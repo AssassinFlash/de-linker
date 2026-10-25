@@ -7942,3 +7942,180 @@ msgstr "Für die ausgewählte Batterie ist eine Angabe zur Betriebstemperatur im
 #: build/planner/assets/planner.js
 msgid "Values or units in the selected product table could not be matched consistently. This calculation could not be prepared."
 msgstr "Die Werte oder Einheiten der ausgewählten Produkttabelle ließen sich nicht konsistent zuordnen. Die Berechnung konnte nicht vorbereitet werden."
+
+
+#: build/planner/assets/planner.js
+msgid "Baseline calculation"
+msgstr "Referenzberechnung"
+
+#: build/planner/assets/planner.js
+msgid "Battery temperature"
+msgstr "Batterietemperatur"
+
+#: build/planner/assets/planner.js
+msgid "Calculated periods"
+msgstr "Berechnungszeiträume"
+
+#: build/planner/assets/planner.js
+msgid "Calculation method"
+msgstr "Berechnungsmethode"
+
+#: build/planner/assets/planner.js
+msgid "Changed"
+msgstr "Geändert"
+
+#: build/planner/assets/planner.js
+msgid "Choose two different calculations."
+msgstr "Wählen Sie zwei unterschiedliche Berechnungen aus."
+
+#: build/planner/assets/planner.js
+msgid "Compare two saved energy calculations from this project using their original inputs and results."
+msgstr "Vergleichen Sie zwei gespeicherte Energieberechnungen dieses Projekts anhand ihrer ursprünglichen Eingaben und Ergebnisse."
+
+#: build/planner/assets/planner.js
+msgid "Comparison basis"
+msgstr "Vergleichsgrundlage"
+
+#: build/planner/assets/planner.js
+msgid "Comparison calculation"
+msgstr "Vergleichsberechnung"
+
+#: build/planner/assets/planner.js
+msgid "DC auxiliary demand"
+msgstr "DC-Hilfsverbrauch"
+
+#: build/planner/assets/planner.js
+msgid "Design and assumption changes"
+msgstr "Änderungen an Auslegung und Annahmen"
+
+#: build/planner/assets/planner.js
+msgid "Differ"
+msgstr "Abweichend"
+
+#: build/planner/assets/planner.js
+msgid "Difference"
+msgstr "Differenz"
+
+#: build/planner/assets/planner.js
+msgid "Difference = comparison minus baseline. Differences in ratios are shown in percentage points. PV differences also require the same AC/DC boundary."
+msgstr "Differenz = Vergleichsberechnung minus Referenzberechnung. Unterschiede bei Anteilen werden in Prozentpunkten angegeben. Bei PV-Werten wird eine Differenz nur angezeigt, wenn beide Werte sich auf dieselbe AC- oder DC-Seite beziehen."
+
+#: build/planner/assets/planner.js
+msgid "Equipment selection"
+msgstr "Geräteauswahl"
+
+#: build/planner/assets/planner.js
+msgid "Load and auxiliary sources"
+msgstr "Quellen für Last und Hilfsverbrauch"
+
+#: build/planner/assets/planner.js
+msgid "Load measurement scope"
+msgstr "Bilanzgrenze der Last"
+
+#: build/planner/assets/planner.js
+msgid "Match"
+msgstr "Übereinstimmend"
+
+#: build/planner/assets/planner.js
+msgid "Matching comparison conditions do not establish manufacturer performance or installation approval."
+msgstr "Übereinstimmende Vergleichsbedingungen belegen weder die Leistungsfähigkeit der Geräte noch eine Freigabe für die Installation."
+
+#: build/planner/assets/planner.js
+msgid "No differences are shown because the comparison conditions differ or are incomplete."
+msgstr "Es werden keine Differenzen angezeigt, da die Vergleichsbedingungen abweichen oder unvollständig sind."
+
+#: build/planner/assets/planner.js
+msgid "Not defined"
+msgstr "Nicht definiert"
+
+#: build/planner/assets/planner.js
+msgid "Not established"
+msgstr "Nicht belegt"
+
+#: build/planner/assets/planner.js
+msgid "Open saved calculation"
+msgstr "Gespeicherte Berechnung öffnen"
+
+#: build/planner/assets/planner.js
+msgid "Operating requirements"
+msgstr "Betriebsanforderungen"
+
+#: build/planner/assets/planner.js
+msgid "PV export"
+msgstr "PV-Einspeisung"
+
+#: build/planner/assets/planner.js
+msgid "PV layout and generation settings"
+msgstr "PV-Belegung und Erzeugungsparameter"
+
+#: build/planner/assets/planner.js
+msgid "PV weather or identical generation input"
+msgstr "PV-Wetterdaten oder identische Erzeugungsdaten"
+
+#: build/planner/assets/planner.js
+msgid "Read comparison again"
+msgstr "Vergleich erneut laden"
+
+#: build/planner/assets/planner.js
+msgid "Reading saved calculation results…"
+msgstr "Gespeicherte Berechnungsergebnisse werden geladen…"
+
+#: build/planner/assets/planner.js
+msgid "Required final stored energy"
+msgstr "Geforderte Mindestenergie am Ende"
+
+#: build/planner/assets/planner.js
+msgid "Save comparison in planning report"
+msgstr "Vergleich im Planungsbericht speichern"
+
+#: build/planner/assets/planner.js
+msgid "Saved calculation comparison"
+msgstr "Vergleich gespeicherter Berechnungen"
+
+#: build/planner/assets/planner.js
+msgid "Saved calculation comparison is not available on this service version."
+msgstr "Der Vergleich gespeicherter Berechnungen ist in dieser Version nicht verfügbar."
+
+#: build/planner/assets/planner.js
+msgid "Scenario requirements"
+msgstr "Szenarioanforderungen"
+
+#: build/planner/assets/planner.js
+msgid "Scenario requirements met"
+msgstr "Szenarioanforderungen erfüllt"
+
+#: build/planner/assets/planner.js
+msgid "Scenario requirements not met"
+msgstr "Szenarioanforderungen nicht erfüllt"
+
+#: build/planner/assets/planner.js
+msgid "Selected calculation"
+msgstr "Ausgewählte Berechnung"
+
+#: build/planner/assets/planner.js
+msgid "Site and time zone"
+msgstr "Standort und Zeitzone"
+
+#: build/planner/assets/planner.js
+msgid "Starting stored energy"
+msgstr "Gespeicherte Energie zu Beginn"
+
+#: build/planner/assets/planner.js
+msgid "Stored energy at end"
+msgstr "Gespeicherte Energie am Ende"
+
+#: build/planner/assets/planner.js
+msgid "The selected results could not be compared. Check that both calculations are available in this project."
+msgstr "Die ausgewählten Ergebnisse konnten nicht verglichen werden. Prüfen Sie, ob beide Berechnungen in diesem Projekt verfügbar sind."
+
+#: build/planner/assets/planner.js
+msgid "Time resolution"
+msgstr "Zeitliche Auflösung"
+
+#: build/planner/assets/planner.js
+msgid "Unchanged"
+msgstr "Unverändert"
+
+#: build/planner/assets/planner.js
+msgid "Compare calculations"
+msgstr "Berechnungen vergleichen"

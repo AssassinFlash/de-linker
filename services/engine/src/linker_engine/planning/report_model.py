@@ -7,6 +7,7 @@ from typing import Any, Literal, cast
 from linker_engine.models import Report, ReportRow, ReportSection, ReportTable
 
 from .canonical import Object
+from .comparison_report import comparison_sections
 from .report_copy import check_label, text
 
 
@@ -380,6 +381,10 @@ def build_report(source: Object) -> Report:
                 rows=energy_rows,
             )
         )
+
+    comparison = source.get("comparison")
+    if isinstance(comparison, dict):
+        sections.extend(comparison_sections(comparison, locale, number))
 
     references: list[ReportRow] = []
     references.extend(

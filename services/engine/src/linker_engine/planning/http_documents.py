@@ -101,6 +101,12 @@ class ProjectRead(Command):
     revision: Revision | None
 
 
+class RunCompare(Command):
+    project_id: Id
+    baseline_run_id: Id
+    candidate_run_id: Id
+
+
 class GeometryReview(Command):
     project_id: Id
     geometry: Object

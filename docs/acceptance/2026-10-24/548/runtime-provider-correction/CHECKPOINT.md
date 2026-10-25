@@ -559,3 +559,55 @@ complete BOM/consumer integration, affected site routes, migration and review/
 production delivery remain within the same active goal. The finite German
 reference is neither an all-Europe engineering release nor production acceptance.
 Shared-source owner was already unblocked as soon as its dependency loaded.
+
+
+### 2026-10-25 · Saved calculation comparison and EN/DE reports delivered locally
+
+The Journal workbench now compares two immutable energy runs from the same owned
+project and saves that same comparison into the existing planning report. It
+keeps original revisions, equipment/counts/capacity, operating periods, sources,
+loss assumptions and AC/DC measurement boundaries. Differences require aligned
+comparison conditions and satisfied scenario requirements; otherwise original
+values remain visible without deltas. Ratio differences use percentage points.
+No alternative is called a manufacturer-approved or country-released design.
+
+The actual Berlin reference retains the three-module run at revision 18 and adds
+one four-module calculation at revision 20 using the same Woo devices and saved
+PV/load inputs. The comparison reads these completed results; the baseline and
+annual sources were not recalculated. Capacity is 13.5 versus 18 kWh. PV export
+changes by -0.798 kWh, final stored energy by +0.806 kWh, and PV used/stored on site
+by +8.626 percentage points within the declared two-hour reference. Both scenarios
+meet their numerical requirements while equipment release remains unestablished.
+
+Native EN/DE comparison reports were generated and downloaded, with each PDF hash
+matching its retained asset and both reports containing the identical canonical
+comparison. Each has three pages. The first downloads exposed a font-missing
+range arrow and a split DE table heading; only their output format was repaired
+and both affected table pages inspected. Original report runs remain intact.
+A report-only selection never imports the current project head's site or candidate
+and never combines alternative equipment into one BOM or inquiry transfer.
+
+The newly added comparison region received scoped EN/DE × 1440/390 inspection.
+Desktop variants now use two columns and mobile variants stack; capacity/module
+counts remain visible. CSS stays in the existing WindPress volume and was compiled
+through its native admin. Valid comparison links survive native language changes.
+The final native runtime is `29417d08`, paired HTTP/worker on unchanged Woo source
+`ee916454`. Original Berlin revision 14, the failed reserve run, and the protected
+roof revision/hash remain intact. One instance and current plus one rollback code
+carrier are retained; obsolete carriers and temporary PDF renders were reclaimed.
+No new dependency environment/full backup was made and production was unchanged.
+
+Spec/Standards and EN/DE copy reviews passed the complete comparison diff and
+bounded historical-site/metadata/layout repairs. One short existing-source fixture
+covers comparison admission, changed requirements and frozen historical report
+projection. Existing site-integration tests, changed-file static checks and the
+frontend build passed. Already-valid annual/PV/AC/commerce/unaffected visual results
+were reused; checks stopped at pass. No new standalone test runner or audit report
+was added. Exact identities and artifacts are in the existing installation JSON's
+`saved_result_comparison` section. Shared product-data work was already unblocked.
+
+Manufacturer continuous/thermal/dynamic performance, unknown converter/terminal
+limits, supported topology search/ranking and country engineering release,
+complete BOM/consumers, affected site/Genie/commerce integration, migration and
+review/production delivery remain in the same active complete goal. This local
+reference comparison does not prove all-Europe or production acceptance.

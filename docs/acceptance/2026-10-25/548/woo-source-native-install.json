@@ -43,7 +43,7 @@
     }
   },
   "production_changed": false,
-  "pending": "Finite independent-AC and shared-DC Woo-backed local calculation/report paths are delivered within their stated domains. Continuous performance, remaining electrical/topology/country release, supported search/ranking/comparison, complete BOM/consumers, site integration, migration and review/production delivery remain in the active full goal.",
+  "pending": "Finite Woo-backed AC/DC reference calculations and saved-result comparison/reports are delivered locally within stated domains. Manufacturer performance, engineering/topology/country release, supported search/ranking, complete BOM/consumers, site integration, migration and review/production delivery remain in the active full goal.",
   "native_wordpress_transport": {
     "route_registered": true,
     "provider": "woocommerce",
@@ -1443,7 +1443,7 @@
       "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
     }
   },
-  "current_frontier": "shared_dc_conditioned_source",
+  "current_frontier": "saved_result_comparison",
   "shared_dc_core": {
     "status": "implemented_and_reviewed_core_not_connected_to_native_commands",
     "model": "constant_window_shared_dc_bus_v1",
@@ -1783,5 +1783,159 @@
     ],
     "production_changed_by_548": false,
     "validation_stopped_after_pass": true
+  },
+  "saved_result_comparison": {
+    "status": "native saved-result comparison and EN/DE reports delivered locally; full goal active",
+    "source_base_commit": "49b8d74f48221574b3ea54aa09aa7c91dda1f223",
+    "at_utc": "2026-10-25T13:18:55.920443+00:00",
+    "runtime_sha256": "29417d08049e40b26b54131dc9fa5820d076267478a9919bf7f73fff5a7f36b9",
+    "rollback_runtime_sha256": "60c17298dc2eb12903192bfb11a1ed1520ca10cc46ab074c81b82a4838284df3",
+    "woo_source_revision": "ee916454e451c0769097294afaf0bef0a73823b79b319c7f3f828f6408ff625d",
+    "project_id": "c7795bc2c1e14e389622015c809ace45",
+    "comparison_sha256": "657b452ab5c62e033553871388312e577164f882de0f371de1e47a39b5a5015d",
+    "baseline": {
+      "run_id": "37101494e75844d7bb146ca95c499052",
+      "revision": 18,
+      "manifest_sha256": "e21dceee3bc521b09329bf6551470c1c5ef34e3c0ce1ba8d9c9876c47fbbade1",
+      "result_sha256": "4c26e7c4152ed781c3fd937a7f4203f5c5bc17b5bfcafba561980d82ced6a48a",
+      "modules_per_stack": 3,
+      "usable_window_kwh": 13.5,
+      "recomputed": false
+    },
+    "candidate": {
+      "run_id": "4a89969354884bb79292f9ca000574c4",
+      "revision": 20,
+      "manifest_sha256": "bd50592121f20d3635df21dc0ebf9b03889c345918f6d357bccfca285d071218",
+      "result_sha256": "5659b713dd9ee1493d9591cb62cc02947829ee1db27d235a863e0760f8a8a4ee",
+      "modules_per_stack": 4,
+      "usable_window_kwh": 18,
+      "new_physical_execution_count": 1
+    },
+    "scope": "Finite two-hour German reference using actual Woo-maintained devices, retained PV and explicit synthetic load/loss assumptions; no manufacturer continuous performance or installation release.",
+    "conditions_aligned": true,
+    "equipment_release": "not_established",
+    "country_release": "not_assessed",
+    "metrics": {
+      "pv_export": {
+        "baseline": 0.797758511290759,
+        "candidate": 3.3306690738754696e-16,
+        "delta": -0.7977585112907587,
+        "unit": "kWh",
+        "delta_unit": "kWh"
+      },
+      "stored_final": {
+        "baseline": 7.3914649281280065,
+        "candidate": 8.197699623601231,
+        "delta": 0.8062346954732247,
+        "unit": "kWh",
+        "delta_unit": "kWh"
+      },
+      "pv_use": {
+        "baseline": 0.913741600880724,
+        "candidate": 1.0,
+        "delta": 8.625839911927603,
+        "unit": "%",
+        "delta_unit": "pp"
+      }
+    },
+    "reports": {
+      "en": {
+        "run_id": "538c926e832c4bd8ab650ad48d226623",
+        "revision": 20,
+        "manifest_sha256": "707c33867e1bdd0aa4663396be387edacd2a103c506c5dbd502cc21a3d9bd435",
+        "result_sha256": "ce12f1ac49d332bd0ad8760c60ee054db7509673ac9eafb8dee4c2749fcc5fcb",
+        "asset_id": "af190a3965f3444bba33bc99d06c9802",
+        "sha256": "6bc595c42b3028d9092f53e989445f18fdfb787ba8ccdad2f20eaf5603ff1df5",
+        "file": "comparison-report-en.pdf",
+        "pages": 3,
+        "comparison_sha256": "657b452ab5c62e033553871388312e577164f882de0f371de1e47a39b5a5015d",
+        "native_browser_download_matches_retained_asset": true,
+        "changed_table_and_period_page_visually_inspected": 2
+      },
+      "de": {
+        "run_id": "e975a59361704b5eb87086b8eb292081",
+        "revision": 20,
+        "manifest_sha256": "f6605edc1169f83314c310d2fcbc4bb9ed7613616f4d32eaaee2102571efeb1b",
+        "result_sha256": "738094a3cf930747ca1998a3c70e5c5e8c07e2aa38586c9496ac07be4f621691",
+        "asset_id": "e718f0e23493401eba7ef3cbec965498",
+        "sha256": "b131b4be140ec996e6bbfdc78b854da5447a1a16737ca52314b6a217216b95f9",
+        "file": "comparison-report-de.pdf",
+        "pages": 3,
+        "comparison_sha256": "657b452ab5c62e033553871388312e577164f882de0f371de1e47a39b5a5015d",
+        "native_browser_download_matches_retained_asset": true,
+        "changed_table_and_period_page_visually_inspected": 2
+      }
+    },
+    "superseded_report_runs_preserved": [
+      "6f5bfe30ebea454c91b7da942818122a",
+      "41c0a44a7a43441eacef42f51cedab61"
+    ],
+    "report_layout_repair": "Font-supported en dash and wider DE baseline/comparison columns; no result recomputation.",
+    "native_ui": {
+      "matrix": [
+        "EN 1440x900",
+        "EN 390x844",
+        "DE 1440x900",
+        "DE 390x844"
+      ],
+      "scope": "new comparison area only; unaffected UI evidence reused",
+      "screenshots": [
+        "comparison-en-desktop.png",
+        "comparison-de-mobile.png"
+      ],
+      "native_language_pair_preserved": true,
+      "viewport_restored": true,
+      "no_unsaved_edits": true
+    },
+    "reviews": {
+      "spec": "PASS full comparison delta plus historical-site repair, summaries, CSS and PDF formatting deltas",
+      "standards": "PASS same bounded deltas; previous unaffected conclusions reused",
+      "copy": "PASS EN/DE review; original saved user assumption note retained verbatim"
+    },
+    "verification": {
+      "one_short_comparison_api_and_report_fixture": "PASS; existing source harness reused",
+      "source_and_owner_condition_counterexamples": "PASS in same fixture",
+      "historical_report_intent": "PASS without comparison key drift",
+      "site_integration_existing_tests": "PASS with validated-pair assertions",
+      "changed_file_ruff_and_strict_mypy": "PASS",
+      "frontend_types_build_and_build_check": "PASS",
+      "annual_pv_ac_commerce_rerun": false,
+      "unrelated_full_site_matrix": false,
+      "validation_stopped_after_pass": true
+    },
+    "retention": {
+      "instances": 1,
+      "executable_carriers": 2,
+      "new_environment": false,
+      "new_full_backup": false,
+      "retired_code_carriers": [
+        {
+          "directory": "/Users/chesterjohn/de-linker-local/p548/planner/runtime-releases/81ae51778de58372f0900252097b7692fb1c101b43b3bdae6e048aa6e6653174",
+          "logical_bytes": 1377564
+        },
+        {
+          "directory": "/Users/chesterjohn/de-linker-local/p548/planner/runtime-releases/afcc3f3c8753bc65225a9fb27de3283fcc4f205133debbd35a1ccfb0b12f6e0e",
+          "logical_bytes": 1378754
+        },
+        {
+          "directory": "/Users/chesterjohn/de-linker-local/p548/planner/runtime-releases/57af429e4e75efea8b1f999e5efaedf99d25b2819a23f97b75810372d89a693e",
+          "logical_bytes": 1408878
+        }
+      ],
+      "temporary_render_images_removed": 2
+    },
+    "protected_roof": {
+      "revision": 14,
+      "input_sha256": "8a6394917a9a9e6b91db4bfc73c0299dcedd2c51619144a5beffa1664f010288"
+    },
+    "original_berlin_revision_14_preserved": true,
+    "original_failed_reserve_requirement_preserved": true,
+    "production_changed": false,
+    "shared_source_owner_dependency_already_released": true,
+    "remaining_full_goal": [
+      "Manufacturer continuous/thermal/dynamic performance and unknown converter, terminal, wiring/topology limits.",
+      "Supported topology search/ranking and country-specific electrical, mounting, fire, structural/grid release across Europe.",
+      "Complete released BOM/report consumers, site/Genie/Woo/commerce integration, old data/link migration, review and production delivery/readback."
+    ]
   }
 }

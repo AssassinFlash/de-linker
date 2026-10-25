@@ -54,4 +54,21 @@ test("language switches keep only validated result/workspace references for the 
 		),
 		`https://site.example/de/?project=${project}`,
 	);
+	const pair = `${run},${"d".repeat(32)}`;
+	assert.equal(
+		projectLanguageUrl(
+			target,
+			`https://site.example/en/?project=${project}&run=${run}&compare=${pair}&nonce=private#lp-calculations`,
+			project,
+		),
+		`https://site.example/de/native/?project=${project}&compare=${encodeURIComponent(pair)}#lp-calculations`,
+	);
+	assert.equal(
+		projectLanguageUrl(
+			`/de/?compare=old-secret`,
+			`https://site.example/en/?project=${project}&compare=invalid&nonce=private#lp-calculations`,
+			project,
+		),
+		`https://site.example/de/?project=${project}#lp-calculations`,
+	);
 });

@@ -3,6 +3,94 @@
 from __future__ import annotations
 
 TEXT = {
+    "comparison_title": (
+        "Saved calculation comparison",
+        "Vergleich gespeicherter Berechnungen",
+    ),
+    "comparison_scope": (
+        "Matching comparison conditions do not establish manufacturer performance or installation approval.",
+        "Übereinstimmende Vergleichsbedingungen belegen weder die Leistungsfähigkeit der Geräte noch eine Freigabe für die Installation.",
+    ),
+    "comparison_definition": (
+        "Difference = comparison minus baseline. Differences in ratios are shown in percentage points. PV differences also require the same AC/DC boundary.",
+        "Differenz = Vergleichsberechnung minus Referenzberechnung. Unterschiede bei Anteilen werden in Prozentpunkten angegeben. Bei PV-Werten wird eine Differenz nur angezeigt, wenn beide Werte sich auf dieselbe AC- oder DC-Seite beziehen.",
+    ),
+    "comparison_blocked": (
+        "No differences are shown because the comparison conditions differ or are incomplete.",
+        "Es werden keine Differenzen angezeigt, da die Vergleichsbedingungen abweichen oder unvollständig sind.",
+    ),
+    "comparison_baseline": ("Baseline calculation", "Referenzberechnung"),
+    "comparison_candidate": ("Comparison calculation", "Vergleichsberechnung"),
+    "comparison_difference": ("Difference", "Differenz"),
+    "comparison_basis": ("Comparison basis", "Vergleichsgrundlage"),
+    "comparison_changes": (
+        "Design and assumption changes",
+        "Änderungen an Auslegung und Annahmen",
+    ),
+    "comparison_changed": ("Changed", "Geändert"),
+    "comparison_unchanged": ("Unchanged", "Unverändert"),
+    "comparison_site": ("Site and time zone", "Standort und Zeitzone"),
+    "comparison_periods": ("Calculated periods", "Berechnungszeiträume"),
+    "comparison_demand_sources": (
+        "Load and auxiliary sources",
+        "Quellen für Last und Hilfsverbrauch",
+    ),
+    "comparison_pv_weather": (
+        "PV weather or identical generation input",
+        "PV-Wetterdaten oder identische Erzeugungsdaten",
+    ),
+    "comparison_time_resolution": ("Time resolution", "Zeitliche Auflösung"),
+    "comparison_operating_requirements": (
+        "Operating requirements",
+        "Betriebsanforderungen",
+    ),
+    "comparison_starting_inventory": (
+        "Starting stored energy",
+        "Gespeicherte Energie zu Beginn",
+    ),
+    "comparison_terminal_requirement": (
+        "Required final stored energy",
+        "Geforderte Mindestenergie am Ende",
+    ),
+    "comparison_load_scope": ("Load measurement scope", "Bilanzgrenze der Last"),
+    "comparison_calculation_method": ("Calculation method", "Berechnungsmethode"),
+    "comparison_scenario_constraints": (
+        "Scenario requirements",
+        "Szenarioanforderungen",
+    ),
+    "comparison_battery_temperature": ("Battery temperature", "Batterietemperatur"),
+    "comparison_storage_parameters": ("Storage parameters", "Speicherparameter"),
+    "comparison_equipment_selection": ("Equipment selection", "Geräteauswahl"),
+    "comparison_pv_design": (
+        "PV layout and generation settings",
+        "PV-Belegung und Erzeugungsparameter",
+    ),
+    "comparison_dc_auxiliary": ("DC auxiliary demand", "DC-Hilfsverbrauch"),
+    "comparison_load_demand": ("Simulated load demand", "Simulierter Strombedarf"),
+    "comparison_solar_supply": (
+        "Solar supplied to load",
+        "Solarenergie zur Lastversorgung",
+    ),
+    "comparison_grid_import": ("Grid import", "Netzbezug"),
+    "comparison_unserved_load": (
+        "Unserved simulated load",
+        "Ungedeckter simulierter Strombedarf",
+    ),
+    "comparison_pv_export": ("PV export", "PV-Einspeisung"),
+    "comparison_stored_final": ("Stored energy at end", "Gespeicherte Energie am Ende"),
+    "comparison_pv_generation": ("PV generation", "PV-Erzeugung"),
+    "comparison_solar_share": (
+        "Solar share of gross demand",
+        "Solarer Deckungsanteil am Gesamtbedarf",
+    ),
+    "comparison_pv_use": (
+        "PV used or stored on site",
+        "PV-Energie für Verbrauch und Speicherung vor Ort",
+    ),
+    "comparison_matched": ("Match", "Übereinstimmend"),
+    "comparison_different": ("Differ", "Abweichend"),
+    "comparison_unavailable": ("Not established", "Nicht belegt"),
+    "comparison_no_minimum": ("No minimum required", "Kein Mindestwert erforderlich"),
     "dc_battery_temperature": (
         "Battery temperature for this scenario",
         "Batterietemperatur im Szenario",

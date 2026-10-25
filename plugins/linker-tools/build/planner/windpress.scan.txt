@@ -9,6 +9,7 @@ lp-button-secondary
 lp-canvas-caption
 lp-canvas-tools
 lp-comparison
+lp-comparison-variants
 lp-data-table
 lp-design-canvas
 lp-design-empty
@@ -28,6 +29,7 @@ lp-editor-main
 lp-editor-with-design
 lp-empty
 lp-energy-chart
+lp-energy-comparison
 lp-energy-metrics
 lp-energy-recovery
 lp-energy-recovery-row

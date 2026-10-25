@@ -102,6 +102,52 @@ A chart loading failure leaves the table and CSV usable. Session loss hides
 cached values and prevents an obsolete callback exporting another scope.
 The chart inherits site font/colour tokens and sizes through WindPress.
 
+## Saved-result comparison and report
+
+The Journal comparison view selects two completed energy results from the same
+owned project, including earlier revisions. `/runs/compare` is an authenticated
+read: it resolves immutable runs, inputs and retained sources and performs no
+simulation, product lookup or project mutation. A validated pair survives reload
+and native EN/DE navigation; arbitrary URL fields and credentials are excluded.
+Pagination retains only the two selected history rows. Opening one original
+result keeps its own identity and revision.
+
+The shared comparison module checks declared site/timezone, UTC periods, load
+and auxiliary source bytes/interpretation, common retained PV weather or identical
+opaque PV input, effective time resolution, operating requirements, initial
+origin buckets, terminal requirement, load scope, calculation method, temperature
+and satisfied scenario requirements. Unmatched or unknown conditions retain the
+two original values but withhold deltas. Independent-AC and shared-DC results can
+retain their own measurement boundaries; PV generation/utilization deltas require
+the same boundary. Common AC metrics keep AC units. Ratio deltas are percentage
+points. Final stored energy is displayed alongside load/grid/PV values.
+
+Method equivalence uses the retained source/lock/environment inventory and
+frozen numerical parameters. Only explicitly named command-read/admission,
+comparison and report-presentation modules are excluded; every unknown module
+stays included. Editing those non-calculating modules or a processing budget
+does not force a physics rerun. Numerical source/dependency/tolerance changes
+remain visible. Full original runtime hashes are still retained on both sides;
+this comparison policy never authorizes a worker to execute a different runtime.
+
+The same canonical comparison can be frozen into the existing planning-report
+task. Its two original run/manifests/results and comparison hash become report
+dependencies. Reports preserve the historical inputs of both alternatives,
+independently of the current project head. Current native Woo preparation and
+document permission are rechecked for every used product/reference proof around
+report publication. A comparison-only report does not adopt the current candidate,
+combine alternative equipment into one BOM or grant an inquiry transfer.
+The additive empty comparison option preserves historical report command hashes.
+The screen and PDF render the same comparison, conditions and stated scope.
+
+Minimum verification is one short existing-source scenario with an efficiency
+alternative, the actual changed-reserve refusal, cross-owner/same-run rejection,
+historical report receipts and one frozen comparison-report path. Existing annual
+PV/dispatch and unaffected commerce checks are reused. Only the new comparison
+view, language-reference propagation and report content need affected UI/PDF
+inspection. Ranking, additional physical models, full BOM/engineering release
+and all site/production obligations stay in the complete active goal.
+
 ## Selected equipment and the actual scenario envelope
 
 When a saved project has an equipment selection, the energy command freezes the

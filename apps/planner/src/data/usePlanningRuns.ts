@@ -15,12 +15,14 @@ export function usePlanningRuns({
 	client,
 	recheck,
 	active,
+	readSelected = true,
 }: {
 	projectId: string;
 	session: Session;
 	client: PlannerClient;
 	recheck: () => void;
 	active: boolean;
+	readSelected?: boolean;
 }) {
 	const [cursor, setCursor] = useState<RunPage["next"]>(null),
 		[selected, setSelected] = useState<string | null>(() => {
@@ -100,7 +102,7 @@ export function usePlanningRuns({
 					runId,
 				);
 			}),
-		enabled: active && admitted && runId !== null,
+		enabled: active && readSelected && admitted && runId !== null,
 		retry: false,
 		refetchInterval: (query) =>
 			query.state.data && runPending(query.state.data.state) ? POLL_MS : false,
@@ -111,6 +113,7 @@ export function usePlanningRuns({
 		// its verified automatic selection in the URL too, for reload/language links.
 		if (
 			active &&
+			readSelected &&
 			admitted &&
 			selected === null &&
 			verifiedRunId &&
@@ -119,6 +122,7 @@ export function usePlanningRuns({
 			select(verifiedRunId);
 	}, [
 		active,
+		readSelected,
 		admitted,
 		selected,
 		verifiedRunId,
@@ -138,6 +142,7 @@ export function usePlanningRuns({
 		setSelected(id);
 		setCancelFailure(null);
 		url.searchParams.set("run", id);
+		url.searchParams.delete("compare");
 		url.hash = "lp-calculations";
 		replacePlannerLocation(url);
 	}

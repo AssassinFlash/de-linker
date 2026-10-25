@@ -2,6 +2,7 @@ import { readObject } from "../../data/readProtocol.ts";
 import { DC_MODEL, readDcLossScenario } from "../../domain/dcEnergy.ts";
 import { PlanningReportForm } from "./PlanningReportForm.tsx";
 import { PlanningReportResult } from "./PlanningReportResult.tsx";
+import { EnergyComparison } from "./EnergyComparison.tsx";
 import { REPORT_TASK } from "../../data/planningReport.ts";
 import type { ReportOptions } from "../../data/planningReport.ts";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -145,11 +146,19 @@ export function EnergyWorkspace({
 	const setup = parsed.value,
 		selections = readSelections(draft.history.current.profile_selections);
 	const [selectedView, setView] = useState<
-			"weather" | "pv" | "scenario" | "equipment" | "runs" | "reports"
+			| "weather"
+			| "pv"
+			| "scenario"
+			| "equipment"
+			| "runs"
+			| "reports"
+			| "comparison"
 		>(() =>
-			new URL(window.location.href).searchParams.has("run")
-				? "runs"
-				: "scenario",
+			new URL(window.location.href).searchParams.has("compare")
+				? "comparison"
+				: new URL(window.location.href).searchParams.has("run")
+					? "runs"
+					: "scenario",
 		),
 		[section, setSection] = useState<"storage" | "initial" | "operation">(
 			"storage",
@@ -215,7 +224,10 @@ export function EnergyWorkspace({
 		session,
 		client,
 		recheck,
-		active: active && (view === "runs" || view === "reports"),
+		active:
+			active &&
+			(view === "runs" || view === "reports" || view === "comparison"),
+		readSelected: view === "runs",
 	});
 	const runTarget = useRef<HTMLDivElement>(null),
 		visibleRunId = runs.run.data?.id;
@@ -649,7 +661,14 @@ export function EnergyWorkspace({
 		}
 	}
 	function chooseView(
-		next: "weather" | "pv" | "scenario" | "equipment" | "runs" | "reports",
+		next:
+			| "weather"
+			| "pv"
+			| "scenario"
+			| "equipment"
+			| "runs"
+			| "reports"
+			| "comparison",
 	) {
 		setView(next);
 		if (next === "runs") {
@@ -657,6 +676,7 @@ export function EnergyWorkspace({
 		} else {
 			const url = new URL(window.location.href);
 			url.searchParams.delete("run");
+			if (next !== "comparison") url.searchParams.delete("compare");
 			replacePlannerLocation(url);
 		}
 	}
@@ -808,6 +828,16 @@ export function EnergyWorkspace({
 					}
 				>
 					{__("Equipment", "linker-tools")}
+				</button>
+				<button
+					type="button"
+					aria-pressed={view === "comparison"}
+					disabled={
+						session.runtime.models.comparison !== "frozen_energy_comparison_v1"
+					}
+					onClick={() => chooseView("comparison")}
+				>
+					{__("Compare calculations", "linker-tools")}
 				</button>
 				<button
 					type="button"
@@ -1123,6 +1153,57 @@ export function EnergyWorkspace({
 						</div>
 					</>
 				)}
+			</div>
+			<div hidden={view !== "comparison"}>
+				<div className="lp-inline-actions">
+					{runs.hasPrevious && (
+						<button
+							type="button"
+							className="lp-text-button"
+							disabled={runs.page.isFetching}
+							onClick={runs.first}
+						>
+							{__("Latest calculations", "linker-tools")}
+						</button>
+					)}
+					{runs.page.data?.next && (
+						<button
+							type="button"
+							className="lp-text-button"
+							disabled={runs.page.isFetching}
+							onClick={runs.next}
+						>
+							{__("Earlier calculations", "linker-tools")}
+						</button>
+					)}
+				</div>
+				<EnergyComparison
+					key={`${projectId}:${session.query_scope}`}
+					projectId={projectId}
+					runs={runs.page.data?.items ?? []}
+					client={client}
+					session={session}
+					active={active && view === "comparison"}
+					locale={locale}
+					recheck={recheck}
+					reportDisabled={
+						dirty ||
+						!!draft.pending ||
+						!!draft.conflict ||
+						blocked ||
+						!syntaxValid ||
+						operations.busy ||
+						operations.checking ||
+						operations.storageFailed ||
+						Boolean(unconfirmed.length) ||
+						!session.runtime.models.report
+					}
+					generateReport={generateReport}
+					openRun={(id) => {
+						runs.select(id);
+						setView("runs");
+					}}
+				/>
 			</div>
 			<div hidden={view !== "reports"}>
 				{runs.page.error && (

@@ -46,6 +46,7 @@ export const RPC_PATHS = [
 	"projects/revise",
 	"projects/runs",
 	"runs/read",
+	"runs/compare",
 	"runs/cancel",
 	"runs/energy",
 	"runs/pv",

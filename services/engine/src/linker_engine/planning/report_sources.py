@@ -8,6 +8,7 @@ from typing import cast
 from .assets import Assets
 from .canonical import Json, Object
 from .dc_energy_kernel import DcEnergyKernel
+from .energy_comparison import compare_energy_runs, comparison_side
 from .energy_inputs import EnergyInputs
 from .energy_kernel import EnergyKernel
 from .equipment_candidate_choice import check_equipment_candidate
@@ -85,7 +86,15 @@ def report_sources(
         return run
 
     assessment: Object | None = None
-    candidate = project.inputs.get("equipment_candidate")
+    comparison_only = options.comparison is not None and all(
+        identity is None
+        for identity in (
+            options.energy_run_id,
+            options.pv_run_id,
+            options.equipment_run_id,
+        )
+    )
+    candidate = None if comparison_only else project.inputs.get("equipment_candidate")
     if isinstance(candidate, dict):
         if options.equipment_run_id not in (None, candidate.get("run_id")):
             raise InvalidInput(
@@ -201,6 +210,44 @@ def report_sources(
                 provenance(workspace.blobs.object(sha))
         bases["pv"] = workspace.blobs.put_object(products.pv_basis(project.inputs))
 
+    comparison: Object | None = None
+    if options.comparison is not None:
+        comparison = compare_energy_runs(
+            workspace,
+            actor,
+            project.id,
+            options.comparison.baseline_run_id,
+            options.comparison.candidate_run_id,
+        )
+        for index, identity in enumerate(
+            (options.comparison.baseline_run_id, options.comparison.candidate_run_id)
+        ):
+            side = comparison_side(workspace, actor, project.id, identity)
+            sources.append(
+                {
+                    "run_id": side.run.id,
+                    "revision": side.run.revision,
+                    "kind": side.result["kind"],
+                    "manifest_sha256": side.run.manifest_sha256,
+                    "result_sha256": side.run.result_sha256,
+                    "input_sha256": side.result["input_sha256"],
+                    "runtime_sha256": side.result["runtime_sha256"],
+                }
+            )
+            if isinstance(side.result.get("equipment_binding"), dict):
+                bases[f"comparison_equipment.{index}"] = side.pinned[
+                    "woo.equipment_inputs"
+                ]
+            for name, sha in side.pinned.items():
+                if name.endswith(".metadata") and isinstance(sha, str):
+                    metadata = workspace.blobs.object(sha)
+                    provenance(metadata)
+                    module_basis = metadata.get("woo_module_inputs")
+                    if isinstance(module_basis, dict):
+                        bases[f"energy.comparison.{index}.{name}"] = (
+                            workspace.blobs.put_object(module_basis)
+                        )
+
     if not sources:
         raise InvalidInput("select at least one completed analysis for the report")
     historical_bases = {
@@ -230,7 +277,7 @@ def report_sources(
         "revision": project.revision,
         "input_sha256": project.input_sha256,
         "title": project.title,
-        "brief": project.inputs.get("brief"),
+        "brief": None if comparison_only else project.inputs.get("brief"),
         "equipment_selection": project.inputs.get("equipment_selection"),
         "candidate": candidate,
         "equipment": assessment,
@@ -245,6 +292,9 @@ def report_sources(
         "source_labels": list(dict.fromkeys(labels)),
         "dependencies": dependencies,
     }
+    if comparison is not None:
+        source["comparison"] = comparison
+        dependencies["energy_comparison"] = workspace.blobs.put_object(comparison)
     confirm_report_sources(workspace, products, source)
     return source
 
@@ -259,10 +309,14 @@ def confirm_report_sources(
     for name, sha in bases.items():
         if not isinstance(sha, str):
             raise VersionUnavailable("report source permission proof is invalid")
-        distinct[sha] = distinct.get(sha, False) or name not in {
-            "equipment",
-            "energy_equipment",
-        }
+        distinct[sha] = distinct.get(sha, False) or (
+            not name.startswith("comparison_equipment.")
+            and name
+            not in {
+                "equipment",
+                "energy_equipment",
+            }
+        )
     for sha, require_reference in distinct.items():
         products.confirm_basis(
             workspace.blobs.object(sha), require_reference=require_reference

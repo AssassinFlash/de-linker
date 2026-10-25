@@ -34,10 +34,20 @@ export function projectLanguageUrl(
 	if (id) target.searchParams.set("project", id);
 	else target.searchParams.delete("project");
 	target.searchParams.delete("run");
+	target.searchParams.delete("compare");
 	target.hash = "";
 	if (id && page.searchParams.get("project") === id) {
 		const run = page.searchParams.get("run");
 		if (run && /^[a-f0-9]{32}$/.test(run)) target.searchParams.set("run", run);
+		const comparison = page.searchParams.get("compare");
+		if (
+			comparison &&
+			/^[a-f0-9]{32},[a-f0-9]{32}$/.test(comparison) &&
+			comparison.slice(0, 32) !== comparison.slice(33)
+		) {
+			target.searchParams.delete("run");
+			target.searchParams.set("compare", comparison);
+		}
 		if (workspaceHashes.has(page.hash)) target.hash = page.hash;
 	}
 	return target.href;

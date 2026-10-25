@@ -14,6 +14,7 @@ export interface ReportOptions extends JsonObject {
 	pv_run_id: string | null;
 	equipment_run_id: string | null;
 	logo: string | null;
+	comparison?: { baseline_run_id: string; candidate_run_id: string } | null;
 }
 export interface ReportRow {
 	label: string;

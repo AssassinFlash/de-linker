@@ -1,5 +1,22 @@
 {
   "$defs": {
+    "ComparisonSelection": {
+      "additionalProperties": false,
+      "properties": {
+        "baseline_run_id": {
+          "$ref": "#/$defs/RunId"
+        },
+        "candidate_run_id": {
+          "$ref": "#/$defs/RunId"
+        }
+      },
+      "required": [
+        "baseline_run_id",
+        "candidate_run_id"
+      ],
+      "title": "ComparisonSelection",
+      "type": "object"
+    },
     "RunId": {
       "pattern": "^[a-f0-9]{32}$",
       "type": "string"
@@ -56,6 +73,17 @@
         }
       ],
       "title": "Logo"
+    },
+    "comparison": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComparisonSelection"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
     }
   },
   "required": [

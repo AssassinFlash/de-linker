@@ -26,6 +26,7 @@ from .assets import Assets
 from .canonical import Json, Object
 from .csv_inspection import inspect_csv
 from .csv_issue import CsvIssue
+from .energy_comparison import compare_energy_runs
 from .energy_service import EnergyService
 from .equipment_candidate_choice import check_equipment_candidate
 from .equipment_candidate_store import EquipmentCandidateStore
@@ -70,6 +71,7 @@ from .http_documents import (
     ProjectRevise,
     ProjectRuns,
     ReportEvaluate,
+    RunCompare,
     RunRead,
     SessionClaim,
     TraceRead,
@@ -254,6 +256,7 @@ def create_private_app(
             "runtime_sha256": energy.kernel.runtime.sha256,
             "models": {
                 **energy.kernel.models,
+                "comparison": "frozen_energy_comparison_v1",
                 **(
                     {"dc_replay": energy.dc_kernel.kind}
                     if energy.dc_kernel is not None
@@ -427,6 +430,16 @@ def create_private_app(
     @app.post("/runs/read")
     def run_read(body: RunRead, request: Request) -> Object:
         return run_view(workspace.run(verified_actor(request.scope), body.run_id))
+
+    @app.post("/runs/compare")
+    def run_compare(body: RunCompare, request: Request) -> Object:
+        return compare_energy_runs(
+            workspace,
+            verified_actor(request.scope),
+            body.project_id,
+            body.baseline_run_id,
+            body.candidate_run_id,
+        )
 
     @app.post("/runs/cancel")
     def cancel(body: RunRead, request: Request) -> Object:

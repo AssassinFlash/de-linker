@@ -10,7 +10,7 @@ import warnings
 from typing import Annotated, Literal
 
 from PIL import Image
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from .canonical import Object, digest, encode
 from .energy_inputs import Document
@@ -26,17 +26,34 @@ class InvalidReportLogo(InvalidInput):
     code = "report_logo_invalid"
 
 
+class ComparisonSelection(Document):
+    baseline_run_id: RunId
+    candidate_run_id: RunId
+
+    @model_validator(mode="after")
+    def distinct_runs(self) -> ComparisonSelection:
+        if self.baseline_run_id == self.candidate_run_id:
+            raise ValueError("choose two different saved calculations")
+        return self
+
+
 class ReportOptions(Document):
     locale: Literal["en", "de"]
     energy_run_id: RunId | None
     pv_run_id: RunId | None
     equipment_run_id: RunId | None
     logo: Annotated[str, Field(max_length=700_000)] | None
+    comparison: ComparisonSelection | None = None
 
     def intent(self) -> Object:
+        options = self.model_dump(mode="json")
+        # The additive empty comparison does not change historical receipts,
+        # including the normalized body used by the native replay adapter.
+        if self.comparison is None:
+            options.pop("comparison")
         return {
             "kind": "planning_report_v1",
-            "options_sha256": digest(encode(self.model_dump(mode="json"))),
+            "options_sha256": digest(encode(options)),
         }
 
     def logo_bytes(self) -> bytes | None:
