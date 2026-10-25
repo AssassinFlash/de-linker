@@ -7717,3 +7717,48 @@ msgstr "Produktübernahme · Eingabeversion %d"
 #: build/planner/assets/planner.js
 msgid "Quantities have not been determined for some selected products. Update the equipment selection and generate a new report."
 msgstr "Für einige ausgewählte Produkte wurde keine Menge ermittelt. Aktualisieren Sie die Geräteauswahl und erstellen Sie einen neuen Bericht."
+
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/energy/RunResult.tsx ../../apps/planner/src/components/equipment/equipmentLabels.ts
+msgid "Continuous AC charge power"
+msgstr "AC-Dauerleistung bei Ladung"
+
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/energy/RunResult.tsx ../../apps/planner/src/components/equipment/equipmentLabels.ts
+msgid "Scenario operating mode"
+msgstr "Betriebsart im Szenario"
+
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/energy/RunResult.tsx ../../apps/planner/src/components/equipment/equipmentLabels.ts
+msgid "Storage losses and operating conditions"
+msgstr "Speicherverluste und Betriebsbedingungen"
+
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/energy/RunResult.tsx ../../apps/planner/src/components/equipment/equipmentLabels.ts
+msgid "Converter ports and system topology"
+msgstr "Umrichteranschlüsse und Systemtopologie"
+
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/energy/RunResult.tsx ../../apps/planner/src/components/equipment/equipmentLabels.ts
+msgid "The scenario includes an outage, but the equipment was selected for grid-connected operation."
+msgstr "Das Szenario enthält einen Stromausfall. Die Geräte wurden für den Netzparallelbetrieb ausgewählt."
+
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/energy/RunResult.tsx ../../apps/planner/src/components/equipment/equipmentLabels.ts
+msgid "The storage losses and efficiencies are scenario inputs. Their applicability to the selected equipment has not been established."
+msgstr "Die Speicherverluste und Wirkungsgrade sind Vorgaben des Szenarios. Ob sie für die ausgewählten Geräte gelten, ist noch nicht nachgewiesen."
+
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/energy/RunResult.tsx ../../apps/planner/src/components/equipment/equipmentLabels.ts
+msgid "The scenario uses a single AC bus. Shared converter ports, DC connections and operating limits of the selected system still require assessment."
+msgstr "Das Szenario verwendet eine gemeinsame AC-Sammelschiene. Gemeinsame Umrichteranschlüsse, DC-Verbindungen und Betriebsgrenzen des ausgewählten Systems müssen noch geprüft werden."
+
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/energy/RunResult.tsx ../../apps/planner/src/components/equipment/equipmentLabels.ts
+msgid "Energy scenario and selected equipment"
+msgstr "Energieszenario und ausgewählte Geräte"
+
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/energy/RunResult.tsx ../../apps/planner/src/components/equipment/equipmentLabels.ts
+msgid "These checks compare the saved scenario parameters with the equipment selected for this calculation. They do not establish manufacturer performance."
+msgstr "Diese Prüfung vergleicht die gespeicherten Szenarioparameter mit den für die Berechnung ausgewählten Geräten. Die Leistungsfähigkeit der Geräte wird dadurch nicht nachgewiesen."

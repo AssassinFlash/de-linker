@@ -135,8 +135,18 @@ def report_sources(
         run = owned(options.energy_run_id, EnergyKernel.kind, ("energy_replay",))
         energy = run.result
         assert energy is not None
+        binding = energy.get("equipment_binding")
+        if isinstance(binding, dict):
+            if EquipmentSelection.read(
+                binding.get("selection")
+            ) != EquipmentSelection.read(project.inputs.get("equipment_selection")):
+                raise ReportInputsChanged(
+                    "report energy result belongs to a different equipment selection"
+                )
         scenario = EnergyInputs.from_project(project.inputs)
         pinned_energy = cast(Object, energy["pinned_assets"])
+        if isinstance(binding, dict):
+            bases["energy_equipment"] = pinned_energy["woo.equipment_inputs"]
         for role, asset_id in scenario.profiles().items():
             asset = Assets(workspace).get(actor, project.id, asset_id)
             try:
@@ -217,6 +227,7 @@ def report_sources(
         "candidate": candidate,
         "equipment": assessment,
         "energy": energy,
+        "energy_equipment": energy.get("equipment_binding") if energy else None,
         "pv": pv,
         "source_runs": sources,
         "woo_bases": bases,
@@ -240,7 +251,10 @@ def confirm_report_sources(
     for name, sha in bases.items():
         if not isinstance(sha, str):
             raise VersionUnavailable("report source permission proof is invalid")
-        distinct[sha] = distinct.get(sha, False) or name != "equipment"
+        distinct[sha] = distinct.get(sha, False) or name not in {
+            "equipment",
+            "energy_equipment",
+        }
     for sha, require_reference in distinct.items():
         products.confirm_basis(
             workspace.blobs.object(sha), require_reference=require_reference

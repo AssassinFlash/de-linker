@@ -48,6 +48,15 @@ TEXT = {
     "model": ("Model", "Modell"),
     "reference": ("Reference", "Referenz"),
     "energy": ("Energy scenario", "Energieszenario"),
+    "energy_equipment": (
+        "Energy scenario and selected equipment",
+        "Energieszenario und ausgewählte Geräte",
+    ),
+    "energy_equipment_scope": (
+        "These checks compare the saved scenario parameters with the equipment selected for this calculation. They do not establish manufacturer performance.",
+        "Diese Prüfung vergleicht die gespeicherten Szenarioparameter mit den für die Berechnung ausgewählten Geräten. Die Leistungsfähigkeit der Geräte wird dadurch nicht nachgewiesen.",
+    ),
+    "check": ("Check", "Prüfung"),
     "scenario_scope": (
         "These values come from the selected saved energy result and reflect its original scenario parameters. The general energy-flow model does not establish the performance of the selected equipment.",
         "Die Werte stammen aus dem gespeicherten Ergebnis der ausgewählten Energieberechnung und beruhen auf den damaligen Szenarioparametern. Das allgemeine Energiemodell belegt nicht die Leistungsfähigkeit der ausgewählten Geräte.",
@@ -103,6 +112,19 @@ CHECKS = {
     "continuous_battery_ac_output": (
         "Continuous AC discharge power",
         "AC-Dauerleistung bei Entladung",
+    ),
+    "continuous_battery_ac_charge": (
+        "Continuous AC charge power",
+        "AC-Dauerleistung bei Ladung",
+    ),
+    "scenario_operating_mode": ("Scenario operating mode", "Betriebsart im Szenario"),
+    "scenario_parameter_basis": (
+        "Storage losses and operating conditions",
+        "Speicherverluste und Betriebsbedingungen",
+    ),
+    "scenario_model_domain": (
+        "Converter ports and system topology",
+        "Umrichteranschlüsse und Systemtopologie",
     ),
     "battery_discharge_path": ("Battery discharge path", "Entladepfad der Batterie"),
     "backup_mode": ("Backup transfer", "Umschaltung auf Ersatzstrom"),

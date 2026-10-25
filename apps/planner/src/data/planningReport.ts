@@ -25,7 +25,11 @@ export interface ReportSection {
 	title: string;
 	rows: ReportRow[];
 	paragraphs: string[];
-	table: { columns: string[]; rows: string[][] } | null;
+	table: {
+		columns: string[];
+		rows: string[][];
+		column_weights?: number[] | null;
+	} | null;
 }
 export interface PlanningReport {
 	title: string;
@@ -51,6 +55,13 @@ export function readPlanningReport(value: unknown): PlanningReport {
 	)
 		throw new ApiError(502, "invalid_planning_report");
 	for (const section of value.sections) {
+		const weights = section.table?.column_weights;
+		if (
+			weights != null &&
+			(weights.length !== section.table!.columns.length ||
+				weights.some((weight) => !Number.isFinite(weight) || weight <= 0))
+		)
+			throw new ApiError(502, "invalid_planning_report");
 		if (
 			section.table?.rows.some(
 				(row) => row.length !== section.table!.columns.length,

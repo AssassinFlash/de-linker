@@ -11,12 +11,17 @@ from __future__ import annotations
 from .access import positive_integer
 from .assets import Assets
 from .battery_model import BatteryModel
-from .canonical import Json, Object
+from .canonical import Json, Object, encode
 from .dispatch import replay, self_consumption_with_reserve
 from .dispatch_checks import verify
+from .energy_equipment import MODEL as EQUIPMENT_MODEL
+from .energy_equipment import assess_energy_equipment
 from .energy_inputs import BatteryParameters, EnergyInputs
 from .energy_metrics import metrics
 from .energy_preparation import prepare_energy
+from .equipment_assessment import selection_products
+from .equipment_candidate_choice import check_equipment_candidate
+from .equipment_inputs import EquipmentSelection
 from .errors import InvalidInput, VersionUnavailable
 from .execution_identity import execution_key
 from .flow_document import flow_document
@@ -39,6 +44,7 @@ class EnergyKernel:
         "profiles": "csv_pvgis_and_geometry_bound_pv_reference_v2",
         "controller": "self_consumption_with_reserve_v1",
         "source_accounting": "proportional_mixing_v1",
+        "equipment_envelope": EQUIPMENT_MODEL,
     }
 
     def __init__(
@@ -62,7 +68,7 @@ class EnergyKernel:
             "kind": self.kind,
             "tolerance": self.tolerance.document(),
             "max_intervals": self.max_intervals,
-            "product_policy": "current_woo_profile_sources_v1"
+            "product_policy": "current_woo_profile_and_selected_equipment_v2"
             if self.products
             else "isolated_algorithm_fixture",
         }
@@ -93,6 +99,20 @@ class EnergyKernel:
         BatteryParameters.read(self.workspace.blobs.object(battery.content_sha256))
         pinned["battery.raw"] = battery.content_sha256
         pinned["battery.metadata"] = battery.metadata_sha256
+        if "equipment_selection" in inputs:
+            if self.products is None:
+                raise InvalidInput("selected equipment requires the current Woo source")
+            check_equipment_candidate(
+                self.workspace, actor, project_id, inputs, previous=inputs
+            )
+            basis = self.products.equipment_basis()
+            selection_products(
+                EquipmentSelection.read(inputs["equipment_selection"]), basis
+            )
+            pinned["woo.equipment_inputs"] = self.workspace.blobs.put_object(basis)
+            pinned["equipment.selection"] = self.workspace.blobs.put(
+                encode(inputs["equipment_selection"])
+            )
         return Context(
             self.runtime.sha256,
             dict(self.models),
@@ -139,6 +159,15 @@ class EnergyKernel:
         inputs = self.workspace.pinned_inputs(manifest)
         scenario = EnergyInputs.from_project(inputs)
         bind_energy_assets(self.workspace, manifest, scenario, inputs, pinned)
+        equipment_basis = (
+            self.workspace.blobs.object(dependency("woo.equipment_inputs"))
+            if "equipment_selection" in inputs
+            else None
+        )
+        if equipment_basis is not None:
+            if self.products is None:
+                raise VersionUnavailable("current Woo equipment source is unavailable")
+            self.products.confirm_basis(equipment_basis, require_reference=False)
         if self.products is not None:
             for role in scenario.profiles():
                 self.products.check_profile(
@@ -179,6 +208,11 @@ class EnergyKernel:
             initial=initial,
             terminal_min_kwh=scenario.terminal_min_kwh,
         )
+        equipment_binding = (
+            assess_energy_equipment(inputs, equipment_basis, model)
+            if equipment_basis is not None
+            else None
+        )
         trace: list[Json] = []
         for flow in flows:
             control.checkpoint()
@@ -197,6 +231,8 @@ class EnergyKernel:
                 self.products.check_profile(
                     self.workspace.blobs.object(dependency(f"{role}.metadata"))
                 )
+            if equipment_basis is not None:
+                self.products.confirm_basis(equipment_basis, require_reference=False)
         return {
             "schema": 1,
             "kind": self.kind,
@@ -217,6 +253,7 @@ class EnergyKernel:
             "pinned_assets": pinned,
             "trace_sha256": trace_hash,
             "dependencies": {"energy_trace": trace_hash},
+            "equipment_binding": equipment_binding,
             "equipment_release": {
                 "status": "not_assessed",
                 "reason": "explicit_scenario_replay_is_not_equipment_release",

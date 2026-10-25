@@ -35,6 +35,7 @@ export function EquipmentResult({
 	dirty,
 	confirmedRevision,
 	assessmentOverride,
+	embedded = false,
 	children,
 }: {
 	run: PlanningRun;
@@ -42,6 +43,7 @@ export function EquipmentResult({
 	dirty: boolean;
 	confirmedRevision: number;
 	assessmentOverride?: JsonObject | null;
+	embedded?: boolean;
 	children?: ReactNode;
 }) {
 	const assessment =
@@ -68,28 +70,31 @@ export function EquipmentResult({
 	}
 	return (
 		<div className="lp-run-result">
-			<div
-				className="lp-run-heading lp-focus-target"
-				data-action-result-context=""
-			>
-				<div>
-					<span className="lp-eyebrow">{taskLabel(runTask(run))}</span>
-					<h3 className="lp-focus-target" tabIndex={-1}>
-						{runStateLabel(run.state, runTask(run))}
-					</h3>
+			{!embedded && (
+				<div
+					className="lp-run-heading lp-focus-target"
+					data-action-result-context=""
+				>
+					<div>
+						<span className="lp-eyebrow">{taskLabel(runTask(run))}</span>
+						<h3 className="lp-focus-target" tabIndex={-1}>
+							{runStateLabel(run.state, runTask(run))}
+						</h3>
+					</div>
+					<span>
+						{sprintf(__("Input revision %d", "linker-tools"), run.revision)}
+					</span>
 				</div>
-				<span>
-					{sprintf(__("Input revision %d", "linker-tools"), run.revision)}
-				</span>
-			</div>
-			{(!run.is_current || run.revision !== confirmedRevision || dirty) && (
-				<Notice>
-					{__(
-						"This calculation uses an earlier input snapshot. Open or newer project changes are excluded from its result.",
-						"linker-tools",
-					)}
-				</Notice>
 			)}
+			{!embedded &&
+				(!run.is_current || run.revision !== confirmedRevision || dirty) && (
+					<Notice>
+						{__(
+							"This calculation uses an earlier input snapshot. Open or newer project changes are excluded from its result.",
+							"linker-tools",
+						)}
+					</Notice>
+				)}
 			{run.state === "failed" && (
 				<Notice error>
 					{__(
@@ -119,6 +124,7 @@ export function EquipmentResult({
 									pv_dc_input: "kWp",
 									usable_energy: "kWh",
 									continuous_battery_ac_output: "kW",
+									continuous_battery_ac_charge: "kW",
 									converter_identity: "kW",
 								} as Record<string, string>
 							)[String(check.id)] ?? "";

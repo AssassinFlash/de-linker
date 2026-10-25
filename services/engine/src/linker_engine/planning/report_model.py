@@ -195,6 +195,115 @@ def build_report(source: Object) -> Report:
             )
         )
 
+    binding = source.get("energy_equipment")
+    if isinstance(binding, dict):
+        linked = cast(Object, binding["assessment"])
+        linked_checks = [
+            check
+            for check in cast(list[dict[str, Any]], linked["checks"])
+            if check["id"]
+            in {
+                "usable_energy",
+                "continuous_battery_ac_output",
+                "continuous_battery_ac_charge",
+                "scenario_operating_mode",
+                "scenario_parameter_basis",
+                "scenario_model_domain",
+            }
+            or check["status"] == "violated"
+        ]
+        bound_products = cast(list[Object], linked["selected_products"])
+        selection = cast(Object, binding["selection"])
+        linked_rows = [row("status", text(str(linked["overall_status"]), locale))]
+        linked_rows.extend(
+            row("model", " ".join(str(product[key]) for key in ("brand", "model")))
+            for product in bound_products
+        )
+        linked_rows.extend(
+            ReportRow(
+                label=check_label(key, locale), value=number(selection[key], locale)
+            )
+            for key in ("modules_per_stack", "parallel_stacks")
+        )
+        paragraphs = [text("energy_equipment_scope", locale)]
+        seen_facts: set[tuple[str, str, int]] = set()
+        for check in linked_checks:
+            derivation = check.get("derivation")
+            if isinstance(derivation, dict):
+                paragraphs.append(
+                    " × ".join(number(n, locale) for n in derivation["factors"])
+                    + " = "
+                    + number(check["actual"], locale, str(derivation["unit"]))
+                )
+            for fact in check["facts"]:
+                cited = fact.get("source")
+                if not isinstance(cited, dict):
+                    continue
+                url, page = cited["url"], cited["page"]
+                fact_key = (check["id"], url, page)
+                if fact_key in seen_facts:
+                    continue
+                seen_facts.add(fact_key)
+                linked_rows.append(
+                    ReportRow(
+                        label=f"{check_label(check['id'], locale)} · {text('source', locale)} · {text('page', locale)} {page}",
+                        value=str(fact["raw_value"])
+                        + (f" {fact['raw_unit']}" if fact.get("raw_unit") else ""),
+                        href=url,
+                    )
+                )
+
+        def linked_value(check: dict[str, Any], field: str) -> str:
+            # Count, voltage and an accessory's product ID must not be printed
+            # as kW when a decisive non-core failure is retained in this table.
+            unit = {
+                "usable_energy": "kWh",
+                "continuous_battery_ac_output": "kW",
+                "continuous_battery_ac_charge": "kW",
+                "converter_identity": "kW",
+                "pv_dc_input": "kWp",
+            }.get(check["id"].split(":")[0], "")
+            value = check[field]
+            if check["id"].split(":")[0] == "required_accessory" and isinstance(
+                value, int
+            ):
+                product = next(
+                    (p for p in bound_products if p["product_id"] == value), None
+                )
+                return (
+                    " ".join(str(product[key]) for key in ("brand", "model"))
+                    if product
+                    else "—"
+                )
+            return number(value, locale, unit)
+
+        sections.append(
+            ReportSection(
+                id="energy-equipment",
+                title=text("energy_equipment", locale),
+                paragraphs=paragraphs,
+                rows=linked_rows,
+                table=ReportTable(
+                    column_weights=[0.32, 0.36, 0.16, 0.16],
+                    columns=[
+                        text("check", locale),
+                        text("status", locale),
+                        text("actual", locale),
+                        text("required", locale),
+                    ],
+                    rows=[
+                        [
+                            check_label(check["id"], locale),
+                            text(check["status"], locale),
+                            linked_value(check, "actual"),
+                            linked_value(check, "required"),
+                        ]
+                        for check in linked_checks
+                    ],
+                ),
+            )
+        )
+
     pv = source.get("pv")
     if isinstance(pv, dict):
         profile = cast(Object, pv["profile_summary"])

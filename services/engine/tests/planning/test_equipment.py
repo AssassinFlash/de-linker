@@ -22,6 +22,8 @@ from fastapi.testclient import TestClient
 
 from linker_engine.engine import Engine
 from linker_engine.planning.canonical import Object
+from linker_engine.planning.energy_equipment import assess_energy_equipment
+from linker_engine.planning.energy_inputs import BatteryParameters
 from linker_engine.planning.energy_kernel import EnergyKernel
 from linker_engine.planning.energy_service import EnergyService
 from linker_engine.planning.equipment_assessment import assess_equipment
@@ -34,18 +36,26 @@ from linker_engine.planning.equipment_search import search_equipment
 from linker_engine.planning.equipment_search_kernel import EquipmentSearchKernel
 from linker_engine.planning.equipment_search_limits import EquipmentSearchLimits
 from linker_engine.planning.equipment_service import EquipmentService
-from linker_engine.planning.errors import InvalidInput, VersionUnavailable
+from linker_engine.planning.errors import (
+    InvalidInput,
+    ProductEvidenceChanged,
+    VersionUnavailable,
+)
 from linker_engine.planning.execution_registry import service_registry
 from linker_engine.planning.http_app import HttpLimits, create_private_app
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.product_sources import ProductSources
 from linker_engine.planning.records import Actor
+from linker_engine.planning.report_inputs import ReportOptions
+from linker_engine.planning.report_model import build_report
+from linker_engine.planning.report_sources import ReportInputsChanged, report_sources
 from linker_engine.planning.worker import Worker
 from linker_engine.planning.workspace import Workspace
 from linker_engine.products import Products
 from linker_engine.publication import Publication, PublicationUnavailable
 
-from .test_energy_kernel import TOLERANCE
+from .test_energy_kernel import BATTERY, TOLERANCE, create_scenario
+from .test_energy_kernel import worker as energy_worker
 from .test_private_http import TOKEN, headers
 
 
@@ -116,6 +126,152 @@ def test_cited_quantities_keep_apparent_power_conditions_and_table_columns(
     ranges = controller["facts"]["system_operating_voltage_range_v"]
     assert ranges["shape"] == "ordered_values" and len(ranges["value"]) == 5
     assert "max_fault_current_a" not in controller["facts"]
+
+
+def test_energy_uses_its_simulated_window_instead_of_the_manual_sizing_target(
+    feed: dict, workspace: Workspace, owner: Actor
+) -> None:
+    scenario = create_scenario(workspace, owner)
+    proposed = {**scenario.inputs, **inputs(feed, 3)}
+    basis = {"products": feed["products"], "compatibility": feed["compatibility"]}
+    model = BatteryParameters.read(BATTERY).battery("a" * 64)
+    binding = assess_energy_equipment(
+        proposed, basis, replace(model, usable_window_kwh=15)
+    )
+    assessment = binding["assessment"]
+    checks = {check["id"]: check for check in assessment["checks"]}
+    # The original manual target is 10 kWh and would pass. The actual replay
+    # window is 15 kWh, exceeding 3 x the source's 4.5 kWh usable module energy.
+    assert proposed["equipment_selection"]["required_usable_kwh"] == 10
+    assert checks["usable_energy"]["required"] == 15
+    assert checks["usable_energy"]["actual"] == 13.5
+    assert checks["usable_energy"]["status"] == "violated"
+    assert checks["continuous_battery_ac_charge"]["status"] == "unresolved"
+    assert assessment["overall_status"] == "violated"
+
+
+def test_energy_freezes_woo_selection_and_keeps_mode_failure_separate_from_replay(
+    feed: dict,
+    engine: Engine,
+    workspace: Workspace,
+    owner: Actor,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    feed.update(figure_projection_version=2, compatibility_origin="woocommerce")
+    loaded = SimpleNamespace(
+        engine=replace(engine, products=Products.from_feed(feed)),
+        publication=Publication(feed),
+        version="fixture",
+    )
+    withdrawn = False
+
+    def current(self: Publication) -> dict:
+        manifest = publication_manifest(self.feed)
+        for row in manifest["products"]:
+            row["ready"]["engineering"] = True
+        if withdrawn:
+            manifest["products"] = [
+                row for row in manifest["products"] if row["product_id"] != 2090
+            ]
+        return manifest
+
+    monkeypatch.setattr(Publication, "read", current)
+    source = ProductSources(lambda: loaded)
+    kernel = EnergyKernel(workspace, TOLERANCE, max_intervals=10, products=source)
+    service = EnergyService(workspace, kernel, max_attempts=1)
+    scenario = create_scenario(workspace, owner, outage=True)
+    project = workspace.revise(
+        owner,
+        scenario.id,
+        scenario.revision,
+        {**scenario.inputs, **inputs(feed, 3)},
+        key="energy-with-equipment",
+    )
+    run = service.evaluate(owner, project.id, project.revision, key="bound-energy")
+    assert energy_worker(workspace, kernel).run_once()
+    saved = workspace.run(owner, run.id)
+    assert saved.state == "succeeded"
+    result = saved.result
+    assert result is not None
+    binding = result["equipment_binding"]
+    assert binding["selection"] == project.inputs["equipment_selection"]
+    assert (
+        workspace.blobs.object(result["pinned_assets"]["equipment.selection"])
+        == binding["selection"]
+    )
+    checks = {check["id"]: check for check in binding["assessment"]["checks"]}
+    assert checks["scenario_operating_mode"]["status"] == "violated"
+    assert checks["usable_energy"]["required"] == 5
+    assert checks["usable_energy"]["actual"] == 13.5
+    assert result["scenario_constraint_status"] == "satisfied"
+    assert binding["assessment"]["overall_status"] == "violated"
+    # An old completed snapshot remains historical; a new action cannot
+    # acquire the withdrawn product's current permission through that result.
+    withdrawn = True
+    with pytest.raises(ProductEvidenceChanged):
+        service.evaluate(owner, project.id, project.revision, key="after-withdrawal")
+    assert workspace.run(owner, run.id).result == result
+    withdrawn = False
+    options = ReportOptions(
+        locale="en",
+        energy_run_id=run.id,
+        pv_run_id=None,
+        equipment_run_id=None,
+        logo=None,
+    )
+    report_source = report_sources(workspace, source, owner, project, options)
+    assert report_source["energy_equipment"] == binding
+    assert (
+        report_source["woo_bases"]["energy_equipment"]
+        == result["pinned_assets"]["woo.equipment_inputs"]
+    )
+    for locale in ("en", "de"):
+        report = build_report({**report_source, "locale": locale})
+        section = next(
+            section for section in report.sections if section.id == "energy-equipment"
+        )
+        assert section.table is not None
+        assert len(section.table.rows) == 6
+        assert section.table.rows[0][2:] == [
+            "13,5 kWh" if locale == "de" else "13.5 kWh",
+            "5 kWh",
+        ]
+        assert section.rows[0].value in (
+            "Requirements not met",
+            "Anforderungen nicht erfüllt",
+        )
+        assert any("H2-10K-T3" in row.value for row in section.rows)
+        assert any(row.href and "2" in row.label for row in section.rows)
+    bad_voltage = assess_energy_equipment(
+        {**project.inputs, **inputs(feed, 1)},
+        workspace.blobs.object(result["pinned_assets"]["woo.equipment_inputs"]),
+        BatteryParameters.read(BATTERY).battery("a" * 64),
+    )
+    report = build_report({**report_source, "energy_equipment": bad_voltage})
+    section = next(
+        section for section in report.sections if section.id == "energy-equipment"
+    )
+    assert section.rows[0].value == "Requirements not met"
+    assert section.table is not None
+    assert any(
+        row[0] == "Battery voltage" and row[1] == "Requirements not met"
+        for row in section.table.rows
+    )
+    changed = workspace.revise(
+        owner,
+        project.id,
+        project.revision,
+        {
+            **project.inputs,
+            "equipment_selection": {
+                **project.inputs["equipment_selection"],
+                "modules_per_stack": 4,
+            },
+        },
+        key="different-equipment-same-energy-input",
+    )
+    with pytest.raises(ReportInputsChanged):
+        report_sources(workspace, source, owner, changed, options)
 
 
 @pytest.mark.parametrize(

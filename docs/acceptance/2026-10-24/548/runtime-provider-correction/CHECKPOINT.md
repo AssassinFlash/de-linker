@@ -406,3 +406,42 @@ was created. Continue the still-active engineering and site-delivery frontier,
 including equipment-coupled energy, remaining topology/electrical/country checks,
 complete BOM, comparisons, remaining consumers, migration and review/production
 delivery. Do not repeat the closed checks without a relevant change or failure.
+
+### 2026-10-25 · Selected Woo equipment and energy envelope connected locally
+
+The energy command now freezes the current Woo pool and exact device selection.
+Its assessment compares the actual simulated window/power with that configuration,
+rather than a separate manual sizing target. Mode contradictions and missing
+continuous-AC/port/loss evidence remain distinct from numerical conservation.
+New reports refuse an energy result belonging to another selection. The frontend
+validates this binding before rendering; the report preserves its overall status,
+all failures, models, configuration, capacity derivation and source-page links.
+
+Reused owned Lyon project `334e269920d540fe8573a66a1031e0be`, revision 6, produced
+one two-hour run `60d5753119cd46879aa357a0404ca0cd`. Its source-backed bank is
+13.5 kWh against the simulated 5 kWh window. The original numeric outcome remains
+4 kWh demand, 3.62 kWh solar supply and 0.38 kWh grid supply. Further manufacturer
+performance, shared/DC port and country checks are explicit, not released.
+The original roof and annual project revisions were preserved.
+
+The bound-result panel passed native EN/DE 1440/390 inspection. A real missing
+script-translation mapping was repaired in the existing catalog. Actual report
+PDF inspection found narrow BOM column widths in the new check table; an optional
+generated presentation hint and paragraph order repair closed it. Both final
+two-page native downloads match their owned assets. Only affected report views
+and changed PDF sections were inspected again; the numerical run was reused.
+One DE before/after pair retains the failure and repair. Spec, Standards and copy
+reviews passed, including bounded repair reviews. Existing numerical, search,
+draft and inquiry acceptance remains closed and was not rerun.
+
+Current HTTP/worker runtime is `5cf4b05a`; the single rollback is `4f3bb430`.
+Schema 5 is unchanged. Superseded executable carriers were retired after their
+immutable source/dependency snapshots were verified. No new project, instance,
+full backup or annual calculation was created. Final PDF paths, checksums, run
+identities, scoped evidence and retention are in the existing installation record.
+
+This local envelope/report batch is closed. The full goal stays active: actual
+equipment-coupled physical models, remaining topologies/electrical/country rules,
+complete BOM, comparison, remaining site consumers, migration and review/production
+delivery still require implementation and acceptance. The explicit scenario's
+efficiencies and losses have not become manufacturer performance by this linkage.

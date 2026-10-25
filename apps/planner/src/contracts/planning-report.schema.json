@@ -1,5 +1,4 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$defs": {
     "ReportRow": {
       "properties": {
@@ -30,7 +29,8 @@
         "href"
       ],
       "title": "ReportRow",
-      "type": "object"
+      "type": "object",
+      "additionalProperties": false
     },
     "ReportSection": {
       "properties": {
@@ -78,7 +78,8 @@
         "table"
       ],
       "title": "ReportSection",
-      "type": "object"
+      "type": "object",
+      "additionalProperties": false
     },
     "ReportTable": {
       "properties": {
@@ -98,6 +99,22 @@
           },
           "title": "Rows",
           "type": "array"
+        },
+        "column_weights": {
+          "anyOf": [
+            {
+              "items": {
+                "exclusiveMinimum": 0,
+                "type": "number"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Column Weights"
         }
       },
       "required": [
@@ -105,7 +122,8 @@
         "rows"
       ],
       "title": "ReportTable",
-      "type": "object"
+      "type": "object",
+      "additionalProperties": false
     }
   },
   "properties": {
@@ -145,5 +163,7 @@
     "sections"
   ],
   "title": "Report",
-  "type": "object"
+  "type": "object",
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
 }

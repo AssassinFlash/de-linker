@@ -33,6 +33,14 @@ export function equipmentCheckLabel(id: string): string {
 			return __("Usable energy", "linker-tools");
 		case "continuous_battery_ac_output":
 			return __("Continuous AC discharge power", "linker-tools");
+		case "continuous_battery_ac_charge":
+			return __("Continuous AC charge power", "linker-tools");
+		case "scenario_operating_mode":
+			return __("Scenario operating mode", "linker-tools");
+		case "scenario_parameter_basis":
+			return __("Storage losses and operating conditions", "linker-tools");
+		case "scenario_model_domain":
+			return __("Converter ports and system topology", "linker-tools");
 		case "battery_discharge_path":
 			return __("Battery discharge path", "linker-tools");
 		case "backup_mode":
@@ -46,6 +54,21 @@ export function equipmentCheckLabel(id: string): string {
 	}
 }
 export function equipmentReason(reason: string): string | null {
+	if (reason === "outage_requires_backup_selection")
+		return __(
+			"The scenario includes an outage, but the equipment was selected for grid-connected operation.",
+			"linker-tools",
+		);
+	if (reason === "scenario_losses_not_manufacturer_performance")
+		return __(
+			"The storage losses and efficiencies are scenario inputs. Their applicability to the selected equipment has not been established.",
+			"linker-tools",
+		);
+	if (reason === "selected_port_topology_requires_assessment")
+		return __(
+			"The scenario uses a single AC bus. Shared converter ports, DC connections and operating limits of the selected system still require assessment.",
+			"linker-tools",
+		);
 	if (reason === "disjoint_voltage_windows")
 		return __("The documented voltage ranges do not overlap.", "linker-tools");
 	if (reason === "partial_voltage_window_energy_not_established")

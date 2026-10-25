@@ -6,6 +6,8 @@ import {
 	readBatteryParameters,
 } from "../domain/energyScenario.ts";
 import { sameJson } from "../domain/draft.ts";
+import { readEquipmentSelection } from "../domain/equipment.ts";
+import { readEquipmentAssessment } from "./readEquipmentResult.ts";
 
 const hash = (value: unknown): value is string =>
 	typeof value === "string" && /^[a-f0-9]{64}$/.test(value);
@@ -20,6 +22,84 @@ const utc = (value: unknown): value is string =>
 	);
 function require(condition: unknown): asserts condition {
 	if (!condition) throw new ApiError(502, "invalid_run_result");
+}
+
+function equipmentBinding(
+	result: JsonObject,
+	models: JsonObject,
+	pinned: JsonObject,
+	model: JsonObject,
+) {
+	if (result.equipment_binding == null) {
+		require(
+			pinned["equipment.selection"] === undefined &&
+				pinned["woo.equipment_inputs"] === undefined,
+		);
+		return;
+	}
+	const binding = readObject(result.equipment_binding),
+		selection = readEquipmentSelection(binding.selection),
+		assessment = readEquipmentAssessment(binding.assessment);
+	require(
+		binding.schema_version === 1 &&
+			binding.model === "selected_woo_scenario_envelope_v1" &&
+			models.equipment_envelope === binding.model &&
+			binding.performance_status === "not_established_by_scenario_envelope" &&
+			hash(pinned["woo.equipment_inputs"]) &&
+			hash(pinned["equipment.selection"]) &&
+			binding.selection_sha256 === pinned["equipment.selection"] &&
+			sameJson(binding.scenario_model, model),
+	);
+	const selected = new Set(Object.keys(selection.product_revisions));
+	const products = assessment.selected_products as readonly JsonObject[];
+	require(products.length === selected.size);
+	for (const product of products) {
+		const id = String(product.product_id);
+		require(
+			selected.delete(id) &&
+				product.product_revision === selection.product_revisions[id],
+		);
+	}
+	const checks = assessment.checks as readonly JsonObject[];
+	const requiredChecks = [
+		"continuous_battery_ac_charge",
+		"scenario_operating_mode",
+		"scenario_parameter_basis",
+		"scenario_model_domain",
+	];
+	if (selection.battery_product_id !== null)
+		requiredChecks.push("usable_energy", "continuous_battery_ac_output");
+	require(
+		requiredChecks.every((id) => checks.some((check) => check.id === id)),
+	);
+	for (const id of ["scenario_parameter_basis", "scenario_model_domain"])
+		require(checks.find((check) => check.id === id)?.status === "unresolved");
+	for (const check of checks) {
+		for (const fact of check.facts as readonly JsonObject[]) {
+			if (fact.source === null) continue;
+			const source = readObject(fact.source);
+			require(
+				typeof source.product_id === "number" &&
+					Object.hasOwn(
+						selection.product_revisions,
+						String(source.product_id),
+					) &&
+					source.product_revision ===
+						selection.product_revisions[String(source.product_id)] &&
+					hash(source.figure_sha256) &&
+					hash(source.document_revision) &&
+					hash(source.blob_sha256),
+			);
+		}
+	}
+	for (const [id, field] of [
+		["usable_energy", "usable_window_kwh"],
+		["continuous_battery_ac_output", "discharge_ac_kw"],
+		["continuous_battery_ac_charge", "charge_ac_kw"],
+	] as const) {
+		const check = checks.find((check) => check.id === id);
+		if (check) require(check.required === model[field]);
+	}
 }
 
 /** Validate the consumed frozen document before any component renders it.
@@ -73,6 +153,7 @@ export function readEnergyResult(
 		);
 		for (const role of ["battery", "gross_load", "pv_available_ac", "aux_ac"])
 			require(hash(pinned[role + ".raw"]) && hash(pinned[role + ".metadata"]));
+		equipmentBinding(result, models, pinned, model);
 		const batteryMetadata = readObject(result.battery_parameter_provenance),
 			provenance = readObject(batteryMetadata.provenance);
 		require(

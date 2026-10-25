@@ -42,6 +42,16 @@ def bind_energy_assets(
     pinned: Object,
 ) -> None:
     expected = {"runtime_bundle", "battery.raw", "battery.metadata"}
+    if "equipment_selection" in inputs:
+        expected.update({"woo.equipment_inputs", "equipment.selection"})
+        selection = pinned.get("equipment.selection")
+        if (
+            not isinstance(selection, str)
+            or workspace.blobs.object(selection) != inputs["equipment_selection"]
+        ):
+            raise VersionUnavailable(
+                "energy equipment differs from its frozen selection"
+            )
     references = {
         **scenario.profiles(),
         "battery": scenario.battery_parameters_asset_id,

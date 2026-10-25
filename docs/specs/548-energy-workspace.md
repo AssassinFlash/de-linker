@@ -101,3 +101,40 @@ exports those same rows and unit-labelled columns without display rounding.
 A chart loading failure leaves the table and CSV usable. Session loss hides
 cached values and prevents an obsolete callback exporting another scope.
 The chart inherits site font/colour tokens and sizes through WindPress.
+
+## Selected equipment and the actual scenario envelope
+
+When a saved project has an equipment selection, the energy command freezes the
+current Woo prepared equipment pool and exact selection as run dependencies.
+Candidate ownership and choice are checked through the existing candidate
+contract. The worker checks current publication permission before and after
+execution; a stale, unprepared or withdrawn device cannot enter a new result.
+Frozen historical results remain unchanged and readable.
+
+The existing quantity/voltage/topology assessment is applied to the storage
+window and discharge power actually simulated, rather than the manually entered
+search sizing target. A 15 kWh scenario cannot pass a documented 13.5 kWh usable
+bank because its separate search target was only 10 kWh. Continuous AC charging
+uses only its cited continuous AC quantity: a maximum DC current, nominal AC
+output, fault current or maximum efficiency cannot supply that missing fact.
+Outage periods are also checked against the selected operating mode.
+
+Numerical conservation and the equipment-envelope assessment remain separate.
+The explicit loss/efficiency assumptions do not become manufacturer performance;
+shared converter ports, DC connections and state-dependent operating conditions
+still require their applicable physical model and Woo evidence. Their missing
+assessment is explicit. This linkage is a required boundary toward the complete
+equipment-coupled model, and does not close the remaining physical-model work.
+
+The energy result and report present the same frozen equipment-envelope checks.
+A new report cannot pair this energy result with a changed device, module count,
+mode or product revision even when the energy-replay settings are unchanged.
+The private historical report and its original PDF remain intact. Earlier
+unbound generic runs retain their original explicit-scenario interpretation;
+they are not retroactively relabelled as equipment-bound calculations.
+
+Minimum verification for this change is the existing two-hour owned worker path
+with a pinned Woo selection, the manual-target/actual-window counterexample,
+withdrawal refusal and changed-selection report refusal. The unchanged annual
+dispatch, PV models and draft/inquiry transfer evidence is reused. Only the new
+bound-result panel and report section require affected presentation checks.

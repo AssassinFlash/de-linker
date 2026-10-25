@@ -1231,5 +1231,217 @@
       "wpcs": "PASS on the three changed PHP files",
       "javascript": "unchanged; existing build result reused"
     }
-  }
+  },
+  "equipment_energy": {
+    "date": "2026-10-25",
+    "status": "native_equipment_envelope_and_report_connected_locally",
+    "runtime": "5cf4b05ac70ccc666a1739e9bed52964f5cbec1c23179627443ce89612f46ada",
+    "rollback": "4f3bb4309a37e4a3b5c986139693d11e939a3eed7f045d1b097e269e3944e220",
+    "model": "selected_woo_scenario_envelope_v1",
+    "source": "Same current Woo-maintained product figures, documents and compatibility proof; no additional product authority.",
+    "behavior": [
+      "Energy run freezes the current Woo equipment basis and exact selection; current permission is checked before and after replay.",
+      "The simulated usable window and discharge power replace manual search targets only for this envelope assessment; the saved selection itself is unchanged.",
+      "Continuous AC charge evidence is not inferred from DC current, fault current, apparent power or maximum efficiency.",
+      "Outage/selection mode contradictions remain separate from numerical conservation.",
+      "New reports reject changed equipment selections; the report retains overall status, all failures, frozen models/configuration, capacity derivation and source-page links.",
+      "The frontend validates this binding through existing selection/assessment readers before rendering it."
+    ],
+    "reviews": {
+      "copy": "energy_envelope_copy PASS, 9 new EN/DE pairs",
+      "spec": "energy_envelope_spec PASS after the two bounded presentation/consumer repairs",
+      "standards": "energy_envelope_standards PASS after frozen identity/source presentation and consumer validation repairs",
+      "final_layout_contract": "Spec and Standards delta PASS after serialized-field, scale normalization and paragraph grouping repairs; previously passed areas reused."
+    },
+    "checks": {
+      "scenario_counterexample_and_owned_worker": "PASS using the existing two-hour fixture; withdrawal and changed-selection refusal included",
+      "generic_history_and_existing_report": "PASS; existing two-hour and report acceptance cases reused",
+      "frontend_binding_boundary": "PASS in the existing planningProtocol test file; prior unbound documents still read",
+      "strict_mypy": "PASS on affected source, with report delta rechecked after repair",
+      "ruff": "PASS on affected files",
+      "production_frontend_build": "PASS with TypeScript; rebuilt only after the consumer validation repair",
+      "german_catalog": "msgfmt --check and existing make-json completed",
+      "serialized_report_compatibility": "PASS: the existing protocol test file rejects the actual missing-paragraphs regression and still accepts old tables without a layout hint."
+    },
+    "native_setup": {
+      "project_id": "334e269920d540fe8573a66a1031e0be",
+      "previous_revision": 5,
+      "revision": 6,
+      "reuse": "Existing owned Lyon two-hour synthetic project; no new project or annual calculation."
+    },
+    "limits": "This binds the explicit scenario envelope to selected equipment evidence. Manufacturer performance, shared/DC ports, state-dependent capabilities, complete country/electrical rules and the remaining full goal are not accepted by this batch.",
+    "retention": {
+      "carriers_kept": [
+        "4f3bb4309a37e4a3b5c986139693d11e939a3eed7f045d1b097e269e3944e220",
+        "5cf4b05ac70ccc666a1739e9bed52964f5cbec1c23179627443ce89612f46ada"
+      ],
+      "new_instances": 0,
+      "new_full_backups": 0,
+      "removed": [
+        {
+          "runtime": "771a24e628d5372f7070422b1d2b8a0096e0f83b39b213613b2d4bc04d1b47d4",
+          "logical_file_bytes": 1229228
+        },
+        {
+          "runtime": "2fef7197912d084df77dc23a3404e1f990ca4012eeb81bc3b2c92283185c89f9",
+          "logical_file_bytes": 1242459,
+          "immutable_source_verified": true
+        }
+      ],
+      "recovery": "Both retired executable snapshots were verified in the immutable source/lock/dependency blob store; current and immediate previous carriers remain. Existing recovery points retained. Final PDFs kept once; temporary renders removed except the single DE before/after evidence pair."
+    },
+    "production_changed": false,
+    "energy_runtime": "4f3bb4309a37e4a3b5c986139693d11e939a3eed7f045d1b097e269e3944e220",
+    "native_energy": {
+      "run_id": "60d5753119cd46879aa357a0404ca0cd",
+      "project_id": "334e269920d540fe8573a66a1031e0be",
+      "revision": 6,
+      "manifest_sha256": "fd276109212fd168fd849bfc5cdcdfe1eb68f01af60c0e963728d60a18ec9256",
+      "result_sha256": "f63dbf4b2746477b3eebefebc5872f076b900400809f4ac3c954b89d0710ebfe",
+      "runtime_sha256": "4f3bb4309a37e4a3b5c986139693d11e939a3eed7f045d1b097e269e3944e220",
+      "interval_count": 2,
+      "selection_sha256": "a5f1d8c59987e9c0eb3c1591140d32397577d4a3095686784326a898f34789ae",
+      "equipment_status": "unresolved",
+      "performance_status": "not_established_by_scenario_envelope",
+      "checks": {
+        "usable_energy": {
+          "status": "satisfied",
+          "actual": 13.5,
+          "required": 5
+        },
+        "continuous_battery_ac_output": {
+          "status": "unresolved",
+          "actual": null,
+          "required": 5
+        },
+        "continuous_battery_ac_charge": {
+          "status": "unresolved",
+          "actual": null,
+          "required": 5
+        },
+        "scenario_operating_mode": {
+          "status": "satisfied",
+          "actual": null,
+          "required": null
+        },
+        "scenario_parameter_basis": {
+          "status": "unresolved",
+          "actual": null,
+          "required": null
+        },
+        "scenario_model_domain": {
+          "status": "unresolved",
+          "actual": null,
+          "required": null
+        }
+      },
+      "equipment_basis_sha256": "23b17ac288d004f6fdf15e02871dd8c6692ce1318435737849f21356bb500bbf",
+      "metrics": {
+        "load_demand_kwh": 4,
+        "solar_load_kwh": 3.62,
+        "grid_import_kwh": 0.3799999999999999
+      }
+    },
+    "native_reports": {
+      "en": {
+        "run_id": "5894ad9baec54cf1bcf768e84b74e1cf",
+        "result_sha256": "eae491ad51c679cdd3499514f7404ffdfc7eb540119aa5c95e5a29677017f8b4",
+        "report_sha256": "633a027734e049da7939f24f82afe546cf40f5f81c7c1e54f2f471c10b4c7128",
+        "source_sha256": "e7a379e365b14a2c3eb6755b2f594c72e613cc7117ecfe88956956faf373c30b",
+        "runtime_sha256": "5cf4b05ac70ccc666a1739e9bed52964f5cbec1c23179627443ce89612f46ada",
+        "pdf_sha256": "c84084695a035bd57207fe79bf7e9be3b03a9fe629d95c1856d647696dfeb28f",
+        "page_count": 2,
+        "changed_section_pages": [
+          1
+        ],
+        "column_weights": [
+          0.32,
+          0.36,
+          0.16,
+          0.16
+        ],
+        "download_matches_native_asset": true,
+        "visual_layout": "PASS; changed section inspected after native download",
+        "pdf": "output/pdf/linker-energy-equipment-en.pdf"
+      },
+      "de": {
+        "run_id": "63cd20714db04ecd87e6bcd56f2a604a",
+        "result_sha256": "cc78917f0453612207ec1b1d7d6da261feb78c23449864b6e6b550bb656a6331",
+        "report_sha256": "e249f72a19397359a3656179d14aaea6860cdd644dd380a8eafe85997e33f7c6",
+        "source_sha256": "1a7ff741d3283231ec75cf443f04ef463eae5b3cbab2f5750cc028d4398a8147",
+        "runtime_sha256": "5cf4b05ac70ccc666a1739e9bed52964f5cbec1c23179627443ce89612f46ada",
+        "pdf_sha256": "d13f867f52429af5afd819b45f457dcdc0ad51e53bd077dfa7477966160d0de6",
+        "page_count": 2,
+        "changed_section_pages": [
+          1
+        ],
+        "column_weights": [
+          0.32,
+          0.36,
+          0.16,
+          0.16
+        ],
+        "download_matches_native_asset": true,
+        "visual_layout": "PASS; changed section inspected after native download",
+        "pdf": "output/pdf/linker-energy-equipment-de.pdf"
+      }
+    },
+    "native_visual": {
+      "new_bound_panel": {
+        "languages": [
+          "en",
+          "de"
+        ],
+        "widths": [
+          1440,
+          390
+        ],
+        "reused_same_energy_run": true
+      },
+      "new_report_section": {
+        "en_width": 1440,
+        "de_width": 390,
+        "unchanged_shared_report_views_reused": true
+      },
+      "screenshots": [
+        "energy-equipment-en-1440.jpg",
+        "energy-equipment-en-390.jpg",
+        "energy-equipment-de-1440.jpg",
+        "energy-equipment-de-390.jpg",
+        "energy-equipment-report-en-1440.jpg",
+        "energy-equipment-report-de-390.jpg"
+      ]
+    },
+    "resolved_delivery_failures": {
+      "module_translation": "The nine new PO messages initially lacked the compiled module source reference. Added the existing build/planner/assets/planner.js reference and regenerated the native script JSON; the actual DE panel then displayed the approved translations. No translation engine or copy change was introduced.",
+      "pdf_layout": {
+        "cause": "The new check table inherited the narrow BOM quantity column and scope paragraphs followed the data.",
+        "repair": "One optional generated ReportTable layout hint; old BOM defaults retained. Scope now precedes data, heading stays with its first paragraph, and relative widths normalize safely.",
+        "output_contract": "All previously required serialized report fields remain required; only the new column_weights hint is optional for old tables.",
+        "superseded_reports": {
+          "de": {
+            "run_id": "2b54fa52c44d4b2291d87775de707a57",
+            "pdf_sha256": "19f0fe4911258c1eccd211409eea838fe23a95a24618623eb94189795c3d9141",
+            "asset_id": "47704d677e6c43588269f50b3377f960",
+            "reason": "Inherited BOM quantity-column width caused German word splitting; scope followed the data."
+          },
+          "en": {
+            "run_id": "3bd94df20e844ec3ab9b1ed2b16d3a2b",
+            "pdf_sha256": "f82704d34a594a621e4f45075a78bb702a3716be83c31e140cf243f2254e3772",
+            "asset_id": "e20df94342214f58a26324d02e3668da",
+            "reason": "Inherited BOM quantity-column width caused German word splitting; scope followed the data."
+          }
+        },
+        "before": "energy-equipment-report-de-before.png",
+        "after": "energy-equipment-report-de-after.png"
+      }
+    },
+    "reuse": {
+      "new_projects": 0,
+      "annual_calculations_rerun": 0,
+      "new_energy_runs": 1,
+      "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
+    }
+  },
+  "current_frontier": "equipment_energy"
 }

@@ -1,5 +1,4 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$defs": {
     "RunId": {
       "pattern": "^[a-f0-9]{32}$",
@@ -67,5 +66,6 @@
     "logo"
   ],
   "title": "ReportOptions",
-  "type": "object"
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
 }

@@ -4,6 +4,8 @@ import { readObject } from "../../data/readProtocol.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
 import { verificationLabel } from "./verificationLabel.ts";
+import { EquipmentResult } from "../equipment/EquipmentResult.tsx";
+import { equipmentStatus } from "../equipment/equipmentLabels.ts";
 
 function failureText(run: PlanningRun): string {
 	switch (run.error?.code) {
@@ -54,6 +56,9 @@ export function RunResult({
 			: "—";
 	const result = run.result,
 		metrics = result ? readObject(result.metrics) : null;
+	const equipment = result?.equipment_binding
+		? readObject(readObject(result.equipment_binding).assessment)
+		: null;
 	const checks = result
 		? (readObject(result.verification)
 				.checks as readonly import("../../data/protocol.ts").JsonObject[])
@@ -199,12 +204,35 @@ export function RunResult({
 						</p>
 					)}
 					<div className="lp-run-boundaries">
-						<p>
-							{__(
-								"Equipment suitability: not assessed by this calculation.",
-								"linker-tools",
-							)}
-						</p>
+						{equipment ? (
+							<details className="lp-comparison">
+								<summary>
+									{__("Energy scenario and selected equipment", "linker-tools")}{" "}
+									· {equipmentStatus(equipment.overall_status)}
+								</summary>
+								<p>
+									{__(
+										"These checks compare the saved scenario parameters with the equipment selected for this calculation. They do not establish manufacturer performance.",
+										"linker-tools",
+									)}
+								</p>
+								<EquipmentResult
+									run={run}
+									locale={locale}
+									dirty={dirty}
+									confirmedRevision={confirmedRevision}
+									assessmentOverride={equipment}
+									embedded
+								/>
+							</details>
+						) : (
+							<p>
+								{__(
+									"Equipment suitability: not assessed by this calculation.",
+									"linker-tools",
+								)}
+							</p>
+						)}
 						<p>
 							{__(
 								"Country requirements: not assessed by this calculation.",
