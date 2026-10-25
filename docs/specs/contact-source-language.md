@@ -113,3 +113,47 @@ No stored-content write, new test matrix, CSS compile, model call, registration,
 inquiry submission or email is required. Verify the same affected consumers
 online and preserve all other runtime bytes, protected page objects and the
 current WindPress cache. The native previous-file receipt supplies rollback.
+
+## Accurate source headings and inclusion guidance
+
+The delivered Services source card has no selected product but is headed
+`Product selection` / `Produktauswahl`. Label its contents consistently in the
+form and existing team/admin consumers: a native product source or requested
+product label retains `Product selection`; a source without selected fields is
+a `Related page`; filters, document-only requests and unavailable recovery data
+use `Related details`. This describes request data and grants no product identity,
+stock, availability or document permission. Existing transport and validation
+remain authoritative and unchanged.
+
+Use one semantic heading helper in the existing SelectionView. Reuse the current
+native source type and normalized fields; do not query a second product source.
+Generic inclusion/exclusion feedback refers to details, and the unavailable-data
+message identifies the exact inclusion checkbox rather than the privacy consent.
+The same reviewed error text replaces the product-only submission error; its
+error code and rejection behavior stay unchanged. Customer receipt content stays
+unchanged. The existing WindPress markup and CSS require no change.
+
+Copy review: the first draft used `beifügen` and said the customer could leave
+details out. Independent review accepted the two headings and exclusion feedback,
+but requested clearer sending language and an explicit checkbox label to avoid
+file-attachment or privacy-checkbox confusion. The final wording is:
+
+| English | German |
+| --- | --- |
+| Related page | Zugehörige Seite |
+| Related details | Zugehörige Angaben |
+| Include these details with my message | Diese Angaben mit meiner Nachricht senden |
+| These details will not be sent. | Diese Angaben werden nicht mitgesendet. |
+| These details could not be loaded. To send your message without them, uncheck “Include these details with my message”. | Diese Angaben konnten nicht geladen werden. Um Ihre Nachricht ohne diese Angaben zu senden, entfernen Sie das Häkchen bei „Diese Angaben mit meiner Nachricht senden“. |
+
+Extend the existing semantic view regressions for the reported page-only defect
+and retained product/filter cases. Reuse unchanged transport, escaping and
+inclusion tests. Native unsaved order rendering proves matching team/admin
+headings without creating or sending an inquiry. Browser checks use the existing
+snapshot for the distinct page/product/filter/document cases and inclusion/error
+feedback; no whole-site rerun or new test framework. Publish the two changed PHP
+files and the catalog sources/compiled German catalog in the existing Commerce
+artifact, with a staged delta of exactly those five files. Protect the current
+resolver, page objects and style cache, and read back the affected online consumers
+before archive. No WindPress volume install or Generate is needed for text-only
+semantic changes when the existing cache remains valid.

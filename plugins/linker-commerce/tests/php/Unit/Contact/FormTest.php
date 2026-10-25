@@ -290,7 +290,7 @@ final class FormTest extends TestCase {
 		$html = ( new Form() )->render();
 		$this->assertSame( 1, preg_match( '/data-linker-contact-draft-context="([a-f0-9]+)"/', $html, $context_attribute ) );
 		$navigation_context = $context_attribute[1] ?? '';
-		$this->assertStringContainsString( 'Include this selection with my message', $html );
+		$this->assertStringContainsString( 'Include these details with my message', $html );
 		$this->assertStringContainsString( 'SAJ with no match', $html );
 		$this->assertStringContainsString( ' checked /><span>', $html );
 		$this->assertStringContainsString( 'required></textarea>', $html, 'Context never pre-fills the message.' );
@@ -334,7 +334,7 @@ final class FormTest extends TestCase {
 			\Linker\Commerce\Protection\FormRecovery::save( 'contact', $post );
 			$html = ( new Form() )->render();
 			$this->assertStringContainsString( 'required>My unchanged question.</textarea>', $html );
-			$this->assertStringContainsString( 'This selection will not be sent.', $html );
+			$this->assertStringContainsString( 'These details will not be sent.', $html );
 			$this->assertStringContainsString( 'data-linker-contact-draft-context="' . $navigation_context . '"', $html, 'The native language URL keeps the public source identity after explicit exclusion.' );
 			$this->assertStringContainsString( 'data-linker-contact-recovered="1"', $html );
 			$this->assertStringNotContainsString( 'SAJ with no match', $html );
