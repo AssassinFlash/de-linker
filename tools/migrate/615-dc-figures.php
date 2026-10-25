@@ -13,6 +13,7 @@ try {
 		$request         = json_decode( base64_decode( $payload ), true, 512, JSON_THROW_ON_ERROR );
 		$key             = \Linker\Commerce\Products\SelectionFacts::FIGURES_META_KEY;
 		$site            = home_url();
+		$written         = 0;
 		$protect         = static function ( int $id ): string {
 			$product = wc_get_product( $id );
 			if ( ! $product instanceof WC_Product ) {
@@ -125,9 +126,10 @@ try {
 				if ( get_post_meta( (int) $id, $key, true ) !== $entry[ $to ] || $protect( (int) $id ) !== $entry['protected'] ) {
 					throw new RuntimeException( esc_html( "Readback failed for {$id}; retain receipt for recovery." ) );
 				}
+				++$written;
 			}
 		}
-		$receipt['changes']         = count( array_filter( $receipt['products'], static fn( array $entry ): bool => $entry['before'] !== $entry['after'] ) );
+		$receipt['changes']         = 'preview' === $request['action'] ? count( array_filter( $receipt['products'], static fn( array $entry ): bool => $entry['before'] !== $entry['after'] ) ) : $written;
 		$receipt['source_revision'] = \Linker\Commerce\Products\Publication::manifest()['source_revision'];
 		echo '@@615-dc-figures@@' . wp_json_encode( $receipt, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) . "\n";
 	} )( '615-dc-figures-payload' );

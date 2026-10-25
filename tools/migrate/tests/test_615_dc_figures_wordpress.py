@@ -94,6 +94,7 @@ def test_native_preparation_and_guarded_recovery(tmp_path: Path) -> None:
     )
     repeated = run("apply")
     assert repeated.returncode == 0, repeated.stderr
+    assert json.loads(repeated.stdout)["changes"] == 0
     assert state()["feed"]["source_revision"] == feed["source_revision"]
     clean_preview = run("preview", tmp_path / "done.json")
     assert clean_preview.returncode == 0, clean_preview.stderr
