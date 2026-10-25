@@ -834,7 +834,11 @@ export function HeroConversation( {
 				if ( ! draftContext.acceptEditor() ) {
 					return;
 				}
-				setPendingSend( { text } );
+				// A file accepted during an earlier turn belongs to the next editor.
+				// Its preparation must not queue a send after that turn settles.
+				if ( ! sending.current ) {
+					setPendingSend( { text } );
+				}
 				filesRef.current.add( picked );
 				return;
 			}

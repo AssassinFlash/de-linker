@@ -1315,6 +1315,23 @@ for ( const surface of [ 'dock', 'home' ] as const ) {
 		'resource',
 	] as const ) {
 		test( `review repair: ${ surface } A1 ${ outcome } preserves the accepted A2 text and actually prepared PDF`, async () => {
+			// Make the CI completion race deterministic: this actual PDF finishes
+			// after the earlier refusal, while remaining the accepted next draft.
+			const finishAfterRefusal =
+				surface === 'home' && outcome === 'refusal';
+			let finishPreparation!: () => void;
+			if ( finishAfterRefusal ) {
+				const original = FileReader.prototype.readAsArrayBuffer;
+				vi.spyOn(
+					FileReader.prototype,
+					'readAsArrayBuffer'
+				).mockImplementation( function (
+					this: FileReader,
+					file: Blob
+				) {
+					finishPreparation = () => original.call( this, file );
+				} );
+			}
 			let resolve!: ( value: typeof answer ) => void;
 			let reject!: ( error: unknown ) => void;
 			vi.mocked( sendTurn ).mockImplementationOnce(
@@ -1338,6 +1355,7 @@ for ( const surface of [ 'dock', 'home' ] as const ) {
 				)
 			);
 			await waitFor( () => expect( resolve ).toBeTypeOf( 'function' ) );
+			expect( ui.field().disabled ).toBe( false );
 			fireEvent.input( ui.field(), {
 				target: { value: 'A2 newly accepted question' },
 			} );
@@ -1350,31 +1368,42 @@ for ( const surface of [ 'dock', 'home' ] as const ) {
 					],
 				},
 			} );
+			const settleOriginalTurn = () =>
+				act( async () => {
+					if ( outcome === 'success' ) {
+						resolve( answer );
+					} else if ( outcome === 'resource' ) {
+						reject(
+							new TurnError( 429, 'linker_admission_quota' )
+						);
+					} else {
+						reject(
+							outcome === 'upstream'
+								? new Error( 'upstream' )
+								: new TurnError(
+										outcome === 'conflict' ? 409 : 413,
+										outcome === 'conflict'
+											? 'linker_genie_turn_conflict'
+											: 'linker_genie_attachment_size'
+									)
+						);
+					}
+				} );
+			if ( finishAfterRefusal ) {
+				await settleOriginalTurn();
+				await act( async () => finishPreparation() );
+			}
 			await waitFor( () => {
 				expect(
 					document.querySelector( '.linker-genie-app__attachment' )
 				).not.toBeNull();
 				expect( screen.queryByText( 'Preparing file…' ) ).toBeNull();
 			} );
-			await act( async () => {
-				if ( outcome === 'success' ) {
-					resolve( answer );
-				} else if ( outcome === 'resource' ) {
-					reject( new TurnError( 429, 'linker_admission_quota' ) );
-				} else {
-					reject(
-						outcome === 'upstream'
-							? new Error( 'upstream' )
-							: new TurnError(
-									outcome === 'conflict' ? 409 : 413,
-									outcome === 'conflict'
-										? 'linker_genie_turn_conflict'
-										: 'linker_genie_attachment_size'
-								)
-					);
-				}
-			} );
+			if ( ! finishAfterRefusal ) {
+				await settleOriginalTurn();
+			}
 			expect( ui.field().value ).toBe( 'A2 newly accepted question' );
+			expect( sendTurn ).toHaveBeenCalledTimes( 1 );
 			expect(
 				document.querySelector( '.linker-genie-app__attachment' )
 					?.textContent

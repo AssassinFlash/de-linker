@@ -159,3 +159,33 @@ The integration preserves these contracts:
 - Retry snapshots accepted uploads at the click and later payloads use that snapshot. The completed-result branch checkpoints an accepted A2 editor before consuming A1 and clears chips only without a newer editor. The existing real-composer `completed-with-next-draft` case asserts one send, the stored answer and retained A2 text/prepared PDF. Card proofs and nonce-aware store calls remain connected to current-main consumers.
 
 Reuse the recorded 300/300 focused, 10/10 completed-request, type/lint/build/i18n results; none was rerun. The earlier [generated review](inquiry-caller-voice/spec-review-generated-b472.md) remains historical for its exact artifacts; the current integrated generated-output review belongs to the separate Standards axis. This source PASS does not accept browser/microphone behavior, local runtime, deployment, production or the full-site goal. Only this section was appended; the three pre-existing tracked edits and all untracked evidence were left untouched.
+
+### CI 40211348204: busy Hero file completion (2026-10-26)
+
+PR #654 at `25c79fee197e7e70fdb38e38bfddd1fd8da1997f` failed the actual 69-file/713-case CI run: `review repair: home A1 refusal preserves the accepted A2 text and actually prepared PDF` read an empty field instead of `A2 newly accepted question`. The earlier local 300-case result does not supersede this failure. The original isolated case passed locally under Node 24.22.0 and Node 22.23.3; that only established that the original schedule was not deterministic, not that CI was incorrect.
+
+Diagnosis isolated a real product race. The native homepage picker calls `bridgeAsk('', files)`. While A1 was pending, the Hero accepted A2's file but still created `pendingSend`. If the preceding turn's refusal/finally completed before the file-ready passive effect ran, that effect observed an idle sender and automatically sent the next file-only turn, clearing A2's field. This was unrelated to principal changes, auxiliary identity outage or a test that merely needed a blind delay.
+
+The same existing home/refusal case now holds the real FileReader `readAsArrayBuffer` through its existing public wrapper, settles A1's refusal, then releases actual PDF preparation. No private React state or fabricated prepared upload is installed. Before the source fix this exact controlled schedule failed with the original CI symptom (`expected '' to be 'A2 newly accepted question'`); a separate diagnostic assertion also measured two `sendTurn` calls. All original text, filename, prepared-byte, pagehide and Restore-exchange assertions remain. One added assertion requires exactly one model turn; the other nine A1 outcome combinations keep their existing schedule. No new matrix, skipped case, softened expectation, retry loop or sleep was introduced.
+
+The only product edit is in `src/hero/Hero.tsx`: file picks accepted while `sending.current` is true are still prepared under the current editing owner, but do not create an automatic `pendingSend`. Ordinary idle photo/PDF picks retain their existing prepare-and-send behavior. Session, journal, inquiry ownership, model channels, product publication, customer copy and other tool sources are unchanged.
+
+Bounded verification after this repair:
+
+- Exact failed case under Node 24: **1 PASS**; existing A1 outcome group (dock/home, five outcomes): **10 PASS**; existing Hero and controller files: **41 PASS**, including ordinary idle file sending. Counts overlap and are not added.
+- Exact controlled case under local Node 22.23.3, the CI major version: **1 PASS**.
+- `npm run lint:types`, changed-file ESLint and Prettier: PASS.
+- One existing `npm run build`, then `just i18n-tools` and `npm run build:check`: PASS. The same three pre-existing webpack performance warnings remain visible.
+- Generated hash comparison: only `build/hero.js`, `build/hero.asset.php` and `build/manifest.json` change; all other **30** observed build/language files remain byte-identical to the pre-repair candidate, including Genie, marketing, inquiry-handoff, configurator, preview, shared chunks, all CSS, PO/JSON/MO and their approved translations. Commerce is unchanged. Scoped diff whitespace check passes.
+
+Final 19-product-path aggregate is **`6d125345e1536570d143c0554bee21e94f5164d9593bb34f2dd7c336d029bf05`**. The native manifest's 109-source/input aggregate is `d3fc6f89c89f044362c041879ed4f251c01fe7c435fab58967103d294bdbdfe2`, using the previously documented sorted row algorithm.
+
+| Changed file | Final SHA-256 |
+| --- | --- |
+| `src/hero/Hero.tsx` | `b35c508e5e09ffc09dd55f33712a829b168e6f493120328e68dcce84f9df0d04` |
+| `src/genie/failureOwnership.consumer.test.tsx` | `302b003742194b2cf7924adf144eee0f67ff26f66dd9ee20f7215724b9fbf11f` |
+| `build/hero.js` | `eb08bc668a6189a5987e6886d9ffa65fc2a93dccfb621c3cec5732167d60288c` |
+| `build/hero.asset.php` | `3b6a387ff813580cd89b73c843eeb4276706d3dd1eb7c58cff0a1ccaeb49e16c` |
+| `build/manifest.json` | `887ed114828253cf54d7dce3e26f9873af1e9e94abdb16cc27c5eb1ea0ba12ff` |
+
+The failed CI run is preserved as failed; a new CI result remains required after the parent takes this commit. This batch did not rerun the full suite, deploy, send mail, call a real model/CAPTCHA, start an instance or change ports/symlinks/configuration. The pre-existing AGENTS and full-site tracked edits plus all untracked goal/evidence files are preserved. Incremental source/generated review and the affected Hero busy-file browser readback remain parent-owned delivery gates.
