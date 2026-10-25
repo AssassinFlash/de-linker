@@ -201,3 +201,31 @@ Only that existing Playwright fixture changes: return one explicit 64-hex Storyb
 One bounded existing Playwright invocation completed: `playwright test tests/e2e/failure.spec.ts --workers=1 --output=artifacts/test-results/genie-ci-40213689343 --timeout=15000` reported **4/4 PASS in 20.3 seconds**. The diagnostic per-case ceiling was lower than the unchanged repository default; assertions were not loosened. Its existing 6006 Storybook server and browser workers ended with the runner; no service remained on 6006. The output contained only a passing `.last-run.json`, which was checked and removed along with its task-owned empty output directory; previous artifact directories were untouched. No additional local browser run will be used as a substitute for the parent's next required CI.
 
 Changed-file ESLint/Prettier and the plugin's `tsc --noEmit` (which includes `tests/`) pass. The existing CI 713-unit PASS is reused; no unit suite or full Playwright matrix was rerun. Product/build/language files are byte-identical to `163cc97d`, so build and i18n were correctly not rerun. The 19-product source aggregate remains `6d125345e1536570d143c0554bee21e94f5164d9593bb34f2dd7c336d029bf05`. The repaired fixture SHA-256 is `b22cdad4ed556cdd92dce7d48403d3ba63c5672165990d562540073bc8d0269b`. Actual WordPress/Cua acceptance remains with the parent on the existing 8888 instance; no WordPress instance, persistent browser, endpoint, global configuration, backup or worktree was created or changed.
+
+
+## Workspace attachment entry and picked files (2026-10-26)
+
+This batch starts from the accepted recovery candidate `bb5089ac` on `codex/genie-workspace-controls`; it does not replay or change the prior deployed recovery work. The confirmed standalone workspace defect was two App render exclusions: `!workspace` hid both the existing attach button and the existing AttachmentChips while the hidden input and owner-aware preparation/send logic still existed. Spec 13's attachment capability and ordinary workspace editing contract already cover these inputs. The approved prototype A remains the layout baseline (`proto/genie-r1` prototype README/CSS); the existing `2026-10-12-genie-openai-design/DOSSIER.md` A5 supplies the mature left-attachment composer pattern. This is restoration of an existing control, with the current approved EN/DE labels.
+
+Only the two workspace exclusions are removed. History-view hiding, fresh native-owner checks, preparation, removal, send gating, failure/Restore and busy A2 editing are unchanged. The existing attachment-container CSS selector now includes the workspace; every property value remains unchanged and the already shared 44px attach-button rule is reused. No global tokens, marketing/body copy, model/API route or other module is edited.
+
+The CSS delivery path is the existing tools-app pipeline: `App.tsx` imports `./genie.css`; the `genie` entry in the native WP-scripts webpack build emits `build/genie.css` and its RTL twin. `Linker\Tools\Assets` registers that CSS under `linker-tools-genie` with the native asset version. `Genie\Entries::dock_assets()` enqueues the style on frontend requests, including the standalone workspace whose shortcode mounts the same app. This file is tool application CSS, not the site-wide WindPress volume; no additional stylesheet channel is introduced.
+
+The existing full upload/remove/payload case now mounts the workspace and verifies its real attach-button click, visible filename/remove control, attachment-only send gating, prepared PDF payload and chip clearing after send. Before the source repair it failed because no accessible `Attach a file` button existed. The existing `completed-with-next-draft` case also mounts the workspace and verifies visible controls plus A2 text/PDF preservation during Retry; its other helper variants remain unchanged. No cases or matrix were added. A bounded existing App selection reports **14 PASS**, covering those paths, cut-stream attachment retention and conversation navigation. TypeScript, changed-file ESLint and Prettier pass.
+
+One `npm run build` and `npm run build:check` pass. The same three webpack performance recommendations remain visible. Of the 33 observed build/language files, only **five** change: Genie JS, CSS, RTL CSS, asset PHP and manifest. The other **28** files are byte-identical, including Hero, marketing, inquiry-handoff, configurator, preview, shared chunks, all their CSS and every PO/JSON/MO. The PHP layer and entire Commerce plugin are unchanged. No i18n regeneration was needed: the strings and existing catalog bytes did not change.
+
+The native manifest's full 109-source/input aggregate is **`e8e2bb180e36c538f314b23eeb4bb16620fded903542bdda61b63064635aff85`**, using sorted `SHA + two spaces + plugin-relative path + LF` rows. Exact source/test/generated hashes are:
+
+| File under `plugins/linker-tools` | SHA-256 |
+| --- | --- |
+| `src/genie/App.tsx` | `1b5750f976fbb82032f5d740987503b98604602a0ee13aa69df8330aec50fe5d` |
+| `src/genie/App.test.tsx` | `3309955311ee53b04a99660d7e9a8b3c79dd0927d3a3c413179ba619ab5bccb2` |
+| `src/genie/genie.css` | `7792b76492fe7237c9536c4c31bc245be09eaca11a4a24f8ccd3c23c6c817363` |
+| `build/genie.js` | `d56ff0471c2cb0a880bafb1f39bede08631b6850ddf430db2e97aacfc0ecd9cb` |
+| `build/genie.css` | `551029eb4cff40ab01fe7990ea2a9e3c71f4d6a0fb5b98afc2f70c184d2f639c` |
+| `build/genie-rtl.css` | `a6f9306f55454740a197ed56b8596b6d92376527d8ed154b8fe28f359df6a934` |
+| `build/genie.asset.php` | `5168161d085d3d32077de5d5ff13da77ca11f82bc846975d6b43ca3d5834a04b` |
+| `build/manifest.json` | `7f3cb7426912ca7b20d4373166505ff9feba664df8f465c901655735d64ee974` |
+
+AGENTS, the two existing full-site tracked edits and all untracked evidence are preserved. No WordPress instance, Storybook/browser, production/mail/model operation, backup or extra worktree was started or created. The parent owns complementary source/generated review, CI, real WP/Cua EN/DE and affected-width acceptance, publication and deployed readback. Component/source success is not claimed as visual or production acceptance.

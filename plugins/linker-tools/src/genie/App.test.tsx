@@ -284,8 +284,18 @@ test.each( [
 		request.onOperation?.( '56300000-0000-4000-8000-000000000001' );
 		throw new Error( 'network result unknown' );
 	} );
-	await renderOwned( <App config={ config() } /> );
-	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	const workspace = scenario === 'completed-with-next-draft';
+	await renderOwned(
+		<App
+			config={ {
+				...config(),
+				surface: workspace ? 'workspace' : 'helper',
+			} }
+		/>
+	);
+	if ( ! workspace ) {
+		fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	}
 	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
 		target: { value: question },
 	} );
@@ -352,6 +362,9 @@ test.each( [
 	} );
 	async function acceptNextDraftDuringRetry() {
 		await waitFor( () => expect( finishRetry ).toBeTypeOf( 'function' ) );
+		expect(
+			screen.getByRole( 'button', { name: 'Attach a file' } )
+		).toBeVisible();
 		fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
 			target: { value: 'Next accepted question' },
 		} );
@@ -1437,11 +1450,17 @@ test( 'an attached file rides with the turn and its name in the question', async
 			meta: null,
 			blocks: [ { type: 'text', text: 'Fixture answer.', refs: [] } ],
 		} );
-	await renderOwned( <App config={ config() } /> );
-	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	await renderOwned(
+		<App config={ { ...config(), surface: 'workspace' } } />
+	);
 	const fileInput = document.querySelector(
 		'input[type="file"]'
 	) as HTMLInputElement;
+	const attach = screen.getByRole( 'button', { name: 'Attach a file' } );
+	expect( attach ).toBeVisible();
+	const pickerClick = vi.spyOn( fileInput, 'click' );
+	fireEvent.click( attach );
+	expect( pickerClick ).toHaveBeenCalledOnce();
 	expect( fileInput.accept ).toContain( 'image/heic' );
 	expect( fileInput.accept ).toContain( 'application/pdf' );
 	const datasheet = new File( [ '%PDF-1.7' ], 'gw10k-et-datenblatt.pdf', {
