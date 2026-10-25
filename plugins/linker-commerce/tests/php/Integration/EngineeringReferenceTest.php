@@ -56,10 +56,13 @@ final class EngineeringReferenceTest extends IntegrationTestCase {
 					'post_title'  => $tag . ' ' . $type,
 				)
 			);
-			$this->assertIsInt( $id );
 			$this->assertGreaterThan( 0, $id );
 			$content[ $type ] = $id;
-			$this->later( static fn () => wp_delete_post( $id, true ) );
+			$this->later(
+				static function () use ( $id ): void {
+					wp_delete_post( $id, true );
+				}
+			);
 		}
 		$original = $GLOBALS['wp_the_query'];
 		$run      = static function ( array $extra = array() ) use ( $tag ): \WP_Query {
@@ -88,9 +91,13 @@ final class EngineeringReferenceTest extends IntegrationTestCase {
 			$this->assertSame( array( 'post', 'page', 'product' ), $first->get( 'post_type' ) );
 			$this->assertSame( 3, (int) $first->found_posts );
 			$this->assertSame( 2, (int) $first->max_num_pages );
-			$second = $run( array( 'paged' => 2 ) );
-			$all    = array_map( 'intval', array_merge( $first->posts, $second->posts ) );
-			$want   = array( $products['sale'], $content['page'], $content['post'] );
+			$second     = $run( array( 'paged' => 2 ) );
+			$first_ids  = $first->posts;
+			$second_ids = $second->posts;
+			$this->assertIsArray( $first_ids );
+			$this->assertIsArray( $second_ids );
+			$all  = array_merge( $first_ids, $second_ids );
+			$want = array( $products['sale'], $content['page'], $content['post'] );
 			sort( $all );
 			sort( $want );
 			$this->assertSame( $want, $all );
@@ -101,7 +108,7 @@ final class EngineeringReferenceTest extends IntegrationTestCase {
 					'post__in'       => array( '0' . $products['reference'], -$products['draft'], '0' . $products['private'], $content['page'], $products['sale'] ),
 				)
 			);
-			$this->assertSame( array( $products['sale'], $content['page'] ), array_map( 'intval', $included->posts ) );
+			$this->assertSame( array( $products['sale'], $content['page'] ), $included->posts );
 			$empty = $run(
 				array(
 					'post_status' => 'any',

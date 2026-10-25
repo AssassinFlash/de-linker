@@ -142,12 +142,17 @@ final class VisibilityReadTest extends TestCase {
 		$include = array( 11, '014', '-13', 100 );
 		$writes  = array();
 		$visibility->query( $mixed );
+		/**
+		 * Mockery applies captured set() writes outside static analysis.
+		 *
+		 * @var array<string, list<int>> $writes
+		 */
 		$this->assertSame( array( 11, 100 ), $writes['post__in'] ?? null );
 		$this->assertArrayNotHasKey( 'post__not_in', $writes );
 		$this->assertSame( 7, $refreshes );
 		$include = array( 13, 14 );
 		$visibility->query( $mixed );
-		$this->assertSame( array( 0 ), $writes['post__in'] ?? null, 'An empty filtered include list must never become an unrestricted query.' );
+		$this->assertSame( array( 0 ), $writes['post__in'], 'An empty filtered include list must never become an unrestricted query.' );
 		$this->assertSame( 8, $refreshes );
 	}
 }
