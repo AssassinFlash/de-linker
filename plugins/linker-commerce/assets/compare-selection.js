@@ -175,6 +175,7 @@
 	var hint = document.querySelector('[data-compare-scroll-hint]');
 	if (scroll && hint) {
 		var measure = function () {
+			// Allow one CSS pixel at the layout boundary; a rounding remainder alone needs no scrolling cue.
 			hint.hidden = scroll.scrollWidth <= scroll.clientWidth + 1;
 		};
 		measure();
