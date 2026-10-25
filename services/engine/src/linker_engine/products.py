@@ -54,6 +54,9 @@ class Figure:
     unit: str | None
     citation: Citation
     value_de: str | None = None
+    qualifier: str | dict[str, Any] | list[Any] | None = None
+    evidence_refs: tuple[str, ...] = ()
+    columns: tuple[dict[str, str | int | float], ...] = ()
 
 
 @dataclass(frozen=True)
@@ -86,6 +89,9 @@ def _figures(raw: dict[str, Any]) -> dict[str, Figure]:
                 entry["citation"].get("doc"),
             ),
             value_de=entry.get("value_de"),
+            qualifier=entry.get("qualifier"),
+            evidence_refs=tuple(entry.get("evidence_refs", [])),
+            columns=tuple(entry.get("columns", [])),
         )
         for key, entry in raw.items()
     }

@@ -6,6 +6,9 @@ import { ScenarioNumber } from "./ScenarioNumber.tsx";
 import { toPercent, fromPercent } from "../../domain/decimal.ts";
 import { OperatingPeriodForm } from "./OperatingPeriodForm.tsx";
 import { batteryPresentation } from "./batteryPresentation.ts";
+import { DcStorageForm } from "./DcStorageForm.tsx";
+import { emptyDcScenario } from "../../domain/dcEnergy.ts";
+import type { JsonObject } from "../../data/protocol.ts";
 
 export function ScenarioForm({
 	value,
@@ -16,6 +19,9 @@ export function ScenarioForm({
 	useProfileRange,
 	rangeBusy,
 	section,
+	equipmentSelection,
+	converters,
+	openEquipment,
 }: {
 	value: ScenarioDraft;
 	locale: string;
@@ -25,6 +31,9 @@ export function ScenarioForm({
 	useProfileRange: () => void;
 	rangeBusy: boolean;
 	section: "storage" | "initial" | "operation";
+	equipmentSelection: JsonObject | null;
+	converters: readonly string[];
+	openEquipment: () => void;
 }) {
 	const validity = useRef(new Map<string, boolean>());
 	const report = useCallback(
@@ -36,9 +45,48 @@ export function ScenarioForm({
 		[onValidity],
 	);
 	const inventory = value.initial_inventory;
+	const dc = value.coupling === "shared_dc";
 	return (
 		<fieldset className="lp-scenario-fields" disabled={disabled}>
-			<section className="lp-scenario-block" hidden={section !== "storage"}>
+			<div hidden={section !== "storage"}>
+				<label className="lp-field">
+					<span>{__("System connection", "linker-tools")}</span>
+					<select
+						value={value.coupling ?? "independent_ac"}
+						onChange={(e) =>
+							onChange({
+								...value,
+								coupling: e.currentTarget.value as
+									"shared_dc" | "independent_ac",
+								dc: value.dc ?? emptyDcScenario(),
+								battery_binding: null,
+							})
+						}
+					>
+						<option value="independent_ac">
+							{__("Separate AC connections", "linker-tools")}
+						</option>
+						<option value="shared_dc">
+							{__("PV and battery share an inverter", "linker-tools")}
+						</option>
+					</select>
+				</label>
+				{dc && (
+					<DcStorageForm
+						value={value}
+						locale={locale}
+						onChange={onChange}
+						report={report}
+						equipmentSelected={equipmentSelection !== null}
+						converters={converters}
+						openEquipment={openEquipment}
+					/>
+				)}
+			</div>
+			<section
+				className="lp-scenario-block"
+				hidden={section !== "storage" || dc}
+			>
 				<h3>{__("Storage parameters", "linker-tools")}</h3>
 				<p className="lp-profile-help">
 					{__(
@@ -292,10 +340,15 @@ export function ScenarioForm({
 				<details className="lp-comparison">
 					<summary>{__("How storage is operated", "linker-tools")}</summary>
 					<p>
-						{__(
-							"PV supplies the simulated load and AC auxiliary demand first. Surplus PV charges the battery within the specified power and energy limits. The battery supplies remaining demand using stored energy above the reserve. When connected, the grid supplies any remaining demand within the import limit. This controller does not request grid charging. Remaining PV is exported within the export limit, then curtailed.",
-							"linker-tools",
-						)}
+						{dc
+							? __(
+									"The DC bus supplies auxiliary demand first. PV and battery share the inverter power limit when serving AC demand. Surplus PV can charge the battery before inverter clipping; remaining PV is exported within the grid limit, then curtailed. Grid charging requires documented equipment support and a separate reverse-efficiency assumption.",
+									"linker-tools",
+								)
+							: __(
+									"PV supplies the simulated load and AC auxiliary demand first. Surplus PV charges the battery within the specified power and energy limits. The battery supplies remaining demand using stored energy above the reserve. When connected, the grid supplies any remaining demand within the import limit. This controller does not request grid charging. Remaining PV is exported within the export limit, then curtailed.",
+									"linker-tools",
+								)}
 					</p>
 					<p>
 						{__(

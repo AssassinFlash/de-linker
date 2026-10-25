@@ -458,3 +458,31 @@ test("native scope withdrawal before persistence finishes prevents dispatch and 
 	await until(() => !r.api.checking && r.api.records.length === 1);
 	assert.equal(r.calls.length, 0);
 });
+
+test("an identified energy evidence refusal retires its unqueued request and preserves source details", async (t) => {
+	let refused = true;
+	const details = {
+		product_id: 4107,
+		fact_id: "max_battery_charge_a",
+		constraint_id: "per_battery_port_scope",
+	};
+	const r = await rig(t, async () =>
+		refused
+			? json({ error: { code: "evidence_missing", details } }, 422)
+			: json(result),
+	);
+	await act(async () =>
+		r.api.start("runs/energy", { expected_revision: result.revision }),
+	);
+	await until(() => r.api.error && r.api.records.length === 0);
+	assert.deepEqual(r.api.error.evidenceIssue, details);
+	assert.deepEqual(await r.durable.list([scope], projectId), []);
+	refused = false;
+	let reply;
+	await act(async () => {
+		reply = await r.api.start("runs/energy", {
+			expected_revision: result.revision,
+		});
+	});
+	assert.equal(reply.run.id, result.id);
+});

@@ -6,7 +6,7 @@ import { sameJson } from "../domain/draft.ts";
 export const EQUIPMENT_TASK = "qualify_woo_equipment_v1";
 const status = (s: unknown) =>
 	["satisfied", "violated", "unresolved"].includes(String(s));
-function documentReference(value: unknown, requirePage = false) {
+export function documentReference(value: unknown, requirePage = false) {
 	const source = readObject(value);
 	if (
 		typeof source.url !== "string" ||

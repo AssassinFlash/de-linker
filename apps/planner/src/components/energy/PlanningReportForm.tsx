@@ -1,3 +1,4 @@
+import { isEnergyTask } from "../../data/readEnergyResult.ts";
 import { useEffect, useRef, useState } from "react";
 import type { RunSummary } from "../../data/planningProtocol.ts";
 import type { ReportOptions } from "../../data/planningReport.ts";
@@ -59,7 +60,11 @@ export function PlanningReportForm({
 			>
 				<option value="">{__("Not included", "linker-tools")}</option>
 				{completed
-					.filter((run) => run.task_kind === kind)
+					.filter((run) =>
+						kind === "single_ac_energy_replay_v1"
+							? isEnergyTask(run.task_kind)
+							: run.task_kind === kind,
+					)
 					.map((run) => (
 						<option key={run.id} value={run.id}>
 							{sprintf(

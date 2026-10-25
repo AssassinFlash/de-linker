@@ -9,6 +9,36 @@ export function energyErrorText(error: unknown): string {
 			? error.code
 			: "";
 	switch (code) {
+		case "dc_equipment_required":
+			return __(
+				"Select and prepare an inverter and battery before preparing the shared-inverter calculation.",
+				"linker-tools",
+			);
+		case "dc_connection_required":
+			return __(
+				"The shared-inverter calculation needs a PV conversion group, a connected battery port and an explicit DC auxiliary demand.",
+				"linker-tools",
+			);
+		case "dc_save_required":
+			return __(
+				"Save the project before preparing DC parameters so that the calculation uses the saved equipment selection.",
+				"linker-tools",
+			);
+		case "invalid_dc_loss_scenario":
+			return __(
+				"Loss assumptions need attention. Efficiencies must be greater than 0% and no more than 100%; auxiliary power and standing-loss rate must be zero or greater. A source or assumption note is required.",
+				"linker-tools",
+			);
+		case "evidence_missing":
+			return __(
+				"Required source information is missing for this calculation. Review the selected equipment, PV source and loss assumptions.",
+				"linker-tools",
+			);
+		case "method_domain_exceeded":
+			return __(
+				"This connection or operating mode is outside the selected calculation model. Review the system connection and operating periods.",
+				"linker-tools",
+			);
 		case "report_logo_invalid":
 			return __(
 				"The logo could not be used. Choose a PNG or JPG of up to 500 kB.",
@@ -186,5 +216,29 @@ export function energyErrorText(error: unknown): string {
 	}
 }
 export function EnergyError({ error }: { error: unknown }) {
-	return error ? <Notice error>{energyErrorText(error)}</Notice> : null;
+	const issue = error instanceof ApiError ? error.evidenceIssue : null;
+	return error ? (
+		<Notice error>
+			<p>{energyErrorText(error)}</p>
+			{issue && (
+				<details>
+					<summary>{__("Source details", "linker-tools")}</summary>
+					<dl className="lp-field-summary">
+						{Object.entries(issue).map(([key, value]) => (
+							<div key={key}>
+								<dt>
+									{key === "product_id"
+										? __("Product", "linker-tools")
+										: key === "fact_id"
+											? __("Source field", "linker-tools")
+											: __("Constraint", "linker-tools")}
+								</dt>
+								<dd>{String(value)}</dd>
+							</div>
+						))}
+					</dl>
+				</details>
+			)}
+		</Notice>
+	) : null;
 }

@@ -1,3 +1,4 @@
+import { isEnergyTask } from "../../data/readEnergyResult.ts";
 import { REPORT_TASK } from "../../data/planningReport.ts";
 import { __ } from "../../i18n.ts";
 import type { RunState } from "../../data/planningProtocol.ts";
@@ -12,8 +13,7 @@ export function taskLabel(kind: string | null | undefined): string {
 	if (kind === WEATHER_TASK)
 		return __("Weather data preparation", "linker-tools");
 	if (kind === PV_TASK) return __("PV generation profile", "linker-tools");
-	if (kind === "single_ac_energy_replay_v1")
-		return __("Energy calculation", "linker-tools");
+	if (isEnergyTask(kind)) return __("Energy calculation", "linker-tools");
 	return __("Saved task", "linker-tools");
 }
 export function runStateLabel(state: RunState, kind?: string | null): string {

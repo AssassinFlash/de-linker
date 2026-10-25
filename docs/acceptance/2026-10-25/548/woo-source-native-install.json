@@ -1443,7 +1443,7 @@
       "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
     }
   },
-  "current_frontier": "shared_dc_native_backend",
+  "current_frontier": "shared_dc_native_frontend",
   "shared_dc_core": {
     "status": "implemented_and_reviewed_core_not_connected_to_native_commands",
     "model": "constant_window_shared_dc_bus_v1",
@@ -1534,5 +1534,94 @@
       "remaining_topologies_electrical_country_BOM_comparison_site_consumers_migration_review_and_production"
     ],
     "storage": "existing_worktree_and_environment_reused; no_new_WordPress_instance_full_backup_or_runtime_carrier; no_new_screenshot_or_standalone_report"
+  },
+  "shared_dc_native_frontend": {
+    "parent_commit": "801429f3",
+    "scope": "DC scenario preparation, task/result/trace/report consumers, structured source refusal and explicit loss assumptions; native p548 and current Woo source connected",
+    "copy_review": "PASS: 38 new EN/DE pairs; independent DC source note preserves the original AC note",
+    "independent_review": {
+      "spec": "PASS after bounded receipt-recovery and source-note repairs",
+      "standards": "PASS after bounded citation/capability/bridge-efficiency validation repairs"
+    },
+    "necessary_verification": {
+      "old_ac_scenario_contract": "reused passed result; unchanged AC input serialization",
+      "dc_browser_contract": "existing completed native two-hour worker result reused; no physics replay for new consumer fixture",
+      "journal": "identified evidence refusal retires unqueued energy request; source detail identifiers survive",
+      "controller": "existing actual controls/late-response protection case passed; incomplete mock runtime model metadata corrected",
+      "build": "TypeScript, Vite and built module/source manifest passed"
+    },
+    "native_install": {
+      "runtime_sha256": "aa5334f0b5cccc07e1e2b45e0d474cb9261a298898b23e0d9a2f4c9b9f184008",
+      "worker_runtime": "aa5334f0b5cccc07e1e2b45e0d474cb9261a298898b23e0d9a2f4c9b9f184008",
+      "source_revision": "ee916454e451c0769097294afaf0bef0a73823b79b319c7f3f828f6408ff625d",
+      "prepared_products": 86,
+      "new_full_backups": 0,
+      "new_instances": 0,
+      "removed": [
+        {
+          "directory": "/Users/chesterjohn/de-linker-local/p548/planner/runtime-releases/4f3bb4309a37e4a3b5c986139693d11e939a3eed7f045d1b097e269e3944e220",
+          "bytes": 1255373
+        }
+      ],
+      "free_before": 953421750272,
+      "free_after": 953418010624
+    },
+    "woo_source_handoff": {
+      "production_source_revision": "61f7dc30cd2bd7e5d73cb45854e221757bb2dce162aaa410ef50639484eb0b5e",
+      "shared_commit": "4885d74534cf649007619cc19a5bd09f23af809e",
+      "canonical_ids": [
+        2090,
+        2092,
+        4107
+      ],
+      "import_scope": "reviewed fields plus original document rows merged into Woo; native bindings/jobs regenerated; no new runtime SKU authority",
+      "original_pdf_sha_matches": true,
+      "sku_status_translation_pairs_preserved": true,
+      "source_owner_notified_after_actual_local_load": true
+    },
+    "native_ui": {
+      "matrix": [
+        "EN 1440x900",
+        "EN 390x844",
+        "DE 1440x900",
+        "DE 390x844"
+      ],
+      "scope": "new settings branch only; AC source note preserved, empty DC note, language/units and responsive layout inspected",
+      "saved_project_revisions_changed": false,
+      "preview_edits_undone": true,
+      "viewport_reset": true,
+      "screenshots": [
+        "dc-settings-en-desktop.png",
+        "dc-settings-de-mobile.png"
+      ]
+    },
+    "protected_projects": [
+      {
+        "id": "82a84c56e50c4efb8497d1bfbe106bd1",
+        "revision": 14,
+        "input_sha256": "8a6394917a9a9e6b91db4bfc73c0299dcedd2c51619144a5beffa1664f010288"
+      },
+      {
+        "id": "c7795bc2c1e14e389622015c809ace45",
+        "revision": 14,
+        "input_sha256": "32b9f95c200fe0c286e9e7552ccaf5377bfcbc63cae14bb6114125ba4ea43f1f"
+      },
+      {
+        "id": "334e269920d540fe8573a66a1031e0be",
+        "revision": 6,
+        "input_sha256": "ca87d19fc255db35be20c111fe26e63c390cc1725f910bf05e99ebe3487ec3f5"
+      }
+    ],
+    "remaining_before_real_product_dc_acceptance": [
+      "Interpret current Woo quantity_kind/direction/ports rather than the previously supported narrow qualifier shapes; preserve original conditions.",
+      "Provide and validate explicit battery operating-temperature/series-stack scenario conditions; never silently satisfy the documented charge/discharge ranges.",
+      "Select module_count-labelled system power/voltage columns and consume the rated_power_w source without treating rated/maximum/fault/Wp/VA as continuous active power.",
+      "Native DC scenario currently needs retained PV DC output. The reused Lyon example contains an AC CSV; do not divide it by guessed efficiency or present it as a supported DC source.",
+      "Complete the real-product native calculation/result/curve/report/PDF path after those implementation changes; no current real H2/B2 DC calculation or production release is claimed."
+    ],
+    "validation_stopped_after_pass": true,
+    "annual_pv_commerce_full_matrix_repeated": false,
+    "production_changed_by_548": false,
+    "temporary_copy_mapping_removed": true
   }
 }

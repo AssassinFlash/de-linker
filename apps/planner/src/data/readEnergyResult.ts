@@ -8,6 +8,16 @@ import {
 import { sameJson } from "../domain/draft.ts";
 import { readEquipmentSelection } from "../domain/equipment.ts";
 import { readEquipmentAssessment } from "./readEquipmentResult.ts";
+import {
+	DC_ENERGY_TASK,
+	DC_MODEL,
+	DC_PV_STAGE,
+	readDcParameters,
+} from "../domain/dcEnergy.ts";
+
+export function isEnergyTask(value: unknown): boolean {
+	return value === "single_ac_energy_replay_v1" || value === DC_ENERGY_TASK;
+}
 
 const hash = (value: unknown): value is string =>
 	typeof value === "string" && /^[a-f0-9]{64}$/.test(value);
@@ -29,6 +39,7 @@ function equipmentBinding(
 	models: JsonObject,
 	pinned: JsonObject,
 	model: JsonObject,
+	dc: boolean,
 ) {
 	if (result.equipment_binding == null) {
 		require(
@@ -42,7 +53,10 @@ function equipmentBinding(
 		assessment = readEquipmentAssessment(binding.assessment);
 	require(
 		binding.schema_version === 1 &&
-			binding.model === "selected_woo_scenario_envelope_v1" &&
+			binding.model ===
+				(dc
+					? "selected_woo_dc_scenario_v1"
+					: "selected_woo_scenario_envelope_v1") &&
 			models.equipment_envelope === binding.model &&
 			binding.performance_status === "not_established_by_scenario_envelope" &&
 			hash(pinned["woo.equipment_inputs"]) &&
@@ -62,11 +76,11 @@ function equipmentBinding(
 	}
 	const checks = assessment.checks as readonly JsonObject[];
 	const requiredChecks = [
-		"continuous_battery_ac_charge",
 		"scenario_operating_mode",
 		"scenario_parameter_basis",
 		"scenario_model_domain",
 	];
+	if (!dc) requiredChecks.push("continuous_battery_ac_charge");
 	if (selection.battery_product_id !== null)
 		requiredChecks.push("usable_energy", "continuous_battery_ac_output");
 	require(
@@ -97,6 +111,7 @@ function equipmentBinding(
 		["continuous_battery_ac_output", "discharge_ac_kw"],
 		["continuous_battery_ac_charge", "charge_ac_kw"],
 	] as const) {
+		if (dc && id !== "usable_energy") continue;
 		const check = checks.find((check) => check.id === id);
 		if (check) require(check.required === model[field]);
 	}
@@ -114,11 +129,12 @@ export function readEnergyResult(
 			context = readObject(manifest.context),
 			models = readObject(context.models),
 			pinned = readObject(result.pinned_assets);
+		const dc = result.kind === DC_ENERGY_TASK;
 		require(
 			run.state === "succeeded" &&
 				hash(run.result_sha256) &&
 				result.schema === 1 &&
-				result.kind === "single_ac_energy_replay_v1" &&
+				isEnergyTask(result.kind) &&
 				result.project_id === run.project_id &&
 				result.revision === run.revision &&
 				result.input_sha256 === manifest.input_sha256 &&
@@ -130,32 +146,97 @@ export function readEnergyResult(
 				result.interval_count > 0,
 		);
 		const model = readObject(result.model);
-		if (model.version !== "constant_window_single_ac_bus_v1")
+		if (model.version !== (dc ? DC_MODEL : "constant_window_single_ac_bus_v1"))
 			throw new ApiError(502, "unsupported_run_model");
-		readBatteryParameters({
-			schema_version: 1,
-			model: model.version,
-			parameter_basis: "explicit_scenario",
-			...Object.fromEntries(BATTERY_FIELDS.map((key) => [key, model[key]])),
-		});
+		if (dc) {
+			const prepared = readDcParameters(result.prepared_dc_parameters),
+				losses = readObject(prepared.loss_scenario);
+			for (const name of ["connected_bridge", "outage_bridge"]) {
+				if (model[name] === null) continue;
+				const bridge = readObject(model[name]);
+				require(
+					bridge.eta_forward === losses.eta_inverter_forward &&
+						(bridge.reverse_supported !== true ||
+							bridge.eta_reverse === losses.eta_inverter_reverse),
+				);
+			}
+
+			for (const key of [
+				"usable_window_kwh",
+				"battery",
+				"selected_port",
+				"pv_input_dc_kw",
+				"dc_dc_charge_bus_kw",
+				"dc_dc_discharge_bus_kw",
+				"connected_bridge",
+				"outage_bridge",
+			])
+				require(sameJson(model[key], prepared[key]));
+			for (const key of [
+				"eta_bus_to_battery",
+				"eta_battery_to_bus",
+				"eta_store_charge",
+				"eta_store_discharge",
+				"internal_aux_kw",
+				"standing_loss_rate_per_hour",
+			])
+				require(model[key] === losses[key]);
+			require(
+				number(model.charge_terminal_kw) &&
+					number(model.discharge_terminal_kw) &&
+					hash(pinned["battery.dc_prepared_parameters"]) &&
+					hash(pinned["battery.dc_woo_inputs"]) &&
+					prepared.selection_sha256 === pinned["equipment.selection"],
+			);
+			const binding = readObject(result.equipment_binding),
+				selection = readEquipmentSelection(binding.selection);
+			require(
+				sameJson(prepared.product_revisions, selection.product_revisions) &&
+					readObject(model.selected_port).id === losses.battery_port_id,
+			);
+		} else
+			readBatteryParameters({
+				schema_version: 1,
+				model: model.version,
+				parameter_basis: "explicit_scenario",
+				...Object.fromEntries(BATTERY_FIELDS.map((key) => [key, model[key]])),
+			});
 		require(
 			model.battery_export === "excluded_from_this_model" &&
 				model.internal_loss_order ===
-					"standing_loss_then_internal_aux_before_ac_flows" &&
+					(dc
+						? "standing_loss_then_internal_aux_before_dc_flows"
+						: "standing_loss_then_internal_aux_before_ac_flows") &&
 				model.source_accounting === "proportional_mixing_v1" &&
 				models.battery === model.version &&
 				models.replay === result.kind &&
 				models.source_accounting === model.source_accounting &&
 				sameJson(pinned, context.assets) &&
 				Object.values(pinned).every(hash) &&
-				model.parameters_source_sha256 === pinned["battery.raw"] &&
+				model.parameters_source_sha256 ===
+					pinned[dc ? "battery.dc_prepared_parameters" : "battery.raw"] &&
 				readObject(result.dependencies).energy_trace === result.trace_sha256,
 		);
-		for (const role of ["battery", "gross_load", "pv_available_ac", "aux_ac"])
+		for (const role of [
+			"battery",
+			"gross_load",
+			dc ? "pv_available_dc" : "pv_available_ac",
+			"aux_ac",
+		])
 			require(hash(pinned[role + ".raw"]) && hash(pinned[role + ".metadata"]));
-		equipmentBinding(result, models, pinned, model);
+		equipmentBinding(result, models, pinned, model, dc);
 		const batteryMetadata = readObject(result.battery_parameter_provenance),
 			provenance = readObject(batteryMetadata.provenance);
+		if (dc) {
+			const dependencies = readObject(batteryMetadata.dependencies);
+			require(
+				Object.keys(dependencies).sort().join() ===
+					"dc_prepared_parameters,dc_woo_inputs" &&
+					dependencies.dc_prepared_parameters ===
+						pinned["battery.dc_prepared_parameters"] &&
+					dependencies.dc_woo_inputs === pinned["battery.dc_woo_inputs"],
+			);
+		}
 		require(
 			batteryMetadata.retention === "permanent" &&
 				provenance.basis === "user_explicit_scenario_not_equipment_release" &&
@@ -173,7 +254,7 @@ export function readEnergyResult(
 			"load_demand_kwh",
 			"solar_load_kwh",
 			"grid_import_kwh",
-			"pv_generated_ac_kwh",
+			dc ? "pv_generated_dc_kwh" : "pv_generated_ac_kwh",
 			"unserved_load_kwh",
 		])
 			require(number(metrics[name]));
@@ -194,7 +275,8 @@ export function readEnergyResult(
 			);
 		}
 		const autarky = readObject(metrics.solar_autarky),
-			pvUse = readObject(metrics.pv_input_self_use);
+			pvUse = readObject(metrics.pv_input_self_use),
+			generation = metrics[dc ? "pv_generated_dc_kwh" : "pv_generated_ac_kwh"];
 		const autarkyReason =
 			metrics.load_measurement_scope !== "gross_load"
 				? "requested_load_scope_is_not_whole_site_gross"
@@ -207,8 +289,8 @@ export function readEnergyResult(
 		);
 		require(
 			pvUse.undefined_reason ===
-				(metrics.pv_generated_ac_kwh === 0 ? "pv_generation_is_zero" : null) &&
-				(pvUse.value === null) === (metrics.pv_generated_ac_kwh === 0),
+				(generation === 0 ? "pv_generation_is_zero" : null) &&
+				(pvUse.value === null) === (generation === 0),
 		);
 		const verification = readObject(result.verification),
 			checks = verification.checks;
@@ -256,8 +338,16 @@ export function readEnergyResult(
 			);
 			const expected =
 				period.mode === "outage"
-					? ["critical_load", "pv_available_ac", "aux_ac"]
-					: ["gross_load", "pv_available_ac", "aux_ac"];
+					? [
+							"critical_load",
+							dc ? "pv_available_dc" : "pv_available_ac",
+							"aux_ac",
+						]
+					: [
+							"gross_load",
+							dc ? "pv_available_dc" : "pv_available_ac",
+							"aux_ac",
+						];
 			require(Object.keys(profiles).sort().join() === expected.sort().join());
 			for (const [role, rawProfile] of Object.entries(profiles)) {
 				const profile = readObject(rawProfile),
@@ -270,7 +360,7 @@ export function readEnergyResult(
 				if (modelInput !== undefined) {
 					const details = readObject(source.details);
 					sourceMatches =
-						role === "pv_available_ac" &&
+						role === (dc ? "pv_available_dc" : "pv_available_ac") &&
 						source.origin === "modelled" &&
 						details.model === "uniform_unshaded_pvlib_reference_v1" &&
 						hash(modelInput) &&
@@ -278,6 +368,13 @@ export function readEnergyResult(
 						source.raw_sha256 === modelInput &&
 						details.input_bundle_sha256 === modelInput &&
 						details.weather_original_sha256 === pinned[role + ".raw"];
+					if (dc)
+						sourceMatches =
+							sourceMatches &&
+							details.output_boundary === DC_PV_STAGE &&
+							details.ac_conversion_applied === false &&
+							typeof details.converter_id === "string" &&
+							details.converter_id.length > 0;
 				}
 				require(
 					profile.measurement === role &&

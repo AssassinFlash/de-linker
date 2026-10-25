@@ -232,3 +232,65 @@ test("the shared negative contract fixtures fail in the browser without coercion
 		);
 	}
 });
+
+test("DC preparation binds Woo equipment and losses without manual device limits", () => {
+	const equipment = {
+		schema_version: 1,
+		inverter_product_id: 4107,
+		battery_product_id: 2090,
+	};
+	const base = scenario();
+	const dc = readScenarioDraft({
+		...base,
+		coupling: "shared_dc",
+		battery_binding: null,
+		dc: {
+			source_note:
+				"Explicit shared-DC loss scenario; no hardware performance approval.",
+			pv_converter_id: "roof-group",
+			battery_port_id: "battery-1",
+			aux_dc_kw: 0,
+			losses: {
+				eta_bus_to_battery: 0.98,
+				eta_battery_to_bus: 0.97,
+				eta_store_charge: 0.99,
+				eta_store_discharge: 0.99,
+				eta_inverter_forward: 0.96,
+				eta_inverter_reverse: null,
+				internal_aux_kw: 0,
+				standing_loss_rate_per_hour: 0,
+			},
+		},
+	});
+	assert.throws(
+		() => scenarioParts(dc, profiles()),
+		refusal("dc_equipment_required"),
+	);
+	const parts = scenarioParts(dc, profiles(), equipment);
+	assert.equal(parts.parameters.model, "constant_window_shared_dc_bus_v1");
+	assert.equal(parts.parameters.usable_window_kwh, undefined);
+	assert.equal(parts.inputs.aux_dc_kw, 0);
+	assert.equal(parts.parameters.source_note, dc.dc!.source_note);
+	assert.notEqual(parts.parameters.source_note, dc.source_note);
+	const bound = readScenarioDraft({
+		...dc,
+		battery_binding: {
+			asset_id: "a".repeat(32),
+			parameters: parts.parameters,
+			source_note: dc.dc!.source_note,
+			equipment_selection: equipment,
+		},
+	});
+	const replay = compileScenario(bound, profiles(), equipment);
+	assert.equal(replay.coupling, "shared_dc");
+	assert.equal(replay.pv_converter_id, "roof-group");
+	assert.throws(
+		() =>
+			compileScenario(bound, profiles(), {
+				...equipment,
+				battery_product_id: 2091,
+			}),
+		refusal("battery_not_prepared"),
+	);
+	assert.deepEqual(compileScenario(base, profiles()), inputsJson);
+});

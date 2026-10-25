@@ -1,3 +1,5 @@
+import { readObject } from "../../data/readProtocol.ts";
+import { DC_MODEL, readDcLossScenario } from "../../domain/dcEnergy.ts";
 import { PlanningReportForm } from "./PlanningReportForm.tsx";
 import { PlanningReportResult } from "./PlanningReportResult.tsx";
 import { REPORT_TASK } from "../../data/planningReport.ts";
@@ -123,7 +125,23 @@ export function EnergyWorkspace({
 			return { value: null, error };
 		}
 	}, [draft.history.current.energy_scenario]);
+	const converterIds = useMemo(() => {
+		try {
+			return readSolarSetup(draft.history.current).pv.converters.map(
+				(c) => c.id,
+			);
+		} catch {
+			return [];
+		}
+	}, [draft.history.current.solar_setup]);
 	const setupDocument = draft.history.current.energy_scenario;
+	const equipmentSelection = useMemo(() => {
+		try {
+			return readEquipmentSelection(draft.history.current.equipment_selection);
+		} catch {
+			return null;
+		}
+	}, [draft.history.current.equipment_selection]);
 	const setup = parsed.value,
 		selections = readSelections(draft.history.current.profile_selections);
 	const [selectedView, setView] = useState<
@@ -226,7 +244,7 @@ export function EnergyWorkspace({
 		prepared =
 			setup !== null &&
 			sameJson(
-				compileScenario(setup, selections),
+				compileScenario(setup, selections, equipmentSelection),
 				draft.history.current.energy_replay,
 			);
 	} catch {
@@ -266,11 +284,13 @@ export function EnergyWorkspace({
 			return;
 		setError(null);
 		try {
-			const parts = scenarioParts(setup, selections),
+			if (setup.coupling === "shared_dc" && dirty)
+				throw new ApiError(422, "dc_save_required");
+			const parts = scenarioParts(setup, selections, equipmentSelection),
 				instance = lifetime.current;
 			let bound = setup;
 			try {
-				compileScenario(setup, selections);
+				compileScenario(setup, selections, equipmentSelection);
 			} catch (cause) {
 				if (
 					!(cause instanceof ApiError) ||
@@ -278,8 +298,14 @@ export function EnergyWorkspace({
 				)
 					throw cause;
 				const reply = await operations.start("battery/scenario", {
-					source_note: setup.source_note,
+					source_note:
+						parts.parameters.model === DC_MODEL
+							? parts.parameters.source_note
+							: setup.source_note,
 					parameters: parts.parameters,
+					...(setup.coupling === "shared_dc"
+						? { expected_revision: draft.baseline.revision }
+						: {}),
 				});
 				if (
 					!reply ||
@@ -293,15 +319,25 @@ export function EnergyWorkspace({
 					battery_binding: {
 						asset_id: reply.asset.id,
 						parameters: parts.parameters,
-						source_note: setup.source_note,
+						source_note:
+							parts.parameters.model === DC_MODEL
+								? parts.parameters.source_note
+								: setup.source_note,
+						...(setup.coupling === "shared_dc" && equipmentSelection
+							? { equipment_selection: equipmentSelection }
+							: {}),
 					},
 				};
 			}
-			const replay = compileScenario(bound, selections);
+			const replay = compileScenario(bound, selections, equipmentSelection);
 			const applied = edit((inputs) => {
 				if (
 					!sameJson(inputs.energy_scenario, setupDocument) ||
-					!sameJson(readSelections(inputs.profile_selections), selections)
+					!sameJson(readSelections(inputs.profile_selections), selections) ||
+					!sameJson(
+						inputs.equipment_selection,
+						draft.history.current.equipment_selection,
+					)
 				)
 					throw new Error("scenario_changed");
 				return { ...scenarioInputs(inputs, bound), energy_replay: replay };
@@ -331,20 +367,16 @@ export function EnergyWorkspace({
 				}
 				return;
 			}
-			if (!setup) return;
+
 			const command = readPlanningOperation(record.path, record.body),
-				parameters = readBatteryParameters(command.parameters);
-			const restored = readScenarioDraft({
-				...setup,
-				battery: Object.fromEntries(
-					BATTERY_FIELDS.map((key) => [key, parameters[key]]),
-				),
-				source_note: command.source_note,
-				battery_binding: null,
-			});
-			if (!edit((inputs) => scenarioInputs(inputs, restored))) return;
-			const instance = lifetime.current,
-				reply = await operations.retry(record);
+				parameters =
+					readObject(command.parameters).model === DC_MODEL
+						? readDcLossScenario(command.parameters)
+						: readBatteryParameters(command.parameters),
+				dc = parameters.model === DC_MODEL,
+				instance = lifetime.current;
+			// Confirm the original receipt before deciding whether it can be applied.
+			const reply = await operations.retry(record);
 			if (
 				!reply ||
 				reply.path !== "battery/scenario" ||
@@ -352,11 +384,59 @@ export function EnergyWorkspace({
 				!client.isCurrentScope(session.query_scope)
 			)
 				return;
+			if (!setup) return;
+			if (
+				dc &&
+				(dirty ||
+					command.expected_revision !== draft.baseline.revision ||
+					!sameJson(
+						equipmentSelection,
+						draft.baseline.inputs.equipment_selection,
+					))
+			) {
+				setError(new ApiError(409, "product_evidence_changed"));
+				return;
+			}
+
+			const restored = readScenarioDraft({
+				...setup,
+				coupling: dc ? "shared_dc" : "independent_ac",
+				...(dc
+					? {
+							dc: {
+								...setup.dc,
+								source_note: command.source_note,
+								battery_port_id: parameters.battery_port_id,
+								losses: Object.fromEntries(
+									[
+										"eta_bus_to_battery",
+										"eta_battery_to_bus",
+										"eta_store_charge",
+										"eta_store_discharge",
+										"eta_inverter_forward",
+										"eta_inverter_reverse",
+										"internal_aux_kw",
+										"standing_loss_rate_per_hour",
+									].map((key) => [key, parameters[key]]),
+								),
+							},
+						}
+					: {
+							battery: Object.fromEntries(
+								BATTERY_FIELDS.map((key) => [key, parameters[key]]),
+							),
+						}),
+				...(dc ? {} : { source_note: command.source_note }),
+				battery_binding: null,
+			});
 			const applied = edit((inputs) => {
-				const current = readScenarioDraft(inputs.energy_scenario);
+				const current = restored;
 				if (
-					!sameJson(current.battery, restored.battery) ||
-					current.source_note !== restored.source_note
+					!sameJson(inputs.energy_scenario, setupDocument) ||
+					!sameJson(
+						inputs.equipment_selection,
+						draft.history.current.equipment_selection,
+					)
 				)
 					throw new Error("scenario_changed");
 				return scenarioInputs(inputs, {
@@ -364,7 +444,10 @@ export function EnergyWorkspace({
 					battery_binding: {
 						asset_id: reply.asset.id,
 						parameters,
-						source_note: restored.source_note,
+						source_note: dc ? parameters.source_note : restored.source_note,
+						...(dc && equipmentSelection
+							? { equipment_selection: equipmentSelection }
+							: {}),
 					},
 				});
 			});
@@ -914,7 +997,12 @@ export function EnergyWorkspace({
 								{(["gross_load", "pv_available_ac", "aux_ac"] as const).map(
 									(role) => (
 										<li key={role}>
-											<span>{measurementLabel(role)}</span>
+											<span>
+												{role === "pv_available_ac" &&
+												setup.coupling === "shared_dc"
+													? __("PV generation", "linker-tools")
+													: measurementLabel(role)}
+											</span>
 											<strong>
 												{selections.selected[role]
 													? __("Selected in this draft", "linker-tools")
@@ -957,6 +1045,13 @@ export function EnergyWorkspace({
 							)}
 						</ol>
 						<ScenarioForm
+							equipmentSelection={equipmentSelection}
+							converters={converterIds}
+							key={setup.coupling ?? "independent_ac"}
+							openEquipment={() => {
+								setView("equipment");
+								openEquipment?.();
+							}}
 							value={setup}
 							section={section}
 							locale={locale}

@@ -1,3 +1,6 @@
+import { DC_ENERGY_TASK, DC_LOSS_FIELDS } from "../../domain/dcEnergy.ts";
+import { dcLossLabel } from "./DcStorageForm.tsx";
+import { DcParameterSources } from "./DcParameterSources.tsx";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { PlanningRun } from "../../data/planningProtocol.ts";
@@ -65,9 +68,14 @@ export function RunBasis({
 					throw new ApiError(502, "run_source_mismatch");
 				const selected = readEnergyInputs(historical.inputs.energy_replay),
 					pins = readObject(readObject(run.manifest.context).assets);
-				const profiles: [Measurement, string][] = [
+				const profiles: [Measurement | "pv_available_dc", string][] = [
 					["gross_load", selected.gross_load_asset_id],
-					["pv_available_ac", selected.pv_available_asset_id],
+					[
+						selected.coupling === "shared_dc"
+							? "pv_available_dc"
+							: "pv_available_ac",
+						selected.pv_available_asset_id,
+					],
 					["aux_ac", selected.aux_ac_asset_id],
 				];
 				if (selected.critical_load_asset_id)
@@ -133,6 +141,7 @@ export function RunBasis({
 		},
 	});
 	if (!run.result) return null;
+	const dc = run.result.kind === DC_ENERGY_TASK;
 	const model = readObject(run.result.model),
 		periods = readObject(run.result.profile_interpretation)
 			.operating_periods as readonly JsonObject[];
@@ -204,16 +213,47 @@ export function RunBasis({
 						</>
 					)}
 					<dl className="lp-field-summary">
-						{BATTERY_FIELDS.map((field) => {
-							const presentation = batteryPresentation(field);
+						{(dc
+							? (["usable_window_kwh", ...DC_LOSS_FIELDS] as const)
+							: BATTERY_FIELDS
+						).map((field) => {
+							const presentation =
+								DC_LOSS_FIELDS.includes(
+									field as (typeof DC_LOSS_FIELDS)[number],
+								) && dc
+									? {
+											label: dcLossLabel(
+												field as (typeof DC_LOSS_FIELDS)[number],
+											),
+											scale: field.startsWith("eta_") ? 100 : 1,
+											unit: field.startsWith("eta_")
+												? "%"
+												: field === "internal_aux_kw"
+													? "kW"
+													: "1/h",
+										}
+									: batteryPresentation(
+											field as (typeof BATTERY_FIELDS)[number],
+										);
+							const raw =
+								dc && field.startsWith("eta_inverter_")
+									? readObject(
+											readObject(run.result!.prepared_dc_parameters)
+												.loss_scenario,
+										)[field]
+									: model[field];
 							return (
 								<div key={field}>
 									<dt>{presentation.label}</dt>
 									<dd>
 										{number(
 											presentation.scale === 100
-												? toPercent(Number(model[field]))
-												: Number(model[field]),
+												? raw === null
+													? null
+													: toPercent(Number(raw))
+												: raw === null
+													? null
+													: Number(raw),
 										)}{" "}
 										{presentation.unit}
 									</dd>
@@ -221,11 +261,22 @@ export function RunBasis({
 							);
 						})}
 					</dl>
+					{dc && (
+						<DcParameterSources
+							parameters={readObject(run.result!.prepared_dc_parameters)}
+							locale={locale}
+						/>
+					)}
 					<p>
-						{__(
-							"The model uses a fixed internal energy window and separate AC conversion efficiencies. Battery export, temperature effects, ageing and switching behaviour are outside this energy calculation.",
-							"linker-tools",
-						)}
+						{dc
+							? __(
+									"PV generation and curtailment are calculated at the DC bus; load supply and grid flows are calculated on the AC side. Storage results use the saved loss assumptions.",
+									"linker-tools",
+								)
+							: __(
+									"The model uses a fixed internal energy window and separate AC conversion efficiencies. Battery export, temperature effects, ageing and switching behaviour are outside this energy calculation.",
+									"linker-tools",
+								)}
 					</p>
 					<div className="lp-table-scroll" tabIndex={0}>
 						<table>
@@ -257,8 +308,10 @@ export function RunBasis({
 														source = readObject(p.source);
 													return (
 														<p key={role}>
-															{measurementLabel(role as Measurement)}:{" "}
-															{number(source.native_max_interval_seconds)} s →{" "}
+															{measurementLabel(
+																role as Measurement | "pv_available_dc",
+															)}
+															: {number(source.native_max_interval_seconds)} s →{" "}
 															{number(p.effective_max_interval_seconds)} s
 															{p.reconstructed_means === true
 																? " · " +

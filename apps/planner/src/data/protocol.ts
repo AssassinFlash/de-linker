@@ -73,16 +73,51 @@ export class ApiError extends Error {
 	readonly status: number;
 	readonly code: string;
 	readonly profileIssue: ProfileIssue | null;
+	readonly evidenceIssue: EvidenceIssue | null;
 
 	constructor(
 		status: number,
 		code: string,
 		profileIssue: ProfileIssue | null = null,
+		evidenceIssue: EvidenceIssue | null = null,
 	) {
 		super(code);
 		this.name = "ApiError";
 		this.status = status;
 		this.code = code;
 		this.profileIssue = profileIssue;
+		this.evidenceIssue = evidenceIssue;
 	}
+}
+
+export interface EvidenceIssue {
+	readonly product_id?: number;
+	readonly fact_id?: string;
+	readonly constraint_id?: string;
+}
+/** Only canonical source identifiers may leave the service; diagnostics stay private. */
+export function readEvidenceIssue(value: unknown): EvidenceIssue | null {
+	if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+	const row = value as Record<string, unknown>;
+	if (
+		Object.keys(row).some(
+			(key) => !["product_id", "fact_id", "constraint_id"].includes(key),
+		) ||
+		!Object.keys(row).length
+	)
+		return null;
+	if (
+		row.product_id !== undefined &&
+		(typeof row.product_id !== "number" ||
+			!Number.isSafeInteger(row.product_id) ||
+			row.product_id <= 0)
+	)
+		return null;
+	for (const key of ["fact_id", "constraint_id"])
+		if (
+			row[key] !== undefined &&
+			(typeof row[key] !== "string" || !/^[a-z][a-z0-9_.:-]*$/.test(row[key]))
+		)
+			return null;
+	return row as EvidenceIssue;
 }

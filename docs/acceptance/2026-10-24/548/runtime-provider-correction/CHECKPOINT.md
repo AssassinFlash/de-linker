@@ -502,3 +502,39 @@ document association/preparation and readback, without waiting for this line's
 remaining tests. This line continues browser DC controls/result decoding and
 WordPress delivery. p548, production, runtime carriers and full backups were
 unchanged; existing annual, PV, workspace and commerce evidence remains closed.
+
+
+### 2026-10-25 · DC frontend and current Woo source connected locally
+
+The shared-DC preparation path, immutable results, report selection, trace and
+CSV consumers are connected to the existing Journal workspace. AC and DC source
+notes stay separate. Source citations and model efficiencies are validated before
+presentation; definite pre-queue evidence refusals and historical receipts no
+longer strand the request journal. Existing completed native DC fixture bytes
+were reused for the browser consumer; annual/PV physics was not rerun.
+
+The current three-product Woo handoff was merged into p548 through native
+maintenance fields and source events. Original PDF hashes matched; unrelated
+product fields, SKU/status/language pairs and saved projects were retained.
+The managed engineering preparation was claimed/acknowledged and loaded.
+HTTP and worker now share `aa5334f0`; local source is `ee916454`. Exactly two
+runtime carriers remain: new current and previous current. No new environment,
+instance or full backup was created. The temporary copy-review mapping was
+removed after checking the compiled German catalog.
+
+The remaining real-product defect is now precise: current Woo qualifiers include
+quantity categories, direction/ports, stack temperature conditions and explicit
+module-count column objects. The existing DC interpreter supports a narrower
+condition vocabulary. That interpreter and its explicit scenario/domain inputs
+must be extended; the maintained product facts must not be flattened or rewritten
+to make an example pass. The reused Lyon example contains an AC CSV, which is
+not an admissible retained DC PV source. A real-product native DC calculation,
+curve/report/PDF and production acceptance are therefore still open. Full-goal
+site/commerce/country/topology/migration work remains in the same map.
+
+Spec, Standards and EN/DE copy reviews passed this scoped frontend batch. Only
+its settings surface received EN/DE × 1440/390 UI inspection; saved calculations
+were preserved, preview edits undone and viewport restored. Detailed identities,
+remaining constraints and two retained images are in the existing installation
+JSON. Shared-source owner was notified as soon as the local dependency loaded;
+its knowledge work does not wait for the rest of this goal.

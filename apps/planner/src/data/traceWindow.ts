@@ -1,6 +1,8 @@
 import Ajv from "ajv";
 import type { PlanningRun } from "./planningProtocol.ts";
 import { ApiError } from "./protocol.ts";
+import { runTask } from "./planningProtocol.ts";
+import { DC_ENERGY_TASK } from "../domain/dcEnergy.ts";
 
 export const TRACE_FIELDS = [
 	"load_kw",
@@ -18,6 +20,7 @@ export interface TraceRow extends Readonly<Record<TraceField, number>> {
 	readonly end_utc: string;
 }
 export interface TraceWindow {
+	readonly measurement_boundaries?: Readonly<Record<string, string>>;
 	readonly schema_version: 1;
 	readonly run_id: string;
 	readonly manifest_sha256: string;
@@ -44,31 +47,40 @@ const instant = {
 	pattern:
 		"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,6})?(?:Z|\\+00:00)$",
 };
+const traceShape = object({
+	schema_version: { const: 1, type: "integer" },
+	run_id: { type: "string", pattern: "^[a-f0-9]{32}$" },
+	manifest_sha256: hash,
+	trace_sha256: hash,
+	interval_count: { ...integer, minimum: 1 },
+	offset: integer,
+	next_offset: { anyOf: [integer, { type: "null" }] },
+	measurement_boundaries: object({
+		pv: { const: "PV_DC_bus", type: "string" },
+		charge: { const: "battery_DC_terminal", type: "string" },
+		discharge: { const: "battery_DC_terminal", type: "string" },
+		import: { const: "grid_AC", type: "string" },
+		export: { const: "grid_AC", type: "string" },
+	}),
+	rows: {
+		type: "array",
+		items: object({
+			interval_index: integer,
+			start_utc: instant,
+			end_utc: instant,
+			...Object.fromEntries(
+				TRACE_FIELDS.map((field) => [field, { type: "number", minimum: 0 }]),
+			),
+		}),
+	},
+});
+traceShape.required = traceShape.required.filter(
+	(key) => key !== "measurement_boundaries",
+);
 const check = new Ajv({
 	strict: true,
 	strictNumbers: true,
-}).compile<TraceWindow>(
-	object({
-		schema_version: { const: 1, type: "integer" },
-		run_id: { type: "string", pattern: "^[a-f0-9]{32}$" },
-		manifest_sha256: hash,
-		trace_sha256: hash,
-		interval_count: { ...integer, minimum: 1 },
-		offset: integer,
-		next_offset: { anyOf: [integer, { type: "null" }] },
-		rows: {
-			type: "array",
-			items: object({
-				interval_index: integer,
-				start_utc: instant,
-				end_utc: instant,
-				...Object.fromEntries(
-					TRACE_FIELDS.map((field) => [field, { type: "number", minimum: 0 }]),
-				),
-			}),
-		},
-	}),
-);
+}).compile<TraceWindow>(traceShape);
 export function readTraceWindow(
 	value: unknown,
 	run: PlanningRun,
@@ -77,6 +89,7 @@ export function readTraceWindow(
 ): TraceWindow {
 	if (
 		!check(value) ||
+		(runTask(run) === DC_ENERGY_TASK) !== !!value.measurement_boundaries ||
 		value.run_id !== run.id ||
 		value.manifest_sha256 !== run.manifest_sha256 ||
 		value.trace_sha256 !== run.result?.trace_sha256 ||

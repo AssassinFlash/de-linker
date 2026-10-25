@@ -26,7 +26,9 @@ export function delimiterLabel(delimiter: string): string {
 	return labels[delimiter] ?? delimiter;
 }
 
-export function measurementLabel(role: Measurement): string {
+export function measurementLabel(
+	role: Measurement | "pv_available_dc",
+): string {
 	const labels = {
 		gross_load: __("Total site load", "linker-tools"),
 		critical_load: __("Critical load", "linker-tools"),
@@ -35,6 +37,7 @@ export function measurementLabel(role: Measurement): string {
 			"linker-tools",
 		),
 		pv_available_ac: __("Available PV output · AC", "linker-tools"),
+		pv_available_dc: __("Available PV output · DC", "linker-tools"),
 		pv_generation_ac: __("PV generation · AC", "linker-tools"),
 		aux_ac: __("External auxiliary load · AC", "linker-tools"),
 	};

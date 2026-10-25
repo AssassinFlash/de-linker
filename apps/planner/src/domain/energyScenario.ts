@@ -1,6 +1,9 @@
 import Ajv2020 from "ajv/dist/2020.js";
 import batterySchema from "../contracts/battery-parameters.schema.json" with { type: "json" };
 import inputSchema from "../contracts/energy-inputs.schema.json" with { type: "json" };
+import dcLossSchema from "../contracts/dc-loss-scenario.schema.json" with { type: "json" };
+import { DC_MODEL, DC_LOSS_FIELDS, readDcLossScenario } from "./dcEnergy.ts";
+import type { DcLossScenario, DcScenarioDraft } from "./dcEnergy.ts";
 import type { JsonObject } from "../data/protocol.ts";
 import { ApiError } from "../data/protocol.ts";
 import { readObject } from "../data/readProtocol.ts";
@@ -40,6 +43,9 @@ export interface OperatingPeriod extends JsonObject {
 	readonly allow_grid_charge: boolean;
 }
 export interface EnergyInputs extends JsonObject {
+	readonly coupling?: "independent_ac" | "shared_dc";
+	readonly pv_converter_id?: string | null;
+	readonly aux_dc_kw?: number | null;
 	readonly schema_version: 1;
 	readonly gross_load_asset_id: string;
 	readonly critical_load_asset_id: string | null;
@@ -72,6 +78,8 @@ export interface PeriodDraft extends JsonObject {
 }
 export interface ScenarioDraft extends JsonObject {
 	readonly schema_version: 1;
+	readonly coupling?: "independent_ac" | "shared_dc";
+	readonly dc?: DcScenarioDraft;
 	readonly battery: Readonly<Record<BatteryField, number | null>>;
 	readonly source_note: string;
 	readonly initial_inventory: {
@@ -85,8 +93,9 @@ export interface ScenarioDraft extends JsonObject {
 	readonly terminal_min_kwh: number | null;
 	readonly battery_binding: {
 		readonly asset_id: string;
-		readonly parameters: BatteryParameters;
+		readonly parameters: BatteryParameters | DcLossScenario;
 		readonly source_note: string;
+		readonly equipment_selection?: JsonObject;
 	} | null;
 }
 
@@ -118,54 +127,70 @@ const checkParts = ajv.compile<JsonObject>({
 		(key) => key !== "battery_parameters_asset_id",
 	),
 });
-const checkDraft = ajv.compile<ScenarioDraft>({
-	$defs: batterySchema.$defs,
-	...object({
-		schema_version: { type: "integer", const: 1 },
-		battery: object(
+const draftShape = object({
+	schema_version: { type: "integer", const: 1 },
+	coupling: { enum: ["independent_ac", "shared_dc"], type: "string" },
+	dc: object({
+		source_note: text,
+		pv_converter_id: text,
+		battery_port_id: text,
+		aux_dc_kw: nullable({ type: "number" }),
+		losses: object(
 			Object.fromEntries(
-				BATTERY_FIELDS.map((key) => [
-					key,
-					// Editable drafts can retain an invalid efficiency such as 0;
-					// preparing it still uses the unmodified backend schema above.
-					nullable({ type: "number" }),
-				]),
+				DC_LOSS_FIELDS.map((key) => [key, nullable({ type: "number" })]),
 			),
 		),
-		source_note: text,
-		initial_inventory: object({
-			pv_kwh: nullableEnergy,
-			grid_kwh: nullableEnergy,
-			initial_unknown_kwh: nullableEnergy,
-			source_note: text,
-		}),
-		schedule: {
-			type: "array",
-			minItems: 1,
-			items: object({
-				id: hashId,
-				start_utc: text,
-				end_utc: text,
-				mode: choice("connected", "outage"),
-				reserve_kwh: nullableEnergy,
-				import_policy: choice("unlimited", "limited"),
-				import_cap_kw: nullableEnergy,
-				export_policy: choice("unlimited", "limited"),
-				export_cap_kw: nullableEnergy,
-				pv_enabled: nullable({ type: "boolean" }),
-				allow_grid_charge: nullable({ type: "boolean" }),
-			}),
-		},
-		terminal_policy: choice("none", "minimum"),
-		terminal_min_kwh: nullableEnergy,
-		battery_binding: nullable(
-			object({
-				asset_id: hashId,
-				parameters: batterySchema,
-				source_note: text,
-			}),
-		),
 	}),
+	battery: object(
+		Object.fromEntries(
+			BATTERY_FIELDS.map((key) => [key, nullable({ type: "number" })]),
+		),
+	),
+	source_note: text,
+	initial_inventory: object({
+		pv_kwh: nullableEnergy,
+		grid_kwh: nullableEnergy,
+		initial_unknown_kwh: nullableEnergy,
+		source_note: text,
+	}),
+	schedule: {
+		type: "array",
+		minItems: 1,
+		items: object({
+			id: hashId,
+			start_utc: text,
+			end_utc: text,
+			mode: choice("connected", "outage"),
+			reserve_kwh: nullableEnergy,
+			import_policy: choice("unlimited", "limited"),
+			import_cap_kw: nullableEnergy,
+			export_policy: choice("unlimited", "limited"),
+			export_cap_kw: nullableEnergy,
+			pv_enabled: nullable({ type: "boolean" }),
+			allow_grid_charge: nullable({ type: "boolean" }),
+		}),
+	},
+	terminal_policy: choice("none", "minimum"),
+	terminal_min_kwh: nullableEnergy,
+	battery_binding: nullable({
+		type: "object",
+		additionalProperties: false,
+		required: ["asset_id", "parameters", "source_note"],
+		properties: {
+			asset_id: hashId,
+			parameters: { anyOf: [batterySchema, dcLossSchema] },
+			source_note: text,
+			equipment_selection: { type: "object" },
+		},
+	}),
+}) as { required: string[] };
+// Optional DC settings preserve every previously saved AC draft verbatim.
+draftShape.required = draftShape.required.filter(
+	(key) => key !== "coupling" && key !== "dc",
+);
+const checkDraft = ajv.compile<ScenarioDraft>({
+	$defs: { ...batterySchema.$defs, ...dcLossSchema.$defs },
+	...draftShape,
 });
 
 export function readBatteryParameters(value: unknown): BatteryParameters {
@@ -232,8 +257,26 @@ export function scenarioBattery(draft: ScenarioDraft): BatteryParameters {
 export function scenarioParts(
 	draft: ScenarioDraft,
 	profiles: ProfileSelections,
-): { readonly parameters: BatteryParameters; readonly inputs: JsonObject } {
-	const parameters = scenarioBattery(draft);
+	equipmentSelection: JsonObject | null = null,
+): {
+	readonly parameters: BatteryParameters | DcLossScenario;
+	readonly inputs: JsonObject;
+} {
+	const dc = draft.coupling === "shared_dc";
+	if (dc && !equipmentSelection)
+		throw new ApiError(422, "dc_equipment_required");
+	if (dc && (!draft.dc?.pv_converter_id.trim() || draft.dc.aux_dc_kw === null))
+		throw new ApiError(422, "dc_connection_required");
+	const parameters = dc
+		? readDcLossScenario({
+				schema_version: 1,
+				model: DC_MODEL,
+				parameter_basis: "explicit_loss_scenario_with_woo_equipment",
+				...draft.dc?.losses,
+				battery_port_id: draft.dc?.battery_port_id,
+				source_note: draft.dc!.source_note,
+			})
+		: scenarioBattery(draft);
 	const { gross_load, critical_load, pv_available_ac, aux_ac } =
 		profiles.selected;
 	if (!gross_load || !pv_available_ac || !aux_ac)
@@ -250,7 +293,7 @@ export function scenarioParts(
 		(inventory.pv_kwh ?? 0) +
 		(inventory.grid_kwh ?? 0) +
 		(inventory.initial_unknown_kwh ?? 0);
-	if (total > parameters.usable_window_kwh)
+	if (parameters.model !== DC_MODEL && total > parameters.usable_window_kwh)
 		throw new ApiError(422, "initial_inventory_exceeds_window");
 	if (
 		!draft.terminal_policy ||
@@ -303,6 +346,13 @@ export function scenarioParts(
 	});
 	const inputs: JsonObject = {
 		schema_version: 1,
+		...(dc
+			? {
+					coupling: "shared_dc",
+					pv_converter_id: draft.dc!.pv_converter_id,
+					aux_dc_kw: draft.dc!.aux_dc_kw,
+				}
+			: {}),
 		gross_load_asset_id: gross_load,
 		critical_load_asset_id: critical_load ?? null,
 		pv_available_asset_id: pv_available_ac,
@@ -320,13 +370,23 @@ export function scenarioParts(
 export function compileScenario(
 	draft: ScenarioDraft,
 	profiles: ProfileSelections,
+	equipmentSelection: JsonObject | null = null,
 ): EnergyInputs {
-	const { parameters, inputs } = scenarioParts(draft, profiles),
+	const { parameters, inputs } = scenarioParts(
+			draft,
+			profiles,
+			equipmentSelection,
+		),
 		binding = draft.battery_binding;
 	if (
 		!binding ||
 		!sameJson(binding.parameters, parameters) ||
-		binding.source_note !== draft.source_note
+		binding.source_note !==
+			(draft.coupling === "shared_dc"
+				? draft.dc!.source_note
+				: draft.source_note) ||
+		(draft.coupling === "shared_dc" &&
+			!sameJson(binding.equipment_selection, equipmentSelection))
 	)
 		throw new ApiError(422, "battery_not_prepared");
 	return readEnergyInputs({

@@ -66,6 +66,7 @@ test("actual scenario controls retain raw input, require confirmed save, use one
 	const session = {
 		query_scope: scope,
 		runtime: {
+			models: actualRun.manifest.context.models,
 			limits: {
 				max_json_depth: 32,
 				max_body_bytes: 16777216,

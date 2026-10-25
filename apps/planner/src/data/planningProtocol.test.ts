@@ -1,3 +1,6 @@
+import { readDcParameters } from "../domain/dcEnergy.ts";
+import dcRunJson from "../../tests/fixtures/dc-energy-run.json" with { type: "json" };
+import { readTraceWindow } from "./traceWindow.ts";
 import test from "node:test";
 import assert from "node:assert/strict";
 import runJson from "../../tests/fixtures/energy-run.json" with { type: "json" };
@@ -291,4 +294,84 @@ test("paginated run history validates owner, finite date and actual cursor names
 			runJson.project_id,
 		),
 	);
+});
+
+test("saved DC worker result and trace preserve their equipment and measurement-stage bindings", () => {
+	const run = readRun(
+		dcRunJson.run,
+		dcRunJson.run.project_id,
+		undefined,
+		"single_ac_energy_replay_v1",
+	);
+	assert.equal(run.result!.kind, "shared_dc_energy_replay_v1");
+	assert.equal(
+		run.result!.metrics && readObject(run.result!.metrics).pv_generated_ac_kwh,
+		undefined,
+	);
+	const trace = readTraceWindow(dcRunJson.trace, run, 0, 2);
+	assert.equal(trace.measurement_boundaries!.charge, "battery_DC_terminal");
+	assert.throws(() =>
+		readTraceWindow(
+			{
+				...trace,
+				measurement_boundaries: {
+					...trace.measurement_boundaries,
+					pv: "PV_AC",
+				},
+			},
+			run,
+			0,
+			2,
+		),
+	);
+
+	const capability = readObject(
+		structuredClone(run.result!.prepared_dc_parameters),
+	);
+	const facts = readObject(capability.source_facts);
+	const cited = readObject(
+		Object.values(facts).find(
+			(v) => v && typeof v === "object" && Object.hasOwn(v, "value"),
+		),
+	);
+	const source = readObject(cited.source),
+		field = "battery_grid_charging_supported";
+	facts[`${source.product_id}.${field}`] = {
+		...cited,
+		value: "not_supported",
+		raw_value: "not_supported",
+		unit: null,
+		source: { ...source, figure_key: field },
+	};
+	assert.doesNotThrow(() => readDcParameters(capability));
+	for (const change of [
+		(p: MutableObject) => {
+			readObject(p.loss_scenario).eta_inverter_forward = 0.5;
+		},
+		(p: MutableObject) => {
+			readObject(
+				readObject(
+					Object.values(readObject(p.source_facts)).find(
+						(v) => typeof v === "object" && v && Object.hasOwn(v, "value"),
+					),
+				).source,
+			).url = "https://user:password@de-linker.com/manual.pdf";
+		},
+		(p: MutableObject) => {
+			readObject(
+				readObject(
+					Object.values(readObject(p.source_facts)).find(
+						(v) => typeof v === "object" && v && Object.hasOwn(v, "value"),
+					),
+				).source,
+			).page = "invalid";
+		},
+	]) {
+		const mutant = readObject(structuredClone(dcRunJson.run));
+		change(readObject(result(mutant).prepared_dc_parameters));
+		assert.throws(() => readRun(mutant, dcRunJson.run.project_id));
+	}
+	const wrong = readObject(structuredClone(dcRunJson.run));
+	readObject(result(wrong).model).parameters_source_sha256 = "0".repeat(64);
+	assert.throws(() => readRun(wrong, dcRunJson.run.project_id));
 });

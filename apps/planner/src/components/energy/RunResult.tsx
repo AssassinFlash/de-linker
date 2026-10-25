@@ -1,3 +1,4 @@
+import { DC_ENERGY_TASK } from "../../domain/dcEnergy.ts";
 import type { PlanningRun } from "../../data/planningProtocol.ts";
 import { runStateLabel } from "./planningLabels.ts";
 import { readObject } from "../../data/readProtocol.ts";
@@ -56,6 +57,7 @@ export function RunResult({
 			: "—";
 	const result = run.result,
 		metrics = result ? readObject(result.metrics) : null;
+	const dc = result?.kind === DC_ENERGY_TASK;
 	const equipment = result?.equipment_binding
 		? readObject(readObject(result.equipment_binding).assessment)
 		: null;
@@ -240,6 +242,14 @@ export function RunResult({
 							)}
 						</p>
 					</div>
+					{dc && (
+						<p className="lp-profile-help">
+							{__(
+								"PV generation and curtailment are calculated at the DC bus; load supply and grid flows are calculated on the AC side. Storage results use the saved loss assumptions.",
+								"linker-tools",
+							)}
+						</p>
+					)}
 					<details className="lp-comparison">
 						<summary>
 							{__("Energy totals and definitions", "linker-tools")}
@@ -250,8 +260,19 @@ export function RunResult({
 								<dd>{format(metrics.load_demand_kwh)} kWh</dd>
 							</div>
 							<div>
-								<dt>{__("Generated AC PV energy", "linker-tools")}</dt>
-								<dd>{format(metrics.pv_generated_ac_kwh)} kWh</dd>
+								<dt>
+									{dc
+										? __("PV generation (DC)", "linker-tools")
+										: __("Generated AC PV energy", "linker-tools")}
+								</dt>
+								<dd>
+									{format(
+										dc
+											? metrics.pv_generated_dc_kwh
+											: metrics.pv_generated_ac_kwh,
+									)}{" "}
+									kWh
+								</dd>
 							</div>
 							<div>
 								<dt>{__("Unserved simulated load", "linker-tools")}</dt>
@@ -269,10 +290,15 @@ export function RunResult({
 							)}
 						</p>
 						<p>
-							{__(
-								"This percentage divides PV supplied to load, AC auxiliary demand and battery charging by generated PV after curtailment. Battery charging is counted before conversion losses, including energy still stored at the end. Curtailed PV is excluded from the denominator.",
-								"linker-tools",
-							)}
+							{dc
+								? __(
+										"PV self-use divides DC generation used on site by DC generation after curtailment. It includes DC auxiliary demand, DC energy used to supply AC demand and battery charging before conversion and storage losses. Stored energy remains attributed to its source.",
+										"linker-tools",
+									)
+								: __(
+										"This percentage divides PV supplied to load, AC auxiliary demand and battery charging by generated PV after curtailment. Battery charging is counted before conversion losses, including energy still stored at the end. Curtailed PV is excluded from the denominator.",
+										"linker-tools",
+									)}
 						</p>
 					</details>
 					<details className="lp-comparison">

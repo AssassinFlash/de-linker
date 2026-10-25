@@ -1,3 +1,5 @@
+import { runTask } from "../../data/planningProtocol.ts";
+import { DC_ENERGY_TASK } from "../../domain/dcEnergy.ts";
 import { lazy, Suspense, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
@@ -31,17 +33,28 @@ export function TraceExplorer({
 		[offset, setOffset] = useState(0),
 		[first, setFirst] = useState("1");
 	const pageSize = session.runtime.limits.max_page_size;
+	const dc = runTask(run) === DC_ENERGY_TASK;
 	const labels = useMemo(
 		() => [
 			__("Load", "linker-tools"),
-			__("Available PV power", "linker-tools"),
-			__("Charging power", "linker-tools"),
-			__("Discharging power", "linker-tools"),
-			__("Grid import", "linker-tools"),
-			__("Grid export", "linker-tools"),
+			dc
+				? __("Available PV power (DC)", "linker-tools")
+				: __("Available PV power", "linker-tools"),
+			dc
+				? __("Charging power at the battery terminals (DC)", "linker-tools")
+				: __("Charging power", "linker-tools"),
+			dc
+				? __("Discharging power at the battery terminals (DC)", "linker-tools")
+				: __("Discharging power", "linker-tools"),
+			dc
+				? __("Grid import (AC)", "linker-tools")
+				: __("Grid import", "linker-tools"),
+			dc
+				? __("Grid export (AC)", "linker-tools")
+				: __("Grid export", "linker-tools"),
 			__("Stored energy", "linker-tools"),
 		],
-		[locale],
+		[locale, dc],
 	);
 	const query = useQuery({
 		queryKey: [

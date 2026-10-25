@@ -7,7 +7,12 @@ import { ApiError } from "./protocol.ts";
 import type { JsonObject } from "./protocol.ts";
 import { readObject } from "./readProtocol.ts";
 import { readBatteryParameters } from "../domain/energyScenario.ts";
-import { readEnergyResult } from "./readEnergyResult.ts";
+import { readEnergyResult, isEnergyTask } from "./readEnergyResult.ts";
+import {
+	DC_MODEL,
+	DC_ENERGY_TASK,
+	readDcLossScenario,
+} from "../domain/dcEnergy.ts";
 import { readPreparationResult } from "./readPreparationResult.ts";
 import { SEARCH_TASK, readEquipmentSearchResult } from "./equipmentSearch.ts";
 import { EQUIPMENT_TASK, readEquipmentResult } from "./readEquipmentResult.ts";
@@ -21,7 +26,8 @@ export const RUN_OPERATIONS = {
 	"runs/report": REPORT_TASK,
 } as const;
 export type RunOperation = keyof typeof RUN_OPERATIONS;
-export type TaskKind = (typeof RUN_OPERATIONS)[RunOperation];
+export type TaskKind =
+	(typeof RUN_OPERATIONS)[RunOperation] | typeof DC_ENERGY_TASK;
 export type PlanningOperation =
 	"battery/scenario" | "draft/apply" | RunOperation;
 export function isPlanningOperation(
@@ -125,6 +131,7 @@ export function readPlanningOperation(
 		)
 			throw new ApiError(422, "invalid_energy_intent");
 	} else {
+		const dc = readObject(command.parameters).model === DC_MODEL;
 		if (
 			!exact(command, [
 				"schema_version",
@@ -132,12 +139,17 @@ export function readPlanningOperation(
 				"source_note",
 				"parameters",
 				"key",
+				...(dc ? ["expected_revision"] : []),
 			]) ||
 			typeof command.source_note !== "string" ||
 			!command.source_note.trim()
 		)
 			throw new ApiError(422, "invalid_energy_intent");
-		readBatteryParameters(command.parameters);
+		if (dc) {
+			if (!revision(command.expected_revision))
+				throw new ApiError(422, "invalid_energy_intent");
+			readDcLossScenario(command.parameters);
+		} else readBatteryParameters(command.parameters);
 	}
 	return command;
 }
@@ -226,8 +238,12 @@ function readRunDocument(
 	readObject(context.parameters);
 	const task = runTask({ manifest });
 	if (
-		(expectedTask !== undefined && task !== expectedTask) ||
-		(task === RUN_OPERATIONS["runs/energy"] && models.replay !== task) ||
+		(expectedTask !== undefined &&
+			task !== expectedTask &&
+			!(
+				expectedTask === RUN_OPERATIONS["runs/energy"] && isEnergyTask(task)
+			)) ||
+		(isEnergyTask(task) && models.replay !== task) ||
 		((task === RUN_OPERATIONS["runs/equipment"] ||
 			task === SEARCH_TASK ||
 			task === REPORT_TASK ||
@@ -243,8 +259,7 @@ function readRunDocument(
 			task === RUN_OPERATIONS["runs/weather"]
 		)
 			readPreparationResult(row.result, row, manifest, task);
-		else if (task === RUN_OPERATIONS["runs/energy"])
-			readEnergyResult(row.result, row, manifest);
+		else if (isEnergyTask(task)) readEnergyResult(row.result, row, manifest);
 		else if (task === SEARCH_TASK)
 			readEquipmentSearchResult(row.result, row, manifest);
 		else if (task === REPORT_TASK) readReportResult(row.result, row, manifest);
@@ -332,9 +347,21 @@ export function readBatteryAsset(
 	value: unknown,
 	projectId: string,
 	sourceNote: string,
+	command?: JsonObject,
 ): BatteryAsset {
 	try {
-		return readBatteryAssetDocument(value, projectId, sourceNote);
+		const asset = readBatteryAssetDocument(value, projectId, sourceNote);
+		if (command && readObject(command.parameters).model === DC_MODEL) {
+			const dependencies = readObject(asset.metadata.dependencies);
+			if (
+				asset.metadata.derived_from_revision !== command.expected_revision ||
+				Object.keys(dependencies).sort().join() !==
+					"dc_prepared_parameters,dc_woo_inputs" ||
+				!Object.values(dependencies).every((v) => hash(v))
+			)
+				throw new ApiError(502, "invalid_battery_reply");
+		}
+		return asset;
 	} catch (error) {
 		if (error instanceof ApiError && error.status === 502) throw error;
 		throw new ApiError(502, "invalid_battery_reply");
