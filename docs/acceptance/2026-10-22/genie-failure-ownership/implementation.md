@@ -248,3 +248,57 @@ Exactly one further native `npm run build` and `npm run build:check` pass, with 
 | `build/manifest.json` | `20ddcb85adcd57b97470295405dbf07528a8eef5c45491b04e4aa39a43cc2a38` |
 
 The pre-existing AGENTS and two tracked full-site evidence edits retain their exact starting hashes. This increment creates no runtime copy, instance, browser run or backup; all existing untracked evidence is preserved. No full App/713/e2e run, push, merge or production action is performed here. Incremental review, the new-head CI decision and the narrow startup visual/readback gate remain with the parent.
+
+## Normal loading feedback and German script catalogs (2026-10-26)
+
+This independent batch starts at accepted source/generated head `0fa64fc4` on `codex/genie-loading-feedback`. The parent supplied actual DE390 production evidence `Q/genie-workspace-live-de390.png`: normal native revalidation displayed English `Opening Genie…` with error styling. The preceding attachment-disabled and complete ready/retry/PDF/Restore paths remain accepted evidence; they are not rerun or changed here.
+
+There are two concrete causes. App and Hero use the error class for the ordinary loading phase (Hero also announces it as an alert and offers Retry). The PO already translates `Opening Genie…`, but its sole build reference is Configurator, so neither actual Genie nor Hero JSON contains it. A bounded source-import and emitted-bundle audit also finds other Hero static UI terms whose existing German translations are assigned only to Genie. The complete before-fix missing list is:
+
+| Actual consumer | Missing static msgids | Repair |
+| --- | --- | --- |
+| Genie and Hero | `Opening Genie…` | Replace these two normal-loading uses with `One moment…` / `Einen Moment …`, referenced to both scripts. Configurator's original opening text/translation remains unchanged. |
+| Hero | `Choose a file` | Add its actual Hero consumer reference; keep `Datei auswählen`. |
+| Hero parts-list UI | `In our range: %s`; `Not in our range.`; `Skipped.`; `Which model does this line mean?`; `This line needs your confirmation.`; `Add the product to the solution draft`; `Add %d products to the solution draft`; `Your parts list`; `%d ×`; `Row %1$d: %2$s`; `Row %d: skip`; `Skip this line` | Add the missing Hero build references for these 12 existing static wrappers. Reuse their existing German translations and placeholders. |
+| Hero product UI | `Currently unavailable` | Add its Hero build reference; retain the existing `Derzeit nicht verfügbar` translation and the Woo stock predicate. |
+
+These are 15 distinct old msgids (16 consumer/msgid pairs). Model replies, file names, row text, option labels, model/product names, quantities, prices and stock facts are left as supplied. EntryInbox's page-question labels are Genie-only consumers, so their absence from Hero is not a defect. Three imported Configurator publication messages (`This solution needs a new calculation before the next step.`, `The current product data could not be checked. Your entries are still here.`, `New calculation required.`) are removed by tree shaking from both scripts and are excluded. Native load failures, failure/retry, conflict, saved-draft warning, thinking/history states, explicit Restore/reselection, file preparation and refusal messages already have their actual consumer translations; they are preserved. In the authoritative PO, all 510 previous entries retain their exact msgid/plural/msgstr values, none is removed, one new waiting entry is added, and 14 existing entries only gain the missing Hero reference.
+
+The initial and final waiting draft is EN `One moment…`, DE `Einen Moment …`. Self-review: it reports only a temporary wait, fits both initial open and normal revalidation, names no internal identity/lease mechanism, and promises no upload, deadline or successful outcome. Existing natural Sie-form failures and recovery instructions remain verbatim. The parent copy counter-review accepted the pair and explicitly rejected more specific checking/upload/completion claims. Applying the copy skill here adds only the tool's transient feedback dimension, with no new industry/category term or marketing claim:
+
+- [x] Encyclopedia loaded (non-PDP): one new dimension; category words attested or absent.
+- [x] Hard Stops 1–9 hold on every changed visible line.
+- [x] Actor: no second-person imperative assigning the reader a task.
+- [x] Future: no invented customer trajectory or motive.
+- [x] Weight: no small service slice presented as the whole offer.
+- [x] Duration: no unsupported continuing-action or time claim.
+- [x] No slogan formulas.
+- [x] No banned brand on this surface.
+- [x] Quotes: no invented customer quote or testimonial.
+
+App and Hero now select `linker-genie-app__status` only during existing native loading. This class shares the existing photo-prompt layout and muted text values, through the same imported `genie.css` / native build / `linker-tools-genie` enqueue path. No numeric style value, global WindPress channel or state transition is added. Hero uses role status while loading and retains role alert, the error class, original failure text and Retry for actual failure. App retains its existing status role and failure Retry behavior. Normal Hero loading no longer offers a failure Retry button. Unknown-owner content gating, native verification, permissions, retained recovery, file preparation and sending code are untouched.
+
+Only four existing cases run: the App pending/outage/Retry case, the Hero initial scoped failure case extended with one controlled initial-lookup gate, and the two existing script-local German catalog cases. They report **4 PASS, 99 skipped**. Both UI cases distinguish neutral loading from the original failure feedback, retain the original hidden-owner/no-automatic-send assertions, and finish through fresh verification. The two JSON cases exercise `@wordpress/i18n` with each real native catalog and preserve their previous publication/confirmation assertions. No test case or matrix is added. TypeScript, the five changed TS files' ESLint, all six changed frontend files' Prettier and diff whitespace checks pass. The prior full recovery, 14-case App and ready native Cua evidence are reused.
+
+After freezing source and copy, exactly one `just i18n-tools` and one `npm run build` run successfully; `msgfmt --check` and `npm run build:check` pass. The same three webpack performance recommendations remain visible. The post-generation source/emitted-bundle/catalog audit finds **200 Genie** and **152 Hero** emitted static msgids with **zero missing German entries** in each script's own JSON. No generated JSON is hand edited. Of 31 tracked generated build/JSON/MO files, **10 change**: Genie JS/CSS/RTL CSS/asset, Hero JS/asset, manifest, the two corresponding DE JSON catalogs and DE MO. The other **21 generated files remain byte-identical**, including Hero CSS/RTL CSS, Configurator, marketing, inquiry handoff, preview, shared chunks, the other two DE JSON catalogs and Chinese MO. Both PO files are source rather than generated outputs; only the targeted German PO changes. PHP, Commerce, site content and global CSS are untouched.
+
+The native manifest's 109-input source aggregate is `53809b97d47b3a3223f7e5233012071ebc11bac16ebbd2120b8931d40cf1f973`. Source and generated SHA-256 values for the changed delivery files are:
+
+| File under `plugins/linker-tools` | SHA-256 |
+| --- | --- |
+| `src/genie/App.tsx` | `44f96ebc09a80e72a9c32c18269479ec04175ac932619b6e84da7a99c2597f77` |
+| `src/hero/Hero.tsx` | `f0077b8fbf0e11a602b4604e79605bfc9c2d3ef6c77f3a0e633ba3339abb4b20` |
+| `src/genie/genie.css` | `66750bab0446faa2b6901c74b1aec9113fb9e24165617fc815f96c0cc1eb2fa4` |
+| `languages/linker-tools-de_DE_formal.po` | `f4ba84d85cf02f549727480c9882309b518e04be0b62bca0457766cb63387790` |
+| `build/genie.js` | `a895d4bbc3deb14ac805f11b3a7e90b8d65171e20e34ec90e1fa39bee92b6c75` |
+| `build/hero.js` | `3b5b5285ce44ade91bdd26c950101455ccefc3daf76f7570f92d55ff6b25193d` |
+| `build/genie.css` | `0c341edfc004ac5420b2b9d41136b8a7a10ac7ca1cf217b549616a063b2a73c8` |
+| `build/genie-rtl.css` | `70d681da51581014728d7ee094ba99775c91255b4f83a2ca2090b31e0a9d42ca` |
+| `build/genie.asset.php` | `b4af1acfe31f241616cec2358b3e1e67bf25432bc89c169f6a378864123e4889` |
+| `build/hero.asset.php` | `cb19da4bccea122d5e6bd63f3e8ff37ec2229d15efc70b6167682e720e3bdb0d` |
+| `build/manifest.json` | `636d3eac2744d06e46633286deb73afddf5ed64bae7b035d879de5406a162f7f` |
+| `languages/linker-tools-de_DE_formal-c2be3a742ec1f5e619cd2beb8d234138.json` | `245a2bdb4fdae3ebd88633eede3a016fd90c90805102eb559dbe76c43ea351ad` |
+| `languages/linker-tools-de_DE_formal-6796211aef57736d0923df38ef696ad2.json` | `89cb249d0cd2a684b73e87adb31aa5ac5dffcb34e917f27a861a27abfa3f23c5` |
+| `languages/linker-tools-de_DE_formal.mo` | `121c9e9388cd8c05c24efa167207508372715724e2fb935e8faa4ed9854b94b0` |
+
+The three pre-existing tracked edits retain their starting hashes and all untracked evidence is preserved. No runtime copy, service, browser, model/mail operation, backup or extra worktree is created. Incremental Spec/Standards review, new-head CI and actual neutral-loading EN/DE visual/deployed readback remain parent delivery gates; the already accepted ready/recovery chain is not reopened by this batch. No push, merge or production action is performed here.

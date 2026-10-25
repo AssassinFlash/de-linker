@@ -1176,28 +1176,39 @@ export function HeroConversation( {
 				</section>
 			) : null }
 			{ draftContext.phase !== 'ready' || recoveryBlocked ? (
-				<div className="linker-genie-app__error" role="alert">
+				<div
+					className={
+						draftContext.phase === 'loading'
+							? 'linker-genie-app__status'
+							: 'linker-genie-app__error'
+					}
+					role={
+						draftContext.phase === 'loading' ? 'status' : 'alert'
+					}
+				>
 					<p>
 						{ draftContext.phase === 'loading'
-							? __( 'Opening Genie…', 'linker-tools' )
+							? __( 'One moment…', 'linker-tools' )
 							: __( 'Genie could not load.', 'linker-tools' ) }
 					</p>
-					<button
-						type="button"
-						className="linker-genie-app__prompt"
-						onClick={ () => {
-							void draftContext
-								.verify()
-								.then( () =>
-									setRecoveryAttempt(
-										( attempt ) => attempt + 1
+					{ draftContext.phase !== 'loading' ? (
+						<button
+							type="button"
+							className="linker-genie-app__prompt"
+							onClick={ () => {
+								void draftContext
+									.verify()
+									.then( () =>
+										setRecoveryAttempt(
+											( attempt ) => attempt + 1
+										)
 									)
-								)
-								.catch( () => undefined );
-						} }
-					>
-						{ __( 'Try again', 'linker-tools' ) }
-					</button>
+									.catch( () => undefined );
+							} }
+						>
+							{ __( 'Try again', 'linker-tools' ) }
+						</button>
+					) : null }
 				</div>
 			) : null }
 			{ phase === 'ask' && draftContext.phase === 'ready' ? (
