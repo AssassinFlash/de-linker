@@ -55,7 +55,8 @@ try {
 				if ( \Linker\Commerce\Products\Publication::canonical_id( $id ) !== $id || ! \Linker\Commerce\Products\Publication::is_published( $id ) ) {
 					throw new RuntimeException( 'Only current canonical published Woo products may be prepared.' );
 				}
-				if ( wc_get_product( $id )->get_attribute( 'pa_model' ) !== $patch['model'] ) {
+				$product = wc_get_product( $id );
+				if ( ! $product instanceof WC_Product || $product->get_attribute( 'pa_model' ) !== $patch['model'] ) {
 					throw new RuntimeException( esc_html( "Model identity changed for {$id}." ) );
 				}
 				$documents_match( $id, $patch['documents'] );
