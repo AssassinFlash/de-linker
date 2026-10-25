@@ -7636,3 +7636,84 @@ msgstr "Bericht erstellt"
 #: build/planner/assets/planner.js
 msgid "A selected result does not match the saved project inputs. Choose a matching result."
 msgstr "Ein ausgewähltes Ergebnis passt nicht zu den gespeicherten Projekteingaben. Wählen Sie ein dazu passendes Ergebnis aus."
+
+
+#: build/planner/assets/planner.js
+msgid "Add selected products to solution draft"
+msgstr "Ausgewählte Produkte zum Lösungsentwurf hinzufügen"
+
+#: build/planner/assets/planner.js
+msgid "Adding selected products…"
+msgstr "Ausgewählte Produkte werden hinzugefügt…"
+
+#: build/planner/assets/planner.js
+msgid "View solution draft"
+msgstr "Lösungsentwurf ansehen"
+
+#: build/planner/assets/planner.js
+msgid "These are the products selected in this report. Adding them does not replace any outstanding engineering checks."
+msgstr "Dies sind die im Bericht ausgewählten Produkte. Die Übernahme ersetzt keine noch ausstehenden technischen Prüfungen."
+
+#: build/planner/assets/planner.js
+msgid "The selected products could not be added. Review your solution draft and try again."
+msgstr "Die ausgewählten Produkte konnten nicht hinzugefügt werden. Prüfen Sie Ihren Lösungsentwurf und versuchen Sie es erneut."
+
+#: build/planner/assets/planner.js
+msgid "Your solution draft has changed. Refresh this page and try again."
+msgstr "Ihr Lösungsentwurf wurde geändert. Laden Sie diese Seite neu und versuchen Sie es erneut."
+
+#: build/planner/assets/planner.js
+msgid "The previous transfer is not yet confirmed. Retry the same transfer."
+msgstr "Die vorherige Übernahme ist noch nicht bestätigt. Versuchen Sie dieselbe Übernahme erneut."
+
+#: build/planner/assets/planner.js
+msgid "Planning project"
+msgstr "Planungsprojekt"
+
+#: build/planner/assets/planner.js
+msgid "%1$s · input revision %2$d"
+msgstr "%1$s · Eingabeversion %2$d"
+
+#: build/planner/assets/planner.js
+msgid "Selected products added to solution draft."
+msgstr "Die ausgewählten Produkte wurden zum Lösungsentwurf hinzugefügt."
+
+#: build/planner/assets/planner.js
+msgid "Quantities differ from the planning report."
+msgstr "Die Mengen weichen vom Planungsbericht ab."
+
+#: build/planner/assets/planner.js
+msgid "Review the changes to this project's products in your solution draft."
+msgstr "Prüfen Sie die Änderungen an den Produkten dieses Projekts in Ihrem Lösungsentwurf."
+
+#: build/planner/assets/planner.js
+msgid "Current quantity"
+msgstr "Aktuelle Menge"
+
+#: build/planner/assets/planner.js
+msgid "New quantity"
+msgstr "Neue Menge"
+
+#: build/planner/assets/planner.js
+msgid "Confirm changes"
+msgstr "Änderungen bestätigen"
+
+#: build/planner/assets/planner.js
+msgid "Generate a report for the project's current saved inputs before adding products."
+msgstr "Erstellen Sie einen Bericht für die aktuell gespeicherten Projekteingaben, bevor Sie Produkte hinzufügen."
+
+#: build/planner/assets/planner.js
+msgid "Preparing changes…"
+msgstr "Änderungen werden vorbereitet…"
+
+#: build/planner/assets/planner.js
+msgid "Retry transfer"
+msgstr "Übernahme erneut versuchen"
+
+#: build/planner/assets/planner.js
+msgid "Product transfer · input revision %d"
+msgstr "Produktübernahme · Eingabeversion %d"
+
+#: build/planner/assets/planner.js
+msgid "Quantities have not been determined for some selected products. Update the equipment selection and generate a new report."
+msgstr "Für einige ausgewählte Produkte wurde keine Menge ermittelt. Aktualisieren Sie die Geräteauswahl und erstellen Sie einen neuen Bericht."

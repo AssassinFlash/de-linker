@@ -41,7 +41,7 @@ final class Admission {
 			return $previous;
 		}
 		$known = json_decode( $previous['body'] );
-		if ( ! $known instanceof \stdClass || 1 !== ( $known->schema_version ?? null ) || ! in_array( $known->status ?? null, array( 'absent', 'replayed' ), true ) || ! is_string( $known->command_sha256 ?? null ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $known->command_sha256 ) || ! is_string( $known->command_scope ?? null ) || 1 !== preg_match( '/\A(?:create|(?:revise|evaluate|asset):[a-f0-9]{32})\z/', $known->command_scope ) || ! str_starts_with( $previous['type'], 'application/json' ) ) {
+		if ( ! $known instanceof \stdClass || 1 !== ( $known->schema_version ?? null ) || ! in_array( $known->status ?? null, array( 'absent', 'replayed' ), true ) || ! is_string( $known->command_sha256 ?? null ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $known->command_sha256 ) || ! is_string( $known->command_scope ?? null ) || 1 !== preg_match( '/\A(?:create|(?:revise|evaluate|asset|handoff):[a-f0-9]{32})\z/', $known->command_scope ) || ! str_starts_with( $previous['type'], 'application/json' ) ) {
 			return Failure::make( 'invalid_reply', 502 );
 		}
 		if ( 'replayed' === $known->status ) {
@@ -249,7 +249,7 @@ final class Admission {
 	private function policy( string $path ): ?array {
 		return match ( $path ) {
 			'projects/create' => array( 'planner_projects', 10, 100, DAY_IN_SECONDS, 500 ),
-			'projects/revise', 'battery/scenario' => array( 'planner_edits', 240, 1200, HOUR_IN_SECONDS, 5000 ),
+			'projects/revise', 'battery/scenario', 'handoffs/prepare' => array( 'planner_edits', 240, 1200, HOUR_IN_SECONDS, 5000 ),
 			'profiles/csv', 'geometry/import' => array( 'planner_uploads', 20, 100, DAY_IN_SECONDS, 500 ),
 			'runs/energy', 'runs/pv', 'runs/weather', 'runs/equipment', 'runs/equipment-search', 'runs/report' => array( 'planner_calculations', 30, 120, HOUR_IN_SECONDS, 500 ),
 			default => null,

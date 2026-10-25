@@ -3955,6 +3955,7 @@ msgstr "Ausgestellt am %s"
 msgid "Valid until %s"
 msgstr "Gültig bis %s"
 
+#: includes/Planning/Context.php
 #: includes/Proforma/AdminBox.php:72
 msgid "Download PDF"
 msgstr "PDF herunterladen"
@@ -6594,3 +6595,20 @@ msgstr "Die Inhaltsversion der aktuellen Woo-Kompatibilitätserklärungen."
 #: includes/Products/EngineeringFeedController.php
 msgid "Current Woo compatibility declarations with canonical product identities and verified hosted evidence; their version equals compatibility_version. Absent when the saved declaration structure is unsupported."
 msgstr "Aktuelle Woo-Kompatibilitätserklärungen mit kanonischen Produktidentitäten und geprüften eigenen Quellen; ihre Version entspricht compatibility_version. Fehlt, wenn die gespeicherte Erklärungsstruktur nicht unterstützt wird."
+
+
+#: includes/Planning/Context.php
+msgid "Planning project"
+msgstr "Planungsprojekt"
+
+#: includes/Planning/Context.php
+msgid "%1$s · input revision %2$d"
+msgstr "%1$s · Eingabeversion %2$d"
+
+#: includes/Planning/Context.php
+msgid "Planning report"
+msgstr "Planungsbericht"
+
+#: includes/Planning/Context.php
+msgid "Quantities differ from the planning report."
+msgstr "Die Mengen weichen vom Planungsbericht ab."

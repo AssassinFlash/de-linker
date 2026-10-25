@@ -956,5 +956,183 @@
     },
     "production_changed": false,
     "remaining": "equipment-coupled energy, parallel/integrated/multiport templates, remaining electrical/country checks, complete BOM/report, comparisons, draft/inquiry/Genie/site consumers, migration and review/production delivery"
+  },
+  "draft_transfer": {
+    "date": "2026-10-25",
+    "status": "native_draft_connected_locally_inquiry_context_open",
+    "runtime": "2fef7197912d084df77dc23a3404e1f990ca4012eeb81bc3b2c92283185c89f9",
+    "rollback": "771a24e628d5372f7070422b1d2b8a0096e0f83b39b213613b2d4bc04d1b47d4",
+    "source": "unchanged WooCommerce-maintained products and compatibility declarations; no alternative product source",
+    "project_id": "c7795bc2c1e14e389622015c809ace45",
+    "report_runs": {
+      "en": "7249d65c5dd844c99bae0686714a3eae",
+      "de": "06d970963c7a4cbbbe8480f40306cdad"
+    },
+    "native_draft": {
+      "same_intent_no_duplicate": true,
+      "already_present_no_write": true,
+      "stale_preview_refused": true,
+      "native_hook_failure_restored_project_and_manual_lines": true,
+      "project_group_replaced_manual_product_preserved": true,
+      "read_only_receipt_discovery": true,
+      "original_browser_draft_restored": true,
+      "fresh_authenticated_rest_session_read_only_recovery": true
+    },
+    "inquiry": {
+      "original": {
+        "order_id": 8351,
+        "line_references_present": true,
+        "report_context_absent": true,
+        "assessment_planning_empty": true
+      },
+      "current": {
+        "order_id": 8352,
+        "raw_bytes": 0,
+        "json_error": "Syntax error",
+        "stored_contexts": 0,
+        "decoded_contexts": 0,
+        "assessment_contexts": 0
+      },
+      "accepted": false,
+      "same_ui_submission_attempts": 2,
+      "current_change": "Order-line-based context assembly now runs before inquiry assessment and byte admission, but actual form submissions still omit that context. Static review and CLI preparation do not close this failure.",
+      "next_work": "Trace the concrete form/native-write path before another submission; do not repeat calculations, PDF rendering or draft acceptance.",
+      "notification_delivery": "not revalidated; local capture and tester-only switch used, original switch restored"
+    },
+    "copy_review": {
+      "reviewer": "energy_trace_copy",
+      "status": "approved",
+      "pairs": [
+        [
+          "Add selected products to solution draft",
+          "Ausgewählte Produkte zum Lösungsentwurf hinzufügen"
+        ],
+        [
+          "Adding selected products…",
+          "Ausgewählte Produkte werden hinzugefügt…"
+        ],
+        [
+          "View solution draft",
+          "Lösungsentwurf ansehen"
+        ],
+        [
+          "These are the products selected in this report. Adding them does not replace any outstanding engineering checks.",
+          "Dies sind die im Bericht ausgewählten Produkte. Die Übernahme ersetzt keine noch ausstehenden technischen Prüfungen."
+        ],
+        [
+          "The selected products could not be added. Review your solution draft and try again.",
+          "Die ausgewählten Produkte konnten nicht hinzugefügt werden. Prüfen Sie Ihren Lösungsentwurf und versuchen Sie es erneut."
+        ],
+        [
+          "Your solution draft has changed. Refresh this page and try again.",
+          "Ihr Lösungsentwurf wurde geändert. Laden Sie diese Seite neu und versuchen Sie es erneut."
+        ],
+        [
+          "The previous transfer is not yet confirmed. Retry the same transfer.",
+          "Die vorherige Übernahme ist noch nicht bestätigt. Versuchen Sie dieselbe Übernahme erneut."
+        ],
+        [
+          "Planning project",
+          "Planungsprojekt"
+        ],
+        [
+          "%1$s · input revision %2$d",
+          "%1$s · Eingabeversion %2$d"
+        ],
+        [
+          "Planning report",
+          "Planungsbericht"
+        ],
+        [
+          "Download PDF",
+          "PDF herunterladen"
+        ],
+        [
+          "Selected products added to solution draft.",
+          "Die ausgewählten Produkte wurden zum Lösungsentwurf hinzugefügt."
+        ],
+        [
+          "Quantities differ from the planning report.",
+          "Die Mengen weichen vom Planungsbericht ab."
+        ],
+        [
+          "Review the changes to this project's products in your solution draft.",
+          "Prüfen Sie die Änderungen an den Produkten dieses Projekts in Ihrem Lösungsentwurf."
+        ],
+        [
+          "Current quantity",
+          "Aktuelle Menge"
+        ],
+        [
+          "New quantity",
+          "Neue Menge"
+        ],
+        [
+          "Confirm changes",
+          "Änderungen bestätigen"
+        ],
+        [
+          "Generate a report for the project's current saved inputs before adding products.",
+          "Erstellen Sie einen Bericht für die aktuell gespeicherten Projekteingaben, bevor Sie Produkte hinzufügen."
+        ],
+        [
+          "Preparing changes…",
+          "Änderungen werden vorbereitet…"
+        ],
+        [
+          "Retry transfer",
+          "Übernahme erneut versuchen"
+        ],
+        [
+          "Product transfer · input revision %d",
+          "Produktübernahme · Eingabeversion %d"
+        ],
+        [
+          "Quantities have not been determined for some selected products. Update the equipment selection and generate a new report.",
+          "Für einige ausgewählte Produkte wurde keine Menge ermittelt. Aktualisieren Sie die Geräteauswahl und erstellen Sie einen neuen Bericht."
+        ]
+      ]
+    },
+    "reviews": {
+      "spec": "full delta and two bounded repair reviews PASS statically; actual inquiry failure remains open",
+      "standards": "full delta and bounded repair review PASS statically"
+    },
+    "reuse": {
+      "new_annual_calculations": 0,
+      "new_report_render_runs": 0,
+      "new_instances": 0,
+      "new_full_backups": 0,
+      "scope": "Existing report/PDF, weather, annual energy, equipment and prior source checks retained; only new handoff behavior exercised"
+    },
+    "screenshots": [
+      "draft-transfer-en-1440.jpg",
+      "draft-transfer-en-390.jpg",
+      "draft-transfer-de-1440.jpg",
+      "draft-transfer-de-390.jpg",
+      "draft-native-en-1440.jpg"
+    ],
+    "protected_project": {
+      "revision": 14,
+      "input_sha256": "8a6394917a9a9e6b91db4bfc73c0299dcedd2c51619144a5beffa1664f010288"
+    },
+    "counts": {
+      "projects": 166,
+      "runs": 17,
+      "handoffs": 2
+    },
+    "retention": {
+      "kept": [
+        "2fef7197912d084df77dc23a3404e1f990ca4012eeb81bc3b2c92283185c89f9",
+        "771a24e628d5372f7070422b1d2b8a0096e0f83b39b213613b2d4bc04d1b47d4"
+      ],
+      "removed": [
+        {
+          "runtime": "21b800b50be82293227f78ff7e0be8c461a92bface43371e62f90b60e8f33a93",
+          "file_bytes": 1228791,
+          "recovery": "unchanged immutable runtime blob retained; current and previous executable retained"
+        }
+      ]
+    },
+    "delivery_limit": "Local candidate only; no production deployment, no whole-goal completion claim"
   }
 }

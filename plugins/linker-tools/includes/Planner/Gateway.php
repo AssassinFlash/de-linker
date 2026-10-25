@@ -22,7 +22,7 @@ final class Gateway {
 	public const MAX_BODY_BYTES = 16 * 1024 * 1024;
 	public const MAX_JSON_DEPTH = 32;
 	/** The account-claim and identity-status commands are deliberately private. */
-	private const PATHS = 'projects/(?:create|list|read|revise|runs)|runs/(?:read|cancel|energy|report|pv|equipment(?:-search)?|weather(?:/status)?|trace)|assets/(?:read|content)|profiles/(?:csv|inspect|preview)|geometry/(?:review|import)|battery/scenario|products/current|equipment/candidates/read|recovery/scopes';
+	private const PATHS = 'projects/(?:create|list|read|revise|runs)|runs/(?:read|cancel|energy|report|pv|equipment(?:-search)?|weather(?:/status)?|trace)|assets/(?:read|content)|profiles/(?:csv|inspect|preview)|geometry/(?:review|import)|battery/scenario|products/current|equipment/candidates/read|recovery/scopes|draft/(?:apply|preview|read)';
 	/**
 	 * A rejected request stays rejected if an installed integration returns null.
 	 *
@@ -253,6 +253,9 @@ final class Gateway {
 		$command = $this->command( $request );
 		if ( is_wp_error( $command ) ) {
 			return $command;
+		}
+		if ( str_starts_with( $path, 'draft/' ) ) {
+			return ( new DraftTransfer() )->apply( $principal, $command, $this->admission, $this->transport, substr( $path, 6 ) );
 		}
 		$reply = $this->admission->send( $principal, $path, $command, (string) $request->get_body(), $this->transport );
 		if ( is_wp_error( $reply ) ) {

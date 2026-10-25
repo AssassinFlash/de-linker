@@ -325,3 +325,46 @@ is identical to the current Woo module document. The old proof remains pinned
 in the report source alongside the current permission proof. Changed module
 facts or citations require a new matching result; numerical results are never
 rewritten during permission renewal.
+
+
+### Native draft and inquiry transfer
+
+An owned completed report supplies an immutable handoff, using the existing
+workspace handoff table and command receipts. It freezes the exact project,
+revision, report/candidate, selected sale-product quantities, consumed Woo
+permission scopes and private PDF hash. Preparing that record does not claim
+current product eligibility or complete-system qualification. Different preview
+keys reuse the same immutable report handoff; login recovery inherits the
+original command through the existing verified guest claim.
+
+Woo remains the writer and current publication/account/stock authority. Its
+native cart is previewed before explicit confirmation. The preview shows the
+old/new quantities of this project's group; the confirmed write replaces only
+that group and preserves unrelated/manual products. A native cart fingerprint
+refuses stale previews. The existing all-or-nothing cart writer performs the
+actual write; native session content and its idempotent acknowledgement commit
+together. An uncertain result retains the exact captured browser intent.
+Read-only receipt discovery may confirm that result without resubmitting it.
+Acknowledged browser intents are cleared; the native Woo receipt remains the
+recovery authority for the session's native lifetime. No parallel product
+registry, cart, report calculator or email sender is introduced.
+
+Native Woo item metadata carries the report reference into the order. Inquiry
+preparation resolves those order-line references against the trusted native
+session before assessment/notification preparation and byte admission; missing
+context refuses the inquiry. It does not depend on the cart still containing
+those lines. Original planned quantities
+and actual inquiry quantities remain distinct, with a visible change notice.
+Current Woo permission is checked again before inquiry admission. Order-owner,
+staff or the native inquiry key grants only that inquiry's non-priced report;
+it does not grant project ownership/editing. The protected download selects a
+server-stored PDF asset and verifies its hash, using the existing private
+transport and a server-only team reader. Historical report downloads do not
+recalculate or requalify a withdrawn product.
+
+Native-first boundary: Woo's cart validation, order-line hooks, session storage,
+translated page pairing and existing LC/Woo rendering surfaces carry the work.
+They do not resolve an external owned planning run or keep its cross-service
+receipt; the narrow Tools/Commerce bridge provides only that missing data
+assembly. New fragments are semantic data with inherited tokens, with no new
+page template, inline style, CSS channel or production mail test.

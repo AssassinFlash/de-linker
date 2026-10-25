@@ -36,6 +36,9 @@ export interface Session {
 }
 
 export const RPC_PATHS = [
+	"draft/preview",
+	"draft/apply",
+	"draft/read",
 	"products/current",
 	"projects/create",
 	"projects/list",

@@ -3,6 +3,8 @@ import { ApiError } from "../../data/protocol.ts";
 import { runStateLabel } from "./planningLabels.ts";
 import { REPORT_TASK } from "../../data/planningReport.ts";
 import { useEffect, useRef, useState } from "react";
+import { DraftTransferButton } from "./DraftTransferButton.tsx";
+import type { usePlanningOperations } from "../../data/usePlanningOperations.ts";
 import type { PlanningRun } from "../../data/planningProtocol.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import type { ReportSection } from "../../data/planningReport.ts";
@@ -37,7 +39,7 @@ function SectionContent({ section }: { section: ReportSection }) {
 			)}
 			{section.table && (
 				<div className="lp-table-scroll">
-					<table>
+					<table className="lp-data-table">
 						<thead>
 							<tr>
 								{section.table.columns.map((label, i) => (
@@ -65,11 +67,19 @@ export function PlanningReportResult({
 	client,
 	scope,
 	recheck,
+	operations,
+	current,
+	blocked,
+	locale,
 }: {
 	run: PlanningRun;
 	client: PlannerClient;
 	scope: string;
 	recheck: () => void;
+	operations: ReturnType<typeof usePlanningOperations>;
+	current: boolean;
+	blocked: boolean;
+	locale: string;
 }) {
 	const report = run.result ? reportFromRun(run) : null,
 		asset = run.result ? readObject(run.result.prepared_asset) : null;
@@ -168,6 +178,20 @@ export function PlanningReportResult({
 				<Notice error>
 					{__("The PDF could not be downloaded. Try again.", "linker-tools")}
 				</Notice>
+			)}
+			{report.sections.some(
+				(section) => section.id === "bom" && section.table?.rows.length,
+			) && (
+				<DraftTransferButton
+					run={run}
+					client={client}
+					scope={scope}
+					operations={operations}
+					current={current}
+					blocked={blocked}
+					locale={locale}
+					recheck={recheck}
+				/>
 			)}
 			{report.sections.map((section) =>
 				section.id.startsWith("check-") ||

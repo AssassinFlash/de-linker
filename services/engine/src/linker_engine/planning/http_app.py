@@ -47,6 +47,7 @@ from .geometry_import import GeometryImport
 from .geometry_import_selections import check_geometry_imports
 from .geometry_review import review_geometry
 from .guest_claims import GuestClaims
+from .handoffs import Handoffs
 from .http_asset_intake import HttpAssetIntake
 from .http_documents import (
     AssetRead,
@@ -58,6 +59,8 @@ from .http_documents import (
     EquipmentCandidateRead,
     GeometryImportCommand,
     GeometryReview,
+    HandoffPrepare,
+    HandoffRead,
     ProfilePreviewRead,
     ProjectCreate,
     ProjectList,
@@ -278,6 +281,20 @@ def create_private_app(
         if products is None:
             raise VersionUnavailable("current Woo product data is unavailable")
         return products.current()
+
+    @app.post("/handoffs/prepare")
+    def prepare_handoff(body: HandoffPrepare, request: Request) -> Object:
+        return Handoffs(workspace).prepare(
+            verified_actor(request.scope, write=True),
+            body.project_id,
+            body.report_run_id,
+            body.expected_revision,
+            key=body.key,
+        )
+
+    @app.post("/handoffs/read")
+    def read_handoff(body: HandoffRead, request: Request) -> Object:
+        return Handoffs(workspace).read(verified_actor(request.scope), body.handoff_id)
 
     @app.post("/identity/claim-session")
     def claim_session(body: SessionClaim, request: Request) -> Object:

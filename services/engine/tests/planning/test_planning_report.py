@@ -18,8 +18,10 @@ from linker_engine.planning.energy_kernel import EnergyKernel
 from linker_engine.planning.energy_service import EnergyService
 from linker_engine.planning.equipment_kernel import EquipmentKernel
 from linker_engine.planning.equipment_service import EquipmentService
-from linker_engine.planning.errors import ProductEvidenceChanged
+from linker_engine.planning.errors import NotFound, ProductEvidenceChanged
 from linker_engine.planning.execution_registry import service_registry
+from linker_engine.planning.guest_claims import GuestClaims
+from linker_engine.planning.handoffs import Handoffs
 from linker_engine.planning.http_app import HttpLimits, create_private_app
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.product_sources import ProductSources
@@ -46,6 +48,15 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
     owner: Actor,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    owner = Actor("guest", "report:guest")
+
+    def caller_headers():
+        return {
+            **headers(),
+            "X-Linker-Planner-Principal-Kind": owner.kind,
+            "X-Linker-Planner-Principal-Subject": owner.subject,
+        }
+
     old_proof = {"schema_version": 1, "module": {"frozen_fact": "same"}}
     current_proof = {**old_proof, "publication": {"revision": "renewed"}}
     assert renew_module_permission(old_proof, current_proof) == current_proof
@@ -133,7 +144,7 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
     }
     with TestClient(app) as client:
         assert client.post("/runs/report", json=command).status_code == 401
-        accepted = client.post("/runs/report", json=command, headers=headers())
+        accepted = client.post("/runs/report", json=command, headers=caller_headers())
         assert accepted.status_code == 200, accepted.text
         assert worker.run_once()
         run = workspace.run(owner, accepted.json()["id"])
@@ -149,13 +160,59 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
         assert "Frozen project report" in text and "13.5" in text
         assert "Provisional bill of materials" in text and "HTW Berlin" not in text
         assert "H2-10K-T3" in text and "BU2" in text
+        transfer_command = {
+            "schema_version": 1,
+            "project_id": project.id,
+            "report_run_id": run.id,
+            "expected_revision": 1,
+            "key": "report-handoff",
+        }
+        prepared = client.post(
+            "/handoffs/prepare", json=transfer_command, headers=caller_headers()
+        )
+        assert prepared.status_code == 200, prepared.text
+        handoff = prepared.json()
+        assert handoff["snapshot_sha256"] == digest(encode(handoff["snapshot"]))
+        assert {
+            (item["product_id"], item["quantity"])
+            for item in handoff["snapshot"]["items"]
+        } == {(4107, 1), (2090, 3), (2092, 1)}
+        assert (
+            client.post(
+                "/handoffs/prepare",
+                json={**transfer_command, "key": "another-preview"},
+                headers=caller_headers(),
+            ).json()["id"]
+            == handoff["id"]
+        )
+        assert (
+            client.post(
+                "/handoffs/prepare",
+                json={**transfer_command, "items": []},
+                headers=caller_headers(),
+            ).status_code
+            == 422
+        )
+        with pytest.raises(NotFound):
+            Handoffs(workspace).read(Actor("user", "other:account"), handoff["id"])
+        guest = owner
+        owner = Actor("user", "report:account")
+        GuestClaims(workspace).claim(guest, owner, key="native-login")
+        assert (
+            client.post(
+                "/handoffs/prepare", json=transfer_command, headers=caller_headers()
+            ).json()["id"]
+            == handoff["id"]
+        )
+        with pytest.raises(NotFound):
+            Handoffs(workspace).read(guest, handoff["id"])
         before_assets = workspace.database.read()
         with before_assets as connection:
             count = connection.execute(
                 "select count(*) from project_assets"
             ).fetchone()[0]
         offline = True
-        replay = client.post("/runs/report", json=command, headers=headers())
+        replay = client.post("/runs/report", json=command, headers=caller_headers())
         assert replay.status_code == 200 and replay.json()["id"] == run.id
         assert Assets(workspace).content(owner, project.id, asset["id"]) == pdf
         offline = False
@@ -173,7 +230,9 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
             "linker_engine.planning.report_kernel.render", withdraw_during_render
         )
         second = client.post(
-            "/runs/report", json={**command, "key": "second-report"}, headers=headers()
+            "/runs/report",
+            json={**command, "key": "second-report"},
+            headers=caller_headers(),
         )
         assert second.status_code == 200, second.text
         assert worker.run_once()

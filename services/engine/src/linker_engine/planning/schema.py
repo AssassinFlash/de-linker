@@ -126,6 +126,7 @@ CREATE TABLE IF NOT EXISTS handoffs (
     snapshot_sha256 TEXT NOT NULL,
     created_at REAL NOT NULL
 );
+CREATE INDEX IF NOT EXISTS handoffs_report ON handoffs(project_id,run_id,snapshot_sha256);
 CREATE TABLE IF NOT EXISTS ownership_transfers (
     project_id TEXT PRIMARY KEY REFERENCES projects(id),
     previous_owner TEXT NOT NULL,

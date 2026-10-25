@@ -34,7 +34,8 @@ def replay(
     # caller still admits the actor and reads the current owned project/resource.
     # Claim-event receipts themselves never inherit another actor's authority.
     if actor.kind == "user" and (
-        scope == "create" or scope.startswith(("revise:", "asset:", "evaluate:"))
+        scope == "create"
+        or scope.startswith(("revise:", "asset:", "evaluate:", "handoff:"))
     ):
         rows.extend(
             connection.execute(

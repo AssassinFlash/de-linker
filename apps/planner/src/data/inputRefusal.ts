@@ -1,6 +1,7 @@
 import { ApiError } from "./protocol.ts";
 
-/** Only an identified refusal before mutation releases a frozen request.
+/** Only an identified noncommit releases a frozen request.
+ * Native planning draft errors include an explicitly confirmed rollback.
  * A proxy's status alone cannot establish whether the server committed.
  * Codes come from PlannerClient/readProtocol, the native Planner BodyGate and
  * the engine's http_app/service_boundary input handlers. */
@@ -8,6 +9,10 @@ export function isPreMutationInputRefusal(error: unknown): boolean {
 	if (!(error instanceof ApiError)) return false;
 	const statuses: Readonly<Record<string, readonly number[]>> = {
 		invalid_input: [400, 422],
+		handoff_incomplete: [422],
+		handoff_revision_changed: [409],
+		planning_draft_changed: [409],
+		linker_solution_changed: [409],
 		report_inputs_changed: [422],
 		report_logo_invalid: [422],
 		product_evidence_changed: [409],

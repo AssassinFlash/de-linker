@@ -159,6 +159,17 @@ class AssetRead(Command):
     asset_id: Id
 
 
+class HandoffPrepare(Command):
+    project_id: Id
+    report_run_id: Id
+    expected_revision: Revision
+    key: Key
+
+
+class HandoffRead(Command):
+    handoff_id: Id
+
+
 class ProfilePreviewRead(AssetRead):
     offset: Annotated[int, Field(strict=True, ge=0)]
     page_size: Annotated[int, Field(strict=True, gt=0)]

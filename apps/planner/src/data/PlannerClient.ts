@@ -19,6 +19,9 @@ export interface ClientOptions {
 
 /** Cookie credentials and native nonces only; identity headers are not an API. */
 export class PlannerClient {
+	get origin(): string {
+		return this.base.origin;
+	}
 	private readonly base: URL;
 	private readonly nonceUrl: URL;
 	private readonly fetcher: typeof fetch;

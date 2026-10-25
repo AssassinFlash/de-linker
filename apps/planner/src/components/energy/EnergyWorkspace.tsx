@@ -182,7 +182,9 @@ export function EnergyWorkspace({
 		recoveryChecking,
 		confirmedBatteryId,
 	});
-	const actionError = error ?? operations.error,
+	const actionError =
+			error ??
+			(operations.intent?.path === "draft/apply" ? null : operations.error),
 		errorTarget = useRef<HTMLDivElement>(null);
 	useEffect(() => {
 		if (actionError && active)
@@ -322,7 +324,7 @@ export function EnergyWorkspace({
 		try {
 			if (record.path !== "battery/scenario") {
 				const reply = await operations.retry(record);
-				if (reply && reply.path !== "battery/scenario") {
+				if (reply && "run" in reply) {
 					runs.accepted(reply.run);
 					setView("runs");
 					openResults?.();
@@ -773,13 +775,24 @@ export function EnergyWorkspace({
 							<span>
 								{record.path === "battery/scenario"
 									? __("Saved storage settings", "linker-tools")
-									: sprintf(
-											__("Calculation request · revision %d", "linker-tools"),
-											Number(
-												readPlanningOperation(record.path, record.body)
-													.expected_revision,
-											),
-										)}
+									: record.path === "draft/apply"
+										? sprintf(
+												__(
+													"Product transfer · input revision %d",
+													"linker-tools",
+												),
+												Number(
+													readPlanningOperation(record.path, record.body)
+														.expected_revision,
+												),
+											)
+										: sprintf(
+												__("Calculation request · revision %d", "linker-tools"),
+												Number(
+													readPlanningOperation(record.path, record.body)
+														.expected_revision,
+												),
+											)}
 							</span>
 							<button
 								type="button"
@@ -789,7 +802,9 @@ export function EnergyWorkspace({
 							>
 								{record.path === "battery/scenario"
 									? __("Restore and retry storage settings", "linker-tools")
-									: __("Retry original calculation request", "linker-tools")}
+									: record.path === "draft/apply"
+										? __("Retry transfer", "linker-tools")
+										: __("Retry original calculation request", "linker-tools")}
 							</button>
 							{record.resultId !== null && (
 								<button
@@ -1189,6 +1204,14 @@ export function EnergyWorkspace({
 									client={client}
 									scope={session.query_scope}
 									recheck={recheck}
+									operations={operations}
+									current={
+										!dirty &&
+										!draft.pending &&
+										runs.run.data.revision === draft.baseline.revision
+									}
+									blocked={blocked}
+									locale={locale}
 								/>
 							) : runTask(runs.run.data) === SEARCH_TASK ? (
 								<EquipmentSearchResult

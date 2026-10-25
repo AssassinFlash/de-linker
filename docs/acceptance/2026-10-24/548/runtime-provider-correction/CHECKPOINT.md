@@ -352,3 +352,26 @@ goal remains active: equipment-coupled energy, additional topologies, remaining
 electrical and country checks, complete BOM/report, comparisons, all downstream
 site/commerce consumers, migration and review/production delivery still require
 completion. Do not reopen passing checks without a changed risk or real failure.
+
+### 2026-10-25 · Native draft bridge; inquiry report still open
+
+Owned report products now reach the native Woo solution draft through preview,
+explicit confirmation and durable native receipts. Original-intent retries do
+not duplicate products; replacement preserves unrelated/manual lines; a native
+validation failure restores the original draft. Authenticated readback initializes
+the native session, and acknowledged browser intents are cleared after matching
+receipt recovery. Product authority remains the existing Woo publication path.
+
+The real inquiry path is **not accepted**: local inquiry 8351 and its bounded
+post-change repetition 8352 retain the line references but omit the project
+context and assessment planning field. Static review and CLI pre-save context
+checks do not prove this buyer path. Further identical submissions are stopped;
+the next work is diagnosis of the actual native request/write path. PDF/report
+and annual calculation checks are unchanged and must not be repeated for this
+failure. No production release or whole-goal completion is claimed.
+
+Runtime is 2fef7197912d084df77dc23a3404e1f990ca4012eeb81bc3b2c92283185c89f9;
+771a24e628d5372f7070422b1d2b8a0096e0f83b39b213613b2d4bc04d1b47d4 is
+the single executable rollback. The older executable carrier was removed after
+verifying its retained immutable source blob. No new instance, full backup,
+annual calculation or PDF render was created for this bridge.

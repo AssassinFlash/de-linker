@@ -15,12 +15,14 @@ from .equipment_kernel import EquipmentKernel
 from .equipment_search_kernel import EquipmentSearchKernel
 from .errors import NotFound
 from .geometry_import import GeometryImport
+from .handoffs import Handoffs
 from .http_asset_intake import HttpAssetIntake
 from .http_documents import (
     BatteryScenario,
     CsvImport,
     EnergyEvaluate,
     GeometryImportCommand,
+    HandoffPrepare,
     ProjectCreate,
     ProjectRevise,
     ReportEvaluate,
@@ -91,6 +93,26 @@ class HttpReplay:
                         revise.project_id,
                         revision=commands.receipt_number(receipt, "revision"),
                     )
+                )
+            )
+        elif path == "handoffs/prepare":
+            handoff = HandoffPrepare.model_validate(value)
+            command_scope = f"handoff:{handoff.project_id}"
+            receipt, command_sha256 = self.receipt(
+                actor,
+                command_scope,
+                handoff.key,
+                {
+                    "expected_revision": handoff.expected_revision,
+                    "report_run_id": handoff.report_run_id,
+                },
+                project_id=handoff.project_id,
+            )
+            result = (
+                None
+                if receipt is None
+                else Handoffs(self.workspace).read(
+                    actor, commands.receipt_string(receipt, "handoff_id")
                 )
             )
         elif path == "runs/report":

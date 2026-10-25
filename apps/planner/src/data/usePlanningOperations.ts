@@ -3,6 +3,8 @@ import type { PlannerClient } from "./PlannerClient.ts";
 import type { JsonObject, Session } from "./protocol.ts";
 import { ApiError } from "./protocol.ts";
 import { wire } from "./readProtocol.ts";
+import { readDraftReceipt } from "./draftTransfer.ts";
+import type { DraftReceipt } from "./draftTransfer.ts";
 import { isPreMutationInputRefusal } from "./inputRefusal.ts";
 import { planningIntentStore } from "./PlanningIntentStore.ts";
 import type {
@@ -27,6 +29,11 @@ export type PlanningJournal = Pick<
 	"list" | "write" | "acknowledge" | "clear"
 >;
 export type PlanningReply =
+	| {
+			readonly path: "draft/apply";
+			readonly receipt: DraftReceipt;
+			readonly intent: PlanningIntent;
+	  }
 	| {
 			readonly path: "battery/scenario";
 			readonly asset: BatteryAsset;
@@ -205,6 +212,12 @@ export function usePlanningOperations({
 					asset: readBatteryAsset(raw, projectId, String(command.source_note)),
 					intent: pending,
 				};
+			else if (path === "draft/apply")
+				reply = {
+					path,
+					receipt: readDraftReceipt(raw, command, client.origin),
+					intent: pending,
+				};
 			else {
 				const run = readRun(raw, projectId, undefined, RUN_OPERATIONS[path]);
 				if (run.revision !== command.expected_revision)
@@ -212,7 +225,11 @@ export function usePlanningOperations({
 				reply = { path, run, intent: pending };
 			}
 			const resultId =
-				reply.path === "battery/scenario" ? reply.asset.id : reply.run.id;
+				reply.path === "battery/scenario"
+					? reply.asset.id
+					: reply.path === "draft/apply"
+						? reply.receipt.handoffId
+						: reply.run.id;
 			if (expectedResultId !== null && resultId !== expectedResultId)
 				throw new ApiError(502, "invalid_energy_receipt");
 			setIntent({ ...pending, resultId });
@@ -306,6 +323,27 @@ export function usePlanningOperations({
 		},
 		retry: (record: PlanningIntent) =>
 			submit(record.path, record.body, record.scope, record.resultId),
+		acknowledgeReadback: async (record: PlanningIntent, resultId: string) => {
+			if (
+				!client.isCurrentScope(session.query_scope) ||
+				record.projectId !== projectId ||
+				!(JSON.parse(scopeKey) as string[]).includes(record.scope)
+			)
+				return;
+			try {
+				await store.acknowledge(
+					record.scope,
+					record.path,
+					record.body,
+					resultId,
+				);
+				if (record.path === "draft/apply")
+					await store.clear(record.scope, record.path, record.body);
+				setRefresh((value) => value + 1);
+			} catch {
+				setStorageFailed(true);
+			}
+		},
 		dismissAcknowledged: async (record: PlanningIntent) => {
 			if (
 				flight.current ||

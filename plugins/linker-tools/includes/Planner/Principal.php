@@ -17,11 +17,11 @@ final class Principal {
 	 *
 	 * @throws \InvalidArgumentException Invalid server principal.
 	 *
-	 * @param string $kind Native guest or account.
+	 * @param string $kind Native guest/account, or a trusted server-only order reader.
 	 * @param string $subject Stable private engine subject.
 	 */
 	public function __construct( public readonly string $kind, public readonly string $subject ) {
-		if ( ! in_array( $kind, array( 'guest', 'user' ), true ) || 1 !== preg_match( '/\A[a-zA-Z0-9][a-zA-Z0-9:_-]{0,255}\z/', $subject ) ) {
+		if ( ! in_array( $kind, array( 'guest', 'user', 'team' ), true ) || 1 !== preg_match( '/\A[a-zA-Z0-9][a-zA-Z0-9:_-]{0,255}\z/', $subject ) ) {
 			throw new \InvalidArgumentException( 'invalid_planner_principal' );
 		}
 	}

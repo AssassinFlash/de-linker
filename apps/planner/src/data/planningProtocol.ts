@@ -22,12 +22,14 @@ export const RUN_OPERATIONS = {
 } as const;
 export type RunOperation = keyof typeof RUN_OPERATIONS;
 export type TaskKind = (typeof RUN_OPERATIONS)[RunOperation];
-export type PlanningOperation = "battery/scenario" | RunOperation;
+export type PlanningOperation =
+	"battery/scenario" | "draft/apply" | RunOperation;
 export function isPlanningOperation(
 	value: unknown,
 ): value is PlanningOperation {
 	return (
 		value === "battery/scenario" ||
+		value === "draft/apply" ||
 		(typeof value === "string" && Object.hasOwn(RUN_OPERATIONS, value))
 	);
 }
@@ -108,11 +110,20 @@ export function readPlanningOperation(
 				"expected_revision",
 				"key",
 				...(path === "runs/report" ? ["options"] : []),
+				...(path === "draft/apply"
+					? ["report_run_id", "expected_draft_sha256"]
+					: []),
 			]) ||
 			!revision(command.expected_revision)
 		)
 			throw new ApiError(422, "invalid_energy_intent");
 		if (path === "runs/report") readReportOptions(command.options);
+		if (
+			path === "draft/apply" &&
+			(!hash(command.report_run_id, 32) ||
+				!hash(command.expected_draft_sha256, 64))
+		)
+			throw new ApiError(422, "invalid_energy_intent");
 	} else {
 		if (
 			!exact(command, [
