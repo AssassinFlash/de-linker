@@ -518,3 +518,28 @@ Existing single-asset tasks and historical PDF-only reports retain their
 contracts. The existing LC mount/WindPress styles and private asset transport
 already own the presentation and download boundary; neither a new endpoint nor
 an independent product or style pipeline is needed.
+
+## Public entry and private project indexing
+
+The canonical tool page remains a public landing page under its existing native
+WordPress/SEOPress policy, canonical URL and EN/DE alternates. A project/run URL
+or a carried link containing customer input receives `noindex, nofollow,
+nosnippet` and private/no-store cache headers. The existing site-wide referrer
+policy is preserved; it already omits path/query values on external requests.
+Empty, invalid and array-valued query inputs retain that protection. A roof-step
+link or tracking parameter alone does not change the public indexing policy.
+
+The decision identifies the canonical page and its Polylang translations through
+native page APIs, including the LiveCanvas-rendered body; independent pages
+containing either native shortcode receive the same private-context policy.
+Other site pages are untouched. Private contexts suppress hreflang but preserve
+SEOPress's clean landing-page canonical. Native robots filters also cover an
+installation without SEOPress. All planner RPC responses, including errors and
+original asset downloads, carry the same noindex header and their existing
+private cache policy. These are indexing/disclosure controls; project ownership
+continues to be enforced by the existing gateway and private engine.
+
+The existing approved German optional-logo wording is bound to the planner's
+own script catalog, rather than only the retired configurator bundle. This is
+a translation binding repair and introduces no new customer wording or build
+pipeline. This increment changes no calculations or project revisions.

@@ -2281,6 +2281,7 @@ msgid "Your logo"
 msgstr "Ihr Logo"
 
 #: src/configurator/report/ReportView.tsx:86 build/configurator.js
+#: ../../apps/planner/src/components/energy/PlanningReportForm.tsx:129 build/planner/assets/planner.js
 msgid "Your logo on the PDF (optional)"
 msgstr "Ihr Logo im PDF (optional)"
 

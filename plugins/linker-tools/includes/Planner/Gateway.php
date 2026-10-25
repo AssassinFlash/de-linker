@@ -292,6 +292,7 @@ final class Gateway {
 			$response->header( 'Cache-Control', 'no-store, private' );
 			$response->header( 'Pragma', 'no-cache' );
 			$response->header( 'X-Content-Type-Options', 'nosniff' );
+			$response->header( 'X-Robots-Tag', 'noindex, nofollow, nosnippet' );
 		}
 		return $response;
 	}

@@ -45,6 +45,7 @@ final class Application {
 	public function register(): void {
 		add_action( 'init', array( $this, 'assets' ) );
 		add_shortcode( 'linker_planner', array( $this, 'mount' ) );
+		( new Indexing() )->register();
 		( new WindPress( $this->plugin_file ) )->register();
 	}
 
