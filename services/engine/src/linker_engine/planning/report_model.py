@@ -61,6 +61,10 @@ def build_report(source: Object) -> Report:
 
     assessment = source.get("equipment")
     if isinstance(assessment, dict):
+        selected = {
+            product["product_id"]: product
+            for product in cast(list[dict[str, Any]], assessment["selected_products"])
+        }
         sections.append(
             ReportSection(
                 id="equipment",
@@ -71,6 +75,7 @@ def build_report(source: Object) -> Report:
         )
         for index, check in enumerate(cast(list[dict[str, Any]], assessment["checks"])):
             unit = {
+                "converter_identity": "kW",
                 "pv_dc_input": "kWp",
                 "usable_energy": "kWh",
                 "continuous_battery_ac_output": "kW",
@@ -79,7 +84,15 @@ def build_report(source: Object) -> Report:
             if isinstance(check["actual"], (int, float)) and not isinstance(
                 check["actual"], bool
             ):
-                rows.append(row("actual", number(check["actual"], locale, unit)))
+                if check["id"].split(":")[0] == "required_accessory":
+                    product = selected.get(check["actual"], {})
+                    name = " ".join(
+                        str(product.get(key, "")) for key in ("brand", "model")
+                    ).strip()
+                    if name:
+                        rows.append(row("actual", name))
+                else:
+                    rows.append(row("actual", number(check["actual"], locale, unit)))
             if isinstance(check["required"], (int, float)) and not isinstance(
                 check["required"], bool
             ):
@@ -152,10 +165,6 @@ def build_report(source: Object) -> Report:
                 )
             )
         lines = cast(list[dict[str, Any]], assessment["provisional_bill_of_materials"])
-        selected = {
-            product["product_id"]: product
-            for product in cast(list[dict[str, Any]], assessment["selected_products"])
-        }
 
         def product_detail(line: dict[str, Any], field: str) -> str:
             value = line.get(field)
