@@ -1,0 +1,75 @@
+{
+  "at": "2026-10-22T06:11:04.350Z",
+  "fonts": "loaded",
+  "groups": [
+    {
+      "direction": "row",
+      "display": "flex",
+      "gap": "10px",
+      "links": [
+        {
+          "background": "rgb(12, 127, 115)",
+          "color": "rgb(255, 255, 255)",
+          "font": "12px",
+          "href": "http://127.0.0.1:9290/contact/?intent=support&source=http%3A%2F%2F127.0.0.1%3A9290%2Fservices-support%2F&kind=service&source_id=2748",
+          "rect": {
+            "bottom": 521.609375,
+            "height": 43,
+            "right": 279.8359375,
+            "width": 179.8359375,
+            "x": 100,
+            "y": 478.609375
+          },
+          "text": "Open Support Request →"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "color": "rgb(23, 39, 33)",
+          "font": "12px",
+          "href": "http://127.0.0.1:9290/my-account/",
+          "rect": {
+            "bottom": 521.609375,
+            "height": 43,
+            "right": 458.5546875,
+            "width": 158.71875,
+            "x": 299.8359375,
+            "y": 478.609375
+          },
+          "text": "Access Partner Portal"
+        }
+      ],
+      "paragraphGap": 25,
+      "previous": {
+        "font": "14px",
+        "lineHeight": "22.4px",
+        "rect": {
+          "bottom": 453.609375,
+          "height": 44.796875,
+          "right": 690,
+          "width": 590,
+          "x": 100,
+          "y": 408.8125
+        },
+        "tag": "P",
+        "text": "Our team in Germany handles quotes, product documents, and engineering support. Registered trade partners order through the partner portal."
+      },
+      "rect": {
+        "bottom": 521.609375,
+        "height": 43,
+        "right": 1340,
+        "width": 1240,
+        "x": 100,
+        "y": 478.609375
+      }
+    }
+  ],
+  "header": {
+    "background": "rgb(255, 255, 255)",
+    "filter": "none"
+  },
+  "height": 1000,
+  "lang": "en-US",
+  "overflow": false,
+  "url": "http://127.0.0.1:9290/services-support/",
+  "width": 1440
+}

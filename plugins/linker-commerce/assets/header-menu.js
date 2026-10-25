@@ -7,6 +7,7 @@
 	const account = header.querySelector( '.tv-b2b-acct' );
 	const toggle = header.querySelector( '#tv-mobile-toggle' );
 	const panel = header.querySelector( '#tv-mobile-panel' );
+	const mobile = toggle?.closest( '.tv-mobile-navigation' );
 	const frame = header.querySelector( '.tv-nav-frame' );
 	const nav = header.querySelector( '.tv-desktop-nav' );
 	const german = document.documentElement.lang.startsWith( 'de' );
@@ -30,17 +31,9 @@
 		// the one other disclosure.
 		if ( ! menu.id ) menu.id = 'linker-menu-' + ( item.dataset.tvNavPrimary || 'account' );
 		button.setAttribute( 'aria-controls', menu.id );
-		// The account menu is shown by `hidden` alone (the header stylesheet
-		// has .tv-b2b-acct-menu[hidden]{display:none}); the mega menu reads
-		// its state from aria-expanded through :has(). Closing the account
-		// menu here is defensive, not a fix for an observed failure: the two
-		// are read from different places (visibility from the markup's
-		// `hidden`, the announcement from this script), so a menu served
-		// without `hidden` would stand open beside aria-expanded="false".
-		// Closing it makes the state this script toggles the state it starts
-		// from, whatever the markup arrives with. Not reproduced on the
-		// workspace header, the planner or any other page. The mega menu is
-		// left as it arrives — hiding it here would eat the first open's fade.
+		// Account visibility follows `hidden`; mega-menu display follows
+		// aria-expanded through WindPress. Keep the initial account state
+		// consistent even when its markup arrives without `hidden`.
 		if ( menu.classList.contains( 'tv-b2b-acct-menu' ) ) setOpen( item, false );
 		let hovered = false;
 		item.addEventListener( 'pointerenter', event => {
@@ -67,50 +60,34 @@
 				if ( ! links.length || ! [ 'ArrowDown', 'ArrowUp', 'Home', 'End' ].includes( event.key ) ) return;
 				event.preventDefault();
 				closeOthers( item );
-				const wasClosed = ! isOpen();
 				setOpen( item, true );
 				const at = links.indexOf( document.activeElement );
 				const next = event.key === 'Home' ? 0 : event.key === 'End' ? links.length - 1 : event.key === 'ArrowDown' ? ( at + 1 ) % links.length : ( at <= 0 ? links.length : at ) - 1;
-				// The mega menu fades in with a visibility transition. Focusing
-				// a link in the same turn as the open is dropped: the element
-				// is not yet visible. Wait until that transition ends, or one
-				// frame when the menu was already open (the account menu uses
-				// hidden and has no such transition).
-				const target = links[ next ];
-				if ( wasClosed && menu.classList.contains( 'tv-mega-menu' ) ) {
-					// A closed menu must not steal focus from the next disclosure;
-					// the fallback must not undo a later arrow after transitionend.
-					let focused = false;
-					const focus = () => {
-						if ( focused || ! isOpen() ) return;
-						focused = true;
-						target.focus();
-					};
-					const onEnd = transition => {
-						if ( transition.target !== menu || transition.propertyName !== 'visibility' ) return;
-						menu.removeEventListener( 'transitionend', onEnd );
-						focus();
-					};
-					menu.addEventListener( 'transitionend', onEnd );
-					window.setTimeout( () => {
-						menu.removeEventListener( 'transitionend', onEnd );
-						if ( document.activeElement !== target ) focus();
-					}, 250 );
-					return;
-				}
-				target.focus();
+				// Opening now makes the native menu visible immediately. Focus
+				// must follow this key, without a delayed callback that can
+				// override a later selection or a closed disclosure.
+				links[ next ].focus();
 			} );
 	} );
 	function setPanel( open ) {
+		if ( mobile ) mobile.open = open;
 		panel.dataset.open = String( open );
-		toggle.setAttribute( 'aria-expanded', String( open ) );
+		// A native summary exposes the details element's actual expanded state.
+		// Retain the button contract while an existing LC partial is replaced.
+		if ( ! mobile ) toggle.setAttribute( 'aria-expanded', String( open ) );
 		toggle.setAttribute( 'aria-label', german ? ( open ? 'Menü schließen' : 'Menü öffnen' ) : ( open ? 'Close menu' : 'Open menu' ) );
 	}
 	if ( toggle && panel ) {
 		toggle.setAttribute( 'aria-controls', panel.id );
+		if ( mobile ) {
+			// Adopt an opening made before this enhancement arrived. The browser
+			// already owns summary activation and the panel's first disclosure.
+			setPanel( mobile.open );
+			mobile.addEventListener( 'toggle', () => setPanel( mobile.open ) );
+		}
 		toggle.addEventListener( 'click', () => {
 			closeOthers( null );
-			setPanel( panel.dataset.open !== 'true' );
+			if ( ! mobile ) setPanel( panel.dataset.open !== 'true' );
 		} );
 	}
 	document.addEventListener( 'click', event => {
@@ -137,6 +114,9 @@
 		}
 	} );
 	if ( frame && nav ) {
+		// The initial CSS offers the native panel before this enhancement can
+		// measure the row. Do not dismiss a desktop opening made in that gap.
+		let keepEarlyDesktopPanel = Boolean( mobile?.open ) && matchMedia( '(min-width:1280px)' ).matches;
 		function fits() {
 			const style = getComputedStyle( frame );
 			const children = [ ...frame.children ].filter( child => getComputedStyle( child ).display !== 'none' );
@@ -146,20 +126,30 @@
 		let pending = false;
 		function fit() {
 			pending = false;
+			const restorePrimaryFocus = keepEarlyDesktopPanel && ! mobile.open && document.activeElement === toggle;
+			if ( ! mobile?.open ) keepEarlyDesktopPanel = false;
 			header.removeAttribute( 'data-tv-nav-folded' );
-			header.removeAttribute( 'data-tv-actions-compact' );
-			if ( matchMedia( '(min-width:1280px)' ).matches && ! fits() ) {
+			header.dataset.tvActionsCompact = 'false';
+			if ( keepEarlyDesktopPanel && matchMedia( '(min-width:1280px)' ).matches ) {
+				header.dataset.tvActionsCompact = 'true';
+				header.dataset.tvNavFolded = 'true';
+			} else if ( matchMedia( '(min-width:1280px)' ).matches && ! fits() ) {
 				header.dataset.tvActionsCompact = 'true';
 				if ( ! fits() ) header.dataset.tvNavFolded = 'true';
 			}
 			if ( getComputedStyle( nav ).display === 'none' ) closeOthers( account );
 			else if ( panel ) setPanel( false );
+			if ( restorePrimaryFocus && getComputedStyle( mobile ).display === 'none' ) {
+				const primary = items[ 0 ] && buttonFor( items[ 0 ] );
+				primary?.focus();
+			}
 		}
 		function schedule() { if ( ! pending ) { pending = true; requestAnimationFrame( fit ); } }
 		const observer = new ResizeObserver( schedule );
 		observer.observe( frame );
 		const actions = frame.querySelector( '.tv-desktop-actions' );
 		if ( actions ) observer.observe( actions );
+		if ( mobile ) mobile.addEventListener( 'toggle', schedule );
 		window.addEventListener( 'resize', schedule, { passive: true } );
 		document.fonts.ready.then( schedule );
 		fit();

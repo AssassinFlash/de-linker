@@ -1,0 +1,21 @@
+/* These saved covers place white text over bright equipment. Their old
+   gradients fall to 8% or 22% opacity through the reading area. Keep the
+   existing photographic layout with a continuous dark text backdrop. */
+#tv-solutions-developers-v1 section.epc-cover::before,
+#tv-solution-v1 section.sol-cover::before {
+	background: linear-gradient(
+		180deg,
+		rgba(7, 29, 52, 0.64),
+		rgba(7, 29, 52, 0.64) 62%,
+		rgba(3, 19, 34, 0.82)
+	);
+}
+
+#tv-rs-page-v1 section.lk-hero-cinematic::before {
+	background: linear-gradient(
+		180deg,
+		rgba(13, 29, 25, 0.64),
+		rgba(13, 29, 25, 0.64) 60%,
+		rgba(13, 29, 25, 0.72)
+	);
+}

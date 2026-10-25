@@ -10,6 +10,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Integration;
 
+use Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture;
+
 use Linker\Commerce\Abilities\HandoffTeam;
 use Linker\Commerce\Contact\Form;
 use Linker\Commerce\Contact\Handler;
@@ -42,6 +44,12 @@ use WC_Admin_Settings;
  */
 final class NotificationRoutingTest extends IntegrationTestCase {
 
+	/** Typed local service with native consumers.
+	 *
+	 * @var NormalMailAuthorizationFixture
+	 */
+	private NormalMailAuthorizationFixture $authorization;
+
 	/**
 	 * The default recipient of internal notifications (Options::DEFAULT_NOTIFY_TO).
 	 */
@@ -57,10 +65,16 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 	 */
 	protected function setUp(): void {
 		parent::setUp();
+		require_once dirname( __DIR__, 2 ) . '/fixtures/NormalMailAuthorizationFixture.php';
+		$this->authorization = NormalMailAuthorizationFixture::install(
+			function ( callable $remove ): void {
+				$this->later( $remove );
+			}
+		);
 		// The email classes extend WC_Email, which WooCommerce loads with its mailer.
 		WC()->mailer();
 		$saved = array();
-		foreach ( array( Options::TEAM_TO, Options::NOTIFY_TO, Options::NOTIFY_FROM, Options::NOTIFY_BCC, Options::PROFORMA_PREFIX, 'woocommerce_email_from_name', 'woocommerce_email_from_address', Monitor::GENIE_URL_OPTION, Monitor::ENGINE_URL_OPTION ) as $name ) {
+		foreach ( array( Options::TEAM_TO, Options::NOTIFY_TO, Options::NOTIFY_FROM, Options::NOTIFY_BCC, Options::PROFORMA_PREFIX, 'linker_commerce_team_locale', 'woocommerce_email_from_name', 'woocommerce_email_from_address', Monitor::GENIE_URL_OPTION, Monitor::ENGINE_URL_OPTION ) as $name ) {
 			$saved[ $name ] = get_option( $name );
 		}
 		foreach ( array( NewCustomerEmail::ID, VatReviewEmail::ID, NewInquiryEmail::ID, 'linker_digest' ) as $id ) {
@@ -82,6 +96,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		delete_option( Options::TEAM_TO );
 		delete_option( Options::NOTIFY_TO );
 		delete_option( Options::NOTIFY_FROM );
+		update_option( 'linker_commerce_team_locale', 'en_US' );
 		update_option( 'woocommerce_email_from_name', 'Linker' );
 		update_option( 'woocommerce_email_from_address', self::PUBLIC );
 		update_option( Options::NOTIFY_BCC, 'copy-' . self::tag() . '@example.test' );
@@ -92,6 +107,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		}
 		// Fill the minute quota so every call is stored instead of sent at
 		// once (MailChainTest does the same): a sent call never becomes a row.
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_MINUTE, time() ), false );
 	}
 
@@ -147,7 +163,20 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		$email    = WC()->mailer()->get_emails()[ VatReviewEmail::class ];
 		$this->assertInstanceOf( VatReviewEmail::class, $email );
 		$marker = self::newest_mail_job();
-		$email->trigger( $customer->get_id(), VatProfile::UNVERIFIED, VatProfile::INVALID );
+		update_user_meta( $customer->get_id(), VatProfile::STATUS_META, VatProfile::UNVERIFIED );
+			$notices = new \Linker\Commerce\Registration\VatNotice();
+			$source  = $notices->persist(
+				$customer->get_id(),
+				'DE123456789',
+				array(
+					'status' => VatProfile::INVALID,
+					'detail' => 'Synthetic native VIES verdict',
+				),
+				true,
+				$notices->version( $customer->get_id() )
+			);
+			$this->assertIsArray( $source );
+			$email->trigger( $customer->get_id(), VatProfile::UNVERIFIED, VatProfile::INVALID );
 		$row = $this->internal_message( $marker, 'VAT check changed: Linker Integration Test GmbH', $from );
 		$this->assertContains( 'Reply-to: Maria Beispiel <' . $customer->get_billing_email() . '>', $row['headers'], VatReviewEmail::ID );
 	}
@@ -169,6 +198,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		$order    = $this->send_inquiry( $customer, array( array( $this->product( '100' ), 1 ) ) );
 		$row      = $this->internal_message( $marker, 'New inquiry #' . $order->get_order_number() . ' from ', $from );
 		$this->assertContains( 'Reply-to: Maria Beispiel <' . $customer->get_billing_email() . '>', $row['headers'], NewInquiryEmail::ID );
+		$this->authorization->drain();
 		$receipt = array_values( array_filter( $this->jobs_after( $marker ), static fn ( array $row ): bool => array( $customer->get_billing_email() ) === $row['to'] ) );
 		$this->assertCount( 1, $receipt );
 		$this->assertContains( 'From: Linker <' . self::PUBLIC . '>', $receipt[0]['headers'] );
@@ -224,6 +254,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		$this->assertArrayNotHasKey( 'Linker\\Commerce\\Contact\\Emails\\TeamMessageEmail', $emails );
 		$row = $this->internal_message( $marker, 'New inquiry #' . $contacts[0]->get_order_number() . ' from ', $from );
 		$this->assertContains( 'Reply-to: Maria Beispiel <' . $contact_email . '>', $row['headers'], NewInquiryEmail::ID );
+		$this->authorization->drain();
 		$receipt = array_values( array_filter( $this->jobs_after( $marker ), static fn ( array $row ): bool => array( $contact_email ) === $row['to'] ) );
 		$this->assertCount( 1, $receipt );
 		$this->assertContains( 'From: Linker <' . self::PUBLIC . '>', $receipt[0]['headers'] );
@@ -281,6 +312,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		);
 		$row = $this->internal_message( $marker, 'New inquiry #' . $order->get_order_number() . ' from ' . $guest, $from );
 		$this->assertNotEmpty( array_filter( $row['headers'], static fn ( string $line ): bool => str_starts_with( $line, 'Reply-to:' ) && str_contains( $line, $guest ) ) );
+		$this->authorization->drain();
 		$receipt = array_values( array_filter( $this->jobs_after( $marker ), static fn ( array $row ): bool => array( $guest ) === $row['to'] ) );
 		$this->assertCount( 1, $receipt );
 		$this->assertContains( 'From: Linker <' . self::PUBLIC . '>', $receipt[0]['headers'] );
@@ -377,6 +409,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 	 * @return array{subject: string, to: list<string>, headers: list<string>}
 	 */
 	private function internal_message( int $marker, string $subject, string $from ): array {
+		$this->authorization->drain();
 		$matching = array_values( array_filter( $this->jobs_after( $marker ), static fn ( array $row ): bool => str_starts_with( $row['subject'], $subject ) ) );
 		$this->assertCount( 1, $matching, "One queued message: {$subject}" );
 		$row = $matching[0];

@@ -1,0 +1,25 @@
+{
+  "at": "2026-10-22T07:48:29.141027+00:00",
+  "base": "9aa0ffe43d65e3ed822ce085e346941c9953a5ef",
+  "aggregate_algorithm": "SHA256 UTF-8 concatenated path + NUL + file SHA256 + LF, in files array order",
+  "files": [
+    {
+      "path": "plugins/linker-commerce/content/windpress/chrome.css",
+      "bytes": 34623,
+      "sha256": "a43202bb828ad63b0d7d49881af91be9bc42cd88c7bdd4aedb338d939aa905f9"
+    },
+    {
+      "path": "plugins/linker-commerce/content/windpress/marketing-rhythm.css",
+      "bytes": 4549,
+      "sha256": "710fb37175f4b157816880e151fd9796b0e5e68ae5c3408f71a75aa0ecc80139"
+    },
+    {
+      "path": "plugins/linker-commerce/content/windpress/hero-readability.css",
+      "bytes": 621,
+      "sha256": "034942b7178f8bc986b90441baa61cc738cb6bd1a80646b0f01510f47d312654"
+    }
+  ],
+  "aggregate": "d69083aefc946cc4884e17d2774d9b503661f5e39cb151388649423791748661",
+  "header_cta_source_unchanged": "d1b740ea801a440ba3a05ab60026a000ebfb06cd64484d53cb3467ee9fcd34e4",
+  "scope": "Only the third file changes hero photographic backdrop; the two previously reviewed source files are unchanged."
+}

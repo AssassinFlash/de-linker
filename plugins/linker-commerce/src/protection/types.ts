@@ -25,8 +25,10 @@ export interface TurnstileApi {
 }
 
 export interface PublicProtection {
+	ready?: ( action: string, container: HTMLElement ) => string;
 	warm: ( action: string, container: HTMLElement ) => Promise< string >;
 	proof: ( action: string, container: HTMLElement ) => Promise< string >;
+	complete?: ( action: string, proof: string ) => boolean;
 	reset: ( action: string ) => void;
 }
 

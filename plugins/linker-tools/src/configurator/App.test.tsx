@@ -26,12 +26,16 @@ import { resetLocaleData, setLocaleData } from '@wordpress/i18n';
 import german from '../../languages/linker-tools-de_DE_formal-ff47dbd6ce1b77b210b406f2367c7ea7.json';
 import germanGenie from '../../languages/linker-tools-de_DE_formal-c2be3a742ec1f5e619cd2beb8d234138.json';
 import { fakeEngine, fakeStore } from '../../tests/configurator/fakes';
-import { saveSolution } from './api/solutions';
+import { SolutionWriteError, saveSolution } from './api/solutions';
 import { App } from './App';
+import { EngineError } from './api/engine';
 
 // The account's route (#11) is mocked: these tests assert the states around
 // the save, not the request itself (solutions.test.ts holds that contract).
-vi.mock( './api/solutions', () => ( { saveSolution: vi.fn() } ) );
+vi.mock( './api/solutions', async ( original ) => ( {
+	...( await original< typeof import( './api/solutions' ) >() ),
+	saveSolution: vi.fn(),
+} ) );
 import type { Config } from './config';
 import type { Locale } from './types';
 
@@ -274,7 +278,7 @@ test( 'a draft that does not confirm shows it in the cards', async () => {
 	} );
 	expect(
 		await screen.findByText(
-			'Some products are not confirmed in your solution draft. See the cards above.'
+			'The addition could not be confirmed. The solution draft may already contain these products.'
 		)
 	).toBeInTheDocument();
 } );
@@ -398,10 +402,7 @@ test( 'German wording comes from the translation file', async () => {
 } );
 
 test.each( [
-	[
-		'unverified',
-		'Gesendet, aber im Entwurf noch nicht sichtbar. Bitte prüfen Sie den Entwurf.',
-	],
+	[ 'unverified', 'Hinzufügen nicht bestätigt.' ],
 	[ 'retry', 'Nicht hinzugefügt. Versuchen Sie es erneut.' ],
 ] as const )(
 	'German configurator keeps its wording alongside Genie (%s)',
@@ -435,6 +436,11 @@ test.each( [
 		expect(
 			( await screen.findAllByText( wording ) ).length
 		).toBeGreaterThan( 0 );
+		expect(
+			screen.getByText(
+				'Das Hinzufügen konnte nicht bestätigt werden. Die Produkte können bereits im Lösungsentwurf stehen.'
+			)
+		).toBeInTheDocument();
 		await act( async () => {
 			fireEvent.click(
 				screen.getByRole( 'button', { name: 'Lösung speichern' } )
@@ -729,7 +735,7 @@ test( 'Ask Genie reuses the solution this session already saved', async () => {
 
 test( 'Ask Genie does not open Genie when the solution could not be saved', async () => {
 	const save = vi.mocked( saveSolution );
-	save.mockRejectedValue( new Error( 'save 500' ) );
+	save.mockRejectedValue( new SolutionWriteError( false ) );
 	const asks = genieAsks();
 	const { engine } = fakeEngine( { locale: 'en' } );
 	render(
@@ -753,6 +759,87 @@ test( 'Ask Genie does not open Genie when the solution could not be saved', asyn
 	expect( asks.asks ).toEqual( [] );
 	asks.stop();
 } );
+
+test.each( [
+	[ 'en', 'Save solution' ],
+	[ 'en', 'Ask Genie' ],
+	[ 'de', 'Lösung speichern' ],
+	[ 'de', 'Genie fragen' ],
+] as const )(
+	'%s %s keeps an unconfirmed save visible without claiming failure or resending',
+	async ( locale, action ) => {
+		if ( locale === 'de' ) {
+			setLocaleData( german.locale_data.messages, 'linker-tools' );
+		}
+		const save = vi.mocked( saveSolution );
+		save.mockRejectedValue( new SolutionWriteError( false, true ) );
+		const asks = genieAsks();
+		const { engine, calls } = fakeEngine( { locale } );
+		render(
+			<App
+				config={ config( locale ) }
+				engine={ engine }
+				store={ fakeStore().store }
+			/>
+		);
+		const germanPage = locale === 'de';
+		fill(
+			germanPage ? /Postleitzahl des Standorts/ : /Postcode of the site/,
+			'80538'
+		);
+		fill(
+			germanPage
+				? /Jahresverbrauch des Haushalts/
+				: /Annual household consumption/,
+			'5000'
+		);
+		fill( germanPage ? /PV-Leistung/ : /PV array/, '10' );
+		await act( async () =>
+			fireEvent.click(
+				screen.getByRole( 'button', {
+					name: germanPage ? 'System berechnen' : 'Calculate system',
+				} )
+			)
+		);
+		const button = await screen.findByRole( 'button', { name: action } );
+		await act( async () => fireEvent.click( button ) );
+		expect(
+			await screen.findByText(
+				germanPage
+					? 'Der Status Ihrer Anfrage konnte nicht bestätigt werden. Bitte prüfen Sie ihn vor einem erneuten Versand.'
+					: 'The request status could not be confirmed. Please check before sending it again.'
+			)
+		).toBeInTheDocument();
+		expect( save ).toHaveBeenCalledTimes( 1 );
+		expect( asks.asks ).toEqual( [] );
+		expect(
+			calls.filter( ( call ) => call.name === 'residential' )
+		).toHaveLength( 1 );
+		expect(
+			screen.queryByText(
+				germanPage
+					? 'Die Lösung konnte nicht gespeichert werden. Versuchen Sie es erneut.'
+					: 'The solution could not be saved. Try again.'
+			)
+		).toBeNull();
+		expect(
+			screen.queryByRole( 'link', {
+				name: germanPage
+					? 'Gespeicherte Lösung öffnen'
+					: 'Open saved solution',
+			} )
+		).toBeNull();
+		expect(
+			screen.getByLabelText(
+				germanPage
+					? 'Postleitzahl des Standorts'
+					: 'Postcode of the site'
+			)
+		).toHaveValue( '80538' );
+		expect( screen.getAllByRole( 'article' ) ).toHaveLength( 2 );
+		asks.stop();
+	}
+);
 
 test( 'a guest save has no account solution, and the report asks for a sign-in', async () => {
 	const save = vi.mocked( saveSolution );
@@ -992,3 +1079,184 @@ test( 'an Ask started before a recalculation does not hand over the previous des
 	);
 	asks.stop();
 } );
+
+const CHANGED = 'This solution needs a new calculation before the next step.';
+const CURRENT_UNAVAILABLE =
+	'The current product data could not be checked. Your entries are still here.';
+
+test.each( [
+	[ 'stale', CHANGED ],
+	[ 'publication', CURRENT_UNAVAILABLE ],
+] as const )(
+	'current-product %s failure keeps entries and does not blame the yield service',
+	async ( outcome, message ) => {
+		const { engine } = fakeEngine( { locale: 'en', residential: outcome } );
+		render(
+			<App
+				config={ config( 'en' ) }
+				engine={ engine }
+				store={ fakeStore().store }
+			/>
+		);
+		await calculate();
+		expect( await screen.findByText( message ) ).toBeInTheDocument();
+		expect( screen.getByLabelText( 'Postcode of the site' ) ).toHaveValue(
+			'80538'
+		);
+		expect(
+			screen.queryByText(
+				'The yield service did not answer. Try again in a minute.'
+			)
+		).toBeNull();
+	}
+);
+
+test.each( [
+	[
+		'stale',
+		'Für den nächsten Schritt muss diese Lösung neu berechnet werden.',
+	],
+	[
+		'publication',
+		'Die aktuellen Produktdaten konnten nicht geprüft werden. Ihre Angaben bleiben erhalten.',
+	],
+] as const )(
+	'German current-product %s uses the shipped locale and preserves entries',
+	async ( outcome, message ) => {
+		setLocaleData( german.locale_data.messages, 'linker-tools' );
+		const { engine } = fakeEngine( {
+			locale: 'de',
+			residential: outcome,
+		} );
+		render(
+			<App
+				config={ config( 'de' ) }
+				engine={ engine }
+				store={ fakeStore().store }
+			/>
+		);
+		fill( /Postleitzahl des Standorts/, '80538' );
+		fill( /Jahresverbrauch des Haushalts/, '5000' );
+		fill( /PV-Leistung/, '10' );
+		await act( async () =>
+			fireEvent.click(
+				screen.getByRole( 'button', { name: 'System berechnen' } )
+			)
+		);
+		expect( await screen.findByText( message ) ).toBeInTheDocument();
+		expect(
+			screen.getByLabelText( 'Postleitzahl des Standorts' )
+		).toHaveValue( '80538' );
+	}
+);
+
+test( 'German refused atomic add keeps its new-calculation status in the shipped locale', async () => {
+	setLocaleData( german.locale_data.messages, 'linker-tools' );
+	const { engine, calls } = fakeEngine( { locale: 'de' } );
+	const { store, added } = fakeStore( 'stale' );
+	render(
+		<App config={ config( 'de' ) } engine={ engine } store={ store } />
+	);
+	fill( /Postleitzahl des Standorts/, '80538' );
+	fill( /Jahresverbrauch des Haushalts/, '5000' );
+	fill( /PV-Leistung/, '10' );
+	await act( async () =>
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'System berechnen' } )
+		)
+	);
+	const add = await screen.findByRole( 'button', {
+		name: 'Alles zum Lösungsentwurf hinzufügen',
+	} );
+	await act( async () => fireEvent.click( add ) );
+	expect(
+		await screen.findByText(
+			'Für den nächsten Schritt muss diese Lösung neu berechnet werden.'
+		)
+	).toBeInTheDocument();
+	expect(
+		screen.getAllByText( 'Neue Berechnung erforderlich.' )
+	).toHaveLength( 2 );
+	expect( added ).toEqual( [] );
+	expect(
+		calls.filter( ( call ) => call.name === 'residential' )
+	).toHaveLength( 1 );
+} );
+
+test( 'an old result rejected by atomic add asks for a new calculation and adds nothing', async () => {
+	const { engine, calls } = fakeEngine( { locale: 'en' } );
+	const { store, added } = fakeStore( 'stale' );
+	render(
+		<App config={ config( 'en' ) } engine={ engine } store={ store } />
+	);
+	await calculate();
+	const add = await screen.findByRole( 'button', {
+		name: 'Add all to solution draft',
+	} );
+	await act( async () => fireEvent.click( add ) );
+	expect( await screen.findByText( CHANGED ) ).toBeInTheDocument();
+	expect( added ).toEqual( [] );
+	expect(
+		calls.filter( ( call ) => call.name === 'residential' )
+	).toHaveLength( 1 );
+	expect(
+		screen.queryByText( 'All products are in your solution draft.' )
+	).toBeNull();
+} );
+
+test( 'a save refused for publication displays re-selection without replacing the screen', async () => {
+	vi.mocked( saveSolution ).mockRejectedValue(
+		new SolutionWriteError( true )
+	);
+	const { engine, calls } = fakeEngine( { locale: 'en' } );
+	render(
+		<App
+			config={ config( 'en' ) }
+			engine={ engine }
+			store={ fakeStore( 'stale' ).store }
+		/>
+	);
+	await calculate();
+	const save = await screen.findByRole( 'button', { name: 'Save solution' } );
+	await act( async () => fireEvent.click( save ) );
+	expect( await screen.findByText( CHANGED ) ).toBeInTheDocument();
+	await act( async () =>
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'Add all to solution draft' } )
+		)
+	);
+	expect( screen.getAllByText( CHANGED ) ).toHaveLength( 1 );
+	expect(
+		calls.filter( ( call ) => call.name === 'residential' )
+	).toHaveLength( 1 );
+	expect(
+		screen.queryByText( 'The solution could not be saved. Try again.' )
+	).toBeNull();
+} );
+
+test.each( [ 'Download PDF', 'Ask Genie' ] )(
+	'%s on a stale screen preserves it and asks for re-selection',
+	async ( action ) => {
+		const { engine, calls } = fakeEngine( { locale: 'en' } );
+		engine.reportPdf = vi
+			.fn()
+			.mockRejectedValue( new EngineError( 'stale' ) );
+		render(
+			<App
+				config={ config( 'en' ) }
+				engine={ engine }
+				store={ fakeStore().store }
+			/>
+		);
+		await calculate();
+		const button = await screen.findByRole( 'button', { name: action } );
+		await act( async () => fireEvent.click( button ) );
+		expect( await screen.findByText( CHANGED ) ).toBeInTheDocument();
+		expect(
+			calls.filter( ( call ) => call.name === 'residential' )
+		).toHaveLength( 1 );
+		expect(
+			screen.queryByText( 'The PDF could not be created. Try again.' )
+		).toBeNull();
+	}
+);

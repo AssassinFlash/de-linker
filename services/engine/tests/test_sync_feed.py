@@ -13,7 +13,7 @@ import json
 import subprocess
 import sys
 import threading
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
 from types import ModuleType
@@ -77,177 +77,174 @@ class Restarter:
 
 
 def feed_document() -> dict[str, Any]:
-    """The fixture feed as the site serves it after #493: contract included."""
-    document: dict[str, Any] = json.loads((FIXTURES / "feed.json").read_text())
-    contract: dict[str, Any] = json.loads((FIXTURES / "compatibility.json").read_text())
-    document["compatibility"] = contract
-    document["compatibility_version"] = contract["version"]
-    return document
+    from conftest import publication_feed
 
-
-def serve(directory: Path, document: dict[str, Any]) -> None:
-    (directory / "feed.json").write_text(json.dumps(document))
+    return publication_feed(
+        json.loads((FIXTURES / "feed.json").read_text()),
+        json.loads((FIXTURES / "compatibility.json").read_text()),
+    )
 
 
 def run(
     sync: ModuleType,
     directory: Path,
     url: str,
+    *,
+    loaded: Callable[[], dict[str, Any]] | None = None,
+    jobs: Callable[[str, dict[str, Any]], dict[str, Any]] | None = None,
 ) -> tuple[int, Restarter, list[str], Path, Path]:
     state = directory / "state"
-    state.mkdir()
-    feed_target = state / "feed.json"
-    compatibility_target = state / "compatibility.json"
-    feed_target.write_bytes(b"old feed")
-    compatibility_target.write_bytes(b"old contract")
+    state.mkdir(exist_ok=True)
+    feed = state / "feed.json"
+    contract = state / "compatibility.json"
+    if not feed.exists():
+        feed.write_bytes(b"old feed")
+        contract.write_bytes(b"old contract")
     restarter = Restarter()
     lines: list[str] = []
+
+    def actual() -> dict[str, Any]:
+        document = json.loads(feed.read_text())
+        return {
+            "source_revision": document["source_revision"],
+            "compatibility_revision": document["compatibility_revision"],
+        }
+
     code = sync.sync(
         feed_url=url,
-        feed_target=feed_target,
-        compatibility_target=compatibility_target,
+        feed_target=feed,
+        compatibility_target=contract,
         probe_python=sys.executable,
         restart=restarter,
+        loaded=loaded or actual,
+        jobs=jobs,
         log=lines.append,
     )
-    return code, restarter, lines, feed_target, compatibility_target
+    return code, restarter, lines, feed, contract
 
 
-def test_a_successful_run_swaps_both_files_and_restarts_once(
+@pytest.mark.parametrize("empty", [False, True])
+def test_complete_generation_including_empty_products(
+    tmp_path: Path, feed_url: str, empty: bool
+) -> None:
+    document = feed_document()
+    if empty:
+        document["products"] = []
+    (tmp_path / "feed.json").write_text(json.dumps(document))
+    code, restart, logs, feed, contract = run(load_sync(), tmp_path, feed_url)
+    assert code == 0, logs
+    assert restart.calls == 1
+    assert feed.is_symlink() and contract.is_symlink()
+    assert feed.resolve().parent == contract.resolve().parent
+    assert json.loads(feed.read_text())["products"] == document["products"]
+    assert json.loads(contract.read_text()) == document["compatibility"]
+    manifest = json.loads((feed.resolve().parent / "manifest.json").read_text())
+    assert manifest["feed_sha256"] == hashlib.sha256(feed.read_bytes()).hexdigest()
+    assert (
+        manifest["compatibility_sha256"]
+        == hashlib.sha256(contract.read_bytes()).hexdigest()
+    )
+
+
+@pytest.mark.parametrize("invalid", ["contract", "feed", "missing", "mismatch"])
+def test_any_invalid_part_preserves_both_originals(
+    tmp_path: Path, feed_url: str, invalid: str
+) -> None:
+    document = feed_document()
+    if invalid == "contract":
+        document["compatibility"]["pairs"] = "invalid"
+    elif invalid == "feed":
+        document["products"][0]["phase"] = 7
+    elif invalid == "missing":
+        del document["compatibility"]
+    else:
+        document["compatibility"]["version"] = "mismatch"
+    (tmp_path / "feed.json").write_text(json.dumps(document))
+    code, restart, logs, feed, contract = run(load_sync(), tmp_path, feed_url)
+    assert code == 1, logs
+    assert restart.calls == 0
+    assert feed.read_bytes() == b"old feed"
+    assert contract.read_bytes() == b"old contract"
+    assert not list(feed.parent.glob("publication-generation-*"))
+
+
+def test_process_readback_failure_rolls_back_the_whole_generation(
     tmp_path: Path, feed_url: str
 ) -> None:
     document = feed_document()
-    serve(tmp_path, document)
-
-    code, restarter, lines, feed_target, contract_target = run(
-        load_sync(), tmp_path, feed_url
-    )
-
+    (tmp_path / "feed.json").write_text(json.dumps(document))
+    code, _, _, feed, contract = run(load_sync(), tmp_path, feed_url)
     assert code == 0
-    assert restarter.calls == 1
-    assert json.loads(feed_target.read_text())["products"] == document["products"]
-    assert json.loads(contract_target.read_text()) == document["compatibility"]
-    assert any("feed refreshed (" in line for line in lines), lines
-    assert any("compatibility refreshed (version " in line for line in lines)
-    assert any("engine restarted on the fresh data" in line for line in lines)
-    assert sorted(path.name for path in (tmp_path / "state").iterdir()) == [
-        "compatibility.json",
-        "feed.json",
-    ], "the staging files leave no temp files behind"
+    old = feed.resolve().parent
+    document["products"] = []
+    document["source_revision"] = "b" * 64
+    (tmp_path / "feed.json").write_text(json.dumps(document))
+    code, restart, logs, feed, contract = run(
+        load_sync(),
+        tmp_path,
+        feed_url,
+        loaded=lambda: {
+            "source_revision": "old-process",
+            "compatibility_revision": "old",
+        },
+    )
+    assert code == 1, logs
+    assert restart.calls == 2
+    assert feed.resolve().parent == contract.resolve().parent == old
+    assert len(list(feed.parent.glob("publication-generation-*"))) == 2
 
 
-def test_the_written_contract_keeps_the_shipped_contracts_content_hash(
+def test_retains_only_current_and_previous_generation(
     tmp_path: Path, feed_url: str
 ) -> None:
-    """The ticket's acceptance: the VPS contract version is its content hash."""
-    contract: dict[str, Any] = json.loads(SHIPPED_COMPATIBILITY.read_text())
+    for revision in ("a", "b", "c"):
+        document = feed_document()
+        document["source_revision"] = revision * 64
+        (tmp_path / "feed.json").write_text(json.dumps(document))
+        code, _, logs, feed, _ = run(load_sync(), tmp_path, feed_url)
+        assert code == 0, logs
+    assert len(list(feed.parent.glob("publication-generation-*"))) == 2
+
+
+def test_jobs_ack_only_the_running_source(tmp_path: Path, feed_url: str) -> None:
     document = feed_document()
-    document["compatibility"] = contract
-    document["compatibility_version"] = contract["version"]
-    serve(tmp_path, document)
+    (tmp_path / "feed.json").write_text(json.dumps(document))
+    calls: list[tuple[str, dict[str, Any]]] = []
 
-    code, restarter, lines, feed_target, contract_target = run(
-        load_sync(), tmp_path, feed_url
+    def jobs(action: str, payload: dict[str, Any]) -> dict[str, Any]:
+        calls.append((action, payload))
+        return (
+            {
+                "job": {
+                    "job_id": "current",
+                    "lease_token": "synthetic",
+                    "source_revision": document["source_revision"],
+                }
+            }
+            if action == "claim"
+            else {}
+        )
+
+    code, _, logs, _, _ = run(load_sync(), tmp_path, feed_url, jobs=jobs)
+    assert code == 0, logs
+    assert calls[-1][0] == "ack"
+    assert calls[-1][1]["status"] == "ready"
+    assert calls[-1][1]["loaded_revision"] == document["source_revision"]
+
+
+def test_no_job_has_no_fetch_or_restart(tmp_path: Path, feed_url: str) -> None:
+    code, restart, logs, feed, contract = run(
+        load_sync(), tmp_path, feed_url, jobs=lambda action, payload: {"job": None}
     )
-
-    assert code == 0
-    written: dict[str, Any] = json.loads(contract_target.read_text())
-    assert written == contract
-    stored = written.pop("version")
-    canonical = json.dumps(
-        written, sort_keys=True, ensure_ascii=False, separators=(",", ":")
-    )
-    assert stored == hashlib.sha256(canonical.encode()).hexdigest()
+    assert code == 0, logs
+    assert restart.calls == 0
+    assert feed.read_bytes() == b"old feed"
+    assert contract.read_bytes() == b"old contract"
 
 
-def test_a_rejected_contract_keeps_the_old_contract_and_the_feed_still_swaps(
-    tmp_path: Path, feed_url: str
-) -> None:
-    document = feed_document()
-    # The version matches, but the contract is not a contract: the loader refuses it.
-    document["compatibility"] = {
-        "schema_version": 1,
-        "version": document["compatibility_version"],
-    }
-    serve(tmp_path, document)
-
-    code, restarter, lines, feed_target, contract_target = run(
-        load_sync(), tmp_path, feed_url
-    )
-
-    assert code == 1
-    assert restarter.calls == 1, "the freshly swapped feed still needs the restart"
-    assert json.loads(feed_target.read_text())["products"] == document["products"]
-    assert contract_target.read_bytes() == b"old contract"
-    assert any("engine loader rejected the fetched contract" in line for line in lines)
-    assert any("feed refreshed (" in line for line in lines)
-
-
-def test_a_rejected_feed_keeps_both_files(tmp_path: Path, feed_url: str) -> None:
-    document = feed_document()
-    del document["products"][0]["phase"]
-    serve(tmp_path, document)
-
-    code, restarter, lines, feed_target, contract_target = run(
-        load_sync(), tmp_path, feed_url
-    )
-
-    assert code == 1
-    assert restarter.calls == 0
-    assert feed_target.read_bytes() == b"old feed"
-    assert contract_target.read_bytes() == b"old contract"
-    assert any("engine loader rejected the fetched feed" in line for line in lines)
-    assert any(
-        "feed not refreshed; previous contract preserved" in line for line in lines
-    )
-
-
-def test_a_contract_that_does_not_match_the_feed_version_keeps_the_old_contract(
-    tmp_path: Path, feed_url: str
-) -> None:
-    document = feed_document()
-    document["compatibility_version"] = "not-the-contract-version"
-    serve(tmp_path, document)
-
-    code, restarter, lines, feed_target, contract_target = run(
-        load_sync(), tmp_path, feed_url
-    )
-
-    assert code == 1
-    assert restarter.calls == 1
-    assert json.loads(feed_target.read_text())["products"] == document["products"]
-    assert contract_target.read_bytes() == b"old contract"
-    assert any("does not match the contract it carries" in line for line in lines)
-
-
-def test_a_feed_without_the_contract_keeps_the_old_contract_and_swaps_the_feed(
-    tmp_path: Path, feed_url: str
-) -> None:
-    """The feed the site served before #493: products valid, no contract key."""
-    document = feed_document()
-    del document["compatibility"]
-    serve(tmp_path, document)
-
-    code, restarter, lines, feed_target, contract_target = run(
-        load_sync(), tmp_path, feed_url
-    )
-
-    assert code == 1
-    assert restarter.calls == 1
-    assert json.loads(feed_target.read_text())["products"] == document["products"]
-    assert contract_target.read_bytes() == b"old contract"
-    assert any("feed carries no compatibility" in line for line in lines)
-
-
-def test_a_fetch_failure_keeps_both_files(tmp_path: Path, feed_url: str) -> None:
-    code, restarter, lines, feed_target, contract_target = run(
-        load_sync(), tmp_path, feed_url
-    )
-
-    assert code == 1
-    assert restarter.calls == 0
-    assert feed_target.read_bytes() == b"old feed"
-    assert contract_target.read_bytes() == b"old contract"
-    assert any(
-        "fetch failed; previous feed and contract preserved" in line for line in lines
-    )
+def test_fetch_failure_keeps_both_files(tmp_path: Path, feed_url: str) -> None:
+    code, restart, logs, feed, contract = run(load_sync(), tmp_path, feed_url)
+    assert code == 1, logs
+    assert restart.calls == 0
+    assert feed.read_bytes() == b"old feed"
+    assert contract.read_bytes() == b"old contract"

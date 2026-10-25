@@ -42,12 +42,11 @@ class UserContext {
 	public const HEADER = 'X-Linker-User-Context';
 
 	/**
-	 * Seconds a token stays valid: twice the shell's 60 s turn timeout
-	 * (Proxy::post, 'timeout' => 60.0). The token is minted when the turn is
-	 * sent and must outlive the longest turn the shell waits for, the
-	 * service's post-run price lookups included (their deadline keeps the turn
-	 * under the same 60 s, services/genie prices.LOOKUP_DEADLINE); measured
-	 * turns on g242 took 4–10 s (tests/e2e genie-prices.spec.ts, 2026-10-18).
+	 * Seconds a token stays valid. This existing 120-second lifetime exceeds
+	 * the native 90-second operation window (Proxy::TURN_BUDGET). The token
+	 * is minted when the turn is sent and remains valid for the service's
+	 * customer-specific ability and price reads. Its scope and lifetime do
+	 * not change with the outer HTTP deadline.
 	 */
 	public const TTL = 120;
 

@@ -95,6 +95,7 @@ final class PendingApprovalsTest extends TestCase {
 		$block = new PendingApprovals( new Approval() );
 
 		$this->assertCount( 2, $this->pending_entries( $block ), 'No state recorded: both customers wait.' );
+		$this->assertSame( 2, $block->pending_count() );
 
 		$this->store[5][ Approval::STATUS_META ] = Approval::APPROVED;
 		$this->store[8][ Approval::STATUS_META ] = Approval::APPROVED;
@@ -102,6 +103,7 @@ final class PendingApprovalsTest extends TestCase {
 
 		$this->store[8][ Approval::STATUS_META ] = Approval::RESTRICTED;
 		$this->assertSame( array(), $this->pending_entries( $block ) );
+		$this->assertSame( 0, $block->pending_count(), 'Restricted summary and empty sentence are not applications.' );
 		$this->assertStringContainsString( 'awaiting customer information: 1', $block->entries()[1]['label'] );
 		$this->assertStringContainsString( '&status=restricted', $block->entries()[1]['url'] );
 		$this->store[8][ Approval::STATUS_META ] = Approval::REJECTED;
@@ -110,6 +112,7 @@ final class PendingApprovalsTest extends TestCase {
 		$this->assertSame( $block->empty_text(), $block->entries()[0]['label'] );
 		$this->assertStringContainsString( 'awaiting customer information: 0', $block->entries()[1]['label'] );
 		$this->store[8][ Approval::STATUS_META ] = Approval::PENDING;
+		$this->assertSame( 1, $block->pending_count() );
 			/** The block's entries, in the digest's entry shape. @var list<array{label: string, url: string, link_text: string, detail: string}> $entries */
 		$entries = $this->pending_entries( $block );
 		$this->assertSame(

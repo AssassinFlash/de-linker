@@ -74,3 +74,34 @@ The new journal does not use the old ownerless writer as a fallback. Its window 
 `tests/e2e/specs/genie-failure-ownership.spec.ts` defines **18** cases. Eight cover home/workspace × EN/DE ×1440/390, starting with actual ordinary typing and home PDF preparation, a real native guest-cookie rotation, another guest's independent failure, original valid guest scope return and explicit restore/retry. Four cover an auxiliary scope outage, four cover get/set denial and usable memory-only retry, and two use actual local login/logout plus a new session for the same account. History/model responses and selected fault conditions are fixtures; guest scope, authentication cookies, nonce handling, real DOM consumers and PDF preparation remain native.
 
 Run only after parent review/build/i18n/presentation. Use a new UTC `LINKER_FAILURE_RUN` per process and one browser runner for privacyviz. Preserve failed frames and case metadata; do not reuse a prior UTC directory. Screenshot geometry checks the reused decision/remove controls; manual review still needs to assess all states and languages. This source record is neither a browser PASS nor a full-page visual parity claim.
+
+
+## Current-main source integration (2026-10-25)
+
+The owner authorized Codex to continue this existing candidate after the Claude alias resolved to another model. No global configuration was changed. The existing `codex/genie-failure-ownership` worktree integrates `origin/main` at `7f0c8f7b38264210e67efc16d0d86ad33cec012b` with the two original candidate commits `811dad33` and `6bdb8869`; no other plugin tree was copied. The two pre-existing tracked full-site edits and all 2,786 untracked files were preserved. The full-site goal/state records remain owned by the parent.
+
+The existing 19-product-path aggregate algorithm from retained-repair `source-files.json` now gives **`28b7e7915fbae4e3871ce4778b5b801dbdfd3096b6eed90657d249f6a2f08eb2`**. Fifteen of those sources remain byte-identical to the reviewed b472 candidate. Four source files differ:
+
+| Source | Integrated SHA-256 | Integration responsibility |
+| --- | --- | --- |
+| `src/genie/App.tsx` | `71bad76f62fc896694fe30c994d41df80863eb3cf4f4473e9cd070a618a24f99` | Retain native leases and current-main operation witnesses; discard witnesses on identity changes; completed retry preserves/checkpoints the next accepted editor and PDF. |
+| `src/genie/shared/failure.ts` | `e26afb75ef041258cb55b57c8545c20916e3f64ea3fd97bccff5a49b659c0e1b` | Keep editing recovery while preserving main's refusal to infer completion from historical matching words. |
+| `src/genie/shared/useFailure.ts` | `e2c6300d3f5253b473d4c707c9243efcb3aa2a7e1559e245b0360712d2e1d672` | Retry owns the attachment snapshot accepted at its click, rather than files accepted by a new editor during asynchronous thread refresh. |
+| `src/hero/session.ts` | `4f97117fd4eb5b467f6cc8b6a960fd43396340b37da6e0f30ed39ee3d15e979d` | Combine native generation/settlement with completed-request recovery; invalidation clears conversation/operation/witness and rejects late results. |
+
+Current-main PHP product publication and resource authorization, Genie API clients, signed card-action protocol, `completedRequest` comparator and protected request transport are byte-identical to main. App's current product proofs and nonce-aware store client remain active. The specification retains the native 5-second identity budget, current 20-second product authorization budget and 90-second turn budget. Only the existing approved unsaved-warning stanza is appended to main's PO; no unrelated translation is replaced.
+
+A single additional case extends the existing completed-request matrix: while Retry waits for the thread read, the actual composer accepts a new question and a real prepared `next.pdf`. It first failed with two sends instead of one. Diagnosis showed the old retry reading the new editor's shared uploads, which defeated its exact operation witness. After capturing the click snapshot, the same case passes with one send, the completed answer visible, and the new text/PDF preserved as an editing record. No previous assertion was removed or weakened. Main's newly added App/Hero cases now await the candidate's native identity initialization; the Hero alert assertion reads the currently mounted alert instead of a detached node returned across revalidation.
+
+Final focused execution from `plugins/linker-tools`:
+
+```sh
+npm run lint:types
+./node_modules/.bin/vitest run src/genie/App.test.tsx src/hero/Hero.test.tsx src/hero/session.test.ts src/genie/failureOwnership.consumer.test.tsx src/genie/voiceOwnership.consumer.test.tsx src/genie/resourceOwnership.consumer.test.tsx src/genie/shared/useFailure.test.tsx src/genie/shared/failure.test.ts src/protection/inquiryHandoff.ownership.test.ts src/protection/inquiryHandoff.consumer.test.tsx src/genie/api/turnProtection.test.ts src/genie/api/historyArtifacts.test.ts src/genie/shared/cardActions.test.tsx src/genie/PartsApp.test.tsx --maxWorkers=2
+./node_modules/.bin/eslint src/genie/App.tsx src/genie/shared/failure.ts src/genie/shared/useFailure.ts src/hero/session.ts src/genie/App.test.tsx src/hero/Hero.test.tsx --max-warnings=0
+./node_modules/.bin/prettier --check src/genie/App.tsx src/genie/shared/failure.ts src/genie/shared/useFailure.ts src/hero/session.ts src/genie/App.test.tsx src/hero/Hero.test.tsx
+```
+
+The focused 14-file run reports **300/300 passing**. TypeScript, changed-file ESLint and formatting pass. After a lint-only rearrangement of the new case's assertions, the existing completed-request matrix was replayed alone: **10 pass**, with 61 unrelated App cases excluded by that explicit filter. The earlier fixture/typing failures and this new red case are described above; historical blocked reports and original failure evidence remain unchanged. A repository-wide cached whitespace check also reports pre-existing main whitespace in `537/phpstan.txt` and the commerce contact asset; neither belongs to this Genie delta, whose scoped diff check passes.
+
+All tools `build/` and generated JSON/MO files currently equal main and intentionally do not claim this source candidate. They require the current native build/i18n pipeline after integrated-source review; the old branch's generated outputs were not used. Independent integrated-diff Spec/Standards review, generated manifest/catalog checks, affected-state Computer Use and release/deployed readback remain parent-owned delivery gates. No full suite, browser, local instance, product model/mail request or production operation ran in this batch. No worktree, backup, dependency installation or temporary report copy was created.

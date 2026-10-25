@@ -164,6 +164,16 @@ mock-erp name:
     trap cleanup EXIT
     python3 "{{ justfile_directory() }}/tools/mock_erp.py" --base "$base" --key "$key" --payload "$payload"
 
+# Native administrator MFA acceptance with synthetic identities and local mail.
+# --prepare installs/verifies the pinned official plugin and German language pack.
+[positional-arguments]
+admin-mfa name *options:
+    PHP={{ php }} uv run --locked --project tools/local python tools/checks/admin-mfa.py "$@"
+# Native synthetic credential authentication and complete inventory pagination.
+[positional-arguments]
+inventory-access name *options:
+    PHP={{ php }} uv run --locked --project tools/local python tools/checks/inventory-access.py "$@"
+
 # docs/specs/10-knowledge-index.md; `just index --help` lists the options.
 # Build Genie's document index on this Mac: hosted PDFs, Docling, chunks, vectors, SQLite.
 [working-directory("services/genie")]
@@ -416,7 +426,8 @@ i18n-coverage:
     PHP={{ php }} python3 "{{ justfile_directory() }}/tools/checks/i18n-coverage.py"
 
 # Rebuild commerce catalogs from PHP/JS/build and live catalog strings in LC
-# fragments. Both input POTs are extracted fresh; no previous POT is merged.
+# fragments, retaining the explicitly listed published identifiers. Code and
+# fragments are extracted fresh; no previous generated POT is merged.
 [positional-arguments]
 i18n-commerce name:
     #!/usr/bin/env bash
@@ -429,7 +440,8 @@ i18n-commerce name:
         --domain=linker-commerce --include=linker-commerce.php,includes,templates,src,build \
         --exclude=vendor,node_modules,tests --skip-audit
     python3 "{{ justfile_directory() }}/tools/checks/i18n_sources.py" "$plugin" "$extraction/fragments.pot"
-    msgcat --use-first --sort-by-file "$extraction/code.pot" "$extraction/fragments.pot" -o "$catalogs.pot"
+    msgcat --use-first --sort-by-file "$extraction/code.pot" "$extraction/fragments.pot" \
+        "$plugin/languages/linker-commerce-published.pot" -o "$catalogs.pot"
     msgmerge --update --backup=none --no-fuzzy-matching "$catalogs-de_DE_formal.po" "$catalogs.pot"
     {{ php }} "$(command -v wp)" i18n make-json "$catalogs-de_DE_formal.po" --no-purge
     msgfmt --check "$catalogs-de_DE_formal.po" -o "$catalogs-de_DE_formal.mo"

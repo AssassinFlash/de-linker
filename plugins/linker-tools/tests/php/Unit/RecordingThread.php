@@ -67,10 +67,12 @@ final class RecordingThread extends Thread {
 	 * @param string                     $stream       The service's SSE text, split.
 	 * @param list<array<string, mixed>> $readings  The turn's readings, split.
 	 * @param int|null                   $lock_wait Seconds the caller had left, unused: this double does not lock.
+	 * @param string                     $operation Trusted operation, unused by this in-memory double.
+	 * @param string                     $fingerprint Internal input fingerprint, unused by this double.
 	 * @return bool False when the test set `accept` to refuse the commit.
 	 */
-	public function record( int $conversation, array $messages, string $stream, array $readings = array(), ?int $lock_wait = null ): bool {
-		unset( $lock_wait );
+	public function record( int $conversation, array $messages, string $stream, array $readings = array(), ?int $lock_wait = null, string $operation = '', string $fingerprint = '' ): bool {
+		unset( $lock_wait, $operation, $fingerprint );
 		if ( ! $this->accept ) {
 			return false;
 		}

@@ -1,0 +1,128 @@
+{
+  "actions": [
+    {
+      "fontSize": "14px",
+      "href": "http://127.0.0.1:9290/genie/",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 1051,
+        "y": 478.203125
+      },
+      "text": "\n\n"
+    },
+    {
+      "fontSize": "11px",
+      "href": "http://127.0.0.1:9290/genie/",
+      "rect": {
+        "height": 35.59375,
+        "width": 273.46875,
+        "x": 422.6640625,
+        "y": 553.203125
+      },
+      "text": "Find a 10 kW three-phase home storage system"
+    },
+    {
+      "fontSize": "11px",
+      "href": "http://127.0.0.1:9290/genie/",
+      "rect": {
+        "height": 35.59375,
+        "width": 311.1953125,
+        "x": 706.1328125,
+        "y": 553.203125
+      },
+      "text": "Compare GoodWe and SAJ residential storage options"
+    },
+    {
+      "fontSize": "11px",
+      "href": "http://127.0.0.1:9290/genie/",
+      "rect": {
+        "height": 35.59375,
+        "width": 256.6171875,
+        "x": 591.6875,
+        "y": 598.796875
+      },
+      "text": "Which battery works with my hybrid inverter?"
+    }
+  ],
+  "bodyClasses": "wp-singular page-template page-template-page-templates page-template-empty page-template-page-templatesempty-php page page-id-749 page-child parent-pageid-746 wp-custom-logo wp-embed-responsive wp-theme-picostrap5 wp-child-theme-picostrap5-child-base theme-picostrap5 lc-custom-header lc-custom-footer woocommerce-js is-using-livecanvas rs-at-cover",
+  "cover": {
+    "before": "linear-gradient(rgba(13, 29, 25, 0.64), rgba(13, 29, 25, 0.64) 60%, rgba(13, 29, 25, 0.72))",
+    "className": "lk-hero-cinematic",
+    "rect": {
+      "height": 760,
+      "width": 1440,
+      "x": 0,
+      "y": 1
+    }
+  },
+  "fontStatus": "loaded",
+  "heading": {
+    "color": "rgb(255, 255, 255)",
+    "fontSize": "48.96px",
+    "lineHeight": "56.304px",
+    "rect": {
+      "height": 112.609375,
+      "width": 850,
+      "x": 295,
+      "y": 182.796875
+    },
+    "text": "Home storage, linked and supplied by Linker."
+  },
+  "overflow": 0,
+  "scrollY": 0,
+  "url": "http://127.0.0.1:9290/solution/residential-storage/",
+  "viewport": [
+    1440,
+    1000
+  ],
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792655451"
+  ],
+  "fonts": "loaded",
+  "header": "rgba(21, 53, 47, 0.8)",
+  "images": [
+    {
+      "complete": true,
+      "naturalWidth": 2560
+    }
+  ],
+  "texts": [
+    {
+      "className": "lk-hero-badge",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": "11px",
+      "opacity": "1",
+      "text": "HOME STORAGE"
+    },
+    {
+      "className": "lk-hero-title",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": "48.96px",
+      "opacity": "1",
+      "text": "Home storage, linked and supplied by Linker."
+    },
+    {
+      "className": "lk-hero-subtitle",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": "14px",
+      "opacity": "1",
+      "text": "Single- and three-phase hybrid inverters, modular LFP batteries, and smart meters, supplied together for residential installations."
+    },
+    {
+      "className": "lk-hero-footnote",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": "11px",
+      "opacity": "0.9",
+      "text": "\n        Start with the system the home needs. Product details and datasheets on file.\n      "
+    },
+    {
+      "className": "screen-reader-text",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": "14px",
+      "opacity": "1",
+      "text": ""
+    }
+  ],
+  "sourceAggregate": "d69083aefc946cc4884e17d2774d9b503661f5e39cb151388649423791748661"
+}

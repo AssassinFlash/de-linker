@@ -1,0 +1,105 @@
+{
+  "service_source_commit": "bafca49b",
+  "reviewed_source_commit": "23c20812",
+  "source_revision": "71567ab3481a9dcb25193ba185a764d441019705a764b71207a3c577ee14c4ed",
+  "instance": "publication614",
+  "normal_wp_frontend": true,
+  "turns": [
+    {
+      "id": 8,
+      "locale": "en",
+      "question": "Can I buy EcoFlow PowerOcean?",
+      "grounded": 1,
+      "failures": [],
+      "fallback": 0,
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "timing": {
+        "understand": 5.732,
+        "understand.vocabulary": 2.489,
+        "understand.attachments": 0.0,
+        "understand.jev": 2.576,
+        "model.tool.linker/search-products": 23.886,
+        "model.attempt_1": 24.94,
+        "model": 24.94,
+        "ground": 0.0,
+        "hydrate": 0.0,
+        "log": 0.002,
+        "first_event": 33.909,
+        "total": 33.909
+      },
+      "text_blocks": [
+        "EcoFlow PowerOcean is not part of our product range — our product data returns no entry for it.\n\nThe closest home storage products we can offer are shown below. Since you are signed in with an approved partner account, the cards show the net price."
+      ],
+      "card_product_ids": [
+        2092,
+        2090,
+        6519,
+        6521,
+        2093,
+        6520
+      ],
+      "all_cards_currently_published": true,
+      "ecoflow_cards": 0,
+      "document_cards": 0,
+      "tool_names": [
+        "linker/search-products",
+        "linker/search-products",
+        "linker/search-products",
+        "linker/search-products"
+      ],
+      "browser_delivered": true,
+      "all_cards_finished_loading": true
+    },
+    {
+      "id": 9,
+      "locale": "de",
+      "question": "Kann ich EcoFlow PowerOcean kaufen?",
+      "grounded": 1,
+      "failures": [],
+      "fallback": 0,
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "timing": {
+        "understand": 3.118,
+        "understand.vocabulary": 0.0,
+        "understand.attachments": 0.0,
+        "understand.jev": 2.443,
+        "model.tool.linker/search-products": 24.314,
+        "model.attempt_1": 21.538,
+        "model": 21.538,
+        "ground": 0.002,
+        "hydrate": 0.0,
+        "log": 0.002,
+        "first_event": 27.633,
+        "total": 27.633
+      },
+      "text_blocks": [
+        "Zu **EcoFlow PowerOcean** finde ich in unseren Produktdaten keinen Eintrag, und auch die Marke EcoFlow ist dort nicht geführt.\n\nDie nächstgelegenen Produkte sind **All-in-One-Speichersysteme** für gewerbliche Anlagen – die Karten zeigen für freigegebene Partnerkonten die Nettopreise. Wenn Sie mir die geplante PV-Größe und den Jahresverbrauch nennen, kann ich gezielter eingrenzen."
+      ],
+      "card_product_ids": [
+        1959,
+        1960,
+        1961,
+        6321
+      ],
+      "all_cards_currently_published": true,
+      "ecoflow_cards": 0,
+      "document_cards": 0,
+      "tool_names": [
+        "linker/search-products",
+        "linker/search-products",
+        "linker/search-products",
+        "linker/search-products"
+      ],
+      "browser_delivered": true,
+      "all_cards_finished_loading": true
+    }
+  ],
+  "public_mobile_screenshots": [
+    "genie-family-en-390.jpg",
+    "genie-family-de-390.jpg"
+  ],
+  "private_desktop_screenshots": "Owned instance publication-ui-private/genie-family-{en,de}-1440.jpg (0600), retained privately because approved-account prices are visible.",
+  "limitation": "Service totals exclude the initial authority read and PHP/browser overhead and are not a controlled performance benchmark. Both frontend answers actually delivered without timeout; existing budgets, timeouts and model channels were unchanged. Initial temporary missing-product placeholders completed normal loading; all six EN and four DE authorized cards were observed."
+}

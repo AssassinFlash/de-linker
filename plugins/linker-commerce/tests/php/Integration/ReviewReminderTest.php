@@ -1,0 +1,292 @@
+<?php
+/** Native stop policy for automatic review reminders.
+ *
+ * @package Linker\Commerce
+ */
+
+declare( strict_types = 1 );
+namespace Linker\Commerce\Tests\Integration;
+
+use Linker\Commerce\Health\ReviewReminder;
+use Linker\Commerce\Health\ReviewSummary;
+use Linker\Commerce\Inquiry\Assessment\Queue;
+use Linker\Commerce\Inquiry\Assessment\RecoverySchedule;
+use Linker\Commerce\Mail\Capture;
+use Linker\Commerce\Mail\JobStore;
+use Linker\Commerce\Mail\NativeOrigin;
+use Linker\Commerce\Mail\Message;
+use Linker\Commerce\Mail\NotificationHold;
+use Linker\Commerce\Mail\OptionBudgetLedger;
+use Linker\Commerce\Mail\Outbox;
+use Linker\Commerce\Mail\Throttle;
+
+/** Real WP/Woo/AS records; the instance mailer never sends externally.
+ *
+ * @coversNothing
+ */
+final class ReviewReminderTest extends IntegrationTestCase {
+	/** Keep original reminder history and recovery heartbeat intact. */
+	protected function setUp(): void {
+		parent::setUp();
+		foreach ( array( ReviewReminder::OPTION, Queue::HEARTBEAT ) as $name ) {
+			$before = get_option( $name );
+			$this->later(
+				static function () use ( $name, $before ): void {
+					false === $before ? delete_option( $name ) : update_option( $name, $before, false );
+				}
+			);
+		}
+	}
+
+	/** No reminder is produced and old history remains unchanged. */
+	public function test_reminder_producer_is_disabled_without_reading_or_rewriting_history(): void {
+		$history = '{"events":[1,2],"active":true,"last":3,"job":4}';
+		update_option( ReviewReminder::OPTION, $history, false );
+		$reads   = 0;
+		$summary = new ReviewSummary(
+			static function () use ( &$reads ): array {
+				++$reads;
+				return array(
+					'count'  => 77,
+					'oldest' => time() - HOUR_IN_SECONDS,
+					'url'    => admin_url(),
+				);
+			}
+		);
+		$before  = self::newest_mail_job();
+		$budget  = get_option( OptionBudgetLedger::OPTION );
+		$legacy  = get_option( Throttle::OPTION );
+		$actor   = new ReviewReminder( $summary );
+		$actor->tick();
+		$actor->tick();
+		$this->assertSame( 0, $reads );
+		$this->assertSame( array(), self::mail_jobs_after( $before ) );
+		$this->assertSame( $history, get_option( ReviewReminder::OPTION ) );
+		$this->assertSame( $budget, get_option( OptionBudgetLedger::OPTION ) );
+		$this->assertSame( $legacy, get_option( Throttle::OPTION ) );
+	}
+
+	/** The production module still runs its other actual minute recovery. */
+	public function test_native_recovery_hook_still_updates_the_inquiry_heartbeat(): void {
+		$before = microtime( true );
+		$jobs   = self::newest_mail_job();
+		do_action( RecoverySchedule::HOOK ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Existing native recovery action.
+		$this->assertGreaterThanOrEqual( $before, (float) get_option( Queue::HEARTBEAT ) );
+		$this->assertSame( array(), self::mail_jobs_after( $jobs ) );
+	}
+
+	/** Existing jobs are retained before transport even when persistence fails.
+	 *
+	 * @dataProvider hold_failures
+	 * @param string $fault Native fault seam.
+	 */
+	public function test_queued_reminder_never_spends_or_sends_and_keeps_the_original( string $fault ): void {
+		$jobs    = new JobStore();
+		$message = new Message( array( self::TESTER ), 'Synthetic review reminder', 'Full original body remains unchanged.', array( Message::INTERNAL_HEADER ), array(), true, Message::REVIEW_REMINDER );
+		$id      = $jobs->create( $message );
+		$this->assertGreaterThan( 0, $id );
+		$jobs->record_failure( $id, 2, 'Original diagnostic retained.' );
+		as_schedule_single_action( time() + 60, Outbox::HOOK, array( $id ), Outbox::GROUP, true );
+		$before    = get_post_meta( $id );
+		$budget    = get_option( OptionBudgetLedger::OPTION );
+		$legacy    = get_option( Throttle::OPTION );
+		$attempts  = 0;
+		$observe   = static function () use ( &$attempts ): void {
+			++$attempts;
+		};
+		$fault_hit = false;
+		$hold      = static function ( $check, $object_id, $key ) use ( $fault, $id, &$fault_hit ) {
+			if ( 'hold' === $fault && $object_id === $id && NotificationHold::META === $key ) {
+				$fault_hit = true;
+				return false;
+			}
+			return $check;
+		};
+		$reads     = 0;
+		$cancel    = static function ( string $sql ) use ( $fault, &$fault_hit, &$reads ): string {
+			if ( 'cancel' === $fault && str_starts_with( $sql, 'UPDATE' ) && str_contains( $sql, 'actionscheduler_actions' ) && str_contains( $sql, 'canceled' ) ) {
+				$fault_hit = true;
+				return 'SELECT 0';
+			}
+			// Native AS query_actions selects IDs; cancellation's other reads are excluded.
+			if ( str_starts_with( ltrim( $sql ), 'SELECT a.action_id' ) && str_contains( $sql, 'actionscheduler_actions' ) ) {
+				++$reads;
+				if ( ( 'snapshot-read' === $fault && 1 === $reads ) || ( 'readback-read' === $fault && 2 === $reads ) ) {
+					$fault_hit = true;
+					return 'SELECT * FROM linker_synthetic_missing_reminder_actions';
+				}
+			}
+			return $sql;
+		};
+		$warnings  = array();
+		$logger    = static function ( string $line ) use ( &$warnings ): string {
+			if ( str_starts_with( $line, 'Automatic review reminder retained;' ) ) {
+				$warnings[] = $line;
+			}
+			return $line;
+		};
+		global $wpdb;
+		$suppressed = $wpdb->suppress_errors( true );
+		add_action( 'phpmailer_init', $observe, PHP_INT_MAX );
+		add_filter( 'update_post_metadata', $hold, 10, 3 );
+		add_filter( 'query', $cancel, 998 );
+		add_filter( 'woocommerce_logger_log_message', $logger );
+		try {
+			do_action( Outbox::HOOK, $id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Actual original-job consumer.
+		} finally {
+			remove_action( 'phpmailer_init', $observe, PHP_INT_MAX );
+			remove_filter( 'update_post_metadata', $hold, 10 );
+			remove_filter( 'query', $cancel, 998 );
+			remove_filter( 'woocommerce_logger_log_message', $logger );
+			$wpdb->suppress_errors( $suppressed );
+		}
+		$this->assertSame( 0, $attempts );
+		if ( '' !== $fault ) {
+			$this->assertTrue( $fault_hit );
+			$phases = array(
+				'hold'          => 'hold',
+				'cancel'        => 'pending_readback',
+				'snapshot-read' => 'pending_snapshot',
+				'readback-read' => 'pending_readback',
+			);
+			// Woo invokes this filter once per enabled native log handler.
+			$this->assertSame( array( 'Automatic review reminder retained; ' . $phases[ $fault ] . ' confirmation failed.' ), array_values( array_unique( $warnings ) ) );
+			if ( 'snapshot-read' === $fault || 'readback-read' === $fault ) {
+				$this->assertSame( 'snapshot-read' === $fault ? 1 : 2, $reads );
+			}
+		}
+		$stored = $jobs->load( $id );
+		$this->assertNotNull( $stored );
+		$this->assertSame( $message->to_array(), $stored['message']->to_array() );
+		$this->assertSame( 2, $stored['attempts'] );
+		$this->assertSame( $before['_linker_mail_error'], get_post_meta( $id, '_linker_mail_error', false ) );
+		$this->assertSame( 'private', get_post_status( $id ) );
+		$this->assertSame( $budget, get_option( OptionBudgetLedger::OPTION ) );
+		$this->assertSame( $legacy, get_option( Throttle::OPTION ) );
+		if ( '' === $fault ) {
+			$this->assertTrue( NotificationHold::job_held( $id ) );
+			$this->assertFalse( as_has_scheduled_action( Outbox::HOOK, array( $id ), Outbox::GROUP ) );
+		}
+	}
+
+	/** The same final transport gate also rejects a typed nonqueued reminder. */
+	public function test_nonqueued_typed_reminder_cannot_reach_transport_or_create_a_job(): void {
+		$before  = self::newest_mail_job();
+		$budget  = get_option( OptionBudgetLedger::OPTION );
+		$legacy  = get_option( Throttle::OPTION );
+		$attempt = new \ReflectionMethod( Outbox::class, 'attempt' );
+		$message = new Message( array( self::TESTER ), 'Synthetic inline reminder', 'No inline transport.', array(), array(), true, Message::REVIEW_REMINDER );
+		$this->assertFalse( $attempt->invoke( new Outbox( new JobStore(), new Throttle() ), $message, 0, 0 ) );
+		$this->assertSame( array(), self::mail_jobs_after( $before ) );
+		$this->assertSame( $budget, get_option( OptionBudgetLedger::OPTION ) );
+		$this->assertSame( $legacy, get_option( Throttle::OPTION ) );
+	}
+
+	/** Native success and fault cases.
+	 *
+	 * @return array<string,array{string}> Cases.
+	 */
+	public static function hold_failures(): array {
+		return array(
+			'normal'        => array( '' ),
+			'hold-write'    => array( 'hold' ),
+			'cancel-write'  => array( 'cancel' ),
+			'snapshot-read' => array( 'snapshot-read' ),
+			'readback-read' => array( 'readback-read' ),
+		);
+	}
+
+	/** Normal standard and critical messages remain eligible for local delivery.
+	 *
+	 * @testWith [false]
+	 *           [true]
+	 * @param bool $critical Normal notification priority.
+	 */
+	public function test_normal_mail_still_uses_the_existing_native_transport( bool $critical ): void {
+		$emails = WC()->mailer()->get_emails();
+		$email  = $emails[ $critical ? \Linker\Commerce\Registration\Emails\ApprovedEmail::class : \Linker\Commerce\Digest\DigestEmail::class ];
+		$this->assertInstanceOf( \WC_Email::class, $email );
+		$budget  = get_option( OptionBudgetLedger::OPTION );
+		$marker  = self::newest_mail_job();
+		$message = Capture::run(
+			$email,
+			function () use ( $email ): void {
+				// WC_Email::send invokes the registered native producer wrapper and capture seam.
+				$this->assertTrue( $email->send( self::TESTER, 'Synthetic normal notification', 'Normal original notification.', '', array() ) );
+			}
+		);
+		$this->assertInstanceOf( Message::class, $message );
+		$this->assertSame( $critical, $message->critical );
+		$this->assertSame( $critical ? 'security' : 'transaction', $message->origin['kind'] );
+		$this->assertSame( $email->id, $message->origin['producer'] );
+		$this->assertTrue( NativeOrigin::valid( $message ) );
+		$this->assertSame( array( self::TESTER ), $message->to );
+		$this->assertSame( 'Synthetic normal notification', $message->subject );
+		$this->assertStringContainsString( 'Normal original notification.', $message->body );
+		$this->assertSame( $budget, get_option( OptionBudgetLedger::OPTION ), 'Native capture does not debit transport.' );
+		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
+		$jobs = new JobStore();
+		$id   = $jobs->create( $message );
+		$this->assertGreaterThan( 0, $id );
+		$stored = $jobs->load( $id );
+		$this->assertNotNull( $stored );
+		$this->assertSame( $critical, $stored['message']->critical );
+		$this->assertFalse( $jobs->critical( $id ), 'Native producer priority is distinct from a private staff-release marker.' );
+		$delivered = array();
+		$observe   = static function ( array $mail ) use ( &$delivered ): void {
+			$delivered[] = $mail;
+		};
+		add_action( 'wp_mail_succeeded', $observe );
+		try {
+			do_action( Outbox::HOOK, $id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Actual native consumer.
+		} finally {
+			remove_action( 'wp_mail_succeeded', $observe );
+		}
+		$this->assertNull( $jobs->load( $id ) );
+		$this->assertCount( 1, $delivered );
+		$this->assertSame( array( self::TESTER ), $delivered[0]['to'] );
+		$this->assertSame( $message->subject, $delivered[0]['subject'] );
+		$this->assertSame( $message->body, $delivered[0]['message'] );
+		$this->assertNotFalse( get_option( OptionBudgetLedger::OPTION ) );
+	}
+
+	/** Public priority or producer fields cannot replace a complete native witness.
+	 *
+	 * @testWith ["unclassified"]
+	 *           ["priority"]
+	 *           ["origin"]
+	 * @param string $forgery The untrusted fixture fields.
+	 */
+	public function test_unclassified_or_forged_priority_retains_job_without_transport_or_budget( string $forgery ): void {
+		$critical = 'unclassified' !== $forgery;
+		$origin   = 'origin' === $forgery ? array(
+			'kind'     => 'security',
+			'producer' => 'linker_approval_approved',
+			'seal'     => str_repeat( 'a', 64 ),
+		) : array();
+		$message  = new Message( array( self::TESTER ), 'Synthetic unclassified notification', 'Unclassified content stays retained.', array(), array(), $critical, Message::STANDARD, $origin );
+		$this->assertFalse( NativeOrigin::valid( $message ) );
+		$jobs = new JobStore();
+		$id   = $jobs->create( $message );
+		$this->assertGreaterThan( 0, $id );
+		$budget   = get_option( OptionBudgetLedger::OPTION );
+		$legacy   = get_option( Throttle::OPTION );
+		$attempts = 0;
+		$observe  = static function () use ( &$attempts ): void {
+			++$attempts;
+		};
+		add_action( 'phpmailer_init', $observe, PHP_INT_MAX );
+		try {
+			do_action( Outbox::HOOK, $id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Actual native consumer.
+		} finally {
+			remove_action( 'phpmailer_init', $observe, PHP_INT_MAX );
+		}
+		$this->assertSame( 0, $attempts );
+		$this->assertSame( $budget, get_option( OptionBudgetLedger::OPTION ) );
+		$this->assertSame( $legacy, get_option( Throttle::OPTION ) );
+		$retained = $jobs->load( $id );
+		$this->assertNotNull( $retained );
+		$this->assertSame( $message->to_array(), $retained['message']->to_array() );
+		$this->assertSame( 0, $retained['attempts'] );
+	}
+}

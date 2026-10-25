@@ -152,6 +152,7 @@ if ( ! class_exists( 'WP_Session_Tokens' ) ) {
 		public $post_status  = 'publish';
 		public $post_password = '';
 		public $post_content = '';
+		public $post_excerpt = '';
 		public $post_name    = '';
 		public $post_date    = '';
 		public function __construct( $post ) {
@@ -243,6 +244,7 @@ if ( ! class_exists( 'WP_REST_Response' ) ) {
 	class WP_REST_Response {
 		public $data;
 		public $status;
+		public $headers = array();
 		public function __construct( $data = null, $status = 200 ) {
 			$this->data   = $data;
 			$this->status = $status;
@@ -255,6 +257,12 @@ if ( ! class_exists( 'WP_REST_Response' ) ) {
 		}
 		public function set_data( $data ) {
 			$this->data = $data;
+		}
+		public function header( $key, $value, $replace = true ) {
+			$this->headers[ $key ] = ! $replace && isset( $this->headers[ $key ] ) ? $this->headers[ $key ] . ', ' . $value : $value;
+		}
+		public function get_headers() {
+			return $this->headers;
 		}
 	}
 }

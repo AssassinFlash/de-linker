@@ -1,8 +1,8 @@
-@font-face{font-family:"Plus Jakarta Sans";font-style:normal;font-weight:400;font-display:swap;src:url("/wp-content/plugins/linker-commerce/assets/fonts/plus-jakarta-sans-400.ttf") format("truetype")}
-@font-face{font-family:"Plus Jakarta Sans";font-style:normal;font-weight:500;font-display:swap;src:url("/wp-content/plugins/linker-commerce/assets/fonts/plus-jakarta-sans-500.ttf") format("truetype")}
-@font-face{font-family:"Plus Jakarta Sans";font-style:normal;font-weight:600;font-display:swap;src:url("/wp-content/plugins/linker-commerce/assets/fonts/plus-jakarta-sans-600.ttf") format("truetype")}
-@font-face{font-family:"Plus Jakarta Sans";font-style:normal;font-weight:700;font-display:swap;src:url("/wp-content/plugins/linker-commerce/assets/fonts/plus-jakarta-sans-700.ttf") format("truetype")}
-@font-face{font-family:"DM Serif Display";font-style:normal;font-weight:400;font-display:swap;src:url("/wp-content/plugins/linker-commerce/assets/fonts/dm-serif-display-400.ttf") format("truetype")}
+@font-face{font-family:"Plus Jakarta Sans";font-style:normal;font-weight:400;font-display:swap;src:url("/wp-content/plugins/linker-commerce/assets/fonts/plus-jakarta-sans-400.woff2") format("woff2"),url("/wp-content/plugins/linker-commerce/assets/fonts/plus-jakarta-sans-400.ttf") format("truetype")}
+@font-face{font-family:"Plus Jakarta Sans";font-style:normal;font-weight:500;font-display:swap;src:url("/wp-content/plugins/linker-commerce/assets/fonts/plus-jakarta-sans-500.woff2") format("woff2"),url("/wp-content/plugins/linker-commerce/assets/fonts/plus-jakarta-sans-500.ttf") format("truetype")}
+@font-face{font-family:"Plus Jakarta Sans";font-style:normal;font-weight:600;font-display:swap;src:url("/wp-content/plugins/linker-commerce/assets/fonts/plus-jakarta-sans-600.woff2") format("woff2"),url("/wp-content/plugins/linker-commerce/assets/fonts/plus-jakarta-sans-600.ttf") format("truetype")}
+@font-face{font-family:"Plus Jakarta Sans";font-style:normal;font-weight:700;font-display:swap;src:url("/wp-content/plugins/linker-commerce/assets/fonts/plus-jakarta-sans-700.woff2") format("woff2"),url("/wp-content/plugins/linker-commerce/assets/fonts/plus-jakarta-sans-700.ttf") format("truetype")}
+@font-face{font-family:"DM Serif Display";font-style:normal;font-weight:400;font-display:swap;src:url("/wp-content/plugins/linker-commerce/assets/fonts/dm-serif-display-400.woff2") format("woff2"),url("/wp-content/plugins/linker-commerce/assets/fonts/dm-serif-display-400.ttf") format("truetype")}
 /* prototype/assets/tokens-a.css
    方向 A · 坝水青绿 · 清透工程感
    色：ds-explore/color.html 方向 01（锚 #0c7f73）

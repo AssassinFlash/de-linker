@@ -40,16 +40,33 @@ final class SelectionView {
 			);
 		}
 		$removed = array() === $context && '' === $raw && ! $included;
-		$html    = '<fieldset class="linker-contact-selection' . ( $removed ? ' linker-contact-selection--excluded' : '' ) . '"><legend>' . esc_html__( 'Product selection', 'linker-commerce' ) . '</legend>';
+		$html    = '<fieldset class="linker-contact-selection' . ( $removed ? ' linker-contact-selection--excluded' : '' ) . '"><legend>' . esc_html( self::heading( $context ) ) . '</legend>';
 		$html   .= '<input type="hidden" name="' . SelectionContext::INCLUDE_FIELD . '" value="0" />';
 		if ( $removed ) {
-			return $html . '<p class="linker-contact-selection__excluded" role="status">' . esc_html__( 'This selection will not be sent.', 'linker-commerce' ) . '</p></fieldset>';
+			return $html . '<p class="linker-contact-selection__excluded" role="status">' . esc_html__( 'These details will not be sent.', 'linker-commerce' ) . '</p></fieldset>';
 		}
-		$html .= '<label class="linker-contact-selection__toggle"><input type="checkbox" name="' . SelectionContext::FIELD . '" value="' . esc_attr( $raw ) . '"' . ( $included ? ' checked' : '' ) . ' /><span>' . esc_html__( 'Include this selection with my message', 'linker-commerce' ) . '</span></label>';
+		$html .= '<label class="linker-contact-selection__toggle"><input type="checkbox" name="' . SelectionContext::FIELD . '" value="' . esc_attr( $raw ) . '"' . ( $included ? ' checked' : '' ) . ' /><span>' . esc_html__( 'Include these details with my message', 'linker-commerce' ) . '</span></label>';
 		$html .= '<div class="linker-contact-selection__summary">';
-		$html .= array() !== $context ? self::summary( $context ) : '<p role="status">' . esc_html__( 'This selection could not be loaded. You can exclude it and send your message.', 'linker-commerce' ) . '</p>';
-		$html .= '</div><p class="linker-contact-selection__excluded" role="status">' . esc_html__( 'This selection will not be sent.', 'linker-commerce' ) . '</p>';
+		$html .= array() !== $context ? self::summary( $context ) : '<p role="status">' . esc_html__( 'These details could not be loaded. To send your message without them, uncheck “Include these details with my message”.', 'linker-commerce' ) . '</p>';
+		$html .= '</div><p class="linker-contact-selection__excluded" role="status">' . esc_html__( 'These details will not be sent.', 'linker-commerce' ) . '</p>';
 		return $html . '</fieldset>';
+	}
+
+	/**
+	 * Describe the actual public source/request without calling an ordinary page a product.
+	 *
+	 * @param array<string,mixed> $context Normalized public data or a compatible stored record.
+	 */
+	private static function heading( array $context ): string {
+		$selection = (array) ( $context['selection'] ?? array() );
+		$platform  = $selection['platform'] ?? null;
+		if ( 'product' === ( $context['type'] ?? null ) || ( is_string( $platform ) && '' !== $platform ) ) {
+			return __( 'Product selection', 'linker-commerce' );
+		}
+		if ( array() !== $context && array() === $selection ) {
+			return __( 'Related page', 'linker-commerce' );
+		}
+		return __( 'Related details', 'linker-commerce' );
 	}
 
 	/**
@@ -74,6 +91,8 @@ final class SelectionView {
 	private static function label( string $key ): string {
 		return match ( $key ) {
 			'q' => __( 'Search', 'linker-commerce' ),
+			'platform' => __( 'Product', 'linker-commerce' ),
+			'document' => __( 'Documents', 'linker-commerce' ),
 			'brand' => __( 'Brand', 'linker-commerce' ),
 			'application' => __( 'Application', 'linker-commerce' ),
 			'phase' => __( 'Phase', 'linker-commerce' ),
@@ -94,6 +113,9 @@ final class SelectionView {
 	 * @param string $value Sanitized selected value.
 	 */
 	private static function value( string $key, string $value ): string {
+		if ( 'document' === $key && 'Datasheets & certificates' === $value ) {
+			return __( 'Datasheets & certificates', 'linker-commerce' );
+		}
 		if ( 'sort' === $key ) {
 			return match ( $value ) {
 				'newest' => __( 'Newest first', 'linker-commerce' ),
@@ -133,7 +155,7 @@ final class SelectionView {
 	public function admin( WC_Order $order ): void {
 		$context = SelectionContext::stored( $order->get_meta( SelectionContext::META ) );
 		if ( array() !== $context ) {
-			echo '<section class="linker-contact-selection-record"><h3>' . esc_html__( 'Product selection', 'linker-commerce' ) . '</h3>' . wp_kses_post( self::summary( $context ) ) . '</section>';
+			echo '<section class="linker-contact-selection-record"><h3>' . esc_html( self::heading( $context ) ) . '</h3>' . wp_kses_post( self::summary( $context ) ) . '</section>';
 		}
 	}
 
@@ -156,14 +178,14 @@ final class SelectionView {
 		}
 		if ( $plain_text ) {
 
-			$lines = array( __( 'Product selection', 'linker-commerce' ), (string) ( $context['title'] ?? '' ), (string) ( $context['url'] ?? '' ) );
+			$lines = array( self::heading( $context ), (string) ( $context['title'] ?? '' ), (string) ( $context['url'] ?? '' ) );
 			foreach ( (array) ( $context['selection'] ?? array() ) as $key => $value ) {
 				$lines[] = self::label( (string) $key ) . ': ' . self::value( (string) $key, (string) $value );
 			}
 			echo implode( "\n", $lines ) . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- native plaintext email; HTML escaping changes the message bytes.
 			return;
 		}
-		echo '<h2>' . esc_html__( 'Product selection', 'linker-commerce' ) . '</h2>' . wp_kses_post( self::summary( $context ) );
+		echo '<h2>' . esc_html( self::heading( $context ) ) . '</h2>' . wp_kses_post( self::summary( $context ) );
 	}
 
 	/**

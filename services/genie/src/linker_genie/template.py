@@ -655,8 +655,17 @@ def fallback(
         )
     if route is not None and route.name == "documents" and facts.documents:
         refs = _document_refs(facts)
-        document_blocks: list[Block] = [TextBlock(text=DOCUMENTS[language], refs=refs)]
+        # A separately requested product keeps only this turn's qualified
+        # cards. A document owner / page product alone is not qualification.
+        ids = _card_ids(facts, route)[:SEARCH_LIMIT]
+        document_blocks: list[Block] = [
+            TextBlock(
+                text=DOCUMENTS[language], refs=[*refs, *(str(pid) for pid in ids)]
+            )
+        ]
         document_blocks.extend(DocumentBlock(ref=ref) for ref in refs)
+        if ids:
+            document_blocks.append(CardsBlock(product_ids=ids))
         return hydrate(TurnOutput(language=language, blocks=document_blocks), facts)
     clarified = _clarify(facts, language, route)
     if clarified is not None:
@@ -723,7 +732,13 @@ def _clarify(
     reported = any(outcome[note.code] in ("products", "empty") for note in notes)
     if failed and not missed and not reported:
         return None
-    qualified = facts.qualified_ids
+    # Clarification must share the document card policy too, while retaining
+    # existing unsearched/unknown-model explanations. Other routes are unchanged.
+    qualified = (
+        set(_card_ids(facts, route))
+        if route.name == "documents"
+        else facts.qualified_ids
+    )
     outage = _outage_line(failed, facts, language)
     missed_lines = _missed_sentences(missed, language)
 
@@ -872,11 +887,15 @@ def _document_refs(facts: TurnFacts) -> list[str]:
 def _card_ids(facts: TurnFacts, route: Route | None) -> list[int]:
     """Ids a fallback may show. The card block caps them at the route's six.
 
-    Qualified ids first. A products search that qualified nothing does not
+    Documents show only separately requested, qualified products, whether
+    documents were found or not. Other routes keep qualified ids first.
+    A products search that qualified nothing does not
     borrow `facts.product_ids` (#366): those are a series hit, a page, or a
     get-product, not the model the customer asked for.
     """
     qualified = sorted(facts.qualified_ids)
+    if route is not None and route.name == "documents":
+        return qualified if route.show_products else []
     if qualified:
         return qualified
     if route is not None and route.name == "products":
@@ -898,6 +917,9 @@ def _degraded_keeping_findings(
     if route is not None and route.name == "documents" and facts.documents:
         blocks: list[Block] = [HandoffBlock(summary=DEGRADED[language])]
         blocks.extend(DocumentBlock(ref=ref) for ref in _document_refs(facts))
+        ids = _card_ids(facts, route)[:SEARCH_LIMIT]
+        if ids:
+            blocks.append(CardsBlock(product_ids=ids))
         return hydrate(TurnOutput(language=language, blocks=blocks), facts, language)
     ids = _card_ids(facts, route)[:SEARCH_LIMIT]
     if not ids:
@@ -1445,7 +1467,10 @@ def seal(
     not print, exactly as a page's are. The configurator's page type is
     `other`, so the generic strip below would cut the answer's figures back to
     the question's own digits. The clearance and document branches keep their
-    own allowances and still run.
+    own allowances and still run. A text block citing a customer attachment
+    keeps the reading's figure facts as well as the question's figures. This
+    happens after grounding and hydration: a filename or an unrelated file
+    must not license numbers, nor may another block borrow that citation.
     """
     if route is None or page_type not in (None, "other"):
         return output
@@ -1469,10 +1494,43 @@ def seal(
         and not route.stock_beside
         and "solution" not in facts.facts
     ):
-        return grounding.strip_unlicensed_numbers(
-            output, grounding.question_allowance(question)
-        )
+        return _seal_attachment_figures(output, facts, question)
     return output
+
+
+def _seal_attachment_figures(
+    output: TurnOutput, facts: TurnFacts, question: str
+) -> TurnOutput:
+    """Keep only question numbers and each text block's cited reading figures.
+
+    The earlier grounding check still requires numeric placeholders and
+    rejects unknown facts and attachment amounts. This final seal must not
+    erase those hydrated figures simply because the question omitted them.
+    A file ref licenses that file's figures; a figure ref licenses only that
+    figure. Raw reading text and the filename are not numerical allowances.
+    """
+    from linker_genie import ground as grounding
+
+    question_numbers = grounding.question_allowance(question)
+    blocks: list[Block] = []
+    for block in output.blocks:
+        allowed = set(question_numbers)
+        if isinstance(block, TextBlock):
+            for fact_id, fact in facts.facts.items():
+                match = re.fullmatch(r"(att[1-9][0-9]{0,5})\.n[1-9][0-9]*", fact_id)
+                if match is None or fact.source != "read-attachment":
+                    continue
+                reading_id = match.group(1)
+                reading = facts.facts.get(reading_id)
+                if reading is None or reading.source != "read-attachment":
+                    continue
+                if reading_id in block.refs or fact_id in block.refs:
+                    allowed.update(grounding.question_allowance(fact.value))
+        sealed = grounding.strip_unlicensed_numbers(
+            output.model_copy(update={"blocks": [block]}), allowed
+        )
+        blocks.extend(sealed.blocks)
+    return output.model_copy(update={"blocks": blocks})
 
 
 def _clearance_question(question: str) -> bool:

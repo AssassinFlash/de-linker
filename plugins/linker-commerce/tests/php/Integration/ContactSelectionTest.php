@@ -8,6 +8,8 @@
 declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Integration;
 
+use Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture;
+
 // phpcs:disable WordPress.Security.NonceVerification -- Actual native nonce/proof consumers are under test; fixture globals are restored.
 // phpcs:disable WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv -- Private local protection fixtures only, restored after each test.
 
@@ -31,9 +33,21 @@ use Linker\Commerce\Protection\Proof;
  * @coversNothing
  */
 final class ContactSelectionTest extends IntegrationTestCase {
+
+	/** Typed local service with native consumers.
+	 *
+	 * @var NormalMailAuthorizationFixture
+	 */
+	private NormalMailAuthorizationFixture $authorization;
 	/** Preserve native journal/cookies/settings; test only local synthetic identities. */
 	protected function setUp(): void {
 		parent::setUp();
+		require_once dirname( __DIR__, 2 ) . '/fixtures/NormalMailAuthorizationFixture.php';
+		$this->authorization = NormalMailAuthorizationFixture::install(
+			function ( callable $remove ): void {
+				$this->later( $remove );
+			}
+		);
 		$this->as_user( 0 );
 		$old    = get_option( Ledger::OPTION );
 		$cookie = $_COOKIE;
@@ -164,6 +178,7 @@ final class ContactSelectionTest extends IntegrationTestCase {
 		} else {
 			$this->assertSame( '', $order->get_meta( SelectionContext::META ) );
 		}
+		$this->authorization->drain();
 		$jobs = self::mail_jobs_after( $marker );
 		$this->assertCount( 2, $jobs );
 		$team_found = false;
@@ -182,6 +197,7 @@ final class ContactSelectionTest extends IntegrationTestCase {
 		}
 		$this->assertTrue( $team_found );
 		$this->assertSame( 'sent', ( new Handler() )->process( $post ), 'Same logical retry recovers the same native record.' );
+		$this->authorization->drain();
 		$this->assertSame( $jobs, self::mail_jobs_after( $marker ), 'Retry does not queue duplicate mail.' );
 		$changed = $post;
 		if ( $included ) {
@@ -193,6 +209,7 @@ final class ContactSelectionTest extends IntegrationTestCase {
 
 		wc_load_cart();
 		$_COOKIE['wp_woocommerce_session_context_fixture'] = 'native-presence';
+		$post['linker_individual_review']                  = '1';
 		FormRecovery::save( 'contact', $post );
 		$recovered = FormRecovery::consume( 'contact' );
 		if ( $included ) {
@@ -210,6 +227,7 @@ final class ContactSelectionTest extends IntegrationTestCase {
 		$this->assertSame( $post[ SelectionContext::INCLUDE_FIELD ], $recovered[ SelectionContext::INCLUDE_FIELD ] );
 		$this->assertSame( $post['message'], $recovered['message'] );
 		$this->assertSame( $post['linker_request_id'], $recovered['linker_request_id'] );
+		$this->assertSame( '1', $recovered['linker_individual_review'], 'Selection and the individual-review request survive the same native recovery.' );
 		$this->assertArrayNotHasKey( 'linker_proof', $recovered );
 		FormRecovery::save( 'contact', $post );
 		$html = ( new Form() )->render();

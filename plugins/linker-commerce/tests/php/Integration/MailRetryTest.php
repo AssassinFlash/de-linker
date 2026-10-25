@@ -13,6 +13,9 @@ use ActionScheduler_QueueRunner;
 use ActionScheduler_Store;
 use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Mail\Throttle;
+use Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture;
+use Linker\Commerce\Contact\Submission;
+use Linker\Commerce\Inquiry\Sender;
 
 /**
  * A message whose first three sends fail is retried by Action Scheduler at the
@@ -26,8 +29,41 @@ final class MailRetryTest extends IntegrationTestCase {
 	 * Three failures, then one delivery.
 	 */
 	public function test_three_failures_then_one_delivery(): void {
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		delete_option( Throttle::OPTION );
-		$subject    = 'Linker integration test ' . self::tag();
+		require_once dirname( __DIR__, 2 ) . '/fixtures/NormalMailAuthorizationFixture.php';
+		$authorization = NormalMailAuthorizationFixture::install(
+			function ( callable $remove ): void {
+				$this->later( $remove );
+			}
+		);
+		$details       = Submission::from_post(
+			array(
+				'name'    => 'Normal retry installer',
+				'email'   => self::TESTER,
+				'company' => 'Retry EPC ' . self::tag(),
+				'message' => 'One message, three failures.',
+				'consent' => '1',
+			)
+		);
+		$this->assertInstanceOf( Submission::class, $details );
+		$marker = self::newest_mail_job();
+		$order  = ( new Sender() )->message( $details );
+		$this->assertInstanceOf( \WC_Order::class, $order );
+		$this->later(
+			static function () use ( $order ): void {
+				$order->delete( true );
+			}
+		);
+		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
+		$state = $authorization->process( $order );
+		$this->assertSame( 'normal', $state['verdict']['decision'] );
+		$job_id = $state['jobs']['team']['id'];
+		$stored = ( new \Linker\Commerce\Mail\JobStore() )->load( $job_id );
+		$this->assertNotNull( $stored );
+		$this->assertStringContainsString( 'One message, three failures.', $stored['message']->body );
+		$this->assertSame( $order->get_id(), $authorization->requests[0]['binding']['record_id'] );
+		$subject    = $stored['message']->subject;
 		$failures   = 3;
 		$deliveries = 0;
 		$fail       = static function ( $mailer ) use ( &$failures ): void {
@@ -50,18 +86,8 @@ final class MailRetryTest extends IntegrationTestCase {
 			}
 		);
 
-		$this->assertTrue( wp_mail( 'buyer@example.test', $subject, 'One message, three failures.' ) );
-		// This message's own job, so retries left over from earlier runs are never picked up.
-		$jobs   = get_posts(
-			array(
-				'post_type'      => \Linker\Commerce\Mail\JobStore::POST_TYPE,
-				'post_status'    => 'any',
-				'posts_per_page' => 1,
-				'orderby'        => 'ID',
-				'order'          => 'DESC',
-			)
-		);
-		$job_id = (int) ( $jobs[0]->ID ?? 0 );
+		$this->assertSame( 0, $deliveries, 'Saving and classification alone do not transport content.' );
+		NormalMailAuthorizationFixture::consume( Outbox::HOOK, $job_id );
 		$delays = array();
 		for ( $attempt = 1; $attempt <= 3; ++$attempt ) {
 			$pending = as_get_scheduled_actions(

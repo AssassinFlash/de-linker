@@ -31,21 +31,47 @@
 		throw new RuntimeException( 'Unknown operation.' );
 	}
 	global $wpdb;
+	if ( 'wpdb' !== get_class( $wpdb ) ) {
+		throw new RuntimeException( 'The native WordPress mysqli connection is required.' );
+	}
+	// The native public compatibility accessors expose these protected
+	// properties without reflection, subclass replacement or a new connection.
+	$connection = $wpdb->__get( 'dbh' );
+	$reconnects = $wpdb->__get( 'reconnect_retries' );
+	if ( ! $connection instanceof mysqli || ! is_int( $reconnects ) ) {
+		throw new RuntimeException( 'The native WordPress mysqli connection is required.' );
+	}
 	$engine = $wpdb->get_var( $wpdb->prepare( 'SELECT ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = %s', $wpdb->posts ) );
 	if ( 'InnoDB' !== $engine ) {
 		throw new RuntimeException( 'Transactional post storage is required.' );
 	}
 	$written = array();
 	$ids     = array_map( static fn( array $change ): int => (int) $change['id'], $payload['changes'] );
+	// A replay on a fresh connection has neither this transaction nor its
+	// locks. Native mysqli exceptions must escape before wpdb can reconnect.
+	$thread           = mysqli_thread_id( $connection ); // phpcs:ignore WordPress.DB.RestrictedFunctions.mysql_mysqli_thread_id -- Inspect the existing native handle; do not create or reconnect a connection.
+	$driver           = new mysqli_driver();
+	$report_mode      = $driver->report_mode;
+	$commit_attempted = false;
+	$guard            = static function ( string $query ) use ( $wpdb, $connection, $thread ): string {
+		if ( $wpdb->__get( 'dbh' ) !== $connection || mysqli_thread_id( $connection ) !== $thread ) { // phpcs:ignore WordPress.DB.RestrictedFunctions.mysql_mysqli_thread_id -- A changed transaction connection must fail before another query.
+			throw new RuntimeException( 'Database connection changed during content transaction.' );
+		}
+		mysqli_report( MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT ); // phpcs:ignore WordPress.DB.RestrictedFunctions.mysql_mysqli_report -- Prevent wpdb's disconnected write replay for this CLI transaction only.
+		return $query;
+	};
 	sort( $ids );
-	if ( false === $wpdb->query( 'START TRANSACTION' ) ) {
-		throw new RuntimeException( 'Could not begin the content transaction.' );
-	}
 	try {
+		$wpdb->__set( 'reconnect_retries', 0 );
+		mysqli_report( MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT ); // phpcs:ignore WordPress.DB.RestrictedFunctions.mysql_mysqli_report -- Restored in finally; no persistent connection setting changes.
+		add_filter( 'query', $guard, PHP_INT_MAX );
+		if ( false === $wpdb->query( 'START TRANSACTION' ) ) {
+			throw new RuntimeException( 'Could not begin the content transaction.' );
+		}
 		// Lock both rows before checking their source, so concurrent saves wait.
 		$locked = array();
 		foreach ( $ids as $id ) {
-			$locked[ $id ] = $wpdb->get_var( $wpdb->prepare( "SELECT post_content FROM {$wpdb->posts} WHERE ID = %d FOR UPDATE", $id ) );
+			$locked[ $id ] = $wpdb->get_var( $wpdb->prepare( 'SELECT post_content FROM %i WHERE ID = %d FOR UPDATE', $wpdb->posts, $id ) );
 			clean_post_cache( $id );
 		}
 		foreach ( $payload['changes'] as $change ) {
@@ -75,15 +101,31 @@
 				throw new RuntimeException( 'Saved page differs from the planned bytes.' );
 			}
 		}
+		$commit_attempted = true;
 		if ( false === $wpdb->query( 'COMMIT' ) ) {
 			throw new RuntimeException( 'Could not commit the content transaction.' );
 		}
 	} catch ( Throwable $error ) {
-		$wpdb->query( 'ROLLBACK' );
+		try {
+			$wpdb->query( 'ROLLBACK' );
+		} catch ( Throwable $rollback_error ) {
+			// Keep the first failure authoritative, without logging page data.
+			error_log( 'Content transaction rollback unavailable: ' . get_class( $rollback_error ) . ' (' . $rollback_error->getCode() . ').' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- CLI failure diagnostic contains only exception type/code, never content.
+		}
 		foreach ( $ids as $id ) {
-			clean_post_cache( $id );
+			// clean_post_cache can query a post. These native cache operations
+			// also work after a disconnect, without hiding the first failure.
+			wp_cache_delete( $id, 'posts' );
+			wp_cache_delete( $id, 'post_meta' );
+		}
+		if ( $commit_attempted ) {
+			throw new RuntimeException( 'Commit outcome is unknown. Independently read both pages before retrying or rolling back.', 0, $error ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Preserve the original exception as cause, not interpolated output.
 		}
 		throw $error;
+	} finally {
+		remove_filter( 'query', $guard, PHP_INT_MAX );
+		$wpdb->__set( 'reconnect_retries', $reconnects );
+		mysqli_report( $report_mode ); // phpcs:ignore WordPress.DB.RestrictedFunctions.mysql_mysqli_report -- Restore the caller's original report mode.
 	}
 	foreach ( $ids as $id ) {
 		clean_post_cache( $id );

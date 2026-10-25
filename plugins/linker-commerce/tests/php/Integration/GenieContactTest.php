@@ -10,6 +10,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Integration;
 
+use Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture;
+
 use Linker\Commerce\Genie\Module;
 use Linker\Commerce\Inquiry\Emails\InquiryReceivedEmail;
 use Linker\Commerce\Inquiry\Emails\NewInquiryEmail;
@@ -37,6 +39,12 @@ use WP_REST_Response;
  * @coversNothing
  */
 final class GenieContactTest extends IntegrationTestCase {
+
+	/** Typed local service with native consumers.
+	 *
+	 * @var NormalMailAuthorizationFixture
+	 */
+	private NormalMailAuthorizationFixture $authorization;
 
 	/**
 	 * The default internal recipient (Options::DEFAULT_NOTIFY_TO).
@@ -73,6 +81,12 @@ final class GenieContactTest extends IntegrationTestCase {
 	 */
 	protected function setUp(): void {
 		parent::setUp();
+		require_once dirname( __DIR__, 2 ) . '/fixtures/NormalMailAuthorizationFixture.php';
+		$this->authorization = NormalMailAuthorizationFixture::install(
+			function ( callable $remove ): void {
+				$this->later( $remove );
+			}
+		);
 		if ( ! class_exists( ContactRequest::class ) ) {
 			$this->markTestSkipped( 'linker-tools is not active on this instance.' );
 		}
@@ -137,6 +151,7 @@ final class GenieContactTest extends IntegrationTestCase {
 		delete_option( 'woocommerce_' . NewInquiryEmail::ID . '_settings' );
 		delete_option( 'woocommerce_' . InquiryReceivedEmail::ID . '_settings' );
 		update_option( Options::NOTIFY_BCC, 'copy-' . self::tag() . '@example.test' );
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_MINUTE, time() ), false );
 		$_SERVER['REMOTE_ADDR'] = $address;
 		unset( $_COOKIE[ Conversations::COOKIE ], $_COOKIE[ Conversations::BROWSER_COOKIE ] );
@@ -204,7 +219,7 @@ final class GenieContactTest extends IntegrationTestCase {
 			array(
 				'sent'    => true,
 				'email'   => $guest,
-				'receipt' => true,
+				'receipt' => false,
 			),
 			$response->get_data()
 		);
@@ -215,6 +230,7 @@ final class GenieContactTest extends IntegrationTestCase {
 		$this->assertSame( 'Can I talk to a person?', $record->get_customer_note() );
 		$this->assertSame( $this->conversation, $record->get_meta( Module::HANDOFF_META )['conversation']['id'] );
 		// The team mail (#246's, to the internal recipient) and the receipt.
+		$this->authorization->drain();
 		$rows = $this->jobs_after( $marker );
 		$this->assertCount( 2, $rows, 'the team mail and the receipt' );
 		$team = $this->row_to( $rows, self::INTERNAL );
@@ -251,7 +267,7 @@ final class GenieContactTest extends IntegrationTestCase {
 		$this->assertSame( $guest, $notes[0]['email'] );
 		$this->assertSame( 'asked', $notes[0]['reason'] );
 		$this->assertSame( $record->get_id(), $notes[0]['order'] );
-		$this->assertTrue( $notes[0]['receipt'] );
+		$this->assertFalse( $notes[0]['receipt'] );
 	}
 
 	/**
@@ -270,6 +286,7 @@ final class GenieContactTest extends IntegrationTestCase {
 		$response = $this->send( array( 'email' => $guest ) + self::fields() );
 		$this->assertSame( 200, $response->get_status() );
 		$this->assertFalse( $response->get_data()['receipt'] );
+		$this->authorization->drain();
 		$rows = $this->jobs_after( $marker );
 		$this->assertCount( 1, $rows, 'the team mail only' );
 		$this->assertSame( array( self::INTERNAL ), $rows[0]['to'] );
@@ -314,6 +331,7 @@ final class GenieContactTest extends IntegrationTestCase {
 		$this->assertSame( 200, $response->get_status() );
 		$record = $this->record( $customer->get_billing_email() );
 		$this->assertSame( $customer->get_id(), $record->get_customer_id() );
+		$this->authorization->drain();
 		$rows = $this->jobs_after( $marker );
 		$this->assertCount( 2, $rows, 'the team mail and the receipt' );
 		$team = $this->row_to( $rows, self::INTERNAL );
@@ -386,6 +404,7 @@ final class GenieContactTest extends IntegrationTestCase {
 			unset( $_COOKIE[ Conversations::COOKIE ], $_COOKIE[ Conversations::BROWSER_COOKIE ] );
 		}
 		// Each accepted request is a team mail and a receipt.
+		$this->authorization->drain();
 		$this->assertCount( 2 * ContactRequest::LIMIT, $this->jobs_after( $marker ) );
 	}
 
@@ -425,7 +444,11 @@ final class GenieContactTest extends IntegrationTestCase {
 		$second = $this->send( $params );
 		$this->assertSame( array( 200, 200 ), array( $first->get_status(), $second->get_status() ) );
 		// Once: one team mail and one receipt.
+		$this->authorization->drain();
 		$this->assertCount( 2, $this->jobs_after( $marker ) );
+		$after = $this->send( $params );
+		$this->assertTrue( $after->get_data()['receipt'] );
+		$this->assertCount( 2, $this->jobs_after( $marker ), 'Completed retry does not duplicate either message.' );
 		$state = rest_do_request( new WP_REST_Request( 'GET', '/linker-ai/v1/genie/contact' ) );
 		$this->assertSame(
 			array(
@@ -456,6 +479,7 @@ final class GenieContactTest extends IntegrationTestCase {
 			restore_previous_locale();
 		}
 		$this->assertSame( 200, $response->get_status() );
+		$this->authorization->drain();
 		$team = $this->row_to( $this->jobs_after( $marker ), self::INTERNAL );
 		$this->assertStringContainsString( 'Asked to talk to a person', html_entity_decode( $team['body'] ) );
 		$this->assertSame( 'Asked to talk to a person', get_post_meta( $this->conversation, ContactRequest::NOTE, false )[0]['label'] );
@@ -477,11 +501,16 @@ final class GenieContactTest extends IntegrationTestCase {
 				array(
 					'after'   => 3,
 					'email'   => $guest,
-					'receipt' => true,
+					'receipt' => false,
 				),
 			),
 			$stored['contacts']
 		);
+		$this->authorization->drain();
+		$fresh = rest_do_request( new WP_REST_Request( 'GET', '/linker-ai/v1/genie/conversation' ) )->get_data();
+		$this->assertTrue( $fresh['contacts'][0]['receipt'], 'Fresh history reads the normal native receipt decision.' );
+		$current = rest_do_request( new WP_REST_Request( 'GET', '/linker-ai/v1/genie/contact' ) )->get_data();
+		$this->assertTrue( $current['sent']['receipt'] );
 	}
 
 	/**

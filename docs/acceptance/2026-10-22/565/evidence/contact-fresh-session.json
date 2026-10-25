@@ -1,0 +1,10 @@
+{
+  "captured_utc": "2026-10-22T12:32:42.913007+00:00",
+  "fresh_cookie_jar": true,
+  "transport": "same local IPv4 connection",
+  "final_path": "/de/kontakt/",
+  "native_limit_text_present": true,
+  "mfa_challenge": false,
+  "http_status": 200,
+  "note": "HTTP status alone is not acceptance evidence."
+}

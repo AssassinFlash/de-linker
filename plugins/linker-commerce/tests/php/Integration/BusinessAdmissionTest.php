@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Integration;
 
+use Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture;
+
 // phpcs:disable WordPress.Security.NonceVerification -- Fixture snapshots and posted data are intentionally sent to the actual native nonce/proof validators.
 // phpcs:disable WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv -- Isolated private env fixtures are restored in cleanup.
 
@@ -38,13 +40,27 @@ use WP_Error;
  */
 final class BusinessAdmissionTest extends IntegrationTestCase {
 
+	/** Typed local service with native consumers.
+	 *
+	 * @var NormalMailAuthorizationFixture
+	 */
+	private NormalMailAuthorizationFixture $authorization;
+
 	/**
 	 * Private fixtures never use live keys or send customer mail.
 	 */
 	protected function setUp(): void {
 		parent::setUp();
+		require_once dirname( __DIR__, 2 ) . '/fixtures/NormalMailAuthorizationFixture.php';
+		$this->authorization = NormalMailAuthorizationFixture::install(
+			function ( callable $remove ): void {
+				$this->later( $remove );
+			}
+		);
 		$this->as_user( 0 );
-		$old = get_option( Ledger::OPTION );
+		$old    = get_option( Ledger::OPTION );
+		$review = get_option( \Linker\Commerce\Protection\IntakeStore::OPTION );
+		delete_option( \Linker\Commerce\Protection\IntakeStore::OPTION );
 		delete_option( Ledger::OPTION );
 		$cookie                      = $_COOKIE; // phpcs:ignore WordPress.Security.NonceVerification -- Restore the fixture request.
 		$_COOKIE[ Identity::COOKIE ] = str_repeat( 'b', 32 );
@@ -60,13 +76,17 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 			putenv( $key . '=' . $value );
 		}
 		$this->later(
-			static function () use ( $env, $old, $cookie ): void {
+			static function () use ( $env, $old, $cookie, $review ): void {
 				foreach ( $env as $key => $value ) {
 					putenv( false === $value ? $key : $key . '=' . $value );
 				}
 				delete_option( Ledger::OPTION );
 				if ( false !== $old ) {
 					update_option( Ledger::OPTION, $old, false );
+				}
+				delete_option( \Linker\Commerce\Protection\IntakeStore::OPTION );
+				if ( false !== $review ) {
+					update_option( \Linker\Commerce\Protection\IntakeStore::OPTION, $review, false );
 				}
 				$_COOKIE = $cookie;
 			}
@@ -170,7 +190,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		);
 		$first                 = $this->post( 'contact' );
 		$first['linker_proof'] = '';
-		$this->assertSame( 'sent', ( new ContactHandler() )->process( $first ) );
+		$this->assertSame( 'saved_review', ( new ContactHandler() )->process( $first ) );
 		$orders = wc_get_orders( array( 'billing_email' => $first['email'] ) );
 		$this->assertIsArray( $orders );
 		$order = $orders[0];
@@ -223,23 +243,32 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * Missing proof and native nonce failures create neither an inquiry nor mail.
+	 * Optional policy preserves a held inquiry; native nonce failures still create none.
 	 */
-	public function test_invalid_proofs_and_nonces_have_zero_business_side_effects(): void {
+	public function test_invalid_proofs_save_held_inquiry_while_bad_nonce_has_no_side_effects(): void {
+		$this->optional_business_verification();
 		$marker = self::newest_mail_job();
 		$post   = $this->post();
-		foreach ( array( array( 'linker_proof' => '' ), array( 'linker_proof' => 'forged' ), array( 'linker_inquiry_nonce' => 'forged' ) ) as $bad ) {
-			$this->assertInstanceOf( WP_Error::class, ( new Handler() )->process( array_replace( $post, $bad ) ) );
+		$this->assertInstanceOf( WP_Error::class, ( new Handler() )->process( array_replace( $post, array( 'linker_inquiry_nonce' => 'forged' ) ) ) );
+		$this->assertSame( array(), wc_get_orders( array( 'billing_email' => $post['email'] ) ) );
+		foreach ( array( '', 'forged' ) as $proof ) {
+			$order = ( new Handler() )->process( array_replace( $post, array( 'linker_proof' => $proof ) ) );
+			$this->assertInstanceOf( WC_Order::class, $order );
+			$this->assertTrue( \Linker\Commerce\Mail\NotificationHold::held( $order ) );
+			$this->later(
+				static function () use ( $order ): void {
+					$order->delete( true );
+				}
+			);
 		}
-		$this->assertSame(
-			array(),
-			wc_get_orders(
-				array(
-					'billing_email' => $post['email'],
-					'return'        => 'ids',
-				)
+		$orders = wc_get_orders(
+			array(
+				'billing_email' => $post['email'],
+				'limit'         => 10,
 			)
 		);
+		$this->assertIsArray( $orders );
+		$this->assertCount( 1, $orders );
 		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
 	}
 
@@ -514,8 +543,9 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 	/**
 	 * Optional customer receipt is fixed; every actual message retains team notification.
 	 */
-	public function test_target_receipt_cap_retains_business_and_team_with_no_reflected_spam(): void {
-		$target = 'same-target@example.test';
+	public function test_target_receipt_cap_retains_normal_business_and_complete_authorized_receipts(): void {
+		$target = 'same-target-' . self::tag() . '@example.test';
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( \Linker\Commerce\Mail\Throttle::OPTION, array_fill( 0, \Linker\Commerce\Mail\Throttle::PER_MINUTE, time() ), false );
 		$store = new \Linker\Commerce\Mail\JobStore();
 		for ( $i = 0; $i < 3; ++$i ) {
@@ -523,20 +553,21 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 				$this->post( 'contact' ),
 				array(
 					'email'   => $target,
-					'name'    => 'ArbitrarySpamName',
-					'message' => 'https://spam.example.test/claim ArbitrarySpamBody',
+					'name'    => 'InstallerFixtureName',
+					'message' => 'Please quote three compatible inverters. https://example.test/product',
 				)
 			);
 			$marker = self::newest_mail_job();
-			$this->assertSame( 2 === $i ? 'sent_no_receipt' : 'sent', ( new ContactHandler() )->process( $post ) );
+			$this->assertSame( 'sent', ( new ContactHandler() )->process( $post ), 'Receipt admission follows the background verdict.' );
+			$this->authorization->drain();
 			$jobs = array_map( static fn ( int $id ) => $store->load( $id ), self::mail_jobs_after( $marker ) );
 			$this->assertCount( 2 === $i ? 1 : 2, $jobs );
 			foreach ( $jobs as $job ) {
 					$this->assertNotNull( $job );
 				if ( str_contains( $job['message']->subject, 'Your inquiry' ) ) {
-					$this->assertStringNotContainsString( 'ArbitrarySpamName', $job['message']->body );
-					$this->assertStringNotContainsString( 'ArbitrarySpamBody', $job['message']->body );
-					$this->assertStringNotContainsString( 'spam.example.test', $job['message']->body );
+					$this->assertStringContainsString( 'InstallerFixtureName', $job['message']->body );
+					$this->assertStringContainsString( 'Please quote three compatible inverters.', $job['message']->body );
+					$this->assertStringContainsString( 'https://example.test/product', $job['message']->body );
 				}
 			}
 		}
@@ -556,6 +587,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 	 * Login succeeds normally; only repeated failed use needs a scoped proof.
 	 */
 	public function test_genie_native_handoffs_report_all_suppressed_receipts(): void {
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( \Linker\Commerce\Mail\Throttle::OPTION, array_fill( 0, \Linker\Commerce\Mail\Throttle::PER_MINUTE, time() ), false );
 		foreach ( array( 'contact', 'inquiry' ) as $door ) {
 			foreach ( array( 'target_cap', 'unavailable' ) as $reason ) {
@@ -589,6 +621,9 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 					}
 				);
 				$this->assertSame( 'inquiry-received', $order->get_status() );
+				$this->assertSame( 'assessment_pending', $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
+				$this->authorization->drain();
+				$order->read_meta_data( true );
 				$this->assertSame( $reason, $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
 				$this->assertCount( 1, self::mail_jobs_after( $marker ), 'Only the normal team notice is queued.' );
 			}

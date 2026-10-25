@@ -1,0 +1,100 @@
+{
+  "at": "2026-10-22T08:23:38.243Z",
+  "fonts": "loaded",
+  "groups": [
+    {
+      "direction": "column",
+      "gap": "12px",
+      "lineBreaks": [
+        "none"
+      ],
+      "links": [
+        {
+          "background": "rgb(255, 255, 255)",
+          "border": "1px solid rgb(12, 127, 115)",
+          "className": "lk-btn-teal",
+          "color": "rgb(12, 127, 115)",
+          "focusVisible": true,
+          "focused": true,
+          "font": "14px",
+          "hovered": true,
+          "href": "http://127.0.0.1:9290/contact/?intent=support&source=http%3A%2F%2F127.0.0.1%3A9290%2Fservices-support%2F&kind=service&source_id=2748",
+          "outline": "rgb(12, 127, 115) solid 2px",
+          "outlineOffset": "2px",
+          "rect": {
+            "bottom": 445.921875,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 397.921875
+          },
+          "text": "Open Support Request →",
+          "transitionDuration": "0.2s, 0.2s, 0.2s",
+          "transitionProperty": "border-color, box-shadow"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "1px solid rgb(160, 177, 164)",
+          "className": "lk-btn-outline",
+          "color": "rgb(23, 39, 33)",
+          "focusVisible": false,
+          "focused": false,
+          "font": "14px",
+          "hovered": false,
+          "href": "http://127.0.0.1:9290/my-account/",
+          "outline": "rgb(23, 39, 33) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 505.921875,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 457.921875
+          },
+          "text": "Access Partner Portal",
+          "transitionDuration": "0.2s, 0.2s, 0.2s",
+          "transitionProperty": "border-color, box-shadow"
+        }
+      ],
+      "paragraphGap": 32,
+      "previous": {
+        "font": "16px",
+        "lineHeight": "26.4px",
+        "rect": {
+          "bottom": 365.921875,
+          "height": 105.59375,
+          "right": 372,
+          "width": 354,
+          "x": 18,
+          "y": 260.328125
+        },
+        "tag": "P",
+        "text": "Our team in Germany handles quotes, product documents, and engineering support. Registered trade partners order through the partner portal."
+      },
+      "rect": {
+        "bottom": 505.921875,
+        "height": 108,
+        "right": 372,
+        "width": 354,
+        "x": 18,
+        "y": 397.921875
+      }
+    }
+  ],
+  "hasAdminBar": false,
+  "header": {
+    "background": "rgb(255, 255, 255)",
+    "filter": "none"
+  },
+  "height": 844,
+  "lang": "en-US",
+  "overflow": false,
+  "stylesheets": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792656909"
+  ],
+  "url": "http://127.0.0.1:9290/services-support/",
+  "width": 390,
+  "sourceAggregate": "00ae7fc26d8df2d5bc63c9e4ab99e7c82da7caf8e2e4fb8d261ad3e892e742ff"
+}

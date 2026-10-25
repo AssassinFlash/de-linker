@@ -1,11 +1,4 @@
-/**
- * Behavior of assets/header-menu.js.
- *
- * The mega menu fades in on a visibility transition. Focusing a link in the
- * same turn as the first open is dropped. The first ArrowDown waits for
- * transitionend (property visibility) and keeps a 250ms fallback. A later
- * arrow, on a menu that is already open, focuses immediately.
- */
+/** Native disclosure keyboard behavior; opening makes links visible immediately. */
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -31,78 +24,53 @@ function page() {
 		</header>
 	</body></html>`, { runScripts: 'outside-only', pretendToBeVisual: true } );
 	const { window } = dom;
-	const queued = [];
-	window.setTimeout = ( fn, ms ) => {
-		queued.push( { fn, ms } );
-		return queued.length;
-	};
 	window.eval( source );
 	const button = window.document.querySelector( '.tv-nav-link' );
 	const menu = window.document.querySelector( '.tv-mega-menu' );
 	const first = window.document.querySelector( 'a' );
 	button.focus();
-	return { window, button, menu, first, queued };
+	return { window, button, menu, first };
 }
 
 function arrow( window, target ) {
 	target.dispatchEvent( new window.KeyboardEvent( 'keydown', { key: 'ArrowDown', bubbles: true, cancelable: true } ) );
 }
 
-test( 'the first ArrowDown opens the mega menu and focuses after visibility', () => {
-	const { window, button, menu, first, queued } = page();
+test( 'the first ArrowDown opens the mega menu and focuses its first link', () => {
+	const { window, button, first } = page();
 	arrow( window, button );
 	assert.equal( button.getAttribute( 'aria-expanded' ), 'true' );
-	assert.notEqual( window.document.activeElement, first );
-	assert.equal( queued.length, 1 );
-	assert.equal( queued[ 0 ].ms, 250 );
-	const ended = new window.Event( 'transitionend', { bubbles: true } );
-	Object.defineProperty( ended, 'propertyName', { value: 'visibility' } );
-	Object.defineProperty( ended, 'target', { value: menu } );
-	menu.dispatchEvent( ended );
-	assert.equal( window.document.activeElement, first );
-	queued[ 0 ].fn();
 	assert.equal( window.document.activeElement, first );
 } );
 
-test( 'the fallback focuses when the visibility transition never ends', () => {
-	const { window, button, first, queued } = page();
-	arrow( window, button );
-	assert.notEqual( window.document.activeElement, first );
-	queued[ 0 ].fn();
-	assert.equal( window.document.activeElement, first );
+test( 'ArrowUp opens a closed menu at its last link', () => {
+	const { window, button, menu } = page();
+	button.dispatchEvent( new window.KeyboardEvent( 'keydown', { key: 'ArrowUp', bubbles: true, cancelable: true } ) );
+	assert.equal( button.getAttribute( 'aria-expanded' ), 'true' );
+	assert.equal( window.document.activeElement, menu.querySelectorAll( 'a' )[ 1 ] );
 } );
 
-test( 'a later ArrowDown on an open menu focuses in the same turn', () => {
-	const { window, button, first, queued } = page();
-	button.setAttribute( 'aria-expanded', 'true' );
+test( 'a later ArrowDown keeps the next keyboard selection', () => {
+	const { window, button, menu, first } = page();
 	arrow( window, button );
-	assert.equal( window.document.activeElement, first );
-	assert.equal( queued.length, 0 );
+	arrow( window, first );
+	assert.equal( window.document.activeElement, menu.querySelectorAll( 'a' )[ 1 ] );
 } );
 
-test( 'closing a menu cancels its delayed keyboard focus', () => {
-	const { window, button, first, queued } = page();
+test( 'Escape closes the menu and returns focus to its disclosure', () => {
+	const { window, button } = page();
 	arrow( window, button );
-	button.dispatchEvent( new window.KeyboardEvent( 'keydown', { key: 'Escape', bubbles: true } ) );
+	window.document.activeElement.dispatchEvent( new window.KeyboardEvent( 'keydown', { key: 'Escape', bubbles: true } ) );
 	assert.equal( button.getAttribute( 'aria-expanded' ), 'false' );
 	assert.equal( window.document.activeElement, button );
-	queued[ 0 ].fn();
-	assert.notEqual( window.document.activeElement, first );
-	assert.equal( window.document.activeElement, button );
 } );
 
-test( 'completed opening focus does not undo the next keyboard selection', () => {
-	const { window, button, menu, first, queued } = page();
-	arrow( window, button );
-	const ended = new window.Event( 'transitionend', { bubbles: true } );
-	Object.defineProperty( ended, 'propertyName', { value: 'visibility' } );
-	menu.dispatchEvent( ended );
+test( 'Home and End move to the first and last menu links', () => {
+	const { window, button, menu, first } = page();
+	button.dispatchEvent( new window.KeyboardEvent( 'keydown', { key: 'End', bubbles: true, cancelable: true } ) );
+	assert.equal( window.document.activeElement, menu.querySelectorAll( 'a' )[ 1 ] );
+	window.document.activeElement.dispatchEvent( new window.KeyboardEvent( 'keydown', { key: 'Home', bubbles: true, cancelable: true } ) );
 	assert.equal( window.document.activeElement, first );
-	arrow( window, first );
-	const second = menu.querySelectorAll( 'a' )[ 1 ];
-	assert.equal( window.document.activeElement, second );
-	queued[ 0 ].fn();
-	assert.equal( window.document.activeElement, second );
 } );
 
 test( 'an account menu served without hidden is closed on load', () => {
@@ -122,4 +90,128 @@ test( 'an account menu served without hidden is closed on load', () => {
 	assert.equal( menu.hidden, true );
 	assert.equal( menu.id, 'linker-menu-account' );
 	assert.equal( button.getAttribute( 'aria-controls' ), menu.id );
+} );
+
+function mobilePage( open = false ) {
+	const dom = new JSDOM( `<!doctype html><html lang="en"><body>
+		<header id="tv-header-v2">
+			<details class="tv-mobile-navigation" ${ open ? 'open' : '' }>
+				<summary id="tv-mobile-toggle" role="button" aria-controls="tv-mobile-panel" aria-label="Open menu">Menu</summary>
+				<div id="tv-mobile-panel"><a href="/products/">Products</a></div>
+			</details>
+		</header><button id="outside">Outside</button>
+	</body></html>`, { runScripts: 'outside-only', pretendToBeVisual: true } );
+	const { window } = dom;
+	window.eval( source );
+	return {
+		window,
+		details: window.document.querySelector( 'details' ),
+		toggle: window.document.querySelector( 'summary' ),
+		panel: window.document.querySelector( '#tv-mobile-panel' ),
+	};
+}
+
+test( 'an opening made before the enhancement is retained', () => {
+	const { details, toggle, panel } = mobilePage( true );
+	assert.equal( details.open, true );
+	assert.equal( panel.dataset.open, 'true' );
+	assert.equal( toggle.getAttribute( 'aria-label' ), 'Close menu' );
+	assert.equal( toggle.hasAttribute( 'aria-expanded' ), false );
+	assert.equal( toggle.getAttribute( 'aria-controls' ), panel.id );
+} );
+
+test( 'native summary activation is not toggled twice by the enhancement', async () => {
+	const { window, details, toggle, panel } = mobilePage();
+	toggle.click();
+	await new Promise( resolve => window.setTimeout( resolve, 0 ) );
+	assert.equal( details.open, true );
+	assert.equal( panel.dataset.open, 'true' );
+	toggle.click();
+	await new Promise( resolve => window.setTimeout( resolve, 0 ) );
+	assert.equal( details.open, false );
+	assert.equal( panel.dataset.open, 'false' );
+} );
+
+test( 'Escape closes the actual native disclosure and returns focus', () => {
+	const { window, details, toggle, panel } = mobilePage( true );
+	panel.querySelector( 'a' ).focus();
+	window.document.activeElement.dispatchEvent( new window.KeyboardEvent( 'keydown', { key: 'Escape', bubbles: true } ) );
+	assert.equal( details.open, false );
+	assert.equal( panel.dataset.open, 'false' );
+	assert.equal( window.document.activeElement, toggle );
+} );
+
+test( 'an outside click closes native open state as well as the CSS state', () => {
+	const { window, details, panel } = mobilePage( true );
+	window.document.querySelector( '#outside' ).click();
+	assert.equal( details.open, false );
+	assert.equal( panel.dataset.open, 'false' );
+} );
+
+function wideEarlyPage() {
+	const dom = new JSDOM( `<!doctype html><html lang="en"><head><style>
+		.tv-nav-frame { padding:0; column-gap:0; }
+		.tv-mobile-navigation { display:none; }
+		#tv-header-v2[data-tv-nav-folded="true"] .tv-mobile-navigation { display:block; }
+		#tv-header-v2[data-tv-nav-folded="true"] .tv-desktop-nav,
+		#tv-header-v2[data-tv-nav-folded="true"] .tv-header-cta { display:none; }
+	</style></head><body><header id="tv-header-v2"><div class="tv-nav-frame">
+		<a class="tv-brand" data-fixture-width="100" href="/">Home</a>
+		<div class="tv-desktop-nav" data-fixture-width="600"><div class="tv-nav-item">
+			<button class="tv-nav-link" aria-expanded="false">Products</button>
+			<div class="tv-mega-menu"><a href="/products/">All products</a></div>
+		</div></div>
+		<div class="tv-desktop-actions" data-fixture-width="200"></div>
+		<a class="tv-header-cta" data-fixture-width="100" href="/contact/">Contact</a>
+		<details class="tv-mobile-navigation" data-fixture-width="44" open>
+			<summary id="tv-mobile-toggle" aria-label="Open menu">Menu</summary>
+			<div id="tv-mobile-panel"><a href="/products/">Products</a></div>
+		</details>
+	</div></header><button id="outside">Outside</button></body></html>`, { runScripts: 'outside-only', pretendToBeVisual: true } );
+	const { window } = dom;
+	const frame = window.document.querySelector( '.tv-nav-frame' );
+	// JSDOM has no layout. These fixture boxes leave room for the normal row,
+	// so keeping an early opening cannot pass merely because the row is full.
+	Object.defineProperty( frame, 'clientWidth', { value: 1200 } );
+	window.HTMLElement.prototype.getBoundingClientRect = function () {
+		return { width: Number( this.getAttribute( 'data-fixture-width' ) ) };
+	};
+	window.matchMedia = () => ( { matches: true } );
+	window.ResizeObserver = class { observe() {} };
+	Object.defineProperty( window.document, 'fonts', { value: { ready: Promise.resolve() } } );
+	const toggle = window.document.querySelector( 'summary' );
+	toggle.focus();
+	window.eval( source );
+	return { window, toggle, details: window.document.querySelector( 'details' ), header: window.document.querySelector( 'header' ), primary: window.document.querySelector( '.tv-nav-link' ) };
+}
+
+test( 'an early desktop opening stays usable even when the full row fits', () => {
+	const { window, details, header } = wideEarlyPage();
+	assert.equal( details.open, true );
+	assert.equal( header.dataset.tvNavFolded, 'true' );
+	assert.equal( window.getComputedStyle( window.document.querySelector( '.tv-mobile-navigation' ) ).display, 'block' );
+	window.close();
+} );
+
+test( 'closing an early desktop opening restores the full row and keyboard focus', async () => {
+	const { window, toggle, details, header, primary } = wideEarlyPage();
+	assert.equal( details.open, true );
+	toggle.click();
+	await new Promise( resolve => window.requestAnimationFrame( () => window.requestAnimationFrame( resolve ) ) );
+	assert.equal( details.open, false );
+	assert.notEqual( header.dataset.tvNavFolded, 'true' );
+	assert.equal( window.document.activeElement, primary );
+	window.close();
+} );
+
+test( 'unfolding after an outside focus change does not take that focus', async () => {
+	const { window, details, header } = wideEarlyPage();
+	const outside = window.document.querySelector( '#outside' );
+	assert.equal( details.open, true );
+	outside.focus();
+	await new Promise( resolve => window.requestAnimationFrame( () => window.requestAnimationFrame( resolve ) ) );
+	assert.equal( details.open, false );
+	assert.notEqual( header.dataset.tvNavFolded, 'true' );
+	assert.equal( window.document.activeElement, outside );
+	window.close();
 } );

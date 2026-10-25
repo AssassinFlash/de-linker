@@ -169,7 +169,7 @@ final class EngineProxyTest extends TestCase {
 	 * The report is bytes: the payload comes back untouched under the pdf
 	 * content type, which is what the serving filter keys on.
 	 */
-	public function test_the_pdf_travels_as_bytes_under_its_content_type(): void {
+	public function test_pdf_without_confirmed_selection_is_refused_before_bytes(): void {
 		$this->wp_functions();
 		WP_Mock::userFunction(
 			'get_option',
@@ -183,14 +183,15 @@ final class EngineProxyTest extends TestCase {
 			static fn(): array => array( 200, array( 'content-type' => 'application/pdf' ), $bytes )
 		);
 		$request = $this->request( 'POST', 'report/pdf' );
+		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => '{"kind":"residential"}' ) );
+		WP_Mock::userFunction( '__', array( 'return_arg' => 0 ) );
 		$request->set_body( '{"postcode":"10115"}' );
 
 		$response = $proxy->forward( $request );
 
-		$this->assertInstanceOf( WP_REST_Response::class, $response );
-		$this->assertSame( 200, $response->get_status() );
-		$this->assertSame( $bytes, $response->get_data() );
-		$this->assertStringStartsWith( 'application/pdf', (string) ( $response->get_headers()['Content-Type'] ?? '' ) );
+		$this->assertInstanceOf( WP_Error::class, $response );
+		$this->assertSame( 'linker_publication_changed', $response->get_error_code() );
+		$this->assertSame( 409, $response->get_error_data()['status'] );
 		$this->assertConditionsMet();
 	}
 

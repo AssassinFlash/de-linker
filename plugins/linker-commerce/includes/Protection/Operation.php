@@ -43,6 +43,12 @@ final class Operation {
 		$address    = isset( $_SERVER['REMOTE_ADDR'] ) && is_string( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
 		$connection = hash_hmac( 'sha256', 'direct-connection|' . $address, wp_salt( 'auth' ) );
 		$limits[]   = new Allowance( $action . '_connection_hour', $connection, 100, HOUR_IN_SECONDS );
+		if ( 'registration' === $action ) {
+			// Shared public-registration allocation: docs/specs/569-registration-capacity.md.
+			$site     = hash_hmac( 'sha256', 'registration-site', wp_salt( 'auth' ) );
+			$limits[] = new Allowance( 'registration_site_hour', $site, 16, HOUR_IN_SECONDS );
+			$limits[] = new Allowance( 'registration_site_day', $site, 32, DAY_IN_SECONDS );
+		}
 		if ( isset( $payload['email'] ) && is_string( $payload['email'] ) && 'password_reset' === $action ) {
 			$target   = Identity::recipient( $payload['email'] );
 			$limits[] = new Allowance( $action . '_target_hour', $target, 2, HOUR_IN_SECONDS );

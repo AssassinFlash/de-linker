@@ -16,7 +16,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import { storeClient } from '../configurator/api/store';
 import { rememberInquiry } from '../protection/inquiryHandoff';
 import type { GenieConfig } from './config';
-import { idsOf, pricesOf } from './shared/blocks';
+import { idsOf, pricesOf, proofsOf } from './shared/blocks';
 import { useCardActions } from './shared/cardActions';
 import { buildQuestion, typeModelPrompt } from './shared/conversation';
 import {
@@ -37,6 +37,10 @@ import type { DraftLease } from './shared/draftContext';
 import type { NativeScope } from './shared/nativeScope';
 import type { FailureCursor } from './shared/ownedFailure';
 import { useDraftContext } from './shared/useDraftContext';
+import {
+	completedRequest,
+	type RequestWitness,
+} from './shared/completedRequest';
 import { startDictation, type DictationSession } from './shared/dictation';
 import {
 	assistantMessage,
@@ -275,6 +279,11 @@ export function App( { config }: { config: GenieConfig } ) {
 
 	const sending = useRef( false );
 	const currentThread = useRef< TurnMessage[] >( [] );
+	// Only this mounted app's actual send can witness a retry recovery. A
+	// matching question in history, another conversation or a reload cannot.
+	const requestWitness = useRef<
+		( RequestWitness & { epoch: number } ) | null
+	>( null );
 	const {
 		failureState,
 		adoptFailure,
@@ -334,6 +343,7 @@ export function App( { config }: { config: GenieConfig } ) {
 	);
 
 	ownerCleanup.current = () => {
+		requestWitness.current = null;
 		detachEntryInbox.current();
 		detachFailure();
 		setInput( '' );
@@ -415,7 +425,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		setCurrentId( id );
 	}, [] );
 
-	const store = storeClient( config.restUrl );
+	const store = storeClient( config.restUrl, undefined, config.restNonce );
 	const {
 		statusFor: cardStatusFor,
 		addToDraft: addCardToDraft,
@@ -889,6 +899,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				sending.current = false;
 				return false;
 			}
+			requestWitness.current = null;
 			setOpen( true );
 			setDockHistory( false );
 			setPhase( 'waiting' );
@@ -944,14 +955,32 @@ export function App( { config }: { config: GenieConfig } ) {
 					];
 					currentThread.current = next;
 					setThread( next );
+					const postedPage = pageRef.current;
+					const pageWitness = JSON.stringify( postedPage );
 					const answer = await sendTurn( {
 						turnUrl: config.turnUrl,
 						restUrl: config.restUrl,
 						nonce: config.restNonce,
 						locale: config.locale,
 						messages: next,
-						page: pageRef.current,
+						page: postedPage,
 						uploads,
+						onOperation: ( operationId ) => {
+							if ( ! draftContext.owns( lease ) ) {
+								return;
+							}
+							requestWitness.current = stored.conversationId
+								? {
+										conversationId: stored.conversationId,
+										operationId,
+										epoch: historyEpoch,
+										messages: next,
+										uploads,
+										locale: config.locale,
+										page: pageWitness,
+									}
+								: null;
+						},
 					} );
 					if ( ! ( await draftContext.settle( lease ) ) ) {
 						retainUnverifiedTurn( lease, draft );
@@ -965,6 +994,7 @@ export function App( { config }: { config: GenieConfig } ) {
 					}
 					draftContext.checkpoint();
 					commitFailure( { type: 'answered' } );
+					requestWitness.current = null;
 					const assistant = assistantMessage( answer );
 					currentThread.current = next.concat( assistant );
 					setThread( currentThread.current );
@@ -1060,17 +1090,63 @@ export function App( { config }: { config: GenieConfig } ) {
 					setInput( 'upstream' === kind ? draft.text : '' );
 					return;
 				}
+				const witness = requestWitness.current;
+				if (
+					witness &&
+					witness.epoch === historyEpoch &&
+					completedRequest(
+						witness,
+						stored,
+						payload.question,
+						payload.uploads,
+						config.locale,
+						pageRef.current
+					)
+				) {
+					// readThread appends an assistant only after parseStream saw
+					// done. Restore that result instead of paying for a new turn.
+					currentThread.current = stored.messages;
+					setThread( stored.messages );
+					if ( ! draftContext.editor ) {
+						filesRef.current.clear();
+					}
+					draftContext.checkpoint();
+					commitFailure( { type: 'answered' } );
+					requestWitness.current = null;
+					setPhase( 'ask' );
+					void refreshHistory();
+					return;
+				}
 				const next = payload.messages;
 				currentThread.current = next;
 				setThread( next );
+				requestWitness.current = null;
+				const postedPage = pageRef.current;
+				const pageWitness = JSON.stringify( postedPage );
 				const answer = await sendTurn( {
 					turnUrl: config.turnUrl,
 					restUrl: config.restUrl,
 					nonce: config.restNonce,
 					locale: config.locale,
 					messages: next,
-					page: pageRef.current,
+					page: postedPage,
 					uploads: payload.uploads,
+					onOperation: ( operationId ) => {
+						if ( ! draftContext.owns( lease ) ) {
+							return;
+						}
+						requestWitness.current = stored.conversationId
+							? {
+									conversationId: stored.conversationId,
+									operationId,
+									epoch: historyEpoch,
+									messages: next,
+									uploads: payload!.uploads,
+									locale: config.locale,
+									page: pageWitness,
+								}
+							: null;
+					},
 				} );
 				if ( ! ( await draftContext.settle( lease ) ) ) {
 					retainUnverifiedTurn( lease, draft );
@@ -1084,6 +1160,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				}
 				draftContext.checkpoint();
 				commitFailure( { type: 'answered' } );
+				requestWitness.current = null;
 				const assistant = assistantMessage( answer );
 				currentThread.current = next.concat( assistant );
 				setThread( currentThread.current );
@@ -1513,6 +1590,7 @@ export function App( { config }: { config: GenieConfig } ) {
 
 	const cardIds = idsOf( turn?.blocks ?? [], 'cards' );
 	const cardPrices = pricesOf( turn?.blocks ?? [] );
+	const cardProofs = proofsOf( turn?.blocks ?? [] );
 	const compareIds = idsOf( turn?.blocks ?? [], 'compare' );
 
 	const entryInbox = useEntryInbox( {
@@ -2202,8 +2280,19 @@ export function App( { config }: { config: GenieConfig } ) {
 														line.product_id ===
 														productId
 												) }
-												onAdd={ addCardToDraft }
-												onSave={ saveCardSolution }
+												onAdd={ ( id ) =>
+													addCardToDraft(
+														id,
+														cardProofs[ id ]
+													)
+												}
+												onSave={ ( id, title ) =>
+													saveCardSolution(
+														id,
+														title,
+														cardProofs[ id ]
+													)
+												}
 											/>
 										) ) }
 									</div>

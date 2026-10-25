@@ -12,6 +12,7 @@ const API_SCRIPT =
 	'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
 
 interface Attempt {
+	token?: string;
 	promise: Promise< string >;
 	container: HTMLElement;
 	expires: number;
@@ -110,6 +111,13 @@ export class ProtectionClient implements PublicProtection {
 		return result;
 	}
 
+	ready( action: string, container: HTMLElement ): string {
+		const attempt = this.attempts.get( action );
+		return attempt?.container === container && attempt.expires > Date.now()
+			? attempt.token || ''
+			: '';
+	}
+
 	warm( action: string, container: HTMLElement ): Promise< string > {
 		return this.proof( action, container );
 	}
@@ -184,6 +192,9 @@ export class ProtectionClient implements PublicProtection {
 					},
 					'error-callback': () => fail( 'verification_widget' ),
 					'expired-callback': () => {
+						if ( this.attempts.get( action ) !== attempt ) {
+							return;
+						}
 						attempt.expires = 0;
 						this.state( attempt.container, action, 'expired' );
 						fail( 'verification_expired' );
@@ -213,6 +224,7 @@ export class ProtectionClient implements PublicProtection {
 		// Local clock skew cannot invalidate a genuine customer challenge.
 		// The server still enforces the original signed absolute expiry.
 		attempt.expires = Date.now() + Math.min( result.ttl, 300 ) * 1000;
+		attempt.token = result.proof;
 		this.state( attempt.container, action, 'ready' );
 		return result.proof;
 	}
@@ -222,6 +234,21 @@ export class ProtectionClient implements PublicProtection {
 		if ( attempt.widget !== undefined ) {
 			window.turnstile?.remove( attempt.widget );
 		}
+	}
+
+	/**
+	 * Retire only the proof used by the request that actually succeeded.
+	 *
+	 * @param action Completed resource scope.
+	 * @param proof  Actual proof sent with the successful request.
+	 */
+	complete( action: string, proof: string ): boolean {
+		const attempt = this.attempts.get( action );
+		if ( ! proof || ! attempt || attempt.token !== proof ) {
+			return false;
+		}
+		this.reset( action );
+		return true;
 	}
 
 	reset( action: string ): void {

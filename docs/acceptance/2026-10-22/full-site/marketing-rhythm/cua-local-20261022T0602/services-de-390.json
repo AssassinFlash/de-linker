@@ -1,0 +1,75 @@
+{
+  "at": "2026-10-22T06:12:04.823Z",
+  "fonts": "loaded",
+  "groups": [
+    {
+      "direction": "row",
+      "display": "grid",
+      "gap": "10px",
+      "links": [
+        {
+          "background": "rgb(12, 127, 115)",
+          "color": "rgb(255, 255, 255)",
+          "font": "12px",
+          "href": "http://127.0.0.1:9290/de/kontakt/?intent=support&source=http%3A%2F%2F127.0.0.1%3A9290%2Fservices-support%2F&kind=service&source_id=2748",
+          "rect": {
+            "bottom": 443.2734375,
+            "height": 43,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 400.2734375
+          },
+          "text": "Support-Anfrage öffnen →"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "color": "rgb(23, 39, 33)",
+          "font": "12px",
+          "href": "http://127.0.0.1:9290/de/mein-konto/",
+          "rect": {
+            "bottom": 531.8671875,
+            "height": 43,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 488.8671875
+          },
+          "text": "Auf Partnerportal zugreifen"
+        }
+      ],
+      "paragraphGap": 25,
+      "previous": {
+        "font": "14px",
+        "lineHeight": "22.4px",
+        "rect": {
+          "bottom": 375.2734375,
+          "height": 67.1953125,
+          "right": 372,
+          "width": 354,
+          "x": 18,
+          "y": 308.078125
+        },
+        "tag": "P",
+        "text": "Unser Team in Deutschland bearbeitet Angebote, Produktunterlagen und technischen Support. Registrierte Fachpartner bestellen über das Partnerportal."
+      },
+      "rect": {
+        "bottom": 531.8671875,
+        "height": 131.59375,
+        "right": 372,
+        "width": 354,
+        "x": 18,
+        "y": 400.2734375
+      }
+    }
+  ],
+  "header": {
+    "background": "rgb(255, 255, 255)",
+    "filter": "none"
+  },
+  "height": 844,
+  "lang": "de-DE",
+  "overflow": false,
+  "url": "http://127.0.0.1:9290/de/kundendienst/",
+  "width": 390
+}

@@ -42,46 +42,97 @@ final class SelectionContextTest extends TestCase {
 	 * @var bool
 	 */
 	private bool $viewable = true;
+	/**
+	 * Native static-front option; unrelated object tests keep their original fixture.
+	 *
+	 * @var bool
+	 */
+	private bool $static_front = false;
+	/**
+	 * The option may already be filtered to the request language.
+	 *
+	 * @var int
+	 */
+	private int $front_id = 14;
+	/**
+	 * Missing native home translation.
+	 *
+	 * @var bool
+	 */
+	private bool $missing_home = false;
+	/**
+	 * Native same-slug lookup may resolve either member of the product pair.
+	 *
+	 * @var int
+	 */
+	private int $product_lookup = 13;
+	/**
+	 * Publication is checked on the matched twin as well.
+	 *
+	 * @var string
+	 */
+	private string $twin_status = 'publish';
+	/**
+	 * The matched twin retains the native password restriction.
+	 *
+	 * @var string
+	 */
+	private string $twin_password = '';
 	/** Current native public object answers, not a proposed browser title. */
 	public function setUp(): void {
 		parent::setUp();
 		$this->plain_text();
 		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://site.test/' ) );
 		WP_Mock::userFunction( 'wp_parse_url', array( 'return' => static fn ( string $url, int $component = -1 ) => parse_url( $url, $component ) ) );
-		WP_Mock::userFunction( 'url_to_postid', array( 'return' => static fn ( string $url ): int => str_contains( $url, '/products/' ) ? 12 : ( str_contains( $url, '/product/model/' ) ? 13 : 0 ) ) );
+		WP_Mock::userFunction( 'url_to_postid', array( 'return' => fn ( string $url ): int => str_contains( $url, '/products/' ) ? 12 : ( str_contains( $url, '/product/model/' ) || str_contains( $url, '/de/produkt/modell/' ) ? $this->product_lookup : 0 ) ) );
 		WP_Mock::userFunction(
 			'get_post',
 			array(
 				'return' => fn ( int $id ): WP_Post => new WP_Post(
 					(object) array(
 						'ID'            => $id,
-						'post_type'     => 12 === $id ? 'page' : 'product',
-						'post_title'    => 12 === $id ? 'Current products' : 'Current model',
-						'post_status'   => $this->status,
-						'post_password' => $this->password,
+						'post_type'     => in_array( $id, array( 12, 14, 15 ), true ) ? 'page' : 'product',
+						'post_title'    => array(
+							12 => 'Current products',
+							14 => 'Home',
+							15 => 'Startseite',
+							16 => 'Aktuelles Modell',
+						)[ $id ] ?? 'Current model',
+						'post_status'   => 16 === $id ? $this->twin_status : $this->status,
+						'post_password' => 16 === $id ? $this->twin_password : $this->password,
 					)
 				),
 			)
 		);
 		WP_Mock::userFunction( 'wc_get_page_id', array( 'return' => 12 ) );
-		WP_Mock::userFunction( 'get_permalink', array( 'return' => static fn ( $post ): string => 12 === ( $post instanceof WP_Post ? $post->ID : $post ) ? 'https://site.test/products/' : 'https://site.test/product/model/' ) );
+		WP_Mock::userFunction(
+			'get_permalink',
+			array(
+				'return' => static fn ( $post ): string => array(
+					12 => 'https://site.test/products/',
+					14 => 'https://site.test/',
+					15 => 'https://site.test/de/home/',
+					16 => 'https://site.test/de/produkt/modell/',
+				)[ $post instanceof WP_Post ? $post->ID : $post ] ?? 'https://site.test/product/model/',
+			)
+		);
 		WP_Mock::userFunction( 'get_the_title', array( 'return' => static fn ( WP_Post $post ): string => $post->post_title ) );
-		WP_Mock::userFunction( 'get_object_taxonomies', array( 'return' => array( 'product_cat' ) ) );
+		WP_Mock::userFunction( 'get_object_taxonomies', array( 'return' => array( 'product_cat', 'language' ) ) );
 		WP_Mock::userFunction( 'is_taxonomy_viewable', array( 'return' => fn (): bool => $this->viewable ) );
 		WP_Mock::userFunction(
 			'get_term_by',
 			array(
-				'return' => static fn ( string $field, string $slug, string $taxonomy ) => 'batteries' === $slug ? new WP_Term(
+				'return' => static fn ( string $field, string $slug, string $taxonomy ) => in_array( $slug, array( 'batteries', 'de' ), true ) ? new WP_Term(
 					(object) array(
-						'term_id'  => 8,
-						'name'     => 'Battery systems',
+						'term_id'  => 'de' === $slug ? 528 : 8,
+						'name'     => 'de' === $slug ? 'Deutsch' : 'Battery systems',
 						'slug'     => $slug,
 						'taxonomy' => $taxonomy,
 					)
 				) : false,
 			)
 		);
-		WP_Mock::userFunction( 'get_term_link', array( 'return' => 'https://site.test/product-category/batteries/' ) );
+		WP_Mock::userFunction( 'get_term_link', array( 'return' => static fn ( $term ): string => 528 === ( $term instanceof WP_Term ? $term->term_id : $term ) ? 'https://site.test/de/' : 'https://site.test/product-category/batteries/' ) );
 		WP_Mock::userFunction( 'sanitize_key', array( 'return' => static fn ( string $value ): string => strtolower( preg_replace( '/[^a-z0-9_-]/i', '', $value ) ?? '' ) ) );
 		WP_Mock::userFunction( 'sanitize_text_field', array( 'return' => static fn ( string $value ): string => trim( strip_tags( $value ) ) ) );
 		WP_Mock::userFunction( 'sanitize_textarea_field', array( 'return' => static fn ( string $value ): string => trim( strip_tags( $value ) ) ) );
@@ -90,8 +141,83 @@ final class SelectionContextTest extends TestCase {
 		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn ( $value ) => json_encode( $value ) ) );
 		WP_Mock::userFunction( 'is_email', array( 'return' => static fn ( string $email ): bool => false !== filter_var( $email, FILTER_VALIDATE_EMAIL ) ) );
 		WP_Mock::userFunction( 'determine_locale', array( 'return' => 'en_US' ) );
-		WP_Mock::userFunction( 'get_option', array( 'return' => false ) );
+		WP_Mock::userFunction( 'get_option', array( 'return' => fn ( string $key ) => 'show_on_front' === $key ? ( $this->static_front ? 'page' : 'posts' ) : ( 'page_on_front' === $key ? $this->front_id : false ) ) );
+		WP_Mock::userFunction( 'pll_languages_list', array( 'return' => array( 'en', 'de' ) ) );
+		WP_Mock::userFunction( 'pll_get_post', array( 'return' => fn ( int $id, string $language ): int => ! $this->missing_home && in_array( $id, array( 14, 15 ), true ) ? ( 'de' === $language ? 15 : 14 ) : 0 ) );
+		WP_Mock::userFunction( 'trailingslashit', array( 'return' => static fn ( string $url ): string => rtrim( $url, '/' ) . '/' ) );
+		WP_Mock::userFunction(
+			'PLL',
+			array(
+				'return' => (object) array(
+					'links_model' => new class() {
+						/**
+						 * Native links-model home URLs do not depend on the current request.
+						 *
+						 * @param string $language Requested language slug.
+						 */
+						public function home_url( string $language ): string {
+							return 'https://site.test/' . ( 'de' === $language ? 'de/' : '' );
+						}
+					},
+				),
+			)
+		);
 		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'private-test-salt' ) );
+	}
+
+	/**
+	 * A same-slug language lookup must identify the object at the requested canonical URL.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function test_wrong_language_product_lookup_uses_the_exact_public_twin(): void {
+		$this->native_product_pair();
+		$context = SelectionContext::normalize(
+			array(
+				'source' => 'https://site.test/de/produkt/modell/',
+				'title'  => 'Forged title',
+			)
+		);
+		$this->assertSame( 16, $context['id'] );
+		$this->assertSame( 'Aktuelles Modell', $context['title'] );
+		$this->assertSame( 'https://site.test/de/produkt/modell/', $context['source'] );
+		$this->product_lookup = 16;
+		$context              = SelectionContext::normalize( array( 'source' => 'https://site.test/product/model/' ) );
+		$this->assertSame( 13, $context['id'] );
+		$this->assertSame( 'Current model', $context['title'] );
+		$this->assertSame( array(), SelectionContext::normalize( array( 'source' => 'https://site.test/fake/de/produkt/modell/' ) ) );
+	}
+
+	/**
+	 * A public counterpart never makes a private or protected source acceptable.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function test_language_pair_lookup_keeps_publication_and_password_boundaries(): void {
+		$this->native_product_pair();
+		$this->twin_status = 'private';
+		$this->assertSame( array(), SelectionContext::normalize( array( 'source' => 'https://site.test/de/produkt/modell/' ) ) );
+		$this->twin_status   = 'publish';
+		$this->twin_password = 'restricted';
+		$this->assertSame( array(), SelectionContext::normalize( array( 'source' => 'https://site.test/de/produkt/modell/' ) ) );
+		$this->twin_password = '';
+		$this->status        = 'private';
+		$this->assertSame( array(), SelectionContext::normalize( array( 'source' => 'https://site.test/product/model/' ) ) );
+	}
+
+	/** The optional API exists only inside the two isolated pair fixtures. */
+	private function native_product_pair(): void {
+		WP_Mock::userFunction(
+			'pll_get_post_translations',
+			array(
+				'return' => static fn ( int $id ): array => in_array( $id, array( 13, 16 ), true ) ? array(
+					'en' => 13,
+					'de' => 16,
+				) : array(),
+			)
+		);
 	}
 
 	/** All public object types keep canonical title and only selected navigation fields. */
@@ -187,6 +313,144 @@ final class SelectionContextTest extends TestCase {
 			),
 			$context['selection']
 		);
+	}
+
+	/** A platform/documents CTA carries the customer's request through the native form boundary. */
+	public function test_platform_and_documents_survive_the_contact_submission(): void {
+		$query     = array(
+			'source'    => 'https://site.test/products/',
+			'title'     => 'FORGED PAGE TITLE',
+			'platform'  => 'CRRC 6.X Liquid-Cooled CESS',
+			'document'  => 'Datasheets & certificates',
+			'entry_ref' => 'untrusted-reference',
+			'token'     => 'secret',
+		);
+		$context   = SelectionContext::query( $query );
+		$selection = array(
+			'platform' => $query['platform'],
+			'document' => $query['document'],
+		);
+		$this->assertSame( 'Current products', $context['title'] );
+		$this->assertSame( $selection, $context['selection'] );
+		$post       = array(
+			'name'                  => 'Maria',
+			'email'                 => 'maria@example.test',
+			'message'               => 'Please send the listed documents.',
+			'consent'               => '1',
+			'intent'                => 'document',
+			SelectionContext::FIELD => json_encode(
+				array(
+					'source'    => $context['source'],
+					'selection' => $context['selection'],
+				)
+			),
+		);
+		$submission = Submission::from_post( $post );
+		$this->assertInstanceOf( Submission::class, $submission );
+		$this->assertSame( $selection, $submission->selection()['selection'] );
+		$this->assertSame( $post['message'], $submission->message );
+		$this->assertStringNotContainsString( 'secret', $context['url'] );
+		$this->assertStringNotContainsString( 'untrusted-reference', $context['url'] );
+		$invalid = SelectionContext::query(
+			array_replace(
+				$query,
+				array(
+					'platform' => array( 'invalid' ),
+					'document' => array( 'invalid' ),
+				)
+			)
+		);
+		$this->assertSame( array(), $invalid['selection'] );
+	}
+
+	/** A language-root collision must resolve the native static page and its actual title. */
+	public function test_static_home_pair_precedes_url_to_postid_and_language_taxonomy(): void {
+		require_once dirname( __DIR__, 5 ) . '/linker-i18n/includes/Languages.php';
+		$this->static_front = true;
+		foreach ( array( 14, 15 ) as $front ) {
+			$this->front_id = $front;
+			foreach ( array( 'en', 'de' ) as $language ) {
+				$url     = 'https://site.test/' . ( 'de' === $language ? 'de/' : '' );
+				$context = SelectionContext::normalize(
+					array(
+						'source' => $url . '?token=discard#old',
+						'title'  => 'Forged',
+					)
+				);
+				$this->assertSame( 'page', $context['type'] );
+				$this->assertSame( 'de' === $language ? 15 : 14, $context['id'] );
+				$this->assertSame( 'de' === $language ? 'Startseite' : 'Home', $context['title'] );
+				$this->assertSame( $url, $context['source'] );
+			}
+		}
+	}
+
+	/** Unpublished, protected and missing homes cannot fall back to the public language term. */
+	public function test_unavailable_static_home_does_not_become_a_taxonomy_source(): void {
+		require_once dirname( __DIR__, 5 ) . '/linker-i18n/includes/Languages.php';
+		$this->static_front = true;
+		$this->status       = 'private';
+		$this->assertSame( array(), SelectionContext::normalize( array( 'source' => 'https://site.test/de/' ) ) );
+		$this->status   = 'publish';
+		$this->password = 'restricted';
+		$this->assertSame( array(), SelectionContext::normalize( array( 'source' => 'https://site.test/de/' ) ) );
+		$this->password     = '';
+		$this->missing_home = true;
+		$this->assertSame( array(), SelectionContext::normalize( array( 'source' => 'https://site.test/de/' ) ) );
+		$this->missing_home = false;
+		$this->front_id     = 0;
+		$this->assertSame( array(), SelectionContext::normalize( array( 'source' => 'https://site.test/de/' ) ) );
+	}
+
+	/** Contact language switching preserves a verified homepage and the selected search. */
+	public function test_home_language_switch_uses_the_root_instead_of_the_front_page_slug(): void {
+		require_once dirname( __DIR__, 5 ) . '/linker-i18n/includes/Languages.php';
+		$this->static_front = true;
+		foreach ( array( 'en', 'de' ) as $language ) {
+			$source = 'https://site.test/' . ( 'de' === $language ? 'de/' : '' );
+			WP_Mock::expectFilter( 'pll_translation_url', $source, $language );
+			$result = SelectionContext::language_query(
+				array(
+					'source'   => 'https://site.test/',
+					'intent'   => 'offer',
+					'search'   => 'SAJ + 5',
+					'platform' => 'CRRC 6.X Liquid-Cooled CESS',
+					'document' => 'Datasheets & certificates',
+				),
+				$language
+			);
+			$this->assertSame( 'offer', $result['intent'] );
+			$transport = json_decode( $result[ SelectionContext::FIELD ], true );
+			$this->assertSame( $source, $transport['source'] );
+			$this->assertSame(
+				array(
+					'q'        => 'SAJ + 5',
+					'platform' => 'CRRC 6.X Liquid-Cooled CESS',
+					'document' => 'Datasheets & certificates',
+				),
+				$transport['selection']
+			);
+			$this->assertSame( 'page', SelectionContext::normalize( $transport )['type'] );
+		}
+	}
+
+	/**
+	 * The companion plugin is optional, including on a site with a static front page.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function test_sources_remain_available_without_the_language_plugin(): void {
+		$this->assertFalse( class_exists( \Linker\I18n\Languages::class ) );
+		$this->static_front = true;
+		$home               = SelectionContext::normalize( array( 'source' => 'https://site.test/' ) );
+		$this->assertSame( 14, $home['id'] );
+		$this->assertSame( 'Home', $home['title'] );
+		$product = SelectionContext::normalize( array( 'source' => 'https://site.test/product/model/' ) );
+		$this->assertSame( 13, $product['id'] );
+		$this->assertSame( 'Current model', $product['title'] );
+		$this->front_id = 13;
+		$this->assertSame( array(), SelectionContext::normalize( array( 'source' => 'https://site.test/' ) ) );
 	}
 
 	/** Message stays independent; exclusion changes the normalized protected fingerprint. */

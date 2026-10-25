@@ -1,0 +1,401 @@
+{
+  "purpose": "One-time reviewed import into WooCommerce; never a runtime product source. Exact hosted PDF bytes and native product records remain the authority.",
+  "reviewed_sources": [
+    {
+      "document_id": "doc-9046d5a92c02c5efa83150796811308cb7f8699dc3aa6d4b2804bf2e9fc5a7b5",
+      "blob_sha256": "0f0e75ad3f318318d1ba3f1d84a0f2c1f4864555b2deb45f4a1d0fd4cfa7acd7",
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+      "pages": [
+        2
+      ]
+    },
+    {
+      "document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+      "blob_sha256": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3",
+      "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+      "pages": [
+        37,
+        43
+      ]
+    },
+    {
+      "document_id": "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904",
+      "blob_sha256": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a",
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+      "pages": [
+        2
+      ]
+    }
+  ],
+  "unproven": [
+    "continuous battery power",
+    "directional conversion efficiencies",
+    "instantaneous DC bus or PV bridge power limits",
+    "one battery stack per inverter battery port"
+  ],
+  "products": {
+    "2090": {
+      "model": "BU2-5.0-HV1",
+      "documents": {
+        "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a"
+      },
+      "figures": {
+        "max_charge_current_a": {
+          "expect": {
+            "value": "30",
+            "unit": "A",
+            "qualifier": null,
+            "columns": null
+          },
+          "set": {
+            "citation": {
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+              "page": 2
+            },
+            "qualifier": {
+              "quantity_kind": "maximum",
+              "scope": "series_stack",
+              "direction": "charge",
+              "module_count_min": 1,
+              "module_count_max": 5,
+              "operating_temperature_c": [
+                0,
+                50
+              ]
+            },
+            "evidence_refs": [
+              "B2-(5-25K)-(HV1,HV5)-datasheet-EN-BEU.pdf:p2",
+              "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904:p2"
+            ]
+          }
+        },
+        "max_discharge_current_a": {
+          "expect": {
+            "value": "30",
+            "unit": "A",
+            "qualifier": null,
+            "columns": null
+          },
+          "set": {
+            "citation": {
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+              "page": 2
+            },
+            "qualifier": {
+              "quantity_kind": "maximum",
+              "scope": "series_stack",
+              "direction": "discharge",
+              "module_count_min": 1,
+              "module_count_max": 5,
+              "operating_temperature_c": [
+                -10,
+                50
+              ]
+            },
+            "evidence_refs": [
+              "B2-(5-25K)-(HV1,HV5)-datasheet-EN-BEU.pdf:p2",
+              "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904:p2"
+            ]
+          }
+        },
+        "module_voltage_range_v": {
+          "expect": {
+            "value": "89.6-115.2",
+            "unit": "V",
+            "qualifier": null,
+            "columns": null
+          },
+          "set": {
+            "citation": {
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+              "page": 2
+            }
+          }
+        },
+        "module_voltage_v_nominal": {
+          "expect": {
+            "value": "102.4",
+            "unit": "V",
+            "qualifier": null,
+            "columns": null
+          },
+          "set": {
+            "citation": {
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+              "page": 2
+            }
+          }
+        },
+        "rated_power_w": {
+          "expect": null,
+          "set": {
+            "citation": {
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+              "page": 2
+            },
+            "value": "3072 / 6144 / 9216 / 12288 / 15360",
+            "unit": "W",
+            "qualifier": {
+              "quantity_kind": "rated",
+              "scope": "battery_system",
+              "module_count_basis": "columns",
+              "battery_module": "BU2-5.0-HV1",
+              "control_module": "BC2-HV1"
+            },
+            "columns": [
+              {
+                "module_count": 1,
+                "model": "B2-5.0-HV1",
+                "value": 3072,
+                "unit": "W"
+              },
+              {
+                "module_count": 2,
+                "model": "B2-10.0-HV1",
+                "value": 6144,
+                "unit": "W"
+              },
+              {
+                "module_count": 3,
+                "model": "B2-15.0-HV1",
+                "value": 9216,
+                "unit": "W"
+              },
+              {
+                "module_count": 4,
+                "model": "B2-20.0-HV1",
+                "value": 12288,
+                "unit": "W"
+              },
+              {
+                "module_count": 5,
+                "model": "B2-25.0-HV1",
+                "value": 15360,
+                "unit": "W"
+              }
+            ],
+            "evidence_refs": [
+              "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904:p2"
+            ]
+          }
+        }
+      }
+    },
+    "2092": {
+      "model": "BC2-HV1",
+      "documents": {
+        "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a"
+      },
+      "figures": {
+        "system_operating_voltage_range_v": {
+          "expect": {
+            "value": "89.6-115.2 / 179.2-230.4 / 268.8-345.6 / 358.4-460.8 / 448-576.0",
+            "unit": "V",
+            "qualifier": null,
+            "columns": null
+          },
+          "set": {
+            "citation": {
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+              "page": 2
+            },
+            "qualifier": {
+              "quantity_kind": "operating_range",
+              "scope": "battery_system",
+              "module_count_basis": "columns"
+            },
+            "columns": [
+              {
+                "module_count": 1,
+                "model": "B2-5.0-HV1",
+                "min": 89.6,
+                "max": 115.2,
+                "unit": "V"
+              },
+              {
+                "module_count": 2,
+                "model": "B2-10.0-HV1",
+                "min": 179.2,
+                "max": 230.4,
+                "unit": "V"
+              },
+              {
+                "module_count": 3,
+                "model": "B2-15.0-HV1",
+                "min": 268.8,
+                "max": 345.6,
+                "unit": "V"
+              },
+              {
+                "module_count": 4,
+                "model": "B2-20.0-HV1",
+                "min": 358.4,
+                "max": 460.8,
+                "unit": "V"
+              },
+              {
+                "module_count": 5,
+                "model": "B2-25.0-HV1",
+                "min": 448,
+                "max": 576,
+                "unit": "V"
+              }
+            ],
+            "evidence_refs": [
+              "B2-(5-25K)-(HV1,HV5)-datasheet-EN-BEU.pdf:p2",
+              "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904:p2"
+            ]
+          }
+        },
+        "max_fault_current_a": {
+          "expect": {
+            "value": "100",
+            "unit": "A",
+            "qualifier": null,
+            "columns": null
+          },
+          "set": {
+            "citation": {
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+              "page": 2
+            },
+            "qualifier": {
+              "quantity_kind": "fault",
+              "scope": "control_module",
+              "excludes_normal_operating_current": true
+            },
+            "evidence_refs": [
+              "doc-2a01f2dd8ad8ee475603e0643a7e1a2d10810917a5367c84ed0dd7cc1950a904:p2"
+            ]
+          }
+        }
+      }
+    },
+    "4107": {
+      "model": "H2-10K-T3",
+      "documents": {
+        "doc-9046d5a92c02c5efa83150796811308cb7f8699dc3aa6d4b2804bf2e9fc5a7b5": "0f0e75ad3f318318d1ba3f1d84a0f2c1f4864555b2deb45f4a1d0fd4cfa7acd7",
+        "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3"
+      },
+      "figures": {
+        "n_battery_ports": {
+          "expect": {
+            "value": "2",
+            "unit": "",
+            "qualifier": null,
+            "columns": null
+          },
+          "set": {
+            "citation": {
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+              "page": 2
+            }
+          }
+        },
+        "max_battery_charge_a": {
+          "expect": {
+            "value": "50",
+            "unit": "A",
+            "qualifier": null,
+            "columns": null
+          },
+          "set": {
+            "citation": {
+              "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+              "page": 37
+            },
+            "qualifier": {
+              "quantity_kind": "maximum",
+              "scope": "per_battery_port",
+              "direction": "charge",
+              "ports": [
+                "BAT1",
+                "BAT2"
+              ],
+              "source_expression": "2*50 A"
+            },
+            "evidence_refs": [
+              "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551:p37",
+              "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551:p43",
+              "doc-9046d5a92c02c5efa83150796811308cb7f8699dc3aa6d4b2804bf2e9fc5a7b5:p2"
+            ]
+          }
+        },
+        "max_battery_discharge_a": {
+          "expect": {
+            "value": "50",
+            "unit": "A",
+            "qualifier": null,
+            "columns": null
+          },
+          "set": {
+            "citation": {
+              "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+              "page": 37
+            },
+            "qualifier": {
+              "quantity_kind": "maximum",
+              "scope": "per_battery_port",
+              "direction": "discharge",
+              "ports": [
+                "BAT1",
+                "BAT2"
+              ],
+              "source_expression": "2*50 A"
+            },
+            "evidence_refs": [
+              "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551:p37",
+              "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551:p43",
+              "doc-9046d5a92c02c5efa83150796811308cb7f8699dc3aa6d4b2804bf2e9fc5a7b5:p2"
+            ]
+          }
+        },
+        "ac_output_kw_nominal": {
+          "expect": {
+            "value": "10000",
+            "unit": "W",
+            "qualifier": null,
+            "columns": null
+          },
+          "set": {
+            "citation": {
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+              "page": 2
+            },
+            "qualifier": {
+              "quantity_kind": "rated_active_power",
+              "scope": "on_grid_ac_output"
+            },
+            "evidence_refs": [
+              "saj_h2_10_30k_datasheet_eu_en.pdf:p2",
+              "doc-9046d5a92c02c5efa83150796811308cb7f8699dc3aa6d4b2804bf2e9fc5a7b5:p2"
+            ]
+          }
+        },
+        "max_pv_input_power_w": {
+          "expect": {
+            "value": "20000",
+            "unit": "Wp",
+            "qualifier": null,
+            "columns": null
+          },
+          "set": {
+            "citation": {
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+              "page": 2
+            },
+            "qualifier": {
+              "quantity_kind": "maximum_pv_nameplate_power",
+              "scope": "pv_array",
+              "rating_basis": "STC"
+            },
+            "evidence_refs": [
+              "saj_h2_10_30k_datasheet_eu_en.pdf:p2",
+              "doc-9046d5a92c02c5efa83150796811308cb7f8699dc3aa6d4b2804bf2e9fc5a7b5:p2"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

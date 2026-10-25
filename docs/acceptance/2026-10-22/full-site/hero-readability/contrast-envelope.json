@@ -1,0 +1,80 @@
+{
+  "scope": "Mathematical upper bound for the existing image-plus-pseudo-element layer with opaque documented text colors; not a full-page accessibility certificate or a substitute for actual visual inspection.",
+  "checks": [
+    {
+      "family": "EPC/Application",
+      "minimum_overlay_opacity": 0.64,
+      "overlay_rgb": [
+        7,
+        29,
+        52
+      ],
+      "lightest_possible_image_rgb": [
+        255,
+        255,
+        255
+      ],
+      "lightest_composite_rgb": [
+        96.28,
+        110.36,
+        125.08
+      ],
+      "foreground_rgb": [
+        255,
+        255,
+        255
+      ],
+      "computed_luminance_contrast": 5.194308579513463
+    },
+    {
+      "family": "EPC small badge",
+      "minimum_overlay_opacity": 0.64,
+      "overlay_rgb": [
+        7,
+        29,
+        52
+      ],
+      "lightest_possible_image_rgb": [
+        255,
+        255,
+        255
+      ],
+      "lightest_composite_rgb": [
+        96.28,
+        110.36,
+        125.08
+      ],
+      "foreground_rgb": [
+        238,
+        248,
+        255
+      ],
+      "computed_luminance_contrast": 4.8248669014605134
+    },
+    {
+      "family": "Residential",
+      "minimum_overlay_opacity": 0.64,
+      "overlay_rgb": [
+        13,
+        29,
+        25
+      ],
+      "lightest_possible_image_rgb": [
+        255,
+        255,
+        255
+      ],
+      "lightest_composite_rgb": [
+        100.12,
+        110.36,
+        107.8
+      ],
+      "foreground_rgb": [
+        255,
+        255,
+        255
+      ],
+      "computed_luminance_contrast": 5.243619810773156
+    }
+  ]
+}

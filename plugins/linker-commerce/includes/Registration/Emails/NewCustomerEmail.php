@@ -14,6 +14,8 @@ use Linker\Commerce\Registration\Fields;
 use Linker\Commerce\Registration\RegistrationInformation;
 use Linker\Commerce\Settings\Options;
 use WP_User;
+use Linker\Commerce\Mail\Message;
+use Linker\Commerce\Mail\Prepared;
 
 /**
  * Sent to the team mailbox when a customer registered (docs/specs/11-commerce.md,
@@ -21,6 +23,19 @@ use WP_User;
  * VAT check.
  */
 final class NewCustomerEmail extends TeamEmail {
+
+	/**
+	 * Prospective native rows, present only during pre-create capture.
+	 *
+	 * @var list<array{key:string,label:string,value:string,website:bool}>|null
+	 */
+	private ?array $preview_rows = null;
+	/**
+	 * Typed preview-only template fields.
+	 *
+	 * @var array<string,string>
+	 */
+	private array $preview_fields = array();
 
 	/**
 	 * Email id.
@@ -50,12 +65,35 @@ final class NewCustomerEmail extends TeamEmail {
 	 * @param int $customer_id Customer.
 	 */
 	public function trigger( $customer_id ): void {
+		if ( \Linker\Commerce\Registration\RegistrationNotices::owns( (int) $customer_id ) ) {
+			\Linker\Commerce\Registration\RegistrationNotices::deliver( (int) $customer_id, 'team' );
+			return;
+		}
 		$user = get_userdata( (int) $customer_id );
 		if ( ! $user instanceof WP_User ) {
 			return;
 		}
 		$this->placeholders['{company}'] = (string) get_user_meta( $user->ID, 'billing_company', true );
 		$this->notify( $user );
+	}
+
+	/**
+	 * Capture the configured native message without a database account or mail.
+	 *
+	 * @param WP_User              $user   Prospective identity, without a password.
+	 * @param array<string,string> $values Validated business values.
+	 * @param array<string,string> $fields Two typed preview-only template fields.
+	 */
+	public function preview( WP_User $user, array $values, array $fields = array() ): ?Message {
+		$before                          = array( $this->preview_rows, $this->preview_fields, $this->object, $this->recipient, $this->placeholders, $this->settings );
+		$this->preview_fields            = $fields;
+		$this->preview_rows              = $this->information->prospective( $values, $user );
+		$this->placeholders['{company}'] = $values['billing_company'] ?? '';
+		try {
+			return Prepared::capture( fn () => $this->notify( $user ) );
+		} finally {
+			[ $this->preview_rows, $this->preview_fields, $this->object, $this->recipient, $this->placeholders, $this->settings ] = $before;
+		}
 	}
 
 	/**
@@ -82,7 +120,9 @@ final class NewCustomerEmail extends TeamEmail {
 	protected function template_args(): array {
 		return array(
 			'customer'          => $this->object,
-			'registration_rows' => $this->object instanceof WP_User ? $this->information->rows( $this->object ) : array(),
+			'account_url'       => $this->preview_fields['account_url'] ?? null,
+			'vat_label'         => $this->preview_fields['vat'] ?? null,
+			'registration_rows' => $this->preview_rows ?? ( $this->object instanceof WP_User ? $this->information->rows( $this->object ) : array() ),
 		);
 	}
 }

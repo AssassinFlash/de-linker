@@ -8,6 +8,9 @@
 	"additionalProperties": false,
 	"properties": {
 		"schema_version": { "const": 1 },
+		"figure_projection_version": { "const": 2 },
+		"source_revision": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+		"compatibility_revision": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
 		"generated_at": { "type": "string", "format": "date-time" },
 		"compatibility_version": {
 			"description": "The `version` of the data/compatibility.json the feed was generated with.",
@@ -20,7 +23,7 @@
 		},
 		"products": { "type": "array", "items": { "$ref": "#/$defs/product" } },
 		"overlay": {
-			"description": "data/engineering-overlay.json: engineering items that are not products (the reference PV module).",
+			"description": "Reference engineering inputs generated from current Woo engineering-reference records and bound evidence. The migration JSON is not a runtime authority. Empty while no reference is published and prepared.",
 			"type": "array",
 			"items": { "$ref": "#/$defs/overlayItem" }
 		}
@@ -50,6 +53,8 @@
 			"additionalProperties": false,
 			"properties": {
 				"id": { "type": "integer", "minimum": 1 },
+				"canonical_product_id": { "type": "integer", "minimum": 1 },
+				"product_revision": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
 				"sku": { "type": "string" },
 				"model": {
 					"description": "pa_model; compatibility patterns are matched against it.",
@@ -95,6 +100,9 @@
 			"properties": {
 				"id": { "type": "string", "minLength": 1 },
 				"kind": { "enum": ["pv_module"] },
+				"canonical_product_id": { "type": "integer", "minimum": 1 },
+				"product_revision": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+				"reference_revision": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
 				"brand": { "type": "string" },
 				"model": { "type": "string" },
 				"figures": { "$ref": "#/$defs/figures" },
@@ -114,6 +122,16 @@
 			"properties": {
 				"value": { "type": ["string", "number"] },
 				"value_de": { "type": "string" },
+				"qualifier": {
+					"description": "The condition as maintained in Woo. It is evidence to interpret, never an automatically satisfied engineering predicate.",
+					"type": ["string", "object", "array", "null"]
+				},
+				"evidence_refs": { "type": "array", "items": { "type": "string" } },
+				"columns": {
+					"description": "Explicit table column labels maintained with the Woo figure. Column order or model names alone never establishes a configuration mapping.",
+					"type": "array",
+					"items": { "type": "object", "minProperties": 1, "additionalProperties": { "type": ["string", "number"] } }
+				},
 				"unit": { "type": ["string", "null"] },
 				"citation": { "$ref": "#/$defs/citation" }
 			}
@@ -124,6 +142,7 @@
 			"additionalProperties": false,
 			"properties": {
 				"url": { "$ref": "#/$defs/hostedUrl" },
+				"doc": { "type": "string", "description": "Original source-document label, retained as provenance. Permission requires the cited hosted URL and current Woo evidence; the label does not authorize use." },
 				"page": { "type": "integer", "minimum": 1 }
 			}
 		},
@@ -132,10 +151,17 @@
 			"required": ["url", "title", "type", "lang"],
 			"additionalProperties": false,
 			"properties": {
+				"role": { "type": "string" },
+				"aliases": { "type": "array", "items": { "$ref": "#/$defs/hostedUrl" }, "description": "Explicit hosted aliases of this versioned document, still subject to current source-product permission." },
+				"citation_aliases": { "type": "array", "items": { "type": "string" } },
+				"document_id": { "type": "string" },
+				"document_revision": { "type": "string" },
+				"blob_sha256": { "type": "string" },
+				"product_ids": { "type": "array", "items": { "type": "integer", "minimum": 1 } },
 				"url": { "$ref": "#/$defs/hostedUrl" },
 				"title": { "type": "string" },
 				"type": { "type": "string" },
-				"lang": { "type": "string", "pattern": "^[a-z]{2}$" }
+				"lang": { "type": "string", "pattern": "^(?:[a-z]{2}|mul|und)$", "description": "Producer-normalized language: a lowercase two-letter language, mul for explicitly multilingual material, und when unstated or unrecognized. Woo's editorial value remains unchanged; unknown does not imply English or German." }
 			}
 		},
 		"hostedUrl": {

@@ -39,6 +39,9 @@ function literal( match: RegExpMatchArray ): string {
 }
 
 function sources( dir: string ): string[] {
+	if ( statSync( dir ).isFile() ) {
+		return [ dir ];
+	}
 	return readdirSync( dir ).flatMap( ( name ) => {
 		const path = join( dir, name );
 		if ( statSync( path ).isDirectory() ) {
@@ -117,13 +120,25 @@ const genieMessages = germanGenie.locale_data.messages as Record<
 
 test( 'every genie text has a German translation', () => {
 	const missing = [
-		...used( [ 'src/genie', 'src/shared', 'src/protection' ] ).keys(),
+		...used( [
+			'src/genie',
+			'src/shared',
+			'src/protection',
+			// The shared addition statuses are imported by Genie cards.
+			'src/configurator/publication.ts',
+		] ).keys(),
 	].filter( ( id ) => ! ( id in genieMessages ) && ! ( id in messages ) );
 	expect( missing ).toEqual( [] );
 } );
 
 test( 'the genie translation file holds only texts the code uses', () => {
-	const ids = used( [ 'src/genie', 'src/shared', 'src/protection' ] );
+	const ids = used( [
+		'src/genie',
+		'src/shared',
+		'src/protection',
+		// The shared addition statuses are imported by Genie cards.
+		'src/configurator/publication.ts',
+	] );
 	const unused = Object.keys( genieMessages ).filter(
 		( id ) => id && ! ids.has( id )
 	);

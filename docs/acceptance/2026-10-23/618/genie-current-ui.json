@@ -1,0 +1,118 @@
+{
+  "source_head": "5397d930d8db2b2d26b7d197599bbe2dfe1a6f03",
+  "index_version": "20261023T175743Z",
+  "source_revision": "71567ab3481a9dcb25193ba185a764d441019705a764b71207a3c577ee14c4ed",
+  "entry": "actual local WordPress browser UI + normal service; no provider override",
+  "observed_delivery": true,
+  "turns": [
+    {
+      "id": 4,
+      "locale": "en",
+      "question": "What is the maximum continuous charge and discharge current of the GoodWe GW261.2-BAT-LCD-G10? Please cite its datasheet.",
+      "grounded": 1,
+      "failures": [],
+      "fallback": 0,
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "timing": {
+        "understand": 22.99,
+        "understand.vocabulary": 8.435,
+        "understand.attachments": 0.0,
+        "understand.jev": 3.686,
+        "understand.call.linker/get-product": 5.753,
+        "understand.call.linker/search-knowledge": 10.205,
+        "understand.calls": 10.206,
+        "model.attempt_1": 6.162,
+        "model": 6.162,
+        "ground": 0.003,
+        "hydrate": 0.001,
+        "log": 0.002,
+        "first_event": 41.392,
+        "total": 41.393
+      },
+      "output": {
+        "language": "en",
+        "blocks": [
+          {
+            "type": "text",
+            "text": "### Maximum charge and discharge current\n\nThe GW261.2-BAT-LCD-G10 datasheet lists, in the row for maximum input and output current, 180 A / 180 A, given as input / output.\n\nIn the same technical table, the row for maximum charging / discharging current carries values only in the GW208.9-BAT-LC-G10 column; in the GW261.2-BAT-LCD-G10 column it is marked with a dash, so the input / output current row is the one the datasheet gives for this model.",
+            "refs": [
+              "027415a66a00-p2-6b052231"
+            ]
+          },
+          {
+            "type": "document",
+            "ref": "p1958.document.2",
+            "label": "GoodWe BAT-C Series 208.9–261.2 kWh Datasheet (EMEA, EN, V1.1) · p. 2",
+            "url": "http://127.0.0.1:8888/wp-content/uploads/2026/09/GW_BAT-C-208-261_Datasheet_EMEA-EN_V1.1.pdf#page=2",
+            "document_id": "doc-56fa939acf90470677e98c7bd9729f23a31ddd53a7c66b3d65ba440ddab13ebb",
+            "document_revision": "8627cceb38bde44f93992f73f09743a19e54153fc66153f0c3cba769c0dd9c95"
+          }
+        ]
+      },
+      "tool_names": [
+        "linker/search-knowledge",
+        "linker/get-product"
+      ]
+    },
+    {
+      "id": 5,
+      "locale": "de",
+      "question": "Welcher Energiezähler wird im Handbuch für den SAJ CHS2-29.9K-T4-X genannt? Bitte nennen Sie die Quelle.",
+      "grounded": 1,
+      "failures": [],
+      "fallback": 0,
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "timing": {
+        "understand": 21.011,
+        "understand.vocabulary": 2.857,
+        "understand.attachments": 0.0,
+        "understand.jev": 2.883,
+        "understand.call.linker/get-product": 5.785,
+        "understand.call.linker/search-knowledge": 14.681,
+        "understand.calls": 14.682,
+        "model.attempt_1": 6.441,
+        "model": 6.441,
+        "ground": 0.001,
+        "hydrate": 0.0,
+        "log": 0.003,
+        "first_event": 39.777,
+        "total": 39.777
+      },
+      "output": {
+        "language": "de",
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Laut Handbuch ist das der Zähler **CHINT DTSU666**: Der Meter-Anschluss des CHS2-29.9K-T4-X lässt sich mit diesem Zähler verbinden, um die Kommunikation über die serielle RS485-Schnittstelle bereitzustellen.\n\n### Quelle\n\n- SAJ CHS2 29.9-50K Benutzerhandbuch (englische Fassung), Abschnitt „Meter Connection for Single Deployment“",
+            "refs": [
+              "92b45188a10e-p27-a38b4312"
+            ]
+          },
+          {
+            "type": "document",
+            "ref": "p1959.document.1",
+            "label": "SAJ CHS2 29.9-50K user manual, English, V0.2 (covers the CHS2-29.9K-T4-X) · S. 27",
+            "url": "http://127.0.0.1:8888/wp-content/uploads/2026/10/SAJ_CHS2_29.9-50K_User-Manual_EN_EU_V0.2.pdf#page=27",
+            "document_id": "doc-29633b9228fd277e32dada64d0647420282373a0d6a67cbad21fd72c36f86705",
+            "document_revision": "83ce89032356b364e0677170f1526914842b9d400b11c8da04e7fe8334900803"
+          }
+        ]
+      },
+      "tool_names": [
+        "linker/search-knowledge",
+        "linker/get-product"
+      ]
+    }
+  ],
+  "screenshots": [
+    "genie-current-en-1440.jpg",
+    "genie-current-en-390.jpg",
+    "genie-current-de-1440.jpg",
+    "genie-current-de-390.jpg",
+    "genie-current-en-390-source.jpg",
+    "genie-current-de-390-source.jpg"
+  ],
+  "limitation": "These delivered positive turns precede the final internal-read consolidation, with the same current knowledge generation. The strict malformed-ID fix, outer final consolidation and vocabulary source binding passed independent Spec/Standards reviews; final-source generic frontend observations are recorded separately. Service timing is not end-to-end browser timing or a controlled benchmark."
+}

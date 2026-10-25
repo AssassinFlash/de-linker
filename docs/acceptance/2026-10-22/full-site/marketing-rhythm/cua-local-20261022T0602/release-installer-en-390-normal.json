@@ -1,0 +1,91 @@
+{
+  "at": "2026-10-22T07:58:23.811Z",
+  "fonts": "loaded",
+  "groups": [
+    {
+      "direction": "column",
+      "display": "flex",
+      "gap": "12px",
+      "lineBreaks": [],
+      "links": [
+        {
+          "background": "rgb(12, 127, 115)",
+          "border": "1px solid rgb(12, 127, 115)",
+          "color": "rgb(255, 255, 255)",
+          "focused": false,
+          "font": "14px",
+          "hovered": false,
+          "href": "http://127.0.0.1:9290/solution-configurator/",
+          "outline": "rgb(255, 255, 255) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 452.84375,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 404.84375
+          },
+          "text": "Plan a Project Solution →"
+        },
+        {
+          "background": "rgb(255, 255, 255)",
+          "border": "1px solid rgb(158, 178, 163)",
+          "color": "rgb(23, 39, 33)",
+          "focused": false,
+          "font": "14px",
+          "hovered": false,
+          "href": "http://127.0.0.1:9290/my-account/",
+          "outline": "rgb(23, 39, 33) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 512.84375,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 464.84375
+          },
+          "text": "Open Partner Account"
+        }
+      ],
+      "paragraphGap": 32,
+      "previous": {
+        "font": "16px",
+        "lineHeight": "25.28px",
+        "rect": {
+          "bottom": 372.84375,
+          "height": 291.46875,
+          "right": 372,
+          "width": 354,
+          "x": 18,
+          "y": 81.375
+        },
+        "tag": "DIV",
+        "text": "\n\n     Solar & Storage Solutions\n    \n\n     Ready to design and source your next installation?\n    \n\n     Linker supplies residential hybrid packages and commercial outdoor cabinets, with Solution Configurator sizing and technical support behind the installation.\n    \n"
+      },
+      "rect": {
+        "bottom": 512.84375,
+        "height": 108,
+        "right": 372,
+        "width": 354,
+        "x": 18,
+        "y": 404.84375
+      }
+    }
+  ],
+  "hasAdminBar": false,
+  "header": {
+    "background": "rgb(255, 255, 255)",
+    "filter": "none"
+  },
+  "height": 844,
+  "lang": "en-US",
+  "overflow": false,
+  "url": "http://127.0.0.1:9290/for-installer/",
+  "width": 390,
+  "sourceAggregate": "d69083aefc946cc4884e17d2774d9b503661f5e39cb151388649423791748661",
+  "stylesheets": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792655451"
+  ]
+}

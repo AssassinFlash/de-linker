@@ -14,6 +14,20 @@ export function resourceRefusalReason( error: unknown ): string | null {
 		return null;
 	}
 
+	if ( error instanceof Error && 'code' in error ) {
+		if ( error.code === 'linker_genie_publication_changed' ) {
+			return __(
+				'The product information changed while Genie was answering. Your message is still here.',
+				'linker-tools'
+			);
+		}
+		if ( error.code === 'linker_genie_publication_unavailable' ) {
+			return __(
+				'Genie is temporarily unavailable. Your message is still here. You can send an inquiry to our team.',
+				'linker-tools'
+			);
+		}
+	}
 	if (
 		error instanceof Error &&
 		( ( 'status' in error && error.status === 429 ) ||

@@ -67,12 +67,13 @@ export interface ProductPresentation {
 }
 
 /**
- * Auxiliary UI reads get five seconds, never the full model turn budget:
- * local full restore fixtures finish in 0.6–1.1 seconds, and a failed lookup
- * may omit a price rather than hold the shared composer indefinitely.
- * This presentation budget is recorded in docs/specs/13-genie.md (2026-10-22).
+ * Use the same 20-second native-read budget as Genie's AbilityClient and
+ * PublicationClient. Current customer acceptance measured valid native reads
+ * at 8–10 seconds; the former five-second presentation timer discarded their
+ * current permissions and document links. Failure still removes stale data,
+ * and hung reads remain bounded (docs/specs/13-genie.md, 2026-10-24).
  */
-export const ARTIFACT_TIMEOUT_MS = 5_000;
+export const ARTIFACT_TIMEOUT_MS = 20_000;
 
 /**
  * Historical prices are snapshots, so restore them from current authority.

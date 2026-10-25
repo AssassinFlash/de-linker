@@ -22,15 +22,21 @@
 @media (min-width:1280px){:root{--lk-header-h:88px}}
 :where([id]){scroll-margin-top:calc(var(--lk-header-h) + 24px)}
 body.admin-bar :where([id]){scroll-margin-top:calc(var(--lk-header-h) + 56px)}
-header#lc-header{position:sticky;top:0;z-index:1000;background:rgba(255,255,255,.95);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--proto-neutral-200)}
-body.admin-bar header#lc-header{top:32px}
-@media (max-width:782px){body.admin-bar header#lc-header{top:46px}}
+/* Keep scrolled titles behind an opaque navigation surface. */
+header#lc-header{position:sticky;top:0;z-index:1000;background:#fff;border-bottom:1px solid var(--proto-neutral-200)}
+/* Saved marketing covers fade the background while leaving the hero.
+ * Switch the reading surface immediately so body copy cannot show through;
+ * retain the existing border transition and every inner menu transition. */
+html body[data-page] header#lc-header{transition-property:border-color}
+body.admin-bar header#lc-header{top:32px;--lk-toolbar-offset:32px}
+@media (max-width:782px){body.admin-bar header#lc-header{top:46px;--lk-toolbar-offset:46px}}
 #tv-header-v2{font-family:var(--proto-font-sans);position:relative;background:transparent;padding-top:0!important;padding-bottom:0!important;color:var(--proto-ink)}
 #tv-header-v2 .tv-container{max-width:1360px!important;margin:0 auto;padding-left:1rem;padding-right:1rem}
 #tv-header-v2 :where(a,button,input,summary,[tabindex]):focus-visible{outline:2px solid var(--proto-teal-600);outline-offset:2px;border-radius:4px}
 #tv-header-v2 .tv-brand{display:inline-flex;color:var(--proto-ink);align-items:center;min-height:44px;flex-shrink:0;text-decoration:none;touch-action:manipulation}
 #tv-header-v2 .tv-brand-mark{display:grid;gap:3px;line-height:1}
-#tv-header-v2 .tv-brand-logo{height:52px;width:auto;display:block}
+/* Original attachment is 712 by 355; keep its box across rounded WP derivatives. */
+#tv-header-v2 .tv-brand-logo{height:52px;width:auto;aspect-ratio:712/355;object-fit:contain;display:block}
 #tv-header-v2 .tv-mega-featured-eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:inherit;font-size:12px;font-weight:800;line-height:1.2;letter-spacing:.16em;text-transform:uppercase;color:var(--proto-teal-600);margin:0 0 2px}
 #tv-header-v2 .tv-mega-featured-eyebrow::before{content:"";width:34px;height:2px;background:var(--proto-teal-600);flex-shrink:0}
 #tv-header-v2 .tv-nav-frame{display:flex;flex-direction:row;gap:clamp(.5rem,1vw,1rem);align-items:center;justify-content:space-between;width:100%;min-height:64px;padding:8px 16px;background:transparent;border:none;border-radius:0;box-shadow:none}
@@ -44,11 +50,11 @@ body.admin-bar header#lc-header{top:32px}
 #tv-header-v2 #tv-mobile-toggle{flex-shrink:0;position:relative;z-index:2}
 }
 @media (min-width:1280px){#tv-header-v2 .tv-nav-frame{min-height:72px}}
-/* The content-box frame already fills its container. Its end padding adds
-   16px outside that width and produces 1px of document overflow at 1280px.
-   Remove only the transparent end padding: the content width, left inset,
-   navigation spacing and native fit() budget remain unchanged. */
-@media (min-width:1280px){#tv-header-v2 .tv-nav-frame{padding-right:0}}
+/* The container already supplies both 1rem gutters. The full-width,
+   content-box frame's extra start padding shifts the row into the end
+   gutter, clipping Contact's focus ring at 1283px. Remove its duplicate
+   inline padding; the content width and native fit() budget stay equal. */
+@media (min-width:1280px){#tv-header-v2 .tv-nav-frame{padding-inline:0}}
 #tv-header-v2 .tv-desktop-nav{display:none}
 @media (min-width:1280px){#tv-header-v2 .tv-desktop-nav{display:flex;align-items:center;gap:4px;flex:0 0 auto}}
 /* #229: DE must fit beside the contact button AND share EN's fold state.
@@ -65,18 +71,23 @@ body.admin-bar header#lc-header{top:32px}
  * sweep and +1px-per-side pressure test guard the rendered behavior.
  * Source, safety calculation, and unresolved boundary table:
  * docs/acceptance/2026-10-18/229/round2/. */
-@media (min-width:1280px){html[lang^="de"] #tv-header-v2 .tv-nav-link{padding-inline:clamp(4.546875px,round(down,calc((min(100vw - 32px,1360px) - 1156.5625px - 3 * clamp(8px,1vw,16px)) / 12),.015625px),14px)}}
-@media (min-width:1288px){html[lang^="de"] #tv-header-v2 .tv-nav-link{padding-inline:clamp(0px,round(down,calc((min(100vw - 32px,1360px) - 1170px - 3 * clamp(8px,1vw,16px)) / 12),.015625px),14px)}}
+/* The actual header excludes a classic scrollbar, unlike 100vw. Native
+ * 1366px readback: header 1351px, frame content 1319px, old budget 1334px.
+ * Use its inline container width with the same gutters and safety budget;
+ * fits() continues to decide disclosure from actual native geometry. */
+@media (min-width:1280px){#tv-header-v2{container-type:inline-size;container-name:linker-header}}
+@media (min-width:1280px){html[lang^="de"] #tv-header-v2 .tv-nav-link{padding-inline:clamp(4.546875px,round(down,calc((min(100cqw - 32px,1360px) - 1156.5625px - 3 * clamp(8px,1vw,16px)) / 12),.015625px),14px)}}
+@container linker-header (min-width:1288px){html[lang^="de"] #tv-header-v2 .tv-nav-link{padding-inline:clamp(0px,round(down,calc((min(100cqw - 32px,1360px) - 1170px - 3 * clamp(8px,1vw,16px)) / 12),.015625px),14px)}}
 #tv-header-v2 .tv-nav-item{position:relative}
 #tv-header-v2 .tv-nav-link{display:inline-flex;align-items:center;gap:4px;height:44px;min-height:44px;padding:0 14px;font-family:inherit;color:var(--proto-ink);text-decoration:none;background:none;border:0;border-radius:8px;cursor:pointer;transition:color 200ms cubic-bezier(.2,0,0,1),background 200ms cubic-bezier(.2,0,0,1);white-space:nowrap;touch-action:manipulation}
 #tv-header-v2 .tv-nav-link:hover{color:var(--proto-teal-600);background:var(--proto-teal-50)}
 #tv-header-v2 .tv-nav-link:active{transform:translateY(1px)}
 #tv-header-v2 .tv-nav-chevron{width:14px;height:14px;transition:transform 200ms cubic-bezier(.2,0,0,1);flex-shrink:0}
 #tv-header-v2 .tv-nav-item:has(> .tv-nav-link[aria-expanded="true"]) .tv-nav-chevron{transform:rotate(180deg)}
-#tv-header-v2 .tv-mega-menu{position:absolute;top:100%;left:50%;transform:translateX(-50%) translateY(-6px);opacity:0;visibility:hidden;transition:opacity 200ms cubic-bezier(.2,0,0,1),transform 200ms cubic-bezier(.2,0,0,1),visibility 200ms;background:#ffffff;border:1px solid var(--proto-neutral-200);border-radius:20px;box-shadow:var(--proto-shadow-3);padding:22px;width:860px;max-width:calc(100vw - 40px);z-index:50;pointer-events:none}
+#tv-header-v2 .tv-mega-menu{display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%) translateY(-6px);opacity:0;visibility:hidden;transition:opacity 200ms cubic-bezier(.2,0,0,1),transform 200ms cubic-bezier(.2,0,0,1),visibility 200ms;background:#ffffff;border:1px solid var(--proto-neutral-200);border-radius:20px;box-shadow:var(--proto-shadow-3);padding:22px;width:860px;max-width:calc(100vw - 40px);z-index:50;pointer-events:none}
 #tv-header-v2 .tv-mega-menu--compact{width:400px;padding:12px}
 #tv-header-v2 .tv-mega-menu::before{content:"";position:absolute;top:-12px;left:0;right:0;height:12px}
-#tv-header-v2 .tv-nav-item:has(> .tv-nav-link[aria-expanded="true"]) .tv-mega-menu{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);pointer-events:auto}
+#tv-header-v2 .tv-nav-item:has(> .tv-nav-link[aria-expanded="true"]) .tv-mega-menu{display:block;opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);pointer-events:auto}
 #tv-header-v2 .tv-mega-grid{display:grid;grid-template-columns:260px 1fr;gap:24px}
 #tv-header-v2 .tv-nav-item[data-tv-nav-primary="products"] .tv-mega-menu{left:0;box-sizing:border-box;width:min(1120px,calc(100vw - 180px));transform:translateY(-6px)}
 #tv-header-v2 .tv-nav-item[data-tv-nav-primary="products"]:has(> .tv-nav-link[aria-expanded="true"]) .tv-mega-menu{transform:translateY(0)}
@@ -190,6 +201,22 @@ body.admin-bar header#lc-header{top:32px}
 #tv-header-v2 .tv-mobile-toggle{display:flex;align-items:center;justify-content:center;width:44px;height:44px;min-height:44px;padding:0;background:#ffffff;border:1px solid var(--proto-neutral-200);border-radius:8px;color:var(--proto-ink);cursor:pointer;transition:border-color 200ms cubic-bezier(.2,0,0,1);touch-action:manipulation}
 #tv-header-v2 .tv-mobile-toggle:hover{border-color:var(--proto-teal-600)}
 #tv-header-v2 .tv-mobile-toggle:active{transform:translateY(1px)}
+#tv-header-v2 .tv-mobile-navigation{flex-shrink:0;width:44px;height:44px}
+#tv-header-v2 .tv-mobile-navigation>.tv-mobile-toggle{box-sizing:border-box;list-style:none}
+#tv-header-v2 .tv-mobile-navigation>.tv-mobile-toggle::-webkit-details-marker{display:none}
+#tv-header-v2 .tv-menu-close-icon{display:none}
+#tv-header-v2 .tv-mobile-navigation[open]>.tv-mobile-toggle .tv-menu-open-icon{display:none}
+#tv-header-v2 .tv-mobile-navigation[open]>.tv-mobile-toggle .tv-menu-close-icon{display:block}
+#tv-header-v2 .tv-mobile-navigation>.tv-mobile-panel{position:absolute;top:100%;left:0;right:0;box-sizing:border-box;max-height:calc(100dvh - var(--lk-header-h) - var(--lk-toolbar-offset,0px));padding-left:1rem;padding-right:1rem;background:#fff;border-bottom:1px solid var(--proto-neutral-200)}
+#tv-header-v2 .tv-mobile-navigation[open]>.tv-mobile-panel{display:flex;flex-direction:column}
+/* The resting Genie dock covers Services' right end in the open panel.
+   Hide the whole collapsed dock: hiding only its button leaves the fixed
+   parent intercepting clicks. Keep its separate, possibly delayed preview
+   clear too. The menu link and an already open conversation stay usable. */
+body:has(#tv-header-v2 .tv-mobile-navigation[open]) .linker-genie:has(>.linker-genie-open[aria-expanded="false"]),
+body:has(#tv-header-v2 .tv-mobile-navigation[open]) .linker-genie-peek{visibility:hidden;pointer-events:none}
+@media (min-width:1280px){#tv-header-v2 .tv-mobile-navigation{display:none}}
+#tv-header-v2[data-tv-nav-folded="true"] .tv-mobile-navigation{display:block}
 @media (min-width:1280px){#tv-header-v2 #tv-mobile-toggle{display:none!important}}
 #tv-header-v2[data-tv-nav-folded="true"] .tv-desktop-nav,
 #tv-header-v2[data-tv-nav-folded="true"] .tv-header-cta:not(.tv-mobile-cta){display:none!important}
@@ -197,6 +224,11 @@ body.admin-bar header#lc-header{top:32px}
 #tv-header-v2[data-tv-actions-compact="true"] .tv-desktop-actions .tv-b2b-acct-btn .tv-b2b-acct-avatar{width:22px;height:22px}
 #tv-header-v2 .tv-mobile-panel{display:none;padding:4px 0 12px;border-top:1px solid var(--proto-neutral-200);max-height:calc(100dvh - var(--lk-header-h));overflow-y:auto;overscroll-behavior:contain}
 #tv-header-v2 .tv-mobile-panel[data-open="true"]{display:flex;flex-direction:column}
+/* Native Tab scrolling needs the 2px outline, 2px offset, 1px panel border
+   and 1px for native whole-pixel scrolling. At 320px a 5px margin leaves
+   EN Blog/DE Configurator outlines .0859375px/.109375px beyond the client
+   scrollport, while the border box itself fits. Keep the strict inner edge. */
+#tv-header-v2 .tv-mobile-panel :is(a[href],summary){scroll-margin-block:6px}
 #tv-header-v2 [data-tv-mobile-primary="products"]{order:1}
 #tv-header-v2 [data-tv-mobile-primary="solutions"]{order:2}
 #tv-header-v2 [data-tv-mobile-primary="ai"]{order:3}
@@ -210,38 +242,45 @@ body.admin-bar header#lc-header{top:32px}
 #tv-header-v2 .tv-mobile-summary::-webkit-details-marker{display:none}
 #tv-header-v2 .tv-mobile-summary svg{transition:transform 200ms cubic-bezier(.2,0,0,1)}
 #tv-header-v2 .tv-mobile-section[open] .tv-mobile-summary svg{transform:rotate(180deg)}
-#tv-header-v2 .tv-mobile-links{padding:0 0 6px;display:flex;flex-direction:column;gap:8px}
+/* Reuse the group's 8px gap so content clears the 2px focus outline and offset. */
+#tv-header-v2 .tv-mobile-links{padding:8px 0 6px;display:flex;flex-direction:column;gap:8px}
 #tv-header-v2 .tv-mobile-link{display:flex;flex-direction:column;padding:0;font-size:16px;color:var(--proto-ink);text-decoration:none;letter-spacing:0;border:1px solid var(--proto-neutral-200);border-radius:12px;box-shadow:none;background:#ffffff;overflow:hidden;transition:border-color 200ms cubic-bezier(.2,0,0,1)}
 #tv-header-v2 .tv-mobile-link:hover{border-color:var(--proto-teal-600)}
 #tv-header-v2 .tv-mobile-link-thumb{width:100%;height:84px;object-fit:cover;display:block;background:var(--proto-neutral-50)}
 #tv-header-v2 .tv-mobile-link-text{display:flex;flex-direction:column;justify-content:center;gap:2px;min-height:44px;padding:10px 12px}
 #tv-header-v2 .tv-mobile-link-title{font-weight:700;color:var(--proto-ink);font-size:16px;line-height:1.3}
 #tv-header-v2 .tv-mobile-link-desc{font-size:13.5px;font-weight:400;color:var(--proto-neutral-500);line-height:1.45}
-#tv-header-v2 .tv-mobile-rail{display:flex;gap:10px;overflow-x:auto;padding:0 0 6px;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory}
-#tv-header-v2 .tv-mobile-rail-card{flex:0 0 140px;scroll-snap-align:start;text-decoration:none;color:inherit}
-#tv-header-v2 .tv-mobile-rail-card img{width:140px;height:80px;object-fit:cover;border-radius:12px;display:block;background:var(--proto-neutral-50)}
+/* The existing 2px outline plus 2px offset needs 4px around the cards.
+   Keep card alignment, the 140px cap and 10px gap; let two cards fit narrow rails. */
+#tv-header-v2 .tv-mobile-rail{display:flex;flex-wrap:wrap;gap:10px;margin-inline:-4px;padding:4px 4px 6px}
+#tv-header-v2 .tv-mobile-rail-card{flex:0 0 min(140px,calc((100% - 10px)/2));min-width:0;text-decoration:none;color:inherit}
+#tv-header-v2 .tv-mobile-rail-card img{width:100%;height:80px;object-fit:cover;border-radius:12px;display:block;background:var(--proto-neutral-50)}
+#tv-header-v2 .tv-mobile-rail-card:focus-visible{border-radius:12px}
+#tv-header-v2 .tv-mobile-rail-card:hover .tv-mobile-rail-title,#tv-header-v2 .tv-mobile-rail-card:focus-visible .tv-mobile-rail-title{color:var(--proto-teal-600)}
 #tv-header-v2 .tv-mobile-rail-title{display:block;margin-top:4px;font-size:13px;font-weight:750;line-height:1.3;color:var(--proto-ink)}
 #tv-header-v2 .tv-mobile-rail-desc{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px;font-size:12px;font-weight:400;line-height:1.35;color:var(--proto-neutral-500)}
 #tv-header-v2 .tv-mobile-sub--break{margin-top:10px}
 #tv-header-v2 .tv-mobile-subhead{margin:8px 2px 2px;font-size:12px;font-weight:750;letter-spacing:.04em;text-transform:uppercase;color:var(--proto-neutral-500)}
 #tv-header-v2 .tv-mobile-link.tv-mobile-sub{margin-left:0;border:0;border-radius:0;background:transparent;box-shadow:none;border-top:1px solid var(--proto-neutral-200)}
 #tv-header-v2 .tv-mobile-link.tv-mobile-sub:hover{border-color:var(--proto-neutral-200);color:var(--proto-teal-600)}
-#tv-header-v2 .tv-mobile-link.tv-mobile-sub .tv-mobile-link-text{min-height:0;padding:8px 2px}
+#tv-header-v2 .tv-mobile-link.tv-mobile-sub .tv-mobile-link-text{box-sizing:border-box;min-height:44px;padding:8px 2px}
 #tv-header-v2 [data-tv-mobile-primary="products"] .tv-mobile-links{gap:0}
 #tv-header-v2 [data-tv-mobile-primary="products"] .tv-mobile-rail{margin-bottom:6px}
 #tv-header-v2 [data-tv-mobile-primary="products"] .tv-mobile-link--all{margin-top:12px}
 #tv-header-v2 .tv-mobile-link.tv-mobile-sub .tv-mobile-link-title{font-weight:400;font-size:15px;color:var(--proto-neutral-500)}
 #tv-header-v2 .tv-mobile-link.tv-mobile-link--all{border-color:rgba(12,127,115,.35);background:var(--proto-teal-50)}
-#tv-header-v2 .tv-mobile-link.tv-mobile-link--all .tv-mobile-link-text{min-height:0;padding:9px 12px}
+#tv-header-v2 .tv-mobile-link.tv-mobile-link--all .tv-mobile-link-text{box-sizing:border-box;min-height:44px;padding:9px 12px}
 #tv-header-v2 .tv-mobile-link.tv-mobile-link--all .tv-mobile-link-title{color:var(--proto-teal-600);font-weight:700}
-#tv-header-v2 .tv-mobile-cta{margin-top:10px;width:100%}
+#tv-header-v2 .tv-mobile-cta{box-sizing:border-box;margin-top:10px;width:100%}
 #tv-header-v2 .tv-mobile-utility-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
 #tv-header-v2 .tv-mobile-utility{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:44px;min-height:44px;border-radius:8px;border:1px solid var(--proto-neutral-200);background:#ffffff;color:var(--proto-ink);font-family:inherit;font-size:13px;font-weight:700;text-decoration:none;touch-action:manipulation}
 #tv-header-v2 .tv-mobile-utility:hover{border-color:var(--proto-teal-600);color:var(--proto-teal-600)}
 #tv-header-v2 .tv-mobile-utility:active{transform:translateY(1px)}
 #tv-header-v2 .tv-mobile-utility svg{width:16px;height:16px;flex-shrink:0}
 #tv-header-v2 .tv-mobile-utility--ai{background:var(--proto-teal-50);border-color:rgba(12,127,115,.28);color:var(--proto-teal-600)}
-@media (min-width:1280px){#lc-header #tv-mobile-panel:not([data-open="true"]){display:none!important}}
+/* Only the old button partial has a direct container child. Native details
+   must reveal their panel through open before the enhancement sets data-open. */
+@media (min-width:1280px){#lc-header .tv-container>#tv-mobile-panel:not([data-open="true"]){display:none!important}}
 html.lia-narrow #lc-header #tv-mobile-panel[data-open="true"]{display:flex!important;flex-direction:column}
 #tv-header-v2 .tv-brand,#tv-header-v2 .tv-mobile-toggle,#tv-header-v2 .tv-header-cta,#tv-header-v2 .tv-header-utility,#tv-header-v2 .tv-header-icon-btn,#tv-header-v2 .tv-mobile-utility,#tv-header-v2 .tv-nav-link,#tv-header-v2 .tv-language-switch,#tv-header-v2 .tv-b2b-mobile-portal-link,#tv-header-v2 .tv-b2b-acct-btn{border-radius:8px!important}
 #tv-header-v2 .tv-mobile-link,#tv-header-v2 .tv-mega-link,#tv-header-v2 .tv-mega-featured,#tv-header-v2 .tv-mega-link-thumb,#tv-header-v2 .tv-mega-featured-img,#tv-header-v2 .tv-app-mega-stack-item,#tv-header-v2 .tv-app-mega-stack-thumb,#tv-header-v2 .tv-mobile-link-thumb{border-radius:12px!important}
@@ -265,11 +304,18 @@ html.lia-narrow #lc-header #tv-mobile-panel[data-open="true"]{display:flex!impor
 #tv-header-v2 .tv-desktop-actions{gap:8px}
 }
 @media (min-width:1280px){
-html:not(.lia-narrow) #tv-header-v2:not([data-tv-actions-compact="true"]) .tv-desktop-actions .tv-header-utility{width:auto;padding:0 16px;gap:8px}
-html:not(.lia-narrow) #tv-header-v2:not([data-tv-actions-compact="true"]) .tv-desktop-actions .tv-b2b-acct-btn{width:auto;padding:0 12px;gap:8px}
-html:not(.lia-narrow) #tv-header-v2:not([data-tv-actions-compact="true"]) .tv-desktop-actions .tv-header-utility-label,
-html:not(.lia-narrow) #tv-header-v2:not([data-tv-actions-compact="true"]) .tv-desktop-actions .tv-b2b-acct-chev{position:static;width:auto;height:auto;margin:0;overflow:visible;clip:auto;clip-path:none}
-html:not(.lia-narrow) #tv-header-v2:not([data-tv-actions-compact="true"]) .tv-desktop-actions .tv-header-cart-link .tv-b2b-acct-count{position:static;top:auto;right:auto;margin-left:2px}
+html:not(.lia-narrow) #tv-header-v2[data-tv-actions-compact="false"] .tv-desktop-actions .tv-header-utility{width:auto;padding:0 16px;gap:8px}
+html:not(.lia-narrow) #tv-header-v2[data-tv-actions-compact="false"] .tv-desktop-actions .tv-b2b-acct-btn{width:auto;padding:0 12px;gap:8px}
+html:not(.lia-narrow) #tv-header-v2[data-tv-actions-compact="false"] .tv-desktop-actions .tv-header-utility-label,
+html:not(.lia-narrow) #tv-header-v2[data-tv-actions-compact="false"] .tv-desktop-actions .tv-b2b-acct-chev{position:static;width:auto;height:auto;margin:0;overflow:visible;clip:auto;clip-path:none}
+html:not(.lia-narrow) #tv-header-v2[data-tv-actions-compact="false"] .tv-desktop-actions .tv-header-cart-link .tv-b2b-acct-count{position:static;top:auto;right:auto;margin-left:2px}
+/* Before fit() measures the existing desktop budget, use the already native
+   folded panel. Its account/contact links work without the enhancement. */
+#tv-header-v2:not([data-tv-actions-compact]) .tv-desktop-nav,
+#tv-header-v2:not([data-tv-actions-compact]) .tv-header-cta:not(.tv-mobile-cta),
+#tv-header-v2:not([data-tv-actions-compact]) .tv-desktop-actions .tv-b2b-acct{display:none!important}
+#tv-header-v2:not([data-tv-actions-compact]) .tv-mobile-navigation{display:block}
+#tv-header-v2:not([data-tv-actions-compact]) #tv-mobile-toggle{display:flex!important}
 }
 #lc-header #tv-header-v2 .tv-mega-link,#lc-header #tv-header-v2 .tv-mega-featured,#lc-header #tv-header-v2 .tv-mobile-link,#lc-header #tv-header-v2 .tv-simple-menu-link{align-items:stretch!important;justify-content:flex-start!important}
 #lc-header #tv-header-v2 .tv-mega-sublink{align-items:center!important;justify-content:space-between!important}

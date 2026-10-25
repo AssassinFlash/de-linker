@@ -11,8 +11,11 @@ namespace Linker\Commerce\Tests\Unit\Mail;
 
 use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Mail\Outbox;
+use Linker\Commerce\Mail\Producer;
 use Linker\Commerce\Mail\TestMode;
 use Linker\Commerce\Mail\Throttle;
+use Linker\Commerce\Mail\OptionBudgetLedger;
+use Linker\Commerce\Tests\Fixtures\BudgetMemory;
 use Linker\Commerce\Tests\TestCase;
 use Mockery;
 use WP_Error;
@@ -93,6 +96,15 @@ final class OutboxTest extends TestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
+		WP_Mock::userFunction( 'clean_post_cache', array( 'return' => null ) );
+		WP_Mock::userFunction( 'get_post_status', array( 'return' => fn ( int $id ) => $this->posts[ $id ] ?? false ) );
+
+		WP_Mock::userFunction( 'wp_cache_delete', array( 'return' => true ) );
+		WP_Mock::userFunction( 'clean_post_cache', array( 'return' => null ) );
+		$GLOBALS['wpdb']         = Mockery::mock( \wpdb::class );
+		$GLOBALS['wpdb']->prefix = 'wp_';
+		$GLOBALS['wpdb']->allows( 'prepare' )->andReturn( 'lock' );
+		$GLOBALS['wpdb']->allows( 'get_var' )->andReturn( '1' );
 		WP_Mock::userFunction( 'get_option', array( 'return' => fn ( string $name, $default_value = false ) => $this->options[ $name ] ?? $default_value ) );
 		WP_Mock::userFunction(
 			'update_option',
@@ -103,6 +115,7 @@ final class OutboxTest extends TestCase {
 				},
 			)
 		);
+		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'isolated-native-producer-fixture' ) );
 		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn ( $value ) => json_encode( $value ) ) );
 		WP_Mock::userFunction( 'wp_slash', array( 'return' => static fn ( $value ) => $value ) );
 		WP_Mock::userFunction( 'wp_strip_all_tags', array( 'return' => static fn ( string $text ): string => strip_tags( $text ) ) );
@@ -166,7 +179,7 @@ final class OutboxTest extends TestCase {
 		WP_Mock::userFunction( 'sanitize_email', array( 'return' => static fn ( string $email ): string => str_contains( $email, '@' ) ? trim( $email ) : '' ) );
 		WP_Mock::userFunction( 'is_email', array( 'return' => static fn ( string $email ): string|false => 1 === preg_match( '/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/', $email ) ? $email : false ) );
 
-		$this->outbox = new Outbox( new JobStore(), new Throttle() );
+		$this->outbox = new Outbox( new JobStore( new \Linker\Commerce\Tests\Fixtures\JobCapacityMemory() ), new Throttle( new BudgetMemory( $this->options ) ) );
 		WP_Mock::userFunction(
 			'wp_mail',
 			array(
@@ -194,11 +207,31 @@ final class OutboxTest extends TestCase {
 	private static function call(): array {
 		return array(
 			'to'          => 'sales@de-linker.com',
-			'subject'     => 'New inquiry #20',
-			'message'     => '<p>New inquiry</p>',
+			'subject'     => 'Operational notification #20',
+			'message'     => '<p>Operational notification</p>',
 			'headers'     => "Content-Type: text/html\r\nBcc: a@example.test, b@example.test, c@example.test\r\n",
 			'attachments' => array(),
 		);
+	}
+
+	/**
+	 * This component test uses an actual ordinary Woo producer context. Public
+	 * inquiries are proved separately through the native bound Queue fixture.
+	 */
+	private function native_notification(): ?bool {
+		$email     = new \WC_Email();
+		$email->id = 'linker_digest';
+		$send      = ( new Producer() )->woocommerce( fn () => $this->outbox->intercept( null, self::call() ), $email );
+		return $send();
+	}
+
+	/** A public unclassified call has no transaction witness or send allowance. */
+	public function test_unclassified_content_does_not_borrow_the_native_producer(): void {
+		$this->logger( 0, 0 );
+		$this->assertTrue( $this->outbox->intercept( null, self::call() ) );
+		$this->assertSame( 0, $this->calls );
+		$this->assertArrayNotHasKey( OptionBudgetLedger::OPTION, $this->options );
+		$this->assertCount( 1, $this->posts );
 	}
 
 	/**
@@ -225,13 +258,13 @@ final class OutboxTest extends TestCase {
 	public function test_sends_at_once(): void {
 		$this->logger( 0, 0 );
 
-		$this->assertTrue( $this->outbox->intercept( null, self::call() ) );
+		$this->assertTrue( $this->native_notification() );
 
 		$this->assertSame( 1, $this->calls );
 		$this->assertSame( array( 'sales@de-linker.com' ), $this->delivered[0][0] );
 		$this->assertContains( 'Bcc: a@example.test, b@example.test, c@example.test', $this->delivered[0][3] );
 		$this->assertSame( array(), $this->posts );
-		$this->assertCount( 1, $this->options[ Throttle::OPTION ] );
+		$this->assertCount( 1, $this->options[ OptionBudgetLedger::OPTION ]['entries'] );
 		$this->assertSame(
 			array( 'Email "' . self::call()['subject'] . '" sent to sales@de-linker.com, bcc a@example.test, b@example.test, c@example.test.' ),
 			$this->sent_lines,
@@ -256,7 +289,7 @@ final class OutboxTest extends TestCase {
 		$this->results = array( false, false, false, true );
 		$start         = time();
 
-		$this->assertTrue( $this->outbox->intercept( null, self::call() ) );
+		$this->assertTrue( $this->native_notification() );
 		$job = (int) array_key_first( $this->posts );
 		for ( $retry = 1; $retry <= 3; ++$retry ) {
 			$this->outbox->retry( $job );
@@ -278,7 +311,7 @@ final class OutboxTest extends TestCase {
 		$this->logger( 7, 1 );
 		$this->results = array_fill( 0, 8, false );
 
-		$this->outbox->intercept( null, self::call() );
+		$this->native_notification();
 		$job = (int) array_key_first( $this->posts );
 		for ( $retry = 1; $retry <= 7; ++$retry ) {
 			$this->outbox->retry( $job );
@@ -297,10 +330,11 @@ final class OutboxTest extends TestCase {
 	 */
 	public function test_waits_for_the_quota(): void {
 		$this->logger( 0, 0 );
-		$now                               = time();
+		$now = time();
+		unset( $this->options[ OptionBudgetLedger::OPTION ] );
 		$this->options[ Throttle::OPTION ] = array_fill( 0, Throttle::PER_MINUTE, $now - 10 );
 
-		$this->assertTrue( $this->outbox->intercept( null, self::call() ) );
+		$this->assertTrue( $this->native_notification() );
 
 		$this->assertSame( 0, $this->calls );
 		$this->assertCount( 1, $this->posts );
@@ -317,15 +351,16 @@ final class OutboxTest extends TestCase {
 		$this->logger( 0, 0 );
 		$this->options[ TestMode::OPTION ] = TestMode::DEFAULT_TO;
 
-		$this->assertTrue( $this->outbox->intercept( null, self::call() ) );
+		$this->assertTrue( $this->native_notification() );
 		$this->assertSame( array( TestMode::DEFAULT_TO ), $this->delivered[0][0], 'The one recipient is the test address.' );
 		$headers = (array) $this->delivered[0][3];
 		$this->assertNotContains( 'Bcc: a@example.test, b@example.test, c@example.test', $headers, 'No blind copy reaches the mailer.' );
 		$this->assertContains( 'Content-Type: text/html; charset=UTF-8', $headers, 'Everything else about the message stays.' );
 
-		$now                               = time();
+		$now = time();
+		unset( $this->options[ OptionBudgetLedger::OPTION ] );
 		$this->options[ Throttle::OPTION ] = array_fill( 0, Throttle::PER_MINUTE, $now - 10 );
-		$this->assertTrue( $this->outbox->intercept( null, self::call() ) );
+		$this->assertTrue( $this->native_notification() );
 
 		$job    = (int) array_key_first( $this->posts );
 		$queued = json_decode( (string) $this->meta[ $job ]['_linker_mail_message'], true );

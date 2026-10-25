@@ -51,7 +51,7 @@ final class Handler {
 		$post  = wp_unslash( $_POST );
 		$back  = $this->back_url( $post );
 		$state = $this->process( $post );
-		if ( ! in_array( $state, array( 'sent', 'sent_no_receipt' ), true ) ) {
+		if ( ! in_array( $state, array( 'sent', 'sent_no_receipt', 'saved_review' ), true ) ) {
 			\Linker\Commerce\Protection\FormRecovery::save( 'contact', $post );
 		}
 		$this->back( $back, $state );
@@ -60,6 +60,8 @@ final class Handler {
 	/**
 	 * The decision of one submission, without the redirect: the state the
 	 * visitor returns to, and the sending a delivered message causes.
+	 *
+	 * @phpstan-impure
 	 *
 	 * @param  array<string, mixed> $post The posted values, unslashed.
 	 * @return string `sent`, `sent_no_receipt`, `invalid` or `throttled`.
@@ -89,13 +91,21 @@ final class Handler {
 		if ( $order instanceof WP_Error ) {
 			$code = $order->get_error_code();
 			return match ( $code ) {
+				'linker_business_capacity' => 'reception_full',
+				'linker_intake_size' => 'review_size',
+				'linker_intake_full' => 'review_full',
+				'linker_intake_grouped' => 'grouped',
 				'linker_admission_quota' => 'throttled',
-				'linker_admission_pending', 'linker_admission_already_completed' => 'pending',
+				'linker_intake_busy', 'linker_intake_pending', 'linker_admission_pending', 'linker_admission_already_completed' => 'pending',
 				'linker_admission_proof', 'linker_admission_proof_reused', 'linker_admission_payload_changed', 'linker_admission_input' => 'verification_failed',
 				default => 'verification_unavailable',
 			};
 		}
-		return '' !== $order->get_meta( ReceiptLimit::SKIPPED_META ) ? 'sent_no_receipt' : 'sent';
+		if ( $order->get_meta( \Linker\Commerce\Protection\Intake::META ) ) {
+			\Linker\Commerce\Protection\IntakeAdmin::remember( $order );
+			return 'saved_review';
+		}
+		return ! in_array( $order->get_meta( ReceiptLimit::SKIPPED_META ), array( '', 'assessment_pending' ), true ) ? 'sent_no_receipt' : 'sent';
 	}
 
 	/**

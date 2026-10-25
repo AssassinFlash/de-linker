@@ -1,0 +1,128 @@
+{
+  "actions": [
+    {
+      "fontSize": "14px",
+      "href": "http://127.0.0.1:9290/de/genie/",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 313,
+        "y": 484.6328125
+      },
+      "text": "\n\n"
+    },
+    {
+      "fontSize": "11px",
+      "href": "http://127.0.0.1:9290/de/genie/",
+      "rect": {
+        "height": 35.59375,
+        "width": 318.3359375,
+        "x": 35.828125,
+        "y": 558.6328125
+      },
+      "text": "Finden Sie ein 10-kW-Dreiphasen-Heimspeichersystem"
+    },
+    {
+      "fontSize": "11px",
+      "href": "http://127.0.0.1:9290/de/genie/",
+      "rect": {
+        "height": 35.59375,
+        "width": 332.1171875,
+        "x": 28.9375,
+        "y": 602.2265625
+      },
+      "text": "Vergleichen Sie GoodWe- und SAJ-Heimspeicheroptionen"
+    },
+    {
+      "fontSize": "11px",
+      "href": "http://127.0.0.1:9290/de/genie/",
+      "rect": {
+        "height": 53.1875,
+        "width": 354,
+        "x": 18,
+        "y": 645.8203125
+      },
+      "text": "Welche Batterie funktioniert mit meinem Hybrid-Wechselrichter?"
+    }
+  ],
+  "bodyClasses": "wp-singular page-template page-template-page-templates page-template-empty page-template-page-templatesempty-php page page-id-6923 page-child parent-pageid-6871 wp-custom-logo wp-embed-responsive wp-theme-picostrap5 wp-child-theme-picostrap5-child-base theme-picostrap5 lc-custom-header lc-custom-footer woocommerce-js is-using-livecanvas rs-at-cover",
+  "cover": {
+    "before": "linear-gradient(rgba(13, 29, 25, 0.64), rgba(13, 29, 25, 0.64) 60%, rgba(13, 29, 25, 0.72))",
+    "className": "lk-hero-cinematic",
+    "rect": {
+      "height": 793.3984375,
+      "width": 390,
+      "x": 0,
+      "y": 1
+    }
+  },
+  "fontStatus": "loaded",
+  "heading": {
+    "color": "rgb(255, 255, 255)",
+    "fontSize": "32px",
+    "lineHeight": "37.12px",
+    "rect": {
+      "height": 111.3515625,
+      "width": 354,
+      "x": 18,
+      "y": 162
+    },
+    "text": "Heimspeicher, verknüpft und geliefert von Linker."
+  },
+  "overflow": 0,
+  "scrollY": 0,
+  "url": "http://127.0.0.1:9290/de/loesung/heimspeicher/",
+  "viewport": [
+    390,
+    844
+  ],
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792655451"
+  ],
+  "fonts": "loaded",
+  "header": "rgba(21, 53, 47, 0.8)",
+  "images": [
+    {
+      "complete": true,
+      "naturalWidth": 2560
+    }
+  ],
+  "texts": [
+    {
+      "className": "lk-hero-badge",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": "10px",
+      "opacity": "1",
+      "text": "HEIMSPEICHER"
+    },
+    {
+      "className": "lk-hero-title",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": "32px",
+      "opacity": "1",
+      "text": "Heimspeicher, verknüpft und geliefert von Linker."
+    },
+    {
+      "className": "lk-hero-subtitle",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": "13px",
+      "opacity": "1",
+      "text": "Ein- und dreiphasige Hybrid-Wechselrichter, modulare LFP-Batteriespeicher und Smart Meter, gemeinsam geliefert für Wohngebäudeinstallationen."
+    },
+    {
+      "className": "lk-hero-footnote",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": "11px",
+      "opacity": "0.9",
+      "text": "\n        Beginnen Sie mit dem System, das das Haus braucht. Produktdetails und Datenblätter liegen vor.\n      "
+    },
+    {
+      "className": "screen-reader-text",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": "14px",
+      "opacity": "1",
+      "text": ""
+    }
+  ],
+  "sourceAggregate": "d69083aefc946cc4884e17d2774d9b503661f5e39cb151388649423791748661"
+}

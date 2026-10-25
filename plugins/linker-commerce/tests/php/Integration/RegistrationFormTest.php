@@ -80,6 +80,7 @@ final class RegistrationFormTest extends IntegrationTestCase {
 	 * fields as the accounts page, the website included.
 	 */
 	public function test_a_registration_saves_the_fields_and_the_team_letter_shows_them(): void {
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_MINUTE, time() ), false );
 		$post   = $this->post();
 		$fields = $this->fields( $post );

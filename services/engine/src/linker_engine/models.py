@@ -8,7 +8,7 @@ against them, so the rules of an input exist once.
 from __future__ import annotations
 
 import math
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -268,6 +268,8 @@ class Report(BaseModel):
 
 
 class ResidentialResult(BaseModel):
+    publication: dict[str, Any] | None = None
+    selection_fingerprint: str | None = None
     status: Literal["solution", "no_candidate"]
     yield_: YieldResult = Field(alias="yield")
     storage: StorageResult
@@ -341,6 +343,7 @@ class RoofPackRequest(Strict):
 
 
 class RoofPlaneResult(BaseModel):
+    publication: dict[str, Any] | None = None
     id: int
     polygon: list[tuple[float, float]] = Field(
         description="Ring as [longitude, latitude] pairs"
@@ -356,6 +359,7 @@ class RoofPlaneResult(BaseModel):
 
 
 class RoofResult(BaseModel):
+    publication: dict[str, Any] | None = None
     found: bool
     building_id: str | None
     address: str | None
@@ -375,6 +379,7 @@ class RoofResult(BaseModel):
 
 
 class ReportRequest(Strict):
+    selection_fingerprint: Annotated[str, Field(pattern=r"^[a-f0-9]{64}$")]
     input: ResidentialInput
     logo: str | None = Field(
         default=None,
@@ -441,6 +446,8 @@ class CommercialSystem(BaseModel):
 
 
 class CommercialResult(BaseModel):
+    publication: dict[str, Any] | None = None
+    selection_fingerprint: str | None = None
     status: Literal["sized", "indicative"]
     load: LoadSummary | None
     options: list[ShavingOption]
@@ -450,3 +457,9 @@ class CommercialResult(BaseModel):
     systems: list[CommercialSystem]
     warnings: list[str]
     inquiry: str
+
+
+class SelectionRequest(Strict):
+    kind: Literal["residential", "commercial"]
+    input: ResidentialInput | CommercialInput
+    selection_fingerprint: Annotated[str, Field(pattern=r"^[a-f0-9]{64}$")]

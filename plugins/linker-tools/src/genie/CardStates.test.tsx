@@ -37,11 +37,12 @@ vi.mock( './api/turn', async ( importOriginal ) => {
 vi.mock( './api/product', () => ( {
 	productModel: vi.fn( async () => 'GW10K-ETA' ),
 } ) );
-vi.mock( '../configurator/api/solutions', () => ( {
-	saveSolution: vi.fn(),
+vi.mock( './api/solution', async ( importOriginal ) => ( {
+	...( await importOriginal< typeof import( './api/solution' ) >() ),
+	saveGenieSolution: vi.fn(),
 } ) );
 import { sendTurn } from './api/turn';
-import { saveSolution } from '../configurator/api/solutions';
+import { saveGenieSolution } from './api/solution';
 import { App } from './App';
 import type { GenieConfig } from './config';
 
@@ -118,7 +119,7 @@ async function openCardTurn() {
 const STATES: [ CardState, string ][] = [
 	[ 'pending', 'Adding…' ],
 	[ 'added', 'In your solution draft.' ],
-	[ 'unverified', 'Sent, but the draft does not show it yet. Please check.' ],
+	[ 'unverified', 'Addition not confirmed.' ],
 	[ 'retry', 'Not added. Try again.' ],
 ];
 
@@ -163,7 +164,7 @@ test( 'the card walks every action state inside the card', async () => {
 } );
 
 test( 'a failed save shows the retry sentence inside the card', async () => {
-	vi.mocked( saveSolution ).mockRejectedValue( new Error( 'save 500' ) );
+	vi.mocked( saveGenieSolution ).mockRejectedValue( new Error( 'save 500' ) );
 	storeFactory = () => storeDouble();
 	await openCardTurn();
 	const card = screen.getByRole( 'article' );

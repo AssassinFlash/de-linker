@@ -1,0 +1,6 @@
+/* The scene's white focus ring belongs on its photo background. The nested
+   white card needs the existing teal focus token to remain visible. Higher
+   specificity preserves this color when the saved LC scene CSS loads later. */
+#home-a .home-scene-card .scene-card-action:focus-visible {
+  outline-color: var(--proto-teal-600);
+}

@@ -22,10 +22,11 @@ import { App, type AppProps } from './App';
 import type { Locale } from './types';
 
 type Args = {
-	outcome: 'solution' | 'none' | 'unavailable' | 'never';
+	outcome:
+		'solution' | 'none' | 'unavailable' | 'never' | 'stale' | 'publication';
 	commercial: 'sized' | 'indicative';
 	segment: AppProps[ 'initialSegment' ];
-	draft: 'added' | 'unverified' | 'retry';
+	draft: 'added' | 'unverified' | 'retry' | 'stale';
 	/** The stock state WooCommerce reports for the answer's products. */
 	stock: 'in' | 'out';
 };
@@ -195,6 +196,19 @@ export const AddedToDraft: Story = {
 export const DraftNotConfirmed: Story = {
 	...AddedToDraft,
 	args: { draft: 'unverified' },
+};
+
+/** A later action discovers that the confirmed result is no longer current. */
+export const SelectionNoLongerCurrent: Story = {
+	...AddedToDraft,
+	args: { draft: 'stale' },
+};
+
+/** Current Woo permission cannot be checked, distinct from the yield service. */
+export const ProductDataUnavailable: Story = {
+	args: { outcome: 'publication' },
+	play: async ( { canvasElement, globals } ) =>
+		fillAndCalculate( canvasElement, globals.locale ),
 };
 
 export const Computing: Story = {

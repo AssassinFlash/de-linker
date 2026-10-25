@@ -177,6 +177,35 @@ final class EngineProxy {
 		}
 		$body = 'POST' === $method ? (string) $request->get_body() : '';
 
+		$proof = array();
+		if ( 'POST' === $method && 'report/pdf' === $path ) {
+			$input   = json_decode( $body, true );
+			$checked = $this->call(
+				'POST',
+				$base . '/selection/validate',
+				(string) wp_json_encode(
+					array(
+						'kind'                  => 'residential',
+						'input'                 => $input['input'] ?? null,
+						'selection_fingerprint' => $input['selection_fingerprint'] ?? '',
+					)
+				)
+			);
+			if ( is_wp_error( $checked ) ) {
+				return $checked;
+			}
+			if ( $checked[0] >= 400 ) {
+				$failure = json_decode( $checked[2], true );
+				$changed = 409 === $checked[0] && in_array( $failure['detail']['error'] ?? '', array( 'publication_changed', 'selection_changed' ), true );
+				return new WP_Error( $changed ? 'linker_publication_changed' : 'linker_publication_unavailable', __( 'Your request could not be completed. Your input is still here. Please try again.', 'linker-tools' ), array( 'status' => $changed ? 409 : 503 ) );
+			}
+			$verified = json_decode( $checked[2], true );
+			$proof    = is_array( $verified['publication'] ?? null ) ? $verified['publication'] : array();
+			$valid    = \Linker\Tools\Protection\EnginePublication::validate( $proof );
+			if ( is_wp_error( $valid ) ) {
+				return $valid;
+			}
+		}
 		$answer = $this->call( $method, $url, $body );
 		if ( is_wp_error( $answer ) ) {
 			return new WP_Error(
@@ -190,16 +219,20 @@ final class EngineProxy {
 		$content_type = (string) ( $headers['content-type'] ?? '' );
 		if ( str_starts_with( $content_type, 'application/pdf' ) && $status < 400 ) {
 			$response = new WP_REST_Response( $payload, $status );
+			$valid    = \Linker\Tools\Protection\EnginePublication::validate( $proof );
+			if ( is_wp_error( $valid ) ) {
+				return $valid;
+			}
+			\Linker\Tools\Protection\EnginePublication::remember( $response, $proof );
 			$response->header( 'Content-Type', 'application/pdf' );
 			$response->header( 'Content-Disposition', 'attachment; filename="design-report.pdf"' );
 			return $response;
 		}
 
-		$decoded = json_decode( $payload, true );
-		return new WP_REST_Response(
-			null === $decoded ? array( 'detail' => $payload ) : $decoded,
-			$status
-		);
+		$decoded  = json_decode( $payload, true );
+		$response = new WP_REST_Response( null === $decoded ? array( 'detail' => $payload ) : $decoded, $status );
+		$response->header( 'Cache-Control', 'private, no-store' );
+		return 'POST' === $method && ( str_starts_with( $path, 'design/' ) || str_starts_with( $path, 'roof/' ) ) ? \Linker\Tools\Protection\EnginePublication::reply( $response ) : $response;
 	}
 
 	/**
@@ -233,8 +266,11 @@ final class EngineProxy {
 				$args['headers']['X-Linker-Resource-Subject'] = '' !== $identity->account ? $identity->account : $identity->browser;
 			}
 		}
-		$version = \Linker\Tools\Protection\Resources::engine_version();
-		if ( '' !== $version && 'POST' === $method ) {
+		$version = 'POST' === $method ? ( new \Linker\Tools\Protection\EngineVersion() )->current() : '';
+		if ( is_wp_error( $version ) ) {
+			return $version;
+		}
+		if ( '' !== $version ) {
 			$args['headers']['X-Linker-Engine-Version'] = $version;
 		}
 		if ( 'POST' === $method ) {

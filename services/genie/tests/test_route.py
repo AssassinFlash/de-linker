@@ -29,6 +29,64 @@ def _model(value: str, *ids: int) -> Match:
     return Match("model", value, value, frozenset(ids), value)
 
 
+@pytest.mark.parametrize("confidence", [0.52, 0.95])
+@pytest.mark.parametrize(
+    ("message", "lang", "show"),
+    [
+        ("Show me the SAJ B2-10.0-HV1 product and its datasheet.", "en", True),
+        ("Zeigen Sie mir das Produkt SAJ B2-10.0-HV1 und sein Datenblatt.", "de", True),
+        ("Show me the datasheet and the SAJ B2-10.0-HV1 product.", "en", True),
+        ("Show me only the B2-10.0-HV1 product and its datasheet.", "en", True),
+        ("Zeigen Sie mir die Produkte B2-10.0-HV1 und ihre Datenblätter.", "de", True),
+        ("Zeigen Sie mir das Datenblatt und das Produkt SAJ B2-10.0-HV1.", "de", True),
+        ("Show me the datasheet for this product B2-10.0-HV1.", "en", False),
+        ("Show me the B2-10.0-HV1 product datasheet and manual.", "en", False),
+        ("Bitte nur das Datenblatt für das Produkt B2-10.0-HV1.", "de", False),
+        ("Do not show the B2-10.0-HV1 product, only its datasheet.", "en", False),
+        (
+            "Zeigen Sie mir nicht das Produkt B2-10.0-HV1 und sein Datenblatt.",
+            "de",
+            False,
+        ),
+        (
+            'Explain "show me the product and its datasheet" for B2-10.0-HV1.',
+            "en",
+            False,
+        ),
+        (
+            "Erklären Sie »Zeigen Sie mir das Produkt und sein Datenblatt« für B2-10.0-HV1.",
+            "de",
+            False,
+        ),
+        (
+            "Explain 'show me the product and its datasheet' for B2-10.0-HV1.",
+            "en",
+            False,
+        ),
+        ("How do I set the export limit on B2-10.0-HV1?", "en", False),
+        ("Show me datasheets for B2-10.0-HV1 and B2-15.0-HV1 products.", "en", False),
+        (
+            "Zeigen Sie mir Datenblätter für B2-10.0-HV1 und B2-15.0-HV1 Produkte.",
+            "de",
+            False,
+        ),
+    ],
+)
+def test_documents_keep_an_explicit_product_request(
+    confidence: float, message: str, lang: str, show: bool
+) -> None:
+    subject = Subject((2067,), {2067: "home-storage"}, {2067: "B2-10.0-HV1"})
+    route = plan(
+        message,
+        [_model("B2-10.0-HV1", 2067)],
+        _reading("documents_specs", confidence),
+        subject,
+        lang,
+    )
+    assert route.name == "documents"
+    assert route.show_products is show
+
+
 def test_sizing_opens_the_configurator_with_the_stated_figures() -> None:
     message = "What size battery for 8 kWp PV and 6000 kWh per year?"
     route = plan(message, [], _reading("sizing", 1.0), NONE, "en")

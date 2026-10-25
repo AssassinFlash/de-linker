@@ -147,6 +147,7 @@ test( 'the parts block reaches the card and its add is one store call', async ()
 			{ productId: 4107, quantity: 2 },
 			{ productId: 3556, quantity: 3 },
 		],
-		expect.any( Function )
+		expect.any( Function ),
+		{ kind: 'genie', token: '' }
 	);
 } );

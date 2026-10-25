@@ -1,0 +1,98 @@
+{
+  "at": "2026-10-22T08:23:36.501Z",
+  "fonts": "loaded",
+  "groups": [
+    {
+      "direction": "column",
+      "gap": "12px",
+      "lineBreaks": [],
+      "links": [
+        {
+          "background": "rgb(12, 127, 115)",
+          "border": "1px solid rgb(12, 127, 115)",
+          "className": "lk-btn-teal",
+          "color": "rgb(255, 255, 255)",
+          "focusVisible": false,
+          "focused": false,
+          "font": "14px",
+          "hovered": false,
+          "href": "http://127.0.0.1:9290/de/loesungskonfigurator/",
+          "outline": "rgb(255, 255, 255) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 543.5703125,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 495.5703125
+          },
+          "text": "Projektlösung planen →",
+          "transitionDuration": "0.18s, 0.18s, 0.18s",
+          "transitionProperty": "border-color, box-shadow"
+        },
+        {
+          "background": "rgb(255, 255, 255)",
+          "border": "1px solid rgb(158, 178, 163)",
+          "className": "lk-btn-outline",
+          "color": "rgb(23, 39, 33)",
+          "focusVisible": false,
+          "focused": false,
+          "font": "14px",
+          "hovered": false,
+          "href": "http://127.0.0.1:9290/de/mein-konto/",
+          "outline": "rgb(23, 39, 33) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 603.5703125,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 555.5703125
+          },
+          "text": "Partnerkonto öffnen",
+          "transitionDuration": "0.18s, 0.18s, 0.18s",
+          "transitionProperty": "border-color, box-shadow"
+        }
+      ],
+      "paragraphGap": 32,
+      "previous": {
+        "font": "16px",
+        "lineHeight": "25.28px",
+        "rect": {
+          "bottom": 463.5703125,
+          "height": 382.1875,
+          "right": 372,
+          "width": 354,
+          "x": 18,
+          "y": 81.3828125
+        },
+        "tag": "DIV",
+        "text": "\n\n     Solar- & Speicherlösungen\n    \n\n     Bereit, Ihre nächste Installation zu planen und zu beschaffen?\n    \n\n     Linker liefert Hybridpakete für Wohngebäude und gewerbliche Outdoor-Schränke, mit der Auslegung im Lösungskonfigurator und technischer Unterstützung für die Installation.\n    \n"
+      },
+      "rect": {
+        "bottom": 603.5703125,
+        "height": 108,
+        "right": 372,
+        "width": 354,
+        "x": 18,
+        "y": 495.5703125
+      }
+    }
+  ],
+  "hasAdminBar": false,
+  "header": {
+    "background": "rgb(255, 255, 255)",
+    "filter": "none"
+  },
+  "height": 844,
+  "lang": "de-DE",
+  "overflow": false,
+  "stylesheets": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792656909"
+  ],
+  "url": "http://127.0.0.1:9290/de/fuer-installateur/",
+  "width": 390,
+  "sourceAggregate": "00ae7fc26d8df2d5bc63c9e4ab99e7c82da7caf8e2e4fb8d261ad3e892e742ff"
+}

@@ -23,14 +23,24 @@
    live parity captured without). components sorts after base and before
    utilities: the reset still outranks the preflight and the form plugin's field
    styling, and a utility class still beats the reset. */
+/* The ten saved marketing roots identify these same pages before their inline
+   enhancement sets data-page. Keep the attribute path for existing consumers;
+   the zero-specificity root alternative cannot increase the reset's weight.
+   Native EN/DE inventory: marketing-initial-styles.md. */
 @layer components {
-:where(body[data-page] #theme-main) :where(*):not(svg,svg *,img,video),:where(body[data-page] #theme-main) ::before,:where(body[data-page] #theme-main) ::after{all:revert}
-:where(body[data-page] #theme-main) :where(img,video,svg){box-sizing:revert;margin:revert;padding:revert;border:revert;display:revert;vertical-align:revert;max-width:revert}
-#theme-main:where(body[data-page] *){all:revert}
+:where(body:is([data-page],:where(:has(#home-a,#tv-contact-v1,#tv-solution-v1,#tv-rs-page-v1,#tv-cs-page-v1,#installer-journal,#tv-solutions-developers-v1,#about-journal,#tv-utility-page-v1,#service-redesign))) #theme-main) :where(*):not(svg,svg *,img,video),:where(body:is([data-page],:where(:has(#home-a,#tv-contact-v1,#tv-solution-v1,#tv-rs-page-v1,#tv-cs-page-v1,#installer-journal,#tv-solutions-developers-v1,#about-journal,#tv-utility-page-v1,#service-redesign))) #theme-main) ::before,:where(body:is([data-page],:where(:has(#home-a,#tv-contact-v1,#tv-solution-v1,#tv-rs-page-v1,#tv-cs-page-v1,#installer-journal,#tv-solutions-developers-v1,#about-journal,#tv-utility-page-v1,#service-redesign))) #theme-main) ::after{all:revert}
+:where(body:is([data-page],:where(:has(#home-a,#tv-contact-v1,#tv-solution-v1,#tv-rs-page-v1,#tv-cs-page-v1,#installer-journal,#tv-solutions-developers-v1,#about-journal,#tv-utility-page-v1,#service-redesign))) #theme-main) :where(img,video,svg){box-sizing:revert;margin:revert;padding:revert;border:revert;display:revert;vertical-align:revert;max-width:revert}
+#theme-main:where(body:is([data-page],:where(:has(#home-a,#tv-contact-v1,#tv-solution-v1,#tv-rs-page-v1,#tv-cs-page-v1,#installer-journal,#tv-solutions-developers-v1,#about-journal,#tv-utility-page-v1,#service-redesign))) *){all:revert}
 }
 #lc-header .tv-language-switch,#lc-header .tv-language-rail{display:none!important}
-html:where(:has(> body[data-page])){scroll-behavior:auto}
-html[lang^="de"] body[data-page] #theme-main,html[lang^="de"] :is(#lc-header,#lc-footer){-webkit-hyphens:auto;hyphens:auto}
+html:where(:has(> body[data-page],> body #home-a,> body #tv-contact-v1,> body #tv-solution-v1,> body #tv-rs-page-v1,> body #tv-cs-page-v1,> body #installer-journal,> body #tv-solutions-developers-v1,> body #about-journal,> body #tv-utility-page-v1,> body #service-redesign)){scroll-behavior:auto}
+html[lang^="de"] body:is([data-page],:where(:has(#home-a,#tv-contact-v1,#tv-solution-v1,#tv-rs-page-v1,#tv-cs-page-v1,#installer-journal,#tv-solutions-developers-v1,#about-journal,#tv-utility-page-v1,#service-redesign))) #theme-main,html[lang^="de"] :is(#lc-header,#lc-footer){-webkit-hyphens:auto;hyphens:auto}
 #lc-header,#lc-footer{font-family:var(--proto-font-sans);font-size:var(--proto-size-md);line-height:var(--proto-leading-body);color:var(--proto-color-ink);letter-spacing:normal}
-body[data-page]{margin:0;min-height:100vh;display:flex;flex-direction:column;background:var(--proto-color-canvas);color:var(--proto-color-ink);font-family:var(--proto-font-sans);font-size:var(--proto-size-md);line-height:var(--proto-leading-body)}
-body[data-page] #theme-main{flex:1 0 auto;background:transparent}
+body:is([data-page],:where(:has(#home-a,#tv-contact-v1,#tv-solution-v1,#tv-rs-page-v1,#tv-cs-page-v1,#installer-journal,#tv-solutions-developers-v1,#about-journal,#tv-utility-page-v1,#service-redesign))){margin:0;min-height:100vh;display:flex;flex-direction:column;background:var(--proto-color-canvas);color:var(--proto-color-ink);font-family:var(--proto-font-sans);font-size:var(--proto-size-md);line-height:var(--proto-leading-body)}
+body:is([data-page],:where(:has(#home-a,#tv-contact-v1,#tv-solution-v1,#tv-rs-page-v1,#tv-cs-page-v1,#installer-journal,#tv-solutions-developers-v1,#about-journal,#tv-utility-page-v1,#service-redesign))) #theme-main{flex:1 0 auto;background:transparent}
+
+/* SEOPress's employee editing beacon is fixed on screen and otherwise repeats
+   over the document on every printed page. It is not document content. */
+@media print {
+  #seopress-beacon-universal-metabox{display:none!important}
+}

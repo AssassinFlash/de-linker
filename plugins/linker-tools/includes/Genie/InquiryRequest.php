@@ -327,7 +327,7 @@ class InquiryRequest {
 				'order'   => $order->get_id(),
 				'number'  => (string) $order->get_order_number(),
 				'status'  => $order->get_status(),
-				'receipt' => ! empty( $note['receipt'] ),
+				'receipt' => '' === (string) $order->get_meta( '_linker_receipt_skipped' ),
 				'email'   => (string) ( $note['email'] ?? $order->get_billing_email() ),
 				'url'     => 0 === (int) $order->get_customer_id() ? $order->get_checkout_order_received_url() : $order->get_view_order_url(),
 			);
@@ -452,8 +452,7 @@ class InquiryRequest {
 		}
 		$inquiry = $this->inquiry( (int) $last['order'], $locale );
 		if ( null !== $inquiry ) {
-			$inquiry['receipt'] = ! empty( $last['receipt'] );
-			$inquiry['email']   = (string) ( $last['email'] ?? $inquiry['email'] );
+			$inquiry['email'] = (string) ( $last['email'] ?? $inquiry['email'] );
 		}
 		return $inquiry;
 	}

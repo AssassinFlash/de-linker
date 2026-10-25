@@ -17,6 +17,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Integration;
 
+use Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture;
+
 use Linker\Commerce\Genie\Module;
 use Linker\Commerce\Inquiry\Emails\InquiryReceivedEmail;
 use Linker\Commerce\Inquiry\Emails\NewInquiryEmail;
@@ -44,6 +46,12 @@ use WP_REST_Response;
  * @coversNothing
  */
 final class GenieInquiryTest extends IntegrationTestCase {
+
+	/** Typed local service with native consumers.
+	 *
+	 * @var NormalMailAuthorizationFixture
+	 */
+	private NormalMailAuthorizationFixture $authorization;
 
 	/**
 	 * The default internal recipient (Options::DEFAULT_NOTIFY_TO).
@@ -79,6 +87,12 @@ final class GenieInquiryTest extends IntegrationTestCase {
 	 */
 	protected function setUp(): void {
 		parent::setUp();
+		require_once dirname( __DIR__, 2 ) . '/fixtures/NormalMailAuthorizationFixture.php';
+		$this->authorization = NormalMailAuthorizationFixture::install(
+			function ( callable $remove ): void {
+				$this->later( $remove );
+			}
+		);
 		if ( ! class_exists( InquiryRequest::class ) ) {
 			$this->markTestSkipped( 'linker-tools is not active on this instance.' );
 		}
@@ -142,8 +156,10 @@ final class GenieInquiryTest extends IntegrationTestCase {
 		delete_option( 'woocommerce_' . InquiryReceivedEmail::ID . '_settings' );
 		// #244's summary is answered by the test, never by the service: the
 		// card and the record carry exactly this array.
-		delete_option( \Linker\Tools\Genie\Proxy::OPTION );
+		// The summary remains mocked independently; the sending classifier uses its local typed seam.
+		update_option( \Linker\Tools\Genie\Proxy::OPTION, 'http://127.0.0.1:9' );
 		update_option( Options::NOTIFY_BCC, 'copy-' . self::tag() . '@example.test' );
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_MINUTE, time() ), false );
 		unset( $_COOKIE[ Conversations::COOKIE ], $_COOKIE[ Conversations::BROWSER_COOKIE ] );
 		self::clear_limits();
@@ -251,7 +267,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 		$this->assertSame( $guest, $data['email'] );
 		$this->assertSame( $guest, $data['inquiry']['email'] );
 		$this->assertSame( Statuses::RECEIVED, $data['inquiry']['status'] );
-		$this->assertTrue( $data['inquiry']['receipt'] );
+		$this->assertFalse( $data['inquiry']['receipt'] );
 		$this->assertNotEmpty( $data['inquiry']['number'] );
 		$this->assertNotEmpty( $data['inquiry']['url'] );
 
@@ -275,6 +291,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 		$this->assertSame( $this->summary, $record->get_meta( Sender::SUMMARY_META ) );
 
 		// The team mail and the receipt, looked up in the queue (test mail rule).
+		$this->authorization->drain();
 		$rows = $this->jobs_after( $marker );
 		$this->assertCount( 2, $rows, 'the team mail and the receipt' );
 		$team = $this->row_to( $rows, self::INTERNAL );
@@ -296,6 +313,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 		$after = $this->state();
 		$this->assertSame( $record->get_order_number(), $after['sent']['number'] );
 		$this->assertSame( Statuses::RECEIVED, $after['sent']['status'] );
+		$this->assertTrue( $after['sent']['receipt'] );
 		$stored = rest_do_request( new WP_REST_Request( 'GET', '/linker-ai/v1/genie/conversation' ) )->get_data();
 		$this->assertSame(
 			array(
@@ -339,6 +357,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 		$this->assertSame( 200, $response->get_status() );
 		$record = $this->record( $guest );
 		$this->assertSame( '', $record->get_meta( Sender::SUMMARY_META ) );
+		$this->authorization->drain();
 		$body = html_entity_decode( $this->row_to( $this->jobs_after( $marker ), self::INTERNAL )['body'] );
 		$this->assertStringNotContainsString( 'Conversation with Genie', $body );
 	}
@@ -535,6 +554,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 		$this->assertSame( $customer->get_id(), $record->get_customer_id() );
 		$this->assertSame( $customer->get_billing_company(), $record->get_billing_company() );
 		$this->assertSame( 'de_DE_formal', $record->get_meta( OrderLocale::META ) );
+		$this->authorization->drain();
 		$this->assertCount( 2, $this->jobs_after( $marker ) );
 	}
 
@@ -560,8 +580,17 @@ final class GenieInquiryTest extends IntegrationTestCase {
 		$second = $this->send( $params );
 		$this->assertSame( array( 200, 200 ), array( $first->get_status(), $second->get_status() ) );
 		$this->assertSame( $first->get_data()['inquiry'], $second->get_data()['inquiry'] );
+		$this->authorization->drain();
 		$this->assertCount( 2, $this->jobs_after( $marker ), 'one team mail and one receipt' );
 		$this->assertCount( 1, $this->orders() );
+		$fresh = $this->state();
+		$this->assertTrue( $fresh['sent']['receipt'] );
+		$completed = $this->send( $params )->get_data()['inquiry'];
+		$this->assertTrue( $completed['receipt'] );
+		$expected            = $first->get_data()['inquiry'];
+		$expected['receipt'] = true;
+		$this->assertSame( $expected, $completed );
+		$this->assertCount( 2, $this->jobs_after( $marker ) );
 	}
 
 	/**
@@ -597,6 +626,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 			) + self::fields()
 		);
 		$this->assertSame( 200, $response->get_status() );
+		$this->authorization->drain();
 		$this->assertCount( 2, $this->jobs_after( $marker ), 'a message alone is an inquiry' );
 	}
 
@@ -626,6 +656,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 		);
 		$this->assertSame( 200, $response->get_status() );
 		$this->assertFalse( $response->get_data()['inquiry']['receipt'] );
+		$this->authorization->drain();
 		$rows = $this->jobs_after( $marker );
 		$this->assertCount( 1, $rows, 'the team mail only' );
 		$this->assertSame( array( self::INTERNAL ), $rows[0]['to'] );

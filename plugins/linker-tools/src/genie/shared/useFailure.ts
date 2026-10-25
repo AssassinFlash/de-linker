@@ -574,7 +574,15 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 				return null;
 			}
 			cursor.current = fresh.cursor;
-			const opened = { draft: current.draft, kind: current.kind };
+			// Thread refresh may outlast a new accepted editor. Its files must
+			// not become this retry's payload or invalidate its completion witness.
+			const opened = {
+				draft: {
+					...current.draft,
+					uploads: [ ...filesRef.current.uploads ],
+				},
+				kind: current.kind,
+			};
 			const committed = commitFailure( { type: 'retry' } );
 			if (
 				committed.phase === 'pending' &&
@@ -605,7 +613,7 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 			retryPayload(
 				{ phase: 'failed', draft, kind },
 				thread,
-				filesRef.current.uploads
+				draft.uploads
 			),
 		[]
 	);
@@ -627,7 +635,7 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 			const payload = retryPayload(
 				{ phase: 'failed', draft, kind },
 				thread,
-				filesRef.current.uploads
+				draft.uploads
 			);
 			if ( ! payload ) {
 				commitFailure( { type: kind } );

@@ -47,6 +47,56 @@ GERMAN_ANSWER = "Diese Batterien passen zum H2-10K-T3."
 MIXED_QUESTION = "Welche battery für den H2-10K-T3?"
 
 
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Die Kommunikation erfolgt über CAN und RS485.",
+        "Die CAN-Kommunikation erfolgt über den Anschluss.",
+        "Das CAN-Protokoll ist im Handbuch beschrieben.",
+    ],
+)
+def test_uppercase_can_is_a_communication_protocol(text: str) -> None:
+    assert clear_language(text) == "de"
+    assert language_failure(_output("de", text), "de") is None
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "CAN YOU show the battery?",
+        "CAN you die Batterie zeigen?",
+        "Die Batterie can über RS485 kommunizieren.",
+        "Die Kommunikation erfolgt über CAN and RS485.",
+        "Die Batterie THE ist verfügbar.",
+    ],
+)
+def test_protocol_exception_does_not_hide_english_prose(text: str) -> None:
+    assert language_failure(_output("de", text), "de") is not None
+
+
+def test_can_protocol_prose_passes_the_real_cycle_without_a_language_retry() -> None:
+    text = "Die Kommunikation erfolgt über CAN und RS485."
+    facts = collect(
+        "linker/search-knowledge",
+        {
+            "hits": [
+                {
+                    "chunk_id": "cCAN",
+                    "text": text,
+                }
+            ]
+        },
+        "de",
+    )
+    output = TurnOutput(language="de", blocks=[TextBlock(text=text, refs=["cCAN"])])
+    result = run(
+        _request("Welche Schnittstellen hat die Batterie?", "de"),
+        lambda _r, _x: (output, facts),
+    )
+    assert result.grounded and not result.fallback
+    assert result.attempts == 1
+
+
 def _request(content: str, locale: str) -> TurnRequest:
     return TurnRequest(
         conversation_id="c374",

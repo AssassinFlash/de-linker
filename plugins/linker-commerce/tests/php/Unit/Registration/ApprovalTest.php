@@ -39,6 +39,11 @@ final class ApprovalTest extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 		$this->plain_text();
+		$mailer = \Mockery::mock();
+		$mailer->allows( 'get_emails' )->andReturn( array() );
+		$woo = \Mockery::mock();
+		$woo->allows( 'mailer' )->andReturn( $mailer );
+		WP_Mock::userFunction( 'WC', array( 'return' => $woo ) );
 		WP_Mock::userFunction(
 			'get_userdata',
 			array(
@@ -72,6 +77,7 @@ final class ApprovalTest extends TestCase {
 			)
 		);
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 7 ) );
+		WP_Mock::userFunction( 'wp_cache_delete', array( 'return' => true ) );
 		WP_Session_Tokens::$destroyed_all = array(); // @phpstan-ignore staticProperty.notFound (the test double lives in tests/php/Doubles, excluded from analysis)
 	}
 
@@ -80,7 +86,7 @@ final class ApprovalTest extends TestCase {
 	 * does not (approved); a recorded state is read as it is.
 	 */
 	public function test_status_defaults(): void {
-		$approval = new Approval();
+		$approval = new Approval( static fn ( callable $work ): mixed => $work() );
 
 		$this->assertSame( Approval::PENDING, $approval->status( 5 ), 'Customer without a decision' );
 		$this->assertSame( Approval::APPROVED, $approval->status( 6 ), 'Staff without a decision' );
@@ -93,7 +99,7 @@ final class ApprovalTest extends TestCase {
 	 * Only an approved account sees prices; a guest sees none.
 	 */
 	public function test_sees_prices_by_state(): void {
-		$approval = new Approval();
+		$approval = new Approval( static fn ( callable $work ): mixed => $work() );
 
 		$this->assertFalse( $approval->sees_prices( 0 ), 'Guest' );
 		$this->assertFalse( $approval->sees_prices( 5 ), 'Pending customer' );
@@ -116,7 +122,7 @@ final class ApprovalTest extends TestCase {
 		$before = time();
 		WP_Mock::expectAction( Approval::CHANGED_ACTION, 5, Approval::PENDING, Approval::RESTRICTED, 'Net prices are for businesses.' );
 
-		$this->assertTrue( ( new Approval() )->set( 5, Approval::RESTRICTED, 'Net prices are for businesses.' ) );
+		$this->assertTrue( ( new Approval( static fn ( callable $work ): mixed => $work() ) )->set( 5, Approval::RESTRICTED, 'Net prices are for businesses.' ) );
 
 		$this->assertSame( Approval::RESTRICTED, $this->store[ Approval::STATUS_META ] );
 		$this->assertSame( 'Net prices are for businesses.', $this->store[ Approval::REASON_META ] );
@@ -132,13 +138,13 @@ final class ApprovalTest extends TestCase {
 		$this->store[ Approval::STATUS_META ] = Approval::REJECTED;
 		$this->store[ Approval::REASON_META ] = 'Not a business.';
 		WP_Mock::expectAction( Approval::CHANGED_ACTION, 5, Approval::REJECTED, Approval::APPROVED, '' );
-		( new Approval() )->set( 5, Approval::APPROVED );
+		( new Approval( static fn ( callable $work ): mixed => $work() ) )->set( 5, Approval::APPROVED );
 
 		$this->assertSame( '', $this->store[ Approval::REASON_META ], 'The approval carries no reason.' );
 		$this->assertNotContains( 5, WP_Session_Tokens::$destroyed_all, 'An approval signs nobody out.' ); // @phpstan-ignore staticProperty.notFound (the test double lives in tests/php/Doubles)
 
 		WP_Mock::expectAction( Approval::CHANGED_ACTION, 5, Approval::APPROVED, Approval::REJECTED, 'Not a business.' );
-		( new Approval() )->set( 5, Approval::REJECTED, 'Not a business.' );
+		( new Approval( static fn ( callable $work ): mixed => $work() ) )->set( 5, Approval::REJECTED, 'Not a business.' );
 		$this->assertContains( 5, WP_Session_Tokens::$destroyed_all, 'A rejection ends the sessions.' ); // @phpstan-ignore staticProperty.notFound (the test double lives in tests/php/Doubles)
 	}
 
@@ -151,7 +157,7 @@ final class ApprovalTest extends TestCase {
 		$this->store[ Approval::REASON_META ] = 'Old reason.';
 		WP_Mock::expectAction( Approval::CHANGED_ACTION, 5, Approval::RESTRICTED, Approval::RESTRICTED, 'Updated reason.' );
 
-		$this->assertTrue( ( new Approval() )->set( 5, Approval::RESTRICTED, 'Updated reason.' ) );
+		$this->assertTrue( ( new Approval( static fn ( callable $work ): mixed => $work() ) )->set( 5, Approval::RESTRICTED, 'Updated reason.' ) );
 
 		$this->assertSame( 'Updated reason.', $this->store[ Approval::REASON_META ] );
 		$this->assertSame( 7, $this->store[ Approval::CHANGED_BY_META ] );
@@ -162,7 +168,7 @@ final class ApprovalTest extends TestCase {
 	 * state: the reason is the customer's explanation by email.
 	 */
 	public function test_a_reason_is_required_and_states_are_validated(): void {
-		$approval = new Approval();
+		$approval = new Approval( static fn ( callable $work ): mixed => $work() );
 
 		$this->assertFalse( $approval->set( 5, Approval::RESTRICTED, '' ) );
 		$this->assertFalse( $approval->set( 5, Approval::REJECTED, '   ' ) );
@@ -175,7 +181,7 @@ final class ApprovalTest extends TestCase {
 	 * through untouched.
 	 */
 	public function test_the_login_gate_keeps_rejected_accounts_out(): void {
-		$approval     = new Approval();
+		$approval     = new Approval( static fn ( callable $work ): mixed => $work() );
 		$customer     = new WP_User();
 		$customer->ID = 5;
 
@@ -197,7 +203,7 @@ final class ApprovalTest extends TestCase {
 	 * visitor cannot tell a missing username from a wrong password.
 	 */
 	public function test_the_sign_in_message_is_the_refusal_or_one_generic_line(): void {
-		$approval                             = new Approval();
+		$approval                             = new Approval( static fn ( callable $work ): mixed => $work() );
 		$customer                             = new WP_User();
 		$customer->ID                         = 5;
 		$this->store[ Approval::STATUS_META ] = Approval::REJECTED;
@@ -208,7 +214,7 @@ final class ApprovalTest extends TestCase {
 		$this->assertSame( $refused->get_error_message(), $approval->login_errors() );
 		$this->assertStringContainsString( 'sales@de-linker.com', $approval->login_errors() );
 
-		$untouched = new Approval();
+		$untouched = new Approval( static fn ( callable $work ): mixed => $work() );
 		$this->assertSame( 'The username or the password is not correct.', $untouched->login_errors() );
 	}
 }

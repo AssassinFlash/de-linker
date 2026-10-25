@@ -13,6 +13,9 @@ use Linker\Commerce\Contact\Submission;
 use Linker\Commerce\Inquiry\Assessment\Admin;
 use Linker\Commerce\Inquiry\Assessment\Queue;
 use Linker\Commerce\Inquiry\Assessment\Result;
+use Linker\Commerce\Inquiry\Assessment\AuthorizationStore;
+use Linker\Commerce\Inquiry\Assessment\SendAuthorization;
+use Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture;
 use Linker\Commerce\Inquiry\Sender;
 use Linker\Commerce\Mail\JobStore;
 use WC_Order;
@@ -23,6 +26,11 @@ use WC_Order;
  * @coversNothing
  */
 final class InquiryAssessmentTest extends IntegrationTestCase {
+	/** Typed local service with native consumers.
+	 *
+	 * @var NormalMailAuthorizationFixture
+	 */
+	private NormalMailAuthorizationFixture $authorization;
 	/** Enable only this test's feature and restore all touched configuration. */
 	protected function setUp(): void {
 		parent::setUp();
@@ -34,10 +42,16 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 				}
 			);
 		}
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( \Linker\Commerce\Mail\Throttle::OPTION, array_fill( 0, \Linker\Commerce\Mail\Throttle::PER_MINUTE, time() ), false );
 		update_option( Queue::ENABLED, 'yes' );
 		update_option( Queue::HEARTBEAT, microtime( true ) );
-		update_option( 'linker_genie_url', 'http://127.0.0.1:9212' );
+		require_once dirname( __DIR__, 2 ) . '/fixtures/NormalMailAuthorizationFixture.php';
+		$this->authorization = NormalMailAuthorizationFixture::install(
+			function ( callable $remove ): void {
+				$this->later( $remove );
+			}
+		);
 		add_filter( 'action_scheduler_allow_async_request_runner', '__return_false' );
 		$this->later(
 			static function (): void {
@@ -67,7 +81,8 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 		);
 		$this->assertInstanceOf( Submission::class, $details );
 		$order = ( new Sender() )->message( $details );
-		$id    = $order->get_id();
+		$this->assertInstanceOf( WC_Order::class, $order );
+		$id = $order->get_id();
 		$this->later(
 			static function () use ( $id ): void {
 				as_unschedule_all_actions( Queue::PROCESS, array( $id ), \Linker\Commerce\Mail\Outbox::GROUP );
@@ -81,13 +96,15 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 		return $order;
 	}
 
-	/** The independently driven native event releases an expired handoff. */
+	/** A long queue wait is recovered without consuming the actual model window. */
 	public function test_native_minute_recovery_event_releases_without_a_visitor(): void {
-		$order            = $this->inquiry();
-		$data             = Queue::data( $order );
-		$data['deadline'] = microtime( true ) - 1;
+		$order               = $this->inquiry();
+		$data                = Queue::data( $order );
+		$data['accepted_at'] = microtime( true ) - 300;
+		$data['deadline']    = $data['accepted_at'] + Queue::WAIT_SECONDS;
 		\Linker\Commerce\Inquiry\Assessment\StructuredMeta::update( $order, Queue::META, $data );
 		$order->save_meta_data();
+		$budget   = get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		$schedule = \Linker\Commerce\Inquiry\Assessment\RecoverySchedule::class;
 		$this->assertTrue( wp_schedule_event( time(), $schedule::INTERVAL, $schedule::HOOK ) );
 		$this->later(
@@ -99,12 +116,18 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 		$this->assertIsObject( $event );
 		$this->assertSame( 60, $event->interval );
 		$this->assertSame( $schedule::HOOK, $event->hook );
-		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Native event was checked against the fixed recovery hook above.
-		do_action_ref_array( $schedule::HOOK, $event->args );
-		$order->read_meta_data( true );
-		$this->assertGreaterThan( 0, Queue::data( $order )['notification_job'] );
-		$this->assertSame( 'deadline', Queue::data( $order )['initial_result']['reason'] );
+		do_action_ref_array( $schedule::HOOK, $event->args ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Fixed registered native minute recovery hook.
 		$this->assertLessThan( 2, microtime( true ) - (float) get_option( Queue::HEARTBEAT ) );
+		NormalMailAuthorizationFixture::consume( Queue::PROCESS, $order->get_id() );
+		$order->read_meta_data( true );
+		$state = AuthorizationStore::read( $order->get_id() );
+		$this->assertIsArray( $state );
+		$this->assertSame( 'normal', $state['status'] );
+		$this->assertSame( 'normal', $state['verdict']['decision'] );
+		$this->assertCount( 2, $state['jobs'] );
+		$this->assertSame( $data['accepted_at'], Queue::data( $order )['accepted_at'] );
+		$this->assertGreaterThan( 9.0, $this->authorization->requests[0]['remaining_seconds'] );
+		$this->assertSame( $budget, get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ) );
 	}
 
 	/** Product inquiry evidence exists at Woo's first native order save. */
@@ -150,16 +173,16 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 		$this->assertSame( Queue::data( $order )['accepted_at'], $first['data']['accepted_at'] );
 	}
 
-	/** Actual service budget refusals retain their diagnostic and normal notice. */
+	/** Actual service budget refusals retain their diagnostic with no content notification. */
 	public function test_provider_budget_failures_survive_client_and_notice(): void {
 		foreach ( array( 'quota', 'unavailable', 'configuration' ) as $reason ) {
 			$order             = $this->inquiry();
-			$result            = Result::unknown( 'provider_budget_' . $reason );
+			$result            = \Linker\Commerce\Inquiry\Assessment\SendVerdict::unknown( 'provider_budget_' . $reason );
 			$result['seconds'] = 0.025;
 			$fetch             = static function ( $pre, $args, $url ) use ( $result ) {
 				return str_ends_with( $url, '/inquiries/assess' ) ? array(
 					'response' => array( 'code' => 200 ),
-					'body'     => wp_json_encode( $result ),
+					'body'     => wp_json_encode( $result + array( 'binding' => json_decode( $args['body'], true )['binding'] ) ),
 				) : $pre;
 			};
 			add_filter( 'pre_http_request', $fetch, 10, 3 );
@@ -172,15 +195,17 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 			$data = Queue::data( $order );
 			$this->assertSame( 'uncertain', $data['initial_result']['label'] );
 			$this->assertSame( 'provider_budget_' . $reason, $data['initial_result']['reason'] );
-			$this->assertSame( 0.025, $data['initial_result']['seconds'] );
-			$this->assertGreaterThan( 0, $data['notification_job'] );
+			$state = AuthorizationStore::read( $order->get_id() );
+			$this->assertIsArray( $state );
+			$this->assertSame( 'pending', $state['status'] );
+			$this->assertSame( array(), $state['jobs'] );
 			$this->assertSame( 'inquiry-received', $order->get_status() );
 		}
 		$this->assertSame( 'invalid_response', Result::validate( Result::unknown( 'provider_budget_untrusted_text' ) )['reason'] );
 	}
 
 	/** Fraud outside the message field remains in the frozen provider input. */
-	public function test_fraud_in_name_is_sent_with_gibberish_body(): void {
+	public function test_fraud_in_name_is_scanned_and_quarantined_with_gibberish_body(): void {
 		$name  = 'Вам перевод 195753 руб. забрать тут https://reward.example.invalid/test';
 		$order = $this->inquiry(
 			array(
@@ -188,9 +213,6 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 				'message' => 'THRT332399MTGJNF KSDJFKSDJF',
 			)
 		);
-		// Subsequent edits cannot replace the accepted evidence.
-		$order->set_billing_first_name( 'Later edit' );
-		$order->save();
 		$seen  = false;
 		$fetch = static function ( $pre, $args, $url ) use ( $name, &$seen ) {
 			if ( ! str_ends_with( $url, '/inquiries/assess' ) ) {
@@ -203,7 +225,7 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 			self::assertSame( 'not_present', $body['state']['context']['status'] );
 			return array(
 				'response' => array( 'code' => 200 ),
-				'body'     => wp_json_encode( self::result( 'suspected_spam', 'fraud_or_phishing' ) ),
+				'body'     => wp_json_encode( self::result( 'suspected_spam', 'fraud_or_phishing', $body['binding'] ) ),
 			);
 		};
 		add_filter( 'pre_http_request', $fetch, 10, 3 );
@@ -216,34 +238,27 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 		$this->assertTrue( $seen );
 		$order->read_meta_data( true );
 		$this->assertSame( 'suspected_spam', Queue::data( $order )['initial_result']['label'] );
+		$state = AuthorizationStore::read( $order->get_id() );
+		$this->assertIsArray( $state );
+		$this->assertSame( 'quarantined', $state['status'] );
+		$this->assertSame( array(), $state['jobs'] );
+		$order->set_billing_first_name( 'Later edit' );
+		$order->save();
+		$this->assertSame( $name, Queue::data( $order )['snapshot']['submission']['billing']['first_name'] );
 	}
 
 	/**
 	 * Model-shaped service output; no real model or email call is made.
 	 *
-	 * @param string $label Raw label.
-	 * @param string $basis Fixed basis.
+	 * @param string              $label Raw label.
+	 * @param string              $basis Fixed basis.
+	 * @param array<string,mixed> $binding Actual service request binding.
 	 * @return array<string, mixed>
 	 */
-	private static function result( string $label = 'normal', string $basis = 'business_request' ): array {
-		return array(
-			'label'   => $label,
-			'basis'   => $basis,
-			'reason'  => 'classified',
-			'model'   => 'typesafe/jev-1.13-20260917',
-			'rubric'  => Result::RUBRIC,
-			'raw'     => array(
-				'classification' => array(
-					'type'   => 'choice',
-					'choice' => $label,
-				),
-				'basis'          => array(
-					'type'   => 'choice',
-					'choice' => $basis,
-				),
-			),
-			'seconds' => 0.1,
-		);
+	private static function result( string $label = 'normal', string $basis = 'business_request', array $binding = array() ): array {
+		$decision = match ( $label ) {
+			'normal' => 'normal', 'suspected_spam' => 'malicious', default => 'unknown' };
+		return NormalMailAuthorizationFixture::verdict( $binding, $decision, $basis, 'unknown' === $decision ? 'insufficient_context' : 'classified' );
 	}
 
 	/** Submission persists and returns without any service call or team mail. */
@@ -252,8 +267,7 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 		$fetch = static function ( $pre, $args, $url ) use ( &$calls ) {
 			if ( str_ends_with( $url, '/inquiries/assess' ) ) {
 				++$calls;
-				return new \WP_Error( 'deliberately_slow_provider' );
-			}
+				return new \WP_Error( 'deliberately_slow_provider' ); }
 			return $pre;
 		};
 		add_filter( 'pre_http_request', $fetch, 10, 3 );
@@ -263,36 +277,37 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 			}
 		);
 		$marker = self::newest_mail_job();
+		$budget = get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		$order  = $this->inquiry();
-		$this->assertSame( 0, $calls, 'The customer submission cannot invoke the classifier.' );
+		$this->assertSame( 0, $calls );
 		$this->assertSame( 'inquiry-received', $order->get_status() );
-		$this->assertCount( 1, self::mail_jobs_after( $marker ), 'Only the customer receipt exists before background work.' );
+		$this->assertSame( array(), self::mail_jobs_after( $marker ), 'Neither content mail may precede classification.' );
 		$data = Queue::data( $order );
 		$this->assertEqualsWithDelta( Queue::WAIT_SECONDS, $data['deadline'] - $data['accepted_at'], .001 );
 		( new Queue() )->process( $order->get_id() );
 		$this->assertSame( 1, $calls );
 		$order->read_meta_data( true );
-		$data = Queue::data( $order );
-		$this->assertSame( 'uncertain', $data['initial_result']['label'] );
-		$this->assertSame( 'service_unavailable', $data['initial_result']['reason'] );
-		$this->assertGreaterThanOrEqual( $data['accepted_at'], $data['result']['started_at'] );
-		$this->assertGreaterThanOrEqual( 0, $data['result']['queue_seconds'] );
-		$this->assertCount( 2, self::mail_jobs_after( $marker ) );
+		$state = AuthorizationStore::read( $order->get_id() );
+		$this->assertIsArray( $state );
+		$this->assertSame( 'pending', $state['status'] );
+		$this->assertSame( 'service_unavailable', $state['verdict']['reason'] );
+		$this->assertGreaterThan( time(), $state['next_at'] );
 		( new Queue() )->process( $order->get_id() );
 		( new Queue() )->expire( $order->get_id() );
 		$this->assertSame( 1, $calls );
-		$this->assertCount( 2, self::mail_jobs_after( $marker ), 'Retries cannot generate a second team message or receipt.' );
+		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
+		$this->assertSame( $budget, get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ) );
 	}
 
 	/**
-	 * All labels notify; a conflict cannot be displayed as a spam conclusion.
+	 * Only typed normal permits notify; malicious and unknown retain the saved source.
 	 *
 	 * @dataProvider observations
 	 * @param string $label Service label.
 	 * @param string $basis Fixed basis.
 	 * @param string $expected Safe stored label.
 	 */
-	public function test_every_observation_is_notified_once( string $label, string $basis, string $expected ): void {
+	public function test_only_normal_decisions_notify_once( string $label, string $basis, string $expected ): void {
 		$fetch = static function ( $pre, $args, $url ) use ( $label, $basis ) {
 			if ( ! str_ends_with( $url, '/inquiries/assess' ) ) {
 				return $pre;
@@ -303,7 +318,7 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 			self::assertSame( 'Synthetic Alex', $body['state']['submission']['billing']['first_name'] );
 			return array(
 				'response' => array( 'code' => 200 ),
-				'body'     => wp_json_encode( self::result( $label, $basis ) ),
+				'body'     => wp_json_encode( self::result( $label, $basis, $body['binding'] ) ),
 			);
 		};
 		add_filter( 'pre_http_request', $fetch, 10, 3 );
@@ -318,18 +333,30 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 		$order->read_meta_data( true );
 		$data = Queue::data( $order );
 		$this->assertSame( $expected, $data['initial_result']['label'] );
-		$this->assertGreaterThan( 0, $data['notification_job'] );
-		$job = ( new JobStore() )->load( $data['notification_job'] );
+		$state = AuthorizationStore::read( $order->get_id() );
+		$this->assertIsArray( $state );
+		if ( 'normal' !== $expected ) {
+			$this->assertSame( array(), $state['jobs'] );
+			$this->assertSame( 'suspected_spam' === $expected ? 'quarantined' : 'pending', $state['status'] );
+			$queue->finish( $order->get_id(), self::result() );
+			$after = AuthorizationStore::read( $order->get_id() );
+			$this->assertIsArray( $after );
+			$this->assertSame( array(), $after['jobs'] );
+			return;
+		}
+		$this->assertCount( 2, $state['jobs'] );
+		$job = ( new JobStore() )->load( $state['jobs']['team']['id'] );
 		$this->assertNotNull( $job );
 		$this->assertSame( array( 'sales@sunriverinverter.com' ), $job['message']->to );
 		$this->assertStringContainsString( Result::label( $expected ), $job['message']->body );
 		$this->assertStringContainsString( 'Please contact us about project equipment.', $job['message']->body );
-		$queue->finish( $order->get_id(), Result::validate( self::result( 'suspected_spam', 'fraud_or_phishing' ) ) );
-		$order->read_meta_data( true );
-		$this->assertSame( $data['notification_job'], Queue::data( $order )['notification_job'] );
-		$after = ( new JobStore() )->load( $data['notification_job'] );
-		$this->assertNotNull( $after );
-		$this->assertSame( $job['message']->body, $after['message']->body );
+		$queue->finish( $order->get_id(), self::result( 'suspected_spam', 'fraud_or_phishing' ) );
+		$after = AuthorizationStore::read( $order->get_id() );
+		$this->assertIsArray( $after );
+		$this->assertSame( $state['jobs'], $after['jobs'] );
+		$stored = ( new JobStore() )->load( $state['jobs']['team']['id'] );
+		$this->assertNotNull( $stored );
+		$this->assertSame( $job['message']->body, $stored['message']->body );
 	}
 
 	/**
@@ -346,68 +373,80 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 		);
 	}
 
-	/** A late-starting task spends no fresh model budget, including zero traffic recovery. */
-	public function test_expired_task_is_released_by_independent_recovery_and_late_results_do_not_resend(): void {
+	/** Queue delay preserves a fresh model window; old unbound results cannot send again. */
+	public function test_queued_task_gets_a_fresh_window_and_late_results_do_not_resend(): void {
 		$order               = $this->inquiry();
 		$data                = Queue::data( $order );
 		$data['accepted_at'] = microtime( true ) - 20;
 		$data['deadline']    = microtime( true ) - 10;
-		$order->update_meta_data( Queue::META, $data );
+		\Linker\Commerce\Inquiry\Assessment\StructuredMeta::update( $order, Queue::META, $data );
 		$order->save_meta_data();
 		$queue = new Queue();
 		$queue->recover();
+		$queue->process( $order->get_id() );
 		$order->read_meta_data( true );
-		$data = Queue::data( $order );
-		$this->assertSame( 'deadline', $data['initial_result']['reason'] );
-		$job = $data['notification_job'];
-		$queue->finish( $order->get_id(), Result::validate( self::result() ) );
-		$order->read_meta_data( true );
-		$data = Queue::data( $order );
-		$this->assertSame( $job, $data['notification_job'] );
-		$this->assertSame( 'deadline', $data['initial_result']['reason'] );
-		$this->assertSame( 'normal', $data['late_result']['label'] );
+		$state = AuthorizationStore::read( $order->get_id() );
+		$this->assertIsArray( $state );
+		$this->assertSame( 'normal', $state['verdict']['decision'] );
+		$this->assertSame( 'normal', $state['status'] );
+		$this->assertCount( 2, $state['jobs'] );
+		$this->assertCount( 1, $this->authorization->requests );
+		$this->assertGreaterThan( 9.0, $this->authorization->requests[0]['remaining_seconds'] );
+		$queue->finish( $order->get_id(), self::result() );
+		$this->assertSame( $state, AuthorizationStore::read( $order->get_id() ) );
 		$this->assertSame( 'inquiry-received', $order->get_status() );
 		$this->assertSame( '', $order->get_meta( Admin::OVERRIDE ) );
 	}
 
-	/** No recovery heartbeat must use normal notification without any model call. */
+	/** A missing heartbeat cannot grant permission; an actual normal task may still authorize. */
 	public function test_missing_recovery_does_not_hold_the_notification(): void {
 		delete_option( Queue::HEARTBEAT );
-		$order = $this->inquiry();
-		$order->read_meta_data( true );
-		$data = Queue::data( $order );
-		$this->assertSame( 'recovery_unavailable', $data['initial_result']['reason'] );
-		$this->assertGreaterThan( 0, $data['notification_job'] );
-		$this->assertNotNull( ( new JobStore() )->load( $data['notification_job'] ) );
+		$marker = self::newest_mail_job();
+		$order  = $this->inquiry();
+		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
+		$pending = AuthorizationStore::read( $order->get_id() );
+		$this->assertIsArray( $pending );
+		$this->assertSame( 'pending', $pending['status'] );
+		$state = $this->authorization->process( $order );
+		$this->assertCount( 2, $state['jobs'] );
+		$this->assertNotNull( ( new JobStore() )->load( $state['jobs']['team']['id'] ) );
 	}
 
 	/** A partially persisted Outbox job must roll back and remain recoverable. */
 	public function test_failed_mail_meta_write_stays_pending_until_recovery(): void {
 		$order  = $this->inquiry();
 		$marker = self::newest_mail_job();
-		$deny   = static function ( $check, $id, $key ) {
-			return '_linker_mail_message' === $key ? false : $check;
+		$hits   = 0;
+		$deny   = static function ( $check, $id, $key ) use ( &$hits ) {
+			if ( '_linker_mail_message' === $key ) {
+				++$hits;
+				return false;
+			} return $check;
 		};
 		add_filter( 'add_post_metadata', $deny, 10, 3 );
 		add_filter( 'update_post_metadata', $deny, 10, 3 );
 		try {
-			( new Queue() )->finish( $order->get_id(), self::result() );
-		} finally {
+			( new Queue() )->process( $order->get_id() ); } finally {
 			remove_filter( 'add_post_metadata', $deny, 10 );
-			remove_filter( 'update_post_metadata', $deny, 10 );
-		}
-		$order->read_meta_data( true );
-		$this->assertSame( 0, Queue::data( $order )['notification_job'] );
-		$this->assertSame( 'yes', $order->get_meta( Queue::PENDING ) );
-		$this->assertSame( array(), self::mail_jobs_after( $marker ), 'A partial job is rolled back.' );
-		$data             = Queue::data( $order );
-		$data['deadline'] = microtime( true ) - 1;
-		$order->update_meta_data( Queue::META, $data );
-		$order->save_meta_data();
+			remove_filter( 'update_post_metadata', $deny, 10 ); }
+			$this->assertGreaterThan( 0, $hits, 'The native partial-write fault must actually hit.' );
+			$state = AuthorizationStore::read( $order->get_id() );
+			$this->assertIsArray( $state );
+			$this->assertSame( 'approved', $state['status'] );
+			$this->assertSame( array(), $state['jobs'] );
+			$this->assertSame( array(), self::mail_jobs_after( $marker ), 'A partial job is rolled back.' );
+			AuthorizationStore::edit(
+				$order->get_id(),
+				static function ( array &$state ): void {
+					$state['next_at'] = time() - 1;
+				}
+			);
 		( new Queue() )->recover();
-		$order->read_meta_data( true );
-		$this->assertGreaterThan( 0, Queue::data( $order )['notification_job'] );
-		$this->assertCount( 1, self::mail_jobs_after( $marker ) );
+		$after = AuthorizationStore::read( $order->get_id() );
+		$this->assertIsArray( $after );
+		$this->assertSame( 'normal', $after['status'] );
+		$this->assertCount( 2, $after['jobs'] );
+		$this->assertCount( 2, self::mail_jobs_after( $marker ) );
 	}
 
 	/** Snapshot the owned retained transcript/readings and never another account's. */
@@ -518,13 +557,16 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 		$close( $second );
 		$close( $first );
 		$order->read_meta_data( true );
-		$data = Queue::data( $order );
-		$this->assertGreaterThan( 0, $data['notification_job'] );
-		$job = $data['notification_job'];
-		$this->assertTrue( (bool) as_has_scheduled_action( Queue::FINISH, array( $order->get_id(), self::result() ), \Linker\Commerce\Mail\Outbox::GROUP ), 'A competing connection must persist its retry.' );
+		$state = AuthorizationStore::read( $order->get_id() );
+		$this->assertIsArray( $state );
+		$this->assertSame( 'normal', $state['status'] );
+		$this->assertSame( 1, $state['attempts'] );
+		$this->assertCount( 2, $state['jobs'] );
+		$this->assertGreaterThan( 0, $state['jobs']['team']['id'] );
+		$this->assertTrue( (bool) as_has_scheduled_action( Queue::PROCESS, array( $order->get_id() ), \Linker\Commerce\Mail\Outbox::GROUP ), 'The original durable task survives the competing worker.' );
 		( new Queue() )->finish( $order->get_id(), self::result() );
-		$order->read_meta_data( true );
-		$this->assertSame( $job, Queue::data( $order )['notification_job'] );
-		as_unschedule_all_actions( Queue::FINISH, array( $order->get_id(), self::result() ), \Linker\Commerce\Mail\Outbox::GROUP );
+		$after = AuthorizationStore::read( $order->get_id() );
+		$this->assertIsArray( $after );
+		$this->assertSame( $state['jobs'], $after['jobs'] );
 	}
 }

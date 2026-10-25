@@ -1,0 +1,85 @@
+{
+  "actions": [
+    {
+      "fontSize": "13px",
+      "href": "http://127.0.0.1:9290/de/loesung/#arenas",
+      "rect": {
+        "height": 45.5,
+        "width": 251.9140625,
+        "x": 69.0390625,
+        "y": 527.5
+      },
+      "text": "Speicher nach Größe ansehen ↓"
+    },
+    {
+      "fontSize": "12px",
+      "href": "http://127.0.0.1:9290/de/loesungskonfigurator/",
+      "rect": {
+        "height": 28,
+        "width": 170.6171875,
+        "x": 109.6875,
+        "y": 585
+      },
+      "text": "Lösungskonfigurator öffnen →"
+    }
+  ],
+  "bodyClasses": "wp-singular page-template page-template-page-templates page-template-empty page-template-page-templatesempty-php page page-id-6871 page-parent wp-custom-logo wp-embed-responsive wp-theme-picostrap5 wp-child-theme-picostrap5-child-base theme-picostrap5 lc-custom-header lc-custom-footer woocommerce-js is-using-livecanvas sol-at-cover",
+  "cover": {
+    "before": "linear-gradient(rgba(7, 29, 52, 0.64), rgba(7, 29, 52, 0.64) 62%, rgba(3, 19, 34, 0.82))",
+    "className": "lk-hero-sol sol-cover",
+    "rect": {
+      "height": 650,
+      "width": 390,
+      "x": 0,
+      "y": 1
+    }
+  },
+  "fontStatus": "loaded",
+  "heading": {
+    "color": "rgb(255, 255, 255)",
+    "fontSize": "32px",
+    "lineHeight": "37.12px",
+    "rect": {
+      "height": 148.46875,
+      "width": 350,
+      "x": 20,
+      "y": 162.5
+    },
+    "text": "Speichersysteme, die zu Ihrer Arbeitsweise auf den Standorten passen."
+  },
+  "overflow": 0,
+  "scrollY": 0,
+  "url": "http://127.0.0.1:9290/de/loesung/",
+  "viewport": [
+    390,
+    844
+  ],
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792655451"
+  ],
+  "fonts": "loaded",
+  "header": "rgba(21, 53, 47, 0.8)",
+  "images": [
+    {
+      "complete": true,
+      "naturalWidth": 2400
+    }
+  ],
+  "texts": [
+    {
+      "className": "lk-hero-h1",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": "32px",
+      "opacity": "1",
+      "text": "Speichersysteme, die zu Ihrer Arbeitsweise auf den Standorten passen."
+    },
+    {
+      "className": "lk-hero-desc",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": "13px",
+      "opacity": "1",
+      "text": "Notstrom für Wohngebäude, gewerbliche Lastspitzenkappung oder Großspeicher-Kapazität. Linker liefert die Batteriespeichersysteme und die technische Unterstützung bis zur Inbetriebnahme."
+    }
+  ],
+  "sourceAggregate": "d69083aefc946cc4884e17d2774d9b503661f5e39cb151388649423791748661"
+}

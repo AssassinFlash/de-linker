@@ -35,6 +35,8 @@ final class Handler {
 	/**
 	 * Verifies before creating any inquiry or email.
 	 *
+	 * @phpstan-impure
+	 *
 	 * @param  array<string, mixed> $post Unslashed fields.
 	 * @return WC_Order|WP_Error The received inquiry or validation failure.
 	 */
@@ -76,8 +78,12 @@ final class Handler {
      // phpcs:ignore WordPress.Security.NonceVerification.Missing -- process() verifies before every write.
 		$post   = wp_unslash( $_POST );
 		$result = $this->process( $post );
+		if ( $result instanceof WC_Order && $result->get_meta( \Linker\Commerce\Protection\Intake::META ) ) {
+			\Linker\Commerce\Protection\IntakeAdmin::remember( $result );
+		}
 		if ( $result instanceof WC_Order ) {
 			WC()->session->set( 'linker_inquiry_fields', null );
+			WC()->session->set( 'linker_intake_grouped', null );
 			WC()->session->set( 'linker_inquiry_error', null );
 			WC()->session->set( 'linker_inquiry_error_locale', null );
 			wp_safe_redirect( $result->get_checkout_order_received_url() );
@@ -86,13 +92,16 @@ final class Handler {
 				WC()->session->set_customer_session_cookie( true );
 			}
 			$fields = array();
-			foreach ( array( 'name', 'email', 'company', 'message', 'linker_request_id' ) as $key ) {
+			foreach ( array( 'name', 'email', 'company', 'message', 'linker_request_id', 'linker_individual_review' ) as $key ) {
 				$fields[ $key ] = isset( $post[ $key ] ) && is_string( $post[ $key ] ) ? sanitize_textarea_field( $post[ $key ] ) : '';
 			}
-			WC()->session->set( 'linker_inquiry_fields', $fields );
+			$fields['consent'] = '1' === ( $post['consent'] ?? '' ) ? '1' : '';
+			$blocked           = 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode() && \Linker\Commerce\Protection\Campaign::recovery_matches( $post, false );
+			WC()->session->set( 'linker_inquiry_fields', $blocked ? null : $fields );
 			$language = isset( $post['lang'] ) && is_string( $post['lang'] ) ? sanitize_key( $post['lang'] ) : null;
 			WC()->session->set( 'linker_inquiry_error', $result->get_error_message() );
 			WC()->session->set( 'linker_inquiry_error_locale', OrderLocale::current( $language ) );
+			WC()->session->set( 'linker_intake_grouped', 'linker_intake_grouped' === $result->get_error_code() );
 			wp_safe_redirect( Checkout::request_url( OrderLocale::current( $language ) ) );
 		}
 		exit;

@@ -1,0 +1,86 @@
+{
+  "environment": "owned local snapshot-backed review station; actual WordPress proxy and current service",
+  "source_revision": "71567ab3481a9dcb25193ba185a764d441019705a764b71207a3c577ee14c4ed",
+  "turns": [
+    {
+      "id": 2,
+      "created_at": "2026-10-23 17:25:17",
+      "locale": "en",
+      "grounded": 1,
+      "failures": [],
+      "fallback": 0,
+      "provider": "service",
+      "model": "none",
+      "tool_calls": [],
+      "output": {
+        "language": "en",
+        "blocks": [
+          {
+            "type": "text",
+            "text": "This model is outside our current product range. I can help identify it. For technical advice or system selection, please contact the Linker team at sales@de-linker.com.",
+            "refs": []
+          },
+          {
+            "type": "ask",
+            "field": "application",
+            "options": [
+              "home",
+              "commercial"
+            ]
+          }
+        ]
+      },
+      "question": "Please show EcoFlow EF HD-P1-6K-S2 and its datasheet.",
+      "timing": {
+        "understand": 0.81,
+        "log": 0.003,
+        "first_event": 13.63,
+        "total": 13.631
+      },
+      "understanding": {
+        "publication": "supplied_model_unavailable"
+      }
+    },
+    {
+      "id": 3,
+      "created_at": "2026-10-23 17:31:17",
+      "locale": "de",
+      "grounded": 1,
+      "failures": [],
+      "fallback": 0,
+      "provider": "service",
+      "model": "none",
+      "tool_calls": [],
+      "output": {
+        "language": "de",
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Dieses Modell gehört derzeit nicht zu unserem Produktangebot. Ich kann Ihnen bei der Identifizierung helfen. Für technische Beratung oder die Systemauswahl wenden Sie sich bitte an das Linker-Team: sales@de-linker.com.",
+            "refs": []
+          },
+          {
+            "type": "ask",
+            "field": "application",
+            "options": [
+              "Wohngebäude",
+              "Gewerbe"
+            ]
+          }
+        ]
+      },
+      "question": "Zeigen Sie mir EcoFlow EF HD-P1-6K-S2 und sein Datenblatt.",
+      "timing": {
+        "understand": 2.375,
+        "log": 0.001,
+        "first_event": 17.968,
+        "total": 17.969
+      },
+      "understanding": {
+        "publication": "supplied_model_unavailable"
+      }
+    }
+  ],
+  "screenshots": "screenshots/genie-withdrawn-{en,de}-{1440,390}.jpg",
+  "production_entry_block": "not changed; these turns use the owned local instance"
+}

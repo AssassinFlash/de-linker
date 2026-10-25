@@ -83,6 +83,8 @@ final class ComparisonTest extends TestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
+		WP_Mock::userFunction( 'wp_cache_supports', array( 'return' => true ) );
+		WP_Mock::userFunction( 'wp_cache_flush_runtime', array( 'return' => true ) );
 		// English products: each answers for itself (CommerceState::is_rfq_only asks the language layer).
 		$this->english_products(
 			array(
@@ -171,7 +173,7 @@ final class ComparisonTest extends TestCase {
 	 * published product drops out.
 	 */
 	public function test_columns_keep_the_order_and_drop_unknown_ids(): void {
-		$comparison = ( new Comparison() )->of( array( 1832, 999, 4107 ) );
+		$comparison = ( $this->comparison() )->of( array( 1832, 999, 4107 ) );
 
 		$this->assertSame( array( 1832, 4107 ), array_column( $comparison['products'], 'product_id' ) );
 		$this->assertSame( 'SKU-1832', $comparison['products'][0]['sku'] );
@@ -183,7 +185,7 @@ final class ComparisonTest extends TestCase {
 	 * single mixed "power" row.
 	 */
 	public function test_the_rows_carry_both_families_and_never_a_mixed_power_row(): void {
-		$comparison = ( new Comparison() )->of( array( 4107, 1832 ) );
+		$comparison = ( $this->comparison() )->of( array( 4107, 1832 ) );
 		$fields     = array_column( $comparison['rows'], 'field' );
 
 		$this->assertSame(
@@ -201,7 +203,7 @@ final class ComparisonTest extends TestCase {
 	 * are the same set the ability documents.
 	 */
 	public function test_the_labels_follow_the_language(): void {
-		$german = ( new Comparison() )->of( array( 4107 ), 'de' );
+		$german = ( $this->comparison() )->of( array( 4107 ), 'de' );
 
 		$this->assertSame( 'Anwendung', $german['rows'][0]['label'] );
 		$this->assertSame( 'Bemessungsleistung AC (kW)', $german['rows'][2]['label'] );
@@ -212,7 +214,7 @@ final class ComparisonTest extends TestCase {
 	 * one row per label, the value under the product that states it.
 	 */
 	public function test_the_technical_rows_are_the_union_of_the_tables(): void {
-		$comparison = ( new Comparison() )->of( array( 4107, 1832 ) );
+		$comparison = ( $this->comparison() )->of( array( 4107, 1832 ) );
 		$specs      = array_column( $comparison['specs'], null, 'label' );
 
 		$this->assertSame( array( 'Rated AC power', 'Ingress protection' ), array_keys( $specs ) );
@@ -247,5 +249,104 @@ final class ComparisonTest extends TestCase {
 			),
 			Comparison::parse_ids( 'abc,-3,0,1e3' )
 		);
+	}
+
+	/** A comparison page releases no partial result after an in-flight withdrawal. */
+	public function test_withdrawal_before_release_refuses_the_complete_comparison(): void {
+		$reads      = 0;
+		$source     = new \Linker\Commerce\Abilities\PublicationData(
+			static function () use ( &$reads ): array {
+				++$reads;
+				$products = array(
+					array(
+						'product_id'           => 4107,
+						'product_revision'     => 'a',
+						'published_locale_ids' => array( 4107 ),
+					),
+				);
+				if ( 1 === $reads ) {
+					$products[] = array(
+						'product_id'           => 1832,
+						'product_revision'     => 'b',
+						'published_locale_ids' => array( 1832 ),
+					);
+				}
+				return array(
+					'source_revision'        => (string) $reads,
+					'compatibility_revision' => 'rules',
+					'products'               => $products,
+					'documents'              => array(),
+				);
+			}
+		);
+		$comparison = new Comparison( facts_reader: static fn( int $id ): \Linker\Commerce\Products\SelectionFactSet => \Linker\Commerce\Products\SelectionFacts::for_product( $id ), publication: $source );
+		$this->assertSame(
+			array(
+				'products' => array(),
+				'rows'     => array(),
+				'specs'    => array(),
+			),
+			$comparison->of( array( 4107, 1832 ) )
+		);
+	}
+
+	/** Replacing a cited document cannot relabel old comparison facts as current. */
+	public function test_new_document_bytes_before_release_refuse_the_comparison(): void {
+		$reads      = 0;
+		$source     = new \Linker\Commerce\Abilities\PublicationData(
+			static function () use ( &$reads ): array {
+				++$reads;
+				return array(
+					'source_revision'        => (string) $reads,
+					'compatibility_revision' => 'rules',
+					'products'               => array(
+						array(
+							'product_id'           => 4107,
+							'product_revision'     => 'a',
+							'published_locale_ids' => array( 4107 ),
+						),
+					),
+					'documents'              => array(
+						array(
+							'document_id'       => 'source',
+							'document_revision' => 'bytes-' . $reads,
+							'product_ids'       => array( 4107 ),
+						),
+					),
+				);
+			}
+		);
+		$comparison = new Comparison( facts_reader: static fn( int $id ): \Linker\Commerce\Products\SelectionFactSet => \Linker\Commerce\Products\SelectionFacts::for_product( $id ), publication: $source );
+		$this->assertSame(
+			array(
+				'products' => array(),
+				'rows'     => array(),
+				'specs'    => array(),
+			),
+			$comparison->of( array( 4107 ) )
+		);
+	}
+
+	/** Presentation fixtures inject their stated facts and an explicit source set. */
+	private function comparison(): \Linker\Commerce\Products\Comparison {
+		$source = new \Linker\Commerce\Abilities\PublicationData(
+			static function (): array {
+				$products = array();
+				foreach ( array_keys( self::PRODUCTS ) as $id ) {
+					$products[] = array(
+						'product_id'           => $id,
+						'product_revision'     => (string) $id,
+						'published_locale_ids' => array( $id ),
+					);
+				}
+				return array(
+					'source_revision'        => 'fixture',
+					'compatibility_revision' => 'fixture',
+					'products'               => $products,
+					'documents'              => array(),
+				);
+			}
+		);
+		return new \Linker\Commerce\Products\Comparison( facts_reader: static fn( int $id ): \Linker\Commerce\Products\SelectionFactSet => \Linker\Commerce\Products\SelectionFacts::for_product( $id ), publication: $source );
 	}
 }

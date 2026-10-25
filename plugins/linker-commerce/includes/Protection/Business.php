@@ -47,6 +47,11 @@ final class Business {
 			if ( ! is_wp_error( $old ) && $action === $old['purpose'] && $identity->binding() === $old['binding'] ) {
 				$order = BusinessRecord::recover( $id, $fp, $identity->binding(), $old );
 				if ( $order instanceof WC_Order ) {
+					if ( $order->has_status( 'pending' ) && $order->get_meta( Intake::META ) ) {
+						$order->update_meta_data( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META, 'review_hold' );
+						WC()->mailer();
+						$order->update_status( \Linker\Commerce\Inquiry\Statuses::RECEIVED );
+					}
 					$ledger->complete( $id, $fp, $order->get_id() );
 					return $order;
 				}
@@ -67,6 +72,26 @@ final class Business {
 		// Initial native-write lease: bounded by the shared journal's 300-second ceiling (#519).
 		$email  = $payload['email'] ?? ( $payload['details']['email'] ?? '' );
 		$owners = is_string( $email ) && is_email( $email ) ? array( Allowance::owner_for( Identity::recipient( $email ) ) ) : array();
+		if ( 'enforce' === $config->mode && in_array( $action, array( 'contact', 'inquiry' ), true ) ) {
+			$required = Configuration::verification_required( $action );
+			if ( $required && ! $config->ready() ) {
+				return new WP_Error( 'linker_admission_configuration', __( 'Your request could not be processed. Please try again.', 'linker-commerce' ), array( 'status' => 503 ) );
+			}
+			$verified = $config->ready() && Intake::verified( $proof, $action, $identity, $id );
+			if ( $required && ! $verified ) {
+				return new WP_Error( 'linker_admission_proof', __( 'Your request could not be processed. Please try again.', 'linker-commerce' ), array( 'status' => 400 ) );
+			}
+			if ( Campaign::submitted( $payload ) ) {
+				return new WP_Error( 'linker_admission_input', __( 'Your request could not be processed. Please try again.', 'linker-commerce' ), array( 'status' => 400 ) );
+			}
+			if ( ! $verified ) {
+				return Intake::run( 'verification', $action, $id, $fp, $identity, $payload, BusinessPolicy::review_limits( $limits ), $carry, $owners, $work );
+			}
+		}
+		$capacity = BusinessCapacity::preflight();
+		if ( $capacity instanceof WP_Error ) {
+			return $capacity;
+		}
 		$permit = $gate->reserve( $action, $proof, $id, $payload, $limits, 120, true, $carry, $owners );
 		if ( is_wp_error( $permit ) ) {
 			return $permit;

@@ -1,0 +1,10 @@
+{
+  "scope": "CSS-only formatting diagnostic; no unrelated global reformat performed.",
+  "existingChromeBaselineMatchesPrettier": false,
+  "currentChromeMatchesPrettier": false,
+  "baselineSha256": "c733b9bdfbf47e4462e547a51e84331041af8b2b3bc47ab7e895df0a573f889d",
+  "currentSha256": "a43202bb828ad63b0d7d49881af91be9bc42cd88c7bdd4aedb338d939aa905f9",
+  "newStylesheetsPrettierCheckExit": 0,
+  "gitDiffCheckExit": 0,
+  "nativeCompilerAndRuntime": "See exact compile8c/d1 and compile9/d690 manifests; the prior full just check remains historical and current CI is still required."
+}

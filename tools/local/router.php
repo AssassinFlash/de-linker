@@ -32,6 +32,15 @@ if ( is_dir( $linker_local_file ) && ! str_ends_with( $linker_local_path, '/' ) 
 }
 // phpcs:enable
 
+// Match the production technical-document gate before the static-file shortcut.
+// Private reports still stream through their logged-in owner routes.
+if ( preg_match( '#^/wp-content/uploads/(.+\\.pdf)$#iD', $linker_local_path, $linker_local_pdf ) ) {
+	$_GET['linker_public_document'] = $linker_local_pdf[1];
+	chdir( $linker_local_root );
+	require $linker_local_root . '/index.php';
+	return true;
+}
+
 if ( is_file( $linker_local_file ) || is_file( $linker_local_file . 'index.php' ) ) {
 	return false;
 }

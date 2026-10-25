@@ -27,13 +27,44 @@ use WP_PHPMailer;
  */
 final class InternalSmtpTest extends IntegrationTestCase {
 
+	/** Transport fixtures use the actual ordinary native Woo producer boundary.
+	 *
+	 * @param mixed ...$arguments Original wp_mail arguments.
+	 */
+	private function transaction_mail( mixed ...$arguments ): bool {
+		$email = WC()->mailer()->get_emails()[ \Linker\Commerce\Digest\DigestEmail::class ];
+		$send  = ( new \Linker\Commerce\Mail\Producer() )->woocommerce( static fn () => wp_mail( ...$arguments ), $email );
+		return $send();
+	}
+
+	/** Capture a native ordinary notification for the explicit staff-retry tests.
+	 *
+	 * @param string $subject Native notification subject.
+	 * @param string $body Complete notification body.
+	 */
+	private function transaction_message( string $subject, string $body ): Message {
+		$email   = WC()->mailer()->get_emails()[ \Linker\Commerce\Digest\DigestEmail::class ];
+		$capture = ( new \Linker\Commerce\Mail\Producer() )->woocommerce(
+			static fn () => Message::from_wp_mail(
+				array(
+					'to'      => array( self::TESTER ),
+					'subject' => $subject,
+					'message' => $body,
+					'headers' => array( Message::INTERNAL_HEADER, 'From: Linker <sales@sunriverinverter.com>' ),
+				)
+			),
+			$email
+		);
+		return $capture();
+	}
+
 	/**
 	 * Internal SMTP and subsequent customer mail through the same WP mailer.
 	 */
 	public function test_internal_smtp_and_customer_file_delivery(): void {
 		$directory = $this->fixture();
 
-		wp_mail( 'tester@example.test', 'Internal SMTP fixture', 'Internal fixture.', array( Message::INTERNAL_HEADER, 'From: Linker <sales@sunriverinverter.com>' ) );
+		$this->transaction_mail( 'tester@example.test', 'Internal SMTP fixture', 'Internal fixture.', array( Message::INTERNAL_HEADER, 'From: Linker <sales@sunriverinverter.com>' ) );
 		$this->assertFileExists( $directory . '/smtp.jsonl', 'An internal message actually reaches the loopback server.' );
 		$smtp = (string) file_get_contents( $directory . '/smtp.jsonl' );
 		$this->assertStringContainsString( 'Internal SMTP fixture', $smtp );
@@ -41,10 +72,10 @@ final class InternalSmtpTest extends IntegrationTestCase {
 		$this->assertStringNotContainsString( 'X-Linker-Internal', $smtp );
 		$this->assertFileDoesNotExist( $directory . '/mail.eml' );
 
-		wp_mail( 'tester@example.test', 'Customer file fixture', 'Customer fixture.', array( 'From: Linker <sales@de-linker.com>' ) );
+		$this->transaction_mail( 'tester@example.test', 'Customer file fixture', 'Customer fixture.', array( 'From: Linker <sales@de-linker.com>' ) );
 		$this->assertStringContainsString( 'Customer file fixture', (string) file_get_contents( $directory . '/mail.eml' ) );
 		$this->assertStringContainsString( 'From: Linker <sales@de-linker.com>', (string) file_get_contents( $directory . '/mail.eml' ) );
-		$this->assertSame( $smtp, file_get_contents( $directory . '/smtp.jsonl' ), 'The customer message never entered SMTP.' );
+		$this->assertSame( $smtp, (string) file_get_contents( $directory . '/smtp.jsonl' ), 'The customer message never entered SMTP.' );
 		$this->assertSame( '', $GLOBALS['phpmailer']->Password );
 		$this->assertSame( '', $GLOBALS['phpmailer']->Username );
 	}
@@ -54,7 +85,7 @@ final class InternalSmtpTest extends IntegrationTestCase {
 	 */
 	public function test_password_punctuation_reaches_the_local_authenticator(): void {
 		$directory = $this->fixture( 'fake;#=password' );
-		wp_mail( 'tester@example.test', 'Literal env fixture', 'Fixture.', array( Message::INTERNAL_HEADER, 'From: Linker <sales@sunriverinverter.com>' ) );
+		$this->transaction_mail( 'tester@example.test', 'Literal env fixture', 'Fixture.', array( Message::INTERNAL_HEADER, 'From: Linker <sales@sunriverinverter.com>' ) );
 		$this->assertFileExists( $directory . '/smtp.jsonl' );
 		$this->assertFileDoesNotExist( $directory . '/mail.eml' );
 	}
@@ -68,7 +99,7 @@ final class InternalSmtpTest extends IntegrationTestCase {
 		file_put_contents( $file, str_replace( 'fake-password', 'wrong-test-password', (string) file_get_contents( $file ) ) );
 		$marker = self::newest_mail_job();
 		$before = time();
-		wp_mail( 'tester@example.test', 'Auth fallback fixture', 'Fixture.', array( Message::INTERNAL_HEADER, 'From: Linker <sales@sunriverinverter.com>' ) );
+		$this->transaction_mail( 'tester@example.test', 'Auth fallback fixture', 'Fixture.', array( Message::INTERNAL_HEADER, 'From: Linker <sales@sunriverinverter.com>' ) );
 		$this->assertFileExists( $directory . '/mail.eml' );
 		$this->assertFileDoesNotExist( $directory . '/smtp.jsonl' );
 		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
@@ -87,7 +118,7 @@ final class InternalSmtpTest extends IntegrationTestCase {
 			$locale_switch->back();
 		}
 		$this->assertStringNotContainsString( 'wrong-test-password', (string) wp_json_encode( $outcome ) );
-		$this->assertCount( 1, get_option( Throttle::OPTION ) );
+		$this->assertCount( 2, json_decode( (string) get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ), true )['entries'] );
 	}
 
 	/**
@@ -113,7 +144,7 @@ final class InternalSmtpTest extends IntegrationTestCase {
 	public function test_mismatched_sender_falls_back_with_a_fixed_reason(): void {
 		$directory = $this->fixture();
 		$marker    = self::newest_mail_job();
-		wp_mail( 'tester@example.test', 'Mismatched sender fixture', 'Fixture.', array( Message::INTERNAL_HEADER, 'From: Linker <sales@de-linker.com>' ) );
+		$this->transaction_mail( 'tester@example.test', 'Mismatched sender fixture', 'Fixture.', array( Message::INTERNAL_HEADER, 'From: Linker <sales@de-linker.com>' ) );
 		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
 		$this->assertFileDoesNotExist( $directory . '/smtp.jsonl' );
 		$this->assertStringContainsString( 'From: Linker <sales@de-linker.com>', (string) file_get_contents( $directory . '/mail.eml' ) );
@@ -163,7 +194,7 @@ final class InternalSmtpTest extends IntegrationTestCase {
 			}
 		);
 		$marker = self::newest_mail_job();
-		wp_mail( 'internal@example.test', 'Retry fixture', 'Retry fixture.', array( Message::INTERNAL_HEADER, 'From: Linker <sales@sunriverinverter.com>', 'Bcc: copy@example.test' ) );
+		$this->transaction_mail( 'internal@example.test', 'Retry fixture', 'Retry fixture.', array( Message::INTERNAL_HEADER, 'From: Linker <sales@sunriverinverter.com>', 'Bcc: copy@example.test' ) );
 		$ids = self::mail_jobs_after( $marker );
 		$this->assertCount( 1, $ids );
 		// A successful retry deletes its post, so the base cleanup can no longer
@@ -185,28 +216,32 @@ final class InternalSmtpTest extends IntegrationTestCase {
 		$this->assertFileDoesNotExist( $directory . '/smtp.jsonl' );
 		file_put_contents( $file, str_replace( 'wrong-test-password', 'fake-password', (string) file_get_contents( $file ) ) );
 		// #297 keeps the existing site quota even for SMTP: a full window queues the retry.
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_MINUTE, time() ), false );
 		/**
 		 * The existing Outbox retry hook, invoked as Action Scheduler invokes it.
 		 *
 		 * @since 0.2.0
 		 */
-		do_action( Outbox::HOOK, $ids[0] ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- this plugin's hook constant.
+		/** This action is documented in Mail\Module::register(). */
+		do_action( Outbox::HOOK, $ids[0] ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- this plugin's hook constant.
 		$this->assertFileDoesNotExist( $directory . '/smtp.jsonl' );
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		delete_option( Throttle::OPTION );
 		/**
 		 * The existing Outbox retry hook, invoked as Action Scheduler invokes it.
 		 *
 		 * @since 0.2.0
 		 */
-		do_action( Outbox::HOOK, $ids[0] ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- this plugin's hook constant.
+		/** This action is documented in Mail\Module::register(). */
+		do_action( Outbox::HOOK, $ids[0] ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- this plugin's hook constant.
 		$this->assertNull( ( new JobStore() )->load( $ids[0] ) );
 		$this->assertCount( 1, (array) file( $directory . '/smtp.jsonl', FILE_IGNORE_NEW_LINES ) );
 		$message = json_decode( (string) file_get_contents( $directory . '/smtp.jsonl' ), true );
 		$this->assertSame( array( 'RCPT TO:<tester@example.test>' ), $message['recipients'] );
 		$this->assertStringNotContainsString( 'Bcc:', $message['message'] );
 		$this->assertStringNotContainsString( 'fake-password', implode( "\n", $lines ) );
-		$this->assertCount( 1, get_option( Throttle::OPTION ) );
+		$this->assertCount( 1, json_decode( (string) get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ), true )['entries'] );
 		$this->assertNotEmpty( $option_writes, 'Observe actual quota writes through WordPress.' );
 		$this->assertStringNotContainsString( 'fake-password', (string) wp_json_encode( $option_writes ) );
 		$this->assertStringNotContainsString( 'LINKER_SMTP_', (string) wp_json_encode( $option_writes ) );
@@ -248,7 +283,7 @@ final class InternalSmtpTest extends IntegrationTestCase {
 					dirname( $plugin ) . '/templates/'
 				);
 				$this->assertSame( 1, substr_count( $body, $warning ), 'The real digest template renders the warning once.' );
-				wp_mail( 'tester@example.test', 'Fallback fixture', $block->entries()[0]['label'], array( Message::INTERNAL_HEADER, 'From: Linker <sales@sunriverinverter.com>' ) );
+				$this->transaction_mail( 'tester@example.test', 'Fallback fixture', $block->entries()[0]['label'], array( Message::INTERNAL_HEADER, 'From: Linker <sales@sunriverinverter.com>' ) );
 			} finally {
 				$locale_switch->back();
 			}
@@ -281,6 +316,13 @@ final class InternalSmtpTest extends IntegrationTestCase {
 	 * Only authorized staff can read configuration status, never config values.
 	 */
 	public function test_staff_rest_readback_has_no_credentials(): void {
+		$before = get_option( \Linker\Commerce\Mail\CapacityHealth::OPTION );
+		$this->later(
+			static function () use ( $before ): void {
+				false === $before ? delete_option( \Linker\Commerce\Mail\CapacityHealth::OPTION ) : update_option( \Linker\Commerce\Mail\CapacityHealth::OPTION, $before, false );
+			}
+		);
+		\Linker\Commerce\Mail\CapacityHealth::failed();
 		$directory = $this->fixture();
 		$server    = rest_get_server();
 		$health    = new \Linker\Commerce\Mail\SmtpHealth( new InternalSmtp( $directory . '/smtp.env' ) );
@@ -298,7 +340,10 @@ final class InternalSmtpTest extends IntegrationTestCase {
 		$data = $response->get_data();
 		$this->assertTrue( $data['smtp_configured'] );
 		$this->assertSame( 'SMTP configured', $data['label'] );
-		$this->assertSame( array( 'smtp_configured', 'label', 'last_outcome' ), array_keys( $data ) );
+		$this->assertSame( array( 'smtp_configured', 'label', 'last_outcome', 'capacity_failure' ), array_keys( $data ) );
+		$this->assertSame( array( 'at', 'reason' ), array_keys( $data['capacity_failure'] ) );
+		$this->assertIsInt( $data['capacity_failure']['at'] );
+		$this->assertSame( 'notification_not_accepted', $data['capacity_failure']['reason'] );
 		$this->assertStringNotContainsString( 'fake-password', (string) wp_json_encode( $data ) );
 	}
 
@@ -309,7 +354,16 @@ final class InternalSmtpTest extends IntegrationTestCase {
 	 * @param int    $mail_failures Number of initial file deliveries to reject.
 	 */
 	private function fixture( string $password = 'fake-password', int $mail_failures = 0 ): string {
-		$previous_to = get_option( TestMode::OPTION );
+		$previous_to     = get_option( TestMode::OPTION );
+		$previous_digest = get_option( 'linker_commerce_team_locale' );
+		update_option( 'linker_commerce_team_locale', 'en_US', false );
+		$this->later(
+			static function () use ( $previous_digest ): void {
+				if ( false !== $previous_digest ) {
+					update_option( 'linker_commerce_team_locale', $previous_digest, false );
+				}
+			}
+		);
 		update_option( TestMode::OPTION, 'tester@example.test' );
 		$this->later(
 			static function () use ( $previous_to ): void {
@@ -367,6 +421,183 @@ final class InternalSmtpTest extends IntegrationTestCase {
 
 		$this->install_outbox( new InternalSmtp( $directory . '/smtp.env' ), $directory, $mail_failures );
 		return $directory;
+	}
+
+	/** Existing unlabelled attempts do not throttle the verified SMTP plan as PHP. */
+	public function test_smtp_succeeds_after_legacy_php_budget_is_full(): void {
+		$directory = $this->fixture();
+		$legacy    = array_fill( 0, Throttle::PER_DAY, time() - 120 );
+		update_option( Throttle::OPTION, $legacy, false );
+		$this->transaction_mail( 'original@example.test', 'Real internal capacity fixture', 'Fixture.', array( Message::INTERNAL_HEADER, 'From: Linker <sales@sunriverinverter.com>' ) );
+		$this->assertFileExists( $directory . '/smtp.jsonl' );
+		$this->assertFileDoesNotExist( $directory . '/mail.eml' );
+		$this->assertSame( $legacy, get_option( Throttle::OPTION ) );
+		$entries = json_decode( get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ), true )['entries'];
+		$this->assertCount( 81, array_filter( $entries, static fn ( array $entry ): bool => Throttle::SMTP === $entry['transport'] ) );
+		$this->assertCount( 80, array_filter( $entries, static fn ( array $entry ): bool => Throttle::PHP === $entry['transport'] ) );
+		$this->assertStringContainsString( 'RCPT TO:<tester@example.test>', (string) file_get_contents( $directory . '/smtp.jsonl' ) );
+	}
+
+	/** Failed SMTP cannot use a full PHP pool; recovery retries only the original job. */
+	public function test_smtp_failure_php_full_then_recovered_smtp(): void {
+		$directory = $this->fixture();
+		$file      = $directory . '/smtp.env';
+		file_put_contents( $file, str_replace( 'fake-password', 'wrong-test-password', (string) file_get_contents( $file ) ) );
+		$legacy = array_fill( 0, Throttle::PER_DAY, time() - 120 );
+		update_option( Throttle::OPTION, $legacy, false );
+		$marker = self::newest_mail_job();
+		$before = time();
+		$this->transaction_mail( 'original@example.test', 'Failed channel fixture', 'Original fixture.', array( Message::INTERNAL_HEADER, 'From: Linker <sales@sunriverinverter.com>' ) );
+		$this->assertFileDoesNotExist( $directory . '/smtp.jsonl' );
+		$this->assertFileDoesNotExist( $directory . '/mail.eml' );
+		$ids = self::mail_jobs_after( $marker );
+		$this->assertCount( 1, $ids );
+		$jobs = new JobStore();
+		$job  = $jobs->load( $ids[0] );
+		$this->assertNotNull( $job );
+		$this->assertSame( 1, $job['attempts'] );
+		$this->assertSame( array( 'original@example.test' ), $job['message']->to );
+		$scheduled = as_next_scheduled_action( Outbox::HOOK, array( $ids[0] ), Outbox::GROUP );
+		$this->assertIsInt( $scheduled );
+		$this->assertEqualsWithDelta( $before + Outbox::RETRY_DELAYS[0], $scheduled, 3, 'PHP exhaustion must not delay the recovered SMTP channel for a day.' );
+		file_put_contents( $file, str_replace( 'wrong-test-password', 'fake-password', (string) file_get_contents( $file ) ) );
+		/** This action is documented in Mail\Module::register(). */
+		do_action( Outbox::HOOK, $ids[0] ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Fixed native Outbox retry.
+		/** This action is documented in Mail\Module::register(). */
+		do_action( Outbox::HOOK, $ids[0] ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Duplicate delivery owner must be idempotent.
+		$this->assertNull( $jobs->load( $ids[0] ) );
+		$lines = file( $directory . '/smtp.jsonl', FILE_IGNORE_NEW_LINES );
+		$this->assertIsArray( $lines );
+		$this->assertCount( 1, $lines );
+		$this->assertFileDoesNotExist( $directory . '/mail.eml' );
+		$this->assertSame( $legacy, get_option( Throttle::OPTION ) );
+		$entries = json_decode( get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ), true )['entries'];
+		$this->assertCount( 82, array_filter( $entries, static fn ( array $entry ): bool => Throttle::SMTP === $entry['transport'] ) );
+		$this->assertCount( 80, array_filter( $entries, static fn ( array $entry ): bool => Throttle::PHP === $entry['transport'] ) );
+		as_unschedule_all_actions( Outbox::HOOK, array( $ids[0] ), Outbox::GROUP );
+	}
+
+	/** No configured SMTP and a full PHP pool remains queued without claiming delivery. */
+	public function test_unavailable_smtp_and_full_php_does_not_claim_a_send(): void {
+		$directory = $this->fixture();
+		unlink( $directory . '/smtp.env' );
+		$legacy = array_fill( 0, Throttle::PER_DAY, time() - 120 );
+		update_option( Throttle::OPTION, $legacy, false );
+		$marker = self::newest_mail_job();
+		$this->transaction_mail( 'original@example.test', 'No channel fixture', 'Fixture.', array( Message::INTERNAL_HEADER, 'From: Linker <sales@sunriverinverter.com>' ) );
+		$this->assertFileDoesNotExist( $directory . '/smtp.jsonl' );
+		$this->assertFileDoesNotExist( $directory . '/mail.eml' );
+		$ids = self::mail_jobs_after( $marker );
+		$this->assertCount( 1, $ids );
+		$job = ( new JobStore() )->load( $ids[0] );
+		$this->assertNotNull( $job );
+		$this->assertSame( 0, $job['attempts'], 'A capacity wait is not a failed transport attempt.' );
+		$this->assertNull( ( new \Linker\Commerce\Mail\SmtpOutcome() )->last() );
+		$this->assertSame( $legacy, get_option( Throttle::OPTION ) );
+	}
+
+	/** A trusted staff-restored original job can use the reserved SMTP capacity. */
+	public function test_staff_release_can_use_reserved_smtp_slots_without_rewriting_message(): void {
+		$directory = $this->fixture();
+		$now       = time();
+		$entries   = array_fill(
+			0,
+			Throttle::SMTP_PER_DAY - Throttle::SMTP_RESERVE,
+			array(
+				'time'      => $now - 120,
+				'transport' => Throttle::SMTP,
+			)
+		);
+		update_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION, wp_json_encode( array( 'entries' => $entries ) ), false );
+		$jobs    = new JobStore();
+		$message = $this->transaction_message( 'Staff-restored fixture', 'Original body.' );
+		$id      = $jobs->create( $message );
+		$jobs->promote( $id );
+		$readback = $jobs->load( $id );
+		$this->assertNotNull( $readback );
+		$this->assertSame( $message->to_array(), $readback['message']->to_array() );
+		/** This action is documented in Mail\Module::register(). */
+		do_action( Outbox::HOOK, $id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Fixed native Outbox retry.
+		$this->assertNull( $jobs->load( $id ) );
+		$this->assertFileExists( $directory . '/smtp.jsonl' );
+		$this->assertFileDoesNotExist( $directory . '/mail.eml' );
+		$entries = json_decode( get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ), true )['entries'];
+		$this->assertCount( 361, $entries );
+	}
+
+	/** Disabled review producers cannot use the critical SMTP reserve. */
+	public function test_pending_review_aggregate_produces_no_job_or_transport(): void {
+		$directory = $this->fixture();
+		$now       = time();
+		$entries   = array_fill(
+			0,
+			Throttle::SMTP_PER_DAY - Throttle::SMTP_RESERVE,
+			array(
+				'time'      => $now - 120,
+				'transport' => Throttle::SMTP,
+			)
+		);
+		$budget    = wp_json_encode( array( 'entries' => $entries ) );
+		update_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION, $budget, false );
+		$summary = new \Linker\Commerce\Health\ReviewSummary(
+			static fn () => array(
+				'count'  => 77,
+				'oldest' => $now - 600,
+				'url'    => admin_url(),
+			)
+		);
+		$marker  = self::newest_mail_job();
+		( new \Linker\Commerce\Health\ReviewReminder( $summary ) )->tick();
+		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
+		$this->assertSame( $budget, get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ) );
+		$this->assertFileDoesNotExist( $directory . '/smtp.jsonl' );
+		$this->assertFileDoesNotExist( $directory . '/mail.eml' );
+	}
+
+	/** Retired reminders cannot spend either transport; other critical recovery still works. */
+	public function test_existing_reminder_is_retained_without_spending_critical_capacity(): void {
+		$directory = $this->fixture();
+		$file      = $directory . '/smtp.env';
+		file_put_contents( $file, str_replace( 'fake-password', 'wrong-test-password', (string) file_get_contents( $file ) ) );
+		$now     = time();
+		$entries = array();
+		foreach ( array(
+			Throttle::SMTP => 360,
+			Throttle::PHP  => 64,
+		) as $transport => $count ) {
+			for ( $i = 0; $i < $count; ++$i ) {
+				$entries[] = array(
+					'time'      => $now - 300,
+					'transport' => $transport,
+					'origin'    => 'legacy',
+				);
+			}
+		}
+		$budget = wp_json_encode( array( 'entries' => $entries ) );
+		update_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION, $budget, false );
+		$jobs    = new JobStore();
+		$message = new Message( array( self::TESTER ), 'Synthetic retired reminder', 'Original reminder body.', array( Message::INTERNAL_HEADER, 'From: Linker <sales@sunriverinverter.com>' ), array(), true, Message::REVIEW_REMINDER );
+		$id      = $jobs->create( $message );
+		for ( $i = 0; $i < 3; ++$i ) {
+			do_action( Outbox::HOOK, $id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Actual repeated native consumer.
+		}
+		$stored = $jobs->load( $id );
+		$this->assertNotNull( $stored );
+		$this->assertSame( $message->to_array(), $stored['message']->to_array() );
+		$this->assertSame( 0, $stored['attempts'] );
+		$this->assertSame( Message::REVIEW_REMINDER, ( new TestMode() )->redirect( $stored['message'] )->category );
+		$this->assertTrue( \Linker\Commerce\Mail\NotificationHold::job_held( $id ) );
+		$this->assertSame( $budget, get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ) );
+		$this->assertFileDoesNotExist( $directory . '/smtp.jsonl' );
+		$this->assertFileDoesNotExist( $directory . '/mail.eml' );
+		$manual = $this->transaction_message( 'Manual critical recovery', 'Original normal message.' );
+		$normal = $jobs->create( $manual );
+		$jobs->promote( $normal );
+		do_action( Outbox::HOOK, $normal ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Existing normal critical consumer.
+		$this->assertNull( $jobs->load( $normal ) );
+		$this->assertFileExists( $directory . '/mail.eml' );
+		$this->assertStringContainsString( 'Manual critical recovery', (string) file_get_contents( $directory . '/mail.eml' ) );
+		as_unschedule_all_actions( Outbox::HOOK, array( $normal ), Outbox::GROUP );
 	}
 
 	/**
@@ -431,7 +662,7 @@ final class InternalSmtpTest extends IntegrationTestCase {
 				return true;
 			}
 		};
-		$outbox               = new Outbox( new JobStore(), new Throttle(), new TestMode(), $smtp );
+		$outbox               = new Outbox( new JobStore(), new Throttle( new \Linker\Commerce\Mail\OptionBudgetLedger(), $smtp ), new TestMode(), $smtp );
 		add_filter( 'pre_wp_mail', array( $outbox, 'intercept' ), 10, 2 );
 		add_action( 'wp_mail_failed', array( $outbox, 'remember_error' ) );
 		add_action( 'phpmailer_init', array( $outbox, 'configure_mailer' ) );

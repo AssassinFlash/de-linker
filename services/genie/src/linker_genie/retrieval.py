@@ -26,18 +26,24 @@ import os
 import re
 import sqlite3
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
+from typing import TYPE_CHECKING, Any, NotRequired, TypedDict
+
+if TYPE_CHECKING:
+    from linker_genie.publication import Snapshot
 
 import sqlite_vec
 
 from linker_genie.embedding import Embedder, query_encoder
+from linker_genie.preparation import RUNTIME_SERVING_REVISION
+from linker_genie.publication_scope import authorize_chunk, table_header
 
 # The release layout of ops/publish_index.py: /opt/linker-genie/index/<version>/ and a
 # `current` link. GENIE_INDEX points elsewhere (a local build, a test fixture).
 DEFAULT_INDEX = Path("/opt/linker-genie/index/current/index.sqlite")
 # The index layout this module reads; index/store.py writes the same number.
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 # How deep each ranking reads: the vector ranking's KNN window, and BM25's when it
 # stands in for it. The spec's top-30 survived the bake-off's fusion experiments:
 # fusing the two at this depth still lost to the vector ranking alone
@@ -95,6 +101,9 @@ class DocumentHit:
     text: str
     lang: str
     score: float
+    document_id: str = ""
+    document_revision: str = ""
+    product_ids: tuple[int, ...] = ()
 
     @property
     def link(self) -> str:
@@ -126,11 +135,23 @@ def rrf(rankings: Sequence[Sequence[int]], k: int = RRF_K) -> list[tuple[int, fl
     return sorted(scores.items(), key=lambda pair: (-pair[1], pair[0]))
 
 
+class Permit(TypedDict):
+    document_id: str
+    document_revision: str
+    url: str
+    product_ids: list[int]
+    table_header: NotRequired[str]
+
+
 class _Auto:
     """Marker: pick the query encoder from the index's recorded model."""
 
 
 AUTO = _Auto()
+
+
+class ServingMismatch(RuntimeError):
+    """A managed generation needs rebuilding for this process's serving rules."""
 
 
 class DocumentIndex:
@@ -145,11 +166,14 @@ class DocumentIndex:
         sqlite_vec.load(self._db)
         self._db.enable_load_extension(False)
         meta = dict(self._db.execute("SELECT key, value FROM meta").fetchall())
-        if int(meta.get("schema_version", "0")) != SCHEMA_VERSION:
+        if int(meta.get("schema_version", "0")) not in (1, SCHEMA_VERSION):
             raise RuntimeError(
                 f"{path}: schema {meta.get('schema_version')}, this code reads {SCHEMA_VERSION}"
             )
         self.version = str(meta.get("version", ""))
+        self.source_revision = str(meta.get("source_revision", ""))
+        self._recipe_revision = str(meta.get("recipe_revision", ""))
+        self._expected_serving_revision = str(meta.get("serving_revision", ""))
         self.embedding_model = str(meta.get("embedding_model", ""))
         self.encoder: Embedder | None
         if int(meta.get("dimensions", "0")) == 0:
@@ -172,8 +196,79 @@ class DocumentIndex:
                 f"encoder that built the index {recorded}"
             )
 
+    def loaded(self) -> dict[str, Any]:
+        tables = {
+            r[0]
+            for r in self._db.execute(
+                "SELECT name FROM sqlite_master WHERE type='table'"
+            )
+        }
+        ready = (
+            [
+                {"product_id": pid, "product_revision": revision}
+                for pid, revision in self._db.execute(
+                    "SELECT product_id, product_revision FROM publication_ready_products ORDER BY product_id"
+                )
+            ]
+            if "publication_ready_products" in tables
+            else []
+        )
+        return {
+            "index_version": self.version,
+            "source_revision": self.source_revision,
+            "recipe_revision": (
+                self._db.execute(
+                    "SELECT value FROM meta WHERE key='recipe_revision'"
+                ).fetchone()
+                or ("",)
+            )[0],
+            "expected_serving_revision": (
+                self._db.execute(
+                    "SELECT value FROM meta WHERE key='serving_revision'"
+                ).fetchone()
+                or ("",)
+            )[0],
+            "serving_revision": RUNTIME_SERVING_REVISION,
+            "activation_epoch": int(
+                (
+                    self._db.execute(
+                        "SELECT value FROM meta WHERE key='activation_epoch'"
+                    ).fetchone()
+                    or ("0",)
+                )[0]
+            ),
+            "products": ready,
+            "materialization_complete": self._db.execute(
+                "SELECT value FROM meta WHERE key='materialization_complete'"
+            ).fetchone()
+            == ("true",),
+            "preparation_complete": self._db.execute(
+                "SELECT value FROM meta WHERE key='preparation_complete'"
+            ).fetchone()
+            == ("true",),
+            "unprepared_documents": json.loads(
+                (
+                    self._db.execute(
+                        "SELECT value FROM meta WHERE key='unprepared_documents'"
+                    ).fetchone()
+                    or ("[]",)
+                )[0]
+            ),
+        }
+
     def close(self) -> None:
         self._db.close()
+
+    def _require_serving(self) -> None:
+        # Imported rules can tighten what older compiler proofs established.
+        # Keep loaded() available so the worker can activate their replacement.
+        if (
+            self._recipe_revision
+            and self._expected_serving_revision != RUNTIME_SERVING_REVISION
+        ):
+            raise ServingMismatch(
+                "managed knowledge index needs matching serving rules"
+            )
 
     def documents_naming(self, query: str) -> list[str]:
         """The documents tagged with a model the query names by its code.
@@ -213,10 +308,10 @@ class DocumentIndex:
         """Chunk rowids allowed by the filters, or None for the whole index."""
         conditions: list[str] = []
         params: list[str] = []
-        if doc_shas:
+        if doc_shas is not None:
             conditions.append("c.doc_sha256 IN (SELECT value FROM json_each(?))")
             params.append(json.dumps(list(doc_shas)))
-        if product_ids:
+        if product_ids is not None:
             shas = [
                 row[0]
                 for row in self._db.execute(
@@ -226,9 +321,8 @@ class DocumentIndex:
                     (json.dumps(list(product_ids)),),
                 )
             ]
-            if shas:
-                conditions.append("c.doc_sha256 IN (SELECT value FROM json_each(?))")
-                params.append(json.dumps(shas))
+            conditions.append("c.doc_sha256 IN (SELECT value FROM json_each(?))")
+            params.append(json.dumps(shas))
         if doc_types:
             conditions.append("d.doc_type IN (SELECT value FROM json_each(?))")
             params.append(json.dumps(list(doc_types)))
@@ -332,6 +426,7 @@ class DocumentIndex:
         k: int = DEFAULT_K,
         query_vector: bytes | None = None,
         neighbours: bool = True,
+        publication: Snapshot | None = None,
     ) -> list[DocumentHit]:
         """The k best chunks for `query`; `lang` (en|de) picks the title language.
 
@@ -349,8 +444,16 @@ class DocumentIndex:
         `neighbours` the k hits come with their neighbours (`with_page_neighbours`);
         without, the result is the ranking alone, which the golden set scores.
         """
+        self._require_serving()
         if lang not in LANGS:
             raise ValueError(f"lang must be one of {LANGS}, not {lang!r}")
+        permits = (
+            self.permissions(publication, product_ids)
+            if publication is not None
+            else None
+        )
+        if permits == {} or product_ids == []:
+            return []
         dense = query_vector is not None or self.encoder is not None
         if not dense:
             log.warning(
@@ -370,6 +473,13 @@ class DocumentIndex:
             scopes.insert(0, (None, named))
         for scoped_ids, scoped_shas in scopes:
             scope = self.scope(scoped_ids, doc_types, scoped_shas)
+            if permits is not None:
+                allowed = set(permits)
+                scope = sorted(
+                    allowed if scope is None else allowed.intersection(scope)
+                )
+            if scope == []:
+                continue
             ranked = (
                 self.vector_ranking(query, scope, query_vector)
                 if dense
@@ -386,14 +496,54 @@ class DocumentIndex:
                 )
                 if is_passage(hit.text)
             ]
+            hits = self._permitted_hits(hits, permits)
             if hits:
                 if not neighbours:
                     return hits[:k]
-                return self.with_page_neighbours(hits[:k], lang)
+                expanded = self.with_page_neighbours(
+                    hits[:k],
+                    lang,
+                    allowed_rows=set(permits) if permits is not None else None,
+                )
+                return self._permitted_hits(expanded, permits)
         return []
 
+    def _permitted_hits(
+        self, hits: Sequence[DocumentHit], permits: dict[int, Permit] | None
+    ) -> list[DocumentHit]:
+        """Apply the same current association to ranked hits and neighbours."""
+        if permits is None:
+            return list(hits)
+        output = []
+        for hit in hits:
+            row = self._db.execute(
+                "SELECT rowid FROM chunks WHERE id=?", (hit.chunk_id,)
+            ).fetchone()
+            if row is None or row[0] not in permits:
+                continue
+            permit = permits[row[0]]
+            header = permit.get("table_header", "")
+            text = hit.text
+            if header and not text.startswith(header + "\n"):
+                text = header + "\n" + text
+            output.append(
+                replace(
+                    hit,
+                    doc_url=permit["url"],
+                    document_id=permit["document_id"],
+                    document_revision=permit["document_revision"],
+                    product_ids=tuple(permit["product_ids"]),
+                    text=text,
+                )
+            )
+        return output
+
     def with_page_neighbours(
-        self, hits: Sequence[DocumentHit], lang: str, limit: int = MAX_HITS
+        self,
+        hits: Sequence[DocumentHit],
+        lang: str,
+        limit: int = MAX_HITS,
+        allowed_rows: set[int] | None = None,
     ) -> list[DocumentHit]:
         """The hits with their neighbours, `limit` in all.
 
@@ -422,7 +572,14 @@ class DocumentIndex:
             ).fetchall()
             neighbours = [
                 neighbour
-                for neighbour in self.hits([(row[0], hit.score) for row in rows], lang)
+                for neighbour in self.hits(
+                    [
+                        (row[0], hit.score)
+                        for row in rows
+                        if allowed_rows is None or row[0] in allowed_rows
+                    ],
+                    lang,
+                )
                 if neighbour.chunk_id not in seen and is_passage(neighbour.text)
             ][: limit - len(out)]
             if not neighbours:
@@ -435,6 +592,110 @@ class DocumentIndex:
             )
             out[position + 1 : position + 1] = neighbours
         return out
+
+    def permissions(
+        self, snapshot: Snapshot, requested: Sequence[int] | None
+    ) -> dict[int, Permit]:
+        """Intersect loaded per-chunk applicability with current Woo associations.
+
+        SHA only reuses parsing. An active association must match its own identity,
+        content revision and product revision; another same-SHA URL grants nothing.
+        A mixed-model chunk is released only while every model it contains is allowed.
+        Old indexes have no proof tables and therefore authorize no chunks.
+        """
+        self._require_serving()
+        tables = {
+            r[0]
+            for r in self._db.execute(
+                "SELECT name FROM sqlite_master WHERE type='table'"
+            )
+        }
+        if "publication_documents" not in tables:
+            return {}
+        loaded_products = dict(
+            self._db.execute(
+                "SELECT product_id, product_revision FROM publication_products"
+            )
+        )
+        allowed = {
+            pid
+            for pid, revision in loaded_products.items()
+            if pid in snapshot.products
+            and snapshot.products[pid]["product_revision"] == revision
+        }
+        wanted = (
+            allowed
+            if requested is None
+            else {snapshot.canonical(pid) for pid in requested}.intersection(allowed)
+        )
+        associations: dict[str, list[dict[str, Any]]] = {}
+        for did, revision, sha, pid in self._db.execute(
+            "SELECT document_id, document_revision, blob_sha256, product_id FROM publication_documents"
+        ):
+            current = snapshot.documents.get(did)
+            if (
+                pid not in allowed
+                or current is None
+                or current["document_revision"] != revision
+                or current["blob_sha256"] != sha
+                or pid not in current["product_ids"]
+            ):
+                continue
+            associations.setdefault(sha, []).append(
+                {
+                    "document_id": did,
+                    "document_revision": revision,
+                    "blob_sha256": sha,
+                    "url": current["url"],
+                    "product_id": pid,
+                    "product_revision": loaded_products[pid],
+                }
+            )
+        output: dict[int, Permit] = {}
+        scopes = (
+            {
+                cid: json.loads(proof)
+                for cid, proof in self._db.execute(
+                    "SELECT chunk_id,proof FROM chunk_scopes"
+                )
+            }
+            if "chunk_scopes" in tables
+            else {}
+        )
+        for row, sha, raw_ids, cid, text in self._db.execute(
+            "SELECT c.rowid, c.doc_sha256, cp.product_ids, c.id, c.text FROM chunks c JOIN chunk_products cp ON cp.chunk_id=c.id"
+        ):
+            ids = set(json.loads(raw_ids))
+            if not ids or not ids.issubset(allowed) or not ids.intersection(wanted):
+                continue
+            authorized = authorize_chunk(
+                sha,
+                sorted(ids),
+                associations.get(sha, []),
+                scopes.get(cid),
+                products=snapshot.products,
+                chunk_id=cid,
+                text=text,
+            )
+            if authorized:
+                header = table_header(
+                    scopes.get(cid),
+                    sorted(ids),
+                    snapshot.products,
+                    chunk_id=cid,
+                    text=text,
+                )
+                if header is None:
+                    continue
+                association = authorized[0]
+                output[row] = {
+                    "document_id": str(association["document_id"]),
+                    "document_revision": str(association["document_revision"]),
+                    "url": str(association["url"]),
+                    "product_ids": sorted(ids),
+                    "table_header": header,
+                }
+        return output
 
     def chunks(self, chunk_ids: Sequence[str], lang: str) -> list[DocumentHit]:
         """The chunks with these IDs, in the order given; unknown IDs are left out."""
@@ -453,10 +714,14 @@ _DEFAULT: DocumentIndex | None = None
 def default_index() -> DocumentIndex:
     """The published index (GENIE_INDEX, else the `current` release), opened once."""
     global _DEFAULT
-    if _DEFAULT is None:
-        _DEFAULT = DocumentIndex(
-            Path(os.environ.get("GENIE_INDEX", str(DEFAULT_INDEX)))
-        )
+    path = Path(os.environ.get("GENIE_INDEX", str(DEFAULT_INDEX))).resolve(strict=True)
+    # Resolve before comparing: switching `current` must reopen the actual file.
+    if _DEFAULT is None or _DEFAULT.path != path:
+        replacement = DocumentIndex(path)
+        previous = _DEFAULT
+        _DEFAULT = replacement
+        if previous is not None:
+            previous.close()
     return _DEFAULT
 
 

@@ -1,0 +1,87 @@
+{
+  "at": "2026-10-22T06:45:33.897Z",
+  "fonts": "loaded",
+  "groups": [
+    {
+      "direction": "column",
+      "display": "flex",
+      "gap": "12px",
+      "lineBreaks": [],
+      "links": [
+        {
+          "background": "rgb(12, 127, 115)",
+          "border": "1px solid rgb(12, 127, 115)",
+          "color": "rgb(255, 255, 255)",
+          "focused": false,
+          "font": "14px",
+          "hovered": false,
+          "href": "http://127.0.0.1:9290/de/loesungskonfigurator/",
+          "outline": "rgb(255, 255, 255) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 543.5703125,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 495.5703125
+          },
+          "text": "Projektlösung planen →"
+        },
+        {
+          "background": "rgb(255, 255, 255)",
+          "border": "1px solid rgb(158, 178, 163)",
+          "color": "rgb(23, 39, 33)",
+          "focused": false,
+          "font": "14px",
+          "hovered": false,
+          "href": "http://127.0.0.1:9290/de/mein-konto/",
+          "outline": "rgb(23, 39, 33) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 603.5703125,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 555.5703125
+          },
+          "text": "Partnerkonto öffnen"
+        }
+      ],
+      "paragraphGap": 32,
+      "previous": {
+        "font": "16px",
+        "lineHeight": "25.28px",
+        "rect": {
+          "bottom": 463.5703125,
+          "height": 382.1875,
+          "right": 372,
+          "width": 354,
+          "x": 18,
+          "y": 81.3828125
+        },
+        "tag": "DIV",
+        "text": "\n\n     Solar- & Speicherlösungen\n    \n\n     Bereit, Ihre nächste Installation zu planen und zu beschaffen?\n    \n\n     Linker liefert Hybridpakete für Wohngebäude und gewerbliche Outdoor-Schränke, mit der Auslegung im Lösungskonfigurator und technischer Unterstützung für die Installation.\n    \n"
+      },
+      "rect": {
+        "bottom": 603.5703125,
+        "height": 108,
+        "right": 372,
+        "width": 354,
+        "x": 18,
+        "y": 495.5703125
+      }
+    }
+  ],
+  "hasAdminBar": false,
+  "header": {
+    "background": "rgb(255, 255, 255)",
+    "filter": "none"
+  },
+  "height": 844,
+  "lang": "de-DE",
+  "overflow": false,
+  "url": "http://127.0.0.1:9290/de/fuer-installateur/",
+  "width": 390
+}

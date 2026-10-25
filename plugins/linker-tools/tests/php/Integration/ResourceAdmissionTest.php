@@ -16,6 +16,10 @@ use Linker\Commerce\Protection\Identity;
 use Linker\Commerce\Protection\Ledger;
 use Linker\Commerce\Protection\Proof;
 use Linker\Tools\Genie\Attachments;
+use Linker\Tools\Genie\Conversations;
+use Linker\Tools\Genie\Proxy;
+use Linker\Tools\Genie\PublicationGuard;
+use Linker\Tools\Genie\Thread;
 use Linker\Tools\Protection\Replies;
 use Linker\Tools\Protection\ResourcePolicy;
 use Linker\Tools\Protection\Resources;
@@ -30,6 +34,13 @@ use WP_REST_Response;
  * @coversNothing
  */
 final class ResourceAdmissionTest extends TestCase {
+	/** Synthetic transport fixtures contain no product-derived facts. */
+	private const PUBLICATION = array(
+		'engineering_contract' => 2,
+		'reference_inputs'     => array(),
+		'products'             => array(),
+		'documents'            => array(),
+	);
 	/**
 	 * Saved local journal.
 	 *
@@ -48,6 +59,13 @@ final class ResourceAdmissionTest extends TestCase {
 	 * @var array<string,mixed>
 	 */
 	private array $cookies = array();
+
+	/**
+	 * Local synthetic conversations removed after each fixture.
+	 *
+	 * @var list<int>
+	 */
+	private array $created_conversations = array();
 
 	/** Synthetic private live-version HTTP fixture, removed after each case.
 	 *
@@ -100,6 +118,9 @@ final class ResourceAdmissionTest extends TestCase {
 		foreach ( $this->environment as $key => $value ) {
 			putenv( false === $value ? $key : $key . '=' . $value );
 		}
+		foreach ( $this->created_conversations as $conversation ) {
+			wp_delete_post( $conversation, true );
+		}
 		$_COOKIE = $this->cookies;
 		foreach ( get_posts(
 			array(
@@ -146,6 +167,9 @@ final class ResourceAdmissionTest extends TestCase {
 		$request->set_header( 'X-Linker-Operation', wp_generate_uuid4() );
 		$request->set_header( 'X-Linker-Proof', $this->proof( $action ) );
 		$request->set_body( (string) wp_json_encode( $input ) );
+		if ( 1 === preg_match( '#/conversations/(\d+)/email$#', $route, $capture ) ) {
+			$request->set_url_params( array( 'id' => (int) $capture[1] ) );
+		}
 		return $request;
 	}
 
@@ -213,12 +237,17 @@ final class ResourceAdmissionTest extends TestCase {
 				$context = $resources->context( null );
 				$this->assertSame( 'genie', $context['action'] );
 				$this->assertMatchesRegularExpression( '/^[a-f0-9]{64}$/', $context['binding'] );
-				return new WP_REST_Response(
+				$response = new WP_REST_Response(
 					array(
 						'conversation_id' => 123,
 						'stream'          => 'synthetic',
 					)
 				);
+				$publication = new PublicationGuard();
+				$dependencies = $publication->dependencies();
+				$this->assertIsArray( $dependencies );
+				$publication->remember( $response, $dependencies );
+				return $response;
 			},
 		);
 		$first     = $resources->dispatch( null, $request, '', $handler );
@@ -227,9 +256,140 @@ final class ResourceAdmissionTest extends TestCase {
 		$this->assertNull( $resources->context( null ) );
 		$request->set_header( 'X-Linker-Proof', '' );
 		$second = $resources->dispatch( null, $request, '', $handler );
-		$this->assertInstanceOf( WP_REST_Response::class, $second );
+		$this->assertInstanceOf( WP_REST_Response::class, $second, is_wp_error( $second ) ? (string) wp_json_encode( array( $second->get_error_code(), $second->get_error_data() ) ) : '' );
 		$this->assertSame( $first->get_data(), $second->get_data() );
 		$this->assertSame( 1, $calls );
+	}
+
+	/**
+	 * The permit binds attachment/context bytes; native GET respects result lifetime.
+	 *
+	 * @dataProvider completion_lifetimes
+	 * @param string $lifetime How the completed native result becomes unavailable.
+	 */
+	public function test_genie_completion_is_bound_to_semantic_input_and_native_result_lifetime( string $lifetime ): void {
+		global $wp_filter;
+		$held = array();
+		foreach ( array( Conversations::COOKIE_ACTION, Conversations::BROWSER_ACTION ) as $hook ) {
+			$held[ $hook ] = isset( $wp_filter[ $hook ] ) ? clone $wp_filter[ $hook ] : null;
+			remove_all_actions( $hook );
+		}
+		try {
+			$conversation                  = ( new Conversations() )->open();
+			$this->created_conversations[] = $conversation;
+		} finally {
+			foreach ( $held as $hook => $callbacks ) {
+				if ( null === $callbacks ) {
+					unset( $wp_filter[ $hook ] );
+				} else {
+					$wp_filter[ $hook ] = $callbacks; } // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Restore this fixture's held cookie hooks.
+			}
+		}
+		$stream      = "event: block\ndata: {\"type\":\"text\",\"text\":\"Native answer.\",\"refs\":[]}\n\nevent: done\ndata: {\"ok\":true}\n\n";
+		$input       = array(
+			'locale'   => 'en',
+			'messages' => array(
+				array(
+					'role'    => 'user',
+					'content' => 'Check test.pdf',
+				),
+			),
+			'page'     => array(
+				'type'       => 'product',
+				'product_id' => 2067,
+			),
+		);
+		$request     = $this->request( '/linker-ai/v1/genie/turn', $input, 'genie' );
+		$id          = (string) $request->get_header( 'X-Linker-Operation' );
+		$fingerprint = '';
+		$calls       = 0;
+		$resources   = new Resources();
+		$handler     = array(
+			'callback' => function () use ( &$calls, &$fingerprint, $id, $conversation, $stream, $input ): WP_REST_Response {
+				++$calls;
+				$this->assertSame( $id, Resources::genie_operation() );
+				$fingerprint = Resources::genie_fingerprint();
+				$this->assertMatchesRegularExpression( '/^[a-f0-9]{64}$/', $fingerprint );
+				$this->assertFalse( Resources::completed_genie_operation( $id, $fingerprint ) );
+				$old_url = get_option( 'linker_genie_url' );
+				update_option( 'linker_genie_url', 'http://127.0.0.1:9' );
+				try {
+					$proxy = new Proxy( new Conversations(), static fn(): string => $stream, token: 'synthetic-local-only' );
+					$turn = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/turn' );
+					foreach ( $input as $key => $value ) {
+						$turn->set_param( $key, $value ); }
+					$response = $proxy->turn( $turn );
+					$this->assertInstanceOf( WP_REST_Response::class, $response );
+					$this->assertSame( $conversation, $response->get_data()['conversation_id'] );
+					return $response;
+				} finally {
+					if ( false === $old_url ) {
+						delete_option( 'linker_genie_url' );
+					} else {
+						update_option( 'linker_genie_url', $old_url ); }
+				}
+			},
+		);
+		$this->assertInstanceOf( WP_REST_Response::class, $resources->dispatch( null, $request, '', $handler ) );
+		$this->assertSame( '', Resources::genie_operation() );
+		$this->assertTrue( Resources::completed_genie_operation( $id, $fingerprint ) );
+		$data = ( new Proxy( new Conversations() ) )->conversation()->get_data();
+		$this->assertSame( $id, $data['operation_id'] ?? '' );
+		$this->assertArrayNotHasKey( 'operation_fingerprint', $data );
+		$this->assertSame( $stream, $data['stream'] );
+		$jar = $_COOKIE;
+		unset( $_COOKIE[ Conversations::COOKIE ], $_COOKIE[ Conversations::BROWSER_COOKIE ] );
+		$this->assertArrayNotHasKey( 'operation_id', ( new Proxy( new Conversations() ) )->conversation()->get_data(), 'UUID is not authorization for a different browser.' );
+		$_COOKIE = $jar;
+		foreach ( array(
+			'page'        => array(
+				'type'       => 'product',
+				'product_id' => 2068,
+			),
+			'attachments' => array(
+				array(
+					'name' => 'test.pdf',
+					'type' => 'application/pdf',
+					'data' => 'ZGlmZmVyZW50',
+				),
+			),
+		) as $key => $value ) {
+			$changed = $this->request( '/linker-ai/v1/genie/turn', array_replace( $input, array( $key => $value ) ), 'genie' );
+			$changed->set_header( 'X-Linker-Operation', $id );
+			$reply = $resources->dispatch( null, $changed, '', $handler );
+			$this->assertInstanceOf( WP_Error::class, $reply );
+			$this->assertSame( 'linker_admission_payload_changed', $reply->get_error_code() );
+		}
+		$this->assertSame( 1, $calls );
+		foreach ( array( 'off', 'observe' ) as $mode ) {
+			putenv( 'LINKER_PUBLIC_PROTECTION_MODE=' . $mode );
+			$this->assertFalse( Resources::completed_genie_operation( $id, $fingerprint ) );
+		}
+		putenv( 'LINKER_PUBLIC_PROTECTION_MODE=enforce' );
+		$receipt = ( new Ledger() )->lookup( $id, $fingerprint );
+		$this->assertIsArray( $receipt );
+		if ( 'delete-reply' === $lifetime ) {
+			wp_delete_post( $receipt['outcome'], true );
+		} elseif ( 'expire-reply' === $lifetime ) {
+			update_post_meta( $receipt['outcome'], '_linker_expires', time() - 1 );
+		} elseif ( 'erase-ledger' === $lifetime ) {
+			$identity = Identity::current();
+			$this->assertInstanceOf( Identity::class, $identity );
+			$this->assertIsArray( ( new Ledger() )->privacy( array( Allowance::owner_for( $identity->browser ) ), true ) );
+		} else {
+			wp_delete_post( $conversation, true );
+			$this->assertSame( '', get_post_meta( $conversation, Thread::COMPLETION, true ) );
+		}
+		$this->assertArrayNotHasKey( 'operation_id', ( new Proxy( new Conversations() ) )->conversation()->get_data() );
+	}
+
+	/**
+	 * Native erasure, expiry and clear boundaries.
+	 *
+	 * @return list<array{string}>
+	 */
+	public static function completion_lifetimes(): array {
+		return array( array( 'delete-reply' ), array( 'expire-reply' ), array( 'erase-ledger' ), array( 'clear-conversation' ) );
 	}
 
 	/** An exception leaves quota spent and removes trusted native context. */
@@ -256,6 +416,8 @@ final class ResourceAdmissionTest extends TestCase {
 
 	/** Reads and conversation writes never consume Genie/model-turn dimensions. */
 	public function test_policy_reads_writes_and_native_budget_exhaustion(): void {
+		$this->assertSame( 'draft_write', ResourcePolicy::action( '/linker-ai/v1/genie/draft', 'POST' ) );
+		$this->assertSame( 'solution_save', ResourcePolicy::action( '/linker-ai/v1/genie/solution', 'POST' ) );
 		$this->assertSame( '', ResourcePolicy::action( '/linker-ai/v1/genie/conversation', 'GET' ) );
 		$this->assertSame( '', ResourcePolicy::action( '/linker-ai/v1/genie/conversations', 'GET' ) );
 		$this->assertSame( 'conversation_write', ResourcePolicy::action( '/linker-ai/v1/genie/conversations', 'POST', true ) );
@@ -322,13 +484,20 @@ final class ResourceAdmissionTest extends TestCase {
 		$handler = array(
 			'callback' => static function () use ( &$calls ): WP_REST_Response {
 				++$calls;
-				return new WP_REST_Response( array( 'synthetic' => 'design' ) );
+				return new WP_REST_Response(
+					array(
+						'synthetic'   => 'design',
+						'publication' => self::PUBLICATION,
+					)
+				);
 			},
 		);
 		$a       = $resources->dispatch( null, $first, '', $handler );
 		$b       = $resources->dispatch( null, $second, '', $handler );
 		$this->assertInstanceOf( WP_REST_Response::class, $a );
 		$this->assertInstanceOf( WP_REST_Response::class, $b );
+		$this->assertSame( 200, $a->get_status() );
+		$this->assertSame( 200, $b->get_status() );
 		$this->assertSame( $a->get_data(), $b->get_data() );
 		$this->assertSame( 1, $calls );
 		$nested = array( 'value' => 'synthetic' );
@@ -463,6 +632,55 @@ final class ResourceAdmissionTest extends TestCase {
 			wp_delete_post( $id, true );
 		}
 	}
+	/** JSON cannot replace a foreign URL source with an owned ID before admission. */
+	public function test_conversation_mail_ownership_is_bound_to_the_native_url_id(): void {
+		global $wp_filter;
+		$held = array();
+		foreach ( array( 'linker_tools_set_conversation_cookie', 'linker_tools_set_genie_browser_cookie' ) as $hook ) {
+			$held[ $hook ] = isset( $wp_filter[ $hook ] ) ? clone $wp_filter[ $hook ] : null;
+			remove_all_actions( $hook );
+		}
+		try {
+			$own = ( new Conversations() )->open();
+		} finally {
+			foreach ( $held as $hook => $callbacks ) {
+				if ( null !== $callbacks ) {
+					$wp_filter[ $hook ] = $callbacks; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restore fixture-held native cookie hooks.
+				}
+			}
+		}
+		$this->assertGreaterThan( 0, $own );
+		$foreign                       = wp_insert_post( array( 'post_type' => Conversations::POST_TYPE, 'post_status' => 'private', 'post_author' => 0 ) ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound -- native fixture record.
+		$this->created_conversations[] = $own;
+		$this->created_conversations[] = $foreign;
+		$policy                        = static fn( array $old, string $action, Identity $identity ): array => array( new Allowance( 'fixture_business_day', $identity->browser, 20, DAY_IN_SECONDS ) );
+		$calls                         = 0;
+		$handler                       = array(
+			'callback' => static function () use ( &$calls ): WP_REST_Response {
+						++$calls;
+						return new WP_REST_Response( array( 'accepted' => true ) );
+			},
+		);
+		add_filter( 'linker_commerce_public_business_limits', $policy, 10, 3 );
+		try {
+			$resources = new Resources();
+			$request   = $this->request( '/linker-ai/v1/genie/conversations/' . $foreign . '/email', array( 'id' => $own ), 'conversation_mail' );
+			$before    = get_option( Ledger::OPTION );
+			$refused   = $resources->dispatch( null, $request, '', $handler );
+			$this->assertInstanceOf( WP_Error::class, $refused );
+			$this->assertSame( 'linker_resource_conversation', $refused->get_error_code() );
+			$this->assertSame( $before, get_option( Ledger::OPTION ), 'A foreign URL must be refused before capacity or receipt mutation.' );
+			$this->assertSame( 0, $calls );
+			$request  = $this->request( '/linker-ai/v1/genie/conversations/' . $own . '/email', array( 'id' => $foreign ), 'conversation_mail' );
+			$accepted = $resources->dispatch( null, $request, '', $handler );
+			$this->assertInstanceOf( WP_REST_Response::class, $accepted );
+			$this->assertSame( 200, $accepted->get_status() );
+			$this->assertSame( 1, $calls, 'The same native ownership rule accepts the URL-owned source.' );
+		} finally {
+			remove_filter( 'linker_commerce_public_business_limits', $policy, 10 );
+			wp_set_current_user( 0 );
+		}
+	}
 	/** Actual PHP transport never treats an off/malformed private guard as permission. */
 	public function test_private_provider_filter_requires_positive_native_debit(): void {
 		$reply   = array( 'remaining' => 0 );
@@ -508,7 +726,13 @@ final class ResourceAdmissionTest extends TestCase {
 		$handler   = array(
 			'callback' => static function () use ( &$calls ): WP_REST_Response {
 				++$calls;
-				return new WP_REST_Response( array( 'synthetic' => true ), 1 === $calls ? 503 : 200 );
+				return new WP_REST_Response(
+					array(
+						'synthetic'   => true,
+						'publication' => self::PUBLICATION,
+					),
+					1 === $calls ? 503 : 200
+				);
 			},
 		);
 		$failed    = $resources->dispatch( null, $request, '', $handler );
@@ -543,7 +767,12 @@ final class ResourceAdmissionTest extends TestCase {
 			$this->assertSame( (string) constant( 'LINKER_GENIE_SERVICE_TOKEN' ), $args['headers']['X-Linker-Service-Token'] );
 			return array(
 				'response' => array( 'code' => 1 === $calls ? 503 : 200 ),
-				'body'     => '{"synthetic":true}',
+				'body'     => wp_json_encode(
+					array(
+						'synthetic'   => true,
+						'publication' => self::PUBLICATION,
+					)
+				),
 				'headers'  => array( 'x-linker-engine-version' => $args['headers']['X-Linker-Engine-Version'] ),
 			);
 		};
@@ -620,9 +849,9 @@ final class ResourceAdmissionTest extends TestCase {
 	}
 
 	/**
-	 * Unavailable live version is advisory in observe; private service auth still applies.
+	 * A private native call still needs actual loaded-version readback in observe.
 	 */
-	public function test_observe_native_saved_design_does_not_require_live_version_readback(): void {
+	public function test_observe_native_saved_design_requires_live_version_readback(): void {
 		$user = wp_insert_user(
 			array(
 				'user_login' => 'g521-' . wp_generate_uuid4(),
@@ -643,7 +872,12 @@ final class ResourceAdmissionTest extends TestCase {
 			$this->assertSame( (string) constant( 'LINKER_GENIE_SERVICE_TOKEN' ), $args['headers']['X-Linker-Service-Token'] );
 			return array(
 				'response' => array( 'code' => 200 ),
-				'body'     => '{"synthetic":true}',
+				'body'     => wp_json_encode(
+					array(
+						'synthetic'   => true,
+						'publication' => self::PUBLICATION,
+					)
+				),
 				'headers'  => array( 'x-linker-engine-version' => $args['headers']['X-Linker-Engine-Version'] ),
 			);
 		};
@@ -651,10 +885,10 @@ final class ResourceAdmissionTest extends TestCase {
 		try {
 			$engine = new \Linker\Tools\Protection\NativeEngine( new \Linker\Tools\Protection\EngineVersion( static fn(): string => '' ) );
 			putenv( 'LINKER_PUBLIC_PROTECTION_MODE=observe' );
-			$this->assertSame( array( 200, '{"synthetic":true}' ), $engine->request( null, $url, '{"synthetic":true}' ) );
+			$this->assertInstanceOf( WP_Error::class, $engine->request( null, $url, '{"synthetic":true}' ) );
 			putenv( 'LINKER_PUBLIC_PROTECTION_MODE=enforce' );
 			$this->assertInstanceOf( WP_Error::class, $engine->request( null, $url, '{"synthetic":true}' ) );
-			$this->assertSame( 1, $calls );
+			$this->assertSame( 0, $calls );
 		} finally {
 			remove_filter( 'pre_http_request', $fixture, 0 );
 			wp_set_current_user( 0 );
@@ -773,7 +1007,12 @@ final class ResourceAdmissionTest extends TestCase {
 			$invalid = isset( $input['_route'] ) || isset( $input['started_nonce'] );
 			return array(
 				'response' => array( 'code' => $invalid ? 422 : 200 ),
-				'body'     => '{"synthetic":"native-engine"}',
+				'body'     => wp_json_encode(
+					array(
+						'synthetic'   => 'native-engine',
+						'publication' => self::PUBLICATION,
+					)
+				),
 				'headers'  => array(
 					'content-type'            => 'application/json',
 					'x-linker-engine-version' => $args['headers']['X-Linker-Engine-Version'],
@@ -844,7 +1083,12 @@ final class ResourceAdmissionTest extends TestCase {
 			'callback' => function () use ( &$calls ): WP_REST_Response {
 						++$calls;
 						$this->assertSame( $this->running_version, Resources::engine_version() );
-						return new WP_REST_Response( array( 'snapshot' => $this->running_version ) );
+						return new WP_REST_Response(
+							array(
+								'snapshot'    => $this->running_version,
+								'publication' => self::PUBLICATION,
+							)
+						);
 			},
 		);
 		$input     = array(
@@ -870,8 +1114,17 @@ final class ResourceAdmissionTest extends TestCase {
 			$this->assertSame( 503, $failed->get_error_data()['status'] );
 			$this->assertSame( 2, $calls, 'Even a known cached result requires current live readback.' );
 			putenv( 'LINKER_PUBLIC_PROTECTION_MODE=observe' );
-			$native = array( 'callback' => static fn(): WP_REST_Response => new WP_REST_Response( array( 'native' => true ) ) );
-			$this->assertInstanceOf( WP_REST_Response::class, $resources->dispatch( null, $this->request( '/linker-ai/v1/engine/design/residential', $input, 'design' ), '', $native ) );
+			$native   = array(
+				'callback' => static fn(): WP_REST_Response => new WP_REST_Response(
+					array(
+						'native'      => true,
+						'publication' => self::PUBLICATION,
+					)
+				),
+			);
+			$observed = $resources->dispatch( null, $this->request( '/linker-ai/v1/engine/design/residential', $input, 'design' ), '', $native );
+			$this->assertInstanceOf( WP_Error::class, $observed );
+			$this->assertSame( 503, $observed->get_error_data()['status'] );
 		} finally {
 			remove_filter( 'pre_http_request', $unavailable, 999 );
 			putenv( 'LINKER_PUBLIC_PROTECTION_MODE=enforce' );
@@ -913,7 +1166,12 @@ final class ResourceAdmissionTest extends TestCase {
 			return array(
 				'response' => array( 'code' => 200 ),
 				'headers'  => array( 'x-linker-engine-version' => $state->wrong ? str_repeat( 'f', 64 ) : $this->running_version ),
-				'body'     => wp_json_encode( array( 'snapshot' => $this->running_version ) ),
+				'body'     => wp_json_encode(
+					array(
+						'snapshot'    => $this->running_version,
+						'publication' => self::PUBLICATION,
+					)
+				),
 			);
 		};
 		add_filter( 'pre_http_request', $fixture, 0, 3 );
@@ -967,7 +1225,12 @@ final class ResourceAdmissionTest extends TestCase {
 			return array(
 				'response' => array( 'code' => 200 ),
 				'headers'  => array( 'x-linker-engine-version' => $state->wrong ? str_repeat( 'f', 64 ) : $args['headers']['X-Linker-Engine-Version'] ),
-				'body'     => '{"synthetic":"actual-worker-result"}',
+				'body'     => wp_json_encode(
+					array(
+						'synthetic'   => 'actual-worker-result',
+						'publication' => self::PUBLICATION,
+					)
+				),
 			);
 		};
 		add_filter( 'pre_http_request', $fixture, 0, 3 );
@@ -987,6 +1250,157 @@ final class ResourceAdmissionTest extends TestCase {
 			$this->assertSame( 2, $calls );
 		} finally {
 			remove_filter( 'pre_http_request', $fixture, 0 );
+		}
+	}
+	/** Current writes can reuse proof; a withdrawal invalidates both receipt routes. */
+	public function test_solution_save_and_draft_receipts_revalidate_current_products(): void {
+		foreach ( array(
+			'/linker/v1/solutions'       => 'solution_save',
+			'/linker/v1/solutions/draft' => 'draft_write',
+		) as $route => $action ) {
+			$product = new \WC_Product_Simple();
+			$product->set_name( 'Publication receipt fixture' );
+			$product->set_status( 'publish' );
+			$id = $product->save();
+			try {
+				$current = \Linker\Commerce\Products\Publication::product( $id );
+				$this->assertIsArray( $current );
+				$dependencies = array(
+					'engineering_contract' => 2,
+					'reference_inputs'     => array(),
+					'products'             => array(
+						array(
+							'product_id'       => $current['product_id'],
+							'product_revision' => $current['product_revision'],
+						),
+					),
+					'documents'            => array(),
+				);
+				$calls        = 0;
+				$handler      = array(
+					'callback' => static function () use ( &$calls, $dependencies ): WP_REST_Response {
+						++$calls;
+						return new WP_REST_Response(
+							array(
+								'saved'       => true,
+								'publication' => $dependencies,
+							)
+						);
+					},
+				);
+				$request      = $this->request( $route, array( 'input' => array( 'plz' => '80538' ) ), $action );
+				$resources    = new Resources();
+				$first        = $resources->dispatch( null, $request, '', $handler );
+				$this->assertInstanceOf( WP_REST_Response::class, $first );
+				$this->assertSame( 200, $first->get_status() );
+				$this->assertSame( 200, $resources->dispatch( null, $request, '', $handler )->get_status() );
+				$this->assertSame( 1, $calls );
+				$product->set_status( 'draft' );
+				$product->save();
+				$withdrawn = $resources->dispatch( null, $request, '', $handler );
+				$this->assertInstanceOf( WP_Error::class, $withdrawn );
+				$this->assertSame( 'linker_publication_changed', $withdrawn->get_error_code() );
+				$this->assertSame( 409, $withdrawn->get_error_data()['status'] );
+				$this->assertSame( 1, $calls );
+			} finally {
+				wp_delete_post( $id, true );
+			}
+		}
+	}
+
+	/** An already completed pre-contract write has no current publication proof. */
+	public function test_pre_contract_solution_receipt_cannot_replay_as_current_success(): void {
+		foreach ( array(
+			'/linker/v1/solutions'       => 'solution_save',
+			'/linker/v1/solutions/draft' => 'draft_write',
+		) as $route => $action ) {
+			$dependencies = self::PUBLICATION;
+			$handler      = array(
+				'callback' => static fn(): WP_REST_Response => new WP_REST_Response(
+					array(
+						'saved'       => true,
+						'publication' => $dependencies,
+					)
+				),
+			);
+			$request      = $this->request( $route, array( 'input' => array( 'plz' => '80538' ) ), $action );
+			$resources    = new Resources();
+			$this->assertSame( 200, $resources->dispatch( null, $request, '', $handler )->get_status() );
+			$receipts = get_posts(
+				array(
+					'post_type'      => Replies::TYPE,
+					'post_status'    => 'private',
+					'posts_per_page' => 1,
+					'fields'         => 'ids',
+				)
+			);
+			$this->assertCount( 1, $receipts );
+			$stored = json_decode( (string) get_post_field( 'post_content', $receipts[0] ), true );
+			unset( $stored['publication'], $stored['data']['publication'] );
+			wp_update_post(
+				array(
+					'ID'           => $receipts[0],
+					'post_content' => wp_slash( (string) wp_json_encode( $stored ) ),
+				)
+			);
+			$reply = $resources->dispatch( null, $request, '', $handler );
+			$this->assertInstanceOf( WP_Error::class, $reply );
+			$this->assertSame( 'linker_publication_changed', $reply->get_error_code() );
+		}
+	}
+
+	/** Native Genie actions and their retries use Genie proof while still checking Woo. */
+	public function test_native_genie_list_writes_and_replays_keep_their_proof_contract(): void {
+		wc_load_cart();
+		$before_cart  = WC()->cart->get_cart_contents();
+		$before_saved = WC()->session->get( \Linker\Commerce\Account\SavedSolutions::SESSION_KEY );
+		$product      = new \WC_Product_Simple();
+		$product->set_name( 'Current Genie receipt fixture' );
+		$product->set_status( 'publish' );
+		$id = $product->save();
+		try {
+			$dependencies = ( new \Linker\Tools\Genie\PublicationGuard() )->dependencies();
+			$this->assertIsArray( $dependencies );
+			$block  = array(
+				'type' => 'parts',
+				'add'  => array(
+					'items' => array(
+						array(
+							'product_id' => $id,
+							'quantity'   => 1,
+						),
+					),
+				),
+			);
+			$stream = ( new \Linker\Tools\Genie\DraftProof() )->stream( "event: block\ndata: " . wp_json_encode( $block ) . "\n\nevent: done\ndata: {}\n\n", $dependencies );
+			$this->assertIsString( $stream );
+			if ( 1 !== preg_match( '/^data: (.+)$/m', $stream, $matches ) ) {
+				$this->fail( 'The live Genie fixture did not produce its signed artifact.' );
+			}
+			$artifact = json_decode( $matches[1], true );
+			$requests = array();
+			foreach ( array(
+				'draft'    => 200,
+				'solution' => 202,
+			) as $path => $status ) {
+				$request = $this->request( '/linker-ai/v1/genie/' . $path, array( 'proof' => $artifact['add']['proof'] ), 'draft' === $path ? 'draft_write' : 'solution_save' );
+				$request->set_header( 'Nonce', wp_create_nonce( 'wc_store_api' ) );
+				$first = rest_do_request( $request );
+				$this->assertSame( $status, $first->get_status(), (string) wp_json_encode( $first->get_data() ) );
+				$request->set_header( 'X-Linker-Proof', '' );
+				$again = rest_do_request( $request );
+				$this->assertSame( $status, $again->get_status(), (string) wp_json_encode( $again->get_data() ) );
+				$requests[] = $request;
+			}
+			$product->set_status( 'draft' );
+			$product->save();
+			foreach ( $requests as $request ) {
+				$this->assertSame( 409, rest_do_request( $request )->get_status(), 'A Genie consumer marker cannot bypass a current Woo withdrawal.' );
+			}
+		} finally {
+			WC()->cart->set_cart_contents( $before_cart );
+			WC()->session->set( \Linker\Commerce\Account\SavedSolutions::SESSION_KEY, $before_saved );
+			wp_delete_post( $id, true );
 		}
 	}
 }

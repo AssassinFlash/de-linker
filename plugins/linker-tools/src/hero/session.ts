@@ -27,6 +27,10 @@ import {
 	EntryScopeError,
 } from '../genie/shared/entryFailure';
 import { retryMessages } from '../genie/shared/failure';
+import {
+	completedRequest,
+	type RequestWitness,
+} from '../genie/shared/completedRequest';
 
 /** What the hero's mount point gives the session (config.ts). */
 export interface HeroSessionConfig {
@@ -64,6 +68,10 @@ export class HeroSession {
 	private inquiriesValue: SentInquiryCard[] = [];
 	private loading: Promise< void > | null = null;
 	private generation = 0;
+	private conversationId: number | undefined;
+	private requestWitness: RequestWitness | null = null;
+	private operationId?: string;
+
 	/** A new native principal/thread cannot reuse a completed load from the prior context. */
 	invalidate(): void {
 		this.generation += 1;
@@ -72,6 +80,9 @@ export class HeroSession {
 		this.turnValue = null;
 		this.contactsValue = [];
 		this.inquiriesValue = [];
+		this.conversationId = undefined;
+		this.requestWitness = null;
+		this.operationId = undefined;
 	}
 
 	/**
@@ -140,6 +151,11 @@ export class HeroSession {
 			if ( current && ! ( await current.settle() ) ) {
 				throw new EntryScopeError( true );
 			}
+			if ( generation !== this.generation ) {
+				throw new EntryScopeError( true );
+			}
+			this.conversationId = stored.conversationId;
+			this.operationId = stored.operationId;
 			this.messagesValue = stored.messages;
 			this.turnValue = stored.turn;
 			this.contactsValue = stored.contacts ?? [];
@@ -179,6 +195,7 @@ export class HeroSession {
 		contacts?: SentContact[];
 		inquiries?: SentInquiryCard[];
 	} > {
+		this.requestWitness = null;
 		// Every send, not only the first: the dock may have written a turn
 		// while this view was folded (or both surfaces are open).
 		await this.refresh( current );
@@ -211,6 +228,37 @@ export class HeroSession {
 		inquiries?: SentInquiryCard[];
 	} > {
 		await this.refresh( current );
+		if (
+			this.turnValue &&
+			completedRequest(
+				this.requestWitness,
+				{
+					...this.snapshot(),
+					conversationId: this.conversationId,
+					operationId: this.operationId,
+				},
+				text,
+				uploads,
+				this.config.locale,
+				this.config.page
+			)
+		) {
+			if ( current ) {
+				if ( ! ( await current.authorize() ) ) {
+					throw new EntryScopeError( true );
+				}
+			} else {
+				await assertEntryScope(
+					{
+						restUrl: this.config.restUrl,
+						restNonce: this.config.nonce,
+					},
+					entryScope
+				);
+			}
+			this.requestWitness = null;
+			return { ...this.snapshot(), answer: this.turnValue };
+		}
 		return this.deliver(
 			retryMessages( this.messagesValue, text ),
 			uploads,
@@ -239,6 +287,7 @@ export class HeroSession {
 		contacts?: SentContact[];
 		inquiries?: SentInquiryCard[];
 	} > {
+		const generation = this.generation;
 		if ( current ) {
 			if ( ! ( await current.authorize() ) ) {
 				throw new EntryScopeError( true );
@@ -249,19 +298,43 @@ export class HeroSession {
 				entryScope
 			);
 		}
+		if ( generation !== this.generation ) {
+			throw new EntryScopeError( true );
+		}
+		this.requestWitness = null;
+		const page = this.config.page;
 		const answer = await this.send( {
 			turnUrl: this.config.turnUrl,
 			restUrl: this.config.restUrl,
 			nonce: this.config.nonce,
 			locale: this.config.locale,
 			messages: next,
-			page: this.config.page,
+			page,
 			uploads,
+			onOperation: ( operationId ) => {
+				if ( generation !== this.generation ) {
+					return;
+				}
+				this.requestWitness = this.conversationId
+					? {
+							conversationId: this.conversationId,
+							operationId,
+							messages: next,
+							uploads,
+							locale: this.config.locale,
+							page: JSON.stringify( page ),
+						}
+					: null;
+			},
 		} );
 		if ( current && ! ( await current.settle() ) ) {
 			throw new EntryScopeError( true );
 		}
+		if ( generation !== this.generation ) {
+			throw new EntryScopeError( true );
+		}
 		this.messagesValue = next.concat( assistantMessage( answer ) );
+		this.requestWitness = null;
 		this.turnValue = answer;
 		return {
 			...this.snapshot(),

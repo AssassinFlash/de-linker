@@ -33,6 +33,7 @@ final class MessageTest extends TestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
+		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn ( $value ) => json_encode( $value ) ) );
 		WP_Mock::userFunction( 'network_home_url', array( 'return' => 'https://www.de-linker.com' ) );
 		WP_Mock::userFunction( 'wp_parse_url', array( 'return' => static fn ( string $url, int $part ) => parse_url( $url, $part ) ) );
 		WP_Mock::userFunction( 'get_bloginfo', array( 'return' => 'UTF-8' ) );

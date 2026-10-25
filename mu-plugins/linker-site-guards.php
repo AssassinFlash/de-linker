@@ -51,4 +51,5 @@ function linker_site_guards_rest_users( $result, $server, $request ) {
 	}
 	return $result;
 }
-add_filter( 'rest_pre_dispatch', 'linker_site_guards_rest_users', 10, 3 );
+// ACF 6.3.1 initializes at 10 and returns null; enforce after that initialization.
+add_filter( 'rest_pre_dispatch', 'linker_site_guards_rest_users', 20, 3 );

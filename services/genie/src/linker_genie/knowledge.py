@@ -29,7 +29,13 @@ from typing import Any
 from linker_genie.embedding import EmbeddingError
 from linker_genie.facts import TurnFacts, collect
 from linker_genie.figures import tag
-from linker_genie.retrieval import LANGS, DocumentIndex, default_index
+from linker_genie.publication import (
+    PublicationChanged,
+    PublicationClient,
+    PublicationUnavailable,
+    current,
+)
+from linker_genie.retrieval import LANGS, DocumentIndex, ServingMismatch, default_index
 
 NAME = "linker/search-knowledge"
 # The input the model is told about (agent.INPUT_DOCS); `validate` reads the same shape.
@@ -60,9 +66,18 @@ def is_index_failure(text: str) -> bool:
 class KnowledgeSearch:
     """Searches the published index; one search at a time on its one connection."""
 
-    def __init__(self, index: Callable[[], DocumentIndex] = default_index) -> None:
+    def __init__(
+        self,
+        index: Callable[[], DocumentIndex] = default_index,
+        publication: PublicationClient | None = None,
+    ) -> None:
         self._index = index
+        self._publication = publication
         self._lock = threading.Lock()
+
+    def loaded(self) -> dict[str, Any]:
+        with self._lock:
+            return self._index().loaded()
 
     def __call__(self, arguments: dict[str, Any] | None) -> dict[str, Any]:
         """The tool result for `arguments`, or `{"error": …}` for an invalid input."""
@@ -73,11 +88,27 @@ class KnowledgeSearch:
         with self._lock:
             try:
                 index = self._index()
-                hits = index.search(query, lang, product_ids or None)
+                authority = self._publication or current()
+                snapshot = authority.snapshot()
+                if "unavailable" in authority.identify_text(query).values():
+                    raise PublicationChanged("supplied model is no longer published")
+                if product_ids:
+                    snapshot.require_products(product_ids)
+                hits = index.search(
+                    query,
+                    lang,
+                    product_ids if product_ids else None,
+                    publication=snapshot,
+                )
+                authority.validate(snapshot)
+            except PublicationChanged:
+                raise
+            except PublicationUnavailable as error:
+                raise KnowledgeUnavailable(str(error)) from error
             except EmbeddingError as error:
                 log.error("document search failed: %s", error)
                 raise
-            except (sqlite3.Error, OSError) as error:
+            except (sqlite3.Error, OSError, ServingMismatch) as error:
                 log.error("document index unavailable: %s", error)
                 raise KnowledgeUnavailable(f"{INDEX_UNAVAILABLE}: {error}") from error
         encoder = index.encoder.model if index.encoder is not None else None
@@ -94,6 +125,9 @@ class KnowledgeSearch:
             payload_hits.append(
                 {
                     "chunk_id": hit.chunk_id,
+                    "document_id": hit.document_id,
+                    "document_revision": hit.document_revision,
+                    "product_ids": list(hit.product_ids),
                     "doc_url": hit.doc_url,
                     "title": hit.title,
                     "page": hit.page,
@@ -106,6 +140,7 @@ class KnowledgeSearch:
             "ranking": index.ranking,
             "encoder": encoder,
             "index_version": index.version,
+            "source_revision": index.source_revision,
             "hits": payload_hits,
         }
 

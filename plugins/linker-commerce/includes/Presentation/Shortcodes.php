@@ -9,7 +9,6 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Presentation;
 
-use Linker\Commerce\Products\Faqs;
 use Linker\Commerce\Settings\Options;
 use WC_Product;
 
@@ -389,7 +388,7 @@ final class Shortcodes {
 		if ( ! $product instanceof WC_Product ) {
 			return '';
 		}
-		$items = Faqs::of( $product->get_id() );
+		$items = \Linker\Commerce\Products\Publication::faqs_for( $product->get_id() );
 		if ( array() === $items ) {
 			return '';
 		}

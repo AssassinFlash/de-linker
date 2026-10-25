@@ -33,6 +33,7 @@ final class CustomerEvidenceTest extends IntegrationTestCase {
 				false === $previous ? delete_option( Queue::ENABLED ) : update_option( Queue::ENABLED, $previous );
 			}
 		);
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( \Linker\Commerce\Mail\Throttle::OPTION, array_fill( 0, \Linker\Commerce\Mail\Throttle::PER_MINUTE, time() ), false );
 		$message = 'Please review "project" C:\\docs\\project';
 		$details = Submission::from_post(
@@ -46,6 +47,7 @@ final class CustomerEvidenceTest extends IntegrationTestCase {
 		);
 		$this->assertInstanceOf( Submission::class, $details );
 		$order = ( new Sender() )->message( $details );
+		$this->assertInstanceOf( WC_Order::class, $order );
 		$this->later(
 			static function () use ( $order ): void {
 				foreach ( array( Queue::PROCESS, Queue::EXPIRE ) as $hook ) {

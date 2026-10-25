@@ -1,0 +1,364 @@
+{
+  "method": "All seven original page hits in the unchanged deterministic first twelve English (model, question-category) samples; source text and native Woo identity snapshot inspected. No new model answer or production acceptance is claimed.",
+  "raw_page_hits": {
+    "before": 7,
+    "after": 2,
+    "sample_size": 12
+  },
+  "page_hit_is_not_answer_correctness": true,
+  "items": [
+    {
+      "golden_id": "00506d0f0c-en",
+      "model": "CHS2-29.9K-T4-X",
+      "question": "Is the chint:DTSU666 meter listed as compatible with the CHS2-29.9K-T4-X?",
+      "old_page_hit": true,
+      "new_page_hit": false,
+      "assessment": "genuine_source_but_incomplete_current_scope",
+      "reason": "The original CHS2 manual explicitly states compatibility with CHINT DTSU666. Its original application scope also names unknown CHS2-49.9K-T6-X; the meter itself has no current association to this document. A genuine manufacturer statement is present, but the complete current permission group required by this contract is not proven.",
+      "source_references": [
+        {
+          "document_id": "doc-29633b9228fd277e32dada64d0647420282373a0d6a67cbad21fd72c36f86705",
+          "document_revision": "83ce89032356b364e0677170f1526914842b9d400b11c8da04e7fe8334900803",
+          "sha": "92b45188a10eac6d72eefc0345165b3c6ade83316555ddd6fdcf6c46cd67a262",
+          "title": "SAJ CHS2 29.9-50K user manual, English, V0.2 (covers the CHS2-29.9K-T4-X)",
+          "type": "manual",
+          "associated_products": [
+            1959,
+            1960,
+            1961
+          ],
+          "page": 27,
+          "expected_quote": "The METER.485 port can connect with meter CHINT’s DTSU666",
+          "chunk_ids": [
+            "92b45188a10e-p27-5e83f06b"
+          ]
+        }
+      ]
+    },
+    {
+      "golden_id": "0065e3e240-en",
+      "model": "GW261.2-BAT-LCD-G10",
+      "question": "What is the rated or maximum current of the GW261.2-BAT-LCD-G10?",
+      "old_page_hit": true,
+      "new_page_hit": true,
+      "assessment": "correct_model_value_but_answer_fragment_not_currently_releasable",
+      "reason": "The original technical heading names GW208.9-BAT-LC-G10 then GW261.2-BAT-LCD-G10, and 180 / 180 A is the second column. The same parameter fragment also names unknown GW52.2-PACK-LC-G10. The post-guard page hit can be its model heading; it does not prove release of the 180 A answer fragment.",
+      "source_references": [
+        {
+          "document_id": "doc-56fa939acf90470677e98c7bd9729f23a31ddd53a7c66b3d65ba440ddab13ebb",
+          "document_revision": "8627cceb38bde44f93992f73f09743a19e54153fc66153f0c3cba769c0dd9c95",
+          "sha": "027415a66a00234f03d1268e180129fa016e601aaf1ecb7cda643a24aecb7d38",
+          "title": "GoodWe BAT-C Series 208.9–261.2 kWh Datasheet (EMEA, EN, V1.1)",
+          "type": "datasheet",
+          "associated_products": [
+            1956,
+            1958
+          ],
+          "page": 2,
+          "expected_quote": "Max. Input / Output Current (A) 180 / 180",
+          "chunk_ids": [
+            "027415a66a00-p2-d4b2736d",
+            "027415a66a00-p2-f884bb73",
+            "027415a66a00-p2-f828dd45",
+            "027415a66a00-p2-ccc801d3"
+          ]
+        }
+      ]
+    },
+    {
+      "golden_id": "00cc9d826a-en",
+      "model": "GW125/261-ESA-LCN-G10",
+      "question": "What is the maximum AC output current of the GW125/261-ESA-LCN-G10?",
+      "old_page_hit": true,
+      "new_page_hit": false,
+      "assessment": "wrong_variant",
+      "reason": "The question is for G10, while the original parameter-page heading explicitly says GW125/261-ESA-LCN-G11. The 198.5 A page hit is not valid G10 evidence. Same document or generic section must not bridge the variant.",
+      "source_references": [
+        {
+          "document_id": "doc-982aed912e09eb0d8ed806cf2ae483ec9cc782a57cc2d77e2d5fcfd35fb3dc03",
+          "document_revision": "f8c5b1ca35caef036cac6a9ace4aeff77bc68387a6dc3a78727b8bbc16197353",
+          "sha": "c95aef48b1ea4fbd0ae8729c104774ce2b5ee7137809fc8fe20642be2780bbfe",
+          "title": "GW ESA 261kWh Datasheet EMEA EN V1.1",
+          "type": "datasheet",
+          "associated_products": [
+            6321
+          ],
+          "page": 2,
+          "expected_quote": "Max. AC Output Current (A) 198.5",
+          "chunk_ids": [
+            "c95aef48b1ea-p2-9b1de5f3",
+            "c95aef48b1ea-p2-1c6d17df",
+            "c95aef48b1ea-p2-e0716aa2",
+            "c95aef48b1ea-p2-8f04d2e7",
+            "c95aef48b1ea-p2-df9c0c06",
+            "c95aef48b1ea-p2-7d3eeeff"
+          ]
+        }
+      ]
+    },
+    {
+      "golden_id": "0121878b05-en",
+      "model": "L260-OMNI",
+      "question": "What depth of discharge does the L260-OMNI allow?",
+      "old_page_hit": true,
+      "new_page_hit": true,
+      "assessment": "correct_model_and_current_answer_fragment",
+      "reason": "The original L260-OMNI section and battery table explicitly provide 98% (single string). The current product and document association are proven, and the numeric battery fragment remains retrievable.",
+      "source_references": [
+        {
+          "document_id": "doc-0672c057029d037b65ec8146400e0acb06e02c7900f41792fd623a0206f91e74",
+          "document_revision": "23c9fa742d5382cc5263d458f0502e915494c1da6053a8ac15e4c6a41b659c9a",
+          "sha": "270d7e015db51b233920640cac612bdff1c461743c896124581c462709f7a083",
+          "title": "Pylontech L260-OMNI 125 kW / 260 kWh - datasheet excerpt, printed pp. 17-18 (EN)",
+          "type": "datasheet",
+          "associated_products": [
+            2003
+          ],
+          "page": 2,
+          "expected_quote": "Depth of Discharge 98% (single string)",
+          "chunk_ids": [
+            "270d7e015db5-p2-5bec9ac2",
+            "270d7e015db5-p2-f3b8ecb0",
+            "270d7e015db5-p2-47177039",
+            "270d7e015db5-p2-5c3714cf",
+            "270d7e015db5-p2-db7b8ef9"
+          ]
+        },
+        {
+          "document_id": "doc-bcbd6d79682cc69e868fdb0b5c5eccb5715ed00a78af2e2e679f5a756f66f47f",
+          "document_revision": "9d5e8eb574d920d418dd51f43b4885f7483fba5681918382bd5d47c39bafd62c",
+          "sha": "bb6712735d77af454a30605abc5b93542f723efe3206d73eee5d73bb086a1699",
+          "title": "Pylontech OPTIM US L260-OMNI Datasheet",
+          "type": "datasheet",
+          "associated_products": [
+            2003
+          ],
+          "page": 2,
+          "expected_quote": "Depth of Discharge 98% (single string)",
+          "chunk_ids": [
+            "bb6712735d77-p2-75431de4",
+            "bb6712735d77-p2-f3b8ecb0",
+            "bb6712735d77-p2-3bbeffa6",
+            "bb6712735d77-p2-c8ee224d",
+            "bb6712735d77-p2-549bed2b"
+          ]
+        }
+      ]
+    },
+    {
+      "golden_id": "015253f935-en",
+      "model": "GW30K-STS-G10",
+      "question": "How long is the product warranty of the GW30K-STS-G10?",
+      "old_page_hit": true,
+      "new_page_hit": false,
+      "assessment": "series_statement_without_proven_model_scope",
+      "reason": "The original warranty row explicitly gives STS series five years. The Woo association is typed document, and the passage uses a series rather than the exact current product model. It is meaningful source evidence, but current model membership and a releasable whole-table scope have not been proven. No automatic model-family inference is introduced.",
+      "source_references": [
+        {
+          "document_id": "doc-61ba93d15b26dedc9a8df61752cdcf2a4e2846c56cab28bb171e037ea1a00939",
+          "document_revision": "85f3e8632b712421abd09cbcb733b857b9f24758219d59d3db781960ca93eab5",
+          "sha": "a786dcf5aeef1f4ed6b2299a445ef01d489001b6963cf0758193f9f379fa06bf",
+          "title": "GOODWE limited warranty for inverter system (Europe)",
+          "type": "document",
+          "associated_products": [
+            1946,
+            1947,
+            1948,
+            2403,
+            3556,
+            3583,
+            3584,
+            3585,
+            6512,
+            6513,
+            6514,
+            6515,
+            6516,
+            6517,
+            6518,
+            6523,
+            6524,
+            6525,
+            6526,
+            6527,
+            6528,
+            6529,
+            6530
+          ],
+          "page": 1,
+          "expected_quote": "STS series",
+          "chunk_ids": [
+            "a786dcf5aeef-p1-8fbc39ae",
+            "a786dcf5aeef-p1-19326636",
+            "a786dcf5aeef-p1-b113c4fc",
+            "a786dcf5aeef-p1-742af588",
+            "a786dcf5aeef-p1-4dd52b15",
+            "a786dcf5aeef-p1-d4764014",
+            "a786dcf5aeef-p1-33492f95"
+          ]
+        }
+      ]
+    },
+    {
+      "golden_id": "01dfea3e55-en",
+      "model": "H2-30K-T3-DE",
+      "question": "How long is the product warranty of the H2-30K-T3-DE?",
+      "old_page_hit": true,
+      "new_page_hit": false,
+      "assessment": "correct_variant_named_but_mixed_current_scope",
+      "reason": "The original manual page 38 explicitly lists current H2-30K-T3-DE, together with unknown H2-25K-T3-BE and H2-30K-T3. Its warranty row says to refer to the policy. Some expected pages (for example page 37) do not list the DE model at all. The datasheets do mention the DE variant, but their mixed table is not an authorized current-only numeric-duration passage. A raw page hit does not establish an acceptable duration answer.",
+      "source_references": [
+        {
+          "document_id": "doc-9046d5a92c02c5efa83150796811308cb7f8699dc3aa6d4b2804bf2e9fc5a7b5",
+          "document_revision": "06c72df5bfd3e5d2b49c9cb4a6cdc77193b520ac204d5cebcf5475f09f77baa7",
+          "sha": "0f0e75ad3f318318d1ba3f1d84a0f2c1f4864555b2deb45f4a1d0fd4cfa7acd7",
+          "title": "SAJ H2 Series (10-30K) T2/T3 Datasheet (EN, BEU)",
+          "type": "datasheet",
+          "associated_products": [
+            1179,
+            1181,
+            2063,
+            2064,
+            4107,
+            4108
+          ],
+          "page": 1,
+          "expected_quote": "Warranty [Year] 10",
+          "chunk_ids": [
+            "0f0e75ad3f31-p1-72d7d810",
+            "0f0e75ad3f31-p1-486dc009"
+          ]
+        },
+        {
+          "document_id": "doc-fc73a4cfbad5c8a20d9210db0349d1e4d13c4c1a129b52b73b0f84c4bd8d0215",
+          "document_revision": "958ba8a49ee5d9ad25db8c3d53ac87779563a880b7c0baab986b0964425b2582",
+          "sha": "be488dc6630cddc8381e38c61c6bc7b41c50c711042cdb2547170bd85e68a752",
+          "title": "SAJ H2 15-30K datasheet, German (covers the H2-25K-T3)",
+          "type": "datasheet",
+          "associated_products": [
+            1179,
+            1181,
+            2063,
+            2064
+          ],
+          "page": 1,
+          "expected_quote": "Garantie [Jahre] 10",
+          "chunk_ids": [
+            "be488dc6630c-p1-3a1e92a2",
+            "be488dc6630c-p1-140e779c"
+          ]
+        },
+        {
+          "document_id": "doc-fc73a4cfbad5c8a20d9210db0349d1e4d13c4c1a129b52b73b0f84c4bd8d0215",
+          "document_revision": "958ba8a49ee5d9ad25db8c3d53ac87779563a880b7c0baab986b0964425b2582",
+          "sha": "be488dc6630cddc8381e38c61c6bc7b41c50c711042cdb2547170bd85e68a752",
+          "title": "SAJ H2 15-30K datasheet, German (covers the H2-25K-T3)",
+          "type": "datasheet",
+          "associated_products": [
+            1179,
+            1181,
+            2063,
+            2064
+          ],
+          "page": 1,
+          "expected_quote": "10 Jahre Garantie",
+          "chunk_ids": [
+            "be488dc6630c-p1-3a1e92a2",
+            "be488dc6630c-p1-140e779c"
+          ]
+        },
+        {
+          "document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+          "document_revision": "59905046216869c53597a2fb8c229c3cea3f8050d90b29ea7ceb3826da64c0ab",
+          "sha": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3",
+          "title": "SAJ H2-(10K-30K)-(T2, T3) Hybrid Solar Inverter User Manual (DE/EN)",
+          "type": "manual",
+          "associated_products": [
+            1179,
+            1181,
+            2063,
+            2064,
+            4107,
+            4108
+          ],
+          "page": 37,
+          "expected_quote": "Warranty [Year] Refer to the warranty policy",
+          "chunk_ids": [
+            "770ccafa080c-p37-63a0f610",
+            "770ccafa080c-p37-54b2a252",
+            "770ccafa080c-p37-1a38d5ad",
+            "770ccafa080c-p37-59022147",
+            "770ccafa080c-p37-7c9010db",
+            "770ccafa080c-p37-ebcb8faf",
+            "770ccafa080c-p37-0f99732a",
+            "770ccafa080c-p37-aec69c22",
+            "770ccafa080c-p37-e9b2da92",
+            "770ccafa080c-p37-ccb100e8",
+            "770ccafa080c-p37-a0e6c48d"
+          ]
+        },
+        {
+          "document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551",
+          "document_revision": "59905046216869c53597a2fb8c229c3cea3f8050d90b29ea7ceb3826da64c0ab",
+          "sha": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3",
+          "title": "SAJ H2-(10K-30K)-(T2, T3) Hybrid Solar Inverter User Manual (DE/EN)",
+          "type": "manual",
+          "associated_products": [
+            1179,
+            1181,
+            2063,
+            2064,
+            4107,
+            4108
+          ],
+          "page": 38,
+          "expected_quote": "Warranty [Year] Refer to the warranty policy",
+          "chunk_ids": [
+            "770ccafa080c-p38-f6f60fb0",
+            "770ccafa080c-p38-5917adba",
+            "770ccafa080c-p38-c8b9c7f6",
+            "770ccafa080c-p38-e2ca6b09",
+            "770ccafa080c-p38-242e5b8e",
+            "770ccafa080c-p38-a6d994ee",
+            "770ccafa080c-p38-c1e3c211",
+            "770ccafa080c-p38-3b882ed4",
+            "770ccafa080c-p38-a9db1572"
+          ]
+        }
+      ]
+    },
+    {
+      "golden_id": "0212b70d6e-en",
+      "model": "GW61.4-BAT-AC-G10",
+      "question": "What BMS does the GW61.4-BAT-AC-G10 use?",
+      "old_page_hit": true,
+      "new_page_hit": false,
+      "assessment": "generic_bms_definition_and_mixed_unknown_models",
+      "reason": "The original warranty says the system includes a battery management system (BMS), and names current GW61.4 plus unknown GW92.1/GW102.4 variants in the same paragraph. It does not identify a BMS model or brand. The page hit is not proof of a current, specific answer to which BMS the product uses.",
+      "source_references": [
+        {
+          "document_id": "doc-efa68535826b12e0c857071495a1eff9c4a25fe4c7553bc0cdff32654436979e",
+          "document_revision": "0a8f2856834e694ae7aeddcd0359648472a638cd4ceb5703ca6cdde39decdd91",
+          "sha": "4690d1156e054bb0aee1156885b6fb0c28f6602b8f55ee8d46770a83894f1ba1",
+          "title": "GoodWe BAT-C 61.4–112.6 kWh Limited Warranty (Europe)",
+          "type": "document",
+          "associated_products": [
+            1954,
+            1955
+          ],
+          "page": 1,
+          "expected_quote": "battery management system (“BMS",
+          "chunk_ids": [
+            "4690d1156e05-p1-8fbc39ae",
+            "4690d1156e05-p1-f41a74d9",
+            "4690d1156e05-p1-b62c66af",
+            "4690d1156e05-p1-12faf8d2",
+            "4690d1156e05-p1-cd334897",
+            "4690d1156e05-p1-beffa461",
+            "4690d1156e05-p1-39eabac9"
+          ]
+        }
+      ]
+    }
+  ]
+}

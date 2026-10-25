@@ -36,10 +36,15 @@ final class ModuleTest extends TestCase {
 		// @phpstan-ignore argument.type (WP_Mock accepts its AnyInstance matcher for array callbacks, as below.)
 		WP_Mock::expectFilterAdded( 'cron_schedules', array( new WP_Mock\Matcher\AnyInstance( \Linker\Commerce\Inquiry\Assessment\RecoverySchedule::class ), 'schedules' ) );
 		$this->expect_action_on_any( \Linker\Commerce\Inquiry\Assessment\Queue::PROCESS, \Linker\Commerce\Inquiry\Assessment\Queue::class, 'process' );
+		$this->expect_action_on_any( \Linker\Commerce\Inquiry\Assessment\ConversationAuthorization::PROCESS, \Linker\Commerce\Inquiry\Assessment\ConversationAuthorization::class, 'process' );
+		$this->expect_action_on_any( 'before_delete_post', \Linker\Commerce\Inquiry\Assessment\ConversationAuthorization::class, 'erase_source' );
+		$this->expect_action_on_any( \Linker\Commerce\Inquiry\Assessment\RecoverySchedule::HOOK, \Linker\Commerce\Inquiry\Assessment\ConversationAuthorization::class, 'recover' );
+		WP_Mock::expectActionAdded( 'woocommerce_privacy_before_remove_order_personal_data', array( \Linker\Commerce\Inquiry\Assessment\SendAuthorization::class, 'erase' ), 9 );
 		$this->expect_action_on_any( \Linker\Commerce\Inquiry\Assessment\Queue::EXPIRE, \Linker\Commerce\Inquiry\Assessment\Queue::class, 'expire' );
 		$this->expect_action_on_any( \Linker\Commerce\Inquiry\Assessment\Queue::FINISH, \Linker\Commerce\Inquiry\Assessment\Queue::class, 'finish', 10, 2 );
 		$this->expect_action_on_any( 'add_meta_boxes', \Linker\Commerce\Inquiry\Assessment\Admin::class, 'boxes' );
 		$this->expect_action_on_any( 'admin_post_linker_inquiry_assessment_correct', \Linker\Commerce\Inquiry\Assessment\Admin::class, 'correct' );
+		$this->expect_action_on_any( 'admin_post_linker_inquiry_notification_release', \Linker\Commerce\Inquiry\Assessment\Admin::class, 'release' );
 		// @phpstan-ignore argument.type (WP_Mock accepts its AnyInstance matcher for array callbacks, as in TestCase::plain_text.)
 		WP_Mock::expectFilterAdded( 'woocommerce_privacy_export_order_personal_data', array( new WP_Mock\Matcher\AnyInstance( \Linker\Commerce\Inquiry\Assessment\EvidencePrivacy::class ), 'export' ), 10, 2 );
 		$this->expect_action_on_any( 'woocommerce_privacy_before_remove_order_personal_data', \Linker\Commerce\Inquiry\Assessment\EvidencePrivacy::class, 'erase' );

@@ -33,9 +33,22 @@ final class Module {
 		( new Form() )->register();
 		( new Handler() )->register();
 		( new SelectionView() )->register();
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_language' ) );
 		// Before do_shortcode (priority 11 on the_content, WordPress default):
 		// the replacement has to be a shortcode by the time that filter runs.
 		add_filter( 'the_content', array( $this, 'mount_form' ), 9 );
+	}
+
+	/**
+	 * Queue the entry for the queried Contact page before the head script printer.
+	 *
+	 * Request identity does not depend on the content loop or render the form.
+	 */
+	public function enqueue_language(): void {
+		$page = get_queried_object();
+		if ( $page instanceof \WP_Post && $this->is_contact_page( $page ) ) {
+			LanguageDraft::enqueue();
+		}
 	}
 
 	/**
@@ -59,7 +72,7 @@ final class Module {
 	 * @param string $content The page content.
 	 */
 	public function mount_form( string $content ): string {
-		if ( ! $this->is_contact_page() || ! str_contains( $content, 'data-linker-contact-mount' ) ) {
+		if ( ! $this->is_contact_page( $this->rendered_page() ) || ! str_contains( $content, 'data-linker-contact-mount' ) ) {
 			return $content;
 		}
 		// Either branch: the fallback stays while the shortcode cannot
@@ -92,9 +105,10 @@ final class Module {
 	 * English is the page at `contact`. German is its Polylang twin
 	 * (`pll_get_post`), which is `/de/kontakt/` on the deployed site — not
 	 * a slug this code invents.
+	 *
+	 * @param \WP_Post|null $page The queried page, or the page whose content is rendering.
 	 */
-	private function is_contact_page(): bool {
-		$page = $this->rendered_page();
+	private function is_contact_page( ?\WP_Post $page ): bool {
 		if ( ! $page instanceof \WP_Post || 'page' !== $page->post_type ) {
 			return false;
 		}

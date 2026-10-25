@@ -219,6 +219,13 @@ final class InquirySummary {
 	 * @return array<string, mixed>
 	 */
 	private function by_rule( array $messages, string $reason ): array {
+		// Only bounded native diagnostics may enter the persistent business
+		// envelope; raw HTTP/WP_Error text is neither customer input nor evidence.
+		$reason = match ( $reason ) {
+			'no service url' => 'no_service_url',
+			'unreadable', 'no answer' => 'unreadable',
+			default => 1 === preg_match( '/^HTTP ([1-5][0-9]{2})$/D', $reason ) ? 'http_' . substr( $reason, 5 ) : 'transport_error',
+		};
 		$said = array();
 		foreach ( array_reverse( $messages ) as $message ) {
 			if ( 'user' !== ( $message['role'] ?? '' ) ) {

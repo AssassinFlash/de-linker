@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Contact;
 
+use Linker\I18n\Languages;
 use WP_Post;
 use WP_Term;
 
@@ -32,11 +33,12 @@ final class SelectionContext {
 		if ( '' === $url || ! self::same_origin( $url ) ) {
 			return array();
 		}
-		$path   = (string) wp_parse_url( $url, PHP_URL_PATH );
-		$source = null;
-		$id     = url_to_postid( $url );
+		$path     = (string) wp_parse_url( $url, PHP_URL_PATH );
+		$homepage = self::home_page( $path );
+		$source   = null;
+		$id       = null === $homepage ? url_to_postid( $url ) : $homepage['id'];
 		// Woo serves the shop as an archive, so native url_to_postid may return zero.
-		if ( $id < 1 && function_exists( 'wc_get_page_id' ) ) {
+		if ( null === $homepage && $id < 1 && function_exists( 'wc_get_page_id' ) ) {
 			$shop = (int) wc_get_page_id( 'shop' );
 			if ( $shop > 0 && self::same_path( $path, (string) get_permalink( $shop ) ) ) {
 				$id = $shop;
@@ -44,8 +46,17 @@ final class SelectionContext {
 		}
 		$post = $id > 0 ? get_post( $id ) : null;
 		if ( $post instanceof WP_Post && 'publish' === $post->post_status && '' === $post->post_password && in_array( $post->post_type, array( 'product', 'page', 'post' ), true ) ) {
-			$canonical = (string) get_permalink( $post );
-			if ( self::same_path( $path, $canonical ) ) {
+			$canonical = null === $homepage ? (string) get_permalink( $post ) : $homepage['source'];
+			if ( null === $homepage && ! self::same_path( $path, $canonical ) ) {
+				// Native product lookup can return the other language's same-slug twin.
+				$twin = self::translation_at_path( $post, $path );
+				if ( null !== $twin ) {
+					$post      = $twin;
+					$id        = $twin->ID;
+					$canonical = (string) get_permalink( $twin );
+				}
+			}
+			if ( self::same_path( $path, $canonical ) && ( null === $homepage || 'page' === $post->post_type ) ) {
 				$source = array(
 					'type'   => $post->post_type,
 					'id'     => $id,
@@ -53,6 +64,10 @@ final class SelectionContext {
 					'source' => $canonical,
 				);
 			}
+		}
+		// A missing or restricted static front page must not become a language term.
+		if ( null !== $homepage && null === $source ) {
+			return array();
 		}
 		if ( null === $source ) {
 			$slug = rawurldecode( basename( rtrim( $path, '/' ) ) );
@@ -101,6 +116,28 @@ final class SelectionContext {
 	}
 
 	/**
+	 * Only a current public native twin at the exact requested path can replace a lookup.
+	 *
+	 * @param WP_Post $post Public native lookup result.
+	 * @param string  $path Requested canonical path.
+	 */
+	private static function translation_at_path( WP_Post $post, string $path ): ?WP_Post {
+		if ( ! function_exists( 'pll_get_post_translations' ) ) {
+			return null;
+		}
+		foreach ( pll_get_post_translations( $post->ID ) as $id ) {
+			if ( $id === $post->ID ) {
+				continue;
+			}
+			$twin = get_post( $id );
+			if ( $twin instanceof WP_Post && $twin->post_type === $post->post_type && 'publish' === $twin->post_status && '' === $twin->post_password && self::same_path( $path, (string) get_permalink( $twin ) ) ) {
+				return $twin;
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * Current transport values, including the older public contact-link shape.
 	 *
 	 * @param array<string,mixed> $query Unslashed read-only URL query.
@@ -116,6 +153,11 @@ final class SelectionContext {
 		}
 		if ( is_string( $query['sort'] ?? null ) ) {
 			$selection['sort'] = $query['sort'];
+		}
+		foreach ( array( 'platform', 'document' ) as $key ) {
+			if ( is_string( $query[ $key ] ?? null ) ) {
+				$selection[ $key ] = $query[ $key ];
+			}
 		}
 		return self::normalize(
 			array(
@@ -142,9 +184,13 @@ final class SelectionContext {
 		if ( array() === $context ) {
 			return $result;
 		}
-		$source = (string) $context['source'];
-		$id     = (int) $context['id'];
-		if ( 'term' === $context['type'] ) {
+		$source    = (string) $context['source'];
+		$id        = (int) $context['id'];
+		$homepage  = self::home_page( (string) wp_parse_url( $source, PHP_URL_PATH ) );
+		$languages = class_exists( Languages::class ) ? new Languages() : null;
+		if ( null !== $homepage && null !== $languages && $languages->exists( $language ) ) {
+			$source = $languages->home_url( $language );
+		} elseif ( 'term' === $context['type'] ) {
 			$twin = function_exists( 'pll_get_term' ) ? (int) pll_get_term( $id, $language ) : 0;
 			$link = $twin > 0 ? get_term_link( $twin ) : $source;
 			if ( is_string( $link ) ) {
@@ -185,6 +231,38 @@ final class SelectionContext {
 	}
 
 	/**
+	 * Native static front pages have language home URLs even outside a front-end request.
+	 * Resolve them before url_to_postid, which can return zero for the German root.
+	 *
+	 * @param string $path Proposed source path.
+	 * @return array{id:int,source:string}|null A recognized home path, including a missing twin.
+	 */
+	private static function home_page( string $path ): ?array {
+		if ( 'page' !== get_option( 'show_on_front' ) ) {
+			return null;
+		}
+		$front     = (int) get_option( 'page_on_front' );
+		$languages = class_exists( Languages::class ) ? new Languages() : null;
+		if ( null !== $languages && $languages->ready() ) {
+			foreach ( array( Languages::SOURCE, Languages::TARGET ) as $language ) {
+				$url = $languages->home_url( $language );
+				if ( self::same_path( $path, $url ) ) {
+					return array(
+						'id'     => $front > 0 ? (int) pll_get_post( $front, $language ) : 0,
+						'source' => $url,
+					);
+				}
+			}
+			return null;
+		}
+		$url = home_url();
+		return self::same_path( $path, $url ) ? array(
+			'id'     => $front,
+			'source' => $url,
+		) : null;
+	}
+
+	/**
 	 * JSON strings retain bytes in both Woo data stores; legacy array values remain readable.
 	 *
 	 * @param mixed $stored Native order metadata.
@@ -219,10 +297,14 @@ final class SelectionContext {
 				$result[ $key ] = (float) $number;
 			}
 		}
-		if ( is_string( $input['q'] ?? null ) ) {
-			$q = sanitize_text_field( $input['q'] );
-			if ( '' !== $q ) {
-				$result['q'] = $q;
+		// These are customer request labels, like search text, never product authority.
+		foreach ( array( 'q', 'platform', 'document' ) as $key ) {
+			if ( ! is_string( $input[ $key ] ?? null ) ) {
+				continue;
+			}
+			$text = sanitize_text_field( $input[ $key ] );
+			if ( '' !== $text ) {
+				$result[ $key ] = $text;
 			}
 		}
 		if ( is_string( $input['sort'] ?? null ) && in_array( $input['sort'], array( 'recommended', 'newest', 'name', 'power-desc', 'power-asc' ), true ) ) {

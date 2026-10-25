@@ -1,0 +1,179 @@
+{
+  "scope": "all 50 published local page contents, native WP read only; body state still requires browser proof",
+  "pages": [
+    {
+      "id": 6698,
+      "title": "Rückerstattungs- und Rücksenderichtlinie",
+      "url": "http://127.0.0.1:9290/de/rueckgabe-erstattung/",
+      "header_rules": []
+    },
+    {
+      "id": 1038,
+      "title": "Refund and Returns Policy",
+      "url": "http://127.0.0.1:9290/refund-returns/",
+      "header_rules": []
+    },
+    {
+      "id": 6917,
+      "title": "Großspeicher",
+      "url": "http://127.0.0.1:9290/de/loesung/grossspeicher/",
+      "header_rules": [
+        "body[data-page='utility-storage'] header#lc-header{margin-bottom:calc(-1 * var(--lk-header-h));transition:background .2s,border-color .2s}",
+        "body[data-page='utility-storage'].us-at-cover header#lc-header{background:transparent;border-color:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}"
+      ]
+    },
+    {
+      "id": 1755,
+      "title": "Utility-Scale Storage",
+      "url": "http://127.0.0.1:9290/solution/utility-storage/",
+      "header_rules": [
+        "body[data-page='utility-storage'] header#lc-header{margin-bottom:calc(-1 * var(--lk-header-h));transition:background .2s,border-color .2s}",
+        "body[data-page='utility-storage'].us-at-cover header#lc-header{background:transparent;border-color:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}"
+      ]
+    },
+    {
+      "id": 6825,
+      "title": "Verkaufsbedingungen",
+      "url": "http://127.0.0.1:9290/de/verkaufsbedingungen/",
+      "header_rules": []
+    },
+    {
+      "id": 1674,
+      "title": "Terms of Sale",
+      "url": "http://127.0.0.1:9290/terms-of-sale/",
+      "header_rules": []
+    },
+    {
+      "id": 6827,
+      "title": "Datenschutzerklärung",
+      "url": "http://127.0.0.1:9290/de/datenschutz/",
+      "header_rules": []
+    },
+    {
+      "id": 1673,
+      "title": "Privacy Policy",
+      "url": "http://127.0.0.1:9290/privacy-policy/",
+      "header_rules": []
+    },
+    {
+      "id": 6829,
+      "title": "Impressum",
+      "url": "http://127.0.0.1:9290/de/impressum/",
+      "header_rules": []
+    },
+    {
+      "id": 1672,
+      "title": "Imprint",
+      "url": "http://127.0.0.1:9290/imprint/",
+      "header_rules": []
+    },
+    {
+      "id": 6865,
+      "title": "Über uns",
+      "url": "http://127.0.0.1:9290/de/ueber-uns/",
+      "header_rules": [
+        "body[data-page=\"about\"] header#lc-header{margin-bottom:calc(-1 * var(--lk-header-h))}",
+        "body[data-page=\"about\"].about-at-scene header#lc-header{background:transparent;border-color:transparent;backdrop-filter:none}"
+      ]
+    },
+    {
+      "id": 862,
+      "title": "About",
+      "url": "http://127.0.0.1:9290/about/",
+      "header_rules": [
+        "body[data-page=\"about\"] header#lc-header{margin-bottom:calc(-1 * var(--lk-header-h))}",
+        "body[data-page=\"about\"].about-at-scene header#lc-header{background:transparent;border-color:transparent;backdrop-filter:none}"
+      ]
+    },
+    {
+      "id": 6867,
+      "title": "Für EPC",
+      "url": "http://127.0.0.1:9290/de/fuer-epc/",
+      "header_rules": [
+        "body[data-page=\"for-epc\"] header#lc-header{margin-bottom:calc(-1 * var(--lk-header-h));transition:background .2s,border-color .2s}",
+        "body[data-page=\"for-epc\"].epc-at-cover header#lc-header{background:transparent;border-color:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}"
+      ]
+    },
+    {
+      "id": 842,
+      "title": "For EPC",
+      "url": "http://127.0.0.1:9290/for-epc/",
+      "header_rules": [
+        "body[data-page=\"for-epc\"] header#lc-header{margin-bottom:calc(-1 * var(--lk-header-h));transition:background .2s,border-color .2s}",
+        "body[data-page=\"for-epc\"].epc-at-cover header#lc-header{background:transparent;border-color:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}"
+      ]
+    },
+    {
+      "id": 6921,
+      "title": "Gewerblicher Speicher",
+      "url": "http://127.0.0.1:9290/de/loesung/gewerbespeicher/",
+      "header_rules": [
+        "body[data-page=\"commercial-storage\"].cs-at-cover header#lc-header{background:transparent;border-color:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}",
+        "body[data-page=\"commercial-storage\"] header#lc-header{margin-bottom:calc(-1 * var(--lk-header-h));transition:background .2s,border-color .2s}"
+      ]
+    },
+    {
+      "id": 792,
+      "title": "Commercial Storage",
+      "url": "http://127.0.0.1:9290/solution/commercial-storage/",
+      "header_rules": [
+        "body[data-page=\"commercial-storage\"].cs-at-cover header#lc-header{background:transparent;border-color:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}",
+        "body[data-page=\"commercial-storage\"] header#lc-header{margin-bottom:calc(-1 * var(--lk-header-h));transition:background .2s,border-color .2s}"
+      ]
+    },
+    {
+      "id": 6923,
+      "title": "Heimspeicher",
+      "url": "http://127.0.0.1:9290/de/loesung/heimspeicher/",
+      "header_rules": [
+        "body[data-page=\"residential-storage\"] header#lc-header{margin-bottom:calc(-1 * var(--lk-header-h));transition:background .2s,border-color .2s}",
+        "body[data-page=\"residential-storage\"].rs-at-cover header#lc-header{background:transparent;border-color:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}"
+      ]
+    },
+    {
+      "id": 749,
+      "title": "Residential Storage",
+      "url": "http://127.0.0.1:9290/solution/residential-storage/",
+      "header_rules": [
+        "body[data-page=\"residential-storage\"] header#lc-header{margin-bottom:calc(-1 * var(--lk-header-h));transition:background .2s,border-color .2s}",
+        "body[data-page=\"residential-storage\"].rs-at-cover header#lc-header{background:transparent;border-color:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}"
+      ]
+    },
+    {
+      "id": 6871,
+      "title": "Anwendung",
+      "url": "http://127.0.0.1:9290/de/loesung/",
+      "header_rules": [
+        "body[data-page=\"solution\"] header#lc-header{margin-bottom:calc(-1 * var(--lk-header-h));transition:background .2s,border-color .2s}",
+        "body[data-page=\"solution\"].sol-at-cover header#lc-header{background:transparent;border-color:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}"
+      ]
+    },
+    {
+      "id": 746,
+      "title": "Application",
+      "url": "http://127.0.0.1:9290/solution/",
+      "header_rules": [
+        "body[data-page=\"solution\"] header#lc-header{margin-bottom:calc(-1 * var(--lk-header-h));transition:background .2s,border-color .2s}",
+        "body[data-page=\"solution\"].sol-at-cover header#lc-header{background:transparent;border-color:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}"
+      ]
+    },
+    {
+      "id": 6913,
+      "title": "Startseite",
+      "url": "http://127.0.0.1:9290/de/",
+      "header_rules": [
+        "body[data-page=\"about\"] header#lc-header{margin-bottom:calc(-1 * var(--lk-header-h))}",
+        "body[data-page=\"about\"].about-at-scene header#lc-header{background:transparent;border-color:transparent;backdrop-filter:none}"
+      ]
+    },
+    {
+      "id": 13,
+      "title": "Home",
+      "url": "http://127.0.0.1:9290/",
+      "header_rules": [
+        "body[data-page=\"about\"] header#lc-header{margin-bottom:calc(-1 * var(--lk-header-h))}",
+        "body[data-page=\"about\"].about-at-scene header#lc-header{background:transparent;border-color:transparent;backdrop-filter:none}"
+      ]
+    }
+  ]
+}

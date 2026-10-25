@@ -193,6 +193,7 @@ test( 'the disclosure is spoken once and a prompt sends the first turn', async (
 
 	expect( sendTurn ).toHaveBeenCalledWith( {
 		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
+		onOperation: expect.any( Function ),
 		restUrl: '/wp-json/',
 		nonce: 'n',
 		locale: 'en',
@@ -255,6 +256,168 @@ test( 'a failed proxy call shows the retry sentence, not a fake answer', async (
 			selector: '.linker-genie-app__message',
 		} )
 	).toBeNull();
+} );
+
+test.each( [
+	'completed',
+	'completed-with-next-draft',
+	'other-conversation',
+	'other-operation-attachment',
+	'other-operation-context',
+	'missing-operation',
+	'missing-id',
+	'changed-prefix',
+	'historical',
+	'unfinished',
+] )( 'retry requires a witnessed completed request: %s', async ( scenario ) => {
+	const before = [
+		{ role: 'user' as const, content: 'SAJ' },
+		{ role: 'assistant' as const, content: 'Which product?' },
+	];
+	const question = 'Show me the B2-10.0-HV1 product and its datasheet.';
+	vi.mocked( readThread ).mockResolvedValue( {
+		conversationId: 563,
+		messages: before,
+		turn: null,
+	} );
+	vi.mocked( sendTurn ).mockImplementation( async ( request ) => {
+		request.onOperation?.( '56300000-0000-4000-8000-000000000001' );
+		throw new Error( 'network result unknown' );
+	} );
+	await renderOwned( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+		target: { value: question },
+	} );
+	await act( async () => {
+		fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) );
+	} );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'Genie did not answer. Please try again.'
+	);
+	// The real reader parses the proxy's complete stream and appends its
+	// assistant message; the first HTTP request failed after it was stored.
+	const actual =
+		await vi.importActual< typeof import( './api/turn' ) >( './api/turn' );
+	const recoveredId = scenario === 'other-conversation' ? 564 : 563;
+	const operationId = scenario.startsWith( 'other-operation' )
+		? '56300000-0000-4000-8000-000000000002'
+		: '56300000-0000-4000-8000-000000000001';
+	const stored = await actual.readThread(
+		'/thread',
+		'n',
+		async () =>
+			new Response(
+				JSON.stringify( {
+					conversation_id:
+						scenario === 'missing-id' ? undefined : recoveredId,
+					operation_id:
+						scenario === 'missing-operation'
+							? undefined
+							: operationId,
+					messages: [
+						...( scenario === 'changed-prefix'
+							? [
+									{
+										role: 'user',
+										content: 'another context',
+									},
+									before[ 1 ],
+								]
+							: before ),
+						...( scenario === 'historical'
+							? []
+							: [ { role: 'user', content: question } ] ),
+					],
+					stream:
+						scenario === 'unfinished'
+							? 'event: block\ndata: {"type":"text","text":"Partial","refs":[]}\n\n'
+							: 'event: block\ndata: {"type":"text","text":"The stored answer.","refs":[]}\n\nevent: done\ndata: {"ok":true}\n\n',
+				} ),
+				{ status: 200 }
+			)
+	);
+	vi.mocked( readThread ).mockResolvedValue( stored );
+	let finishRetry!: () => void;
+	if ( scenario === 'completed-with-next-draft' ) {
+		vi.mocked( readThread ).mockImplementationOnce(
+			() =>
+				new Promise( ( resolve ) => {
+					finishRetry = () => resolve( stored );
+				} )
+		);
+	}
+	await act( async () => {
+		fireEvent.click( screen.getByRole( 'button', { name: 'Try again' } ) );
+	} );
+	async function acceptNextDraftDuringRetry() {
+		await waitFor( () => expect( finishRetry ).toBeTypeOf( 'function' ) );
+		fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+			target: { value: 'Next accepted question' },
+		} );
+		fireEvent.change( document.querySelector( 'input[type="file"]' )!, {
+			target: {
+				files: [
+					new File( [ '%PDF-1.7 next' ], 'next.pdf', {
+						type: 'application/pdf',
+					} ),
+				],
+			},
+		} );
+		await waitFor( () => {
+			expect( screen.queryByText( 'Preparing file…' ) ).toBeNull();
+			expect( screen.getByText( 'next.pdf' ) ).toBeInTheDocument();
+		} );
+		await act( async () => finishRetry() );
+	}
+	const nextDraft = scenario === 'completed-with-next-draft';
+	if ( nextDraft ) {
+		await acceptNextDraftDuringRetry();
+	}
+	const completed = scenario.startsWith( 'completed' );
+	expect( sendTurn ).toHaveBeenCalledTimes( completed ? 1 : 2 );
+	if ( ! completed ) {
+		return;
+	}
+	expect(
+		await screen.findByText( 'The stored answer.' )
+	).toBeInTheDocument();
+	expect( screen.queryByRole( 'alert' ) ).toBeNull();
+	expect( screen.getByLabelText( 'Ask Genie' ) ).toHaveValue(
+		nextDraft ? 'Next accepted question' : ''
+	);
+	expect( screen.queryByText( 'next.pdf' ) !== null ).toBe( nextDraft );
+	const raw = currentOwnedRaw();
+	const record = raw ? JSON.parse( raw ) : null;
+	expect(
+		record && {
+			text: record.text,
+			editing: record.editing,
+			uploads: record.uploads,
+		}
+	).toEqual(
+		nextDraft
+			? {
+					text: 'Next accepted question',
+					editing: true,
+					uploads: [
+						{
+							name: 'next.pdf',
+							type: 'application/pdf',
+							data: btoa( '%PDF-1.7 next' ),
+						},
+					],
+				}
+			: null
+	);
+	// The same words typed as a new question remain a deliberate new turn.
+	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+		target: { value: question },
+	} );
+	await act( async () => {
+		fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) );
+	} );
+	expect( sendTurn ).toHaveBeenCalledTimes( 2 );
 } );
 
 test( 'a 502 keeps the question across a reload and retries once', async () => {
@@ -587,6 +750,7 @@ test( 'a conflicting turn re-reads, keeps the question and refreshes the rail', 
 	).toBeNull();
 	expect( sendTurn ).toHaveBeenCalledWith( {
 		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
+		onOperation: expect.any( Function ),
 		restUrl: '/wp-json/',
 		nonce: 'n',
 		locale: 'en',
@@ -2046,7 +2210,7 @@ test( 'a guest gets a confirmation link at the address they type', async () => {
 	);
 	expect(
 		await screen.findByText(
-			'A confirmation link is on its way to tester@example.test. The conversation follows once the link is opened.'
+			'A confirmation link is on its way to tester@example.test.'
 		)
 	).toBeVisible();
 } );
@@ -2248,6 +2412,7 @@ test( 'a request for a person shows the contact card, and Genie keeps answering'
 	).toBeInTheDocument();
 	expect( sendTurn ).toHaveBeenLastCalledWith( {
 		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
+		onOperation: expect.any( Function ),
 		restUrl: '/wp-json/',
 		nonce: 'n',
 		locale: 'en',

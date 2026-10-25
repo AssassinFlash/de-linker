@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Integration;
 
+use Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture;
+
 use Linker\Commerce\Contact\Submission;
 use Linker\Commerce\Inquiry\Sender;
 use Linker\Commerce\Inquiry\PublicGuard;
@@ -21,6 +23,23 @@ use WC_Order;
  * @coversNothing
  */
 final class OpenInquiryTest extends IntegrationTestCase {
+
+	/** Install only this test's bound local service seam. */
+	protected function setUp(): void {
+		parent::setUp();
+		require_once dirname( __DIR__, 2 ) . '/fixtures/NormalMailAuthorizationFixture.php';
+		$this->authorization = NormalMailAuthorizationFixture::install(
+			function ( callable $remove ): void {
+				$this->later( $remove );
+			}
+		);
+	}
+
+	/** Typed local service with native consumers.
+	 *
+	 * @var NormalMailAuthorizationFixture
+	 */
+	private NormalMailAuthorizationFixture $authorization;
 
 	/** Retired Woo checkout transports cannot bypass the shared public inquiry sender. */
 	public function test_alternate_checkout_transports_cannot_create_an_inquiry(): void {
@@ -113,8 +132,8 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$html = do_shortcode( '[linker_inquiry_form]' );
 		$this->assertStringNotContainsString( '[linker_inquiry_', $html );
 		$this->assertStringContainsString( 'id="inquiry-name" name="name"', $html );
-		// Woo posts to the draft route and redirects to this form through its native referer.
-		$this->assertStringContainsString( '<form method="post" action="' . wc_get_cart_url() . '">', $html );
+		// The native draft form submits to the current request route and retains its real form class.
+		$this->assertStringContainsString( '<form class="woocommerce-cart-form" method="post" action="' . wc_get_checkout_url() . '">', $html );
 		$this->assertStringContainsString( 'value="" required', $html );
 		$this->assertStringContainsString( 'action="' . admin_url( 'admin-post.php' ) . '"', $html );
 		$fields = WC()->session->get( 'linker_inquiry_fields' );
@@ -327,6 +346,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$product = $this->product( '125' );
 		WC()->cart->add_to_cart( $product->get_id(), 2 );
 		WC()->cart->calculate_totals();
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_MINUTE, time() ), false );
 		$details = Submission::from_post(
 			array(
@@ -605,6 +625,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 				}
 			}
 		);
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_MINUTE, time() ), false );
 		$marker  = self::newest_mail_job();
 		$details = Submission::from_post(
@@ -623,6 +644,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 				$order->delete( true );
 			}
 		);
+		$this->authorization->drain();
 		$rows = array_map( static fn ( int $id ) => json_decode( (string) get_post_meta( $id, '_linker_mail_message', true ), true ), self::mail_jobs_after( $marker ) );
 		$this->assertCount( 2, $rows );
 		$recipients = array_column( $rows, 'to' );

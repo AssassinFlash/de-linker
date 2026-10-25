@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Any
 
 from linker_genie import attachments, knowledge, page, solution, timing
-from linker_genie.abilities import ABILITY_NAMES, AbilityClient, AbilityError
+from linker_genie.abilities import ABILITY_NAMES, Abilities, AbilityError
 from linker_genie.conversation import customer_messages, last_customer_message
 from linker_genie.embedding import EmbeddingError
 from linker_genie.facts import TurnFacts, merge
@@ -249,7 +249,7 @@ def build_model() -> Any:
 
 
 def make_generate(
-    client: AbilityClient,
+    client: Abilities,
     model: Any | None = None,
     prepared: Prepared | None = None,
     search: knowledge.Search | None = None,
@@ -458,7 +458,7 @@ def without_class_text(
 
 
 def _ability_runner(
-    client: AbilityClient,
+    client: Abilities,
     budget: ToolBudget,
     name: str,
     user_context: str | None = None,
@@ -564,7 +564,7 @@ def _page_runner(
 
 
 def _solution_runner(
-    client: AbilityClient,
+    client: Abilities,
     budget: ToolBudget,
     request: TurnRequest,
     locale: str = "en",
