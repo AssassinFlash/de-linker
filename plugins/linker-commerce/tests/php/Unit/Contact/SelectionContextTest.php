@@ -144,15 +144,6 @@ final class SelectionContextTest extends TestCase {
 		WP_Mock::userFunction( 'get_option', array( 'return' => fn ( string $key ) => 'show_on_front' === $key ? ( $this->static_front ? 'page' : 'posts' ) : ( 'page_on_front' === $key ? $this->front_id : false ) ) );
 		WP_Mock::userFunction( 'pll_languages_list', array( 'return' => array( 'en', 'de' ) ) );
 		WP_Mock::userFunction( 'pll_get_post', array( 'return' => fn ( int $id, string $language ): int => ! $this->missing_home && in_array( $id, array( 14, 15 ), true ) ? ( 'de' === $language ? 15 : 14 ) : 0 ) );
-		WP_Mock::userFunction(
-			'pll_get_post_translations',
-			array(
-				'return' => static fn ( int $id ): array => in_array( $id, array( 13, 16 ), true ) ? array(
-					'en' => 13,
-					'de' => 16,
-				) : array(),
-			)
-		);
 		WP_Mock::userFunction( 'trailingslashit', array( 'return' => static fn ( string $url ): string => rtrim( $url, '/' ) . '/' ) );
 		WP_Mock::userFunction(
 			'PLL',
@@ -174,8 +165,14 @@ final class SelectionContextTest extends TestCase {
 		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'private-test-salt' ) );
 	}
 
-	/** A same-slug language lookup must identify the object at the requested canonical URL. */
+	/**
+	 * A same-slug language lookup must identify the object at the requested canonical URL.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
 	public function test_wrong_language_product_lookup_uses_the_exact_public_twin(): void {
+		$this->native_product_pair();
 		$context = SelectionContext::normalize(
 			array(
 				'source' => 'https://site.test/de/produkt/modell/',
@@ -192,8 +189,14 @@ final class SelectionContextTest extends TestCase {
 		$this->assertSame( array(), SelectionContext::normalize( array( 'source' => 'https://site.test/fake/de/produkt/modell/' ) ) );
 	}
 
-	/** A public counterpart never makes a private or protected source acceptable. */
+	/**
+	 * A public counterpart never makes a private or protected source acceptable.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
 	public function test_language_pair_lookup_keeps_publication_and_password_boundaries(): void {
+		$this->native_product_pair();
 		$this->twin_status = 'private';
 		$this->assertSame( array(), SelectionContext::normalize( array( 'source' => 'https://site.test/de/produkt/modell/' ) ) );
 		$this->twin_status   = 'publish';
@@ -202,6 +205,19 @@ final class SelectionContextTest extends TestCase {
 		$this->twin_password = '';
 		$this->status        = 'private';
 		$this->assertSame( array(), SelectionContext::normalize( array( 'source' => 'https://site.test/product/model/' ) ) );
+	}
+
+	/** The optional API exists only inside the two isolated pair fixtures. */
+	private function native_product_pair(): void {
+		WP_Mock::userFunction(
+			'pll_get_post_translations',
+			array(
+				'return' => static fn ( int $id ): array => in_array( $id, array( 13, 16 ), true ) ? array(
+					'en' => 13,
+					'de' => 16,
+				) : array(),
+			)
+		);
 	}
 
 	/** All public object types keep canonical title and only selected navigation fields. */
