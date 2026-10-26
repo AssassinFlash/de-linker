@@ -1276,6 +1276,7 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 .linker-inquiry-empty p { margin: 0; font-size: var(--proto-size-sm); line-height: var(--proto-leading-body); }
 .linker-inquiry-error { color: var(--proto-sem-danger); margin: 0; padding: var(--proto-space-4); background: var(--proto-neutral-50); border: 1px solid var(--proto-sem-danger); border-radius: var(--proto-radius-lg); font-size: var(--proto-size-sm); }
 .linker-inquiry-error:empty { display: none; }
+.linker-inquiry-draft-notice { margin: 0; padding: var(--proto-space-4); border: 1px solid var(--proto-line-journal); border-radius: var(--proto-radius-lg); background: var(--proto-neutral-50); color: var(--proto-ink-muted-deep); font-size: var(--proto-size-sm); line-height: var(--proto-leading-body); }
 #tv-woo-b2b-checkout .linker-inquiry [hidden] { display: none; }
 .linker-inquiry-restriction { padding: var(--proto-space-5); margin-bottom: var(--proto-space-6); border: 1px solid var(--proto-line-journal); border-radius: var(--proto-radius-panel); background: var(--proto-canvas-white); }
 .linker-inquiry-restriction h2 { font-size: var(--proto-size-lg); }

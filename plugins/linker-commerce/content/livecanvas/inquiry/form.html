@@ -2,9 +2,9 @@
 	<div class="woocommerce-notices-wrapper">[lc_wc_notices]</div>
 	[linker_inquiry_restriction]
 	<div class="linker-inquiry-columns">
-		<form class="linker-inquiry-form" method="post" action="{{action}}">
+		<form class="linker-inquiry-form" data-inquiry-context="{{retention-context}}" method="post" action="{{action}}">
 			[linker_inquiry_hidden]
-			<header class="linker-inquiry-head"><a class="linker-inquiry-back" href="{{draft-url}}"><span aria-hidden="true">←</span> [linker_inquiry_text key="draft"]</a><h1>[linker_inquiry_text key="title"]</h1><p>[linker_inquiry_text key="intro"]</p></header>
+			<header class="linker-inquiry-head"><a class="linker-inquiry-back" data-inquiry-edit href="{{draft-url}}"><span aria-hidden="true">←</span> [linker_inquiry_text key="draft"]</a><h1>[linker_inquiry_text key="title"]</h1><p>[linker_inquiry_text key="intro"]</p></header>
 			<p class="linker-inquiry-error" role="alert">{{error}}</p>
 			<label class="linker-form-label" for="inquiry-message">[linker_inquiry_text key="message"]<textarea class="linker-form-input" id="inquiry-message" name="message" rows="5" maxlength="5000">{{message}}</textarea></label>
 			<details class="linker-inquiry-details" {{open}}>
@@ -17,10 +17,12 @@
 				</div>
 			</details>
 			<label class="linker-form-consent" {{guest-hide}}><input type="checkbox" name="consent" value="1" {{consent-attributes}} /><span>[linker_inquiry_text key="consent"] <a href="{{privacy}}">[linker_inquiry_text key="privacy"]</a></span></label>
+			<p class="linker-inquiry-draft-notice" data-inquiry-draft-pending role="status" hidden>[linker_inquiry_text key="update-before-send"]</p>
+			<p class="linker-inquiry-draft-notice" data-inquiry-retention-error role="alert" tabindex="-1" hidden>[linker_inquiry_text key="retention-error"]</p>
 			<button class="linker-form-primary" type="submit">[linker_inquiry_text key="send"] <span aria-hidden="true">↗</span></button>
 			<div class="linker-inquiry-reassurance"><span {{guest-hide}}>[linker_inquiry_text key="no-account"]</span><p class="linker-inquiry-promise">[linker_inquiry_text key="promise"]</p></div>
 			<div class="linker-inquiry-guest" {{guest-hide}}><a href="{{login-url}}">[linker_inquiry_text key="partner"]</a> [linker_create_account]</div>
 		</form>
-		<aside class="linker-inquiry-draft"><form class="woocommerce-cart-form" method="post" action="{{draft-action}}"><input type="hidden" name="proceed" value="1" /><div class="linker-inquiry-draft-head"><h2>[linker_inquiry_text key="draft"]</h2><a href="{{draft-url}}">[linker_inquiry_text key="edit"]</a></div><div class="linker-inquiry-lines woocommerce-cart-form__contents">[linker_inquiry_lines]</div>[linker_inquiry_draft_nonce]<button class="linker-inquiry-update" type="submit" name="update_cart" value="1" {{draft-empty}}>[linker_inquiry_text key="update"]</button></form></aside>
+		<aside class="linker-inquiry-draft"><form class="woocommerce-cart-form" method="post" action="{{draft-action}}"><input type="hidden" name="proceed" value="1" /><div class="linker-inquiry-draft-head"><h2>[linker_inquiry_text key="draft"]</h2><a data-inquiry-edit href="{{draft-url}}" {{draft-empty}}>[linker_inquiry_text key="edit"]</a></div><div class="linker-inquiry-lines woocommerce-cart-form__contents">[linker_inquiry_lines]</div>[linker_inquiry_draft_nonce]<button class="linker-inquiry-update" type="submit" name="update_cart" value="1" {{draft-empty}}>[linker_inquiry_text key="update"]</button></form></aside>
 	</div>
 </div>

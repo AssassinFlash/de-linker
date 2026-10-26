@@ -78,6 +78,7 @@ final class Form {
 			$error = __( 'Please check your entries and send the form again.', 'linker-commerce' );
 		}
 		$values = array(
+			'retention-context'  => hash_hmac( 'sha256', get_current_user_id() . '|' . wp_get_session_token(), wp_salt( 'nonce' ) ),
 			'name'               => $name,
 			'email'              => $email,
 			'company'            => $customer->get_billing_company(),
@@ -125,24 +126,26 @@ final class Form {
 	 */
 	public function text( $atts = array() ): string {
 		$words = array(
-			'title'      => __( 'Send an inquiry', 'linker-commerce' ),
-			'intro'      => __( 'Tell us what you need. The products in your solution draft will be included.', 'linker-commerce' ),
-			'message'    => __( 'Message (optional)', 'linker-commerce' ),
-			'details'    => __( 'Your reply details', 'linker-commerce' ),
-			'change'     => __( 'Change', 'linker-commerce' ),
-			'name'       => __( 'Name', 'linker-commerce' ),
-			'email'      => __( 'Reply email', 'linker-commerce' ),
-			'company'    => __( 'Company (optional)', 'linker-commerce' ),
-			'consent'    => __( 'I agree that my details may be used to respond to this message.', 'linker-commerce' ),
-			'privacy'    => __( 'Privacy', 'linker-commerce' ),
-			'send'       => __( 'Send inquiry', 'linker-commerce' ),
-			'promise'    => __( 'We reply within one business day.', 'linker-commerce' ),
-			'no-account' => __( 'No account needed.', 'linker-commerce' ),
-			'partner'    => __( 'Have an approved account? Log in for net prices and saved details.', 'linker-commerce' ),
-			'draft'      => __( 'Solution draft', 'linker-commerce' ),
-			'edit'       => __( 'Edit solution draft', 'linker-commerce' ),
-			'quantity'   => __( 'Quantity', 'linker-commerce' ),
-			'update'     => __( 'Update solution draft', 'linker-commerce' ),
+			'title'              => __( 'Send an inquiry', 'linker-commerce' ),
+			'intro'              => __( 'Tell us what you need. The products in your solution draft will be included.', 'linker-commerce' ),
+			'message'            => __( 'Message (optional)', 'linker-commerce' ),
+			'details'            => __( 'Your reply details', 'linker-commerce' ),
+			'change'             => __( 'Change', 'linker-commerce' ),
+			'name'               => __( 'Name', 'linker-commerce' ),
+			'email'              => __( 'Reply email', 'linker-commerce' ),
+			'company'            => __( 'Company (optional)', 'linker-commerce' ),
+			'consent'            => __( 'I agree that my details may be used to respond to this message.', 'linker-commerce' ),
+			'privacy'            => __( 'Privacy', 'linker-commerce' ),
+			'send'               => __( 'Send inquiry', 'linker-commerce' ),
+			'promise'            => __( 'We reply within one business day.', 'linker-commerce' ),
+			'no-account'         => __( 'No account needed.', 'linker-commerce' ),
+			'partner'            => __( 'Have an approved account? Log in for net prices and saved details.', 'linker-commerce' ),
+			'draft'              => __( 'Solution draft', 'linker-commerce' ),
+			'edit'               => __( 'Edit solution draft', 'linker-commerce' ),
+			'quantity'           => __( 'Quantity', 'linker-commerce' ),
+			'update'             => __( 'Update solution draft', 'linker-commerce' ),
+			'update-before-send' => __( 'Update the solution draft before sending your inquiry.', 'linker-commerce' ),
+			'retention-error'    => __( 'Your browser could not save your entries. Stay on this page to avoid losing them.', 'linker-commerce' ),
 		);
 		return esc_html( $words[ $atts['key'] ?? '' ] ?? '' );
 	}
