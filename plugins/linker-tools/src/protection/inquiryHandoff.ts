@@ -115,7 +115,6 @@ export async function restoreInquiry( config?: Config ): Promise< void > {
 		field.form?.querySelector< HTMLInputElement >(
 			'input[name="linker_inquiry_retained"]'
 		)?.value === '1';
-	const retained = retainsSubmission();
 	const path = window.location.pathname;
 	let edited = false;
 	const onEdit = () => {
@@ -140,6 +139,7 @@ export async function restoreInquiry( config?: Config ): Promise< void > {
 		if ( snapshot.size === 0 ) {
 			return;
 		}
+		const retained = retainsSubmission();
 		const identity = await nativeScope( routes, true );
 		const key = PREFIX + identity.scope;
 		const raw = snapshot.get( key );
