@@ -73,18 +73,22 @@ final class DocumentsMetaBoxTest extends TestCase {
 		$this->plain_text();
 		WP_Mock::userFunction( 'wp_nonce_field', array( 'return' => '' ) );
 		WP_Mock::userFunction( 'selected', array( 'return' => static fn ( string $a, string $b ): string => $a === $b ? ' selected' : '' ) );
+		$languages = array( 'DE', 'MUL', 'EN/DE', 'MULTI' );
+		$files     = array( 'manual.pdf', 'kept.pdf', 'gone.pdf', 'appended.pdf' );
+		$documents = array();
+		foreach ( $languages as $index => $language ) {
+			$documents[] = array(
+				'url'   => 'http://site/wp-content/uploads/2026/10/' . $files[ $index ],
+				'title' => 'GW5.1 Battery User Manual',
+				'type'  => 'manual',
+				'lang'  => $language,
+			);
+		}
 		WP_Mock::userFunction(
 			'get_post_meta',
 			array(
 				'args'   => array( 6521, EngineeringData::DOCUMENTS_META_KEY, true ),
-				'return' => array(
-					array(
-						'url'   => 'http://site/wp-content/uploads/2026/10/manual.pdf',
-						'title' => 'GW5.1 Battery User Manual',
-						'type'  => 'manual',
-						'lang'  => 'de',
-					),
-				),
+				'return' => $documents,
 			)
 		);
 
@@ -94,8 +98,23 @@ final class DocumentsMetaBoxTest extends TestCase {
 
 		$this->assertStringContainsString( 'linker_documents[0][url]', $html );
 		$this->assertStringContainsString( 'GW5.1 Battery User Manual', $html );
-		$this->assertStringContainsString( 'linker_documents[1][url]', $html, 'A spare row follows the stored one.' );
-		$this->assertStringContainsString( 'selected', $html, 'The stored type and language stay selected.' );
+		$this->assertStringContainsString( 'linker_documents[4][url]', $html, 'A spare row follows the stored documents.' );
+		$dom = new \DOMDocument();
+		$dom->loadHTML( $html, LIBXML_NOERROR | LIBXML_NOWARNING );
+		$xpath = new \DOMXPath( $dom );
+		foreach ( $languages as $index => $language ) {
+			$this->assertSame(
+				$language,
+				$xpath->evaluate( 'string(//select[@name="linker_documents[' . $index . '][lang]"]/option[@selected]/@value)' ),
+				'An untouched browser form must post the exact stored language.'
+			);
+		}
+		foreach ( array( 'certificate', 'compatibility', 'brochure' ) as $type ) {
+			$this->assertTrue(
+				$xpath->evaluate( 'boolean(//select[@name="linker_documents[4][type]"]/option[@value="' . $type . '"])' ),
+				'New rows must offer the document types used by the public register.'
+			);
+		}
 		$this->assertConditionsMet();
 	}
 

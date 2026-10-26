@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Admin;
 
 use Linker\Commerce\Products\EngineeringData;
+use Linker\Commerce\Products\DocumentLibrary;
 use Linker\Commerce\Products\Publication;
 use Linker\Commerce\Products\Publication\DocumentFiles;
 
@@ -31,7 +32,7 @@ final class DocumentsMetaBox {
 	/**
 	 * The document types the list uses, from the migrated data.
 	 */
-	private const TYPES = array( 'datasheet', 'manual', 'warranty', 'document' );
+	private const TYPES = DocumentLibrary::TYPE_ORDER;
 
 	/**
 	 * Empty rows offered below the stored ones, so an editor can add a
@@ -165,11 +166,25 @@ final class DocumentsMetaBox {
 		}
 		echo '</select></td>';
 		echo '<td><select style="width:100%" name="' . esc_attr( $field( 'lang' ) ) . '" aria-label="' . esc_attr__( 'Language', 'linker-commerce' ) . '">';
+		$languages = array();
+		$stored    = DocumentLibrary::language( $lang );
 		foreach ( array(
-			''   => '—',
-			'en' => 'EN',
-			'de' => 'DE',
+			''      => '—',
+			'en'    => 'EN',
+			'de'    => 'DE',
+			'mul'   => 'MUL',
+			'en/de' => 'EN/DE',
+			'de/en' => 'DE/EN',
 		) as $value => $label ) {
+			if ( '' !== $lang && $label === $stored ) {
+				$value = $lang;
+			}
+			$languages[ $value ] = $label;
+		}
+		if ( '' !== $lang && ! array_key_exists( $lang, $languages ) ) {
+			$languages[ $lang ] = $stored;
+		}
+		foreach ( $languages as $value => $label ) {
 			printf(
 				'<option value="%1$s"%2$s>%3$s</option>',
 				esc_attr( (string) $value ),
