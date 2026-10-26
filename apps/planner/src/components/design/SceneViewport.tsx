@@ -19,6 +19,9 @@ import {
 	Vector3,
 	Vector2,
 	WebGPURenderer,
+	Line,
+	LineBasicMaterial,
+	BufferGeometry,
 } from "three/webgpu";
 import type {
 	GeometryDocument,
@@ -65,6 +68,7 @@ interface SceneProps {
 	select: (id: string) => void;
 	commit: (command: GeometryCommand) => boolean;
 	disabled: boolean;
+	routes?: readonly (readonly Vec3[])[];
 }
 const vector = (point: Vec3) => new Vector3(...point);
 const sceneLens = { fov: SCENE_FOV_DEG };
@@ -432,6 +436,47 @@ function RendererLifecycle({ fail }: { fail: () => void }) {
 	return null;
 }
 
+function RouteLines({
+	paths,
+	reference,
+	color,
+}: {
+	paths: readonly (readonly Vec3[])[];
+	reference: Vec3;
+	color: string;
+}) {
+	const lines = useMemo(
+		() =>
+			paths.map((path) => {
+				const points = path.map((point) =>
+					toRender(add(point, scale(reference, -1))),
+				);
+				requireRenderCoordinates(points.flat());
+				return new Line(
+					new BufferGeometry().setFromPoints(points.map(vector)),
+					new LineBasicMaterial({ color, depthTest: false }),
+				);
+			}),
+		[paths, reference, color],
+	);
+	useEffect(
+		() => () => {
+			for (const line of lines) {
+				line.geometry.dispose();
+				line.material.dispose();
+			}
+		},
+		[lines],
+	);
+	return (
+		<>
+			{lines.map((line, i) => (
+				<primitive key={i} object={line} dispose={null} />
+			))}
+		</>
+	);
+}
+
 /** Loaded only when 3D is opened. Geometry persists independently of this GPU tree. */
 export default function SceneViewport(props: SceneProps) {
 	const compatibilityHelp = useId();
@@ -465,15 +510,19 @@ export default function SceneViewport(props: SceneProps) {
 			background: token("--proto-neutral-100"),
 		});
 	}, []);
-	const reference = props.document.roofs[0]?.origin_enu;
+	const reference =
+		props.document.roofs[0]?.origin_enu ?? props.routes?.[0]?.[0];
 	const bounds = useMemo(() => {
 		if (!reference) return null;
 		try {
-			const points = renderBoundsPoints(
-				props.document,
-				props.poses,
-				reference,
-			).map(vector);
+			const points = [
+				...(props.document.roofs.length
+					? renderBoundsPoints(props.document, props.poses, reference)
+					: []),
+				...(props.routes ?? []).flatMap((route) =>
+					route.map((point) => toRender(add(point, scale(reference, -1)))),
+				),
+			].map(vector);
 			const box = new Box3().setFromPoints(points),
 				centre = box.getCenter(new Vector3()),
 				size = box.getSize(new Vector3()).length();
@@ -481,16 +530,14 @@ export default function SceneViewport(props: SceneProps) {
 			return {
 				centre,
 				size,
-				direction: sceneViewDirection(
-					props.document,
-					props.selected,
-					props.poses,
-				),
+				direction: props.document.roofs.length
+					? sceneViewDirection(props.document, props.selected, props.poses)
+					: ([0, Math.SQRT1_2, Math.SQRT1_2] as Vec3),
 			};
 		} catch {
 			return null;
 		}
-	}, [props.document, props.poses, props.selected, reference]);
+	}, [props.document, props.poses, props.selected, props.routes, reference]);
 	return (
 		<div className="lp-scene-view" ref={host}>
 			{failed ? (
@@ -616,6 +663,13 @@ export default function SceneViewport(props: SceneProps) {
 								select={props.select}
 							/>
 							<SceneCamera extent={bounds} request={fitRequest} />
+							{props.routes && (
+								<RouteLines
+									paths={props.routes}
+									reference={reference}
+									color={palette.module}
+								/>
+							)}
 							<RendererLifecycle fail={() => setFailed(true)} />
 						</Canvas>
 					</SceneBoundary>
@@ -659,12 +713,14 @@ export default function SceneViewport(props: SceneProps) {
 					)}
 				</p>
 			</details>
-			<p className="lp-profile-help">
-				{__(
-					"Dragging the selected array's handles changes its position in the roof plane. Camera controls change only the view. Lighting is for display; it does not calculate shading losses.",
-					"linker-tools",
-				)}
-			</p>
+			{!props.disabled && (
+				<p className="lp-profile-help">
+					{__(
+						"Dragging the selected array's handles changes its position in the roof plane. Camera controls change only the view. Lighting is for display; it does not calculate shading losses.",
+						"linker-tools",
+					)}
+				</p>
+			)}
 		</div>
 	);
 }

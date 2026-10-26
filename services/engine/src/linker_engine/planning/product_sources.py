@@ -233,6 +233,7 @@ class ProductSources:
     def check_project(self, inputs: Object, previous: Object | None = None) -> None:
         """Retain unchanged history; new/edited product facts must come from Woo."""
         before = previous or {}
+        self.check_installation(inputs, before)
         changed = inputs.get("geometry") != before.get("geometry")
         pv_changed = inputs.get("pv_generation") != before.get("pv_generation")
         if (not changed and not pv_changed) or "geometry" not in inputs:
@@ -259,6 +260,33 @@ class ProductSources:
             self._check_module(module, basis)
         if pv_changed and "pv_generation" in inputs:
             self.check_pv_inputs(inputs, basis)
+
+    def check_installation(self, inputs: Object, previous: Object) -> None:
+        from .installation_inputs import InstallationInputs
+        from .installation_takeoff import product_basis
+
+        if "installation" not in inputs or inputs.get("installation") == previous.get(
+            "installation"
+        ):
+            return
+        plan = InstallationInputs.read(inputs["installation"])
+        old = (
+            InstallationInputs.read(previous["installation"])
+            if "installation" in previous
+            else None
+        )
+        bindings = (
+            {(d.id, d.product_id, d.product_revision) for d in old.instances}
+            if old
+            else set()
+        )
+        if any(
+            d.product_id is not None
+            and (d.id, d.product_id, d.product_revision) not in bindings
+            for d in plan.instances
+        ):
+            basis = product_basis(plan, self.equipment_basis())
+            self.confirm_basis(basis, require_reference=False)
 
     def pv_basis(self, inputs: Object) -> Object:
         basis = self.module_basis()

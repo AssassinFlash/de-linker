@@ -8,6 +8,7 @@ from linker_engine.models import Report, ReportRow, ReportSection, ReportTable
 
 from .canonical import Object
 from .comparison_report import comparison_sections
+from .installation_report import installation_sections
 from .project_materials import (
     material_name,
     material_quantity,
@@ -255,6 +256,7 @@ def build_report(source: Object) -> Report:
                     rows=list({(d.label, d.href): d for d in documents}.values()),
                 )
             )
+    sections.extend(installation_sections(source, locale))
     materials = source.get("materials")
     if not isinstance(materials, dict):
         materials = project_materials(source)
@@ -275,7 +277,17 @@ def build_report(source: Object) -> Report:
             ReportSection(
                 id="bom",
                 title=text("bom", locale),
-                paragraphs=[text("bom_scope", locale)],
+                paragraphs=[
+                    text(
+                        "installation_scope"
+                        if all(
+                            line["handling"] == "installation_requirement"
+                            for line in lines
+                        )
+                        else "bom_scope",
+                        locale,
+                    )
+                ],
                 rows=list(material_documents.values()),
                 table=ReportTable(
                     columns=[
@@ -560,9 +572,10 @@ def build_report(source: Object) -> Report:
         if item.get("candidate_id"):
             value += f" · {item['candidate_id']}"
         references.append(row("run", value))
-    sections.append(
-        ReportSection(id="basis", title=text("basis", locale), rows=references)
-    )
+    if references:
+        sections.append(
+            ReportSection(id="basis", title=text("basis", locale), rows=references)
+        )
     return Report(
         title=text("title", locale),
         subtitle=text("subtitle", locale),

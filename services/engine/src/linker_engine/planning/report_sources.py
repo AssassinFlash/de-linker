@@ -16,6 +16,8 @@ from .equipment_candidate_store import EquipmentCandidateStore
 from .equipment_inputs import EquipmentSelection
 from .equipment_kernel import EquipmentKernel
 from .errors import InvalidInput, ProductEvidenceChanged, VersionUnavailable
+from .installation_inputs import InstallationInputs
+from .installation_takeoff import product_basis, route_takeoff
 from .product_sources import ProductSources
 from .profile_assets import profile_dependencies
 from .pv_preparation import PvReferenceKernel
@@ -87,12 +89,16 @@ def report_sources(
         return run
 
     assessment: Object | None = None
-    comparison_only = options.comparison is not None and all(
-        identity is None
-        for identity in (
-            options.energy_run_id,
-            options.pv_run_id,
-            options.equipment_run_id,
+    comparison_only = (
+        not options.include_installation
+        and options.comparison is not None
+        and all(
+            identity is None
+            for identity in (
+                options.energy_run_id,
+                options.pv_run_id,
+                options.equipment_run_id,
+            )
         )
     )
     candidate = None if comparison_only else project.inputs.get("equipment_candidate")
@@ -300,7 +306,50 @@ def report_sources(
                             workspace.blobs.put_object(module_basis)
                         )
 
-    if not sources:
+    installation: Object | None = None
+    if options.include_installation:
+        plan = InstallationInputs.read(project.inputs.get("installation"))
+        if not plan.cable_runs:
+            raise InvalidInput(
+                "select at least one physical cable for the routing report"
+            )
+        basis = product_basis(plan, products.equipment_basis())
+        installation = route_takeoff(project.inputs, basis)
+        from .geometry_documents import GeometryDocument
+
+        geometry = GeometryDocument.read(project.inputs.get("geometry"))
+        instance_sources = {instance.source_id for instance in plan.instances}
+        if any(
+            s.id in instance_sources and s.permissions.export != "permitted"
+            for s in geometry.sources
+        ):
+            raise InvalidInput(
+                "installation instance source export permission is unconfirmed"
+            )
+        if any(
+            "source_export_unconfirmed" in cast(list[str], cable["reasons"])
+            for cable in cast(list[Object], installation["cables"])
+        ):
+            raise InvalidInput("installation source export permission is unconfirmed")
+        bases["installation"] = workspace.blobs.put_object(basis)
+        if isinstance(assessment, dict):
+            counts: dict[int, int] = {}
+            for instance in plan.instances:
+                if instance.product_id is not None:
+                    counts[instance.product_id] = counts.get(instance.product_id, 0) + 1
+            checked = {
+                p["product_id"]: p.get("quantity")
+                for p in cast(list[Object], assessment["provisional_bill_of_materials"])
+            }
+            if any(
+                type(checked.get(pid)) is not int or quantity > cast(int, checked[pid])
+                for pid, quantity in counts.items()
+            ):
+                raise ReportInputsChanged(
+                    "installation instances exceed the selected equipment assessment scope"
+                )
+
+    if not sources and installation is None:
         raise InvalidInput("select at least one completed analysis for the report")
     if isinstance(assessment, dict) and isinstance(
         assessment.get("pv_electrical"), dict
@@ -355,6 +404,7 @@ def report_sources(
         "equipment_selection": project.inputs.get("equipment_selection"),
         "candidate": candidate,
         "equipment": assessment,
+        "installation": installation,
         "energy": energy,
         "energy_equipment": energy.get("equipment_binding") if energy else None,
         "pv_components": component_list,
@@ -370,6 +420,8 @@ def report_sources(
     if comparison is not None:
         source["comparison"] = comparison
         dependencies["energy_comparison"] = workspace.blobs.put_object(comparison)
+    if installation is not None:
+        dependencies["installation_model"] = workspace.blobs.put_object(installation)
     confirm_report_sources(workspace, products, source)
     return source
 
@@ -390,6 +442,7 @@ def confirm_report_sources(
             not in {
                 "equipment",
                 "energy_equipment",
+                "installation",
             }
         )
     for sha, require_reference in distinct.items():

@@ -1,7 +1,7 @@
 """One frozen projection of established equipment, roof and included materials.
 
-Woo remains the maintained authority. This projection introduces no product
-facts or installation quantities, and does not turn reference modules into
+Woo remains the maintained authority. This projection introduces no manufacturer
+facts or inferred installation quantities, and does not turn reference modules into
 products that can be added to the solution draft.
 """
 
@@ -140,9 +140,27 @@ def project_materials(source: Object) -> Object:
                     "scope": pv["scope"],
                 }
             )
+    installation = source.get("installation")
+    if isinstance(installation, dict):
+        for cable in cast(list[Object], installation["cables"]):
+            lines.append(
+                {
+                    "id": f"installation:{cable['id']}",
+                    "handling": "installation_requirement",
+                    "label": {"en": cable["name"], "de": cable["name"]},
+                    "quantity": cable["quantity"],
+                    "unit": "m",
+                    "basis": installation["method"],
+                    "source": {
+                        "installation_input_sha256": installation["input_sha256"],
+                        "geometry_sha256": installation["geometry_sha256"],
+                        **cable,
+                    },
+                }
+            )
     return {
-        "schema_version": 2,
-        "kind": "project_materials_v2",
+        "schema_version": 3,
+        "kind": "project_materials_v3",
         "project_id": source["project_id"],
         "revision": source["revision"],
         "input_sha256": source["input_sha256"],
@@ -155,7 +173,7 @@ def project_materials(source: Object) -> Object:
 
 
 def material_name(line: Object, locale: str) -> str:
-    if line["handling"] == "manufacturer_included":
+    if line["handling"] in {"manufacturer_included", "installation_requirement"}:
         if isinstance(line.get("label"), dict):
             return cast(str, cast(Object, line["label"])[locale])
         return text(f"material_{line['kind']}", locale)

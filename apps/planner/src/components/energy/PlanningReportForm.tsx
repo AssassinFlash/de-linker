@@ -9,12 +9,14 @@ export function PlanningReportForm({
 	runs,
 	locale,
 	hasCandidate,
+	hasInstallation = false,
 	disabled,
 	generate,
 }: {
 	runs: readonly RunSummary[];
 	locale: string;
 	hasCandidate: boolean;
+	hasInstallation?: boolean;
 	disabled: boolean;
 	generate: (options: ReportOptions) => Promise<void>;
 }) {
@@ -25,6 +27,7 @@ export function PlanningReportForm({
 		[error, setError] = useState(false),
 		[reading, setReading] = useState(false);
 	const reader = useRef<FileReader | null>(null);
+	const [installation, setInstallation] = useState(false);
 	useEffect(() => () => reader.current?.abort(), []);
 	const [chosenRows, setChosenRows] = useState<Record<string, RunSummary>>({});
 	// Keep only the three explicit selections across history pages.
@@ -87,6 +90,7 @@ export function PlanningReportForm({
 		pv_run_id: pv || null,
 		equipment_run_id: equipment || null,
 		logo,
+		...(installation && hasInstallation ? { include_installation: true } : {}),
 	};
 	return (
 		<section className="lp-scenario-block">
@@ -98,6 +102,20 @@ export function PlanningReportForm({
 				)}
 			</p>
 			<div className="lp-scenario-fields">
+				{hasInstallation && (
+					<label className="lp-check">
+						<input
+							type="checkbox"
+							checked={installation}
+							disabled={disabled}
+							onChange={(e) => setInstallation(e.currentTarget.checked)}
+						/>
+						{__(
+							"Include installation routes from the saved project",
+							"linker-tools",
+						)}
+					</label>
+				)}
 				{choose(
 					"single_ac_energy_replay_v1",
 					energy,
@@ -184,7 +202,11 @@ export function PlanningReportForm({
 					disabled ||
 					error ||
 					reading ||
-					(!hasCandidate && !energy && !pv && !equipment)
+					(!hasCandidate &&
+						!energy &&
+						!pv &&
+						!equipment &&
+						!(installation && hasInstallation))
 				}
 				onClick={() => void generate(options)}
 			>

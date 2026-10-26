@@ -1,0 +1,334 @@
+{
+  "$defs": {
+    "CableRun": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "name": {
+          "$ref": "#/$defs/Text"
+        },
+        "circuit_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "route_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "construction": {
+          "enum": [
+            "single_conductor",
+            "multicore_cable",
+            "unspecified"
+          ],
+          "title": "Construction",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "circuit_id",
+        "route_id",
+        "construction"
+      ],
+      "title": "CableRun",
+      "type": "object"
+    },
+    "ConnectionPoint": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "name": {
+          "$ref": "#/$defs/Text"
+        },
+        "position": {
+          "$ref": "#/$defs/RoutePoint"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "position"
+      ],
+      "title": "ConnectionPoint",
+      "type": "object"
+    },
+    "Count": {
+      "exclusiveMinimum": 0,
+      "maximum": 9007199254740991,
+      "type": "integer"
+    },
+    "DeviceInstance": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "name": {
+          "$ref": "#/$defs/Text"
+        },
+        "product_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Count"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "product_revision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Hash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "ports": {
+          "items": {
+            "$ref": "#/$defs/ConnectionPoint"
+          },
+          "minItems": 1,
+          "title": "Ports",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "product_id",
+        "product_revision",
+        "source_id",
+        "ports"
+      ],
+      "title": "DeviceInstance",
+      "type": "object"
+    },
+    "Endpoint": {
+      "additionalProperties": false,
+      "properties": {
+        "instance_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "port_id": {
+          "$ref": "#/$defs/Identifier"
+        }
+      },
+      "required": [
+        "instance_id",
+        "port_id"
+      ],
+      "title": "Endpoint",
+      "type": "object"
+    },
+    "Hash": {
+      "pattern": "^[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "Identifier": {
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "type": "string"
+    },
+    "InstallationCircuit": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "name": {
+          "$ref": "#/$defs/Text"
+        },
+        "kind": {
+          "enum": [
+            "pv_dc",
+            "battery_dc",
+            "ac",
+            "control",
+            "protective_earth",
+            "other"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "start": {
+          "$ref": "#/$defs/Endpoint"
+        },
+        "end": {
+          "$ref": "#/$defs/Endpoint"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "kind",
+        "start",
+        "end"
+      ],
+      "title": "InstallationCircuit",
+      "type": "object"
+    },
+    "InstallationRoute": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "name": {
+          "$ref": "#/$defs/Text"
+        },
+        "source_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "points": {
+          "items": {
+            "$ref": "#/$defs/RoutePoint"
+          },
+          "minItems": 2,
+          "title": "Points",
+          "type": "array"
+        },
+        "extra_length_m": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Nonnegative"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "extra_length_note": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Text"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "source_id",
+        "points",
+        "extra_length_m",
+        "extra_length_note"
+      ],
+      "title": "InstallationRoute",
+      "type": "object"
+    },
+    "Nonnegative": {
+      "minimum": 0,
+      "type": "number"
+    },
+    "Number": {
+      "maximum": 9007199254740991,
+      "minimum": -9007199254740991,
+      "type": "number"
+    },
+    "RoutePoint": {
+      "additionalProperties": false,
+      "properties": {
+        "east_m": {
+          "$ref": "#/$defs/Number"
+        },
+        "north_m": {
+          "$ref": "#/$defs/Number"
+        },
+        "height_m": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "east_m",
+        "north_m",
+        "height_m"
+      ],
+      "title": "RoutePoint",
+      "type": "object"
+    },
+    "SchemaVersion": {
+      "maximum": 1,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "Text": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "$ref": "#/$defs/SchemaVersion"
+    },
+    "geometry_sha256": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Hash"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "instances": {
+      "items": {
+        "$ref": "#/$defs/DeviceInstance"
+      },
+      "title": "Instances",
+      "type": "array"
+    },
+    "circuits": {
+      "items": {
+        "$ref": "#/$defs/InstallationCircuit"
+      },
+      "title": "Circuits",
+      "type": "array"
+    },
+    "routes": {
+      "items": {
+        "$ref": "#/$defs/InstallationRoute"
+      },
+      "title": "Routes",
+      "type": "array"
+    },
+    "cable_runs": {
+      "items": {
+        "$ref": "#/$defs/CableRun"
+      },
+      "title": "Cable Runs",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "geometry_sha256",
+    "instances",
+    "circuits",
+    "routes",
+    "cable_runs"
+  ],
+  "title": "InstallationInputs",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

@@ -367,6 +367,60 @@ TEXT = {
         "Manufacturer package contents",
         "Herstellerseitiger Lieferumfang",
     ),
+    "material_installation_requirement": (
+        "Installation requirement · specification pending",
+        "Installationsbedarf · Spezifikation offen",
+    ),
+    "installation": ("Installation routing", "Leitungswege der Installation"),
+    "installation_scope": (
+        "Each listed cable or conductor is one physical run. Lengths use the saved three-dimensional path and explicitly declared extra length. Cable sizing, connector matching, protection, earthing, mounting and country requirements have not been assessed by this route calculation.",
+        "Jede Zeile steht für eine einzelne Leitung oder einen separat geführten Leiter. Die Länge ergibt sich aus dem gespeicherten dreidimensionalen Leitungsweg zuzüglich der ausdrücklich angegebenen Zusatzlänge. Die Auslegung der Leitungen, die Kompatibilität der Steckverbinder, Schutzmaßnahmen, Erdung, Montage und länderspezifische Anforderungen werden durch diese Längenberechnung nicht geprüft.",
+    ),
+    "installation_instances": (
+        "Physical devices and site connections",
+        "Geräte und Anschlüsse am Standort",
+    ),
+    "installation_instance_scope": (
+        "Connection point names and positions are project inputs. They do not establish manufacturer terminal ratings or approve the circuit design.",
+        "Namen und Positionen der Anschlusspunkte sind Projektangaben. Die Bemessungswerte der Herstelleranschlüsse und die Auslegung des Stromkreises werden damit nicht geprüft.",
+    ),
+    "installation_instance": (
+        "Device or site connection",
+        "Gerät oder Anschluss am Standort",
+    ),
+    "installation_ports": ("Connection points", "Anschlusspunkte"),
+    "installation_site_point": ("Site connection", "Anschluss am Standort"),
+    "installation_circuit": ("Circuit / route", "Stromkreis / Leitungsweg"),
+    "installation_pending": ("Quantity not confirmed", "Menge nicht bestätigt"),
+    "installation_length": (
+        "Route length + extra length",
+        "Leitungsweglänge + Zusatzlänge",
+    ),
+    "installation_layout_confirmation_required": (
+        "Confirm against the current layout",
+        "Mit der aktuellen Planung abgleichen",
+    ),
+    "installation_source_missing": (
+        "Measurement or drawing source missing",
+        "Quelle für Messung oder Zeichnung fehlt",
+    ),
+    "installation_source_export_unconfirmed": (
+        "Source export permission unconfirmed",
+        "Berechtigung zum Export der Quelldaten nicht bestätigt",
+    ),
+    "installation_route_endpoints_differ": (
+        "Route endpoints differ from the saved connection points",
+        "Endpunkte des Leitungswegs weichen von den gespeicherten Anschlusspunkten ab",
+    ),
+    "installation_height_missing": ("Elevation missing", "Höhenangabe fehlt"),
+    "installation_extra_length_unconfirmed": (
+        "Extra length or its basis is missing",
+        "Zusatzlänge oder deren Grundlage fehlt",
+    ),
+    "installation_route_length_not_positive": (
+        "A positive route length is required",
+        "Die Leitungsweglänge muss größer als null sein",
+    ),
     "pv_components_roof_scope": (
         "Module counts come from the saved roof used by the selected equipment check. The modules are design references; electrical and mounting suitability require project-specific assessment.",
         "Die Stückzahlen stammen aus der gespeicherten Dachbelegung der ausgewählten Geräteprüfung. Die Module dienen als Auslegungsreferenz; ihre elektrische Eignung und ihre Eignung für die Montage müssen projektspezifisch geprüft werden.",

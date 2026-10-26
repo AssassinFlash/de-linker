@@ -329,6 +329,7 @@ msgstr "Wird berechnet …"
 #: ../../apps/planner/src/components/NewProject.tsx
 #: build/planner/assets/planner.js
 #: build/genie.js:10 build/genie.js:19 build/hero.js
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:446
 msgid "Cancel"
 msgstr "Abbrechen"
 
@@ -1114,6 +1115,12 @@ msgid "My device is the %s"
 msgstr "Mein Gerät ist das Modell %s"
 
 #: build/genie.js build/hero.js
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:506
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:154
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:304
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:392
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:531
+#: build/planner/assets/planner.js
 msgid "Name"
 msgstr "Name"
 
@@ -1483,6 +1490,8 @@ msgstr "Freigegeben mit Zubehör"
 
 #: src/genie/components/EntryInbox.tsx src/hero/Hero.tsx build/genie.js
 #: build/hero.js
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:437
+#: build/planner/assets/planner.js
 msgid "Remove"
 msgstr "Entfernen"
 
@@ -3243,6 +3252,7 @@ msgstr "Berechnungsjahr"
 
 #: build/planner/assets/planner.js
 #: ../../apps/planner/src/components/design/SourceForm.tsx:68
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:313
 msgid "Calibration and measurement conditions"
 msgstr "Kalibrierung und Messbedingungen"
 
@@ -3408,6 +3418,7 @@ msgid "Choose a model"
 msgstr "Modell auswählen"
 
 #: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:42
 msgid "Choose a source"
 msgstr "Quelle auswählen"
 
@@ -3689,6 +3700,7 @@ msgstr ""
 
 #: build/planner/assets/planner.js
 #: ../../apps/planner/src/components/design/SourceForm.tsx:58
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:307
 msgid "Declared spatial precision"
 msgstr "Angegebene räumliche Genauigkeit"
 
@@ -4460,6 +4472,8 @@ msgid "Input SHA-256"
 msgstr "SHA-256 der Eingabedaten"
 
 #: build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:64
+#: build/planner/assets/planner.js
 msgid "Input needs attention"
 msgstr "Eingabe prüfen"
 
@@ -5092,6 +5106,7 @@ msgstr "Nicht freigegeben"
 
 #: build/planner/assets/planner.js
 #: ../../apps/planner/src/components/design/RoofForm.tsx:66
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:270
 msgid "Not recorded."
 msgstr "Nicht erfasst."
 
@@ -5507,6 +5522,7 @@ msgstr ""
 
 #: build/planner/assets/planner.js
 #: ../../apps/planner/src/components/design/SourceForm.tsx:84
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:320
 msgid "Permission or licence basis"
 msgstr "Berechtigungs- oder Lizenzgrundlage"
 
@@ -6693,6 +6709,8 @@ msgstr "Quelle bereit"
 #: build/planner/assets/planner.js
 #: ../../apps/planner/src/components/design/ShapeForm.tsx:85
 #: ../../apps/planner/src/components/design/SourceForm.tsx:51
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:287
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:40
 msgid "Source reference"
 msgstr "Quellenreferenz"
 
@@ -6721,6 +6739,7 @@ msgstr "Zeitzone der Quelldaten"
 #: ../../apps/planner/src/components/ProfileMapping.tsx:215
 #: ../../apps/planner/src/components/ProfileReview.tsx:40
 #: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:292
 msgid "Source type"
 msgstr "Art der Datenquelle"
 
@@ -8702,6 +8721,7 @@ msgstr "Aktuelle Produktdaten werden vorbereitet."
 
 #: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:213
 #: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:489
 msgid "Reload product data"
 msgstr "Produktdaten neu laden"
 
@@ -8758,6 +8778,7 @@ msgstr "Zusätzliche Produkte"
 
 #: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:338
 #: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:459
 msgid "Use current product data"
 msgstr "Aktuelle Produktdaten übernehmen"
 
@@ -10585,3 +10606,412 @@ msgstr "Die Datei konnte nicht heruntergeladen werden. Versuchen Sie es erneut."
 #: build/planner/assets/planner.js
 msgid "Recover the stored request below before starting a new calculation or report."
 msgstr "Rufen Sie zuerst das Ergebnis der unten gespeicherten Anfrage ab. Danach können Sie eine neue Berechnung oder einen neuen Bericht starten."
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:42
+#: build/planner/assets/planner.js
+msgid "Confirm against the current layout"
+msgstr "Mit der aktuellen Planung abgleichen"
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:45
+#: build/planner/assets/planner.js
+msgid "Measurement or drawing source missing"
+msgstr "Quelle für Messung oder Zeichnung fehlt"
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:47
+#: build/planner/assets/planner.js
+msgid "Source export permission unconfirmed"
+msgstr "Berechtigung zum Export der Quelldaten nicht bestätigt"
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:51
+#: build/planner/assets/planner.js
+msgid "Route endpoints differ from the saved connection points"
+msgstr "Endpunkte des Leitungswegs weichen von den gespeicherten Anschlusspunkten ab"
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:54
+#: build/planner/assets/planner.js
+msgid "Elevation missing"
+msgstr "Höhenangabe fehlt"
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:56
+#: build/planner/assets/planner.js
+msgid "Extra length or its basis is missing"
+msgstr "Zusatzlänge oder deren Grundlage fehlt"
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:60
+#: build/planner/assets/planner.js
+msgid "A positive route length is required"
+msgstr "Die Leitungsweglänge muss größer als null sein"
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:184
+#: build/planner/assets/planner.js
+msgid "Physical devices and site connections"
+msgstr "Geräte und Anschlüsse am Standort"
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:185
+#: build/planner/assets/planner.js
+msgid "Circuits"
+msgstr "Stromkreise"
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:186
+#: build/planner/assets/planner.js
+msgid "Recorded routes"
+msgstr "Erfasste Leitungswege"
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:187
+#: build/planner/assets/planner.js
+msgid "Physical cables and conductors"
+msgstr "Leitungen und Einzelleiter"
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:190
+#: build/planner/assets/planner.js
+msgid "Add device or site connection"
+msgstr "Gerät oder Anschluss am Standort hinzufügen"
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:191
+#: build/planner/assets/planner.js
+msgid "Add circuit"
+msgstr "Stromkreis hinzufügen"
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:192
+#: build/planner/assets/planner.js
+msgid "Add route"
+msgstr "Leitungsweg hinzufügen"
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:193
+#: build/planner/assets/planner.js
+msgid "Add cable or conductor"
+msgstr "Leitung oder Leiter hinzufügen"
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:218
+#: ../../apps/planner/src/components/ProjectEditor.tsx:342
+#: ../../apps/planner/src/components/ProjectEditor.tsx:510
+#: build/planner/assets/planner.js
+msgid "Installation routing"
+msgstr "Leitungswege der Installation"
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:222
+#: build/planner/assets/planner.js
+msgid "Place the devices and connection points, record the routes, then calculate cable and conductor lengths. Save the project to include these inputs in a planning report."
+msgstr "Positionieren Sie die Geräte und Anschlusspunkte, erfassen Sie die Leitungswege und berechnen Sie anschließend die Längen der Leitungen und Leiter. Speichern Sie das Projekt, um diese Eingaben in einen Planungsbericht aufzunehmen."
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:230
+#: build/planner/assets/planner.js
+msgid "This step calculates lengths from the positions and routes you record. Cable sizing, protection, earthing, mounting, connector matching and country requirements remain separate engineering checks."
+msgstr "In diesem Schritt werden die Längen anhand der von Ihnen erfassten Positionen und Leitungswege berechnet. Die Auslegung der Leitungen, Schutzmaßnahmen, Erdung, Montage, die Kompatibilität der Steckverbinder und länderspezifische Anforderungen sind gesondert fachlich zu prüfen."
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:237
+#: build/planner/assets/planner.js
+msgid "Add the source of your site measurements or drawing before recording positions. A roof layout is optional."
+msgstr "Legen Sie zuerst eine Quelle für Ihre Messungen vor Ort oder Ihre Projektzeichnung an, bevor Sie Positionen erfassen. Eine Dachbelegung ist optional."
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:245
+#: build/planner/assets/planner.js
+msgid "Installation quantities could not be confirmed. Check the device data, sources and route inputs; your recorded work remains available."
+msgstr "Die Installationsmengen konnten nicht bestätigt werden. Prüfen Sie die Gerätedaten, Quellen und Angaben zu den Leitungswegen. Ihre bisherigen Eingaben bleiben erhalten."
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:252
+#: build/planner/assets/planner.js
+msgid "Measurement or drawing source"
+msgstr "Quelle für Messung oder Zeichnung"
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:295
+#: build/planner/assets/planner.js
+msgid "Choose a source type"
+msgstr "Art der Datenquelle auswählen"
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:298
+#: build/planner/assets/planner.js
+msgid "Site measurement"
+msgstr "Messung vor Ort"
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:301
+#: build/planner/assets/planner.js
+msgid "Project drawing"
+msgstr "Projektzeichnung"
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:327
+#: build/planner/assets/planner.js
+msgid "I may save, use and export these project measurements or drawing data."
+msgstr "Ich bin berechtigt, diese Projektmessungen oder Zeichnungsdaten zu speichern, zu verwenden und zu exportieren."
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:366
+#: build/planner/assets/planner.js
+msgid "Add measurement or drawing source"
+msgstr "Quelle für Messung oder Zeichnung hinzufügen"
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:374
+#: build/planner/assets/planner.js
+msgid "Plan view"
+msgstr "Draufsicht"
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:381
+#: build/planner/assets/planner.js
+msgid "3D view"
+msgstr "3D-Ansicht"
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:422
+#: build/planner/assets/planner.js
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:430
+#: build/planner/assets/planner.js
+msgid "Remove linked connections first"
+msgstr "Entfernen Sie zuerst die verknüpften Verbindungen"
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:498
+#: build/planner/assets/planner.js
+msgid "Checking…"
+msgstr "Wird geprüft…"
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:499
+#: build/planner/assets/planner.js
+msgid "Check route quantities"
+msgstr "Leitungslängen prüfen"
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:507
+#: build/planner/assets/planner.js
+msgid "Calculated length (m)"
+msgstr "Berechnete Länge (m)"
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:508
+#: build/planner/assets/planner.js
+msgid "Quantity basis"
+msgstr "Mengengrundlage"
+
+#: ../../apps/planner/src/components/installation/NetworkViewport.tsx:66
+#: build/planner/assets/planner.js
+msgid "Installation plan · East and North in metres"
+msgstr "Installationsplan · Ost- und Nordkoordinaten in Metern"
+
+#: ../../apps/planner/src/components/installation/NetworkViewport.tsx:140
+#: build/planner/assets/planner.js
+msgid "Click to add a plan point, then enter its height from the source measurement or drawing."
+msgstr "Klicken Sie, um einen Punkt in der Draufsicht hinzuzufügen. Tragen Sie anschließend die Höhe aus der zugrunde liegenden Messung oder Zeichnung ein."
+
+#: ../../apps/planner/src/components/installation/NetworkViewport.tsx:144
+#: build/planner/assets/planner.js
+msgid "Plan view shows horizontal positions. Heights remain in the route properties and 3D view."
+msgstr "Die Draufsicht zeigt die horizontalen Positionen. Höhenangaben finden Sie bei den Leitungswegen und in der 3D-Ansicht."
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:65
+#: build/planner/assets/planner.js
+msgid "East"
+msgstr "Ostkoordinate"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:71
+#: build/planner/assets/planner.js
+msgid "North"
+msgstr "Nordkoordinate"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:77
+#: build/planner/assets/planner.js
+msgid "Height above project origin"
+msgstr "Höhe über dem Projektursprung"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:121
+#: build/planner/assets/planner.js
+msgid "Device instance or site connection"
+msgstr "Einzelgerät oder Anschluss am Standort"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:158
+#: build/planner/assets/planner.js
+msgid "Device or site connection"
+msgstr "Gerät oder Anschluss am Standort"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:171
+#: build/planner/assets/planner.js
+msgid "Choose a product or site connection"
+msgstr "Produkt oder Anschluss am Standort auswählen"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:173
+#: build/planner/assets/planner.js
+msgid "Site connection"
+msgstr "Anschluss am Standort"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:177
+#: build/planner/assets/planner.js
+msgid "Saved device · current data unavailable"
+msgstr "Gespeichertes Gerät · aktuelle Daten nicht verfügbar"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:193
+#: build/planner/assets/planner.js
+msgid "Give each physical device its own name. Connection point names and positions describe your site; manufacturer ratings remain in the product data."
+msgstr "Geben Sie jedem einzelnen Gerät einen eigenen Namen. Namen und Positionen der Anschlusspunkte beschreiben die Verhältnisse vor Ort. Die Bemessungswerte des Herstellers bleiben Bestandteil der Produktdaten."
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:201
+#: build/planner/assets/planner.js
+msgid "Connection point name"
+msgstr "Name des Anschlusspunkts"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:217
+#: build/planner/assets/planner.js
+msgid "Remove connection point"
+msgstr "Anschlusspunkt entfernen"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:231
+#: build/planner/assets/planner.js
+msgid "Add connection point"
+msgstr "Anschlusspunkt hinzufügen"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:250
+#: build/planner/assets/planner.js
+msgid "From connection point"
+msgstr "Anschlusspunkt (Start)"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:251
+#: build/planner/assets/planner.js
+msgid "To connection point"
+msgstr "Anschlusspunkt (Ende)"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:259
+#: build/planner/assets/planner.js
+msgid "Choose a connection point"
+msgstr "Anschlusspunkt auswählen"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:285
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:535
+#: build/planner/assets/planner.js
+msgid "Circuit"
+msgstr "Stromkreis"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:308
+#: build/planner/assets/planner.js
+msgid "Connection type"
+msgstr "Verbindungsart"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:311
+#: build/planner/assets/planner.js
+msgid "Choose connection type"
+msgstr "Verbindungsart auswählen"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:314
+#: build/planner/assets/planner.js
+msgid "PV DC"
+msgstr "PV-DC"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:315
+#: build/planner/assets/planner.js
+msgid "Battery DC"
+msgstr "Batterie-DC"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:316
+#: build/planner/assets/planner.js
+msgid "AC"
+msgstr "AC"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:317
+#: build/planner/assets/planner.js
+msgid "Control / communication"
+msgstr "Steuerung / Kommunikation"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:318
+#: build/planner/assets/planner.js
+msgid "Protective earthing"
+msgstr "Schutzerdung"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:319
+#: build/planner/assets/planner.js
+msgid "Other"
+msgstr "Sonstige"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:374
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:546
+#: build/planner/assets/planner.js
+msgid "Recorded route"
+msgstr "Erfasster Leitungsweg"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:400
+#: build/planner/assets/planner.js
+msgid "Use current circuit endpoints"
+msgstr "Aktuelle Anschlusspunkte des Stromkreises übernehmen"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:403
+#: build/planner/assets/planner.js
+msgid "Choose a circuit to set the endpoints"
+msgstr "Stromkreis zur Übernahme der Anschlusspunkte auswählen"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:414
+#: build/planner/assets/planner.js
+msgid "Record every bend and vertical section in project metres. A blank height keeps the complete cable length unconfirmed."
+msgstr "Erfassen Sie jede Richtungsänderung und jeden senkrechten Abschnitt in Metern im Projektkoordinatensystem. Ohne Höhenangabe bleibt die vollständige Leitungslänge unbestätigt."
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:447
+#: build/planner/assets/planner.js
+msgid "Pick a bend in plan view"
+msgstr "Richtungsänderung in der Draufsicht markieren"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:464
+#: build/planner/assets/planner.js
+msgid "Add route point"
+msgstr "Punkt zum Leitungsweg hinzufügen"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:478
+#: build/planner/assets/planner.js
+msgid "Remove route point"
+msgstr "Punkt aus dem Leitungsweg entfernen"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:484
+#: build/planner/assets/planner.js
+msgid "Additional length (m)"
+msgstr "Zusatzlänge (m)"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:491
+#: build/planner/assets/planner.js
+msgid "Basis for additional length"
+msgstr "Grundlage für die Zusatzlänge"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:498
+#: build/planner/assets/planner.js
+msgid "Enter 0 and its basis when the recorded path already includes all required length. No allowance is added automatically."
+msgstr "Geben Sie 0 mit einer Begründung an, wenn der erfasste Leitungsweg bereits die gesamte benötigte Länge umfasst. Ein Zuschlag wird nicht automatisch addiert."
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:515
+#: build/planner/assets/planner.js
+msgid "Physical cable or conductor"
+msgstr "Leitung oder Einzelleiter"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:537
+#: build/planner/assets/planner.js
+msgid "Choose a circuit"
+msgstr "Stromkreis auswählen"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:548
+#: build/planner/assets/planner.js
+msgid "Choose a route"
+msgstr "Leitungsweg auswählen"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:557
+#: build/planner/assets/planner.js
+msgid "Physical construction"
+msgstr "Bauart"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:563
+#: build/planner/assets/planner.js
+msgid "Choose construction"
+msgstr "Bauart auswählen"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:565
+#: build/planner/assets/planner.js
+msgid "One separate conductor"
+msgstr "Ein separat geführter Leiter"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:568
+#: build/planner/assets/planner.js
+msgid "One multicore cable"
+msgstr "Eine mehradrige Leitung"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:571
+#: build/planner/assets/planner.js
+msgid "Not yet specified"
+msgstr "Noch nicht festgelegt"
+
+#: ../../apps/planner/src/components/installation/NetworkForms.tsx:577
+#: build/planner/assets/planner.js
+msgid "Add one row for each physical length. Two separate DC conductors need two rows; one multicore cable needs one row."
+msgstr "Erfassen Sie jede einzelne Leitung bzw. jeden separat geführten Leiter in einer eigenen Zeile. Zwei separate DC-Leiter benötigen zwei Zeilen; eine mehradrige Leitung benötigt eine Zeile."
+
+#: ../../apps/planner/src/components/energy/PlanningReportForm.tsx:114
+#: build/planner/assets/planner.js
+msgid "Include installation routes from the saved project"
+msgstr "Leitungswege aus dem gespeicherten Projekt aufnehmen"

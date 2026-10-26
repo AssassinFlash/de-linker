@@ -84,6 +84,10 @@ class ProjectInputs(Command):
             from .pv_string_inputs import PvStringPlan
 
             PvStringPlan.model_validate(value["pv_string_plan"])
+        if "installation" in value:
+            from .installation_inputs import InstallationInputs
+
+            InstallationInputs.model_validate(value["installation"])
         if "equipment_requirements" in value:
             from .equipment_requirements import EquipmentRequirements
 
@@ -98,6 +102,27 @@ class ProjectInputs(Command):
 class ProjectCreate(ProjectInputs):
     title: Annotated[str, Field(min_length=1, max_length=256)]
     key: Key
+
+
+class InstallationReview(Command):
+    project_id: Id
+    geometry: Object
+    installation: Object
+    bind_geometry: bool
+
+    @field_validator("geometry")
+    @classmethod
+    def geometry_document(cls, value: Object) -> Object:
+        GeometryDocument.read(value)
+        return value
+
+    @field_validator("installation")
+    @classmethod
+    def installation_document(cls, value: Object) -> Object:
+        from .installation_inputs import InstallationInputs
+
+        InstallationInputs.read(value)
+        return value
 
 
 class ProjectRead(Command):

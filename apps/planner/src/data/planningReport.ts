@@ -15,6 +15,7 @@ export interface ReportOptions extends JsonObject {
 	equipment_run_id: string | null;
 	logo: string | null;
 	comparison?: { baseline_run_id: string; candidate_run_id: string } | null;
+	include_installation?: boolean;
 }
 export interface ReportRow {
 	label: string;
@@ -142,7 +143,8 @@ export function readReportResult(
 			!csv.id ||
 			csv.project_id !== run.project_id ||
 			(csv.purpose !== "planning_materials_csv_v1" &&
-				csv.purpose !== "planning_materials_csv_v2") ||
+				csv.purpose !== "planning_materials_csv_v2" &&
+				csv.purpose !== "planning_materials_csv_v3") ||
 			csv.media_type !== "text/csv" ||
 			!hash(csv.content_sha256) ||
 			!hash(csv.metadata_sha256) ||

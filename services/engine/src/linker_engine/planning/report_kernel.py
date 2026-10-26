@@ -29,7 +29,8 @@ class ReportKernel:
     models = {
         "task": kind,
         "report": "frozen_project_report_v1",
-        "materials": "project_materials_v2",
+        "materials": "project_materials_v3",
+        "installation": "installation_route_takeoff_v1",
     }
 
     def __init__(self, workspace: Workspace, products: ProductSources) -> None:
@@ -145,7 +146,7 @@ class ReportKernel:
                 materials, cast(str, dependencies["materials_model"]), report.locale
             ),
             "text/csv",
-            "planning_materials_csv_v2",
+            "planning_materials_csv_v3",
             {
                 "retention": "permanent",
                 "provenance": {
@@ -172,7 +173,7 @@ class ReportKernel:
                 "materials_sha256": dependencies["materials_model"],
                 "has_draft_items": any(
                     isinstance(line, dict) and line.get("handling") == "woo_product"
-                    for line in cast(list, materials["lines"])
+                    for line in cast(list[Object], materials["lines"])
                 ),
                 "source_runs": source["source_runs"],
                 "equipment_candidate": source["candidate"],

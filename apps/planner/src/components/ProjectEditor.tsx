@@ -44,9 +44,17 @@ import { revealActionResult } from "./revealActionResult.ts";
 import { EnergyWorkspace } from "./energy/EnergyWorkspace.tsx";
 import { invalidateEnergyReplay } from "../domain/energyScenario.ts";
 import { replacePlannerLocation } from "../data/plannerLocation.ts";
+import { InstallationEditor } from "./installation/InstallationEditor.tsx";
+import { readInstallation } from "../domain/installation.ts";
 
 type ProjectWorkspace =
-	"overview" | "site" | "energy" | "design" | "calculations" | "equipment";
+	| "overview"
+	| "site"
+	| "energy"
+	| "design"
+	| "calculations"
+	| "equipment"
+	| "installation";
 const workspaceHash = {
 	overview: "lp-overview",
 	site: "lp-site",
@@ -54,6 +62,7 @@ const workspaceHash = {
 	design: "lp-design",
 	calculations: "lp-calculations",
 	equipment: "lp-equipment",
+	installation: "lp-installation",
 } as const;
 const workspaceTarget = { ...workspaceHash, site: "lp-brief-use" } as const;
 const mapPropertyHashes: readonly string[] = [
@@ -62,6 +71,7 @@ const mapPropertyHashes: readonly string[] = [
 	"#lp-map-feature-properties",
 ];
 function workspaceFromHash(): ProjectWorkspace {
+	if (window.location.hash === "#lp-installation") return "installation";
 	if (window.location.hash === "#lp-equipment") return "equipment";
 	if (
 		window.location.hash === "#lp-calculations" ||
@@ -123,7 +133,8 @@ export function ProjectEditor({
 	const [briefValid, setBriefValid] = useState(true);
 	const [designValid, setDesignValid] = useState(true);
 	const [energyValid, setEnergyValid] = useState(true);
-	const valid = briefValid && designValid && energyValid;
+	const [installationValid, setInstallationValid] = useState(true);
+	const valid = briefValid && designValid && energyValid && installationValid;
 	const [workspace, setWorkspace] =
 		useState<ProjectWorkspace>(workspaceFromHash);
 	const [calculationsOpened, setCalculationsOpened] = useState(() =>
@@ -279,6 +290,7 @@ export function ProjectEditor({
 		geometryImports = readGeometryImports(
 			draft.history.current.geometry_imports,
 		);
+		readInstallation(draft.history.current.installation);
 	} catch {
 		return (
 			<Notice error>
@@ -326,6 +338,9 @@ export function ProjectEditor({
 							{__("Energy calculation", "linker-tools")}
 						</option>
 						<option value="equipment">{__("Equipment", "linker-tools")}</option>
+						<option value="installation">
+							{__("Installation routing", "linker-tools")}
+						</option>
 					</select>
 				</div>
 				<div className="lp-edit-actions">
@@ -334,7 +349,7 @@ export function ProjectEditor({
 							? __("Saving…", "linker-tools")
 							: draft.pending
 								? __("Save not confirmed", "linker-tools")
-								: !briefValid || !energyValid
+								: !briefValid || !energyValid || !installationValid
 									? __("Input needs attention", "linker-tools")
 									: !designValid
 										? __("Roof editing in progress", "linker-tools")
@@ -387,7 +402,7 @@ export function ProjectEditor({
 						(dirty || draft.pending))) && (
 					<div className="lp-navigation-refusal">
 						<Notice error>
-							{!briefValid || !energyValid
+							{!briefValid || !energyValid || !installationValid
 								? __(
 										"Correct the highlighted input before leaving this project.",
 										"linker-tools",
@@ -482,6 +497,17 @@ export function ProjectEditor({
 						>
 							<Icon name="layers" />
 							{__("Equipment", "linker-tools")}
+						</a>
+						<a
+							href="#lp-installation"
+							aria-current={workspace === "installation" ? "page" : undefined}
+							onClick={(event) => {
+								event.preventDefault();
+								chooseWorkspace("installation");
+							}}
+						>
+							<Icon name="layers" />
+							{__("Installation routing", "linker-tools")}
 						</a>
 					</nav>
 					<div className="lp-source-note">
@@ -619,6 +645,9 @@ export function ProjectEditor({
 								brief={brief}
 								geometry={geometry}
 								config={config}
+								installation={readInstallation(
+									draft.history.current.installation,
+								)}
 								choose={chooseWorkspace}
 							/>
 						</div>
@@ -782,6 +811,34 @@ export function ProjectEditor({
 							/>
 						</div>
 					</fieldset>
+					{workspace === "installation" && (
+						<fieldset
+							disabled={
+								busy ||
+								Boolean(draft.pending) ||
+								Boolean(draft.conflict) ||
+								recoveries.length > 0
+							}
+						>
+							<InstallationEditor
+								inputs={draft.history.current}
+								geometry={geometry}
+								client={client}
+								session={session}
+								projectId={project.id}
+								locale={config.locale}
+								sceneModuleUrl={config.sceneModuleUrl ?? null}
+								editGeometry={editGeometry}
+								onValidity={setInstallationValid}
+								change={(plan) =>
+									editEnergy((inputs) => ({
+										...inputs,
+										installation: readObject(plan),
+									}))
+								}
+							/>
+						</fieldset>
+					)}
 					{calculationsOpened && (
 						<div
 							hidden={workspace !== "calculations" && workspace !== "equipment"}

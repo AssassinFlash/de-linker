@@ -13,6 +13,7 @@ const workspaceHashes = new Set([
 	"#lp-design",
 	"#lp-calculations",
 	"#lp-equipment",
+	"#lp-installation",
 	"#lp-map-roof-properties",
 	"#lp-map-ring-properties",
 	"#lp-map-feature-properties",

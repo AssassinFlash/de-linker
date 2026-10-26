@@ -63,6 +63,7 @@ export const RPC_PATHS = [
 	"profiles/inspect",
 	"profiles/preview",
 	"geometry/review",
+	"installation/review",
 	"geometry/import",
 	"battery/scenario",
 	"recovery/scopes",

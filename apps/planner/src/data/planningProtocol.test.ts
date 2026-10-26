@@ -131,6 +131,10 @@ test("report output keeps serialized fields mandatory and old column layout opti
 	v2.prepared_attachments.bill_of_materials_csv.purpose =
 		"planning_materials_csv_v2";
 	assert.doesNotThrow(() => readReportResult(v2, run, manifest));
+	const v3 = structuredClone(v2);
+	v3.prepared_attachments.bill_of_materials_csv.purpose =
+		"planning_materials_csv_v3";
+	assert.doesNotThrow(() => readReportResult(v3, run, manifest));
 	assert.throws(() =>
 		readReportResult({ ...paired, materials_sha256: sha }, run, manifest),
 	);

@@ -1,3 +1,4 @@
+import { readInstallation } from "../../domain/installation.ts";
 import { readObject } from "../../data/readProtocol.ts";
 import { DC_MODEL, readDcLossScenario } from "../../domain/dcEnergy.ts";
 import { PlanningReportForm } from "./PlanningReportForm.tsx";
@@ -1263,6 +1264,10 @@ export function EnergyWorkspace({
 					runs={runs.page.data?.items ?? []}
 					locale={locale}
 					hasCandidate={Boolean(draft.baseline.inputs.equipment_candidate)}
+					hasInstallation={
+						readInstallation(draft.baseline.inputs.installation).cable_runs
+							.length > 0
+					}
 					disabled={
 						dirty ||
 						!!draft.pending ||

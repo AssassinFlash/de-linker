@@ -84,6 +84,11 @@
         }
       ],
       "default": null
+    },
+    "include_installation": {
+      "default": false,
+      "title": "Include Installation",
+      "type": "boolean"
     }
   },
   "required": [

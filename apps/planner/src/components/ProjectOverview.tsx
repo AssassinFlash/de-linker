@@ -7,6 +7,7 @@ import type { Configuration } from "../data/config.ts";
 import { PlanViewport } from "./design/PlanViewport.tsx";
 import { Icon } from "./Icon.tsx";
 import { __ } from "../i18n.ts";
+import type { InstallationInputs } from "../domain/installation.ts";
 
 /** Summary values come from the current input document. It does not invent a
  * yield, a completion percentage or an engineering-release state. */
@@ -15,11 +16,15 @@ export function ProjectOverview({
 	geometry,
 	config,
 	choose,
+	installation,
 }: {
 	brief: Brief;
 	geometry: GeometryDocument;
 	config: Configuration;
-	choose: (workspace: "site" | "energy" | "design" | "calculations") => void;
+	choose: (
+		workspace: "site" | "energy" | "design" | "calculations" | "installation",
+	) => void;
+	installation: InstallationInputs;
 }) {
 	const poses = useMemo(() => panelPoses(geometry), [geometry]),
 		summary = useMemo(() => moduleSummary(geometry), [geometry]),
@@ -95,6 +100,27 @@ export function ProjectOverview({
 					</small>
 				</div>
 			</dl>
+			<section className="lp-scenario-block">
+				<h3>{__("Installation routing", "linker-tools")}</h3>
+				<dl className="lp-overview-metrics">
+					<div>
+						<dt>
+							{__("Physical devices and site connections", "linker-tools")}
+						</dt>
+						<dd>{installation.instances.length}</dd>
+					</div>
+					<div>
+						<dt>{__("Physical cables and conductors", "linker-tools")}</dt>
+						<dd>{installation.cable_runs.length}</dd>
+					</div>
+				</dl>
+				<button
+					className="lp-text-button"
+					onClick={() => choose("installation")}
+				>
+					{__("Installation routing", "linker-tools")}
+				</button>
+			</section>
 			<div className="lp-overview-work">
 				<div className="lp-overview-preview">
 					{roof ? (

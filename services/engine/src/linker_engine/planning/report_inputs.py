@@ -44,6 +44,7 @@ class ReportOptions(Document):
     equipment_run_id: RunId | None
     logo: Annotated[str, Field(max_length=700_000)] | None
     comparison: ComparisonSelection | None = None
+    include_installation: bool = False
 
     def intent(self) -> Object:
         options = self.model_dump(mode="json")
@@ -51,6 +52,8 @@ class ReportOptions(Document):
         # including the normalized body used by the native replay adapter.
         if self.comparison is None:
             options.pop("comparison")
+        if not self.include_installation:
+            options.pop("include_installation")
         return {
             "kind": "planning_report_v1",
             "options_sha256": digest(encode(options)),

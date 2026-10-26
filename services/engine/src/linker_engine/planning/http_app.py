@@ -64,6 +64,7 @@ from .http_documents import (
     GeometryReview,
     HandoffPrepare,
     HandoffRead,
+    InstallationReview,
     ProfilePreviewRead,
     ProjectCreate,
     ProjectList,
@@ -426,6 +427,24 @@ def create_private_app(
                 key=body.key,
             )
         )
+
+    @app.post("/installation/review")
+    def installation_review(body: InstallationReview, request: Request) -> Object:
+        from .installation_inputs import InstallationInputs
+        from .installation_takeoff import product_basis, route_takeoff
+
+        workspace.get(verified_actor(request.scope), body.project_id)
+        if products is None:
+            raise VersionUnavailable("current Woo installation evidence is unavailable")
+        inputs: Object = {"geometry": body.geometry, "installation": body.installation}
+        basis = product_basis(
+            InstallationInputs.read(body.installation), products.equipment_basis()
+        )
+        reply = route_takeoff(inputs, basis, bind_geometry=body.bind_geometry)
+        products.confirm_basis(basis, require_reference=False)
+        reply["project_id"] = body.project_id
+        reply["runtime_sha256"] = energy.kernel.runtime.sha256
+        return reply
 
     @app.post("/runs/read")
     def run_read(body: RunRead, request: Request) -> Object:

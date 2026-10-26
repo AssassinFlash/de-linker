@@ -28,6 +28,7 @@ from .errors import (
 from .execution_control import require_accepting
 from .execution_identity import execution_key
 from .geometry import validate_project_geometry
+from .installation_inputs import validate_installation_project
 from .records import Actor, Context, JobState, Project, Run
 from .storage import Blobs, Database
 
@@ -83,6 +84,7 @@ class Workspace:
                 )
             validate_new_brief(inputs)
             validate_project_geometry(inputs)
+            validate_installation_project(inputs)
             content = self.blobs.put_object(inputs)
             project_id = uuid4().hex
             now = self.clock()
@@ -156,6 +158,7 @@ class Workspace:
                 raise Conflict("project inputs have changed")
             validate_new_brief(inputs)
             validate_project_geometry(inputs)
+            validate_installation_project(inputs)
             content = self.blobs.put_object(inputs)
             number = expected_revision + 1
             now = self.clock()
