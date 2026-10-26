@@ -90,6 +90,69 @@
 	min-height: var(--proto-control-height, 2.75rem);
 }
 
+/* Footer labels use the existing 12px navigation scale; native controls keep
+   the shared 44px height. Specificity also covers the partial's phone rules. */
+#tv-footer-v2 nav.tv-footer-lang-seg a {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: var(--proto-control-height);
+	font-size: 12px;
+}
+
+#tv-footer-v2 nav.tv-footer-lang-seg a:hover {
+	background: #fff;
+	color: var(--proto-teal-800);
+}
+
+#tv-footer-v2 .tv-footer-container .tv-footer-bar,
+#tv-footer-v2 .tv-footer-container .tv-footer-bar-trust,
+#tv-footer-v2 .footer-contact-panel .tv-footer-address,
+#tv-footer-v2 .footer-contact-panel .footer-email-card a > span {
+	font-size: 12px;
+}
+
+#tv-footer-v2 .footer-contact-panel .footer-email-card {
+	padding: 12px;
+}
+
+#tv-footer-v2 .footer-contact-panel .footer-email-card:has(.footer-copy) {
+	padding-right: calc(var(--proto-control-height) + var(--proto-space-3));
+}
+
+#tv-footer-v2 .footer-contact-panel .footer-panel-heading h2 a,
+#tv-footer-v2 .footer-contact-panel .footer-email-card a,
+#tv-footer-v2 .footer-contact-panel a.footer-phone {
+	min-height: var(--proto-control-height);
+}
+
+#tv-footer-v2 .footer-contact-panel .footer-email-card a {
+	justify-content: center;
+	max-width: 100%;
+	overflow-wrap: anywhere;
+}
+
+#tv-footer-v2 .footer-contact-panel .footer-email-card strong {
+	font-size: 14px;
+}
+
+#tv-footer-v2 .footer-contact-panel button.footer-copy {
+	top: 50%;
+	width: var(--proto-control-height);
+	height: var(--proto-control-height);
+	transform: translateY(-50%);
+}
+
+#tv-footer-v2 .footer-contact-panel a.footer-phone {
+	font-size: 12px;
+}
+
+@media (max-width: 560px) {
+	#tv-footer-v2 .footer-contact-panel .footer-email-grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
 /* Native Woo updates keep their handler and receive the site's secondary
    action vocabulary. Disabled stays legible; processing reuses the account
    spinner's existing size and timing. */
