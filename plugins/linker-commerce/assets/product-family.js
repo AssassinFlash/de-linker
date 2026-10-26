@@ -82,8 +82,11 @@
 
 		var checkbox = card.querySelector( '[data-compare-product]' );
 		if ( checkbox ) {
-			checkbox.setAttribute( 'data-compare-product', String( member.id ) );
-			checkbox.setAttribute( 'aria-label', 'Compare: ' + String( member.name || '' ) );
+			checkbox.setAttribute( 'data-compare-product', String( member.compareId || member.id ) );
+			checkbox.setAttribute( 'aria-label', String( member.compareLabel || checkbox.getAttribute( 'aria-label' ) || '' ) );
+			if ( typeof window.linkerComparePaint === 'function' ) {
+				window.linkerComparePaint();
+			}
 		}
 	}
 

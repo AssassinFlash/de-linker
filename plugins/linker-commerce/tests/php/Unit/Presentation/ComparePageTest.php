@@ -155,15 +155,16 @@ final class ComparePageTest extends TestCase {
 				},
 			)
 		);
-		WP_Mock::userFunction( 'has_filter', array( 'return' => false ) );
+		WP_Mock::userFunction( 'has_filter', array( 'return' => fn (): bool => $this->product_twins ) );
+		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn ( $value ): string => (string) json_encode( $value ) ) );
 		WP_Mock::userFunction(
 			'pll_get_post',
 			array(
 				// The language layer's answer as the instance's Polylang gives it:
 				// the post itself in its own language, its twin in the other.
 				'return' => function ( int $id, string $language = '' ): int {
-					if ( $this->product_twins && in_array( $id, array( 4107, 1832 ), true ) ) {
-						return 'de' === $language ? 1832 : 4107;
+					if ( $this->product_twins && in_array( $id, array( 4107, 84107 ), true ) ) {
+						return 'de' === $language ? 84107 : 4107;
 					}
 					$translations = array(
 						5385 => array(
@@ -209,7 +210,7 @@ final class ComparePageTest extends TestCase {
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
 		WP_Mock::userFunction( 'get_the_post_thumbnail_url', array( 'return' => '' ) );
 		WP_Mock::userFunction( 'get_the_title', array( 'return' => static fn ( int $id ): string => self::PRODUCTS[ $id ]['name'] ) );
-		WP_Mock::userFunction( 'get_post_type', array( 'return' => static fn ( int $id ): string => isset( self::PRODUCTS[ $id ] ) ? 'product' : '' ) );
+		WP_Mock::userFunction( 'get_post_type', array( 'return' => fn ( int $id ): string => isset( self::PRODUCTS[ $id ] ) || ( $this->product_twins && 84107 === $id ) ? 'product' : '' ) );
 		WP_Mock::userFunction( 'get_post_status', array( 'return' => 'publish' ) );
 		WP_Mock::userFunction(
 			'get_the_terms',
@@ -343,14 +344,23 @@ final class ComparePageTest extends TestCase {
 	/** Native translated slugs retain ordered product twins and run the state script. */
 	public function test_german_page_keeps_product_twins_and_loads_selection_script(): void {
 		$this->product_twins = true;
-		$page                = new WP_Post(
+		$this->english_products(
+			array(
+				84107 => 4107,
+				77    => 77,
+				88    => 88,
+				99    => 99,
+				100   => 100,
+			)
+		);
+		$page   = new WP_Post(
 			(object) array(
 				'ID'        => 6608,
 				'post_type' => 'page',
 				'post_name' => 'produkte-vergleichen',
 			)
 		);
-		$source              = new WP_Post(
+		$source = new WP_Post(
 			(object) array(
 				'ID'        => 5385,
 				'post_type' => 'page',
@@ -368,12 +378,28 @@ final class ComparePageTest extends TestCase {
 		);
 		self::assertSame(
 			array(
-				'ids'    => '1832',
+				'ids'    => '4107',
 				'capped' => '1',
 			),
-			ComparePage::language_query( array( 'ids' => '4107,4107,bad,1832,77,88,99' ), 'de' )
+			ComparePage::language_query( array( 'ids' => '4107,4107,bad,84107,77,88,99,100' ), 'de' )
 		);
-		self::assertSame( array( 'ids' => '4107' ), ComparePage::language_query( array( 'ids' => '1832' ), 'en' ) );
+		self::assertSame( array( 'ids' => '4107' ), ComparePage::language_query( array( 'ids' => '84107' ), 'en' ) );
+		self::assertSame(
+			array(
+				84107 => 4107,
+				4107  => 4107,
+			),
+			ComparePage::identities( array( 84107 ) )
+		);
+		$_GET['ids'] = '84107,4107,77,88,99,100';
+		self::assertSame(
+			array(
+				'ids'    => array( 4107, 77, 88, 99 ),
+				'capped' => true,
+			),
+			( new ComparePage() )->selection()
+		);
+		unset( $_GET['ids'] );
 		WP_Mock::userFunction( 'plugins_url', array( 'return' => 'https://de-linker.test/compare-selection.js' ) );
 		WP_Mock::userFunction( 'wp_enqueue_script', array( 'times' => 1 ) );
 		( new ComparePage() )->assets();

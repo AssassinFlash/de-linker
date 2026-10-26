@@ -11,6 +11,7 @@ namespace Linker\Commerce\Presentation;
 
 use Linker\Commerce\Products\Comparison;
 use Linker\Commerce\Abilities\ProductText;
+use Linker\Commerce\Products\Publication;
 
 /**
  * /compare-products/: the page a visitor builds a comparison on, and the
@@ -103,10 +104,64 @@ final class ComparePage {
 	 * @return array{ids: list<int>, capped: bool}
 	 */
 	public function selection(): array {
-		$parsed           = Comparison::parse_ids( (string) $this->requested_ids() );
+		$parsed           = self::canonical_selection( (string) $this->requested_ids() );
 		$parsed['capped'] = $parsed['capped'] || $this->requested_capped();
 
 		return $parsed;
+	}
+
+	/**
+	 * Native source identities for the products already rendered on this page.
+	 *
+	 * @param int[] $ids Rendered product IDs, including family members.
+	 * @return array<int,int> Locale ID => source ID; no product facts or permissions.
+	 */
+	public static function identities( array $ids ): array {
+		$map = array();
+		foreach ( $ids as $id ) {
+			$source = Publication::canonical_id( $id );
+			if ( $source < 1 ) {
+				continue;
+			}
+			$map[ $id ]     = $source;
+			$map[ $source ] = $source;
+			if ( function_exists( 'pll_get_post' ) ) {
+				$twin = (int) pll_get_post( $source, 'de' );
+				if ( $twin > 0 ) {
+					$map[ $twin ] = $source;
+				}
+			}
+		}
+
+		return $map;
+	}
+
+	/**
+	 * Deduplicate locale aliases before applying the shared four-product limit.
+	 *
+	 * @param string $raw Address or legacy selection.
+	 * @return array{ids:list<int>,capped:bool}
+	 */
+	private static function canonical_selection( string $raw ): array {
+		$ids  = array();
+		$seen = array();
+		foreach ( explode( ',', $raw ) as $token ) {
+			$id = Comparison::parse_ids( $token )['ids'][0] ?? 0;
+			if ( $id < 1 || isset( $seen[ $id ] ) ) {
+				continue;
+			}
+			$seen[ $id ] = true;
+			$source      = Publication::canonical_id( $id );
+			if ( $source > 0 && ! in_array( $source, $ids, true ) ) {
+				$ids[] = $source;
+			}
+			// One additional identity is enough to retain the existing capped warning.
+			if ( count( $ids ) > Comparison::MAX_PRODUCTS ) {
+				break;
+			}
+		}
+
+		return Comparison::parse_ids( implode( ',', $ids ) );
 	}
 
 	/** The current comparison page, including a twin with its own slug. */
@@ -135,12 +190,12 @@ final class ComparePage {
 		if ( ! is_string( $query['ids'] ?? null ) || ! self::is_comparison_page() ) {
 			return array();
 		}
-		$parsed = Comparison::parse_ids( $query['ids'] );
+		$parsed = self::canonical_selection( $query['ids'] );
 		$ids    = array();
 		foreach ( $parsed['ids'] as $id ) {
 			$translated = ProductText::translated_id( $id, ProductText::lang( $language ) );
-			if ( $translated > 0 && ! in_array( $translated, $ids, true ) ) {
-				$ids[] = $translated;
+			if ( $translated > 0 ) {
+				$ids[] = $id;
 			}
 		}
 		if ( array() === $ids ) {
@@ -239,7 +294,7 @@ final class ComparePage {
 		) : $this->comparison->of( $parsed['ids'], self::language() );
 		$columns    = $comparison['products'];
 
-		$html = '<div id="linker-compare" class="linker-compare" data-compare-ids="' . esc_attr( implode( ',', array_column( $columns, 'product_id' ) ) ) . '">';
+		$html = '<div id="linker-compare" class="linker-compare" data-compare-identities="' . esc_attr( (string) wp_json_encode( self::identities( array_column( $columns, 'product_id' ) ) ) ) . '" data-compare-ids="' . esc_attr( implode( ',', array_column( $columns, 'product_id' ) ) ) . '">';
 		if ( $parsed['capped'] ) {
 			$html .= sprintf(
 				'<p class="linker-compare-note mb-4 text-sm text-neutral-600" role="status">%s</p>',
