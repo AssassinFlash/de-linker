@@ -5659,3 +5659,11 @@ msgstr ""
 #: includes/Presentation/AccountTemplates.php:467
 msgid "This saved solution needs a new calculation before it can be added to your solution draft."
 msgstr ""
+
+#: includes/Inquiry/Form.php
+msgid "Update the solution draft before sending your inquiry."
+msgstr ""
+
+#: includes/Inquiry/Form.php
+msgid "Your browser could not save your entries. Stay on this page to avoid losing them."
+msgstr ""
