@@ -47,7 +47,6 @@ trait CurrentFaqProduct {
 		$this->managed_documents( array( '2026/manual.pdf' ) );
 		WP_Mock::userFunction( 'wp_cache_supports' )->andReturn( true )->byDefault();
 		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->andReturn( true )->byDefault();
-		WP_Mock::userFunction( '_prime_post_caches' )->byDefault();
 		WP_Mock::userFunction( 'has_filter' )->andReturn( false )->byDefault();
 		WP_Mock::userFunction( 'get_posts' )->andReturn( array( $id ) )->byDefault();
 		WP_Mock::userFunction( 'get_post_type' )->with( $id )->andReturn( 'product' )->byDefault();
