@@ -602,9 +602,11 @@ final class ProductView {
 		if ( ! Publication::is_published( $product_id ) ) {
 			return array();
 		}
+		// Download links consume current listing metadata, not product revisions
+		// or preparation state. The original PDF gate still authorizes its bytes.
 		$id         = Publication::canonical_id( $product_id );
 		$documents  = array();
-		$manifest ??= Publication::manifest();
+		$manifest ??= Publication::library_read();
 		foreach ( $manifest['documents'] as $document ) {
 			if ( ! in_array( $id, $document['product_ids'], true ) ) {
 				continue;
