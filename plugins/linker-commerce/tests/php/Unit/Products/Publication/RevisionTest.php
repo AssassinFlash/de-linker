@@ -303,7 +303,24 @@ final class RevisionTest extends TestCase {
 				),
 			),
 		);
-		WP_Mock::userFunction( 'get_posts' )->andReturn( array( 11, 12, 14 ) );
+		$read_order                               = array();
+		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->andReturnUsing(
+			static function () use ( &$read_order ): bool {
+				$read_order[] = 'refresh';
+				return true;
+			}
+		);
+		WP_Mock::userFunction( 'get_posts' )->andReturnUsing(
+			static function () use ( &$read_order ): array {
+				$read_order[] = 'candidates';
+				return array( 11, 12, 14 );
+			}
+		);
+		WP_Mock::userFunction( '_prime_post_caches' )->with( array( 11, 12, 14 ), true, true )->andReturnUsing(
+			static function () use ( &$read_order ): void {
+				$read_order[] = 'prime';
+			}
+		);
 		WP_Mock::userFunction( 'get_post_type' )->andReturn( 'product' );
 		WP_Mock::userFunction( 'get_post_status' )->andReturn( 'publish' );
 		WP_Mock::userFunction( 'get_post' )->andReturnUsing(
@@ -325,7 +342,8 @@ final class RevisionTest extends TestCase {
 			}
 		);
 		EvidenceBindings::capture_faqs( 12, true );
-		$all      = Publication::library_read();
+		$all = Publication::library_read();
+		$this->assertSame( array( 'refresh', 'candidates', 'prime' ), $read_order );
 		$expected = array_values( array_filter( $all['documents'], static fn ( array $document ): bool => in_array( 12, $document['product_ids'], true ) ) );
 		$answers  = Publication::faqs_for( 12, $all );
 		$this->assertCount( 1, $answers );
@@ -336,7 +354,9 @@ final class RevisionTest extends TestCase {
 				return 0;
 			}
 		);
-		$read = Publication::product_library_read( 12 );
+		$read_order = array();
+		$read       = Publication::product_library_read( 12 );
+		$this->assertSame( array( 'refresh', 'candidates', 'prime' ), $read_order, 'Independent reads batch native data only after refreshing current permissions.' );
 		$this->assertSame( $expected, $read['documents'] );
 		$this->assertSame( 'Earlier shared title', $read['documents'][0]['title'] );
 		$this->assertSame( $answers, Publication::faqs_for( 12 ) );
