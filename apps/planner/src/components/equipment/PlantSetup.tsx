@@ -12,6 +12,7 @@ import {
 	plantIdentity as newId,
 } from "../../domain/equipmentPlant.ts";
 import type { PlantDraft } from "../../domain/equipmentPlant.ts";
+import { compilePlantSearch } from "../../domain/plantSearch.ts";
 import { ApiError } from "../../data/protocol.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
@@ -96,6 +97,17 @@ export function PlantSetup(props: Props) {
 		!catalog.data?.prepared;
 	const products = catalog.data?.products ?? [];
 	let prepared = false;
+	let searchPrepared = false;
+	try {
+		searchPrepared =
+			!!setup &&
+			sameJson(
+				compilePlantSearch(setup),
+				draft.history.current.equipment_plant_requirements,
+			);
+	} catch {
+		/* Search demand can be prepared before products are chosen. */
+	}
 	try {
 		prepared =
 			!!setup &&
@@ -613,6 +625,77 @@ export function PlantSetup(props: Props) {
 					{__("Check saved multi-system plan", "linker-tools")}
 				</button>
 			</div>
+			{props.searchEnabled && (
+				<div className="lp-scenario-block">
+					<h3>{__("Multi-system combination", "linker-tools")}</h3>
+					<p>
+						{__(
+							"Complete the requirements for the project and each system. The search can propose equipment combinations.",
+							"linker-tools",
+						)}
+					</p>
+					<details className="lp-comparison">
+						<summary>{__("Search scope", "linker-tools")}</summary>
+						<p>
+							{__(
+								"The search uses the system count, requirements for each system and coordination groups you have declared. It checks equipment combinations from current product data for each system and the project, counting one shared controller per group. It does not compare alternative system counts or different allocations of project requirements, or simulate joint energy flows. Unresolved conditions remain shown in the results.",
+								"linker-tools",
+							)}
+						</p>
+					</details>
+					{searchPrepared && (
+						<p role="status">
+							{__(
+								"The requirements are ready for a multi-system equipment search.",
+								"linker-tools",
+							)}
+						</p>
+					)}
+					<div className="lp-energy-submit">
+						<button
+							type="button"
+							className="lp-button lp-button-secondary"
+							disabled={blocked || actionsDisabled || !valid}
+							onClick={() => {
+								if (!client.isCurrentScope(scope)) return;
+								try {
+									const before = readPlantDraft(draft.history.current),
+										plan = compilePlantSearch(before);
+									if (
+										!edit((inputs) => {
+											if (!sameJson(readPlantDraft(inputs), before))
+												throw new ApiError(409, "conflict");
+											return { ...inputs, equipment_plant_requirements: plan };
+										})
+									)
+										throw new ApiError(409, "conflict");
+									onError(null);
+								} catch (error) {
+									onError(error);
+								}
+							}}
+						>
+							{__("Prepare multi-system search", "linker-tools")}
+						</button>
+						<button
+							type="button"
+							className="lp-button"
+							disabled={
+								blocked ||
+								actionsDisabled ||
+								!valid ||
+								!searchPrepared ||
+								isDirty(draft) ||
+								!!draft.pending ||
+								!!draft.conflict
+							}
+							onClick={props.search}
+						>
+							{__("Find equipment for these systems", "linker-tools")}
+						</button>
+					</div>
+				</div>
+			)}
 		</>
 	);
 }

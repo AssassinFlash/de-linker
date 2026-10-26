@@ -7,7 +7,7 @@ from collections.abc import Callable
 from decimal import Decimal
 from typing import Any, cast
 
-from .canonical import Object, decode_object, encode
+from .canonical import Object, decode_object, digest, encode
 from .equipment_assessment import assess_equipment, selection_products
 from .equipment_evidence import EquipmentEvidence
 from .equipment_plant import EquipmentPlant
@@ -27,11 +27,16 @@ def plant_products(plant: EquipmentPlant, basis: Object) -> dict[int, dict[str, 
 
 
 def assess_plant(
-    inputs: Object, basis: Object, checkpoint: Callable[[], None] | None = None
+    inputs: Object,
+    basis: Object,
+    checkpoint: Callable[[], None] | None = None,
+    *,
+    unit_assessments: dict[str, Object] | None = None,
+    evidence: EquipmentEvidence | None = None,
 ) -> Object:
     plant = EquipmentPlant.from_inputs(inputs)
     products = plant_products(plant, basis)
-    evidence = EquipmentEvidence(basis)
+    evidence = evidence if evidence is not None else EquipmentEvidence(basis)
     evidence.require_basis(basis)
     units = {u.id: u for u in plant.units}
     checks: list[dict[str, Any]] = []
@@ -56,13 +61,20 @@ def assess_plant(
     for unit in plant.units:
         if checkpoint is not None:
             checkpoint()
-        assessment = assess_equipment(
-            {
-                "brief": inputs.get("brief"),
-                "equipment_selection": unit.selection.model_dump(mode="json"),
-            },
-            basis,
-            evidence=evidence,
+        cached = (unit_assessments or {}).get(
+            digest(encode(cast(Object, unit.selection.model_dump(mode="json"))))
+        )
+        assessment = (
+            cached
+            if cached is not None
+            else assess_equipment(
+                {
+                    "brief": inputs.get("brief"),
+                    "equipment_selection": unit.selection.model_dump(mode="json"),
+                },
+                basis,
+                evidence=evidence,
+            )
         )
         systems.append(
             {

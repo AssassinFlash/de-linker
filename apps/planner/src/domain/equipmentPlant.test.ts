@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { beginDraft, editDraft, undoDraft } from "./draft.ts";
 import { equipmentDraft } from "./equipment.ts";
+import { adoptPlantCandidate, compilePlantSearch } from "./plantSearch.ts";
 import {
 	applyEquipmentContext,
 	beginPlant,
@@ -161,4 +162,81 @@ test("factory counts are applied on preparation without editing saved history or
 		null,
 	);
 	assert.equal(equipmentDraft(ready.units[0]!.inputs).modules_per_stack, null);
+});
+
+test("plant search prepares demand without hardware and adopts one whole candidate without losing unrelated edits", () => {
+	const base = configured();
+	const complete = {
+		...base,
+		units: base.units.map((unit) => ({
+			...unit,
+			inputs: {
+				equipment_setup: {
+					...equipmentDraft(unit.inputs),
+					required_usable_kwh: 0,
+					required_discharge_ac_kw: 0,
+				},
+			},
+		})),
+	};
+	const hardware = compilePlant(complete, products);
+	const unselected = {
+		...complete,
+		units: complete.units.map((unit) => ({
+			...unit,
+			inputs: {
+				equipment_setup: {
+					...equipmentDraft(unit.inputs),
+					inverter_product_id: null,
+				},
+			},
+		})),
+	};
+	const plan = compilePlantSearch(unselected);
+	assert.equal(plan.units.length, 2);
+	assert.equal(plan.units[0]!.requirements.required_usable_kwh, 0);
+	assert.throws(() => compilePlant(unselected, products));
+	const current = {
+		...plantInputs(original, unselected),
+		equipment_plant_requirements: plan,
+		site: { country_code: "FR" },
+	};
+	const choice = {
+		run_id: "a".repeat(32),
+		candidate_id: "b".repeat(64),
+		assessment_sha256: "c".repeat(64),
+	};
+	const adopted = adoptPlantCandidate(current, hardware, products, choice);
+	assert.deepEqual(adopted.site, { country_code: "FR" });
+	assert.deepEqual(adopted.equipment_candidate, choice);
+	assert.deepEqual(adopted.equipment_plant, hardware);
+	assert.equal(adopted.equipment_plant_requirements, undefined);
+	assert.equal(
+		equipmentDraft(readPlantDraft(current).units[0]!.inputs)
+			.inverter_product_id,
+		null,
+	);
+	assert.equal(
+		equipmentDraft(readPlantDraft(adopted).units[0]!.inputs)
+			.inverter_product_id,
+		1,
+	);
+	assert.throws(() =>
+		adoptPlantCandidate(current, hardware, products.slice(0, 1), choice),
+	);
+	const changed = readPlantDraft(current);
+	changed.units[0]!.inputs = {
+		equipment_setup: {
+			...equipmentDraft(changed.units[0]!.inputs),
+			required_usable_kwh: 1,
+		},
+	};
+	assert.throws(() =>
+		adoptPlantCandidate(
+			plantInputs(current, changed),
+			hardware,
+			products,
+			choice,
+		),
+	);
 });

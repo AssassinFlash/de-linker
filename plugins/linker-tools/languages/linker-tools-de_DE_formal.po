@@ -1571,6 +1571,7 @@ msgstr "In Ihrem Konto gespeichert."
 #: build/genie.js:13 src/configurator/solution/Solution.tsx:333 build/hero.js
 #: src/genie/shared/cardActions.ts src/configurator/solution/Solution.tsx
 #: build/configurator.js build/genie.js
+#: build/planner/assets/planner.js
 msgid "Saving…"
 msgstr "Wird gespeichert …"
 
@@ -11296,3 +11297,39 @@ msgstr "Feste Anzahl interner Batteriemodule"
 #, javascript-format
 msgid "The manufacturer specifies %d internal battery modules per battery system."
 msgstr "Der Hersteller gibt %d interne Batteriemodule je Batteriesystem an."
+
+#: build/planner/assets/planner.js
+msgid "Prepare multi-system search"
+msgstr "Gerätesuche für mehrere Systeme vorbereiten"
+
+#: build/planner/assets/planner.js
+msgid "Find equipment for these systems"
+msgstr "Geräte für diese Systeme suchen"
+
+#: build/planner/assets/planner.js
+msgid "Complete the requirements for the project and each system. The search can propose equipment combinations."
+msgstr "Vervollständigen Sie die Anforderungen für das Projekt und jedes einzelne System. Die Suche kann Gerätekombinationen vorschlagen."
+
+#: build/planner/assets/planner.js
+msgid "The search uses the system count, requirements for each system and coordination groups you have declared. It checks equipment combinations from current product data for each system and the project, counting one shared controller per group. It does not compare alternative system counts or different allocations of project requirements, or simulate joint energy flows. Unresolved conditions remain shown in the results."
+msgstr "Die Suche verwendet die von Ihnen festgelegte Systemanzahl, die Anforderungen für jedes System und die Koordinationsgruppen. Gerätekombinationen aus den aktuellen Produktdaten werden mit den Anforderungen der einzelnen Systeme und des Gesamtprojekts abgeglichen. Ein gemeinsamer Controller wird je Gruppe einmal gezählt. Andere Systemanzahlen, eine andere Verteilung der Projektanforderungen und gemeinsame Energieflüsse werden in dieser Suche nicht untersucht. Offene Bedingungen bleiben in den Ergebnissen sichtbar."
+
+#: build/planner/assets/planner.js
+msgid "This result is for a different system arrangement. Choose the matching arrangement before using a combination."
+msgstr "Dieses Ergebnis gehört zu einem anderen Systemaufbau. Wählen Sie den dazu passenden Systemaufbau, bevor Sie eine Kombination übernehmen."
+
+#: build/planner/assets/planner.js
+msgid "Multi-system combination"
+msgstr "Gerätekombination für mehrere Systeme"
+
+#: build/planner/assets/planner.js
+msgid "The requirements are ready for a multi-system equipment search."
+msgstr "Die Anforderungen sind für die Gerätesuche mit mehreren Systemen vorbereitet."
+
+#: build/planner/assets/planner.js
+msgid "Inverter output limit in grid-connected operation"
+msgstr "Leistungsgrenze des Wechselrichters im Netzparallelbetrieb"
+
+#: build/planner/assets/planner.js
+msgid "In grid-connected operation, the requested continuous active power from the battery cannot exceed the applicable documented maximum output of the whole inverter. Where the source gives a maximum apparent power S, |P| ≤ S is a necessary upper bound only; S is not an active-power rating. Passing this check does not establish continuous battery output."
+msgstr "Im Netzparallelbetrieb darf die geforderte dauerhafte Wirkleistungsabgabe der Batterie die dokumentierte maximale Ausgangsleistung des gesamten Wechselrichters nicht überschreiten, sofern diese Angabe für die gewählten Bedingungen gilt. Gibt die Quelle eine maximale Scheinleistung S an, liefert |P| ≤ S lediglich eine notwendige Obergrenze; S darf nicht als Wirkleistungsangabe verwendet werden. Das Einhalten dieser Grenze weist keine Dauerentladeleistung der Batterie nach."

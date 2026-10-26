@@ -41,7 +41,17 @@ import {
 import { WEATHER_TASK, PV_TASK } from "../../data/readPreparationResult.ts";
 import { EQUIPMENT_TASK } from "../../data/readEquipmentResult.ts";
 import { EquipmentWorkspace } from "../equipment/EquipmentWorkspace.tsx";
-import { hasPlant, readEquipmentPlant } from "../../domain/equipmentPlant.ts";
+import {
+	hasPlant,
+	readEquipmentPlant,
+	equipmentContext,
+	applyEquipmentContext,
+	readPlantDraft,
+} from "../../domain/equipmentPlant.ts";
+import {
+	adoptPlantCandidate,
+	compilePlantSearch,
+} from "../../domain/plantSearch.ts";
 import { EquipmentResult } from "../equipment/EquipmentResult.tsx";
 import {
 	readEquipmentSelection,
@@ -54,7 +64,7 @@ import {
 	readEquipmentRequirements,
 } from "../../domain/equipmentRequirements.ts";
 import { readEquipmentProducts } from "../../data/equipmentProducts.ts";
-import { SEARCH_TASK } from "../../data/equipmentSearch.ts";
+import { SEARCH_TASK, isPlantCandidate } from "../../data/equipmentSearch.ts";
 import type { EquipmentCandidate } from "../../data/equipmentSearch.ts";
 import { EquipmentSearchResult } from "../equipment/EquipmentSearchResult.tsx";
 import type { PlanningIntent } from "../../data/PlanningIntentStore.ts";
@@ -491,8 +501,6 @@ export function EnergyWorkspace({
 		}
 	}
 	async function applyEquipment(candidate: EquipmentCandidate) {
-		if (hasPlant(draft.history.current))
-			throw new ApiError(422, "equipment_plant_single_candidate");
 		const selectedRun = runs.run.data;
 		if (
 			!selectedRun ||
@@ -502,8 +510,11 @@ export function EnergyWorkspace({
 			draft.conflict
 		)
 			return;
-		const instance = lifetime.current,
-			originalSetup = equipmentDraft(draft.history.current);
+		const snapshot = draft.history.current,
+			original = equipmentContext(snapshot),
+			instance = lifetime.current;
+		if (hasPlant(snapshot) !== isPlantCandidate(candidate))
+			throw new ApiError(422, "equipment_plant_single_candidate");
 		const current = readEquipmentProducts(
 			await client.query(
 				"products/current",
@@ -516,21 +527,30 @@ export function EnergyWorkspace({
 			instance !== lifetime.current
 		)
 			return;
-		if (
-			!current.prepared ||
-			Object.entries(candidate.selection.product_revisions).some(
-				([id, revision]) =>
-					!current.products.some(
-						(p) => String(p.id) === id && p.product_revision === revision,
-					),
+		if (!current.prepared) throw new ApiError(409, "product_evidence_changed");
+		const choice = {
+			run_id: selectedRun.id,
+			candidate_id: candidate.id,
+			assessment_sha256: candidate.assessment_sha256,
+		};
+		let next: JsonObject;
+		if (isPlantCandidate(candidate)) {
+			next = adoptPlantCandidate(
+				snapshot,
+				candidate.plant,
+				current.products,
+				choice,
+			);
+		} else {
+			if (
+				Object.entries(candidate.selection.product_revisions).some(
+					([id, revision]) =>
+						!current.products.some(
+							(p) => String(p.id) === id && p.product_revision === revision,
+						),
+				)
 			)
-		)
-			throw new ApiError(409, "product_evidence_changed");
-		const applied = edit((inputs) => {
-			if (hasPlant(inputs))
-				throw new ApiError(422, "equipment_plant_single_candidate");
-			if (!sameJson(equipmentDraft(inputs), originalSetup))
-				throw new ApiError(409, "equipment_selection_changed");
+				throw new ApiError(409, "product_evidence_changed");
 			const patch = Object.fromEntries(
 				(
 					[
@@ -542,34 +562,33 @@ export function EnergyWorkspace({
 					] as const
 				).map((key) => [key, candidate.selection[key]]),
 			);
-			const next = changeEquipment(inputs, patch);
+			next = changeEquipment(snapshot, patch);
 			try {
 				const selection = compileEquipment(
 					equipmentDraft(next),
 					current.products,
 				);
-				return {
+				next = {
 					...next,
 					equipment_selection: selection,
 					...(sameJson(selection, candidate.selection)
-						? {
-								equipment_candidate: {
-									run_id: selectedRun.id,
-									candidate_id: candidate.id,
-									assessment_sha256: candidate.assessment_sha256,
-								},
-							}
+						? { equipment_candidate: choice }
 						: {}),
 				};
 			} catch {
-				return next;
+				/* Updated sizing requirements remain editable for a new assessment. */
 			}
-		});
-		if (applied) {
-			setError(null);
-			setView("equipment");
-			openEquipment?.();
 		}
+		const replacement = equipmentContext(next);
+		const applied = edit((inputs) => {
+			if (!sameJson(equipmentContext(inputs), original))
+				throw new ApiError(409, "equipment_selection_changed");
+			return applyEquipmentContext(inputs, replacement);
+		});
+		if (!applied) throw new ApiError(409, "equipment_selection_changed");
+		setError(null);
+		setView("equipment");
+		openEquipment?.();
 	}
 	async function generateReport(options: ReportOptions) {
 		if (
@@ -626,7 +645,15 @@ export function EnergyWorkspace({
 			const setup = path.startsWith("runs/equipment")
 				? null
 				: readSolarSetup(inputs);
-			if (path === "runs/equipment-search") {
+			if (path === "runs/equipment-search" && hasPlant(inputs)) {
+				if (
+					!sameJson(
+						compilePlantSearch(readPlantDraft(inputs)),
+						inputs.equipment_plant_requirements,
+					)
+				)
+					return;
+			} else if (path === "runs/equipment-search") {
 				readEquipmentRequirements(inputs.equipment_requirements);
 				if (
 					!sameJson(
@@ -1030,7 +1057,10 @@ export function EnergyWorkspace({
 					start={() => void startSolar("runs/equipment")}
 					search={() => void startSolar("runs/equipment-search")}
 					searchEnabled={
-						session.runtime.models.equipment_search === SEARCH_TASK
+						hasPlant(draft.history.current)
+							? session.runtime.models.equipment_plant_search ===
+								"declared_plant_v1"
+							: session.runtime.models.equipment_search === SEARCH_TASK
 					}
 				/>
 			</div>
@@ -1439,6 +1469,9 @@ export function EnergyWorkspace({
 									}
 									apply={applyEquipment}
 									plantActive={hasPlant(draft.history.current)}
+									projectCandidate={readObject(
+										draft.history.current.equipment_candidate ?? {},
+									)}
 									onError={setError}
 								/>
 							) : runTask(runs.run.data) === EQUIPMENT_TASK ? (

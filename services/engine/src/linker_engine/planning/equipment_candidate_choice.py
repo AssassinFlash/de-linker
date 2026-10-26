@@ -10,7 +10,7 @@ from .canonical import Object, encode
 from .energy_inputs import Document
 from .equipment_candidate_store import EquipmentCandidateStore
 from .equipment_inputs import EquipmentSelection
-from .equipment_plant import assert_plant_exclusivity
+from .equipment_plant import EquipmentPlant, assert_plant_exclusivity
 from .errors import InvalidInput, VersionUnavailable
 from .product_sources import ProductSources
 from .records import Actor
@@ -51,11 +51,23 @@ def check_equipment_candidate(
     )
     # Browser JSON does not retain the textual distinction between 10 and
     # 10.0. Compare strict typed fields, preserving ID and revision checks.
-    if reply[
-        "assessment_sha256"
-    ] != choice.assessment_sha256 or EquipmentSelection.read(
-        inputs.get("equipment_selection")
-    ) != EquipmentSelection.read(candidate["selection"]):
+    if "plant" in candidate:
+        from .plant_search_plan import PlantSearchPlan
+
+        plant = EquipmentPlant.read(candidate["plant"])
+        coverage = cast(Object, search["coverage"])
+        matches = (
+            PlantSearchPlan.read(coverage.get("plan")).matches_plant(plant)
+            and EquipmentPlant.from_inputs(inputs) == plant
+        )
+    else:
+        matches = not {"equipment_plant", "equipment_plant_setup"}.intersection(
+            inputs
+        ) and (
+            EquipmentSelection.read(inputs.get("equipment_selection"))
+            == EquipmentSelection.read(candidate["selection"])
+        )
+    if reply["assessment_sha256"] != choice.assessment_sha256 or not matches:
         raise InvalidInput("candidate choice does not match the frozen selection")
     if previous is not None and encode(previous.get("equipment_candidate")) == encode(
         inputs["equipment_candidate"]

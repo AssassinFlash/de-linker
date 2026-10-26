@@ -175,9 +175,11 @@ def test_cabinet_sales_unit_and_factory_count_share_cited_woo_basis(feed: dict) 
     result = assess_equipment(
         {"equipment_selection": selection.model_dump(mode="json")}, basis
     )
-    assert [row["quantity"] for row in result["provisional_bill_of_materials"] if row["product_id"] == 1955] == [
-        1
-    ]
+    assert [
+        row["quantity"]
+        for row in result["provisional_bill_of_materials"]
+        if row["product_id"] == 1955
+    ] == [1]
     cabinet["figures"]["modules_per_stack_max"]["qualifier"] = {"unassessed": True}
     conditional = battery_assembly(compile_product(cabinet))
     assert conditional is not None and conditional["fixed_modules_per_stack"] is None
@@ -277,7 +279,14 @@ def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
     energy = EnergyService(
         workspace, EnergyKernel(workspace, TOLERANCE, max_intervals=10), max_attempts=1
     )
-    registry = service_registry(energy, None, None, equipment)
+    search = EquipmentService(
+        workspace,
+        EquipmentSearchKernel(
+            workspace, sources, EquipmentSearchLimits(work_budget=1000)
+        ),
+        max_attempts=1,
+    )
+    registry = service_registry(energy, None, None, equipment, search)
     executor = Worker(
         Jobs(workspace),
         "plant-fixture",
@@ -293,6 +302,7 @@ def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
         credential=lambda: TOKEN,
         limits=HttpLimits(1_000_000, 10_000, 10, 32),
         equipment=equipment,
+        equipment_search=search,
         product_provider=lambda: shared,
     )
     with TestClient(app) as client:
@@ -395,7 +405,7 @@ def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
         equipment_run_id=run_id,
         logo=None,
     )
-    with pytest.raises(InvalidInput, match="single-converter"):
+    with pytest.raises(InvalidInput):
         report_sources(
             workspace,
             sources,
@@ -480,6 +490,174 @@ def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
         report_sources(
             workspace, sources, actor, workspace.get(actor, project["id"]), options
         )
+
+    # The same private command/worker/store/report path can now search a whole
+    # layout before any converter or battery has been manually chosen.
+    from linker_engine.planning.plant_search_plan import PlantSearchPlan
+
+    raw_search = copy.deepcopy(setup)
+    for unit in raw_search["units"]:
+        raw_selection = unit["inputs"].pop("equipment_selection")
+        raw_selection.pop("product_revisions")
+        raw_selection.update(
+            inverter_product_id=None,
+            battery_product_id=None,
+            modules_per_stack=None,
+            parallel_stacks=None,
+            accessory_product_ids=[],
+        )
+        unit["inputs"]["equipment_setup"] = raw_selection
+    plan = {
+        "schema_version": 1,
+        "requirements": raw_search["requirements"],
+        "units": [
+            {
+                "id": u["id"],
+                "name": u["name"],
+                "requirements": {
+                    key: u["inputs"]["equipment_setup"][key]
+                    for key in EquipmentRequirements.model_fields
+                },
+            }
+            for u in raw_search["units"]
+        ],
+        "parallel_groups": raw_search["parallel_groups"],
+    }
+    request_inputs = {
+        "equipment_plant_setup": raw_search,
+        "equipment_plant_requirements": plan,
+    }
+    PlantSearchPlan.from_inputs(request_inputs)
+    with TestClient(app) as client:
+        updated = client.post(
+            "/projects/revise",
+            headers=headers(),
+            json={
+                "schema_version": 1,
+                "project_id": project["id"],
+                "expected_revision": 2,
+                "inputs": request_inputs,
+                "key": "prepare-plant-search",
+            },
+        )
+        assert updated.status_code == 200, updated.text
+        queued = client.post(
+            "/runs/equipment-search",
+            headers=headers(),
+            json={
+                "schema_version": 1,
+                "project_id": project["id"],
+                "expected_revision": 3,
+                "key": "search-plant-layout",
+            },
+        )
+        assert queued.status_code == 200, queued.text
+        assert executor.run_once()
+        searched = workspace.run(actor, queued.json()["id"])
+        assert searched.state == "succeeded", searched.error
+        result = searched.result["search"]
+        assert (
+            result["coverage"]["template"]
+            == "declared_plant_one_external_assembly_per_converter"
+        )
+        assert result["coverage"]["identical_demand_cache_entries"] == 1
+        assert result["candidates"]
+        candidate = result["candidates"][0]
+        assert "selection" not in candidate
+        detail = client.post(
+            "/equipment/candidates/read",
+            headers=headers(),
+            json={
+                "schema_version": 1,
+                "run_id": searched.id,
+                "candidate_id": candidate["id"],
+            },
+        )
+        assert detail.status_code == 200, detail.text
+        assessment = detail.json()["assessment"]
+        assert len(assessment["systems"]) == 2
+        assert all(
+            "facts" in c
+            for u in assessment["systems"]
+            for c in u["assessment"]["checks"]
+        )
+        assert (
+            next(
+                r
+                for r in assessment["provisional_bill_of_materials"]
+                if r["product_id"] == 2409
+            )["quantity"]
+            == 1
+        )
+        compact = workspace.blobs.object(candidate["assessment_sha256"])
+        assert all(
+            "facts" not in c
+            for u in compact["systems"]
+            for c in u["assessment"]["checks"]
+        )
+        chosen = candidate["plant"]
+        adopted_setup = {
+            "schema_version": 1,
+            "requirements": chosen["requirements"],
+            "units": [
+                {
+                    "id": u["id"],
+                    "name": u["name"],
+                    "inputs": {"equipment_selection": u["selection"]},
+                }
+                for u in chosen["units"]
+            ],
+            "parallel_groups": [
+                {k: v for k, v in g.items() if k != "controller_revision"}
+                for g in chosen["parallel_groups"]
+            ],
+        }
+        choice = {
+            "run_id": searched.id,
+            "candidate_id": candidate["id"],
+            "assessment_sha256": candidate["assessment_sha256"],
+        }
+        adopted = client.post(
+            "/projects/revise",
+            headers=headers(),
+            json={
+                "schema_version": 1,
+                "project_id": project["id"],
+                "expected_revision": 3,
+                "inputs": {
+                    "equipment_plant_setup": adopted_setup,
+                    "equipment_plant": chosen,
+                    "equipment_candidate": choice,
+                },
+                "key": "adopt-plant-search",
+            },
+        )
+        assert adopted.status_code == 200, adopted.text
+    selected_source = report_sources(
+        workspace,
+        sources,
+        actor,
+        workspace.get(actor, project["id"]),
+        options.model_copy(update={"equipment_run_id": None}),
+    )
+    assert selected_source["equipment"] == assessment
+    assert selected_source["equipment_plant"] == chosen
+    assert selected_source["source_runs"][0]["candidate_id"] == candidate["id"]
+    frozen = EquipmentCandidateStore(workspace).read(
+        actor, searched.id, candidate["id"]
+    )
+    assert frozen["assessment"] == assessment
+    changed = copy.deepcopy(adopted.json()["inputs"])
+    changed["equipment_plant"]["units"][0]["selection"]["required_usable_kwh"] += 1
+    changed.pop("equipment_plant_setup")
+    with pytest.raises(InvalidInput):
+        check_equipment_candidate(
+            workspace, actor, project["id"], changed, previous=changed
+        )
+    stale_plan = copy.deepcopy(request_inputs)
+    stale_plan["equipment_plant_setup"]["units"][0]["name"] = "Changed search demand"
+    with pytest.raises(InvalidInput):
+        PlantSearchPlan.from_inputs(stale_plan)
 
 
 def test_plant_packaging_only_covers_the_owning_units_included_items() -> None:
@@ -1694,6 +1872,108 @@ def test_search_enumerates_documented_counts_and_keeps_budget_exhaustion_visible
     assert (
         limited["completion"] == "budget_exhausted" and len(limited["candidates"]) == 1
     )
+
+    # A necessary ceiling excludes underpowered grid proposals without
+    # replacing the separate missing continuous battery-output evidence.
+    ceiling_inputs = inputs(feed, 3)
+    ceiling_inputs["equipment_selection"]["required_discharge_ac_kw"] = 50
+    bounded = assess_equipment(ceiling_inputs, basis)
+    check = next(c for c in bounded["checks"] if c["id"] == "grid_output_ceiling")
+    assert (
+        check["status"] == "violated"
+        and check["actual"] == 11
+        and check["required"] == 50
+    )
+    assert (
+        check["facts"][0]["quantity"] == "apparent_power"
+        and check["facts"][0]["unit"] == "kVA"
+    )
+    assert check["calculation"]["role"] == "necessary_upper_bound_only"
+    assert (
+        next(c for c in bounded["checks"] if c["id"] == "continuous_battery_ac_output")[
+            "status"
+        ]
+        == "unresolved"
+    )
+    ceiling_inputs["equipment_selection"]["operating_mode"] = "backup"
+    assert not any(
+        c["id"] == "grid_output_ceiling"
+        for c in assess_equipment(ceiling_inputs, basis)["checks"]
+    )
+
+    from linker_engine.planning.plant_search import search_plant
+
+    unit_requirements = demand["equipment_requirements"]
+    total = {
+        **unit_requirements,
+        "pv_dc_kw": 20,
+        "required_usable_kwh": 30,
+        "required_discharge_ac_kw": 10,
+    }
+    plan = {
+        "schema_version": 1,
+        "requirements": total,
+        "units": [
+            {"id": uid, "name": uid, "requirements": unit_requirements}
+            for uid in ("a", "b")
+        ],
+        "parallel_groups": [],
+    }
+    raw = {
+        "schema_version": 1,
+        "requirements": total,
+        "units": [
+            {"id": uid, "name": uid, "inputs": {"equipment_setup": unit_requirements}}
+            for uid in ("a", "b")
+        ],
+        "parallel_groups": [],
+    }
+    plant_demand = {"equipment_plant_requirements": plan, "equipment_plant_setup": raw}
+    whole = search_plant(
+        plant_demand, basis, EquipmentSearchLimits(work_budget=100), store, lambda: None
+    )
+    assert whole["completion"] == "exhausted_supported_domain"
+    # Count2 remains unresolved on its source window, so it cannot be pruned
+    # as a proven violation. Only the known failed count3 is excluded.
+    assert {
+        tuple(u["selection"]["modules_per_stack"] for u in c["plant"]["units"])
+        for c in whole["candidates"]
+    } == {(a, b) for a in (2, 4, 5) for b in (2, 4, 5)}
+    assert len({c["id"] for c in whole["candidates"]}) == 9
+    assert whole["coverage"]["identical_demand_cache_entries"] == 1
+    partial = search_plant(
+        plant_demand, basis, EquipmentSearchLimits(work_budget=8), store, lambda: None
+    )
+    assert partial["completion"] == "budget_exhausted"
+    assert len(partial["candidates"]) == 1 and partial["work_used"] == 8
+    # A large declared layout must pay for the expanded selection before a
+    # result entry is created. This is an execution bound, not a device limit.
+    large_plan = copy.deepcopy(plan)
+    large_raw = copy.deepcopy(raw)
+    large_plan["units"] = [
+        {"id": f"u{i}", "name": f"U{i}", "requirements": unit_requirements}
+        for i in range(300)
+    ]
+    large_raw["units"] = [
+        {
+            "id": f"u{i}",
+            "name": f"U{i}",
+            "inputs": {"equipment_setup": unit_requirements},
+        }
+        for i in range(300)
+    ]
+    weighted = search_plant(
+        {
+            "equipment_plant_requirements": large_plan,
+            "equipment_plant_setup": large_raw,
+        },
+        basis,
+        EquipmentSearchLimits(work_budget=400),
+        store,
+        lambda: None,
+    )
+    assert weighted["completion"] == "budget_exhausted"
+    assert weighted["candidates"] == [] and weighted["work_used"] <= 400
 
 
 def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(

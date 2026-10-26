@@ -151,6 +151,45 @@ def assess_equipment(
         converter_refs,
         converter_power,
     )
+    if (
+        selection.operating_mode == "grid_connected"
+        and selection.required_discharge_ac_kw is not None
+        and selection.required_discharge_ac_kw > 0
+    ):
+        ceilings: list[float] = []
+        ceiling_refs: list[dict[str, Any]] = []
+        for key in ("ac_output_kw_max", "max_apparent_power_kva"):
+            value, refs = number(
+                selection.inverter_product_id,
+                key,
+                ("active_power", "apparent_power"),
+                "grid_output_ceiling",
+            )
+            if value is not None:
+                ceilings.append(value)
+                ceiling_refs.extend(refs)
+        if ceilings:
+            # |P| <= S: a cited maximum apparent output gives a necessary
+            # active-power upper bound, never continuous battery capability.
+            # Retain the original quantity/unit in every bound source fact.
+            ceiling = min(ceilings)
+            checks.append(
+                {
+                    "id": "grid_output_ceiling",
+                    "status": "satisfied"
+                    if selection.required_discharge_ac_kw <= ceiling
+                    else "violated",
+                    "reason": "maximum_grid_output_is_necessary_bound_only",
+                    "facts": cast(list[Json], ceiling_refs),
+                    "actual": ceiling,
+                    "required": selection.required_discharge_ac_kw,
+                    "unit": "kW",
+                    "calculation": {
+                        "relation": "abs(P)<=S",
+                        "role": "necessary_upper_bound_only",
+                    },
+                }
+            )
     phase = inverter["phase"]
     add(
         "grid_phase",

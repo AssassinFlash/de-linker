@@ -313,7 +313,9 @@ export function EquipmentResult({
 											{productDetail(line, "brand")}{" "}
 											{productDetail(line, "model") || "—"}
 											{productDetail(line, "sku") && (
-												<small>{productDetail(line, "sku")}</small>
+												<div>
+													<small>{productDetail(line, "sku")}</small>
+												</div>
 											)}
 										</td>
 										<td>

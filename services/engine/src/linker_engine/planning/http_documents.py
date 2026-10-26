@@ -99,6 +99,10 @@ class ProjectInputs(Command):
             from .equipment_requirements import EquipmentRequirements
 
             EquipmentRequirements.model_validate(value["equipment_requirements"])
+        if "equipment_plant_requirements" in value:
+            from .plant_search_plan import PlantSearchPlan
+
+            PlantSearchPlan.from_inputs(value)
         if "equipment_candidate" in value:
             from .equipment_candidate_choice import EquipmentCandidateChoice
 

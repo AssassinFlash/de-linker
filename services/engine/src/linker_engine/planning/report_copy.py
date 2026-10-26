@@ -3,6 +3,10 @@
 from __future__ import annotations
 
 TEXT = {
+    "maximum_grid_output_is_necessary_bound_only": (
+        "In grid-connected operation, the requested continuous active power from the battery cannot exceed the applicable documented maximum output of the whole inverter. Where the source gives a maximum apparent power S, |P| ≤ S is a necessary upper bound only; S is not an active-power rating. Passing this check does not establish continuous battery output.",
+        "Im Netzparallelbetrieb darf die geforderte dauerhafte Wirkleistungsabgabe der Batterie die dokumentierte maximale Ausgangsleistung des gesamten Wechselrichters nicht überschreiten, sofern diese Angabe für die gewählten Bedingungen gilt. Gibt die Quelle eine maximale Scheinleistung S an, liefert |P| ≤ S lediglich eine notwendige Obergrenze; S darf nicht als Wirkleistungsangabe verwendet werden. Das Einhalten dieser Grenze weist keine Dauerentladeleistung der Batterie nach.",
+    ),
     "sales_battery_system": ("Battery system", "Batteriesystem"),
     "sales_battery_module": ("Battery module", "Batteriemodul"),
     "sales_integrated_system": ("Integrated system", "Integriertes System"),
@@ -628,6 +632,10 @@ CHECKS = {
     ),
     "pv_design_current": ("Design current", "Auslegungsstrom"),
     "pv_wiring_protection": ("Wiring and protection", "Leitungen und Schutz"),
+    "grid_output_ceiling": (
+        "Inverter output limit in grid-connected operation",
+        "Leistungsgrenze des Wechselrichters im Netzparallelbetrieb",
+    ),
     "converter_identity": ("Converter output", "Ausgang des Umrichters"),
     "grid_phase": ("Grid phases", "Netzphasen"),
     "pv_dc_input": ("PV input power", "PV-Eingangsleistung"),

@@ -8,7 +8,7 @@ from .equipment_kernel import EquipmentKernel
 from .equipment_requirements import EquipmentRequirements
 from .equipment_search import search_equipment
 from .equipment_search_limits import EquipmentSearchLimits
-from .errors import InvalidInput
+from .plant_search_plan import PlantSearchPlan
 from .product_sources import ProductSources
 from .records import Actor, Context
 from .worker import Control
@@ -17,7 +17,7 @@ from .workspace import Workspace
 
 class EquipmentSearchKernel(EquipmentKernel):
     kind = "search_woo_equipment_v1"
-    models = {"task": kind, "search": "finite_woo_topologies_v1"}
+    models = {"task": kind, "search": "finite_woo_single_and_declared_plant_v2"}
 
     def __init__(
         self,
@@ -33,8 +33,9 @@ class EquipmentSearchKernel(EquipmentKernel):
 
     def context(self, actor: Actor, project_id: str, inputs: Object) -> Context:
         if "equipment_plant" in inputs or "equipment_plant_setup" in inputs:
-            raise InvalidInput("single-converter search cannot replace a plant")
-        EquipmentRequirements.from_inputs(inputs)
+            PlantSearchPlan.from_inputs(inputs)
+        else:
+            EquipmentRequirements.from_inputs(inputs)
         basis = self.products.equipment_basis()
         return Context(
             self.runtime.sha256,
@@ -47,8 +48,13 @@ class EquipmentSearchKernel(EquipmentKernel):
         )
 
     def compute(self, inputs: Object, basis: Object, control: Control) -> Object:
+        search = search_equipment
+        if "equipment_plant" in inputs or "equipment_plant_setup" in inputs:
+            from .plant_search import search_plant
+
+            search = search_plant
         return {
-            "search": search_equipment(
+            "search": search(
                 inputs,
                 basis,
                 self.limits,

@@ -18,6 +18,7 @@ from .equipment_inputs import EquipmentSelection
 type FactUse = Literal[
     "numeric",
     "nominal_ac_output",
+    "grid_output_ceiling",
     "pv_nameplate_limit",
     "normal_charge_current",
     "normal_discharge_current",
@@ -218,6 +219,14 @@ def resolve_fact(
         if use == "nominal_ac_output":
             valid = q == {
                 "quantity_kind": "rated_active_power",
+                "scope": "on_grid_ac_output",
+            }
+        elif use == "grid_output_ceiling":
+            valid = fact.get("quantity") in (
+                "active_power",
+                "apparent_power",
+            ) and q == {
+                "quantity_kind": "maximum_" + str(fact["quantity"]),
                 "scope": "on_grid_ac_output",
             }
         elif use == "pv_nameplate_limit":

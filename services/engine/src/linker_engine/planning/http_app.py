@@ -265,7 +265,10 @@ def create_private_app(
                 ),
                 **({"report": reports.kernel.kind} if reports is not None else {}),
                 **(
-                    {"equipment_search": equipment_search.kernel.kind}
+                    {
+                        "equipment_search": equipment_search.kernel.kind,
+                        "equipment_plant_search": "declared_plant_v1",
+                    }
                     if equipment_search is not None
                     else {}
                 ),

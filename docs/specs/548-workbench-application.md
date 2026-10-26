@@ -272,7 +272,13 @@ or no battery when both storage demands are explicitly zero. Current
 manufacturer-listed pairings, intersected documented module-count bounds and
 unambiguous required components generate selections. No missing count,
 parallel capability, sales-unit identity or manufacturer condition is invented.
-The same assessment function checks every selection. A single external
+The same assessment function checks every selection. In grid-connected mode,
+a cited applicable maximum active or apparent grid output also gives a necessary
+upper bound on requested continuous active discharge. For apparent power,
+`|P| <= S` supplies only an active-power ceiling; the original kVA quantity stays
+in the source facts. Passing the ceiling never establishes continuous battery
+output, and a grid limit is not applied to backup operation. Missing or
+uninterpreted source conditions remain unresolved. A single external
 assembly does not require evidence for inter-assembly parallel operation.
 Wp/kWp are PV nameplate quantities, distinct from continuous active AC power;
 an unlabeled active-power field cannot establish an installed STC array limit.
@@ -317,7 +323,7 @@ frozen Woo pool and evaluate the declared relationships. Reads and report
 selection keep the exact whole-plant inputs. Duplicate physical identities,
 inconsistent revisions, an obsolete single-converter selection/candidate/wiring
 result alongside a plant, and changed controller evidence are rejected.
-Single-converter automatic search cannot overwrite a plant.
+Single-converter candidates cannot overwrite a plant; whole-plant candidates follow the search contract below.
 
 Unit demand allocations are checked against the whole-project demand, with
 PV nameplate allocations kept distinct from continuous AC demand. These are
@@ -347,8 +353,53 @@ visible. Changes invalidate preparation; new calculation uses a confirmed saved
 revision. Result checks and conditions retain their unit/group ownership.
 
 This local editor and report integration does not establish scoped Woo
-mode/network/firmware maintenance, cabinet quantity interpretation, automatic
-plant search, joint energy dispatch or complete country qualification.
+mode/network/firmware maintenance, joint energy dispatch or complete country
+qualification. Cabinet sales units/counts are covered above; whole-plant search
+is specified below.
+
+### Automatic search within a declared multi-system layout
+
+The existing equipment-search command also accepts a saved
+`equipment_plant_requirements` plan. Its named systems, per-system demand,
+whole-project requirements and disjoint coordination-group membership must match
+the editable plant draft. Products need not have been chosen or prepared.
+Selected controllers constrain the search; a null controller requests the
+intersection of current manufacturer component declarations. Missing controller
+association stays unresolved. No alternate system count, demand allocation,
+multiple external battery assembly or integrated topology is invented.
+
+One frozen current Woo pool, source permission checks and operational work
+budget cover both single and plant searches. Both use the same equipment
+configuration enumerator and qualification function. Identical unit demand
+shares computation within the request; unit and battery identities remain
+distinct. Proven unit violations are pruned with visible gap counts. Whole-plant
+candidates are assessed as new Cartesian options arrive, so an incomplete
+search can still contain assessed candidates. Each tuple is visited once;
+exhausting the work budget reports incomplete coverage and never infeasibility.
+Full candidate expansion consumes one work unit per named system and group
+before its materialisation; sharing numerical work cannot multiply an unbounded
+list of expanded plant selections under a flat combination counter.
+Canonical traversal is a display order, not an optimisation ranking.
+
+The result names its declared layout, each assessed configuration, omissions
+and source gaps. Candidate details include unit/group checks and the complete
+provisional equipment projection. Nested and top-level checks share immutable
+fact blobs. Private reads reconstruct those facts without current-source
+substitution. The server verifies an adopted candidate's search membership,
+assessment identity, exact plant and original demand/layout, and checks current
+Woo permission on first adoption. A single candidate cannot overwrite a plant,
+and a plant candidate cannot overwrite single-system planning.
+
+Adoption atomically updates editable and prepared equipment, preserves unrelated
+project edits, rechecks all current Woo revisions, and refuses a late operation
+over changed equipment context. Changes invalidate the saved search plan and
+candidate. The existing report/material path consumes an adopted whole-plant
+candidate without rerunning equipment or energy calculations. The workbench
+advertises plant search only when its configured backend supports it.
+
+This search proposes hardware for the declared layout. Manufacturer operating
+conditions, shared output/dispatch, country qualification and final installation
+release remain their own required assessments within the full goal.
 
 ### Frozen planning report and private PDF
 

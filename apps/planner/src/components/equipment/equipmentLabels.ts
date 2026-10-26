@@ -82,6 +82,11 @@ export function equipmentCheckLabel(id: string): string {
 		case "pv_wiring_protection":
 			return __("Wiring and protection", "linker-tools");
 
+		case "grid_output_ceiling":
+			return __(
+				"Inverter output limit in grid-connected operation",
+				"linker-tools",
+			);
 		case "converter_identity":
 			return __("Converter output", "linker-tools");
 		case "grid_phase":
@@ -127,6 +132,11 @@ export function equipmentCheckLabel(id: string): string {
 	}
 }
 export function equipmentReason(reason: string): string | null {
+	if (reason === "maximum_grid_output_is_necessary_bound_only")
+		return __(
+			"In grid-connected operation, the requested continuous active power from the battery cannot exceed the applicable documented maximum output of the whole inverter. Where the source gives a maximum apparent power S, |P| ≤ S is a necessary upper bound only; S is not an active-power rating. Passing this check does not establish continuous battery output.",
+			"linker-tools",
+		);
 	if (reason === "unit_must_match_plant_connection")
 		return __(
 			"Each system must match the project grid phases and operating mode.",

@@ -2,9 +2,13 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { PlanningRun } from "../../data/planningProtocol.ts";
 import type { JsonObject } from "../../data/protocol.ts";
+import type { EquipmentSelection } from "../../domain/equipment.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import type { EquipmentCandidate } from "../../data/equipmentSearch.ts";
-import { readEquipmentCandidate } from "../../data/equipmentSearch.ts";
+import {
+	readEquipmentCandidate,
+	isPlantCandidate,
+} from "../../data/equipmentSearch.ts";
 import { readObject } from "../../data/readProtocol.ts";
 import { EquipmentResult } from "./EquipmentResult.tsx";
 import { equipmentStatus } from "./equipmentLabels.ts";
@@ -22,6 +26,7 @@ export function EquipmentSearchResult({
 	apply,
 	onError,
 	plantActive = false,
+	projectCandidate,
 }: {
 	run: PlanningRun;
 	locale: string;
@@ -33,6 +38,7 @@ export function EquipmentSearchResult({
 	apply: (candidate: EquipmentCandidate) => Promise<void>;
 	onError: (cause: unknown) => void;
 	plantActive?: boolean;
+	projectCandidate?: JsonObject;
 }) {
 	const search = run.result ? readObject(run.result.search) : null;
 	const candidates = (search?.candidates ?? []) as EquipmentCandidate[];
@@ -44,7 +50,16 @@ export function EquipmentSearchResult({
 	);
 	const [selected, setSelected] = useState<string | null>(null),
 		[busy, setBusy] = useState(false);
-	const candidate = candidates.find((c) => c.id === selected) ?? candidates[0];
+	const adoptedId =
+		projectCandidate?.run_id === run.id ? projectCandidate.candidate_id : null;
+	const candidate =
+		candidates.find((c) => c.id === (selected ?? adoptedId)) ?? candidates[0];
+	const alreadyAdopted = candidate?.id === adoptedId;
+	const plantSearch =
+		search &&
+		readObject(search.coverage).template ===
+			"declared_plant_one_external_assembly_per_converter";
+	const differentArrangement = Boolean(plantActive) !== Boolean(plantSearch);
 	const detail = useQuery({
 		queryKey: ["equipment-candidate", scope, run.id, candidate?.id],
 		enabled: !!candidate && client.isCurrentScope(scope),
@@ -63,16 +78,32 @@ export function EquipmentSearchResult({
 				candidate!,
 			),
 	});
-	const names = (c: EquipmentCandidate) =>
-		[c.selection.inverter_product_id, c.selection.battery_product_id]
+	const deviceNames = (selection: EquipmentSelection) =>
+		[selection.inverter_product_id, selection.battery_product_id]
 			.filter((id) => id !== null)
 			.map((id) => {
 				const p = products.get(id);
 				return p ? `${p.brand} ${p.model}` : "—";
 			})
 			.join(" + ");
+	const names = (c: EquipmentCandidate) =>
+		isPlantCandidate(c)
+			? c.plant.units
+					.map(
+						(u) =>
+							`${u.name}: ${deviceNames(u.selection)} · ${__("Battery modules per stack", "linker-tools")}: ${u.selection.modules_per_stack ?? "—"}`,
+					)
+					.join(" · ")
+			: `${deviceNames(c.selection)} · ${__("Battery modules per stack", "linker-tools")}: ${c.selection.modules_per_stack ?? "—"}`;
 	const applySelected = async () => {
-		if (!candidate || busy || disabled || plantActive) return;
+		if (
+			!candidate ||
+			busy ||
+			disabled ||
+			differentArrangement ||
+			alreadyAdopted
+		)
+			return;
 		setBusy(true);
 		try {
 			await apply(candidate);
@@ -92,10 +123,10 @@ export function EquipmentSearchResult({
 		>
 			{search && (
 				<>
-					{plantActive && (
+					{differentArrangement && (
 						<Notice>
 							{__(
-								"This search covers a single system. Choose products within each system when editing a multi-system plan.",
+								"This result is for a different system arrangement. Choose the matching arrangement before using a combination.",
 								"linker-tools",
 							)}
 						</Notice>
@@ -111,10 +142,15 @@ export function EquipmentSearchResult({
 					<details className="lp-comparison">
 						<summary>{__("Search scope", "linker-tools")}</summary>
 						<p>
-							{__(
-								"This search assesses combinations of one inverter and one external battery assembly. Parallel inverter systems, multiple battery ports and integrated storage systems require separate assessment.",
-								"linker-tools",
-							)}
+							{plantSearch
+								? __(
+										"The search uses the system count, requirements for each system and coordination groups you have declared. It checks equipment combinations from current product data for each system and the project, counting one shared controller per group. It does not compare alternative system counts or different allocations of project requirements, or simulate joint energy flows. Unresolved conditions remain shown in the results.",
+										"linker-tools",
+									)
+								: __(
+										"This search assesses combinations of one inverter and one external battery assembly. Parallel inverter systems, multiple battery ports and integrated storage systems require separate assessment.",
+										"linker-tools",
+									)}
 						</p>
 					</details>
 					<p>
@@ -157,9 +193,7 @@ export function EquipmentSearchResult({
 												.filter((c) => c.status === status)
 												.map((c) => (
 													<option key={c.id} value={c.id}>
-														{names(c)} ·{" "}
-														{__("Battery modules per stack", "linker-tools")}:{" "}
-														{c.selection.modules_per_stack ?? "—"}
+														{names(c)}
 													</option>
 												))}
 										</optgroup>
@@ -184,7 +218,8 @@ export function EquipmentSearchResult({
 								busy ||
 								!detail.data ||
 								detail.isFetching ||
-								plantActive
+								differentArrangement ||
+								alreadyAdopted
 							}
 							onClick={() => void applySelected()}
 						>

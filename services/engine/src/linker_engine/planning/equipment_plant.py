@@ -51,7 +51,7 @@ def assert_plant_exclusivity(inputs: Object) -> None:
         return
     if any(
         inputs.get(key) is not None
-        for key in ("equipment_selection", "equipment_candidate", "pv_string_plan")
+        for key in ("equipment_selection", "pv_string_plan")
     ):
         raise InvalidInput(
             "a plant cannot reuse a single-converter selection or wiring result"

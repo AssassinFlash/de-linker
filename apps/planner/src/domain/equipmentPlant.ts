@@ -76,6 +76,7 @@ export function hasPlant(inputs: JsonObject): boolean {
 const equipmentFields = [
 	"equipment_plant",
 	"equipment_plant_setup",
+	"equipment_plant_requirements",
 	"equipment_selection",
 	"equipment_candidate",
 	"equipment_setup",
@@ -247,6 +248,7 @@ export function plantInputs(inputs: JsonObject, draft: PlantDraft): JsonObject {
 	};
 	for (const key of [
 		"equipment_plant",
+		"equipment_plant_requirements",
 		"equipment_selection",
 		"equipment_candidate",
 		"equipment_setup",
@@ -269,6 +271,8 @@ export function singleSystem(inputs: JsonObject): JsonObject {
 	};
 	delete next.equipment_plant;
 	delete next.equipment_plant_setup;
+	delete next.equipment_plant_requirements;
+	delete next.equipment_candidate;
 	return next;
 }
 export function compilePlant(

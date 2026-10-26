@@ -1159,3 +1159,64 @@ production release/readback remain in the active full goal. This is a local
 delivery, with no production, mail or inquiry write. Exact source, result,
 review and retention details extend the existing acceptance JSON under
 `equipment_cabinet_assembly`; no separate report or ticket was created.
+
+### Declared-plant search and adopted report — local delivery closed
+
+A saved declared layout can now search current Woo hardware before products
+are chosen. The existing single-system enumerator, source guards, command
+journal and worker are shared. Per-unit demand computation is cached within
+the same source snapshot; physical unit/battery ownership remains distinct.
+Incremental Cartesian expansion avoids rescanning old tuples, and the work
+budget pays per expanded system/group before creating each full candidate.
+An exhausted budget is incomplete coverage, never infeasibility or optimality.
+
+Customer66 used the same project 1ac83b43ab08481bae7e6eb05cf633c4. Search
+revision 4 initially exposed missing necessary output filtering: small devices
+with unknown continuous battery data remained candidates. The final code uses
+applicable maximum active/apparent grid output as a necessary active-power
+ceiling, with |P|<=S kept separate from a continuous battery capability. Backup
+is not assessed by that grid ceiling. The current associated H2 datasheet page 2
+was visually verified; only six local Woo products gained their own maximum
+apparent-output figure and typed grid scope. The DE30k model correctly uses
+29,999 VA, not the 33,000 VA column of the other 30 kW model. Source intake reuses native
+binding/preparation hooks and the existing claim/load/ack publisher; no second
+product source or externally fetched dataset was introduced.
+
+Final source ad18efbf, compatibility a939cdb8 and runtime 93059c67 are active on the
+matched p548 pair, storage 5. The current source has 86 prepared records; this
+count does not claim all records or equipment are qualified. Runtime 8662d5e2
+is the single rollback. Superseded carriers and a stale rollback-pointer file
+were corrected/retired in the same operations. The instance/environment is
+reused; only a scoped Woo-field undo was added, with no full backup or new
+execution harness. All temporary PDF/source renders have been removed.
+
+Search d541474f33a34c41adb4e65aa67ec6bb completed its stated layout domain with
+36 assessed combinations and 327/1,000 work units. Candidate 28bbd264... selects
+two GW80K-ET, two GW112.6-BAT-AC-G10 and one SEC3000C. Adoption saved revision 5;
+reopening and switching languages restore that exact same-run candidate and
+prevent repeat adoption. The original search and older project revisions are
+unchanged. The adopted result produced report 4a8124062ed64ec0b7c80fd199133df6,
+a seven-page German PDF SHA256
+6548b26c63e0c2be01e3e974909d56dab188874e089717142af30351c83883ba.
+Its two 88 kW necessary-ceiling checks preserve the 50 kW per-unit target, while
+continuous storage capability and joint/country qualification stay unresolved.
+The final material quantities are 1946:2, 1955:2, 2409:1. One browser download
+completed without an alert; a specific OS download location is not asserted.
+
+The existing native fixture and finite-search case were extended; one client
+adoption case was added. Relevant static/build checks and Spec/Standards/copy
+reviews passed. Reviews then covered only the resource, source ceiling, saved
+choice and SKU-block deltas. Final EN/DE 1440/390 views were inspected and have
+no horizontal overflow; the approved Saving translation gained its missing
+planner reference. Model/SKU concatenation was fixed with native block markup.
+The final PDF layout and its source/BOM pages were inspected. Unchanged annual,
+PV, commerce and release-lifecycle evidence was reused. This batch's validation
+is closed; no new numerical or whole-site matrix is pending.
+
+Manufacturer mode/network/firmware/bank and meter/CT scope, conditioned storage
+performance and joint dispatch, broader topology/count/allocation search,
+installation/country requirements, remaining consumers/migration and coordinated
+review/production release/readback remain in the full active goal. No production,
+mail or inquiry write occurred. Existing acceptance JSON equipment_plant_search
+is the authoritative current delivery record; no separate ticket/report layer
+was created.
