@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Account;
 
+use Linker\Commerce\Planning\LegacyRoutes;
+
 /**
  * The account menu, the contact person, the inquiry list, saved solutions
  * and the route that saves them, documents and their downloads. A pending
@@ -25,11 +27,10 @@ final class Module {
 	 * @param SavedSolutions       $solutions The saved solutions.
 	 * @param Documents            $documents The documents page.
 	 * @param DocumentDownload     $download  The downloads.
-	 * @param SolutionsRoute       $route     The route that saves solutions.
+	 * @param LegacyRoutes         $route     Retirement replies for old design writes.
 	 * @param AccountStatusNotice  $status_notice   The pending or restricted account status notice.
 	 * @param AuthTemplates        $auth      The guest sign-in, register and lost-password pages.
 	 * @param AdminAccessNotice    $admin_access The explanation of Woo's admin protection.
-	 * @param SolutionDraftRoute   $draft_route Atomic current-design additions.
 	 * @param SavedSolutionRemoval $removal Recoverable saved-solution removal.
 	 */
 	public function __construct(
@@ -39,11 +40,10 @@ final class Module {
 		private readonly SavedSolutions $solutions,
 		private readonly Documents $documents,
 		private readonly DocumentDownload $download,
-		private readonly SolutionsRoute $route,
+		private readonly LegacyRoutes $route,
 		private readonly AccountStatusNotice $status_notice = new AccountStatusNotice(),
 		private readonly AuthTemplates $auth = new AuthTemplates(),
 		private readonly AdminAccessNotice $admin_access = new AdminAccessNotice(),
-		private readonly SolutionDraftRoute $draft_route = new SolutionDraftRoute(),
 		private readonly SavedSolutionRemoval $removal = new SavedSolutionRemoval()
 	) {}
 
@@ -71,7 +71,6 @@ final class Module {
 		add_action( 'woocommerce_load_cart_from_session', array( $this->solutions, 'claim' ) );
 		$this->removal->register();
 		add_action( 'rest_api_init', array( $this->route, 'register' ) );
-		add_action( 'rest_api_init', array( $this->draft_route, 'register' ) );
 		add_action( 'woocommerce_account_documents_endpoint', array( $this->documents, 'render' ) );
 		add_action( 'template_redirect', array( $this->download, 'serve' ), 1 );
 	}

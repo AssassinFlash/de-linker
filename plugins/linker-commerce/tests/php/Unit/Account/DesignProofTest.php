@@ -39,14 +39,8 @@ final class DesignProofTest extends TestCase {
 			},
 			static fn (): array => array( 200, (string) json_encode( $result ) )
 		);
-		$this->assertInstanceOf( WP_Error::class, $proof->verify( 'residential', array( 'plz' => '39179' ), str_repeat( 'a', 64 ) ) );
+		$this->assertFalse( $proof->is_current( self::result() ) );
 		$this->assertSame( array( 10, 20 ), array_column( $seen['products'], 'product_id' ) );
-	}
-
-	/** A different result cannot be saved using a client's copied fingerprint. */
-	public function test_the_trusted_result_must_match_the_confirmed_fingerprint(): void {
-		$proof = new DesignProof( static fn (): array => array( 'valid' => true ), static fn (): array => array( 200, (string) json_encode( self::result() ) ) );
-		$this->assertInstanceOf( WP_Error::class, $proof->verify( 'residential', array( 'plz' => '39179' ), str_repeat( 'b', 64 ) ) );
 	}
 
 	/** An unreadable authority stops the action without claiming product withdrawal. */
@@ -54,52 +48,13 @@ final class DesignProofTest extends TestCase {
 		$proof = new DesignProof(
 			static function (): array {
 				throw new \RuntimeException( 'Current authority unavailable.' );
-			},
-			static fn (): array => array( 200, (string) json_encode( self::result() ) )
+			}
 		);
-		$error = $proof->verify( 'residential', array( 'plz' => '39179' ), str_repeat( 'a', 64 ) );
+		$error = $proof->current_error( self::result() );
 		$this->assertInstanceOf( WP_Error::class, $error );
 		$this->assertSame( 'linker_solution_verification', $error->get_error_code() );
 		$this->assertSame( array( 'status' => 503 ), $error->get_error_data() );
 		$this->assertFalse( $proof->is_current( self::result() ) );
-	}
-
-	/** Commercial calls identify the customer's explicit card, never the first one. */
-	public function test_commercial_selection_requires_an_explicit_valid_index(): void {
-		$result = self::result();
-		unset( $result['selected'] );
-		$result['systems'] = array(
-			array(
-				'lines' => array(
-					array(
-						'product'  => array( 'id' => 10 ),
-						'quantity' => 2,
-					),
-				),
-			),
-			array(
-				'lines' => array(
-					array(
-						'product'  => array( 'id' => 20 ),
-						'quantity' => 3,
-					),
-				),
-			),
-		);
-		$proof             = new DesignProof( static fn (): array => array( 'valid' => true ), static fn (): array => array( 200, (string) json_encode( $result ) ) );
-		$this->assertInstanceOf( WP_Error::class, $proof->verify( 'commercial', array( 'plz' => '39179' ), str_repeat( 'a', 64 ) ) );
-		$this->assertInstanceOf( WP_Error::class, $proof->verify( 'commercial', array( 'plz' => '39179' ), str_repeat( 'a', 64 ), 2 ) );
-		$verified = $proof->verify( 'commercial', array( 'plz' => '39179' ), str_repeat( 'a', 64 ), 1 );
-		$this->assertIsArray( $verified );
-		$this->assertSame(
-			array(
-				array(
-					'product_id' => 20,
-					'quantity'   => 3,
-				),
-			),
-			DesignProof::items( $verified )
-		);
 	}
 
 	/** Missing or empty publication evidence cannot become a current write. */
@@ -162,9 +117,6 @@ final class DesignProofTest extends TestCase {
 			'product'  => array( 'id' => 10 ),
 			'quantity' => 2.0,
 		);
-		$proof                                      = new DesignProof( static fn (): array => array( 'valid' => true ), static fn (): array => array( 200, (string) json_encode( $result, JSON_PRESERVE_ZERO_FRACTION ) ) );
-		$verified                                   = $proof->verify( 'residential', array( 'plz' => '80538' ), str_repeat( 'a', 64 ) );
-		$this->assertIsArray( $verified );
 		$this->assertSame(
 			array(
 				array(
@@ -172,7 +124,7 @@ final class DesignProofTest extends TestCase {
 					'quantity'   => 3,
 				),
 			),
-			DesignProof::items( $verified )
+			DesignProof::items( $result )
 		);
 	}
 

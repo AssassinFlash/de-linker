@@ -1509,3 +1509,37 @@ are in the existing ledger's `account_project_navigation` section.
 The account-project dependency can be handed off immediately. Remaining old
 write/sizing and Genie consumers, engineering/country coverage, review-site
 and production release/readback remain in the same active full goal.
+
+### Parallel public design writer — local batch closed
+
+The old public engine proxy and the two legacy save/whole-draft writes now
+return410 with the native translated workspace destination. Their calculation,
+roof packing, new PDF generation, old fingerprint RPC and native adapter are
+removed. No old upstream calls occurred in the registered native request
+probe. Guest DE HTTP returned the same retirement code and German link.
+
+An owned, correctly nonced old saved-form action redirected source8367 to
+the accepted input-restoration page without changing its metadata hash.
+Original records/PDFs remain readable. Genie signed product lists retain
+their separate product-only save/current-publication/draft contract. Final
+native WordPress composition still reads the same owned current project.
+Project save, complete-set draft/inquiry report transfer, original PDF and
+EN/DE1440/390 account/restoration acceptance are reused, with no repeat core
+calculation, report generation, engine build/restart or new project fixture.
+
+Retired success-path tests were removed together. Final review found more
+obsolete proxy/receipt cases; all were cleared in one pass. A targeted port
+showed why the old engine cross-operation cache contract cannot be applied
+to Genie: fake conversation123 cannot earn native replay authority. The
+incorrect port was removed, preserving this diagnosis. JSON reordering is
+now asserted in the existing real Proxy/Conversations same-operation/lifetime
+fixture. It and the existing Genie observe fixture pass; Genie signed-list
+and shared current Woo/material coverage remain. No business deduplication
+rule was changed to satisfy a test. Final Spec/Standards deltas and changed
+layer checks passed. The current ledger records the exact native readback,
+review findings and coverage reuse.
+
+This batch is ready for immediate integration handoff. Genie active-project
+reading, remaining engineering/country coverage, final review-site and
+production release/readback remain in the same active full goal. No production
+write, notification email, full backup, extra instance or screenshot was made.

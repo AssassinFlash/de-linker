@@ -37,11 +37,6 @@ final class ResourcePolicy {
 			self::matches( '#\A/linker-ai/v1/genie/turn/\d+/vote\z#', $route ) => 'vote',
 			'/linker-ai/v1/genie/conversations' === $route => self::conversation_action( $select ),
 			self::matches( '#\A/linker-ai/v1/genie/conversations/\d+\z#', $route ) => 'conversation_write',
-			self::matches( '#\A/linker-ai/v1/engine/design/(residential|commercial)\z#', $route ) => 'design',
-			self::matches( '#\A/linker-ai/v1/engine/roof/(outline|pack)\z#', $route ) => 'roof',
-			'/linker-ai/v1/engine/report/pdf' === $route => 'report_pdf',
-			'/linker/v1/solutions/draft' === $route => 'draft_write',
-			'/linker/v1/solutions' === $route => 'solution_save',
 			default => '',
 		};
 	}

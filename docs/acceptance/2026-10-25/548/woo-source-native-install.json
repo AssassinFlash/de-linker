@@ -1443,7 +1443,7 @@
       "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
     }
   },
-  "current_frontier": "account_project_navigation_local",
+  "current_frontier": "retired_parallel_design_routes_local",
   "shared_dc_core": {
     "status": "implemented_and_reviewed_core_not_connected_to_native_commands",
     "model": "constant_window_shared_dc_bus_v1",
@@ -4835,6 +4835,90 @@
       "legacy sizing/write channels and Genie project consumers",
       "full engineering/country coverage already tracked by the same goal",
       "final whole-candidate review and review-site/production release/readback"
+    ]
+  },
+  "retired_parallel_design_routes": {
+    "status": "local_acceptance_closed",
+    "baseline": "d130473f4b273c7a7db7a2d44e9e52d65fcb2244",
+    "change": "Retired the parallel public calculator, old design saves, complete-set writes and unreachable fingerprint RPC/native adapter; historical reads and Genie signed product lists retained.",
+    "native": {
+      "routes": [
+        {
+          "method": "POST",
+          "path": "/linker/v1/solutions",
+          "status": 410
+        },
+        {
+          "method": "POST",
+          "path": "/linker/v1/solutions/draft",
+          "status": 410
+        },
+        {
+          "method": "POST",
+          "path": "/linker-ai/v1/engine/design/residential",
+          "status": 410
+        },
+        {
+          "method": "GET",
+          "path": "/linker-ai/v1/engine/health",
+          "status": 410
+        }
+      ],
+      "error_code": "linker_planner_required",
+      "legacy_upstream_calls": 0,
+      "anonymous_de_http": {
+        "save": 410,
+        "former_pdf_generator": 410,
+        "type": "application/json; charset=UTF-8",
+        "message": "Lösungskonfigurator öffnen",
+        "url": "http://127.0.0.1:9347/de/loesungskonfigurator/"
+      },
+      "owned_old_form": {
+        "actor": "user:wp:1:user:66",
+        "source_id": 8367,
+        "nonce_and_owner": "native validated",
+        "redirect": "http://127.0.0.1:9347/solution-configurator/?saved_solution=8367",
+        "source_sha_unchanged": true
+      },
+      "final_native_composition": {
+        "retired_draft_status": 410,
+        "owned_project_index_count": 10,
+        "existing_project": "64020c5e4c6c469aa7f584796027ad42",
+        "present": true
+      }
+    },
+    "checks": {
+      "changed_layer_units": "PASS: retirement callbacks, account module/presentation, shared publication/material validation, Tools registration",
+      "changed_file_static": "WPCS / PHPStan passed; final formatting fixes only",
+      "native_receipt_fixture": "PASS: existing real conversation semantic-input/result-lifetime cases with same-operation JSON reorder assertion; existing Genie observe case",
+      "spec": "PASS including complete removal of obsolete retired-route success assertions",
+      "standards": "PASS including final test-contract delta",
+      "copy": "existing approved native EN/DE workspace wording reused",
+      "reused": [
+        "project saves",
+        "native complete-set draft/inquiry report transfer",
+        "original PDFs",
+        "old-input restoration",
+        "EN/DE1440/390 account/restoration rendering"
+      ]
+    },
+    "test_cleanup": {
+      "removed": "old proxy success/query/worker/version tests; old design-save/draft receipts and pre-contract replay; old native fingerprint retries",
+      "retained": "Genie signed-list/current Woo checks, native operation lifetime/ownership, general shared publication/material validation, private historical removal/Undo",
+      "porting_diagnosis": "An initial fake-conversation port correctly failed to earn Genie replay permission. Old engine cross-operation caching differs from native Genie same-operation/conversation recovery. Removed the incorrect port; added JSON reorder to the existing real Proxy/Conversation fixture. No product deduplication rule was changed."
+    },
+    "runtime": "PHP/route composition only; existing engine release and source unchanged; no restart or frontend/CSS build required",
+    "not_performed": [
+      "new instance or full backup",
+      "new planning fixture or energy calculation",
+      "PDF/report regeneration",
+      "production write",
+      "email/inquiry"
+    ],
+    "remaining": [
+      "Genie active project/read-result integration",
+      "remaining engineering/country coverage under the same goal",
+      "final review-site/production release and live acceptance"
     ]
   }
 }

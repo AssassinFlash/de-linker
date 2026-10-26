@@ -561,8 +561,8 @@ final class AccountTemplatesTest extends TestCase {
 		$this->assertStringContainsString( '2 × EcoFlow Recorded model at save', $html );
 		$this->assertStringNotContainsString( 'Someone else', $html );
 		$this->assertSame( 1, substr_count( $html, 'Design report (PDF)' ) );
-		$this->assertSame( 1, substr_count( $html, 'name="linker_solution_to_draft"' ) );
-		$this->assertSame( 1, substr_count( $html, 'This saved solution needs a new calculation before it can be added to your solution draft.' ) );
+		$this->assertStringNotContainsString( 'name="linker_solution_to_draft"', $html );
+		$this->assertSame( 2, substr_count( $html, 'This saved solution needs a new calculation before it can be added to your solution draft.' ) );
 		$this->assertStringContainsString( 'linker-document=report&id=45', $html );
 		$this->assertStringNotContainsString( 'linker-document=report&id=46', $html );
 		$this->assertStringNotContainsString( 'linker-document=report&id=47', $html );

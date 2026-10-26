@@ -34,15 +34,13 @@ final class Resources {
 	 * Native reply lifecycle dependency.
 	 *
 	 * @param Replies          $replies Private receipts.
-	 * @param NativeEngine     $engine Trusted ability requests.
 	 * @param Attachments|null $attachments Heavy validation seam.
 	 * @param EngineVersion    $version Running data snapshot readback.
 	 */
-	public function __construct( private readonly Replies $replies = new Replies(), private readonly NativeEngine $engine = new NativeEngine(), private readonly ?Attachments $attachments = null, private readonly EngineVersion $version = new EngineVersion() ) {}
+	public function __construct( private readonly Replies $replies = new Replies(), private readonly ?Attachments $attachments = null, private readonly EngineVersion $version = new EngineVersion() ) {}
 
 	/** Wire native boundaries; do not replace endpoint callbacks or permissions. */
 	public function register(): void {
-		$this->engine->register();
 		add_filter( 'rest_dispatch_request', array( $this, 'dispatch' ), 10, 4 );
 		add_filter( 'linker_commerce_public_business_context', array( $this, 'context' ) );
 		add_action( 'init', array( $this->replies, 'register' ) );

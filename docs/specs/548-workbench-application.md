@@ -934,3 +934,32 @@ project list. Empty and historical account states retain their existing
 behaviour; existing historical records and their input-restoration/PDF
 controls remain available. WooCommerce remains the only current product
 authority. All unchanged numerical, report and migration evidence is reused.
+
+
+# Retire parallel public calculation and design writes
+
+The canonical configurator mount already renders the unified project
+application. The old `/linker-ai/v1/engine/*` proxy and POST
+`/linker/v1/solutions` / `/linker/v1/solutions/draft` therefore return410,
+`linker_planner_required`, and the native translated workspace destination.
+No legacy calculator, roof packer, report generator, fingerprint verifier,
+CPT save or cart write runs behind these retirement replies. Their obsolete
+resource-admission actions and success-path tests are removed together.
+
+Existing private historical records and PDF downloads are preserved. Their
+account cards open the accepted owned-input restoration workflow, including
+old signed form submissions after nonce/owner validation. Current engineering
+saves remain project revisions; complete-set additions use the accepted
+planning preview/transfer/report-reference path. Genie sizing already links
+to the workbench without doing its own calculation. Signed Genie product
+lists retain their existing product-only save/current-publication/draft
+contract. Historical product-only actions cannot be silently relabelled as
+new engineered results. The shared current-publication and item-validation
+helpers remain; the now-unreachable old engine fingerprint RPC is removed.
+
+This batch reuses accepted project saves, native complete-set/inquiry report
+transfer, original PDFs and EN/DE1440/390 account/restoration rendering.
+Only retirement replies, owned-source redirect, no legacy upstream/write,
+and continued private project access need fresh native verification. Genie
+reading the active project is a separate remaining integration in the same
+full goal; old saved snapshots retain their explicit historical semantics.

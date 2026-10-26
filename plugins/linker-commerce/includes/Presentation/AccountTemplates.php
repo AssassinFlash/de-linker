@@ -613,7 +613,7 @@ final class AccountTemplates {
 							continue;
 						}
 						$snapshot = $saved->snapshot( $solution->ID );
-						$can_add  = null !== $snapshot && DesignProof::can_revalidate( $snapshot );
+						$can_add  = null !== $snapshot && 'genie' === ( $snapshot['kind'] ?? '' ) && DesignProof::can_revalidate( $snapshot );
 						$items    = '';
 						foreach ( $saved->historical_items( $solution->ID ) as $item ) {
 							$current = null === $snapshot ? ( $products[ $item['product_id'] ] ?? array() ) : array();
