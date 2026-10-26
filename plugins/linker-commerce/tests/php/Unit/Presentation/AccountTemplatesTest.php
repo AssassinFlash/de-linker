@@ -472,6 +472,7 @@ final class AccountTemplatesTest extends TestCase {
 		WP_Mock::userFunction( 'get_post_timestamp', array( 'return' => 1700000000 ) );
 		WP_Mock::userFunction( 'wp_nonce_field', array( 'return' => '<input type="hidden" name="_wpnonce" value="n" />' ) );
 		$root = sys_get_temp_dir() . '/linker-report-gate-' . getmypid();
+		WP_Mock::userFunction( 'home_url' )->andReturn( 'https://example.test/' );
 		mkdir( $root . '/solution-reports/45', 0777, true );
 		file_put_contents( $root . '/solution-reports/45/design-report.pdf', '%PDF-1.4' );
 		WP_Mock::userFunction( 'wp_upload_dir', array( 'return' => array( 'basedir' => $root ) ) );
@@ -484,7 +485,7 @@ final class AccountTemplatesTest extends TestCase {
 						return '[{"product_id":9,"quantity":2}]';
 					}
 					if ( 45 === $id && SavedSolutions::DESIGN_META === $key ) {
-						return '{"snapshot":{"selected":{"lines":[{"product":{"id":9,"brand":"EcoFlow","model":"Recorded model at save"}}]}}}';
+						return '{"snapshot":{"kind":"residential","publication":{"products":[{"product_id":9,"product_revision":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}],"documents":[],"reference_inputs":[],"engineering_contract":2,"compatibility_revision":"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"},"selected":{"lines":[{"product":{"id":9,"brand":"EcoFlow","model":"Recorded model at save"},"quantity":2}]}}}';
 					}
 					return SavedSolutions::REPORT_META === $key && 45 === $id ? '45/design-report.pdf' : '';
 				},
@@ -528,9 +529,72 @@ final class AccountTemplatesTest extends TestCase {
 		$this->assertStringContainsString( '2 × EcoFlow Recorded model at save', $html );
 		$this->assertStringNotContainsString( 'Someone else', $html );
 		$this->assertSame( 1, substr_count( $html, 'Design report (PDF)' ) );
+		$this->assertSame( 1, substr_count( $html, 'name="linker_solution_to_draft"' ) );
+		$this->assertSame( 1, substr_count( $html, 'This saved solution needs a new calculation before it can be added to your solution draft.' ) );
 		$this->assertStringContainsString( 'linker-document=report&id=45', $html );
 		$this->assertStringNotContainsString( 'linker-document=report&id=46', $html );
 		$this->assertStringNotContainsString( 'linker-document=report&id=47', $html );
+	}
+
+	/** Legacy product references have a current, published way forward without authorising an old design. */
+	public function test_legacy_solution_has_current_product_links_and_recalculation_guidance(): void {
+		$this->visible_prices( false );
+		$this->plain_text();
+		WP_Mock::userFunction( 'add_shortcode' );
+		WP_Mock::userFunction( 'wp_date', array( 'return' => '9 Oct 2026' ) );
+		WP_Mock::userFunction( 'get_post_timestamp', array( 'return' => 1700000000 ) );
+		WP_Mock::userFunction( 'wp_nonce_field', array( 'return' => '<input type="hidden" name="_wpnonce" value="n" />' ) );
+		WP_Mock::userFunction( 'get_post_meta' )->andReturnUsing(
+			static fn ( int $id, string $key ): string => SavedSolutions::ITEMS_META === $key ? '[{"product_id":9,"quantity":2},{"product_id":10,"quantity":1}]' : ''
+		);
+		WP_Mock::userFunction( 'determine_locale' )->andReturn( 'de_DE_formal' );
+		WP_Mock::userFunction( 'pll_get_post' )->andReturnUsing( static fn ( int $id, string $language ): int => 'de' === $language ? $id * 10 : $id );
+		WP_Mock::userFunction( 'wp_cache_supports' )->with( 'flush_runtime' )->andReturn( true );
+		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->once()->andReturn( true );
+		WP_Mock::userFunction( 'has_filter' )->with( 'linker_commerce_facts_product_id' )->andReturn( true );
+		WP_Mock::onFilter( 'linker_commerce_facts_product_id' )->with( 90 )->reply( 9 );
+		WP_Mock::onFilter( 'linker_commerce_facts_product_id' )->with( 100 )->reply( 10 );
+		WP_Mock::userFunction( 'get_post_type' )->andReturn( 'product' );
+		WP_Mock::userFunction( 'get_post_status' )->andReturnUsing( static fn ( int $id ): string => 10 === $id ? 'draft' : 'publish' );
+		$product = Mockery::mock( \WC_Product::class );
+		$product->expects( 'get_name' )->andReturn( 'Aktuelles Woo Modell' );
+		$product->expects( 'get_permalink' )->andReturn( 'https://example.test/de/produkt/current/' );
+		WP_Mock::userFunction( 'wc_get_product' )->once()->with( 90 )->andReturn( $product );
+		WP_Mock::userFunction( 'pll_current_language' )->andReturn( 'de' );
+		WP_Mock::userFunction( 'get_page_by_path' )->with( 'solution-configurator' )->andReturn( new \WP_Post( (object) array( 'ID' => 80 ) ) );
+		WP_Mock::userFunction( 'get_permalink' )->with( 800 )->andReturn( 'https://example.test/de/loesungskonfigurator/' );
+		WP_Mock::userFunction( 'wp_upload_dir', array( 'return' => array( 'basedir' => sys_get_temp_dir() ) ) );
+		$adapter = new AccountTemplates();
+		WP_Mock::expectFilterAdded( 'wc_get_template', array( $adapter, 'template' ), 20, 2 );
+		WP_Mock::expectFilterAdded( 'woocommerce_my_account_my_orders_query', array( $adapter, 'orders_query' ) );
+		$adapter->register();
+		$this->expand_fields( $adapter );
+		ob_start();
+		AccountTemplates::output(
+			array(
+				'template_name' => 'myaccount/linker-saved-solutions.php',
+				'args'          => array(
+					'saved'     => new SavedSolutions( new PrivateFiles( 'solution-reports' ), '/plugin/templates/' ),
+					'solutions' => array(
+						(object) array(
+							'ID'          => 45,
+							'post_author' => 5,
+							'post_title'  => 'Legacy original',
+						),
+					),
+				),
+			)
+		);
+		$html = (string) ob_get_clean();
+		$this->assertStringContainsString( 'Aktuelles Woo Modell', $html );
+		$this->assertStringContainsString( 'https://example.test/de/produkt/current/', $html );
+		$this->assertStringContainsString( '1 × Product 10', $html );
+		$this->assertStringContainsString( 'Legacy original', $html );
+		$this->assertStringContainsString( 'This saved solution needs a new calculation before it can be added to your solution draft.', $html );
+		$this->assertStringContainsString( 'Open the Solution Configurator', $html );
+		$this->assertStringContainsString( 'https://example.test/de/loesungskonfigurator/', $html );
+		$this->assertStringNotContainsString( 'name="linker_solution_to_draft"', $html );
+		$this->assertStringContainsString( 'name="linker_solution_remove"', $html );
 	}
 
 	/**
