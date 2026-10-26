@@ -175,6 +175,9 @@ final class AccountTemplates {
 			$value = (string) get_permalink( (int) wc_get_page_id( 'shop' ) );
 		} elseif ( 'configurator-url' === $key ) {
 			$value = $this->translated_page_url( 'solution-configurator' );
+			if ( isset( $this->row['id'] ) && (int) $this->row['id'] > 0 ) {
+				$value = add_query_arg( 'saved_solution', (int) $this->row['id'], $value );
+			}
 		} elseif ( in_array( $key, array( 'all-current', 'open-current' ), true ) ) {
 			$value = ( 'open-current' === $key ? $this->open_only() : '' === $this->selected_status() ) ? 'page' : 'false';
 		}

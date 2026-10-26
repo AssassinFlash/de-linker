@@ -9,6 +9,7 @@ export const ENTRY_QUERY_KEYS = [
 	"backup",
 	"plz",
 	"step",
+	"saved_solution",
 ] as const;
 export interface EntryHints {
 	pvKw: number | null;
@@ -22,7 +23,11 @@ export interface EntryHints {
 
 /** Public link values are proposals for a new project, never saved results. */
 export function readEntryHints(params: URLSearchParams): EntryHints | null {
-	if (params.has("project") || !ENTRY_QUERY_KEYS.some((key) => params.has(key)))
+	if (
+		params.has("project") ||
+		params.has("saved_solution") ||
+		!ENTRY_QUERY_KEYS.some((key) => params.has(key))
+	)
 		return null;
 	let invalid = false;
 	const one = (key: string): string | null => {

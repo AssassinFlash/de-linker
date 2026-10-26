@@ -182,6 +182,7 @@ msgid "All products are in your solution draft."
 msgstr "Alle Produkte sind in Ihrem Lösungsentwurf."
 
 #: src/configurator/commercial/CommercialPanel.tsx:258 build/configurator.js
+#: build/planner/assets/planner.js:1
 msgid "Annual consumption"
 msgstr "Jahresverbrauch"
 
@@ -279,6 +280,7 @@ msgid "Average power in kW"
 msgstr "Mittlere Leistung in kW"
 
 #: build/genie.js:16 build/hero.js
+#: build/planner/assets/planner.js:1
 msgid "Back"
 msgstr "Zurück"
 
@@ -390,6 +392,7 @@ msgid "Choose another photo"
 msgstr "Anderes Foto auswählen"
 
 #: src/configurator/commercial/CommercialPanel.tsx:405 build/configurator.js
+#: build/planner/assets/planner.js:1
 msgid "Choose file"
 msgstr "Datei auswählen"
 
@@ -1516,6 +1519,7 @@ msgid "Reply with an option"
 msgstr "Antwort auswählen"
 
 #: src/configurator/App.tsx:56 build/configurator.js
+#: build/planner/assets/planner.js:1
 msgid "Residential"
 msgstr "Wohngebäude"
 
@@ -2067,6 +2071,7 @@ msgstr "Modell eingeben"
 
 #: src/configurator/commercial/CommercialResult.tsx:197
 #: src/configurator/commercial/CommercialResult.tsx:235 build/configurator.js
+#: build/planner/assets/planner.js:1
 msgid "Usable energy"
 msgstr "Nutzbare Energie"
 
@@ -11677,3 +11682,43 @@ msgstr "Unterschiedliches Kapazitätsmodell"
 #: build/planner/assets/planner.js:1
 msgid "This reference calculation uses the selected product’s published usable energy as a fixed model window. The manufacturer’s test conditions are shown with the source. Choosing this mode does not establish that they are met. Ageing and changes in usable energy with temperature or charge/discharge rate are not modelled. Conversion and storage losses follow the separate scenario assumptions. Actual deliverable energy is not established."
 msgstr "Diese Referenzberechnung verwendet die vom Hersteller angegebene nutzbare Energie des ausgewählten Produkts als festes Energiefenster im Modell. Die Prüfbedingungen des Herstellers sind beim Quellennachweis angegeben. Die Auswahl dieses Modus bestätigt nicht, dass diese Bedingungen erfüllt sind. Alterung sowie Änderungen der nutzbaren Energie durch Temperatur oder Lade- und Entladerate werden nicht modelliert. Umwandlungs- und Speicherverluste werden nach den gesonderten Szenarioannahmen berechnet. Die tatsächlich abgebbare Energie wird damit nicht nachgewiesen."
+
+#: ../../apps/planner/src/components/SavedSolutionStart.tsx:1
+#: build/planner/assets/planner.js:1
+msgid "Start a new project from a saved solution"
+msgstr "Aus einer gespeicherten Lösung ein neues Projekt erstellen"
+
+#: ../../apps/planner/src/components/SavedSolutionStart.tsx:1
+#: build/planner/assets/planner.js:1
+msgid "Review these saved inputs before creating a new project. The original solution stays available. After creating the project, select equipment using current product data and run a new calculation."
+msgstr "Prüfen Sie die gespeicherten Angaben, bevor Sie ein neues Projekt erstellen. Die ursprüngliche Lösung bleibt verfügbar. Anschließend wählen Sie im neuen Projekt Geräte anhand aktueller Produktdaten aus und starten eine neue Berechnung."
+
+#: ../../apps/planner/src/components/SavedSolutionStart.tsx:1
+#: build/planner/assets/planner.js:1
+msgid "The saved inputs could not be loaded in this session."
+msgstr "Die gespeicherten Angaben konnten in dieser Sitzung nicht geladen werden."
+
+#: ../../apps/planner/src/components/SavedSolutionStart.tsx:1
+#: build/planner/assets/planner.js:1
+msgid "Continue without these inputs"
+msgstr "Ohne diese Angaben fortfahren"
+
+#: ../../apps/planner/src/components/SavedSolutionStart.tsx:1
+#: build/planner/assets/planner.js:1
+msgid "Annual consumption as recorded in the saved solution."
+msgstr "Jahresverbrauch laut den Angaben in der gespeicherten Lösung."
+
+#: ../../apps/planner/src/components/SavedSolutionStart.tsx:1
+#: build/planner/assets/planner.js:1
+msgid "Original inputs"
+msgstr "Ursprüngliche Angaben"
+
+#: ../../apps/planner/src/components/SavedSolutionStart.tsx:1
+#: build/planner/assets/planner.js:1
+msgid "Some saved inputs cannot be carried over automatically. They are kept for reference and need review in the new project."
+msgstr "Einige gespeicherte Angaben werden nicht automatisch übernommen. Sie bleiben als Referenz erhalten und müssen im neuen Projekt geprüft werden."
+
+#: ../../apps/planner/src/components/SavedSolutionStart.tsx:1
+#: build/planner/assets/planner.js:1
+msgid "Download original inputs (JSON)"
+msgstr "Ursprüngliche Angaben herunterladen (JSON)"

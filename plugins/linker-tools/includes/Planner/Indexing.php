@@ -107,7 +107,7 @@ final class Indexing {
 	 */
 	private function private_context(): bool {
 		$keys = array_keys( $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only indexing policy uses names only, not values or authorisation.
-		if ( array() === array_intersect( $keys, array( 'project', 'run', 'pv_kwp', 'annual_kwh', 'phase', 'backup', 'plz' ) ) || is_admin() || ! is_page() ) {
+		if ( array() === array_intersect( $keys, array( 'project', 'run', 'pv_kwp', 'annual_kwh', 'phase', 'backup', 'plz', 'saved_solution' ) ) || is_admin() || ! is_page() ) {
 			return false;
 		}
 		$post = get_queried_object();

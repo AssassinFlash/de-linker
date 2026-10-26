@@ -1,3 +1,4 @@
+import { savedSolutionId } from "../domain/savedSolution.ts";
 import { useEffect } from "react";
 import { PLANNER_NAVIGATION } from "./plannerLocation.ts";
 import { measurePlannerChrome } from "./measurePlannerChrome.ts";
@@ -39,6 +40,8 @@ export function projectLanguageUrl(
 	target.searchParams.delete("run");
 	target.searchParams.delete("compare");
 	for (const key of ENTRY_QUERY_KEYS) target.searchParams.delete(key);
+	const saved = id === null ? savedSolutionId(page.searchParams) : null;
+	if (saved !== null) target.searchParams.set("saved_solution", String(saved));
 	const hints = id === null ? readEntryHints(page.searchParams) : null;
 	if (hints)
 		for (const [key, value] of Object.entries({

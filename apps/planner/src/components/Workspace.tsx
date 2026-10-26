@@ -16,6 +16,8 @@ import { recoveryScopes } from "../data/recoveryScopes.ts";
 import { __, sprintf } from "../i18n.ts";
 import { Icon } from "./Icon.tsx";
 import { NewProject } from "./NewProject.tsx";
+import { SavedSolutionStart } from "./SavedSolutionStart.tsx";
+import { savedSolutionId } from "../domain/savedSolution.ts";
 import { ProjectEditor } from "./ProjectEditor.tsx";
 import { Notice } from "./Notice.tsx";
 import { ENTRY_QUERY_KEYS, readEntryHints } from "../domain/entryHints.ts";
@@ -39,6 +41,9 @@ export function Workspace({
 	recheck: () => void;
 }) {
 	const [selected, setSelected] = useState<string | null>(currentProject);
+	const [savedSource, setSavedSource] = useState(() =>
+		savedSolutionId(new URL(location.href).searchParams),
+	);
 	const [entryHints, setEntryHints] = useState(() =>
 		readEntryHints(new URL(location.href).searchParams),
 	);
@@ -94,6 +99,7 @@ export function Workspace({
 			url.hash = destination;
 			replacePlannerLocation(url);
 			setEntryHints(null);
+			setSavedSource(null);
 			setSelected(id);
 		},
 		[client, session.query_scope],
@@ -230,18 +236,39 @@ export function Workspace({
 							)}
 						</p>
 					</div>
-					<NewProject
-						entryHints={entryHints}
-						locale={config.locale}
-						session={session}
-						client={client}
-						store={store}
-						created={created}
-						recheck={recheck}
-						recoveryScopes={recovery.data}
-						recoveryChecking={recovery.isFetching}
-						recoveryDiscoveryFailed={recovery.isError}
-					/>
+					{savedSource !== null ? (
+						<SavedSolutionStart
+							solutionId={savedSource}
+							dismiss={() => {
+								const url = new URL(location.href);
+								url.searchParams.delete("saved_solution");
+								replacePlannerLocation(url);
+								setSavedSource(null);
+							}}
+							locale={config.locale}
+							session={session}
+							client={client}
+							store={store}
+							created={created}
+							recheck={recheck}
+							recoveryScopes={recovery.data}
+							recoveryChecking={recovery.isFetching}
+							recoveryDiscoveryFailed={recovery.isError}
+						/>
+					) : (
+						<NewProject
+							entryHints={entryHints}
+							locale={config.locale}
+							session={session}
+							client={client}
+							store={store}
+							created={created}
+							recheck={recheck}
+							recoveryScopes={recovery.data}
+							recoveryChecking={recovery.isFetching}
+							recoveryDiscoveryFailed={recovery.isError}
+						/>
+					)}
 				</header>
 				{recovery.isError && (
 					<Notice error>

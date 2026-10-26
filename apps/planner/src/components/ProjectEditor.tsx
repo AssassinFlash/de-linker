@@ -39,6 +39,7 @@ import {
 import type { PreparedGeometryImport } from "../domain/geometryImports.ts";
 import type { GeometryDocument } from "../domain/geometry.ts";
 import { ProjectOverview } from "./ProjectOverview.tsx";
+import { SavedSolutionReference } from "./SavedSolutionReference.tsx";
 import { revealActionResult } from "./revealActionResult.ts";
 import { EnergyWorkspace } from "./energy/EnergyWorkspace.tsx";
 import { invalidateEnergyReplay } from "../domain/energyScenario.ts";
@@ -640,6 +641,9 @@ export function ProjectEditor({
 						className="lp-brief-fields"
 					>
 						<div hidden={workspace !== "overview"}>
+							<SavedSolutionReference
+								value={draft.history.current.saved_solution_reference}
+							/>
 							<ProjectOverview
 								brief={brief}
 								geometry={geometry}

@@ -1443,7 +1443,7 @@
       "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
     }
   },
-  "current_frontier": "site_consumer_main_integration_local",
+  "current_frontier": "legacy_saved_solution_migration_local",
   "shared_dc_core": {
     "status": "implemented_and_reviewed_core_not_connected_to_native_commands",
     "model": "constant_window_shared_dc_bus_v1",
@@ -2375,7 +2375,7 @@
       "notification_sent": true,
       "shared_woo_source": "ee916454e451c0769097294afaf0bef0a73823b79b319c7f3f828f6408ff625d"
     },
-    "batch_stop": "Current site integration through pinned main18e79d5b closed. Fixed existing asset-manifest drift; native templates/cache loaded, original QA identity restored and saved result reopened. Commit/push now; do not chase later unrelated main changes or reopen closed calculations/UI matrices.",
+    "batch_stop": "Saved-input migration delivered locally with one creation, data-preservation readback and changed views. All existing planner messages now bound through the same native catalog. Commit/push and hand off this contract; do not repeat physics, source-body, review or unchanged UI checks.",
     "reviews": "Final Spec/Standards/copy deltas PASS; unchanged accepted evidence reused."
   },
   "pv_operating_conditions": {
@@ -4637,6 +4637,146 @@
     },
     "evidence_reuse": "Prior native planner draft-to-inquiry HPOS/private-download result, physics, source conditions and EN/DE desktop/mobile evidence retained. Only changed integration risks inspected; no full-site scan or expanded matrix.",
     "shared_interface_contract_changed": false,
-    "remaining_scope": "Full engineering/country coverage, remaining consumers and persisted-data migration, final review-site and production release/readback remain active under the original goal."
+    "remaining_scope": "Full engineering/country coverage, remaining consumers and persisted-data migration, final review-site and production release/readback remain active under the original goal.",
+    "superseded_frontier": "legacy_saved_solution_migration"
+  },
+  "legacy_saved_solution_migration": {
+    "owner": "unified-planner-548",
+    "status": "local_acceptance_closed_pending_commit",
+    "purpose": "Restore saved customer inputs into a separate owned planning project; original records remain intact",
+    "base_commit": "a706bde5b58bba18df9b5ee47e56efab83c4f5b9",
+    "native_inventory": {
+      "local_records_before": 1,
+      "production_records_read_only": 1,
+      "kinds": [
+        "residential"
+      ],
+      "input_keys": [
+        "locale",
+        "plz",
+        "annual_kwh",
+        "pv_kwp",
+        "phase",
+        "backup",
+        "heat_pump",
+        "electric_vehicle"
+      ]
+    },
+    "protected_originals": [
+      {
+        "id": 8207,
+        "design_sha256": "6dfee710c8f17869436d9cf79ba7625d241b16aee45d535b24062f00b91e7859",
+        "items_sha256": "b0c097b23d5b255e9696e99a1efc83c68d24429c15aa592d6af3b0e913605596"
+      }
+    ],
+    "owned_source": {
+      "id": 8367,
+      "design_sha256": "512c8c6bec1a407c8dd38962fc5bb9543bb6ae82aa2fa2750df32ff119f69767",
+      "items_sha256": "2df51c02fe992f421fee9c805902b42e6f708fb38f426c9325b6d00ba7e1f890"
+    },
+    "qa_owner": 66,
+    "retention": "One native owned source and one resulting migration project are the acceptance evidence; no extra instance, full backup or duplicate fixture",
+    "new_calculation_runs": 0,
+    "new_report_runs": 0,
+    "production_changed": false,
+    "project_id": "64020c5e4c6c469aa7f584796027ad42",
+    "project_revision": 1,
+    "project_input_sha256": "f817333e66d3ad7716a3f827c259a834fd3803f64e059d293e538122825c5910",
+    "original_source_unchanged": true,
+    "protected_originals_unchanged": true,
+    "unmapped_input_preserved": true,
+    "source_product_ids_not_selected": true,
+    "location_not_inferred": true,
+    "project_run_count": 0,
+    "http_private_context": {
+      "status": 200,
+      "cache_control": "no-store, private, max-age=0",
+      "robots": "noindex, nofollow, nosnippet"
+    },
+    "catalog_binding_fix": {
+      "cause": "Approved shared translations lacked the planner-entry reference; PO presence alone did not bind runtime JSON",
+      "existing_messages_bound": [
+        "Residential",
+        "Annual consumption",
+        "Back",
+        "Choose file",
+        "Usable energy"
+      ],
+      "all_other_compiled_translations_unchanged": true,
+      "only_new_translations": "Eight reviewed EN and independent DE messages",
+      "all_active_planner_bindings": "existing planner_json_problems guard PASS",
+      "broad_gettext_reformat_rejected": true,
+      "temporary_gettext_files_removed": true,
+      "before_screenshot": "docs/acceptance/2026-10-24/548/runtime-provider-correction/saved-input-project-de-before.png"
+    },
+    "completed_at_utc": "2026-10-26T20:59:31.963188+00:00",
+    "screenshots": [
+      {
+        "stage": "preview",
+        "locale": "en",
+        "width": 1440,
+        "path": "docs/acceptance/2026-10-24/548/runtime-provider-correction/saved-input-preview-en-1440.png",
+        "sha256": "8fde3ca7c566c9f5c0bc04123b5de5b10c8a7e5fc1c5518d381a0b6c2e6c861f",
+        "page_horizontal_overflow": false
+      },
+      {
+        "stage": "preview",
+        "locale": "de",
+        "width": 390,
+        "path": "docs/acceptance/2026-10-24/548/runtime-provider-correction/saved-input-preview-de-390.png",
+        "sha256": "4214337f35e3d6cdc04486ccd5e6cb991d4f5178ed4bbb586f691a81af785a2a",
+        "page_horizontal_overflow": false
+      },
+      {
+        "stage": "project",
+        "locale": "de",
+        "width": 1440,
+        "path": "docs/acceptance/2026-10-24/548/runtime-provider-correction/saved-input-project-de-1440.png",
+        "sha256": "21d8759fbfc28ed5d2fd4345bb3b97bd34ed6f185bdef9e7c6956f5a4e1551f8",
+        "page_horizontal_overflow": false
+      },
+      {
+        "stage": "project",
+        "locale": "en",
+        "width": 390,
+        "path": "docs/acceptance/2026-10-24/548/runtime-provider-correction/saved-input-project-en-390.png",
+        "sha256": "82333fea976660ec27f9e3250e1db5bd5a30ab57ace82ca0fd6fdfe4bd36bf5b",
+        "page_horizontal_overflow": false
+      }
+    ],
+    "source_download_payload_matches_retained_reference": true,
+    "native_creation_attempts": 1,
+    "native_default_destination": "site; original source does not establish a country",
+    "spec_review": "PASS final input-type/unknown-kind corrections; source isolation and old creation recovery unchanged",
+    "standards_review": "PASS final body/depth handling, private cache/language lifecycle and active catalog binding delta",
+    "copy_review": {
+      "draft": "Original draft could imply creation automatically recalculates equipment/results",
+      "critique": "Make preview, explicit project creation and later current-Woo equipment selection/calculation distinct; preserve original inputs without claiming completeness",
+      "final": "Eight EN and independently written DE messages applied; existing translation wording retained"
+    },
+    "verification_stop": "One native owned source and one project creation. Old source and protected original hashes unchanged; archived unknown fields and JSON download payload equal. Targeted owner/route/indexing and mapping checks, final types/build/static checks and incremental reviews closed. No energy/report runs or repeated full-site matrix.",
+    "static_tooling": "Initial PHPStan worker/debug runs diagnosed the local128M PHP limit; changed-file analysis passed with per-command1G, without changing global or service settings",
+    "authority": "Existing native Woo/WordPress account record supplies historical user input only; current product facts remain Woo authority",
+    "source_rpc": "POST linker/v1/planner/rpc/sources/saved-solution",
+    "url_contract": "Native account/language links carry only saved_solution ID, removed when the distinct project is created",
+    "archive_contract": "saved_solution_reference v1, historical_user_input; no old snapshot/result/price/formula becomes new equipment or calculation authority",
+    "source_permissions": "Current account owner + active private CPT only, existing origin/nonce/generation/private-response gates; read never mutates old record",
+    "mapping_boundaries": [
+      "known kind and supported types only",
+      "unknown source fields retained and review-marked",
+      "postcode/locale do not infer country/coordinates/timezone",
+      "residential partial demand not treated as gross total when HP/EV absence is not explicit",
+      "recorded product IDs are archived, never selected as current equipment"
+    ],
+    "engine_runtime_unchanged": "6b114eb45eb4fca07aa89e463ed6ac423dc88c1de5f7a0e6783a457ba45b2cee",
+    "new_database_tables": false,
+    "new_instances": 0,
+    "new_full_backups": 0,
+    "native_qa_retention": "One source8367 and one project64020c5e4c6c469aa7f584796027ad42 retain this unique migration acceptance; original records unchanged, temporary gettext artifacts removed",
+    "remaining_full_goal": [
+      "remaining old entry/write-channel and account/Genie project-consumer integration",
+      "actual SKU operating and manufacturer joint/island/country coverage",
+      "final migration/review-site/production release and readback"
+    ]
   }
 }

@@ -1437,3 +1437,42 @@ login material was removed, no new instance/full backup was made, and engine
 runtime6b114eb4 remains unchanged. This is local integration, not production
 publication or full-goal completion. Exact values use the existing acceptance
 ledger's `site_consumer_main_integration` section.
+
+
+### Saved account inputs restored into a new project — local batch closed
+
+The actual local/production inventory each contains one legacy residential
+saved solution whose recovery link previously opened an empty workbench. The
+native account link now identifies its owned source; the protected gateway
+returns historical customer inputs for preview and explicit project creation.
+Old records/PDFs remain intact, old recommendations and calculations are not
+reused, and recorded products do not become selected equipment. Current
+product facts continue to originate only in WooCommerce.
+
+Only known semantics are mapped. Unknown kinds/types/fields retain their
+source and review notice. A residential figure excluding unconfirmed extra
+HP/EV demand does not become gross annual load; country/location are not
+inferred from language/postcode. Original inputs remain downloadable before
+and after creation. Reads are bounded, private, owner-only and origin/nonce
+guarded. Source data stays pinned while creation may be pending and leaves
+the read cache on closure. Existing creation/recovery handles the new seed.
+
+One native source8367 created project64020c5e4c6c469aa7f584796027ad42,
+revision1. Archived inputs and the browser download payload match, including
+the unmapped field; both the owned source and protected original retain their
+exact metadata hashes. The project has no calculation/report runs. EN/DE
+preview and resulting-project views cover1440/390 without page overflow.
+The missing shared-message script bindings were repaired together using
+existing source collection and the native gettext compiler: approved legacy
+translations are unchanged, eight reviewed new EN/DE messages were added,
+and the existing all-planner binding guard passes. One unique before-image
+is retained; an unrelated broad catalog reformat was rejected.
+
+Final Spec/Standards/copy deltas and changed-layer checks are closed. Existing
+physical/source/report evidence is reused; no new engine release, instance,
+full backup, production write or notification email occurred. The shared
+account import contract can now be handed off without waiting for the full
+goal. Exact readback and retention are in the existing installation ledger's
+`legacy_saved_solution_migration` section. Remaining old write/entry channels,
+account/Genie consumers, engineering/country coverage and final publication
+stay with this same complete goal.

@@ -874,3 +874,43 @@ explicit identity-loss assumptions. Its retained result supplies8kWh load from
 result-table style and report heading/paragraph pagination were reread after
 those defects were fixed. Full-goal operating/country qualification and final
 release remain open; source facts continue to originate only in WooCommerce.
+
+
+## Restore a saved solution into a separate project
+
+The current native account record contains a configurator kind/input but its
+recalculation link opens an empty workbench. The link now carries only the
+saved record ID, in the reader's existing EN/DE route. The private Planner
+gateway reads that record only for its current account owner while it remains
+an active private saved solution. Guest, other-owner, removed and unavailable
+records disclose no source. Existing origin, nonce, bounded-input, session
+generation and private-response rules apply. No customer input is put in the
+URL or a publicly cached page configuration.
+
+The customer previews the original inputs before explicitly creating a new
+project. Creation uses the existing immutable creation intent and recovery
+journal; earlier uncertain creations keep their original bodies and owners.
+The old saved record and PDF remain intact. Only customer inputs and recorded
+product IDs/counts are archived in `saved_solution_reference` with a version,
+original record ID and source hash. This is historical user-input metadata,
+never equipment permission, manufacturer facts or a current calculated result.
+It remains downloadable before import and from the new project overview.
+Current product facts and any new equipment selection continue to come only
+from WooCommerce; no old recommendations, snapshots, prices or formulas enter
+the new calculation basis.
+
+Only known input semantics are mapped. Language/postcode do not establish a
+country, coordinates or timezone. The original residential annual figure
+excluded additional heat-pump/EV demand: if their absence is not explicit,
+that figure stays in the archive instead of becoming the new gross annual
+total. Unknown or invalid fields stay in the reference with a review notice.
+No roof geometry is invented from a postal code or an old PV capacity. The
+existing project ID takes precedence over an import URL; cancelling clears
+only the import hint. Importing neither calculates energy nor selects devices.
+
+Native ownership/storage are provided by the existing WordPress private CPT;
+LC supplies the account link, and the existing WindPress/application surfaces
+render the preview. The custom adapter is limited to reading the old account
+input shape because Woo's native post API does not map it into the planner's
+versioned project inputs. There is no new product registry, calculation
+service, database table or second project-creation journal.

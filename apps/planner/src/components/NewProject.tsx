@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { PlannerClient } from "../data/PlannerClient.ts";
-import type { Project, Session } from "../data/protocol.ts";
+import type { JsonObject, Project, Session } from "../data/protocol.ts";
 import { ApiError } from "../data/protocol.ts";
 import type { DraftStore } from "../data/DraftStore.ts";
 import { creationIntents, intentId } from "../data/recoveryIntents.ts";
@@ -24,6 +24,8 @@ export function NewProject({
 	recoveryChecking = false,
 	recoveryDiscoveryFailed = false,
 	entryHints = null,
+	initialProject = null,
+	cancelled,
 	locale = "en",
 }: {
 	session: Session;
@@ -35,11 +37,13 @@ export function NewProject({
 	recoveryChecking?: boolean;
 	recoveryDiscoveryFailed?: boolean;
 	entryHints?: EntryHints | null;
+	initialProject?: { title: string; inputs: JsonObject } | null;
+	cancelled?: () => void;
 	locale?: string;
 }) {
-	const [open, setOpen] = useState(Boolean(entryHints));
+	const [open, setOpen] = useState(Boolean(entryHints || initialProject));
 	const [useHints, setUseHints] = useState(true);
-	const [title, setTitle] = useState("");
+	const [title, setTitle] = useState(initialProject?.title ?? "");
 	const [busy, setBusy] = useState(false);
 	const [failed, setFailed] = useState(false);
 	const [recoveryFailed, setRecoveryFailed] = useState(false);
@@ -49,7 +53,9 @@ export function NewProject({
 	const intentScope = useRef(session.query_scope);
 	const lifetime = useRef(0);
 	const openWork = useRef(false);
-	openWork.current = Boolean(intent.current || title);
+	openWork.current = Boolean(
+		intent.current || (title && title !== initialProject?.title),
+	);
 	const admitted = client.isCurrentScope(session.query_scope);
 	useEffect(() => {
 		lifetime.current++;
@@ -106,32 +112,35 @@ export function NewProject({
 		const instance = lifetime.current;
 		if (!intent.current) intentScope.current = session.query_scope;
 		const originScope = intentScope.current;
-		intent.current ??= wire(
-			{
-				schema_version: 1,
-				title: title.trim(),
-				inputs:
-					entryHints && useHints
-						? entryInputs(
-								entryHints,
-								__(
-									"Values carried from a tool link. Review them for this project.",
-									"linker-tools",
-								),
-								__(
-									"Backup supply requested; accessories may be considered.",
-									"linker-tools",
-								),
-							)
-						: { brief: emptyBrief() },
-				key: crypto.randomUUID(),
-			},
-			session.runtime.limits.max_json_depth,
-			session.runtime.limits.max_body_bytes,
-		);
+
 		setBusy(true);
 		setFailed(false);
 		try {
+			intent.current ??= wire(
+				{
+					schema_version: 1,
+					title: title.trim(),
+					inputs:
+						initialProject && useHints
+							? initialProject.inputs
+							: entryHints && useHints
+								? entryInputs(
+										entryHints,
+										__(
+											"Values carried from a tool link. Review them for this project.",
+											"linker-tools",
+										),
+										__(
+											"Backup supply requested; accessories may be considered.",
+											"linker-tools",
+										),
+									)
+								: { brief: emptyBrief() },
+					key: crypto.randomUUID(),
+				},
+				session.runtime.limits.max_json_depth,
+				session.runtime.limits.max_body_bytes,
+			);
 			await store.writeCreation(originScope, intent.current).catch(() => {
 				if (lifetime.current === instance) setRecoveryFailed(true);
 			});
@@ -212,12 +221,20 @@ export function NewProject({
 			{entryHints && !selectedRequest && (
 				<Notice>
 					<p>
-						{entryHints.roof && !hasCarriedValues
-							? __("Create a project to start the roof design.", "linker-tools")
-							: __(
-									"Review the values from this link. If you choose to use them, they will be saved as project inputs when you create the project. This does not run a calculation or select equipment.",
+						{initialProject
+							? __(
+									"Review these saved inputs before creating a new project. The original solution stays available. After creating the project, select equipment using current product data and run a new calculation.",
 									"linker-tools",
-								)}
+								)
+							: entryHints.roof && !hasCarriedValues
+								? __(
+										"Create a project to start the roof design.",
+										"linker-tools",
+									)
+								: __(
+										"Review the values from this link. If you choose to use them, they will be saved as project inputs when you create the project. This does not run a calculation or select equipment.",
+										"linker-tools",
+									)}
 					</p>
 					<dl className="lp-field-summary">
 						{entryHints.annualKwh !== null && (
@@ -261,10 +278,15 @@ export function NewProject({
 					</dl>
 					{entryHints.invalid && (
 						<p>
-							{__(
-								"Some link values are invalid and have not been applied. Check the project inputs before calculating.",
-								"linker-tools",
-							)}
+							{initialProject
+								? __(
+										"Some saved inputs cannot be carried over automatically. They are kept for reference and need review in the new project.",
+										"linker-tools",
+									)
+								: __(
+										"Some link values are invalid and have not been applied. Check the project inputs before calculating.",
+										"linker-tools",
+									)}
 						</p>
 					)}
 					{!intent.current && hasCarriedValues && (
@@ -337,7 +359,10 @@ export function NewProject({
 					<button
 						className="lp-text-button"
 						type="button"
-						onClick={() => setOpen(false)}
+						onClick={() => {
+							setOpen(false);
+							cancelled?.();
+						}}
 					>
 						{__("Cancel", "linker-tools")}
 					</button>
