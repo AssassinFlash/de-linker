@@ -1,4 +1,5 @@
 name: check
+run-name: "check #${{ github.event.pull_request.number || github.ref_name }} | tree-ref=${{ github.sha }}"
 
 on:
   pull_request:
@@ -10,7 +11,173 @@ permissions:
   contents: read
 
 jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      mode: ${{ steps.scope.outputs.mode }}
+      catalog_changed: ${{ steps.scope.outputs.catalog_changed }}
+      php_test_changed: ${{ steps.scope.outputs.php_test_changed }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 3
+          ref: ${{ github.sha }}
+      - name: Select checks from the actual change
+        id: scope
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.sha }}
+          REPOSITORY: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PYTHON'
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import subprocess
+
+          def git(*args):
+              return subprocess.check_output(["git", *args], stderr=subprocess.DEVNULL)
+
+          def document(path):
+              return path in {"AGENTS.md", "CLAUDE.md", "CONTEXT.md", "README.md"} or (
+                  path.startswith("docs/") and path.endswith((".md", ".rst", ".txt"))
+              )
+
+          def regular_text(commit, path):
+              if git("ls-tree", commit, "--", path).split()[0] != b"100644":
+                  return False
+              content = git("show", f"{commit}:{path}")
+              if b"\0" in content:
+                  return False
+              content.decode("utf-8")
+              return True
+
+          def text_change(status, path, base, head):
+              revisions = {"M": (base, head), "A": (head,), "D": (base,)}.get(status, ())
+              return bool(revisions) and all(regular_text(rev, path) for rev in revisions)
+
+          def classify(changes):
+              def presentation(path):
+                  return bool(re.fullmatch(
+                      r"plugins/linker-commerce/content/(livecanvas/(de/)?[a-z0-9_-]+[.]html|windpress/[a-z0-9_-]+[.]css)", path
+                  )) or path == "plugins/linker-commerce/tests/php/Unit/Presentation/TemplatesTest.php"
+              if changes and all(document(path) for _, path in changes):
+                  return "docs"
+              if changes and all(document(path) or (status == "M" and presentation(path)) for status, path in changes):
+                  return "presentation"
+              return "full"
+
+          def api(endpoint):
+              result = subprocess.run(["gh", "api", endpoint], capture_output=True, text=True, timeout=30, check=True)
+              return json.loads(result.stdout)
+
+          def latest_run(sha, event=""):
+              repo = os.environ["REPOSITORY"]
+              endpoint = f"repos/{repo}/actions/workflows/check.yml/runs?head_sha={sha}&per_page=100"
+              if event:
+                  endpoint += "&event=" + event
+              runs = api(endpoint)["workflow_runs"]
+              runs = [r for r in runs if r["head_sha"] == sha and r["path"] == ".github/workflows/check.yml"
+                      and r["event"] in {"pull_request", "push", "workflow_dispatch"}
+                      and (not event or r["event"] == event)]
+              return max(runs, key=lambda r: (r["run_number"], r["run_attempt"]), default=None)
+
+          def successful(run):
+              return run and run["status"] == "completed" and run["conclusion"] == "success"
+
+          def checked_run(run, commit):
+              if not successful(run):
+                  return False
+              workflow = ".github/workflows/check.yml"
+              if git("rev-parse", f"{commit}:{workflow}") != git("rev-parse", f"HEAD:{workflow}"):
+                  return False
+              marker = re.fullmatch(r"check #[^\n]+ [|] tree-ref=([0-9a-f]{40})", run.get("display_title", ""))
+              if not marker:
+                  return False
+              tested = marker.group(1)
+              try:
+                  tree = git("rev-parse", tested + "^{tree}").decode().strip()
+              except subprocess.CalledProcessError:
+                  repo = os.environ["REPOSITORY"]
+                  tree = api(f"repos/{repo}/git/commits/{tested}")["tree"]["sha"]
+              if tree != git("rev-parse", commit + "^{tree}").decode().strip():
+                  return False
+              repo = os.environ["REPOSITORY"]
+              jobs = api(f"repos/{repo}/actions/runs/{run['id']}/attempts/{run['run_attempt']}/jobs?per_page=100")["jobs"]
+              allowed = {"full", "presentation"} if run["event"] == "pull_request" else {"full", "reuse"}
+              labels = {f"Record validation scope ({mode})" for mode in allowed}
+              return any(step["name"] in labels and step.get("conclusion") == "success"
+                         for job in jobs if job["name"].startswith("check (")
+                         for step in job.get("steps", []))
+
+          def checked_pr_tree(commit):
+              source = git("rev-parse", commit + "^2").decode().strip()
+              if git("rev-parse", commit + "^{tree}") != git("rev-parse", source + "^{tree}"):
+                  return None
+              run = latest_run(source, "pull_request")
+              return run if checked_run(run, source) else None
+
+          def checked_base(commit):
+              run = latest_run(commit)
+              if checked_run(run, commit):
+                  return True
+              if run and (run["status"] != "completed" or run["conclusion"] != "cancelled"):
+                  return False
+              return bool(checked_pr_tree(commit))
+
+          event = os.environ["EVENT_NAME"]
+          head = os.environ["HEAD_SHA"]
+          base = os.environ.get("BASE_SHA", "")
+          changes = []
+          mode, reason = "full", "Runtime, control-plane or unproven changes retain the complete checks."
+          if base and set(base) != {"0"}:
+              try:
+                  try:
+                      git("cat-file", "-e", base + "^{commit}")
+                  except subprocess.CalledProcessError:
+                      git("fetch", "--depth=1", "origin", base)
+                  formatting = subprocess.run(["git", "diff", "--check", base, head])
+                  if formatting.returncode:
+                      raise SystemExit(formatting.returncode)
+                  fields = git("diff", "--name-status", "-z", "--no-renames", base, head).decode(errors="surrogateescape").split("\0")
+                  changes = list(zip(fields[0:-1:2], fields[1:-1:2]))
+                  if event in {"pull_request", "push"}:
+                      candidate = classify(changes)
+                      if candidate != "full" and not all(text_change(status, path, base, head) for status, path in changes):
+                          candidate = "full"
+                      if candidate == "docs":
+                          mode, reason = "docs", "Documentation only; no runtime or instance checks."
+                      elif candidate == "presentation" and event == "pull_request":
+                          if checked_base(base):
+                              mode, reason = "presentation", "Existing LC/CSS surfaces and a checked base; run their contracts and content guards."
+              except (OSError, subprocess.SubprocessError, UnicodeError, KeyError, ValueError, IndexError):
+                  mode, reason = "full", "Change or baseline proof unavailable; complete checks required."
+          if event == "push" and mode != "docs":
+              try:
+                  run = checked_pr_tree(head)
+                  if run:
+                      mode = "reuse"
+                      reason = f"Identical complete Git tree; successful PR check run {run['id']} reused."
+              except (OSError, subprocess.SubprocessError, KeyError, ValueError):
+                  mode, reason = "full", "No proven successful check for this tree; complete checks required."
+          with Path(os.environ["GITHUB_OUTPUT"]).open("a") as f:
+              f.write(f"mode={mode}\n")
+              f.write(f"catalog_changed={str(any(path.startswith('plugins/linker-commerce/content/livecanvas/') for _, path in changes)).lower()}\n")
+              f.write(f"php_test_changed={str(any(path == 'plugins/linker-commerce/tests/php/Unit/Presentation/TemplatesTest.php' for _, path in changes)).lower()}\n")
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as f:
+              f.write(f"### Validation scope: {mode}\n\n{reason}\n")
+          print(f"Validation scope: {mode}. {reason}")
+          PYTHON
+
   check:
+    needs: plan
+    if: always()
     # The VPS's release (docs/research/2026-10-09/old-repo-006-target-architecture.md);
     # named, so the runner does not move when ubuntu-latest does.
     runs-on: ubuntu-24.04
@@ -25,9 +192,24 @@ jobs:
     # Each action is pinned to the commit of its latest release on 2026-10-09
     # (`gh api repos/<owner>/<repo>/releases/latest`); the tag follows the SHA.
     steps:
+      - name: Require a successful recognized plan
+        env:
+          PLAN_RESULT: ${{ needs.plan.result }}
+          MODE: ${{ needs.plan.outputs.mode }}
+        run: |
+          test "$PLAN_RESULT" = success
+          case "$MODE" in full|presentation|docs|reuse) ;; *) exit 1 ;; esac
+      - name: Record validation scope (${{ needs.plan.outputs.mode }})
+        env:
+          MODE: ${{ needs.plan.outputs.mode }}
+        run: printf 'Validation scope %s; see plan for reused or selected checks.\n' "$MODE"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'presentation'
+        with:
+          ref: ${{ github.sha }}
 
       - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'presentation'
         with:
           php-version: ${{ matrix.php }}
           # The composer.lock files are Composer 2 locks (written with 2.9.7).
@@ -35,6 +217,7 @@ jobs:
           coverage: none
 
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        if: needs.plan.outputs.mode == 'full'
         with:
           node-version: ${{ matrix.node }}
           cache: npm
@@ -43,6 +226,7 @@ jobs:
             plugins/linker-commerce/package-lock.json
 
       - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        if: needs.plan.outputs.mode == 'full'
         with:
           # The uv that wrote the uv.lock files.
           version: "0.10.11"
@@ -53,6 +237,7 @@ jobs:
             tools/*/uv.lock
 
       - uses: taiki-e/install-action@f7e5d7c961414b23f5b25b2da9294395d08513ad # v2.87.26
+        if: needs.plan.outputs.mode == 'full'
         with:
           # The just the justfile is written for.
           tool: just@1.58.0
@@ -60,35 +245,63 @@ jobs:
       # The German-coverage gate reads the .po catalogs with gettext's own
       # tools (msgattrib, msgfmt); the runner image does not carry them.
       - name: gettext for the i18n coverage gate
+        if: needs.plan.outputs.mode == 'full' || (needs.plan.outputs.mode == 'presentation' && needs.plan.outputs.catalog_changed == 'true')
         run: sudo apt-get update && sudo apt-get install -y gettext
 
       # #302: reproduce linker-tools script catalogs using the local stack's
       # WP-CLI version. i18n make-json does not need a WordPress instance.
       - name: WP-CLI 2.12 for script translation reproducibility
+        if: needs.plan.outputs.mode == 'full' || (needs.plan.outputs.mode == 'presentation' && needs.plan.outputs.catalog_changed == 'true')
         run: |
           curl -fsSL -o /usr/local/bin/wp https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar
           sudo chmod +x /usr/local/bin/wp
           wp --version
 
+      - name: Existing presentation contracts and affected source guards
+        if: needs.plan.outputs.mode == 'presentation'
+        working-directory: plugins/linker-commerce
+        env:
+          PHP_TEST_CHANGED: ${{ needs.plan.outputs.php_test_changed }}
+          CATALOG_CHANGED: ${{ needs.plan.outputs.catalog_changed }}
+        run: |
+          composer validate --no-check-publish
+          composer install --no-interaction --no-progress --quiet
+          if [ "$PHP_TEST_CHANGED" = true ]; then
+            php vendor/bin/phpcs -q tests/php/Unit/Presentation/TemplatesTest.php
+            php vendor/bin/phpstan analyse --no-progress --memory-limit=-1 tests/php/Unit/Presentation/TemplatesTest.php
+          fi
+          php vendor/bin/phpunit tests/php/Unit/Presentation
+          if [ "$CATALOG_CHANGED" = true ]; then
+            python3 ../../tools/checks/german-copy.py
+            python3 ../../tools/checks/internal-home-urls.py --root "$GITHUB_WORKSPACE"
+            (cd "$GITHUB_WORKSPACE" && python3 tools/checks/i18n-coverage.py)
+          fi
+
       - name: just check
+        if: needs.plan.outputs.mode == 'full'
         run: just check
 
       - name: Playwright's Chromium and its system libraries
+        if: needs.plan.outputs.mode == 'full'
         working-directory: plugins/linker-tools
         run: npx playwright install --with-deps --only-shell chromium
 
       - name: just test
+        if: needs.plan.outputs.mode == 'full'
         run: just test
 
       # build/manifest.json says what the committed build/ was made from; a
       # fresh build proves the files themselves are what the sources produce.
       - name: just build reproduces the committed build/
+        if: needs.plan.outputs.mode == 'full'
         run: |
           just build
           git status --porcelain -- plugins/linker-tools/build plugins/linker-commerce/build
           test -z "$(git status --porcelain -- plugins/linker-tools/build plugins/linker-commerce/build)"
 
   mu-smoke:
+    needs: plan
+    if: always()
     # The must-use plugins' smoke suite asserts properties of a real site (the
     # response headers, the closed REST user list, the recorder's file, the
     # pin's installation), so it needs WordPress: this job builds the smallest
@@ -100,25 +313,43 @@ jobs:
       # The runner image's MySQL root credentials; see the MySQL step below.
       MYSQL_PWD: root
     steps:
+      - name: Require a successful recognized plan
+        env:
+          PLAN_RESULT: ${{ needs.plan.result }}
+          MODE: ${{ needs.plan.outputs.mode }}
+        run: |
+          test "$PLAN_RESULT" = success
+          case "$MODE" in full|presentation|docs|reuse) ;; *) exit 1 ;; esac
+      - name: Record native integration scope
+        env:
+          MODE: ${{ needs.plan.outputs.mode }}
+        run: printf 'Validation scope %s; native integration runs for runtime or unproven changes.\n' "$MODE"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: needs.plan.outputs.mode == 'full'
+        with:
+          ref: ${{ github.sha }}
 
       - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        if: needs.plan.outputs.mode == 'full'
         with:
           php-version: "8.3"
           tools: composer:v2
           coverage: none
 
       - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        if: needs.plan.outputs.mode == 'full'
         with:
           version: "0.10.11"
           python-version: "3.12"
 
       - uses: taiki-e/install-action@f7e5d7c961414b23f5b25b2da9294395d08513ad # v2.87.26
+        if: needs.plan.outputs.mode == 'full'
         with:
           tool: just@1.58.0
 
       # tools/local's wpcli.require_version() wants WP-CLI 2.12 (production's).
       - name: WP-CLI 2.12
+        if: needs.plan.outputs.mode == 'full'
         run: |
           curl -fsSL -o /usr/local/bin/wp https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar
           sudo chmod +x /usr/local/bin/wp
@@ -131,6 +362,7 @@ jobs:
       # environment, which is what the local stack on a Mac gets from
       # Homebrew's passwordless root. Redis is already installed.
       - name: MySQL and Redis for the instance
+        if: needs.plan.outputs.mode == 'full'
         run: |
           sudo systemctl start mysql
           # The image documents Redis but carries no redis-server binary
@@ -145,21 +377,25 @@ jobs:
           redis-cli ping
 
       - name: a bare instance (no snapshot)
+        if: needs.plan.outputs.mode == 'full'
         run: just up smoke
 
       - name: the must-use plugins' smoke suite
+        if: needs.plan.outputs.mode == 'full'
         run: just mu-smoke smoke
 
       # #373: two PHP processes commit one conversation and the trace shows
       # one of them blocked in GET_LOCK. The instance's linker-tools is this
       # checkout (`just up` symlinks it).
       - name: Genie conversation concurrency
+        if: needs.plan.outputs.mode == 'full'
         run: just genie-concurrency smoke
 
       # #297: native WordPress/Woo routing and an authenticated loopback SMTP
       # sink. The test owns the server and uses fake values only; mail() is
       # captured to files. The existing bare instance is sufficient for mail.
       - name: internal SMTP, notification routing and mail-language integration
+        if: needs.plan.outputs.mode == 'full'
         working-directory: plugins/linker-commerce
         run: |
           LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
@@ -171,6 +407,7 @@ jobs:
       # connection, source ACK, critical/reset/VAT, held-job and classifier fixtures.
       # Registration adds its real SQL/ACK/erasure guards to each existing store run.
       - name: business and native notification capacity in both stores
+        if: needs.plan.outputs.mode == 'full'
         run: |
           cd plugins/linker-commerce
           LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
@@ -192,6 +429,7 @@ jobs:
       # account privacy, advisory mode and actual disconnect/peer recovery.
       # Uses synthetic inputs and intercepted HTTP; no external mail/provider.
       - name: public verification and atomic admission
+        if: needs.plan.outputs.mode == 'full'
         working-directory: plugins/linker-commerce
         run: |
           LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
@@ -204,6 +442,7 @@ jobs:
       # (facts._from_inquiry), so a dialogue fixture would not show a leaked
       # total. The Proforma download is the next step.
       - name: inquiry status price gate
+        if: needs.plan.outputs.mode == 'full'
         working-directory: plugins/linker-commerce
         run: |
           LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
@@ -214,6 +453,7 @@ jobs:
       # solution carries the engine's figures and no price. The engine is a
       # pre_http_request double, so the bare instance needs no tuning.
       - name: saved solution reader
+        if: needs.plan.outputs.mode == 'full'
         working-directory: plugins/linker-commerce
         run: |
           LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
@@ -222,11 +462,13 @@ jobs:
       # #405: an edit drops the cached page through wp_remote_post. After the
       # mail tests, so Polylang setup does not change their instance.
       - name: page cache follows a save
+        if: needs.plan.outputs.mode == 'full'
         run: just page-cache-chain smoke
 
       # Native authentication plus the existing reader on 201 synthetic rows per
       # collection; no production binding, credential, model or external mail.
       - name: inventory application credential scope
+        if: needs.plan.outputs.mode == 'full'
         run: |
           uv run --locked --project tools/local ruff check --config tools/local/pyproject.toml tools/checks/inventory-access.py
           uv run --locked --project tools/local ruff format --check --config tools/local/pyproject.toml tools/checks/inventory-access.py
@@ -237,6 +479,7 @@ jobs:
       # page-cache step installs the local-only service token. All HTTP is
       # intercepted; running-version responses and sizing inputs are synthetic.
       - name: public resource admission and private service handoff
+        if: needs.plan.outputs.mode == 'full'
         run: |
           just wp smoke option update linker_engine_url http://127.0.0.1:9
           just wp smoke option update linker_genie_url http://127.0.0.1:9
@@ -251,6 +494,7 @@ jobs:
       # conversation case, for the same reason as #414. pdftotext reads the
       # PDF: dompdf draws glyph ids, so the amount is not in the raw bytes.
       - name: proforma price gate
+        if: needs.plan.outputs.mode == 'full'
         working-directory: plugins/linker-commerce
         run: |
           if ! command -v pdftotext >/dev/null; then
@@ -267,6 +511,7 @@ jobs:
       # its German inquiry needs the de language the page-cache step above
       # configured, which runs before this one in this job.
       - name: genie inquiry chain
+        if: needs.plan.outputs.mode == 'full'
         working-directory: plugins/linker-commerce
         run: |
           LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
@@ -277,6 +522,7 @@ jobs:
       # Outbox data. Includes private review history, native privacy, two real
       # PHP connections, and rollback after a failed metadata write.
       - name: inquiry assessment, customer evidence and staff review
+        if: needs.plan.outputs.mode == 'full'
         working-directory: plugins/linker-commerce
         run: |
           LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
@@ -286,6 +532,7 @@ jobs:
       # Official dependency only; test users/factors are synthetic and deleted.
       # Native wp-login + Woo EN/DE, TOTP/recovery replay, customer and API lanes.
       - name: administrator MFA without mandatory customer factors
+        if: needs.plan.outputs.mode == 'full'
         run: |
           if ! command -v msgcat >/dev/null; then
             sudo apt-get update
@@ -301,5 +548,5 @@ jobs:
       # The cleanup runs even when an earlier step failed and the instance was
       # never built, so it reports rather than failing the job twice.
       - name: stop the instance
-        if: always()
+        if: always() && needs.plan.result == 'success' && needs.plan.outputs.mode == 'full'
         run: just down smoke || echo "no instance to stop"

@@ -31,3 +31,10 @@
 **待主线终态的部分在套件里以 `pending-main` 标注**（运行时 skip 并写明原因），不静默删除。2026-10-16 清账：本段原先点名的两处都已落到实跑——商品页 Genie 入口（R13 行改为点页面实际带的 `[data-pdp-ask]` 入口，芯片组不在 LC 产品模板上）、hreflang 的旧站点残留（快照 SEOPress 数据已不带线上自己的 alternates，断言改为硬判）；chrome.spec 的 301 落点依赖 `12-site-chrome.py` 迁移，未跑该迁移的实例以具名 skip 报出（README 的前置清单已补该步）。`genie-dock.spec.ts` 那一处 skip 的口径是 `pending-fixture`（既非主线欠行，也非迁移前置）：套件客户由 `products.spec.ts` 的 `ensureCustomer()` 在运行时自建，因此该行实例上跑过一遍套件后即转实跑；三种标注（`pending-main`/`pending-setup`/`pending-fixture`）的定义见 `tests/e2e/README.md`。
 
 **判分记录落盘**（2026-10-11 修复轮）：级联的逐问记录写在实例目录下（`~/de-linker-local/<实例>/e2e-judge/<本地时间戳>/`，与 `mail/` 同级），`run/summary.json`、`run/jev.jsonl`、`run/deepseek.jsonl`、`run/cascade.jsonl` 在跑完后仍可查阅；判分开始的路径会打印在运行输出里。判分答案里的商品按角色分列（`This page's product:` 与 `Recommended products:` 两行，`linker_judges.turns.answer_with_offers` 是唯一实现）——R5 分歧的根因正是把「本页产品」与「推荐产品」压成一张清单。
+
+
+## CI 随差异收敛
+
+check.yml 先用实际 Git 差异选检查，并核实缩减范围内文件的类型、UTF-8 编码和非二进制内容。纯文档不安装运行环境；只修改既有 Commerce LC/CSS 文件及其模板合同测试时，执行原有 Presentation 合同；修改模板时保留德语、站内地址与 i18n-coverage 守卫，修改模板合同 PHP 测试时保留该文件的 PHPCS 和 PHPStan，并先核实基线已有成功检查。新增、删除、改类型、运行代码、依赖、构建或工作流改动，以及无法识别或无法证明基线的变化，仍执行原完整检查与原生集成。界面变更的 Computer Use 验收照旧，不把 CI 选中范围当作视觉验收。
+
+main 合并结果的完整 Git 树等于第二父提交时，仍须核实成功运行实际测试的合成提交：run-name 记录 github.sha，各 checkout 显式使用同一 SHA；解析其 Git tree 并与候选完整树严格比较，同时核对工作流 blob 相同、对应 attempt 的检查范围确为 full/presentation（push 可为 reuse），不把 docs-only 结果当运行基线。只有这些证明齐全且该 PR head 最新运行已完成并成功时，才复用结果；失败、API 不可用、没有可核对结果或 Git 树不同均执行完整检查。工作流保留现有两个 required job 的名称；计划失败、取消或模式未知时，两者明确失败。计划写明选中或复用范围；不把未执行的用例写成新通过。手动 workflow_dispatch 始终执行完整检查。
