@@ -1,7 +1,11 @@
 # Managed planning worker deployment contract
 
-The [candidate unit](linker-planner-worker.service.in) is not installed by this
-increment. Its systemd semantics and acquisition evidence are in the
+The paired deployment operator is [planner_release.py](planner_release.py).
+Its source/configuration and activation contract is in
+[548-service-hosting](../../../docs/specs/548-service-hosting.md). It prepares
+and controls a dedicated non-root HTTP/worker namespace without restarting the
+existing engine or Genie. The [candidate unit](linker-planner-worker.service.in)
+remains the standalone template reference. Its systemd semantics are in the
 [hosting research](../../../docs/research/2026-10-24-managed-worker/HOSTING.md).
 The complete workbench still needs production workload limits, staged site
 acceptance and deployment/readback. The existing HTTP service alone does not

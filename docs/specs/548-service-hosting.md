@@ -31,10 +31,55 @@ WordPress identity/admission gateway or public application acceptance.
    combined entry on that instance's existing engine port and writes
    `linker_planner_url` only after authenticated readiness succeeds. No other
    instance's process, workspace or credential is used.
-6. The production service entry and dedicated nginx planning location carry
-   the same path. The transport location sets private headers even on its own
-   errors and preserves all other routes. Production changes still require
-   backup, configuration validation, process draining and real readback.
+6. The managed planning HTTP/worker pair uses a separate loopback listener
+   (8911 on the services host) and release namespace. The dedicated nginx
+   planning location forwards the same private path to this pair. Existing
+   engine/Genie listeners and public routes retain their current owner. The
+   transport location sets private headers even on its own errors. Production
+   changes still require backup, configuration validation, process draining
+   and real readback; an isolated host review does not publish this routing.
+
+## Paired release lifecycle
+
+`services/engine/ops/planner_release.py` operates an explicitly prepared
+namespace, independently of the generic engine/Genie deployment. Every retained
+release contains its source and an environment built at that immutable path,
+plus `.deploy/spec.json`, `runtime.json` and `worker.json`. The strict release
+specification supplies schema version 1, absolute root/release paths, a
+`linker-planner` service prefix matching the root name, explicit port, dedicated
+non-root user and finite positive start/stop budgets. Operational budgets are
+deployment policy, not engineering limits or production capacity evidence.
+
+`prepare SPEC --source-environment ENV --publication-url URL` freezes both
+policies, the service configuration and executable identity. It verifies that
+the actual service UID can construct the site's source loader before admitting
+the candidate. A root-readable source alone is insufficient. The publisher
+exposes only the public Woo projection generation as directories `0755` and
+files `0644`, including an initial retained rollback pair; private workspace,
+cache and service credentials retain their separate permissions. No new fact
+authority is created. The source paths still identify the current Woo-derived
+feed/contract generation and the publication endpoint still validates current
+permissions. Remote publication endpoints require credential-free HTTPS;
+literal HTTP loopback is allowed for a private local authority.
+If an owned local authority is reached through SSH forwarding, preserve its
+original origin (including port). The existing exact-origin URL reconciliation
+does not treat an arbitrary forward address as the authority's upload origin.
+
+`activate SPEC` drains the current queue with its own retained executor, then
+starts and verifies the matched HTTP/worker pair before reopening admission.
+It checks live source paths, systemd fragment/override ownership, process cwd,
+listener PID, invocation ID, runtime, execution and storage identity. Only the
+owned loopback socket receives the HTTP service token. The numerical worker
+receives public source settings without service, publication-writer, research
+or model credentials. The two boot dependencies point through stable unit
+links, so retiring a release cannot leave reboot wiring attached to its files.
+
+`status SPEC`, `rollback SPEC` and `stop SPEC` use the same ownership and drain
+boundaries. A stopped old worker recovers its own pending jobs before replacement;
+failed activation restores the previous selector and matching pair. Successful
+replacement retains the current release and one rollback. It refuses storage
+schema changes that lack a separate migration plan. It never changes WordPress,
+the public proxy, the existing engine/Genie service or product data.
 
 ## Explicit local policy
 

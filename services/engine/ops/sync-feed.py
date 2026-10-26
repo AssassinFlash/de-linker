@@ -99,6 +99,14 @@ def atomic_link(target: Path, link: Path) -> None:
     os.replace(temporary, link)
 
 
+def public_generation(directory: Path) -> None:
+    # These are public Woo projections. mkdtemp's private directory otherwise
+    # blocks the dedicated non-root planner, including a legacy rollback pair.
+    for published in directory.iterdir():
+        os.chmod(published, 0o644)
+    os.chmod(directory, 0o755)
+
+
 def read_loaded() -> dict[str, Any]:
     request = urllib.request.Request(
         os.environ.get(
@@ -208,6 +216,7 @@ def sync(
                 "compatibility_sha256": hashlib.sha256(contract_raw).hexdigest(),
             }
             (generation / "manifest.json").write_text(json.dumps(manifest))
+            public_generation(generation)
             current = directory / "current"
             previous = current.resolve() if current.is_symlink() else None
             if (
@@ -224,6 +233,7 @@ def sync(
                 (previous / "compatibility.json").write_bytes(
                     compatibility_target.read_bytes()
                 )
+                public_generation(previous)
             atomic_link(generation, current)
             # Only the initial migration changes these links. The process pins
             # the resolved feed generation, so it never reads a mixed contract.
