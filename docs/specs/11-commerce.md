@@ -18,7 +18,7 @@
 6. **公司侧**（Woo 后台订单页，角色 shop_manager）：订单标题 "Inquiry #"；按钮 "Issue Proforma / Proforma ausstellen"：生成 PDF、状态改 `wc-proforma-issued`、给客户发邮件（附 PDF 链接，不附件）；之后手动 `completed` 或 `cancelled`。无其他动作。后台把状态直接改成 `wc-proforma-issued` 走同一条签发（`Issuer::ensure_issued`，钩在 `woocommerce_order_status_proforma-issued`）：号与 PDF 写上之后，客户侧才有下载入口。没有银行账户时按钮不出现，状态改过去也不签发——见下节，不补造账户。
 7. **客户账户**（Woo My Account，端点改名）：Inquiries / Anfragen（列表：编号、日期、状态、金额、PI 下载）、Saved solutions / Gespeicherte Lösungen（定名，账户页与 `POST linker/v1/solutions` 的保存结果；保存的方案与设计报告 PDF，来自 #14）、Company / Unternehmen（资料与地址）、Documents / Unterlagen（本账户所有 PI 与设计报告）、页面顶部 "Your contact person / Ihre Ansprechperson"（姓名、邮箱、电话，来自设置）、每条询盘上 "Request again / Erneut anfragen"（复制为新的 Lösungsentwurf）。移除：订单、付款方式、下载（Woo 原生端点中不需要的隐藏）。
 
-询盘详情的产品资料链接只读取该商品当前关联的文档，不为每一行反复装配全站事实与文档版本。数据手册类型、旧URL别名的选择顺序和原PDF权限门保持；旧别名参与选择时仍核对实际字节，变更后的别名不得授权原资料。未发布商品、邮件纯文本及非询盘详情不提供该链接。
+询盘详情的产品资料链接只读取该商品当前关联的文档，不为每一行反复装配全站事实与文档版本。数据手册类型、旧URL别名的选择顺序和原PDF权限门保持；旧别名参与选择时仍核对实际字节，变更后的别名不得授权原资料。未发布商品、邮件纯文本及非询盘详情不提供该链接。 数据手册入口沿账户次级动作样式，提供至少44px的点击高度、hover变色与可见键盘焦点；手机窄列中的长德语标签保持完整。
 
 ## 模块（PSR-4 `Linker\Commerce\`，一类一文件，各有测试）
 - `Registration`（字段、VIES 客户端、角色元数据、提醒邮件）。
