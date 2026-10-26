@@ -235,3 +235,12 @@ blogs 实例整体 `== CLEAN ==`，exit 0。
 
 另：本票不改 `docs/acceptance/2026-10-13/legacy-surfaces/README.md`（当期验收记录，历史），
 接管后的口径以 §3 与本文为准。
+
+
+## 原生分页的呈现补全（2026-10-27，全站体验目标）
+
+站内搜索的真实第二页确认：LiveCanvas输出当前项为`span.page-link.current`，原卷只给链接和`span.page-numbers`统一尺寸，因此当前数字仅约9.6×20px；原生`h2.visually-hidden`也未获得对应隐藏规则，直接露出默认英文标题。共享journal卷补齐原生span的既有44px外观，并仅在分页内保留标题的辅助阅读隐藏语义。三个页型的英德模板使用LiveCanvas原生`screen_reader_text`参数传入Page navigation／Seitennavigation，不改插件PHP、分页查询或链接机制。
+
+站内搜索分支缺少其他journal页面已有的`journal-content`容器，手机flex顺序因此把搜索分区入口放到结果末尾，紧贴分页。英德分支补回同一容器，分区导航回到搜索框与结果之间；沿已有样式和值，不另造间距体系。
+
+必要验收：真实多页搜索的当前项、相邻项、下一页、查询/语言保留和键盘焦点；EN/DE1440/390实际布局；同一原生标签在博客首页及分类的消费者核实。当前项保持非链接和aria-current，标题仍可被辅助阅读命名。无分页时不出现额外空导航。已有未受影响搜索、文章消费者与营销正文结果复用。
