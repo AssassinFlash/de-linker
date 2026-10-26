@@ -10,9 +10,11 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Unit\Products\Publication;
 
 use Linker\Commerce\Products\EngineeringData;
+use Linker\Commerce\Products\Faqs;
 use Linker\Commerce\Products\Publication;
 use Linker\Commerce\Products\Publication\DocumentAccess;
 use Linker\Commerce\Products\Publication\DocumentFiles;
+use Linker\Commerce\Products\Publication\EvidenceBindings;
 use Linker\Commerce\Tests\Support\CurrentFaqProduct;
 use WP_Mock;
 use WP_Mock\Tools\TestCase;
@@ -203,6 +205,7 @@ final class RevisionTest extends TestCase {
 		);
 
 		$this->assertSame( array(), Publication::library_read()['documents'] );
+		$this->assertSame( array(), Publication::product_library_read( 12 )['documents'] );
 		$states   = array(
 			301 => '1',
 			302 => '1',
@@ -259,6 +262,85 @@ final class RevisionTest extends TestCase {
 		$this->assertSame( 410, ( new DocumentAccess() )->response( $file, 'HEAD' )['status'], 'A later shared row cannot add aliases to the first published document record.' );
 		$this->current_faq_meta[ EngineeringData::DOCUMENTS_META_KEY ][0]['aliases'][] = $late;
 		$this->assertSame( 200, ( new DocumentAccess() )->response( $file, 'HEAD' )['status'] );
+	}
+
+	/** A product keeps earlier shared metadata and aliases without inspecting unrelated files. */
+	public function test_product_read_preserves_shared_rows_without_unrelated_file_checks(): void {
+		$url       = 'https://de-linker.com/wp-content/uploads/2026/manual.pdf';
+		$alias     = 'https://de-linker.com/wp-content/uploads/2026/alias.pdf';
+		$unrelated = 'https://de-linker.com/wp-content/uploads/2026/unrelated.pdf';
+		copy( $this->publication_uploads . '/2026/manual.pdf', $this->publication_uploads . '/2026/alias.pdf' );
+		file_put_contents( $this->publication_uploads . '/2026/unrelated.pdf', "%PDF-1.4\nOther product evidence.\n%%EOF" );
+		$rows                                     = array(
+			11 => array(
+				array(
+					'url'     => $url,
+					'title'   => 'Earlier shared title',
+					'aliases' => array( $alias ),
+				),
+			),
+			12 => array(
+				array(
+					'url'     => $url,
+					'title'   => 'Later product title',
+					'aliases' => array( $alias ),
+				),
+			),
+			14 => array(
+				array(
+					'url'   => $unrelated,
+					'title' => 'Unrelated document',
+				),
+			),
+		);
+		$this->current_faq_meta[ Faqs::META_KEY ] = array(
+			array(
+				'question' => 'Shared source?',
+				'answer'   => 'Current shared evidence.',
+				'citation' => array(
+					'url'  => $alias,
+					'page' => 1,
+				),
+			),
+		);
+		WP_Mock::userFunction( 'get_posts' )->andReturn( array( 11, 12, 14 ) );
+		WP_Mock::userFunction( 'get_post_type' )->andReturn( 'product' );
+		WP_Mock::userFunction( 'get_post_status' )->andReturn( 'publish' );
+		WP_Mock::userFunction( 'get_post' )->andReturnUsing(
+			static fn ( int $id ): \WP_Post => new \WP_Post(
+				(object) array(
+					'ID'         => $id,
+					'post_title' => 'Current product',
+				)
+			)
+		);
+		WP_Mock::userFunction( 'get_post_meta' )->andReturnUsing(
+			function ( int $id, string $key = '' ) use ( $rows ): mixed {
+				$meta                                        = $this->current_faq_meta;
+				$meta[ EngineeringData::DOCUMENTS_META_KEY ] = $rows[ $id ];
+				if ( 12 !== $id ) {
+					$meta[ Faqs::META_KEY ] = array();
+				}
+				return '' === $key ? $meta : ( $meta[ $key ] ?? '' );
+			}
+		);
+		EvidenceBindings::capture_faqs( 12, true );
+		$all      = Publication::library_read();
+		$expected = array_values( array_filter( $all['documents'], static fn ( array $document ): bool => in_array( 12, $document['product_ids'], true ) ) );
+		$answers  = Publication::faqs_for( 12, $all );
+		$this->assertCount( 1, $answers );
+		$lookups = array();
+		WP_Mock::userFunction( 'attachment_url_to_postid' )->andReturnUsing(
+			static function ( string $document_url ) use ( &$lookups ): int {
+				$lookups[ $document_url ] = true;
+				return 0;
+			}
+		);
+		$read = Publication::product_library_read( 12 );
+		$this->assertSame( $expected, $read['documents'] );
+		$this->assertSame( 'Earlier shared title', $read['documents'][0]['title'] );
+		$this->assertSame( $answers, Publication::faqs_for( 12 ) );
+		$this->assertArrayNotHasKey( $unrelated, $lookups );
 	}
 
 	/**
