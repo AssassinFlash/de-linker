@@ -482,8 +482,8 @@ final class Publication {
 	/**
 	 * Conservative byte-read scope; stored FAQ bindings still decide release.
 	 *
-	 * All published source products are considered before the first shared
-	 * document row. A later product's citation may depend on that earlier row.
+	 * The source candidates in this read are considered before the first shared
+	 * document row. A selected product's citation may depend on an earlier row.
 	 * Path identity can over-select a file, but cannot authorize an answer.
 	 *
 	 * @param int[] $ids Native locale candidates.
