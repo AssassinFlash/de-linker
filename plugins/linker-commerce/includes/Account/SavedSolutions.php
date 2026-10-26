@@ -324,7 +324,7 @@ final class SavedSolutions {
 		} else {
 			wc_add_notice( __( 'The products of the saved solution are in your solution draft.', 'linker-commerce' ) );
 		}
-		wp_safe_redirect( wc_get_cart_url() );
+		wp_safe_redirect( $added instanceof \WP_Error ? self::url( 0 ) : wc_get_cart_url() );
 		exit;
 	}
 

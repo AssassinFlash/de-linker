@@ -213,3 +213,12 @@ IBAN 为空时：订单页不显示 Issue Proforma，框内说明去 Settings �
 账户内自己的保存方案可经明确确认移除；原生details的取消操作不提交表单。动作校验当前身份、账号状态、专用nonce、私有方案类型和author；访客、他人、拒绝账号及无效nonce不得改动。复用WordPress原生回收站和Woo通知的Undo，将同一记录恢复为private，保留产品、设计和报告文件，不改当前草稿。回收站被关闭时保持原记录并明确失败，不能静默永久删除。原生永久清理发生后，仅回收该保存方案ID的报告目录，其他客户文件保持。
 
 Woo没有客户保存方案的原生对象，沿用现有私有CPT；只补所有者动作适配，状态迁移使用wp_trash_post/wp_untrash_post，组成和确认在LC数据片段、样式在WindPress，未增加JS构建或通用删除API。
+
+
+## Saved-solution recovery guidance
+
+A saved record without a revalidatable stored result must explain the required new calculation and link to the existing locale-specific Solution Configurator. It must not offer a form whose stored prerequisites already guarantee rejection. `DesignProof::can_revalidate()` exposes only the existing local receipt prerequisites and a nonempty BOM; actual writes still run the current-authority check and atomic add.
+
+A snapshotless product reference may show the current Woo product name and native permalink only while both the locale and canonical source are published. Resolve all such references in one fresh `Publication::published_ids()` read, without an engineering request, manifest/PDF traversal or per-card permission refresh. Recorded snapshot names and stored data remain unchanged; withdrawn or unreadable current authority retains the recorded reference and no live link. Polylang resolution uses the existing `PageUrls::twin()` seam.
+
+LC owns the current-product link and recalculation fragments; WindPress owns spacing, wrapping,44px link targets andhover/focus. The existing add form,report andremove/Undo remain available where applicable. A failed saved add returns to the saved-solutions page with Woo's notice; success still opens the solution draft. No raw legacy items or historical snapshot silently become a new engineering approval.

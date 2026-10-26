@@ -86,3 +86,7 @@ msgstr ""
 #: includes/Account/SavedSolutionRemoval.php includes/Presentation/AccountTemplates.php
 msgid "The saved solution could not be updated. Please try again."
 msgstr ""
+
+#: includes/Presentation/AccountTemplates.php:467
+msgid "This saved solution needs a new calculation before it can be added to your solution draft."
+msgstr ""

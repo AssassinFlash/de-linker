@@ -10,12 +10,14 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Presentation;
 
 use Linker\Commerce\Account\DocumentDownload;
+use Linker\Commerce\Account\DesignProof;
 use Linker\Commerce\Account\InquiryList;
 use Linker\Commerce\Account\SavedSolutions;
 use Linker\Commerce\Gating\CommerceState;
 use Linker\Commerce\Gating\PriceDisplay;
 use Linker\Commerce\Inquiry\Statuses;
 use Linker\Commerce\Proforma\Issuer;
+use Linker\Commerce\Products\Publication;
 use Linker\Commerce\Vocabulary\LocaleFormat;
 use WC_Order;
 
@@ -462,6 +464,7 @@ final class AccountTemplates {
 			'download'        => __( 'Download (PDF)', 'linker-commerce' ),
 			'saved'           => __( 'Saved on', 'linker-commerce' ),
 			'add'             => __( 'Add to solution draft', 'linker-commerce' ),
+			'recalculate'     => __( 'This saved solution needs a new calculation before it can be added to your solution draft.', 'linker-commerce' ),
 			'remove'          => __( 'Remove', 'linker-commerce' ),
 			'keep-solution'   => __( 'Keep solution', 'linker-commerce' ),
 			'remove-question' => __( 'Remove this saved solution?', 'linker-commerce' ),
@@ -563,17 +566,22 @@ final class AccountTemplates {
 			case 'solutions':
 				$saved = $this->args['saved'] ?? null;
 				if ( $saved instanceof SavedSolutions ) {
+					$products = $this->legacy_products( (array) ( $this->args['solutions'] ?? array() ), $saved );
 					foreach ( $this->args['solutions'] ?? array() as $solution ) {
 						if ( get_current_user_id() !== (int) $solution->post_author ) {
 							continue;
 						}
-						$items = '';
+						$snapshot = $saved->snapshot( $solution->ID );
+						$can_add  = null !== $snapshot && DesignProof::can_revalidate( $snapshot );
+						$items    = '';
 						foreach ( $saved->historical_items( $solution->ID ) as $item ) {
-							$items .= $this->fragment(
+							$current = null === $snapshot ? ( $products[ $item['product_id'] ] ?? array() ) : array();
+							$items  .= $this->fragment(
 								'product-line',
 								array(
 									'quantity' => $item['quantity'],
-									'name'     => $item['label'],
+									'name'     => $current['name'] ?? $item['label'],
+									'url'      => $current['url'] ?? '',
 								)
 							);
 						}
@@ -584,7 +592,8 @@ final class AccountTemplates {
 								'title'        => $solution->post_title,
 								'date'         => wp_date( LocaleFormat::date_format(), (int) get_post_timestamp( $solution ) ),
 								'items'        => $items,
-								'nonce'        => wp_nonce_field( SavedSolutions::ADD_ACTION . '_' . $solution->ID, '_wpnonce', true, false ) . \Linker\Commerce\Protection\FormFields::render( 'draft_write' ),
+								'can-add'      => $can_add,
+								'nonce'        => $can_add ? wp_nonce_field( SavedSolutions::ADD_ACTION . '_' . $solution->ID, '_wpnonce', true, false ) . \Linker\Commerce\Protection\FormFields::render( 'draft_write' ) : '',
 								'remove-nonce' => wp_nonce_field( \Linker\Commerce\Account\SavedSolutionRemoval::REMOVE . '_' . $solution->ID, '_wpnonce', true, false ),
 								'report'       => '' !== $saved->report_path( $solution->ID ) ? DocumentDownload::report_url( $solution->ID ) : '',
 							)
@@ -592,6 +601,10 @@ final class AccountTemplates {
 					}
 				}
 				return '' === $html ? $this->fragment( 'empty-solutions' ) : $html;
+			case 'product-name':
+				return '' !== ( $this->row['url'] ?? '' ) ? $this->fragment( 'action', array_merge( $this->row, array( 'kind' => 'product' ) ) ) : $this->field( array( 'key' => 'name' ) );
+			case 'solution-action':
+				return $this->fragment( ! empty( $this->row['can-add'] ) ? 'solution-add' : 'solution-recalculate', $this->row );
 			case 'report':
 				return '' !== (string) ( $this->row['report'] ?? '' ) ? $this->fragment(
 					'action',
@@ -670,6 +683,67 @@ final class AccountTemplates {
 					'rows' => '' === $documents ? $this->fragment( 'empty-documents' ) : $documents,
 				)
 			);
+	}
+
+	/**
+	 * Current links only for legacy references that have no recorded result.
+	 *
+	 * One fresh permission read covers the page. Stored snapshots never borrow
+	 * current facts; a withdrawn source cannot be exposed through its twin.
+	 *
+	 * @param \WP_Post[]     $solutions Owned saved records.
+	 * @param SavedSolutions $saved    Existing historical store.
+	 * @return array<int, array{name:string,url:string}>
+	 */
+	private function legacy_products( array $solutions, SavedSolutions $saved ): array {
+		$ids = array();
+		foreach ( $solutions as $solution ) {
+			if ( get_current_user_id() !== (int) $solution->post_author || null !== $saved->snapshot( $solution->ID ) ) {
+				continue;
+			}
+			foreach ( $saved->items( $solution->ID ) as $item ) {
+				$ids[ $item['product_id'] ] = true;
+			}
+		}
+		if ( array() === $ids ) {
+			return array();
+		}
+		$locale  = determine_locale();
+		$display = array();
+		try {
+			$allowed = Publication::published_ids(
+				static function () use ( $ids, $locale, &$display ): array {
+					foreach ( array_keys( $ids ) as $id ) {
+						$twin = PageUrls::twin( $id, $locale );
+						if ( $twin > 0 || ! str_starts_with( $locale, 'de' ) ) {
+							$display[ $id ] = $twin > 0 ? $twin : $id;
+						}
+					}
+					return array_values( array_unique( $display ) );
+				}
+			);
+		} catch ( \RuntimeException $error ) {
+			// Retain the stored reference when current permission cannot be read.
+			return array();
+		}
+		$products = array();
+		foreach ( $display as $id => $product_id ) {
+			if ( ! in_array( $product_id, $allowed, true ) ) {
+				continue;
+			}
+			$product = wc_get_product( $product_id );
+			if ( $product instanceof \WC_Product ) {
+				$name = trim( $product->get_name() );
+				$url  = $product->get_permalink();
+				if ( '' !== $name && '' !== $url ) {
+					$products[ $id ] = array(
+						'name' => $name,
+						'url'  => $url,
+					);
+				}
+			}
+		}
+		return $products;
 	}
 
 	/**
