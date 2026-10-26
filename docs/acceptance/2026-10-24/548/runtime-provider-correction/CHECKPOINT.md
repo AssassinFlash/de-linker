@@ -1044,3 +1044,45 @@ electrical/structural specification and reconciliation, commercial multi-device
 qualification, country scope, remaining consumers and persisted-data migration,
 coordinated review/production publication and readback. The new operator and
 publisher permission fix still need that coordinated production release.
+
+## Multi-converter plant backend — implemented, not installed in the site
+
+Code `364773f9` adds distinct Woo-bound converter/battery units and explicit AC
+coordination groups to the existing saved project and equipment command. Each
+unit keeps its own selection and battery assembly; a shared group controller
+is counted once. All product revisions must agree with the same current Woo
+pool. A plant cannot reuse a single-converter candidate or string result, and
+the single-converter search cannot replace it. Declared demand allocation is
+separate from available joint output; missing manufacturer applicability and
+joint operation remain unresolved.
+
+The new input reached the actual private HTTP handlers, durable equipment
+worker and report/material projection in isolated source fixtures. Two units
+produced two converters, six battery modules, two unit controllers and one
+explicit group controller. This synthetic combination tests identity and
+quantity semantics; it does not assert a real cross-manufacturer release.
+Changed plant requirements cannot reuse an old assessment in a new report.
+
+Independent review exposed and resolved cross-unit inclusion suppression,
+lost report labels/units/model identities, missing per-unit manufacturer
+conditions and a presentation list alias. Reports preserve unit/group context,
+source links and the unchanged frozen source. A's known supplied item cannot
+erase B's unknown item. EN drafts were reviewed and DE wording independently
+finalized. The three focused cases, Ruff and strict-config mypy passed; this
+backend validation has stopped. Shared fixture setup was consolidated.
+
+Held current Woo manuals and a bounded Apify lookup establish the first real
+GoodWe two-converter AC coordination reference and its limits; section 7 of
+the existing CAPABILITY-MAP records them. Shared DC batteries are not licensed
+by AC parallel operation. Current STS125 cannot stand in for a multi-converter
+shared backup design; STS375/750 lack maintained Woo product identities. Current
+prose requirements also lack executable mode/network/firmware applicability.
+No source fact or SKU was invented to fill those gaps.
+
+The existing p548 HTTP/worker/runtime and public site were not changed. No new
+environment, backup or runtime carrier was created. The plant editor, result
+consumers, scoped Woo maintenance, automatic plant search and joint dispatch
+remain the next work in this same goal, alongside the remaining installation,
+country, migration and coordinated release obligations. This is backend
+implementation evidence, not browser or production acceptance. Exact status is
+`equipment_plant_backend` in the existing acceptance JSON.

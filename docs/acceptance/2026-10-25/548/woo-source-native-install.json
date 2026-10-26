@@ -1443,7 +1443,7 @@
       "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
     }
   },
-  "current_frontier": "paired_release_lifecycle",
+  "current_frontier": "equipment_plant_backend",
   "shared_dc_core": {
     "status": "implemented_and_reviewed_core_not_connected_to_native_commands",
     "model": "constant_window_shared_dc_bus_v1",
@@ -3500,5 +3500,68 @@
       "owned_authority_forward_removed": true,
       "forward_pid": 39187
     }
+  },
+  "equipment_plant_backend": {
+    "status": "backend_implemented_and_fixture_verified_not_installed",
+    "code_commit": "364773f9",
+    "at_utc": "2026-10-26T02:39:28.217870+00:00",
+    "contract": "docs/specs/548-workbench-application.md#plant-owned-equipment-and-ac-coordination-groups",
+    "source_authority": "Woo-maintained products and cited documents; no independent fact source",
+    "research": "docs/research/2026-10-23-modern-workbench/CAPABILITY-MAP.md#7",
+    "implemented": [
+      "Distinct converter/battery units with consistent current Woo revisions",
+      "Explicit AC coordination group membership and one controller per group",
+      "Unit checks and declared demand allocation, separate from available joint output",
+      "Saved whole-plant assessment and frozen report/BOM lineage",
+      "Per-unit manufacturer conditions, readable report scopes/units/models and scoped package inclusion"
+    ],
+    "verification": {
+      "native_fixture": "real private HTTP create/equipment command, durable worker, frozen report/material projection; synthetic source data, not a manufacturer release or live WordPress claim",
+      "physical_alias_and_revision_guards": "passed",
+      "multi_converter_pipeline_and_report": "passed",
+      "per_unit_unknown_inclusion": "passed",
+      "ruff": "passed",
+      "mypy": "passed on ten changed source files",
+      "spec": "passed",
+      "standards": "passed after immutable projection correction",
+      "copy_review": {
+        "reviewer": "dc_boundary_copy_review",
+        "status": "EN draft reviewed and DE independently finalized",
+        "file": "services/engine/src/linker_engine/planning/report_copy.py",
+        "refinements": [
+          "planned controller vs established installation",
+          "mode/network applicability distinct from raw count",
+          "allocated demand distinct from available shared output"
+        ]
+      }
+    },
+    "resolved_review_findings": [
+      "Packaging dedupe now uses owning unit scope, preserving other unknown items",
+      "Semantic check identity preserves names, units and product models",
+      "Per-unit pair conditions and document links retained",
+      "Report projection copies the requirements list and leaves frozen source unchanged"
+    ],
+    "validation_closed": true,
+    "runtime_installed": false,
+    "local_runtime_changed": false,
+    "production_changed": false,
+    "woo_product_data_written": false,
+    "mail_sent": false,
+    "next_in_same_goal": [
+      "Plant editor and all new result consumers",
+      "Woo-owned typed operating mode/network/firmware/association applicability",
+      "Automatic plant search and joint time-series dispatch",
+      "Remaining installation/country qualification and whole-site consumers/migration/review/production readback"
+    ],
+    "source_boundaries": [
+      "Current STS125 is not a multi-converter shared-backup substitute;375/750 lack maintained Woo identity",
+      "Current prose claims do not establish executable mode/network/firmware scope",
+      "Research source bytes are the existing Woo-associated manuals; official latest bytes were not retrieved"
+    ],
+    "reuse": [
+      "Previous single-converter, annual/PV, browser and commerce evidence",
+      "Closed paired deployment lifecycle from ac85952e/69876754"
+    ],
+    "retention": "No instance, worktree, runtime carrier or backup added; research temporary render files removed; shared test fixtures reused"
   }
 }
