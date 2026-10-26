@@ -76,6 +76,30 @@ final class PrivateFiles {
 	}
 
 	/**
+	 * Reclaims the per-object directory after its post has been permanently deleted.
+	 *
+	 * @param int $owner_id Deleted object's ID, the directory used by write().
+	 */
+	public function delete_owner( int $owner_id ): void {
+		$directory = $this->root() . '/' . $owner_id;
+		if ( $owner_id <= 0 || ! is_dir( $directory ) || is_link( $directory ) ) {
+			return;
+		}
+		$files = glob( $directory . '/*.pdf' );
+		if ( false === $files ) {
+			return;
+		}
+		foreach ( $files as $file ) {
+			wp_delete_file_from_directory( $file, $directory );
+		}
+		$entries = scandir( $directory );
+		if ( is_array( $entries ) && array() === array_values( array_diff( $entries, array( '.', '..' ) ) ) ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_rmdir -- matches the per-object uploads directory created by write().
+			rmdir( $directory );
+		}
+	}
+
+	/**
 	 * The directory.
 	 */
 	private function root(): string {

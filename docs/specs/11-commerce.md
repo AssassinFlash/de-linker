@@ -206,3 +206,10 @@ IBAN 为空时：订单页不显示 Issue Proforma，框内说明去 Settings �
 - 2026-10-11（#67，GAP-16）：新增 `Health` 模块（服务健康告警最小件）。WordPress/Woo 没有外部服务健康监视的原生能力，检查本身是本插件的；机制全部原生：调度 WP cron daily（`init` 懒登记 + 停用 `wp_clear_scheduled_hook`），HTTP 走 WP HTTP API，邮件走 `wp_mail` 即 #11 的 Outbox 队列（复用限流与重试）。验收：单元 `MonitorTest`（7 项）+ 实例集成 `HealthMonitorTest`（cron 钩子触发路径、失败一封 To 对接人+Bcc、健康零邮件、每日事件在排期），实例级 `wp cron event run linker_commerce_health_check` 健康/失败两跑实证。
 - 2026-10-14：线上 `/contact/` 与 `/de/kontakt/` 仍渲染旧兜底（form=0）。根因是挂载替换只在迁移脚本里，而该脚本不在切换清单，部署后的页面内容没有短代码。渲染时替换补上这一步。兜底行在短代码未注册时留下，正文里已经写着短代码也一样。本页渲染的是 #68 重建的最小表单（`docs/acceptance/2026-10-11/68/README.md` §4 原文：线上像素级比对不适用本票两块新面——搜索框芯片与联系表单是新建/重建面，非复刻面）；该记录与业主 2026-10-10 像素门裁定（所有客户可见页遵循线上现有设计，营销页按页型对拍）对 `/contact/` 的适用关系曾随本票报业主（PR #159 openQuestions），**已收口**（清账决策 2，2026-10-15，`.scratch/closure-decisions-2026-10-15.md` 第 2 条）：**移植旧线上整卡设计**——`/contact/` 是客户可见页，#68 的「重建面」记录说的是实现管线，不豁免设计层；**PR #165 已执行**（旧线上 What can we help with? 整卡 + 副卡移植进 LC/WindPress 层，表单仍走 #68 管线，文案三轮对抗评审后保持 #68 定稿）。
 - 2026-10-11（#68）：联系表单（最小）落地并接 Mail 管线：短代码 `[linker_contact_form]`、admin-post 处理（nonce/蜜罐/限流/校验）、客户回执 + 团队信（Bcc 走 SettingsTab）；`tools/migrate/68-contact-form.py` 换挂载点；同轮修 Figures/FAQ meta box 的保存形态（浏览器实际提交的是嵌套数组，两个箱子此前对真实 POST 从不写入，证据与复现见 docs/acceptance/2026-10-11/68/README.md §3）。
+
+
+## 已保存方案的移除与撤销
+
+账户内自己的保存方案可经明确确认移除；原生details的取消操作不提交表单。动作校验当前身份、账号状态、专用nonce、私有方案类型和author；访客、他人、拒绝账号及无效nonce不得改动。复用WordPress原生回收站和Woo通知的Undo，将同一记录恢复为private，保留产品、设计和报告文件，不改当前草稿。回收站被关闭时保持原记录并明确失败，不能静默永久删除。原生永久清理发生后，仅回收该保存方案ID的报告目录，其他客户文件保持。
+
+Woo没有客户保存方案的原生对象，沿用现有私有CPT；只补所有者动作适配，状态迁移使用wp_trash_post/wp_untrash_post，组成和确认在LC数据片段、样式在WindPress，未增加JS构建或通用删除API。

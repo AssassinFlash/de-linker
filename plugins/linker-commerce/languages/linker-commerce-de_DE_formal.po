@@ -6481,3 +6481,43 @@ msgstr "Verwendungszweck"
 #~ msgid_plural "products"
 #~ msgstr[0] "Produkt"
 #~ msgstr[1] "Produkte"
+
+
+#: includes/Account/SavedSolutionRemoval.php includes/Presentation/AccountTemplates.php
+msgid "Keep solution"
+msgstr "Lösung behalten"
+
+
+#: includes/Account/SavedSolutionRemoval.php includes/Presentation/AccountTemplates.php
+msgid "Remove this saved solution?"
+msgstr "Diese gespeicherte Lösung entfernen?"
+
+
+#: includes/Account/SavedSolutionRemoval.php includes/Presentation/AccountTemplates.php
+msgid "Remove solution"
+msgstr "Lösung entfernen"
+
+
+#: includes/Account/SavedSolutionRemoval.php includes/Presentation/AccountTemplates.php
+msgid "Saved solution removed."
+msgstr "Gespeicherte Lösung entfernt."
+
+
+#: includes/Account/SavedSolutionRemoval.php includes/Presentation/AccountTemplates.php
+msgid "Saved solution restored."
+msgstr "Gespeicherte Lösung wiederhergestellt."
+
+
+#: includes/Account/SavedSolutionRemoval.php includes/Presentation/AccountTemplates.php
+msgid "Undo"
+msgstr "Rückgängig"
+
+
+#: includes/Account/SavedSolutionRemoval.php includes/Presentation/AccountTemplates.php
+msgid "This saved solution is not available."
+msgstr "Diese gespeicherte Lösung ist nicht verfügbar."
+
+
+#: includes/Account/SavedSolutionRemoval.php includes/Presentation/AccountTemplates.php
+msgid "The saved solution could not be updated. Please try again."
+msgstr "Die gespeicherte Lösung konnte nicht aktualisiert werden. Bitte versuchen Sie es erneut."

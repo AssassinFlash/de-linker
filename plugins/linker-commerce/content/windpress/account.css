@@ -293,6 +293,18 @@ body.woocommerce-account.logged-in .linker-account #container-content-account {
 .linker-account .linker-account-btn.is-primary.is-loading::after { border-color: rgba(255, 255, 255, 0.35); border-top-color: #fff; }
 .linker-account .linker-account-btn:focus-visible { outline: 2px solid var(--proto-teal-600); outline-offset: 3px; }
 
+/* Native disclosure keeps confirmation and cancellation usable without JS. */
+.linker-account .linker-account-removal { min-width: 0; }
+.linker-account .linker-account-removal summary::-webkit-details-marker { display: none; }
+.linker-account .linker-account-removal .when-open { display: none; }
+.linker-account .linker-account-removal[open] .when-open { display: inline; }
+.linker-account .linker-account-removal[open] .when-closed { display: none; }
+.linker-account .linker-account-removal-confirm { margin-top: var(--proto-space-3); padding: var(--proto-space-4); border-radius: var(--acct-r-sm); background: var(--proto-neutral-50); }
+.linker-account .linker-account-removal-confirm p { margin: 0 0 var(--proto-space-4); color: var(--proto-ink-deep); }
+body.woocommerce-account .linker-account-undo { display: inline-flex; align-items: center; min-height: var(--proto-control-height); padding-inline: var(--proto-space-2); color: var(--proto-teal-800); text-decoration: underline; }
+body.woocommerce-account .linker-account-undo:is(:hover,:focus-visible) { background: var(--proto-teal-50); }
+body.woocommerce-account .linker-account-undo:focus-visible { outline: 2px solid var(--proto-teal-600); outline-offset: 2px; }
+
 /* ── Overview ──────────────────────────────────────────────────────────── */
 .linker-account .linker-account-dashboard { display: grid; gap: 20px; min-width: 0; align-content: start; }
 

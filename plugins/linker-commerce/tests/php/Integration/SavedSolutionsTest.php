@@ -11,6 +11,8 @@ namespace Linker\Commerce\Tests\Integration;
 
 use Linker\Commerce\Account\PrivateFiles;
 use Linker\Commerce\Account\SavedSolutions;
+use Linker\Commerce\Account\SavedSolutionRemoval;
+use Linker\Commerce\Registration\Approval;
 use Linker\Commerce\Products\Publication;
 use Linker\Commerce\Protection\Identity;
 use WP_REST_Request;
@@ -23,6 +25,65 @@ use WP_REST_Request;
  * @coversNothing
  */
 final class SavedSolutionsTest extends IntegrationTestCase {
+
+	/** Owner removal and Undo preserve private data and report; other actors cannot write it. */
+	public function test_removal_and_undo_preserve_private_data(): void {
+		$owner = $this->customer()->get_id();
+		$other = $this->customer()->get_id();
+		$files = new PrivateFiles( SavedSolutions::REPORTS_DIRECTORY );
+		$store = new SavedSolutions( $files, '' );
+		$bytes = "%PDF-1.4\nowned transport fixture\n%%EOF";
+		$id    = $store->save(
+			$owner,
+			'Removal fixture',
+			array(),
+			array(
+				'kind'  => 'residential',
+				'input' => array(),
+			),
+			$bytes
+		);
+		$keep  = $store->save( $other, 'Other owner fixture', array(), array(), $bytes );
+		$this->forget( $id );
+		$this->forget( $keep );
+		$path = $store->report_path( $id );
+		$kept = $store->report_path( $keep );
+		$this->assertFileExists( $path );
+		$before  = get_post_meta( $id );
+		$actions = new SavedSolutionRemoval();
+
+		$this->as_user( $other );
+		$this->assertInstanceOf( \WP_Error::class, $actions->remove( $id, wp_create_nonce( SavedSolutionRemoval::REMOVE . '_' . $id ) ) );
+		$this->as_user( 0 );
+		$this->assertInstanceOf( \WP_Error::class, $actions->remove( $id, wp_create_nonce( SavedSolutionRemoval::REMOVE . '_' . $id ) ) );
+		$this->as_user( $owner );
+		$this->assertInstanceOf( \WP_Error::class, $actions->remove( $id, 'invalid' ) );
+		update_user_meta( $owner, Approval::STATUS_META, Approval::REJECTED );
+		$this->assertInstanceOf( \WP_Error::class, $actions->remove( $id, wp_create_nonce( SavedSolutionRemoval::REMOVE . '_' . $id ) ) );
+		update_user_meta( $owner, Approval::STATUS_META, Approval::APPROVED );
+		$this->assertSame( 'private', get_post_status( $id ) );
+		$this->assertSame( $before, get_post_meta( $id ) );
+
+		$nonce = wp_create_nonce( SavedSolutionRemoval::REMOVE . '_' . $id );
+		$this->assertTrue( $actions->remove( $id, $nonce ) );
+		$this->assertTrue( $actions->remove( $id, $nonce ) );
+		$this->assertSame( 'trash', get_post_status( $id ) );
+		$this->assertSame( array(), $store->for_customer( $owner ) );
+		$this->assertSame( $bytes, file_get_contents( $path ) );
+		$this->as_user( $other );
+		$this->assertInstanceOf( \WP_Error::class, $actions->restore( $id, wp_create_nonce( SavedSolutionRemoval::UNDO . '_' . $id ) ) );
+		$this->as_user( $owner );
+		$this->assertTrue( $actions->restore( $id, wp_create_nonce( SavedSolutionRemoval::UNDO . '_' . $id ) ) );
+		$this->assertSame( 'private', get_post_status( $id ) );
+		foreach ( $before as $key => $value ) {
+			$this->assertSame( $value, get_post_meta( $id )[ $key ] );
+		}
+		$this->assertSame( $bytes, file_get_contents( $path ) );
+		wp_delete_post( $id, true );
+		$this->assertFileDoesNotExist( $path );
+		$this->assertFileExists( $kept );
+		$this->assertSame( 'private', get_post_status( $keep ) );
+	}
 	/** Native guest admission sees a browser cookie, as a real REST request does. */
 	protected function setUp(): void {
 		parent::setUp();
