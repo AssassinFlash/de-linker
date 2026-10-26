@@ -63,6 +63,7 @@
 
   `data-compare-article` 的值是商品 ID；标签文字归卡模板（线上是 `+`，德语 `Vergleichen`）。脚本只写状态，不写样式也不写文字：选中即 `data-compare-selected="true"` 与 `aria-pressed="true"`，选满 4 个后未选中的控件 `disabled` 且带 `data-compare-limit="reached"`。选中态的样式由卡模板的类 + WindPress 规则决定（选择器挂 `[data-compare-selected="true"]`）。
 - 浮动芯片：`[linker_compare_chip]`。它在目录页与产品页**已经**经 `wp_footer` 自行出现（与 Genie dock 同一路数，隐藏到标签页有选择为止），所以模板不改也生效；模板若要自己放，就用这个短代码，别抄标记。
+  - 手机与折叠导航宽度（小于 1280px）已有选择时，这个单一入口显示在导航下方的独立 52px 实底栏；页头同时预留该行，章节锚点和产品页吸顶导航使用合计 133px 的高度（81px 导航含边框，加 52px 比较栏）。依据是实际 390px 页面中原浮动胶囊遮住创建账户链接；只挪链接不能解除其他滚动位置的遮挡。空选择不留空栏，桌面保留原位置。仅由 WindPress 的 `storefront.css` 表达，不复制入口、不加滚动监听、不改变选择数据或产品权限。
 - 页面：`/compare-products/` 已由页面的 `lc_use_template_of_slug` 接好，卡模板不需要知道它。
 
 ## 6. 附带修复（本轮发现，本轮修）

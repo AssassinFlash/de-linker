@@ -1877,10 +1877,8 @@
 		border-radius: var(--proto-radius-lg);
 	}
 
-	/* The comparison chip and the assistant launcher clear the action bar. The
-	   chip's own class is the one ComparePage prints (`linker-compare-chip`);
-	   its Tailwind `bottom-24` would otherwise ride on the measured bar. */
-	body:has(#tv-storefront-pdp) #compare-chip.linker-compare-chip,
+	/* The assistant launcher clears the action bar. The comparison entry
+	   has its own mobile navigation row in storefront.css. */
 	body:has(#tv-storefront-pdp) .linker-genie {
 		bottom: calc(var(--pdp-action-height, 64px) + 28px);
 	}

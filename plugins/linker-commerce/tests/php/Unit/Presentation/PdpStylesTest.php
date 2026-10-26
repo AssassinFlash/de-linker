@@ -148,15 +148,11 @@ final class PdpStylesTest extends TestCase {
 	}
 
 	/**
-	 * The comparison chip clears the phone action bar by the class the markup
-	 * really carries (`linker-compare-chip`, ComparePage::chip()); the former
-	 * `.sf-compare-chip` selector matched nothing at all.
+	 * The former `.sf-compare-chip` selector matched no rendered element.
+	 * Layout acceptance belongs to the rendered WindPress result, not to an
+	 * assertion that preserves a particular floating position.
 	 */
-	public function test_the_compare_chip_selector_matches_the_markup(): void {
-		$this->assertStringContainsString(
-			'body:has(#tv-storefront-pdp) #compare-chip.linker-compare-chip',
-			$this->rules( self::PDP_CSS )
-		);
+	public function test_the_compare_chip_has_no_inert_legacy_selector(): void {
 		$this->assertDoesNotMatchRegularExpression( '/\.sf-compare-chip/', $this->rules( self::PDP_CSS ) );
 		$this->assertDoesNotMatchRegularExpression( '/\.sf-compare-chip/', $this->rules( self::STOREFRONT_CSS ) );
 	}

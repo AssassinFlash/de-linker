@@ -5,8 +5,8 @@
  * Access pages load this volume and match none of the surface roots
  * below, so these custom properties are what they inherit.
  *
- * Header chrome lives in chrome.css (its own volume). Nothing here
- * restyles #lc-header or #tv-header-v2.
+ * Header chrome lives in chrome.css (its own volume). The mobile comparison
+ * row below only reserves its own space after #lc-header.
  */
 
 :root {
@@ -883,10 +883,45 @@ body.tv-product-dialog-open { overflow: hidden; }
   overflow: auto;
   padding: 0 1rem calc(1.25rem + env(safe-area-inset-bottom));
 }
-/* The comparison chip styles itself with the classes ComparePage prints
-   (`linker-compare-chip` plus its Tailwind utilities); the former
-   `#compare-chip.sf-compare-chip` rules here matched markup that no code
-   produces, so they never reached the chip. */
+/* A floating selection chip covers card actions on a phone. Give it a
+   separate navigation row instead. chrome.css owns the 80px mobile navigation plus its 1px border;
+   the 52px row includes a touch target above the site's 44px minimum.
+   The effective header height also keeps product section links below it.
+   Desktop retains the existing floating chip. */
+@media (max-width: 1279px) {
+  body:has(#compare-chip:not([hidden])) { --lk-header-h: 133px; }
+  body:has(#compare-chip:not([hidden])) header#lc-header { margin-bottom: 52px; }
+  body #compare-chip {
+    top: 81px;
+    right: 0;
+    bottom: auto;
+    left: 0;
+    z-index: 999;
+    box-sizing: border-box;
+    justify-content: center;
+    min-height: 52px;
+    padding: 4px 16px;
+    border-bottom: 1px solid var(--shop-line);
+    border-radius: 0;
+    background: white;
+    color: var(--shop-teal);
+    box-shadow: none;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  body #compare-chip:hover { background: var(--shop-paper); }
+  body #compare-chip:focus-visible { outline: 2px solid var(--shop-teal); outline-offset: -4px; }
+  body #compare-chip [data-compare-count] {
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--shop-teal);
+    color: white;
+  }
+  body.admin-bar #compare-chip { top: 113px; }
+}
+@media (max-width: 782px) {
+  body.admin-bar #compare-chip { top: 127px; }
+}
 .sf-compare {
   font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   color: var(--sf-fg);
