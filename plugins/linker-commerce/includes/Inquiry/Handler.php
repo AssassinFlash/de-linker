@@ -64,7 +64,8 @@ final class Handler {
 				'draft'   => $draft,
 			);
 			$sender  = new Sender();
-			return Business::run( 'inquiry', $post, $payload, static fn () => $sender->request( $details, $post ), ! Business::enabled() || hash_equals( WC()->cart->get_cart_hash(), $draft ), static fn () => $sender->preflight( $details ) );
+			// Conversation summaries belong to the separately reviewed Genie confirmation.
+			return Business::run( 'inquiry', $post, $payload, static fn () => $sender->request( $details, $post, false ), ! Business::enabled() || hash_equals( WC()->cart->get_cart_hash(), $draft ), static fn () => $sender->preflight( $details ) );
 		} finally {
 			$locale->back();
 		}

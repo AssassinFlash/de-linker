@@ -111,6 +111,11 @@ export async function restoreInquiry( config?: Config ): Promise< void > {
 	}
 	const initialValue = field.value;
 	const initialDefault = field.defaultValue;
+	const retainsSubmission = () =>
+		field.form?.querySelector< HTMLInputElement >(
+			'input[name="linker_inquiry_retained"]'
+		)?.value === '1';
+	const retained = retainsSubmission();
 	const path = window.location.pathname;
 	let edited = false;
 	const onEdit = () => {
@@ -147,7 +152,8 @@ export async function restoreInquiry( config?: Config ): Promise< void > {
 			document.querySelector( '#inquiry-message' ) !== field ||
 			edited ||
 			field.value !== initialValue ||
-			field.defaultValue !== initialDefault
+			field.defaultValue !== initialDefault ||
+			retainsSubmission() !== retained
 		) {
 			return;
 		}
@@ -160,6 +166,9 @@ export async function restoreInquiry( config?: Config ): Promise< void > {
 		storage.removeItem( key );
 		if (
 			storage.getItem( key ) !== null ||
+			retained ||
+			initialValue !== '' ||
+			initialDefault !== '' ||
 			saved.path !== path ||
 			saved.expires <= Date.now() ||
 			saved.expires > Date.now() + LIFETIME
