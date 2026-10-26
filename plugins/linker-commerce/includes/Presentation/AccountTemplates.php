@@ -72,6 +72,13 @@ final class AccountTemplates {
 	private ?array $overview = null;
 
 	/**
+	 * The current project list replaces the historical empty-state prompt.
+	 *
+	 * @var bool
+	 */
+	private bool $current_projects_shown = false;
+
+	/**
 	 * The documents page, built once: the dashboard reads the same list.
 	 *
 	 * @var \Linker\Commerce\Account\Documents|null
@@ -175,8 +182,10 @@ final class AccountTemplates {
 			$value = (string) get_permalink( (int) wc_get_page_id( 'shop' ) );
 		} elseif ( 'configurator-url' === $key ) {
 			$value = $this->translated_page_url( 'solution-configurator' );
-			if ( isset( $this->row['id'] ) && (int) $this->row['id'] > 0 ) {
-				$value = add_query_arg( 'saved_solution', (int) $this->row['id'], $value );
+			if ( isset( $this->row['project-id'] ) ) {
+				$value = add_query_arg( array( 'project' => $this->row['project-id'] ), $value ) . '#lp-overview';
+			} elseif ( isset( $this->row['id'] ) && (int) $this->row['id'] > 0 ) {
+				$value = add_query_arg( array( 'saved_solution' => (int) $this->row['id'] ), $value );
 			}
 		} elseif ( in_array( $key, array( 'all-current', 'open-current' ), true ) ) {
 			$value = ( 'open-current' === $key ? $this->open_only() : '' === $this->selected_status() ) ? 'page' : 'false';
@@ -478,6 +487,8 @@ final class AccountTemplates {
 			'empty'           => __( 'No inquiries yet.', 'linker-commerce' ),
 			'browse'          => __( 'Browse products', 'linker-commerce' ),
 			'configurator'    => __( 'Open the Solution Configurator', 'linker-commerce' ),
+			'projects'        => __( 'Projects', 'linker-commerce' ),
+			'projects-error'  => __( 'Saved projects could not be loaded.', 'linker-commerce' ),
 			'empty-documents' => __( 'Your Proforma invoices and the design reports of your saved solutions will appear here.', 'linker-commerce' ),
 			'empty-solutions' => __( 'Solutions you save in the Solution Configurator appear here, with their design report.', 'linker-commerce' ),
 			'recent'          => __( 'Recent inquiries', 'linker-commerce' ),
@@ -499,6 +510,33 @@ final class AccountTemplates {
 		$type = (string) ( $atts['type'] ?? '' );
 		$html = '';
 		switch ( $type ) {
+			case 'planning-projects':
+				/**
+				 * Read summaries from the workbench's native current-account adapter.
+				 *
+				 * @since 0.2.0
+				 * @param mixed $projects Owned summaries or a private error; null without the adapter.
+				 */
+				$projects = apply_filters( 'linker_commerce_planning_projects', null );
+				if ( null === $projects ) {
+					return '';
+				}
+				if ( is_wp_error( $projects ) || ! is_array( $projects ) ) {
+					$this->current_projects_shown = true;
+					return $this->fragment( 'project-error' );
+				}
+				foreach ( $projects as $project ) {
+					$html .= $this->fragment(
+						'project-row',
+						array(
+							'project-id' => $project['id'],
+							'title'      => $project['title'],
+							'date'       => wp_date( LocaleFormat::date_format(), (int) $project['updated_at'] ),
+						)
+					);
+				}
+				$this->current_projects_shown = '' !== $html;
+				return '' === $html ? '' : $this->fragment( 'projects', array( 'rows' => $html ) );
 			case 'dashboard':
 				return $this->dashboard();
 			case 'inquiries':
@@ -603,7 +641,7 @@ final class AccountTemplates {
 						);
 					}
 				}
-				return '' === $html ? $this->fragment( 'empty-solutions' ) : $html;
+				return '' === $html && ! $this->current_projects_shown ? $this->fragment( 'empty-solutions' ) : $html;
 			case 'product-name':
 				return '' !== ( $this->row['url'] ?? '' ) ? $this->fragment( 'action', array_merge( $this->row, array( 'kind' => 'product' ) ) ) : $this->field( array( 'key' => 'name' ) );
 			case 'solution-action':

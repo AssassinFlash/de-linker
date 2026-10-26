@@ -55,6 +55,7 @@ $planner_gateway->lifecycle();
 add_action( 'rest_api_init', array( $planner_gateway, 'register' ) );
 ( new \Linker\Tools\Planner\Application( __FILE__ ) )->register();
 ( new \Linker\Tools\Planner\ReportAccess() )->register();
+( new \Linker\Tools\Planner\AccountProjects() )->register();
 
 $conversations = new Conversations(); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- bootstrap scope, used four times below.
 $thread        = new Thread(); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- bootstrap scope, used four times below.

@@ -914,3 +914,23 @@ render the preview. The custom adapter is limited to reading the old account
 input shape because Woo's native post API does not map it into the planner's
 versioned project inputs. There is no new product registry, calculation
 service, database table or second project-creation journal.
+# Current projects in the account
+
+The account's existing saved-solutions endpoint reads current planning
+project summaries from the same engine workspace as the application, through
+the server-only `linker_commerce_planning_projects` filter. Tools derives
+the owner from the current native WordPress account and uses the existing
+private transport; the client supplies no owner or project-list identity.
+The preview shows up to ten most recently updated projects. Opening the
+Solution Configurator retains the complete paged index; this display policy
+does not limit saved-project capacity.
+
+LiveCanvas renders the account section using existing account styles. A
+project link preserves the same project ID and current page language and
+opens the overview. No project, calculation, selection, saved solution or
+report is created by this read. An unavailable/malformed index displays the
+existing reviewed failure wording and an application link, not an empty
+project list. Empty and historical account states retain their existing
+behaviour; existing historical records and their input-restoration/PDF
+controls remain available. WooCommerce remains the only current product
+authority. All unchanged numerical, report and migration evidence is reused.

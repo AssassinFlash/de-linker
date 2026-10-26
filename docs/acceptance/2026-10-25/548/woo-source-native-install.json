@@ -1443,7 +1443,7 @@
       "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
     }
   },
-  "current_frontier": "legacy_saved_solution_migration_local",
+  "current_frontier": "account_project_navigation_local",
   "shared_dc_core": {
     "status": "implemented_and_reviewed_core_not_connected_to_native_commands",
     "model": "constant_window_shared_dc_bus_v1",
@@ -4777,6 +4777,64 @@
       "remaining old entry/write-channel and account/Genie project-consumer integration",
       "actual SKU operating and manufacturer joint/island/country coverage",
       "final migration/review-site/production release and readback"
+    ]
+  },
+  "account_project_navigation": {
+    "status": "local_acceptance_closed",
+    "baseline": "97cd53fbc34778f6db3b39d5bd81dfcdb3f33db3",
+    "contract": {
+      "authority": "existing planning workspace project index",
+      "filter": "linker_commerce_planning_projects",
+      "owner": "current native WP account; no browser owner input",
+      "preview_size": 10,
+      "complete_index": "existing localized Solution Configurator project index",
+      "storage_or_calculation_added": false,
+      "product_authority": "WooCommerce only"
+    },
+    "native": {
+      "actor": "user:wp:1:user:66",
+      "project_id": "64020c5e4c6c469aa7f584796027ad42",
+      "revision": 1,
+      "run_count": 0,
+      "annual_kwh": 4800,
+      "en_and_de_account_links": "same project ID; localized workbench; #lp-overview",
+      "interaction": "native accessibility click opened existing project; EN overview rendered with saved title and 4800 kWh",
+      "overflow": false,
+      "screenshots": [
+        "docs/acceptance/2026-10-24/548/runtime-provider-correction/account-projects-en-1440.png",
+        "docs/acceptance/2026-10-24/548/runtime-provider-correction/account-projects-en-390.png",
+        "docs/acceptance/2026-10-24/548/runtime-provider-correction/account-projects-de-1440.png",
+        "docs/acceptance/2026-10-24/548/runtime-provider-correction/account-projects-de-390.png"
+      ]
+    },
+    "verification": {
+      "scope": "changed account owner/read/render/entry seam only",
+      "unit": "AccountProjects owner/empty/malformed/guest representative flow; AccountTemplates existing cases retained, impacted native URL mocks updated",
+      "static": "changed-file WPCS and PHPStan passed",
+      "gettext": "two existing approved Tools messages reused in Commerce; native DE Projekte observed",
+      "spec_review": "PASS after closing blank/overlong title finding using existing title contract",
+      "standards_review": "PASS including title and LC date-placement delta",
+      "copy": "reused approved Projects / Saved projects could not be loaded. EN/DE; reviewed in context",
+      "reused": "all previous product source, physical calculation, report/PDF and saved-input migration acceptance"
+    },
+    "local_presentation": {
+      "templates_created": 0,
+      "templates_updated": 0,
+      "templates_unchanged": 18,
+      "new_css_or_compile": false,
+      "recovery": "existing single bounded present backup option"
+    },
+    "not_performed": [
+      "engine release or restart",
+      "new project fixture",
+      "calculation or report regeneration",
+      "production write",
+      "email or inquiry"
+    ],
+    "remaining": [
+      "legacy sizing/write channels and Genie project consumers",
+      "full engineering/country coverage already tracked by the same goal",
+      "final whole-candidate review and review-site/production release/readback"
     ]
   }
 }

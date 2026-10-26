@@ -1476,3 +1476,36 @@ goal. Exact readback and retention are in the existing installation ledger's
 `legacy_saved_solution_migration` section. Remaining old write/entry channels,
 account/Genie consumers, engineering/country coverage and final publication
 stay with this same complete goal.
+
+### Current account projects — local batch closed
+
+The existing account saved-solutions page now reads owned project summaries
+from the same workbench index. Native WordPress identity supplies the owner;
+the existing private transport returns a bounded ten-project preview and the
+application link retains the complete paged index. LC renders the section
+using existing account styles. No new project store, product authority,
+calculation or report path was introduced. Historical records and their
+accepted restoration/PDF controls remain available. Failed index reads are
+distinct from an empty list, with existing reviewed EN/DE wording.
+
+The native account link opened project64020c5e4c6c469aa7f584796027ad42 at its
+localized overview; EN rendered the saved title and4800kWh input. The owned
+project remains revision1 with zero runs. Four bounded account captures
+cover EN/DE and1440/390; no horizontal overflow was observed. A screenshot
+transport scaling issue was isolated from product behaviour and corrected
+using the established explicit-clip method. Native AX activation was used
+for the actual link; an emulated-coordinate click was not counted as proof.
+
+Changed-layer checks and final Spec/Standards deltas passed. The sole review
+finding, a blank project title producing an unnamed link, is closed using
+the existing nonempty/256-character title contract. The same representative
+flow covers the failure. Dates now sit below titles in LC markup, with no
+new CSS. Existing physical/source/PDF/migration acceptance is reused. Native
+present found18 unchanged templates and the existing fresh WindPress cache;
+no engine release/restart, extra instance, full backup, project fixture,
+production write or notification occurred. Exact readback and review status
+are in the existing ledger's `account_project_navigation` section.
+
+The account-project dependency can be handed off immediately. Remaining old
+write/sizing and Genie consumers, engineering/country coverage, review-site
+and production release/readback remain in the same active full goal.

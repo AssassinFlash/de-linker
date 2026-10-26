@@ -6881,3 +6881,11 @@ msgstr "Aktualisieren Sie den Lösungsentwurf, bevor Sie Ihre Anfrage senden."
 #: includes/Inquiry/Form.php
 msgid "Your browser could not save your entries. Stay on this page to avoid losing them."
 msgstr "Ihr Browser konnte Ihre Eingaben nicht speichern. Bleiben Sie auf dieser Seite, damit sie erhalten bleiben."
+
+#: includes/Presentation/AccountTemplates.php
+msgid "Projects"
+msgstr "Projekte"
+
+#: includes/Presentation/AccountTemplates.php
+msgid "Saved projects could not be loaded."
+msgstr "Gespeicherte Projekte konnten nicht geladen werden."
