@@ -3,6 +3,37 @@
 from __future__ import annotations
 
 TEXT = {
+    "plant_scope": (
+        "The report presents checks for each recorded system and its coordination group. Shared output, backup transfer and country-specific acceptance remain subject to the open checks.",
+        "Der Bericht enthält die Prüfergebnisse für jedes erfasste System und seine Koordinationsgruppe. Die gemeinsame Leistungsabgabe, die Umschaltung auf Notstrombetrieb und die Erfüllung länderspezifischer Anforderungen sind aufgrund der offenen Prüfpunkte noch nicht bestätigt.",
+    ),
+    "plant_group": ("Coordination group", "Koordinationsgruppe"),
+    "grid_connected": ("Grid-connected", "Netzparallelbetrieb"),
+    "backup": ("Backup", "Notstrombetrieb"),
+    "unit_must_match_plant_connection": (
+        "Each system must match the project grid phases and operating mode.",
+        "Jedes System muss die im Projekt geforderte Phasenanzahl und Betriebsart unterstützen.",
+    ),
+    "woo_parallel_count_requires_mode_scope": (
+        "The group size is compared with the limit in the product data. Applicability to the declared operating mode and communication setup remains unconfirmed.",
+        "Die Anzahl der Geräte in der Gruppe wird mit dem Grenzwert in den Produktdaten verglichen. Ob dieser Wert für die angegebene Betriebsart und Kommunikationsanbindung gilt, ist noch nicht bestätigt.",
+    ),
+    "mode_model_firmware_and_battery_association_require_scoped_evidence": (
+        "Joint operation of this group remains unconfirmed for its operating mode, model combination, firmware versions and battery configuration.",
+        "Der gemeinsame Betrieb dieser Gruppe ist hinsichtlich Betriebsart, Modellkombination, Firmwareversionen und Batteriekonfiguration noch nicht bestätigt.",
+    ),
+    "one_shared_controller_per_declared_group": (
+        "The plan specifies one shared controller for the group. Its model and quantity must match the documented manufacturer requirements.",
+        "Für die Gruppe ist ein gemeinsamer Controller vorgesehen. Modell und Stückzahl müssen den dokumentierten Herstellervorgaben entsprechen.",
+    ),
+    "declared_unit_demand_allocation_not_available_plant_output": (
+        "These are declared project requirements allocated to individual systems. Available energy and power at the shared connection remain unconfirmed.",
+        "Dies sind die den einzelnen Systemen zugewiesenen Projektanforderungen. Die verfügbare Energie und Leistung am gemeinsamen Anschlusspunkt sind noch nicht bestätigt.",
+    ),
+    "joint_delivery_requires_allocation_and_connection_assessment": (
+        "Joint output requires assessment of the individual systems, their allocated requirements and the shared connection.",
+        "Die gemeinsame Leistungsabgabe erfordert eine Prüfung der einzelnen Systeme mit ihren zugewiesenen Anforderungen sowie des gemeinsamen Anschlusspunkts.",
+    ),
     "pv_fitting_method": ("Fitting method", "Anpassungsmethode"),
     "pv_refinement_method": ("Numerical refinement", "Numerische Verfeinerung"),
     "pv_translation_method": ("Temperature translation", "Temperaturumrechnung"),
@@ -503,6 +534,37 @@ TEXT = {
 }
 
 CHECKS = {
+    "plant_grid_phase": (
+        "Plant grid phases",
+        "Phasenanzahl am Netzanschluss der Gesamtanlage",
+    ),
+    "plant_operating_mode": ("Plant operating mode", "Betriebsart der Gesamtanlage"),
+    "plant_parallel_count": (
+        "Converters in the group",
+        "Anzahl der Umrichter in der Gruppe",
+    ),
+    "plant_joint_operation": ("Joint operation", "Gemeinsamer Betrieb"),
+    "plant_controller": ("Shared controller", "Gemeinsamer Controller"),
+    "plant_pv_allocation": (
+        "Allocated PV nameplate rating",
+        "Zugewiesene PV-Nennleistung",
+    ),
+    "plant_energy_allocation": (
+        "Allocated usable energy target",
+        "Zugewiesener Zielwert für die nutzbare Energie",
+    ),
+    "plant_discharge_allocation": (
+        "Allocated continuous discharge power target",
+        "Zugewiesener Zielwert für die Dauerentladeleistung",
+    ),
+    "plant_joint_energy": (
+        "Usable energy at the shared connection",
+        "Nutzbare Energie am gemeinsamen Anschlusspunkt",
+    ),
+    "plant_joint_discharge": (
+        "Continuous discharge power at the shared connection",
+        "Dauerentladeleistung am gemeinsamen Anschlusspunkt",
+    ),
     "pv_iv_model": ("Single-diode model fit", "Anpassung des Eindiodenmodells"),
     "pv_model_applicability": (
         "Model applicability to this module",

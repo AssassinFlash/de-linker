@@ -286,6 +286,41 @@ lineage and exact selection. Changed demand instead requires a new assessment
 and is not relabelled as the old candidate. This binding is available for the
 remaining report, BOM and commerce consumers.
 
+### Plant-owned equipment and AC coordination groups
+
+`equipment_plant` records named, distinct converter/battery units, their full
+current Woo selections, whole-project requirements and explicit AC coordination
+groups. A unit belongs to at most one group. A shared controller is selected
+once per group with its own current Woo revision; it cannot also be counted as
+a unit's device. Each unit owns its battery assembly. This model does not allow
+a battery DC bank to be silently shared across converters. Distinct groups may
+use distinct physical controllers of the same Woo model.
+
+The existing `runs/equipment` journal and worker qualify every unit against one
+frozen Woo pool and evaluate the declared relationships. Reads and report
+selection keep the exact whole-plant inputs. Duplicate physical identities,
+inconsistent revisions, an obsolete single-converter selection/candidate/wiring
+result alongside a plant, and changed controller evidence are rejected.
+Single-converter automatic search cannot overwrite a plant.
+
+Unit demand allocations are checked against the whole-project demand, with
+PV nameplate allocations kept distinct from continuous AC demand. These are
+declared project allocations; their sum does not establish available plant
+output. Current Woo parallel count bounds can expose violations, while missing
+mode, model-mixing, network, firmware or battery-association scope stays
+unresolved. A controller match alone never grants shared backup or DC coupling.
+Source-backed scoped declarations and the joint port/dispatch model remain
+required for full multi-device qualification.
+
+The provisional material projection sums independently selected unit hardware
+and counts each group controller once. It preserves unit/group allocations,
+unknown quantities and current product/document proof. A report accepts a
+plant assessment only when it matches the saved plant; unrelated subsequent
+project edits do not change frozen results. Country and joint-operation
+obligations remain visible. This backend path is part of the active plant
+implementation; the plant editor, scoped Woo maintenance, automatic plant
+search and joint energy dispatch are not established by this increment.
+
 ### Frozen planning report and private PDF
 
 `runs/report` uses the existing durable command journal, executor registry and

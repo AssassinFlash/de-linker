@@ -233,6 +233,13 @@ class ProductSources:
     def check_project(self, inputs: Object, previous: Object | None = None) -> None:
         """Retain unchanged history; new/edited product facts must come from Woo."""
         before = previous or {}
+        if "equipment_plant" in inputs and inputs.get("equipment_plant") != before.get(
+            "equipment_plant"
+        ):
+            from .equipment_plant import EquipmentPlant
+            from .plant_assessment import plant_products
+
+            plant_products(EquipmentPlant.from_inputs(inputs), self.equipment_basis())
         self.check_installation(inputs, before)
         changed = inputs.get("geometry") != before.get("geometry")
         pv_changed = inputs.get("pv_generation") != before.get("pv_generation")

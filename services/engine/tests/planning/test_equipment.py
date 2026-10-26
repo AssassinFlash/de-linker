@@ -57,7 +57,7 @@ from linker_engine.publication import Publication, PublicationUnavailable
 
 from .test_energy_kernel import BATTERY, TOLERANCE, create_scenario
 from .test_energy_kernel import worker as energy_worker
-from .test_private_http import TOKEN, headers
+from .test_private_http import TOKEN, USER, headers
 
 
 @pytest.fixture
@@ -106,6 +106,310 @@ def inputs(feed: dict, count: int) -> Object:
             },
         }
     }
+
+
+def plant_inputs(feed: dict, *, coordinated: bool = False) -> Object:
+    unit = inputs(feed, 3)["equipment_selection"]
+    requirements = {
+        k: v for k, v in unit.items() if k in EquipmentRequirements.model_fields
+    }
+    requirements["pv_dc_kw"] = 20
+    controller = next(p for p in feed["products"] if p["id"] == 2409)
+    return {
+        "schema_version": 1,
+        "requirements": requirements,
+        "units": [
+            {"id": "a", "name": "A", "selection": copy.deepcopy(unit)},
+            {"id": "b", "name": "B", "selection": copy.deepcopy(unit)},
+        ],
+        "parallel_groups": [
+            {
+                "id": "ac",
+                "unit_ids": ["a", "b"],
+                "controller_product_id": 2409,
+                "controller_revision": controller["product_revision"],
+            }
+        ]
+        if coordinated
+        else [],
+    }
+
+
+def test_multi_converter_plant_keeps_unit_ownership_and_source_revisions(
+    feed: dict,
+) -> None:
+    from pydantic import ValidationError
+
+    from linker_engine.planning.equipment_plant import EquipmentPlant
+    from linker_engine.planning.plant_assessment import plant_products
+
+    plant = plant_inputs(feed)
+    unit = plant["units"][0]["selection"]
+    parsed = EquipmentPlant.from_inputs({"equipment_plant": plant})
+    assert len(parsed.units) == 2
+    with pytest.raises(InvalidInput, match="single-converter"):
+        EquipmentPlant.from_inputs(
+            {"equipment_plant": plant, "equipment_selection": unit}
+        )
+    duplicate = copy.deepcopy(plant)
+    duplicate["units"][1]["id"] = "a"
+    with pytest.raises(ValidationError, match="unique"):
+        EquipmentPlant.model_validate(duplicate)
+    crossed = copy.deepcopy(plant)
+    crossed["parallel_groups"] = [
+        {
+            "id": "g",
+            "unit_ids": ["a", "b"],
+            "controller_product_id": 2092,
+            "controller_revision": unit["product_revisions"]["2092"],
+        }
+    ]
+    with pytest.raises(ValidationError, match="shared controller"):
+        EquipmentPlant.model_validate(crossed)
+    changed = copy.deepcopy(plant)
+    for u in changed["units"]:
+        u["selection"]["product_revisions"]["4107"] = "0" * 64
+    with pytest.raises(ProductEvidenceChanged):
+        plant_products(EquipmentPlant.read(changed), {"products": feed["products"]})
+
+
+def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
+    feed: dict,
+    engine: Engine,
+    workspace: Workspace,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from linker_engine.planning.plant_assessment import assess_plant
+    from linker_engine.planning.project_materials import project_materials
+
+    feed.update(figure_projection_version=2, compatibility_origin="woocommerce")
+    shared = SimpleNamespace(
+        engine=replace(engine, products=Products.from_feed(feed)),
+        publication=Publication(feed),
+        version="plant-fixture",
+    )
+
+    def current(self):
+        manifest = publication_manifest(self.feed)
+        for row in manifest["products"]:
+            row["ready"]["engineering"] = True
+        return manifest
+
+    monkeypatch.setattr(Publication, "read", current)
+    sources = ProductSources(lambda: shared)
+    controller = next(p for p in feed["products"] if p["id"] == 2409)
+    plant = plant_inputs(feed, coordinated=True)
+    equipment = EquipmentService(
+        workspace, EquipmentKernel(workspace, sources), max_attempts=1
+    )
+    energy = EnergyService(
+        workspace, EnergyKernel(workspace, TOLERANCE, max_intervals=10), max_attempts=1
+    )
+    registry = service_registry(energy, None, None, equipment)
+    executor = Worker(
+        Jobs(workspace),
+        "plant-fixture",
+        {"evaluate": registry},
+        lease_seconds=30,
+        heartbeat_seconds=1,
+        retry_seconds=1,
+        routing=registry.routing(8),
+    )
+    app = create_private_app(
+        workspace,
+        energy,
+        credential=lambda: TOKEN,
+        limits=HttpLimits(1_000_000, 10_000, 10, 32),
+        equipment=equipment,
+        product_provider=lambda: shared,
+    )
+    with TestClient(app) as client:
+        response = client.post(
+            "/projects/create",
+            headers=headers(),
+            json={
+                "schema_version": 1,
+                "title": "Synthetic two-converter plant",
+                "inputs": {"equipment_plant": plant},
+                "key": "plant-create",
+            },
+        )
+        assert response.status_code == 200, response.text
+        project = response.json()
+        response = client.post(
+            "/runs/equipment",
+            headers=headers(),
+            json={
+                "schema_version": 1,
+                "project_id": project["id"],
+                "expected_revision": 1,
+                "key": "plant-check",
+            },
+        )
+        assert response.status_code == 200, response.text
+        run_id = response.json()["id"]
+        assert executor.run_once()
+        run = client.post(
+            "/runs/read",
+            headers=headers(),
+            json={"schema_version": 1, "run_id": run_id},
+        ).json()
+        assert run["state"] == "succeeded", run["error"]
+    actor = USER
+    options = ReportOptions(
+        locale="en",
+        energy_run_id=None,
+        pv_run_id=None,
+        equipment_run_id=run_id,
+        logo=None,
+    )
+    source = report_sources(
+        workspace, sources, actor, workspace.get(actor, project["id"]), options
+    )
+    materials = project_materials(source)
+    quantities = {
+        row["product_id"]: row["quantity"]
+        for row in materials["lines"]
+        if row["handling"] == "woo_product"
+    }
+    assert quantities == {4107: 2, 2090: 6, 2092: 2, 2409: 1}
+    assert (
+        source["equipment_plant"] == plant
+        and source["equipment"]["overall_status"] == "unresolved"
+    )
+    frozen_source = copy.deepcopy(source)
+    report = build_report(source)
+    assert source == frozen_source
+    converter = next(s for s in report.sections if s.title == "A · Converter output")
+    assert any(row.value.endswith(" kW") for row in converter.rows)
+    accessory = next(s for s in report.sections if s.title == "A · Required accessory")
+    accessory_model = next(p["model"] for p in feed["products"] if p["id"] == 2092)
+    assert any(accessory_model in row.value for row in accessory.rows)
+    assert not any(
+        row.value == "2092" for section in report.sections for row in section.rows
+    )
+    conditions = next(s for s in report.sections if s.id == "conditions")
+    assert any(p.startswith("A · ") for p in conditions.paragraphs) or any(
+        row.label.startswith("A · ") for row in conditions.rows
+    )
+    assert any(
+        s.title.endswith("Joint operation") and s.paragraphs for s in report.sections
+    )
+    wrong = copy.deepcopy(plant)
+    wrong["requirements"]["pv_dc_kw"] = 21
+    assessment = assess_plant({"equipment_plant": wrong}, sources.equipment_basis())
+    assert any(
+        c["id"] == "plant:allocation:pv_dc_kw" and c["status"] == "violated"
+        for c in assessment["checks"]
+    )
+    # A deliberately synthetic source bound tests the group constraint. It
+    # does not assert that these SAJ devices actually use a GoodWe controller.
+    limited = copy.deepcopy(sources.equipment_basis())
+    limited["compatibility"]["requirements"].append(
+        {
+            "kind": "parallel_controller",
+            "inverter": "^H2-10K-T3$",
+            "inverter_product_id": 4107,
+            "included": False,
+            "phase": 3,
+            "max_units": 1,
+            "conditions": [],
+            "accessories": [
+                {
+                    "product_id": 2409,
+                    "model": "^SEC3000C$",
+                    "quantity": 1,
+                    "per": "system",
+                }
+            ],
+            "documents": [{"url": controller["documents"][0]["url"]}],
+        }
+    )
+    restricted = assess_plant({"equipment_plant": plant}, limited)
+    assert any(
+        c["id"].endswith(":parallel_count") and c["status"] == "violated"
+        for c in restricted["checks"]
+    )
+    workspace.revise(
+        actor, project["id"], 1, {"equipment_plant": wrong}, key="change-plant-demand"
+    )
+    with pytest.raises(InvalidInput):
+        report_sources(
+            workspace, sources, actor, workspace.get(actor, project["id"]), options
+        )
+
+
+def test_plant_packaging_only_covers_the_owning_units_included_items() -> None:
+    from linker_engine.planning.project_materials import (
+        material_name,
+        project_materials,
+    )
+
+    # Synthetic packaging identities exercise scope, not a manufacturer's
+    # real contents. B's unquantified included meter must survive A's package.
+    source = {
+        "project_id": "synthetic",
+        "revision": 1,
+        "input_sha256": "0" * 64,
+        "equipment": {
+            "selected_products": [
+                {
+                    "product_id": 1,
+                    "model": "A",
+                    "package_contents": {
+                        "status": "documented",
+                        "items": [
+                            {
+                                "id": "meter",
+                                "quantity": 1,
+                                "unit": "piece",
+                                "role": "meter",
+                                "label": {
+                                    "en": "Supplied meter",
+                                    "de": "Mitgelieferter Zähler",
+                                },
+                                "source": {},
+                            }
+                        ],
+                    },
+                },
+                {"product_id": 2, "model": "B"},
+            ],
+            "provisional_bill_of_materials": [
+                {
+                    "product_id": 1,
+                    "quantity": 1,
+                    "basis": "selected_converter",
+                    "unit_ids": ["a"],
+                },
+                {
+                    "product_id": 2,
+                    "quantity": 1,
+                    "basis": "selected_converter",
+                    "unit_ids": ["b"],
+                },
+            ],
+            "installation_requirements": [
+                {"kind": "meter", "included": True, "unit_id": "a", "unit_name": "A"},
+                {
+                    "kind": "meter",
+                    "included": True,
+                    "unit_id": "b",
+                    "unit_name": "B",
+                    "documents": [{"url": "https://fixture.invalid/b.pdf"}],
+                },
+            ],
+        },
+    }
+    material = project_materials(source)
+    unknown = [
+        r for r in material["lines"] if r.get("basis") == "manufacturer_included"
+    ]
+    assert len(unknown) == 1 and unknown[0]["quantity"] is None
+    assert material_name(unknown[0], "en").startswith("B · ")
+    assert unknown[0]["source"]["documents"] == [
+        {"url": "https://fixture.invalid/b.pdf"}
+    ]
 
 
 def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(

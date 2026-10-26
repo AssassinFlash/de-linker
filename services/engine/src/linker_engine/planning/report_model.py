@@ -126,10 +126,16 @@ def build_report(source: Object) -> Report:
                 id="equipment",
                 title=text("equipment", locale),
                 rows=[row("status", text(str(assessment["overall_status"]), locale))],
-                paragraphs=[text("country_open", locale)],
+                paragraphs=[text("country_open", locale)]
+                + (
+                    [text("plant_scope", locale)]
+                    if assessment.get("model") == "woo_multi_converter_plant_v1"
+                    else []
+                ),
             )
         )
         for index, check in enumerate(cast(list[dict[str, Any]], assessment["checks"])):
+            semantic_id = str(check.get("semantic_id", check["id"]))
             if isinstance(source.get("energy_equipment"), dict) and check["id"] in {
                 "scenario_operating_mode",
                 "scenario_parameter_basis",
@@ -143,16 +149,20 @@ def build_report(source: Object) -> Report:
                 "pv_dc_input": "kWp",
                 "usable_energy": "kWh",
                 "continuous_battery_ac_output": "kW",
-            }.get(check["id"].split(":")[0], check.get("unit", ""))
+            }.get(semantic_id.split(":")[0], check.get("unit", ""))
             rows = [row("status", text(check["status"], locale))]
             if isinstance(check["actual"], (int, float)) and not isinstance(
                 check["actual"], bool
             ):
-                if check["id"].split(":")[0] == "required_accessory":
+                if (
+                    semantic_id.split(":")[0] == "required_accessory"
+                    or check.get("value_kind") == "product_identity"
+                ):
                     product = selected.get(check["actual"], {})
                     name = " ".join(
                         str(product.get(key, "")) for key in ("brand", "model")
                     ).strip()
+                    name = check.get("actual_label") or name
                     if name:
                         rows.append(row("actual", name))
                 else:
@@ -160,7 +170,13 @@ def build_report(source: Object) -> Report:
             if isinstance(check["required"], (int, float)) and not isinstance(
                 check["required"], bool
             ):
-                rows.append(row("required", number(check["required"], locale, unit)))
+                if check.get("value_kind") == "product_identity":
+                    if check.get("required_label"):
+                        rows.append(row("required", check["required_label"]))
+                else:
+                    rows.append(
+                        row("required", number(check["required"], locale, unit))
+                    )
             elif isinstance(check["required"], list) and all(
                 isinstance(n, (int, float)) and not isinstance(n, bool)
                 for n in check["required"]
@@ -172,6 +188,10 @@ def build_report(source: Object) -> Report:
                         + (f" {unit}" if unit else ""),
                     )
                 )
+            if semantic_id == "plant_operating_mode":
+                for field in ("actual", "required"):
+                    if check.get(field) in ("grid_connected", "backup"):
+                        rows.append(row(field, text(check[field], locale)))
             paragraphs: list[str] = (
                 [text(check["reason"], locale)] if check["reason"] in TEXT else []
             )
@@ -201,11 +221,29 @@ def build_report(source: Object) -> Report:
                             href=url,
                         )
                     )
-            check_title = check_label(check["id"], locale)
-            suffix = check["id"].partition(":")[2]
+            for doc in check.get("documents", []):
+                if (
+                    isinstance(doc.get("url"), str)
+                    and (doc["url"], doc.get("page")) not in seen
+                ):
+                    rows.append(
+                        ReportRow(
+                            label=text("source", locale)
+                            + (
+                                f" · {text('page', locale)} {doc['page']}"
+                                if doc.get("page")
+                                else ""
+                            ),
+                            value=doc["url"],
+                            href=doc["url"],
+                        )
+                    )
+                    seen.add((doc["url"], doc.get("page")))
+            check_title = check_label(semantic_id, locale)
+            suffix = semantic_id.partition(":")[2]
             if suffix in string_numbers:
                 check_title = f"{text('pv_string', locale)} {string_numbers[suffix]} · {check_title}"
-            elif check["id"].split(":")[0] in {
+            elif semantic_id.split(":")[0] in {
                 "pv_stc_current",
                 "pv_stc_isc",
                 "pv_parallel_match",
@@ -216,6 +254,10 @@ def build_report(source: Object) -> Report:
                 "pv_cold_isc",
             }:
                 check_title = f"MPPT {suffix} · {check_title}"
+            if isinstance(check.get("unit_name"), str):
+                check_title = f"{check['unit_name']} · {check_title}"
+            elif isinstance(check.get("group_name"), str):
+                check_title = f"{text('plant_group', locale)} {check['group_name']} · {check_title}"
             sections.append(
                 ReportSection(
                     id=f"check-{index}",
@@ -224,25 +266,35 @@ def build_report(source: Object) -> Report:
                     paragraphs=paragraphs,
                 )
             )
-        requirements = cast(
-            list[dict[str, Any]], assessment.get("installation_requirements", [])
+        requirements = list(
+            cast(list[dict[str, Any]], assessment.get("installation_requirements", []))
         )
         pair = assessment.get("manufacturer_pair")
         if isinstance(pair, dict):
             requirements = [*requirements, pair]
+        for system in cast(list[dict[str, Any]], assessment.get("systems", [])):
+            unit_pair = system.get("assessment", {}).get("manufacturer_pair")
+            if isinstance(unit_pair, dict):
+                requirements.append({**unit_pair, "unit_name": system["name"]})
         conditions: list[str] = []
         documents: list[ReportRow] = []
         for requirement in requirements:
+            scope_name = requirement.get("unit_name", requirement.get("group_name"))
+            scope_prefix = str(scope_name) + " · " if scope_name else ""
             conditions.extend(
-                str(condition[locale])
+                scope_prefix + str(condition[locale])
                 for condition in requirement.get("conditions", [])
                 if condition.get(locale)
             )
             for doc in requirement.get("documents", []):
-                label = text("source", locale) + (
-                    f" · {text('page', locale)} {doc['page']}"
-                    if doc.get("page")
-                    else ""
+                label = (
+                    scope_prefix
+                    + text("source", locale)
+                    + (
+                        f" · {text('page', locale)} {doc['page']}"
+                        if doc.get("page")
+                        else ""
+                    )
                 )
                 documents.append(
                     ReportRow(label=label, value=doc["url"], href=doc["url"])

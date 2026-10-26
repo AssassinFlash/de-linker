@@ -136,9 +136,17 @@ def report_sources(
     elif options.equipment_run_id is not None:
         run = owned(options.equipment_run_id, EquipmentKernel.kind, ())
         previous = workspace.pinned_inputs(run.manifest)
-        if EquipmentSelection.read(
-            previous.get("equipment_selection")
-        ) != EquipmentSelection.read(project.inputs.get("equipment_selection")):
+        if "equipment_plant" in previous or "equipment_plant" in project.inputs:
+            from .equipment_plant import EquipmentPlant
+
+            matches = EquipmentPlant.from_inputs(
+                previous
+            ) == EquipmentPlant.from_inputs(project.inputs)
+        else:
+            matches = EquipmentSelection.read(
+                previous.get("equipment_selection")
+            ) == EquipmentSelection.read(project.inputs.get("equipment_selection"))
+        if not matches:
             raise InvalidInput(
                 "report equipment does not match the saved project selection"
             )
@@ -402,6 +410,11 @@ def report_sources(
         "title": project.title,
         "brief": None if comparison_only else project.inputs.get("brief"),
         "equipment_selection": project.inputs.get("equipment_selection"),
+        **(
+            {"equipment_plant": project.inputs["equipment_plant"]}
+            if "equipment_plant" in project.inputs
+            else {}
+        ),
         "candidate": candidate,
         "equipment": assessment,
         "installation": installation,

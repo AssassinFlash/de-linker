@@ -40,9 +40,15 @@ class EquipmentKernel:
         )
 
     def context(self, actor: Actor, project_id: str, inputs: Object) -> Context:
-        selection = EquipmentSelection.read(inputs.get("equipment_selection"))
         basis = self.products.equipment_basis()
-        selection_products(selection, basis)
+        if "equipment_plant" in inputs:
+            from .equipment_plant import EquipmentPlant
+            from .plant_assessment import plant_products
+
+            plant_products(EquipmentPlant.from_inputs(inputs), basis)
+        else:
+            selection = EquipmentSelection.read(inputs.get("equipment_selection"))
+            selection_products(selection, basis)
         if inputs.get("pv_string_plan") is not None:
             basis["pv_module_inputs"] = self.products.electrical_module_basis()
             # Validate object identities before queueing, then evaluate again
@@ -98,4 +104,8 @@ class EquipmentKernel:
         }
 
     def compute(self, inputs: Object, basis: Object, control: Control) -> Object:
+        if "equipment_plant" in inputs:
+            from .plant_assessment import assess_plant
+
+            return {"assessment": assess_plant(inputs, basis, control.checkpoint)}
         return {"assessment": assess_equipment(inputs, basis)}

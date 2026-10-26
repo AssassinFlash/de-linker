@@ -175,3 +175,58 @@ Aladdin 不只提供画布。固定源码中已经能追到：
 - 同一修订/结果的屏幕、PDF、CSV和草稿候选保持一致，安装需求不增加虚假销售 SKU；变路由只失效相关任务，原文件仍是历史原件。复用已通过的报告/权限/历史与未变年度能流证据，只补安装新增风险。
 
 此合同没有降低“统一工具、住宅/工商业、欧洲、完整 BOM/工程交接”的目标。它明确了当前缺少的事实和真实实现顺序；在安装体系、相应产品/现场资料与方法尚未取得时，完整安装资格及完整 BOM 均不可宣称已经交付。
+
+
+## 7. 首个商用协调多机拓扑的厂商事实（2026-10-26）
+
+**首段采用“共用 AC 并网点、每台 ET 自有 DC 电池组、一个 SEC3000C 协调”的两台同型号方案。** 当前 Woo 有可引用的 ET80/99.99/100（1946/1947/1948）、BAT C 61.4/112.6（1954/1955）与 SEC3000C（2409）；首段选择 1955，以免把 61.4 的总体兼容误升级为未证明的备电放行。两台是本次首段的明确项目选择，不是伪造的厂商最多台数。本节是原件证据与待维护合同，未改 Woo、未运行产品、未证明现场调试或完整工程放行。
+
+### 7.1 本轮实际读过的维护源与原件
+
+读取当前 `/Users/chesterjohn/de-linker-local/p548/engine/feed.json`，生成于 `2026-10-25T21:58:02+00:00`，`source_revision=ae4a0a7920abea212908786f8b08141e4432e6631af699d79c99429c27a1257f`、`compatibility_revision=a939cdb8036477d94f534dee354de58f93a48521c8de9bc6d8593cc045f8dc55`。以下均是该源已关联、实际存在于 p548 uploads 的厂商 PDF；**PDF 页码是从封面起的 1 基序号**，通常比页脚页码大 1。ET/SEC 接线图及关键表格已看渲染页，不能只按抽取文本拼接表格。
+
+| 原件代号 / 版本 | 当前托管原件与所用页 | 已绑定字节 SHA-256 |
+| --- | --- | --- |
+| ET-S / Solution Manual V1.3，2026-06-30 | [ET 50–100，PDF9–12 并网、PDF15–19 并离网、PDF33 线缆](https://de-linker.com/wp-content/uploads/2026/09/GW_ET-50-100kW_User-Manual-EN_V1.3.pdf#page=9) | `f66efb70d0d8927a92355980e0a0bd09359f580664976e082c4e510320e6d5a0` |
+| ET-U / User Manual V1.2，2026-07-02 | [ET 50–100，PDF19 电池归属、PDF30–32 并网、PDF36–38 并离网、PDF52 扩容、PDF168 电池接线、PDF178 cloud board](https://de-linker.com/wp-content/uploads/2026/10/GW_ET-100kW_User-Manual-EN_V1.2.pdf#page=19) | `0ef4b1ccdcc418e3ca8de31194b3d9e2969be39aa739ffa0ca1f038fcfac6615` |
+| SEC-U / User Manual V1.3，2026-07-31 | [SEC3000C，PDF18–19 内含设备、PDF40–43 ET 拓扑、PDF51–54 CT/LAN、PDF155 数量表](https://de-linker.com/wp-content/uploads/2026/09/GW_SEC3000C_User-Manual-EN.pdf#page=40) | `98bbe6f74e4d4d0e2437c3917e1fb2365c352ad01b5c46d26ad82876cb18850d` |
+| SEC-D / EMEA Datasheet V1.1，2026-05-15 | [SEC3000C，PDF1](https://de-linker.com/wp-content/uploads/2026/09/GW_SEC3000C_Datasheet_EMEA-EN.pdf#page=1) | `143fb6026284ffdb499ceb2efc5f46023a3bc84de4c215460fbe0d466b19ba54` |
+| BAT-D / BAT C EMEA Datasheet V1.1，2026-01-12 | [BAT C 61.4/112.6，PDF1–2](https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf#page=1) | `845e51ffb2801f48971c8b53941629dde1e8bc114b9b45dbc4f08c49c5ef815c` |
+
+原有 [FACT-INTAKE §5](../2026-10-23-capability-inputs/FACT-INTAKE.md#5-交叉电气边界et80--gw614-不等于-80kw-电池系统)已经正确区分 1946/1954 的电压/功率和模式边界，本节沿用，不重复构造一份规格库。当前六条 `parallel_controller` requirement 全属于 **ETR**，只声明 SEC≥V7.8.19；ET 三个商品只有 `parallel_operation` 文字。ETR 的版本条件不能挪给 ET。ETR 现有手册的表列也未在所读页给出通用多机数量，本轮没有把它替代成无证据的上限。
+
+### 7.2 模式、数量、关联与必要件的明确边界
+
+| 域 | 厂商原件实际支持的内容 | 对首段及后续搜索的约束 |
+| --- | --- | --- |
+| 纯并网多机 | ET-S PDF10–12 / ET-U PDF30–32 的系统表写最大 **15 台**；ARM≥**2.184**、DSP≥**2.212**；SEC 主程序≥**V7.5.32**。ET-S PDF7 明确此模式停电即停输出 | 保留 `mode=grid_connected`。15 是该系统表的数值；其中 hybrid 行的说明在分页处空白、15/固件印在 BT 行旁，不能隐藏这个表格归属疑点。首段两台同型号不引入型号混用规则；未获明示的异型号混用继续未知 |
+| 并网/备电切换多机 | ET-S PDF16 / ET-U PDF36 的共同说明格明确 ET+BT 最大 **6 台**；ARM≥**3.193**、DSP≥**3.306**。ET-S PDF18 / ET-U PDF38：SEC≥**7.18**、STS≥**3.304** | 必须独立于纯并网计数和固件。备电不是“几台功率相加”即可放行；须有实际 STS 及负荷/电池约束。上述版本按原文保留，不能擅自补位或将 7.18 与 7.5.32 当小数比较 |
+| STS 承载台数 | ET-S PDF18：GW125K-STS-G10 接 **1 台**；GW375K-STS-A-G10 接 **3 台**；GW750K-STS-A-G10 接 **6 台**。400V 额定功率依次125/375/750kW；375/750 在220V时为200/400kW | 当前 feed 的此类产品只有125K（2403），另有30K/60K。**375K/750K 均没有当前 Woo 身份**。因此125K不能给两台提供一个公共备电出口；首段采用纯并网，后续共享备电保留具名缺件，不能创建参考销售 SKU 顶替 |
+| SEC 接口数量 | SEC-D PDF1、SEC-U PDF155：**RS485 60 / LAN 10**；SEC-U PDF53：每条可用 RS485 总线最多 **20 台并网逆变器**，3条可用总线，另一条默认接内含GM330；15是交换机端口数 | LAN10、交换机15口、ET系统15台和RS48560不是同一物理/语义上限。不能用RS48560批准60台ET储能协调，也不能以15口推出15台LAN控制。两台首段处于这些已知数量内；超过10的LAN方案仍须消除文件/接法差异后才放行 |
+| 每台逆变器的电池关联 | ET-S PDF11/16、ET-U PDF31/36：**2对电池口**可接本台的同一电池系统或独立的两个电池系统；ET-U PDF19明确**每个电池只能接一台储能逆变器** | 采用 converter instance → battery bank instance 的明确归属；同一电池/并联柜组不得横跨两台逆变器。多台的AC并联不是共享DC母排的许可。首段可选每台一个自有柜组，实际双口接线仍须按原图/电流约束 |
+| BAT C 并联结构 | BAT-D PDF1、ET-S PDF12/17、ET-U PDF31/37/168：同一电池并联组最多 **4柜**，不同型号不能在一个组内混并。1954为6 PACK，1955为11 PACK，不是让客户逐块自由叠到任意电压 | 实例按“整柜/组/端口”建模。允许的4柜只作用于它所属的battery bank；不能把两台各4柜解释为同一跨逆变器8柜组。ET-U PDF52又规定安装后不支持柜内添PACK；加柜扩容为安装一年内、同型号同料号，需售后细则 |
+| 61.4 的模式与功率 | 签署的[兼容声明 PDF1](https://de-linker.com/wp-content/uploads/2026/09/BAT100KWHInverterCompatibilitystatement.pdf#page=1)列1946/47/48与61.4–112.6；[EMEA兼容表 PDF6](https://de-linker.com/wp-content/uploads/2026/09/GW_Battery-Compatibility-Overview_EMEA-EN_20260910.pdf#page=6)注明61.4不能达到ET80–100满功率。ET-S EN PDF12列61.4，备电PDF17及较后的ET-U对应表未列61.4；ET-S DE对应表亦未列61.4 | 总体 `released` 不等于61.4备电批准。保留1954的原有条件及文件差异；第一组用1955。缺列不能反写为厂商明确禁止61.4备电 |
+| 计量和CT | SEC-D PDF1、SEC-U PDF19：SEC内含 **GM330×1**；SEC-U PDF51–52：要使用该表需对应三相取样与CT，CT自购/向GoodWe采购，**nA/5A，200≤n≤5000**；方向/相序须正确，线径须能穿CT | 公共并网点由同一SEC的GM330计量，不能另加“每台一个必须另购GM330”。CT比率/孔径由现场数据决定，未知不能给任意型号或数量已齐结论。SEC内含表的 `included` 归属是SEC产品，与逆变器随附表分别记账 |
+| 通信与具体连接 | ET-S PDF9/15说明112.6类柜有内置Ezlink，逆变器通过smart stick接本地电池系统，再经LAN把并联信息交SEC；SEC-U PDF54要求储能逆变器经stick接入时使用 **WiFi/LAN Kit-20≥V2.5.49**。ET-S PDF33要求电池并柜/cloud-board线为 **CAT5E及以上屏蔽网线、RJ45、EIA/TIA568B**，客户准备 | 首段要声明每台转换器的stick/本地CAN和柜组间LAN路径，再接同一个SEC。不能将图上CAN和LAN混作同一边。Kit/线缆的随附量未由当前feed证明，先保留安装需求；未映射件不进入Woo销售行 |
+| 电池监控数量 | ET-U PDF178 的cloud-board通信写可连接 **60个电池系统**，并规定配对路由器及标准屏蔽网线；联网与否影响CELL/PACK信息可见性 | 这是监控通信层，不修改同一DC电池组最多4柜或一个电池只能接一台逆变器的规则。严禁把60当能量拓扑/并联柜上限 |
+
+上表各数字必须跟随适用模式/端口/网络/文件，不得在UI或engine只剩一个 `parallel_max`。三相事实已在现维护ET资料内，首段为 `phase=3`；不能从“3相”推断任意国家、接地系统或并网证书全部适用。设备/控制器/电池BMS的实际固件与调试状态尚未取得，属于项目需要核实的条件。
+
+### 7.3 最少的 Woo 维护增量及现有 schema 的实际能力
+
+以下是待实施合同 I，不是已写入的产品事实。身份、文件和原文条件仍只维护在 Woo；运行侧编译同一维护源，不另建外部事实包。
+
+1. **已能容纳的字段先复用。** `CompatibilityClaims.php:150–168` / `CompatibilityEditor.php:117–121` 已接受正整数 `phase` 和 `max_units`；`accessories` 能记录 `product_id=2409, quantity=1, per=system`，文件可绑定 `document_id/blob_sha256/document_revision/product_id/page`。现有 `Requirement` 投影也保留这两个整数。因此不需要发明另一套产品身份或纯数值并机上限字段。
+2. **一个未分域的 `max_units` 尚不够。** 当前 requirement 只有kind、included、phase、max_units、accessories、EN/DE文字条件和来源，没有可执行的 mode、通信方式、固件目标或电池归属条件；`requirements(inverter_model, kind, inverter_id)` 也不接 mode。并列写两条15/6却不扩条件匹配会被同时读出，不能据此选择正确限制。最小增量是在同一Woo claim中增加具类型的适用域（至少 `operating_mode`、`control_network`、实际部件/firmware条件）及明确条件状态，再分别维护grid与backup声明。不能从EN/DE句子解析“备电/15台”替代结构。
+3. **组合同样在 Woo 事实编译层。** ET三型号：phase3、两电池口、模式数量/固件、1 SEC/组；2409：内含GM330×1、LAN/RS485的各自上限、Kit固件；1954/1955：整柜、4柜/组、组内同型号、单逆变器归属。非商品安装件（CT/线缆/Kit未映射）是有规格/证据但缺当前销售身份的需求，不伪造accessory产品ID。BMS/CAN与LAN是明确端口类型，不能由品牌相同推断兼容。
+4. **首段可执行范围。** 先提供两台同型号1946（也可随后逐型号开放1947/1948）、各一自有1955柜组、一个2409、三相并网公共计量点的候选。每台的电池组和PV串独立归属，能流按每台设备实际功率/电池窗口计算后汇总到公共点；削峰调度需受整个并网点计量约束。控制器协调权、现场固件、CT和安装设计仍是具名条件。报告/BOM应数2台转换器、实际每台柜数、1个SEC及其内含GM330，不能把两台单机结果仅相加后称为完整多机拓扑。
+5. **后续尚未解决。** 网联ET表格分页说明的精确适用范围；ET15与SEC LAN10之间的可用网络/版本；异型号converter混用；61.4的备电；375K/750K的Woo维护身份；Kit/CT/线缆实际随附/采购身份；现场固件、额定条件与调试。它们各自限制对应范围，不阻止实现两台112.6独立电池组的纯并网建模，也不能被已有pair=`released`或计算成功吞掉。
+
+本节没有新增测试矩阵。后续只须围绕上述首段验证实例/归属、模式和数量守卫、SEC/内含表数量以及当前Woo来源读回；未变化的功率/电压原件与既有数值证据沿用。
+
+
+### 7.4 本轮新增的外部核实与边界
+
+新增外部动作只有 Apify。`apify/google-search-scraper` run `O52xHxCB3qBjTpfb2` / dataset `qWbiqBnihRggMzZB9` 于 `2026-10-26T01:58:26Z` 成功，重新定位两个厂商原域链接：[GoodWe Solution Manual](https://fr.goodwe.com/Ftp/EN/Downloads/User%20Manual/GW_Commercial-Smart-Inverter-Solutions_User-Manual-ET100kW-EN.pdf)、[GoodWe User Manual](https://en.goodwe.com/Ftp/EN/Downloads/User%20Manual/GW_ET-100kW_User-Manual-EN.pdf)。此步只证明官方定位仍可被检索；不把搜索摘要当新的参数依据。
+
+随后 `apify/website-content-crawler` run `oDbT3dcJYxMhHZFdI` / dataset `wBwUyjrHt8ggiPBlq` 取这两份原域PDF，日志显示目标响应流连续超时、0份正文取回。已停止相同重试；没有改用普通搜索或绕过Apify下载。Apify检索本身成功，失败落在GoodWe大PDF响应流，不能将它声称为完成最新版/字节同一性核验。本节的技术结论全部依赖7.1中已有Woo关联、本地已持有并核过字节和页码的原件；官方原域最新字节仍为未核实。五张仅供读图的临时PNG共1,225,875字节已删除，没有另建报告、源文件副本、测试脚本或运行实例。

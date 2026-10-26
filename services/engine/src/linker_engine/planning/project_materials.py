@@ -19,7 +19,7 @@ from .report_copy import text
 
 def project_materials(source: Object) -> Object:
     lines: list[Json] = []
-    covered_inclusions: set[str] = set()
+    covered_inclusions: set[tuple[str, str]] = set()
     equipment = source.get("equipment")
     if isinstance(equipment, dict):
         products = {
@@ -53,7 +53,9 @@ def project_materials(source: Object) -> Object:
                         "quantity_citation": sales.get("source")
                         if isinstance(sales, dict)
                         else None,
-                        "selection": source.get("equipment_selection"),
+                        "selection": source.get(
+                            "equipment_plant", source.get("equipment_selection")
+                        ),
                     },
                 }
             )
@@ -99,13 +101,28 @@ def project_materials(source: Object) -> Object:
                         }
                     )
                     if line.get("basis") == "selected_converter":
-                        covered_inclusions.add(cast(str, item["role"]))
+                        owners = line.get("unit_ids")
+                        scopes = (
+                            ["unit:" + str(uid) for uid in owners]
+                            if isinstance(owners, list)
+                            else ["legacy"]
+                        )
+                        covered_inclusions.update(
+                            (scope, cast(str, item["role"])) for scope in scopes
+                        )
         for index, requirement in enumerate(
             cast(list[Object], equipment.get("installation_requirements", []))
         ):
+            inclusion_scope = (
+                "unit:" + str(requirement["unit_id"])
+                if "unit_id" in requirement
+                else "group:" + str(requirement["group_id"])
+                if "group_id" in requirement
+                else "legacy"
+            )
             if (
                 requirement.get("included") is True
-                and requirement["kind"] not in covered_inclusions
+                and (inclusion_scope, requirement["kind"]) not in covered_inclusions
             ):
                 lines.append(
                     {
@@ -118,6 +135,11 @@ def project_materials(source: Object) -> Object:
                         "basis": "manufacturer_included",
                         "conditions": requirement.get("conditions", []),
                         "source": {"documents": requirement.get("documents", [])},
+                        **(
+                            {"unit_name": requirement["unit_name"]}
+                            if "unit_name" in requirement
+                            else {}
+                        ),
                     }
                 )
     pv = source.get("pv_components")
@@ -175,9 +197,12 @@ def project_materials(source: Object) -> Object:
 def material_name(line: Object, locale: str) -> str:
     if line["handling"] in {"manufacturer_included", "installation_requirement"}:
         if isinstance(line.get("label"), dict):
-            return cast(str, cast(Object, line["label"])[locale])
-        return text(f"material_{line['kind']}", locale)
-    return " ".join(str(line[key]) for key in ("brand", "model") if line.get(key))
+            name = cast(str, cast(Object, line["label"])[locale])
+        else:
+            name = text(f"material_{line['kind']}", locale)
+    else:
+        name = " ".join(str(line[key]) for key in ("brand", "model") if line.get(key))
+    return f"{line['unit_name']} · {name}" if line.get("unit_name") else name
 
 
 def material_reference(line: Object) -> str:
