@@ -43,7 +43,7 @@
     }
   },
   "production_changed": false,
-  "pending": "Canonical bilingual tool entry and retired roof links now use the unified workbench locally, including reviewed input carry/opt-out and language navigation. Remaining manufacturer/country qualification, complete installation BOM/exports, further site/Genie/commerce consequences, persisted-data migration, private-page SEO policy and review/production delivery stay in the active complete goal.",
+  "pending": "Source-bound physical route takeoff and its frozen EN/DE material report are closed locally. Installation domain design/material reconciliation, multi-device suitability, country qualification, remaining consumers/migration and review/production delivery remain within the active complete goal.",
   "native_wordpress_transport": {
     "route_registered": true,
     "provider": "woocommerce",
@@ -1443,7 +1443,7 @@
       "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
     }
   },
-  "current_frontier": "private_page_indexing",
+  "current_frontier": "installation_routes",
   "shared_dc_core": {
     "status": "implemented_and_reviewed_core_not_connected_to_native_commands",
     "model": "constant_window_shared_dc_bus_v1",
@@ -3246,6 +3246,134 @@
     "remaining_full_goal": [
       "Implement installation inputs, routing/takeoff, domain design and material reconciliation with current manufacturer/country evidence.",
       "Remaining consumer integration, persisted-data migration, coordinated review/production release and readback."
+    ]
+  },
+  "installation_routes": {
+    "status": "implemented_reviewed_native_local_exports; not production delivery",
+    "code_commit": "be4047f4",
+    "project": {
+      "id": "9a84917ca0094a5d8898f34e63a0154e",
+      "revision": 3,
+      "input_sha256": "c8ed5507aed46532e2b3002bfd7f7ed81955feec426673b9bee2ad68b52641a4"
+    },
+    "counts": {
+      "physical_instances": 2,
+      "canonical_woo_product_ids": [
+        4107
+      ],
+      "circuits": 1,
+      "paths": 1,
+      "physical_cables_or_conductors": 3
+    },
+    "numeric_readback": {
+      "horizontal_path_m": 10,
+      "three_dimensional_path_m": 14,
+      "explicit_extra_length_m": 2.5,
+      "each_physical_quantity_m": 16.5,
+      "core_count_multiplier": false,
+      "example_is_synthetic": true
+    },
+    "contract": {
+      "inputs": "optional installation schema v1; stable instances/ports/circuits/routes/cable_runs",
+      "preview": "owned POST installation/review; explicit bind_geometry; no job, product write or annual replay",
+      "authority": "Woo canonical IDs and revisions only; site connection positions are project inputs",
+      "materials": "project_materials_v3; installation_requirement only; not Woo sales rows",
+      "csv": "planning_materials_csv_v3 with v1/v2 readers retained",
+      "source_scope": "Only referenced Woo devices; source permissions checked separately from missing-source reasons and across every reported instance"
+    },
+    "reports": {
+      "en": {
+        "run_id": "3c6d278e4d8249f09bb5a6384027dcd7",
+        "revision": 3,
+        "result_sha256": "b726d691c83943ed1e98fd117a087acdd8f15bac3ac7e0a0a069cbe063f0ea3c",
+        "runtime_sha256": "8b9ee8405e8c0db88a46ce7f50cb0eb43cf99ee3816eb74f16ebf4ad60eca1b4",
+        "materials_sha256": "820bb5f18e2dd30e542d54d4a03a013e87c560053210ca672fd8f10abbd1af1c",
+        "pdf": {
+          "id": "4d545af79fc841f5a166b1fb4a941404",
+          "content_sha256": "040adc488c20edb15b9cf04763c122ddaa37eae6b237399d3cd58ecf6f6c9118"
+        },
+        "csv": {
+          "id": "a8ed5391dd44448c9da2c3f984105e62",
+          "content_sha256": "33abdf56cdd3f0757bea2cd6deb27f25c1101f549d00675e97864b77ceb097dc",
+          "purpose": "planning_materials_csv_v3"
+        },
+        "artifacts": {
+          "pdf": "docs/acceptance/2026-10-25/548/installation-report-en.pdf",
+          "csv": "docs/acceptance/2026-10-25/548/installation-report-en.csv"
+        }
+      },
+      "de": {
+        "run_id": "dc921e1a55a841c19ab00a90b8a58acd",
+        "revision": 3,
+        "result_sha256": "23bc3c9225c3c3fcb3b21d99a43411e870900894f3887b6a805c99d54f932347",
+        "runtime_sha256": "8b9ee8405e8c0db88a46ce7f50cb0eb43cf99ee3816eb74f16ebf4ad60eca1b4",
+        "materials_sha256": "820bb5f18e2dd30e542d54d4a03a013e87c560053210ca672fd8f10abbd1af1c",
+        "pdf": {
+          "id": "872c7bc8b991404fa6b365937ef8f2fa",
+          "content_sha256": "bba953623b965c86053e5c0d722668eaebb3c886b36d2101d2281bb96253ba92"
+        },
+        "csv": {
+          "id": "43add3e99bc741c3937a92adea743c4b",
+          "content_sha256": "281a8bb63ca8b4dc07cfc5d58c1d6dbe7e15ff96c04145b30a5a244b6b05e0bb",
+          "purpose": "planning_materials_csv_v3"
+        },
+        "artifacts": {
+          "pdf": "docs/acceptance/2026-10-25/548/installation-report-de.pdf",
+          "csv": "docs/acceptance/2026-10-25/548/installation-report-de.csv"
+        }
+      }
+    },
+    "visuals": [
+      "docs/acceptance/2026-10-25/548/installation-en-desktop.png",
+      "docs/acceptance/2026-10-25/548/installation-en-mobile.png",
+      "docs/acceptance/2026-10-25/548/installation-de-desktop.png",
+      "docs/acceptance/2026-10-25/548/installation-de-mobile.png"
+    ],
+    "corrections": [
+      "Missing-source and existing-source export restrictions are independent; all reported instance sources checked.",
+      "Rejected graph edits show an existing error and preserve the form; stable vertex IDs preserve staged values.",
+      "New installation hash retained during language switching.",
+      "Native 503 at 5120 ms identified missing installation/review in the existing 30-second source-operation transport policy; corrected without changing ordinary reads.",
+      "Read-only 3D hides drag-edit help; routes use the existing dark teal token.",
+      "Routing-only report uses its actual material scope and omits an empty saved-analysis heading.",
+      "Synthetic project note corrected to describe only the copied location and illustrative route inputs; no weather or module calculation is claimed."
+    ],
+    "reused_evidence": "Unchanged annual energy/PV calculations, historical exports, product/package-source studies, draft/inquiry and general site checks. No new site scan, annual replay, product edit or commerce submission.",
+    "necessary_checks": {
+      "physical_and_report_path": "PASS one analytic/unknown/source/owned/report flow with real SQLite and PDF/CSV exports",
+      "client": "PASS staged coordinate retention and used-field reader; existing report protocol extended for v3",
+      "php": "PASS changed gateway and scoped static/style checks; PHPStan default 128MB parser exhaustion diagnosed and command-local 512MB used, no global setting changed",
+      "reviews": {
+        "spec": "PASS final source plus small related increments only",
+        "standards": "PASS final source plus small related increments only",
+        "copy": "PASS new EN/DE UI and report wording, existing translated phrases retained"
+      },
+      "native": "Edited/applied/previewed/saved revision2 in real EN UI; EN/DE at 1440/390, no document overflow; final revision3 is synthetic-note correction. Current EN/DE report originals downloaded through native owned buttons; hashes match frozen assets and share one material model. New PDF content inspected, no clipped table cells or empty basis heading."
+    },
+    "runtime": {
+      "runtime_sha256": "8b9ee8405e8c0db88a46ce7f50cb0eb43cf99ee3816eb74f16ebf4ad60eca1b4",
+      "rollback_sha256": "c68d486fc56a3f51f78a3cd5146ed51fc4a20e653b926460c683109a0c28428c",
+      "storage_schema": 5,
+      "instance": "p548 reused; HTTP and worker paired",
+      "retained_executables": 2,
+      "environment_reused": true,
+      "obsolete_executables_removed": [
+        "6386028cb5d2f9bc14d2256f295cefa63297d58c2c51ff2e8cbfc4ed0b986cfb",
+        "6443f43ba88b88d9851fefc0e4823fa273b1dbc30c790d8cc5ef5326b3a0b9b9"
+      ]
+    },
+    "before_pdf": {
+      "run_id": "867f14ddc59645b3b5a6e7ad382c7ca0",
+      "image": "docs/acceptance/2026-10-25/548/installation-report-de-before.png",
+      "retention": "Original revision2 report remains in owned store; necessary unique visual failure retained."
+    },
+    "validation_closed": true,
+    "production_changed": false,
+    "mail_sent": false,
+    "remaining_full_goal": [
+      "Electrical cable specification, protection, earthing, mounting and connector allocation/reconciliation with Woo-maintained evidence.",
+      "Commercial multi-device system qualification; physical instances alone do not qualify joint operation.",
+      "Remaining country-specific scope, site/Genie/commerce consumers, persisted-data migration, review/production publication and readback."
     ]
   }
 }

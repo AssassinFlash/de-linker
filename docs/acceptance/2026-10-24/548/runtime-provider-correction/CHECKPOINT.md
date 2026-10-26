@@ -949,3 +949,47 @@ manually filled list is not engineering design; component lead cross-section,
 maximum fuse ratings and packaging connector counts cannot become unrelated
 site design choices. Full installation and the remaining full-goal consumers,
 migration/review/production gates remain active. No production or mail write.
+
+## Physical routes and frozen material demand — local increment closed
+
+Code `be4047f4` adds independent Woo-bound physical instances/ports, circuits,
+recorded ENU paths and one-row-per-physical-cable takeoff. The installation view
+uses the existing project history, source records, 2D/3D renderers and EN/DE site
+integration. No customer-maintained manufacturer fact source was introduced.
+Missing heights, sources, endpoint agreement, layout binding or allowance basis
+leave quantity unknown. Source export restrictions remain independent of missing
+source IDs and cover all displayed instances. Mixed report counts cannot exceed
+the selected equipment assessment.
+
+Native specimen `9a84917ca0094a5d8898f34e63a0154e` was edited, checked and saved
+through the EN UI. Its synthetic 10 m horizontal / 14 m three-dimensional path
+plus explicit 2.5 m allowance yields 16.5 m for each of three distinct physical
+rows, including one multicore cable without core multiplication. Revision 3
+corrects the specimen note to describe only this route example. Final EN/DE
+reports share materials `820bb5f18e2dd30e542d54d4a03a013e87c560053210ca672fd8f10abbd1af1c`;
+original browser PDF/CSV downloads match their owned frozen assets. New PDF
+content was visually inspected. The report-only path has no invented sales rows.
+
+Real integration exposed a missing source-operation timeout entry and a
+routing-only report's empty reference heading/scope text. Both were repaired;
+only affected request/report behavior was revisited. Unique before evidence and
+the original owned report remain. Spec, Standards and EN/DE copy review passed.
+Scoped physical/report, client and native gateway checks passed. PHPStan's
+128 MB parser exhaustion was diagnosed; a command-local 512 MB budget passed,
+without global configuration changes. Unchanged annual/PV, old exports and
+commerce/site evidence was reused. Validation of this closed boundary stops.
+
+HTTP/worker now use runtime
+`8b9ee8405e8c0db88a46ce7f50cb0eb43cf99ee3816eb74f16ebf4ad60eca1b4`, storage 5,
+with `c68d486fc56a3f51f78a3cd5146ed51fc4a20e653b926460c683109a0c28428c`
+as the single verified rollback executable. The same instance/environment was
+reused; obsolete executable carriers and this batch's temporary renders were
+removed. Exact records and artifacts are in `installation_routes` in the existing
+acceptance JSON. The active visual/commerce chat was told its stable integration
+has no dependency on this added optional input or the remainder of this goal.
+
+Full installation domain design/material reconciliation, commercial multi-device
+qualification, country scope, remaining consumers and persisted-data migration,
+review/production publication and readback remain within the complete active
+goal. Physical instance support alone does not qualify joint system operation.
+No production, Woo product, mail or inquiry write occurred in this increment.

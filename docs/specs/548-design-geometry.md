@@ -85,3 +85,51 @@ service-only PASS does not assert those views or the full B path exist.
     original receipts, ownership/no-orphan writes, server/browser pose parity,
     actual EN/DE × 1440/390 editing/save/reopen/undo and GPU fallback. Passing
     this contract alone does not close full design, calculation or delivery.
+
+## Physical installation routes
+
+`inputs.installation` is an optional strict schema-v1 project document. Its
+shared browser contract is `apps/planner/src/contracts/installation.schema.json`.
+Device instances have independent IDs even when they use the same canonical
+Woo product ID and revision. Null product identity denotes a site connection.
+Names and measured ports are project inputs; manufacturer ratings stay in Woo.
+Circuits bind two saved instance/port IDs, paths hold local ENU metre vertices,
+and every cable row identifies one physical cable or independently routed
+conductor. The project source records remain in `geometry.sources`; a roof and
+PV layout are optional. Missing sources can remain editable, with unconfirmed
+quantities.
+
+The owned, read-only `installation/review` RPC accepts `schema_version: 1`,
+`project_id`, `geometry`, `installation`, and explicit `bind_geometry`. It returns
+prepared inputs, the exact geometry hash, individual cable quantities and
+reasons. It creates no job or product record. The source-aware native transport
+uses the existing source-operation timeout. Current Woo revisions and scoped
+publication permissions are checked before returning device identities.
+
+For path vertices p0…pn with known heights, the measured-path length is
+`sum(sqrt(dEast² + dNorth² + dHeight²))`. Explicit extra length is added once per
+physical cable row and needs its own note; an explicit zero is permitted.
+Multicore cable length has no core-count multiplier. Shared path geometry is
+measured once, and distinct physical cable rows retain their own quantities.
+Unknown height, missing source, mismatched endpoints, stale geometry binding or
+missing extra-length basis keeps final quantity null. Existing-source export
+permissions are checked independently of missing IDs. Reports additionally
+check every displayed instance's source permission.
+
+An explicitly selected routing report may use saved installation inputs without
+an energy or equipment run. A mixed report rejects instance counts outside its
+selected equipment assessment. The new lines are `installation_requirement`
+items in `project_materials_v3`; they are not Woo sales items. Screen, PDF and
+`planning_materials_csv_v3` use one frozen material projection; existing v1/v2
+exports stay readable. Old report request identities remain unchanged when the
+installation option is false. Routing-only reports use their actual scope and
+omit empty analysis-reference sections.
+
+Plan and 3D views consume these same positions. Numeric properties remain the
+complete input path, and vertex insertion/removal preserves staged values.
+Source, instance, circuit and path edits use the existing project history/save
+boundary. The installation view survives EN/DE switching. This increment
+calculates path lengths; cable specification, protection, earthing, mounting,
+connector allocation, multi-device suitability and country qualification remain
+separate, unresolved parts of the complete delivery goal. Its native specimen
+and frozen exports are recorded in the existing 548 acceptance JSON.
