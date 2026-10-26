@@ -23,6 +23,7 @@ from .equipment_search_limits import EquipmentSearchLimits
 from .equipment_service import EquipmentService
 from .http_app import HttpLimits
 from .numerical_tolerance import Tolerance
+from .plant_energy_kernel import PlantEnergyKernel
 from .product_sources import ProductSources, worker_product_provider
 from .pv_parameters import PvGenerationLimits
 from .pv_preparation import PvPreparationService, PvReferenceKernel
@@ -72,11 +73,12 @@ class RuntimeConfig(Document):
         self, *, products: ProductSources | None = None
     ) -> tuple[Workspace, EnergyService]:
         workspace = Workspace(Path(self.directory))
+        source = products or ProductSources(worker_product_provider)
         kernel = EnergyKernel(
             workspace,
             Tolerance(self.absolute_kwh, self.absolute_kw, self.relative),
             max_intervals=self.max_intervals,
-            products=products or ProductSources(worker_product_provider),
+            products=source,
         )
         return workspace, EnergyService(
             workspace,
@@ -86,7 +88,13 @@ class RuntimeConfig(Document):
                 workspace,
                 Tolerance(self.absolute_kwh, self.absolute_kw, self.relative),
                 max_intervals=self.max_intervals,
-                products=products or ProductSources(worker_product_provider),
+                products=source,
+            ),
+            plant_kernel=PlantEnergyKernel(
+                workspace,
+                Tolerance(self.absolute_kwh, self.absolute_kw, self.relative),
+                max_intervals=self.max_intervals,
+                products=source,
             ),
         )
 

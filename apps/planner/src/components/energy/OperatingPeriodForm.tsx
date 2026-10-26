@@ -9,6 +9,7 @@ export function OperatingPeriodForm({
 	onChange,
 	remove,
 	report,
+	perUnitReserve = false,
 }: {
 	period: PeriodDraft;
 	index: number;
@@ -16,6 +17,7 @@ export function OperatingPeriodForm({
 	onChange: (next: PeriodDraft) => void;
 	remove: (() => void) | undefined;
 	report: (field: string, valid: boolean) => void;
+	perUnitReserve?: boolean;
 }) {
 	const field = "period-" + period.id;
 	function patch(
@@ -80,15 +82,17 @@ export function OperatingPeriodForm({
 						<option value="outage">{__("Grid outage", "linker-tools")}</option>
 					</select>
 				</label>
-				<ScenarioNumber
-					field={field + "-reserve"}
-					label={__("Reserved stored energy", "linker-tools")}
-					value={period.reserve_kwh}
-					unit="kWh"
-					locale={locale}
-					report={report}
-					onChange={(value) => patch({ reserve_kwh: value })}
-				/>
+				{!perUnitReserve && (
+					<ScenarioNumber
+						field={field + "-reserve"}
+						label={__("Reserved stored energy", "linker-tools")}
+						value={period.reserve_kwh}
+						unit="kWh"
+						locale={locale}
+						report={report}
+						onChange={(value) => patch({ reserve_kwh: value })}
+					/>
+				)}
 				<label className="lp-field">
 					<span>{__("PV available in this period", "linker-tools")}</span>
 					<select

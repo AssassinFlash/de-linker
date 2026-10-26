@@ -28,7 +28,7 @@ from .errors import InvalidInput, VersionUnavailable
 from .execution_identity import execution_key
 from .flow_document import flow_document
 from .frozen_profiles import frozen_profile
-from .frozen_run import bind_energy_assets, frozen_manifest
+from .frozen_run import bind_energy_assets, frozen_energy_execution
 from .numerical_tolerance import Tolerance
 from .product_sources import ProductSources
 from .profile_assets import profile_dependencies
@@ -125,41 +125,16 @@ class EnergyKernel:
 
     def __call__(self, lease: Lease, control: Control) -> Object:
         control.checkpoint()
-        manifest_hash = lease.request.get("manifest_sha256")
-        if not isinstance(manifest_hash, str):
-            raise VersionUnavailable("evaluation has no pinned manifest")
-        manifest = frozen_manifest(self.workspace, lease, manifest_hash)
-        context = manifest.get("context")
-        if (
-            not isinstance(context, dict)
-            or context.get("code_sha256") != self.runtime.sha256
-            or context.get("models") != self.models
-        ):
-            raise VersionUnavailable(
-                "this worker cannot execute the pinned runtime/models"
-            )
-        parameters = context.get("parameters")
-        expected_parameters = self.parameters()
-        if parameters != expected_parameters:
-            raise VersionUnavailable(
-                "this worker cannot execute the pinned numerical settings"
-            )
-        pinned = context.get("assets")
-        if not isinstance(pinned, dict) or any(
-            not isinstance(value, str) for value in pinned.values()
-        ):
-            raise VersionUnavailable("pinned dependency hashes required")
-
-        def dependency(name: str) -> str:
-            value = pinned.get(name)
-            if not isinstance(value, str):
-                raise VersionUnavailable(f"pinned dependency missing: {name}")
-            self.workspace.blobs.read(value)
-            return value
-
-        if dependency("runtime_bundle") != self.runtime.sha256:
-            raise VersionUnavailable("runtime bundle and code identity differ")
-        inputs = self.workspace.pinned_inputs(manifest)
+        execution = frozen_energy_execution(
+            self.workspace,
+            lease,
+            runtime_sha256=self.runtime.sha256,
+            models=self.models,
+            parameters=self.parameters(),
+        )
+        manifest_hash, manifest = execution.manifest_hash, execution.manifest
+        inputs, pinned = execution.inputs, execution.pinned
+        dependency = execution.dependency
         scenario = self.scenario(inputs)
         bind_energy_assets(self.workspace, manifest, scenario, inputs, pinned)
         equipment_basis = (
@@ -187,25 +162,7 @@ class EnergyKernel:
                 )
             if equipment_basis is not None:
                 self.products.confirm_basis(equipment_basis, require_reference=False)
-        return {
-            "schema": 1,
-            "kind": self.kind,
-            "project_id": manifest.get("project_id"),
-            "revision": manifest.get("revision"),
-            "input_sha256": manifest.get("input_sha256"),
-            "manifest_sha256": manifest_hash,
-            "runtime_sha256": self.runtime.sha256,
-            **physical,
-            "pinned_assets": pinned,
-            "equipment_release": {
-                "status": "not_assessed",
-                "reason": "explicit_scenario_replay_is_not_equipment_release",
-            },
-            "country_assessment": {
-                "status": "not_assessed",
-                "reason": "country_rules_are_a_separate_assessment",
-            },
-        }
+        return execution.result(self.kind, physical)
 
     def scenario(self, inputs: Object) -> EnergyInputs:
         scenario = EnergyInputs.from_project(inputs)

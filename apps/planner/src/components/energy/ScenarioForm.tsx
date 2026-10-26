@@ -1,11 +1,12 @@
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import { useCallback, useRef } from "react";
 import type { ScenarioDraft } from "../../domain/energyScenario.ts";
-import { BATTERY_FIELDS, emptyPeriod } from "../../domain/energyScenario.ts";
+import { BATTERY_FIELDS } from "../../domain/energyScenario.ts";
 import { __ } from "../../i18n.ts";
 import { ScenarioNumber } from "./ScenarioNumber.tsx";
 import { toPercent, fromPercent } from "../../domain/decimal.ts";
-import { OperatingPeriodForm } from "./OperatingPeriodForm.tsx";
+import { InitialInventoryForm } from "./InitialInventoryForm.tsx";
+import { OperatingPeriodsForm } from "./OperatingPeriodsForm.tsx";
 import { batteryPresentation } from "./batteryPresentation.ts";
 import { DcStorageForm } from "./DcStorageForm.tsx";
 import { emptyDcScenario } from "../../domain/dcEnergy.ts";
@@ -51,7 +52,6 @@ export function ScenarioForm({
 		},
 		[onValidity],
 	);
-	const inventory = value.initial_inventory;
 	const dc = value.coupling === "shared_dc";
 	return (
 		<fieldset className="lp-scenario-fields" disabled={disabled}>
@@ -180,142 +180,25 @@ export function ScenarioForm({
 					</p>
 				</details>
 			</section>
-			<section className="lp-scenario-block" hidden={section !== "initial"}>
-				<h3>{__("Initial stored energy", "linker-tools")}</h3>
-				<p className="lp-profile-help">
-					{__(
-						"Stored energy keeps its origin throughout the calculation. Energy from the grid or an unknown source is excluded from the solar-supplied total.",
-						"linker-tools",
-					)}
-				</p>
-				<div className="lp-geometry-fields">
-					{(["pv_kwh", "grid_kwh", "initial_unknown_kwh"] as const).map(
-						(field) => (
-							<ScenarioNumber
-								key={field}
-								field={"initial-" + field}
-								label={
-									field === "pv_kwh"
-										? __("From PV", "linker-tools")
-										: field === "grid_kwh"
-											? __("From the grid", "linker-tools")
-											: __("Origin unknown", "linker-tools")
-								}
-								value={inventory[field]}
-								unit="kWh"
-								locale={locale}
-								report={report}
-								onChange={(number) =>
-									onChange({
-										...value,
-										initial_inventory: { ...inventory, [field]: number },
-									})
-								}
-							/>
-						),
-					)}
-				</div>
-				<button
-					type="button"
-					className="lp-text-button"
-					onClick={() =>
-						onChange({
-							...value,
-							initial_inventory: {
-								pv_kwh: 0,
-								grid_kwh: 0,
-								initial_unknown_kwh: 0,
-								source_note: __(
-									"Empty stored-energy inventory selected for the start of this scenario.",
-									"linker-tools",
-								),
-							},
-						})
+			<div hidden={section !== "initial"}>
+				<InitialInventoryForm
+					value={value.initial_inventory}
+					onChange={(initial_inventory) =>
+						onChange({ ...value, initial_inventory })
 					}
-				>
-					{__("Start with an empty battery", "linker-tools")}
-				</button>
-				<label className="lp-field">
-					<span>{__("Basis for the initial state", "linker-tools")}</span>
-					<textarea
-						rows={2}
-						value={inventory.source_note}
-						onChange={(e) =>
-							onChange({
-								...value,
-								initial_inventory: {
-									...inventory,
-									source_note: e.currentTarget.value,
-								},
-							})
-						}
-					/>
-				</label>
-			</section>
+					locale={locale}
+					report={report}
+				/>
+			</div>
 			<section className="lp-scenario-block" hidden={section !== "operation"}>
-				<h3>{__("Operating periods", "linker-tools")}</h3>
-				<p className="lp-profile-help">
-					{__(
-						"Periods must join without gaps or overlaps and stay within the source data. Timestamps include Z for UTC or an explicit offset, such as +01:00.",
-						"linker-tools",
-					)}
-				</p>
-				<button
-					type="button"
-					className="lp-button lp-button-secondary"
-					disabled={rangeBusy}
-					onClick={useProfileRange}
-				>
-					{rangeBusy
-						? __("Checking profile coverage…", "linker-tools")
-						: __("Use the shared profile range", "linker-tools")}
-				</button>
-				{value.schedule.map((period, index) => (
-					<OperatingPeriodForm
-						key={period.id}
-						period={period}
-						index={index}
-						locale={locale}
-						report={report}
-						onChange={(next) =>
-							onChange({
-								...value,
-								schedule: value.schedule.map((item) =>
-									item.id === period.id ? next : item,
-								),
-							})
-						}
-						remove={
-							value.schedule.length > 1
-								? () =>
-										onChange({
-											...value,
-											schedule: value.schedule.filter(
-												(item) => item.id !== period.id,
-											),
-										})
-								: undefined
-						}
-					/>
-				))}
-				<button
-					type="button"
-					className="lp-text-button"
-					onClick={() =>
-						onChange({
-							...value,
-							schedule: [
-								...value.schedule,
-								{
-									...emptyPeriod(),
-									start_utc: value.schedule.at(-1)?.end_utc ?? "",
-								},
-							],
-						})
-					}
-				>
-					{__("Add operating period", "linker-tools")}
-				</button>
+				<OperatingPeriodsForm
+					periods={value.schedule}
+					onChange={(schedule) => onChange({ ...value, schedule })}
+					locale={locale}
+					report={report}
+					useProfileRange={useProfileRange}
+					rangeBusy={rangeBusy}
+				/>
 				<label className="lp-field">
 					<span>
 						{__("Stored energy at the end of the calculation", "linker-tools")}

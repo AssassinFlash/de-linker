@@ -74,14 +74,31 @@ def comparison_sections(
                 value=number(ref["starting_energy_kwh"], locale, "kWh"),
             )
         )
-        rows.append(
-            ReportRow(
-                label=label("terminal_requirement"),
-                value=number(ref["terminal_min_kwh"], locale, "kWh")
-                if ref["terminal_min_kwh"] is not None
-                else label("no_minimum"),
+        if isinstance(ref.get("storage_units"), list):
+            for unit in cast(list[Object], ref["storage_units"]):
+                name = str(unit["name"])
+                for key, field in (
+                    ("plant_unit_start", "starting_energy_kwh"),
+                    ("plant_unit_reserve", "reserve_kwh"),
+                    ("plant_unit_terminal", "terminal_min_kwh"),
+                ):
+                    rows.append(
+                        ReportRow(
+                            label=name + " · " + text(key, locale),
+                            value=number(unit[field], locale, "kWh")
+                            if unit[field] is not None
+                            else label("no_minimum"),
+                        )
+                    )
+        else:
+            rows.append(
+                ReportRow(
+                    label=label("terminal_requirement"),
+                    value=number(ref["terminal_min_kwh"], locale, "kWh")
+                    if ref["terminal_min_kwh"] is not None
+                    else label("no_minimum"),
+                )
             )
-        )
         rows.append(
             ReportRow(
                 label=label("scenario_constraints"),

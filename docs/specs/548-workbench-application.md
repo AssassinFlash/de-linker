@@ -691,3 +691,63 @@ through search/adoption, and one owned local save/result/report path. No new
 all-site or numerical matrix is required. Code and conditional Woo data must
 roll back together: the preceding runtime rejects the new source schema;
 retained prior source generation/scoped metadata preimage are its recovery.
+
+## Joint connection replay and named storage states — local integration
+
+The physical model extends NUMERICAL-MODELS.md sections5–7: a common AC
+connection has one load/PV/auxiliary boundary and one grid import/export cap.
+Every storage unit retains its own usable window, directional power and
+conversion efficiencies, internal/standing losses, initial origin buckets,
+reserve and terminal requirement. Different units can charge and discharge
+at once; no aggregate battery or global device-mode prohibition is used.
+Losses occur before delivery and only delivered energy changes the state.
+
+The baseline controller shares the post-loss available charging/discharging
+power proportionally for site self-consumption. It is chronological, with no
+forecast or optimality guarantee and no assertion that the selected EMS or
+firmware implements this policy. Proportional source accounting applies in
+each bank and at the common AC bus; transfers retain their PV/grid/unknown
+origin, conversion losses and distinct destination state. Current PV delivered
+to charge is distinguished from recharged historical battery PV for metrics.
+
+The first executor accepts separately converted AC PV and battery-only use of
+the selected storage converters. Each converter's DC PV allocation must be
+explicitly zero and its project declaration must confirm unused DC PV inputs.
+The existing Woo-derived single-port DC envelope is reduced algebraically to
+its AC equivalent, retaining the bank/port current, voltage and directional
+bridge limits and all conversion efficiencies. This is a scoped constant-window
+scenario, not a continuous-output guarantee. Unknown reverse capability cannot
+be invented, and absent outage evidence cannot supply a backup envelope.
+Outage periods may use the documented battery-only backup envelope with PV
+explicitly unavailable. AC PV during an outage is refused until an island-bus
+arrangement and its directional charging capability are evidenced; the old
+single-DC grid-absence flag cannot establish that topology.
+Shared-DC PV inside multiple hybrids requires its actual per-unit bridge model;
+this first domain does not stand in for that remaining full-goal requirement.
+
+`energy_plant` names every prepared equipment-plant unit, its own source-derived
+parameter asset, initial inventory, per-unit reserve and terminal condition.
+The native battery-scenario operation accepts an optional prepared plant unit
+identity for DC parameter preparation. Product quantities remain server-derived
+from Woo; only explicit loss/auxiliary/temperature assumptions are customer
+inputs. Asset provenance binds unit identity and owned revision; a parameter
+asset cannot silently be assigned to another physical unit. Old requests keep
+their exact command/receipt shape when the new identity was absent.
+
+Single and joint executors share immutable execution/manifest validation and
+real profile alignment. The plant kernel has its own registered execution key,
+strict exact-role dependency binding, current Woo permission checks before/after
+work, independently verified unit/source/common-meter equations and paged trace.
+Its work budget charges device-intervals, preventing a large plant from creating
+unbounded per-interval payload under the single-device limit. Multi-unit projects
+cannot silently execute the single-battery path. Equipment/country acceptance
+remains separate from a successfully replayed physical scenario.
+
+Native preparation/execution, frozen result/trace consumers, shared report/PDF,
+independent review and installation on the existing p548 instance are closed
+for this AC domain. EN/DE1440/390 forms and per-unit saved-setting readback
+are recorded in the existing acceptance ledger. The actual numerical native
+fixture has synthetic, explicitly labelled reverse-conversion source claims;
+it does not qualify a real product. Real Woo AC charging evidence and per-unit
+shared-DC hybrid execution remain required work within the complete goal.
+The closed physical core and unchanged source/permission evidence are reused.

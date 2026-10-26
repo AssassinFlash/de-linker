@@ -141,3 +141,24 @@
 5. 修改/补充商品事实后，旧 revision/run 保留旧源与能力hash；unknown不默认为false；设备数据完整、数值可执行、项目模式符合、国家规则通过分别记录，不以一次计算任务成功代替工程放行。
 
 上述是应同步补足的实际数据与验证合同，不是本研究已经完成产品修复或全SKU放行的声明。
+
+### Joint-AC charging evidence readback — 2026-10-26
+
+The current Woo H2 records already have the named BAT1/BAT2 port count and
+per-port current evidence; no duplicate port-count maintenance is needed.
+A local source-bound H2/B2/BMS preparation succeeds when BAT1 is selected.
+The current source does not bind the AC reverse charging capability/power
+needed by the separate-AC plant equivalent. AC inlet current/apparent input
+cannot be relabelled as battery charging active power.
+
+Apify search run `TTMcVNi3bmPtxOtPC` / dataset `mGiPcDKLP0PfYYysv` found the
+manufacturer [H2/HS2/HS3/AS2/AS3 configuration instructions](https://www.saj-electric.com/hubfs/Guides%20and%20Manuals/HS3/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf).
+Crawler run `5WyJiPc1kdbrZWijj` / dataset `b1GvzMkq5nKGCtLem` retrieved the
+200 PDF binary; its HTML/text extraction failed, so the saved Apify binary was
+parsed locally with pdftotext. The 91-page document describes AC-coupled
+three-phase arrangements and configurable battery charging operation
+(printed pages20,42,57). This supports the technology direction, but does not
+supply a model-specific H2-10K-T3 AC battery charge power rating. Manuals for
+LS2/LT2/Africa models returned by the search are not transferred to the EU T3.
+No new product facts or runtime source pack were invented from these searches;
+verified future maintenance must go through the native Woo product record.

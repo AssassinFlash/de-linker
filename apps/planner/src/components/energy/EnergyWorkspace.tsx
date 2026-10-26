@@ -1,3 +1,12 @@
+import {
+	PLANT_ENERGY_TASK,
+	compilePlantEnergy,
+	plantEnergyDraft,
+	plantEnergyInputs,
+	plantEnergyParts,
+} from "../../domain/plantEnergy.ts";
+import type { PlantEnergyDraft } from "../../domain/plantEnergy.ts";
+import { PlantEnergyForm } from "./PlantEnergyForm.tsx";
 import { readInstallation } from "../../domain/installation.ts";
 import { readObject } from "../../data/readProtocol.ts";
 import { DC_MODEL, readDcLossScenario } from "../../domain/dcEnergy.ts";
@@ -125,6 +134,23 @@ export function EnergyWorkspace({
 	openEquipment?: () => void;
 	openResults?: () => void;
 }) {
+	const joint = hasPlant(draft.history.current);
+	const jointContext = useMemo(() => {
+		if (!joint) return { value: null, error: null };
+		try {
+			const plant = readEquipmentPlant(draft.history.current.equipment_plant);
+			return {
+				value: { plant, setup: plantEnergyDraft(draft.history.current, plant) },
+				error: null,
+			};
+		} catch (error) {
+			return { value: null, error };
+		}
+	}, [
+		joint,
+		draft.history.current.equipment_plant,
+		draft.history.current.energy_plant_setup,
+	]);
 	const parsed = useMemo(() => {
 		try {
 			return {
@@ -147,7 +173,9 @@ export function EnergyWorkspace({
 			return [];
 		}
 	}, [draft.history.current.solar_setup]);
-	const setupDocument = draft.history.current.energy_scenario;
+	const setupDocument = joint
+		? draft.history.current.energy_plant_setup
+		: draft.history.current.energy_scenario;
 	const equipmentSelection = useMemo(() => {
 		try {
 			return readEquipmentSelection(draft.history.current.equipment_selection);
@@ -156,6 +184,7 @@ export function EnergyWorkspace({
 		}
 	}, [draft.history.current.equipment_selection]);
 	const setup = parsed.value,
+		currentSetup = joint ? (jointContext.value?.setup ?? null) : setup,
 		selections = readSelections(draft.history.current.profile_selections);
 	const [selectedView, setView] = useState<
 			| "weather"
@@ -186,7 +215,11 @@ export function EnergyWorkspace({
 		// Undo/redo and profile edits also change the effective scenario, without
 		// passing through this form's onChange handler.
 		setError(null);
-	}, [setupDocument, draft.history.current.profile_selections]);
+	}, [
+		setupDocument,
+		draft.history.current.profile_selections,
+		draft.history.current.equipment_plant,
+	]);
 	const lifetime = useRef(0),
 		rangeFlight = useRef<AbortController | null>(null);
 	const projectId = draft.baseline.id,
@@ -212,6 +245,13 @@ export function EnergyWorkspace({
 			return null;
 		}
 	}, [draft.baseline.inputs.energy_replay]);
+	const confirmedBatteryIds = useMemo(() => {
+		const input = draft.baseline.inputs.energy_plant;
+		if (!input || !Array.isArray(readObject(input).units)) return [];
+		return (readObject(input).units as readonly JsonObject[]).map((u) =>
+			String(u.battery_parameters_asset_id),
+		);
+	}, [draft.baseline.inputs.energy_plant]);
 	const operations = usePlanningOperations({
 		projectId,
 		session,
@@ -220,6 +260,7 @@ export function EnergyWorkspace({
 		recoveryScopes,
 		recoveryChecking,
 		confirmedBatteryId,
+		confirmedBatteryIds,
 	});
 	const actionError =
 			error ??
@@ -265,12 +306,21 @@ export function EnergyWorkspace({
 	}, [view, visibleRunId, runs.runId, active, client, session.query_scope]);
 	let prepared = false;
 	try {
-		prepared =
-			setup !== null &&
-			sameJson(
-				compileScenario(setup, selections, equipmentSelection),
-				draft.history.current.energy_replay,
-			);
+		prepared = joint
+			? jointContext.value !== null &&
+				sameJson(
+					compilePlantEnergy(
+						jointContext.value.setup,
+						selections,
+						jointContext.value.plant,
+					),
+					draft.history.current.energy_plant,
+				)
+			: setup !== null &&
+				sameJson(
+					compileScenario(setup, selections, equipmentSelection),
+					draft.history.current.energy_replay,
+				);
 	} catch {
 		/* Incomplete settings stay editable. */
 	}
@@ -279,6 +329,7 @@ export function EnergyWorkspace({
 	);
 	const canCalculate =
 		prepared &&
+		(!joint || session.runtime.models.plant_replay === PLANT_ENERGY_TASK) &&
 		!dirty &&
 		!draft.pending &&
 		!draft.conflict &&
@@ -294,9 +345,108 @@ export function EnergyWorkspace({
 		edit((inputs) => scenarioInputs(inputs, next));
 		setError(null);
 	}
+	function changeJoint(next: PlantEnergyDraft) {
+		if (blocked || !client.isCurrentScope(session.query_scope)) return;
+		edit((inputs) => plantEnergyInputs(inputs, next));
+		setError(null);
+	}
+	async function prepareJoint() {
+		if (
+			!jointContext.value ||
+			session.runtime.models.plant_replay !== PLANT_ENERGY_TASK
+		)
+			return;
+		const { plant, setup: original } = jointContext.value;
+		if (
+			!sameJson(
+				equipmentContext(draft.history.current),
+				equipmentContext(draft.baseline.inputs),
+			)
+		)
+			throw new ApiError(422, "dc_save_required");
+		const parts = plantEnergyParts(original, selections, plant),
+			instance = lifetime.current;
+		let bound = original,
+			expectedDocument = setupDocument;
+		for (const unit of original.units) {
+			const parameters = parts.parameters.get(unit.unit_id)!;
+			const selection = plant.units.find(
+				(u) => u.id === unit.unit_id,
+			)!.selection;
+			const binding = unit.settings.battery_binding;
+			if (
+				binding &&
+				sameJson(binding.parameters, parameters) &&
+				sameJson(binding.equipment_selection, selection) &&
+				binding.source_note === parameters.source_note
+			)
+				continue;
+			const reply = await operations.start("battery/scenario", {
+				source_note: parameters.source_note,
+				parameters,
+				equipment_unit_id: unit.unit_id,
+				expected_revision: draft.baseline.revision,
+			});
+			if (
+				!reply ||
+				reply.path !== "battery/scenario" ||
+				instance !== lifetime.current ||
+				!client.isCurrentScope(session.query_scope)
+			)
+				return;
+			const next = {
+				...bound,
+				units: bound.units.map((u) =>
+					u.unit_id === unit.unit_id
+						? {
+								...u,
+								settings: {
+									...u.settings,
+									battery_binding: {
+										asset_id: reply.asset.id,
+										parameters,
+										source_note: parameters.source_note,
+										equipment_selection: selection,
+									},
+								},
+							}
+						: u,
+				),
+			};
+			const expected = expectedDocument;
+			if (
+				!edit((inputs) => {
+					if (
+						!sameJson(inputs.energy_plant_setup, expected) ||
+						!sameJson(inputs.equipment_plant, plant)
+					)
+						throw new ApiError(409, "scenario_changed");
+					return plantEnergyInputs(inputs, next);
+				})
+			)
+				throw new ApiError(409, "scenario_changed");
+			bound = next;
+			expectedDocument = next;
+		}
+		const replay = compilePlantEnergy(bound, selections, plant),
+			expected = expectedDocument;
+		if (
+			!edit((inputs) => {
+				if (
+					!sameJson(inputs.energy_plant_setup, expected) ||
+					!sameJson(inputs.equipment_plant, plant) ||
+					!sameJson(readSelections(inputs.profile_selections), selections)
+				)
+					throw new ApiError(409, "scenario_changed");
+				return { ...plantEnergyInputs(inputs, bound), energy_plant: replay };
+			})
+		)
+			throw new ApiError(409, "scenario_changed");
+		await flush();
+	}
 	async function prepare() {
 		if (
-			!setup ||
+			!currentSetup ||
 			blocked ||
 			!syntaxValid ||
 			operations.busy ||
@@ -308,6 +458,11 @@ export function EnergyWorkspace({
 			return;
 		setError(null);
 		try {
+			if (joint) {
+				await prepareJoint();
+				return;
+			}
+			if (!setup) return;
 			if (setup.coupling === "shared_dc" && dirty)
 				throw new ApiError(422, "dc_save_required");
 			const parts = scenarioParts(setup, selections, equipmentSelection),
@@ -327,7 +482,7 @@ export function EnergyWorkspace({
 							? parts.parameters.source_note
 							: setup.source_note,
 					parameters: parts.parameters,
-					...(setup.coupling === "shared_dc"
+					...(!joint && setup?.coupling === "shared_dc"
 						? { expected_revision: draft.baseline.revision }
 						: {}),
 				});
@@ -408,7 +563,69 @@ export function EnergyWorkspace({
 				!client.isCurrentScope(session.query_scope)
 			)
 				return;
-			if (!setup) return;
+			if (command.equipment_unit_id !== undefined) {
+				if (
+					!jointContext.value ||
+					!dc ||
+					command.expected_revision !== draft.baseline.revision ||
+					!sameJson(
+						equipmentContext(draft.history.current),
+						equipmentContext(draft.baseline.inputs),
+					)
+				)
+					throw new ApiError(409, "product_evidence_changed");
+				const { plant, setup: current } = jointContext.value;
+				const unit = current.units.find(
+						(u) => u.unit_id === command.equipment_unit_id,
+					),
+					hardware = plant.units.find(
+						(u) => u.id === command.equipment_unit_id,
+					);
+				if (
+					!unit ||
+					!hardware ||
+					!sameJson(
+						plantEnergyParts(current, selections, plant).parameters.get(
+							unit.unit_id,
+						),
+						parameters,
+					)
+				)
+					throw new ApiError(409, "scenario_changed");
+				const next = {
+					...current,
+					units: current.units.map((u) =>
+						u.unit_id === unit.unit_id
+							? {
+									...u,
+									settings: {
+										...u.settings,
+										battery_binding: {
+											asset_id: reply.asset.id,
+											parameters,
+											source_note: String(command.source_note),
+											equipment_selection: hardware.selection,
+										},
+									},
+								}
+							: u,
+					),
+				};
+				if (
+					!edit((inputs) => {
+						if (
+							!sameJson(inputs.energy_plant_setup, setupDocument) ||
+							!sameJson(inputs.equipment_plant, plant)
+						)
+							throw new ApiError(409, "scenario_changed");
+						return plantEnergyInputs(inputs, next);
+					})
+				)
+					throw new ApiError(409, "scenario_changed");
+				await flush();
+				return;
+			}
+			if (!setup || joint) return;
 			if (
 				dc &&
 				(dirty ||
@@ -715,7 +932,7 @@ export function EnergyWorkspace({
 		}
 	}
 	async function useRange() {
-		if (!setup || rangeFlight.current || !admitted) return;
+		if (!currentSetup || rangeFlight.current || !admitted) return;
 		const controller = new AbortController(),
 			instance = lifetime.current;
 		rangeFlight.current = controller;
@@ -726,7 +943,7 @@ export function EnergyWorkspace({
 				"gross_load",
 				"pv_available_ac",
 				"aux_ac",
-				...(setup.schedule.some((period) => period.mode === "outage")
+				...(currentSetup.schedule.some((period) => period.mode === "outage")
 					? ["critical_load" as const]
 					: []),
 			];
@@ -769,21 +986,24 @@ export function EnergyWorkspace({
 			)
 				return;
 			const range = sharedProfileRange(ranges),
-				last = setup.schedule.length - 1;
+				last = currentSetup.schedule.length - 1;
 			const applied = edit((inputs) => {
 				if (
-					!sameJson(inputs.energy_scenario, setupDocument) ||
+					!sameJson(
+						joint ? inputs.energy_plant_setup : inputs.energy_scenario,
+						setupDocument,
+					) ||
 					!sameJson(readSelections(inputs.profile_selections), selections)
 				)
 					throw new Error("scenario_changed");
-				return scenarioInputs(inputs, {
-					...setup,
-					schedule: setup.schedule.map((period, index) => ({
-						...period,
-						...(index === 0 ? { start_utc: range.start_utc } : {}),
-						...(index === last ? { end_utc: range.end_utc } : {}),
-					})),
-				});
+				const schedule = currentSetup.schedule.map((period, index) => ({
+					...period,
+					...(index === 0 ? { start_utc: range.start_utc } : {}),
+					...(index === last ? { end_utc: range.end_utc } : {}),
+				}));
+				return joint && jointContext.value
+					? plantEnergyInputs(inputs, { ...jointContext.value.setup, schedule })
+					: scenarioInputs(inputs, { ...setup!, schedule });
 			});
 			if (!applied) throw new ApiError(409, "scenario_changed");
 		} catch (cause) {
@@ -1065,15 +1285,20 @@ export function EnergyWorkspace({
 				/>
 			</div>
 			<div hidden={view !== "scenario"}>
-				{Boolean(parsed.error) && (
+				{Boolean(joint ? jointContext.error : parsed.error) && (
 					<Notice error>
-						{__(
-							"This scenario-settings format cannot be edited here. Its saved input and calculation history remain available.",
-							"linker-tools",
-						)}
+						{joint
+							? __(
+									"Prepare and save the equipment plan, then review the storage settings for each unit.",
+									"linker-tools",
+								)
+							: __(
+									"This scenario-settings format cannot be edited here. Its saved input and calculation history remain available.",
+									"linker-tools",
+								)}
 					</Notice>
 				)}
-				{setup && (
+				{currentSetup && (
 					<>
 						<div className="lp-scenario-sources">
 							<h3>{__("Interval sources", "linker-tools")}</h3>
@@ -1083,7 +1308,8 @@ export function EnergyWorkspace({
 										<li key={role}>
 											<span>
 												{role === "pv_available_ac" &&
-												setup.coupling === "shared_dc"
+												!joint &&
+												setup?.coupling === "shared_dc"
 													? __("PV generation", "linker-tools")
 													: measurementLabel(role)}
 											</span>
@@ -1128,26 +1354,58 @@ export function EnergyWorkspace({
 								),
 							)}
 						</ol>
-						<ScenarioForm
-							client={client}
-							scope={session.query_scope}
-							active={active && view === "scenario"}
-							equipmentSelection={equipmentSelection}
-							converters={converterIds}
-							key={setup.coupling ?? "independent_ac"}
-							openEquipment={() => {
-								setView("equipment");
-								openEquipment?.();
-							}}
-							value={setup}
-							section={section}
-							locale={locale}
-							disabled={blocked || operations.busy || !admitted}
-							onChange={change}
-							onValidity={setScenarioValid}
-							useProfileRange={() => void useRange()}
-							rangeBusy={rangeBusy}
-						/>
+						{joint && jointContext.value ? (
+							<PlantEnergyForm
+								value={jointContext.value.setup}
+								plant={jointContext.value.plant}
+								section={section}
+								locale={locale}
+								disabled={blocked || operations.busy || !admitted}
+								onChange={changeJoint}
+								onValidity={setScenarioValid}
+								useProfileRange={() => void useRange()}
+								rangeBusy={rangeBusy}
+								openEquipment={() => {
+									setView("equipment");
+									openEquipment?.();
+								}}
+								client={client}
+								scope={session.query_scope}
+								active={active && view === "scenario"}
+							/>
+						) : (
+							setup && (
+								<ScenarioForm
+									client={client}
+									scope={session.query_scope}
+									active={active && view === "scenario"}
+									equipmentSelection={equipmentSelection}
+									converters={converterIds}
+									key={setup.coupling ?? "independent_ac"}
+									openEquipment={() => {
+										setView("equipment");
+										openEquipment?.();
+									}}
+									value={setup}
+									section={section}
+									locale={locale}
+									disabled={blocked || operations.busy || !admitted}
+									onChange={change}
+									onValidity={setScenarioValid}
+									useProfileRange={() => void useRange()}
+									rangeBusy={rangeBusy}
+								/>
+							)
+						)}
+						{joint &&
+							session.runtime.models.plant_replay !== PLANT_ENERGY_TASK && (
+								<Notice>
+									{__(
+										"Joint storage calculation is unavailable in this service version. Your equipment plan remains available.",
+										"linker-tools",
+									)}
+								</Notice>
+							)}
 						<div className="lp-energy-submit">
 							<div>
 								<strong>
@@ -1175,6 +1433,9 @@ export function EnergyWorkspace({
 								className="lp-button lp-button-secondary"
 								disabled={
 									blocked ||
+									(joint &&
+										session.runtime.models.plant_replay !==
+											PLANT_ENERGY_TASK) ||
 									!syntaxValid ||
 									operations.busy ||
 									operations.checking ||

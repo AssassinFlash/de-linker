@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from .canonical import Json, Object
 from .dispatch_frame import Frame
 from .energy_alignment import interpretation, schedule_axis
-from .energy_inputs import EnergyInputs
+from .energy_schedule import EnergySchedule
 from .errors import InvalidInput
 from .power_series import PowerSeries
 from .regrid import regrid
@@ -22,13 +22,13 @@ class PreparedEnergy:
 
 
 def prepare_energy(
-    scenario: EnergyInputs,
+    scenario: EnergySchedule,
     profiles: dict[str, PowerSeries],
     control: Control,
     *,
     max_intervals: int,
 ) -> PreparedEnergy:
-    if scenario.coupling != "independent_ac":
+    if scenario.coupling not in {"independent_ac", "plant_ac"}:
         raise InvalidInput("AC replay requires the independent AC boundary")
     frames: list[Frame] = []
     interpretations: list[Json] = []

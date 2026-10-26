@@ -55,6 +55,7 @@ export function usePlanningOperations({
 	recoveryScopes,
 	recoveryChecking = false,
 	confirmedBatteryId = null,
+	confirmedBatteryIds = [],
 	store = planningIntentStore,
 }: {
 	projectId: string;
@@ -64,6 +65,7 @@ export function usePlanningOperations({
 	recoveryScopes?: readonly string[] | undefined;
 	recoveryChecking?: boolean;
 	confirmedBatteryId?: string | null;
+	confirmedBatteryIds?: readonly string[];
 	store?: PlanningJournal;
 }) {
 	const [records, setRecords] = useState<readonly PlanningIntent[]>([]),
@@ -76,6 +78,14 @@ export function usePlanningOperations({
 	const lifetime = useRef(0),
 		flight = useRef<AbortController | null>(null);
 	const admitted = client.isCurrentScope(session.query_scope);
+	const confirmedKey = JSON.stringify(
+		[
+			...new Set([
+				...confirmedBatteryIds,
+				...(confirmedBatteryId ? [confirmedBatteryId] : []),
+			]),
+		].sort(),
+	);
 	const scopeKey = JSON.stringify([
 		...new Set([session.query_scope, ...(recoveryScopes ?? [])]),
 	]);
@@ -107,12 +117,13 @@ export function usePlanningOperations({
 					projectId,
 				),
 				pending: PlanningIntent[] = [];
+			const confirmed = new Set(JSON.parse(confirmedKey) as string[]);
 			for (const record of found) {
 				if (!current()) return;
 				if (
 					record.path === "battery/scenario" &&
 					record.resultId !== null &&
-					record.resultId === confirmedBatteryId
+					confirmed.has(record.resultId)
 				)
 					await store.clear(record.scope, record.path, record.body);
 				else pending.push(record);
@@ -135,7 +146,7 @@ export function usePlanningOperations({
 		admitted,
 		recoveryChecking,
 		scopeKey,
-		confirmedBatteryId,
+		confirmedKey,
 		projectId,
 		session.query_scope,
 		client,

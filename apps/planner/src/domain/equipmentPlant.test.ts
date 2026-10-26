@@ -101,6 +101,16 @@ test("multi-system editing preserves project history, pins current Woo identitie
 	);
 	assert.equal(equipmentDraft(returned).grid_phase, 3);
 	assert.equal(returned.equipment_plant_setup, undefined);
+	const switched = applyEquipmentContext(
+		{
+			...inputs,
+			energy_plant: { coupling: "plant_ac" },
+			energy_replay: { coupling: "independent_ac" },
+		},
+		equipmentContext(returned),
+	);
+	assert.equal(switched.energy_plant, undefined);
+	assert.equal(switched.energy_replay, undefined);
 	assert.deepEqual(
 		applyEquipmentContext(
 			{ ...original, site: { country_code: "FR" } },

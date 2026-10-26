@@ -1,3 +1,8 @@
+import {
+	PLANT_ENERGY_TASK,
+	readPlantEnergyInputs,
+} from "../../domain/plantEnergy.ts";
+import { PlantParameterBasis } from "./PlantParameterBasis.tsx";
 import { DC_ENERGY_TASK, DC_LOSS_FIELDS } from "../../domain/dcEnergy.ts";
 import { dcLossLabel } from "./DcStorageForm.tsx";
 import { DcParameterSources } from "./DcParameterSources.tsx";
@@ -34,6 +39,7 @@ export function RunBasis({
 	recheck: () => void;
 	locale: string;
 }) {
+	const joint = run.result?.kind === PLANT_ENERGY_TASK;
 	const [open, setOpen] = useState(false);
 	const sources = useQuery({
 		queryKey: [
@@ -66,7 +72,9 @@ export function RunBasis({
 					historical.input_sha256 !== run.manifest.input_sha256
 				)
 					throw new ApiError(502, "run_source_mismatch");
-				const selected = readEnergyInputs(historical.inputs.energy_replay),
+				const selected = joint
+						? readPlantEnergyInputs(historical.inputs.energy_plant)
+						: readEnergyInputs(historical.inputs.energy_replay),
 					pins = readObject(readObject(run.manifest.context).assets);
 				const profiles: [Measurement | "pv_available_dc", string][] = [
 					["gross_load", selected.gross_load_asset_id],
@@ -103,6 +111,7 @@ export function RunBasis({
 						return { role, asset, label };
 					}),
 				);
+				if (joint) return { selected, entries, battery: null, note: "" };
 				const provenance = readObject(
 					readObject(run.result?.battery_parameter_provenance).provenance,
 				);
@@ -114,7 +123,7 @@ export function RunBasis({
 						{
 							schema_version: 1,
 							project_id: run.project_id,
-							asset_id: selected.battery_parameters_asset_id,
+							asset_id: String(selected.battery_parameters_asset_id),
 						},
 						session.query_scope,
 						signal,
@@ -212,73 +221,80 @@ export function RunBasis({
 							</ul>
 						</>
 					)}
-					<dl className="lp-field-summary">
-						{dc && (
-							<div>
-								<dt>
-									{__("Battery temperature for this scenario", "linker-tools")}
-								</dt>
-								<dd>
-									{(() => {
-										const temperature = readObject(
-											readObject(run.result!.prepared_dc_parameters)
-												.loss_scenario,
-										).battery_temperature_c;
-										return typeof temperature === "number"
-											? number(temperature) + " °C"
-											: __("Not specified", "linker-tools");
-									})()}
-								</dd>
-							</div>
-						)}
-						{(dc
-							? (["usable_window_kwh", ...DC_LOSS_FIELDS] as const)
-							: BATTERY_FIELDS
-						).map((field) => {
-							const presentation =
-								DC_LOSS_FIELDS.includes(
-									field as (typeof DC_LOSS_FIELDS)[number],
-								) && dc
-									? {
-											label: dcLossLabel(
-												field as (typeof DC_LOSS_FIELDS)[number],
-											),
-											scale: field.startsWith("eta_") ? 100 : 1,
-											unit: field.startsWith("eta_")
-												? "%"
-												: field === "internal_aux_kw"
-													? "kW"
-													: "1/h",
-										}
-									: batteryPresentation(
-											field as (typeof BATTERY_FIELDS)[number],
-										);
-							const raw =
-								dc && field.startsWith("eta_inverter_")
-									? readObject(
-											readObject(run.result!.prepared_dc_parameters)
-												.loss_scenario,
-										)[field]
-									: model[field];
-							return (
-								<div key={field}>
-									<dt>{presentation.label}</dt>
+					{joint ? (
+						<PlantParameterBasis result={run.result!} locale={locale} />
+					) : (
+						<dl className="lp-field-summary">
+							{dc && (
+								<div>
+									<dt>
+										{__(
+											"Battery temperature for this scenario",
+											"linker-tools",
+										)}
+									</dt>
 									<dd>
-										{number(
-											presentation.scale === 100
-												? raw === null
-													? null
-													: toPercent(Number(raw))
-												: raw === null
-													? null
-													: Number(raw),
-										)}{" "}
-										{presentation.unit}
+										{(() => {
+											const temperature = readObject(
+												readObject(run.result!.prepared_dc_parameters)
+													.loss_scenario,
+											).battery_temperature_c;
+											return typeof temperature === "number"
+												? number(temperature) + " °C"
+												: __("Not specified", "linker-tools");
+										})()}
 									</dd>
 								</div>
-							);
-						})}
-					</dl>
+							)}
+							{(dc
+								? (["usable_window_kwh", ...DC_LOSS_FIELDS] as const)
+								: BATTERY_FIELDS
+							).map((field) => {
+								const presentation =
+									DC_LOSS_FIELDS.includes(
+										field as (typeof DC_LOSS_FIELDS)[number],
+									) && dc
+										? {
+												label: dcLossLabel(
+													field as (typeof DC_LOSS_FIELDS)[number],
+												),
+												scale: field.startsWith("eta_") ? 100 : 1,
+												unit: field.startsWith("eta_")
+													? "%"
+													: field === "internal_aux_kw"
+														? "kW"
+														: "1/h",
+											}
+										: batteryPresentation(
+												field as (typeof BATTERY_FIELDS)[number],
+											);
+								const raw =
+									dc && field.startsWith("eta_inverter_")
+										? readObject(
+												readObject(run.result!.prepared_dc_parameters)
+													.loss_scenario,
+											)[field]
+										: model[field];
+								return (
+									<div key={field}>
+										<dt>{presentation.label}</dt>
+										<dd>
+											{number(
+												presentation.scale === 100
+													? raw === null
+														? null
+														: toPercent(Number(raw))
+													: raw === null
+														? null
+														: Number(raw),
+											)}{" "}
+											{presentation.unit}
+										</dd>
+									</div>
+								);
+							})}
+						</dl>
+					)}
 					{dc && (
 						<DcParameterSources
 							parameters={readObject(run.result!.prepared_dc_parameters)}
@@ -286,15 +302,20 @@ export function RunBasis({
 						/>
 					)}
 					<p>
-						{dc
+						{joint
 							? __(
-									"PV generation and curtailment are calculated at the DC bus; load supply and grid flows are calculated on the AC side. Storage results use the saved loss assumptions.",
+									"Each storage unit uses its selected equipment limits and its own saved loss assumptions. Import and export limits apply once at the shared AC metering point. This calculation does not establish joint operating capability or country-specific grid compliance.",
 									"linker-tools",
 								)
-							: __(
-									"The model uses a fixed internal energy window and separate AC conversion efficiencies. Battery export, temperature effects, ageing and switching behaviour are outside this energy calculation.",
-									"linker-tools",
-								)}
+							: dc
+								? __(
+										"PV generation and curtailment are calculated at the DC bus; load supply and grid flows are calculated on the AC side. Storage results use the saved loss assumptions.",
+										"linker-tools",
+									)
+								: __(
+										"The model uses a fixed internal energy window and separate AC conversion efficiencies. Battery export, temperature effects, ageing and switching behaviour are outside this energy calculation.",
+										"linker-tools",
+									)}
 					</p>
 					<div className="lp-table-scroll" tabIndex={0}>
 						<table>

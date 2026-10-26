@@ -1,5 +1,6 @@
 import { readDcParameters } from "../domain/dcEnergy.ts";
 import dcRunJson from "../../tests/fixtures/dc-energy-run.json" with { type: "json" };
+import plantRunJson from "../../tests/fixtures/plant-energy-run.json" with { type: "json" };
 import { readTraceWindow } from "./traceWindow.ts";
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -16,6 +17,26 @@ const readObject = (value: unknown): MutableObject =>
 	objectDocument(value) as MutableObject;
 const original = () => readObject(structuredClone(runJson));
 const result = (run: JsonObject) => readObject(run.result);
+
+test("native joint result retains named parameter proofs, unit trace and the shared report consumer", () => {
+	const run = readRun(
+		plantRunJson.run,
+		plantRunJson.run.project_id,
+		undefined,
+		"single_ac_energy_replay_v1",
+	);
+	assert.equal(run.result!.kind, "plant_ac_energy_replay_v1");
+	const trace = readTraceWindow(plantRunJson.trace, run, 0, 2, "a");
+	assert.equal(trace.rows[0]!.unit!.unit_id, "a");
+	assert.equal(trace.rows[1]!.unit!.after.pv_kwh, 0);
+	assert.throws(() => readTraceWindow(plantRunJson.trace, run, 0, 2, "b"));
+	assert.doesNotThrow(() => readRun(plantRunJson.report, run.project_id));
+	const counterfeit = structuredClone(plantRunJson.run);
+	counterfeit.result.parameter_sources.units[0]!.parameter_sha256 = "0".repeat(
+		64,
+	);
+	assert.throws(() => readRun(counterfeit, run.project_id));
+});
 test("report output keeps serialized fields mandatory and old column layout optional", () => {
 	const report = {
 		title: "Contract fixture",

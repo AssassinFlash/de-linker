@@ -5,7 +5,7 @@ from __future__ import annotations
 from bisect import bisect_left
 
 from .canonical import Object
-from .energy_inputs import EnergyInputs
+from .energy_schedule import EnergySchedule
 from .errors import InvalidInput
 from .interval import Interval
 from .operating_limits import OperatingLimits
@@ -14,7 +14,7 @@ from .pv_dc_profile import DcPvProfile
 
 
 def schedule_axis(
-    scenario: EnergyInputs,
+    scenario: EnergySchedule,
     profiles: dict[str, PowerSeries] | dict[str, PowerSeries | DcPvProfile],
     *,
     max_intervals: int,

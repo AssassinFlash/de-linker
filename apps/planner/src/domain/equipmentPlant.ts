@@ -103,6 +103,10 @@ export function applyEquipmentContext(
 	context: JsonObject,
 ): JsonObject {
 	const next: Record<string, Json> = { ...inputs };
+	if (hasPlant(inputs) !== hasPlant(context)) {
+		delete next.energy_replay;
+		delete next.energy_plant;
+	}
 	for (const key of equipmentFields) delete next[key];
 	return { ...next, ...context };
 }

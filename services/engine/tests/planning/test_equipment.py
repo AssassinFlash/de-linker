@@ -751,41 +751,23 @@ def test_plant_packaging_only_covers_the_owning_units_included_items() -> None:
     ]
 
 
-def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
+def prepared_dc_fixture_source(
     feed: dict,
     engine: Engine,
-    workspace: Workspace,
-    owner: Actor,
     monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """One two-hour native route, with explicit synthetic Woo maintenance facts."""
-    from datetime import timedelta
+    *,
+    reverse_ac_kw: float | None = None,
+) -> tuple[dict, ProductSources, SimpleNamespace, dict, dict, dict]:
+    """Reuse one synthetic maintained-source fixture; no runtime product data.
 
-    from linker_engine.planning.assets import Assets
-    from linker_engine.planning.canonical import digest, encode
-    from linker_engine.planning.csv_mapping import CsvMapping
-    from linker_engine.planning.dc_energy_kernel import DcEnergyKernel
-    from linker_engine.planning.dc_energy_parameters import DcLossScenario
-    from linker_engine.planning.errors import VersionUnavailable
-    from linker_engine.planning.interval import Interval
-    from linker_engine.planning.profile_import import ProfileImport
-    from linker_engine.planning.pv_generation import generate_pv
-    from linker_engine.planning.pv_parameters import PvGenerationParameters
-    from linker_engine.planning.pv_profile_preparation import PROFILE_PURPOSE
-    from linker_engine.planning.report_pv_components import (
-        pv_components,
-        saved_roof_components,
-    )
-    from linker_engine.planning.series_source import SeriesSource
-
-    from .test_energy_kernel import PROVENANCE
-    from .test_pv_generation import geometry, parameter_document, weather
-
+    Extra reverse-conversion figures cite an explicitly synthetic fixture file.
+    They test the native producer boundary and never claim manufacturer facts.
+    """
     inverter = next(row for row in feed["products"] if row["id"] == 4107)
     battery = next(row for row in feed["products"] if row["id"] == 2090)
 
     def figure(
-        product: dict, key: str, value: float | str, unit: str, citation: dict
+        product: dict, key: str, value: float | str | bool, unit: str, citation: dict
     ) -> None:
         product["figures"][key] = {
             "value": value,
@@ -862,6 +844,25 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
         for i, value in enumerate(rated["value"].split("/"), 1)
     ]
 
+    if reverse_ac_kw is not None:
+        synthetic_citation = {
+            "url": "https://de-linker.com/wp-content/uploads/fixtures/joint-ac-fixture-only.pdf",
+            "page": 1,
+        }
+        figure(
+            inverter,
+            "battery_grid_charging_supported",
+            "supported",
+            "",
+            synthetic_citation,
+        )
+        figure(
+            inverter,
+            "max_battery_charge_ac_power_kw",
+            reverse_ac_kw,
+            "kW",
+            synthetic_citation,
+        )
     feed = publication_feed(feed, feed["compatibility"])
     feed.update(figure_projection_version=2, compatibility_origin="woocommerce")
     loaded = SimpleNamespace(
@@ -878,6 +879,42 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
 
     monkeypatch.setattr(Publication, "read", current)
     source = ProductSources(lambda: loaded)
+    return feed, source, loaded, inverter, battery, controller
+
+
+def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
+    feed: dict,
+    engine: Engine,
+    workspace: Workspace,
+    owner: Actor,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """One two-hour native route, with explicit synthetic Woo maintenance facts."""
+    from datetime import timedelta
+
+    from linker_engine.planning.assets import Assets
+    from linker_engine.planning.canonical import digest, encode
+    from linker_engine.planning.csv_mapping import CsvMapping
+    from linker_engine.planning.dc_energy_kernel import DcEnergyKernel
+    from linker_engine.planning.dc_energy_parameters import DcLossScenario
+    from linker_engine.planning.errors import VersionUnavailable
+    from linker_engine.planning.interval import Interval
+    from linker_engine.planning.profile_import import ProfileImport
+    from linker_engine.planning.pv_generation import generate_pv
+    from linker_engine.planning.pv_parameters import PvGenerationParameters
+    from linker_engine.planning.pv_profile_preparation import PROFILE_PURPOSE
+    from linker_engine.planning.report_pv_components import (
+        pv_components,
+        saved_roof_components,
+    )
+    from linker_engine.planning.series_source import SeriesSource
+
+    from .test_energy_kernel import PROVENANCE
+    from .test_pv_generation import geometry, parameter_document, weather
+
+    feed, source, loaded, inverter, battery, controller = prepared_dc_fixture_source(
+        feed, engine, monkeypatch
+    )
     layout = geometry()
     module_id = layout["module_specs"][0]["id"]
     module_basis = source.module_basis()["module"]

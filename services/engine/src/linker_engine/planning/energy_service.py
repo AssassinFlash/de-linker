@@ -5,7 +5,8 @@ from __future__ import annotations
 from .canonical import Object
 from .energy_inputs import EnergyInputs
 from .energy_kernel import EnergyKernel
-from .errors import EvidenceMissing
+from .errors import EvidenceMissing, InvalidInput
+from .plant_energy_kernel import PlantEnergyKernel
 from .records import Actor, Run
 from .workspace import Workspace
 
@@ -18,19 +19,35 @@ class EnergyService:
         *,
         max_attempts: int,
         dc_kernel: EnergyKernel | None = None,
+        plant_kernel: PlantEnergyKernel | None = None,
     ) -> None:
         self.workspace = workspace
         self.kernel = kernel
         self.max_attempts = max_attempts
         self.dc_kernel = dc_kernel
+        self.plant_kernel = plant_kernel
 
     @property
-    def kernels(self) -> tuple[EnergyKernel, ...]:
+    def kernels(self) -> tuple[EnergyKernel | PlantEnergyKernel, ...]:
         return (
-            (self.kernel,) if self.dc_kernel is None else (self.kernel, self.dc_kernel)
+            self.kernel,
+            *((self.dc_kernel,) if self.dc_kernel is not None else ()),
+            *((self.plant_kernel,) if self.plant_kernel is not None else ()),
         )
 
-    def kernel_for(self, inputs: Object) -> EnergyKernel:
+    def kernel_for(self, inputs: Object) -> EnergyKernel | PlantEnergyKernel:
+        if {"equipment_plant", "equipment_plant_setup"}.intersection(inputs):
+            if self.plant_kernel is None:
+                raise EvidenceMissing(
+                    "plant_energy_executor: no registered joint executor"
+                )
+            if "energy_plant" not in inputs:
+                raise EvidenceMissing(
+                    "plant_energy_scenario: prepare every named storage unit and common connection"
+                )
+            return self.plant_kernel
+        if "energy_plant" in inputs:
+            raise InvalidInput("joint energy requires a prepared equipment plant")
         if EnergyInputs.from_project(inputs).coupling == "independent_ac":
             return self.kernel
         if self.dc_kernel is None:

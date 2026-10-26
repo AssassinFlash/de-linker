@@ -6,6 +6,16 @@ import { GeometryInputError } from "../../domain/validateGeometry.ts";
 export function energyErrorText(error: unknown): string {
 	if (error instanceof ApiError) {
 		switch (error.evidenceIssue?.constraint_id) {
+			case "plant_ac_reverse_capability":
+				return __(
+					"AC charging capability and power limit are not established for this converter. Review the selected product and its source documents before preparing the joint calculation.",
+					"linker-tools",
+				);
+			case "joint_outage_ac_pv_topology":
+				return __(
+					"AC PV during an outage requires separately established island-operation topology. If support is unconfirmed, mark PV as unavailable for the outage periods and review the backup connections.",
+					"linker-tools",
+				);
 			case "battery_operating_temperature_required":
 				return __(
 					"The selected battery needs a declared operating temperature for this scenario.",
@@ -39,6 +49,16 @@ export function energyErrorText(error: unknown): string {
 			? error.code
 			: "";
 	switch (code) {
+		case "plant_energy_dc_pv_used":
+			return __(
+				"This calculation includes PV only through a separate AC generation input. In the storage plan, set the total DC PV nameplate rating and each converter's DC PV allocation to zero. Confirm that every storage converter's DC PV inputs are unused.",
+				"linker-tools",
+			);
+		case "invalid_plant_energy_inputs":
+			return __(
+				"Review the equipment plan, each unit's storage settings and the shared operating periods before preparing this calculation.",
+				"linker-tools",
+			);
 		case "equipment_plant_single_candidate":
 			return __(
 				"This search covers a single system. Choose products within each system when editing a multi-system plan.",

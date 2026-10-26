@@ -249,9 +249,14 @@ export function EnergyComparison({
 									</details>
 								)}
 								<p>
-									{ref.coupling === "shared_dc"
-										? __("PV and battery share an inverter", "linker-tools")
-										: __("Separate AC connections", "linker-tools")}
+									{ref.coupling === "plant_ac"
+										? __(
+												"Multiple storage units at a shared AC metering point",
+												"linker-tools",
+											)
+										: ref.coupling === "shared_dc"
+											? __("PV and battery share an inverter", "linker-tools")
+											: __("Separate AC connections", "linker-tools")}
 								</p>
 								<p>
 									{ref.scenario_constraint_status === "satisfied"

@@ -21,6 +21,9 @@ from .energy_origins import EnergyOrigins
 if TYPE_CHECKING:
     from .dc_battery_model import DcBatteryModel
     from .dc_frame import DcFlows
+    from .dispatch_frame import Command
+    from .interval import Interval
+    from .plant_energy_model import StorageFlow
 
 
 def _energy(value: EnergyOrigins) -> Fraction:
@@ -40,6 +43,26 @@ class InventoryBoundary:
     tracked_deviation_kwh: float
     charge_kw: float
     discharge_kw: float
+
+
+@dataclass(frozen=True)
+class _BoundedTransfer:
+    interval: Interval
+    before: EnergyOrigins
+    after: EnergyOrigins
+    standing_loss: EnergyOrigins
+    internal_aux: EnergyOrigins
+    command: Command
+    capacity_kwh: float
+    reserve_kwh: float
+    eta_charge: float
+    eta_discharge: float
+    charge_limit_kw: float
+    discharge_limit_kw: float
+    actual_charge_kw: float
+    actual_discharge_kw: float
+    standing_rate_per_hour: float
+    internal_aux_kw: float
 
 
 class InventoryWitness:
@@ -126,66 +149,98 @@ class InventoryWitness:
         return float(Fraction(minimum_kwh) - self.energy)
 
     def advance_dc(self, flow: DcFlows, model: DcBatteryModel) -> InventoryBoundary:
-        """Integrate actual terminal transfers on exact time, without rounding stock.
+        """DC paths retain their own checks; only admissible transfer finances stock."""
+        return self._advance_bounded(
+            _BoundedTransfer(
+                flow.frame.interval,
+                flow.before,
+                flow.after,
+                flow.standing_loss,
+                flow.internal_aux,
+                flow.command,
+                model.usable_window_kwh,
+                flow.frame.limits.reserve_kwh,
+                model.eta_store_charge,
+                model.eta_store_discharge,
+                model.charge_terminal_kw,
+                model.discharge_terminal_kw,
+                flow.charge_terminal_dc_kw,
+                flow.discharge_terminal_dc_kw,
+                model.standing_loss_rate_per_hour,
+                model.internal_aux_kw,
+            )
+        )
 
-        DC path/priority limits are checked independently by the DC verifier.
-        These returned powers are upper inventory/command bounds, not a second
-        dispatch policy. Fixed kWh tolerances cannot finance any DC delivery.
-        """
+    def advance_storage(
+        self, flow: StorageFlow, interval: Interval
+    ) -> InventoryBoundary:
+        """Each physical plant unit has a separate conserved rational budget."""
+        model = flow.unit.for_mode(flow.mode)
+        return self._advance_bounded(
+            _BoundedTransfer(
+                interval,
+                flow.before,
+                flow.after,
+                flow.standing_loss,
+                flow.internal_aux,
+                flow.command,
+                model.usable_window_kwh,
+                flow.reserve_kwh,
+                model.eta_charge,
+                model.eta_discharge,
+                model.charge_ac_kw,
+                model.discharge_ac_kw,
+                flow.received_ac.total / interval.hours,
+                flow.delivered_ac.total / interval.hours,
+                model.standing_loss_rate_per_hour,
+                model.internal_aux_kw,
+            )
+        )
+
+    def _advance_bounded(self, step: _BoundedTransfer) -> InventoryBoundary:
         before = self.energy
-        dt = Fraction(flow.frame.interval.duration_us, 3_600_000_000)
-        eta_c, eta_d = (
-            Fraction(model.eta_store_charge),
-            Fraction(model.eta_store_discharge),
-        )
-        fraction = -math.expm1(
-            -model.standing_loss_rate_per_hour * flow.frame.interval.hours
-        )
+        dt = Fraction(step.interval.duration_us, 3_600_000_000)
+        eta_c, eta_d = Fraction(step.eta_charge), Fraction(step.eta_discharge)
+        fraction = -math.expm1(-step.standing_rate_per_hour * step.interval.hours)
         standing = Fraction(float(before) * fraction)
         post_standing = max(before - standing, Fraction())
         after_losses = post_standing - min(
-            Fraction(model.internal_aux_kw) * dt, post_standing
+            Fraction(step.internal_aux_kw) * dt, post_standing
         )
         discharge_bound = min(
-            Fraction(flow.command.discharge_kw),
-            Fraction(model.discharge_terminal_kw),
-            max(after_losses - Fraction(flow.frame.limits.reserve_kwh), Fraction())
-            * eta_d
-            / dt,
+            Fraction(step.command.discharge_kw),
+            Fraction(step.discharge_limit_kw),
+            max(after_losses - Fraction(step.reserve_kwh), Fraction()) * eta_d / dt,
         )
-        # As in the AC witness, only independently admissible transfer enters
-        # the conserved budget. The DC verifier separately requires the actual
-        # reported power to fit this bound within its local representation ULPs.
-        # It never lends an absolute kWh allowance to a short interval.
-        discharge = min(Fraction(flow.discharge_terminal_dc_kw), discharge_bound)
+        discharge = min(Fraction(step.actual_discharge_kw), discharge_bound)
         after_discharge = after_losses - discharge * dt / eta_d
         charge_bound = min(
-            Fraction(flow.command.charge_kw),
-            Fraction(model.charge_terminal_kw),
-            max(Fraction(model.usable_window_kwh) - after_discharge, Fraction())
+            Fraction(step.command.charge_kw),
+            Fraction(step.charge_limit_kw),
+            max(Fraction(step.capacity_kwh) - after_discharge, Fraction())
             / (eta_c * dt),
         )
-        charge = min(Fraction(flow.charge_terminal_dc_kw), charge_bound)
+        charge = min(Fraction(step.actual_charge_kw), charge_bound)
         self.energy = after_discharge + charge * dt * eta_c
         deviation = max(
-            abs(before - _energy(flow.before)),
+            abs(before - _energy(step.before)),
             abs(
                 after_losses
                 - (
-                    _energy(flow.before)
-                    - _energy(flow.standing_loss)
-                    - _energy(flow.internal_aux)
+                    _energy(step.before)
+                    - _energy(step.standing_loss)
+                    - _energy(step.internal_aux)
                 )
             ),
-            abs(self.energy - _energy(flow.after)),
+            abs(self.energy - _energy(step.after)),
         )
         return InventoryBoundary(
             float(
-                max(before, self.energy, _energy(flow.before), _energy(flow.after))
-                - Fraction(model.usable_window_kwh)
+                max(before, self.energy, _energy(step.before), _energy(step.after))
+                - Fraction(step.capacity_kwh)
             ),
             float(
-                Fraction(flow.frame.limits.reserve_kwh)
+                Fraction(step.reserve_kwh)
                 - min(before, after_losses, after_discharge, self.energy)
             ),
             float(deviation),

@@ -1260,3 +1260,54 @@ mail or inquiry write occurred. Temporary manual/PDF renders were removed;
 this batch's validation is closed. The previous full-goal remaining scope is
 unchanged; equipment_requirement_scope in the existing acceptance JSON is the
 current delivery record, with no additional ticket or report layer.
+
+
+### Joint AC storage — local integration closed, 2026-10-26
+
+The existing p548 instance now runs the joint executor with the same storage
+schema5, source generation and interpreter. Runtime:
+`17c1c475b97ec4f6c73201d29fec9bf9ff1e95987c3bd1be62704e3edee85578`;
+rollback `018a1e134de27e024c1ce61640c3c8c47ff2e3d3311b356cfe72623ced4e37db`.
+The superseded93059c carrier was retired in the same installation; current plus
+one rollback remain. No new instance, source pack or full backup was created.
+
+One native two-hour fixture establishes per-unit owned parameter preparation,
+frozen joint execution, exact paged unit trace and shared report/PDF output.
+The fixture's reverse-conversion claims are explicitly synthetic and are never
+maintenance inputs for a real product. Its recorded output is reused by the
+browser contract/preparation and comparison report checks; those consumers do
+not replay physics. Existing single-AC/DC, durable-operation and switch-mode
+coverage is reused or run only where changed. The closed physical core's
+verified stock/source counterexamples are not rerun.
+
+Spec and Standards reviews closed the actual integration defects: returning to
+single equipment clears effective joint inputs, comparison reports retain list
+periods and named reserve/terminal conditions, invalid numeric drafts cannot be
+lost by switching device/section, source summaries require all three origin
+buckets, and per-unit metric aggregation no longer searches every device for
+each device/interval. Copy review supplied final EN/DE wording; PO, native
+script JSON/MO and the existing build manifests were generated together.
+
+The browser's owned equipment project1ac83b43ab08481bae7e6eb05cf633c4 is now
+revision7: unit1 declares25°C and unit2 declares20°C as UI acceptance inputs.
+Switching back restored25°C; invalid numeric text disabled both unit and section
+switching and preparation until corrected. Product quantities and source facts
+were not changed. It has no load/PV profiles and is not a numerical performance
+acceptance project. The existing revision6 report remains frozen.
+
+The joint PDF artefact uses the retained native report facts with final wording
+and the same explicit credits argument as ReportKernel. Rendering initially
+omitted that optional argument and picked the legacy default attribution; that
+manual-render discrepancy was corrected without changing product code or
+rerunning the numerical fixture.
+
+Open full-goal work remains explicit: real Woo AC charging envelopes, per-unit
+shared-DC PV/bridge execution, joint manufacturer and country qualification,
+remaining downstream/migration and final release. A successful constant-capacity
+scenario does not close any of those engineering/release gates.
+
+Final EN/DE1440/390 screens show the current source/preparation boundary with no
+horizontal page overflow. The new DC-PV confirmation reuses the existing
+lp-field checkbox surface. The final build manifests match sources; native
+script catalog and MO bindings were independently checked. Only the necessary
+current screens/PDF/native consumer fixture are retained for this batch.

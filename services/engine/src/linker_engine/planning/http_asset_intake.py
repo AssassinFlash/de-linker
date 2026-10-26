@@ -9,6 +9,7 @@ from .assets import Asset, Assets
 from .canonical import Object, digest, encode
 from .dc_energy_parameters import DcLossScenario
 from .dc_parameter_source import prepare_dc_parameters
+from .equipment_plant import EquipmentPlant
 from .errors import InvalidInput
 from .http_documents import BatteryScenario, CsvImport
 from .product_sources import ProductSources
@@ -93,6 +94,11 @@ class HttpAssetIntake:
                 if isinstance(body.parameters, DcLossScenario)
                 else {}
             ),
+            **(
+                {"equipment_unit_id": body.equipment_unit_id}
+                if body.equipment_unit_id is not None
+                else {}
+            ),
         }
 
     def battery(self, actor: Actor, body: BatteryScenario) -> Asset:
@@ -109,7 +115,30 @@ class HttpAssetIntake:
                 actor, body.project_id, revision=body.expected_revision
             )
             basis = self.products.equipment_basis()
-            prepared = prepare_dc_parameters(project.inputs, basis, body.parameters)
+            selected = project.inputs
+            if body.equipment_unit_id is not None:
+                plant = EquipmentPlant.from_inputs(project.inputs)
+                unit = next(
+                    (unit for unit in plant.units if unit.id == body.equipment_unit_id),
+                    None,
+                )
+                if unit is None:
+                    raise InvalidInput(
+                        "the parameter request must name a prepared plant unit"
+                    )
+                selected = {
+                    key: value
+                    for key, value in project.inputs.items()
+                    if key
+                    not in {
+                        "equipment_plant",
+                        "equipment_plant_setup",
+                        "equipment_plant_requirements",
+                        "equipment_candidate",
+                    }
+                }
+                selected["equipment_selection"] = unit.selection.model_dump(mode="json")
+            prepared = prepare_dc_parameters(selected, basis, body.parameters)
             self.products.confirm_basis(basis, require_reference=False)
             metadata = {
                 **metadata,

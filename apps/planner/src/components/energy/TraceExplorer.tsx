@@ -1,3 +1,6 @@
+import { PLANT_ENERGY_TASK } from "../../domain/plantEnergy.ts";
+import { readObject } from "../../data/readProtocol.ts";
+import type { JsonObject } from "../../data/protocol.ts";
 import { runTask } from "../../data/planningProtocol.ts";
 import { DC_ENERGY_TASK } from "../../domain/dcEnergy.ts";
 import { lazy, Suspense, useMemo, useState } from "react";
@@ -32,6 +35,22 @@ export function TraceExplorer({
 	const [open, setOpen] = useState(false),
 		[offset, setOffset] = useState(0),
 		[first, setFirst] = useState("1");
+	const [unitId, selectUnit] = useState<string | null>(null);
+	const joint = runTask(run) === PLANT_ENERGY_TASK;
+	const units = joint
+		? (readObject(readObject(run.result?.equipment_binding).plant)
+				.units as readonly JsonObject[])
+		: [];
+	const unitLabels = unitId
+		? [
+				__("Storage unit", "linker-tools"),
+				__("Unit AC charging power (interval mean, kW)", "linker-tools"),
+				__("Unit AC discharging power (interval mean, kW)", "linker-tools"),
+				__("Stored from PV (kWh)", "linker-tools"),
+				__("Stored from grid (kWh)", "linker-tools"),
+				__("Stored with unknown origin (kWh)", "linker-tools"),
+			]
+		: [];
 	const pageSize = session.runtime.limits.max_page_size;
 	const dc = runTask(run) === DC_ENERGY_TASK;
 	const labels = useMemo(
@@ -65,6 +84,7 @@ export function TraceExplorer({
 			run.result?.trace_sha256,
 			offset,
 			pageSize,
+			unitId,
 		],
 		enabled:
 			active &&
@@ -77,13 +97,20 @@ export function TraceExplorer({
 			readTraceWindow(
 				await client.query(
 					"runs/trace",
-					{ schema_version: 1, run_id: run.id, offset, page_size: pageSize },
+					{
+						schema_version: 1,
+						run_id: run.id,
+						offset,
+						page_size: pageSize,
+						...(unitId ? { unit_id: unitId } : {}),
+					},
 					session.query_scope,
 					signal,
 				),
 				run,
 				offset,
 				pageSize,
+				unitId,
 			),
 	});
 	const page =
@@ -98,13 +125,17 @@ export function TraceExplorer({
 		if (!page || !client.isCurrentScope(session.query_scope)) return;
 		const blob = new Blob(
 			[
-				traceCsv(page, [
-					"start_utc",
-					"end_utc",
-					...labels.map(
-						(label, index) => `${label} (${index === 6 ? "kWh" : "kW"})`,
-					),
-				]),
+				traceCsv(
+					page,
+					[
+						"start_utc",
+						"end_utc",
+						...labels.map(
+							(label, index) => `${label} (${index === 6 ? "kWh" : "kW"})`,
+						),
+					],
+					unitLabels,
+				),
 			],
 			{ type: "text/csv;charset=utf-8" },
 		);
@@ -129,6 +160,32 @@ export function TraceExplorer({
 							"linker-tools",
 						)}
 					</p>
+					{joint && (
+						<label className="lp-field">
+							<span>{__("Storage unit", "linker-tools")}</span>
+							<select
+								value={unitId ?? ""}
+								onChange={(e) => selectUnit(e.currentTarget.value || null)}
+							>
+								<option value="">
+									{__("Shared AC metering point", "linker-tools")}
+								</option>
+								{units.map((u) => (
+									<option key={String(u.id)} value={String(u.id)}>
+										{String(u.name)}
+									</option>
+								))}
+							</select>
+						</label>
+					)}
+					{joint && (
+						<p className="lp-profile-help">
+							{__(
+								"The chart shows the shared AC metering point. Select a storage unit to add its AC power and stored-energy data to the table.",
+								"linker-tools",
+							)}
+						</p>
+					)}
 					{query.isFetching && (
 						<p role="status">
 							{__("Loading interval values…", "linker-tools")}
@@ -171,6 +228,46 @@ export function TraceExplorer({
 									/>
 								</Suspense>
 							</ChartBoundary>
+							{unitId && (
+								<div className="lp-table-scroll" tabIndex={0}>
+									<table>
+										<caption>
+											{String(units.find((u) => u.id === unitId)?.name)}
+										</caption>
+										<thead>
+											<tr>
+												<th>{__("Start", "linker-tools")}</th>
+												{unitLabels.slice(1).map((label) => (
+													<th key={label}>{label}</th>
+												))}
+											</tr>
+										</thead>
+										<tbody>
+											{page.rows.map((row) => {
+												const u = row.unit!;
+												return (
+													<tr key={row.interval_index}>
+														<th scope="row">{row.start_utc}</th>
+														{[
+															u.charge_kw,
+															u.discharge_kw,
+															u.after.pv_kwh,
+															u.after.grid_kwh,
+															u.after.initial_unknown_kwh,
+														].map((n, index) => (
+															<td key={index}>
+																{new Intl.NumberFormat(locale, {
+																	maximumFractionDigits: 5,
+																}).format(n)}
+															</td>
+														))}
+													</tr>
+												);
+											})}
+										</tbody>
+									</table>
+								</div>
+							)}
 							<div className="lp-trace-controls">
 								<button
 									type="button"

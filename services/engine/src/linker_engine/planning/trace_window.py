@@ -15,7 +15,15 @@ class TraceWindow:
     def __init__(self, workspace: Workspace) -> None:
         self.workspace = workspace
 
-    def page(self, actor: Actor, run_id: str, *, offset: int, page_size: int) -> Object:
+    def page(
+        self,
+        actor: Actor,
+        run_id: str,
+        *,
+        offset: int,
+        page_size: int,
+        unit_id: str | None = None,
+    ) -> Object:
         run = self.workspace.run(actor, run_id)
         positive_integer(page_size, "trace page size")
         if type(offset) is not int or offset < 0:
@@ -28,7 +36,11 @@ class TraceWindow:
         flows = trace.get("flows")
         if (
             result.get("kind")
-            not in ("single_ac_energy_replay_v1", "shared_dc_energy_replay_v1")
+            not in (
+                "single_ac_energy_replay_v1",
+                "shared_dc_energy_replay_v1",
+                "plant_ac_energy_replay_v1",
+            )
             or trace.get("kind") != result["kind"]
             or trace.get("manifest_sha256") != run.manifest_sha256
             or not isinstance(flows, list)
@@ -38,6 +50,9 @@ class TraceWindow:
         end = min(offset + page_size, len(flows))
         rows: list[Json] = []
         dc = result["kind"] == "shared_dc_energy_replay_v1"
+        plant = result["kind"] == "plant_ac_energy_replay_v1"
+        if unit_id is not None and not plant:
+            raise InvalidInput("unit trace selection requires a joint plant result")
         for index in range(offset, end):
             flow = flows[index]
             if not isinstance(flow, dict):
@@ -53,8 +68,40 @@ class TraceWindow:
             if any(type(value) not in (int, float) for value in buckets):
                 raise VersionUnavailable("stored energy origins unavailable")
             assert isinstance(frame, dict)
+            selected: Object = {}
+            if unit_id is not None:
+                units = flow.get("units")
+                if not isinstance(units, list):
+                    raise VersionUnavailable(
+                        "joint trace has no individual unit states"
+                    )
+                matching = [
+                    unit
+                    for unit in units
+                    if isinstance(unit, dict) and unit.get("unit_id") == unit_id
+                ]
+                if len(matching) != 1:
+                    raise NotFound("named storage unit trace not found")
+                unit = matching[0]
+                selected = {
+                    "unit": {
+                        key: unit[key]
+                        for key in (
+                            "unit_id",
+                            "mode",
+                            "reserve_kwh",
+                            "before",
+                            "after",
+                            "charge_kw",
+                            "discharge_kw",
+                            "charge_command_unmet_kw",
+                            "discharge_command_unmet_kw",
+                        )
+                    }
+                }
             rows.append(
                 {
+                    **selected,
                     "interval_index": index,
                     "start_utc": interval["start_utc"],
                     "end_utc": interval["end_utc"],

@@ -41,6 +41,7 @@ export function DcStorageForm({
 	scope,
 	active,
 	inverterId,
+	storageOnly = false,
 }: {
 	value: ScenarioDraft;
 	locale: string;
@@ -53,6 +54,7 @@ export function DcStorageForm({
 	scope: string;
 	active: boolean;
 	inverterId: number | null;
+	storageOnly?: boolean;
 }) {
 	const dc = value.dc ?? emptyDcScenario();
 	const catalog = useEquipmentProducts(client, scope, active);
@@ -78,7 +80,11 @@ export function DcStorageForm({
 	) => onChange({ ...value, dc: { ...dc, ...patch }, battery_binding: null });
 	return (
 		<section className="lp-scenario-block">
-			<h3>{__("Shared inverter and battery", "linker-tools")}</h3>
+			<h3>
+				{storageOnly
+					? __("Storage converter and battery", "linker-tools")
+					: __("Shared inverter and battery", "linker-tools")}
+			</h3>
 			<p className="lp-profile-help">
 				{__(
 					"The saved product selection supplies battery capacity, voltage, current and equipment power limits where documented. Losses and auxiliary consumption remain separate calculation assumptions.",
@@ -101,19 +107,23 @@ export function DcStorageForm({
 				</p>
 			)}
 			<div className="lp-geometry-fields">
-				<label className="lp-field">
-					<span>{__("PV conversion group", "linker-tools")}</span>
-					<input
-						value={dc.pv_converter_id}
-						list="lp-dc-converters"
-						onChange={(e) => change({ pv_converter_id: e.currentTarget.value })}
-					/>
-					<datalist id="lp-dc-converters">
-						{converters.map((id) => (
-							<option key={id} value={id} />
-						))}
-					</datalist>
-				</label>
+				{!storageOnly && (
+					<label className="lp-field">
+						<span>{__("PV conversion group", "linker-tools")}</span>
+						<input
+							value={dc.pv_converter_id}
+							list="lp-dc-converters"
+							onChange={(e) =>
+								change({ pv_converter_id: e.currentTarget.value })
+							}
+						/>
+						<datalist id="lp-dc-converters">
+							{converters.map((id) => (
+								<option key={id} value={id} />
+							))}
+						</datalist>
+					</label>
+				)}
 				{ports !== undefined ? (
 					<label className="lp-field">
 						<span>{__("Connected battery port", "linker-tools")}</span>
@@ -172,22 +182,26 @@ export function DcStorageForm({
 					onChange={(n) => change({ battery_temperature_c: n })}
 				/>
 
-				<ScenarioNumber
-					field="dc-aux"
-					label={__("Auxiliary demand on the DC bus", "linker-tools")}
-					value={dc.aux_dc_kw}
-					unit="kW"
-					locale={locale}
-					report={report}
-					onChange={(n) => change({ aux_dc_kw: n })}
-				/>
-			</div>
-			<p className="lp-profile-help">
-				{__(
-					"The selected PV source must retain DC power for this conversion group. A CSV containing AC generation cannot supply this input. The battery port is checked against the selected inverter.",
-					"linker-tools",
+				{!storageOnly && (
+					<ScenarioNumber
+						field="dc-aux"
+						label={__("Auxiliary demand on the DC bus", "linker-tools")}
+						value={dc.aux_dc_kw}
+						unit="kW"
+						locale={locale}
+						report={report}
+						onChange={(n) => change({ aux_dc_kw: n })}
+					/>
 				)}
-			</p>
+			</div>
+			{!storageOnly && (
+				<p className="lp-profile-help">
+					{__(
+						"The selected PV source must retain DC power for this conversion group. A CSV containing AC generation cannot supply this input. The battery port is checked against the selected inverter.",
+						"linker-tools",
+					)}
+				</p>
+			)}
 			<p className="lp-profile-help">
 				{__(
 					"Battery temperature is a fixed scenario condition used to check the documented charging and discharging temperature ranges. It is not inferred from outdoor weather. This model uses fixed loss assumptions and does not simulate temperature changes.",

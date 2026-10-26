@@ -36,7 +36,7 @@ export const COMPARISON_DIFFERENCES = [
 export interface ComparisonReference extends JsonObject {
 	run_id: string;
 	revision: number;
-	coupling: "independent_ac" | "shared_dc";
+	coupling: "independent_ac" | "shared_dc" | "plant_ac";
 	scenario_constraint_status: "satisfied" | "violated";
 	equipment_status: string | null;
 	equipment_models: readonly string[];
@@ -108,7 +108,9 @@ export function readEnergyComparison(
 			!hash(id, 32) ||
 			!Number.isSafeInteger(ref.revision) ||
 			Number(ref.revision) < 1 ||
-			!["shared_dc", "independent_ac"].includes(String(ref.coupling)) ||
+			!["shared_dc", "independent_ac", "plant_ac"].includes(
+				String(ref.coupling),
+			) ||
 			!["satisfied", "violated"].includes(
 				String(ref.scenario_constraint_status),
 			) ||

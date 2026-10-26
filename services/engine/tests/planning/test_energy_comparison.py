@@ -33,6 +33,57 @@ from .test_energy_kernel import BATTERY, PROVENANCE, TOLERANCE, create_scenario
 from .test_private_http import TOKEN, headers
 
 
+def test_joint_comparison_report_keeps_list_periods_and_named_final_requirements() -> (
+    None
+):
+    """Read the retained native fixture; do not replay its physical calculation."""
+    import json
+    from pathlib import Path
+
+    from linker_engine.planning.comparison_report import comparison_sections
+    from linker_engine.planning.energy_comparison import EnergyComparisonSide
+    from linker_engine.planning.plant_energy_inputs import PlantEnergyInputs
+    from linker_engine.planning.records import Run
+    from linker_engine.planning.report_model import number
+
+    fixture = json.loads(
+        (
+            Path(__file__).resolve().parents[4]
+            / "apps/planner/tests/fixtures/plant-energy-run.json"
+        ).read_text()
+    )
+    run = Run(**fixture["run"])
+    scenario = PlantEnergyInputs.from_project(fixture["project"]["inputs"])
+    # A presentation-only declared final requirement distinguishes it from None.
+    scenario = scenario.model_copy(
+        update={
+            "units": [
+                scenario.units[0].model_copy(update={"terminal_min_kwh": 2}),
+                *scenario.units[1:],
+            ]
+        }
+    )
+    side = EnergyComparisonSide(run, run.result, fixture["project"]["inputs"], scenario)
+    reference = side.reference()
+    assert isinstance(reference["operating_periods"], list)
+    sections = comparison_sections(
+        {
+            "baseline": reference,
+            "candidate": reference,
+            "conditions_aligned": False,
+            "metrics": [],
+            "conditions": [],
+            "differences": [],
+        },
+        "en",
+        number,
+    )
+    assert any(
+        row.label.endswith("Minimum final stored energy") and row.value == "2 kWh"
+        for row in sections[1].rows
+    )
+
+
 def test_saved_comparison_keeps_original_conditions_and_publishes_report(
     workspace: Workspace, owner: Actor
 ) -> None:

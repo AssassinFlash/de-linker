@@ -2898,8 +2898,9 @@ msgstr "Modulspezifikation hinzufügen"
 msgid "Add obstacle"
 msgstr "Hindernis hinzufügen"
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
 #: ../../apps/planner/src/components/energy/ScenarioForm.tsx:281
+#: ../../apps/planner/src/components/energy/OperatingPeriodsForm.tsx:74
 msgid "Add operating period"
 msgstr "Betriebszeitraum hinzufügen"
 
@@ -3095,8 +3096,9 @@ msgstr "Zurück zu den Projekten"
 msgid "Basis for the annual figure"
 msgstr "Grundlage des Jahreswerts"
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
 #: ../../apps/planner/src/components/energy/ScenarioForm.tsx:203
+#: ../../apps/planner/src/components/energy/InitialInventoryForm.tsx:65
 msgid "Basis for the initial state"
 msgstr "Grundlage des Anfangszustands"
 
@@ -3394,8 +3396,9 @@ msgstr "Geometrie des Umrisses wird geprüft…"
 msgid "Checking layout…"
 msgstr "Belegung wird geprüft …"
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
 #: ../../apps/planner/src/components/energy/ScenarioForm.tsx:234
+#: ../../apps/planner/src/components/energy/OperatingPeriodsForm.tsx:37
 msgid "Checking profile coverage…"
 msgstr "Zeitliche Profilabdeckung wird geprüft…"
 
@@ -3432,8 +3435,9 @@ msgstr "Modell auswählen"
 msgid "Choose a source"
 msgstr "Quelle auswählen"
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
 #: ../../apps/planner/src/components/energy/ScenarioForm.tsx:295
+#: ../../apps/planner/src/components/energy/PlantEnergyForm.tsx:181
 msgid "Choose an option"
 msgstr "Bitte auswählen"
 
@@ -3908,8 +3912,9 @@ msgstr "Stromabrechnungen"
 msgid "Electricity consumption"
 msgstr "Stromverbrauch"
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
 #: ../../apps/planner/src/components/energy/ScenarioForm.tsx:192
+#: ../../apps/planner/src/components/energy/InitialInventoryForm.tsx:56
 msgid "Empty stored-energy inventory selected for the start of this scenario."
 msgstr ""
 "Für den Start dieses Szenarios wurde eine gespeicherte Energie von null "
@@ -4153,13 +4158,17 @@ msgstr ""
 "In dieser Spalte steht 0 für das erste und 1 für das zweite Vorkommen einer "
 "doppelt auftretenden lokalen Endzeit."
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
 #: ../../apps/planner/src/components/energy/ScenarioForm.tsx:163
+#: ../../apps/planner/src/components/energy/PlantStorageSummary.tsx:40
+#: ../../apps/planner/src/components/energy/InitialInventoryForm.tsx:33
 msgid "From PV"
 msgstr "Aus PV-Erzeugung"
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
 #: ../../apps/planner/src/components/energy/ScenarioForm.tsx:165
+#: ../../apps/planner/src/components/energy/PlantStorageSummary.tsx:41
+#: ../../apps/planner/src/components/energy/InitialInventoryForm.tsx:35
 msgid "From the grid"
 msgstr "Aus dem Stromnetz"
 
@@ -4460,8 +4469,9 @@ msgstr "Berücksichtigte Module"
 msgid "Industrial"
 msgstr "Industrie"
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
 #: ../../apps/planner/src/components/energy/ScenarioForm.tsx:148
+#: ../../apps/planner/src/components/energy/InitialInventoryForm.tsx:18
 msgid "Initial stored energy"
 msgstr "Gespeicherte Energie zu Beginn"
 
@@ -4516,8 +4526,9 @@ msgstr ""
 msgid "Internal auxiliary demand supplied"
 msgstr "Deckung des internen Hilfsverbrauchs"
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
 #: ../../apps/planner/src/components/energy/ScenarioForm.tsx:22
+#: ../../apps/planner/src/components/energy/DcStorageForm.tsx:26
 msgid "Internal auxiliary power"
 msgstr "Interner Hilfsverbrauch"
 
@@ -4888,8 +4899,9 @@ msgid ""
 msgstr ""
 "Meter relativ zum Höhenbezug des Projekts. Negative Werte sind zulässig."
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
 #: ../../apps/planner/src/components/energy/ScenarioForm.tsx:307
+#: ../../apps/planner/src/components/energy/PlantEnergyForm.tsx:193
 msgid "Minimum final stored energy"
 msgstr "Gespeicherte Mindestenergie am Ende"
 
@@ -5067,8 +5079,9 @@ msgstr ""
 msgid "No file selected"
 msgstr "Keine Datei ausgewählt"
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
 #: ../../apps/planner/src/components/energy/ScenarioForm.tsx:297
+#: ../../apps/planner/src/components/energy/PlantEnergyForm.tsx:183
 msgid "No minimum required"
 msgstr "Kein Mindestwert erforderlich"
 
@@ -5124,6 +5137,7 @@ msgstr "Nicht erfasst."
 
 #: ../../apps/planner/src/components/equipment/PlantSetup.tsx ../../apps/planner/src/components/equipment/EquipmentResult.tsx
 #: build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/energy/PlantParameterBasis.tsx:44
 msgid "Not specified"
 msgstr "Nicht angegeben"
 
@@ -5287,8 +5301,9 @@ msgstr "Übernommene Aussparungen"
 msgid "Operating period %d"
 msgstr "Betriebszeitraum %d"
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
 #: ../../apps/planner/src/components/energy/ScenarioForm.tsx:220
+#: ../../apps/planner/src/components/energy/OperatingPeriodsForm.tsx:23
 msgid "Operating periods"
 msgstr "Betriebszeiträume"
 
@@ -5312,8 +5327,10 @@ msgstr "Ursprung Höhe"
 msgid "Origin north"
 msgstr "Ursprung Nord"
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
 #: ../../apps/planner/src/components/energy/ScenarioForm.tsx:166
+#: ../../apps/planner/src/components/energy/PlantStorageSummary.tsx:42
+#: ../../apps/planner/src/components/energy/InitialInventoryForm.tsx:36
 msgid "Origin unknown"
 msgstr "Herkunft unbekannt"
 
@@ -5522,8 +5539,9 @@ msgstr ""
 "Die Zeitangaben benötigen Datum, Uhrzeit und entweder Z für UTC oder einen "
 "numerischen UTC-Versatz."
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
 #: ../../apps/planner/src/components/energy/ScenarioForm.tsx:222
+#: ../../apps/planner/src/components/energy/OperatingPeriodsForm.tsx:26
 msgid ""
 "Periods must join without gaps or overlaps and stay within the source data. "
 "Timestamps include Z for UTC or an explicit offset, such as +01:00."
@@ -5990,8 +6008,9 @@ msgid "Reserved energy exceeds the usable energy window."
 msgstr ""
 "Die Energiereserve ist größer als der nutzbare Energiebereich des Speichers."
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
 #: ../../apps/planner/src/components/energy/OperatingPeriodForm.tsx:85
+#: ../../apps/planner/src/components/energy/PlantEnergyForm.tsx:154
 msgid "Reserved stored energy"
 msgstr "Energiereserve im Speicher"
 
@@ -6788,8 +6807,9 @@ msgstr "Quelle und Bedingungen der Spezifikation"
 msgid "Specified cap"
 msgstr "Grenzwert festlegen"
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
 #: ../../apps/planner/src/components/energy/ScenarioForm.tsx:300
+#: ../../apps/planner/src/components/energy/PlantEnergyForm.tsx:186
 msgid "Specify a minimum"
 msgstr "Mindestwert festlegen"
 
@@ -6797,13 +6817,15 @@ msgstr "Mindestwert festlegen"
 msgid "Spectral factor"
 msgstr "Spektraler Korrekturfaktor"
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
 #: ../../apps/planner/src/components/energy/ScenarioForm.tsx:24
+#: ../../apps/planner/src/components/energy/DcStorageForm.tsx:28
 msgid "Standing-loss coefficient"
 msgstr "Koeffizient der zeitabhängigen Speicherverluste"
 
 #: ../../apps/planner/src/components/ProfileReview.tsx:156
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/energy/TraceExplorer.tsx:239
 msgid "Start"
 msgstr "Beginn"
 
@@ -6817,8 +6839,9 @@ msgstr "Zeichnung beginnen"
 msgid "Start with UTC or offset"
 msgstr "Beginn (UTC oder Zeitversatz)"
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
 #: ../../apps/planner/src/components/energy/ScenarioForm.tsx:200
+#: ../../apps/planner/src/components/energy/InitialInventoryForm.tsx:62
 msgid "Start with an empty battery"
 msgstr "Anfangsenergie auf null setzen"
 
@@ -6827,8 +6850,9 @@ msgstr "Anfangsenergie auf null setzen"
 msgid "Starting file line"
 msgstr "Erste Dateizeile"
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
 #: ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:548
+#: ../../apps/planner/src/components/energy/PlantStorageSummary.tsx:38
 msgid "Starting state"
 msgstr "Anfangszustand"
 
@@ -6870,8 +6894,9 @@ msgstr ""
 msgid "Stored energy"
 msgstr "Speicherenergie"
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
 #: ../../apps/planner/src/components/energy/ScenarioForm.tsx:284
+#: ../../apps/planner/src/components/energy/PlantEnergyForm.tsx:164
 msgid "Stored energy at the end of the calculation"
 msgstr "Speicherenergie am Ende der Berechnung"
 
@@ -6887,8 +6912,9 @@ msgstr ""
 "Speicherzustand wird weder um Mitternacht noch zu Beginn eines Netzausfalls "
 "zurückgesetzt."
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
 #: ../../apps/planner/src/components/energy/ScenarioForm.tsx:150
+#: ../../apps/planner/src/components/energy/InitialInventoryForm.tsx:21
 msgid ""
 "Stored energy keeps its origin throughout the calculation. Energy from the "
 "grid or an unknown source is excluded from the solar-supplied total."
@@ -8361,8 +8387,9 @@ msgstr "Dachkoordinaten übernehmen"
 msgid "Use saved revision"
 msgstr "Gespeicherte Version verwenden"
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
 #: ../../apps/planner/src/components/energy/ScenarioForm.tsx:235
+#: ../../apps/planner/src/components/energy/OperatingPeriodsForm.tsx:38
 msgid "Use the shared profile range"
 msgstr "Gemeinsamen Profilzeitraum übernehmen"
 
@@ -9391,7 +9418,8 @@ msgstr "Verfügbare PV-Leistung (DC)"
 msgid "Charging power at the battery terminals (DC)"
 msgstr "Ladeleistung am Batterieanschluss (DC)"
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/energy/PlantParameterBasis.tsx:35
 msgid "Connected battery port"
 msgstr "Verwendeter Batterieanschluss"
 
@@ -9399,11 +9427,13 @@ msgstr "Verwendeter Batterieanschluss"
 msgid "Constraint"
 msgstr "Bedingung"
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/energy/DcStorageForm.tsx:14
 msgid "DC converter: charging efficiency"
 msgstr "DC-Wandler: Ladewirkungsgrad"
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/energy/DcStorageForm.tsx:16
 msgid "DC converter: discharging efficiency"
 msgstr "DC-Wandler: Entladewirkungsgrad"
 
@@ -9431,11 +9461,13 @@ msgstr "Netzeinspeisung (AC)"
 msgid "Grid import (AC)"
 msgstr "Netzbezug (AC)"
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/energy/DcStorageForm.tsx:24
 msgid "Inverter: AC to DC efficiency"
 msgstr "Wechselrichter: Wirkungsgrad AC zu DC"
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/energy/DcStorageForm.tsx:22
 msgid "Inverter: DC to AC efficiency"
 msgstr "Wechselrichter: Wirkungsgrad DC zu AC"
 
@@ -9498,7 +9530,8 @@ msgstr ""
 "Für diese Berechnung fehlen erforderliche Quellangaben. Prüfen Sie die "
 "Geräteauswahl, die PV-Quelle und die Verlustannahmen."
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/energy/PlantEnergyForm.tsx:89
 msgid "Review equipment selection"
 msgstr "Geräteauswahl prüfen"
 
@@ -9538,11 +9571,13 @@ msgstr "Quelldetails"
 msgid "Source field"
 msgstr "Datenfeld der Quelle"
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/energy/DcStorageForm.tsx:18
 msgid "Storage: charging efficiency"
 msgstr "Speicher: Ladewirkungsgrad"
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/energy/DcStorageForm.tsx:20
 msgid "Storage: discharging efficiency"
 msgstr "Speicher: Entladewirkungsgrad"
 
@@ -9620,7 +9655,8 @@ msgstr ""
 "Der gewählten Modulanzahl konnte keine dokumentierte Konfiguration eindeutig "
 "zugeordnet werden. Prüfen Sie die Geräteauswahl und die Quelldetails."
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/energy/PlantParameterBasis.tsx:40
 msgid "Battery temperature for this scenario"
 msgstr "Batterietemperatur im Szenario"
 
@@ -9836,7 +9872,8 @@ msgstr "Standort und Zeitzone"
 msgid "Starting stored energy"
 msgstr "Gespeicherte Energie zu Beginn"
 
-#: build/planner/assets/planner.js
+#: build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/energy/PlantStorageSummary.tsx:39
 msgid "Stored energy at end"
 msgstr "Gespeicherte Energie am Ende"
 
@@ -11354,3 +11391,127 @@ msgstr "Die dokumentierte Herstellervorgabe gilt für die angegebene Betriebsart
 #: ../../apps/planner/src/components/equipment/equipmentLabels.ts
 msgid "Group size is checked only against manufacturer limits documented for the declared operating mode, topology and communication setup. If no applicable limit is documented, it remains unknown."
 msgstr "Die Gerätezahl der Gruppe wird nur mit Herstellergrenzen abgeglichen, die für die angegebene Betriebsart, Topologie und Kommunikationsanbindung dokumentiert sind. Ist keine anwendbare Grenze dokumentiert, bleibt sie unbekannt."
+
+#: ../../apps/planner/src/components/energy/PlantEnergyForm.tsx:73
+#: build/planner/assets/planner.js:1
+msgid "This calculation uses one shared AC metering point. Stored energy and its origin, power limits and loss assumptions are kept separately for each storage unit."
+msgstr "Die Berechnung verwendet einen gemeinsamen AC-Messpunkt. Gespeicherte Energie und ihre Herkunft, Leistungsgrenzen und Verlustannahmen werden für jede Speichereinheit getrennt geführt."
+
+#: ../../apps/planner/src/components/energy/PlantEnergyForm.tsx:81
+#: ../../apps/planner/src/components/energy/EnergyError.tsx:54
+#: build/planner/assets/planner.js:1
+msgid "This calculation includes PV only through a separate AC generation input. In the storage plan, set the total DC PV nameplate rating and each converter's DC PV allocation to zero. Confirm that every storage converter's DC PV inputs are unused."
+msgstr "Diese Berechnung berücksichtigt PV nur über eine separate AC-Erzeugung. Setzen Sie in der Speicherplanung sowohl die gesamte als auch die je Umrichter zugewiesene DC-PV-Nennleistung auf null. Bestätigen Sie außerdem, dass die DC-PV-Eingänge aller Speicherumrichter ungenutzt sind."
+
+#: ../../apps/planner/src/components/energy/PlantEnergyForm.tsx:95
+#: ../../apps/planner/src/components/energy/PlantStorageSummary.tsx:37
+#: ../../apps/planner/src/components/energy/TraceExplorer.tsx:46
+#: ../../apps/planner/src/components/energy/TraceExplorer.tsx:165
+#: build/planner/assets/planner.js:1
+msgid "Storage unit"
+msgstr "Speichereinheit"
+
+#: ../../apps/planner/src/components/energy/PlantEnergyForm.tsx:120
+#: build/planner/assets/planner.js:1
+msgid "This converter's DC PV inputs are unused"
+msgstr "Die DC-PV-Eingänge dieses Umrichters sind ungenutzt"
+
+#: ../../apps/planner/src/components/energy/PlantEnergyForm.tsx:221
+#: build/planner/assets/planner.js:1
+msgid "Import and export limits apply once at the shared AC metering point. In each interval, charging or discharging is shared in proportion to each unit's available power within its declared power and energy limits. The rule uses no forecast, does not request grid charging and does not reproduce a manufacturer EMS or an optimal dispatch schedule."
+msgstr "Die Bezugs- und Einspeisegrenzen gelten einmal am gemeinsamen AC-Messpunkt. Für jedes Zeitintervall verteilt die Berechnung das Laden oder Entladen proportional zur verfügbaren Leistung der einzelnen Einheiten innerhalb ihrer vorgegebenen Leistungs- und Energiegrenzen. Die Regel verwendet keine Prognose und fordert kein Laden aus dem Netz an. Sie bildet weder ein Hersteller-EMS noch eine optimale Einsatzplanung ab."
+
+#: ../../apps/planner/src/components/energy/PlantEnergyForm.tsx:227
+#: build/planner/assets/planner.js:1
+msgid "These results describe the declared scenario. Joint operating capability, continuous equipment performance, backup transfer and country-specific grid compliance are not established by this calculation."
+msgstr "Die Ergebnisse beschreiben das angegebene Szenario. Der gemeinsame Betrieb der Geräte, ihre Dauerleistung, die Notstromumschaltung und die Erfüllung länderspezifischer Netzanforderungen sind durch diese Berechnung nicht nachgewiesen."
+
+#: ../../apps/planner/src/components/energy/PlantParameterBasis.tsx:49
+#: build/planner/assets/planner.js:1
+msgid "Usable storage capacity in this scenario"
+msgstr "Nutzbare Speicherkapazität in diesem Szenario"
+
+#: ../../apps/planner/src/components/energy/PlantStorageSummary.tsx:26
+#: build/planner/assets/planner.js:1
+msgid "Stored energy by unit"
+msgstr "Gespeicherte Energie je Speichereinheit"
+
+#: ../../apps/planner/src/components/energy/PlantStorageSummary.tsx:31
+#: build/planner/assets/planner.js:1
+msgid "Initial and final stored energy (kWh), with final energy shown by origin"
+msgstr "Gespeicherte Energie zu Beginn und am Ende (kWh); die am Ende gespeicherte Energie ist nach Herkunft aufgeteilt"
+
+#: ../../apps/planner/src/components/energy/TraceExplorer.tsx:47
+#: build/planner/assets/planner.js:1
+msgid "Unit AC charging power (interval mean, kW)"
+msgstr "AC-Ladeleistung der Speichereinheit (Intervallmittel, kW)"
+
+#: ../../apps/planner/src/components/energy/TraceExplorer.tsx:48
+#: build/planner/assets/planner.js:1
+msgid "Unit AC discharging power (interval mean, kW)"
+msgstr "AC-Entladeleistung der Speichereinheit (Intervallmittel, kW)"
+
+#: ../../apps/planner/src/components/energy/TraceExplorer.tsx:49
+#: build/planner/assets/planner.js:1
+msgid "Stored from PV (kWh)"
+msgstr "Gespeicherte Energie aus PV (kWh)"
+
+#: ../../apps/planner/src/components/energy/TraceExplorer.tsx:50
+#: build/planner/assets/planner.js:1
+msgid "Stored from grid (kWh)"
+msgstr "Gespeicherte Energie aus dem Netz (kWh)"
+
+#: ../../apps/planner/src/components/energy/TraceExplorer.tsx:51
+#: build/planner/assets/planner.js:1
+msgid "Stored with unknown origin (kWh)"
+msgstr "Gespeicherte Energie unbekannter Herkunft (kWh)"
+
+#: ../../apps/planner/src/components/energy/TraceExplorer.tsx:171
+#: build/planner/assets/planner.js:1
+msgid "Shared AC metering point"
+msgstr "Gemeinsamer AC-Messpunkt"
+
+#: ../../apps/planner/src/components/energy/TraceExplorer.tsx:184
+#: build/planner/assets/planner.js:1
+msgid "The chart shows the shared AC metering point. Select a storage unit to add its AC power and stored-energy data to the table."
+msgstr "Das Diagramm zeigt den gemeinsamen AC-Messpunkt. Wählen Sie eine Speichereinheit aus, um deren AC-Leistung und gespeicherte Energie zusätzlich in der Tabelle anzuzeigen."
+
+#: ../../apps/planner/src/components/energy/RunBasis.tsx:307
+#: build/planner/assets/planner.js:1
+msgid "Each storage unit uses its selected equipment limits and its own saved loss assumptions. Import and export limits apply once at the shared AC metering point. This calculation does not establish joint operating capability or country-specific grid compliance."
+msgstr "Für jede Speichereinheit verwendet die Berechnung die Grenzen der gewählten Geräte und die separat gespeicherten Verlustannahmen. Die Bezugs- und Einspeisegrenzen gelten einmal am gemeinsamen AC-Messpunkt. Der gemeinsame Betrieb der Geräte und die Erfüllung länderspezifischer Netzanforderungen sind damit nicht nachgewiesen."
+
+#: ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:1292
+#: build/planner/assets/planner.js:1
+msgid "Prepare and save the equipment plan, then review the storage settings for each unit."
+msgstr "Bereiten Sie die Geräteplanung vor und speichern Sie sie. Prüfen Sie anschließend die Speichereinstellungen jeder Einheit."
+
+#: ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:1404
+#: build/planner/assets/planner.js:1
+msgid "Joint storage calculation is unavailable in this service version. Your equipment plan remains available."
+msgstr "Die gemeinsame Speicherberechnung ist in dieser Version nicht verfügbar. Ihre Geräteplanung bleibt erhalten."
+
+#: ../../apps/planner/src/components/energy/EnergyError.tsx:11
+#: build/planner/assets/planner.js:1
+msgid "AC charging capability and power limit are not established for this converter. Review the selected product and its source documents before preparing the joint calculation."
+msgstr "Für diesen Umrichter sind die AC-Ladefähigkeit und die Ladeleistungsgrenze nicht belegt. Prüfen Sie das gewählte Produkt und die zugehörigen Quelldokumente, bevor Sie die gemeinsame Berechnung vorbereiten."
+
+#: ../../apps/planner/src/components/energy/EnergyError.tsx:16
+#: build/planner/assets/planner.js:1
+msgid "AC PV during an outage requires separately established island-operation topology. If support is unconfirmed, mark PV as unavailable for the outage periods and review the backup connections."
+msgstr "AC-PV-Erzeugung bei einem Netzausfall setzt eine gesondert nachgewiesene Inselbetriebstopologie voraus. Ist die Eignung nicht bestätigt, kennzeichnen Sie PV in den Ausfallzeiträumen als nicht verfügbar und prüfen Sie die Notstromanschlüsse."
+
+#: ../../apps/planner/src/components/energy/EnergyError.tsx:59
+#: build/planner/assets/planner.js:1
+msgid "Review the equipment plan, each unit's storage settings and the shared operating periods before preparing this calculation."
+msgstr "Prüfen Sie die Geräteplanung, die Speichereinstellungen jeder Einheit und die gemeinsamen Betriebszeiträume, bevor Sie diese Berechnung vorbereiten."
+
+#: ../../apps/planner/src/components/energy/EnergyComparison.tsx:254
+#: build/planner/assets/planner.js:1
+msgid "Multiple storage units at a shared AC metering point"
+msgstr "Mehrere Speichereinheiten an einem gemeinsamen AC-Messpunkt"
+
+#: ../../apps/planner/src/components/energy/DcStorageForm.tsx:85
+#: build/planner/assets/planner.js:1
+msgid "Storage converter and battery"
+msgstr "Speicherumrichter und Batterie"

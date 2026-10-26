@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+from dataclasses import dataclass
+
 from .assets import Asset
 from .canonical import Object
 from .energy_inputs import EnergyInputs
@@ -9,6 +12,85 @@ from .errors import VersionUnavailable
 from .profile_assets import profile_dependencies
 from .records import Lease
 from .workspace import Workspace
+
+
+@dataclass(frozen=True)
+class FrozenEnergyExecution:
+    workspace: Workspace
+    manifest_hash: str
+    manifest: Object
+    inputs: Object
+    pinned: Object
+    runtime_sha256: str
+
+    def dependency(self, name: str) -> str:
+        value = self.pinned.get(name)
+        if not isinstance(value, str):
+            raise VersionUnavailable(f"pinned dependency missing: {name}")
+        self.workspace.blobs.read(value)
+        return value
+
+    def result(self, kind: str, physical: Object) -> Object:
+        return {
+            "schema": 1,
+            "kind": kind,
+            "project_id": self.manifest.get("project_id"),
+            "revision": self.manifest.get("revision"),
+            "input_sha256": self.manifest.get("input_sha256"),
+            "manifest_sha256": self.manifest_hash,
+            "runtime_sha256": self.runtime_sha256,
+            **physical,
+            "pinned_assets": self.pinned,
+            "equipment_release": {
+                "status": "not_assessed",
+                "reason": "explicit_scenario_replay_is_not_equipment_release",
+            },
+            "country_assessment": {
+                "status": "not_assessed",
+                "reason": "country_rules_are_a_separate_assessment",
+            },
+        }
+
+
+def frozen_energy_execution(
+    workspace: Workspace,
+    lease: Lease,
+    *,
+    runtime_sha256: str,
+    models: Mapping[str, str],
+    parameters: Object,
+) -> FrozenEnergyExecution:
+    manifest_hash = lease.request.get("manifest_sha256")
+    if not isinstance(manifest_hash, str):
+        raise VersionUnavailable("evaluation has no pinned manifest")
+    manifest = frozen_manifest(workspace, lease, manifest_hash)
+    context = manifest.get("context")
+    if (
+        not isinstance(context, dict)
+        or context.get("code_sha256") != runtime_sha256
+        or context.get("models") != models
+    ):
+        raise VersionUnavailable("this worker cannot execute the pinned runtime/models")
+    if context.get("parameters") != parameters:
+        raise VersionUnavailable(
+            "this worker cannot execute the pinned numerical settings"
+        )
+    pinned = context.get("assets")
+    if not isinstance(pinned, dict) or any(
+        not isinstance(value, str) for value in pinned.values()
+    ):
+        raise VersionUnavailable("pinned dependency hashes required")
+    execution = FrozenEnergyExecution(
+        workspace,
+        manifest_hash,
+        manifest,
+        workspace.pinned_inputs(manifest),
+        pinned,
+        runtime_sha256,
+    )
+    if execution.dependency("runtime_bundle") != runtime_sha256:
+        raise VersionUnavailable("runtime bundle and code identity differ")
+    return execution
 
 
 def frozen_manifest(workspace: Workspace, lease: Lease, manifest_hash: str) -> Object:

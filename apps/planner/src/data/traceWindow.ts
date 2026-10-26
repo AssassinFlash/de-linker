@@ -2,6 +2,7 @@ import Ajv from "ajv";
 import type { PlanningRun } from "./planningProtocol.ts";
 import { ApiError } from "./protocol.ts";
 import { runTask } from "./planningProtocol.ts";
+import { PLANT_ENERGY_TASK } from "../domain/plantEnergy.ts";
 import { DC_ENERGY_TASK } from "../domain/dcEnergy.ts";
 
 export const TRACE_FIELDS = [
@@ -14,7 +15,23 @@ export const TRACE_FIELDS = [
 	"stored_kwh",
 ] as const;
 export type TraceField = (typeof TRACE_FIELDS)[number];
+export interface UnitTrace {
+	readonly unit_id: string;
+	readonly mode: "connected" | "outage";
+	readonly reserve_kwh: number;
+	readonly before: Readonly<
+		Record<"pv_kwh" | "grid_kwh" | "initial_unknown_kwh", number>
+	>;
+	readonly after: Readonly<
+		Record<"pv_kwh" | "grid_kwh" | "initial_unknown_kwh", number>
+	>;
+	readonly charge_kw: number;
+	readonly discharge_kw: number;
+	readonly charge_command_unmet_kw: number;
+	readonly discharge_command_unmet_kw: number;
+}
 export interface TraceRow extends Readonly<Record<TraceField, number>> {
+	readonly unit?: UnitTrace;
 	readonly interval_index: number;
 	readonly start_utc: string;
 	readonly end_utc: string;
@@ -47,6 +64,38 @@ const instant = {
 	pattern:
 		"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,6})?(?:Z|\\+00:00)$",
 };
+const originShape = object(
+	Object.fromEntries(
+		["pv_kwh", "grid_kwh", "initial_unknown_kwh"].map((k) => [
+			k,
+			{ type: "number", minimum: 0 },
+		]),
+	),
+);
+const rowShape = object({
+	unit: object({
+		unit_id: { type: "string" },
+		mode: { type: "string", enum: ["connected", "outage"] },
+		reserve_kwh: { type: "number", minimum: 0 },
+		before: originShape,
+		after: originShape,
+		...Object.fromEntries(
+			[
+				"charge_kw",
+				"discharge_kw",
+				"charge_command_unmet_kw",
+				"discharge_command_unmet_kw",
+			].map((k) => [k, { type: "number", minimum: 0 }]),
+		),
+	}),
+	interval_index: integer,
+	start_utc: instant,
+	end_utc: instant,
+	...Object.fromEntries(
+		TRACE_FIELDS.map((field) => [field, { type: "number", minimum: 0 }]),
+	),
+});
+rowShape.required = rowShape.required.filter((k) => k !== "unit");
 const traceShape = object({
 	schema_version: { const: 1, type: "integer" },
 	run_id: { type: "string", pattern: "^[a-f0-9]{32}$" },
@@ -62,17 +111,7 @@ const traceShape = object({
 		import: { const: "grid_AC", type: "string" },
 		export: { const: "grid_AC", type: "string" },
 	}),
-	rows: {
-		type: "array",
-		items: object({
-			interval_index: integer,
-			start_utc: instant,
-			end_utc: instant,
-			...Object.fromEntries(
-				TRACE_FIELDS.map((field) => [field, { type: "number", minimum: 0 }]),
-			),
-		}),
-	},
+	rows: { type: "array", items: rowShape },
 });
 traceShape.required = traceShape.required.filter(
 	(key) => key !== "measurement_boundaries",
@@ -86,6 +125,7 @@ export function readTraceWindow(
 	run: PlanningRun,
 	offset: number,
 	pageSize: number,
+	unitId: string | null = null,
 ): TraceWindow {
 	if (
 		!check(value) ||
@@ -105,6 +145,9 @@ export function readTraceWindow(
 		throw new ApiError(502, "invalid_trace_window");
 	value.rows.forEach((row, index) => {
 		if (
+			(row.unit !== undefined) !== (unitId !== null) ||
+			(unitId !== null &&
+				(runTask(run) !== PLANT_ENERGY_TASK || row.unit?.unit_id !== unitId)) ||
 			row.interval_index !== offset + index ||
 			!Number.isFinite(Date.parse(row.start_utc)) ||
 			!Number.isFinite(Date.parse(row.end_utc)) ||
@@ -117,16 +160,30 @@ export function readTraceWindow(
 
 /** Locale-independent CSV numbers retain the stored values; every column names
  * its unit. Only the exact displayed rows are exported, never chart samples. */
-export function traceCsv(page: TraceWindow, labels: readonly string[]): string {
+export function traceCsv(
+	page: TraceWindow,
+	labels: readonly string[],
+	unitLabels: readonly string[] = [],
+): string {
 	const quote = (value: string) => '"' + value.replaceAll('"', '""') + '"';
 	return (
 		[
-			labels.map(quote).join(","),
+			[...labels, ...unitLabels].map(quote).join(","),
 			...page.rows.map((row) =>
 				[
 					row.start_utc,
 					row.end_utc,
 					...TRACE_FIELDS.map((field) => String(row[field])),
+					...(unitLabels.length && row.unit
+						? [
+								row.unit.unit_id,
+								row.unit.charge_kw,
+								row.unit.discharge_kw,
+								row.unit.after.pv_kwh,
+								row.unit.after.grid_kwh,
+								row.unit.after.initial_unknown_kwh,
+							].map(String)
+						: []),
 				]
 					.map(quote)
 					.join(","),

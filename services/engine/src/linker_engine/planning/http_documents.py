@@ -10,6 +10,7 @@ from .brief import PlanningBrief
 from .canonical import Object
 from .dc_energy_parameters import DcLossScenario
 from .energy_inputs import BatteryParameters, Document, MappingDocument, SchemaVersion
+from .equipment_plant import Identity
 from .geometry_documents import GeometryDocument
 from .geometry_import_documents import GeometryImportOptions
 from .report_inputs import ReportOptions
@@ -193,9 +194,12 @@ class EquipmentCandidateRead(RunRead):
 class TraceRead(RunRead):
     offset: Annotated[int, Field(strict=True, ge=0)] | None = None
     page_size: Annotated[int, Field(strict=True, gt=0)] | None = None
+    unit_id: Identity | None = None
 
     @model_validator(mode="after")
     def paired_window(self) -> TraceRead:
+        if self.unit_id is not None and self.offset is None:
+            raise ValueError("unit trace selection requires an explicit page")
         if (self.offset is None) != (self.page_size is None):
             raise ValueError("trace window requires offset and page size")
         return self
@@ -244,9 +248,16 @@ class BatteryScenario(Command):
     source_note: Note
     key: Key
     expected_revision: Revision | None = None
+    equipment_unit_id: Identity | None = None
 
     @model_validator(mode="after")
     def dc_revision(self) -> BatteryScenario:
+        if self.equipment_unit_id is not None and not isinstance(
+            self.parameters, DcLossScenario
+        ):
+            raise ValueError(
+                "plant unit parameters must be derived from current Woo equipment"
+            )
         if (
             isinstance(self.parameters, DcLossScenario)
             and self.expected_revision is None

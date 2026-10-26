@@ -15,10 +15,12 @@ from .equipment_candidate_choice import check_equipment_candidate
 from .equipment_candidate_store import EquipmentCandidateStore
 from .equipment_inputs import EquipmentSelection
 from .equipment_kernel import EquipmentKernel
-from .equipment_plant import assert_plant_exclusivity
+from .equipment_plant import EquipmentPlant, assert_plant_exclusivity
 from .errors import InvalidInput, ProductEvidenceChanged, VersionUnavailable
 from .installation_inputs import InstallationInputs
 from .installation_takeoff import product_basis, route_takeoff
+from .plant_energy_inputs import PlantEnergyInputs
+from .plant_energy_kernel import PlantEnergyKernel
 from .product_sources import ProductSources
 from .profile_assets import profile_dependencies
 from .pv_preparation import PvReferenceKernel
@@ -139,8 +141,6 @@ def report_sources(
         run = owned(options.equipment_run_id, EquipmentKernel.kind, ())
         previous = workspace.pinned_inputs(run.manifest)
         if "equipment_plant" in previous or "equipment_plant" in project.inputs:
-            from .equipment_plant import EquipmentPlant
-
             matches = EquipmentPlant.from_inputs(
                 previous
             ) == EquipmentPlant.from_inputs(project.inputs)
@@ -177,25 +177,38 @@ def report_sources(
     component_list: Object | None = None
     energy: Object | None = None
     if options.energy_run_id is not None:
-        scenario = EnergyInputs.from_project(project.inputs)
+        joint = "energy_plant" in project.inputs
+        scenario: EnergyInputs | PlantEnergyInputs = (
+            PlantEnergyInputs.from_project(project.inputs)
+            if joint
+            else EnergyInputs.from_project(project.inputs)
+        )
         run = owned(
             options.energy_run_id,
-            DcEnergyKernel.kind
+            PlantEnergyKernel.kind
+            if joint
+            else DcEnergyKernel.kind
             if scenario.coupling == "shared_dc"
             else EnergyKernel.kind,
-            ("energy_replay",),
+            ("energy_plant", "equipment_plant") if joint else ("energy_replay",),
         )
         energy = run.result
         assert energy is not None
         binding = energy.get("equipment_binding")
         if isinstance(binding, dict):
-            if EquipmentSelection.read(
+            if joint:
+                if EquipmentPlant.read(
+                    binding.get("plant")
+                ) != EquipmentPlant.from_inputs(project.inputs):
+                    raise ReportInputsChanged(
+                        "report energy result belongs to another prepared plant"
+                    )
+            elif EquipmentSelection.read(
                 binding.get("selection")
             ) != EquipmentSelection.read(project.inputs.get("equipment_selection")):
                 raise ReportInputsChanged(
                     "report energy result belongs to a different equipment selection"
                 )
-        scenario = EnergyInputs.from_project(project.inputs)
         pinned_energy = cast(Object, energy["pinned_assets"])
         if isinstance(binding, dict):
             bases["energy_equipment"] = pinned_energy["woo.equipment_inputs"]
@@ -242,6 +255,7 @@ def report_sources(
                         metadata,
                         converter_id=scenario.pv_converter_id
                         if name == "pv_available_dc.metadata"
+                        and isinstance(scenario, EnergyInputs)
                         else None,
                     )
                 module_basis = metadata.get("woo_module_inputs")
@@ -260,7 +274,7 @@ def report_sources(
         if (
             energy is not None
             and cast(Object, pv["prepared_asset"])["id"]
-            != EnergyInputs.from_project(project.inputs).pv_available_asset_id
+            != scenario.pv_available_asset_id
         ):
             raise ReportInputsChanged(
                 "report PV and energy results use different generation profiles"
@@ -421,6 +435,9 @@ def report_sources(
         "equipment": assessment,
         "installation": installation,
         "energy": energy,
+        "energy_scenario": scenario.model_dump(mode="json")
+        if energy is not None
+        else None,
         "energy_equipment": energy.get("equipment_binding") if energy else None,
         "pv_components": component_list,
         "pv": pv,

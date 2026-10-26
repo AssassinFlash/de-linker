@@ -450,7 +450,7 @@ def build_report(source: Object) -> Report:
         )
 
     binding = source.get("energy_equipment")
-    if isinstance(binding, dict):
+    if isinstance(binding, dict) and "selection" in binding:
         linked = cast(Object, binding["assessment"])
         linked_checks = [
             check
@@ -577,6 +577,7 @@ def build_report(source: Object) -> Report:
     if isinstance(energy, dict):
         metrics = cast(Object, energy["metrics"])
         dc = energy.get("kind") == "shared_dc_energy_replay_v1"
+        joint = energy.get("kind") == "plant_ac_energy_replay_v1"
         energy_rows = [
             row(label, number(metrics.get(key), locale, "kWh"))
             for label, key in (
@@ -624,7 +625,14 @@ def build_report(source: Object) -> Report:
                 id="energy",
                 title=text("energy", locale),
                 paragraphs=[
-                    text("scenario_dc_scope" if dc else "scenario_scope", locale)
+                    text(
+                        "scenario_plant_scope"
+                        if joint
+                        else "scenario_dc_scope"
+                        if dc
+                        else "scenario_scope",
+                        locale,
+                    )
                 ]
                 + (
                     [text("dc_temperature_scope", locale)]
@@ -634,6 +642,141 @@ def build_report(source: Object) -> Report:
                 rows=energy_rows,
             )
         )
+        if joint:
+            binding = cast(Object, energy.get("equipment_binding", {}))
+            plant = cast(Object, binding.get("plant", {}))
+            scenarios = {
+                str(unit["unit_id"]): unit
+                for unit in cast(
+                    list[Object], cast(Object, source["energy_scenario"])["units"]
+                )
+            }
+            parameter_sources = cast(Object, energy["parameter_sources"])
+            parameter_pool = cast(Object, parameter_sources["pool"])
+            names = {
+                str(unit["id"]): str(unit["name"])
+                for unit in cast(list[Object], plant.get("units", []))
+            }
+            for unit in cast(list[Object], metrics.get("units", [])):
+                start = cast(Object, unit["stored_initial"])
+                finish = cast(Object, unit["stored_final"])
+                rows = [
+                    row(
+                        "plant_unit_window",
+                        number(unit["usable_window_kwh"], locale, "kWh"),
+                    ),
+                    row(
+                        "plant_unit_start",
+                        number(
+                            sum(
+                                float(cast(float, start[k]))
+                                for k in ("pv_kwh", "grid_kwh", "initial_unknown_kwh")
+                            ),
+                            locale,
+                            "kWh",
+                        ),
+                    ),
+                    row(
+                        "plant_unit_finish",
+                        number(
+                            sum(
+                                float(cast(float, finish[k]))
+                                for k in ("pv_kwh", "grid_kwh", "initial_unknown_kwh")
+                            ),
+                            locale,
+                            "kWh",
+                        ),
+                    ),
+                ]
+                for key in ("pv_kwh", "grid_kwh", "initial_unknown_kwh"):
+                    rows.append(
+                        row(
+                            "plant_unit_finish_" + key,
+                            number(finish[key], locale, "kWh"),
+                        )
+                    )
+                condition = scenarios[str(unit["unit_id"])]
+                rows.extend(
+                    [
+                        row(
+                            "plant_unit_reserve",
+                            number(condition["reserve_kwh"], locale, "kWh"),
+                        ),
+                        row(
+                            "plant_unit_terminal",
+                            number(condition["terminal_min_kwh"], locale, "kWh")
+                            if condition["terminal_min_kwh"] is not None
+                            else text("plant_no_terminal_minimum", locale),
+                        ),
+                    ]
+                )
+                sections.append(
+                    ReportSection(
+                        id="energy-unit-" + str(unit["unit_id"]),
+                        title=names.get(str(unit["unit_id"]), str(unit["unit_id"])),
+                        rows=rows,
+                    )
+                )
+            for index, (sha, raw) in enumerate(parameter_pool.items()):
+                proof = cast(Object, raw)
+                losses = cast(Object, proof["loss_scenario"])
+                assigned = [
+                    names[str(u["unit_id"])]
+                    for u in cast(list[Object], parameter_sources["units"])
+                    if u["parameter_sha256"] == sha
+                ]
+                rows = []
+                for key in (
+                    "eta_bus_to_battery",
+                    "eta_battery_to_bus",
+                    "eta_store_charge",
+                    "eta_store_discharge",
+                    "eta_inverter_forward",
+                    "eta_inverter_reverse",
+                    "internal_aux_kw",
+                    "standing_loss_rate_per_hour",
+                ):
+                    value = losses[key]
+                    efficiency = key.startswith("eta_")
+                    rows.append(
+                        row(
+                            "plant_loss_" + key,
+                            number(
+                                float(cast(float, value)) * 100
+                                if efficiency and value is not None
+                                else value,
+                                locale,
+                                "%"
+                                if efficiency
+                                else "kW"
+                                if key == "internal_aux_kw"
+                                else "1/h",
+                            ),
+                        )
+                    )
+                unit_citations = {}
+                for fact in cast(Object, proof["source_facts"]).values():
+                    cited = fact.get("source") if isinstance(fact, dict) else None
+                    if isinstance(cited, dict):
+                        unit_citations[
+                            (str(cited["url"]), int(cast(int, cited["page"])))
+                        ] = cited
+                for url, page in unit_citations:
+                    rows.append(
+                        ReportRow(
+                            label=f"{text('source', locale)} · {text('page', locale)} {page}",
+                            value=url,
+                            href=url,
+                        )
+                    )
+                sections.append(
+                    ReportSection(
+                        id="energy-parameters-" + str(index),
+                        title=text("plant_parameter_sources", locale),
+                        paragraphs=[" · ".join(assigned), str(losses["source_note"])],
+                        rows=rows,
+                    )
+                )
 
     comparison = source.get("comparison")
     if isinstance(comparison, dict):

@@ -3,6 +3,79 @@
 from __future__ import annotations
 
 TEXT = {
+    "plant_unit_reserve": (
+        "Reserved stored energy",
+        "Energiereserve im Speicher",
+    ),
+    "plant_unit_terminal": (
+        "Minimum final stored energy",
+        "Gespeicherte Mindestenergie am Ende",
+    ),
+    "plant_no_terminal_minimum": (
+        "No minimum required",
+        "Kein Mindestwert erforderlich",
+    ),
+    "plant_parameter_sources": (
+        "Storage assumptions and product data sources",
+        "Speicherannahmen und Quellen der Produktdaten",
+    ),
+    "plant_loss_eta_bus_to_battery": (
+        "DC converter: charging efficiency",
+        "DC-Wandler: Ladewirkungsgrad",
+    ),
+    "plant_loss_eta_battery_to_bus": (
+        "DC converter: discharging efficiency",
+        "DC-Wandler: Entladewirkungsgrad",
+    ),
+    "plant_loss_eta_store_charge": (
+        "Storage: charging efficiency",
+        "Speicher: Ladewirkungsgrad",
+    ),
+    "plant_loss_eta_store_discharge": (
+        "Storage: discharging efficiency",
+        "Speicher: Entladewirkungsgrad",
+    ),
+    "plant_loss_eta_inverter_forward": (
+        "Inverter: DC to AC efficiency",
+        "Wechselrichter: Wirkungsgrad DC zu AC",
+    ),
+    "plant_loss_eta_inverter_reverse": (
+        "Inverter: AC to DC efficiency",
+        "Wechselrichter: Wirkungsgrad AC zu DC",
+    ),
+    "plant_loss_internal_aux_kw": (
+        "Internal auxiliary power",
+        "Interner Hilfsverbrauch",
+    ),
+    "plant_loss_standing_loss_rate_per_hour": (
+        "Standing-loss coefficient",
+        "Koeffizient der zeitabhängigen Speicherverluste",
+    ),
+    "scenario_plant_scope": (
+        "This scenario models separate AC PV generation and individual storage units at one shared AC metering point, with the storage converters' DC PV inputs unused. AC PV during outages requires separately established island-operation topology; the availability setting alone is insufficient. Each unit retains its own stored energy by origin, power limits, reserve and loss assumptions; usable storage capacity is held fixed for the stated conditions. Power is allocated proportionally within each unit's power and energy limits for the current interval, without forecasting or optimal dispatch. The calculation does not reproduce a manufacturer EMS or establish joint operating capability, continuous equipment performance, backup transfer or country-specific grid compliance.",
+        "Dieses Szenario berechnet die separate AC-PV-Erzeugung und die einzelnen Speichereinheiten an einem gemeinsamen AC-Messpunkt. Die DC-PV-Eingänge der Speicherumrichter sind ungenutzt. AC-PV-Erzeugung bei einem Netzausfall erfordert eine gesondert nachgewiesene Inselbetriebstopologie; die Verfügbarkeitseinstellung allein reicht dafür nicht aus. Für jede Einheit werden gespeicherte Energie nach Herkunft, Leistungsgrenzen, Reserve und Verlustannahmen getrennt geführt; die nutzbare Speicherkapazität wird für die angegebenen Bedingungen als konstant angesetzt. Die Leistung wird für das aktuelle Zeitintervall proportional innerhalb der jeweiligen Leistungs- und Energiegrenzen verteilt, ohne Prognose oder optimale Einsatzplanung. Ein Hersteller-EMS wird damit nicht nachgebildet. Der gemeinsame Betrieb der Geräte, ihre Dauerleistung, die Notstromumschaltung und die Erfüllung länderspezifischer Netzanforderungen sind nicht nachgewiesen.",
+    ),
+    "plant_unit_window": (
+        "Usable storage capacity in this scenario",
+        "Nutzbare Speicherkapazität in diesem Szenario",
+    ),
+    "plant_unit_start": (
+        "Initial stored energy",
+        "Gespeicherte Energie zu Beginn",
+    ),
+    "plant_unit_finish": ("Stored energy at end", "Gespeicherte Energie am Ende"),
+    "plant_unit_finish_pv_kwh": (
+        "Stored PV energy at end",
+        "Gespeicherte PV-Energie am Ende",
+    ),
+    "plant_unit_finish_grid_kwh": (
+        "Stored grid energy at end",
+        "Gespeicherte Netzenergie am Ende",
+    ),
+    "plant_unit_finish_initial_unknown_kwh": (
+        "Initial energy of unknown origin remaining at end",
+        "Am Ende verbleibende Anfangsenergie unbekannter Herkunft",
+    ),
     "not_specified": ("Not specified", "Nicht angegeben"),
     "manufacturer_requirement_matches_operating_context": (
         "The documented manufacturer requirement applies to the declared operating mode, topology and communication setup. Firmware, model combination and commissioning still require separate checks.",

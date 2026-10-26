@@ -293,69 +293,15 @@ export function scenarioParts(
 		profiles.selected;
 	if (!gross_load || !pv_available_ac || !aux_ac)
 		throw new ApiError(422, "scenario_profiles_required");
-	const inventory = draft.initial_inventory;
-	if (
-		!inventory.source_note.trim() ||
-		Object.entries(inventory).some(
-			([key, value]) => key !== "source_note" && value === null,
-		)
-	)
-		throw new ApiError(422, "initial_inventory_required");
+	const inventory = compileInitialInventory(draft.initial_inventory);
 	const total =
 		(inventory.pv_kwh ?? 0) +
 		(inventory.grid_kwh ?? 0) +
 		(inventory.initial_unknown_kwh ?? 0);
 	if (parameters.model !== DC_MODEL && total > parameters.usable_window_kwh)
 		throw new ApiError(422, "initial_inventory_exceeds_window");
-	if (
-		!draft.terminal_policy ||
-		(draft.terminal_policy === "minimum" && draft.terminal_min_kwh === null)
-	)
-		throw new ApiError(422, "terminal_condition_required");
-	const schedule = draft.schedule.map((period) => {
-		if (
-			!period.mode ||
-			period.reserve_kwh === null ||
-			period.pv_enabled === null ||
-			(period.mode === "connected" &&
-				(period.allow_grid_charge === null ||
-					!period.import_policy ||
-					!period.export_policy)) ||
-			(period.mode === "outage" && !critical_load)
-		)
-			throw new ApiError(422, "operating_period_incomplete");
-		if (period.mode === "outage" && period.allow_grid_charge === true)
-			throw new ApiError(422, "outage_grid_charge");
-		if (!explicitInstant(period.start_utc) || !explicitInstant(period.end_utc))
-			throw new ApiError(422, "period_offset_required");
-		for (const [policy, cap] of [
-			[period.import_policy, period.import_cap_kw],
-			[period.export_policy, period.export_cap_kw],
-		] as const)
-			if (period.mode === "connected" && policy === "limited" && cap === null)
-				throw new ApiError(422, "grid_cap_required");
-		return {
-			start_utc: period.start_utc,
-			end_utc: period.end_utc,
-			mode: period.mode,
-			reserve_kwh: period.reserve_kwh,
-			import_cap_kw:
-				period.mode === "outage"
-					? 0
-					: period.import_policy === "unlimited"
-						? null
-						: period.import_cap_kw,
-			export_cap_kw:
-				period.mode === "outage"
-					? 0
-					: period.export_policy === "unlimited"
-						? null
-						: period.export_cap_kw,
-			pv_enabled: period.pv_enabled,
-			allow_grid_charge:
-				period.mode === "outage" ? false : period.allow_grid_charge,
-		};
-	});
+	const terminal = compileTerminalMinimum(draft);
+	const schedule = compileOperatingPeriods(draft.schedule, critical_load);
 	const inputs: JsonObject = {
 		schema_version: 1,
 		...(dc
@@ -372,8 +318,7 @@ export function scenarioParts(
 		initial_inventory: { ...inventory, basis: "user_declared" },
 		schedule,
 		controller: "self_consumption_with_reserve_v1",
-		terminal_min_kwh:
-			draft.terminal_policy === "none" ? null : draft.terminal_min_kwh,
+		terminal_min_kwh: terminal,
 	};
 	if (!checkParts(inputs)) throw new ApiError(422, "invalid_energy_inputs");
 	return { parameters, inputs };
@@ -428,6 +373,86 @@ export function scenarioInputs(
 }
 
 export function invalidateEnergyReplay(inputs: JsonObject): JsonObject {
-	const { energy_replay: _old, ...rest } = inputs;
+	const { energy_replay: _old, energy_plant: _joint, ...rest } = inputs;
 	return rest;
+}
+
+export function compileOperatingPeriods(
+	periods: readonly PeriodDraft[],
+	critical_load: string | undefined,
+): OperatingPeriod[] {
+	return periods.map((period) => {
+		if (
+			!period.mode ||
+			period.reserve_kwh === null ||
+			period.pv_enabled === null ||
+			(period.mode === "connected" &&
+				(period.allow_grid_charge === null ||
+					!period.import_policy ||
+					!period.export_policy)) ||
+			(period.mode === "outage" && !critical_load)
+		)
+			throw new ApiError(422, "operating_period_incomplete");
+		if (period.mode === "outage" && period.allow_grid_charge === true)
+			throw new ApiError(422, "outage_grid_charge");
+		if (!explicitInstant(period.start_utc) || !explicitInstant(period.end_utc))
+			throw new ApiError(422, "period_offset_required");
+		for (const [policy, cap] of [
+			[period.import_policy, period.import_cap_kw],
+			[period.export_policy, period.export_cap_kw],
+		] as const)
+			if (period.mode === "connected" && policy === "limited" && cap === null)
+				throw new ApiError(422, "grid_cap_required");
+		return {
+			start_utc: period.start_utc,
+			end_utc: period.end_utc,
+			mode: period.mode,
+			reserve_kwh: period.reserve_kwh,
+			import_cap_kw:
+				period.mode === "outage"
+					? 0
+					: period.import_policy === "unlimited"
+						? null
+						: period.import_cap_kw,
+			export_cap_kw:
+				period.mode === "outage"
+					? 0
+					: period.export_policy === "unlimited"
+						? null
+						: period.export_cap_kw,
+			pv_enabled: period.pv_enabled,
+			allow_grid_charge:
+				period.mode === "outage" ? false : period.allow_grid_charge!,
+		};
+	});
+}
+
+export function compileInitialInventory(
+	inventory: ScenarioDraft["initial_inventory"],
+): EnergyInputs["initial_inventory"] {
+	if (
+		!inventory.source_note.trim() ||
+		Object.entries(inventory).some(
+			([key, value]) => key !== "source_note" && value === null,
+		)
+	)
+		throw new ApiError(422, "initial_inventory_required");
+	return {
+		...inventory,
+		pv_kwh: inventory.pv_kwh!,
+		grid_kwh: inventory.grid_kwh!,
+		initial_unknown_kwh: inventory.initial_unknown_kwh!,
+		basis: "user_declared",
+	};
+}
+
+export function compileTerminalMinimum(
+	draft: Pick<ScenarioDraft, "terminal_policy" | "terminal_min_kwh">,
+): number | null {
+	if (
+		!draft.terminal_policy ||
+		(draft.terminal_policy === "minimum" && draft.terminal_min_kwh === null)
+	)
+		throw new ApiError(422, "terminal_condition_required");
+	return draft.terminal_policy === "none" ? null : draft.terminal_min_kwh;
 }

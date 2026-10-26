@@ -1443,7 +1443,7 @@
       "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
     }
   },
-  "current_frontier": "equipment_requirement_scope_local",
+  "current_frontier": "joint_ac_storage_local",
   "shared_dc_core": {
     "status": "implemented_and_reviewed_core_not_connected_to_native_commands",
     "model": "constant_window_shared_dc_bus_v1",
@@ -4144,5 +4144,64 @@
     },
     "copy_review": "The existing copy reviewer revised the applicability label/reasons and source declaration to avoid whole-system approval and ET/BT extrapolation; applied EN/DE final wording.",
     "remaining_full_goal": "Manufacturer firmware/model/bank/meter scope and conditioned performance, joint dispatch, wider topology/allocation search, installation/country rules, remaining site consumers/migration and review/production publication/readback remain in the same active full goal."
+  },
+  "joint_ac_storage": {
+    "status": "local_integration_closed_real_product_envelopes_open",
+    "base_commit": "2d2f430b",
+    "runtime_sha256": "17c1c475b97ec4f6c73201d29fec9bf9ff1e95987c3bd1be62704e3edee85578",
+    "rollback_runtime_sha256": "018a1e134de27e024c1ce61640c3c8c47ff2e3d3311b356cfe72623ced4e37db",
+    "storage_schema_version": 5,
+    "source_generation_unchanged": "f4205bc282d65d6a7770c5050842a6532d46326d7b906cb75f2f695b563a38fd",
+    "owned_project": "1ac83b43ab08481bae7e6eb05cf633c4",
+    "owned_revision": 7,
+    "native_numerical_evidence": "one two-hour synthetic-source native preparation/execution/unit trace/report; captured output reused by browser consumers",
+    "fixture_is_not_real_equipment_approval": true,
+    "spec_review": "PASS physical core reused; native/UI/report/comparison and switching deltas closed",
+    "standards_review": "PASS code and actual build/translation deltas; no full replay",
+    "copy_review": "EN and independent DE approved and applied",
+    "screenshots": [
+      {
+        "locale": "en",
+        "width": 1440,
+        "image": "docs/acceptance/2026-10-24/548/runtime-provider-correction/joint-ac-form-en-desktop.png",
+        "sha256": "d4c76cac21ac35ed0117dd68a85531d096bd37f1cbb9a2f2b165b0fa3f65fb16"
+      },
+      {
+        "locale": "en",
+        "width": 390,
+        "image": "docs/acceptance/2026-10-24/548/runtime-provider-correction/joint-ac-form-en-mobile.png",
+        "sha256": "56cd96ef16a2a06bed8543d09654e6a6bd51f334e057704734ac0358ea6b580f"
+      },
+      {
+        "locale": "de",
+        "width": 1440,
+        "image": "docs/acceptance/2026-10-24/548/runtime-provider-correction/joint-ac-form-de-desktop.png",
+        "sha256": "9042556540819e4a7c18afc3dec428d1d19d9ce93f50d071377965494d1b539d"
+      },
+      {
+        "locale": "de",
+        "width": 390,
+        "image": "docs/acceptance/2026-10-24/548/runtime-provider-correction/joint-ac-form-de-mobile.png",
+        "sha256": "3452a9c793bbeeac94407b64e0b08c3fbbff8c3ab00a3cd4d5aedb00bf610c36"
+      }
+    ],
+    "unit_settings_readback": {
+      "unit1_temperature_c": 25,
+      "unit2_temperature_c": 20,
+      "invalid_number_locks_unit_and_section_switches": true
+    },
+    "pdf": "docs/acceptance/2026-10-24/548/runtime-provider-correction/joint-ac-report-de.pdf",
+    "pdf_pages": 9,
+    "retained_runtime_carriers": 2,
+    "retired_runtime_carrier": "93059c674323f937d1dbd31cf017f64002ec3408bbb2c31a118d6c74bf1b4bd3",
+    "production_changed": false,
+    "full_goal_open": [
+      "actual Woo AC reverse envelopes",
+      "per-unit shared DC PV/bridge executor",
+      "manufacturer joint operation and country qualification",
+      "remaining downstream and migration",
+      "review site and production release/readback"
+    ],
+    "completed_at_utc": "2026-10-26T14:26:04.377592+00:00"
   }
 }

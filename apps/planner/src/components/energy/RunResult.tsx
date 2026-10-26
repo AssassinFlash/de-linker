@@ -1,3 +1,5 @@
+import { PLANT_ENERGY_TASK } from "../../domain/plantEnergy.ts";
+import { PlantStorageSummary } from "./PlantStorageSummary.tsx";
 import { DC_ENERGY_TASK } from "../../domain/dcEnergy.ts";
 import type { PlanningRun } from "../../data/planningProtocol.ts";
 import { runStateLabel } from "./planningLabels.ts";
@@ -174,6 +176,9 @@ export function RunResult({
 							<dd>{ratio("pv_input_self_use")}</dd>
 						</div>
 					</dl>
+					{result.kind === PLANT_ENERGY_TASK && (
+						<PlantStorageSummary result={result} locale={locale} />
+					)}
 					<p className="lp-profile-help">
 						{__(
 							"Figures cover the simulated periods. Solar supply includes PV-origin battery energy; grid-origin and unknown-origin inventory remain separate.",

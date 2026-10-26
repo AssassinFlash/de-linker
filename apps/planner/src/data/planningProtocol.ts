@@ -8,6 +8,7 @@ import type { JsonObject } from "./protocol.ts";
 import { readObject } from "./readProtocol.ts";
 import { readBatteryParameters } from "../domain/energyScenario.ts";
 import { readEnergyResult, isEnergyTask } from "./readEnergyResult.ts";
+import { PLANT_ENERGY_TASK } from "../domain/plantEnergy.ts";
 import {
 	DC_MODEL,
 	DC_ENERGY_TASK,
@@ -27,7 +28,9 @@ export const RUN_OPERATIONS = {
 } as const;
 export type RunOperation = keyof typeof RUN_OPERATIONS;
 export type TaskKind =
-	(typeof RUN_OPERATIONS)[RunOperation] | typeof DC_ENERGY_TASK;
+	| (typeof RUN_OPERATIONS)[RunOperation]
+	| typeof DC_ENERGY_TASK
+	| typeof PLANT_ENERGY_TASK;
 export type PlanningOperation =
 	"battery/scenario" | "draft/apply" | RunOperation;
 export function isPlanningOperation(
@@ -140,9 +143,19 @@ export function readPlanningOperation(
 				"parameters",
 				"key",
 				...(dc ? ["expected_revision"] : []),
+				...(command.equipment_unit_id !== undefined
+					? ["equipment_unit_id"]
+					: []),
 			]) ||
 			typeof command.source_note !== "string" ||
 			!command.source_note.trim()
+		)
+			throw new ApiError(422, "invalid_energy_intent");
+		if (
+			command.equipment_unit_id !== undefined &&
+			(!dc ||
+				typeof command.equipment_unit_id !== "string" ||
+				!/^[A-Za-z][A-Za-z0-9_-]{0,63}$/.test(command.equipment_unit_id))
 		)
 			throw new ApiError(422, "invalid_energy_intent");
 		if (dc) {
@@ -355,6 +368,7 @@ export function readBatteryAsset(
 			const dependencies = readObject(asset.metadata.dependencies);
 			if (
 				asset.metadata.derived_from_revision !== command.expected_revision ||
+				asset.metadata.equipment_unit_id !== command.equipment_unit_id ||
 				Object.keys(dependencies).sort().join() !==
 					"dc_prepared_parameters,dc_woo_inputs" ||
 				!Object.values(dependencies).every((v) => hash(v))
