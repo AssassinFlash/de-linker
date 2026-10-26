@@ -226,7 +226,8 @@ final class TemplatesTest extends TestCase {
 				$html = (string) file_get_contents( $paths[ $meta . $suffix ] );
 				$this->assertStringContainsString( 'id="' . $anchor . '"', $html, $meta . $suffix );
 				$this->assertStringContainsString( '<tangible class="live-refresh">', $html );
-				$this->assertStringContainsString( '[lc_the_pagination]', $html );
+				$pagination_label = '__de' === $suffix ? 'Seitennavigation' : 'Page navigation';
+				$this->assertStringContainsString( '[lc_the_pagination screen_reader_text="' . $pagination_label . '"]', $html );
 				$this->assertStringNotContainsString( '<style', $html );
 				$this->assertStringNotContainsString( ' style="', $html );
 				$this->assertStringNotContainsString( '/{Field name}/', $html );
