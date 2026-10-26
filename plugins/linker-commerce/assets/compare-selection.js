@@ -21,6 +21,28 @@
 	'use strict';
 
 	var storageKey = 'linkerCompareIds';
+	var aliases = {};
+
+	function identities() {
+		var map = {};
+		Array.prototype.forEach.call(document.querySelectorAll('[data-compare-identities]'), function (node) {
+			try {
+				var rows = JSON.parse(node.getAttribute('data-compare-identities') || '{}');
+				if (!rows || typeof rows !== 'object' || Array.isArray(rows)) {
+					return;
+				}
+				Object.keys(rows).forEach(function (id) {
+					var source = String(rows[id]);
+					if (/^[1-9][0-9]*$/.test(id) && /^[1-9][0-9]*$/.test(source)) {
+						map[id] = source;
+					}
+				});
+			} catch (error) {
+				// Malformed page data must not destroy the visitor's selection.
+			}
+		});
+		return map;
+	}
 
 	function chip() {
 		return document.querySelector('[data-compare-chip]');
@@ -46,6 +68,7 @@
 		var seen = {};
 		rows.forEach(function (id) {
 			id = String(id);
+			id = aliases[id] || id;
 			if (!/^[1-9][0-9]*$/.test(id) || seen[id]) {
 				return;
 			}
@@ -80,7 +103,9 @@
 	}
 
 	function paint() {
+		aliases = identities();
 		var ids = read();
+		write(ids);
 		var limit = max();
 		var full = ids.length >= limit;
 		var selected = {};
@@ -89,7 +114,8 @@
 		});
 
 		Array.prototype.forEach.call(document.querySelectorAll('[data-compare-product]'), function (control) {
-			var id = control.getAttribute('data-compare-product') || '';
+			var raw = control.getAttribute('data-compare-product') || '';
+			var id = aliases[raw] || raw;
 			var on = !!selected[id];
 			control.setAttribute('aria-pressed', on ? 'true' : 'false');
 			control.setAttribute('data-compare-selected', on ? 'true' : 'false');
@@ -118,6 +144,7 @@
 
 	function toggle(id) {
 		id = String(id || '');
+		id = aliases[id] || id;
 		if (!/^[1-9][0-9]*$/.test(id)) {
 			return;
 		}
@@ -168,6 +195,7 @@
 	});
 
 	window.linkerComparePaint = paint;
+	aliases = identities();
 	syncFromPage();
 	paint();
 
