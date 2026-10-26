@@ -552,8 +552,20 @@ final class AccountTemplatesTest extends TestCase {
 		WP_Mock::userFunction( 'wp_cache_supports' )->with( 'flush_runtime' )->andReturn( true );
 		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->once()->andReturn( true );
 		WP_Mock::userFunction( 'has_filter' )->with( 'linker_commerce_facts_product_id' )->andReturn( true );
-		WP_Mock::onFilter( 'linker_commerce_facts_product_id' )->with( 90 )->reply( 9 );
-		WP_Mock::onFilter( 'linker_commerce_facts_product_id' )->with( 100 )->reply( 10 );
+		foreach (
+			array(
+				90  => 9,
+				100 => 10,
+			) as $display_id => $source_id
+		) {
+			/**
+			 * The filter factory supplies its filter-specific responder.
+			 *
+			 * @var \WP_Mock\Filter_Responder $filter
+			 */
+			$filter = WP_Mock::onFilter( 'linker_commerce_facts_product_id' )->with( $display_id );
+			$filter->reply( $source_id );
+		}
 		WP_Mock::userFunction( 'get_post_type' )->andReturn( 'product' );
 		WP_Mock::userFunction( 'get_post_status' )->andReturnUsing( static fn ( int $id ): string => 10 === $id ? 'draft' : 'publish' );
 		$product = Mockery::mock( \WC_Product::class );

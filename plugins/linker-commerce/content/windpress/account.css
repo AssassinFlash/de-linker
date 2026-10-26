@@ -756,6 +756,7 @@ body.woocommerce-account .linker-account-undo:focus-visible { outline: 2px solid
 
 .linker-account .linker-account-recalculate { display: grid; flex: 1 1 100%; gap: 14px; }
 .linker-account .linker-account-recalculate p { margin: 0; color: var(--acct-ink-2); font-size: 14.5px; line-height: 1.6; }
+.linker-account .linker-account-recalculate .linker-account-btn { text-align: center; }
 .linker-account .linker-account-products .linker-account-action { display: inline-flex; flex: 1; align-items: center; min-width: 0; min-height: 44px; color: var(--proto-teal-600); overflow-wrap: anywhere; text-decoration: underline; text-underline-offset: 3px; }
 .linker-account .linker-account-products .linker-account-action:hover { color: var(--proto-teal-700); }
 .linker-account .linker-account-products .linker-account-action:focus-visible { outline: 2px solid var(--proto-teal-600); outline-offset: 3px; }
