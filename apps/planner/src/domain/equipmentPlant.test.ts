@@ -7,6 +7,7 @@ import {
 	beginPlant,
 	compilePlant,
 	equipmentContext,
+	factoryPlant,
 	plantInputs,
 	readEquipmentPlant,
 	readPlantDraft,
@@ -120,4 +121,44 @@ test("plant qualification rejects crossed ownership and inconsistent product rev
 		mutate(candidate);
 		assert.throws(() => readEquipmentPlant(candidate));
 	}
+});
+
+test("factory counts are applied on preparation without editing saved history or multiplying sales units", () => {
+	const raw = configured();
+	const ready = factoryPlant(raw, {
+		"1": {
+			sales_unit_kind: "battery_system",
+			fixed_modules_per_stack: 11,
+			documents: [{ url: "https://de-linker.com/fixture.pdf", page: 2 }],
+		},
+	});
+	// The synthetic publication identifies the battery separately from converter.
+	const withBattery = {
+		...raw,
+		units: raw.units.map((u) => ({
+			...u,
+			inputs: {
+				equipment_setup: {
+					...equipmentDraft(u.inputs),
+					battery_product_id: 1,
+					inverter_product_id: 2,
+					parallel_stacks: 1,
+				},
+			},
+		})),
+	};
+	const prepared = factoryPlant(withBattery, {
+		"1": {
+			sales_unit_kind: "battery_system",
+			fixed_modules_per_stack: 11,
+			documents: [{ url: "https://de-linker.com/fixture.pdf", page: 2 }],
+		},
+	});
+	assert.equal(equipmentDraft(prepared.units[0]!.inputs).modules_per_stack, 11);
+	assert.equal(equipmentDraft(prepared.units[0]!.inputs).parallel_stacks, 1);
+	assert.equal(
+		equipmentDraft(withBattery.units[0]!.inputs).modules_per_stack,
+		null,
+	);
+	assert.equal(equipmentDraft(ready.units[0]!.inputs).modules_per_stack, null);
 });

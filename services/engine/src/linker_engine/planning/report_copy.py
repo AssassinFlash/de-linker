@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 TEXT = {
+    "sales_battery_system": ("Battery system", "Batteriesystem"),
+    "sales_battery_module": ("Battery module", "Batteriemodul"),
+    "sales_integrated_system": ("Integrated system", "Integriertes System"),
     "plant_scope": (
         "The report presents checks for each recorded system and its coordination group. Shared output, backup transfer and country-specific acceptance remain subject to the open checks.",
         "Der Bericht enthält die Prüfergebnisse für jedes erfasste System und seine Koordinationsgruppe. Die gemeinsame Leistungsabgabe, die Umschaltung auf Notstrombetrieb und die Erfüllung länderspezifischer Anforderungen sind aufgrund der offenen Prüfpunkte noch nicht bestätigt.",

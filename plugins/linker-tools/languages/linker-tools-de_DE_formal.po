@@ -11283,3 +11283,16 @@ msgstr "Diese Suche bezieht sich auf ein einzelnes System. Wählen Sie bei einer
 #: build/planner/assets/planner.js
 msgid "Project requirements and joint checks"
 msgstr "Projektanforderungen und Prüfungen des gemeinsamen Betriebs"
+
+#: build/planner/assets/planner.js
+msgid "Number of battery systems for this converter"
+msgstr "Anzahl der Batteriesysteme für diesen Umrichter"
+
+#: build/planner/assets/planner.js
+msgid "Fixed internal module count"
+msgstr "Feste Anzahl interner Batteriemodule"
+
+#: build/planner/assets/planner.js
+#, javascript-format
+msgid "The manufacturer specifies %d internal battery modules per battery system."
+msgstr "Der Hersteller gibt %d interne Batteriemodule je Batteriesystem an."

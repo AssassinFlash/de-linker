@@ -8,9 +8,28 @@ import {
 	compileEquipment,
 	equipmentDraft,
 	readEquipmentSelection,
+	changeEquipment,
+	factoryEquipment,
 } from "./equipment.ts";
 import type { EquipmentSelection } from "./equipment.ts";
 import { compileEquipmentRequirements } from "./equipmentRequirements.ts";
+import type { BatteryAssemblies } from "../data/equipmentProducts.ts";
+
+export function factoryPlant(
+	draft: PlantDraft,
+	assemblies: BatteryAssemblies,
+): PlantDraft {
+	return {
+		...draft,
+		units: draft.units.map((unit) => ({
+			...unit,
+			inputs: changeEquipment(
+				unit.inputs,
+				factoryEquipment(equipmentDraft(unit.inputs), assemblies),
+			),
+		})),
+	};
+}
 
 export interface PlantUnitDraft extends JsonObject {
 	id: string;

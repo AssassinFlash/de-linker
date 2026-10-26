@@ -135,6 +135,62 @@ def plant_inputs(feed: dict, *, coordinated: bool = False) -> Object:
     }
 
 
+def test_cabinet_sales_unit_and_factory_count_share_cited_woo_basis(feed: dict) -> None:
+    from linker_engine.planning.battery_assembly import battery_assembly
+    from linker_engine.planning.equipment_inputs import EquipmentSelection
+
+    basis = copy.deepcopy(feed)
+    cabinet = next(p for p in basis["products"] if p["id"] == 1955)
+    original = compile_product(cabinet)
+    assert battery_assembly(original) is None
+    # Explicit synthetic Woo maintenance entry, using the fixture's existing
+    # whole-system source. It is not an independent runtime product registry.
+    cabinet["figures"]["sales_unit_kind"] = {
+        "value": "battery_system",
+        "unit": None,
+        "citation": copy.deepcopy(
+            cabinet["figures"]["modules_per_stack_min"]["citation"]
+        ),
+    }
+    assembly = battery_assembly(compile_product(cabinet))
+    assert assembly is not None and assembly["fixed_modules_per_stack"] == 11
+    assert assembly["documents"] == [
+        {"url": cabinet["figures"]["sales_unit_kind"]["citation"]["url"], "page": 2}
+    ]
+    selection = EquipmentSelection.read(
+        {
+            **inputs(feed, 3)["equipment_selection"],
+            "inverter_product_id": 1946,
+            "battery_product_id": 1955,
+            "modules_per_stack": 11,
+            "parallel_stacks": 1,
+            "accessory_product_ids": [],
+            "product_revisions": {
+                str(p["id"]): p["product_revision"]
+                for p in basis["products"]
+                if p["id"] in [1946, 1955]
+            },
+        }
+    )
+    result = assess_equipment(
+        {"equipment_selection": selection.model_dump(mode="json")}, basis
+    )
+    assert [row["quantity"] for row in result["provisional_bill_of_materials"] if row["product_id"] == 1955] == [
+        1
+    ]
+    cabinet["figures"]["modules_per_stack_max"]["qualifier"] = {"unassessed": True}
+    conditional = battery_assembly(compile_product(cabinet))
+    assert conditional is not None and conditional["fixed_modules_per_stack"] is None
+    del cabinet["figures"]["sales_unit_kind"]
+    assert battery_assembly(compile_product(cabinet)) is None
+    assert not any(
+        row["product_id"] == 1955
+        for row in assess_equipment(
+            {"equipment_selection": selection.model_dump(mode="json")}, basis
+        )["provisional_bill_of_materials"]
+    )
+
+
 def test_multi_converter_plant_keeps_unit_ownership_and_source_revisions(
     feed: dict,
 ) -> None:

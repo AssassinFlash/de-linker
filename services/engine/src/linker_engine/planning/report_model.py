@@ -213,10 +213,21 @@ def build_report(source: Object) -> Report:
                     label = text("source", locale) + (
                         f" · {text('page', locale)} {page}" if page else ""
                     )
+                    source_display_value = str(fact.get("raw_value", "—"))
+                    if cited.get(
+                        "figure_key"
+                    ) == "sales_unit_kind" and source_display_value in {
+                        "battery_module",
+                        "battery_system",
+                        "integrated_system",
+                    }:
+                        source_display_value = text(
+                            "sales_" + source_display_value, locale
+                        )
                     rows.append(
                         ReportRow(
                             label=label,
-                            value=str(fact.get("raw_value", "—"))
+                            value=source_display_value
                             + (f" {fact['raw_unit']}" if fact.get("raw_unit") else ""),
                             href=url,
                         )

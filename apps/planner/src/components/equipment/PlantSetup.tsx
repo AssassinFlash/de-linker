@@ -6,6 +6,7 @@ import { isDirty, sameJson } from "../../domain/draft.ts";
 import { equipmentDraft } from "../../domain/equipment.ts";
 import {
 	compilePlant,
+	factoryPlant,
 	plantInputs,
 	readPlantDraft,
 	plantIdentity as newId,
@@ -100,7 +101,10 @@ export function PlantSetup(props: Props) {
 			!!setup &&
 			!blocked &&
 			sameJson(
-				compilePlant(setup, products),
+				compilePlant(
+					factoryPlant(setup, catalog.data?.assemblies ?? {}),
+					products,
+				),
 				draft.history.current.equipment_plant,
 			);
 	} catch {
@@ -568,12 +572,19 @@ export function PlantSetup(props: Props) {
 						if (!client.isCurrentScope(scope)) return;
 						try {
 							const before = readPlantDraft(draft.history.current);
-							const compiled = compilePlant(before, products);
+							const preparedSetup = factoryPlant(
+								before,
+								catalog.data?.assemblies ?? {},
+							);
+							const compiled = compilePlant(preparedSetup, products);
 							if (
 								!edit((inputs) => {
 									if (!sameJson(readPlantDraft(inputs), before))
 										throw new ApiError(409, "conflict");
-									return { ...inputs, equipment_plant: compiled };
+									return {
+										...plantInputs(inputs, preparedSetup),
+										equipment_plant: compiled,
+									};
 								})
 							)
 								throw new ApiError(409, "conflict");

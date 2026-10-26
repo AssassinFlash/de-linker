@@ -4,7 +4,22 @@ import type { Json, JsonObject } from "../data/protocol.ts";
 import { ApiError } from "../data/protocol.ts";
 import { readObject } from "../data/readProtocol.ts";
 import { readEquipmentRequirements } from "./equipmentRequirements.ts";
-import type { EquipmentProduct } from "../data/equipmentProducts.ts";
+import type {
+	EquipmentProduct,
+	BatteryAssemblies,
+} from "../data/equipmentProducts.ts";
+
+/** Applied by explicit preparation; never mutates an older saved selection. */
+export function factoryEquipment(
+	setup: JsonObject,
+	assemblies: BatteryAssemblies,
+): JsonObject {
+	const assembly = assemblies[String(setup.battery_product_id)];
+	return assembly?.sales_unit_kind === "battery_system" &&
+		assembly.fixed_modules_per_stack !== null
+		? { ...setup, modules_per_stack: assembly.fixed_modules_per_stack }
+		: setup;
+}
 
 export interface EquipmentSelection extends JsonObject {
 	schema_version: 1;

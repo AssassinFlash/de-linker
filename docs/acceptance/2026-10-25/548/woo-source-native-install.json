@@ -1443,7 +1443,7 @@
       "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
     }
   },
-  "current_frontier": "equipment_plant_workspace_local",
+  "current_frontier": "equipment_cabinet_assembly_local",
   "shared_dc_core": {
     "status": "implemented_and_reviewed_core_not_connected_to_native_commands",
     "model": "constant_window_shared_dc_bus_v1",
@@ -3617,6 +3617,116 @@
     "retention": "One owned project, four final views and one unique before image; current carrier plus one verified rollback; replaced obsolete carrier deleted; no new instance, worktree, environment or backup",
     "production_changed": false,
     "woo_product_data_written": false,
-    "mail_sent": false
+    "mail_sent": false,
+    "resolved_in_newer_batch": "Cabinet sales-unit/count interpretation and native DE plant PDF are delivered in equipment_cabinet_assembly; its remaining_in_same_goal is the current frontier"
+  },
+  "equipment_cabinet_assembly": {
+    "status": "local_source_input_materials_and_pdf_delivered",
+    "source_ref": "Commit containing this record on codex/unified-planner-548",
+    "at_utc": "2026-10-26T05:53:58.698156+00:00",
+    "runtime_sha256": "73e62fb127dfe01a79a282e1bdb2e36a82a5df8ca514eb5e01cc5ef18c5864ec",
+    "instance": "Existing p548; WP9347 and engine9348; matching HTTP/worker, storage5",
+    "source_authority": "Existing Woo products, maintained engineering figures, document bindings and native preparation; no alternate product source",
+    "source_revision": "0a2036e8b1ff71032a6773e087391de01881aed5fe0f0463a37639c5f9f069be",
+    "compatibility_revision": "a939cdb8036477d94f534dee354de58f93a48521c8de9bc6d8593cc045f8dc55",
+    "woo": {
+      "changed_products": [
+        1955
+      ],
+      "reused_existing_declaration": [
+        1954
+      ],
+      "figure": "sales_unit_kind=battery_system; citation reused from each product fixed module-count source",
+      "publication": "Native EvidenceBindings hooks and claim/ack preparation consumed the Woo generation",
+      "prepared_products": 86,
+      "source_pdf_sha256": "845e51ffb2801f48971c8b53941629dde1e8bc114b9b45dbc4f08c49c5ef815c",
+      "source_page": 2,
+      "factory_internal_counts": {
+        "1954": 6,
+        "1955": 11
+      },
+      "no_new_physical_claims": "Conditional usable capacities, continuous output and joint applicability were not inferred from these counts"
+    },
+    "delivered": [
+      "Current cited sales units distinguish a battery system from its internal modules",
+      "Only cited unconditional equal integer module bounds establish a fixed internal count",
+      "Customer quantity counts battery systems per converter; the factory count is shown with its source link",
+      "Explicit preparation atomically updates raw and compiled input; historical revisions remain unchanged",
+      "Native whole-plant BOM and saved report count two converters, two battery systems and one shared controller",
+      "Known sales-unit enums display reviewed EN/DE names in the report and PDF; immutable source values remain intact"
+    ],
+    "native": {
+      "project_id": "1ac83b43ab08481bae7e6eb05cf633c4",
+      "revision": 3,
+      "equipment_run": "6aabf880d13e48edbf3ea2da7216352f",
+      "before_report": "9bc5c7a394db400a88ca0435e6d560f4",
+      "report": "33086c71667d494590ebee013847362e",
+      "pdf_sha256": "315671c7489f2cd80c356268bcf3e5bd6426eb91a6c28e03822a7763d3086ba1",
+      "pdf_pages": 6,
+      "quantity_by_product": {
+        "1946": 2,
+        "1955": 2,
+        "2409": 1
+      },
+      "old_revision_internal_counts": [
+        null,
+        null
+      ],
+      "current_internal_counts": [
+        11,
+        11
+      ],
+      "current_system_counts": [
+        1,
+        1
+      ]
+    },
+    "verification": {
+      "focused_backend": "Existing equipment suite extended with one cited cabinet/count/BOM case; passed",
+      "focused_client": "Existing plant lifecycle suite extended with one explicit factory-count preparation case; passed",
+      "static": "Final TypeScript/Vite build, affected Python Ruff/mypy and translation compilation passed",
+      "review": "Spec and Standards passed the full cabinet delta and final presentation delta; EN/DE copy independently reviewed",
+      "browser": "Same owned project, saved revision3 and one equipment job; report presentation regenerated from that unchanged result",
+      "pdf": "Final native six-page PDF inspected; source-display repair verified on page2; unchanged BOM/page layout reused",
+      "visual": "Existing EN/DE1440/390 cabinet views retained; final shared source-link class/token delta checked once on DE desktop",
+      "download_scope": "Browser PDF action returned enabled without an error; native guarded PDF bytes retained; OS Downloads location not asserted",
+      "validation_closed": true
+    },
+    "evidence": [
+      "equipment-cabinet-de.pdf",
+      "equipment-cabinet-de-before.pdf",
+      "equipment-cabinet-de-bom.png",
+      "equipment-cabinet-en-desktop.png",
+      "equipment-cabinet-en-mobile.png",
+      "equipment-cabinet-de-desktop.png",
+      "equipment-cabinet-de-mobile.png"
+    ],
+    "visual_provenance": {
+      "equipment-cabinet-de-desktop.png": "Final source link uses existing lp-text-button and site teal rgb(8,77,70)",
+      "other_cabinet_views": "Same reviewed inputs and wrapping before source-link class-only delta; reused under AGENTS0.1",
+      "equipment-cabinet-de-before.pdf": "Unique pre-repair raw sales-unit enum evidence; six-page layout and quantities unchanged",
+      "equipment-cabinet-de-bom.png": "Unchanged page6 layout and quantities from before display-only repair"
+    },
+    "reuse": "Closed annual/PV, single-system, commerce, plant numerical and paired deployment evidence reused; no new full-site or lifecycle matrix",
+    "retention": {
+      "current_runtime": "73e62fb127dfe01a79a282e1bdb2e36a82a5df8ca514eb5e01cc5ef18c5864ec",
+      "single_rollback": "6c1b1fdb947c1976fb2b8a6d70e99228bacf0813cb53e8a7f4f198714b4aeb35",
+      "scoped_woo_undo": "/Users/chesterjohn/de-linker-local/p548/planner/cabinet-figures-before.json",
+      "superseded_carriers_removed": true,
+      "new_instances_worktrees_environments_or_full_backups": false,
+      "temporary_source_and_report_renders_removed": true
+    },
+    "remaining_in_same_goal": [
+      "Woo-typed operating mode, network, firmware, battery association and conditioned usable-energy/power applicability",
+      "Automatic multi-system selection and joint time-series dispatch",
+      "Installation electrical/structural/material reconciliation and European country requirements",
+      "Remaining site and Genie consumers, historical migration, coordinated review/production release and readback"
+    ],
+    "coordination": "Woo authority confirmed no active waiting dependency; active presentation chat is advancing its own ordinary-form and Genie handoff repair",
+    "production_changed": false,
+    "woo_product_data_written": "Local1955 only;1954 reused",
+    "mail_sent": false,
+    "inquiry_written": false,
+    "whole_goal_complete": false
   }
 }

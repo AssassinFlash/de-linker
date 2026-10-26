@@ -6,9 +6,11 @@ import {
 	changeEquipment,
 	compileEquipment,
 	equipmentDraft,
+	factoryEquipment,
 } from "../../domain/equipment.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import type { JsonObject } from "../../data/protocol.ts";
+import { ApiError } from "../../data/protocol.ts";
 import { useEquipmentProducts } from "../../data/equipmentProducts.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { NumberField } from "../NumberField.tsx";
@@ -94,13 +96,27 @@ export function EquipmentSetup({
 			catalog.isFetching ||
 			!!catalog.error ||
 			!catalog.data?.prepared;
+	const assembly = setup
+		? catalog.data?.assemblies[String(setup.battery_product_id)]
+		: undefined;
+	const fixedCount =
+		assembly?.sales_unit_kind === "battery_system"
+			? assembly.fixed_modules_per_stack
+			: null;
+	const configuredSetup = setup
+		? factoryEquipment(setup, catalog.data?.assemblies ?? {})
+		: null;
+	useEffect(() => {
+		if (fixedCount !== null && fixedCount !== undefined)
+			callbacks.modules_per_stack!(true);
+	}, [fixedCount, callbacks]);
 	let prepared = false;
 	try {
 		prepared =
 			!!setup &&
 			!blocked &&
 			sameJson(
-				compileEquipment(setup, products),
+				compileEquipment(configuredSetup!, products),
 				draft.history.current.equipment_selection,
 			);
 	} catch {
@@ -404,15 +420,46 @@ export function EquipmentSetup({
 							__("Battery or storage system", "linker-tools"),
 							storage,
 						)}
-						{number(
-							"modules_per_stack",
-							__("Battery modules per stack", "linker-tools"),
-							"",
-							true,
+						{fixedCount != null ? (
+							<div className="lp-field">
+								<span>{__("Fixed internal module count", "linker-tools")}</span>
+								<p>
+									{sprintf(
+										__(
+											"The manufacturer specifies %d internal battery modules per battery system.",
+											"linker-tools",
+										),
+										fixedCount,
+									)}
+								</p>
+								{assembly?.documents.map((doc) => (
+									<a
+										className="lp-text-button"
+										key={`${doc.url}:${doc.page}`}
+										href={`${doc.url}#page=${doc.page}`}
+										target="_blank"
+										rel="noopener noreferrer"
+									>
+										{__("Source", "linker-tools")}
+									</a>
+								))}
+							</div>
+						) : (
+							number(
+								"modules_per_stack",
+								__("Battery modules per stack", "linker-tools"),
+								"",
+								true,
+							)
 						)}
 						{number(
 							"parallel_stacks",
-							__("Parallel stacks or systems", "linker-tools"),
+							assembly?.sales_unit_kind === "battery_system"
+								? __(
+										"Number of battery systems for this converter",
+										"linker-tools",
+									)
+								: __("Parallel stacks or systems", "linker-tools"),
 							"",
 							true,
 						)}
@@ -511,11 +558,18 @@ export function EquipmentSetup({
 							}
 							onClick={() => {
 								try {
-									const value = compileEquipment(setup, products);
-									edit((current) => ({
-										...current,
-										equipment_selection: value,
-									}));
+									const value = compileEquipment(configuredSetup!, products);
+									if (
+										!edit((current) => {
+											if (!sameJson(equipmentDraft(current), setup))
+												throw new ApiError(409, "conflict");
+											return {
+												...changeEquipment(current, configuredSetup!),
+												equipment_selection: value,
+											};
+										})
+									)
+										throw new ApiError(409, "conflict");
 									onError(null);
 								} catch (error) {
 									onError(error);

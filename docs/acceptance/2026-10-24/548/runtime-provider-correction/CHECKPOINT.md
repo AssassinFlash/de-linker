@@ -1123,3 +1123,39 @@ folder. No annual/PV, commerce, VPS operator or full-site matrix was repeated.
 The local editor/report-view batch is verified; PDF acceptance, scoped Woo
 cabinet/operating semantics, automatic plant search/joint dispatch, country and
 whole-site publication gates remain in the same active goal.
+
+### Cabinet assembly and native report — local delivery closed
+
+The same owned plant project now has saved revision3: two GW80K-ET
+converters, two whole GW112.6-BAT-AC-G10 battery systems and one shared
+SEC3000C. Each cabinet contains11 internal modules; that factory count does
+not multiply the sale quantity. Woo1954 already maintained its sales-unit
+declaration and was reused; only local Woo1955 gained the missing declaration,
+with its existing held datasheet page2 citation. Native binding hooks and
+preparation claim/ack published source0a2036e8. No separate product source or
+unconditional usable-energy/output claim was introduced. Historical revision2
+retains its unknown internal count; explicit preparation creates the new state.
+
+Runtime73e62fb1 is the matching local HTTP/worker pair with storage5;6c1b1fdb
+is the sole rollback. Superseded carriers were removed; one small scoped Woo
+undo record is retained. No new instance, environment or full backup was added.
+One equipment job produced quantities1946:2,1955:2,2409:1. The saved result
+feeds the final six-page German PDF33086c71667d494590ebee013847362e, SHA256
+315671c7489f2cd80c356268bcf3e5bd6426eb91a6c28e03822a7763d3086ba1.
+Its sales-unit source label is customer-readable and the unchanged material
+table fits. The native PDF action completed without a UI error; a particular
+OS Downloads path is not asserted. The unique pre-repair PDF is retained.
+
+Focused source/count and preparation lifecycle cases, affected static/build
+checks and Spec/Standards/copy review passed. Existing EN/DE1440/390 views
+are reused; only the final shared source-link token delta was checked again
+on DE desktop. Closed annual/PV, commerce and operator evidence was not
+repeated. Validation of this batch has stopped. The Woo authority has no
+waiting dependency; active presentation work continues independently.
+
+Conditioned equipment applicability, automatic plant selection/joint dispatch,
+installation/country requirements, remaining consumers/migration and review/
+production release/readback remain in the active full goal. This is a local
+delivery, with no production, mail or inquiry write. Exact source, result,
+review and retention details extend the existing acceptance JSON under
+`equipment_cabinet_assembly`; no separate report or ticket was created.

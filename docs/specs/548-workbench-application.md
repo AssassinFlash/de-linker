@@ -216,6 +216,22 @@ describes its internal module. Known conditional energy figures cannot become
 unconditional capacity. Missing sales-unit identity keeps that BOM line
 unresolved. No substitute capability pack is introduced.
 
+The current product reply may project `battery_assemblies` from that same
+prepared Woo pool. A battery-system sales-unit declaration requires its bound
+source. A fixed internal count is available only when cited, unconditional
+minimum and maximum module counts are the same positive safe integer. Unknown,
+conditional or unbound counts stay editable/unresolved; no model-name rule is
+used. The editor presents the fixed count with its source page and asks for the
+number of complete battery systems on the converter. Explicit preparation
+writes the source-derived internal count into the editable and compiled inputs
+in one guarded mutation. Historical inputs and results are never rewritten.
+The existing battery-system BOM rule counts complete systems independently of
+internal pack count; the module-sales rule still counts modules. Neither rule
+approves shared power, usable energy under unassessed conditions or a parallel
+connection. The projection reuses one per-request fact compilation for battery
+ports and assembly metadata; it creates no secondary product authority.
+
+
 Each result contains satisfied/violated/unresolved checks, the source facts,
 manufacturer conditions and a provisional parts list. A successful task is
 not an approved system. Detailed string/port/continuous battery conversion,

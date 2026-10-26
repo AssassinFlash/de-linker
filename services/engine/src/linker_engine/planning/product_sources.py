@@ -20,6 +20,7 @@ from ..publication import (
     ReferenceEvidenceUnavailable,
     View,
 )
+from .battery_assembly import battery_assembly
 from .canonical import Json, Object, decode_object, encode
 from .equipment_fact_resolution import declared_battery_ports
 from .equipment_facts import compile_product
@@ -354,6 +355,11 @@ class ProductSources:
                             "reason": str(error),
                         }
                     )
+            compiled = {
+                str(row["canonical_product_id"]): compile_product(row)
+                for row in feed["products"]
+                if row["id"] in ids
+            }
             result = decode_object(
                 encode(
                     {
@@ -369,19 +375,25 @@ class ProductSources:
                         "products": [
                             row for row in feed["products"] if row["id"] in ids
                         ],
-                        "parallel_controller_product_ids": sorted({
-                            accessory["product_id"]
-                            for requirement in feed["compatibility"]["requirements"]
-                            if requirement["kind"] == "parallel_controller"
-                            for accessory in requirement["accessories"]
-                            if type(accessory.get("product_id")) is int and accessory["product_id"] in ids
-                        }),
+                        "parallel_controller_product_ids": sorted(
+                            {
+                                accessory["product_id"]
+                                for requirement in feed["compatibility"]["requirements"]
+                                if requirement["kind"] == "parallel_controller"
+                                for accessory in requirement["accessories"]
+                                if type(accessory.get("product_id")) is int
+                                and accessory["product_id"] in ids
+                            }
+                        ),
                         "dc_battery_ports": {
-                            str(row["canonical_product_id"]): cast(Json, ports)
-                            for row in feed["products"]
-                            if row["id"] in ids
-                            and (ports := declared_battery_ports(compile_product(row)))
-                            is not None
+                            pid: cast(Json, ports)
+                            for pid, row in compiled.items()
+                            if (ports := declared_battery_ports(row)) is not None
+                        },
+                        "battery_assemblies": {
+                            pid: assembly
+                            for pid, row in compiled.items()
+                            if (assembly := battery_assembly(row)) is not None
                         },
                         "references": references,
                         "pv_modules": templates,
