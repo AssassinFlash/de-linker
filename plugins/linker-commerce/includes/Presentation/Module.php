@@ -109,7 +109,7 @@ final class Module {
 		if ( function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() ) ) {
 			// The catalogue's family cards: the model picker switches the
 			// article a card shows (spec: the live shop's family grid).
-			wp_enqueue_script( 'linker-product-family', $base . 'product-family.js', array(), '1', true );
+			wp_enqueue_script( 'linker-product-family', $base . 'product-family.js', array(), (string) filemtime( dirname( __DIR__, 2 ) . '/assets/product-family.js' ), true );
 			// The product archive's filter drawer on the narrow viewports: the open
 			// and close state of the rail's panel (spec 82 planned this file
 			// as the storefront script's successor; the drawer never had its
