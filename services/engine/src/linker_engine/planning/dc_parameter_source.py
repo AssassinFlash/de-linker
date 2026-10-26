@@ -26,7 +26,11 @@ from .errors import EvidenceMissing, MethodDomainExceeded, ProductEvidenceChange
 
 class _Facts:
     def __init__(
-        self, basis: Object, selection: EquipmentSelection, assumptions: DcLossScenario
+        self,
+        basis: Object,
+        selection: EquipmentSelection,
+        assumptions: DcLossScenario,
+        country_code: str | None = None,
     ) -> None:
         self.evidence = EquipmentEvidence(basis)
         self.selection = selection
@@ -38,6 +42,7 @@ class _Facts:
             },
             assumptions.battery_temperature_c,
             assumptions.battery_port_id,
+            country_code=country_code,
         )
         self.used: Object = {}
 
@@ -130,12 +135,19 @@ class _Facts:
 
     def capability(self, pid: int, key: str) -> bool | None:
         fact = cast(Object, self.evidence.compiled(pid)["facts"]).get(key)
-        if (
-            not isinstance(fact, dict)
-            or fact.get("source") is None
-            or fact.get("qualifier") not in (None, "", {}, [])
-        ):
+        if not isinstance(fact, dict) or fact.get("source") is None:
             return None
+        qualifier = fact.get("qualifier")
+        if qualifier not in (None, "", {}, []):
+            # This records a documented physical path, never grid permission.
+            # Permission to use it is separately declared by the operation;
+            # manufacturer/country approval remains an assessment obligation.
+            if key != "battery_grid_charging_supported" or qualifier != {
+                "quantity_kind": "documented_operating_function",
+                "scope": "grid_connected_battery_charging",
+                "requires_local_grid_permission": True,
+            }:
+                return None
         value = fact.get("raw_value")
         if (
             value is True
@@ -167,7 +179,15 @@ def prepare_dc_parameters(
         raise MethodDomainExceeded(
             "shared DC currently requires one explicitly configured battery stack"
         )
-    facts = _Facts(basis, selection, assumptions)
+    brief = inputs.get("brief")
+    site = brief.get("site") if isinstance(brief, dict) else None
+    country = site.get("country_code") if isinstance(site, dict) else None
+    facts = _Facts(
+        basis,
+        selection,
+        assumptions,
+        country if isinstance(country, str) and re.fullmatch(r"[A-Z]{2}", country) else None,
+    )
     inv, battery = selection.inverter_product_id, selection.battery_product_id
     assessment = assess_equipment(
         {
@@ -225,6 +245,7 @@ def prepare_dc_parameters(
         assumptions.battery_temperature_c,
         assumptions.battery_port_id,
         int(port_count),
+        facts.context.country_code,
     )
     battery_charge = facts.number(
         battery, ("max_charge_current_a",), "current", use="normal_charge_current"
@@ -253,6 +274,20 @@ def prepare_dc_parameters(
         "current",
         per_port=True,
         use="normal_discharge_current",
+    )
+    terminal_charge = facts.number(
+        inv,
+        ("max_battery_terminal_charge_power_kw",),
+        "active_power",
+        required=False,
+        use="battery_terminal_power",
+    )
+    terminal_discharge = facts.number(
+        inv,
+        ("max_battery_terminal_discharge_power_kw",),
+        "active_power",
+        required=False,
+        use="battery_terminal_power",
     )
     rated_bank = facts.number(
         battery,
@@ -299,11 +334,38 @@ def prepare_dc_parameters(
                 "dc_loss_scenario:explicit_reverse_efficiency",
                 constraint_id="explicit_reverse_efficiency",
             )
-        reverse_ac = facts.number(
+        active_ceiling = facts.number(
             inv,
             ("max_battery_charge_ac_power_kw", "rated_battery_charge_ac_power_kw"),
             "active_power",
+            required=False,
         )
+        apparent_ceiling = facts.number(
+            inv,
+            ("max_apparent_power_from_grid_kva",),
+            "apparent_power",
+            required=False,
+            use="grid_input_ceiling",
+        )
+        bounds = [v for v in (active_ceiling, apparent_ceiling) if v is not None]
+        if not bounds:
+            raise EvidenceMissing(
+                f"woo_dc_fact:{inv}:reverse_ac_input_ceiling",
+                product_id=inv,
+                fact_id="max_battery_charge_ac_power_kw",
+                constraint_id="reverse_ac_input_ceiling",
+            )
+        reverse_ac = min(bounds)
+        if apparent_ceiling is not None:
+            # P^2 + Q^2 = S^2 implies |P| <= S. This is a necessary ceiling,
+            # not an active-power rating, efficiency or deliverability proof.
+            facts.used["reverse_ac_input_ceiling"] = {
+                "relation": "abs(P)<=S",
+                "role": "necessary_upper_bound_only",
+                "active_power_limit_kw": active_ceiling,
+                "apparent_power_limit_kva": apparent_ceiling,
+                "effective_active_upper_bound_kw": reverse_ac,
+            }
         reverse_dc = facts.number(
             inv, ("max_battery_charge_dc_power_kw",), "active_power", required=False
         )
@@ -357,8 +419,10 @@ def prepare_dc_parameters(
             "id": assumptions.battery_port_id,
             "operating_min_v": inv_range[0],
             "operating_max_v": inv_range[1],
-            "charge_power_limit_kw": None,
-            "discharge_power_limit_kw": None,
+            # A single selected battery port is below the whole converter's
+            # battery-terminal ceiling. PV and reversed AC share this cap.
+            "charge_power_limit_kw": terminal_charge,
+            "discharge_power_limit_kw": terminal_discharge,
             "charge_current_a": port_charge,
             "discharge_current_a": port_discharge,
         },

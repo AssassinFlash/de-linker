@@ -1352,3 +1352,32 @@ release. Multi-converter outage calculations expose missing joint topology
 evidence rather than reusing a single-device backup approval. This batch has
 not changed production. Exact runtime/source/evidence and retention details
 are in the existing acceptance ledger's `joint_dc_storage` entry.
+
+### Real Woo ET/BAT-C source and directional ceilings — local batch closed
+
+The exact BAT-C document SHA/page was rechecked against the current native
+Woo relation. Its confirmed citation alias now restores the existing battery
+facts (GW112.6:6 to28 bound entries), including the original conditional110kWh
+rating. No publisher relaxation, alternate product source or stripped rating
+condition was introduced. The ET intake separately binds per-port current,
+whole battery-terminal powers, documented grid-charging function and the
+inverter's apparent AC-input ceiling. Manufacturer port count is retained;
+engine numeric IDs are not asserted as manufacturer port labels.
+
+The producer retains `abs(P)<=S` as a necessary upper bound and applies the
+battery-terminal power cap once across local PV and reversed AC. Source
+country exclusions read only canonical `brief.site.country_code`. Independent
+review repaired that path and a null-condition bypass; the same source-only
+representative checks and changed-file static checks then passed. No energy
+replay, frontend build, screenshot matrix or unrelated check was repeated.
+
+Existing publication claim/ack loaded source830c8f6e with HTTP/worker663ddc4d
+and schema5. The sole rollback is43ada736; older17c1c475 was retired. The
+native loaded source reports100A per ET80 port and88kW battery-terminal/
+88kVA input ceilings. The actual current assessment preserves full voltage
+containment while marking usable capacity unresolved because its manufacturer
+test conditions are not yet interpreted. That is the next real implementation
+gap, alongside the existing joint/country qualification and final delivery
+scope. No new project, instance, full backup or production write was made.
+Exact source readback and the scoped native metadata undo use the existing
+acceptance and private retention records.

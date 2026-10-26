@@ -1443,7 +1443,7 @@
       "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
     }
   },
-  "current_frontier": "joint_dc_storage_local",
+  "current_frontier": "real_device_operating_envelopes_local",
   "shared_dc_core": {
     "status": "implemented_and_reviewed_core_not_connected_to_native_commands",
     "model": "constant_window_shared_dc_bus_v1",
@@ -2375,7 +2375,7 @@
       "notification_sent": true,
       "shared_woo_source": "ee916454e451c0769097294afaf0bef0a73823b79b319c7f3f828f6408ff625d"
     },
-    "batch_stop": "Shared-DC integration is installed and its necessary numerical, native, reader and presentation checks are closed. Reuse this evidence; proceed with actual remaining implementation and release rather than additional matrices or report layers.",
+    "batch_stop": "Real Woo source/producer directional-bound increment closed. Reuse its source check/readback; proceed to actual rated-capacity conditions and remaining delivery.",
     "reviews": "Final Spec/Standards/copy deltas PASS; unchanged accepted evidence reused."
   },
   "pv_operating_conditions": {
@@ -4269,6 +4269,87 @@
       "remaining downstream and migration",
       "review site and production release/readback"
     ],
-    "completed_at_utc": "2026-10-26T17:00:51.599932+00:00"
+    "completed_at_utc": "2026-10-26T17:00:51.599932+00:00",
+    "superseded_frontier": "real_device_operating_envelopes"
+  },
+  "real_device_operating_envelopes": {
+    "status": "source_and_directional_ceiling_increment_closed_locally",
+    "base_commit": "c9825f23",
+    "runtime_sha256": "663ddc4d9180ca96ff2d0f501b04c7213afd9a6991781c7de4be85f61eb68468",
+    "rollback_runtime_sha256": "43ada736f28393b6c13556ca94742f0fccf2fa42d25e28ca6f352b717d33c1c0",
+    "source_revision": "830c8f6ea6fcc56cc96f629ecf1eb443c7be09d5a04059181a23243d54ae77bc",
+    "compatibility_revision": "1f5b594311f5e1553f56b1afd12b13001451be3891f65a0dc49495799bd8e119",
+    "storage_schema_version": 5,
+    "woo_products": [
+      1946,
+      1947,
+      1948,
+      1954,
+      1955
+    ],
+    "authority": "Native Woo product facts and existing linked manufacturer documents only",
+    "source_note": "docs/research/2026-10-23-capability-inputs/FACT-INTAKE.md",
+    "battery_alias_sha256": "845e51ffb2801f48971c8b53941629dde1e8bc114b9b45dbc4f08c49c5ef815c",
+    "battery_1955_bound_figures_before": 6,
+    "battery_1955_bound_figures_after": 28,
+    "physics_boundary": "Battery-terminal charge cap shared by PV and reversed AC; apparent AC input provides abs(P)<=S necessary bound, no active rating inference",
+    "country_context": "Canonical brief.site.country_code; null or unknown qualifiers refused",
+    "native_loaded_source_readback": {
+      "inverter": {
+        "id": 1946,
+        "ports": 2.0,
+        "charge_current_per_port_a": 100.0,
+        "charge_terminal_power_kw": 88.0,
+        "input_apparent_kva": 88.0
+      },
+      "battery": {
+        "id": 1955,
+        "usable_kwh": 110.0,
+        "usable_status": "conditional",
+        "source_sha256": "845e51ffb2801f48971c8b53941629dde1e8bc114b9b45dbc4f08c49c5ef815c"
+      },
+      "native_assessment": [
+        {
+          "id": "battery_voltage",
+          "status": "satisfied",
+          "reason": "full_voltage_window_containment",
+          "actual": null
+        },
+        {
+          "id": "usable_energy",
+          "status": "unresolved",
+          "reason": "cited_usable_energy_and_sales_basis",
+          "actual": null
+        }
+      ]
+    },
+    "publication_jobs": [
+      {
+        "action": "claim",
+        "job_id": "5ab45875a1f42fd6c0da5ed84a9cba863e20e78e173b3dfd4b022ae876a2d724",
+        "status": null
+      },
+      {
+        "action": "ack",
+        "job_id": "5ab45875a1f42fd6c0da5ed84a9cba863e20e78e173b3dfd4b022ae876a2d724",
+        "status": "ready"
+      }
+    ],
+    "spec_review": "PASS final code and native data delta; canonical country path repaired",
+    "standards_review": "PASS final delta including null-condition refusal; unchanged integration reused",
+    "verification_stop": "Only changed source-preparation representative and changed-file static checks. No numerical replay, frontend build or screenshot matrix.",
+    "retention": {
+      "retained_runtime_carriers": 2,
+      "retired_runtime": "/Users/chesterjohn/de-linker-local/p548/planner/runtime-releases/17c1c475b97ec4f6c73201d29fec9bf9ff1e95987c3bd1be62704e3edee85578",
+      "scoped_metadata_undo": "Existing private retention ledger, real_device_envelope_intake.preimage"
+    },
+    "production_changed": false,
+    "remaining_full_goal": [
+      "manufacturer rated usable-window operating conditions",
+      "actual continuous and thermal capability",
+      "joint island and country qualification",
+      "remaining downstream/migration and final review-site/production delivery"
+    ],
+    "completed_at_utc": "2026-10-26T17:39:23.661664+00:00"
   }
 }

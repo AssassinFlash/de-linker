@@ -8,6 +8,7 @@ Temperature is a declared scenario input, never inferred from outdoor weather.
 from __future__ import annotations
 
 import math
+import re
 from dataclasses import dataclass
 from typing import Any, Literal, cast
 
@@ -19,9 +20,11 @@ type FactUse = Literal[
     "numeric",
     "nominal_ac_output",
     "grid_output_ceiling",
+    "grid_input_ceiling",
     "pv_nameplate_limit",
     "normal_charge_current",
     "normal_discharge_current",
+    "battery_terminal_power",
     "bank_rated_dc_power",
     "battery_operating_voltage",
 ]
@@ -34,6 +37,7 @@ class FactContext:
     battery_temperature_c: float | None = None
     battery_port_id: str | None = None
     battery_port_count: int | None = None
+    country_code: str | None = None
 
 
 @dataclass(frozen=True)
@@ -221,13 +225,38 @@ def resolve_fact(
                 "quantity_kind": "rated_active_power",
                 "scope": "on_grid_ac_output",
             }
-        elif use == "grid_output_ceiling":
+        elif use in ("grid_output_ceiling", "grid_input_ceiling"):
+            excluded = q.get("excluded_countries")
+            conditions = {k: v for k, v in q.items() if k != "excluded_countries"}
             valid = fact.get("quantity") in (
                 "active_power",
                 "apparent_power",
-            ) and q == {
+            ) and conditions == {
                 "quantity_kind": "maximum_" + str(fact["quantity"]),
-                "scope": "on_grid_ac_output",
+                "scope": "on_grid_ac_output"
+                if use == "grid_output_ceiling"
+                else "on_grid_ac_input",
+            }
+            if "excluded_countries" in q:
+                valid = (
+                    valid
+                    and use == "grid_input_ceiling"
+                    and isinstance(excluded, list)
+                    and all(
+                        isinstance(code, str) and re.fullmatch(r"[A-Z]{2}", code)
+                        for code in excluded
+                    )
+                )
+                if valid:
+                    if context.country_code is None:
+                        return FactResolution(None, "country_required")
+                    if context.country_code in cast(list[str], excluded):
+                        return FactResolution(None, "country_outside_condition")
+                    match["country_code"] = context.country_code
+        elif use == "battery_terminal_power":
+            valid = q == {
+                "quantity_kind": "maximum_active_power",
+                "scope": "inverter_battery_terminals_total",
             }
         elif use == "pv_nameplate_limit":
             valid = q == {

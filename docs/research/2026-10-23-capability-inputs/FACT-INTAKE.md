@@ -162,3 +162,71 @@ supply a model-specific H2-10K-T3 AC battery charge power rating. Manuals for
 LS2/LT2/Africa models returned by the search are not transferred to the EU T3.
 No new product facts or runtime source pack were invented from these searches;
 verified future maintenance must go through the native Woo product record.
+
+### Owned GoodWe ET/BAT-C charging and island evidence — 2026-10-27
+
+This narrow read uses the active native feed at
+`/Users/chesterjohn/de-linker-local/p548/engine/feed.json`: source
+`f4205bc282d65d6a7770c5050842a6532d46326d7b906cb75f2f695b563a38fd`,
+compatibility `1f5b594311f5e1553f56b1afd12b13001451be3891f65a0dc49495799bd8e119`.
+The older `planner/woo-current-feed.json` is an October24 capture, not the
+current authority. The following are interpretations of already-associated
+manufacturer documents, not another maintained product source. No Woo records,
+runtime, tests, account or production state were changed. No external lookup
+was needed: the current local PDF bytes match their active Woo document hashes.
+
+| Source | Complete SHA256 and relevant physical PDF pages |
+| --- | --- |
+| [ET75–100 datasheet](https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf#page=2) | `4f7178042e8faf03bd926dc33a5ff0b85ffcd4f46e12f1dcf86d6db10befee4d`, p2 |
+| [ET50–100 solution manual](https://de-linker.com/wp-content/uploads/2026/09/GW_ET-50-100kW_User-Manual-EN_V1.3.pdf#page=16) | `f66efb70d0d8927a92355980e0a0bd09359f580664976e082c4e510320e6d5a0`, pp7,16–18,49; Figure18 on p49 visually inspected |
+| [ET100 user manual](https://de-linker.com/wp-content/uploads/2026/10/GW_ET-100kW_User-Manual-EN_V1.2.pdf#page=81) | `0ef4b1ccdcc418e3ca8de31194b3d9e2969be39aa739ffa0ca1f038fcfac6615`, pp36–38,49–51,81–83,134 |
+| [BAT-C61.4/112.6 EMEA datasheet](https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf#page=2) | `845e51ffb2801f48971c8b53941629dde1e8bc114b9b45dbc4f08c49c5ef815c`, pp1–2 |
+| [SEC3000C manual](https://de-linker.com/wp-content/uploads/2026/09/GW_SEC3000C_User-Manual-EN.pdf#page=99) | `98bbe6f74e4d4d0e2437c3917e1fb2365c352ad01b5c46d26ad82876cb18850d`, pp43,76,94,99,131 |
+
+The field descriptions below specify physical meaning; they do not declare
+new runtime keys or give unconditional equipment approval.
+
+| Maintainable fact / physical boundary | Exact manufacturer value and condition |
+| --- | --- |
+| Battery grid-charging capability, ET1946/1947/1948 | ET user manual p81 permits purchased-grid charging to backup SOC; p83 permits TOU grid charging, both subject to local regulations. SEC manual p99 also describes immediate grid battery charging. This supports a capability statement with the regulation/mode condition, not automatic country approval. |
+| Inverter battery-side DC charge/discharge maxima | ET datasheet p2 Battery Side:1946 GW80K=88/88kW;1947 GW99.99K=99.99/99.99kW;1948 GW100K=110/110kW. These are inverter-level battery-side maxima across its battery connections, not per-port values or a dedicated AC active charging rating. PV-origin and reverse-AC-origin battery charging share this physical limit. |
+| Inverter battery-port continuous current | ET datasheet p2:2 inputs;1946=100A per input in either direction;1947/1948=110A per input in either direction. One selected port cannot receive twice its rating. The manual allows the two inputs to connect to the same or independent battery systems only with the documented wiring; the source alone does not establish the project's actual connection. |
+| Inverter AC-port input apparent-power ceiling | ET datasheet p2 AC Side(on-grid):1946=88kVA;1947=99.99kVA;1948=110kVA. Footnote5 reduces1946 to80kVA and1948 to100kVA **for Chile**, not Europe. This is a separate apparent-power bound; use of the necessary relation `abs(P)<=S` does not convert it into a manufacturer active charging rating or prove delivery at every PF. |
+| Actual battery-side AC reverse output | The inverter's DC charging maximum above limits charging from any source. No separate reverse-only DC maximum is published in these owned documents. A model must retain the shared battery-side limit rather than granting that maximum independently to PV and reverse AC. |
+| BAT-C1954/1955 system charge/discharge current | BAT-C datasheet p2:180/220A, at the **assembled battery-system** boundary. Cell SOC and temperature cause current/power derating; maximum C-rate duration also depends on SOC, cell temperature and ambient temperature. These are not a constant available envelope across all conditions. |
+| BAT-C system DC charge/discharge power maxima | BAT-C p2:1954 GW61.4=55.2/67.5kW;1955 GW112.6=101.3/123.9kW, with the same footnote2 derating/duration conditions. Neither value is AC output or a per-module rating. |
+| BAT-C usable energy | BAT-C p2:1954=60kWh;1955=110kWh. Footnote1:beginning-of-life system,100%DOD,.2C charge/discharge,+25±2°C; system usable energy may vary with configuration. The .2C/temperature test point cannot establish invariant usable capacity under an arbitrary replay. |
+| BAT-C operating temperature and efficiency test point | BAT-C p2 gives both charging and discharging temperature ranges as−20…+55°C. This operating range does not cancel footnote2's SOC/cell-temperature derating. Rated system capacity is200Ah; the usable-energy test specifies.2C for both charge and discharge, not the separate180/220A maxima. Round-trip efficiency is96% at100%DOD,.2C,+25±2°C; that single cycle result does not uniquely determine two directional efficiencies. |
+
+**AC boundary conclusion.** ET user manual p49 identifies one inverter AC
+wiring module. Its p51 separately identifies STS INVERTER, BACK-UP, SMART and
+GRID terminals. The solution manual p49 Figure18 shows the inverter AC cables
+joining the STS INVERTER path, with grid and backup loads on distinct STS paths.
+Thus the datasheet's from-grid apparent maximum belongs to the **inverter AC
+port**; it is neither the site's aggregate PCC import maximum nor an STS bypass
+or backup rating. The model needs that separate AC-port ceiling as well as the
+battery-side DC/current limits. These documents do not provide an active AC
+charging maximum, fixed PF, reverse efficiency curve or state/temperature
+performance envelope. A constant-efficiency replay remains an explicit scenario.
+
+**Interconnected island topology is documented, with conditions.** Solution
+manual pp16–18 (printed15–17), independently repeated by user manual pp36–38:
+up to6 listed ET/BT inverters; ARM firmware≥3.193 and DSP≥3.306. Parallel
+operation requires SEC3000C firmware≥7.18. STS firmware≥3.304 is required.
+GW125K-STS-G10 supports1 inverter and125kW at400V; GW375K-STS-A-G10 supports3
+and375kW at400V/200kW at220V; GW750K-STS-A-G10 supports6 and750kW at400V/
+400kW at220V. These rated values apply separately to the documented grid,
+BACK-UP and SMART-PORT paths. The inverter, STS and controller limits must all
+hold; an unrelated ESA cabinet's10-unit island or20-unit grid limit cannot be
+transferred here. User manual p134 requires an STS for off-grid function and
+forbids a breaker between the inverter and STS.
+
+The BAT92.1/102.4/112.6 family permits up to4 same-model cabinets per cluster;
+different battery models cannot be mixed. The backup list on solution manual
+p17 includes112.6 but omits61.4; that omission leaves61.4 backup qualification
+unresolved and does not prove it prohibited. SEC manual pp76/94 prescribes
+the parallel-backup wiring mode. Motor/capacitive loads also have dedicated
+off-grid limits in solution manual p7; total unit nameplates cannot replace
+those load-specific constraints. Project wiring, actual firmware, neutral/PE
+arrangements, STS product selection and country/site authorization must still
+be established before granting a real interconnected-island approval.

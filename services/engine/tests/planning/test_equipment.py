@@ -882,6 +882,105 @@ def prepared_dc_fixture_source(
     return feed, source, loaded, inverter, battery, controller
 
 
+@pytest.mark.parametrize(
+    ("active_limit", "country", "expected"),
+    [(None, "DE", 10), (6, "DE", 6), (None, "CL", None), (None, None, None)],
+)
+def test_reverse_input_ceiling_and_battery_terminal_power_keep_their_boundaries(
+    feed: dict,
+    engine: Engine,
+    monkeypatch: pytest.MonkeyPatch,
+    active_limit: int | None,
+    country: str | None,
+    expected: int | None,
+) -> None:
+    """One source-preparation check; reuse fixtures without any energy replay."""
+    from linker_engine.planning.dc_energy_parameters import DcLossScenario
+    from linker_engine.planning.dc_parameter_source import prepare_dc_parameters
+    from linker_engine.planning.errors import EvidenceMissing
+
+    feed, source, _, _, _, _ = prepared_dc_fixture_source(
+        feed, engine, monkeypatch, reverse_ac_kw=6
+    )
+    basis = source.equipment_basis()
+    inverter = next(p for p in basis["products"] if p["canonical_product_id"] == 4107)
+    figures = inverter["figures"]
+    capability = figures["battery_grid_charging_supported"]
+    capability["qualifier"] = {
+        "quantity_kind": "documented_operating_function",
+        "scope": "grid_connected_battery_charging",
+        "requires_local_grid_permission": True,
+    }
+    citation = copy.deepcopy(capability["citation"])
+    if active_limit is None:
+        figures.pop("max_battery_charge_ac_power_kw")
+    figures["max_apparent_power_from_grid_kva"] = {
+        "value": 10,
+        "unit": "kVA",
+        "citation": citation,
+        "qualifier": {
+            "quantity_kind": "maximum_apparent_power",
+            "scope": "on_grid_ac_input",
+            "excluded_countries": ["CL"],
+        },
+    }
+    for direction, power in (("charge", 2), ("discharge", 3)):
+        figures[f"max_battery_terminal_{direction}_power_kw"] = {
+            "value": power,
+            "unit": "kW",
+            "citation": citation,
+            "qualifier": {
+                "quantity_kind": "maximum_active_power",
+                "scope": "inverter_battery_terminals_total",
+            },
+        }
+    assumptions = DcLossScenario.read(
+        {
+            "schema_version": 1,
+            "model": "constant_window_shared_dc_bus_v1",
+            "parameter_basis": "explicit_loss_scenario_with_woo_equipment",
+            "battery_port_id": "BAT1",
+            "battery_temperature_c": 20,
+            "eta_bus_to_battery": 1,
+            "eta_battery_to_bus": 1,
+            "eta_store_charge": 1,
+            "eta_store_discharge": 1,
+            "eta_inverter_forward": 1,
+            "eta_inverter_reverse": 1,
+            "internal_aux_kw": 0,
+            "standing_loss_rate_per_hour": 0,
+            "source_note": "Synthetic source-bound input/terminal limits only",
+        }
+    )
+    project_inputs = {
+        **inputs(feed, 3),
+        "brief": {"site": {"country_code": country}},
+    }
+    if expected is None:
+        with pytest.raises(EvidenceMissing):
+            prepare_dc_parameters(project_inputs, basis, assumptions)
+        return
+    prepared = prepare_dc_parameters(project_inputs, basis, assumptions)
+    assert prepared.connected_bridge.reverse_ac_kw == expected
+    # The maximum battery-terminal power is shared by PV and reversed AC;
+    # it must not become a separate AC-to-DC bridge-output allowance.
+    assert prepared.connected_bridge.reverse_dc_kw is None
+    assert prepared.selected_port.charge_power_limit_kw == 2
+    assert prepared.selected_port.discharge_power_limit_kw == 3
+    assert prepared.battery_model("0" * 64).charge_terminal_kw == 2
+    ceiling = prepared.source_facts["reverse_ac_input_ceiling"]
+    assert ceiling["role"] == "necessary_upper_bound_only"
+    assert ceiling["apparent_power_limit_kva"] == 10
+    assert ceiling["active_power_limit_kw"] == active_limit
+    if active_limit is None:
+        # A declared but unknown condition is not the absence of a condition.
+        figures["max_apparent_power_from_grid_kva"]["qualifier"][
+            "excluded_countries"
+        ] = None
+        with pytest.raises(EvidenceMissing):
+            prepare_dc_parameters(project_inputs, basis, assumptions)
+
+
 def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
     feed: dict,
     engine: Engine,

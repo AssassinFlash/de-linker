@@ -813,3 +813,33 @@ remaining downstream/migration and final release remain within the full goal.
 Multi-converter outage periods currently report the missing joint topology
 evidence explicitly; single-device backup approval cannot qualify a shared
 island. No real product or country is qualified by the synthetic fixture.
+
+## Documented reverse input and battery-terminal ceilings
+
+The native Woo ET/BAT-C source intake uses the exact currently linked
+manufacturer bytes and pages recorded in FACT-INTAKE.md. The battery document's
+confirmed legacy citation name is attached to that same Woo document relation;
+the publisher's current-source checks remain unchanged. Existing usable-energy
+conditions are retained, including the rated test rate, temperature and age.
+Their presence in the feed does not establish the project's usable capacity.
+
+The DC producer recognizes a documented grid-charging physical function while
+retaining its local-grid-permission obligation. Its AC-input active-power
+ceiling is the minimum of an explicitly documented active limit, when present,
+and a separately documented apparent-input limit. The latter follows only
+`abs(P)<=S` and is retained as a necessary bound, not an active-power rating or
+proof that the device can supply that power at arbitrary power factor.
+Source-declared country exclusions use the existing `brief.site.country_code`;
+absent, null or unrecognized conditions never become unconditional facts.
+
+The inverter's battery-terminal maximum charging/discharging powers constrain
+the selected battery port. Local PV and reversed AC share that terminal bound;
+the battery-side total is not copied to the AC-to-DC bridge output as a second
+independent allowance. Named ports are used only where the source names them;
+a documented count alone retains the engine's existing numeric port IDs.
+Each prepared parameter confirmation re-evaluates current source conditions.
+
+This source/producer work leaves the rated usable-window operating conditions,
+continuous/thermal behavior, country release and interconnected island
+qualification explicit in the same full goal. It does not qualify those paths
+by making formerly missing source facts readable.
