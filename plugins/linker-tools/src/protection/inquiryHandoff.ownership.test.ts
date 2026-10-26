@@ -8,8 +8,7 @@ const config = { restUrl: '/wp-json/', restNonce: 'native-current' };
 
 function destination(): HTMLTextAreaElement {
 	window.history.replaceState( null, '', '/proforma-request/' );
-	document.body.innerHTML =
-		'<textarea id="inquiry-message">Current native inquiry default</textarea>';
+	document.body.innerHTML = '<textarea id="inquiry-message"></textarea>';
 	return document.querySelector( 'textarea' )!;
 }
 
@@ -130,6 +129,7 @@ test( 'a slot created during the identity await needs a later explicit restore',
 for ( const mutation of [
 	'edited then reverted',
 	'default changed',
+	'retained submission appeared',
 	'field replaced',
 	'path changed',
 	'identity lifecycle changed',
@@ -146,6 +146,14 @@ for ( const mutation of [
 			field.value = field.defaultValue;
 		} else if ( mutation === 'default changed' ) {
 			field.defaultValue = 'Updated native server default';
+		} else if ( mutation === 'retained submission appeared' ) {
+			const form = document.createElement( 'form' );
+			field.before( form );
+			form.append( field );
+			form.insertAdjacentHTML(
+				'beforeend',
+				'<input type="hidden" name="linker_inquiry_retained" value="1">'
+			);
 		} else if ( mutation === 'field replaced' ) {
 			field.outerHTML =
 				'<textarea id="inquiry-message">Replacement native field</textarea>';

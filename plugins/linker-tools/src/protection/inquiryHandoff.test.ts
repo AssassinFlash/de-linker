@@ -29,6 +29,7 @@ afterEach( () => {
 } );
 
 test( 'explicit same-owner navigation carries plain text once, without URL or files', async () => {
+	document.querySelector( 'textarea' )!.defaultValue = '';
 	const text = '<img src=x onerror=alert(1)> Current unsent question';
 	expect( rememberInquiry( window.location.href, text, scope ) ).toBe( true );
 	await restoreInquiry( config );
@@ -41,6 +42,24 @@ test( 'explicit same-owner navigation carries plain text once, without URL or fi
 	await restoreInquiry( config );
 	expect( field.value ).toBe( 'Later edit' );
 } );
+
+test.each( [ '', 'Customer corrected this message' ] )(
+	'failed submission keeps its customer message %j and retires the matching fallback',
+	async ( message ) => {
+		document.body.innerHTML =
+			'<form><input type="hidden" name="linker_inquiry_retained" value="1"><textarea id="inquiry-message"></textarea></form>';
+		const field = document.querySelector( 'textarea' )!;
+		field.defaultValue = message;
+		rememberInquiry(
+			window.location.href,
+			'Earlier accepted fallback',
+			scope
+		);
+		await restoreInquiry( config );
+		expect( field.value ).toBe( message );
+		expect( window.sessionStorage.getItem( key ) ).toBeNull();
+	}
+);
 
 test( 'an explicit same-origin empty question clears only its earlier same-owner handoff', async () => {
 	expect(

@@ -122,6 +122,17 @@ final class OpenInquiryTest extends IntegrationTestCase {
 	public function test_guest_form_renders_empty_fields_and_real_transport_attributes(): void {
 		$this->as_user( 0 );
 		wc_load_cart();
+		$summary_calls = 0;
+		$old_summary   = static function () use ( &$summary_calls ): array {
+			++$summary_calls;
+			return array( 'note' => 'Previous unrelated project question.' );
+		};
+		add_filter( 'linker_genie_inquiry_summary', $old_summary, 999 );
+		$this->later(
+			static function () use ( $old_summary ): void {
+				remove_filter( 'linker_genie_inquiry_summary', $old_summary, 999 );
+			}
+		);
 		$tags = $GLOBALS['shortcode_tags'];
 		$this->later(
 			static function () use ( $tags ): void {
@@ -136,6 +147,9 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->assertStringContainsString( '<form class="woocommerce-cart-form" method="post" action="' . wc_get_checkout_url() . '">', $html );
 		$this->assertStringContainsString( 'value="" required', $html );
 		$this->assertStringContainsString( 'action="' . admin_url( 'admin-post.php' ) . '"', $html );
+		$this->assertStringNotContainsString( 'Previous unrelated project question.', $html );
+		$this->assertSame( 0, $summary_calls, 'Opening the native form does not request a conversation summary.' );
+		$this->assertStringContainsString( 'name="linker_inquiry_retained" value="0"', $html );
 		$fields = WC()->session->get( 'linker_inquiry_fields' );
 		$this->later(
 			static function () use ( $fields ): void {
@@ -144,9 +158,14 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		);
 		$literal = '[linker_inquiry_text key=title]';
 		WC()->session->set( 'linker_inquiry_fields', array( 'message' => $literal ) );
-		$this->assertStringContainsString( '>' . esc_attr( $literal ) . '</textarea>', do_shortcode( '[linker_inquiry_form]' ) );
+		$retained = do_shortcode( '[linker_inquiry_form]' );
+		$this->assertStringContainsString( '>' . esc_attr( $literal ) . '</textarea>', $retained );
+		$this->assertStringContainsString( 'name="linker_inquiry_retained" value="1"', $retained );
 		$this->assertNull( WC()->session->get( 'linker_inquiry_fields' ), 'The next render consumes the guest PII.' );
 		$this->assertStringNotContainsString( esc_attr( $literal ), do_shortcode( '[linker_inquiry_form]' ), 'PII is never refilled a second time.' );
+		WC()->session->set( 'linker_inquiry_fields', array( 'message' => '' ) );
+		$cleared = do_shortcode( '[linker_inquiry_form]' );
+		$this->assertStringContainsString( 'name="linker_inquiry_retained" value="1"', $cleared, 'An intentionally cleared failed submission is still customer input.' );
 	}
 
 	/** Retained validation feedback follows the language when the customer switches pages. */
@@ -187,6 +206,20 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->as_user( 0 );
 		wc_load_cart();
 		WC()->cart->empty_cart();
+		$summary_calls = 0;
+		$old_summary   = static function () use ( &$summary_calls ): array {
+			++$summary_calls;
+			return array(
+				'summary' => 'Previous unrelated project.',
+				'note'    => 'Old customer question.',
+			);
+		};
+		add_filter( 'linker_genie_inquiry_summary', $old_summary, 999 );
+		$this->later(
+			static function () use ( $old_summary ): void {
+				remove_filter( 'linker_genie_inquiry_summary', $old_summary, 999 );
+			}
+		);
 		$stamp = (string) ( time() - 5 );
 		$order = ( new \Linker\Commerce\Inquiry\Handler() )->process(
 			array(
@@ -210,6 +243,9 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->assertStringContainsString( '/de/proforma-anfrage/', $order->get_checkout_order_received_url() );
 		$this->assertSame( 0, $order->get_item_count() );
 		$this->assertSame( array(), $order->get_order_item_totals(), 'A message alone has no monetary total.' );
+		$this->assertSame( 'Bitte kontaktieren Sie mich.', $order->get_customer_note() );
+		$this->assertSame( '', $order->get_meta( Sender::SUMMARY_META ) );
+		$this->assertSame( 0, $summary_calls, 'The ordinary form does not silently attach an old Genie conversation.' );
 	}
 
 	/** Admin-post is an admin request; the stored product line must still use the form's language. */

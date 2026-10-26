@@ -26,13 +26,6 @@ final class Form {
 	private array $flash = array();
 
 	/**
-	 * The conversation's note, resolved once per render (#244).
-	 *
-	 * @var string|null
-	 */
-	private ?string $note = null;
-
-	/**
 	 * Registers the form and its escaped data tags.
 	 */
 	public function register(): void {
@@ -88,10 +81,7 @@ final class Form {
 			'name'               => $name,
 			'email'              => $email,
 			'company'            => $customer->get_billing_company(),
-			// A customer who talked with Genie starts from the note of that
-			// conversation (#244): the team sees the whole summary with the
-			// inquiry, and nothing already said is typed again.
-			'message'            => isset( $previous['message'] ) && is_string( $previous['message'] ) ? $previous['message'] : ( 'message' === $key ? $this->summary_note() : '' ),
+			'message'            => isset( $previous['message'] ) && is_string( $previous['message'] ) ? $previous['message'] : '',
 			'action'             => admin_url( 'admin-post.php' ),
 			'draft-url'          => wc_get_cart_url(),
 			'draft-action'       => wc_get_checkout_url(),
@@ -115,6 +105,7 @@ final class Form {
 	 */
 	public function hidden(): string {
 		return '<input type="hidden" name="action" value="linker_inquiry" /><input type="hidden" name="lang" value="' . esc_attr( str_starts_with( determine_locale(), 'de' ) ? 'de' : 'en' ) . '" />'
+		. '<input type="hidden" name="linker_inquiry_retained" value="' . ( array() !== (array) ( $this->flash['fields'] ?? array() ) ? '1' : '0' ) . '" />'
 		. wp_nonce_field( Handler::ACTION, Handler::NONCE, true, false ) . ( new PublicGuard() )->fields()
 		. '<input type="hidden" name="linker_draft_hash" value="' . esc_attr( WC()->cart->get_cart_hash() ) . '" />'
 		. \Linker\Commerce\Protection\FormFields::render( 'inquiry', (string) ( $this->flash['fields']['linker_request_id'] ?? '' ), '1' === ( $this->flash['fields']['linker_individual_review'] ?? '' ) );
@@ -125,23 +116,6 @@ final class Form {
 	 */
 	public function draft_nonce(): string {
 		return wp_nonce_field( 'woocommerce-cart', 'woocommerce-cart-nonce', true, false ) . \Linker\Commerce\Protection\FormFields::render( 'draft_write' );
-	}
-
-	/**
-	 * The latest message of the visitor's Genie conversation, or ''.
-	 *
-	 * Linker\Tools\Genie\InquirySummary answers the filter once per thread
-	 * state and caches it, so the form's render and the inquiry's submit share
-	 * one summary (#244). Without linker-tools or a conversation the filter
-	 * stays unanswered and the form starts empty.
-	 */
-	private function summary_note(): string {
-		if ( null !== $this->note ) {
-			return $this->note;
-		}
-		$summary    = apply_filters( 'linker_genie_inquiry_summary', null, 0 ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- linker-tools' filter (Linker\Tools\Genie\InquirySummary::FILTER): the plugin answers with the conversation's summary.
-		$this->note = is_array( $summary ) && isset( $summary['note'] ) && is_string( $summary['note'] ) ? $summary['note'] : '';
-		return $this->note;
 	}
 
 	/**
