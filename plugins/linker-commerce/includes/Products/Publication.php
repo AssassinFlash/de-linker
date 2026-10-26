@@ -336,7 +336,9 @@ final class Publication {
 	 * @return array<string,mixed>
 	 */
 	private static function assemble( bool $library = false, ?int $product_id = null, string $legacy_url = '' ): array {
-		$ids                    = self::candidate_ids();
+		$ids = self::candidate_ids();
+		// WordPress batches the same native posts, metadata and terms after this read's runtime refresh.
+		_prime_post_caches( $ids, true, true );
 		$citation_ids           = $library ? self::faq_document_ids( null === $product_id ? $ids : array( $product_id ) ) : array();
 		$document_ids           = null === $product_id ? null : self::product_document_ids( $product_id );
 		$products               = array();
