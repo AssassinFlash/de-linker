@@ -7,7 +7,7 @@ const {JSDOM}=require('../../../linker-tools/node_modules/jsdom');
 const script=readFileSync(new URL('../../assets/account-ui.js',import.meta.url),'utf8');
 
 function account(){
- const dom=new JSDOM(`<div class="linker-auth"><form method="post" id="signin">
+ const dom=new JSDOM(`<div class="linker-auth"><form method="post" id="signin" novalidate>
  <input type="text" name="username" required>
  <button type="submit" name="login">Log in</button>
  </form></div>`,{runScripts:'outside-only'});
@@ -74,14 +74,19 @@ test('protected inquiry/account marks busy only on the verified native resubmit'
  assert.equal(form.dataset.accountState,'submitting');
 });
 
-test('a form the browser reports invalid keeps its button untouched',()=>{
+test('a native Woo novalidate form reports missing fields and stays on the page',()=>{
  const win=account();
  const button=win.document.querySelector('button[type="submit"]');
  const form=win.document.getElementById('signin');
  // jsdom reports an empty required field as invalid, the same as the browser.
  assert.equal(form.checkValidity(),false);
+ assert.equal(form.noValidate,true,'Woo delegates its login validation to the submit path');
+ let reported=false;
+ form.reportValidity=()=>{reported=true;return false;};
  const event=submit(form);
- assert.equal(event.defaultPrevented,false);
+ assert.equal(event.defaultPrevented,true,'invalid novalidate forms must not reach the server');
+ assert.equal(reported,true,'the customer must be directed to the missing field');
+ assert.equal(form.dataset.accountState,undefined);
  assert.equal(button.classList.contains('is-loading'),false);
 });
 

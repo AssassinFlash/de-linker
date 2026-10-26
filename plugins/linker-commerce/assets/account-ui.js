@@ -155,8 +155,8 @@
 	}
 
 	// One submission at a time: the pressed button reports that it is working.
-	// The browser's own field validation still runs first, so an empty required
-	// field keeps its native message instead of a button that never lands.
+	// Woo's login form uses novalidate. Report native constraints here so a
+	// missing field stays on this page, before verification or loading state.
 	// The button is never disabled: WooCommerce reads the pressed button's own
 	// name and value (`login`, `register`, `save_account_details`), and a
 	document.addEventListener(
@@ -187,7 +187,8 @@
 			if ( error && pair ) {
 				showMismatch( error, pair.second, false );
 			}
-			if ( typeof form.checkValidity === 'function' && ! form.checkValidity() ) {
+			if ( typeof form.reportValidity === 'function' && ! form.reportValidity() ) {
+				event.preventDefault();
 				return;
 			}
 			// Verification waits on the original submit. Mark busy only when
