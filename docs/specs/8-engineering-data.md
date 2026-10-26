@@ -29,7 +29,9 @@
 
 商品编辑器的 "Documents" meta box（`Linker\Commerce\Admin\DocumentsMetaBox`）维护
 `_linker_documents`（`{url,title,type,lang}`，与迁移写入同形）：标题、URL、类型
-（datasheet|manual|warranty|document）、语言（en|de）逐行可改，行可删除，留 2 行空行供新增；
+沿公共文档库的完整类型词汇提供新增选项（datasheet|manual|certificate|compatibility|warranty|brochure|document），
+语言提供 EN、DE、MUL 及 EN/DE、DE/EN 组合。现有语言的大小写、别名和其他已存值在表单里保持选中，
+未编辑保存不会将其清空或改写。标题、URL、类型和语言逐行可改，行可删除，留 2 行空行供新增；
 保存走 `save_post_product` + nonce + `edit_post` 权限，只接受本机（本站域名）的 URL——
 外链一律拒绝并保留原值，空 URL 的行删除。box 顶部写明两条常设规则：文件在自家媒体库
 （无来源链接）与"内容改动逐项确认"（本票只做入口，不改内容）。
