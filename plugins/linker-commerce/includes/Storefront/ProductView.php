@@ -606,7 +606,7 @@ final class ProductView {
 		// or preparation state. The original PDF gate still authorizes its bytes.
 		$id         = Publication::canonical_id( $product_id );
 		$documents  = array();
-		$manifest ??= Publication::library_read();
+		$manifest ??= Publication::product_library_read( $id );
 		foreach ( $manifest['documents'] as $document ) {
 			if ( ! in_array( $id, $document['product_ids'], true ) ) {
 				continue;

@@ -198,6 +198,31 @@ final class Publication {
 	}
 
 	/**
+	 * Current product documents, retaining the shared register's first-row rules.
+	 *
+	 * Other products still determine shared metadata and declared aliases, but
+	 * their unrelated files and FAQ citations do not need to be inspected.
+	 *
+	 * @param int $id Locale product ID.
+	 * @return array<string,mixed>
+	 */
+	public static function product_library_read( int $id ): array {
+		self::refresh_runtime();
+		DocumentFiles::begin_read();
+		try {
+			if ( ! self::published_in_current_read( $id ) ) {
+				return array(
+					'products'  => array(),
+					'documents' => array(),
+				);
+			}
+			return self::assemble( true, self::canonical_id( $id ) );
+		} finally {
+			DocumentFiles::end_read();
+		}
+	}
+
+	/**
 	 * Authorize one original PDF without hashing unrelated technical documents.
 	 *
 	 * @param array<string,string> $file The caller's resolved hosted PDF.
@@ -304,12 +329,14 @@ final class Publication {
 	/**
 	 * Assemble this authority read, hashing each real file at most once.
 	 *
-	 * @param bool $library Only library metadata and current cited FAQ bytes.
+	 * @param bool     $library Only library metadata and current cited FAQ bytes.
+	 * @param int|null $product_id Restrict document IO to this current source.
 	 * @return array<string,mixed>
 	 */
-	private static function assemble( bool $library = false ): array {
+	private static function assemble( bool $library = false, ?int $product_id = null ): array {
 		$ids                    = self::candidate_ids();
-		$citation_ids           = $library ? self::faq_document_ids( $ids ) : array();
+		$citation_ids           = $library ? self::faq_document_ids( null === $product_id ? $ids : array( $product_id ) ) : array();
+		$document_ids           = null === $product_id ? null : self::product_document_ids( $product_id );
 		$products               = array();
 		$documents              = array();
 		$attachment_permissions = array();
@@ -332,6 +359,9 @@ final class Publication {
 				$products[ $id ] = $record;
 				foreach ( self::document_rows( $id ) as $row ) {
 					if ( false === ( $row['active'] ?? true ) || '0' === (string) ( $row['active'] ?? '1' ) ) {
+						continue;
+					}
+					if ( null !== $document_ids && ! isset( $document_ids[ DocumentFiles::id( (string) ( $row['url'] ?? '' ) ) ] ) ) {
 						continue;
 					}
 					$needs_bytes = ! $library || self::row_is_cited( $row, $citation_ids );
@@ -419,6 +449,22 @@ final class Publication {
 	}
 
 	/**
+	 * Select maintained primary identities; aliases remain owned by the first row.
+	 *
+	 * @param int $id Current canonical source.
+	 * @return array<string,true>
+	 */
+	private static function product_document_ids( int $id ): array {
+		$documents = array();
+		foreach ( self::document_rows( $id ) as $row ) {
+			if ( false !== ( $row['active'] ?? true ) && '0' !== (string) ( $row['active'] ?? '1' ) ) {
+				$documents[ DocumentFiles::id( (string) ( $row['url'] ?? '' ) ) ] = true;
+			}
+		}
+		return $documents;
+	}
+
+	/**
 	 * A primary or declared alias may be an FAQ source anywhere in this read.
 	 *
 	 * @param array<string,mixed> $row Current maintained association.
@@ -436,8 +482,8 @@ final class Publication {
 	/**
 	 * Conservative byte-read scope; stored FAQ bindings still decide release.
 	 *
-	 * All published source products are considered before the first shared
-	 * document row. A later product's citation may depend on that earlier row.
+	 * The source candidates in this read are considered before the first shared
+	 * document row. A selected product's citation may depend on an earlier row.
 	 * Path identity can over-select a file, but cannot authorize an answer.
 	 *
 	 * @param int[] $ids Native locale candidates.
@@ -601,7 +647,7 @@ final class Publication {
 			return array();
 		}
 		// FAQ release needs current cited bytes, not product revision or readiness.
-		$manifest ??= self::library_read();
+		$manifest ??= self::product_library_read( $id );
 		if ( ! in_array( $id, array_column( $manifest['products'], 'product_id' ), true ) ) {
 			return array();
 		}
