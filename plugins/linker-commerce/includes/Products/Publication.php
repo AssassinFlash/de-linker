@@ -203,10 +203,11 @@ final class Publication {
 	 * Other products still determine shared metadata and declared aliases, but
 	 * their unrelated files and FAQ citations do not need to be inspected.
 	 *
-	 * @param int $id Locale product ID.
+	 * @param int    $id Locale product ID.
+	 * @param string $legacy_url Legacy selection URL needing declared-alias byte identity.
 	 * @return array<string,mixed>
 	 */
-	public static function product_library_read( int $id ): array {
+	public static function product_library_read( int $id, string $legacy_url = '' ): array {
 		self::refresh_runtime();
 		DocumentFiles::begin_read();
 		try {
@@ -216,7 +217,7 @@ final class Publication {
 					'documents' => array(),
 				);
 			}
-			return self::assemble( true, self::canonical_id( $id ) );
+			return self::assemble( true, self::canonical_id( $id ), $legacy_url );
 		} finally {
 			DocumentFiles::end_read();
 		}
@@ -331,15 +332,19 @@ final class Publication {
 	 *
 	 * @param bool     $library Only library metadata and current cited FAQ bytes.
 	 * @param int|null $product_id Restrict document IO to this current source.
+	 * @param string   $legacy_url Inspect aliases needed to select a legacy document URL.
 	 * @return array<string,mixed>
 	 */
-	private static function assemble( bool $library = false, ?int $product_id = null ): array {
+	private static function assemble( bool $library = false, ?int $product_id = null, string $legacy_url = '' ): array {
 		$ids                    = self::candidate_ids();
 		$citation_ids           = $library ? self::faq_document_ids( null === $product_id ? $ids : array( $product_id ) ) : array();
 		$document_ids           = null === $product_id ? null : self::product_document_ids( $product_id );
 		$products               = array();
 		$documents              = array();
 		$attachment_permissions = array();
+		if ( $library && '' !== $legacy_url ) {
+			$citation_ids[ DocumentFiles::id( $legacy_url ) ] = true;
+		}
 		foreach ( $ids as $locale_id ) {
 			$locale_id = (int) $locale_id;
 			if ( ! self::published_in_current_read( $locale_id ) ) {

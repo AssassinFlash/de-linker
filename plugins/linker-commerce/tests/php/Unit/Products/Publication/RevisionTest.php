@@ -341,6 +341,27 @@ final class RevisionTest extends TestCase {
 		$this->assertSame( 'Earlier shared title', $read['documents'][0]['title'] );
 		$this->assertSame( $answers, Publication::faqs_for( 12 ) );
 		$this->assertArrayNotHasKey( $unrelated, $lookups );
+
+		// The inquiry line also needs uncited legacy aliases, without a full manifest.
+		$this->current_faq_meta[ Faqs::META_KEY ]          = array();
+		$this->current_faq_meta['_delinker_datasheet_url'] = $alias;
+		WP_Mock::userFunction( 'is_wc_endpoint_url' )->andReturn( true );
+		WP_Mock::passthruFunction( 'esc_url' );
+		WP_Mock::passthruFunction( 'esc_html__' );
+		$item = \Mockery::mock( \WC_Order_Item_Product::class );
+		$item->allows( 'get_product_id' )->andReturn( 12 );
+		$order   = \Mockery::mock( \WC_Order::class );
+		$list    = new \Linker\Commerce\Account\InquiryList();
+		$lookups = array();
+		ob_start();
+		$list->datasheet_link( 1, $item, $order );
+		$html = (string) ob_get_clean();
+		$this->assertStringContainsString( 'href="' . $url . '"', $html );
+		$this->assertArrayNotHasKey( $unrelated, $lookups, 'An inquiry line must not read other products\' files.' );
+		file_put_contents( $this->publication_uploads . '/2026/alias.pdf', "%PDF-1.4\nChanged alias bytes.\n%%EOF" );
+		ob_start();
+		$list->datasheet_link( 1, $item, $order );
+		$this->assertSame( '', ob_get_clean(), 'A changed legacy alias cannot authorize this datasheet.' );
 	}
 
 	/**
