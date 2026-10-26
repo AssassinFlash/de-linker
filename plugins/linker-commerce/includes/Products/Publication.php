@@ -595,13 +595,18 @@ final class Publication {
 		if ( ! self::is_published( $id ) ) {
 			return array();
 		}
-		$manifest ??= self::manifest();
-		$id         = self::canonical_id( $id );
+		$id      = self::canonical_id( $id );
+		$entries = Faqs::of( $id );
+		if ( array() === $entries ) {
+			return array();
+		}
+		// FAQ release needs current cited bytes, not product revision or readiness.
+		$manifest ??= self::library_read();
 		if ( ! in_array( $id, array_column( $manifest['products'], 'product_id' ), true ) ) {
 			return array();
 		}
 		$answers = array();
-		foreach ( Faqs::of( $id ) as $entry ) {
+		foreach ( $entries as $entry ) {
 			foreach ( $manifest['documents'] as $document ) {
 				if ( in_array( $id, $document['product_ids'], true ) && in_array( strtok( $entry['citation']['url'], '#' ), $document['aliases'], true ) && EvidenceBindings::matches_faq( $id, $entry, $document ) ) {
 					$answers[] = $entry;
