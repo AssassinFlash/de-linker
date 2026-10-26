@@ -95,6 +95,8 @@ lp-page
 lp-panel-shape
 lp-plan-svg
 lp-plan-view
+lp-plant-switcher
+lp-plant-toolbar
 lp-profile-facts
 lp-profile-help
 lp-profile-intake

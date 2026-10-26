@@ -22,7 +22,7 @@ type Revision = Annotated[str, Field(pattern=r"^[a-f0-9]{64}$")]
 
 class PlantUnit(Document):
     id: Identity
-    name: Annotated[str, Field(min_length=1, max_length=256)]
+    name: Annotated[str, Field(min_length=1, max_length=256, pattern=r"\S")]
     selection: EquipmentSelection
 
 
@@ -39,6 +39,73 @@ class ParallelGroup(Document):
         if (self.controller_product_id is None) != (self.controller_revision is None):
             raise ValueError("a controller needs its current Woo product revision")
         return self
+
+
+class PlantPreparationRequired(InvalidInput):
+    code = "equipment_plant_requires_preparation"
+
+
+def assert_plant_exclusivity(inputs: Object) -> None:
+    """Editable and prepared plants both replace the single-system context."""
+    if not {"equipment_plant", "equipment_plant_setup"}.intersection(inputs):
+        return
+    if any(
+        inputs.get(key) is not None
+        for key in ("equipment_selection", "equipment_candidate", "pv_string_plan")
+    ):
+        raise InvalidInput(
+            "a plant cannot reuse a single-converter selection or wiring result"
+        )
+
+
+def matches_setup(plant: EquipmentPlant, setup: Object) -> bool:
+    """An editable draft cannot silently evaluate an older prepared plant."""
+    if setup.get("schema_version") != 1 or setup.get(
+        "requirements"
+    ) != plant.requirements.model_dump(mode="json"):
+        return False
+    units = setup.get("units")
+    groups = setup.get("parallel_groups")
+    if (
+        not isinstance(units, list)
+        or len(units) != len(plant.units)
+        or not isinstance(groups, list)
+    ):
+        return False
+    for raw, unit in zip(units, plant.units, strict=True):
+        if (
+            not isinstance(raw, dict)
+            or raw.get("id") != unit.id
+            or raw.get("name") != unit.name
+        ):
+            return False
+        inputs = raw.get("inputs")
+        if not isinstance(inputs, dict):
+            return False
+        selection = inputs.get("equipment_setup", inputs.get("equipment_selection"))
+        if not isinstance(selection, dict):
+            return False
+        actual = {
+            key: selection.get(key)
+            for key in EquipmentSelection.model_fields
+            if key != "product_revisions"
+        }
+        actual.update(
+            grid_phase=plant.requirements.grid_phase,
+            operating_mode=plant.requirements.operating_mode,
+        )
+        if actual != unit.selection.model_dump(
+            mode="json", exclude={"product_revisions"}
+        ):
+            return False
+    return groups == [
+        {
+            "id": g.id,
+            "unit_ids": g.unit_ids,
+            "controller_product_id": g.controller_product_id,
+        }
+        for g in plant.parallel_groups
+    ]
 
 
 class EquipmentPlant(Document):
@@ -84,11 +151,13 @@ class EquipmentPlant(Document):
 
     @classmethod
     def from_inputs(cls, inputs: Object) -> EquipmentPlant:
-        if any(
-            inputs.get(key) is not None
-            for key in ("equipment_selection", "equipment_candidate", "pv_string_plan")
+        assert_plant_exclusivity(inputs)
+        if inputs.get("equipment_plant") is None and "equipment_plant_setup" in inputs:
+            raise PlantPreparationRequired("prepare the updated multi-system plan")
+        plant = cls.read(inputs.get("equipment_plant"))
+        setup = inputs.get("equipment_plant_setup")
+        if "equipment_plant_setup" in inputs and (
+            not isinstance(setup, dict) or not matches_setup(plant, setup)
         ):
-            raise InvalidInput(
-                "a plant cannot reuse a single-converter selection or wiring result"
-            )
-        return cls.read(inputs.get("equipment_plant"))
+            raise PlantPreparationRequired("prepare the updated multi-system plan")
+        return plant

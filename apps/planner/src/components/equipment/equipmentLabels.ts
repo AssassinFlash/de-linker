@@ -9,6 +9,29 @@ export function equipmentStatus(status: unknown): string {
 }
 export function equipmentCheckLabel(id: string): string {
 	switch (id.split(":")[0]) {
+		case "plant_grid_phase":
+			return __("Plant grid phases", "linker-tools");
+		case "plant_operating_mode":
+			return __("Plant operating mode", "linker-tools");
+		case "plant_parallel_count":
+			return __("Converters in the group", "linker-tools");
+		case "plant_joint_operation":
+			return __("Joint operation", "linker-tools");
+		case "plant_controller":
+			return __("Shared controller", "linker-tools");
+		case "plant_pv_allocation":
+			return __("Allocated PV nameplate rating", "linker-tools");
+		case "plant_energy_allocation":
+			return __("Allocated usable energy target", "linker-tools");
+		case "plant_discharge_allocation":
+			return __("Allocated continuous discharge power target", "linker-tools");
+		case "plant_joint_energy":
+			return __("Usable energy at the shared connection", "linker-tools");
+		case "plant_joint_discharge":
+			return __(
+				"Continuous discharge power at the shared connection",
+				"linker-tools",
+			);
 		case "pv_iv_model":
 			return __("Single-diode model fit", "linker-tools");
 		case "pv_model_applicability":
@@ -104,6 +127,39 @@ export function equipmentCheckLabel(id: string): string {
 	}
 }
 export function equipmentReason(reason: string): string | null {
+	if (reason === "unit_must_match_plant_connection")
+		return __(
+			"Each system must match the project grid phases and operating mode.",
+			"linker-tools",
+		);
+	if (reason === "woo_parallel_count_requires_mode_scope")
+		return __(
+			"The group size is compared with the limit in the product data. Applicability to the declared operating mode and communication setup remains unconfirmed.",
+			"linker-tools",
+		);
+	if (
+		reason ===
+		"mode_model_firmware_and_battery_association_require_scoped_evidence"
+	)
+		return __(
+			"Joint operation of this group remains unconfirmed for its operating mode, model combination, firmware versions and battery configuration.",
+			"linker-tools",
+		);
+	if (reason === "one_shared_controller_per_declared_group")
+		return __(
+			"The plan specifies one shared controller for the group. Its model and quantity must match the documented manufacturer requirements.",
+			"linker-tools",
+		);
+	if (reason === "declared_unit_demand_allocation_not_available_plant_output")
+		return __(
+			"These are declared project requirements allocated to individual systems. Available energy and power at the shared connection remain unconfirmed.",
+			"linker-tools",
+		);
+	if (reason === "joint_delivery_requires_allocation_and_connection_assessment")
+		return __(
+			"Joint output requires assessment of the individual systems, their allocated requirements and the shared connection.",
+			"linker-tools",
+		);
 	if (reason === "derived_iv_model_with_numerical_readback")
 		return __(
 			"The fitted parameters reproduce the supplied STC points within the stated numerical tolerance. This is a numerical check, not a manufacturer performance validation.",

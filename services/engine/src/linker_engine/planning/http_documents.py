@@ -52,6 +52,9 @@ class ProjectInputs(Command):
     @field_validator("inputs")
     @classmethod
     def validate_brief(cls, value: Object) -> Object:
+        from .equipment_plant import assert_plant_exclusivity
+
+        assert_plant_exclusivity(value)
         if "brief" in value:
             PlanningBrief.model_validate(value["brief"])
         if "profile_selections" in value:

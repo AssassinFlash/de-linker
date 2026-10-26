@@ -317,9 +317,22 @@ and counts each group controller once. It preserves unit/group allocations,
 unknown quantities and current product/document proof. A report accepts a
 plant assessment only when it matches the saved plant; unrelated subsequent
 project edits do not change frozen results. Country and joint-operation
-obligations remain visible. This backend path is part of the active plant
-implementation; the plant editor, scoped Woo maintenance, automatic plant
-search and joint energy dispatch are not established by this increment.
+obligations remain visible.
+
+The workbench offers Single system / Multiple systems in the equipment section.
+The plant editor keeps one mounted form per unit, named navigation, shared
+project requirements and explicit coordination groups. Invalid numeric text
+blocks a mode change; project undo preserves earlier selections. Editable
+`equipment_plant_setup` may be saved incomplete, but evaluation requires a
+matching prepared `equipment_plant`. Both forms exclude the old single-unit
+selection, candidate and wiring at HTTP, candidate and report boundaries.
+Preparation is validated before the editor mutation and failed mutations remain
+visible. Changes invalidate preparation; new calculation uses a confirmed saved
+revision. Result checks and conditions retain their unit/group ownership.
+
+This local editor and report integration does not establish scoped Woo
+mode/network/firmware maintenance, cabinet quantity interpretation, automatic
+plant search, joint energy dispatch or complete country qualification.
 
 ### Frozen planning report and private PDF
 

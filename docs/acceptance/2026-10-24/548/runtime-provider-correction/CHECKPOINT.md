@@ -1086,3 +1086,40 @@ remain the next work in this same goal, alongside the remaining installation,
 country, migration and coordinated release obligations. This is backend
 implementation evidence, not browser or production acceptance. Exact status is
 `equipment_plant_backend` in the existing acceptance JSON.
+
+
+### Multi-system workbench integration — local delivery
+
+The plant backend is installed with its editor, shared requirements, distinct
+unit selections and explicit coordination groups on the existing p548. Runtime
+`78eb2241e09f39bc28a2a4f3d933a04fcc362bd446a1da18f33002f1ce0177f6`
+keeps storage5 and the matching HTTP/worker pair. The prior8b9ee840 carrier is
+the single rollback; the superseded c68d486f carrier was removed. No instance,
+venv or recovery snapshot was added.
+
+Customer66 created owned project `1ac83b43ab08481bae7e6eb05cf633c4` in the UI,
+prepared/saved revision2, and executed one equipment check. The same result
+feeds EN/DE report views; no numerical calculation was repeated for translation.
+Unit and group ownership, shared-controller quantity1 and unresolved commercial
+battery quantities remain explicit. The original roof/Berlin/route projects
+were not changed. Woo confirmed no active waiting dependency; the presentation chat is
+advancing independent product-page performance work. Closed evidence is not
+reopened.
+
+Two review findings were repaired: invalid local text now blocks mode changes,
+and raw plant drafts cannot coexist with old single-system candidate/wiring
+state, including at report consumption. Preparation errors are caught outside
+the editor mutation, and failed mutations stay visible. The existing native
+multi-converter pipeline was extended for these boundaries; two client domain
+lifecycle cases and the final build/static checks passed. Spec/Standards delta
+review and independent EN/DE copy review passed.
+
+Actual EN/DE1440/390 views found one checkbox sizing defect, repaired in the
+existing WindPress volume and compiled natively. Final content widths equal
+the requested viewports. Three approved shared translations gained the planner
+script reference; actual DE result headers read Produkt/Menge. Four final
+views and the unique before image are retained in the existing548 evidence
+folder. No annual/PV, commerce, VPS operator or full-site matrix was repeated.
+The local editor/report-view batch is verified; PDF acceptance, scoped Woo
+cabinet/operating semantics, automatic plant search/joint dispatch, country and
+whole-site publication gates remain in the same active goal.

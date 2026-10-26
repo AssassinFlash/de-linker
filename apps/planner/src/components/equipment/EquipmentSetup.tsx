@@ -38,6 +38,8 @@ export function EquipmentSetup({
 	search,
 	searchEnabled,
 	standalone,
+	heading = true,
+	embedded = false,
 }: {
 	draft: Draft;
 	edit: (change: (inputs: JsonObject) => JsonObject) => boolean;
@@ -53,6 +55,8 @@ export function EquipmentSetup({
 	search: () => void;
 	searchEnabled: boolean;
 	standalone: boolean;
+	heading?: boolean;
+	embedded?: boolean;
 }) {
 	const catalog = useEquipmentProducts(client, scope, active);
 	const [validity, setValidity] = useState<Record<string, boolean>>({});
@@ -189,116 +193,133 @@ export function EquipmentSetup({
 			onValidity={callbacks[key]!}
 		/>
 	);
+	const requirementFields = (
+		<fieldset
+			disabled={disabled}
+			className="lp-scenario-fields lp-scenario-block"
+		>
+			<div className="lp-geometry-fields">
+				{!embedded && (
+					<>
+						<label className="lp-field">
+							<span>{__("Choose an operating mode", "linker-tools")}</span>
+							<select
+								value={
+									typeof setup.operating_mode === "string"
+										? setup.operating_mode
+										: ""
+								}
+								onChange={(event) =>
+									change({
+										operating_mode: event.currentTarget.value || null,
+									})
+								}
+							>
+								<option value="">
+									{__("Choose an operating mode", "linker-tools")}
+								</option>
+								<option value="grid_connected">
+									{__("Grid-connected", "linker-tools")}
+								</option>
+								<option value="backup">
+									{__("Backup operation", "linker-tools")}
+								</option>
+							</select>
+						</label>
+						<label className="lp-field">
+							<span>{__("Grid connection", "linker-tools")}</span>
+							<select
+								value={
+									typeof setup.grid_phase === "number"
+										? String(setup.grid_phase)
+										: ""
+								}
+								onChange={(event) =>
+									change({
+										grid_phase: event.currentTarget.value
+											? Number(event.currentTarget.value)
+											: null,
+									})
+								}
+							>
+								<option value="">—</option>
+								<option value="1">{__("Single-phase", "linker-tools")}</option>
+								<option value="3">{__("Three-phase", "linker-tools")}</option>
+							</select>
+						</label>
+					</>
+				)}
+				{number("pv_dc_kw", __("PV array", "linker-tools"), "kWp")}
+				{number(
+					"required_usable_kwh",
+					__("Required usable energy", "linker-tools"),
+					"kWh",
+				)}
+				{number(
+					"required_discharge_ac_kw",
+					__("Required continuous AC discharge power", "linker-tools"),
+					"kW",
+				)}
+			</div>
+		</fieldset>
+	);
 	return (
 		<>
-			{standalone ? (
-				<div className="lp-section-heading">
-					<span className="lp-index">08</span>
-					<h2 id="lp-equipment-title">{__("Equipment", "linker-tools")}</h2>
-				</div>
-			) : (
-				<h3 id="lp-equipment-title">{__("Equipment", "linker-tools")}</h3>
-			)}
-			<p className="lp-profile-help">
-				{__(
-					"Product properties come from Linker's product data. Each result records the product data and documents used.",
-					"linker-tools",
-				)}
-			</p>
-			{catalog.error && (
-				<Notice error>
-					{__("Product data could not be loaded.", "linker-tools")}
-				</Notice>
-			)}
-			{(catalog.isFetching || (catalog.data && !catalog.data.prepared)) && (
-				<p role="status">
-					{__("Current product data is being prepared.", "linker-tools")}
-				</p>
-			)}
-			<button
-				className="lp-text-button"
-				type="button"
-				disabled={catalog.isFetching || disabled}
-				onClick={() => void catalog.refetch()}
-			>
-				{__("Reload product data", "linker-tools")}
-			</button>
-			<fieldset
-				disabled={disabled}
-				className="lp-scenario-fields lp-scenario-block"
-			>
-				<div className="lp-geometry-fields">
-					<label className="lp-field">
-						<span>{__("Choose an operating mode", "linker-tools")}</span>
-						<select
-							value={
-								typeof setup.operating_mode === "string"
-									? setup.operating_mode
-									: ""
-							}
-							onChange={(event) =>
-								change({ operating_mode: event.currentTarget.value || null })
-							}
-						>
-							<option value="">
-								{__("Choose an operating mode", "linker-tools")}
-							</option>
-							<option value="grid_connected">
-								{__("Grid-connected", "linker-tools")}
-							</option>
-							<option value="backup">
-								{__("Backup operation", "linker-tools")}
-							</option>
-						</select>
-					</label>
-					<label className="lp-field">
-						<span>{__("Grid connection", "linker-tools")}</span>
-						<select
-							value={
-								typeof setup.grid_phase === "number"
-									? String(setup.grid_phase)
-									: ""
-							}
-							onChange={(event) =>
-								change({
-									grid_phase: event.currentTarget.value
-										? Number(event.currentTarget.value)
-										: null,
-								})
-							}
-						>
-							<option value="">—</option>
-							<option value="1">{__("Single-phase", "linker-tools")}</option>
-							<option value="3">{__("Three-phase", "linker-tools")}</option>
-						</select>
-					</label>
-					{number("pv_dc_kw", __("PV array", "linker-tools"), "kWp")}
-					{number(
-						"required_usable_kwh",
-						__("Required usable energy", "linker-tools"),
-						"kWh",
+			{heading &&
+				!embedded &&
+				(standalone ? (
+					<div className="lp-section-heading">
+						<span className="lp-index">08</span>
+						<h2 id="lp-equipment-title">{__("Equipment", "linker-tools")}</h2>
+					</div>
+				) : (
+					<h3 id="lp-equipment-title">{__("Equipment", "linker-tools")}</h3>
+				))}
+			{!embedded && (
+				<>
+					<p className="lp-profile-help">
+						{__(
+							"Product properties come from Linker's product data. Each result records the product data and documents used.",
+							"linker-tools",
+						)}
+					</p>
+					{catalog.error && (
+						<Notice error>
+							{__("Product data could not be loaded.", "linker-tools")}
+						</Notice>
 					)}
-					{number(
-						"required_discharge_ac_kw",
-						__("Required continuous AC discharge power", "linker-tools"),
-						"kW",
+					{(catalog.isFetching || (catalog.data && !catalog.data.prepared)) && (
+						<p role="status">
+							{__("Current product data is being prepared.", "linker-tools")}
+						</p>
 					)}
-				</div>
-			</fieldset>
+					<button
+						className="lp-text-button"
+						type="button"
+						disabled={catalog.isFetching || disabled}
+						onClick={() => void catalog.refetch()}
+					>
+						{__("Reload product data", "linker-tools")}
+					</button>
+				</>
+			)}
+			{!embedded && requirementFields}
 
-			<PvStringSetup
-				draft={draft}
-				edit={edit}
-				inverterId={
-					typeof setup.inverter_product_id === "number"
-						? setup.inverter_product_id
-						: null
-				}
-				locale={locale}
-				disabled={disabled}
-				onValidity={callbacks.pv_string_plan!}
-			/>
-			{searchEnabled && (
+			{!embedded && (
+				<PvStringSetup
+					draft={draft}
+					edit={edit}
+					inverterId={
+						typeof setup.inverter_product_id === "number"
+							? setup.inverter_product_id
+							: null
+					}
+					locale={locale}
+					disabled={disabled}
+					onValidity={callbacks.pv_string_plan!}
+				/>
+			)}
+			{!embedded && searchEnabled && (
 				<>
 					<p>
 						{__(
@@ -359,7 +380,7 @@ export function EquipmentSetup({
 			)}
 			<details
 				className="lp-comparison"
-				open={typeof setup.inverter_product_id === "number"}
+				open={embedded || typeof setup.inverter_product_id === "number"}
 			>
 				<summary>{__("Choose equipment manually", "linker-tools")}</summary>
 				<p>
@@ -397,6 +418,7 @@ export function EquipmentSetup({
 						)}
 					</div>
 				</fieldset>
+				{embedded && requirementFields}
 				<details className="lp-comparison">
 					<summary>{__("Additional products", "linker-tools")}</summary>
 					<label className="lp-field">
@@ -448,72 +470,77 @@ export function EquipmentSetup({
 						</label>
 					))}
 				</details>
-				<div className="lp-energy-submit">
-					<div>
-						<strong>
-							{prepared
-								? __(
-										"Equipment selection prepared in this draft",
-										"linker-tools",
-									)
-								: __(
-										"Choose products and prepare the selection before saving the project.",
-										"linker-tools",
-									)}
-						</strong>
-						<p>
-							{isDirty(draft) || draft.pending
-								? __(
-										"Save project records these inputs before a new calculation can start.",
-										"linker-tools",
-									)
-								: sprintf(
-										__(
-											"A new calculation uses saved input revision %d.",
+				{!embedded && (
+					<div className="lp-energy-submit">
+						<div>
+							<strong>
+								{prepared
+									? __(
+											"Equipment selection prepared in this draft",
 											"linker-tools",
-										),
-										draft.baseline.revision,
-									)}
-						</p>
-					</div>
-					<button
-						type="button"
-						className="lp-button lp-button-secondary"
-						disabled={
-							actionsDisabled ||
-							blocked ||
-							!valid ||
-							!setup.inverter_product_id ||
-							!setup.operating_mode
-						}
-						onClick={() => {
-							try {
-								const value = compileEquipment(setup, products);
-								edit((current) => ({ ...current, equipment_selection: value }));
-								onError(null);
-							} catch (error) {
-								onError(error);
+										)
+									: __(
+											"Choose products and prepare the selection before saving the project.",
+											"linker-tools",
+										)}
+							</strong>
+							<p>
+								{isDirty(draft) || draft.pending
+									? __(
+											"Save project records these inputs before a new calculation can start.",
+											"linker-tools",
+										)
+									: sprintf(
+											__(
+												"A new calculation uses saved input revision %d.",
+												"linker-tools",
+											),
+											draft.baseline.revision,
+										)}
+							</p>
+						</div>
+						<button
+							type="button"
+							className="lp-button lp-button-secondary"
+							disabled={
+								actionsDisabled ||
+								blocked ||
+								!valid ||
+								!setup.inverter_product_id ||
+								!setup.operating_mode
 							}
-						}}
-					>
-						{__("Prepare equipment selection", "linker-tools")}
-					</button>
-					<button
-						type="button"
-						className="lp-button"
-						disabled={
-							actionsDisabled ||
-							!valid ||
-							!prepared ||
-							isDirty(draft) ||
-							!!draft.pending ||
-							!!draft.conflict
-						}
-						onClick={start}
-					>
-						{__("Check saved equipment selection", "linker-tools")}
-					</button>
-				</div>
+							onClick={() => {
+								try {
+									const value = compileEquipment(setup, products);
+									edit((current) => ({
+										...current,
+										equipment_selection: value,
+									}));
+									onError(null);
+								} catch (error) {
+									onError(error);
+								}
+							}}
+						>
+							{__("Prepare equipment selection", "linker-tools")}
+						</button>
+						<button
+							type="button"
+							className="lp-button"
+							disabled={
+								actionsDisabled ||
+								!valid ||
+								!prepared ||
+								isDirty(draft) ||
+								!!draft.pending ||
+								!!draft.conflict
+							}
+							onClick={start}
+						>
+							{__("Check saved equipment selection", "linker-tools")}
+						</button>
+					</div>
+				)}
 			</details>
 		</>
 	);

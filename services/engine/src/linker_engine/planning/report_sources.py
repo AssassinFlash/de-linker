@@ -15,6 +15,7 @@ from .equipment_candidate_choice import check_equipment_candidate
 from .equipment_candidate_store import EquipmentCandidateStore
 from .equipment_inputs import EquipmentSelection
 from .equipment_kernel import EquipmentKernel
+from .equipment_plant import assert_plant_exclusivity
 from .errors import InvalidInput, ProductEvidenceChanged, VersionUnavailable
 from .installation_inputs import InstallationInputs
 from .installation_takeoff import product_basis, route_takeoff
@@ -101,6 +102,7 @@ def report_sources(
             )
         )
     )
+    assert_plant_exclusivity(project.inputs)
     candidate = None if comparison_only else project.inputs.get("equipment_candidate")
     if isinstance(candidate, dict):
         if options.equipment_run_id not in (None, candidate.get("run_id")):

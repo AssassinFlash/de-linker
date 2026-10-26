@@ -32,7 +32,7 @@ class EquipmentSearchKernel(EquipmentKernel):
         return {**super().parameters(), "work_budget": self.limits.work_budget}
 
     def context(self, actor: Actor, project_id: str, inputs: Object) -> Context:
-        if "equipment_plant" in inputs:
+        if "equipment_plant" in inputs or "equipment_plant_setup" in inputs:
             raise InvalidInput("single-converter search cannot replace a plant")
         EquipmentRequirements.from_inputs(inputs)
         basis = self.products.equipment_basis()

@@ -41,7 +41,7 @@ class EquipmentKernel:
 
     def context(self, actor: Actor, project_id: str, inputs: Object) -> Context:
         basis = self.products.equipment_basis()
-        if "equipment_plant" in inputs:
+        if "equipment_plant" in inputs or "equipment_plant_setup" in inputs:
             from .equipment_plant import EquipmentPlant
             from .plant_assessment import plant_products
 

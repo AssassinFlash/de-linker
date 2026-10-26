@@ -1443,7 +1443,7 @@
       "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
     }
   },
-  "current_frontier": "equipment_plant_backend",
+  "current_frontier": "equipment_plant_workspace_local",
   "shared_dc_core": {
     "status": "implemented_and_reviewed_core_not_connected_to_native_commands",
     "model": "constant_window_shared_dc_bus_v1",
@@ -3502,7 +3502,7 @@
     }
   },
   "equipment_plant_backend": {
-    "status": "backend_implemented_and_fixture_verified_not_installed",
+    "status": "integrated_into_local_workbench",
     "code_commit": "364773f9",
     "at_utc": "2026-10-26T02:39:28.217870+00:00",
     "contract": "docs/specs/548-workbench-application.md#plant-owned-equipment-and-ac-coordination-groups",
@@ -3542,13 +3542,12 @@
       "Report projection copies the requirements list and leaves frozen source unchanged"
     ],
     "validation_closed": true,
-    "runtime_installed": false,
-    "local_runtime_changed": false,
+    "runtime_installed": true,
+    "local_runtime_changed": true,
     "production_changed": false,
     "woo_product_data_written": false,
     "mail_sent": false,
     "next_in_same_goal": [
-      "Plant editor and all new result consumers",
       "Woo-owned typed operating mode/network/firmware/association applicability",
       "Automatic plant search and joint time-series dispatch",
       "Remaining installation/country qualification and whole-site consumers/migration/review/production readback"
@@ -3563,5 +3562,61 @@
       "Closed paired deployment lifecycle from ac85952e/69876754"
     ],
     "retention": "No instance, worktree, runtime carrier or backup added; research temporary render files removed; shared test fixtures reused"
+  },
+  "equipment_plant_workspace": {
+    "status": "local_editor_and_saved_report_views_verified",
+    "source_ref": "Commit containing this record on codex/unified-planner-548",
+    "runtime_sha256": "78eb2241e09f39bc28a2a4f3d933a04fcc362bd446a1da18f33002f1ce0177f6",
+    "instance": "p548; WP9347, engine9348; reused",
+    "project": {
+      "id": "1ac83b43ab08481bae7e6eb05cf633c4",
+      "owner": 66,
+      "revision": 2,
+      "site_use": "commercial",
+      "country": "FR",
+      "equipment_run": "e4b3d418c5e741a5b9115f3f1cb8f8a2",
+      "report_en": "15eb4c446dfd470d9e9de4bbe4165a60",
+      "report_de": "02fe68ac6c1f477ea295b1caa4ca0635"
+    },
+    "delivered": [
+      "Single/multiple system editing, named units and coordination groups",
+      "Current Woo product revisions only; controller options from existing Woo declarations",
+      "One saved source revision feeds scoped equipment result and EN/DE report views",
+      "Raw numeric validity blocks lossy mode switching; mutation errors remain visible",
+      "Raw-only plants save but cannot evaluate stale or mixed legacy selections"
+    ],
+    "verification": {
+      "source_lifecycle": "Two focused client domain cases passed",
+      "native_pipeline": "Extended existing multi-converter HTTP/worker/report case passed; raw/mixed/stale/null guards included",
+      "static": "Final TypeScript/Vite build and built-module check passed; seven affected Python files passed mypy",
+      "review": "Spec and Standards passed complete UI diff and P2 repair delta; final checkbox CSS delta passed; EN/DE copy independently reviewed",
+      "browser": "Actual customer66 created, prepared, saved and checked the owned project; one equipment job, two locale report jobs; no repeated numerical calculation",
+      "visual": "EN/DE at1440 and390; content width equals viewport after checkbox repair",
+      "translations": "Reused approved Product/Quantity/Result translations by adding planner script reference; actual DE result table readback confirmed"
+    },
+    "evidence": [
+      "equipment-plant-en-desktop.png",
+      "equipment-plant-en-mobile.png",
+      "equipment-plant-de-desktop.png",
+      "equipment-plant-de-mobile.png"
+    ],
+    "resolved_findings": [
+      "Mode switch validity and atomic equipment-context guard",
+      "Compile outside swallowed edit updater; explicit mutation failure",
+      "Raw setup single-selection/candidate/wiring exclusivity at producer and report consumers",
+      "Scoped checkboxes restore native size and44px label target",
+      "Existing approved shared nouns included in planner language bundle"
+    ],
+    "before_evidence": "equipment-plant-en-desktop-before.png",
+    "not_claimed_complete": [
+      "Native PDF download/render acceptance for the new plant reports",
+      "Woo source/type interpretation for selected commercial cabinet quantity and operating applicability",
+      "Automatic plant search and joint dispatch; whole-country and final site consumer/release acceptance"
+    ],
+    "reuse": "Previous numerical, commerce and paired VPS deployment evidence retained; no new scenarios, full-site scans or lifecycle matrices",
+    "retention": "One owned project, four final views and one unique before image; current carrier plus one verified rollback; replaced obsolete carrier deleted; no new instance, worktree, environment or backup",
+    "production_changed": false,
+    "woo_product_data_written": false,
+    "mail_sent": false
   }
 }

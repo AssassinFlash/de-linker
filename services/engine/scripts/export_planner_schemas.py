@@ -16,6 +16,7 @@ from linker_engine.planning.dc_energy_parameters import (
     DcPreparedParameters,
 )
 from linker_engine.planning.energy_inputs import BatteryParameters, EnergyInputs
+from linker_engine.planning.equipment_plant import EquipmentPlant
 from linker_engine.planning.installation_inputs import InstallationInputs
 from linker_engine.planning.pv_parameters import PvGenerationParameters
 from linker_engine.planning.report_inputs import ReportOptions
@@ -72,6 +73,7 @@ def documents() -> dict[str, str]:
             ("planning-report", Report),
             ("planning-report-options", ReportOptions),
             ("installation", InstallationInputs),
+            ("equipment-plant", EquipmentPlant),
         )
     }
 

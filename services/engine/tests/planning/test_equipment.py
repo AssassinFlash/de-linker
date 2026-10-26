@@ -199,6 +199,22 @@ def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
     sources = ProductSources(lambda: shared)
     controller = next(p for p in feed["products"] if p["id"] == 2409)
     plant = plant_inputs(feed, coordinated=True)
+    setup = {
+        "schema_version": 1,
+        "requirements": copy.deepcopy(plant["requirements"]),
+        "units": [
+            {
+                "id": u["id"],
+                "name": u["name"],
+                "inputs": {"equipment_selection": copy.deepcopy(u["selection"])},
+            }
+            for u in plant["units"]
+        ],
+        "parallel_groups": [
+            {k: v for k, v in g.items() if k != "controller_revision"}
+            for g in plant["parallel_groups"]
+        ],
+    }
     equipment = EquipmentService(
         workspace, EquipmentKernel(workspace, sources), max_attempts=1
     )
@@ -224,13 +240,73 @@ def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
         product_provider=lambda: shared,
     )
     with TestClient(app) as client:
+        raw = client.post(
+            "/projects/create",
+            headers=headers(),
+            json={
+                "schema_version": 1,
+                "title": "Editable plant",
+                "inputs": {"equipment_plant_setup": setup},
+                "key": "plant-raw",
+            },
+        )
+        assert raw.status_code == 200, raw.text
+        unprepared = client.post(
+            "/runs/equipment",
+            headers=headers(),
+            json={
+                "schema_version": 1,
+                "project_id": raw.json()["id"],
+                "expected_revision": 1,
+                "key": "raw-check",
+            },
+        )
+        assert unprepared.status_code == 422
+        assert (
+            unprepared.json()["error"]["code"] == "equipment_plant_requires_preparation"
+        )
+        mixed = client.post(
+            "/projects/create",
+            headers=headers(),
+            json={
+                "schema_version": 1,
+                "title": "Mixed legacy input",
+                "inputs": {
+                    "equipment_plant_setup": setup,
+                    "equipment_selection": plant["units"][0]["selection"],
+                },
+                "key": "plant-mixed",
+            },
+        )
+        assert mixed.status_code == 422
+        stale = copy.deepcopy(setup)
+        stale["units"][0]["name"] = "Changed"
+        for raw_setup in (stale, None):
+            refused = client.post(
+                "/projects/create",
+                headers=headers(),
+                json={
+                    "schema_version": 1,
+                    "title": "Stale prepared plant",
+                    "inputs": {
+                        "equipment_plant": plant,
+                        "equipment_plant_setup": raw_setup,
+                    },
+                    "key": "plant-stale",
+                },
+            )
+            assert refused.status_code == 422
+            assert (
+                refused.json()["error"]["code"]
+                == "equipment_plant_requires_preparation"
+            )
         response = client.post(
             "/projects/create",
             headers=headers(),
             json={
                 "schema_version": 1,
                 "title": "Synthetic two-converter plant",
-                "inputs": {"equipment_plant": plant},
+                "inputs": {"equipment_plant": plant, "equipment_plant_setup": setup},
                 "key": "plant-create",
             },
         )
@@ -263,6 +339,17 @@ def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
         equipment_run_id=run_id,
         logo=None,
     )
+    with pytest.raises(InvalidInput, match="single-converter"):
+        report_sources(
+            workspace,
+            sources,
+            actor,
+            replace(
+                workspace.get(actor, project["id"]),
+                inputs={"equipment_plant_setup": setup, "equipment_candidate": {}},
+            ),
+            options,
+        )
     source = report_sources(
         workspace, sources, actor, workspace.get(actor, project["id"]), options
     )

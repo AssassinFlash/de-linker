@@ -890,6 +890,7 @@ msgstr "Geht über den Aufgabenbereich von Genie hinaus."
 #: src/configurator/residential/ResidentialForm.tsx:271 build/hero.js
 #: src/configurator/utility/UtilityForm.tsx:45 build/configurator.js
 #: build/genie.js
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:214
 msgid "Grid connection"
 msgstr "Netzanschluss"
 
@@ -1407,6 +1408,7 @@ msgstr "Datei wird vorbereitet …"
 msgid "Privacy Policy"
 msgstr "Datenschutzerklärung"
 
+#: build/planner/assets/planner.js
 #: build/genie.js:1 build/hero.js
 msgid "Product"
 msgstr "Produkt"
@@ -1436,6 +1438,7 @@ msgstr "Projektbeschreibung"
 msgid "Project type"
 msgstr "Projektart"
 
+#: build/planner/assets/planner.js
 #: src/configurator/solution/Solution.tsx:382 build/configurator.js
 msgid "Quantity"
 msgstr "Menge"
@@ -1521,6 +1524,7 @@ msgstr "Antwort"
 msgid "Restore unsent draft"
 msgstr "Bisherigen Entwurf wiederherstellen"
 
+#: build/planner/assets/planner.js
 #: src/configurator/commercial/CommercialPanel.tsx:155
 #: src/configurator/commercial/CommercialPanel.tsx:518 build/configurator.js
 msgid "Result"
@@ -1681,6 +1685,7 @@ msgstr "Anmelden"
 #: ../../apps/planner/src/components/NewProject.tsx
 #: build/planner/assets/planner.js
 #: src/configurator/residential/ResidentialForm.tsx:289 build/configurator.js
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:235
 msgid "Single-phase"
 msgstr "Einphasig"
 
@@ -1804,6 +1809,8 @@ msgid "Supported by its sources"
 msgstr "Durch die Quellen gedeckt"
 
 #: src/configurator/commercial/CommercialResult.tsx:277 build/configurator.js
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:310
+#: build/planner/assets/planner.js
 msgid "System"
 msgstr "System"
 
@@ -2018,6 +2025,7 @@ msgstr "Drei Schritte. Das Ergebnis folgt den Eingaben, die Sie machen."
 #: ../../apps/planner/src/components/NewProject.tsx
 #: build/planner/assets/planner.js
 #: src/configurator/residential/ResidentialForm.tsx:280 build/configurator.js
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:236
 msgid "Three-phase"
 msgstr "Dreiphasig"
 
@@ -2621,6 +2629,7 @@ msgstr ""
 
 #: build/planner/assets/planner.js
 #: ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:578
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:539
 #, javascript-format
 msgid "A new calculation uses saved input revision %d."
 msgstr "Eine neue Berechnung verwendet die gespeicherte Eingabeversion %d."
@@ -4994,6 +5003,8 @@ msgstr ""
 
 #: build/planner/assets/planner.js
 #: ../../apps/planner/src/components/energy/RunResult.tsx:273
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:302
+#: ../../apps/planner/src/components/energy/RunResult.tsx:340
 msgid "Needs attention"
 msgstr "Prüfung erforderlich"
 
@@ -6314,6 +6325,7 @@ msgstr "Projekt speichern"
 
 #: build/planner/assets/planner.js
 #: ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:574
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:534
 msgid "Save project records these inputs before a new calculation can start."
 msgstr ""
 "Mit Projekt speichern werden diese Eingaben gesichert. Erst danach kann eine "
@@ -8623,12 +8635,14 @@ msgstr "Für eine neue Berechnung muss die Modulauswahl aktualisiert werden."
 #: build/planner/assets/planner.js
 #: ../../apps/planner/src/components/design/ModuleForm.tsx:151
 #: ../../apps/planner/src/components/energy/PvModuleParameters.tsx:43
+#: ../../apps/planner/src/components/equipment/EquipmentConditions.tsx:19
 msgid "Source document"
 msgstr "Quelldokument"
 
 #: build/planner/assets/planner.js
 #: ../../apps/planner/src/components/design/ModuleForm.tsx:154
 #: ../../apps/planner/src/components/energy/PvModuleParameters.tsx:45
+#: ../../apps/planner/src/components/equipment/EquipmentConditions.tsx:19
 msgid "Page %d"
 msgstr "Seite %d"
 
@@ -8652,6 +8666,8 @@ msgstr ""
 #: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:180
 #: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:183
 #: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/equipment/EquipmentWorkspace.tsx:52
+#: ../../apps/planner/src/components/equipment/EquipmentWorkspace.tsx:55
 msgid "Equipment"
 msgstr "Geräte"
 
@@ -8711,17 +8727,20 @@ msgstr "Produkt auswählen"
 
 #: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:199
 #: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:161
 msgid "Product data could not be loaded."
 msgstr "Die Produktdaten konnten nicht geladen werden."
 
 #: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:204
 #: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:166
 msgid "Current product data is being prepared."
 msgstr "Aktuelle Produktdaten werden vorbereitet."
 
 #: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:213
 #: build/planner/assets/planner.js
 #: ../../apps/planner/src/components/installation/InstallationEditor.tsx:489
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:175
 msgid "Reload product data"
 msgstr "Produktdaten neu laden"
 
@@ -8738,16 +8757,22 @@ msgstr "Batterie oder Speichersystem"
 #: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:227
 #: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:239
 #: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:184
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:203
 msgid "Choose an operating mode"
 msgstr "Betriebsart auswählen"
 
 #: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:242
 #: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:206
+#: ../../apps/planner/src/components/equipment/EquipmentResult.tsx:82
 msgid "Grid-connected"
 msgstr "Netzparallelbetrieb"
 
 #: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:245
 #: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:209
+#: ../../apps/planner/src/components/equipment/EquipmentResult.tsx:82
 msgid "Backup operation"
 msgstr "Ersatzstrombetrieb"
 
@@ -8984,6 +9009,7 @@ msgstr "Geprüfte Kombinationen"
 
 #. Equipment search: independent EN/DE copy review.
 #: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/equipment/EquipmentConditions.tsx:15
 msgid "Components and manufacturer conditions"
 msgstr "Komponenten und Herstellervorgaben"
 
@@ -11015,3 +11041,245 @@ msgstr "Erfassen Sie jede einzelne Leitung bzw. jeden separat geführten Leiter 
 #: build/planner/assets/planner.js
 msgid "Include installation routes from the saved project"
 msgstr "Leitungswege aus dem gespeicherten Projekt aufnehmen"
+
+#: ../../apps/planner/src/components/equipment/EquipmentWorkspace.tsx:29
+#: ../../apps/planner/src/components/equipment/EquipmentWorkspace.tsx:33
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:271
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:296
+#: build/planner/assets/planner.js
+msgid "System %d"
+msgstr "System %d"
+
+#: ../../apps/planner/src/components/equipment/EquipmentWorkspace.tsx:60
+#: build/planner/assets/planner.js
+msgid "System arrangement"
+msgstr "Systemaufbau"
+
+#: ../../apps/planner/src/components/equipment/EquipmentWorkspace.tsx:71
+#: build/planner/assets/planner.js
+msgid "Single system"
+msgstr "Einzelnes System"
+
+#: ../../apps/planner/src/components/equipment/EquipmentWorkspace.tsx:82
+#: build/planner/assets/planner.js
+msgid "Multiple systems"
+msgstr "Mehrere Systeme"
+
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:118
+#: build/planner/assets/planner.js
+msgid "This multi-system draft cannot be edited here. Its saved inputs and results remain available."
+msgstr "Dieser Entwurf mit mehreren Systemen kann hier nicht bearbeitet werden. Seine gespeicherten Eingaben und Ergebnisse bleiben verfügbar."
+
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:149
+#: build/planner/assets/planner.js
+msgid "Each system has its own equipment selection. Battery equipment may be separate, integrated or absent. Coordination groups record systems planned to share a controller."
+msgstr "Jedes System hat eine eigene Geräteauswahl. Eine Batterie kann separat angeschlossen oder integriert sein; bei reinen PV-Systemen entfällt sie. Koordinationsgruppen erfassen Systeme, für die ein gemeinsamer Controller vorgesehen ist."
+
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:155
+#: build/planner/assets/planner.js
+msgid "To return to single-system planning, keep one system, remove coordination groups, then choose Single system. Undo can reverse changes still available in the current editing history."
+msgstr "Um wieder ein einzelnes System zu planen, behalten Sie ein System bei, entfernen Sie die Koordinationsgruppen und wählen Sie „Einzelnes System“. Mit „Rückgängig“ können Sie Änderungen zurücknehmen, die noch im aktuellen Bearbeitungsverlauf verfügbar sind."
+
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:181
+#: build/planner/assets/planner.js
+msgid "Project requirements"
+msgstr "Projektanforderungen"
+
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:241
+#: build/planner/assets/planner.js
+msgid "Total PV nameplate rating"
+msgstr "Gesamte PV-Nennleistung"
+
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:246
+#: build/planner/assets/planner.js
+msgid "Total required usable energy"
+msgstr "Insgesamt erforderliche nutzbare Energie"
+
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:251
+#: build/planner/assets/planner.js
+msgid "Total required continuous AC discharge power"
+msgstr "Insgesamt erforderliche AC-Dauerentladeleistung"
+
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:257
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:286
+#: build/planner/assets/planner.js
+msgid "Systems in this project"
+msgstr "Systeme in diesem Projekt"
+
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:281
+#: build/planner/assets/planner.js
+msgid "Add system"
+msgstr "System hinzufügen"
+
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:314
+#: build/planner/assets/planner.js
+msgid "System name"
+msgstr "Systemname"
+
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:350
+#: build/planner/assets/planner.js
+msgid "Remove system"
+msgstr "System entfernen"
+
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:379
+#: build/planner/assets/planner.js
+msgid "Coordination groups"
+msgstr "Koordinationsgruppen"
+
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:412
+#: build/planner/assets/planner.js
+msgid "Add coordination group"
+msgstr "Koordinationsgruppe hinzufügen"
+
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:422
+#: build/planner/assets/planner.js
+msgid "Coordination group %d"
+msgstr "Koordinationsgruppe %d"
+
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:426
+#: build/planner/assets/planner.js
+msgid "Choose at least two systems planned to share a controller."
+msgstr "Wählen Sie mindestens zwei Systeme aus, für die ein gemeinsamer Controller vorgesehen ist."
+
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:467
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:21
+#: build/planner/assets/planner.js
+msgid "Shared controller"
+msgstr "Gemeinsamer Controller"
+
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:484
+#: build/planner/assets/planner.js
+msgid "No controller selected"
+msgstr "Kein Controller ausgewählt"
+
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:489
+#: build/planner/assets/planner.js
+msgid "Select a current controller"
+msgstr "Controller aus den aktuellen Produktdaten auswählen"
+
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:517
+#: build/planner/assets/planner.js
+msgid "Remove group"
+msgstr "Gruppe entfernen"
+
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:525
+#: build/planner/assets/planner.js
+msgid "The multi-system plan is prepared."
+msgstr "Die Planung mit mehreren Systemen ist vorbereitet."
+
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:527
+#: build/planner/assets/planner.js
+msgid "Complete the project requirements and choose equipment for every system."
+msgstr "Vervollständigen Sie die Projektanforderungen und wählen Sie für jedes System die Geräte aus."
+
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:563
+#: build/planner/assets/planner.js
+msgid "Prepare multi-system plan"
+msgstr "Planung mit mehreren Systemen vorbereiten"
+
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx:579
+#: build/planner/assets/planner.js
+msgid "Check saved multi-system plan"
+msgstr "Gespeicherte Planung mit mehreren Systemen prüfen"
+
+#: ../../apps/planner/src/components/equipment/EquipmentConditions.tsx:17
+#: ../../apps/planner/src/components/equipment/EquipmentResult.tsx:137
+#: build/planner/assets/planner.js
+msgid "Coordination group"
+msgstr "Koordinationsgruppe"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:13
+#: build/planner/assets/planner.js
+msgid "Plant grid phases"
+msgstr "Phasenanzahl am Netzanschluss der Gesamtanlage"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:15
+#: build/planner/assets/planner.js
+msgid "Plant operating mode"
+msgstr "Betriebsart der Gesamtanlage"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:17
+#: build/planner/assets/planner.js
+msgid "Converters in the group"
+msgstr "Anzahl der Umrichter in der Gruppe"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:19
+#: build/planner/assets/planner.js
+msgid "Joint operation"
+msgstr "Gemeinsamer Betrieb"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:23
+#: build/planner/assets/planner.js
+msgid "Allocated PV nameplate rating"
+msgstr "Zugewiesene PV-Nennleistung"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:25
+#: build/planner/assets/planner.js
+msgid "Allocated usable energy target"
+msgstr "Zugewiesener Zielwert für die nutzbare Energie"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:27
+#: build/planner/assets/planner.js
+msgid "Allocated continuous discharge power target"
+msgstr "Zugewiesener Zielwert für die Dauerentladeleistung"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:29
+#: build/planner/assets/planner.js
+msgid "Usable energy at the shared connection"
+msgstr "Nutzbare Energie am gemeinsamen Anschlusspunkt"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:31
+#: build/planner/assets/planner.js
+msgid "Continuous discharge power at the shared connection"
+msgstr "Dauerentladeleistung am gemeinsamen Anschlusspunkt"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:127
+#: build/planner/assets/planner.js
+msgid "Each system must match the project grid phases and operating mode."
+msgstr "Jedes System muss die im Projekt geforderte Phasenanzahl und Betriebsart unterstützen."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:128
+#: build/planner/assets/planner.js
+msgid "The group size is compared with the limit in the product data. Applicability to the declared operating mode and communication setup remains unconfirmed."
+msgstr "Die Anzahl der Geräte in der Gruppe wird mit dem Grenzwert in den Produktdaten verglichen. Ob dieser Wert für die angegebene Betriebsart und Kommunikationsanbindung gilt, ist noch nicht bestätigt."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:129
+#: build/planner/assets/planner.js
+msgid "Joint operation of this group remains unconfirmed for its operating mode, model combination, firmware versions and battery configuration."
+msgstr "Der gemeinsame Betrieb dieser Gruppe ist hinsichtlich Betriebsart, Modellkombination, Firmwareversionen und Batteriekonfiguration noch nicht bestätigt."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:130
+#: build/planner/assets/planner.js
+msgid "The plan specifies one shared controller for the group. Its model and quantity must match the documented manufacturer requirements."
+msgstr "Für die Gruppe ist ein gemeinsamer Controller vorgesehen. Modell und Stückzahl müssen den dokumentierten Herstellervorgaben entsprechen."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:131
+#: build/planner/assets/planner.js
+msgid "These are declared project requirements allocated to individual systems. Available energy and power at the shared connection remain unconfirmed."
+msgstr "Dies sind die den einzelnen Systemen zugewiesenen Projektanforderungen. Die verfügbare Energie und Leistung am gemeinsamen Anschlusspunkt sind noch nicht bestätigt."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:132
+#: build/planner/assets/planner.js
+msgid "Joint output requires assessment of the individual systems, their allocated requirements and the shared connection."
+msgstr "Die gemeinsame Leistungsabgabe erfordert eine Prüfung der einzelnen Systeme mit ihren zugewiesenen Anforderungen sowie des gemeinsamen Anschlusspunkts."
+
+#: ../../apps/planner/src/components/equipment/EquipmentResult.tsx:126
+#: build/planner/assets/planner.js
+msgid "The report presents checks for each recorded system and its coordination group. Shared output, backup transfer and country-specific acceptance remain subject to the open checks."
+msgstr "Der Bericht enthält die Prüfergebnisse für jedes erfasste System und seine Koordinationsgruppe. Die gemeinsame Leistungsabgabe, die Umschaltung auf Notstrombetrieb und die Erfüllung länderspezifischer Anforderungen sind aufgrund der offenen Prüfpunkte noch nicht bestätigt."
+
+#: ../../apps/planner/src/components/energy/EnergyError.tsx:45
+#: build/planner/assets/planner.js
+msgid "Complete the project requirements and equipment for each system, then prepare and save the multi-system plan."
+msgstr "Vervollständigen Sie die Projektanforderungen und die Geräteauswahl für jedes System. Bereiten Sie anschließend die Planung mit mehreren Systemen vor und speichern Sie sie."
+
+#: ../../apps/planner/src/components/equipment/EquipmentSearchResult.tsx:98
+#: ../../apps/planner/src/components/energy/EnergyError.tsx:44
+#: build/planner/assets/planner.js
+msgid "This search covers a single system. Choose products within each system when editing a multi-system plan."
+msgstr "Diese Suche bezieht sich auf ein einzelnes System. Wählen Sie bei einer Planung mit mehreren Systemen die Produkte im jeweiligen System aus."
+
+#: ../../apps/planner/src/components/equipment/PlantCheckGroups.tsx:59
+#: build/planner/assets/planner.js
+msgid "Project requirements and joint checks"
+msgstr "Projektanforderungen und Prüfungen des gemeinsamen Betriebs"

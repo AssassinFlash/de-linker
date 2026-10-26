@@ -110,6 +110,8 @@
   [data-linker-planner] .lp-field [aria-invalid="true"] { border-color: var(--proto-sem-danger); }
   [data-linker-planner] .lp-field .lp-field-error { color: var(--proto-sem-danger); }
   [data-linker-planner] .lp-field textarea { resize: vertical; }
+  [data-linker-planner] .lp-field > span:has(> input[type="checkbox"]) { justify-content: flex-start; align-items: center; min-height: 44px; }
+  [data-linker-planner] .lp-field input[type="checkbox"] { appearance: auto; width: 18px; height: 18px; min-height: 18px; flex: 0 0 18px; padding: 0; accent-color: var(--proto-accent); }
   [data-linker-planner] .lp-notice { padding: 16px 18px; margin: 20px 0; background: var(--proto-teal-50); border-left: 2px solid var(--proto-accent); color: var(--proto-teal-900); font-size: 13px; }
   [data-linker-planner] .lp-notice[data-error] { background: var(--proto-neutral-0); border-color: var(--proto-sem-danger); color: var(--proto-neutral-800); }
   [data-linker-planner] .lp-notice > :last-child { margin-bottom: 0; }
@@ -511,6 +513,13 @@
     [data-linker-planner] .lp-run-heading h3 { font-size: 20px; }
     [data-linker-planner] .lp-run-basis .lp-field-summary, [data-linker-planner] .lp-run-result .lp-field-summary { grid-template-columns: minmax(0, 1fr); }
   }
+  [data-linker-planner] .lp-plant-toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-block: 18px; }
+  [data-linker-planner] .lp-plant-toolbar > h3 { margin: 0; }
+  [data-linker-planner] .lp-plant-toolbar > .lp-field { flex: 1 1 220px; max-width: 100%; }
+  [data-linker-planner] .lp-plant-toolbar[role="group"] { justify-content: start; border-bottom: 1px solid var(--lp-line); }
+  [data-linker-planner] .lp-plant-switcher { display: flex; flex-wrap: wrap; gap: 4px 12px; border-bottom: 1px solid var(--lp-line); margin-block: 16px; }
+  [data-linker-planner] .lp-plant-switcher > button, [data-linker-planner] .lp-plant-toolbar[role="group"] > button { border-radius: 0; border-bottom: 2px solid transparent; }
+  [data-linker-planner] .lp-plant-switcher > button[aria-pressed="true"], [data-linker-planner] .lp-plant-toolbar[role="group"] > button[aria-pressed="true"] { color: var(--proto-teal-800); border-bottom-color: var(--proto-accent); font-weight: 600; }
   [data-linker-planner] .lp-trace-explorer { padding-block: 24px; border-bottom: 1px solid var(--lp-line); }
   [data-linker-planner] .lp-trace-explorer > summary { cursor: pointer; font-size: 16px; font-weight: 600; }
   [data-linker-planner] .lp-energy-chart { width: 100%; height: 360px; margin-block: 24px; }

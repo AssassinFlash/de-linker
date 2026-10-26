@@ -4,12 +4,27 @@ import { ApiError } from "./protocol.ts";
 import { readObject } from "./readProtocol.ts";
 import { sameJson } from "../domain/draft.ts";
 import { documentReference } from "./documentReference.ts";
+import { readEquipmentSelection } from "../domain/equipment.ts";
 
 export { documentReference } from "./documentReference.ts";
 
 export const EQUIPMENT_TASK = "qualify_woo_equipment_v1";
 const status = (s: unknown) =>
 	["satisfied", "violated", "unresolved"].includes(String(s));
+function statements(value: JsonObject) {
+	const conditions = value.conditions ?? [],
+		documents = value.documents ?? [];
+	if (!Array.isArray(conditions) || !Array.isArray(documents))
+		throw new ApiError(502, "invalid_run_result");
+	for (const condition of conditions) {
+		if (typeof condition !== "string") {
+			const c = readObject(condition);
+			if (typeof c.en !== "string" || typeof c.de !== "string")
+				throw new ApiError(502, "invalid_run_result");
+		}
+	}
+	for (const doc of documents) documentReference(doc);
+}
 export function readEquipmentResult(
 	value: unknown,
 	run: JsonObject,
@@ -62,7 +77,39 @@ export function readEquipmentAssessment(value: unknown): JsonObject {
 				typeof r.included !== "boolean"
 			)
 				throw new ApiError(502, "invalid_run_result");
-			for (const doc of r.documents) documentReference(doc);
+			statements(r);
+		}
+	}
+	if (assessment.manufacturer_pair != null)
+		statements(readObject(assessment.manufacturer_pair));
+	if (
+		assessment.model === "woo_multi_converter_plant_v1" &&
+		assessment.systems === undefined
+	)
+		throw new ApiError(502, "invalid_run_result");
+	if (assessment.systems !== undefined) {
+		if (
+			assessment.model !== "woo_multi_converter_plant_v1" ||
+			!Array.isArray(assessment.systems) ||
+			!assessment.systems.length
+		)
+			throw new ApiError(502, "invalid_run_result");
+		const systemIds = new Set<string>();
+		for (const value of assessment.systems) {
+			const unit = readObject(value),
+				nested = readObject(unit.assessment);
+			if (
+				typeof unit.id !== "string" ||
+				!/^[A-Za-z][A-Za-z0-9_-]{0,63}$/.test(unit.id) ||
+				systemIds.has(unit.id) ||
+				typeof unit.name !== "string" ||
+				!unit.name ||
+				nested.systems !== undefined
+			)
+				throw new ApiError(502, "invalid_run_result");
+			systemIds.add(unit.id);
+			readEquipmentSelection(unit.selection);
+			readEquipmentAssessment(nested);
 		}
 	}
 	for (const value of assessment.selected_products) {
@@ -119,6 +166,22 @@ export function readEquipmentAssessment(value: unknown): JsonObject {
 			!Array.isArray(check.facts)
 		)
 			throw new ApiError(502, "invalid_run_result");
+		for (const key of ["semantic_id", "unit_name", "group_name"])
+			if (check[key] !== undefined && typeof check[key] !== "string")
+				throw new ApiError(502, "invalid_run_result");
+		for (const key of ["actual_label", "required_label"])
+			if (check[key] != null && typeof check[key] !== "string")
+				throw new ApiError(502, "invalid_run_result");
+		if (
+			check.value_kind !== undefined &&
+			check.value_kind !== "product_identity"
+		)
+			throw new ApiError(502, "invalid_run_result");
+		if (check.documents !== undefined) {
+			if (!Array.isArray(check.documents))
+				throw new ApiError(502, "invalid_run_result");
+			for (const doc of check.documents) documentReference(doc);
+		}
 		if (check.derivation !== undefined) {
 			const d = readObject(check.derivation);
 			if (

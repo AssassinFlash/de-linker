@@ -21,6 +21,7 @@ export function EquipmentSearchResult({
 	disabled,
 	apply,
 	onError,
+	plantActive = false,
 }: {
 	run: PlanningRun;
 	locale: string;
@@ -31,6 +32,7 @@ export function EquipmentSearchResult({
 	disabled: boolean;
 	apply: (candidate: EquipmentCandidate) => Promise<void>;
 	onError: (cause: unknown) => void;
+	plantActive?: boolean;
 }) {
 	const search = run.result ? readObject(run.result.search) : null;
 	const candidates = (search?.candidates ?? []) as EquipmentCandidate[];
@@ -70,7 +72,7 @@ export function EquipmentSearchResult({
 			})
 			.join(" + ");
 	const applySelected = async () => {
-		if (!candidate || busy || disabled) return;
+		if (!candidate || busy || disabled || plantActive) return;
 		setBusy(true);
 		try {
 			await apply(candidate);
@@ -90,6 +92,14 @@ export function EquipmentSearchResult({
 		>
 			{search && (
 				<>
+					{plantActive && (
+						<Notice>
+							{__(
+								"This search covers a single system. Choose products within each system when editing a multi-system plan.",
+								"linker-tools",
+							)}
+						</Notice>
+					)}
 					<p>
 						{search.completion === "budget_exhausted"
 							? __(
@@ -169,7 +179,13 @@ export function EquipmentSearchResult({
 						<button
 							className="lp-button"
 							type="button"
-							disabled={disabled || busy || !detail.data || detail.isFetching}
+							disabled={
+								disabled ||
+								busy ||
+								!detail.data ||
+								detail.isFetching ||
+								plantActive
+							}
 							onClick={() => void applySelected()}
 						>
 							{__("Use this combination in the project", "linker-tools")}

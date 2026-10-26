@@ -42,6 +42,15 @@ export function readEquipmentProducts(value: unknown) {
 	if (new Set(products.map((p) => p.id)).size !== products.length)
 		throw new ApiError(502, "invalid_product_reply");
 	const dcPorts = readObject(row.dc_battery_ports ?? {});
+	const controllerIds = row.parallel_controller_product_ids ?? [];
+	if (
+		!Array.isArray(controllerIds) ||
+		new Set(controllerIds).size !== controllerIds.length ||
+		controllerIds.some(
+			(id) => typeof id !== "number" || !products.some((p) => p.id === id),
+		)
+	)
+		throw new ApiError(502, "invalid_product_reply");
 	for (const [id, ports] of Object.entries(dcPorts))
 		if (
 			!products.some((p) => String(p.id) === id) ||
@@ -52,6 +61,7 @@ export function readEquipmentProducts(value: unknown) {
 			throw new ApiError(502, "invalid_product_reply");
 	return {
 		products,
+		controllers: products.filter((p) => controllerIds.includes(p.id)),
 		dcPorts: dcPorts as Readonly<Record<string, readonly string[]>>,
 		prepared:
 			row.figure_projection_version === 2 &&

@@ -40,7 +40,8 @@ import {
 } from "../../data/planningProtocol.ts";
 import { WEATHER_TASK, PV_TASK } from "../../data/readPreparationResult.ts";
 import { EQUIPMENT_TASK } from "../../data/readEquipmentResult.ts";
-import { EquipmentSetup } from "../equipment/EquipmentSetup.tsx";
+import { EquipmentWorkspace } from "../equipment/EquipmentWorkspace.tsx";
+import { hasPlant, readEquipmentPlant } from "../../domain/equipmentPlant.ts";
 import { EquipmentResult } from "../equipment/EquipmentResult.tsx";
 import {
 	readEquipmentSelection,
@@ -490,6 +491,8 @@ export function EnergyWorkspace({
 		}
 	}
 	async function applyEquipment(candidate: EquipmentCandidate) {
+		if (hasPlant(draft.history.current))
+			throw new ApiError(422, "equipment_plant_single_candidate");
 		const selectedRun = runs.run.data;
 		if (
 			!selectedRun ||
@@ -524,6 +527,8 @@ export function EnergyWorkspace({
 		)
 			throw new ApiError(409, "product_evidence_changed");
 		const applied = edit((inputs) => {
+			if (hasPlant(inputs))
+				throw new ApiError(422, "equipment_plant_single_candidate");
 			if (!sameJson(equipmentDraft(inputs), originalSetup))
 				throw new ApiError(409, "equipment_selection_changed");
 			const patch = Object.fromEntries(
@@ -631,7 +636,8 @@ export function EnergyWorkspace({
 				)
 					return;
 			} else if (path === "runs/equipment") {
-				readEquipmentSelection(inputs.equipment_selection);
+				if (hasPlant(inputs)) readEquipmentPlant(inputs.equipment_plant);
+				else readEquipmentSelection(inputs.equipment_selection);
 			} else if (path === "runs/weather" && setup) {
 				if (
 					!sameJson(compileWeather(setup.weather), inputs.weather_acquisition)
@@ -1003,7 +1009,7 @@ export function EnergyWorkspace({
 				className="lp-focus-target"
 				tabIndex={-1}
 			>
-				<EquipmentSetup
+				<EquipmentWorkspace
 					draft={draft}
 					edit={edit}
 					client={client}
@@ -1432,6 +1438,7 @@ export function EnergyWorkspace({
 										!syntaxValid
 									}
 									apply={applyEquipment}
+									plantActive={hasPlant(draft.history.current)}
 									onError={setError}
 								/>
 							) : runTask(runs.run.data) === EQUIPMENT_TASK ? (

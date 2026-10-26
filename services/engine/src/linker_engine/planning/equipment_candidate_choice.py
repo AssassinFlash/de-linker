@@ -10,6 +10,7 @@ from .canonical import Object, encode
 from .energy_inputs import Document
 from .equipment_candidate_store import EquipmentCandidateStore
 from .equipment_inputs import EquipmentSelection
+from .equipment_plant import assert_plant_exclusivity
 from .errors import InvalidInput, VersionUnavailable
 from .product_sources import ProductSources
 from .records import Actor
@@ -31,6 +32,7 @@ def check_equipment_candidate(
     products: ProductSources | None = None,
     previous: Object | None = None,
 ) -> None:
+    assert_plant_exclusivity(inputs)
     if "equipment_candidate" not in inputs:
         return
     choice = EquipmentCandidateChoice.read(inputs["equipment_candidate"])

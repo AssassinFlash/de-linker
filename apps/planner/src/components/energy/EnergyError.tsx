@@ -39,6 +39,17 @@ export function energyErrorText(error: unknown): string {
 			? error.code
 			: "";
 	switch (code) {
+		case "equipment_plant_single_candidate":
+			return __(
+				"This search covers a single system. Choose products within each system when editing a multi-system plan.",
+				"linker-tools",
+			);
+		case "equipment_plant_incomplete":
+		case "equipment_plant_requires_preparation":
+			return __(
+				"Complete the project requirements and equipment for each system, then prepare and save the multi-system plan.",
+				"linker-tools",
+			);
 		case "dc_equipment_required":
 			return __(
 				"Select and prepare an inverter and battery before preparing the shared-inverter calculation.",
