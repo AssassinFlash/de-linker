@@ -751,3 +751,46 @@ fixture has synthetic, explicitly labelled reverse-conversion source claims;
 it does not qualify a real product. Real Woo AC charging evidence and per-unit
 shared-DC hybrid execution remain required work within the complete goal.
 The closed physical core and unchanged source/permission evidence are reused.
+
+## Shared-DC plant ports — port ready, plant integration in progress
+
+The next physical interface separates each converter's DC port calculation from
+allocation at the plant AC metering point. Reuse NUMERICAL-MODELS section12's
+SSC-grounded topology and directional equations, the current source-derived
+DcPreparedParameters, exact stock witnesses and origin ledger. Do not create
+another product authority or infer bidirectional support from a product name.
+
+A port first plans its internal/standing losses, own DC auxiliary supply,
+PV-to-storage flow and bounded forward injection. Its external delivery target
+and additional accepted AC injection are dispatch allocations, not separate
+customer loads or utility-grid limits. Incoming AC is completed with explicit
+PV/grid/unknown energy components from the shared bus. The port enforces one
+net inverter direction, terminal/current/window limits, reserve and actual
+source withdrawal before delivered energy advances state. Unknown reverse
+capability is requested only when the chosen physical path needs it and has
+available external energy; an unused path does not acquire invented limits.
+
+The single-converter executor and multi-converter executor must use this same
+port implementation. The existing single-converter interface remains an
+adapter for its one load and utility grid. The plant applies utility import and
+export caps once and retains per-unit DC PV, inventory, source and conversion
+constraints. No repeated local-grid balances may be summed as a plant result.
+
+Each assigned PV conversion group must retain its pre-AC DC producer output and
+be assigned once. Clipped AC cannot be inverted into a DC profile. Per-run
+retained PV outputs are shared across group projections without multiplying
+weather/PV reconstruction by device count. Mixed AC/DC inputs keep their
+measurement stages in reports; kWh at different stages are not added to invent
+a single utilization ratio. Native preparation, frozen source binding, GUI,
+comparison and report consumers must carry the new domain before it is marked
+delivered. The active17c1c475 local release stays in place during development.
+
+The port extraction is implemented: the single-converter executor now uses
+`dc_port.plan/complete`; its adapter allocates the one site's customer demand
+and utility limits and retains the existing result contract. External AC
+packets retain PV/grid/initial-unknown origins across reverse conversion,
+DC/DC conversion and internal charging; unused packets are returned. The
+existing DC behavior checks and one new external-origin/capacity case passed,
+with independent Spec and Standards PASS. No interface or runtime installation
+changed in this step. The multi-converter coordinator, native frozen execution
+and presentation integration remain open.

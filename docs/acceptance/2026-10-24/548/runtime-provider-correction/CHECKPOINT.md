@@ -1311,3 +1311,20 @@ horizontal page overflow. The new DC-PV confirmation reuses the existing
 lp-field checkbox surface. The final build manifests match sources; native
 script catalog and MO bindings were independently checked. Only the necessary
 current screens/PDF/native consumer fixture are retained for this batch.
+
+### Shared-DC port extraction — source implementation, 2026-10-26
+
+Single-DC dispatch now delegates device physics to `dc_port.plan/complete`.
+Its original embedded implementation was removed; the site adapter retains
+only customer/auxiliary AC allocation, utility limits and the existing output
+contract. External AC packets preserve all three origins and return unused
+supply, allowing the next common-bus coordinator to use the same device path.
+
+The existing `test_shared_dc.py` completed once (5 passed); its only new case
+distinguishes mixed external AC origins, shared reverse capacity and unused
+capability from the old grid-only adapter. Changed-file Ruff/mypy passed.
+Independent Spec and Standards reviewers both returned PASS without rerunning
+tests or reopening the closed AC/native/browser evidence. No new instance,
+runtime snapshot, screenshot or backup was created. Installed release17c1c475
+and its one rollback remain unchanged. Multi-converter native/UI/report
+integration is still required; this source extraction does not close that scope.

@@ -9,6 +9,7 @@ import pytest
 
 from linker_engine.planning.dc_battery_model import DcBatteryModel, DcPort, SharedBridge
 from linker_engine.planning.dc_frame import DcFrame
+from linker_engine.planning.dc_port import DcPortFrame, plan
 from linker_engine.planning.dispatch_frame import Command
 from linker_engine.planning.energy_origins import EnergyOrigins
 from linker_engine.planning.errors import EvidenceMissing
@@ -226,3 +227,43 @@ def test_only_selected_port_intersects_battery_current_at_voltage_floor() -> Non
     assert verify(
         (flow,), physical, TOLERANCE, initial=initial, terminal_min_kwh=None
     ).passed
+
+
+def test_shared_port_preserves_external_ac_origins_and_returns_unused_supply() -> None:
+    physical = replace(
+        model(),
+        connected_bridge=SharedBridge(10, 20, 1, True, 10, 9, 0.9),
+        eta_bus_to_battery=0.8,
+        eta_store_charge=0.9,
+    )
+    request = DcPortFrame(frame(0, 0).interval, 0, 1, "connected", 0, True, 0, 0)
+    port = plan(request, physical, EMPTY, Command(9, 0))
+    incoming_aux, incoming_charge = EnergyOrigins(1, 1, 1), EnergyOrigins(6, 6, 6)
+    flow = port.complete(incoming_aux, incoming_charge)
+    # One 10kW AC bridge serves DC auxiliaries first, then charging:
+    # 10 AC -> 9 bus; 1 auxiliary + 8 charge -> 6.4 terminal -> 5.76 internal.
+    # An AC packet may have come from PV or a different bank; none is renamed grid.
+    assert flow.incoming_aux_dc.total == pytest.approx(1)
+    assert flow.incoming_charge_dc.total == pytest.approx(8)
+    assert flow.charge_terminal_dc_kw == pytest.approx(6.4)
+    assert flow.after.pv_kwh == pytest.approx(1.92)
+    assert flow.after.grid_kwh == pytest.approx(1.92)
+    assert flow.after.initial_unknown_kwh == pytest.approx(1.92)
+    assert flow.incoming_aux_ac.plus(flow.unused_aux_ac).total == pytest.approx(
+        incoming_aux.total
+    )
+    assert flow.incoming_charge_ac.plus(flow.unused_charge_ac).total == pytest.approx(
+        incoming_charge.total
+    )
+    assert flow.incoming_aux_ac.total + flow.incoming_charge_ac.total == pytest.approx(
+        10
+    )
+
+    unknown = replace(
+        physical, connected_bridge=SharedBridge(10, 20, 1, None, None, None, None)
+    )
+    unpowered = plan(request, unknown, EMPTY, Command(9, 0))
+    assert unpowered.complete(EMPTY, EMPTY).after == EMPTY
+    assert unpowered.charging_request_ac_kw(0, 0) == 0
+    with pytest.raises(EvidenceMissing, match="reverse_conversion"):
+        unpowered.complete(EnergyOrigins(1, 0, 0), EMPTY)
