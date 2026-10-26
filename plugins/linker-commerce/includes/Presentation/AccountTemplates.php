@@ -176,10 +176,10 @@ final class AccountTemplates {
 		} elseif ( in_array( $key, array( 'all-current', 'open-current' ), true ) ) {
 			$value = ( 'open-current' === $key ? $this->open_only() : '' === $this->selected_status() ) ? 'page' : 'false';
 		}
-		if ( in_array( $key, array( 'icon', 'total', 'items', 'nonce', 'tiles', 'rows' ), true ) ) {
+		if ( in_array( $key, array( 'icon', 'total', 'items', 'nonce', 'remove-nonce', 'tiles', 'rows' ), true ) ) {
 			// 'icon' is fixed markup from nav_icon()/document_icon(), never request
 			// data; the allowlist carries the SVG elements either way.
-			return 'nonce' === $key ? (string) $value : wp_kses( (string) $value, self::allowed_html() );
+			return in_array( $key, array( 'nonce', 'remove-nonce' ), true ) ? (string) $value : wp_kses( (string) $value, self::allowed_html() );
 		}
 		return in_array( $key, array( 'url', 'open-url', 'products-url', 'configurator-url', 'report' ), true ) ? esc_url( (string) $value ) : esc_attr( (string) $value );
 	}
@@ -462,6 +462,10 @@ final class AccountTemplates {
 			'download'        => __( 'Download (PDF)', 'linker-commerce' ),
 			'saved'           => __( 'Saved on', 'linker-commerce' ),
 			'add'             => __( 'Add to solution draft', 'linker-commerce' ),
+			'remove'          => __( 'Remove', 'linker-commerce' ),
+			'keep-solution'   => __( 'Keep solution', 'linker-commerce' ),
+			'remove-question' => __( 'Remove this saved solution?', 'linker-commerce' ),
+			'remove-solution' => __( 'Remove solution', 'linker-commerce' ),
 			'report'          => __( 'Design report (PDF)', 'linker-commerce' ),
 			'previous'        => __( 'Previous', 'woocommerce' ), /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */
 			'next'            => __( 'Next', 'woocommerce' ), /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */
@@ -576,12 +580,13 @@ final class AccountTemplates {
 						$html .= $this->fragment(
 							'solution-card',
 							array(
-								'id'     => $solution->ID,
-								'title'  => $solution->post_title,
-								'date'   => wp_date( LocaleFormat::date_format(), (int) get_post_timestamp( $solution ) ),
-								'items'  => $items,
-								'nonce'  => wp_nonce_field( SavedSolutions::ADD_ACTION . '_' . $solution->ID, '_wpnonce', true, false ) . \Linker\Commerce\Protection\FormFields::render( 'draft_write' ),
-								'report' => '' !== $saved->report_path( $solution->ID ) ? DocumentDownload::report_url( $solution->ID ) : '',
+								'id'           => $solution->ID,
+								'title'        => $solution->post_title,
+								'date'         => wp_date( LocaleFormat::date_format(), (int) get_post_timestamp( $solution ) ),
+								'items'        => $items,
+								'nonce'        => wp_nonce_field( SavedSolutions::ADD_ACTION . '_' . $solution->ID, '_wpnonce', true, false ) . \Linker\Commerce\Protection\FormFields::render( 'draft_write' ),
+								'remove-nonce' => wp_nonce_field( \Linker\Commerce\Account\SavedSolutionRemoval::REMOVE . '_' . $solution->ID, '_wpnonce', true, false ),
+								'report'       => '' !== $saved->report_path( $solution->ID ) ? DocumentDownload::report_url( $solution->ID ) : '',
 							)
 						);
 					}
