@@ -577,24 +577,39 @@ def build_report(source: Object) -> Report:
     if isinstance(energy, dict):
         metrics = cast(Object, energy["metrics"])
         dc = energy.get("kind") == "shared_dc_energy_replay_v1"
-        joint = energy.get("kind") == "plant_ac_energy_replay_v1"
+        joint_dc = energy.get("kind") == "plant_shared_dc_energy_replay_v1"
+        joint = energy.get("kind") in {
+            "plant_ac_energy_replay_v1",
+            "plant_shared_dc_energy_replay_v1",
+        }
         energy_rows = [
             row(label, number(metrics.get(key), locale, "kWh"))
             for label, key in (
                 ("load", "load_demand_kwh"),
                 (
-                    "generation_dc" if dc else "generation",
+                    "plant_common_ac_generation"
+                    if joint_dc
+                    else "generation_dc"
+                    if dc
+                    else "generation",
                     "pv_generated_dc_kwh" if dc else "pv_generated_ac_kwh",
                 ),
                 ("import", "grid_import_kwh"),
                 ("export", "pv_export_ac_kwh" if dc else "pv_export_kwh"),
                 (
-                    "curtailed_dc" if dc else "curtailed",
-                    "pv_curtailed_dc_kwh" if dc else "pv_curtailed_kwh",
+                    "curtailed_dc" if dc or joint_dc else "curtailed",
+                    "pv_curtailed_dc_kwh" if dc or joint_dc else "pv_curtailed_kwh",
                 ),
                 ("unserved", "unserved_load_kwh"),
             )
         ]
+        if joint_dc:
+            energy_rows.append(
+                row(
+                    "plant_dc_generation",
+                    number(metrics["pv_generated_dc_kwh"], locale, "kWh"),
+                )
+            )
         for label, key in (
             ("autarky", "solar_autarky"),
             ("self_use", "pv_input_self_use"),
@@ -626,7 +641,9 @@ def build_report(source: Object) -> Report:
                 title=text("energy", locale),
                 paragraphs=[
                     text(
-                        "scenario_plant_scope"
+                        "scenario_dc_plant_scope"
+                        if joint_dc
+                        else "scenario_plant_scope"
                         if joint
                         else "scenario_dc_scope"
                         if dc
@@ -634,6 +651,14 @@ def build_report(source: Object) -> Report:
                         locale,
                     )
                 ]
+                + (
+                    [
+                        text("plant_dc_stages", locale),
+                        text("scenario_plant_limits", locale),
+                    ]
+                    if joint_dc
+                    else []
+                )
                 + (
                     [text("dc_temperature_scope", locale)]
                     if temperature is not None
@@ -696,6 +721,34 @@ def build_report(source: Object) -> Report:
                         )
                     )
                 condition = scenarios[str(unit["unit_id"])]
+                if joint_dc:
+                    rows.extend(
+                        [
+                            row(
+                                "plant_dc_generation",
+                                number(unit["pv_generated_dc_kwh"], locale, "kWh"),
+                            ),
+                            row(
+                                "plant_pv_group",
+                                str(condition["pv_converter_id"])
+                                if condition["pv_converter_id"] is not None
+                                else text("plant_pv_unused", locale),
+                            ),
+                            row(
+                                "comparison_dc_auxiliary",
+                                number(condition["aux_dc_kw"], locale, "kW"),
+                            ),
+                            row(
+                                "plant_ac_charge_policy",
+                                text(
+                                    "plant_ac_charge_on"
+                                    if condition["allow_ac_charge"]
+                                    else "plant_ac_charge_off",
+                                    locale,
+                                ),
+                            ),
+                        ]
+                    )
                 rows.extend(
                     [
                         row(

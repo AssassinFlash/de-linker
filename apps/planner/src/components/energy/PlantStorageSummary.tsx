@@ -1,6 +1,7 @@
 import type { JsonObject } from "../../data/protocol.ts";
 import { readObject } from "../../data/readProtocol.ts";
 import { __ } from "../../i18n.ts";
+import { DC_PLANT_ENERGY_TASK } from "../../domain/plantEnergy.ts";
 
 export function PlantStorageSummary({
 	result,
@@ -61,6 +62,33 @@ export function PlantStorageSummary({
 					</tbody>
 				</table>
 			</div>
+			{result.kind === DC_PLANT_ENERGY_TASK && (
+				<div className="lp-table-scroll" tabIndex={0}>
+					<table>
+						<caption>
+							{__("DC PV generation after curtailment", "linker-tools")} (kWh)
+						</caption>
+						<thead>
+							<tr>
+								<th>{__("Storage unit", "linker-tools")}</th>
+								<th>
+									{__("DC PV generation after curtailment", "linker-tools")}
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							{(metrics.units as readonly JsonObject[]).map((u) => (
+								<tr key={String(u.unit_id)}>
+									<th scope="row">
+										{String(units.find((x) => x.id === u.unit_id)!.name)}
+									</th>
+									<td>{format(u.pv_generated_dc_kwh)}</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			)}
 		</section>
 	);
 }

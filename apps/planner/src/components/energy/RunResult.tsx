@@ -1,4 +1,7 @@
-import { PLANT_ENERGY_TASK } from "../../domain/plantEnergy.ts";
+import {
+	isPlantEnergyTask,
+	DC_PLANT_ENERGY_TASK,
+} from "../../domain/plantEnergy.ts";
 import { PlantStorageSummary } from "./PlantStorageSummary.tsx";
 import { DC_ENERGY_TASK } from "../../domain/dcEnergy.ts";
 import type { PlanningRun } from "../../data/planningProtocol.ts";
@@ -9,8 +12,14 @@ import { Notice } from "../Notice.tsx";
 import { verificationLabel } from "./verificationLabel.ts";
 import { EquipmentResult } from "../equipment/EquipmentResult.tsx";
 import { equipmentStatus } from "../equipment/equipmentLabels.ts";
+import { energyConstraintText } from "./EnergyError.tsx";
 
 function failureText(run: PlanningRun): string {
+	const specific =
+		run.error?.code === "evidence_missing"
+			? energyConstraintText(readObject(run.error.details ?? {}).constraint_id)
+			: null;
+	if (specific) return specific;
 	switch (run.error?.code) {
 		case "version_unavailable":
 			return __(
@@ -176,7 +185,7 @@ export function RunResult({
 							<dd>{ratio("pv_input_self_use")}</dd>
 						</div>
 					</dl>
-					{result.kind === PLANT_ENERGY_TASK && (
+					{isPlantEnergyTask(result.kind) && (
 						<PlantStorageSummary result={result} locale={locale} />
 					)}
 					<p className="lp-profile-help">
@@ -202,13 +211,22 @@ export function RunResult({
 							)}
 						</p>
 					)}
-					{readObject(metrics.pv_input_self_use).value === null && (
+					{result.kind === DC_PLANT_ENERGY_TASK ? (
 						<p className="lp-profile-help">
 							{__(
-								"The PV-use percentage is undefined when generated PV energy is zero.",
+								"PV generation is shown separately at each DC bus and at the common AC bus. No combined PV self-consumption rate is calculated across these stages.",
 								"linker-tools",
 							)}
 						</p>
+					) : (
+						readObject(metrics.pv_input_self_use).value === null && (
+							<p className="lp-profile-help">
+								{__(
+									"The PV-use percentage is undefined when generated PV energy is zero.",
+									"linker-tools",
+								)}
+							</p>
+						)
 					)}
 					<div className="lp-run-boundaries">
 						{equipment ? (

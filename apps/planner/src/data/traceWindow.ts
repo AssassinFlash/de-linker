@@ -2,7 +2,10 @@ import Ajv from "ajv";
 import type { PlanningRun } from "./planningProtocol.ts";
 import { ApiError } from "./protocol.ts";
 import { runTask } from "./planningProtocol.ts";
-import { PLANT_ENERGY_TASK } from "../domain/plantEnergy.ts";
+import {
+	isPlantEnergyTask,
+	DC_PLANT_ENERGY_TASK,
+} from "../domain/plantEnergy.ts";
 import { DC_ENERGY_TASK } from "../domain/dcEnergy.ts";
 
 export const TRACE_FIELDS = [
@@ -29,6 +32,7 @@ export interface UnitTrace {
 	readonly discharge_kw: number;
 	readonly charge_command_unmet_kw: number;
 	readonly discharge_command_unmet_kw: number;
+	readonly pv_dc_kw?: number;
 }
 export interface TraceRow extends Readonly<Record<TraceField, number>> {
 	readonly unit?: UnitTrace;
@@ -72,22 +76,25 @@ const originShape = object(
 		]),
 	),
 );
+const unitShape = object({
+	unit_id: { type: "string" },
+	mode: { type: "string", enum: ["connected", "outage"] },
+	reserve_kwh: { type: "number", minimum: 0 },
+	before: originShape,
+	after: originShape,
+	pv_dc_kw: { type: "number", minimum: 0 },
+	...Object.fromEntries(
+		[
+			"charge_kw",
+			"discharge_kw",
+			"charge_command_unmet_kw",
+			"discharge_command_unmet_kw",
+		].map((k) => [k, { type: "number", minimum: 0 }]),
+	),
+});
+unitShape.required = unitShape.required.filter((k) => k !== "pv_dc_kw");
 const rowShape = object({
-	unit: object({
-		unit_id: { type: "string" },
-		mode: { type: "string", enum: ["connected", "outage"] },
-		reserve_kwh: { type: "number", minimum: 0 },
-		before: originShape,
-		after: originShape,
-		...Object.fromEntries(
-			[
-				"charge_kw",
-				"discharge_kw",
-				"charge_command_unmet_kw",
-				"discharge_command_unmet_kw",
-			].map((k) => [k, { type: "number", minimum: 0 }]),
-		),
-	}),
+	unit: unitShape,
 	interval_index: integer,
 	start_utc: instant,
 	end_utc: instant,
@@ -105,9 +112,18 @@ const traceShape = object({
 	offset: integer,
 	next_offset: { anyOf: [integer, { type: "null" }] },
 	measurement_boundaries: object({
-		pv: { const: "PV_DC_bus", type: "string" },
-		charge: { const: "battery_DC_terminal", type: "string" },
-		discharge: { const: "battery_DC_terminal", type: "string" },
+		pv: {
+			enum: ["PV_DC_bus", "common_AC_PV_after_curtailment"],
+			type: "string",
+		},
+		charge: {
+			enum: ["battery_DC_terminal", "sum_distinct_battery_DC_terminals"],
+			type: "string",
+		},
+		discharge: {
+			enum: ["battery_DC_terminal", "sum_distinct_battery_DC_terminals"],
+			type: "string",
+		},
 		import: { const: "grid_AC", type: "string" },
 		export: { const: "grid_AC", type: "string" },
 	}),
@@ -129,7 +145,8 @@ export function readTraceWindow(
 ): TraceWindow {
 	if (
 		!check(value) ||
-		(runTask(run) === DC_ENERGY_TASK) !== !!value.measurement_boundaries ||
+		[DC_ENERGY_TASK, DC_PLANT_ENERGY_TASK].includes(String(runTask(run))) !==
+			!!value.measurement_boundaries ||
 		value.run_id !== run.id ||
 		value.manifest_sha256 !== run.manifest_sha256 ||
 		value.trace_sha256 !== run.result?.trace_sha256 ||
@@ -143,11 +160,26 @@ export function readTraceWindow(
 				: null)
 	)
 		throw new ApiError(502, "invalid_trace_window");
+	const dcPlant = runTask(run) === DC_PLANT_ENERGY_TASK;
+	if (
+		value.measurement_boundaries &&
+		(value.measurement_boundaries.pv !==
+			(dcPlant ? "common_AC_PV_after_curtailment" : "PV_DC_bus") ||
+			value.measurement_boundaries.charge !==
+				(dcPlant
+					? "sum_distinct_battery_DC_terminals"
+					: "battery_DC_terminal") ||
+			value.measurement_boundaries.discharge !==
+				value.measurement_boundaries.charge)
+	)
+		throw new ApiError(502, "invalid_trace_window");
 	value.rows.forEach((row, index) => {
 		if (
 			(row.unit !== undefined) !== (unitId !== null) ||
 			(unitId !== null &&
-				(runTask(run) !== PLANT_ENERGY_TASK || row.unit?.unit_id !== unitId)) ||
+				(!isPlantEnergyTask(runTask(run)) ||
+					row.unit?.unit_id !== unitId ||
+					(dcPlant && row.unit?.pv_dc_kw === undefined))) ||
 			row.interval_index !== offset + index ||
 			!Number.isFinite(Date.parse(row.start_utc)) ||
 			!Number.isFinite(Date.parse(row.end_utc)) ||

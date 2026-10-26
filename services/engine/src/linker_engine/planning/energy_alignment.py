@@ -18,6 +18,7 @@ def schedule_axis(
     profiles: dict[str, PowerSeries] | dict[str, PowerSeries | DcPvProfile],
     *,
     max_intervals: int,
+    measurements: dict[str, str] | None = None,
 ) -> tuple[tuple[Interval, OperatingLimits, tuple[Interval, ...]], ...]:
     schedule = tuple((item.interval(), item.limits()) for item in scenario.schedule)
     if any(
@@ -34,8 +35,12 @@ def schedule_axis(
     edges = {start, end}
     for interval, _ in schedule:
         edges.update((interval.start, interval.end))
+    if measurements is not None and set(measurements) != set(profiles):
+        raise InvalidInput("each named profile requires its explicit measurement stage")
     for role, profile in profiles.items():
-        if profile.measurement != role:
+        if profile.measurement != (
+            measurements[role] if measurements is not None else role
+        ):
             raise InvalidInput(f"{role}: profile measurement boundary differs")
         for interval in profile.intervals:
             if start < interval.start < end:

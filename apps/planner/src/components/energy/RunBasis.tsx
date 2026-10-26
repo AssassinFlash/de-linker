@@ -1,5 +1,5 @@
 import {
-	PLANT_ENERGY_TASK,
+	isPlantEnergyTask,
 	readPlantEnergyInputs,
 } from "../../domain/plantEnergy.ts";
 import { PlantParameterBasis } from "./PlantParameterBasis.tsx";
@@ -39,7 +39,7 @@ export function RunBasis({
 	recheck: () => void;
 	locale: string;
 }) {
-	const joint = run.result?.kind === PLANT_ENERGY_TASK;
+	const joint = isPlantEnergyTask(run.result?.kind);
 	const [open, setOpen] = useState(false);
 	const sources = useQuery({
 		queryKey: [
@@ -76,16 +76,28 @@ export function RunBasis({
 						? readPlantEnergyInputs(historical.inputs.energy_plant)
 						: readEnergyInputs(historical.inputs.energy_replay),
 					pins = readObject(readObject(run.manifest.context).assets);
-				const profiles: [Measurement | "pv_available_dc", string][] = [
+				const profiles: [
+					import("../../domain/profiles.ts").ProfileRole | "pv_available_dc",
+					string,
+				][] = [
 					["gross_load", selected.gross_load_asset_id],
-					[
+					["aux_ac", selected.aux_ac_asset_id],
+				];
+				if (selected.pv_available_asset_id)
+					profiles.push([
 						selected.coupling === "shared_dc"
 							? "pv_available_dc"
 							: "pv_available_ac",
 						selected.pv_available_asset_id,
-					],
-					["aux_ac", selected.aux_ac_asset_id],
-				];
+					]);
+				if (selected.coupling === "plant_shared_dc") {
+					const reference = selected.pv_reference_asset_id;
+					if (reference !== null) {
+						if (typeof reference !== "string")
+							throw new ApiError(502, "run_source_mismatch");
+						profiles.push(["pv_reference", reference]);
+					}
+				}
 				if (selected.critical_load_asset_id)
 					profiles.push(["critical_load", selected.critical_load_asset_id]);
 				const entries = await Promise.all(

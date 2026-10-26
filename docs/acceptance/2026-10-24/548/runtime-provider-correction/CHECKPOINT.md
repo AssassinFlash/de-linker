@@ -1312,7 +1312,7 @@ lp-field checkbox surface. The final build manifests match sources; native
 script catalog and MO bindings were independently checked. Only the necessary
 current screens/PDF/native consumer fixture are retained for this batch.
 
-### Shared-DC port extraction — source implementation, 2026-10-26
+### Shared-DC plant — local batch closed, 2026-10-26
 
 Single-DC dispatch now delegates device physics to `dc_port.plan/complete`.
 Its original embedded implementation was removed; the site adapter retains
@@ -1320,11 +1320,35 @@ only customer/auxiliary AC allocation, utility limits and the existing output
 contract. External AC packets preserve all three origins and return unused
 supply, allowing the next common-bus coordinator to use the same device path.
 
-The existing `test_shared_dc.py` completed once (5 passed); its only new case
-distinguishes mixed external AC origins, shared reverse capacity and unused
-capability from the old grid-only adapter. Changed-file Ruff/mypy passed.
-Independent Spec and Standards reviewers both returned PASS without rerunning
-tests or reopening the closed AC/native/browser evidence. No new instance,
-runtime snapshot, screenshot or backup was created. Installed release17c1c475
-and its one rollback remain unchanged. Multi-converter native/UI/report
-integration is still required; this source extraction does not close that scope.
+The closed single-DC port evidence is reused. The native multi-converter
+coordinator now assigns retained pre-AC PV groups once, shares one PCC cap,
+keeps each battery's source inventory and port limits separate, and returns
+unused PV to its own converter before AC injection. Common AC generation and
+local DC generation remain separate measurement stages. Native preparation,
+frozen execution, GUI, trace, comparison, report and PDF all carry the new kind
+`plant_shared_dc_energy_replay_v1`.
+
+Only newly changed risks were checked: local DC charging/backpressure and
+shared import allocation; one synthetic two-hour native preparation/run/trace/
+report, whose retained result is reused by UI/comparison consumers; the changed
+shared-kernel AC path and profile schema; safe saved public error reasons.
+Final changed-file Ruff/mypy, TypeScript and the built-source check passed.
+Spec, Standards and EN/independent-DE copy reviews returned PASS. These items
+are closed and are not rerun for later metadata, report or session changes.
+
+The p548 HTTP/worker pair serves43ada736 with schema5 and the existing Woo
+source generation.17c1c475 is the sole rollback; obsolete018a1e13 was removed
+in the same install. No new instance, full backup or product source was made.
+The existing UI project1ac83b43ab08481bae7e6eb05cf633c4 saved revision8 in the
+actual browser. Its missing time series/roof groups stay visible; no physical
+performance is inferred from this form-only project. EN/DE1440/390 screens
+have no horizontal overflow and preserve usable labels/controls. The retained
+current German PDF's10 pages and energy page were visually inspected, using
+the native report facts without another numerical replay.
+
+Real Woo device envelopes, manufacturer joint/island operation and country
+qualification remain open, together with downstream/migration and final
+release. Multi-converter outage calculations expose missing joint topology
+evidence rather than reusing a single-device backup approval. This batch has
+not changed production. Exact runtime/source/evidence and retention details
+are in the existing acceptance ledger's `joint_dc_storage` entry.

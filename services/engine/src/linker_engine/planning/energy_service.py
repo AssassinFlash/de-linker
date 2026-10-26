@@ -20,12 +20,14 @@ class EnergyService:
         max_attempts: int,
         dc_kernel: EnergyKernel | None = None,
         plant_kernel: PlantEnergyKernel | None = None,
+        plant_dc_kernel: PlantEnergyKernel | None = None,
     ) -> None:
         self.workspace = workspace
         self.kernel = kernel
         self.max_attempts = max_attempts
         self.dc_kernel = dc_kernel
         self.plant_kernel = plant_kernel
+        self.plant_dc_kernel = plant_dc_kernel
 
     @property
     def kernels(self) -> tuple[EnergyKernel | PlantEnergyKernel, ...]:
@@ -33,11 +35,18 @@ class EnergyService:
             self.kernel,
             *((self.dc_kernel,) if self.dc_kernel is not None else ()),
             *((self.plant_kernel,) if self.plant_kernel is not None else ()),
+            *((self.plant_dc_kernel,) if self.plant_dc_kernel is not None else ()),
         )
 
     def kernel_for(self, inputs: Object) -> EnergyKernel | PlantEnergyKernel:
         if {"equipment_plant", "equipment_plant_setup"}.intersection(inputs):
-            if self.plant_kernel is None:
+            scenario = inputs.get("energy_plant")
+            dc = (
+                isinstance(scenario, dict)
+                and scenario.get("coupling") == "plant_shared_dc"
+            )
+            kernel = self.plant_dc_kernel if dc else self.plant_kernel
+            if kernel is None:
                 raise EvidenceMissing(
                     "plant_energy_executor: no registered joint executor"
                 )
@@ -45,7 +54,7 @@ class EnergyService:
                 raise EvidenceMissing(
                     "plant_energy_scenario: prepare every named storage unit and common connection"
                 )
-            return self.plant_kernel
+            return kernel
         if "energy_plant" in inputs:
             raise InvalidInput("joint energy requires a prepared equipment plant")
         if EnergyInputs.from_project(inputs).coupling == "independent_ac":

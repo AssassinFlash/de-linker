@@ -15,7 +15,6 @@ import {
 } from "../domain/draft.ts";
 import { emptyBrief, readBrief } from "../domain/brief.ts";
 import { readSelections } from "../domain/profiles.ts";
-import type { Measurement } from "../domain/profiles.ts";
 import { __, sprintf } from "../i18n.ts";
 import { BriefForm } from "./BriefForm.tsx";
 import { Icon } from "./Icon.tsx";
@@ -691,14 +690,20 @@ export function ProjectEditor({
 									className="lp-selected-profile lp-comparison"
 									key={role + assetId}
 								>
-									<summary>{measurementLabel(role as Measurement)}</summary>
+									<summary>
+										{measurementLabel(
+											role as import("../domain/profiles.ts").ProfileRole,
+										)}
+									</summary>
 									<OwnedProfile
 										projectId={project.id}
 										assetId={assetId}
 										session={session}
 										client={client}
 										locale={config.locale}
-										expectedRole={role as Measurement}
+										expectedRole={
+											role as import("../domain/profiles.ts").ProfileRole
+										}
 										recheck={recheck}
 									/>
 									<button
@@ -712,7 +717,9 @@ export function ProjectEditor({
 														previous.history.current.profile_selections,
 													).selected,
 												};
-												delete chosen[role as Measurement];
+												delete chosen[
+													role as import("../domain/profiles.ts").ProfileRole
+												];
 												return editDraft(previous, {
 													...invalidateEnergyReplay(previous.history.current),
 													profile_selections: {

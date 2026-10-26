@@ -16,9 +16,12 @@ import {
 } from "./energyScenario.ts";
 import { readSelections } from "./profiles.ts";
 import { ApiError } from "../data/protocol.ts";
-import plantFixture from "../../tests/fixtures/plant-energy-run.json" with { type: "json" };
+import plantAcFixture from "../../tests/fixtures/plant-energy-run.json" with { type: "json" };
 import { readEquipmentPlant } from "./equipmentPlant.ts";
 import { plantEnergyDraft, compilePlantEnergy } from "./plantEnergy.ts";
+import dcPlantFixture from "../../tests/fixtures/dc-plant-energy-run.json" with { type: "json" };
+import { readObject } from "../data/readProtocol.ts";
+import { readDcParameters } from "./dcEnergy.ts";
 import { DC_LOSS_FIELDS } from "./dcEnergy.ts";
 
 const scenario = () => readScenarioDraft(structuredClone(scenarioJson));
@@ -26,104 +29,124 @@ const profiles = () => readSelections(structuredClone(profilesJson));
 const refusal = (code: string) => (error: unknown) =>
 	error instanceof ApiError && error.status === 422 && error.code === code;
 
-test("joint preparation preserves each native unit asset and refuses a changed equipment binding", () => {
-	const inputs = plantFixture.project.inputs;
-	const plant = readEquipmentPlant(inputs.equipment_plant);
-	const original = inputs.energy_plant;
-	const empty = plantEnergyDraft(inputs, plant);
-	assert.equal(empty.units[0]!.pv_dc_input_unused, null);
-	const setup = {
-		...empty,
-		schedule: original.schedule.map((p, index) => ({
-			...emptyScenario().schedule[0]!,
-			...p,
-			mode: p.mode as "connected" | "outage",
-			id: String(index).repeat(32),
-			import_policy:
-				p.import_cap_kw === null
-					? ("unlimited" as const)
-					: ("limited" as const),
-			export_policy:
-				p.export_cap_kw === null
-					? ("unlimited" as const)
-					: ("limited" as const),
-		})),
-		units: empty.units.map((unit) => {
-			const saved = original.units.find((u) => u.unit_id === unit.unit_id)!;
-			const entry = plantFixture.run.result.parameter_sources.units.find(
-				(u) => u.unit_id === unit.unit_id,
-			)!;
-			const pool = plantFixture.run.result.parameter_sources.pool;
-			const proof = pool[entry.parameter_sha256 as keyof typeof pool];
-			const parameters = proof.loss_scenario;
-			return {
-				...unit,
-				reserve_kwh: saved.reserve_kwh,
-				pv_dc_input_unused: true,
-				settings: readScenarioDraft({
-					...unit.settings,
-					initial_inventory: {
-						pv_kwh: saved.initial_inventory.pv_kwh,
-						grid_kwh: saved.initial_inventory.grid_kwh,
-						initial_unknown_kwh: saved.initial_inventory.initial_unknown_kwh,
-						source_note: saved.initial_inventory.source_note,
-					},
-					terminal_policy: saved.terminal_min_kwh === null ? "none" : "minimum",
-					terminal_min_kwh: saved.terminal_min_kwh,
-					dc: {
-						...unit.settings.dc,
-						source_note: parameters.source_note,
-						battery_port_id: parameters.battery_port_id,
-						battery_temperature_c: parameters.battery_temperature_c,
-						losses: Object.fromEntries(
-							DC_LOSS_FIELDS.map((k) => [k, parameters[k]]),
-						),
-					},
-					battery_binding: {
-						asset_id: saved.battery_parameters_asset_id,
-						parameters,
-						source_note: parameters.source_note,
-						equipment_selection: plant.units.find((u) => u.id === unit.unit_id)!
-							.selection,
-					},
-				}),
-			};
-		}),
-	};
-	const profiles = readSelections({
-		schema_version: 1,
-		selected: {
-			gross_load: original.gross_load_asset_id,
-			pv_available_ac: original.pv_available_asset_id,
-			aux_ac: original.aux_ac_asset_id,
-		},
-	});
-	assert.deepEqual(compilePlantEnergy(setup, profiles, plant), {
-		...original,
-		units: original.units.map((u) => ({
-			...u,
-			initial_inventory: { ...u.initial_inventory, basis: "user_declared" },
-		})),
-	});
-	const changed = {
-		...plant,
-		units: plant.units.map((u, index) =>
-			index === 0
-				? {
-						...u,
-						selection: {
-							...u.selection,
-							modules_per_stack: u.selection.modules_per_stack! + 1,
+for (const plantFixture of [plantAcFixture, dcPlantFixture]) {
+	test(`joint preparation preserves each native unit asset and refuses a changed equipment binding: ${plantFixture.run.result.kind}`, () => {
+		const inputs = plantFixture.project.inputs;
+		const plant = readEquipmentPlant(inputs.equipment_plant);
+		const original = inputs.energy_plant;
+		const empty = plantEnergyDraft(inputs, plant);
+		assert.equal(empty.units[0]!.pv_dc_input_unused, null);
+		const setup = {
+			...empty,
+			ac_pv_converter_ids:
+				"ac_pv_converter_ids" in original ? original.ac_pv_converter_ids : [],
+			schedule: original.schedule.map((p, index) => ({
+				...emptyScenario().schedule[0]!,
+				...p,
+				mode: p.mode as "connected" | "outage",
+				id: String(index).repeat(32),
+				import_policy:
+					p.import_cap_kw === null
+						? ("unlimited" as const)
+						: ("limited" as const),
+				export_policy:
+					p.export_cap_kw === null
+						? ("unlimited" as const)
+						: ("limited" as const),
+			})),
+			units: empty.units.map((unit) => {
+				const saved = original.units.find((u) => u.unit_id === unit.unit_id)!;
+				const entry = plantFixture.run.result.parameter_sources.units.find(
+					(u) => u.unit_id === unit.unit_id,
+				)!;
+				const pool = plantFixture.run.result.parameter_sources.pool;
+				const proof = readDcParameters(
+					readObject(pool)[entry.parameter_sha256],
+				);
+				const parameters = readObject(proof.loss_scenario);
+				return {
+					...unit,
+					reserve_kwh: saved.reserve_kwh,
+					pv_dc_input_unused:
+						"pv_converter_id" in saved ? saved.pv_converter_id === null : true,
+					allow_ac_charge:
+						"allow_ac_charge" in saved ? saved.allow_ac_charge : null,
+					settings: readScenarioDraft({
+						...unit.settings,
+						initial_inventory: {
+							pv_kwh: saved.initial_inventory.pv_kwh,
+							grid_kwh: saved.initial_inventory.grid_kwh,
+							initial_unknown_kwh: saved.initial_inventory.initial_unknown_kwh,
+							source_note: saved.initial_inventory.source_note,
 						},
-					}
-				: u,
-		),
-	};
-	assert.throws(
-		() => compilePlantEnergy(setup, profiles, changed),
-		refusal("battery_not_prepared"),
-	);
-});
+						terminal_policy:
+							saved.terminal_min_kwh === null ? "none" : "minimum",
+						terminal_min_kwh: saved.terminal_min_kwh,
+						dc: {
+							...unit.settings.dc,
+							pv_converter_id:
+								"pv_converter_id" in saved ? (saved.pv_converter_id ?? "") : "",
+							aux_dc_kw: "aux_dc_kw" in saved ? saved.aux_dc_kw : 0,
+							source_note: parameters.source_note,
+							battery_port_id: parameters.battery_port_id,
+							battery_temperature_c: parameters.battery_temperature_c,
+							losses: Object.fromEntries(
+								DC_LOSS_FIELDS.map((k) => [k, parameters[k]]),
+							),
+						},
+						battery_binding: {
+							asset_id: saved.battery_parameters_asset_id,
+							parameters,
+							source_note: parameters.source_note,
+							equipment_selection: plant.units.find(
+								(u) => u.id === unit.unit_id,
+							)!.selection,
+						},
+					}),
+				};
+			}),
+		};
+		const profiles = readSelections({
+			schema_version: 1,
+			selected: {
+				gross_load: original.gross_load_asset_id,
+				...(original.pv_available_asset_id
+					? { pv_available_ac: original.pv_available_asset_id }
+					: {}),
+				...("pv_reference_asset_id" in original &&
+				original.pv_reference_asset_id
+					? { pv_reference: original.pv_reference_asset_id }
+					: {}),
+				aux_ac: original.aux_ac_asset_id,
+			},
+		});
+		assert.deepEqual(compilePlantEnergy(setup, profiles, plant), {
+			...original,
+			units: original.units.map((u) => ({
+				...u,
+				initial_inventory: { ...u.initial_inventory, basis: "user_declared" },
+			})),
+		});
+		const changed = {
+			...plant,
+			units: plant.units.map((u, index) =>
+				index === 0
+					? {
+							...u,
+							selection: {
+								...u.selection,
+								modules_per_stack: u.selection.modules_per_stack! + 1,
+							},
+						}
+					: u,
+			),
+		};
+		assert.throws(
+			() => compilePlantEnergy(setup, profiles, changed),
+			refusal("battery_not_prepared"),
+		);
+	});
+}
 
 test("unfinished draft retains nulls while explicit zero survives preparation", () => {
 	const blank = emptyScenario();

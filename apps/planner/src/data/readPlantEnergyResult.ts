@@ -10,6 +10,8 @@ import {
 import {
 	PLANT_ENERGY_MODEL,
 	PLANT_ENERGY_TASK,
+	DC_PLANT_ENERGY_TASK,
+	DC_PLANT_ENERGY_MODEL,
 } from "../domain/plantEnergy.ts";
 import { sameJson } from "../domain/draft.ts";
 import {
@@ -18,6 +20,7 @@ import {
 	energyRequire as require,
 	verifyEnergyDetails,
 } from "./readEnergyDetails.ts";
+import { verifyDcModel } from "./readDcEnergyModel.ts";
 
 /** Verify consumed identities and source bindings without recalculating physics. */
 export function readPlantEnergyResult(
@@ -29,11 +32,12 @@ export function readPlantEnergyResult(
 		models = readObject(context.models),
 		pinned = readObject(result.pinned_assets),
 		model = readObject(result.model);
+	const dc = result.kind === DC_PLANT_ENERGY_TASK;
 	require(
 		run.state === "succeeded" &&
 			hash(run.result_sha256) &&
 			result.schema === 1 &&
-			result.kind === PLANT_ENERGY_TASK &&
+			result.kind === (dc ? DC_PLANT_ENERGY_TASK : PLANT_ENERGY_TASK) &&
 			result.project_id === run.project_id &&
 			result.revision === run.revision &&
 			result.input_sha256 === manifest.input_sha256 &&
@@ -44,14 +48,16 @@ export function readPlantEnergyResult(
 			Number(result.interval_count) > 0,
 	);
 	require(
-		model.version === PLANT_ENERGY_MODEL &&
+		model.version === (dc ? DC_PLANT_ENERGY_MODEL : PLANT_ENERGY_MODEL) &&
 			models.battery === model.version &&
 			models.replay === result.kind &&
 			model.source_accounting ===
 				"proportional_mixing_per_unit_and_common_ac_bus_v1" &&
 			models.source_accounting === model.source_accounting &&
 			model.pv_boundary ===
-				"independent_ac_generation; converter_dc_pv_inputs_unused" &&
+				(dc
+					? "each_retained_group_assigned_once_at_its_DC_or_AC_stage"
+					: "independent_ac_generation; converter_dc_pv_inputs_unused") &&
 			sameJson(pinned, context.assets) &&
 			Object.values(pinned).every(hash) &&
 			readObject(result.dependencies).energy_trace === result.trace_sha256,
@@ -61,7 +67,10 @@ export function readPlantEnergyResult(
 		assessment = readEquipmentAssessment(binding.assessment);
 	require(
 		binding.schema_version === 1 &&
-			binding.model === "selected_woo_plant_ac_scenario_v1" &&
+			binding.model ===
+				(dc
+					? "selected_woo_plant_dc_scenario_v1"
+					: "selected_woo_plant_ac_scenario_v1") &&
 			models.equipment_envelope === binding.model &&
 			binding.plant_sha256 === pinned["equipment.plant"] &&
 			hash(pinned["equipment.plant"]) &&
@@ -132,24 +141,40 @@ export function readPlantEnergyResult(
 				typeof provenance.label === "string" &&
 				provenance.label.trim().length > 0,
 		);
-		for (const mode of ["connected", "outage"]) {
-			if (mode === "outage" && unitModel[mode] === null) continue;
-			const equivalent = readObject(unitModel[mode]);
-			readBatteryParameters({
-				schema_version: 1,
-				model: "constant_window_single_ac_bus_v1",
-				parameter_basis: "explicit_scenario",
-				...Object.fromEntries(
-					BATTERY_FIELDS.map((key) => [key, equivalent[key]]),
-				),
-			});
+		if (dc) {
+			const port = readObject(unitModel.dc_model);
+			verifyDcModel(port, proof);
 			require(
-				equivalent.parameters_source_sha256 === entry.parameter_sha256 &&
-					equivalent.usable_window_kwh === proof.usable_window_kwh,
+				port.parameters_source_sha256 === entry.parameter_sha256 &&
+					typeof unitModel.allow_ac_charge === "boolean" &&
+					(unitModel.pv_converter_id === null ||
+						typeof unitModel.pv_converter_id === "string"),
 			);
-		}
+		} else
+			for (const mode of ["connected", "outage"]) {
+				if (mode === "outage" && unitModel[mode] === null) continue;
+				const equivalent = readObject(unitModel[mode]);
+				readBatteryParameters({
+					schema_version: 1,
+					model: "constant_window_single_ac_bus_v1",
+					parameter_basis: "explicit_scenario",
+					...Object.fromEntries(
+						BATTERY_FIELDS.map((key) => [key, equivalent[key]]),
+					),
+				});
+				require(
+					equivalent.parameters_source_sha256 === entry.parameter_sha256 &&
+						equivalent.usable_window_kwh === proof.usable_window_kwh,
+				);
+			}
 	}
-	for (const role of ["gross_load", "pv_available_ac", "aux_ac"])
+	for (const role of [
+		"gross_load",
+		...(!dc || pinned["pv_available_ac.raw"] !== undefined
+			? ["pv_available_ac"]
+			: []),
+		"aux_ac",
+	])
 		require(hash(pinned[role + ".raw"]) && hash(pinned[role + ".metadata"]));
 	const metrics = readObject(result.metrics);
 	require(
@@ -160,6 +185,17 @@ export function readPlantEnergyResult(
 	);
 	for (const raw of metrics.units) {
 		const unit = readObject(raw);
+		if (dc)
+			for (const name of [
+				"pv_available_dc_kwh",
+				"pv_generated_dc_kwh",
+				"pv_curtailed_dc_kwh",
+				"pv_input_curtailed_dc_kwh",
+				"local_pv_charge_bus_dc_kwh",
+				"charge_terminal_dc_kwh",
+				"discharge_terminal_dc_kwh",
+			])
+				require(number(unit[name]));
 		require(
 			plant.units.some((u) => u.id === unit.unit_id) &&
 				number(unit.usable_window_kwh) &&
@@ -177,6 +213,6 @@ export function readPlantEnergyResult(
 		verification.physical_passed === true &&
 			Array.isArray(verification.task_codes),
 	);
-	verifyEnergyDetails(result, pinned, false);
+	verifyEnergyDetails(result, pinned, dc ? "plant_dc" : false);
 	return result;
 }

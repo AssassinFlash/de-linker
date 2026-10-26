@@ -29,3 +29,13 @@ This is one two-hour synthetic Woo/AC-charging contract fixture, not a real
 H2 performance claim or a runtime product source. The existing worker output
 is reused by result, trace, preparation and comparison presentation checks;
 those consumers do not trigger another physical replay.
+
+`dc-plant-energy-run.json` retains the one completed two-hour native shared-DC
+plant run, named-unit trace and report from
+`test_native_dc_plant_projects_owned_pv_groups_and_keeps_report_stages`.
+The actual PV producer supplies three distinct retained groups: two DC-connected
+storage converters and one independent AC group. Product constraints originate
+from the existing explicitly synthetic Woo maintenance fixture; no unknown
+reverse capability is invented. Browser contract and preparation checks share
+this output without another PV or dispatch replay. The fixture is never runtime
+product data or manufacturer/country qualification.

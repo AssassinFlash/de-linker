@@ -1740,6 +1740,7 @@ msgid "Solution"
 msgstr "Lösung"
 
 #: src/configurator/App.tsx:97 build/configurator.js
+#: build/planner/assets/planner.js:1
 msgid "Solution Configurator"
 msgstr "Lösungskonfigurator"
 
@@ -2043,6 +2044,7 @@ msgstr ""
 #: includes/Genie/Entries.php build/genie.js:19 build/hero.js
 #: src/configurator/residential/ResidentialPanel.tsx:308 src/genie/App.tsx:1351
 #: build/configurator.js
+#: build/planner/assets/planner.js:1
 msgid "Try again"
 msgstr "Erneut versuchen"
 
@@ -11515,3 +11517,124 @@ msgstr "Mehrere Speichereinheiten an einem gemeinsamen AC-Messpunkt"
 #: build/planner/assets/planner.js:1
 msgid "Storage converter and battery"
 msgstr "Speicherumrichter und Batterie"
+
+#: ../../apps/planner/src/components/energy/PlantEnergyForm.tsx:89
+#: build/planner/assets/planner.js:1
+msgid "AC-coupled PV generation"
+msgstr "AC-gekoppelte PV-Erzeugung"
+
+#: ../../apps/planner/src/components/energy/PlantEnergyForm.tsx:124
+#: build/planner/assets/planner.js:1
+msgid "Assign each roof PV group once: to one storage converter below or to the common AC bus here. Select the prepared roof PV source for this calculation. Any additional AC generation profile must represent a different source."
+msgstr "Ordnen Sie jede Dach-PV-Gruppe genau einmal zu: unten einem Speicherumrichter oder hier der gemeinsamen AC-Sammelschiene. Wählen Sie für diese Berechnung die bereitgestellte Dach-PV-Quelle aus. Ein zusätzliches AC-Erzeugungsprofil muss eine andere Quelle abbilden."
+
+#: ../../apps/planner/src/components/energy/PlantEnergyForm.tsx:220
+#: build/planner/assets/planner.js:1
+msgid "Charging from the common AC bus"
+msgstr "Laden über die gemeinsame AC-Sammelschiene"
+
+#: ../../apps/planner/src/components/energy/PlantEnergyForm.tsx:92
+#: build/planner/assets/planner.js:1
+msgid "DC PV at individual storage converters"
+msgstr "DC-PV an einzelnen Speicherumrichtern"
+
+#: ../../apps/planner/src/components/energy/PlantStorageSummary.tsx:69
+#: ../../apps/planner/src/components/energy/PlantStorageSummary.tsx:75
+#: build/planner/assets/planner.js:1
+msgid "DC PV generation after curtailment"
+msgstr "DC-PV-Erzeugung nach Abregelung"
+
+#: ../../apps/planner/src/components/energy/PlantEnergyForm.tsx:214
+#: build/planner/assets/planner.js:1
+msgid "DC PV inputs unused"
+msgstr "DC-PV-Eingänge ungenutzt"
+
+#: ../../apps/planner/src/components/energy/TraceExplorer.tsx:52
+#: build/planner/assets/planner.js:1
+msgid "DC charging power per storage unit (interval average, kW)"
+msgstr "DC-Ladeleistung je Speichereinheit (Intervallmittelwert, kW)"
+
+#: ../../apps/planner/src/components/energy/TraceExplorer.tsx:58
+#: build/planner/assets/planner.js:1
+msgid "DC discharging power per storage unit (interval average, kW)"
+msgstr "DC-Entladeleistung je Speichereinheit (Intervallmittelwert, kW)"
+
+#: ../../apps/planner/src/components/energy/PlantEnergyForm.tsx:244
+#: build/planner/assets/planner.js:1
+msgid "Disabled"
+msgstr "Deaktiviert"
+
+#: ../../apps/planner/src/components/energy/EnergyError.tsx:10
+#: build/planner/assets/planner.js:1
+msgid "Each converter’s allocated DC PV nameplate rating must match the STC rating of its assigned roof PV group."
+msgstr "Die jedem Umrichter zugewiesene DC-PV-Nennleistung muss mit der STC-Nennleistung der zugeordneten Dach-PV-Gruppe übereinstimmen."
+
+#: ../../apps/planner/src/components/energy/PlantEnergyForm.tsx:247
+#: build/planner/assets/planner.js:1
+msgid "Enabled (requires documented AC-to-DC charging)"
+msgstr "Aktiviert (AC-Ladung muss dokumentiert sein)"
+
+#: ../../apps/planner/src/components/energy/PlantEnergyForm.tsx:376
+#: build/planner/assets/planner.js:1
+msgid "In each interval, each converter supplies its own DC auxiliary demand and its allocated share of AC demand before charging from local DC PV. AC demand is shared in proportion to each unit’s available power. Charging from the AC bus must be enabled and supported by the equipment documentation. It uses remaining AC surplus; grid charging is requested only when separately permitted and within the remaining import limit. This time-step calculation uses no forecast and does not reproduce a manufacturer EMS or an optimal dispatch schedule."
+msgstr "In jedem Zeitintervall versorgt jeder Umrichter zunächst seinen DC-Eigenbedarf und seinen zugeteilten Anteil am AC-Bedarf. Erst danach lädt er den Speicher aus lokaler DC-PV-Erzeugung. Der AC-Bedarf wird im Verhältnis zur verfügbaren Leistung der einzelnen Geräte aufgeteilt. Die AC-Ladung muss aktiviert und durch die Geräteunterlagen belegt sein. Dafür wird der verbleibende AC-Überschuss genutzt. Netzladung wird nur bei gesonderter Freigabe und innerhalb der verbleibenden Netzbezugsgrenze angefordert. Die Berechnung erfolgt schrittweise ohne Prognose und bildet weder ein Hersteller-EMS noch eine optimale Einsatzplanung nach."
+
+#: ../../apps/planner/src/components/energy/EnergyError.tsx:15
+#: build/planner/assets/planner.js:1
+msgid "Multi-converter backup requires a documented island-mode topology. This calculation does not provide that evidence."
+msgstr "Der gemeinsame Ersatzstrombetrieb mehrerer Umrichter erfordert eine dokumentierte Inselnetztopologie. Diese Berechnung liefert dafür keinen Nachweis."
+
+#: ../../apps/planner/src/components/energy/PlantEnergyForm.tsx:157
+#: build/planner/assets/planner.js:1
+msgid "No roof PV groups are available to assign yet."
+msgstr "Es sind noch keine Dach-PV-Gruppen für die Zuordnung vorhanden."
+
+#: ../../apps/planner/src/components/energy/TraceExplorer.tsx:74
+#: build/planner/assets/planner.js:1
+msgid "PV at the common AC bus"
+msgstr "PV an der gemeinsamen AC-Sammelschiene"
+
+#: ../../apps/planner/src/components/energy/PlantEnergyForm.tsx:76
+#: build/planner/assets/planner.js:1
+msgid "PV connection for this plant"
+msgstr "PV-Anbindung der Anlage"
+
+#: ../../apps/planner/src/components/energy/PlantEnergyForm.tsx:187
+#: build/planner/assets/planner.js:1
+msgid "PV connection on this converter"
+msgstr "PV-Anbindung dieses Umrichters"
+
+#: ../../apps/planner/src/components/energy/RunResult.tsx:210
+#: build/planner/assets/planner.js:1
+msgid "PV generation is shown separately at each DC bus and at the common AC bus. No combined PV self-consumption rate is calculated across these stages."
+msgstr "Die PV-Erzeugung wird für jede DC-Sammelschiene und die gemeinsame AC-Sammelschiene getrennt ausgewiesen. Über diese Stufen hinweg wird keine gemeinsame Eigenverbrauchsquote berechnet."
+
+#: ../../apps/planner/src/components/energy/PlantEnergyForm.tsx:211
+#: build/planner/assets/planner.js:1
+msgid "PV group connected to the DC inputs"
+msgstr "PV-Gruppe an den DC-Eingängen angeschlossen"
+
+#: ../../apps/planner/src/components/energy/PlantEnergyForm.tsx:122
+#: build/planner/assets/planner.js:1
+msgid "PV groups at the common AC bus"
+msgstr "PV-Gruppen an der gemeinsamen AC-Sammelschiene"
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:33
+#: build/planner/assets/planner.js:1
+msgid "Roof PV source"
+msgstr "Dach-PV-Quelle"
+
+#: ../../apps/planner/src/components/energy/EnergyError.tsx:63
+#: build/planner/assets/planner.js:1
+msgid "Select the PV group and AC charging option, and enter the DC auxiliary demand for each converter."
+msgstr "Für jeden Umrichter wählen Sie die PV-Gruppe und die AC-Ladeoption aus und geben den DC-Eigenbedarf an."
+
+#: ../../apps/planner/src/components/energy/EnergyError.tsx:68
+#: build/planner/assets/planner.js:1
+msgid "The same roof PV source cannot also be counted as an additional AC source."
+msgstr "Dieselbe Dach-PV-Quelle darf nicht zusätzlich als AC-Quelle erfasst werden."
+
+#: ../../apps/planner/src/components/energy/TraceExplorer.tsx:201
+#: build/planner/assets/planner.js:1
+msgid "Load, PV generation and grid import/export are shown at the common AC bus. The charging and discharging curves show the sum of the power at each battery’s DC terminals. Total stored energy is shown for reference. Select a storage unit to show its DC power and stored energy in the table."
+msgstr "Last, PV-Erzeugung sowie Netzbezug und Netzeinspeisung werden an der gemeinsamen AC-Sammelschiene dargestellt. Die Lade- und Entladekurven zeigen die Summe der Leistungen an den DC-Anschlüssen der einzelnen Batterien. Der Gesamtwert der gespeicherten Energie dient der Übersicht. Wählen Sie eine Speichereinheit aus, um deren DC-Leistung und gespeicherte Energie in der Tabelle anzuzeigen."

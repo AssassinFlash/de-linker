@@ -752,9 +752,9 @@ it does not qualify a real product. Real Woo AC charging evidence and per-unit
 shared-DC hybrid execution remain required work within the complete goal.
 The closed physical core and unchanged source/permission evidence are reused.
 
-## Shared-DC plant ports — port ready, plant integration in progress
+## Shared-DC plant — native integration installed locally
 
-The next physical interface separates each converter's DC port calculation from
+The physical interface separates each converter's DC port calculation from
 allocation at the plant AC metering point. Reuse NUMERICAL-MODELS section12's
 SSC-grounded topology and directional equations, the current source-derived
 DcPreparedParameters, exact stock witnesses and origin ledger. Do not create
@@ -770,7 +770,7 @@ source withdrawal before delivered energy advances state. Unknown reverse
 capability is requested only when the chosen physical path needs it and has
 available external energy; an unused path does not acquire invented limits.
 
-The single-converter executor and multi-converter executor must use this same
+The single-converter executor and multi-converter executor use this same
 port implementation. The existing single-converter interface remains an
 adapter for its one load and utility grid. The plant applies utility import and
 export caps once and retains per-unit DC PV, inventory, source and conversion
@@ -782,15 +782,34 @@ retained PV outputs are shared across group projections without multiplying
 weather/PV reconstruction by device count. Mixed AC/DC inputs keep their
 measurement stages in reports; kWh at different stages are not added to invent
 a single utilization ratio. Native preparation, frozen source binding, GUI,
-comparison and report consumers must carry the new domain before it is marked
-delivered. The active17c1c475 local release stays in place during development.
+comparison, trace and report consumers carry `plant_shared_dc_energy_replay_v1`.
+The installed p548 release is43ada736;17c1c475 is its sole retained rollback.
 
 The port extraction is implemented: the single-converter executor now uses
 `dc_port.plan/complete`; its adapter allocates the one site's customer demand
 and utility limits and retains the existing result contract. External AC
 packets retain PV/grid/initial-unknown origins across reverse conversion,
 DC/DC conversion and internal charging; unused packets are returned. The
-existing DC behavior checks and one new external-origin/capacity case passed,
-with independent Spec and Standards PASS. No interface or runtime installation
-changed in this step. The multi-converter coordinator, native frozen execution
-and presentation integration remain open.
+existing single-DC evidence is reused. The plant coordinator applies
+`local_dc_then_proportional_ac_self_consumption_v1`: local DC demand and
+storage use precede bridge clipping; remaining AC demand/supply is allocated
+at the shared bus. Explicit per-unit AC charging permission and documented
+reverse envelopes are required only for an actually used incoming path.
+PV backpressure returns to its own producing port rather than appearing as
+phantom AC energy. Each retained PV group is assigned exactly once and its
+nameplate agrees with its declared equipment allocation.
+
+The owned native two-hour fixture runs preparation, frozen execution, per-unit
+trace and German report with synthetic source claims. Its one retained result
+is reused by browser and comparison consumers, without recalculating physics.
+Independent Spec, Standards and EN/DE copy reviews closed the implementation
+findings. EN/DE1440/390 forms and the current German PDF have been inspected.
+The existing owned UI project is revision8; it has no load/PV profiles and
+therefore proves saved forms, not real equipment performance.
+
+This closes local shared-DC integration. Actual Woo product envelopes,
+manufacturer-approved interconnected island operation, country qualifications,
+remaining downstream/migration and final release remain within the full goal.
+Multi-converter outage periods currently report the missing joint topology
+evidence explicitly; single-device backup approval cannot qualify a shared
+island. No real product or country is qualified by the synthetic fixture.

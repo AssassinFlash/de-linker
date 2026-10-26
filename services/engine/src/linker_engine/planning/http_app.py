@@ -268,6 +268,11 @@ def create_private_app(
                     if energy.plant_kernel is not None
                     else {}
                 ),
+                **(
+                    {"plant_dc_replay": energy.plant_dc_kernel.kind}
+                    if energy.plant_dc_kernel is not None
+                    else {}
+                ),
                 **({"report": reports.kernel.kind} if reports is not None else {}),
                 **(
                     {

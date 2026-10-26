@@ -4,7 +4,7 @@ import type { PlannerClient } from "../data/PlannerClient.ts";
 import type { Session } from "../data/protocol.ts";
 import { ApiError } from "../data/protocol.ts";
 import type {
-	Measurement,
+	ProfileRole,
 	ProfileAsset,
 	ProfilePreview,
 } from "../domain/profiles.ts";
@@ -29,7 +29,7 @@ export function OwnedProfile({
 	session: Session;
 	client: PlannerClient;
 	locale: string;
-	expectedRole?: Measurement;
+	expectedRole?: ProfileRole;
 	onSelect?: (asset: ProfileAsset, preview: ProfilePreview) => void;
 	recheck: () => void;
 }) {
@@ -78,7 +78,15 @@ export function OwnedProfile({
 					),
 					asset,
 				);
-				if (expectedRole && preview.measurement !== expectedRole)
+				if (
+					expectedRole &&
+					preview.measurement !== expectedRole &&
+					!(
+						expectedRole === "pv_reference" &&
+						asset.purpose === "pvlib_reference_profile_v1" &&
+						preview.measurement === "pv_available_ac"
+					)
+				)
 					throw new ApiError(502, "profile_role_mismatch");
 				recoveringSession.current = false;
 				return { asset, preview };

@@ -9,8 +9,11 @@ import pytest
 
 from linker_engine.planning.dc_battery_model import DcBatteryModel, DcPort, SharedBridge
 from linker_engine.planning.dc_frame import DcFrame
+from linker_engine.planning.dc_plant_checks import verify as plant_verify
+from linker_engine.planning.dc_plant_dispatch import replay as plant_replay
+from linker_engine.planning.dc_plant_model import DcPlantFrame, DcPlantUnit
 from linker_engine.planning.dc_port import DcPortFrame, plan
-from linker_engine.planning.dispatch_frame import Command
+from linker_engine.planning.dispatch_frame import Command, Frame
 from linker_engine.planning.energy_origins import EnergyOrigins
 from linker_engine.planning.errors import EvidenceMissing
 from linker_engine.planning.interval import Interval
@@ -267,3 +270,91 @@ def test_shared_port_preserves_external_ac_origins_and_returns_unused_supply() -
     assert unpowered.charging_request_ac_kw(0, 0) == 0
     with pytest.raises(EvidenceMissing, match="reverse_conversion"):
         unpowered.complete(EnergyOrigins(1, 0, 0), EMPTY)
+
+
+def test_dc_plant_retains_local_dc_and_cross_converter_origins_before_curtailment() -> (
+    None
+):
+    first = DcPlantUnit("A", model(), False)
+    second_model = replace(
+        model(),
+        usable_window_kwh=2,
+        connected_bridge=SharedBridge(2, 2, 1, True, 2, 2, 0.9),
+    )
+    second = DcPlantUnit("B", second_model, True)
+    units, initial = (first, second), {"A": EMPTY, "B": EMPTY}
+    frames = tuple(
+        DcPlantFrame(
+            Frame(
+                frame(0, load, hour=i).interval,
+                load,
+                0,
+                0,
+                frame(0, load).limits,
+                "gross_load",
+            ),
+            {"A": pv, "B": 0},
+            {"A": 0, "B": 0},
+            {"A": 0, "B": 0},
+        )
+        for i, (pv, load) in enumerate(((14, 10), (18, 0), (30, 0)))
+    )
+    flows = plant_replay(frames, units, initial, checkpoint=lambda: None)
+    a, b, c = flows
+    assert a.units[0].port.after == EnergyOrigins(4, 0, 0)
+    assert b.units[0].port.after == EnergyOrigins(20, 0, 0)
+    assert b.units[1].port.after.pv_kwh == pytest.approx(1.8)
+    assert c.units[1].port.after.pv_kwh == pytest.approx(2)
+    assert c.units[0].port.plan.forward_ac_kw == pytest.approx(0.2 / 0.9)
+    assert c.units[0].port.plan.pv_curtailed_dc_kw == pytest.approx(30 - 0.2 / 0.9)
+    assert all(f.grid_import_kwh == 0 and f.export_sources.total == 0 for f in flows)
+    checked = plant_verify(
+        flows, units, TOLERANCE, initial=initial, terminal_min_kwh={"A": 20, "B": 2}
+    )
+    assert checked.physical_passed, [c for c in checked.checks if not c.passed]
+    assert checked.passed
+    # A numerically balanced receiving bank cannot relabel a different
+    # converter's PV input as grid energy at the common bus.
+    transferred = b.units[1].port
+    forged = replace(
+        transferred,
+        incoming_charge_ac=EnergyOrigins(0, transferred.incoming_charge_ac.total, 0),
+        incoming_charge_dc=EnergyOrigins(0, transferred.incoming_charge_dc.total, 0),
+        after=EnergyOrigins(0, transferred.after.total, 0),
+    )
+    invalid_b = replace(b, units=(b.units[0], replace(b.units[1], port=forged)))
+    invalid = plant_verify(
+        (a, invalid_b),
+        units,
+        TOLERANCE,
+        initial=initial,
+        terminal_min_kwh={"A": None, "B": None},
+    )
+    assert not invalid.physical_passed
+    assert any(
+        "bus_charge" in check.code and not check.passed for check in invalid.checks
+    )
+
+
+def test_dc_plant_applies_one_import_cap_to_load_and_all_reverse_ports() -> None:
+    physical = replace(
+        model(), connected_bridge=SharedBridge(10, 20, 1, True, 10, 10, 1)
+    )
+    units = (DcPlantUnit("A", physical, False), DcPlantUnit("B", physical, False))
+    limits = OperatingLimits("connected", 0, 5, 0, True, False)
+    site = Frame(frame(0, 4).interval, 4, 0, 0, limits, "gross_load")
+    request = DcPlantFrame(site, {"A": 0, "B": 0}, {"A": 3, "B": 3}, {"A": 0, "B": 0})
+    initial = {"A": EMPTY, "B": EMPTY}
+    flow = plant_replay((request,), units, initial, checkpoint=lambda: None)[0]
+    assert flow.grid_import_kwh == 5
+    assert flow.grid_to_load_kwh == 4
+    assert [u.port.incoming_aux_ac.total for u in flow.units] == [0.5, 0.5]
+    assert [u.port.unserved_aux_dc_kw for u in flow.units] == [2.5, 2.5]
+    checked = plant_verify(
+        (flow,),
+        units,
+        TOLERANCE,
+        initial=initial,
+        terminal_min_kwh={"A": None, "B": None},
+    )
+    assert checked.physical_passed and not checked.passed

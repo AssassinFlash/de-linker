@@ -33,14 +33,18 @@ from .test_energy_kernel import BATTERY, PROVENANCE, TOLERANCE, create_scenario
 from .test_private_http import TOKEN, headers
 
 
-def test_joint_comparison_report_keeps_list_periods_and_named_final_requirements() -> (
-    None
-):
+@pytest.mark.parametrize(
+    "fixture_name", ["plant-energy-run.json", "dc-plant-energy-run.json"]
+)
+def test_joint_comparison_report_keeps_list_periods_and_named_final_requirements(
+    fixture_name: str,
+) -> None:
     """Read the retained native fixture; do not replay its physical calculation."""
     import json
     from pathlib import Path
 
     from linker_engine.planning.comparison_report import comparison_sections
+    from linker_engine.planning.dc_plant_inputs import DcPlantEnergyInputs
     from linker_engine.planning.energy_comparison import EnergyComparisonSide
     from linker_engine.planning.plant_energy_inputs import PlantEnergyInputs
     from linker_engine.planning.records import Run
@@ -49,11 +53,14 @@ def test_joint_comparison_report_keeps_list_periods_and_named_final_requirements
     fixture = json.loads(
         (
             Path(__file__).resolve().parents[4]
-            / "apps/planner/tests/fixtures/plant-energy-run.json"
+            / "apps/planner/tests/fixtures"
+            / fixture_name
         ).read_text()
     )
     run = Run(**fixture["run"])
-    scenario = PlantEnergyInputs.from_project(fixture["project"]["inputs"])
+    scenario = (
+        DcPlantEnergyInputs if fixture_name.startswith("dc-") else PlantEnergyInputs
+    ).from_project(fixture["project"]["inputs"])
     # A presentation-only declared final requirement distinguishes it from None.
     scenario = scenario.model_copy(
         update={

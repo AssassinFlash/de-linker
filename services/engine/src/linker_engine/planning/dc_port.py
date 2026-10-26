@@ -9,7 +9,7 @@ packets are returned, never counted as delivered or used to patch inventory.
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Literal, cast
 
 from .battery_model import nonnegative
@@ -108,6 +108,28 @@ class DcPortPlan:
     @property
     def bridge(self) -> SharedBridge:
         return self.model.bridge(self.frame.mode)
+
+    def accept_forward_pv(self, accepted_ac_kw: float) -> DcPortPlan:
+        """Back off unused PV before conversion; battery withdrawal stays distinct."""
+        nonnegative(accepted_ac_kw, "accepted PV AC injection")
+        if accepted_ac_kw > self.pv_forward_ac_kw:
+            raise InvalidInput(
+                "accepted PV injection exceeds the planned producer offer"
+            )
+        if accepted_ac_kw == self.pv_forward_ac_kw:
+            return self
+        pv_dc = min(self.pv_to_inverter_dc_kw, accepted_ac_kw / self.bridge.eta_forward)
+        forward_dc = pv_dc + self.battery_to_inverter_dc_kw
+        return replace(
+            self,
+            pv_to_inverter_dc_kw=pv_dc,
+            pv_curtailed_dc_kw=self.pv_curtailed_dc_kw
+            + self.pv_to_inverter_dc_kw
+            - pv_dc,
+            forward_dc_kw=forward_dc,
+            forward_ac_kw=forward_dc * self.bridge.eta_forward,
+            pv_forward_ac_kw=pv_dc * self.bridge.eta_forward,
+        )
 
     def _reverse_dc(
         self,

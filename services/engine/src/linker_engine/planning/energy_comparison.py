@@ -13,6 +13,7 @@ from datetime import UTC, datetime
 from typing import cast
 
 from .canonical import Json, Object, digest, encode
+from .dc_plant_inputs import DcPlantEnergyInputs
 from .energy_inputs import EnergyInputs
 from .errors import InvalidInput, NotFound, VersionUnavailable
 from .plant_energy_inputs import PlantEnergyInputs
@@ -24,6 +25,7 @@ KINDS = {
     "single_ac_energy_replay_v1",
     "shared_dc_energy_replay_v1",
     "plant_ac_energy_replay_v1",
+    "plant_shared_dc_energy_replay_v1",
 }
 # Admission/read/presentation modules do not calculate these frozen results.
 # All other source files, dependencies and interpreter bindings stay included;
@@ -50,7 +52,7 @@ class EnergyComparisonSide:
     run: Run
     result: Object
     inputs: Object
-    scenario: EnergyInputs | PlantEnergyInputs
+    scenario: EnergyInputs | PlantEnergyInputs | DcPlantEnergyInputs
 
     @property
     def dc(self) -> bool:
@@ -58,10 +60,10 @@ class EnergyComparisonSide:
 
     @property
     def joint(self) -> bool:
-        return isinstance(self.scenario, PlantEnergyInputs)
+        return isinstance(self.scenario, (PlantEnergyInputs, DcPlantEnergyInputs))
 
     def inventory_key(self) -> Json:
-        if isinstance(self.scenario, PlantEnergyInputs):
+        if isinstance(self.scenario, (PlantEnergyInputs, DcPlantEnergyInputs)):
             return {
                 u.unit_id: u.initial_inventory.energy().document()
                 for u in self.scenario.units
@@ -69,7 +71,7 @@ class EnergyComparisonSide:
         return self.scenario.initial_inventory.energy().document()
 
     def terminal_key(self) -> Json:
-        if isinstance(self.scenario, PlantEnergyInputs):
+        if isinstance(self.scenario, (PlantEnergyInputs, DcPlantEnergyInputs)):
             return {u.unit_id: u.terminal_min_kwh for u in self.scenario.units}
         return self.scenario.terminal_min_kwh
 
@@ -98,7 +100,7 @@ class EnergyComparisonSide:
         return cast(Object, self.result["pinned_assets"])
 
     def storage_unit_references(self) -> list[Json]:
-        if not isinstance(self.scenario, PlantEnergyInputs):
+        if not isinstance(self.scenario, (PlantEnergyInputs, DcPlantEnergyInputs)):
             return []
         plant = _object(_object(self.result.get("equipment_binding")).get("plant"))
         names = {
@@ -179,7 +181,7 @@ class EnergyComparisonSide:
             "starting_energy_kwh": math.fsum(
                 u.initial_inventory.energy().total for u in self.scenario.units
             )
-            if isinstance(self.scenario, PlantEnergyInputs)
+            if isinstance(self.scenario, (PlantEnergyInputs, DcPlantEnergyInputs))
             else self.scenario.initial_inventory.energy().total,
             "terminal_min_kwh": None
             if self.joint
@@ -211,8 +213,10 @@ def comparison_side(
             "comparison result identity differs from its saved run"
         )
     inputs = workspace.pinned_inputs(run.manifest)
-    scenario: EnergyInputs | PlantEnergyInputs = (
-        PlantEnergyInputs.from_project(inputs)
+    scenario: EnergyInputs | PlantEnergyInputs | DcPlantEnergyInputs = (
+        DcPlantEnergyInputs.from_project(inputs)
+        if result["kind"] == "plant_shared_dc_energy_replay_v1"
+        else PlantEnergyInputs.from_project(inputs)
         if result["kind"] == "plant_ac_energy_replay_v1"
         else EnergyInputs.from_project(inputs)
     )
@@ -223,7 +227,9 @@ def comparison_side(
     context = _object(run.manifest.get("context"))
     models = _object(context.get("models"))
     expected_battery = (
-        "distinct_woo_battery_only_ac_equivalents_v1"
+        "distinct_woo_shared_dc_ports_v1"
+        if isinstance(scenario, DcPlantEnergyInputs)
+        else "distinct_woo_battery_only_ac_equivalents_v1"
         if isinstance(scenario, PlantEnergyInputs)
         else "constant_window_shared_dc_bus_v1"
         if scenario.coupling == "shared_dc"
@@ -286,6 +292,28 @@ def _profile_key(side: EnergyComparisonSide, role: str) -> Json:
 
 
 def _weather_key(workspace: Workspace, side: EnergyComparisonSide) -> Json:
+    if isinstance(side.scenario, DcPlantEnergyInputs):
+        weather: Object = {}
+        opaque = False
+        for role in ("pv_reference", "pv_available_ac"):
+            if role + ".metadata" not in side.pinned:
+                continue
+            metadata = workspace.blobs.object(str(side.pinned[role + ".metadata"]))
+            dependencies = metadata.get("dependencies")
+            if metadata.get(
+                "profile_type"
+            ) == "pvlib_reference_profile_v1" and isinstance(dependencies, dict):
+                model = workspace.blobs.object(str(dependencies["pv_model_inputs"]))
+                weather[role] = {
+                    "retained_weather_sha256": digest(encode(model["weather"]))
+                }
+            else:
+                weather[role] = _profile_key(side, role)
+                opaque = True
+        return {
+            "plant_weather_sources": weather,
+            **({"opaque": True} if opaque else {}),
+        }
     role = "pv_available_dc" if side.dc else "pv_available_ac"
     metadata = workspace.blobs.object(str(side.pinned[f"{role}.metadata"]))
     dependencies = metadata.get("dependencies")
@@ -317,12 +345,25 @@ def _schedule(side: EnergyComparisonSide, *, times_only: bool) -> Json:
 
 def _operation_key(side: EnergyComparisonSide) -> Json:
     periods = _schedule(side, times_only=False)
-    if isinstance(side.scenario, PlantEnergyInputs):
+    if isinstance(side.scenario, (PlantEnergyInputs, DcPlantEnergyInputs)):
         return {
             "periods": periods,
             "unit_reserves_kwh": {
                 u.unit_id: u.reserve_kwh for u in side.scenario.units
             },
+            **(
+                {
+                    "unit_dc_operation": {
+                        u.unit_id: {
+                            "aux_dc_kw": u.aux_dc_kw,
+                            "allow_ac_charge": u.allow_ac_charge,
+                        }
+                        for u in side.scenario.units
+                    }
+                }
+                if isinstance(side.scenario, DcPlantEnergyInputs)
+                else {}
+            ),
         }
     return periods
 
@@ -551,13 +592,39 @@ def compare_energy_runs(
             ),
             (
                 "pv_design",
-                [a.inputs.get("geometry"), a.inputs.get("pv_generation")],
-                [b.inputs.get("geometry"), b.inputs.get("pv_generation")],
+                [
+                    a.inputs.get("geometry"),
+                    a.inputs.get("pv_generation"),
+                    [
+                        {"unit_id": u.unit_id, "pv_converter_id": u.pv_converter_id}
+                        for u in a.scenario.units
+                    ]
+                    if isinstance(a.scenario, DcPlantEnergyInputs)
+                    else None,
+                ],
+                [
+                    b.inputs.get("geometry"),
+                    b.inputs.get("pv_generation"),
+                    [
+                        {"unit_id": u.unit_id, "pv_converter_id": u.pv_converter_id}
+                        for u in b.scenario.units
+                    ]
+                    if isinstance(b.scenario, DcPlantEnergyInputs)
+                    else None,
+                ],
             ),
             (
                 "dc_auxiliary",
-                None if a.joint else cast(EnergyInputs, a.scenario).aux_dc_kw,
-                None if b.joint else cast(EnergyInputs, b.scenario).aux_dc_kw,
+                {u.unit_id: u.aux_dc_kw for u in a.scenario.units}
+                if isinstance(a.scenario, DcPlantEnergyInputs)
+                else None
+                if a.joint
+                else cast(EnergyInputs, a.scenario).aux_dc_kw,
+                {u.unit_id: u.aux_dc_kw for u in b.scenario.units}
+                if isinstance(b.scenario, DcPlantEnergyInputs)
+                else None
+                if b.joint
+                else cast(EnergyInputs, b.scenario).aux_dc_kw,
             ),
         )
     ]

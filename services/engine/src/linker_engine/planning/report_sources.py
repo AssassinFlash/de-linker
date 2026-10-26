@@ -8,6 +8,8 @@ from typing import cast
 from .assets import Assets
 from .canonical import Json, Object
 from .dc_energy_kernel import DcEnergyKernel
+from .dc_plant_inputs import DcPlantEnergyInputs
+from .dc_plant_kernel import DcPlantEnergyKernel
 from .energy_comparison import compare_energy_runs, comparison_side
 from .energy_inputs import EnergyInputs
 from .energy_kernel import EnergyKernel
@@ -178,14 +180,23 @@ def report_sources(
     energy: Object | None = None
     if options.energy_run_id is not None:
         joint = "energy_plant" in project.inputs
-        scenario: EnergyInputs | PlantEnergyInputs = (
-            PlantEnergyInputs.from_project(project.inputs)
+        raw_plant = project.inputs.get("energy_plant")
+        joint_dc = (
+            isinstance(raw_plant, dict)
+            and raw_plant.get("coupling") == "plant_shared_dc"
+        )
+        scenario: EnergyInputs | PlantEnergyInputs | DcPlantEnergyInputs = (
+            DcPlantEnergyInputs.from_project(project.inputs)
+            if joint_dc
+            else PlantEnergyInputs.from_project(project.inputs)
             if joint
             else EnergyInputs.from_project(project.inputs)
         )
         run = owned(
             options.energy_run_id,
-            PlantEnergyKernel.kind
+            DcPlantEnergyKernel.kind
+            if joint_dc
+            else PlantEnergyKernel.kind
             if joint
             else DcEnergyKernel.kind
             if scenario.coupling == "shared_dc"
@@ -223,11 +234,18 @@ def report_sources(
                 # a newer product snapshot to fill the report and handoff.
                 assessment = bound_assessment
                 bases["equipment"] = pinned_energy["woo.equipment_inputs"]
-        for role, asset_id in scenario.profiles().items():
+        energy_profiles = (
+            PlantEnergyKernel.profile_bindings(scenario)
+            if isinstance(scenario, (PlantEnergyInputs, DcPlantEnergyInputs))
+            else {
+                role: (role, asset_id) for role, asset_id in scenario.profiles().items()
+            }
+        )
+        for role, (measurement, asset_id) in energy_profiles.items():
             asset = Assets(workspace).get(actor, project.id, asset_id)
             try:
                 profile_bindings = profile_dependencies(
-                    asset, role, project.inputs, workspace.blobs
+                    asset, measurement, project.inputs, workspace.blobs, binding=role
                 )
             except InvalidInput as error:
                 raise ReportInputsChanged(
@@ -243,7 +261,11 @@ def report_sources(
             if name.endswith(".metadata") and isinstance(sha, str):
                 metadata = workspace.blobs.object(sha)
                 provenance(metadata)
-                if name in {"pv_available_ac.metadata", "pv_available_dc.metadata"}:
+                if name in {
+                    "pv_available_ac.metadata",
+                    "pv_available_dc.metadata",
+                    "pv_reference.metadata",
+                }:
                     raw_sha = pinned_energy.get(name.replace(".metadata", ".raw"))
                     if not isinstance(raw_sha, str):
                         raise VersionUnavailable(
@@ -271,10 +293,10 @@ def report_sources(
         )
         pv = run.result
         assert pv is not None
-        if (
-            energy is not None
-            and cast(Object, pv["prepared_asset"])["id"]
-            != scenario.pv_available_asset_id
+        if energy is not None and cast(Object, pv["prepared_asset"])["id"] != (
+            scenario.pv_reference_asset_id
+            if isinstance(scenario, DcPlantEnergyInputs)
+            else scenario.pv_available_asset_id
         ):
             raise ReportInputsChanged(
                 "report PV and energy results use different generation profiles"

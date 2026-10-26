@@ -3,52 +3,80 @@ import { __ } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
 import { GeometryInputError } from "../../domain/validateGeometry.ts";
 
-export function energyErrorText(error: unknown): string {
-	if (error instanceof ApiError) {
-		switch (error.evidenceIssue?.constraint_id) {
-			case "plant_ac_reverse_capability":
-				return __(
-					"AC charging capability and power limit are not established for this converter. Review the selected product and its source documents before preparing the joint calculation.",
-					"linker-tools",
-				);
-			case "joint_outage_ac_pv_topology":
-				return __(
-					"AC PV during an outage requires separately established island-operation topology. If support is unconfirmed, mark PV as unavailable for the outage periods and review the backup connections.",
-					"linker-tools",
-				);
-			case "battery_operating_temperature_required":
-				return __(
-					"The selected battery needs a declared operating temperature for this scenario.",
-					"linker-tools",
-				);
-			case "battery_temperature_outside_condition":
-				return __(
-					"The declared battery temperature is outside a documented operating range. Review the scenario temperature and source details.",
-					"linker-tools",
-				);
-			case "module_count_outside_condition":
-			case "module_count_column_required":
-				return __(
-					"A documented configuration could not be matched to the selected module count. Review the equipment selection and source details.",
-					"linker-tools",
-				);
-			case "column_value_unit_mismatch":
-				return __(
-					"Values or units in the selected product table could not be matched consistently. This calculation could not be prepared.",
-					"linker-tools",
-				);
-			case "uninterpreted_condition":
-				return __(
-					"A documented condition could not be checked for this scenario. Review the source details.",
-					"linker-tools",
-				);
-		}
+export function energyConstraintText(constraintId: unknown): string | null {
+	switch (constraintId) {
+		case "plant_dc_pv_nameplate_mismatch":
+			return __(
+				"Each converter’s allocated DC PV nameplate rating must match the STC rating of its assigned roof PV group.",
+				"linker-tools",
+			);
+		case "joint_outage_dc_topology":
+			return __(
+				"Multi-converter backup requires a documented island-mode topology. This calculation does not provide that evidence.",
+				"linker-tools",
+			);
+		case "plant_ac_reverse_capability":
+		case "explicit_reverse_capability":
+			return __(
+				"AC charging capability and power limit are not established for this converter. Review the selected product and its source documents before preparing the joint calculation.",
+				"linker-tools",
+			);
+		case "joint_outage_ac_pv_topology":
+			return __(
+				"AC PV during an outage requires separately established island-operation topology. If support is unconfirmed, mark PV as unavailable for the outage periods and review the backup connections.",
+				"linker-tools",
+			);
+		case "battery_operating_temperature_required":
+			return __(
+				"The selected battery needs a declared operating temperature for this scenario.",
+				"linker-tools",
+			);
+		case "battery_temperature_outside_condition":
+			return __(
+				"The declared battery temperature is outside a documented operating range. Review the scenario temperature and source details.",
+				"linker-tools",
+			);
+		case "module_count_outside_condition":
+		case "module_count_column_required":
+			return __(
+				"A documented configuration could not be matched to the selected module count. Review the equipment selection and source details.",
+				"linker-tools",
+			);
+		case "column_value_unit_mismatch":
+			return __(
+				"Values or units in the selected product table could not be matched consistently. This calculation could not be prepared.",
+				"linker-tools",
+			);
+		case "uninterpreted_condition":
+			return __(
+				"A documented condition could not be checked for this scenario. Review the source details.",
+				"linker-tools",
+			);
 	}
+	return null;
+}
+
+export function energyErrorText(error: unknown): string {
+	const specific =
+		error instanceof ApiError
+			? energyConstraintText(error.evidenceIssue?.constraint_id)
+			: null;
+	if (specific) return specific;
 	const code =
 		error instanceof ApiError || error instanceof GeometryInputError
 			? error.code
 			: "";
 	switch (code) {
+		case "plant_dc_assignment_required":
+			return __(
+				"Select the PV group and AC charging option, and enter the DC auxiliary demand for each converter.",
+				"linker-tools",
+			);
+		case "plant_dc_duplicate_pv_source":
+			return __(
+				"The same roof PV source cannot also be counted as an additional AC source.",
+				"linker-tools",
+			);
 		case "plant_energy_dc_pv_used":
 			return __(
 				"This calculation includes PV only through a separate AC generation input. In the storage plan, set the total DC PV nameplate rating and each converter's DC PV allocation to zero. Confirm that every storage converter's DC PV inputs are unused.",

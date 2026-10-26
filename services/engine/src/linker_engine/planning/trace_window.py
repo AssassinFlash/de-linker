@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+from typing import cast
 
 from .access import positive_integer
 from .canonical import Json, Object
@@ -40,6 +41,7 @@ class TraceWindow:
                 "single_ac_energy_replay_v1",
                 "shared_dc_energy_replay_v1",
                 "plant_ac_energy_replay_v1",
+                "plant_shared_dc_energy_replay_v1",
             )
             or trace.get("kind") != result["kind"]
             or trace.get("manifest_sha256") != run.manifest_sha256
@@ -50,7 +52,11 @@ class TraceWindow:
         end = min(offset + page_size, len(flows))
         rows: list[Json] = []
         dc = result["kind"] == "shared_dc_energy_replay_v1"
-        plant = result["kind"] == "plant_ac_energy_replay_v1"
+        plant_dc = result["kind"] == "plant_shared_dc_energy_replay_v1"
+        plant = result["kind"] in (
+            "plant_ac_energy_replay_v1",
+            "plant_shared_dc_energy_replay_v1",
+        )
         if unit_id is not None and not plant:
             raise InvalidInput("unit trace selection requires a joint plant result")
         for index in range(offset, end):
@@ -99,6 +105,10 @@ class TraceWindow:
                         )
                     }
                 }
+                if plant_dc:
+                    cast(Object, selected["unit"])["pv_dc_kw"] = unit[
+                        "pv_available_dc_kw"
+                    ]
             rows.append(
                 {
                     **selected,
@@ -132,14 +142,20 @@ class TraceWindow:
             **(
                 {
                     "measurement_boundaries": {
-                        "pv": "PV_DC_bus",
-                        "charge": "battery_DC_terminal",
-                        "discharge": "battery_DC_terminal",
+                        "pv": "common_AC_PV_after_curtailment"
+                        if plant_dc
+                        else "PV_DC_bus",
+                        "charge": "sum_distinct_battery_DC_terminals"
+                        if plant_dc
+                        else "battery_DC_terminal",
+                        "discharge": "sum_distinct_battery_DC_terminals"
+                        if plant_dc
+                        else "battery_DC_terminal",
                         "import": "grid_AC",
                         "export": "grid_AC",
                     }
                 }
-                if dc
+                if dc or plant_dc
                 else {}
             ),
         }

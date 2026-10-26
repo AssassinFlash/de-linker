@@ -21,6 +21,7 @@ from .energy_origins import EnergyOrigins
 if TYPE_CHECKING:
     from .dc_battery_model import DcBatteryModel
     from .dc_frame import DcFlows
+    from .dc_port import DcPortFlow
     from .dispatch_frame import Command
     from .interval import Interval
     from .plant_energy_model import StorageFlow
@@ -192,6 +193,30 @@ class InventoryWitness:
                 model.discharge_ac_kw,
                 flow.received_ac.total / interval.hours,
                 flow.delivered_ac.total / interval.hours,
+                model.standing_loss_rate_per_hour,
+                model.internal_aux_kw,
+            )
+        )
+
+    def advance_dc_port(self, flow: DcPortFlow) -> InventoryBoundary:
+        """Use the same hard stock witness for a converter on a common AC bus."""
+        p, model = flow.plan, flow.plan.model
+        return self._advance_bounded(
+            _BoundedTransfer(
+                p.frame.interval,
+                p.before,
+                flow.after,
+                p.standing_loss,
+                p.internal_aux,
+                p.command,
+                model.usable_window_kwh,
+                p.frame.reserve_kwh,
+                model.eta_store_charge,
+                model.eta_store_discharge,
+                model.charge_terminal_kw,
+                model.discharge_terminal_kw,
+                flow.charge_terminal_dc_kw,
+                p.discharge_terminal_dc_kw,
                 model.standing_loss_rate_per_hour,
                 model.internal_aux_kw,
             )

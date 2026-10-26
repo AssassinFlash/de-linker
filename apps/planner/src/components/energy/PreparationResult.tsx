@@ -7,7 +7,10 @@ import type { PlanningRun } from "../../data/planningProtocol.ts";
 import { runTask } from "../../data/planningProtocol.ts";
 import { WEATHER_TASK } from "../../data/readPreparationResult.ts";
 import { readObject, readProject } from "../../data/readProtocol.ts";
-import { selectPreparation } from "../../domain/preparationSelection.ts";
+import {
+	selectPreparation,
+	preparationPvRole,
+} from "../../domain/preparationSelection.ts";
 import { readPreparationWeather } from "../../data/preparationBasis.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
@@ -130,8 +133,9 @@ export function PreparationResult({
 		asset !== null &&
 		(weather
 			? readObject(inputs.pv_preparation ?? {}).weather_asset_id === asset.id
-			: readObject(readObject(inputs.profile_selections ?? {}).selected ?? {})
-					.pv_available_ac === asset.id);
+			: readObject(readObject(inputs.profile_selections ?? {}).selected ?? {})[
+					preparationPvRole(inputs)
+				] === asset.id);
 	const summary = run.result
 		? readObject(
 				weather ? run.result.weather_summary : run.result.profile_summary,

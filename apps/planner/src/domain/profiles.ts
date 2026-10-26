@@ -14,6 +14,7 @@ export const MEASUREMENTS = [
 	"aux_ac",
 ] as const;
 export type Measurement = (typeof MEASUREMENTS)[number];
+export type ProfileRole = Measurement | "pv_reference";
 export interface CsvMapping extends JsonObject {
 	readonly timestamp_column: string;
 	readonly value_column: string;
@@ -42,7 +43,7 @@ export interface ImportCommand extends JsonObject {
 }
 export interface ProfileSelections extends JsonObject {
 	readonly schema_version: 1;
-	readonly selected: Readonly<Partial<Record<Measurement, string>>>;
+	readonly selected: Readonly<Partial<Record<ProfileRole, string>>>;
 }
 export interface ProfileAsset extends JsonObject {
 	readonly id: string;

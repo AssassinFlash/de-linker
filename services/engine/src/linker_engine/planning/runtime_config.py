@@ -14,6 +14,7 @@ from typing import Annotated, Self
 from pydantic import Field, model_validator
 
 from .dc_energy_kernel import DcEnergyKernel
+from .dc_plant_kernel import DcPlantEnergyKernel
 from .energy_inputs import Document, Nonnegative, SchemaVersion
 from .energy_kernel import EnergyKernel
 from .energy_service import EnergyService
@@ -91,6 +92,12 @@ class RuntimeConfig(Document):
                 products=source,
             ),
             plant_kernel=PlantEnergyKernel(
+                workspace,
+                Tolerance(self.absolute_kwh, self.absolute_kw, self.relative),
+                max_intervals=self.max_intervals,
+                products=source,
+            ),
+            plant_dc_kernel=DcPlantEnergyKernel(
                 workspace,
                 Tolerance(self.absolute_kwh, self.absolute_kw, self.relative),
                 max_intervals=self.max_intervals,

@@ -1,4 +1,5 @@
 import test from "node:test";
+import dcPlant from "../../tests/fixtures/dc-plant-energy-run.json" with { type: "json" };
 import assert from "node:assert/strict";
 import fixture from "../../tests/fixtures/preparation-flow.json" with { type: "json" };
 import {
@@ -238,6 +239,25 @@ test("PV selection preserves load edits, invalidates prepared energy and refuses
 			.pv_available_ac,
 		asset.id,
 	);
+	assert.ok(typeof asset.id === "string");
+	const joint = selectPreparation(
+		{
+			...inputs,
+			equipment_plant: dcPlant.project.inputs.equipment_plant,
+			profile_selections: {
+				schema_version: 1,
+				selected: { pv_available_ac: asset.id },
+			},
+		},
+		run,
+		historical,
+		asset,
+	);
+	const chosen = readObject(readObject(joint.profile_selections).selected);
+	assert.equal(chosen.pv_reference, asset.id);
+	assert.equal(chosen.pv_available_ac, undefined);
+	assert.equal(joint.user_note, inputs.user_note);
+
 	assert.throws(() =>
 		selectPreparation({ ...inputs, geometry: {} }, run, historical, asset),
 	);

@@ -1,0 +1,266 @@
+{
+  "$defs": {
+    "DcPlantStorageInputs": {
+      "additionalProperties": false,
+      "properties": {
+        "unit_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "battery_parameters_asset_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "initial_inventory": {
+          "$ref": "#/$defs/InitialInventory"
+        },
+        "reserve_kwh": {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        "terminal_min_kwh": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Nonnegative"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pv_converter_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identifier"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "aux_dc_kw": {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        "allow_ac_charge": {
+          "title": "Allow Ac Charge",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "unit_id",
+        "battery_parameters_asset_id",
+        "initial_inventory",
+        "reserve_kwh",
+        "terminal_min_kwh",
+        "pv_converter_id",
+        "aux_dc_kw",
+        "allow_ac_charge"
+      ],
+      "title": "DcPlantStorageInputs",
+      "type": "object"
+    },
+    "Identifier": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "Identity": {
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "type": "string"
+    },
+    "InitialInventory": {
+      "additionalProperties": false,
+      "properties": {
+        "pv_kwh": {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        "grid_kwh": {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        "initial_unknown_kwh": {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        "basis": {
+          "enum": [
+            "user_declared",
+            "synthetic_fixture"
+          ],
+          "title": "Basis",
+          "type": "string"
+        },
+        "source_note": {
+          "$ref": "#/$defs/Identifier"
+        }
+      },
+      "required": [
+        "pv_kwh",
+        "grid_kwh",
+        "initial_unknown_kwh",
+        "basis",
+        "source_note"
+      ],
+      "title": "InitialInventory",
+      "type": "object"
+    },
+    "Nonnegative": {
+      "minimum": 0,
+      "type": "number"
+    },
+    "ScheduleSegment": {
+      "additionalProperties": false,
+      "properties": {
+        "start_utc": {
+          "title": "Start Utc",
+          "type": "string"
+        },
+        "end_utc": {
+          "title": "End Utc",
+          "type": "string"
+        },
+        "mode": {
+          "enum": [
+            "connected",
+            "outage"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "reserve_kwh": {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        "import_cap_kw": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Nonnegative"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "export_cap_kw": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Nonnegative"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pv_enabled": {
+          "title": "Pv Enabled",
+          "type": "boolean"
+        },
+        "allow_grid_charge": {
+          "title": "Allow Grid Charge",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "start_utc",
+        "end_utc",
+        "mode",
+        "reserve_kwh",
+        "import_cap_kw",
+        "export_cap_kw",
+        "pv_enabled",
+        "allow_grid_charge"
+      ],
+      "title": "ScheduleSegment",
+      "type": "object"
+    },
+    "SchemaVersion": {
+      "maximum": 1,
+      "minimum": 1,
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "$ref": "#/$defs/SchemaVersion"
+    },
+    "coupling": {
+      "const": "plant_shared_dc",
+      "title": "Coupling",
+      "type": "string"
+    },
+    "gross_load_asset_id": {
+      "$ref": "#/$defs/Identifier"
+    },
+    "critical_load_asset_id": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "pv_available_asset_id": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "pv_reference_asset_id": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "ac_pv_converter_ids": {
+      "items": {
+        "$ref": "#/$defs/Identifier"
+      },
+      "title": "Ac Pv Converter Ids",
+      "type": "array"
+    },
+    "aux_ac_asset_id": {
+      "$ref": "#/$defs/Identifier"
+    },
+    "schedule": {
+      "items": {
+        "$ref": "#/$defs/ScheduleSegment"
+      },
+      "minItems": 1,
+      "title": "Schedule",
+      "type": "array"
+    },
+    "units": {
+      "items": {
+        "$ref": "#/$defs/DcPlantStorageInputs"
+      },
+      "minItems": 1,
+      "title": "Units",
+      "type": "array"
+    },
+    "controller": {
+      "const": "local_dc_then_proportional_ac_self_consumption_v1",
+      "title": "Controller",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "coupling",
+    "gross_load_asset_id",
+    "critical_load_asset_id",
+    "pv_available_asset_id",
+    "pv_reference_asset_id",
+    "ac_pv_converter_ids",
+    "aux_ac_asset_id",
+    "schedule",
+    "units",
+    "controller"
+  ],
+  "title": "DcPlantEnergyInputs",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

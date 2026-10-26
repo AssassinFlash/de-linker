@@ -1443,7 +1443,7 @@
       "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
     }
   },
-  "current_frontier": "joint_ac_storage_local",
+  "current_frontier": "joint_dc_storage_local",
   "shared_dc_core": {
     "status": "implemented_and_reviewed_core_not_connected_to_native_commands",
     "model": "constant_window_shared_dc_bus_v1",
@@ -2375,8 +2375,8 @@
       "notification_sent": true,
       "shared_woo_source": "ee916454e451c0769097294afaf0bef0a73823b79b319c7f3f828f6408ff625d"
     },
-    "batch_stop": "Canonical route, input carry/opt-out, native language navigation and affected redirects are delivered. Closed physics/source/commerce evidence remains reused; no repeated full matrix or new annual calculation.",
-    "reviews": "Existing full Spec/Standards and copy review reused; final P2 deltas both PASS."
+    "batch_stop": "Shared-DC integration is installed and its necessary numerical, native, reader and presentation checks are closed. Reuse this evidence; proceed with actual remaining implementation and release rather than additional matrices or report layers.",
+    "reviews": "Final Spec/Standards/copy deltas PASS; unchanged accepted evidence reused."
   },
   "pv_operating_conditions": {
     "implementation_base_commit": "3ec28481",
@@ -4202,6 +4202,73 @@
       "remaining downstream and migration",
       "review site and production release/readback"
     ],
-    "completed_at_utc": "2026-10-26T14:26:04.377592+00:00"
+    "completed_at_utc": "2026-10-26T14:26:04.377592+00:00",
+    "superseded_frontier": "joint_dc_storage"
+  },
+  "joint_dc_storage": {
+    "status": "local_integration_closed_real_product_and_joint_qualification_open",
+    "base_commit": "3850f53c",
+    "runtime_sha256": "43ada736f28393b6c13556ca94742f0fccf2fa42d25e28ca6f352b717d33c1c0",
+    "rollback_runtime_sha256": "17c1c475b97ec4f6c73201d29fec9bf9ff1e95987c3bd1be62704e3edee85578",
+    "storage_schema_version": 5,
+    "source_generation_unchanged": "f4205bc282d65d6a7770c5050842a6532d46326d7b906cb75f2f695b563a38fd",
+    "task_kind": "plant_shared_dc_energy_replay_v1",
+    "dispatch_policy": "local_dc_then_proportional_ac_self_consumption_v1",
+    "owned_project": "1ac83b43ab08481bae7e6eb05cf633c4",
+    "owned_revision": 8,
+    "owned_project_scope": "Actual saved form/state only; no load, roof or PV profile; no real performance assertion",
+    "native_numerical_evidence": "One two-hour native shared-DC fixture with retained PV-group projections, per-unit source preparation, frozen worker, trace and German report; captured result reused by UI/comparison readers",
+    "native_fixture": "apps/planner/tests/fixtures/dc-plant-energy-run.json",
+    "fixture_is_not_real_equipment_approval": true,
+    "spec_review": "PASS final native/UI/worker/trace/comparison/PV assignment deltas; no closed-core rerun",
+    "standards_review": "PASS source/finite-metric validation/current build/native translation bindings",
+    "copy_review": "Final EN and independently written DE approved and installed",
+    "screenshots": [
+      {
+        "locale": "en",
+        "width": 1440,
+        "image": "docs/acceptance/2026-10-24/548/runtime-provider-correction/joint-dc-form-en-desktop.png",
+        "sha256": "2975033f243a0310a1cc807c5e5a9cc2f561b0863221ed196d41452bbee03f03",
+        "horizontal_overflow": false
+      },
+      {
+        "locale": "en",
+        "width": 390,
+        "image": "docs/acceptance/2026-10-24/548/runtime-provider-correction/joint-dc-form-en-mobile.png",
+        "sha256": "473b8a05d00bfb5ee8ef5893deffcb6205c83d707534b1d00157ecdb422ef08b",
+        "horizontal_overflow": false
+      },
+      {
+        "locale": "de",
+        "width": 1440,
+        "image": "docs/acceptance/2026-10-24/548/runtime-provider-correction/joint-dc-form-de-desktop.png",
+        "sha256": "6d82a6d944d9e4a599666bb0ba3dd3ed66dd5a57bfa3bc41a95efb09ae643dac",
+        "horizontal_overflow": false
+      },
+      {
+        "locale": "de",
+        "width": 390,
+        "image": "docs/acceptance/2026-10-24/548/runtime-provider-correction/joint-dc-form-de-mobile.png",
+        "sha256": "10e6a2381666fda73d3565654ba1dd1e1f66c461de63add4b2d8a8768eae2a37",
+        "horizontal_overflow": false
+      }
+    ],
+    "pdf": "docs/acceptance/2026-10-24/548/runtime-provider-correction/joint-dc-report-de.pdf",
+    "pdf_sha256": "bfca607c44eea0c8f45254dddf1941c57e95431e357966ab033ef45afbbd4566",
+    "pdf_pages": 10,
+    "pdf_visual": "Current report facts rendered once; all-page overview and energy page inspected; no physics replay",
+    "retained_runtime_carriers": 2,
+    "retired_runtime_carrier": "018a1e134de27e024c1ce61640c3c8c47ff2e3d3311b356cfe72623ced4e37db",
+    "island_scope": "Native multi-converter outage request requires joint topology evidence; no inference from single-device backup",
+    "shared_woo_material_draft_contract_changed": false,
+    "production_changed": false,
+    "full_goal_open": [
+      "actual Woo device AC/reverse envelopes",
+      "manufacturer joint and interconnected-island operation",
+      "country qualification",
+      "remaining downstream and migration",
+      "review site and production release/readback"
+    ],
+    "completed_at_utc": "2026-10-26T17:00:51.599932+00:00"
   }
 }

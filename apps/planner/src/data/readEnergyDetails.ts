@@ -1,5 +1,7 @@
 import { ApiError, type JsonObject } from "./protocol.ts";
 import { readObject } from "./readProtocol.ts";
+import { sameJson } from "../domain/draft.ts";
+import { isPlantEnergyTask } from "../domain/plantEnergy.ts";
 export const energyHash = (value: unknown): value is string =>
 	typeof value === "string" && /^[a-f0-9]{64}$/.test(value);
 export const energyNumber = (value: unknown): value is number =>
@@ -15,8 +17,10 @@ import { DC_PV_STAGE } from "../domain/dcEnergy.ts";
 export function verifyEnergyDetails(
 	result: JsonObject,
 	pinned: JsonObject,
-	dc: boolean,
+	dc: boolean | "plant_dc",
 ) {
+	const mixed = dc === "plant_dc";
+	dc = dc === true;
 	energyRequire(
 		typeof result.interval_count === "number" &&
 			Number.isSafeInteger(result.interval_count) &&
@@ -29,6 +33,13 @@ export function verifyEnergyDetails(
 		if (readObject(assessment).status !== "not_assessed")
 			throw new ApiError(502, "unsupported_run_assessment");
 	const metrics = readObject(result.metrics);
+	if (mixed)
+		for (const name of [
+			"pv_generated_dc_kwh",
+			"pv_curtailed_dc_kwh",
+			"independent_pv_curtailed_ac_kwh",
+		])
+			energyRequire(energyNumber(metrics[name]));
 	for (const name of [
 		"load_demand_kwh",
 		"solar_load_kwh",
@@ -58,7 +69,7 @@ export function verifyEnergyDetails(
 		generation = metrics[dc ? "pv_generated_dc_kwh" : "pv_generated_ac_kwh"];
 	const autarkyReason =
 		metrics.load_measurement_scope !== "gross_load"
-			? result.kind === "plant_ac_energy_replay_v1"
+			? isPlantEnergyTask(result.kind)
 				? "critical_or_mixed_demand_is_not_whole_site_load"
 				: "requested_load_scope_is_not_whole_site_gross"
 			: metrics.load_demand_kwh === 0
@@ -70,8 +81,11 @@ export function verifyEnergyDetails(
 	);
 	energyRequire(
 		pvUse.undefined_reason ===
-			(generation === 0 ? "pv_generation_is_zero" : null) &&
-			(pvUse.value === null) === (generation === 0),
+			(mixed
+				? "mixed_pv_measurement_stages"
+				: generation === 0
+					? "pv_generation_is_zero"
+					: null) && (pvUse.value === null) === (mixed || generation === 0),
 	);
 	const verification = readObject(result.verification),
 		checks = verification.checks;
@@ -115,8 +129,26 @@ export function verifyEnergyDetails(
 				utc(period.end_utc) &&
 				["connected", "outage"].includes(String(period.mode)),
 		);
-		const expected =
-			period.mode === "outage"
+		const unitModels = mixed
+			? (readObject(result.model).units as readonly JsonObject[])
+			: [];
+		const expected = mixed
+			? [
+					period.mode === "outage" ? "critical_load" : "gross_load",
+					"aux_ac",
+					...(pinned["pv_available_ac.raw"] === undefined
+						? []
+						: ["pv_available_ac"]),
+					...((
+						readObject(result.model).ac_pv_converter_ids as readonly unknown[]
+					).length
+						? ["reference_ac"]
+						: []),
+					...unitModels
+						.filter((u) => u.pv_converter_id !== null)
+						.map((u) => `unit:${u.unit_id}:pv_available_dc`),
+				]
+			: period.mode === "outage"
 				? [
 						"critical_load",
 						dc ? "pv_available_dc" : "pv_available_ac",
@@ -127,34 +159,57 @@ export function verifyEnergyDetails(
 			Object.keys(profiles).sort().join() === expected.sort().join(),
 		);
 		for (const [role, rawProfile] of Object.entries(profiles)) {
+			const unit = mixed
+				? unitModels.find((u) => role === `unit:${u.unit_id}:pv_available_dc`)
+				: undefined;
+			const reference = !!unit || (mixed && role === "reference_ac");
+			const measured = unit
+				? "pv_available_dc"
+				: mixed && role === "reference_ac"
+					? "pv_available_ac"
+					: role;
+			const key = reference ? "pv_reference" : role;
 			const profile = readObject(rawProfile),
 				source = readObject(profile.source),
-				modelInput = pinned[role + ".pv_model_inputs"];
+				modelInput = pinned[key + ".pv_model_inputs"];
 			// A generated roof profile identifies its frozen model input
 			// bundle as the series source. The asset's raw bytes remain the
 			// original weather; CSV/system-output profiles identify raw bytes.
-			let sourceMatches = source.raw_sha256 === pinned[role + ".raw"];
+			let sourceMatches = source.raw_sha256 === pinned[key + ".raw"];
 			if (modelInput !== undefined) {
 				const details = readObject(source.details);
 				sourceMatches =
-					role === (dc ? "pv_available_dc" : "pv_available_ac") &&
+					(reference ||
+						role === (dc ? "pv_available_dc" : "pv_available_ac")) &&
 					source.origin === "modelled" &&
 					details.model === "uniform_unshaded_pvlib_reference_v1" &&
 					energyHash(modelInput) &&
-					energyHash(pinned[role + ".pv_model_witness"]) &&
+					energyHash(pinned[key + ".pv_model_witness"]) &&
 					source.raw_sha256 === modelInput &&
 					details.input_bundle_sha256 === modelInput &&
-					details.weather_original_sha256 === pinned[role + ".raw"];
-				if (dc)
+					details.weather_original_sha256 === pinned[key + ".raw"];
+				if (dc || unit)
 					sourceMatches =
 						sourceMatches &&
 						details.output_boundary === DC_PV_STAGE &&
 						details.ac_conversion_applied === false &&
 						typeof details.converter_id === "string" &&
 						details.converter_id.length > 0;
+				if (unit)
+					sourceMatches =
+						sourceMatches && details.converter_id === unit.pv_converter_id;
+				if (mixed && role === "reference_ac")
+					sourceMatches =
+						sourceMatches &&
+						details.output_boundary ===
+							"retained_selected_converter_ac_outputs" &&
+						sameJson(
+							details.converter_ids,
+							readObject(result.model).ac_pv_converter_ids,
+						);
 			}
 			energyRequire(
-				profile.measurement === role &&
+				profile.measurement === measured &&
 					typeof profile.reconstructed_means === "boolean" &&
 					positive(profile.effective_max_interval_seconds) &&
 					positive(source.native_max_interval_seconds) &&

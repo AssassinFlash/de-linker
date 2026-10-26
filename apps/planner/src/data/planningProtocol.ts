@@ -8,7 +8,10 @@ import type { JsonObject } from "./protocol.ts";
 import { readObject } from "./readProtocol.ts";
 import { readBatteryParameters } from "../domain/energyScenario.ts";
 import { readEnergyResult, isEnergyTask } from "./readEnergyResult.ts";
-import { PLANT_ENERGY_TASK } from "../domain/plantEnergy.ts";
+import {
+	PLANT_ENERGY_TASK,
+	DC_PLANT_ENERGY_TASK,
+} from "../domain/plantEnergy.ts";
 import {
 	DC_MODEL,
 	DC_ENERGY_TASK,
@@ -30,7 +33,8 @@ export type RunOperation = keyof typeof RUN_OPERATIONS;
 export type TaskKind =
 	| (typeof RUN_OPERATIONS)[RunOperation]
 	| typeof DC_ENERGY_TASK
-	| typeof PLANT_ENERGY_TASK;
+	| typeof PLANT_ENERGY_TASK
+	| typeof DC_PLANT_ENERGY_TASK;
 export type PlanningOperation =
 	"battery/scenario" | "draft/apply" | RunOperation;
 export function isPlanningOperation(

@@ -1,375 +1,375 @@
 {
-	"$defs": {
-		"DcLossScenario": {
-			"additionalProperties": false,
-			"properties": {
-				"schema_version": {
-					"$ref": "#/$defs/SchemaVersion"
-				},
-				"model": {
-					"const": "constant_window_shared_dc_bus_v1",
-					"title": "Model",
-					"type": "string"
-				},
-				"parameter_basis": {
-					"const": "explicit_loss_scenario_with_woo_equipment",
-					"title": "Parameter Basis",
-					"type": "string"
-				},
-				"battery_port_id": {
-					"$ref": "#/$defs/Identifier"
-				},
-				"battery_temperature_c": {
-					"anyOf": [
-						{
-							"type": "number"
-						},
-						{
-							"type": "null"
-						}
-					],
-					"default": null,
-					"title": "Battery Temperature C"
-				},
-				"eta_bus_to_battery": {
-					"$ref": "#/$defs/PositiveEfficiency"
-				},
-				"eta_battery_to_bus": {
-					"$ref": "#/$defs/PositiveEfficiency"
-				},
-				"eta_store_charge": {
-					"$ref": "#/$defs/PositiveEfficiency"
-				},
-				"eta_store_discharge": {
-					"$ref": "#/$defs/PositiveEfficiency"
-				},
-				"eta_inverter_forward": {
-					"$ref": "#/$defs/PositiveEfficiency"
-				},
-				"eta_inverter_reverse": {
-					"anyOf": [
-						{
-							"$ref": "#/$defs/PositiveEfficiency"
-						},
-						{
-							"type": "null"
-						}
-					]
-				},
-				"internal_aux_kw": {
-					"$ref": "#/$defs/Nonnegative"
-				},
-				"standing_loss_rate_per_hour": {
-					"$ref": "#/$defs/Nonnegative"
-				},
-				"source_note": {
-					"$ref": "#/$defs/Identifier"
-				}
-			},
-			"required": [
-				"schema_version",
-				"model",
-				"parameter_basis",
-				"battery_port_id",
-				"eta_bus_to_battery",
-				"eta_battery_to_bus",
-				"eta_store_charge",
-				"eta_store_discharge",
-				"eta_inverter_forward",
-				"eta_inverter_reverse",
-				"internal_aux_kw",
-				"standing_loss_rate_per_hour",
-				"source_note"
-			],
-			"title": "DcLossScenario",
-			"type": "object"
-		},
-		"DcPortDocument": {
-			"additionalProperties": false,
-			"properties": {
-				"id": {
-					"$ref": "#/$defs/Identifier"
-				},
-				"operating_min_v": {
-					"$ref": "#/$defs/Nonnegative"
-				},
-				"operating_max_v": {
-					"$ref": "#/$defs/Nonnegative"
-				},
-				"charge_power_limit_kw": {
-					"anyOf": [
-						{
-							"$ref": "#/$defs/Nonnegative"
-						},
-						{
-							"type": "null"
-						}
-					]
-				},
-				"discharge_power_limit_kw": {
-					"anyOf": [
-						{
-							"$ref": "#/$defs/Nonnegative"
-						},
-						{
-							"type": "null"
-						}
-					]
-				},
-				"charge_current_a": {
-					"$ref": "#/$defs/Nonnegative"
-				},
-				"discharge_current_a": {
-					"$ref": "#/$defs/Nonnegative"
-				}
-			},
-			"required": [
-				"id",
-				"operating_min_v",
-				"operating_max_v",
-				"charge_power_limit_kw",
-				"discharge_power_limit_kw",
-				"charge_current_a",
-				"discharge_current_a"
-			],
-			"title": "DcPortDocument",
-			"type": "object"
-		},
-		"Hash": {
-			"pattern": "^[a-f0-9]{64}$",
-			"type": "string"
-		},
-		"Identifier": {
-			"minLength": 1,
-			"type": "string"
-		},
-		"Json": {
-			"anyOf": [
-				{
-					"type": "boolean"
-				},
-				{
-					"type": "integer"
-				},
-				{
-					"type": "number"
-				},
-				{
-					"type": "string"
-				},
-				{
-					"items": {
-						"$ref": "#/$defs/Json"
-					},
-					"type": "array"
-				},
-				{
-					"additionalProperties": {
-						"$ref": "#/$defs/Json"
-					},
-					"type": "object"
-				},
-				{
-					"type": "null"
-				}
-			]
-		},
-		"Nonnegative": {
-			"minimum": 0,
-			"type": "number"
-		},
-		"Object": {
-			"additionalProperties": {
-				"$ref": "#/$defs/Json"
-			},
-			"type": "object"
-		},
-		"PositiveEfficiency": {
-			"exclusiveMinimum": 0,
-			"maximum": 1,
-			"type": "number"
-		},
-		"SchemaVersion": {
-			"maximum": 1,
-			"minimum": 1,
-			"type": "integer"
-		},
-		"SharedBridgeDocument": {
-			"additionalProperties": false,
-			"properties": {
-				"forward_ac_kw": {
-					"$ref": "#/$defs/Nonnegative"
-				},
-				"forward_dc_kw": {
-					"anyOf": [
-						{
-							"$ref": "#/$defs/Nonnegative"
-						},
-						{
-							"type": "null"
-						}
-					]
-				},
-				"eta_forward": {
-					"$ref": "#/$defs/PositiveEfficiency"
-				},
-				"reverse_supported": {
-					"anyOf": [
-						{
-							"type": "boolean"
-						},
-						{
-							"type": "null"
-						}
-					],
-					"title": "Reverse Supported"
-				},
-				"reverse_ac_kw": {
-					"anyOf": [
-						{
-							"$ref": "#/$defs/Nonnegative"
-						},
-						{
-							"type": "null"
-						}
-					]
-				},
-				"reverse_dc_kw": {
-					"anyOf": [
-						{
-							"$ref": "#/$defs/Nonnegative"
-						},
-						{
-							"type": "null"
-						}
-					]
-				},
-				"eta_reverse": {
-					"anyOf": [
-						{
-							"$ref": "#/$defs/PositiveEfficiency"
-						},
-						{
-							"type": "null"
-						}
-					]
-				}
-			},
-			"required": [
-				"forward_ac_kw",
-				"forward_dc_kw",
-				"eta_forward",
-				"reverse_supported",
-				"reverse_ac_kw",
-				"reverse_dc_kw",
-				"eta_reverse"
-			],
-			"title": "SharedBridgeDocument",
-			"type": "object"
-		}
-	},
-	"additionalProperties": false,
-	"properties": {
-		"schema_version": {
-			"$ref": "#/$defs/SchemaVersion"
-		},
-		"model": {
-			"const": "constant_window_shared_dc_bus_v1",
-			"title": "Model",
-			"type": "string"
-		},
-		"parameter_basis": {
-			"const": "woo_selected_equipment_with_explicit_loss_scenario",
-			"title": "Parameter Basis",
-			"type": "string"
-		},
-		"loss_scenario": {
-			"$ref": "#/$defs/DcLossScenario"
-		},
-		"selection_sha256": {
-			"$ref": "#/$defs/Hash"
-		},
-		"product_revisions": {
-			"additionalProperties": {
-				"$ref": "#/$defs/Hash"
-			},
-			"title": "Product Revisions",
-			"type": "object"
-		},
-		"source_facts": {
-			"$ref": "#/$defs/Object"
-		},
-		"usable_window_kwh": {
-			"$ref": "#/$defs/Nonnegative"
-		},
-		"battery": {
-			"$ref": "#/$defs/DcPortDocument"
-		},
-		"selected_port": {
-			"$ref": "#/$defs/DcPortDocument"
-		},
-		"pv_input_dc_kw": {
-			"anyOf": [
-				{
-					"$ref": "#/$defs/Nonnegative"
-				},
-				{
-					"type": "null"
-				}
-			]
-		},
-		"dc_dc_charge_bus_kw": {
-			"anyOf": [
-				{
-					"$ref": "#/$defs/Nonnegative"
-				},
-				{
-					"type": "null"
-				}
-			]
-		},
-		"dc_dc_discharge_bus_kw": {
-			"anyOf": [
-				{
-					"$ref": "#/$defs/Nonnegative"
-				},
-				{
-					"type": "null"
-				}
-			]
-		},
-		"connected_bridge": {
-			"$ref": "#/$defs/SharedBridgeDocument"
-		},
-		"outage_bridge": {
-			"anyOf": [
-				{
-					"$ref": "#/$defs/SharedBridgeDocument"
-				},
-				{
-					"type": "null"
-				}
-			]
-		}
-	},
-	"required": [
-		"schema_version",
-		"model",
-		"parameter_basis",
-		"loss_scenario",
-		"selection_sha256",
-		"product_revisions",
-		"source_facts",
-		"usable_window_kwh",
-		"battery",
-		"selected_port",
-		"pv_input_dc_kw",
-		"dc_dc_charge_bus_kw",
-		"dc_dc_discharge_bus_kw",
-		"connected_bridge",
-		"outage_bridge"
-	],
-	"title": "DcPreparedParameters",
-	"type": "object",
-	"$schema": "https://json-schema.org/draft/2020-12/schema"
+  "$defs": {
+    "DcLossScenario": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "$ref": "#/$defs/SchemaVersion"
+        },
+        "model": {
+          "const": "constant_window_shared_dc_bus_v1",
+          "title": "Model",
+          "type": "string"
+        },
+        "parameter_basis": {
+          "const": "explicit_loss_scenario_with_woo_equipment",
+          "title": "Parameter Basis",
+          "type": "string"
+        },
+        "battery_port_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "battery_temperature_c": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Battery Temperature C"
+        },
+        "eta_bus_to_battery": {
+          "$ref": "#/$defs/PositiveEfficiency"
+        },
+        "eta_battery_to_bus": {
+          "$ref": "#/$defs/PositiveEfficiency"
+        },
+        "eta_store_charge": {
+          "$ref": "#/$defs/PositiveEfficiency"
+        },
+        "eta_store_discharge": {
+          "$ref": "#/$defs/PositiveEfficiency"
+        },
+        "eta_inverter_forward": {
+          "$ref": "#/$defs/PositiveEfficiency"
+        },
+        "eta_inverter_reverse": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PositiveEfficiency"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "internal_aux_kw": {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        "standing_loss_rate_per_hour": {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        "source_note": {
+          "$ref": "#/$defs/Identifier"
+        }
+      },
+      "required": [
+        "schema_version",
+        "model",
+        "parameter_basis",
+        "battery_port_id",
+        "eta_bus_to_battery",
+        "eta_battery_to_bus",
+        "eta_store_charge",
+        "eta_store_discharge",
+        "eta_inverter_forward",
+        "eta_inverter_reverse",
+        "internal_aux_kw",
+        "standing_loss_rate_per_hour",
+        "source_note"
+      ],
+      "title": "DcLossScenario",
+      "type": "object"
+    },
+    "DcPortDocument": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "operating_min_v": {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        "operating_max_v": {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        "charge_power_limit_kw": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Nonnegative"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "discharge_power_limit_kw": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Nonnegative"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "charge_current_a": {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        "discharge_current_a": {
+          "$ref": "#/$defs/Nonnegative"
+        }
+      },
+      "required": [
+        "id",
+        "operating_min_v",
+        "operating_max_v",
+        "charge_power_limit_kw",
+        "discharge_power_limit_kw",
+        "charge_current_a",
+        "discharge_current_a"
+      ],
+      "title": "DcPortDocument",
+      "type": "object"
+    },
+    "Hash": {
+      "pattern": "^[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "Identifier": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "Json": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "items": {
+            "$ref": "#/$defs/Json"
+          },
+          "type": "array"
+        },
+        {
+          "additionalProperties": {
+            "$ref": "#/$defs/Json"
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "Nonnegative": {
+      "minimum": 0,
+      "type": "number"
+    },
+    "Object": {
+      "additionalProperties": {
+        "$ref": "#/$defs/Json"
+      },
+      "type": "object"
+    },
+    "PositiveEfficiency": {
+      "exclusiveMinimum": 0,
+      "maximum": 1,
+      "type": "number"
+    },
+    "SchemaVersion": {
+      "maximum": 1,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "SharedBridgeDocument": {
+      "additionalProperties": false,
+      "properties": {
+        "forward_ac_kw": {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        "forward_dc_kw": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Nonnegative"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "eta_forward": {
+          "$ref": "#/$defs/PositiveEfficiency"
+        },
+        "reverse_supported": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reverse Supported"
+        },
+        "reverse_ac_kw": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Nonnegative"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reverse_dc_kw": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Nonnegative"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "eta_reverse": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PositiveEfficiency"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "forward_ac_kw",
+        "forward_dc_kw",
+        "eta_forward",
+        "reverse_supported",
+        "reverse_ac_kw",
+        "reverse_dc_kw",
+        "eta_reverse"
+      ],
+      "title": "SharedBridgeDocument",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "$ref": "#/$defs/SchemaVersion"
+    },
+    "model": {
+      "const": "constant_window_shared_dc_bus_v1",
+      "title": "Model",
+      "type": "string"
+    },
+    "parameter_basis": {
+      "const": "woo_selected_equipment_with_explicit_loss_scenario",
+      "title": "Parameter Basis",
+      "type": "string"
+    },
+    "loss_scenario": {
+      "$ref": "#/$defs/DcLossScenario"
+    },
+    "selection_sha256": {
+      "$ref": "#/$defs/Hash"
+    },
+    "product_revisions": {
+      "additionalProperties": {
+        "$ref": "#/$defs/Hash"
+      },
+      "title": "Product Revisions",
+      "type": "object"
+    },
+    "source_facts": {
+      "$ref": "#/$defs/Object"
+    },
+    "usable_window_kwh": {
+      "$ref": "#/$defs/Nonnegative"
+    },
+    "battery": {
+      "$ref": "#/$defs/DcPortDocument"
+    },
+    "selected_port": {
+      "$ref": "#/$defs/DcPortDocument"
+    },
+    "pv_input_dc_kw": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "dc_dc_charge_bus_kw": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "dc_dc_discharge_bus_kw": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "connected_bridge": {
+      "$ref": "#/$defs/SharedBridgeDocument"
+    },
+    "outage_bridge": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SharedBridgeDocument"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "model",
+    "parameter_basis",
+    "loss_scenario",
+    "selection_sha256",
+    "product_revisions",
+    "source_facts",
+    "usable_window_kwh",
+    "battery",
+    "selected_port",
+    "pv_input_dc_kw",
+    "dc_dc_charge_bus_kw",
+    "dc_dc_discharge_bus_kw",
+    "connected_bridge",
+    "outage_bridge"
+  ],
+  "title": "DcPreparedParameters",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
 }

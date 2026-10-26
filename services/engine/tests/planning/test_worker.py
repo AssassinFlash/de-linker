@@ -7,18 +7,21 @@ from typing import Literal
 import pytest
 
 from linker_engine.planning.canonical import Object
+from linker_engine.planning.errors import EvidenceMissing
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.records import Actor, Context, Lease
 from linker_engine.planning.worker import Control, RetryableExecution, Worker
 from linker_engine.planning.workspace import Workspace
 
 
-@pytest.mark.parametrize("outcome", ["success", "transient", "bug", "cancel"])
+@pytest.mark.parametrize(
+    "outcome", ["success", "transient", "bug", "cancel", "evidence"]
+)
 def test_worker_publishes_only_owned_frozen_work(
     workspace: Workspace,
     owner: Actor,
     context: Context,
-    outcome: Literal["success", "transient", "bug", "cancel"],
+    outcome: Literal["success", "transient", "bug", "cancel", "evidence"],
 ) -> None:
     project = workspace.create(owner, "Project", {"load": 5}, key="new")
     run = workspace.evaluate(owner, project.id, 1, context, key="run", max_attempts=3)
@@ -35,6 +38,11 @@ def test_worker_publishes_only_owned_frozen_work(
             raise RetryableExecution("fixture transport error")
         if outcome == "bug":
             raise RuntimeError("fixture unexpected error")
+        if outcome == "evidence":
+            raise EvidenceMissing(
+                "private raw fixture detail must not escape",
+                constraint_id="plant_dc_pv_nameplate_mismatch",
+            )
         if outcome == "cancel":
             workspace.cancel(owner, run.id)
         return {"fixture_only": True, "frozen_inputs": frozen}
@@ -58,6 +66,13 @@ def test_worker_publishes_only_owned_frozen_work(
     elif outcome == "bug":
         assert current.state == "failed" and current.result is None
         assert current.error == {"code": "execution_failed", "retryable": False}
+    elif outcome == "evidence":
+        assert current.state == "failed" and current.result is None
+        assert current.error == {
+            "code": "evidence_missing",
+            "retryable": False,
+            "details": {"constraint_id": "plant_dc_pv_nameplate_mismatch"},
+        }
     else:
         assert current.state == "cancelled" and current.result is None
     assert not worker.run_once()

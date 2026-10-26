@@ -14,13 +14,14 @@ from .assets import Asset, Assets
 from .canonical import Json, Object, encode
 from .dc_energy_parameters import DcLossScenario, DcPreparedParameters
 from .dc_parameter_source import confirm_dc_parameters
+from .dc_plant_inputs import DcPlantEnergyInputs
 from .energy_preparation import prepare_energy
 from .equipment_candidate_choice import check_equipment_candidate
 from .equipment_plant import EquipmentPlant
 from .errors import InvalidInput, NumericalFailure, VersionUnavailable
 from .execution_identity import execution_key
 from .frozen_profiles import frozen_profile
-from .frozen_run import frozen_energy_execution
+from .frozen_run import FrozenEnergyExecution, frozen_energy_execution
 from .numerical_tolerance import Tolerance
 from .plant_ac_parameters import storage_unit
 from .plant_assessment import assess_plant, plant_products
@@ -35,6 +36,8 @@ from .records import Actor, Context, Lease
 from .runtime_snapshot import RuntimeSnapshot
 from .worker import Control
 from .workspace import Workspace
+
+type PlantScenario = PlantEnergyInputs | DcPlantEnergyInputs
 
 
 class PlantEnergyKernel:
@@ -79,6 +82,28 @@ class PlantEnergyKernel:
                 "parameters": self.parameters(),
             }
         )
+
+    def scenario(self, inputs: Object) -> PlantScenario:
+        return PlantEnergyInputs.from_project(inputs)
+
+    @staticmethod
+    def profile_bindings(scenario: PlantScenario) -> dict[str, tuple[str, str]]:
+        result = {
+            role: (role, asset_id) for role, asset_id in scenario.profiles().items()
+        }
+        if (
+            isinstance(scenario, DcPlantEnergyInputs)
+            and scenario.pv_reference_asset_id is not None
+        ):
+            result["pv_reference"] = ("pv_available_dc", scenario.pv_reference_asset_id)
+        return result
+
+    def validate_models(
+        self, inputs: Object, scenario: PlantScenario, pinned: Object, basis: Object
+    ) -> None:
+        if not isinstance(scenario, PlantEnergyInputs):
+            raise InvalidInput("an AC plant kernel requires its own scenario contract")
+        self._models(inputs, scenario, pinned, basis)
 
     @staticmethod
     def unit_inputs(inputs: Object, plant: EquipmentPlant, unit_id: str) -> Object:
@@ -166,7 +191,7 @@ class PlantEnergyKernel:
         return tuple(result)
 
     def context(self, actor: Actor, project_id: str, inputs: Object) -> Context:
-        scenario = PlantEnergyInputs.from_project(inputs)
+        scenario = self.scenario(inputs)
         plant = EquipmentPlant.from_inputs(inputs)
         check_equipment_candidate(
             self.workspace, actor, project_id, inputs, previous=inputs
@@ -181,11 +206,13 @@ class PlantEnergyKernel:
                 encode(inputs["equipment_plant"])
             ),
         }
-        for role, asset_id in scenario.profiles().items():
+        for role, (measurement, asset_id) in self.profile_bindings(scenario).items():
             asset = assets.get(actor, project_id, asset_id)
             self.products.check_profile(asset.metadata)
             pinned.update(
-                profile_dependencies(asset, role, inputs, self.workspace.blobs)
+                profile_dependencies(
+                    asset, measurement, inputs, self.workspace.blobs, binding=role
+                )
             )
         for request in scenario.units:
             asset = assets.get(actor, project_id, request.battery_parameters_asset_id)
@@ -202,7 +229,7 @@ class PlantEnergyKernel:
                     ).items()
                 }
             )
-        self._models(inputs, scenario, cast(Object, pinned), basis)
+        self.validate_models(inputs, scenario, cast(Object, pinned), basis)
         self.products.confirm_basis(basis, require_reference=False)
         return Context(
             self.runtime.sha256, dict(self.models), pinned, self.parameters()
@@ -212,7 +239,7 @@ class PlantEnergyKernel:
         self,
         manifest: Object,
         inputs: Object,
-        scenario: PlantEnergyInputs,
+        scenario: PlantScenario,
         pinned: Object,
     ) -> None:
         expected = {"runtime_bundle", "woo.equipment_inputs", "equipment.plant"}
@@ -221,8 +248,12 @@ class PlantEnergyKernel:
             plant_hash
         ) != inputs.get("equipment_plant"):
             raise VersionUnavailable("joint replay belongs to another prepared plant")
+        profiles = self.profile_bindings(scenario)
+        parameter_units = {
+            "unit:" + unit.unit_id + ":battery": unit.unit_id for unit in scenario.units
+        }
         references = {
-            **scenario.profiles(),
+            **{role: asset_id for role, (_, asset_id) in profiles.items()},
             **{
                 "unit:" + unit.unit_id + ":battery": unit.battery_parameters_asset_id
                 for unit in scenario.units
@@ -251,8 +282,8 @@ class PlantEnergyKernel:
                     row["metadata_sha256"],
                     self.workspace.blobs.object(row["metadata_sha256"]),
                 )
-                if role.startswith("unit:"):
-                    uid = role.removeprefix("unit:").removesuffix(":battery")
+                if role in parameter_units:
+                    uid = parameter_units[role]
                     dependencies = {
                         role + ".raw": asset.content_sha256,
                         role + ".metadata": asset.metadata_sha256,
@@ -265,7 +296,11 @@ class PlantEnergyKernel:
                     }
                 else:
                     dependencies = profile_dependencies(
-                        asset, role, inputs, self.workspace.blobs
+                        asset,
+                        profiles[role][0],
+                        inputs,
+                        self.workspace.blobs,
+                        binding=role,
                     )
                 if any(pinned.get(name) != sha for name, sha in dependencies.items()):
                     raise VersionUnavailable("joint dependency proof changed")
@@ -285,12 +320,31 @@ class PlantEnergyKernel:
             parameters=self.parameters(),
         )
         inputs, pinned = execution.inputs, execution.pinned
-        scenario = PlantEnergyInputs.from_project(inputs)
+        scenario = self.scenario(inputs)
         self.bind_assets(execution.manifest, inputs, scenario, pinned)
         basis = self.workspace.blobs.object(
             execution.dependency("woo.equipment_inputs")
         )
         self.products.confirm_basis(basis, require_reference=False)
+        physical = self.calculate(execution, scenario, basis, control)
+        control.checkpoint()
+        self.products.confirm_basis(basis, require_reference=False)
+        for role in self.profile_bindings(scenario):
+            self.products.check_profile(
+                self.workspace.blobs.object(execution.dependency(role + ".metadata"))
+            )
+        return execution.result(self.kind, physical)
+
+    def calculate(
+        self,
+        execution: FrozenEnergyExecution,
+        scenario: PlantScenario,
+        basis: Object,
+        control: Control,
+    ) -> Object:
+        if not isinstance(scenario, PlantEnergyInputs):
+            raise InvalidInput("an AC plant kernel requires its own scenario contract")
+        inputs, pinned = execution.inputs, execution.pinned
         units = self._models(inputs, scenario, pinned, basis)
         profiles = {}
         for role in scenario.profiles():
@@ -406,10 +460,4 @@ class PlantEnergyKernel:
                 "performance_status": "not_established_by_scenario_envelope",
             },
         }
-        control.checkpoint()
-        self.products.confirm_basis(basis, require_reference=False)
-        for role in scenario.profiles():
-            self.products.check_profile(
-                self.workspace.blobs.object(execution.dependency(role + ".metadata"))
-            )
-        return execution.result(self.kind, physical)
+        return physical

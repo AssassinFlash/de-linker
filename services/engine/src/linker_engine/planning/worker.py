@@ -10,7 +10,7 @@ from threading import Event, Thread
 from .asset_publication import AssetResult
 from .canonical import Object, encode
 from .dependencies import verify_dependencies
-from .errors import InvalidInput, LeaseLost, PlanningError
+from .errors import EvidenceMissing, InvalidInput, LeaseLost, PlanningError
 from .execution_identity import EvaluationRouting
 from .jobs import Jobs
 from .records import JobKind, Lease
@@ -133,6 +133,12 @@ class Worker:
             retry_after = self.retry_seconds
         except PlanningError as error:
             failure = {"code": error.code, "retryable": False}
+            if isinstance(error, EvidenceMissing) and error.public_details:
+                # The error constructor admits only canonical public IDs.
+                # Exception messages and operational details remain private.
+                failure["details"] = {
+                    key: value for key, value in error.public_details.items()
+                }
         except Exception:
             # Traceback goes to private operational logs, not customer result
             # JSON. Unexpected programming errors do not become fake results.

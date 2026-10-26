@@ -7,6 +7,18 @@ import { readObject } from "../data/readProtocol.ts";
 import { sameJson } from "./draft.ts";
 import { invalidateEnergyReplay } from "./energyScenario.ts";
 import { readSelections } from "./profiles.ts";
+import { readEquipmentPlant } from "./equipmentPlant.ts";
+import { plantEnergyDraft } from "./plantEnergy.ts";
+
+export function preparationPvRole(
+	inputs: JsonObject,
+): "pv_reference" | "pv_available_ac" {
+	return inputs.equipment_plant !== undefined &&
+		plantEnergyDraft(inputs, readEquipmentPlant(inputs.equipment_plant))
+			.coupling === "plant_shared_dc"
+		? "pv_reference"
+		: "pv_available_ac";
+}
 
 /** Explicit selection changes only its role; the caller supplies current edits. */
 export function selectPreparation(
@@ -50,14 +62,17 @@ export function selectPreparation(
 		!sameJson(inputs.pv_generation, historical.inputs.pv_generation)
 	)
 		throw new ApiError(409, "preparation_source_changed");
+	const chosen = { ...readSelections(inputs.profile_selections).selected };
+	const jointDc = preparationPvRole(inputs) === "pv_reference";
+	if (jointDc) {
+		chosen.pv_reference = assetId;
+		if (chosen.pv_available_ac === assetId) delete chosen.pv_available_ac;
+	} else chosen.pv_available_ac = assetId;
 	return {
 		...invalidateEnergyReplay(inputs),
 		profile_selections: {
 			schema_version: 1,
-			selected: {
-				...readSelections(inputs.profile_selections).selected,
-				pv_available_ac: assetId,
-			},
+			selected: chosen,
 		},
 	};
 }

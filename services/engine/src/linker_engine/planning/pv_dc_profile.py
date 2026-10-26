@@ -106,7 +106,7 @@ class DcPvProfile:
         }
 
 
-def _project(
+def project_dc(
     ac: PowerSeries,
     inputs: Object,
     witness: Object,
@@ -189,7 +189,7 @@ def _project(
 
 
 def from_generation(result: PvGeneration, converter_id: str) -> DcPvProfile:
-    return _project(
+    return project_dc(
         result.profile,
         decode_object(result.inputs_json),
         result.witness(),
@@ -205,7 +205,7 @@ def prepared_dc_profile(
     # reads retained outputs; it does not rerun pvlib or require a new library.
     ac = prepared_profile(blobs, raw_sha256, metadata)
     dependencies = model_dependencies(metadata)
-    return _project(
+    return project_dc(
         ac,
         blobs.object(dependencies["pv_model_inputs"]),
         blobs.object(dependencies["pv_model_witness"]),

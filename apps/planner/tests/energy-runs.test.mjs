@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import React, { act, useState } from "react";
+import { createRoot } from "react-dom/client";
+import { RunResult } from "../src/components/energy/RunResult.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { setupDom, until, deferred } from "./dom-fixture.mjs";
 import { usePlanningRuns } from "../src/data/usePlanningRuns.ts";
@@ -121,4 +123,34 @@ test("opening history after its first page loads pins the verified visible run i
 	assert.equal(location.hash, "#lp-calculations");
 	assert.equal(current.runId, actualRun.id);
 	assert.deepEqual(calls.slice(0, 2), ["projects/runs", "runs/read"]);
+});
+
+test("a saved public evidence reason reaches the failed-calculation panel without private error text", async (t) => {
+	const dom = setupDom(),
+		root = createRoot(dom.element);
+	t.after(() => dom.dispose(root));
+	const failed = {
+		...actualRun,
+		state: "failed",
+		result: null,
+		result_sha256: null,
+		error: {
+			code: "evidence_missing",
+			retryable: false,
+			details: { constraint_id: "plant_dc_pv_nameplate_mismatch" },
+			message: "private raw fixture detail must not escape",
+		},
+	};
+	await act(async () =>
+		root.render(
+			React.createElement(RunResult, {
+				run: failed,
+				locale: "en",
+				dirty: false,
+				confirmedRevision: failed.revision,
+			}),
+		),
+	);
+	assert.match(dom.element.textContent, /must match the STC rating/);
+	assert.doesNotMatch(dom.element.textContent, /private raw fixture/);
 });

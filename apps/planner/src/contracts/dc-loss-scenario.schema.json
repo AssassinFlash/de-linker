@@ -1,105 +1,105 @@
 {
-	"$defs": {
-		"Identifier": {
-			"minLength": 1,
-			"type": "string"
-		},
-		"Nonnegative": {
-			"minimum": 0,
-			"type": "number"
-		},
-		"PositiveEfficiency": {
-			"exclusiveMinimum": 0,
-			"maximum": 1,
-			"type": "number"
-		},
-		"SchemaVersion": {
-			"maximum": 1,
-			"minimum": 1,
-			"type": "integer"
-		}
-	},
-	"additionalProperties": false,
-	"properties": {
-		"schema_version": {
-			"$ref": "#/$defs/SchemaVersion"
-		},
-		"model": {
-			"const": "constant_window_shared_dc_bus_v1",
-			"title": "Model",
-			"type": "string"
-		},
-		"parameter_basis": {
-			"const": "explicit_loss_scenario_with_woo_equipment",
-			"title": "Parameter Basis",
-			"type": "string"
-		},
-		"battery_port_id": {
-			"$ref": "#/$defs/Identifier"
-		},
-		"battery_temperature_c": {
-			"anyOf": [
-				{
-					"type": "number"
-				},
-				{
-					"type": "null"
-				}
-			],
-			"default": null,
-			"title": "Battery Temperature C"
-		},
-		"eta_bus_to_battery": {
-			"$ref": "#/$defs/PositiveEfficiency"
-		},
-		"eta_battery_to_bus": {
-			"$ref": "#/$defs/PositiveEfficiency"
-		},
-		"eta_store_charge": {
-			"$ref": "#/$defs/PositiveEfficiency"
-		},
-		"eta_store_discharge": {
-			"$ref": "#/$defs/PositiveEfficiency"
-		},
-		"eta_inverter_forward": {
-			"$ref": "#/$defs/PositiveEfficiency"
-		},
-		"eta_inverter_reverse": {
-			"anyOf": [
-				{
-					"$ref": "#/$defs/PositiveEfficiency"
-				},
-				{
-					"type": "null"
-				}
-			]
-		},
-		"internal_aux_kw": {
-			"$ref": "#/$defs/Nonnegative"
-		},
-		"standing_loss_rate_per_hour": {
-			"$ref": "#/$defs/Nonnegative"
-		},
-		"source_note": {
-			"$ref": "#/$defs/Identifier"
-		}
-	},
-	"required": [
-		"schema_version",
-		"model",
-		"parameter_basis",
-		"battery_port_id",
-		"eta_bus_to_battery",
-		"eta_battery_to_bus",
-		"eta_store_charge",
-		"eta_store_discharge",
-		"eta_inverter_forward",
-		"eta_inverter_reverse",
-		"internal_aux_kw",
-		"standing_loss_rate_per_hour",
-		"source_note"
-	],
-	"title": "DcLossScenario",
-	"type": "object",
-	"$schema": "https://json-schema.org/draft/2020-12/schema"
+  "$defs": {
+    "Identifier": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "Nonnegative": {
+      "minimum": 0,
+      "type": "number"
+    },
+    "PositiveEfficiency": {
+      "exclusiveMinimum": 0,
+      "maximum": 1,
+      "type": "number"
+    },
+    "SchemaVersion": {
+      "maximum": 1,
+      "minimum": 1,
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "$ref": "#/$defs/SchemaVersion"
+    },
+    "model": {
+      "const": "constant_window_shared_dc_bus_v1",
+      "title": "Model",
+      "type": "string"
+    },
+    "parameter_basis": {
+      "const": "explicit_loss_scenario_with_woo_equipment",
+      "title": "Parameter Basis",
+      "type": "string"
+    },
+    "battery_port_id": {
+      "$ref": "#/$defs/Identifier"
+    },
+    "battery_temperature_c": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Battery Temperature C"
+    },
+    "eta_bus_to_battery": {
+      "$ref": "#/$defs/PositiveEfficiency"
+    },
+    "eta_battery_to_bus": {
+      "$ref": "#/$defs/PositiveEfficiency"
+    },
+    "eta_store_charge": {
+      "$ref": "#/$defs/PositiveEfficiency"
+    },
+    "eta_store_discharge": {
+      "$ref": "#/$defs/PositiveEfficiency"
+    },
+    "eta_inverter_forward": {
+      "$ref": "#/$defs/PositiveEfficiency"
+    },
+    "eta_inverter_reverse": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PositiveEfficiency"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "internal_aux_kw": {
+      "$ref": "#/$defs/Nonnegative"
+    },
+    "standing_loss_rate_per_hour": {
+      "$ref": "#/$defs/Nonnegative"
+    },
+    "source_note": {
+      "$ref": "#/$defs/Identifier"
+    }
+  },
+  "required": [
+    "schema_version",
+    "model",
+    "parameter_basis",
+    "battery_port_id",
+    "eta_bus_to_battery",
+    "eta_battery_to_bus",
+    "eta_store_charge",
+    "eta_store_discharge",
+    "eta_inverter_forward",
+    "eta_inverter_reverse",
+    "internal_aux_kw",
+    "standing_loss_rate_per_hour",
+    "source_note"
+  ],
+  "title": "DcLossScenario",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
 }

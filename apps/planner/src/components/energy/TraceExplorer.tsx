@@ -1,4 +1,7 @@
-import { PLANT_ENERGY_TASK } from "../../domain/plantEnergy.ts";
+import {
+	isPlantEnergyTask,
+	DC_PLANT_ENERGY_TASK,
+} from "../../domain/plantEnergy.ts";
 import { readObject } from "../../data/readProtocol.ts";
 import type { JsonObject } from "../../data/protocol.ts";
 import { runTask } from "../../data/planningProtocol.ts";
@@ -36,7 +39,8 @@ export function TraceExplorer({
 		[offset, setOffset] = useState(0),
 		[first, setFirst] = useState("1");
 	const [unitId, selectUnit] = useState<string | null>(null);
-	const joint = runTask(run) === PLANT_ENERGY_TASK;
+	const joint = isPlantEnergyTask(runTask(run));
+	const plantDc = runTask(run) === DC_PLANT_ENERGY_TASK;
 	const units = joint
 		? (readObject(readObject(run.result?.equipment_binding).plant)
 				.units as readonly JsonObject[])
@@ -44,8 +48,18 @@ export function TraceExplorer({
 	const unitLabels = unitId
 		? [
 				__("Storage unit", "linker-tools"),
-				__("Unit AC charging power (interval mean, kW)", "linker-tools"),
-				__("Unit AC discharging power (interval mean, kW)", "linker-tools"),
+				plantDc
+					? __(
+							"DC charging power per storage unit (interval average, kW)",
+							"linker-tools",
+						)
+					: __("Unit AC charging power (interval mean, kW)", "linker-tools"),
+				plantDc
+					? __(
+							"DC discharging power per storage unit (interval average, kW)",
+							"linker-tools",
+						)
+					: __("Unit AC discharging power (interval mean, kW)", "linker-tools"),
 				__("Stored from PV (kWh)", "linker-tools"),
 				__("Stored from grid (kWh)", "linker-tools"),
 				__("Stored with unknown origin (kWh)", "linker-tools"),
@@ -56,13 +70,15 @@ export function TraceExplorer({
 	const labels = useMemo(
 		() => [
 			__("Load", "linker-tools"),
-			dc
-				? __("Available PV power (DC)", "linker-tools")
-				: __("Available PV power", "linker-tools"),
-			dc
+			plantDc
+				? __("PV at the common AC bus", "linker-tools")
+				: dc
+					? __("Available PV power (DC)", "linker-tools")
+					: __("Available PV power", "linker-tools"),
+			dc || plantDc
 				? __("Charging power at the battery terminals (DC)", "linker-tools")
 				: __("Charging power", "linker-tools"),
-			dc
+			dc || plantDc
 				? __("Discharging power at the battery terminals (DC)", "linker-tools")
 				: __("Discharging power", "linker-tools"),
 			dc
@@ -73,7 +89,7 @@ export function TraceExplorer({
 				: __("Grid export", "linker-tools"),
 			__("Stored energy", "linker-tools"),
 		],
-		[locale, dc],
+		[locale, dc, plantDc],
 	);
 	const query = useQuery({
 		queryKey: [
@@ -180,10 +196,15 @@ export function TraceExplorer({
 					)}
 					{joint && (
 						<p className="lp-profile-help">
-							{__(
-								"The chart shows the shared AC metering point. Select a storage unit to add its AC power and stored-energy data to the table.",
-								"linker-tools",
-							)}
+							{plantDc
+								? __(
+										"Load, PV generation and grid import/export are shown at the common AC bus. The charging and discharging curves show the sum of the power at each battery’s DC terminals. Total stored energy is shown for reference. Select a storage unit to show its DC power and stored energy in the table.",
+										"linker-tools",
+									)
+								: __(
+										"The chart shows the shared AC metering point. Select a storage unit to add its AC power and stored-energy data to the table.",
+										"linker-tools",
+									)}
 						</p>
 					)}
 					{query.isFetching && (

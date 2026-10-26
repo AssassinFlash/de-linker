@@ -42,6 +42,7 @@ export function DcStorageForm({
 	active,
 	inverterId,
 	storageOnly = false,
+	showPvAssignment = true,
 }: {
 	value: ScenarioDraft;
 	locale: string;
@@ -55,6 +56,7 @@ export function DcStorageForm({
 	active: boolean;
 	inverterId: number | null;
 	storageOnly?: boolean;
+	showPvAssignment?: boolean;
 }) {
 	const dc = value.dc ?? emptyDcScenario();
 	const catalog = useEquipmentProducts(client, scope, active);
@@ -77,7 +79,16 @@ export function DcStorageForm({
 				| "losses"
 			>
 		>,
-	) => onChange({ ...value, dc: { ...dc, ...patch }, battery_binding: null });
+	) =>
+		onChange({
+			...value,
+			dc: { ...dc, ...patch },
+			battery_binding: Object.keys(patch).some(
+				(key) => key !== "pv_converter_id" && key !== "aux_dc_kw",
+			)
+				? null
+				: value.battery_binding,
+		});
 	return (
 		<section className="lp-scenario-block">
 			<h3>
@@ -107,7 +118,7 @@ export function DcStorageForm({
 				</p>
 			)}
 			<div className="lp-geometry-fields">
-				{!storageOnly && (
+				{!storageOnly && showPvAssignment && (
 					<label className="lp-field">
 						<span>{__("PV conversion group", "linker-tools")}</span>
 						<input
@@ -194,7 +205,7 @@ export function DcStorageForm({
 					/>
 				)}
 			</div>
-			{!storageOnly && (
+			{!storageOnly && showPvAssignment && (
 				<p className="lp-profile-help">
 					{__(
 						"The selected PV source must retain DC power for this conversion group. A CSV containing AC generation cannot supply this input. The battery port is checked against the selected inverter.",

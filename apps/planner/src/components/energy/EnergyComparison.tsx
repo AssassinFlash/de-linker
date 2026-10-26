@@ -249,7 +249,7 @@ export function EnergyComparison({
 									</details>
 								)}
 								<p>
-									{ref.coupling === "plant_ac"
+									{ref.coupling.startsWith("plant_")
 										? __(
 												"Multiple storage units at a shared AC metering point",
 												"linker-tools",

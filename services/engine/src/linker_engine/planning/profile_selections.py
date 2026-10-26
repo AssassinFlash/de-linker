@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Annotated
+from typing import Annotated, Literal
 
 from pydantic import Field
 
@@ -14,10 +14,12 @@ from .power_series import Measurement
 from .pv_profile import PURPOSE
 from .records import Actor
 
+type ProfileRole = Measurement | Literal["pv_reference"]
+
 
 class ProfileSelections(Document):
     schema_version: SchemaVersion
-    selected: dict[Measurement, Annotated[str, Field(pattern=r"^[a-f0-9]{32}$")]]
+    selected: dict[ProfileRole, Annotated[str, Field(pattern=r"^[a-f0-9]{32}$")]]
 
 
 def check_profile_selections(
@@ -43,7 +45,10 @@ def check_profile_selections(
                 raise InvalidInput(
                     "selected source has a different measurement boundary"
                 )
-        elif asset.purpose in ("pvgis_system_profile_v1", PURPOSE):
+        elif asset.purpose == PURPOSE:
+            if measurement not in {"pv_available_ac", "pv_reference"}:
+                raise InvalidInput("PV source cannot become a consumption profile")
+        elif asset.purpose == "pvgis_system_profile_v1":
             if measurement != "pv_available_ac":
                 raise InvalidInput("PV source cannot become a consumption profile")
         else:

@@ -1,4 +1,4 @@
-import type { Measurement } from "../domain/profiles.ts";
+import type { ProfileRole } from "../domain/profiles.ts";
 import type { ProfileIssue } from "../data/profileIssue.ts";
 import { __ } from "../i18n.ts";
 
@@ -27,9 +27,10 @@ export function delimiterLabel(delimiter: string): string {
 }
 
 export function measurementLabel(
-	role: Measurement | "pv_available_dc",
+	role: ProfileRole | "pv_available_dc",
 ): string {
 	const labels = {
+		pv_reference: __("Roof PV source", "linker-tools"),
 		gross_load: __("Total site load", "linker-tools"),
 		critical_load: __("Critical load", "linker-tools"),
 		net_import: __(

@@ -1,6 +1,7 @@
+import { verifyDcModel } from "./readDcEnergyModel.ts";
 import { verifyEnergyDetails } from "./readEnergyDetails.ts";
 import { readPlantEnergyResult } from "./readPlantEnergyResult.ts";
-import { PLANT_ENERGY_TASK } from "../domain/plantEnergy.ts";
+import { isPlantEnergyTask } from "../domain/plantEnergy.ts";
 import { ApiError } from "./protocol.ts";
 import type { JsonObject } from "./protocol.ts";
 import { readObject } from "./readProtocol.ts";
@@ -21,7 +22,7 @@ export function isEnergyTask(value: unknown): boolean {
 	return (
 		value === "single_ac_energy_replay_v1" ||
 		value === DC_ENERGY_TASK ||
-		value === PLANT_ENERGY_TASK
+		isPlantEnergyTask(value)
 	);
 }
 
@@ -128,7 +129,7 @@ export function readEnergyResult(
 			context = readObject(manifest.context),
 			models = readObject(context.models),
 			pinned = readObject(result.pinned_assets);
-		if (result.kind === PLANT_ENERGY_TASK)
+		if (isPlantEnergyTask(result.kind))
 			return readPlantEnergyResult(result, run, manifest);
 		const dc = result.kind === DC_ENERGY_TASK;
 		require(
@@ -150,38 +151,8 @@ export function readEnergyResult(
 		if (model.version !== (dc ? DC_MODEL : "constant_window_single_ac_bus_v1"))
 			throw new ApiError(502, "unsupported_run_model");
 		if (dc) {
-			const prepared = readDcParameters(result.prepared_dc_parameters),
-				losses = readObject(prepared.loss_scenario);
-			for (const name of ["connected_bridge", "outage_bridge"]) {
-				if (model[name] === null) continue;
-				const bridge = readObject(model[name]);
-				require(
-					bridge.eta_forward === losses.eta_inverter_forward &&
-						(bridge.reverse_supported !== true ||
-							bridge.eta_reverse === losses.eta_inverter_reverse),
-				);
-			}
-
-			for (const key of [
-				"usable_window_kwh",
-				"battery",
-				"selected_port",
-				"pv_input_dc_kw",
-				"dc_dc_charge_bus_kw",
-				"dc_dc_discharge_bus_kw",
-				"connected_bridge",
-				"outage_bridge",
-			])
-				require(sameJson(model[key], prepared[key]));
-			for (const key of [
-				"eta_bus_to_battery",
-				"eta_battery_to_bus",
-				"eta_store_charge",
-				"eta_store_discharge",
-				"internal_aux_kw",
-				"standing_loss_rate_per_hour",
-			])
-				require(model[key] === losses[key]);
+			const prepared = readDcParameters(result.prepared_dc_parameters);
+			verifyDcModel(model, prepared);
 			require(
 				number(model.charge_terminal_kw) &&
 					number(model.discharge_terminal_kw) &&
@@ -193,7 +164,8 @@ export function readEnergyResult(
 				selection = readEquipmentSelection(binding.selection);
 			require(
 				sameJson(prepared.product_revisions, selection.product_revisions) &&
-					readObject(model.selected_port).id === losses.battery_port_id,
+					readObject(model.selected_port).id ===
+						readObject(prepared.loss_scenario).battery_port_id,
 			);
 		} else
 			readBatteryParameters({

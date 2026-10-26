@@ -1,5 +1,7 @@
 import {
 	PLANT_ENERGY_TASK,
+	DC_PLANT_ENERGY_TASK,
+	plantEnergyTask,
 	compilePlantEnergy,
 	plantEnergyDraft,
 	plantEnergyInputs,
@@ -34,7 +36,7 @@ import {
 	readPreview,
 	readSelections,
 } from "../../domain/profiles.ts";
-import type { Measurement } from "../../domain/profiles.ts";
+import type { ProfileRole } from "../../domain/profiles.ts";
 import { sharedProfileRange } from "../../domain/profileCoverage.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import type { JsonObject, Session } from "../../data/protocol.ts";
@@ -151,6 +153,14 @@ export function EnergyWorkspace({
 		draft.history.current.equipment_plant,
 		draft.history.current.energy_plant_setup,
 	]);
+	const jointTask = jointContext.value
+		? plantEnergyTask(jointContext.value.setup)
+		: PLANT_ENERGY_TASK;
+	const jointAvailable =
+		session.runtime.models[
+			jointTask === DC_PLANT_ENERGY_TASK ? "plant_dc_replay" : "plant_replay"
+		] === jointTask;
+
 	const parsed = useMemo(() => {
 		try {
 			return {
@@ -329,7 +339,7 @@ export function EnergyWorkspace({
 	);
 	const canCalculate =
 		prepared &&
-		(!joint || session.runtime.models.plant_replay === PLANT_ENERGY_TASK) &&
+		(!joint || jointAvailable) &&
 		!dirty &&
 		!draft.pending &&
 		!draft.conflict &&
@@ -351,11 +361,7 @@ export function EnergyWorkspace({
 		setError(null);
 	}
 	async function prepareJoint() {
-		if (
-			!jointContext.value ||
-			session.runtime.models.plant_replay !== PLANT_ENERGY_TASK
-		)
-			return;
+		if (!jointContext.value || !jointAvailable) return;
 		const { plant, setup: original } = jointContext.value;
 		if (
 			!sameJson(
@@ -364,6 +370,23 @@ export function EnergyWorkspace({
 			)
 		)
 			throw new ApiError(422, "dc_save_required");
+		if (
+			original.coupling === "plant_shared_dc" &&
+			selections.selected.pv_reference
+		) {
+			const groups = [
+				...(original.ac_pv_converter_ids ?? []),
+				...original.units
+					.filter((u) => u.pv_dc_input_unused === false)
+					.map((u) => u.settings.dc?.pv_converter_id ?? ""),
+			];
+			if (
+				new Set(groups).size !== groups.length ||
+				groups.length !== converterIds.length ||
+				groups.some((id) => !converterIds.includes(id))
+			)
+				throw new ApiError(422, "plant_dc_assignment_required");
+		}
 		const parts = plantEnergyParts(original, selections, plant),
 			instance = lifetime.current;
 		let bound = original,
@@ -939,9 +962,16 @@ export function EnergyWorkspace({
 		setRangeBusy(true);
 		setError(null);
 		try {
-			const roles: Measurement[] = [
+			const jointDc = jointContext.value?.setup.coupling === "plant_shared_dc";
+			const pvRoles: ProfileRole[] =
+				joint && jointDc
+					? (["pv_reference", "pv_available_ac"] as const).filter(
+							(role) => !!selections.selected[role],
+						)
+					: ["pv_available_ac"];
+			const roles: ProfileRole[] = [
 				"gross_load",
-				"pv_available_ac",
+				...pvRoles,
 				"aux_ac",
 				...(currentSetup.schedule.some((period) => period.mode === "outage")
 					? ["critical_load" as const]
@@ -975,7 +1005,15 @@ export function EnergyWorkspace({
 						),
 						asset,
 					);
-					if (asset.id !== id || preview.measurement !== role)
+					if (
+						asset.id !== id ||
+						(preview.measurement !== role &&
+							!(
+								role === "pv_reference" &&
+								asset.purpose === "pvlib_reference_profile_v1" &&
+								preview.measurement === "pv_available_ac"
+							))
+					)
 						throw new ApiError(502, "profile_role_mismatch");
 					return preview.summary;
 				}),
@@ -1303,24 +1341,30 @@ export function EnergyWorkspace({
 						<div className="lp-scenario-sources">
 							<h3>{__("Interval sources", "linker-tools")}</h3>
 							<ul>
-								{(["gross_load", "pv_available_ac", "aux_ac"] as const).map(
-									(role) => (
-										<li key={role}>
-											<span>
-												{role === "pv_available_ac" &&
-												!joint &&
-												setup?.coupling === "shared_dc"
-													? __("PV generation", "linker-tools")
-													: measurementLabel(role)}
-											</span>
-											<strong>
-												{selections.selected[role]
-													? __("Selected in this draft", "linker-tools")
-													: __("Required", "linker-tools")}
-											</strong>
-										</li>
-									),
-								)}
+								{(
+									[
+										"gross_load",
+										jointContext.value?.setup.coupling === "plant_shared_dc"
+											? "pv_reference"
+											: "pv_available_ac",
+										"aux_ac",
+									] as const
+								).map((role) => (
+									<li key={role}>
+										<span>
+											{role === "pv_available_ac" &&
+											!joint &&
+											setup?.coupling === "shared_dc"
+												? __("PV generation", "linker-tools")
+												: measurementLabel(role)}
+										</span>
+										<strong>
+											{selections.selected[role]
+												? __("Selected in this draft", "linker-tools")
+												: __("Required", "linker-tools")}
+										</strong>
+									</li>
+								))}
 							</ul>
 							<button
 								type="button"
@@ -1358,6 +1402,7 @@ export function EnergyWorkspace({
 							<PlantEnergyForm
 								value={jointContext.value.setup}
 								plant={jointContext.value.plant}
+								converters={converterIds}
 								section={section}
 								locale={locale}
 								disabled={blocked || operations.busy || !admitted}
@@ -1397,15 +1442,14 @@ export function EnergyWorkspace({
 								/>
 							)
 						)}
-						{joint &&
-							session.runtime.models.plant_replay !== PLANT_ENERGY_TASK && (
-								<Notice>
-									{__(
-										"Joint storage calculation is unavailable in this service version. Your equipment plan remains available.",
-										"linker-tools",
-									)}
-								</Notice>
-							)}
+						{joint && !jointAvailable && (
+							<Notice>
+								{__(
+									"Joint storage calculation is unavailable in this service version. Your equipment plan remains available.",
+									"linker-tools",
+								)}
+							</Notice>
+						)}
 						<div className="lp-energy-submit">
 							<div>
 								<strong>
@@ -1433,9 +1477,7 @@ export function EnergyWorkspace({
 								className="lp-button lp-button-secondary"
 								disabled={
 									blocked ||
-									(joint &&
-										session.runtime.models.plant_replay !==
-											PLANT_ENERGY_TASK) ||
+									(joint && !jointAvailable) ||
 									!syntaxValid ||
 									operations.busy ||
 									operations.checking ||
