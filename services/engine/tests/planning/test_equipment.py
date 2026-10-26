@@ -466,6 +466,10 @@ def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
             "included": False,
             "phase": 3,
             "max_units": 1,
+            "applicability": {
+                "operating_mode": "grid_connected",
+                "topology": "parallel_group",
+            },
             "conditions": [],
             "accessories": [
                 {
@@ -482,6 +486,20 @@ def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
     assert any(
         c["id"].endswith(":parallel_count") and c["status"] == "violated"
         for c in restricted["checks"]
+    )
+    scoped_row = limited["compatibility"]["requirements"][-1]
+    scoped_row["applicability"]["operating_mode"] = "backup"
+    wrong_mode = assess_plant({"equipment_plant": plant}, limited)
+    assert not any(
+        c["id"].endswith(":parallel_count") and c["status"] != "unresolved"
+        for c in wrong_mode["checks"]
+    )
+    del scoped_row["applicability"]
+    legacy = assess_plant({"equipment_plant": plant}, limited)
+    assert all(
+        c["status"] == "unresolved"
+        for c in legacy["checks"]
+        if c["id"].endswith(":parallel_count")
     )
     workspace.revise(
         actor, project["id"], 1, {"equipment_plant": wrong}, key="change-plant-demand"

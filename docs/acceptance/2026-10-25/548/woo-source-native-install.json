@@ -1443,7 +1443,7 @@
       "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
     }
   },
-  "current_frontier": "equipment_plant_search_local",
+  "current_frontier": "equipment_requirement_scope_local",
   "shared_dc_core": {
     "status": "implemented_and_reviewed_core_not_connected_to_native_commands",
     "model": "constant_window_shared_dc_bus_v1",
@@ -3925,5 +3925,224 @@
     "mail_sent": false,
     "inquiry_written": false,
     "whole_goal_complete": false
+  },
+  "equipment_requirement_scope": {
+    "status": "local_delivery_closed",
+    "base_commit": "0cf50fa6",
+    "runtime_sha256": "018a1e134de27e024c1ce61640c3c8c47ff2e3d3311b356cfe72623ced4e37db",
+    "rollback_runtime_sha256": "93059c674323f937d1dbd31cf017f64002ec3408bbb2c31a118d6c74bf1b4bd3",
+    "storage_schema_version": 5,
+    "source_revision": "f4205bc282d65d6a7770c5050842a6532d46326d7b906cb75f2f695b563a38fd",
+    "compatibility_revision": "1f5b594311f5e1553f56b1afd12b13001451be3891f65a0dc49495799bd8e119",
+    "source_authority": "native Woo compatibility claims, explicitly bound current associated manufacturer manuals",
+    "maintenance": {
+      "local_only": true,
+      "product_ids": [
+        1946,
+        1947,
+        1948
+      ],
+      "added_kind": "parallel_controller",
+      "applicability": {
+        "operating_mode": "grid_connected",
+        "topology": "parallel_group",
+        "control_network": "lan"
+      },
+      "accessory": {
+        "product_id": 2409,
+        "quantity": 1,
+        "per": "system"
+      },
+      "documents": [
+        {
+          "document_id": "doc-b830f9958ea2c24f66f1d2f64dafee170ab24c175d091c8ce13e0a25f2e40a17",
+          "page": 10
+        },
+        {
+          "document_id": "doc-cbd6d3d2db163cf7bce09abf348fd8531756f4e1f3e1ae9a2d82418b322a2568",
+          "page": 19
+        }
+      ],
+      "et_max_units_and_firmware_not_inferred_from_bt_table": true,
+      "scoped_undo_file": "/Users/chesterjohn/de-linker-local/p548/planner/operating-scope-claims-before.json"
+    },
+    "publication_job": "47897ebf50d19ba7561387415ed4b5af057c38364de15eb6d60b2999ec46ea8a",
+    "review": {
+      "spec": "PASS full increment and null-display repair",
+      "standards": "PASS full increment and null-display/bundle-translation repairs",
+      "copy": "revised and approved EN/DE labels, reasons and native declaration conditions"
+    },
+    "validation": {
+      "native_editor_scope_projection": "passed",
+      "python_mode_network_scope": "passed; fixture selection repaired from adjacent ET to intended ETR row",
+      "existing_native_plant_job_report": "passed, extended mode/legacy count assertions",
+      "existing_client_lifecycle_adoption": "passed, network survives adoption and invalidates mismatched candidate",
+      "affected_static_and_build": "passed; PHPStan parallel child failure diagnosed, serial diagnostic run passed",
+      "bundle_translations": "four new entries present in existing planner script JSON",
+      "reused": "unchanged annual/PV, permission, material/report and managed-release lifecycle evidence",
+      "owned_ui": "same project saved revision 6; communication LAN prepared, source-qualified and reported; no repeated search or annual/PV calculation",
+      "views": [
+        {
+          "locale": "en",
+          "width": 1440,
+          "overflow": false,
+          "path": "docs/acceptance/2026-10-25/548/equipment-requirement-scope-en-desktop.png"
+        },
+        {
+          "locale": "en",
+          "width": 390,
+          "overflow": false,
+          "path": "docs/acceptance/2026-10-25/548/equipment-requirement-scope-en-mobile.png"
+        },
+        {
+          "locale": "de",
+          "width": 1440,
+          "overflow": false,
+          "path": "docs/acceptance/2026-10-25/548/equipment-requirement-scope-de-desktop.png"
+        },
+        {
+          "locale": "de",
+          "width": 390,
+          "overflow": false,
+          "path": "docs/acceptance/2026-10-25/548/equipment-requirement-scope-de-mobile.png"
+        }
+      ],
+      "pdf": "8-page German frozen report; full overview and applicability/source/BOM pages visually inspected; no clipping; original calculated equipment result consumed without recalculation",
+      "download": "existing unchanged browser download lifecycle evidence reused; no OS download-path assertion"
+    },
+    "retention": {
+      "instance_and_environment_reused": true,
+      "retired_runtime_carriers": [
+        "8662d5e21bcfefda16cecc420efaee1b1cdbd630d903f85193feeefde309ed62"
+      ],
+      "active_plus_one_rollback": true,
+      "source_generation_retention": "existing publisher keeps current plus prior",
+      "rollback_requires": "previous runtime plus previous source generation and scoped claim preimage"
+    },
+    "production_mail_inquiry_writes": false,
+    "owned_readback": {
+      "project_id": "1ac83b43ab08481bae7e6eb05cf633c4",
+      "revision": 6,
+      "run_id": "cfd6a2ee7f5a4ec1b9ea86ea86530e0a",
+      "state": "succeeded",
+      "overall_status": "unresolved",
+      "runtime_sha256": "018a1e134de27e024c1ce61640c3c8c47ff2e3d3311b356cfe72623ced4e37db",
+      "pinned_equipment_basis": "63259c8fb10574509fbd00898ff8833b54ad5aca0551dc5fa593d858087e3811",
+      "scope_checks": [
+        {
+          "actual": "grid_connected",
+          "control_network": "lan",
+          "documents": [
+            {
+              "page": 10,
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-50-100kW_User-Manual-EN_V1.3.pdf"
+            },
+            {
+              "page": 19,
+              "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ET-100kW_User-Manual-EN_V1.2.pdf"
+            }
+          ],
+          "facts": [],
+          "group_name": "System 1, System 2",
+          "id": "group:group_10aa67e9-3b9a-4ea6-97be-725a12f55eaa:system_a176991d-c5a2-49cb-9dfc-dcfc9f3cffc3:operating_scope",
+          "reason": "manufacturer_requirement_matches_operating_context",
+          "required": null,
+          "semantic_id": "plant_operating_scope",
+          "status": "satisfied"
+        },
+        {
+          "actual": "grid_connected",
+          "control_network": "lan",
+          "documents": [
+            {
+              "page": 10,
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-50-100kW_User-Manual-EN_V1.3.pdf"
+            },
+            {
+              "page": 19,
+              "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ET-100kW_User-Manual-EN_V1.2.pdf"
+            }
+          ],
+          "facts": [],
+          "group_name": "System 1, System 2",
+          "id": "group:group_10aa67e9-3b9a-4ea6-97be-725a12f55eaa:system_cbb2b6ac-a9d0-417b-8f4a-a66ef5edbc1f:operating_scope",
+          "reason": "manufacturer_requirement_matches_operating_context",
+          "required": null,
+          "semantic_id": "plant_operating_scope",
+          "status": "satisfied"
+        }
+      ],
+      "count_checks": [
+        {
+          "actual": 2,
+          "documents": [
+            {
+              "page": 10,
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-50-100kW_User-Manual-EN_V1.3.pdf"
+            },
+            {
+              "page": 19,
+              "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ET-100kW_User-Manual-EN_V1.2.pdf"
+            }
+          ],
+          "facts": [],
+          "group_name": "System 1, System 2",
+          "id": "group:group_10aa67e9-3b9a-4ea6-97be-725a12f55eaa:system_a176991d-c5a2-49cb-9dfc-dcfc9f3cffc3:parallel_count",
+          "reason": "parallel_count_uses_applicable_manufacturer_limit",
+          "required": null,
+          "semantic_id": "plant_parallel_count",
+          "status": "unresolved"
+        },
+        {
+          "actual": 2,
+          "documents": [
+            {
+              "page": 10,
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-50-100kW_User-Manual-EN_V1.3.pdf"
+            },
+            {
+              "page": 19,
+              "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ET-100kW_User-Manual-EN_V1.2.pdf"
+            }
+          ],
+          "facts": [],
+          "group_name": "System 1, System 2",
+          "id": "group:group_10aa67e9-3b9a-4ea6-97be-725a12f55eaa:system_cbb2b6ac-a9d0-417b-8f4a-a66ef5edbc1f:parallel_count",
+          "reason": "parallel_count_uses_applicable_manufacturer_limit",
+          "required": null,
+          "semantic_id": "plant_parallel_count",
+          "status": "unresolved"
+        }
+      ],
+      "controller_check": {
+        "actual": 2409,
+        "actual_label": "GoodWe SEC3000C",
+        "facts": [],
+        "group_name": "System 1, System 2",
+        "id": "group:group_10aa67e9-3b9a-4ea6-97be-725a12f55eaa:controller",
+        "reason": "one_shared_controller_per_declared_group",
+        "required": 2409,
+        "required_label": "GoodWe SEC3000C",
+        "semantic_id": "plant_controller",
+        "status": "satisfied",
+        "value_kind": "product_identity"
+      },
+      "bom_quantities": {
+        "1946": 2,
+        "1955": 2,
+        "2409": 1
+      },
+      "old_candidate_cleared_by_project_edit": true
+    },
+    "report": {
+      "run_id": "97a81e54c75e4e2aa6f164581514cb95",
+      "revision": 6,
+      "pdf_sha256": "234017a9590a5a0bcb35c4bd43b37d600704dfa17988822d437cf0bc3431c491",
+      "path": "docs/acceptance/2026-10-25/548/equipment-requirement-scope-de.pdf",
+      "uses_equipment_run": "cfd6a2ee7f5a4ec1b9ea86ea86530e0a",
+      "pages": 8
+    },
+    "copy_review": "The existing copy reviewer revised the applicability label/reasons and source declaration to avoid whole-system approval and ET/BT extrapolation; applied EN/DE final wording.",
+    "remaining_full_goal": "Manufacturer firmware/model/bank/meter scope and conditioned performance, joint dispatch, wider topology/allocation search, installation/country rules, remaining site consumers/migration and review/production publication/readback remain in the same active full goal."
   }
 }

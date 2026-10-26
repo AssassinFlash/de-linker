@@ -53,7 +53,12 @@ function configured() {
 			},
 		})),
 		parallel_groups: [
-			{ id: "ac", unit_ids: ["a", "b"], controller_product_id: 2 },
+			{
+				id: "ac",
+				unit_ids: ["a", "b"],
+				controller_product_id: 2,
+				control_network: "lan" as const,
+			},
 		],
 	};
 }
@@ -210,6 +215,20 @@ test("plant search prepares demand without hardware and adopts one whole candida
 	assert.deepEqual(adopted.site, { country_code: "FR" });
 	assert.deepEqual(adopted.equipment_candidate, choice);
 	assert.deepEqual(adopted.equipment_plant, hardware);
+	assert.equal(
+		readPlantDraft(adopted).parallel_groups[0]!.control_network,
+		"lan",
+	);
+	const networkChanged = readPlantDraft(current);
+	networkChanged.parallel_groups[0]!.control_network = "rs485";
+	assert.throws(() =>
+		adoptPlantCandidate(
+			plantInputs(current, networkChanged),
+			hardware,
+			products,
+			choice,
+		),
+	);
 	assert.equal(adopted.equipment_plant_requirements, undefined);
 	assert.equal(
 		equipmentDraft(readPlantDraft(current).units[0]!.inputs)

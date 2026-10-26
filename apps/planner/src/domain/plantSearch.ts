@@ -7,6 +7,7 @@ import { equipmentDraft, changeEquipment } from "./equipment.ts";
 import { compileEquipmentRequirements } from "./equipmentRequirements.ts";
 import {
 	plantInputs,
+	plantGroupDraft,
 	readEquipmentPlant,
 	readPlantDraft,
 } from "./equipmentPlant.ts";
@@ -103,6 +104,7 @@ export function matchesPlantSearch(
 			return (
 				request.id === group.id &&
 				sameJson(request.unit_ids, group.unit_ids) &&
+				request.control_network === group.control_network &&
 				(request.controller_product_id === null ||
 					request.controller_product_id === group.controller_product_id)
 			);
@@ -147,13 +149,7 @@ export function adoptPlantCandidate(
 			name: unit.name,
 			inputs: changeEquipment(draft.units[i]!.inputs, unit.selection),
 		})),
-		parallel_groups: plant.parallel_groups.map(
-			({ id, unit_ids, controller_product_id }) => ({
-				id,
-				unit_ids,
-				controller_product_id,
-			}),
-		),
+		parallel_groups: plant.parallel_groups.map(plantGroupDraft),
 	};
 	return {
 		...plantInputs(inputs, updated),

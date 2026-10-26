@@ -46,7 +46,12 @@ def controller_options(
         converter = evidence.products[pid]
         options: set[int] = set()
         for row in evidence.contract.requirements(
-            converter["model"], "parallel_controller", inverter_id=pid
+            converter["model"],
+            "parallel_controller",
+            inverter_id=pid,
+            operating_mode=cast(str, selection["operating_mode"]),
+            topology="parallel_group",
+            control_network=group.control_network,
         ):
             if row.phase not in (None, selection["grid_phase"]):
                 continue
@@ -154,8 +159,7 @@ def search_plant(
                         ],
                         "parallel_groups": [
                             {
-                                "id": g.id,
-                                "unit_ids": cast(Json, g.unit_ids),
+                                **g.model_dump(mode="json"),
                                 "controller_product_id": pid,
                                 "controller_revision": space.evidence.products[pid][
                                     "product_revision"

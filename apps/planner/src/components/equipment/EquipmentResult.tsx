@@ -94,6 +94,17 @@ export function EquipmentResult({
 							.join(" ")
 					: "—";
 		}
+		if (semantic === "plant_operating_scope") {
+			const mode =
+				check[field] === "grid_connected"
+					? __("Grid-connected", "linker-tools")
+					: check[field] === "backup"
+						? __("Backup operation", "linker-tools")
+						: null;
+			return mode
+				? `${mode} · ${typeof check.control_network === "string" ? check.control_network.toUpperCase() : __("Not specified", "linker-tools")}`
+				: "—";
+		}
 		if (semantic === "plant_operating_mode")
 			return check[field] === "grid_connected"
 				? __("Grid-connected", "linker-tools")

@@ -436,6 +436,42 @@ final class CompatibilityTest extends TestCase {
 		$this->assertSame( array(), Compatibility::pairs( $this->manifest ), 'No static runtime fallback.' );
 	}
 
+	/** Conditional declarations survive the native editor and cannot become general requirements. */
+	public function test_native_requirement_scope_stays_bound_and_contextual(): void {
+		$owner                = $this->product_id( 'GW100K-ETR-G10' );
+		$row                  = $this->claims[ $owner ]['requirements'][0];
+		$row['applicability'] = array(
+			'operating_mode'  => 'backup',
+			'topology'        => 'parallel_group',
+			'control_network' => 'lan',
+		);
+		$raw                  = $row;
+		$raw['included']      = $row['included'] ? '1' : '0';
+		$raw['confirm']       = '1';
+		$raw['documents']     = array_map( static fn( array $doc ): array => array_intersect_key( $doc, array_flip( array( 'document_id', 'page' ) ) ), $row['documents'] );
+		$before               = $this->claims[ $owner ];
+		$draft                = array(
+			'complete'     => '1',
+			'pairs'        => array(),
+			'requirements' => array( $raw ),
+		);
+		// Preserve existing pairs while changing only this maintained requirement.
+		$draft['pairs']         = array_map(
+			static function ( array $pair ): array {
+				$pair['documents'] = array_map( static fn( array $doc ): array => array_intersect_key( $doc, array_flip( array( 'document_id', 'page' ) ) ), $pair['documents'] );
+				return $pair;
+			},
+			$before['pairs']
+		);
+		$this->claims[ $owner ] = CompatibilityEditor::prepare( $owner, $draft, $before, $this->manifest );
+		$this->assertSame( $row['applicability'], $this->claims[ $owner ]['requirements'][0]['applicability'] );
+		$this->assertSame( array(), Compatibility::requirements( 'GW100K-ETR-G10', 'parallel_controller', $owner, $this->manifest ) );
+		$this->assertCount( 1, Compatibility::requirements( 'GW100K-ETR-G10', 'parallel_controller', $owner, $this->manifest, $row['applicability'] ) );
+		$row['applicability']['control_network'] = 'wifi';
+		$this->expectException( \RuntimeException::class );
+		CompatibilityClaims::bind_row( $owner, $row, 'requirements', $this->manifest, true );
+	}
+
 	/** Truncated native POST fields cannot erase declarations from later rows. */
 	public function test_truncated_editor_preserves_all_stored_declarations(): void {
 		$owner = $this->product_id( 'H2-10K-T3' );

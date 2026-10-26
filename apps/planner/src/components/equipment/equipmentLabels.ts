@@ -13,6 +13,8 @@ export function equipmentCheckLabel(id: string): string {
 			return __("Plant grid phases", "linker-tools");
 		case "plant_operating_mode":
 			return __("Plant operating mode", "linker-tools");
+		case "plant_operating_scope":
+			return __("Manufacturer requirement applicability", "linker-tools");
 		case "plant_parallel_count":
 			return __("Converters in the group", "linker-tools");
 		case "plant_joint_operation":
@@ -132,6 +134,16 @@ export function equipmentCheckLabel(id: string): string {
 	}
 }
 export function equipmentReason(reason: string): string | null {
+	if (reason === "manufacturer_requirement_matches_operating_context")
+		return __(
+			"The documented manufacturer requirement applies to the declared operating mode, topology and communication setup. Firmware, model combination and commissioning still require separate checks.",
+			"linker-tools",
+		);
+	if (reason === "parallel_count_uses_applicable_manufacturer_limit")
+		return __(
+			"Group size is checked only against manufacturer limits documented for the declared operating mode, topology and communication setup. If no applicable limit is documented, it remains unknown.",
+			"linker-tools",
+		);
 	if (reason === "maximum_grid_output_is_necessary_bound_only")
 		return __(
 			"In grid-connected operation, the requested continuous active power from the battery cannot exceed the applicable documented maximum output of the whole inverter. Where the source gives a maximum apparent power S, |P| ≤ S is a necessary upper bound only; S is not an active-power rating. Passing this check does not establish continuous battery output.",

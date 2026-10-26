@@ -40,6 +40,14 @@ export interface PlantGroupDraft extends JsonObject {
 	id: string;
 	unit_ids: string[];
 	controller_product_id: number | null;
+	control_network?: "lan" | "rs485";
+}
+/** Preserve optional context across edit/prepare/adopt without adding nulls to old projects. */
+export function plantGroupDraft({
+	controller_revision: _revision,
+	...group
+}: PlantGroupDraft & { controller_revision?: string | null }): PlantGroupDraft {
+	return group;
 }
 export interface PlantDraft extends JsonObject {
 	schema_version: 1;
@@ -156,13 +164,7 @@ export function readPlantDraft(inputs: JsonObject): PlantDraft {
 				name: u.name,
 				inputs: { equipment_selection: u.selection },
 			})),
-			parallel_groups: plant.parallel_groups.map(
-				({ id, unit_ids, controller_product_id }) => ({
-					id,
-					unit_ids,
-					controller_product_id,
-				}),
-			),
+			parallel_groups: plant.parallel_groups.map(plantGroupDraft),
 		};
 	}
 	const raw = readObject(inputs.equipment_plant_setup);
@@ -194,6 +196,9 @@ export function readPlantDraft(inputs: JsonObject): PlantDraft {
 			!identity.test(g.id) ||
 			!Array.isArray(g.unit_ids) ||
 			g.unit_ids.some((id) => typeof id !== "string") ||
+			(g.control_network !== undefined &&
+				g.control_network !== "lan" &&
+				g.control_network !== "rs485") ||
 			(g.controller_product_id !== null &&
 				(typeof g.controller_product_id !== "number" ||
 					!Number.isSafeInteger(g.controller_product_id) ||
@@ -204,6 +209,9 @@ export function readPlantDraft(inputs: JsonObject): PlantDraft {
 			id: g.id,
 			unit_ids: g.unit_ids as string[],
 			controller_product_id: g.controller_product_id as number | null,
+			...(g.control_network === undefined
+				? {}
+				: { control_network: g.control_network as "lan" | "rs485" }),
 		};
 	});
 	if (

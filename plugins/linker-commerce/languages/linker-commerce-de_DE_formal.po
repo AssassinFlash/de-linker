@@ -6798,3 +6798,28 @@ msgstr "Verwendungszweck"
 #~ msgid_plural "products"
 #~ msgstr[0] "Produkt"
 #~ msgstr[1] "Produkte"
+
+
+#: includes/Products/Publication/CompatibilityEditor.php
+msgid "Operating mode not specified"
+msgstr "Betriebsart nicht angegeben"
+
+#: includes/Products/Publication/CompatibilityEditor.php
+msgid "Grid-connected"
+msgstr "Netzparallelbetrieb"
+
+#: includes/Products/Publication/CompatibilityEditor.php
+msgid "Topology not specified"
+msgstr "Topologie nicht angegeben"
+
+#: includes/Products/Publication/CompatibilityEditor.php
+msgid "Single converter"
+msgstr "Einzelner Wechselrichter"
+
+#: includes/Products/Publication/CompatibilityEditor.php
+msgid "Parallel group"
+msgstr "Parallelgruppe"
+
+#: includes/Products/Publication/CompatibilityEditor.php
+msgid "No network restriction declared"
+msgstr "Keine Netzwerkeinschränkung angegeben"

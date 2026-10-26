@@ -5122,6 +5122,7 @@ msgstr "Nicht freigegeben"
 msgid "Not recorded."
 msgstr "Nicht erfasst."
 
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx ../../apps/planner/src/components/equipment/EquipmentResult.tsx
 #: build/planner/assets/planner.js:1
 msgid "Not specified"
 msgstr "Nicht angegeben"
@@ -11333,3 +11334,23 @@ msgstr "Leistungsgrenze des Wechselrichters im Netzparallelbetrieb"
 #: build/planner/assets/planner.js
 msgid "In grid-connected operation, the requested continuous active power from the battery cannot exceed the applicable documented maximum output of the whole inverter. Where the source gives a maximum apparent power S, |P| ≤ S is a necessary upper bound only; S is not an active-power rating. Passing this check does not establish continuous battery output."
 msgstr "Im Netzparallelbetrieb darf die geforderte dauerhafte Wirkleistungsabgabe der Batterie die dokumentierte maximale Ausgangsleistung des gesamten Wechselrichters nicht überschreiten, sofern diese Angabe für die gewählten Bedingungen gilt. Gibt die Quelle eine maximale Scheinleistung S an, liefert |P| ≤ S lediglich eine notwendige Obergrenze; S darf nicht als Wirkleistungsangabe verwendet werden. Das Einhalten dieser Grenze weist keine Dauerentladeleistung der Batterie nach."
+
+#: build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/equipment/PlantSetup.tsx
+msgid "Controller communication"
+msgstr "Controller-Kommunikation"
+
+#: build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+msgid "Manufacturer requirement applicability"
+msgstr "Anwendbarkeit der Herstellervorgabe"
+
+#: build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+msgid "The documented manufacturer requirement applies to the declared operating mode, topology and communication setup. Firmware, model combination and commissioning still require separate checks."
+msgstr "Die dokumentierte Herstellervorgabe gilt für die angegebene Betriebsart, Topologie und Kommunikationsanbindung. Firmware, Modellkombination und Inbetriebnahme müssen weiterhin gesondert geprüft werden."
+
+#: build/planner/assets/planner.js:1
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+msgid "Group size is checked only against manufacturer limits documented for the declared operating mode, topology and communication setup. If no applicable limit is documented, it remains unknown."
+msgstr "Die Gerätezahl der Gruppe wird nur mit Herstellergrenzen abgeglichen, die für die angegebene Betriebsart, Topologie und Kommunikationsanbindung dokumentiert sind. Ist keine anwendbare Grenze dokumentiert, bleibt sie unbekannt."

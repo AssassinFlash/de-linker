@@ -52,6 +52,7 @@
 				"kind": { "enum": ["meter", "backup", "parallel_controller"] },
 				"included": { "type": "boolean" },
 				"phase": { "enum": [1, 3] },
+				"applicability": { "$ref": "#/$defs/requirementScope" },
 				"max_units": {
 					"description": "parallel_controller: the most inverters one controller coordinates.",
 					"type": "integer",
@@ -63,6 +64,16 @@
 			},
 			"if": { "properties": { "included": { "const": false } } },
 			"then": { "required": ["accessories"] }
+		},
+		"requirementScope": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["operating_mode", "topology"],
+			"properties": {
+				"operating_mode": { "enum": ["grid_connected", "backup"] },
+				"topology": { "enum": ["single_converter", "parallel_group"] },
+				"control_network": { "enum": ["lan", "rs485"] }
+			}
 		},
 		"accessory": {
 			"type": "object",

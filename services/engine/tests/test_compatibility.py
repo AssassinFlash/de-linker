@@ -105,6 +105,44 @@ def test_parallel_limits_come_from_the_controller_documents(
         r.max_units
         for r in compatibility.requirements("CHS2-30K-T4-X", "parallel_controller")
     ] == [10]
+    # Synthetic scoped rows distinguish application, not another product source.
+    raw = compatibility.snapshot()
+    grid = next(
+        r
+        for r in raw["requirements"]
+        if r.get("max_units") == 15 and re.search(r["inverter"], "GW100K-ETR-G10")
+    )
+    raw["requirements"] = [
+        {
+            **grid,
+            "max_units": count,
+            "applicability": {
+                "operating_mode": mode,
+                "topology": "parallel_group",
+                "control_network": "lan",
+            },
+        }
+        for mode, count in (("grid_connected", 15), ("backup", 6))
+    ]
+    scoped = Compatibility(raw)
+    assert scoped.requirements("GW100K-ETR-G10", "parallel_controller") == []
+    context = dict(topology="parallel_group", control_network="lan")
+    assert [
+        r.max_units
+        for r in scoped.requirements(
+            "GW100K-ETR-G10", "parallel_controller", operating_mode="backup", **context
+        )
+    ] == [6]
+    assert (
+        scoped.requirements(
+            "GW100K-ETR-G10",
+            "parallel_controller",
+            operating_mode="backup",
+            topology="parallel_group",
+            control_network="rs485",
+        )
+        == []
+    )
 
 
 def test_the_shipped_contract_keeps_the_one_module_b2_off_the_h2(

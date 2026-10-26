@@ -192,6 +192,20 @@ def build_report(source: Object) -> Report:
                 for field in ("actual", "required"):
                     if check.get(field) in ("grid_connected", "backup"):
                         rows.append(row(field, text(check[field], locale)))
+            if semantic_id == "plant_operating_scope":
+                network = check.get("control_network")
+                rows.append(
+                    row(
+                        "actual",
+                        text(check["actual"], locale)
+                        + " · "
+                        + (
+                            str(network).upper()
+                            if network
+                            else text("not_specified", locale)
+                        ),
+                    )
+                )
             paragraphs: list[str] = (
                 [text(check["reason"], locale)] if check["reason"] in TEXT else []
             )

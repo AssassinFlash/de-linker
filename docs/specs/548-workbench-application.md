@@ -658,3 +658,36 @@ The existing approved German optional-logo wording is bound to the planner's
 own script catalog, rather than only the retired configurator bundle. This is
 a translation binding repair and introduces no new customer wording or build
 pipeline. This increment changes no calculations or project revisions.
+## Requirement applicability within the current Woo authority
+
+This delivery adds optional `applicability` to a Woo-native compatibility
+requirement: an explicit `operating_mode` and `topology`, plus an optional
+`control_network` (`lan` or `rs485`). Native product editing, source binding,
+publication and the engine share that declaration. A caller without matching
+context must not receive a conditional claim as an unconditional requirement;
+older callers retain their existing unscoped claims. No alternate product
+authority, text parsing, or commissioning approval is introduced.
+
+The plant records a communication choice per coordination group. Preparation,
+search, candidate adoption, saved revisions and reports use that same choice.
+An unanswered field is omitted to preserve older canonical inputs; changing
+the choice invalidates equipment preparation and an old candidate. Controller
+association and group-count checks use applicable rows. A bare legacy
+`max_units` cannot approve or reject a group in an unproved operating context.
+An applicable count is a necessary bound; a mode/network match does not resolve
+firmware, mixed models, installation, country acceptance or joint performance.
+
+The held ET solution manual's grid table places the count/ARM/DSP bullets in
+the BT row, while the ET description cell is empty on the previous page.
+Therefore this delivery must not maintain those numbers as ET limits. The
+explicit ET grid/LAN diagram can support a scoped one-SEC requirement while
+the ET count and firmware remain unknown. Product facts remain native Woo
+declarations bound to the current associated manual bytes and page.
+
+Reuse the preceding delivery's unchanged annual/PV, ownership, report-material
+and release-lifecycle evidence. The affected checks are scoped native
+editing/projection, mode/network/count discrimination, context preservation
+through search/adoption, and one owned local save/result/report path. No new
+all-site or numerical matrix is required. Code and conditional Woo data must
+roll back together: the preceding runtime rejects the new source schema;
+retained prior source generation/scoped metadata preimage are its recovery.

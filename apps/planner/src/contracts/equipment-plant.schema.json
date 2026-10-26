@@ -1,5 +1,12 @@
 {
   "$defs": {
+    "ControlNetwork": {
+      "enum": [
+        "lan",
+        "rs485"
+      ],
+      "type": "string"
+    },
     "Count": {
       "exclusiveMinimum": 0,
       "maximum": 9007199254740991,
@@ -218,6 +225,17 @@
               "type": "null"
             }
           ]
+        },
+        "control_network": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ControlNetwork"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [

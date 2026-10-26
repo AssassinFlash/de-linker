@@ -65,6 +65,27 @@ class PairResult:
 
 
 @dataclass(frozen=True)
+class RequirementScope:
+    operating_mode: Literal["grid_connected", "backup"]
+    topology: Literal["single_converter", "parallel_group"]
+    control_network: Literal["lan", "rs485"] | None = None
+
+    def matches(
+        self,
+        operating_mode: str | None,
+        topology: str | None,
+        control_network: str | None,
+    ) -> bool:
+        return (
+            self.operating_mode == operating_mode
+            and self.topology == topology
+            and (
+                self.control_network is None or self.control_network == control_network
+            )
+        )
+
+
+@dataclass(frozen=True)
 class Requirement:
     kind: Literal["meter", "backup", "parallel_controller"]
     included: bool
@@ -73,6 +94,7 @@ class Requirement:
     accessories: tuple[Accessory, ...]
     conditions: tuple[Text, ...]
     documents: tuple[DocumentRef, ...]
+    applicability: RequirementScope | None = None
 
 
 @lru_cache(maxsize=512)
@@ -168,8 +190,20 @@ class Compatibility:
         )
 
     def requirements(
-        self, inverter_model: str, kind: str, *, inverter_id: int | None = None
+        self,
+        inverter_model: str,
+        kind: str,
+        *,
+        inverter_id: int | None = None,
+        operating_mode: str | None = None,
+        topology: str | None = None,
+        control_network: str | None = None,
     ) -> list[Requirement]:
+        """Scoped claims require matching context, including a known network.
+
+        Callers without that context retain only their older unscoped claims;
+        they cannot turn a new conditional declaration into a general release.
+        """
         return [
             Requirement(
                 kind=item["kind"],
@@ -179,6 +213,9 @@ class Compatibility:
                 accessories=_accessories(item.get("accessories", [])),
                 conditions=_texts(item["conditions"]),
                 documents=_documents(item["documents"]),
+                applicability=RequirementScope(**item["applicability"])
+                if "applicability" in item
+                else None,
             )
             for item in self._requirements
             if item["kind"] == kind
@@ -186,6 +223,12 @@ class Compatibility:
             and (
                 "inverter_product_id" not in item
                 or item["inverter_product_id"] == inverter_id
+            )
+            and (
+                "applicability" not in item
+                or RequirementScope(**item["applicability"]).matches(
+                    operating_mode, topology, control_network
+                )
             )
         ]
 

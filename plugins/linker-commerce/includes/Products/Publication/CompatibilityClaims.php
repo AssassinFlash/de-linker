@@ -152,6 +152,13 @@ final class CompatibilityClaims {
 			}
 			$result['kind']     = $row['kind'];
 			$result['included'] = $row['included'];
+			if ( array_key_exists( 'applicability', $row ) ) {
+				$scope = $row['applicability'];
+				if ( ! is_array( $scope ) || array_diff( array_keys( $scope ), array( 'operating_mode', 'topology', 'control_network' ) ) || ! in_array( $scope['operating_mode'] ?? null, array( 'grid_connected', 'backup' ), true ) || ! in_array( $scope['topology'] ?? null, array( 'single_converter', 'parallel_group' ), true ) || ( array_key_exists( 'control_network', $scope ) && ! in_array( $scope['control_network'], array( 'lan', 'rs485' ), true ) ) ) {
+					throw new \RuntimeException( 'A requirement scope needs a supported operating mode, topology and optional control network.' );
+				}
+				$result['applicability'] = $scope;
+			}
 			foreach ( array( 'phase', 'max_units' ) as $field ) {
 				if ( isset( $row[ $field ] ) ) {
 					if ( ! self::positive( $row[ $field ] ) || ( 'phase' === $field && ! in_array( $row[ $field ], array( 1, 3 ), true ) ) ) {

@@ -1220,3 +1220,43 @@ review/production release/readback remain in the full active goal. No production
 mail or inquiry write occurred. Existing acceptance JSON equipment_plant_search
 is the authoritative current delivery record; no separate ticket/report layer
 was created.
+
+### Mode/network-scoped Woo requirements — local delivery closed
+
+Conditional native Woo requirements now carry operating mode, topology and
+optional control network. Old callers without matching context never receive
+new conditional rows as general requirements. A legacy unscoped maximum does
+not decide the current group count. Group communication survives preparation,
+search/adoption and saved revisions; changing it clears an old candidate.
+Matching source applicability is separate from firmware, mixed models and
+commissioning. ET-S PDF10–11 were visually rechecked: the15/ARM/DSP bullets
+belong to the BT row, so no ET limit was inferred from them.
+
+Only local Woo1946/1947/1948 gained a grid/LAN/parallel one-SEC requirement,
+with currently associated ET-S PDF10 and ET-U PDF19 bytes explicitly bound.
+Sourcef4205bc2, compatibility1f5b5943 and matching runtime018a1e13 are loaded;
+publication job47897ebf completed the native claim/load/ack path. Storage5 and
+the existing environment/instance are reused. Runtime93059c67 is the sole
+rollback;8662d5e2 was retired. Rollback requires the prior source generation
+and the scoped native-claim preimage as well as the prior executable.
+
+The same owned project saved revision6 and ran cfd6a2ee7f5a4ec1b9ea86ea86530e0a.
+The two LAN/grid source-scope checks and one-controller association are met;
+ET count, continuous/joint capability and commissioning remain unresolved.
+Hardware quantities stay1946:2,1955:2,2409:1. Report97a81e54c75e4e2aa6f164581514cb95
+consumes that result, with an eight-page German PDF SHA256
+234017a9590a5a0bcb35c4bd43b37d600704dfa17988822d437cf0bc3431c491.
+Its layout, added scope/source conditions and unchanged material quantities
+were inspected. EN/DE1440/390 scoped result views have no horizontal overflow.
+A missing requirement displays a dash, not a fictitious backup requirement;
+four new translations are present in the existing planner script JSON.
+
+Native editing/projection, scope discrimination, the existing plant job/report
+fixture, client lifecycle/adoption, relevant static/build and independent
+Spec/Standards/copy review passed. Only actual repairs were rechecked; unchanged
+annual/PV, permission, material, download and release-lifecycle evidence was
+reused. No new test matrix, instance, environment, full backup, production,
+mail or inquiry write occurred. Temporary manual/PDF renders were removed;
+this batch's validation is closed. The previous full-goal remaining scope is
+unchanged; equipment_requirement_scope in the existing acceptance JSON is the
+current delivery record, with no additional ticket or report layer.

@@ -3,6 +3,15 @@
 from __future__ import annotations
 
 TEXT = {
+    "not_specified": ("Not specified", "Nicht angegeben"),
+    "manufacturer_requirement_matches_operating_context": (
+        "The documented manufacturer requirement applies to the declared operating mode, topology and communication setup. Firmware, model combination and commissioning still require separate checks.",
+        "Die dokumentierte Herstellervorgabe gilt für die angegebene Betriebsart, Topologie und Kommunikationsanbindung. Firmware, Modellkombination und Inbetriebnahme müssen weiterhin gesondert geprüft werden.",
+    ),
+    "parallel_count_uses_applicable_manufacturer_limit": (
+        "Group size is checked only against manufacturer limits documented for the declared operating mode, topology and communication setup. If no applicable limit is documented, it remains unknown.",
+        "Die Gerätezahl der Gruppe wird nur mit Herstellergrenzen abgeglichen, die für die angegebene Betriebsart, Topologie und Kommunikationsanbindung dokumentiert sind. Ist keine anwendbare Grenze dokumentiert, bleibt sie unbekannt.",
+    ),
     "maximum_grid_output_is_necessary_bound_only": (
         "In grid-connected operation, the requested continuous active power from the battery cannot exceed the applicable documented maximum output of the whole inverter. Where the source gives a maximum apparent power S, |P| ≤ S is a necessary upper bound only; S is not an active-power rating. Passing this check does not establish continuous battery output.",
         "Im Netzparallelbetrieb darf die geforderte dauerhafte Wirkleistungsabgabe der Batterie die dokumentierte maximale Ausgangsleistung des gesamten Wechselrichters nicht überschreiten, sofern diese Angabe für die gewählten Bedingungen gilt. Gibt die Quelle eine maximale Scheinleistung S an, liefert |P| ≤ S lediglich eine notwendige Obergrenze; S darf nicht als Wirkleistungsangabe verwendet werden. Das Einhalten dieser Grenze weist keine Dauerentladeleistung der Batterie nach.",
@@ -551,6 +560,10 @@ CHECKS = {
         "Anzahl der Umrichter in der Gruppe",
     ),
     "plant_joint_operation": ("Joint operation", "Gemeinsamer Betrieb"),
+    "plant_operating_scope": (
+        "Manufacturer requirement applicability",
+        "Anwendbarkeit der Herstellervorgabe",
+    ),
     "plant_controller": ("Shared controller", "Gemeinsamer Controller"),
     "plant_pv_allocation": (
         "Allocated PV nameplate rating",

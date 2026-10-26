@@ -9,7 +9,12 @@ from pydantic import Field, model_validator
 from .canonical import Json, Object
 from .energy_inputs import Document, SchemaVersion
 from .equipment_inputs import Count
-from .equipment_plant import EquipmentPlant, Identity, assert_plant_exclusivity
+from .equipment_plant import (
+    ControlNetwork,
+    EquipmentPlant,
+    Identity,
+    assert_plant_exclusivity,
+)
 from .equipment_requirements import EquipmentRequirements
 from .errors import InvalidInput
 
@@ -25,6 +30,9 @@ class SearchGroup(Document):
     unit_ids: Annotated[list[Identity], Field(min_length=2)]
     # A selected controller constrains the search; null asks the Woo contract.
     controller_product_id: Count | None
+    control_network: ControlNetwork | None = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
 
 
 class PlantSearchPlan(Document):
@@ -127,6 +135,7 @@ class PlantSearchPlan(Document):
         return len(self.parallel_groups) == len(plant.parallel_groups) and all(
             (request.id, request.unit_ids) == (group.id, group.unit_ids)
             and request.controller_product_id in (None, group.controller_product_id)
+            and request.control_network == group.control_network
             for request, group in zip(
                 self.parallel_groups, plant.parallel_groups, strict=True
             )

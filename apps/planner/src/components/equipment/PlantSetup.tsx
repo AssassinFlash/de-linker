@@ -497,6 +497,30 @@ export function PlantSetup(props: Props) {
 						))}
 					</div>
 					<label className="lp-field">
+						<span>{__("Controller communication", "linker-tools")}</span>
+						<select
+							value={group.control_network ?? ""}
+							disabled={blocked}
+							onChange={(event) => {
+								const network = event.currentTarget.value;
+								change((current) => ({
+									...current,
+									parallel_groups: current.parallel_groups.map((g) => {
+										if (g.id !== group.id) return g;
+										const { control_network: _previous, ...rest } = g;
+										return network === "lan" || network === "rs485"
+											? { ...rest, control_network: network }
+											: rest;
+									}),
+								}));
+							}}
+						>
+							<option value="">{__("Not specified", "linker-tools")}</option>
+							<option value="lan">LAN</option>
+							<option value="rs485">RS485</option>
+						</select>
+					</label>
+					<label className="lp-field">
 						<span>{__("Shared controller", "linker-tools")}</span>
 						<select
 							value={group.controller_product_id ?? ""}

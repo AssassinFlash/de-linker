@@ -138,13 +138,34 @@ def assess_plant(
                     raw["model"],
                     "parallel_controller",
                     inverter_id=selection.inverter_product_id,
+                    operating_mode=plant.requirements.operating_mode,
+                    topology="parallel_group",
+                    control_network=group.control_network,
                 )
                 if r.phase in (None, plant.requirements.grid_phase)
             ]
             declarations.extend(matched)
             if matched:
                 covered.add(uid)
-            bounds = [r.max_units for r in matched if r.max_units is not None]
+            # A legacy bare count does not establish whether it applies to
+            # grid/backup or this communication setup. Retain its source text
+            # without using it to approve or reject the current group size.
+            scoped = [r for r in matched if r.applicability is not None]
+            bounds = [r.max_units for r in scoped if r.max_units is not None]
+            add(
+                f"group:{group.id}:{uid}:operating_scope",
+                "satisfied" if scoped else "unresolved",
+                "manufacturer_requirement_matches_operating_context"
+                if scoped
+                else "mode_model_firmware_and_battery_association_require_scoped_evidence",
+                semantic_id="plant_operating_scope",
+                group_name=group_name,
+                actual=plant.requirements.operating_mode,
+                control_network=group.control_network,
+                documents=[
+                    {"url": d.url, "page": d.page} for r in scoped for d in r.documents
+                ],
+            )
             add(
                 f"group:{group.id}:{uid}:parallel_count",
                 "unresolved"
@@ -152,7 +173,7 @@ def assess_plant(
                 else "satisfied"
                 if len(group.unit_ids) <= min(bounds)
                 else "violated",
-                "woo_parallel_count_requires_mode_scope",
+                "parallel_count_uses_applicable_manufacturer_limit",
                 actual=len(group.unit_ids),
                 required=min(bounds) if bounds else None,
                 semantic_id="plant_parallel_count",
@@ -161,8 +182,8 @@ def assess_plant(
                     {"url": d.url, "page": d.page} for r in matched for d in r.documents
                 ],
             )
-        # Current Woo declarations have no typed operating-mode or mixed-model
-        # scope. Neither a numerical bound nor matching controller text grants it.
+        # A mode/network match is only the scope of a source requirement.
+        # It does not confirm model mixing, firmware or battery commissioning.
         add(
             f"group:{group.id}:manufacturer_topology",
             "unresolved",

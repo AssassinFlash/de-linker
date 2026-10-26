@@ -138,9 +138,10 @@ final class Compatibility {
 	 * @param string                   $kind     The requirement kind (meter, parallel_controller).
 	 * @param int|null                 $inverter_id Exact Woo identity when the caller has it.
 	 * @param array<string,mixed>|null $manifest Same current Woo authority read.
+	 * @param array<string,string>     $context Explicit operating mode/topology/network; absent context never grants a conditional claim.
 	 * @return list<array<string, mixed>> The matching entries.
 	 */
-	public static function requirements( string $inverter, string $kind, ?int $inverter_id = null, ?array $manifest = null ): array {
+	public static function requirements( string $inverter, string $kind, ?int $inverter_id = null, ?array $manifest = null, array $context = array() ): array {
 		$manifest    ??= Publication::manifest();
 		$inverter_id ??= self::identity( $inverter, $manifest );
 		$data          = EngineeringData::compatibility( $manifest );
@@ -150,6 +151,7 @@ final class Compatibility {
 			if ( is_array( $entry )
 				&& ( $entry['kind'] ?? '' ) === $kind
 				&& null !== $inverter_id && ( $entry['inverter_product_id'] ?? null ) === Publication::canonical_id( $inverter_id )
+				&& ( ! isset( $entry['applicability'] ) || array() === array_diff_assoc( $entry['applicability'], $context ) )
 			) {
 				$requirements[] = $entry;
 			}

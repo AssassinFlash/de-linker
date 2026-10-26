@@ -6,7 +6,7 @@ those batteries a shared DC bank or establishes a common backup supply.
 
 from __future__ import annotations
 
-from typing import Annotated
+from typing import Annotated, Literal
 
 from pydantic import Field, model_validator
 
@@ -18,6 +18,7 @@ from .errors import InvalidInput
 
 type Identity = Annotated[str, Field(pattern=r"^[A-Za-z][A-Za-z0-9_-]{0,63}$")]
 type Revision = Annotated[str, Field(pattern=r"^[a-f0-9]{64}$")]
+type ControlNetwork = Literal["lan", "rs485"]
 
 
 class PlantUnit(Document):
@@ -31,6 +32,11 @@ class ParallelGroup(Document):
     unit_ids: Annotated[list[Identity], Field(min_length=2)]
     controller_product_id: Count | None
     controller_revision: Revision | None
+    # Omit an unanswered new field so retained projects/candidates keep their
+    # original canonical representation and immutable assessment references.
+    control_network: ControlNetwork | None = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
 
     @model_validator(mode="after")
     def distinct_members(self) -> ParallelGroup:
@@ -50,8 +56,7 @@ def assert_plant_exclusivity(inputs: Object) -> None:
     if not {"equipment_plant", "equipment_plant_setup"}.intersection(inputs):
         return
     if any(
-        inputs.get(key) is not None
-        for key in ("equipment_selection", "pv_string_plan")
+        inputs.get(key) is not None for key in ("equipment_selection", "pv_string_plan")
     ):
         raise InvalidInput(
             "a plant cannot reuse a single-converter selection or wiring result"
@@ -99,11 +104,7 @@ def matches_setup(plant: EquipmentPlant, setup: Object) -> bool:
         ):
             return False
     return groups == [
-        {
-            "id": g.id,
-            "unit_ids": g.unit_ids,
-            "controller_product_id": g.controller_product_id,
-        }
+        g.model_dump(mode="json", exclude={"controller_revision"})
         for g in plant.parallel_groups
     ]
 

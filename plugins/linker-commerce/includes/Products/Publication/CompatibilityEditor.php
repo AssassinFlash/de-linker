@@ -119,6 +119,8 @@ final class CompatibilityEditor {
 				$this->input( $name . '[' . $field . ']', (string) ( $row[ $field ] ?? '' ), 'number' );
 				echo '</label> ';
 			}
+			echo '</p><p>';
+			$this->scope_fields( $name, $row['applicability'] ?? array() );
 		}
 		echo '</p>';
 		if ( ! empty( $row['unresolved'] ) ) {
@@ -293,6 +295,10 @@ final class CompatibilityEditor {
 					$row[ $key ] = self::integer( $raw[ $key ] );
 				}
 			}
+			$scope = array_filter( (array) ( $raw['applicability'] ?? array() ), static fn( mixed $value ): bool => '' !== $value );
+			if ( array() !== $scope ) {
+				$row['applicability'] = $scope;
+			}
 		}
 		foreach ( (array) ( $raw['conditions'] ?? array() ) as $condition ) {
 			$en = sanitize_textarea_field( (string) ( $condition['en'] ?? '' ) );
@@ -357,6 +363,35 @@ final class CompatibilityEditor {
 			throw new \RuntimeException( 'A positive whole number is required.' );
 		}
 		return (int) $value;
+	}
+
+	/**
+	 * Source applicability uses native controls, with empty fields kept unknown.
+	 *
+	 * @param string              $name Row field prefix.
+	 * @param array<string,mixed> $scope Current maintained scope.
+	 */
+	private function scope_fields( string $name, array $scope ): void {
+		$options = array(
+			'operating_mode'  => array(
+				''               => __( 'Operating mode not specified', 'linker-commerce' ),
+				'grid_connected' => __( 'Grid-connected', 'linker-commerce' ),
+				'backup'         => __( 'Backup', 'linker-commerce' ),
+			),
+			'topology'        => array(
+				''                 => __( 'Topology not specified', 'linker-commerce' ),
+				'single_converter' => __( 'Single converter', 'linker-commerce' ),
+				'parallel_group'   => __( 'Parallel group', 'linker-commerce' ),
+			),
+			'control_network' => array(
+				''      => __( 'No network restriction declared', 'linker-commerce' ),
+				'lan'   => 'LAN',
+				'rs485' => 'RS485',
+			),
+		);
+		foreach ( $options as $key => $choices ) {
+			$this->select( $name . '[applicability][' . $key . ']', (string) ( $scope[ $key ] ?? '' ), $choices );
+		}
 	}
 
 	/** Show a native, user-scoped save refusal. */
