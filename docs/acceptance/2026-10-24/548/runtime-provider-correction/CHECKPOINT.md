@@ -993,3 +993,54 @@ qualification, country scope, remaining consumers and persisted-data migration,
 review/production publication and readback remain within the complete active
 goal. Physical instance support alone does not qualify joint system operation.
 No production, Woo product, mail or inquiry write occurred in this increment.
+
+## Private paired release lifecycle — host review closed and retired
+
+Code `ac85952e` adds an independent non-root planning HTTP/worker release
+operator. The actual services host still ran the legacy engine entry without a
+managed planning worker; the generic engine/Genie restart path could not safely
+own this queue. The new operator prepares immutable source/environments and
+policies, drains with the retained matching executor, verifies both live
+identities before admission, restores a failed activation and retains only the
+current plus one rollback. Stable boot dependencies follow the current units.
+
+The real host exposed a public source-access defect: `mkdtemp` made the Woo
+projection generation root-only. The publisher now sets public generation/file
+modes to `0755`/`0644`, including the initial retained rollback pair; private
+workspaces and credentials keep their own permissions. Preparation validates
+the source loader as the actual service UID before stopping a working release.
+The permission checks for all retained generations share one assertion rather
+than duplicate the current-generation assertions.
+
+One isolated namespace on loopback 8911 exercised a stopped old executor's
+queued report, old-version recovery, activation of the new matching pair,
+original PDF/CSV reads, a report produced by the new worker, rollback and reads
+of both versions' unchanged original assets. The native Linux identities were
+`223d7925…` and `85be6d35…`, with storage 5 and one shared store. Their hashes
+are host-specific and are not compared with the retained macOS runtime hashes.
+Both reports share the same frozen materials model. The existing production
+engine/Genie PID and invocation identities did not change.
+
+Production has not yet received this line's Woo-owned compatibility increment.
+The host review therefore used the exact already-validated p548 Woo projection
+bytes and its current manifest through a private SSH forward. The authority's
+original origin, including port, had to be preserved: an alternate forward
+address correctly failed product binding. No fact, compatibility claim or
+product revision was invented or relaxed. This review is not production
+publication or workload-capacity acceptance.
+
+Spec and Standards passed; focused operator/source checks and static checks
+passed. Existing numerical, browser and commerce evidence was reused, with no
+new UI or whole-site run. The host pair was drained and stopped, both units and
+boot links removed, the reproducible review root and its dedicated account
+deleted, and both owned SSH forwards closed. Only a compact unique lifecycle
+receipt is retained in `paired_release_lifecycle` in the existing acceptance
+JSON. Pre-delete query/tool corrections are recorded there; unrelated broken
+host service links were left untouched. Validation of this boundary has stopped.
+
+The Woo authority chat received the version and unchanged data contract without
+an added wait on this goal. The complete goal remains active: installation
+electrical/structural specification and reconciliation, commercial multi-device
+qualification, country scope, remaining consumers and persisted-data migration,
+coordinated review/production publication and readback. The new operator and
+publisher permission fix still need that coordinated production release.

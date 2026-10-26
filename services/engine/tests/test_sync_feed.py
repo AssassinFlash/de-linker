@@ -137,10 +137,6 @@ def test_complete_generation_including_empty_products(
     assert feed.is_symlink() and contract.is_symlink()
     assert feed.resolve().parent == contract.resolve().parent
     # Public projections must remain readable by the non-root planning pair.
-    assert feed.resolve().parent.stat().st_mode & 0o777 == 0o755
-    assert all(
-        path.stat().st_mode & 0o777 == 0o644 for path in feed.resolve().parent.iterdir()
-    )
     assert all(
         path.stat().st_mode & 0o777 == (0o755 if path.is_dir() else 0o644)
         for generation in feed.parent.glob("publication-generation-*")

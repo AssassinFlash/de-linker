@@ -1443,7 +1443,7 @@
       "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
     }
   },
-  "current_frontier": "installation_routes",
+  "current_frontier": "paired_release_lifecycle",
   "shared_dc_core": {
     "status": "implemented_and_reviewed_core_not_connected_to_native_commands",
     "model": "constant_window_shared_dc_bus_v1",
@@ -3375,5 +3375,130 @@
       "Commercial multi-device system qualification; physical instances alone do not qualify joint operation.",
       "Remaining country-specific scope, site/Genie/commerce consumers, persisted-data migration, review/production publication and readback."
     ]
+  },
+  "paired_release_lifecycle": {
+    "authority": {
+      "production_data_written": false,
+      "source": "p548 maintained Woo via loopback SSH forward",
+      "source_revision": "ae4a0a7920abea212908786f8b08141e4432e6631af699d79c99429c27a1257f"
+    },
+    "baseline": {
+      "execution_key": "21c0074bcb6741b9f033b72a4dcd2b8c0f0e804ada3b05fabe2e09fce4793dc5",
+      "runtime_sha256": "223d79259e80c4f140fcc75c34809ee327c85f28df0dbd1ef2bc980dbd9386de",
+      "storage_binding": "3656080dbea35ba56358da467a935bd1e66c4b14737f659dd5a1171ee33d6b5c"
+    },
+    "before": {
+      "linker-engine.service": "MainPID=118923\nActiveState=active\nInvocationID=b832db71373a473fb0257e90a68dd27d\n",
+      "linker-genie.service": "MainPID=99161\nActiveState=active\nInvocationID=f23eff86f8ac49baab8d8683617a27c3\n"
+    },
+    "created_user": true,
+    "de": {
+      "exports": {
+        "planning_materials_csv_v3": {
+          "bytes": 3086,
+          "id": "6d8ed7fdd33c43d2afeb579807e08a46",
+          "sha256": "432abd46cbfede2c510b071cda4537f0f9f7428fee542a0eda0ba8a91dae9e70"
+        },
+        "planning_report_pdf_v1": {
+          "bytes": 45916,
+          "id": "55cc7ecaf2c64c32b2aef78529641c0d",
+          "sha256": "415fc1273a9732c0519746564e33dbcdbcbeebd1c9b03e6847643a7acc5e1e05"
+        }
+      },
+      "id": "5694f0fbbf9e4162a2dfd7fca76300c0",
+      "materials_sha256": "5be5a3cc660912770e7ad24a321672de09e309499f5dd3c2565b2699971f8f2a",
+      "runtime_sha256": "85be6d350acbd28763371ce18238d32515100e9eac5b7fbbf04738c12e6d2978"
+    },
+    "en": {
+      "exports": {
+        "planning_materials_csv_v3": {
+          "bytes": 3072,
+          "id": "e076e6d190cc4614b4553049eeadca12",
+          "sha256": "93652b44cf06efe75f41c8d02b71e2a5c6ac7f86ba5ca5a7420fe75fb8764563"
+        },
+        "planning_report_pdf_v1": {
+          "bytes": 44992,
+          "id": "c0f60a6bf1e34d0aafd632d7bea0f992",
+          "sha256": "ac8a1e2f30919498ae296cac3267d3126a3421962a80a1abfe304b7d93ee6057"
+        }
+      },
+      "id": "df2e1ae4350341a3803b793693ff738b",
+      "materials_sha256": "5be5a3cc660912770e7ad24a321672de09e309499f5dd3c2565b2699971f8f2a",
+      "runtime_sha256": "223d79259e80c4f140fcc75c34809ee327c85f28df0dbd1ef2bc980dbd9386de"
+    },
+    "owner_thread": "01a162c2-2e24-7671-a172-afb082fdfc4e",
+    "pending": 0,
+    "phase": "closed_and_retired",
+    "project": {
+      "id": "16ac21d7674d4eb190a3fed2251aafe2",
+      "input_sha256": "c8ed5507aed46532e2b3002bfd7f7ed81955feec426673b9bee2ad68b52641a4",
+      "revision": 1
+    },
+    "queued_run": "df2e1ae4350341a3803b793693ff738b",
+    "release_limit": 2,
+    "retire_when": "After one bounded review lifecycle in this increment; stop units then remove reproducible root.",
+    "retired_preparation": {
+      "identity": {
+        "execution_key": "21c0074bcb6741b9f033b72a4dcd2b8c0f0e804ada3b05fabe2e09fce4793dc5",
+        "runtime_sha256": "223d79259e80c4f140fcc75c34809ee327c85f28df0dbd1ef2bc980dbd9386de",
+        "storage_binding": "3656080dbea35ba56358da467a935bd1e66c4b14737f659dd5a1171ee33d6b5c"
+      },
+      "reason": "root-only production projection and not-yet-published Woo compatibility contract; no project/run created"
+    },
+    "rollback": {
+      "execution_key": "21c0074bcb6741b9f033b72a4dcd2b8c0f0e804ada3b05fabe2e09fce4793dc5",
+      "runtime_sha256": "223d79259e80c4f140fcc75c34809ee327c85f28df0dbd1ef2bc980dbd9386de",
+      "storage_binding": "3656080dbea35ba56358da467a935bd1e66c4b14737f659dd5a1171ee33d6b5c"
+    },
+    "root": "/opt/linker-planner-review-548",
+    "source_origin_correction": {
+      "authority_port": 9347,
+      "prior_attempt_created_projects": 0,
+      "reason": "Current authority upload origin must remain exact; no source bytes or claims changed",
+      "rejected_alias_port": 8912
+    },
+    "stable_boot_links": true,
+    "uid": 994,
+    "unchanged_production_units": true,
+    "upgraded": {
+      "execution_key": "3b2f7fd7280108dec2a058d495486c18d2c7528eca03f91addbda2764cd59747",
+      "runtime_sha256": "85be6d350acbd28763371ce18238d32515100e9eac5b7fbbf04738c12e6d2978",
+      "storage_binding": "3656080dbea35ba56358da467a935bd1e66c4b14737f659dd5a1171ee33d6b5c"
+    },
+    "worker_has_service_or_research_credentials": false,
+    "worker_uid": 994,
+    "receipt_sha256": "7fd4a39b85df4206ea4425657ee435b0f2342f7789f511e082a37a1b4f4072f7",
+    "code_commit": "ac85952e",
+    "recorded_at_utc": "2026-10-26T01:41:17.585963+00:00",
+    "necessary_checks": {
+      "operator_boundary_and_generation_permissions": "passed, four existing focused cases",
+      "ruff": "pass",
+      "mypy_strict": "pass",
+      "spec": "pass",
+      "standards": "pass",
+      "native_systemd_lifecycle": "pass"
+    },
+    "validation_closed": true,
+    "production_routing_changed": false,
+    "source_product_data_written": false,
+    "retirement": {
+      "review_root_removed": "/opt/linker-planner-review-548",
+      "owned_units_removed": [
+        "linker-planner-review-548-http.service",
+        "linker-planner-review-548-worker.service"
+      ],
+      "service_account_removed": true,
+      "verified_completed_runs": 2,
+      "review_port_closed": true,
+      "production_units_unchanged": true,
+      "unrelated_broken_unit_links_untouched": 1,
+      "retirement_corrections": [
+        "Task state is owned by jobs, not runs; initial pre-delete SQL check made no deletion",
+        "Recursive grep returned failure for unrelated broken service links after own units were removed; exact readable unit inspection found no other account use"
+      ],
+      "at_utc": "2026-10-26T01:45:54.216274+00:00",
+      "owned_authority_forward_removed": true,
+      "forward_pid": 39187
+    }
   }
 }
