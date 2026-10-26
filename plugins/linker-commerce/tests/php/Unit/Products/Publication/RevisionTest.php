@@ -10,9 +10,13 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Unit\Products\Publication;
 
 use Linker\Commerce\Products\EngineeringData;
+use Linker\Commerce\Products\Faqs;
 use Linker\Commerce\Products\Publication;
 use Linker\Commerce\Products\Publication\CompatibilityClaims;
 use Linker\Commerce\Products\Publication\CompatibilityMigration;
+use Linker\Commerce\Products\Publication\DocumentAccess;
+use Linker\Commerce\Products\Publication\DocumentFiles;
+use Linker\Commerce\Products\Publication\EvidenceBindings;
 use Linker\Commerce\Tests\Support\CurrentFaqProduct;
 use WP_Mock;
 use WP_Mock\Tools\TestCase;
@@ -122,6 +126,8 @@ final class RevisionTest extends TestCase {
 
 	/** Same-URL replacement still revokes old document and product revisions. */
 	public function test_document_bytes_change_source_and_revoke_previous_dependencies(): void {
+		$stale = DocumentFiles::resolve( 'https://de-linker.com/wp-content/uploads/2026/manual.pdf' );
+		$this->assertNotNull( $stale );
 		$before = Publication::manifest();
 		file_put_contents( $this->publication_uploads . '/2026/manual.pdf', "%PDF-1.4\nCurrent replacement evidence.\n%%EOF" );
 		$after = Publication::manifest();
@@ -130,10 +136,13 @@ final class RevisionTest extends TestCase {
 		$this->assertNotSame( $before['products'][0]['product_revision'], $after['products'][0]['product_revision'] );
 		$this->assertNotSame( $before['source_revision'], $after['source_revision'] );
 		$this->assertFalse( $this->initial_dependencies_are_valid( $before ) );
+		$this->assertSame( 410, ( new DocumentAccess() )->response( $stale, 'HEAD' )['status'] );
 	}
 
 	/** Removing the Woo association still removes current document permission. */
 	public function test_document_relation_removal_changes_source_and_revokes_dependencies(): void {
+		$file = DocumentFiles::resolve( 'https://de-linker.com/wp-content/uploads/2026/manual.pdf' );
+		$this->assertNotNull( $file );
 		$before = Publication::manifest();
 		$this->current_faq_meta[ EngineeringData::DOCUMENTS_META_KEY ] = array();
 		$after = Publication::manifest();
@@ -141,6 +150,267 @@ final class RevisionTest extends TestCase {
 		$this->assertNotSame( $before['source_revision'], $after['source_revision'] );
 		$this->assertNotSame( $before['products'][0]['product_revision'], $after['products'][0]['product_revision'] );
 		$this->assertFalse( $this->initial_dependencies_are_valid( $before ) );
+		$this->assertSame( 410, ( new DocumentAccess() )->response( $file, 'HEAD' )['status'] );
+	}
+
+	/** Shared URLs are checked once per assembly, including denied aliases, then read afresh. */
+	public function test_shared_attachment_permission_is_fresh_for_each_manifest(): void {
+		$url   = 'https://de-linker.com/wp-content/uploads/2026/manual.pdf';
+		$alias = 'https://de-linker.com/wp-content/uploads/2026/alias.pdf';
+		$this->assertTrue( copy( $this->publication_uploads . '/2026/manual.pdf', $this->publication_uploads . '/2026/alias.pdf' ) );
+		$this->current_faq_meta[ EngineeringData::DOCUMENTS_META_KEY ] = array(
+			array(
+				'url'     => $url,
+				'aliases' => array( $alias ),
+				'type'    => 'manual',
+			),
+			array(
+				'url'  => $alias,
+				'type' => 'manual',
+			),
+		);
+		WP_Mock::userFunction( 'get_posts' )->andReturn( array( 12, 13 ) );
+		WP_Mock::userFunction( 'get_post_type' )->with( 13 )->andReturn( 'product' );
+		WP_Mock::userFunction( 'get_post_status' )->with( 13 )->andReturn( 'publish' );
+		WP_Mock::userFunction( 'get_post' )->with( 13 )->andReturn(
+			new \WP_Post(
+				(object) array(
+					'ID'         => 13,
+					'post_title' => 'Second shared-document product',
+				)
+			)
+		);
+		$states               = array(
+			301 => '1',
+			302 => '0',
+		);
+		$lookups              = array();
+		$documents_by_product = array( 13 => $this->current_faq_meta[ EngineeringData::DOCUMENTS_META_KEY ] );
+		WP_Mock::userFunction( 'attachment_url_to_postid' )->andReturnUsing(
+			static function ( string $document_url ) use ( $url, $alias, &$lookups ): int {
+				$lookups[ $document_url ] = ( $lookups[ $document_url ] ?? 0 ) + 1;
+				return match ( $document_url ) {
+					$url => 301,
+					$alias => 302,
+					default => 0,
+				};
+			}
+		);
+		WP_Mock::userFunction( 'get_post_meta' )->andReturnUsing(
+			function ( int $id, string $key = '' ) use ( &$states, &$documents_by_product ): mixed {
+				if ( isset( $states[ $id ] ) ) {
+					return '_linker_document_public' === $key ? $states[ $id ] : '';
+				}
+				$meta = $this->current_faq_meta;
+				if ( isset( $documents_by_product[ $id ] ) ) {
+					$meta[ EngineeringData::DOCUMENTS_META_KEY ] = $documents_by_product[ $id ];
+				}
+				return '' === $key ? $meta : ( $meta[ $key ] ?? '' );
+			}
+		);
+
+		$before = Publication::manifest();
+		$this->assertCount( 1, $before['documents'] );
+		$this->assertSame( array( 12, 13 ), $before['documents'][0]['product_ids'] );
+		$this->assertSame( array( $url ), $before['documents'][0]['aliases'] );
+		$this->assertSame(
+			array(
+				$url   => 1,
+				$alias => 1,
+			),
+			$lookups
+		);
+
+		$states[301] = '0';
+		$lookups     = array();
+		$withdrawn   = Publication::manifest();
+		$this->assertSame( array(), $withdrawn['documents'] );
+		$this->assertSame(
+			array(
+				$url   => 1,
+				$alias => 1,
+			),
+			$lookups
+		);
+
+		$this->assertSame( array(), Publication::library_read()['documents'] );
+		$this->assertSame( array(), Publication::product_library_read( 12 )['documents'] );
+		$states   = array(
+			301 => '1',
+			302 => '1',
+		);
+		$lookups  = array();
+		$restored = Publication::manifest();
+		$this->assertCount( 2, $restored['documents'] );
+		$this->assertSame(
+			array(
+				$url   => 1,
+				$alias => 1,
+			),
+			$lookups
+		);
+		$this->assertNotSame( $before['source_revision'], $restored['source_revision'] );
+
+		$states[302] = '0';
+		$lookups     = array();
+		$file        = DocumentFiles::resolve( $url );
+		$this->assertNotNull( $file );
+		$this->assertSame( 200, ( new DocumentAccess() )->response( $file, 'HEAD' )['status'] );
+		$this->assertSame( array( $url => 1 ), $lookups, 'A download must not check an unrelated alias.' );
+
+		$lookups = array();
+		$file    = DocumentFiles::resolve( $alias );
+		$this->assertNotNull( $file );
+		$this->assertSame( 410, ( new DocumentAccess() )->response( $file, 'HEAD' )['status'] );
+		$this->assertSame(
+			array(
+				$url   => 1,
+				$alias => 1,
+			),
+			$lookups
+		);
+
+		$states[301] = '0';
+		$lookups     = array();
+		$file        = DocumentFiles::resolve( $url );
+		$this->assertNotNull( $file );
+		$this->assertSame( 410, ( new DocumentAccess() )->response( $file, 'HEAD' )['status'] );
+		$this->assertSame( array( $url => 1 ), $lookups );
+
+		$late = 'https://de-linker.com/wp-content/uploads/2026/later-alias.pdf';
+		$this->assertTrue( copy( $this->publication_uploads . '/2026/manual.pdf', $this->publication_uploads . '/2026/later-alias.pdf' ) );
+		$states[301]              = '1';
+		$documents_by_product[13] = array(
+			array(
+				'url'     => $url,
+				'aliases' => array( $late ),
+			),
+		);
+		$file                     = DocumentFiles::resolve( $late );
+		$this->assertNotNull( $file );
+		$this->assertSame( 410, ( new DocumentAccess() )->response( $file, 'HEAD' )['status'], 'A later shared row cannot add aliases to the first published document record.' );
+		$this->current_faq_meta[ EngineeringData::DOCUMENTS_META_KEY ][0]['aliases'][] = $late;
+		$this->assertSame( 200, ( new DocumentAccess() )->response( $file, 'HEAD' )['status'] );
+	}
+
+	/** A product keeps earlier shared metadata and aliases without inspecting unrelated files. */
+	public function test_product_read_preserves_shared_rows_without_unrelated_file_checks(): void {
+		$url       = 'https://de-linker.com/wp-content/uploads/2026/manual.pdf';
+		$alias     = 'https://de-linker.com/wp-content/uploads/2026/alias.pdf';
+		$unrelated = 'https://de-linker.com/wp-content/uploads/2026/unrelated.pdf';
+		copy( $this->publication_uploads . '/2026/manual.pdf', $this->publication_uploads . '/2026/alias.pdf' );
+		file_put_contents( $this->publication_uploads . '/2026/unrelated.pdf', "%PDF-1.4\nOther product evidence.\n%%EOF" );
+		$rows                                     = array(
+			11 => array(
+				array(
+					'url'     => $url,
+					'title'   => 'Earlier shared title',
+					'aliases' => array( $alias ),
+				),
+			),
+			12 => array(
+				array(
+					'url'     => $url,
+					'title'   => 'Later product title',
+					'aliases' => array( $alias ),
+				),
+			),
+			14 => array(
+				array(
+					'url'   => $unrelated,
+					'title' => 'Unrelated document',
+				),
+			),
+		);
+		$this->current_faq_meta[ Faqs::META_KEY ] = array(
+			array(
+				'question' => 'Shared source?',
+				'answer'   => 'Current shared evidence.',
+				'citation' => array(
+					'url'  => $alias,
+					'page' => 1,
+				),
+			),
+		);
+		$read_order                               = array();
+		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->andReturnUsing(
+			static function () use ( &$read_order ): bool {
+				$read_order[] = 'refresh';
+				return true;
+			}
+		);
+		WP_Mock::userFunction( 'get_posts' )->andReturnUsing(
+			static function () use ( &$read_order ): array {
+				$read_order[] = 'candidates';
+				return array( 11, 12, 14 );
+			}
+		);
+		WP_Mock::userFunction( '_prime_post_caches' )->with( array( 11, 12, 14 ), true, true )->andReturnUsing(
+			static function () use ( &$read_order ): void {
+				$read_order[] = 'prime';
+			}
+		);
+		WP_Mock::userFunction( 'get_post_type' )->andReturn( 'product' );
+		WP_Mock::userFunction( 'get_post_status' )->andReturn( 'publish' );
+		WP_Mock::userFunction( 'get_post' )->andReturnUsing(
+			static fn ( int $id ): \WP_Post => new \WP_Post(
+				(object) array(
+					'ID'         => $id,
+					'post_title' => 'Current product',
+				)
+			)
+		);
+		WP_Mock::userFunction( 'get_post_meta' )->andReturnUsing(
+			function ( int $id, string $key = '' ) use ( $rows ): mixed {
+				$meta                                        = $this->current_faq_meta;
+				$meta[ EngineeringData::DOCUMENTS_META_KEY ] = $rows[ $id ];
+				if ( 12 !== $id ) {
+					$meta[ Faqs::META_KEY ] = array();
+				}
+				return '' === $key ? $meta : ( $meta[ $key ] ?? '' );
+			}
+		);
+		EvidenceBindings::capture_faqs( 12, true );
+		$all = Publication::library_read();
+		$this->assertSame( array( 'refresh', 'candidates', 'prime' ), $read_order );
+		$expected = array_values( array_filter( $all['documents'], static fn ( array $document ): bool => in_array( 12, $document['product_ids'], true ) ) );
+		$answers  = Publication::faqs_for( 12, $all );
+		$this->assertCount( 1, $answers );
+		$lookups = array();
+		WP_Mock::userFunction( 'attachment_url_to_postid' )->andReturnUsing(
+			static function ( string $document_url ) use ( &$lookups ): int {
+				$lookups[ $document_url ] = true;
+				return 0;
+			}
+		);
+		$read_order = array();
+		$read       = Publication::product_library_read( 12 );
+		$this->assertSame( array( 'refresh', 'candidates', 'prime' ), $read_order, 'Independent reads batch native data only after refreshing current permissions.' );
+		$this->assertSame( $expected, $read['documents'] );
+		$this->assertSame( 'Earlier shared title', $read['documents'][0]['title'] );
+		$this->assertSame( $answers, Publication::faqs_for( 12 ) );
+		$this->assertArrayNotHasKey( $unrelated, $lookups );
+
+		// The inquiry line also needs uncited legacy aliases, without a full manifest.
+		$this->current_faq_meta[ Faqs::META_KEY ]          = array();
+		$this->current_faq_meta['_delinker_datasheet_url'] = $alias;
+		WP_Mock::userFunction( 'is_wc_endpoint_url' )->andReturn( true );
+		WP_Mock::passthruFunction( 'esc_url' );
+		WP_Mock::passthruFunction( 'esc_html__' );
+		$item = \Mockery::mock( \WC_Order_Item_Product::class );
+		$item->allows( 'get_product_id' )->andReturn( 12 );
+		$order   = \Mockery::mock( \WC_Order::class );
+		$list    = new \Linker\Commerce\Account\InquiryList();
+		$lookups = array();
+		ob_start();
+		$list->datasheet_link( 1, $item, $order );
+		$html = (string) ob_get_clean();
+		$this->assertStringContainsString( 'href="' . $url . '"', $html );
+		$this->assertArrayNotHasKey( $unrelated, $lookups, 'An inquiry line must not read other products\' files.' );
+		file_put_contents( $this->publication_uploads . '/2026/alias.pdf', "%PDF-1.4\nChanged alias bytes.\n%%EOF" );
+		ob_start();
+		$list->datasheet_link( 1, $item, $order );
+		$this->assertSame( '', ob_get_clean(), 'A changed legacy alias cannot authorize this datasheet.' );
 	}
 
 	/**

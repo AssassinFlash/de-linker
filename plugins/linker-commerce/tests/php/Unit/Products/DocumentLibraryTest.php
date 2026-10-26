@@ -241,11 +241,21 @@ final class DocumentLibraryTest extends TestCase {
 
 	/** Native published translations do not override canonical withdrawal. */
 	public function test_library_omits_a_product_without_current_publication_permission(): void {
-		$manifest             = $this->manifest();
+		$manifest = $this->manifest();
+		$reads    = 0;
+		$library  = new DocumentLibrary(
+			$this->published_document_view(),
+			static function () use ( &$manifest, &$reads ): array {
+				++$reads;
+				return $manifest;
+			}
+		);
+		$this->assertNotEmpty( $library->entries()['answers'] );
 		$manifest['products'] = array( $manifest['products'][1] );
-		$library              = new DocumentLibrary( $this->published_document_view(), static fn (): array => $manifest );
-		$this->assertSame( array(), $library->answers() );
-		foreach ( $library->documents() as $document ) {
+		$withdrawn            = $library->entries();
+		$this->assertSame( 2, $reads, 'A new assembly must re-read current permission.' );
+		$this->assertSame( array(), $withdrawn['answers'] );
+		foreach ( $withdrawn['documents'] as $document ) {
 			$this->assertNotContains( 'GoodWe GW5.1-BAT-D-G21', $document['covers'] );
 		}
 	}

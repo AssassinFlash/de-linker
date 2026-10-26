@@ -27,6 +27,7 @@ trait ManagedDocumentFixture {
 	 * @phpstan-param list<string> $paths
 	 */
 	private function managed_documents( array $paths ): void {
+		WP_Mock::userFunction( '_prime_post_caches' )->byDefault();
 		$this->publication_uploads = sys_get_temp_dir() . '/linker-publication-' . bin2hex( random_bytes( 8 ) );
 		foreach ( $paths as $path ) {
 			$target = $this->publication_uploads . '/' . $path;

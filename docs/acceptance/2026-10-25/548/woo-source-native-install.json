@@ -1443,7 +1443,7 @@
       "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
     }
   },
-  "current_frontier": "manufacturer_reference_capacity_local",
+  "current_frontier": "site_consumer_main_integration_local",
   "shared_dc_core": {
     "status": "implemented_and_reviewed_core_not_connected_to_native_commands",
     "model": "constant_window_shared_dc_bus_v1",
@@ -2375,7 +2375,7 @@
       "notification_sent": true,
       "shared_woo_source": "ee916454e451c0769097294afaf0bef0a73823b79b319c7f3f828f6408ff625d"
     },
-    "batch_stop": "Reference-capacity increment closed with retained numerical result and final affected presentation readback. Commit/push and continue remaining delivery; do not reopen passed physics, source, reviews or general UI matrices.",
+    "batch_stop": "Current site integration through pinned main18e79d5b closed. Fixed existing asset-manifest drift; native templates/cache loaded, original QA identity restored and saved result reopened. Commit/push now; do not chase later unrelated main changes or reopen closed calculations/UI matrices.",
     "reviews": "Final Spec/Standards/copy deltas PASS; unchanged accepted evidence reused."
   },
   "pv_operating_conditions": {
@@ -4570,6 +4570,73 @@
       "remaining downstream and migration",
       "final review-site and production release/readback"
     ],
-    "completed_at_utc": "2026-10-26T19:08:11.739837+00:00"
+    "completed_at_utc": "2026-10-26T19:08:11.739837+00:00",
+    "superseded_frontier": "site_consumer_main_integration"
+  },
+  "site_consumer_main_integration": {
+    "owner": "unified-planner-548",
+    "status": "local_increment_closed_pending_commit",
+    "purpose": "Integrate accepted site repairs with unified planner without replaying closed calculation evidence",
+    "base_commit": "a29ffe0b656bb48b12f61279df05b875ad454356",
+    "main_commit": "18e79d5be98c89c625ea1395cfdfcb8b3f23ff43",
+    "presentation": {
+      "created": 0,
+      "updated": 2,
+      "unchanged": 17,
+      "recovery": "Existing single bounded native linker_commerce_present_backup option",
+      "readback": "presentation in sync"
+    },
+    "windpress": {
+      "before": 1792988963,
+      "cache_mtime": 1793042596,
+      "cache_bytes": 883053,
+      "cache_sha256": "515a0cd359a1a857173f2134abc54a016757c4cd8a8c6c12d4c0f934fc20dd80",
+      "missing_anchor_classes": []
+    },
+    "qa_identity_restored": 66,
+    "temporary_login_material_removed": true,
+    "engine_runtime_unchanged": "6b114eb45eb4fca07aa89e463ed6ac423dc88c1de5f7a0e6783a457ba45b2cee",
+    "new_energy_runs": 0,
+    "new_report_runs": 0,
+    "new_instances": 0,
+    "production_changed": false,
+    "screenshot": {
+      "path": "docs/acceptance/2026-10-24/548/runtime-provider-correction/main-integration-workspace-en.png",
+      "sha256": "30d3c21331790da8166b834542b360a4d17a356d577eff6431c1c20923dedb98",
+      "scope": "Affected workbench result after native shared-style compilation; existing EN/DE/mobile and numerical evidence reused",
+      "page_horizontal_overflow": false,
+      "dom_application_roots": 1
+    },
+    "completed_at_utc": "2026-10-26T19:31:49.191840+00:00",
+    "scope": [
+      "Accepted mainline unsaved-quantity inquiry guard and form retention",
+      "Accepted account saved-solution recovery/removal guidance",
+      "Current Woo publication native batching and document byte authorization",
+      "Mainline Genie and site template repairs retained alongside unified workbench"
+    ],
+    "merge_resolution": "Both additive commerce message sets and publication-test imports retained; tools JSON/MO regenerated from merged PO, commerce MO compiled. No business changes discarded.",
+    "manifest_repair": "Existing parent Tools manifest listed absent old planner chunks; existing generator refreshed only metadata, then its check passed. No application rebuild.",
+    "reviews": {
+      "spec": "PASS intersecting Woo full manifest, engineering facts, manufacturer conditions and Planner draft/inquiry/frozen-report contracts",
+      "standards": "PASS final intersection and parent-manifest delta; unchanged prior full implementation reviews reused"
+    },
+    "checks": {
+      "source_contract": "Existing compatibility-claim identity, product-revision freshness and attachment-permission freshness cases passed after merge",
+      "translation": "Native make-json/msgfmt generation and conflict-file PHP syntax passed",
+      "mainline_inquiry_ci": {
+        "pull_request": 677,
+        "state": "MERGED",
+        "merge_commit": "33a1b13e242a4a791f0eceddffe93bfba53ef854",
+        "checks": [
+          "check (8.3, 22, 3.12): SUCCESS",
+          "mu-smoke: SUCCESS"
+        ]
+      },
+      "source_manifest": "Existing generator check: build/ matches its sources",
+      "numerical_replay": "None; retained c0af418e48524449add2f6304c95aad5 result opened under original QA owner"
+    },
+    "evidence_reuse": "Prior native planner draft-to-inquiry HPOS/private-download result, physics, source conditions and EN/DE desktop/mobile evidence retained. Only changed integration risks inspected; no full-site scan or expanded matrix.",
+    "shared_interface_contract_changed": false,
+    "remaining_scope": "Full engineering/country coverage, remaining consumers and persisted-data migration, final review-site and production release/readback remain active under the original goal."
   }
 }

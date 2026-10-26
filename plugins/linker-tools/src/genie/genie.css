@@ -71,7 +71,7 @@
 }
 
 /* `.gp button:hover` */
-.linker-genie-app :where(button):hover {
+.linker-genie-app :where(button:not(:disabled)):hover {
 	background: #ededed;
 }
 
@@ -859,7 +859,8 @@ body:has(.linker-genie-workspace)
 }
 
 /* `.gp-send:disabled` */
-.linker-genie-app__send:disabled {
+.linker-genie-app__send:disabled,
+.linker-genie-app__attach:disabled {
 	background: #ededed;
 	color: #afafaf;
 	cursor: default;
@@ -1016,8 +1017,7 @@ body:has(.linker-genie-workspace)
 }
 
 /* The picked files, over the composer. */
-.linker-genie-app:not(.linker-genie-app--workspace)
-	.linker-genie-app__attachments {
+.linker-genie-app .linker-genie-app__attachments {
 	display: flex;
 	flex-wrap: wrap;
 	flex-shrink: 0;
@@ -1077,9 +1077,10 @@ body:has(.linker-genie-workspace)
 	font-size: 13px;
 }
 
-/* Opened for a nameplate photo (the preview card's suggestion): the picker
- * is one click away, over the composer. */
-.linker-genie-app__photo-prompt {
+/* Neutral feedback over the composer: the photo picker and normal loading
+ * share the existing spacing and muted text. */
+.linker-genie-app__photo-prompt,
+.linker-genie-app__status {
 	display: flex;
 	flex-direction: column;
 	flex-shrink: 0;
@@ -1090,7 +1091,8 @@ body:has(.linker-genie-workspace)
 	color: #5d5d5d;
 }
 
-.linker-genie-app__photo-prompt p {
+.linker-genie-app__photo-prompt p,
+.linker-genie-app__status p {
 	margin: 0;
 }
 

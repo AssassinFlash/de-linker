@@ -61,6 +61,10 @@ business form, mail, model or new snapshot is needed. Final Spec/Standards,
 precise CI, backup, scoped template/code publication and online readback remain
 required before closing the issue.
 
+## Journal input retention
+
+The EN/DE journal search input displays the submitted phrase through LiveCanvas's native `lc_the_search_query` shortcode. Its escaped value remains editable after a search, including quotes and ampersands. The existing general-search `Url query=s` binding and all search scopes, forms, words, result loops and pagination stay unchanged.
+
 ## UI wording draft
 
 EN / DE: Search the site / Website durchsuchen; Search sections / Suchbereiche;

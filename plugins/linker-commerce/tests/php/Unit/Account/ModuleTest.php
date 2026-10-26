@@ -19,6 +19,7 @@ use Linker\Commerce\Account\Menu;
 use Linker\Commerce\Account\Module;
 use Linker\Commerce\Account\AccountStatusNotice;
 use Linker\Commerce\Account\PrivateFiles;
+use Linker\Commerce\Account\SavedSolutionRemoval;
 use Linker\Commerce\Account\SavedSolutions;
 use Linker\Commerce\Account\SolutionsRoute;
 use Linker\Commerce\Account\SolutionDraftRoute;
@@ -41,6 +42,7 @@ final class ModuleTest extends TestCase {
 		$contact     = new ContactCard( new Options() );
 		$inquiries   = new InquiryList();
 		$saved       = new SavedSolutions( new PrivateFiles( SavedSolutions::REPORTS_DIRECTORY ), '/plugin/templates/' );
+		$removal     = new SavedSolutionRemoval();
 		$documents   = new Documents( $saved, '/plugin/templates/' );
 		$download    = new DocumentDownload( new PrivateFiles( 'proforma' ), $saved );
 		$route       = new SolutionsRoute( $saved );
@@ -62,6 +64,8 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectActionAdded( 'woocommerce_account_saved-solutions_endpoint', array( $saved, 'render' ) );
 		WP_Mock::expectActionAdded( 'wp_loaded', array( $saved, 'add_to_draft' ), 30 );
 		WP_Mock::expectActionAdded( 'woocommerce_load_cart_from_session', array( $saved, 'claim' ) );
+		WP_Mock::expectActionAdded( 'wp_loaded', array( $removal, 'request' ), 30 );
+		WP_Mock::expectActionAdded( 'deleted_post', array( $removal, 'deleted' ), 10, 2 );
 		WP_Mock::expectActionAdded( 'rest_api_init', array( $route, 'register' ) );
 		WP_Mock::expectActionAdded( 'rest_api_init', array( $draft_route, 'register' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_account_documents_endpoint', array( $documents, 'render' ) );
@@ -82,7 +86,7 @@ final class ModuleTest extends TestCase {
 			)
 		);
 
-		( new Module( $menu, $contact, $inquiries, $saved, $documents, $download, $route, $pending, $auth, $admin_access, $draft_route ) )->register();
+		( new Module( $menu, $contact, $inquiries, $saved, $documents, $download, $route, $pending, $auth, $admin_access, $draft_route, $removal ) )->register();
 
 		$this->assertConditionsMet();
 	}

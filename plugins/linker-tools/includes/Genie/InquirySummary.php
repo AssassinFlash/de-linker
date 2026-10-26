@@ -57,14 +57,14 @@ final class InquirySummary {
 
 	/**
 	 * Seconds one summary may take: the service's own budget (summary.py
-	 * TIMEOUT_SECONDS) plus one round trip. The request page waits for it once;
+	 * TIMEOUT_SECONDS) plus one round trip. An explicit summary request waits once;
 	 * a slower answer falls back to the rule-based summary.
 	 */
 	private const TIMEOUT = 10.0;
 
 	/**
-	 * How long the answer is reused: the form's render and the submit of the
-	 * same visit ask twice, and the conversation cannot have changed between.
+	 * Repeated previews of an unchanged conversation may reuse this answer.
+	 * The language and current transcript are part of its cache key.
 	 */
 	private const CACHE_TTL = 600;
 
@@ -174,11 +174,9 @@ final class InquirySummary {
 		if ( '' === $summary ) {
 			return $this->by_rule( $messages, 'unreadable' );
 		}
-		// The form starts its message from the note (acceptance A7), so the note
-		// is always the customer's own last sentence: the model writes its note
-		// in the third person ("The customer asked to …"), which is wrong voice
-		// for a message the customer sends to the team (measured on the #250
-		// card, 2026-10-18). The model's summary is separate and stays as it is.
+		// The reviewed context quotes the customer's own last sentence, not a
+		// model's third-person rewrite. It is separate from the editable message
+		// of the ordinary inquiry form, which never reads this note implicitly.
 		$note = $this->last_said( $messages );
 		return array(
 			'summary'    => mb_substr( $summary, 0, self::MAX_SUMMARY ),
@@ -211,8 +209,7 @@ final class InquirySummary {
 	 * The customer's own sentences, for when the service did not answer.
 	 *
 	 * The last five messages, newest first, as the hand-off already quotes them
-	 * (ContactRequest::handoff); the note is the latest message, which is what
-	 * the request form starts with.
+	 * (ContactRequest::handoff); the note separately quotes the latest message.
 	 *
 	 * @param list<array<string, mixed>> $messages Thread::transcript().
 	 * @param string                     $reason   Why the model's summary was not used.

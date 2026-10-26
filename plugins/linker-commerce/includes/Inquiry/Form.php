@@ -26,13 +26,6 @@ final class Form {
 	private array $flash = array();
 
 	/**
-	 * The conversation's note, resolved once per render (#244).
-	 *
-	 * @var string|null
-	 */
-	private ?string $note = null;
-
-	/**
 	 * Registers the form and its escaped data tags.
 	 */
 	public function register(): void {
@@ -85,13 +78,11 @@ final class Form {
 			$error = __( 'Please check your entries and send the form again.', 'linker-commerce' );
 		}
 		$values = array(
+			'retention-context'  => hash_hmac( 'sha256', get_current_user_id() . '|' . wp_get_session_token(), wp_salt( 'nonce' ) ),
 			'name'               => $name,
 			'email'              => $email,
 			'company'            => $customer->get_billing_company(),
-			// A customer who talked with Genie starts from the note of that
-			// conversation (#244): the team sees the whole summary with the
-			// inquiry, and nothing already said is typed again.
-			'message'            => isset( $previous['message'] ) && is_string( $previous['message'] ) ? $previous['message'] : ( 'message' === $key ? $this->summary_note() : '' ),
+			'message'            => isset( $previous['message'] ) && is_string( $previous['message'] ) ? $previous['message'] : '',
 			'action'             => admin_url( 'admin-post.php' ),
 			'draft-url'          => wc_get_cart_url(),
 			'draft-action'       => wc_get_checkout_url(),
@@ -115,6 +106,7 @@ final class Form {
 	 */
 	public function hidden(): string {
 		return '<input type="hidden" name="action" value="linker_inquiry" /><input type="hidden" name="lang" value="' . esc_attr( str_starts_with( determine_locale(), 'de' ) ? 'de' : 'en' ) . '" />'
+		. '<input type="hidden" name="linker_inquiry_retained" value="' . ( array() !== (array) ( $this->flash['fields'] ?? array() ) ? '1' : '0' ) . '" />'
 		. wp_nonce_field( Handler::ACTION, Handler::NONCE, true, false ) . ( new PublicGuard() )->fields()
 		. '<input type="hidden" name="linker_draft_hash" value="' . esc_attr( WC()->cart->get_cart_hash() ) . '" />'
 		. \Linker\Commerce\Protection\FormFields::render( 'inquiry', (string) ( $this->flash['fields']['linker_request_id'] ?? '' ), '1' === ( $this->flash['fields']['linker_individual_review'] ?? '' ) );
@@ -128,47 +120,32 @@ final class Form {
 	}
 
 	/**
-	 * The latest message of the visitor's Genie conversation, or ''.
-	 *
-	 * Linker\Tools\Genie\InquirySummary answers the filter once per thread
-	 * state and caches it, so the form's render and the inquiry's submit share
-	 * one summary (#244). Without linker-tools or a conversation the filter
-	 * stays unanswered and the form starts empty.
-	 */
-	private function summary_note(): string {
-		if ( null !== $this->note ) {
-			return $this->note;
-		}
-		$summary    = apply_filters( 'linker_genie_inquiry_summary', null, 0 ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- linker-tools' filter (Linker\Tools\Genie\InquirySummary::FILTER): the plugin answers with the conversation's summary.
-		$this->note = is_array( $summary ) && isset( $summary['note'] ) && is_string( $summary['note'] ) ? $summary['note'] : '';
-		return $this->note;
-	}
-
-	/**
 	 * Reviewed bilingual words, resolved by the plugin's gettext catalogues.
 	 *
 	 * @param array<string, string>|string $atts Attributes.
 	 */
 	public function text( $atts = array() ): string {
 		$words = array(
-			'title'      => __( 'Send an inquiry', 'linker-commerce' ),
-			'intro'      => __( 'Tell us what you need. The products in your solution draft will be included.', 'linker-commerce' ),
-			'message'    => __( 'Message (optional)', 'linker-commerce' ),
-			'details'    => __( 'Your reply details', 'linker-commerce' ),
-			'change'     => __( 'Change', 'linker-commerce' ),
-			'name'       => __( 'Name', 'linker-commerce' ),
-			'email'      => __( 'Reply email', 'linker-commerce' ),
-			'company'    => __( 'Company (optional)', 'linker-commerce' ),
-			'consent'    => __( 'I agree that my details may be used to respond to this message.', 'linker-commerce' ),
-			'privacy'    => __( 'Privacy', 'linker-commerce' ),
-			'send'       => __( 'Send inquiry', 'linker-commerce' ),
-			'promise'    => __( 'We reply within one business day.', 'linker-commerce' ),
-			'no-account' => __( 'No account needed.', 'linker-commerce' ),
-			'partner'    => __( 'Have an approved account? Log in for net prices and saved details.', 'linker-commerce' ),
-			'draft'      => __( 'Solution draft', 'linker-commerce' ),
-			'edit'       => __( 'Edit solution draft', 'linker-commerce' ),
-			'quantity'   => __( 'Quantity', 'linker-commerce' ),
-			'update'     => __( 'Update solution draft', 'linker-commerce' ),
+			'title'              => __( 'Send an inquiry', 'linker-commerce' ),
+			'intro'              => __( 'Tell us what you need. The products in your solution draft will be included.', 'linker-commerce' ),
+			'message'            => __( 'Message (optional)', 'linker-commerce' ),
+			'details'            => __( 'Your reply details', 'linker-commerce' ),
+			'change'             => __( 'Change', 'linker-commerce' ),
+			'name'               => __( 'Name', 'linker-commerce' ),
+			'email'              => __( 'Reply email', 'linker-commerce' ),
+			'company'            => __( 'Company (optional)', 'linker-commerce' ),
+			'consent'            => __( 'I agree that my details may be used to respond to this message.', 'linker-commerce' ),
+			'privacy'            => __( 'Privacy', 'linker-commerce' ),
+			'send'               => __( 'Send inquiry', 'linker-commerce' ),
+			'promise'            => __( 'We reply within one business day.', 'linker-commerce' ),
+			'no-account'         => __( 'No account needed.', 'linker-commerce' ),
+			'partner'            => __( 'Have an approved account? Log in for net prices and saved details.', 'linker-commerce' ),
+			'draft'              => __( 'Solution draft', 'linker-commerce' ),
+			'edit'               => __( 'Edit solution draft', 'linker-commerce' ),
+			'quantity'           => __( 'Quantity', 'linker-commerce' ),
+			'update'             => __( 'Update solution draft', 'linker-commerce' ),
+			'update-before-send' => __( 'Update the solution draft before sending your inquiry.', 'linker-commerce' ),
+			'retention-error'    => __( 'Your browser could not save your entries. Stay on this page to avoid losing them.', 'linker-commerce' ),
 		);
 		return esc_html( $words[ $atts['key'] ?? '' ] ?? '' );
 	}

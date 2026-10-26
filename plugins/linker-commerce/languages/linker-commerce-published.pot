@@ -46,3 +46,47 @@ msgstr ""
 #. Retained published message identifier; no current runtime caller.
 msgid "Saved inquiries need staff review"
 msgstr ""
+
+
+#: includes/Account/SavedSolutionRemoval.php includes/Presentation/AccountTemplates.php
+msgid "Keep solution"
+msgstr ""
+
+
+#: includes/Account/SavedSolutionRemoval.php includes/Presentation/AccountTemplates.php
+msgid "Remove this saved solution?"
+msgstr ""
+
+
+#: includes/Account/SavedSolutionRemoval.php includes/Presentation/AccountTemplates.php
+msgid "Remove solution"
+msgstr ""
+
+
+#: includes/Account/SavedSolutionRemoval.php includes/Presentation/AccountTemplates.php
+msgid "Saved solution removed."
+msgstr ""
+
+
+#: includes/Account/SavedSolutionRemoval.php includes/Presentation/AccountTemplates.php
+msgid "Saved solution restored."
+msgstr ""
+
+
+#: includes/Account/SavedSolutionRemoval.php includes/Presentation/AccountTemplates.php
+msgid "Undo"
+msgstr ""
+
+
+#: includes/Account/SavedSolutionRemoval.php includes/Presentation/AccountTemplates.php
+msgid "This saved solution is not available."
+msgstr ""
+
+
+#: includes/Account/SavedSolutionRemoval.php includes/Presentation/AccountTemplates.php
+msgid "The saved solution could not be updated. Please try again."
+msgstr ""
+
+#: includes/Presentation/AccountTemplates.php:467
+msgid "This saved solution needs a new calculation before it can be added to your solution draft."
+msgstr ""

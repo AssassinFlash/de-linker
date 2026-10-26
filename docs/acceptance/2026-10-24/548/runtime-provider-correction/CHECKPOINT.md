@@ -1414,3 +1414,26 @@ contract is unchanged and the site-repair chat has resumed its own work.
 Full scope remains active; this batch does not change production. Exact
 source/runtime/native/PDF/copy/review/retention evidence uses the existing
 acceptance ledger's `manufacturer_reference_capacity` entry.
+
+
+### Current site repairs integrated — local batch closed
+
+Pinned main18e79d5b is integrated with the unified planner, preserving
+its approved inquiry-entry retention/unsaved-quantity guard, saved-solution
+recovery/removal, native Woo batching/document permissions, Genie and site
+repairs. Additive translation/import conflicts retain both sides. Spec and
+Standards intersection reviews pass. The existing parent Tools asset manifest
+was stale before this merge; its native metadata generator now points at the
+actual nested planner assets without rebuilding the application.
+
+Only the intersecting source identity/permission cases, native translation
+generation and final manifest contract were checked. Upstream inquiry CI and
+existing planner/native inquiry/report/EN/DE/mobile evidence are reused. The
+original p548 instance now has two updated templates and current WindPress
+styles, compiled once through the native admin. Presentation drift is zero and
+required CSS anchors are present. The original QA owner66 reopened the same
+saved energy result; no energy/report run or inquiry was submitted. Temporary
+login material was removed, no new instance/full backup was made, and engine
+runtime6b114eb4 remains unchanged. This is local integration, not production
+publication or full-goal completion. Exact values use the existing acceptance
+ledger's `site_consumer_main_integration` section.

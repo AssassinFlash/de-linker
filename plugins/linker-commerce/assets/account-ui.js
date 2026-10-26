@@ -9,23 +9,115 @@
 	// The account chain's forms: the guest cards, the workspace and the gates.
 	const FORMS = '.linker-auth form, .linker-account form, .linker-gate form, .linker-inquiry-form';
 
-	// Woo blocks only the independent draft form while an edit is pending.
-	// Keep the inquiry from overtaking that write and submitting the old lines.
+	// The inquiry and Woo draft are separate forms. Unsaved edits and in-flight
+	// writes must both stop the inquiry from sending the previous server lines.
 	const inquiry = document.querySelector( '.linker-inquiry' );
 	const draftBusy = () => Boolean( inquiry?.querySelector( '.woocommerce-cart-form.processing' ) );
+	const draftChanged = () => [ ...( inquiry?.querySelectorAll( '.woocommerce-cart-form input.qty' ) || [] ) ]
+		.some( ( quantity ) => quantity.value !== quantity.defaultValue );
+	const draftBlocked = () => draftBusy() || draftChanged();
+	const inquiryStorageKey = 'linker-inquiry-edit';
 	if ( inquiry ) {
+		const form = inquiry.querySelector( '.linker-inquiry-form' );
 		const send = inquiry.querySelector( '.linker-inquiry-form button[type="submit"]' );
+		const pending = inquiry.querySelector( '[data-inquiry-draft-pending]' );
+		const retentionError = inquiry.querySelector( '[data-inquiry-retention-error]' );
+		const names = [ 'name', 'email', 'company', 'message' ];
+		const context = form?.dataset.inquiryContext || '';
+		const field = ( name ) => form?.elements.namedItem( name );
+
+		// A one-use bridge for the explicit edit/return navigation. It stays in
+		// this tab, uses the native authentication context, and never writes an inquiry or
+		// sends personal details to another endpoint. Server error values win.
+		try {
+			const raw = window.sessionStorage.getItem( inquiryStorageKey );
+			window.sessionStorage.removeItem( inquiryStorageKey );
+			const kept = raw ? JSON.parse( raw ) : null;
+			if ( context && kept?.context === context && names.every( ( name ) => typeof kept.fields?.[ name ] === 'string' ) && field( 'linker_inquiry_retained' )?.value !== '1' ) {
+				let detailsChanged = false;
+				for ( const name of names ) {
+					const control = field( name );
+					if ( control && typeof kept.fields?.[ name ] === 'string' ) {
+						detailsChanged ||= name !== 'message' && control.value !== kept.fields[ name ];
+						control.value = kept.fields[ name ];
+					}
+				}
+				if ( field( 'consent' ) ) {
+					field( 'consent' ).checked = kept.consent === true;
+				}
+				if ( field( 'linker_inquiry_retained' ) ) {
+					// The existing handoff contract also preserves intentionally empty text.
+					field( 'linker_inquiry_retained' ).value = '1';
+				}
+				const details = form.querySelector( '.linker-inquiry-details' );
+				if ( details && detailsChanged ) {
+					details.open = true;
+				}
+				const summary = details?.querySelector( 'summary small' );
+				if ( summary ) {
+					summary.textContent = `${ field( 'name' )?.value || '' } · ${ field( 'email' )?.value || '' }`;
+				}
+			}
+		} catch {
+			// An unavailable or invalid bridge never replaces the current form.
+		}
+
+		const syncDraftState = () => {
+			if ( send ) {
+				send.disabled = draftBlocked();
+			}
+			if ( pending ) {
+				pending.hidden = ! draftChanged();
+			}
+		};
 		if ( send ) {
-			const syncDraftState = () => {
-				send.disabled = draftBusy();
-			};
 			new MutationObserver( syncDraftState ).observe( inquiry, {
 				childList: true,
 				subtree: true,
 				attributes: true,
 				attributeFilter: [ 'class' ],
 			} );
+			inquiry.addEventListener( 'input', syncDraftState );
+			inquiry.addEventListener( 'change', syncDraftState );
 			syncDraftState();
+		}
+
+		document.addEventListener( 'click', ( event ) => {
+			const link = event.target.closest( '[data-inquiry-edit], a[lang], a[hreflang]' );
+			if ( ! link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey ) {
+				return;
+			}
+			if ( draftBlocked() ) {
+				event.preventDefault();
+				syncDraftState();
+				inquiry.querySelector( '[name="update_cart"]' )?.focus();
+				return;
+			}
+			const fields = Object.fromEntries( names.map( ( name ) => [ name, field( name )?.value || '' ] ) );
+			const consent = field( 'consent' )?.checked === true;
+			if ( ! consent && names.every( ( name ) => fields[ name ] === '' ) ) {
+				return;
+			}
+			try {
+				if ( ! context ) {
+					throw new Error( 'Missing native inquiry context' );
+				}
+				window.sessionStorage.setItem( inquiryStorageKey, JSON.stringify( { context, fields, consent } ) );
+			} catch {
+				event.preventDefault();
+				if ( retentionError ) {
+					retentionError.hidden = false;
+					retentionError.focus();
+				}
+			}
+		} );
+	} else {
+		// The same asset runs on account and confirmation pages, never the cart.
+		// An authentication detour or completed inquiry retires a pending bridge.
+		try {
+			window.sessionStorage.removeItem( inquiryStorageKey );
+		} catch {
+			// A storage restriction does not affect native account forms.
 		}
 	}
 
@@ -63,8 +155,8 @@
 	}
 
 	// One submission at a time: the pressed button reports that it is working.
-	// The browser's own field validation still runs first, so an empty required
-	// field keeps its native message instead of a button that never lands.
+	// Woo's login form uses novalidate. Report native constraints here so a
+	// missing field stays on this page, before verification or loading state.
 	// The button is never disabled: WooCommerce reads the pressed button's own
 	// name and value (`login`, `register`, `save_account_details`), and a
 	document.addEventListener(
@@ -74,7 +166,7 @@
 			if ( ! ( form instanceof HTMLFormElement ) || ! form.matches( FORMS ) ) {
 				return;
 			}
-			if ( form.matches( '.linker-inquiry-form' ) && draftBusy() ) {
+			if ( form.matches( '.linker-inquiry-form' ) && draftBlocked() ) {
 				event.preventDefault();
 				return;
 			}
@@ -95,7 +187,8 @@
 			if ( error && pair ) {
 				showMismatch( error, pair.second, false );
 			}
-			if ( typeof form.checkValidity === 'function' && ! form.checkValidity() ) {
+			if ( typeof form.reportValidity === 'function' && ! form.reportValidity() ) {
+				event.preventDefault();
 				return;
 			}
 			// Verification waits on the original submit. Mark busy only when
@@ -109,6 +202,13 @@
 				return;
 			}
 			form.dataset.accountState = 'submitting';
+			if ( form.matches( '.linker-inquiry-form' ) ) {
+				try {
+					window.sessionStorage.removeItem( inquiryStorageKey );
+				} catch {
+					// Storage is optional; the native inquiry transport still works.
+				}
+			}
 			const button = form.querySelector( 'button[type="submit"], input[type="submit"]' );
 			if ( ! button ) {
 				return;

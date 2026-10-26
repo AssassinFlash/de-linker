@@ -107,17 +107,10 @@ final class DocumentAccess {
 		if ( null === $file ) {
 			return $denied;
 		}
-		$allowed = false;
 		try {
-			$manifest = Publication::manifest();
+			$allowed = Publication::allows_document( $file );
 		} catch ( \RuntimeException $error ) {
 			return array_replace( $denied, array( 'status' => 503 ) );
-		}
-		foreach ( $manifest['documents'] as $document ) {
-			if ( $document['blob_sha256'] === $file['blob_sha256'] && in_array( $file['url'], $document['aliases'], true ) ) {
-				$allowed = true;
-				break;
-			}
 		}
 		if ( ! $allowed ) {
 			return $denied;

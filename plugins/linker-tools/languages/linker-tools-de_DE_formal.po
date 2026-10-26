@@ -58,7 +58,7 @@ msgstr[0] "%d Modul"
 msgstr[1] "%d Module"
 
 #. translators: %d is how many of this product the customer listed.
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "%d ×"
 msgstr "%d ×"
 
@@ -124,7 +124,7 @@ msgid "Action"
 msgstr "Aktion"
 
 #. translators: %d is the number of distinct products.
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Add %d products to the solution draft"
 msgstr "%d Produkte dem Lösungsentwurf hinzufügen"
 
@@ -138,7 +138,7 @@ msgstr ""
 msgid "Add all to solution draft"
 msgstr "Alles zum Lösungsentwurf hinzufügen"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Add the product to the solution draft"
 msgstr "Das Produkt dem Lösungsentwurf hinzufügen"
 
@@ -373,7 +373,7 @@ msgstr "Die Überprüfung läuft …"
 msgid "Choose a PNG or JPEG file."
 msgstr "Wählen Sie eine PNG- oder JPEG-Datei."
 
-#: build/genie.js
+#: src/genie/components/MissingFiles.tsx src/hero/Hero.tsx build/genie.js build/hero.js
 msgid "Choose a file"
 msgstr "Datei auswählen"
 
@@ -541,7 +541,7 @@ msgstr "Antwort kopieren"
 msgid "Current unsent draft"
 msgstr "Bisheriger ungesendeter Entwurf"
 
-#: build/genie.js src/configurator/stock.ts:34 build/configurator.js
+#: build/genie.js build/hero.js src/configurator/stock.ts:34 build/configurator.js
 #: src/genie/components/GenieCard.tsx
 msgid "Currently unavailable"
 msgstr "Derzeit nicht verfügbar"
@@ -933,7 +933,7 @@ msgstr ""
 "Nachricht verwendet werden."
 
 #. translators: %s is our model name, as the product titles write it.
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "In our range: %s"
 msgstr "In unserem Sortiment: %s"
 
@@ -1223,7 +1223,7 @@ msgstr "Nicht alles wurde hinzugefügt. Bitte erneut versuchen."
 msgid "Not helpful"
 msgstr "Nicht hilfreich"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Not in our range."
 msgstr "Nicht in unserem Sortiment."
 
@@ -1292,6 +1292,10 @@ msgstr "Konfigurator öffnen"
 #: build/genie.js build/hero.js
 msgid "Open the inquiry page"
 msgstr "Anfrageseite öffnen"
+
+#: src/genie/App.tsx src/hero/Hero.tsx build/genie.js build/hero.js
+msgid "One moment…"
+msgstr "Einen Moment …"
 
 #: src/configurator/report/ReportView.tsx:146 build/configurator.js
 msgid "Opening Genie…"
@@ -1535,12 +1539,12 @@ msgid "Roof"
 msgstr "Dach"
 
 #. translators: 1: the line's number, 2: our model name.
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Row %1$d: %2$s"
 msgstr "Zeile %1$d: %2$s"
 
 #. translators: %d is the line's number.
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Row %d: skip"
 msgstr "Zeile %d: überspringen"
 
@@ -1721,7 +1725,7 @@ msgstr "Für %s kW auslegen"
 msgid "Size your system and get the bill of materials."
 msgstr "System auslegen und Stückliste erhalten."
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Skip this line"
 msgstr "Diese Zeile überspringen"
 
@@ -1729,7 +1733,7 @@ msgstr "Diese Zeile überspringen"
 msgid "Skipped"
 msgstr "Übersprungen"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Skipped."
 msgstr "Übersprungen."
 
@@ -1999,7 +2003,7 @@ msgstr ""
 "Dieser Dateityp kann nicht gesendet werden. Genie liest Fotos (JPEG, PNG, "
 "WebP oder HEIC), PDFs und Teilelisten (CSV oder .xlsx)."
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "This line needs your confirmation."
 msgstr "Diese Zeile braucht Ihre Bestätigung."
 
@@ -2186,7 +2190,7 @@ msgstr "Womit möchten Sie beginnen?"
 msgid "Which batteries work with my inverter?"
 msgstr "Welche Batterien passen zu meinem Wechselrichter?"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Which model does this line mean?"
 msgstr "Welches Modell ist mit dieser Zeile gemeint?"
 
@@ -2305,7 +2309,7 @@ msgstr "Ihr Logo"
 msgid "Your logo on the PDF (optional)"
 msgstr "Ihr Logo im PDF (optional)"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Your parts list"
 msgstr "Ihre Teileliste"
 

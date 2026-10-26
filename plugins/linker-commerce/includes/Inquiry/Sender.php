@@ -45,7 +45,7 @@ final class Sender {
 	 * @param array<string, mixed>|false|null $summary The conversation summary the
 	 *        Genie confirmation card showed (#250): an array stores it, false
 	 *        stores none (the customer turned the summary off), null asks the
-	 *        filter as the request page does (#244).
+	 *        conversation-summary filter.
 	 * @param array<string, mixed>            $context Trusted related Genie conversation/page.
 	 * @return WC_Order|WP_Error Received inquiry or validation failure.
 	 */

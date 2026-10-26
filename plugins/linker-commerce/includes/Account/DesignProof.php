@@ -101,11 +101,8 @@ final class DesignProof {
 	 * @phpstan-impure Reads the current authority on each invocation.
 	 */
 	public function current_error( array $result ): ?WP_Error {
-		$dependencies = $result['publication'] ?? null;
-		if ( ! is_array( $dependencies ) || ! is_array( $dependencies['products'] ?? null ) || array() === $dependencies['products'] || ! is_string( $dependencies['compatibility_revision'] ?? null ) || '' === $dependencies['compatibility_revision'] ) {
-			return self::unavailable();
-		}
-		if ( 'genie' !== ( $result['kind'] ?? '' ) && ! self::has_engineering_proof( $dependencies ) ) {
+		$dependencies = self::dependencies( $result );
+		if ( null === $dependencies ) {
 			return self::unavailable();
 		}
 		try {
@@ -114,6 +111,29 @@ final class DesignProof {
 			return self::verification_failed();
 		}
 		return true === ( $checked['valid'] ?? false ) ? null : self::unavailable();
+	}
+
+	/**
+	 * Whether a stored result can reach fresh validation; never a permission grant.
+	 *
+	 * @param array<string, mixed> $result Historical result.
+	 */
+	public static function can_revalidate( array $result ): bool {
+		return null !== self::dependencies( $result ) && array() !== self::items( $result );
+	}
+
+	/**
+	 * The same local prerequisites for both the action and its account guidance.
+	 *
+	 * @param array<string, mixed> $result Historical result.
+	 * @return array<string, mixed>|null
+	 */
+	private static function dependencies( array $result ): ?array {
+		$dependencies = $result['publication'] ?? null;
+		if ( ! is_array( $dependencies ) || ! is_array( $dependencies['products'] ?? null ) || array() === $dependencies['products'] || ! is_string( $dependencies['compatibility_revision'] ?? null ) || '' === $dependencies['compatibility_revision'] ) {
+			return null;
+		}
+		return 'genie' === ( $result['kind'] ?? '' ) || self::has_engineering_proof( $dependencies ) ? $dependencies : null;
 	}
 
 	/**

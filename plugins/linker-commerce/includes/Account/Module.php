@@ -19,17 +19,18 @@ final class Module {
 	/**
 	 * Sets up the module.
 	 *
-	 * @param Menu                $menu      The menu.
-	 * @param ContactCard         $contact   The contact person card.
-	 * @param InquiryList         $inquiries The inquiry list.
-	 * @param SavedSolutions      $solutions The saved solutions.
-	 * @param Documents           $documents The documents page.
-	 * @param DocumentDownload    $download  The downloads.
-	 * @param SolutionsRoute      $route     The route that saves solutions.
-	 * @param AccountStatusNotice $status_notice   The pending or restricted account status notice.
-	 * @param AuthTemplates       $auth      The guest sign-in, register and lost-password pages.
-	 * @param AdminAccessNotice   $admin_access The explanation of Woo's admin protection.
-	 * @param SolutionDraftRoute  $draft_route Atomic current-design additions.
+	 * @param Menu                 $menu      The menu.
+	 * @param ContactCard          $contact   The contact person card.
+	 * @param InquiryList          $inquiries The inquiry list.
+	 * @param SavedSolutions       $solutions The saved solutions.
+	 * @param Documents            $documents The documents page.
+	 * @param DocumentDownload     $download  The downloads.
+	 * @param SolutionsRoute       $route     The route that saves solutions.
+	 * @param AccountStatusNotice  $status_notice   The pending or restricted account status notice.
+	 * @param AuthTemplates        $auth      The guest sign-in, register and lost-password pages.
+	 * @param AdminAccessNotice    $admin_access The explanation of Woo's admin protection.
+	 * @param SolutionDraftRoute   $draft_route Atomic current-design additions.
+	 * @param SavedSolutionRemoval $removal Recoverable saved-solution removal.
 	 */
 	public function __construct(
 		private readonly Menu $menu,
@@ -42,7 +43,8 @@ final class Module {
 		private readonly AccountStatusNotice $status_notice = new AccountStatusNotice(),
 		private readonly AuthTemplates $auth = new AuthTemplates(),
 		private readonly AdminAccessNotice $admin_access = new AdminAccessNotice(),
-		private readonly SolutionDraftRoute $draft_route = new SolutionDraftRoute()
+		private readonly SolutionDraftRoute $draft_route = new SolutionDraftRoute(),
+		private readonly SavedSolutionRemoval $removal = new SavedSolutionRemoval()
 	) {}
 
 	/**
@@ -67,6 +69,7 @@ final class Module {
 		add_action( 'woocommerce_account_saved-solutions_endpoint', array( $this->solutions, 'render' ) );
 		add_action( 'wp_loaded', array( $this->solutions, 'add_to_draft' ), 30 );
 		add_action( 'woocommerce_load_cart_from_session', array( $this->solutions, 'claim' ) );
+		$this->removal->register();
 		add_action( 'rest_api_init', array( $this->route, 'register' ) );
 		add_action( 'rest_api_init', array( $this->draft_route, 'register' ) );
 		add_action( 'woocommerce_account_documents_endpoint', array( $this->documents, 'render' ) );

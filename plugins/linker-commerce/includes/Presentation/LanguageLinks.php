@@ -150,7 +150,12 @@ final class LanguageLinks {
 		foreach ( $contact as $key => $value ) {
 			$kept[ $key ] = rawurlencode( $value );
 		}
-		$url = (string) add_query_arg( $kept, remove_query_arg( array_merge( self::LANGUAGE_QUERY_KEYS, array( 'post_type', 'cbq', 'intent', \Linker\Commerce\Contact\SelectionContext::FIELD ) ), $url ) );
+		// Comparison IDs are page-scoped and mapped to current public product twins.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- public GET navigation.
+		foreach ( ComparePage::language_query( wp_unslash( $_GET ), $lang ) as $key => $value ) {
+			$kept[ $key ] = rawurlencode( $value );
+		}
+		$url = (string) add_query_arg( $kept, remove_query_arg( array_merge( self::LANGUAGE_QUERY_KEYS, array( 'ids', 'capped', 'post_type', 'cbq', 'intent', \Linker\Commerce\Contact\SelectionContext::FIELD ) ), $url ) );
 		/**
 		 * Reapply Polylang's native URL translation after retaining request context.
 		 *

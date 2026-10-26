@@ -115,17 +115,18 @@ final class InquiryList {
 	 * @param bool          $plain_text Whether the output is plain text (emails).
 	 */
 	public function datasheet_link( int $item_id, WC_Order_Item $item, WC_Order $order, bool $plain_text = false ): void {
-		if ( $plain_text || ! $item instanceof WC_Order_Item_Product || ! is_wc_endpoint_url( 'view-order' ) ) {
+		if ( $plain_text || ! $item instanceof WC_Order_Item_Product || ! is_wc_endpoint_url( 'view-order' ) || ! Publication::is_published( $item->get_product_id() ) ) {
 			return;
 		}
-		$product = Publication::product( $item->get_product_id() );
-		if ( null === $product ) {
+		$product_id = Publication::canonical_id( $item->get_product_id() );
+		$legacy     = (string) get_post_meta( $product_id, self::DATASHEET_META, true );
+		$documents  = Publication::product_library_read( $item->get_product_id(), $legacy )['documents'];
+		if ( array() === $documents ) {
 			return;
 		}
-		$url    = '';
-		$legacy = (string) get_post_meta( $product['product_id'], self::DATASHEET_META, true );
-		foreach ( Publication::manifest()['documents'] as $document ) {
-			if ( in_array( $document['document_id'], $product['documents'], true ) && in_array( $product['product_id'], $document['product_ids'], true ) && ( 'datasheet' === $document['type'] || in_array( $legacy, $document['aliases'], true ) ) ) {
+		$url = '';
+		foreach ( $documents as $document ) {
+			if ( in_array( $product_id, $document['product_ids'], true ) && ( 'datasheet' === $document['type'] || in_array( $legacy, $document['aliases'], true ) ) ) {
 				$url = (string) $document['url'];
 				break;
 			}

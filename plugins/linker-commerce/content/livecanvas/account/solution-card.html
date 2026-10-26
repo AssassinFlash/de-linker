@@ -1,12 +1,19 @@
 <article id="linker-solution-[linker_account_field key='id']" class="linker-account-panel linker-account-solution">
 	<header class="linker-account-panel-heading">
-		<span><h2>[linker_account_field key="title"]</h2><p class="linker-account-solution-date">[linker_account_text key="saved"] · [linker_account_field key="date"]</p></span>
+		<span><h2 id="linker-solution-title-[linker_account_field key='id']">[linker_account_field key="title"]</h2><p class="linker-account-solution-date">[linker_account_text key="saved"] · [linker_account_field key="date"]</p></span>
 	</header>
 	<div class="linker-account-panel-body">
 		<ul class="linker-account-products">[linker_account_field key="items"]</ul>
 		<div class="linker-account-actions">
-			<form method="post" class="linker-account-form">[linker_account_field key="nonce"]<button class="linker-account-btn is-primary" data-action="add" name="linker_solution_to_draft" value="[linker_account_field key='id']" type="submit"><span>[linker_account_text key="add"]</span></button></form>
+			[linker_account_rows type="solution-action"]
 			[linker_account_rows type="report"]
+			<details class="linker-account-removal">
+				<summary class="linker-account-btn is-ghost" aria-describedby="linker-solution-title-[linker_account_field key='id']"><span class="when-closed">[linker_account_text key="remove"]</span><span class="when-open">[linker_account_text key="keep-solution"]</span></summary>
+				<div class="linker-account-removal-confirm">
+					<p>[linker_account_text key="remove-question"]</p>
+					<form method="post" class="linker-account-form">[linker_account_field key="remove-nonce"]<button class="linker-account-btn is-ghost" aria-describedby="linker-solution-title-[linker_account_field key='id']" name="linker_solution_remove" value="[linker_account_field key='id']" type="submit">[linker_account_text key="remove-solution"]</button></form>
+				</div>
+			</details>
 		</div>
 	</div>
 </article>

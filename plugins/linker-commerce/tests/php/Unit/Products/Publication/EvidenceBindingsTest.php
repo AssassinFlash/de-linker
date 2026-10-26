@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Unit\Products\Publication;
 
 use Linker\Commerce\Products\Faqs;
+use Linker\Commerce\Products\EngineeringData;
 use Linker\Commerce\Products\Publication;
 use Linker\Commerce\Products\Publication\DocumentFiles;
 use Linker\Commerce\Products\Publication\EvidenceBindings;
@@ -61,9 +62,48 @@ final class EvidenceBindingsTest extends TestCase {
 	/** Replacement bytes remove the answer and page together, preserving editor data. */
 	public function test_replacement_removes_current_answers_without_deleting_them(): void {
 		$this->assertCount( 2, Publication::faqs_for( 12 ) );
+		$this->assertCount( 2, Publication::faqs_for( 12, Publication::library_read() ) );
 		$this->replace_pdf();
 		$this->assertSame( array(), Publication::faqs_for( 12 ) );
+		$this->assertSame( array(), Publication::faqs_for( 12, Publication::library_read() ) );
 		$this->assertCount( 2, Faqs::of( 12 ) );
+	}
+
+	/** Library metadata never supplies uninspected bytes to a cited answer. */
+	public function test_library_lists_uncited_metadata_but_checks_cited_alias_bytes(): void {
+		$base = 'https://de-linker.com/wp-content/uploads/2026/';
+		$this->assertTrue( copy( $this->publication_uploads . '/2026/manual.pdf', $this->publication_uploads . '/2026/alias.pdf' ) );
+		$this->assertTrue( copy( $this->publication_uploads . '/2026/manual.pdf', $this->publication_uploads . '/2026/brochure.pdf' ) );
+		$this->current_faq_meta[ EngineeringData::DOCUMENTS_META_KEY ] = array(
+			array(
+				'url'     => $base . 'manual.pdf',
+				'aliases' => array( $base . 'alias.pdf' ),
+			),
+			array( 'url' => $base . 'brochure.pdf' ),
+		);
+		foreach ( $this->current_faq_meta[ Faqs::META_KEY ] as &$entry ) {
+			$entry['citation']['url'] = $base . 'alias.pdf';
+		}
+		unset( $entry );
+		EvidenceBindings::capture_faqs( 12 );
+		$full    = Publication::manifest();
+		$library = Publication::library_read();
+		$this->assertSame( array( 'products', 'documents' ), array_keys( $library ) );
+		$this->assertCount( 2, $library['documents'] );
+		$this->assertSame( Publication::faqs_for( 12, $full ), Publication::faqs_for( 12, $library ) );
+		$this->assertCount( 2, Publication::faqs_for( 12, $library ) );
+		foreach ( $library['documents'] as $document ) {
+			$this->assertArrayNotHasKey( 'document_revision', $document );
+			if ( $base . 'brochure.pdf' === $document['url'] ) {
+				$this->assertNull( $document['blob_sha256'] );
+			} else {
+				$this->assertSame( hash_file( 'sha256', $this->publication_uploads . '/2026/manual.pdf' ), $document['blob_sha256'] );
+			}
+		}
+		file_put_contents( $this->publication_uploads . '/2026/alias.pdf', "%PDF-1.4\ndifferent alias bytes\n%%EOF" );
+		$this->assertSame( array(), Publication::faqs_for( 12, Publication::library_read() ) );
+		unlink( $this->publication_uploads . '/2026/brochure.pdf' );
+		$this->assertCount( 1, Publication::library_read()['documents'] );
 	}
 
 	/** An unchanged answer cannot acquire fresh evidence because of a list operation. */

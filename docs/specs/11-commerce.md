@@ -3,6 +3,9 @@
 依据：`docs/research/2026-10-09/account-workspace.md`、`mail-root-cause.md`、AGENTS.md §1–§3，账号审批=票据 73（业主 2026-10-11 裁定）。原则：Woo 原生能力优先，自定义只在 Woo 没有答案处。
 
 ## 用户旅程（EN / DE 文案按 AGENTS.md 规则逐处写，此处只给语义）
+
+普通询盘的留言框初始为空，不因曾使用Genie而读取或生成历史摘要。表单只保存客户本次填写的留言；失败提交返回的字段优先保留，包括客户特意清空的留言。Genie明确导航至询盘页时，既有身份、路径和时效验证通过后仅交接当前未发送文字，不覆盖客户已有内容；遇到已保留的提交时只退役该身份的匹配交接，避免以后重新填入。对话中已经展示并经客户确认的Genie摘要仍沿原显式询盘卡入口附带，Sender的显式摘要合同不变。
+
 1. **访客**：看产品分类与产品，看不到价格（价格位显示 "Log in for prices" / "Preise nach Anmeldung"）；可用 Genie 与配置器；可把产品加入 Lösungsentwurf（按会话保存）。
 2. **注册**（Woo 原生 My Account 注册表单 + 字段；#225 两步，业主 2026-10-17 裁定）：第 1 步 `Your company`：公司名、业务类型（安装商 / EPC / 经销商，三单选，`linker_customer_role` 三值不变）、国家（全部国家，德国置顶，Europe 大洲其后，Woo selectWoo 搜索）、公司网站或 VAT ID 至少一项（VAT 继续 VIES 实时校验，失败可提交但标记）；第 2 步 `You and your sign-in`：名、姓、邮箱、密码。街道、邮编、城市与电话不在注册，由 Proforma 请求页的原生账单字段收。防机器人复用 `Inquiry\PublicGuard`（蜜罐 + 签名起始时间 + 每连接原子限额），在 `woocommerce_register_form` 渲染、`woocommerce_process_registration_errors` 建号与发信之前拦截；被拒计数可观测（`wp linker-commerce registration-blocks`）。**注册即 pending（票据 73）**：账号在团队批准前读站如访客；客户语言随注册写入 WP 用户 `locale`（询盘同源的取语规则）。邮件：注册确认（RegistrationReceivedEmail，Woo 原生欢迎信已关）+ 公司"新客户"提醒（与后台账户页读同一套注册字段，含网站，另含审批状态行与后台直达链接）。
 3. **审批**：后台首页原生仪表盘小工具展示待审卡片，顶栏红旗在任意后台页打开同一审核抽屉；Accounts 菜单通向原生列表历史。全部状态随时可再决定，Restrict / Reject 必须带客户可读原因，经既有邮件链告知；相同决定重复提交不重复发信，限制/拒绝的原因变更也通知。资料页与用户列表保留状态及深链，原 GET / 资料表单写入通道在对等验证后移除。权限为 `edit_users` 加每用户 `edit_user`，只审核纯 customer。详情与原生优先证明见 `accounts-admin.md`。
@@ -14,6 +17,8 @@
 5. **询盘提交**（#246，业主 2026-10-17）：原 checkout 地址 `/proforma-request/`、`/de/proforma-anfrage/` 不变。访客填写姓名、邮箱、公司（选填）、一个开放留言框（选填）与隐私同意，不问国家、地址、VAT 或电话，不自动注册。左边表单、右边可编辑的 Lösungsentwurf；已登录客户的回复资料折叠为一行，可展开更改本次询盘资料，留言与发送按钮直接可用。产品随询盘带上；空草稿可以只留言，但产品和留言均空时拒绝。访客、pending、restricted、approved 共用发送入口，价格门保持现状。提交后原生 Woo 感谢页与回执保留，状态 `wc-inquiry-received`，库存不扣减。回执与感谢页给访客一个可选注册链接（本次邮箱预填；须带正确订单 key 才能将该询盘附到新账号）。地址和 VAT 从账号已有数据带入，或由团队开 Proforma 时补。
 6. **公司侧**（Woo 后台订单页，角色 shop_manager）：订单标题 "Inquiry #"；按钮 "Issue Proforma / Proforma ausstellen"：生成 PDF、状态改 `wc-proforma-issued`、给客户发邮件（附 PDF 链接，不附件）；之后手动 `completed` 或 `cancelled`。无其他动作。后台把状态直接改成 `wc-proforma-issued` 走同一条签发（`Issuer::ensure_issued`，钩在 `woocommerce_order_status_proforma-issued`）：号与 PDF 写上之后，客户侧才有下载入口。没有银行账户时按钮不出现，状态改过去也不签发——见下节，不补造账户。
 7. **客户账户**（Woo My Account，端点改名）：Inquiries / Anfragen（列表：编号、日期、状态、金额、PI 下载）、Saved solutions / Gespeicherte Lösungen（定名，账户页与 `POST linker/v1/solutions` 的保存结果；保存的方案与设计报告 PDF，来自 #14）、Company / Unternehmen（资料与地址）、Documents / Unterlagen（本账户所有 PI 与设计报告）、页面顶部 "Your contact person / Ihre Ansprechperson"（姓名、邮箱、电话，来自设置）、每条询盘上 "Request again / Erneut anfragen"（复制为新的 Lösungsentwurf）。移除：订单、付款方式、下载（Woo 原生端点中不需要的隐藏）。
+
+询盘详情的产品资料链接只读取该商品当前关联的文档，不为每一行反复装配全站事实与文档版本。数据手册类型、旧URL别名的选择顺序和原PDF权限门保持；旧别名参与选择时仍核对实际字节，变更后的别名不得授权原资料。未发布商品、邮件纯文本及非询盘详情不提供该链接。 数据手册入口沿账户次级动作样式，提供至少44px的点击高度、hover变色与可见键盘焦点；手机窄列中的长德语标签保持完整。
 
 ## 模块（PSR-4 `Linker\Commerce\`，一类一文件，各有测试）
 - `Registration`（字段、VIES 客户端、角色元数据、提醒邮件）。
@@ -201,3 +206,26 @@ IBAN 为空时：订单页不显示 Issue Proforma，框内说明去 Settings �
 - 2026-10-11（#67，GAP-16）：新增 `Health` 模块（服务健康告警最小件）。WordPress/Woo 没有外部服务健康监视的原生能力，检查本身是本插件的；机制全部原生：调度 WP cron daily（`init` 懒登记 + 停用 `wp_clear_scheduled_hook`），HTTP 走 WP HTTP API，邮件走 `wp_mail` 即 #11 的 Outbox 队列（复用限流与重试）。验收：单元 `MonitorTest`（7 项）+ 实例集成 `HealthMonitorTest`（cron 钩子触发路径、失败一封 To 对接人+Bcc、健康零邮件、每日事件在排期），实例级 `wp cron event run linker_commerce_health_check` 健康/失败两跑实证。
 - 2026-10-14：线上 `/contact/` 与 `/de/kontakt/` 仍渲染旧兜底（form=0）。根因是挂载替换只在迁移脚本里，而该脚本不在切换清单，部署后的页面内容没有短代码。渲染时替换补上这一步。兜底行在短代码未注册时留下，正文里已经写着短代码也一样。本页渲染的是 #68 重建的最小表单（`docs/acceptance/2026-10-11/68/README.md` §4 原文：线上像素级比对不适用本票两块新面——搜索框芯片与联系表单是新建/重建面，非复刻面）；该记录与业主 2026-10-10 像素门裁定（所有客户可见页遵循线上现有设计，营销页按页型对拍）对 `/contact/` 的适用关系曾随本票报业主（PR #159 openQuestions），**已收口**（清账决策 2，2026-10-15，`.scratch/closure-decisions-2026-10-15.md` 第 2 条）：**移植旧线上整卡设计**——`/contact/` 是客户可见页，#68 的「重建面」记录说的是实现管线，不豁免设计层；**PR #165 已执行**（旧线上 What can we help with? 整卡 + 副卡移植进 LC/WindPress 层，表单仍走 #68 管线，文案三轮对抗评审后保持 #68 定稿）。
 - 2026-10-11（#68）：联系表单（最小）落地并接 Mail 管线：短代码 `[linker_contact_form]`、admin-post 处理（nonce/蜜罐/限流/校验）、客户回执 + 团队信（Bcc 走 SettingsTab）；`tools/migrate/68-contact-form.py` 换挂载点；同轮修 Figures/FAQ meta box 的保存形态（浏览器实际提交的是嵌套数组，两个箱子此前对真实 POST 从不写入，证据与复现见 docs/acceptance/2026-10-11/68/README.md §3）。
+
+
+## 已保存方案的移除与撤销
+
+账户内自己的保存方案可经明确确认移除；原生details的取消操作不提交表单。动作校验当前身份、账号状态、专用nonce、私有方案类型和author；访客、他人、拒绝账号及无效nonce不得改动。复用WordPress原生回收站和Woo通知的Undo，将同一记录恢复为private，保留产品、设计和报告文件，不改当前草稿。回收站被关闭时保持原记录并明确失败，不能静默永久删除。原生永久清理发生后，仅回收该保存方案ID的报告目录，其他客户文件保持。
+
+Woo没有客户保存方案的原生对象，沿用现有私有CPT；只补所有者动作适配，状态迁移使用wp_trash_post/wp_untrash_post，组成和确认在LC数据片段、样式在WindPress，未增加JS构建或通用删除API。
+
+
+## Saved-solution recovery guidance
+
+A saved record without a revalidatable stored result must explain the required new calculation and link to the existing locale-specific Solution Configurator. It must not offer a form whose stored prerequisites already guarantee rejection. `DesignProof::can_revalidate()` exposes only the existing local receipt prerequisites and a nonempty BOM; actual writes still run the current-authority check and atomic add.
+
+A snapshotless product reference may show the current Woo product name and native permalink only while both the locale and canonical source are published. Resolve all such references in one fresh `Publication::published_ids()` read, without an engineering request, manifest/PDF traversal or per-card permission refresh. Recorded snapshot names and stored data remain unchanged; withdrawn or unreadable current authority retains the recorded reference and no live link. Polylang resolution uses the existing `PageUrls::twin()` seam.
+
+LC owns the current-product link and recalculation fragments; WindPress owns spacing, wrapping,44px link targets andhover/focus. The existing add form,report andremove/Undo remain available where applicable. A failed saved add returns to the saved-solutions page with Woo's notice; success still opens the solution draft. No raw legacy items or historical snapshot silently become a new engineering approval.
+
+
+## Inquiry draft edits and retained entries
+
+The inquiry and its native WooCommerce draft remain separate forms. Unsubmitted quantity changes, including zero or an invalid/empty value, block inquiry submission with a bilingual instruction to update the draft. Native processing also blocks submission. A failed update keeps the changed values blocked; the returned native draft fragment establishes the saved baseline. Reverting an edit releases the block. No inquiry, notification, price, or stock authority changes.
+
+Both explicit links to edit the draft and native language links preserve name, reply email, company, message and the current consent choice in a one-use tab sessionStorage bridge. An opaque HMAC of the native user/session token binds the bridge to the authentication context without the native nonce tick expiry; it is consumed on the next inquiry render, and native server-retained validation fields take precedence. Restored reply details are visible and their summary agrees with their input values. Account/confirmation pages clear a pending bridge. There is no new server endpoint or persistent browser store. When storage is unavailable, filled entries stay on the page and an accessible bilingual notice explains why navigation stopped. Source markup remains LiveCanvas; notice styling remains WindPress.

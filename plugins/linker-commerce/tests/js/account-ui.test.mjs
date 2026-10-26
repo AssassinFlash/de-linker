@@ -7,7 +7,7 @@ const {JSDOM}=require('../../../linker-tools/node_modules/jsdom');
 const script=readFileSync(new URL('../../assets/account-ui.js',import.meta.url),'utf8');
 
 function account(){
- const dom=new JSDOM(`<div class="linker-auth"><form method="post" id="signin">
+ const dom=new JSDOM(`<div class="linker-auth"><form method="post" id="signin" novalidate>
  <input type="text" name="username" required>
  <button type="submit" name="login">Log in</button>
  </form></div>`,{runScripts:'outside-only'});
@@ -74,14 +74,19 @@ test('protected inquiry/account marks busy only on the verified native resubmit'
  assert.equal(form.dataset.accountState,'submitting');
 });
 
-test('a form the browser reports invalid keeps its button untouched',()=>{
+test('a native Woo novalidate form reports missing fields and stays on the page',()=>{
  const win=account();
  const button=win.document.querySelector('button[type="submit"]');
  const form=win.document.getElementById('signin');
  // jsdom reports an empty required field as invalid, the same as the browser.
  assert.equal(form.checkValidity(),false);
+ assert.equal(form.noValidate,true,'Woo delegates its login validation to the submit path');
+ let reported=false;
+ form.reportValidity=()=>{reported=true;return false;};
  const event=submit(form);
- assert.equal(event.defaultPrevented,false);
+ assert.equal(event.defaultPrevented,true,'invalid novalidate forms must not reach the server');
+ assert.equal(reported,true,'the customer must be directed to the missing field');
+ assert.equal(form.dataset.accountState,undefined);
  assert.equal(button.classList.contains('is-loading'),false);
 });
 
@@ -138,6 +143,88 @@ test('agreeing passwords post the form',()=>{
  const event=submit(form);
  assert.equal(event.defaultPrevented,false);
  assert.equal(form.querySelector('button[type="submit"]').classList.contains('is-loading'),true);
+});
+
+function inquiryDraft({saved=[],context='same-auth-session',nonce='first-nonce-tick',retained=false,storageUnavailable=false,closed=false,defaultName='',defaultEmail=''}={}){
+ const dom=new JSDOM(`<div class="linker-inquiry">
+ <form class="linker-inquiry-form" data-inquiry-context="${context}"><input type="hidden" name="linker_inquiry_nonce" value="${nonce}"><input type="hidden" name="linker_inquiry_retained" value="${retained?'1':'0'}">
+ <textarea name="message"></textarea><details class="linker-inquiry-details" ${closed?'':'open'}><summary><small>${defaultName} · ${defaultEmail}</small></summary><input name="name" value="${defaultName}"><input name="email" type="email" value="${defaultEmail}"><input name="company"></details><input type="checkbox" name="consent">
+ <p data-inquiry-draft-pending hidden role="status">Update the solution draft before sending your inquiry.</p>
+ <p data-inquiry-retention-error hidden role="alert" tabindex="-1">Your browser could not keep your entries.</p>
+ <button type="submit">Send inquiry</button></form>
+ <aside><form class="woocommerce-cart-form"><input class="qty" name="cart[line][qty]" type="number" min="0" step="1" value="1"><button type="submit" name="update_cart">Update solution draft</button></form>
+ <a data-inquiry-edit href="/cart/">Edit solution draft</a></aside></div><nav><a lang="de" href="/de/proforma-anfrage/">DE</a></nav>`,{runScripts:'outside-only',url:'https://example.test/proforma-request/'});
+ const win=dom.window;
+ for(const [key,value] of saved)win.sessionStorage.setItem(key,value);
+ if(storageUnavailable)Object.defineProperty(win,'sessionStorage',{get(){throw new Error('Storage unavailable');}});
+ win.eval(script);
+ const form=win.document.querySelector('.linker-inquiry-form');
+ return {win,form,draft:win.document.querySelector('.woocommerce-cart-form'),send:form.querySelector('button'),field:(name)=>form.querySelector(`[name="${name}"]`)};
+}
+
+test('unsaved inquiry quantities block sending, and reverting them restores sending',()=>{
+ const {win,form,draft,send}=inquiryDraft();
+ const quantity=draft.querySelector('.qty');
+ assert.equal(send.disabled,false);
+ quantity.value='0';quantity.dispatchEvent(new win.Event('input',{bubbles:true}));
+ assert.equal(send.disabled,true,'the inquiry must not send the previous server quantity');
+ assert.equal(submit(form).defaultPrevented,true);
+ assert.equal(form.querySelector('[data-inquiry-draft-pending]').hidden,false);
+ quantity.value='1';quantity.dispatchEvent(new win.Event('change',{bubbles:true}));
+ assert.equal(send.disabled,false,'reverting is not a pending edit');
+ assert.equal(form.querySelector('[data-inquiry-draft-pending]').hidden,true);
+});
+
+test('native draft failure stays blocked until retry replaces the quantity fragment',async()=>{
+ const {win,form,draft,send}=inquiryDraft();
+ const quantity=draft.querySelector('.qty');
+ quantity.value='2';quantity.dispatchEvent(new win.Event('input',{bubbles:true}));
+ draft.classList.add('processing');await Promise.resolve();
+ assert.equal(send.disabled,true);
+ draft.classList.remove('processing');await Promise.resolve();
+ assert.equal(send.disabled,true,'a failed update must not make old lines sendable');
+ const replacement=draft.cloneNode(true);replacement.querySelector('.qty').setAttribute('value','2');
+ draft.replaceWith(replacement);await Promise.resolve();
+ assert.equal(send.disabled,false,'Woo now returned the saved quantity');
+ assert.equal(form.querySelector('[data-inquiry-draft-pending]').hidden,true);
+});
+
+test('editing the draft preserves fields once across nonce ticks, within the authentication context',()=>{
+ const first=inquiryDraft();
+ const values={name:'Local UX Check',email:'draft-ux@example.test',company:'Local fixture',message:'Quotes "A" & B.\nPath \\keep\\text.'};
+ for(const [name,value] of Object.entries(values))first.field(name).value=value;
+ first.field('consent').checked=true;
+ first.win.document.addEventListener('click',event=>event.preventDefault());
+ first.win.document.querySelector('[data-inquiry-edit]').click();
+ const saved=Object.entries(first.win.sessionStorage);
+ const returned=inquiryDraft({saved,nonce:'next-nonce-tick',closed:true,defaultName:'Account name',defaultEmail:'account@example.test'});
+ for(const [name,value] of Object.entries(values))assert.equal(returned.field(name).value,value);
+ assert.equal(returned.field('consent').checked,true);
+ assert.equal(returned.field('linker_inquiry_retained').value,'1','the existing Genie handoff must not replace retained empty entries');
+ assert.equal(returned.form.querySelector('details').open,true,'changed reply details must be visible');
+ assert.equal(returned.form.querySelector('summary small').textContent,'Local UX Check · draft-ux@example.test');
+ assert.equal(returned.win.sessionStorage.length,0,'the bridge is consumed on return');
+ const different=inquiryDraft({saved,context:'different-auth-session'});
+ assert.equal(different.field('message').value,'','another authenticated context must not inherit a message');
+ assert.equal(different.win.sessionStorage.length,0);
+ const serverRetained=inquiryDraft({saved,retained:true});
+ assert.equal(serverRetained.field('message').value,'','server-retained error fields take precedence');
+ returned.field('message').value='Keep this when changing language';
+ returned.win.document.addEventListener('click',event=>event.preventDefault());
+ returned.win.document.querySelector('a[lang]').click();
+ const translated=inquiryDraft({saved:Object.entries(returned.win.sessionStorage)});
+ assert.equal(translated.field('message').value,'Keep this when changing language');
+});
+
+test('unavailable tab storage keeps the inquiry open and explains the edit failure',()=>{
+ const current=inquiryDraft({storageUnavailable:true});
+ current.field('message').value='Do not lose this message';
+ let prevented=false;
+ current.win.document.addEventListener('click',event=>{prevented=event.defaultPrevented;event.preventDefault();});
+ current.win.document.querySelector('[data-inquiry-edit]').click();
+ assert.equal(prevented,true,'navigation must stop when filled entries cannot be kept');
+ assert.equal(current.form.querySelector('[data-inquiry-retention-error]').hidden,false);
+ assert.equal(current.field('message').value,'Do not lose this message');
 });
 
 // Public inquiries use the same in-flight submission protection as account forms.

@@ -179,27 +179,174 @@ final class Publication {
 	}
 
 	/**
-	 * Assemble this authority read, hashing each real file at most once.
+	 * Fresh library rows, with byte identity only for potential FAQ sources.
+	 *
+	 * This projection has no manifest/product/document revisions or readiness.
+	 * Uncited rows expose listing metadata, never a claimed content hash; the
+	 * original download gate independently resolves and authorizes actual bytes.
 	 *
 	 * @return array<string,mixed>
 	 */
-	private static function assemble(): array {
-		$ids       = get_posts(
-			array(
-				'post_type'                   => 'product',
-				'post_status'                 => 'publish',
-				'fields'                      => 'ids',
-				'posts_per_page'              => -1,
-				'orderby'                     => 'ID',
-				'order'                       => 'ASC',
-				'suppress_filters'            => true,
-				'lang'                        => '',
-				'linker_publication_internal' => true,
-				'cache_results'               => false,
+	public static function library_read(): array {
+		self::refresh_runtime();
+		DocumentFiles::begin_read();
+		try {
+			return self::assemble( true );
+		} finally {
+			DocumentFiles::end_read();
+		}
+	}
+
+	/**
+	 * Current product documents, retaining the shared register's first-row rules.
+	 *
+	 * Other products still determine shared metadata and declared aliases, but
+	 * their unrelated files and FAQ citations do not need to be inspected.
+	 *
+	 * @param int    $id Locale product ID.
+	 * @param string $legacy_url Legacy selection URL needing declared-alias byte identity.
+	 * @return array<string,mixed>
+	 */
+	public static function product_library_read( int $id, string $legacy_url = '' ): array {
+		self::refresh_runtime();
+		DocumentFiles::begin_read();
+		try {
+			if ( ! self::published_in_current_read( $id ) ) {
+				return array(
+					'products'  => array(),
+					'documents' => array(),
+				);
+			}
+			return self::assemble( true, self::canonical_id( $id ), $legacy_url );
+		} finally {
+			DocumentFiles::end_read();
+		}
+	}
+
+	/**
+	 * Authorize one original PDF without hashing unrelated technical documents.
+	 *
+	 * @param array<string,string> $file The caller's resolved hosted PDF.
+	 */
+	public static function allows_document( array $file ): bool {
+		self::refresh_runtime();
+		DocumentFiles::begin_read();
+		try {
+			return self::document_in_current_read( $file );
+		} finally {
+			DocumentFiles::end_read();
+		}
+	}
+
+	/**
+	 * Preserve manifest association order and alias permission for this PDF.
+	 *
+	 * @param array<string,string> $file The caller's resolved hosted PDF.
+	 */
+	private static function document_in_current_read( array $file ): bool {
+		$target     = DocumentFiles::id( $file['url'] );
+		$rows       = array();
+		$candidates = array();
+		$sources    = array();
+		foreach ( self::candidate_ids() as $locale_id ) {
+			if ( ! self::published_in_current_read( $locale_id ) ) {
+				continue;
+			}
+			$id = self::canonical_id( $locale_id );
+			if ( isset( $sources[ $id ] ) ) {
+				continue;
+			}
+			$sources[ $id ] = true;
+			foreach ( self::document_rows( $id ) as $row ) {
+				if ( false === ( $row['active'] ?? true ) || '0' === (string) ( $row['active'] ?? '1' ) ) {
+					continue;
+				}
+				$identity = DocumentFiles::id( (string) ( $row['url'] ?? '' ) );
+				$rows[]   = array( $identity, $row );
+				if ( $identity === $target ) {
+					$candidates[ $identity ] = true;
+				}
+				foreach ( (array) ( $row['aliases'] ?? array() ) as $url ) {
+					if ( is_string( $url ) && DocumentFiles::id( $url ) === $target ) {
+						$candidates[ $identity ] = true;
+					}
+				}
+			}
+		}
+		$seen        = array();
+		$permissions = array();
+		foreach ( $rows as [ $identity, $row ] ) {
+			if ( ! isset( $candidates[ $identity ] ) || isset( $seen[ $identity ] ) ) {
+				continue;
+			}
+			$primary = DocumentFiles::resolve( (string) ( $row['url'] ?? '' ) );
+			if ( null === $primary || ! self::attachment_allows( $primary['url'], $permissions ) ) {
+				continue;
+			}
+			$seen[ $identity ] = true;
+			if ( $primary['url'] === $file['url'] && $primary['blob_sha256'] === $file['blob_sha256'] ) {
+				return true;
+			}
+			foreach ( (array) ( $row['aliases'] ?? array() ) as $url ) {
+				if ( ! is_string( $url ) || DocumentFiles::id( $url ) !== $target ) {
+					continue;
+				}
+				$alias = DocumentFiles::resolve( $url );
+				if ( null !== $alias && $alias['url'] === $file['url'] && $alias['blob_sha256'] === $primary['blob_sha256'] && $alias['blob_sha256'] === $file['blob_sha256'] && self::attachment_allows( $alias['url'], $permissions ) ) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Native candidate order shared by the full manifest and original PDF gate.
+	 *
+	 * @return list<int>
+	 */
+	private static function candidate_ids(): array {
+		return array_values(
+			array_map(
+				'intval',
+				get_posts(
+					array(
+						'post_type'                   => 'product',
+						'post_status'                 => 'publish',
+						'fields'                      => 'ids',
+						'posts_per_page'              => -1,
+						'orderby'                     => 'ID',
+						'order'                       => 'ASC',
+						'suppress_filters'            => true,
+						'lang'                        => '',
+						'linker_publication_internal' => true,
+						'cache_results'               => false,
+					)
+				)
 			)
 		);
-		$products  = array();
-		$documents = array();
+	}
+
+	/**
+	 * Assemble this authority read, hashing each real file at most once.
+	 *
+	 * @param bool     $library Only library metadata and current cited FAQ bytes.
+	 * @param int|null $product_id Restrict document IO to this current source.
+	 * @param string   $legacy_url Inspect aliases needed to select a legacy document URL.
+	 * @return array<string,mixed>
+	 */
+	private static function assemble( bool $library = false, ?int $product_id = null, string $legacy_url = '' ): array {
+		$ids = self::candidate_ids();
+		// WordPress batches the same native posts, metadata and terms after this read's runtime refresh.
+		_prime_post_caches( $ids, true, true );
+		$citation_ids           = $library ? self::faq_document_ids( null === $product_id ? $ids : array( $product_id ) ) : array();
+		$document_ids           = null === $product_id ? null : self::product_document_ids( $product_id );
+		$products               = array();
+		$documents              = array();
+		$attachment_permissions = array();
+		if ( $library && '' !== $legacy_url ) {
+			$citation_ids[ DocumentFiles::id( $legacy_url ) ] = true;
+		}
 		foreach ( $ids as $locale_id ) {
 			$locale_id = (int) $locale_id;
 			if ( ! self::published_in_current_read( $locale_id ) ) {
@@ -207,7 +354,12 @@ final class Publication {
 			}
 			$id = self::canonical_id( $locale_id );
 			if ( ! isset( $products[ $id ] ) ) {
-				$record = self::product_record( $id );
+				$record = $library ? array(
+					'product_id'           => $id,
+					'locale_product_ids'   => array(),
+					'published_locale_ids' => array(),
+					'documents'            => array(),
+				) : self::product_record( $id );
 				if ( null === $record ) {
 					continue;
 				}
@@ -216,22 +368,26 @@ final class Publication {
 					if ( false === ( $row['active'] ?? true ) || '0' === (string) ( $row['active'] ?? '1' ) ) {
 						continue;
 					}
-					$file = DocumentFiles::resolve( (string) ( $row['url'] ?? '' ) );
-					if ( null === $file || ! self::attachment_allows( $file['url'] ) ) {
+					if ( null !== $document_ids && ! isset( $document_ids[ DocumentFiles::id( (string) ( $row['url'] ?? '' ) ) ] ) ) {
+						continue;
+					}
+					$needs_bytes = ! $library || self::row_is_cited( $row, $citation_ids );
+					$file        = $needs_bytes ? DocumentFiles::resolve( (string) ( $row['url'] ?? '' ) ) : DocumentFiles::locate( (string) ( $row['url'] ?? '' ) );
+					if ( null === $file || ! self::attachment_allows( $file['url'], $attachment_permissions ) ) {
 						continue;
 					}
 					$document_id = DocumentFiles::id( $file['url'] );
 					if ( ! isset( $documents[ $document_id ] ) ) {
 						$aliases = array( $file['url'] );
-						foreach ( (array) ( $row['aliases'] ?? array() ) as $alias ) {
+						foreach ( isset( $file['blob_sha256'] ) ? (array) ( $row['aliases'] ?? array() ) : array() as $alias ) {
 							$resolved = is_string( $alias ) ? DocumentFiles::resolve( $alias ) : null;
-							if ( null !== $resolved && $resolved['blob_sha256'] === $file['blob_sha256'] && self::attachment_allows( $resolved['url'] ) ) {
+							if ( null !== $resolved && ( $file['blob_sha256'] ?? null ) === $resolved['blob_sha256'] && self::attachment_allows( $resolved['url'], $attachment_permissions ) ) {
 								$aliases[] = $resolved['url'];
 							}
 						}
 						$documents[ $document_id ] = array(
 							'document_id'      => $document_id,
-							'blob_sha256'      => $file['blob_sha256'],
+							'blob_sha256'      => $file['blob_sha256'] ?? null,
 							'url'              => $file['url'],
 							'aliases'          => array_values( array_unique( $aliases ) ),
 							'product_ids'      => array(),
@@ -255,9 +411,6 @@ final class Publication {
 			$document['product_ids'] = array_values( array_unique( $document['product_ids'] ) );
 			sort( $document['product_ids'] );
 			sort( $document['aliases'] );
-			$content = $document;
-			unset( $content['product_ids'] );
-			$document['document_revision'] = self::revision( $content );
 		}
 		unset( $document );
 		ksort( $products );
@@ -265,6 +418,21 @@ final class Publication {
 			$product['documents'] = array_values( array_unique( $product['documents'] ) );
 			sort( $product['documents'] );
 			sort( $product['published_locale_ids'] );
+		}
+		unset( $product );
+		if ( $library ) {
+			return array(
+				'products'  => array_values( $products ),
+				'documents' => array_values( $documents ),
+			);
+		}
+		foreach ( $documents as &$document ) {
+			$content = $document;
+			unset( $content['product_ids'] );
+			$document['document_revision'] = self::revision( $content );
+		}
+		unset( $document );
+		foreach ( $products as &$product ) {
 			$versions = array();
 			foreach ( $product['documents'] as $document_id ) {
 				$versions[ $document_id ] = $documents[ $document_id ]['document_revision'];
@@ -285,6 +453,66 @@ final class Publication {
 		}
 		unset( $product );
 		return $manifest;
+	}
+
+	/**
+	 * Select maintained primary identities; aliases remain owned by the first row.
+	 *
+	 * @param int $id Current canonical source.
+	 * @return array<string,true>
+	 */
+	private static function product_document_ids( int $id ): array {
+		$documents = array();
+		foreach ( self::document_rows( $id ) as $row ) {
+			if ( false !== ( $row['active'] ?? true ) && '0' !== (string) ( $row['active'] ?? '1' ) ) {
+				$documents[ DocumentFiles::id( (string) ( $row['url'] ?? '' ) ) ] = true;
+			}
+		}
+		return $documents;
+	}
+
+	/**
+	 * A primary or declared alias may be an FAQ source anywhere in this read.
+	 *
+	 * @param array<string,mixed> $row Current maintained association.
+	 * @param array<string,true>  $citation_ids Potential citation paths.
+	 */
+	private static function row_is_cited( array $row, array $citation_ids ): bool {
+		foreach ( array_merge( array( $row['url'] ?? '' ), (array) ( $row['aliases'] ?? array() ) ) as $url ) {
+			if ( is_string( $url ) && isset( $citation_ids[ DocumentFiles::id( $url ) ] ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Conservative byte-read scope; stored FAQ bindings still decide release.
+	 *
+	 * The source candidates in this read are considered before the first shared
+	 * document row. A selected product's citation may depend on an earlier row.
+	 * Path identity can over-select a file, but cannot authorize an answer.
+	 *
+	 * @param int[] $ids Native locale candidates.
+	 * @return array<string,true>
+	 */
+	private static function faq_document_ids( array $ids ): array {
+		$sources   = array();
+		$documents = array();
+		foreach ( $ids as $id ) {
+			if ( ! self::published_in_current_read( $id ) ) {
+				continue;
+			}
+			$source = self::canonical_id( $id );
+			if ( isset( $sources[ $source ] ) ) {
+				continue;
+			}
+			$sources[ $source ] = true;
+			foreach ( Faqs::of( $source ) as $entry ) {
+				$documents[ DocumentFiles::id( $entry['citation']['url'] ) ] = true;
+			}
+		}
+		return $documents;
 	}
 
 	/**
@@ -410,11 +638,15 @@ final class Publication {
 	/**
 	 * A media-level withdrawal applies to every relation of that attachment.
 	 *
-	 * @param string $url Hosted document URL.
+	 * @param string             $url Hosted document URL.
+	 * @param array<string,bool> $permissions Decisions for this assembly only.
 	 */
-	private static function attachment_allows( string $url ): bool {
-		$id = attachment_url_to_postid( $url );
-		return 0 === $id || ! in_array( get_post_meta( $id, '_linker_document_public', true ), array( '0', 0, false ), true );
+	private static function attachment_allows( string $url, array &$permissions ): bool {
+		if ( ! array_key_exists( $url, $permissions ) ) {
+			$id                  = attachment_url_to_postid( $url );
+			$permissions[ $url ] = 0 === $id || ! in_array( get_post_meta( $id, '_linker_document_public', true ), array( '0', 0, false ), true );
+		}
+		return $permissions[ $url ];
 	}
 
 	/**
@@ -429,13 +661,18 @@ final class Publication {
 		if ( ! self::is_published( $id ) ) {
 			return array();
 		}
-		$manifest ??= self::manifest();
-		$id         = self::canonical_id( $id );
+		$id      = self::canonical_id( $id );
+		$entries = Faqs::of( $id );
+		if ( array() === $entries ) {
+			return array();
+		}
+		// FAQ release needs current cited bytes, not product revision or readiness.
+		$manifest ??= self::product_library_read( $id );
 		if ( ! in_array( $id, array_column( $manifest['products'], 'product_id' ), true ) ) {
 			return array();
 		}
 		$answers = array();
-		foreach ( Faqs::of( $id ) as $entry ) {
+		foreach ( $entries as $entry ) {
 			foreach ( $manifest['documents'] as $document ) {
 				if ( in_array( $id, $document['product_ids'], true ) && in_array( strtok( $entry['citation']['url'], '#' ), $document['aliases'], true ) && EvidenceBindings::matches_faq( $id, $entry, $document ) ) {
 					$answers[] = $entry;

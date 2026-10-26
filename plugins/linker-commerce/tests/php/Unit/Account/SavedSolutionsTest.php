@@ -206,6 +206,7 @@ final class SavedSolutionsTest extends TestCase {
 			)
 		);
 		WP_Mock::userFunction( 'wc_get_cart_url', array( 'return' => 'https://example.test/cart/' ) );
+		WP_Mock::userFunction( 'wc_get_account_endpoint_url', array( 'return' => 'https://example.test/my-account/saved-solutions/' ) );
 		WP_Mock::userFunction(
 			'wp_safe_redirect',
 			array(
@@ -219,7 +220,7 @@ final class SavedSolutionsTest extends TestCase {
 			$this->store()->add_to_draft();
 			$this->fail( 'No redirect.' );
 		} catch ( RuntimeException $redirect ) {
-			$this->assertSame( 'https://example.test/cart/', $redirect->getMessage() );
+			$this->assertSame( 'https://example.test/my-account/saved-solutions/', $redirect->getMessage() );
 		} finally {
 			$_POST = array();
 		}
