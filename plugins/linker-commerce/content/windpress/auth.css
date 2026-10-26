@@ -507,8 +507,8 @@
 .linker-account button.show-password-input:focus-visible { outline: 2px solid var(--proto-teal-600); outline-offset: 2px; }
 
 /* The checkbox: WooCommerce's own input, drawn as the prototype's box. */
-.linker-auth .woocommerce-form-login__rememberme,
-.linker-account .woocommerce-form-login__rememberme {
+.linker-auth form .form-row label.woocommerce-form-login__rememberme,
+.linker-account form .form-row label.woocommerce-form-login__rememberme {
 	display: flex;
 	align-items: center;
 	gap: 10px;

@@ -172,3 +172,8 @@
 - **防机器人**：`BotGuard` 在 `woocommerce_register_form` 打印 `Inquiry\PublicGuard` 的蜜罐与签名起始时间，在 `woocommerce_process_registration_errors`（优先级 20，字段校验之后、建号与发信之前）复用同一个守卫：蜜罐、时钟、过短被拒，并共用每连接每小时 3 次的原子限额。蜜罐/时钟/过短与字段错误同时出现时仍计数；每连接限额只由字段通过的表单消耗。被拒计数写入 `linker_commerce_registration_blocked`（不 autoload，按原因分桶 + 最后时间），`wp linker-commerce registration-blocks [--reset]` 是读取入口；`linker_commerce_registration_blocked` action 只作为后续扩展点，本分支没有监控或摘要消费者。
 - **通知与后台**：`NewCustomerEmail` 与后台账户页都通过 `RegistrationInformation::rows()` 读同一套字段定义，网站自动出现在新客户通知与审核卡（以及卡片上的 Company website 链接）；VAT 检查与审批状态行仍附在后面。
 - **验收**：`docs/acceptance/2026-10-19/225/`（EN/DE × 1440/390 两步与错误态、线上 before、机器人拦截/成功实走、Outbox 断言、文案对抗评审、变更台账）。注册卡属裁定重设计，不做整页像素相等声明。
+# Native required-field guidance
+
+Woo's native login form carries `novalidate`, so the shared form enhancement must call the browser's `reportValidity()` and cancel an invalid submission before verification/loading state. Empty username/password fields stay on the form with native focus and guidance; valid submissions keep their existing Woo fields, pressed-button identity and server validation. The existing invalid-form regression uses the real `novalidate` condition rather than assuming the browser cancels submission before the handler runs.
+
+The existing Remember me rule keeps its 10px gap and 44px label target. Its selector must outrank Woo's more specific native login-label display rules so the intended flex alignment and gap actually apply. No new wording or layout tokens are introduced.
