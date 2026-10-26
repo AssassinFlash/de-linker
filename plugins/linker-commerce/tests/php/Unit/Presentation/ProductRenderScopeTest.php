@@ -101,6 +101,14 @@ final class ProductRenderScopeTest extends TestCase {
 		WP_Mock::userFunction( 'get_queried_object' )->andReturn( null );
 		WP_Mock::userFunction( 'pll_current_language' )->andReturn( '' );
 		WP_Mock::userFunction( 'pll_get_post_language' )->andReturn( 'en' );
+		WP_Mock::userFunction( 'pll_get_post' )->andReturnUsing(
+			static function ( int $id, string $lang = '' ): int {
+				if ( 'en' === $lang ) {
+					return $id;
+				}
+				return 0;
+			}
+		);
 		WP_Mock::userFunction( 'is_user_logged_in' )->andReturn( false );
 		WP_Mock::userFunction( 'get_option' )->andReturn( 'no' );
 		WP_Mock::userFunction( 'sanitize_key' )->andReturnUsing( static fn ( string $value ): string => $value );
