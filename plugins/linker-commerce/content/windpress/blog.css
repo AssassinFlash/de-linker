@@ -48,9 +48,10 @@
 #tv-blog-single-v1 .tv-blog-single-content .linker-article-comparison { display: grid; gap: var(--proto-space-5); }
 #tv-blog-single-v1 .tv-blog-single-content .linker-article-topic { padding-bottom: var(--proto-space-5); border-bottom: 1px solid var(--proto-neutral-200); }
 #tv-blog-single-v1 .tv-blog-single-content .linker-article-check { margin-top: var(--proto-space-6); padding: var(--proto-space-5); border-left: 3px solid var(--proto-teal-600); background: var(--proto-teal-50); }
-/* Nested article sections already supply spacing through their container;
- * start the first title at its padding instead of adding the shared h2 margin. */
+/* Keep nested title spacing in the containers; adjacent comparison groups
+ * use the same space token as their internal grid gap. */
 #tv-blog-single-v1 .tv-blog-single-content :is(.linker-article-topic,.linker-article-check) > h2:first-child { margin-top: 0; }
+#tv-blog-single-v1 .tv-blog-single-content .linker-article-comparison + .linker-article-comparison { margin-top: var(--proto-space-5); }
 #tv-blog-single-v1 .tv-blog-single-content .linker-article-next { font-size: .875rem; }
 #tv-blog-single-v1 .reader-meta { display: grid; gap: var(--proto-space-3); margin-top: var(--proto-space-7); padding-top: var(--proto-space-5); border-top: 1px solid var(--proto-neutral-200); color: var(--proto-neutral-500); font-size: .75rem; }
 #tv-blog-single-v1 .reader-actions { display: flex; flex-wrap: wrap; gap: var(--proto-space-4); margin-top: var(--proto-space-5); font-size: .8125rem; font-weight: 500; }
