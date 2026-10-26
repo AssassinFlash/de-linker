@@ -11,7 +11,12 @@ import type { PlantEnergyDraft } from "../../domain/plantEnergy.ts";
 import { PlantEnergyForm } from "./PlantEnergyForm.tsx";
 import { readInstallation } from "../../domain/installation.ts";
 import { readObject } from "../../data/readProtocol.ts";
-import { DC_MODEL, readDcLossScenario } from "../../domain/dcEnergy.ts";
+import {
+	DC_MODEL,
+	REFERENCE_CAPACITY,
+	restoreDcConditions,
+	readDcLossScenario,
+} from "../../domain/dcEnergy.ts";
 import { PlanningReportForm } from "./PlanningReportForm.tsx";
 import { PlanningReportResult } from "./PlanningReportResult.tsx";
 import { EnergyComparison } from "./EnergyComparison.tsx";
@@ -668,18 +673,12 @@ export function EnergyWorkspace({
 				...(dc
 					? {
 							dc: {
-								...Object.fromEntries(
-									Object.entries(setup.dc ?? {}).filter(
-										([key]) => key !== "battery_temperature_c",
-									),
+								...restoreDcConditions(
+									setup.dc,
+									readDcLossScenario(parameters),
 								),
 								source_note: command.source_note,
 								battery_port_id: parameters.battery_port_id,
-								...(parameters.battery_temperature_c === undefined
-									? {}
-									: {
-											battery_temperature_c: parameters.battery_temperature_c,
-										}),
 								losses: Object.fromEntries(
 									[
 										"eta_bus_to_battery",
@@ -1400,6 +1399,10 @@ export function EnergyWorkspace({
 						</ol>
 						{joint && jointContext.value ? (
 							<PlantEnergyForm
+								referenceCapacitySupported={
+									session.runtime.models.capacity_reference ===
+									REFERENCE_CAPACITY
+								}
 								value={jointContext.value.setup}
 								plant={jointContext.value.plant}
 								converters={converterIds}
@@ -1421,6 +1424,10 @@ export function EnergyWorkspace({
 						) : (
 							setup && (
 								<ScenarioForm
+									referenceCapacitySupported={
+										session.runtime.models.capacity_reference ===
+										REFERENCE_CAPACITY
+									}
 									client={client}
 									scope={session.query_scope}
 									active={active && view === "scenario"}

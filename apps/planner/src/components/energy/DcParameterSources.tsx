@@ -1,6 +1,7 @@
 import type { JsonObject } from "../../data/protocol.ts";
 import { readObject } from "../../data/readProtocol.ts";
 import { __, sprintf } from "../../i18n.ts";
+import { CapacityReferenceBasis } from "./CapacityReference.tsx";
 
 /** Frozen Woo facts, including their original identifiers and citations. */
 export function DcParameterSources({
@@ -18,6 +19,7 @@ export function DcParameterSources({
 	return (
 		<details className="lp-comparison">
 			<summary>{__("Product data used", "linker-tools")}</summary>
+			<CapacityReferenceBasis parameters={parameters} locale={locale} />
 			<dl className="lp-field-summary">
 				{Object.entries(facts)
 					.filter(
@@ -30,6 +32,17 @@ export function DcParameterSources({
 					.map(([id, raw]) => {
 						const fact = readObject(raw),
 							source = fact.source ? readObject(fact.source) : null;
+						const qualifier =
+							fact.qualifier &&
+							typeof fact.qualifier === "object" &&
+							!Array.isArray(fact.qualifier)
+								? readObject(fact.qualifier)
+								: null;
+						const original = qualifier
+							? readObject(qualifier.source_text ?? qualifier)
+							: null;
+						const conditionText =
+							original?.[locale.startsWith("de") ? "de" : "en"];
 						const url =
 							typeof source?.url === "string" &&
 							/^https?:\/\//i.test(source.url)
@@ -55,9 +68,15 @@ export function DcParameterSources({
 											)}
 										</p>
 									)}
-									{fact.qualifier !== null && fact.qualifier !== undefined && (
-										<p>{JSON.stringify(fact.qualifier)}</p>
-									)}
+									{fact.qualifier !== null &&
+										fact.qualifier !== undefined &&
+										qualifier?.quantity_kind !== "rated_usable_energy" && (
+											<p>
+												{typeof conditionText === "string"
+													? conditionText
+													: JSON.stringify(fact.qualifier)}
+											</p>
+										)}
 								</dd>
 							</div>
 						);

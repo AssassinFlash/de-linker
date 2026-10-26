@@ -7,6 +7,8 @@ import { __ } from "../../i18n.ts";
 import { toPercent, fromPercent } from "../../domain/decimal.ts";
 import { ScenarioNumber } from "./ScenarioNumber.tsx";
 import { Notice } from "../Notice.tsx";
+import { REFERENCE_CAPACITY } from "../../domain/dcEnergy.ts";
+import { capacityReferenceText } from "./CapacityReference.tsx";
 
 export function dcLossLabel(field: DcLossField): string {
 	switch (field) {
@@ -43,6 +45,7 @@ export function DcStorageForm({
 	inverterId,
 	storageOnly = false,
 	showPvAssignment = true,
+	referenceCapacitySupported = false,
 }: {
 	value: ScenarioDraft;
 	locale: string;
@@ -57,6 +60,7 @@ export function DcStorageForm({
 	inverterId: number | null;
 	storageOnly?: boolean;
 	showPvAssignment?: boolean;
+	referenceCapacitySupported?: boolean;
 }) {
 	const dc = value.dc ?? emptyDcScenario();
 	const catalog = useEquipmentProducts(client, scope, active);
@@ -75,6 +79,7 @@ export function DcStorageForm({
 				| "pv_converter_id"
 				| "battery_port_id"
 				| "battery_temperature_c"
+				| "capacity_window_basis"
 				| "aux_dc_kw"
 				| "losses"
 			>
@@ -118,6 +123,31 @@ export function DcStorageForm({
 				</p>
 			)}
 			<div className="lp-geometry-fields">
+				<label className="lp-field">
+					<span>{__("Capacity model", "linker-tools")}</span>
+					<select
+						disabled={!referenceCapacitySupported}
+						value={dc.capacity_window_basis ?? ""}
+						onChange={(e) =>
+							change({
+								capacity_window_basis:
+									e.currentTarget.value === REFERENCE_CAPACITY
+										? REFERENCE_CAPACITY
+										: null,
+							})
+						}
+					>
+						<option value="">
+							{__("Use documented operating-capacity data", "linker-tools")}
+						</option>
+						<option value={REFERENCE_CAPACITY}>
+							{__(
+								"Use the manufacturer’s stated usable energy as a fixed reference",
+								"linker-tools",
+							)}
+						</option>
+					</select>
+				</label>
 				{!storageOnly && showPvAssignment && (
 					<label className="lp-field">
 						<span>{__("PV conversion group", "linker-tools")}</span>
@@ -205,6 +235,9 @@ export function DcStorageForm({
 					/>
 				)}
 			</div>
+			{dc.capacity_window_basis === REFERENCE_CAPACITY && (
+				<p className="lp-profile-help">{capacityReferenceText()}</p>
+			)}
 			{!storageOnly && showPvAssignment && (
 				<p className="lp-profile-help">
 					{__(

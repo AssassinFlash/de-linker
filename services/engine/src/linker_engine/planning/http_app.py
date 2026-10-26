@@ -24,6 +24,7 @@ from starlette.types import ASGIApp
 from .access import active_actor, positive_integer
 from .assets import Assets
 from .canonical import Json, Object
+from .capacity_window import REFERENCE_CAPACITY
 from .csv_inspection import inspect_csv
 from .csv_issue import CsvIssue
 from .energy_comparison import compare_energy_runs
@@ -258,6 +259,11 @@ def create_private_app(
             "models": {
                 **energy.kernel.models,
                 "comparison": "frozen_energy_comparison_v1",
+                **(
+                    {"capacity_reference": REFERENCE_CAPACITY}
+                    if energy.dc_kernel is not None or energy.plant_kernel is not None
+                    else {}
+                ),
                 **(
                     {"dc_replay": energy.dc_kernel.kind}
                     if energy.dc_kernel is not None

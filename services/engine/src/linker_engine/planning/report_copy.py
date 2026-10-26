@@ -3,6 +3,22 @@
 from __future__ import annotations
 
 TEXT = {
+    "capacity_reference_title": (
+        "Reference scenario using the manufacturer’s usable energy",
+        "Referenzszenario mit nutzbarer Energie laut Hersteller",
+    ),
+    "capacity_reference_published": (
+        "Manufacturer’s stated usable energy",
+        "Nutzbare Energie laut Hersteller",
+    ),
+    "capacity_reference_scope": (
+        "This reference calculation uses the selected product’s published usable energy as a fixed model window. The manufacturer’s test conditions are shown with the source. Choosing this mode does not establish that they are met. Ageing and changes in usable energy with temperature or charge/discharge rate are not modelled. Conversion and storage losses follow the separate scenario assumptions. Actual deliverable energy is not established.",
+        "Diese Referenzberechnung verwendet die vom Hersteller angegebene nutzbare Energie des ausgewählten Produkts als festes Energiefenster im Modell. Die Prüfbedingungen des Herstellers sind beim Quellennachweis angegeben. Die Auswahl dieses Modus bestätigt nicht, dass diese Bedingungen erfüllt sind. Alterung sowie Änderungen der nutzbaren Energie durch Temperatur oder Lade- und Entladerate werden nicht modelliert. Umwandlungs- und Speicherverluste werden nach den gesonderten Szenarioannahmen berechnet. Die tatsächlich abgebbare Energie wird damit nicht nachgewiesen.",
+    ),
+    "comparison_capacity_basis": (
+        "Capacity model differs",
+        "Unterschiedliches Kapazitätsmodell",
+    ),
     "plant_unit_reserve": (
         "Reserved stored energy",
         "Energiereserve im Speicher",

@@ -27,6 +27,7 @@ export function ScenarioForm({
 	client,
 	scope,
 	active,
+	referenceCapacitySupported = false,
 }: {
 	value: ScenarioDraft;
 	locale: string;
@@ -42,6 +43,7 @@ export function ScenarioForm({
 	client: PlannerClient;
 	scope: string;
 	active: boolean;
+	referenceCapacitySupported?: boolean;
 }) {
 	const validity = useRef(new Map<string, boolean>());
 	const report = useCallback(
@@ -80,6 +82,7 @@ export function ScenarioForm({
 				</label>
 				{dc && (
 					<DcStorageForm
+						referenceCapacitySupported={referenceCapacitySupported}
 						client={client}
 						scope={scope}
 						active={active && section === "storage"}

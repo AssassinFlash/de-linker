@@ -230,3 +230,58 @@ off-grid limits in solution manual p7; total unit nameplates cannot replace
 those load-specific constraints. Project wiring, actual firmware, neutral/PE
 arrangements, STS product selection and country/site authorization must still
 be established before granting a real interconnected-island approval.
+
+### Manufacturer-capacity reference scenario — implementation decision, 2026-10-27
+
+The existing primary evidence is sufficient for this bounded modeling decision.
+This read reused the original Apify-captured SAM
+[Cell and System](https://samrepo.nlr.gov/help/battery_storage_btm.html) and
+[BTM Dispatch](https://samrepo.nlr.gov/help/battery_dispatch_btm.html) bodies
+retained in commit `0b37a330219645bd1701b4c2174784931e87e604`, under
+`docs/research/2026-10-22-roof-calculation/method-study/raw/sam-02.md` and
+`sam-01.md`, and the [BatteryStateful API](https://nrel-pysam.readthedocs.io/en/main/modules/BatteryStateful.html)
+body `pysam-03.md`. No new search, fetch, model run or product fact was needed.
+
+SAM separates nominal bank capacity, dispatch SOC limits, temperature-capacity
+curves and lifetime degradation. In particular, its Cell and System guidance
+uses nominal capacity for bank size and SOC limits for the smaller usable
+capacity; its thermal model separately changes capacity with temperature.
+The Stateful API likewise separates nominal installed energy, SOC bounds,
+temperature-capacity data and the life model. These are mature precedents for
+keeping a reference quantity distinct from adjusted operating capacity. They
+do not establish that our constant-window replay is a full SAM simulation or
+that SAM defaults are appropriate for this product. See also NUMERICAL-MODELS
+sections5 and12.2/12.4/12.5 for the existing explicit scenario/state-core seam.
+
+An implementable choice is an **explicit manufacturer-usable-capacity reference
+scenario**, alongside the existing strict source-condition path. Its capacity
+must still come from the selected Woo product's cited quantity: for1955,
+110kWh with the unchanged BOL/100%DOD/.2C/25±2°C test qualifier and source hash.
+The choice asserts a modeling convention, **not that those test conditions are
+met by the real project**. It may hold the reference window constant for a
+replay, with ageing and capacity-vs-temperature/rate effects unmodeled; it must
+not turn an unparsed or unmatched source condition into `condition_match=true`.
+
+Preserve the chosen basis/model version, unit and product configuration,
+original source value/qualifier/hash, assumed inventory boundary and excluded
+effects in preparation, saved run, report/PDF and comparisons. Different bases
+or source revisions must be visible as a comparison difference. The result is
+conditional reference-scenario performance; equipment/operating qualification
+remains unresolved wherever the actual age, thermal/rate behavior, BMS state
+or other required evidence has not been assessed. Electrical constraints and
+source/model identity checks continue to apply independently.
+
+The110kWh is already the manufacturer's usable quantity; do not deduct the
+same100%DOD again. Mapping it to this kernel's internal usable-energy window
+is an explicit reference-model convention: the table alone does not establish
+all internal-versus-DC-terminal loss boundaries. Do not silently substitute110
+for PySAM's nominal-energy input or infer directional losses from the96% RTE.
+
+**The.2C test point cannot scientifically be widened to a `<=.2C` verified
+domain from this sheet.** It gives neither a capacity-versus-rate curve nor a
+guaranteed monotonic lower bound over that interval; variable-power replay is
+also not the same experiment as constant.2C testing. Likewise,23–27°C and BOL
+describe the reference test, not a demonstrated constant110kWh operating
+surface. A UI setting within those numbers is insufficient for hardware
+approval. This reference option permits honest scenario calculation without
+claiming measured or guaranteed capacity at other ages, temperatures or rates.

@@ -6,9 +6,15 @@ power, energy and selected-port capability are never customer-supplied fields.
 
 from __future__ import annotations
 
-from typing import Annotated, Literal
+from typing import Annotated, Literal, cast
 
-from pydantic import Field, field_validator, model_validator
+from pydantic import (
+    Field,
+    SerializerFunctionWrapHandler,
+    field_validator,
+    model_serializer,
+    model_validator,
+)
 
 from .canonical import Object
 from .dc_battery_model import DcBatteryModel, DcPort, SharedBridge
@@ -29,6 +35,9 @@ class DcLossScenario(Document):
     parameter_basis: Literal["explicit_loss_scenario_with_woo_equipment"]
     battery_port_id: Identifier
     battery_temperature_c: Annotated[float, Field(allow_inf_nan=False)] | None = None
+    capacity_window_basis: (
+        Literal["manufacturer_reference_constant_window_v1"] | None
+    ) = None
     eta_bus_to_battery: PositiveEfficiency
     eta_battery_to_bus: PositiveEfficiency
     eta_store_charge: PositiveEfficiency
@@ -38,6 +47,15 @@ class DcLossScenario(Document):
     internal_aux_kw: Nonnegative
     standing_loss_rate_per_hour: Nonnegative
     source_note: Identifier
+
+    @model_serializer(mode="wrap")
+    def preserve_optional_capacity(
+        self, handler: SerializerFunctionWrapHandler
+    ) -> Object:
+        document = cast(Object, handler(self))
+        if "capacity_window_basis" not in self.model_fields_set:
+            document.pop("capacity_window_basis", None)
+        return document
 
     @field_validator("source_note")
     @classmethod

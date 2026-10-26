@@ -11638,3 +11638,38 @@ msgstr "Dieselbe Dach-PV-Quelle darf nicht zusätzlich als AC-Quelle erfasst wer
 #: build/planner/assets/planner.js:1
 msgid "Load, PV generation and grid import/export are shown at the common AC bus. The charging and discharging curves show the sum of the power at each battery’s DC terminals. Total stored energy is shown for reference. Select a storage unit to show its DC power and stored energy in the table."
 msgstr "Last, PV-Erzeugung sowie Netzbezug und Netzeinspeisung werden an der gemeinsamen AC-Sammelschiene dargestellt. Die Lade- und Entladekurven zeigen die Summe der Leistungen an den DC-Anschlüssen der einzelnen Batterien. Der Gesamtwert der gespeicherten Energie dient der Übersicht. Wählen Sie eine Speichereinheit aus, um deren DC-Leistung und gespeicherte Energie in der Tabelle anzuzeigen."
+
+#: ../../apps/planner/src/components/energy/CapacityReference.tsx:1
+#: build/planner/assets/planner.js:1
+msgid "Capacity model"
+msgstr "Kapazitätsmodell"
+
+#: ../../apps/planner/src/components/energy/CapacityReference.tsx:1
+#: build/planner/assets/planner.js:1
+msgid "Use documented operating-capacity data"
+msgstr "Dokumentierte Kapazitätsdaten für den Betrieb verwenden"
+
+#: ../../apps/planner/src/components/energy/CapacityReference.tsx:1
+#: build/planner/assets/planner.js:1
+msgid "Use the manufacturer’s stated usable energy as a fixed reference"
+msgstr "Nutzbare Energie laut Hersteller als festen Referenzwert verwenden"
+
+#: ../../apps/planner/src/components/energy/CapacityReference.tsx:1
+#: build/planner/assets/planner.js:1
+msgid "Reference scenario using the manufacturer’s usable energy"
+msgstr "Referenzszenario mit nutzbarer Energie laut Hersteller"
+
+#: ../../apps/planner/src/components/energy/CapacityReference.tsx:1
+#: build/planner/assets/planner.js:1
+msgid "Manufacturer’s stated usable energy"
+msgstr "Nutzbare Energie laut Hersteller"
+
+#: ../../apps/planner/src/components/energy/CapacityReference.tsx:1
+#: build/planner/assets/planner.js:1
+msgid "Capacity model differs"
+msgstr "Unterschiedliches Kapazitätsmodell"
+
+#: ../../apps/planner/src/components/energy/CapacityReference.tsx:1
+#: build/planner/assets/planner.js:1
+msgid "This reference calculation uses the selected product’s published usable energy as a fixed model window. The manufacturer’s test conditions are shown with the source. Choosing this mode does not establish that they are met. Ageing and changes in usable energy with temperature or charge/discharge rate are not modelled. Conversion and storage losses follow the separate scenario assumptions. Actual deliverable energy is not established."
+msgstr "Diese Referenzberechnung verwendet die vom Hersteller angegebene nutzbare Energie des ausgewählten Produkts als festes Energiefenster im Modell. Die Prüfbedingungen des Herstellers sind beim Quellennachweis angegeben. Die Auswahl dieses Modus bestätigt nicht, dass diese Bedingungen erfüllt sind. Alterung sowie Änderungen der nutzbaren Energie durch Temperatur oder Lade- und Entladerate werden nicht modelliert. Umwandlungs- und Speicherverluste werden nach den gesonderten Szenarioannahmen berechnet. Die tatsächlich abgebbare Energie wird damit nicht nachgewiesen."

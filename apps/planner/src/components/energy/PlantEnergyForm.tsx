@@ -28,6 +28,7 @@ export function PlantEnergyForm({
 	scope,
 	active,
 	converters,
+	referenceCapacitySupported = false,
 }: {
 	value: PlantEnergyDraft;
 	plant: EquipmentPlant;
@@ -43,6 +44,7 @@ export function PlantEnergyForm({
 	scope: string;
 	active: boolean;
 	converters: readonly string[];
+	referenceCapacitySupported?: boolean;
 }) {
 	const [selected, select] = useState(plant.units[0]!.id);
 	const [numbersValid, setNumbersValid] = useState(true);
@@ -281,6 +283,7 @@ export function PlantEnergyForm({
 						</label>
 					)}
 					<DcStorageForm
+						referenceCapacitySupported={referenceCapacitySupported}
 						value={unit.settings}
 						locale={locale}
 						onChange={(settings) => change({ ...unit, settings })}

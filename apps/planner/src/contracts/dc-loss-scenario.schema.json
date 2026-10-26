@@ -49,6 +49,19 @@
       "default": null,
       "title": "Battery Temperature C"
     },
+    "capacity_window_basis": {
+      "anyOf": [
+        {
+          "const": "manufacturer_reference_constant_window_v1",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Capacity Window Basis"
+    },
     "eta_bus_to_battery": {
       "$ref": "#/$defs/PositiveEfficiency"
     },

@@ -17,6 +17,7 @@ from .project_materials import (
     project_materials,
 )
 from .pv_operating_report import operating_sections
+from .report_capacity import capacity_section
 from .report_copy import TEXT, check_label, text
 
 
@@ -667,6 +668,15 @@ def build_report(source: Object) -> Report:
                 rows=energy_rows,
             )
         )
+        if dc:
+            reference = capacity_section(
+                cast(Object, energy["prepared_dc_parameters"]),
+                locale,
+                number,
+                identity="energy-capacity-reference",
+            )
+            if reference is not None:
+                sections.append(reference)
         if joint:
             binding = cast(Object, energy.get("equipment_binding", {}))
             plant = cast(Object, binding.get("plant", {}))
@@ -778,6 +788,15 @@ def build_report(source: Object) -> Report:
                     for u in cast(list[Object], parameter_sources["units"])
                     if u["parameter_sha256"] == sha
                 ]
+                reference = capacity_section(
+                    proof,
+                    locale,
+                    number,
+                    identity="energy-capacity-reference-" + str(index),
+                    unit_names=" · ".join(assigned),
+                )
+                if reference is not None:
+                    sections.append(reference)
                 rows = []
                 for key in (
                     "eta_bus_to_battery",

@@ -11,6 +11,7 @@ import re
 from typing import Any, cast
 
 from .canonical import Object, digest, encode
+from .capacity_window import capacity_window
 from .dc_energy_parameters import DcLossScenario, DcPreparedParameters
 from .equipment_assessment import assess_equipment, selection_products
 from .equipment_evidence import EquipmentEvidence
@@ -186,7 +187,9 @@ def prepare_dc_parameters(
         basis,
         selection,
         assumptions,
-        country if isinstance(country, str) and re.fullmatch(r"[A-Z]{2}", country) else None,
+        country
+        if isinstance(country, str) and re.fullmatch(r"[A-Z]{2}", country)
+        else None,
     )
     inv, battery = selection.inverter_product_id, selection.battery_product_id
     assessment = assess_equipment(
@@ -204,23 +207,21 @@ def prepare_dc_parameters(
     voltage = next(
         (check for check in checks if check["id"] == "battery_voltage"), None
     )
-    if (
-        usable is None
-        or usable.get("status") != "satisfied"
-        or type(usable.get("actual")) not in (int, float)
-        or voltage is None
-        or voltage.get("status") != "satisfied"
-    ):
+    if voltage is None or voltage.get("status") != "satisfied":
         raise EvidenceMissing(
             "woo_dc_fact:usable_energy_and_complete_voltage_window",
             product_id=battery,
             constraint_id="usable_energy_and_complete_voltage_window",
         )
+    capacity = capacity_window(
+        selection, usable, facts.evidence, assumptions.capacity_window_basis
+    )
     voltage_facts = cast(list[Object], voltage["facts"])
     inv_range = cast(list[float], voltage_facts[0]["value"])
     battery_range = cast(list[float], voltage_facts[1]["value"])
     facts.used["usable_energy_derivation"] = usable
     facts.used["complete_voltage_window"] = voltage
+    facts.used.update(capacity.source_facts)
     port_match = re.fullmatch(r"battery-([1-9][0-9]*)", assumptions.battery_port_id)
     port_count = facts.number(
         inv,
@@ -405,7 +406,7 @@ def prepare_dc_parameters(
         "selection_sha256": digest(encode(inputs["equipment_selection"])),
         "product_revisions": dict(selection.product_revisions),
         "source_facts": facts.used,
-        "usable_window_kwh": usable["actual"],
+        "usable_window_kwh": capacity.window_kwh,
         "battery": {
             "id": f"woo:{battery}",
             "operating_min_v": battery_range[0],

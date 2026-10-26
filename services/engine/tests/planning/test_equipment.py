@@ -882,6 +882,30 @@ def prepared_dc_fixture_source(
     return feed, source, loaded, inverter, battery, controller
 
 
+def dc_loss_fixture():
+    """Shared explicit source-only assumptions, never a device-efficiency fact."""
+    from linker_engine.planning.dc_energy_parameters import DcLossScenario
+
+    return DcLossScenario.read(
+        {
+            "schema_version": 1,
+            "model": "constant_window_shared_dc_bus_v1",
+            "parameter_basis": "explicit_loss_scenario_with_woo_equipment",
+            "battery_port_id": "BAT1",
+            "battery_temperature_c": 20,
+            "eta_bus_to_battery": 1,
+            "eta_battery_to_bus": 1,
+            "eta_store_charge": 1,
+            "eta_store_discharge": 1,
+            "eta_inverter_forward": 1,
+            "eta_inverter_reverse": 1,
+            "internal_aux_kw": 0,
+            "standing_loss_rate_per_hour": 0,
+            "source_note": "Synthetic source-bound input/terminal limits only",
+        }
+    )
+
+
 @pytest.mark.parametrize(
     ("active_limit", "country", "expected"),
     [(None, "DE", 10), (6, "DE", 6), (None, "CL", None), (None, None, None)],
@@ -895,7 +919,6 @@ def test_reverse_input_ceiling_and_battery_terminal_power_keep_their_boundaries(
     expected: int | None,
 ) -> None:
     """One source-preparation check; reuse fixtures without any energy replay."""
-    from linker_engine.planning.dc_energy_parameters import DcLossScenario
     from linker_engine.planning.dc_parameter_source import prepare_dc_parameters
     from linker_engine.planning.errors import EvidenceMissing
 
@@ -934,24 +957,7 @@ def test_reverse_input_ceiling_and_battery_terminal_power_keep_their_boundaries(
                 "scope": "inverter_battery_terminals_total",
             },
         }
-    assumptions = DcLossScenario.read(
-        {
-            "schema_version": 1,
-            "model": "constant_window_shared_dc_bus_v1",
-            "parameter_basis": "explicit_loss_scenario_with_woo_equipment",
-            "battery_port_id": "BAT1",
-            "battery_temperature_c": 20,
-            "eta_bus_to_battery": 1,
-            "eta_battery_to_bus": 1,
-            "eta_store_charge": 1,
-            "eta_store_discharge": 1,
-            "eta_inverter_forward": 1,
-            "eta_inverter_reverse": 1,
-            "internal_aux_kw": 0,
-            "standing_loss_rate_per_hour": 0,
-            "source_note": "Synthetic source-bound input/terminal limits only",
-        }
-    )
+    assumptions = dc_loss_fixture()
     project_inputs = {
         **inputs(feed, 3),
         "brief": {"site": {"country_code": country}},
@@ -979,6 +985,67 @@ def test_reverse_input_ceiling_and_battery_terminal_power_keep_their_boundaries(
         ] = None
         with pytest.raises(EvidenceMissing):
             prepare_dc_parameters(project_inputs, basis, assumptions)
+
+
+def test_reference_capacity_is_explicit_and_does_not_resolve_operating_conditions(
+    feed: dict, engine: Engine, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from linker_engine.planning.capacity_window import REFERENCE_CAPACITY
+    from linker_engine.planning.dc_parameter_source import prepare_dc_parameters
+    from linker_engine.planning.errors import EvidenceMissing
+
+    feed, source, _, _, _, _ = prepared_dc_fixture_source(feed, engine, monkeypatch)
+    basis = source.equipment_basis()
+    battery = next(p for p in basis["products"] if p["canonical_product_id"] == 2090)
+    fact = battery["figures"]["module_energy_kwh_usable"]
+    fact["qualifier"] = {
+        "quantity_kind": "rated_usable_energy",
+        "scope": "battery_module",
+        "rating_conditions": {
+            "life_state": "beginning_of_life",
+            "depth_of_discharge_pct": 100,
+            "charge_rate_c": 0.2,
+            "discharge_rate_c": 0.2,
+            "test_temperature_c": [23, 27],
+        },
+        "configuration_dependent": True,
+        "source_text": {
+            "en": "Synthetic manufacturer reference conditions",
+            "de": "Synthetische Hersteller-Prüfbedingungen",
+        },
+    }
+    project_inputs = inputs(feed, 3)
+    assumptions = dc_loss_fixture()
+    assert "capacity_window_basis" not in assumptions.model_dump(mode="json")
+    assert (
+        assumptions.model_copy(update={"capacity_window_basis": None}).model_dump(
+            mode="json"
+        )["capacity_window_basis"]
+        is None
+    )
+    with pytest.raises(EvidenceMissing):
+        prepare_dc_parameters(project_inputs, basis, assumptions)
+    chosen = assumptions.model_copy(
+        update={"capacity_window_basis": REFERENCE_CAPACITY}
+    )
+    prepared = prepare_dc_parameters(project_inputs, basis, chosen)
+    assert (
+        prepared.usable_window_kwh == 13.5
+    )  # 3 × 4.5 usable kWh; no second DOD reduction.
+    recorded = prepared.source_facts["capacity_window_assumption"]
+    assert recorded["rating_conditions_status"] == "not_established"
+    assert recorded["manufacturer_qualifier"] == fact["qualifier"]
+    assert (
+        recorded["internal_window_mapping"] == "published_usable_energy_as_model_window"
+    )
+    assert prepared.source_facts["usable_energy_derivation"]["status"] == "unresolved"
+    assert (
+        "condition_match" not in prepared.source_facts["2090.module_energy_kwh_usable"]
+    )
+    # Explicit model selection never interprets a new unknown source condition.
+    fact["qualifier"]["unrecognized_operating_condition"] = "unknown"
+    with pytest.raises(EvidenceMissing):
+        prepare_dc_parameters(project_inputs, basis, chosen)
 
 
 def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(

@@ -91,6 +91,28 @@ class EnergyComparisonSide:
             ).get("battery_temperature_c")
         return None
 
+    def capacity_key(self) -> Json:
+        def basis(proof: Object) -> Json:
+            assumption = _object(proof.get("source_facts")).get(
+                "capacity_window_assumption"
+            )
+            return assumption if isinstance(assumption, dict) else None
+
+        if self.joint:
+            sources = _object(self.result.get("parameter_sources"))
+            pool = _object(sources.get("pool"))
+            return {
+                str(unit["unit_id"]): basis(
+                    _object(pool.get(str(unit["parameter_sha256"])))
+                )
+                for unit in cast(list[Object], sources["units"])
+            }
+        return (
+            basis(_object(self.result.get("prepared_dc_parameters")))
+            if self.dc
+            else None
+        )
+
     @property
     def metrics(self) -> Object:
         return cast(Object, self.result["metrics"])
@@ -626,6 +648,7 @@ def compare_energy_runs(
                 if b.joint
                 else cast(EnergyInputs, b.scenario).aux_dc_kw,
             ),
+            ("capacity_basis", a.capacity_key(), b.capacity_key()),
         )
     ]
     return {

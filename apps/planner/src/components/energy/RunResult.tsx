@@ -13,6 +13,7 @@ import { verificationLabel } from "./verificationLabel.ts";
 import { EquipmentResult } from "../equipment/EquipmentResult.tsx";
 import { equipmentStatus } from "../equipment/equipmentLabels.ts";
 import { energyConstraintText } from "./EnergyError.tsx";
+import { CapacityReferenceNotice } from "./CapacityReference.tsx";
 
 function failureText(run: PlanningRun): string {
 	const specific =
@@ -142,6 +143,7 @@ export function RunResult({
 			)}
 			{result && metrics && (
 				<>
+					<CapacityReferenceNotice result={result} />
 					{result.scenario_constraint_status === "violated" && (
 						<Notice error>
 							{__(

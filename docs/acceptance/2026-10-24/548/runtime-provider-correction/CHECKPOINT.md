@@ -1381,3 +1381,36 @@ gap, alongside the existing joint/country qualification and final delivery
 scope. No new project, instance, full backup or production write was made.
 Exact source readback and the scoped native metadata undo use the existing
 acceptance and private retention records.
+
+
+### Manufacturer-capacity reference scenario — local batch closed
+
+The customer can explicitly choose a fixed reference window from the selected
+Woo product's cited usable energy. The default remains the strict operating-
+capacity path. Products1954/1955 retain60/110kWh and their exact original
+EN/DE rating conditions, now as typed native source provenance. No test point
+is widened to an operating domain; actual deliverable energy and equipment/
+country qualification remain unresolved where evidence is missing.
+
+The existing owned FR project1ac83b43ab08481bae7e6eb05cf633c4 retains the
+actual reference-energy runc0af418e48524449add2f6304c95aad5 at revision10.
+The synthetic load is8kWh over two hours, grid import8kWh, PV supply0; each
+reference window is110kWh. Revision11 repairs only its synthetic UI row ID.
+No numerical replay was made for this fixture correction or presentation work.
+
+Final Spec, Standards and EN/DE copy reviews passed. Existing source-only,
+recovery and static/build results are closed. Actual inspection found missing
+existing table classes and a split PDF heading/notice; both are repaired. Only
+the affected EN desktop/DE mobile result frames and revised report page were
+reread. The existing form evidence was reused. The revised native DE report
+ec18200be9a04e038024570ddce8f21f uses the same energy result; its PDF SHA is
+78433422d209a4d39bbfb3483de6d488fa5fec6b4ffbbe8e7dc83021a6616ba6.
+
+Runtime6b114eb4 with schema5 serves sourcee1773a35;63d348e1 is the sole
+rollback. Old43ada736 and663ddc4 carriers were retired by the existing
+installer, and the temporary PDF render was removed. No new instance, full
+backup or product authority was created. The shared Woo/material/draft
+contract is unchanged and the site-repair chat has resumed its own work.
+Full scope remains active; this batch does not change production. Exact
+source/runtime/native/PDF/copy/review/retention evidence uses the existing
+acceptance ledger's `manufacturer_reference_capacity` entry.

@@ -1443,7 +1443,7 @@
       "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
     }
   },
-  "current_frontier": "real_device_operating_envelopes_local",
+  "current_frontier": "manufacturer_reference_capacity_local",
   "shared_dc_core": {
     "status": "implemented_and_reviewed_core_not_connected_to_native_commands",
     "model": "constant_window_shared_dc_bus_v1",
@@ -2367,7 +2367,7 @@
     }
   },
   "execution_convergence": {
-    "owner_correction": "2026-10-26: repeated validation and delayed shared-interface handoffs blocked progress. Apply AGENTS 0.1; deliver the bounded increment, reuse unchanged successful evidence.",
+    "owner_correction": "2026-10-27: the owner again identified endless validation as blocking other tasks. Enforce AGENTS 0.1 in execution: no new verification without a named delivery decision, hand off satisfied interfaces immediately, close the current increment after its actual failures are repaired.",
     "dependency_readback": {
       "thread_id": "01a1684e-e0ef-7951-9c25-64cc89eda28f",
       "title": "将 EcoFlow 产品下架为草稿",
@@ -2375,7 +2375,7 @@
       "notification_sent": true,
       "shared_woo_source": "ee916454e451c0769097294afaf0bef0a73823b79b319c7f3f828f6408ff625d"
     },
-    "batch_stop": "Real Woo source/producer directional-bound increment closed. Reuse its source check/readback; proceed to actual rated-capacity conditions and remaining delivery.",
+    "batch_stop": "Reference-capacity increment closed with retained numerical result and final affected presentation readback. Commit/push and continue remaining delivery; do not reopen passed physics, source, reviews or general UI matrices.",
     "reviews": "Final Spec/Standards/copy deltas PASS; unchanged accepted evidence reused."
   },
   "pv_operating_conditions": {
@@ -4350,6 +4350,226 @@
       "joint island and country qualification",
       "remaining downstream/migration and final review-site/production delivery"
     ],
-    "completed_at_utc": "2026-10-26T17:39:23.661664+00:00"
+    "completed_at_utc": "2026-10-26T17:39:23.661664+00:00",
+    "superseded_frontier": "manufacturer_reference_capacity"
+  },
+  "manufacturer_reference_capacity": {
+    "status": "local_increment_closed_full_goal_active",
+    "base_commit": "9c4d6ab0fcc5997f6385f3698e6b41e8c1f17465",
+    "runtime_sha256": "6b114eb45eb4fca07aa89e463ed6ac423dc88c1de5f7a0e6783a457ba45b2cee",
+    "rollback_runtime_sha256": "63d348e11c69aa8dd65bb49ed5aad6cff390f86f614d6ade407d61c4cfa9737f",
+    "source_install_runtime_sha256": "63d348e11c69aa8dd65bb49ed5aad6cff390f86f614d6ade407d61c4cfa9737f",
+    "source_revision": "e1773a35f189b2eec9267b9f757a55c60bd996e62df9e5d1812d90f0b8c337d4",
+    "compatibility_revision": "1f5b594311f5e1553f56b1afd12b13001451be3891f65a0dc49495799bd8e119",
+    "storage_schema_version": 5,
+    "worker_pid": 95196,
+    "source_intake": {
+      "authority": "WooCommerce native engineering metadata",
+      "product_ids": [
+        1954,
+        1955
+      ],
+      "field": "system_usable_energy_kwh.qualifier",
+      "source_sha256": "845e51ffb2801f48971c8b53941629dde1e8bc114b9b45dbc4f08c49c5ef815c",
+      "page": 2,
+      "usable_kwh_unchanged": [
+        60,
+        110
+      ],
+      "original_en_de_qualifier_preserved": true,
+      "source_preimage": "Existing private retention reference_capacity_intake.rows",
+      "publication_jobs": [
+        {
+          "action": "claim",
+          "job_id": "bb173da87bb6d509a5ee849765d8f9db62e98b140293af3780d3f37c7ba6628d",
+          "status": null
+        },
+        {
+          "action": "ack",
+          "job_id": "bb173da87bb6d509a5ee849765d8f9db62e98b140293af3780d3f37c7ba6628d",
+          "status": "ready"
+        }
+      ]
+    },
+    "contract": {
+      "choice": "manufacturer_reference_constant_window_v1",
+      "default": "existing strict operating-capacity path",
+      "conditions_status": "not_established",
+      "unknown_qualifiers_refused": true,
+      "fixed_window_mapping": "published_usable_energy_as_model_window",
+      "age_temperature_rate_capacity_effects": "not modelled",
+      "losses": "separate declared scenario",
+      "actual_deliverable_energy": "not established",
+      "existing_voltage_port_assembly_current_permission_checks_retained": true,
+      "original_absent_null_value_payload_shape_preserved": true
+    },
+    "native_acceptance": {
+      "project_id": "1ac83b43ab08481bae7e6eb05cf633c4",
+      "owner": "user:wp:1:user:66",
+      "base_revision": 8,
+      "base_input_sha256": "7681dd230aa9e5b37a8fcaeec350d7c945158cf0e4b598e10875c9bd0e68852f",
+      "purpose": "One two-hour owned synthetic load reference with actual Woo ET/BAT-C facts; no product or country approval",
+      "retention": "Reuse existing owned UI acceptance project; retain original revision8 and this single native result, no new instance or duplicated weather/roof generation",
+      "profiles": {
+        "gross_load": "77bbb6aa222146a88d4146cc9f2efb77",
+        "pv_available_ac": "9812c7e4589c45e7b80ca019b359538e",
+        "aux_ac": "6edf93527fe142b98423519309eba614"
+      },
+      "preparation_revision": 9,
+      "country_preserved": "FR",
+      "source_revision": "e1773a35f189b2eec9267b9f757a55c60bd996e62df9e5d1812d90f0b8c337d4",
+      "source_context": "Manufacturer reference capacity, original unit temperatures25/20°C retained; no site/country approval",
+      "parameter_assets": {
+        "system_a176991d-c5a2-49cb-9dfc-dcfc9f3cffc3": "f35503eaa34a4457a6040beffaadbb1b",
+        "system_cbb2b6ac-a9d0-417b-8f4a-a66ef5edbc1f": "a06365c6fc834407b683e1a52a5bf537"
+      },
+      "calculation_revision": 10,
+      "energy_run_id": "c0af418e48524449add2f6304c95aad5",
+      "energy_state": "succeeded",
+      "window_kwh_by_unit": {
+        "system_a176991d-c5a2-49cb-9dfc-dcfc9f3cffc3": 110.0,
+        "system_cbb2b6ac-a9d0-417b-8f4a-a66ef5edbc1f": 110.0
+      },
+      "metrics": {
+        "load_demand_kwh": 8.0,
+        "grid_import_kwh": 8.0,
+        "solar_load_kwh": 0.0
+      },
+      "equipment_status": "unresolved",
+      "report_de_run_id": "ec18200be9a04e038024570ddce8f21f",
+      "report_de_state": "succeeded",
+      "form_revision": 11,
+      "fixture_correction": "Only synthetic UI schedule-row ID changed to its existing32hex contract; effective energy_plant unchanged. Calculation revision10/result reused, not rerun.",
+      "pdf_de": {
+        "path": "docs/acceptance/2026-10-24/548/runtime-provider-correction/capacity-reference-report-de.pdf",
+        "asset_id": "558ae8f29154467ea34bf60ab31d8d83",
+        "sha256": "78433422d209a4d39bbfb3483de6d488fa5fec6b4ffbbe8e7dc83021a6616ba6",
+        "bytes": 84710,
+        "runtime_sha256": "6b114eb45eb4fca07aa89e463ed6ac423dc88c1de5f7a0e6783a457ba45b2cee",
+        "pages": 11,
+        "visual_readback": "Changed capacity page10 inspected; both system headings stay with the approved scope paragraph. Unchanged report template evidence reused."
+      },
+      "pdf_de_before": {
+        "path": "docs/acceptance/2026-10-24/548/runtime-provider-correction/capacity-reference-report-de-before.pdf",
+        "asset_id": "11ba1b324879435099e8c68e6964593a",
+        "sha256": "287653c6dc0add8fb5f840ea96f175e78f0db82c4b59c370a2f7190ee474ead5",
+        "report_run_id": "395b9fd6ecf344e88a2ad800d107b499",
+        "issue": "Unit name used the first kept paragraph, leaving scope on next page"
+      },
+      "table_before": "docs/acceptance/2026-10-24/548/runtime-provider-correction/capacity-reference-table-before-en-1440.png",
+      "report_de_layout_submission": {
+        "id": "ec18200be9a04e038024570ddce8f21f",
+        "project_id": "1ac83b43ab08481bae7e6eb05cf633c4",
+        "revision": 11,
+        "state": "queued",
+        "is_current": true,
+        "manifest_sha256": "1a8746fbcf317411103b4ee636b31944ff116b66858497547e0aa06babfa8b3b",
+        "manifest": {
+          "context": {
+            "assets": {
+              "report.source": "f088b577508d4b14114b55e4d37d56ff26329acfeada1fd1922554266e43129b",
+              "runtime_bundle": "6b114eb45eb4fca07aa89e463ed6ac423dc88c1de5f7a0e6783a457ba45b2cee"
+            },
+            "code_sha256": "6b114eb45eb4fca07aa89e463ed6ac423dc88c1de5f7a0e6783a457ba45b2cee",
+            "models": {
+              "installation": "installation_route_takeoff_v1",
+              "materials": "project_materials_v3",
+              "report": "frozen_project_report_v1",
+              "task": "planning_report_v1"
+            },
+            "parameters": {
+              "kind": "planning_report_v1",
+              "policy": "selected_owned_analyses_current_woo_v1"
+            }
+          },
+          "input_sha256": "a49c2eabbc1501a08b4031da0b9320177c70d52dc9dd733aa5c39c39ad257a64",
+          "project_id": "1ac83b43ab08481bae7e6eb05cf633c4",
+          "revision": 11,
+          "schema": 1
+        },
+        "result_sha256": null,
+        "result": null,
+        "error": null
+      },
+      "screenshots": [
+        {
+          "stage": "settings",
+          "locale": "de",
+          "width": 1440,
+          "image": "docs/acceptance/2026-10-24/548/runtime-provider-correction/capacity-reference-settings-de-1440.png",
+          "sha256": "c1119a2a20899d49b64a752d3e9d111c522fce822d24e280d9fc888c7afe8894",
+          "horizontal_overflow": false,
+          "validation": "existing form evidence reused"
+        },
+        {
+          "stage": "settings",
+          "locale": "en",
+          "width": 390,
+          "image": "docs/acceptance/2026-10-24/548/runtime-provider-correction/capacity-reference-settings-en-390.png",
+          "sha256": "508f5225a8f2f863b6d7610a0e29c1e642eee60b2f347c7ca7a6410af9082b00",
+          "horizontal_overflow": false,
+          "validation": "existing form evidence reused"
+        },
+        {
+          "stage": "result",
+          "locale": "en",
+          "width": 1440,
+          "image": "docs/acceptance/2026-10-24/548/runtime-provider-correction/capacity-reference-result-en-1440.png",
+          "sha256": "e0482e98d6006afb923f70bde598f71400307293478fab0aede59979644b583a",
+          "horizontal_overflow": false,
+          "validation": "only changed table presentation read back"
+        },
+        {
+          "stage": "result",
+          "locale": "de",
+          "width": 390,
+          "image": "docs/acceptance/2026-10-24/548/runtime-provider-correction/capacity-reference-result-de-390.png",
+          "sha256": "7ed551d1f3221ee8ec49f96d470012eb33ebd421c7792b0e35652353db6c310c",
+          "horizontal_overflow": false,
+          "validation": "only changed table presentation read back"
+        }
+      ]
+    },
+    "independent_review": {
+      "spec": "PASS implementation, absent/null/value recovery and final report/table deltas",
+      "standards": "PASS implementation, native gettext/source binding and final report/table deltas",
+      "copy": "Existing copy reviewer returned final EN and independently written DE; approved wording installed in gettext and frozen report"
+    },
+    "copy_review": {
+      "draft": "Explicit fixed manufacturer reference window with original test conditions",
+      "review": "Do not claim that source test conditions are met; distinguish ageing/temperature/rate capacity effects from separately declared losses; actual deliverable energy remains unestablished. Avoid raw qualifier JSON when localized original wording exists.",
+      "final": "Seven EN/DE UI messages and corresponding report labels/scope applied; draft, critique and approved final wording are retained by this record and the source diff."
+    },
+    "verification_stop": "Source-only representative, absent/null/value recovery, changed-file static checks and final frontend build already passed. One actual native reference-energy result retained; only the failed table and PDF presentation were reread after fixes. No energy replay, full-site scan, second environment or expanded matrix.",
+    "retention": {
+      "current_plus_rollback": [
+        "63d348e11c69aa8dd65bb49ed5aad6cff390f86f614d6ade407d61c4cfa9737f",
+        "6b114eb45eb4fca07aa89e463ed6ac423dc88c1de5f7a0e6783a457ba45b2cee"
+      ],
+      "retired_runtime_carriers": [
+        "/Users/chesterjohn/de-linker-local/p548/planner/runtime-releases/43ada736f28393b6c13556ca94742f0fccf2fa42d25e28ca6f352b717d33c1c0",
+        "/Users/chesterjohn/de-linker-local/p548/planner/runtime-releases/663ddc4d9180ca96ff2d0f501b04c7213afd9a6991781c7de4be85f61eb68468"
+      ],
+      "latest_retired_logical_bytes": 1776699,
+      "free_before_latest_install": 922249351168,
+      "free_after_latest_install": 922098540544,
+      "space_delta_includes_other_active_chats": true,
+      "unique_before_evidence": [
+        "docs/acceptance/2026-10-24/548/runtime-provider-correction/capacity-reference-table-before-en-1440.png",
+        "docs/acceptance/2026-10-24/548/runtime-provider-correction/capacity-reference-report-de-before.pdf"
+      ],
+      "temporary_pdf_render_removed": true
+    },
+    "production_changed": false,
+    "shared_woo_materials_draft_contract_changed": false,
+    "handoff": "Existing shared-interface handoff remains valid; the active site-repair chat has resumed and has no new dependency on this increment.",
+    "remaining_full_goal": [
+      "actual operating-capacity and continuous/thermal data where required",
+      "remaining SKU and manufacturer joint/island qualification",
+      "country evidence and explicit supported coverage",
+      "remaining downstream and migration",
+      "final review-site and production release/readback"
+    ],
+    "completed_at_utc": "2026-10-26T19:08:11.739837+00:00"
   }
 }

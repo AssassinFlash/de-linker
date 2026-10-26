@@ -21,10 +21,45 @@ import { readEquipmentPlant } from "./equipmentPlant.ts";
 import { plantEnergyDraft, compilePlantEnergy } from "./plantEnergy.ts";
 import dcPlantFixture from "../../tests/fixtures/dc-plant-energy-run.json" with { type: "json" };
 import { readObject } from "../data/readProtocol.ts";
-import { readDcParameters } from "./dcEnergy.ts";
+import {
+	readDcParameters,
+	readDcLossScenario,
+	restoreDcConditions,
+	emptyDcScenario,
+	REFERENCE_CAPACITY,
+} from "./dcEnergy.ts";
 import { DC_LOSS_FIELDS } from "./dcEnergy.ts";
 
 const scenario = () => readScenarioDraft(structuredClone(scenarioJson));
+
+test("DC recovery restores the original capacity choice instead of inheriting the current mode", () => {
+	const pool = dcPlantFixture.run.result.parameter_sources.pool;
+	const proof = readDcParameters(Object.values(pool)[0]);
+	const original = readDcLossScenario(proof.loss_scenario);
+	const current = {
+		...emptyDcScenario(),
+		capacity_window_basis: REFERENCE_CAPACITY as typeof REFERENCE_CAPACITY,
+	};
+	const restored = restoreDcConditions(current, original);
+	assert.equal(Object.hasOwn(restored, "capacity_window_basis"), false);
+	assert.equal(
+		restoreDcConditions(
+			current,
+			readDcLossScenario({ ...original, capacity_window_basis: null }),
+		).capacity_window_basis,
+		null,
+	);
+	assert.equal(
+		restoreDcConditions(
+			{ ...current, capacity_window_basis: null },
+			readDcLossScenario({
+				...original,
+				capacity_window_basis: REFERENCE_CAPACITY,
+			}),
+		).capacity_window_basis,
+		REFERENCE_CAPACITY,
+	);
+});
 const profiles = () => readSelections(structuredClone(profilesJson));
 const refusal = (code: string) => (error: unknown) =>
 	error instanceof ApiError && error.status === 422 && error.code === code;

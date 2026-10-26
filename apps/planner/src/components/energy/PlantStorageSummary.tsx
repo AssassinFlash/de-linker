@@ -26,7 +26,7 @@ export function PlantStorageSummary({
 		<section className="lp-scenario-block">
 			<h4>{__("Stored energy by unit", "linker-tools")}</h4>
 			<div className="lp-table-scroll" tabIndex={0}>
-				<table>
+				<table className="lp-data-table">
 					<caption>
 						{__(
 							"Initial and final stored energy (kWh), with final energy shown by origin",
@@ -64,7 +64,7 @@ export function PlantStorageSummary({
 			</div>
 			{result.kind === DC_PLANT_ENERGY_TASK && (
 				<div className="lp-table-scroll" tabIndex={0}>
-					<table>
+					<table className="lp-data-table">
 						<caption>
 							{__("DC PV generation after curtailment", "linker-tools")} (kWh)
 						</caption>

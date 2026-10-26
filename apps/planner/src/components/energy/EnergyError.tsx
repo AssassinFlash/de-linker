@@ -48,6 +48,7 @@ export function energyConstraintText(constraintId: unknown): string | null {
 				"linker-tools",
 			);
 		case "uninterpreted_condition":
+		case "capacity_reference_conditions":
 			return __(
 				"A documented condition could not be checked for this scenario. Review the source details.",
 				"linker-tools",

@@ -843,3 +843,34 @@ This source/producer work leaves the rated usable-window operating conditions,
 continuous/thermal behavior, country release and interconnected island
 qualification explicit in the same full goal. It does not qualify those paths
 by making formerly missing source facts readable.
+
+
+## Explicit manufacturer-capacity reference mode
+
+The existing strict operating-capacity path remains the default. An explicit
+`manufacturer_reference_constant_window_v1` choice permits a fixed-window
+reference scenario from the selected Woo product's current cited usable-energy
+quantity and a known typed rating qualifier. A reference setting never proves
+the manufacturer's rating conditions, operating capacity or actual deliverable
+energy. Unknown qualifiers are refused. Full voltage containment, selected
+port, assembly count, source revisions and permissions remain independently
+enforced; a reference choice cannot approve equipment or country requirements.
+
+Published usable energy is mapped to the kernel's internal window by an explicit
+model convention. It receives no second DOD deduction. Temperature, ageing and
+rate-dependent capacity changes are unmodelled; conversion/storage losses use
+separately declared scenario assumptions. Neither the .2C test point nor the
+published RTE defines an operating curve or directional efficiency. The source
+quantity, original EN/DE qualifier, hash/page, window mapping, excluded effects
+and unresolved condition status remain in the prepared source proof, saved
+result, comparison, interface and report/PDF. Comparisons show a different
+capacity basis as a model difference. Existing payloads preserve the original
+absent/null/value distinction; restoring a calculation restores its basis.
+
+The actual native FR owned project used two110kWh reference windows with its
+original25/20C scenario temperatures, synthetic two-hour load/no-PV inputs and
+explicit identity-loss assumptions. Its retained result supplies8kWh load from
+8kWh grid import; it does not establish actual equipment performance. Only the
+result-table style and report heading/paragraph pagination were reread after
+those defects were fixed. Full-goal operating/country qualification and final
+release remain open; source facts continue to originate only in WooCommerce.

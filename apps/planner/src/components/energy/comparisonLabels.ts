@@ -18,6 +18,7 @@ export function comparisonLabel(id: string): string {
 		equipment_selection: __("Equipment selection", "linker-tools"),
 		pv_design: __("PV layout and generation settings", "linker-tools"),
 		dc_auxiliary: __("DC auxiliary demand", "linker-tools"),
+		capacity_basis: __("Capacity model differs", "linker-tools"),
 		load_demand: __("Simulated load demand", "linker-tools"),
 		solar_supply: __("Solar supplied to load", "linker-tools"),
 		grid_import: __("Grid import", "linker-tools"),

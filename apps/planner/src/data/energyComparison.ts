@@ -158,7 +158,12 @@ export function readEnergyComparison(
 			fail();
 	if (x.conditions_aligned !== conditions.every((c) => c.status === "matched"))
 		fail();
-	for (const d of rows("differences", COMPARISON_DIFFERENCES))
+	const differences =
+		Array.isArray(x.differences) &&
+		x.differences.length === COMPARISON_DIFFERENCES.length + 1
+			? [...COMPARISON_DIFFERENCES, "capacity_basis"]
+			: COMPARISON_DIFFERENCES;
+	for (const d of rows("differences", differences))
 		if (typeof d.changed !== "boolean") fail();
 	for (const row of rows("metrics", COMPARISON_METRICS)) {
 		if (

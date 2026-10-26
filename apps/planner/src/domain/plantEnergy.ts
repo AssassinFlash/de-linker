@@ -181,6 +181,9 @@ export function plantEnergyParameters(
 		...(dc.battery_temperature_c === undefined
 			? {}
 			: { battery_temperature_c: dc.battery_temperature_c }),
+		...(dc.capacity_window_basis === undefined
+			? {}
+			: { capacity_window_basis: dc.capacity_window_basis }),
 		source_note: dc.source_note,
 	});
 }

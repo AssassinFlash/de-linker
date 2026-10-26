@@ -139,6 +139,10 @@ const draftShape = object({
 			pv_converter_id: text,
 			battery_port_id: text,
 			battery_temperature_c: nullable({ type: "number" }),
+			capacity_window_basis: nullable({
+				type: "string",
+				enum: ["manufacturer_reference_constant_window_v1"],
+			}),
 			aux_dc_kw: nullable({ type: "number" }),
 			losses: object(
 				Object.fromEntries(
@@ -146,7 +150,7 @@ const draftShape = object({
 				),
 			),
 		},
-		["battery_temperature_c"],
+		["battery_temperature_c", "capacity_window_basis"],
 	),
 	battery: object(
 		Object.fromEntries(
@@ -286,6 +290,9 @@ export function scenarioParts(
 				...(draft.dc!.battery_temperature_c === undefined
 					? {}
 					: { battery_temperature_c: draft.dc!.battery_temperature_c }),
+				...(draft.dc!.capacity_window_basis === undefined
+					? {}
+					: { capacity_window_basis: draft.dc!.capacity_window_basis }),
 				source_note: draft.dc!.source_note,
 			})
 		: scenarioBattery(draft);
