@@ -162,6 +162,9 @@ def test_capability_refuses_partial_controls_pair_and_changed_sources() -> None:
     old = capability()
     final = controls.plan_pair("capability", old, old)[0]
     for changed in (
+        old.replace('<div class="lk-story-name">Dirk van de Berg</div>', "").replace(
+            '<div class="lk-testi-pill-bar" data-index="1"></div>', ""
+        ),
         old.replace('data-index="1"', 'data-index="2"'),
         old.replace('class="lk-story-name"', 'class="renamed"'),
         old.replace("testiPills.forEach", "otherPills.forEach"),

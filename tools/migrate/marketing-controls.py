@@ -95,8 +95,9 @@ def _installer(content: str) -> tuple[str, str]:
 
 def _capability(content: str) -> tuple[str, str]:
     names = re.findall(r'<div class="lk-story-name\b[^"]*"[^>]*>([^<]+)</div>', content)
-    if not names:
-        raise ValueError("Expected existing Capability story names")
+    # This reviewed pair has exactly two stories; changed content needs review.
+    if len(names) != 2:
+        raise ValueError("Expected the two existing Capability story names")
     old_handler = (
         "testiPills.forEach(function(p, i) {\n"
         "          p.classList.toggle('active', i === idx);\n"
