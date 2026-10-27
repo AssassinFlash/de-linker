@@ -22,7 +22,8 @@ html[lang^="de"]
 	:is(
 		#service-redesign .service-hero-rest,
 		#tv-cs-page-v1 .lk-hero-title,
-		#installer-journal .lk-hero-title
+		#installer-journal .lk-hero-title,
+		#about-journal .scene-title
 	) {
 	-webkit-hyphens: manual;
 	hyphens: manual;
