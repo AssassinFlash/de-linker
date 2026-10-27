@@ -4962,7 +4962,7 @@
       "en_1440": "native screenshot accepted",
       "en_390": "native screenshot accepted; no overflow;12px site-token caption padding",
       "de_390": "native rendered answer and screenshot accepted",
-      "de_1440": "native AX/DOM readback; screenshot compositor duplicated/offset surface; invalid image removed and not counted as visual acceptance"
+      "de_1440": "PASS: Chrome native viewport1440x1000, same existing QA owner/project revision24 and stored German answer. IAB compositor failure diagnosed as tooling; no extra numerical or model operation."
     },
     "retired_runtime_bytes": 1788499,
     "source_base": "8c6de43fbcf79ca41a7e86d5ce2c82cbc916de6d",
@@ -4971,13 +4971,23 @@
     "selected_scenario_run": "ab8810c5ffe64587a4664c26cb1fe9fc",
     "production_changed": false,
     "coverage_reuse": "unchanged physical kernels, Woo authority, saved calculations, original reports/PDFs, native identity and commerce acceptance",
-    "remaining_full_goal": "engineering/country coverage, final site-wide review/release and native visual/readback; DE1440 compositor capture is not accepted",
+    "remaining_full_goal": "Remaining engineering/country coverage and final coordinated site release/migration/readback remain active. Exact DE1440 visual gate is now closed.",
     "historical_navigation_correction": {
       "problem": "Stored German conversation action retained its old English workspace URL; fresh-turn localization did not repair this current navigation consumer.",
       "change": "Entries supplies actual EN/DE PageUrls::translated addresses; Genie app and homepage pass the same optional mapping. Only exact known same-origin paths are localized, preserving project/run/compare query and hash. Missing/native-unknown/foreign addresses remain unchanged; history and numerical results never rewritten.",
       "verification": "Existing ActionView/config cases and Entries30 passed; JS lint/types/build/manifest and PHPStan/PHPCS passed. Spec/Standards incremental review PASS after homepage consumer and missing-twin safeguards corrected.",
-      "visual_evidence": "genie-project-de-desktop-native.png is native1280x720 supplemental evidence. Emulated1440 compositor output is invalid and not accepted. No further blind capture retries.",
+      "visual_evidence": "genie-project-de-1440.png: valid native1440x1000 after the shared-runtime repair. Superseded1280 capture removed. One actual product-defect before frame retained as genie-shared-i18n-before-1440.png.",
       "native_readback": "Existing German conversation reopened under native owner at project revision24. Original historical result81.449%/36.978% unchanged; action now targets /de/loesungskonfigurator/?project=c7795bc2c1e14e389622015c809ace45&run=ab8810c5ffe64587a4664c26cb1fe9fc#lp-calculations. No model turn or numerical run."
+    },
+    "shared_translation_runtime": {
+      "failure": "Opening Genie inserted a second unversioned wp-i18n script alongside native wp-i18n-js. Its fresh runtime lost the planner catalog; subsequent section navigation rendered English. This was a product defect distinct from IAB screenshot transport.",
+      "correction": "Respect native enqueued/done dependency trees before recursion; lazy boot waits for DOMContentLoaded so the native queue finishes. Missing dependencies still load through the existing ordered/error/retry path.",
+      "verification": "Existing Entries30/178assertions, including original four DOM failure/retry/keyboard scenarios passed; fixture now waits for real DOM readiness and asserts no premature script. PHPCS/PHPStan passed. Actual native Chrome path opened saved DE answer and changed workbench section; one i18n script and DE labels retained. No new model/numeric run.",
+      "evidence": [
+        "genie-shared-i18n-before-1440.png",
+        "genie-project-de-1440.png"
+      ],
+      "temporary_browser_state": "A single existing local QA login cookie was reused in the owned Chrome validation tab, never displayed or written to disk. Its temporary copy was removed, viewport reset and owned tab closed; original IAB login unchanged."
     }
   },
   "certificate_evidence": {
@@ -5308,6 +5318,11 @@
           "max_inverse_height_error_m": 1.862645149230957e-09,
           "correction": "One explicit four-Earth-scale-ULP absolute metric boundary for forward ENU and inverse height; keep angle abs1e-10/rel0. Actual locked production Linux executable evaluated all28 original points read-only; no new fixture or model run."
         }
+      },
+      "build_manifest_correction": {
+        "run": 40457189468,
+        "failure": "All configured checks reached build-manifest gate. Standalone wp-scripts build removed nested planner output; unchanged accepted planner files were restored afterwards but outer Tools manifest had been written before restoration.",
+        "fix": "Use the existing Tools manifest writer after all restored planner outputs; both existing Tools and planner source/build checks pass. No source/test/workflow exclusion introduced."
       }
     }
   },

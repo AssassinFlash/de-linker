@@ -101,6 +101,8 @@ final class EntriesTest extends TestCase {
 		$payload = json_decode( (string) $inline['data-linker-genie-boot-payload'], true );
 		$this->assertSame( 'Genie could not load.', $payload['error'] );
 		$this->assertSame( 'Try again', $payload['retry'] );
+		$this->assertNotContains( '/wp-includes/js/dist/i18n.min.js', $payload['deps'] );
+		$this->assertContains( '/wp-includes/js/dist/vendor/react.min.js', $payload['deps'] );
 		$this->assertConditionsMet();
 	}
 
@@ -638,6 +640,7 @@ JS
 	 * @param string               $language Language layer's answer; empty when it has none.
 	 */
 	private function frontend( string $locale, array $page, string $slug = '', string $language = '' ): void {
+		WP_Mock::userFunction( 'wp_script_is', array( 'return' => static fn( string $handle, string $state ): bool => 'wp-i18n' === $handle && 'enqueued' === $state ) );
 		WP_Mock::userFunction( 'shortcode_exists', array( 'return' => fn (): bool => $this->account_entries ) );
 		$kinds = array(
 			'product'  => 'product',

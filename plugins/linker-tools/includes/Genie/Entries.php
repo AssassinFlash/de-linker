@@ -531,6 +531,12 @@ class Entries {
 		}
 	});
 			function boot() {
+                // Native enqueued dependencies finish before DOMContentLoaded.
+                // Re-executing them would reset the planner's translations.
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', boot, { once: true });
+                    return;
+                }
 				if (loaded || ready) {
 					return;
 				}
@@ -992,6 +998,11 @@ JS,
 	private function script_deps(): array {
 		$urls = array();
 		$walk = function ( string $handle ) use ( &$urls, &$walk ): void {
+			// Reuse the native queue, including its transitive dependencies.
+			// The loader waits for DOM readiness before consuming queued scripts.
+			if ( wp_script_is( $handle, 'enqueued' ) || wp_script_is( $handle, 'done' ) ) {
+				return;
+			}
 			$script = wp_scripts()->query( $handle );
 			if ( ! $script || ! is_string( $script->src ) ) {
 				return;
