@@ -50,7 +50,7 @@ jobs:
               )
 
           def acceptance_record(path):
-              return path.startswith("docs/acceptance/") and path.endswith((".json", ".png", ".pdf"))
+              return path.startswith("docs/acceptance/") and path.endswith((".json", ".png", ".pdf", ".jpg", ".jpeg"))
 
           def non_runtime_file(commit, path):
               if git("ls-tree", commit, "--", path).split()[0] != b"100644":
@@ -59,6 +59,8 @@ jobs:
               if acceptance_record(path):
                   if path.endswith(".png"):
                       return content.startswith(b"\x89PNG\r\n\x1a\n")
+                  if path.endswith((".jpg", ".jpeg")):
+                      return content.startswith(b"\xff\xd8\xff")
                   if path.endswith(".pdf"):
                       return content.startswith(b"%PDF-")
                   json.loads(content)

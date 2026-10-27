@@ -95,6 +95,22 @@ EN 50549-1/-2 的公开 scope 均明确：DSO、TSO、成员国或监管机构�
 | GoodWe Preview 实际 PDF | `NIUQ5hdh9GeqAWaHS` | KV `CP42HAOhduugEjZEm` · `file-d145cc8-downloadFile` |
 | GoodWe Download 实际 PDF | `T1nN38s6Am0ixmeLC` | KV `WopsxJMzGnf4GVvvJ` · `file-037ff3f-downloadFile` |
 
+### 2026-10-27 19:10–19:22 UTC：当前维护关联及 ZEREZ 公共下载补查
+
+- **先核当前 Woo，未沿用旧缺失标签。**只读查询生产 Woo 的商品 `1946 / 1947 / 1948 / 6506`：四者仍只关联上述 SGS 封面，没有单列此 Annex。媒体库中按 `250008`、`Annex`、`4110 / 4120` 定向核对，相关 ET 附件仍是 `6376`；实际服务器文件为 **629,561 字节**、SHA-256 `da4d0f336bb0b6e7828ad18f4e89534698383d0191c28a4c4dedbb7a94f4c61f`，与先前核过的单页原件相同。既有受维护资料清单与本 dossier 未提供另一份该编号的完整 Annex；这不是对所有未关联资料或当前 Genie 全部语料作不存在判断。
+- **新增的公开镜像仍是重复封面。**经 Apify 的精确型号、Annex、4110 检索，取得 [BayWa 所托管的同名证书](https://solar-distribution.baywa-re.de/out/media/19_ET-G10_Serie_GW_ET-75-100kW_Certificate-VDE4110_VDE4120.pdf)。实际原件同为 **629,561 字节**、同一 SHA-256；没有补出附录，也不另保留相同字节的本地 PDF。
+- **ZEREZ 的公共下载动作已定位，不能冒称取得正文。**在 [GW75K 的精确单位页](https://www.zerez.net/units/1dd4aab1-4a63-4310-6c58-08de5fee9eea)，无需登录的 `Deckblatt` 下载控件实际生成文件名 **`250008RECO14-CER_Certificate_4110_20.pdf`**。`Evaluierungsbericht` 与 `Modell` 仍显示 `Gesperrt`。本次没有打开锁定内容，也没有证据可把其中某一项等同于所缺的 164 页 Annex。
+- **下载字节的剩余障碍属于采集工具。**公共控件能触发下载，但浏览器给的是临时 Blob；直接重读已撤销的 Blob URL 返回 `NetworkError`，改用下载流／页内 FileReader 后发生 Firefox `Target page, context or browser has been closed`。没有取得可校验的 ZEREZ PDF 字节，故不填写其 hash 或页数，也不把这些工具错误当成来源拒绝、附件不存在或必须私密访问的证明。完成这一有界排障后停止，没有继续扩大关键词或绕开登录。
+
+| 新增有效定位 / 目的 | Apify run | 保留的证据定位 |
+| --- | --- | --- |
+| ZEREZ 公共 Deckblatt 的实际文件名、锁定分类边界 | `nvepcL3S4nkIfai2b` | dataset `x2bGqkTyXE0zIzt25` |
+| 精确型号 Annex 检索，定位 BayWa 对应文件 | `xRifRGfSdu8n93HKq` | dataset `EdmY0ivObBlcbilue`；仅作入口定位，不把搜索摘要当成 PDF 正文 |
+| BayWa 原始字节与现有封面 hash 相等 | `niHrlE8f21SWmU32u` | KV `tIX5TwmzRjpeexX6q` · `PROVENANCE`；重复原件已删除并读回，保留第 7 节既有 GoodWe 同 hash 原件 |
+| 最后一次有界浏览器采集故障 | `OxoIFYYJkBeuNRdj0` | run log：浏览器上下文关闭；没有形成 PDF 原件证据 |
+
+**仍缺的确切原件与下一事实：**SGS **250008RECO14-CER，Annex，164 页，revision 0，2026-01-30** 的完整 PDF，或由 SGS／GoodWe 明确指向它的合法公共 URL／已识别的 ZEREZ 附件及访问条件。现在仍不能确认该附录是否公开、是否与锁定评估报告同一文件，或是否须由持有人提供。没有对外联系、创建账号、绕过鉴权或写入 Woo／runtime；未知配置和项目适用性继续保持未核实。
+
 ## 8. 4105:2026-03 对 2018-11 单元证书的过渡条件
 
 2026-10-27，限定核查旧版单元证书继续被承认的申请/投运时间条件。**未取得能够确定该条件的正式原文，当前判断继续为“版次/过渡适用性未核实”。**本次具体来源边界如下：

@@ -7252,7 +7252,7 @@
     }
   },
   "managed_roof_ac_reference": {
-    "state": "native_local_source_adoption_energy_report_pdf_genie_pass; production_pending_final_CI",
+    "state": "production_backend_and_tools_published; production_weather_prepared; owned_workflow_readback_in_progress",
     "model": "pvgis_5_3_roof_ac_reference_v1",
     "kind": "prepare_pvgis_roof_ac_reference_v1",
     "profile_purpose": "pvgis_roof_ac_reference_profile_v1",
@@ -7894,6 +7894,544 @@
       "local_source_archive_removed_after_verified_prepare": true,
       "local_temporary_bytes_reclaimed": 2309000,
       "activation_authority": "root only after remaining release gates; no activation by preparation agent"
+    },
+    "production_backend_activation": {
+      "state": "backend_and_ui_published_affected_workflow_readback_in_progress",
+      "observed_at": "2026-10-27T19:28:31.311210+00:00",
+      "source_commit": "3d6aa97d2574b5594856adb2a5d255ac8e348e64",
+      "merge_commit": "b1777caa495e4e4215d6bc02d78da20140d09ec1",
+      "pr": 706,
+      "ci_run": 40561667916,
+      "ci": "success",
+      "release": "ea0aa282078650e0c6d79cc66934de9d3b083af0b1dfd7059e812646793d2d97",
+      "runtime_sha256": "8beaa6186e0c9ac97c6957d808692afafe68cce7be9b8d9ce95da8e628134df6",
+      "rollback": "2a15ff379eba9b2ef0b0397c044ccf28eefd1c24e131b3d4deba89aee1bf7a0c",
+      "http_pid": 197181,
+      "worker_pid": 197344,
+      "draining": false,
+      "pending": 0,
+      "preserved_counts": {
+        "projects": 2,
+        "revisions": 12,
+        "runs": 9,
+        "jobs": 9,
+        "project_assets": 12
+      },
+      "jobs_states": {
+        "failed": 2,
+        "succeeded": 7
+      },
+      "shared_service_pids_unchanged": [
+        182375,
+        187414,
+        73664
+      ],
+      "backup": "workspace-20261027T191348Z.sqlite3",
+      "backup_sha256": "99d4766a5dca87c8f421517ea37448c43e92cf13e4534a06efd9ac56e0f1b203",
+      "remaining": "Owned project weather/PV/energy/report consumer readback; full goal remaining engineering and site gates are not complete"
+    },
+    "production_weather": {
+      "state": "api_adopted_ui_pending",
+      "updated_at_utc": "2026-10-27T19:51:52.130701+00:00",
+      "execution_owner": "/root via existing production owner native UI",
+      "readback_owner": "/root/certificate_conditions_backend",
+      "project_id": "1812286480344d6d8cec94e2f5f2c00e",
+      "revision": 10,
+      "run_id": "2af1501692834982b6356709cd942c89",
+      "asset_id": "1e644e0a2293465ab5a9761e6f0e5c9b",
+      "purpose": "pvgis_tmy_weather_v1",
+      "original_sha256": "c0ec4d04ad4293a1e008e7b09919dac75a5dbd39a4f81b4a3c77d7a5245790e5",
+      "metadata_sha256": "7186b0011e10ab51f66ea589c522c96d085c592e182306c523bdbd0aa938b5e8",
+      "runtime_sha256": "8beaa6186e0c9ac97c6957d808692afafe68cce7be9b8d9ce95da8e628134df6",
+      "actual_native_dispatch_count": 1,
+      "actual_job_attempt": 1,
+      "source_adopted": true,
+      "ui_acceptance_completed": false,
+      "independent_readback": {
+        "checked_at_utc": "2026-10-27T19:33:40.921292+00:00",
+        "state": "succeeded_verified_independent_official_capture",
+        "project_id": "1812286480344d6d8cec94e2f5f2c00e",
+        "run_id": "2af1501692834982b6356709cd942c89",
+        "revision": 9,
+        "current_revision_at_read": 9,
+        "current_input_sha256": "f217d6ea6f6b5c7c6e2111eee43296255ce9369acd628360872b4fe16e33d774",
+        "manifest_sha256": "5a2219d6e64e42248f705ff4bc3ccaef9e994d5a056d4e7e5b12500022634cc8",
+        "result_sha256": "fa58e552b3beff5ee0c43651873af9d0bfe30ebe9b13dd2d83634ce1b1cf6917",
+        "input_sha256": "f217d6ea6f6b5c7c6e2111eee43296255ce9369acd628360872b4fe16e33d774",
+        "runtime_sha256": "8beaa6186e0c9ac97c6957d808692afafe68cce7be9b8d9ce95da8e628134df6",
+        "job": {
+          "state": "succeeded",
+          "attempt": 1,
+          "error_sha256": null
+        },
+        "asset": {
+          "id": "1e644e0a2293465ab5a9761e6f0e5c9b",
+          "content_sha256": "c0ec4d04ad4293a1e008e7b09919dac75a5dbd39a4f81b4a3c77d7a5245790e5",
+          "metadata_sha256": "7186b0011e10ab51f66ea589c522c96d085c592e182306c523bdbd0aa938b5e8",
+          "purpose": "pvgis_tmy_weather_v1",
+          "media_type": "application/json"
+        },
+        "plan_sha256": "7953f185b89d7aa4ee762fd34a604a7304be1a6706896a8ea6f779c26b782a88",
+        "capture_sha256": "1cdfc5f48f6fc4bf4542334ab539d75b61ee415bf9e3997c2d40b79c07837f48",
+        "capture_evidence_sha256": "1fbea8643e270d77a8c48114b60edcc3903fc69e8140990251ee3c7c9ccef435",
+        "transport_receipt_sha256": "e1182b9d7b6cee37ea8946301a6a656517f6bc9328e3e19aedb1843ba159ae30",
+        "transport_receipt": {
+          "capture_basis": "official_jrc_https_get_original_v1",
+          "content_type": "application/json",
+          "loaded_url": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=48.8566&lon=2.3522&startyear=2014&endyear=2023&usehorizon=0&outputformat=json",
+          "received_at_utc": "2026-10-27T19:31:38.475826+00:00",
+          "requested_url": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=48.8566&lon=2.3522&startyear=2014&endyear=2023&usehorizon=0&outputformat=json",
+          "schema_version": 1,
+          "source_identifiers": {
+            "api_version": "5.3",
+            "provider": "EC_JRC_PVGIS"
+          },
+          "status": 200
+        },
+        "capture_evidence": {
+          "dependencies": {
+            "transport_receipt": "e1182b9d7b6cee37ea8946301a6a656517f6bc9328e3e19aedb1843ba159ae30"
+          },
+          "kind": "official_jrc_weather_transport_evidence_v1",
+          "schema_version": 1
+        },
+        "original_bytes": 1268646,
+        "original_sha256": "c0ec4d04ad4293a1e008e7b09919dac75a5dbd39a4f81b4a3c77d7a5245790e5",
+        "request": {
+          "api_version": "5.3",
+          "end_year": 2023,
+          "expected_meteo_database": "ERA5",
+          "expected_radiation_database": "PVGIS-SARAH3",
+          "latitude_deg": 48.8566,
+          "longitude_deg": 2.3522,
+          "radiation_database_policy": "provider_default_with_verified_echo",
+          "schema_version": 1,
+          "start_year": 2014,
+          "use_terrain_horizon": false
+        },
+        "interpretation": {
+          "output_axis_policy": "nonleap_synthetic_utc_hourly_scenario_v1",
+          "power_reconstruction": "representative_pv_output_over_declared_intervals_v1",
+          "schema_version": 1,
+          "solar_date_policy": "original_selected_year_plus_reported_irradiance_offset",
+          "synthetic_energy_year": 2023
+        },
+        "provider_inputs": {
+          "location": {
+            "latitude": 48.8566,
+            "longitude": 2.3522,
+            "elevation": 41,
+            "irradiance_time_offset": 0.1805
+          },
+          "meteo_data": {
+            "radiation_db": "PVGIS-SARAH3",
+            "meteo_db": "ERA5",
+            "year_min": 2014,
+            "year_max": 2023,
+            "use_horizon": false,
+            "horizon_db": null
+          }
+        },
+        "interval_count": 8760,
+        "raw_stats": {
+          "G(h)": {
+            "min": 0,
+            "max": 938,
+            "negative_count": 0,
+            "finite_count": 8760
+          },
+          "Gb(n)": {
+            "min": 0,
+            "max": 957.42,
+            "negative_count": 0,
+            "finite_count": 8760
+          },
+          "Gd(h)": {
+            "min": 0,
+            "max": 441,
+            "negative_count": 0,
+            "finite_count": 8760
+          },
+          "WS10m": {
+            "min": 0,
+            "max": 9.93,
+            "negative_count": 0,
+            "finite_count": 8760
+          },
+          "SP": {
+            "min": 98100,
+            "max": 103280,
+            "negative_count": 0,
+            "finite_count": 8760
+          },
+          "T2m": {
+            "min": -3.95,
+            "max": 32.37,
+            "negative_count": 263,
+            "finite_count": 8760
+          }
+        },
+        "source_timestamps_unique": true,
+        "original_month_year_labels_match_selected_months": true,
+        "month_counts": {
+          "1": 744,
+          "2": 672,
+          "3": 744,
+          "4": 720,
+          "5": 744,
+          "6": 720,
+          "7": 744,
+          "8": 744,
+          "9": 720,
+          "10": 744,
+          "11": 720,
+          "12": 744
+        },
+        "months_selected": [
+          {
+            "month": 1,
+            "year": 2014
+          },
+          {
+            "month": 2,
+            "year": 2015
+          },
+          {
+            "month": 3,
+            "year": 2023
+          },
+          {
+            "month": 4,
+            "year": 2019
+          },
+          {
+            "month": 5,
+            "year": 2016
+          },
+          {
+            "month": 6,
+            "year": 2023
+          },
+          {
+            "month": 7,
+            "year": 2016
+          },
+          {
+            "month": 8,
+            "year": 2023
+          },
+          {
+            "month": 9,
+            "year": 2016
+          },
+          {
+            "month": 10,
+            "year": 2016
+          },
+          {
+            "month": 11,
+            "year": 2018
+          },
+          {
+            "month": 12,
+            "year": 2018
+          }
+        ],
+        "irradiance_offset_hours": 0.1805,
+        "irradiance_offset_seconds": 649.8,
+        "source_metadata_matches_raw": true,
+        "current_source_parameters_match_run": true,
+        "geometry_unchanged_from_revision8": true,
+        "load_profile_selections_unchanged_from_revision8": true,
+        "annual_load_unchanged_from_revision8": true,
+        "verified_cas_blob_count": 11,
+        "no_model_replay": true,
+        "read_only_sqlite_mode": true,
+        "adopted_by_this_agent": false,
+        "preservation": {
+          "changed_top_level_fields": [
+            "solar_setup",
+            "weather_acquisition"
+          ],
+          "profile_selections": {
+            "schema_version": 1,
+            "selected": {
+              "aux_ac": "3d953e80afd14ac7a73bafa33f4e6902",
+              "gross_load": "c5ac441320fd4ed087aa1b43e5b3582c",
+              "pv_available_ac": "957262339d7448d2930233333c7bedb0"
+            }
+          },
+          "geometry_unchanged": true,
+          "annual_load_unchanged": true,
+          "gross_load": {
+            "id": "c5ac441320fd4ed087aa1b43e5b3582c",
+            "content_sha256": "f45e890022e6d424395aa2855d214c24e6ec34c3462ce7edefddcbe3c8dd7e79",
+            "metadata_sha256": "d31f69e5d1217be6a40c93761676531911e3fc09fc1f1b8db71910983bfd6c72",
+            "purpose": "csv_profile_v1"
+          },
+          "gross_load_interpretation": {
+            "end_utc": "2024-03-31T01:00:00+00:00",
+            "energy_kwh": 4,
+            "interval_count": 2,
+            "measurement": "gross_load",
+            "native_max_interval_seconds": 3600,
+            "origin": "synthetic",
+            "start_utc": "2024-03-30T23:00:00+00:00"
+          }
+        }
+      },
+      "history": [
+        {
+          "state": "owner_ui_unavailable_no_request",
+          "owner": "/root/certificate_conditions_backend",
+          "recorded_at_utc": "2026-10-27T19:30:58.703304+00:00",
+          "ui_attempt": {
+            "chrome_tab": "329397614",
+            "message": "This project could not be opened in the current session.",
+            "temporary_chrome_tab_closed": true,
+            "iab_create_error": "Browser is not available: iab",
+            "available_browser_ids": [
+              "1"
+            ],
+            "available_browser_name": "Chrome / Chester extension"
+          },
+          "project_writes": 0,
+          "weather_run_dispatches": 0,
+          "official_jrc_requests": 0,
+          "production_login_credentials_created": false,
+          "roof_and_existing_inputs_untouched": true,
+          "root_iab8_untouched": true
+        },
+        {
+          "state": "source_prepared_not_adopted",
+          "ui_adoption_blocker": {
+            "reported_by": "/root",
+            "reason": "Owner IAB AX timed out; two rebind attempts to tab8 also ended with transport timeout. Root stopped repeating the attempt. Source has not been adopted and no task was redispatched."
+          }
+        }
+      ],
+      "reader_production_mutations": 0,
+      "reader_provider_requests": 0,
+      "reader_model_replays": 0,
+      "handoff": "Verified weather source adopted through existing native owner1 Planner Transport with existing frontend selection/save functions. UI acceptance remains pending. No PV, energy, report or other project action was performed.",
+      "api_adoption": {
+        "key": "9b223025-68c7-4c41-bb68-829f691c1089",
+        "expected_revision": 9,
+        "result_revision": 10,
+        "request_sha256": "80bed06159b9dd2f32608110ec1ddca2106f652470bfb86465d1cc3c4c2c2498",
+        "request_bytes": 6154,
+        "response_sha256": "abd5a3c224e82fd9ecd346190ceb8b7673fbf1ff85f0d1b86143142c28f97d64",
+        "current_readback_sha256": "abd5a3c224e82fd9ecd346190ceb8b7673fbf1ff85f0d1b86143142c28f97d64",
+        "changed_fields": [
+          "pv_preparation"
+        ],
+        "selected_weather_asset_id": "1e644e0a2293465ab5a9761e6f0e5c9b",
+        "selector": "apps/planner/src/domain/preparationSelection.ts:selectPreparation",
+        "save_module": "draft.ts:prepareSave",
+        "source_files": {
+          "src/domain/preparationSelection.ts": "e4a7fbe0bcd571a38f436b33d094c0b8d7ce26b01e7a3689c8a7b632a35519d3",
+          "src/data/readProtocol.ts": "cc5ed373b3b0f3e99f2dbebe2729d6b999f7c294927aa5c61f81fe5163cfdae5",
+          "src/data/planningProtocol.ts": "497301e48a6e4fd958205f6702ad964daa703bcb659922a6905e07420eaf92bd",
+          "src/domain/draft.ts": "b8630d317ecd746c4afe7783654601c646ccac6caff728f6af4f036464255d3a"
+        },
+        "acknowledgement": "draft.ts:acknowledgeSave PASS",
+        "requests_sent": 1,
+        "retries": 0,
+        "ui_acceptance_completed": false,
+        "state": "acknowledged_and_native_readback_verified",
+        "at_utc": "2026-10-27T19:51:52.130821+00:00",
+        "owner_user_id": 1,
+        "owner_actor": "user:wp:1:user:1",
+        "project_id": "1812286480344d6d8cec94e2f5f2c00e",
+        "input_sha256": "4d522c5a4e94f3052c731649c57ee8d0d4194742c0b33ed6aede2316b798b7e2",
+        "native_reply_hashes": {
+          "project_before": "10a60910ffd48c87fe8a11b8fc04cfc370a701df6ee9831cf2588d4dae2a70d8",
+          "run": "e9153bb8ddd753ce56dc067a6ae5e33a1cfa1203ed06f3ba9b6a9f39b563313a",
+          "asset": "4999d81b7a6670c37cc712a1a91657416c0fe312dbf8605254bbc2b47ee3df5e",
+          "project_after": "abd5a3c224e82fd9ecd346190ceb8b7673fbf1ff85f0d1b86143142c28f97d64"
+        },
+        "durable_idempotency": {
+          "actor": "user:wp:1:user:1",
+          "scope": "revise:1812286480344d6d8cec94e2f5f2c00e",
+          "key": "9b223025-68c7-4c41-bb68-829f691c1089",
+          "command_sha256": "aa3c57fe3323a2eb543c9bb7062b04df266eeeffceae2b9e0050be9a9119f946",
+          "receipt_sha256": "f5217d9dc3b7ac66409b4499f7583eb830c9eb0a27b7041011bc357e9292e126"
+        },
+        "only_changed_paths": [
+          "pv_preparation.schema_version",
+          "pv_preparation.weather_asset_id"
+        ],
+        "geometry_unchanged": true,
+        "profile_selections_unchanged": true,
+        "weather_acquisition_unchanged": true,
+        "no_new_calculation_or_source_request": true,
+        "temporary_files_reclaimed": [
+          {
+            "path": "/tmp/p548-fr-weather-adoption-read.json",
+            "bytes": 28835
+          },
+          {
+            "path": "/tmp/p548-fr-weather-adoption-intent.json",
+            "bytes": 13829
+          },
+          {
+            "path": "/tmp/p548-fr-weather-adoption-save.json",
+            "bytes": 8191
+          },
+          {
+            "path": "/tmp/p548-fr-weather-adoption-after.json",
+            "bytes": 6854
+          }
+        ],
+        "temporary_bytes_reclaimed": 57709
+      },
+      "source_prepared_revision": 9,
+      "current_input_sha256": "4d522c5a4e94f3052c731649c57ee8d0d4194742c0b33ed6aede2316b798b7e2",
+      "ui_acceptance_gap": "Owner IAB reload/rebind transport is closed. Native business API adoption succeeded; browser UI acceptance has not been completed.",
+      "handoff_json": {
+        "path": "/Users/chesterjohn/de-linker-local/p548/planner/managed-reference-native/fr-weather-api-handoff.json",
+        "bytes": 55987,
+        "sha256": "13a0cc8ce16dfaec1818cab20f6d3d354b634559b6c011fae45792fb0570ca35",
+        "purpose": "Actual production project rev10, historical rev9, weather run and asset replies for existing PV preparation compiler; no credentials/cookies/headers",
+        "owner": "/root",
+        "reclaim_condition": "After the active FR consumer preparation and acceptance record have retained needed binding evidence; keep one current handoff only",
+        "review_by_utc": "2026-10-28T23:59:00Z"
+      },
+      "api_mutations_by_this_agent": 1,
+      "direct_database_writes": 0
+    },
+    "production_ui_release_preparation": {
+      "state": "published_archived_staging_reclaimed",
+      "source_commit": "3d6aa97d2574b5594856adb2a5d255ac8e348e64",
+      "database_snapshot": {
+        "name": "db-20261027T193012Z.sql.gz",
+        "path": "/Users/chesterjohn/de-linker-data/snapshots/db-20261027T193012Z.sql.gz",
+        "size": 7248913,
+        "sha256": "d7596a06e066061737bb48376999e566e1228fafcd76d9c152a9016d10e829ad",
+        "retention": {
+          "kept": [
+            "db-20261027T193012Z.sql.gz",
+            "db-20261027T171341Z.sql.gz",
+            "db-20261027T154740Z.sql.gz",
+            "db-20261026T222742Z.sql.gz",
+            "db-20261025T234349Z.sql.gz",
+            "db-20261024T182545Z.sql.gz",
+            "db-20261023T232408Z.sql.gz",
+            "db-20261022T140810Z.sql.gz",
+            "db-20261021T183520Z.sql.gz"
+          ],
+          "removed": [
+            {
+              "name": "db-20261027T144332Z.sql.gz",
+              "bytes": 7177765
+            }
+          ],
+          "verified_new_gzip": true
+        }
+      },
+      "peer_rail_recovery": {
+        "path": "/Users/chesterjohn/de-linker-data/planner-production/peer-workspace-rail-before-706.tar.gz",
+        "bytes": 7712,
+        "sha256": "76d5dfa928f2220ab1382a13889c8a8fbcea697210d7223c5a0c7bd1348ec0e1",
+        "file_sha256": "5b73a36d968684bf925a2243592df9e0617161d40bc6f4f108555951cffc2f94",
+        "source_deploy": "20261027T185454Z-workspace-rail-d2a0e9e6",
+        "retention": "until peer confirms equivalent recovery or this batch rollback no longer needs preimage"
+      },
+      "public_genie_and_hero_hashes_match_candidate": true,
+      "browser_observation": "Owner IAB action dispatched weather once; subsequent AX and tab binding transport timed out; no repeated request or adoption."
+    },
+    "production_ui_release": {
+      "deploy_id": "20261027T193955Z-planner-reference-3d6aa97d",
+      "switch_seconds": 0.003,
+      "backup_directory": "/home/u388076051/deploy-prev/20261027T193955Z-planner-reference-3d6aa97d",
+      "paths": [
+        "wp-content/plugins/linker-tools"
+      ],
+      "readbacks": [],
+      "after_switch": [
+        "opcache-reset=done attempts=1"
+      ],
+      "state": "archived",
+      "public_asset_readbacks": [
+        {
+          "path": "build/planner/assets/EnergyFlowChart-B7O8c2q5.js",
+          "status": 200,
+          "mime": "application/x-javascript",
+          "bytes": 555899,
+          "sha256": "c4cc9f19cc7e0723df06be44f140236a670c45a08722fb5d6823c732a1cdcf90"
+        },
+        {
+          "path": "build/planner/assets/MapViewport-kGAlIE66.js",
+          "status": 200,
+          "mime": "application/x-javascript",
+          "bytes": 1189296,
+          "sha256": "b193e158cd78312f3d3cb42911d9da41226ad71cfefc4662d880e63f3c1f24d6"
+        },
+        {
+          "path": "build/planner/assets/SceneViewport-BeJEfAi9.js",
+          "status": 200,
+          "mime": "application/x-javascript",
+          "bytes": 1549129,
+          "sha256": "2212e279c93c1d89fb5e7f7a1cdce54d292515c681d303f96a8ee076ca657b70"
+        },
+        {
+          "path": "build/planner/assets/planner-core-B_PKlfnu.js",
+          "status": 200,
+          "mime": "application/x-javascript",
+          "bytes": 1088869,
+          "sha256": "e3e602a5f090ca0fdda41f514ee49170bfd5c9275c224122f22aed9ad381231b"
+        },
+        {
+          "path": "build/planner/assets/planner.js",
+          "status": 200,
+          "mime": "application/x-javascript",
+          "bytes": 1310,
+          "sha256": "5c8d2e8d0626ba1adde983d77af22d303f24168537f3c457f4fec613a46e5dcb"
+        },
+        {
+          "path": "build/planner/assets/rolldown-runtime-BWaJ3C7D.js",
+          "status": 200,
+          "mime": "application/x-javascript",
+          "bytes": 911,
+          "sha256": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3"
+        }
+      ],
+      "browser": {
+        "language": "en",
+        "entry_sha256": "5c8d2e8d0626ba1adde983d77af22d303f24168537f3c457f4fec613a46e5dcb",
+        "guest_workspace_rendered": true,
+        "console_errors": [],
+        "scope": "entry execution only; owned project workflow continues separately",
+        "screenshot": "docs/acceptance/2026-10-25/548/production-managed-reference-entry.jpg",
+        "screenshot_sha256": "27b38001dd571881d868321b11ac943f6c9d213ab89cf49487b9df80d4b2a269"
+      },
+      "staging_reclaimed": {
+        "files": 320,
+        "bytes": 10576733,
+        "rebuild_source_commit": "3d6aa97d2574b5594856adb2a5d255ac8e348e64",
+        "retained": "publication and backup metadata; one native server rollback; unique production screenshot"
+      }
+    },
+    "final_ci": {
+      "run": 40561667916,
+      "state": "success",
+      "source_commit": "3d6aa97d2574b5594856adb2a5d255ac8e348e64",
+      "pr": 706,
+      "merge_commit": "b1777caa495e4e4215d6bc02d78da20140d09ec1"
+    },
+    "acceptance_ci_scope": {
+      "problem": "PR710 documentation plus actual JPEG receipt selected full runtime checks because JPEG was absent from acceptance artifact classification",
+      "cancelled_run": 40573384729,
+      "fix": ".github/workflows/check.yml: recognize only docs/acceptance regular100644 jpg/jpeg with FF D8 FF magic; runtime and unknown paths retain full checks",
+      "changed_lines": {
+        "added": 3,
+        "removed": 1
+      },
+      "focused_validation": "One AST-extracted actual-plan probe: real JPEG/doc diff accepted; invalid JPEG, invalid old side, symlink, executable, runtime/outside-acceptance/unknown rejected; existing PNG/PDF/JSON/text behavior preserved",
+      "review": "Independent worker boundary probe plus root complete3-line diff review PASS",
+      "screenshot_preserved": true,
+      "runtime_changes": false,
+      "next_gate": "One required full check for the control-plane change; no new planner runtime test run requested separately"
     }
   }
 }
