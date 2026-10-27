@@ -29,6 +29,24 @@ use WP_Mock\Matcher\AnyInstance;
  */
 final class ModuleTest extends TestCase {
 
+	/** The standalone native draft also receives the saved-quantity guard. */
+	public function test_cart_loads_account_interactions(): void {
+		WP_Mock::userFunction( 'is_account_page' )->andReturn( false );
+		WP_Mock::userFunction( 'is_checkout' )->andReturn( false );
+		WP_Mock::userFunction( 'is_cart' )->andReturn( true );
+		WP_Mock::userFunction( 'is_wc_endpoint_url' )->andReturn( false );
+		WP_Mock::userFunction( 'plugins_url' )->andReturn( 'https://example.test/assets/' );
+		WP_Mock::userFunction( 'wp_enqueue_script' )->once()->with(
+			'linker-account-ui',
+			'https://example.test/assets/account-ui.js',
+			array(),
+			(string) filemtime( dirname( __DIR__, 4 ) . '/assets/account-ui.js' ),
+			true
+		);
+		( new Module( new Shortcodes(), new LoginGate(), new WindPress() ) )->enqueue_account_scripts();
+		$this->assertConditionsMet();
+	}
+
 	/**
 	 * The module's hooks, and no other: the shortcodes of the three page
 	 * families (the product and checkout shortcodes, the comparison page's
