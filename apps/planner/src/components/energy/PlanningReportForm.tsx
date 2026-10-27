@@ -107,17 +107,19 @@ export function PlanningReportForm({
 			</p>
 			<div className="lp-scenario-fields">
 				{hasInstallation && (
-					<label className="lp-check">
-						<input
-							type="checkbox"
-							checked={installation}
-							disabled={disabled}
-							onChange={(e) => setInstallation(e.currentTarget.checked)}
-						/>
-						{__(
-							"Include installation routes from the saved project",
-							"linker-tools",
-						)}
+					<label className="lp-field">
+						<span>
+							<input
+								type="checkbox"
+								checked={installation}
+								disabled={disabled}
+								onChange={(e) => setInstallation(e.currentTarget.checked)}
+							/>
+							{__(
+								"Include installation routes from the saved project",
+								"linker-tools",
+							)}
+						</span>
 					</label>
 				)}
 				{choose(
@@ -148,8 +150,8 @@ export function PlanningReportForm({
 					)
 				)}
 				{(hasCandidate || equipment) && (
-					<div>
-						<label className="lp-check">
+					<label className="lp-field">
+						<span>
 							<input
 								type="checkbox"
 								checked={certificates}
@@ -160,14 +162,14 @@ export function PlanningReportForm({
 								"Include information from the linked certificate files",
 								"linker-tools",
 							)}
-						</label>
-						<p className="lp-profile-help">
+						</span>
+						<small>
 							{__(
 								"The report includes readable model, firmware and standard information from labelled fields on the first page, and flags references to unverified annexes. It does not confirm that the equipment or project meets the stated conditions.",
 								"linker-tools",
 							)}
-						</p>
-					</div>
+						</small>
+					</label>
 				)}
 				<label className="lp-field">
 					<span>{__("Your logo on the PDF (optional)", "linker-tools")}</span>
