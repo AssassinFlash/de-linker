@@ -8,6 +8,12 @@ export function revealActionResult(
 	if (!element?.isConnected || !canReveal()) return false;
 	const root = element.closest<HTMLElement>("[data-linker-planner]");
 	if (root) measurePlannerChrome(root);
+	// Result headings need programmatic focus for the late sticky-bar correction.
+	// Native form controls keep their ordinary keyboard tab order.
+	if (element.matches("h1,h2,h3,h4,h5,h6")) {
+		if (!element.hasAttribute("tabindex")) element.tabIndex = -1;
+		element.classList.add("lp-focus-target");
+	}
 	element.focus({ preventScroll: true });
 	if (!canReveal()) return false;
 	// Reveal a field label or the complete marked result heading (including its

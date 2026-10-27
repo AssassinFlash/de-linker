@@ -46,7 +46,11 @@ import { sharedProfileRange } from "../../domain/profileCoverage.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import type { JsonObject, Session } from "../../data/protocol.ts";
 import { ApiError } from "../../data/protocol.ts";
-import { replacePlannerLocation } from "../../data/plannerLocation.ts";
+import {
+	initialEnergyView,
+	replacePlannerLocation,
+} from "../../data/plannerLocation.ts";
+import type { EnergyView } from "../../data/plannerLocation.ts";
 import { usePlanningOperations } from "../../data/usePlanningOperations.ts";
 import { usePlanningRuns } from "../../data/usePlanningRuns.ts";
 import {
@@ -202,20 +206,8 @@ export function EnergyWorkspace({
 	const setup = parsed.value,
 		currentSetup = joint ? (jointContext.value?.setup ?? null) : setup,
 		selections = readSelections(draft.history.current.profile_selections);
-	const [selectedView, setView] = useState<
-			| "weather"
-			| "pv"
-			| "scenario"
-			| "equipment"
-			| "runs"
-			| "reports"
-			| "comparison"
-		>(() =>
-			new URL(window.location.href).searchParams.has("compare")
-				? "comparison"
-				: new URL(window.location.href).searchParams.has("run")
-					? "runs"
-					: "scenario",
+	const [selectedView, setView] = useState<EnergyView>(() =>
+			initialEnergyView(new URL(window.location.href)),
 		),
 		[section, setSection] = useState<"storage" | "initial" | "operation">(
 			"storage",
@@ -934,25 +926,17 @@ export function EnergyWorkspace({
 			if (client.isCurrentScope(session.query_scope)) setError(cause);
 		}
 	}
-	function chooseView(
-		next:
-			| "weather"
-			| "pv"
-			| "scenario"
-			| "equipment"
-			| "runs"
-			| "reports"
-			| "comparison",
-	) {
+	function chooseView(next: EnergyView) {
 		setView(next);
-		if (next === "runs") {
-			if (runs.runId) runs.select(runs.runId);
-		} else {
-			const url = new URL(window.location.href);
-			url.searchParams.delete("run");
-			if (next !== "comparison") url.searchParams.delete("compare");
-			replacePlannerLocation(url);
+		if (next === "runs" && runs.runId) {
+			runs.select(runs.runId);
+			return;
 		}
+		const url = new URL(window.location.href);
+		url.searchParams.set("energy_view", next);
+		if (next !== "runs") url.searchParams.delete("run");
+		if (next !== "comparison") url.searchParams.delete("compare");
+		replacePlannerLocation(url);
 	}
 	async function useRange() {
 		if (!currentSetup || rangeFlight.current || !admitted) return;
