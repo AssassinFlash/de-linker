@@ -8313,6 +8313,7 @@ msgstr "Rückgängig"
 msgid "Unfinished roof drawing"
 msgstr "Unvollständige Dachzeichnung"
 
+#: ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:204 ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:210 ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:215 ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:280 ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:298 ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:152 ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:161 ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:166 ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:216 build/planner/assets/planner.js:1
 #: build/planner/assets/planner.js
 #: ../../apps/planner/src/components/design/SourceForm.tsx:103
 msgid "Unknown"
@@ -8665,6 +8666,7 @@ msgstr ""
 msgid "A new calculation requires an updated module selection."
 msgstr "Für eine neue Berechnung muss die Modulauswahl aktualisiert werden."
 
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:192 build/planner/assets/planner.js:1
 #: build/planner/assets/planner.js
 #: ../../apps/planner/src/components/design/ModuleForm.tsx:151
 #: ../../apps/planner/src/components/energy/PvModuleParameters.tsx:43
@@ -8672,6 +8674,7 @@ msgstr "Für eine neue Berechnung muss die Modulauswahl aktualisiert werden."
 msgid "Source document"
 msgstr "Quelldokument"
 
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:260 build/planner/assets/planner.js:1
 #: build/planner/assets/planner.js
 #: ../../apps/planner/src/components/design/ModuleForm.tsx:154
 #: ../../apps/planner/src/components/energy/PvModuleParameters.tsx:45
@@ -11745,6 +11748,7 @@ msgstr "Die Quellenangaben konnten nicht geladen werden. Versuchen Sie es erneut
 msgid "Open document"
 msgstr "Dokument öffnen"
 
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:274
 #: ../../apps/planner/src/components/equipment/CertificateEvidence.tsx:1 build/planner/assets/planner.js:1
 msgid "Recorded source details"
 msgstr "Details zur erfassten Quelle"
@@ -11757,6 +11761,7 @@ msgstr "Dieses Dokument ist derzeit nicht verfügbar."
 msgid "This file differs from the version recorded with this result."
 msgstr "Diese Datei unterscheidet sich von der für dieses Ergebnis erfassten Fassung."
 
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:285
 #: ../../apps/planner/src/components/equipment/CertificateEvidence.tsx:1 build/planner/assets/planner.js:1
 msgid "Recorded document revision"
 msgstr "Erfasster Dokumentstand"
@@ -11768,3 +11773,290 @@ msgstr "Angaben aus den zugeordneten Zertifikatsdateien aufnehmen"
 #: ../../apps/planner/src/components/energy/PlanningReportForm.tsx build/planner/assets/planner.js
 msgid "The report includes readable model, firmware and standard information from labelled fields on the first page, and flags references to unverified annexes. It does not confirm that the equipment or project meets the stated conditions."
 msgstr "Der Bericht übernimmt auslesbare Modell-, Firmware- und Normangaben aus beschrifteten Feldern der ersten Seite und kennzeichnet Verweise auf ungeprüfte Anhänge. Ob die Geräte oder das Projekt die genannten Bedingungen erfüllen, wird damit nicht bestätigt."
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:28 ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:18 build/planner/assets/planner.js:1
+msgid "Accessory"
+msgstr "Zubehör"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:265 build/planner/assets/planner.js:1
+msgid "Annex conditions remain unresolved. The identity and completeness of any annex have not been verified."
+msgstr "Die Bedingungen in Anhängen sind weiterhin ungeklärt. Identität und Vollständigkeit etwaiger Anhänge wurden nicht geprüft."
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:86 build/planner/assets/planner.js:1
+msgid "Annex identity, completeness and conditions"
+msgstr "Identität, Vollständigkeit und Bedingungen der Anhänge"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:99 build/planner/assets/planner.js:1
+msgid "Applicable standard edition and transition rules"
+msgstr "Anwendbare Normenausgabe und Übergangsregelungen"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:27 ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:17 build/planner/assets/planner.js:1
+msgid "Battery"
+msgstr "Batterie"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:210 build/planner/assets/planner.js:1
+msgid "Compared product model reference"
+msgstr "Verglichenes Produktmodell als Referenz"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:208 build/planner/assets/planner.js:1
+msgid "Compared project model"
+msgstr "Verglichene Modellangabe im Projekt"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:49 build/planner/assets/planner.js:1
+#, javascript-format
+msgid "Coordination group %d · Shared controller"
+msgstr "Koordinationsgruppe %d · Gemeinsamer Controller"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:34 ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:12 build/planner/assets/planner.js:1
+#, javascript-format
+msgid "Coordination group %s · Shared controller"
+msgstr "Koordinationsgruppe %s · Gemeinsamer Controller"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:95 build/planner/assets/planner.js:1
+msgid "Country settings and grid-operator requirements"
+msgstr "Ländereinstellungen und Anforderungen des Netzbetreibers"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:261 build/planner/assets/planner.js:1
+msgid "Current product data unavailable"
+msgstr "Aktuelle Produktdaten nicht verfügbar"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:103 build/planner/assets/planner.js:1
+msgid "Current status with the document issuer"
+msgstr "Aktueller Status beim Aussteller des Dokuments"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:208 ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:269 ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:159 build/planner/assets/planner.js:1
+msgid "Declared firmware or software"
+msgstr "Angegebene Firmware oder Software"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:202 ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:266 ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:151 build/planner/assets/planner.js:1
+msgid "Declared model"
+msgstr "Angegebenes Modell"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:231 build/planner/assets/planner.js:1
+msgid "Device fields appear after products are selected. Unknown details can remain blank and the project can be saved."
+msgstr "Die Gerätefelder erscheinen nach der Produktauswahl. Unbekannte Angaben können leer bleiben; das Projekt lässt sich trotzdem speichern."
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:118 build/planner/assets/planner.js:1
+msgid "Device model and firmware"
+msgstr "Gerätemodell und Firmware"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:192 build/planner/assets/planner.js:1
+msgid "Device reference"
+msgstr "Gerätezuordnung"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:188 build/planner/assets/planner.js:1
+msgid "Entry needs a current device reference"
+msgstr "Gerätezuordnung des Eintrags muss geprüft werden"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:232 build/planner/assets/planner.js:1
+msgid "Exact version match in this file"
+msgstr "Version stimmt in dieser Datei exakt überein"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:228 build/planner/assets/planner.js:1
+msgid "Firmware or software comparison"
+msgstr "Vergleich der Firmware oder Software"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:107 build/planner/assets/planner.js:1
+msgid "Grid assessment for this project"
+msgstr "Netztechnische Bewertung dieses Projekts"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:110 build/planner/assets/planner.js:1
+msgid "Grid-operator permission"
+msgstr "Genehmigung des Netzbetreibers"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:90 build/planner/assets/planner.js:1
+msgid "Hardware version and device configuration"
+msgstr "Hardwareversion und Gerätekonfiguration"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:151 build/planner/assets/planner.js:1
+msgid "Include a review of device details against linked files"
+msgstr "Geräteangaben mit verknüpften Dateien abgleichen"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:26 ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:16 build/planner/assets/planner.js:1
+msgid "Inverter"
+msgstr "Wechselrichter"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:196 build/planner/assets/planner.js:1
+msgid "Model comparison"
+msgstr "Modellvergleich"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:202 build/planner/assets/planner.js:1
+msgid "Model comparison unresolved"
+msgstr "Modellvergleich ungeklärt"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:199 build/planner/assets/planner.js:1
+msgid "Model listed on this page"
+msgstr "Modell auf dieser Seite aufgeführt"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:201 build/planner/assets/planner.js:1
+msgid "Model not listed on this page"
+msgstr "Modell auf dieser Seite nicht aufgeführt"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:53 build/planner/assets/planner.js:1
+msgid "No firmware or software version was declared for this device in the project."
+msgstr "Für dieses Gerät wurde im Projekt keine Firmware- oder Softwareversion angegeben."
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:180 build/planner/assets/planner.js:1
+msgid "No linked certificate file was recorded for this device. Its conditions remain unresolved."
+msgstr "Für dieses Gerät wurde keine verknüpfte Zertifikatsdatei erfasst. Die Bedingungen bleiben ungeklärt."
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:93 build/planner/assets/planner.js:1
+msgid "Operating mode"
+msgstr "Betriebsart"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:121 build/planner/assets/planner.js:1
+msgid "Optional project entries describe the model and firmware or software planned for or observed on each device. Blank fields mean unknown. Product data remains the reference; these entries do not change it."
+msgstr "Hier können für jedes Gerät das vorgesehene oder am Gerät festgestellte Modell sowie die Firmware oder Software erfasst werden. Leere Felder stehen für unbekannte Angaben. Die Produktdaten bleiben die Referenz und werden durch diese Projekteinträge nicht geändert."
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:82 build/planner/assets/planner.js:1
+msgid "Other pages and referenced test reports"
+msgstr "Weitere Seiten und referenzierte Prüfberichte"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:259 build/planner/assets/planner.js:1
+msgid "Product model reference"
+msgstr "Produktmodell als Referenz"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:124 build/planner/assets/planner.js:1
+msgid "Project device details"
+msgstr "Geräteangaben im Projekt"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:196 ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:278 build/planner/assets/planner.js:1
+msgid "Recorded product revision"
+msgstr "Erfasste Produktrevision"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:224 ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:329 build/planner/assets/planner.js:1
+msgid "Remove entry"
+msgstr "Eintrag entfernen"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:160 build/planner/assets/planner.js:1
+msgid "Save project records these entries. A new equipment check or report compares them with labelled fields in each linked certificate file. Version strings are kept exactly, including leading zeros. Removing this option removes the entries from this draft; Undo can restore them."
+msgstr "Mit „Projekt speichern“ werden diese Angaben gespeichert. Eine neue Geräteprüfung oder ein neuer Bericht gleicht sie mit den beschrifteten Feldern jeder verknüpften Zertifikatsdatei ab. Versionsangaben bleiben exakt erhalten, einschließlich führender Nullen. Wird diese Option deaktiviert, werden die Einträge aus diesem Entwurf entfernt. Mit „Rückgängig“ lassen sie sich wiederherstellen."
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:78 build/planner/assets/planner.js:1
+msgid "Scope and applicability of each document"
+msgstr "Geltungsbereich und Anwendbarkeit jedes Dokuments"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:176 build/planner/assets/planner.js:1
+msgid "Some entries belong to a different device, system or product revision. Their original values are shown below. Remove those entries before saving, then enter any details that apply to the current selection."
+msgstr "Einige Einträge beziehen sich auf ein anderes Gerät, ein anderes System oder eine andere Produktrevision. Die ursprünglichen Angaben stehen unten. Diese Einträge müssen vor dem Speichern entfernt werden. Anschließend lassen sich Angaben zur aktuellen Auswahl ergänzen."
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:214 ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:271 ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:165 build/planner/assets/planner.js:1
+msgid "Source note"
+msgstr "Hinweis zur Quelle"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:306 build/planner/assets/planner.js:1
+msgid "Still requires separate review"
+msgstr "Weiterhin gesondert zu prüfen"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:39 ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:22 build/planner/assets/planner.js:1
+#, javascript-format
+msgid "System %s"
+msgstr "System %s"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:38 build/planner/assets/planner.js:1
+msgid "The compared model appears in the literal list on this file’s cover."
+msgstr "Das verglichene Modell steht in der eindeutigen Liste der Modellbezeichnungen auf dem Deckblatt dieser Datei."
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:43 build/planner/assets/planner.js:1
+msgid "The compared model does not appear in the literal list on this file’s cover. Other files require their own review."
+msgstr "Das verglichene Modell steht nicht in der eindeutigen Liste der Modellbezeichnungen auf dem Deckblatt dieser Datei. Andere Dateien müssen jeweils gesondert geprüft werden."
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:48 build/planner/assets/planner.js:1
+msgid "The labelled firmware or software field could not be read as one explicit version. Lists, ranges and component-specific versions remain unresolved."
+msgstr "Aus dem beschrifteten Firmware- oder Softwarefeld ließ sich keine einzelne eindeutige Version auslesen. Listen, Versionsbereiche und komponentenspezifische Versionen bleiben ungeklärt."
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:28 build/planner/assets/planner.js:1
+msgid "The labelled model field could not be read as an explicit list of model names."
+msgstr "Das beschriftete Modellfeld ließ sich nicht als eindeutige Liste von Modellbezeichnungen auslesen."
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:251 build/planner/assets/planner.js:1
+msgid "The product model is a selection reference. No model was declared as planned or observed for this device."
+msgstr "Das Produktmodell dient als Referenz der Auswahl. Für dieses Gerät wurde kein vorgesehenes oder am Gerät festgestelltes Modell angegeben."
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:58 build/planner/assets/planner.js:1
+msgid "The project entry could not be compared as one explicit firmware or software version."
+msgstr "Die Projektangabe ließ sich nicht als einzelne eindeutige Firmware- oder Softwareversion vergleichen."
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:33 build/planner/assets/planner.js:1
+msgid "The project model entry could not be compared as a single literal model name."
+msgstr "Die Modellangabe im Projekt ließ sich nicht als einzelne Modellbezeichnung für einen wortgetreuen Abgleich verwenden."
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:68 build/planner/assets/planner.js:1
+msgid "The project version differs from the version printed in this file’s cover field. This comparison applies to this file only."
+msgstr "Die im Projekt angegebene Version weicht von der Version im Feld auf dem Deckblatt dieser Datei ab. Dieser Vergleich gilt nur für diese Datei."
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:63 build/planner/assets/planner.js:1
+msgid "The project version exactly matches the version printed in this file’s cover field."
+msgstr "Die im Projekt angegebene Version stimmt exakt mit der Version im Feld auf dem Deckblatt dieser Datei überein."
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:319 build/planner/assets/planner.js:1
+msgid "The source note can name a device label, commissioning record or planned configuration. It is saved with this device entry."
+msgstr "Der Quellenhinweis kann sich etwa auf ein Typenschild, ein Inbetriebnahmeprotokoll oder eine geplante Konfiguration beziehen. Er wird mit diesem Geräteeintrag gespeichert."
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:72 build/planner/assets/planner.js:1
+msgid "This comparison remains unresolved."
+msgstr "Dieser Vergleich bleibt ungeklärt."
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:223 ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:244 build/planner/assets/planner.js:1
+msgid "Unresolved"
+msgstr "Ungeklärt"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:235 build/planner/assets/planner.js:1
+msgid "Version comparison unresolved"
+msgstr "Versionsvergleich ungeklärt"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:234 build/planner/assets/planner.js:1
+msgid "Version differs from this file"
+msgstr "Version weicht von dieser Datei ab"
+
+#: ../../apps/planner/src/components/energy/EnergyError.tsx:283 build/planner/assets/planner.js:1
+msgid "Some device entries refer to a different selection or product revision. The original entries are kept in Device model and firmware. Remove them and enter the details for the current devices before saving."
+msgstr "Einige Geräteangaben beziehen sich auf eine andere Auswahl oder Produktrevision. Die ursprünglichen Einträge bleiben unter „Gerätemodell und Firmware“ erhalten. Vor dem Speichern müssen sie entfernt und für die aktuelle Geräteauswahl neu erfasst werden."
+
+#: ../../apps/planner/src/components/energy/EnergyError.tsx:288 build/planner/assets/planner.js:1
+msgid "The device entries are saved, but the equipment selection needs preparation before a new check or report. Prepare the selection and save the project."
+msgstr "Die Geräteangaben sind gespeichert. Für eine neue Prüfung oder einen neuen Bericht muss die Geräteauswahl vorbereitet und das Projekt anschließend gespeichert werden."
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionInputs.tsx:167 build/planner/assets/planner.js:1
+msgid "The device entries could not be read. Undo the last edit, or remove this optional review and enter the details again."
+msgstr "Die Geräteangaben konnten nicht gelesen werden. Die letzte Bearbeitung lässt sich mit „Rückgängig“ zurücknehmen. Alternativ kann dieser optionale Abgleich entfernt und anschließend neu erfasst werden."
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:220 build/planner/assets/planner.js:1
+msgid "Models printed on this page"
+msgstr "Auf dieser Seite aufgeführte Modelle"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:240 build/planner/assets/planner.js:1
+msgid "Version printed on this page"
+msgstr "Auf dieser Seite angegebene Version"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:127 build/planner/assets/planner.js:1
+msgid "These comparisons use the project entries and the labelled model and firmware or software fields on each original file’s first page. Each result concerns only the text read on that page. Project suitability, country requirements and installation approval remain unassessed."
+msgstr "Der Abgleich verwendet die Projektangaben und die beschrifteten Modell-, Firmware- oder Softwarefelder auf der ersten Seite jeder Originaldatei. Jedes Ergebnis bezieht sich ausschließlich auf den Text, der auf dieser Seite ausgelesen wurde. Die Eignung für das Projekt, die länderspezifischen Anforderungen und die Freigabe der Anlage sind weiterhin nicht bewertet."
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:138 build/planner/assets/planner.js:1
+msgid "Model identity"
+msgstr "Modellidentität"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:141 build/planner/assets/planner.js:1
+msgid "Project model not declared"
+msgstr "Im Projekt kein Modell angegeben"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:144 build/planner/assets/planner.js:1
+msgid "Project and product model texts match"
+msgstr "Modellangabe im Projekt und Produktmodell sind wortgleich"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:147 build/planner/assets/planner.js:1
+msgid "Model identity requires review"
+msgstr "Modellidentität muss geprüft werden"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:155 build/planner/assets/planner.js:1
+msgid "Selected product model"
+msgstr "Ausgewähltes Produktmodell"
+
+#: ../../apps/planner/src/components/equipment/DeviceConditionReview.tsx:172 build/planner/assets/planner.js:1
+msgid "The project model text differs from the selected product model. Their identity has not been established and needs reconciliation."
+msgstr "Die Modellangabe im Projekt weicht vom ausgewählten Produktmodell ab. Ob beide Bezeichnungen für dasselbe Modell stehen, ist noch ungeklärt."
+
+#: ../../apps/planner/src/components/energy/PlanningReportForm.tsx:168 build/planner/assets/planner.js:1
+msgid "If the selected equipment result contains a device review, the report retains that review. Changed project entries require a new equipment check before they can be included."
+msgstr "Enthält das ausgewählte Geräteergebnis einen Abgleich der Geräteangaben, wird dieser in den Bericht übernommen. Geänderte Projektangaben können erst nach einer neuen Geräteprüfung berücksichtigt werden."

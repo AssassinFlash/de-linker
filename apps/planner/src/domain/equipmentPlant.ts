@@ -89,6 +89,7 @@ const equipmentFields = [
 	"equipment_candidate",
 	"equipment_setup",
 	"equipment_requirements",
+	"equipment_condition_inputs",
 	"pv_string_plan",
 ] as const;
 export function equipmentContext(inputs: JsonObject): JsonObject {

@@ -2,8 +2,14 @@
 
 from __future__ import annotations
 
+from typing import cast
+
 from .canonical import Object
+from .certificate_evidence import certificate_documents
+from .certificate_sources import inspect_report_certificates
 from .equipment_assessment import assess_equipment, selection_products
+from .equipment_condition_inputs import validate_condition_inputs
+from .equipment_conditions import review_device_conditions
 from .equipment_inputs import EquipmentSelection
 from .errors import VersionUnavailable
 from .execution_identity import execution_key, request_execution_key
@@ -49,6 +55,7 @@ class EquipmentKernel:
         else:
             selection = EquipmentSelection.read(inputs.get("equipment_selection"))
             selection_products(selection, basis)
+        validate_condition_inputs(inputs, require_prepared=True)
         if inputs.get("pv_string_plan") is not None:
             basis["pv_module_inputs"] = self.products.electrical_module_basis()
             # Validate object identities before queueing, then evaluate again
@@ -88,7 +95,16 @@ class EquipmentKernel:
             raise VersionUnavailable("equipment publication proof is missing")
         basis = self.workspace.blobs.object(proof)
         self.products.confirm_basis(basis, require_reference=False)
-        output = self.compute(self.workspace.pinned_inputs(manifest), basis, control)
+        inputs = self.workspace.pinned_inputs(manifest)
+        output = self.compute(inputs, basis, control)
+        if "equipment_condition_inputs" in inputs:
+            evidence = certificate_documents(basis, cast(Object, output["assessment"]))
+            source: Object = {"certificates": evidence}
+            originals = inspect_report_certificates(
+                source, self.workspace.blobs, control.checkpoint
+            )
+            evidence["condition_review"] = review_device_conditions(inputs, evidence)
+            output.update(certificates=evidence, dependencies=originals)
         control.checkpoint()
         self.products.confirm_basis(basis, require_reference=False)
         return {

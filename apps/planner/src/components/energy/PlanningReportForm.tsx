@@ -165,6 +165,10 @@ export function PlanningReportForm({
 						</span>
 						<small>
 							{__(
+								"If the selected equipment result contains a device review, the report retains that review. Changed project entries require a new equipment check before they can be included.",
+								"linker-tools",
+							)}{" "}
+							{__(
 								"The report includes readable model, firmware and standard information from labelled fields on the first page, and flags references to unverified annexes. It does not confirm that the equipment or project meets the stated conditions.",
 								"linker-tools",
 							)}

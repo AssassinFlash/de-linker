@@ -3,6 +3,201 @@
 from __future__ import annotations
 
 TEXT = {
+    "certificate_condition_title": (
+        "Project device details",
+        "Geräteangaben im Projekt",
+    ),
+    "certificate_condition_scope": (
+        "The model and device firmware/software values below were entered for this project. Each comparison refers only to the first page of the named document. A matching field does not establish that the device or installation meets all document conditions.",
+        "Die folgenden Angaben zu Modell und Gerätefirmware bzw. Gerätesoftware wurden für dieses Projekt erfasst. Jeder Abgleich bezieht sich nur auf die erste Seite der genannten Unterlage. Eine übereinstimmende Angabe weist nicht nach, dass das Gerät oder die Installation alle Bedingungen der Unterlage erfüllt.",
+    ),
+    "certificate_condition_source_run": ("Source calculation", "Quellberechnung"),
+    "certificate_condition_source_revision": (
+        "Source input revision",
+        "Eingabeversion der Quellberechnung",
+    ),
+    "certificate_condition_source_candidate": (
+        "Source equipment candidate",
+        "Gerätevariante der Quellberechnung",
+    ),
+    "certificate_condition_recorded_scope": (
+        "These device details and comparisons belong to the source calculation and input revision shown here.",
+        "Diese Geräteangaben und Abgleiche gehören zur hier genannten Quellberechnung und deren Eingabeversion.",
+    ),
+    "certificate_condition_device_empty": (
+        "No certificate or related product document was recorded for this device.",
+        "Für dieses Gerät wurden keine Zertifikate oder zugehörigen Produktunterlagen erfasst.",
+    ),
+    "certificate_condition_identity": (
+        "Declared model and selected product model",
+        "Angegebene Modellbezeichnung und Modell des ausgewählten Produkts",
+    ),
+    "certificate_condition_identity_unprovided": (
+        "Project model not entered",
+        "Kein Projektmodell erfasst",
+    ),
+    "certificate_condition_identity_same_text": (
+        "Model text is identical",
+        "Modellbezeichnungen sind wortgleich",
+    ),
+    "certificate_condition_identity_different_text": (
+        "Model text differs; identity needs clarification",
+        "Modellbezeichnungen weichen ab; Zuordnung ungeklärt",
+    ),
+    "certificate_condition_reference": ("Device reference", "Gerätereferenz"),
+    "certificate_condition_single": ("Individual selection", "Einzelauswahl"),
+    "certificate_condition_unit": ("System {identity}", "System {identity}"),
+    "certificate_condition_controller": (
+        "Shared controller for group {identity}",
+        "Gemeinsamer Controller der Gruppe {identity}",
+    ),
+    "certificate_condition_inverter": ("Inverter", "Wechselrichter"),
+    "certificate_condition_battery": ("Battery", "Batterie"),
+    "certificate_condition_accessory": ("Accessory", "Zubehör"),
+    "certificate_condition_product": ("Product ID", "Produkt-ID"),
+    "certificate_condition_product_revision": (
+        "Recorded product revision",
+        "Erfasster Produktstand",
+    ),
+    "certificate_condition_woo_model": (
+        "Selected product model",
+        "Modell des ausgewählten Produkts",
+    ),
+    "certificate_condition_declared_model": (
+        "Model recorded for this project",
+        "Im Projekt erfasstes Modell",
+    ),
+    "certificate_condition_declared_firmware": (
+        "Device firmware/software recorded for this project",
+        "Im Projekt erfasste Gerätefirmware bzw. Gerätesoftware",
+    ),
+    "certificate_condition_source_note": (
+        "Source of project entry",
+        "Quelle der Projektangabe",
+    ),
+    "certificate_condition_document": ("Document ID", "Dokument-ID"),
+    "certificate_condition_model_comparison": ("Model comparison", "Modellabgleich"),
+    "certificate_condition_firmware_comparison": (
+        "Firmware comparison",
+        "Firmwareabgleich",
+    ),
+    "certificate_condition_compared_model": (
+        "Compared model designation",
+        "Verglichene Modellbezeichnung",
+    ),
+    "certificate_condition_compared_firmware": (
+        "Compared firmware entry",
+        "Verglichene Firmwareangabe",
+    ),
+    "certificate_condition_basis": ("Comparison basis", "Grundlage des Abgleichs"),
+    "certificate_condition_project_declared": ("Project entry", "Projektangabe"),
+    "certificate_condition_selected_woo_model": (
+        "Selected product model",
+        "Modell des ausgewählten Produkts",
+    ),
+    "certificate_condition_listed": (
+        "Model listed on this page",
+        "Modell auf dieser Seite aufgeführt",
+    ),
+    "certificate_condition_not_listed": (
+        "Model not listed on this page",
+        "Modell auf dieser Seite nicht aufgeführt",
+    ),
+    "certificate_condition_model_unresolved": (
+        "Model comparison unresolved",
+        "Modellabgleich offen",
+    ),
+    "certificate_condition_exact_match": (
+        "Firmware text matches",
+        "Firmwareangabe stimmt überein",
+    ),
+    "certificate_condition_conflict": (
+        "Firmware text differs",
+        "Firmwareangabe weicht ab",
+    ),
+    "certificate_condition_firmware_unresolved": (
+        "Firmware comparison unresolved",
+        "Firmwareabgleich offen",
+    ),
+    "certificate_condition_detail": ("Comparison detail", "Erläuterung zum Abgleich"),
+    "certificate_condition_model_field_unresolved": (
+        "An explicit model list could not be read from this document’s first page.",
+        "Auf der ersten Seite dieser Unterlage konnte keine eindeutige Modellliste ausgelesen werden.",
+    ),
+    "certificate_condition_project_model_unresolved": (
+        "The project model entry is not a single model designation that can be compared literally.",
+        "Die Modellangabe im Projekt ist keine einzelne Typenbezeichnung, die sich wortgetreu abgleichen lässt.",
+    ),
+    "certificate_condition_literal_model_list_match": (
+        "The compared model appears exactly in the explicit model list on page 1.",
+        "Die verglichene Modellbezeichnung ist in der eindeutigen Modellliste auf Seite 1 genau so genannt.",
+    ),
+    "certificate_condition_literal_model_not_listed": (
+        "The compared model is absent from the explicit model list on page 1.",
+        "Die verglichene Modellbezeichnung fehlt in der eindeutigen Modellliste auf Seite 1.",
+    ),
+    "certificate_condition_firmware_field_unresolved": (
+        "A single firmware version could not be read unambiguously from page 1. Software platforms, version lists and ranges remain unresolved.",
+        "Auf Seite 1 konnte kein einzelner Firmwarestand eindeutig ausgelesen werden. Softwareplattformen, Versionslisten und Versionsbereiche bleiben ungeklärt.",
+    ),
+    "certificate_condition_project_firmware_missing": (
+        "No firmware version was recorded for this device in the project.",
+        "Für dieses Gerät ist im Projekt kein Firmwarestand erfasst.",
+    ),
+    "certificate_condition_project_firmware_unresolved": (
+        "The project firmware entry is not a single version that can be compared literally.",
+        "Die Firmwareangabe im Projekt ist keine einzelne Version, die sich wortgetreu abgleichen lässt.",
+    ),
+    "certificate_condition_literal_firmware_equal": (
+        "The project entry and the document’s firmware text are identical. Leading zeros, case and suffixes were retained.",
+        "Die Projektangabe stimmt mit der Firmwareangabe der Unterlage überein. Führende Nullen, Groß- und Kleinschreibung sowie Zusätze wurden beibehalten.",
+    ),
+    "certificate_condition_literal_firmware_different": (
+        "The project entry differs from the document’s firmware text. Leading zeros, case and suffixes are part of the comparison.",
+        "Die Projektangabe weicht von der Firmwareangabe der Unterlage ab. Führende Nullen, Groß- und Kleinschreibung sowie Zusätze gehören zum Abgleich.",
+    ),
+    "certificate_condition_not_assessed": ("Not assessed", "Nicht geprüft"),
+    "certificate_condition_open_title": (
+        "Remaining document and project checks",
+        "Offene Prüfungen zu Unterlagen und Projekt",
+    ),
+    "certificate_condition_document_scope": (
+        "Document scope",
+        "Geltungsbereich der Unterlage",
+    ),
+    "certificate_condition_other_pages_and_reports": (
+        "Other pages and referenced reports",
+        "Weitere Seiten und genannte Berichte",
+    ),
+    "certificate_condition_annex_conditions": (
+        "Annex conditions",
+        "Bedingungen der Anhänge",
+    ),
+    "certificate_condition_hardware_and_configuration": (
+        "Hardware and configuration",
+        "Hardware und Konfiguration",
+    ),
+    "certificate_condition_operating_mode": ("Operating mode", "Betriebsart"),
+    "certificate_condition_country_and_dso_settings": (
+        "Country and grid-operator settings",
+        "Länder- und Netzbetreibereinstellungen",
+    ),
+    "certificate_condition_standard_edition_and_transition": (
+        "Standard edition and transition rules",
+        "Normausgabe und Übergangsregelungen",
+    ),
+    "certificate_condition_issuer_current_status": (
+        "Current certificate status with the issuer",
+        "Aktueller Zertifikatsstatus beim Aussteller",
+    ),
+    "certificate_condition_project_grid_assessment": (
+        "Project grid-connection assessment",
+        "Prüfung des projektspezifischen Netzanschlusses",
+    ),
+    "certificate_condition_dso_permission": (
+        "Grid-operator permission",
+        "Zustimmung des Netzbetreibers",
+    ),
     "certificate_declarations": (
         "Information from the document",
         "Angaben aus der Unterlage",

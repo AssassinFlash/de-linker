@@ -3,6 +3,8 @@ import type { JsonObject } from "./protocol.ts";
 import { ApiError } from "./protocol.ts";
 import { readObject } from "./readProtocol.ts";
 import { documentReference } from "./documentReference.ts";
+import { readEquipmentConditionReview } from "./equipmentConditionReview.ts";
+import type { EquipmentConditionReview } from "./equipmentConditionReview.ts";
 
 export interface CertificateProduct {
 	product_id: number;
@@ -26,6 +28,7 @@ export interface CertificateDocument {
 export interface CertificateEvidence {
 	products: CertificateProduct[];
 	documents: CertificateDocument[];
+	condition_review?: EquipmentConditionReview;
 }
 
 function invalid(): never {
@@ -138,5 +141,17 @@ export function readCertificateEvidence(
 			},
 		};
 	});
-	return { products, documents };
+	return {
+		products,
+		documents,
+		...(row.condition_review === undefined
+			? {}
+			: {
+					condition_review: readEquipmentConditionReview(
+						row.condition_review,
+						products,
+						documents,
+					),
+				}),
+	};
 }

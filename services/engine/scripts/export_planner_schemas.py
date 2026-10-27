@@ -17,6 +17,7 @@ from linker_engine.planning.dc_energy_parameters import (
 )
 from linker_engine.planning.dc_plant_inputs import DcPlantEnergyInputs
 from linker_engine.planning.energy_inputs import BatteryParameters, EnergyInputs
+from linker_engine.planning.equipment_condition_inputs import EquipmentConditionInputs
 from linker_engine.planning.equipment_plant import EquipmentPlant
 from linker_engine.planning.installation_inputs import InstallationInputs
 from linker_engine.planning.plant_energy_inputs import PlantEnergyInputs
@@ -32,6 +33,9 @@ def closed_document(
     value: dict[str, Any], *, serialized_output: bool = False
 ) -> dict[str, Any]:
     """Keep the existing browser's closed presentation documents generated."""
+    # Pydantic emits an OpenAPI annotation; the browser uses strict JSON Schema
+    # and the generated oneOf/const constraints already enforce this union.
+    value.pop("discriminator", None)
     for child in value.values():
         if isinstance(child, dict):
             closed_document(child, serialized_output=serialized_output)
@@ -77,6 +81,7 @@ def documents() -> dict[str, str]:
             ("planning-report-options", ReportOptions),
             ("installation", InstallationInputs),
             ("equipment-plant", EquipmentPlant),
+            ("equipment-condition-inputs", EquipmentConditionInputs),
             ("plant-energy-inputs", PlantEnergyInputs),
             ("dc-plant-energy-inputs", DcPlantEnergyInputs),
             ("plant-search-plan", PlantSearchPlan),

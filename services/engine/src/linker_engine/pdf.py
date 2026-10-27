@@ -159,7 +159,9 @@ def _section(
             ]
             for row in section.rows
         ]
-        table = Table(rows, colWidths=[width * 0.42, width * 0.58])
+        # Private project entries can span a page. Keep normal rows intact,
+        # allowing an oversized row's paragraphs to continue without truncation.
+        table = Table(rows, colWidths=[width * 0.42, width * 0.58], splitInRow=1)
         table.setStyle(
             TableStyle(
                 [

@@ -1,9 +1,10 @@
-import { useCallback, useState } from "react";
+import { useEffect, useState } from "react";
 import type { ComponentProps } from "react";
 import { ApiError } from "../../data/protocol.ts";
 import { sameJson } from "../../domain/draft.ts";
 import { EquipmentSetup } from "./EquipmentSetup.tsx";
 import { PlantSetup } from "./PlantSetup.tsx";
+import { DeviceConditionInputs } from "./DeviceConditionInputs.tsx";
 import {
 	beginPlant,
 	hasPlant,
@@ -18,14 +19,13 @@ type Props = ComponentProps<typeof EquipmentSetup>;
 
 export function EquipmentWorkspace(props: Props) {
 	const { draft, disabled, client, scope, edit, onError } = props;
-	const [valid, setValid] = useState(true);
-	const reportValidity = useCallback(
-		(value: boolean) => {
-			setValid(value);
-			props.onValidity(value);
-		},
-		[props.onValidity],
-	);
+	const [equipmentValid, reportValidity] = useState(true);
+	const [conditionValid, reportConditionValidity] = useState(true);
+	const valid = equipmentValid && conditionValid;
+	useEffect(() => {
+		props.onValidity(valid);
+		return () => props.onValidity(true);
+	}, [valid, props.onValidity]);
 	const multi = hasPlant(draft.history.current);
 	let canReturn = false;
 	try {
@@ -111,6 +111,16 @@ export function EquipmentWorkspace(props: Props) {
 					onValidity={reportValidity}
 				/>
 			)}
+			<DeviceConditionInputs
+				draft={draft}
+				edit={edit}
+				client={client}
+				scope={scope}
+				active={props.active}
+				disabled={disabled}
+				onValidity={reportConditionValidity}
+				onError={onError}
+			/>
 		</>
 	);
 }

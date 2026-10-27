@@ -11,6 +11,7 @@ from .asset_publication import AssetPublication, AssetResult
 from .canonical import Object
 from .certificate_information import report_source_with_information
 from .certificate_sources import inspect_report_certificates
+from .equipment_conditions import review_device_conditions
 from .errors import VersionUnavailable
 from .execution_identity import execution_key, request_execution_key
 from .frozen_run import frozen_manifest
@@ -109,6 +110,12 @@ class ReportKernel:
             originals = inspect_report_certificates(
                 source, self.workspace.blobs, control.checkpoint
             )
+            if "equipment_condition_inputs" in source:
+                cast(Object, source["certificates"])["condition_review"] = (
+                    review_device_conditions(
+                        source, cast(Object, source["certificates"])
+                    )
+                )
             control.checkpoint()
             confirm_report_sources(self.workspace, self.products, source)
             inspection_sha = self.workspace.blobs.put_object(
