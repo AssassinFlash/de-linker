@@ -1989,6 +1989,20 @@ body.woocommerce-order-received #container-content-page > div {
 #tv-woo-b2b-checkout table.shop_table tfoot .order-total th,
 #tv-woo-b2b-checkout table.shop_table tfoot .order-total td { font-weight: 600; }
 
+/* Woo's note header has no scope or actions class; reserve three quarters for its text. */
+#tv-woo-b2b-checkout .shop_table.woocommerce-table--order-details:not(:has(> tbody > tr)) > thead {
+  display: none;
+}
+#tv-woo-b2b-checkout .shop_table.woocommerce-table--order-details:not(:has(> tbody > tr)) > tfoot > tr:has(> th:not([scope], .order-actions--heading)) > th {
+  width: 25%;
+  padding-inline-end: var(--proto-space-4);
+  vertical-align: top;
+}
+#tv-woo-b2b-checkout .shop_table.woocommerce-table--order-details:not(:has(> tbody > tr)) > tfoot > tr:has(> th:not([scope], .order-actions--heading)) > td {
+  text-align: start;
+  overflow-wrap: anywhere;
+}
+
 #tv-woo-b2b-checkout #payment {
   background: transparent;
   border: 0;
