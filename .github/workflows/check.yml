@@ -128,10 +128,10 @@ jobs:
 
           def checked_pr_tree(commit):
               source = git("rev-parse", commit + "^2").decode().strip()
-              if git("rev-parse", commit + "^{tree}") != git("rev-parse", source + "^{tree}"):
-                  return None
               run = latest_run(source, "pull_request")
-              return run if checked_run(run, source) else None
+              # A PR run checks its merge-ref tree, which can include a newer base.
+              # Reuse only when that actual tested tree matches the final commit.
+              return run if checked_run(run, commit) else None
 
           def checked_base(commit):
               run = latest_run(commit)
