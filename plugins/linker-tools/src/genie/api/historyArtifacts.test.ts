@@ -250,6 +250,81 @@ test( 'document-only history matches authoritative metadata by ref and retains e
 	} );
 } );
 
+test.each( [
+	[ 'en' as const, 'pp.' ],
+	[ 'de' as const, 'S.' ],
+] )(
+	'chunk-only citations use the verified native title in %s without product lookups',
+	async ( locale, pageWord ) => {
+		const title = 'GoodWe Wechselrichtersystem Garantie (DE)';
+		const documentWord = locale === 'de' ? 'Dokument' : 'Document';
+		setLocaleData( { Document: [ documentWord ] }, 'linker-tools' );
+		const url =
+			'https://de-linker.test/uploads/GW_Limited-Warranty_Inverter-System_Europe_DE.pdf?download=1#page=2';
+		const original = {
+			type: 'document' as const,
+			ref: 'c99',
+			document_id: 'warranty',
+			document_revision: 'revision-2',
+			label: 'Historical source title · pp. 2, 5',
+			url,
+		};
+		const fetcher = vi.fn( async () => ( {
+			ok: true,
+			json: async () => ( {
+				...permission,
+				documents: [
+					{
+						document_id: 'warranty',
+						document_revision: 'revision-2',
+						title,
+						url: url.split( '#' )[ 0 ],
+					},
+					{
+						document_id: 'missing-title',
+						document_revision: 'revision-2',
+						title: '   ',
+						url: url.split( '#' )[ 0 ],
+					},
+				],
+			} ),
+		} ) ) as unknown as typeof fetch;
+		const restored = await restoreArtifacts(
+			{
+				meta: null,
+				blocks: [
+					original,
+					{ ...original, ref: 'c100', document_id: 'missing-title' },
+					{ ...original, ref: 'c101', document_revision: 'stale' },
+				],
+			},
+			{ ...context, locale },
+			'n',
+			fetcher
+		);
+		expect( restored.blocks[ 0 ] ).toMatchObject( {
+			label: `${ title } · ${ pageWord }\u00a02, 5`,
+			sourceTitle: title,
+			url,
+		} );
+		expect( restored.blocks[ 1 ] ).toMatchObject( {
+			label: `${ documentWord } · GW_Limited-Warranty_Inverter-System_Europe_DE.pdf · ${ pageWord }\u00a02, 5`,
+			sourceTitle: 'Historical source title',
+			url,
+		} );
+		expect( restored.blocks[ 2 ] ).toMatchObject( {
+			label: original.label,
+			url: null,
+		} );
+		expect( original.label ).toBe( 'Historical source title · pp. 2, 5' );
+		expect( fetcher ).toHaveBeenCalledTimes( 1 );
+		expect( fetcher ).toHaveBeenCalledWith(
+			'/wp-json/linker/v1/publication/manifest',
+			expect.any( Object )
+		);
+	}
+);
+
 test( 'unproven historical content identity keeps the transcript but removes its active URL', async () => {
 	setLocaleData( { Document: [ 'Dokument' ] }, 'linker-tools' );
 	const original = {
