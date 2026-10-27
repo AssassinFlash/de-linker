@@ -8,6 +8,7 @@ reviewed current-state digest, and exact post-write readback.
 from __future__ import annotations
 
 import re
+from html import escape, unescape
 
 
 def _utility(content: str) -> tuple[str, str]:
@@ -92,15 +93,53 @@ def _installer(content: str) -> tuple[str, str]:
     return content.replace(field, field.replace('rows="2"', 'rows="3"'), 1), "old"
 
 
+def _capability(content: str) -> tuple[str, str]:
+    names = re.findall(r'<div class="lk-story-name\b[^"]*"[^>]*>([^<]+)</div>', content)
+    if not names:
+        raise ValueError("Expected existing Capability story names")
+    old_handler = (
+        "testiPills.forEach(function(p, i) {\n"
+        "          p.classList.toggle('active', i === idx);\n"
+        "        });"
+    )
+    new_handler = old_handler.replace(
+        "\n        });",
+        "\n          p.setAttribute('aria-pressed', String(i === idx));\n        });",
+    )
+    edits = [(old_handler, new_handler)]
+    for index, name in enumerate(names):
+        classes = "lk-testi-pill-bar" + (" active" if index == 0 else "")
+        attributes = f'class="{classes}" data-index="{index}"'
+        edits.append(
+            (
+                f"<div {attributes}></div>",
+                f'<button type="button" {attributes} '
+                f'aria-label="{escape(unescape(name), quote=True)}" '
+                f'aria-pressed="{"true" if index == 0 else "false"}"></button>',
+            )
+        )
+    old = all(content.count(a) == 1 and b not in content for a, b in edits)
+    final = all(a not in content and content.count(b) == 1 for a, b in edits)
+    controls = re.findall(r'<(?:div|button)\b[^>]*class="lk-testi-pill-bar\b', content)
+    if len(controls) != len(names) or not (old or final):
+        raise ValueError("Capability story controls changed or are partial")
+    if final:
+        return content, "final"
+    for before, after in edits:
+        content = content.replace(before, after, 1)
+    return content, "old"
+
+
 def plan_pair(family: str, english: str, german: str) -> tuple[str, str]:
     """Accept a complete old or final pair; preserve all other source bytes."""
     families = {
         "utility": ("tv-utility-page-v1", _utility),
         "services": ("service-redesign", _services),
         "installer": ("installer-journal", _installer),
+        "capability": ("tv-cp-page-v1", _capability),
     }
     if family not in families:
-        raise ValueError("Only Utility, Services and Installer are eligible")
+        raise ValueError("Unknown marketing control family")
     root, transform = families[family]
     planned: list[str] = []
     states: list[str] = []
