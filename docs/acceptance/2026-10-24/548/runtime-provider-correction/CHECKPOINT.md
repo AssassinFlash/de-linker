@@ -1582,3 +1582,36 @@ process referenced it; only the active release and unique63d348e1 baseline
 remain. No full backup, new instance, production write or notification occurred.
 Remaining engineering/country coverage, review-site and production delivery
 remain active in the same full goal.
+
+
+### Recorded certificate sources — native dependency delivered
+
+The read-only inspector exposes a saved equipment result or candidate's exact
+frozen Woo product/document associations. The same reader handles historical
+report sources; newly generated screen/PDF reports carry the source appendix.
+Current native publication supplies access separately, and the optional file
+SHA pins both native index links and original PDF URLs to the recorded bytes.
+Presence never becomes model/firmware/edition/annex or country/DSO approval.
+
+Native old candidate/report reads and current UI sources passed without replay.
+The original-file check exposed a stale instance router copy; synchronizing
+the already-committed native PDF gate fixed it. Pinned original ranges return206
+with no-store; path/query shadowing and wrong versions return410 without bytes.
+The first new report correctly refused stale product proof. Woo inverter4107
+facts had changed, so only the synthetic project's product revision and its
+equipment check were renewed at revision24. No energy or PV calculation ran.
+EN/DE reports now include three exact source documents; only the new appendix
+pages were rendered and checked. Old reports and results remain unchanged.
+
+Spec, Standards (including final i18n/build delta) and copy reviews passed.
+Changed-layer checks are closed. EN/DE1440 source panels and390 source-detail
+views are retained; unchanged physics and commerce evidence is reused. The
+shared Woo contract did not change and the collaborating chat was unblocked
+immediately. This dependency does not wait for full-goal completion.
+
+Runtime a6e6cc43 uses the same schema5 store and environment. The superseded
+3d1a7d7f carrier was removed after all230 files matched committed0e47c38b and
+no process referenced it. Only the active carrier and verified63d348e1 baseline
+remain. No extra instance, full backup, production or mail write occurred.
+Certificate applicability/remaining engineering coverage and coordinated
+review-site/production release/readback remain in the active full goal.

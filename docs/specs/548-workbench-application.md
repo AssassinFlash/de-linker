@@ -1005,3 +1005,29 @@ planning root or that exact figure. Other blocks cannot borrow its numeric
 permission. The native return destination uses the explicit turn locale and
 the existing Polylang page twin, including REST requests whose ambient
 language differs; a missing translated page is unavailable.
+
+# Recorded product certificate sources
+
+An owned completed equipment result, a selected recorded search candidate,
+or a saved report can expose certificate-classified documents from its exact
+frozen Woo equipment proof. The read-only `equipment/certificates/read`
+projection binds the project, input revision, run manifest, candidate assessment,
+Woo product revisions and document identities. Opening it creates no project
+revision, calculation, report or product source. Shared documents list only
+the selected associated products. Old results remain inspectable without replay.
+
+Historical document association does not establish applicability. The inspector
+and new report appendix explicitly leave model, firmware, configuration,
+standard edition, annex, national installation and grid-operator acceptance
+unassessed. The source findings and unresolved annex/transition requirements
+are recorded in `docs/research/2026-10-23-modern-workbench/COUNTRY-EVIDENCE.md`.
+
+Native current Woo publication controls access separately. Only a current
+selected-product association with matching PDF bytes receives an actionable
+native link. Withdrawal, changed bytes and unavailable authority cannot retain
+one. Optional `linker_document_sha256` pins downloads to recorded bytes and
+never grants permission; both native index links and original PDF URLs retain
+the existing current-publication gate. Deployment must refresh the native
+WordPress rewrite block to retain this query on original PDF URLs. Historical
+reports are unchanged; newly generated screen/PDF reports include the same
+source identities and explicit unassessed scope.

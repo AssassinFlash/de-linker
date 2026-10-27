@@ -7,6 +7,7 @@ from typing import Any, Literal, cast
 from linker_engine.models import Report, ReportRow, ReportSection, ReportTable
 
 from .canonical import Object
+from .certificate_report import certificate_sections
 from .comparison_report import comparison_sections
 from .installation_report import installation_sections
 from .project_materials import (
@@ -867,6 +868,10 @@ def build_report(source: Object) -> Report:
     if references:
         sections.append(
             ReportSection(id="basis", title=text("basis", locale), rows=references)
+        )
+    if isinstance(source.get("certificates"), dict):
+        sections.extend(
+            certificate_sections(cast(Object, source["certificates"]), locale)
         )
     return Report(
         title=text("title", locale),

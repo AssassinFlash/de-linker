@@ -3,6 +3,19 @@
 from __future__ import annotations
 
 TEXT = {
+    "certificate_title": (
+        "Certificates and related product documents",
+        "Zertifikate und zugehörige Produktunterlagen",
+    ),
+    "certificate_scope": (
+        "These documents were linked to the selected products when this result was recorded. Their applicability to this project’s models, firmware, configuration, standard editions and annexes has not been assessed here. Compliance with country-specific requirements, installation approval and grid-operator acceptance require separate evidence.",
+        "Diese Unterlagen waren den ausgewählten Produkten zugeordnet, als dieses Ergebnis gespeichert wurde. Ob sie für die Modelle, Firmwarestände und Konfigurationen dieses Projekts gelten und welche Normausgaben und Anhänge maßgeblich sind, wurde hier nicht geprüft. Die Erfüllung landesspezifischer Anforderungen, die Freigabe der Installation und die Zustimmung des Netzbetreibers müssen gesondert nachgewiesen werden.",
+    ),
+    "certificate_empty": (
+        "No certificates or related product documents were recorded for the selected products.",
+        "Für die ausgewählten Produkte wurden keine Zertifikate oder zugehörigen Produktunterlagen erfasst.",
+    ),
+    "certificate_revision": ("Recorded document revision", "Erfasster Dokumentstand"),
     "capacity_reference_title": (
         "Reference scenario using the manufacturer’s usable energy",
         "Referenzszenario mit nutzbarer Energie laut Hersteller",

@@ -39,6 +39,7 @@ export function EquipmentResult({
 	confirmedRevision,
 	assessmentOverride,
 	embedded = false,
+	certificateSources,
 	children,
 }: {
 	run: PlanningRun;
@@ -47,6 +48,7 @@ export function EquipmentResult({
 	confirmedRevision: number;
 	assessmentOverride?: JsonObject | null;
 	embedded?: boolean;
+	certificateSources?: ReactNode;
 	children?: ReactNode;
 }) {
 	const assessment =
@@ -285,6 +287,7 @@ export function EquipmentResult({
 									)}
 						</p>
 					</Notice>
+					{certificateSources}
 					{pvWiring && <PvStringResult value={pvWiring} locale={locale} />}
 					{assessment.model === "woo_multi_converter_plant_v1" ? (
 						<PlantCheckGroups

@@ -14,6 +14,7 @@ import { EquipmentResult } from "../equipment/EquipmentResult.tsx";
 import { equipmentStatus } from "../equipment/equipmentLabels.ts";
 import { energyConstraintText } from "./EnergyError.tsx";
 import { CapacityReferenceNotice } from "./CapacityReference.tsx";
+import type { ReactNode } from "react";
 
 function failureText(run: PlanningRun): string {
 	const specific =
@@ -55,11 +56,13 @@ export function RunResult({
 	locale,
 	dirty,
 	confirmedRevision,
+	certificateSources,
 }: {
 	run: PlanningRun;
 	locale: string;
 	dirty: boolean;
 	confirmedRevision: number;
+	certificateSources?: ReactNode;
 }) {
 	const format = (value: unknown, digits = 2) =>
 		typeof value === "number"
@@ -250,6 +253,7 @@ export function RunResult({
 									confirmedRevision={confirmedRevision}
 									assessmentOverride={equipment}
 									embedded
+									certificateSources={certificateSources}
 								/>
 							</details>
 						) : (

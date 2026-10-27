@@ -26,6 +26,7 @@ from .assets import Assets
 from .assistant_context import assistant_context
 from .canonical import Json, Object
 from .capacity_window import REFERENCE_CAPACITY
+from .certificate_evidence import CertificateEvidence
 from .csv_inspection import inspect_csv
 from .csv_issue import CsvIssue
 from .energy_comparison import compare_energy_runs
@@ -57,6 +58,7 @@ from .http_asset_intake import HttpAssetIntake
 from .http_documents import (
     AssetRead,
     BatteryScenario,
+    CertificateRead,
     Command,
     CsvImport,
     CsvInspect,
@@ -578,6 +580,12 @@ def create_private_app(
     @app.post("/equipment/candidates/read")
     def equipment_candidate(body: EquipmentCandidateRead, request: Request) -> Object:
         return EquipmentCandidateStore(workspace).read(
+            verified_actor(request.scope), body.run_id, body.candidate_id
+        )
+
+    @app.post("/equipment/certificates/read")
+    def equipment_certificates(body: CertificateRead, request: Request) -> Object:
+        return CertificateEvidence(workspace).read(
             verified_actor(request.scope), body.run_id, body.candidate_id
         )
 

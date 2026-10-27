@@ -4972,5 +4972,256 @@
     "production_changed": false,
     "coverage_reuse": "unchanged physical kernels, Woo authority, saved calculations, original reports/PDFs, native identity and commerce acceptance",
     "remaining_full_goal": "engineering/country coverage, final site-wide review/release and native visual/readback; DE1440 compositor capture is not accepted"
+  },
+  "certificate_evidence": {
+    "status": "local-interface-and-report-delivered",
+    "baseline": "0e47c38b7f76618192768ec57778e3a46f2b4319",
+    "purpose": "Read selected-product certificate associations from an owned frozen Woo result without recalculation; current native publication separately controls exact-version file access.",
+    "acceptance_scope": [
+      "owned result and candidate identity",
+      "immutable Woo product and document revisions",
+      "current permission plus matching PDF bytes",
+      "EN/DE inspector and report appendix"
+    ],
+    "unchanged_evidence_reused": [
+      "all accepted energy, PV, DC, AC and plant physics checks",
+      "existing product source producer and publication authority",
+      "existing owner and candidate admission mechanisms"
+    ],
+    "copy_review": {
+      "reviewer": "/root/dc_plant_copy",
+      "initial_draft": "Certificate availability and applicability were separated in the first draft; document presence was never proposed as a country or grid approval.",
+      "review_decisions": [
+        "Do not call all certificate-classified files grid certificates.",
+        "State that model, firmware, configuration, standard edition and annex applicability were not assessed.",
+        "Keep country-specific requirements, installation and grid-operator acceptance explicit.",
+        "Separate absence, read failure, current unavailability and changed bytes."
+      ],
+      "result": "PASS",
+      "final_pairs": [
+        {
+          "en": "Certificates and related product documents",
+          "de": "Zertifikate und zugeh\u00f6rige Produktunterlagen"
+        },
+        {
+          "en": "These documents were linked to the selected products when this result was recorded. Their applicability to this project\u2019s models, firmware, configuration, standard editions and annexes has not been assessed here. Compliance with country-specific requirements, installation approval and grid-operator acceptance require separate evidence.",
+          "de": "Diese Unterlagen waren den ausgew\u00e4hlten Produkten zugeordnet, als dieses Ergebnis gespeichert wurde. Ob sie f\u00fcr die Modelle, Firmwarest\u00e4nde und Konfigurationen dieses Projekts gelten und welche Normausgaben und Anh\u00e4nge ma\u00dfgeblich sind, wurde hier nicht gepr\u00fcft. Die Erf\u00fcllung landesspezifischer Anforderungen, die Freigabe der Installation und die Zustimmung des Netzbetreibers m\u00fcssen gesondert nachgewiesen werden."
+        },
+        {
+          "en": "No certificates or related product documents were recorded for the selected products.",
+          "de": "F\u00fcr die ausgew\u00e4hlten Produkte wurden keine Zertifikate oder zugeh\u00f6rigen Produktunterlagen erfasst."
+        },
+        {
+          "en": "The document sources could not be loaded. Try again.",
+          "de": "Die Quellenangaben konnten nicht geladen werden. Versuchen Sie es erneut."
+        },
+        {
+          "en": "Open document",
+          "de": "Dokument \u00f6ffnen"
+        },
+        {
+          "en": "Recorded source details",
+          "de": "Details zur erfassten Quelle"
+        },
+        {
+          "en": "This document is currently unavailable.",
+          "de": "Dieses Dokument ist derzeit nicht verf\u00fcgbar."
+        },
+        {
+          "en": "This file differs from the version recorded with this result.",
+          "de": "Diese Datei unterscheidet sich von der f\u00fcr dieses Ergebnis erfassten Fassung."
+        },
+        {
+          "en": "Recorded document revision",
+          "de": "Erfasster Dokumentstand"
+        }
+      ]
+    },
+    "production_changed": false,
+    "full_goal_open": true,
+    "runtime_sha256": "a6e6cc4324a76e060a60ab5407a2b027f54d75f1ccecd60df57fb9eadb8499d5",
+    "storage_schema_version": 5,
+    "existing_rows_preserved_on_install": true,
+    "native_reads": [
+      {
+        "run_id": "10d121ed063349d49ab076753e52be11",
+        "revision": 13,
+        "documents": 3,
+        "access": [
+          "available",
+          "available",
+          "available"
+        ],
+        "applicability": "not_assessed"
+      },
+      {
+        "run_id": "7249d65c5dd844c99bae0686714a3eae",
+        "revision": 14,
+        "documents": 3,
+        "access": [
+          "available",
+          "available",
+          "available"
+        ],
+        "applicability": "not_assessed"
+      }
+    ],
+    "downloads": [
+      {
+        "case": "exact_native",
+        "status": 200,
+        "bytes": 2976761,
+        "valid": true
+      },
+      {
+        "case": "wrong_version",
+        "status": 410,
+        "bytes": 0,
+        "valid": true
+      },
+      {
+        "case": "exact_original",
+        "status": 206,
+        "bytes": 5,
+        "valid": true
+      },
+      {
+        "case": "path_query_shadow",
+        "status": 410,
+        "bytes": 0,
+        "valid": true
+      }
+    ],
+    "resolved_native_environment_issue": {
+      "path": "/Users/chesterjohn/de-linker-local/p548/router.php",
+      "source": "tools/local/router.php",
+      "before_sha256": "7cc613ab666ac0509a1f41d183ca439343193d1a5b13c9861e95e5b75bc30d49",
+      "after_sha256": "56b93a6aca7487a49dbda613b3269bcd0390856e887e38a07827ec8551c3f608",
+      "reason": "Instance copy predates the accepted native technical PDF permission gate; built-in static shortcut bypassed it. Only that already-committed gate differs.",
+      "production_changed": false,
+      "at_utc": "2026-10-27T01:32:14.871384+00:00"
+    },
+    "data_refresh": {
+      "project_id": "c7795bc2c1e14e389622015c809ace45",
+      "old_revision": 23,
+      "revision": 24,
+      "reason": "Selected inverter4107 facts and product revision changed in current Woo. Renew only native product revision and its equipment qualification.",
+      "old_result_preserved": "bca8cc093f1a47e9bf4d811bd9bb53fe",
+      "equipment_run_id": "e851a81cadf24da78fa09cf81259faeb",
+      "new_energy_runs": 0,
+      "new_pv_runs": 0
+    },
+    "report_preparation_diagnosis": {
+      "status": 409,
+      "code": "product_evidence_changed",
+      "changes": {
+        "source_revision": "e1773a35f189b2eec9267b9f757a55c60bd996e62df9e5d1812d90f0b8c337d4",
+        "selected_product_diff_fields": {
+          "2090": [],
+          "2092": [],
+          "4107": [
+            "figures",
+            "product_revision"
+          ]
+        },
+        "changed_pool_product_ids": [
+          1179,
+          1181,
+          1946,
+          1947,
+          1948,
+          1954,
+          1955,
+          2063,
+          2064,
+          4107,
+          4108
+        ],
+        "frozen_pool_products": 85,
+        "reason": "Existing equipment run predates Woo product fact revisions; do not suppress its permission failure."
+      },
+      "no_failed_calculation_created": true
+    },
+    "reports": [
+      {
+        "locale": "en",
+        "run_id": "4291da1bca3849ecbd1068a074ed3ea7",
+        "state": "succeeded",
+        "pdf": "docs/acceptance/2026-10-25/548/certificate-appendix-en.pdf",
+        "pdf_sha256": "09aa2d3bd8ace122c7d0c33073c0c1d586cf9227fb816e0d0b75a6fbae8bd954",
+        "bytes": 88635,
+        "certificate_documents": 3,
+        "report_source_sha256": "cb69fb34ec0d0caa470ac97a58e511a98fe59f934cfba1620678369495b3528a"
+      },
+      {
+        "locale": "de",
+        "run_id": "15c54a0fa85c494e83bc32e0cc5dabf2",
+        "state": "succeeded",
+        "pdf": "docs/acceptance/2026-10-25/548/certificate-appendix-de.pdf",
+        "pdf_sha256": "df22854679a43039c62347ed285bef2634e1a61b53f48ce544478668dda8249c",
+        "bytes": 91505,
+        "certificate_documents": 3,
+        "report_source_sha256": "fcb2593697d0477a4c8eb3f98ed6e158dd3dcddc06109b7bd44b6edc222f3b0a"
+      }
+    ],
+    "pdf_visual": [
+      {
+        "locale": "en",
+        "pdf_pages": 13,
+        "changed_section_first_page": 12,
+        "images": [
+          "docs/acceptance/2026-10-25/548/certificate-appendix-en-page-12.png",
+          "docs/acceptance/2026-10-25/548/certificate-appendix-en-page-13.png"
+        ]
+      },
+      {
+        "locale": "de",
+        "pdf_pages": 13,
+        "changed_section_first_page": 12,
+        "images": [
+          "docs/acceptance/2026-10-25/548/certificate-appendix-de-page-12.png",
+          "docs/acceptance/2026-10-25/548/certificate-appendix-de-page-13.png"
+        ]
+      }
+    ],
+    "screenshots": {
+      "en_1440": "docs/acceptance/2026-10-25/548/certificate-evidence-en-1440.png",
+      "de_1440": "docs/acceptance/2026-10-25/548/certificate-evidence-de-1440.png",
+      "en_390_details": "docs/acceptance/2026-10-25/548/certificate-evidence-en-390.png",
+      "de_390_details": "docs/acceptance/2026-10-25/548/certificate-evidence-de-390.png"
+    },
+    "independent_review": {
+      "spec": "/root/certificate_spec: PASS, frozen owner/result/candidate/report provenance and permission boundary",
+      "standards": "/root/energy_envelope_standards: PASS, including the final reused loading string and source/build manifest delta",
+      "copy": "/root/dc_plant_copy: PASS, final EN/DE pairs recorded above"
+    },
+    "verification_stop": "New collector/protocol/owner/access guards and changed-layer typing/format/build checks passed. Native old candidate/report reads, pinned native/original downloads, EN/DE1440/390 and the new PDF section passed. Reuse prior unchanged energy/PV/DC/plant/commerce evidence; no full-site matrix or physical replay.",
+    "retention": {
+      "retired_runtime": "3d1a7d7f9fc928a4a39fefd1926526430d07df66b98f55f88d7f8e2ba6b93b1a",
+      "retired_logical_bytes": 1802350,
+      "recoverable_git_commit": "0e47c38b7f76618192768ec57778e3a46f2b4319",
+      "verified_source_files": 230,
+      "no_process_references": true,
+      "retained_carriers": [
+        "63d348e11c69aa8dd65bb49ed5aad6cff390f86f614d6ade407d61c4cfa9737f",
+        "a6e6cc4324a76e060a60ab5407a2b027f54d75f1ccecd60df57fb9eadb8499d5"
+      ],
+      "free_bytes_before": 915820597248,
+      "free_bytes_after": 915822952448,
+      "new_environment": false,
+      "new_instance": false,
+      "new_full_backup": false
+    },
+    "handoff": {
+      "thread_id": "01a15e9f-a4e6-72b1-8e70-6c663590796b",
+      "existing_interfaces_unblocked": true,
+      "shared_woo_product_contract_changed": false,
+      "others_need_not_wait_for_full_goal": true
+    },
+    "remaining_full_goal": [
+      "Certificate applicability is not assessed by this association viewer; the sourced firmware/annex/edition/country/DSO requirements remain open where not established.",
+      "Remaining engineering coverage and final coordinated review-site/production release/readback stay in the same active goal."
+    ],
+    "completed_at_utc": "2026-10-27T01:57:05.422117+00:00"
   }
 }

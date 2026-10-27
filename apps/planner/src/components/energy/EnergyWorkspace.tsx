@@ -69,6 +69,7 @@ import {
 	compilePlantSearch,
 } from "../../domain/plantSearch.ts";
 import { EquipmentResult } from "../equipment/EquipmentResult.tsx";
+import { CertificateEvidence } from "../equipment/CertificateEvidence.tsx";
 import {
 	readEquipmentSelection,
 	equipmentDraft,
@@ -1790,6 +1791,13 @@ export function EnergyWorkspace({
 									locale={locale}
 									dirty={dirty || Boolean(draft.pending)}
 									confirmedRevision={draft.baseline.revision}
+									certificateSources={
+										<CertificateEvidence
+											client={client}
+											scope={session.query_scope}
+											run={runs.run.data}
+										/>
+									}
 								/>
 							) : (
 								<>
@@ -1798,6 +1806,13 @@ export function EnergyWorkspace({
 										locale={locale}
 										dirty={dirty || Boolean(draft.pending)}
 										confirmedRevision={draft.baseline.revision}
+										certificateSources={
+											<CertificateEvidence
+												client={client}
+												scope={session.query_scope}
+												run={runs.run.data}
+											/>
+										}
 									/>
 									{runs.run.data.state === "succeeded" &&
 										typeof runs.run.data.result?.trace_sha256 === "string" && (

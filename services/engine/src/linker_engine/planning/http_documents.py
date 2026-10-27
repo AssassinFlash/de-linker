@@ -199,6 +199,10 @@ class EquipmentCandidateRead(RunRead):
     candidate_id: Annotated[str, Field(pattern=r"^[a-f0-9]{64}$")]
 
 
+class CertificateRead(RunRead):
+    candidate_id: Annotated[str, Field(pattern=r"^[a-f0-9]{64}$")] | None = None
+
+
 class TraceRead(RunRead):
     offset: Annotated[int, Field(strict=True, ge=0)] | None = None
     page_size: Annotated[int, Field(strict=True, gt=0)] | None = None

@@ -1298,6 +1298,7 @@ msgid "Open the inquiry page"
 msgstr "Anfrageseite öffnen"
 
 #: src/genie/App.tsx src/hero/Hero.tsx build/genie.js build/hero.js
+#: ../../apps/planner/src/components/equipment/CertificateEvidence.tsx:1 build/planner/assets/planner.js:1
 msgid "One moment…"
 msgstr "Einen Moment …"
 
@@ -11732,3 +11733,39 @@ msgstr "Gespeichertes Projekt · Stand %d"
 #: src/genie/App.tsx build/genie.js
 msgid "Save your changes so Genie can read the updated project."
 msgstr "Speichern Sie Ihre Änderungen, damit Genie den aktualisierten Projektstand lesen kann."
+
+#: ../../apps/planner/src/components/equipment/CertificateEvidence.tsx:1 build/planner/assets/planner.js:1
+msgid "Certificates and related product documents"
+msgstr "Zertifikate und zugehörige Produktunterlagen"
+
+#: ../../apps/planner/src/components/equipment/CertificateEvidence.tsx:1 build/planner/assets/planner.js:1
+msgid "These documents were linked to the selected products when this result was recorded. Their applicability to this project’s models, firmware, configuration, standard editions and annexes has not been assessed here. Compliance with country-specific requirements, installation approval and grid-operator acceptance require separate evidence."
+msgstr "Diese Unterlagen waren den ausgewählten Produkten zugeordnet, als dieses Ergebnis gespeichert wurde. Ob sie für die Modelle, Firmwarestände und Konfigurationen dieses Projekts gelten und welche Normausgaben und Anhänge maßgeblich sind, wurde hier nicht geprüft. Die Erfüllung landesspezifischer Anforderungen, die Freigabe der Installation und die Zustimmung des Netzbetreibers müssen gesondert nachgewiesen werden."
+
+#: ../../apps/planner/src/components/equipment/CertificateEvidence.tsx:1 build/planner/assets/planner.js:1
+msgid "No certificates or related product documents were recorded for the selected products."
+msgstr "Für die ausgewählten Produkte wurden keine Zertifikate oder zugehörigen Produktunterlagen erfasst."
+
+#: ../../apps/planner/src/components/equipment/CertificateEvidence.tsx:1 build/planner/assets/planner.js:1
+msgid "The document sources could not be loaded. Try again."
+msgstr "Die Quellenangaben konnten nicht geladen werden. Versuchen Sie es erneut."
+
+#: ../../apps/planner/src/components/equipment/CertificateEvidence.tsx:1 build/planner/assets/planner.js:1
+msgid "Open document"
+msgstr "Dokument öffnen"
+
+#: ../../apps/planner/src/components/equipment/CertificateEvidence.tsx:1 build/planner/assets/planner.js:1
+msgid "Recorded source details"
+msgstr "Details zur erfassten Quelle"
+
+#: ../../apps/planner/src/components/equipment/CertificateEvidence.tsx:1 build/planner/assets/planner.js:1
+msgid "This document is currently unavailable."
+msgstr "Dieses Dokument ist derzeit nicht verfügbar."
+
+#: ../../apps/planner/src/components/equipment/CertificateEvidence.tsx:1 build/planner/assets/planner.js:1
+msgid "This file differs from the version recorded with this result."
+msgstr "Diese Datei unterscheidet sich von der für dieses Ergebnis erfassten Fassung."
+
+#: ../../apps/planner/src/components/equipment/CertificateEvidence.tsx:1 build/planner/assets/planner.js:1
+msgid "Recorded document revision"
+msgstr "Erfasster Dokumentstand"

@@ -11,6 +11,7 @@ import {
 } from "../../data/equipmentSearch.ts";
 import { readObject } from "../../data/readProtocol.ts";
 import { EquipmentResult } from "./EquipmentResult.tsx";
+import { CertificateEvidence } from "./CertificateEvidence.tsx";
 import { equipmentStatus } from "./equipmentLabels.ts";
 import { __ } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
@@ -120,6 +121,16 @@ export function EquipmentSearchResult({
 			dirty={dirty}
 			confirmedRevision={confirmedRevision}
 			assessmentOverride={detail.data ?? null}
+			certificateSources={
+				candidate && (
+					<CertificateEvidence
+						client={client}
+						scope={scope}
+						run={run}
+						candidate={candidate}
+					/>
+				)
+			}
 		>
 			{search && (
 				<>

@@ -7,6 +7,7 @@ from typing import cast
 
 from .assets import Assets
 from .canonical import Json, Object
+from .certificate_evidence import certificate_documents
 from .dc_energy_kernel import DcEnergyKernel
 from .dc_plant_inputs import DcPlantEnergyInputs
 from .dc_plant_kernel import DcPlantEnergyKernel
@@ -471,6 +472,10 @@ def report_sources(
         "source_labels": list(dict.fromkeys(labels)),
         "dependencies": dependencies,
     }
+    if assessment is not None and "equipment" in bases:
+        source["certificates"] = certificate_documents(
+            workspace.blobs.object(cast(str, bases["equipment"])), assessment
+        )
     if comparison is not None:
         source["comparison"] = comparison
         dependencies["energy_comparison"] = workspace.blobs.put_object(comparison)
