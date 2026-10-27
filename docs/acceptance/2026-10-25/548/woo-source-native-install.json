@@ -42,8 +42,8 @@
       "sha256": "fde6eed9d9af38fcb81a4165a87430aea4532885fca26402b7d56083c1bfedc2"
     }
   },
-  "production_changed": false,
-  "pending": "Source-bound physical route takeoff and its frozen EN/DE material report are closed locally. Installation domain design/material reconciliation, multi-device suitability, country qualification, remaining consumers/migration and review/production delivery remain within the active complete goal.",
+  "production_changed": true,
+  "pending": "Homepage prominence is now being corrected as the next bounded batch; remaining actual manufacturer/installation/country-rule coverage remains in the original full goal.",
   "native_wordpress_transport": {
     "route_registered": true,
     "provider": "woocommerce",
@@ -5327,16 +5327,16 @@
     }
   },
   "production_release": {
-    "state": "active private pair, public routing unchanged",
+    "state": "Published; live project, component, map/3D, energy, report/PDF and account continuation readback passed",
     "root": "/opt/linker-planner",
     "port": 8911,
-    "release": "/opt/linker-planner/releases/cac8fb43f1b6a189eba6d57b8f15591884b752e655e3939521ac63f1b8ee64f5",
-    "source_tree_sha256": "cac8fb43f1b6a189eba6d57b8f15591884b752e655e3939521ac63f1b8ee64f5",
+    "release": "/opt/linker-planner/releases/d9459c39752ac28878fe2716b41df15cb7aa23a2912d1bee88611917a3393946",
+    "source_tree_sha256": "d9459c39752ac28878fe2716b41df15cb7aa23a2912d1bee88611917a3393946",
     "stage_receipt": {
-      "release": "/opt/linker-planner/releases/cac8fb43f1b6a189eba6d57b8f15591884b752e655e3939521ac63f1b8ee64f5",
+      "release": "/opt/linker-planner/releases/18d14896444aa994b282f44c9626f3571a0de7d236953a4048c489595b7141af",
       "files_verified": 245,
       "obsolete_staged_directory_exists": false,
-      "public_routing_changed": false
+      "public_routing_changed": true
     },
     "native_source_readback": {
       "exit": 0,
@@ -5364,15 +5364,16 @@
         "pv_modules": 1,
         "loaded_source_revision": "726308c3eaa0ab7835d3b6576027f0141834473c132f03c0a5e1c2768a44d53f",
         "error": null
-      }
+      },
+      "scope": "Earlier private installation readback for726308c3; current production generation is recorded in shared_engine_repair after the actual publisher loaded2e043416. No historical readback has been relabelled."
     },
-    "retention": "Current release and one rollback only. If production activation is abandoned, stop any owned units and reclaim reproducible candidate by 2026-10-27T16:00:00Z, preserving unique receipts and recovery.",
+    "retention": "Permanent current planner/worker plus one matching rollback. Shared engine current plus one rollback.2 obsolete shared releases and temporary native engine staging reclaimed after runtime/reader checks.",
     "private_pair_identity": {
-      "execution_key": "3328f1c0b1625f4bf7899b8bd2d7553603caa42bdcadd1561407127c30c45215",
-      "runtime_sha256": "eaeb0472a1690e6a424e8f342fbd86b74ff1e98b8bf9380236cff941b02ae39d",
+      "runtime_sha256": "a02ea33de9c2b3d21e759ff0426f79066dd5f4a5fe6792f03f32c0b2bc20467a",
+      "execution_key": "b5a7314110ce6cea95301e5e4629f3565894a06f75209707253c87426d9744bb",
       "storage_binding": "f91b6338e5204a220d7163fde4277f900fc0c12ca913edec9d7c1560f0eb06d4"
     },
-    "source_publisher": "Existing public_generation permissions installed; bytes unchanged, current feed85 products/one reference/one PV module read successfully. Old engine and Genie not restarted by this change; public TLS and WordPress entry remain unchanged.",
+    "source_publisher": "Native sync-feed.py public projection permissions installed. Shared source engine aligned to approved121b664ae; current source2e043416… published and actually loaded successfully. Genie not restarted by548.",
     "prewrite_backup": {
       "directory": "/Users/chesterjohn/de-linker-data/cutover-20261027-0548",
       "state": "complete and verified",
@@ -5389,7 +5390,198 @@
       "diagnosis": "The entry point overrode configured_private_app default current-generation provider with legacy HTTP holder. Worker reloaded each operation; HTTP retained old feed after native Woo publication.",
       "change": "Remove that override. HTTP and worker both use the existing current-generation Services supplier, keeping each operation on one resolved generation and the same Publication before/after proof. Classic engine snapshot seam remains unchanged; no new product source/cache or publication restart workflow.",
       "verification": "Incremental Spec/Standards PASS; Ruff/format/mypy and existing private HTTP host/current-source contracts passed. No new test file, fixture matrix or numerical run.",
-      "deployment": "Existing private pair still runs its earlier exact release. The corrected source must be installed as a new matched pair before the public planning entry is switched."
+      "deployment": "Correction active in exact18d148… release; HTTP and worker use current native Woo supplier per operation. Production source refresh then observed through the customer module form."
+    },
+    "site_deployment": {
+      "source_commit": "121b664ae1cbe2cdbb15c6b6fea1c636841175fd",
+      "approved_candidate": "74ec98399b851a385580670a13fe298cf4827f86",
+      "required_ci": 40462436654,
+      "required_ci_status": "all required jobs success",
+      "merge": "PR683 merged; full-tree diff from approved candidate is empty",
+      "command": "just cutover deploy",
+      "session_id": 58827,
+      "state": "native atomic deployment completed; presentation and rewrite readback passed",
+      "compiler": "Native production WindPress Performance Generate completed: 2026-10-27 15:36:47, 883.39kB; Cached mode unchanged.",
+      "main_ci": {
+        "run": 40466105120,
+        "conclusion": "success",
+        "head": "121b664ae1cbe2cdbb15c6b6fea1c636841175fd"
+      },
+      "exit_code": 0,
+      "deploy_id": "20261027T072528225457Z-121b664ae",
+      "rollback": "/home/u388076051/deploy-prev/20261027T072528225457Z-121b664ae",
+      "database_snapshot": "/Users/chesterjohn/de-linker-data/snapshots/db-20261027T072437Z.sql.gz",
+      "presentation_check": "Success: presentation in sync",
+      "rewrite_flush": "Success: Rewrite rules flushed; hard flush emits existing .htaccess special configuration warning",
+      "peer_window_released": true
+    },
+    "gateway": {
+      "state": "applied and affected gateway routes verified",
+      "backup": "/Users/chesterjohn/de-linker-local/p548/planner/production-gateway-before.tar",
+      "before_sha256": "a8ced23783a525371e8390c84cee9fef373b2878a8c1a185d712212a11d9e2dd",
+      "candidate_sha256": "be02acdb7ebb57f8670c2e291a320635490f06d9c087243a5d51121cb52dcfd1",
+      "difference": "Only private authenticated /planning upstream8911 with no-store headers and16MiB request cap; all current engine/Genie/TLS/logging unchanged",
+      "retention": "One exact current preimage; reuse during this deployment and remove only after rollback superseded",
+      "apply": {
+        "exit": 0,
+        "stdout": "",
+        "stderr": "Dedicated gateway configuration installed: be02acdb7ebb57f8670c2e291a320635490f06d9c087243a5d51121cb52dcfd1\n"
+      },
+      "readback": {
+        "engine": 200,
+        "genie": 200,
+        "planning_unauth": 401
+      }
+    },
+    "shared_engine_repair": {
+      "state": "native engine release and current Woo generation published and loaded",
+      "reason": "products/current503; old engine feed-schema rejects compatibility_origin so native current Woo generation cannot prepare",
+      "source_commit": "121b664ae1cbe2cdbb15c6b6fea1c636841175fd",
+      "before": "/opt/linker-engine/20261025T075605294533Z",
+      "staging": "/root/linker-release/engine",
+      "owner": "548",
+      "retention": {
+        "retained": [
+          "/opt/linker-engine/20261027T080240856652Z",
+          "/opt/linker-engine/20261025T075605294533Z"
+        ],
+        "removed": [
+          "/opt/linker-engine/20261022T090847845388Z",
+          "/opt/linker-engine/20261023T220643104029Z",
+          "/root/linker-release/engine"
+        ],
+        "precondition": "Current loaded publisher successful and native browser module applied; no /proc cwd/cmdline readers on retired paths; rollback loader source exists",
+        "removed_logical_bytes": 889916618
+      },
+      "release": "/opt/linker-engine/20261027T080240856652Z",
+      "previous": "/opt/linker-engine/20261025T075605294533Z",
+      "native_publisher_result": "success; ExecMainStatus=0",
+      "source_revision": "2e0434164b5f50314f3177d784df8bf0fee6a2d01206a59e393bcb5cc7398a59",
+      "compatibility_revision": "e90acaa602fd9b0e23eb24696e48667f81a2cab9ff2c5f409c9ab1706221aa2c",
+      "engine_pid": 174161,
+      "genie_pid_unchanged": 99161,
+      "projection_permissions": "directory0755/files0644",
+      "customer_readback": "Existing guest module form loaded native Trina specification, dimensions, STC power, temperature coefficient and owned source PDF page2; applied 20 modules=9.2kWp. No manual module values."
+    },
+    "customer_readback": {
+      "project": "1812286480344d6d8cec94e2f5f2c00e",
+      "principal": "Guest project claimed by existing native user1 through normal login; same IDs/revision/results",
+      "revision": 7,
+      "country": "FR",
+      "site_use": "commercial",
+      "timezone": "Europe/Paris",
+      "language": "EN creation and save to DE restore",
+      "roof": "20x12m synthetic flat roof; 20 native Woo modules;9.2kWp",
+      "views": "3D rendered; MapLibre street basemap loaded and attribution visible after privacy choice; same project geometry",
+      "screenshot": "docs/acceptance/2026-10-25/548/production-commercial-roof-de.png",
+      "profile_import": "Existing two-hour owned synthetic gross load parsed4kWh,2intervals,no gaps; original units/measurement point/UTC offset and source recorded",
+      "inquiry_or_mail_sent": false,
+      "energy_run": "8b366d7cbef44c2bb8fe880f9cc7557e",
+      "report_run_before_period_fix": "4e4d56cf133d435baa22b4c74ac7dd97",
+      "energy_result": {
+        "load_kwh": 4,
+        "pv_ac_kwh": 4,
+        "solar_to_load_kwh": 2,
+        "import_kwh": 2,
+        "export_kwh": 2,
+        "autarky": 0.5,
+        "pv_self_use": 0.5,
+        "intervals": 2,
+        "storage_kwh": 0,
+        "source": "Existing owned synthetic two-hour CSV fixtures; independent of synthetic roof production"
+      },
+      "pdf_before": "production-two-hour-report-before-period-de.pdf",
+      "account_readback": "Saved solutions page shows the same project and its continue-planning URL after normal native claim/bootstrap; project and original report reopened as authenticated owner.",
+      "account_link_click": "Native account project link opened exact181228…#lp-overview200 after claim; same project and original run retained. Locator-only click had no effect; native click resolved automation issue without product changes."
+    },
+    "retention_readback": {
+      "engine_current": "20261027T080240856652Z",
+      "engine_rollback": "20261025T075605294533Z",
+      "removed_versions": 2,
+      "removed_staging": 1,
+      "removed_logical_bytes": 889916618,
+      "vps_free_bytes_after": 46214852608,
+      "services_after": {
+        "engine": "ok",
+        "genie": "ok"
+      },
+      "before_free_bytes_not_sampled": true,
+      "planner_current": "d9459c39752ac28878fe2716b41df15cb7aa23a2912d1bee88611917a3393946",
+      "planner_rollback": "18d14896444aa994b282f44c9626f3571a0de7d236953a4048c489595b7141af",
+      "planner_executable_count": 2
+    },
+    "report_period_correction": {
+      "diagnosis": "Actual live original PDF downloaded and visually read; energy totals and references were present but its calculation period was omitted. Do not present a short-window total as a year.",
+      "scope": "One shared presentation seam only: source energy_scenario.schedule resolved against selected frozen run; normalize every actual segment to UTC, reuse existing EN/DE period label; no raw input, physical replay or numerical model changed.",
+      "verification": "Existing EN/DE two-segment DST fixture also preserves historical source without energy_scenario;1 targeted existing case, Ruff and mypy pass. Independent Spec and Standards PASS. Required CI40474837638 succeeded; actual corrected production PDF downloaded and read.",
+      "pull_request": 688,
+      "source_commit": "0710586e4",
+      "state": "released_and_live_readback_passed",
+      "merge_commit": "eeeccf6b17d6c963d599b0c445eb9830ff1583a5",
+      "ci": 40474837638,
+      "ci_status": "success",
+      "corrected_report_run": "d4b53195d5d04d93b98b8838d458b487",
+      "corrected_pdf": "production-two-hour-report-de.pdf",
+      "pdf_sha256": "df19fa1bc4a47e9ae7c4aad1a63f84a251208963d87627f253d81223c8e96e87",
+      "pdf_pages": 1,
+      "pdf_visual": "One-page original downloaded through the real customer button; period and original run reference present, no clipped/overlapped rows",
+      "numeric_replay": 0
+    },
+    "homepage_discoverability": {
+      "readback": "DE home public body mentions Solution Configurator in phase1 but no direct workbench CTA was present in that body; primary navigation has collapsed Planen mit Linker group and footer planning tab.",
+      "status": "released_and_live_readback_passed",
+      "change": "One canonical same-language link immediately after unchanged hero subtitle and before Genie input. Existing LiveCanvas markup/home-btn/home-btn-primary classes only; no CSS or script change.",
+      "posts": [
+        {
+          "id": 13,
+          "lang": "en",
+          "modified_gmt": "2026-10-25 15:19:00",
+          "sha256": "2f43e67bd7a76707752ae50b31a6cd7d9e9d3d3c205e5b1f62deffd90672af42",
+          "after_sha256": "efbf4eef870864b235b7fe5d53fc964967e7bd90e886eb41733da0ea5d2c47f9"
+        },
+        {
+          "id": 6913,
+          "lang": "de",
+          "modified_gmt": "2026-10-25 15:19:00",
+          "sha256": "839d9055d66c9a11e44e76f1e1a1b11c9ce2a0f150ed814af7aca5c7194e6485",
+          "after_sha256": "a13b3f08815c6e3fcc6a04ee69867b2430c9446cef5d1e9e4d5a791746520ba9"
+        }
+      ],
+      "copy_review": "dc_plant_copy PASS; existing EN/DE label reused; encyclopedia Tools dimension and Hard Stops1–9 checked",
+      "spec_review": "PASS final placement increment",
+      "standards_review": "PASS native helper correction, bounded recovery and final selector/placement increment",
+      "backup_reuse": "Full verified cutover20261027-0548 covers unchanged target home content, live modified20261025 15:19; no new full recovery point",
+      "local_failure": "Operation-only helper namespace corrected from I18n/Projection to I18n/Woo/Projection; both local body writes already matched exact after hashes; retry skips them, constructs helper before mutations, and adopts the reviewed pair. No live write occurred.",
+      "placement": "After unchanged hero subtitle and before the Genie search box, visible within first viewport. Existing .hero-capsules layout; new anchor is .home-btn, not intercepted .hero-capsule.",
+      "local_readback": "Both exact after hashes; native reviewed pair translation_status=synced",
+      "visual": {
+        "en1440": "home-tool-en-1440.png",
+        "de1440": "home-tool-de-1440.png",
+        "en390": "home-tool-en-390.png",
+        "de390": "home-tool-de-390.png",
+        "prior_placement_failure": "home-tool-placement-before-en-1440.png"
+      },
+      "interaction": "Native click of visible new homepage CTA opens same-language unified configurator, not Genie; no project or inquiry created for this check.",
+      "live_readback": {
+        "utc": "2026-10-27T09:39:15.447722+00:00",
+        "posts": [
+          {
+            "id": 13,
+            "lang": "en",
+            "sha256": "efbf4eef870864b235b7fe5d53fc964967e7bd90e886eb41733da0ea5d2c47f9"
+          },
+          {
+            "id": 6913,
+            "lang": "de",
+            "sha256": "a13b3f08815c6e3fcc6a04ee69867b2430c9446cef5d1e9e4d5a791746520ba9"
+          }
+        ],
+        "translation_status": "synced",
+        "public_http": "EN and DE200; one marker each, exact language-specific label and canonical tool href",
+        "native_browser": "Live DE home visible; click directly entered functional unified project list; existing Version7 project remains. No new project, inquiry or email.",
+        "screenshot": "production-home-tool-de-1440.png"
+      },
+      "rollback": "Native post-content operation removes only the exact data-linker-planner-entry=home-hero block from posts13/6913 after after-hash guard, followed by reviewed native Translator::adopt_current. Complete cutover20261027-0548 also retains exact before bodies."
     }
   }
 }
