@@ -295,19 +295,17 @@ final class DocumentLibrary {
 	/**
 	 * A document type as the register names it.
 	 *
-	 * The row's role and type go through the one mapping the product page's
-	 * document cards use (Materials::document_kind), so a German row reads
-	 * like its English twin (`Datenblatt` and `datasheet` are both
-	 * `datasheet`) — the German table stores German type words, and the
-	 * register read them all as `Document` until 2026-10-16. The result is
-	 * then closed on the register's own vocabulary: a word the register does
-	 * not know still reads `Document`.
+	 * A known maintained type is authoritative. The retained role only fills
+	 * a missing, generic or unknown type; German aliases share the same mapping.
 	 *
 	 * @param string $stored Stored type.
 	 * @param string $role   Stored role, '' when the row states none.
 	 */
 	public static function type( string $stored, string $role = '' ): string {
-		$kind = Materials::document_kind( $role, $stored );
+		$kind = Materials::document_kind( '', $stored );
+		if ( 'document' === $kind || ! in_array( $kind, self::TYPE_ORDER, true ) ) {
+			$kind = Materials::document_kind( $role, $stored );
+		}
 
 		return in_array( $kind, self::TYPE_ORDER, true ) ? $kind : 'document';
 	}
