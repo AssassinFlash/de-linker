@@ -279,6 +279,9 @@
 
 /* The loader renders this semantic fallback before the app stylesheet exists.
    Its recovery controls must remain legible and usable when that file fails. */
+[data-linker-genie-mount]:has(> [data-linker-genie-load-error]) > [data-linker-app="genie"]:empty {
+	display: none;
+}
 [data-linker-genie-load-error] {
 	display: flex;
 	flex-direction: column;
