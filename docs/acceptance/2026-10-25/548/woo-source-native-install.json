@@ -5662,10 +5662,10 @@
       ]
     },
     "ui": {
-      "en_1440": "PASS existing controls after markup correction",
-      "en_390": "PASS same controls with wrapping helper",
-      "de_1440": "PASS actual native form; helper/control uses existing styles",
-      "de_390": "PASS actual native form; no clipping or overlapping controls",
+      "en_1440": "PASS actual Chrome CSS1440x1000; native form readback",
+      "en_390": "PASS actual Chrome CSS390x844; native form readback",
+      "de_1440": "PASS corrected actual Chrome CSS1440x1000",
+      "de_390": "PASS corrected actual Chrome CSS390x844; same existing source/equipment result, no recalculation",
       "new_css": false,
       "same_accepted_native_po_mo_json": true,
       "screenshots": [
@@ -6000,7 +6000,7 @@
   "workspace_usability_continuation": {
     "baseline": "c126e9b09",
     "owner": "548",
-    "state": "implementation; native acceptance pending",
+    "state": "local native acceptance and final incremental reviews passed; CI/publication pending",
     "problems": [
       "Native language switching discarded the chosen energy workspace form view and opened scenario settings.",
       "Result h3 headings were not programmatically focusable, preventing the existing late sticky-bar correction while restoring a saved report."
@@ -6008,8 +6008,58 @@
     "impact": "Energy-view route, same-project native language links and result-heading focus; no model, product source, calculation or report content change",
     "minimum_verification": {
       "passed": "Existing siteIntegration cases extended for same-project report view, unrelated-project refusal and saved-result precedence; existing actual-project-bar case extended for heading focus and unchanged native button tab order; TypeScript passed",
-      "pending": "Native cold restored-report heading on mobile and desktop; EN/DE report-view language roundtrip with existing reports; independent final Spec/Standards; publish/readback"
+      "pending": "Final candidate CI, scoped Tools publication and live route/heading readback only",
+      "native_passed": "Actual Chrome CSS390x844/1440x1000 EN/DE forms; native DE->EN->DE selected report view; cold saved DE mobile/EN desktop report heading below measured bars. Existing reports/results reused; no generated calculation or PDF."
     },
-    "stop": "Reuse all accepted physics, Woo, PDF and commerce evidence. No new numerical runs, test files, instance, matrix or full-site scan."
+    "stop": "Reuse all accepted physics, Woo, PDF and commerce evidence. No new numerical runs, test files, instance, matrix or full-site scan.",
+    "native_diagnosis": {
+      "heading_before": {
+        "focused": true,
+        "top_px": 0.1484375,
+        "scroll_margin_top_px": 0,
+        "native_bar_bottom_px": 194
+      },
+      "fix": "Reuse existing lp-focus-target WindPress class on programmatically focused headings; no new site CSS",
+      "viewport_correction": "IAB requested390 returned CSS innerWidth587. Old size labels invalidated; native Chrome override verified actual390x844. Recheck only affected evidence in Chrome."
+    },
+    "native_report_390": {
+      "viewport_css": [
+        390,
+        844
+      ],
+      "heading_top_px": 226.9375,
+      "bar_bottom_px": 210.796875,
+      "computed_scroll_margin_top_px": 227,
+      "heading_focused": true,
+      "run": "63cd20714db04ecd87e6bcd56f2a604a",
+      "recalculation": false
+    },
+    "native_language_view": {
+      "route": "energy_view=reports",
+      "de_to_en": "PASS native header click; chosen report view=true",
+      "en_to_de": "PASS native header click; chosen report view=true",
+      "same_project": true
+    },
+    "independent_review": {
+      "spec": "PASS bb4ffe02 and final existing-WindPress-class increment",
+      "standards": "PASS bb4ffe02 and final existing-WindPress-class increment"
+    },
+    "native_report_1440": {
+      "viewport_css": [
+        1440,
+        1000
+      ],
+      "heading_top_px": 178.234375,
+      "bar_bottom_px": 162,
+      "heading_focused": true,
+      "run": "dfc304391dc64316b1db7447ac0cbb18",
+      "recalculation": false
+    },
+    "screenshots": [
+      "restored-report-before.png",
+      "restored-report-de-390.png",
+      "restored-report-en-1440.png"
+    ],
+    "viewport_cleanup": "Both IAB and Chrome temporary overrides reset; one existing p548 instance reused"
   }
 }

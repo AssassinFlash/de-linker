@@ -471,6 +471,7 @@ test("the actual project bar is observed after asynchronous draft opening and on
 	assert.equal(revealActionResult(heading), true);
 	assert.equal(document.activeElement, heading);
 	assert.equal(heading.tabIndex, -1);
+	assert.equal(heading.classList.contains("lp-focus-target"), true);
 });
 
 test("creation authentication failure rechecks once and explicitly retries the exact intent", async (t) => {
