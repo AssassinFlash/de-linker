@@ -120,9 +120,14 @@ final class DocumentsMetaBoxTest extends TestCase {
 
 	/**
 	 * The save writes the posted rows as the document list, in the shape the
-	 * feed and the figures box read.
+	 * feed and the figures box read. Hidden generic roles must not shadow an editor change.
+	 *
+	 * @dataProvider saved_document_roles
+	 * @param array<string,mixed> $stored Previous source row.
+	 * @param array<string,mixed> $kept Preserved extended fields.
+	 * @param string              $type Posted specific type.
 	 */
-	public function test_save_writes_the_posted_rows(): void {
+	public function test_save_writes_the_posted_rows( array $stored, array $kept, string $type ): void {
 		$this->plain_text();
 		WP_Mock::userFunction( 'wp_verify_nonce', array( 'return' => 1 ) );
 		WP_Mock::userFunction( 'current_user_can', array( 'return' => true ) );
@@ -138,7 +143,7 @@ final class DocumentsMetaBoxTest extends TestCase {
 			)
 		);
 		WP_Mock::userFunction( 'home_url', array( 'return' => 'http://127.0.0.1:8927' ) );
-		WP_Mock::userFunction( 'get_post_meta', array( 'return' => array() ) );
+		WP_Mock::userFunction( 'get_post_meta', array( 'return' => array( $stored ) ) );
 		WP_Mock::userFunction(
 			'update_post_meta',
 			array(
@@ -147,11 +152,14 @@ final class DocumentsMetaBoxTest extends TestCase {
 					6521,
 					EngineeringData::DOCUMENTS_META_KEY,
 					array(
-						array(
-							'url'   => 'http://127.0.0.1:8927/wp-content/uploads/2026/10/manual.pdf',
-							'title' => 'User Manual',
-							'type'  => 'manual',
-							'lang'  => 'de',
+						array_merge(
+							$kept,
+							array(
+								'url'   => 'http://127.0.0.1:8927/wp-content/uploads/2026/10/manual.pdf',
+								'title' => 'User Manual',
+								'type'  => $type,
+								'lang'  => 'de',
+							)
 						),
 					),
 				),
@@ -164,7 +172,7 @@ final class DocumentsMetaBoxTest extends TestCase {
 				0 => array(
 					'title'  => 'User Manual',
 					'url'    => 'http://127.0.0.1:8927/wp-content/uploads/2026/10/manual.pdf',
-					'type'   => 'manual',
+					'type'   => $type,
 					'lang'   => 'de',
 					'remove' => '',
 				),
@@ -177,7 +185,7 @@ final class DocumentsMetaBoxTest extends TestCase {
 				2 => array(
 					'title' => 'A row without an address',
 					'url'   => '',
-					'type'  => 'manual',
+					'type'  => $type,
 					'lang'  => 'en',
 				),
 			),
@@ -185,6 +193,40 @@ final class DocumentsMetaBoxTest extends TestCase {
 		( new DocumentsMetaBox() )->save( 6521 );
 		$_POST = array();
 		$this->assertConditionsMet();
+	}
+
+	/**
+	 * Native posted type wins over a generic hidden role, preserving dedicated roles.
+	 *
+	 * @return array<string,array{array<string,mixed>,array<string,mixed>,string}>
+	 */
+	public static function saved_document_roles(): array {
+		$url = 'http://127.0.0.1:8927/wp-content/uploads/2026/10/manual.pdf';
+		return array(
+			'new'       => array( array(), array(), 'manual' ),
+			'generic'   => array(
+				array(
+					'url'    => $url,
+					'type'   => 'document',
+					'role'   => 'document',
+					'source' => 'keep',
+				),
+				array( 'source' => 'keep' ),
+				'warranty',
+			),
+			'dedicated' => array(
+				array(
+					'url'    => $url,
+					'role'   => 'datasheet',
+					'source' => 'keep',
+				),
+				array(
+					'role'   => 'datasheet',
+					'source' => 'keep',
+				),
+				'manual',
+			),
+		);
 	}
 
 	/**

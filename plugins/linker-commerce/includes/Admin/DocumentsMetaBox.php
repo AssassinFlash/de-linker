@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Admin;
 
 use Linker\Commerce\Products\EngineeringData;
+use Linker\Commerce\Products\Materials;
 use Linker\Commerce\Products\DocumentLibrary;
 use Linker\Commerce\Products\Publication;
 use Linker\Commerce\Products\Publication\DocumentFiles;
@@ -243,7 +244,7 @@ final class DocumentsMetaBox {
 				// what clearing the address means).
 				continue;
 			}
-			$document    = array_merge(
+			$document = array_merge(
 				$previous[ $index ] ?? array(),
 				array(
 					'url'   => $url,
@@ -252,6 +253,16 @@ final class DocumentsMetaBox {
 					'lang'  => $row['lang'],
 				)
 			);
+			// A hidden generic role must not override the type this editor just saved.
+			// Dedicated/unknown roles and every other extended field keep their meaning.
+			$role = $document['role'] ?? '';
+			$kind = Materials::document_kind( '', $row['type'] );
+			if ( is_string( $role )
+				&& in_array( mb_strtolower( trim( $role ), 'UTF-8' ), array( '', 'document', 'dokument' ), true )
+				&& in_array( $kind, self::TYPES, true ) && 'document' !== $kind
+			) {
+				unset( $document['role'] );
+			}
 			$documents[] = $document;
 		}
 		// Rows beyond the ones the box sent are kept: another writer may have
