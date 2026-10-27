@@ -895,7 +895,11 @@ def build_report(source: Object) -> Report:
         )
     if isinstance(source.get("certificates"), dict):
         sections.extend(
-            certificate_sections(cast(Object, source["certificates"]), locale)
+            certificate_sections(
+                cast(Object, source["certificates"]),
+                locale,
+                cast(Object | None, source.get("certificate_context")),
+            )
         )
     return Report(
         title=text("title", locale),

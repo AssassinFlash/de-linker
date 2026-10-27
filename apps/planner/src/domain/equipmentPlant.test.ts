@@ -15,7 +15,14 @@ import {
 	singleSystem,
 } from "./equipmentPlant.ts";
 import type { EquipmentProduct } from "../data/equipmentProducts.ts";
-import type { Project } from "../data/protocol.ts";
+import type { JsonObject, Project } from "../data/protocol.ts";
+import {
+	changeDeviceCondition,
+	conditionBindingMatches,
+	equipmentConditionTargets,
+	readEquipmentConditionInputs,
+	removeDeviceCondition,
+} from "./equipmentConditionInputs.ts";
 
 // Identity-only publication fixtures; no product performance or release facts.
 const products: EquipmentProduct[] = [1, 2].map((id) => ({
@@ -267,5 +274,129 @@ test("plant search prepares demand without hardware and adopts one whole candida
 			products,
 			choice,
 		),
+	);
+});
+
+test("device observations retain exact versions and distinct plant nodes through Draft undo and editable preparation", () => {
+	const plant = compilePlant(configured(), products);
+	const inputs: JsonObject = {
+		...plantInputs(start(), configured()),
+		equipment_plant: plant,
+	};
+	const targets = equipmentConditionTargets(inputs, products);
+	const a = targets.find(
+		(d) =>
+			d.selection_ref.kind === "plant_unit" && d.selection_ref.unit_id === "a",
+	)!;
+	const b = targets.find(
+		(d) =>
+			d.selection_ref.kind === "plant_unit" && d.selection_ref.unit_id === "b",
+	)!;
+	assert.equal(a.product_id, b.product_id);
+	assert.equal(
+		targets.filter((d) => d.selection_ref.kind === "plant_controller").length,
+		1,
+	);
+	assert.equal(
+		inputs.equipment_condition_inputs,
+		undefined,
+		"reading old input never adds an optional object",
+	);
+	let observed = changeDeviceCondition(
+		inputs,
+		a,
+		{ declared_firmware: "001.02-A", source_note: "  commissioning record  " },
+		products,
+	);
+	observed = changeDeviceCondition(
+		observed,
+		b,
+		{ declared_firmware: "01.2-A" },
+		products,
+	);
+	const declarations = readEquipmentConditionInputs(
+		observed.equipment_condition_inputs,
+	);
+	assert.equal(
+		declarations.devices[0]!.declared_model,
+		null,
+		"Woo reference is never copied as an observation",
+	);
+	assert.equal(declarations.devices[0]!.declared_firmware, "001.02-A");
+	assert.equal(
+		declarations.devices[0]!.source_note,
+		"  commissioning record  ",
+	);
+	assert.equal(declarations.devices[1]!.declared_firmware, "01.2-A");
+	const editable = plantInputs(observed, readPlantDraft(observed));
+	assert.deepEqual(
+		editable.equipment_condition_inputs,
+		observed.equipment_condition_inputs,
+	);
+	assert.equal(
+		conditionBindingMatches(
+			declarations.devices[0]!,
+			equipmentConditionTargets(editable, products)[0]!,
+		),
+		true,
+	);
+	assert.deepEqual(
+		equipmentContext(editable).equipment_condition_inputs,
+		declarations,
+	);
+	const changedRevision = products.map((p) =>
+		p.id === a.product_id ? { ...p, product_revision: "a".repeat(64) } : p,
+	);
+	assert.equal(
+		conditionBindingMatches(
+			declarations.devices[0]!,
+			equipmentConditionTargets(editable, changedRevision)[0]!,
+		),
+		false,
+	);
+	assert.throws(
+		() =>
+			changeDeviceCondition(
+				editable,
+				equipmentConditionTargets(editable, changedRevision)[0]!,
+				{ source_note: "new" },
+				changedRevision,
+			),
+		/product_evidence_changed/,
+	);
+	assert.throws(() =>
+		readEquipmentConditionInputs({
+			schema_version: 1,
+			devices: [declarations.devices[0], declarations.devices[0]],
+		}),
+	);
+	const cleared = changeDeviceCondition(
+		observed,
+		a,
+		{ declared_firmware: " " },
+		products,
+	);
+	assert.equal(
+		readEquipmentConditionInputs(cleared.equipment_condition_inputs).devices[0]!
+			.declared_firmware,
+		null,
+	);
+	assert.equal(
+		readEquipmentConditionInputs(
+			removeDeviceCondition(observed, declarations.devices[0]!)
+				.equipment_condition_inputs,
+		).devices.length,
+		1,
+	);
+	const project: Project = {
+		id: "a".repeat(32),
+		title: "Fixture",
+		revision: 1,
+		input_sha256: "b".repeat(64),
+		inputs,
+	};
+	assert.deepEqual(
+		undoDraft(editDraft(beginDraft(project), observed)).history.current,
+		inputs,
 	);
 });

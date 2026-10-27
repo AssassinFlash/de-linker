@@ -14,12 +14,18 @@ from conftest import publication_manifest
 from fastapi.testclient import TestClient
 from pypdf import PdfReader
 
+from linker_engine import pdf
 from linker_engine.engine import Engine
+from linker_engine.models import Report
 from linker_engine.planning.assets import Assets
 from linker_engine.planning.assistant_context import assistant_context
 from linker_engine.planning.canonical import digest, encode
+from linker_engine.planning.certificate_evidence import CertificateEvidence
+from linker_engine.planning.certificate_report import certificate_sections
+from linker_engine.planning.certificate_sources import inspect_report_certificates
 from linker_engine.planning.energy_kernel import EnergyKernel
 from linker_engine.planning.energy_service import EnergyService
+from linker_engine.planning.equipment_conditions import review_device_conditions
 from linker_engine.planning.equipment_kernel import EquipmentKernel
 from linker_engine.planning.equipment_service import EquipmentService
 from linker_engine.planning.errors import NotFound, ProductEvidenceChanged
@@ -30,16 +36,27 @@ from linker_engine.planning.http_app import HttpLimits, create_private_app
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.product_sources import ProductSources
 from linker_engine.planning.project_materials import materials_csv
-from linker_engine.planning.records import Actor
+from linker_engine.planning.records import Actor, Context
+from linker_engine.planning.report_inputs import ReportOptions
 from linker_engine.planning.report_kernel import ReportKernel, ReportService
-from linker_engine.planning.report_sources import renew_module_permission
+from linker_engine.planning.report_sources import (
+    ReportInputsChanged,
+    renew_module_permission,
+    report_sources,
+)
 from linker_engine.planning.worker import Control, Worker
 from linker_engine.planning.workspace import Workspace
 from linker_engine.products import Products
 from linker_engine.publication import Publication, PublicationUnavailable
+from linker_engine.texts import t
 
 from .conftest import FixtureObject, json_object
-from .test_certificate_evidence import certificate_pdf
+from .test_certificate_evidence import (
+    certificate_pdf,
+    condition_project,
+    evidence,
+    inspected_fixture,
+)
 from .test_energy_kernel import TOLERANCE
 from .test_equipment import (
     feed as equipment_feed,  # noqa: F401 -- Shared cited fixture, registered under this name.
@@ -180,11 +197,28 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
         retry_seconds=1,
         routing=registry.routing(8),
     )
+    project_inputs = inputs(feed, 3)
+    project_inputs["equipment_condition_inputs"] = {
+        "schema_version": 1,
+        "devices": [
+            {
+                "selection_ref": {"kind": "single", "role": "inverter"},
+                "product_id": 4107,
+                "product_revision": project_inputs["equipment_selection"][
+                    "product_revisions"
+                ]["4107"],
+                "declared_model": "Fixture-1",
+                "declared_firmware": "010101",
+                "source_note": "Synthetic proposed device detail for this project.",
+            }
+        ],
+    }
     project = workspace.create(
-        owner, "Frozen project report", inputs(feed, 3), key="report-project"
+        owner, "Frozen project report", project_inputs, key="report-project"
     )
     checked = equipment.evaluate(owner, project.id, 1, key="equipment-source")
     assert worker.run_once() and workspace.run(owner, checked.id).state == "succeeded"
+    equipment_certificates = CertificateEvidence(workspace).read(owner, checked.id)
     app = create_private_app(
         workspace,
         energy,
@@ -205,7 +239,6 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
             "pv_run_id": None,
             "equipment_run_id": checked.id,
             "logo": None,
-            "inspect_certificate_declarations": True,
         },
     }
     with TestClient(app) as client:
@@ -268,6 +301,9 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
         assert "Provisional bill of materials" in text and "HTW Berlin" not in text
         assert "H2-10K-T3" in text and "BU2" in text
         assert "010101" in text and "164" in text
+        assert "Project device details" in text
+        assert "Model listed on this page" in text and "Firmware text matches" in text
+        assert "Model text differs" in text and "identity needs clarification" in text
         inspection = json_object(
             workspace.blobs.object(result["dependencies"]["certificate_inspection"])
         )
@@ -281,6 +317,30 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
             result["dependencies"]["report_source"]
             == inspection["report_source_sha256"]
             == result["pinned_assets"]["report.source"]
+        )
+        report_source_sha = result["dependencies"]["report_source"]
+        recorded_source = json_object(workspace.blobs.object(report_source_sha))
+        assert (
+            recorded_source["equipment_condition_inputs"]
+            == project_inputs["equipment_condition_inputs"]
+        )
+        assert recorded_source["inspect_certificate_declarations"] is True
+        assert recorded_source["certificate_context"] == {
+            "run_id": checked.id,
+            "revision": 1,
+            "kind": EquipmentKernel.kind,
+        }
+        device_section = next(
+            section
+            for section in result["report"]["sections"]
+            if section["id"] == "certificate-device-conditions"
+        )
+        assert {row["value"] for row in device_section["rows"]} == {checked.id, "1"}
+        assert (
+            CertificateEvidence(workspace).read(owner, run.id)["condition_review"]
+            == equipment_certificates["condition_review"]
+            == inspection["evidence"]["condition_review"]
+            == recorded_source["certificates"]["condition_review"]
         )
         transfer_command = {
             "schema_version": 1,
@@ -391,3 +451,265 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
         )
         with pytest.raises(NotFound):
             Assets(workspace).content(guest, project.id, csv_asset["id"])
+        changed_inputs = copy.deepcopy(project_inputs)
+        changed_inputs["equipment_condition_inputs"]["devices"][0][
+            "declared_firmware"
+        ] = "10101"
+        changed = workspace.revise(
+            owner, project.id, 1, changed_inputs, key="later-device-details"
+        )
+        with pytest.raises(ReportInputsChanged):
+            report_sources(
+                workspace,
+                sources,
+                owner,
+                changed,
+                ReportOptions(
+                    locale="en",
+                    energy_run_id=None,
+                    pv_run_id=None,
+                    equipment_run_id=checked.id,
+                    logo=None,
+                ),
+            )
+        assert workspace.blobs.object(report_source_sha) == recorded_source
+        assert Assets(workspace).content(owner, project.id, asset["id"]) == pdf
+
+
+def test_device_report_keeps_each_documents_result_and_unanswered_device(
+    workspace: Workspace,
+) -> None:
+    source = json_object(inspected_fixture(workspace))
+    original = source["documents"][0]
+    another = {
+        **original,
+        "document_id": "doc-other",
+        "document_revision": "c" * 64,
+        "title": "Second recorded certificate",
+        "product_ids": [1],
+        "blob_sha256": workspace.blobs.put(
+            certificate_pdf(models="Other-9", firmware="010102")
+        ),
+    }
+    source["documents"].append(another)
+    inspect_report_certificates({"certificates": source}, workspace.blobs, lambda: None)
+    inputs = json_object(condition_project())
+    inputs["equipment_condition_inputs"]["devices"][0]["declared_firmware"] = "010102"
+    legacy_sections = certificate_sections(source, "en")
+    source["condition_review"] = review_device_conditions(inputs, source)
+    frozen_sha = digest(encode(source))
+    for locale, listed, absent, conflict, matched, unresolved in (
+        (
+            "en",
+            "Model listed on this page",
+            "Model not listed on this page",
+            "Firmware text differs",
+            "Firmware text matches",
+            "Firmware comparison unresolved",
+        ),
+        (
+            "de",
+            "Modell auf dieser Seite aufgeführt",
+            "Modell auf dieser Seite nicht aufgeführt",
+            "Firmwareangabe weicht ab",
+            "Firmwareangabe stimmt überein",
+            "Firmwareabgleich offen",
+        ),
+    ):
+        sections = {
+            section.id: section
+            for section in certificate_sections(
+                source,
+                locale,
+                {"run_id": "a" * 32, "revision": 4, "candidate_id": "saved-choice"},
+            )
+        }
+        assert {
+            row.value for row in sections["certificate-device-conditions"].rows
+        } == {
+            "a" * 32,
+            "4",
+            "saved-choice",
+        }
+        first = sections["certificate-device-0-document-0"]
+        second = sections["certificate-device-0-document-1"]
+        assert {row.value for row in first.rows} >= {
+            listed,
+            conflict,
+            "010101",
+            "010102",
+        }
+        assert {row.value for row in second.rows} >= {
+            absent,
+            matched,
+            "Other-9",
+            "010102",
+        }
+        assert any("164" in row.value for row in first.rows)
+        for document, section in ((original, first), (another, second)):
+            assert {row.value for row in section.rows} >= {
+                document["document_id"],
+                document["document_revision"],
+                document["blob_sha256"],
+            }
+            assert all(
+                "linker_document_sha256=" + document["blob_sha256"] in row.href
+                for row in section.rows
+                if row.href
+            )
+        unanswered = sections["certificate-device-1-document-0"]
+        assert unresolved in {row.value for row in unanswered.rows}
+        assert len(sections["certificate-device-open-checks"].rows) == 10
+    assert certificate_sections(source, "en")[0] == legacy_sections[0]
+    assert (
+        digest(encode(source)) == frozen_sha
+    )  # Presentation never rewrites its input.
+    # The wire accepts these full-length private entries. A single token and
+    # a spaced note both need lossless continuation across PDF pages.
+    long_model = "GW-" + "W" * 4093
+    long_note = "W " * 2047 + "<&"
+    declared = inputs["equipment_condition_inputs"]["devices"][0]
+    declared.update(declared_model=long_model, source_note=long_note)
+    source["condition_review"] = review_device_conditions(inputs, source)
+    long_sections = certificate_sections(source, "en")
+    device_section = next(s for s in long_sections if s.id == "certificate-device-0")
+    assert {row.value for row in device_section.rows} >= {long_model, long_note}
+    document = pdf.render(
+        Report(
+            title="Synthetic long device entries",
+            subtitle="Lossless page continuation",
+            generated_at="2026-10-27T00:00:00Z",
+            locale="en",
+            sections=long_sections,
+        )
+    )
+    reader = PdfReader(io.BytesIO(document))
+    # Page furniture must not interrupt a field continued onto another page.
+    written = "".join(
+        "".join(line.split())
+        for number, page in enumerate(reader.pages, start=1)
+        for line in page.extract_text().splitlines()
+        if line not in {str(number), t("pdf.footer", "en"), t("pdf.credits", "en")}
+    )
+    assert long_model in written
+    assert long_note.replace(" ", "") in written
+    assert len(reader.pages) > 1
+
+
+def test_absent_device_inputs_keep_legacy_report_source_shape(
+    workspace: Workspace,
+    owner: Actor,
+    context: Context,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    project_inputs = json_object(condition_project())
+    project_inputs.pop("equipment_condition_inputs")
+    basis, assessment = evidence()
+    proof = workspace.blobs.put_object(basis)
+    context = replace(context, assets={**context.assets, "woo.equipment_inputs": proof})
+    project = workspace.create(
+        owner, "Legacy report shape", project_inputs, key="legacy"
+    )
+    run = workspace.evaluate(owner, project.id, 1, context, key="run", max_attempts=1)
+    jobs = Jobs(workspace)
+    lease = jobs.claim("fixture", kinds=("evaluate",), lease_seconds=30)
+    assert lease is not None
+    jobs.complete(
+        lease,
+        {
+            "kind": EquipmentKernel.kind,
+            "assessment": assessment,
+            "pinned_assets": {key: sha for key, sha in context.assets.items()},
+            "runtime_sha256": context.code_sha256,
+        },
+    )
+    products = ProductSources(
+        lambda: pytest.fail("this fixture uses the frozen source")
+    )
+    monkeypatch.setattr(products, "confirm_basis", lambda *args, **kwargs: None)
+    source = report_sources(
+        workspace,
+        products,
+        owner,
+        project,
+        ReportOptions(
+            locale="en",
+            energy_run_id=None,
+            pv_run_id=None,
+            equipment_run_id=run.id,
+            logo=None,
+        ),
+    )
+    assert "equipment_condition_inputs" not in source
+    assert "certificate_context" not in source
+    assert "inspect_certificate_declarations" not in source
+    assert "condition_review" not in json_object(source["certificates"])
+    assert len(certificate_sections(json_object(source["certificates"]), "en")) == 1
+
+
+def test_report_subset_omits_unrelated_unprepared_device_entries(
+    workspace: Workspace,
+    owner: Actor,
+    context: Context,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # Reuse valid private device entries, but leave their selection unprepared.
+    # A comparison-only report must not acquire an unrelated equipment scope.
+    values = json_object(condition_project())
+    setup = values.pop("equipment_selection")
+    setup.pop("product_revisions")
+    values["equipment_setup"] = setup
+    project = workspace.create(owner, "Comparison only", values, key="subset")
+    module = __import__(
+        "linker_engine.planning.report_sources", fromlist=["report_sources"]
+    )
+    monkeypatch.setattr(module, "compare_energy_runs", lambda *args: {"fixture": True})
+    monkeypatch.setattr(
+        module,
+        "comparison_side",
+        lambda _workspace, _actor, _project, identity: SimpleNamespace(
+            run=SimpleNamespace(
+                id=identity,
+                revision=1,
+                manifest_sha256="c" * 64,
+                result_sha256="d" * 64,
+            ),
+            result={
+                "kind": "synthetic_saved_comparison",
+                "input_sha256": "e" * 64,
+                "runtime_sha256": context.code_sha256,
+            },
+            pinned={},
+        ),
+    )
+    source = report_sources(
+        workspace,
+        ProductSources(
+            lambda: pytest.fail("no equipment source belongs to this report")
+        ),
+        owner,
+        project,
+        ReportOptions.read(
+            {
+                "locale": "en",
+                "energy_run_id": None,
+                "pv_run_id": None,
+                "equipment_run_id": None,
+                "logo": None,
+                "comparison": {
+                    "baseline_run_id": "a" * 32,
+                    "candidate_run_id": "b" * 32,
+                },
+            }
+        ),
+    )
+    assert source["equipment"] is None
+    assert all(
+        key not in source
+        for key in (
+            "equipment_condition_inputs",
+            "certificate_context",
+            "certificates",
+            "inspect_certificate_declarations",
+        )
+    )

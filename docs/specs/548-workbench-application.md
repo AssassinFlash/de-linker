@@ -1046,3 +1046,63 @@ the existing current-publication gate. Deployment must refresh the native
 WordPress rewrite block to retain this query on original PDF URLs. Historical
 reports are unchanged; newly generated screen/PDF reports include the same
 source identities and explicit unassessed scope.
+
+## Project-declared device conditions
+
+Optional `equipment_condition_inputs` has `schema_version: 1` and a `devices`
+array. Each observation carries a typed `selection_ref`, `product_id`,
+`product_revision`, and nullable `declared_model`, `declared_firmware` and
+`source_note`. References identify a single-system device role, a named plant
+unit and role, or a named plant-group controller. These are project observations,
+never manufacturer facts or another maintained product source. Separate plant
+nodes retain separate observations even when they select the same Woo product.
+Unknown fields use `null`; blank-only non-null strings are rejected, while all
+nonblank text retains its exact whitespace, case and version notation.
+Unanswered fields and an empty array are saveable. Projects without the optional
+object retain its absence in canonical inputs, hashes and idempotency receipts.
+
+Saving may bind an observation to the selected product/node in editable setup
+while preparation is absent. Its retained claimed revision is pending evidence,
+not confirmation of the current Woo revision. Consuming observations requires
+matching prepared equipment and exact product revisions; a changed setup must
+be prepared again. The named errors are `equipment_condition_binding_changed`,
+`equipment_condition_revision_changed` and
+`equipment_condition_requires_preparation`. Old declarations
+remain available for explicit removal and re-entry; edits never silently rebind
+them or propagate one unit's firmware to other units.
+
+Condition review uses the existing worker and Woo-associated certificate
+originals. Retained bytes are reused; new acquisition checks the allowed origin
+and exact content hash under current Woo permission checks before and after the
+work. The read-only inspector performs no acquisition. Each selected device
+keeps a separate result for each associated document, including documents with
+different scopes or editions. A document classification or an unrelated match
+cannot establish that a file covers the project.
+
+`literal_device_conditions_v1` compares only unambiguous labelled fields from
+the retained first page. Model results are `listed`, `not_listed` or
+`unresolved`; firmware results are `exact_match`, `conflict` or `unresolved`.
+The comparison retains its exact value, basis and page. Versions retain leading
+zeros, case and suffixes. Ambiguous fields, lists and ranges remain unresolved;
+brand, family, prefix, suffix and version-range expansion are not inferred.
+Each device also records `model_identity` with the exact declared and selected
+Woo model strings: `unprovided`, `same_text` or `different_text`. Different text
+requires reconciliation, without declaring hardware incompatibility or assuming
+an alias. This identity comparison is visible before per-document matches.
+
+Screen and PDF reports consume the same frozen review and observations.
+`certificate_context` identifies the selected run, revision, task kind and any
+candidate; source provenance and Woo proofs retain manifest/input hashes,
+product/document revisions and original-byte hashes. An old selected equipment result
+cannot borrow changed observations from the current project. Equipment included
+through an adopted candidate or bound energy result follows the same source
+equality boundary. Reports outside equipment scope omit unrelated observations;
+including equipment conditions forces source inspection even without the
+optional inspection checkbox. Frozen reads verify the review and original-file
+dependencies rather than silently recomputing against newer project values.
+
+These literal comparisons do not create an aggregate qualification or ranking
+permission. Referenced annexes, other pages and reports, hardware/configuration,
+operating mode, country/DSO settings, standard editions and transition rules,
+issuer status, project grid assessment and DSO permission remain explicit
+unresolved obligations. One matching cover field cannot approve them.

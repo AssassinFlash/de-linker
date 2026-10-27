@@ -43,7 +43,7 @@
     }
   },
   "production_changed": true,
-  "pending": "Homepage prominence is now being corrected as the next bounded batch; remaining actual manufacturer/installation/country-rule coverage remains in the original full goal.",
+  "pending": "Homepage prominence, account navigation, native local Genie continuation and the device-condition increment have accepted later evidence. Remaining: the live integrated roof/weather/PV/device-energy source chain; live historical/Genie/draft/inquiry context continuation; source-supported manufacturer performance, complete installation BOM and country/DSO coverage. Existing accepted calculations are reused; full goal548 remains open.",
   "native_wordpress_transport": {
     "route_registered": true,
     "provider": "woocommerce",
@@ -1443,7 +1443,7 @@
       "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
     }
   },
-  "current_frontier": "genie_active_project_reader_native_dependency_ready",
+  "current_frontier": "project_device_condition_review_published_and_native_read_back; remaining_roof_to_energy_live_and_downstream_closure",
   "shared_dc_core": {
     "status": "implemented_and_reviewed_core_not_connected_to_native_commands",
     "model": "constant_window_shared_dc_bus_v1",
@@ -5655,44 +5655,329 @@
     },
     "pdf": {
       "en": "Native worker output;3 pages; certificate section visually inspected",
-      "de": "Read-only presentation of same verified immutable source;3 pages; certificate section visually inspected; not a new native run",
+      "de": "Native DE worker run c61beb1661aa493793f7590d28f55e6b;3 pages; actual source section visually inspected",
       "fixtures": [
         "certificate-information-en.pdf",
         "certificate-information-de.pdf"
       ]
     },
     "ui": {
-      "en_1440": "PASS existing controls after markup correction",
-      "en_390": "PASS same controls with wrapping helper",
-      "de_1440": "Not completed: Work settings disabled local browser use after native EN report submission",
-      "de_390": "Not completed: same tool restriction",
+      "en_1440": "PASS actual Chrome CSS1440x1000; native form readback",
+      "en_390": "PASS actual Chrome CSS390x844; native form readback",
+      "de_1440": "PASS corrected actual Chrome CSS1440x1000",
+      "de_390": "PASS corrected actual Chrome CSS390x844; same existing source/equipment result, no recalculation",
       "new_css": false,
-      "same_accepted_native_po_mo_json": true
+      "same_accepted_native_po_mo_json": true,
+      "screenshots": [
+        "certificate-information-de-1440.png",
+        "certificate-information-de-390.png",
+        "resumed-review-report-de.png",
+        "production-certificate-information-de.png"
+      ]
     },
     "local_release_retention": "Current a6d391 and rollback a6e6cc only; obsolete63d348 carrier reclaimed after immutable source recovery verification;1,788,498 logical bytes",
-    "production": "Prepared only. CI/review/source/PDF passed; DE browser gate remains incomplete after Work settings disabled local browser use. Current production pair remains unchanged.",
-    "remaining": "Actual certificate/configuration/firmware/national applicability matching remains part of548; this source inspection must not be described as qualification.",
+    "production": "Released through native paired planner activation and scoped atomic linker-tools publication; live EN/DE control, native DE report/download and actual PDF source section passed. Full548 engineering goal remains active.",
+    "remaining": "Condition matching for actual model/firmware/configuration, national/DSO rule requirements and unavailable original conditions remain in the same active548 goal. Source extraction is not qualification. Observed mobile saved-history list and language-switch view continuity remain owned usability items.",
     "production_candidate": {
       "path": "/opt/linker-planner/releases/e40e163df7bd25a11ff83e8a313f177d1ba07de83df9f2fe493a941e5fdd31e0",
       "purpose": "Reviewed certificate source information; prepare then native paired activation",
       "owner": "548",
       "retire_after": "Activation retires the superseded previous carrier; failed candidate removed after old pair remains verified",
-      "state": "prepared; not activated",
+      "state": "native_pair_active",
       "runtime_sha256": "c7a606dcaa114ff1a676a06c5e646bd74be4c78e45555077d280b74e58686d94",
       "storage_schema_version": 5,
-      "temporary_retention_expiry": "2026-10-28T05:00:00+08:00",
-      "cleanup_condition": "Activate through native operator then retire the superseded previous carrier; if UI gate still unavailable by expiry, remove unactivated candidate after confirming active/rollback identities"
+      "cleanup_condition": "Activate through native operator then retire the superseded previous carrier; if UI gate still unavailable by expiry, remove unactivated candidate after confirming active/rollback identities",
+      "retired_at_utc": "2026-10-27T12:17:58.651628+00:00",
+      "retention": {
+        "removed_unactivated_candidate": "/opt/linker-planner/releases/e40e163df7bd25a11ff83e8a313f177d1ba07de83df9f2fe493a941e5fdd31e0",
+        "reconstructible_source_commit": "ee217d669da32eacbcb542c4bf2b52188e623a34",
+        "source_tree_sha256": "e40e163df7bd25a11ff83e8a313f177d1ba07de83df9f2fe493a941e5fdd31e0",
+        "files_verified_at_preparation": 248,
+        "logical_bytes_removed": 342644555,
+        "free_bytes_before": 46229594112,
+        "free_bytes_after": 46235844608,
+        "shared_library_aliases_preserved": 185,
+        "candidate_executors": [],
+        "retained": [
+          "18d14896444aa994b282f44c9626f3571a0de7d236953a4048c489595b7141af",
+          "d9459c39752ac28878fe2716b41df15cb7aa23a2912d1bee88611917a3393946"
+        ],
+        "selection_unchanged": true,
+        "scope": "Only unselected candidate removed. Mapped library aliases have surviving identical inodes in retained releases. No live service, workspace, project, job, original, credential or rollback removed. Observed free-space change is not the logical deletion total."
+      },
+      "previous_retirement": {
+        "state": "retired_unselected_after_browser_block",
+        "at_utc": "2026-10-27T12:17:58.651628+00:00",
+        "retention": {
+          "removed_unactivated_candidate": "/opt/linker-planner/releases/e40e163df7bd25a11ff83e8a313f177d1ba07de83df9f2fe493a941e5fdd31e0",
+          "reconstructible_source_commit": "ee217d669da32eacbcb542c4bf2b52188e623a34",
+          "source_tree_sha256": "e40e163df7bd25a11ff83e8a313f177d1ba07de83df9f2fe493a941e5fdd31e0",
+          "files_verified_at_preparation": 248,
+          "logical_bytes_removed": 342644555,
+          "free_bytes_before": 46229594112,
+          "free_bytes_after": 46235844608,
+          "shared_library_aliases_preserved": 185,
+          "candidate_executors": [],
+          "retained": [
+            "18d14896444aa994b282f44c9626f3571a0de7d236953a4048c489595b7141af",
+            "d9459c39752ac28878fe2716b41df15cb7aa23a2912d1bee88611917a3393946"
+          ],
+          "selection_unchanged": true,
+          "scope": "Only unselected candidate removed. Mapped library aliases have surviving identical inodes in retained releases. No live service, workspace, project, job, original, credential or rollback removed. Observed free-space change is not the logical deletion total."
+        }
+      },
+      "source_commit": "a094e5701fe2a61c9dde69430af3668de0ed8595",
+      "identity": {
+        "execution_key": "b166dc1ff52a88baac00958fda6a58a2606876e0c5db515e62b66ae373813c0a",
+        "runtime_sha256": "c7a606dcaa114ff1a676a06c5e646bd74be4c78e45555077d280b74e58686d94",
+        "storage_binding": "f91b6338e5204a220d7163fde4277f900fc0c12ca913edec9d7c1560f0eb06d4"
+      },
+      "worker_pid": 183148,
+      "readiness": "HTTP/worker identity matches; draining=false; pending=0; schema5 unchanged",
+      "retained": [
+        "e40e163df7bd25a11ff83e8a313f177d1ba07de83df9f2fe493a941e5fdd31e0",
+        "d9459c39752ac28878fe2716b41df15cb7aa23a2912d1bee88611917a3393946"
+      ],
+      "remote_transfer_cleanup": {
+        "paths": [
+          "/tmp/p548-planner-certificate.tar.gz",
+          "/tmp/p548-planner-certificate-source.json"
+        ],
+        "logical_bytes": 543778,
+        "free_bytes_before": 46226886656,
+        "free_bytes_after": 46227435520
+      }
     },
-    "temporary_transfer_archives": "Removed both local and VPS package/source-map staging files after248-file verification and preparation; retained .deploy/source.json stays with the owned candidate",
+    "temporary_transfer_archives": "Local and VPS transfer package/source-map files removed after immutable release activation. Inspected temporary PDF rasters and exact duplicate native download reclaimed; accepted PDFs/screenshots retained.",
     "validation_scope_correction": {
       "cause": "CI treated PNG/PDF/JSON acceptance evidence as runtime changes and repeated full suites for record-only commits",
       "implementation": "Only regular100644 docs/acceptance JSON/PNG/PDF; format/signature checked in affected before/after revisions; runtime/config/scripts/tests/unknown/executable/symlink paths remain full; mixed existing LC/CSS plus records retains presentation contracts",
       "verification": "Workflow Python AST parses;18 independent scope cases passed; Spec and Standards incremental reviews PASS; no new test file or local business suite",
-      "ci": "Required full run for changed workflow pending one candidate push; later evidence-only commits select docs"
+      "ci": "PASS required full candidate run40499021347; no rerun requested"
+    },
+    "candidate_head": "0e53021ec9247b31a7bb5bcd9153ebf79acb5e04",
+    "current_ci": {
+      "run": 40499021347,
+      "head": "0e53021ec9247b31a7bb5bcd9153ebf79acb5e04",
+      "state": "completed",
+      "reason": "One required full candidate validation because workflow selection logic changed; no local business suites repeated",
+      "conclusion": "success",
+      "jobs": {
+        "plan": "success",
+        "check": "success",
+        "mu_smoke": "success"
+      }
+    },
+    "browser_gate": {
+      "state": "restored",
+      "consecutive_goal_turns": 3,
+      "observed_error": "Local browser use is disabled in Work settings",
+      "not_attempted": "No alternate browser control, setting change, or safety-gate waiver",
+      "owned_tab_cleanup": "Browser control unavailable; previously held Chrome7 tab329396822 with1440x1000 viewport and IAB13 cannot be inspected or reset. Current tab presence not asserted.",
+      "previous_state": "unavailable",
+      "viewport_reset": true,
+      "scope": "Native browser access restored; existing p548 instance restarted after stopped services; original project334e and immutable report63cd reopened without recalculation"
+    },
+    "post_retirement_readback": {
+      "http_worker_runtime_sha256": "a02ea33de9c2b3d21e759ff0426f79066dd5f4a5fe6792f03f32c0b2bc20467a",
+      "execution_key": "b5a7314110ce6cea95301e5e4629f3565894a06f75209707253c87426d9744bb",
+      "storage_binding": "f91b6338e5204a220d7163fde4277f900fc0c12ca913edec9d7c1560f0eb06d4",
+      "worker_pid": 177019,
+      "draining": false,
+      "pending": 0,
+      "shared_engine": {
+        "pid": 174161,
+        "state": "active"
+      },
+      "genie": {
+        "pid": 175824,
+        "state": "active"
+      },
+      "current_and_rollback_preflight": "PASS; schema5 both; source identities unchanged",
+      "new_business_calculation": false
+    },
+    "merged_commit": "a094e5701fe2a61c9dde69430af3668de0ed8595",
+    "native_de_report": {
+      "run": "c61beb1661aa493793f7590d28f55e6b",
+      "result_sha256": "9e537d77080ef0e1cb8f658c390390094a3272eb824e6c87c390bae54dbc6f53",
+      "pdf_sha256": "bfb4091e7e73660c5d6e28271a49246820801885af7c5e4b47ec2f3f982421a9",
+      "inspection_sha256": "63f271c957b5472717c07076abe3dceb9d1c97e16dee5f95a286d8af6f73d8da",
+      "equipment_run": "4e092bd22d1c468c8f7333ad72b0dcb7",
+      "revision": 3,
+      "new_physical_calculation": false
+    },
+    "production_database_snapshot": {
+      "path": "/Users/chesterjohn/de-linker-data/planner-production/workspace-20261027T131332Z.sqlite3",
+      "sha256": "8c40510c08d204da865365ca1f5488391fe27fadf3f13b1398f5c5b57167f123",
+      "bytes": 163840,
+      "schema": 5,
+      "rows": {
+        "projects": 1,
+        "revisions": 7,
+        "runs": 3
+      },
+      "scope": "Consistent private-planner SQLite snapshot streamed to local disk; immutable original blobs remain in the existing store",
+      "retained_points": 1
+    },
+    "wordpress_preflight": {
+      "prior_deploy_id": "20261027T131252Z-empty-actions-15194fa7",
+      "prior_state": "archived",
+      "retained_peer_rollback": "/Users/chesterjohn/de-linker-data/planner-production/commerce-131252-preimage.tar.gz",
+      "database_snapshot": {
+        "name": "db-20261027T133045Z.sql.gz",
+        "path": "/Users/chesterjohn/de-linker-data/snapshots/db-20261027T133045Z.sql.gz",
+        "size": 7174986,
+        "sha256": "ab5a56210e00e1b28c0a0b5b7b893f1f060668d78a7c51317b7ec5cff0b396c2"
+      },
+      "scope": "linker-tools only; Commerce/CMS/cache unchanged"
+    },
+    "public_asset_readback": [
+      {
+        "path": "build/planner/assets/planner-core-CdyuiW2U.js",
+        "status": 200,
+        "mime": "application/x-javascript",
+        "sha256": "a7d11761512a299ffc55aa0d76b953c31cf86c29bf0e7f51643f51056cf9e033",
+        "matches_staged": true
+      },
+      {
+        "path": "build/planner/assets/rolldown-runtime-BWaJ3C7D.js",
+        "status": 200,
+        "mime": "application/x-javascript",
+        "sha256": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3",
+        "matches_staged": true
+      },
+      {
+        "path": "build/planner/assets/MapViewport-CkaEHGE3.js",
+        "status": 200,
+        "mime": "application/x-javascript",
+        "sha256": "6ede6b45aa54c028e7a3bdf85096d2f76b8c0b01b664f473c59bc8d156122c74",
+        "matches_staged": true
+      },
+      {
+        "path": "build/planner/assets/SceneViewport-CTy3Lh9I.js",
+        "status": 200,
+        "mime": "application/x-javascript",
+        "sha256": "e3daa3ca34234724d043cd77880f9f674c2bac7072aa2b6a086470c20fcc26f3",
+        "matches_staged": true
+      },
+      {
+        "path": "build/planner/assets/EnergyFlowChart-CeZf1cl3.js",
+        "status": 200,
+        "mime": "application/x-javascript",
+        "sha256": "f3db7074c64ac1de1a28ac329804a0a9f5e6101353ba7b818f25b2f4ed817fb5",
+        "matches_staged": true
+      },
+      {
+        "path": "build/planner/assets/planner.js",
+        "status": 200,
+        "mime": "application/x-javascript",
+        "sha256": "fe0d67b2e253662f19f03475fecd7d9723c8f42c755e4791ae05f97806ab5445",
+        "matches_staged": true
+      },
+      {
+        "path": "languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json",
+        "status": 200,
+        "mime": "application/json",
+        "sha256": "dcb6d2c77c14e7d135b1e7c0a4f848fe8ecb2bf01e6bc093fc74980f7d07c582",
+        "matches_staged": true
+      }
+    ],
+    "snapshot_retention": {
+      "removed": "/Users/chesterjohn/de-linker-data/snapshots/db-20261027T083923Z.sql.gz",
+      "removed_bytes": 7293184,
+      "retained": [
+        "db-20261021T183520Z.sql.gz",
+        "db-20261022T140810Z.sql.gz",
+        "db-20261023T232408Z.sql.gz",
+        "db-20261024T182545Z.sql.gz",
+        "db-20261025T234349Z.sql.gz",
+        "db-20261026T222742Z.sql.gz",
+        "db-20261027T110951Z.sql.gz",
+        "db-20261027T113032Z.sql.gz",
+        "db-20261027T133045Z.sql.gz"
+      ],
+      "policy": "Latest3 plus final daily point for last7days; no current reader; retained gzip streams verified to end"
+    },
+    "local_temporary_cleanup": {
+      "removed": [
+        {
+          "path": "/tmp/p548-planner-certificate.tar.gz",
+          "bytes": 498303
+        },
+        {
+          "path": "/tmp/p548-planner-certificate-source.json",
+          "bytes": 45475
+        },
+        {
+          "path": "/tmp/p548-native-certificate-de-page.png",
+          "bytes": 334348
+        },
+        {
+          "path": "/tmp/p548-production-certificate-de-page.png",
+          "bytes": 351769
+        },
+        {
+          "path": "/Users/chesterjohn/Downloads/linker-planning-af0ad4ab79464b8da02c30b6bcda6c6a-r3-de.pdf",
+          "bytes": 53809
+        }
+      ],
+      "free_bytes_before": 935624044544,
+      "free_bytes_after": 935625310208,
+      "at_utc": "2026-10-27T13:39:14.463209+00:00",
+      "scope": "Only own reconstructed transfer archives, inspected rasters and exact native-download duplicate; unique accepted PDF retained in repo"
+    },
+    "wordpress_receipt": {
+      "deploy_id": "20261027T133059Z-planner-certificate-a094e570",
+      "switch_seconds": 0.004,
+      "backup_directory": "/home/u388076051/deploy-prev/20261027T133059Z-planner-certificate-a094e570",
+      "paths": [
+        "wp-content/plugins/linker-tools"
+      ],
+      "readbacks": [
+        "Public entry/core/lazy chunks and DE catalog:200 matching staged hashes",
+        "Native EN/DE new control loaded",
+        "Native report61474209b58d4171938ac78601a54626 generated; actual PDF downloaded and source section visually accepted"
+      ],
+      "after_switch": [
+        "opcache-reset=done attempts=1"
+      ]
+    },
+    "wordpress_state": "archived_after_native_report_readback",
+    "production_report": {
+      "project": "af0ad4ab79464b8da02c30b6bcda6c6a",
+      "revision": 3,
+      "equipment_run": "522e135b6d7c4a7aaa25f095f905045d",
+      "report_run": "61474209b58d4171938ac78601a54626",
+      "locale": "de",
+      "pdf_sha256": "d4231de0d8606b9faa4e126a40ac7a584559982b60488001841fd76194963ae6",
+      "pdf_pages": 3,
+      "download": "Native customer button; actual downloaded bytes retained",
+      "visual": "Changed source section page2 inspected; no clipping; current source document revisions reflect peer Woo update",
+      "new_energy_or_pv_calculations": 0,
+      "scope": "Explicitly owned synthetic report-source case; no physical or national approval"
+    },
+    "published_at_utc": "2026-10-27T13:41:14.942268+00:00",
+    "wordpress_staging": {
+      "path": "/Users/chesterjohn/de-linker-local/p548/planner/deploy-staging",
+      "purpose": "One scoped linker-tools publication of merged PR691",
+      "owner": "548",
+      "remove_after": "Published asset/native readback or abandoned deployment; no persistent extra runtime",
+      "state": "reclaimed",
+      "logical_bytes": 10452800,
+      "free_bytes_before": 935614164992,
+      "free_bytes_after": 935625506816,
+      "at_utc": "2026-10-27T13:41:59.956422+00:00"
+    },
+    "verification_stop": "Changed-layer implementation/CI/reviews reused. Completed missing native DE1440/390 and DE worker PDF; once public assets and native report/download passed, archive and hand off. No new energy/PV/year, commerce matrix or site-wide scan.",
+    "full_goal_open": true,
+    "acceptance_record_encoding": {
+      "cause": "Native IAB screenshot API returned JPEG bytes; four captures were initially saved under PNG names, correctly forcing full CI classification",
+      "fix": "Lossless PNG encoding of the same captured pixels; no new capture, product code, CI waiver or test added",
+      "retired_ci_run": 40514484872,
+      "scope": "Cancel that redundant full run; next head has valid regular PNG/PDF/JSON acceptance records only"
     }
   },
   "production_source_continuation": {
-    "at_utc": "2026-10-27T11:49:00Z",
     "scope": "Current installed owned-principal source read only; no new calculation, product update or service restart",
     "provider": "woocommerce",
     "compatibility_origin": "woocommerce",
@@ -5708,6 +5993,911 @@
       "code": "version_unavailable",
       "status": "Unexplained transient source availability failure; subsequent same-service direct loader and original HTTP process succeeded. Not relabelled as a code fix. Peer production-change timestamps requested."
     },
-    "collaboration": "Production source/publisher and compatibility-origin completion sent to previously waiting source-authority conversation01a1684e; privacy/publisher owner informed of exact failure and subsequent success."
+    "collaboration": "Production source/publisher and compatibility-origin completion sent to previously waiting source-authority conversation01a1684e; privacy/publisher owner informed of exact failure and subsequent success.",
+    "recorded_at_utc": "2026-10-27T11:51:26.964447+00:00",
+    "observation_time_basis": "First failed native HTTP request is logged at2026-10-27T11:42:32Z. Subsequent original-loader and original-HTTP success are recorded in observation order; no precise successful-response wall-clock time was captured."
+  },
+  "workspace_usability_continuation": {
+    "baseline": "c126e9b09",
+    "owner": "548",
+    "state": "released_and_archived_after_live_readback",
+    "problems": [
+      "Native language switching discarded the chosen energy workspace form view and opened scenario settings.",
+      "Result h3 headings were not programmatically focusable, preventing the existing late sticky-bar correction while restoring a saved report."
+    ],
+    "impact": "Energy-view route, same-project native language links and result-heading focus; no model, product source, calculation or report content change",
+    "minimum_verification": {
+      "passed": "Existing siteIntegration cases extended for same-project report view, unrelated-project refusal and saved-result precedence; existing actual-project-bar case extended for heading focus and unchanged native button tab order; TypeScript passed",
+      "pending": "None for this UI release; next condition-review batch remains in same active full goal",
+      "native_passed": "Actual Chrome CSS390x844/1440x1000 EN/DE forms; native DE->EN->DE selected report view; cold saved DE mobile/EN desktop report heading below measured bars. Existing reports/results reused; no generated calculation or PDF."
+    },
+    "stop": "Reuse all accepted physics, Woo, PDF and commerce evidence. No new numerical runs, test files, instance, matrix or full-site scan.",
+    "native_diagnosis": {
+      "heading_before": {
+        "focused": true,
+        "top_px": 0.1484375,
+        "scroll_margin_top_px": 0,
+        "native_bar_bottom_px": 194
+      },
+      "fix": "Reuse existing lp-focus-target WindPress class on programmatically focused headings; no new site CSS",
+      "viewport_correction": "IAB requested390 returned CSS innerWidth587. Old size labels invalidated; native Chrome override verified actual390x844. Recheck only affected evidence in Chrome."
+    },
+    "native_report_390": {
+      "viewport_css": [
+        390,
+        844
+      ],
+      "heading_top_px": 226.9375,
+      "bar_bottom_px": 210.796875,
+      "computed_scroll_margin_top_px": 227,
+      "heading_focused": true,
+      "run": "63cd20714db04ecd87e6bcd56f2a604a",
+      "recalculation": false
+    },
+    "native_language_view": {
+      "route": "energy_view=reports",
+      "de_to_en": "PASS native header click; chosen report view=true",
+      "en_to_de": "PASS native header click; chosen report view=true",
+      "same_project": true
+    },
+    "independent_review": {
+      "spec": "PASS bb4ffe02 and final existing-WindPress-class increment",
+      "standards": "PASS bb4ffe02 and final existing-WindPress-class increment"
+    },
+    "native_report_1440": {
+      "viewport_css": [
+        1440,
+        1000
+      ],
+      "heading_top_px": 178.234375,
+      "bar_bottom_px": 162,
+      "heading_focused": true,
+      "run": "dfc304391dc64316b1db7447ac0cbb18",
+      "recalculation": false
+    },
+    "screenshots": [
+      "restored-report-before.png",
+      "restored-report-de-390.png",
+      "restored-report-en-1440.png",
+      "production-restored-report-de.png"
+    ],
+    "viewport_cleanup": "Both IAB and Chrome temporary overrides reset; one existing p548 instance reused",
+    "source_commit": "7f6dd42b8d8caae85f944a03ebaf8cf95bd2b064",
+    "merged_commit": "d07f45afe4bd9bcf7b4d61d2a11bd28c859ae66b",
+    "ci": {
+      "run": 40518708577,
+      "state": "success",
+      "repeated_runtime_suites": false
+    },
+    "production": {
+      "owner": "548",
+      "source_commit": "7f6dd42b8d8caae85f944a03ebaf8cf95bd2b064",
+      "purpose": "One scoped Tools release for accepted view/focus fixes; backend runtime unchanged",
+      "staging": "/Users/chesterjohn/de-linker-local/p548/planner/deploy-staging",
+      "reclaim": "After archived publication/readback, or candidate abandonment; one stage and no new runtime/instance",
+      "status": "archived_after_native_readback",
+      "transport": {
+        "socket": "/Users/chesterjohn/de-linker-local/p548/planner/ssh-control",
+        "purpose": "Reuse the same authorized SSH connection for native scoped deployment; no global SSH config change",
+        "idle_lifetime_seconds": 120,
+        "reclaim": "Exit only this task-owned master after publication/readback; automatic idle expiry otherwise",
+        "preflight_latest": "20261027T135221Z-about-heading-9f47424e",
+        "preflight_state": "archived",
+        "three_native_read_seconds": 9.49,
+        "state": "task-owned master closed after native archive"
+      },
+      "peer_rollback": {
+        "deploy_id": "20261027T135221Z-about-heading-9f47424e",
+        "path": "/Users/chesterjohn/de-linker-data/planner-production/peer-about-before-ui698.tar.gz",
+        "bytes": 4505,
+        "purpose": "Preserve peer current scoped recovery before native global archive pruning",
+        "reclaim": "After peer confirms replacement or recovery represented by a verified retained full backup; no duplicate stage",
+        "state": "duplicate_tar_reclaimed_after_exact_bytes_match",
+        "replacement_full_backup": "/Users/chesterjohn/de-linker-data/cutover-20261027-1144"
+      },
+      "snapshot": {
+        "name": "db-20261027T144332Z.sql.gz",
+        "path": "/Users/chesterjohn/de-linker-data/snapshots/db-20261027T144332Z.sql.gz",
+        "size": 7177765,
+        "sha256": "782d305dcb03fd549ce85c695346c40b7ba73cea34dff912a2084c18a0ddaf9b"
+      },
+      "receipt": {
+        "deploy_id": "20261027T144342Z-planner-views-7f6dd42b",
+        "switch_seconds": 0.003,
+        "backup_directory": "/home/u388076051/deploy-prev/20261027T144342Z-planner-views-7f6dd42b",
+        "paths": [
+          "wp-content/plugins/linker-tools"
+        ],
+        "readbacks": [
+          "Seven public build/catalog resources200 with exact frozen-stage hashes",
+          "Actual production DE existing report restored; heading255.80px below measured bars194px; same original run61474209",
+          "Native DE->EN link preserved project af0ad4 and energy_view=reports; actual EN report form selected, no new calculation"
+        ],
+        "after_switch": [
+          "opcache-reset=done attempts=1"
+        ]
+      },
+      "public_assets": [
+        {
+          "path": "build/planner/assets/planner-core-TG293mOu.js",
+          "status": 200,
+          "mime": "application/x-javascript",
+          "matches_frozen_stage": true,
+          "sha256": "97e6714473a6ba287d2907b9001434f7e34df2d844700f26f104e5d66198b804"
+        },
+        {
+          "path": "build/planner/assets/rolldown-runtime-BWaJ3C7D.js",
+          "status": 200,
+          "mime": "application/x-javascript",
+          "matches_frozen_stage": true,
+          "sha256": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3"
+        },
+        {
+          "path": "build/planner/assets/MapViewport-ThxhV-F9.js",
+          "status": 200,
+          "mime": "application/x-javascript",
+          "matches_frozen_stage": true,
+          "sha256": "90b1f686607d0d531ec494c34a67c153676e87d345d768e7901e7e7623927955"
+        },
+        {
+          "path": "build/planner/assets/SceneViewport-BFvEHhYB.js",
+          "status": 200,
+          "mime": "application/x-javascript",
+          "matches_frozen_stage": true,
+          "sha256": "a1f205d5f1a78696e466ba593053a7a7257e52ea940c5a2c6fa6da2316a79f95"
+        },
+        {
+          "path": "build/planner/assets/EnergyFlowChart-DtzipPmk.js",
+          "status": 200,
+          "mime": "application/x-javascript",
+          "matches_frozen_stage": true,
+          "sha256": "a3176005f6f7a0c6276b6a4ec438dee02c413505bd68dea91796238f18c03f5a"
+        },
+        {
+          "path": "build/planner/assets/planner.js",
+          "status": 200,
+          "mime": "application/x-javascript",
+          "matches_frozen_stage": true,
+          "sha256": "dcdffef43f010c15ef54dfeda5b994a7181f4d6ed37fdaae51b59be0fb3fb7b4"
+        },
+        {
+          "path": "languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json",
+          "status": 200,
+          "mime": "application/json",
+          "matches_frozen_stage": true,
+          "sha256": "dcb6d2c77c14e7d135b1e7c0a4f848fe8ecb2bf01e6bc093fc74980f7d07c582"
+        }
+      ],
+      "completed_at_utc": "2026-10-27T14:58:33.755980+00:00",
+      "live_readback": {
+        "project": "af0ad4ab79464b8da02c30b6bcda6c6a",
+        "revision": 3,
+        "run": "61474209b58d4171938ac78601a54626",
+        "viewport": "Default IAB CSS587x796; no390/1440 size claim",
+        "heading_top_px": 255.796875,
+        "bar_bottom_px": 194,
+        "focused": true,
+        "language": "DE->EN native link; same project and selected reports view",
+        "new_calculations": 0,
+        "new_pdf": 0
+      },
+      "staging_cleanup": {
+        "logical_bytes": 10453342,
+        "free_bytes_before": 930400333824,
+        "free_bytes_after": 930411618304,
+        "source_rebuildable_from": "7f6dd42b8d8caae85f944a03ebaf8cf95bd2b064"
+      },
+      "snapshot_retention": {
+        "removed": [
+          {
+            "path": "/Users/chesterjohn/de-linker-data/snapshots/db-20261027T110951Z.sql.gz",
+            "bytes": 7341942
+          }
+        ],
+        "retained": [
+          "db-20261021T183520Z.sql.gz",
+          "db-20261022T140810Z.sql.gz",
+          "db-20261023T232408Z.sql.gz",
+          "db-20261024T182545Z.sql.gz",
+          "db-20261025T234349Z.sql.gz",
+          "db-20261026T222742Z.sql.gz",
+          "db-20261027T113032Z.sql.gz",
+          "db-20261027T133045Z.sql.gz",
+          "db-20261027T144332Z.sql.gz"
+        ],
+        "verification": "New point verified by native streamed snapshot; unchanged retained streams reuse previous completed integrity proof",
+        "policy": "Latest3 plus final daily point for7days; no active reader on retired file"
+      },
+      "duplicate_peer_recovery_cleanup": [
+        {
+          "removed": "/Users/chesterjohn/de-linker-data/planner-production/commerce-131252-preimage.tar.gz",
+          "bytes": 7253,
+          "equivalent_retained_full_backup": "/Users/chesterjohn/de-linker-data/cutover-20261027-1144",
+          "leaves": [
+            "wp-content/plugins/linker-commerce/content/windpress/account-links.css"
+          ],
+          "sha256": {
+            "wp-content/plugins/linker-commerce/content/windpress/account-links.css": "2c55f55dcdbaef00f5b1379b61130732649e879ecdc293fd763d3fa4e0d24029"
+          }
+        },
+        {
+          "removed": "/Users/chesterjohn/de-linker-data/planner-production/peer-about-before-ui698.tar.gz",
+          "bytes": 4505,
+          "equivalent_retained_full_backup": "/Users/chesterjohn/de-linker-data/cutover-20261027-1144",
+          "leaves": [
+            "wp-content/plugins/linker-commerce/content/windpress/marketing-rhythm.css"
+          ],
+          "sha256": {
+            "wp-content/plugins/linker-commerce/content/windpress/marketing-rhythm.css": "7e37677b73350dd70b91de5e0cae19fccc67341692ab7f3069199a8592372a48"
+          }
+        }
+      ]
+    }
+  },
+  "project_device_condition_review": {
+    "state": "published_and_native_read_back",
+    "scope": "Per-device/per-document literal model/firmware checks; declared-vs-Woo model text reconciliation; no aggregate applicability/ranking/country approval",
+    "source_authority": "Selected versioned Woo product and document evidence only; optional project declarations never become manufacturer facts",
+    "input_contract": "equipment_condition_inputs schema1; per single/unit/controller exact binding; null unknown; blank-only nonnull rejected; nonblank text exact",
+    "backend_checks": "Existing18 certificate cases passed; final affected blank-input case passed; selected-source strict mypy/ruff and schema parity passed. No physics/year/whole-site suite.",
+    "frontend_checks": "Existing scoped domain/data and saved-plant fixture passed; tsc passed; actual EquipmentKernel -> native PHP current_access(null) -> strict JS seam passed; no live permission claim.",
+    "report_checks": "Four affected report fixtures passed; same equipment/API/report condition review and original source identity; historical immutable read unchanged; subset scope and declaration mismatch enforced. Last empty-device wording checked against existing captured payload only.",
+    "synthetic_seam": {
+      "run": "611695f7f23740bb831d1abd92534459",
+      "revision": 1,
+      "devices": 3,
+      "documents": 1,
+      "identity": "different_text even when compared declared model is listed and firmware010101 matches",
+      "other_devices": "unprovided with no files",
+      "annex": "unresolved",
+      "open_obligations": 10,
+      "native_access": "unavailable/null without current authority",
+      "captures": [
+        {
+          "name": "p548-conditions-equipment-certificates.json",
+          "sha256": "d875e4a9682dee62d0139f7ceeeb6f7688c40e054fa270ea37a62123fb38b867",
+          "bytes": 6350,
+          "kind": "Synthetic actual EquipmentKernel/HTTP-view fixture; not a native-site or live-access claim",
+          "top_keys": [
+            "applicability",
+            "condition_review",
+            "documents",
+            "inspections",
+            "products",
+            "schema_version",
+            "scope",
+            "run_id",
+            "project_id",
+            "revision",
+            "manifest_sha256",
+            "basis_sha256"
+          ]
+        },
+        {
+          "name": "p548-conditions-equipment-run.json",
+          "sha256": "6f7953fce20526c115085570a178ab29daf0e5983fb51a8853deefc3a4ebef69",
+          "bytes": 110306,
+          "kind": "Synthetic actual EquipmentKernel/HTTP-view fixture; not a native-site or live-access claim",
+          "top_keys": [
+            "id",
+            "project_id",
+            "revision",
+            "state",
+            "is_current",
+            "manifest_sha256",
+            "manifest",
+            "result_sha256",
+            "result",
+            "error"
+          ]
+        }
+      ]
+    },
+    "copy_review": {
+      "frontend": {
+        "initial_draft": "69 initial EN/DE pairs; state assertion project unchanged, broad applicability/page labels and physical-identity implication required correction",
+        "independent_reviewer": "zerez_certificate_source",
+        "decisions": [
+          "Removed unsupported unchanged-project claim",
+          "First-page literal model/firmware scope stated",
+          "No applies/approval or physical-equivalence inference",
+          "Natural formal German; historical selected-result guidance"
+        ],
+        "final": "76 reviewed pairs present in native cf892 planner binding;71 new entries,5existing translations reused;2080 prior translations and metadata preserved. msgfmt/native WP-CLI reproduction passed."
+      },
+      "report": {
+        "initial_draft": "Project device observations; Model listed/not listed; project-model identity and global no-document empty text",
+        "independent_reviewer": "root",
+        "decisions": [
+          "Use Project device details with explicit project-entered device values",
+          "Model listed/not listed on this page",
+          "Literal model identity only; selected frozen run/revision explicit",
+          "Empty-document statement per device only"
+        ],
+        "final_en_empty": "No certificate or related product document was recorded for this device.",
+        "final_de_empty": "Für dieses Gerät wurden keine Zertifikate oder zugehörigen Produktunterlagen erfasst.",
+        "verdict": "PASS all new labels/reasons and final empty-state increment"
+      }
+    },
+    "remaining": "This increment is closed. Full goal548 remains active for the roof-to-energy and downstream live paths, manufacturer evidence, installation scope and country/DSO coverage, with the recorded source boundaries.",
+    "independent_review": {
+      "spec": "Original fixed d07f45afe..bfbbc07e complete. One confirmed source-note projection issue fixed in assistant_context.py; existing EN/DE privacy cases2PASS, strict mypy/ruffPASS. Root reviewed the increment and localization path.",
+      "standards": "Original fixed d07f45afe..bfbbc07e complete. One confirmed accepted4096-character field PDF LayoutError fixed using existing Table splitInRow; extended existing report case1PASS, strict mypy/ruffPASS. Independent Spec reviewer reviewed the small final PDF increment and passed; no repeated tests."
+    },
+    "review_fixes": [
+      "Free-form per-device source notes remain in owned reports but are excluded from Genie projection in both locales.",
+      "Accepted long device values continue across PDF pages without truncation, including one4096-character token and spaced/escaped source note."
+    ],
+    "packaging": {
+      "source_commit": "bfbbc07e5beab1ecba5299b92b8ebfa21e77d976",
+      "pipeline": "Existing apps/planner Vite build + planner source manifest + Tools outer manifest; no wp-scripts overwrite",
+      "checks": "Both manifest checks and existing built-module graph check PASS; prior tsc/domain/component checks reused",
+      "outputs": {
+        "build/planner/assets/planner.js": "8fbe7a641821dc1ff73971f600f05ce892f195c82486e7716a0dafc625923882",
+        "build/planner/source-manifest.json": "2a9be7bb21337d61b96b9e8c253661eaafdff5684009c0587b4c1f785706c4c4",
+        "build/planner/vite-manifest.json": "2d999736af1f34596ef3d9fd01b06548356e6e2c580442f3cb9df202c381b0b2",
+        "build/manifest.json": "c47682b2b2e225fa55d90f322b5df7f94401211ecab6c44874a0e4cff2c3ae0f",
+        "languages/linker-tools-de_DE_formal.po": "5bcb59c70fd2805ebad96626b0ab0558db6e26318a3fa8c941bcd879488a648a",
+        "languages/linker-tools-de_DE_formal.mo": "1c18b6c21668198df96347308fceb297f90cc6d2e88cd489e14cfea7b82dacc6",
+        "languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json": "bed04a053d168842b77f41b8070371f578ed72345889ce1c0dca4753e1543d38"
+      }
+    },
+    "delivery_frontier_reconciliation": {
+      "basis": "Current issue548 contract and later existing acceptance entries; no tests/source changes",
+      "historical_scalars_corrected": [
+        "current_frontier",
+        "pending"
+      ],
+      "manufacturer_temperature_boundary": "BAT-C1954/1955 current Woo operating_temp_c -20..55°C has no physical measurement qualifier; existing scenario battery_temperature_c also lacks cell/ambient basis. Direct guard is not established. Original S03 p2 distinguishes Cell Temperature and Atmosphere environment temperature. No false thermal-model patch or product change made.",
+      "installation_boundary": "Current cited H2 manual p43/printed22 requires separate grid AC breakers and recommends50A for10-20K,63A for25-30K; these facts are not yet maintained as Woo engineering figures. No second authority or Python constant table added. Full BOS source, exact connector identity and site protection/conductor design remain unestablished."
+    },
+    "native_local": {
+      "project": "2e8444927ed541308da3822a34cd2b43",
+      "revision": 4,
+      "declared_model": "GW75K-ET-G10",
+      "declared_firmware": "010102",
+      "note": "Explicit synthetic/proposed firmware only, no installed-device claim",
+      "workflow": "Chrome customer UI save -> native WP gateway -> matched HTTP/registered worker -> result -> EN/DE native reports -> actual IAB Downloads; optional source checkbox leftfalse and saved device review still included",
+      "runs": [
+        {
+          "id": "0ee6c2d603d1419a915a4219c32156d5",
+          "revision": 4,
+          "manifest_sha256": "3c158080cd349fd64ff3798ca84ffc93091718bc467387a755cc7fa1e598edb8",
+          "result_sha256": "bbe6d488e25b9278194b1162d24e7f795f7bba18542fe8797cf40974001dece9",
+          "kind": "qualify_woo_equipment_v1",
+          "dependencies": {
+            "certificate.doc-2228549d7c1dacdd30ac0601dc5950b8bdc078e13c6069cc5519229e4ad77716.raw": "da4d0f336bb0b6e7828ad18f4e89534698383d0191c28a4c4dedbb7a94f4c61f",
+            "certificate.doc-b11bf27e66e770e8dbd27085b04d6a43fdf55e351f345615471c69f80eec0f68.raw": "d7b7f3908f84c129234d5de8edc78dbe3893cfde03bba0c953d231fff72dcdd4",
+            "certificate.doc-d62395cedd12833066d6fb6dd0ddc47aab4f7a63d418de339f23b5e7b8238892.raw": "1c767b82edadcf91af46d489a9f95f11f5c68ef61e07e36d0612d360de7b2ade"
+          }
+        },
+        {
+          "id": "80435baad7db4fdbad38b47684a9a06c",
+          "revision": 4,
+          "manifest_sha256": "43cdddf7d47a0838cc793dd553bc3aa0493efe237acaf618de4882bbfcbcaf38",
+          "result_sha256": "039edce3181633e8ad9c691759815c0611ac414072e8327b55589f65e5d1e116",
+          "kind": "planning_report_v1",
+          "dependencies": {
+            "certificate_inspection": "cf94e92f6bfadb90fb83a9afcd86d216ce1335694f5944e57670a6eec568f5cc",
+            "materials_model": "e874517c6ea421d5f621874366bae0558c1ab4a3940a7c244a506db894c7a994",
+            "prepared_asset_content": "64098f7c80f99bf6a55b85a15603a7b7686e196b5f03d4bc5472225127ba224f",
+            "prepared_asset_metadata": "d6053161420516b91ca779da43094cce8c2977e815f54fcdff6877de634b9d6b",
+            "prepared_attachment.bill_of_materials_csv.content": "dce27495bf57062255eda03cd117c2a9de262f79d7de7ec55b9574872b09c511",
+            "prepared_attachment.bill_of_materials_csv.metadata": "5a7216096acaae9915c2e9e3cd88051c5c73e6e5129f4589010f5b9dbe126e03",
+            "report_model": "a8a49cbf1432784323aa956350e9ef771b5d71449c63a0a6375f1c75daaf934c",
+            "report_source": "ba7e3601c5065d681689ae1d26b25061c05b98f9f61f05ccf4526249e1c5502c"
+          }
+        },
+        {
+          "id": "37975b5e41e049f8b600791895790e7f",
+          "revision": 4,
+          "manifest_sha256": "1957d7ee039e077d49b3689c0d241a437fc72e0b8fd0f28123ff4e36cd4129cd",
+          "result_sha256": "4fe45497b7483165f5f2d8f58f789dd8430682bd73e75f55caad41e06600b761",
+          "kind": "planning_report_v1",
+          "dependencies": {
+            "certificate_inspection": "450fa4087f58392099245a2a38c6615102dbce5bce0a073885d672498e63a1e4",
+            "materials_model": "e874517c6ea421d5f621874366bae0558c1ab4a3940a7c244a506db894c7a994",
+            "prepared_asset_content": "1f4bc81d7b03c5983d338493dc22b9c2ff0912768ffd6f588281318e90df6de8",
+            "prepared_asset_metadata": "03db448d62dc3d7b1acf5d4b28f945950c08acd4ba28ab55b7cc561bf85c7a82",
+            "prepared_attachment.bill_of_materials_csv.content": "d1f7fe6bc60d644fba3acbb05e965fd164a50cabc9b4415a35067f8acb9e0d1f",
+            "prepared_attachment.bill_of_materials_csv.metadata": "b6cfdf8bd60f3965960726429b4396a7e3973a4e1972536ff69ef4b01339efdc",
+            "report_model": "e6175edb5cc5c184df2e7e8e1b5faeb78494958d76299b9ae180b315ae6dd3b1",
+            "report_source": "4b3624f3063201635a4069f77b4a0a08ad16b43b0bc9d646a93cd85a8a01a953"
+          }
+        }
+      ],
+      "per_file_result": "3associated files: SGS model unresolved/firmware conflict;4105model listed/firmware conflict;DoC both unresolved; model_identity same_text; annex and10obligations unresolved",
+      "pdfs": {
+        "en": {
+          "file": "device-conditions-en.pdf",
+          "bytes": 66098,
+          "sha256": "64098f7c80f99bf6a55b85a15603a7b7686e196b5f03d4bc5472225127ba224f",
+          "pages": 6,
+          "download": "Actual customer button via IAB. Chrome OS Save As event was unavailable while Mac locked; no repeated click."
+        },
+        "de": {
+          "file": "device-conditions-de.pdf",
+          "bytes": 67425,
+          "sha256": "1f4bc81d7b03c5983d338493dc22b9c2ff0912768ffd6f588281318e90df6de8",
+          "pages": 6,
+          "download": "Actual customer button via IAB. Chrome OS Save As event was unavailable while Mac locked; no repeated click."
+        }
+      },
+      "ui": {
+        "scope": "Changed fields/results through shared design system; actual ChromeCSS measurements, not requestedIAB overrides",
+        "matrix": [
+          "EN1440x1000 report",
+          "EN390x844 inputs",
+          "DE1440x1000 inputs",
+          "DE390x844 report"
+        ],
+        "screenshots": [
+          "device-report-en-1440.png",
+          "device-input-en-390.png",
+          "device-input-de-1440.png",
+          "device-report-de-390.png"
+        ],
+        "no_new_css": true
+      },
+      "pdf_visual": "Changed pages3–6 in both actual6page downloads inspected; identity/source/ref, differing010102/010101, document-specific outcomes and10unresolved obligations remain readable with no clipping or overlaps."
+    },
+    "tools_publication": {
+      "state": "archived_after_actual_native_readback",
+      "owner": "548/root",
+      "source_commit": "8931d08ba21c606078a9c6f42a081592f4052dc1",
+      "staging": "/Users/chesterjohn/de-linker-local/p548/planner/deploy-staging",
+      "purpose": "One scoped immutable Tools publication after accepted native bilingual device reports; preserve all peer plugins/CMS",
+      "reclaim": "After native archive/readback or abandonment; no new instance/runtimecopy",
+      "snapshot": {
+        "name": "db-20261027T154740Z.sql.gz",
+        "path": "/Users/chesterjohn/de-linker-data/snapshots/db-20261027T154740Z.sql.gz",
+        "size": 7223549,
+        "sha256": "35b6e5f6a377f8af42596f94ac0f25ada82076bb0e5972408fec162c9244f6c2"
+      },
+      "preflight": {
+        "latest": "20261027T144342Z-planner-views-7f6dd42b",
+        "state": "archived"
+      },
+      "receipt": {
+        "deploy_id": "20261027T155134Z-planner-devices-8931d08b",
+        "switch_seconds": 0.003,
+        "backup_directory": "/home/u388076051/deploy-prev/20261027T155134Z-planner-devices-8931d08b",
+        "paths": [
+          "wp-content/plugins/linker-tools"
+        ],
+        "readbacks": [
+          "7publicbuild/catalogresources200withfrozenhashes; actualversionedentryexecuted",
+          "LiveENsavedprojectaf0ad4revision4 equipmentd1c2f83b; per-filefirmware010102vs010101",
+          "NativeDEsameprojectandrun; newreport1c94479f plusactual6pagePDFdownload; page4visualPASS"
+        ],
+        "after_switch": [
+          "opcache-reset=done attempts=1"
+        ]
+      },
+      "snapshot_retention": {
+        "policy": "Latest3 plus finaldaily point7days; existingprotectedbaselinefullbackups retained; newstreamverified, unchangedpreviousintegrityproofreused",
+        "removed": [
+          {
+            "path": "/Users/chesterjohn/de-linker-data/snapshots/db-20261027T113032Z.sql.gz",
+            "bytes": 7341839
+          }
+        ],
+        "retained": [
+          "db-20261021T183520Z.sql.gz",
+          "db-20261022T140810Z.sql.gz",
+          "db-20261023T232408Z.sql.gz",
+          "db-20261024T182545Z.sql.gz",
+          "db-20261025T234349Z.sql.gz",
+          "db-20261026T222742Z.sql.gz",
+          "db-20261027T133045Z.sql.gz",
+          "db-20261027T144332Z.sql.gz",
+          "db-20261027T154740Z.sql.gz"
+        ],
+        "free_bytes_before": 933013041152,
+        "free_bytes_after": 933020377088
+      },
+      "public_assets": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-27T15:54:49.035558+00:00",
+        "publication": "20261027T155134Z-planner-devices-8931d08b",
+        "source_commit": "8931d08ba21c606078a9c6f42a081592f4052dc1",
+        "frozen_stage": "/Users/chesterjohn/de-linker-local/p548/planner/deploy-staging/linker-tools",
+        "vite_manifest_sha256": "2d999736af1f34596ef3d9fd01b06548356e6e2c580442f3cb9df202c381b0b2",
+        "entry_version": "8fbe7a641821dc1ff73971f600f05ce892f195c82486e7716a0dafc625923882",
+        "entry_version_basis": "native Planner/Application.php hash_file sha256 passed to wp_register_script_module",
+        "request_policy": "One normal public HTTPS GET per exact asset URL; native entry ver only, no cache-bypass header or random parameter; no retry",
+        "count": 7,
+        "results": [
+          {
+            "file": "build/planner/assets/EnergyFlowChart-mQ75iXrK.js",
+            "url": "https://de-linker.com/wp-content/plugins/linker-tools/build/planner/assets/EnergyFlowChart-mQ75iXrK.js",
+            "expected_sha256": "65fdf7603f2338e35d501f1f09e94575ea1c6a63a328a445b5f159e636765278",
+            "expected_bytes": 555899,
+            "status": 200,
+            "mime": "application/x-javascript",
+            "sha256": "65fdf7603f2338e35d501f1f09e94575ea1c6a63a328a445b5f159e636765278",
+            "bytes": 555899,
+            "final_url": "https://de-linker.com/wp-content/plugins/linker-tools/build/planner/assets/EnergyFlowChart-mQ75iXrK.js",
+            "headers": {
+              "Content-Type": "application/x-javascript",
+              "Content-Length": "555899",
+              "Cache-Control": "public, max-age=604800",
+              "ETag": "\"87b7b-6ae0c0fa-f0593bc03dafa07c;;;\"",
+              "Last-Modified": "Tue, 27 Oct 2026 15:19:22 GMT",
+              "Server": "LiteSpeed"
+            },
+            "matches_frozen_sha256": true,
+            "mime_expected": true,
+            "passed": true
+          },
+          {
+            "file": "build/planner/assets/MapViewport-BCcUyCQx.js",
+            "url": "https://de-linker.com/wp-content/plugins/linker-tools/build/planner/assets/MapViewport-BCcUyCQx.js",
+            "expected_sha256": "1e78e4a2cb43e75026eb2d8030a3b6d519a209902790000705a9c621af2be27a",
+            "expected_bytes": 1189296,
+            "status": 200,
+            "mime": "application/x-javascript",
+            "sha256": "1e78e4a2cb43e75026eb2d8030a3b6d519a209902790000705a9c621af2be27a",
+            "bytes": 1189296,
+            "final_url": "https://de-linker.com/wp-content/plugins/linker-tools/build/planner/assets/MapViewport-BCcUyCQx.js",
+            "headers": {
+              "Content-Type": "application/x-javascript",
+              "Content-Length": "1189296",
+              "Cache-Control": "public, max-age=604800",
+              "ETag": "\"1225b0-6ae0c0fa-897631fbfe537ef9;;;\"",
+              "Last-Modified": "Tue, 27 Oct 2026 15:19:22 GMT",
+              "Server": "LiteSpeed"
+            },
+            "matches_frozen_sha256": true,
+            "mime_expected": true,
+            "passed": true
+          },
+          {
+            "file": "build/planner/assets/SceneViewport-GKKuY2HY.js",
+            "url": "https://de-linker.com/wp-content/plugins/linker-tools/build/planner/assets/SceneViewport-GKKuY2HY.js",
+            "expected_sha256": "31cafa4eabf0d2d62729e7973e8b3e938c7854202ecbce32cecb77eb35b23b00",
+            "expected_bytes": 1549129,
+            "status": 200,
+            "mime": "application/x-javascript",
+            "sha256": "31cafa4eabf0d2d62729e7973e8b3e938c7854202ecbce32cecb77eb35b23b00",
+            "bytes": 1549129,
+            "final_url": "https://de-linker.com/wp-content/plugins/linker-tools/build/planner/assets/SceneViewport-GKKuY2HY.js",
+            "headers": {
+              "Content-Type": "application/x-javascript",
+              "Content-Length": "1549129",
+              "Cache-Control": "public, max-age=604800",
+              "ETag": "\"17a349-6ae0c0fa-eeb24a687eedf43d;;;\"",
+              "Last-Modified": "Tue, 27 Oct 2026 15:19:22 GMT",
+              "Server": "LiteSpeed"
+            },
+            "matches_frozen_sha256": true,
+            "mime_expected": true,
+            "passed": true
+          },
+          {
+            "file": "build/planner/assets/planner-core-CMTG8QwD.js",
+            "url": "https://de-linker.com/wp-content/plugins/linker-tools/build/planner/assets/planner-core-CMTG8QwD.js",
+            "expected_sha256": "fe6bc3c1826a19b9da35d4cf7f23188c54879cde580fbf5fcd894343a5bed439",
+            "expected_bytes": 1064394,
+            "status": 200,
+            "mime": "application/x-javascript",
+            "sha256": "fe6bc3c1826a19b9da35d4cf7f23188c54879cde580fbf5fcd894343a5bed439",
+            "bytes": 1064394,
+            "final_url": "https://de-linker.com/wp-content/plugins/linker-tools/build/planner/assets/planner-core-CMTG8QwD.js",
+            "headers": {
+              "Content-Type": "application/x-javascript",
+              "Content-Length": "1064394",
+              "Cache-Control": "public, max-age=604800",
+              "ETag": "\"103dca-6ae0c0fa-877f078f7d75fd4b;;;\"",
+              "Last-Modified": "Tue, 27 Oct 2026 15:19:22 GMT",
+              "Server": "LiteSpeed"
+            },
+            "matches_frozen_sha256": true,
+            "mime_expected": true,
+            "passed": true
+          },
+          {
+            "file": "build/planner/assets/planner.js",
+            "url": "https://de-linker.com/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=8fbe7a641821dc1ff73971f600f05ce892f195c82486e7716a0dafc625923882",
+            "expected_sha256": "8fbe7a641821dc1ff73971f600f05ce892f195c82486e7716a0dafc625923882",
+            "expected_bytes": 1310,
+            "status": 200,
+            "mime": "application/x-javascript",
+            "sha256": "8fbe7a641821dc1ff73971f600f05ce892f195c82486e7716a0dafc625923882",
+            "bytes": 1310,
+            "final_url": "https://de-linker.com/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=8fbe7a641821dc1ff73971f600f05ce892f195c82486e7716a0dafc625923882",
+            "headers": {
+              "Content-Type": "application/x-javascript",
+              "Content-Length": "1310",
+              "Cache-Control": "public, max-age=604800",
+              "ETag": "\"51e-6ae0c0fa-4ca31e1e8740f6e5;;;\"",
+              "Last-Modified": "Tue, 27 Oct 2026 15:19:22 GMT",
+              "Server": "LiteSpeed"
+            },
+            "matches_frozen_sha256": true,
+            "mime_expected": true,
+            "passed": true
+          },
+          {
+            "file": "build/planner/assets/rolldown-runtime-BWaJ3C7D.js",
+            "url": "https://de-linker.com/wp-content/plugins/linker-tools/build/planner/assets/rolldown-runtime-BWaJ3C7D.js",
+            "expected_sha256": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3",
+            "expected_bytes": 911,
+            "status": 200,
+            "mime": "application/x-javascript",
+            "sha256": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3",
+            "bytes": 911,
+            "final_url": "https://de-linker.com/wp-content/plugins/linker-tools/build/planner/assets/rolldown-runtime-BWaJ3C7D.js",
+            "headers": {
+              "Content-Type": "application/x-javascript",
+              "Content-Length": "911",
+              "Cache-Control": "public, max-age=604800",
+              "ETag": "\"38f-6ae0c0fa-7b9c175669d03b23;;;\"",
+              "Last-Modified": "Tue, 27 Oct 2026 15:19:22 GMT",
+              "Server": "LiteSpeed"
+            },
+            "matches_frozen_sha256": true,
+            "mime_expected": true,
+            "passed": true
+          },
+          {
+            "file": "languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json",
+            "url": "https://de-linker.com/wp-content/plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json",
+            "expected_sha256": "bed04a053d168842b77f41b8070371f578ed72345889ce1c0dca4753e1543d38",
+            "expected_bytes": 217282,
+            "status": 200,
+            "mime": "application/json",
+            "sha256": "bed04a053d168842b77f41b8070371f578ed72345889ce1c0dca4753e1543d38",
+            "bytes": 217282,
+            "final_url": "https://de-linker.com/wp-content/plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json",
+            "headers": {
+              "Content-Type": "application/json",
+              "Content-Length": "217282",
+              "ETag": "\"350c2-6ae0bf1a-56097c714d2887cf;;;\"",
+              "Last-Modified": "Tue, 27 Oct 2026 15:11:22 GMT",
+              "Server": "LiteSpeed"
+            },
+            "matches_frozen_sha256": true,
+            "mime_expected": true,
+            "passed": true
+          }
+        ],
+        "initial_classification": {
+          "status": "mismatch_requires_diagnosis",
+          "reason": "Local MIME allowlist excluded observed application/x-javascript; all seven HTTP statuses and frozen byte hashes already matched."
+        },
+        "mime_interpretation": "application/x-javascript is the observed JavaScript MIME. The initial local allowlist was too narrow; parent confirmed actual customer DOM entry version and completed new device condition flow. Classification corrected using the same retained responses.",
+        "network_request_count": 7,
+        "repeated_samples": 0,
+        "mismatches": []
+      },
+      "completed_at_utc": "2026-10-27T16:01:07.251698+00:00",
+      "staging_cleanup": {
+        "logical_bytes": 10521616,
+        "free_bytes_before": 933008183296,
+        "free_bytes_after": 933018501120,
+        "rebuildable_source_commit": "8931d08ba21c606078a9c6f42a081592f4052dc1"
+      }
+    },
+    "candidate_delivery": {
+      "source": "8931d08ba21c606078a9c6f42a081592f4052dc1",
+      "merge": "9583535e5a0caa7205fe7e1c101d44948be72913",
+      "pr": 702,
+      "ci": 40530896930,
+      "ci_status": "All required checks SUCCESS; reused once, no rerun after nativeQA"
+    },
+    "local_install": {
+      "candidate_runtime_sha256": "d6fb634ea70c8cacc1f65f91b7a0c0795f7c32ba2d8d80aec5c32aae83cef9ee",
+      "source_head_at_freeze": "8931d08ba21c606078a9c6f42a081592f4052dc1",
+      "active_at_utc": "2026-10-27T15:28:13.639924+00:00",
+      "http_identity": {
+        "runtime_sha256": "d6fb634ea70c8cacc1f65f91b7a0c0795f7c32ba2d8d80aec5c32aae83cef9ee",
+        "execution_key": "8f1545cc17b0e2d7b45afe7926a8242a2305d769585012a7daa74e6d9c3df69e",
+        "storage_binding": "ec4c7866c5a15b82fcb94096a143b7e77f8801ac38153cb146e673fe1b3ea0d9"
+      },
+      "worker_pid": 5048,
+      "http_group_pid": 4962,
+      "post_install_control": {
+        "draining": false,
+        "pending": 0,
+        "quiescent": false,
+        "schema_version": 1,
+        "states": {},
+        "storage_binding": "ec4c7866c5a15b82fcb94096a143b7e77f8801ac38153cb146e673fe1b3ea0d9"
+      },
+      "protected_table_hashes_unchanged": true,
+      "protected_wp_group_unchanged": true,
+      "protected_genie_state_unchanged": true,
+      "feed_unchanged": true,
+      "retained_carrier_count": 2,
+      "removed_carriers": [
+        {
+          "directory": "/Users/chesterjohn/de-linker-local/p548/planner/runtime-releases/a6e6cc4324a76e060a60ab5407a2b027f54d75f1ccecd60df57fb9eadb8499d5",
+          "runtime_sha256": "a6e6cc4324a76e060a60ab5407a2b027f54d75f1ccecd60df57fb9eadb8499d5",
+          "logical_bytes": 1812971,
+          "retained_runtime_blob": "/Users/chesterjohn/de-linker-local/p548/planner/workspace/blobs/a6/a6e6cc4324a76e060a60ab5407a2b027f54d75f1ccecd60df57fb9eadb8499d5",
+          "blob_sha256_verified": true,
+          "no_process_references": true
+        }
+      ]
+    },
+    "production_activation": {
+      "status": "private_pair_active_retention_complete",
+      "source_commit": "8931d08ba21c606078a9c6f42a081592f4052dc1",
+      "merged_commit": "9583535e5a0caa7205fe7e1c101d44948be72913",
+      "ci_run": 40530896930,
+      "database_backup": {
+        "owner": "548 project device condition review",
+        "created_at_utc": "2026-10-27T15:48:28.689184+00:00",
+        "path": "/Users/chesterjohn/de-linker-data/planner-production/workspace-20261027T154822Z.sqlite3",
+        "bytes": 163840,
+        "sha256": "eb6d6b19afc9a6e98b539a5a1e6116a457f2af46d0a1b202fbefcac3fe0e738a",
+        "quick_check": "ok",
+        "schema_version": 5,
+        "schema_sha256": "136fc2aca7aa4329b9cbcf57b5bf7f857a43131816762d7d7b15f38196874826",
+        "tables": {
+          "artifacts": {
+            "count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "evaluation_routes": {
+            "count": 5,
+            "sha256": "d975e642ec4f4a3e3e5e60e8f7a6de1ab4f973a51528d659c313b98200a086da"
+          },
+          "handoffs": {
+            "count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "idempotency": {
+            "count": 20,
+            "sha256": "1364baaf1ddf2e9bd58e108688415094813b50945d53bc3dd34f16a223a54256"
+          },
+          "jobs": {
+            "count": 5,
+            "sha256": "cb6608bb6f09facd4dd760156eea8642eec99327b0eaf96ef3b5e23a6b5b875e"
+          },
+          "ownership_transfers": {
+            "count": 1,
+            "sha256": "65b703ae22ca17808c72fab598ff3c29c84e404e5f4573db76d70f0a41efcea4"
+          },
+          "principal_closures": {
+            "count": 1,
+            "sha256": "d19b09143c849a67125abeca39c8aa18915476f1e891411a84c58c90ab03eb62"
+          },
+          "project_assets": {
+            "count": 10,
+            "sha256": "58eccb251da16d36f1992b3043752889626f9901e1715e673a5d3186854f1e04"
+          },
+          "projects": {
+            "count": 2,
+            "sha256": "2d3f6f4f09659d212a20ef2c354bae7c68b5ab9792a56a86de020f53d1367e02"
+          },
+          "revisions": {
+            "count": 10,
+            "sha256": "880370bb4329d624684dad2a9b8e2c269ec012524a6ce4353b8a81baee62a68b"
+          },
+          "runs": {
+            "count": 5,
+            "sha256": "d4eb3288c0853aa4f572b79b9c69fbeec8bcc0de82b200b48426dfb25bba8920"
+          },
+          "weather_downloads": {
+            "count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "consistent_snapshot": "SQLite source opened mode=ro, backup to memory, serialize streamed directly to local private file",
+        "no_remote_backup_file": true,
+        "retention": "Latest3 successful snapshots, daily-last7days, one explicit recovery baseline; retain previous complete backup, reclaim orphan partial sidecars after verifying this snapshot."
+      },
+      "authorized_prepared_spec": "/opt/linker-planner/releases/14f603e334dc8e5d28cb13f88526dc8744924f4a5f403923d05d5a17135dd663/.deploy/spec.json",
+      "activated_at_utc": "2026-10-27T15:50:53.229669+00:00",
+      "control": {
+        "draining": false,
+        "pending": 0,
+        "quiescent": false,
+        "schema_version": 1,
+        "states": {},
+        "storage_binding": "f91b6338e5204a220d7163fde4277f900fc0c12ca913edec9d7c1560f0eb06d4"
+      },
+      "database_rows_and_schema_unchanged": true,
+      "identity": {
+        "execution_key": "b42ab2017f82e4df7a9048cc304dc00389fd7130b4d29ffdeb5a42fe01f486c9",
+        "limits": {
+          "max_body_bytes": 16777216,
+          "max_csv_bytes": 8388608,
+          "max_json_depth": 32,
+          "max_page_size": 100
+        },
+        "models": {
+          "battery": "constant_window_single_ac_bus_v1",
+          "capacity_reference": "manufacturer_reference_constant_window_v1",
+          "comparison": "frozen_energy_comparison_v1",
+          "controller": "self_consumption_with_reserve_v1",
+          "dc_replay": "shared_dc_energy_replay_v1",
+          "equipment_envelope": "selected_woo_scenario_envelope_v1",
+          "equipment_plant_search": "declared_plant_v1",
+          "equipment_search": "search_woo_equipment_v1",
+          "plant_dc_replay": "plant_shared_dc_energy_replay_v1",
+          "plant_replay": "plant_ac_energy_replay_v1",
+          "profiles": "csv_pvgis_and_geometry_bound_pv_reference_v2",
+          "replay": "single_ac_energy_replay_v1",
+          "report": "planning_report_v1",
+          "source_accounting": "proportional_mixing_v1"
+        },
+        "runtime_sha256": "9d1f8de40d6a92edd51a83d6fab225a2b1b3535abfb781ebdac53539f9fd9c5f",
+        "schema_version": 1,
+        "storage_binding": "f91b6338e5204a220d7163fde4277f900fc0c12ca913edec9d7c1560f0eb06d4"
+      },
+      "no_shared_service_or_proxy_change": true,
+      "protected_blob_bytes_verified": true,
+      "protected_blob_count": 19,
+      "protected_units_unchanged": true,
+      "ready": {
+        "execution_key": "b42ab2017f82e4df7a9048cc304dc00389fd7130b4d29ffdeb5a42fe01f486c9",
+        "generation": "dcb61d5fc8de4cc29f9534a00030c680",
+        "name": "production-linker-planner",
+        "pid": 189802,
+        "runtime_sha256": "9d1f8de40d6a92edd51a83d6fab225a2b1b3535abfb781ebdac53539f9fd9c5f",
+        "schema_version": 1,
+        "storage_binding": "f91b6338e5204a220d7163fde4277f900fc0c12ca913edec9d7c1560f0eb06d4"
+      },
+      "retained_carriers": [
+        "14f603e334dc8e5d28cb13f88526dc8744924f4a5f403923d05d5a17135dd663",
+        "e40e163df7bd25a11ff83e8a313f177d1ba07de83df9f2fe493a941e5fdd31e0"
+      ],
+      "retired_old_rollback_absent": true,
+      "retiring_runtime_blob_retained": "a02ea33de9c2b3d21e759ff0426f79066dd5f4a5fe6792f03f32c0b2bc20467a",
+      "retained_database_backups": [
+        {
+          "path": "/Users/chesterjohn/de-linker-data/planner-production/workspace-20261027T131332Z.sqlite3",
+          "bytes": 163840,
+          "sha256": "8c40510c08d204da865365ca1f5488391fe27fadf3f13b1398f5c5b57167f123",
+          "schema_version": 5,
+          "quick_check": "ok"
+        },
+        {
+          "path": "/Users/chesterjohn/de-linker-data/planner-production/workspace-20261027T154822Z.sqlite3",
+          "bytes": 163840,
+          "sha256": "eb6d6b19afc9a6e98b539a5a1e6116a457f2af46d0a1b202fbefcac3fe0e738a",
+          "schema_version": 5,
+          "quick_check": "ok"
+        }
+      ],
+      "removed_orphan_partial_sidecars": [
+        {
+          "path": "/Users/chesterjohn/de-linker-data/planner-production/workspace-20261027T131332Z.partial-wal",
+          "bytes": 0
+        },
+        {
+          "path": "/Users/chesterjohn/de-linker-data/planner-production/workspace-20261027T131332Z.partial-shm",
+          "bytes": 32768
+        }
+      ],
+      "remote_free_bytes_after": 46247170048,
+      "remote_retained_directories": [
+        "14f603e334dc8e5d28cb13f88526dc8744924f4a5f403923d05d5a17135dd663",
+        "e40e163df7bd25a11ff83e8a313f177d1ba07de83df9f2fe493a941e5fdd31e0"
+      ]
+    },
+    "production_native": {
+      "project_id": "af0ad4ab79464b8da02c30b6bcda6c6a",
+      "revision": 4,
+      "equipment_run": "d1c2f83bb3a048e5acf8ee8caf372aac",
+      "report_run_de": "1c94479f8e764a559cee0dbee254ef26",
+      "customer_path": "Actual EN native fields -> Save project -> registered worker result -> per-file inspector -> nativeDElink sameproject/run -> DE report -> actualPDFbutton",
+      "per_file": "Same_text declared-vs-Woo identity; SGSmodelunresolved/firmwareconflict;4105model listed/firmwareconflict;DoCunresolved, source010101 andproject010102 unchanged; noproject/countryapproval",
+      "actual_entry": "planner.js?ver=8fbe7a641821dc1ff73971f600f05ce892f195c82486e7716a0dafc625923882",
+      "pdf": {
+        "file": "production-device-conditions-de.pdf",
+        "sha256": "197451fdbe68d4ce06ef709cf04592f07c4f7f9025c929aca6da89d2b29c4526",
+        "bytes": 67610,
+        "pages": 6,
+        "visual": "Actualproductionpage4renderinspected; bothversions/first-pagescope/164-pageannexgap readable. Samechangedtemplatesbilingualpages3–6acceptedlocally."
+      },
+      "new_energy_or_pv_runs": 0,
+      "inquiry_or_mail": 0,
+      "screenshot": "production-device-conditions-de.png",
+      "viewport": "DefaultIAB587x796; no390/1440claim"
+    }
   }
 }

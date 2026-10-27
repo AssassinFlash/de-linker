@@ -5,6 +5,7 @@ import type { PlanningRun } from "../../data/planningProtocol.ts";
 import { readCertificateEvidence } from "../../data/certificateEvidence.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
+import { DeviceConditionReview } from "./DeviceConditionReview.tsx";
 
 type CandidateReference = { id: string; assessment_sha256: string };
 function Sources({
@@ -79,6 +80,12 @@ function Sources({
 			<p className="lp-profile-help">
 				{sprintf(__("Input revision %d", "linker-tools"), run.revision)}
 			</p>
+			{query.data.condition_review && (
+				<DeviceConditionReview
+					review={query.data.condition_review}
+					documents={query.data.documents}
+				/>
+			)}
 			{query.data.documents.length === 0 ? (
 				<p>
 					{__(

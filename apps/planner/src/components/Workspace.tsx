@@ -95,6 +95,8 @@ export function Workspace({
 			if (id) url.searchParams.set("project", id);
 			else url.searchParams.delete("project");
 			url.searchParams.delete("run");
+			url.searchParams.delete("compare");
+			url.searchParams.delete("energy_view");
 			for (const key of ENTRY_QUERY_KEYS) url.searchParams.delete(key);
 			url.hash = destination;
 			replacePlannerLocation(url);

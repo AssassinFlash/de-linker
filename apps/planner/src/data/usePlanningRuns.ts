@@ -143,6 +143,7 @@ export function usePlanningRuns({
 		setCancelFailure(null);
 		url.searchParams.set("run", id);
 		url.searchParams.delete("compare");
+		url.searchParams.delete("energy_view");
 		url.hash = "lp-calculations";
 		replacePlannerLocation(url);
 	}

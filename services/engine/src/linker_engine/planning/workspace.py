@@ -18,6 +18,7 @@ from . import commands
 from .access import active_actor, positive_integer, project_row
 from .brief import validate_new_brief
 from .canonical import Object, digest, encode
+from .equipment_condition_inputs import validate_condition_inputs
 from .errors import (
     Conflict,
     EvaluationRevisionChanged,
@@ -85,6 +86,7 @@ class Workspace:
             validate_new_brief(inputs)
             validate_project_geometry(inputs)
             validate_installation_project(inputs)
+            validate_condition_inputs(inputs)
             content = self.blobs.put_object(inputs)
             project_id = uuid4().hex
             now = self.clock()
@@ -159,6 +161,7 @@ class Workspace:
             validate_new_brief(inputs)
             validate_project_geometry(inputs)
             validate_installation_project(inputs)
+            validate_condition_inputs(inputs)
             content = self.blobs.put_object(inputs)
             number = expected_revision + 1
             now = self.clock()
