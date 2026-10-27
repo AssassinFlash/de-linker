@@ -1443,7 +1443,7 @@
       "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
     }
   },
-  "current_frontier": "project_device_condition_review_published_and_native_read_back; remaining_roof_to_energy_live_and_downstream_closure",
+  "current_frontier": "weather_source_quality_published_and_native_readback; managed_roof_ac_reference_integration_and_full_downstream_closure_in_progress",
   "shared_dc_core": {
     "status": "implemented_and_reviewed_core_not_connected_to_native_commands",
     "model": "constant_window_shared_dc_bus_v1",
@@ -6901,7 +6901,7 @@
     }
   },
   "weather_source_quality": {
-    "state": "source_reviewed_and_packaged; native_release_pending",
+    "state": "published_and_native_readback_pass; source_remains_rejected",
     "production_failure": {
       "project": "1812286480344d6d8cec94e2f5f2c00e",
       "revision": 8,
@@ -6938,6 +6938,317 @@
       "build/planner/vite-manifest.json": "4227dbe01d56d873028c31450cc541ef5d2af4c1b2cccf84199805afd2b36b94",
       "build/manifest.json": "8490071c7629605df5abe7095ed2dfd69416fcaa5dc67154683e8d354386b698",
       "languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json": "09c046539ddc808c7e0445b435ea29519a221cc32c9baa4883b48564d89c184f"
+    },
+    "source_commit": "536090bf778313389031f4f5e11c62bfd547fd00",
+    "pull_request": 705,
+    "native_local": {
+      "runtime_sha256": "744e90d8ff9355b6bfb05577cff63fb14d66c105f04fb2c8d3e260c8bc0892d4",
+      "http_worker_match": true,
+      "case": {
+        "project_id": "7bea9f212a8c4ee8be87a02f6253b49a",
+        "owner": "user:wp:1:user:66",
+        "revision": 3,
+        "run_id": "4355e4fdc23e4417a053457adfaff2de",
+        "requests_started": 1,
+        "parameters": {
+          "latitude": 48.8566,
+          "longitude": 2.3522,
+          "source_years": [
+            2005,
+            2023
+          ],
+          "radiation_database": "PVGIS-SARAH3",
+          "meteorological_database": "ERA5",
+          "terrain_horizon": false,
+          "synthetic_calculation_year": 2023
+        },
+        "scope": "Owned synthetic source-quality rejection; no real site measurement, PV output or weather dataset qualification",
+        "manifest_sha256": "9691523ec955b3b1db5910a436306ffcacfe472730fd9e7e509d77bcf21f949a",
+        "task_id": "ddb14a27db0a4fdbb85e495ef5a184cf",
+        "task_state": "failed",
+        "run_result_sha256": null,
+        "weather_capture_sha256": null,
+        "project_asset_count": 0,
+        "error": {
+          "code": "weather_source_quality_invalid",
+          "details": {
+            "field": "WS10m",
+            "reason": "negative_wind",
+            "row_index": 751,
+            "source_timestamp_utc": "2006-02-01T07:00:00+00:00",
+            "value": -0.29
+          },
+          "retryable": false
+        },
+        "status": {
+          "schema_version": 1,
+          "run_id": "4355e4fdc23e4417a053457adfaff2de",
+          "task_state": "failed",
+          "acquisition_state": "rejected",
+          "plan_sha256": "9ad94994655a3925711667f527a7cfac5312151a6be59ad546dbf71d39e3abf7",
+          "capture_sha256": null,
+          "diagnostic_retained": true,
+          "validation_failure": {
+            "code": "weather_source_quality_invalid",
+            "reason": "negative_wind",
+            "field": "WS10m",
+            "row_index": 751,
+            "source_timestamp_utc": "2006-02-01T07:00:00+00:00",
+            "value": -0.29
+          }
+        },
+        "cache_control": "no-store, private",
+        "diagnostic_sha256": "6ab88e2baeb4232369ffa3cb3f18fafd4bd3821949f3e823697b7e5b44831ceb",
+        "diagnostic_kind": "unvalidated_official_jrc_tmy_diagnostic_v1",
+        "usable_weather_source": false,
+        "original_sha256": "d69d50b73dd277e88da0ce6558b66bb1dd8b6f1d0cc82170f0df6c3b3da39e00",
+        "original_bytes": 1268366,
+        "original_hash_verified": true,
+        "diagnostic_dependencies_verified": true,
+        "transport_receipt_sha256": "2a69ef97f64f208f0110f17f68b5ace5310be08bd0925066baf0b81fa230c4cf",
+        "source_row_index": 751,
+        "source_timestamp_utc": "2006-02-01T07:00:00+00:00",
+        "source_value": -0.29,
+        "source_unit": "m/s",
+        "r_and_d_body_imported": false,
+        "provider_retries_requested": false
+      },
+      "ui": {
+        "verdict": "PASS",
+        "screenshots": {
+          "en_1440": {
+            "path": "/Users/chesterjohn/de-linker-local/p548/planner/weather-quality-native/en-1440.jpg",
+            "sha256": "026700ad6432bf41178d9a8bbd420d1534f8ef32b7d94dbbc97ec07d057aac7d",
+            "css_viewport": {
+              "width": 1440,
+              "height": 1000
+            },
+            "notice_fully_visible": true,
+            "horizontal_overflow": false
+          },
+          "en_390": {
+            "path": "/Users/chesterjohn/de-linker-local/p548/planner/weather-quality-native/en-390.jpg",
+            "sha256": "1e7293162f65a3e4d97a2247830b70e0a7f90d79ab1257e66ed2e0b1e68ab6fd",
+            "css_viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "notice_fully_visible": true,
+            "horizontal_overflow": false
+          },
+          "de_1440": {
+            "path": "/Users/chesterjohn/de-linker-local/p548/planner/weather-quality-native/de-1440.jpg",
+            "sha256": "9c503b6f02abafe73fddad8cdbb5483c39598e418b416161e4cbef38ee5afdfb",
+            "css_viewport": {
+              "width": 1440,
+              "height": 1000
+            },
+            "notice_fully_visible": true,
+            "horizontal_overflow": false
+          },
+          "de_390": {
+            "path": "/Users/chesterjohn/de-linker-local/p548/planner/weather-quality-native/de-390.jpg",
+            "sha256": "de7a31bc2226a9823125ef9dbfab0ba72603babbf2bc41493685d58fc3678a23",
+            "css_viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "notice_fully_visible": true,
+            "horizontal_overflow": false
+          }
+        },
+        "copy": "Approved EN and formal DE6 pairs unchanged",
+        "safe_detail_only": true,
+        "usable_weather_download_or_selection_action": false,
+        "viewport_reset": true,
+        "owned_tabs_closed": true,
+        "invalid_clipped_de_desktop_capture_replaced": true
+      },
+      "old_rows_preserved": true,
+      "root_visual_readback": "Actual retained DE390 notice inspected; localized negative value/unit/sourceUTC fully visible without overflow"
+    },
+    "staging": {
+      "commit_only": true,
+      "plugin": "linker-tools",
+      "future_worktree_changes_excluded": true,
+      "redundant_git_extract_removed_bytes": 11541483,
+      "publish_pending": false,
+      "reclaimed": true,
+      "removed_logical_bytes": 10532429,
+      "free_bytes_before": 928315940864,
+      "free_bytes_after": 928327311360
+    },
+    "merged_commit": "fc29c661ec2092241466b4be1e8b7be693767805",
+    "ci": {
+      "run": 40545578400,
+      "plan": "success",
+      "check": "success",
+      "mu_smoke": "success"
+    },
+    "production": {
+      "source_commit": "536090bf778313389031f4f5e11c62bfd547fd00",
+      "private_release": "2a15ff379eba9b2ef0b0397c044ccf28eefd1c24e131b3d4deba89aee1bf7a0c",
+      "runtime_sha256": "31463ea490cc9f24044542a48017bc74be6dc9241743273949a981eaeeb5490d",
+      "execution_key": "ac5b4b6cc2811943edae8dad50ff1e7b08bc9c346e9da6d6a749b81b96c4edfa",
+      "storage_binding": "f91b6338e5204a220d7163fde4277f900fc0c12ca913edec9d7c1560f0eb06d4",
+      "http_pid": 192417,
+      "worker_pid": 192544,
+      "matched_ready": true,
+      "pending": 0,
+      "draining": false,
+      "shared_services_unchanged": {
+        "engine": 182375,
+        "genie": 187414,
+        "nginx": 73664
+      },
+      "old_counts_preserved_before_native_case": {
+        "projects": 2,
+        "revisions": 12,
+        "runs": 8,
+        "jobs": 8,
+        "project_assets": 12
+      },
+      "private_db_recovery": {
+        "path": "/Users/chesterjohn/de-linker-data/planner-production/workspace-20261027T171610Z.sqlite3",
+        "bytes": 163840,
+        "sha256": "9386d1ff7c9732dde951980bb48500f94481f207aaf7056cce1747ee4260f49c",
+        "integrity": "ok",
+        "counts": {
+          "projects": 2,
+          "revisions": 12,
+          "runs": 8,
+          "jobs": 8,
+          "project_assets": 12
+        }
+      },
+      "publication": {
+        "deploy_id": "20261027T1715Z-planner-quality-536090bf",
+        "switch_seconds": 0.003,
+        "backup_directory": "/home/u388076051/deploy-prev/20261027T1715Z-planner-quality-536090bf",
+        "paths": [
+          "wp-content/plugins/linker-tools"
+        ],
+        "readbacks": [],
+        "after_switch": [
+          "opcache-reset=done attempts=1"
+        ]
+      },
+      "prepublication": {
+        "source_commit": "536090bf778313389031f4f5e11c62bfd547fd00",
+        "peer_recovery": {
+          "deploy_id": "20261027T165917Z-marketing-controls-def9896a",
+          "path": "/Users/chesterjohn/de-linker-data/planner-production/peer-marketing-before-quality705.tar.gz",
+          "bytes": 4514,
+          "sha256": "c59aa1ea55118162604ba857ba3521a3d53077f4cc31ca8500b0025671f71de5",
+          "purpose": "preserve latest peer CSS rollback before native archive prunes previous batch",
+          "reclaim": "peer confirms replacement or verified full backup contains identical bytes"
+        },
+        "snapshot": {
+          "name": "db-20261027T171341Z.sql.gz",
+          "path": "/Users/chesterjohn/de-linker-data/snapshots/db-20261027T171341Z.sql.gz",
+          "size": 7245894,
+          "sha256": "60e9c7737f8e97bd8a7f7bd4e4ed546ea4e89ed30ba80ef7127966863660a6bf"
+        }
+      },
+      "assets_readback": [
+        {
+          "path": "build/planner/assets/EnergyFlowChart-hC5kNxqM.js",
+          "status": 200,
+          "mime": "application/x-javascript",
+          "sha256": "0225be81b30f538715721df2dc6c78a5048067b2c031fa432496b57bc6c63968",
+          "bytes": 555899
+        },
+        {
+          "path": "build/planner/assets/MapViewport-CxWXh_qf.js",
+          "status": 200,
+          "mime": "application/x-javascript",
+          "sha256": "8b50f6e6c6ce45bf541b2d105f872c12b43aa13cbaeabbf505192948f072c0d4",
+          "bytes": 1189296
+        },
+        {
+          "path": "build/planner/assets/SceneViewport-DBH1dJSJ.js",
+          "status": 200,
+          "mime": "application/x-javascript",
+          "sha256": "18d2ef0361469add5e5e5c22d4a8a1bc0c0e077037fd8fc5ed29d94fdbd475ba",
+          "bytes": 1549129
+        },
+        {
+          "path": "build/planner/assets/planner-core-8dfcUjys.js",
+          "status": 200,
+          "mime": "application/x-javascript",
+          "sha256": "891ff3ec6e47fa5763057ea411e80a9cf47b3b4cc2cc4e59dea55822b725f76e",
+          "bytes": 1067475
+        },
+        {
+          "path": "build/planner/assets/planner.js",
+          "status": 200,
+          "mime": "application/x-javascript",
+          "sha256": "3cb9b3a1397c55d3e7dddc14416ae2b7b2f5296f721926f1d32db80de8402dd9",
+          "bytes": 1310
+        },
+        {
+          "path": "build/planner/assets/rolldown-runtime-BWaJ3C7D.js",
+          "status": 200,
+          "mime": "application/x-javascript",
+          "sha256": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3",
+          "bytes": 911
+        }
+      ],
+      "native_case": {
+        "run": {
+          "id": "4f98d0db20c94d1582beec6fb0adc2f5",
+          "project_id": "1812286480344d6d8cec94e2f5f2c00e",
+          "revision": 8,
+          "result_sha256": null
+        },
+        "job": {
+          "state": "failed",
+          "attempt": 1,
+          "output_sha256": "703fd3a4c7cf7310cb13b33eea48253e26282545c8d983c2a5894f21dc72263a"
+        },
+        "capture": {
+          "capture_sha256": null
+        },
+        "project_asset_count": 8,
+        "diagnostic": {
+          "kind": "unvalidated_official_jrc_tmy_diagnostic_v1",
+          "usable_weather_source": false,
+          "validation_failure": {
+            "code": "weather_source_quality_invalid",
+            "field": "WS10m",
+            "reason": "negative_wind",
+            "row_index": 751,
+            "source_timestamp_utc": "2006-02-01T07:00:00+00:00",
+            "value": -0.29
+          },
+          "original_sha256": "d69d50b73dd277e88da0ce6558b66bb1dd8b6f1d0cc82170f0df6c3b3da39e00",
+          "original_bytes": 1268366,
+          "original_hash_verified": true
+        }
+      },
+      "new_request_count": 1,
+      "project_assets_before_and_after": 8,
+      "publication_state": "archived",
+      "old_generic_failure_ui_readback": true,
+      "native_ui": "Actual EN and formalDE browser readback; same project/revision/run preserved; negative value/fixedunit/UTC all visible; default IAB viewport, no390/1440claim",
+      "source_scope": "Actual native official GET; response remains invalid. No PV output/dataset/release claim, no R&D body injection",
+      "retention": {
+        "runtime_carriers": "current2a15ff + rollback14f603 only",
+        "private_sqlite_recoveries": 3,
+        "wp_snapshots": 9,
+        "obsolete_snapshot_removed": "db-20261027T133045Z.sql.gz",
+        "obsolete_snapshot_removed_bytes": 7174986
+      },
+      "screenshots": {
+        "en": {
+          "path": "docs/acceptance/2026-10-25/548/production-weather-quality-en.jpg",
+          "sha256": "01a65f55321f8f5d96a9667728ea74e8d5af9c4412121a0bd662a776745e0232"
+        },
+        "de": {
+          "path": "docs/acceptance/2026-10-25/548/production-weather-quality-de.jpg",
+          "sha256": "6363b285cfa1dacd93e2a62598b918bdf67a1e3e7868eac68ca866edd45a0e81"
+        }
+      }
     }
   }
 }
