@@ -31,6 +31,15 @@ html[lang^="de"]
 	text-wrap: balance;
 }
 
+/* Services audience tabs on EN2748/DE6700 use the existing14px action
+   type and44px target. Two IDs outrank retained desktop11px/mobile10px rules. */
+#service-redesign #solutions .service-role-nav button {
+	min-height: 44px;
+	font-size: var(--proto-size-sm);
+	line-height: 1.4;
+	white-space: normal;
+}
+
 @media (max-width: 640px) {
 	/* Use the existing14px label token while retaining the native44px target. */
 	#tv-utility-page-v1 .lk-hero-cta-row a.lk-btn-hero-ghost,
