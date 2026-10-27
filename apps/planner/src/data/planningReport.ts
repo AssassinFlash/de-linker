@@ -16,6 +16,7 @@ export interface ReportOptions extends JsonObject {
 	logo: string | null;
 	comparison?: { baseline_run_id: string; candidate_run_id: string } | null;
 	include_installation?: boolean;
+	inspect_certificate_declarations?: boolean;
 }
 export interface ReportRow {
 	label: string;

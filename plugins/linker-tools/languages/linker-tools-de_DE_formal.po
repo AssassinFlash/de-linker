@@ -11760,3 +11760,11 @@ msgstr "Diese Datei unterscheidet sich von der für dieses Ergebnis erfassten Fa
 #: ../../apps/planner/src/components/equipment/CertificateEvidence.tsx:1 build/planner/assets/planner.js:1
 msgid "Recorded document revision"
 msgstr "Erfasster Dokumentstand"
+
+#: ../../apps/planner/src/components/energy/PlanningReportForm.tsx build/planner/assets/planner.js
+msgid "Include information from the linked certificate files"
+msgstr "Angaben aus den zugeordneten Zertifikatsdateien aufnehmen"
+
+#: ../../apps/planner/src/components/energy/PlanningReportForm.tsx build/planner/assets/planner.js
+msgid "The report includes readable model, firmware and standard information from labelled fields on the first page, and flags references to unverified annexes. It does not confirm that the equipment or project meets the stated conditions."
+msgstr "Der Bericht übernimmt auslesbare Modell-, Firmware- und Normangaben aus beschrifteten Feldern der ersten Seite und kennzeichnet Verweise auf ungeprüfte Anhänge. Ob die Geräte oder das Projekt die genannten Bedingungen erfüllen, wird damit nicht bestätigt."

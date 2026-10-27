@@ -2,17 +2,32 @@
 
 from __future__ import annotations
 
+import io
 from typing import cast
 
 import pytest
+from reportlab.pdfgen.canvas import Canvas
 
-from linker_engine.planning.canonical import Object
+from linker_engine.planning.canonical import Object, digest
+from linker_engine.planning.certificate_declarations import inspect_certificate
 from linker_engine.planning.certificate_evidence import (
     CertificateEvidence,
     certificate_documents,
 )
+from linker_engine.planning.certificate_information import (
+    report_source_with_information,
+)
 from linker_engine.planning.certificate_report import certificate_sections
-from linker_engine.planning.errors import NotFound, VersionUnavailable
+from linker_engine.planning.certificate_sources import (
+    InspectionUnavailable,
+    download_certificate,
+    inspect_report_certificates,
+)
+from linker_engine.planning.errors import (
+    NotFound,
+    ProductEvidenceChanged,
+    VersionUnavailable,
+)
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.records import Actor, Context
 from linker_engine.planning.workspace import Workspace
@@ -109,3 +124,82 @@ def test_absent_certificate_is_distinct_from_a_broken_association() -> None:
     cast(list[Object], product["documents"])[0]["product_ids"] = []
     with pytest.raises(VersionUnavailable):
         certificate_documents(basis, assessment)
+
+
+def certificate_pdf() -> bytes:
+    stream = io.BytesIO()
+    canvas = Canvas(stream)
+    line = canvas.beginText(40, 780)
+    for text in (
+        "Identification: Type Designation : Fixture-1, Fixture-2",
+        "Firmware Version : 010101",
+        "Remark: Refer to report TEST-1 for details.",
+        "Tested acc. to: VDE-AR-N 4105/11.18",
+        "The certificate is comprised of 1 page and an Annex of 164 pages.",
+        "Unrelated footer note: EN 50549-2:2099",
+    ):
+        line.textLine(text)
+    canvas.drawText(line)
+    canvas.save()
+    return stream.getvalue()
+
+
+def test_literal_declarations_retain_bytes_and_never_grant_applicability(
+    workspace: Workspace,
+) -> None:
+    basis, assessment = evidence()
+    source = certificate_documents(basis, assessment)
+    document = cast(list[Object], source["documents"])[0]
+    content = certificate_pdf()
+    document["blob_sha256"] = digest(content)
+    report: Object = {"certificates": source, "dependencies": {}}
+    seed_sha = workspace.blobs.put_object(report)
+    calls = []
+
+    def load(doc: Object) -> bytes:
+        calls.append(doc["document_id"])
+        return content
+
+    originals = inspect_report_certificates(
+        report, workspace.blobs, lambda: None, load=load
+    )
+    inspect_report_certificates(report, workspace.blobs, lambda: None, load=load)
+    assert calls == ["doc-recorded"]  # Same original reused across report attempts.
+    inspection = cast(Object, cast(Object, source["inspections"])["doc-recorded"])
+    assert inspection["applicability"] == "not_assessed"
+    assert cast(Object, inspection["annex"])["retained_pdf_pages"] == 1
+    fields = {
+        row["kind"]: row["value"]
+        for row in cast(list[Object], inspection["declarations"])
+    }
+    assert fields["firmware"] == "010101"
+    assert "4105/11.18" in str(fields["standards"])
+    assert "2026" not in str(fields["standards"])
+    assert "2099" not in str(fields["standards"])
+    for locale in ("en", "de"):
+        section = certificate_sections(source, locale)[0]
+        assert any("164" in row.value for row in section.rows)
+        assert any(row.value == "010101" for row in section.rows)
+    bundle: Object = {
+        "schema_version": 1,
+        "kind": "certificate_cover_information_v1",
+        "report_source_sha256": seed_sha,
+        "evidence": source,
+        "dependencies": {"report_source": seed_sha, **originals},
+    }
+    frozen: Object = {
+        "report_source": seed_sha,
+        "certificate_inspection": workspace.blobs.put_object(bundle),
+    }
+    assert (
+        report_source_with_information(workspace.blobs, frozen)["certificates"]
+        == source
+    )
+    inspection["document_revision"] = "c" * 64
+    frozen["certificate_inspection"] = workspace.blobs.put_object(bundle)
+    with pytest.raises(VersionUnavailable):
+        report_source_with_information(workspace.blobs, frozen)
+    with pytest.raises(ProductEvidenceChanged):
+        inspect_certificate(content + b" changed", document)
+    with pytest.raises(InspectionUnavailable):
+        download_certificate({**document, "url": "https://other.invalid/private.pdf"})

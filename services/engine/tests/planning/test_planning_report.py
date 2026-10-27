@@ -16,6 +16,7 @@ from pypdf import PdfReader
 
 from linker_engine.engine import Engine
 from linker_engine.planning.assets import Assets
+from linker_engine.planning.assistant_context import assistant_context
 from linker_engine.planning.canonical import digest, encode
 from linker_engine.planning.energy_kernel import EnergyKernel
 from linker_engine.planning.energy_service import EnergyService
@@ -38,6 +39,7 @@ from linker_engine.products import Products
 from linker_engine.publication import Publication, PublicationUnavailable
 
 from .conftest import FixtureObject, json_object
+from .test_certificate_evidence import certificate_pdf
 from .test_energy_kernel import TOLERANCE
 from .test_equipment import (
     feed as equipment_feed,  # noqa: F401 -- Shared cited fixture, registered under this name.
@@ -75,6 +77,23 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
         )
     feed = request.getfixturevalue("equipment_feed")
     feed.update(figure_projection_version=2, compatibility_origin="woocommerce")
+    certificate_bytes = certificate_pdf()
+    certificate_sha = workspace.blobs.put(certificate_bytes)
+    next(p for p in feed["products"] if p["id"] == 4107)["documents"].append(
+        {
+            "document_id": "doc-" + digest(b"synthetic-certificate"),
+            "document_revision": digest(b"synthetic-certificate-revision"),
+            "blob_sha256": certificate_sha,
+            "url": "https://de-linker.com/wp-content/uploads/fixture-certificate.pdf",
+            "title": "Synthetic certificate declarations",
+            "type": "certificate",
+            "lang": "en",
+            "product_ids": [4107],
+            "role": "primary",
+            "aliases": [],
+            "citation_aliases": [],
+        }
+    )
     # Synthetic quantities exercise the Woo projection, not a real packing list.
     for pid, quantity, role, name in (
         (4107, 1, "meter", "Fixture supplied meter"),
@@ -186,6 +205,7 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
             "pv_run_id": None,
             "equipment_run_id": checked.id,
             "logo": None,
+            "inspect_certificate_declarations": True,
         },
     }
     with TestClient(app) as client:
@@ -247,6 +267,21 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
         assert "Frozen project report" in text and "13.5" in text
         assert "Provisional bill of materials" in text and "HTW Berlin" not in text
         assert "H2-10K-T3" in text and "BU2" in text
+        assert "010101" in text and "164" in text
+        inspection = json_object(
+            workspace.blobs.object(result["dependencies"]["certificate_inspection"])
+        )
+        assert (
+            inspection["dependencies"][
+                "certificate.doc-" + digest(b"synthetic-certificate") + ".raw"
+            ]
+            == certificate_sha
+        )
+        assert (
+            result["dependencies"]["report_source"]
+            == inspection["report_source_sha256"]
+            == result["pinned_assets"]["report.source"]
+        )
         transfer_command = {
             "schema_version": 1,
             "project_id": project.id,
@@ -300,6 +335,16 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
                 "select count(*) from project_assets"
             ).fetchone()[0]
         offline = True
+        german_context = json_object(
+            assistant_context(workspace, owner, project.id, 1, [run.id], "de")
+        )
+        assert any(
+            "Firmware" in row["label"] and row["value"] == "010101"
+            for row in german_context["runs"][0]["rows"]
+        )
+        assert any(
+            "164" in str(row["value"]) for row in german_context["runs"][0]["rows"]
+        )
         replay = client.post("/runs/report", json=command, headers=caller_headers())
         assert replay.status_code == 200 and replay.json()["id"] == run.id
         assert Assets(workspace).content(owner, project.id, asset["id"]) == pdf

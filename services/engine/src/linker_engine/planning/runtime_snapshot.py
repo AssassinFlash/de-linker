@@ -63,6 +63,7 @@ class RuntimeSnapshot:
                 name: version(name)
                 for name in (
                     "pydantic",
+                    "pypdf",
                     "pillow",
                     "jsonschema",
                     "requests",

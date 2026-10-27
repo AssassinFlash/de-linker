@@ -45,6 +45,7 @@ class ReportOptions(Document):
     logo: Annotated[str, Field(max_length=700_000)] | None
     comparison: ComparisonSelection | None = None
     include_installation: bool = False
+    inspect_certificate_declarations: bool = False
 
     def intent(self) -> Object:
         options = self.model_dump(mode="json")
@@ -54,6 +55,8 @@ class ReportOptions(Document):
             options.pop("comparison")
         if not self.include_installation:
             options.pop("include_installation")
+        if not self.inspect_certificate_declarations:
+            options.pop("inspect_certificate_declarations")
         return {
             "kind": "planning_report_v1",
             "options_sha256": digest(encode(options)),

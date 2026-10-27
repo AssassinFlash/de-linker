@@ -3,6 +3,36 @@
 from __future__ import annotations
 
 TEXT = {
+    "certificate_declarations": (
+        "Information from the document",
+        "Angaben aus der Unterlage",
+    ),
+    "certificate_models": ("Stated model designations", "Genannte Typenbezeichnungen"),
+    "certificate_firmware": (
+        "Stated firmware or software",
+        "Genannte Firmware bzw. Software",
+    ),
+    "certificate_standards": (
+        "Printed standard references",
+        "Abgedruckte Normverweise",
+    ),
+    "certificate_annex": ("Referenced annex", "Genannter Anhang"),
+    "certificate_inspection_scope": (
+        "The following information was read from labelled fields on the first page of the retained source document. It does not establish that the equipment or project meets the stated conditions. Other pages, reports and referenced annexes require separate assessment.",
+        "Die folgenden Angaben wurden aus beschrifteten Feldern auf der ersten Seite der gespeicherten Originalunterlage ausgelesen. Ob die Geräte oder das Projekt die genannten Bedingungen erfüllen, ist damit nicht nachgewiesen. Weitere Seiten, Berichte und genannte Anhänge müssen gesondert bewertet werden.",
+    ),
+    "certificate_inspection_unavailable": (
+        "The source document’s information could not be read. No applicability conclusion was made.",
+        "Die Angaben der Originalunterlage konnten nicht ausgelesen werden. Eine Aussage zur Anwendbarkeit wurde nicht getroffen.",
+    ),
+    "certificate_inspection_limit": (
+        "This file exceeds the automatic reading limit. The source document requires separate review; no applicability conclusion was made.",
+        "Diese Datei überschreitet die Grenze für das automatische Auslesen. Die Originalunterlage muss gesondert geprüft werden; eine Aussage zur Anwendbarkeit wurde nicht getroffen.",
+    ),
+    "certificate_annex_unverified": (
+        "The cover refers to {body} certificate page(s) and {annex} annex pages. The retained PDF has {retained} page(s). The referenced annex and its conditions have not been verified.",
+        "Das Deckblatt nennt {body} Zertifikatsseite(n) und {annex} Anhangseiten. Die gespeicherte PDF enthält {retained} Seite(n). Der genannte Anhang und seine Bedingungen wurden nicht geprüft.",
+    ),
     "certificate_title": (
         "Certificates and related product documents",
         "Zertifikate und zugehörige Produktunterlagen",

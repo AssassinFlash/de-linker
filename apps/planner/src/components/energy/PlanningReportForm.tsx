@@ -28,6 +28,7 @@ export function PlanningReportForm({
 		[reading, setReading] = useState(false);
 	const reader = useRef<FileReader | null>(null);
 	const [installation, setInstallation] = useState(false);
+	const [certificates, setCertificates] = useState(false);
 	useEffect(() => () => reader.current?.abort(), []);
 	const [chosenRows, setChosenRows] = useState<Record<string, RunSummary>>({});
 	// Keep only the three explicit selections across history pages.
@@ -91,6 +92,9 @@ export function PlanningReportForm({
 		equipment_run_id: equipment || null,
 		logo,
 		...(installation && hasInstallation ? { include_installation: true } : {}),
+		...(certificates && (hasCandidate || equipment)
+			? { inspect_certificate_declarations: true }
+			: {}),
 	};
 	return (
 		<section className="lp-scenario-block">
@@ -142,6 +146,28 @@ export function PlanningReportForm({
 						setEquipment,
 						__("Equipment checks", "linker-tools"),
 					)
+				)}
+				{(hasCandidate || equipment) && (
+					<div>
+						<label className="lp-check">
+							<input
+								type="checkbox"
+								checked={certificates}
+								disabled={disabled}
+								onChange={(e) => setCertificates(e.currentTarget.checked)}
+							/>
+							{__(
+								"Include information from the linked certificate files",
+								"linker-tools",
+							)}
+						</label>
+						<p className="lp-profile-help">
+							{__(
+								"The report includes readable model, firmware and standard information from labelled fields on the first page, and flags references to unverified annexes. It does not confirm that the equipment or project meets the stated conditions.",
+								"linker-tools",
+							)}
+						</p>
+					</div>
 				)}
 				<label className="lp-field">
 					<span>{__("Your logo on the PDF (optional)", "linker-tools")}</span>
