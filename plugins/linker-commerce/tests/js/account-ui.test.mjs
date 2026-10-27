@@ -164,7 +164,7 @@ function inquiryDraft({saved=[],context='same-auth-session',nonce='first-nonce-t
 
 test('standalone draft blocks stale continuation until native readback, preserving the inquiry edit bridge',async()=>{
  const dom=new JSDOM(`<div id="tv-storefront-cart">
- <p id="draft-pending" data-inquiry-draft-pending role="status" hidden>Update the solution draft before sending your inquiry.</p>
+ <p id="draft-pending" data-inquiry-draft-pending role="status" tabindex="-1" hidden>Update the solution draft before sending your inquiry.</p>
  <form class="woocommerce-cart-form"><input class="qty" name="cart[line][qty]" type="number" min="0" step="1" value="1"><button name="update_cart">Update solution draft</button></form>
  <div class="wc-proceed-to-checkout"><a href="/proforma-request/">Send inquiry</a></div></div>`,{runScripts:'outside-only',url:'https://example.test/cart/'});
  const win=dom.window;const kept='existing inquiry entries';win.sessionStorage.setItem('linker-inquiry-edit',kept);win.eval(script);
@@ -179,7 +179,7 @@ test('standalone draft blocks stale continuation until native readback, preservi
  }
  quantity.value='1';quantity.dispatchEvent(new win.Event('change',{bubbles:true}));
  assert.equal(link.getAttribute('aria-disabled'),'false');assert.equal(notice.hidden,true);
- draft.classList.add('processing');await Promise.resolve();assert.equal(activate().defaultPrevented,true,'native processing also blocks continuation');
+ draft.classList.add('processing');draft.querySelector('button').disabled=true;await Promise.resolve();assert.equal(activate().defaultPrevented,true,'native processing also blocks continuation');assert.equal(notice.hidden,false);assert.equal(win.document.activeElement,notice,'a disabled update action focuses its visible status instead');draft.querySelector('button').disabled=false;
  quantity.value='2';draft.classList.remove('processing');await Promise.resolve();assert.equal(link.getAttribute('aria-disabled'),'true','a failed native update keeps the edit blocked');
  const replacement=draft.cloneNode(true);replacement.querySelector('.qty').setAttribute('value','2');draft.replaceWith(replacement);await Promise.resolve();
  assert.equal(link.getAttribute('aria-disabled'),'false');assert.equal(notice.hidden,true);assert.equal(link.getAttribute('aria-describedby'),'draft-pending');

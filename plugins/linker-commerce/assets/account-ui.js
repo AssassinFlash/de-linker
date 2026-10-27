@@ -30,7 +30,7 @@
 			}
 		} );
 		if ( pending ) {
-			pending.hidden = ! draftChanged();
+			pending.hidden = ! draftBlocked();
 		}
 	};
 	if ( draftSurface ) {
@@ -46,7 +46,12 @@
 			if ( event.target.closest( '.wc-proceed-to-checkout a' ) && draftBlocked() ) {
 				event.preventDefault();
 				syncDraftState();
-				draftSurface.querySelector( '[name="update_cart"]' )?.focus();
+				const update = draftSurface.querySelector( '[name="update_cart"]' );
+				if ( update && ! update.disabled ) {
+					update.focus();
+				} else {
+					pending?.focus();
+				}
 			}
 		} );
 		syncDraftState();
