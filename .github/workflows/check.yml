@@ -49,27 +49,37 @@ jobs:
                   path.startswith("docs/") and path.endswith((".md", ".rst", ".txt"))
               )
 
-          def regular_text(commit, path):
+          def acceptance_record(path):
+              return path.startswith("docs/acceptance/") and path.endswith((".json", ".png", ".pdf"))
+
+          def non_runtime_file(commit, path):
               if git("ls-tree", commit, "--", path).split()[0] != b"100644":
                   return False
               content = git("show", f"{commit}:{path}")
+              if acceptance_record(path):
+                  if path.endswith(".png"):
+                      return content.startswith(b"\x89PNG\r\n\x1a\n")
+                  if path.endswith(".pdf"):
+                      return content.startswith(b"%PDF-")
+                  json.loads(content)
+                  return True
               if b"\0" in content:
                   return False
               content.decode("utf-8")
               return True
 
-          def text_change(status, path, base, head):
+          def non_runtime_change(status, path, base, head):
               revisions = {"M": (base, head), "A": (head,), "D": (base,)}.get(status, ())
-              return bool(revisions) and all(regular_text(rev, path) for rev in revisions)
+              return bool(revisions) and all(non_runtime_file(rev, path) for rev in revisions)
 
           def classify(changes):
               def presentation(path):
                   return bool(re.fullmatch(
                       r"plugins/linker-commerce/content/(livecanvas/(de/)?[a-z0-9_-]+[.]html|windpress/[a-z0-9_-]+[.]css)", path
                   )) or path == "plugins/linker-commerce/tests/php/Unit/Presentation/TemplatesTest.php"
-              if changes and all(document(path) for _, path in changes):
+              if changes and all(document(path) or acceptance_record(path) for _, path in changes):
                   return "docs"
-              if changes and all(document(path) or (status == "M" and presentation(path)) for status, path in changes):
+              if changes and all(document(path) or acceptance_record(path) or (status == "M" and presentation(path)) for status, path in changes):
                   return "presentation"
               return "full"
 
@@ -149,10 +159,10 @@ jobs:
                   changes = list(zip(fields[0:-1:2], fields[1:-1:2]))
                   if event in {"pull_request", "push"}:
                       candidate = classify(changes)
-                      if candidate != "full" and not all(text_change(status, path, base, head) for status, path in changes):
+                      if candidate != "full" and not all(non_runtime_change(status, path, base, head) for status, path in changes):
                           candidate = "full"
                       if candidate == "docs":
-                          mode, reason = "docs", "Documentation only; no runtime or instance checks."
+                          mode, reason = "docs", "Documentation and acceptance records only; no runtime or instance checks."
                       elif candidate == "presentation" and event == "pull_request":
                           if checked_base(base):
                               mode, reason = "presentation", "Existing LC/CSS surfaces and a checked base; run their contracts and content guards."

@@ -5583,5 +5583,131 @@
       },
       "rollback": "Native post-content operation removes only the exact data-linker-planner-entry=home-hero block from posts13/6913 after after-hash guard, followed by reviewed native Translator::adopt_current. Complete cutover20261027-0548 also retains exact before bodies."
     }
+  },
+  "certificate_information": {
+    "at_utc": "2026-10-27T11:31:42.707696+00:00",
+    "source_commit": "ee217d669da32eacbcb542c4bf2b52188e623a34",
+    "pr": 691,
+    "scope": "Optional first-page literal source information; actual applicability and national qualification remain unassessed",
+    "review": {
+      "spec": "PASS final implementation and markup delta",
+      "standards": "PASS final implementation and markup delta",
+      "copy": "EN/DE adversarial review PASS"
+    },
+    "ci": {
+      "run": 40494212138,
+      "head": "ee217d669da32eacbcb542c4bf2b52188e623a34",
+      "plan": "pass",
+      "check": "pass",
+      "mu_smoke": "pass"
+    },
+    "runtime_sha256": "a6d391dad5382e595e13abbffbb5aa3e9a2274d96e799b8392c79bc8b2ac2216",
+    "native_positive_case": {
+      "project_id": "2e8444927ed541308da3822a34cd2b43",
+      "revision": 3,
+      "equipment_run": "4e092bd22d1c468c8f7333ad72b0dcb7",
+      "report_run": "dfc304391dc64316b1db7447ac0cbb18",
+      "result_sha256": "2d5d8cac1af71a39e43ce7835a0494fb06f4f02b1593377d042617a6e851a71a",
+      "pdf_sha256": "1fffff4a7d0467af9af2a9d086cffd7e6faa2454d0e0f2ed2e2caf5d36fb0cfa",
+      "source_sha256": "1c417f61c271b3adddeb29717faf092125d3d4249670c29a72e2d451118df24c",
+      "inspection_sha256": "0b0b02e7da4da7a92f44b8fa816fc645a9172b0dea7c7ee69034bc29e33de247",
+      "documents": {
+        "doc-2228549d7c1dacdd30ac0601dc5950b8bdc078e13c6069cc5519229e4ad77716": {
+          "status": "read",
+          "method": "literal_certificate_cover_v1",
+          "document_revision": "d9dc34c2583e5f894d87ea5a80a087e58ac68a3929f40a53da6fa895c4a9b11d",
+          "blob_sha256": "da4d0f336bb0b6e7828ad18f4e89534698383d0191c28a4c4dedbb7a94f4c61f",
+          "annex": {
+            "annex_pages_stated": 164,
+            "cover_pages_stated": 1,
+            "page": 1,
+            "quote": "certificate is comprised of 1 page and an Annex of 164 pages",
+            "retained_pdf_pages": 1,
+            "status": "not_verified"
+          }
+        },
+        "doc-b11bf27e66e770e8dbd27085b04d6a43fdf55e351f345615471c69f80eec0f68": {
+          "status": "read",
+          "method": "literal_certificate_cover_v1",
+          "document_revision": "6b735253bea97d7e386006776d2cca58c452389d4809e6820bd85eab37b729b8",
+          "blob_sha256": "d7b7f3908f84c129234d5de8edc78dbe3893cfde03bba0c953d231fff72dcdd4",
+          "annex": null
+        },
+        "doc-d62395cedd12833066d6fb6dd0ddc47aab4f7a63d418de339f23b5e7b8238892": {
+          "status": "unrecognised",
+          "method": "literal_certificate_cover_v1",
+          "document_revision": "17573b5987db0100c655a5102c44ce93ed6b6fb6b7a0a2eb159ed78eef54be9f",
+          "blob_sha256": "1c767b82edadcf91af46d489a9f95f11f5c68ef61e07e36d0612d360de7b2ade",
+          "annex": null
+        }
+      },
+      "new_physical_calculation": false,
+      "original_report_source_preserved": true
+    },
+    "native_unknown_layout_case": {
+      "project_id": "c7795bc2c1e14e389622015c809ace45",
+      "revision": 24,
+      "report_run": "4cfcd9b01e51418db35c6a941e78c48f",
+      "status": "success",
+      "all_three_woo_originals_retained": true,
+      "cover_layout": "unrecognised",
+      "no_applicability_conclusion": true
+    },
+    "pdf": {
+      "en": "Native worker output;3 pages; certificate section visually inspected",
+      "de": "Read-only presentation of same verified immutable source;3 pages; certificate section visually inspected; not a new native run",
+      "fixtures": [
+        "certificate-information-en.pdf",
+        "certificate-information-de.pdf"
+      ]
+    },
+    "ui": {
+      "en_1440": "PASS existing controls after markup correction",
+      "en_390": "PASS same controls with wrapping helper",
+      "de_1440": "Not completed: Work settings disabled local browser use after native EN report submission",
+      "de_390": "Not completed: same tool restriction",
+      "new_css": false,
+      "same_accepted_native_po_mo_json": true
+    },
+    "local_release_retention": "Current a6d391 and rollback a6e6cc only; obsolete63d348 carrier reclaimed after immutable source recovery verification;1,788,498 logical bytes",
+    "production": "Prepared only. CI/review/source/PDF passed; DE browser gate remains incomplete after Work settings disabled local browser use. Current production pair remains unchanged.",
+    "remaining": "Actual certificate/configuration/firmware/national applicability matching remains part of548; this source inspection must not be described as qualification.",
+    "production_candidate": {
+      "path": "/opt/linker-planner/releases/e40e163df7bd25a11ff83e8a313f177d1ba07de83df9f2fe493a941e5fdd31e0",
+      "purpose": "Reviewed certificate source information; prepare then native paired activation",
+      "owner": "548",
+      "retire_after": "Activation retires the superseded previous carrier; failed candidate removed after old pair remains verified",
+      "state": "prepared; not activated",
+      "runtime_sha256": "c7a606dcaa114ff1a676a06c5e646bd74be4c78e45555077d280b74e58686d94",
+      "storage_schema_version": 5,
+      "temporary_retention_expiry": "2026-10-28T05:00:00+08:00",
+      "cleanup_condition": "Activate through native operator then retire the superseded previous carrier; if UI gate still unavailable by expiry, remove unactivated candidate after confirming active/rollback identities"
+    },
+    "temporary_transfer_archives": "Removed both local and VPS package/source-map staging files after248-file verification and preparation; retained .deploy/source.json stays with the owned candidate",
+    "validation_scope_correction": {
+      "cause": "CI treated PNG/PDF/JSON acceptance evidence as runtime changes and repeated full suites for record-only commits",
+      "implementation": "Only regular100644 docs/acceptance JSON/PNG/PDF; format/signature checked in affected before/after revisions; runtime/config/scripts/tests/unknown/executable/symlink paths remain full; mixed existing LC/CSS plus records retains presentation contracts",
+      "verification": "Workflow Python AST parses;18 independent scope cases passed; Spec and Standards incremental reviews PASS; no new test file or local business suite",
+      "ci": "Required full run for changed workflow pending one candidate push; later evidence-only commits select docs"
+    }
+  },
+  "production_source_continuation": {
+    "at_utc": "2026-10-27T11:49:00Z",
+    "scope": "Current installed owned-principal source read only; no new calculation, product update or service restart",
+    "provider": "woocommerce",
+    "compatibility_origin": "woocommerce",
+    "products": 85,
+    "references": 1,
+    "source_revision": "2e0434164b5f50314f3177d784df8bf0fee6a2d01206a59e393bcb5cc7398a59",
+    "engine_version": "874fbaae2415a098552fe02929e205e9eab38f7f86e7351765ee45ab194d76a4",
+    "http": 200,
+    "elapsed_seconds": 9.99,
+    "cache_control": "no-store, private",
+    "prior_observed_failure": {
+      "http": 503,
+      "code": "version_unavailable",
+      "status": "Unexplained transient source availability failure; subsequent same-service direct loader and original HTTP process succeeded. Not relabelled as a code fix. Peer production-change timestamps requested."
+    },
+    "collaboration": "Production source/publisher and compatibility-origin completion sent to previously waiting source-authority conversation01a1684e; privacy/publisher owner informed of exact failure and subsequent success."
   }
 }
