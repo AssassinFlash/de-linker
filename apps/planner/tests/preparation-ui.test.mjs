@@ -6,6 +6,7 @@ import { IDBFactory } from "fake-indexeddb";
 import { setupDom, until, deferred, enter } from "./dom-fixture.mjs";
 import { PreparationResult } from "../src/components/energy/PreparationResult.tsx";
 import { WeatherProgress } from "../src/components/energy/WeatherProgress.tsx";
+import { readWeatherStatus } from "../src/data/weatherStatus.ts";
 import { EnergyWorkspace } from "../src/components/energy/EnergyWorkspace.tsx";
 import {
 	beginDraft,
@@ -347,6 +348,158 @@ for (const state of ["not_started", "fetching"]) {
 		);
 	});
 }
+
+test("typed rejected official weather explains the source failure, keeps legacy fallback and hides cached details after ownership changes", async (t) => {
+	const quality = {
+		reason: "negative_wind",
+		field: "WS10m",
+		row_index: 751,
+		source_timestamp_utc: "2006-02-01T07:00:00+00:00",
+		value: -0.29,
+	};
+	const failed = {
+		...structuredClone(fixture.weather_run),
+		state: "failed",
+		result: null,
+		result_sha256: null,
+		error: {
+			code: "weather_source_quality_invalid",
+			retryable: false,
+			details: {
+				...quality,
+				private_exception: "PRIVATE_EXCEPTION_DO_NOT_RENDER",
+			},
+		},
+	};
+	const rejected = {
+		...structuredClone(fixture.weather_status),
+		task_state: "failed",
+		acquisition_state: "rejected",
+		capture_sha256: null,
+		diagnostic_retained: true,
+		validation_failure: {
+			code: "weather_source_quality_invalid",
+			...quality,
+			private_url: "PRIVATE_URL_DO_NOT_RENDER",
+		},
+	};
+	assert.equal(
+		readWeatherStatus(rejected, failed.id).validationFailure.sourceTimestampUtc,
+		quality.source_timestamp_utc,
+	);
+	assert.throws(() =>
+		readWeatherStatus(
+			{
+				...rejected,
+				validation_failure: {
+					...rejected.validation_failure,
+					source_timestamp_utc: "PRIVATE_EXCEPTION_DO_NOT_RENDER",
+				},
+			},
+			failed.id,
+		),
+	);
+	let admitted = true,
+		legacy = false,
+		update;
+	const calls = [];
+	const client = {
+		isCurrentScope: (value) => admitted && value === scope,
+		async query(path, body) {
+			calls.push(path);
+			assert.equal(path, "runs/weather/status");
+			return legacy
+				? {
+						...fixture.weather_status,
+						run_id: body.run_id,
+						task_state: "failed",
+						acquisition_state: "fetching",
+						capture_sha256: null,
+					}
+				: rejected;
+		},
+		send() {
+			throw new Error(
+				"reading rejected weather must never request provider work",
+			);
+		},
+	};
+	function Harness() {
+		const [, refresh] = useState(0);
+		update = () => refresh((value) => value + 1);
+		return React.createElement(PreparationResult, {
+			run: legacy
+				? {
+						...failed,
+						id: "f".repeat(32),
+						error: { code: "invalid_input", retryable: false },
+					}
+				: failed,
+			inputs: fixture.weather_project.inputs,
+			edit() {
+				throw new Error("a rejected source cannot change project inputs");
+			},
+			session,
+			client,
+			recheck: () => {},
+			locale: "en-GB",
+			blocked: false,
+			active: true,
+		});
+	}
+	await mount(t, React.createElement(Harness));
+	await until(() =>
+		document.body.textContent.includes("negative wind-speed value"),
+	);
+	assert.equal(
+		(document.body.textContent.match(/negative wind-speed value/g) ?? [])
+			.length,
+		1,
+	);
+	assert.match(document.body.textContent, /cannot be used for PV calculation/);
+	assert.match(document.body.textContent, /Source value: -0\.29 m\/s/);
+	assert.match(
+		document.body.textContent,
+		/No usable weather dataset was created from this response/,
+	);
+	assert.match(document.body.textContent, /Source timestamp \(UTC\):.*2006/);
+	assert.doesNotMatch(
+		document.body.textContent,
+		/PRIVATE_|Use this weather source|Source ready/,
+	);
+	assert.equal(calls.length, 1);
+	await act(async () => {
+		admitted = false;
+		update();
+	});
+	assert.doesNotMatch(
+		document.body.textContent,
+		/negative wind-speed|2006|PRIVATE_/,
+	);
+	assert.equal(
+		[...document.querySelectorAll("button")].find(
+			(node) => node.textContent === "Refresh weather status",
+		).disabled,
+		true,
+	);
+	assert.equal(calls.length, 1);
+	await act(async () => {
+		admitted = true;
+		legacy = true;
+		update();
+	});
+	await until(() =>
+		document.body.textContent.includes(
+			"ended without a validated weather source",
+		),
+	);
+	assert.match(document.body.textContent, /This source could not be prepared/);
+	assert.doesNotMatch(
+		document.body.textContent,
+		/negative wind-speed|2006|PRIVATE_|Source ready/,
+	);
+	assert.ok(calls.every((path) => path === "runs/weather/status"));
+});
 
 test("real saved plant device entries stay optional, preserve per-unit version text and recover through Draft save and undo", async (t) => {
 	let current = beginDraft(structuredClone(plantFixture.project)),

@@ -47,3 +47,11 @@ strict source ownership and complete weather→PV→energy behavior. Production
 source access, provider rate/availability conditions and EN/DE customer states
 must be validated before native installation and delivery. Full engineering,
 country/equipment, reports and site-consumer goals remain unchanged.
+
+## Rejected official response diagnostics
+
+Official responses that fail validation remain unusable. Within the frozen response and metadata byte budgets, the worker retains their exact original and transport evidence as an explicitly unvalidated private diagnostic dependency of the failed job. It never sets the validated capture pointer, publishes a result or creates a weather asset from that diagnostic. Archived private job-output dependency traversal retains the evidence without changing the storage schema. A retained rejection is replayed before any further provider download.
+
+The public status may expose `rejected` only after the task is terminally failed; the retention-before-failure interval remains pending and uncaptured. Safe quality details contain only enumerated negative-wind/negative-irradiance reason, source field, zero-based row index, finite negative value and canonical source UTC instant. Raw exceptions, coordinates, URLs, HTTP evidence and diagnostic references stay private. Customer presentation uses the typed reason, value with fixed unit and source UTC; historical generic failures retain their original fallback. An old run whose body was not retained cannot acquire the identity of a later R&D response.
+
+No source value is clipped, absolutized, deleted or replaced to obtain success. A separate explicitly selected reference producer must retain its own model/source identity; a weather failure never switches the calculation method automatically.

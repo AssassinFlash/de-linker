@@ -17,6 +17,7 @@ from .pvgis_metadata import at
 from .pvgis_response import PvgisCapture
 from .pvgis_tmy_request import PvgisTmyInterpretation, PvgisTmyRequest
 from .series_source import SeriesSource
+from .weather_fetch_errors import SourceQualityField, WeatherSourceQualityInvalid
 
 
 def tmy_weather(
@@ -148,17 +149,30 @@ def tmy_weather(
             raise InvalidInput(
                 "TMY irradiance instant cannot be represented"
             ) from error
+        values = {
+            field: number(row, field)
+            for field in ("G(h)", "Gb(n)", "Gd(h)", "T2m", "WS10m", "SP")
+        }
+        for field in ("G(h)", "Gb(n)", "Gd(h)", "WS10m"):
+            if values[field] < 0:
+                raise WeatherSourceQualityInvalid(
+                    "negative_wind" if field == "WS10m" else "negative_irradiance",
+                    cast(SourceQualityField, field),
+                    index,
+                    source.isoformat(),
+                    values[field],
+                )
         points.append(
             WeatherPoint(
                 Interval(target, target + timedelta(hours=1)),
                 source,
                 sample,
-                number(row, "G(h)"),
-                number(row, "Gb(n)"),
-                number(row, "Gd(h)"),
-                number(row, "T2m"),
-                number(row, "WS10m"),
-                number(row, "SP"),
+                values["G(h)"],
+                values["Gb(n)"],
+                values["Gd(h)"],
+                values["T2m"],
+                values["WS10m"],
+                values["SP"],
             )
         )
     # Observed provider failure elsewhere returned zero meteorology, not

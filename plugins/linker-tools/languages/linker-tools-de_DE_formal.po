@@ -12060,3 +12060,28 @@ msgstr "Die Modellangabe im Projekt weicht vom ausgewählten Produktmodell ab. O
 #: ../../apps/planner/src/components/energy/PlanningReportForm.tsx:168 build/planner/assets/planner.js:1
 msgid "If the selected equipment result contains a device review, the report retains that review. Changed project entries require a new equipment check before they can be included."
 msgstr "Enthält das ausgewählte Geräteergebnis einen Abgleich der Geräteangaben, wird dieser in den Bericht übernommen. Geänderte Projektangaben können erst nach einer neuen Geräteprüfung berücksichtigt werden."
+
+#: ../../apps/planner/src/components/energy/WeatherFailureNotice.tsx:20 build/planner/assets/planner.js:1
+msgid "The official weather source contains a negative wind-speed value and cannot be used for PV calculation."
+msgstr "Die offizielle Wetterquelle enthält einen negativen Wert für die Windgeschwindigkeit und kann für die PV-Berechnung nicht verwendet werden."
+
+#: ../../apps/planner/src/components/energy/WeatherFailureNotice.tsx:24 build/planner/assets/planner.js:1
+msgid "The official weather source contains a negative irradiance value and cannot be used for PV calculation."
+msgstr "Die offizielle Wetterquelle enthält einen negativen Wert für die Bestrahlungsstärke und kann für die PV-Berechnung nicht verwendet werden."
+
+#: ../../apps/planner/src/components/energy/WeatherFailureNotice.tsx:32 build/planner/assets/planner.js:1
+msgid "No usable weather dataset was created from this response."
+msgstr "Aus dieser Antwort wurde kein verwendbarer Wetterdatensatz erstellt."
+
+#: ../../apps/planner/src/components/energy/WeatherFailureNotice.tsx:53 build/planner/assets/planner.js:1
+#, javascript-format
+msgid "Source timestamp (UTC): %s"
+msgstr "Zeitangabe in den Quelldaten (UTC): %s"
+
+#: ../../apps/planner/src/components/energy/WeatherFailureNotice.tsx:15 ../../apps/planner/src/components/energy/WeatherProgress.tsx:31 build/planner/assets/planner.js:1
+msgid "The official weather response did not pass validation and cannot be used for PV calculation."
+msgstr "Die Antwort der offiziellen Wetterquelle hat die Prüfung nicht bestanden und kann für die PV-Berechnung nicht verwendet werden."
+
+#: ../../apps/planner/src/components/energy/WeatherFailureNotice.tsx:38 build/planner/assets/planner.js:1
+msgid "Source value"
+msgstr "Wert in den Quelldaten"
