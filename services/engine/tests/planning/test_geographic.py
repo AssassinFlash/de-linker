@@ -61,8 +61,16 @@ def test_frozen_proj_oracle_and_ellipsoid_contract_are_current() -> None:
             assert bridge.forward(*point["geodetic"]) == pytest.approx(
                 point["enu"], abs=1e-10
             )
-            assert bridge.inverse(*point["enu"]) == pytest.approx(
-                point["inverse"], abs=1e-10
+            inverse = bridge.inverse(*point["enu"])
+            assert inverse[:2] == pytest.approx(point["inverse"][:2], rel=0, abs=1e-10)
+            # Inverse height subtracts Earth-sized binary64 values. The CI
+            # Linux result differs from the frozen macOS oracle by two ULPs
+            # at the WGS84 semi-major axis (1.862645149230957e-9 m). Keep
+            # angular parity strict and budget four Earth-scale ULPs solely
+            # for height cancellation; this is not surveyed-site accuracy.
+            height_roundoff_m = 4 * math.ulp(6378137.0)
+            assert inverse[2] == pytest.approx(
+                point["inverse"][2], rel=0, abs=height_roundoff_m
             )
     ellipsoid = json.loads(
         (ROOT / "apps/planner/src/contracts/wgs84-ellipsoid.json").read_text()
