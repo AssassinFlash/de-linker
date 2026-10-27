@@ -31,6 +31,42 @@ html[lang^="de"]
 	text-wrap: balance;
 }
 
+/* Services audience tabs on EN2748/DE6700 use the existing14px action
+   type and44px target. Two IDs outrank retained desktop11px/mobile10px rules. */
+#service-redesign #solutions .service-role-nav button {
+	min-height: 44px;
+	font-size: var(--proto-size-sm);
+	line-height: 1.4;
+	white-space: normal;
+}
+
+/* Installer tool choices, EPC FAQ topics and residential planning choices
+   retain their native states and targets; use the existing14px action token.
+   Their separate ordinal-only spans keep the authored caption size. */
+#installer-journal #tools .lk-tool-switcher button,
+#tv-solutions-developers-v1 #faq .epc-faq-topics button,
+#tv-rs-page-v1 #engineering-tools .lk-tooldeck-btn {
+	min-width: 0;
+	font-size: var(--proto-size-sm);
+	line-height: 1.4;
+	white-space: normal;
+}
+
+/* Keep the existing two-digit FAQ ordinals together when a topic wraps. */
+#tv-solutions-developers-v1 #faq .epc-faq-topics button > span {
+	flex: 0 0 auto;
+	white-space: nowrap;
+}
+
+/* The native residential tool deck switches to its phone layout at760px.
+   Stack its three choices like the existing About phone chapter tabs: the
+   full German Kompatibilität label must fit at the action size. */
+@media (max-width: 760px) {
+	#tv-rs-page-v1 #engineering-tools .lk-tooldeck-nav {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
 @media (max-width: 640px) {
 	/* Use the existing14px label token while retaining the native44px target. */
 	#tv-utility-page-v1 .lk-hero-cta-row a.lk-btn-hero-ghost,

@@ -65,7 +65,8 @@ function documentPages(
 function documentLabel(
 	block: DocumentBlock,
 	products: ProductPresentation[],
-	locale: Locale
+	locale: Locale,
+	currentTitle?: string
 ): DocumentBlock {
 	if ( ! block.url || ! block.label ) {
 		return block;
@@ -101,6 +102,14 @@ function documentLabel(
 			sourceTitle: document.title || title,
 		};
 	}
+	// The identity-verified native title needs no inferred product association.
+	if ( typeof currentTitle === 'string' && currentTitle.trim() ) {
+		return {
+			...block,
+			label: `${ currentTitle.trim() }${ suffix }`,
+			sourceTitle: currentTitle,
+		};
+	}
 	// An unknown historic title is source material, not text to guess-translate.
 	// Use the actual filename in the current-language Document UI; keep its
 	// original title as the link's title attribute and leave the URL untouched.
@@ -133,6 +142,7 @@ async function publicationManifest(
 	documents: Array< {
 		document_id: string;
 		document_revision: string;
+		title?: string;
 		url: string;
 		aliases?: string[];
 	} >;
@@ -300,7 +310,12 @@ export async function restoreArtifacts(
 						)
 				);
 				return current
-					? documentLabel( block, products, context.locale )
+					? documentLabel(
+							block,
+							products,
+							context.locale,
+							current.title
+						)
 					: { ...block, url: null };
 			}
 			return block;
