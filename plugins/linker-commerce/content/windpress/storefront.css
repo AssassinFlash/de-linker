@@ -1575,7 +1575,13 @@ body.woocommerce-cart #tv-storefront-cart h1 {
 }
 #tv-storefront-cart .shipping-calculator-button::after,
 #tv-storefront-cart .woocommerce-shipping-destination + a::after { content: none !important; }
+#tv-storefront-cart > .linker-inquiry-draft-notice { margin-bottom: 1.5rem; }
 #tv-storefront-cart button:disabled { opacity: .45; }
+#tv-storefront-cart .wc-proceed-to-checkout a[aria-disabled="true"] {
+  opacity: .55;
+  cursor: not-allowed;
+  background: var(--sf-primary) !important;
+}
 
 @media (max-width: 1023px) {
   #tv-storefront-cart .woocommerce { grid-template-columns: 1fr; }

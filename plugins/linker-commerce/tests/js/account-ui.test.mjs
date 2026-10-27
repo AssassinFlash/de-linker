@@ -162,6 +162,32 @@ function inquiryDraft({saved=[],context='same-auth-session',nonce='first-nonce-t
  return {win,form,draft:win.document.querySelector('.woocommerce-cart-form'),send:form.querySelector('button'),field:(name)=>form.querySelector(`[name="${name}"]`)};
 }
 
+test('standalone draft blocks stale continuation until native readback, preserving the inquiry edit bridge',async()=>{
+ const dom=new JSDOM(`<div id="tv-storefront-cart">
+ <p id="draft-pending" data-inquiry-draft-pending role="status" hidden>Update the solution draft before sending your inquiry.</p>
+ <form class="woocommerce-cart-form"><input class="qty" name="cart[line][qty]" type="number" min="0" step="1" value="1"><button name="update_cart">Update solution draft</button></form>
+ <div class="wc-proceed-to-checkout"><a href="/proforma-request/">Send inquiry</a></div></div>`,{runScripts:'outside-only',url:'https://example.test/cart/'});
+ const win=dom.window;const kept='existing inquiry entries';win.sessionStorage.setItem('linker-inquiry-edit',kept);win.eval(script);
+ const draft=win.document.querySelector('form'),quantity=draft.querySelector('.qty'),link=win.document.querySelector('a'),notice=win.document.querySelector('[role="status"]');
+ const activate=()=>{const event=new win.MouseEvent('click',{bubbles:true,cancelable:true});link.dispatchEvent(event);return event;};
+ assert.equal(win.sessionStorage.getItem('linker-inquiry-edit'),kept);
+ assert.equal(link.getAttribute('aria-disabled'),'false');
+ for(const value of ['2','0','']){
+  quantity.value=value;quantity.dispatchEvent(new win.Event('input',{bubbles:true}));
+  assert.equal(link.getAttribute('aria-disabled'),'true');assert.equal(notice.hidden,false);
+  assert.equal(activate().defaultPrevented,true);assert.equal(win.document.activeElement.name,'update_cart');
+ }
+ quantity.value='1';quantity.dispatchEvent(new win.Event('change',{bubbles:true}));
+ assert.equal(link.getAttribute('aria-disabled'),'false');assert.equal(notice.hidden,true);
+ draft.classList.add('processing');await Promise.resolve();assert.equal(activate().defaultPrevented,true,'native processing also blocks continuation');
+ quantity.value='2';draft.classList.remove('processing');await Promise.resolve();assert.equal(link.getAttribute('aria-disabled'),'true','a failed native update keeps the edit blocked');
+ const replacement=draft.cloneNode(true);replacement.querySelector('.qty').setAttribute('value','2');draft.replaceWith(replacement);await Promise.resolve();
+ assert.equal(link.getAttribute('aria-disabled'),'false');assert.equal(notice.hidden,true);assert.equal(link.getAttribute('aria-describedby'),'draft-pending');
+ // Avoid jsdom navigation while proving that the release guard allows the saved readback.
+ let allowed=false;win.document.addEventListener('click',event=>{allowed=!event.defaultPrevented;event.preventDefault();});activate();assert.equal(allowed,true);
+ win.close();
+});
+
 test('unsaved inquiry quantities block sending, and reverting them restores sending',()=>{
  const {win,form,draft,send}=inquiryDraft();
  const quantity=draft.querySelector('.qty');
