@@ -16,6 +16,7 @@ from .energy_inputs import EnergyInputs
 from .energy_kernel import EnergyKernel
 from .equipment_candidate_choice import check_equipment_candidate
 from .equipment_candidate_store import EquipmentCandidateStore
+from .equipment_condition_inputs import validate_condition_inputs
 from .equipment_inputs import EquipmentSelection
 from .equipment_kernel import EquipmentKernel
 from .equipment_plant import EquipmentPlant, assert_plant_exclusivity
@@ -95,6 +96,9 @@ def report_sources(
         return run
 
     assessment: Object | None = None
+    frozen_certificates: Object | None = None
+    equipment_source_run: Run | None = None
+    equipment_source_inputs: Object | None = None
     comparison_only = (
         not options.include_installation
         and options.comparison is not None
@@ -121,6 +125,8 @@ def report_sources(
         )
         run = workspace.run(actor, cast(str, candidate["run_id"]))
         assert run.result is not None
+        equipment_source_run = run
+        equipment_source_inputs = workspace.pinned_inputs(run.manifest)
         detail = EquipmentCandidateStore(workspace).read(
             actor, run.id, cast(str, candidate["candidate_id"])
         )
@@ -143,6 +149,8 @@ def report_sources(
     elif options.equipment_run_id is not None:
         run = owned(options.equipment_run_id, EquipmentKernel.kind, ())
         previous = workspace.pinned_inputs(run.manifest)
+        equipment_source_run = run
+        equipment_source_inputs = previous
         if "equipment_plant" in previous or "equipment_plant" in project.inputs:
             matches = EquipmentPlant.from_inputs(
                 previous
@@ -157,6 +165,9 @@ def report_sources(
             )
         assert run.result is not None
         assessment = cast(Object, run.result["assessment"])
+        recorded_certificates = run.result.get("certificates")
+        if isinstance(recorded_certificates, dict):
+            frozen_certificates = recorded_certificates
         if isinstance(assessment.get("pv_electrical"), dict) and any(
             previous.get(field) != project.inputs.get(field)
             for field in ("geometry", "pv_string_plan")
@@ -235,6 +246,8 @@ def report_sources(
                 # a newer product snapshot to fill the report and handoff.
                 assessment = bound_assessment
                 bases["equipment"] = pinned_energy["woo.equipment_inputs"]
+                equipment_source_run = run
+                equipment_source_inputs = workspace.pinned_inputs(run.manifest)
         energy_profiles = (
             PlantEnergyKernel.profile_bindings(scenario)
             if isinstance(scenario, (PlantEnergyInputs, DcPlantEnergyInputs))
@@ -441,6 +454,32 @@ def report_sources(
     if component_list is not None and component_list.get("status") == "available":
         for name, sha in cast(Object, component_list["dependencies"]).items():
             dependencies[f"pv_components.{name}"] = sha
+    condition_inputs: Object | None = None
+    certificate_context: Object | None = None
+    if assessment is not None and "equipment" in bases:
+        if equipment_source_run is None or equipment_source_inputs is None:
+            raise VersionUnavailable("the equipment source calculation is missing")
+        condition_key = "equipment_condition_inputs"
+        if (
+            condition_key in equipment_source_inputs,
+            equipment_source_inputs.get(condition_key),
+        ) != (condition_key in project.inputs, project.inputs.get(condition_key)):
+            raise ReportInputsChanged(
+                "report device entries differ from the selected result; prepare and check the selection again"
+            )
+        if condition_key in equipment_source_inputs:
+            validate_condition_inputs(equipment_source_inputs, require_prepared=True)
+            condition_inputs = cast(Object, equipment_source_inputs[condition_key])
+            certificate_context = {
+                "run_id": equipment_source_run.id,
+                "revision": equipment_source_run.revision,
+                "kind": cast(Object, equipment_source_run.result)["kind"],
+                **(
+                    {"candidate_id": candidate["candidate_id"]}
+                    if isinstance(candidate, dict)
+                    else {}
+                ),
+            }
     source: Object = {
         "schema_version": 1,
         "project_id": project.id,
@@ -449,6 +488,14 @@ def report_sources(
         "title": project.title,
         "brief": None if comparison_only else project.inputs.get("brief"),
         "equipment_selection": project.inputs.get("equipment_selection"),
+        **(
+            {
+                "equipment_condition_inputs": condition_inputs,
+                "certificate_context": certificate_context,
+            }
+            if condition_inputs is not None
+            else {}
+        ),
         **(
             {"equipment_plant": project.inputs["equipment_plant"]}
             if "equipment_plant" in project.inputs
@@ -473,10 +520,22 @@ def report_sources(
         "dependencies": dependencies,
     }
     if assessment is not None and "equipment" in bases:
-        source["certificates"] = certificate_documents(
+        certificates = certificate_documents(
             workspace.blobs.object(cast(str, bases["equipment"])), assessment
         )
-    if options.inspect_certificate_declarations:
+        if frozen_certificates is not None:
+            associated = {
+                key: value
+                for key, value in frozen_certificates.items()
+                if key not in {"inspections", "condition_review"}
+            }
+            if associated != certificates:
+                raise VersionUnavailable(
+                    "recorded certificate review differs from frozen equipment sources"
+                )
+            certificates = frozen_certificates
+        source["certificates"] = certificates
+    if options.inspect_certificate_declarations or condition_inputs is not None:
         if "certificates" not in source:
             raise InvalidInput("certificate inspection requires selected equipment")
         source["inspect_certificate_declarations"] = True

@@ -3,13 +3,21 @@ import test from "node:test";
 import React, { act, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { IDBFactory } from "fake-indexeddb";
-import { setupDom, until, deferred } from "./dom-fixture.mjs";
+import { setupDom, until, deferred, enter } from "./dom-fixture.mjs";
 import { PreparationResult } from "../src/components/energy/PreparationResult.tsx";
 import { WeatherProgress } from "../src/components/energy/WeatherProgress.tsx";
 import { EnergyWorkspace } from "../src/components/energy/EnergyWorkspace.tsx";
-import { beginDraft } from "../src/domain/draft.ts";
+import {
+	beginDraft,
+	editDraft,
+	undoDraft,
+	prepareSave,
+	acknowledgeSave,
+} from "../src/domain/draft.ts";
+import { DeviceConditionInputs } from "../src/components/equipment/DeviceConditionInputs.tsx";
 import { ApiError } from "../src/data/protocol.ts";
 import fixture from "./fixtures/preparation-flow.json" with { type: "json" };
+import plantFixture from "./fixtures/plant-energy-run.json" with { type: "json" };
 
 const scope = "a".repeat(64);
 const session = {
@@ -339,3 +347,111 @@ for (const state of ["not_started", "fetching"]) {
 		);
 	});
 }
+
+test("real saved plant device entries stay optional, preserve per-unit version text and recover through Draft save and undo", async (t) => {
+	let current = beginDraft(structuredClone(plantFixture.project)),
+		setter,
+		valid = true;
+	const client = {
+		isCurrentScope: (value) => value === scope,
+		query() {
+			throw new Error("inactive input editor must not acquire a source");
+		},
+	};
+	function Harness() {
+		const [draft, setDraft] = useState(current);
+		setter = setDraft;
+		return React.createElement(DeviceConditionInputs, {
+			draft,
+			client,
+			scope,
+			active: false,
+			disabled: false,
+			onValidity: (value) => {
+				valid = value;
+			},
+			onError(error) {
+				if (error) throw error;
+			},
+			edit(operation) {
+				current = editDraft(current, operation(current.history.current));
+				setDraft(current);
+				return true;
+			},
+		});
+	}
+	await mount(t, React.createElement(Harness));
+	assert.equal(current.history.current.equipment_condition_inputs, undefined);
+	await act(async () =>
+		document.querySelector('input[type="checkbox"]').click(),
+	);
+	assert.deepEqual(current.history.current.equipment_condition_inputs, {
+		schema_version: 1,
+		devices: [],
+	});
+	const firmwareFields = [...document.querySelectorAll("label")]
+		.filter(
+			(node) =>
+				node.querySelector("span")?.textContent ===
+				"Declared firmware or software",
+		)
+		.map((node) => node.querySelector("input"));
+	assert.equal(firmwareFields.length, 6);
+	assert.ok(
+		firmwareFields.every((node) => node.value === ""),
+		"no Woo model or version is autofilled as a project entry",
+	);
+	await enter(firmwareFields[0], "001.02-A");
+	await enter(firmwareFields[3], "01.2-A");
+	const entries = current.history.current.equipment_condition_inputs.devices;
+	assert.equal(entries[0].selection_ref.unit_id, "a");
+	assert.equal(entries[1].selection_ref.unit_id, "b");
+	assert.equal(entries[0].declared_firmware, "001.02-A");
+	assert.equal(entries[1].declared_firmware, "01.2-A");
+	assert.equal(entries[0].declared_model, null);
+	await act(async () => {
+		current = prepareSave(current, crypto.randomUUID(), {
+			maxDepth: 32,
+			maxBytes: 16777216,
+		});
+		const intent = current.pending;
+		current = acknowledgeSave(current, intent, {
+			...current.baseline,
+			revision: intent.expectedRevision + 1,
+			inputs: intent.inputs,
+			input_sha256: "e".repeat(64),
+		});
+		setter(current);
+	});
+	assert.equal(
+		current.baseline.inputs.equipment_condition_inputs.devices[0]
+			.declared_firmware,
+		"001.02-A",
+	);
+	await act(async () => {
+		const next = structuredClone(current.history.current);
+		for (const unit of next.equipment_plant.units)
+			unit.selection.product_revisions["4107"] = "a".repeat(64);
+		current = editDraft(current, next);
+		setter(current);
+	});
+	assert.equal(valid, false);
+	assert.match(
+		document.body.textContent,
+		/different device, system or product revision/,
+	);
+	assert.match(document.body.textContent, /001\.02-A/);
+	assert.equal(
+		current.history.current.equipment_condition_inputs.devices[0]
+			.product_revision,
+		plantFixture.project.inputs.equipment_plant.units[0].selection
+			.product_revisions["4107"],
+		"a stale entry is never rebound",
+	);
+	await act(async () => {
+		current = undoDraft(current);
+		setter(current);
+	});
+	assert.equal(valid, true);
+	assert.equal(document.querySelector('[role="alert"]'), null);
+});

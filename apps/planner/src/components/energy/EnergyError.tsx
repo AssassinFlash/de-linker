@@ -277,6 +277,17 @@ export function energyErrorText(error: unknown): string {
 			);
 		case "equipment_requirements_incomplete":
 			return __("Enter the search requirements first.", "linker-tools");
+		case "equipment_condition_binding_changed":
+		case "equipment_condition_revision_changed":
+			return __(
+				"Some device entries refer to a different selection or product revision. The original entries are kept in Device model and firmware. Remove them and enter the details for the current devices before saving.",
+				"linker-tools",
+			);
+		case "equipment_condition_requires_preparation":
+			return __(
+				"The device entries are saved, but the equipment selection needs preparation before a new check or report. Prepare the selection and save the project.",
+				"linker-tools",
+			);
 		case "pv_string_plan_incomplete":
 		case "equipment_selection_incomplete":
 			return __(

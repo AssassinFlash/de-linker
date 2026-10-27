@@ -6000,7 +6000,7 @@
   "workspace_usability_continuation": {
     "baseline": "c126e9b09",
     "owner": "548",
-    "state": "local native acceptance and final incremental reviews passed; CI/publication pending",
+    "state": "released_and_archived_after_live_readback",
     "problems": [
       "Native language switching discarded the chosen energy workspace form view and opened scenario settings.",
       "Result h3 headings were not programmatically focusable, preventing the existing late sticky-bar correction while restoring a saved report."
@@ -6008,7 +6008,7 @@
     "impact": "Energy-view route, same-project native language links and result-heading focus; no model, product source, calculation or report content change",
     "minimum_verification": {
       "passed": "Existing siteIntegration cases extended for same-project report view, unrelated-project refusal and saved-result precedence; existing actual-project-bar case extended for heading focus and unchanged native button tab order; TypeScript passed",
-      "pending": "Final candidate CI, scoped Tools publication and live route/heading readback only",
+      "pending": "None for this UI release; next condition-review batch remains in same active full goal",
       "native_passed": "Actual Chrome CSS390x844/1440x1000 EN/DE forms; native DE->EN->DE selected report view; cold saved DE mobile/EN desktop report heading below measured bars. Existing reports/results reused; no generated calculation or PDF."
     },
     "stop": "Reuse all accepted physics, Woo, PDF and commerce evidence. No new numerical runs, test files, instance, matrix or full-site scan.",
@@ -6058,8 +6058,267 @@
     "screenshots": [
       "restored-report-before.png",
       "restored-report-de-390.png",
-      "restored-report-en-1440.png"
+      "restored-report-en-1440.png",
+      "production-restored-report-de.png"
     ],
-    "viewport_cleanup": "Both IAB and Chrome temporary overrides reset; one existing p548 instance reused"
+    "viewport_cleanup": "Both IAB and Chrome temporary overrides reset; one existing p548 instance reused",
+    "source_commit": "7f6dd42b8d8caae85f944a03ebaf8cf95bd2b064",
+    "merged_commit": "d07f45afe4bd9bcf7b4d61d2a11bd28c859ae66b",
+    "ci": {
+      "run": 40518708577,
+      "state": "success",
+      "repeated_runtime_suites": false
+    },
+    "production": {
+      "owner": "548",
+      "source_commit": "7f6dd42b8d8caae85f944a03ebaf8cf95bd2b064",
+      "purpose": "One scoped Tools release for accepted view/focus fixes; backend runtime unchanged",
+      "staging": "/Users/chesterjohn/de-linker-local/p548/planner/deploy-staging",
+      "reclaim": "After archived publication/readback, or candidate abandonment; one stage and no new runtime/instance",
+      "status": "archived_after_native_readback",
+      "transport": {
+        "socket": "/Users/chesterjohn/de-linker-local/p548/planner/ssh-control",
+        "purpose": "Reuse the same authorized SSH connection for native scoped deployment; no global SSH config change",
+        "idle_lifetime_seconds": 120,
+        "reclaim": "Exit only this task-owned master after publication/readback; automatic idle expiry otherwise",
+        "preflight_latest": "20261027T135221Z-about-heading-9f47424e",
+        "preflight_state": "archived",
+        "three_native_read_seconds": 9.49,
+        "state": "task-owned master closed after native archive"
+      },
+      "peer_rollback": {
+        "deploy_id": "20261027T135221Z-about-heading-9f47424e",
+        "path": "/Users/chesterjohn/de-linker-data/planner-production/peer-about-before-ui698.tar.gz",
+        "bytes": 4505,
+        "purpose": "Preserve peer current scoped recovery before native global archive pruning",
+        "reclaim": "After peer confirms replacement or recovery represented by a verified retained full backup; no duplicate stage",
+        "state": "duplicate_tar_reclaimed_after_exact_bytes_match",
+        "replacement_full_backup": "/Users/chesterjohn/de-linker-data/cutover-20261027-1144"
+      },
+      "snapshot": {
+        "name": "db-20261027T144332Z.sql.gz",
+        "path": "/Users/chesterjohn/de-linker-data/snapshots/db-20261027T144332Z.sql.gz",
+        "size": 7177765,
+        "sha256": "782d305dcb03fd549ce85c695346c40b7ba73cea34dff912a2084c18a0ddaf9b"
+      },
+      "receipt": {
+        "deploy_id": "20261027T144342Z-planner-views-7f6dd42b",
+        "switch_seconds": 0.003,
+        "backup_directory": "/home/u388076051/deploy-prev/20261027T144342Z-planner-views-7f6dd42b",
+        "paths": [
+          "wp-content/plugins/linker-tools"
+        ],
+        "readbacks": [
+          "Seven public build/catalog resources200 with exact frozen-stage hashes",
+          "Actual production DE existing report restored; heading255.80px below measured bars194px; same original run61474209",
+          "Native DE->EN link preserved project af0ad4 and energy_view=reports; actual EN report form selected, no new calculation"
+        ],
+        "after_switch": [
+          "opcache-reset=done attempts=1"
+        ]
+      },
+      "public_assets": [
+        {
+          "path": "build/planner/assets/planner-core-TG293mOu.js",
+          "status": 200,
+          "mime": "application/x-javascript",
+          "matches_frozen_stage": true,
+          "sha256": "97e6714473a6ba287d2907b9001434f7e34df2d844700f26f104e5d66198b804"
+        },
+        {
+          "path": "build/planner/assets/rolldown-runtime-BWaJ3C7D.js",
+          "status": 200,
+          "mime": "application/x-javascript",
+          "matches_frozen_stage": true,
+          "sha256": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3"
+        },
+        {
+          "path": "build/planner/assets/MapViewport-ThxhV-F9.js",
+          "status": 200,
+          "mime": "application/x-javascript",
+          "matches_frozen_stage": true,
+          "sha256": "90b1f686607d0d531ec494c34a67c153676e87d345d768e7901e7e7623927955"
+        },
+        {
+          "path": "build/planner/assets/SceneViewport-BFvEHhYB.js",
+          "status": 200,
+          "mime": "application/x-javascript",
+          "matches_frozen_stage": true,
+          "sha256": "a1f205d5f1a78696e466ba593053a7a7257e52ea940c5a2c6fa6da2316a79f95"
+        },
+        {
+          "path": "build/planner/assets/EnergyFlowChart-DtzipPmk.js",
+          "status": 200,
+          "mime": "application/x-javascript",
+          "matches_frozen_stage": true,
+          "sha256": "a3176005f6f7a0c6276b6a4ec438dee02c413505bd68dea91796238f18c03f5a"
+        },
+        {
+          "path": "build/planner/assets/planner.js",
+          "status": 200,
+          "mime": "application/x-javascript",
+          "matches_frozen_stage": true,
+          "sha256": "dcdffef43f010c15ef54dfeda5b994a7181f4d6ed37fdaae51b59be0fb3fb7b4"
+        },
+        {
+          "path": "languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json",
+          "status": 200,
+          "mime": "application/json",
+          "matches_frozen_stage": true,
+          "sha256": "dcb6d2c77c14e7d135b1e7c0a4f848fe8ecb2bf01e6bc093fc74980f7d07c582"
+        }
+      ],
+      "completed_at_utc": "2026-10-27T14:58:33.755980+00:00",
+      "live_readback": {
+        "project": "af0ad4ab79464b8da02c30b6bcda6c6a",
+        "revision": 3,
+        "run": "61474209b58d4171938ac78601a54626",
+        "viewport": "Default IAB CSS587x796; no390/1440 size claim",
+        "heading_top_px": 255.796875,
+        "bar_bottom_px": 194,
+        "focused": true,
+        "language": "DE->EN native link; same project and selected reports view",
+        "new_calculations": 0,
+        "new_pdf": 0
+      },
+      "staging_cleanup": {
+        "logical_bytes": 10453342,
+        "free_bytes_before": 930400333824,
+        "free_bytes_after": 930411618304,
+        "source_rebuildable_from": "7f6dd42b8d8caae85f944a03ebaf8cf95bd2b064"
+      },
+      "snapshot_retention": {
+        "removed": [
+          {
+            "path": "/Users/chesterjohn/de-linker-data/snapshots/db-20261027T110951Z.sql.gz",
+            "bytes": 7341942
+          }
+        ],
+        "retained": [
+          "db-20261021T183520Z.sql.gz",
+          "db-20261022T140810Z.sql.gz",
+          "db-20261023T232408Z.sql.gz",
+          "db-20261024T182545Z.sql.gz",
+          "db-20261025T234349Z.sql.gz",
+          "db-20261026T222742Z.sql.gz",
+          "db-20261027T113032Z.sql.gz",
+          "db-20261027T133045Z.sql.gz",
+          "db-20261027T144332Z.sql.gz"
+        ],
+        "verification": "New point verified by native streamed snapshot; unchanged retained streams reuse previous completed integrity proof",
+        "policy": "Latest3 plus final daily point for7days; no active reader on retired file"
+      },
+      "duplicate_peer_recovery_cleanup": [
+        {
+          "removed": "/Users/chesterjohn/de-linker-data/planner-production/commerce-131252-preimage.tar.gz",
+          "bytes": 7253,
+          "equivalent_retained_full_backup": "/Users/chesterjohn/de-linker-data/cutover-20261027-1144",
+          "leaves": [
+            "wp-content/plugins/linker-commerce/content/windpress/account-links.css"
+          ],
+          "sha256": {
+            "wp-content/plugins/linker-commerce/content/windpress/account-links.css": "2c55f55dcdbaef00f5b1379b61130732649e879ecdc293fd763d3fa4e0d24029"
+          }
+        },
+        {
+          "removed": "/Users/chesterjohn/de-linker-data/planner-production/peer-about-before-ui698.tar.gz",
+          "bytes": 4505,
+          "equivalent_retained_full_backup": "/Users/chesterjohn/de-linker-data/cutover-20261027-1144",
+          "leaves": [
+            "wp-content/plugins/linker-commerce/content/windpress/marketing-rhythm.css"
+          ],
+          "sha256": {
+            "wp-content/plugins/linker-commerce/content/windpress/marketing-rhythm.css": "7e37677b73350dd70b91de5e0cae19fccc67341692ab7f3069199a8592372a48"
+          }
+        }
+      ]
+    }
+  },
+  "project_device_condition_review": {
+    "state": "source_integrated; build/native/final_reviews_pending",
+    "scope": "Per-device/per-document literal model/firmware checks; declared-vs-Woo model text reconciliation; no aggregate applicability/ranking/country approval",
+    "source_authority": "Selected versioned Woo product and document evidence only; optional project declarations never become manufacturer facts",
+    "input_contract": "equipment_condition_inputs schema1; per single/unit/controller exact binding; null unknown; blank-only nonnull rejected; nonblank text exact",
+    "backend_checks": "Existing18 certificate cases passed; final affected blank-input case passed; selected-source strict mypy/ruff and schema parity passed. No physics/year/whole-site suite.",
+    "frontend_checks": "Existing scoped domain/data and saved-plant fixture passed; tsc passed; actual EquipmentKernel -> native PHP current_access(null) -> strict JS seam passed; no live permission claim.",
+    "report_checks": "Four affected report fixtures passed; same equipment/API/report condition review and original source identity; historical immutable read unchanged; subset scope and declaration mismatch enforced. Last empty-device wording checked against existing captured payload only.",
+    "synthetic_seam": {
+      "run": "611695f7f23740bb831d1abd92534459",
+      "revision": 1,
+      "devices": 3,
+      "documents": 1,
+      "identity": "different_text even when compared declared model is listed and firmware010101 matches",
+      "other_devices": "unprovided with no files",
+      "annex": "unresolved",
+      "open_obligations": 10,
+      "native_access": "unavailable/null without current authority",
+      "captures": [
+        {
+          "name": "p548-conditions-equipment-certificates.json",
+          "sha256": "d875e4a9682dee62d0139f7ceeeb6f7688c40e054fa270ea37a62123fb38b867",
+          "bytes": 6350,
+          "kind": "Synthetic actual EquipmentKernel/HTTP-view fixture; not a native-site or live-access claim",
+          "top_keys": [
+            "applicability",
+            "condition_review",
+            "documents",
+            "inspections",
+            "products",
+            "schema_version",
+            "scope",
+            "run_id",
+            "project_id",
+            "revision",
+            "manifest_sha256",
+            "basis_sha256"
+          ]
+        },
+        {
+          "name": "p548-conditions-equipment-run.json",
+          "sha256": "6f7953fce20526c115085570a178ab29daf0e5983fb51a8853deefc3a4ebef69",
+          "bytes": 110306,
+          "kind": "Synthetic actual EquipmentKernel/HTTP-view fixture; not a native-site or live-access claim",
+          "top_keys": [
+            "id",
+            "project_id",
+            "revision",
+            "state",
+            "is_current",
+            "manifest_sha256",
+            "manifest",
+            "result_sha256",
+            "result",
+            "error"
+          ]
+        }
+      ]
+    },
+    "copy_review": {
+      "frontend": {
+        "initial_draft": "69 initial EN/DE pairs; state assertion project unchanged, broad applicability/page labels and physical-identity implication required correction",
+        "independent_reviewer": "zerez_certificate_source",
+        "decisions": [
+          "Removed unsupported unchanged-project claim",
+          "First-page literal model/firmware scope stated",
+          "No applies/approval or physical-equivalence inference",
+          "Natural formal German; historical selected-result guidance"
+        ],
+        "final": "76 reviewed pairs frozen in source; catalog integration pending"
+      },
+      "report": {
+        "initial_draft": "Project device observations; Model listed/not listed; project-model identity and global no-document empty text",
+        "independent_reviewer": "root",
+        "decisions": [
+          "Use Project device details with explicit project-entered device values",
+          "Model listed/not listed on this page",
+          "Literal model identity only; selected frozen run/revision explicit",
+          "Empty-document statement per device only"
+        ],
+        "final_en_empty": "No certificate or related product document was recorded for this device.",
+        "final_de_empty": "F\u00fcr dieses Ger\u00e4t wurden keine Zertifikate oder zugeh\u00f6rigen Produktunterlagen erfasst.",
+        "verdict": "PASS all new labels/reasons and final empty-state increment"
+      }
+    },
+    "remaining": "Integrate catalogs/build, prepare matched local backend, independent final source reviews, one native saved-project condition case and EN/DE outputs, candidate CI and coordinated release/readback. Full548 scope/source gaps remain active."
   }
 }

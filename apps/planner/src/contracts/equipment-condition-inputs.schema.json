@@ -1,0 +1,184 @@
+{
+  "$defs": {
+    "Count": {
+      "exclusiveMinimum": 0,
+      "maximum": 9007199254740991,
+      "type": "integer"
+    },
+    "DeviceConditionInput": {
+      "additionalProperties": false,
+      "properties": {
+        "selection_ref": {
+          "$ref": "#/$defs/SelectionRef"
+        },
+        "product_id": {
+          "$ref": "#/$defs/Count"
+        },
+        "product_revision": {
+          "$ref": "#/$defs/Revision"
+        },
+        "declared_model": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Observation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "declared_firmware": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Observation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_note": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Observation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "selection_ref",
+        "product_id",
+        "product_revision",
+        "declared_model",
+        "declared_firmware",
+        "source_note"
+      ],
+      "title": "DeviceConditionInput",
+      "type": "object"
+    },
+    "Identity": {
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "type": "string"
+    },
+    "Observation": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "pattern": "\\S",
+      "type": "string"
+    },
+    "PlantControllerRef": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "plant_controller",
+          "title": "Kind",
+          "type": "string"
+        },
+        "group_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "kind",
+        "group_id"
+      ],
+      "title": "PlantControllerRef",
+      "type": "object"
+    },
+    "PlantDeviceRef": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "plant_unit",
+          "title": "Kind",
+          "type": "string"
+        },
+        "unit_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "role": {
+          "$ref": "#/$defs/Role"
+        }
+      },
+      "required": [
+        "kind",
+        "unit_id",
+        "role"
+      ],
+      "title": "PlantDeviceRef",
+      "type": "object"
+    },
+    "Revision": {
+      "pattern": "^[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "Role": {
+      "enum": [
+        "inverter",
+        "battery",
+        "accessory"
+      ],
+      "type": "string"
+    },
+    "SchemaVersion": {
+      "maximum": 1,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "SelectionRef": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/SingleDeviceRef"
+        },
+        {
+          "$ref": "#/$defs/PlantDeviceRef"
+        },
+        {
+          "$ref": "#/$defs/PlantControllerRef"
+        }
+      ]
+    },
+    "SingleDeviceRef": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "single",
+          "title": "Kind",
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/$defs/Role"
+        }
+      },
+      "required": [
+        "kind",
+        "role"
+      ],
+      "title": "SingleDeviceRef",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "$ref": "#/$defs/SchemaVersion"
+    },
+    "devices": {
+      "items": {
+        "$ref": "#/$defs/DeviceConditionInput"
+      },
+      "title": "Devices",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "devices"
+  ],
+  "title": "EquipmentConditionInputs",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

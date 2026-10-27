@@ -29,6 +29,16 @@ def _block(text: str, start: str, end: str) -> str | None:
     return match[1].strip() if match and match[1].strip() else None
 
 
+def _blocks(text: str, start: str, end: str) -> list[str]:
+    return [
+        match[1].strip()
+        for match in re.finditer(
+            start + r"\s*(.*?)\s*(?=" + end + r")", text, re.S | re.I
+        )
+        if match[1].strip()
+    ]
+
+
 def _standard_field(text: str) -> str:
     guide = _block(
         text,
@@ -81,23 +91,24 @@ def inspect_certificate(content: bytes, document: Object) -> Object:
             return {**result, "status": "resource_limit"}
         page_count = len(reader.pages)
         declarations: list[Json] = []
-        models = _block(
+        models = _blocks(
             text,
             r"Type\s+Designation\s*:",
             r"Firmware\s+Version\s*:",
-        ) or _block(text, r"Models\s*/\s*Modelle", r"Technical\s+Data\s*/")
-        firmware = re.search(
+        ) + _blocks(text, r"Models\s*/\s*Modelle", r"Technical\s+Data\s*/")
+        firmware = re.finditer(
             r"(?:Firmware\s+Version\s*:|Software\s+version\s*/\s*Softwareversion)"
             r"[ \t]*([^\r\n]+)",
             text,
             re.I,
         )
-        if models:
-            declarations.append({"kind": "models", "value": models, "page": 1})
-        if firmware and firmware[1].strip():
-            declarations.append(
-                {"kind": "firmware", "value": firmware[1].strip(), "page": 1}
-            )
+        for model_field in models:
+            declarations.append({"kind": "models", "value": model_field, "page": 1})
+        for version in firmware:
+            if version[1].strip():
+                declarations.append(
+                    {"kind": "firmware", "value": version[1].strip(), "page": 1}
+                )
         # Retain printed references, including amendments and their actual
         # notation. A short /11.18 is not rewritten into a claimed new edition.
         references: dict[str, str] = {}

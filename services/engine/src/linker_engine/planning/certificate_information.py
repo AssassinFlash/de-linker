@@ -6,6 +6,7 @@ from typing import cast
 
 from .canonical import Object
 from .dependencies import verify_dependencies
+from .equipment_conditions import review_device_conditions
 from .errors import VersionUnavailable
 from .storage import Blobs
 
@@ -28,17 +29,43 @@ def report_source_with_information(blobs: Blobs, dependencies: Object) -> Object
         or bundle.get("report_source_sha256") != seed_sha
         or not isinstance(evidence, dict)
         or not isinstance(original, dict)
-        or {k: v for k, v in evidence.items() if k != "inspections"} != original
+        or {
+            k: v
+            for k, v in evidence.items()
+            if k not in {"inspections", "condition_review"}
+        }
+        != {
+            k: v
+            for k, v in original.items()
+            if k not in {"inspections", "condition_review"}
+        }
     ):
         raise VersionUnavailable("certificate inspection differs from report source")
-    inspections, children = evidence.get("inspections"), bundle.get("dependencies")
-    documents = cast(list[Object], original["documents"])
-    if (
-        not isinstance(inspections, dict)
-        or set(inspections) != {str(d["document_id"]) for d in documents}
-        or not isinstance(children, dict)
-        or children.get("report_source") != seed_sha
-    ):
+    children = bundle.get("dependencies")
+    if not isinstance(children, dict) or children.get("report_source") != seed_sha:
+        raise VersionUnavailable("certificate inspection dependencies are missing")
+    verify_certificate_information(blobs, evidence, children)
+    if "equipment_condition_inputs" in source:
+        if evidence.get("condition_review") != review_device_conditions(
+            source, evidence
+        ):
+            raise VersionUnavailable(
+                "certificate conditions differ from frozen project observations"
+            )
+    elif "condition_review" in evidence:
+        raise VersionUnavailable("certificate conditions have no project observations")
+    return {**source, "certificates": evidence}
+
+
+def verify_certificate_information(
+    blobs: Blobs, evidence: Object, children: Object
+) -> None:
+    """The same retained source requirements govern equipment and report reads."""
+    documents = cast(list[Object], evidence["documents"])
+    inspections = evidence.get("inspections")
+    if not isinstance(inspections, dict) or set(inspections) != {
+        str(d["document_id"]) for d in documents
+    }:
         raise VersionUnavailable("certificate inspection dependencies are missing")
     for document in documents:
         identity = str(document["document_id"])
@@ -69,5 +96,4 @@ def report_source_with_information(blobs: Blobs, dependencies: Object) -> Object
                 or not isinstance(declaration.get("value"), str)
             ):
                 raise VersionUnavailable("certificate declaration is invalid")
-    verify_dependencies(blobs, bundle)
-    return {**source, "certificates": evidence}
+    verify_dependencies(blobs, {"dependencies": children})

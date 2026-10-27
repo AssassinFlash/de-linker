@@ -111,3 +111,31 @@ EN 50549-1/-2 的公开 scope 均明确：DSO、TSO、成员国或监管机构�
 | VDE VERLAG 2026-03 公开说明 | run `dWZlf2D8gof8pgjFa` · dataset `pGBGhyd3DPcUcxdtf` |
 | FNN Anhang F 免费表单 | run `tLHzkBrvIBYyseb0O` · KV `dQYiswxE1Q9cdeCW4` · `file-7680133-vde-ar-n-4105-formulare-anhang-e-data.pdf` |
 | TÜV Rheinland 并网认证说明 | run `J9E1uZJHIkDQyeOCV` · dataset `ctZr4RcJDzjZjFINQ` |
+
+
+## 9. ZEREZ：四款 ET-G10 的登记读回与文件边界
+
+2026-10-27 14:15–14:33 UTC，仅沿 [ZEREZ 官方首页](https://www.zerez.net/)的公开入口进入[单位与证书表](https://www.zerez.net/units-and-certificates)，使用页面真实搜索字段筛选 `ET-G10`。实际应用的公开 GraphQL 响应返回 **8 条**记录：四个既有 Woo 型号各有下列两组登记；本次没有扩大产品范围。
+
+| 既有 Woo 型号 | 4110 / 4120 单位登记 | 4105 单位登记 |
+| --- | --- | --- |
+| GW75K-ET-G10 | [ZE-PWRY-PB3X-0001](https://www.zerez.net/units/1dd4aab1-4a63-4310-6c58-08de5fee9eea) | [ZE-XBO0-1CWG-0001](https://www.zerez.net/units/8062ecc6-2ce2-4e97-fdfe-08ddf1c90eeb) |
+| GW80K-ET-G10 | [ZE-PWRY-PB3X-0003](https://www.zerez.net/units/f037a3c2-7f49-4c15-6c5a-08de5fee9eea) | [ZE-XBO0-1CWG-0002](https://www.zerez.net/units/d3f106e2-360b-46ef-fdff-08ddf1c90eeb) |
+| GW99.99K-ET-G10 | [ZE-PWRY-PB3X-0005](https://www.zerez.net/units/4e8b2015-1149-4658-6c5c-08de5fee9eea) | [ZE-XBO0-1CWG-0003](https://www.zerez.net/units/26778716-46ec-46a6-fe00-08ddf1c90eeb) |
+| GW100K-ET-G10 | [ZE-PWRY-PB3X-0007](https://www.zerez.net/units/5de64769-7813-4fa3-6c5e-08de5fee9eea) | [ZE-XBO0-1CWG-0004](https://www.zerez.net/units/40c733c1-ee61-4c26-fe01-08ddf1c90eeb) |
+
+- **登记状态已读回。**八条 API 记录均为 `Valid / Ongoing`、`isVerified=true`。4110/4120 组共用 ZEREZ 证书码 **ZE-PWRY-PB3X**、证书号 **250008RECO14-CER**、证书 UUID `58d2552c-eb4e-4fbc-86e1-c6c5dcb135df`，标准为 **4110:2023-09 / 4120:2018-11**；[GW75K 实际详情](https://www.zerez.net/units/1dd4aab1-4a63-4310-6c58-08de5fee9eea)显示 SGS TECNOS, S.A.、2026-01-30 签发、有效至 2031-01-30。4105 组共用 **ZE-XBO0-1CWG**、**A3 50694726 0001**、证书 UUID `9ce0c83b-1f4f-45c7-a057-4d7456398caf`；[GW100K 实际详情](https://www.zerez.net/units/40c733c1-ee61-4c26-fe01-08ddf1c90eeb)显示 **4105:2018-11**、2025-09-15 签发、有效且已验证，限制栏未指定内容。这是当前登记状态，不能替代文件全文或项目接网批准。
+- **SGS 限制全文已展开取得。**上述 GW75K 详情的完整限制说明：认证产品不提供测试端子；必要时须另装连接端子板。条件中的“必要时”保留，不扩成所有项目无条件必装，也不从这条简短限制推断 164 页附录的其他条件。该页的 `Software Version` 实际填写 **DIgSILENT PowerFactory 2024**，不能将它当成设备固件或据此补证固件 **010101** 的适用性。
+- **文件入口有新定位，原件仍未取得。**SGS 单位详情给出[真实证书路由](https://www.zerez.net/certificates/58d2552c-eb4e-4fbc-86e1-c6c5dcb135df)；本次直接读取该路由仅得到动态壳页，未取得额外证书内容。单位详情文件区显示公开的封面下载按钮，评估报告与模型标为锁定；不能据文件类别认定锁定内容就是目标附录。4105 详情另显示封面及 NA 保护证书/试验报告两个下载按钮，并给出[证书路由](https://www.zerez.net/certificates/9ce0c83b-1f4f-45c7-a057-4d7456398caf)。这些按钮没有公开在 DOM 中的实际文件 href；本轮没有取得可供已批准 crawler 直接读取的文件 URL。SGS 下载尝试未捕获浏览器下载事件，因同一工具错误自动重启后已主动终止，未继续反复尝试。**本轮没有取得 PDF 字节，因此没有新增文件哈希、字节数或页数，也不由“封面”标签猜测文件只有一页。**未新存本地文件或重复已知 PDF。
+- **4105 过渡缺口保持。**本次目标筛选的八条记录没有 4105:2026-03 条目；其中 4105:2018-11 当前标为有效，仍不能推出其继续承认的申请、报装或投运条件。首页表偶见其他型号的 2026-03 登记，不适用于这四款型号，也不是过渡条款原文。第 8 节的“版次/过渡适用性未核实”不变。
+
+**收口：**本次新增了八个精确单位登记、两组证书的当前登记读回及一条完整 SGS 限制，仍未补齐 **250008RECO14-CER 的 164 页 Annex、revision 0、2026-01-30**，也未取得新文件原件、额外固件适用性说明或 4105:2026-03 过渡原文。Woo 继续是唯一维护的产品与资料来源；外部登记没有写回 Woo，没有新增型号、替换证书或形成接网放行。本次没有对外联系或绕过锁定文件。
+
+| 本次有效来源 / 具体限度 | Apify 定位（均为已批准的 `apify/website-content-crawler`） |
+| --- | --- |
+| 公开登记页与真实搜索字段 | run `tiR12zC9L9XpiyNUU` · dataset `hWPIvRHxoXVp8hRH6` |
+| `ET-G10` 筛选及完整 8 条 GraphQL 响应 | run `xBzS7jww1ebRDhscF` · dataset `FGY7enFefYRIRF539`；实际接口 `https://app-zerez-weeu-gatewaysvc-prod-01.azurewebsites.net/graphql/` |
+| SGS 单位详情及文件区 | run `PugHIxNc3dh4Uk9PP` · dataset `CseMdcoDa40NbyWRz` |
+| SGS 完整限制展开 | run `M167kNSTV4qsK3jCm` · dataset `IONha0DlXIBL1zjWj` |
+| 4105 GW100K 代表详情；SGS 证书路由仅壳页 | run `14KdJ2uExsbzN9p26` · dataset `hkVVwX8Dd9vgWHZOx` |
+| 未取回文件的下载事件失败（已终止） | run `i9GkKXPYUipewJVxR` · KV `hzrta9KBHI0lZVOHK`；日志定位，不作为 PDF 原件 |
