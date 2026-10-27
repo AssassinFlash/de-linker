@@ -121,7 +121,7 @@ final class Publication {
 	 */
 	public static function model_statuses(): array {
 		self::refresh_runtime();
-		$ids   = get_posts(
+		$ids = get_posts(
 			array(
 				'post_type'                   => 'product',
 				'post_status'                 => array( 'publish', 'draft', 'pending', 'private', 'future', 'trash' ),
@@ -133,22 +133,33 @@ final class Publication {
 				'cache_results'               => false,
 			)
 		);
+		$ids = array_map( 'intval', $ids );
+		if ( array() === $ids ) {
+			return array();
+		}
+		// This fresh authority read batches native posts/meta and model relationships.
+		_prime_post_caches( $ids, false, true );
+		$terms = wp_get_object_terms(
+			$ids,
+			'pa_model',
+			array(
+				'fields' => 'all_with_object_id',
+				'lang'   => '',
+			)
+		);
+		if ( is_wp_error( $terms ) ) {
+			throw new \RuntimeException( 'Current model identity terms could not be read.' );
+		}
+		$models_by_id = array();
+		foreach ( $terms as $term ) {
+			// all_with_object_id adds the native relationship to the term's fields.
+			$relationship                                       = get_object_vars( $term );
+			$models_by_id[ (int) $relationship['object_id'] ][] = $term->name;
+		}
 		$known = array();
 		foreach ( $ids as $id ) {
-			$id    = (int) $id;
-			$terms = wp_get_object_terms(
-				$id,
-				'pa_model',
-				array(
-					'fields' => 'names',
-					'lang'   => '',
-				)
-			);
-			if ( is_wp_error( $terms ) ) {
-				throw new \RuntimeException( 'Current model identity terms could not be read.' );
-			}
 			$published = self::published_in_current_read( $id ) && ! EngineeringReference::is_reference( $id );
-			foreach ( $terms as $model ) {
+			foreach ( $models_by_id[ $id ] ?? array() as $model ) {
 				$key = strtolower( trim( $model ) );
 				if ( ! isset( $known[ $key ] ) || $published ) {
 					$known[ $key ] = $published
