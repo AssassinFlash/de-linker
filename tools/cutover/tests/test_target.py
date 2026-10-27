@@ -271,6 +271,8 @@ def test_copy_out_pulls_the_four_chunk_kinds(
     listing = "\n".join(
         [
             "D ./assets/fonts",
+            "F ./assets/bootstrap.css",
+            "F ./templates/card.html",
             "F ./logo-direct.png",
             "F ./root.txt",
             "d ./templates",
@@ -294,6 +296,7 @@ def test_copy_out_pulls_the_four_chunk_kinds(
     base = target.path_of(relative)
     pulls = [command[-2] for command in seen if command[0] == "rsync"]
     assert pulls == [
+        f"{HOST}:{base}/assets/bootstrap.css",
         f"{HOST}:{base}/logo-direct.png",
         f"{HOST}:{base}/root.txt",
         f"{HOST}:{base}/assets/fonts/",
