@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 from typing import cast
 
 from linker_engine.models import ReportRow, ReportSection
@@ -32,14 +33,58 @@ def pvlib_reference(
     witness = blobs.object(dependencies["pv_model_witness"])
     weather = _object(_object(inputs["weather"])["source"])
     details = _object(weather["details"])
-    for field in ("request", "capture", "interpretation"):
-        if details.get(field) != metadata.get("weather_" + field):
-            raise VersionUnavailable("the frozen PV weather provenance differs")
-    capture = _object(details["capture"])
-    capture_sha = blobs.put_object(capture)
+    source_fields = ("request", "capture", "interpretation")
+    tmy = (
+        any(
+            field in details or "weather_" + field in metadata
+            for field in source_fields
+        )
+        or details.get("adapter") == "pvgis_5_3_tmy_explicit_two_axes_v1"
+    )
+    capture_dependencies: Object = {}
+    if tmy:
+        for field in source_fields:
+            if not isinstance(details.get(field), dict) or details[
+                field
+            ] != metadata.get("weather_" + field):
+                raise VersionUnavailable("the frozen PV weather provenance differs")
+        capture_dependencies["weather_capture"] = blobs.put_object(
+            _object(details["capture"])
+        )
     parameters = _object(inputs["parameters"])
     geometry = _object(inputs["geometry"])
-    summary = _object(metadata["interpretation"])
+    # Native retained references can use synthetic/non-TMY weather and omit
+    # optional summary metadata. Their verified axis/output remain reportable;
+    # no official request, capture or typical-year facts are invented for them.
+    summary = dict(_object(metadata.get("interpretation", {})))
+    for field, instant in {
+        "start_utc": ac.intervals[0].start,
+        "end_utc": ac.intervals[-1].end,
+    }.items():
+        if field not in summary:
+            summary[field] = instant.isoformat()
+        else:
+            value = summary[field]
+            try:
+                if (
+                    not isinstance(value, str)
+                    or datetime.fromisoformat(value) != instant
+                ):
+                    raise ValueError
+            except ValueError as error:
+                raise VersionUnavailable(
+                    "the frozen PV summary axis differs"
+                ) from error
+    for field, value in {
+        "interval_count": len(ac.intervals),
+        "energy_kwh": witness["energy_kwh"],
+        "measurement": "pv_available_ac",
+    }.items():
+        if field in summary and (
+            isinstance(summary[field], bool) or summary[field] != value
+        ):
+            raise VersionUnavailable("the frozen PV summary differs from its output")
+        summary.setdefault(field, value)
     selected: set[str] | None = None
     if converter_id is not None:
         dc = project_dc(
@@ -121,7 +166,7 @@ def pvlib_reference(
         "dependencies": {
             **dependencies,
             "weather_original": raw_sha256,
-            "weather_capture": capture_sha,
+            **capture_dependencies,
             "geometry": blobs.put_object(geometry),
         },
     }
@@ -140,9 +185,7 @@ def pvlib_sections(source: Object, locale: str) -> list[ReportSection]:
         reference = _object(value)
         parameters = _object(reference["parameters"])
         weather = _object(reference["weather"])
-        request = _object(weather["request"])
-        capture = _object(weather["capture"])
-        interpretation = _object(weather["interpretation"])
+        tmy = isinstance(weather.get("capture"), dict)
         summary = _object(reference["profile_summary"])
         parts = _object(reference["pv_components"])
         dc_group = isinstance(reference.get("converter_id"), str)
@@ -151,50 +194,89 @@ def pvlib_sections(source: Object, locale: str) -> list[ReportSection]:
                 "pvlib_model",
                 f"{parameters['model']} / pvlib {parameters['pvlib_version']}",
             ),
-            row(
-                "pvlib_weather_period", f"{request['start_year']}–{request['end_year']}"
-            ),
-            row("pvgis_radiation_database", weather["radiation_database"]),
-            row("pvlib_meteo_database", weather["meteo_database"]),
-            row(
-                "pvgis_terrain_horizon",
-                text(
-                    "pvgis_horizon_included"
-                    if request["use_terrain_horizon"]
-                    else "pvgis_horizon_omitted",
-                    locale,
-                ),
-            ),
-            row("pvlib_synthetic_year", interpretation["synthetic_energy_year"]),
-            row("period", f"{summary['start_utc']} – {summary['end_utc']}"),
-            row("intervals", summary["interval_count"]),
-            row(
-                "pvlib_dc_energy" if dc_group else "pvgis_ac_energy",
-                f"{summary['energy_kwh']} kWh",
-            ),
-            row(
-                "pvlib_offset",
-                f"{weather['irradiance_time_offset_hours']} h / {weather['irradiance_offset_microseconds']} µs",
-            ),
-            row(
-                "pvlib_selected_months",
-                "; ".join(
-                    f"{_object(m)['month']}: {_object(m)['year']}"
-                    for m in cast(list[Json], weather["months_selected"])
-                ),
-            ),
-            row("pvlib_temporal", parameters["temporal_policy"]),
-            row("pvlib_solar_dates", weather["solar_date_basis"]),
-            row("pvlib_radiation_semantics", weather["native_radiation_semantics"]),
-            row(
-                "pvlib_original_request",
-                str(capture["requested_url"]),
-                str(capture["requested_url"]),
-            ),
-            row("pvlib_capture_time", capture["received_at_utc"]),
-            row("pv_components_capacity", f"{parts['nameplate_kwp']} kWp"),
-            row("pvlib_note", parameters["source_note"]),
         ]
+        if tmy:
+            request = _object(weather["request"])
+            capture = _object(weather["capture"])
+            interpretation = _object(weather["interpretation"])
+            rows.extend(
+                [
+                    row(
+                        "pvlib_weather_period",
+                        f"{request['start_year']}–{request['end_year']}",
+                    ),
+                    row("pvgis_radiation_database", weather["radiation_database"]),
+                    row("pvlib_meteo_database", weather["meteo_database"]),
+                    row(
+                        "pvgis_terrain_horizon",
+                        text(
+                            "pvgis_horizon_included"
+                            if request["use_terrain_horizon"]
+                            else "pvgis_horizon_omitted",
+                            locale,
+                        ),
+                    ),
+                    row(
+                        "pvlib_synthetic_year", interpretation["synthetic_energy_year"]
+                    ),
+                ]
+            )
+        rows.extend(
+            [
+                row("period", f"{summary['start_utc']} – {summary['end_utc']}"),
+                row("intervals", summary["interval_count"]),
+                row(
+                    "pvlib_dc_energy" if dc_group else "pvgis_ac_energy",
+                    f"{summary['energy_kwh']} kWh",
+                ),
+            ]
+        )
+        if tmy:
+            rows.extend(
+                [
+                    row(
+                        "pvlib_offset",
+                        f"{weather['irradiance_time_offset_hours']} h / {weather['irradiance_offset_microseconds']} µs",
+                    ),
+                    row(
+                        "pvlib_selected_months",
+                        "; ".join(
+                            f"{_object(m)['month']}: {_object(m)['year']}"
+                            for m in cast(list[Json], weather["months_selected"])
+                        ),
+                    ),
+                ]
+            )
+        rows.append(row("pvlib_temporal", parameters["temporal_policy"]))
+        if tmy:
+            rows.extend(
+                [
+                    row("pvlib_solar_dates", weather["solar_date_basis"]),
+                    row(
+                        "pvlib_radiation_semantics",
+                        weather["native_radiation_semantics"],
+                    ),
+                    row(
+                        "pvlib_original_request",
+                        str(capture["requested_url"]),
+                        str(capture["requested_url"]),
+                    ),
+                    row("pvlib_capture_time", capture["received_at_utc"]),
+                ]
+            )
+        else:
+            rows.extend(
+                [
+                    row("pvlib_original_request", text("not_defined", locale)),
+                    row("pvlib_capture_time", text("not_defined", locale)),
+                ]
+            )
+        rows.extend(
+            [
+                row("pv_components_capacity", f"{parts['nameplate_kwp']} kWp"),
+                row("pvlib_note", parameters["source_note"]),
+            ]
+        )
         if dc_group:
             rows.append(row("pvlib_selected_dc_group", reference["converter_id"]))
         for use in cast(list[Object], reference["used_by"]):
@@ -296,10 +378,17 @@ def pvlib_sections(source: Object, locale: str) -> list[ReportSection]:
                 title=text("pvlib_reference", locale),
                 paragraphs=[
                     text(
-                        "pvlib_dc_scope" if dc_group else "pvlib_reference_scope",
+                        ("pvlib_dc_scope" if dc_group else "pvlib_reference_scope")
+                        if tmy
+                        else "pv_scope",
                         locale,
                     ),
                     text("pvlib_thermal_scope", locale),
+                    *(
+                        [text("pv_components_dc_scope", locale)]
+                        if dc_group and not tmy
+                        else []
+                    ),
                 ],
                 rows=rows,
             )
