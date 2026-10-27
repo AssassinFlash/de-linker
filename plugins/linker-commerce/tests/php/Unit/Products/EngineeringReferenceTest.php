@@ -64,7 +64,21 @@ final class EngineeringReferenceTest extends TestCase {
 		}
 		EvidenceBindings::capture( self::ID, true );
 		WP_Mock::userFunction( 'get_object_taxonomies' )->andReturn( array( 'pa_model', 'pa_brand' ) );
-		WP_Mock::userFunction( 'wp_get_object_terms' )->andReturnUsing( static fn ( int $id, string $taxonomy ): array => array( 'pa_model' === $taxonomy ? 'TSM-460NEG9R.28' : 'Trina Solar' ) );
+		WP_Mock::userFunction( 'wp_get_object_terms' )->andReturnUsing(
+			static function ( int|array $id, string $taxonomy, array $args = array() ): array {
+				$name = 'pa_model' === $taxonomy ? 'TSM-460NEG9R.28' : 'Trina Solar';
+				if ( is_array( $id ) && 'all_with_object_id' === ( $args['fields'] ?? '' ) ) {
+					return array_map(
+						static fn ( int $product_id ): object => (object) array(
+							'object_id' => $product_id,
+							'name'      => $name,
+						),
+						$id
+					);
+				}
+				return array( $name );
+			}
+		);
 		WP_Mock::userFunction( 'is_wp_error' )->andReturn( false )->byDefault();
 		WP_Mock::userFunction( 'update_postmeta_cache' )->andReturn( array() );
 		WP_Mock::userFunction( 'update_object_term_cache' )->andReturn( array() );
