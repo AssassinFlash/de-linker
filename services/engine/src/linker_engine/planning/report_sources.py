@@ -67,6 +67,12 @@ def report_sources(
     roof_references: dict[str, Object] = {}
     pvlib_references: dict[tuple[str, str | None], Object] = {}
 
+    def require_profile_proof(asset: Asset) -> None:
+        if not isinstance(asset.metadata.get("woo_module_inputs"), dict):
+            raise InvalidInput(
+                "prepare a PV profile from the current Woo-maintained module"
+            )
+
     def weather_reference(
         asset: Asset,
         run: Run,
@@ -75,6 +81,7 @@ def report_sources(
         comparison_role: str | None = None,
         converter_id: str | None = None,
     ) -> None:
+        require_profile_proof(asset)
         scope = (asset.metadata_sha256, converter_id)
         if scope not in pvlib_references:
             pvlib_references[scope] = {
@@ -102,6 +109,7 @@ def report_sources(
     def roof_reference(
         asset: Asset, run: Run, binding: str, *, comparison_role: str | None = None
     ) -> None:
+        require_profile_proof(asset)
         # Read the retained output and its original proof, never a current
         # product snapshot or a second provider/model calculation.
         prepared_reference_profile(
@@ -347,13 +355,11 @@ def report_sources(
                     "report energy source dependencies have changed"
                 )
             if asset.purpose == ROOF_AC_PURPOSE:
-                products.check_profile(asset.metadata)
                 roof_reference(asset, run, role)
                 component_list = pv_components(
                     workspace.blobs, asset.content_sha256, asset.metadata
                 )
             elif asset.purpose == PVLIB_PURPOSE:
-                products.check_profile(asset.metadata)
                 weather_reference(
                     asset,
                     run,
@@ -432,7 +438,6 @@ def report_sources(
             profile_dependencies(
                 asset, "pv_available_ac", project.inputs, workspace.blobs
             )
-            products.check_profile(asset.metadata)
             provenance(asset.metadata)
             roof_reference(asset, run, "pv_available_ac")
             bases["pv"] = workspace.blobs.put_object(
@@ -447,7 +452,6 @@ def report_sources(
                 or asset.metadata != prepared_pv.get("metadata")
             ):
                 raise VersionUnavailable("the saved weather-based PV asset differs")
-            products.check_profile(asset.metadata)
             weather_reference(asset, run, "pv_available_ac")
             bases["pv"] = workspace.blobs.put_object(
                 cast(Object, asset.metadata["woo_module_inputs"])
@@ -514,7 +518,6 @@ def report_sources(
                 )
                 if any(side.pinned.get(name) != sha for name, sha in bindings.items()):
                     raise VersionUnavailable("comparison PV source bindings differ")
-                products.check_profile(asset.metadata)
                 if asset.purpose == ROOF_AC_PURPOSE:
                     roof_reference(
                         asset,
@@ -731,6 +734,10 @@ def report_sources(
         dependencies["energy_comparison"] = workspace.blobs.put_object(comparison)
     if installation is not None:
         dependencies["installation_model"] = workspace.blobs.put_object(installation)
+    # All owned artifacts above remain frozen source facts. Confirm each
+    # distinct Woo proof once here, before admission can publish a run. An
+    # eager check per profile/consumer would repeat the same live publication
+    # reads; the durable worker independently confirms before and after use.
     confirm_report_sources(workspace, products, source)
     return source
 
