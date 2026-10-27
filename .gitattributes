@@ -5,15 +5,25 @@
 *.pdf binary
 
 # Generated files: collapsed in pull request diffs.
-plugins/linker-tools/build/** linguist-generated=true
+plugins/linker-tools/build/** linguist-generated=true -whitespace
 **/composer.lock linguist-generated=true
 **/package-lock.json linguist-generated=true
 **/uv.lock linguist-generated=true
 
-# Exact official-page excerpts retain source whitespace and their recorded hashes.
-docs/research/2026-10-24-pv-managed-intake/raw/docs-*-excerpt.txt -whitespace
+# Captured official pages retain source whitespace and their recorded hashes.
+docs/research/**/raw/** -whitespace
+docs/research/**/primary/** -whitespace
+
+# Archived terminal/AX/JUnit/patch evidence is data; executable source and tests
+# remain subject to ordinary whitespace checks. Do not rewrite captured failures.
+docs/acceptance/**/548/**/*.log -whitespace
+docs/acceptance/**/548/**/*.txt -whitespace
+docs/acceptance/**/548/**/*.xml -whitespace
+docs/acceptance/**/548/**/*.diff -whitespace
+docs/acceptance/2026-10-22/548/geographic-probes/e1380d49-spec/test_independent_spec.py -whitespace
+docs/acceptance/2026-10-22/548/handover-probes/probe-legacy-edges.original.php -whitespace
 
 # Preserve the browser's exact CSV download bytes, including CRLF.
-docs/acceptance/2026-10-25/548/trace-ui/de-intervals-1-100.csv -text
+docs/acceptance/2026-10-25/548/trace-ui/de-intervals-1-100.csv -text -whitespace
 docs/acceptance/2026-10-25/548/unified-materials-report-*.csv -text -whitespace
 docs/acceptance/2026-10-25/548/installation-report-*.csv -text -whitespace

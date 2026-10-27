@@ -5230,6 +5230,15 @@
       "ci_policy": "Preserve main scope/reuse planner and this branch calculation/native integration checks; first complete PR candidate runs required CI once.",
       "reused": "All unchanged548 source/physics/native/visual/report checks plus accepted upstream document/pagination reviews; no engine rebuild, physical replay, instance or backup.",
       "remaining": "Review-site/production acceptance and the full-goal engineering/source boundaries remain open."
+    },
+    "ci": {
+      "first_run": 40437104574,
+      "first_head": "595559943f4fc8209e8d1d275a26cebea56f7dbe",
+      "first_failure": "plan: whole-PR whitespace check included original evidence and generated third-party shader text; downstream required jobs exited on failed plan before running business tests.",
+      "correction": "Use native .gitattributes only for generated output/captured source records and exact historical probe/CSV paths. Preserve their bytes. Authored runtime/source/tests and hand-written specs retain ordinary whitespace checks; build manifests and selected CI checks are unchanged.",
+      "local_readback": "Full PR git diff --check origin/main passed. TS/Python/PHP maintained sources retain whitespace:unspecified; captured/generated inputs have whitespace:unset.",
+      "status": "awaiting corrected candidate CI",
+      "existing_runtime_evidence_reused": true
     }
   }
 }

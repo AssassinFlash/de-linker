@@ -1622,3 +1622,10 @@ recompiled from the merged authoritative PO. The auto-merged ProductView
 intersection passed its existing fixture and level8 typing. The main CI scope/
 reuse policy is retained alongside548 integration checks. All unaffected
 acceptance is reused; no numerical or rendering matrix was repeated.
+
+The first PR candidate stopped in plan before business tests: the whole-PR
+whitespace check included retained terminal/crawler/probe/CSV bytes and bundled
+shader strings. Native attributes now distinguish those captured/generated
+records from maintained source and tests. The complete PR whitespace check
+passes without rewriting evidence. Build reproducibility and CI selection are
+unchanged; runtime/visual/physical evidence is reused. Corrected CI is pending.
