@@ -43,8 +43,10 @@ final class AccountTemplatesTest extends TestCase {
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => static fn ( mixed $value ): bool => $value instanceof \WP_Error ) );
 		$adapter = new AccountTemplates();
 		$this->expand_fields( $adapter );
-		$id = str_repeat( 'a', 32 );
-		WP_Mock::onFilter( 'linker_commerce_planning_projects' )->with( null )->reply(
+		$id       = str_repeat( 'a', 32 );
+		$projects = WP_Mock::onFilter( 'linker_commerce_planning_projects' )->with( null );
+		$this->assertInstanceOf( \WP_Mock\Filter_Responder::class, $projects );
+		$projects->reply(
 			array(
 				array(
 					'id'         => $id,
@@ -495,7 +497,9 @@ final class AccountTemplatesTest extends TestCase {
 	 * another customer's solution is omitted.
 	 */
 	public function test_saved_solution_links_its_design_report_without_prices(): void {
-		WP_Mock::onFilter( 'linker_commerce_planning_projects' )->with( null )->reply( null );
+		$projects = WP_Mock::onFilter( 'linker_commerce_planning_projects' )->with( null );
+		$this->assertInstanceOf( \WP_Mock\Filter_Responder::class, $projects );
+		$projects->reply( null );
 		$this->visible_prices( false );
 		$this->plain_text();
 		WP_Mock::userFunction( 'add_shortcode' );
@@ -570,7 +574,9 @@ final class AccountTemplatesTest extends TestCase {
 
 	/** Legacy product references have a current, published way forward without authorising an old design. */
 	public function test_legacy_solution_has_current_product_links_and_recalculation_guidance(): void {
-		WP_Mock::onFilter( 'linker_commerce_planning_projects' )->with( null )->reply( null );
+		$projects = WP_Mock::onFilter( 'linker_commerce_planning_projects' )->with( null );
+		$this->assertInstanceOf( \WP_Mock\Filter_Responder::class, $projects );
+		$projects->reply( null );
 		WP_Mock::userFunction( 'add_query_arg', array( 'return' => static fn ( array $query, string $url ): string => $url . '?' . http_build_query( $query ) ) );
 		$this->visible_prices( false );
 		$this->plain_text();

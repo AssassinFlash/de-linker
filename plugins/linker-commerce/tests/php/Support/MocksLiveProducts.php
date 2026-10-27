@@ -82,11 +82,11 @@ trait MocksLiveProducts {
 		WP_Mock::userFunction( 'wp_parse_url', array( 'return' => static fn( string $url, int $part = -1 ) => parse_url( $url, $part ) ) );
 		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://de-linker.com' ) );
 		WP_Mock::userFunction( 'pll_get_post', array( 'return' => 0 ) )->byDefault();
-		$this->publication_migrated         = $migrated;
-		$this->compatibility_fixture_claims = array();
+		$this->publication_migrated = $migrated;
 		WP_Mock::userFunction( 'metadata_exists' )->andReturnUsing( fn ( string $type, int $id, string $key ): bool => CompatibilityClaims::META_KEY === $key && isset( $this->compatibility_fixture_claims[ $id ] ) );
-		$products = LiveProducts::products( $migrated );
-		$bindings = array();
+		$this->compatibility_fixture_claims = array();
+		$products                           = LiveProducts::products( $migrated );
+		$bindings                           = array();
 		foreach ( $products as $id => $product ) {
 			$figures = json_decode( $product['figures'], true );
 			foreach ( is_array( $figures ) ? $figures : array() as $field => $entry ) {

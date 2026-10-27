@@ -5237,8 +5237,21 @@
       "first_failure": "plan: whole-PR whitespace check included original evidence and generated third-party shader text; downstream required jobs exited on failed plan before running business tests.",
       "correction": "Use native .gitattributes only for generated output/captured source records and exact historical probe/CSV paths. Preserve their bytes. Authored runtime/source/tests and hand-written specs retain ordinary whitespace checks; build manifests and selected CI checks are unchanged.",
       "local_readback": "Full PR git diff --check origin/main passed. TS/Python/PHP maintained sources retain whitespace:unspecified; captured/generated inputs have whitespace:unset.",
-      "status": "awaiting corrected candidate CI",
-      "existing_runtime_evidence_reused": true
+      "status": "native integration passed at33ed6e723; identified PHP static defects repaired locally; next candidate CI pending",
+      "existing_runtime_evidence_reused": true,
+      "native_job": {
+        "run_id": 40438016189,
+        "job": "mu-smoke",
+        "conclusion": "success"
+      },
+      "static_repair": {
+        "source": "Canonical accessory product IDs follow the existing required Woo contract; remove the unreachable model-regex path. Current native reads are annotated impure; keep mixed hook results and the runtime refusal guard.",
+        "fixtures": "Restore retained-record cleanup with later; remove retired RPC constructor argument and unused fixture constant; use the installed Filter_Responder API; retain owner/current/invalid-reply assertions and narrow nullable projections.",
+        "configured_phpstan": "All five configured PHP projects passed; the unaffected three were checked once and reused.",
+        "existing_runtime_fixtures": "Design/current-source, package and publication cases passed; corrected AccountTemplates fixture passed; native old saved-record removal/Undo/retirement passed. No test file or matrix was added.",
+        "review": "Incremental Spec and Standards PASS; no old endpoint restored or permission loosened.",
+        "reuse": "Unchanged engine runtime, numerical/PDF/UI evidence and accepted native interfaces remain valid."
+      }
     }
   }
 }

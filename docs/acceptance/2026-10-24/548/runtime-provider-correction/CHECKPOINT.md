@@ -1629,3 +1629,14 @@ shader strings. Native attributes now distinguish those captured/generated
 records from maintained source and tests. The complete PR whitespace check
 passes without rewriting evidence. Build reproducibility and CI selection are
 unchanged; runtime/visual/physical evidence is reused. Corrected CI is pending.
+
+The full native CI job at33ed6e723 passed. The companion static job exposed
+old fixture/API/type residues. They were collected across all five configured
+PHP projects in one batch: retained cleanup and current source/owner/refusal
+assertions remain, a retired constructor argument and unused fixture constant
+are removed, installed Filter_Responder/nullable contracts are explicit, and
+current native reads are correctly marked impure. The existing required Woo
+accessory-ID contract replaces an unreachable model-regex fallback. All five
+static scopes now pass; only the corrected failed fixture was rerun. Native
+saved-record removal/Undo/retirement passed. Incremental Spec/Standards passed;
+no new test, endpoint, calculation, environment or visual matrix was added.

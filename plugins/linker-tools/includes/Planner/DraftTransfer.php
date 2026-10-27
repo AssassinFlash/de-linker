@@ -79,7 +79,7 @@ final class DraftTransfer {
 			 * Commerce applies current Woo product/account/stock rules and saves a receipt.
 			 *
 			 * @since 0.3.0
-			 * @param array<string,mixed>|WP_Error $result Native result, absent by default.
+			 * @param mixed                       $result Native result, checked below before use.
 			 * @param array<string,mixed>          $command Verified versioned intent.
 			 * @param array<string,mixed>          $data Engine-owned immutable handoff.
 			 */

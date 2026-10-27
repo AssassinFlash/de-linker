@@ -36,6 +36,7 @@ final class AccountProjects {
 	 *
 	 * @param mixed $previous Previous adapter result.
 	 * @return list<array{id:string,title:string,updated_at:float|int}>|WP_Error
+	 * @phpstan-impure Reads the current native account and project service on every call.
 	 */
 	public function read( mixed $previous ): array|WP_Error {
 		unset( $previous );

@@ -149,7 +149,7 @@ final class PublicationData {
 	 * @param int                 $inverter Inverter ID.
 	 * @param int                 $battery Battery ID.
 	 * @param array<string,mixed> $manifest Current snapshot.
-	 * @return array{verdict:string,conditions:list<array{en:string,de:string}>,documents:list<array{url:string,page?:int}>,accessories:list<array{model:string,quantity:int,per:string,product_id?:int}>}|null
+	 * @return array{verdict:string,conditions:list<array{en:string,de:string}>,documents:list<array{url:string,page?:int}>,accessories:list<array{model:string,quantity:int,per:string,product_id:int}>}|null
 	 */
 	public function pairing( int $inverter, int $battery, array $manifest ): ?array {
 		if ( count( $this->published( array( $inverter, $battery ), $manifest ) ) !== 2 ) {
@@ -162,9 +162,8 @@ final class PublicationData {
 		foreach ( $answer['accessories'] as $accessory ) {
 			$known = false;
 			foreach ( $manifest['products'] as $product ) {
-				$product_id   = (int) ( $product['product_id'] ?? 0 );
-				$accessory_id = (int) ( $accessory['product_id'] ?? 0 );
-				if ( isset( $accessory['product_id'] ) ? $accessory_id === $product_id : 1 === preg_match( '~' . $accessory['model'] . '~i', (string) ( $product['model'] ?? '' ) ) ) {
+				$product_id = (int) ( $product['product_id'] ?? 0 );
+				if ( $accessory['product_id'] === $product_id ) {
 					$known = true;
 					break;
 				}

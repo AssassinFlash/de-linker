@@ -36,10 +36,9 @@ final class DesignProofTest extends TestCase {
 			static function ( array $dependencies ) use ( &$seen ): array {
 				$seen = $dependencies;
 				return array( 'valid' => false );
-			},
-			static fn (): array => array( 200, (string) json_encode( $result ) )
+			}
 		);
-		$this->assertFalse( $proof->is_current( self::result() ) );
+		$this->assertFalse( $proof->is_current( $result ) );
 		$this->assertSame( array( 10, 20 ), array_column( $seen['products'], 'product_id' ) );
 	}
 

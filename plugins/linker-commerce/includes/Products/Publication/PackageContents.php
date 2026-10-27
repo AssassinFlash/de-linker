@@ -73,6 +73,7 @@ final class PackageContents {
 	 * @param  int                 $owner    Canonical product.
 	 * @param  array<string,mixed> $manifest Same assembly used by the feed.
 	 * @return array<string,mixed>|null Null retains the existing no-data contract.
+	 * @phpstan-impure Reads current Woo metadata, including after operator edits.
 	 * @throws \RuntimeException Handled internally to withdraw the entire invalid contents projection.
 	 */
 	public static function projection( int $owner, array $manifest ): ?array {

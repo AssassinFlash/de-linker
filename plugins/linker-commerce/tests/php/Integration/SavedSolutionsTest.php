@@ -41,8 +41,12 @@ final class SavedSolutionsTest extends IntegrationTestCase {
 			$bytes
 		);
 		$keep  = $store->save( $other, 'Other owner fixture', array(), array(), $bytes );
-		$this->forget( $id );
-		$this->forget( $keep );
+		$this->later(
+			static function () use ( $id, $keep ): void {
+				wp_delete_post( $id, true );
+				wp_delete_post( $keep, true );
+			}
+		);
 		$path = $store->report_path( $id );
 		$kept = $store->report_path( $keep );
 		$this->assertFileExists( $path );

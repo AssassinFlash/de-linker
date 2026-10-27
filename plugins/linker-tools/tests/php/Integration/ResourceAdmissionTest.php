@@ -34,13 +34,6 @@ use WP_REST_Response;
  * @coversNothing
  */
 final class ResourceAdmissionTest extends TestCase {
-	/** Synthetic transport fixtures contain no product-derived facts. */
-	private const PUBLICATION = array(
-		'engineering_contract' => 2,
-		'reference_inputs'     => array(),
-		'products'             => array(),
-		'documents'            => array(),
-	);
 	/**
 	 * Saved local journal.
 	 *

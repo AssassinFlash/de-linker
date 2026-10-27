@@ -88,7 +88,9 @@ final class PackageContentsTest extends TestCase {
 				return 41 === $owner && PackageContents::META_KEY === $key && $single ? $stored : '';
 			}
 		);
-		$this->assertSame( 'documented', PackageContents::projection( 41, $manifest )['status'] );
+		$projection = PackageContents::projection( 41, $manifest );
+		$this->assertIsArray( $projection );
+		$this->assertSame( 'documented', $projection['status'] );
 		$this->assertSame( str_repeat( 'b', 64 ), $stored['items'][0]['source']['blob_sha256'] );
 		$draft['items'][0]['confirm']                  = '';
 		$manifest['documents'][0]['document_revision'] = str_repeat( 'c', 64 );
@@ -102,9 +104,13 @@ final class PackageContentsTest extends TestCase {
 		);
 		$draft['items'][0]['confirm'] = '1';
 		$stored                       = PackageContentsEditor::prepare( 41, $draft, $stored, $manifest );
-		$this->assertSame( 'documented', PackageContents::projection( 41, $manifest )['status'] );
+		$projection                   = PackageContents::projection( 41, $manifest );
+		$this->assertIsArray( $projection );
+		$this->assertSame( 'documented', $projection['status'] );
 		$manifest['documents'][0]['product_ids'] = array( 42 );
-		$this->assertSame( 'unresolved', PackageContents::projection( 41, $manifest )['status'] );
+		$projection                              = PackageContents::projection( 41, $manifest );
+		$this->assertIsArray( $projection );
+		$this->assertSame( 'unresolved', $projection['status'] );
 		$this->expectException( \RuntimeException::class );
 		PackageContentsEditor::prepare( 41, array( 'items' => array() ), $stored, $manifest );
 	}
