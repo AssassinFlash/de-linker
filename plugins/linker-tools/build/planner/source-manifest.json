@@ -69,7 +69,7 @@
     "src/components/energy/OperatingPeriodForm.tsx": "9f73acaed60f9474d76b35685ed66482972bac4c2d4875c6b86f8866b87fb0c7",
     "src/components/energy/OperatingPeriodsForm.tsx": "978393dfcc32fe47d9bb8d4bd1418a47c64c103d195650653e0b736d151f61bc",
     "src/components/energy/ParameterNote.tsx": "9b43894b0f3c49eb5677c673c2f861bbacc1ed18c6171fbba4179cc00a60aee2",
-    "src/components/energy/PlanningReportForm.tsx": "476f17bb9d7cf80e186245153ce7f887faa865299dd0e066c477e9a084abc10c",
+    "src/components/energy/PlanningReportForm.tsx": "18c1ab81a7b09323daba7850c315f90539c02ef6c4056316e3af97f488409d50",
     "src/components/energy/PlanningReportResult.tsx": "9f7cec2081c3d4c470094f6ec522f829efafce9237e68b4dcb332c8286e66abc",
     "src/components/energy/PlantEnergyForm.tsx": "e5811591465dbf3bf78e927604a6851ad8d73de724c3a830444961c4e9e473a1",
     "src/components/energy/PlantParameterBasis.tsx": "fc3356f361bf388154377dadd99f3d616d61e8a63aae923e597636992fe57816",
@@ -127,7 +127,7 @@
     "src/contracts/geometry-policy.json": "30cbe9f4b0493466c5763a5841d5c57efa8b16d7db9fa0832c25918a40f0de7d",
     "src/contracts/geometry.schema.json": "838689d63f2fb7c8273a8a5539ba9821a1db0a2fee527e5b002a3edd8001a6d2",
     "src/contracts/installation.schema.json": "8358c9d6ca1156040da67a039fcdcef9e363bd26c484db85e791cecc49b6c6ba",
-    "src/contracts/planning-report-options.schema.json": "5f5f24ac110d7d7b67871b37ded459cdf691bd2445655d65139a069d052e8f5d",
+    "src/contracts/planning-report-options.schema.json": "140f199debfe240df9b412f0a6ec40d29930749a5650dc1384f75171fcd6f6fc",
     "src/contracts/planning-report.schema.json": "9b651dc612df6061790ba42e780067e4c273c4a1a8cf2b287a8dea1b4e9555f7",
     "src/contracts/plant-energy-inputs.schema.json": "2611e9ddbff0c39e9666318b975bd4fabe27f9e559630ad5654cc93a09f2e49a",
     "src/contracts/plant-search-plan.schema.json": "e34e7fb73615bb046c8efb17cb17116bc90a0391b6d38e6aa23ef7bb15eab5f2",
@@ -164,7 +164,7 @@
     "src/data/moduleTemplates.ts": "ced511c2763fffd64b08bbfb6466a5a62c4d20df05e84609b8bd6d64b452c616",
     "src/data/plannerLocation.ts": "69cc9a81e957c7e313609e5b24323973e2a6a0cc20d881e14cc66053e1a463da",
     "src/data/planningProtocol.ts": "e5533c9cb20ba9681bcab2a8e32b0326df8d54698db061682597c277b35b68b6",
-    "src/data/planningReport.ts": "b79edfdc90fcbe22ccff7df54ef52afa169eb36cb7d8321a0ae7d530411bbaa9",
+    "src/data/planningReport.ts": "a059cfb44619ee43c19acb63a149c975136e7bac0d4de37fafb217031b28dbd8",
     "src/data/preparationBasis.ts": "795952c97544f085330608a10b10045e663c7e5d750a98b2284a127c9684743c",
     "src/data/profileIssue.ts": "d7fc789099b4d3f8dab079f0fca7665f9d3da5672cd2b205817414947cf8b01d",
     "src/data/projectIndex.ts": "ee7fe2d8ae915643987003f403b149ef6d958ccebefaf3109caaf6b0c0f623c5",
@@ -241,13 +241,13 @@
     "vite.config.ts": "124325835376cd0382f1a8c0652d2264597cb7ae6f054f05b7e1807bbf98916d"
   },
   "build": {
-    "assets/EnergyFlowChart-C0kxHMFe.js": "b05aecad8ad0436453da410fb6993557fd331ac2bef2f3ce8fba228e1521e586",
-    "assets/MapViewport-wRctf-oA.js": "5c09085d70ec6e0914cf9c6c4217a28edf26e4cfe6523bc5e716101cb9cd52d0",
-    "assets/SceneViewport-B34eKZL_.js": "e183581f9c8e8edac355321f54960d2a469611960cfe51f6266f7d154835d10c",
-    "assets/planner-core-CpUBHaCo.js": "a111443625ded295c21c3689d51d3c9427334a7178b9e159129d5b1af6253ce5",
-    "assets/planner.js": "85242878e71ee780df8191557d5e4ba655e85f6705a2986ae898b7f620e844c2",
+    "assets/EnergyFlowChart-CeZf1cl3.js": "f3db7074c64ac1de1a28ac329804a0a9f5e6101353ba7b818f25b2f4ed817fb5",
+    "assets/MapViewport-CkaEHGE3.js": "6ede6b45aa54c028e7a3bdf85096d2f76b8c0b01b664f473c59bc8d156122c74",
+    "assets/SceneViewport-CTy3Lh9I.js": "e3daa3ca34234724d043cd77880f9f674c2bac7072aa2b6a086470c20fcc26f3",
+    "assets/planner-core-CdyuiW2U.js": "a7d11761512a299ffc55aa0d76b953c31cf86c29bf0e7f51643f51056cf9e033",
+    "assets/planner.js": "fe0d67b2e253662f19f03475fecd7d9723c8f42c755e4791ae05f97806ab5445",
     "assets/rolldown-runtime-BWaJ3C7D.js": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3",
-    "vite-manifest.json": "041d6532b2263596bf49a5ea258ee95bbacce17dfd8163ba6be65ca970972b40",
+    "vite-manifest.json": "790d84bb540a728bc20afbe11b24ea92be27ec1af833ab800148c7a805993179",
     "windpress.scan.txt": "1097e62d108022acd8a5bc911b30255d9ccee966d411148a1022e14a17f2daeb"
   }
 }

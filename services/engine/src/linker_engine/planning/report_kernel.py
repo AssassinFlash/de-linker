@@ -9,6 +9,8 @@ from linker_engine.pdf import render
 
 from .asset_publication import AssetPublication, AssetResult
 from .canonical import Object
+from .certificate_information import report_source_with_information
+from .certificate_sources import inspect_report_certificates
 from .errors import VersionUnavailable
 from .execution_identity import execution_key, request_execution_key
 from .frozen_run import frozen_manifest
@@ -31,6 +33,7 @@ class ReportKernel:
         "report": "frozen_project_report_v1",
         "materials": "project_materials_v3",
         "installation": "installation_route_takeoff_v1",
+        "certificate_information": "literal_certificate_cover_v1",
     }
 
     def __init__(self, workspace: Workspace, products: ProductSources) -> None:
@@ -101,6 +104,32 @@ class ReportKernel:
             )
         confirm_report_sources(self.workspace, self.products, source)
         control.checkpoint()
+        inspection_sha: str | None = None
+        if source.get("inspect_certificate_declarations") is True:
+            originals = inspect_report_certificates(
+                source, self.workspace.blobs, control.checkpoint
+            )
+            control.checkpoint()
+            confirm_report_sources(self.workspace, self.products, source)
+            inspection_sha = self.workspace.blobs.put_object(
+                {
+                    "schema_version": 1,
+                    "kind": "certificate_cover_information_v1",
+                    "report_source_sha256": pinned["report.source"],
+                    "evidence": source["certificates"],
+                    "dependencies": {
+                        "report_source": pinned["report.source"],
+                        **originals,
+                    },
+                }
+            )
+            source = report_source_with_information(
+                self.workspace.blobs,
+                {
+                    "report_source": pinned["report.source"],
+                    "certificate_inspection": inspection_sha,
+                },
+            )
         report = build_report(source)
         logo: str | None = None
         if isinstance(pinned.get("report.logo"), str):
@@ -120,6 +149,8 @@ class ReportKernel:
         }
         if pinned.get("report.logo") is not None:
             dependencies["branding"] = pinned["report.logo"]
+        if inspection_sha is not None:
+            dependencies["certificate_inspection"] = inspection_sha
         asset = AssetPublication.prepare(
             self.workspace.blobs,
             cast(str, manifest["project_id"]),

@@ -10,6 +10,7 @@ from typing import cast
 
 from .brief import PlanningBrief
 from .canonical import Json, Object, encode
+from .certificate_information import report_source_with_information
 from .equipment_candidate_store import EquipmentCandidateStore
 from .errors import InvalidInput
 from .records import Actor, Run
@@ -118,7 +119,7 @@ def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
             sha = dependencies.get("report_source")
             if not isinstance(sha, str):
                 raise InvalidInput("saved report source is missing")
-            source = workspace.blobs.object(sha)
+            source = report_source_with_information(workspace.blobs, dependencies)
             if (
                 source.get("project_id") != run.project_id
                 or source.get("revision") != run.revision

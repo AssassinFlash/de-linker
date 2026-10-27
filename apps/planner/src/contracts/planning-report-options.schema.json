@@ -89,6 +89,11 @@
       "default": false,
       "title": "Include Installation",
       "type": "boolean"
+    },
+    "inspect_certificate_declarations": {
+      "default": false,
+      "title": "Inspect Certificate Declarations",
+      "type": "boolean"
     }
   },
   "required": [

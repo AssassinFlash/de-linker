@@ -476,6 +476,10 @@ def report_sources(
         source["certificates"] = certificate_documents(
             workspace.blobs.object(cast(str, bases["equipment"])), assessment
         )
+    if options.inspect_certificate_declarations:
+        if "certificates" not in source:
+            raise InvalidInput("certificate inspection requires selected equipment")
+        source["inspect_certificate_declarations"] = True
     if comparison is not None:
         source["comparison"] = comparison
         dependencies["energy_comparison"] = workspace.blobs.put_object(comparison)

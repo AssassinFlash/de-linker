@@ -99,6 +99,21 @@ competitor's screenshot is not evidence that this application works.
     components remain distinct from Woo products. Transfer to Solution draft
     or inquiry rechecks current product/account/stock rules, presents changes
     and obtains a real idempotent receipt without rewriting the old run.
+    A report may explicitly include literal information from its selected
+    equipment's Woo-associated certificate originals. Only labelled fields
+    on the first page are read: model designations, firmware/software and
+    printed standard references; a stated annex is recorded as unverified.
+    The worker checks current Woo permission before and after acquisition,
+    requires exact source bytes, and retains them by their existing content
+    identity. The derived inspection is a separate immutable dependency of
+    the screen/PDF/materials output, bound to the unchanged original report
+    source. It does not replace that source, re-run equipment calculations,
+    resolve installation/country requirements or authorise ranking. Missing,
+    unrecognised and over-policy sources stay explicit. Historical commands
+    without this optional choice retain their original receipt identity.
+    Automatic reading has an explicit resource policy of 20 documents per
+    report, 16 MiB per original and 100,000 extracted cover characters;
+    exceeding it does not imply missing evidence or certificate invalidity.
 14. WordPress owns native identity; a durable login transition claims and
     retires the verified guest, including in-flight requests. Genie and team
     readers use authorised current or explicitly selected historical results.
