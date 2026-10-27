@@ -131,12 +131,13 @@ def test_original_series_bound_claims_procedure_reaches_sqlite_and_revokes(
                 for d in raw["documents"]
                 if d["type"] == "warranty" and d["lang"].casefold() == "en"
             )
-            for field, value, did in [
+            revocations: list[tuple[str, Any, str]] = [
                 ("remove", None, ds),
                 ("blob_sha256", "0" * 64, ds),
                 ("product_ids", [], en),
                 ("role", "document", en),
-            ]:
+            ]
+            for field, value, did in revocations:
                 changed = deepcopy(raw)
                 if field == "remove":
                     changed["documents"] = [
