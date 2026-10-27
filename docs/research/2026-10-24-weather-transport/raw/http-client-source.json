@@ -1,0 +1,121 @@
+{
+  "source": "installed package source, read-only; no runtime/network/test execution",
+  "requestsVersion": "2.34.2",
+  "urllib3Version": "2.8.0",
+  "files": [
+    {
+      "installedFile": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/services/engine/.venv/lib/python3.12/site-packages/requests/__version__.py",
+      "sha256": "abba90670b0370a3dc40d97c2dea46a35d4bec941ff10d7c3cf3098ef04a17f9",
+      "bytes": 435,
+      "excerpts": [
+        {
+          "startLine": 1,
+          "endLine": 12,
+          "text": "# .-. .-. .-. . . .-. .-. .-. .-.\n# |(  |-  |.| | | |-  `-.  |  `-.\n# ' ' `-' `-`.`-' `-' `-'  '  `-'\n\n__title__ = \"requests\"\n__description__ = \"Python HTTP for Humans.\"\n__url__ = \"https://requests.readthedocs.io\"\n__version__ = \"2.34.2\"\n__build__ = 0x023402\n__author__ = \"Kenneth Reitz\"\n__author_email__ = \"me@kennethreitz.org\"\n__license__ = \"Apache-2.0\""
+        }
+      ]
+    },
+    {
+      "installedFile": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/services/engine/.venv/lib/python3.12/site-packages/requests/adapters.py",
+      "sha256": "647eabd4453de232aa40b55ff033d6f19778910b7e7069c51fdf63076fc77493",
+      "bytes": 28064,
+      "excerpts": [
+        {
+          "startLine": 201,
+          "endLine": 218,
+          "text": "    def __init__(\n        self,\n        pool_connections: int = DEFAULT_POOLSIZE,\n        pool_maxsize: int = DEFAULT_POOLSIZE,\n        max_retries: int | Retry = DEFAULT_RETRIES,\n        pool_block: bool = DEFAULT_POOLBLOCK,\n    ) -> None:\n        if max_retries == DEFAULT_RETRIES:\n            self.max_retries = Retry(0, read=False)\n        else:\n            self.max_retries = Retry.from_int(max_retries)\n        self.config = {}\n        self.proxy_manager = {}\n\n        super().__init__()\n\n        self._pool_connections = pool_connections\n        self._pool_maxsize = pool_maxsize"
+        },
+        {
+          "startLine": 681,
+          "endLine": 708,
+          "text": "        if isinstance(timeout, tuple):\n            try:\n                connect, read = timeout\n                resolved_timeout = TimeoutSauce(connect=connect, read=read)\n            except ValueError:\n                raise ValueError(\n                    f\"Invalid timeout {timeout}. Pass a (connect, read) timeout tuple, \"\n                    f\"or a single float to set both timeouts to the same value.\"\n                )\n        elif isinstance(timeout, TimeoutSauce):\n            resolved_timeout = timeout\n        else:\n            resolved_timeout = TimeoutSauce(connect=timeout, read=timeout)\n\n        try:\n            resp = conn.urlopen(\n                method=request.method,\n                url=url,\n                body=request.body,  # type: ignore[arg-type]  # urllib3 stubs don't accept Iterable[bytes | str]\n                headers=request.headers,  # type: ignore[arg-type]  # urllib3#3072\n                redirect=False,\n                assert_same_host=False,\n                preload_content=False,\n                decode_content=False,\n                retries=self.max_retries,\n                timeout=resolved_timeout,\n                chunked=chunked,\n            )"
+        }
+      ]
+    },
+    {
+      "installedFile": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/services/engine/.venv/lib/python3.12/site-packages/requests/models.py",
+      "sha256": "d1bc0d990abf5d5ebee05f890911b4363fadf2d5264b686a963df47c529b6ace",
+      "bytes": 41783,
+      "excerpts": [
+        {
+          "startLine": 933,
+          "endLine": 945,
+          "text": "        def generate() -> Generator[bytes, None, None]:\n            # Special case for urllib3.\n            if hasattr(self.raw, \"stream\"):\n                try:\n                    yield from self.raw.stream(chunk_size, decode_content=True)\n                except ProtocolError as e:\n                    raise ChunkedEncodingError(e)\n                except DecodeError as e:\n                    raise ContentDecodingError(e)\n                except ReadTimeoutError as e:\n                    raise ConnectionError(e)\n                except SSLError as e:\n                    raise RequestsSSLError(e)"
+        },
+        {
+          "startLine": 1169,
+          "endLine": 1186,
+          "text": "    def close(self) -> None:\n        \"\"\"Releases the connection back to the pool. Once this method has been\n        called the underlying ``raw`` object must not be accessed again.\n\n        *Note: Should not normally need to be called explicitly.*\n        \"\"\"\n        if not self._content_consumed:\n            self.raw.close()\n\n        release_conn = getattr(self.raw, \"release_conn\", None)\n        if release_conn is not None:\n            release_conn()"
+        }
+      ]
+    },
+    {
+      "installedFile": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/services/engine/.venv/lib/python3.12/site-packages/requests/sessions.py",
+      "sha256": "96fbb30bbbf06a59a5268d13b57885149756aa3f31695b5c15e41dd7bb2f67a6",
+      "bytes": 34248,
+      "excerpts": [
+        {
+          "startLine": 202,
+          "endLine": 214,
+          "text": "        url = self.get_redirect_target(resp)\n        previous_fragment = urlparse(req.url).fragment\n        while url:\n            prepared_request = req.copy()\n\n            # Update history and keep track of redirects.\n            resp.history = hist[:]\n            hist.append(resp)\n\n            try:\n                resp.content  # Consume socket so it can be released\n            except (ChunkedEncodingError, ContentDecodingError, RuntimeError):\n                resp.raw.read(decode_content=False)"
+        },
+        {
+          "startLine": 801,
+          "endLine": 829,
+          "text": "        # Resolve redirects if allowed.\n        if allow_redirects:\n            # Redirect resolving generator.\n            gen = self.resolve_redirects(r, request, **kwargs)\n            history = [resp for resp in gen]\n        else:\n            history = []\n\n        # Shuffle things around if there's history.\n        if history:\n            # Insert the first (original) request at the start\n            history.insert(0, r)\n            # Get the last request made\n            r = history.pop()\n            r.history = history\n\n        # If redirects aren't being followed, store the response on the Request for Response.next().\n        if not allow_redirects:\n            try:\n                r._next = next(  # type: ignore[assignment]  # yield_requests=True returns PreparedRequest\n                    self.resolve_redirects(r, request, yield_requests=True, **kwargs)\n                )\n            except StopIteration:\n                pass\n\n        if not stream:\n            r.content\n\n        return r"
+        }
+      ]
+    },
+    {
+      "installedFile": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/services/engine/.venv/lib/python3.12/site-packages/urllib3/_version.py",
+      "sha256": "7b84320186a7a1805134fd8aeaa0d508e80116851aecbd23f7561042c5073bd4",
+      "bytes": 520,
+      "excerpts": [
+        {
+          "startLine": 14,
+          "endLine": 24,
+          "text": "version: str\n__version__: str\n__version_tuple__: tuple[int | str, ...]\nversion_tuple: tuple[int | str, ...]\ncommit_id: str | None\n__commit_id__: str | None\n\n__version__ = version = '2.8.0'\n__version_tuple__ = version_tuple = (2, 8, 0)\n\n__commit_id__ = commit_id = None"
+        }
+      ]
+    },
+    {
+      "installedFile": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/services/engine/.venv/lib/python3.12/site-packages/urllib3/response.py",
+      "sha256": "0e4559c737914d4f8f941dca9ecfaf6caec6792258302bffec7b8b41dae3c71a",
+      "bytes": 54628,
+      "excerpts": [
+        {
+          "startLine": 642,
+          "endLine": 685,
+          "text": "    def _decode(\n        self,\n        data: bytes,\n        decode_content: bool | None,\n        flush_decoder: bool,\n        max_length: int | None = None,\n    ) -> bytes:\n        \"\"\"\n        Decode the data passed in and potentially flush the decoder.\n        \"\"\"\n        if not decode_content:\n            if self._has_decoded_content:\n                raise RuntimeError(\n                    \"Calling read(decode_content=False) is not supported after \"\n                    \"read(decode_content=True) was called.\"\n                )\n            return data\n\n        if max_length is None or flush_decoder:\n            max_length = -1\n\n        try:\n            if self._decoder:\n                data = self._decoder.decompress(data, max_length=max_length)\n                self._has_decoded_content = True\n        except self.DECODER_ERROR_CLASSES as e:\n            content_encoding = self.headers.get(\"content-encoding\", \"\").lower()\n            raise DecodeError(\n                \"Received response with content-encoding: %s, but \"\n                \"failed to decode it.\" % content_encoding,\n                e,\n            ) from e\n        if flush_decoder:\n            data += self._flush_decoder()\n\n        return data\n\n    def _flush_decoder(self) -> bytes:\n        \"\"\"\n        Flushes the decoder. Should only be called if the decoder is actually\n        being used.\n        \"\"\"\n        if self._decoder:\n            return self._decoder.decompress(b\"\") + self._decoder.flush()"
+        },
+        {
+          "startLine": 918,
+          "endLine": 952,
+          "text": "        \"\"\"\n        Catch low-level python exceptions, instead re-raising urllib3\n        variants, so that low-level exceptions are not leaked in the\n        high-level api.\n\n        On exit, release the connection back to the pool.\n        \"\"\"\n        clean_exit = False\n\n        try:\n            try:\n                yield\n\n            except SocketTimeout as e:\n                # FIXME: Ideally we'd like to include the url in the ReadTimeoutError but\n                # there is yet no clean way to get at it from this context.\n                raise ReadTimeoutError(self._pool, None, \"Read timed out.\") from e  # type: ignore[arg-type]\n\n            except BaseSSLError as e:\n                # SSL errors related to framing/MAC get wrapped and reraised here\n                raise SSLError(e) from e\n\n            except IncompleteRead as e:\n                if (\n                    e.expected is not None\n                    and e.partial is not None\n                    and e.expected == -e.partial\n                ):\n                    arg = \"Response may not contain content.\"\n                else:\n                    arg = f\"Connection broken: {e!r}\"\n                raise ProtocolError(arg, e) from e\n\n            except (HTTPException, OSError) as e:\n                raise ProtocolError(f\"Connection broken: {e!r}\", e) from e"
+        },
+        {
+          "startLine": 1025,
+          "endLine": 1047,
+          "text": "        elif read1:\n            return self._fp.read1(amt) if amt is not None else self._fp.read1()\n        else:\n            # StringIO doesn't like amt=None\n            return self._fp.read(amt) if amt is not None else self._fp.read()\n\n    def _raw_read(\n        self,\n        amt: int | None = None,\n        *,\n        read1: bool = False,\n    ) -> bytes:\n        \"\"\"\n        Reads `amt` of bytes from the socket.\n        \"\"\"\n        if self._fp is None:\n            return None  # type: ignore[return-value]\n\n        fp_closed = getattr(self._fp, \"closed\", False)\n\n        with self._error_catcher():\n            data = self._fp_read(amt, read1=read1) if not fp_closed else b\"\"\n            if amt is not None and amt != 0 and not data:"
+        },
+        {
+          "startLine": 1191,
+          "endLine": 1260,
+          "text": "    def read1(\n        self,\n        amt: int | None = None,\n        decode_content: bool | None = None,\n    ) -> bytes:\n        \"\"\"\n        Similar to ``http.client.HTTPResponse.read1`` and documented\n        in :meth:`io.BufferedReader.read1`, but with an additional parameter:\n        ``decode_content``.\n\n        :param amt:\n            How much of the content to read.\n\n        :param decode_content:\n            If True, will attempt to decode the body based on the\n            'content-encoding' header.\n        \"\"\"\n        if decode_content is None:\n            decode_content = self.decode_content\n        if amt and amt < 0:\n            # Negative numbers and `None` should be treated the same.\n            amt = None\n        # try and respond without going to the network\n        if self._has_decoded_content:\n            if not decode_content:\n                raise RuntimeError(\n                    \"Calling read1(decode_content=False) is not supported after \"\n                    \"read1(decode_content=True) was called.\"\n                )\n            if (\n                self._decoder\n                and self._decoder.has_unconsumed_tail\n                and (amt is None or len(self._decoded_buffer) < amt)\n            ):\n                decoded_data = self._decode(\n                    b\"\",\n                    decode_content,\n                    flush_decoder=False,\n                    max_length=(\n                        amt - len(self._decoded_buffer) if amt is not None else None\n                    ),\n                )\n                self._decoded_buffer.put(decoded_data)\n            if len(self._decoded_buffer) > 0:\n                if amt is None:\n                    return self._decoded_buffer.get_all()\n                return self._decoded_buffer.get(amt)\n        if amt == 0:\n            return b\"\"\n\n        # FIXME, this method's type doesn't say returning None is possible\n        data = self._raw_read(amt, read1=True)\n        self._uncached_read_occurred = True\n        if not decode_content or data is None:\n            return data\n\n        self._init_decoder()\n        while True:\n            flush_decoder = not data\n            decoded_data = self._decode(\n                data, decode_content, flush_decoder, max_length=amt\n            )\n            self._decoded_buffer.put(decoded_data)\n            if decoded_data or flush_decoder:\n                break\n            data = self._raw_read(8192, read1=True)\n\n        if amt is None:\n            return self._decoded_buffer.get_all()\n        return self._decoded_buffer.get(amt)"
+        }
+      ]
+    },
+    {
+      "installedFile": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/services/engine/.venv/lib/python3.12/site-packages/urllib3/util/timeout.py",
+      "sha256": "e1e4f5155799654ee1ee6603d49ab639735ee1fc5e91d36f868594919bac4690",
+      "bytes": 10346,
+      "excerpts": [
+        {
+          "startLine": 76,
+          "endLine": 103,
+          "text": "    :param read:\n        The maximum amount of time (in seconds) to wait between consecutive\n        read operations for a response from the server. Omitting the parameter\n        will default the read timeout to the system default, probably `the\n        global default timeout in socket.py\n        <http://hg.python.org/cpython/file/603b4d593758/Lib/socket.py#l535>`_.\n        None will set an infinite timeout.\n\n    :type read: int, float, or None\n\n    .. note::\n\n        Many factors can affect the total amount of time for urllib3 to return\n        an HTTP response.\n\n        For example, Python's DNS resolver does not obey the timeout specified\n        on the socket. Other factors that can affect total request time include\n        high CPU load, high swap, the program running at a low priority level,\n        or other behaviors.\n\n        In addition, the read and total timeouts only measure the time between\n        read operations on the socket connecting the client and the server,\n        not the total amount of time for the request to return a complete\n        response. For most requests, the timeout is raised because the server\n        has not sent the first byte in the specified time. This is not always\n        the case; if a server streams one byte every fifteen seconds, a timeout\n        of 20 seconds will not trigger, even though the request will take\n        several minutes to complete."
+        }
+      ]
+    }
+  ]
+}

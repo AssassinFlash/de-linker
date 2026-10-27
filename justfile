@@ -7,7 +7,7 @@ mod build "tools/build.just"
 
 # Composer projects: the plugins, the production mu-plugins, and tools/local for
 # its local mu-plugins and router.
-js_projects := "plugins/linker-tools plugins/linker-commerce"
+js_projects := "plugins/linker-tools plugins/linker-commerce apps/planner"
 
 php_projects := "plugins/linker-commerce plugins/linker-i18n plugins/linker-tools mu-plugins tools/local"
 
@@ -91,9 +91,9 @@ login name *options:
 status:
     PHP={{ php }} {{ linker_local }} status
 
-# (Re)start the engine and Genie of the instance and write their addresses into it.
+# (Re)start owned services; --service engine leaves Genie running.
 [positional-arguments]
-serve name:
+serve name *options:
     PHP={{ php }} {{ linker_local }} serve "$@"
 
 # Run WP-CLI against the instance, e.g. `just wp a plugin list`.
@@ -363,6 +363,7 @@ js-check: js-install
 js-test: js-install
     npm run test:unit
     cd "{{ justfile_directory() }}/plugins/linker-commerce" && npm run test:unit
+    cd "{{ justfile_directory() }}/apps/planner" && npm test
     # The commerce plugins' script tests are plain node:test files (jsdom
     # resolves through this project's node_modules); this gate is what runs
     # them in CI.
@@ -423,6 +424,7 @@ internal-home-urls:
 # byte-for-byte JSON reproduction via WP-CLI (tools/checks/i18n-coverage.py).
 [group('check')]
 i18n-coverage:
+    python3 -m unittest discover -s "{{ justfile_directory() }}/tools/checks" -p test_i18n_sources.py
     PHP={{ php }} python3 "{{ justfile_directory() }}/tools/checks/i18n-coverage.py"
 
 # Rebuild commerce catalogs from PHP/JS/build and live catalog strings in LC

@@ -1,0 +1,169 @@
+{
+  "$defs": {
+    "ReportRow": {
+      "properties": {
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "string"
+        },
+        "href": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Href"
+        }
+      },
+      "required": [
+        "label",
+        "value",
+        "href"
+      ],
+      "title": "ReportRow",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "ReportSection": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "rows": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ReportRow"
+          },
+          "title": "Rows",
+          "type": "array"
+        },
+        "paragraphs": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Paragraphs",
+          "type": "array"
+        },
+        "table": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ReportTable"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "rows",
+        "paragraphs",
+        "table"
+      ],
+      "title": "ReportSection",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "ReportTable": {
+      "properties": {
+        "columns": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Columns",
+          "type": "array"
+        },
+        "rows": {
+          "items": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "title": "Rows",
+          "type": "array"
+        },
+        "column_weights": {
+          "anyOf": [
+            {
+              "items": {
+                "exclusiveMinimum": 0,
+                "type": "number"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Column Weights"
+        }
+      },
+      "required": [
+        "columns",
+        "rows"
+      ],
+      "title": "ReportTable",
+      "type": "object",
+      "additionalProperties": false
+    }
+  },
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "subtitle": {
+      "title": "Subtitle",
+      "type": "string"
+    },
+    "generated_at": {
+      "title": "Generated At",
+      "type": "string"
+    },
+    "locale": {
+      "enum": [
+        "en",
+        "de"
+      ],
+      "title": "Locale",
+      "type": "string"
+    },
+    "sections": {
+      "items": {
+        "$ref": "#/$defs/ReportSection"
+      },
+      "title": "Sections",
+      "type": "array"
+    }
+  },
+  "required": [
+    "title",
+    "subtitle",
+    "generated_at",
+    "locale",
+    "sections"
+  ],
+  "title": "Report",
+  "type": "object",
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

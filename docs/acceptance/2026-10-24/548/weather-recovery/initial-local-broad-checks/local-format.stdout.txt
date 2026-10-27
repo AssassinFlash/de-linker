@@ -1,0 +1,1120 @@
+unformatted: File would be reformatted
+    --> tests/integration/test_planner_native.py:93:13
+     |
+92   |
+     -     def rpc(
+     -         self, path: str, command: dict[str, Any], **overrides: str
+     -     ) -> Reply:
+93   +     def rpc(self, path: str, command: dict[str, Any], **overrides: str) -> Reply:
+94   |         headers = {"Content-Type": "application/json", "Origin": self.site}
+--------------------------------------------------------------------------------
+100  |         reply = self.http(
+     -             ROOT + path, body=json.dumps(command, separators=(",", ":")).encode(),
+101  +             ROOT + path,
+102  +             body=json.dumps(command, separators=(",", ":")).encode(),
+103  |             headers=headers,
+104  |         )
+     -         directives = {part.strip() for part in reply.headers.get("cache-control", "").split(",")}
+105  +         directives = {
+106  +             part.strip() for part in reply.headers.get("cache-control", "").split(",")
+107  +         }
+108  |         assert {"no-store", "private"} <= directives and "public" not in directives
+--------------------------------------------------------------------------------
+123  |     def create(self, title: str) -> dict[str, Any]:
+     -         reply = self.rpc("rpc/projects/create", {
+     -             "schema_version": 1, "title": title, "inputs": {}, "key": str(uuid.uuid4()),
+     -         })
+124  +         reply = self.rpc(
+125  +             "rpc/projects/create",
+126  +             {
+127  +                 "schema_version": 1,
+128  +                 "title": title,
+129  +                 "inputs": {},
+130  +                 "key": str(uuid.uuid4()),
+131  +             },
+132  +         )
+133  |         assert reply.status == 200, reply.body
+134  |         return reply.object()
+135  |
+136  |     def read(self, project: dict[str, Any]) -> Reply:
+     -         return self.rpc("rpc/projects/read", {
+     -             "schema_version": 1, "project_id": project["id"], "revision": None,
+     -         })
+137  +         return self.rpc(
+138  +             "rpc/projects/read",
+139  +             {
+140  +                 "schema_version": 1,
+141  +                 "project_id": project["id"],
+142  +                 "revision": None,
+143  +             },
+144  +         )
+145  |
+146  |     def native_cookie(self) -> Cookie:
+     -         return next(c for c in self.cookies if c.name.startswith("wp_woocommerce_session_"))
+147  +         return next(
+148  +             c for c in self.cookies if c.name.startswith("wp_woocommerce_session_")
+149  +         )
+150  |
+151  |     def login(self, login: str, password: str) -> None:
+152  |         self.http("/wp-login.php")
+     -         reply = self.http("/wp-login.php", body=urllib.parse.urlencode({
+     -             "log": login, "pwd": password, "wp-submit": "Log In",
+     -             "testcookie": "1", "redirect_to": self.site + "/my-account/",
+     -         }).encode(), headers={"Content-Type": "application/x-www-form-urlencoded", "Origin": self.site})
+153  +         reply = self.http(
+154  +             "/wp-login.php",
+155  +             body=urllib.parse.urlencode(
+156  +                 {
+157  +                     "log": login,
+158  +                     "pwd": password,
+159  +                     "wp-submit": "Log In",
+160  +                     "testcookie": "1",
+161  +                     "redirect_to": self.site + "/my-account/",
+162  +                 }
+163  +             ).encode(),
+164  +             headers={
+165  +                 "Content-Type": "application/x-www-form-urlencoded",
+166  +                 "Origin": self.site,
+167  +             },
+168  +         )
+169  |         assert reply.status == 200
+--------------------------------------------------------------------------------
+219  |         'if (is_wp_error($id)) { throw new Exception("fixture user failed"); } echo $id;',
+     -         env={"LINKER_PLANNER_FIXTURE_LOGIN": login, "LINKER_PLANNER_FIXTURE_PASSWORD": password},
+220  +         env={
+221  +             "LINKER_PLANNER_FIXTURE_LOGIN": login,
+222  +             "LINKER_PLANNER_FIXTURE_PASSWORD": password,
+223  +         },
+224  |     )
+--------------------------------------------------------------------------------
+231  |
+     - def test_native_bootstrap_exposes_only_the_browser_runtime_contract(local: tuple[Instance, WpCli]) -> None:
+232  + def test_native_bootstrap_exposes_only_the_browser_runtime_contract(
+233  +     local: tuple[Instance, WpCli],
+234  + ) -> None:
+235  |     instance, _ = local
+236  |     context = Browser(instance.url).bootstrap()
+     -     assert set(context["runtime"]) == {"schema_version", "runtime_sha256", "models", "limits"}
+237  +     assert set(context["runtime"]) == {
+238  +         "schema_version",
+239  +         "runtime_sha256",
+240  +         "models",
+241  +         "limits",
+242  +     }
+243  |     assert set(context["runtime"]["limits"]) == {
+     -         "max_body_bytes", "max_csv_bytes", "max_page_size", "max_json_depth",
+244  +         "max_body_bytes",
+245  +         "max_csv_bytes",
+246  +         "max_page_size",
+247  +         "max_json_depth",
+248  |     }
+249  |
+250  |
+     - def test_native_guest_save_replay_conflict_and_private_ownership(local: tuple[Instance, WpCli]) -> None:
+251  + def test_native_guest_save_replay_conflict_and_private_ownership(
+252  +     local: tuple[Instance, WpCli],
+253  + ) -> None:
+254  |     instance, _ = local
+--------------------------------------------------------------------------------
+258  |     scope = first.context["query_scope"]
+     -     command = {"schema_version": 1, "title": "Native save evidence", "inputs": {}, "key": str(uuid.uuid4())}
+259  +     command = {
+260  +         "schema_version": 1,
+261  +         "title": "Native save evidence",
+262  +         "inputs": {},
+263  +         "key": str(uuid.uuid4()),
+264  +     }
+265  |     created = first.rpc("rpc/projects/create", command)
+--------------------------------------------------------------------------------
+270  |     assert second.read(project).status == 404
+     -     assert second.rpc("rpc/projects/read", {"schema_version": 1, "project_id": project["id"], "revision": None}, **{
+     -         "X-Linker-Planner-Principal-Kind": "user", "X-Linker-Planner-Principal-Subject": "wp:1:user:1",
+     -     }).status == 404
+     -     changed = {"schema_version": 1, "project_id": project["id"], "expected_revision": 1, "inputs": {"site": {"country": "FR"}}, "key": str(uuid.uuid4())}
+271  +     assert (
+272  +         second.rpc(
+273  +             "rpc/projects/read",
+274  +             {"schema_version": 1, "project_id": project["id"], "revision": None},
+275  +             **{
+276  +                 "X-Linker-Planner-Principal-Kind": "user",
+277  +                 "X-Linker-Planner-Principal-Subject": "wp:1:user:1",
+278  +             },
+279  +         ).status
+280  +         == 404
+281  +     )
+282  +     changed = {
+283  +         "schema_version": 1,
+284  +         "project_id": project["id"],
+285  +         "expected_revision": 1,
+286  +         "inputs": {"site": {"country": "FR"}},
+287  +         "key": str(uuid.uuid4()),
+288  +     }
+289  |     revision = first.rpc("rpc/projects/revise", changed)
+--------------------------------------------------------------------------------
+294  |     assert first.rpc("rpc/projects/revise", changed).status == 409
+     -     assert first.rpc("rpc/projects/read", {"schema_version": 1, "project_id": project["id"], "revision": 1}).object() == project
+295  +     assert (
+296  +         first.rpc(
+297  +             "rpc/projects/read",
+298  +             {"schema_version": 1, "project_id": project["id"], "revision": 1},
+299  +         ).object()
+300  +         == project
+301  +     )
+302  |     assert first.bootstrap()["query_scope"] == scope
+303  |     assert first.read(project).object()["inputs"] == {"site": {"country": "FR"}}
+304  |
+305  |
+     - def test_geometry_import_source_manifest_and_save_use_the_actual_native_gateway(local: tuple[Instance, WpCli]) -> None:
+306  + def test_geometry_import_source_manifest_and_save_use_the_actual_native_gateway(
+307  +     local: tuple[Instance, WpCli],
+308  + ) -> None:
+309  |     instance, _ = local
+--------------------------------------------------------------------------------
+315  |     source = (root / "fixtures/planning/source-roof-wgs84.geojson").read_bytes()
+     -     options = json.loads((root / "fixtures/planning/geometry-import-options.json").read_text())
+     -     command = {"schema_version": 1, "project_id": project["id"], "content_base64": base64.b64encode(source).decode(), "options": options, "key": str(uuid.uuid4())}
+316  +     options = json.loads(
+317  +         (root / "fixtures/planning/geometry-import-options.json").read_text()
+318  +     )
+319  +     command = {
+320  +         "schema_version": 1,
+321  +         "project_id": project["id"],
+322  +         "content_base64": base64.b64encode(source).decode(),
+323  +         "options": options,
+324  +         "key": str(uuid.uuid4()),
+325  +     }
+326  |     imported = owner.rpc("rpc/geometry/import", command)
+--------------------------------------------------------------------------------
+332  |     geometry = prepared["geometry"]
+     -     assert geometry["roofs"][0]["holes_uv"] and geometry["roofs"][0]["origin_enu"][2] == 5
+333  +     assert (
+334  +         geometry["roofs"][0]["holes_uv"] and geometry["roofs"][0]["origin_enu"][2] == 5
+335  +     )
+336  |     assert owner.read(project).object()["revision"] == 1
+337  |     assert owner.read(project).object()["inputs"] == {}
+     -     assert foreign.rpc("rpc/geometry/import", {**command, "content_base64": "!"}).status == 404
+338  +     assert (
+339  +         foreign.rpc("rpc/geometry/import", {**command, "content_base64": "!"}).status
+340  +         == 404
+341  +     )
+342  |     invalid_id = json.loads(source)
+343  |     invalid_id["id"] = 2**54
+     -     refused = owner.rpc("rpc/geometry/import", {**command, "key": str(uuid.uuid4()), "content_base64": base64.b64encode(json.dumps(invalid_id).encode()).decode()})
+344  +     refused = owner.rpc(
+345  +         "rpc/geometry/import",
+346  +         {
+347  +             **command,
+348  +             "key": str(uuid.uuid4()),
+349  +             "content_base64": base64.b64encode(
+350  +                 json.dumps(invalid_id).encode()
+351  +             ).decode(),
+352  +         },
+353  +     )
+354  |     assert refused.status == 422
+355  |     assert owner.read(project).object()["revision"] == 1
+     -     assert owner.rpc("rpc/assets/content", {"schema_version": 1, "project_id": project["id"], "asset_id": asset["id"]}).body == source
+356  +     assert (
+357  +         owner.rpc(
+358  +             "rpc/assets/content",
+359  +             {"schema_version": 1, "project_id": project["id"], "asset_id": asset["id"]},
+360  +         ).body
+361  +         == source
+362  +     )
+363  |     source_id = geometry["sources"][0]["id"]
+     -     inputs = {"geometry": geometry, "geometry_imports": {"schema_version": 1, "selected": {source_id: asset["id"]}}}
+     -     change = {"schema_version": 1, "project_id": project["id"], "expected_revision": 1, "inputs": inputs, "key": str(uuid.uuid4())}
+364  +     inputs = {
+365  +         "geometry": geometry,
+366  +         "geometry_imports": {"schema_version": 1, "selected": {source_id: asset["id"]}},
+367  +     }
+368  +     change = {
+369  +         "schema_version": 1,
+370  +         "project_id": project["id"],
+371  +         "expected_revision": 1,
+372  +         "inputs": inputs,
+373  +         "key": str(uuid.uuid4()),
+374  +     }
+375  |     saved = owner.rpc("rpc/projects/revise", change)
+--------------------------------------------------------------------------------
+381  |     tampered["geometry"]["sources"][0]["reference_sha256"] = "0" * 64
+     -     assert owner.rpc("rpc/projects/revise", {"schema_version": 1, "project_id": project["id"], "expected_revision": 2, "inputs": tampered, "key": str(uuid.uuid4())}).status == 422
+382  +     assert (
+383  +         owner.rpc(
+384  +             "rpc/projects/revise",
+385  +             {
+386  +                 "schema_version": 1,
+387  +                 "project_id": project["id"],
+388  +                 "expected_revision": 2,
+389  +                 "inputs": tampered,
+390  +                 "key": str(uuid.uuid4()),
+391  +             },
+392  +         ).status
+393  +         == 422
+394  +     )
+395  |     assert owner.read(project).object()["revision"] == 2
+     -     report = owner.rpc("rpc/geometry/review", {"schema_version": 1, "project_id": project["id"], "geometry": geometry})
+396  +     report = owner.rpc(
+397  +         "rpc/geometry/review",
+398  +         {"schema_version": 1, "project_id": project["id"], "geometry": geometry},
+399  +     )
+400  |     assert report.status == 200 and report.object()["module_count"] == 0
+401  |     assert report.object()["engineering_status"] == "not_evaluated"
+402  |
+403  |
+     - def test_geometry_review_and_saved_source_use_the_actual_native_gateway(local: tuple[Instance, WpCli]) -> None:
+404  + def test_geometry_review_and_saved_source_use_the_actual_native_gateway(
+405  +     local: tuple[Instance, WpCli],
+406  + ) -> None:
+407  |     instance, _ = local
+--------------------------------------------------------------------------------
+413  |     geometry = json.loads(path.read_text())
+     -     review_body = {"schema_version": 1, "project_id": project["id"], "geometry": geometry}
+414  +     review_body = {
+415  +         "schema_version": 1,
+416  +         "project_id": project["id"],
+417  +         "geometry": geometry,
+418  +     }
+419  |     report = owner.rpc("rpc/geometry/review", review_body)
+--------------------------------------------------------------------------------
+425  |     assert owner.read(project).object()["inputs"] == {}
+     -     assert foreign.rpc("rpc/geometry/review", {**review_body, "geometry": {}}).status == 404
+426  +     assert (
+427  +         foreign.rpc("rpc/geometry/review", {**review_body, "geometry": {}}).status
+428  +         == 404
+429  +     )
+430  |     geometry["arrays"][0]["source_id"] = "missing"
+     -     command = {"schema_version": 1, "project_id": project["id"], "expected_revision": 1, "inputs": {"geometry": geometry}, "key": str(uuid.uuid4())}
+431  +     command = {
+432  +         "schema_version": 1,
+433  +         "project_id": project["id"],
+434  +         "expected_revision": 1,
+435  +         "inputs": {"geometry": geometry},
+436  +         "key": str(uuid.uuid4()),
+437  +     }
+438  |     assert owner.rpc("rpc/projects/revise", command).status == 422
+--------------------------------------------------------------------------------
+448  |     assert reopened["inputs"] == {"geometry": geometry}
+     -     assert owner.rpc("rpc/geometry/review", review_body).object()["geometry_sha256"] == report.object()["geometry_sha256"]
+449  +     assert (
+450  +         owner.rpc("rpc/geometry/review", review_body).object()["geometry_sha256"]
+451  +         == report.object()["geometry_sha256"]
+452  +     )
+453  |
+454  |
+     - def test_nonce_origin_body_and_unknown_route_are_private(local: tuple[Instance, WpCli]) -> None:
+455  + def test_nonce_origin_body_and_unknown_route_are_private(
+456  +     local: tuple[Instance, WpCli],
+457  + ) -> None:
+458  |     instance, _ = local
+459  |     browser = Browser(instance.url)
+460  |     browser.bootstrap()
+461  |     command = {"schema_version": 1, "page_size": 10, "after": None}
+     -     assert browser.rpc("rpc/projects/list", command, **{"X-Linker-Planner-Nonce": ""}).status == 403
+     -     assert browser.rpc("rpc/projects/list", command, **{"X-Linker-Planner-Nonce": "bad"}).status == 403
+     -     assert browser.rpc("rpc/projects/list", command, Origin="https://foreign.invalid").status == 403
+     -     assert browser.rpc("rpc/projects/list", command, **{"Content-Type": "text/plain"}).status == 415
+462  +     assert (
+463  +         browser.rpc(
+464  +             "rpc/projects/list", command, **{"X-Linker-Planner-Nonce": ""}
+465  +         ).status
+466  +         == 403
+467  +     )
+468  +     assert (
+469  +         browser.rpc(
+470  +             "rpc/projects/list", command, **{"X-Linker-Planner-Nonce": "bad"}
+471  +         ).status
+472  +         == 403
+473  +     )
+474  +     assert (
+475  +         browser.rpc(
+476  +             "rpc/projects/list", command, Origin="https://foreign.invalid"
+477  +         ).status
+478  +         == 403
+479  +     )
+480  +     assert (
+481  +         browser.rpc(
+482  +             "rpc/projects/list", command, **{"Content-Type": "text/plain"}
+483  +         ).status
+484  +         == 415
+485  +     )
+486  |     assert Browser(instance.url).rpc("rpc/projects/list", command).status == 401
+     -     assert browser.rpc("rpc/identity/claim-session", {"schema_version": 1}).status == 404
+487  +     assert (
+488  +         browser.rpc("rpc/identity/claim-session", {"schema_version": 1}).status == 404
+489  +     )
+490  |     assert browser.rpc("bootstrap", {"schema_version": True}).status == 400
+491  |     for method in ("GET", "HEAD", "OPTIONS"):
+     -         reply = browser.http(ROOT + "unknown", headers={"Origin": "https://foreign.invalid"}, method=method)
+492  +         reply = browser.http(
+493  +             ROOT + "unknown",
+494  +             headers={"Origin": "https://foreign.invalid"},
+495  +             method=method,
+496  +         )
+497  |         assert reply.status in (200, 404, 405)
+     -         directives = {part.strip() for part in reply.headers.get("cache-control", "").split(",")}
+498  +         directives = {
+499  +             part.strip() for part in reply.headers.get("cache-control", "").split(",")
+500  +         }
+501  |         assert {"no-store", "private"} <= directives and "public" not in directives
+502  |         assert "access-control-allow-origin" not in reply.headers
+503  |
+504  |
+     - def test_native_revoked_tampered_and_expired_cookies_cannot_read(local: tuple[Instance, WpCli]) -> None:
+505  + def test_native_revoked_tampered_and_expired_cookies_cannot_read(
+506  +     local: tuple[Instance, WpCli],
+507  + ) -> None:
+508  |     instance, wp = local
+--------------------------------------------------------------------------------
+521  |     # but expired cookie. The application contains no copy of that algorithm.
+     -     expired = wp.run("eval", '$id = getenv("LINKER_PLANNER_FIXTURE_GUEST"); '
+     -         '$expiry = time() - 60; $session = new WC_Session_Handler(); '
+522  +     expired = wp.run(
+523  +         "eval",
+524  +         '$id = getenv("LINKER_PLANNER_FIXTURE_GUEST"); '
+525  +         "$expiry = time() - 60; $session = new WC_Session_Handler(); "
+526  |         '$hash = (new ReflectionMethod($session, "hash"))->invoke($session, $id . "|" . $expiry); '
+527  |         'echo $id . "|" . $expiry . "|" . ($expiry - 60) . "|" . $hash;',
+     -         env={"LINKER_PLANNER_FIXTURE_GUEST": guest})
+528  +         env={"LINKER_PLANNER_FIXTURE_GUEST": guest},
+529  +     )
+530  |     cookie.value = urllib.parse.quote(expired)
+531  |     assert browser.read(project).status == 401
+532  |     cookie.value = original
+     -     wp.run("eval", '(new WC_Session_Handler())->delete_session(getenv("LINKER_PLANNER_FIXTURE_GUEST"));', env={"LINKER_PLANNER_FIXTURE_GUEST": guest})
+533  +     wp.run(
+534  +         "eval",
+535  +         '(new WC_Session_Handler())->delete_session(getenv("LINKER_PLANNER_FIXTURE_GUEST"));',
+536  +         env={"LINKER_PLANNER_FIXTURE_GUEST": guest},
+537  +     )
+538  |     assert browser.read(project).status == 401
+--------------------------------------------------------------------------------
+543  |
+     - def test_cart_token_clone_never_inherits_project_ownership(local: tuple[Instance, WpCli]) -> None:
+544  + def test_cart_token_clone_never_inherits_project_ownership(
+545  +     local: tuple[Instance, WpCli],
+546  + ) -> None:
+547  |     instance, _ = local
+--------------------------------------------------------------------------------
+579  |         owner.login(login, password)
+     -         pending = wp.run("eval", 'echo (new \\Linker\\Tools\\Planner\\ClaimOutbox())->pending((int) getenv("LINKER_PLANNER_FIXTURE_USER")) ? "yes" : "no";', env={"LINKER_PLANNER_FIXTURE_USER": str(user)})
+580  +         pending = wp.run(
+581  +             "eval",
+582  +             'echo (new \\Linker\\Tools\\Planner\\ClaimOutbox())->pending((int) getenv("LINKER_PLANNER_FIXTURE_USER")) ? "yes" : "no";',
+583  +             env={"LINKER_PLANNER_FIXTURE_USER": str(user)},
+584  +         )
+585  |         assert pending == "yes"
+--------------------------------------------------------------------------------
+610  |     guest = owner.bootstrap()
+     -     assert owner.rpc("rpc/recovery/scopes", {"schema_version": 1, "after": None}).object()["scopes"] == []
+     -     command = {"schema_version": 1, "title": "Synthetic lost acknowledgement", "inputs": {}, "key": str(uuid.uuid4())}
+611  +     assert (
+612  +         owner.rpc("rpc/recovery/scopes", {"schema_version": 1, "after": None}).object()[
+613  +             "scopes"
+614  +         ]
+615  +         == []
+616  +     )
+617  +     command = {
+618  +         "schema_version": 1,
+619  +         "title": "Synthetic lost acknowledgement",
+620  +         "inputs": {},
+621  +         "key": str(uuid.uuid4()),
+622  +     }
+623  |     original = owner.rpc("rpc/projects/create", command).object()
+--------------------------------------------------------------------------------
+627  |     assert page.status == 200
+     -     assert set(page.object()["scopes"]) == {guest["query_scope"], signed_in["query_scope"]}
+628  +     assert set(page.object()["scopes"]) == {
+629  +         guest["query_scope"],
+630  +         signed_in["query_scope"],
+631  +     }
+632  |     assert owner.rpc("rpc/projects/create", command).object() == original
+     -     assert owner.rpc("rpc/projects/list", {"schema_version": 1, "page_size": 20, "after": None}).object()["items"][0]["id"] == original["id"]
+     -     assert owner.rpc("rpc/recovery/scopes", {"schema_version": 1, "after": "invalid"}).status == 422
+     -     assert owner.rpc("rpc/recovery/scopes", {"schema_version": 1, "after": None, "user": account.user}).status == 422
+633  +     assert (
+634  +         owner.rpc(
+635  +             "rpc/projects/list", {"schema_version": 1, "page_size": 20, "after": None}
+636  +         ).object()["items"][0]["id"]
+637  +         == original["id"]
+638  +     )
+639  +     assert (
+640  +         owner.rpc(
+641  +             "rpc/recovery/scopes", {"schema_version": 1, "after": "invalid"}
+642  +         ).status
+643  +         == 422
+644  +     )
+645  +     assert (
+646  +         owner.rpc(
+647  +             "rpc/recovery/scopes",
+648  +             {"schema_version": 1, "after": None, "user": account.user},
+649  +         ).status
+650  +         == 422
+651  +     )
+652  |     owner.logout()
+653  |     owner.bootstrap()
+     -     assert owner.rpc("rpc/recovery/scopes", {"schema_version": 1, "after": None}).object()["scopes"] == []
+654  +     assert (
+655  +         owner.rpc("rpc/recovery/scopes", {"schema_version": 1, "after": None}).object()[
+656  +             "scopes"
+657  +         ]
+658  +         == []
+659  +     )
+660  |     assert owner.read(original).status == 404
+661  |     owner.login(second_account.login, second_account.password)
+662  |     second = owner.bootstrap()
+     -     scopes = owner.rpc("rpc/recovery/scopes", {"schema_version": 1, "after": None}).object()["scopes"]
+663  +     scopes = owner.rpc(
+664  +         "rpc/recovery/scopes", {"schema_version": 1, "after": None}
+665  +     ).object()["scopes"]
+666  |     assert signed_in["query_scope"] not in scopes and guest["query_scope"] not in scopes
+--------------------------------------------------------------------------------
+670  |     renewed = owner.bootstrap()
+     -     scopes = owner.rpc("rpc/recovery/scopes", {"schema_version": 1, "after": None}).object()["scopes"]
+     -     assert {guest["query_scope"], signed_in["query_scope"], renewed["query_scope"]} <= set(scopes)
+671  +     scopes = owner.rpc(
+672  +         "rpc/recovery/scopes", {"schema_version": 1, "after": None}
+673  +     ).object()["scopes"]
+674  +     assert {
+675  +         guest["query_scope"],
+676  +         signed_in["query_scope"],
+677  +         renewed["query_scope"],
+678  +     } <= set(scopes)
+679  |     assert second["query_scope"] not in scopes
+--------------------------------------------------------------------------------
+687  |     synthetic = sorted(uuid.uuid4().hex + uuid.uuid4().hex for _ in range(67))
+     -     result = wp.run("eval", '$registry = new \\Linker\\Tools\\Planner\\RecoveryScopes(); foreach (json_decode(getenv("LINKER_PLANNER_FIXTURE_SCOPES"), true) as $scope) { if (!$registry->remember((int) getenv("LINKER_PLANNER_FIXTURE_USER"), $scope)) { throw new Exception("scope fixture failed"); } } echo "ok";', env={"LINKER_PLANNER_FIXTURE_USER": str(account.user), "LINKER_PLANNER_FIXTURE_SCOPES": json.dumps(synthetic)})
+688  +     result = wp.run(
+689  +         "eval",
+690  +         '$registry = new \\Linker\\Tools\\Planner\\RecoveryScopes(); foreach (json_decode(getenv("LINKER_PLANNER_FIXTURE_SCOPES"), true) as $scope) { if (!$registry->remember((int) getenv("LINKER_PLANNER_FIXTURE_USER"), $scope)) { throw new Exception("scope fixture failed"); } } echo "ok";',
+691  +         env={
+692  +             "LINKER_PLANNER_FIXTURE_USER": str(account.user),
+693  +             "LINKER_PLANNER_FIXTURE_SCOPES": json.dumps(synthetic),
+694  +         },
+695  +     )
+696  |     assert result == "ok"
+--------------------------------------------------------------------------------
+702  |     while True:
+     -         page = owner.rpc("rpc/recovery/scopes", {"schema_version": 1, "after": after}).object()
+703  +         page = owner.rpc(
+704  +             "rpc/recovery/scopes", {"schema_version": 1, "after": after}
+705  +         ).object()
+706  |         assert 0 < len(page["scopes"]) <= 32
+--------------------------------------------------------------------------------
+726  |     token = uuid.uuid4().hex
+     -     source = '''<?php
+727  +     source = """<?php
+728  | if (PHP_SAPI !== 'cli-server' || !hash_equals('TOKEN', $_SERVER['HTTP_X_LINKER_PLANNER_FIXTURE'] ?? '')) { return; }
+--------------------------------------------------------------------------------
+732  | }, 10, 3);
+     - '''
+733  + """
+734  |     path.write_text(source.replace("TOKEN", token))
+--------------------------------------------------------------------------------
+747  |     browser.bootstrap()
+     -     command = {"schema_version": 1, "title": "Synthetic admitted but uncommitted request", "inputs": {}, "key": str(uuid.uuid4())}
+748  +     command = {
+749  +         "schema_version": 1,
+750  +         "title": "Synthetic admitted but uncommitted request",
+751  +         "inputs": {},
+752  +         "key": str(uuid.uuid4()),
+753  +     }
+754  |     with failed_native_dispatch(instance) as token:
+     -         reply = browser.rpc("rpc/projects/create", command, **{"X-Linker-Planner-Fixture": token})
+755  +         reply = browser.rpc(
+756  +             "rpc/projects/create", command, **{"X-Linker-Planner-Fixture": token}
+757  +         )
+758  |         assert reply.status == 503
+     -     assert browser.rpc("rpc/projects/list", {"schema_version": 1, "page_size": 10, "after": None}).object()["items"] == []
+759  +     assert (
+760  +         browser.rpc(
+761  +             "rpc/projects/list", {"schema_version": 1, "page_size": 10, "after": None}
+762  +         ).object()["items"]
+763  +         == []
+764  +     )
+765  |     browser.login(account.login, account.password)
+--------------------------------------------------------------------------------
+769  |     assert browser.rpc("rpc/projects/create", command).object() == created.object()
+     -     assert len(browser.rpc("rpc/projects/list", {"schema_version": 1, "page_size": 10, "after": None}).object()["items"]) == 1
+770  +     assert (
+771  +         len(
+772  +             browser.rpc(
+773  +                 "rpc/projects/list",
+774  +                 {"schema_version": 1, "page_size": 10, "after": None},
+775  +             ).object()["items"]
+776  +         )
+777  +         == 1
+778  +     )
+779  |
+--------------------------------------------------------------------------------
+791  |     token = uuid.uuid4().hex
+     -     source = '''<?php
+792  +     source = """<?php
+793  | if (PHP_SAPI !== 'cli-server' || !hash_equals('TOKEN', $_SERVER['HTTP_X_LINKER_PLANNER_FIXTURE'] ?? '')) { return; }
+794  | add_filter('wp_insert_post_empty_content', static function ($empty, $post) {
+795  |     return ($post['post_type'] ?? '') === 'linker_planner_claim' ? true : $empty;
+796  | }, 10, 2);
+     - '''
+797  + """
+798  |     path.write_text(source.replace("TOKEN", token))
+--------------------------------------------------------------------------------
+806  | def test_native_insert_failure_tickets_stay_bound_across_shared_browser_accounts(
+     -     local: tuple[Instance, WpCli], account: Account, second_account: Account,
+807  +     local: tuple[Instance, WpCli],
+808  +     account: Account,
+809  +     second_account: Account,
+810  | ) -> None:
+--------------------------------------------------------------------------------
+820  |         assert browser.read(first_project).status == 404
+     -         assert any(c.name.startswith("linker_planner_transition_") for c in browser.cookies)
+821  +         assert any(
+822  +             c.name.startswith("linker_planner_transition_") for c in browser.cookies
+823  +         )
+824  |         browser.logout()
+--------------------------------------------------------------------------------
+828  |         assert browser.bootstrap()["claim_pending"] is True
+     -         tickets = [c for c in browser.cookies if c.name.startswith("linker_planner_transition_")]
+829  +         tickets = [
+830  +             c
+831  +             for c in browser.cookies
+832  +             if c.name.startswith("linker_planner_transition_")
+833  +         ]
+834  |         assert len(tickets) == 2
+--------------------------------------------------------------------------------
+839  |     assert browser.read(first_project).status == 404
+     -     assert not any(c.name.startswith("linker_planner_transition_") for c in browser.cookies)
+840  +     assert not any(
+841  +         c.name.startswith("linker_planner_transition_") for c in browser.cookies
+842  +     )
+843  |     # Execute the actual native background dispatcher for account A's event.
+     -     wp.run("action-scheduler", "run", "--group=linker-planner", "--batch-size=25", "--force")
+844  +     wp.run(
+845  +         "action-scheduler",
+846  +         "run",
+847  +         "--group=linker-planner",
+848  +         "--batch-size=25",
+849  +         "--force",
+850  +     )
+851  |     first = Browser(instance.url)
+--------------------------------------------------------------------------------
+857  |
+     - def test_actual_native_dispatch_refuses_before_its_json_parser(local: tuple[Instance, WpCli]) -> None:
+858  + def test_actual_native_dispatch_refuses_before_its_json_parser(
+859  +     local: tuple[Instance, WpCli],
+860  + ) -> None:
+861  |     _, wp = local
+     -     result = wp.run("eval", '''
+862  +     result = wp.run(
+863  +         "eval",
+864  +         """
+865  | class LinkerPlannerParserProbe extends WP_REST_Request {
+--------------------------------------------------------------------------------
+888  | echo wp_json_encode($result);
+     - ''')
+889  + """,
+890  +     )
+891  |     cases = json.loads(result)
+--------------------------------------------------------------------------------
+901  |
+     - def test_native_parser_limits_cover_unsupported_methods_and_reused_requests(local: tuple[Instance, WpCli]) -> None:
+902  + def test_native_parser_limits_cover_unsupported_methods_and_reused_requests(
+903  +     local: tuple[Instance, WpCli],
+904  + ) -> None:
+905  |     _, wp = local
+     -     result = wp.run("eval", '''
+906  +     result = wp.run(
+907  +         "eval",
+908  +         """
+909  | class LinkerPlannerMethodProbe extends WP_REST_Request {
+--------------------------------------------------------------------------------
+948  | echo wp_json_encode($result);
+     - ''')
+949  + """,
+950  +     )
+951  |     cases = json.loads(result)
+--------------------------------------------------------------------------------
+960  |
+     - def test_native_journal_namespaces_owners_and_exact_engine_keys(local: tuple[Instance, WpCli]) -> None:
+961  + def test_native_journal_namespaces_owners_and_exact_engine_keys(
+962  +     local: tuple[Instance, WpCli],
+963  + ) -> None:
+964  |     instance, wp = local
+--------------------------------------------------------------------------------
+970  |         key = str(uuid.uuid4())
+     -     command = {"schema_version": 1, "title": "Synthetic key namespace", "inputs": {}, "key": key}
+971  +     command = {
+972  +         "schema_version": 1,
+973  +         "title": "Synthetic key namespace",
+974  +         "inputs": {},
+975  +         "key": key,
+976  +     }
+977  |     preceding = native_operation_ids(wp)
+--------------------------------------------------------------------------------
+993  |     # Observe the actual native journal rather than recomputing its private ID.
+     -     return set(json.loads(wp.run("eval", 'echo wp_json_encode(array_keys(json_decode(get_option(\\Linker\\Commerce\\Protection\\Ledger::OPTION), true)["receipts"] ?? array()));')))
+994  +     return set(
+995  +         json.loads(
+996  +             wp.run(
+997  +                 "eval",
+998  +                 'echo wp_json_encode(array_keys(json_decode(get_option(\\Linker\\Commerce\\Protection\\Ledger::OPTION), true)["receipts"] ?? array()));',
+999  +             )
+1000 +         )
+1001 +     )
+1002 |
+1003 |
+1004 | @pytest.mark.parametrize("committed", [False, True])
+1005 | def test_legacy_native_receipt_retries_and_settles_without_new_quota(
+     -     local: tuple[Instance, WpCli], committed: bool,
+1006 +     local: tuple[Instance, WpCli],
+1007 +     committed: bool,
+1008 | ) -> None:
+1009 |     instance, wp = local
+1010 |     browser = Browser(instance.url)
+1011 |     browser.bootstrap()
+     -     command = {"schema_version": 1, "title": "Synthetic legacy receipt", "inputs": {}, "key": str(uuid.uuid4())}
+1012 +     command = {
+1013 +         "schema_version": 1,
+1014 +         "title": "Synthetic legacy receipt",
+1015 +         "inputs": {},
+1016 +         "key": str(uuid.uuid4()),
+1017 +     }
+1018 |     preceding = native_operation_ids(wp)
+--------------------------------------------------------------------------------
+1023 |         with failed_native_dispatch(instance) as token:
+     -             assert browser.rpc("rpc/projects/create", command, **{"X-Linker-Planner-Fixture": token}).status == 503
+1024 +             assert (
+1025 +                 browser.rpc(
+1026 +                     "rpc/projects/create",
+1027 +                     command,
+1028 +                     **{"X-Linker-Planner-Fixture": token},
+1029 +                 ).status
+1030 +                 == 503
+1031 +             )
+1032 |     inserted = native_operation_ids(wp) - preceding
+--------------------------------------------------------------------------------
+1036 |     # synthetic operation. Its native fingerprint, binding and debits survive.
+     -     before = json.loads(wp.run("eval", '''
+1037 +     before = json.loads(
+1038 +         wp.run(
+1039 +             "eval",
+1040 +             """
+1041 | $name = \\Linker\\Commerce\\Protection\\Ledger::OPTION;
+--------------------------------------------------------------------------------
+1050 | echo wp_json_encode(array('receipt' => $state['receipts'][$key], 'count' => count($state['receipts']), 'buckets' => $state['buckets']));
+     - ''', env={"LINKER_PLANNER_FIXTURE_OPERATION": native_id, "LINKER_PLANNER_FIXTURE_KEY": command["key"]}))
+1051 + """,
+1052 +             env={
+1053 +                 "LINKER_PLANNER_FIXTURE_OPERATION": native_id,
+1054 +                 "LINKER_PLANNER_FIXTURE_KEY": command["key"],
+1055 +             },
+1056 +         )
+1057 +     )
+1058 |     if not committed:
+     -         assert browser.rpc("rpc/projects/create", {**command, "title": "Changed legacy intent"}).status == 409
+1059 +         assert (
+1060 +             browser.rpc(
+1061 +                 "rpc/projects/create", {**command, "title": "Changed legacy intent"}
+1062 +             ).status
+1063 +             == 409
+1064 +         )
+1065 |     reply = browser.rpc("rpc/projects/create", command)
+1066 |     assert reply.status == 200, reply.body
+1067 |     if committed:
+1068 |         assert reply.object() == original.object()
+     -     after = json.loads(wp.run("eval", '''
+1069 +     after = json.loads(
+1070 +         wp.run(
+1071 +             "eval",
+1072 +             """
+1073 | $state = json_decode(get_option(\\Linker\\Commerce\\Protection\\Ledger::OPTION), true);
+1074 | $id = getenv('LINKER_PLANNER_FIXTURE_KEY');
+1075 | echo wp_json_encode(array('receipt' => $state['receipts'][$id], 'count' => count($state['receipts']), 'buckets' => $state['buckets']));
+     - ''', env={"LINKER_PLANNER_FIXTURE_KEY": command["key"]}))
+1076 + """,
+1077 +             env={"LINKER_PLANNER_FIXTURE_KEY": command["key"]},
+1078 +         )
+1079 +     )
+1080 |     assert before["count"] == after["count"]
+--------------------------------------------------------------------------------
+1090 | def test_unused_native_attempts_can_continue_the_same_business_intent(
+     -     local: tuple[Instance, WpCli], legacy: bool, terminal: str,
+1091 +     local: tuple[Instance, WpCli],
+1092 +     legacy: bool,
+1093 +     terminal: str,
+1094 | ) -> None:
+1095 |     instance, wp = local
+1096 |     browser = Browser(instance.url)
+1097 |     browser.bootstrap()
+     -     command = {"schema_version": 1, "title": "Synthetic unused reservation", "inputs": {}, "key": str(uuid.uuid4())}
+1098 +     command = {
+1099 +         "schema_version": 1,
+1100 +         "title": "Synthetic unused reservation",
+1101 +         "inputs": {},
+1102 +         "key": str(uuid.uuid4()),
+1103 +     }
+1104 |     preceding = native_operation_ids(wp)
+1105 |     with failed_native_dispatch(instance) as token:
+     -         assert browser.rpc("rpc/projects/create", command, **{"X-Linker-Planner-Fixture": token}).status == 503
+1106 +         assert (
+1107 +             browser.rpc(
+1108 +                 "rpc/projects/create", command, **{"X-Linker-Planner-Fixture": token}
+1109 +             ).status
+1110 +             == 503
+1111 +         )
+1112 |     inserted = native_operation_ids(wp) - preceding
+--------------------------------------------------------------------------------
+1117 |     old_id = command["key"] if legacy else native_id
+     -     before = json.loads(wp.run("eval", '''
+1118 +     before = json.loads(
+1119 +         wp.run(
+1120 +             "eval",
+1121 +             """
+1122 | $name = \\Linker\\Commerce\\Protection\\Ledger::OPTION;
+--------------------------------------------------------------------------------
+1139 | echo wp_json_encode(array('receipt' => $receipt, 'count' => count($state['receipts']), 'buckets' => $state['buckets']));
+     - ''', env={"LINKER_PLANNER_FIXTURE_OPERATION": native_id, "LINKER_PLANNER_FIXTURE_OLD_ID": old_id, "LINKER_PLANNER_FIXTURE_TERMINAL": terminal}))
+     -     assert browser.rpc("rpc/projects/create", {**command, "title": "Changed unused intent"}).status == 409
+1140 + """,
+1141 +             env={
+1142 +                 "LINKER_PLANNER_FIXTURE_OPERATION": native_id,
+1143 +                 "LINKER_PLANNER_FIXTURE_OLD_ID": old_id,
+1144 +                 "LINKER_PLANNER_FIXTURE_TERMINAL": terminal,
+1145 +             },
+1146 +         )
+1147 +     )
+1148 +     assert (
+1149 +         browser.rpc(
+1150 +             "rpc/projects/create", {**command, "title": "Changed unused intent"}
+1151 +         ).status
+1152 +         == 409
+1153 +     )
+1154 |     created = browser.rpc("rpc/projects/create", command)
+1155 |     assert created.status == 200, created.body
+     -     after = json.loads(wp.run("eval", '''
+1156 +     after = json.loads(
+1157 +         wp.run(
+1158 +             "eval",
+1159 +             """
+1160 | $state = json_decode(get_option(\\Linker\\Commerce\\Protection\\Ledger::OPTION), true);
+1161 | $id = getenv('LINKER_PLANNER_FIXTURE_OLD_ID');
+1162 | echo wp_json_encode(array('receipt' => $state['receipts'][$id], 'count' => count($state['receipts']), 'buckets' => $state['buckets']));
+     - ''', env={"LINKER_PLANNER_FIXTURE_OLD_ID": old_id}))
+1163 + """,
+1164 +             env={"LINKER_PLANNER_FIXTURE_OLD_ID": old_id},
+1165 +         )
+1166 +     )
+1167 |     assert after["receipt"]["status"] == terminal
+     -     assert before["buckets"] == after["buckets"], "refund plus replacement consumes one attempt, not two"
+1168 +     assert before["buckets"] == after["buckets"], (
+1169 +         "refund plus replacement consumes one attempt, not two"
+1170 +     )
+1171 |     assert before["count"] + 1 == after["count"]
+1172 |     before_receipt = {**before["receipt"], "status": terminal}
+     -     assert before_receipt == after["receipt"], "the original terminal receipt is never rewritten"
+1173 +     assert before_receipt == after["receipt"], (
+1174 +         "the original terminal receipt is never rewritten"
+1175 +     )
+1176 |     assert browser.rpc("rpc/projects/create", command).object() == created.object()
+1177 |     assert len(native_operation_ids(wp)) == after["count"]
+     -     projects = browser.rpc("rpc/projects/list", {"schema_version": 1, "page_size": 10, "after": None}).object()
+1178 +     projects = browser.rpc(
+1179 +         "rpc/projects/list", {"schema_version": 1, "page_size": 10, "after": None}
+1180 +     ).object()
+1181 |     assert len(projects["items"]) == 1
+1182 |
+1183 |
+     - def test_permanent_engine_replay_uses_no_new_quota_after_native_receipt_forgetting(local: tuple[Instance, WpCli]) -> None:
+1184 + def test_permanent_engine_replay_uses_no_new_quota_after_native_receipt_forgetting(
+1185 +     local: tuple[Instance, WpCli],
+1186 + ) -> None:
+1187 |     instance, wp = local
+1188 |     browser = Browser(instance.url)
+1189 |     browser.bootstrap()
+1190 |     key = str(uuid.uuid4())
+     -     command = {"schema_version": 1, "title": "Permanent replay evidence", "inputs": {"object": {}, "array": [], "one": 1.0}, "key": key}
+1191 +     command = {
+1192 +         "schema_version": 1,
+1193 +         "title": "Permanent replay evidence",
+1194 +         "inputs": {"object": {}, "array": [], "one": 1.0},
+1195 +         "key": key,
+1196 +     }
+1197 |     preceding = native_operation_ids(wp)
+--------------------------------------------------------------------------------
+1204 |     # UUID only; do not advance global time or delete other native receipts.
+     -     before = wp.run("eval", '''
+1205 +     before = wp.run(
+1206 +         "eval",
+1207 +         """
+1208 | $name = \\Linker\\Commerce\\Protection\\Ledger::OPTION;
+--------------------------------------------------------------------------------
+1212 | echo hash('sha256', wp_json_encode($state));
+     - ''', env={"LINKER_PLANNER_FIXTURE_OPERATION": native_id})
+1213 + """,
+1214 +         env={"LINKER_PLANNER_FIXTURE_OPERATION": native_id},
+1215 +     )
+1216 |     assert browser.rpc("rpc/projects/create", command).object() == created.object()
+     -     after = wp.run("eval", 'echo hash("sha256", get_option(\\Linker\\Commerce\\Protection\\Ledger::OPTION));')
+1217 +     after = wp.run(
+1218 +         "eval",
+1219 +         'echo hash("sha256", get_option(\\Linker\\Commerce\\Protection\\Ledger::OPTION));',
+1220 +     )
+1221 |     assert before == after, "permanent replay must not reserve a new quota receipt"
+--------------------------------------------------------------------------------
+1225 |
+     - def test_profile_preview_and_csv_issue_cross_the_real_native_gateway(local: tuple[Instance, WpCli]) -> None:
+1226 + def test_profile_preview_and_csv_issue_cross_the_real_native_gateway(
+1227 +     local: tuple[Instance, WpCli],
+1228 + ) -> None:
+1229 |     instance, _ = local
+--------------------------------------------------------------------------------
+1234 |     mapping = {
+     -         "timestamp_column": "time", "value_column": "power", "measurement": "gross_load",
+     -         "value_kind": "interval_average_kw", "timestamp_role": "start", "timezone": "Europe/Oslo",
+     -         "origin": "synthetic", "interval_seconds": 900, "delimiter": ";", "decimal": ",",
+     -         "end_timestamp_column": None, "fold_column": None, "end_fold_column": None,
+     -         "offset_rule": "explicit_offset_precedes_naive_timezone", "within_interval_assumption": "constant_mean_no_new_observations",
+1235 +         "timestamp_column": "time",
+1236 +         "value_column": "power",
+1237 +         "measurement": "gross_load",
+1238 +         "value_kind": "interval_average_kw",
+1239 +         "timestamp_role": "start",
+1240 +         "timezone": "Europe/Oslo",
+1241 +         "origin": "synthetic",
+1242 +         "interval_seconds": 900,
+1243 +         "delimiter": ";",
+1244 +         "decimal": ",",
+1245 +         "end_timestamp_column": None,
+1246 +         "fold_column": None,
+1247 +         "end_fold_column": None,
+1248 +         "offset_rule": "explicit_offset_precedes_naive_timezone",
+1249 +         "within_interval_assumption": "constant_mean_no_new_observations",
+1250 |     }
+1251 |     raw = b"time;power\n2024-01-01T00:00Z;4\n2024-01-01T00:30Z;8\n"
+     -     command = {"schema_version": 1, "project_id": project["id"], "content_base64": base64.b64encode(raw).decode(), "mapping": mapping, "source_label": "Synthetic native fixture", "rights_note": "Generated in this local fixture", "key": str(uuid.uuid4())}
+1252 +     command = {
+1253 +         "schema_version": 1,
+1254 +         "project_id": project["id"],
+1255 +         "content_base64": base64.b64encode(raw).decode(),
+1256 +         "mapping": mapping,
+1257 +         "source_label": "Synthetic native fixture",
+1258 +         "rights_note": "Generated in this local fixture",
+1259 +         "key": str(uuid.uuid4()),
+1260 +     }
+1261 |     imported = first.rpc("rpc/profiles/csv", command)
+1262 |     assert imported.status == 200, imported.body
+1263 |     asset = imported.object()
+     -     request = {"schema_version": 1, "project_id": project["id"], "asset_id": asset["id"], "offset": 0, "page_size": 1}
+1264 +     request = {
+1265 +         "schema_version": 1,
+1266 +         "project_id": project["id"],
+1267 +         "asset_id": asset["id"],
+1268 +         "offset": 0,
+1269 +         "page_size": 1,
+1270 +     }
+1271 |     preview = first.rpc("rpc/profiles/preview", request)
+--------------------------------------------------------------------------------
+1280 |     assert second.rpc("rpc/profiles/preview", request).status == 404
+     -     failed = first.rpc("rpc/profiles/csv", {**command, "key": str(uuid.uuid4()), "content_base64": base64.b64encode(b"time;power\nPRIVATE-CELL;4\n").decode()})
+1281 +     failed = first.rpc(
+1282 +         "rpc/profiles/csv",
+1283 +         {
+1284 +             **command,
+1285 +             "key": str(uuid.uuid4()),
+1286 +             "content_base64": base64.b64encode(
+1287 +                 b"time;power\nPRIVATE-CELL;4\n"
+1288 +             ).decode(),
+1289 +         },
+1290 +     )
+1291 |     assert failed.status == 422
+     -     assert failed.object() == {"error": {"code": "invalid_input", "profile_issue": {"issue": "timestamp_format", "line": 2, "field": "timestamp"}}}
+1292 +     assert failed.object() == {
+1293 +         "error": {
+1294 +             "code": "invalid_input",
+1295 +             "profile_issue": {
+1296 +                 "issue": "timestamp_format",
+1297 +                 "line": 2,
+1298 +                 "field": "timestamp",
+1299 +             },
+1300 +         }
+1301 +     }
+1302 |     assert b"PRIVATE-CELL" not in failed.body
+1303 |
+1304 |
+     - def test_equivalent_wire_replay_settles_the_same_canonical_native_receipt(local: tuple[Instance, WpCli]) -> None:
+1305 + def test_equivalent_wire_replay_settles_the_same_canonical_native_receipt(
+1306 +     local: tuple[Instance, WpCli],
+1307 + ) -> None:
+1308 |     instance, wp = local
+1309 |     browser = Browser(instance.url)
+1310 |     browser.bootstrap()
+1311 |     key = str(uuid.uuid4())
+     -     command = {"schema_version": 1, "title": "Canonical native receipt", "inputs": {"object": {}, "array": [], "one": 1.0}, "key": key}
+1312 +     command = {
+1313 +         "schema_version": 1,
+1314 +         "title": "Canonical native receipt",
+1315 +         "inputs": {"object": {}, "array": [], "one": 1.0},
+1316 +         "key": key,
+1317 +     }
+1318 |     preceding = native_operation_ids(wp)
+--------------------------------------------------------------------------------
+1323 |     native_id = inserted.pop()
+     -     before = json.loads(wp.run("eval", '''
+1324 +     before = json.loads(
+1325 +         wp.run(
+1326 +             "eval",
+1327 +             """
+1328 | $name = \\Linker\\Commerce\\Protection\\Ledger::OPTION;
+--------------------------------------------------------------------------------
+1333 | echo wp_json_encode(array('receipt' => $state['receipts'][$id], 'count' => count($state['receipts']), 'buckets' => $state['buckets']));
+     - ''', env={"LINKER_PLANNER_FIXTURE_OPERATION": native_id}))
+     -     reply = browser.http(ROOT + "rpc/projects/create", body=json.dumps(command, indent=2, sort_keys=True).encode(), headers={
+     -         "Content-Type": "application/json", "Origin": instance.url,
+     -         "X-Linker-Planner-Nonce": browser.context["nonce"],
+     -     })
+1334 + """,
+1335 +             env={"LINKER_PLANNER_FIXTURE_OPERATION": native_id},
+1336 +         )
+1337 +     )
+1338 +     reply = browser.http(
+1339 +         ROOT + "rpc/projects/create",
+1340 +         body=json.dumps(command, indent=2, sort_keys=True).encode(),
+1341 +         headers={
+1342 +             "Content-Type": "application/json",
+1343 +             "Origin": instance.url,
+1344 +             "X-Linker-Planner-Nonce": browser.context["nonce"],
+1345 +         },
+1346 +     )
+1347 |     assert reply.status == 200 and reply.object() == created.object()
+     -     after = json.loads(wp.run("eval", '''
+1348 +     after = json.loads(
+1349 +         wp.run(
+1350 +             "eval",
+1351 +             """
+1352 | $state = json_decode(get_option(\\Linker\\Commerce\\Protection\\Ledger::OPTION), true);
+1353 | $id = getenv('LINKER_PLANNER_FIXTURE_OPERATION');
+1354 | echo wp_json_encode(array('receipt' => $state['receipts'][$id], 'count' => count($state['receipts']), 'buckets' => $state['buckets']));
+     - ''', env={"LINKER_PLANNER_FIXTURE_OPERATION": native_id}))
+1355 + """,
+1356 +             env={"LINKER_PLANNER_FIXTURE_OPERATION": native_id},
+1357 +         )
+1358 +     )
+1359 |     assert after["receipt"]["status"] == "completed"
+--------------------------------------------------------------------------------
+1364 |
+     - def test_one_public_operation_key_cannot_meter_two_project_resources(local: tuple[Instance, WpCli]) -> None:
+1365 + def test_one_public_operation_key_cannot_meter_two_project_resources(
+1366 +     local: tuple[Instance, WpCli],
+1367 + ) -> None:
+1368 |     instance, _ = local
+--------------------------------------------------------------------------------
+1372 |     second = browser.create("Receipt resource B")
+     -     csv = base64.b64encode(b"time,power\n2026-01-01T00:00:00Z,1\n2026-01-01T01:00:00Z,2\n").decode()
+1373 +     csv = base64.b64encode(
+1374 +         b"time,power\n2026-01-01T00:00:00Z,1\n2026-01-01T01:00:00Z,2\n"
+1375 +     ).decode()
+1376 |     commands: list[tuple[str, dict[str, Any]]] = [
+1377 |         ("projects/revise", {"expected_revision": 1, "inputs": {"same": True}}),
+     -         ("battery/scenario", {"parameters": {
+     -             "schema_version": 1, "model": "constant_window_single_ac_bus_v1", "parameter_basis": "explicit_scenario",
+     -             "usable_window_kwh": 10.0, "charge_ac_kw": 5.0, "discharge_ac_kw": 5.0,
+     -             "eta_charge": 0.95, "eta_discharge": 0.95, "internal_aux_kw": 0.0, "standing_loss_rate_per_hour": 0.0,
+     -         }, "source_note": "Synthetic native integration scenario"}),
+     -         ("profiles/csv", {"content_base64": csv, "source_label": "Synthetic native integration profile", "rights_note": "Locally generated fixture", "mapping": {
+     -             "timestamp_column": "time", "value_column": "power", "measurement": "gross_load",
+     -             "value_kind": "interval_average_kw", "timestamp_role": "start", "timezone": "UTC", "origin": "synthetic",
+     -             "interval_seconds": 3600.0, "delimiter": ",", "decimal": ".", "end_timestamp_column": None,
+     -             "fold_column": None, "end_fold_column": None, "offset_rule": "explicit_offset_precedes_naive_timezone",
+     -             "within_interval_assumption": "constant_mean_no_new_observations",
+     -         }}),
+1378 +         (
+1379 +             "battery/scenario",
+1380 +             {
+1381 +                 "parameters": {
+1382 +                     "schema_version": 1,
+1383 +                     "model": "constant_window_single_ac_bus_v1",
+1384 +                     "parameter_basis": "explicit_scenario",
+1385 +                     "usable_window_kwh": 10.0,
+1386 +                     "charge_ac_kw": 5.0,
+1387 +                     "discharge_ac_kw": 5.0,
+1388 +                     "eta_charge": 0.95,
+1389 +                     "eta_discharge": 0.95,
+1390 +                     "internal_aux_kw": 0.0,
+1391 +                     "standing_loss_rate_per_hour": 0.0,
+1392 +                 },
+1393 +                 "source_note": "Synthetic native integration scenario",
+1394 +             },
+1395 +         ),
+1396 +         (
+1397 +             "profiles/csv",
+1398 +             {
+1399 +                 "content_base64": csv,
+1400 +                 "source_label": "Synthetic native integration profile",
+1401 +                 "rights_note": "Locally generated fixture",
+1402 +                 "mapping": {
+1403 +                     "timestamp_column": "time",
+1404 +                     "value_column": "power",
+1405 +                     "measurement": "gross_load",
+1406 +                     "value_kind": "interval_average_kw",
+1407 +                     "timestamp_role": "start",
+1408 +                     "timezone": "UTC",
+1409 +                     "origin": "synthetic",
+1410 +                     "interval_seconds": 3600.0,
+1411 +                     "delimiter": ",",
+1412 +                     "decimal": ".",
+1413 +                     "end_timestamp_column": None,
+1414 +                     "fold_column": None,
+1415 +                     "end_fold_column": None,
+1416 +                     "offset_rule": "explicit_offset_precedes_naive_timezone",
+1417 +                     "within_interval_assumption": "constant_mean_no_new_observations",
+1418 +                 },
+1419 +             },
+1420 +         ),
+1421 |     ]
+1422 |     for path, fields in commands:
+     -         command = {"schema_version": 1, **fields, "project_id": first["id"], "key": str(uuid.uuid4())}
+1423 +         command = {
+1424 +             "schema_version": 1,
+1425 +             **fields,
+1426 +             "project_id": first["id"],
+1427 +             "key": str(uuid.uuid4()),
+1428 +         }
+1429 |         accepted = browser.rpc("rpc/" + path, command)
+--------------------------------------------------------------------------------
+1437 |
+     - def test_unrepresentable_numbers_are_rejected_without_changing_project_data(local: tuple[Instance, WpCli]) -> None:
+1438 + def test_unrepresentable_numbers_are_rejected_without_changing_project_data(
+1439 +     local: tuple[Instance, WpCli],
+1440 + ) -> None:
+1441 |     instance, _ = local
+1442 |     browser = Browser(instance.url)
+1443 |     browser.bootstrap()
+1444 |     for number in (2**53, 9223372036854775809, 10**400, 1e100):
+     -         reply = browser.rpc("rpc/projects/create", {
+     -             "schema_version": 1, "title": "Unsupported numeric fixture",
+     -             "inputs": {"nested": [{"number": number}]}, "key": str(uuid.uuid4()),
+     -         })
+1445 +         reply = browser.rpc(
+1446 +             "rpc/projects/create",
+1447 +             {
+1448 +                 "schema_version": 1,
+1449 +                 "title": "Unsupported numeric fixture",
+1450 +                 "inputs": {"nested": [{"number": number}]},
+1451 +                 "key": str(uuid.uuid4()),
+1452 +             },
+1453 +         )
+1454 |         assert reply.status == 400, reply.body
+     -     projects = browser.rpc("rpc/projects/list", {"schema_version": 1, "page_size": 10, "after": None})
+1455 +     projects = browser.rpc(
+1456 +         "rpc/projects/list", {"schema_version": 1, "page_size": 10, "after": None}
+1457 +     )
+1458 |     assert projects.object()["items"] == []
+     -     command = {"schema_version": 1, "title": "Representable numeric fixture", "inputs": {"number": 2**53 - 1, "fraction": 0.125}, "key": str(uuid.uuid4())}
+1459 +     command = {
+1460 +         "schema_version": 1,
+1461 +         "title": "Representable numeric fixture",
+1462 +         "inputs": {"number": 2**53 - 1, "fraction": 0.125},
+1463 +         "key": str(uuid.uuid4()),
+1464 +     }
+1465 |     created = browser.rpc("rpc/projects/create", command)
+     |
+
+1 file would be reformatted, 33 files already formatted

@@ -1,0 +1,541 @@
+{
+  "fixed_sha": "eff8341d5a0eaf24999f42854da6339032c65c9c",
+  "final_file_sha256": "2a8fac53a9c8aa8bf984cbcb8cfa0f95adcdd722a5ee2063359cc09addf3e4d0",
+  "count": 76,
+  "unchanged_adopted_review_pairs": 75,
+  "GEO_010_exception": "Independently accepted against list/acknowledge/cleanup branches. Actual EN/DE controller and integrated ProjectEditor probes retain the original and permit preview/adoption/server save after local updates fail. This does not claim native browser acceptance.",
+  "messages": [
+    {
+      "id": "GEO-001",
+      "english": "This file could not be used. Choose a UTF-8 GeoJSON file up to 4 MiB with closed roof polygons containing only WGS 84 longitude/latitude pairs.",
+      "german": "Diese Datei kann nicht verwendet werden. Unterstützt wird GeoJSON in UTF-8 bis 4 MiB mit geschlossenen Dachumrissen und WGS-84-Koordinaten aus Längen- und Breitengrad.",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-002",
+      "english": "Complete this field to continue.",
+      "german": "Bitte füllen Sie dieses Feld aus.",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-003",
+      "english": "The roof preview could not be prepared. Your file and entries remain available for correction.",
+      "german": "Die Dachvorschau konnte nicht vorbereitet werden. Ihre Datei und Eingaben bleiben für die Korrektur erhalten.",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-004",
+      "english": "File and roof",
+      "german": "Datei und Dachfläche",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-005",
+      "english": "Roof plane",
+      "german": "Dachebene",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-006",
+      "english": "Source",
+      "german": "Quelle",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-007",
+      "english": "Import roof geometry",
+      "german": "Dachgeometrie importieren",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-008",
+      "english": "The roof import is included in the saved project.",
+      "german": "Der Dachimport ist im gespeicherten Projekt enthalten.",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-009",
+      "english": "Imported roof is in the current design. Save the project to record it.",
+      "german": "Die importierte Dachfläche ist im aktuellen Projektentwurf enthalten. Speichern Sie das Projekt, um diesen Stand zu sichern.",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-010",
+      "english": "Browser recovery could not be read or updated. An upload starts only after a recovery copy of its original file and settings is saved. Project versions already saved on the server are unchanged.",
+      "german": "Die Wiederherstellung im Browser konnte nicht gelesen oder aktualisiert werden. Ein Upload startet erst, wenn die Originaldatei und ihre Einstellungen hier für die Wiederherstellung gesichert sind. Bereits auf dem Server gespeicherte Projektstände bleiben unverändert.",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": false
+    },
+    {
+      "id": "GEO-011",
+      "english": "Imports to review",
+      "german": "Importe zur Prüfung",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-012",
+      "english": "Review an earlier upload before retrying it or adding its roof to this project.",
+      "german": "Prüfen Sie einen früheren Upload, bevor Sie ihn erneut versuchen oder die Dachfläche in dieses Projekt übernehmen.",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-013",
+      "english": "Review imported roof",
+      "german": "Importierte Dachfläche prüfen",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-014",
+      "english": "Review an earlier upload",
+      "german": "Früheren Upload prüfen",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-015",
+      "english": "Preview the roof outline and its openings, then add it to your design. Importing a drawing does not verify site dimensions or engineering compliance.",
+      "german": "Die Vorschau zeigt den Dachumriss mit seinen Aussparungen. Anschließend können Sie die Fläche in den Entwurf übernehmen. Der Import ersetzt weder ein Aufmaß vor Ort noch eine technische Prüfung.",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-016",
+      "english": "The file or roof settings could not be accepted. Your file and entries are still available. Check the file format and roof settings, then try again.",
+      "german": "Die Datei oder die Dachangaben konnten nicht übernommen werden. Ihre Datei und Eingaben bleiben erhalten. Bitte prüfen Sie das Dateiformat und die Dachangaben und versuchen Sie es erneut.",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-017",
+      "english": "The upload has not been confirmed. Retry uses the same original file and settings; your current design is kept.",
+      "german": "Der Upload wurde nicht bestätigt. Ein erneuter Versuch verwendet dieselbe Originaldatei und dieselben Angaben. Ihr aktueller Entwurf bleibt erhalten.",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-018",
+      "english": "Preparing preview…",
+      "german": "Vorschau wird vorbereitet …",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-019",
+      "english": "Check or retry this upload",
+      "german": "Upload prüfen oder erneut versuchen",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-020",
+      "english": "Retained original file",
+      "german": "Gesicherte Originaldatei",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-021",
+      "english": "Correct this import",
+      "german": "Importangaben korrigieren",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-022",
+      "english": "Import progress",
+      "german": "Importschritte",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-023",
+      "english": "The existing design needs a geographic origin and a source reference for true north before another roof can be imported. Close this import and open Project coordinate references. These settings do not rotate or move existing objects; the design must already match the references.",
+      "german": "Für eine weitere Dachfläche benötigt der bestehende Entwurf einen geografischen Ursprung und einen Bezug auf geografisch Nord mit Quellenangabe. Schließen Sie den Import und öffnen Sie Koordinatenbezüge des Projekts. Diese Angaben drehen oder verschieben vorhandene Objekte nicht; der Entwurf muss bereits mit diesen Bezügen übereinstimmen.",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-024",
+      "english": "Roof file",
+      "german": "Dachdatei",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-025",
+      "english": "WGS 84 GeoJSON · up to 4 MiB",
+      "german": "GeoJSON in WGS 84 · höchstens 4 MiB",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-026",
+      "english": "Back",
+      "german": "Zurück",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-027",
+      "english": "Continue",
+      "german": "Weiter",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-028",
+      "english": "Prepare roof preview",
+      "german": "Dachvorschau vorbereiten",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-029",
+      "english": "Roof-plane area",
+      "german": "Fläche in der Dachebene",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-030",
+      "english": "Openings retained",
+      "german": "Übernommene Aussparungen",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-031",
+      "english": "The design or coordinate reference has changed. Your imported source is retained; review it against the current project before adding it.",
+      "german": "Der Entwurf oder sein Koordinatenbezug hat sich geändert. Die importierte Quelle bleibt erhalten. Bitte gleichen Sie die Angaben vor dem Übernehmen mit dem aktuellen Projekt ab.",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-032",
+      "english": "Add roof to current design",
+      "german": "Dachfläche in den Entwurf übernehmen",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-033",
+      "english": "One editable roof face is added as a single step in project history. Save the project to record the addition. You can undo this addition in the open design.",
+      "german": "Die bearbeitbare Dachfläche wird in einem Schritt in den Projektverlauf übernommen. Speichern Sie das Projekt, um sie darin zu sichern. Diese Übernahme lässt sich im offenen Projektentwurf rückgängig machen.",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-034",
+      "english": "Close import",
+      "german": "Import schließen",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-035",
+      "english": "%1$s · face %2$d",
+      "german": "%1$s · Fläche %2$d",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-036",
+      "english": "Feature %d",
+      "german": "Objekt %d",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-037",
+      "english": "Roof in this file",
+      "german": "Dachfläche in dieser Datei",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-038",
+      "english": "Select a roof face",
+      "german": "Dachfläche auswählen",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-039",
+      "english": "Openings in source: %d",
+      "german": "Aussparungen in der Quelle: %d",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-040",
+      "english": "Roof face name",
+      "german": "Name der Dachfläche",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-041",
+      "english": "The file provides the horizontal outline. Add the roof pitch, downslope direction and relative height from a survey or drawing to reconstruct the roof surface.",
+      "german": "Die Datei liefert den horizontalen Dachumriss. Für die räumliche Dachfläche werden zusätzlich Neigung, Gefällerichtung und relative Höhe aus Ihrem Aufmaß oder Plan benötigt.",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-042",
+      "english": "Roof pitch",
+      "german": "Dachneigung",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-043",
+      "english": "Enter 0° for a flat roof, or a value greater than 0° and below 90°.",
+      "german": "Für ein flaches Dach gilt 0°. Bei geneigten Dächern muss der Wert größer als 0° und kleiner als 90° sein.",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-044",
+      "english": "Downslope direction from true north",
+      "german": "Gefällerichtung ab geografisch Nord",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-045",
+      "english": "Measured clockwise from true north: 0° north, 90° east, 180° south, 270° west. For a flat roof this sets its local drawing axes.",
+      "german": "Der Winkel läuft im Uhrzeigersinn ab geografisch Nord: 0° Nord, 90° Ost, 180° Süd, 270° West. Bei einem flachen Dach bestimmt er die lokalen Zeichenachsen.",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-046",
+      "english": "Set the first outline point's relative height to 0 m",
+      "german": "Relative Höhe am ersten Umrisspunkt auf 0 m setzen",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-047",
+      "english": "0 m uses the project's height reference. It does not establish ground level or height above sea level. Other roofs and obstacles must use the same height reference.",
+      "german": "0 m bezieht sich auf den Höhenbezug des Projekts. Daraus ergeben sich weder die Geländehöhe noch eine Höhe über dem Meer. Weitere Dachflächen und Hindernisse müssen denselben Höhenbezug verwenden.",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-048",
+      "english": "Relative height at the first outline point",
+      "german": "Relative Höhe am ersten Umrisspunkt",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-049",
+      "english": "Metres relative to the project's height reference. Negative values are allowed.",
+      "german": "Meter relativ zum Höhenbezug des Projekts. Negative Werte sind zulässig.",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-050",
+      "english": "Measurement or drawing reference",
+      "german": "Aufmaß- oder Zeichnungsreferenz",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-051",
+      "english": "Identify the drawing or survey used for pitch, downslope direction and relative height. Include its date or identifier.",
+      "german": "Geben Sie an, aus welchem Plan oder Aufmaß Neigung, Gefällerichtung und relative Höhe stammen. Nennen Sie dazu das Datum oder die Referenzkennung.",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-052",
+      "english": "Position and coordinate reference",
+      "german": "Position und Koordinatenbezug",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-053",
+      "english": "An existing geographic project origin is kept. For an empty, unreferenced project, the first point of the selected outer outline becomes the geographic origin, with WGS 84 true north. This sets the coordinate reference; it does not verify the survey.",
+      "german": "Ein vorhandener geografischer Projektursprung bleibt erhalten. Bei einem leeren Projekt ohne geografischen Bezug wird der erste Punkt des gewählten äußeren Dachumrisses zum geografischen Ursprung; der Nordbezug ist geografisch Nord nach WGS 84. Die Genauigkeit des Aufmaßes wird damit nicht geprüft.",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-054",
+      "english": "Source reference",
+      "german": "Quellenreferenz",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-055",
+      "english": "Name the drawing, survey or data export used for this roof.",
+      "german": "Bezeichnung des Plans, Aufmaßes oder Datenexports für diese Dachfläche.",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-056",
+      "english": "Declared spatial precision",
+      "german": "Angegebene räumliche Genauigkeit",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-057",
+      "english": "Source-stated precision, in metres. Leave blank if unknown.",
+      "german": "Genauigkeitsangabe der Quelle in Metern. Ohne Angabe bleibt das Feld leer.",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-058",
+      "english": "Permission or licence basis",
+      "german": "Berechtigungs- oder Lizenzgrundlage",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-059",
+      "english": "Explain your permission to use and privately retain this original file and its derived geometry.",
+      "german": "Grundlage Ihrer Berechtigung zur Nutzung und privaten Speicherung der Originaldatei und der daraus erzeugten Geometrie.",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-060",
+      "english": "Permission to export geometry",
+      "german": "Berechtigung zum Export der Geometrie",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-061",
+      "english": "Unknown",
+      "german": "Unbekannt",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-062",
+      "english": "Permitted",
+      "german": "Erlaubt",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-063",
+      "english": "Prohibited",
+      "german": "Untersagt",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-064",
+      "english": "I have permission to upload this original file, derive roof geometry from it and retain both privately with this project.",
+      "german": "Ich bin berechtigt, die Originaldatei für dieses Projekt hochzuladen, daraus Dachgeometrie zu erzeugen und beides privat mit dem Projekt zu speichern.",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-065",
+      "english": "Original import settings",
+      "german": "Ursprüngliche Importeinstellungen",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-066",
+      "english": "A retry uses this original file and these unchanged settings for the same import.",
+      "german": "Ein erneuter Versuch verwendet für denselben Import diese Originaldatei und die unveränderten Einstellungen.",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-067",
+      "english": "Feature in original file",
+      "german": "Objekt in der Originaldatei",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-068",
+      "english": "Roof face in feature",
+      "german": "Dachfläche im Objekt",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-069",
+      "english": "Project origin longitude",
+      "german": "Längengrad des Projektursprungs",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-070",
+      "english": "Project origin latitude",
+      "german": "Breitengrad des Projektursprungs",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-071",
+      "english": "Plane origin: east, north and relative height (m)",
+      "german": "Ebenenursprung: Ost, Nord und relative Höhe (m)",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-072",
+      "english": "Plane U unit vector (east, north, up)",
+      "german": "U-Einheitsvektor der Dachebene (Ost, Nord, Hoch)",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-073",
+      "english": "Plane V unit vector (east, north, up)",
+      "german": "V-Einheitsvektor der Dachebene (Ost, Nord, Hoch)",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-074",
+      "english": "Roof-plane reference",
+      "german": "Referenz der Dachebene",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-075",
+      "english": "Conversion method",
+      "german": "Umrechnungsmethode",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    },
+    {
+      "id": "GEO-076",
+      "english": "Unsupported earlier conversion method",
+      "german": "Frühere Umrechnungsmethode nicht unterstützt",
+      "gnu_mo_and_wp_json_match": true,
+      "matches_reviewed_proposal": true
+    }
+  ]
+}

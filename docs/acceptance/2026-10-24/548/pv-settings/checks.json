@@ -1,0 +1,62 @@
+{
+  "base": "c7232e3d91e80d87887ca3d1d398f92852dec021",
+  "final_source": "310bf2f4b6cd9d5a7c8bfcf35965c38905ef08be",
+  "app": {
+    "domain_and_data_pass": 137,
+    "dom_pass": 178,
+    "fail": 0,
+    "skip": 0,
+    "todo": 0,
+    "log": "app-tests-final.txt",
+    "build_and_manifest": "passed",
+    "formatting": "passed"
+  },
+  "engine": {
+    "related_backend_tests_pass": 135,
+    "final_actual_ts_asgi_worker_contracts_pass": 2,
+    "complete_pv_intervals": 8760,
+    "strict_type_files": 159,
+    "strict_type_command": "MYPY_PATH=src .venv/bin/mypy --cache-dir=/dev/null src tests/planning/test_browser_solar_contracts.py scripts/export_planner_schemas.py",
+    "strict_type_exit_code": 0,
+    "whole_tree_status": "199 errors in 16 unchanged test files; not waived; see engine-whole-type-scope.json",
+    "ruff": "passed"
+  },
+  "i18n": {
+    "reviewed_messages": 73,
+    "native_wordpress_exact": 73,
+    "source_script_coverage": "passed",
+    "valid_catalog_count": 8,
+    "german_copy": "passed"
+  },
+  "reviews": {
+    "spec_initial_p2": "fixed; final open 0",
+    "standards_initial_p3": "fixed; final breaches 0",
+    "copy_opposition_and_final": "recorded"
+  },
+  "browser": {
+    "languages": [
+      "en",
+      "de"
+    ],
+    "requested_widths": [
+      1440,
+      390
+    ],
+    "capture_count": 19,
+    "warning_error_count": 0,
+    "native_installed": false,
+    "provider_started": false,
+    "temporary_service_and_tab_reclaimed": true
+  },
+  "added_line_legacy_hits": {
+    "tv_b2b_": 0,
+    "Linker_AI_": 0,
+    "dlk-": 0
+  },
+  "added_line_secret_prefix_hits": {
+    "apify_api_": 0,
+    "sk-proj-": 0,
+    "ghp_": 0
+  },
+  "full_goal_accepted": false
+}

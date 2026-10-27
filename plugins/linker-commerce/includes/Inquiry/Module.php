@@ -42,6 +42,7 @@ final class Module {
 	 * Adds the module's hooks.
 	 */
 	public function register(): void {
+		( new \Linker\Commerce\Planning\Module() )->register();
 		( new Assessment\Queue() )->register();
 		( new Form() )->register();
 		( new AccountLink() )->register();

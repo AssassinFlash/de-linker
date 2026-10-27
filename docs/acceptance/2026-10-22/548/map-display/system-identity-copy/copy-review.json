@@ -1,0 +1,153 @@
+{
+  "at_utc": "2026-10-23T14:42:59.279468+00:00",
+  "verdict": "PASS for this corrected copy proposal; four draft corrections resolved",
+  "method": "Single delegated copy-opposition task: English draft, adversarial source/claim pass, independent formal German, final wording. No claim of a second external reviewer.",
+  "scope": "One application-level identity option and shared native details disclosure. This is proposed copy, not installed or runtime-accepted UI.",
+  "messages": 10,
+  "corrections": [
+    {
+      "id": "system_role",
+      "concern": "The three-field list repeats the current dashboard labels and makes the product sound like data collection. State the whole solar/storage planning role without promising a completed system result.",
+      "resolution": "Use an editable project for solar and storage planning as the systemic role.",
+      "before": "Linker combines site, roof and energy data in one project.",
+      "after": "Linker brings your inputs into an editable project for solar and storage planning."
+    },
+    {
+      "id": "linker_contribution",
+      "concern": "Saved and recovered sounds unconditional. The source explicitly handles unconfirmed saves and unavailable browser recovery.",
+      "resolution": "Describe controls for saving and restoring available drafts, preserving the real workflow without a recovery guarantee.",
+      "before": "Linker provides the project workflow and editing tools. Your inputs and design are saved and recovered in the same project.",
+      "after": "Linker provides the project workflow and editing tools. Your inputs and design stay together in the same project, with controls for saving changes and restoring available drafts."
+    },
+    {
+      "id": "geometry_source_boundary",
+      "concern": "The tool does not approve installations is broader than the display boundary and can be read as permanently limiting the full product. Leading with map and 3D also recentres the identity on renderers.",
+      "resolution": "Lead with all design views sharing the project geometry; keep the engineering-approval limit attached to the displayed model.",
+      "before": "Map and 3D views use the project geometry. Source accuracy and permissions stay as recorded. The tool does not approve installations.",
+      "after": "All design views use the same project geometry. Source records retain the declared accuracy and permissions; a displayed model provides no engineering approval."
+    },
+    {
+      "id": "software_credits",
+      "concern": "Drei is installed and appears in the selected-stack dossier, but no current apps/planner/src import uses it. Terra Draw and ECharts are also installed without a current source import. Installation is not an active-feature credit.",
+      "resolution": "Credit the current React/Query/Ajv, Three/Fiber and MapLibre imports. Leave the candidate packages out of the displayed runtime credits.",
+      "before": "Interface and project data: React, TanStack Query and Ajv. 3D views: Three.js, React Three Fiber and Drei. Map display: MapLibre GL JS.",
+      "after": "Interface and project data: React, TanStack Query and Ajv. 3D views: Three.js and React Three Fiber. Map display: MapLibre GL JS."
+    }
+  ],
+  "working_tree_readback": {
+    "git_head_at_recording": "f40db1d6e22f4b7511ddc658024ff2cf8f91f507",
+    "note": "Source files were inspected read-only in a moving shared checkout. Hashes are readback metadata, not a copied snapshot or a pinned full code-review range.",
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "sha256": "afb605acea0a03d946ff0622db70e9893283ac81dc579d9e06db0605da15de26"
+      },
+      {
+        "path": "apps/planner/src/components/Workspace.tsx",
+        "sha256": "a7c3b5d29ce8320e513ec10e6d1a3eec035e50f043cd18c7303a9a4a5db434dd"
+      },
+      {
+        "path": "apps/planner/src/components/ProjectEditor.tsx",
+        "sha256": "f5aab51d98cb1f1322bcf5da6eef82983728989865a023186f9bc575fa4d8b39"
+      },
+      {
+        "path": "apps/planner/src/components/ProjectOverview.tsx",
+        "sha256": "60d6b51f1ce743b8ab2a5cae651f066efbec4a8e4d748774441ab792cf20016d"
+      },
+      {
+        "path": "apps/planner/src/data/useProjectDraft.ts",
+        "sha256": "acacde557542c8617cadaa5813059f0c0a93178b900c948faff0a2db448a45e1"
+      },
+      {
+        "path": "apps/planner/src/components/design/DesignEditor.tsx",
+        "sha256": "a6e5e81eb1695fa440367843b425286844c2a21cee6965ca4edffaf1a639e339"
+      },
+      {
+        "path": "apps/planner/src/components/design/PlanViewport.tsx",
+        "sha256": "2084f36da7a99854dc8a75d498dd1fa9f481884313532647d1703d56ec1b7dab"
+      },
+      {
+        "path": "apps/planner/src/components/design/SceneViewport.tsx",
+        "sha256": "7a250987f8119e34ebec1e3011bb5b7e9985e15cb573abe64881383df9ccbcd7"
+      },
+      {
+        "path": "apps/planner/src/components/design/SceneCamera.tsx",
+        "sha256": "ba03471442357aabeedff3a2440250525b1d1a05e7fbea753c9553cffcd78a77"
+      },
+      {
+        "path": "apps/planner/src/components/design/SceneControls.tsx",
+        "sha256": "b477c8850bfa73cb32065eb09e0bbf8d9bd1470f78c0c4974521a76daef593a2"
+      },
+      {
+        "path": "apps/planner/src/components/design/MapViewport.tsx",
+        "sha256": "2556cec03299d264ea5d57ed7fec0b46294143e28296b2553b32de4b0de16e2f"
+      },
+      {
+        "path": "apps/planner/src/domain/mapGeometry.ts",
+        "sha256": "70e70fc8977a677fbdeb768c71ae4bd49358a29be7c315ed9224b7cc1c06552a"
+      },
+      {
+        "path": "apps/planner/src/domain/validateGeometry.ts",
+        "sha256": "2e506f5665f3f7768077108c434723e31442d77a2e4d4256fd9be9a17f3343b4"
+      },
+      {
+        "path": "apps/planner/src/domain/profiles.ts",
+        "sha256": "4b25d53cd7e7a25423813be2b84e295e348ebddec64a42d177b877ed707c5c5b"
+      },
+      {
+        "path": "apps/planner/src/data/readProtocol.ts",
+        "sha256": "cc5ed373b3b0f3e99f2dbebe2729d6b999f7c294927aa5c61f81fe5163cfdae5"
+      },
+      {
+        "path": "apps/planner/package.json",
+        "sha256": "b7640607d7d9196f960700c2987991d892d9481a9559866340fcd8180c588fb7"
+      },
+      {
+        "path": "docs/specs/548-workbench-application.md",
+        "sha256": "4ce900568547c83756db8f019f56d2eff21c79c7ae7d0f227054c4c54b7a3b91"
+      },
+      {
+        "path": "docs/specs/548-project-workspace.md",
+        "sha256": "4c3a1dc073f82d8a8c1b4193504e10afd72da2dcbc0db22b1e79b34a4d13e91e"
+      },
+      {
+        "path": "docs/specs/548-map-display.md",
+        "sha256": "f77673a31057c85b4ce60a9c83f5dd38bf1a3a598547932412b432039f4b7f1f"
+      },
+      {
+        "path": "docs/adr/0001-unified-project-authority.md",
+        "sha256": "f8d7272169be2bbb635574b35c777a08eb1b824860d55162a9001297c13b24b3"
+      },
+      {
+        "path": "docs/adr/0002-isolated-planner-runtime.md",
+        "sha256": "d1dfe4eaef64fd3e03bd08a34aef82954dc5422ee4ee5d5cb8ea37e18db2855f"
+      },
+      {
+        "path": "docs/research/2026-10-23-modern-workbench/CAPABILITY-MAP.md",
+        "sha256": "12c519ed8b116c4782723bc48ba7e1c6eeb6fb92df5ca58838d85f1fc79e1e58"
+      },
+      {
+        "path": "docs/research/2026-10-23-3d-workspace/STACK-EVIDENCE.md",
+        "sha256": "672c4ad84266ae0634783b3b4f621246c92b525c858bd7eb40a5110898916a97"
+      },
+      {
+        "path": "docs/research/2026-10-23-map-workbench-integration/MAP-DISPLAY.md",
+        "sha256": "573b48d38b5eef935b5e819992873f99777f08608019d10d3d00a9e3feda9139"
+      },
+      {
+        "path": "docs/research/2026-10-23-map-workbench-integration/IMPLEMENTATION.md",
+        "sha256": "6601c1a9ccf4298d73def0b309b99999ad492029320c837a14a62d68773c815c"
+      },
+      {
+        "path": "docs/research/2026-10-23-map-workbench-integration/provider-openfreemap/apify-results.json",
+        "sha256": "bb8e9dc4fd64c270b846c350536880f5412776f20327fc58a1fb2ff7cc698da0"
+      },
+      {
+        "path": "/Users/chesterjohn/Documents/de-linker/AGENTS.md",
+        "sha256": "56ced81dfdc89fb2818c0a4db463120f11251204bb0346f3649f54ce383da309"
+      }
+    ]
+  },
+  "full_goal_retained": "AGENTS Solution Configurator input-to-whole-system proposal/design report and the accepted workbench contract remain the active goal, including calculations, equipment qualification, BOM/report and inquiry handoff. These have not been accepted as current new-workbench capabilities and are not asserted by this current-surface copy.",
+  "verification_boundary": "Copy and source inspection only. No network research, application/locale/stack/production edits, native execution, engineering-accuracy approval, legal acceptance or whole-goal completion."
+}

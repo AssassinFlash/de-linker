@@ -1,0 +1,26 @@
+{
+  "state": {
+    "canvas": 1,
+    "caption": "Fit 3D view3D · WebGPUUse WebGL 2 backend",
+    "rows": "2.5"
+  },
+  "resources": {
+    "result": {
+      "type": "object",
+      "value": [
+        {
+          "decodedBodySize": 0,
+          "duration": 0,
+          "name": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/SceneViewport-eud94aNY.js",
+          "transferSize": 0
+        },
+        {
+          "decodedBodySize": 1547124,
+          "duration": 8.799999982118607,
+          "name": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/SceneViewport-eud94aNY.js?planner_retry=1",
+          "transferSize": 1547424
+        }
+      ]
+    }
+  }
+}

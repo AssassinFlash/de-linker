@@ -1,0 +1,31 @@
+{
+  "states": [
+    {
+      "identityCount": 1,
+      "revision": "Gespeichert · Version 3",
+      "summary": "Über dieses Werkzeug",
+      "workspace": "site"
+    },
+    {
+      "identityCount": 1,
+      "revision": "Gespeichert · Version 3",
+      "summary": "Über dieses Werkzeug",
+      "workspace": "energy"
+    },
+    {
+      "identityCount": 1,
+      "revision": "Gespeichert · Version 3",
+      "summary": "Über dieses Werkzeug",
+      "workspace": "design"
+    },
+    {
+      "identityCount": 1,
+      "revision": "Gespeichert · Version 3",
+      "summary": "Über dieses Werkzeug",
+      "workspace": "overview"
+    }
+  ],
+  "fieldsUnchanged": true,
+  "beforeRevision": "Gespeichert · Version 3",
+  "afterRevision": "Gespeichert · Version 3"
+}

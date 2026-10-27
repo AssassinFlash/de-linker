@@ -1,0 +1,1552 @@
+[
+  {
+    "source_url": "https://registry.npmjs.org/@types%2fthree/latest",
+    "retrieved_at": "2026-10-22T18:27:57.332Z",
+    "apify_record": "/v2/key-value-stores/ducC5BvKVY37ZfN7W/records/file-60f491c-latest",
+    "sha256": "c3c0d3fa4863e62f3d2f5769f9d3c4a0412da0a15e801099233caffda48d7a40",
+    "bytes": 2254,
+    "package": {
+      "name": "@types/three",
+      "version": "0.186.0",
+      "license": "MIT",
+      "type": "module",
+      "types": "index.d.ts",
+      "typesVersions": null,
+      "typeScriptVersion": "5.6",
+      "peerDependencies": {},
+      "peerDependenciesMeta": null,
+      "dependencies": {
+        "fflate": "~0.8.3",
+        "@types/webxr": ">=0.5.17",
+        "meshoptimizer": "~1.1.1",
+        "@types/stats.js": "*",
+        "@tweenjs/tween.js": "~23.1.3",
+        "@dimforge/rapier3d-compat": "~0.12.0"
+      },
+      "exports": {
+        ".": {
+          "import": "./build/three.module.js",
+          "require": "./build/three.cjs"
+        },
+        "./tsl": "./build/three.tsl.js",
+        "./src/*": "./src/*",
+        "./addons": "./examples/jsm/Addons.js",
+        "./webgpu": "./build/three.webgpu.js",
+        "./addons/*": "./examples/jsm/*",
+        "./package.json": "./package.json",
+        "./examples/jsm/*": "./examples/jsm/*",
+        "./examples/fonts/*": "./examples/fonts/*"
+      },
+      "engines": null,
+      "dist": {
+        "integrity": "sha512-mxYSBpDC+D0pLfSP6sW4WZTcT+nrtmZcimMqnVmy36Hte3XpeYSrvgg4TRdaM1GemGog1AWzI5qL2VoIfMXbJQ==",
+        "shasum": "fc936323d7eeb885052fd5de352e3772f488ea99",
+        "tarball": "https://registry.npmjs.org/@types/three/-/three-0.186.0.tgz"
+      }
+    }
+  },
+  {
+    "source_url": "https://registry.npmjs.org/three/latest",
+    "retrieved_at": "2026-10-22T18:27:57.497Z",
+    "apify_record": "/v2/key-value-stores/ducC5BvKVY37ZfN7W/records/file-bf0495b-latest",
+    "sha256": "0305c00b56fcf7ded1d9fa5f166b98f070111273663b616b39e75f1f7bccde65",
+    "bytes": 4113,
+    "package": {
+      "name": "three",
+      "version": "0.186.1",
+      "license": "MIT",
+      "type": "module",
+      "types": null,
+      "typesVersions": null,
+      "typeScriptVersion": null,
+      "peerDependencies": null,
+      "peerDependenciesMeta": null,
+      "dependencies": null,
+      "exports": {
+        ".": {
+          "import": "./build/three.module.js",
+          "require": "./build/three.cjs"
+        },
+        "./tsl": "./build/three.tsl.js",
+        "./src/*": "./src/*",
+        "./addons": "./examples/jsm/Addons.js",
+        "./webgpu": "./build/three.webgpu.js",
+        "./addons/*": "./examples/jsm/*",
+        "./examples/jsm/*": "./examples/jsm/*",
+        "./examples/fonts/*": "./examples/fonts/*"
+      },
+      "engines": null,
+      "dist": {
+        "integrity": "sha512-blFeqb49wRCSGUGj7gtpfnSGHy2lwDk94RhUmS1c/hTby70kvChbWpkJ4Pm1390LqzzvTmzgXKHPEafJwCb8jA==",
+        "shasum": "6d50f70c2c437f844179bbb56d6f5b774e1ca38a",
+        "tarball": "https://registry.npmjs.org/three/-/three-0.186.1.tgz"
+      }
+    }
+  },
+  {
+    "source_url": "https://registry.npmjs.org/@react-three%2ffiber/latest",
+    "retrieved_at": "2026-10-22T18:27:58.134Z",
+    "apify_record": "/v2/key-value-stores/ducC5BvKVY37ZfN7W/records/file-04392fc-latest",
+    "sha256": "b892709b6706b1e8543c71a6b03dfc92e11c9119f45a5feaf1e06604903ecbe6",
+    "bytes": 3059,
+    "package": {
+      "name": "@react-three/fiber",
+      "version": "9.8.2",
+      "license": "MIT",
+      "type": null,
+      "types": "dist/react-three-fiber.cjs.d.ts",
+      "typesVersions": null,
+      "typeScriptVersion": null,
+      "peerDependencies": {
+        "expo": ">=43.0",
+        "react": ">=19 <19.4",
+        "three": ">=0.156",
+        "expo-gl": ">=11.0",
+        "react-dom": ">=19 <19.4",
+        "expo-asset": ">=8.4",
+        "react-native": ">=0.78",
+        "expo-file-system": ">=11.0"
+      },
+      "peerDependenciesMeta": {
+        "expo": {
+          "optional": true
+        },
+        "expo-gl": {
+          "optional": true
+        },
+        "react-dom": {
+          "optional": true
+        },
+        "expo-asset": {
+          "optional": true
+        },
+        "react-native": {
+          "optional": true
+        },
+        "expo-file-system": {
+          "optional": true
+        }
+      },
+      "dependencies": {
+        "buffer": "^6.0.3",
+        "zustand": "^5.0.3",
+        "its-fine": "^2.1.1",
+        "base64-js": "^1.5.1",
+        "scheduler": "^0.28.0",
+        "@types/webxr": "*",
+        "suspend-react": "^0.1.3",
+        "@babel/runtime": "^7.17.8",
+        "react-use-measure": "^2.1.7",
+        "use-sync-external-store": "^1.4.0"
+      },
+      "exports": null,
+      "engines": null,
+      "dist": {
+        "integrity": "sha512-6s0ejw0bT1myQ/aLLugcil8/zBmNnnHw/AISWF1yfDLOxfX3yYaTS+0IkpJITEnm/SSMLtxje6CJDt0i5Wu1Sw==",
+        "shasum": "c4ca62cec8a2fd51302694d504a6807f82f8e993",
+        "tarball": "https://registry.npmjs.org/@react-three/fiber/-/fiber-9.8.2.tgz"
+      }
+    }
+  },
+  {
+    "source_url": "https://registry.npmjs.org/@react-three%2ffiber/8.18.0",
+    "retrieved_at": "2026-10-22T18:27:58.424Z",
+    "apify_record": "/v2/key-value-stores/ducC5BvKVY37ZfN7W/records/file-6859336-8.18.0",
+    "sha256": "5a5bbcae7a66226cffb3708ed028d099d04f6b533c101e2b87fba7783ee63ee5",
+    "bytes": 3566,
+    "package": {
+      "name": "@react-three/fiber",
+      "version": "8.18.0",
+      "license": "MIT",
+      "type": null,
+      "types": "dist/react-three-fiber.cjs.d.ts",
+      "typesVersions": null,
+      "typeScriptVersion": null,
+      "peerDependencies": {
+        "expo": ">=43.0",
+        "react": ">=18 <19",
+        "three": ">=0.133",
+        "expo-gl": ">=11.0",
+        "react-dom": ">=18 <19",
+        "expo-asset": ">=8.4",
+        "react-native": ">=0.64",
+        "expo-file-system": ">=11.0"
+      },
+      "peerDependenciesMeta": {
+        "expo": {
+          "optional": true
+        },
+        "expo-gl": {
+          "optional": true
+        },
+        "react-dom": {
+          "optional": true
+        },
+        "expo-asset": {
+          "optional": true
+        },
+        "react-native": {
+          "optional": true
+        },
+        "expo-file-system": {
+          "optional": true
+        }
+      },
+      "dependencies": {
+        "buffer": "^6.0.3",
+        "zustand": "^3.7.1",
+        "its-fine": "^1.0.6",
+        "base64-js": "^1.5.1",
+        "scheduler": "^0.21.0",
+        "@types/webxr": "*",
+        "suspend-react": "^0.1.3",
+        "@babel/runtime": "^7.17.8",
+        "react-reconciler": "^0.27.0",
+        "react-use-measure": "^2.1.7",
+        "@types/react-reconciler": "^0.26.7"
+      },
+      "exports": null,
+      "engines": null,
+      "dist": {
+        "integrity": "sha512-FYZZqD0UUHUswKz3LQl2Z7H24AhD14XGTsIRw3SJaXUxyfVMi+1yiZGmqTcPt/CkPpdU7rrxqcyQ1zJE5DjvIQ==",
+        "shasum": "73bfa12c82dabf889b572f9dfeefb10485532dd1",
+        "tarball": "https://registry.npmjs.org/@react-three/fiber/-/fiber-8.18.0.tgz"
+      }
+    }
+  },
+  {
+    "source_url": "https://registry.npmjs.org/@react-three%2fdrei/latest",
+    "retrieved_at": "2026-10-22T18:27:58.771Z",
+    "apify_record": "/v2/key-value-stores/ducC5BvKVY37ZfN7W/records/file-0865169-latest",
+    "sha256": "5d5f0ec1b3992cf3736b9c154ae5d94a50e86853e194559eb2d0f2ff0eb08082",
+    "bytes": 2842,
+    "package": {
+      "name": "@react-three/drei",
+      "version": "10.7.9",
+      "license": "MIT",
+      "type": null,
+      "types": "index.d.ts",
+      "typesVersions": null,
+      "typeScriptVersion": null,
+      "peerDependencies": {
+        "react": "^19",
+        "three": ">=0.159",
+        "react-dom": "^19",
+        "@react-three/fiber": "^9.0.0"
+      },
+      "peerDependenciesMeta": {
+        "react-dom": {
+          "optional": true
+        }
+      },
+      "dependencies": {
+        "maath": "^0.10.8",
+        "hls.js": "^1.5.17",
+        "zustand": "^5.0.1",
+        "meshline": "^3.3.1",
+        "stats-gl": "^2.2.8",
+        "stats.js": "^0.17.0",
+        "cross-env": "^7.0.3",
+        "detect-gpu": "^5.0.56",
+        "glsl-noise": "^0.0.0",
+        "tunnel-rat": "^0.1.2",
+        "three-stdlib": "^2.35.6",
+        "suspend-react": "^0.1.3",
+        "utility-types": "^3.11.0",
+        "@babel/runtime": "^7.26.0",
+        "three-mesh-bvh": "^0.8.3",
+        "camera-controls": "^3.1.0",
+        "troika-three-text": "^0.52.4",
+        "@use-gesture/react": "^10.3.1",
+        "@monogrid/gainmap-js": "^3.0.6",
+        "@mediapipe/tasks-vision": "0.10.17",
+        "use-sync-external-store": "^1.4.0"
+      },
+      "exports": null,
+      "engines": null,
+      "dist": {
+        "integrity": "sha512-wP4Y6o58KFi+hT1zCfjJarRtPCT6WW/lo53WMiA/aCORuUvBzW916XsCtadnIB1KB+3IQNcDU5JeVh/gYb8MYw==",
+        "shasum": "bc5f6ee0b1b40980b438f3c1dac88f039ad69b5e",
+        "tarball": "https://registry.npmjs.org/@react-three/drei/-/drei-10.7.9.tgz"
+      }
+    }
+  },
+  {
+    "source_url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/LICENSE",
+    "retrieved_at": "2026-10-22T18:27:59.036Z",
+    "apify_record": "/v2/key-value-stores/ducC5BvKVY37ZfN7W/records/file-b994e3c-LICENSE",
+    "sha256": "8b378ebe60e2fe500158cb0ac71cb5e8b7d92953c2abcc63a0eb90499653b5bc",
+    "bytes": 1081,
+    "original_text": "The MIT License\n\nCopyright © 2010-2026 three.js authors\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in\nall copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\nTHE SOFTWARE.\n"
+  },
+  {
+    "source_url": "https://registry.npmjs.org/@react-three%2fdrei/9.122.0",
+    "retrieved_at": "2026-10-22T18:27:59.102Z",
+    "apify_record": "/v2/key-value-stores/ducC5BvKVY37ZfN7W/records/file-0b25cbe-9.122.0",
+    "sha256": "41bb93079cd7e5e7cd89bd440021319be8ff16248e49bf4e5cfdb349fc4ded8d",
+    "bytes": 2422,
+    "package": {
+      "name": "@react-three/drei",
+      "version": "9.122.0",
+      "license": "MIT",
+      "type": null,
+      "types": "index.d.ts",
+      "typesVersions": null,
+      "typeScriptVersion": null,
+      "peerDependencies": {
+        "react": "^18",
+        "three": ">=0.137",
+        "react-dom": "^18",
+        "@react-three/fiber": "^8"
+      },
+      "peerDependenciesMeta": {
+        "react-dom": {
+          "optional": true
+        }
+      },
+      "dependencies": {
+        "maath": "^0.10.8",
+        "hls.js": "^1.5.17",
+        "zustand": "^5.0.1",
+        "meshline": "^3.3.1",
+        "stats-gl": "^2.2.8",
+        "stats.js": "^0.17.0",
+        "cross-env": "^7.0.3",
+        "detect-gpu": "^5.0.56",
+        "glsl-noise": "^0.0.0",
+        "tunnel-rat": "^0.1.2",
+        "three-stdlib": "^2.35.6",
+        "suspend-react": "^0.1.3",
+        "utility-types": "^3.11.0",
+        "@babel/runtime": "^7.26.0",
+        "react-composer": "^5.0.3",
+        "three-mesh-bvh": "^0.7.8",
+        "camera-controls": "^2.9.0",
+        "troika-three-text": "^0.52.0",
+        "@use-gesture/react": "^10.3.1",
+        "@react-spring/three": "~9.7.5",
+        "@monogrid/gainmap-js": "^3.0.6",
+        "@mediapipe/tasks-vision": "0.10.17"
+      },
+      "exports": null,
+      "engines": null,
+      "dist": {
+        "integrity": "sha512-SEO/F/rBCTjlLez7WAlpys+iGe9hty4rNgjZvgkQeXFSiwqD4Hbk/wNHMAbdd8vprO2Aj81mihv4dF5bC7D0CA==",
+        "shasum": "9d40ea658b12bc4650baf34b4b73f86e1357c8d3",
+        "tarball": "https://registry.npmjs.org/@react-three/drei/-/drei-9.122.0.tgz"
+      }
+    }
+  },
+  {
+    "source_url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/editor/js/History.js",
+    "retrieved_at": "2026-10-22T18:27:59.572Z",
+    "apify_record": "/v2/key-value-stores/ducC5BvKVY37ZfN7W/records/file-f577e77-History.js",
+    "sha256": "13671b7af827bc01327b7b9c64573ffbea9ccc34ec8153f42bcf78760b0fd3fe",
+    "bytes": 6013,
+    "original_text": "import * as Commands from './commands/Commands.js';\n\nclass History {\n\n\tconstructor( editor ) {\n\n\t\tthis.editor = editor;\n\t\tthis.undos = [];\n\t\tthis.redos = [];\n\t\tthis.lastCmdTime = Date.now();\n\t\tthis.idCounter = 0;\n\n\t\tthis.historyDisabled = false;\n\t\tthis.config = editor.config;\n\n\t\t// signals\n\n\t\tconst scope = this;\n\n\t\tthis.editor.signals.startPlayer.add( function () {\n\n\t\t\tscope.historyDisabled = true;\n\n\t\t} );\n\n\t\tthis.editor.signals.stopPlayer.add( function () {\n\n\t\t\tscope.historyDisabled = false;\n\n\t\t} );\n\n\t}\n\n\texecute( cmd, optionalName ) {\n\n\t\tconst lastCmd = this.undos[ this.undos.length - 1 ];\n\t\tconst timeDifference = Date.now() - this.lastCmdTime;\n\n\t\tconst isUpdatableCmd = lastCmd &&\n\t\t\tlastCmd.updatable &&\n\t\t\tcmd.updatable &&\n\t\t\tlastCmd.object === cmd.object &&\n\t\t\tlastCmd.type === cmd.type &&\n\t\t\tlastCmd.script === cmd.script &&\n\t\t\tlastCmd.attributeName === cmd.attributeName;\n\n\t\tif ( isUpdatableCmd && cmd.type === 'SetScriptValueCommand' ) {\n\n\t\t\t// When the cmd.type is \"SetScriptValueCommand\" the timeDifference is ignored\n\n\t\t\tlastCmd.update( cmd );\n\t\t\tcmd = lastCmd;\n\n\t\t} else if ( isUpdatableCmd && timeDifference < 500 ) {\n\n\t\t\tlastCmd.update( cmd );\n\t\t\tcmd = lastCmd;\n\n\t\t} else {\n\n\t\t\t// the command is not updatable and is added as a new part of the history\n\n\t\t\tthis.undos.push( cmd );\n\t\t\tcmd.id = ++ this.idCounter;\n\n\t\t}\n\n\t\tcmd.name = ( optionalName !== undefined ) ? optionalName : cmd.name;\n\t\tcmd.execute();\n\t\tcmd.inMemory = true;\n\n\t\tif ( this.config.getKey( 'settings/history' ) ) {\n\n\t\t\tcmd.json = cmd.toJSON();\t// serialize the cmd immediately after execution and append the json to the cmd\n\n\t\t}\n\n\t\tthis.lastCmdTime = Date.now();\n\n\t\t// clearing all the redo-commands\n\n\t\tthis.redos = [];\n\t\tthis.editor.signals.historyChanged.dispatch( cmd );\n\n\t}\n\n\tundo() {\n\n\t\tif ( this.historyDisabled ) {\n\n\t\t\talert( this.editor.strings.getKey( 'prompt/history/forbid' ) );\n\t\t\treturn;\n\n\t\t}\n\n\t\tlet cmd = undefined;\n\n\t\tif ( this.undos.length > 0 ) {\n\n\t\t\tcmd = this.undos.pop();\n\n\t\t\tif ( cmd.inMemory === false ) {\n\n\t\t\t\tcmd.fromJSON( cmd.json );\n\n\t\t\t}\n\n\t\t}\n\n\t\tif ( cmd !== undefined ) {\n\n\t\t\tcmd.undo();\n\t\t\tthis.redos.push( cmd );\n\t\t\tthis.editor.signals.historyChanged.dispatch( cmd );\n\n\t\t}\n\n\t\treturn cmd;\n\n\t}\n\n\tredo() {\n\n\t\tif ( this.historyDisabled ) {\n\n\t\t\talert( this.editor.strings.getKey( 'prompt/history/forbid' ) );\n\t\t\treturn;\n\n\t\t}\n\n\t\tlet cmd = undefined;\n\n\t\tif ( this.redos.length > 0 ) {\n\n\t\t\tcmd = this.redos.pop();\n\n\t\t\tif ( cmd.inMemory === false ) {\n\n\t\t\t\tcmd.fromJSON( cmd.json );\n\n\t\t\t}\n\n\t\t}\n\n\t\tif ( cmd !== undefined ) {\n\n\t\t\tcmd.execute();\n\t\t\tthis.undos.push( cmd );\n\t\t\tthis.editor.signals.historyChanged.dispatch( cmd );\n\n\t\t}\n\n\t\treturn cmd;\n\n\t}\n\n\ttoJSON() {\n\n\t\tconst history = {};\n\t\thistory.undos = [];\n\t\thistory.redos = [];\n\n\t\tif ( ! this.config.getKey( 'settings/history' ) ) {\n\n\t\t\treturn history;\n\n\t\t}\n\n\t\t// Append Undos to History\n\n\t\tfor ( let i = 0; i < this.undos.length; i ++ ) {\n\n\t\t\tif ( this.undos[ i ].hasOwnProperty( 'json' ) ) {\n\n\t\t\t\thistory.undos.push( this.undos[ i ].json );\n\n\t\t\t}\n\n\t\t}\n\n\t\t// Append Redos to History\n\n\t\tfor ( let i = 0; i < this.redos.length; i ++ ) {\n\n\t\t\tif ( this.redos[ i ].hasOwnProperty( 'json' ) ) {\n\n\t\t\t\thistory.redos.push( this.redos[ i ].json );\n\n\t\t\t}\n\n\t\t}\n\n\t\treturn history;\n\n\t}\n\n\tfromJSON( json ) {\n\n\t\tif ( json === undefined ) return;\n\n\t\tfor ( let i = 0; i < json.undos.length; i ++ ) {\n\n\t\t\tconst cmdJSON = json.undos[ i ];\n\t\t\tconst cmd = new Commands[ cmdJSON.type ]( this.editor ); // creates a new object of type \"json.type\"\n\t\t\tcmd.json = cmdJSON;\n\t\t\tcmd.id = cmdJSON.id;\n\t\t\tcmd.name = cmdJSON.name;\n\t\t\tthis.undos.push( cmd );\n\t\t\tthis.idCounter = ( cmdJSON.id > this.idCounter ) ? cmdJSON.id : this.idCounter; // set last used idCounter\n\n\t\t}\n\n\t\tfor ( let i = 0; i < json.redos.length; i ++ ) {\n\n\t\t\tconst cmdJSON = json.redos[ i ];\n\t\t\tconst cmd = new Commands[ cmdJSON.type ]( this.editor ); // creates a new object of type \"json.type\"\n\t\t\tcmd.json = cmdJSON;\n\t\t\tcmd.id = cmdJSON.id;\n\t\t\tcmd.name = cmdJSON.name;\n\t\t\tthis.redos.push( cmd );\n\t\t\tthis.idCounter = ( cmdJSON.id > this.idCounter ) ? cmdJSON.id : this.idCounter; // set last used idCounter\n\n\t\t}\n\n\t\t// Select the last executed undo-command\n\t\tthis.editor.signals.historyChanged.dispatch( this.undos[ this.undos.length - 1 ] );\n\n\t}\n\n\tclear() {\n\n\t\tthis.undos = [];\n\t\tthis.redos = [];\n\t\tthis.idCounter = 0;\n\n\t\tthis.editor.signals.historyChanged.dispatch();\n\n\t}\n\n\tgoToState( id ) {\n\n\t\tif ( this.historyDisabled ) {\n\n\t\t\talert( this.editor.strings.getKey( 'prompt/history/forbid' ) );\n\t\t\treturn;\n\n\t\t}\n\n\t\tthis.editor.signals.sceneGraphChanged.active = false;\n\t\tthis.editor.signals.historyChanged.active = false;\n\n\t\tlet cmd = this.undos.length > 0 ? this.undos[ this.undos.length - 1 ] : undefined;\t// next cmd to pop\n\n\t\tif ( cmd === undefined || id > cmd.id ) {\n\n\t\t\tcmd = this.redo();\n\t\t\twhile ( cmd !== undefined && id > cmd.id ) {\n\n\t\t\t\tcmd = this.redo();\n\n\t\t\t}\n\n\t\t} else {\n\n\t\t\twhile ( true ) {\n\n\t\t\t\tcmd = this.undos[ this.undos.length - 1 ];\t// next cmd to pop\n\n\t\t\t\tif ( cmd === undefined || id === cmd.id ) break;\n\n\t\t\t\tthis.undo();\n\n\t\t\t}\n\n\t\t}\n\n\t\tthis.editor.signals.sceneGraphChanged.active = true;\n\t\tthis.editor.signals.historyChanged.active = true;\n\n\t\tthis.editor.signals.sceneGraphChanged.dispatch();\n\t\tthis.editor.signals.historyChanged.dispatch( cmd );\n\n\t}\n\n\tenableSerialization( id ) {\n\n\t\t/**\n\t\t * because there might be commands in this.undos and this.redos\n\t\t * which have not been serialized with .toJSON() we go back\n\t\t * to the oldest command and redo one command after the other\n\t\t * while also calling .toJSON() on them.\n\t\t */\n\n\t\tthis.goToState( - 1 );\n\n\t\tthis.editor.signals.sceneGraphChanged.active = false;\n\t\tthis.editor.signals.historyChanged.active = false;\n\n\t\tlet cmd = this.redo();\n\t\twhile ( cmd !== undefined ) {\n\n\t\t\tif ( ! cmd.hasOwnProperty( 'json' ) ) {\n\n\t\t\t\tcmd.json = cmd.toJSON();\n\n\t\t\t}\n\n\t\t\tcmd = this.redo();\n\n\t\t}\n\n\t\tthis.editor.signals.sceneGraphChanged.active = true;\n\t\tthis.editor.signals.historyChanged.active = true;\n\n\t\tthis.goToState( id );\n\n\t}\n\n}\n\nexport { History };\n"
+  },
+  {
+    "source_url": "https://registry.npmjs.org/react/latest",
+    "retrieved_at": "2026-10-22T18:31:44.363Z",
+    "apify_record": "/v2/key-value-stores/y0Q6TkarOU24vBqT9/records/file-cce63fd-latest",
+    "sha256": "ecf8c02b9096a7813842d87fae50a707a8809c5c3d0ec6b359ac51d40188ff6f",
+    "bytes": 2150,
+    "package": {
+      "name": "react",
+      "version": "19.3.1",
+      "license": "MIT",
+      "type": null,
+      "types": null,
+      "typesVersions": null,
+      "typeScriptVersion": null,
+      "peerDependencies": null,
+      "peerDependenciesMeta": null,
+      "dependencies": null,
+      "exports": {
+        ".": {
+          "default": "./index.js",
+          "react-server": "./react.react-server.js"
+        },
+        "./jsx-runtime": {
+          "default": "./jsx-runtime.js",
+          "react-server": "./jsx-runtime.react-server.js"
+        },
+        "./package.json": "./package.json",
+        "./jsx-dev-runtime": {
+          "default": "./jsx-dev-runtime.js",
+          "react-server": "./jsx-dev-runtime.react-server.js"
+        },
+        "./compiler-runtime": {
+          "default": "./compiler-runtime.js",
+          "react-server": "./compiler-runtime.js"
+        }
+      },
+      "engines": {
+        "node": ">=0.10.0"
+      },
+      "dist": {
+        "integrity": "sha512-QNhWdt7nrgVWWQG58QuGsAR3jv3Hbe4mb4vz7w2csnHavciZJgda1CPNaldF6eVxv90ud3jUXpKlHL69gO38yw==",
+        "shasum": "26e9523fc36ea06be5050ebb780249a133260ad7",
+        "tarball": "https://registry.npmjs.org/react/-/react-19.3.1.tgz"
+      }
+    }
+  },
+  {
+    "source_url": "https://registry.npmjs.org/react-dom/latest",
+    "retrieved_at": "2026-10-22T18:31:44.354Z",
+    "apify_record": "/v2/key-value-stores/y0Q6TkarOU24vBqT9/records/file-95dc2cd-latest",
+    "sha256": "2d72d7d33a8b0fea5614e1b415d06470877efa8eebbdf638cee04e5b83c2c7a5",
+    "bytes": 3419,
+    "package": {
+      "name": "react-dom",
+      "version": "19.3.1",
+      "license": "MIT",
+      "type": null,
+      "types": null,
+      "typesVersions": null,
+      "typeScriptVersion": null,
+      "peerDependencies": {
+        "react": "^19.3.1"
+      },
+      "peerDependenciesMeta": null,
+      "dependencies": {
+        "scheduler": "^0.28.0"
+      },
+      "exports": {
+        ".": {
+          "default": "./index.js",
+          "react-server": "./react-dom.react-server.js"
+        },
+        "./client": {
+          "default": "./client.js",
+          "react-server": "./client.react-server.js"
+        },
+        "./server": {
+          "bun": "./server.bun.js",
+          "deno": "./server.node.js",
+          "node": "./server.node.js",
+          "worker": "./server.browser.js",
+          "browser": "./server.browser.js",
+          "default": "./server.node.js",
+          "workerd": "./server.edge.js",
+          "edge-light": "./server.edge.js",
+          "react-server": "./server.react-server.js"
+        },
+        "./static": {
+          "deno": "./static.browser.js",
+          "node": "./static.node.js",
+          "worker": "./static.browser.js",
+          "browser": "./static.browser.js",
+          "default": "./static.node.js",
+          "workerd": "./static.edge.js",
+          "edge-light": "./static.edge.js",
+          "react-server": "./static.react-server.js"
+        },
+        "./profiling": {
+          "default": "./profiling.js",
+          "react-server": "./profiling.react-server.js"
+        },
+        "./server.bun": {
+          "default": "./server.bun.js",
+          "react-server": "./server.react-server.js"
+        },
+        "./test-utils": "./test-utils.js",
+        "./server.edge": {
+          "default": "./server.edge.js",
+          "react-server": "./server.react-server.js"
+        },
+        "./server.node": {
+          "default": "./server.node.js",
+          "react-server": "./server.react-server.js"
+        },
+        "./static.edge": {
+          "default": "./static.edge.js",
+          "react-server": "./static.react-server.js"
+        },
+        "./static.node": {
+          "default": "./static.node.js",
+          "react-server": "./static.react-server.js"
+        },
+        "./package.json": "./package.json",
+        "./server.browser": {
+          "default": "./server.browser.js",
+          "react-server": "./server.react-server.js"
+        },
+        "./static.browser": {
+          "default": "./static.browser.js",
+          "react-server": "./static.react-server.js"
+        }
+      },
+      "engines": null,
+      "dist": {
+        "integrity": "sha512-Y0bARz53lhEC1NMCASs0/j+faB/zqt3R8hpvg1e8+61ZVJ4UL0UdC4cBbXfZMcIuhrfgeILTLe+ZeBCavQPtKQ==",
+        "shasum": "b384c53cfcbe9c2a5d09d863b98455de9d68afe2",
+        "tarball": "https://registry.npmjs.org/react-dom/-/react-dom-19.3.1.tgz"
+      }
+    }
+  },
+  {
+    "source_url": "https://registry.npmjs.org/@types%2freact-dom/latest",
+    "retrieved_at": "2026-10-22T18:31:45.288Z",
+    "apify_record": "/v2/key-value-stores/y0Q6TkarOU24vBqT9/records/file-d7449b2-latest",
+    "sha256": "4d8ed45d8ca1673b9e27017726cc0f97f65a177cb1499efd9d09f484d4e81f5c",
+    "bytes": 2958,
+    "package": {
+      "name": "@types/react-dom",
+      "version": "19.3.0",
+      "license": "MIT",
+      "type": null,
+      "types": "index.d.ts",
+      "typesVersions": null,
+      "typeScriptVersion": "5.6",
+      "peerDependencies": {
+        "@types/react": "^19.3.0"
+      },
+      "peerDependenciesMeta": null,
+      "dependencies": {},
+      "exports": {
+        ".": {
+          "types": {
+            "default": "./index.d.ts"
+          }
+        },
+        "./canary": {
+          "types": {
+            "default": "./canary.d.ts"
+          }
+        },
+        "./client": {
+          "types": {
+            "default": "./client.d.ts"
+          }
+        },
+        "./server": {
+          "types": {
+            "default": "./server.d.ts"
+          }
+        },
+        "./static": {
+          "types": {
+            "default": "./static.d.ts"
+          }
+        },
+        "./server.bun": {
+          "types": {
+            "default": "./server.bun.d.ts"
+          }
+        },
+        "./test-utils": {
+          "types": {
+            "default": "./test-utils/index.d.ts"
+          }
+        },
+        "./server.edge": {
+          "types": {
+            "default": "./server.edge.d.ts"
+          }
+        },
+        "./server.node": {
+          "types": {
+            "default": "./server.node.d.ts"
+          }
+        },
+        "./static.edge": {
+          "types": {
+            "default": "./static.edge.d.ts"
+          }
+        },
+        "./static.node": {
+          "types": {
+            "default": "./static.node.d.ts"
+          }
+        },
+        "./experimental": {
+          "types": {
+            "default": "./experimental.d.ts"
+          }
+        },
+        "./package.json": "./package.json",
+        "./server.browser": {
+          "types": {
+            "default": "./server.browser.d.ts"
+          }
+        },
+        "./static.browser": {
+          "types": {
+            "default": "./static.browser.d.ts"
+          }
+        }
+      },
+      "engines": null,
+      "dist": {
+        "integrity": "sha512-ZI7bU42mZXXKHn/qNLEw2IrbiINU7X5+vfgdixBHkCNpYWXjKgfQ/P+uyGb5CjOLB9UcnTeg3rylQtV2hym44Q==",
+        "shasum": "90294a9266efd928a5266f2110d60d5dba5015d2",
+        "tarball": "https://registry.npmjs.org/@types/react-dom/-/react-dom-19.3.0.tgz"
+      }
+    }
+  },
+  {
+    "source_url": "https://registry.npmjs.org/@types%2freact/latest",
+    "retrieved_at": "2026-10-22T18:31:45.387Z",
+    "apify_record": "/v2/key-value-stores/y0Q6TkarOU24vBqT9/records/file-24f0cf6-latest",
+    "sha256": "eec8e8dd1f72955d2fa12e256cd5ab96d476342594cd2034398679a76cfdcac8",
+    "bytes": 4682,
+    "package": {
+      "name": "@types/react",
+      "version": "19.3.0",
+      "license": "MIT",
+      "type": null,
+      "types": "index.d.ts",
+      "typesVersions": {
+        "<=5.0": {
+          "*": [
+            "ts5.0/*"
+          ]
+        }
+      },
+      "typeScriptVersion": "5.6",
+      "peerDependencies": {},
+      "peerDependenciesMeta": null,
+      "dependencies": {
+        "csstype": "^3.2.2"
+      },
+      "exports": {
+        ".": {
+          "types": {
+            "default": "./index.d.ts"
+          },
+          "types@<=5.0": {
+            "default": "./ts5.0/index.d.ts"
+          }
+        },
+        "./canary": {
+          "types": {
+            "default": "./canary.d.ts"
+          },
+          "types@<=5.0": {
+            "default": "./ts5.0/canary.d.ts"
+          }
+        },
+        "./jsx-runtime": {
+          "types": {
+            "default": "./jsx-runtime.d.ts"
+          },
+          "types@<=5.0": {
+            "default": "./ts5.0/jsx-runtime.d.ts"
+          }
+        },
+        "./experimental": {
+          "types": {
+            "default": "./experimental.d.ts"
+          },
+          "types@<=5.0": {
+            "default": "./ts5.0/experimental.d.ts"
+          }
+        },
+        "./package.json": "./package.json",
+        "./jsx-dev-runtime": {
+          "types": {
+            "default": "./jsx-dev-runtime.d.ts"
+          },
+          "types@<=5.0": {
+            "default": "./ts5.0/jsx-dev-runtime.d.ts"
+          }
+        },
+        "./compiler-runtime": {
+          "types": {
+            "default": "./compiler-runtime.d.ts"
+          }
+        }
+      },
+      "engines": null,
+      "dist": {
+        "integrity": "sha512-N0rFCuH9YoxG9/m61l9MfpJKfmLOVU0em7ipIz6TRgSSkvReLB9vL85GB+yr8Bs5leqpvg96JSwF4ZS1s4viQg==",
+        "shasum": "3b3ce8d8c1627fb5ccd4dadd57ef445c5a153b77",
+        "tarball": "https://registry.npmjs.org/@types/react/-/react-19.3.0.tgz"
+      }
+    }
+  },
+  {
+    "source_url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/src/core/Object3D.js",
+    "retrieved_at": "2026-10-22T18:30:42.681Z",
+    "apify_record": "/v2/key-value-stores/HkqMpNAgP7BOfCFFL/records/file-04e2010-Object3D.js",
+    "sha256": "63549f4c5f8535c09e25206e10a9f2fee8ab54c4e6897aa17d186f16f58b1e80",
+    "bytes": 41848,
+    "source_excerpts": [
+      {
+        "line": 1691,
+        "text": " * @type {Vector3}"
+      },
+      {
+        "line": 1692,
+        "text": " * @default (0,1,0)"
+      },
+      {
+        "line": 1693,
+        "text": " */"
+      },
+      {
+        "line": 1694,
+        "text": "Object3D.DEFAULT_UP = /*@__PURE__*/ new Vector3( 0, 1, 0 );"
+      },
+      {
+        "line": 1695,
+        "text": ""
+      },
+      {
+        "line": 1696,
+        "text": "/**"
+      },
+      {
+        "line": 1697,
+        "text": " * The default setting for {@link Object3D#matrixAutoUpdate} for"
+      },
+      {
+        "line": 1698,
+        "text": " * newly created 3D objects."
+      },
+      {
+        "line": 1699,
+        "text": " *"
+      },
+      {
+        "line": 1700,
+        "text": " * @static"
+      },
+      {
+        "line": 1701,
+        "text": " * @type {boolean}"
+      },
+      {
+        "line": 1702,
+        "text": " * @default true"
+      },
+      {
+        "line": 1703,
+        "text": " */"
+      },
+      {
+        "line": 1704,
+        "text": "Object3D.DEFAULT_MATRIX_AUTO_UPDATE = true;"
+      },
+      {
+        "line": 1705,
+        "text": ""
+      },
+      {
+        "line": 1706,
+        "text": "/**"
+      },
+      {
+        "line": 1707,
+        "text": " * The default setting for {@link Object3D#matrixWorldAutoUpdate} for"
+      },
+      {
+        "line": 1708,
+        "text": " * newly created 3D objects."
+      },
+      {
+        "line": 1709,
+        "text": " *"
+      },
+      {
+        "line": 1710,
+        "text": " * @static"
+      },
+      {
+        "line": 1711,
+        "text": " * @type {boolean}"
+      },
+      {
+        "line": 1712,
+        "text": " * @default true"
+      },
+      {
+        "line": 1713,
+        "text": " */"
+      }
+    ]
+  },
+  {
+    "source_url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/src/renderers/WebGLRenderer.js",
+    "retrieved_at": "2026-10-22T18:30:43.364Z",
+    "apify_record": "/v2/key-value-stores/HkqMpNAgP7BOfCFFL/records/file-60d2849-WebGLRenderer.js",
+    "sha256": "a3a8d716f9931a1bee3d8568f60be2201f7b407be591775651892b1f3b6207af",
+    "bytes": 113093,
+    "source_excerpts": [
+      {
+        "line": 301,
+        "text": ""
+      },
+      {
+        "line": 302,
+        "text": "\t\tconst _this = this;"
+      },
+      {
+        "line": 303,
+        "text": ""
+      },
+      {
+        "line": 304,
+        "text": "\t\tlet _isContextLost = false;"
+      },
+      {
+        "line": 305,
+        "text": "\t\tlet _nodesHandler = null;"
+      },
+      {
+        "line": 306,
+        "text": ""
+      },
+      {
+        "line": 307,
+        "text": "\t\tlet _scratchFramebuffer = null;"
+      },
+      {
+        "line": 308,
+        "text": "\t\tlet _srcFramebuffer = null;"
+      },
+      {
+        "line": 309,
+        "text": "\t\tlet _dstFramebuffer = null;"
+      },
+      {
+        "line": 310,
+        "text": ""
+      },
+      {
+        "line": 311,
+        "text": "\t\t// internal state cache"
+      },
+      {
+        "line": 312,
+        "text": ""
+      },
+      {
+        "line": 313,
+        "text": "\t\tthis._outputColorSpace = SRGBColorSpace;"
+      },
+      {
+        "line": 314,
+        "text": ""
+      },
+      {
+        "line": 315,
+        "text": "\t\tlet _currentActiveCubeFace = 0;"
+      },
+      {
+        "line": 316,
+        "text": "\t\tlet _currentActiveMipmapLevel = 0;"
+      },
+      {
+        "line": 317,
+        "text": "\t\tlet _currentRenderTarget = null;"
+      },
+      {
+        "line": 318,
+        "text": "\t\tlet _currentMaterialId = - 1;"
+      },
+      {
+        "line": 319,
+        "text": ""
+      },
+      {
+        "line": 320,
+        "text": "\t\tlet _currentCamera = null;"
+      },
+      {
+        "line": 321,
+        "text": ""
+      },
+      {
+        "line": 322,
+        "text": "\t\tconst _currentViewport = new Vector4();"
+      },
+      {
+        "line": 323,
+        "text": "\t\tconst _currentScissor = new Vector4();"
+      },
+      {
+        "line": 402,
+        "text": "\t\t\tif ( 'setAttribute' in canvas ) canvas.setAttribute( 'data-engine', `three.js r${REVISION}` );"
+      },
+      {
+        "line": 403,
+        "text": ""
+      },
+      {
+        "line": 404,
+        "text": "\t\t\t// event listeners must be registered before WebGL context is created, see #12753"
+      },
+      {
+        "line": 405,
+        "text": "\t\t\tcanvas.addEventListener( 'webglcontextlost', onContextLost, false );"
+      },
+      {
+        "line": 406,
+        "text": "\t\t\tcanvas.addEventListener( 'webglcontextrestored', onContextRestore, false );"
+      },
+      {
+        "line": 407,
+        "text": "\t\t\tcanvas.addEventListener( 'webglcontextcreationerror', onContextCreationError, false );"
+      },
+      {
+        "line": 408,
+        "text": ""
+      },
+      {
+        "line": 409,
+        "text": "\t\t\tif ( _gl === null ) {"
+      },
+      {
+        "line": 410,
+        "text": ""
+      },
+      {
+        "line": 411,
+        "text": "\t\t\t\tconst contextName = 'webgl2';"
+      },
+      {
+        "line": 412,
+        "text": ""
+      },
+      {
+        "line": 413,
+        "text": "\t\t\t\t_gl = getContext( contextName, contextAttributes );"
+      },
+      {
+        "line": 414,
+        "text": ""
+      },
+      {
+        "line": 415,
+        "text": "\t\t\t\tif ( _gl === null ) {"
+      },
+      {
+        "line": 416,
+        "text": ""
+      },
+      {
+        "line": 417,
+        "text": "\t\t\t\t\tif ( getContext( contextName ) ) {"
+      },
+      {
+        "line": 418,
+        "text": ""
+      },
+      {
+        "line": 419,
+        "text": "\t\t\t\t\t\tthrow new Error( 'THREE.WebGLRenderer: Error creating WebGL context with your selected attributes.' );"
+      },
+      {
+        "line": 420,
+        "text": ""
+      },
+      {
+        "line": 421,
+        "text": "\t\t\t\t\t} else {"
+      },
+      {
+        "line": 422,
+        "text": ""
+      },
+      {
+        "line": 423,
+        "text": "\t\t\t\t\t\tthrow new Error( 'THREE.WebGLRenderer: Error creating WebGL context.' );"
+      },
+      {
+        "line": 424,
+        "text": ""
+      },
+      {
+        "line": 425,
+        "text": "\t\t\t\t\t}"
+      },
+      {
+        "line": 432,
+        "text": ""
+      },
+      {
+        "line": 433,
+        "text": "\t\t} catch ( e ) {"
+      },
+      {
+        "line": 434,
+        "text": ""
+      },
+      {
+        "line": 435,
+        "text": "\t\t\tcanvas.removeEventListener( 'webglcontextlost', onContextLost, false );"
+      },
+      {
+        "line": 436,
+        "text": "\t\t\tcanvas.removeEventListener( 'webglcontextrestored', onContextRestore, false );"
+      },
+      {
+        "line": 437,
+        "text": "\t\t\tcanvas.removeEventListener( 'webglcontextcreationerror', onContextCreationError, false );"
+      },
+      {
+        "line": 438,
+        "text": ""
+      },
+      {
+        "line": 439,
+        "text": "\t\t\terror( 'WebGLRenderer: ' + e.message );"
+      },
+      {
+        "line": 440,
+        "text": "\t\t\tthrow e;"
+      },
+      {
+        "line": 441,
+        "text": ""
+      },
+      {
+        "line": 442,
+        "text": "\t\t}"
+      },
+      {
+        "line": 443,
+        "text": ""
+      },
+      {
+        "line": 444,
+        "text": "\t\tfunction initGLContext() {"
+      },
+      {
+        "line": 445,
+        "text": ""
+      },
+      {
+        "line": 446,
+        "text": "\t\t\textensions = new WebGLExtensions( _gl );"
+      },
+      {
+        "line": 447,
+        "text": "\t\t\textensions.init();"
+      },
+      {
+        "line": 448,
+        "text": ""
+      },
+      {
+        "line": 449,
+        "text": "\t\t\tutils = new WebGLUtils( _gl, extensions );"
+      },
+      {
+        "line": 450,
+        "text": ""
+      },
+      {
+        "line": 451,
+        "text": "\t\t\tcapabilities = new WebGLCapabilities( _gl, extensions, parameters, utils );"
+      },
+      {
+        "line": 452,
+        "text": ""
+      },
+      {
+        "line": 453,
+        "text": "\t\t\tstate = new WebGLState( _gl, extensions );"
+      },
+      {
+        "line": 454,
+        "text": ""
+      },
+      {
+        "line": 455,
+        "text": "\t\t\tif ( capabilities.reversedDepthBuffer && reversedDepthBuffer ) {"
+      },
+      {
+        "line": 1085,
+        "text": "\t\t * Frees the GPU-related resources allocated by this instance. Call this"
+      },
+      {
+        "line": 1086,
+        "text": "\t\t * method whenever this instance is no longer used in your app."
+      },
+      {
+        "line": 1087,
+        "text": "\t\t */"
+      },
+      {
+        "line": 1088,
+        "text": "\t\tthis.dispose = function () {"
+      },
+      {
+        "line": 1089,
+        "text": ""
+      },
+      {
+        "line": 1090,
+        "text": "\t\t\tcanvas.removeEventListener( 'webglcontextlost', onContextLost, false );"
+      },
+      {
+        "line": 1091,
+        "text": "\t\t\tcanvas.removeEventListener( 'webglcontextrestored', onContextRestore, false );"
+      },
+      {
+        "line": 1092,
+        "text": "\t\t\tcanvas.removeEventListener( 'webglcontextcreationerror', onContextCreationError, false );"
+      },
+      {
+        "line": 1093,
+        "text": ""
+      },
+      {
+        "line": 1094,
+        "text": "\t\t\tbackground.dispose();"
+      },
+      {
+        "line": 1095,
+        "text": "\t\t\trenderLists.dispose();"
+      },
+      {
+        "line": 1096,
+        "text": "\t\t\trenderStates.dispose();"
+      },
+      {
+        "line": 1097,
+        "text": "\t\t\ttextures.dispose();"
+      },
+      {
+        "line": 1098,
+        "text": "\t\t\tproperties.dispose();"
+      },
+      {
+        "line": 1099,
+        "text": "\t\t\tenvironments.dispose();"
+      },
+      {
+        "line": 1100,
+        "text": "\t\t\tobjects.dispose();"
+      },
+      {
+        "line": 1101,
+        "text": "\t\t\tgeometries.dispose();"
+      },
+      {
+        "line": 1102,
+        "text": "\t\t\tbindingStates.dispose();"
+      },
+      {
+        "line": 1103,
+        "text": "\t\t\tuniformsGroups.dispose();"
+      },
+      {
+        "line": 1104,
+        "text": "\t\t\tprogramCache.dispose();"
+      },
+      {
+        "line": 1105,
+        "text": ""
+      },
+      {
+        "line": 1106,
+        "text": "\t\t\txr.dispose();"
+      },
+      {
+        "line": 1107,
+        "text": ""
+      },
+      {
+        "line": 1108,
+        "text": "\t\t\txr.removeEventListener( 'sessionstart', onXRSessionStart );"
+      },
+      {
+        "line": 1109,
+        "text": "\t\t\txr.removeEventListener( 'sessionend', onXRSessionEnd );"
+      },
+      {
+        "line": 1110,
+        "text": ""
+      },
+      {
+        "line": 1114,
+        "text": ""
+      },
+      {
+        "line": 1115,
+        "text": "\t\t// Events"
+      },
+      {
+        "line": 1116,
+        "text": ""
+      },
+      {
+        "line": 1117,
+        "text": "\t\tfunction onContextLost( event ) {"
+      },
+      {
+        "line": 1118,
+        "text": ""
+      },
+      {
+        "line": 1119,
+        "text": "\t\t\tevent.preventDefault();"
+      },
+      {
+        "line": 1120,
+        "text": ""
+      },
+      {
+        "line": 1121,
+        "text": "\t\t\tlog( 'WebGLRenderer: Context Lost.' );"
+      },
+      {
+        "line": 1122,
+        "text": ""
+      },
+      {
+        "line": 1123,
+        "text": "\t\t\t_isContextLost = true;"
+      },
+      {
+        "line": 1124,
+        "text": ""
+      },
+      {
+        "line": 1125,
+        "text": "\t\t}"
+      },
+      {
+        "line": 1126,
+        "text": ""
+      },
+      {
+        "line": 1127,
+        "text": "\t\tfunction onContextRestore( /* event */ ) {"
+      },
+      {
+        "line": 1128,
+        "text": ""
+      },
+      {
+        "line": 1129,
+        "text": "\t\t\tlog( 'WebGLRenderer: Context Restored.' );"
+      },
+      {
+        "line": 1130,
+        "text": ""
+      },
+      {
+        "line": 1131,
+        "text": "\t\t\t_isContextLost = false;"
+      },
+      {
+        "line": 1132,
+        "text": ""
+      },
+      {
+        "line": 1133,
+        "text": "\t\t\tconst infoAutoReset = info.autoReset;"
+      },
+      {
+        "line": 1134,
+        "text": "\t\t\tconst shadowMapEnabled = shadowMap.enabled;"
+      },
+      {
+        "line": 1135,
+        "text": "\t\t\tconst shadowMapAutoUpdate = shadowMap.autoUpdate;"
+      },
+      {
+        "line": 1136,
+        "text": "\t\t\tconst shadowMapNeedsUpdate = shadowMap.needsUpdate;"
+      },
+      {
+        "line": 1137,
+        "text": "\t\t\tconst shadowMapType = shadowMap.type;"
+      },
+      {
+        "line": 1138,
+        "text": ""
+      },
+      {
+        "line": 1139,
+        "text": "\t\t\tinitGLContext();"
+      },
+      {
+        "line": 1140,
+        "text": ""
+      },
+      {
+        "line": 1141,
+        "text": "\t\t\tinfo.autoReset = infoAutoReset;"
+      },
+      {
+        "line": 1142,
+        "text": "\t\t\tshadowMap.enabled = shadowMapEnabled;"
+      },
+      {
+        "line": 1143,
+        "text": "\t\t\tshadowMap.autoUpdate = shadowMapAutoUpdate;"
+      },
+      {
+        "line": 1144,
+        "text": "\t\t\tshadowMap.needsUpdate = shadowMapNeedsUpdate;"
+      },
+      {
+        "line": 1145,
+        "text": "\t\t\tshadowMap.type = shadowMapType;"
+      },
+      {
+        "line": 1146,
+        "text": ""
+      },
+      {
+        "line": 1147,
+        "text": "\t\t}"
+      },
+      {
+        "line": 1148,
+        "text": ""
+      },
+      {
+        "line": 1149,
+        "text": "\t\tfunction onContextCreationError( event ) {"
+      },
+      {
+        "line": 1150,
+        "text": ""
+      },
+      {
+        "line": 1647,
+        "text": ""
+      },
+      {
+        "line": 1648,
+        "text": "\t\t\t}"
+      },
+      {
+        "line": 1649,
+        "text": ""
+      },
+      {
+        "line": 1650,
+        "text": "\t\t\tif ( _isContextLost === true ) return;"
+      },
+      {
+        "line": 1651,
+        "text": ""
+      },
+      {
+        "line": 1652,
+        "text": "\t\t\t// update node builder if available"
+      },
+      {
+        "line": 1653,
+        "text": "\t\t\tif ( _nodesHandler !== null ) {"
+      },
+      {
+        "line": 1654,
+        "text": ""
+      },
+      {
+        "line": 1655,
+        "text": "\t\t\t\t_nodesHandler.renderStart( scene, camera );"
+      },
+      {
+        "line": 1656,
+        "text": ""
+      },
+      {
+        "line": 1657,
+        "text": "\t\t\t}"
+      },
+      {
+        "line": 1658,
+        "text": ""
+      },
+      {
+        "line": 1659,
+        "text": "\t\t\t// use internal render target for HalfFloatType color buffer (only when tone mapping is enabled)"
+      },
+      {
+        "line": 1660,
+        "text": ""
+      },
+      {
+        "line": 1661,
+        "text": "\t\t\tconst isXRPresenting = xr.enabled === true && xr.isPresenting === true;"
+      },
+      {
+        "line": 1662,
+        "text": ""
+      },
+      {
+        "line": 1663,
+        "text": "\t\t\tconst useOutput = output !== null && ( _currentRenderTarget === null || isXRPresenting ) && output.begin( _this, _currentRenderTarget );"
+      },
+      {
+        "line": 1664,
+        "text": ""
+      },
+      {
+        "line": 1665,
+        "text": "\t\t\t// update scene graph"
+      },
+      {
+        "line": 1666,
+        "text": ""
+      },
+      {
+        "line": 1667,
+        "text": "\t\t\tif ( scene.matrixWorldAutoUpdate === true ) scene.updateMatrixWorld();"
+      },
+      {
+        "line": 1668,
+        "text": ""
+      },
+      {
+        "line": 1669,
+        "text": "\t\t\t// update camera matrices and frustum"
+      }
+    ]
+  },
+  {
+    "source_url": "https://registry.npmjs.org/vite/latest",
+    "retrieved_at": "2026-10-22T18:36:48.900Z",
+    "apify_record": "/v2/key-value-stores/VKLtFqCqVC8wofM3L/records/file-8a26071-latest",
+    "sha256": "ba34bc2cd5e3e2c14de8d81d000e5596d4c110aab59b723c8b9bdb175df78723",
+    "bytes": 5170,
+    "package": {
+      "name": "vite",
+      "version": "8.3.5",
+      "license": "MIT",
+      "type": "module",
+      "types": null,
+      "typesVersions": null,
+      "typeScriptVersion": null,
+      "peerDependencies": {
+        "tsx": "^4.8.1",
+        "jiti": ">=1.21.0",
+        "less": "^4.0.0",
+        "sass": "^1.70.0",
+        "yaml": "^2.4.2",
+        "stylus": ">=0.54.8",
+        "terser": "^5.16.0",
+        "esbuild": "^0.27.0 || ^0.28.0",
+        "sugarss": "^5.0.0",
+        "@types/node": "^20.19.0 || >=22.12.0",
+        "sass-embedded": "^1.70.0",
+        "@vitejs/devtools": "^0.7.1 || ^0.8.0"
+      },
+      "peerDependenciesMeta": {
+        "tsx": {
+          "optional": true
+        },
+        "jiti": {
+          "optional": true
+        },
+        "less": {
+          "optional": true
+        },
+        "sass": {
+          "optional": true
+        },
+        "yaml": {
+          "optional": true
+        },
+        "stylus": {
+          "optional": true
+        },
+        "terser": {
+          "optional": true
+        },
+        "esbuild": {
+          "optional": true
+        },
+        "sugarss": {
+          "optional": true
+        },
+        "@types/node": {
+          "optional": true
+        },
+        "sass-embedded": {
+          "optional": true
+        },
+        "@vitejs/devtools": {
+          "optional": true
+        }
+      },
+      "dependencies": {
+        "postcss": "^8.5.30",
+        "rolldown": "~1.2.14",
+        "picomatch": "^4.0.7",
+        "tinyglobby": "^0.2.17",
+        "lightningcss": "^1.33.0"
+      },
+      "exports": {
+        ".": "./dist/node/index.js",
+        "./client": {
+          "types": "./client.d.ts"
+        },
+        "./types/*": {
+          "types": "./types/*"
+        },
+        "./internal": "./dist/node/internal.js",
+        "./package.json": "./package.json",
+        "./dist/client/*": "./dist/client/*",
+        "./module-runner": "./dist/node/module-runner.js",
+        "./types/internal/*": null
+      },
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      },
+      "dist": {
+        "integrity": "sha512-z1YpjieJ9g0ebTmQpLBv/oq9E3F9EIlOe+7LahW8SrE3LTiG3udBRUXQOlYXP9b+IC2q2phHeVxj9xGlw34OEQ==",
+        "shasum": "9614f66026cb92fe486cb9d3c90780b2a69fc85d",
+        "tarball": "https://registry.npmjs.org/vite/-/vite-8.3.5.tgz"
+      }
+    }
+  },
+  {
+    "source_url": "https://registry.npmjs.org/@vitejs%2fplugin-react/latest",
+    "retrieved_at": "2026-10-22T18:36:48.996Z",
+    "apify_record": "/v2/key-value-stores/VKLtFqCqVC8wofM3L/records/file-c231108-latest",
+    "sha256": "4b69f47be418b4a5db930c2e5189de1d51ff95f101d0ab0a056d79bdedc6f636",
+    "bytes": 3174,
+    "package": {
+      "name": "@vitejs/plugin-react",
+      "version": "6.1.2",
+      "license": "MIT",
+      "type": "module",
+      "types": null,
+      "typesVersions": null,
+      "typeScriptVersion": null,
+      "peerDependencies": {
+        "vite": "^8.0.0",
+        "oxc-transform-react": "^0.152.0",
+        "@rolldown/plugin-babel": "^0.1.7 || ^0.2.0",
+        "babel-plugin-react-compiler": "^1.0.0"
+      },
+      "peerDependenciesMeta": {
+        "oxc-transform-react": {
+          "optional": true
+        },
+        "@rolldown/plugin-babel": {
+          "optional": true
+        },
+        "babel-plugin-react-compiler": {
+          "optional": true
+        }
+      },
+      "dependencies": {
+        "@rolldown/pluginutils": "^1.0.1"
+      },
+      "exports": {
+        ".": "./dist/index.js",
+        "./preamble": "./types/preamble.d.ts"
+      },
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      },
+      "dist": {
+        "integrity": "sha512-fhJNGUdscQa4HkI0xFxwonWyhnVReCPDbXI7FH7jmzpnVCrFQI7PRrhWecO263610vOrs9tr2Y4xcf8uAdFxbw==",
+        "shasum": "924d47e890a78cdf2b72f3f41fe8ab98e089b81e",
+        "tarball": "https://registry.npmjs.org/@vitejs/plugin-react/-/plugin-react-6.1.2.tgz"
+      }
+    }
+  }
+]

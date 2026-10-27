@@ -1,0 +1,12 @@
+Browser tab: 5, Title: "Planning source consumer fixture", URL: "http://127.0.0.1:50673/tests/preparation-browser.html?view=setup&task=weather&lang=de&case=390&source=cf951e3d".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+~		3 button Projekt speichern
++			132 container
++				133 text Das Berechnungsjahr darf kein Schaltjahr sein. Dieses Modell verwendet 8.760 Stundenintervalle.
+~					96 text field (settable) Erstes Jahr des Quellzeitraums, Value: 2005
+~					97 text Ganze Zahlen ohne Tausendertrennzeichen.
+~					123 text field (settable) Synthetisches Berechnungsjahr, Value: 2024
+~			128 text Wettereinstellungen noch nicht vorbereitet
+~			129 text Diese Einstellungen müssen mit „Projekt speichern“ gesichert werden, bevor eine Wetterabfrage starten kann.
+~			130 button Wettereinstellungen vorbereiten
+The focused UI element is 132 container

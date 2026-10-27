@@ -1,0 +1,52 @@
+✔ independent: real camera hook preserves orbit on selection and resize; explicit Fit uses the latest selected roof without a new Canvas (118.943542ms)
+▶ independent: current camera fits supported tiny and large scenes across narrow and wide aspects
+  ✔ scene scale 0.0001 (20.001625ms)
+  ✔ scene scale 1 (13.282708ms)
+  ✔ scene scale 10000 (12.351958ms)
+✔ independent: current camera fits supported tiny and large scenes across narrow and wide aspects (46.363292ms)
+✔ independent: Fit during pending renderer init does not invalidate ownership, and failure/retry/backend retain their existing generation guards (32.691875ms)
+{"case":"selected-panel-roof","selected":"array:0:0","roof":"second-roof","dot":0.0016781750203078924,"actual":[0.27472112789737824,0.9615239476408232,1.1102230246251568e-16],"expected":[0.37112274642524185,0.5579795817509948,-0.7422443623462363]}
+✖ SPEC COUNTEREXAMPLE: selected panel instance must use its owning second roof for explicit Fit (26.355417ms)
+{"case":"resize-current-extent","outsideAfterResize":4,"examples":[[0.08545852955053841,-0.4816852537563174,1.0000459754426918],[0.08536333252722138,-0.47606760363317313,1.0000459626522453],[0.07587851780197451,-0.47606760363317313,1.0000459626522453]],"allInsideAfterExplicitFit":true}
+✖ SPEC COUNTEREXAMPLE: resize must fit current geometry extents after an ordinary document edit without resetting its direction (21.141334ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 6
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1086.759875
+
+✖ failing tests:
+
+test at tests/camera-probe.mjs:64:1
+✖ SPEC COUNTEREXAMPLE: selected panel instance must use its owning second roof for explicit Fit (26.355417ms)
+  AssertionError [ERR_ASSERTION]: the selected real panel instance must not fall back to the nearly edge-on first-roof composition
+      at TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/camera-spec-f48228a8-lfh__g_4/apps/planner/tests/camera-probe.mjs:68:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/camera-probe.mjs:71:1
+✖ SPEC COUNTEREXAMPLE: resize must fit current geometry extents after an ordinary document edit without resetting its direction (21.141334ms)
+  AssertionError [ERR_ASSERTION]: resize used stale last-Fit bounds instead of the current scene extent
+  
+  4 !== 0
+  
+      at TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/camera-spec-f48228a8-lfh__g_4/apps/planner/tests/camera-probe.mjs:75:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 4,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

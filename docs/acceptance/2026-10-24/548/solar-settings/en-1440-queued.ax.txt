@@ -1,0 +1,38 @@
+Browser tab: 5, Title: "Planning source consumer fixture", URL: "http://127.0.0.1:50673/tests/preparation-browser.html?view=setup&task=weather&lang=en&blank=1&source=cf951e3d".
+1 AXWebArea Planning source consumer fixture, URL: 127.0.0.1:50673/tests/preparation-browser.html?view=setup&task=weather&lang=en&blank=1&source=cf951e3d
+	2 container
+		3 button (disabled) Save project
+		4 container Energy calculation, ID: lp-calculations
+			5 text 07
+			6 heading Energy calculation, Value: 2, ID: lp-calculations-heading
+				7 text Energy calculation
+			8 text Calculate this project's energy flows over the selected periods. Each saved result keeps the inputs, sources and model used.
+			9 container Calculation workspace view
+				10 checkbox Weather source, Value: 0
+				11 checkbox Scenario settings, Value: 0
+				12 checkbox Saved calculations, Value: 1
+			78 container
+				79 heading Calculation history, Value: 3
+					80 text Calculation history
+				81 checkbox Revision 3 Weather data preparation Queued 15/11/2023, 06:13, Value: 1
+					82 text Revision 3
+					83 text Weather data preparation
+					84 text Queued
+					85 text 15/11/2023, 06:13
+			86 heading Weather data preparation, Value: 3
+				87 text Weather data preparation
+			88 text Queued
+			89 text Revision 3
+			90 container Weather request status
+				91 heading Weather request status, Value: 4
+					92 text Weather request status
+				93 text The weather request is waiting to start.
+				94 button Refresh weather status
+			95 button Cancel calculation
+		73 text Solution Configurator
+		74 text by Linker
+		75 text Linker brings your inputs into an editable project for solar and storage planning.
+		76 button (collapsed) About this tool, Secondary Actions: Expand
+			77 text About this tool
+
+The focused UI element is 86 heading Weather data preparation, Value: 3

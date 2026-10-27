@@ -1,0 +1,50 @@
+{
+  "fixed_sha": "eefe7c0b060214b60ba7a012ff206e668dbce6d3",
+  "run_utc": "2026-10-23T09:53:32.341780+00:00",
+  "checks": [
+    {
+      "name": "fixed-client-suite",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/journal-standards-eefe-kx9joza_/apps/planner",
+      "exit_code": 0,
+      "log": "fixed-client-suite.log",
+      "summary": "sh preserve hidden edits until same owner returns (86.201459ms)\n\u2714 a confirmed different identity removes the former editor and does not grant its project (47.328709ms)\n\u2714 the actual project bar is observed after asynchronous draft opening and on resize (32.318625ms)\n\u2714 creation authentication failure rechecks once and explicitly retries the exact intent (32.63075ms)\n\u25b6 a former identity's delayed creation cannot dispatch or restore cache and navigation\n  \u2714 write (17.557417ms)\n  \u2714 clear (17.128667ms)\n\u2714 a former identity's delayed creation cannot dispatch or restore cache and navigation (35.1225ms)\n\u25b6 native confirmation fences pending creation, revision and navigation before React commits\n  \u2714 write (16.829417ms)\n  \u2714 clear (15.989167ms)\n  \u2714 revise (116.794833ms)\n  \u2714 close (95.257125ms)\n\u2714 native confirmation fences pending creation, revision and navigation before React commits (245.528875ms)\n\u2139 tests 54\n\u2139 suites 0\n\u2139 pass 54\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 5456.394375\n",
+      "execution_note": "Exit0 observed in unified session99228 before subsequent metadata parser assertion; no test rerun."
+    },
+    {
+      "name": "fixed-build-check",
+      "command": [
+        "npm",
+        "run",
+        "build:check"
+      ],
+      "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/journal-standards-eefe-kx9joza_/apps/planner",
+      "exit_code": 0,
+      "log": "fixed-build-check.log",
+      "summary": "\n> @linker/planner@0.1.0 build:check\n> node bin/build-manifest.mjs check && node --test tests/built-modules.mjs\n\nPlanner build matches its sources.\n\u2714 a lazy built chunk never executes the versioned WordPress entry again (158.433ms)\n\u2139 tests 1\n\u2139 suites 0\n\u2139 pass 1\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 331.85675\n",
+      "execution_note": "Exit0 observed in unified session99228 before subsequent metadata parser assertion; no test rerun."
+    },
+    {
+      "name": "independent-mobile-overview",
+      "command": [
+        "node",
+        "--no-warnings=ExperimentalWarning",
+        "--loader",
+        "./tests/tsx-loader.mjs",
+        "--test",
+        "tests/standards_overview_probe.test.mjs",
+        "tests/standards_mobile_probe.test.mjs"
+      ],
+      "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/journal-standards-eefe-kx9joza_/apps/planner",
+      "exit_code": 0,
+      "log": "independent-mobile-overview.log",
+      "summary": "\u2714 independent mobile selector shares workspace/hash/input nodes and reveals the first Site section (662.598916ms)\n\u2714 independent mobile selector refuses invalid annual raw value and follows correction without losing it (166.604541ms)\n\u2714 independent mobile selector cannot hide an unapplied roof form and resumes after cancel (64.883417ms)\n\u2714 independent mobile selector obeys immediate native scope fence before a React recheck render (32.742084ms)\n\u2714 empty overview retains unknown layout and actual explicit zero consumption en-US (84.683916ms)\n\u2714 multi-roof summary spans all layouts while preview names and draws only first roof en-US (15.51425ms)\n\u2714 empty overview retains unknown layout and actual explicit zero consumption de-DE (8.407792ms)\n\u2714 multi-roof summary spans all layouts while preview names and draws only first roof de-DE (9.240875ms)\n\u2139 tests 8\n\u2139 suites 0\n\u2139 pass 8\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 1329.057167\n",
+      "execution_note": "Exit0 observed in unified session99228 before subsequent metadata parser assertion; no test rerun."
+    }
+  ],
+  "copy_catalogs_unchanged": true,
+  "native_volume_and_compiled_rules_match": true
+}

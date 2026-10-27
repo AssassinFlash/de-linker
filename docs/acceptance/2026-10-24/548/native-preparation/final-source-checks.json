@@ -1,0 +1,28 @@
+[
+  {
+    "name": "final-app-tests",
+    "command": [
+      "npm",
+      "test"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "final-build-check",
+    "command": [
+      "npm",
+      "run",
+      "build:check"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "final-format",
+    "command": [
+      "npm",
+      "run",
+      "lint:format"
+    ],
+    "exit_code": 0
+  }
+]

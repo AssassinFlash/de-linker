@@ -1,0 +1,483 @@
+{
+  "scope": "Journal presentation native viewport checks; not physics, physical-touch or production acceptance",
+  "native_instance": "p548 / loopback9347",
+  "project_id": "8c71ef3068ee465d86f093cece8406fa",
+  "saved_revision": 6,
+  "normal_matrix": "EN+DE ×1440x1000/390x844 ×overview/site/energy/roof",
+  "sources": {
+    "eefe7c0b": "earlier title-wrap/input/focus evidence",
+    "cbf75a9c": "DE normal matrix and pre-relocation refusal; final delta does not alter normal states",
+    "f0df6762": "EN normal matrix, final visible EN/DE staged refusals; final source"
+  },
+  "ax_files": "captured native accessibility observations may be diffs; viewport JSON and pixels accompany each",
+  "entry_sha256": "758ec5df3711f49c96df5278f60d959210e51482b6fb7175c098fa0623e3e8ab",
+  "final_windpress_generated_local": "2026-10-23 18:04:47",
+  "console": "final observed native warn/error list was empty",
+  "files": [
+    {
+      "path": "f0df6762/en-1440-overview.png",
+      "source_revision": "f0df6762",
+      "sha256": "97d107b9c099903350c9535c7f5eceb4fcae16cf2b284b260af2f325b5fd5bd8",
+      "bytes": 127009
+    },
+    {
+      "path": "f0df6762/en-1440-overview.json",
+      "source_revision": "f0df6762",
+      "sha256": "ef45783814615668e924ce1bbbe23e80b6ccf6555b2d64eb2659ec5c4708bde7",
+      "bytes": 695
+    },
+    {
+      "path": "f0df6762/en-1440-overview.ax.txt",
+      "source_revision": "f0df6762",
+      "sha256": "e1176a7bd7b08cdb7e60322a9525a7ac85aa99d8b2dda928b66ea2b7c4e0d342",
+      "bytes": 307
+    },
+    {
+      "path": "f0df6762/en-1440-site.png",
+      "source_revision": "f0df6762",
+      "sha256": "fbc345e14a0e7198a6672c1b3dea95d4b897a43bbc733cb3a9a7281c1b8a48fe",
+      "bytes": 106600
+    },
+    {
+      "path": "f0df6762/en-1440-site.json",
+      "source_revision": "f0df6762",
+      "sha256": "250622df8edaa4102173fe8e83fbf53e91174da2fd455f2663f9bb13ac1b8974",
+      "bytes": 617
+    },
+    {
+      "path": "f0df6762/en-1440-site.ax.txt",
+      "source_revision": "f0df6762",
+      "sha256": "d9ab974a9a73e146b07955f2ba2a9faaf6161d5242dae7ff3a434838b898051a",
+      "bytes": 305
+    },
+    {
+      "path": "f0df6762/en-1440-energy.png",
+      "source_revision": "f0df6762",
+      "sha256": "9613257835be21e4a97b9e745698bda89d109e378eecc684c7a2855e4f08b82d",
+      "bytes": 156253
+    },
+    {
+      "path": "f0df6762/en-1440-energy.json",
+      "source_revision": "f0df6762",
+      "sha256": "22727f24b0acb24e14760b758aaa2193e4b0bf1cd18e8f0fdc910605095f7c19",
+      "bytes": 614
+    },
+    {
+      "path": "f0df6762/en-1440-energy.ax.txt",
+      "source_revision": "f0df6762",
+      "sha256": "25b06e49897e6cd3766e7d0cfc362be672bd81f0f6d9fdf9eebc2e8bb4391633",
+      "bytes": 310
+    },
+    {
+      "path": "f0df6762/en-1440-roof.png",
+      "source_revision": "f0df6762",
+      "sha256": "17964b641f786ac051c4edfbd28bafdc74d3dbbe6e09616507288b97b76cb4ae",
+      "bytes": 121492
+    },
+    {
+      "path": "f0df6762/en-1440-roof.json",
+      "source_revision": "f0df6762",
+      "sha256": "d4d893d7cb59417539fd621550fdbf6ed409ff312a260609b46eeea01d4762c3",
+      "bytes": 616
+    },
+    {
+      "path": "f0df6762/en-1440-roof.ax.txt",
+      "source_revision": "f0df6762",
+      "sha256": "77dbef76a4ded5d335e5a5beae14e233799d94a046562f2a4cd6d515a3606849",
+      "bytes": 302
+    },
+    {
+      "path": "f0df6762/en-390-overview.png",
+      "source_revision": "f0df6762",
+      "sha256": "64dc1b51b64115cbc901a074a31547c71a8a9bcd8e1cdc2afe8fb02d7e18007a",
+      "bytes": 54623
+    },
+    {
+      "path": "f0df6762/en-390-overview.json",
+      "source_revision": "f0df6762",
+      "sha256": "404c1dfb5d806f1fe0343e5b267e02dcdb5dd308fc1ee1ddc540452c2b272a66",
+      "bytes": 659
+    },
+    {
+      "path": "f0df6762/en-390-overview.ax.txt",
+      "source_revision": "f0df6762",
+      "sha256": "2048522be0d3fb70037eb967b4c3a1be4fdc079badde5293c48e7435602709e4",
+      "bytes": 320
+    },
+    {
+      "path": "f0df6762/en-390-site.png",
+      "source_revision": "f0df6762",
+      "sha256": "df8b38178a22b4445d934d9d8473b54fcd27ad3d5a4e95850cb966c0c40dd981",
+      "bytes": 52891
+    },
+    {
+      "path": "f0df6762/en-390-site.json",
+      "source_revision": "f0df6762",
+      "sha256": "8cedcd612269a4df667dc1ba991b0b9fc6f05575dde2791d84f1f1751115d49e",
+      "bytes": 610
+    },
+    {
+      "path": "f0df6762/en-390-site.ax.txt",
+      "source_revision": "f0df6762",
+      "sha256": "354998ce0765b0a2c451a8e2fbf6b0cb64f1606418b9c205c1418e0ea162427d",
+      "bytes": 306
+    },
+    {
+      "path": "f0df6762/en-390-energy.png",
+      "source_revision": "f0df6762",
+      "sha256": "09e736a0e3bc33ad8ca428b416d0add71e93293ce63fa5b1dc2fb3c4dcf213f9",
+      "bytes": 61929
+    },
+    {
+      "path": "f0df6762/en-390-energy.json",
+      "source_revision": "f0df6762",
+      "sha256": "db932b2e8932bc2525229cabe61604f71f5d6d214398ae864852a75f056eb847",
+      "bytes": 607
+    },
+    {
+      "path": "f0df6762/en-390-energy.ax.txt",
+      "source_revision": "f0df6762",
+      "sha256": "a819106be24d6cc9fbe6efe73b5e13ff931936090d359148c6d30b13b8fe489e",
+      "bytes": 311
+    },
+    {
+      "path": "f0df6762/en-390-roof.png",
+      "source_revision": "f0df6762",
+      "sha256": "38e61b25887c72398a5f4d869d611848b2dc01063a63a385f792a6ff60286615",
+      "bytes": 47528
+    },
+    {
+      "path": "f0df6762/en-390-roof.json",
+      "source_revision": "f0df6762",
+      "sha256": "b7d71bd26382624cf19eebf3115eb79d9dfdeec1acbe4868e0b7b05ae3139017",
+      "bytes": 609
+    },
+    {
+      "path": "f0df6762/en-390-roof.ax.txt",
+      "source_revision": "f0df6762",
+      "sha256": "82ca2bfb6ddfc4db7a66a3aa3cad86744c2917372f6742eb3b44ec7eaf9b85fe",
+      "bytes": 303
+    },
+    {
+      "path": "cbf75a9c/de-1440-overview.png",
+      "source_revision": "cbf75a9c",
+      "sha256": "63b477e0d72e241cc539d267d067ae8bc4d5de15ff6e77ed51a12c9c66f92818",
+      "bytes": 132794
+    },
+    {
+      "path": "cbf75a9c/de-1440-overview.json",
+      "source_revision": "cbf75a9c",
+      "sha256": "ef45783814615668e924ce1bbbe23e80b6ccf6555b2d64eb2659ec5c4708bde7",
+      "bytes": 695
+    },
+    {
+      "path": "cbf75a9c/de-1440-overview.ax.txt",
+      "source_revision": "cbf75a9c",
+      "sha256": "6b2e1ee2d3f0b3f69339441b7e7aab083f1fad79050cfa15324994c3136d9cc7",
+      "bytes": 323
+    },
+    {
+      "path": "cbf75a9c/de-1440-site.png",
+      "source_revision": "cbf75a9c",
+      "sha256": "4b8df3cb1cc3366901fc5d452d07a73466a3cd4f32e2c74e69fe10c1361e2c18",
+      "bytes": 117000
+    },
+    {
+      "path": "cbf75a9c/de-1440-site.json",
+      "source_revision": "cbf75a9c",
+      "sha256": "250622df8edaa4102173fe8e83fbf53e91174da2fd455f2663f9bb13ac1b8974",
+      "bytes": 617
+    },
+    {
+      "path": "cbf75a9c/de-1440-site.ax.txt",
+      "source_revision": "cbf75a9c",
+      "sha256": "78c95cefd5d15a9e5214e14204834c52a464571b1ba8af1cf5546979706f2b33",
+      "bytes": 307
+    },
+    {
+      "path": "cbf75a9c/de-1440-energy.png",
+      "source_revision": "cbf75a9c",
+      "sha256": "88a13e99fda8553d1cec5085a4cb6ecdcb846b4f633318b94b16cd300f9d3abb",
+      "bytes": 164990
+    },
+    {
+      "path": "cbf75a9c/de-1440-energy.json",
+      "source_revision": "cbf75a9c",
+      "sha256": "22727f24b0acb24e14760b758aaa2193e4b0bf1cd18e8f0fdc910605095f7c19",
+      "bytes": 614
+    },
+    {
+      "path": "cbf75a9c/de-1440-energy.ax.txt",
+      "source_revision": "cbf75a9c",
+      "sha256": "92ba73bd54d6d48453bd1d571ba9a52282bdbcf3e02c9114ab7e407d58bd55f1",
+      "bytes": 304
+    },
+    {
+      "path": "cbf75a9c/de-1440-roof.png",
+      "source_revision": "cbf75a9c",
+      "sha256": "0f1cfce4fc5ae7624f70a8a23054d5640859f9fe634c70590f98f3830b06c994",
+      "bytes": 131795
+    },
+    {
+      "path": "cbf75a9c/de-1440-roof.json",
+      "source_revision": "cbf75a9c",
+      "sha256": "d4d893d7cb59417539fd621550fdbf6ed409ff312a260609b46eeea01d4762c3",
+      "bytes": 616
+    },
+    {
+      "path": "cbf75a9c/de-1440-roof.ax.txt",
+      "source_revision": "cbf75a9c",
+      "sha256": "7a936df5c395abcc60c22d7a4098a778c0eb759135a76d11d905bfd142d00f58",
+      "bytes": 305
+    },
+    {
+      "path": "cbf75a9c/de-390-overview.png",
+      "source_revision": "cbf75a9c",
+      "sha256": "461dc705860fe4ab9107369f1dac2a9aa4aa55e433478ee13e12f04e2d81f4c6",
+      "bytes": 55894
+    },
+    {
+      "path": "cbf75a9c/de-390-overview.json",
+      "source_revision": "cbf75a9c",
+      "sha256": "9ae6ec1d4d2db314209de1cceb5ad33e08a4f500b0a95312b38a4e38a2329c37",
+      "bytes": 660
+    },
+    {
+      "path": "cbf75a9c/de-390-overview.ax.txt",
+      "source_revision": "cbf75a9c",
+      "sha256": "6b2e1ee2d3f0b3f69339441b7e7aab083f1fad79050cfa15324994c3136d9cc7",
+      "bytes": 323
+    },
+    {
+      "path": "cbf75a9c/de-390-site.png",
+      "source_revision": "cbf75a9c",
+      "sha256": "ca2c9ad5335119afb9f1d7faef27a17fd6f1c0d1875c5535bea74875f53cdcb6",
+      "bytes": 56895
+    },
+    {
+      "path": "cbf75a9c/de-390-site.json",
+      "source_revision": "cbf75a9c",
+      "sha256": "697f3f7f21fef84a8d03510d3e13d2649e1d4486fe397a204aa3f0db1d4a9f56",
+      "bytes": 610
+    },
+    {
+      "path": "cbf75a9c/de-390-site.ax.txt",
+      "source_revision": "cbf75a9c",
+      "sha256": "e96671b024519a4ca97cbb9199d2fb8697ad7d986268ebd7cc18002c3839e3ed",
+      "bytes": 307
+    },
+    {
+      "path": "cbf75a9c/de-390-energy.png",
+      "source_revision": "cbf75a9c",
+      "sha256": "dd75c57d4853e1b3896da565375c2d9d8ddd5063b545ed765bf7a22c3d796d99",
+      "bytes": 59907
+    },
+    {
+      "path": "cbf75a9c/de-390-energy.json",
+      "source_revision": "cbf75a9c",
+      "sha256": "351966e742a69dbfe1894676f299f50104890805e19955765d983ab64867c635",
+      "bytes": 607
+    },
+    {
+      "path": "cbf75a9c/de-390-energy.ax.txt",
+      "source_revision": "cbf75a9c",
+      "sha256": "0b3ec705a5065401a60c6c2288a8d56ae624977b8095ce94087ebe3bc99713e1",
+      "bytes": 304
+    },
+    {
+      "path": "cbf75a9c/de-390-roof.png",
+      "source_revision": "cbf75a9c",
+      "sha256": "9785e5e1e4426529f2677350699de9fa0ed070f6dd2255986f1c26c72f75afd6",
+      "bytes": 52249
+    },
+    {
+      "path": "cbf75a9c/de-390-roof.json",
+      "source_revision": "cbf75a9c",
+      "sha256": "0b0f08431917944eb767e9e68db122bf46393bae6082b064f3101d7a74718d72",
+      "bytes": 609
+    },
+    {
+      "path": "cbf75a9c/de-390-roof.ax.txt",
+      "source_revision": "cbf75a9c",
+      "sha256": "9ddc5e7144054c5bb1a4af2094b676d1237d46b1b1c15d9b6d786c5bfbc9d66e",
+      "bytes": 305
+    },
+    {
+      "path": "f0df6762/en-390-visible-staged-refusal.png",
+      "source_revision": "f0df6762",
+      "sha256": "8dda4712b89976daf7a1bc6b9b41ebab7de653ac6503d4a6719ef3313c6f73a5",
+      "bytes": 58862
+    },
+    {
+      "path": "f0df6762/en-390-visible-staged-refusal.json",
+      "source_revision": "f0df6762",
+      "sha256": "6e26ede296cb924df9ba5109dfd03ecc831047655c5ea0056afdd6f258152c71",
+      "bytes": 620
+    },
+    {
+      "path": "f0df6762/en-390-visible-staged-refusal.ax.txt",
+      "source_revision": "f0df6762",
+      "sha256": "4e4cb206ad7cd1ea502d76b4f60631dcb48ebe84b7706182830f59af87a873b0",
+      "bytes": 351
+    },
+    {
+      "path": "f0df6762/de-390-visible-staged-refusal.png",
+      "source_revision": "f0df6762",
+      "sha256": "2fe5c1e8a4d03fa2d8598b2e4962069a3f31f4454efcece9e73b74842ef1d572",
+      "bytes": 57795
+    },
+    {
+      "path": "f0df6762/de-390-visible-staged-refusal.json",
+      "source_revision": "f0df6762",
+      "sha256": "2a1ff0b7dcf9f060374fd1b829877023a07941626e130a7af4d4f6f1a26d4768",
+      "bytes": 620
+    },
+    {
+      "path": "f0df6762/de-390-visible-staged-refusal.ax.txt",
+      "source_revision": "f0df6762",
+      "sha256": "b56a65a984c79645764dbba3a68b327429b5f228059f6d0923fa65ac6412d57b",
+      "bytes": 372
+    },
+    {
+      "path": "cbf75a9c/de-390-invalid-input.png",
+      "source_revision": "cbf75a9c",
+      "sha256": "9293df9cbff97f33f4f0e8d0cb4034e2dadd6fc416621ee9b23bcc087a6ab75f",
+      "bytes": 57746
+    },
+    {
+      "path": "cbf75a9c/de-390-invalid-input.json",
+      "source_revision": "cbf75a9c",
+      "sha256": "6372f9b91769af4031604afe6c7eedf9848412b25c51cd3d385bdac94626bd3d",
+      "bytes": 659
+    },
+    {
+      "path": "cbf75a9c/de-390-invalid-input.ax.txt",
+      "source_revision": "cbf75a9c",
+      "sha256": "431329d9e5960292190b0677c54fb19ff0fb6dd5a904a2a30e344bcf01b5894b",
+      "bytes": 319
+    },
+    {
+      "path": "cbf75a9c/de-390-staged-roof.png",
+      "source_revision": "cbf75a9c",
+      "sha256": "e1e6703128c4084a2b9475577134db297c3a0d18b6a73538e4c4193568245c26",
+      "bytes": 60425
+    },
+    {
+      "path": "cbf75a9c/de-390-staged-roof.json",
+      "source_revision": "cbf75a9c",
+      "sha256": "97d3c02d936029e8303249ff39237c951d6f07cb0ae0c6580a0136c92e468c0f",
+      "bytes": 604
+    },
+    {
+      "path": "cbf75a9c/de-390-staged-roof.ax.txt",
+      "source_revision": "cbf75a9c",
+      "sha256": "3b1d5afa30bf6a62eb27de3c239e175e36c35b05b7671b16c54f34110e3bf7b7",
+      "bytes": 311
+    },
+    {
+      "path": "eefe7c0b/en-390-long-roof-title.png",
+      "source_revision": "eefe7c0b",
+      "sha256": "8065b789774100c751781e824a858a7b39d8c07af8a5587da8bd20ac890e7480",
+      "bytes": 53635
+    },
+    {
+      "path": "eefe7c0b/en-390-long-roof-title.json",
+      "source_revision": "eefe7c0b",
+      "sha256": "8733dd0232eb11902414785ddc74da59d2e312efb1ba98591b10eb60eeaa8f9f",
+      "bytes": 660
+    },
+    {
+      "path": "eefe7c0b/en-390-long-roof-title.ax.txt",
+      "source_revision": "eefe7c0b",
+      "sha256": "2e30293bb0eb6afab9dedc871a9bbbf1f57504a3fdad261adf0710be4ccdf433",
+      "bytes": 319
+    },
+    {
+      "path": "eefe7c0b/en-390-invalid-input-preserved.png",
+      "source_revision": "eefe7c0b",
+      "sha256": "b4abcc925046ea8628457c0552680131e84110e224e671dac9c59ad95aca909f",
+      "bytes": 60254
+    },
+    {
+      "path": "eefe7c0b/en-390-invalid-input-preserved.json",
+      "source_revision": "eefe7c0b",
+      "sha256": "bf7d6e7fab65f51e22f4015c08c7042f86b7435f9179dc6d4fd2285d6901d909",
+      "bytes": 659
+    },
+    {
+      "path": "eefe7c0b/en-390-invalid-input-preserved.ax.txt",
+      "source_revision": "eefe7c0b",
+      "sha256": "ef2921169739f80b121fb1af51b6f16be7761dc506c2f912bf763e66d9d12606",
+      "bytes": 320
+    },
+    {
+      "path": "eefe7c0b/en-390-site-corrected.png",
+      "source_revision": "eefe7c0b",
+      "sha256": "4178a252fe87c4300bb71f428d2f151206ee1a47842373a4d74ee82c7b785fa1",
+      "bytes": 53192
+    },
+    {
+      "path": "eefe7c0b/en-390-site-corrected.json",
+      "source_revision": "eefe7c0b",
+      "sha256": "8cedcd612269a4df667dc1ba991b0b9fc6f05575dde2791d84f1f1751115d49e",
+      "bytes": 610
+    },
+    {
+      "path": "eefe7c0b/en-390-site-corrected.ax.txt",
+      "source_revision": "eefe7c0b",
+      "sha256": "258587c2499f6622f9487f88fb2a5a583ab5d6a1f3e60a28d980ce735cb3a5e3",
+      "bytes": 305
+    },
+    {
+      "path": "cbf75a9c/client-checks.log",
+      "source_revision": "cbf75a9c",
+      "sha256": "baae82c82dd561f04abfb4409416a5b035fcdfc2e9b14bd213da9b6f0ded9059",
+      "bytes": 12840
+    },
+    {
+      "path": "f0df6762/client-checks.log",
+      "source_revision": "f0df6762",
+      "sha256": "db2c361ae1fea5b17260fa8af5230fa1c68a14950989f1ef34f1f80ec6c316f3",
+      "bytes": 12794
+    },
+    {
+      "path": "f0df6762/final-native-readback.json",
+      "source_revision": "f0df6762",
+      "sha256": "560d7f548c23ece812ff01c8f8f54d94a66db0fa084c74677feae38bcb416abc",
+      "bytes": 1088
+    }
+  ],
+  "storage": {
+    "action": "moved unique evidence, verified SHA after every move; no full instance/snapshot copy",
+    "discarded_superseded_candidates": [
+      {
+        "path": "artifacts/548/workbench/workspace-visual/en-1440-overview-candidate.png",
+        "bytes": 127002
+      },
+      {
+        "path": "artifacts/548/workbench/workspace-visual/en-1440-overview-candidate.json",
+        "bytes": 695
+      },
+      {
+        "path": "artifacts/548/workbench/workspace-visual/en-1440-overview-candidate.ax.txt",
+        "bytes": 319
+      },
+      {
+        "path": "artifacts/548/workbench/workspace-visual/en-390-overview-candidate.png",
+        "bytes": 55201
+      },
+      {
+        "path": "artifacts/548/workbench/workspace-visual/en-390-overview-candidate.json",
+        "bytes": 659
+      },
+      {
+        "path": "artifacts/548/workbench/workspace-visual/en-390-overview-candidate.ax.txt",
+        "bytes": 319
+      }
+    ],
+    "discarded_bytes": 184195,
+    "retained_images": 23,
+    "retained_full_runtime_instances": 1,
+    "retained_approved_design_baselines": 1
+  }
+}

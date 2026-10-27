@@ -1,0 +1,12 @@
+{
+  "before": {
+    "paddingTop": "0px",
+    "touchAction": "auto",
+    "y": 475.5
+  },
+  "after": {
+    "area": "Roof-plane area\n181.89 m²\nOpenings retained\n1",
+    "y": 762.5
+  },
+  "input": "native wheel over read-only SVG; physical touch not inferred"
+}

@@ -1,0 +1,28 @@
+{
+  "at_utc": "2026-10-23T12:51:44.195551+00:00",
+  "owner": "/root/import_layout_standards",
+  "base": "6dc3c292079ec4f654113ecd3e11b631906e6c04",
+  "target": "bc714bc628f1555d2ddcbface216dabc7b9371d5",
+  "snapshot_sha": "1652209cb0deef904adc70baba9770c8f8ed61b7",
+  "full_fixed_diff_command": "git diff 6dc3c292079ec4f654113ecd3e11b631906e6c04...bc714bc628f1555d2ddcbface216dabc7b9371d5",
+  "standards_sources": [
+    "AGENTS.md",
+    "/Users/chesterjohn/Documents/de-linker/AGENTS.md",
+    "/Users/chesterjohn/Documents/de-linker/docs/agents/local-storage.md",
+    "docs/adr/0002-isolated-planner-runtime.md",
+    "README.md",
+    "CONTEXT.md",
+    "docs/acceptance/protocol.md"
+  ],
+  "contributing_or_coding_standards_files_found": [],
+  "source_manifest_entries": 93,
+  "build_manifest_entries": 6,
+  "fixed_git_blob_sha_verification": "All sources/build digests matched in initial read-only check; later optional character-prefix bundle inspection was interrupted. The complete generated JS word-diff was then checked successfully.",
+  "generated_bundle_diff_log": "generated-asset-diff.log",
+  "new_legacy_identifier_matches": [],
+  "findings": {
+    "hard_violations": 0,
+    "justified_fowler_smells": 0
+  },
+  "verification_limit": "One existing staged-error focus/label test timed out after 50 seconds with no output; not a test pass. No rebuild or browser/native/full-camera/kernel/production acceptance."
+}

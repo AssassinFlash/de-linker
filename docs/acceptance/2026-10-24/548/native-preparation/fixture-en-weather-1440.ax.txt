@@ -1,0 +1,61 @@
+Browser tab: 4, Title: "Planning source consumer fixture", URL: "http://127.0.0.1:58673/tests/preparation-browser.html?lang=en&task=weather".
+1 AXWebArea Planning source consumer fixture, URL: 127.0.0.1:58673/tests/preparation-browser.html?lang=en&task=weather
+	2 container
+		3 heading Weather data preparation, Value: 3
+			4 text Weather data preparation
+		5 text Source ready
+		6 text Revision 2
+		7 container Weather request status
+			8 heading Weather request status, Value: 4
+				9 text Weather request status
+			10 text The original weather data has passed validation and is retained. A project source is available only when the preparation status above shows "Source ready".
+			11 button Refresh weather status
+		12 definition list
+			13 container Latitude
+				14 text Latitude
+			15 container
+				16 text 52.52  °
+			17 container Longitude
+				18 text Longitude
+			19 container
+				20 text 13.405  °
+			21 container Altitude
+				22 text Altitude
+			23 container
+				24 text 37  m
+			25 container Hourly weather records
+				26 text Hourly weather records
+			27 text 8,760
+		28 text Preparation leaves your project inputs unchanged. Selecting a source updates the current open draft. Save project saves that selection on the server.
+		29 button Use this weather source
+		30 container
+			31 definition list
+				32 container Weather source
+					33 text Weather source
+				34 container
+					35 text JRC PVGIS typical meteorological year  · PVGIS  5.3
+				36 container Radiation database
+					37 text Radiation database
+				38 text PVGIS-SARAH3
+				39 container Meteorological database
+					40 text Meteorological database
+				41 text ERA5
+				42 container Requested source year range
+					43 text Requested source year range
+				44 container
+					45 text 2005  /  2023
+				46 container Synthetic calculation year
+					47 text Synthetic calculation year
+				48 text 2023
+			49 text A typical meteorological year combines selected months from different years.
+			50 button (collapsed) Original source and interpretation record, Secondary Actions: Expand
+				51 text Original source and interpretation record
+		52 button (collapsed) Source and task checksums, Secondary Actions: Expand
+			53 text Source and task checksums
+		54 text Solution Configurator
+		55 text by Linker
+		56 text Linker brings your inputs into an editable project for solar and storage planning.
+		57 button (collapsed) About this tool, Secondary Actions: Expand
+			58 text About this tool
+
+The focused UI element is 1 AXWebArea Planning source consumer fixture, URL: 127.0.0.1:58673/tests/preparation-browser.html?lang=en&task=weather

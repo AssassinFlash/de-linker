@@ -1,0 +1,77 @@
+[
+  {
+    "url": "https://registry.npmjs.org/maplibre-gl/5.24.0",
+    "crawl": {
+      "loadedUrl": "https://registry.npmjs.org/maplibre-gl/5.24.0",
+      "depth": 0,
+      "referrerUrl": "https://registry.npmjs.org/maplibre-gl/5.24.0",
+      "loadedTime": "2026-10-23T15:14:33.305Z",
+      "httpStatusCode": 200,
+      "contentType": "application/json"
+    },
+    "html": null,
+    "htmlUrl": null,
+    "text": null,
+    "markdown": null,
+    "metadata": {
+      "author": null,
+      "canonicalUrl": "https://registry.npmjs.org/maplibre-gl/5.24.0",
+      "description": null,
+      "keywords": null,
+      "languageCode": null,
+      "title": "5.24.0"
+    },
+    "screenshotUrl": null,
+    "fileUrl": "https://api.apify.com/v2/key-value-stores/zhouGACyaErrAJvoY/records/file-fa873e9-5.24.0"
+  },
+  {
+    "url": "https://registry.npmjs.org/terra-draw/1.35.0",
+    "crawl": {
+      "loadedUrl": "https://registry.npmjs.org/terra-draw/1.35.0",
+      "depth": 0,
+      "referrerUrl": "https://registry.npmjs.org/terra-draw/1.35.0",
+      "loadedTime": "2026-10-23T15:14:34.007Z",
+      "httpStatusCode": 200,
+      "contentType": "application/json"
+    },
+    "html": null,
+    "htmlUrl": null,
+    "text": null,
+    "markdown": null,
+    "metadata": {
+      "author": null,
+      "canonicalUrl": "https://registry.npmjs.org/terra-draw/1.35.0",
+      "description": null,
+      "keywords": null,
+      "languageCode": null,
+      "title": "1.35.0"
+    },
+    "screenshotUrl": null,
+    "fileUrl": "https://api.apify.com/v2/key-value-stores/zhouGACyaErrAJvoY/records/file-4e69f2a-1.35.0"
+  },
+  {
+    "url": "https://registry.npmjs.org/terra-draw-maplibre-gl-adapter/1.4.1",
+    "crawl": {
+      "loadedUrl": "https://registry.npmjs.org/terra-draw-maplibre-gl-adapter/1.4.1",
+      "depth": 0,
+      "referrerUrl": "https://registry.npmjs.org/terra-draw-maplibre-gl-adapter/1.4.1",
+      "loadedTime": "2026-10-23T15:14:34.663Z",
+      "httpStatusCode": 200,
+      "contentType": "application/json"
+    },
+    "html": null,
+    "htmlUrl": null,
+    "text": null,
+    "markdown": null,
+    "metadata": {
+      "author": null,
+      "canonicalUrl": "https://registry.npmjs.org/terra-draw-maplibre-gl-adapter/1.4.1",
+      "description": null,
+      "keywords": null,
+      "languageCode": null,
+      "title": "1.4.1"
+    },
+    "screenshotUrl": null,
+    "fileUrl": "https://api.apify.com/v2/key-value-stores/zhouGACyaErrAJvoY/records/file-262c84f-1.4.1"
+  }
+]

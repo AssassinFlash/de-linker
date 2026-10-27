@@ -1,0 +1,42 @@
+✔ exact request survives a new store instance; duplicate writers and acknowledgement keep one immutable receipt (21.975208ms)
+✔ changed bytes cannot replace, acknowledge or delete an original intent; owners/projects remain scoped (5.843917ms)
+✔ one UUID in different operation namespaces retains independent exact bodies (4.611084ms)
+✔ retention limit refuses new intents without evicting originals or losing known acknowledgements (413.52ms)
+✔ corrupt stored recovery is surfaced before project filtering, rather than silently discarded (1.203417ms)
+✔ actual managed two-hour result retains frozen identity, source origins and analytic totals (5.617333ms)
+✔ result mutants cannot be presented as a validated customer result (24.151208ms)
+✔ mixed or empty load scope keeps its undefined reason and never gains a gross percentage (3.482083ms)
+✔ paginated run history validates owner, finite date and actual cursor names (0.4095ms)
+✔ native language destinations retain the current project without inventing a route (1.539167ms)
+✔ language switches keep only validated result/workspace references for the same project (0.5515ms)
+✔ unfinished draft retains nulls while explicit zero survives preparation (7.113833ms)
+✔ generated parameter/input contracts refuse coercion, hidden defaults and extra facts (0.284791ms)
+✔ battery binding belongs to exact parameters and source, and source selection must be explicit (0.351125ms)
+✔ grid policies and outage coverage are choices, with no browser rounding of instants (1.024833ms)
+✔ editing settings or source selection invalidates the effective replay but preserves unrelated inputs (1.3995ms)
+✔ the shared negative contract fixtures fail in the browser without coercion (1.14275ms)
+✔ shared source range keeps microsecond endpoint ordering and refuses an empty intersection (2.427917ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 730.966542
+✔ double activation dispatches one durably saved request; a lost response retries the exact original revision/key (96.029292ms)
+✔ storage failure prevents dispatch, remains visible and requires an explicit successful storage check (13.762291ms)
+✔ unmount while persistence is pending never sends a mutation and retains the eventual durable intent (7.260166ms)
+✔ a verified account transition discovers the guest intent but never submits it automatically (15.970166ms)
+✔ only a specific proven pre-mutation stale-revision refusal releases a calculation intent (11.751083ms)
+✔ acknowledged battery settings remain recoverable until that asset is saved, or explicitly dismissed (21.449875ms)
+✔ native scope withdrawal before persistence finishes prevents dispatch and preserves the exact guest intent (9.272666ms)
+✔ actual scenario controls retain raw input, require confirmed save, use one frozen revision, and preserve edits from a late preparation response (268.272ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1057.662416

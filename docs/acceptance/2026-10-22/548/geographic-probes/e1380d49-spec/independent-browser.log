@@ -1,0 +1,12 @@
+✔ independent analytic oblique equatorial line and translated local solve (0.905291ms)
+✔ browser facing, UV spacing, ENU spacing and inverse branch guards remain independent (0.796834ms)
+✔ legacy recovery command is preserved without becoming a newly attachable candidate (4.111875ms)
+✔ owned candidate, source attachment, openings and unrelated inputs share one history step (1.845625ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 218.919667

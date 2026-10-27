@@ -1,0 +1,39 @@
+
+> @linker/planner@0.1.0 build
+> tsc --noEmit && vite build && node bin/build-manifest.mjs write
+
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 251 modules transformed.
+rendering chunks...
+computing gzip size...
+../../plugins/linker-tools/build/planner/vite-manifest.json                       0.90 kB │ gzip:   0.27 kB
+../../plugins/linker-tools/build/planner/assets/rolldown-runtime-BWaJ3C7D.js      0.91 kB │ gzip:   0.51 kB
+../../plugins/linker-tools/build/planner/assets/planner.js                        1.25 kB │ gzip:   0.67 kB
+../../plugins/linker-tools/build/planner/assets/planner-core-DcYMVvKs.js        603.86 kB │ gzip: 173.40 kB
+../../plugins/linker-tools/build/planner/assets/SceneViewport-C2H7tgEJ.js     1,548.47 kB │ gzip: 416.98 kB
+
+[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 274ms
+
+> @linker/planner@0.1.0 build:check
+> node bin/build-manifest.mjs check && node --test tests/built-modules.mjs
+
+Planner build matches its sources.
+(node:13926) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/plugins/linker-tools/build/planner/assets/planner.js?ver=wordpress-version is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/plugins/linker-tools/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ a lazy built chunk never executes the versioned WordPress entry again (339.255833ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1470.490042

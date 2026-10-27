@@ -1,0 +1,22 @@
+{
+  "owner": "/root/geographic_spec_e138",
+  "target": "563e038786330ba17aea339e96e9f54e961e4195",
+  "base": "7e96b88dd902ea64fd27250494d3129783d7f307",
+  "source_files_sha_checked_and_removed": 121,
+  "source_bytes_removed": 708668,
+  "source_mismatches": [],
+  "generated_files_removed": 0,
+  "generated_bytes_removed": 0,
+  "dependency_links_removed": [
+    "apps/planner/node_modules"
+  ],
+  "staging_root": "/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/workspace-spec-563e-djurgov9",
+  "all_test_handles_completed": true,
+  "no_native_instance_or_dependency_installation": true,
+  "free_before_bytes": 894120452096,
+  "free_after_bytes": 894121598976,
+  "observed_free_delta_bytes": 1146880,
+  "completed_utc": "2026-10-23T09:47:35.961745+00:00",
+  "scope": "Only this fixed-source review snapshot reclaimed. Parent WIP, existing dependencies, other-chat fixture, prototype, native services and production untouched. Free-space delta includes concurrent activity.",
+  "staging_root_absent": true
+}

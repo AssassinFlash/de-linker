@@ -1,0 +1,115 @@
+{
+  "events": [
+    {
+      "method": "Network.requestWillBeSent",
+      "type": "Fetch",
+      "url": "/styles/liberty"
+    },
+    {
+      "method": "Network.responseReceived",
+      "type": "Fetch",
+      "url": "/styles/liberty",
+      "status": 200,
+      "mime": "application/json"
+    },
+    {
+      "method": "Network.requestWillBeSent",
+      "type": "Fetch",
+      "url": "/planet"
+    },
+    {
+      "method": "Network.requestWillBeSent",
+      "type": "Fetch",
+      "url": "/sprites/ofm_f384/ofm.json"
+    },
+    {
+      "method": "Network.requestWillBeSent",
+      "type": "Fetch",
+      "url": "/sprites/ofm_f384/ofm.png"
+    },
+    {
+      "method": "Network.responseReceived",
+      "type": "Fetch",
+      "url": "/planet",
+      "status": 200,
+      "mime": "application/json"
+    },
+    {
+      "method": "Network.responseReceived",
+      "type": "Fetch",
+      "url": "/sprites/ofm_f384/ofm.json",
+      "status": 200,
+      "mime": "application/json"
+    },
+    {
+      "method": "Network.responseReceived",
+      "type": "Fetch",
+      "url": "/sprites/ofm_f384/ofm.png",
+      "status": 200,
+      "mime": "image/png"
+    },
+    {
+      "method": "Network.requestWillBeSent",
+      "type": "Fetch",
+      "url": "/fonts/Noto%20Sans%20Italic/0-255.pbf"
+    },
+    {
+      "method": "Network.requestWillBeSent",
+      "type": "Fetch",
+      "url": "/fonts/Noto%20Sans%20Italic/256-511.pbf"
+    },
+    {
+      "method": "Network.requestWillBeSent",
+      "type": "Fetch",
+      "url": "/fonts/Noto%20Sans%20Italic/768-1023.pbf"
+    },
+    {
+      "method": "Network.requestWillBeSent",
+      "type": "Fetch",
+      "url": "/fonts/Noto%20Sans%20Italic/8192-8447.pbf"
+    },
+    {
+      "method": "Network.requestWillBeSent",
+      "type": "Fetch",
+      "url": "/fonts/Noto%20Sans%20Regular/0-255.pbf"
+    },
+    {
+      "method": "Network.responseReceived",
+      "type": "Fetch",
+      "url": "/fonts/Noto%20Sans%20Italic/256-511.pbf",
+      "status": 200,
+      "mime": "application/x-protobuf"
+    },
+    {
+      "method": "Network.responseReceived",
+      "type": "Fetch",
+      "url": "/fonts/Noto%20Sans%20Italic/768-1023.pbf",
+      "status": 200,
+      "mime": "application/x-protobuf"
+    },
+    {
+      "method": "Network.responseReceived",
+      "type": "Fetch",
+      "url": "/fonts/Noto%20Sans%20Italic/0-255.pbf",
+      "status": 200,
+      "mime": "application/x-protobuf"
+    },
+    {
+      "method": "Network.responseReceived",
+      "type": "Fetch",
+      "url": "/fonts/Noto%20Sans%20Italic/8192-8447.pbf",
+      "status": 200,
+      "mime": "application/x-protobuf"
+    },
+    {
+      "method": "Network.responseReceived",
+      "type": "Fetch",
+      "url": "/fonts/Noto%20Sans%20Regular/0-255.pbf",
+      "status": 200,
+      "mime": "application/x-protobuf"
+    }
+  ],
+  "hasMore": false,
+  "truncated": false,
+  "boundary": "Main target only; child/worker packet trace unavailable"
+}

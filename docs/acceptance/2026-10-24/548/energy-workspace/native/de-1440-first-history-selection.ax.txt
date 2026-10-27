@@ -1,0 +1,114 @@
+Browser tab: 2, Title: "Lösungskonfigurator · Arbeitsbereich | Linker", URL: "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be&run=a0f51822d8ee4e0e98ff4112145ed767#lp-calculations".
+1 AXWebArea Lösungskonfigurator · Arbeitsbereich | Linker, URL: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be&run=a0f51822d8ee4e0e98ff4112145ed767#lp-calculations
+	2 container
+		3 container Primäre Navigation
+			4 link Description: Linker-Startseite, Value: 127.0.0.1:9347/de/
+			5 pop up button (collapsed) Produkte, Secondary Actions: Expand
+				6 text Produkte
+				7 image
+			8 pop up button (collapsed) Lösungen, Secondary Actions: Expand
+				9 text Lösungen
+				10 image
+			11 pop up button (collapsed) Planen mit Linker, Secondary Actions: Expand
+			12 link Description: Dienstleistungen, Value: 127.0.0.1:9347/de/kundendienst/
+			13 pop up button (collapsed) Für Partner, Secondary Actions: Expand
+			14 pop up button (collapsed) Über uns, Secondary Actions: Expand
+			15 link Description: Produkte suchen, Value: 127.0.0.1:9347/de/produkte/#search-box
+			16 link Description: Lösungsentwurf, Value: 127.0.0.1:9347/de/loesungsentwurf/
+			17 pop up button (collapsed) Description: Mein Konto, Secondary Actions: Expand
+			18 container Sprache
+				19 link Description: EN, Help: English, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=a0f51822d8ee4e0e98ff4112145ed767#lp-calculations
+				20 link Description: DE, Help: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be&run=a0f51822d8ee4e0e98ff4112145ed767#lp-calculations
+			21 link Description: Linker kontaktieren, Value: 127.0.0.1:9347/de/kontakt/
+		22 container
+			23 button Projekte
+			24 text Lyon · synthetic energy scenario · acceptance
+			25 text Gespeichert · Version 5
+			26 button (disabled) Rückgängig
+			27 button (disabled) Wiederholen
+			28 button (disabled) Projekt speichern
+			29 text Lösungskonfigurator AKTUELLES PROJEKT
+			30 container Projektbereiche
+				31 link Description: Projektübersicht, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be&run=a0f51822d8ee4e0e98ff4112145ed767#lp-overview
+				32 link Description: Standort und Projekt, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be&run=a0f51822d8ee4e0e98ff4112145ed767#lp-site
+				33 link Description: Dachplanung, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be&run=a0f51822d8ee4e0e98ff4112145ed767#lp-design
+				34 link Description: Energiedaten, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be&run=a0f51822d8ee4e0e98ff4112145ed767#lp-load
+				35 link Description: Energieberechnung, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be&run=a0f51822d8ee4e0e98ff4112145ed767#lp-calculations
+			36 text Projektangaben bleiben mit ihrer Quelle und Version verknüpft. AKTUELLES PROJEKT
+			37 heading Lyon · synthetic energy scenario · acceptance, Value: 1
+				38 text Lyon · synthetic energy scenario · acceptance
+			39 text Standortdaten und Dachbelegungen werden im selben Projekt gespeichert.
+			40 container Energieberechnung, ID: lp-calculations
+				41 text 07
+				42 heading Energieberechnung, Value: 2, ID: lp-calculations-heading
+					43 text Energieberechnung
+				44 text Berechnen Sie die Energieflüsse dieses Projekts für die gewählten Zeiträume. Mit jedem Ergebnis bleiben die verwendeten Eingaben, Quellen und das Berechnungsmodell gespeichert.
+				45 container Ansicht der Energieberechnung
+					46 checkbox Szenarioeinstellungen, Value: 0
+					47 checkbox Gespeicherte Berechnungen, Value: 1
+				48 container
+					49 heading Bisherige Berechnungen, Value: 3
+						50 text Bisherige Berechnungen
+					51 checkbox Version 5 Berechnung abgebrochen 24.10.26, 10:14, Value: 1
+						52 text Version 5
+						53 text Berechnung abgebrochen
+						54 text 24.10.26, 10:14
+					55 checkbox Version 4 Berechnung fehlgeschlagen 24.10.26, 10:06, Value: 0
+						56 text Version 4
+						57 text Berechnung fehlgeschlagen
+						58 text 24.10.26, 10:06
+					59 checkbox Version 3 Berechnung abgeschlossen 24.10.26, 09:38, Value: 0
+						60 text Version 3
+						61 text Berechnung abgeschlossen
+						62 text 24.10.26, 09:38
+				63 text GESPEICHERTE BERECHNUNG
+				64 heading Berechnung abgebrochen, Value: 3
+					65 text Berechnung abgebrochen
+				66 text Eingabeversion 5
+				67 text Der Server hat den Abbruch bestätigt. Bereits gespeicherte frühere Ergebnisse bleiben verfügbar.
+			68 text Lösungskonfigurator
+			69 text von Linker
+			70 text Linker bündelt Ihre Angaben in einem bearbeitbaren Projekt für die PV- und Speicherplanung.
+			71 button (collapsed) Über dieses Werkzeug, Secondary Actions: Expand
+				72 text Über dieses Werkzeug
+		73 container tv-footer-v2
+			74 image Linker
+			75 container
+				76 text Sprache
+				77 container Sprache
+					78 link Description: Englisch, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=a0f51822d8ee4e0e98ff4112145ed767#lp-calculations
+					79 link Description: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be&run=a0f51822d8ee4e0e98ff4112145ed767#lp-calculations
+			80 text WIR VERBINDEN
+			81 link Description: Produkte, Value: 127.0.0.1:9347/de/produkte/
+			82 text ,
+			83 link Description: Technologie, Value: 127.0.0.1:9347/de/ueber-uns/leistungsfaehigkeit/
+			84 text und
+			85 link Description: Service, Value: 127.0.0.1:9347/de/kundendienst/
+			86 text und schaffen 
+			87 text dauerhaften Wert
+			88 text  für Energiepartner in Europa.
+			89 tab group Fußzeilen-Navigation
+				90 tab (selected, settable, boolean) Lösungen, Value: 1, ID: footer-tab-solutions
+				91 tab (selectable, settable, boolean) Dienstleistungen, Value: 0, ID: footer-tab-services
+				92 tab (selectable, settable, boolean) Planen mit Linker, Value: 0, ID: footer-tab-planning
+				93 tab (selectable, settable, boolean) Konto, Value: 0, ID: footer-tab-account
+				94 tab (selectable, settable, boolean) Linker kontaktieren, Value: 0, ID: footer-tab-contact
+			95 container Description: Lösungen, ID: footer-panel-solutions
+				96 heading Lösungen, Value: 2
+					97 text Lösungen
+				98 content list
+					99 link Description: Heimspeicher, Value: 127.0.0.1:9347/de/loesung/heimspeicher/
+					100 link Description: Gewerbespeicher, Value: 127.0.0.1:9347/de/loesung/gewerbespeicher/
+					101 link Description: Großspeicher, Value: 127.0.0.1:9347/de/loesung/grossspeicher/
+			102 text © 2026 Linker. Alle Rechte vorbehalten.
+			103 container Rechtliches
+				104 link Description: Impressum, Value: 127.0.0.1:9347/de/impressum/
+				105 link Description: Datenschutzerklärung, Value: 127.0.0.1:9347/de/datenschutz/
+				106 button Cookie-Einstellungen
+				107 link Description: Verkaufsbedingungen, Value: 127.0.0.1:9347/de/verkaufsbedingungen/
+				108 link Description: Rückgabe & Erstattung, Value: 127.0.0.1:9347/de/rueckgabe-erstattung/
+			109 container
+				110 text Produkteignung · Wechselrichter-Kompatibilität · Projektunterstützung
+		111 button (collapsed) Description: Genie fragen, Secondary Actions: Expand
+
+The focused UI element is 64 heading Berechnung abgebrochen, Value: 3

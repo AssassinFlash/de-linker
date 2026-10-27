@@ -1,0 +1,16 @@
+{
+  "command": [
+    "node",
+    "--no-warnings=ExperimentalWarning",
+    "--loader",
+    "./tests/tsx-loader.mjs",
+    "--test",
+    "tests/independent-revision-refusal.mjs"
+  ],
+  "cwd": "apps/planner",
+  "target": "3225fc552a89c406f685bfc5643d50745e58baa9",
+  "exit_code": 0,
+  "probe_sha256": "f4d95de00ab4581a9846f5569ee3b30fe04752487eca9ae46dfbfb0a0129e540",
+  "generated_path": "apps/planner/tests/independent-revision-refusal.mjs",
+  "completed_utc": "2026-10-23T11:22:18.128400+00:00"
+}

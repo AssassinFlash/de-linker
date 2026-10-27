@@ -11,7 +11,10 @@ namespace Linker\Commerce\Tests\Support;
 
 use Linker\Commerce\Gating\CommerceState;
 use Linker\Commerce\Abilities\PublicationData;
-use Linker\Commerce\Products\Compatibility;
+use Linker\Commerce\Products\EngineeringData;
+use Linker\Commerce\Products\Publication\CompatibilityClaims;
+use Linker\Commerce\Products\Publication\CompatibilityMigration;
+use Linker\Commerce\Products\Publication\DocumentFiles;
 use Linker\Commerce\Products\SelectionFacts;
 use Linker\Commerce\Registration\Approval;
 use Mockery;
@@ -30,6 +33,18 @@ trait MocksLiveProducts {
 	 * @var bool
 	 */
 	private bool $publication_migrated = false;
+
+	/** Whether this case installed native product readers.
+	 *
+	 * @var bool
+	 */
+	private bool $live_products_mocked = false;
+
+	/** Synthetic native Woo declarations populated by the explicit fixture migration.
+	 *
+	 * @var array<int,array<string,mixed>>
+	 */
+	private array $compatibility_fixture_claims = array();
 
 
 	/**
@@ -60,6 +75,7 @@ trait MocksLiveProducts {
 	 * @throws \LogicException When WP_Mock answers with another responder.
 	 */
 	protected function mock_live_products( array $ids, bool $migrated = false, bool $sees_prices = false ): void {
+		$this->live_products_mocked = true;
 		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn( mixed $value, int $flags = 0 ): string|false => json_encode( $value, $flags ) ) );
 		WP_Mock::userFunction( 'wp_cache_supports', array( 'return' => true ) );
 		WP_Mock::userFunction( 'wp_cache_flush_runtime', array( 'return' => true ) );
@@ -67,8 +83,10 @@ trait MocksLiveProducts {
 		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://de-linker.com' ) );
 		WP_Mock::userFunction( 'pll_get_post', array( 'return' => 0 ) )->byDefault();
 		$this->publication_migrated = $migrated;
-		$products                   = LiveProducts::products( $migrated );
-		$bindings                   = array();
+		WP_Mock::userFunction( 'metadata_exists' )->andReturnUsing( fn ( string $type, int $id, string $key ): bool => CompatibilityClaims::META_KEY === $key && isset( $this->compatibility_fixture_claims[ $id ] ) );
+		$this->compatibility_fixture_claims = array();
+		$products                           = LiveProducts::products( $migrated );
+		$bindings                           = array();
 		foreach ( $products as $id => $product ) {
 			$figures = json_decode( $product['figures'], true );
 			foreach ( is_array( $figures ) ? $figures : array() as $field => $entry ) {
@@ -125,7 +143,10 @@ trait MocksLiveProducts {
 		WP_Mock::userFunction(
 			'get_post_meta',
 			array(
-				'return' => static function ( int $id, string $key ) use ( $products, $bindings ) {
+				'return' => function ( int $id, string $key ) use ( $products, $bindings ) {
+					if ( CompatibilityClaims::META_KEY === $key ) {
+						return $this->compatibility_fixture_claims[ $id ] ?? '';
+					}
 					$product = $products[ $id ] ?? null;
 					if ( null === $product ) {
 						return '';
@@ -226,6 +247,16 @@ trait MocksLiveProducts {
 	 * @return PublicationData
 	 */
 	protected function publication_data(): PublicationData {
+		if ( ! $this->live_products_mocked ) {
+			return new PublicationData(
+				static fn (): array => array(
+					'source_revision'        => 'fixture',
+					'compatibility_revision' => 'fixture',
+					'products'               => array(),
+					'documents'              => array(),
+				)
+			);
+		}
 		return new PublicationData(
 			function (): array {
 				$products  = array();
@@ -235,6 +266,7 @@ trait MocksLiveProducts {
 						$products[] = array(
 							'product_id'           => $id,
 							'product_revision'     => (string) $id,
+							'model'                => self::MODEL_NAMES[ array_values( $product['attributes']['pa_model'] ?? array( '' ) )[0] ] ?? array_values( $product['attributes']['pa_model'] ?? array( '' ) )[0],
 							'published_locale_ids' => array( $id ),
 						);
 						$figures    = json_decode( $product['figures'], true );
@@ -258,10 +290,11 @@ trait MocksLiveProducts {
 						}
 					}
 				}
-				foreach ( Compatibility::pairs() as $pair ) {
+				$input = EngineeringData::json( EngineeringData::COMPATIBILITY_FILE );
+				foreach ( array_merge( $input['pairs'] ?? array(), $input['requirements'] ?? array() ) as $pair ) {
 					foreach ( (array) ( $pair['documents'] ?? array() ) as $document ) {
 						$url               = $document['url'];
-						$key               = hash( 'sha256', $url );
+						$key               = DocumentFiles::id( $url );
 						$documents[ $key ] = array(
 							'document_id'       => $key,
 							'document_revision' => $key,
@@ -275,12 +308,18 @@ trait MocksLiveProducts {
 						);
 					}
 				}
-				return array(
+				$manifest = array(
 					'source_revision'        => 'fixture',
 					'compatibility_revision' => 'fixture',
 					'products'               => $products,
 					'documents'              => array_values( $documents ),
 				);
+				if ( is_array( $input ) ) {
+					foreach ( CompatibilityMigration::plan( $input, str_repeat( 'a', 64 ), $manifest )['changes'] as $change ) {
+						$this->compatibility_fixture_claims[ $change['product_id'] ] = $change['after'];
+					}
+				}
+				return $manifest;
 			}
 		);
 	}

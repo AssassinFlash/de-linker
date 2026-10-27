@@ -1,0 +1,7 @@
+{
+  "queries": "OpenSolar custom consumption interval data CSV upload help\nNREL SAM electric load data CSV time step daylight saving time",
+  "maxPagesPerQuery": 1,
+  "resultsPerPage": 5,
+  "saveHtml": false,
+  "saveHtmlToKeyValueStore": false
+}

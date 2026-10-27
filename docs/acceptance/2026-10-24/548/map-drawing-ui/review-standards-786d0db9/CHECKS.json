@@ -1,0 +1,40 @@
+{
+  "pin": "786d0db99203d35010b6a7fdc38dc984b3058606",
+  "incremental_base": "02c8704970294ff17de3f0aaa00f420e5f1e0405",
+  "full_review_base": "43297ecf5673fa5f29c82f90fbe583666a5e3e15",
+  "commits": ["b48ffda6", "786d0db9"],
+  "incremental_diff_command": "git diff --no-ext-diff --unified=0 02c8704970294ff17de3f0aaa00f420e5f1e0405...786d0db99203d35010b6a7fdc38dc984b3058606",
+  "incremental_diff_sha256": "d3e9c16fcee8b6cd58ddf12e090f2af61441bbb6d5c9a9590135de2a6f3b29d7",
+  "changed_files": 11,
+  "added_lines_scanned": 304,
+  "legacy_pattern_hits": 0,
+  "credential_pattern_hits": 0,
+  "css_locale_dependency_php_or_service_changes": [],
+  "build_check": {
+    "command": "npm run build:check",
+    "cwd": "apps/planner",
+    "exit_code": 0,
+    "source_and_build_hashes": "matched",
+    "built_module_identity_tests_passed": 1,
+    "warning": "Existing MODULE_TYPELESS_PACKAGE_JSON warning when Node imports generated planner.js; no native inference."
+  },
+  "focused_tests": {
+    "command": "node --no-warnings=ExperimentalWarning --loader ./tests/tsx-loader.mjs --test tests/map-prefix-controller.test.mjs tests/map-roof-recovery.test.mjs tests/map-roof-workspace.test.mjs",
+    "cwd": "apps/planner",
+    "exit_code": 0,
+    "passed": 14,
+    "failed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "new_assertions": ["invalid field associated alert and focus", "generic refusal focus within property form", "success result header focus", "status follows controlled shared-geometry revert and reapply"],
+    "boundary": "Real React/journal/domain/Terra with fake IndexedDB and MapLibre port; controlled geometry replacement is not native undo-button proof."
+  },
+  "tooling_only_diagnostic": {
+    "command": "git diff --check 43297ecf5673fa5f29c82f90fbe583666a5e3e15...786d0db99203d35010b6a7fdc38dc984b3058606",
+    "exit_code": 2,
+    "file": "plugins/linker-tools/build/planner/assets/MapViewport-_fltUiPZ.js",
+    "line": 62,
+    "reason": "Trailing whitespace in bundled MapLibre shader source; existing diagnostic retained, excluded from Standards findings under the tooling-enforced-issue rule."
+  },
+  "reviewer_mutations": "Only this directory; no source/test/build/locale, dependency, browser, instance, mail or production mutation."
+}

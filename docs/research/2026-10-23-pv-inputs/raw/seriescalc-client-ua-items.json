@@ -1,0 +1,106 @@
+[
+  {
+    "url": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-ERA5&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=crystSi&mountingplace=free&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json",
+    "crawl": {
+      "loadedUrl": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-ERA5&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=crystSi&mountingplace=free&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json",
+      "depth": 0,
+      "referrerUrl": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-ERA5&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=crystSi&mountingplace=free&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json",
+      "loadedTime": "2026-10-22T17:36:09.626Z",
+      "httpStatusCode": 200,
+      "contentLengthBytes": 1057449,
+      "contentType": "application/json"
+    },
+    "html": null,
+    "htmlUrl": null,
+    "text": null,
+    "markdown": null,
+    "metadata": {
+      "author": null,
+      "canonicalUrl": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-ERA5&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=crystSi&mountingplace=free&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json",
+      "description": null,
+      "keywords": null,
+      "languageCode": null,
+      "title": "seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-ERA5&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=crystSi&mountingplace=free&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json"
+    },
+    "screenshotUrl": null,
+    "fileUrl": "https://api.apify.com/v2/key-value-stores/WRudj2UjhIKNA4f6D/records/file-1498b16-seriescalc"
+  },
+  {
+    "url": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-SARAH3&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=crystSi&mountingplace=free&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json",
+    "crawl": {
+      "loadedUrl": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-SARAH3&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=crystSi&mountingplace=free&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json",
+      "depth": 0,
+      "referrerUrl": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-SARAH3&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=crystSi&mountingplace=free&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json",
+      "loadedTime": "2026-10-22T17:36:19.987Z",
+      "httpStatusCode": 200,
+      "contentLengthBytes": 1054883,
+      "contentType": "application/json"
+    },
+    "html": null,
+    "htmlUrl": null,
+    "text": null,
+    "markdown": null,
+    "metadata": {
+      "author": null,
+      "canonicalUrl": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-SARAH3&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=crystSi&mountingplace=free&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json",
+      "description": null,
+      "keywords": null,
+      "languageCode": null,
+      "title": "seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-SARAH3&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=crystSi&mountingplace=free&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json"
+    },
+    "screenshotUrl": null,
+    "fileUrl": "https://api.apify.com/v2/key-value-stores/WRudj2UjhIKNA4f6D/records/file-f477a3a-seriescalc"
+  },
+  {
+    "url": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&startyear=2020&endyear=2020&raddatabase=PVGIS-ERA5&outputformat=json",
+    "crawl": {
+      "loadedUrl": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&startyear=2020&endyear=2020&raddatabase=PVGIS-ERA5&outputformat=json",
+      "depth": 0,
+      "referrerUrl": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&startyear=2020&endyear=2020&raddatabase=PVGIS-ERA5&outputformat=json",
+      "loadedTime": "2026-10-22T17:36:22.633Z",
+      "httpStatusCode": 200,
+      "contentLengthBytes": 743551,
+      "contentType": "application/json"
+    },
+    "html": null,
+    "htmlUrl": null,
+    "text": null,
+    "markdown": null,
+    "metadata": {
+      "author": null,
+      "canonicalUrl": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&startyear=2020&endyear=2020&raddatabase=PVGIS-ERA5&outputformat=json",
+      "description": null,
+      "keywords": null,
+      "languageCode": null,
+      "title": "seriescalc?lat=52.52&lon=13.405&startyear=2020&endyear=2020&raddatabase=PVGIS-ERA5&outputformat=json"
+    },
+    "screenshotUrl": null,
+    "fileUrl": "https://api.apify.com/v2/key-value-stores/WRudj2UjhIKNA4f6D/records/file-ec231d2-seriescalc"
+  },
+  {
+    "url": "https://re.jrc.ec.europa.eu/api/v5_3/PVcalc?lat=45&lon=8&peakpower=1&loss=14&outputformat=json",
+    "crawl": {
+      "loadedUrl": "https://re.jrc.ec.europa.eu/api/v5_3/PVcalc?lat=45&lon=8&peakpower=1&loss=14&outputformat=json",
+      "depth": 0,
+      "referrerUrl": "https://re.jrc.ec.europa.eu/api/v5_3/PVcalc?lat=45&lon=8&peakpower=1&loss=14&outputformat=json",
+      "loadedTime": "2026-10-22T17:36:23.311Z",
+      "httpStatusCode": 200,
+      "contentLengthBytes": 5193,
+      "contentType": "application/json"
+    },
+    "html": null,
+    "htmlUrl": null,
+    "text": null,
+    "markdown": null,
+    "metadata": {
+      "author": null,
+      "canonicalUrl": "https://re.jrc.ec.europa.eu/api/v5_3/PVcalc?lat=45&lon=8&peakpower=1&loss=14&outputformat=json",
+      "description": null,
+      "keywords": null,
+      "languageCode": null,
+      "title": "PVcalc?lat=45&lon=8&peakpower=1&loss=14&outputformat=json"
+    },
+    "screenshotUrl": null,
+    "fileUrl": "https://api.apify.com/v2/key-value-stores/WRudj2UjhIKNA4f6D/records/file-118ba84-PVcalc"
+  }
+]

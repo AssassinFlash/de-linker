@@ -1,0 +1,13 @@
+{
+  "name": "unchanged-563-probe",
+  "command": [
+    "node",
+    "--no-warnings=ExperimentalWarning",
+    "--loader",
+    "./tests/tsx-loader.mjs",
+    "--test",
+    "tests/independent-journal-probe.mjs"
+  ],
+  "cwd": "apps/planner",
+  "exit_code": 0
+}

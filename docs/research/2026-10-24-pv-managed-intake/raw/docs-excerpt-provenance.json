@@ -1,0 +1,156 @@
+[
+  {
+    "sourceUrl": "https://docs.apify.com/api/v2/act-runs-post",
+    "capture": {
+      "loadedUrl": "https://docs.apify.com/api/v2/actors-runs-post",
+      "loadedTime": "2026-10-24T04:13:18.654Z",
+      "referrerUrl": "https://docs.apify.com/api/v2/act-runs-post",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 33819,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "actorTextRepresentation": "markdown",
+    "originalActorTextBytes": 152493,
+    "originalActorTextSha256": "22f12831172939e387610cd19d0ca817e98b754ffc141d0b02e8ece4d0fcb3f1",
+    "retainedLineRanges": [
+      [
+        1,
+        102
+      ]
+    ],
+    "retainedFile": "docs-act-runs-post-excerpt.txt",
+    "retainedBytes": 4249,
+    "retainedSha256": "d751312e6865ff0b6328609ae73c4cc3722f13befef4dd94edefb3ad43798481",
+    "selectionPolicy": "exact Actor markdown lines selected; repetitive full response/error-schema examples excluded"
+  },
+  {
+    "sourceUrl": "https://docs.apify.com/api/v2/actor-run-get",
+    "capture": {
+      "loadedUrl": "https://docs.apify.com/api/v2/actor-run-get",
+      "loadedTime": "2026-10-24T04:13:19.485Z",
+      "referrerUrl": "https://docs.apify.com/api/v2/actor-run-get",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 31744,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "actorTextRepresentation": "markdown",
+    "originalActorTextBytes": 113321,
+    "originalActorTextSha256": "ac140d537b3d7353da478dbdd08d668217413336695ee3224667bd56dc0f0946",
+    "retainedLineRanges": [
+      [
+        1,
+        45
+      ]
+    ],
+    "retainedFile": "docs-actor-run-get-excerpt.txt",
+    "retainedBytes": 1839,
+    "retainedSha256": "d92a28118935f3a380ea7ef47ac9ba10470d003760df643994b4098bf6d83c7b",
+    "selectionPolicy": "exact Actor markdown lines selected; repetitive full response/error-schema examples excluded"
+  },
+  {
+    "sourceUrl": "https://docs.apify.com/api/v2/actor-run-abort-post",
+    "capture": {
+      "loadedUrl": "https://docs.apify.com/api/v2/actor-run-abort-post",
+      "loadedTime": "2026-10-24T04:13:20.081Z",
+      "referrerUrl": "https://docs.apify.com/api/v2/actor-run-abort-post",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 30294,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "actorTextRepresentation": "markdown",
+    "originalActorTextBytes": 98932,
+    "originalActorTextSha256": "53c526ad68aab67f5b3e1b73c6e6ab440b49bcd6cca5ed261732b823fab6a731",
+    "retainedLineRanges": [
+      [
+        1,
+        32
+      ]
+    ],
+    "retainedFile": "docs-actor-run-abort-post-excerpt.txt",
+    "retainedBytes": 795,
+    "retainedSha256": "fd35e04734573799beb20af074de0f5ef7f5db1b72967f0fd3e8fe3e62af7b10",
+    "selectionPolicy": "exact Actor markdown lines selected; repetitive full response/error-schema examples excluded"
+  },
+  {
+    "sourceUrl": "https://docs.apify.com/api/v2/dataset-items-get",
+    "capture": {
+      "loadedUrl": "https://docs.apify.com/api/v2/dataset-items-get",
+      "loadedTime": "2026-10-24T04:13:20.677Z",
+      "referrerUrl": "https://docs.apify.com/api/v2/dataset-items-get",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 29077,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "actorTextRepresentation": "markdown",
+    "originalActorTextBytes": 97196,
+    "originalActorTextSha256": "73474d15844e203c0e5a78c43a7ed877e6548a997e996e2db9f48e365bd82a60",
+    "retainedLineRanges": [
+      [
+        1,
+        300
+      ]
+    ],
+    "retainedFile": "docs-dataset-items-get-excerpt.txt",
+    "retainedBytes": 11051,
+    "retainedSha256": "cf5f3cff6ff71f71f023c19a5f3cc87c2756611f0e7d5425ff36a20978d75273",
+    "selectionPolicy": "exact Actor markdown lines selected; repetitive full response/error-schema examples excluded"
+  },
+  {
+    "sourceUrl": "https://docs.apify.com/api/v2/key-value-store-record-get",
+    "capture": {
+      "loadedUrl": "https://docs.apify.com/api/v2/key-value-store-record-get",
+      "loadedTime": "2026-10-24T04:13:21.199Z",
+      "referrerUrl": "https://docs.apify.com/api/v2/key-value-store-record-get",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 24437,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "actorTextRepresentation": "markdown",
+    "originalActorTextBytes": 87397,
+    "originalActorTextSha256": "64d64367e393197b48129223a50a13083ed10b7977a09953a539775e07f6652f",
+    "retainedLineRanges": [
+      [
+        1,
+        53
+      ],
+      [
+        63,
+        65
+      ]
+    ],
+    "retainedFile": "docs-key-value-store-record-get-excerpt.txt",
+    "retainedBytes": 1809,
+    "retainedSha256": "8b77833f51bdd0f378b14f12127b5aab9f315c35a6d17103edf8bb2e891c72de",
+    "selectionPolicy": "exact Actor markdown lines selected; repetitive full response/error-schema examples excluded"
+  },
+  {
+    "sourceUrl": "https://docs.apify.com/platform/actors/running/runs-and-builds",
+    "capture": {
+      "loadedUrl": "https://docs.apify.com/actors/running/runs-and-builds",
+      "loadedTime": "2026-10-24T04:13:21.898Z",
+      "referrerUrl": "https://docs.apify.com/platform/actors/running/runs-and-builds",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 13371,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "actorTextRepresentation": "markdown",
+    "originalActorTextBytes": 9578,
+    "originalActorTextSha256": "bbc7e22fa6155ac1c9a35a0ac1a56f4a1e6d31a8050ac59a570f0340fde69f17",
+    "retainedLineRanges": [
+      [
+        1,
+        116
+      ]
+    ],
+    "retainedFile": "docs-runs-and-builds-excerpt.txt",
+    "retainedBytes": 6606,
+    "retainedSha256": "9cee716b60d9236d040de6b9ab98a4d4790977330a12b7953f9f858672c5c213",
+    "selectionPolicy": "exact Actor markdown lines selected; repetitive full response/error-schema examples excluded"
+  }
+]

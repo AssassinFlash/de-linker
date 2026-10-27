@@ -1,0 +1,11 @@
+{
+  "command": [
+    "npm",
+    "run",
+    "lint:types"
+  ],
+  "cwd": "apps/planner",
+  "exit_code": 0,
+  "target": "eff8341d5a0eaf24999f42854da6339032c65c9c",
+  "completed_utc": "2026-10-23T11:30:54.798260+00:00"
+}

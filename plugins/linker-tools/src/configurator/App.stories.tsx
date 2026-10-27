@@ -1,7 +1,7 @@
 /**
  * The configurator's screens and states on the engine's recorded answers.
- * Each story types the inputs behind the answer it shows (the requests are
- * listed in services/engine/tests/test_ui_fixtures.py).
+ * Historical recordings for the retired calculator UI. Current customer
+ * workflow acceptance lives with the unified planner and its native reports.
  */
 
 /**

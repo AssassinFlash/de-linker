@@ -1,0 +1,78 @@
+[
+  {
+    "case": "normal",
+    "commits": 1,
+    "origin": [
+      5,
+      1
+    ]
+  },
+  {
+    "case": "pointercancel",
+    "commits": 0,
+    "attempts": 0,
+    "preview": false,
+    "captured": 0
+  },
+  {
+    "case": "lostpointercapture",
+    "commits": 0,
+    "attempts": 0,
+    "preview": false,
+    "captured": 1
+  },
+  {
+    "case": "Escape",
+    "commits": 0,
+    "attempts": 0,
+    "preview": false,
+    "captured": 0
+  },
+  {
+    "case": "blur",
+    "commits": 0,
+    "attempts": 0,
+    "preview": false,
+    "captured": 0
+  },
+  {
+    "case": "Pan view",
+    "commits": 0,
+    "attempts": 0,
+    "preview": false,
+    "captured": 0
+  },
+  {
+    "case": "Zoom in",
+    "commits": 0,
+    "attempts": 0,
+    "preview": false,
+    "captured": 0
+  },
+  {
+    "case": "Fit view",
+    "commits": 0,
+    "attempts": 0,
+    "preview": false,
+    "captured": 0
+  },
+  {
+    "case": "disable",
+    "commits": 0,
+    "attempts": 0,
+    "preview": false,
+    "captured": 0
+  },
+  {
+    "case": "module_changed",
+    "commits": 0,
+    "attempts": 0,
+    "preview": false,
+    "captured": 0
+  },
+  {
+    "case": "parent_before_child",
+    "attempts": 1,
+    "commits": 0
+  }
+]

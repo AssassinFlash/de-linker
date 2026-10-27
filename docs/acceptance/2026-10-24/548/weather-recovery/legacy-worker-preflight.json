@@ -1,0 +1,28 @@
+{
+  "capture": {
+    "runtime_sha256": "9b66656acb26b65b88b09a44b8508a42094059af64b49e7038eedef0d92a10a1",
+    "module_file": "/Users/chesterjohn/de-linker-local/p548/planner/runtime-releases/9b66656acb26b65b88b09a44b8508a42094059af64b49e7038eedef0d92a10a1/src/linker_engine/planning/runtime_snapshot.py",
+    "schema_constants": {
+      "SCHEMA_VERSION": 2
+    }
+  },
+  "identity": {
+    "execution_key": "dfe60fc2089c920a945bb269da56dcb9debe6ccd5f6e9e7e70b46f6c08f55116",
+    "runtime_sha256": "9b66656acb26b65b88b09a44b8508a42094059af64b49e7038eedef0d92a10a1",
+    "schema_version": 1,
+    "storage_binding": "ec4c7866c5a15b82fcb94096a143b7e77f8801ac38153cb146e673fe1b3ea0d9"
+  },
+  "python": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/services/engine/.venv/bin/python",
+  "environment_keys": [
+    "HOME",
+    "LANG",
+    "LC_ALL",
+    "LINKER_PLANNER_CONFIG",
+    "LINKER_PLANNER_WORKER_CONFIG",
+    "PATH",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONPATH",
+    "TMPDIR"
+  ],
+  "exit_code": 0
+}

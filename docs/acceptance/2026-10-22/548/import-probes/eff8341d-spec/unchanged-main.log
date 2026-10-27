@@ -1,0 +1,30 @@
+✔ independent: all raw controls and original bytes survive Back, unidentified 422, and later typed correction (701.689833ms)
+✔ independent: actual MultiPolygon choice is explicit and sends its original rings and nonzero part indices (157.579041ms)
+✔ independent: existing origin stays fixed and declared negative Up follows the selected vertex geodetic vertical (122.272333ms)
+✔ independent: nonempty unaligned geometry cannot supply implicit origin or dispatch (39.784042ms)
+✔ independent: malformed 3D, CRS and unclosed originals never reach mutation (76.288333ms)
+✔ independent: real IDB quota across other project intents refuses dispatch without evicting originals (185.795791ms)
+✔ independent: incomplete local commit and later native withdrawal cannot dispatch a roof request (18.072667ms)
+✔ independent: dismiss aborts a dispatched request, preserves its durable intent, and fences an ignored late response (25.030958ms)
+✔ independent: current native admission, without dismissal, fences a late successful response (18.540667ms)
+✔ independent: only a native-granted former namespace can be explicitly retried with the same original body/key (38.933792ms)
+✔ independent: unidentified status/code combinations retain retry bytes; only identified pre-mutation pairs release them (52.23525ms)
+✔ independent: changed server options or content hash never produce an attachable prepared roof (19.123375ms)
+✔ independent: CSV identified refusal correction also uses the real client and real IndexedDB original (42.981ms)
+✔ independent: commercial project preview adds exactly one shared history step; unknown revision retry preserves body; confirmed save clears only that original (427.335167ms)
+▶ SPEC COUNTEREXAMPLE: explicit relative-zero datum releases a previously rejected hidden height
+  ✔ previously required blank (41.962791ms)
+  ✔ previously invalid raw decimal (45.499375ms)
+✔ SPEC COUNTEREXAMPLE: explicit relative-zero datum releases a previously rejected hidden height (88.023875ms)
+▶ SPEC COUNTEREXAMPLE: response-shape parsing never proves a pre-mutation refusal
+  ✔ non-object JSON response with HTTP 200 (13.488667ms)
+  ✔ non-object JSON response with HTTP 502 (12.13075ms)
+✔ SPEC COUNTEREXAMPLE: response-shape parsing never proves a pre-mutation refusal (26.180375ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5093.531542

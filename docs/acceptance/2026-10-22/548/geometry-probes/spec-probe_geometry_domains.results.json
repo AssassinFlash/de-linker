@@ -1,0 +1,63 @@
+[
+  {
+    "case": "concave_roof_recess_not_filled",
+    "passed": true,
+    "status": "conflicts_detected",
+    "conflicts": 1,
+    "complete": true,
+    "candidate_checks": 0
+  },
+  {
+    "case": "hole_not_filled",
+    "passed": true,
+    "status": "conflicts_detected",
+    "conflicts": 1,
+    "complete": true,
+    "candidate_checks": 1
+  },
+  {
+    "case": "cuboid_thickness_crosses_edge",
+    "passed": true,
+    "status": "conflicts_detected",
+    "conflicts": 1,
+    "complete": true,
+    "candidate_checks": 0
+  },
+  {
+    "case": "cuboid_thickness_inside_edge",
+    "passed": true,
+    "status": "no_conflicts_detected",
+    "conflicts": 0,
+    "complete": true,
+    "candidate_checks": 0
+  },
+  {
+    "case": "world_vertical_extrusion_projects_on_sloped_face",
+    "passed": true,
+    "status": "conflicts_detected",
+    "conflicts": 1,
+    "complete": true,
+    "candidate_checks": 1
+  },
+  {
+    "case": "zero_clearance_boundary_contact_permitted",
+    "passed": true,
+    "status": "no_conflicts_detected",
+    "conflicts": 0,
+    "complete": true,
+    "candidate_checks": 1
+  },
+  {
+    "case": "real_candidate_budget_is_explicitly_incomplete",
+    "passed": true,
+    "status": "incomplete",
+    "conflicts": 200000,
+    "complete": false,
+    "candidate_checks": 200000,
+    "elapsed_s": 2.058075374981854
+  },
+  {
+    "case": "slot_budget_5001_refused",
+    "passed": true
+  }
+]

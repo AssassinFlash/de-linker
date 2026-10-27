@@ -1,0 +1,114 @@
+{
+  "capture": "Page.captureScreenshot explicit CSS viewport clip, captureBeyondViewport=true",
+  "before": {
+    "active": {
+      "invalid": "true",
+      "label": {
+        "bottom": 294.6484375,
+        "height": 116.890625,
+        "left": 298.5546875,
+        "right": 830,
+        "top": 177.7578125,
+        "width": 531.4453125,
+        "x": 298.5546875,
+        "y": 177.7578125
+      },
+      "name": "pitch",
+      "rect": {
+        "bottom": 252.5546875,
+        "height": 46,
+        "left": 298.5546875,
+        "right": 830,
+        "top": 206.5546875,
+        "width": 531.4453125,
+        "x": 298.5546875,
+        "y": 206.5546875
+      },
+      "tag": "INPUT",
+      "text": null,
+      "value": "1."
+    },
+    "bar": {
+      "bottom": 162,
+      "height": 73,
+      "left": 0,
+      "right": 1440,
+      "top": 89,
+      "width": 1440,
+      "x": 0,
+      "y": 89
+    },
+    "columns": [
+      "531.445px 531.445px"
+    ],
+    "documentWidth": 1440,
+    "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2",
+    "fontStatus": "loaded",
+    "height": 1000,
+    "renderer": [],
+    "scrollWidth": 1440,
+    "styles": [
+      "http://127.0.0.1:9347/wp-content/uploads/windpress/cache/tailwind.css?ver=1792757967"
+    ],
+    "url": "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-design",
+    "width": 1440,
+    "x": 0,
+    "y": 876
+  },
+  "after": {
+    "active": {
+      "invalid": "true",
+      "label": {
+        "bottom": 294.6484375,
+        "height": 116.890625,
+        "left": 298.5546875,
+        "right": 830,
+        "top": 177.7578125,
+        "width": 531.4453125,
+        "x": 298.5546875,
+        "y": 177.7578125
+      },
+      "name": "pitch",
+      "rect": {
+        "bottom": 252.5546875,
+        "height": 46,
+        "left": 298.5546875,
+        "right": 830,
+        "top": 206.5546875,
+        "width": 531.4453125,
+        "x": 298.5546875,
+        "y": 206.5546875
+      },
+      "tag": "INPUT",
+      "text": null,
+      "value": "1."
+    },
+    "bar": {
+      "bottom": 162,
+      "height": 73,
+      "left": 0,
+      "right": 1440,
+      "top": 89,
+      "width": 1440,
+      "x": 0,
+      "y": 89
+    },
+    "columns": [
+      "531.445px 531.445px"
+    ],
+    "documentWidth": 1440,
+    "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2",
+    "fontStatus": "loaded",
+    "height": 1000,
+    "renderer": [],
+    "scrollWidth": 1440,
+    "styles": [
+      "http://127.0.0.1:9347/wp-content/uploads/windpress/cache/tailwind.css?ver=1792757967"
+    ],
+    "url": "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-design",
+    "width": 1440,
+    "x": 0,
+    "y": 876
+  },
+  "scrollStable": true
+}

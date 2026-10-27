@@ -1,0 +1,321 @@
+{
+  "project": {
+    "id": "82a84c56e50c4efb8497d1bfbe106bd1",
+    "title": "K\u00f6ln \u00b7 owned synthetic roof \u00b7 acceptance",
+    "revision": 3
+  },
+  "input_sha256": "7c0cb7e21d5e461b9dba405499d65534ace8876775fd35efedb266639facaf13",
+  "inputs": {
+    "brief": {
+      "annual_load": {
+        "basis": null,
+        "kwh": null,
+        "source_note": ""
+      },
+      "project_note": "",
+      "project_use": "commercial",
+      "schema_version": 1,
+      "site": {
+        "coordinate_basis": "user_entered",
+        "country_code": "DE",
+        "latitude": 50.94,
+        "location_label": "Synthetic site at 50.94 N, 6.96 E \u00b7 not a surveyed building",
+        "longitude": 6.96,
+        "timezone": "Europe/Berlin"
+      },
+      "system_scope": "new_pv_storage"
+    },
+    "geometry": {
+      "arrays": [],
+      "coordinate_system": {
+        "anchor": {
+          "datum": "EPSG:4326",
+          "latitude_deg": 50.94,
+          "longitude_deg": 6.96,
+          "source_id": "source_8cfac87f5edf38bb019d2aedb57676a6"
+        },
+        "height_reference": "relative_to_project_origin",
+        "kind": "local_enu",
+        "north_reference": "true_north",
+        "north_source_id": "source_8cfac87f5edf38bb019d2aedb57676a6",
+        "unit": "m"
+      },
+      "keepouts": [],
+      "layout_rules": [],
+      "module_specs": [],
+      "obstacles": [],
+      "roofs": [
+        {
+          "boundary_uv": [
+            [
+              0,
+              0
+            ],
+            [
+              14.057646091088232,
+              2.3814009744514944e-05
+            ],
+            [
+              14.057597585864213,
+              13.90590761029432
+            ],
+            [
+              -2.6992427029122135e-11,
+              13.905883796071086
+            ]
+          ],
+          "holes_uv": [
+            [
+              [
+                5.623050675547586,
+                5.5623616689456865
+              ],
+              [
+                5.623046795074092,
+                8.343538427712893
+              ],
+              [
+                8.434570192672988,
+                8.343543190594023
+              ],
+              [
+                8.434576013290787,
+                5.562366431443335
+              ]
+            ]
+          ],
+          "id": "roof_8cfac87f5edf38bb019d2aedb57676a6",
+          "name": "Synthetic 3\u20134\u20135 roof \u00b7 K\u00f6ln",
+          "origin_enu": [
+            0,
+            0,
+            5
+          ],
+          "source_id": "source_8cfac87f5edf38bb019d2aedb57676a6",
+          "u_axis_enu": [
+            1,
+            0,
+            0
+          ],
+          "v_axis_enu": [
+            0,
+            0.8,
+            -0.6
+          ]
+        }
+      ],
+      "schema_version": 1,
+      "sources": [
+        {
+          "acquired_at_utc": null,
+          "calibration_note": "Synthetic 3\u20134\u20135 plane; original generated outline, not a measured building. 2026-10-23.",
+          "id": "source_8cfac87f5edf38bb019d2aedb57676a6",
+          "kind": "user_drawing",
+          "note": "Synthetic WGS 84 fixture \u00b7 K\u00f6ln \u00b7 2026-10-23",
+          "permissions": {
+            "derive": "permitted",
+            "export": "permitted",
+            "retain": "permitted"
+          },
+          "reference_sha256": "47770a0dc5034b54743dd2da28d1c855e2c8c047c7678d3688215d8e89d9eebc",
+          "reference_url": null,
+          "rights_basis": "user_attestation",
+          "rights_note": "Created by Linker for local acceptance. Original and derived geometry may be retained and exported; no actual measured building.",
+          "spatial_precision_m": null
+        }
+      ]
+    },
+    "geometry_imports": {
+      "schema_version": 1,
+      "selected": {
+        "source_8cfac87f5edf38bb019d2aedb57676a6": "07a83a4c17ad4281a9802e77cbfd66b8"
+      }
+    }
+  },
+  "assets": [
+    {
+      "asset_id": "07a83a4c17ad4281a9802e77cbfd66b8",
+      "content_sha256": "47770a0dc5034b54743dd2da28d1c855e2c8c047c7678d3688215d8e89d9eebc",
+      "metadata_sha256": "c13aee7b2310330e45e04ffaa27a01962e2de2aaf7528ed5e4fe5afe23f5c8fa",
+      "original_bytes": 405,
+      "original_exact": true,
+      "metadata": {
+        "geometry_import": {
+          "area_roof_plane_m2": 187.66430950859078,
+          "elevation_basis": "user_declared_plane_relative_to_project_origin",
+          "engineering_status": "not_evaluated",
+          "geometry": {
+            "arrays": [],
+            "coordinate_system": {
+              "anchor": {
+                "datum": "EPSG:4326",
+                "latitude_deg": 50.94,
+                "longitude_deg": 6.96,
+                "source_id": "source_8cfac87f5edf38bb019d2aedb57676a6"
+              },
+              "height_reference": "relative_to_project_origin",
+              "kind": "local_enu",
+              "north_reference": "true_north",
+              "north_source_id": "source_8cfac87f5edf38bb019d2aedb57676a6",
+              "unit": "m"
+            },
+            "keepouts": [],
+            "layout_rules": [],
+            "module_specs": [],
+            "obstacles": [],
+            "roofs": [
+              {
+                "boundary_uv": [
+                  [
+                    0.0,
+                    0.0
+                  ],
+                  [
+                    14.057646091088232,
+                    2.3814009744514944e-05
+                  ],
+                  [
+                    14.057597585864213,
+                    13.90590761029432
+                  ],
+                  [
+                    -2.6992427029122135e-11,
+                    13.905883796071086
+                  ]
+                ],
+                "holes_uv": [
+                  [
+                    [
+                      5.623050675547586,
+                      5.5623616689456865
+                    ],
+                    [
+                      5.623046795074092,
+                      8.343538427712893
+                    ],
+                    [
+                      8.434570192672988,
+                      8.343543190594023
+                    ],
+                    [
+                      8.434576013290787,
+                      5.562366431443335
+                    ]
+                  ]
+                ],
+                "id": "roof_8cfac87f5edf38bb019d2aedb57676a6",
+                "name": "Synthetic 3\u20134\u20135 roof \u00b7 K\u00f6ln",
+                "origin_enu": [
+                  0.0,
+                  0.0,
+                  5.0
+                ],
+                "source_id": "source_8cfac87f5edf38bb019d2aedb57676a6",
+                "u_axis_enu": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "v_axis_enu": [
+                  0.0,
+                  0.8,
+                  -0.6
+                ]
+              }
+            ],
+            "schema_version": 1,
+            "sources": [
+              {
+                "acquired_at_utc": null,
+                "calibration_note": "Synthetic 3\u20134\u20135 plane; original generated outline, not a measured building. 2026-10-23.",
+                "id": "source_8cfac87f5edf38bb019d2aedb57676a6",
+                "kind": "user_drawing",
+                "note": "Synthetic WGS 84 fixture \u00b7 K\u00f6ln \u00b7 2026-10-23",
+                "permissions": {
+                  "derive": "permitted",
+                  "export": "permitted",
+                  "retain": "permitted"
+                },
+                "reference_sha256": "47770a0dc5034b54743dd2da28d1c855e2c8c047c7678d3688215d8e89d9eebc",
+                "reference_url": null,
+                "rights_basis": "user_attestation",
+                "rights_note": "Created by Linker for local acceptance. Original and derived geometry may be retained and exported; no actual measured building.",
+                "spatial_precision_m": null
+              }
+            ]
+          },
+          "geometry_sha256": "19e67935a9e186db8fd1182bfcb37297fab9b94f5b33c98c5c3540cbb9dbe598",
+          "original_content_sha256": "47770a0dc5034b54743dd2da28d1c855e2c8c047c7678d3688215d8e89d9eebc",
+          "plane_intersection_method": "geodetic_vertical_line_v1",
+          "projection": {
+            "grid_dependencies": [],
+            "input_axis_order": "longitude_latitude_ellipsoid_height",
+            "input_crs": "EPSG:4979",
+            "operation": "+proj=pipeline +step +proj=unitconvert +xy_in=deg +xy_out=rad +step +proj=cart +ellps=WGS84 +step +proj=topocentric +ellps=WGS84 +lon_0=6.96 +lat_0=50.94 +h_0=0.0",
+            "output_axes": "east_north_up_metres",
+            "proj": "9.8.1",
+            "pyproj": "3.8.0",
+            "reference": {
+              "ellipsoid_height_m": 0.0,
+              "height_basis": "zero_height_horizontal_convention",
+              "latitude_deg": 50.94,
+              "longitude_deg": 6.96,
+              "method": "wgs84_cart_topocentric_v1",
+              "schema_version": 1
+            },
+            "schema_version": 1
+          },
+          "schema_version": 1,
+          "source_feature_id": "synthetic-roof-not-surveyed"
+        },
+        "geometry_import_options": {
+          "feature_index": 0,
+          "format": "geojson_wgs84_horizontal_v1",
+          "plane": {
+            "basis_note": "Synthetic 3\u20134\u20135 plane; original generated outline, not a measured building. 2026-10-23.",
+            "origin_enu": [
+              0.0,
+              0.0,
+              5.0
+            ],
+            "u_axis_enu": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "v_axis_enu": [
+              0.0,
+              0.8,
+              -0.6
+            ]
+          },
+          "plane_intersection_method": "geodetic_vertical_line_v1",
+          "polygon_index": 0,
+          "reference": {
+            "ellipsoid_height_m": 0.0,
+            "height_basis": "zero_height_horizontal_convention",
+            "latitude_deg": 50.94,
+            "longitude_deg": 6.96,
+            "method": "wgs84_cart_topocentric_v1",
+            "schema_version": 1
+          },
+          "roof_name": "Synthetic 3\u20134\u20135 roof \u00b7 K\u00f6ln",
+          "schema_version": 1,
+          "source": {
+            "export_permission": "permitted",
+            "label": "Synthetic WGS 84 fixture \u00b7 K\u00f6ln \u00b7 2026-10-23",
+            "rights_note": "Created by Linker for local acceptance. Original and derived geometry may be retained and exported; no actual measured building.",
+            "spatial_precision_m": null
+          }
+        },
+        "provenance": {
+          "basis": "user_owned_geometry_file_declaration",
+          "label": "Synthetic WGS 84 fixture \u00b7 K\u00f6ln \u00b7 2026-10-23",
+          "rights_basis": "Created by Linker for local acceptance. Original and derived geometry may be retained and exported; no actual measured building."
+        },
+        "retention": "permanent",
+        "schema_version": 1
+      }
+    }
+  ]
+}

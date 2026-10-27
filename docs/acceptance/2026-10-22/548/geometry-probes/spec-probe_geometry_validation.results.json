@@ -1,0 +1,12 @@
+[
+  {
+    "case": "bad_acquired_at_utc",
+    "python_accepted": false,
+    "browser_accepted": true
+  },
+  {
+    "case": "duplicate_excluded_slot",
+    "python_accepted": false,
+    "browser_accepted": true
+  }
+]

@@ -1,0 +1,27 @@
+✖ new browser horizontal-plane helper preserves local slope under a pure Up translation or explicitly refuses unsupported arithmetic (1.106084ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 78.96075
+
+✖ failing tests:
+
+test at probe_plane.test.mjs:2:1
+✖ new browser horizontal-plane helper preserves local slope under a pure Up translation or explicitly refuses unsupported arithmetic (1.106084ms)
+  AssertionError [ERR_ASSERTION]: {"up":1000000000,"input_en":[0,0.1],"analytic_uv":[0,0.125],"actual":[0,0.12499995708465578],"error":null}
+      at TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/planning-spec-geo-a0d1-4iwo5atx/probe_plane.test.mjs:2:551)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

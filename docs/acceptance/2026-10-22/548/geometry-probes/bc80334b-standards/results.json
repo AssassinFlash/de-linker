@@ -1,0 +1,76 @@
+{
+  "original_translation": {
+    "command": [
+      "services/engine/.venv/bin/python",
+      "probe_geometry_translation.py"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-bc80-nw5ey9z6",
+    "exit": 0,
+    "stdout": "{\"origin\": [0, 0, 4], \"status\": \"conflicts_detected\", \"conflict_count\": 1, \"issues\": [\"north_reference_unspecified\", \"source_precision_unspecified\", \"panel_projected_overlap\"], \"panel_bounds\": [[1.0, 2.0], [1.9900000000000002, 2.99]]}\n{\"origin\": [1000000000000000.0, 0, 4], \"status\": \"conflicts_detected\", \"conflict_count\": 1, \"issues\": [\"north_reference_unspecified\", \"source_precision_unspecified\", \"panel_projected_overlap\"], \"panel_bounds\": [[1.0, 2.0], [2.0, 3.0]]}\n",
+    "stderr": ""
+  },
+  "original_angle_python": {
+    "command": [
+      "services/engine/.venv/bin/python",
+      "probe-angle.py"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-bc80-nw5ey9z6",
+    "exit": 0,
+    "stdout": "{\"id\": \"array:0:0\", \"array_id\": \"array\", \"roof_id\": \"roof\", \"row\": 0, \"column\": 0, \"included\": true, \"centre_uvn\": [2.0258098312460286, 2.444650638275708, 0.12000000000000001], \"u_axis_uvn\": [0.7660444431189778, -0.6427876096865396, 0.0], \"v_axis_uvn\": [0.6427876096865396, 0.7660444431189778, 0.0], \"normal_uvn\": [-0.0, 0.0, 1.0], \"footprint_uv\": [[1.0, 2.0], [1.766044443118978, 1.3572123903134603], [3.0516196624920573, 2.889301276551416], [2.2855752193730794, 3.532088886237956]], \"centre_enu\": [2.0258098312460286, 2.444650638275708, 4.12], \"u_axis_enu\": [0.7660444431189778, -0.6427876096865396, 0.0], \"v_axis_enu\": [0.6427876096865396, 0.7660444431189778, 0.0], \"normal_enu\": [0.0, 0.0, 1.0], \"width_m\": 1.0, \"length_m\": 2.0, \"thickness_m\": 0.04, \"stc_power_w\": 500.0}\n",
+    "stderr": ""
+  },
+  "original_angle_node": {
+    "command": [
+      "node",
+      "probe-angle.mjs"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-bc80-nw5ey9z6",
+    "exit": 0,
+    "stdout": "{\"id\":\"array:0:0\",\"array_id\":\"array\",\"roof_id\":\"roof\",\"row\":0,\"column\":0,\"included\":true,\"centre_uvn\":[2.0258098312460286,2.444650638275708,0.12000000000000001],\"u_axis_uvn\":[0.7660444431189778,-0.6427876096865396,0],\"v_axis_uvn\":[0.6427876096865396,0.7660444431189778,0],\"normal_uvn\":[0,0,1],\"footprint_uv\":[[1,2],[1.766044443118978,1.3572123903134603],[3.0516196624920573,2.889301276551416],[2.2855752193730794,3.532088886237956]],\"centre_enu\":[2.0258098312460286,2.444650638275708,4.12],\"u_axis_enu\":[0.7660444431189778,-0.6427876096865396,0],\"v_axis_enu\":[0.6427876096865396,0.7660444431189778,0],\"normal_enu\":[0,0,1],\"width_m\":1,\"length_m\":2,\"thickness_m\":0.04,\"stc_power_w\":500}\n",
+    "stderr": ""
+  },
+  "original_uv_extent": {
+    "command": [
+      "services/engine/.venv/bin/python",
+      "probe_uv_extent.py"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-bc80-nw5ey9z6",
+    "exit": 0,
+    "stdout": "{\"left_boundary\": 0, \"geometry_status\": \"conflicts_detected\", \"conflicts\": 1, \"complete\": true, \"kinds\": [\"north_reference_unspecified\", \"source_precision_unspecified\", \"panel_projected_overlap\"]}\n{\"left_boundary\": -1000000000000000.0, \"geometry_status\": \"incomplete\", \"conflicts\": 0, \"complete\": false, \"kinds\": [\"numeric_resolution_unsupported\"]}\n",
+    "stderr": ""
+  },
+  "original_derived_uv_domain": {
+    "command": [
+      "services/engine/.venv/bin/python",
+      "probe_derived_resolution.py"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-bc80-nw5ey9z6",
+    "exit": 0,
+    "stdout": "{\"case\": \"derived_obstacle_projection\", \"status\": \"incomplete\", \"complete\": false, \"reported_resolution_m\": 0.125, \"derived_endpoint\": 707106781186553.6, \"derived_endpoint_ulp_m\": 0.125, \"policy_m\": 1e-09, \"kinds\": [\"numeric_resolution_unsupported\"]}\n{\"case\": \"derived_cuboid_corner\", \"status\": \"incomplete\", \"complete\": false, \"reported_resolution_m\": 1.862645149230957e-09, \"derived_corner_ulp_m\": 1.862645149230957e-09, \"policy_m\": 1e-09, \"kinds\": [\"numeric_resolution_unsupported\"]}\n",
+    "stderr": ""
+  },
+  "independent_checker4": {
+    "command": [
+      "services/engine/.venv/bin/python",
+      "probe_checker4_reference.py"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-bc80-nw5ey9z6",
+    "exit": 0,
+    "stdout": "{\"independent_analytic_cases\": 64, \"status\": \"PASS\", \"same_array_exclusions_tilt_gap\": \"48 exact rational interval cases\", \"cross_array_positive_overlap_separation\": \"16 rotated cases\"}\n",
+    "stderr": ""
+  },
+  "python_geometry_http": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv/bin/python -m pytest -p no:cacheprovider tests/planning/test_geometry.py tests/planning/test_private_http.py -q",
+    "observed_exit": 0,
+    "observed_summary": "151 passed in 2.30s",
+    "note": "Recorded from the independent completed run; not rerun for report generation"
+  },
+  "node_geometry": {
+    "command": "node --test src/domain/geometry.test.ts",
+    "observed_exit": 0,
+    "observed_summary": "11 tests;11 pass;0 fail;229.528041ms",
+    "note": "Recorded from independent completed run"
+  },
+  "legacy_identifier_hits": [],
+  "fixed_commit": "bc80334b7b29553f24e0c75de3c2e6781493066e"
+}

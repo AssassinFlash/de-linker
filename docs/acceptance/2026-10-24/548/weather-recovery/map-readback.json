@@ -1,0 +1,23 @@
+{
+  "checked_at_utc": "2026-10-24T09:11:45.162229+00:00",
+  "map_title": "地图：统一方案工作台重构与全站交付",
+  "map_url": "https://github.com/AssassinFlash/de-linker/issues/548",
+  "map_state": "OPEN",
+  "source_pin": "c1ddef08c34075f1667972a62a95e3a0d2f55a6d",
+  "evidence_commit": "520a5d68c6c3156ead91cf888ba7677138790cd7",
+  "verified_remote_head": "520a5d68c6c3156ead91cf888ba7677138790cd7",
+  "before_body_sha256": "934d69bd5d3d963dfe41d4764e3dc060ecaf7aa81050886e6e385c150e93371a",
+  "readback_body_sha256": "f245fc6876b9d5bd3faccfd9077fcf07457eaf308970ec54105c58d48a0c8d12",
+  "body_verified_exact": true,
+  "only_current_frontier_replaced": true,
+  "comment_url": "https://github.com/AssassinFlash/de-linker/issues/548#issuecomment-6382385620",
+  "comment_sha256": "e986b39e7db450e007b9e2d7b0a0e0996a8cbf20ac112739f46253286d6f0c65",
+  "comment_verified_exact": true,
+  "comment_body": "统一方案工作台本轮后台恢复与发布核对已完成，完整目标继续。\n\n- 私有 operator 将已知远端核对、观察、捕获、停止排入同一租约队列；显式续跑保留原任务、尝试次数、期限和运行版本。恢复不发布原结果/来源，不覆盖输入，不把取消变成成功，也不再次启动 Actor。\n- 核对结果现在留存精确有效 INPUT 原件和服务端提交输入；FAILED/ABORTED 场景也能保存与恢复证据，缺失依赖时备份失败。未知启动仍不假定远端不存在，ABORTING 仍未解决。\n- schema4 非空迁移/回滚/旧归档保持原队列记录；发布排空检查所有本地任务及远端未决状态，旧版排空读取其数据库但不创建或迁移。\n- 最终 816 项引擎测试零失败/错误/跳过，lint、format165、types127 通过。本地 92 单元在其实际源码版本通过，变更的本地文件与最终版字节一致。历史失败、813/814中间成功，以及直接全栈诊断的 PHP 版本错误/跳过与基线格式问题分别留存，未冒称原生全栈验收。\n- Standards 最初 2 项 P2、Spec 最初 1 项 P2 均修正；各自独立完整28文件/5提交终核零未关闭。评审因可用并发槽限制串行，未相互读取；完整回归由执行者单独完成。\n- 本地旧 worker 实际退出且残留旧就绪文件。已用既有 CAS 中精确旧源码/锁文件与原解释器恢复，实际新 PID71736；执行/存储版本一致，全部165项目、228修订、原屋顶版本14及输入和策略未变，仍schema2，未安装新版本。退出原因未确立。单一689,144字节原版载体已登记保留期限和回收条件；未新增实例、工作树或整站备份。本轮新增 Actor 为0，provider回复均标为模拟。\n- 源码 `c1ddef08c34075f1667972a62a95e3a0d2f55a6d`；[完整验证](https://github.com/AssassinFlash/de-linker/blob/520a5d68c6c3156ead91cf888ba7677138790cd7/docs/acceptance/2026-10-24/548/weather-recovery/VALIDATION.md)、[独立双轴评审](https://github.com/AssassinFlash/de-linker/blob/520a5d68c6c3156ead91cf888ba7677138790cd7/docs/acceptance/2026-10-24/548/weather-recovery/REVIEWS.md)。系统级 Linker 产品身份继续保留，按已交付能力说明贡献，技术/数据来源分工署名。\n\n下一步在同一目标完成原生来源/模型输入、获取/显式选择/恢复交互、私有凭证注入，经 EN/DE 1440/390 后成对安装/读回。详细工程、真实设备/国家、完整 BOM/报告/PDF、站点入口与 Genie/Woo/Solution draft/询盘、迁移及生产读回继续完成；本轮没有缩减范围或结案。\n",
+  "temporary_purpose": "p548 recovery map frontier/comment update and exact readback",
+  "owner": "p548",
+  "temporary_request_files_removed": 2,
+  "temporary_request_bytes_removed": 16302,
+  "temporary_directory_removed": true,
+  "disk_free_bytes_after": 901780410368
+}

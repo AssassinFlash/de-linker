@@ -1,0 +1,19 @@
+{
+  "at_utc": "2026-10-24T14:19:34.010877+00:00",
+  "schema_user_version": 2,
+  "all_table_count": 12,
+  "project_count": 165,
+  "revision_count": 228,
+  "canonical_all_rows_sha256": "b74d9b5e657e3180fc0182233bd1138e7a90f98fee47b3d62e1e9af4e5176295",
+  "all_rows_match_prior": true,
+  "protected_project_id": "82a84c56e50c4efb8497d1bfbe106bd1",
+  "protected_revision": 14,
+  "protected_revision_record": {
+    "project_id": "82a84c56e50c4efb8497d1bfbe106bd1",
+    "number": 14,
+    "input_sha256": "8a6394917a9a9e6b91db4bfc73c0299dcedd2c51619144a5beffa1664f010288",
+    "created_at": 1792793576.72418
+  },
+  "native_upgrade_installed": false,
+  "wp_plugin_symlink": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/plugins/linker-tools"
+}

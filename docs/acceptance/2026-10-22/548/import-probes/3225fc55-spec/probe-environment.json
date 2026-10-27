@@ -1,0 +1,19 @@
+{
+  "observed_utc": "2026-10-23T11:25:19.454017+00:00",
+  "node": "v24.22.0",
+  "fake_indexeddb": "6.2.6",
+  "dependency_source": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/apps/planner/node_modules/fake-indexeddb/package.json",
+  "runtime": "real React, Query, PlannerClient, GeometryImportStore and DraftStore; isolated IDBFactory; controlled HTTP replies",
+  "fixtures": {
+    "fixtures/planning/geographic-proj-reference.json": "e54853b62ca72d719769c2b1623557eb86aa43273b4b283276f6efa9105cabca",
+    "fixtures/planning/geometry-flat.json": "7796458fec100be3f0cece963d3c6b8240a871cff35a6fe2067cd5754fcb8041",
+    "fixtures/planning/geometry-import-asset.json": "fbb01d76a8b6a4f8977b11aa7d10ac85df1ca360b148a09cb3c6f786cbb2f234",
+    "fixtures/planning/geometry-import-options.json": "3e66275ebe71b48834d1d6b3a58d2ca084257ba86e1d8b84797098f9a0f4f10c",
+    "fixtures/planning/geometry-pose-reference.json": "eb7ab915e36bb093dc91608dc0d308efc62e66488440f31f94d9b2ec512d4310",
+    "fixtures/planning/source-roof-wgs84.geojson": "47770a0dc5034b54743dd2da28d1c855e2c8c047c7678d3688215d8e89d9eebc"
+  },
+  "native_browser_used": false,
+  "production_used": false,
+  "backend_sources_changed": [],
+  "kernel_boundary": "The diff contains no engine/backend change; unchanged geographic/import validators remain authoritative. The new plane helper is separately challenged against frozen PROJ data and analytic geodetic direction."
+}

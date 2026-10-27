@@ -1,0 +1,11 @@
+Independent Spec addendum at source pin b57d7dbfe20559ff513b2122500c57fd708996c7.
+Diff: git diff 55104bbdbbf9e694eba4785787daaaf109b99ed8...b57d7dbfe20559ff513b2122500c57fd708996c7
+Working directory for tests: apps/planner.
+
+node --test src/domain/mapRoofDraft.test.ts src/domain/mapFeatureDraft.test.ts
+node --no-warnings=ExperimentalWarning --loader ./tests/tsx-loader.mjs --test --test-name-pattern '^new (hole|obstacle|keepout) UI' tests/map-roof-workspace.test.mjs
+npm run build:check
+
+The original 17 real-engine scenarios are preserved in review-spec-55104bbd.
+No geometry/service/review/command code changed in this addendum, so those cases
+are not repeated. DOM fixture evidence does not establish native or HTTP proof.

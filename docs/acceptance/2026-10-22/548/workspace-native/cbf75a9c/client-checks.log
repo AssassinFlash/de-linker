@@ -1,0 +1,172 @@
+src/components/ProjectEditor.tsx 66ms (unchanged)
+tests/workspace-lifecycle.test.mjs 43ms
+
+> @linker/planner@0.1.0 build
+> tsc --noEmit && vite build && node bin/build-manifest.mjs write
+
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 239 modules transformed.
+rendering chunks...
+computing gzip size...
+../../plugins/linker-tools/build/planner/vite-manifest.json                       0.90 kB │ gzip:   0.27 kB
+../../plugins/linker-tools/build/planner/assets/rolldown-runtime-BWaJ3C7D.js      0.91 kB │ gzip:   0.51 kB
+../../plugins/linker-tools/build/planner/assets/planner.js                        1.25 kB │ gzip:   0.67 kB
+../../plugins/linker-tools/build/planner/assets/planner-core-Cc6vfAFX.js        568.90 kB │ gzip: 163.45 kB
+../../plugins/linker-tools/build/planner/assets/SceneViewport-Cfc0UBCF.js     1,547.12 kB │ gzip: 416.56 kB
+
+[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 236ms
+
+> @linker/planner@0.1.0 build:check
+> node bin/build-manifest.mjs check && node --test tests/built-modules.mjs
+
+Planner build matches its sources.
+(node:58387) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/plugins/linker-tools/build/planner/assets/planner.js?ver=wordpress-version is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/plugins/linker-tools/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ a lazy built chunk never executes the versioned WordPress entry again (161.559209ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 406.216875
+
+> @linker/planner@0.1.0 test
+> node --test src/domain/*.test.ts src/data/*.test.ts && node --no-warnings=ExperimentalWarning --loader ./tests/tsx-loader.mjs --test tests/*.test.mjs
+
+✔ scope admission follows native confirmation immediately, independently of React cleanup (26.931792ms)
+✔ native bootstrap confirms the presented cookie before any private RPC (1.235791ms)
+✔ account nonce failure blocks bootstrap and cannot silently downgrade to guest (0.622458ms)
+✔ a failed save has no automatic retry; an explicit retry sends the frozen bytes (3.484916ms)
+✔ authentication refusal clears private admission even when its reply is malformed (0.844334ms)
+✔ bounded replies preserve split UTF-8 and cancel an oversized chunked stream (0.988375ms)
+✔ protocol validation rejects unsafe local values before recursive parsing or encoding (0.623458ms)
+✔ wire schemas reject coercion and extra response fields without changing the input (0.609291ms)
+✔ recovery retains the baseline, local edits and exact uncertain intent (1.609042ms)
+✔ tampered recovery cannot substitute a pending snapshot, project or acknowledgement (1.277209ms)
+✔ invalid recovered creation is rejected before IndexedDB or a network call (2.462042ms)
+✔ native recovery discovery consumes every ordered page without inventing a scope (1.426833ms)
+✔ malformed, unordered and nonadvancing grant pages cannot release browser data (0.846917ms)
+✔ a delayed grant reply after native withdrawal cannot be used (0.250584ms)
+✔ discovered immutable intents retain exact original namespaces and bodies (7.730875ms)
+✔ import discovery stays on the currently authorised project in every approved namespace (0.930875ms)
+✔ aggregate recovery ceilings report inability to read rather than truncate or evict (28.728666ms)
+✔ native language destinations retain the current project without inventing a route (5.596167ms)
+✔ EN/DE numeric input rejects grouping instead of silently changing magnitude (26.914041ms)
+✔ a late acknowledgement preserves newer edits and their undo/redo history (2.961417ms)
+✔ conflict resolution is explicit and preserves the local branch until chosen (0.263917ms)
+✔ incorrect save acknowledgements cannot advance the confirmed baseline (0.353125ms)
+✔ wire-equivalent signed zeroes acknowledge saved geometry without rewriting the local input (0.371875ms)
+✔ browser ECEF/ENU matches frozen independent PROJ positions and full inverse (4.15525ms)
+✔ horizontal-only zero is explicit and never an inferred measured height (4.827042ms)
+✔ horizontal footprint is lifted onto a 3-4-5 plane before roof UV projection (0.176ms)
+✔ geodetic line intersection retains curvature and supports negative derived heights (0.408709ms)
+✔ polar inverse applies the same output numeric guard as every other branch (0.116375ms)
+✔ ENU/render mapping preserves handedness, lengths and exact round trip (1.115208ms)
+✔ face coordinates use slope length, independent of horizontal projection (2.7575ms)
+✔ shared panel poses provide stable IDs, metres and the exact active quantity (0.408208ms)
+✔ tilted rows reset lower-edge height instead of becoming one rising plane (0.252041ms)
+✔ array rotation changes positions and orientation around the same roof anchor (0.5585ms)
+✔ wire geometry rejects coercion, missing references, invalid units and runaway allocations (1.612666ms)
+✔ module-source claims need complete references and safe URL schemes (0.60425ms)
+✔ browser poses match frozen server poses across slope, rotation and tilted mounts (3.597917ms)
+✔ periodic angles normalise before trig and large origins retain a rebased local pose (3.143875ms)
+✔ source UTC semantics and duplicate excluded slots agree with the server (1.842333ms)
+✔ large UV charts are preserved as inputs but the render helper explicitly refuses lost precision (0.804292ms)
+✔ grouped roof/source creation is atomic and has one undo boundary (3.55975ms)
+✔ stale properties and changed roof dependents cannot overwrite current work (1.837375ms)
+✔ excluded slots keep their identities and quantities derive from included poses (3.686084ms)
+✔ a completed gesture rejects any changed coordinate or geometry frame atomically (0.720417ms)
+✔ manual roof frame has upward normal, declared pitch and clockwise bearing (17.73225ms)
+✔ actual server import wire joins geometry/reference/source in one project history step (4.908084ms)
+✔ a stale frame, unaligned existing roof and repeated attach are refused without mutation (1.149833ms)
+✔ import wire rejects wrong owner/version/hash, permissive source claims and invalid base64 (4.889709ms)
+✔ undo/redo preserve document versions and a divergent edit closes the redo branch (0.79275ms)
+✔ history resource limit bounds retained snapshots without altering the current input (0.108084ms)
+✔ Float32 roof buffers retain centimetre openings inside large supported UV charts (0.857167ms)
+✔ scene framing includes all actual obstacle top vertices (3.63675ms)
+✔ large arrays batch relative to local pivots without dropping stable IDs (13.729875ms)
+✔ unowned failed renderer releases both partial backends and preserves cleanup isolation (1.791041ms)
+✔ initialised renderer owns current backend disposal and previous fallback remains separate (0.314792ms)
+ℹ tests 54
+ℹ suites 0
+ℹ pass 54
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 373.147625
+✔ only a same-site reviewed scene asset can become an executable retry URL (103.620292ms)
+✔ several pending creations require selection and an explicit retry of the exact bytes (557.746917ms)
+✔ a native-granted prior scope restores exact creations without automatically sending or clearing another scope (47.918709ms)
+✔ measured roof intake preserves decimal locale, explicit source and one command (545.367416ms)
+✔ invalid staged properties stay visible until corrected or cancelled (69.128375ms)
+✔ a bound original hash stays immutable while its source notes can be edited (52.0725ms)
+✔ module exclusion updates the same plan, object selection and derived quantity (85.035625ms)
+✔ a late layout check is retained as previous output and cannot select current objects (70.278375ms)
+✔ manual roof intake marks the unsupported vertical boundary at its field (41.802792ms)
+✔ 3D chunk failure and retry preserve unapplied raw properties and the plan path (883.432334ms)
+✔ unknown imports are explicitly selected and retried with frozen bytes before durable selection clears recovery (1187.059ms)
+✔ a new file needs explicit mapping and provenance, and closing is guarded until recovery is durable (221.610083ms)
+✔ close and reload are guarded while selected file bytes are still being read (12.695083ms)
+✔ typed input refusal permits correction despite failed local writes and cleanup (117.194417ms)
+✔ a refused recovery is removed before slow cleanup and cannot regain false durable admission (25.648833ms)
+✔ confirmed server selection releases the source workflow despite unavailable browser recovery (196.134125ms)
+✔ selection notices follow current draft undo and redo independently of the saved baseline (178.970458ms)
+✔ a different native scope confirmed during the recovery write prevents an old upload dispatch (14.949375ms)
+✔ authentication refusal rechecks native identity even after the client invalidates its scope (12.756041ms)
+✔ same-scope verification does not strand delayed recovery hydration (12.141542ms)
+✔ a rejected replacement file cannot leave an older file available for import (26.408625ms)
+✔ an interactive result is revealed once; background reads and interval paging keep user focus (19.280041ms)
+✔ same-identity verification consumes deferred completion before history can replay it (164.492833ms)
+▶ native withdrawal between render and effects prevents cached-result and error focus
+  ✔ preview (7.402167ms)
+  ✔ error (3.95675ms)
+✔ native withdrawal between render and effects prevents cached-result and error focus (11.769666ms)
+✔ persistent profile authentication failure rechecks once and waits for an explicit session retry (12.606417ms)
+✔ a native-granted previous import namespace is retained through explicit retry and exact cleanup (19.74925ms)
+✔ frozen source settings explain fixed start intervals without changing the command (515.57025ms)
+✔ frozen source settings explain fractional end intervals and energy values without changing the command (14.78175ms)
+✔ frozen source settings explain separate boundaries with repeated-time columns without changing the command (13.412375ms)
+✔ a transient authentication refusal recovers native reads without replaying a mutation (1136.596291ms)
+✔ recovery 401 has bounded verification and a working explicit retry (67.014334ms)
+✔ recovery 503 has bounded verification and a working explicit retry (29.06125ms)
+✔ prior scope: now-saved edits do not reappear as unsaved (1176.680625ms)
+✔ prior scope: uncertain intent remains reviewable (70.350291ms)
+✔ current scope: now-saved edits do not reappear as unsaved (52.816ms)
+✔ current scope: uncertain intent remains reviewable (45.71725ms)
+✔ clean-prior scope: now-saved edits do not reappear as unsaved (44.506333ms)
+✔ a deferred close refused during same-scope verification remains retryable (1344.449667ms)
+✔ same identity rechecks retain delayed edits and invalid raw numeric text (1378.67675ms)
+✔ Journal workspaces show one task while retaining real input nodes, values and undo history (139.343542ms)
+✔ failed storage and failed identity refresh preserve hidden edits until same owner returns (71.164583ms)
+✔ a confirmed different identity removes the former editor and does not grant its project (42.66875ms)
+✔ the actual project bar is observed after asynchronous draft opening and on resize (45.270083ms)
+✔ creation authentication failure rechecks once and explicitly retries the exact intent (29.894208ms)
+▶ a former identity's delayed creation cannot dispatch or restore cache and navigation
+  ✔ write (19.173333ms)
+  ✔ clear (17.742584ms)
+✔ a former identity's delayed creation cannot dispatch or restore cache and navigation (37.434917ms)
+▶ native confirmation fences pending creation, revision and navigation before React commits
+  ✔ write (17.5445ms)
+  ✔ clear (16.3755ms)
+  ✔ revise (51.051666ms)
+  ✔ close (47.365459ms)
+✔ native confirmation fences pending creation, revision and navigation before React commits (133.026792ms)
+ℹ tests 54
+ℹ suites 0
+ℹ pass 54
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3088.022083

@@ -489,8 +489,8 @@ class Proxy {
 		 *
 		 * @param bool $sees False unless the price rule says otherwise.
 		 */
-		$partner = true === apply_filters( 'linker_commerce_visitor_sees_prices', false ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- linker-commerce's filter, read here; not this plugin's own hook.
-		$body    = array(
+		$partner  = true === apply_filters( 'linker_commerce_visitor_sees_prices', false ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- linker-commerce's filter, read here; not this plugin's own hook.
+		$body     = array(
 			'conversation_id' => (string) $conversation,
 			'messages'        => $request->get_param( 'messages' ),
 			'locale'          => $locale,
@@ -509,6 +509,10 @@ class Proxy {
 				'context'   => $this->user_context->mint(),
 			),
 		);
+		$planning = ( new \Linker\Tools\Planner\GenieContext() )->read( $request, $page, $locale );
+		if ( null !== $planning ) {
+			$body['planning_context'] = $planning;
+		}
 		if ( array() !== $files ) {
 			$body['attachments'] = $files;
 		}

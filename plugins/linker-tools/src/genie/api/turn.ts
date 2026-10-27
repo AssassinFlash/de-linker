@@ -295,6 +295,10 @@ export interface PageContext {
 	 * ability checks the owner; a guest's solution has no post and no id.
 	 */
 	solution_id?: number;
+	planning_project_id?: string;
+	planning_revision?: number;
+	planning_run_ids?: string[];
+	planning_unsaved?: boolean;
 }
 
 /**
@@ -339,6 +343,8 @@ export interface ConversationList {
 
 /** One turn. The test seams sit on the object, not further positional arguments. */
 export interface TurnRequest {
+	/** Existing planner guest CSRF proof; never part of page data or logs. */
+	plannerNonce?: string;
 	/** Current REST root for document presentation from existing product metadata. */
 	restUrl?: string;
 	/** Proxy route URL. */
@@ -422,6 +428,9 @@ export async function sendTurn( request: TurnRequest ): Promise< Turn > {
 					headers: {
 						'Content-Type': 'application/json',
 						'X-WP-Nonce': nonce,
+						...( request.plannerNonce
+							? { 'X-Linker-Planner-Nonce': request.plannerNonce }
+							: {} ),
 					},
 					body: JSON.stringify( {
 						locale,

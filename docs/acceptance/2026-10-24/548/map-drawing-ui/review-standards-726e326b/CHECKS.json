@@ -1,0 +1,38 @@
+{
+  "pin": "726e326b5c3ce322a2e1471008483a10e9e3c3b1",
+  "incremental_base": "786d0db99203d35010b6a7fdc38dc984b3058606",
+  "full_review_base": "43297ecf5673fa5f29c82f90fbe583666a5e3e15",
+  "diff_command": "git diff --no-ext-diff --unified=0 786d0db99203d35010b6a7fdc38dc984b3058606...726e326b5c3ce322a2e1471008483a10e9e3c3b1",
+  "diff_sha256": "adeab04491af04d2e5e12694e729d69a3c7856fa73aa8c785214c384861ad2fd",
+  "changed_files": 9,
+  "added_lines_scanned": 244,
+  "legacy_pattern_hits": 0,
+  "credential_pattern_hits": 0,
+  "focused_tests": {
+    "command": "node --no-warnings=ExperimentalWarning --loader ./tests/tsx-loader.mjs --test tests/map-roof-workspace.test.mjs",
+    "cwd": "apps/planner",
+    "exit_code": 0,
+    "passed": 2,
+    "failed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "act_warnings": 0,
+    "boundary": "Actual React/journal/domain/Terra with fake IndexedDB and narrow MapLibre fixture; no native viewport or touch inference."
+  },
+  "build_check": {
+    "command": "npm run build:check",
+    "cwd": "apps/planner",
+    "exit_code": 0,
+    "source_and_build_hashes": "matched",
+    "built_module_identity_tests_passed": 1,
+    "warning": "Existing MODULE_TYPELESS_PACKAGE_JSON warning when Node imports generated planner.js."
+  },
+  "tooling_only_diagnostic": {
+    "command": "git diff --check 43297ecf5673fa5f29c82f90fbe583666a5e3e15...726e326b5c3ce322a2e1471008483a10e9e3c3b1",
+    "exit_code": 2,
+    "file": "plugins/linker-tools/build/planner/assets/MapViewport-DEU-DlpF.js",
+    "line": 62,
+    "reason": "Trailing whitespace in bundled MapLibre shader source; retained as tooling-only, not a Standards finding."
+  },
+  "reviewer_mutations": "Only this review directory; no source/test/build/locale/dependency/runtime/production changes."
+}

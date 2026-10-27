@@ -1,0 +1,26 @@
+{
+  "base": "be5711bf429c86dc5118e55227c0a48bb78d26b1",
+  "prior_review_target": "81cd1c5b1a7d5ff5592131602c12d642d13c162b",
+  "target": "5c693115d345a676d7a737bdfb886597b74fbe80",
+  "verdict": "PASS",
+  "hard_documented_breaches": [],
+  "closed_findings": [
+    {
+      "id": "canonical-lock-registry",
+      "priority": 2,
+      "rule": {"file": "README.md", "line": 60},
+      "previous_scope": "All 28 newly added mirror-specific resolved entries; first at apps/planner/package-lock.json:186.",
+      "closure": "All 189 planner lock resolved hosts are canonical registry.npmjs.org. Only resolved URLs differ from the prior pin; all other lock data is identical. Package-local replace-registry-host=always is included in the source manifest.",
+      "affected_added_entry_readback": "probe.json:registry_correction.closed_prior_added_entries"
+    }
+  ],
+  "fowler_baseline_judgment_calls": [],
+  "fowler_baseline_considered": [
+    "Mysterious Name", "Duplicated Code", "Feature Envy", "Data Clumps",
+    "Primitive Obsession", "Repeated Switches", "Shotgun Surgery", "Divergent Change",
+    "Speculative Generality", "Message Chains", "Middle Man", "Refused Bequest"
+  ],
+  "independent_probe": "probe.py / probe.json",
+  "probe_first_failure": "probe-first-failure.txt retains the reviewer count correction; the corrected probe passes.",
+  "verification_boundary": "Full pinned Standards diff review by reuse plus actual correction readback. No repeat of unchanged suites, new native execution, engineering/country/provider-legal/production or whole-goal acceptance. No other evidence, source, dependency, stack or settings edits."
+}

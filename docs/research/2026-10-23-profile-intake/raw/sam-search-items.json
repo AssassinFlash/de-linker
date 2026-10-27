@@ -1,0 +1,132 @@
+[
+  {
+    "searchQuery": {
+      "term": "site:sam.nlr.gov \"load data\" \"daylight\" \"negative\"",
+      "url": "http://www.google.com/search?q=site%3Asam.nlr.gov+%22load+data%22+%22daylight%22+%22negative%22&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Asam.nlr.gov+%22load+data%22+%22daylight%22+%22negative%22&gl=us",
+    "hasNextPage": false,
+    "serpProviderCode": "OX",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "SAM Webinars 2017: Electricity Rates and Bill Savings for ...",
+        "websiteTitle": "System Advisor Model - SAM (.gov)",
+        "url": "https://sam.nlr.gov/financial-models/images/webinar_files/sam-webinars-2017-electricity-rates.pdf",
+        "displayedUrl": "https://sam.nlr.gov › images › webinar_files › sam...",
+        "description": "Load data should be for one year: 8760 values for hourly data with no leap day, and no daylight savings ... grid purchases (negative) are ...Read more",
+        "date": "2017-06-01T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "Load data",
+          "daylight",
+          "negative"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "General SAM How-To - Page 42 - SAM Forum - System Advisor Model",
+        "websiteTitle": "System Advisor Model - SAM (.gov)",
+        "url": "https://sam.nlr.gov/forum/forum-general.html?start=2050",
+        "displayedUrl": "https://sam.nlr.gov › ... › General SAM How-To",
+        "description": "Daylight savings support. Category: General SAM ... Problem related with Electric Load data input. ... Negative production from pv simualtion. Category ...",
+        "emphasizedKeywords": [
+          "Daylight",
+          "Load data",
+          "Negative"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "SAM Help",
+        "websiteTitle": "System Advisor Model - SAM (.gov)",
+        "url": "https://sam.nlr.gov/images/web_page_files/sam-help-2024-12-12.pdf",
+        "displayedUrl": "https://sam.nlr.gov › images › sam-help-2024-12-12",
+        "description": "daylight savings time. Note. You must specify a time (or times) in ... negative, or decimal values. Update. Calculates values based on ...Read more",
+        "date": "2024-12-12T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "daylight",
+          "negative"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "SAM Help",
+        "websiteTitle": "System Advisor Model - SAM (.gov)",
+        "url": "https://sam.nlr.gov/images/web_page_files/sam-help-2020-11-29r1.pdf",
+        "displayedUrl": "https://sam.nlr.gov › images › web_page_files",
+        "description": "daylight savings, so all times are in local standard time throughout ... negative, or decimal values. Update. Calculates values based on ...Read more",
+        "date": "2020-11-29T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "daylight",
+          "negative"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 4
+      },
+      {
+        "title": "SAM Help",
+        "websiteTitle": "System Advisor Model - SAM (.gov)",
+        "url": "https://sam.nlr.gov/images/web_page_files/sam-help-2018-11-11-r4.pdf",
+        "displayedUrl": "https://sam.nlr.gov › sam-help-2018-11-11-r4",
+        "description": "... load data, which is specified on the Electric ... daylight savings time. Wind Resource Data. For ... negative value of tilt. Tilt, degrees. Applies ...",
+        "emphasizedKeywords": [
+          "load data",
+          "daylight",
+          "negative"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 5
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null
+  },
+  {
+    "searchQuery": {
+      "term": "site:natlabrockies.github.io/SAM/doc \"Electric Load\" \"CSV\"",
+      "url": "http://www.google.com/search?q=site%3Anatlabrockies.github.io%2FSAM%2Fdoc+%22Electric+Load%22+%22CSV%22&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Anatlabrockies.github.io%2FSAM%2Fdoc+%22Electric+Load%22+%22CSV%22&gl=us",
+    "hasNextPage": true,
+    "serpProviderCode": "OX",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null
+  }
+]

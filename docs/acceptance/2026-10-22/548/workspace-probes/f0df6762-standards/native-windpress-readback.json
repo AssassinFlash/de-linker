@@ -1,0 +1,49 @@
+{
+  "fixed_sha": "f0df6762fc549bf9251d508a802bb38cd2c258fa",
+  "observed_utc": "2026-10-23T10:13:09.421524+00:00",
+  "volume_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/windpress/data/planner.css",
+  "fixed_planner_css_sha256": "b753f6a1a0af03c847b523930367d6cfdf4fb0745e3d319ac9413f2acac0028e",
+  "volume_matches_fixed": true,
+  "cache_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/windpress/cache/tailwind.css",
+  "cache_sha256": "c9027657d2cc0ba4b174ab19fb0be41ca49a4e4566e6925fedcf2121e4350177",
+  "compiled_rules": {
+    ".lp-plan-svg": [
+      "touch-action:none;-webkit-user-select:none;user-select:none;width:100%;height:460px;display:block;",
+      "height:350px;"
+    ],
+    ".lp-overview-preview .lp-plan-svg": [
+      "cursor:default;touch-action:auto;height:360px;",
+      "height:220px;"
+    ],
+    ".lp-overview-preview-title > span": [
+      "overflow-wrap:anywhere;min-width:0;"
+    ],
+    ".lp-mobile-workspace": [
+      "display:none;",
+      "min-width:0;min-height:44px;color:var(--proto-teal-900);border:1pxsolidvar(--lp-line);border-radius:var(--proto-radius-sm);background-color:#fff9;flex:1;padding:8px10px;font-size:16px;font-weight:500;display:block;"
+    ],
+    ".lp-overview-metrics dd small": [
+      "margin-inline-start:4px;"
+    ],
+    ".lp-project-bar:has(.lp-navigation-refusal)": [
+      "flex-wrap:wrap;row-gap:8px;"
+    ],
+    ".lp-navigation-refusal": [
+      "flex-basis:100%;min-width:0;"
+    ],
+    ".lp-navigation-refusal .lp-notice": [
+      "margin:0;padding:12px14px;font-size:12px;"
+    ]
+  },
+  "section_focus_suppression": [
+    {
+      "selectors": "[data-linker-planner] .lp-section[tabindex=\"-1\"]:focus-visible, [data-linker-planner] .lp-overview[tabindex=\"-1\"]:focus-visible",
+      "body": "outline: none;"
+    }
+  ],
+  "main_imports_planner": true,
+  "native_module_manifest_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/plugins/linker-tools/build/planner/source-manifest.json",
+  "native_manifest_sha256": "67eddc78bd49e9aade9594f6a89107576e504e4730e042350a55367f8b684d52",
+  "native_manifest_matches_fixed": true,
+  "limits": "Read-only filesystem/compiler evidence only, not browser focus appearance, viewport geometry or physical touch."
+}

@@ -1,0 +1,63 @@
+{
+  "at_utc": "2026-10-24T16:04:27.375009+00:00",
+  "source_commit": "079f1d18",
+  "old_runtime": "9b66656acb26b65b88b09a44b8508a42094059af64b49e7038eedef0d92a10a1",
+  "new_runtime": "052c98c14da24a7d5d04b9b09dbe201c1753285d20124900982711e7d2bfc1df",
+  "schema_before": 2,
+  "research_credentials_injected": false,
+  "production_changed": false,
+  "schema_after": 5,
+  "installed": true,
+  "existing_tables_preserved": [
+    "artifacts",
+    "evaluation_routes",
+    "handoffs",
+    "idempotency",
+    "jobs",
+    "ownership_transfers",
+    "principal_closures",
+    "project_assets",
+    "projects",
+    "revisions",
+    "runs"
+  ],
+  "existing_projects_preserved": 165,
+  "existing_revisions_preserved": 228,
+  "identity": {
+    "schema_version": 1,
+    "runtime_sha256": "052c98c14da24a7d5d04b9b09dbe201c1753285d20124900982711e7d2bfc1df",
+    "models": {
+      "replay": "single_ac_energy_replay_v1",
+      "battery": "constant_window_single_ac_bus_v1",
+      "profiles": "csv_pvgis_and_geometry_bound_pv_reference_v2",
+      "controller": "self_consumption_with_reserve_v1",
+      "source_accounting": "proportional_mixing_v1"
+    },
+    "execution_key": "597a9248d84d24a35bfe8e13cf67e1870ff52b64760e466716b202449072bace",
+    "storage_binding": "ec4c7866c5a15b82fcb94096a143b7e77f8801ac38153cb146e673fe1b3ea0d9",
+    "limits": {
+      "max_body_bytes": 16777216,
+      "max_csv_bytes": 8388608,
+      "max_page_size": 100,
+      "max_json_depth": 32
+    }
+  },
+  "worker": {
+    "execution_key": "597a9248d84d24a35bfe8e13cf67e1870ff52b64760e466716b202449072bace",
+    "generation": "cf998e7ed07d4b9aa4a13088b502a4fd",
+    "name": "local-p548",
+    "pid": 63481,
+    "runtime_sha256": "052c98c14da24a7d5d04b9b09dbe201c1753285d20124900982711e7d2bfc1df",
+    "schema_version": 1,
+    "storage_binding": "ec4c7866c5a15b82fcb94096a143b7e77f8801ac38153cb146e673fe1b3ea0d9"
+  },
+  "status": {
+    "draining": false,
+    "pending": 0,
+    "quiescent": false,
+    "schema_version": 1,
+    "states": {},
+    "storage_binding": "ec4c7866c5a15b82fcb94096a143b7e77f8801ac38153cb146e673fe1b3ea0d9"
+  },
+  "finished_at_utc": "2026-10-24T16:04:33.865652+00:00"
+}

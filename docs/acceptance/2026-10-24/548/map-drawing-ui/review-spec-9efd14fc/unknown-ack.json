@@ -1,0 +1,34 @@
+{
+  "pin": "9efd14fcb79687344d676a8fdb5fbd24c2e9aad8",
+  "runtime": "v24.22.0",
+  "library_versions": {
+    "react": "19.3.1",
+    "fake_indexeddb": "6.2.6"
+  },
+  "open_points": 2,
+  "durable_points": 1,
+  "storage_failed_after_retry": true,
+  "writes": [
+    {
+      "points": 0,
+      "previous": null,
+      "result": "acknowledged"
+    },
+    {
+      "points": 1,
+      "previous": 0,
+      "result": "committed_then_unknown_ack"
+    },
+    {
+      "points": 2,
+      "previous": 0,
+      "result": "map_drawing_recovery_conflict"
+    },
+    {
+      "points": 2,
+      "previous": 0,
+      "result": "map_drawing_recovery_conflict"
+    }
+  ],
+  "boundary": "React/journal/domain fault injection only; no native map or production acceptance"
+}

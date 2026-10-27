@@ -1,0 +1,92 @@
+{
+  "pvlibVersion": "0.16.1",
+  "tag": "v0.16.1",
+  "tagTree": "ba161f9962f7a95fb8bd052fe646ba8234e99d95",
+  "reusedPrimaryApifyProvenance": "../../2026-10-23-pv-inputs/raw/pvlib-originals-provenance.json",
+  "files": [
+    {
+      "path": "pvlib/irradiance.py",
+      "sha256": "e607fa36bd6d279385bdbf1d71b7793630cd4e7e67c6ccc70ef29052f578391c",
+      "gitBlobSHA1": "38bf122b9105a31ca63d8aa0e5cb8a5c79e27173",
+      "tagTreeSHA1": "38bf122b9105a31ca63d8aa0e5cb8a5c79e27173",
+      "matchesTag": true
+    },
+    {
+      "path": "pvlib/temperature.py",
+      "sha256": "2adbab834d25836007bad5fc429acd2b53b83dc99b7be6d288bc1644d5a18319",
+      "gitBlobSHA1": "55222c0fb13c0486453a51fdad34cd7b345fac30",
+      "tagTreeSHA1": "55222c0fb13c0486453a51fdad34cd7b345fac30",
+      "matchesTag": true
+    },
+    {
+      "path": "pvlib/pvsystem.py",
+      "sha256": "881de34dd0ec21ac9dc2c89f1b73568f6a566099df0b9a0f92d41874e4c313f0",
+      "gitBlobSHA1": "79d8a58d11d26cc88ced78dda3d20317c97b7cee",
+      "tagTreeSHA1": "79d8a58d11d26cc88ced78dda3d20317c97b7cee",
+      "matchesTag": true
+    },
+    {
+      "path": "pvlib/inverter.py",
+      "sha256": "78b25bc11905ffae65876da2dee455db5cdef4527860c139c8bf47a831cc2dd0",
+      "gitBlobSHA1": "622fb9b9584c72e51432b1e7284bee821c8a8f66",
+      "tagTreeSHA1": "622fb9b9584c72e51432b1e7284bee821c8a8f66",
+      "matchesTag": true
+    },
+    {
+      "path": "pvlib/atmosphere.py",
+      "sha256": "c275478b8f09bcc055d6c86f0db775f9161933a89e526cffeb162f2af6033287",
+      "gitBlobSHA1": "95401ff3ba82f57eaaf3ffea042aefc7f13d8f6a",
+      "tagTreeSHA1": "95401ff3ba82f57eaaf3ffea042aefc7f13d8f6a",
+      "matchesTag": true
+    },
+    {
+      "path": "pvlib/solarposition.py",
+      "sha256": "4a564432547e2b04de82bd77e1b93a7d8926e9b49016b902789be9027dfaad81",
+      "gitBlobSHA1": "4441ed01f129e89e268604427408650aec031baa",
+      "tagTreeSHA1": "4441ed01f129e89e268604427408650aec031baa",
+      "matchesTag": true
+    }
+  ],
+  "functions": [
+    {
+      "api": "pvlib.irradiance.get_total_irradiance",
+      "signature": "(surface_tilt, surface_azimuth, solar_zenith, solar_azimuth, dni, ghi, dhi, dni_extra=None, airmass=None, albedo=0.25, surface_type=None, model='isotropic', model_perez='allsitescomposite1990', diffuse_components=False)",
+      "startLine": 278
+    },
+    {
+      "api": "pvlib.irradiance.perez",
+      "signature": "(surface_tilt, surface_azimuth, dhi, dni, dni_extra, solar_zenith, solar_azimuth, airmass, model='allsitescomposite1990', return_components=False)",
+      "startLine": 1159
+    },
+    {
+      "api": "pvlib.temperature.sapm_cell",
+      "signature": "(poa_global, temp_air, wind_speed, a, b, deltaT, irrad_ref=1000.0)",
+      "startLine": 57
+    },
+    {
+      "api": "pvlib.pvsystem.pvwatts_dc",
+      "signature": "(effective_irradiance, temp_cell, pdc0, gamma_pdc, temp_ref=25.0, k=None, cap_adjustment=False)",
+      "startLine": 3052
+    },
+    {
+      "api": "pvlib.inverter.pvwatts",
+      "signature": "(pdc, pdc0, eta_inv_nom=0.96, eta_inv_ref=0.9637)",
+      "startLine": 336
+    },
+    {
+      "api": "pvlib.atmosphere.get_relative_airmass",
+      "signature": "(zenith, model='kastenyoung1989')",
+      "startLine": 134
+    },
+    {
+      "api": "pvlib.solarposition.get_solarposition",
+      "signature": "(time, latitude, longitude, altitude=None, pressure=None, method='nrel_numpy', temperature=12.0, **kwargs)",
+      "startLine": 30
+    },
+    {
+      "api": "pvlib.inverter.pvwatts_multi",
+      "signature": "(pdc, pdc0, eta_inv_nom=0.96, eta_inv_ref=0.9637)",
+      "startLine": 415
+    }
+  ]
+}

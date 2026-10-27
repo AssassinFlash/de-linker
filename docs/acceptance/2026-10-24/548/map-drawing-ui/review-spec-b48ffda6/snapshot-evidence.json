@@ -1,0 +1,31 @@
+{
+  "pin": "b48ffda68aeb2e9f17dd27b84f7449e05b321873",
+  "base": "43297ecf5673fa5f29c82f90fbe583666a5e3e15",
+  "diff_command": "git diff 43297ecf...b48ffda6",
+  "commits": [
+    "b48ffda6 fix(planner): show drawing validation beside its inputs",
+    "02c87049 fix(planner): confirm uncertain drawing writes before newer input",
+    "9efd14fc feat(planner): mount recoverable manual map roof drawing"
+  ],
+  "diff_files": 41,
+  "snapshot_and_current_manifest_hash_checks": {
+    "sources": 114,
+    "build": 7
+  },
+  "compiled_formal_german_copy_final_entries_checked": 44,
+  "original_failure_files_unchanged_sha256": {
+    "REPORT.md": "4f47a7fa99471cc3e9361e77450919c3e1c67cdd39c14c663ba4e89ab148513f",
+    "probe-unknown-ack.mjs": "9f18f63a0239a674501246ca0692d0330ab02248b367475d573fdc4862442fd9",
+    "unknown-ack.json": "897430f9633476495c9f12c89541eed6965be935bad92908e04efd75111d09f9"
+  },
+  "installed_versions": {
+    "react": "19.3.1",
+    "maplibre-gl": "5.24.0",
+    "terra-draw": "1.35.0",
+    "terra-draw-maplibre-gl-adapter": "1.4.1"
+  },
+  "independent_probe": "final-recovery.json",
+  "focused_tests_command": "node --no-warnings=ExperimentalWarning --loader ./tests/tsx-loader.mjs --test tests/map-roof-recovery.test.mjs tests/map-roof-workspace.test.mjs",
+  "native_acceptance": "Not performed by this reviewer; owner running separate actual-browser matrix",
+  "whole_goal": "active"
+}

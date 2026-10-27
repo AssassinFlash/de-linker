@@ -1,0 +1,14 @@
+{
+  "command": [
+    "node",
+    "--no-warnings=ExperimentalWarning",
+    "--loader",
+    "./tests/tsx-loader.mjs",
+    "--test",
+    "tests/independent-journal-probe.mjs"
+  ],
+  "cwd": "apps/planner",
+  "exit_code": 1,
+  "expected_exit_code": 1,
+  "expected_product_findings": 1
+}

@@ -1,0 +1,35 @@
+{
+  "focus": {
+    "classes": "wp-singular page-template page-template-page-templates page-template-empty page-template-page-templatesempty-php page page-id-8252 logged-in wp-custom-logo wp-embed-responsive wp-theme-picostrap5 wp-child-theme-picostrap5-child-base theme-picostrap5 woocommerce-js lc-custom-header lc-custom-footer",
+    "rect": {
+      "bottom": 3336.609375,
+      "height": 3336.609375,
+      "left": 0,
+      "right": 390,
+      "top": 0,
+      "width": 390,
+      "x": 0,
+      "y": 0
+    },
+    "tag": "BODY"
+  },
+  "headings": [
+    "Energy calculation",
+    "Interval sources",
+    "Storage parameters",
+    "Software and data credits"
+  ],
+  "scripts": [
+    "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=5515effff1fadfb1649f6ec05bde8838fb3e697e80169e8623c6d89cc0ab8f80"
+  ],
+  "scroll": {
+    "pageWidth": 390,
+    "x": 0,
+    "y": 0
+  },
+  "url": "http://127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be#lp-calculations",
+  "viewport": {
+    "height": 844,
+    "width": 390
+  }
+}

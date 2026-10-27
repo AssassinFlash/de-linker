@@ -1,0 +1,79 @@
+{
+  "target": "bc80334b7b29553f24e0c75de3c2e6781493066e",
+  "base": "8791c933fca452fc7d6922deb91b1bd4691eb81b",
+  "patch_base": "d7deddf74295f4e6b3042a3b96dd6b78f3e47c51",
+  "axis": "Spec",
+  "verdict": "PASS",
+  "findings": {
+    "missing_or_partial": [],
+    "scope_creep": [],
+    "incorrect_implementation": []
+  },
+  "existing_tests": {
+    "python_geometry_private_http": 151,
+    "node_geometry": 11
+  },
+  "independent_asgi_tests": 7,
+  "original_probe_hashes": {
+    "probe_geometry_numeric.py": {
+      "sha256": "8f2cf6d3ac573978bec61407b062f1c493f224ba5783cac5c4e645766383f823",
+      "unchanged_from_previous_review": true
+    },
+    "probe_geometry_periodic.py": {
+      "sha256": "4b85ef50e617e9be6c53b4a3cb7117d78553b1ca55278da29c9590e7dfeb976a",
+      "unchanged_from_previous_review": true
+    },
+    "probe_geometry_domains.py": {
+      "sha256": "637a732582ca77dff80639773c9c914e00afaa4a5c43d3b15967a2cdcdd85037",
+      "unchanged_from_previous_review": true
+    },
+    "probe_geometry_support.py": {
+      "sha256": "8070d9c33457df6c6c96a25d84d3da6d3a3a76abc1965b7484e83642aecfa8c8",
+      "unchanged_from_previous_review": true
+    },
+    "probe_geometry_touch.py": {
+      "sha256": "21ec4ffbd49880f2919563c5af9580a923278367df04972485edf52cefeec822",
+      "unchanged_from_previous_review": true
+    },
+    "apps/planner/probe_geometry_rebase.mjs": {
+      "sha256": "6641801f9ec0091dbd165a9f4b787da6c69071e00a94cfa80575463ff8395bb9",
+      "unchanged_from_previous_review": true
+    },
+    "apps/planner/probe_geometry_rebase_metre.mjs": {
+      "sha256": "4148ca03368b03345f0e973413ea6de7250c92d6c6c39197b8843b4ea64ad9be",
+      "unchanged_from_previous_review": true
+    },
+    "apps/planner/probe_geometry_rebase_support.mjs": {
+      "sha256": "6f1ee27d70a3e23852b43de31ea4a57be82f343f932a4afdd3899728abab00d3",
+      "unchanged_from_previous_review": true
+    },
+    "services/engine/tests/planning/_probe_geometry_http.py": {
+      "sha256": "4220241ec93657593906bd5f7ed21cf7bb4bcb19cef1f308596697e107f56f2a",
+      "unchanged_from_previous_review": true
+    },
+    "services/engine/tests/planning/_probe_geometry_support_http.py": {
+      "sha256": "ab18a8aa507f53dc92c677eefa947905f8ef7c03f5273f245cd2879f272de9ed",
+      "unchanged_from_previous_review": true
+    }
+  },
+  "independent_topology_cases": 27,
+  "footprint_browser_server_parity": {
+    "cases": 16,
+    "coordinates": 768,
+    "max_error_m": 0
+  },
+  "previous_findings_closed": [
+    "derived cuboid corners and swept obstacle coordinates now included in numeric domain",
+    "zero-gap ordinary rotated adjacent columns have no false overlap",
+    "typed unsupported helper preserved",
+    "cyclic roof ordering unsupported rather than false clear"
+  ],
+  "other_evidence": [
+    "actual candidate limit200000 returns incomplete with5000 modules;5001 wire limit refused",
+    "actual runtime hash equals installed EnergyKernel identity; extra body-selected runtime refused",
+    "numerically unsupported wire-safe document saves; review no writes/hash/input/revision changes; original receipt still200 after policy change",
+    "16 roof-axis/ENU cases retain contacts and known1cm overlap both origins detected",
+    "periodic signed-angle probes unchanged and exact"
+  ],
+  "method_boundary": "Same-array overlap checked against an independent high-precision interval-intersection reference. This validates the declared rectangular-grid projection model, not solid collision, structural/electrical release, real survey fidelity, native UI, or full B/whole-tool acceptance."
+}

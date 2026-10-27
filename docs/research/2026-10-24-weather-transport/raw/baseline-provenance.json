@@ -1,0 +1,23 @@
+{
+  "sourceRun": "YgxlVDzJ8c1fh03tT",
+  "sourceStore": "i3OvQkzJuDD6tihWH",
+  "endpoint": "https://api.apify.com/v2/key-value-stores/i3OvQkzJuDD6tihWH/records/INPUT",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "acquiredAtUTC": "2026-10-24T05:40:52.110856+00:00",
+  "bytes": 1686,
+  "sha256": "361ce26601d9028ac3f76712f7be4977b99fc724c6a77054912ccfdd9a0cf5ab",
+  "retainedFile": "weather-effective-input-baseline.json",
+  "topLevelKeys": 51,
+  "safetyVerification": "complete canonical equality with prior safe51-key docs INPUT overlaid by exact weather submission, with initialConcurrency0 and maxResults9999999 restored to pinned schema defaults; no unknown fields or credential values",
+  "priorSafeDocsFile": "../../2026-10-24-pv-managed-intake/raw/docs-effective-input.json",
+  "weatherSubmittedFile": "../../2026-10-24-pv-generation/raw/acquisition-input.json",
+  "observedDefaults": {
+    "initialConcurrency": 0,
+    "maxResults": 9999999
+  },
+  "differenceReason": "docs acquisition explicitly submitted initialConcurrency1/maxResults8; original weather omitted both and received pinned schema defaults",
+  "intrinsicPerRunVariableFieldsFound": [],
+  "safetyCheckDevelopment": "initial candidate reused docs maxResults8; complete-equality check rejected it before retention, then known pinned schema default was restored"
+}

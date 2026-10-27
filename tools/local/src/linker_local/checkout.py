@@ -48,3 +48,17 @@ class Checkout:
 
     def service(self, name: str) -> Path:
         return self.root / "services" / name
+
+    @property
+    def engine_compatibility(self) -> Path:
+        """The common bootstrap contract; managed feeds pin their own sibling."""
+        return self.root / "plugins/linker-commerce/data/compatibility.json"
+
+    def engine_contract(self, feed: Path) -> Path:
+        """Use the same complete managed generation as Services, or bootstrap."""
+        generation = feed.resolve().parent
+        return (
+            generation / "compatibility.json"
+            if (generation / "manifest.json").is_file()
+            else self.engine_compatibility
+        )

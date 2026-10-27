@@ -1504,7 +1504,9 @@ def _seal_attachment_figures(
     """Keep only question numbers and each text block's cited reading figures.
 
     The earlier grounding check still requires numeric placeholders and
-    rejects unknown facts and attachment amounts. This final seal must not
+    rejects unknown facts and attachment amounts. Planning figures use the
+    same per-block citation boundary, without granting product permission.
+    This final seal must not
     erase those hydrated figures simply because the question omitted them.
     A file ref licenses that file's figures; a figure ref licenses only that
     figure. Raw reading text and the filename are not numerical allowances.
@@ -1517,12 +1519,17 @@ def _seal_attachment_figures(
         allowed = set(question_numbers)
         if isinstance(block, TextBlock):
             for fact_id, fact in facts.facts.items():
-                match = re.fullmatch(r"(att[1-9][0-9]{0,5})\.n[1-9][0-9]*", fact_id)
-                if match is None or fact.source != "read-attachment":
+                match = re.fullmatch(
+                    r"(att[1-9][0-9]{0,5}|planning)\.n[1-9][0-9]*", fact_id
+                )
+                if match is None or fact.source not in {
+                    "read-attachment",
+                    "read-planning-project",
+                }:
                     continue
                 reading_id = match.group(1)
                 reading = facts.facts.get(reading_id)
-                if reading is None or reading.source != "read-attachment":
+                if reading is None or reading.source != fact.source:
                     continue
                 if reading_id in block.refs or fact_id in block.refs:
                     allowed.update(grounding.question_allowance(fact.value))

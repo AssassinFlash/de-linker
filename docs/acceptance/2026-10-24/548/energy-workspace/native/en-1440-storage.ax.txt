@@ -1,0 +1,154 @@
+Browser tab: 2, Title: "Solution Configurator · Workspace review | Linker", URL: "http://127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be#lp-calculations".
+1 AXWebArea Solution Configurator · Workspace review | Linker, URL: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be#lp-calculations
+	2 container
+		3 container Primary navigation
+			4 link Description: Linker home, Value: 127.0.0.1:9347/
+			5 pop up button (collapsed) Products, Secondary Actions: Expand
+				6 text Products
+				7 image
+			8 pop up button (collapsed) Solutions, Secondary Actions: Expand
+				9 text Solutions
+				10 image
+			11 pop up button (collapsed) Plan with Linker, Secondary Actions: Expand
+			12 link Description: Services, Value: 127.0.0.1:9347/services-support/
+			13 pop up button (collapsed) For Partners, Secondary Actions: Expand
+			14 pop up button (collapsed) About, Secondary Actions: Expand
+			15 link Description: Search products, Value: 127.0.0.1:9347/products/#search-box
+			16 link Description: Solution draft, Value: 127.0.0.1:9347/cart/
+			17 pop up button (collapsed) Description: My account, Secondary Actions: Expand
+			18 container Language
+				19 link Description: EN, Help: English, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be#lp-calculations
+				20 link Description: DE, Help: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be#lp-calculations
+			21 link Description: Contact Linker, Value: 127.0.0.1:9347/contact/
+		22 container
+			23 button Projects
+			24 text Lyon · synthetic energy scenario · acceptance
+			25 text Saved · revision 2
+			26 button Undo
+			27 button (disabled) Redo
+			28 button (disabled) Save project
+			29 text Solution Configurator CURRENT PROJECT
+			30 container Project sections
+				31 link Description: Project overview, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be#lp-overview
+				32 link Description: Site and project, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be#lp-site
+				33 link Description: Roof design, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be#lp-design
+				34 link Description: Energy inputs, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be#lp-load
+				35 link Description: Energy calculation, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be#lp-calculations
+			36 text Project information is kept with its source and revision. CURRENT PROJECT
+			37 heading Lyon · synthetic energy scenario · acceptance, Value: 1
+				38 text Lyon · synthetic energy scenario · acceptance
+			39 text Site data and roof layouts are saved in the same project.
+			40 container Energy calculation, ID: lp-calculations
+				41 text 07
+				42 heading Energy calculation, Value: 2, ID: lp-calculations-heading
+					43 text Energy calculation
+				44 text Calculate this project's energy flows over the selected periods. Each saved result keeps the inputs, sources and model used.
+				45 container Calculation workspace view
+					46 checkbox Scenario settings, Value: 1
+					47 checkbox Saved calculations, Value: 0
+				48 heading Interval sources, Value: 3
+					49 text Interval sources
+				50 content list
+					51 container
+						52 text Total site load Selected in this draft
+					53 container
+						54 text Available PV output · AC Selected in this draft
+					55 container
+						56 text External auxiliary load · AC Selected in this draft
+				57 button Review energy inputs
+				58 content list
+					59 button 01 Storage
+						60 text 01
+						152 text Storage
+					62 button 02 Starting state
+						63 text 02
+						153 text Starting state
+					65 button 03 Operation
+						66 text 03
+						154 text Operation
+				68 container
+					69 heading Storage parameters, Value: 3
+						70 text Storage parameters
+					71 text These values define a storage scenario at one AC connection. This calculation does not assess product suitability.
+					72 container
+						73 text Usable stored energy kWh
+					74 text field (settable) Usable stored energy kWh, Value: 5
+					75 text Decimal point; no thousands separators.
+					76 container
+						77 text AC charging power kW
+					78 text field (settable) AC charging power kW, Value: 5
+					79 text Decimal point; no thousands separators.
+					80 container
+						81 text AC discharging power kW
+					82 text field (settable) AC discharging power kW, Value: 5
+					83 text Decimal point; no thousands separators.
+					84 container
+						85 text Charging efficiency %
+					86 text field (settable) Charging efficiency %, Value: 90
+					87 text Decimal point; no thousands separators.
+					88 container
+						89 text Discharging efficiency %
+					90 text field (settable) Discharging efficiency %, Value: 90
+					91 text Decimal point; no thousands separators.
+					92 container
+						93 text Internal auxiliary power kW
+					94 text field (settable) Internal auxiliary power kW, Value: 0
+					95 text Decimal point; no thousands separators.
+					96 container
+						97 text Standing-loss coefficient 1/h
+					98 text field (settable) Standing-loss coefficient 1/h, Value: 0
+					99 text Decimal point; no thousands separators.
+					100 text Source or assumption for storage parameters
+					101 text entry area (settable) Source or assumption for storage parameters, Value: Explicit analytic acceptance scenario: 5 kWh usable, 5 kW AC in/out, separate 90% efficiencies, zero auxiliary and standing losses. No manufacturer, SKU or equipment approval.
+					102 button (collapsed) Storage model and units, Secondary Actions: Expand
+						103 text Storage model and units
+				104 text Scenario settings need preparation
+				105 text A new calculation uses saved input revision 2.
+				106 button Prepare scenario settings
+				107 button (disabled) Calculate saved scenario
+			108 text Solution Configurator
+			109 text by Linker
+			110 text Linker brings your inputs into an editable project for solar and storage planning.
+			111 button (collapsed) About this tool, Secondary Actions: Expand
+				112 text About this tool
+		113 container tv-footer-v2
+			114 image Linker
+			115 container
+				116 text Language
+				117 container Language
+					118 link Description: English, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be#lp-calculations
+					119 link Description: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be#lp-calculations
+			120 text LINKING
+			121 link Description: products, Value: 127.0.0.1:9347/products/
+			122 text ,
+			123 link Description: technology, Value: 127.0.0.1:9347/about/capability/
+			124 text and
+			125 link Description: service, Value: 127.0.0.1:9347/services-support/
+			126 text to create 
+			127 text lasting value
+			128 text  for energy partners in Europe.
+			129 tab group Footer navigation
+				130 tab (selected, settable, boolean) Solutions, Value: 1, ID: footer-tab-solutions
+				131 tab (selectable, settable, boolean) Services, Value: 0, ID: footer-tab-services
+				132 tab (selectable, settable, boolean) Plan with Linker, Value: 0, ID: footer-tab-planning
+				133 tab (selectable, settable, boolean) Account, Value: 0, ID: footer-tab-account
+				134 tab (selectable, settable, boolean) Contact Linker, Value: 0, ID: footer-tab-contact
+			135 container Description: Solutions, ID: footer-panel-solutions
+				136 heading Solutions, Value: 2
+					137 text Solutions
+				138 content list
+					139 link Description: Residential Storage, Value: 127.0.0.1:9347/solution/residential-storage/
+					140 link Description: Commercial Storage, Value: 127.0.0.1:9347/solution/commercial-storage/
+					141 link Description: Utility-Scale Storage, Value: 127.0.0.1:9347/solution/utility-storage/
+			142 text © 2026 Linker. All rights reserved.
+			143 container Legal
+				144 link Description: Imprint, Value: 127.0.0.1:9347/imprint/
+				145 link Description: Privacy Policy, Value: 127.0.0.1:9347/privacy-policy/
+				146 button Cookie settings
+				147 link Description: Terms of Sale, Value: 127.0.0.1:9347/terms-of-sale/
+				148 link Description: Refund & Returns, Value: 127.0.0.1:9347/refund-returns/
+			149 container
+				150 text Product fit · Inverter compatibility · Project support
+		151 button (collapsed) Description: Ask Genie, Secondary Actions: Expand
+
+The focused UI element is 40 container Energy calculation, ID: lp-calculations

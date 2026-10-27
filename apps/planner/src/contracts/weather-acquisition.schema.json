@@ -1,0 +1,140 @@
+{
+  "$defs": {
+    "PvgisTmyInterpretation": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "$ref": "#/$defs/SchemaVersion"
+        },
+        "synthetic_energy_year": {
+          "$ref": "#/$defs/Year"
+        },
+        "solar_date_policy": {
+          "const": "original_selected_year_plus_reported_irradiance_offset",
+          "title": "Solar Date Policy",
+          "type": "string"
+        },
+        "output_axis_policy": {
+          "const": "nonleap_synthetic_utc_hourly_scenario_v1",
+          "title": "Output Axis Policy",
+          "type": "string"
+        },
+        "power_reconstruction": {
+          "const": "representative_pv_output_over_declared_intervals_v1",
+          "title": "Power Reconstruction",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "synthetic_energy_year",
+        "solar_date_policy",
+        "output_axis_policy",
+        "power_reconstruction"
+      ],
+      "title": "PvgisTmyInterpretation",
+      "type": "object"
+    },
+    "PvgisTmyRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "$ref": "#/$defs/SchemaVersion"
+        },
+        "api_version": {
+          "const": "5.3",
+          "title": "Api Version",
+          "type": "string"
+        },
+        "latitude_deg": {
+          "$ref": "#/$defs/linker_engine__planning__pvgis_request__Finite__1"
+        },
+        "longitude_deg": {
+          "$ref": "#/$defs/linker_engine__planning__pvgis_request__Finite__2"
+        },
+        "start_year": {
+          "$ref": "#/$defs/Year"
+        },
+        "end_year": {
+          "$ref": "#/$defs/Year"
+        },
+        "use_terrain_horizon": {
+          "title": "Use Terrain Horizon",
+          "type": "boolean"
+        },
+        "radiation_database_policy": {
+          "const": "provider_default_with_verified_echo",
+          "title": "Radiation Database Policy",
+          "type": "string"
+        },
+        "expected_radiation_database": {
+          "enum": [
+            "PVGIS-SARAH3",
+            "PVGIS-ERA5"
+          ],
+          "title": "Expected Radiation Database",
+          "type": "string"
+        },
+        "expected_meteo_database": {
+          "const": "ERA5",
+          "title": "Expected Meteo Database",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "api_version",
+        "latitude_deg",
+        "longitude_deg",
+        "start_year",
+        "end_year",
+        "use_terrain_horizon",
+        "radiation_database_policy",
+        "expected_radiation_database",
+        "expected_meteo_database"
+      ],
+      "title": "PvgisTmyRequest",
+      "type": "object"
+    },
+    "SchemaVersion": {
+      "maximum": 1,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "Year": {
+      "maximum": 9998,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "linker_engine__planning__pvgis_request__Finite__1": {
+      "maximum": 90,
+      "minimum": -90,
+      "type": "number"
+    },
+    "linker_engine__planning__pvgis_request__Finite__2": {
+      "maximum": 180,
+      "minimum": -180,
+      "type": "number"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "$ref": "#/$defs/SchemaVersion"
+    },
+    "request": {
+      "$ref": "#/$defs/PvgisTmyRequest"
+    },
+    "interpretation": {
+      "$ref": "#/$defs/PvgisTmyInterpretation"
+    }
+  },
+  "required": [
+    "schema_version",
+    "request",
+    "interpretation"
+  ],
+  "title": "WeatherAcquisitionInputs",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

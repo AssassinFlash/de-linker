@@ -1,0 +1,154 @@
+Browser tab: 2, Title: "Lösungskonfigurator · Arbeitsbereich | Linker", URL: "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-map-ring-properties".
+1 AXWebArea Lösungskonfigurator · Arbeitsbereich | Linker, URL: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-map-ring-properties
+	2 container
+		3 container Primäre Navigation
+			4 link Description: Linker-Startseite, Value: 127.0.0.1:9347/de/
+			5 pop up button (collapsed) Produkte, Secondary Actions: Expand
+				6 text Produkte
+				7 image
+			8 pop up button (collapsed) Lösungen, Secondary Actions: Expand
+				9 text Lösungen
+				10 image
+			11 pop up button (collapsed) Planen mit Linker, Secondary Actions: Expand
+			12 link Description: Dienstleistungen, Value: 127.0.0.1:9347/de/kundendienst/
+			13 pop up button (collapsed) Für Partner, Secondary Actions: Expand
+			14 pop up button (collapsed) Über uns, Secondary Actions: Expand
+			15 link Description: Produkte suchen, Value: 127.0.0.1:9347/de/produkte/#search-box
+			16 link Description: Lösungsentwurf, Value: 127.0.0.1:9347/de/loesungsentwurf/
+			17 pop up button (collapsed) Description: Mein Konto, Secondary Actions: Expand
+			18 container Sprache
+				19 link Description: EN, Help: English, Value: 127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1
+				20 link Description: DE, Help: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1
+			21 link Description: Linker kontaktieren, Value: 127.0.0.1:9347/de/kontakt/
+		22 container
+			63 button Projekte
+			64 text Köln · owned synthetic roof · acceptance
+			65 text Gespeichert · Version 11
+			66 button (disabled) Rückgängig
+			67 button (disabled) Wiederholen
+			68 button (disabled) Projekt speichern
+			69 text Lösungskonfigurator AKTUELLES PROJEKT
+			70 container Projektbereiche
+				71 link Description: Projektübersicht, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-overview
+				72 link Description: Standort und Projekt, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-site
+				73 link Description: Dachplanung, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-design
+				74 link Description: Energiedaten, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-load
+			75 text Projektangaben bleiben mit ihrer Quelle und Version verknüpft. AKTUELLES PROJEKT
+			76 heading Köln · owned synthetic roof · acceptance, Value: 1
+				77 text Köln · owned synthetic roof · acceptance
+			78 text Standortdaten und Dachbelegungen werden im selben Projekt gespeichert.
+			79 container Dachplanung, ID: lp-design
+				80 text 06
+				81 heading Dachplanung, Value: 2, ID: lp-design-heading
+					82 text Dachplanung
+				83 text Dachgeometrie und Modulspezifikationen bilden die Grundlage für eine bearbeitbare Belegung und eine nachvollziehbare Prüfung in der Dachfläche. Die Dachplanung ist bei jedem Projekttyp optional.
+				84 button Dachfläche hinzufügen
+				85 button Modulspezifikation hinzufügen
+				86 container Planungsansicht
+					87 checkbox Draufsicht, Value: 0
+					88 checkbox Karte, Value: 1
+					89 checkbox 3D, Value: 0
+				90 button Dachgeometrie importieren
+				91 button (collapsed) Importe zur Prüfung, Secondary Actions: Expand
+					92 text Importe zur Prüfung
+				93 container
+					94 container Zeichnen auf der Karte
+						95 heading Zeichnen auf der Karte, Value: 3
+							96 text Zeichnen auf der Karte
+						97 button Zeichnung beginnen
+						98 text Aus Umriss und Dacheigenschaften entsteht eine bearbeitbare Dachfläche. Sie ist im Projekt in der Plan- und 3D-Ansicht verfügbar; ihre Quellenangaben und Nutzungsberechtigungen bleiben mit ihr verknüpft.
+						99 text Wählen Sie auf der Karte oder in der Objektliste eine Dachfläche, ein Hindernis oder eine Sperrfläche aus. Bei einer Dachfläche können Sie den äußeren Umriss oder eine vorhandene Dachöffnung wählen.
+					100 container Projektkarte
+						101 heading Projektkarte, Value: 3
+							102 text Projektkarte
+						103 text PROJEKTGEOMETRIE
+						104 text Karten-, Plan- und 3D-Ansicht verwenden dieselbe Projektgeometrie. Verschieben und Zoomen ändern nur die Ansicht. Änderungen am Umriss wirken sich erst nach dem Übernehmen auf das Projekt aus.
+						105 container Bedienelemente der Karte
+							106 button Gesamte Planung anzeigen
+							107 button Vergrößern
+							108 button Verkleinern
+							109 button Norden oben
+						110 container
+							111 container Projektkarte
+						112 text Wenn Sie die Straßenkarte laden, erhalten OpenFreeMap und die beteiligten Dienste Ihre IP-Adresse und Angaben zum angezeigten Kartenausschnitt. Die Straßenkarte dient der Orientierung.
+						113 button Straßenkarte laden
+						114 link Description: Datenschutzhinweise von OpenFreeMap, Value: openfreemap.org/privacy/
+					115 definition list
+						116 container Berücksichtigte Module
+							117 text Berücksichtigte Module
+						118 text 0
+						119 container Angegebene DC-Nennleistung
+							120 text Angegebene DC-Nennleistung
+						121 container
+							122 text 0 kWp
+						123 container Dachflächen
+							124 text Dachflächen
+						125 text 3
+				126 container Planungsobjekte und Eigenschaften
+					127 heading Planungsobjekte, Value: 3
+						128 text Planungsobjekte
+					129 container Planungsobjekt auswählen
+						130 checkbox Synthetic 3–4–5 roof · Köln, Value: 0
+						131 checkbox Synthetisches Hindernis · lokale Prüfung, Value: 0
+						132 checkbox Synthetische Sperrfläche · lokale Prüfung, Value: 0
+						133 checkbox Synthetic drawing acceptance · 548 · 24 Oct, Value: 0
+						134 checkbox Synthetic phone recovery · 548 · 24 Oct, Value: 0
+					135 button (disabled) Modulfeld hinzufügen
+					136 button Hindernis hinzufügen
+					137 button Sperrfläche hinzufügen
+					138 button Abstandsvorgaben der Belegung
+					139 text Vor dem Platzieren eines Modulfelds ist eine Modulspezifikation erforderlich.
+					140 button Koordinatenbezüge
+					141 button (collapsed) Quellen, Secondary Actions: Expand
+						142 text Quellen
+				143 container Belegung prüfen
+					144 heading Belegung prüfen, Value: 3, ID: lp-layout-review-heading
+						145 text Belegung prüfen
+					146 button Belegung prüfen
+					147 text Die Prüfung vergleicht vollständige Modulprojektionen, Dachränder und Öffnungen, Hindernisse, Sperrflächen und angegebene Abstände in der jeweiligen Dachfläche. Statik, Brandschutz, elektrische Auslegung und Verschattung werden gesondert beurteilt.
+			148 text Lösungskonfigurator
+			149 text von Linker
+			150 text Linker bündelt Ihre Angaben in einem bearbeitbaren Projekt für die PV- und Speicherplanung.
+			151 button (collapsed) Über dieses Werkzeug, Secondary Actions: Expand
+				152 text Über dieses Werkzeug
+		24 container tv-footer-v2
+			25 image Linker
+			26 container
+				27 text Sprache
+				28 container Sprache
+					29 link Description: Englisch, Value: 127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1
+					30 link Description: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1
+			31 text WIR VERBINDEN
+			32 link Description: Produkte, Value: 127.0.0.1:9347/de/produkte/
+			33 text ,
+			34 link Description: Technologie, Value: 127.0.0.1:9347/de/ueber-uns/leistungsfaehigkeit/
+			35 text und
+			36 link Description: Service, Value: 127.0.0.1:9347/de/kundendienst/
+			37 text und schaffen 
+			38 text dauerhaften Wert
+			39 text  für Energiepartner in Europa.
+			40 tab group Fußzeilen-Navigation
+				41 tab (selected, settable, boolean) Lösungen, Value: 1, ID: footer-tab-solutions
+				42 tab (selectable, settable, boolean) Dienstleistungen, Value: 0, ID: footer-tab-services
+				43 tab (selectable, settable, boolean) Planen mit Linker, Value: 0, ID: footer-tab-planning
+				44 tab (selectable, settable, boolean) Konto, Value: 0, ID: footer-tab-account
+				45 tab (selectable, settable, boolean) Linker kontaktieren, Value: 0, ID: footer-tab-contact
+			46 container Description: Lösungen, ID: footer-panel-solutions
+				47 heading Lösungen, Value: 2
+					48 text Lösungen
+				49 content list
+					50 link Description: Heimspeicher, Value: 127.0.0.1:9347/de/loesung/heimspeicher/
+					51 link Description: Gewerbespeicher, Value: 127.0.0.1:9347/de/loesung/gewerbespeicher/
+					52 link Description: Großspeicher, Value: 127.0.0.1:9347/de/loesung/grossspeicher/
+			53 text © 2026 Linker. Alle Rechte vorbehalten.
+			54 container Rechtliches
+				55 link Description: Impressum, Value: 127.0.0.1:9347/de/impressum/
+				56 link Description: Datenschutzerklärung, Value: 127.0.0.1:9347/de/datenschutz/
+				57 button Cookie-Einstellungen
+				58 link Description: Verkaufsbedingungen, Value: 127.0.0.1:9347/de/verkaufsbedingungen/
+				59 link Description: Rückgabe & Erstattung, Value: 127.0.0.1:9347/de/rueckgabe-erstattung/
+			60 container
+				61 text Produkteignung · Wechselrichter-Kompatibilität · Projektunterstützung
+		62 button (collapsed) Description: Genie fragen, Secondary Actions: Expand
+
+The focused UI element is 1 AXWebArea Lösungskonfigurator · Arbeitsbereich | Linker, URL: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-map-ring-properties

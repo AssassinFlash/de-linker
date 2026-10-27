@@ -1,0 +1,135 @@
+Browser tab: 2, Title: "Lösungskonfigurator · Arbeitsbereich | Linker", URL: "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1".
+1 AXWebArea Lösungskonfigurator · Arbeitsbereich | Linker, URL: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1
+	2 container
+		3 container Primäre Navigation
+			4 link Description: Linker-Startseite, Value: 127.0.0.1:9347/de/
+			15 link Description: Produkte suchen, Value: 127.0.0.1:9347/de/produkte/#search-box
+			147 container Sprache
+				148 link Description: EN, Help: English, Value: 127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1
+				149 link Description: DE, Help: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1
+			150 button (collapsed) Description: Menü öffnen, ID: tv-mobile-toggle, Secondary Actions: Expand
+				151 image
+		22 container
+			63 button Projekte
+			152 pop up button (collapsed, settable) Description: Projektbereiche, Value: Projektübersicht, Secondary Actions: Expand
+				153 menu
+					154 (selected) Projektübersicht
+					155 Standort und Projekt
+					156 Dachplanung
+					157 Energiedaten
+			65 text Gespeichert · Version 14
+			66 button (disabled) Rückgängig
+			67 button (disabled) Wiederholen
+			68 button (disabled) Projekt speichern
+			158 text AKTUELLES PROJEKT
+			76 heading Köln · owned synthetic roof · acceptance, Value: 1
+				77 text Köln · owned synthetic roof · acceptance
+			78 text Standortdaten und Dachbelegungen werden im selben Projekt gespeichert.
+			79 container Ihr Projekt im Überblick, ID: lp-overview
+				80 text PROJEKTÜBERSICHT
+				81 heading Ihr Projekt im Überblick, Value: 2, ID: lp-overview-heading
+					82 text Ihr Projekt im Überblick
+				83 text Standort, Dachplanung und Energiedaten gehören zu demselben Projekt. Sie können die Angaben in den jeweiligen Arbeitsbereichen nach und nach ergänzen.
+				84 definition list
+					85 container Land
+						86 text Land
+					87 text Deutschland
+					88 text Projektstandort
+					89 container Jahresverbrauch
+						90 text Jahresverbrauch
+					91 text —
+					92 text Grundlage nicht angegeben
+					93 container Berücksichtigte Module
+						94 text Berücksichtigte Module
+					95 text —
+					96 text Aus den aktuellen Dachbelegungen
+					97 container Angegebene DC-Nennleistung
+						98 text Angegebene DC-Nennleistung
+					99 text —
+					100 text Modulanzahl und angegebene Spezifikationen
+				101 text Synthetic 3–4–5 roof · Köln
+				102 text Aktuelle Belegung
+				103 image Dachfläche: Synthetic 3–4–5 roof · Köln. U nimmt nach rechts zu, V nach oben.
+				104 button Dachplanung öffnen
+				105 container Projektbereiche
+					106 heading Projekt weiterbearbeiten, Value: 3
+						107 text Projekt weiterbearbeiten
+					108 button Standort und Projekt Synthetic site at 50.94 N, 6.96 E · not a surveyed building
+						109 text Standort und Projekt
+						110 text Synthetic site at 50.94 N, 6.96 E · not a surveyed building
+					111 button Dachplanung Dachflächen, Hindernisse und Modulbelegung
+						112 text Dachplanung
+						113 text Dachflächen, Hindernisse und Modulbelegung
+					114 button Energiedaten Jahresverbrauch und Zeitreihendaten
+						115 text Energiedaten
+						116 text Jahresverbrauch und Zeitreihendaten
+					117 text Die Übersicht zeigt Ihre aktuellen Eingaben. Für Ertrag, Geräteeignung und technische Freigabe sind die jeweiligen Berechnungen und Nachweise erforderlich.
+			118 text Lösungskonfigurator
+			119 text von Linker
+			120 text Linker bündelt Ihre Angaben in einem bearbeitbaren Projekt für die PV- und Speicherplanung.
+			121 container
+				122 button (expanded) Über dieses Werkzeug, Secondary Actions: Collapse
+					123 text Über dieses Werkzeug
+				124 text Linker verbindet die Projektverwaltung mit den Bearbeitungsfunktionen. Ihre Angaben und der Entwurf bleiben im selben Projekt; dort können Sie Änderungen speichern und verfügbare Arbeitsstände wiederherstellen. Alle Entwurfsansichten verwenden dieselbe Projektgeometrie. Die erfassten Angaben zur Quellengenauigkeit und zu Nutzungsrechten bleiben unverändert. Die Darstellung ersetzt keine fachtechnische Freigabe.
+				125 heading Software und Datenquellen, Value: 2
+					126 text Software und Datenquellen
+				127 text Oberfläche und Projektdaten: 
+				128 link Description: React, Value: react.dev/
+				129 text , 
+				130 link Description: TanStack Query, Value: tanstack.com/query
+				131 text  und 
+				132 link Description: Ajv, Value: ajv.js.org/
+				133 text . 3D-Ansichten: 
+				134 link Description: Three.js, Value: threejs.org/
+				135 text  und 
+				136 link Description: React Three Fiber, Value: r3f.docs.pmnd.rs/getting-started/introduction
+				137 text . Kartendarstellung: 
+				138 link Description: MapLibre GL JS, Value: maplibre.org/maplibre-gl-js/docs/
+				139 text . Straßenkarte: 
+				140 link Description: OpenFreeMap, Value: openfreemap.org/
+				141 text . 
+				142 link Description: © OpenMapTiles, Value: openmaptiles.org/
+				143 text ; 
+				144 link Description: © OpenStreetMap-Mitwirkende, Value: openstreetmap.org/copyright
+				145 text .
+				146 link Description: Datenschutzhinweise von OpenFreeMap, Value: openfreemap.org/privacy/
+		24 container tv-footer-v2
+			25 image Linker
+			26 container
+				27 text Sprache
+				28 container Sprache
+					29 link Description: Englisch, Value: 127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1
+					30 link Description: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1
+			31 text WIR VERBINDEN
+			32 link Description: Produkte, Value: 127.0.0.1:9347/de/produkte/
+			33 text ,
+			34 link Description: Technologie, Value: 127.0.0.1:9347/de/ueber-uns/leistungsfaehigkeit/
+			35 text und
+			36 link Description: Service, Value: 127.0.0.1:9347/de/kundendienst/
+			37 text und schaffen 
+			38 text dauerhaften Wert
+			39 text  für Energiepartner in Europa.
+			40 tab group Fußzeilen-Navigation
+				41 tab (selected, settable, boolean) Lösungen, Value: 1, ID: footer-tab-solutions
+				42 tab (selectable, settable, boolean) Dienstleistungen, Value: 0, ID: footer-tab-services
+				43 tab (selectable, settable, boolean) Planen mit Linker, Value: 0, ID: footer-tab-planning
+				44 tab (selectable, settable, boolean) Konto, Value: 0, ID: footer-tab-account
+				45 tab (selectable, settable, boolean) Linker kontaktieren, Value: 0, ID: footer-tab-contact
+			46 container Description: Lösungen, ID: footer-panel-solutions
+				47 heading Lösungen, Value: 2
+					48 text Lösungen
+				49 content list
+					50 link Description: Heimspeicher, Value: 127.0.0.1:9347/de/loesung/heimspeicher/
+					51 link Description: Gewerbespeicher, Value: 127.0.0.1:9347/de/loesung/gewerbespeicher/
+					52 link Description: Großspeicher, Value: 127.0.0.1:9347/de/loesung/grossspeicher/
+			53 text © 2026 Linker. Alle Rechte vorbehalten.
+			54 container Rechtliches
+				55 link Description: Impressum, Value: 127.0.0.1:9347/de/impressum/
+				56 link Description: Datenschutzerklärung, Value: 127.0.0.1:9347/de/datenschutz/
+				57 button Cookie-Einstellungen
+				58 link Description: Verkaufsbedingungen, Value: 127.0.0.1:9347/de/verkaufsbedingungen/
+				59 link Description: Rückgabe & Erstattung, Value: 127.0.0.1:9347/de/rueckgabe-erstattung/
+			60 container
+				61 text Produkteignung · Wechselrichter-Kompatibilität · Projektunterstützung
+
+The focused UI element is 122 button (expanded) Über dieses Werkzeug, Secondary Actions: Collapse

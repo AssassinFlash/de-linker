@@ -1,0 +1,6 @@
+PASS: occluded
+PASS: clear
+PASS: focus-moved
+PASS: scope-withdrawn
+PASS: disconnected
+PASS: initial unadmitted/disconnected targets do not focus, scroll or schedule

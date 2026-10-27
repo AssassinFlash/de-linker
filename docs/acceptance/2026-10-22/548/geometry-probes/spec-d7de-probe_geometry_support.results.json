@@ -1,0 +1,91 @@
+[
+  {
+    "case": "raw_boundary_below",
+    "largest": 8388607.999999999,
+    "ulp_m": 9.313225746154785e-10,
+    "reported_m": 9.313225746154785e-10,
+    "status": "no_conflicts_detected",
+    "complete": true
+  },
+  {
+    "case": "raw_boundary_at",
+    "largest": 8388608,
+    "ulp_m": 1.862645149230957e-09,
+    "reported_m": 1.862645149230957e-09,
+    "status": "incomplete",
+    "complete": false
+  },
+  {
+    "case": "raw_boundary_above",
+    "largest": 8388608.000000002,
+    "ulp_m": 1.862645149230957e-09,
+    "reported_m": 1.862645149230957e-09,
+    "status": "incomplete",
+    "complete": false
+  },
+  {
+    "case": "derived_obstacle_sweep",
+    "derived_largest_uv_m": 60000000000004.0,
+    "actual_derived_ulp_m": 0.0078125,
+    "reported_m": 3.552713678800501e-15,
+    "budget_m": 1e-09,
+    "status": "no_conflicts_detected",
+    "complete": true,
+    "issues": [
+      {
+        "kind": "north_reference_unspecified",
+        "object_id": "coordinate_system",
+        "roof_id": null,
+        "related_id": null,
+        "category": "missing_input",
+        "required_m": null,
+        "actual_m": null
+      },
+      {
+        "kind": "source_precision_unspecified",
+        "object_id": "survey",
+        "roof_id": null,
+        "related_id": null,
+        "category": "missing_input",
+        "required_m": null,
+        "actual_m": null
+      }
+    ]
+  },
+  {
+    "case": "derived_cuboid_corner",
+    "actual_derived_ulp_m": 1.862645149230957e-09,
+    "reported_m": 9.313225746154785e-10,
+    "status": "conflicts_detected",
+    "complete": true,
+    "issues": [
+      {
+        "kind": "north_reference_unspecified",
+        "object_id": "coordinate_system",
+        "roof_id": null,
+        "related_id": null,
+        "category": "missing_input",
+        "required_m": null,
+        "actual_m": null
+      },
+      {
+        "kind": "source_precision_unspecified",
+        "object_id": "survey",
+        "roof_id": null,
+        "related_id": null,
+        "category": "missing_input",
+        "required_m": null,
+        "actual_m": null
+      },
+      {
+        "kind": "panel_outside_roof",
+        "object_id": "array:0:0",
+        "roof_id": "roof",
+        "related_id": null,
+        "category": "layout_conflict",
+        "required_m": null,
+        "actual_m": null
+      }
+    ]
+  }
+]

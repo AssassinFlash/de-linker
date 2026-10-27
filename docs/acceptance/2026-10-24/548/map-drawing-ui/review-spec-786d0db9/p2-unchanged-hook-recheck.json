@@ -1,0 +1,53 @@
+{
+  "pin": "b48ffda68aeb2e9f17dd27b84f7449e05b321873",
+  "runtime": "v24.22.0",
+  "original_finding": "closed",
+  "repeated_unknown_ack_then_public_retry": {
+    "pass": true,
+    "open_points": 2,
+    "durable_points": 2,
+    "raw_invalid_pitch": "12,,invalid",
+    "exact_uncertain_bytes_replayed": true,
+    "writes": [
+      {
+        "points": 0,
+        "previous_points": null,
+        "previous_sha256": null,
+        "next_sha256": "4d9b90a7c5190b58ba692805585ba600877f1faf29580be8b1805f918a6e6ef8",
+        "result": "acknowledged"
+      },
+      {
+        "points": 1,
+        "previous_points": 0,
+        "previous_sha256": "4d9b90a7c5190b58ba692805585ba600877f1faf29580be8b1805f918a6e6ef8",
+        "next_sha256": "d7ca2bd8982fa2dfbbc419fefaae5e3fb906d95d620723d04b7510187e582c50",
+        "result": "committed_then_unknown_ack"
+      },
+      {
+        "points": 1,
+        "previous_points": 0,
+        "previous_sha256": "4d9b90a7c5190b58ba692805585ba600877f1faf29580be8b1805f918a6e6ef8",
+        "next_sha256": "d7ca2bd8982fa2dfbbc419fefaae5e3fb906d95d620723d04b7510187e582c50",
+        "result": "committed_then_unknown_ack"
+      },
+      {
+        "points": 1,
+        "previous_points": 0,
+        "previous_sha256": "4d9b90a7c5190b58ba692805585ba600877f1faf29580be8b1805f918a6e6ef8",
+        "next_sha256": "d7ca2bd8982fa2dfbbc419fefaae5e3fb906d95d620723d04b7510187e582c50",
+        "result": "acknowledged"
+      },
+      {
+        "points": 2,
+        "previous_points": 1,
+        "previous_sha256": "d7ca2bd8982fa2dfbbc419fefaae5e3fb906d95d620723d04b7510187e582c50",
+        "next_sha256": "e3475caaf68af4f0992a09690080fdd3977f863c144df6eae758218abc4c8f42",
+        "result": "acknowledged"
+      }
+    ]
+  },
+  "competing_tab_retry_and_discard_refused": true,
+  "explicit_fork_preserved_both": true,
+  "explicit_discard_settled_unknown_and_preserved_competing_copy": true,
+  "boundary": "Real React/hook/domain/journal with fake IndexedDB and fault injection; no native map, provider, account or production acceptance"
+}

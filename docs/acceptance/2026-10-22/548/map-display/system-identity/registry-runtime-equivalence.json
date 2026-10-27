@@ -1,0 +1,9 @@
+{
+  "previous_pin": "81cd1c5b1a7d5ff5592131602c12d642d13c162b",
+  "emitted_artifacts_byte_identical": true,
+  "emitted_artifacts": 7,
+  "runtime_source_files_unchanged": 97,
+  "entry_sha256": "590f6efccb8f8b4e8937a8c481df7fea9a19b440fd37eee575aa12453fadbf1b",
+  "package_config_in_source_manifest": true,
+  "native_evidence_binding": "Native matrix loaded this unchanged WordPress entry SHA; correction changes dependency URL/config/manifest metadata only"
+}

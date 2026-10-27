@@ -1,0 +1,33 @@
+{
+  "focus": {
+    "classes": "",
+    "rect": {
+      "bottom": 446.03125,
+      "height": 48,
+      "left": 144.375,
+      "right": 261.8046875,
+      "top": 398.03125,
+      "width": 117.4296875,
+      "x": 144.375,
+      "y": 398.03125
+    },
+    "tag": "BUTTON"
+  },
+  "headings": [
+    "Energy calculation",
+    "Software and data credits"
+  ],
+  "scripts": [
+    "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f3eea0738fbd08a4297369c602c22476339ec2d9e01bd34f72342da9bfa88748"
+  ],
+  "scroll": {
+    "pageWidth": 390,
+    "x": 0,
+    "y": 136
+  },
+  "url": "http://127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be#lp-calculations",
+  "viewport": {
+    "height": 844,
+    "width": 390
+  }
+}

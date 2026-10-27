@@ -1,0 +1,19 @@
+{
+  "run": "MeW4ghKpbi270mO3l",
+  "status": "FAILED",
+  "memory_limit_bytes": 512000000,
+  "restarts": 3,
+  "relevant_log": [
+    "2026-10-23T15:11:48.309Z WARN  CheerioCrawler:AutoscaledPool:Snapshotter: Memory is critically overloaded. Using 488 MB of 512 MB (95%). Consider increasing available memory.",
+    "2026-10-23T15:11:48.850Z ./run_protected.sh: line 20:    29 Killed                  $APP $ARGS 2> >(tee $TMPLOG 1>&2)",
+    "2026-10-23T15:11:49.880Z ACTOR: Run exited with a non-zero exit code and was restarted.",
+    "2026-10-23T15:11:55.128Z WARN  CheerioCrawler:AutoscaledPool:Snapshotter: Memory is critically overloaded. Using 488 MB of 512 MB (95%). Consider increasing available memory.",
+    "2026-10-23T15:11:55.746Z ./run_protected.sh: line 20:    29 Killed                  $APP $ARGS 2> >(tee $TMPLOG 1>&2)",
+    "2026-10-23T15:11:56.779Z ACTOR: Run exited with a non-zero exit code and was restarted.",
+    "2026-10-23T15:12:02.515Z WARN  CheerioCrawler:AutoscaledPool:Snapshotter: Memory is critically overloaded. Using 488 MB of 512 MB (95%). Consider increasing available memory.",
+    "2026-10-23T15:12:02.969Z ./run_protected.sh: line 20:    29 Killed                  $APP $ARGS 2> >(tee $TMPLOG 1>&2)",
+    "2026-10-23T15:12:04.009Z ACTOR: Run exited with a non-zero exit code and was restarted.",
+    "2026-10-23T15:12:10.156Z WARN  CheerioCrawler:AutoscaledPool:Snapshotter: Memory is critically overloaded. Using 488 MB of 512 MB (95%). Consider increasing available memory.",
+    "2026-10-23T15:12:10.702Z ./run_protected.sh: line 20:    29 Killed                  $APP $ARGS 2> >(tee $TMPLOG 1>&2)"
+  ]
+}

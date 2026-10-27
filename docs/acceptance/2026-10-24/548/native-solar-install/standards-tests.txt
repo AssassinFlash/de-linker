@@ -1,0 +1,194 @@
+Independent Standards evidence — native launch increment, 2026-10-24
+Repository: /Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548
+Resolved base: eaacd408638e3db4609fbee68c9031e5aebe4ada
+Target: bcb9008da711a95b6a548ac69a3c177a059407d0
+Initial and completion git rev-parse HEAD both returned the target.
+
+Pinned diff command:
+git diff eaacd408638e3db4609fbee68c9031e5aebe4ada...bcb9008da711a95b6a548ac69a3c177a059407d0
+Commit: bcb9008da711a95b6a548ac69a3c177a059407d0 Guard paired planner launches and scope weather credentials
+Diff stat: 12 files changed, 791 insertions(+), 15 deletions(-).
+
+All changed files reviewed:
+docs/specs/548-native-solar-install.md
+docs/specs/548-native-solar-tasks.md
+services/engine/src/linker_engine/planning/worker_host.py
+services/engine/tests/planning/test_release_probe.py
+tools/local/src/linker_local/engine_release.py
+tools/local/src/linker_local/planner_provider.py
+tools/local/src/linker_local/planner_worker.py
+tools/local/src/linker_local/services.py
+tools/local/tests/test_engine_release.py
+tools/local/tests/test_planner_launch.py
+tools/local/tests/test_planner_provider.py
+tools/local/tests/test_planner_worker.py
+
+Standards/context sources:
+Current authoritative /Users/chesterjohn/Documents/de-linker/AGENTS.md;
+owned CONTEXT.md; docs/agents/domain.md; accepted ADR 0001 and 0002;
+docs/specs/548-native-solar-install.md; docs/specs/548-service-hosting.md;
+docs/specs/548-managed-energy-worker.md; code-review Standards baseline and
+codebase-design SKILL. Current local-storage policy was read before closure.
+No Spec report, other review report, native operator policy or native DB was read.
+
+1. Focused local release/provider/launch/lifecycle tests
+cwd=tools/local
+$ env PYTHONDONTWRITEBYTECODE=1 uv run --locked --no-sync pytest -p no:cacheprovider -o tmp_path_retention_policy=none tests/test_engine_release.py tests/test_planner_provider.py tests/test_planner_launch.py tests/test_planner_worker.py tests/test_services.py
+============================= test session starts ==============================
+platform darwin -- Python 3.12.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: /Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local
+configfile: pyproject.toml
+collected 53 items
+tests/test_engine_release.py ...........                                 [ 20%]
+tests/test_planner_provider.py .........                                 [ 37%]
+tests/test_planner_launch.py ...                                         [ 43%]
+tests/test_planner_worker.py .......................                     [ 86%]
+tests/test_services.py .......                                           [100%]
+============================== 53 passed in 0.85s ==============================
+Exit 0. These use isolated temporary fixture stores/instance directories;
+process-group fixtures own and clean up their synthetic child processes.
+No instance service or native process was signalled by the reviewer.
+
+2. Real release-probe subprocess
+The first concurrent engine invocation used pytest's shared default temp root
+with tmp_path_retention_policy=none. It failed with FileNotFoundError while
+reading its protected/workspace.sqlite fixture directory, while the parallel
+local pytest invocation completed and cleaned the same default temp-root family.
+The release command itself returned the expected JSON and no stderr. That run
+is not treated as evidence of a product failure. The isolated rerun below
+avoids the shared pytest-root interaction and passed.
+
+cwd=services/engine
+$ env PYTHONDONTWRITEBYTECODE=1 uv run --locked --no-sync python - <<'PY'
+from pathlib import Path
+from tempfile import TemporaryDirectory
+import subprocess, sys
+with TemporaryDirectory(prefix='standards-native-engine-pytest-') as temporary:
+    result=subprocess.run([sys.executable,'-m','pytest','-p','no:cacheprovider','--basetemp',str(Path(temporary)/'pytest'),'tests/planning/test_release_probe.py'],check=False)
+    raise SystemExit(result.returncode)
+PY
+============================= test session starts ==============================
+platform darwin -- Python 3.12.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: /Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/services/engine
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collected 1 item
+tests/planning/test_release_probe.py .                                   [100%]
+============================== 1 passed in 2.75s ===============================
+Exit 0. The actual release subprocess accepts missing/invalid policy references,
+returns the expected runtime/schema envelope and retains the isolated schema-2
+project DB bytes and file inventory. This does not inspect the real native DB.
+
+3. Strict local module typing
+cwd=tools/local
+$ env PYTHONDONTWRITEBYTECODE=1 uv run --locked --no-sync mypy src/linker_local/engine_release.py src/linker_local/planner_provider.py src/linker_local/planner_worker.py src/linker_local/services.py
+Success: no issues found in 4 source files
+Exit 0. No whole-engine mypy/CI claim is made.
+
+4. Confirmed P2 reproducer — partial identity allows lifecycle entry
+Executed read-only with respect to the real repository/runtime, using temporary
+synthetic source, private runtime configuration and a temporary SQLite DB.
+The test changes only its fake HTTP entry; it uses the actual RuntimeSnapshot
+implementation for hashing, and actual services.serve/compatible_release for
+the launch decision. External identity/probe replies are supplied at their
+normal process seam. A sentinel intercepts drain before any lifecycle mutation.
+
+cwd=services/engine
+$ env PYTHONDONTWRITEBYTECODE=1 uv run --locked --no-sync python - <<'PY'
+from contextlib import ExitStack
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from unittest.mock import patch
+import json, sqlite3, sys
+sys.path.insert(0,str(Path.cwd().parents[1]/'tools/local/src'))
+from linker_engine.planning import runtime_snapshot
+from linker_local import services
+from linker_local.checkout import Checkout
+from linker_local.instance import Instance
+from linker_local.planner_worker import PlannerWorker
+class StopBeforeMutation(Exception): pass
+class RunningHttp:
+    def pid(self): return 17
+with TemporaryDirectory(prefix='standards-native-identity-gap-') as temporary:
+    root=Path(temporary)
+    checkout=Checkout(root/'checkout')
+    project=checkout.service('engine')
+    planning=project/'src/linker_engine/planning'
+    planning.mkdir(parents=True)
+    capture_file=planning/'runtime_snapshot.py'
+    capture_file.write_text('# synthetic stable planning source\n')
+    (project/'pyproject.toml').write_text('# synthetic stable project\n')
+    (project/'uv.lock').write_text('# synthetic stable lock\n')
+    interpreter=project/'.venv/bin/python'
+    interpreter.parent.mkdir(parents=True)
+    interpreter.touch()
+    application=planning.parent/'application.py'
+    application.write_text('# synthetic HTTP revision one\n')
+    with patch.object(runtime_snapshot,'__file__',str(capture_file)):
+        old=runtime_snapshot.RuntimeSnapshot.capture().sha256
+        application.write_text('# synthetic HTTP revision two\n')
+        new=runtime_snapshot.RuntimeSnapshot.capture().sha256
+    assert old==new
+    instance=Instance('isolated',1,2,3,root/'instances')
+    config=Path(services.planner_environment(instance)['LINKER_PLANNER_CONFIG'])
+    workspace=Path(json.loads(config.read_bytes())['directory'])
+    workspace.mkdir(parents=True)
+    db=workspace/'workspace.sqlite'
+    with sqlite3.connect(db) as connection:
+        connection.execute('CREATE TABLE projects(id TEXT)')
+        connection.execute("INSERT INTO projects VALUES ('retained')")
+        connection.execute('PRAGMA user_version=4')
+    before=db.read_bytes()
+    reached=[]
+    def forbidden_drain(worker):
+        reached.append('drain')
+        raise StopBeforeMutation()
+    with ExitStack() as patches:
+        patches.enter_context(patch.object(services,'_uv',return_value=Path(sys.executable)))
+        patches.enter_context(patch.object(services,'service_token',return_value='synthetic-service'))
+        patches.enter_context(patch.object(PlannerWorker,'release',return_value={'schema_version':1,'runtime_sha256':new,'storage_schema_version':4}))
+        patches.enter_context(patch.object(services.Service,'process',return_value=RunningHttp()))
+        patches.enter_context(patch.object(services,'_planner_probe',return_value={'runtime_sha256':old}))
+        patches.enter_context(patch.object(PlannerWorker,'drain',side_effect=forbidden_drain,autospec=True))
+        try:
+            services.serve(instance,checkout,object(),only='engine')
+        except StopBeforeMutation:
+            pass
+    assert reached==['drain']
+    assert before==db.read_bytes()
+    print('Actual services.serve accepted unchanged planning hash after HTTP entry changed: REPRODUCED')
+    print('Guard reached drain; sentinel stopped before real drain, stop, sync, provider or WordPress write.')
+    print('Isolated project row/schema database bytes remained unchanged.')
+print('Temporary fixture removed; real native runtime untouched.')
+PY
+
+Actual output, Exit 0:
+Actual services.serve accepted unchanged planning hash after HTTP entry changed: REPRODUCED
+Guard reached drain; sentinel stopped before real drain, stop, sync, provider or WordPress write.
+Isolated project row/schema database bytes remained unchanged.
+Temporary fixture removed; real native runtime untouched.
+
+A separate minimal real RuntimeSnapshot probe also printed:
+Changed the isolated HTTP entry source; planning release hash remained identical: REPRODUCED
+Captured file inventory: src/linker_engine/planning/runtime_snapshot.py, pyproject.toml, uv.lock
+Temporary fixture removed; no real source, policy, process or project database touched.
+
+5. Cumulative added-line policy scan, Exit 0
+Source from git diff --unified=0 at the exact base/target above; added lines only.
+legacy_identifiers pattern: tv_b2b_|Linker_AI_|dlk-
+new_model_channels pattern: api\.openai|aihubmix|gpt-[0-9]|claude|grok
+Actual output:
+legacy_identifiers: 0 cumulative added-line hits
+new_model_channels: 0 cumulative added-line hits
+No UI, CSS, catalog or model implementation changes in the pinned 12-file diff.
+
+Ownership/storage readback:
+Only standards-initial.md and standards-tests.txt were authored. No tracked
+source, catalog, instance policy, persistent project DB, provider call or service
+lifecycle was changed. Only isolated fixture processes were started/stopped by
+their existing tests. TemporaryDirectory wrappers removed both custom probes
+and the independent engine pytest base; no extra runtime/worktree/backup retained.
+The actual schema-2 native project rows and running HTTP/worker pair were not
+opened, installed, restarted or migrated. No Spec report was read.
+Before report writing, git status still showed only the existing untracked
+docs/acceptance/2026-10-24/548/native-solar-install/ evidence directory.

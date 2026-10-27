@@ -1,0 +1,45 @@
+{
+  "provenance": "Read-only p548 SQLite and SHA-256-verified blobs after normal CUA five-corner drawing; native zero-height refusal, correction to DE 1,25, pause, EN restoration retaining original decimal locale, real geometry check and Save project. Owned synthetic input only.",
+  "project_id": "82a84c56e50c4efb8497d1bfbe106bd1",
+  "kind": "obstacle",
+  "before_revision": 12,
+  "after_revision": 13,
+  "before_input_sha256": "3b32912028bf51024b7d27a42e027afd5564a85890c36e54f282af6ef93c3a16",
+  "after_input_sha256": "aabdeda701caf5e209742132d7baa248ba67643d6d7072379ddd2631ca35eb42",
+  "new_object": {
+    "extrusion_axis_enu": [
+      0,
+      0,
+      1
+    ],
+    "footprint_uv": [
+      [
+        1.5619404261122767,
+        11.949328427042897
+      ],
+      [
+        3.38422768583905,
+        11.949329513247719
+      ],
+      [
+        3.3842292665074245,
+        10.067030509918503
+      ],
+      [
+        2.4470781971896067,
+        10.78095746415026
+      ],
+      [
+        1.5619411555790663,
+        10.06702942312418
+      ]
+    ],
+    "height_m": 1.25,
+    "id": "obstacle_928195164c114290ac7c45a951dbb83d",
+    "name": "Synthetisches neues Hindernis · Kartenprüfung",
+    "roof_id": "roof_8cfac87f5edf38bb019d2aedb57676a6",
+    "source_id": "source_8cfac87f5edf38bb019d2aedb57676a6"
+  },
+  "only_one_new_object_appended": true,
+  "all_other_geometry_sources_planes_and_inputs_exactly_unchanged": true
+}

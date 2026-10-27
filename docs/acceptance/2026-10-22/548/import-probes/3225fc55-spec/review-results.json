@@ -1,0 +1,55 @@
+{
+  "axis": "Spec",
+  "verdict": "FAIL",
+  "target": "3225fc552a89c406f685bfc5643d50745e58baa9",
+  "base": "367e454c23f542632258e1440387c4c9e7825e17",
+  "findings": [
+    {
+      "priority": 1,
+      "title": "Response parsing can delete an uncertain original",
+      "file": "apps/planner/src/data/inputRefusal.ts",
+      "start": 11,
+      "end": 11,
+      "consumer": "apps/planner/src/data/useGeometryImport.ts:217-226",
+      "spec": "docs/specs/548-roof-import-workflow.md:47-52",
+      "reproduction": "Valid import; respond HTTP200 [] or HTTP502 []; actual local response parser error is misclassified and the exact durable intent is deleted",
+      "leaf_variants": 2
+    },
+    {
+      "priority": 2,
+      "title": "Explicit relative zero cannot recover a rejected height",
+      "file": "apps/planner/src/components/design/GeometryIntake.tsx",
+      "start": 226,
+      "end": 245,
+      "spec": "docs/specs/548-roof-import-workflow.md:19-24",
+      "reproduction": "Valid pitch/bearing/basis; missing height or invalid EN 1,; Continue; tick explicit0m datum; Continue still blocked by hidden customValidity",
+      "leaf_variants": 2
+    }
+  ],
+  "checks": {
+    "domain_data": {
+      "pass": 61,
+      "fail": 0
+    },
+    "DOM": {
+      "pass": 66,
+      "fail": 0
+    },
+    "types": "PASS",
+    "emitted_graph_and_source_manifest": "PASS",
+    "independent_main": {
+      "node_tests": 20,
+      "pass": 14,
+      "fail": 6,
+      "failing_leaf_variants": 4,
+      "failing_parent_groups": 2
+    },
+    "independent_revision": {
+      "pass": 1,
+      "fail": 0
+    }
+  },
+  "scope": "Guided owned roof import; no native or full A-D acceptance",
+  "latest_main_log": "independent-attempt-5.log",
+  "unique_prior_harness_failures_retained": true
+}

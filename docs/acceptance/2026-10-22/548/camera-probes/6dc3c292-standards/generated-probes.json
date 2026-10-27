@@ -1,0 +1,32 @@
+[
+  {
+    "path": "apps/planner/tests/controlled-fiber-loader.mjs",
+    "bytes": 409,
+    "sha256": "ad5ad5f59c482ef1079cb1b6bb24a3d8f3e67651e4f39448bd3b6b3bf3019426"
+  },
+  {
+    "path": "apps/planner/tests/controlled-fiber.mjs",
+    "bytes": 2313,
+    "sha256": "fe262c6938c6d2e0890ae2139248953dd1961869d746aa33d53fcec893ebc7f1"
+  },
+  {
+    "path": "apps/planner/tests/camera-lifecycle.test.mjs",
+    "bytes": 5916,
+    "sha256": "1d2f0ddfc33e1e195914d8a1ffe6072a9c3e3e1c01bcb91d97d23a2d1f48a766"
+  },
+  {
+    "path": "apps/planner/tests/selected-panel.test.mjs",
+    "bytes": 1777,
+    "sha256": "07abeefc9414881dc45b8a63e5e840ad16ca5cbd356219b7a44d96e31209f049"
+  },
+  {
+    "path": "apps/planner/tests/reveal-focus.test.mjs",
+    "bytes": 2630,
+    "sha256": "bc067379dc952a0cde5035bd74e6de764e491e03457291d79bba40d9cf8cc71f"
+  },
+  {
+    "path": "apps/planner/tests/camera-lifetime.test.mjs",
+    "bytes": 8030,
+    "sha256": "4e305dabc54d3c2cd978f9bb94ed105afcc78638bc8bc6d47c42d0de7e034e91"
+  }
+]

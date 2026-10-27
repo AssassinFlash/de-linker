@@ -1,0 +1,39 @@
+{
+  "fixed_sha": "cbf75a9cead3b3c87c0cb2f206a1cd7e6226551e",
+  "owner": "/root/geographic_standards_e138",
+  "removed_root": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/journal-standards-cbf-jc9w0qg6",
+  "root_absent": true,
+  "sha_verified_source_files": 129,
+  "source_bytes": 3155766,
+  "source_mismatches": [],
+  "generated_files": 3,
+  "generated_bytes": 18324,
+  "links_removed": [
+    "apps/planner/node_modules"
+  ],
+  "unique_evidence_retained": [
+    "REVIEW.md",
+    "COPY-REVIEW.md",
+    "snapshot-manifest.json",
+    "run_review_checks.py",
+    "rebuild_snapshot.py",
+    "probe_overview.test.mjs",
+    "probe_mobile_append.mjs",
+    "probe_warning_append.mjs",
+    "fixed-client-suite.log",
+    "fixed-build-check.log",
+    "independent-mobile-overview-warning.log",
+    "independent-mobile-overview-warning.initial.log",
+    "copy-catalog-check.json",
+    "native-windpress-readback.json",
+    "check-results.json",
+    "execution-results.json",
+    "legacy-identifier-check.json",
+    "authority-delta-check.json"
+  ],
+  "free_before_bytes": 893458415616,
+  "free_after_bytes": 893461962752,
+  "observed_free_delta_bytes": 3547136,
+  "completed_utc": "2026-10-23T10:07:01.866850+00:00",
+  "scope": "Only own fixed snapshot/generated probes reclaimed. Source/parent WIP/native instance/other proofs/shared dependencies untouched; metadata readback made no native writes. Free delta includes concurrent activity."
+}

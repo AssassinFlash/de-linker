@@ -1,0 +1,35 @@
+{
+  "startUrls": [
+    {
+      "url": "https://maplibre.org/maplibre-gl-js/docs/API/classes/Map/"
+    },
+    {
+      "url": "https://maplibre.org/maplibre-gl-js/docs/examples/draw-polygon-with-mapbox-gl-draw/"
+    },
+    {
+      "url": "https://github.com/JamesLMilner/terra-draw"
+    },
+    {
+      "url": "https://www.openstreetmap.org/copyright"
+    },
+    {
+      "url": "https://opendatacommons.org/licenses/odbl/1-0/"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 5,
+  "maxResults": 5,
+  "maxConcurrency": 2,
+  "saveHtml": false,
+  "saveMarkdown": true,
+  "respectRobotsTxtFile": true,
+  "htmlTransformer": "none",
+  "useSitemaps": false,
+  "proxyConfiguration": {
+    "useApifyProxy": true
+  },
+  "requestTimeoutSecs": 60,
+  "maxRequestRetries": 3,
+  "removeElementsCssSelector": "nav, footer, script, style, noscript"
+}

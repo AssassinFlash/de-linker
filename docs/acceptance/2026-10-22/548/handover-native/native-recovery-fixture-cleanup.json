@@ -1,0 +1,11 @@
+{
+  "fixture": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/mu-plugins/linker-planner-cua-recovery-548.php",
+  "purpose": "Owned local fixture account only: recovery-discovery503 EN/DE 1440/390 and known project save; remove after recovery acceptance.",
+  "owner": "Codex unified-planner-548",
+  "expires_at_utc": "2026-10-23T04:35:03Z",
+  "source_sha256": "de172d617b3ec2513e22cdd8224eaaf53c0f7079f7ac0bf959d5df0dafa84686",
+  "fixture_removed": true,
+  "cleanup_record_removed": true,
+  "removed_at_utc": "2026-10-23T03:38:00Z",
+  "no_options_or_project_data_written_by_fault": true
+}

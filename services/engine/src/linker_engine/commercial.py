@@ -158,7 +158,9 @@ def options(load: list[float]) -> list[Shaving]:
 def _controller(
     engine: Engine, inverter: Product
 ) -> tuple[int | None, list[Accessory]]:
-    found = engine.compatibility.requirements(inverter.model, "parallel_controller")
+    found = engine.compatibility.requirements(
+        inverter.model, "parallel_controller", inverter_id=inverter.id
+    )
     if not found:
         return None, []
     requirement = found[0]
@@ -206,7 +208,12 @@ def systems(
             out.append(((system.power_kw, system.usable_kwh, inverter.id), system))
             continue
         for battery in engine.products.in_class(*BATTERY_CLASSES):
-            pair = engine.compatibility.pair(inverter.model, battery.model)
+            pair = engine.compatibility.pair(
+                inverter.model,
+                battery.model,
+                inverter_id=inverter.id,
+                battery_id=battery.id,
+            )
             # Each inverter carries the same battery configuration, within the
             # stacking figures and the release; the smallest that reaches the energy.
             reaching = [
@@ -222,7 +229,9 @@ def systems(
                 _line(battery, config.quantity * units, "battery", locale),
             ]
             for accessory in pair.accessories:
-                matches = engine.products.by_model_pattern(accessory.model)
+                matches = engine.products.by_model_pattern(
+                    accessory.model, product_id=accessory.product_id
+                )
                 if matches:
                     per = {"system": 1, "stack": config.stacks, "unit": 1}[
                         accessory.per
@@ -278,7 +287,9 @@ def _controller_lines(
         return []
     lines = []
     for accessory in controller:
-        matches = engine.products.by_model_pattern(accessory.model)
+        matches = engine.products.by_model_pattern(
+            accessory.model, product_id=accessory.product_id
+        )
         if matches:
             lines.append(
                 Line(

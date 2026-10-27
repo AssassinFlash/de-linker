@@ -1,0 +1,22 @@
+{
+  "source_base": "79e56ea9011d5e241e7ee05d45018b2e6df8b253",
+  "source_pin": "0187cc9210baacf51764bec50da42405a40ac71b",
+  "changed_engine_files": 15,
+  "legacy_or_todo_hits": [],
+  "research_manifest_verified_entries": 17,
+  "research_manifest_total_bytes": 78432,
+  "actual_cas_references_verified": 21,
+  "credential_or_signed_query_violations": [],
+  "temporary_trial_directory_absent": true,
+  "junit": {
+    "tests": "776",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "time": "73.198"
+  },
+  "all_command_exit_codes_zero": true,
+  "local_markdown_links_verified": true,
+  "map_body_and_comment_readback_verified": true,
+  "temporary_map_request_files_removed": 2
+}

@@ -126,6 +126,10 @@ final class Sender {
 	 * @param Submission $details Validated reply details.
 	 */
 	public function preflight( Submission $details ): ?WP_Error {
+		$planning = \Linker\Commerce\Planning\Context::preflight();
+		if ( $planning instanceof WP_Error ) {
+			return $planning;
+		}
 		if ( WC()->cart->is_empty() && '' === $details->message ) {
 			return new WP_Error( 'linker_inquiry_empty', __( 'Please add a product or write a message.', 'linker-commerce' ) );
 		}
@@ -221,6 +225,9 @@ final class Sender {
 		$order->update_meta_data( OrderLocale::META, $details->locale );
 		$order->update_meta_data( '_linker_inquiry_source', $source );
 		$order->update_meta_data( '_linker_inquiry_topic', $details->intent );
+		if ( 'proforma' === $source ) {
+			( new \Linker\Commerce\Planning\Context() )->capture( $order );
+		}
 		\Linker\Commerce\Protection\Intake::prepare( $order );
 		Assessment\Queue::prepare( $order, $context );
 		if ( 0 === $order->get_id() ) {

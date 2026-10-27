@@ -1,0 +1,9 @@
+{
+  "name": "target-client",
+  "command": [
+    "npm",
+    "test"
+  ],
+  "cwd": "apps/planner",
+  "exit_code": 0
+}

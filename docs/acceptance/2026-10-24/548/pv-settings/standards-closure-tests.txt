@@ -1,0 +1,135 @@
+Independent final cumulative Standards closure, 2026-10-24
+Repository: /Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548
+Base: c7232e3d91e80d87887ca3d1d398f92852dec021
+Final reviewed HEAD: 310bf2f4b6cd9d5a7c8bfcf35965c38905ef08be
+Initial and completion git rev-parse HEAD both matched this exact final pin.
+
+Accountability:
+$ git log --format='%H %s' c7232e3d91e80d87887ca3d1d398f92852dec021..310bf2f4b6cd9d5a7c8bfcf35965c38905ef08be
+310bf2f4b6cd9d5a7c8bfcf35965c38905ef08be Cite module parameter sources and fit German mobile step label
+15f018d812556294901559e5956197f8e4bc74a8 Preserve decimal input across percentage conversion and parent echoes
+0e16d6d5298616d9eb757c4cbcd621b9d3407f04 Connect saved roof models to shared PV calculation workflow
+
+$ git diff --stat c7232e3d91e80d87887ca3d1d398f92852dec021...310bf2f4b6cd9d5a7c8bfcf35965c38905ef08be
+33 files changed, 2074 insertions(+), 85 deletions(-)
+The complete cumulative source/test/spec delta, WindPress CSS, generated JS,
+source/build manifests and shipped PO/MO/planner JSON were in the review scope.
+The prior full initial review remains frozen and applies to unchanged content.
+
+$ git diff --name-status 15f018d812556294901559e5956197f8e4bc74a8...310bf2f4b6cd9d5a7c8bfcf35965c38905ef08be
+M apps/planner/src/components/energy/PvModuleParameters.tsx
+M plugins/linker-tools/build/planner/source-manifest.json
+M plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json
+M plugins/linker-tools/languages/linker-tools-de_DE_formal.mo
+M plugins/linker-tools/languages/linker-tools-de_DE_formal.po
+
+Inspected the complete final five-file delta and the actual retained sources
+cited by the new comment. WEATHER-AND-MODELS.md:36 pins pvwatts_dc with temp_ref=25;
+NUMERICAL-MODELS.md section 4.2 gives gamma in 1/degree C and the percentage
+boundary. The module comment explicitly calls -0.29 a percentage-entry example.
+
+Final-pin checks independently executed:
+
+1. cwd=apps/planner
+$ npm run lint:types
+> @linker/planner@0.1.0 lint:types
+> tsc --noEmit
+Exit 0; no diagnostics.
+
+2. cwd=apps/planner
+$ npm run build:check
+> @linker/planner@0.1.0 build:check
+> node bin/build-manifest.mjs check && node --test tests/built-modules.mjs
+Planner build matches its sources.
+PASS a lazy built chunk never executes the versioned WordPress entry again
+tests 1; pass 1; fail 0; skipped 0; todo 0
+Exit 0; duration 720.662208 ms.
+Same existing Node MODULE_TYPELESS_PACKAGE_JSON warning as initial review;
+emitted ESM imports succeeded. This is a source/build/import-binding check.
+
+3. cwd=apps/planner
+$ node --test src/domain/decimal.test.ts src/domain/solarSetup.test.ts
+PASS EN/DE numeric input rejects grouping instead of silently changing magnitude
+PASS percent boundaries shift declared decimal digits without binary multiplication artifacts or hidden rounding
+PASS solar drafts retain incomplete explicit choices without inventing parameter values
+PASS PV preflight requires a selected source and compares the effective weather request with roof coordinates
+PASS actual published worker fixture compiles identically, without model defaults or rounding
+PASS draft version, identities, constants, structure and numeric types stay strict
+PASS weather preparation checks year order, integer/range constraints and non-leap output axis
+PASS changing source/model inputs invalidates prepared documents and retains unrelated draft edits
+PASS PV preparation requires the current active layout, exact module set and partitioned conversion groups
+PASS PV source references require complete safe datasheet evidence before preparation
+PASS explicit weather replacement clears only the stale binding and prepared replay, so native saving can accept the new request
+tests 11; pass 11; fail 0; skipped 0; todo 0
+Exit 0; duration 262.704958 ms.
+Actual percent helper output is used; no precision cutoff/rounding was substituted.
+
+4. cwd=services/engine
+$ env PYTHONDONTWRITEBYTECODE=1 uv run --locked --no-sync pytest -p no:cacheprovider -o tmp_path_retention_policy=none tests/planning/test_browser_solar_contracts.py
+============================= test session starts ==============================
+platform darwin -- Python 3.12.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: /Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/services/engine
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collected 2 items
+tests/planning/test_browser_solar_contracts.py ..                        [100%]
+============================== 2 passed in 2.30s ===============================
+Exit 0. Actual Node preparation, private ASGI and worker execution registry were
+exercised against retained TMY bytes. Test databases/files are isolated temporary
+fixtures; tmp_path_retention_policy=none removes this run's temporary fixtures.
+The task's running/original DB was not touched.
+
+5. cwd=repository root
+$ python3 tools/checks/i18n-coverage.py
+plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po: untranslated=62 exempt=62 gap=0
+plugins/linker-i18n/languages/linker-i18n-de_DE_formal.po: untranslated=0 exempt=0 gap=0
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source gaps=0 JSON problems=0
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: untranslated=0 exempt=0 gap=0
+i18n-coverage: clean
+Exit 0. Native make-json reproduction uses a removed TemporaryDirectory and
+--no-purge, preserving the original source catalog.
+
+6. cwd=repository root; read-only inline Python assertions, Exit 0:
+- Assert the final delta contains exactly the five named files above.
+- git diff --name-only 15f...310 -- plugins/linker-tools/build/planner/assets
+  returns no file: all production JS modules retain identical bytes.
+- Compile current PO through msgfmt --check -o - and compare GNUTranslations
+  _catalog with shipped MO; compare current MO with git show 15f:<MO path>.
+- Assert the only changed translation dictionary entry is exactly
+  {'Power conversion': ('Leistungsumwandlung', 'Umwandlung')}.
+- Assert planner JSON chosen by md5 of build/planner/assets/planner.js contains
+  ['Umwandlung'] for Power conversion and equals MO for every other message.
+- Assert the actual exported pv-generation.schema.json definitions have:
+  Text.maxLength=4096; Hash.pattern=^[a-f0-9]{64}$;
+  PositiveInteger.exclusiveMinimum=0; maximum=9007199254740991.
+- Scan cumulative added source/test/spec/CSS lines for legacy identifiers,
+  inline layout/second CSS compiler and unexpected model channels, using the
+  same regexes recorded in immutable standards-tests.txt.
+- Assert SHA-256 of both immutable initial evidence files remains unchanged.
+
+Actual output:
+Final delta: 5 files; production JS module changes from reviewed 15f pin: 0
+Source-reference bounds match actual exported Text/Hash/PositiveInteger definitions: PASS
+Shipped PO/MO semantic equality: PASS; entries=1503
+Only changed German message: Power conversion -> Umwandlung
+Planner JSON/MO translation equality: PASS; messages=1001
+legacy_identifiers: 0 cumulative added-line hits
+inline_layout_or_second_css: 0 cumulative added-line hits
+unexpected_model_channels: 0 cumulative added-line hits
+Initial report and evidence SHA-256 unchanged: PASS
+
+Preserved immutable hashes:
+944fd1f81ed4525f8ba2eeee3cda9955eadccf4cc43887dbf953223d30feb1b2 standards-initial.md
+a808eddbc8033e2082800a78f8f611c0f8a75c0582d9473cfae276e6329b4411 standards-tests.txt
+
+Ownership and scope:
+Only standards-final.md and standards-closure-tests.txt were authored for this
+closure. No tracked source/catalog/DB/service/other-report edit; no commit.
+No Spec or copy report was read. No new server, instance, worktree, snapshot,
+backup or dependency installation; existing current task resources were reused.
+Prior current local-storage policy read remains applicable; no extra retained
+review runtime or temporary copy exists to recycle.
+git status before closure writing still showed only the existing untracked
+docs/acceptance/2026-10-24/548/pv-settings/ evidence directory.
+No installed native runtime, source acquisition, production, engineering release,
+whole-engine mypy/pytest/CI or visual CUA acceptance claim follows from these checks.

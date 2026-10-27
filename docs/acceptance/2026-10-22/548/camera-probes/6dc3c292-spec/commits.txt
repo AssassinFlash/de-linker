@@ -1,0 +1,2 @@
+6dc3c292 fix(planner): fit current geometry and retain accessible error context
+f48228a8 fix(planner): frame roof surfaces for desktop and narrow 3D views

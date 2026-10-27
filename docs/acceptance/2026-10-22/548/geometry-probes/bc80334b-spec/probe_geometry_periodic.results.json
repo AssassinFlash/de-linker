@@ -1,0 +1,50 @@
+[
+  {
+    "rotation_deg": 360,
+    "same_rotation_mod360": 0,
+    "centre_error_m": 0.0,
+    "axis_error": 0.0,
+    "actual_axis": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "mod360_axis": [
+      1.0,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "rotation_deg": 360000000031,
+    "same_rotation_mod360": 31,
+    "centre_error_m": 0.0,
+    "axis_error": 0.0,
+    "actual_axis": [
+      0.8571673007021123,
+      0.5150380749100542,
+      0.0
+    ],
+    "mod360_axis": [
+      0.8571673007021123,
+      0.5150380749100542,
+      0.0
+    ]
+  },
+  {
+    "rotation_deg": 9007199254740991,
+    "same_rotation_mod360": 31,
+    "centre_error_m": 0.0,
+    "axis_error": 0.0,
+    "actual_axis": [
+      0.8571673007021123,
+      0.5150380749100542,
+      0.0
+    ],
+    "mod360_axis": [
+      0.8571673007021123,
+      0.5150380749100542,
+      0.0
+    ]
+  }
+]

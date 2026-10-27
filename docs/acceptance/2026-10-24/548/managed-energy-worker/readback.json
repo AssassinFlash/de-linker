@@ -1,0 +1,54 @@
+{
+  "readback_at": "2026-10-23T23:41:20.225726+00:00",
+  "source_pin": "b87aa3c9b39c0955f381c6847e9c5137f0c2b8f3",
+  "matrix": [
+    {
+      "language": "de",
+      "width": 1440,
+      "revision": 14,
+      "overflow_px": 0,
+      "about_open": true
+    },
+    {
+      "language": "de",
+      "width": 390,
+      "revision": 14,
+      "overflow_px": 0,
+      "about_open": true
+    },
+    {
+      "language": "en",
+      "width": 1440,
+      "revision": 14,
+      "overflow_px": 0,
+      "about_open": true
+    },
+    {
+      "language": "en",
+      "width": 390,
+      "revision": 14,
+      "overflow_px": 0,
+      "about_open": true
+    }
+  ],
+  "projects_preserved": 161,
+  "revisions_preserved": 217,
+  "jobs": [
+    [
+      "succeeded",
+      2
+    ]
+  ],
+  "schema_version": 2,
+  "integrity_check": "ok",
+  "runtime_config_preserved": true,
+  "genie_php_process_records_preserved": true,
+  "recovery_point_removed": "/Users/chesterjohn/de-linker-local/p548/planner/managed-worker-before.sqlite",
+  "reclaimed_logical_bytes": 393216,
+  "free_bytes_observed": 881407201280,
+  "restored_tab": "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-design",
+  "viewport_override_reset": true,
+  "new_instances": 0,
+  "new_worktrees": 0,
+  "new_dependency_trees": 0
+}

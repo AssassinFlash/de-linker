@@ -1,0 +1,32 @@
+{"mode":"handles_unmount","position":[1,2,3],"cancelled":1,"finished":0}
+✔ actual Three controller handles_unmount (108.724875ms)
+{"mode":"frame_change","position":[1,2,3],"cancelled":1,"finished":0}
+✔ actual Three controller frame_change (19.126125ms)
+{"mode":"escape","position":[1,2,3],"cancelled":1,"finished":0}
+✔ actual Three controller escape (10.442458ms)
+{"mode":"blur","position":[1,2,3],"cancelled":1,"finished":0}
+✔ actual Three controller blur (11.06025ms)
+{"mode":"pointercancel","position":[1,2,3],"cancelled":1,"finished":0}
+✔ actual Three controller pointercancel (9.97575ms)
+{"mode":"lostpointercapture","position":[1,2,3],"cancelled":1,"finished":0}
+✔ actual Three controller lostpointercapture (10.62825ms)
+{"mode":"normal_finish","position":[7,2,3],"cancelled":0,"finished":1}
+✔ actual Three controller normal_finish (9.63475ms)
+✖ whole Panels unmount clears the group ref before the real controller cancels (81.420834ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 7
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 777.8195
+
+✖ failing tests:
+
+test at tests/standards-controls-recheck.mjs:34:1
+✖ whole Panels unmount clears the group ref before the real controller cancels (81.420834ms)
+  ReferenceError [Error]: Cannot access 'document' before initialization
+      at TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-b008-_buw2n9_/apps/planner/tests/standards-controls-recheck.mjs:37:33)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)

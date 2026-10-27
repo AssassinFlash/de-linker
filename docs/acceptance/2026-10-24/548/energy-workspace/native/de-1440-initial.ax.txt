@@ -1,0 +1,137 @@
+Browser tab: 2, Title: "Lösungskonfigurator · Arbeitsbereich | Linker", URL: "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be#lp-calculations".
+1 AXWebArea Lösungskonfigurator · Arbeitsbereich | Linker, URL: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be#lp-calculations
+	2 container
+		3 container Primäre Navigation
+			4 link Description: Linker-Startseite, Value: 127.0.0.1:9347/de/
+			5 pop up button (collapsed) Produkte, Secondary Actions: Expand
+				6 text Produkte
+				7 image
+			8 pop up button (collapsed) Lösungen, Secondary Actions: Expand
+				9 text Lösungen
+				10 image
+			11 pop up button (collapsed) Planen mit Linker, Secondary Actions: Expand
+			12 link Description: Dienstleistungen, Value: 127.0.0.1:9347/de/kundendienst/
+			13 pop up button (collapsed) Für Partner, Secondary Actions: Expand
+			14 pop up button (collapsed) Über uns, Secondary Actions: Expand
+			15 link Description: Produkte suchen, Value: 127.0.0.1:9347/de/produkte/#search-box
+			16 link Description: Lösungsentwurf, Value: 127.0.0.1:9347/de/loesungsentwurf/
+			17 pop up button (collapsed) Description: Mein Konto, Secondary Actions: Expand
+			18 container Sprache
+				19 link Description: EN, Help: English, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be#lp-calculations
+				20 link Description: DE, Help: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be#lp-calculations
+			21 link Description: Linker kontaktieren, Value: 127.0.0.1:9347/de/kontakt/
+		22 container
+			63 button Projekte
+			64 text Lyon · synthetic energy scenario · acceptance
+			65 text Gespeichert · Version 3
+			66 button (disabled) Rückgängig
+			67 button (disabled) Wiederholen
+			68 button (disabled) Projekt speichern
+			69 text Lösungskonfigurator AKTUELLES PROJEKT
+			70 container Projektbereiche
+				71 link Description: Projektübersicht, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be#lp-overview
+				72 link Description: Standort und Projekt, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be#lp-site
+				73 link Description: Dachplanung, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be#lp-design
+				74 link Description: Energiedaten, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be#lp-load
+				75 link Description: Energieberechnung, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be#lp-calculations
+			76 text Projektangaben bleiben mit ihrer Quelle und Version verknüpft. AKTUELLES PROJEKT
+			77 heading Lyon · synthetic energy scenario · acceptance, Value: 1
+				78 text Lyon · synthetic energy scenario · acceptance
+			79 text Standortdaten und Dachbelegungen werden im selben Projekt gespeichert.
+			80 container Energieberechnung, ID: lp-calculations
+				81 text 07
+				82 heading Energieberechnung, Value: 2, ID: lp-calculations-heading
+					83 text Energieberechnung
+				84 text Berechnen Sie die Energieflüsse dieses Projekts für die gewählten Zeiträume. Mit jedem Ergebnis bleiben die verwendeten Eingaben, Quellen und das Berechnungsmodell gespeichert.
+				85 container Ansicht der Energieberechnung
+					86 checkbox Szenarioeinstellungen, Value: 1
+					87 checkbox Gespeicherte Berechnungen, Value: 0
+				130 heading Quellen der Zeitreihen, Value: 3
+					131 text Quellen der Zeitreihen
+				132 content list
+					133 container
+						134 text Gesamte Standortlast Für diese Eingaben ausgewählt
+					135 container
+						136 text Verfügbare PV-Leistung · AC Für diese Eingaben ausgewählt
+					137 container
+						138 text Externer Hilfsverbrauch · AC Für diese Eingaben ausgewählt
+				139 button Energiedaten prüfen
+				140 content list
+					141 button 01 Speicher
+						142 text 01
+						143 text Speicher
+					144 button 02 Anfangszustand
+						145 text 02
+						146 text Anfangszustand
+					147 button 03 Betrieb
+						148 text 03
+						149 text Betrieb
+				190 container
+					191 heading Gespeicherte Energie zu Beginn, Value: 3
+						192 text Gespeicherte Energie zu Beginn
+					193 text Die Herkunft der gespeicherten Energie bleibt während der gesamten Berechnung nachvollziehbar. Energie aus dem Netz oder unbekannter Herkunft zählt nicht zur solaren Versorgung.
+					194 container
+						195 text Aus PV-Erzeugung kWh
+					196 text field (settable) Aus PV-Erzeugung kWh, Value: 0
+					197 text Dezimalkomma; keine Tausendertrennzeichen.
+					198 container
+						199 text Aus dem Stromnetz kWh
+					200 text field (settable) Aus dem Stromnetz kWh, Value: 0
+					201 text Dezimalkomma; keine Tausendertrennzeichen.
+					202 container
+						203 text Herkunft unbekannt kWh
+					204 text field (settable) Herkunft unbekannt kWh, Value: 0
+					205 text Dezimalkomma; keine Tausendertrennzeichen.
+					206 button Anfangsenergie auf null setzen
+					207 text Grundlage des Anfangszustands
+					208 text entry area (settable) Grundlage des Anfangszustands, Value: Analytic test starts with no stored energy of PV, grid or unknown origin. Explicit zero for each origin.
+				186 text Szenario für die offenen Eingaben vorbereitet
+				187 text Eine neue Berechnung verwendet die gespeicherte Eingabeversion 3.
+				188 button Szenario vorbereiten
+				189 button Gespeichertes Szenario berechnen
+			125 text Lösungskonfigurator
+			126 text von Linker
+			127 text Linker bündelt Ihre Angaben in einem bearbeitbaren Projekt für die PV- und Speicherplanung.
+			128 button (collapsed) Über dieses Werkzeug, Secondary Actions: Expand
+				129 text Über dieses Werkzeug
+		24 container tv-footer-v2
+			25 image Linker
+			26 container
+				27 text Sprache
+				28 container Sprache
+					29 link Description: Englisch, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be#lp-calculations
+					30 link Description: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be#lp-calculations
+			31 text WIR VERBINDEN
+			32 link Description: Produkte, Value: 127.0.0.1:9347/de/produkte/
+			33 text ,
+			34 link Description: Technologie, Value: 127.0.0.1:9347/de/ueber-uns/leistungsfaehigkeit/
+			35 text und
+			36 link Description: Service, Value: 127.0.0.1:9347/de/kundendienst/
+			37 text und schaffen 
+			38 text dauerhaften Wert
+			39 text  für Energiepartner in Europa.
+			40 tab group Fußzeilen-Navigation
+				41 tab (selected, settable, boolean) Lösungen, Value: 1, ID: footer-tab-solutions
+				42 tab (selectable, settable, boolean) Dienstleistungen, Value: 0, ID: footer-tab-services
+				43 tab (selectable, settable, boolean) Planen mit Linker, Value: 0, ID: footer-tab-planning
+				44 tab (selectable, settable, boolean) Konto, Value: 0, ID: footer-tab-account
+				45 tab (selectable, settable, boolean) Linker kontaktieren, Value: 0, ID: footer-tab-contact
+			46 container Description: Lösungen, ID: footer-panel-solutions
+				47 heading Lösungen, Value: 2
+					48 text Lösungen
+				49 content list
+					50 link Description: Heimspeicher, Value: 127.0.0.1:9347/de/loesung/heimspeicher/
+					51 link Description: Gewerbespeicher, Value: 127.0.0.1:9347/de/loesung/gewerbespeicher/
+					52 link Description: Großspeicher, Value: 127.0.0.1:9347/de/loesung/grossspeicher/
+			53 text © 2026 Linker. Alle Rechte vorbehalten.
+			54 container Rechtliches
+				55 link Description: Impressum, Value: 127.0.0.1:9347/de/impressum/
+				56 link Description: Datenschutzerklärung, Value: 127.0.0.1:9347/de/datenschutz/
+				57 button Cookie-Einstellungen
+				58 link Description: Verkaufsbedingungen, Value: 127.0.0.1:9347/de/verkaufsbedingungen/
+				59 link Description: Rückgabe & Erstattung, Value: 127.0.0.1:9347/de/rueckgabe-erstattung/
+			60 container
+				61 text Produkteignung · Wechselrichter-Kompatibilität · Projektunterstützung
+		62 button (collapsed) Description: Genie fragen, Secondary Actions: Expand
+
+The focused UI element is 144 button 02 Anfangszustand

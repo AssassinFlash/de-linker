@@ -29,6 +29,39 @@ use WP_Mock;
  */
 final class AccountTemplatesTest extends TestCase {
 
+	/** The account opens the same project through its current language entry. */
+	public function test_planning_project_link_uses_current_language_and_preserves_identity(): void {
+		$this->plain_text();
+		$this->signed_in( 66 );
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 66 ) );
+		WP_Mock::userFunction( 'get_page_by_path' )->with( 'solution-configurator' )->andReturn( new \WP_Post( (object) array( 'ID' => 80 ) ) );
+		WP_Mock::userFunction( 'pll_current_language' )->andReturn( 'de' );
+		WP_Mock::userFunction( 'pll_get_post' )->with( 80, 'de' )->andReturn( 800 );
+		WP_Mock::userFunction( 'get_permalink' )->with( 800 )->andReturn( 'https://example.test/de/loesungskonfigurator/' );
+		WP_Mock::userFunction( 'add_query_arg', array( 'return' => static fn ( array $query, string $url ): string => $url . '?' . http_build_query( $query ) ) );
+		WP_Mock::userFunction( 'wp_date', array( 'return' => '27 Oct 2026' ) );
+		WP_Mock::userFunction( 'is_wp_error', array( 'return' => static fn ( mixed $value ): bool => $value instanceof \WP_Error ) );
+		$adapter = new AccountTemplates();
+		$this->expand_fields( $adapter );
+		$id       = str_repeat( 'a', 32 );
+		$projects = WP_Mock::onFilter( 'linker_commerce_planning_projects' )->with( null );
+		$this->assertInstanceOf( \WP_Mock\Filter_Responder::class, $projects );
+		$projects->reply(
+			array(
+				array(
+					'id'         => $id,
+					'title'      => 'Same owned project',
+					'updated_at' => 1793040000,
+				),
+			)
+		);
+		$html = $adapter->rows( array( 'type' => 'planning-projects' ) );
+		$this->assertStringContainsString( 'https://example.test/de/loesungskonfigurator/?project=' . $id . '#lp-overview', $html );
+		$this->assertStringContainsString( 'Same owned project', $html );
+		$this->assertStringNotContainsString( 'saved_solution=', $html );
+		$this->assertStringNotContainsString( 'linker_solution_to_draft', $html );
+	}
+
 	/** Logged-out requests retain Woo's forms and templates. */
 	public function test_guest_keeps_native_template_and_cannot_read_rows(): void {
 		WP_Mock::userFunction( 'is_account_page', array( 'return' => true ) );
@@ -464,6 +497,9 @@ final class AccountTemplatesTest extends TestCase {
 	 * another customer's solution is omitted.
 	 */
 	public function test_saved_solution_links_its_design_report_without_prices(): void {
+		$projects = WP_Mock::onFilter( 'linker_commerce_planning_projects' )->with( null );
+		$this->assertInstanceOf( \WP_Mock\Filter_Responder::class, $projects );
+		$projects->reply( null );
 		$this->visible_prices( false );
 		$this->plain_text();
 		WP_Mock::userFunction( 'add_shortcode' );
@@ -529,8 +565,8 @@ final class AccountTemplatesTest extends TestCase {
 		$this->assertStringContainsString( '2 × EcoFlow Recorded model at save', $html );
 		$this->assertStringNotContainsString( 'Someone else', $html );
 		$this->assertSame( 1, substr_count( $html, 'Design report (PDF)' ) );
-		$this->assertSame( 1, substr_count( $html, 'name="linker_solution_to_draft"' ) );
-		$this->assertSame( 1, substr_count( $html, 'This saved solution needs a new calculation before it can be added to your solution draft.' ) );
+		$this->assertStringNotContainsString( 'name="linker_solution_to_draft"', $html );
+		$this->assertSame( 2, substr_count( $html, 'This saved solution needs a new calculation before it can be added to your solution draft.' ) );
 		$this->assertStringContainsString( 'linker-document=report&id=45', $html );
 		$this->assertStringNotContainsString( 'linker-document=report&id=46', $html );
 		$this->assertStringNotContainsString( 'linker-document=report&id=47', $html );
@@ -538,6 +574,10 @@ final class AccountTemplatesTest extends TestCase {
 
 	/** Legacy product references have a current, published way forward without authorising an old design. */
 	public function test_legacy_solution_has_current_product_links_and_recalculation_guidance(): void {
+		$projects = WP_Mock::onFilter( 'linker_commerce_planning_projects' )->with( null );
+		$this->assertInstanceOf( \WP_Mock\Filter_Responder::class, $projects );
+		$projects->reply( null );
+		WP_Mock::userFunction( 'add_query_arg', array( 'return' => static fn ( array $query, string $url ): string => $url . '?' . http_build_query( $query ) ) );
 		$this->visible_prices( false );
 		$this->plain_text();
 		WP_Mock::userFunction( 'add_shortcode' );

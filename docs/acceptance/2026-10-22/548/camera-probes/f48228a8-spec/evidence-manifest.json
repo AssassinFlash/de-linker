@@ -1,0 +1,140 @@
+{
+  "owner": "/root/geographic_spec_e138",
+  "target": "f48228a87894c23f68d180675d05b902139d531e",
+  "base": "eff8341d5a0eaf24999f42854da6339032c65c9c",
+  "files": [
+    {
+      "path": "REPRODUCE.md",
+      "bytes": 2179,
+      "sha256": "ac97b549322b916f70b4b4297a1e97f9a01b0914b9440505bb5c737d31ae0b52"
+    },
+    {
+      "path": "REVIEW.md",
+      "bytes": 2389,
+      "sha256": "a37159d1c4fddc5dde453a551ef0b7766bc5e5572e194d0349b1f9cf3fef977c"
+    },
+    {
+      "path": "camera-host.attempt-1.mjs",
+      "bytes": 1287,
+      "sha256": "c0efe9f415f2fa7b56092e4ad3765784a3139422e7e12ff03913f9300e4ece6a"
+    },
+    {
+      "path": "camera-host.mjs",
+      "bytes": 1269,
+      "sha256": "20966ef775e127cb499bc4db9b705cf4d228879ef77748dfd9abc14a79896954"
+    },
+    {
+      "path": "camera-loader.mjs",
+      "bytes": 372,
+      "sha256": "4ce78b24b54740ad8f874524a256de1012fe7091c7f506bc683a042fa6cb88fc"
+    },
+    {
+      "path": "camera-probe.mjs",
+      "bytes": 9117,
+      "sha256": "16dd892636c680c288d50dd69400b0e9fc236066fa893bf71fa137818304fd33"
+    },
+    {
+      "path": "cleanup.json",
+      "bytes": 1674,
+      "sha256": "e65934827c0076fad5b368f96903035ea5813daa104ec5863f997b96a4d32905"
+    },
+    {
+      "path": "cleanup_snapshot.py",
+      "bytes": 4575,
+      "sha256": "b5d7e926cc5bd7cadf6e763553a648aeb0e2cd621aa66ff15245665ce3d7cb05"
+    },
+    {
+      "path": "client-run.json",
+      "bytes": 199,
+      "sha256": "87ec0e5fcbb030fb5d8a80b0303bfd16dab86b129d3d5024357107311891f351"
+    },
+    {
+      "path": "client.log",
+      "bytes": 14445,
+      "sha256": "dd35a6bc5a063288d1a693f05c3ace5a81973d145f13f30110014d5edf664553"
+    },
+    {
+      "path": "commits.txt",
+      "bytes": 75,
+      "sha256": "b45a36dba7e387d472581791ebd0288fef0321e7aeb079458a5f790e189107b0"
+    },
+    {
+      "path": "diff-metadata.json",
+      "bytes": 1420,
+      "sha256": "042745f6a24ebae9c0713abf4212f9e36a2f26817aaf6e22016216d35fd49f16"
+    },
+    {
+      "path": "emitted-run.json",
+      "bytes": 217,
+      "sha256": "1c14bdbaafd7a926a3f2b5a30cd93757df6498c34d2370afdd2fb9b5575e5c86"
+    },
+    {
+      "path": "emitted.log",
+      "bytes": 353,
+      "sha256": "1acdc51a811b6a1e16f6eaf04b5cf9934f29a7f4716e48af3e724c81b0f1a119"
+    },
+    {
+      "path": "harness-notes.md",
+      "bytes": 711,
+      "sha256": "26a7a2c7b33ea74738f811a93d7b408926effb12aacae7c40bfce969a3a9f623"
+    },
+    {
+      "path": "independent-attempt-1.json",
+      "bytes": 616,
+      "sha256": "a846bc2e5ee3176dc209e821ae00d3fdd3a6d15c136588c59f951afca3f61b7a"
+    },
+    {
+      "path": "independent-attempt-1.log",
+      "bytes": 21679,
+      "sha256": "069d0438846d9a3cef264163f5fc43a259b8949439eab11193d2d643842ac4c1"
+    },
+    {
+      "path": "independent-attempt-2.json",
+      "bytes": 616,
+      "sha256": "dd0913c237299f15cdac435d4198834b7966803d5b7a1ec313f56f13aac635bc"
+    },
+    {
+      "path": "independent-attempt-2.log",
+      "bytes": 3064,
+      "sha256": "abea84314a066b6fda0e801b81cc7ab8905c36a58da8edbed8ffa512095488fa"
+    },
+    {
+      "path": "probe-environment.json",
+      "bytes": 623,
+      "sha256": "b5fa08068a72230bc3ffa3e108ab3fb7a64288e9808c3aa2bbacaa92d503c6df"
+    },
+    {
+      "path": "rebuild_snapshot.py",
+      "bytes": 1897,
+      "sha256": "1d4167df13deab2be6298564336f9ae520b0edce23257537343e53f32b6099d6"
+    },
+    {
+      "path": "review-results.json",
+      "bytes": 1638,
+      "sha256": "9eaac8f13e33e89cde3df4b4d3d8c5d2faebf971766700d57cfe3a215978df41"
+    },
+    {
+      "path": "run_camera_probe.py",
+      "bytes": 1288,
+      "sha256": "dde70959b5416e69e3d7f2882aba54cc1d9bc1b2c260dbe8ba4c1d9f02a28d98"
+    },
+    {
+      "path": "snapshot-manifest.json",
+      "bytes": 29892,
+      "sha256": "6340df45a5e0df37b0640facfdbaa3b123e353b37b57f72a110b3a6c59b41752"
+    },
+    {
+      "path": "types-run.json",
+      "bytes": 216,
+      "sha256": "e17e37daed7a759da195ce2b2c9a777229377aba11aa8889d9c3fc5e6c9e67b5"
+    },
+    {
+      "path": "types.log",
+      "bytes": 52,
+      "sha256": "fb7214a441e2b429aa43fce4db1d0911e9e6b638dc1d2f33682197312a418623"
+    }
+  ],
+  "file_count": 26,
+  "payload_bytes": 101863,
+  "verified_utc": "2026-10-23T11:54:01.130931+00:00"
+}

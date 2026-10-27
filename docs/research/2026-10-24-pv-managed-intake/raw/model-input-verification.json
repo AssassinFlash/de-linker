@@ -1,0 +1,65 @@
+{
+  "pvlibVersion": "0.16.1",
+  "primarySourceUrl": "https://raw.githubusercontent.com/pvlib/pvlib-python/v0.16.1/pvlib/temperature.py",
+  "temperatureFileSha256": "2adbab834d25836007bad5fc429acd2b53b83dc99b7be6d288bc1644d5a18319",
+  "matchesPreviousPinnedTagVerification": true,
+  "matchesInstalledReadOnlySource": true,
+  "sapmNamedTable": {
+    "open_rack_glass_glass": {
+      "a": -3.47,
+      "b": -0.0594,
+      "deltaT": 3
+    },
+    "close_mount_glass_glass": {
+      "a": -2.98,
+      "b": -0.0471,
+      "deltaT": 1
+    },
+    "open_rack_glass_polymer": {
+      "a": -3.56,
+      "b": -0.075,
+      "deltaT": 3
+    },
+    "insulated_back_glass_polymer": {
+      "a": -2.81,
+      "b": -0.0455,
+      "deltaT": 0
+    }
+  },
+  "sapmSourceLines": {
+    "table": [
+      15,
+      21
+    ],
+    "inputsAndUnits": [
+      65,
+      86
+    ],
+    "equationsAndMountingDescriptions": [
+      96,
+      137
+    ]
+  },
+  "module": {
+    "model": "TSM-460NEG9R.28",
+    "datasheetFile": "trina-neg9r28-en-2024c.pdf",
+    "datasheetSha256": "f4d280f9a0d89475cf575fbb99906e2b091da27f08b848fc51877cc1d24e8e22",
+    "page": 2,
+    "pmaxTemperatureCoefficient": {
+      "value": "-0.29",
+      "unit": "%/\u00b0C"
+    },
+    "gamma_pdc_per_c": "-0.0029",
+    "construction": "glass/glass",
+    "pageTextSelectedLines": [
+      "Front Glass                                      1.6 mm, AR Coated Heat Strengthened Glass",
+      "Back Glass                                       1.6 mm, Heat Strengthened Glass",
+      "Temperature Coefficient of PMAX                      \u20130.29 %/\u00b0C        Maximum System Voltage         1500 V DC (IEC)",
+      "Version number: TSM_EN_2024_C                                                                                                                             www.trinasolar.com"
+    ],
+    "interpretation": "gamma conversion is arithmetic, not an additional manufacturer claim; SAPM mounting is not established by this datasheet"
+  },
+  "temperatureGitBlobSha1": "55222c0fb13c0486453a51fdad34cd7b345fac30",
+  "retainedV0161TreeBlobSha1": "55222c0fb13c0486453a51fdad34cd7b345fac30",
+  "matchesRetainedV0161Tree": true
+}

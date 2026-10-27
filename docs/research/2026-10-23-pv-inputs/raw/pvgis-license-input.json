@@ -1,0 +1,24 @@
+{
+  "startUrls": [
+    {
+      "url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis_en"
+    },
+    {
+      "url": "https://commission.europa.eu/legal-notice_en"
+    },
+    {
+      "url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/getting-started-pvgis/pvgis-data-sources-calculation-methods_en"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 3,
+  "respectRobotsTxtFile": false,
+  "maxConcurrency": 1,
+  "maxRequestRetries": 1,
+  "saveMarkdown": true,
+  "saveText": true,
+  "saveHtml": true,
+  "htmlTransformer": "none",
+  "requestTimeoutSecs": 90
+}

@@ -1,0 +1,8 @@
+
+> @linker/planner@0.1.0 lint:format
+> prettier --check .
+
+Checking formatting...
+[warn] src/components/energy/PreparationResult.tsx
+[warn] src/data/preparationProtocol.test.ts
+[warn] Code style issues found in 2 files. Run Prettier with --write to fix.

@@ -1,0 +1,35 @@
+Performance
+Rendering modes
+
+Choose the rendering strategy based on your needs.
+
+Cached
+Hybrid
+Compiler
+
+Available modes:
+
+Cached - Load cached CSS when available, otherwise fallback to Compiler.
+
+Hybrid - Inline cached CSS when available, then run the Compiler to regenerate the style.
+
+Compiler - Always use the Compiler to generate the style.
+
+Cached CSS loading method
+
+Load cached CSS as an inline instead of an external file.
+
+Inline Cached CSS
+Generate source map
+
+Generate the source map for the cached CSS file.
+
+Enable Source Map
+Generate the cached CSS
+
+Last Generated:
+2026-10-24 04:21:01
+837.16 kB
+
+Generate
+Save

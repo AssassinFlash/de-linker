@@ -1,0 +1,230 @@
+[
+  {
+    "roof_rotation_deg": 0,
+    "origin": 0,
+    "conflicts": 0,
+    "kinds": [],
+    "uv_bounds": [
+      0.0,
+      0.0,
+      1.0,
+      2.0
+    ]
+  },
+  {
+    "roof_rotation_deg": 0,
+    "origin": 10,
+    "conflicts": 0,
+    "kinds": [],
+    "uv_bounds": [
+      0.0,
+      0.0,
+      1.0,
+      2.0
+    ]
+  },
+  {
+    "roof_rotation_deg": 0,
+    "origin": 1000000.0,
+    "conflicts": 0,
+    "kinds": [],
+    "uv_bounds": [
+      0.0,
+      0.0,
+      1.0,
+      2.0
+    ]
+  },
+  {
+    "roof_rotation_deg": 0,
+    "origin": 1000000000000000.0,
+    "conflicts": 0,
+    "kinds": [],
+    "uv_bounds": [
+      0.0,
+      0.0,
+      1.0,
+      2.0
+    ]
+  },
+  {
+    "roof_rotation_deg": 30,
+    "origin": 0,
+    "conflicts": 1,
+    "kinds": [
+      "panel_outside_roof"
+    ],
+    "uv_bounds": [
+      -1.1102230246251565e-16,
+      -5.551115123125783e-17,
+      1.0,
+      2.0
+    ]
+  },
+  {
+    "roof_rotation_deg": 30,
+    "origin": 10,
+    "conflicts": 1,
+    "kinds": [
+      "panel_outside_roof"
+    ],
+    "uv_bounds": [
+      0.0,
+      0.0,
+      0.9999999999999993,
+      2.0000000000000018
+    ]
+  },
+  {
+    "roof_rotation_deg": 30,
+    "origin": 1000000.0,
+    "conflicts": 1,
+    "kinds": [
+      "panel_outside_roof"
+    ],
+    "uv_bounds": [
+      0.0,
+      -2.8014257580366575e-11,
+      1.0000000001045508,
+      2.0000000000970446
+    ]
+  },
+  {
+    "roof_rotation_deg": 30,
+    "origin": 1000000000000000.0,
+    "conflicts": 1,
+    "kinds": [
+      "panel_outside_roof"
+    ],
+    "uv_bounds": [
+      0.0,
+      0.0,
+      0.9084936490538901,
+      2.073557158514987
+    ]
+  },
+  {
+    "roof_rotation_deg": 45,
+    "origin": 0,
+    "conflicts": 0,
+    "kinds": [],
+    "uv_bounds": [
+      0.0,
+      0.0,
+      1.0,
+      2.0
+    ]
+  },
+  {
+    "roof_rotation_deg": 45,
+    "origin": 10,
+    "conflicts": 1,
+    "kinds": [
+      "panel_outside_roof"
+    ],
+    "uv_bounds": [
+      -1.1102230246251565e-16,
+      0.0,
+      1.0000000000000004,
+      1.9999999999999987
+    ]
+  },
+  {
+    "roof_rotation_deg": 45,
+    "origin": 1000000.0,
+    "conflicts": 1,
+    "kinds": [
+      "panel_outside_roof"
+    ],
+    "uv_bounds": [
+      0.0,
+      0.0,
+      1.0000000000078861,
+      2.0000000000157723
+    ]
+  },
+  {
+    "roof_rotation_deg": 45,
+    "origin": 1000000000000000.0,
+    "conflicts": 1,
+    "kinds": [
+      "panel_outside_roof"
+    ],
+    "uv_bounds": [
+      -2.220446049250313e-16,
+      0.0,
+      0.8838834764831844,
+      1.9445436482630059
+    ]
+  },
+  {
+    "roof_rotation_deg": 60,
+    "origin": 0,
+    "conflicts": 0,
+    "kinds": [],
+    "uv_bounds": [
+      0.0,
+      0.0,
+      1.0,
+      2.0
+    ]
+  },
+  {
+    "roof_rotation_deg": 60,
+    "origin": 10,
+    "conflicts": 1,
+    "kinds": [
+      "panel_outside_roof"
+    ],
+    "uv_bounds": [
+      -8.881784197001252e-16,
+      -4.440892098500626e-16,
+      0.9999999999999991,
+      2.000000000000001
+    ]
+  },
+  {
+    "roof_rotation_deg": 60,
+    "origin": 1000000.0,
+    "conflicts": 1,
+    "kinds": [
+      "panel_outside_roof"
+    ],
+    "uv_bounds": [
+      -5.6028959249943e-11,
+      0.0,
+      1.0000000000485223,
+      2.000000000125059
+    ]
+  },
+  {
+    "roof_rotation_deg": 60,
+    "origin": 1000000000000000.0,
+    "conflicts": 1,
+    "kinds": [
+      "panel_outside_roof"
+    ],
+    "uv_bounds": [
+      -0.008974596215561625,
+      -0.05801270189221919,
+      0.899519052838329,
+      2.015544456622768
+    ]
+  },
+  {
+    "overlap_origin": 0,
+    "analytic_overlap_m2": 0.02,
+    "geometry_status": "conflicts_detected",
+    "conflicts": 1,
+    "kinds": [
+      "panel_projected_overlap"
+    ]
+  },
+  {
+    "overlap_origin": 1000000000000000.0,
+    "analytic_overlap_m2": 0.02,
+    "geometry_status": "no_conflicts_detected",
+    "conflicts": 0,
+    "kinds": []
+  }
+]

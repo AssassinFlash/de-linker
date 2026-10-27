@@ -1,0 +1,5 @@
+{
+  "max_panels": 5000,
+  "max_vertices": 20000,
+  "max_objects": 1024
+}

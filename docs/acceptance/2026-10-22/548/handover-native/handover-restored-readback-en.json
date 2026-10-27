@@ -1,0 +1,15 @@
+{
+  "saved_status": "Saved · revision 3",
+  "note": "Synthetic saved-during-discovery-failure · acceptance 548",
+  "recovery_notice_visible": false,
+  "pending_import_selector_visible": false,
+  "source_panel": "05\nInterval data\n\nAfter import, the data's meaning and coverage are shown for review. A profile selection applies to the open draft and is saved with Save project. The annual consumption entry remains separate.\n\nNet grid import · negative values mean export\nData interpretation\n\n2024-10-27T00:00:00+00:00 → 2024-10-27T01:15:00+00:00 · UTC\n\nSource label\nSynthetic lost acknowledgement source · 548 native\nMeasurement point\nNet grid import · negative values mean export\nSource type\nSynthetic test data\nOriginal value meaning\nAverage power over each interval · kW\nSource time zone\nEurope/Oslo\nThe timestamp identifies…\nThe start of the interval\nEnergy in covered intervals\n1 kWh\nData records\n2\nCovered duration\n0.5 h\nGap duration within the source period\n0.75 h\nGaps\n1\nLongest original interval\n15 min\nEffective resolution limit\n15 min\nMinimum interval mean\n-4 kW\nMaximum interval mean\n8 kW\nThe summary covers the full source period shown above. Maximum power is an interval average. This review does not determine instantaneous peaks, battery size or suitability for a calculation.\nThe source contains gaps. Missing intervals have not been filled with zeros or estimated values.\n\nFor net grid import, energy is imports minus exports over the covered intervals.\n\nNet grid import can be affected by on-site generation and storage. Total site consumption cannot be derived from net import alone.\n\nInterpreted intervals · UTC · average kW\nStart\tEnd\tkW\n2024-10-27T00:00:00+00:00\t2024-10-27T00:15:00+00:00\t-4\n2024-10-27T01:00:00+00:00\t2024-10-27T01:15:00+00:00\t8\nGap locations · UTC\nOriginal source and interpretation record\nRemove draft selection\n\nRemoving a selection leaves the stored source unchanged. Save the project to record the change.\n\nImport interval data",
+  "layout": {
+    "documentWidth": 1440,
+    "innerHeight": 1000,
+    "innerWidth": 1440,
+    "script": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f9e71051f4be59e3686869e9ac17bde121322e0b0faee397efd825142351b396",
+    "scrollWidth": 1440,
+    "url": "http://127.0.0.1:9347/planning-workspace-review/?project=5c9fca3466324c308895cc8b386dc6db#lp-profiles"
+  }
+}

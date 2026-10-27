@@ -22,7 +22,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from linker_genie import attachments, knowledge, page, solution, timing
+from linker_genie import attachments, knowledge, page, planning, solution, timing
 from linker_genie.abilities import ABILITY_NAMES, Abilities, AbilityError
 from linker_genie.conversation import customer_messages, last_customer_message
 from linker_genie.embedding import EmbeddingError
@@ -97,6 +97,7 @@ INPUT_DOCS: dict[str, str] = {
     "linker/inquiry-status": "{}",
     "linker/handoff-team": "{summary: string}",
     solution.NAME: solution.INPUT_DOC,
+    planning.NAME: planning.INPUT_DOC,
     knowledge.NAME: knowledge.INPUT_DOC,
     page.NAME: page.INPUT_DOC,
 }
@@ -110,6 +111,7 @@ TOOL_NAMES = (
     knowledge.NAME,
     page.NAME,
     solution.NAME,
+    planning.NAME,
 )
 PROMPTS = Path(__file__).resolve().parents[2] / "prompts"
 # Owner ruling 2026-10-11: the one chat model, on the official DeepSeek API.
@@ -292,6 +294,8 @@ def make_generate(
                 runner = _page_runner(pages, budget, request, clock)
             elif name == solution.NAME:
                 runner = _solution_runner(client, budget, request, expected, clock)
+            elif name == planning.NAME:
+                runner = _planning_runner(budget, request, clock)
             else:
                 runner = _ability_runner(
                     client,
@@ -600,10 +604,40 @@ def _solution_runner(
     return run
 
 
+def _planning_runner(
+    budget: ToolBudget,
+    request: TurnRequest,
+    clock: timing.Timing | None = None,
+) -> Callable[[dict[str, Any] | None], Any]:
+    def call(arguments: dict[str, Any] | None) -> Any:
+        del arguments
+        payload, gathered = planning.record(
+            request.planning_context, request.page_context
+        )
+        budget.parts.append(gathered)
+        return planning.model_view(payload)
+
+    timed = _timed(clock, timing.tool_key(planning.NAME), call)
+
+    def run(arguments: dict[str, Any] | None = None) -> Any:
+        if not budget.allow():
+            return {"error": f"tool budget {MAX_TOOL_CALLS} exhausted"}
+        return timed(arguments)
+
+    run.__name__ = _tool_name(planning.NAME)
+    return run
+
+
 def _page_lines(request: TurnRequest) -> list[str]:
     """The page the customer is on, as the prompt names it (#234)."""
     context = request.page_context
     lines = [f"page={context.type}"]
+    if context.planning_project_id:
+        lines.append(
+            "This page selects a saved planning project revision and optional result(s). "
+            "Use linker_read_planning_project for its inputs and figures; only that "
+            "server-verified result establishes readable data. " + planning.RULE
+        )
     if context.title:
         lines.append(f"page_title={context.title}")
     path = page.page_path(context.url)
@@ -636,6 +670,8 @@ def _result_view(item: dict[str, Any]) -> dict[str, Any]:
         return {**item, "result": page.model_view(result)}
     if item.get("name") == solution.NAME:
         return {**item, "result": solution.model_view(result)}
+    if item.get("name") == planning.NAME:
+        return {**item, "result": planning.model_view(result)}
     return item
 
 
@@ -732,7 +768,13 @@ def _user_prompt(
         "text, not even as a placeholder: show the product as a card, whose "
         "price line the service fills for this account; with partner=True say "
         "the card shows the net price, otherwise say once that approved partner "
-        "accounts see net prices. " + page.RULE + " " + solution.RULE + " "
+        "accounts see net prices. "
+        + page.RULE
+        + " "
+        + solution.RULE
+        + " "
+        + planning.RULE
+        + " "
         "A document (a search-knowledge chunk ID, compat.document.N, "
         "compat.document.BATTERYID.N, or pPRODUCTID.document.N for the documents "
         "get-product listed this turn — such a ref exists only after get-product "

@@ -1,0 +1,8 @@
+{
+  "endpoint": "https://api.apify.com/v2/datasets/dftNO1TLfoZWg7XyJ/items?format=json&clean=true&limit=20&offset=0",
+  "status": 200,
+  "responseBytes": 1074876,
+  "responseSha256": "111f2db5cdf847d634a50e9fedbdb994c9dc3f060143e242e661e6e27d955759",
+  "items": 8,
+  "selection": "only URL/crawl/metadata/query-stripped fileUrl and one extracted text representation retained"
+}

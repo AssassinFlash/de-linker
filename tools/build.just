@@ -7,6 +7,7 @@ set ignore-comments := true
 
 tools_dir := justfile_directory() / "plugins/linker-tools"
 commerce_dir := justfile_directory() / "plugins/linker-commerce"
+planner_dir := justfile_directory() / "apps/planner"
 
 # Build the apps into plugins/linker-tools/build/ and write its manifest.
 [default]
@@ -15,9 +16,13 @@ all:
     # rejects `super::js-install` as an unknown dependency), so it calls just.
     {{ just_executable() }} --justfile {{ justfile() }} js-install
     cd {{ tools_dir }} && npm run build
+    # wp-scripts cleans build/: the isolated application must be built after it.
+    cd {{ planner_dir }} && npm run build
+    cd {{ tools_dir }} && node bin/build-manifest.mjs write
     cd {{ commerce_dir }} && npm run build
 
 # Fail if a source or a built file changed since the last `just build`.
 check:
     cd {{ tools_dir }} && npm run --silent build:check
     cd {{ commerce_dir }} && npm run --silent build:check
+    cd {{ planner_dir }} && npm run --silent build:check

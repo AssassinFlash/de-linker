@@ -1,0 +1,43 @@
+{
+  "endpoint": "https://api.apify.com/v2/datasets/NjWC2HllyL6L087kJ/items?format=json&limit=2&offset=0&fields=url,crawl,markdown",
+  "httpStatus": 200,
+  "responseBytes": 60723,
+  "responseSha256": "7dcecd28216516d8f2ff78c94f167a697130d6f444e7fba9e9a9f769fb0157f3",
+  "records": [
+    {
+      "sourceUrl": "https://docs.apify.com/platform/actors/development/actor-definition/input-schema/specification/v1",
+      "capture": {
+        "loadedUrl": "https://docs.apify.com/actors/development/actor-definition/input-schema/specification/v1",
+        "loadedTime": "2026-10-24T05:44:51.930Z",
+        "referrerUrl": "https://docs.apify.com/platform/actors/development/actor-definition/input-schema/specification/v1",
+        "httpStatusCode": 200,
+        "depth": 0,
+        "contentLengthBytes": 55148,
+        "contentType": "text/html; charset=utf-8"
+      },
+      "sourceTextBytes": 57536,
+      "sourceTextSha256": "b175cb04036e4133939ad1f664b4aed069008f260872c8a66dd414e7532c5e79",
+      "file": "request-list-sources-excerpt.txt",
+      "retainedBytes": 5357,
+      "retainedSha256": "d2c94fb4b0e514a2d97a2de3cbb48bec6fb18afb553cb3dcfaeb61a16826492c",
+      "retainedOriginalLineRanges": [
+        [
+          32,
+          56
+        ],
+        [
+          776,
+          800
+        ],
+        [
+          806,
+          830
+        ],
+        [
+          893,
+          920
+        ]
+      ]
+    }
+  ]
+}

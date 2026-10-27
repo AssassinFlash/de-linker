@@ -1,0 +1,35 @@
+{
+  "source_pin": "ceb4a896bd39ffaa4ca72ae24eff6b73f3af6f8a",
+  "checked_at_unix": 1792809138.1358452,
+  "disk_free_before_bytes": 905678385152,
+  "deleted": [
+    {
+      "path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/windpress/data/planner.css.bak",
+      "bytes": 46360,
+      "sha256": "a44bd2c71a81d8cf6675241faf95fd301de4704eb8a002e1af88f4d466a92bb8",
+      "reason": "Exact source duplicate at committed base 71b54073; active volume matches current committed source and generated cache is independently verified."
+    }
+  ],
+  "moved_private": [
+    {
+      "from": "docs/acceptance/2026-10-24/548/energy-workspace/native/windpress-generated.png",
+      "to": "/Users/chesterjohn/de-linker-local/p548/planner/acceptance-private/energy-workspace/windpress-generated.jpg",
+      "bytes": 50825,
+      "sha256": "7d8dee219fd9f41d5ff36df798aee548b96b949797f13fdf5385331304ef0425",
+      "reason": "Admin UI capture is private; safe WindPress cache readback is retained in repository evidence. No copy was created.",
+      "reclaim_when": "At full goal acceptance, remove with the owned p548 instance."
+    }
+  ],
+  "retained": {
+    "worktree": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548",
+    "instance": "/Users/chesterjohn/de-linker-local/p548",
+    "reason": "One owned worktree and one instance remain required by active goal 548; reclaim after full acceptance/merge or explicit abandonment."
+  },
+  "consumed_auth_url_files_absent": {
+    "p548-energy-admin-login-url.txt": true,
+    "p548-energy-customer-login-url.txt": true
+  },
+  "disk_free_after_bytes": 905678405632,
+  "observed_free_space_delta_bytes": 20480,
+  "attribution": "Observed free-space delta is not bytes reclaimed: other active sessions share this APFS volume; only listed deletion bytes are attributed to this task."
+}

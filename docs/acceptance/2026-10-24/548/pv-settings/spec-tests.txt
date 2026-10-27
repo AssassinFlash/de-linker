@@ -1,0 +1,41 @@
+Independent PV Spec checks
+Source 0e16d6d5298616d9eb757c4cbcd621b9d3407f04
+Base c7232e3d91e80d87887ca3d1d398f92852dec021
+
+Reproduction: actual PvArrayParameters mounted through React/createRoot and the
+repository DOM/input helpers, locale de-DE, state echoing each onChange.
+
+Ground reflectance:
+  entered: 57
+  saved fraction: 0.57
+  displayed immediately: 56,99999999999999
+  aria-invalid: false
+Irradiance retained after soiling:
+  entered: 56
+  saved fraction: 0.56
+  displayed immediately: 56,00000000000001
+  aria-invalid: false
+Temperature coefficient -0,29 -> saved -0.0029, displayed -0,29.
+Nominal conversion efficiency 96,37 -> saved 0.9637, displayed 96,37.
+
+Independent targeted checks from apps/planner:
+node --test src/domain/solarSetup.test.ts: 9 passed
+node --no-warnings=ExperimentalWarning --loader ./tests/tsx-loader.mjs --test
+  tests/pv-setup.test.mjs tests/weather-setup.test.mjs
+  tests/energy-operations.test.mjs tests/preparation-ui.test.mjs
+  tests/energy-workspace.test.mjs: 27 passed
+npm run build:check: source/build bindings match; 1 built-module test passed.
+Total Node tests: 37 passed.
+
+Actual backend contract checks, executed independently from services/engine:
+PYTHONDONTWRITEBYTECODE=1 uv run --no-sync python -B -m pytest -p no:cacheprovider
+  --basetemp <owned temporary fixture workspace>
+  tests/planning/test_browser_solar_contracts.py -q
+2 passed in 3.27s
+The PV contract saves actual TypeScript preparation, sends the minimal revision
+command, executes the real Worker/registry using retained full-year TMY, publishes
+8760 intervals, retains the original source/revision and replays the same receipt.
+Independent temporary contract workspace reclaimed: True
+
+No network, live service, instance or persistent database was changed.
+No source, catalog or other agent-owned artifact was edited.

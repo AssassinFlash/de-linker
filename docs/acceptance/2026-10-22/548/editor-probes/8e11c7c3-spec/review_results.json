@@ -1,0 +1,81 @@
+{
+  "axis": "Spec",
+  "target": "8e11c7c3dfbcf658765b53b5f7fa4074e03ed560",
+  "base": "8a4a80b132f692062125807e509a57926fb0f518",
+  "correction_base": "b0080ec15eb2dcab6b2c22b7b029180a2c1f73c2",
+  "verdict": "FAIL",
+  "severity": "P3 only, narrow explicit URL contract; not an exploit",
+  "findings": {
+    "missing_partial": [],
+    "scope_creep": [],
+    "incorrect": [
+      {
+        "priority": 3,
+        "id": "empty_executable_url_delimiters",
+        "source": "apps/planner/src/data/config.ts:39-46",
+        "spec": "docs/specs/548-interactive-design.md:104-106; docs/acceptance/2026-10-22/548/DESIGN-REVIEW.md:130-132",
+        "quote": "The client accepts only a query-free, credential-free SceneViewport-hash.js; acceptance says query/fragment additions rejected.",
+        "inputs": [
+          "SceneViewport-hash_1.js?",
+          "SceneViewport-hash_1.js#",
+          "SceneViewport-hash_1.js?#"
+        ],
+        "actual": "All accepted with delimiters retained in sceneModuleUrl. WHATWG URL.search/URL.hash are empty for these components; href retains delimiters.",
+        "boundary": "Actual PHP Application rejects these suffixes; no arbitrary executable path or native exploit demonstrated. Client still falls short of its independently stated canonical executable URL guard.",
+        "probe": "apps/planner/tests/spec-config-boundary.test.mjs"
+      }
+    ]
+  },
+  "validation": {
+    "target_dom": {
+      "pass": 52,
+      "fail": 0,
+      "log": "target-dom.log"
+    },
+    "target_build_graph": {
+      "pass": 1,
+      "log": "target-build.log"
+    },
+    "independent_transport_loader": {
+      "pass": 2,
+      "failureQuerySequence": [
+        "",
+        "?planner_retry=1",
+        "?planner_retry=2"
+      ]
+    },
+    "independent_react_recovery": {
+      "pass": 1,
+      "rawPreserved": "2.5",
+      "viewRemounts": 3,
+      "geometryCommits": 0
+    },
+    "independent_emitted_retry_graph": {
+      "pass": 1,
+      "bareFailureCached": true,
+      "queriedEntryMountScans": 1
+    },
+    "independent_svg_order_routing": {
+      "pass": 1,
+      "geometryUnchanged": true
+    },
+    "php_actual_application_manifest_cases": 14,
+    "client_url_matrix": {
+      "valid": 4,
+      "foreign_variants_refused": 20,
+      "explicit_contract_failures": 3
+    },
+    "actual_typescript_vite_build": "all7 emitted files identical to target",
+    "b008_accepted_geometry": "reused, not rerun"
+  },
+  "method_limits": [
+    "Transport fixtures replace only returned Scene module to control failure/success; real loadSceneModule/React lazy/error boundary/form runs",
+    "Actual emitted Scene/core queried graph executed; only first bare module fails via loader; no application mount target/GPU",
+    "Second queried scene module was deliberately imported after success to challenge graph identity; Three warns about multiple instances on this out-of-loader extra evaluation. Actual loadSceneModule success reuse is separately verified.",
+    "PHP actual class with native function stubs/local manifests, not real WordPress/native acceptance",
+    "SVG direct DOM event routing/order, not physical native hit-testing",
+    "No browser/p548/production operation or parent source modification",
+    "Full A-D goal/touch/device-loss/mobile capacity acceptance remains unproved here"
+  ],
+  "spec_resolution": "548-workbench.md does not exist at target; actual548-workbench-application.md used"
+}

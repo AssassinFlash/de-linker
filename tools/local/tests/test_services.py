@@ -1,3 +1,5 @@
+import json
+import os
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from threading import Thread
@@ -6,12 +8,14 @@ import pytest
 
 from linker_local.checkout import Checkout
 from linker_local.instance import Instance
+from linker_local.planner_worker import PlannerWorker
 from linker_local.processes import ProcessError
 from linker_local.services import (
     SERVICES,
     _engine_environment,
     genie_environment,
     genie_index,
+    planner_environment,
 )
 
 
@@ -27,6 +31,30 @@ def test_each_service_has_its_own_port_log_and_option() -> None:
         Path("/data/a/run/engine.pid"),
         Path("/data/a/logs/engine.log"),
     )
+    assert SERVICES[0].app == "linker_engine.application:app"
+
+
+def test_planner_config_is_private_isolated_and_preserves_operator_changes(
+    tmp_path: Path,
+) -> None:
+    import json
+    import stat
+
+    a = Instance("a", 8888, 8889, 8890, tmp_path)
+    b = Instance("b", 8891, 8892, 8893, tmp_path)
+    path_a = Path(planner_environment(a)["LINKER_PLANNER_CONFIG"])
+    path_b = Path(planner_environment(b)["LINKER_PLANNER_CONFIG"])
+    values_a = json.loads(path_a.read_bytes())
+    values_b = json.loads(path_b.read_bytes())
+    assert values_a["directory"] != values_b["directory"]
+    assert values_a["directory"] == str(a.dir / "planner/workspace")
+    assert values_a["max_csv_bytes"] < values_a["max_body_bytes"]
+    assert values_a["schema_version"] == 1
+    assert stat.S_IMODE(path_a.stat().st_mode) == 0o600
+    changed = {**values_a, "max_page_size": 17}
+    path_a.write_text(json.dumps(changed))
+    assert planner_environment(a)["LINKER_PLANNER_CONFIG"] == str(path_a)
+    assert json.loads(path_a.read_bytes()) == changed
 
 
 def test_each_instance_logs_genie_turns_in_its_own_directory() -> None:
@@ -96,7 +124,9 @@ def test_no_index_fails_and_says_how_to_get_one(tmp_path: Path) -> None:
     assert "just index" in str(error.value)
 
 
-def test_local_engine_uses_its_own_woo_authority(tmp_path: Path) -> None:
+def test_local_engine_uses_its_own_woo_authority(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     paths: list[str] = []
 
     class Feed(BaseHTTPRequestHandler):
@@ -104,7 +134,9 @@ def test_local_engine_uses_its_own_woo_authority(tmp_path: Path) -> None:
             paths.append(self.path)
             self.send_response(200)
             self.end_headers()
-            self.wfile.write(b'{"products":[]}')
+            self.wfile.write(
+                b'{"products":[],"source_revision":"woo","compatibility_revision":"contract"}'
+            )
 
         def log_message(self, format: str, *args: object) -> None:
             pass
@@ -116,11 +148,72 @@ def test_local_engine_uses_its_own_woo_authority(tmp_path: Path) -> None:
         instance.dir.mkdir()
         try:
             environment = _engine_environment(instance, Checkout.here())
+            worker = PlannerWorker(
+                instance, Checkout.here().service("engine"), Path("uv")
+            )
+            assert (
+                worker.environment()["LINKER_ENGINE_COMPATIBILITY"]
+                == environment["LINKER_ENGINE_COMPATIBILITY"]
+            )
+            feed = Path(environment["LINKER_ENGINE_FEED"])
+            generation = feed.parent / "publication-generation-current"
+            generation.mkdir()
+            frozen = generation / "feed.json"
+            # Same source identity, deliberately different whitespace. Restart
+            # must keep the exact worker-published bytes and their manifest.
+            original = b'{ "products": [], "source_revision": "woo", "compatibility_revision": "contract" }'
+            frozen.write_bytes(original)
+            (generation / "compatibility.json").write_bytes(
+                Checkout.here().engine_compatibility.read_bytes()
+            )
+            (generation / "manifest.json").write_text(
+                json.dumps(
+                    {"source_revision": "woo", "compatibility_revision": "contract"}
+                )
+            )
+            feed.unlink()
+            feed.symlink_to(frozen)
+            managed = _engine_environment(instance, Checkout.here())
+            assert managed["LINKER_ENGINE_COMPATIBILITY"] == str(
+                generation / "compatibility.json"
+            )
+            assert (
+                worker.environment()["LINKER_ENGINE_COMPATIBILITY"]
+                == managed["LINKER_ENGINE_COMPATIBILITY"]
+            )
+            assert frozen.read_bytes() == original
+            (generation / "manifest.json").write_text(
+                json.dumps(
+                    {"source_revision": "stale", "compatibility_revision": "contract"}
+                )
+            )
+            with pytest.raises(
+                ProcessError, match="could not read the engineering feed"
+            ):
+                _engine_environment(instance, Checkout.here())
+            assert frozen.read_bytes() == original
+            feed.unlink()
+            feed.write_bytes(b"bootstrap")
+            original_open = os.open
+
+            def publication_swaps_before_open(path: Path, flags: int, mode: int) -> int:
+                assert path == feed
+                feed.unlink()
+                feed.symlink_to(frozen)
+                return original_open(path, flags, mode)
+
+            with monkeypatch.context() as race:
+                race.setattr(os, "open", publication_swaps_before_open)
+                with pytest.raises(
+                    ProcessError, match="could not read the engineering feed"
+                ):
+                    _engine_environment(instance, Checkout.here())
+            assert frozen.read_bytes() == original
         finally:
             server.shutdown()
             thread.join()
-    assert paths == ["/wp-json/linker/v1/engineering-feed"]
+    assert paths == ["/wp-json/linker/v1/engineering-feed"] * 4
     assert environment["LINKER_PUBLICATION_URL"] == (
         instance.url + "/wp-json/linker/v1/publication/manifest"
     )
-    assert Path(environment["LINKER_ENGINE_FEED"]).read_bytes() == b'{"products":[]}'
+    assert Path(environment["LINKER_ENGINE_FEED"]).read_bytes() == original

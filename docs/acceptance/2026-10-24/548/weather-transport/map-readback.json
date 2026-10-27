@@ -1,0 +1,22 @@
+{
+  "checked_at_utc": "2026-10-24T06:31:53.021437+00:00",
+  "map_title": "地图：统一方案工作台重构与全站交付",
+  "map_url": "https://github.com/AssassinFlash/de-linker/issues/548",
+  "map_state": "open",
+  "source_pin": "0187cc9210baacf51764bec50da42405a40ac71b",
+  "evidence_commit": "212b0b2021cf2e9732f7545b9e36a87dc118f17d",
+  "verified_remote_head": "212b0b2021cf2e9732f7545b9e36a87dc118f17d",
+  "before_body_sha256": "ea2b06e0b425c716cb8c2ec5f7c3556599506ccf5d5cf655f2fa61664d1235ad",
+  "readback_body_sha256": "10d9492bd82dbd0393463bc8903077c83d6518861c191b9a27c6647774ac91ce",
+  "body_verified_exact": true,
+  "comment_url": "https://github.com/AssassinFlash/de-linker/issues/548#issuecomment-6380935753",
+  "comment_sha256": "f7703954f6eaa170dffc40d538633be21b8f55ff2d907e57b9ddab8742120557",
+  "comment_verified_exact": true,
+  "comment_body": "统一方案工作台持续推进，本轮已把新的Apify气象获取做成真实传输和可恢复的持久任务组件。\n\n- 启动固定Actor/build并只消耗一次POST许可；丢失回执保持不确定，已知任务重试沿用原编号。恢复先核对完整安全INPUT和唯一意图标识。下载只走固定Apify来源、对应dataset与本次KV记录；不跟随任意跳转，传输/解压和完整原始TMY均有边界及校验。\n- 真实采集先遇到“provider成功、源站200但返回HTML拒绝页”，已正确挡住；随后另一个明确任务恢复既有请求头，取到1,268,118字节JSON，SHA与此前原始样本一致。唯一标识回显、完整INPUT、原件与气象解释均通过。这不是请求头因果或全地区可用性证明；合计1个文档Actor、2个气象Actor。\n- 独立Standards四项和Spec一项发现已在本轮修复。修正了取消检查/cleanup异常掩盖原错误，以及网络报错同时取消/超时可能漏掉远端abort的边界；保护替换worker正在接手的任务，保留实际ABORTING而不冒称已终止。两条完整69文件复核均零未关闭发现。\n- 最终776项引擎测试通过（73.25秒），lint/format146和严格types112通过。21个CAS引用、17项研究清单及78,432字节总量均核实；令牌/临时访问查询没有进入证据。临时1,430,334字节试跑目录已回收，重复官方原件按SHA复用。\n- 源码 `0187cc9210baacf51764bec50da42405a40ac71b`；[完整验证](https://github.com/AssassinFlash/de-linker/blob/212b0b2021cf2e9732f7545b9e36a87dc118f17d/docs/acceptance/2026-10-24/548/weather-transport/VALIDATION.md)、[双轴评审与闭环](https://github.com/AssassinFlash/de-linker/blob/212b0b2021cf2e9732f7545b9e36a87dc118f17d/docs/acceptance/2026-10-24/548/weather-transport/REVIEWS.md)。164个原始项目、受保护屋顶版本14、运行策略与完整worker身份均保持；本轮没有安装/重启p548、改线上、发信或写询盘。\n\n当前接受的是后端组件；同一完整目标继续接入托管weather执行器/单一注册器、恢复与显式来源选择、英德1440/390原生操作，再连通详细工程、SKU/国家、BOM/报告/PDF和全站消费者及上线读回。没有缩减目标或以此结案。",
+  "temporary_request_files_removed": 2,
+  "temporary_request_bytes_removed": 15673,
+  "temporary_directory_removed": true,
+  "temporary_purpose": "p548 map body/comment update and exact readback",
+  "owner": "p548",
+  "disk_free_bytes_after": 905552736256
+}

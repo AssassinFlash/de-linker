@@ -1,0 +1,534 @@
+[
+  {
+    "id": "GEO-001",
+    "en": "This file could not be used. Choose a UTF-8 GeoJSON file up to 4 MiB with closed roof polygons containing only WGS 84 longitude/latitude pairs.",
+    "de": "Diese Datei kann nicht verwendet werden. Unterstützt wird GeoJSON in UTF-8 bis 4 MiB mit geschlossenen Dachumrissen und WGS-84-Koordinaten aus Längen- und Breitengrad.",
+    "review_decision": "recommended_change",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-002",
+    "en": "Complete this field to continue.",
+    "de": "Bitte füllen Sie dieses Feld aus.",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-003",
+    "en": "The roof preview could not be prepared. Your file and entries remain available for correction.",
+    "de": "Die Dachvorschau konnte nicht vorbereitet werden. Ihre Datei und Eingaben bleiben für die Korrektur erhalten.",
+    "review_decision": "must_change",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-004",
+    "en": "File and roof",
+    "de": "Datei und Dachfläche",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-005",
+    "en": "Roof plane",
+    "de": "Dachebene",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-006",
+    "en": "Source",
+    "de": "Quelle",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-007",
+    "en": "Import roof geometry",
+    "de": "Dachgeometrie importieren",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-008",
+    "en": "The roof import is included in the saved project.",
+    "de": "Der Dachimport ist im gespeicherten Projekt enthalten.",
+    "review_decision": "recommended_change",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-009",
+    "en": "Imported roof is in the current design. Save the project to record it.",
+    "de": "Die importierte Dachfläche ist im aktuellen Projektentwurf enthalten. Speichern Sie das Projekt, um diesen Stand zu sichern.",
+    "review_decision": "must_change",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-010",
+    "en": "Browser recovery could not be read or updated. An upload starts only after a recovery copy of its original file and settings is saved. Project versions already saved on the server are unchanged.",
+    "de": "Die Wiederherstellung im Browser konnte nicht gelesen oder aktualisiert werden. Ein Upload startet erst, wenn die Originaldatei und ihre Einstellungen hier für die Wiederherstellung gesichert sind. Bereits auf dem Server gespeicherte Projektstände bleiben unverändert.",
+    "review_decision": "must_change",
+    "resolution": "Runtime branch correction: storageFailed also covers read/acknowledge/cleanup; a confirmed preview may still be attached/saved. Generic warning does not assert all uploads are blocked."
+  },
+  {
+    "id": "GEO-011",
+    "en": "Imports to review",
+    "de": "Importe zur Prüfung",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-012",
+    "en": "Review an earlier upload before retrying it or adding its roof to this project.",
+    "de": "Prüfen Sie einen früheren Upload, bevor Sie ihn erneut versuchen oder die Dachfläche in dieses Projekt übernehmen.",
+    "review_decision": "recommended_change",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-013",
+    "en": "Review imported roof",
+    "de": "Importierte Dachfläche prüfen",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-014",
+    "en": "Review an earlier upload",
+    "de": "Früheren Upload prüfen",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-015",
+    "en": "Preview the roof outline and its openings, then add it to your design. Importing a drawing does not verify site dimensions or engineering compliance.",
+    "de": "Die Vorschau zeigt den Dachumriss mit seinen Aussparungen. Anschließend können Sie die Fläche in den Entwurf übernehmen. Der Import ersetzt weder ein Aufmaß vor Ort noch eine technische Prüfung.",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-016",
+    "en": "The file or roof settings could not be accepted. Your file and entries are still available. Check the file format and roof settings, then try again.",
+    "de": "Die Datei oder die Dachangaben konnten nicht übernommen werden. Ihre Datei und Eingaben bleiben erhalten. Bitte prüfen Sie das Dateiformat und die Dachangaben und versuchen Sie es erneut.",
+    "review_decision": "must_change",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-017",
+    "en": "The upload has not been confirmed. Retry uses the same original file and settings; your current design is kept.",
+    "de": "Der Upload wurde nicht bestätigt. Ein erneuter Versuch verwendet dieselbe Originaldatei und dieselben Angaben. Ihr aktueller Entwurf bleibt erhalten.",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-018",
+    "en": "Preparing preview…",
+    "de": "Vorschau wird vorbereitet …",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-019",
+    "en": "Check or retry this upload",
+    "de": "Upload prüfen oder erneut versuchen",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-020",
+    "en": "Retained original file",
+    "de": "Gesicherte Originaldatei",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-021",
+    "en": "Correct this import",
+    "de": "Importangaben korrigieren",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-022",
+    "en": "Import progress",
+    "de": "Importschritte",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-023",
+    "en": "The existing design needs a geographic origin and a source reference for true north before another roof can be imported. Close this import and open Project coordinate references. These settings do not rotate or move existing objects; the design must already match the references.",
+    "de": "Für eine weitere Dachfläche benötigt der bestehende Entwurf einen geografischen Ursprung und einen Bezug auf geografisch Nord mit Quellenangabe. Schließen Sie den Import und öffnen Sie Koordinatenbezüge des Projekts. Diese Angaben drehen oder verschieben vorhandene Objekte nicht; der Entwurf muss bereits mit diesen Bezügen übereinstimmen.",
+    "review_decision": "must_change",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-024",
+    "en": "Roof file",
+    "de": "Dachdatei",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-025",
+    "en": "WGS 84 GeoJSON · up to 4 MiB",
+    "de": "GeoJSON in WGS 84 · höchstens 4 MiB",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-026",
+    "en": "Back",
+    "de": "Zurück",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-027",
+    "en": "Continue",
+    "de": "Weiter",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-028",
+    "en": "Prepare roof preview",
+    "de": "Dachvorschau vorbereiten",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-029",
+    "en": "Roof-plane area",
+    "de": "Fläche in der Dachebene",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-030",
+    "en": "Openings retained",
+    "de": "Übernommene Aussparungen",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-031",
+    "en": "The design or coordinate reference has changed. Your imported source is retained; review it against the current project before adding it.",
+    "de": "Der Entwurf oder sein Koordinatenbezug hat sich geändert. Die importierte Quelle bleibt erhalten. Bitte gleichen Sie die Angaben vor dem Übernehmen mit dem aktuellen Projekt ab.",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-032",
+    "en": "Add roof to current design",
+    "de": "Dachfläche in den Entwurf übernehmen",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-033",
+    "en": "One editable roof face is added as a single step in project history. Save the project to record the addition. You can undo this addition in the open design.",
+    "de": "Die bearbeitbare Dachfläche wird in einem Schritt in den Projektverlauf übernommen. Speichern Sie das Projekt, um sie darin zu sichern. Diese Übernahme lässt sich im offenen Projektentwurf rückgängig machen.",
+    "review_decision": "must_change",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-034",
+    "en": "Close import",
+    "de": "Import schließen",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-035",
+    "en": "%1$s · face %2$d",
+    "de": "%1$s · Fläche %2$d",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-036",
+    "en": "Feature %d",
+    "de": "Objekt %d",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-037",
+    "en": "Roof in this file",
+    "de": "Dachfläche in dieser Datei",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-038",
+    "en": "Select a roof face",
+    "de": "Dachfläche auswählen",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-039",
+    "en": "Openings in source: %d",
+    "de": "Aussparungen in der Quelle: %d",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-040",
+    "en": "Roof face name",
+    "de": "Name der Dachfläche",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-041",
+    "en": "The file provides the horizontal outline. Add the roof pitch, downslope direction and relative height from a survey or drawing to reconstruct the roof surface.",
+    "de": "Die Datei liefert den horizontalen Dachumriss. Für die räumliche Dachfläche werden zusätzlich Neigung, Gefällerichtung und relative Höhe aus Ihrem Aufmaß oder Plan benötigt.",
+    "review_decision": "must_change",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-042",
+    "en": "Roof pitch",
+    "de": "Dachneigung",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-043",
+    "en": "Enter 0° for a flat roof, or a value greater than 0° and below 90°.",
+    "de": "Für ein flaches Dach gilt 0°. Bei geneigten Dächern muss der Wert größer als 0° und kleiner als 90° sein.",
+    "review_decision": "must_change",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-044",
+    "en": "Downslope direction from true north",
+    "de": "Gefällerichtung ab geografisch Nord",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-045",
+    "en": "Measured clockwise from true north: 0° north, 90° east, 180° south, 270° west. For a flat roof this sets its local drawing axes.",
+    "de": "Der Winkel läuft im Uhrzeigersinn ab geografisch Nord: 0° Nord, 90° Ost, 180° Süd, 270° West. Bei einem flachen Dach bestimmt er die lokalen Zeichenachsen.",
+    "review_decision": "recommended_change",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-046",
+    "en": "Set the first outline point's relative height to 0 m",
+    "de": "Relative Höhe am ersten Umrisspunkt auf 0 m setzen",
+    "review_decision": "must_change",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-047",
+    "en": "0 m uses the project's height reference. It does not establish ground level or height above sea level. Other roofs and obstacles must use the same height reference.",
+    "de": "0 m bezieht sich auf den Höhenbezug des Projekts. Daraus ergeben sich weder die Geländehöhe noch eine Höhe über dem Meer. Weitere Dachflächen und Hindernisse müssen denselben Höhenbezug verwenden.",
+    "review_decision": "must_change",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-048",
+    "en": "Relative height at the first outline point",
+    "de": "Relative Höhe am ersten Umrisspunkt",
+    "review_decision": "must_change",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-049",
+    "en": "Metres relative to the project's height reference. Negative values are allowed.",
+    "de": "Meter relativ zum Höhenbezug des Projekts. Negative Werte sind zulässig.",
+    "review_decision": "must_change",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-050",
+    "en": "Measurement or drawing reference",
+    "de": "Aufmaß- oder Zeichnungsreferenz",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-051",
+    "en": "Identify the drawing or survey used for pitch, downslope direction and relative height. Include its date or identifier.",
+    "de": "Geben Sie an, aus welchem Plan oder Aufmaß Neigung, Gefällerichtung und relative Höhe stammen. Nennen Sie dazu das Datum oder die Referenzkennung.",
+    "review_decision": "recommended_change",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-052",
+    "en": "Position and coordinate reference",
+    "de": "Position und Koordinatenbezug",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-053",
+    "en": "An existing geographic project origin is kept. For an empty, unreferenced project, the first point of the selected outer outline becomes the geographic origin, with WGS 84 true north. This sets the coordinate reference; it does not verify the survey.",
+    "de": "Ein vorhandener geografischer Projektursprung bleibt erhalten. Bei einem leeren Projekt ohne geografischen Bezug wird der erste Punkt des gewählten äußeren Dachumrisses zum geografischen Ursprung; der Nordbezug ist geografisch Nord nach WGS 84. Die Genauigkeit des Aufmaßes wird damit nicht geprüft.",
+    "review_decision": "must_change",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-054",
+    "en": "Source reference",
+    "de": "Quellenreferenz",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-055",
+    "en": "Name the drawing, survey or data export used for this roof.",
+    "de": "Bezeichnung des Plans, Aufmaßes oder Datenexports für diese Dachfläche.",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-056",
+    "en": "Declared spatial precision",
+    "de": "Angegebene räumliche Genauigkeit",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-057",
+    "en": "Source-stated precision, in metres. Leave blank if unknown.",
+    "de": "Genauigkeitsangabe der Quelle in Metern. Ohne Angabe bleibt das Feld leer.",
+    "review_decision": "recommended_change",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-058",
+    "en": "Permission or licence basis",
+    "de": "Berechtigungs- oder Lizenzgrundlage",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-059",
+    "en": "Explain your permission to use and privately retain this original file and its derived geometry.",
+    "de": "Grundlage Ihrer Berechtigung zur Nutzung und privaten Speicherung der Originaldatei und der daraus erzeugten Geometrie.",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-060",
+    "en": "Permission to export geometry",
+    "de": "Berechtigung zum Export der Geometrie",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-061",
+    "en": "Unknown",
+    "de": "Unbekannt",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-062",
+    "en": "Permitted",
+    "de": "Erlaubt",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-063",
+    "en": "Prohibited",
+    "de": "Untersagt",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-064",
+    "en": "I have permission to upload this original file, derive roof geometry from it and retain both privately with this project.",
+    "de": "Ich bin berechtigt, die Originaldatei für dieses Projekt hochzuladen, daraus Dachgeometrie zu erzeugen und beides privat mit dem Projekt zu speichern.",
+    "review_decision": "must_change",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-065",
+    "en": "Original import settings",
+    "de": "Ursprüngliche Importeinstellungen",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-066",
+    "en": "A retry uses this original file and these unchanged settings for the same import.",
+    "de": "Ein erneuter Versuch verwendet für denselben Import diese Originaldatei und die unveränderten Einstellungen.",
+    "review_decision": "must_change",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-067",
+    "en": "Feature in original file",
+    "de": "Objekt in der Originaldatei",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-068",
+    "en": "Roof face in feature",
+    "de": "Dachfläche im Objekt",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-069",
+    "en": "Project origin longitude",
+    "de": "Längengrad des Projektursprungs",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-070",
+    "en": "Project origin latitude",
+    "de": "Breitengrad des Projektursprungs",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-071",
+    "en": "Plane origin: east, north and relative height (m)",
+    "de": "Ebenenursprung: Ost, Nord und relative Höhe (m)",
+    "review_decision": "recommended_change",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-072",
+    "en": "Plane U unit vector (east, north, up)",
+    "de": "U-Einheitsvektor der Dachebene (Ost, Nord, Hoch)",
+    "review_decision": "recommended_change",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-073",
+    "en": "Plane V unit vector (east, north, up)",
+    "de": "V-Einheitsvektor der Dachebene (Ost, Nord, Hoch)",
+    "review_decision": "recommended_change",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-074",
+    "en": "Roof-plane reference",
+    "de": "Referenz der Dachebene",
+    "review_decision": "must_change",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-075",
+    "en": "Conversion method",
+    "de": "Umrechnungsmethode",
+    "review_decision": "keep",
+    "resolution": "Accepted final proposal."
+  },
+  {
+    "id": "GEO-076",
+    "en": "Unsupported earlier conversion method",
+    "de": "Frühere Umrechnungsmethode nicht unterstützt",
+    "review_decision": "recommended_change",
+    "resolution": "Accepted final proposal."
+  }
+]

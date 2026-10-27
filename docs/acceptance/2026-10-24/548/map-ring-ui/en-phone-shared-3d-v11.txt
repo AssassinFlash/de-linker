@@ -1,0 +1,134 @@
+Browser tab: 2, Title: "Solution Configurator · Workspace review | Linker", URL: "http://127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-design".
+1 AXWebArea Solution Configurator · Workspace review | Linker, URL: 127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-design
+	2 container
+		3 container Primary navigation
+			4 link Description: Linker home, Value: 127.0.0.1:9347/
+			15 link Description: Search products, Value: 127.0.0.1:9347/products/#search-box
+			62 container Language
+				63 link Description: EN, Help: English, Value: 127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1
+				64 link Description: DE, Help: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1
+			65 button (collapsed) Description: Open menu, ID: tv-mobile-toggle, Secondary Actions: Expand
+				66 image
+		22 container
+			69 button Projects
+			70 pop up button (collapsed, settable) Description: Project sections, Value: Roof design, Secondary Actions: Expand
+				71 menu
+					72 Project overview
+					73 Site and project
+					74 (selected) Roof design
+					75 Energy inputs
+			76 text Saved · revision 11
+			77 button (disabled) Undo
+			78 button (disabled) Redo
+			79 button (disabled) Save project
+			80 text CURRENT PROJECT
+			81 heading Köln · owned synthetic roof · acceptance, Value: 1
+				82 text Köln · owned synthetic roof · acceptance
+			83 text Site data and roof layouts are saved in the same project.
+			127 container Roof design, ID: lp-design
+				128 text 06
+				129 heading Roof design, Value: 2, ID: lp-design-heading
+					130 text Roof design
+				131 text Roof geometry and module specifications produce an editable layout and a traceable plan check. The roof step is optional for every project type.
+				132 button Add roof face
+				133 button Add module specification
+				134 container Design view
+					135 checkbox Plan, Value: 0
+					136 checkbox Map, Value: 0
+					137 checkbox 3D, Value: 1
+				138 button Import roof geometry
+				139 button (collapsed) Imports to review, Secondary Actions: Expand
+					140 text Imports to review
+				141 container
+					142 text Active roof face
+					143 pop up button (collapsed, settable) Active roof face, Value: Synthetic 3–4–5 roof · Köln, Secondary Actions: Expand
+						144 menu
+							145 (selected) Synthetic 3–4–5 roof · Köln
+							146 Synthetic drawing acceptance · 548 · 24 Oct
+							147 Synthetic phone recovery · 548 · 24 Oct
+					148 text NORTH REFERENCE RECORDED
+					194 container Roof design
+					195 button Fit 3D view
+					196 text 3D
+					197 button (collapsed) View options, Secondary Actions: Expand
+						198 text View options
+					199 text Dragging the selected array's handles changes its position in the roof plane. Camera controls change only the view. Lighting is for display; it does not calculate shading losses.
+					158 definition list
+						159 container Included modules
+							160 text Included modules
+						161 text 0
+						162 container Declared DC nameplate power
+							163 text Declared DC nameplate power
+						164 container
+							165 text 0 kWp
+						166 container Roof faces
+							167 text Roof faces
+						168 text 3
+				169 container Design objects and properties
+					170 heading Design objects, Value: 3
+						171 text Design objects
+					172 container Select a design object
+						173 checkbox Synthetic 3–4–5 roof · Köln, Value: 0
+						174 checkbox Synthetisches Hindernis · lokale Prüfung, Value: 0
+						175 checkbox Synthetische Sperrfläche · lokale Prüfung, Value: 0
+						176 checkbox Synthetic drawing acceptance · 548 · 24 Oct, Value: 0
+						177 checkbox Synthetic phone recovery · 548 · 24 Oct, Value: 0
+					178 button (disabled) Add module array
+					179 button Add obstacle
+					180 button Add keep-out area
+					181 button Layout clearances
+					182 text A module specification is needed before an array can be placed.
+					183 button Coordinate references
+					191 container
+						192 button (collapsed) Sources, Secondary Actions: Expand
+							193 text Sources
+				186 container Layout check
+					187 heading Layout check, Value: 3, ID: lp-layout-review-heading
+						188 text Layout check
+					189 button Check layout
+					190 text The check compares full module projections, roof boundaries and openings, obstacles, keep-out areas and declared clearances in each roof plane. Structural, fire-safety, electrical and shading assessments are separate.
+			123 text Solution Configurator
+			124 text by Linker
+			125 text Linker brings your inputs into an editable project for solar and storage planning.
+			68 button (collapsed) About this tool, Secondary Actions: Expand
+				126 text About this tool
+		24 container tv-footer-v2
+			25 image Linker
+			26 container
+				27 text Language
+				28 container Language
+					29 link Description: English, Value: 127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1
+					30 link Description: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1
+			31 text LINKING
+			32 link Description: products, Value: 127.0.0.1:9347/products/
+			33 text ,
+			34 link Description: technology, Value: 127.0.0.1:9347/about/capability/
+			35 text and
+			36 link Description: service, Value: 127.0.0.1:9347/services-support/
+			37 text to create 
+			38 text lasting value
+			39 text  for energy partners in Europe.
+			40 tab group Footer navigation
+				41 tab (selected, settable, boolean) Solutions, Value: 1, ID: footer-tab-solutions
+				42 tab (selectable, settable, boolean) Services, Value: 0, ID: footer-tab-services
+				43 tab (selectable, settable, boolean) Plan with Linker, Value: 0, ID: footer-tab-planning
+				44 tab (selectable, settable, boolean) Account, Value: 0, ID: footer-tab-account
+				45 tab (selectable, settable, boolean) Contact Linker, Value: 0, ID: footer-tab-contact
+			46 container Description: Solutions, ID: footer-panel-solutions
+				47 heading Solutions, Value: 2
+					48 text Solutions
+				49 content list
+					50 link Description: Residential Storage, Value: 127.0.0.1:9347/solution/residential-storage/
+					51 link Description: Commercial Storage, Value: 127.0.0.1:9347/solution/commercial-storage/
+					52 link Description: Utility-Scale Storage, Value: 127.0.0.1:9347/solution/utility-storage/
+			53 text © 2026 Linker. All rights reserved.
+			54 container Legal
+				55 link Description: Imprint, Value: 127.0.0.1:9347/imprint/
+				56 link Description: Privacy Policy, Value: 127.0.0.1:9347/privacy-policy/
+				57 button Cookie settings
+				58 link Description: Terms of Sale, Value: 127.0.0.1:9347/terms-of-sale/
+				59 link Description: Refund & Returns, Value: 127.0.0.1:9347/refund-returns/
+			60 container
+				61 text Product fit · Inverter compatibility · Project support
+
+The focused UI element is 137 checkbox 3D, Value: 1

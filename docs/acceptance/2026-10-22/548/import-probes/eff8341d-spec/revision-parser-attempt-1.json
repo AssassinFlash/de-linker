@@ -1,0 +1,19 @@
+{
+  "command": [
+    "node",
+    "--no-warnings=ExperimentalWarning",
+    "--loader",
+    "./tests/tsx-loader.mjs",
+    "--test",
+    "tests/revision-parser-probe.mjs"
+  ],
+  "target": "eff8341d5a0eaf24999f42854da6339032c65c9c",
+  "cwd": "apps/planner",
+  "exit_code": 0,
+  "retained_probes_unchanged": true,
+  "prefix_sha256": "0eb6a82132b93609646ce5c1180ea7b1fe2127e3bfa19a920df3127040c45430",
+  "suffix_sha256": "11009ec9b9d04f866d39d3e295da712cff605478073da8a84a8cc3466158549c",
+  "generated_path": "apps/planner/tests/revision-parser-probe.mjs",
+  "generated_sha256": "6ef58d3b331e45aa268adb718b6d658fc4b3b90f9faef34cb9c5a6d014254071",
+  "completed_utc": "2026-10-23T11:34:52.488003+00:00"
+}

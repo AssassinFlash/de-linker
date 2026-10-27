@@ -1,0 +1,47 @@
+[
+  {
+    "draft": "Weather source",
+    "en": "Weather source",
+    "de": "Wetterquelle"
+  },
+  {
+    "draft": "Radiation database",
+    "en": "Radiation database",
+    "de": "Strahlungsdatenbank"
+  },
+  {
+    "draft": "Meteorological database",
+    "en": "Meteorological database",
+    "de": "Meteorologische Datenbank"
+  },
+  {
+    "draft": "Source year range",
+    "en": "Requested source year range",
+    "de": "Angefragter Zeitraum"
+  },
+  {
+    "draft": "Synthetic energy year",
+    "en": "Synthetic calculation year",
+    "de": "Synthetisches Berechnungsjahr"
+  },
+  {
+    "draft": "A typical meteorological year combines selected months from different years.",
+    "en": "A typical meteorological year combines selected months from different years.",
+    "de": "Ein typisches meteorologisches Jahr setzt sich aus ausgewählten Monaten verschiedener Jahre zusammen."
+  },
+  {
+    "draft": "Some interval means were reconstructed. Finer output intervals do not create finer original observations.",
+    "en": "The PV profile includes reconstructed interval averages. Shorter output intervals do not increase the time resolution of the original weather data.",
+    "de": "Das PV-Profil enthält rekonstruierte Intervallmittelwerte. Die zeitliche Auflösung der ursprünglichen Wetterdaten bleibt auch bei kürzeren Ausgabeintervallen unverändert."
+  },
+  {
+    "draft": "Original source and interpretation record",
+    "en": "Original source and interpretation record",
+    "de": "Originalquelle und Interpretationsprotokoll"
+  },
+  {
+    "draft": "PV model settings",
+    "en": "PV model settings",
+    "de": "PV-Modelleinstellungen"
+  }
+]

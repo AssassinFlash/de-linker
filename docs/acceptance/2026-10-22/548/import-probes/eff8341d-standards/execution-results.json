@@ -1,0 +1,25 @@
+[
+  {
+    "name": "fixed-client-suite",
+    "command": [
+      "npm",
+      "test"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/roof-import-standards-eff8-ho43dg81/apps/planner",
+    "exit_code": 0,
+    "log": "fixed-client-suite.log",
+    "summary": "\u2714 invalid_input: revision retry keeps or releases the original key according to the identified refusal (35.240125ms)\n\u2714 prior scope: now-saved edits do not reappear as unsaved (903.17925ms)\n\u2714 prior scope: uncertain intent remains reviewable (47.74275ms)\n\u2714 current scope: now-saved edits do not reappear as unsaved (44.867667ms)\n\u2714 current scope: uncertain intent remains reviewable (38.627833ms)\n\u2714 clean-prior scope: now-saved edits do not reappear as unsaved (44.212333ms)\n\u2714 a deferred close refused during same-scope verification remains retryable (995.228916ms)\n\u2714 same identity rechecks retain delayed edits and invalid raw numeric text (962.433583ms)\n\u2714 Journal workspaces show one task while retaining real input nodes, values and undo history (127.506209ms)\n\u2714 failed storage and failed identity refresh preserve hidden edits until same owner returns (65.871125ms)\n\u2714 a confirmed different identity removes the former editor and does not grant its project (44.354583ms)\n\u2714 the actual project bar is observed after asynchronous draft opening and on resize (26.457209ms)\n\u2714 creation authentication failure rechecks once and explicitly retries the exact intent (28.388ms)\n\u25b6 a former identity's delayed creation cannot dispatch or restore cache and navigation\n  \u2714 write (21.604167ms)\n  \u2714 clear (15.23025ms)\n\u2714 a former identity's delayed creation cannot dispatch or restore cache and navigation (37.401625ms)\n\u25b6 native confirmation fences pending creation, revision and navigation before React commits\n  \u2714 write (15.514167ms)\n  \u2714 clear (18.05225ms)\n  \u2714 revise (44.532666ms)\n  \u2714 close (45.035209ms)\n\u2714 native confirmation fences pending creation, revision and navigation before React commits (123.782708ms)\n\u2139 tests 87\n\u2139 suites 0\n\u2139 pass 87\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 3819.650583\n"
+  },
+  {
+    "name": "fixed-build-check",
+    "command": [
+      "npm",
+      "run",
+      "build:check"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/roof-import-standards-eff8-ho43dg81/apps/planner",
+    "exit_code": 0,
+    "log": "fixed-build-check.log",
+    "summary": "\n> @linker/planner@0.1.0 build:check\n> node bin/build-manifest.mjs check && node --test tests/built-modules.mjs\n\nPlanner build matches its sources.\n\u2714 a lazy built chunk never executes the versioned WordPress entry again (160.619042ms)\n\u2139 tests 1\n\u2139 suites 0\n\u2139 pass 1\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 334.982625\n"
+  }
+]

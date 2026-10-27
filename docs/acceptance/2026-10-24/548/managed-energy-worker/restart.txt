@@ -1,0 +1,7 @@
+p548: planner worker ready
+p548: engine http://127.0.0.1:9348
+PHP=/opt/homebrew/opt/php@8.3/bin/php uv run --locked --project tools/local linker-local serve "$@"
+warning: `VIRTUAL_ENV=services/engine/.venv` does not match the project environment path `tools/local/.venv` and will be ignored; use `--active` to target the active environment instead
+warning: `VIRTUAL_ENV=tools/local/.venv` does not match the project environment path `services/engine/.venv` and will be ignored; use `--active` to target the active environment instead
+Resolved 60 packages in 3ms
+Checked 58 packages in 1ms

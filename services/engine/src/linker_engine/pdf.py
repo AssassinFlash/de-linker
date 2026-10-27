@@ -146,6 +146,11 @@ def _section(
     section: ReportSection, styles: dict[str, ParagraphStyle], width: float
 ) -> list[Flowable]:
     parts: list[Flowable] = [Paragraph(_escape(section.title), styles["h2"])]
+    # The shared report document and application present scope before data.
+    # Keep assumptions beside the heading instead of pushing them after a
+    # potentially multi-page table.
+    for paragraph in section.paragraphs:
+        parts += [Spacer(1, 3), Paragraph(_linked(paragraph), styles["base"])]
     if section.rows:
         rows = [
             [
@@ -173,9 +178,22 @@ def _section(
             [Paragraph(_escape(cell), styles["cell"]) for cell in row]
             for row in section.table.rows
         ]
+        weights = section.table.column_weights
+        # Normalize the scale first: individually finite weights can have an
+        # overflowing sum, while their relative layout is still representable.
+        scaled = [weight / max(weights) for weight in weights] if weights else []
+        shares = (
+            [weight / sum(scaled) for weight in scaled]
+            if weights
+            else [0.13, 0.45, 0.24, 0.18]
+            if len(header) == 4
+            else [0.13, 0.62, 0.25]
+            if len(header) == 3
+            else [1 / max(1, len(header))] * len(header)
+        )
         table = Table(
             [header, *body],
-            colWidths=[width * 0.13, width * 0.45, width * 0.24, width * 0.18],
+            colWidths=[width * share for share in shares],
             repeatRows=1,
         )
         table.setStyle(
@@ -191,12 +209,15 @@ def _section(
             )
         )
         parts.append(table)
-    for paragraph in section.paragraphs:
-        parts += [Spacer(1, 3), Paragraph(_linked(paragraph), styles["base"])]
-    return [KeepTogether(parts[:2]), *parts[2:]]
+    # A heading stays with the first paragraph, including its leading spacer;
+    # a spacer alone must not make a heading look safe at the page bottom.
+    first_content = 3 if section.paragraphs else 2
+    return [KeepTogether(parts[:first_content]), *parts[first_content:]]
 
 
-def render(report: Report, logo: str | None = None) -> bytes:
+def render(
+    report: Report, logo: str | None = None, *, credits: str | None = None
+) -> bytes:
     styles = _styles()
     buffer = io.BytesIO()
     margin = 18 * mm
@@ -246,7 +267,7 @@ def render(report: Report, logo: str | None = None) -> bytes:
         story += _section(section, styles, width)
 
     footer = t("pdf.footer", report.locale)
-    credits = t("pdf.credits", report.locale)
+    credits = t("pdf.credits", report.locale) if credits is None else credits
 
     def page(canvas: object, doc: object) -> None:
         canvas.saveState()  # type: ignore[attr-defined]

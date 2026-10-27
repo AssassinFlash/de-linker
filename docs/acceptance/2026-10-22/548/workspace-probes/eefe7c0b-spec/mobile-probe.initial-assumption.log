@@ -1,0 +1,67 @@
+▶ legacy initial fragment links reveal the corresponding active workspace without revising inputs
+  ✔ #lp-site (616.6105ms)
+  ✔ #lp-brief-use (52.970041ms)
+  ✔ #lp-notes (50.329666ms)
+  ✔ #lp-load (114.636834ms)
+  ✔ #lp-profiles (75.531125ms)
+  ✔ #lp-design (53.992958ms)
+  ✔ #lp-overview (114.710375ms)
+✔ legacy initial fragment links reveal the corresponding active workspace without revising inputs (1082.667167ms)
+▶ missing inputs render unknown quantities; an explicitly empty layout can honestly render zero
+  ✔ missing (59.934625ms)
+  ✔ all explicitly excluded (64.950875ms)
+✔ missing inputs render unknown quantities; an explicitly empty layout can honestly render zero (126.155ms)
+✔ multiple roof quantities use included objects across the document while preview names its first roof (53.301833ms)
+✔ overview plan is read-only and does not offer editor controls or create edits (80.256875ms)
+✔ switching workspaces retains the same raw inputs and one shared undo/redo document including source metadata (265.376333ms)
+✔ unapplied geometry form blocks navigation until explicit cancel and keeps the raw values (147.424709ms)
+✔ an in-progress CSV file selection and raw delimiter remain mounted across workspace switches (96.250333ms)
+✔ revoked scope cannot switch the workspaces or alter its URL fragment (26.040791ms)
+✔ a completed geometry property edit remains one shared history step across the overview (109.630917ms)
+✔ SPEC COUNTEREXAMPLE: Site workspace navigation must reveal its first project-use/system-scope section (39.524ms)
+✔ new native selector shares the active workspace, destination and unchanged document (84.426375ms)
+✔ native selector retains actually invalid raw brief input and restores its controlled selection (96.023875ms)
+✔ native selector cannot hide either a valid unapplied or invalid submitted geometry form (133.268375ms)
+✔ mixed brief and geometry edits retain one shared undo chain when navigating with the selector (355.096541ms)
+✔ file reading may finish in a hidden workspace without resetting the source or stealing destination focus (125.923417ms)
+▶ native-scope withdrawal fences selector admission and its deferred reveal
+  ✔ withdrawn before event (51.82225ms)
+  ✖ withdrawn before effect (85.561417ms)
+✖ native-scope withdrawal fences selector admission and its deferred reveal (139.02ms)
+▶ each legacy initial fragment initializes the new selector without changing the old URL or project
+  ✔ #lp-site (51.751208ms)
+  ✔ #lp-brief-use (49.757791ms)
+  ✔ #lp-notes (49.288917ms)
+  ✔ #lp-load (70.565958ms)
+  ✔ #lp-profiles (27.55825ms)
+  ✔ #lp-design (31.781708ms)
+  ✔ #lp-overview (47.67275ms)
+✔ each legacy initial fragment initializes the new selector without changing the old URL or project (329.621792ms)
+ℹ tests 35
+ℹ suites 0
+ℹ pass 33
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4459.756375
+
+✖ failing tests:
+
+test at tests/composed-mobile-probe.mjs:205:11
+✖ withdrawn before effect (85.561417ms)
+  AssertionError [ERR_ASSERTION]: Expected "actual" to be strictly unequal to:
+  
+  'lp-design'
+      at TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/workspace-spec-eefe-5teovmwd/apps/planner/tests/composed-mobile-probe.mjs:205:264)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/workspace-spec-eefe-5teovmwd/apps/planner/tests/composed-mobile-probe.mjs:205:3)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'lp-design',
+    expected: 'lp-design',
+    operator: 'notStrictEqual',
+    diff: 'simple'
+  }

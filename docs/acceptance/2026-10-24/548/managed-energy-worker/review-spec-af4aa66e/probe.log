@@ -1,0 +1,15 @@
+Command (repository root; existing engine environment; no dependency sync):
+PYTHONDONTWRITEBYTECODE=1 services/engine/.venv/bin/python -B docs/acceptance/2026-10-24/548/managed-energy-worker/review-spec-af4aa66e/probe_route_cache.py
+
+Final rerun imports every planning module directly from immutable `git show`
+bytes at af4aa66e in memory. The owner's concurrent source repair is excluded.
+
+Exit: 0
+{"pin": "af4aa66e9f4994efcbe2159f428a93cc9007c71a", "matching_polls": 5, "leases": 0, "state": "queued", "attempt": 0, "wrong_route_unchanged": true}
+{"control_after_cache_removal": "leased", "attempt": 1}
+
+This intentionally demonstrates the defect, so exit 0 means the observed defective
+behavior and the cache-removal control both matched the probe's assertions.
+Only in-memory SQLite and memory blobs were changed. No service was started or
+signalled; no on-disk database, config, source, dependency tree, or git index was
+modified. Files created by this reviewer are limited to this evidence directory.

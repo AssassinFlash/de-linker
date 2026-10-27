@@ -1,0 +1,16 @@
+{
+  "fixed_sha": "cbf75a9cead3b3c87c0cb2f206a1cd7e6226551e",
+  "unchanged_prior_pairs": 19,
+  "new_pairs": [
+    {
+      "english": "Roof editing in progress",
+      "german": "Dachbearbeitung läuft",
+      "compiled_gnu_and_wp_agree": true
+    },
+    {
+      "english": "Finish or cancel roof editing before leaving this workspace.",
+      "german": "Schließen Sie die Dachbearbeitung ab oder brechen Sie sie ab, bevor Sie den Arbeitsbereich verlassen.",
+      "compiled_gnu_and_wp_agree": true
+    }
+  ]
+}

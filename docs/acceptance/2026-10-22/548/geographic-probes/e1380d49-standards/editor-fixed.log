@@ -1,0 +1,14 @@
+✔ measured roof intake preserves decimal locale, explicit source and one command (415.065583ms)
+✔ invalid staged properties stay visible until corrected or cancelled (91.443958ms)
+✔ a bound original hash stays immutable while its source notes can be edited (48.250667ms)
+✔ module exclusion updates the same plan, object selection and derived quantity (74.786917ms)
+✔ a late layout check is retained as previous output and cannot select current objects (60.267208ms)
+✔ manual roof intake marks the unsupported vertical boundary at its field (35.762292ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1639.76025

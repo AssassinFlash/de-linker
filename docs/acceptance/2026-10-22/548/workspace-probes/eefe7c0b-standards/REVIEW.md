@@ -1,0 +1,14 @@
+# Standards — corrected Journal workspaces
+
+**Scoped PASS.** Fixed `eefe7c0b060214b60ba7a012ff206e668dbce6d3` versus `7e96b88d`; command `git diff 7e96b88d...eefe7c0b`. Commits563e0387 and eefe7c0b. No documented-standard breach found. Native presentation, physical touch and full A–D acceptance remain separate and incomplete.
+
+Read current user/checked-in AGENTS, CONTEXT, isolated-runtime ADR, local-storage rules and WORKSPACE-VISUAL-CORRECTION. The earlier full standards/copy review remains at `../563e0387-standards/`; its source presentation concerns are corrected here, without rewriting its historical evidence.
+
+- ProjectEditor.tsx:47–53,97–126,233–254 retains legacy hashes and one guarded navigation function. The new selector reveals Site's first inputs through workspaceTarget rather than the second section. Independent real-component probes verify shared nodes/hash/state, raw invalid-value refusal and controlled-value restoration, unapplied roof cancellation, and immediate scope fencing before React recheck. This follows the workspace contract's mounted-input/history and navigation requirements.
+- WindPress planner.css:281,284–285,306–309 scopes title wrapping and touch-action:auto to the readonly overview; editor touch-action:none remains. Selector styling stays in the native WindPress volume, satisfying AGENTS presentation rules and the isolated-runtime ADR. Filesystem readback confirms exact fixed stylesheet SHA in p548's volume, its native main import, compiled corrected rules and matching module source-manifest. This proves neither browser loading/visibility nor physical swipes.
+- PO, MO and native WordPress JSON are byte-identical to563e. All nineteen previously independently reviewed EN/DE pairs still agree; the selector reuses existing messages. The unchanged independent Hard Stops/formal-German review therefore applies without new wording approval.
+- Fixed checks:54 domain/data +54 DOM, emitted graph/source check1, plus8 independent mobile/overview probes. English/German empty and multi-roof summaries still preserve unknown versus zero and whole-project versus preview scope.
+
+**Heuristic judgement:** no actionable Mysterious Name, Duplicated Code, Feature Envy, Data Clumps, Primitive Obsession, Repeated Switches, Shotgun Surgery, Divergent Change, Speculative Generality, Message Chains, Middle Man or Refused Bequest. Shared navigation is appropriate; no speculative router or duplicate saved scene appears. Tool-enforced lint/type issues are not review findings.
+
+Unique executable probes, logs, catalog/native readbacks and rebuild hashes are retained here. Cleanup verifies/removes only the minimal reviewer-owned SHA snapshot; no implementation/native/production write, dependency installation, commit or push. Parent owns final EN/DE×1440/390 evidence and the complete active goal.

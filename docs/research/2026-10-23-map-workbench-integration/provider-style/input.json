@@ -1,0 +1,18 @@
+{
+  "startUrls": [
+    {
+      "url": "https://tiles.openfreemap.org/styles/liberty"
+    }
+  ],
+  "proxyConfiguration": {
+    "useApifyProxy": true
+  },
+  "maxRequestsPerCrawl": 1,
+  "maxConcurrency": 1,
+  "requestTimeoutSecs": 60,
+  "maxRequestRetries": 2,
+  "additionalMimeTypes": [
+    "application/json"
+  ],
+  "pageFunction": "async function pageFunction(context) {\n const text = context.body ? context.body.toString() : context.$('body').text();\n let parsed=null;try {parsed=JSON.parse(text);}catch {}\n return {url:context.request.url,status:context.response?.statusCode,headers:context.response?.headers,body:text,json:parsed};\n}"
+}

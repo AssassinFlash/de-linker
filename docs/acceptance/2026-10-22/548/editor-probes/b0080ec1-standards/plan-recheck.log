@@ -1,0 +1,50 @@
+{"mode":"normal_finish","calls":1,"accepted":1,"releases":1,"remainingCaptures":0}
+✔ plan preview normal_finish (119.315375ms)
+{"mode":"escape","calls":0,"accepted":0,"releases":1,"remainingCaptures":0}
+✔ plan preview escape (10.312583ms)
+{"mode":"blur","calls":0,"accepted":0,"releases":1,"remainingCaptures":0}
+✔ plan preview blur (9.270708ms)
+{"mode":"pointercancel","calls":0,"accepted":0,"releases":1,"remainingCaptures":0}
+✔ plan preview pointercancel (9.487667ms)
+{"mode":"lostpointercapture","calls":0,"accepted":0,"releases":0,"remainingCaptures":0}
+✔ plan preview lostpointercapture (8.372458ms)
+{"mode":"disabled","calls":0,"accepted":0,"releases":1,"remainingCaptures":0}
+✔ plan preview disabled (8.885916ms)
+{"mode":"geometry_render","calls":0,"accepted":0,"releases":1,"remainingCaptures":0}
+✔ plan preview geometry_render (9.364667ms)
+{"mode":"geometry_before_render","calls":1,"accepted":0,"releases":1,"remainingCaptures":0}
+✔ plan preview geometry_before_render (8.165ms)
+{"mode":"pan_tool","calls":0,"accepted":0,"releases":1,"remainingCaptures":0}
+✔ plan preview pan_tool (10.015167ms)
+{"mode":"zoom","calls":0,"accepted":0,"releases":1,"remainingCaptures":0}
+✔ plan preview zoom (10.984333ms)
+{"mode":"fit","calls":0,"accepted":0,"releases":1,"remainingCaptures":0}
+✔ plan preview fit (8.082334ms)
+✖ plan preview unmount (6.656917ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 11
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 788.992916
+
+✖ failing tests:
+
+test at tests/standards-plan-recheck.mjs:6:178
+✖ plan preview unmount (6.656917ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-b008-_buw2n9_/apps/planner/tests/standards-plan-recheck.mjs:39:9)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

@@ -1,0 +1,14 @@
+[
+  {
+    "probe": "probe_geometry_rebase.mjs",
+    "typed_unsupported": true,
+    "error_name": "GeometryPrecisionError",
+    "error_code": "geometry_numeric_resolution_unsupported"
+  },
+  {
+    "probe": "probe_geometry_rebase_metre.mjs",
+    "typed_unsupported": true,
+    "error_name": "GeometryPrecisionError",
+    "error_code": "geometry_numeric_resolution_unsupported"
+  }
+]

@@ -168,6 +168,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 )
             return holder["services"]
 
+    # Explicit consumers may read this app's immutable snapshot. The private
+    # deployment uses the current-generation supplier shared with its worker.
+    app.state.planning_product_provider = services
+
     def unavailable(error: Exception, code: str) -> HTTPException:
         detail = {"error": code, "message": str(error)}
         if isinstance(error, ReferenceEvidenceUnavailable):

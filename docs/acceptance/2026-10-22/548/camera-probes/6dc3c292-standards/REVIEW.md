@@ -1,0 +1,13 @@
+# Standards: scoped PASS — 6dc3c292
+
+Fixed full camera diff: `eff8341d5a0eaf24999f42854da6339032c65c9c...6dc3c292079ec4f654113ecd3e11b631906e6c04` (f48228a8 plus correction). Earlier FAIL evidence is preserved.
+
+**Documented rules: no remaining scoped breach found.** AGENTS, CONTEXT, the accepted isolated-runtime decision and the scoped specification were checked. No additional CONTRIBUTING/CODING_STANDARDS file exists. Global React, dependencies, saved geometry/calculations and source permissions are unchanged. Styling remains in the single WindPress volume; clipping, lens, padding and composition remain declared display policies.
+
+**Previous findings independently closed.** The original panel and camera test files, loader and catalog checker are byte-identical. The host adaptation is separately recorded: `extent` replaces `framing`, and an actual DOM canvas supplies installed, real OrbitControls. Original resize and panel assertions now pass. Latest bounds reach the camera; ordinary edits/selection retain the view, while Fit/resize synchronize camera and orbit target. Actual controls survive Fit/resize and correctly pause/resume and dispose, including StrictMode replay and initially zero-sized viewports. No GPU success is manufactured by the controlled Canvas boundary.
+
+The fixed GNU MO now contains all three approved pairs and matches PO/WP JSON/source/emitted consumers; its SHA begins `c9c0180b`. The reviewed copy draft SHA remains `d44b0cb0…f9a008`, and final text is unchanged. The former possible Primitive Obsession is addressed by shared `selectedRoofId`, using real poses instead of parsing opaque IDs. All twelve Fowler heuristics were reconsidered as judgments; no remaining actionable smell is asserted. Full per-smell reasoning is in `FULL-REPORT.md`.
+
+**Independent execution:** seven camera/buffer/lifetime cases, two unchanged lifecycle replays, one unchanged panel replay, three real-control lifecycle probes, three focus/WindPress checks, all 87 fixed DOM cases, and actual emitted-ESM/source verification pass. The real-IDB gated focus case waits for the enabled entry after recovery scanning. Focus remains on the field while its label/unit is the scroll destination; CSS accounts for both measured bars. Actual pixel clearance remains a native acceptance responsibility.
+
+Evidence: `execution-results.json`, original full logs, replay hashes and source/artifact hashes. One SHA-verified snapshot and its dependency symlink were reclaimed; see `cleanup.json`. This scoped PASS does not establish native GPU, physical-touch, production or complete A–D acceptance.

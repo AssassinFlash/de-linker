@@ -1,0 +1,129 @@
+{
+  "The point or edit could not be accepted. Your previous drawing is still available.": [
+    "apps/planner/src/components/design/MapRoofWorkspace.tsx:116"
+  ],
+  "The roof needs valid plane values, a source reference and permission to use the drawing. The entered values have been kept.": [
+    "apps/planner/src/components/design/MapRoofWorkspace.tsx:196"
+  ],
+  "This roof boundary could not pass the geometry check. Its points remain available for correction.": [
+    "apps/planner/src/components/design/MapRoofWorkspace.tsx:240"
+  ],
+  "The project changed before this roof could be added. The drawing has been kept.": [
+    "apps/planner/src/components/design/MapRoofWorkspace.tsx:259"
+  ],
+  "The roof check or local save could not be completed. The drawing and its entered values remain available.": [
+    "apps/planner/src/components/design/MapRoofWorkspace.tsx:271"
+  ],
+  "Map roof drawing": [
+    "apps/planner/src/components/design/MapRoofWorkspace.tsx:291"
+  ],
+  "Draw a roof face": [
+    "apps/planner/src/components/design/MapRoofWorkspace.tsx:294"
+  ],
+  "Start roof drawing": [
+    "apps/planner/src/components/design/MapRoofWorkspace.tsx:311"
+  ],
+  "A drawing becomes a roof face after its outline, slope, height and source have been checked. It then appears in the plan and 3D views of this project.": [
+    "apps/planner/src/components/design/MapRoofWorkspace.tsx:317"
+  ],
+  "Checking saved drawings…": [
+    "apps/planner/src/components/design/MapRoofWorkspace.tsx:322"
+  ],
+  "The drawing could not be protected in browser storage. It remains open here. Retrying preserves any newer copy saved by another tab.": [
+    "apps/planner/src/components/design/MapRoofWorkspace.tsx:328"
+  ],
+  "Retry local save": [
+    "apps/planner/src/components/design/MapRoofWorkspace.tsx:340"
+  ],
+  "Save as separate drawing": [
+    "apps/planner/src/components/design/MapRoofWorkspace.tsx:348"
+  ],
+  "Unfinished roof face": [
+    "apps/planner/src/components/design/MapRoofWorkspace.tsx:360"
+  ],
+  "%d recorded vertices": [
+    "apps/planner/src/components/design/MapRoofWorkspace.tsx:363",
+    "apps/planner/src/components/design/MapRoofWorkspace.tsx:389"
+  ],
+  "Open saved drawing": [
+    "apps/planner/src/components/design/MapRoofWorkspace.tsx:374"
+  ],
+  "Checking roof geometry…": [
+    "apps/planner/src/components/design/MapRoofWorkspace.tsx:384"
+  ],
+  "Saving drawing in this browser…": [
+    "apps/planner/src/components/design/MapRoofWorkspace.tsx:386"
+  ],
+  "Roof added to the project draft. Save project stores it with the project.": [
+    "apps/planner/src/components/design/MapRoofWorkspace.tsx:394"
+  ],
+  "Drawing paused and retained in this browser.": [
+    "apps/planner/src/components/design/MapRoofWorkspace.tsx:398"
+  ],
+  "The project geometry has changed since this drawing began. The original drawing is retained; it cannot be applied to this changed geometry.": [
+    "apps/planner/src/components/design/MapRoofWorkspace.tsx:405"
+  ],
+  "Each map click records one corner. Panning and zooming keep the recorded points. At least three corners are needed before closing the outline.": [
+    "apps/planner/src/components/design/MapRoofWorkspace.tsx:414"
+  ],
+  "Close outline and review": [
+    "apps/planner/src/components/design/MapRoofWorkspace.tsx:432"
+  ],
+  "Remove last corner": [
+    "apps/planner/src/components/design/MapRoofWorkspace.tsx:445"
+  ],
+  "Pause drawing": [
+    "apps/planner/src/components/design/MapRoofWorkspace.tsx:467"
+  ],
+  "Resume drawing": [
+    "apps/planner/src/components/design/MapRoofWorkspace.tsx:477"
+  ],
+  "Close drawing preview": [
+    "apps/planner/src/components/design/MapRoofWorkspace.tsx:490"
+  ],
+  "Discard drawing": [
+    "apps/planner/src/components/design/MapRoofWorkspace.tsx:491"
+  ],
+  "Vertices can be dragged on the map. Edge midpoints add a corner. The roof plane uses the marked height reference even if the outline changes.": [
+    "apps/planner/src/components/design/MapRoofProperties.tsx:80"
+  ],
+  "Roof pitch (°)": [
+    "apps/planner/src/components/design/MapRoofProperties.tsx:89"
+  ],
+  "Down-slope bearing (°)": [
+    "apps/planner/src/components/design/MapRoofProperties.tsx:98"
+  ],
+  "Clockwise from true north, 0 to less than 360. North is 0, east 90, south 180 and west 270.": [
+    "apps/planner/src/components/design/MapRoofProperties.tsx:100"
+  ],
+  "Height at marked reference (m)": [
+    "apps/planner/src/components/design/MapRoofProperties.tsx:107"
+  ],
+  "Height relative to the project origin, not altitude above sea level. The reference is fixed at the first recorded map point.": [
+    "apps/planner/src/components/design/MapRoofProperties.tsx:109"
+  ],
+  "Height reference: longitude %1$s; latitude %2$s.": [
+    "apps/planner/src/components/design/MapRoofProperties.tsx:119"
+  ],
+  "The reference identifies the measurements or drawing used for the outline, slope and height. The street map provides orientation.": [
+    "apps/planner/src/components/design/MapRoofProperties.tsx:136"
+  ],
+  "Declared spatial precision (m)": [
+    "apps/planner/src/components/design/MapRoofProperties.tsx:146"
+  ],
+  "Check and add roof": [
+    "apps/planner/src/components/design/MapRoofProperties.tsx:200"
+  ],
+  "Continue adding corners": [
+    "apps/planner/src/components/design/MapRoofProperties.tsx:207"
+  ],
+  "The check tests roof polygon geometry. Measurement accuracy, structural safety and engineering approval remain separate.": [
+    "apps/planner/src/components/design/MapRoofProperties.tsx:213"
+  ],
+  "Height reference": [
+    "apps/planner/src/components/design/MapViewport.tsx:458"
+  ],
+  "Add vertex at map centre": [
+    "apps/planner/src/components/design/MapViewport.tsx:614"
+  ]
+}

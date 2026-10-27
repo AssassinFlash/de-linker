@@ -1,0 +1,11 @@
+Standards closure at `443eb71d7a9245942aa0d9a6e6de53acde9a867c`: **zero remaining findings.**
+
+Reviewed the entire immutable `cda1b7df188b78db561c3cbd6d475e2b968c8788...443eb71d7a9245942aa0d9a6e6de53acde9a867c` delta: 16 files, including all nine handwritten source/test files and generated assets/manifests. The original full 65-file review and previous repair addenda remain identifiable. The same documented repository sources, canonical operational overrides and complete Fowler baseline apply. No hard documented-standard violation or actionable heuristic smell was found.
+
+`EnergyWorkspace.tsx:148–169` reveals the selected run's semantic heading after layout, with active view, selected ID and current scope checks. Its dependencies exclude run status/object updates, so polling the same run does not cause repeated focus. The pending outer animation frame is cancelled on dependency change. `RunResult.tsx:99–113` marks the complete heading as reveal context while keeping keyboard focus on the heading itself.
+
+`measurePlannerChrome.ts:3–14` gathers existing native geometry in one shared function, consumed by both existing hooks and `revealActionResult.ts:8–37`. This removes duplicated measurement responsibility. The helper's one late correction checks connectedness, unchanged focus and scope admission, then scrolls only if the context is occluded. It schedules no correction loop. `EnergyWorkspace.tsx:95–99` clears obsolete local feedback when effective scenario/profile identity changes; durable operation errors remain separate.
+
+Fresh checks at the exact pin passed: source-manifest guard, one actual emitted-module graph test, and 18 existing React workflow/lifecycle tests, including the changed regression paths. An additional read-only probe of the real helper passed six cases covering late occlusion, clear geometry, moved focus, withdrawn scope, removed targets and initial refusal. No added legacy markers were found in the handwritten delta.
+
+Commands and small logs are in `evidence.md`. No source, build, dependency, service, native database or browser was changed by this reviewer. Synthetic DOM checks establish lifecycle behavior; native EN/DE viewport acceptance, deployment and production behavior remain separate.

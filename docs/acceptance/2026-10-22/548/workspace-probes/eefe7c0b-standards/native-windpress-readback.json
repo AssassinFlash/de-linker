@@ -1,0 +1,32 @@
+{
+  "observed_utc": "2026-10-23T09:53:32.340934+00:00",
+  "fixed_sha": "eefe7c0b060214b60ba7a012ff206e668dbce6d3",
+  "fixed_planner_css_sha256": "73668230825cab02d7af3838b174241c0a01ae460484ba6e4d32b45de4069e79",
+  "volume_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/windpress/data/planner.css",
+  "volume_sha256": "73668230825cab02d7af3838b174241c0a01ae460484ba6e4d32b45de4069e79",
+  "volume_matches_fixed": true,
+  "native_main_imports_planner": true,
+  "cache_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/windpress/cache/tailwind.css",
+  "cache_sha256": "5caa3e73e6202ee4607bc19cf42405f87e61b8e8423ce90194a62da243cc6bff",
+  "cache_mtime_ns": 1792748842694105295,
+  "compiled_rules": {
+    ".lp-plan-svg": [
+      "touch-action:none;-webkit-user-select:none;user-select:none;width:100%;height:460px;display:block;",
+      "height:350px;"
+    ],
+    ".lp-overview-preview .lp-plan-svg": [
+      "cursor:default;touch-action:auto;height:360px;"
+    ],
+    ".lp-overview-preview-title > span": [
+      "overflow-wrap:anywhere;min-width:0;"
+    ],
+    ".lp-mobile-workspace": [
+      "display:none;",
+      "min-width:0;min-height:44px;color:var(--proto-teal-900);border:1pxsolidvar(--lp-line);border-radius:var(--proto-radius-sm);background-color:#fff9;flex:1;padding:8px10px;font-size:16px;font-weight:500;display:block;"
+    ]
+  },
+  "native_module_manifest_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/plugins/linker-tools/build/planner/source-manifest.json",
+  "native_module_manifest_sha256": "33d1be2e5dc897c5b215232f63e0205c1d26b70d9105f0af97521615a32cba0d",
+  "native_manifest_matches_fixed": true,
+  "limits": "Filesystem metadata and compiled rules only; not current browser cache, actual viewport visibility or physical-touch acceptance."
+}

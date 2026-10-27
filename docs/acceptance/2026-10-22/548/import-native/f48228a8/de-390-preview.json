@@ -1,0 +1,44 @@
+{
+  "before": {
+    "active": "H3",
+    "bar": {
+      "bottom": 268.390625,
+      "height": 187.390625,
+      "left": 0,
+      "right": 375,
+      "top": 81,
+      "width": 375,
+      "x": 0,
+      "y": 81
+    },
+    "documentWidth": 375,
+    "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=effd05f58a3051fcd39deb4c9f5872d1c9dfaea4dd0f679f749453f08d8138ba",
+    "fontStatus": "loaded",
+    "height": 844,
+    "importHeading": "Importierte Dachfläche prüfen",
+    "scrollWidth": 375,
+    "url": "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-design",
+    "width": 390,
+    "x": 0,
+    "y": 644.5
+  },
+  "after": {
+    "bar": {
+      "bottom": 268.390625,
+      "height": 187.390625,
+      "left": 0,
+      "right": 375,
+      "top": 81,
+      "width": 375,
+      "x": 0,
+      "y": 81
+    },
+    "documentWidth": 375,
+    "height": 844,
+    "scrollWidth": 375,
+    "width": 390,
+    "x": 0,
+    "y": 644.5
+  },
+  "scrollStable": true
+}

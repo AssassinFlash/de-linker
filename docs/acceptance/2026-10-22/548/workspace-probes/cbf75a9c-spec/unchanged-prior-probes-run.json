@@ -1,0 +1,9 @@
+{
+  "name": "unchanged-prior-probes",
+  "command": [
+    "python3",
+    "run_mobile_probe.py"
+  ],
+  "cwd": ".",
+  "exit_code": 0
+}

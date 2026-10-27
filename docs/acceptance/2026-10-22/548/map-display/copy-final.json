@@ -1,0 +1,140 @@
+[
+  {
+    "en": "Show full design",
+    "de": "Gesamte Planung anzeigen",
+    "draft_en": "Fit design",
+    "resolution": "Applied independent opposition"
+  },
+  {
+    "en": "Hide street map",
+    "de": "Straßenkarte ausblenden",
+    "draft_en": "Hide street map",
+    "resolution": "Retained after independent opposition"
+  },
+  {
+    "en": "Load street map",
+    "de": "Straßenkarte laden",
+    "draft_en": "Load street map",
+    "resolution": "Retained after independent opposition"
+  },
+  {
+    "en": "Loading map…",
+    "de": "Karte wird geladen…",
+    "draft_en": "Loading map workspace…",
+    "resolution": "Applied independent opposition"
+  },
+  {
+    "en": "Loading the street map sends your IP address and the area shown to OpenFreeMap and its delivery network. The street map is for orientation.",
+    "de": "Wenn Sie die Straßenkarte laden, erhalten OpenFreeMap und die beteiligten Dienste Ihre IP-Adresse und Angaben zum angezeigten Kartenausschnitt. Die Straßenkarte dient der Orientierung.",
+    "draft_en": "Loading the street map sends your IP address and the map area to OpenFreeMap and its delivery network. Street-map data is a reference for orientation.",
+    "resolution": "Applied independent opposition"
+  },
+  {
+    "en": "Map",
+    "de": "Karte",
+    "draft_en": "Map",
+    "resolution": "Retained after independent opposition"
+  },
+  {
+    "en": "Map attribution",
+    "de": "Quellenangaben zur Karte",
+    "draft_en": "Map attribution",
+    "resolution": "Retained after independent opposition"
+  },
+  {
+    "en": "Map controls",
+    "de": "Bedienelemente der Karte",
+    "draft_en": "Map controls",
+    "resolution": "Retained after independent opposition"
+  },
+  {
+    "en": "Map feedback",
+    "de": "Rückmeldung zur Karte",
+    "draft_en": "Map feedback",
+    "resolution": "Retained after independent opposition"
+  },
+  {
+    "en": "OpenFreeMap privacy policy",
+    "de": "Datenschutzhinweise von OpenFreeMap",
+    "draft_en": "Map provider privacy",
+    "resolution": "Applied independent opposition"
+  },
+  {
+    "en": "North up",
+    "de": "Norden oben",
+    "draft_en": "North up",
+    "resolution": "Retained after independent opposition"
+  },
+  {
+    "en": "Project geometry",
+    "de": "Projektgeometrie",
+    "draft_en": "Project geometry",
+    "resolution": "Retained after independent opposition"
+  },
+  {
+    "en": "Project map",
+    "de": "Projektkarte",
+    "draft_en": "Project map",
+    "resolution": "Retained after independent opposition"
+  },
+  {
+    "en": "Retry loading map",
+    "de": "Karte erneut laden",
+    "draft_en": "Retry loading map",
+    "resolution": "Retained after independent opposition"
+  },
+  {
+    "en": "The map could not be fully displayed. Your project geometry is unchanged.",
+    "de": "Die Karte konnte nicht vollständig angezeigt werden. Die Geometrie Ihres Projekts ist unverändert.",
+    "draft_en": "Some map resources could not be displayed. Your project geometry is unchanged.",
+    "resolution": "Applied independent opposition"
+  },
+  {
+    "en": "Street map",
+    "de": "Straßenkarte",
+    "draft_en": "Street map",
+    "resolution": "Retained after independent opposition"
+  },
+  {
+    "en": "The map needs a geographic origin and a recorded true-north reference for this design.",
+    "de": "Die Kartenansicht benötigt einen geografischen Ursprung und einen im Projekt hinterlegten Bezug auf geografisch Nord.",
+    "draft_en": "The map needs a geographic origin and a recorded true-north reference for this design.",
+    "resolution": "Retained after independent opposition"
+  },
+  {
+    "en": "The map displays your recorded geometry using the project's geographic reference. Roof dimensions and declared source accuracy remain unchanged.",
+    "de": "Die Karte zeigt die erfasste Geometrie anhand des geografischen Projektbezugs. Dachmaße und die im Projekt angegebene Quellengenauigkeit bleiben unverändert.",
+    "draft_en": "The map places your recorded geometry at its geographic reference. Roof dimensions and source accuracy stay as declared in the project.",
+    "resolution": "Applied independent opposition"
+  },
+  {
+    "en": "The map could not be loaded. You can still switch views or edit numeric properties.",
+    "de": "Die Karte konnte nicht geladen werden. Sie können weiterhin die Ansicht wechseln oder numerische Eigenschaften bearbeiten.",
+    "draft_en": "The map workspace could not be loaded. Plan view, 3D and numeric properties remain available.",
+    "resolution": "Applied independent opposition"
+  },
+  {
+    "en": "This geometry cannot be shown on the map. You can still switch views or edit numeric properties.",
+    "de": "Diese Geometrie lässt sich auf der Karte nicht darstellen. Sie können weiterhin die Ansicht wechseln oder numerische Eigenschaften bearbeiten.",
+    "draft_en": "This geometry cannot be displayed by the map projection. Plan view, 3D and numeric properties remain available.",
+    "resolution": "Applied independent opposition"
+  },
+  {
+    "en": "Use Ctrl + scroll to zoom the map",
+    "de": "Zum Zoomen der Karte Strg gedrückt halten und scrollen.",
+    "draft_en": "Use Ctrl + scroll to zoom the map",
+    "resolution": "Retained after independent opposition"
+  },
+  {
+    "en": "Use two fingers to move the map",
+    "de": "Die Karte mit zwei Fingern verschieben.",
+    "draft_en": "Use two fingers to move the map",
+    "resolution": "Retained after independent opposition"
+  },
+  {
+    "en": "Use ⌘ + scroll to zoom the map",
+    "de": "Zum Zoomen der Karte ⌘ gedrückt halten und scrollen.",
+    "draft_en": "Use ⌘ + scroll to zoom the map",
+    "resolution": "Retained after independent opposition"
+  }
+]

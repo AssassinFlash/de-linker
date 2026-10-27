@@ -1,0 +1,616 @@
+{
+  "repo": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548",
+  "sha": "bc80334b7b29553f24e0c75de3c2e6781493066e",
+  "files": [
+    {
+      "path": "docs/specs/548-design-geometry.md",
+      "sha256": "b36f245063afd94d10b01f0316a584659ba587af6dfc373ea4fb8333d0274eb5",
+      "bytes": 6233
+    },
+    {
+      "path": "fixtures/planning/geometry-pose-reference.json",
+      "sha256": "eb7ab915e36bb093dc91608dc0d308efc62e66488440f31f94d9b2ec512d4310",
+      "bytes": 22278
+    },
+    {
+      "path": "fixtures/planning/geometry-flat.json",
+      "sha256": "7796458fec100be3f0cece963d3c6b8240a871cff35a6fe2067cd5754fcb8041",
+      "bytes": 2073
+    },
+    {
+      "path": "apps/planner/package.json",
+      "sha256": "9e01620c0a3ca8e28c38d6f93e1a789be8e619eb1b140a0070d42527317f3533",
+      "bytes": 1146
+    },
+    {
+      "path": "apps/planner/src/contracts/geometry-policy.json",
+      "sha256": "30cbe9f4b0493466c5763a5841d5c57efa8b16d7db9fa0832c25918a40f0de7d",
+      "bytes": 73
+    },
+    {
+      "path": "apps/planner/src/contracts/geometry.schema.json",
+      "sha256": "49bce6890774c8080f39253626014f5ca72b0104e7bf56cd7b10488307819166",
+      "bytes": 14696
+    },
+    {
+      "path": "apps/planner/src/contracts/geometry-numerics.json",
+      "sha256": "6746de02fb949989ec09115c1acdc47864a6415426a672fec354de2116b81f52",
+      "bytes": 35
+    },
+    {
+      "path": "apps/planner/src/data/inspectJson.ts",
+      "sha256": "4a7de8ac282ff71aea99785e717a225b8b6a1869a7abdbe2a2d260e6f1b3b46b",
+      "bytes": 2517
+    },
+    {
+      "path": "apps/planner/src/data/protocol.ts",
+      "sha256": "df7dba05572cff1745b54c4238ef32a37f8581bf16fcc463aad27d9ee53ca4c4",
+      "bytes": 1827
+    },
+    {
+      "path": "apps/planner/src/domain/coordinates.ts",
+      "sha256": "72a95de2ef31c922d21368fca286d2143641e5c2d1d3de6cc088a4a0bd3b193e",
+      "bytes": 1772
+    },
+    {
+      "path": "apps/planner/src/domain/geometry.ts",
+      "sha256": "ef8081325419c7cbb182fca2afb498cdf9db1ac00bcd4a2f4fade2031717e8bb",
+      "bytes": 3491
+    },
+    {
+      "path": "apps/planner/src/domain/geometry.test.ts",
+      "sha256": "767dd4b8d96d40cb572954a81c63d01f3f3aa75c20d58c3427f105bf845865ee",
+      "bytes": 8529
+    },
+    {
+      "path": "apps/planner/src/domain/geometryNumerics.ts",
+      "sha256": "15c0936d81a3ada76c53881524e9cb38eba597947ee9a91b58e49b10066b39a2",
+      "bytes": 1404
+    },
+    {
+      "path": "apps/planner/src/domain/panelPoses.ts",
+      "sha256": "27aa5e704814ae820362ba92e5b7f099903dddaede3720d7481ae3e087bdcee4",
+      "bytes": 5006
+    },
+    {
+      "path": "apps/planner/src/domain/geometrySchema.ts",
+      "sha256": "23c0df561b16a9146fc8fb7629fad5642a56c350aac066ce82addf2bc4dcbf01",
+      "bytes": 185
+    },
+    {
+      "path": "apps/planner/src/domain/validateGeometry.ts",
+      "sha256": "2e506f5665f3f7768077108c434723e31442d77a2e4d4256fd9be9a17f3343b4",
+      "bytes": 7817
+    },
+    {
+      "path": "services/engine/uv.lock",
+      "sha256": "c27b0f08eec61383a7656882cba31f99de40d99eeac3cb48ec99770190dab48e",
+      "bytes": 333407
+    },
+    {
+      "path": "services/engine/pyproject.toml",
+      "sha256": "61e76a2aacdea849d5b28172c13328f10ad226d7534f1e441842c7847f58cd47",
+      "bytes": 1520
+    },
+    {
+      "path": "services/engine/tests/planning/conftest.py",
+      "sha256": "51a8216926fa68e31cf0bd12bb99024e343fdcfce11dd1ec8c0381b4483b7b26",
+      "bytes": 1293
+    },
+    {
+      "path": "services/engine/tests/planning/test_private_http.py",
+      "sha256": "85b6bd0271c7c52a908e63c99042c0e614623b7b10989058d2080ec789fbe91c",
+      "bytes": 53341
+    },
+    {
+      "path": "services/engine/tests/planning/test_geometry.py",
+      "sha256": "e077cef15948ab8e241c07c089e42073d16c8048924521ba156eb1f07b1647fb",
+      "bytes": 17500
+    },
+    {
+      "path": "services/engine/src/linker_engine/geo.py",
+      "sha256": "e46375c1fec298a1088f26e1ace282c308c0e5b0a7279d475fe964d77b0e673d",
+      "bytes": 1370
+    },
+    {
+      "path": "services/engine/src/linker_engine/compatibility.py",
+      "sha256": "fe637029e8cb13ef668f08320d316b6e238fd03462560909d6e478802ca74495",
+      "bytes": 5101
+    },
+    {
+      "path": "services/engine/src/linker_engine/units.py",
+      "sha256": "8d5c57eb5586353d1834625c65769a4cc3736e07b25c979499c076ef03a3f675",
+      "bytes": 3516
+    },
+    {
+      "path": "services/engine/src/linker_engine/version.py",
+      "sha256": "c18d3640d140c5a3970a8ba5f4d585bbcd3de2762088220fdf3842c82cf260e6",
+      "bytes": 759
+    },
+    {
+      "path": "services/engine/src/linker_engine/models.py",
+      "sha256": "2dab8f6948adb14723d718e486639a9b91907d65e9f96928512f662f081fb2db",
+      "bytes": 12075
+    },
+    {
+      "path": "services/engine/src/linker_engine/slots.py",
+      "sha256": "fea837e9ffe7683423cefaaa84096d64c2f193c38abc504e0396d25696f513fb",
+      "bytes": 2307
+    },
+    {
+      "path": "services/engine/src/linker_engine/__init__.py",
+      "sha256": "873958606936a2746a94e2afee4ef7c1a0ed9ac78d74dc4c3fba9f7f7b808936",
+      "bytes": 36
+    },
+    {
+      "path": "services/engine/src/linker_engine/rules.py",
+      "sha256": "ed9a39a864bd845f9a8cc7ddc6e4226c12a63182ecaa2e68a2edffd02384aed3",
+      "bytes": 11363
+    },
+    {
+      "path": "services/engine/src/linker_engine/pdf.py",
+      "sha256": "5243daed587a795122ac092a09a554e1e0756d7cb96d293bfb28bad8ea8ebf9d",
+      "bytes": 8880
+    },
+    {
+      "path": "services/engine/src/linker_engine/products.py",
+      "sha256": "85217e3ef8c6b6cff6800a909704595a44ff7eef61835c6fb28ac43d144fdf0a",
+      "bytes": 9005
+    },
+    {
+      "path": "services/engine/src/linker_engine/application.py",
+      "sha256": "95f44ff31ca5f5fe110751862d5d5925ef79688270b9dbe7f3f393eadfb99793",
+      "bytes": 247
+    },
+    {
+      "path": "services/engine/src/linker_engine/engine.py",
+      "sha256": "311ca614b2f76a5db2f19296d4117240c8d3e04efc3f8df903de57a477d513c9",
+      "bytes": 2099
+    },
+    {
+      "path": "services/engine/src/linker_engine/pvgis.py",
+      "sha256": "2dbf8a8bf14b0ceedc5f17804d6a48935dcf2ea24abc39263483765b705f3e85",
+      "bytes": 5273
+    },
+    {
+      "path": "services/engine/src/linker_engine/gate.py",
+      "sha256": "f287f23a6adb5fa1d07b3d22e888cdfc1d127ef6a13a9307e41ce1587f4e05c5",
+      "bytes": 6291
+    },
+    {
+      "path": "services/engine/src/linker_engine/texts.py",
+      "sha256": "21eca89cb8e6af1421833f1a1fbed8f4899c8d8578c1a771cf2004a269d270f5",
+      "bytes": 31541
+    },
+    {
+      "path": "services/engine/src/linker_engine/app.py",
+      "sha256": "a5e8a21f2f23b45b611f9bdfa7ebbbb53066f4b8a8bc1126127f302633cec29e",
+      "bytes": 9057
+    },
+    {
+      "path": "services/engine/src/linker_engine/htw.py",
+      "sha256": "adbf79317541395d49dd5f5b1dc1f004d1ffa0378026bf641231df42394246d7",
+      "bytes": 5802
+    },
+    {
+      "path": "services/engine/src/linker_engine/commercial.py",
+      "sha256": "f7482a685b48c126571a17ac06d3b864cf35290b95520e28ffeb98f701724e93",
+      "bytes": 15926
+    },
+    {
+      "path": "services/engine/src/linker_engine/stacking.py",
+      "sha256": "275b01dda41467bfa9723dbfae1268eb74b615d8307d5a8b7c3eecb9eab97f77",
+      "bytes": 3092
+    },
+    {
+      "path": "services/engine/src/linker_engine/residential.py",
+      "sha256": "ade4a9151bd828cad022f684573fdfa7c324d449e8e2d65ebd94d47438713fd3",
+      "bytes": 34164
+    },
+    {
+      "path": "services/engine/src/linker_engine/imagery.py",
+      "sha256": "d29c12438315544f4fac13c0feeb190a9727212f97ff5495a084f6c5cc1d44c3",
+      "bytes": 1090
+    },
+    {
+      "path": "services/engine/src/linker_engine/explain.py",
+      "sha256": "740710b56eabaa960da3dc40ea25715ad49a315ea9d2fb86dc009d7e8f4acebe",
+      "bytes": 2041
+    },
+    {
+      "path": "services/engine/src/linker_engine/report.py",
+      "sha256": "669f02311dee4e3de918b2b7d728379b8a1051d0e6c27a8b592f61460211e5de",
+      "bytes": 13715
+    },
+    {
+      "path": "services/engine/src/linker_engine/strings.py",
+      "sha256": "2c220635100546e8500867dfae11193cf569540fcd6270d9a4a1a0c67ec1b8f7",
+      "bytes": 7079
+    },
+    {
+      "path": "services/engine/src/linker_engine/eligibility.py",
+      "sha256": "b404676e759f7309b77139656818f531e7292c03f780ed41fbb7a8858a53cce2",
+      "bytes": 3334
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/worker.py",
+      "sha256": "50046d91e3f5d439b538a60c1b5a7b3b29468afe0d20e5fa83c7a43b2f2a3053",
+      "bytes": 4719
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/runtime_config.py",
+      "sha256": "8f6cefbec6e9dfc514ab33728e37f66f84077b141e6162cecb4a2b849a153a97",
+      "bytes": 2363
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/csv_issue.py",
+      "sha256": "d20cedd832d192dd8c8ff20a4d009eb86732503399bd8ec844e1f5bba22786be",
+      "bytes": 2420
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/frozen_run.py",
+      "sha256": "84017a6e4e188ece4a7c2dc148092656f99be70c36b7d1b51ef48a4c71674a86",
+      "bytes": 3444
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/pvgis_response.py",
+      "sha256": "5982c12aa4ffbb37fb25027cb12c8cf2ddcedf99c3feec4fb737721edca0a714",
+      "bytes": 6996
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/geometry_review.py",
+      "sha256": "1c114a9711df00fdb1239c3bcf0f5fd11bb509d4320695a3116b5820028d492a",
+      "bytes": 13610
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/energy_kernel.py",
+      "sha256": "1802edaafe6f803c17c298c86d0289b9ab8a5df78f646fa8ebe1d81615675d19",
+      "bytes": 7831
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/http_index.py",
+      "sha256": "92a642c324cc4c8cea9f0ff7339e733e27d72b180de66ab379d252a21e0774c6",
+      "bytes": 3693
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/dispatch_checks.py",
+      "sha256": "fc6ca13b9bf0f2fff5537db47e3c898bd58030d84437323b10c24fe209204aca",
+      "bytes": 21473
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/pvgis_import.py",
+      "sha256": "7098cf62a77add2d342ecf029998787e4428913798d62cae28e82f8ee455b11f",
+      "bytes": 3374
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/service_boundary.py",
+      "sha256": "485cf13778b21f6c03a2026926c38ed12c4b84daa26aecc62f042b915b278103",
+      "bytes": 9283
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/interval.py",
+      "sha256": "3531ba2ec3752fc2272e6a9cea9f6581935c5ebd5b08010da62ef1f936f258ae",
+      "bytes": 1960
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/csv_inspection.py",
+      "sha256": "f3977ddae2b2452a434d20f8e2ca368099df30d64c75b3f46ca0b4f5d6b2c6a2",
+      "bytes": 2119
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/http_host.py",
+      "sha256": "f6bd54838ba7953bf42260547e9e06db0bb6ede82fc0e2377914cd0f411cae79",
+      "bytes": 2647
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/geometry_numerics.py",
+      "sha256": "a9f4132df4b2c7566ba452141398a53ed0b24c9e9cfd16520d5ec6ebce3cce79",
+      "bytes": 2344
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/http_app.py",
+      "sha256": "cb54d0f3a4e16626d9cf63cff6c33802bb360b27b7c0af3ed7cbc70a77870a8a",
+      "bytes": 12946
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/dispatch.py",
+      "sha256": "12290fb9484f202ef719e4bd0af7c43cad30ea6ed0f6bdd408966254bcec6121",
+      "bytes": 7109
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/pvgis_metadata.py",
+      "sha256": "87c3cf27af05171dab8fb7fdd6d53d162a174cedf890164ecd565f985a6ce491",
+      "bytes": 3372
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/numerical_tolerance.py",
+      "sha256": "2f1f4beee951bced788b1f066e8c678e7c53f9428bca0bee7ee5c23e9be8177e",
+      "bytes": 807
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/records.py",
+      "sha256": "a6d94e54f997e1660702a008fda519ba991c6dd659a4d8760938d37c065da900",
+      "bytes": 2970
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/csv_reader.py",
+      "sha256": "46ebc3157368e4ae999d6984f17fe3be428ed949612834a121c2bb82646cb4fb",
+      "bytes": 769
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/runtime_snapshot.py",
+      "sha256": "fa252b4f7294e4c0fb13825de5465d315876917e834dad8269ff68c2826ffa9d",
+      "bytes": 2045
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/dispatch_delivery_checks.py",
+      "sha256": "0396f0d4fd733663305b1944954145237003b635bfaf251d837358870c0f2814",
+      "bytes": 6998
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/access.py",
+      "sha256": "e04420168d0257d180f529ebb9e0e5e2d785ee3d528c328e0d94bcc56aba0120",
+      "bytes": 1244
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/profile_assets.py",
+      "sha256": "b4136ab40df8ac9588c506486b787367bae9f639f61db647b97752b0cfae9659",
+      "bytes": 885
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/profile_selections.py",
+      "sha256": "049457bed5b784717440768dc1e26c39d6eba003d217d4864a3f6dbcd62b0ece",
+      "bytes": 1766
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/brief.py",
+      "sha256": "8b5ccb124b8ca6f53d6185b3eb7ed261c48de7470a57f4a626170eee05d21892",
+      "bytes": 2823
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/__init__.py",
+      "sha256": "40e51b5b4b0951a649dbe4c2ef472b6db0ffe16f7b8f3f41d7953ac55d309c17",
+      "bytes": 95
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/geometry_documents.py",
+      "sha256": "d371ddff1568b87e621dfa6eea5649855d4f2158532e5c68567c326a65669b4c",
+      "bytes": 7206
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/guest_claims.py",
+      "sha256": "e2371eb9586d28bd0c8fe6e3272bd18a23f9aa74bda3049c5d0eee076b28f428",
+      "bytes": 3049
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/inventory_witness.py",
+      "sha256": "bc7a4ccffb015986a896e42b5368d432ce612711d93047dd0a6d00f79879baf2",
+      "bytes": 4744
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/sample_reconstruction.py",
+      "sha256": "8c4e0e9c91e4e63d8938556187df119e4a0417f459ac22ad546c7be2824bceea",
+      "bytes": 1800
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/energy_service.py",
+      "sha256": "24623cf8ffd531c66c8824f6007d7a0b8f36d284aa2c58c271401bb9c265b97e",
+      "bytes": 1090
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/energy_preparation.py",
+      "sha256": "edb81dea8dbe3247e9eaa6fdfa07e99857160da3e8a1d1359dc78de20fb4980e",
+      "bytes": 3580
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/jobs.py",
+      "sha256": "d63d8be0e6d407fc22d2e9c5564c4a17acdc8528d09c45de375070ebe66a6b2e",
+      "bytes": 8309
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/energy_metrics.py",
+      "sha256": "ca11de80a81f24616082e3ab1d817f2815b9d71eec0c73c6fcf443dfce994f46",
+      "bytes": 5806
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/http_asset_intake.py",
+      "sha256": "02f6986131bdb30da34482e4db541533e1a33a56b647b25c82bfd9b4a770a48b",
+      "bytes": 3584
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/scenario_frames.py",
+      "sha256": "4da40ea5df45d8106562383c572d57ba413443b1d83759d602df0abf0f01e1c4",
+      "bytes": 1359
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/assets.py",
+      "sha256": "c529ce2bd1ce65834cd59975b6571f6972fcc9c32ee80cefd3a7719266cc335e",
+      "bytes": 6768
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/series_transform.py",
+      "sha256": "802aeb57ca02a5f979a06dbed3d566587e743b5697e6a8035be5db0e51219de4",
+      "bytes": 1645
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/canonical.py",
+      "sha256": "96efff542d8aa8b43d6567cf2815d8656cb364914dc88f19fbd3a0a7f5fe19df",
+      "bytes": 1965
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/geometry.py",
+      "sha256": "ec53829483f600ccfb8d291869042769771b64da01f1a88833709858601dc749",
+      "bytes": 12805
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/frozen_profiles.py",
+      "sha256": "1f7e5b3fb05e85abc4242cf254ad99d63c1693183e4d4b35eacfaff535ab07d3",
+      "bytes": 2233
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/storage.py",
+      "sha256": "63ddb818d0e6735c838af9e1e4fe6dd580df9b8dc47f7db4cb162ae201050f95",
+      "bytes": 6611
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/energy_inputs.py",
+      "sha256": "042c8c066bdb5b9f6eacb38170f6b77ccd9a6e2c331381746abc087841b4512f",
+      "bytes": 5693
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/archive.py",
+      "sha256": "9cbb8a5ea061dab41aa3162ca74a71fd435d0725b57cf78558f77ef1e51e2f51",
+      "bytes": 9322
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/operating_limits.py",
+      "sha256": "b7bb185f42832cb4e816abcc0c255b26cebd6042268ea22e1785f981e23f0db9",
+      "bytes": 1747
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/energy_origins.py",
+      "sha256": "88f56e1681fdeb91b485c3ffe62f30d1355ab577617a0b2259677959c8fac699",
+      "bytes": 2631
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/errors.py",
+      "sha256": "29024c3eaeceedfa0dd191822f21bd02fc36a640507565fd14f36d98a3c340a7",
+      "bytes": 1043
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/profile_preview.py",
+      "sha256": "e935dee3e2db1ad62c7e0ca684056ced4cc1f9e26a75a4eb372658c19d0d6244",
+      "bytes": 4848
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/pvgis_request.py",
+      "sha256": "c10331574afb869b1f51381908792aade5c93477903f99c68b1821c56fe04260",
+      "bytes": 4710
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/http_documents.py",
+      "sha256": "3d6e0d4812b97f4f74e57dce2e0efe6168f81bde3bcf24fcf8a99da413a13717",
+      "bytes": 3152
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/profile_import.py",
+      "sha256": "63e233d6b27f58e1d0788ef4edf9a324aa672b5dfb202a7c7245002babcf557c",
+      "bytes": 3633
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/workspace.py",
+      "sha256": "72d30bbbb98f6dbb5cb7ac8f24bf98a5171f57c7f8a7b2fe85ac4690c942783a",
+      "bytes": 13942
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/dispatch_priorities.py",
+      "sha256": "8c26403b5791b1785bc425ddd46b120cc7c334c4237bd8c717068e67004dc880",
+      "bytes": 3038
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/flow_document.py",
+      "sha256": "cdcb3d954e70697b14985d1ef92400a7deb2b263fd5de9df85188343bcf425c6",
+      "bytes": 691
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/wire_numbers.py",
+      "sha256": "8be6e4eb85d6f08de2fe715f8080639798f994b0e7b8204dcfb8bf7faa384f0e",
+      "bytes": 907
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/power_series.py",
+      "sha256": "f3b4bcc0c56f18bc2999bc607a6c2a10539e80867df624557bf92d745d52119c",
+      "bytes": 4108
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/battery_model.py",
+      "sha256": "879cb1f7b70e30b99b8b791c8b8370268a7bb36a49f76e06f76de2c799b86588",
+      "bytes": 2559
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/csv_mapping.py",
+      "sha256": "1e38529c33db7102f01f2b5910a4ffef0a1e7ec5bb8415306466a8cc4d71883e",
+      "bytes": 3957
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/commands.py",
+      "sha256": "237d5ce41687373db1eb3f28d44622a53272c67fc07105965b85454f950053cd",
+      "bytes": 2834
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/http_views.py",
+      "sha256": "4494555881c7e0a2c546e7c68adf13ead163ad1680d24dc8d88b4a110b0fa02e",
+      "bytes": 1182
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/profiles.py",
+      "sha256": "a0c321928f197b8013b886a67835f64f96d2b88f9878d547f2c7feefa005f76d",
+      "bytes": 7498
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/dispatch_frame.py",
+      "sha256": "a776810b3d19fc21ca8cd0ea5d5a22230e9d927257e09fac443427fec5909bfb",
+      "bytes": 2252
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/timezone_rules.py",
+      "sha256": "7b33285f9b2d0fdffdd6e70f889ecc5f77f9695fc2b7304391caddcf39d1ba29",
+      "bytes": 2932
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/dependencies.py",
+      "sha256": "0ed7da66021d4177debcb1b7f538da0fc69baadd9d9e015df0565d26c3a49921",
+      "bytes": 677
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/schema.py",
+      "sha256": "57fb77b9a2ec6355154294d8b41ddf493b2f2e8b3b4070696d3e8857bbec667b",
+      "bytes": 4264
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/regrid.py",
+      "sha256": "0ddd455208c06a4556f98d724643f8307670e5823d81715142fb23082948eb8d",
+      "bytes": 3168
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/series_source.py",
+      "sha256": "a6c482f120325e85a26fe3fd25b3b9a1af41fedf1d792db6611d9f1d0e178804",
+      "bytes": 1663
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/http_replay.py",
+      "sha256": "b72b27fa295c535cd751deb39d559986aa2949afaf00b80f997462092ba885e3",
+      "bytes": 5622
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/pvgis_profile.py",
+      "sha256": "892736dfb72f5555b101bfef4cef9b8a84fbf83e7431e1464a422cf31ce54200",
+      "bytes": 2982
+    },
+    {
+      "path": "services/engine/src/linker_engine/roof/service.py",
+      "sha256": "690fb27cee49e8502e3941cd85c6928bddbe107639e5fdea524153bc6d3009d2",
+      "bytes": 6736
+    },
+    {
+      "path": "services/engine/src/linker_engine/roof/__init__.py",
+      "sha256": "6457bedefe2a4d72d9d6429e25f2bfdb228c13788f0db588708b9983ba93481b",
+      "bytes": 63
+    },
+    {
+      "path": "services/engine/src/linker_engine/roof/citygml.py",
+      "sha256": "cde193b5d5e4734bf6938c89102c619002ca23a488b5fc748bdbcb37dc2b0271",
+      "bytes": 4228
+    },
+    {
+      "path": "services/engine/src/linker_engine/roof/packing.py",
+      "sha256": "dbcf29c22495026d38d2ad7b5d8616969116dbe7d04fd4ea69f0c5a950dd0387",
+      "bytes": 3483
+    },
+    {
+      "path": "services/engine/src/linker_engine/roof/lod2.py",
+      "sha256": "d87f38f132d829fa0ecdc865ea4a154992793b9fb69e6d5d5661ff61c3916b84",
+      "bytes": 9669
+    }
+  ]
+}

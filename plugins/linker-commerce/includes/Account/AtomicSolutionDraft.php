@@ -30,9 +30,11 @@ final class AtomicSolutionDraft {
 	 * Tops up every BOM line as one operation, never duplicating an existing set.
 	 *
 	 * @param array<string, mixed> $result Trusted complete design.
+	 * @param array<string,mixed>  $item_data Trusted native context, when supplied by a server integration.
+	 * @param string[]             $replace_keys Only the reviewed native project group, when supplied.
 	 * @return list<array{id:int,quantity:int}>|WP_Error Read-back quantities.
 	 */
-	public function add( array $result ): array|WP_Error {
+	public function add( array $result, array $item_data = array(), array $replace_keys = array() ): array|WP_Error {
 		$items = DesignProof::items( $result );
 		if ( array() === $items ) {
 			return DesignProof::unavailable();
@@ -57,10 +59,15 @@ final class AtomicSolutionDraft {
 		$before  = $cart->get_cart();
 		$notices = wc_get_notices();
 		try {
+			foreach ( $replace_keys as $key ) {
+				if ( false === $cart->remove_cart_item( $key ) ) {
+					return $this->rollback( $cart, $before, $notices );
+				}
+			}
 			foreach ( $items as $item ) {
 				$held = 0;
 				foreach ( $cart->get_cart() as $line ) {
-					if ( (int) $line['product_id'] === $item['product_id'] ) {
+					if ( (int) $line['product_id'] === $item['product_id'] && $this->matches( $line, $item_data ) ) {
 						$held += (int) $line['quantity'];
 					}
 				}
@@ -70,7 +77,8 @@ final class AtomicSolutionDraft {
 					// the cart method does not run it for trusted server-side callers.
 					/** This filter is documented in woocommerce/includes/class-wc-form-handler.php. */
 					$valid = apply_filters( 'woocommerce_add_to_cart_validation', true, $item['product_id'], $needed ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce's native validation hook.
-					if ( ! $valid || false === $cart->add_to_cart( $item['product_id'], $needed ) ) {
+					$added = $valid ? ( array() === $item_data ? $cart->add_to_cart( $item['product_id'], $needed ) : $cart->add_to_cart( $item['product_id'], $needed, 0, array(), $item_data ) ) : false;
+					if ( false === $added ) {
 						return $this->rollback( $cart, $before, $notices );
 					}
 				}
@@ -81,11 +89,14 @@ final class AtomicSolutionDraft {
 			}
 			$quantities = array();
 			foreach ( $cart->get_cart() as $line ) {
+				if ( ! $this->matches( $line, $item_data ) ) {
+					continue;
+				}
 				$id                = (int) $line['product_id'];
 				$quantities[ $id ] = ( $quantities[ $id ] ?? 0 ) + (int) $line['quantity'];
 			}
 			foreach ( $items as $item ) {
-				if ( ( $quantities[ $item['product_id'] ] ?? 0 ) < $item['quantity'] ) {
+				if ( ( $quantities[ $item['product_id'] ] ?? 0 ) < $item['quantity'] || ( array() !== $item_data && ( $quantities[ $item['product_id'] ] ?? 0 ) != $item['quantity'] ) ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseNotEqual -- Woo may return an integral float; fractional pieces do not satisfy the frozen quantity.
 					return $this->rollback( $cart, $before, $notices );
 				}
 			}
@@ -104,6 +115,21 @@ final class AtomicSolutionDraft {
 		} catch ( Throwable $error ) {
 			return $this->rollback( $cart, $before, $notices );
 		}
+	}
+
+	/**
+	 * Keep independent project transfers separate while preserving ordinary adds.
+	 *
+	 * @param array<string,mixed> $line Native Woo line.
+	 * @param array<string,mixed> $data Trusted server metadata.
+	 */
+	private function matches( array $line, array $data ): bool {
+		foreach ( $data as $key => $value ) {
+			if ( ( $line[ $key ] ?? null ) !== $value ) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**

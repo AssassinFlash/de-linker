@@ -1,0 +1,42 @@
+{
+  "provider_run_id": "tXCGhHtxHRpnGQrOS",
+  "items": [
+    {
+      "keys": [
+        "url",
+        "crawl",
+        "metadata",
+        "screenshotUrl",
+        "text",
+        "html",
+        "htmlUrl",
+        "markdown",
+        "debug"
+      ],
+      "url": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=52.52&lon=13.405&startyear=2005&endyear=2023&usehorizon=0&outputformat=json",
+      "crawl": {
+        "loadedUrl": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=52.52&lon=13.405&startyear=2005&endyear=2023&usehorizon=0&outputformat=json",
+        "loadedTime": "2026-10-24T05:58:34.068Z",
+        "referrerUrl": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=52.52&lon=13.405&startyear=2005&endyear=2023&usehorizon=0&outputformat=json",
+        "httpStatusCode": 200,
+        "depth": 0,
+        "contentLengthBytes": 245,
+        "contentType": "text/html"
+      },
+      "file_origin": "",
+      "file_path": "",
+      "has_temporary_access_query": false
+    }
+  ],
+  "receipt": {
+    "status": 200,
+    "content_type": "application/json; charset=utf-8",
+    "content_encoding": "identity",
+    "encoded_bytes": 2060,
+    "decoded_bytes": 2060,
+    "body_sha256": "f197e4aedcb5b7d3f584c564e1b9d402b1585b7d493be5d3b6c3baf14d078aa1"
+  },
+  "deadline_remaining_seconds": 203.03,
+  "nonce_echo_already_passed": true,
+  "new_actor_starts": 0
+}

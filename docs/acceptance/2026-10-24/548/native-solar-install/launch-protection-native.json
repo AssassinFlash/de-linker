@@ -1,0 +1,18 @@
+{
+  "at_utc": "2026-10-24T14:40:23.046996+00:00",
+  "on_disk_release": {
+    "runtime_sha256": "ccd98b3173be0f5e67d2c5b719ad5fbde87595d86058632fc27a7300de87aaaa",
+    "schema_version": 1,
+    "storage_schema_version": 4
+  },
+  "native_schema": 2,
+  "rejected_before_migration": true,
+  "message": "planning storage/executable versions differ; a verified paired upgrade and recovery point are required",
+  "before_rows_sha256": "b74d9b5e657e3180fc0182233bd1138e7a90f98fee47b3d62e1e9af4e5176295",
+  "after_rows_sha256": "b74d9b5e657e3180fc0182233bd1138e7a90f98fee47b3d62e1e9af4e5176295",
+  "existing_worker_pid": 71736,
+  "worker_readiness_unchanged": true,
+  "old_policy_did_not_receive_provider_token": true,
+  "live_pair_restarted": false,
+  "native_policy_changed": false
+}

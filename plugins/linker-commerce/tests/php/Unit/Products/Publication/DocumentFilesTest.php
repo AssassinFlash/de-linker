@@ -73,7 +73,7 @@ final class DocumentFilesTest extends TestCase {
 	public function test_original_url_gate_precedes_static_shortcut(): void {
 		$rules = "RewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteRule . /index.php [L]\n";
 		$after = ( new DocumentAccess() )->rewrite_rules( $rules );
-		self::assertStringContainsString( 'linker_public_document=$1 [END,NC]', $after );
+		self::assertStringContainsString( 'linker_public_document=$1 [END,NC,QSA]', $after );
 		self::assertLessThan( strpos( $after, 'REQUEST_FILENAME' ), strpos( $after, 'linker_public_document=' ) );
 	}
 
@@ -84,5 +84,19 @@ final class DocumentFilesTest extends TestCase {
 		$response = ( new DocumentAccess() )->response( $file, 'GET' );
 		self::assertSame( 503, $response['status'] );
 		self::assertSame( 0, $response['length'] );
+	}
+
+	/** An old source link cannot return replacement bytes or bypass permission. */
+	public function test_recorded_file_version_is_checked_before_current_permission(): void {
+		$file = DocumentFiles::resolve( rtrim( home_url(), '/' ) . '/wp-content/uploads/2026/manual.pdf' );
+		self::assertNotNull( $file );
+		$access = new DocumentAccess();
+		foreach ( array( str_repeat( '0', 64 ), 'invalid' ) as $sha ) {
+			$response = $access->response( $file, 'GET', '', $sha );
+			self::assertSame( 410, $response['status'] );
+			self::assertSame( 0, $response['length'] );
+		}
+		\WP_Mock::userFunction( 'wp_cache_supports' )->with( 'flush_runtime' )->andReturn( false );
+		self::assertSame( 503, $access->response( $file, 'GET', '', $file['blob_sha256'] )['status'] );
 	}
 }

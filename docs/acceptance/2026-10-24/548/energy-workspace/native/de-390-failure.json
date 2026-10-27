@@ -1,0 +1,35 @@
+{
+  "focus": {
+    "classes": "lp-focus-target",
+    "rect": {
+      "bottom": 261.546875,
+      "height": 23,
+      "left": 16,
+      "right": 274.203125,
+      "top": 238.546875,
+      "width": 258.203125,
+      "x": 16,
+      "y": 238.546875
+    },
+    "tag": "H3"
+  },
+  "headings": [
+    "Energieberechnung",
+    "Bisherige Berechnungen",
+    "Berechnung fehlgeschlagen",
+    "Software und Datenquellen"
+  ],
+  "scripts": [
+    "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=52fb733a2fc7884b846623f07279ab9ca6d9cb6d788c73163c09cd088c1d197b"
+  ],
+  "scroll": {
+    "pageWidth": 390,
+    "x": 0,
+    "y": 718
+  },
+  "url": "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be&run=43310088cfe74ba19bdb155fb3ce1598#lp-calculations",
+  "viewport": {
+    "height": 844,
+    "width": 390
+  }
+}

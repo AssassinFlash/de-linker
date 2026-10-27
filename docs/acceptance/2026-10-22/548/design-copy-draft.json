@@ -1,0 +1,1563 @@
+[
+  {
+    "en": "Array properties",
+    "refs": [
+      "src/components/design/ArrayForm.tsx:20"
+    ]
+  },
+  {
+    "en": "Add a module array",
+    "refs": [
+      "src/components/design/ArrayForm.tsx:21"
+    ]
+  },
+  {
+    "en": "Array name",
+    "refs": [
+      "src/components/design/ArrayForm.tsx:54"
+    ]
+  },
+  {
+    "en": "Module specification",
+    "refs": [
+      "src/components/design/ArrayForm.tsx:58",
+      "src/components/design/ModuleForm.tsx:15"
+    ]
+  },
+  {
+    "en": "Select a module specification",
+    "refs": [
+      "src/components/design/ArrayForm.tsx:65"
+    ]
+  },
+  {
+    "en": "Layout source",
+    "refs": [
+      "src/components/design/ArrayForm.tsx:75"
+    ]
+  },
+  {
+    "en": "Anchor U",
+    "refs": [
+      "src/components/design/ArrayForm.tsx:92"
+    ]
+  },
+  {
+    "en": "Anchor V",
+    "refs": [
+      "src/components/design/ArrayForm.tsx:98"
+    ]
+  },
+  {
+    "en": "Rows",
+    "refs": [
+      "src/components/design/ArrayForm.tsx:104"
+    ]
+  },
+  {
+    "en": "Positive whole number.",
+    "refs": [
+      "src/components/design/ArrayForm.tsx:107",
+      "src/components/design/ArrayForm.tsx:115"
+    ]
+  },
+  {
+    "en": "Columns",
+    "refs": [
+      "src/components/design/ArrayForm.tsx:112"
+    ]
+  },
+  {
+    "en": "Rotation within roof plane",
+    "refs": [
+      "src/components/design/ArrayForm.tsx:120"
+    ]
+  },
+  {
+    "en": "Counter-clockwise from the roof U axis toward V.",
+    "refs": [
+      "src/components/design/ArrayForm.tsx:123"
+    ]
+  },
+  {
+    "en": "Additional module tilt",
+    "refs": [
+      "src/components/design/ArrayForm.tsx:131"
+    ]
+  },
+  {
+    "en": "0 to 90, relative to this roof face. Each row starts at its own lower edge.",
+    "refs": [
+      "src/components/design/ArrayForm.tsx:134"
+    ]
+  },
+  {
+    "en": "Gap between columns",
+    "refs": [
+      "src/components/design/ArrayForm.tsx:142"
+    ]
+  },
+  {
+    "en": "0 or greater.",
+    "refs": [
+      "src/components/design/ArrayForm.tsx:144"
+    ]
+  },
+  {
+    "en": "Projected gap between rows",
+    "refs": [
+      "src/components/design/ArrayForm.tsx:149"
+    ]
+  },
+  {
+    "en": "Gap on the roof plane, 0 or greater. Shading and maintenance requirements are assessed separately.",
+    "refs": [
+      "src/components/design/ArrayForm.tsx:151"
+    ]
+  },
+  {
+    "en": "Lower-edge height above roof",
+    "refs": [
+      "src/components/design/ArrayForm.tsx:159"
+    ]
+  },
+  {
+    "en": "0 or greater, measured along the roof normal.",
+    "refs": [
+      "src/components/design/ArrayForm.tsx:161"
+    ]
+  },
+  {
+    "en": "Mounting assumptions and reference",
+    "refs": [
+      "src/components/design/ArrayForm.tsx:169"
+    ]
+  },
+  {
+    "en": "The anchor is the lower-left corner of the first row before tilt and thickness are projected. Resizing preserves excluded module slots; slots outside the new size must be restored first.",
+    "refs": [
+      "src/components/design/ArrayForm.tsx:174"
+    ]
+  },
+  {
+    "en": "Project coordinate references",
+    "refs": [
+      "src/components/design/CoordinatesForm.tsx:16"
+    ]
+  },
+  {
+    "en": "The project uses metres in a local east/north/up frame. A north reference records the stated basis for that frame; it does not rotate existing objects or verify a survey.",
+    "refs": [
+      "src/components/design/CoordinatesForm.tsx:58"
+    ]
+  },
+  {
+    "en": "North reference",
+    "refs": [
+      "src/components/design/CoordinatesForm.tsx:64"
+    ]
+  },
+  {
+    "en": "Unreferenced",
+    "refs": [
+      "src/components/design/CoordinatesForm.tsx:67"
+    ]
+  },
+  {
+    "en": "User-declared north",
+    "refs": [
+      "src/components/design/CoordinatesForm.tsx:70"
+    ]
+  },
+  {
+    "en": "True north with source reference",
+    "refs": [
+      "src/components/design/CoordinatesForm.tsx:73"
+    ]
+  },
+  {
+    "en": "North reference source",
+    "refs": [
+      "src/components/design/CoordinatesForm.tsx:78"
+    ]
+  },
+  {
+    "en": "Select a source",
+    "refs": [
+      "src/components/design/CoordinatesForm.tsx:83",
+      "src/components/design/CoordinatesForm.tsx:120"
+    ]
+  },
+  {
+    "en": "Project origin latitude",
+    "refs": [
+      "src/components/design/CoordinatesForm.tsx:95"
+    ]
+  },
+  {
+    "en": "−90 to 90. Both coordinates are required for a geographic anchor; empty fields leave it unknown.",
+    "refs": [
+      "src/components/design/CoordinatesForm.tsx:99"
+    ]
+  },
+  {
+    "en": "Project origin longitude",
+    "refs": [
+      "src/components/design/CoordinatesForm.tsx:107"
+    ]
+  },
+  {
+    "en": "−180 to 180, WGS 84 (EPSG:4326).",
+    "refs": [
+      "src/components/design/CoordinatesForm.tsx:111"
+    ]
+  },
+  {
+    "en": "Geographic anchor source",
+    "refs": [
+      "src/components/design/CoordinatesForm.tsx:115"
+    ]
+  },
+  {
+    "en": "Roof design",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:183",
+      "src/components/ProjectEditor.tsx:258"
+    ]
+  },
+  {
+    "en": "Measured roof faces and module specifications produce an editable layout and a traceable plan check. The roof step is optional for every project type.",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:185"
+    ]
+  },
+  {
+    "en": "Add roof face",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:201"
+    ]
+  },
+  {
+    "en": "Add module specification",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:209"
+    ]
+  },
+  {
+    "en": "Design view",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:215"
+    ]
+  },
+  {
+    "en": "Plan",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:222"
+    ]
+  },
+  {
+    "en": "The edit could not be applied. An object may have changed, a reference may still be in use, or the values may exceed the design contract. The current design has been preserved.",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:235"
+    ]
+  },
+  {
+    "en": "Active roof face",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:247"
+    ]
+  },
+  {
+    "en": "North unreferenced",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:265"
+    ]
+  },
+  {
+    "en": "North reference recorded",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:266"
+    ]
+  },
+  {
+    "en": "Loading 3D workspace…",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:284"
+    ]
+  },
+  {
+    "en": "The roof layout starts with measured geometry",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:303"
+    ]
+  },
+  {
+    "en": "A roof face needs surface dimensions, pitch, orientation and a measurement reference. Module dimensions and mounting parameters then determine the layout. Missing dimensions are left empty.",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:309"
+    ]
+  },
+  {
+    "en": "Add the first roof face",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:320"
+    ]
+  },
+  {
+    "en": "Included modules",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:327"
+    ]
+  },
+  {
+    "en": "Declared DC nameplate power",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:331"
+    ]
+  },
+  {
+    "en": "Roof faces",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:337"
+    ]
+  },
+  {
+    "en": "Design objects and properties",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:344"
+    ]
+  },
+  {
+    "en": "Remove this roof face?",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:397"
+    ]
+  },
+  {
+    "en": "Removing %1$s also removes %2$d dependent arrays, obstacles and keep-out areas from this draft. Undo restores this edit.",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:400"
+    ]
+  },
+  {
+    "en": "Remove roof and dependent objects",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:426"
+    ]
+  },
+  {
+    "en": "Cancel",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:433"
+    ]
+  },
+  {
+    "en": "Design objects",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:441"
+    ]
+  },
+  {
+    "en": "Select a design object",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:445"
+    ]
+  },
+  {
+    "en": "Add module array",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:498"
+    ]
+  },
+  {
+    "en": "Add obstacle",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:506"
+    ]
+  },
+  {
+    "en": "Add keep-out area",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:514"
+    ]
+  },
+  {
+    "en": "Layout clearances",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:522"
+    ]
+  },
+  {
+    "en": "A module specification is needed before an array can be placed.",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:526"
+    ]
+  },
+  {
+    "en": "Module row %1$d, column %2$d",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:545"
+    ]
+  },
+  {
+    "en": "Included",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:551",
+      "src/components/design/DesignEditor.tsx:669"
+    ]
+  },
+  {
+    "en": "Excluded",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:552",
+      "src/components/design/DesignEditor.tsx:670"
+    ]
+  },
+  {
+    "en": "Exclude module",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:569",
+      "src/components/design/DesignEditor.tsx:693"
+    ]
+  },
+  {
+    "en": "Restore module",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:570",
+      "src/components/design/DesignEditor.tsx:694"
+    ]
+  },
+  {
+    "en": "Edit numeric properties",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:593"
+    ]
+  },
+  {
+    "en": "Remove object",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:605"
+    ]
+  },
+  {
+    "en": "Source properties",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:615",
+      "src/components/design/SourceForm.tsx:15"
+    ]
+  },
+  {
+    "en": "Coordinate references",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:626"
+    ]
+  },
+  {
+    "en": "Sources",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:629"
+    ]
+  },
+  {
+    "en": "Module slots in %s",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:648"
+    ]
+  },
+  {
+    "en": "Row / column",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:654"
+    ]
+  },
+  {
+    "en": "Status",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:655"
+    ]
+  },
+  {
+    "en": "Actions",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:656"
+    ]
+  },
+  {
+    "en": "Select module",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:678"
+    ]
+  },
+  {
+    "en": "Previous",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:709"
+    ]
+  },
+  {
+    "en": "Page %1$d of %2$d",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:713"
+    ]
+  },
+  {
+    "en": "Next",
+    "refs": [
+      "src/components/design/DesignEditor.tsx:724"
+    ]
+  },
+  {
+    "en": "A valid number is required. Thousands separators are not accepted.",
+    "refs": [
+      "src/components/design/GeometryForm.tsx:44"
+    ]
+  },
+  {
+    "en": "The value is outside this field's permitted range. The unit and range are shown beside the field.",
+    "refs": [
+      "src/components/design/GeometryForm.tsx:60"
+    ]
+  },
+  {
+    "en": "These properties could not be applied. The current design has been kept; the values remain available for correction.",
+    "refs": [
+      "src/components/design/GeometryForm.tsx:123"
+    ]
+  },
+  {
+    "en": "Lengths are in metres. Decimal comma; no thousands separators.",
+    "refs": [
+      "src/components/design/GeometryForm.tsx:152"
+    ]
+  },
+  {
+    "en": "Lengths are in metres. Decimal point; no thousands separators.",
+    "refs": [
+      "src/components/design/GeometryForm.tsx:156"
+    ]
+  },
+  {
+    "en": "Apply properties",
+    "refs": [
+      "src/components/design/GeometryForm.tsx:165"
+    ]
+  },
+  {
+    "en": "Cancel properties",
+    "refs": [
+      "src/components/design/GeometryForm.tsx:175"
+    ]
+  },
+  {
+    "en": "North reference is missing.",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:16"
+    ]
+  },
+  {
+    "en": "Source measurement precision is unknown.",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:20"
+    ]
+  },
+  {
+    "en": "Roof-edge clearance has not been specified.",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:24"
+    ]
+  },
+  {
+    "en": "Obstacle clearance has not been specified.",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:28"
+    ]
+  },
+  {
+    "en": "The roof boundary or openings do not form a valid polygon.",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:32"
+    ]
+  },
+  {
+    "en": "The obstacle footprint is invalid.",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:36"
+    ]
+  },
+  {
+    "en": "The obstacle does not extend above this roof face.",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:40"
+    ]
+  },
+  {
+    "en": "The obstacle projection extends outside this roof face.",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:44"
+    ]
+  },
+  {
+    "en": "The keep-out footprint is invalid.",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:48"
+    ]
+  },
+  {
+    "en": "A module projection cannot be resolved at the supported numerical precision.",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:52"
+    ]
+  },
+  {
+    "en": "Coordinate resolution exceeds this check's numerical support. The design remains available for correction.",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:56"
+    ]
+  },
+  {
+    "en": "A module overlaps a roof opening.",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:60"
+    ]
+  },
+  {
+    "en": "A module extends outside the roof boundary.",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:61"
+    ]
+  },
+  {
+    "en": "A module is closer to the roof boundary than the declared clearance.",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:65"
+    ]
+  },
+  {
+    "en": "A module projection overlaps an obstacle projection.",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:69"
+    ]
+  },
+  {
+    "en": "A module overlaps a keep-out area.",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:73"
+    ]
+  },
+  {
+    "en": "A module is closer to an obstacle than the declared clearance.",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:74"
+    ]
+  },
+  {
+    "en": "Two module projections overlap.",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:78"
+    ]
+  },
+  {
+    "en": "Additional layout diagnostic.",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:83"
+    ]
+  },
+  {
+    "en": "Layout check",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:159"
+    ]
+  },
+  {
+    "en": "Checking layout…",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:168"
+    ]
+  },
+  {
+    "en": "Check layout",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:169"
+    ]
+  },
+  {
+    "en": "The check compares full module projections, roof boundaries and openings, obstacles, keep-out areas and declared clearances in each roof plane. Structural, fire-safety, electrical and shading assessments are separate.",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:173"
+    ]
+  },
+  {
+    "en": "The layout check could not be completed. The design and any previous check remain available.",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:180"
+    ]
+  },
+  {
+    "en": "Previous check: the design has changed. A new check is required.",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:194"
+    ]
+  },
+  {
+    "en": "Check incomplete. Some checks could not be performed.",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:199"
+    ]
+  },
+  {
+    "en": "Layout conflicts detected.",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:204"
+    ]
+  },
+  {
+    "en": "No conflicts detected in the completed plan checks.",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:205"
+    ]
+  },
+  {
+    "en": "Actual: %1$s m; required: %2$s m.",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:229"
+    ]
+  },
+  {
+    "en": "%1$d diagnostics are shown out of %2$d. Further conflicts may remain.",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:242"
+    ]
+  },
+  {
+    "en": "Method, inputs and numerical limits",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:253"
+    ]
+  },
+  {
+    "en": "Missing source precision, north references and clearance values remain listed even when a plan check finds no geometric conflicts. Geometry checks do not provide engineering approval.",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:256"
+    ]
+  },
+  {
+    "en": "Checker and geometry library",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:262"
+    ]
+  },
+  {
+    "en": "Geometry SHA-256",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:268"
+    ]
+  },
+  {
+    "en": "Calculation runtime SHA-256",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:270"
+    ]
+  },
+  {
+    "en": "Observed coordinate granularity / supported maximum",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:273"
+    ]
+  },
+  {
+    "en": "Candidate checks / limit",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:282"
+    ]
+  },
+  {
+    "en": "The numerical limit describes internal arithmetic support. It is not a surveying tolerance or an installation requirement.",
+    "refs": [
+      "src/components/design/LayoutReviewPanel.tsx:289"
+    ]
+  },
+  {
+    "en": "Declared layout clearances",
+    "refs": [
+      "src/components/design/LayoutRulesForm.tsx:18"
+    ]
+  },
+  {
+    "en": "Clearances are project inputs with a stated basis. Empty fields remain unknown. A value of 0 explicitly allows contact in the plan check; it is not a country, fire-safety or mounting approval.",
+    "refs": [
+      "src/components/design/LayoutRulesForm.tsx:40"
+    ]
+  },
+  {
+    "en": "Minimum roof-edge clearance",
+    "refs": [
+      "src/components/design/LayoutRulesForm.tsx:48"
+    ]
+  },
+  {
+    "en": "0 or greater; roof openings are included in the boundary distance.",
+    "refs": [
+      "src/components/design/LayoutRulesForm.tsx:51"
+    ]
+  },
+  {
+    "en": "Minimum obstacle clearance",
+    "refs": [
+      "src/components/design/LayoutRulesForm.tsx:59"
+    ]
+  },
+  {
+    "en": "0 or greater, measured between roof-plane projections.",
+    "refs": [
+      "src/components/design/LayoutRulesForm.tsx:62"
+    ]
+  },
+  {
+    "en": "Clearance source",
+    "refs": [
+      "src/components/design/LayoutRulesForm.tsx:68"
+    ]
+  },
+  {
+    "en": "Requirement, applicability and reference",
+    "refs": [
+      "src/components/design/LayoutRulesForm.tsx:79"
+    ]
+  },
+  {
+    "en": "Model or reference name",
+    "refs": [
+      "src/components/design/ModuleForm.tsx:48"
+    ]
+  },
+  {
+    "en": "Module width",
+    "refs": [
+      "src/components/design/ModuleForm.tsx:55"
+    ]
+  },
+  {
+    "en": "Greater than 0.",
+    "refs": [
+      "src/components/design/ModuleForm.tsx:57",
+      "src/components/design/ModuleForm.tsx:64",
+      "src/components/design/ModuleForm.tsx:71",
+      "src/components/design/RoofForm.tsx:103",
+      "src/components/design/ShapeForm.tsx:124",
+      "src/components/design/ShapeForm.tsx:130"
+    ]
+  },
+  {
+    "en": "Module length",
+    "refs": [
+      "src/components/design/ModuleForm.tsx:62"
+    ]
+  },
+  {
+    "en": "Module thickness",
+    "refs": [
+      "src/components/design/ModuleForm.tsx:69"
+    ]
+  },
+  {
+    "en": "Rated power at STC",
+    "refs": [
+      "src/components/design/ModuleForm.tsx:76"
+    ]
+  },
+  {
+    "en": "Declared nameplate power, greater than 0. This is not generated energy.",
+    "refs": [
+      "src/components/design/ModuleForm.tsx:79"
+    ]
+  },
+  {
+    "en": "Specification evidence",
+    "refs": [
+      "src/components/design/ModuleForm.tsx:86"
+    ]
+  },
+  {
+    "en": "User-declared values",
+    "refs": [
+      "src/components/design/ModuleForm.tsx:92"
+    ]
+  },
+  {
+    "en": "Referenced datasheet",
+    "refs": [
+      "src/components/design/ModuleForm.tsx:95"
+    ]
+  },
+  {
+    "en": "Specification source and conditions",
+    "refs": [
+      "src/components/design/ModuleForm.tsx:101"
+    ]
+  },
+  {
+    "en": "Source document URL",
+    "refs": [
+      "src/components/design/ModuleForm.tsx:107"
+    ]
+  },
+  {
+    "en": "Source document SHA-256",
+    "refs": [
+      "src/components/design/ModuleForm.tsx:113"
+    ]
+  },
+  {
+    "en": "Source page",
+    "refs": [
+      "src/components/design/ModuleForm.tsx:120"
+    ]
+  },
+  {
+    "en": "A datasheet reference requires its URL, 64-character SHA-256 and a positive whole page number. The reference is recorded; this form does not fetch or verify the document.",
+    "refs": [
+      "src/components/design/ModuleForm.tsx:124"
+    ]
+  },
+  {
+    "en": "This coordinate range cannot be displayed at the supported numerical precision. The source geometry remains saved and its numeric properties remain editable.",
+    "refs": [
+      "src/components/design/PlanViewport.tsx:109"
+    ]
+  },
+  {
+    "en": "Plan view controls",
+    "refs": [
+      "src/components/design/PlanViewport.tsx:212"
+    ]
+  },
+  {
+    "en": "Select / move array",
+    "refs": [
+      "src/components/design/PlanViewport.tsx:220"
+    ]
+  },
+  {
+    "en": "Pan view",
+    "refs": [
+      "src/components/design/PlanViewport.tsx:228"
+    ]
+  },
+  {
+    "en": "Zoom in",
+    "refs": [
+      "src/components/design/PlanViewport.tsx:234"
+    ]
+  },
+  {
+    "en": "Zoom out",
+    "refs": [
+      "src/components/design/PlanViewport.tsx:242"
+    ]
+  },
+  {
+    "en": "Fit view",
+    "refs": [
+      "src/components/design/PlanViewport.tsx:251"
+    ]
+  },
+  {
+    "en": "Roof plane: %s. U increases to the right; V increases upward.",
+    "refs": [
+      "src/components/design/PlanViewport.tsx:260"
+    ]
+  },
+  {
+    "en": "Roof plane · metres",
+    "refs": [
+      "src/components/design/PlanViewport.tsx:346"
+    ]
+  },
+  {
+    "en": "Dragging a module moves its array in this roof plane. Numeric properties provide the same operation. Pan and zoom change only the view.",
+    "refs": [
+      "src/components/design/PlanViewport.tsx:350"
+    ]
+  },
+  {
+    "en": "Roof properties",
+    "refs": [
+      "src/components/design/RoofForm.tsx:34"
+    ]
+  },
+  {
+    "en": "Add a measured roof face",
+    "refs": [
+      "src/components/design/RoofForm.tsx:35"
+    ]
+  },
+  {
+    "en": "Not recorded.",
+    "refs": [
+      "src/components/design/RoofForm.tsx:66"
+    ]
+  },
+  {
+    "en": "Roof face name",
+    "refs": [
+      "src/components/design/RoofForm.tsx:93"
+    ]
+  },
+  {
+    "en": "Width along U",
+    "refs": [
+      "src/components/design/RoofForm.tsx:102",
+      "src/components/design/ShapeForm.tsx:123"
+    ]
+  },
+  {
+    "en": "Length down the slope",
+    "refs": [
+      "src/components/design/RoofForm.tsx:108"
+    ]
+  },
+  {
+    "en": "Surface length, greater than 0; this is not its horizontal projection.",
+    "refs": [
+      "src/components/design/RoofForm.tsx:109"
+    ]
+  },
+  {
+    "en": "Roof pitch",
+    "refs": [
+      "src/components/design/RoofForm.tsx:117"
+    ]
+  },
+  {
+    "en": "0 to 90. A flat roof is 0.",
+    "refs": [
+      "src/components/design/RoofForm.tsx:119"
+    ]
+  },
+  {
+    "en": "Down-slope bearing",
+    "refs": [
+      "src/components/design/RoofForm.tsx:124"
+    ]
+  },
+  {
+    "en": "Clockwise from project north: 0 north, 90 east, 180 south, 270 west. North remains unverified until a reference is recorded.",
+    "refs": [
+      "src/components/design/RoofForm.tsx:126"
+    ]
+  },
+  {
+    "en": "The origin is the high corner of the roof face. East, north and height are relative to the project origin; height is not altitude above sea level.",
+    "refs": [
+      "src/components/design/RoofForm.tsx:135"
+    ]
+  },
+  {
+    "en": "Origin east",
+    "refs": [
+      "src/components/design/RoofForm.tsx:144"
+    ]
+  },
+  {
+    "en": "Origin north",
+    "refs": [
+      "src/components/design/RoofForm.tsx:150"
+    ]
+  },
+  {
+    "en": "Origin height",
+    "refs": [
+      "src/components/design/RoofForm.tsx:156"
+    ]
+  },
+  {
+    "en": "Roof boundary in U/V metres",
+    "refs": [
+      "src/components/design/RoofForm.tsx:164"
+    ]
+  },
+  {
+    "en": "One U ; V pair per line, at least three vertices. The final vertex connects to the first. The existing roof plane is preserved.",
+    "refs": [
+      "src/components/design/RoofForm.tsx:167"
+    ]
+  },
+  {
+    "en": "Roof openings in U/V metres",
+    "refs": [
+      "src/components/design/RoofForm.tsx:174"
+    ]
+  },
+  {
+    "en": "One U ; V pair per line. A blank line separates openings; an empty field means no openings.",
+    "refs": [
+      "src/components/design/RoofForm.tsx:180"
+    ]
+  },
+  {
+    "en": "Measurement or drawing reference",
+    "refs": [
+      "src/components/design/RoofForm.tsx:190"
+    ]
+  },
+  {
+    "en": "The reference is saved with this roof face. Measurement precision starts as unknown and can be recorded in Source properties.",
+    "refs": [
+      "src/components/design/RoofForm.tsx:192"
+    ]
+  },
+  {
+    "en": "Basis for using these measurements",
+    "refs": [
+      "src/components/design/RoofForm.tsx:199"
+    ]
+  },
+  {
+    "en": "I have permission to retain these measurements and derive an editable design from them.",
+    "refs": [
+      "src/components/design/RoofForm.tsx:204"
+    ]
+  },
+  {
+    "en": "3D rendering is unavailable. The design remains available in the plan view and numeric properties.",
+    "refs": [
+      "src/components/design/SceneViewport.tsx:435"
+    ]
+  },
+  {
+    "en": "Retry 3D",
+    "refs": [
+      "src/components/design/SceneViewport.tsx:450"
+    ]
+  },
+  {
+    "en": "This geometry cannot be displayed in 3D at the supported numerical precision. Numeric properties remain available.",
+    "refs": [
+      "src/components/design/SceneViewport.tsx:455"
+    ]
+  },
+  {
+    "en": "3D rendering is unavailable on this device.",
+    "refs": [
+      "src/components/design/SceneViewport.tsx:508"
+    ]
+  },
+  {
+    "en": "Fit 3D view",
+    "refs": [
+      "src/components/design/SceneViewport.tsx:568"
+    ]
+  },
+  {
+    "en": "Preparing 3D…",
+    "refs": [
+      "src/components/design/SceneViewport.tsx:571"
+    ]
+  },
+  {
+    "en": "Use WebGL 2 backend",
+    "refs": [
+      "src/components/design/SceneViewport.tsx:584"
+    ]
+  },
+  {
+    "en": "Dragging the selected array's handles changes its position in the roof plane. Camera controls change only the view. Lighting is for display; it does not calculate shading losses.",
+    "refs": [
+      "src/components/design/SceneViewport.tsx:588"
+    ]
+  },
+  {
+    "en": "Obstacle properties",
+    "refs": [
+      "src/components/design/ShapeForm.tsx:27"
+    ]
+  },
+  {
+    "en": "Keep-out area properties",
+    "refs": [
+      "src/components/design/ShapeForm.tsx:28"
+    ]
+  },
+  {
+    "en": "Object name",
+    "refs": [
+      "src/components/design/ShapeForm.tsx:81"
+    ]
+  },
+  {
+    "en": "Source reference",
+    "refs": [
+      "src/components/design/ShapeForm.tsx:85",
+      "src/components/design/SourceForm.tsx:51"
+    ]
+  },
+  {
+    "en": "Footprint in U/V metres",
+    "refs": [
+      "src/components/design/ShapeForm.tsx:100"
+    ]
+  },
+  {
+    "en": "One U ; V pair per line, at least three vertices. The final vertex connects to the first.",
+    "refs": [
+      "src/components/design/ShapeForm.tsx:103"
+    ]
+  },
+  {
+    "en": "Lower corner U",
+    "refs": [
+      "src/components/design/ShapeForm.tsx:113"
+    ]
+  },
+  {
+    "en": "Lower corner V",
+    "refs": [
+      "src/components/design/ShapeForm.tsx:118"
+    ]
+  },
+  {
+    "en": "Length along V",
+    "refs": [
+      "src/components/design/ShapeForm.tsx:129"
+    ]
+  },
+  {
+    "en": "Obstacle height",
+    "refs": [
+      "src/components/design/ShapeForm.tsx:139"
+    ]
+  },
+  {
+    "en": "Greater than 0, measured along the selected extrusion direction.",
+    "refs": [
+      "src/components/design/ShapeForm.tsx:141"
+    ]
+  },
+  {
+    "en": "Extrusion direction",
+    "refs": [
+      "src/components/design/ShapeForm.tsx:147"
+    ]
+  },
+  {
+    "en": "Select a direction",
+    "refs": [
+      "src/components/design/ShapeForm.tsx:154"
+    ]
+  },
+  {
+    "en": "Keep the recorded direction",
+    "refs": [
+      "src/components/design/ShapeForm.tsx:158"
+    ]
+  },
+  {
+    "en": "Perpendicular to this roof face",
+    "refs": [
+      "src/components/design/ShapeForm.tsx:162"
+    ]
+  },
+  {
+    "en": "Vertically upward",
+    "refs": [
+      "src/components/design/ShapeForm.tsx:165"
+    ]
+  },
+  {
+    "en": "Reason or requirement",
+    "refs": [
+      "src/components/design/ShapeForm.tsx:173"
+    ]
+  },
+  {
+    "en": "Source statements are retained with the geometry. They describe the supplied evidence and permissions; they do not certify measurement accuracy or licence compliance.",
+    "refs": [
+      "src/components/design/SourceForm.tsx:44"
+    ]
+  },
+  {
+    "en": "Declared spatial precision",
+    "refs": [
+      "src/components/design/SourceForm.tsx:58"
+    ]
+  },
+  {
+    "en": "0 or greater. An empty field means unknown. This is a source claim, separate from numerical calculation precision.",
+    "refs": [
+      "src/components/design/SourceForm.tsx:61"
+    ]
+  },
+  {
+    "en": "Calibration and measurement conditions",
+    "refs": [
+      "src/components/design/SourceForm.tsx:68"
+    ]
+  },
+  {
+    "en": "Acquired at UTC",
+    "refs": [
+      "src/components/design/SourceForm.tsx:74"
+    ]
+  },
+  {
+    "en": "YYYY-MM-DDTHH:MM:SSZ; an empty field means not recorded.",
+    "refs": [
+      "src/components/design/SourceForm.tsx:77"
+    ]
+  },
+  {
+    "en": "Permission or licence basis",
+    "refs": [
+      "src/components/design/SourceForm.tsx:84"
+    ]
+  },
+  {
+    "en": "Reference URL",
+    "refs": [
+      "src/components/design/SourceForm.tsx:90"
+    ]
+  },
+  {
+    "en": "Reference SHA-256",
+    "refs": [
+      "src/components/design/SourceForm.tsx:96"
+    ]
+  },
+  {
+    "en": "Permission to export geometry",
+    "refs": [
+      "src/components/design/SourceForm.tsx:101"
+    ]
+  },
+  {
+    "en": "Unknown",
+    "refs": [
+      "src/components/design/SourceForm.tsx:103"
+    ]
+  },
+  {
+    "en": "Permitted",
+    "refs": [
+      "src/components/design/SourceForm.tsx:104"
+    ]
+  },
+  {
+    "en": "Prohibited",
+    "refs": [
+      "src/components/design/SourceForm.tsx:105"
+    ]
+  },
+  {
+    "en": "Opening project…",
+    "refs": [
+      "src/components/ProjectEditor.tsx:136"
+    ]
+  },
+  {
+    "en": "This project contains an input format that this workspace cannot edit.",
+    "refs": [
+      "src/components/ProjectEditor.tsx:154"
+    ]
+  },
+  {
+    "en": "Projects",
+    "refs": [
+      "src/components/ProjectEditor.tsx:172"
+    ]
+  },
+  {
+    "en": "Saving…",
+    "refs": [
+      "src/components/ProjectEditor.tsx:180"
+    ]
+  },
+  {
+    "en": "Save not confirmed",
+    "refs": [
+      "src/components/ProjectEditor.tsx:182"
+    ]
+  },
+  {
+    "en": "Input needs attention",
+    "refs": [
+      "src/components/ProjectEditor.tsx:184"
+    ]
+  },
+  {
+    "en": "Unsaved changes",
+    "refs": [
+      "src/components/ProjectEditor.tsx:186"
+    ]
+  },
+  {
+    "en": "Saved · revision %d",
+    "refs": [
+      "src/components/ProjectEditor.tsx:188"
+    ]
+  },
+  {
+    "en": "Undo",
+    "refs": [
+      "src/components/ProjectEditor.tsx:194",
+      "src/components/ProjectEditor.tsx:195"
+    ]
+  },
+  {
+    "en": "Redo",
+    "refs": [
+      "src/components/ProjectEditor.tsx:203",
+      "src/components/ProjectEditor.tsx:204"
+    ]
+  },
+  {
+    "en": "Retry save",
+    "refs": [
+      "src/components/ProjectEditor.tsx:224"
+    ]
+  },
+  {
+    "en": "Save project",
+    "refs": [
+      "src/components/ProjectEditor.tsx:225"
+    ]
+  },
+  {
+    "en": "Project",
+    "refs": [
+      "src/components/ProjectEditor.tsx:231"
+    ]
+  },
+  {
+    "en": "Site data and roof layouts are saved in the same project.",
+    "refs": [
+      "src/components/ProjectEditor.tsx:234"
+    ]
+  },
+  {
+    "en": "Project sections",
+    "refs": [
+      "src/components/ProjectEditor.tsx:239"
+    ]
+  },
+  {
+    "en": "Project brief",
+    "refs": [
+      "src/components/ProjectEditor.tsx:242"
+    ]
+  },
+  {
+    "en": "Project location",
+    "refs": [
+      "src/components/ProjectEditor.tsx:246"
+    ]
+  },
+  {
+    "en": "Electricity consumption",
+    "refs": [
+      "src/components/ProjectEditor.tsx:250"
+    ]
+  },
+  {
+    "en": "Interval data",
+    "refs": [
+      "src/components/ProjectEditor.tsx:254",
+      "src/components/ProjectEditor.tsx:403"
+    ]
+  },
+  {
+    "en": "Project information is kept with its source and revision.",
+    "refs": [
+      "src/components/ProjectEditor.tsx:264"
+    ]
+  },
+  {
+    "en": "Unconfirmed project creations and CSV imports from earlier sessions could not be checked. Any recovery data already stored in this browser remains unchanged.",
+    "refs": [
+      "src/components/ProjectEditor.tsx:275"
+    ]
+  },
+  {
+    "en": "Check session",
+    "refs": [
+      "src/components/ProjectEditor.tsx:281"
+    ]
+  },
+  {
+    "en": "Several local drafts are available for this project. Select one to compare with the saved revision.",
+    "refs": [
+      "src/components/ProjectEditor.tsx:288"
+    ]
+  },
+  {
+    "en": "Local draft · revision %d",
+    "refs": [
+      "src/components/ProjectEditor.tsx:301"
+    ]
+  },
+  {
+    "en": "Correct the highlighted input before leaving this project.",
+    "refs": [
+      "src/components/ProjectEditor.tsx:317"
+    ]
+  },
+  {
+    "en": "Save the project before leaving. Browser recovery could not be stored.",
+    "refs": [
+      "src/components/ProjectEditor.tsx:321"
+    ]
+  },
+  {
+    "en": "Unsaved work from this browser has been restored.",
+    "refs": [
+      "src/components/ProjectEditor.tsx:329"
+    ]
+  },
+  {
+    "en": "Browser recovery is unavailable. Changes remain open here until the server confirms a save.",
+    "refs": [
+      "src/components/ProjectEditor.tsx:337"
+    ]
+  },
+  {
+    "en": "The save could not be confirmed. Your input is still here.",
+    "refs": [
+      "src/components/ProjectEditor.tsx:345"
+    ]
+  },
+  {
+    "en": "Open changes have been kept alongside the saved revision.",
+    "refs": [
+      "src/components/ProjectEditor.tsx:354"
+    ]
+  },
+  {
+    "en": "Keep open changes",
+    "refs": [
+      "src/components/ProjectEditor.tsx:365"
+    ]
+  },
+  {
+    "en": "Use saved revision",
+    "refs": [
+      "src/components/ProjectEditor.tsx:371"
+    ]
+  },
+  {
+    "en": "After import, the data's meaning and coverage are shown for review. A profile selection applies to the open draft and is saved with Save project. The annual consumption entry remains separate.",
+    "refs": [
+      "src/components/ProjectEditor.tsx:406"
+    ]
+  },
+  {
+    "en": "Remove draft selection",
+    "refs": [
+      "src/components/ProjectEditor.tsx:450"
+    ]
+  },
+  {
+    "en": "Removing a selection leaves the stored source unchanged. Save the project to record the change.",
+    "refs": [
+      "src/components/ProjectEditor.tsx:453"
+    ]
+  }
+]

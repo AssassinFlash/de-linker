@@ -1,0 +1,32 @@
+[
+  {
+    "url": "https://de-linker.com/wp-content/uploads/2026/07/ATS1-Datasheet-ES.pdf",
+    "local_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/07/ATS1-Datasheet-ES.pdf",
+    "exists": true,
+    "bytes": 369777,
+    "content_sha256": "4326828242f2a72bba05c90bc49096d7458f5d00a2846ccd88b076f786583e9d",
+    "physical_pdf_page_count": 2,
+    "source_review": null,
+    "scope": "additional exact recorded-alias/host-map target outside the current 71 source URL union; original count unchanged"
+  },
+  {
+    "url": "https://de-linker.com/wp-content/uploads/2026/07/goodwe_ezmanager3000_datasheet_en-1.pdf",
+    "local_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/07/goodwe_ezmanager3000_datasheet_en-1.pdf",
+    "exists": true,
+    "bytes": 123768,
+    "content_sha256": "aeb1d7abaca0833efbbffdb3d6e86a1ffd25e73f6c363cdad40f7fc517ca177d",
+    "physical_pdf_page_count": 1,
+    "source_review": null,
+    "scope": "additional exact recorded-alias/host-map target outside the current 71 source URL union; original count unchanged"
+  },
+  {
+    "url": "https://de-linker.com/wp-content/uploads/2026/09/goodwe_et12_30kw_user_manual_en.pdf",
+    "local_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/goodwe_et12_30kw_user_manual_en.pdf",
+    "exists": true,
+    "bytes": 23979719,
+    "content_sha256": "fba3a03ae50f5fbda2f8583c7a44a578a2e439c5fbcd2099ad3307a8fe550532",
+    "physical_pdf_page_count": 286,
+    "source_review": null,
+    "scope": "additional exact recorded-alias/host-map target outside the current 71 source URL union; original count unchanged"
+  }
+]

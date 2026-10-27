@@ -1,0 +1,12 @@
+{
+  "snapshot": "1652209cb0deef904adc70baba9770c8f8ed61b7",
+  "applies_to_target": "bc714bc628f1555d2ddcbface216dabc7b9371d5",
+  "command": [
+    "npm",
+    "run",
+    "build:check"
+  ],
+  "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/import-layout-spec-1652209c-0t_749d2/apps/planner",
+  "exit_code": 0,
+  "duration_seconds": 10.204
+}

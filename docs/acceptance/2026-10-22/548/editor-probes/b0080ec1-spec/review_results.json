@@ -1,0 +1,83 @@
+{
+  "axis": "Spec",
+  "target": "b0080ec15eb2dcab6b2c22b7b029180a2c1f73c2",
+  "base": "8a4a80b132f692062125807e509a57926fb0f518",
+  "patch_base": "6c6680ad4e2eb890b08c58b5a9bffd95ecb48957",
+  "verdict": "PASS",
+  "findings": {
+    "missing_or_partial_in_increment": [],
+    "scope_creep": [],
+    "incorrect_implementation": []
+  },
+  "spec": [
+    "docs/specs/548-interactive-design.md:23-34,85-97",
+    "docs/specs/548-design-geometry.md",
+    "docs/specs/548-workbench-application.md"
+  ],
+  "previous_failures": {
+    "roof_frame_changed": {
+      "before_uv": [
+        1,
+        2
+      ],
+      "previous_wrong_uv": [
+        11,
+        2
+      ],
+      "now_uv": [
+        1,
+        2
+      ],
+      "commits": 0
+    },
+    "reference_frame_changed": {
+      "before_uv": [
+        1,
+        2
+      ],
+      "previous_wrong_uv": [
+        -9,
+        2
+      ],
+      "now_uv": [
+        1,
+        2
+      ],
+      "commits": 0
+    },
+    "original_probe_sha256": "602615e6549caa43f30b04fb7cbc740fcf989cfc645734582d5150ec52a49b93",
+    "adapter": "Only mandatory Panels document/frame props and result filename were added, original test conditions/assertions retained; diff saved."
+  },
+  "verification": {
+    "fixed_domain_data_tests": 46,
+    "fixed_dom_tests": 51,
+    "fixed_emitted_module_graph_tests": 1,
+    "original_cas_probes": 3,
+    "extra_r3f_probes": 12,
+    "extra_plan_probes": 11,
+    "all_passed": true,
+    "actual_build": "npm run build && npm run build:check succeeded; all7 rebuilt artifacts byte-identical to fixed target"
+  },
+  "independent_cases": [
+    "Normal Three control finish is exactly one group and keeps other arrays unchanged",
+    "Module, other-array and valid north changes cancel preview; fresh subsequent gesture succeeds",
+    "Roof/reference/module/other-array/north parent mutations before child re-render each attempt1 commit0, document unchanged",
+    "Deselect, disable and unmount cancel, detach and write0",
+    "Plan normal pointerup is one immutable whole-document command",
+    "Plan pointercancel/lostcapture/Escape/blur/Pan/zoom/fit/disable/module mutation cancel without write or preview",
+    "Plan parent mutation before child render rejected atomically"
+  ],
+  "methods": [
+    "Real React19 StrictMode and R3F reconciler",
+    "Real Three Group, InstancedMesh and official TransformControls; private source loader appends export only",
+    "GPU render is a no-op and gestures are controlled control events; no native raycast/GPU/browser claim",
+    "Real Plan component React/DOM events with explicit CTM/pointer-capture fixture",
+    "Actual fixed emitted ESM entry with query+lazy chunk imported in JSDOM; actual TypeScript/Vite rebuild independently compared byhash"
+  ],
+  "limits": [
+    "Original six issues closed on6c, unchanged implementation evidence retained; this pass does not claim full pathB/map/tool acceptance",
+    "No p548/native/production operation performed",
+    "Native GPU/gesture viewport matrix remains parent-owned; emitted-graph evidence is distinct from GPU proof"
+  ],
+  "harness_corrections": "PROBE-HARNESS-NOTES.md records invalid synthetic enum and detached-group assertion corrections; neither was treated as product failure"
+}

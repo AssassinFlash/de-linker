@@ -1,0 +1,40 @@
+{
+  "fixed_sha": "cbf75a9cead3b3c87c0cb2f206a1cd7e6226551e",
+  "observed_utc": "2026-10-23T10:01:17.041969+00:00",
+  "volume_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/windpress/data/planner.css",
+  "fixed_planner_css_sha256": "a96563bcf8f974f4a8dd2b1d84a72101d478ea767531891e49447bb03d3666e6",
+  "volume_matches_fixed": true,
+  "cache_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/windpress/cache/tailwind.css",
+  "cache_sha256": "33a6ed68f9fbeedc9edb3996164a6383d931d32bcdd59a8dde32b73a30fbbba8",
+  "compiled_rules": {
+    ".lp-plan-svg": [
+      "touch-action:none;-webkit-user-select:none;user-select:none;width:100%;height:460px;display:block;",
+      "height:350px;"
+    ],
+    ".lp-overview-preview .lp-plan-svg": [
+      "cursor:default;touch-action:auto;height:360px;",
+      "height:220px;"
+    ],
+    ".lp-overview-preview-title > span": [
+      "overflow-wrap:anywhere;min-width:0;"
+    ],
+    ".lp-mobile-workspace": [
+      "display:none;",
+      "min-width:0;min-height:44px;color:var(--proto-teal-900);border:1pxsolidvar(--lp-line);border-radius:var(--proto-radius-sm);background-color:#fff9;flex:1;padding:8px10px;font-size:16px;font-weight:500;display:block;"
+    ],
+    ".lp-overview-metrics dd small": [
+      "margin-inline-start:4px;"
+    ]
+  },
+  "section_focus_suppression": [
+    {
+      "selectors": "[data-linker-planner] .lp-section[tabindex=\"-1\"]:focus-visible, [data-linker-planner] .lp-overview[tabindex=\"-1\"]:focus-visible",
+      "body": "outline: none;"
+    }
+  ],
+  "main_imports_planner": true,
+  "native_module_manifest_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/plugins/linker-tools/build/planner/source-manifest.json",
+  "native_manifest_sha256": "5e26e96302f49bb196a48cbbe0d27e5c73cbefda2806bec2fa8e7a2aa575298f",
+  "native_manifest_matches_fixed": true,
+  "limits": "Read-only filesystem/compiler evidence only, not browser focus appearance, viewport geometry or physical touch."
+}

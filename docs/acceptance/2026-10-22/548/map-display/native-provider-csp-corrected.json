@@ -1,0 +1,127 @@
+{
+  "cursorFrom": 1465,
+  "cursorTo": 1554,
+  "truncated": false,
+  "hasMore": false,
+  "requests": [
+    {
+      "sequence": 1466,
+      "origin": "https://tiles.openfreemap.org",
+      "kind": "styles",
+      "source": {
+        "tabId": 2
+      }
+    },
+    {
+      "sequence": 1477,
+      "origin": "https://tiles.openfreemap.org",
+      "kind": "planet",
+      "source": {
+        "tabId": 2
+      }
+    },
+    {
+      "sequence": 1478,
+      "origin": "https://tiles.openfreemap.org",
+      "kind": "sprites",
+      "source": {
+        "tabId": 2
+      }
+    },
+    {
+      "sequence": 1479,
+      "origin": "https://tiles.openfreemap.org",
+      "kind": "sprites",
+      "source": {
+        "tabId": 2
+      }
+    },
+    {
+      "sequence": 1501,
+      "origin": "https://tiles.openfreemap.org",
+      "kind": "fonts",
+      "source": {
+        "tabId": 2
+      }
+    },
+    {
+      "sequence": 1502,
+      "origin": "https://tiles.openfreemap.org",
+      "kind": "fonts",
+      "source": {
+        "tabId": 2
+      }
+    },
+    {
+      "sequence": 1503,
+      "origin": "https://tiles.openfreemap.org",
+      "kind": "fonts",
+      "source": {
+        "tabId": 2
+      }
+    },
+    {
+      "sequence": 1504,
+      "origin": "https://tiles.openfreemap.org",
+      "kind": "fonts",
+      "source": {
+        "tabId": 2
+      }
+    },
+    {
+      "sequence": 1505,
+      "origin": "https://tiles.openfreemap.org",
+      "kind": "fonts",
+      "source": {
+        "tabId": 2
+      }
+    }
+  ],
+  "responses": [
+    {
+      "sequence": 1470,
+      "status": 200,
+      "kind": "styles"
+    },
+    {
+      "sequence": 1484,
+      "status": 200,
+      "kind": "sprites"
+    },
+    {
+      "sequence": 1491,
+      "status": 200,
+      "kind": "planet"
+    },
+    {
+      "sequence": 1492,
+      "status": 200,
+      "kind": "sprites"
+    },
+    {
+      "sequence": 1530,
+      "status": 200,
+      "kind": "fonts"
+    },
+    {
+      "sequence": 1537,
+      "status": 200,
+      "kind": "fonts"
+    },
+    {
+      "sequence": 1541,
+      "status": 200,
+      "kind": "fonts"
+    },
+    {
+      "sequence": 1547,
+      "status": 200,
+      "kind": "fonts"
+    },
+    {
+      "sequence": 1550,
+      "status": 200,
+      "kind": "fonts"
+    }
+  ]
+}

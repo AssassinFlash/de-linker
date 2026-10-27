@@ -1,0 +1,199 @@
+{
+	"$defs": {
+		"Finite": {
+			"type": "number"
+		},
+		"GeographicReference": {
+			"additionalProperties": false,
+			"properties": {
+				"schema_version": {
+					"$ref": "#/$defs/SchemaVersion"
+				},
+				"method": {
+					"const": "wgs84_cart_topocentric_v1",
+					"title": "Method",
+					"type": "string"
+				},
+				"longitude_deg": {
+					"maximum": 180,
+					"minimum": -180,
+					"title": "Longitude Deg",
+					"type": "number"
+				},
+				"latitude_deg": {
+					"maximum": 90,
+					"minimum": -90,
+					"title": "Latitude Deg",
+					"type": "number"
+				},
+				"ellipsoid_height_m": {
+					"$ref": "#/$defs/Finite"
+				},
+				"height_basis": {
+					"enum": [
+						"known_wgs84_ellipsoid",
+						"zero_height_horizontal_convention"
+					],
+					"title": "Height Basis",
+					"type": "string"
+				}
+			},
+			"required": [
+				"schema_version",
+				"method",
+				"longitude_deg",
+				"latitude_deg",
+				"ellipsoid_height_m",
+				"height_basis"
+			],
+			"title": "GeographicReference",
+			"type": "object"
+		},
+		"GeometryImportDeclaration": {
+			"additionalProperties": false,
+			"properties": {
+				"label": {
+					"$ref": "#/$defs/Text"
+				},
+				"rights_note": {
+					"$ref": "#/$defs/Text"
+				},
+				"spatial_precision_m": {
+					"anyOf": [
+						{
+							"$ref": "#/$defs/Nonnegative"
+						},
+						{
+							"type": "null"
+						}
+					]
+				},
+				"export_permission": {
+					"enum": [
+						"permitted",
+						"unknown",
+						"prohibited"
+					],
+					"title": "Export Permission",
+					"type": "string"
+				}
+			},
+			"required": [
+				"label",
+				"rights_note",
+				"spatial_precision_m",
+				"export_permission"
+			],
+			"title": "GeometryImportDeclaration",
+			"type": "object"
+		},
+		"ImportedPlane": {
+			"additionalProperties": false,
+			"properties": {
+				"origin_enu": {
+					"$ref": "#/$defs/Vec3"
+				},
+				"u_axis_enu": {
+					"$ref": "#/$defs/Vec3"
+				},
+				"v_axis_enu": {
+					"$ref": "#/$defs/Vec3"
+				},
+				"basis_note": {
+					"$ref": "#/$defs/Text"
+				}
+			},
+			"required": [
+				"origin_enu",
+				"u_axis_enu",
+				"v_axis_enu",
+				"basis_note"
+			],
+			"title": "ImportedPlane",
+			"type": "object"
+		},
+		"Index": {
+			"minimum": 0,
+			"type": "integer"
+		},
+		"Nonnegative": {
+			"minimum": 0,
+			"type": "number"
+		},
+		"Number": {
+			"type": "number"
+		},
+		"SchemaVersion": {
+			"maximum": 1,
+			"minimum": 1,
+			"type": "integer"
+		},
+		"Text": {
+			"maxLength": 4096,
+			"minLength": 1,
+			"type": "string"
+		},
+		"Vec3": {
+			"items": {
+				"$ref": "#/$defs/Number"
+			},
+			"maxItems": 3,
+			"minItems": 3,
+			"type": "array"
+		}
+	},
+	"additionalProperties": false,
+	"properties": {
+		"schema_version": {
+			"$ref": "#/$defs/SchemaVersion"
+		},
+		"format": {
+			"const": "geojson_wgs84_horizontal_v1",
+			"title": "Format",
+			"type": "string"
+		},
+		"plane_intersection_method": {
+			"anyOf": [
+				{
+					"const": "geodetic_vertical_line_v1",
+					"type": "string"
+				},
+				{
+					"type": "null"
+				}
+			],
+			"default": null,
+			"title": "Plane Intersection Method"
+		},
+		"feature_index": {
+			"$ref": "#/$defs/Index"
+		},
+		"polygon_index": {
+			"$ref": "#/$defs/Index"
+		},
+		"roof_name": {
+			"$ref": "#/$defs/Text"
+		},
+		"reference": {
+			"$ref": "#/$defs/GeographicReference"
+		},
+		"plane": {
+			"$ref": "#/$defs/ImportedPlane"
+		},
+		"source": {
+			"$ref": "#/$defs/GeometryImportDeclaration"
+		}
+	},
+	"required": [
+		"schema_version",
+		"format",
+		"feature_index",
+		"polygon_index",
+		"roof_name",
+		"reference",
+		"plane",
+		"source"
+	],
+	"title": "GeometryImportOptions",
+	"type": "object"
+}

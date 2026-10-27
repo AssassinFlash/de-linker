@@ -1,0 +1,18 @@
+{
+  "aboutOpen": true,
+  "document": {
+    "scrollWidth": 390,
+    "width": 390
+  },
+  "identity": "Solution Configurator\nby Linker\n\nLinker brings your inputs into an editable project for solar and storage planning.\n\nAbout this tool\n\nLinker provides the project workflow and editing tools. Your inputs and design stay together in the same project, with controls for saving changes and restoring available drafts.\n\nAll design views use the same project geometry. Source records retain the declared accuracy and permissions; a displayed model provides no engineering approval.\n\nSoftware and data credits\n\nInterface and project data: React, TanStack Query and Ajv. 3D views: Three.js and React Three Fiber. Map display: MapLibre GL JS.\n\nStreet map: OpenFreeMap. © OpenMapTiles; © OpenStreetMap contributors.\n\nOpenFreeMap privacy policy",
+  "language": "en-US",
+  "scripts": [
+    "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=dec8b7a3214ae2d9260eed1112c6907002596e876a14d1f6bbca00258704c90d"
+  ],
+  "text": "Search\nEN\nDE\nProjects\n/\nProject overview\nSite and project\nRoof design\nEnergy inputs\nSaved · revision 14\nSave project\nCURRENT PROJECT\nKöln · owned synthetic roof · acceptance\n\nSite data and roof layouts are saved in the same project.\n\nPROJECT OVERVIEW\nYour project at a glance\n\nSite information, roof layouts and energy inputs share this project. Each workspace can be completed as the design develops.\n\nCountry\nGermany\nProject location\nAnnual consumption\n—\nBasis not specified\nIncluded modules\n—\nAcross the current roof layouts\nDeclared DC nameplate power\n—\nModule count and declared specifications\nSynthetic 3–4–5 roof · Köln\nCurrent layout\nOpen roof workspace\nContinue your project\nSite and project\nSynthetic site at 50.94 N, 6.96 E · not a surveyed building\nRoof design\nRoof faces, obstacles and module layout\nEnergy inputs\nAnnual consumption and interval data\n\nThe overview describes the current inputs. Energy yield, equipment suitability and engineering release require their respective calculations and evidence.\n\nSolution Configurator\nby Linker\n\nLinker brings your inputs into an editable project for solar and storage planning.\n\nAbout this tool\n\nLinker provides the project workflow and editing tools. Your inputs and design stay together in the same project, with controls for saving changes and restoring available drafts.\n\nAll design views use the same project geometry. Source records retain the declared accuracy and permissions; a displayed model provides no engineering approval.\n\nSoftware and data credits\n\nInterface and project data: React, TanStack Query and Ajv. 3D views: Three.js and React Three Fiber. Map display: MapLibre GL JS.\n\nStreet map: OpenFreeMap. © OpenMapTiles; © OpenStreetMap contributors.\n\nOpenFreeMap privacy policy\nLanguage\nEnglish\nDeutsch\n\nLINKING\nproducts\n,\ntechnology\nand\nservice\nto create lasting value for energy partners in Europe.\n\nSolutions\nServices\nPlan with Linker\nAccount\nContact Linker\nSolutions\n03\nResidential Storage\nCommercial Storage\nUtility-Scale Storage\n© 2026 Linker. All rights reserved.\nImprint\nPrivacy Policy\nCookie settings\nTerms of Sale\nRefund & Returns\nProduct fit·Inverter compatibility·Project support",
+  "url": "http://127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1",
+  "viewport": {
+    "height": 844,
+    "width": 390
+  }
+}

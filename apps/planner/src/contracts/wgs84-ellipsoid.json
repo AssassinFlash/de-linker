@@ -1,0 +1,5 @@
+{
+  "authority": "EPSG:4979 / WGS 84",
+  "semi_major_axis_m": 6378137.0,
+  "inverse_flattening": 298.257223563
+}

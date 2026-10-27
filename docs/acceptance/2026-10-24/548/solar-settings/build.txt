@@ -1,0 +1,22 @@
+
+> @linker/planner@0.1.0 build
+> tsc --noEmit && vite build && node bin/build-manifest.mjs write
+
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 317 modules transformed.
+rendering chunks...
+computing gzip size...
+../../plugins/linker-tools/build/planner/vite-manifest.json                       1.25 kB │ gzip:   0.31 kB
+../../plugins/linker-tools/build/planner/assets/rolldown-runtime-BWaJ3C7D.js      0.91 kB │ gzip:   0.51 kB
+../../plugins/linker-tools/build/planner/assets/planner.js                        1.31 kB │ gzip:   0.69 kB
+../../plugins/linker-tools/build/planner/assets/planner-core-B1Gn8Hx9.js        764.24 kB │ gzip: 213.80 kB
+../../plugins/linker-tools/build/planner/assets/MapViewport-BABdHBxq.js       1,189.29 kB │ gzip: 312.65 kB
+../../plugins/linker-tools/build/planner/assets/SceneViewport-CpGCVmxY.js     1,548.46 kB │ gzip: 416.99 kB
+
+[plugin builtin:vite-reporter]
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 302ms

@@ -1,0 +1,48 @@
+▶ legacy initial fragment links reveal the corresponding active workspace without revising inputs
+  ✔ #lp-site (1151.695833ms)
+  ✔ #lp-brief-use (117.9455ms)
+  ✔ #lp-notes (139.290875ms)
+  ✔ #lp-load (67.377125ms)
+  ✔ #lp-profiles (75.965834ms)
+  ✔ #lp-design (60.910709ms)
+  ✔ #lp-overview (62.572875ms)
+✔ legacy initial fragment links reveal the corresponding active workspace without revising inputs (1677.634584ms)
+▶ missing inputs render unknown quantities; an explicitly empty layout can honestly render zero
+  ✔ missing (66.394125ms)
+  ✔ all explicitly excluded (76.717417ms)
+✔ missing inputs render unknown quantities; an explicitly empty layout can honestly render zero (143.765375ms)
+✔ multiple roof quantities use included objects across the document while preview names its first roof (64.918ms)
+✔ overview plan is read-only and does not offer editor controls or create edits (85.479708ms)
+✔ switching workspaces retains the same raw inputs and one shared undo/redo document including source metadata (256.8235ms)
+✔ unapplied geometry form blocks navigation until explicit cancel and keeps the raw values (56.455208ms)
+✔ an in-progress CSV file selection and raw delimiter remain mounted across workspace switches (45.273ms)
+✔ revoked scope cannot switch the workspaces or alter its URL fragment (23.224583ms)
+✔ a completed geometry property edit remains one shared history step across the overview (82.106541ms)
+✔ SPEC COUNTEREXAMPLE: Site workspace navigation must reveal its first project-use/system-scope section (30.24275ms)
+✔ new native selector shares the active workspace, destination and unchanged document (53.331583ms)
+✔ native selector retains actually invalid raw brief input and restores its controlled selection (42.070208ms)
+✔ native selector cannot hide either a valid unapplied or invalid submitted geometry form (60.924083ms)
+✔ mixed brief and geometry edits retain one shared undo chain when navigating with the selector (81.646208ms)
+✔ file reading may finish in a hidden workspace without resetting the source or stealing destination focus (33.078917ms)
+▶ native-scope withdrawal fences selector admission and its deferred reveal
+  ✔ withdrawn before event (24.775ms)
+  ✔ withdrawn before effect (31.487208ms)
+✔ native-scope withdrawal fences selector admission and its deferred reveal (56.643375ms)
+▶ each legacy initial fragment initializes the new selector without changing the old URL or project
+  ✔ #lp-site (23.990167ms)
+  ✔ #lp-brief-use (26.820125ms)
+  ✔ #lp-notes (24.163083ms)
+  ✔ #lp-load (23.543792ms)
+  ✔ #lp-profiles (25.680166ms)
+  ✔ #lp-design (33.542583ms)
+  ✔ #lp-overview (31.3805ms)
+✔ each legacy initial fragment initializes the new selector without changing the old URL or project (190.008125ms)
+✔ SPEC COUNTEREXAMPLE: a resolved brief refusal must not reappear when a valid unapplied roof form opens (143.185041ms)
+ℹ tests 36
+ℹ suites 0
+ℹ pass 36
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4441.992208

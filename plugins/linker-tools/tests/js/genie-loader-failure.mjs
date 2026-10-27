@@ -60,6 +60,12 @@ async function scenario( width, workspace ) {
 			} )
 		);
 	}
+	if ( doc.readyState === 'loading' ) {
+		assert.equal( scripts.length, 0 );
+		await new Promise( ( resolve ) =>
+			doc.addEventListener( 'DOMContentLoaded', resolve, { once: true } )
+		);
+	}
 	scripts.at( -1 ).dispatchEvent( new win.Event( 'error' ) );
 	await new Promise( ( resolve ) => setTimeout( resolve, 20 ) );
 	const failure = doc.querySelector( '[data-linker-genie-load-error]' );

@@ -1,0 +1,33 @@
+{
+  "pin": "5c693115d345a676d7a737bdfb886597b74fbe80",
+  "full_diff": "git diff be5711bf...5c693115d345a676d7a737bdfb886597b74fbe80",
+  "review_words": 331,
+  "sources": 103,
+  "runtime_sources": 97,
+  "tracked_src": 116,
+  "runtime_artifacts": 7,
+  "canonical_url_changes": 189,
+  "native_pairs_inspected": 5,
+  "resources_created": {
+    "source_copy": 0,
+    "dependency_copy": 0,
+    "worktree": 0,
+    "instance": 0,
+    "backup": 0,
+    "network_request": 0
+  },
+  "files": {
+    "REVIEW.md": {
+      "bytes": 2702,
+      "sha256": "bee286a0351281dfb8d27361eb025bf48a77c224152475a76b83f1082a35f990"
+    },
+    "probe.json": {
+      "bytes": 25160,
+      "sha256": "c00267409780892006e41aaafbc32f38dbd596845967b7c1677d4303d57ae1d4"
+    },
+    "probe.mjs": {
+      "bytes": 8103,
+      "sha256": "d448e709790fd1db4fee6333d28e9da0913c59c644eb676d207f57cb31d3cef1"
+    }
+  }
+}

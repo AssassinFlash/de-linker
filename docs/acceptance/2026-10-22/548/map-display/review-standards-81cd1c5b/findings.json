@@ -1,0 +1,253 @@
+{
+  "base": "be5711bf429c86dc5118e55227c0a48bb78d26b1",
+  "target": "81cd1c5b1a7d5ff5592131602c12d642d13c162b",
+  "verdict": "FAIL",
+  "hard_documented_breaches": [
+    {
+      "id": "canonical-lock-registry",
+      "priority": 2,
+      "file": "apps/planner/package-lock.json",
+      "line": 186,
+      "title": "Keep committed lock URLs on the documented canonical registry",
+      "rule": {
+        "file": "README.md",
+        "line": 60,
+        "requirement": "Committed package-lock download URLs use registry.npmjs.org; replace-registry-host=always selects the configured machine registry."
+      },
+      "trigger": "This fixed diff adds 28 package entries whose resolved URLs use registry.npmmirror.com.",
+      "impact": "The committed lock gains mirror-specific package locations contrary to the repository convention; this is a documented Standards breach without needing a network or failure claim.",
+      "scope": "All 28 new resolved entries are affected. Existing mirror URLs in the base are not counted as newly introduced findings and do not waive the rule. The isolated-runtime exception permits the planner runtime, not a different committed registry policy.",
+      "required_change": "Normalize the planner lock resolved URLs to registry.npmjs.org while preserving versions and integrity values, and retain mirror choice through package-local replace-registry-host=always. Do not change global registry settings.",
+      "affected_added_entries": [
+        {
+          "package": "node_modules/@mapbox/jsonlint-lines-primitives",
+          "version": "2.0.3",
+          "resolved": "https://registry.npmmirror.com/@mapbox/jsonlint-lines-primitives/-/jsonlint-lines-primitives-2.0.3.tgz",
+          "integrity": "sha512-0SElaV0uMxEnxzBhhX9WTuPyUeMsAN/SS0i16tjuba4/mio63MG9khjC1a0JAiPGXAwvwm4UfHJURCN7nyudQg==",
+          "entry_line": 184,
+          "resolved_line": 186
+        },
+        {
+          "package": "node_modules/@mapbox/point-geometry",
+          "version": "1.1.0",
+          "resolved": "https://registry.npmmirror.com/@mapbox/point-geometry/-/point-geometry-1.1.0.tgz",
+          "integrity": "sha512-YGcBz1cg4ATXDCM/71L9xveh4dynfGmcLDqufR+nQQy3fKwsAZsWd/x4621/6uJaeB9mwOHE6hPeDgXz9uViUQ==",
+          "entry_line": 193,
+          "resolved_line": 195
+        },
+        {
+          "package": "node_modules/@mapbox/tiny-sdf",
+          "version": "2.3.0",
+          "resolved": "https://registry.npmmirror.com/@mapbox/tiny-sdf/-/tiny-sdf-2.3.0.tgz",
+          "integrity": "sha512-gBvcNDBBB66bgQYvnaJ6Jk+VCaMmVq5+IZR2kWPisT88Z8s0kBQt6hfVi8QgRW8Vpg0UWZzBA4ZSyzHHC+VeRA==",
+          "entry_line": 199,
+          "resolved_line": 201
+        },
+        {
+          "package": "node_modules/@mapbox/unitbezier",
+          "version": "0.0.1",
+          "resolved": "https://registry.npmmirror.com/@mapbox/unitbezier/-/unitbezier-0.0.1.tgz",
+          "integrity": "sha512-nMkuDXFv60aBr9soUG5q+GvZYL+2KZHVvsqFCzqnkGEf46U2fvmytHaEVc1/YZbiLn8X+eR3QzX1+dwDO1lxlw==",
+          "entry_line": 205,
+          "resolved_line": 207
+        },
+        {
+          "package": "node_modules/@mapbox/vector-tile",
+          "version": "2.0.5",
+          "resolved": "https://registry.npmmirror.com/@mapbox/vector-tile/-/vector-tile-2.0.5.tgz",
+          "integrity": "sha512-pXj8m7KTsqZt+1jsE0xIpGvqTSbblfkuEJL/NJmNePMtEwxO8V3XMDo9WMSfDeqHvCtBI9Lmt4mGcGR10zecmw==",
+          "entry_line": 211,
+          "resolved_line": 213
+        },
+        {
+          "package": "node_modules/@mapbox/whoots-js",
+          "version": "3.1.0",
+          "resolved": "https://registry.npmmirror.com/@mapbox/whoots-js/-/whoots-js-3.1.0.tgz",
+          "integrity": "sha512-Es6WcD0nO5l+2BOQS4uLfNPYQaNDfbot3X1XUoloz+x0mPDS3eeORZJl06HXjwBG1fOGwCRnzK88LMdxKRrd6Q==",
+          "entry_line": 222,
+          "resolved_line": 224
+        },
+        {
+          "package": "node_modules/@maplibre/geojson-vt",
+          "version": "6.3.0",
+          "resolved": "https://registry.npmmirror.com/@maplibre/geojson-vt/-/geojson-vt-6.3.0.tgz",
+          "integrity": "sha512-3Zw2jsU9pIJG3G2CQFbLjWj2MlAHodhD7cSY+15iywUuLmmkgzcKRnueVRZ4AcC/5wOtfhidcJAAzBpoBNs3Xg==",
+          "entry_line": 231,
+          "resolved_line": 233
+        },
+        {
+          "package": "node_modules/@maplibre/maplibre-gl-style-spec",
+          "version": "24.10.0",
+          "resolved": "https://registry.npmmirror.com/@maplibre/maplibre-gl-style-spec/-/maplibre-gl-style-spec-24.10.0.tgz",
+          "integrity": "sha512-lichxSiagMEBBrqHF0trtMQH9RKh+9jUlIJl0qW0QHvt2H/tbvUWdE+ZzI2Jd0/pT7j/iavLonlPu7EQ/ixTOw==",
+          "entry_line": 240,
+          "resolved_line": 242
+        },
+        {
+          "package": "node_modules/@maplibre/maplibre-gl-style-spec/node_modules/@mapbox/unitbezier",
+          "version": "1.0.0",
+          "resolved": "https://registry.npmmirror.com/@mapbox/unitbezier/-/unitbezier-1.0.0.tgz",
+          "integrity": "sha512-fqd515fjBmANKGGsQ286E2Wvj/XvDFpGzwJxq4CI6jMQue6Oy04uCKp+JWKF00xRTmk6cEu1jPJ9p3xqH8YWqQ==",
+          "entry_line": 259,
+          "resolved_line": 261
+        },
+        {
+          "package": "node_modules/@maplibre/mlt",
+          "version": "1.3.0",
+          "resolved": "https://registry.npmmirror.com/@maplibre/mlt/-/mlt-1.3.0.tgz",
+          "integrity": "sha512-7M2O7ABM80Oi8XPkfkrjKB8mOBIxGoVgkA52Mu4RMWoBvvMdagQ522+WxVYujZsMpqIr3BpzrTbXrm4k8lCzCQ==",
+          "entry_line": 265,
+          "resolved_line": 267
+        },
+        {
+          "package": "node_modules/@maplibre/vt-pbf",
+          "version": "4.3.2",
+          "resolved": "https://registry.npmmirror.com/@maplibre/vt-pbf/-/vt-pbf-4.3.2.tgz",
+          "integrity": "sha512-j6p0AdjvAR19Z3XaCysle7A4ZSo08tYOzxD0Y9NQylwPAkwJJeYub5b2eVucdeDh7erhv69DahoLOevDRERRUw==",
+          "entry_line": 274,
+          "resolved_line": 276
+        },
+        {
+          "package": "node_modules/@maplibre/vt-pbf/node_modules/pbf",
+          "version": "5.1.2",
+          "resolved": "https://registry.npmmirror.com/pbf/-/pbf-5.1.2.tgz",
+          "integrity": "sha512-mnvGdvOrIvJOBGUEdGkrVXjN8E/VkIJCkf2eS1DH2yv82ORUlLttmDt0rWY38yYZmVwciZwBUvHM20qxBZf40w==",
+          "entry_line": 285,
+          "resolved_line": 287
+        },
+        {
+          "package": "node_modules/@types/geojson",
+          "version": "7946.0.16",
+          "resolved": "https://registry.npmmirror.com/@types/geojson/-/geojson-7946.0.16.tgz",
+          "integrity": "sha512-6C8nqWur3j98U6+lXDfTUWIfgvZU+EumvpHKcYjujKH7woYyLj2sUmff0tRhrqM7BohUw7Pz3ZB1jj2gW9Fvmg==",
+          "entry_line": 737,
+          "resolved_line": 739
+        },
+        {
+          "package": "node_modules/earcut",
+          "version": "3.2.4",
+          "resolved": "https://registry.npmmirror.com/earcut/-/earcut-3.2.4.tgz",
+          "integrity": "sha512-FHc6yNpnTORB0tM5kmZ03iD2mDuNakDE2lvf4Hw1XkfxtEHIGVi01B/GqUSwx+NcC1WGjidAfpTXzeALtPtfpg==",
+          "entry_line": 1069,
+          "resolved_line": 1071
+        },
+        {
+          "package": "node_modules/gl-matrix",
+          "version": "3.4.4",
+          "resolved": "https://registry.npmmirror.com/gl-matrix/-/gl-matrix-3.4.4.tgz",
+          "integrity": "sha512-latSnyDNt/8zYUB6VIJ6PCh2jBjJX6gnDsoCZ7LyW7GkqrD51EWwa9qCoGixj8YqBtETQK/xY7OmpTF8xz1DdQ==",
+          "entry_line": 1169,
+          "resolved_line": 1171
+        },
+        {
+          "package": "node_modules/json-stringify-pretty-compact",
+          "version": "4.0.0",
+          "resolved": "https://registry.npmmirror.com/json-stringify-pretty-compact/-/json-stringify-pretty-compact-4.0.0.tgz",
+          "integrity": "sha512-3CNZ2DnrpByG9Nqj6Xo8vqbjT4F6N+tb4Gb28ESAZjYZ5yqvmc56J+/kuIwkaAMOyblTQhUW7PxMkUb8Q36N3Q==",
+          "entry_line": 1344,
+          "resolved_line": 1346
+        },
+        {
+          "package": "node_modules/kdbush",
+          "version": "4.1.0",
+          "resolved": "https://registry.npmmirror.com/kdbush/-/kdbush-4.1.0.tgz",
+          "integrity": "sha512-e9vurzrXJQrFX6ckpHP3bvj5l+9CnYzkxDNnNQ1h2QTqdWsUAJgXiKdGNcOa1EY85dU8KbQ+z/FdQdB7P+9yfQ==",
+          "entry_line": 1350,
+          "resolved_line": 1352
+        },
+        {
+          "package": "node_modules/maplibre-gl",
+          "version": "5.24.0",
+          "resolved": "https://registry.npmmirror.com/maplibre-gl/-/maplibre-gl-5.24.0.tgz",
+          "integrity": "sha512-ALyFxgtd5R+65UqZ/++lOqwWcC0SNho9c27fYSyLmG7AfnAul2o46F05aDJGPbFU57wos9dgcIySHs0Xe6ia3A==",
+          "entry_line": 1655,
+          "resolved_line": 1657
+        },
+        {
+          "package": "node_modules/maplibre-gl/node_modules/potpack",
+          "version": "2.1.0",
+          "resolved": "https://registry.npmmirror.com/potpack/-/potpack-2.1.0.tgz",
+          "integrity": "sha512-pcaShQc1Shq0y+E7GqJqvZj8DTthWV1KeHGdi0Z6IAin2Oi3JnLCOfwnCo84qc+HAp52wT9nK9H7FAJp5a44GQ==",
+          "entry_line": 1689,
+          "resolved_line": 1691
+        },
+        {
+          "package": "node_modules/minimist",
+          "version": "1.2.8",
+          "resolved": "https://registry.npmmirror.com/minimist/-/minimist-1.2.8.tgz",
+          "integrity": "sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==",
+          "entry_line": 1710,
+          "resolved_line": 1712
+        },
+        {
+          "package": "node_modules/murmurhash-js",
+          "version": "1.0.0",
+          "resolved": "https://registry.npmmirror.com/murmurhash-js/-/murmurhash-js-1.0.0.tgz",
+          "integrity": "sha512-TvmkNhkv8yct0SVBSy+o8wYzXjE4Zz3PCesbfs8HiCXXdcTuocApFv11UWlNFWKYsP2okqrhb7JNlSm9InBhIw==",
+          "entry_line": 1726,
+          "resolved_line": 1728
+        },
+        {
+          "package": "node_modules/pbf",
+          "version": "4.0.2",
+          "resolved": "https://registry.npmmirror.com/pbf/-/pbf-4.0.2.tgz",
+          "integrity": "sha512-J0ajxARhZfpUEebxYs1vhMGMuLSXtBe1e+fFPDrf2uA2hgo+UshKfNUWOz92HJNz6/NFEXseQPddnHkTreWRqg==",
+          "entry_line": 1780,
+          "resolved_line": 1782
+        },
+        {
+          "package": "node_modules/protocol-buffers-schema",
+          "version": "3.6.1",
+          "resolved": "https://registry.npmmirror.com/protocol-buffers-schema/-/protocol-buffers-schema-3.6.1.tgz",
+          "integrity": "sha512-VG2K63Igkiv9p76tk1lilczEK1cT+kCjKtkdhw1dQZV3k3IXJbd3o6Ho8b9zJZaHSnT2hKe4I+ObmX9w6m5SmQ==",
+          "entry_line": 1873,
+          "resolved_line": 1875
+        },
+        {
+          "package": "node_modules/quickselect",
+          "version": "3.0.0",
+          "resolved": "https://registry.npmmirror.com/quickselect/-/quickselect-3.0.0.tgz",
+          "integrity": "sha512-XdjUArbK4Bm5fLLvlm5KpTFOiOThgfWWI4axAZDWg4E/0mKdZyI9tNEfds27qCi1ze/vwTR16kvmmGhRra3c2g==",
+          "entry_line": 1889,
+          "resolved_line": 1891
+        },
+        {
+          "package": "node_modules/resolve-protobuf-schema",
+          "version": "2.1.0",
+          "resolved": "https://registry.npmmirror.com/resolve-protobuf-schema/-/resolve-protobuf-schema-2.1.0.tgz",
+          "integrity": "sha512-kI5ffTiZWmJaS/huM8wZfEMer1eRd7oJQhDuxeCLe3t7N7mX3z94CN0xPxBQxFYQTSNz9T0i+v6inKqSdK8xrQ==",
+          "entry_line": 1940,
+          "resolved_line": 1942
+        },
+        {
+          "package": "node_modules/terra-draw",
+          "version": "1.35.0",
+          "resolved": "https://registry.npmmirror.com/terra-draw/-/terra-draw-1.35.0.tgz",
+          "integrity": "sha512-uQI8lcPiUMqwVV29CexTfvT/AM4lGHtA+xWraW4njVExiM1+eGvRetYOBXmXEmgy5pL4X2dmjwMRH8JEYVtbgw==",
+          "entry_line": 2089,
+          "resolved_line": 2091
+        },
+        {
+          "package": "node_modules/terra-draw-maplibre-gl-adapter",
+          "version": "1.4.1",
+          "resolved": "https://registry.npmmirror.com/terra-draw-maplibre-gl-adapter/-/terra-draw-maplibre-gl-adapter-1.4.1.tgz",
+          "integrity": "sha512-qZ/bc9bVPnyt0keLVTofV8xiTPkdkbO6RzqrfNLe9zH/edW5PsjvJw97m1EksPZeXNJtFxsVbhi12cPaoNiWfg==",
+          "entry_line": 2095,
+          "resolved_line": 2097
+        },
+        {
+          "package": "node_modules/tinyqueue",
+          "version": "3.0.0",
+          "resolved": "https://registry.npmmirror.com/tinyqueue/-/tinyqueue-3.0.0.tgz",
+          "integrity": "sha512-gRa9gwYU3ECmQYv3lslts5hxuIa90veaEcxDYuu3QGOIAEM2mOZkVHp48ANJuu1CURtRdHKUBY5Lm1tHV+sD4g==",
+          "entry_line": 2160,
+          "resolved_line": 2162
+        }
+      ]
+    }
+  ],
+  "fowler_baseline_judgment_calls": [],
+  "independent_readback": "probe.py / probe.json",
+  "review_scope": "All changed source, tests, package changes, compiled modules/manifests, gettext, PHP mount, local CSP and relevant provenance were covered. Prior Spec conclusions were not read or used.",
+  "verification_boundary": "No native, country, engineering, legal, production or whole-goal acceptance. The parent owns the fresh native matrix."
+}

@@ -1,0 +1,151 @@
+{
+  "languages": [
+    {
+      "language": "en",
+      "accepted_messages": 10,
+      "credits": [
+        {
+          "label": "React",
+          "url": "https://react.dev/",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "label": "TanStack Query",
+          "url": "https://tanstack.com/query",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "label": "Ajv",
+          "url": "https://ajv.js.org/",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "label": "Three.js",
+          "url": "https://threejs.org/",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "label": "React Three Fiber",
+          "url": "https://r3f.docs.pmnd.rs/getting-started/introduction",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "label": "MapLibre GL JS",
+          "url": "https://maplibre.org/maplibre-gl-js/docs/",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "label": "OpenFreeMap",
+          "url": "https://openfreemap.org/",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "label": "© OpenMapTiles",
+          "url": "https://www.openmaptiles.org/",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "label": "© OpenStreetMap contributors",
+          "url": "https://www.openstreetmap.org/copyright",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "label": "OpenFreeMap privacy policy",
+          "url": "https://openfreemap.org/privacy/",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        }
+      ],
+      "native_details_toggle": "open/close",
+      "unsaved_input_unchanged": true,
+      "location_unchanged": true,
+      "new_fetch_calls": 0
+    },
+    {
+      "language": "de",
+      "accepted_messages": 10,
+      "credits": [
+        {
+          "label": "React",
+          "url": "https://react.dev/",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "label": "TanStack Query",
+          "url": "https://tanstack.com/query",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "label": "Ajv",
+          "url": "https://ajv.js.org/",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "label": "Three.js",
+          "url": "https://threejs.org/",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "label": "React Three Fiber",
+          "url": "https://r3f.docs.pmnd.rs/getting-started/introduction",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "label": "MapLibre GL JS",
+          "url": "https://maplibre.org/maplibre-gl-js/docs/",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "label": "OpenFreeMap",
+          "url": "https://openfreemap.org/",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "label": "© OpenMapTiles",
+          "url": "https://www.openmaptiles.org/",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "label": "© OpenStreetMap-Mitwirkende",
+          "url": "https://www.openstreetmap.org/copyright",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        },
+        {
+          "label": "Datenschutzhinweise von OpenFreeMap",
+          "url": "https://openfreemap.org/privacy/",
+          "rel": "noopener noreferrer",
+          "target": "_blank"
+        }
+      ],
+      "native_details_toggle": "open/close",
+      "unsaved_input_unchanged": true,
+      "location_unchanged": true,
+      "new_fetch_calls": 0
+    }
+  ],
+  "map_unsupported_fallback": {
+    "notice": true,
+    "numeric_reference_action": true,
+    "renderer_instances": 0
+  },
+  "total_fetch_calls": 0,
+  "evidence_limit": "Component DOM only, with native map library port. Does not prove browser layout, map tiles, actual network privacy, keyboard or full project persistence."
+}

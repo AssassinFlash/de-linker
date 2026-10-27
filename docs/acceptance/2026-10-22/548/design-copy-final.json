@@ -1,0 +1,1038 @@
+[
+  {
+    "en": "Array properties",
+    "de": "Eigenschaften des Modulfelds"
+  },
+  {
+    "en": "Add a module array",
+    "de": "Modulfeld hinzufügen"
+  },
+  {
+    "en": "Array name",
+    "de": "Name des Modulfelds"
+  },
+  {
+    "en": "Module specification",
+    "de": "Modulspezifikation"
+  },
+  {
+    "en": "Select a module specification",
+    "de": "Modulspezifikation auswählen"
+  },
+  {
+    "en": "Layout source",
+    "de": "Quelle der Anordnung"
+  },
+  {
+    "en": "Anchor U",
+    "de": "Bezugspunkt U"
+  },
+  {
+    "en": "Anchor V",
+    "de": "Bezugspunkt V"
+  },
+  {
+    "en": "Rows",
+    "de": "Reihen"
+  },
+  {
+    "en": "Positive whole number.",
+    "de": "Positive ganze Zahl."
+  },
+  {
+    "en": "Columns",
+    "de": "Spalten"
+  },
+  {
+    "en": "Rotation within roof plane",
+    "de": "Drehung in der Dachfläche"
+  },
+  {
+    "en": "Counter-clockwise from the roof U axis toward V.",
+    "de": "Gegen den Uhrzeigersinn von der U-Achse des Dachs in Richtung V."
+  },
+  {
+    "en": "Additional module tilt",
+    "de": "Zusätzliche Modulneigung"
+  },
+  {
+    "en": "0 to 90, relative to this roof face. Each row starts at its own lower edge.",
+    "de": "0 bis 90, bezogen auf diese Dachfläche. Jede Reihe beginnt an ihrer eigenen Unterkante."
+  },
+  {
+    "en": "Gap between columns",
+    "de": "Abstand zwischen den Spalten"
+  },
+  {
+    "en": "0 or greater.",
+    "de": "0 oder größer."
+  },
+  {
+    "en": "Projected gap between rows",
+    "de": "Projizierter Reihenabstand"
+  },
+  {
+    "en": "Gap on the roof plane, 0 or greater. Shading and maintenance requirements are assessed separately.",
+    "de": "Abstand auf der Dachfläche, 0 oder größer. Anforderungen an Verschattung und Wartungszugang werden gesondert beurteilt."
+  },
+  {
+    "en": "Lower-edge height above roof",
+    "de": "Höhe der Unterkante über dem Dach"
+  },
+  {
+    "en": "0 or greater, measured along the roof normal.",
+    "de": "0 oder größer, senkrecht zur Dachfläche gemessen."
+  },
+  {
+    "en": "Mounting assumptions and reference",
+    "de": "Montageannahmen und Referenz"
+  },
+  {
+    "en": "The anchor is the lower-left corner of the first row before tilt and thickness are projected. Resizing preserves excluded module slots; slots outside the new size must be restored first.",
+    "de": "Der Bezugspunkt liegt an der unteren linken Ecke der ersten Reihe, bevor Neigung und Moduldicke projiziert werden. Beim Ändern der Größe bleiben ausgeschlossene Modulplätze erhalten. Plätze außerhalb der neuen Größe müssen vorher wieder aufgenommen werden."
+  },
+  {
+    "en": "Project coordinate references",
+    "de": "Koordinatenbezüge des Projekts"
+  },
+  {
+    "en": "The project uses metres in a local east/north/up frame. A north reference records the stated basis for that frame; it does not rotate existing objects or verify a survey.",
+    "de": "Das Projekt verwendet ein lokales Ost-Nord-Hoch-System in Metern. Der Nordbezug hält die angegebene Grundlage dieses Systems fest. Er dreht keine vorhandenen Objekte und bestätigt kein Aufmaß."
+  },
+  {
+    "en": "North reference",
+    "de": "Nordbezug"
+  },
+  {
+    "en": "Unreferenced",
+    "de": "Ohne Nordbezug"
+  },
+  {
+    "en": "User-declared north",
+    "de": "Vom Nutzer angegebene Nordrichtung"
+  },
+  {
+    "en": "True north with source reference",
+    "de": "Geografisch Nord mit Quellenangabe"
+  },
+  {
+    "en": "North reference source",
+    "de": "Quelle des Nordbezugs"
+  },
+  {
+    "en": "Select a source",
+    "de": "Quelle auswählen"
+  },
+  {
+    "en": "Project origin latitude",
+    "de": "Breitengrad des Projektursprungs"
+  },
+  {
+    "en": "−90 to 90. Both coordinates are required for a geographic anchor; empty fields leave it unknown.",
+    "de": "−90 bis 90. Für einen geografischen Bezugspunkt sind beide Koordinaten erforderlich. Leere Felder bedeuten, dass der Bezugspunkt unbekannt ist."
+  },
+  {
+    "en": "Project origin longitude",
+    "de": "Längengrad des Projektursprungs"
+  },
+  {
+    "en": "−180 to 180, WGS 84 (EPSG:4326).",
+    "de": "−180 bis 180, WGS 84 (EPSG:4326)."
+  },
+  {
+    "en": "Geographic anchor source",
+    "de": "Quelle des geografischen Bezugspunkts"
+  },
+  {
+    "en": "Roof design",
+    "de": "Dachplanung"
+  },
+  {
+    "en": "Roof geometry and module specifications produce an editable layout and a traceable plan check. The roof step is optional for every project type.",
+    "de": "Dachgeometrie und Modulspezifikationen bilden die Grundlage für eine bearbeitbare Belegung und eine nachvollziehbare Prüfung in der Dachfläche. Die Dachplanung ist bei jedem Projekttyp optional."
+  },
+  {
+    "en": "Add roof face",
+    "de": "Dachfläche hinzufügen"
+  },
+  {
+    "en": "Add module specification",
+    "de": "Modulspezifikation hinzufügen"
+  },
+  {
+    "en": "Design view",
+    "de": "Planungsansicht"
+  },
+  {
+    "en": "Plan",
+    "de": "Draufsicht"
+  },
+  {
+    "en": "This edit could not be applied. Some values or references may be invalid or may have changed. The current design is unchanged.",
+    "de": "Die Änderung konnte nicht angewendet werden. Einige Werte oder Verweise sind möglicherweise ungültig oder haben sich geändert. Die aktuelle Planung bleibt unverändert."
+  },
+  {
+    "en": "Active roof face",
+    "de": "Aktive Dachfläche"
+  },
+  {
+    "en": "North unreferenced",
+    "de": "Nordbezug fehlt"
+  },
+  {
+    "en": "North reference recorded",
+    "de": "Nordbezug erfasst"
+  },
+  {
+    "en": "Loading 3D workspace…",
+    "de": "3D-Arbeitsbereich wird geladen …"
+  },
+  {
+    "en": "The roof layout starts with roof geometry",
+    "de": "Die Dachbelegung beginnt mit der Dachgeometrie"
+  },
+  {
+    "en": "A roof face needs surface dimensions, pitch, orientation and a measurement reference. Module dimensions and mounting parameters then determine the layout. Missing dimensions are left empty.",
+    "de": "Eine Dachfläche benötigt Oberflächenmaße, Neigung, Ausrichtung und einen Aufmaßbezug. Modulmaße und Montageparameter bestimmen anschließend die Belegung. Fehlende Maße bleiben leer."
+  },
+  {
+    "en": "Add the first roof face",
+    "de": "Erste Dachfläche hinzufügen"
+  },
+  {
+    "en": "Included modules",
+    "de": "Berücksichtigte Module"
+  },
+  {
+    "en": "Declared DC nameplate power",
+    "de": "Angegebene DC-Nennleistung"
+  },
+  {
+    "en": "Roof faces",
+    "de": "Dachflächen"
+  },
+  {
+    "en": "Design objects and properties",
+    "de": "Planungsobjekte und Eigenschaften"
+  },
+  {
+    "en": "Remove this roof face?",
+    "de": "Diese Dachfläche entfernen?"
+  },
+  {
+    "en": "Removing %1$s also removes %2$d dependent arrays, obstacles and keep-out areas, together with this roof face's clearance settings. Undo restores this edit.",
+    "de": "Mit %1$s werden auch %2$d zugehörige Modulfelder, Hindernisse und Sperrflächen sowie die Abstandsvorgaben dieser Dachfläche aus dem Entwurf entfernt. Rückgängig stellt diese Änderung wieder her."
+  },
+  {
+    "en": "Remove roof and dependent objects",
+    "de": "Dachfläche und zugehörige Objekte entfernen"
+  },
+  {
+    "en": "Cancel",
+    "de": "Abbrechen"
+  },
+  {
+    "en": "Design objects",
+    "de": "Planungsobjekte"
+  },
+  {
+    "en": "Select a design object",
+    "de": "Planungsobjekt auswählen"
+  },
+  {
+    "en": "Add module array",
+    "de": "Modulfeld hinzufügen"
+  },
+  {
+    "en": "Add obstacle",
+    "de": "Hindernis hinzufügen"
+  },
+  {
+    "en": "Add keep-out area",
+    "de": "Sperrfläche hinzufügen"
+  },
+  {
+    "en": "Layout clearances",
+    "de": "Abstandsvorgaben der Belegung"
+  },
+  {
+    "en": "A module specification is needed before an array can be placed.",
+    "de": "Vor dem Platzieren eines Modulfelds ist eine Modulspezifikation erforderlich."
+  },
+  {
+    "en": "Module row %1$d, column %2$d",
+    "de": "Modul in Reihe %1$d, Spalte %2$d"
+  },
+  {
+    "en": "Included",
+    "de": "Berücksichtigt"
+  },
+  {
+    "en": "Excluded",
+    "de": "Ausgeschlossen"
+  },
+  {
+    "en": "Exclude module",
+    "de": "Modul ausschließen"
+  },
+  {
+    "en": "Restore module",
+    "de": "Modul wieder aufnehmen"
+  },
+  {
+    "en": "Edit numeric properties",
+    "de": "Numerische Eigenschaften bearbeiten"
+  },
+  {
+    "en": "Remove object",
+    "de": "Objekt entfernen"
+  },
+  {
+    "en": "Source properties",
+    "de": "Quelleneigenschaften"
+  },
+  {
+    "en": "Coordinate references",
+    "de": "Koordinatenbezüge"
+  },
+  {
+    "en": "Sources",
+    "de": "Quellen"
+  },
+  {
+    "en": "Module slots in %s",
+    "de": "Modulplätze in %s"
+  },
+  {
+    "en": "Row / column",
+    "de": "Reihe / Spalte"
+  },
+  {
+    "en": "Status",
+    "de": "Status"
+  },
+  {
+    "en": "Actions",
+    "de": "Aktionen"
+  },
+  {
+    "en": "Select module",
+    "de": "Modul auswählen"
+  },
+  {
+    "en": "Previous",
+    "de": "Zurück"
+  },
+  {
+    "en": "Page %1$d of %2$d",
+    "de": "Seite %1$d von %2$d"
+  },
+  {
+    "en": "Next",
+    "de": "Weiter"
+  },
+  {
+    "en": "A valid number is required. Thousands separators are not accepted.",
+    "de": "Eine gültige Zahl ist erforderlich. Tausendertrennzeichen sind nicht zulässig."
+  },
+  {
+    "en": "The value is outside this field's permitted range. The unit and range are shown beside the field.",
+    "de": "Der Wert liegt außerhalb des zulässigen Bereichs dieses Felds. Einheit und Wertebereich stehen am Feld."
+  },
+  {
+    "en": "These properties could not be applied. The current design has been kept; the values remain available for correction.",
+    "de": "Diese Eigenschaften konnten nicht angewendet werden. Die aktuelle Planung bleibt erhalten. Die Eingaben können weiterhin korrigiert werden."
+  },
+  {
+    "en": "Lengths are in metres. Decimal comma; no thousands separators.",
+    "de": "Längen werden in Metern angegeben. Dezimalkomma verwenden, keine Tausendertrennzeichen."
+  },
+  {
+    "en": "Lengths are in metres. Decimal point; no thousands separators.",
+    "de": "Längen werden in Metern angegeben. Dezimalpunkt verwenden, keine Tausendertrennzeichen."
+  },
+  {
+    "en": "Apply properties",
+    "de": "Eigenschaften anwenden"
+  },
+  {
+    "en": "Cancel properties",
+    "de": "Bearbeitung abbrechen"
+  },
+  {
+    "en": "North reference is missing.",
+    "de": "Der Nordbezug fehlt."
+  },
+  {
+    "en": "Source measurement precision is unknown.",
+    "de": "Die Genauigkeit der Ausgangsmaße ist unbekannt."
+  },
+  {
+    "en": "Roof-edge clearance has not been specified.",
+    "de": "Der Abstand zum Dachrand wurde nicht angegeben."
+  },
+  {
+    "en": "Obstacle clearance has not been specified.",
+    "de": "Der Abstand zu Hindernissen wurde nicht angegeben."
+  },
+  {
+    "en": "The roof boundary or openings do not form a valid polygon.",
+    "de": "Dachrand oder Dachöffnungen bilden kein gültiges Polygon."
+  },
+  {
+    "en": "The obstacle footprint is invalid.",
+    "de": "Der Grundriss des Hindernisses ist ungültig."
+  },
+  {
+    "en": "The obstacle does not extend above this roof face.",
+    "de": "Das Hindernis ragt nicht über diese Dachfläche hinaus."
+  },
+  {
+    "en": "The obstacle footprint extends outside this roof face.",
+    "de": "Der Grundriss des Hindernisses reicht über diese Dachfläche hinaus."
+  },
+  {
+    "en": "The keep-out footprint is invalid.",
+    "de": "Der Grundriss der Sperrfläche ist ungültig."
+  },
+  {
+    "en": "A module projection cannot be resolved at the supported numerical precision.",
+    "de": "Eine Modulprojektion lässt sich mit der unterstützten numerischen Genauigkeit nicht auflösen."
+  },
+  {
+    "en": "Coordinate resolution exceeds this check's numerical support. The design remains available for correction.",
+    "de": "Die Koordinatenauflösung liegt außerhalb des numerischen Unterstützungsbereichs dieser Prüfung. Die Planung kann weiterhin korrigiert werden."
+  },
+  {
+    "en": "A module overlaps a roof opening.",
+    "de": "Ein Modul überlappt eine Dachöffnung."
+  },
+  {
+    "en": "A module extends outside the roof boundary.",
+    "de": "Ein Modul reicht über den Dachrand hinaus."
+  },
+  {
+    "en": "A module is closer to the roof boundary than the declared clearance.",
+    "de": "Ein Modul unterschreitet den angegebenen Abstand zum Dachrand."
+  },
+  {
+    "en": "A module projection overlaps an obstacle projection.",
+    "de": "Eine Modulprojektion überlappt die Projektion eines Hindernisses."
+  },
+  {
+    "en": "A module overlaps a keep-out area.",
+    "de": "Ein Modul überlappt eine Sperrfläche."
+  },
+  {
+    "en": "A module is closer to an obstacle than the declared clearance.",
+    "de": "Ein Modul unterschreitet den angegebenen Abstand zu einem Hindernis."
+  },
+  {
+    "en": "Two module projections overlap.",
+    "de": "Zwei Modulprojektionen überlappen sich."
+  },
+  {
+    "en": "Additional layout diagnostic.",
+    "de": "Weiterer Hinweis zur Belegung."
+  },
+  {
+    "en": "Layout check",
+    "de": "Belegung prüfen"
+  },
+  {
+    "en": "Checking layout…",
+    "de": "Belegung wird geprüft …"
+  },
+  {
+    "en": "Check layout",
+    "de": "Belegung prüfen"
+  },
+  {
+    "en": "The check compares full module projections, roof boundaries and openings, obstacles, keep-out areas and declared clearances in each roof plane. Structural, fire-safety, electrical and shading assessments are separate.",
+    "de": "Die Prüfung vergleicht vollständige Modulprojektionen, Dachränder und Öffnungen, Hindernisse, Sperrflächen und angegebene Abstände in der jeweiligen Dachfläche. Statik, Brandschutz, elektrische Auslegung und Verschattung werden gesondert beurteilt."
+  },
+  {
+    "en": "The layout check could not be completed. The design and any previous check remain available.",
+    "de": "Die Belegungsprüfung konnte nicht abgeschlossen werden. Die Planung und vorhandene Prüfergebnisse bleiben erhalten."
+  },
+  {
+    "en": "Previous check: the design has changed. A new check is required.",
+    "de": "Vorherige Prüfung: Die Planung wurde geändert. Eine neue Prüfung ist erforderlich."
+  },
+  {
+    "en": "Check incomplete. Some checks could not be performed.",
+    "de": "Prüfung unvollständig. Einige Prüfungen konnten nicht durchgeführt werden."
+  },
+  {
+    "en": "Layout conflicts detected.",
+    "de": "Konflikte in der Belegung erkannt."
+  },
+  {
+    "en": "No conflicts detected in the completed plan checks.",
+    "de": "In den abgeschlossenen Prüfungen der Dachprojektion wurden keine Konflikte erkannt."
+  },
+  {
+    "en": "Actual: %1$s m; required: %2$s m.",
+    "de": "Tatsächlich: %1$s m; erforderlich: %2$s m."
+  },
+  {
+    "en": "%1$d of %2$d diagnostics are shown.",
+    "de": "%1$d von %2$d Hinweisen werden angezeigt."
+  },
+  {
+    "en": "Method, inputs and numerical limits",
+    "de": "Methode, Eingaben und numerische Grenzen"
+  },
+  {
+    "en": "Missing source precision, north references and clearance values remain listed even when a plan check finds no geometric conflicts. Geometry checks do not provide engineering approval.",
+    "de": "Fehlende Angaben zur Quellengenauigkeit, zum Nordbezug und zu Abständen bleiben aufgeführt, auch wenn die Prüfung keine geometrischen Konflikte findet. Geometrieprüfungen ersetzen keine fachtechnische Freigabe."
+  },
+  {
+    "en": "Checker and geometry library",
+    "de": "Prüfverfahren und Geometriebibliothek"
+  },
+  {
+    "en": "Geometry SHA-256",
+    "de": "SHA-256 der Geometrie"
+  },
+  {
+    "en": "Calculation runtime SHA-256",
+    "de": "SHA-256 der Berechnungsumgebung"
+  },
+  {
+    "en": "Observed coordinate granularity / supported maximum",
+    "de": "Gleitkommaschrittweite der Koordinaten / unterstützter Höchstwert"
+  },
+  {
+    "en": "Candidate checks / limit",
+    "de": "Geprüfte Kandidatenpaare / Höchstzahl"
+  },
+  {
+    "en": "The numerical limit describes internal arithmetic support. It is not a surveying tolerance or an installation requirement.",
+    "de": "Die numerische Grenze beschreibt den internen Rechenbereich. Sie ist weder eine Aufmaßtoleranz noch eine Montagevorgabe."
+  },
+  {
+    "en": "Declared layout clearances",
+    "de": "Angegebene Abstände der Belegung"
+  },
+  {
+    "en": "Clearances are project inputs with a stated basis. Empty fields remain unknown. A value of 0 explicitly allows contact in the plan check; it is not a country, fire-safety or mounting approval.",
+    "de": "Abstände sind Projekteingaben mit einer angegebenen Grundlage. Leere Felder bleiben unbekannt. Der Wert 0 erlaubt in der Prüfung ausdrücklich eine Berührung. Er bestätigt keine landesspezifischen, brandschutztechnischen oder montagetechnischen Anforderungen."
+  },
+  {
+    "en": "Minimum roof-edge clearance",
+    "de": "Mindestabstand zum Dachrand"
+  },
+  {
+    "en": "0 or greater; roof openings are included in the boundary distance.",
+    "de": "0 oder größer. Dachöffnungen werden bei der Abstandsmessung als Begrenzung berücksichtigt."
+  },
+  {
+    "en": "Minimum obstacle clearance",
+    "de": "Mindestabstand zu Hindernissen"
+  },
+  {
+    "en": "0 or greater, measured between roof-plane projections.",
+    "de": "0 oder größer, zwischen den Projektionen auf die Dachfläche gemessen."
+  },
+  {
+    "en": "Clearance source",
+    "de": "Quelle der Abstandsvorgaben"
+  },
+  {
+    "en": "Requirement, applicability and reference",
+    "de": "Anforderung, Geltungsbereich und Referenz"
+  },
+  {
+    "en": "Model or reference name",
+    "de": "Modell- oder Referenzbezeichnung"
+  },
+  {
+    "en": "Module width",
+    "de": "Modulbreite"
+  },
+  {
+    "en": "Greater than 0.",
+    "de": "Größer als 0."
+  },
+  {
+    "en": "Module length",
+    "de": "Modullänge"
+  },
+  {
+    "en": "Module thickness",
+    "de": "Moduldicke"
+  },
+  {
+    "en": "Rated power at STC",
+    "de": "Nennleistung unter STC"
+  },
+  {
+    "en": "Declared nameplate power, greater than 0. This is not generated energy.",
+    "de": "Angegebene Nennleistung, größer als 0. Dieser Wert ist keine erzeugte Energiemenge."
+  },
+  {
+    "en": "Specification evidence",
+    "de": "Beleg der Spezifikation"
+  },
+  {
+    "en": "User-declared values",
+    "de": "Vom Nutzer angegebene Werte"
+  },
+  {
+    "en": "Referenced datasheet",
+    "de": "Referenziertes Datenblatt"
+  },
+  {
+    "en": "Specification source and conditions",
+    "de": "Quelle und Bedingungen der Spezifikation"
+  },
+  {
+    "en": "Source document URL",
+    "de": "URL des Quelldokuments"
+  },
+  {
+    "en": "Source document SHA-256",
+    "de": "SHA-256 des Quelldokuments"
+  },
+  {
+    "en": "Source page",
+    "de": "Seite im Quelldokument"
+  },
+  {
+    "en": "A datasheet reference requires its URL, 64-character SHA-256 and a positive whole page number. The reference is recorded; this form does not fetch or verify the document.",
+    "de": "Eine Datenblattreferenz benötigt eine URL, einen SHA-256 mit 64 Zeichen und eine positive ganze Seitenzahl. Die Referenz wird erfasst. Dieses Formular ruft das Dokument nicht ab und überprüft es nicht."
+  },
+  {
+    "en": "This coordinate range cannot be displayed at the supported numerical precision. The source geometry remains in the open project draft and its numeric properties remain editable.",
+    "de": "Dieser Koordinatenbereich lässt sich mit der unterstützten numerischen Genauigkeit nicht darstellen. Die Quellgeometrie bleibt im offenen Projektentwurf erhalten; die numerischen Eigenschaften können weiter bearbeitet werden."
+  },
+  {
+    "en": "Plan view controls",
+    "de": "Bedienelemente der Draufsicht"
+  },
+  {
+    "en": "Select / move array",
+    "de": "Modulfeld auswählen / verschieben"
+  },
+  {
+    "en": "Pan view",
+    "de": "Ansicht verschieben"
+  },
+  {
+    "en": "Zoom in",
+    "de": "Vergrößern"
+  },
+  {
+    "en": "Zoom out",
+    "de": "Verkleinern"
+  },
+  {
+    "en": "Fit view",
+    "de": "Ansicht einpassen"
+  },
+  {
+    "en": "Roof plane: %s. U increases to the right; V increases upward.",
+    "de": "Dachfläche: %s. U nimmt nach rechts zu, V nach oben."
+  },
+  {
+    "en": "Roof plane · metres",
+    "de": "Dachfläche · Meter"
+  },
+  {
+    "en": "Dragging a module moves its array in this roof plane. Numeric properties provide the same operation. Pan and zoom change only the view.",
+    "de": "Beim Ziehen eines Moduls wird sein gesamtes Modulfeld in dieser Dachfläche verschoben. Dieselbe Änderung ist über die numerischen Eigenschaften möglich. Verschieben und Zoomen der Ansicht ändern nur die Ansicht."
+  },
+  {
+    "en": "Roof properties",
+    "de": "Dacheigenschaften"
+  },
+  {
+    "en": "Add a measured roof face",
+    "de": "Dachfläche nach Aufmaß hinzufügen"
+  },
+  {
+    "en": "Not recorded.",
+    "de": "Nicht erfasst."
+  },
+  {
+    "en": "Roof face name",
+    "de": "Name der Dachfläche"
+  },
+  {
+    "en": "Width along U",
+    "de": "Breite entlang U"
+  },
+  {
+    "en": "Length down the slope",
+    "de": "Länge in Gefällerichtung"
+  },
+  {
+    "en": "Surface length, greater than 0; this is not its horizontal projection.",
+    "de": "Oberflächenlänge, größer als 0. Dieser Wert ist keine horizontale Projektion."
+  },
+  {
+    "en": "Roof pitch",
+    "de": "Dachneigung"
+  },
+  {
+    "en": "0 or greater and less than 90. A flat roof is 0.",
+    "de": "0 oder größer und kleiner als 90. Ein Flachdach hat die Neigung 0."
+  },
+  {
+    "en": "Down-slope bearing",
+    "de": "Richtung des Dachgefälles"
+  },
+  {
+    "en": "Clockwise from project north: 0 north, 90 east, 180 south, 270 west. Bearings use the project's stated north reference; recording a reference does not verify it.",
+    "de": "Im Uhrzeigersinn von Projektnord: 0 Nord, 90 Ost, 180 Süd, 270 West. Die Winkel verwenden den angegebenen Nordbezug des Projekts; das Erfassen einer Referenz bestätigt ihn nicht."
+  },
+  {
+    "en": "The origin is the high corner of the roof face. East, north and height are relative to the project origin; height is not altitude above sea level.",
+    "de": "Der Ursprung liegt an der oberen Ecke der Dachfläche. Ost, Nord und Höhe beziehen sich auf den Projektursprung. Die Höhe ist keine Höhenlage über dem Meeresspiegel."
+  },
+  {
+    "en": "Origin east",
+    "de": "Ursprung Ost"
+  },
+  {
+    "en": "Origin north",
+    "de": "Ursprung Nord"
+  },
+  {
+    "en": "Origin height",
+    "de": "Ursprung Höhe"
+  },
+  {
+    "en": "Roof boundary in U/V metres",
+    "de": "Dachrand in U/V-Metern"
+  },
+  {
+    "en": "One U ; V pair per line, at least three vertices. The final vertex connects to the first. The existing roof plane is preserved.",
+    "de": "Ein Wertepaar U ; V pro Zeile, mindestens drei Eckpunkte. Der letzte Punkt wird mit dem ersten verbunden. Die vorhandene Dachebene bleibt erhalten."
+  },
+  {
+    "en": "Roof openings in U/V metres",
+    "de": "Dachöffnungen in U/V-Metern"
+  },
+  {
+    "en": "One U ; V pair per line. A blank line separates openings; an empty field means no openings.",
+    "de": "Ein Wertepaar U ; V pro Zeile. Eine Leerzeile trennt die Öffnungen. Ein leeres Feld bedeutet, dass keine Öffnungen vorhanden sind."
+  },
+  {
+    "en": "Measurement or drawing reference",
+    "de": "Aufmaß- oder Zeichnungsreferenz"
+  },
+  {
+    "en": "The reference stays with this roof face in the project draft and is stored with Save project. Measurement precision starts as unknown and can be recorded in Source properties.",
+    "de": "Die Referenz bleibt mit dieser Dachfläche im Projektentwurf verknüpft. Mit „Projekt speichern“ wird sie im Projekt gespeichert. Die Genauigkeit ist zunächst unbekannt und kann unter „Quelleneigenschaften“ erfasst werden."
+  },
+  {
+    "en": "Basis for using these measurements",
+    "de": "Grundlage für die Verwendung dieser Maße"
+  },
+  {
+    "en": "I have permission to retain these measurements and derive an editable design from them.",
+    "de": "Ich bin berechtigt, diese Maße zu speichern und daraus eine bearbeitbare Planung abzuleiten."
+  },
+  {
+    "en": "3D rendering is unavailable. The design remains available in the plan view and numeric properties.",
+    "de": "Die 3D-Darstellung ist nicht verfügbar. Die Planung bleibt in der Draufsicht und über die numerischen Eigenschaften zugänglich."
+  },
+  {
+    "en": "Retry 3D",
+    "de": "3D erneut versuchen"
+  },
+  {
+    "en": "This geometry cannot be displayed in 3D at the supported numerical precision. Numeric properties remain available.",
+    "de": "Diese Geometrie lässt sich mit der unterstützten numerischen Genauigkeit nicht in 3D darstellen. Die numerischen Eigenschaften bleiben zugänglich."
+  },
+  {
+    "en": "3D rendering is unavailable on this device.",
+    "de": "Die 3D-Darstellung ist auf diesem Gerät nicht verfügbar."
+  },
+  {
+    "en": "Fit 3D view",
+    "de": "3D-Ansicht einpassen"
+  },
+  {
+    "en": "Preparing 3D…",
+    "de": "3D wird vorbereitet …"
+  },
+  {
+    "en": "Use WebGL 2 backend",
+    "de": "WebGL-2-Renderer verwenden"
+  },
+  {
+    "en": "Dragging the selected array's handles changes its position in the roof plane. Camera controls change only the view. Lighting is for display; it does not calculate shading losses.",
+    "de": "Beim Ziehen an den Griffen des ausgewählten Modulfelds wird dessen Position in der Dachfläche geändert. Die Kamerasteuerung ändert nur die Ansicht. Die Beleuchtung dient der Darstellung und berechnet keine Verschattungsverluste."
+  },
+  {
+    "en": "Obstacle properties",
+    "de": "Hinderniseigenschaften"
+  },
+  {
+    "en": "Keep-out area properties",
+    "de": "Eigenschaften der Sperrfläche"
+  },
+  {
+    "en": "Object name",
+    "de": "Objektname"
+  },
+  {
+    "en": "Source reference",
+    "de": "Quellenreferenz"
+  },
+  {
+    "en": "Footprint in U/V metres",
+    "de": "Grundriss in U/V-Metern"
+  },
+  {
+    "en": "One U ; V pair per line, at least three vertices. The final vertex connects to the first.",
+    "de": "Ein Wertepaar U ; V pro Zeile, mindestens drei Eckpunkte. Der letzte Punkt wird mit dem ersten verbunden."
+  },
+  {
+    "en": "Lower corner U",
+    "de": "Untere Ecke U"
+  },
+  {
+    "en": "Lower corner V",
+    "de": "Untere Ecke V"
+  },
+  {
+    "en": "Length along V",
+    "de": "Länge entlang V"
+  },
+  {
+    "en": "Obstacle height",
+    "de": "Hindernishöhe"
+  },
+  {
+    "en": "Greater than 0, measured along the selected extrusion direction.",
+    "de": "Größer als 0, entlang der gewählten Extrusionsrichtung gemessen."
+  },
+  {
+    "en": "Extrusion direction",
+    "de": "Extrusionsrichtung"
+  },
+  {
+    "en": "Select a direction",
+    "de": "Richtung auswählen"
+  },
+  {
+    "en": "Keep the recorded direction",
+    "de": "Erfasste Richtung beibehalten"
+  },
+  {
+    "en": "Perpendicular to this roof face",
+    "de": "Senkrecht zu dieser Dachfläche"
+  },
+  {
+    "en": "Vertically upward",
+    "de": "Senkrecht nach oben"
+  },
+  {
+    "en": "Reason or requirement",
+    "de": "Grund oder Anforderung"
+  },
+  {
+    "en": "Source statements are retained with the geometry. They describe the supplied evidence and permissions; they do not certify measurement accuracy or licence compliance.",
+    "de": "Quellenangaben bleiben mit der Geometrie verknüpft. Sie beschreiben die bereitgestellten Belege und Berechtigungen; sie bestätigen weder die Genauigkeit des Aufmaßes noch die Einhaltung von Lizenzbedingungen."
+  },
+  {
+    "en": "Declared spatial precision",
+    "de": "Angegebene räumliche Genauigkeit"
+  },
+  {
+    "en": "0 or greater. An empty field means unknown. This is a source claim, separate from numerical calculation precision.",
+    "de": "0 oder größer. Ein leeres Feld bedeutet unbekannt. Dies ist eine Quellenangabe und unabhängig von der numerischen Rechengenauigkeit."
+  },
+  {
+    "en": "Calibration and measurement conditions",
+    "de": "Kalibrierung und Messbedingungen"
+  },
+  {
+    "en": "Acquired at UTC",
+    "de": "Erfasst am (UTC)"
+  },
+  {
+    "en": "YYYY-MM-DDTHH:MM:SSZ; an empty field means not recorded.",
+    "de": "YYYY-MM-DDTHH:MM:SSZ; ein leeres Feld bedeutet nicht erfasst."
+  },
+  {
+    "en": "Permission or licence basis",
+    "de": "Berechtigungs- oder Lizenzgrundlage"
+  },
+  {
+    "en": "Reference URL",
+    "de": "Referenz-URL"
+  },
+  {
+    "en": "Reference SHA-256",
+    "de": "Referenz-SHA-256"
+  },
+  {
+    "en": "Permission to export geometry",
+    "de": "Berechtigung zum Export der Geometrie"
+  },
+  {
+    "en": "Unknown",
+    "de": "Unbekannt"
+  },
+  {
+    "en": "Permitted",
+    "de": "Erlaubt"
+  },
+  {
+    "en": "Prohibited",
+    "de": "Untersagt"
+  },
+  {
+    "en": "Opening project…",
+    "de": "Projekt wird geöffnet…"
+  },
+  {
+    "en": "This project contains an input format that this workspace cannot edit.",
+    "de": "Dieses Projekt enthält ein Eingabeformat, das sich in diesem Arbeitsbereich nicht bearbeiten lässt."
+  },
+  {
+    "en": "Projects",
+    "de": "Projekte"
+  },
+  {
+    "en": "Saving…",
+    "de": "Wird gespeichert …"
+  },
+  {
+    "en": "Save not confirmed",
+    "de": "Speichern nicht bestätigt"
+  },
+  {
+    "en": "Input needs attention",
+    "de": "Eingabe prüfen"
+  },
+  {
+    "en": "Unsaved changes",
+    "de": "Ungespeicherte Änderungen"
+  },
+  {
+    "en": "Saved · revision %d",
+    "de": "Gespeichert · Version %d"
+  },
+  {
+    "en": "Undo",
+    "de": "Rückgängig"
+  },
+  {
+    "en": "Redo",
+    "de": "Wiederholen"
+  },
+  {
+    "en": "Retry save",
+    "de": "Speichern erneut versuchen"
+  },
+  {
+    "en": "Save project",
+    "de": "Projekt speichern"
+  },
+  {
+    "en": "Project",
+    "de": "Projekt"
+  },
+  {
+    "en": "Site data and roof layouts are saved in the same project.",
+    "de": "Standortdaten und Dachbelegungen werden im selben Projekt gespeichert."
+  },
+  {
+    "en": "Project sections",
+    "de": "Projektbereiche"
+  },
+  {
+    "en": "Project brief",
+    "de": "Projektdaten"
+  },
+  {
+    "en": "Project location",
+    "de": "Projektstandort"
+  },
+  {
+    "en": "Electricity consumption",
+    "de": "Stromverbrauch"
+  },
+  {
+    "en": "Interval data",
+    "de": "Zeitreihendaten"
+  },
+  {
+    "en": "Project information is kept with its source and revision.",
+    "de": "Projektangaben bleiben mit ihrer Quelle und Version verknüpft."
+  },
+  {
+    "en": "Unconfirmed project creations and CSV imports from earlier sessions could not be checked. Any recovery data already stored in this browser remains unchanged.",
+    "de": "Unbestätigte Projekterstellungen und CSV-Importe aus früheren Sitzungen konnten nicht geprüft werden. Bereits in diesem Browser gespeicherte Wiederherstellungsdaten bleiben unverändert."
+  },
+  {
+    "en": "Check session",
+    "de": "Sitzung prüfen"
+  },
+  {
+    "en": "Several local drafts are available for this project. Select one to compare with the saved revision.",
+    "de": "Für dieses Projekt sind mehrere lokale Entwürfe vorhanden. Wählen Sie einen aus, um ihn mit der gespeicherten Version zu vergleichen."
+  },
+  {
+    "en": "Local draft · revision %d",
+    "de": "Lokaler Entwurf · Version %d"
+  },
+  {
+    "en": "Correct the highlighted input before leaving this project.",
+    "de": "Korrigieren Sie die markierte Eingabe, bevor Sie dieses Projekt verlassen."
+  },
+  {
+    "en": "Save the project before leaving. Browser recovery could not be stored.",
+    "de": "Speichern Sie das Projekt, bevor Sie es verlassen. Die Wiederherstellungsdaten konnten nicht im Browser gespeichert werden."
+  },
+  {
+    "en": "Unsaved work from this browser has been restored.",
+    "de": "Ungespeicherte Änderungen aus diesem Browser wurden wiederhergestellt."
+  },
+  {
+    "en": "Browser recovery is unavailable. Changes remain open here until the server confirms a save.",
+    "de": "Die Wiederherstellung im Browser ist nicht verfügbar. Änderungen bleiben hier geöffnet, bis der Server das Speichern bestätigt."
+  },
+  {
+    "en": "The save could not be confirmed. Your input is still here.",
+    "de": "Das Speichern konnte nicht bestätigt werden. Ihre Eingaben bleiben hier erhalten."
+  },
+  {
+    "en": "Open changes have been kept alongside the saved revision.",
+    "de": "Die offenen Änderungen und die gespeicherte Version sind erhalten geblieben."
+  },
+  {
+    "en": "Keep open changes",
+    "de": "Offene Änderungen beibehalten"
+  },
+  {
+    "en": "Use saved revision",
+    "de": "Gespeicherte Version verwenden"
+  },
+  {
+    "en": "After import, the data's meaning and coverage are shown for review. A profile selection applies to the open draft and is saved with Save project. The annual consumption entry remains separate.",
+    "de": "Nach dem Import werden Bedeutung und Abdeckung der Daten angezeigt. Die Profilauswahl gilt zunächst für den offenen Projektentwurf und wird mit „Projekt speichern“ im Projekt gespeichert. Die Angabe zum Jahresverbrauch bleibt davon getrennt."
+  },
+  {
+    "en": "Remove draft selection",
+    "de": "Auswahl im Entwurf aufheben"
+  },
+  {
+    "en": "Removing a selection leaves the stored source unchanged. Save the project to record the change.",
+    "de": "Beim Aufheben der Auswahl bleibt die gespeicherte Quelle unverändert. Mit „Projekt speichern“ wird die Änderung im Projekt gespeichert."
+  },
+  {
+    "en": "The 3D workspace could not be loaded. Plan view and numeric properties remain available.",
+    "de": "Der 3D-Arbeitsbereich konnte nicht geladen werden. Draufsicht und numerische Eigenschaften bleiben verfügbar."
+  },
+  {
+    "en": "Retry loading 3D",
+    "de": "3D erneut laden"
+  }
+]

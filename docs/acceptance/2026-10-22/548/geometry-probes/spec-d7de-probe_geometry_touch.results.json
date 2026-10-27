@@ -1,0 +1,118 @@
+[
+  {
+    "angle_deg": 0,
+    "expected_positive_area_overlap": false,
+    "actual_intersection_m2": 0.0,
+    "uv_resolution_m": 3.552713678800501e-15,
+    "status": "no_conflicts_detected",
+    "kinds": []
+  },
+  {
+    "angle_deg": 1,
+    "expected_positive_area_overlap": false,
+    "actual_intersection_m2": 8.880431458248164e-16,
+    "uv_resolution_m": 3.552713678800501e-15,
+    "status": "conflicts_detected",
+    "kinds": [
+      "panel_projected_overlap"
+    ]
+  },
+  {
+    "angle_deg": 15,
+    "expected_positive_area_overlap": false,
+    "actual_intersection_m2": 0.0,
+    "uv_resolution_m": 3.552713678800501e-15,
+    "status": "no_conflicts_detected",
+    "kinds": []
+  },
+  {
+    "angle_deg": 30,
+    "expected_positive_area_overlap": false,
+    "actual_intersection_m2": 1.546341191791035e-15,
+    "uv_resolution_m": 3.552713678800501e-15,
+    "status": "conflicts_detected",
+    "kinds": [
+      "panel_projected_overlap"
+    ]
+  },
+  {
+    "angle_deg": 31,
+    "expected_positive_area_overlap": false,
+    "actual_intersection_m2": 0.0,
+    "uv_resolution_m": 3.552713678800501e-15,
+    "status": "no_conflicts_detected",
+    "kinds": []
+  },
+  {
+    "angle_deg": 45,
+    "expected_positive_area_overlap": false,
+    "actual_intersection_m2": 2.5154161253362765e-15,
+    "uv_resolution_m": 3.552713678800501e-15,
+    "status": "conflicts_detected",
+    "kinds": [
+      "panel_projected_overlap"
+    ]
+  },
+  {
+    "angle_deg": 60,
+    "expected_positive_area_overlap": false,
+    "actual_intersection_m2": 7.691850745534253e-16,
+    "uv_resolution_m": 3.552713678800501e-15,
+    "status": "conflicts_detected",
+    "kinds": [
+      "panel_projected_overlap"
+    ]
+  },
+  {
+    "angle_deg": 75,
+    "expected_positive_area_overlap": false,
+    "actual_intersection_m2": 0.0,
+    "uv_resolution_m": 3.552713678800501e-15,
+    "status": "no_conflicts_detected",
+    "kinds": []
+  },
+  {
+    "angle_deg": 89,
+    "expected_positive_area_overlap": false,
+    "actual_intersection_m2": 1.7763568394002505e-15,
+    "uv_resolution_m": 3.552713678800501e-15,
+    "status": "conflicts_detected",
+    "kinds": [
+      "panel_projected_overlap"
+    ]
+  },
+  {
+    "angle_deg": 90,
+    "expected_positive_area_overlap": false,
+    "actual_intersection_m2": 0.0,
+    "uv_resolution_m": 3.552713678800501e-15,
+    "status": "no_conflicts_detected",
+    "kinds": []
+  },
+  {
+    "angle_deg": 135,
+    "expected_positive_area_overlap": false,
+    "actual_intersection_m2": 2.5154161253362757e-15,
+    "uv_resolution_m": 3.552713678800501e-15,
+    "status": "conflicts_detected",
+    "kinds": [
+      "panel_projected_overlap"
+    ]
+  },
+  {
+    "angle_deg": 180,
+    "expected_positive_area_overlap": false,
+    "actual_intersection_m2": 0.0,
+    "uv_resolution_m": 3.552713678800501e-15,
+    "status": "no_conflicts_detected",
+    "kinds": []
+  },
+  {
+    "angle_deg": 270,
+    "expected_positive_area_overlap": false,
+    "actual_intersection_m2": 0.0,
+    "uv_resolution_m": 3.552713678800501e-15,
+    "status": "no_conflicts_detected",
+    "kinds": []
+  }
+]

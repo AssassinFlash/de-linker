@@ -1,0 +1,5 @@
+# Preserve original native accessibility text and captured process output bytes.
+# Their trailing text-node spaces and terminal alignment are evidence, not code.
+native/*.ax.txt -text -whitespace
+*.log -text -whitespace
+review-spec-1b0b5d7d/*.txt -text -whitespace

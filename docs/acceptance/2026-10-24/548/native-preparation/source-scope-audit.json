@@ -1,0 +1,13 @@
+{
+  "base": "83f06cafd6dbec886dd1b7ac60a0de5a799da023",
+  "source_pin": "ee667df1eaacf7d7b8f9972b0d05e8789dc565b3",
+  "scan_scope": "added production source lines only",
+  "matches": {
+    "apify_token": 0,
+    "private_key": 0,
+    "old_custom_code": 0
+  },
+  "external_actor_starts": 0,
+  "external_research_requests": 0,
+  "full_changed_production_module_roots_old_identifier_hits": []
+}

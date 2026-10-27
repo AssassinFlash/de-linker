@@ -1,0 +1,1126 @@
+{
+	"schema_version": 1,
+	"provider_responses": "Simulated single official HTTPS response with retained original JRC TMY bytes; no live network or research credentials",
+	"weather_run": {
+		"id": "d01bb105c67c458380ae7d5802ab42a4",
+		"project_id": "688bc1561e314802aca2a0125acfe39f",
+		"revision": 2,
+		"state": "succeeded",
+		"is_current": false,
+		"manifest_sha256": "e4d8cf29ee5156fa7919c0b94d1d37d19400fa5d84d9698271a052d0c266b448",
+		"manifest": {
+			"context": {
+				"assets": {
+					"runtime_bundle": "47a14496e87b642b22a6be77d758ec5de4614be26de8851de569dcfbb2503aed",
+					"weather_acquisition.plan": "cba7b972160b1324fa878de1a68983e7deff5db8d653ebbd74938bb7358806b0"
+				},
+				"code_sha256": "47a14496e87b642b22a6be77d758ec5de4614be26de8851de569dcfbb2503aed",
+				"models": {
+					"acquisition": "official_jrc_https_get_original_v1",
+					"task": "acquire_pvgis_tmy_weather_v1",
+					"weather": "pvgis_5_3_tmy_explicit_two_axes_v1"
+				},
+				"parameters": {
+					"kind": "acquire_pvgis_tmy_weather_v1",
+					"limits": {
+						"connect_timeout_seconds": 5.0,
+						"max_elapsed_seconds": 60.0,
+						"max_metadata_bytes": 100000,
+						"max_response_bytes": 2000000,
+						"max_weather_rows": 9000,
+						"read_timeout_seconds": 20.0
+					}
+				}
+			},
+			"input_sha256": "1694640ee6fb0a3b2a5c3ead6573ee9ae1ac81db4afcc4e1fb77dbb974fa0077",
+			"project_id": "688bc1561e314802aca2a0125acfe39f",
+			"revision": 2,
+			"schema": 1
+		},
+		"result_sha256": "26645b5f30df90f37e560b01732efd3599cac62770d4563a79ef48c6a9835c07",
+		"result": {
+			"acquisition_run_id": "d01bb105c67c458380ae7d5802ab42a4",
+			"dependencies": {
+				"acquisition_plan": "cba7b972160b1324fa878de1a68983e7deff5db8d653ebbd74938bb7358806b0",
+				"capture.transport_receipt": "6148805d41a061558040ebbcf39a313a731c32bfd07d9c58c6a298f38de56e24",
+				"capture_evidence": "c38a02959b3fe6b51eb8b601db6988c77853bd512814fe103e893d2fbb7e2795",
+				"prepared_asset_content": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
+				"prepared_asset_metadata": "c0a9f66f1826904482885e8a013986921d422c4fed3d7a0c94b3d6715fb72c08",
+				"runtime_bundle": "47a14496e87b642b22a6be77d758ec5de4614be26de8851de569dcfbb2503aed",
+				"weather_capture": "e7580ae493fae7167f91a54ebf24966cbb23ef94c19a9cbe1dc81d5af0a6c492",
+				"weather_original": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110"
+			},
+			"input_sha256": "1694640ee6fb0a3b2a5c3ead6573ee9ae1ac81db4afcc4e1fb77dbb974fa0077",
+			"kind": "acquire_pvgis_tmy_weather_v1",
+			"manifest_sha256": "e4d8cf29ee5156fa7919c0b94d1d37d19400fa5d84d9698271a052d0c266b448",
+			"pinned_assets": {
+				"runtime_bundle": "47a14496e87b642b22a6be77d758ec5de4614be26de8851de569dcfbb2503aed",
+				"weather_acquisition.plan": "cba7b972160b1324fa878de1a68983e7deff5db8d653ebbd74938bb7358806b0"
+			},
+			"prepared_asset": {
+				"content_sha256": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
+				"id": "c981f61c8a4743699e56acb6e56cfa31",
+				"media_type": "application/json",
+				"metadata": {
+					"acquisition_limits": {
+						"connect_timeout_seconds": 5.0,
+						"max_elapsed_seconds": 60.0,
+						"max_metadata_bytes": 100000,
+						"max_response_bytes": 2000000,
+						"max_weather_rows": 9000,
+						"read_timeout_seconds": 20.0
+					},
+					"dependencies": {
+						"acquisition_plan": "cba7b972160b1324fa878de1a68983e7deff5db8d653ebbd74938bb7358806b0",
+						"capture.transport_receipt": "6148805d41a061558040ebbcf39a313a731c32bfd07d9c58c6a298f38de56e24",
+						"capture_evidence": "c38a02959b3fe6b51eb8b601db6988c77853bd512814fe103e893d2fbb7e2795",
+						"runtime_bundle": "47a14496e87b642b22a6be77d758ec5de4614be26de8851de569dcfbb2503aed",
+						"weather_capture": "e7580ae493fae7167f91a54ebf24966cbb23ef94c19a9cbe1dc81d5af0a6c492",
+						"weather_original": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110"
+					},
+					"provenance": {
+						"basis": "official_jrc_https_original",
+						"label": "JRC PVGIS typical meteorological year",
+						"rights_basis": "JRC PVGIS usage conditions; source/database attribution and private permanent original retention"
+					},
+					"retention": "permanent",
+					"schema": 1,
+					"source_type": "pvgis_tmy_weather_v1",
+					"weather": {
+						"altitude_m": 37.0,
+						"interval_count": 8760,
+						"latitude_deg": 52.52,
+						"longitude_deg": 13.405,
+						"source": {
+							"details": {
+								"ac_interval_energy_preservation_claim": false,
+								"adapter": "pvgis_5_3_tmy_explicit_two_axes_v1",
+								"capture": {
+									"capture_basis": "official_jrc_https_get_original_v1",
+									"content_type": "application/json",
+									"loaded_url": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=52.52&lon=13.405&startyear=2005&endyear=2023&usehorizon=0&outputformat=json",
+									"received_at_utc": "2023-11-14T22:13:20+00:00",
+									"requested_url": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=52.52&lon=13.405&startyear=2005&endyear=2023&usehorizon=0&outputformat=json",
+									"schema_version": 1,
+									"source_identifiers": {
+										"api_version": "5.3",
+										"provider": "EC_JRC_PVGIS"
+									},
+									"status": 200
+								},
+								"energy_axis_basis": "nonleap_synthetic_utc_hourly_scenario_v1",
+								"interpretation": {
+									"output_axis_policy": "nonleap_synthetic_utc_hourly_scenario_v1",
+									"power_reconstruction": "representative_pv_output_over_declared_intervals_v1",
+									"schema_version": 1,
+									"solar_date_policy": "original_selected_year_plus_reported_irradiance_offset",
+									"synthetic_energy_year": 2023
+								},
+								"irradiance_offset_microseconds": 661680000,
+								"irradiance_time_offset_hours": 0.1838,
+								"meteo_database": "ERA5",
+								"meteorology_time_basis": "provider_hourly_conditions_no_new_subhourly_observations",
+								"months_selected": [
+									{
+										"month": 1,
+										"year": 2021
+									},
+									{
+										"month": 2,
+										"year": 2019
+									},
+									{
+										"month": 3,
+										"year": 2006
+									},
+									{
+										"month": 4,
+										"year": 2018
+									},
+									{
+										"month": 5,
+										"year": 2010
+									},
+									{
+										"month": 6,
+										"year": 2009
+									},
+									{
+										"month": 7,
+										"year": 2018
+									},
+									{
+										"month": 8,
+										"year": 2015
+									},
+									{
+										"month": 9,
+										"year": 2009
+									},
+									{
+										"month": 10,
+										"year": 2008
+									},
+									{
+										"month": 11,
+										"year": 2011
+									},
+									{
+										"month": 12,
+										"year": 2014
+									}
+								],
+								"native_radiation_semantics": "sarah_instantaneous",
+								"provider_inputs": {
+									"location": {
+										"elevation": 37.0,
+										"irradiance_time_offset": 0.1838,
+										"latitude": 52.52,
+										"longitude": 13.405
+									},
+									"meteo_data": {
+										"horizon_db": null,
+										"meteo_db": "ERA5",
+										"radiation_db": "PVGIS-SARAH3",
+										"use_horizon": false,
+										"year_max": 2023,
+										"year_min": 2005
+									}
+								},
+								"provider_metadata": {
+									"inputs": {
+										"location": {
+											"description": "Selected location",
+											"variables": {
+												"elevation": {
+													"description": "Elevation",
+													"units": "m"
+												},
+												"latitude": {
+													"description": "Latitude",
+													"units": "decimal degree"
+												},
+												"longitude": {
+													"description": "Longitude",
+													"units": "decimal degree"
+												}
+											}
+										},
+										"meteo_data": {
+											"description": "Sources of meteorological data",
+											"variables": {
+												"horizon_db": {
+													"description": "Source of horizon data"
+												},
+												"meteo_db": {
+													"description": "Database used for meteorological variables other than solar radiation"
+												},
+												"radiation_db": {
+													"description": "Solar radiation database"
+												},
+												"use_horizon": {
+													"description": "Include horizon shadows"
+												},
+												"year_max": {
+													"description": "Last year of the calculations"
+												},
+												"year_min": {
+													"description": "First year of the calculations"
+												}
+											}
+										}
+									},
+									"outputs": {
+										"months_selected": {
+											"description": "months selected for the TMY",
+											"timestamp": "monthly",
+											"type": "time series"
+										},
+										"tmy_hourly": {
+											"timestamp": "hourly",
+											"type": "time series",
+											"variables": {
+												"G(h)": {
+													"description": "Global irradiance on the horizontal plane",
+													"units": "W/m2"
+												},
+												"Gb(n)": {
+													"description": "Beam/direct irradiance on a plane always normal to sun rays",
+													"units": "W/m2"
+												},
+												"Gd(h)": {
+													"description": "Diffuse irradiance on the horizontal plane",
+													"units": "W/m2"
+												},
+												"IR(h)": {
+													"description": "Surface infrared (thermal) irradiance on a horizontal plane",
+													"units": "W/m2"
+												},
+												"RH": {
+													"description": "relative humidity",
+													"units": "%"
+												},
+												"SP": {
+													"description": "Surface (air) pressure",
+													"units": "Pa"
+												},
+												"T2m": {
+													"description": "2-m air temperature",
+													"units": "degree Celsius"
+												},
+												"WD10m": {
+													"description": "10-m wind direction (0 = N, 90 = E)",
+													"units": "degree"
+												},
+												"WS10m": {
+													"description": "10-m total wind speed",
+													"units": "m/s"
+												}
+											}
+										}
+									}
+								},
+								"radiation_database": "PVGIS-SARAH3",
+								"request": {
+									"api_version": "5.3",
+									"end_year": 2023,
+									"expected_meteo_database": "ERA5",
+									"expected_radiation_database": "PVGIS-SARAH3",
+									"latitude_deg": 52.52,
+									"longitude_deg": 13.405,
+									"radiation_database_policy": "provider_default_with_verified_echo",
+									"schema_version": 1,
+									"start_year": 2005,
+									"use_terrain_horizon": false
+								},
+								"solar_date_basis": "original_selected_year_plus_reported_irradiance_offset",
+								"weather_kind": "stitched_typical_months_not_observed_historical_year"
+							},
+							"native_max_interval_seconds": 3600,
+							"origin": "template",
+							"raw_sha256": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
+							"timezone": "UTC"
+						}
+					},
+					"weather_capture": {
+						"capture_basis": "official_jrc_https_get_original_v1",
+						"content_type": "application/json",
+						"loaded_url": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=52.52&lon=13.405&startyear=2005&endyear=2023&usehorizon=0&outputformat=json",
+						"received_at_utc": "2023-11-14T22:13:20+00:00",
+						"requested_url": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=52.52&lon=13.405&startyear=2005&endyear=2023&usehorizon=0&outputformat=json",
+						"schema_version": 1,
+						"source_identifiers": {
+							"api_version": "5.3",
+							"provider": "EC_JRC_PVGIS"
+						},
+						"status": 200
+					},
+					"weather_interpretation": {
+						"output_axis_policy": "nonleap_synthetic_utc_hourly_scenario_v1",
+						"power_reconstruction": "representative_pv_output_over_declared_intervals_v1",
+						"schema_version": 1,
+						"solar_date_policy": "original_selected_year_plus_reported_irradiance_offset",
+						"synthetic_energy_year": 2023
+					},
+					"weather_request": {
+						"api_version": "5.3",
+						"end_year": 2023,
+						"expected_meteo_database": "ERA5",
+						"expected_radiation_database": "PVGIS-SARAH3",
+						"latitude_deg": 52.52,
+						"longitude_deg": 13.405,
+						"radiation_database_policy": "provider_default_with_verified_echo",
+						"schema_version": 1,
+						"start_year": 2005,
+						"use_terrain_horizon": false
+					}
+				},
+				"metadata_sha256": "c0a9f66f1826904482885e8a013986921d422c4fed3d7a0c94b3d6715fb72c08",
+				"project_id": "688bc1561e314802aca2a0125acfe39f",
+				"purpose": "pvgis_tmy_weather_v1"
+			},
+			"project_id": "688bc1561e314802aca2a0125acfe39f",
+			"revision": 2,
+			"runtime_sha256": "47a14496e87b642b22a6be77d758ec5de4614be26de8851de569dcfbb2503aed",
+			"schema": 1,
+			"weather_summary": {
+				"altitude_m": 37.0,
+				"interval_count": 8760,
+				"latitude_deg": 52.52,
+				"longitude_deg": 13.405,
+				"source": {
+					"details": {
+						"ac_interval_energy_preservation_claim": false,
+						"adapter": "pvgis_5_3_tmy_explicit_two_axes_v1",
+						"capture": {
+							"capture_basis": "official_jrc_https_get_original_v1",
+							"content_type": "application/json",
+							"loaded_url": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=52.52&lon=13.405&startyear=2005&endyear=2023&usehorizon=0&outputformat=json",
+							"received_at_utc": "2023-11-14T22:13:20+00:00",
+							"requested_url": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=52.52&lon=13.405&startyear=2005&endyear=2023&usehorizon=0&outputformat=json",
+							"schema_version": 1,
+							"source_identifiers": {
+								"api_version": "5.3",
+								"provider": "EC_JRC_PVGIS"
+							},
+							"status": 200
+						},
+						"energy_axis_basis": "nonleap_synthetic_utc_hourly_scenario_v1",
+						"interpretation": {
+							"output_axis_policy": "nonleap_synthetic_utc_hourly_scenario_v1",
+							"power_reconstruction": "representative_pv_output_over_declared_intervals_v1",
+							"schema_version": 1,
+							"solar_date_policy": "original_selected_year_plus_reported_irradiance_offset",
+							"synthetic_energy_year": 2023
+						},
+						"irradiance_offset_microseconds": 661680000,
+						"irradiance_time_offset_hours": 0.1838,
+						"meteo_database": "ERA5",
+						"meteorology_time_basis": "provider_hourly_conditions_no_new_subhourly_observations",
+						"months_selected": [
+							{
+								"month": 1,
+								"year": 2021
+							},
+							{
+								"month": 2,
+								"year": 2019
+							},
+							{
+								"month": 3,
+								"year": 2006
+							},
+							{
+								"month": 4,
+								"year": 2018
+							},
+							{
+								"month": 5,
+								"year": 2010
+							},
+							{
+								"month": 6,
+								"year": 2009
+							},
+							{
+								"month": 7,
+								"year": 2018
+							},
+							{
+								"month": 8,
+								"year": 2015
+							},
+							{
+								"month": 9,
+								"year": 2009
+							},
+							{
+								"month": 10,
+								"year": 2008
+							},
+							{
+								"month": 11,
+								"year": 2011
+							},
+							{
+								"month": 12,
+								"year": 2014
+							}
+						],
+						"native_radiation_semantics": "sarah_instantaneous",
+						"provider_inputs": {
+							"location": {
+								"elevation": 37.0,
+								"irradiance_time_offset": 0.1838,
+								"latitude": 52.52,
+								"longitude": 13.405
+							},
+							"meteo_data": {
+								"horizon_db": null,
+								"meteo_db": "ERA5",
+								"radiation_db": "PVGIS-SARAH3",
+								"use_horizon": false,
+								"year_max": 2023,
+								"year_min": 2005
+							}
+						},
+						"provider_metadata": {
+							"inputs": {
+								"location": {
+									"description": "Selected location",
+									"variables": {
+										"elevation": {
+											"description": "Elevation",
+											"units": "m"
+										},
+										"latitude": {
+											"description": "Latitude",
+											"units": "decimal degree"
+										},
+										"longitude": {
+											"description": "Longitude",
+											"units": "decimal degree"
+										}
+									}
+								},
+								"meteo_data": {
+									"description": "Sources of meteorological data",
+									"variables": {
+										"horizon_db": {
+											"description": "Source of horizon data"
+										},
+										"meteo_db": {
+											"description": "Database used for meteorological variables other than solar radiation"
+										},
+										"radiation_db": {
+											"description": "Solar radiation database"
+										},
+										"use_horizon": {
+											"description": "Include horizon shadows"
+										},
+										"year_max": {
+											"description": "Last year of the calculations"
+										},
+										"year_min": {
+											"description": "First year of the calculations"
+										}
+									}
+								}
+							},
+							"outputs": {
+								"months_selected": {
+									"description": "months selected for the TMY",
+									"timestamp": "monthly",
+									"type": "time series"
+								},
+								"tmy_hourly": {
+									"timestamp": "hourly",
+									"type": "time series",
+									"variables": {
+										"G(h)": {
+											"description": "Global irradiance on the horizontal plane",
+											"units": "W/m2"
+										},
+										"Gb(n)": {
+											"description": "Beam/direct irradiance on a plane always normal to sun rays",
+											"units": "W/m2"
+										},
+										"Gd(h)": {
+											"description": "Diffuse irradiance on the horizontal plane",
+											"units": "W/m2"
+										},
+										"IR(h)": {
+											"description": "Surface infrared (thermal) irradiance on a horizontal plane",
+											"units": "W/m2"
+										},
+										"RH": {
+											"description": "relative humidity",
+											"units": "%"
+										},
+										"SP": {
+											"description": "Surface (air) pressure",
+											"units": "Pa"
+										},
+										"T2m": {
+											"description": "2-m air temperature",
+											"units": "degree Celsius"
+										},
+										"WD10m": {
+											"description": "10-m wind direction (0 = N, 90 = E)",
+											"units": "degree"
+										},
+										"WS10m": {
+											"description": "10-m total wind speed",
+											"units": "m/s"
+										}
+									}
+								}
+							}
+						},
+						"radiation_database": "PVGIS-SARAH3",
+						"request": {
+							"api_version": "5.3",
+							"end_year": 2023,
+							"expected_meteo_database": "ERA5",
+							"expected_radiation_database": "PVGIS-SARAH3",
+							"latitude_deg": 52.52,
+							"longitude_deg": 13.405,
+							"radiation_database_policy": "provider_default_with_verified_echo",
+							"schema_version": 1,
+							"start_year": 2005,
+							"use_terrain_horizon": false
+						},
+						"solar_date_basis": "original_selected_year_plus_reported_irradiance_offset",
+						"weather_kind": "stitched_typical_months_not_observed_historical_year"
+					},
+					"native_max_interval_seconds": 3600,
+					"origin": "template",
+					"raw_sha256": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
+					"timezone": "UTC"
+				}
+			}
+		},
+		"error": null
+	},
+	"pv_run": {
+		"id": "cc6d87835df44867a0a3a8954d4c143e",
+		"project_id": "688bc1561e314802aca2a0125acfe39f",
+		"revision": 3,
+		"state": "succeeded",
+		"is_current": true,
+		"manifest_sha256": "96e569494389f292fca36a54173a8aeb0c9d1c7906a9f8c9101c15cde3ca6f1c",
+		"manifest": {
+			"context": {
+				"assets": {
+					"runtime_bundle": "47a14496e87b642b22a6be77d758ec5de4614be26de8851de569dcfbb2503aed",
+					"weather.metadata": "c0a9f66f1826904482885e8a013986921d422c4fed3d7a0c94b3d6715fb72c08",
+					"weather.raw": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110"
+				},
+				"code_sha256": "47a14496e87b642b22a6be77d758ec5de4614be26de8851de569dcfbb2503aed",
+				"models": {
+					"generation": "uniform_unshaded_pvlib_reference_v1",
+					"pvlib": "0.16.1",
+					"task": "prepare_roof_pv_reference_v1",
+					"weather": "pvgis_5_3_tmy_explicit_two_axes_v1"
+				},
+				"parameters": {
+					"kind": "prepare_roof_pv_reference_v1",
+					"limits": {
+						"max_array_steps": 9000,
+						"max_weather_bytes": 2000000,
+						"max_weather_rows": 9000
+					}
+				}
+			},
+			"input_sha256": "0ddf2dec18566e76350b3fecc7a482e573b6a355fa8803ac04f7ff0d3edc28a2",
+			"project_id": "688bc1561e314802aca2a0125acfe39f",
+			"revision": 3,
+			"schema": 1
+		},
+		"result_sha256": "2500f86bfef4ced3ed9397de88efb522a2e4e3d620013b9fe2ecc87a5573291a",
+		"result": {
+			"country_assessment": {
+				"status": "not_assessed"
+			},
+			"dependencies": {
+				"prepared_asset_content": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
+				"prepared_asset_metadata": "155a4a01b9b422a2dec6110921016bce877406a8fcf5bec2b20eb6845961e0cf",
+				"pv_model_inputs": "a032774f09c8055bd86615589639c7a417cbd6007599665e7550a7e5fb830181",
+				"pv_model_witness": "0d35d4d804efb690cd267b640f968e3c09ca214e5ee1fbebe3e6cfd7a8c46526"
+			},
+			"equipment_release": {
+				"status": "not_assessed"
+			},
+			"input_sha256": "0ddf2dec18566e76350b3fecc7a482e573b6a355fa8803ac04f7ff0d3edc28a2",
+			"kind": "prepare_roof_pv_reference_v1",
+			"manifest_sha256": "96e569494389f292fca36a54173a8aeb0c9d1c7906a9f8c9101c15cde3ca6f1c",
+			"near_shading_assessment": {
+				"status": "not_assessed"
+			},
+			"pinned_assets": {
+				"runtime_bundle": "47a14496e87b642b22a6be77d758ec5de4614be26de8851de569dcfbb2503aed",
+				"weather.metadata": "c0a9f66f1826904482885e8a013986921d422c4fed3d7a0c94b3d6715fb72c08",
+				"weather.raw": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110"
+			},
+			"prepared_asset": {
+				"content_sha256": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
+				"id": "0f963a8448dd4561a75543b5cdb07f43",
+				"media_type": "application/json",
+				"metadata": {
+					"dependencies": {
+						"pv_model_inputs": "a032774f09c8055bd86615589639c7a417cbd6007599665e7550a7e5fb830181",
+						"pv_model_witness": "0d35d4d804efb690cd267b640f968e3c09ca214e5ee1fbebe3e6cfd7a8c46526"
+					},
+					"derived_from_revision": 3,
+					"geometry_sha256": "f93d7aac1afe0dd07f968e067a6a08e5cf912803d64d0f1fb41d475ab92cce68",
+					"interpretation": {
+						"end_utc": "2024-01-01T00:00:00+00:00",
+						"energy_kwh": 2943.945050162976,
+						"interval_count": 8760,
+						"measurement": "pv_available_ac",
+						"model_role": "unshaded_reference_scenario",
+						"native_max_interval_seconds": 3600,
+						"origin": "modelled",
+						"reconstructed_means": true,
+						"start_utc": "2023-01-01T00:00:00+00:00",
+						"transformations": [
+							{
+								"energy_preservation_claim": false,
+								"exact_interval_copy": false,
+								"input_document_sha256": "a032774f09c8055bd86615589639c7a417cbd6007599665e7550a7e5fb830181",
+								"input_max_interval_seconds": 3600,
+								"interval_assignment_basis": "explicit_model_policy_not_observed_interval_power",
+								"method": "representative_pv_output_over_declared_intervals_v1",
+								"native_value_semantics": "weather_records_with_separate_irradiance_instants",
+								"output_max_interval_seconds": 3600.0,
+								"output_value_semantics": "reconstructed_interval_average",
+								"target_axis_sha256": "14a224c7124465732da27e330e6665c15a1dd095cea3cc43b55e84677b5fc070"
+							}
+						]
+					},
+					"limits": {
+						"max_array_steps": 9000,
+						"max_weather_bytes": 2000000,
+						"max_weather_rows": 9000
+					},
+					"parameters_sha256": "250f2ceab7ec6598136f70fe160944e71f0d0169c73689f1c6e380713ba0b4f7",
+					"profile_type": "pvlib_reference_profile_v1",
+					"provenance": {
+						"basis": "official_jrc_https_original",
+						"label": "JRC PVGIS typical meteorological year",
+						"rights_basis": "JRC PVGIS usage conditions; source/database attribution and private permanent original retention"
+					},
+					"retention": "permanent",
+					"schema": 1,
+					"weather_capture": {
+						"capture_basis": "official_jrc_https_get_original_v1",
+						"content_type": "application/json",
+						"loaded_url": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=52.52&lon=13.405&startyear=2005&endyear=2023&usehorizon=0&outputformat=json",
+						"received_at_utc": "2023-11-14T22:13:20+00:00",
+						"requested_url": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=52.52&lon=13.405&startyear=2005&endyear=2023&usehorizon=0&outputformat=json",
+						"schema_version": 1,
+						"source_identifiers": {
+							"api_version": "5.3",
+							"provider": "EC_JRC_PVGIS"
+						},
+						"status": 200
+					},
+					"weather_interpretation": {
+						"output_axis_policy": "nonleap_synthetic_utc_hourly_scenario_v1",
+						"power_reconstruction": "representative_pv_output_over_declared_intervals_v1",
+						"schema_version": 1,
+						"solar_date_policy": "original_selected_year_plus_reported_irradiance_offset",
+						"synthetic_energy_year": 2023
+					},
+					"weather_request": {
+						"api_version": "5.3",
+						"end_year": 2023,
+						"expected_meteo_database": "ERA5",
+						"expected_radiation_database": "PVGIS-SARAH3",
+						"latitude_deg": 52.52,
+						"longitude_deg": 13.405,
+						"radiation_database_policy": "provider_default_with_verified_echo",
+						"schema_version": 1,
+						"start_year": 2005,
+						"use_terrain_horizon": false
+					}
+				},
+				"metadata_sha256": "155a4a01b9b422a2dec6110921016bce877406a8fcf5bec2b20eb6845961e0cf",
+				"project_id": "688bc1561e314802aca2a0125acfe39f",
+				"purpose": "pvlib_reference_profile_v1"
+			},
+			"profile_summary": {
+				"end_utc": "2024-01-01T00:00:00+00:00",
+				"energy_kwh": 2943.945050162976,
+				"interval_count": 8760,
+				"measurement": "pv_available_ac",
+				"model_role": "unshaded_reference_scenario",
+				"native_max_interval_seconds": 3600,
+				"origin": "modelled",
+				"reconstructed_means": true,
+				"start_utc": "2023-01-01T00:00:00+00:00",
+				"transformations": [
+					{
+						"energy_preservation_claim": false,
+						"exact_interval_copy": false,
+						"input_document_sha256": "a032774f09c8055bd86615589639c7a417cbd6007599665e7550a7e5fb830181",
+						"input_max_interval_seconds": 3600,
+						"interval_assignment_basis": "explicit_model_policy_not_observed_interval_power",
+						"method": "representative_pv_output_over_declared_intervals_v1",
+						"native_value_semantics": "weather_records_with_separate_irradiance_instants",
+						"output_max_interval_seconds": 3600.0,
+						"output_value_semantics": "reconstructed_interval_average",
+						"target_axis_sha256": "14a224c7124465732da27e330e6665c15a1dd095cea3cc43b55e84677b5fc070"
+					}
+				]
+			},
+			"project_id": "688bc1561e314802aca2a0125acfe39f",
+			"revision": 3,
+			"runtime_sha256": "47a14496e87b642b22a6be77d758ec5de4614be26de8851de569dcfbb2503aed",
+			"schema": 1
+		},
+		"error": null
+	},
+	"weather_project": {
+		"id": "688bc1561e314802aca2a0125acfe39f",
+		"title": "Actual JRC typical weather / synthetic roof, not equipment qualification",
+		"revision": 2,
+		"input_sha256": "1694640ee6fb0a3b2a5c3ead6573ee9ae1ac81db4afcc4e1fb77dbb974fa0077",
+		"inputs": {
+			"geometry": {
+				"arrays": [
+					{
+						"column_gap_m": 0.2,
+						"columns": 3,
+						"excluded_slots": ["1:2"],
+						"id": "array",
+						"lower_edge_clearance_m": 0.1,
+						"module_spec_id": "module",
+						"mount_tilt_deg": 30,
+						"mounting_note": "Synthetic dimensions, not mounting-system approval",
+						"name": "Fixture array",
+						"origin_uv": [1, 2],
+						"roof_id": "roof",
+						"rotation_deg": 0,
+						"row_gap_m": 0.4,
+						"rows": 2,
+						"source_id": "survey"
+					}
+				],
+				"coordinate_system": {
+					"anchor": {
+						"datum": "EPSG:4326",
+						"latitude_deg": 52.52,
+						"longitude_deg": 13.405,
+						"source_id": "survey"
+					},
+					"height_reference": "relative_to_project_origin",
+					"kind": "local_enu",
+					"north_reference": "user_declared",
+					"north_source_id": "survey",
+					"unit": "m"
+				},
+				"keepouts": [],
+				"layout_rules": [
+					{
+						"edge_clearance_m": 0,
+						"obstacle_clearance_m": 0,
+						"roof_id": "roof",
+						"source_id": "survey",
+						"source_note": "Explicit zero for analytic fixture; not a recommended installation clearance"
+					}
+				],
+				"module_specs": [
+					{
+						"id": "module",
+						"length_m": 2,
+						"model": "Synthetic 1 x 2 m",
+						"source": {
+							"document_sha256": null,
+							"kind": "user_declared",
+							"note": "Synthetic module, not a product release",
+							"page": null,
+							"url": null
+						},
+						"stc_power_w": 500,
+						"thickness_m": 0.04,
+						"width_m": 1
+					}
+				],
+				"obstacles": [],
+				"roofs": [
+					{
+						"boundary_uv": [
+							[0, 0],
+							[20, 0],
+							[20, 20],
+							[0, 20]
+						],
+						"holes_uv": [],
+						"id": "roof",
+						"name": "Fixture roof",
+						"origin_enu": [10, -20, 4],
+						"source_id": "survey",
+						"u_axis_enu": [1, 0, 0],
+						"v_axis_enu": [0, 1, 0]
+					}
+				],
+				"schema_version": 1,
+				"sources": [
+					{
+						"acquired_at_utc": null,
+						"calibration_note": "Analytic metre-scale fixture; no real-world precision claim",
+						"id": "survey",
+						"kind": "synthetic_fixture",
+						"note": "Analytic synthetic dimensions only",
+						"permissions": {
+							"derive": "permitted",
+							"export": "permitted",
+							"retain": "permitted"
+						},
+						"reference_sha256": null,
+						"reference_url": null,
+						"rights_basis": "synthetic",
+						"rights_note": "Owned test data, not a site survey or product datasheet",
+						"spatial_precision_m": null
+					}
+				]
+			},
+			"pv_generation": {
+				"arrays": [
+					{
+						"albedo": 0.2,
+						"array_id": "array",
+						"beam_iam_b": 0,
+						"beam_iam_model": "ashrae",
+						"dc_mismatch_factor": 1,
+						"dc_wiring_factor": 1,
+						"ground_diffuse_iam_factor": 1,
+						"sky_diffuse_iam_factor": 1,
+						"soiling_factor": 1,
+						"source_note": "Synthetic analytic scenario; no surveyed, manufacturer, shading or country release",
+						"spectral_factor": 1,
+						"thermal": {
+							"a": -3.47,
+							"b": -0.0594,
+							"delta_t_c": 3,
+							"model": "sapm_cell",
+							"source_note": "Synthetic analytic scenario; no surveyed, manufacturer, shading or country release"
+						},
+						"transposition": "perez"
+					}
+				],
+				"converters": [
+					{
+						"array_ids": ["array"],
+						"eta_nominal": 0.96,
+						"eta_reference": 0.9637,
+						"id": "converter",
+						"input_assumption": "independent_mppt_array_mpp_sum",
+						"model": "pvwatts",
+						"reference_dc_power_w": 10000,
+						"source_note": "Synthetic analytic scenario; no surveyed, manufacturer, shading or country release"
+					}
+				],
+				"model": "uniform_unshaded_pvlib_reference_v1",
+				"modules": [
+					{
+						"gamma_pdc_per_c": -0.004,
+						"module_spec_id": "module",
+						"source": {
+							"document_sha256": null,
+							"kind": "user_declared",
+							"note": "Synthetic analytic scenario; no surveyed, manufacturer, shading or country release",
+							"page": null,
+							"url": null
+						}
+					}
+				],
+				"pvlib_version": "0.16.1",
+				"schema_version": 1,
+				"shading_policy": "explicit_unshaded_reference",
+				"source_note": "Synthetic analytic scenario; no surveyed, manufacturer, shading or country release",
+				"temporal_policy": "representative_pv_output_over_declared_intervals_v1"
+			},
+			"weather_acquisition": {
+				"interpretation": {
+					"output_axis_policy": "nonleap_synthetic_utc_hourly_scenario_v1",
+					"power_reconstruction": "representative_pv_output_over_declared_intervals_v1",
+					"schema_version": 1,
+					"solar_date_policy": "original_selected_year_plus_reported_irradiance_offset",
+					"synthetic_energy_year": 2023
+				},
+				"request": {
+					"api_version": "5.3",
+					"end_year": 2023,
+					"expected_meteo_database": "ERA5",
+					"expected_radiation_database": "PVGIS-SARAH3",
+					"latitude_deg": 52.52,
+					"longitude_deg": 13.405,
+					"radiation_database_policy": "provider_default_with_verified_echo",
+					"schema_version": 1,
+					"start_year": 2005,
+					"use_terrain_horizon": false
+				},
+				"schema_version": 1
+			}
+		}
+	},
+	"pv_project": {
+		"id": "688bc1561e314802aca2a0125acfe39f",
+		"title": "Actual JRC typical weather / synthetic roof, not equipment qualification",
+		"revision": 3,
+		"input_sha256": "0ddf2dec18566e76350b3fecc7a482e573b6a355fa8803ac04f7ff0d3edc28a2",
+		"inputs": {
+			"geometry": {
+				"arrays": [
+					{
+						"column_gap_m": 0.2,
+						"columns": 3,
+						"excluded_slots": ["1:2"],
+						"id": "array",
+						"lower_edge_clearance_m": 0.1,
+						"module_spec_id": "module",
+						"mount_tilt_deg": 30,
+						"mounting_note": "Synthetic dimensions, not mounting-system approval",
+						"name": "Fixture array",
+						"origin_uv": [1, 2],
+						"roof_id": "roof",
+						"rotation_deg": 0,
+						"row_gap_m": 0.4,
+						"rows": 2,
+						"source_id": "survey"
+					}
+				],
+				"coordinate_system": {
+					"anchor": {
+						"datum": "EPSG:4326",
+						"latitude_deg": 52.52,
+						"longitude_deg": 13.405,
+						"source_id": "survey"
+					},
+					"height_reference": "relative_to_project_origin",
+					"kind": "local_enu",
+					"north_reference": "user_declared",
+					"north_source_id": "survey",
+					"unit": "m"
+				},
+				"keepouts": [],
+				"layout_rules": [
+					{
+						"edge_clearance_m": 0,
+						"obstacle_clearance_m": 0,
+						"roof_id": "roof",
+						"source_id": "survey",
+						"source_note": "Explicit zero for analytic fixture; not a recommended installation clearance"
+					}
+				],
+				"module_specs": [
+					{
+						"id": "module",
+						"length_m": 2,
+						"model": "Synthetic 1 x 2 m",
+						"source": {
+							"document_sha256": null,
+							"kind": "user_declared",
+							"note": "Synthetic module, not a product release",
+							"page": null,
+							"url": null
+						},
+						"stc_power_w": 500,
+						"thickness_m": 0.04,
+						"width_m": 1
+					}
+				],
+				"obstacles": [],
+				"roofs": [
+					{
+						"boundary_uv": [
+							[0, 0],
+							[20, 0],
+							[20, 20],
+							[0, 20]
+						],
+						"holes_uv": [],
+						"id": "roof",
+						"name": "Fixture roof",
+						"origin_enu": [10, -20, 4],
+						"source_id": "survey",
+						"u_axis_enu": [1, 0, 0],
+						"v_axis_enu": [0, 1, 0]
+					}
+				],
+				"schema_version": 1,
+				"sources": [
+					{
+						"acquired_at_utc": null,
+						"calibration_note": "Analytic metre-scale fixture; no real-world precision claim",
+						"id": "survey",
+						"kind": "synthetic_fixture",
+						"note": "Analytic synthetic dimensions only",
+						"permissions": {
+							"derive": "permitted",
+							"export": "permitted",
+							"retain": "permitted"
+						},
+						"reference_sha256": null,
+						"reference_url": null,
+						"rights_basis": "synthetic",
+						"rights_note": "Owned test data, not a site survey or product datasheet",
+						"spatial_precision_m": null
+					}
+				]
+			},
+			"pv_generation": {
+				"arrays": [
+					{
+						"albedo": 0.2,
+						"array_id": "array",
+						"beam_iam_b": 0,
+						"beam_iam_model": "ashrae",
+						"dc_mismatch_factor": 1,
+						"dc_wiring_factor": 1,
+						"ground_diffuse_iam_factor": 1,
+						"sky_diffuse_iam_factor": 1,
+						"soiling_factor": 1,
+						"source_note": "Synthetic analytic scenario; no surveyed, manufacturer, shading or country release",
+						"spectral_factor": 1,
+						"thermal": {
+							"a": -3.47,
+							"b": -0.0594,
+							"delta_t_c": 3,
+							"model": "sapm_cell",
+							"source_note": "Synthetic analytic scenario; no surveyed, manufacturer, shading or country release"
+						},
+						"transposition": "perez"
+					}
+				],
+				"converters": [
+					{
+						"array_ids": ["array"],
+						"eta_nominal": 0.96,
+						"eta_reference": 0.9637,
+						"id": "converter",
+						"input_assumption": "independent_mppt_array_mpp_sum",
+						"model": "pvwatts",
+						"reference_dc_power_w": 10000,
+						"source_note": "Synthetic analytic scenario; no surveyed, manufacturer, shading or country release"
+					}
+				],
+				"model": "uniform_unshaded_pvlib_reference_v1",
+				"modules": [
+					{
+						"gamma_pdc_per_c": -0.004,
+						"module_spec_id": "module",
+						"source": {
+							"document_sha256": null,
+							"kind": "user_declared",
+							"note": "Synthetic analytic scenario; no surveyed, manufacturer, shading or country release",
+							"page": null,
+							"url": null
+						}
+					}
+				],
+				"pvlib_version": "0.16.1",
+				"schema_version": 1,
+				"shading_policy": "explicit_unshaded_reference",
+				"source_note": "Synthetic analytic scenario; no surveyed, manufacturer, shading or country release",
+				"temporal_policy": "representative_pv_output_over_declared_intervals_v1"
+			},
+			"pv_preparation": {
+				"schema_version": 1,
+				"weather_asset_id": "c981f61c8a4743699e56acb6e56cfa31"
+			},
+			"weather_acquisition": {
+				"interpretation": {
+					"output_axis_policy": "nonleap_synthetic_utc_hourly_scenario_v1",
+					"power_reconstruction": "representative_pv_output_over_declared_intervals_v1",
+					"schema_version": 1,
+					"solar_date_policy": "original_selected_year_plus_reported_irradiance_offset",
+					"synthetic_energy_year": 2023
+				},
+				"request": {
+					"api_version": "5.3",
+					"end_year": 2023,
+					"expected_meteo_database": "ERA5",
+					"expected_radiation_database": "PVGIS-SARAH3",
+					"latitude_deg": 52.52,
+					"longitude_deg": 13.405,
+					"radiation_database_policy": "provider_default_with_verified_echo",
+					"schema_version": 1,
+					"start_year": 2005,
+					"use_terrain_horizon": false
+				},
+				"schema_version": 1
+			}
+		}
+	},
+	"weather_status": {
+		"schema_version": 1,
+		"run_id": "d01bb105c67c458380ae7d5802ab42a4",
+		"task_state": "succeeded",
+		"acquisition_state": "captured",
+		"plan_sha256": "cba7b972160b1324fa878de1a68983e7deff5db8d653ebbd74938bb7358806b0",
+		"capture_sha256": "e7580ae493fae7167f91a54ebf24966cbb23ef94c19a9cbe1dc81d5af0a6c492"
+	}
+}

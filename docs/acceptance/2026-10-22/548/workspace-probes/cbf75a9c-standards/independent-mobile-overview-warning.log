@@ -1,0 +1,18 @@
+✔ independent mobile selector shares workspace/hash/input nodes and reveals the first Site section (798.615833ms)
+✔ independent mobile selector refuses invalid annual raw value and follows correction without losing it (115.018459ms)
+✔ independent mobile selector cannot hide an unapplied roof form and resumes after cancel (85.632458ms)
+✔ independent mobile selector obeys immediate native scope fence before a React recheck render (37.062417ms)
+✔ empty overview retains unknown layout and actual explicit zero consumption en-US (131.043375ms)
+✔ multi-roof summary spans all layouts while preview names and draws only first roof en-US (21.040166ms)
+✔ empty overview retains unknown layout and actual explicit zero consumption de-DE (15.867416ms)
+✔ multi-roof summary spans all layouts while preview names and draws only first roof de-DE (15.813042ms)
+✔ independent stale refusal stays cleared and staged roof/module wording remains accurate en-US (938.073334ms)
+✔ independent stale refusal stays cleared and staged roof/module wording remains accurate de-DE (153.170417ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1733.7

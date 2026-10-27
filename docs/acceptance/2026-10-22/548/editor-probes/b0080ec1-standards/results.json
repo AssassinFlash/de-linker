@@ -1,0 +1,35 @@
+{
+  "source": "b0080ec15eb2dcab6b2c22b7b029180a2c1f73c2",
+  "base": "8a4a80b1",
+  "prior": "6c6680ad4e2eb890b08c58b5a9bffd95ecb48957",
+  "axis": "Standards",
+  "verdict": "PASS",
+  "hard_findings": [],
+  "actionable_heuristic_findings": [],
+  "checks": {
+    "original_probe_unchanged_sha256": "f2f1db8e5dd1214f4ec23e8921872daf98a091f06375d1a4e755016e24b5ba89",
+    "original_bug_assertion": "Fails as expected: actual [1,2,3], cancelled 1, finished 0; stale-preview defect closed",
+    "actual_Three_and_production_Panels_callbacks": {
+      "pass": 8,
+      "gpu": false,
+      "host_seam": "R3F useThree mocked; group JSX uses real Three Group with layout ref cleanup before passive effects. Actual product Panels callbacks and actual installed TransformControls execute."
+    },
+    "plan_real_React_pointer_handlers": {
+      "pass": 12,
+      "native_layout": false,
+      "seam": "Identity SVG CTM and DOMPoint, explicit capture Map. Native automatic capture release on removal is NOT modeled/asserted; unmount asserts no command/DOM removed."
+    },
+    "official_domain_and_data": 46,
+    "official_React_DOM": 51,
+    "actual_fixed_emitted_ESM_graph": 1,
+    "manifest_matches_sources": true,
+    "new_legacy_identifiers": 0,
+    "copy_catalogue_delta": "none; retain prior 259-message source/PO/script-JSON comparison PASS; fallback reuses Roof design"
+  },
+  "boundaries": [
+    "No p548/browser/production access",
+    "Actual GPU/context-loss/native browser proof remains parent axis",
+    "No claim of full design scope B or complete planner acceptance",
+    "Initial suite run omitted two archived fixtures; fixed archive intake then suite passed. Initial plan capture assertion assumed unsupported JSDOM native-disconnect behavior; scope corrected explicitly, no product code changed."
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "purpose": "new missing primary requestListSources documentation only; no weather URL",
+  "method": "POST",
+  "endpoint": "https://api.apify.com/v2/acts/aYG0l9s7dbB7j3gbS/runs?build=0.3.101&timeout=90&memory=1024&restartOnError=false",
+  "httpStatus": 201,
+  "responseBytes": 2991,
+  "responseSha256": "8176566653c976ab9d95afe4f88bb77909a1f37db8cadbdc5f76fbe364799a8d",
+  "acquiredAtUTC": "2026-10-24T05:44:47.584680+00:00",
+  "run": {
+    "id": "a6I92wwUlGLV6ZcPd",
+    "actId": "aYG0l9s7dbB7j3gbS",
+    "status": "READY",
+    "buildId": "bsZdc9Cal4wAwV0VW",
+    "buildNumber": "0.3.101",
+    "defaultDatasetId": "NjWC2HllyL6L087kJ",
+    "defaultKeyValueStoreId": "JcMtcDe9Ssm5e1j3i",
+    "startedAt": "2026-10-24T05:44:46.072Z",
+    "finishedAt": null
+  },
+  "readback": {
+    "method": "GET",
+    "endpoint": "https://api.apify.com/v2/actor-runs/a6I92wwUlGLV6ZcPd?waitForFinish=10",
+    "httpStatus": 200,
+    "responseBytes": 3794,
+    "responseSha256": "3e775a8426f60e6d0c94913731e0fa4cb7aa03fa2b2d0bd5d16aedf8d541fb4d",
+    "acquiredAtUTC": "2026-10-24T05:45:12.835819+00:00",
+    "run": {
+      "id": "a6I92wwUlGLV6ZcPd",
+      "actId": "aYG0l9s7dbB7j3gbS",
+      "status": "SUCCEEDED",
+      "buildId": "bsZdc9Cal4wAwV0VW",
+      "buildNumber": "0.3.101",
+      "defaultDatasetId": "NjWC2HllyL6L087kJ",
+      "defaultKeyValueStoreId": "JcMtcDe9Ssm5e1j3i",
+      "startedAt": "2026-10-24T05:44:46.072Z",
+      "finishedAt": "2026-10-24T05:44:53.394Z",
+      "statusMessage": "Finished! Total 1 requests: 1 succeeded, 0 failed."
+    }
+  }
+}

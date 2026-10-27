@@ -1,0 +1,24 @@
+{
+  "channel": "CUA Chrome extension read-only visible JSON DOM, own new tab closed after extraction",
+  "tabId": "329395485",
+  "era5": {
+    "providerURL": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-ERA5&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=crystSi&mountingplace=free&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json",
+    "chars": 1057449,
+    "rows": 8784,
+    "first": "20200101:0030",
+    "last": "20201231:2330"
+  },
+  "sarah3": {
+    "providerURL": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-SARAH3&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=crystSi&mountingplace=free&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json",
+    "chars": 1054883,
+    "rows": 8784,
+    "first": "20200101:0011",
+    "last": "20201231:2311",
+    "minutes": [
+      "11"
+    ]
+  },
+  "bothGenericTimestampField": "hourly averages",
+  "attachmentAttempt": "browser=1 navigation ERR_ABORTED; CUA download event timed out; this was not used as the saved fixture",
+  "rawFixtureSource": "Apify run 1hHNy9TJqSLGv9hq4 independently captured original file record bytes, not a DOM reconstruction"
+}

@@ -1,0 +1,185 @@
+{
+  "id": "cc50db9a4db14595901826e2669bffae",
+  "project_id": "fadd62a5da73432890521e75cd2f225f",
+  "content_sha256": "47770a0dc5034b54743dd2da28d1c855e2c8c047c7678d3688215d8e89d9eebc",
+  "media_type": "application/geo+json",
+  "purpose": "geometry_import_v1",
+  "metadata_sha256": "af661ef15e4550f3e5912c4b554c1fd067010e47d738354563173df5e6d21257",
+  "metadata": {
+    "geometry_import": {
+      "area_roof_plane_m2": 187.66430950859078,
+      "elevation_basis": "user_declared_plane_relative_to_project_origin",
+      "engineering_status": "not_evaluated",
+      "geometry": {
+        "arrays": [],
+        "coordinate_system": {
+          "anchor": {
+            "datum": "EPSG:4326",
+            "latitude_deg": 50.94,
+            "longitude_deg": 6.96,
+            "source_id": "source_22f5b02074242a360b1522d0f31469b5"
+          },
+          "height_reference": "relative_to_project_origin",
+          "kind": "local_enu",
+          "north_reference": "true_north",
+          "north_source_id": "source_22f5b02074242a360b1522d0f31469b5",
+          "unit": "m"
+        },
+        "keepouts": [],
+        "layout_rules": [],
+        "module_specs": [],
+        "obstacles": [],
+        "roofs": [
+          {
+            "boundary_uv": [
+              [
+                0.0,
+                0.0
+              ],
+              [
+                14.057646091088232,
+                2.3814009744514944e-05
+              ],
+              [
+                14.057597585864213,
+                13.90590761029432
+              ],
+              [
+                -2.6992427029122135e-11,
+                13.905883796071086
+              ]
+            ],
+            "holes_uv": [
+              [
+                [
+                  5.623050675547586,
+                  5.5623616689456865
+                ],
+                [
+                  5.623046795074092,
+                  8.343538427712893
+                ],
+                [
+                  8.434570192672988,
+                  8.343543190594023
+                ],
+                [
+                  8.434576013290787,
+                  5.562366431443335
+                ]
+              ]
+            ],
+            "id": "roof_22f5b02074242a360b1522d0f31469b5",
+            "name": "Synthetic 3-4-5 roof with opening",
+            "origin_enu": [
+              0.0,
+              0.0,
+              5.0
+            ],
+            "source_id": "source_22f5b02074242a360b1522d0f31469b5",
+            "u_axis_enu": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "v_axis_enu": [
+              0.0,
+              0.8,
+              -0.6
+            ]
+          }
+        ],
+        "schema_version": 1,
+        "sources": [
+          {
+            "acquired_at_utc": null,
+            "calibration_note": "Synthetic 3-4-5 plane, origin Up5m relative to the project; not a surveyed roof or known ellipsoid elevation.",
+            "id": "source_22f5b02074242a360b1522d0f31469b5",
+            "kind": "user_drawing",
+            "note": "Generated WGS84 source; not surveyed",
+            "permissions": {
+              "derive": "permitted",
+              "export": "permitted",
+              "retain": "permitted"
+            },
+            "reference_sha256": "47770a0dc5034b54743dd2da28d1c855e2c8c047c7678d3688215d8e89d9eebc",
+            "reference_url": null,
+            "rights_basis": "user_attestation",
+            "rights_note": "Generated synthetic test coordinates. This is our own original file, and we permit retaining and deriving this test geometry.",
+            "spatial_precision_m": null
+          }
+        ]
+      },
+      "geometry_sha256": "eb5e91068fad254cc10469113aad8fe443f9d8c7aaad991e86acb9a1d88abb45",
+      "original_content_sha256": "47770a0dc5034b54743dd2da28d1c855e2c8c047c7678d3688215d8e89d9eebc",
+      "plane_intersection_method": "geodetic_vertical_line_v1",
+      "projection": {
+        "grid_dependencies": [],
+        "input_axis_order": "longitude_latitude_ellipsoid_height",
+        "input_crs": "EPSG:4979",
+        "operation": "+proj=pipeline +step +proj=unitconvert +xy_in=deg +xy_out=rad +step +proj=cart +ellps=WGS84 +step +proj=topocentric +ellps=WGS84 +lon_0=6.96 +lat_0=50.94 +h_0=0.0",
+        "output_axes": "east_north_up_metres",
+        "proj": "9.8.1",
+        "pyproj": "3.8.0",
+        "reference": {
+          "ellipsoid_height_m": 0.0,
+          "height_basis": "zero_height_horizontal_convention",
+          "latitude_deg": 50.94,
+          "longitude_deg": 6.96,
+          "method": "wgs84_cart_topocentric_v1",
+          "schema_version": 1
+        },
+        "schema_version": 1
+      },
+      "schema_version": 1,
+      "source_feature_id": "synthetic-roof-not-surveyed"
+    },
+    "geometry_import_options": {
+      "feature_index": 0,
+      "format": "geojson_wgs84_horizontal_v1",
+      "plane": {
+        "basis_note": "Synthetic 3-4-5 plane, origin Up5m relative to the project; not a surveyed roof or known ellipsoid elevation.",
+        "origin_enu": [
+          0.0,
+          0.0,
+          5.0
+        ],
+        "u_axis_enu": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "v_axis_enu": [
+          0.0,
+          0.8,
+          -0.6
+        ]
+      },
+      "plane_intersection_method": "geodetic_vertical_line_v1",
+      "polygon_index": 0,
+      "reference": {
+        "ellipsoid_height_m": 0.0,
+        "height_basis": "zero_height_horizontal_convention",
+        "latitude_deg": 50.94,
+        "longitude_deg": 6.96,
+        "method": "wgs84_cart_topocentric_v1",
+        "schema_version": 1
+      },
+      "roof_name": "Synthetic 3-4-5 roof with opening",
+      "schema_version": 1,
+      "source": {
+        "export_permission": "permitted",
+        "label": "Generated WGS84 source; not surveyed",
+        "rights_note": "Generated synthetic test coordinates. This is our own original file, and we permit retaining and deriving this test geometry.",
+        "spatial_precision_m": null
+      }
+    },
+    "provenance": {
+      "basis": "user_owned_geometry_file_declaration",
+      "label": "Generated WGS84 source; not surveyed",
+      "rights_basis": "Generated synthetic test coordinates. This is our own original file, and we permit retaining and deriving this test geometry."
+    },
+    "retention": "permanent",
+    "schema_version": 1
+  }
+}

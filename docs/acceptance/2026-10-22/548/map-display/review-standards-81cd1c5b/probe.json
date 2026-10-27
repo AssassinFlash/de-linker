@@ -1,0 +1,761 @@
+{
+  "at_utc": "2026-10-23T15:06:42.539320+00:00",
+  "base": "be5711bf429c86dc5118e55227c0a48bb78d26b1",
+  "target": "81cd1c5b1a7d5ff5592131602c12d642d13c162b",
+  "full_diff_command": "git diff be5711bf429c86dc5118e55227c0a48bb78d26b1...81cd1c5b1a7d5ff5592131602c12d642d13c162b",
+  "commits": [
+    "81cd1c5b1a7d5ff5592131602c12d642d13c162b Add Linker identity across the planning application and guard map precision",
+    "f40db1d6e22f4b7511ddc658024ff2cf8f91f507 Retain map build checks and test-boundary evidence",
+    "910b4751a471d05e6b3f81f2d7dcaf79da86fa09 Add a shared-project map view with bounded provider requests"
+  ],
+  "diff_bytes": 4093618,
+  "diff_sha256": "022835839a472076d25ec9c067a91b71f2a7bc9b7486633327f8d25a292c0cbc",
+  "files_in_full_fixed_diff": 98,
+  "new_lock_packages": 28,
+  "added_mirror_resolved_entries": 28,
+  "added_dependency_entries": [
+    {
+      "package": "node_modules/@mapbox/jsonlint-lines-primitives",
+      "version": "2.0.3",
+      "resolved": "https://registry.npmmirror.com/@mapbox/jsonlint-lines-primitives/-/jsonlint-lines-primitives-2.0.3.tgz",
+      "integrity": "sha512-0SElaV0uMxEnxzBhhX9WTuPyUeMsAN/SS0i16tjuba4/mio63MG9khjC1a0JAiPGXAwvwm4UfHJURCN7nyudQg==",
+      "entry_line": 184,
+      "resolved_line": 186
+    },
+    {
+      "package": "node_modules/@mapbox/point-geometry",
+      "version": "1.1.0",
+      "resolved": "https://registry.npmmirror.com/@mapbox/point-geometry/-/point-geometry-1.1.0.tgz",
+      "integrity": "sha512-YGcBz1cg4ATXDCM/71L9xveh4dynfGmcLDqufR+nQQy3fKwsAZsWd/x4621/6uJaeB9mwOHE6hPeDgXz9uViUQ==",
+      "entry_line": 193,
+      "resolved_line": 195
+    },
+    {
+      "package": "node_modules/@mapbox/tiny-sdf",
+      "version": "2.3.0",
+      "resolved": "https://registry.npmmirror.com/@mapbox/tiny-sdf/-/tiny-sdf-2.3.0.tgz",
+      "integrity": "sha512-gBvcNDBBB66bgQYvnaJ6Jk+VCaMmVq5+IZR2kWPisT88Z8s0kBQt6hfVi8QgRW8Vpg0UWZzBA4ZSyzHHC+VeRA==",
+      "entry_line": 199,
+      "resolved_line": 201
+    },
+    {
+      "package": "node_modules/@mapbox/unitbezier",
+      "version": "0.0.1",
+      "resolved": "https://registry.npmmirror.com/@mapbox/unitbezier/-/unitbezier-0.0.1.tgz",
+      "integrity": "sha512-nMkuDXFv60aBr9soUG5q+GvZYL+2KZHVvsqFCzqnkGEf46U2fvmytHaEVc1/YZbiLn8X+eR3QzX1+dwDO1lxlw==",
+      "entry_line": 205,
+      "resolved_line": 207
+    },
+    {
+      "package": "node_modules/@mapbox/vector-tile",
+      "version": "2.0.5",
+      "resolved": "https://registry.npmmirror.com/@mapbox/vector-tile/-/vector-tile-2.0.5.tgz",
+      "integrity": "sha512-pXj8m7KTsqZt+1jsE0xIpGvqTSbblfkuEJL/NJmNePMtEwxO8V3XMDo9WMSfDeqHvCtBI9Lmt4mGcGR10zecmw==",
+      "entry_line": 211,
+      "resolved_line": 213
+    },
+    {
+      "package": "node_modules/@mapbox/whoots-js",
+      "version": "3.1.0",
+      "resolved": "https://registry.npmmirror.com/@mapbox/whoots-js/-/whoots-js-3.1.0.tgz",
+      "integrity": "sha512-Es6WcD0nO5l+2BOQS4uLfNPYQaNDfbot3X1XUoloz+x0mPDS3eeORZJl06HXjwBG1fOGwCRnzK88LMdxKRrd6Q==",
+      "entry_line": 222,
+      "resolved_line": 224
+    },
+    {
+      "package": "node_modules/@maplibre/geojson-vt",
+      "version": "6.3.0",
+      "resolved": "https://registry.npmmirror.com/@maplibre/geojson-vt/-/geojson-vt-6.3.0.tgz",
+      "integrity": "sha512-3Zw2jsU9pIJG3G2CQFbLjWj2MlAHodhD7cSY+15iywUuLmmkgzcKRnueVRZ4AcC/5wOtfhidcJAAzBpoBNs3Xg==",
+      "entry_line": 231,
+      "resolved_line": 233
+    },
+    {
+      "package": "node_modules/@maplibre/maplibre-gl-style-spec",
+      "version": "24.10.0",
+      "resolved": "https://registry.npmmirror.com/@maplibre/maplibre-gl-style-spec/-/maplibre-gl-style-spec-24.10.0.tgz",
+      "integrity": "sha512-lichxSiagMEBBrqHF0trtMQH9RKh+9jUlIJl0qW0QHvt2H/tbvUWdE+ZzI2Jd0/pT7j/iavLonlPu7EQ/ixTOw==",
+      "entry_line": 240,
+      "resolved_line": 242
+    },
+    {
+      "package": "node_modules/@maplibre/maplibre-gl-style-spec/node_modules/@mapbox/unitbezier",
+      "version": "1.0.0",
+      "resolved": "https://registry.npmmirror.com/@mapbox/unitbezier/-/unitbezier-1.0.0.tgz",
+      "integrity": "sha512-fqd515fjBmANKGGsQ286E2Wvj/XvDFpGzwJxq4CI6jMQue6Oy04uCKp+JWKF00xRTmk6cEu1jPJ9p3xqH8YWqQ==",
+      "entry_line": 259,
+      "resolved_line": 261
+    },
+    {
+      "package": "node_modules/@maplibre/mlt",
+      "version": "1.3.0",
+      "resolved": "https://registry.npmmirror.com/@maplibre/mlt/-/mlt-1.3.0.tgz",
+      "integrity": "sha512-7M2O7ABM80Oi8XPkfkrjKB8mOBIxGoVgkA52Mu4RMWoBvvMdagQ522+WxVYujZsMpqIr3BpzrTbXrm4k8lCzCQ==",
+      "entry_line": 265,
+      "resolved_line": 267
+    },
+    {
+      "package": "node_modules/@maplibre/vt-pbf",
+      "version": "4.3.2",
+      "resolved": "https://registry.npmmirror.com/@maplibre/vt-pbf/-/vt-pbf-4.3.2.tgz",
+      "integrity": "sha512-j6p0AdjvAR19Z3XaCysle7A4ZSo08tYOzxD0Y9NQylwPAkwJJeYub5b2eVucdeDh7erhv69DahoLOevDRERRUw==",
+      "entry_line": 274,
+      "resolved_line": 276
+    },
+    {
+      "package": "node_modules/@maplibre/vt-pbf/node_modules/pbf",
+      "version": "5.1.2",
+      "resolved": "https://registry.npmmirror.com/pbf/-/pbf-5.1.2.tgz",
+      "integrity": "sha512-mnvGdvOrIvJOBGUEdGkrVXjN8E/VkIJCkf2eS1DH2yv82ORUlLttmDt0rWY38yYZmVwciZwBUvHM20qxBZf40w==",
+      "entry_line": 285,
+      "resolved_line": 287
+    },
+    {
+      "package": "node_modules/@types/geojson",
+      "version": "7946.0.16",
+      "resolved": "https://registry.npmmirror.com/@types/geojson/-/geojson-7946.0.16.tgz",
+      "integrity": "sha512-6C8nqWur3j98U6+lXDfTUWIfgvZU+EumvpHKcYjujKH7woYyLj2sUmff0tRhrqM7BohUw7Pz3ZB1jj2gW9Fvmg==",
+      "entry_line": 737,
+      "resolved_line": 739
+    },
+    {
+      "package": "node_modules/earcut",
+      "version": "3.2.4",
+      "resolved": "https://registry.npmmirror.com/earcut/-/earcut-3.2.4.tgz",
+      "integrity": "sha512-FHc6yNpnTORB0tM5kmZ03iD2mDuNakDE2lvf4Hw1XkfxtEHIGVi01B/GqUSwx+NcC1WGjidAfpTXzeALtPtfpg==",
+      "entry_line": 1069,
+      "resolved_line": 1071
+    },
+    {
+      "package": "node_modules/gl-matrix",
+      "version": "3.4.4",
+      "resolved": "https://registry.npmmirror.com/gl-matrix/-/gl-matrix-3.4.4.tgz",
+      "integrity": "sha512-latSnyDNt/8zYUB6VIJ6PCh2jBjJX6gnDsoCZ7LyW7GkqrD51EWwa9qCoGixj8YqBtETQK/xY7OmpTF8xz1DdQ==",
+      "entry_line": 1169,
+      "resolved_line": 1171
+    },
+    {
+      "package": "node_modules/json-stringify-pretty-compact",
+      "version": "4.0.0",
+      "resolved": "https://registry.npmmirror.com/json-stringify-pretty-compact/-/json-stringify-pretty-compact-4.0.0.tgz",
+      "integrity": "sha512-3CNZ2DnrpByG9Nqj6Xo8vqbjT4F6N+tb4Gb28ESAZjYZ5yqvmc56J+/kuIwkaAMOyblTQhUW7PxMkUb8Q36N3Q==",
+      "entry_line": 1344,
+      "resolved_line": 1346
+    },
+    {
+      "package": "node_modules/kdbush",
+      "version": "4.1.0",
+      "resolved": "https://registry.npmmirror.com/kdbush/-/kdbush-4.1.0.tgz",
+      "integrity": "sha512-e9vurzrXJQrFX6ckpHP3bvj5l+9CnYzkxDNnNQ1h2QTqdWsUAJgXiKdGNcOa1EY85dU8KbQ+z/FdQdB7P+9yfQ==",
+      "entry_line": 1350,
+      "resolved_line": 1352
+    },
+    {
+      "package": "node_modules/maplibre-gl",
+      "version": "5.24.0",
+      "resolved": "https://registry.npmmirror.com/maplibre-gl/-/maplibre-gl-5.24.0.tgz",
+      "integrity": "sha512-ALyFxgtd5R+65UqZ/++lOqwWcC0SNho9c27fYSyLmG7AfnAul2o46F05aDJGPbFU57wos9dgcIySHs0Xe6ia3A==",
+      "entry_line": 1655,
+      "resolved_line": 1657
+    },
+    {
+      "package": "node_modules/maplibre-gl/node_modules/potpack",
+      "version": "2.1.0",
+      "resolved": "https://registry.npmmirror.com/potpack/-/potpack-2.1.0.tgz",
+      "integrity": "sha512-pcaShQc1Shq0y+E7GqJqvZj8DTthWV1KeHGdi0Z6IAin2Oi3JnLCOfwnCo84qc+HAp52wT9nK9H7FAJp5a44GQ==",
+      "entry_line": 1689,
+      "resolved_line": 1691
+    },
+    {
+      "package": "node_modules/minimist",
+      "version": "1.2.8",
+      "resolved": "https://registry.npmmirror.com/minimist/-/minimist-1.2.8.tgz",
+      "integrity": "sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==",
+      "entry_line": 1710,
+      "resolved_line": 1712
+    },
+    {
+      "package": "node_modules/murmurhash-js",
+      "version": "1.0.0",
+      "resolved": "https://registry.npmmirror.com/murmurhash-js/-/murmurhash-js-1.0.0.tgz",
+      "integrity": "sha512-TvmkNhkv8yct0SVBSy+o8wYzXjE4Zz3PCesbfs8HiCXXdcTuocApFv11UWlNFWKYsP2okqrhb7JNlSm9InBhIw==",
+      "entry_line": 1726,
+      "resolved_line": 1728
+    },
+    {
+      "package": "node_modules/pbf",
+      "version": "4.0.2",
+      "resolved": "https://registry.npmmirror.com/pbf/-/pbf-4.0.2.tgz",
+      "integrity": "sha512-J0ajxARhZfpUEebxYs1vhMGMuLSXtBe1e+fFPDrf2uA2hgo+UshKfNUWOz92HJNz6/NFEXseQPddnHkTreWRqg==",
+      "entry_line": 1780,
+      "resolved_line": 1782
+    },
+    {
+      "package": "node_modules/protocol-buffers-schema",
+      "version": "3.6.1",
+      "resolved": "https://registry.npmmirror.com/protocol-buffers-schema/-/protocol-buffers-schema-3.6.1.tgz",
+      "integrity": "sha512-VG2K63Igkiv9p76tk1lilczEK1cT+kCjKtkdhw1dQZV3k3IXJbd3o6Ho8b9zJZaHSnT2hKe4I+ObmX9w6m5SmQ==",
+      "entry_line": 1873,
+      "resolved_line": 1875
+    },
+    {
+      "package": "node_modules/quickselect",
+      "version": "3.0.0",
+      "resolved": "https://registry.npmmirror.com/quickselect/-/quickselect-3.0.0.tgz",
+      "integrity": "sha512-XdjUArbK4Bm5fLLvlm5KpTFOiOThgfWWI4axAZDWg4E/0mKdZyI9tNEfds27qCi1ze/vwTR16kvmmGhRra3c2g==",
+      "entry_line": 1889,
+      "resolved_line": 1891
+    },
+    {
+      "package": "node_modules/resolve-protobuf-schema",
+      "version": "2.1.0",
+      "resolved": "https://registry.npmmirror.com/resolve-protobuf-schema/-/resolve-protobuf-schema-2.1.0.tgz",
+      "integrity": "sha512-kI5ffTiZWmJaS/huM8wZfEMer1eRd7oJQhDuxeCLe3t7N7mX3z94CN0xPxBQxFYQTSNz9T0i+v6inKqSdK8xrQ==",
+      "entry_line": 1940,
+      "resolved_line": 1942
+    },
+    {
+      "package": "node_modules/terra-draw",
+      "version": "1.35.0",
+      "resolved": "https://registry.npmmirror.com/terra-draw/-/terra-draw-1.35.0.tgz",
+      "integrity": "sha512-uQI8lcPiUMqwVV29CexTfvT/AM4lGHtA+xWraW4njVExiM1+eGvRetYOBXmXEmgy5pL4X2dmjwMRH8JEYVtbgw==",
+      "entry_line": 2089,
+      "resolved_line": 2091
+    },
+    {
+      "package": "node_modules/terra-draw-maplibre-gl-adapter",
+      "version": "1.4.1",
+      "resolved": "https://registry.npmmirror.com/terra-draw-maplibre-gl-adapter/-/terra-draw-maplibre-gl-adapter-1.4.1.tgz",
+      "integrity": "sha512-qZ/bc9bVPnyt0keLVTofV8xiTPkdkbO6RzqrfNLe9zH/edW5PsjvJw97m1EksPZeXNJtFxsVbhi12cPaoNiWfg==",
+      "entry_line": 2095,
+      "resolved_line": 2097
+    },
+    {
+      "package": "node_modules/tinyqueue",
+      "version": "3.0.0",
+      "resolved": "https://registry.npmmirror.com/tinyqueue/-/tinyqueue-3.0.0.tgz",
+      "integrity": "sha512-gRa9gwYU3ECmQYv3lslts5hxuIa90veaEcxDYuu3QGOIAEM2mOZkVHp48ANJuu1CURtRdHKUBY5Lm1tHV+sD4g==",
+      "entry_line": 2160,
+      "resolved_line": 2162
+    }
+  ],
+  "modified_existing_dependency_entries": [],
+  "documented_registry_rule": {
+    "path": "README.md",
+    "line": 60,
+    "text": "`package-lock.json` 里的下载地址写 `registry.npmjs.org`。插件目录的 `.npmrc` 设 `replace-registry-host=always`，npm 一律从当前机器配置的源下载（本机是 npmmirror，CI 是 npmjs），与锁文件里写的主机无关。",
+    "owner_scope_readback": "Root reviewer confirmed the canonical registry rule applies to the isolated planner; existing mirror URLs do not waive it."
+  },
+  "source_build_manifest": {
+    "source_count": 102,
+    "build_count": 7,
+    "mismatches": []
+  },
+  "vendor_css": {
+    "version": "5.24.0",
+    "upstream_sha256": "ab1e70d59ec40465bae7e7030da2f3ccf28133fd502e62bd598eefbadfd7a732",
+    "full_licence_sha256": "ee5fc05a0677eaf69601d2c7db0d9ecd6cc27c3abc1d0733bc9ed34707cf8ef2",
+    "full_licence_retained": true,
+    "scoped_body_exact": true,
+    "all_css_urls_inline": true
+  },
+  "reviewed_copy": {
+    "entries_including_shared_keys": 33,
+    "unique_messages": 32,
+    "MO_and_wordpress_JSON_gaps": []
+  },
+  "new_legacy_identifier_hits": [],
+  "provider_style_and_acquisition_manifests": "fixed source bytes/digests matched",
+  "file_inventory": [
+    {
+      "path": "apps/planner/package-lock.json",
+      "bytes": 83094,
+      "sha256": "e177845d57b15d2ef654aa3e2a6c7725198c54393aa37f69dfd9b8525ec49a3a"
+    },
+    {
+      "path": "apps/planner/package.json",
+      "bytes": 1312,
+      "sha256": "b7640607d7d9196f960700c2987991d892d9481a9559866340fcd8180c588fb7"
+    },
+    {
+      "path": "apps/planner/src/components/CreditText.tsx",
+      "bytes": 1129,
+      "sha256": "a2e029484473c16a10bc0ed04a88907d04e382d738f920666eee94c5210f1acb"
+    },
+    {
+      "path": "apps/planner/src/components/ProjectEditor.tsx",
+      "bytes": 20283,
+      "sha256": "f5aab51d98cb1f1322bcf5da6eef82983728989865a023186f9bc575fa4d8b39"
+    },
+    {
+      "path": "apps/planner/src/components/ToolIdentity.tsx",
+      "bytes": 1907,
+      "sha256": "17ee1270a4af7f9486077b8c0cb687d1d2b7d8c92d15f0f1e0528713b7606863"
+    },
+    {
+      "path": "apps/planner/src/components/design/DesignEditor.tsx",
+      "bytes": 22719,
+      "sha256": "a6e5e81eb1695fa440367843b425286844c2a21cee6965ca4edffaf1a639e339"
+    },
+    {
+      "path": "apps/planner/src/components/design/LazyMapViewport.tsx",
+      "bytes": 1038,
+      "sha256": "7bb8e45d568aa62abf73f7a4771da67a67e14ad7370b1c1efc02247ece217df3"
+    },
+    {
+      "path": "apps/planner/src/components/design/LazySceneViewport.tsx",
+      "bytes": 1084,
+      "sha256": "011f94ed6dd73075627880a98a77d4fa7c340b67fcbd04385d9a4584d29e8747"
+    },
+    {
+      "path": "apps/planner/src/components/design/MapViewport.tsx",
+      "bytes": 15131,
+      "sha256": "2556cec03299d264ea5d57ed7fec0b46294143e28296b2553b32de4b0de16e2f"
+    },
+    {
+      "path": "apps/planner/src/components/design/ViewportBoundary.tsx",
+      "bytes": 763,
+      "sha256": "6a2e00808146bf9c3081dd6ff6c0f6752a1aadb6301406d7569882075a9d5cce"
+    },
+    {
+      "path": "apps/planner/src/data/config.ts",
+      "bytes": 2023,
+      "sha256": "056d43e91e0df78759239b11fd87f6987363e5a7595ed1c9e983fdfe4133536c"
+    },
+    {
+      "path": "apps/planner/src/data/mapModule.ts",
+      "bytes": 263,
+      "sha256": "90a72815ea92cec116fdd32036ebd9e43fba388375b6a0af7d8bc74cd42a7e17"
+    },
+    {
+      "path": "apps/planner/src/data/mapRequests.test.ts",
+      "bytes": 1600,
+      "sha256": "a5fa39d6ef167fe628cdafea71bc58f4806a289356b87556c9c56ca620b36956"
+    },
+    {
+      "path": "apps/planner/src/data/mapRequests.ts",
+      "bytes": 1137,
+      "sha256": "fea467369cab044d1fff656336af64c5b426836857dfbecd95fd07384c1d482e"
+    },
+    {
+      "path": "apps/planner/src/data/retryableModule.ts",
+      "bytes": 1115,
+      "sha256": "e8de42cf86d8cc30313c5e5450982eb2566257ea1f49d9a8a82b0b654e6be025"
+    },
+    {
+      "path": "apps/planner/src/data/sceneModule.ts",
+      "bytes": 271,
+      "sha256": "3d238e55d9db3418ade21214ef6ce6a051ea81d4d1308527f34625cdd0a26927"
+    },
+    {
+      "path": "apps/planner/src/domain/mapGeometry.test.ts",
+      "bytes": 8406,
+      "sha256": "38de4585547d7e132f175caefc63eda0669c8c564309216438ff241357b65922"
+    },
+    {
+      "path": "apps/planner/src/domain/mapGeometry.ts",
+      "bytes": 6419,
+      "sha256": "70e70fc8977a677fbdeb768c71ae4bd49358a29be7c315ed9224b7cc1c06552a"
+    },
+    {
+      "path": "apps/planner/src/main.tsx",
+      "bytes": 2391,
+      "sha256": "c959c3612ddf8accd3f1a029be3984298534b49524689094ead828d8fa187c8c"
+    },
+    {
+      "path": "apps/planner/tests/built-modules.mjs",
+      "bytes": 2579,
+      "sha256": "7e8d0be3ad43fdfd2e3c010d6a7ee6116bdb5f8796f16ca6d858ac80dc363e50"
+    },
+    {
+      "path": "apps/planner/tests/config.test.mjs",
+      "bytes": 1839,
+      "sha256": "62aba3a9129a3d863ba153de44cec1e58ed85ad77a91d9b6c4c27aa901d880b8"
+    },
+    {
+      "path": "apps/planner/tests/design-lazy-failure.test.mjs",
+      "bytes": 3197,
+      "sha256": "3dd6e29745cd9bf2d8b81611d6761a1d0f430cf833834558edcf082fa50bba4b"
+    },
+    {
+      "path": "apps/planner/tests/map-library-fixture.mjs",
+      "bytes": 2377,
+      "sha256": "a2060eac116a90172959dd476a5550a950b38292201b4a026d9377b755e64465"
+    },
+    {
+      "path": "apps/planner/tests/map-library-loader.mjs",
+      "bytes": 249,
+      "sha256": "2dd6e200b5b9db61a8e487a02be7f6915ff360d51e5ec8c1f58449a2f08ef53d"
+    },
+    {
+      "path": "apps/planner/tests/map-lifecycle.test.mjs",
+      "bytes": 6039,
+      "sha256": "e5b01db2f82291a7c2222b99bc987a24d6c9a20581f46c680e8e13a3f131f0e8"
+    },
+    {
+      "path": "apps/planner/tests/map-vendor.test.mjs",
+      "bytes": 1743,
+      "sha256": "07183204de8289f953d5248aeea84e7d7528d89dd9f6c63249e0227b6ff1226a"
+    },
+    {
+      "path": "apps/planner/tests/scene-failure-loader.mjs",
+      "bytes": 562,
+      "sha256": "d9d8f948d5c94d8b6cc3381bf9b917a8b5dd486e05b7d2e5df3715c3004ce81b"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/COPY-REVIEW.md",
+      "bytes": 2941,
+      "sha256": "10f7e5a5f7f545374d4888860bc61f2d53168ec985c5884b4df5009c33cd0c37"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/build-check-pinned.log",
+      "bytes": 946,
+      "sha256": "33e3b78f6ce23ca4ae1da98723e9369e8d1addfe41c7eada371bb6abcd2458be"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/build-pinned.log",
+      "bytes": 1284,
+      "sha256": "413ea771835f3df2ad8bfbfaaa6907d596d73b01c5cc752e01d736ae0e29c0a3"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/copy-draft.json",
+      "bytes": 4943,
+      "sha256": "a7de6cdaceb0e16129c88e9fbe970b48aa094df7f1c90ebf451397327d1f3dfb"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/copy-feedback.json",
+      "bytes": 5386,
+      "sha256": "94bea89e24ecd6ab66910c8a2d451cd0182f22a31e1c25e550246b8a7a6eb544"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/copy-final.json",
+      "bytes": 5684,
+      "sha256": "f81d4876a012988f9f82054ae287ab80f5ec75c553e67634e3ac3c76f82c7c81"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/emitted-dom-missing-blob-url.log",
+      "bytes": 2458,
+      "sha256": "10e5e90c594e39c81a6a40e99d812da34d4360483315edbe00ebcb8d1bb93814"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/format-pinned.log",
+      "bytes": 125,
+      "sha256": "07e3f3d64aaf65e944001a0eb36c2a82af3bbe8f416742d085ac6df60b7ddceb"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/i18n-coverage.log",
+      "bytes": 391,
+      "sha256": "f71c50b58bebe856c098aae4faffae2033e2a346d4e0817632bc09c95d510bfa"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/lifecycle-dom-css-inheritance.log",
+      "bytes": 927,
+      "sha256": "48ff8b036b95ad029ca3c18b665480d8eb9cd62715eec73b30c4c50a4687c7ef"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/local-csp-readback.json",
+      "bytes": 2423,
+      "sha256": "33004737038ce920c8f95290bafbdb80fcf7af7197696e7f3e451c9de796f95c"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/local-csp-refresh.json",
+      "bytes": 621,
+      "sha256": "62c381040bc863645c7a2c1cc98296e0f7a2f53155efb151d0e74a21eefdb1d1"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/native-before-provider.json",
+      "bytes": 1127,
+      "sha256": "3578c8f5854c594c7b7f65f7f23cdf945a56818661bd260d77a448982eb199c9"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/native-manifest-phpunit.log",
+      "bytes": 199,
+      "sha256": "e0de4b36be3d2953db6f9ce7f3bf90bb4dcca4251931f6ec281ba6d86ad5728c"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/native-provider-csp-corrected.json",
+      "bytes": 2245,
+      "sha256": "0c0d767e7c063faf2ec4a6b1585f3a4a6ec0e9eeddbe0bdfe178d8adc74efe0b"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/native-provider-initial-refusal.json",
+      "bytes": 288,
+      "sha256": "2ece791b5327fcb7ee9b16f14177f2e0c106ce601bd7b228f2f251737528841e"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/phpcs-pinned.log",
+      "bytes": 49,
+      "sha256": "a6396952b21a417af2de22a3c04a49127e57ed1b3378987511aaaf1d54f8e492"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/phpstan-pinned.log",
+      "bytes": 83,
+      "sha256": "9dd3eeb023e498eff4ab6e14af3d76d6e6c7672da330c9e3edf35753590df0d7"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/request-policy.log",
+      "bytes": 319,
+      "sha256": "c9a6668df3b8bb4f601525d13e72d1465e845df878e983d1e253a7b7face486c"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/review-spec-f40db1d6/REVIEW.md",
+      "bytes": 2519,
+      "sha256": "28ddb47b4e0cee77f4738198823e3f9d9706b5bf2d36ac6a0da9f84f40fb7fda"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/review-spec-f40db1d6/evidence-index.json",
+      "bytes": 8144,
+      "sha256": "81dd8832c15ce7fb0e192b5779599782f4e0335d56b7fbd204958d7d75cc5af0"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/review-spec-f40db1d6/probe.json",
+      "bytes": 10765,
+      "sha256": "de5dda7851d70c351b4aeab99cf65107ff2c241abd02c55041a2478bd1303010"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/review-spec-f40db1d6/probe.mjs",
+      "bytes": 4478,
+      "sha256": "ee0ab0da001fbcfe24898abd5d13920b37d0966b1e8e0939826b58efe6043f97"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/source-checkpoint.json",
+      "bytes": 2594,
+      "sha256": "a41b11def79f6b9f30055b0d4492e3fb18708d329bdad732ce12f7098ed25e0a"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/system-identity-copy/COPY-REVIEW.md",
+      "bytes": 6885,
+      "sha256": "eca5526694df072bd69a9c08f98f2fafa5cad9d1b7827261d75be9d595ed85fb"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/system-identity-copy/copy-draft.json",
+      "bytes": 1309,
+      "sha256": "2278add7f19fd443a54a1e3d97707795f6987251eca2f6aaf0120019d9199352"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/system-identity-copy/copy-final.json",
+      "bytes": 4080,
+      "sha256": "9b30d5b5d1b0858f03107b031680581d9d576f1b04ed6613576b077c717b3169"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/system-identity-copy/copy-review.json",
+      "bytes": 8639,
+      "sha256": "c9fa6470531192f1b5c2e523c500e49d6e8d6159c3a16a846602a8ed37c6aa94"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/system-identity/build-check.log",
+      "bytes": 944,
+      "sha256": "665abbf177d19b5f2bad3ec3396875a44d78abd01d8732946148ebc1f92ac2ef"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/system-identity/build.log",
+      "bytes": 1284,
+      "sha256": "ac8aefaf231b6564bc3bdf06cfff4920a6b508597d142466fb22a6df9952382b"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/system-identity/format.log",
+      "bytes": 125,
+      "sha256": "07e3f3d64aaf65e944001a0eb36c2a82af3bbe8f416742d085ac6df60b7ddceb"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/system-identity/locale-readback.json",
+      "bytes": 311,
+      "sha256": "abb526b115204e799783922942a2855842d2d77ceaf7695b260dc148a1919af9"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/system-identity/tests.log",
+      "bytes": 15530,
+      "sha256": "5f1697615c0f9c74f8939de33675c29109088ea40ab722fe63fbfac904769bce"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/system-identity/windpress-volume.json",
+      "bytes": 702,
+      "sha256": "387cb93f84165ca56f110e2534b0cdc7cb3cdf0e9d1f3210bc74dec36728846a"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/tests-pinned.log",
+      "bytes": 15412,
+      "sha256": "a5767f02757daaf2f769f467a6bcecd457cf9af25579bbb92c4875715169ed9a"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/windpress-native.png",
+      "bytes": 92702,
+      "sha256": "2bd4bf63b77727e5a1aa1d9483aafd76c5d5a3386244ad3930c67c064cba7fec"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/windpress-native.txt",
+      "bytes": 164,
+      "sha256": "6638e3445d32bf9018eb370764c406ffded0c6f0125db6263a0421f30f6abc57"
+    },
+    {
+      "path": "docs/research/2026-10-23-map-workbench-integration/MAP-DISPLAY.md",
+      "bytes": 5802,
+      "sha256": "573b48d38b5eef935b5e819992873f99777f08608019d10d3d00a9e3feda9139"
+    },
+    {
+      "path": "docs/research/2026-10-23-map-workbench-integration/map-display-primary/apify-results.json",
+      "bytes": 458797,
+      "sha256": "02adb38c8622f394e38975c52ba0a5ff0af447d78a445afc11011e0d68c48714"
+    },
+    {
+      "path": "docs/research/2026-10-23-map-workbench-integration/map-display-primary/input.json",
+      "bytes": 862,
+      "sha256": "39ba0cfed6ed6f73b026dcddd802a94055d558ba6800e08522b16fa7575c972b"
+    },
+    {
+      "path": "docs/research/2026-10-23-map-workbench-integration/map-display-primary/run.json",
+      "bytes": 268,
+      "sha256": "fbc0cc97e24cf4e436fe9dd4155155339b48b2513769914e8db3abad13e44901"
+    },
+    {
+      "path": "docs/research/2026-10-23-map-workbench-integration/map-display-primary/source-manifest.json",
+      "bytes": 732,
+      "sha256": "80a59fd6f41ed1797e498c73f1a1f96587dac3a7930102a1a56c6280b5ac2c12"
+    },
+    {
+      "path": "docs/research/2026-10-23-map-workbench-integration/provider-openfreemap/apify-results.json",
+      "bytes": 46489,
+      "sha256": "bb8e9dc4fd64c270b846c350536880f5412776f20327fc58a1fb2ff7cc698da0"
+    },
+    {
+      "path": "docs/research/2026-10-23-map-workbench-integration/provider-openfreemap/run.json",
+      "bytes": 218,
+      "sha256": "9e3960609ecf5f97acdea9ea12b1632874b565730042e61e36b5ce5f55d918e5"
+    },
+    {
+      "path": "docs/research/2026-10-23-map-workbench-integration/provider-style/apify-results.json",
+      "bytes": 797,
+      "sha256": "1c77b238912b1f7946b918dc962940f8e094c265271774ca6128e5e52b34424a"
+    },
+    {
+      "path": "docs/research/2026-10-23-map-workbench-integration/provider-style/approved-actor-input-schema.json",
+      "bytes": 32174,
+      "sha256": "496e15146dae8e847b75d5f0d6dbb377e72880fadbd8ad17bae7a949edbbc378"
+    },
+    {
+      "path": "docs/research/2026-10-23-map-workbench-integration/provider-style/input-approved.json",
+      "bytes": 494,
+      "sha256": "4d21f2b3dbc40c286ae5d4a4851d40932322f0b05856f6838cb545f966ddd8d2"
+    },
+    {
+      "path": "docs/research/2026-10-23-map-workbench-integration/provider-style/input.json",
+      "bytes": 644,
+      "sha256": "1c144483dcdfa9a650e92b4e031c385ec2cac44ea9a2a787cc7b2a6dd44f914a"
+    },
+    {
+      "path": "docs/research/2026-10-23-map-workbench-integration/provider-style/liberty-style.json",
+      "bytes": 43079,
+      "sha256": "6010998863b4876911ac9a2d62c9a28d97c8877f6d20cd158b74808572257b60"
+    },
+    {
+      "path": "docs/research/2026-10-23-map-workbench-integration/provider-style/run.json",
+      "bytes": 341,
+      "sha256": "c1ebcfb4132f77fda0886aa85aa50894954cced8b2f96bc7a5968d2fbf0b43c2"
+    },
+    {
+      "path": "docs/research/2026-10-23-map-workbench-integration/provider-style/start-refusal.json",
+      "bytes": 286,
+      "sha256": "db6552496880b39a44ff69c446cc48eff329aa54a51d491dd5a826ddccbfa969"
+    },
+    {
+      "path": "docs/research/2026-10-23-map-workbench-integration/provider-style/style-manifest.json",
+      "bytes": 779,
+      "sha256": "90cd7a51b08db1306ea235b65cb03fd5c669061af7a7a79c2e2ba436da1459a0"
+    },
+    {
+      "path": "docs/specs/548-map-display.md",
+      "bytes": 5344,
+      "sha256": "f77673a31057c85b4ce60a9c83f5dd38bf1a3a598547932412b432039f4b7f1f"
+    },
+    {
+      "path": "docs/specs/548-product-identity.md",
+      "bytes": 2143,
+      "sha256": "8ab8381e7b94ae31d856991487f398deae9aab0320b3ee40a3e456257dd527f4"
+    },
+    {
+      "path": "plugins/linker-commerce/content/windpress/planner-maplibre.css",
+      "bytes": 76276,
+      "sha256": "5b973e5c58584ff41f8ec405c9f8cdf2c5c6d504fb35673b528cbcd8b3b367ca"
+    },
+    {
+      "path": "plugins/linker-commerce/content/windpress/planner.css",
+      "bytes": 42983,
+      "sha256": "6438cadd51f0b2bae05e31837ce3dc74e21e278ab2b298cad5c2790e290b1bd5"
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/assets/MapViewport-DOKp8Xb1.js",
+      "bytes": 1039061,
+      "sha256": "8e3c91876fea6785e49511d6ac80354ffd9271b52adfd05949d32807ac6dcd9a"
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/assets/SceneViewport-VJ3GRgC6.js",
+      "bytes": 1548465,
+      "sha256": "12e25c8e98ae5ba972fac64cb54fe5b504ff6dfa7b5f6a7aedc437044c71a15f"
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/assets/planner-core-CDGLxH3H.js",
+      "status": "removed"
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/assets/planner-core-DnhRbFyr.js",
+      "bytes": 607322,
+      "sha256": "630a0dede67742cf506488f17e4e33d82435e66986749cd67b345542d1c166da"
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/assets/planner.js",
+      "bytes": 1310,
+      "sha256": "590f6efccb8f8b4e8937a8c481df7fea9a19b440fd37eee575aa12453fadbf1b"
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/source-manifest.json",
+      "bytes": 11582,
+      "sha256": "e8994c08817378a1eadb824ce8c36c9b07ce7a56dad73fa022bab71c617367a8"
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/vite-manifest.json",
+      "bytes": 1254,
+      "sha256": "4adf0e774a8c1151da6df8652f4e2284373d8e35e9604248d6dc72966d6507be"
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/windpress.scan.txt",
+      "bytes": 1911,
+      "sha256": "b52f9c950b01c108a06e3933c638bf4ad57d09f7756294bd28177f574d4ebee4"
+    },
+    {
+      "path": "plugins/linker-tools/includes/Planner/Application.php",
+      "bytes": 3904,
+      "sha256": "ea50d83f08d9edec1d45cf9c029289db5e7f1c890bd756d92bf0ce660824356d"
+    },
+    {
+      "path": "plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json",
+      "bytes": 65596,
+      "sha256": "fd3e9a3d1b5a3f404b531a5db4199c304a1ff843e2651a3c4100d54a34caf8de"
+    },
+    {
+      "path": "plugins/linker-tools/languages/linker-tools-de_DE_formal.mo",
+      "bytes": 115666,
+      "sha256": "3dd0123316d188a033eb195346b8a0999b56d5d86cd0c5a2a1ad1fe7351936f1"
+    },
+    {
+      "path": "plugins/linker-tools/languages/linker-tools-de_DE_formal.po",
+      "bytes": 196976,
+      "sha256": "5e97aa2e748d78c76a59783f7195da610c40ccfcdc01455544924b2a1c3c71b6"
+    },
+    {
+      "path": "plugins/linker-tools/tests/php/Unit/PlannerApplicationTest.php",
+      "bytes": 4015,
+      "sha256": "fc91186bc6b8c132576bec9b366b4f7c2675522d74de8c09d88989043f24fa34"
+    },
+    {
+      "path": "tools/local/mu/000-linker-local-isolation.php",
+      "bytes": 9017,
+      "sha256": "9a230984633ed6383b4e880abe4dcb72baa4f80e69eb65848812380b85585256"
+    },
+    {
+      "path": "tools/local/tests/test_stack.py",
+      "bytes": 23985,
+      "sha256": "ebc14b6cc8e65f837aa45007784ab8d4005a142257ffe41adaddbc359a43293f"
+    }
+  ],
+  "verification_boundary": "Static fixed-object readback only. Existing tests/build/PHP/locale logs inspected without rerunning suites. No checkout, snapshot, source copy, network, stack change or native execution."
+}

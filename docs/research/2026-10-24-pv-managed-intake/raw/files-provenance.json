@@ -1,0 +1,42 @@
+[
+  {
+    "sourceUrl": "https://raw.githubusercontent.com/pvlib/pvlib-python/v0.16.1/pvlib/temperature.py",
+    "actorDatasetCapture": {
+      "loadedUrl": "https://raw.githubusercontent.com/pvlib/pvlib-python/v0.16.1/pvlib/temperature.py",
+      "depth": 0,
+      "referrerUrl": "https://raw.githubusercontent.com/pvlib/pvlib-python/v0.16.1/pvlib/temperature.py",
+      "loadedTime": "2026-10-24T04:13:22.713Z",
+      "httpStatusCode": 200,
+      "contentLengthBytes": 14520,
+      "contentType": "text/plain; charset=utf-8"
+    },
+    "recordEndpoint": "https://api.apify.com/v2/key-value-stores/nhkKQ8gHiwmVem6qa/records/file-397a297-temperature.py",
+    "downloadStatus": 200,
+    "downloadContentType": "text/plain; charset=utf-8",
+    "bytes": 60724,
+    "sha256": "2adbab834d25836007bad5fc429acd2b53b83dc99b7be6d288bc1644d5a18319",
+    "file": "pvlib-0.16.1-temperature.py",
+    "acquiredAt": "2026-10-24T04:14:30.291054+00:00",
+    "bytePolicy": "exact downloaded Apify KV record bytes; no reencoding"
+  },
+  {
+    "sourceUrl": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+    "actorDatasetCapture": {
+      "loadedUrl": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "depth": 0,
+      "referrerUrl": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "loadedTime": "2026-10-24T04:13:34.421Z",
+      "httpStatusCode": 200,
+      "contentLengthBytes": 488969,
+      "contentType": "application/pdf"
+    },
+    "recordEndpoint": "https://api.apify.com/v2/key-value-stores/nhkKQ8gHiwmVem6qa/records/file-c013b20-240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+    "downloadStatus": 200,
+    "downloadContentType": "application/pdf",
+    "bytes": 488969,
+    "sha256": "f4d280f9a0d89475cf575fbb99906e2b091da27f08b848fc51877cc1d24e8e22",
+    "file": "trina-neg9r28-en-2024c.pdf",
+    "acquiredAt": "2026-10-24T04:14:34.929132+00:00",
+    "bytePolicy": "exact downloaded Apify KV record bytes; no reencoding"
+  }
+]

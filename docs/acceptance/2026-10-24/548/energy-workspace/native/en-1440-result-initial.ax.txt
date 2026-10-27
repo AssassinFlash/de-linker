@@ -1,0 +1,131 @@
+Browser tab: 2, Title: "Solution Configurator · Workspace review | Linker", URL: "http://127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=2c360c4679fe41cf8bd8f874036e58c4#lp-calculations".
+1 AXWebArea Solution Configurator · Workspace review | Linker, URL: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=2c360c4679fe41cf8bd8f874036e58c4#lp-calculations
+	2 container
+		3 container Primary navigation
+			4 link Description: Linker home, Value: 127.0.0.1:9347/
+			5 pop up button (collapsed) Products, Secondary Actions: Expand
+				6 text Products
+				7 image
+			8 pop up button (collapsed) Solutions, Secondary Actions: Expand
+				9 text Solutions
+				10 image
+			11 pop up button (collapsed) Plan with Linker, Secondary Actions: Expand
+			12 link Description: Services, Value: 127.0.0.1:9347/services-support/
+			13 pop up button (collapsed) For Partners, Secondary Actions: Expand
+			14 pop up button (collapsed) About, Secondary Actions: Expand
+			15 link Description: Search products, Value: 127.0.0.1:9347/products/#search-box
+			16 link Description: Solution draft, Value: 127.0.0.1:9347/cart/
+			17 pop up button (collapsed) Description: My account, Secondary Actions: Expand
+			18 container Language
+				19 link Description: EN, Help: English, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=2c360c4679fe41cf8bd8f874036e58c4#lp-calculations
+				20 link Description: DE, Help: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be&run=2c360c4679fe41cf8bd8f874036e58c4#lp-calculations
+			21 link Description: Contact Linker, Value: 127.0.0.1:9347/contact/
+		22 container
+			23 button Projects
+			24 text Lyon · synthetic energy scenario · acceptance
+			25 text Saved · revision 3
+			26 button Undo
+			27 button (disabled) Redo
+			28 button (disabled) Save project
+			29 text Solution Configurator CURRENT PROJECT
+			30 container Project sections
+				31 link Description: Project overview, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=2c360c4679fe41cf8bd8f874036e58c4#lp-overview
+				32 link Description: Site and project, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=2c360c4679fe41cf8bd8f874036e58c4#lp-site
+				33 link Description: Roof design, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=2c360c4679fe41cf8bd8f874036e58c4#lp-design
+				34 link Description: Energy inputs, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=2c360c4679fe41cf8bd8f874036e58c4#lp-load
+				35 link Description: Energy calculation, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=2c360c4679fe41cf8bd8f874036e58c4#lp-calculations
+			36 text Project information is kept with its source and revision. CURRENT PROJECT
+			37 heading Lyon · synthetic energy scenario · acceptance, Value: 1
+				38 text Lyon · synthetic energy scenario · acceptance
+			39 text Site data and roof layouts are saved in the same project.
+			40 container Energy calculation, ID: lp-calculations
+				41 text 07
+				42 heading Energy calculation, Value: 2, ID: lp-calculations-heading
+					43 text Energy calculation
+				44 text Calculate this project's energy flows over the selected periods. Each saved result keeps the inputs, sources and model used.
+				45 container Calculation workspace view
+					46 checkbox Scenario settings, Value: 0
+					47 checkbox Saved calculations, Value: 1
+				152 container
+					153 heading Calculation history, Value: 3
+						154 text Calculation history
+					155 checkbox Revision 3 Calculation complete 10/24/26, 9:38 AM, Value: 1
+						156 text Revision 3
+						157 text Calculation complete
+						158 text 10/24/26, 9:38 AM
+				159 text SAVED CALCULATION
+				160 heading Calculation complete, Value: 3
+					161 text Calculation complete
+				162 text Input revision 3
+				163 definition list
+					164 container Solar supplied to load
+						165 text Solar supplied to load
+					166 container
+						167 text 3.62 kWh
+					168 container Grid import
+						169 text Grid import
+					170 container
+						171 text 0.38 kWh
+					172 container Solar share of gross demand
+						173 text Solar share of gross demand
+					174 text 90.5%
+					175 container PV used or stored on site
+						176 text PV used or stored on site
+					177 text 100%
+				178 text Figures cover the simulated periods. Solar supply includes PV-origin battery energy; grid-origin and unknown-origin inventory remain separate.
+				179 text Equipment suitability: not assessed by this calculation.
+				180 text Country requirements: not assessed by this calculation.
+				181 button (collapsed) Energy totals and definitions, Secondary Actions: Expand
+					182 text Energy totals and definitions
+				183 button (collapsed) Numerical verification details, Secondary Actions: Expand
+					184 text Numerical verification details
+				185 button (collapsed) Calculation records, Secondary Actions: Expand
+					186 text Calculation records
+				187 button (collapsed) Sources, period and storage model, Secondary Actions: Expand
+					188 text Sources, period and storage model
+			108 text Solution Configurator
+			109 text by Linker
+			110 text Linker brings your inputs into an editable project for solar and storage planning.
+			111 button (collapsed) About this tool, Secondary Actions: Expand
+				112 text About this tool
+		113 container tv-footer-v2
+			114 image Linker
+			115 container
+				116 text Language
+				117 container Language
+					118 link Description: English, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=2c360c4679fe41cf8bd8f874036e58c4#lp-calculations
+					119 link Description: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be&run=2c360c4679fe41cf8bd8f874036e58c4#lp-calculations
+			120 text LINKING
+			121 link Description: products, Value: 127.0.0.1:9347/products/
+			122 text ,
+			123 link Description: technology, Value: 127.0.0.1:9347/about/capability/
+			124 text and
+			125 link Description: service, Value: 127.0.0.1:9347/services-support/
+			126 text to create 
+			127 text lasting value
+			128 text  for energy partners in Europe.
+			129 tab group Footer navigation
+				130 tab (selected, settable, boolean) Solutions, Value: 1, ID: footer-tab-solutions
+				131 tab (selectable, settable, boolean) Services, Value: 0, ID: footer-tab-services
+				132 tab (selectable, settable, boolean) Plan with Linker, Value: 0, ID: footer-tab-planning
+				133 tab (selectable, settable, boolean) Account, Value: 0, ID: footer-tab-account
+				134 tab (selectable, settable, boolean) Contact Linker, Value: 0, ID: footer-tab-contact
+			135 container Description: Solutions, ID: footer-panel-solutions
+				136 heading Solutions, Value: 2
+					137 text Solutions
+				138 content list
+					139 link Description: Residential Storage, Value: 127.0.0.1:9347/solution/residential-storage/
+					140 link Description: Commercial Storage, Value: 127.0.0.1:9347/solution/commercial-storage/
+					141 link Description: Utility-Scale Storage, Value: 127.0.0.1:9347/solution/utility-storage/
+			142 text © 2026 Linker. All rights reserved.
+			143 container Legal
+				144 link Description: Imprint, Value: 127.0.0.1:9347/imprint/
+				145 link Description: Privacy Policy, Value: 127.0.0.1:9347/privacy-policy/
+				146 button Cookie settings
+				147 link Description: Terms of Sale, Value: 127.0.0.1:9347/terms-of-sale/
+				148 link Description: Refund & Returns, Value: 127.0.0.1:9347/refund-returns/
+			149 container
+				150 text Product fit · Inverter compatibility · Project support
+		151 button (collapsed) Description: Ask Genie, Secondary Actions: Expand
+
+The focused UI element is 1 AXWebArea Solution Configurator · Workspace review | Linker, URL: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=2c360c4679fe41cf8bd8f874036e58c4#lp-calculations

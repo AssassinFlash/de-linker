@@ -15,6 +15,54 @@ use Linker\Commerce\Products\Publication\PreparationJobs;
 /** No original file is deleted; the emergency withdrawal block remains intact. */
 final class PublicationCommand {
 	/**
+	 * Preview or apply the one-time Woo declaration migration; preview is default.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [--input=<path>]
+	 * : Retained compatibility JSON; defaults to the shipped one-time input.
+	 * [--dry-run]
+	 * : Return the complete before/after plan without writing.
+	 * [--apply]
+	 * : Apply only with the reviewed source hash and current publication revision.
+	 * [--source-sha256=<sha256>]
+	 * : Exact input-file hash returned by the preview.
+	 * [--publication-revision=<sha256>]
+	 * : Current source revision returned by the preview.
+	 * [--rollback]
+	 * : Preview restoration of untouched migration writes; add --apply to restore.
+	 *
+	 * @subcommand migrate-compatibility
+	 * @param array<int,string>   $args Positional arguments.
+	 * @param array<string,mixed> $assoc_args Native CLI options.
+	 * @throws \RuntimeException Caught and reported through WP-CLI.
+	 */
+	public function migrate_compatibility( array $args, array $assoc_args ): void {
+		unset( $args );
+		try {
+			$apply = isset( $assoc_args['apply'] ) && ! isset( $assoc_args['dry-run'] );
+			if ( isset( $assoc_args['rollback'] ) ) {
+				$result = \Linker\Commerce\Products\Publication\CompatibilityMigration::rollback( ! $apply );
+			} else {
+				$path  = isset( $assoc_args['input'] ) ? (string) $assoc_args['input'] : dirname( __DIR__, 2 ) . '/' . \Linker\Commerce\Products\EngineeringData::COMPATIBILITY_FILE;
+				$input = \Linker\Commerce\Products\EngineeringData::json_from( $path );
+				$hash  = is_readable( $path ) ? hash_file( 'sha256', $path ) : false; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_readable -- Explicit CLI migration input.
+				if ( null === $input || false === $hash ) {
+					throw new \RuntimeException( 'The retained migration input cannot be read.' );
+				}
+				$plan = \Linker\Commerce\Products\Publication\CompatibilityMigration::plan( $input, $hash );
+				if ( $apply && ( ( $assoc_args['source-sha256'] ?? '' ) !== $hash || ( $assoc_args['publication-revision'] ?? '' ) !== $plan['publication_revision'] ) ) {
+					throw new \RuntimeException( 'Apply requires the source hash and publication revision from the reviewed preview.' );
+				}
+				$result = $apply ? \Linker\Commerce\Products\Publication\CompatibilityMigration::apply( $plan ) : $plan;
+			}
+			\WP_CLI::log( (string) wp_json_encode( $result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+		} catch ( \RuntimeException $error ) {
+			\WP_CLI::error( $error->getMessage() );
+		}
+	}
+
+	/**
 	 * Migrate the retained reference input into Woo once, or withdraw that record.
 	 *
 	 * ## OPTIONS

@@ -8,7 +8,9 @@ linker_engine_url (the Solution Configurator's engine) and linker_genie_url
 from __future__ import annotations
 
 import hashlib
+import json
 import os
+import re
 import secrets
 import shutil
 import subprocess
@@ -19,7 +21,10 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from linker_local.checkout import Checkout
+from linker_local.engine_release import engine_project
 from linker_local.instance import HOST, Instance
+from linker_local.planner_worker import PlannerWorker
+from linker_local.private_config import lifecycle_lock, publish_once
 from linker_local.processes import Background, ProcessError
 from linker_local.wpcli import WpCli, WpCliError
 
@@ -96,7 +101,10 @@ class Service:
 
 SERVICES = (
     Service(
-        "engine", "linker_engine.app:app", "linker_engine_url", lambda i: i.engine_port
+        "engine",
+        "linker_engine.application:app",
+        "linker_engine_url",
+        lambda i: i.engine_port,
     ),
     Service(
         "genie", "linker_genie.app:app", "linker_genie_url", lambda i: i.genie_port
@@ -104,26 +112,83 @@ SERVICES = (
 )
 
 
-def serve(instance: Instance, checkout: Checkout, wp: WpCli) -> list[str]:
+def serve(
+    instance: Instance, checkout: Checkout, wp: WpCli, *, only: str | None = None
+) -> list[str]:
+    with lifecycle_lock(instance.run_dir / "services.lock"):
+        return _serve(instance, checkout, wp, only=only)
+
+
+def _serve(
+    instance: Instance, checkout: Checkout, wp: WpCli, *, only: str | None
+) -> list[str]:
     """(Re)start both services from this checkout; return their URLs.
 
     The document index is found before anything restarts: a Genie without one
     would answer every document question with its fallback.
     """
     uv = _uv()
-    index = genie_index()
+    if only is not None and only not in ("engine", "genie"):
+        raise ProcessError("unknown local service selection")
+    selected = tuple(
+        service for service in SERVICES if only is None or service.name == only
+    )
+    index = (
+        genie_index() if any(service.name == "genie" for service in selected) else None
+    )
     token = service_token(wp)
+    worker: PlannerWorker | None = None
+    engine_synced = False
+    engine_pinned = False
+    if any(service.name == "engine" for service in selected):
+        project = engine_project(instance, checkout.service("engine"))
+        engine_pinned = project != checkout.service("engine")
+        planner_environment(instance)
+        worker = PlannerWorker(instance, project, uv, checkout=checkout)
+        # First startup needs an environment for the private control CLI.
+        # Never sync dependencies underneath an existing numerical process.
+        if not (project / ".venv/bin/python").is_file():
+            if engine_pinned:
+                raise ProcessError("the retained engine environment is unavailable")
+            if worker.process.pid() is not None:
+                raise ProcessError("live worker has no retained engine environment")
+            subprocess.run(
+                [str(uv), "sync", "--locked", "--project", str(project)], check=True
+            )
+            engine_synced = True
+        worker.ensure_policy()
+        target_release = worker.compatible_release()
+        if SERVICES[0].process(instance).pid() is not None:
+            current = _planner_probe(f"http://{HOST}:{instance.engine_port}", token)
+            if current["runtime_sha256"] != target_release["runtime_sha256"]:
+                raise ProcessError(
+                    "running planning HTTP differs from this executable; "
+                    "preserve it for a verified paired upgrade"
+                )
+        worker.drain()
+        worker.stop()
+        # Dependency synchronization must not replace files underneath either
+        # half of the old pair. Both identities were checked before draining.
+        SERVICES[0].process(instance).stop()
     urls = []
-    for service in SERVICES:
-        project = checkout.service(service.name)
-        port = service.port(instance)
-        subprocess.run(
-            [str(uv), "sync", "--locked", "--project", str(project)], check=True
+    for service in selected:
+        project = (
+            worker.project
+            if service.name == "engine" and worker is not None
+            else checkout.service(service.name)
         )
+        port = service.port(instance)
+        if service.name != "engine" or (not engine_synced and not engine_pinned):
+            subprocess.run(
+                [str(uv), "sync", "--locked", "--project", str(project)], check=True
+            )
         env = dict(os.environ)
+        # Apify is an R&D tool, never a customer application dependency.
+        env.pop("APIFY_TOKEN", None)
+        env.pop("APIFY_API_TOKEN", None)
         if service.name == "engine":
             env.update(_engine_environment(instance, checkout))
-            source = checkout.root / "services/engine/src/linker_engine"
+            source = project / "src/linker_engine"
             release = hashlib.sha256()
             for path in sorted(source.rglob("*.py")):
                 release.update(path.read_bytes())
@@ -137,15 +202,23 @@ def serve(instance: Instance, checkout: Checkout, wp: WpCli) -> list[str]:
                 "--type=constant",
             )
             env.update(
-                {"GENIE_SERVICE_TOKEN": token, "LINKER_ENGINE_GATE_MODE": "enforce"}
+                {
+                    "GENIE_SERVICE_TOKEN": token,
+                    "LINKER_ENGINE_GATE_MODE": "enforce",
+                    "PYTHONPATH": str(project / "src"),
+                    "PYTHONDONTWRITEBYTECODE": "1",
+                }
             )
         else:
+            assert index is not None
             env.update(genie_environment(instance, index.path, token))
         service.process(instance).restart(
             [
                 str(uv),
                 "run",
                 "--locked",
+                "--no-sync",
+                "--offline",
                 "--project",
                 str(project),
                 "uvicorn",
@@ -160,9 +233,17 @@ def serve(instance: Instance, checkout: Checkout, wp: WpCli) -> list[str]:
             START_TIMEOUT,
         )
         url = f"http://{HOST}:{port}"
+        if service.name == "engine":
+            identity = _planner_probe(url, token)
+            assert worker is not None
+            worker.start(identity, START_TIMEOUT)
+            worker.control("resume")
+            wp.run("option", "update", "linker_planner_url", url + "/planning")
+            urls.append("planner worker ready")
         wp.run("option", "update", service.option, url)
         urls.append(f"{service.name} {url}")
-    urls.append(index.line())
+    if index is not None:
+        urls.append(index.line())
     return urls
 
 
@@ -215,11 +296,25 @@ def genie_index(environ: Mapping[str, str] = os.environ) -> GenieIndex:
 
 def stop(instance: Instance) -> list[str]:
     """Stop the services; return the names of those that were running."""
-    return [service.name for service in SERVICES if service.process(instance).stop()]
+    with lifecycle_lock(instance.run_dir / "services.lock"):
+        return _stop(instance)
+
+
+def _stop(instance: Instance) -> list[str]:
+    worker = Background(
+        instance.run_dir / "planner-worker.pid", instance.log_dir / "planner-worker.log"
+    )
+    stopped = ["planner-worker"] if worker.stop() else []
+    return stopped + [
+        service.name for service in SERVICES if service.process(instance).stop()
+    ]
 
 
 def running(instance: Instance) -> list[str]:
-    return [
+    worker = Background(
+        instance.run_dir / "planner-worker.pid", instance.log_dir / "planner-worker.log"
+    )
+    return (["planner-worker"] if worker.pid() is not None else []) + [
         service.name
         for service in SERVICES
         if service.process(instance).pid() is not None
@@ -234,17 +329,44 @@ def _engine_environment(instance: Instance, checkout: Checkout) -> dict[str, str
     holds — not a second source of products. A site that cannot answer is a
     broken `serve`, not a silently data-less engine.
     """
-    compatibility = checkout.root / "plugins/linker-commerce/data/compatibility.json"
-    if not compatibility.is_file():
-        raise ProcessError(f"{compatibility} is missing from this checkout")
     directory = instance.dir / "engine"
     directory.mkdir(exist_ok=True)
     feed = directory / "feed.json"
+    compatibility = checkout.engine_contract(feed)
+    if not compatibility.is_file():
+        raise ProcessError(f"{compatibility} is missing from the selected generation")
     url = instance.url + ENGINE_FEED_PATH
     try:
         with urllib.request.urlopen(url, timeout=ENGINE_FEED_TIMEOUT) as reply:
-            feed.write_bytes(reply.read())
-    except (urllib.error.URLError, OSError, TimeoutError) as error:
+            raw = reply.read()
+        if feed.is_symlink():
+            # The shared publication worker swaps a complete generation. A
+            # restart must not write through its link into immutable bytes.
+            target = feed.resolve()
+            if not target.is_relative_to(directory.resolve()):
+                raise ValueError("managed feed is outside this instance")
+            manifest = json.loads((target.parent / "manifest.json").read_bytes())
+            current = json.loads(raw)
+            if any(
+                manifest[key] != current[key]
+                for key in ("source_revision", "compatibility_revision")
+            ):
+                raise ValueError("managed feed needs shared publication preparation")
+        else:
+            # The first publication swap can race the check above. Never
+            # follow a managed link that appeared before opening this file.
+            descriptor = os.open(
+                feed, os.O_WRONLY | os.O_CREAT | os.O_TRUNC | os.O_NOFOLLOW, 0o600
+            )
+            with os.fdopen(descriptor, "wb") as output:
+                output.write(raw)
+    except (
+        urllib.error.URLError,
+        OSError,
+        TimeoutError,
+        ValueError,
+        KeyError,
+    ) as error:
         raise ProcessError(
             f"could not read the engineering feed from {url}: {error}. "
             "Is the instance up with linker-commerce active?"
@@ -260,7 +382,80 @@ def _engine_environment(instance: Instance, checkout: Checkout) -> dict[str, str
         # The configurator calls the engine cross-origin from the page; without
         # this allowance the browser blocks every call (the roof step first).
         "LINKER_ENGINE_CORS_ORIGINS": instance.url,
+        **planner_environment(instance),
     }
+
+
+def planner_environment(instance: Instance) -> dict[str, str]:
+    """Create an explicit local policy once; preserve operator changes.
+
+    These are development resource bounds, not project/engineering limits or
+    production capacity promises. Arithmetic settings are the independently
+    tested replay tolerances, frozen in each manifest (548-service-hosting).
+    """
+    directory = instance.dir / "planner"
+    directory.mkdir(parents=True, exist_ok=True, mode=0o700)
+    config = directory / "runtime.json"
+    if not config.exists():
+        payload = {
+            "schema_version": 1,
+            "directory": str(directory / "workspace"),
+            "max_body_bytes": 16 * 1024 * 1024,
+            "max_csv_bytes": 8 * 1024 * 1024,
+            "max_page_size": 100,
+            "max_json_depth": 32,
+            "max_intervals": 100_000,
+            "max_attempts": 2,
+            "absolute_kwh": 1e-7,
+            "absolute_kw": 1e-7,
+            "relative": 1e-9,
+        }
+        publish_once(config, payload)
+    return {"LINKER_PLANNER_CONFIG": str(config)}
+
+
+def _planner_probe(base: str, token: str) -> dict[str, object]:
+    request = urllib.request.Request(
+        base + "/planning/version",
+        data=b'{"schema_version":1}',
+        headers={
+            "Content-Type": "application/json",
+            "X-Linker-Service-Token": token,
+            "X-Linker-Planner-Principal-Kind": "team",
+            "X-Linker-Planner-Principal-Subject": "local:readiness",
+        },
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=START_TIMEOUT) as response:
+            value = json.loads(response.read())
+        if (
+            not isinstance(value, dict)
+            or type(value.get("schema_version")) is not int
+            or value["schema_version"] != 1
+            or not isinstance(value.get("runtime_sha256"), str)
+            or re.fullmatch(r"[a-f0-9]{64}", value["runtime_sha256"]) is None
+            or any(
+                not isinstance(value.get(name), str)
+                or re.fullmatch(r"[a-f0-9]{64}", value[name]) is None
+                for name in ("execution_key", "storage_binding")
+            )
+            or not isinstance(value.get("limits"), dict)
+            or any(
+                type(value["limits"].get(name)) is not int or value["limits"][name] <= 0
+                for name in (
+                    "max_body_bytes",
+                    "max_csv_bytes",
+                    "max_page_size",
+                    "max_json_depth",
+                )
+            )
+        ):
+            raise ValueError("planning version response is invalid")
+        return value
+    except (urllib.error.URLError, OSError, ValueError, TimeoutError) as error:
+        raise ProcessError(
+            "the private planning service did not pass readiness"
+        ) from error
 
 
 def _uv() -> Path:

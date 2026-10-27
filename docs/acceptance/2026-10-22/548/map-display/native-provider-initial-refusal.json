@@ -1,0 +1,7 @@
+{
+  "status": "loading_with_resource_refusal",
+  "mainTargetEvents": [],
+  "hasMore": false,
+  "truncated": false,
+  "childTargetObservation": "Target.setAutoAttach is unsupported by the IAB CDP capability; absence of cross-origin events is not accepted as absence of network requests."
+}

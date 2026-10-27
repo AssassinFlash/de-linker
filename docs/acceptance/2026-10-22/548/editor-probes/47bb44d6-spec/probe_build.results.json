@@ -1,0 +1,50 @@
+{
+  "target": "47bb44d6ca2ff664d0bf638e394ab6fa842ac2fd",
+  "actual_typescript_vite_build": true,
+  "source_manifest_check": true,
+  "all7_identical": true,
+  "artifacts": [
+    {
+      "path": "plugins/linker-tools/build/planner/assets/SceneViewport-uF-OdQNM.js",
+      "bytes": 1547124,
+      "sha256": "6295e9a22c22bf1f9cce098a0bf837bf8caaff12daf153237d72e602ba31bb18",
+      "target_identical": true
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/assets/planner-core-DWaGfCpX.js",
+      "bytes": 555597,
+      "sha256": "b4e0a2ddde586a79de80bdc7a1b7b4a4948bdcff32930eadcb8eb297b8503e5a",
+      "target_identical": true
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/assets/planner.js",
+      "bytes": 1251,
+      "sha256": "91dba6371bc2b6403b4a3bca82d6e0c4100df801bff1e85e4af5ab9adb893ce4",
+      "target_identical": true
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/assets/rolldown-runtime-BWaJ3C7D.js",
+      "bytes": 911,
+      "sha256": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3",
+      "target_identical": true
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/source-manifest.json",
+      "bytes": 8497,
+      "sha256": "f4f66a965b096b47fdc276cce731828bf117232dc01ce1713f0ff50341d99bd6",
+      "target_identical": true
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/vite-manifest.json",
+      "bytes": 908,
+      "sha256": "c858ec465b4da39e310ff081cd16428c99aa4cac77d65dc5e4001a9a3b615cb0",
+      "target_identical": true
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/windpress.scan.txt",
+      "bytes": 1418,
+      "sha256": "2da4fe9c74d140865a5a63ef4ee4914efee27ac9008ccd744666ebb567c32d1d",
+      "target_identical": true
+    }
+  ]
+}

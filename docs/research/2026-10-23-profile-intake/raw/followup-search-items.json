@@ -1,0 +1,375 @@
+[
+  {
+    "searchQuery": {
+      "term": "OpenSolar custom consumption interval data CSV upload help",
+      "url": "http://www.google.com/search?q=OpenSolar+custom+consumption+interval+data+CSV+upload+help&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=OpenSolar+custom+consumption+interval+data+CSV+upload+help&gl=us",
+    "hasNextPage": true,
+    "serpProviderCode": "A",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "How to upload interval data",
+        "websiteTitle": "OpenSolar",
+        "url": "https://support.opensolar.com/hc/en-us/articles/13183853699215-How-to-upload-interval-data",
+        "displayedUrl": "https://support.opensolar.com › en-us › articles › 13183...",
+        "description": "Open your desired Project in OpenSolar. · Navigate to the Energy tab. · In the Electricity Usage section, select “Interval Data” from the Data ...Read more",
+        "date": "2026-05-08T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "Navigate to the Energy tab"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "Use UtilityAPI to import usage data (US only)",
+        "websiteTitle": "OpenSolar",
+        "url": "https://support.opensolar.com/hc/en-us/articles/4407439610009-Use-UtilityAPI-to-import-usage-data-US-only",
+        "displayedUrl": "https://support.opensolar.com › en-us › articles › 44074...",
+        "description": "Import ​UtilityAPI Interval Data into your OpenSolar Project: · Go to the energy tab within your project · Click on the \"UtilityAPI import\" button ...Read more",
+        "date": "2023-03-28T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "Import",
+          "Interval Data",
+          "OpenSolar",
+          "import"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "How to customize electricity usage",
+        "websiteTitle": "OpenSolar",
+        "url": "https://support.opensolar.com/hc/en-us/articles/13183763473295-How-to-customize-electricity-usage",
+        "displayedUrl": "https://support.opensolar.com › en-us › articles › 13183...",
+        "description": "Upload 15, 30, or 60-minute interval data for an entire year (8760 hours). See detailed instructions for uploading interval data",
+        "date": "2026-05-08T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "Upload 15, 30, or 60-minute interval data"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "How to use the Interval Meter Tool on OpenSolar",
+        "websiteTitle": "YouTube · OpenSolar",
+        "url": "https://www.youtube.com/watch?v=ikmUHyuBs8s",
+        "displayedUrl": "YouTube › OpenSolar",
+        "description": "This video shows you how to use the IMD in OpenSolar powered by SunWiz. How to use the Interval Meter Tool on OpenSolar",
+        "emphasizedKeywords": [],
+        "siteLinks": [],
+        "productInfo": {},
+        "views": "260+ views",
+        "lastUpdated": "5 years ago",
+        "type": "organic",
+        "position": 4
+      },
+      {
+        "title": "Green Button CSV Data (30 minute interval) kWh to status ...",
+        "websiteTitle": "PVOutput Community",
+        "url": "https://forum.pvoutput.org/t/green-button-csv-data-30-minute-interval-kwh-to-status-batch/3488",
+        "displayedUrl": "https://forum.pvoutput.org › green-button-csv-data-30-...",
+        "description": "The data shows energy consumed at each 30 minute block, assuming positive is import and negative export. 1020Wh every 30 minutes = 170Wh ...Read more",
+        "date": "2020-08-09T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "data",
+          "consumed",
+          "import"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 5
+      },
+      {
+        "title": "How to enter customer usage from bills or interval data",
+        "websiteTitle": "YouTube · OpenSolar",
+        "url": "https://www.youtube.com/watch?v=cWJ-8VV-AzE",
+        "displayedUrl": "YouTube › OpenSolar",
+        "description": "This video will go through how to upload usage data into OpenSolar in a number of different ways in order to achieve the highest level of ...",
+        "emphasizedKeywords": [],
+        "siteLinks": [],
+        "productInfo": {},
+        "views": "740+ views",
+        "lastUpdated": "6 years ago",
+        "type": "organic",
+        "position": 6
+      },
+      {
+        "title": "Energy Usage & Consumption",
+        "websiteTitle": "OpenSolar",
+        "url": "https://support.opensolar.com/hc/en-us/sections/17378434417167-Energy-Usage-Consumption",
+        "displayedUrl": "https://support.opensolar.com › en-us › sections › 1737...",
+        "description": "How to customize electricity usage How to upload interval data OpenSolar Free, class-leading software to design, sell and manage solar projects.",
+        "emphasizedKeywords": [
+          "How to upload interval data"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 7
+      },
+      {
+        "title": "How To Upload Interval Usage Data",
+        "websiteTitle": "Enphase",
+        "url": "https://solargrafsupport.enphase.com/s/article/How-to-Upload-Green-Button-Data",
+        "displayedUrl": "https://solargrafsupport.enphase.com › article › How-to-...",
+        "description": "The guide below outlines. Select Upload Usage On the Utility Settings page, under Electricity bills & consumption, select Upload Usage.",
+        "emphasizedKeywords": [
+          "Select Upload Usage On the Utility Settings page"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 8
+      },
+      {
+        "title": "OpenSolar query re: Energy usage graph : r/SolarUK",
+        "websiteTitle": "Reddit · r/SolarUK",
+        "url": "https://www.reddit.com/r/SolarUK/comments/1kssmjf/opensolar_query_re_energy_usage_graph/",
+        "displayedUrl": "Reddit › r/SolarUK",
+        "description": "I am playing with OpenSolar, but it insists on making my graph show less electricity usage in the summer months.Read more",
+        "emphasizedKeywords": [
+          "OpenSolar",
+          "usage"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "commentsAmount": "2 comments",
+        "lastUpdated": "1 year ago",
+        "type": "organic",
+        "position": 9
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "aiOverview": {
+      "type": "live",
+      "content": "You can upload custom consumption interval data in OpenSolar by following the official process on the project energy tab How to upload interval data – OpenSolar.Open Project: Navigate to your project in OpenSolar.Go to Energy Tab: Select the Energy tab from the project menu.Select Data Source: Expand the Data Source dropdown and select Interval Data under Electricity Usage.Upload CSV: Click Upload CSV and select your prepared file.CSV File Guidelines & FormatsOfficial Templates: Use the official unedited templates provided by OpenSolar rather than custom structural layouts.Interval Structures: Supports vertical or horizontal structures with 15, 30, or 60-minute intervals.Data Preparation: Match headers directly to the downloaded template, align start dates accurately, and confirm measurement units (kWh) after uploading.Partial or Cross-Year Datasets: OpenSolar accepts partial or cross-year datasets and automatically extrapolates missing periods, though very large datasets may experience processing delays.If you are running into a specific error or formatting issue with your CSV file, let me know what interval length (15, 30, or 60 min) you are using or what error message appears so I can help troubleshoot it.If you are running into a specific error or formatting issue with your CSV file, let me know what interval length (15, 30, or 60 min) you are using or what error message appears so I can help troubleshoot it.AI responses may include mistakes. Learn moreCopied to clipboardFailed to copy to clipboard.  Try again later.CopiedFailed to copyCopyShare public linkThis public link is valid for 7 days and shares a thread, including any personal information you added. This link or copies made by others cannot be deleted. If you share with third parties, their policies apply.Can’t copy the link right now. Try again later.FacebookGmailXRedditWhatsAppShareGood responseBad responseMore",
+      "sources": [
+        {
+          "url": "https://support.opensolar.com/hc/en-us/articles/13183853699215-How-to-upload-interval-data",
+          "title": "How to upload interval data – OpenSolar",
+          "description": "Process: Open project, go to Energy tab, select Interval Data under Electricity Usage, and click Upload CSV. Formats: Accepts CSV ..."
+        },
+        {
+          "url": "https://support.opensolar.com/hc/en-us/articles/13211925173519-How-to-Design-Your-First-Project-in-OpenSolar",
+          "title": "How to Design Your First Project in OpenSolar",
+          "description": "To Enter Usage: * Navigate to the Energy Tab. * Expand the Data Source dropdown. * Choose the appropriate format, such as: Monthly..."
+        }
+      ]
+    },
+    "customData": null
+  },
+  {
+    "searchQuery": {
+      "term": "NREL SAM electric load data CSV time step daylight saving time",
+      "url": "http://www.google.com/search?q=NREL+SAM+electric+load+data+CSV+time+step+daylight+saving+time&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=NREL+SAM+electric+load+data+CSV+time+step+daylight+saving+time&gl=us",
+    "hasNextPage": true,
+    "serpProviderCode": "L",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "SAM Help",
+        "websiteTitle": "System Advisor Model - SAM (.gov)",
+        "url": "https://sam.nlr.gov/images/web_page_files/sam-help-2024-12-12.pdf",
+        "displayedUrl": "https://sam.nlr.gov › images › sam-help-2024-12-12",
+        "description": "SAM includes several databases of performance data and coefficients for system components such as photovoltaic modules and inverters, batteries ...",
+        "date": "2024-12-12T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "SAM"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "Electricity Purchases Load Rate Data issue - SAM Forum",
+        "websiteTitle": "System Advisor Model - SAM (.gov)",
+        "url": "https://sam.nlr.gov/forum/forum-general/4586-electricity-purchases-load-rate-data-issue.html",
+        "displayedUrl": "https://sam.nlr.gov › ... › General SAM How-To",
+        "description": "When you provide time series electricity rate data as input, SAM automatically considers it to be hourly data if has 8,760 rows, 15-minute data ...Read more",
+        "date": "2024-04-03T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "time",
+          "electricity",
+          "data",
+          "SAM",
+          "data",
+          "data"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "Release Notes — SAM Help",
+        "websiteTitle": "GitHub Pages documentation",
+        "url": "https://natlabrockies.github.io/SAM/doc/reference/release_notes.html",
+        "displayedUrl": "https://natlabrockies.github.io › SAM › doc › reference",
+        "description": "SAM assumes time stamps are in local time, not UTC. Only affects projects with load data or time-depending electricity prices.",
+        "emphasizedKeywords": [
+          "SAM assumes time stamps are in local time"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "SAM Photovoltaic Model Technical Reference Update",
+        "websiteTitle": "National Laboratory of the Rockies (NLR) (.gov)",
+        "url": "https://www.nrel.gov/docs/fy18osti/67399.pdf",
+        "displayedUrl": "https://www.nrel.gov › docs",
+        "description": "by P Gilman · 2018 · Cited by 166 — SAM reads the time stamp data for the current time step in the weather file (represented by a data row) as a year, month, day, hour, and minute value. The ...Read more",
+        "emphasizedKeywords": [
+          "SAM reads the time stamp data for the current time step"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "personalInfo": {
+          "rawText": "by P Gilman · 2018 · Cited by 166 — SAM reads the time stamp data for the current time step in the weather file (represented by a data row) as a year, month, day, hour, and minute value. The ...Read more"
+        },
+        "type": "organic",
+        "position": 4
+      },
+      {
+        "title": "PV self-consumption rate and dependence on time step",
+        "websiteTitle": "System Advisor Model - SAM (.gov)",
+        "url": "https://sam.nlr.gov/forum/forum-general/3946-pv-self-consumption-rate-and-dependence-on-time-step.html",
+        "displayedUrl": "https://sam.nlr.gov › ... › General SAM How-To",
+        "description": "SAM's simulation time step depends on the weather data time step, and the load data time step must match the weather data time step.",
+        "date": "2022-07-07T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "SAM's",
+          "time step",
+          "data time step",
+          "load data time step",
+          "data time step"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 5
+      },
+      {
+        "title": "Renewable Energy and Electricity Demand Time Series ...",
+        "websiteTitle": "Mendeley Data",
+        "url": "https://data.mendeley.com/datasets/fdfftr3tc2/1",
+        "displayedUrl": "https://data.mendeley.com › datasets",
+        "description": "The database contains 12 columns, including date, station (1: Winter, 2: Spring, 3: Summer, 4: Autumn), day of the week (0: Monday, ... , 6: ...Read more",
+        "date": "2023-04-26T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "database",
+          "Summer",
+          "day"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 6
+      },
+      {
+        "title": "System Advisor Model (SAM)",
+        "websiteTitle": "GitHub",
+        "url": "https://github.com/NREL/SAM",
+        "displayedUrl": "https://github.com › NREL › SAM",
+        "description": "SAM is a simulation program for electricity generation projects. It has models for different kinds of renewable energy systems and financial models for ...Read more",
+        "emphasizedKeywords": [
+          "SAM is a simulation program for electricity generation projects"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 7
+      },
+      {
+        "title": "Residential and Commercial - System Advisor Model - SAM",
+        "websiteTitle": "System Advisor Model - SAM (.gov)",
+        "url": "https://sam.nlr.gov/financial-models/residential-and-commercial.html",
+        "displayedUrl": "https://sam.nlr.gov › Financial Models",
+        "description": "SAM requires electric load data, which is specified on the Electric Load page. It covers weather and load data, electricity rate inputs, electricity bill  ...",
+        "emphasizedKeywords": [
+          "SAM requires electric load data"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 8
+      },
+      {
+        "title": "Electricity-Demand-Growth-and-Forecasting-in-a-Time-of- ...",
+        "websiteTitle": "The Brattle Group",
+        "url": "https://www.brattle.com/wp-content/uploads/2024/05/Electricity-Demand-Growth-and-Forecasting-in-a-Time-of-Change-1.pdf",
+        "displayedUrl": "https://www.brattle.com › uploads › 2024/05 › El...",
+        "description": "by TB Tsuchida · 2024 · Cited by 30 — Load forecasting, or projecting future peak demand and energy consumption, is a critical component of the electric power industry's responsibilities.1 While ...Read more",
+        "emphasizedKeywords": [
+          "Load",
+          "electric power"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "personalInfo": {
+          "rawText": "by TB Tsuchida · 2024 · Cited by 30 — Load forecasting, or projecting future peak demand and energy consumption, is a critical component of the electric power industry's responsibilities.1 While ...Read more"
+        },
+        "type": "organic",
+        "position": 9
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "aiOverview": {
+      "type": "live",
+      "content": "In NREL's System Advisor Model (SAM), electric load data and weather files do not account for Daylight Saving Time (DST).No Daylight Saving Time: SAM assumes all time series data (load, weather, and time-of-use electricity pricing) operates on a standard, non-shifting local time (e.g., standard time year-round). If your raw CSV load data includes DST spring-forward (8,759 rows) or fall-back (8,761 rows) shifts, you must flatten or adjust the timestamp series to a continuous 8,760-hour (or exact sub-hourly equivalent) standard time format before importing.Time Step & Row Counts:For hourly data, SAM expects 8,760 values for a standard non-leap year (plus an extra header row at the top).For sub-hourly data, you must specify the corresponding time step (e.g., enter 15 for 15-minute data), requiring 8,760 × (steps per hour) rows (e.g., 35,040 rows for 15-minute intervals).Start Convention: SAM assumes the dataset starts on Monday, January 1, with the first row representing the end of the first time step (e.g., the hour ending at 1:00 AM on January 1).Time-of-Use (TOU) Alignment: If your utility rate structure uses time-dependent or seasonal pricing, your electric load CSV and weather/rate profiles must share the exact same time convention so weekdays, weekends, and peak periods match accurately.You can manage or inspect these settings via the Electric Load Input Documentation or by exporting a default template directly inside SAM.You can manage or inspect these settings via the Electric Load Input Documentation or by exporting a default template directly inside SAM.If you are converting a raw utility CSV with DST shifts, let me know:What interval your data is in (hourly, 15-minute, etc.)Where the data is located (which region/utility)I can help guide you on how to shift or interpolate the missing/extra hours.If you are converting a raw utility CSV with DST shifts, let me know:I can help guide you on how to shift or interpolate the missing/extra hours.AI responses may include mistakes. Learn moreCopied to clipboardFailed to copy to clipboard.  Try again later.CopiedFailed to copyCopyShare public linkThis public link is valid for 7 days and shares a thread, including any personal information you added. This link or copies made by others cannot be deleted. If you share with third parties, their policies apply.Can’t copy the link right now. Try again later.FacebookGmailXRedditWhatsAppShareGood responseBad responseMore",
+      "sources": [
+        {
+          "url": "https://sam.nlr.gov/financial-models/images/webinar_files/sam-webinars-2017-electricity-rates.pdf",
+          "title": "SAM Webinars 2017: Electricity Rates and Bill Savings for ...",
+          "description": "NATIONAL RENEWABLE ENERGY LABORATORY 11 Import one year of load data when it is available For subhourly data enter the time step, ..."
+        },
+        {
+          "url": "https://sam.nlr.gov/forum/forum-general/616-flat-plate-pv-model-user-entered-hourly-data-for-electric-load.html",
+          "title": "Flat Plate PV model",
+          "description": "judsannu 05 Nov 2013 23:06 #1901 Replied by judsannu on topic Flat Plate PV model - user entered hourly data for electric load Tha..."
+        },
+        {
+          "url": "https://sam.nlr.gov/forum/forum-general/161-question-about-the-time-in-the-data-files.html",
+          "title": "Question about the Time in the Data files",
+          "description": "Paul Gilman 23 Apr 2012 11:50 #505 Replied by Paul Gilman on topic Question about the Time in the Data files The time convention i..."
+        }
+      ]
+    },
+    "customData": null
+  }
+]

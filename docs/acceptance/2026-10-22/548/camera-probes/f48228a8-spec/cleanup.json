@@ -1,0 +1,26 @@
+{
+  "owner": "/root/geographic_spec_e138",
+  "target": "f48228a87894c23f68d180675d05b902139d531e",
+  "removed_temporary_root": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/camera-spec-f48228a8-lfh__g_4",
+  "purpose_complete": "Fixed-source checks and independent camera counterexamples durably archived",
+  "reclaim_condition": "After durable unique evidence readback SHA-check and reclaim fixed source/build files, generated probe copies and dependency link",
+  "source_files_sha_verified_and_removed": 147,
+  "generated_probe_copies_sha_verified_and_removed": {
+    "apps/planner/tests/camera-loader.mjs": "4ce78b24b54740ad8f874524a256de1012fe7091c7f506bc683a042fa6cb88fc",
+    "apps/planner/tests/camera-host.mjs": "20966ef775e127cb499bc4db9b705cf4d228879ef77748dfd9abc14a79896954",
+    "apps/planner/tests/camera-probe.mjs": "16dd892636c680c288d50dd69400b0e9fc236066fa893bf71fa137818304fd33"
+  },
+  "dependency_symlinks_removed_only": {
+    "apps/planner/node_modules": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/apps/planner/node_modules"
+  },
+  "removed_file_payload_bytes": 2964147,
+  "active_process_references_excluding_cleanup_ancestors": [],
+  "prior_eff_archive_files_sha_verified_unchanged": 27,
+  "temporary_root_absent_after": true,
+  "disk_free_before_bytes": 883507089408,
+  "disk_free_after_bytes": 883510476800,
+  "observed_disk_free_change_bytes": 3387392,
+  "disk_delta_caveat": "Shared APFS volume and other active work may change free space concurrently; payload bytes are not physical allocation claims.",
+  "new_worktree_site_database_or_runtime_instances": 0,
+  "completed_utc": "2026-10-23T11:53:47.945618+00:00"
+}

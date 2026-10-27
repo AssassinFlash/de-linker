@@ -1,0 +1,94 @@
+{
+  "review_axis": "Spec",
+  "reviewer_task": "map_feature_spec",
+  "created_at_utc": "2026-10-23T21:49:57.563132+00:00",
+  "base": "81524ca90795f4f26e80c59e5a63c63e23bd80c9",
+  "source_pin": "55104bbdbbf9e694eba4785787daaaf109b99ed8",
+  "head_at_completion": "55104bbdbbf9e694eba4785787daaaf109b99ed8",
+  "diff_command": "git diff 81524ca90795f4f26e80c59e5a63c63e23bd80c9...55104bbdbbf9e694eba4785787daaaf109b99ed8",
+  "commits": [
+    {
+      "sha": "55104bbdbbf9e694eba4785787daaaf109b99ed8",
+      "subject": "feat(planner): draw new roof features through the shared project journal"
+    }
+  ],
+  "changed_file_sha256": {
+    "apps/planner/src/components/ProjectEditor.tsx": "15a28d3c0114ae6918840b2a50559419e60236645c49d46e25c2dcf52334aab3",
+    "apps/planner/src/components/design/MapDrawingWorkspace.tsx": "00201814ef82c8efdc45c7fa282b2f6564493e08c8d0b7e9228707caed30d460",
+    "apps/planner/src/components/design/MapFeatureProperties.tsx": "54e5cdee68b2aca823d0ea8beea8d88930be6bc94bcea4bed3a0005267e6656f",
+    "apps/planner/src/components/design/MapFeatureSelector.tsx": "c812a5e4db6d39b35c06679d61a8ba7ec1d452de3bf439801707dbaa1f6e0b08",
+    "apps/planner/src/components/design/MapRingProperties.tsx": "a97938881bc521438452df89ebc356853a221b6d900987cbecea03f23d98a3cc",
+    "apps/planner/src/components/design/MapSourceDetails.tsx": "dc80c331b8ca0cd77076bbbd713984ad4b8eed20bc115e8151ded00efed304a0",
+    "apps/planner/src/components/design/mapDrawingLabels.ts": "883f937b29a36fb5db24b9be60b64381db93e0985d59a8ce911732f2c6da6adb",
+    "apps/planner/src/domain/mapDrawingBase.ts": "9825a16446dba4a17de9e975652122442da7f78a3e46071615ccb4595646ac37",
+    "apps/planner/src/domain/mapDrawingDraft.ts": "1e1706bd7467d7dd09db64f79e599d45ecf1d9d8a185e3a75fb91bbf3ed87284",
+    "apps/planner/src/domain/mapFeatureDraft.test.ts": "8c473207cd521749ed33d91485fecad9c166c504929f4ed6c3a973d2f3f5c9d5",
+    "apps/planner/src/domain/mapFeatureDraft.ts": "c32a888715ce1ca62927a8f0dbdd3044b4200d52f510d4c144d1da94e19f88e0",
+    "apps/planner/src/domain/mapRoofDraft.ts": "716d7f3af5d67041817b3738b8fe3a5c25f7ce53ab3d4afa5b25085739ea7b81",
+    "apps/planner/tests/map-roof-recovery.test.mjs": "1abb2f7f53aea4b7b0349f3148079cebb451bc5ddf09df32829a3359cb4254ce",
+    "apps/planner/tests/map-roof-workspace.test.mjs": "8a002d59f0127e0d66c87f729eb8235603deb3eb1724e64d5512ba8941c4267e",
+    "apps/planner/tests/workspace-lifecycle.test.mjs": "6c820bb8e1ca97952ca00fa25de9388f01170b07e472d62da0c9f5ff16e4e653",
+    "docs/acceptance/2026-10-24/548/map-feature-creation/COPY-DRAFT.json": "810cf1bc78cf733b17002dd2023427a1f2a6fcc61406026afa75c029fb8d0e8a",
+    "docs/acceptance/2026-10-24/548/map-feature-creation/COPY-FINAL.json": "cc2ed09d028f1db3dbad44e7f881427a1bacd68896737d8ab495eec9c5b376c4",
+    "docs/acceptance/2026-10-24/548/map-feature-creation/COPY-REVIEW.md": "e302bbbb83956776a15f8cb6301d6948f9db6314f4a0e7dc6274bbecd2e279d4",
+    "docs/acceptance/2026-10-24/548/map-feature-creation/tests-output.txt": "ce39af8984815de052a3e2f6a7dacc9dac7537363f36b40038c364b2fd9ead94",
+    "docs/specs/548-map-feature-creation.md": "2a6e4fee6e7334f6324ae25def080562fc65c6df26d9d0289e870e0445f190fc",
+    "plugins/linker-tools/build/planner/assets/MapViewport-CWzVvPkG.js": "7229cb0fa60e093ee2127b4f0c36a8a0ce896023cd76fa69c3562e0c6a038a60",
+    "plugins/linker-tools/build/planner/assets/SceneViewport-Dd4pwnYT.js": "1167a489c9991b0775dff1c24d2f3cdcffdb500e0db0079bb186d82f9d1830be",
+    "plugins/linker-tools/build/planner/assets/planner-core-2m7KzItW.js": "ccdd95b4087dc6e1fcc6e9f94127ea710fa60345537f59ce5f9c8b249c97911c",
+    "plugins/linker-tools/build/planner/assets/planner.js": "16aa8b494762a31e3bd7e5bf82c811e3e1bcbc38f99ce06b1cf603bbe86d9128",
+    "plugins/linker-tools/build/planner/source-manifest.json": "e5eb00f1a938a5e8264e919307affb360a5cb97d2ee744dd1fefac0b649838d1",
+    "plugins/linker-tools/build/planner/vite-manifest.json": "8a9b83d2c9f3270b9cbb5ee79190c246356845bbe6b22190a222d0ed94378a4e",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json": "0bcb3589348c20b31268ef2eacc4416de1fc0f54c2b7842d5d13d4b3f2822a90",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal.mo": "605dd05da25b40c8733049d1c914c9b336122de15ec49d9377ece351ea90153f",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal.po": "e23d7c27c937eddf3cf3548038656b3e98e0632301a3a1db2b5030f592a3ca08"
+  },
+  "manifest_source_count": 125,
+  "manifest_build_count": 7,
+  "source_and_build_manifest_verified": true,
+  "checks": [
+    {
+      "command": "node --test src/domain/mapFeatureDraft.test.ts",
+      "passed": 6,
+      "failed": 0,
+      "log": "existing-tests-output.txt"
+    },
+    {
+      "command": "node --no-warnings=ExperimentalWarning --loader ./tests/tsx-loader.mjs --test tests/map-roof-workspace.test.mjs tests/map-roof-recovery.test.mjs tests/workspace-lifecycle.test.mjs",
+      "passed": 46,
+      "failed": 0,
+      "log": "existing-tests-output.txt"
+    },
+    {
+      "command": "npm run build:check",
+      "passed": 1,
+      "failed": 0,
+      "log": "build-check-output.txt"
+    },
+    {
+      "command": "node --no-warnings=ExperimentalWarning --loader ./tests/tsx-loader.mjs --test ../../docs/acceptance/2026-10-24/548/map-feature-creation/review-spec-55104bbd/engine-gate-probe.test.mjs",
+      "initial_passed": 16,
+      "initial_failed": 1,
+      "log": "engine-gate-probe-initial-output.txt",
+      "failure_class": "Probe compared JS -0 with JSON zero; product uses sameJson/JSON. Preserved initial evidence; corrected only assertion."
+    },
+    {
+      "command": "node --no-warnings=ExperimentalWarning --loader ./tests/tsx-loader.mjs --test --test-name-pattern unknown_prepared_write ../../docs/acceptance/2026-10-24/548/map-feature-creation/review-spec-55104bbd/engine-gate-probe.test.mjs",
+      "passed": 1,
+      "failed": 0,
+      "log": "engine-gate-probe-corrected-output.txt"
+    }
+  ],
+  "real_engine": {
+    "shapely": "2.2.0",
+    "geos": "3.14.1",
+    "checker": "roof_plane_layout_v4",
+    "unique_scenarios": 17,
+    "source": "services/engine/src/linker_engine/planning/geometry_review.py",
+    "limitations": "JSDOM and existing MapLibre port; no native browser, real HTTP route, GPU, provider or engineering release. runtime_sha256 envelope marker is synthetic; all geometry diagnostics come from actual review_geometry."
+  },
+  "ownership": "Only review evidence in this directory. No source, dependency, browser, instance, settings, account or production changes.",
+  "retention": "Small unique review evidence. No runtime copy, worktree, snapshot or backup was created; no new resources require retirement.",
+  "confirmed_spec_findings": 0,
+  "full_goal_complete": false
+}

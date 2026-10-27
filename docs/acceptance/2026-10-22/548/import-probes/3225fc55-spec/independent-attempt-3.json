@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "--no-warnings=ExperimentalWarning",
+    "--loader",
+    "./tests/tsx-loader.mjs",
+    "--test",
+    "tests/independent-roof-import.mjs"
+  ],
+  "cwd": "apps/planner",
+  "target": "3225fc552a89c406f685bfc5643d50745e58baa9",
+  "base": "367e454c23f542632258e1440387c4c9e7825e17",
+  "exit_code": 0,
+  "probe_sha256": "30d462b23779b6dcffff4b560d516ea47ce434ad7cbdea6ea5270bf418d9cc1f",
+  "generated_path": "apps/planner/tests/independent-roof-import.mjs",
+  "completed_utc": "2026-10-23T11:20:29.118402+00:00"
+}

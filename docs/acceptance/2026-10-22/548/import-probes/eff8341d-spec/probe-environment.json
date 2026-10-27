@@ -1,0 +1,20 @@
+{
+  "observed_utc": "2026-10-23T11:37:46.024870+00:00",
+  "node": "v24.22.0",
+  "source_snapshot": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/roof-import-spec-eff8341d-0sxnek86",
+  "fixed_source_files": 145,
+  "runtime": "real React, Query, PlannerClient, GeometryImportStore, DraftStore, isolated IDBFactory; controlled synthetic HTTP and synthetic raw geometry fixture",
+  "German_locale": "fixed generated WordPress JSON catalog supplied to the fixture i18n adapter; not native WordPress runtime proof",
+  "prior_probes": [
+    {
+      "archive": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-22/548/import-probes/3225fc55-spec/independent-roof-import.mjs",
+      "sha256": "0eb6a82132b93609646ce5c1180ea7b1fe2127e3bfa19a920df3127040c45430"
+    },
+    {
+      "archive": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-22/548/import-probes/3225fc55-spec/independent-revision-refusal.mjs",
+      "sha256": "f4d95de00ab4581a9846f5569ee3b30fe04752487eca9ae46dfbfb0a0129e540"
+    }
+  ],
+  "parent_WIP_ignored": true,
+  "browser_production_operations": false
+}

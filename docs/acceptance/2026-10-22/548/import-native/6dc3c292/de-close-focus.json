@@ -1,0 +1,7 @@
+{
+  "activeText": "Dachgeometrie importieren",
+  "enabled": true,
+  "renderer": [
+    "WebGPU"
+  ]
+}

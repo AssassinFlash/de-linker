@@ -1,0 +1,11 @@
+✔ new hole UI recovers an unfinished arbitrary outline, reviews its fields and source, edits through Terra and applies one grouped command (244.003958ms)
+✔ new obstacle UI recovers an unfinished arbitrary outline, reviews its fields and source, edits through Terra and applies one grouped command (133.008209ms)
+✔ new keepout UI recovers an unfinished arbitrary outline, reviews its fields and source, edits through Terra and applies one grouped command (109.073583ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1101.9675

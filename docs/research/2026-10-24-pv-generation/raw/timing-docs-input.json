@@ -1,0 +1,27 @@
+{
+  "startUrls": [
+    {
+      "url": "https://ec.europa.eu/jrc/en/PVGIS/tools/tmy"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/pvlib/pvlib-python/v0.16.1/docs/tutorials/tmy_to_power.ipynb"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 2,
+  "saveMarkdown": true,
+  "saveText": true,
+  "saveHtml": true,
+  "saveContentTypes": "application/json, text/plain",
+  "htmlTransformer": "none",
+  "respectRobotsTxtFile": false,
+  "maxConcurrency": 1,
+  "requestTimeoutSecs": 90,
+  "maxRequestRetries": 1,
+  "minFileDownloadSpeedKBps": 1,
+  "customHttpHeaders": {
+    "Accept": "application/json",
+    "User-Agent": "python-requests/2.32.5"
+  }
+}

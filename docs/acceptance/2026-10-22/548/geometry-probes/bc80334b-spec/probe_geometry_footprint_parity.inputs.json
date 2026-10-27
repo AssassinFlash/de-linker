@@ -1,0 +1,3794 @@
+[
+  {
+    "rotation": 1,
+    "tilt": 0,
+    "document": {
+      "schema_version": 1,
+      "coordinate_system": {
+        "kind": "local_enu",
+        "unit": "m",
+        "height_reference": "relative_to_project_origin",
+        "north_reference": "unreferenced",
+        "north_source_id": null,
+        "anchor": null
+      },
+      "sources": [
+        {
+          "id": "survey",
+          "kind": "synthetic_fixture",
+          "note": "Analytic synthetic dimensions only",
+          "rights_note": "Owned test data, not a site survey or product datasheet",
+          "reference_url": null,
+          "reference_sha256": null,
+          "acquired_at_utc": null,
+          "spatial_precision_m": null,
+          "calibration_note": "Analytic metre-scale fixture; no real-world precision claim",
+          "rights_basis": "synthetic",
+          "permissions": {
+            "derive": "permitted",
+            "retain": "permitted",
+            "export": "permitted"
+          }
+        }
+      ],
+      "roofs": [
+        {
+          "id": "roof",
+          "name": "Fixture roof",
+          "source_id": "survey",
+          "origin_enu": [
+            1000000000000000.0,
+            0,
+            4
+          ],
+          "u_axis_enu": [
+            1,
+            0,
+            0
+          ],
+          "v_axis_enu": [
+            0,
+            1,
+            0
+          ],
+          "boundary_uv": [
+            [
+              0,
+              0
+            ],
+            [
+              20,
+              0
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              0,
+              20
+            ]
+          ],
+          "holes_uv": []
+        }
+      ],
+      "module_specs": [
+        {
+          "id": "module",
+          "model": "Synthetic 1 x 2 m",
+          "width_m": 1,
+          "length_m": 2,
+          "thickness_m": 0.04,
+          "stc_power_w": 500,
+          "source": {
+            "kind": "user_declared",
+            "note": "Synthetic module, not a product release",
+            "document_sha256": null,
+            "url": null,
+            "page": null
+          }
+        }
+      ],
+      "arrays": [
+        {
+          "id": "array",
+          "name": "Fixture array",
+          "source_id": "survey",
+          "roof_id": "roof",
+          "module_spec_id": "module",
+          "origin_uv": [
+            1,
+            2
+          ],
+          "rotation_deg": 1,
+          "mount_tilt_deg": 0,
+          "lower_edge_clearance_m": 0.1,
+          "rows": 3,
+          "columns": 2,
+          "column_gap_m": 0.2,
+          "row_gap_m": 0.4,
+          "excluded_slots": [
+            "1:1"
+          ],
+          "mounting_note": "Synthetic dimensions, not mounting-system approval"
+        }
+      ],
+      "obstacles": [],
+      "keepouts": [],
+      "layout_rules": [
+        {
+          "roof_id": "roof",
+          "source_id": "survey",
+          "edge_clearance_m": 0,
+          "obstacle_clearance_m": 0,
+          "source_note": "Explicit zero for analytic fixture; not a recommended installation clearance"
+        }
+      ]
+    },
+    "footprints": [
+      [
+        [
+          1.0,
+          2.0
+        ],
+        [
+          1.9998476951563913,
+          2.0174524064372834
+        ],
+        [
+          1.9649428822818242,
+          4.017147796750066
+        ],
+        [
+          0.965095187125433,
+          3.9996953903127825
+        ]
+      ],
+      [
+        [
+          2.1998172341876696,
+          2.02094288772474
+        ],
+        [
+          3.199664929344061,
+          2.0383952941620236
+        ],
+        [
+          3.1647601164694943,
+          4.038090684474806
+        ],
+        [
+          2.164912421313103,
+          4.020638278037523
+        ]
+      ],
+      [
+        [
+          0.9581142245505195,
+          4.399634468375339
+        ],
+        [
+          1.957961919706911,
+          4.417086874812622
+        ],
+        [
+          1.9230571068323439,
+          6.416782265125406
+        ],
+        [
+          0.9232094116759525,
+          6.399329858688122
+        ]
+      ],
+      [
+        [
+          2.1579314587381893,
+          4.420577356100079
+        ],
+        [
+          3.1577791538945807,
+          4.438029762537362
+        ],
+        [
+          3.1228743410200135,
+          6.437725152850145
+        ],
+        [
+          2.123026645863622,
+          6.420272746412863
+        ]
+      ],
+      [
+        [
+          0.9162284491010392,
+          6.799268936750678
+        ],
+        [
+          1.9160761442574303,
+          6.816721343187961
+        ],
+        [
+          1.8811713313828633,
+          8.816416733500745
+        ],
+        [
+          0.8813236362264721,
+          8.79896432706346
+        ]
+      ],
+      [
+        [
+          2.116045683288709,
+          6.820211824475418
+        ],
+        [
+          3.1158933784451004,
+          6.837664230912701
+        ],
+        [
+          3.080988565570533,
+          8.837359621225485
+        ],
+        [
+          2.0811408704141416,
+          8.8199072147882
+        ]
+      ]
+    ]
+  },
+  {
+    "rotation": 1,
+    "tilt": 30,
+    "document": {
+      "schema_version": 1,
+      "coordinate_system": {
+        "kind": "local_enu",
+        "unit": "m",
+        "height_reference": "relative_to_project_origin",
+        "north_reference": "unreferenced",
+        "north_source_id": null,
+        "anchor": null
+      },
+      "sources": [
+        {
+          "id": "survey",
+          "kind": "synthetic_fixture",
+          "note": "Analytic synthetic dimensions only",
+          "rights_note": "Owned test data, not a site survey or product datasheet",
+          "reference_url": null,
+          "reference_sha256": null,
+          "acquired_at_utc": null,
+          "spatial_precision_m": null,
+          "calibration_note": "Analytic metre-scale fixture; no real-world precision claim",
+          "rights_basis": "synthetic",
+          "permissions": {
+            "derive": "permitted",
+            "retain": "permitted",
+            "export": "permitted"
+          }
+        }
+      ],
+      "roofs": [
+        {
+          "id": "roof",
+          "name": "Fixture roof",
+          "source_id": "survey",
+          "origin_enu": [
+            1000000000000000.0,
+            0,
+            4
+          ],
+          "u_axis_enu": [
+            1,
+            0,
+            0
+          ],
+          "v_axis_enu": [
+            0,
+            1,
+            0
+          ],
+          "boundary_uv": [
+            [
+              0,
+              0
+            ],
+            [
+              20,
+              0
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              0,
+              20
+            ]
+          ],
+          "holes_uv": []
+        }
+      ],
+      "module_specs": [
+        {
+          "id": "module",
+          "model": "Synthetic 1 x 2 m",
+          "width_m": 1,
+          "length_m": 2,
+          "thickness_m": 0.04,
+          "stc_power_w": 500,
+          "source": {
+            "kind": "user_declared",
+            "note": "Synthetic module, not a product release",
+            "document_sha256": null,
+            "url": null,
+            "page": null
+          }
+        }
+      ],
+      "arrays": [
+        {
+          "id": "array",
+          "name": "Fixture array",
+          "source_id": "survey",
+          "roof_id": "roof",
+          "module_spec_id": "module",
+          "origin_uv": [
+            1,
+            2
+          ],
+          "rotation_deg": 1,
+          "mount_tilt_deg": 30,
+          "lower_edge_clearance_m": 0.1,
+          "rows": 3,
+          "columns": 2,
+          "column_gap_m": 0.2,
+          "row_gap_m": 0.4,
+          "excluded_slots": [
+            "1:1"
+          ],
+          "mounting_note": "Synthetic dimensions, not mounting-system approval"
+        }
+      ],
+      "obstacles": [],
+      "keepouts": [],
+      "layout_rules": [
+        {
+          "roof_id": "roof",
+          "source_id": "survey",
+          "edge_clearance_m": 0,
+          "obstacle_clearance_m": 0,
+          "source_note": "Explicit zero for analytic fixture; not a recommended installation clearance"
+        }
+      ]
+    },
+    "footprints": [
+      [
+        [
+          1.0003490481287456,
+          1.9800030460968723
+        ],
+        [
+          2.000196743285137,
+          1.9974554525341557
+        ],
+        [
+          1.969619240492674,
+          3.749239414278792
+        ],
+        [
+          0.9697715453362828,
+          3.7317870078415085
+        ]
+      ],
+      [
+        [
+          2.2001662823164154,
+          2.0009459338216122
+        ],
+        [
+          3.200013977472807,
+          2.0183983402588956
+        ],
+        [
+          3.169436474680344,
+          3.7701823020035317
+        ],
+        [
+          2.1695887795239526,
+          3.7527298955662483
+        ]
+      ],
+      [
+        [
+          0.9631396308901151,
+          4.111729132000937
+        ],
+        [
+          1.9629873260465063,
+          4.129181538438221
+        ],
+        [
+          1.9324098232540434,
+          5.880965500182857
+        ],
+        [
+          0.9325621280976523,
+          5.863513093745572
+        ]
+      ],
+      [
+        [
+          2.162956865077785,
+          4.132672019725677
+        ],
+        [
+          3.1628045602341763,
+          4.150124426162961
+        ],
+        [
+          3.1322270574417135,
+          5.901908387907596
+        ],
+        [
+          2.132379362285322,
+          5.884455981470313
+        ]
+      ],
+      [
+        [
+          0.9259302136514845,
+          6.2434552179050025
+        ],
+        [
+          1.9257779088078757,
+          6.260907624342286
+        ],
+        [
+          1.8952004060154128,
+          8.01269158608692
+        ],
+        [
+          0.8953527108590217,
+          7.995239179649637
+        ]
+      ],
+      [
+        [
+          2.1257474478391543,
+          6.264398105629743
+        ],
+        [
+          3.1255951429955457,
+          6.281850512067026
+        ],
+        [
+          3.095017640203083,
+          8.033634473811661
+        ],
+        [
+          2.0951699450466914,
+          8.016182067374377
+        ]
+      ]
+    ]
+  },
+  {
+    "rotation": 1,
+    "tilt": 45,
+    "document": {
+      "schema_version": 1,
+      "coordinate_system": {
+        "kind": "local_enu",
+        "unit": "m",
+        "height_reference": "relative_to_project_origin",
+        "north_reference": "unreferenced",
+        "north_source_id": null,
+        "anchor": null
+      },
+      "sources": [
+        {
+          "id": "survey",
+          "kind": "synthetic_fixture",
+          "note": "Analytic synthetic dimensions only",
+          "rights_note": "Owned test data, not a site survey or product datasheet",
+          "reference_url": null,
+          "reference_sha256": null,
+          "acquired_at_utc": null,
+          "spatial_precision_m": null,
+          "calibration_note": "Analytic metre-scale fixture; no real-world precision claim",
+          "rights_basis": "synthetic",
+          "permissions": {
+            "derive": "permitted",
+            "retain": "permitted",
+            "export": "permitted"
+          }
+        }
+      ],
+      "roofs": [
+        {
+          "id": "roof",
+          "name": "Fixture roof",
+          "source_id": "survey",
+          "origin_enu": [
+            1000000000000000.0,
+            0,
+            4
+          ],
+          "u_axis_enu": [
+            1,
+            0,
+            0
+          ],
+          "v_axis_enu": [
+            0,
+            1,
+            0
+          ],
+          "boundary_uv": [
+            [
+              0,
+              0
+            ],
+            [
+              20,
+              0
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              0,
+              20
+            ]
+          ],
+          "holes_uv": []
+        }
+      ],
+      "module_specs": [
+        {
+          "id": "module",
+          "model": "Synthetic 1 x 2 m",
+          "width_m": 1,
+          "length_m": 2,
+          "thickness_m": 0.04,
+          "stc_power_w": 500,
+          "source": {
+            "kind": "user_declared",
+            "note": "Synthetic module, not a product release",
+            "document_sha256": null,
+            "url": null,
+            "page": null
+          }
+        }
+      ],
+      "arrays": [
+        {
+          "id": "array",
+          "name": "Fixture array",
+          "source_id": "survey",
+          "roof_id": "roof",
+          "module_spec_id": "module",
+          "origin_uv": [
+            1,
+            2
+          ],
+          "rotation_deg": 1,
+          "mount_tilt_deg": 45,
+          "lower_edge_clearance_m": 0.1,
+          "rows": 3,
+          "columns": 2,
+          "column_gap_m": 0.2,
+          "row_gap_m": 0.4,
+          "excluded_slots": [
+            "1:1"
+          ],
+          "mounting_note": "Synthetic dimensions, not mounting-system approval"
+        }
+      ],
+      "obstacles": [],
+      "keepouts": [],
+      "layout_rules": [
+        {
+          "roof_id": "roof",
+          "source_id": "survey",
+          "edge_clearance_m": 0,
+          "obstacle_clearance_m": 0,
+          "source_note": "Explicit zero for analytic fixture; not a recommended installation clearance"
+        }
+      ]
+    },
+    "footprints": [
+      [
+        [
+          1.0004936285975932,
+          1.971720036584047
+        ],
+        [
+          2.000341323753984,
+          1.9891724430213304
+        ],
+        [
+          1.9751662652767374,
+          3.4314505772349317
+        ],
+        [
+          0.9753185701203462,
+          3.4139981707976483
+        ]
+      ],
+      [
+        [
+          2.2003108627852628,
+          1.9926629243087872
+        ],
+        [
+          3.2001585579416543,
+          2.0101153307460704
+        ],
+        [
+          3.1749834994644073,
+          3.4523934649596724
+        ],
+        [
+          2.175135804308016,
+          3.434941058522389
+        ]
+      ],
+      [
+        [
+          0.9688312361430258,
+          3.7856572854442523
+        ],
+        [
+          1.968678931299417,
+          3.8031096918815357
+        ],
+        [
+          1.94350387282217,
+          5.245387826095136
+        ],
+        [
+          0.9436561776657789,
+          5.227935419657854
+        ]
+      ],
+      [
+        [
+          2.1686484703306954,
+          3.8066001731689925
+        ],
+        [
+          3.168496165487087,
+          3.824052579606276
+        ],
+        [
+          3.14332110700984,
+          5.266330713819877
+        ],
+        [
+          2.1434734118534484,
+          5.2488783073825935
+        ]
+      ],
+      [
+        [
+          0.9371688436884585,
+          5.599594534304457
+        ],
+        [
+          1.93701653884485,
+          5.617046940741741
+        ],
+        [
+          1.911841480367603,
+          7.059325074955342
+        ],
+        [
+          0.9119937852112117,
+          7.041872668518058
+        ]
+      ],
+      [
+        [
+          2.136986077876128,
+          5.620537422029198
+        ],
+        [
+          3.1368337730325195,
+          5.6379898284664804
+        ],
+        [
+          3.1116587145552725,
+          7.080267962680082
+        ],
+        [
+          2.111811019398881,
+          7.062815556242798
+        ]
+      ]
+    ]
+  },
+  {
+    "rotation": 1,
+    "tilt": 90,
+    "document": {
+      "schema_version": 1,
+      "coordinate_system": {
+        "kind": "local_enu",
+        "unit": "m",
+        "height_reference": "relative_to_project_origin",
+        "north_reference": "unreferenced",
+        "north_source_id": null,
+        "anchor": null
+      },
+      "sources": [
+        {
+          "id": "survey",
+          "kind": "synthetic_fixture",
+          "note": "Analytic synthetic dimensions only",
+          "rights_note": "Owned test data, not a site survey or product datasheet",
+          "reference_url": null,
+          "reference_sha256": null,
+          "acquired_at_utc": null,
+          "spatial_precision_m": null,
+          "calibration_note": "Analytic metre-scale fixture; no real-world precision claim",
+          "rights_basis": "synthetic",
+          "permissions": {
+            "derive": "permitted",
+            "retain": "permitted",
+            "export": "permitted"
+          }
+        }
+      ],
+      "roofs": [
+        {
+          "id": "roof",
+          "name": "Fixture roof",
+          "source_id": "survey",
+          "origin_enu": [
+            1000000000000000.0,
+            0,
+            4
+          ],
+          "u_axis_enu": [
+            1,
+            0,
+            0
+          ],
+          "v_axis_enu": [
+            0,
+            1,
+            0
+          ],
+          "boundary_uv": [
+            [
+              0,
+              0
+            ],
+            [
+              20,
+              0
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              0,
+              20
+            ]
+          ],
+          "holes_uv": []
+        }
+      ],
+      "module_specs": [
+        {
+          "id": "module",
+          "model": "Synthetic 1 x 2 m",
+          "width_m": 1,
+          "length_m": 2,
+          "thickness_m": 0.04,
+          "stc_power_w": 500,
+          "source": {
+            "kind": "user_declared",
+            "note": "Synthetic module, not a product release",
+            "document_sha256": null,
+            "url": null,
+            "page": null
+          }
+        }
+      ],
+      "arrays": [
+        {
+          "id": "array",
+          "name": "Fixture array",
+          "source_id": "survey",
+          "roof_id": "roof",
+          "module_spec_id": "module",
+          "origin_uv": [
+            1,
+            2
+          ],
+          "rotation_deg": 1,
+          "mount_tilt_deg": 90,
+          "lower_edge_clearance_m": 0.1,
+          "rows": 3,
+          "columns": 2,
+          "column_gap_m": 0.2,
+          "row_gap_m": 0.4,
+          "excluded_slots": [
+            "1:1"
+          ],
+          "mounting_note": "Synthetic dimensions, not mounting-system approval"
+        }
+      ],
+      "obstacles": [],
+      "keepouts": [],
+      "layout_rules": [
+        {
+          "roof_id": "roof",
+          "source_id": "survey",
+          "edge_clearance_m": 0,
+          "obstacle_clearance_m": 0,
+          "source_note": "Explicit zero for analytic fixture; not a recommended installation clearance"
+        }
+      ]
+    },
+    "footprints": [
+      [
+        [
+          1.0006980962574914,
+          1.9600060921937443
+        ],
+        [
+          2.0005457914138827,
+          1.9774584986310277
+        ],
+        [
+          1.9998476951563913,
+          2.0174524064372834
+        ],
+        [
+          1.0,
+          2.0
+        ]
+      ],
+      [
+        [
+          2.200515330445161,
+          1.9809489799184845
+        ],
+        [
+          3.2003630256015523,
+          1.998401386355768
+        ],
+        [
+          3.199664929344061,
+          2.0383952941620236
+        ],
+        [
+          2.1998172341876696,
+          2.02094288772474
+        ]
+      ],
+      [
+        [
+          0.993717133682578,
+          2.359945170256301
+        ],
+        [
+          1.9935648288389691,
+          2.377397576693584
+        ],
+        [
+          1.992866732581478,
+          2.41739148449984
+        ],
+        [
+          0.9930190374250866,
+          2.3999390780625567
+        ]
+      ],
+      [
+        [
+          2.1935343678702477,
+          2.380888057981041
+        ],
+        [
+          3.193382063026639,
+          2.3983404644183244
+        ],
+        [
+          3.1926839667691476,
+          2.4383343722245803
+        ],
+        [
+          2.192836271612756,
+          2.420881965787297
+        ]
+      ],
+      [
+        [
+          0.9867361711076645,
+          2.7598842483188575
+        ],
+        [
+          1.9865838662640558,
+          2.777336654756141
+        ],
+        [
+          1.9858857700065644,
+          2.8173305625623963
+        ],
+        [
+          0.9860380748501731,
+          2.799878156125113
+        ]
+      ],
+      [
+        [
+          2.186553405295334,
+          2.7808271360435977
+        ],
+        [
+          3.1864011004517256,
+          2.798279542480881
+        ],
+        [
+          3.1857030041942345,
+          2.8382734502871365
+        ],
+        [
+          2.185855309037843,
+          2.820821043849853
+        ]
+      ]
+    ]
+  },
+  {
+    "rotation": 31,
+    "tilt": 0,
+    "document": {
+      "schema_version": 1,
+      "coordinate_system": {
+        "kind": "local_enu",
+        "unit": "m",
+        "height_reference": "relative_to_project_origin",
+        "north_reference": "unreferenced",
+        "north_source_id": null,
+        "anchor": null
+      },
+      "sources": [
+        {
+          "id": "survey",
+          "kind": "synthetic_fixture",
+          "note": "Analytic synthetic dimensions only",
+          "rights_note": "Owned test data, not a site survey or product datasheet",
+          "reference_url": null,
+          "reference_sha256": null,
+          "acquired_at_utc": null,
+          "spatial_precision_m": null,
+          "calibration_note": "Analytic metre-scale fixture; no real-world precision claim",
+          "rights_basis": "synthetic",
+          "permissions": {
+            "derive": "permitted",
+            "retain": "permitted",
+            "export": "permitted"
+          }
+        }
+      ],
+      "roofs": [
+        {
+          "id": "roof",
+          "name": "Fixture roof",
+          "source_id": "survey",
+          "origin_enu": [
+            1000000000000000.0,
+            0,
+            4
+          ],
+          "u_axis_enu": [
+            1,
+            0,
+            0
+          ],
+          "v_axis_enu": [
+            0,
+            1,
+            0
+          ],
+          "boundary_uv": [
+            [
+              0,
+              0
+            ],
+            [
+              20,
+              0
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              0,
+              20
+            ]
+          ],
+          "holes_uv": []
+        }
+      ],
+      "module_specs": [
+        {
+          "id": "module",
+          "model": "Synthetic 1 x 2 m",
+          "width_m": 1,
+          "length_m": 2,
+          "thickness_m": 0.04,
+          "stc_power_w": 500,
+          "source": {
+            "kind": "user_declared",
+            "note": "Synthetic module, not a product release",
+            "document_sha256": null,
+            "url": null,
+            "page": null
+          }
+        }
+      ],
+      "arrays": [
+        {
+          "id": "array",
+          "name": "Fixture array",
+          "source_id": "survey",
+          "roof_id": "roof",
+          "module_spec_id": "module",
+          "origin_uv": [
+            1,
+            2
+          ],
+          "rotation_deg": 31,
+          "mount_tilt_deg": 0,
+          "lower_edge_clearance_m": 0.1,
+          "rows": 3,
+          "columns": 2,
+          "column_gap_m": 0.2,
+          "row_gap_m": 0.4,
+          "excluded_slots": [
+            "1:1"
+          ],
+          "mounting_note": "Synthetic dimensions, not mounting-system approval"
+        }
+      ],
+      "obstacles": [],
+      "keepouts": [],
+      "layout_rules": [
+        {
+          "roof_id": "roof",
+          "source_id": "survey",
+          "edge_clearance_m": 0,
+          "obstacle_clearance_m": 0,
+          "source_note": "Explicit zero for analytic fixture; not a recommended installation clearance"
+        }
+      ]
+    },
+    "footprints": [
+      [
+        [
+          1.0,
+          2.0
+        ],
+        [
+          1.8571673007021123,
+          2.5150380749100543
+        ],
+        [
+          0.827091150882004,
+          4.229372676314279
+        ],
+        [
+          -0.03007614982010831,
+          3.7143346014042247
+        ]
+      ],
+      [
+        [
+          2.0286007608425347,
+          2.6180456898920648
+        ],
+        [
+          2.8857680615446473,
+          3.1330837648021195
+        ],
+        [
+          1.855691911724539,
+          4.847418366206345
+        ],
+        [
+          0.9985246110224264,
+          4.332380291296289
+        ]
+      ],
+      [
+        [
+          -0.23609137978412997,
+          4.057201521685069
+        ],
+        [
+          0.6210759209179824,
+          4.572239596595123
+        ],
+        [
+          -0.4090002289021262,
+          6.286574197999348
+        ],
+        [
+          -1.2661675296042385,
+          5.7715361230892945
+        ]
+      ],
+      [
+        [
+          0.7925093810584047,
+          4.675247211577134
+        ],
+        [
+          1.6496766817605173,
+          5.190285286487189
+        ],
+        [
+          0.6196005319404088,
+          6.904619887891414
+        ],
+        [
+          -0.2375667687617038,
+          6.389581812981359
+        ]
+      ],
+      [
+        [
+          -1.47218275956826,
+          6.114403043370139
+        ],
+        [
+          -0.6150154588661476,
+          6.629441118280193
+        ],
+        [
+          -1.6450916086862557,
+          8.343775719684418
+        ],
+        [
+          -2.502258909388368,
+          7.828737644774364
+        ]
+      ],
+      [
+        [
+          -0.44358199872572524,
+          6.732448733262204
+        ],
+        [
+          0.4135853019763873,
+          7.247486808172258
+        ],
+        [
+          -0.6164908478437208,
+          8.961821409576483
+        ],
+        [
+          -1.4736581485458333,
+          8.446783334666428
+        ]
+      ]
+    ]
+  },
+  {
+    "rotation": 31,
+    "tilt": 30,
+    "document": {
+      "schema_version": 1,
+      "coordinate_system": {
+        "kind": "local_enu",
+        "unit": "m",
+        "height_reference": "relative_to_project_origin",
+        "north_reference": "unreferenced",
+        "north_source_id": null,
+        "anchor": null
+      },
+      "sources": [
+        {
+          "id": "survey",
+          "kind": "synthetic_fixture",
+          "note": "Analytic synthetic dimensions only",
+          "rights_note": "Owned test data, not a site survey or product datasheet",
+          "reference_url": null,
+          "reference_sha256": null,
+          "acquired_at_utc": null,
+          "spatial_precision_m": null,
+          "calibration_note": "Analytic metre-scale fixture; no real-world precision claim",
+          "rights_basis": "synthetic",
+          "permissions": {
+            "derive": "permitted",
+            "retain": "permitted",
+            "export": "permitted"
+          }
+        }
+      ],
+      "roofs": [
+        {
+          "id": "roof",
+          "name": "Fixture roof",
+          "source_id": "survey",
+          "origin_enu": [
+            1000000000000000.0,
+            0,
+            4
+          ],
+          "u_axis_enu": [
+            1,
+            0,
+            0
+          ],
+          "v_axis_enu": [
+            0,
+            1,
+            0
+          ],
+          "boundary_uv": [
+            [
+              0,
+              0
+            ],
+            [
+              20,
+              0
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              0,
+              20
+            ]
+          ],
+          "holes_uv": []
+        }
+      ],
+      "module_specs": [
+        {
+          "id": "module",
+          "model": "Synthetic 1 x 2 m",
+          "width_m": 1,
+          "length_m": 2,
+          "thickness_m": 0.04,
+          "stc_power_w": 500,
+          "source": {
+            "kind": "user_declared",
+            "note": "Synthetic module, not a product release",
+            "document_sha256": null,
+            "url": null,
+            "page": null
+          }
+        }
+      ],
+      "arrays": [
+        {
+          "id": "array",
+          "name": "Fixture array",
+          "source_id": "survey",
+          "roof_id": "roof",
+          "module_spec_id": "module",
+          "origin_uv": [
+            1,
+            2
+          ],
+          "rotation_deg": 31,
+          "mount_tilt_deg": 30,
+          "lower_edge_clearance_m": 0.1,
+          "rows": 3,
+          "columns": 2,
+          "column_gap_m": 0.2,
+          "row_gap_m": 0.4,
+          "excluded_slots": [
+            "1:1"
+          ],
+          "mounting_note": "Synthetic dimensions, not mounting-system approval"
+        }
+      ],
+      "obstacles": [],
+      "keepouts": [],
+      "layout_rules": [
+        {
+          "roof_id": "roof",
+          "source_id": "survey",
+          "edge_clearance_m": 0,
+          "obstacle_clearance_m": 0,
+          "source_note": "Explicit zero for analytic fixture; not a recommended installation clearance"
+        }
+      ]
+    },
+    "footprints": [
+      [
+        [
+          1.0103007614982011,
+          1.9828566539859578
+        ],
+        [
+          1.8674680622003135,
+          2.497894728896012
+        ],
+        [
+          0.9650951871254331,
+          3.999695390312783
+        ],
+        [
+          0.10792788642332074,
+          3.4846573154027283
+        ]
+      ],
+      [
+        [
+          2.0389015223407356,
+          2.6009023438780225
+        ],
+        [
+          2.896068823042848,
+          3.1159404187880773
+        ],
+        [
+          1.993695947967968,
+          4.617741080204848
+        ],
+        [
+          1.1365286472658553,
+          4.102703005294793
+        ]
+      ],
+      [
+        [
+          -0.0877865820424999,
+          3.8103808896695313
+        ],
+        [
+          0.7693807186596124,
+          4.325418964579585
+        ],
+        [
+          -0.13299215641526785,
+          5.8272196259963565
+        ],
+        [
+          -0.9901594571173802,
+          5.312181551086302
+        ]
+      ],
+      [
+        [
+          0.9408141788000348,
+          4.428426579561596
+        ],
+        [
+          1.7979814795021474,
+          4.943464654471651
+        ],
+        [
+          0.8956086044272671,
+          6.445265315888421
+        ],
+        [
+          0.03844130372515453,
+          5.9302272409783665
+        ]
+      ],
+      [
+        [
+          -1.1858739255832011,
+          5.637905125353106
+        ],
+        [
+          -0.3287066248810888,
+          6.152943200263159
+        ],
+        [
+          -1.2310794999559687,
+          7.654743861679929
+        ],
+        [
+          -2.088246800658081,
+          7.139705786769875
+        ]
+      ],
+      [
+        [
+          -0.15727316474066644,
+          6.2559508152451695
+        ],
+        [
+          0.6998941359614461,
+          6.770988890155225
+        ],
+        [
+          -0.20247873911343373,
+          8.272789551571995
+        ],
+        [
+          -1.0596460398155463,
+          7.75775147666194
+        ]
+      ]
+    ]
+  },
+  {
+    "rotation": 31,
+    "tilt": 45,
+    "document": {
+      "schema_version": 1,
+      "coordinate_system": {
+        "kind": "local_enu",
+        "unit": "m",
+        "height_reference": "relative_to_project_origin",
+        "north_reference": "unreferenced",
+        "north_source_id": null,
+        "anchor": null
+      },
+      "sources": [
+        {
+          "id": "survey",
+          "kind": "synthetic_fixture",
+          "note": "Analytic synthetic dimensions only",
+          "rights_note": "Owned test data, not a site survey or product datasheet",
+          "reference_url": null,
+          "reference_sha256": null,
+          "acquired_at_utc": null,
+          "spatial_precision_m": null,
+          "calibration_note": "Analytic metre-scale fixture; no real-world precision claim",
+          "rights_basis": "synthetic",
+          "permissions": {
+            "derive": "permitted",
+            "retain": "permitted",
+            "export": "permitted"
+          }
+        }
+      ],
+      "roofs": [
+        {
+          "id": "roof",
+          "name": "Fixture roof",
+          "source_id": "survey",
+          "origin_enu": [
+            1000000000000000.0,
+            0,
+            4
+          ],
+          "u_axis_enu": [
+            1,
+            0,
+            0
+          ],
+          "v_axis_enu": [
+            0,
+            1,
+            0
+          ],
+          "boundary_uv": [
+            [
+              0,
+              0
+            ],
+            [
+              20,
+              0
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              0,
+              20
+            ]
+          ],
+          "holes_uv": []
+        }
+      ],
+      "module_specs": [
+        {
+          "id": "module",
+          "model": "Synthetic 1 x 2 m",
+          "width_m": 1,
+          "length_m": 2,
+          "thickness_m": 0.04,
+          "stc_power_w": 500,
+          "source": {
+            "kind": "user_declared",
+            "note": "Synthetic module, not a product release",
+            "document_sha256": null,
+            "url": null,
+            "page": null
+          }
+        }
+      ],
+      "arrays": [
+        {
+          "id": "array",
+          "name": "Fixture array",
+          "source_id": "survey",
+          "roof_id": "roof",
+          "module_spec_id": "module",
+          "origin_uv": [
+            1,
+            2
+          ],
+          "rotation_deg": 31,
+          "mount_tilt_deg": 45,
+          "lower_edge_clearance_m": 0.1,
+          "rows": 3,
+          "columns": 2,
+          "column_gap_m": 0.2,
+          "row_gap_m": 0.4,
+          "excluded_slots": [
+            "1:1"
+          ],
+          "mounting_note": "Synthetic dimensions, not mounting-system approval"
+        }
+      ],
+      "obstacles": [],
+      "keepouts": [],
+      "layout_rules": [
+        {
+          "roof_id": "roof",
+          "source_id": "survey",
+          "edge_clearance_m": 0,
+          "obstacle_clearance_m": 0,
+          "source_note": "Explicit zero for analytic fixture; not a recommended installation clearance"
+        }
+      ]
+    },
+    "footprints": [
+      [
+        [
+          1.0145674766135266,
+          1.9757556475624867
+        ],
+        [
+          1.871734777315639,
+          2.490793722472541
+        ],
+        [
+          1.1287934700257836,
+          3.7272556967857184
+        ],
+        [
+          0.27162616932367123,
+          3.2122176218756646
+        ]
+      ],
+      [
+        [
+          2.043168237456061,
+          2.5938013374545514
+        ],
+        [
+          2.9003355381581737,
+          3.108839412364606
+        ],
+        [
+          2.1573942308683183,
+          4.345301386677784
+        ],
+        [
+          1.300226930166206,
+          3.8302633117677294
+        ]
+      ],
+      [
+        [
+          0.0801784159731761,
+          3.5308401897189965
+        ],
+        [
+          0.9373457166752884,
+          4.04587826462905
+        ],
+        [
+          0.19440440938543335,
+          5.282340238942227
+        ],
+        [
+          -0.662762891316679,
+          4.7673021640321736
+        ]
+      ],
+      [
+        [
+          1.1087791768157107,
+          4.148885879611061
+        ],
+        [
+          1.9659464775178233,
+          4.663923954521116
+        ],
+        [
+          1.2230051702279683,
+          5.900385928834293
+        ],
+        [
+          0.36583786952585573,
+          5.385347853924238
+        ]
+      ],
+      [
+        [
+          -0.8542106446671742,
+          5.085924731875505
+        ],
+        [
+          0.00295665603493811,
+          5.60096280678556
+        ],
+        [
+          -0.7399846512549171,
+          6.837424781098738
+        ],
+        [
+          -1.5971519519570294,
+          6.322386706188683
+        ]
+      ],
+      [
+        [
+          0.1743901161753605,
+          5.70397042176757
+        ],
+        [
+          1.031557416877473,
+          6.219008496677625
+        ],
+        [
+          0.28861610958761785,
+          7.455470470990803
+        ],
+        [
+          -0.5685511911144947,
+          6.940432396080748
+        ]
+      ]
+    ]
+  },
+  {
+    "rotation": 31,
+    "tilt": 90,
+    "document": {
+      "schema_version": 1,
+      "coordinate_system": {
+        "kind": "local_enu",
+        "unit": "m",
+        "height_reference": "relative_to_project_origin",
+        "north_reference": "unreferenced",
+        "north_source_id": null,
+        "anchor": null
+      },
+      "sources": [
+        {
+          "id": "survey",
+          "kind": "synthetic_fixture",
+          "note": "Analytic synthetic dimensions only",
+          "rights_note": "Owned test data, not a site survey or product datasheet",
+          "reference_url": null,
+          "reference_sha256": null,
+          "acquired_at_utc": null,
+          "spatial_precision_m": null,
+          "calibration_note": "Analytic metre-scale fixture; no real-world precision claim",
+          "rights_basis": "synthetic",
+          "permissions": {
+            "derive": "permitted",
+            "retain": "permitted",
+            "export": "permitted"
+          }
+        }
+      ],
+      "roofs": [
+        {
+          "id": "roof",
+          "name": "Fixture roof",
+          "source_id": "survey",
+          "origin_enu": [
+            1000000000000000.0,
+            0,
+            4
+          ],
+          "u_axis_enu": [
+            1,
+            0,
+            0
+          ],
+          "v_axis_enu": [
+            0,
+            1,
+            0
+          ],
+          "boundary_uv": [
+            [
+              0,
+              0
+            ],
+            [
+              20,
+              0
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              0,
+              20
+            ]
+          ],
+          "holes_uv": []
+        }
+      ],
+      "module_specs": [
+        {
+          "id": "module",
+          "model": "Synthetic 1 x 2 m",
+          "width_m": 1,
+          "length_m": 2,
+          "thickness_m": 0.04,
+          "stc_power_w": 500,
+          "source": {
+            "kind": "user_declared",
+            "note": "Synthetic module, not a product release",
+            "document_sha256": null,
+            "url": null,
+            "page": null
+          }
+        }
+      ],
+      "arrays": [
+        {
+          "id": "array",
+          "name": "Fixture array",
+          "source_id": "survey",
+          "roof_id": "roof",
+          "module_spec_id": "module",
+          "origin_uv": [
+            1,
+            2
+          ],
+          "rotation_deg": 31,
+          "mount_tilt_deg": 90,
+          "lower_edge_clearance_m": 0.1,
+          "rows": 3,
+          "columns": 2,
+          "column_gap_m": 0.2,
+          "row_gap_m": 0.4,
+          "excluded_slots": [
+            "1:1"
+          ],
+          "mounting_note": "Synthetic dimensions, not mounting-system approval"
+        }
+      ],
+      "obstacles": [],
+      "keepouts": [],
+      "layout_rules": [
+        {
+          "roof_id": "roof",
+          "source_id": "survey",
+          "edge_clearance_m": 0,
+          "obstacle_clearance_m": 0,
+          "source_note": "Explicit zero for analytic fixture; not a recommended installation clearance"
+        }
+      ]
+    },
+    "footprints": [
+      [
+        [
+          1.0206015229964023,
+          1.9657133079719156
+        ],
+        [
+          1.8777688236985144,
+          2.48075138288197
+        ],
+        [
+          1.8571673007021123,
+          2.5150380749100543
+        ],
+        [
+          1.0,
+          2.0
+        ]
+      ],
+      [
+        [
+          2.049202283838937,
+          2.5837589978639803
+        ],
+        [
+          2.9063695845410495,
+          3.098797072774035
+        ],
+        [
+          2.8857680615446473,
+          3.1330837648021195
+        ],
+        [
+          2.0286007608425347,
+          2.6180456898920648
+        ]
+      ],
+      [
+        [
+          0.8145862930323805,
+          2.3085802282527603
+        ],
+        [
+          1.6717535937344927,
+          2.8236183031628146
+        ],
+        [
+          1.6511520707380907,
+          2.857904995190899
+        ],
+        [
+          0.7939847700359783,
+          2.342866920280845
+        ]
+      ],
+      [
+        [
+          1.843187053874915,
+          2.926625918144825
+        ],
+        [
+          2.7003543545770277,
+          3.44166399305488
+        ],
+        [
+          2.6797528315806254,
+          3.4759506850829647
+        ],
+        [
+          1.822585530878513,
+          2.96091261017291
+        ]
+      ],
+      [
+        [
+          0.6085710630683588,
+          2.6514471485336055
+        ],
+        [
+          1.465738363770471,
+          3.16648522344366
+        ],
+        [
+          1.445136840774069,
+          3.2007719154717442
+        ],
+        [
+          0.5879695400719567,
+          2.68573384056169
+        ]
+      ],
+      [
+        [
+          1.6371718239108937,
+          3.2694928384256703
+        ],
+        [
+          2.494339124613006,
+          3.784530913335725
+        ],
+        [
+          2.473737601616604,
+          3.8188176053638094
+        ],
+        [
+          1.6165703009144914,
+          3.3037795304537547
+        ]
+      ]
+    ]
+  },
+  {
+    "rotation": 89,
+    "tilt": 0,
+    "document": {
+      "schema_version": 1,
+      "coordinate_system": {
+        "kind": "local_enu",
+        "unit": "m",
+        "height_reference": "relative_to_project_origin",
+        "north_reference": "unreferenced",
+        "north_source_id": null,
+        "anchor": null
+      },
+      "sources": [
+        {
+          "id": "survey",
+          "kind": "synthetic_fixture",
+          "note": "Analytic synthetic dimensions only",
+          "rights_note": "Owned test data, not a site survey or product datasheet",
+          "reference_url": null,
+          "reference_sha256": null,
+          "acquired_at_utc": null,
+          "spatial_precision_m": null,
+          "calibration_note": "Analytic metre-scale fixture; no real-world precision claim",
+          "rights_basis": "synthetic",
+          "permissions": {
+            "derive": "permitted",
+            "retain": "permitted",
+            "export": "permitted"
+          }
+        }
+      ],
+      "roofs": [
+        {
+          "id": "roof",
+          "name": "Fixture roof",
+          "source_id": "survey",
+          "origin_enu": [
+            1000000000000000.0,
+            0,
+            4
+          ],
+          "u_axis_enu": [
+            1,
+            0,
+            0
+          ],
+          "v_axis_enu": [
+            0,
+            1,
+            0
+          ],
+          "boundary_uv": [
+            [
+              0,
+              0
+            ],
+            [
+              20,
+              0
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              0,
+              20
+            ]
+          ],
+          "holes_uv": []
+        }
+      ],
+      "module_specs": [
+        {
+          "id": "module",
+          "model": "Synthetic 1 x 2 m",
+          "width_m": 1,
+          "length_m": 2,
+          "thickness_m": 0.04,
+          "stc_power_w": 500,
+          "source": {
+            "kind": "user_declared",
+            "note": "Synthetic module, not a product release",
+            "document_sha256": null,
+            "url": null,
+            "page": null
+          }
+        }
+      ],
+      "arrays": [
+        {
+          "id": "array",
+          "name": "Fixture array",
+          "source_id": "survey",
+          "roof_id": "roof",
+          "module_spec_id": "module",
+          "origin_uv": [
+            1,
+            2
+          ],
+          "rotation_deg": 89,
+          "mount_tilt_deg": 0,
+          "lower_edge_clearance_m": 0.1,
+          "rows": 3,
+          "columns": 2,
+          "column_gap_m": 0.2,
+          "row_gap_m": 0.4,
+          "excluded_slots": [
+            "1:1"
+          ],
+          "mounting_note": "Synthetic dimensions, not mounting-system approval"
+        }
+      ],
+      "obstacles": [],
+      "keepouts": [],
+      "layout_rules": [
+        {
+          "roof_id": "roof",
+          "source_id": "survey",
+          "edge_clearance_m": 0,
+          "obstacle_clearance_m": 0,
+          "source_note": "Explicit zero for analytic fixture; not a recommended installation clearance"
+        }
+      ]
+    },
+    "footprints": [
+      [
+        [
+          1.0,
+          2.0
+        ],
+        [
+          1.0174524064372834,
+          2.999847695156391
+        ],
+        [
+          -0.9822429838754991,
+          3.034752508030958
+        ],
+        [
+          -0.9996953903127825,
+          2.034904812874567
+        ]
+      ],
+      [
+        [
+          1.02094288772474,
+          3.1998172341876696
+        ],
+        [
+          1.0383952941620234,
+          4.1996649293440615
+        ],
+        [
+          -0.9613000961507592,
+          4.234569742218628
+        ],
+        [
+          -0.9787525025880426,
+          3.2347220470622364
+        ]
+      ],
+      [
+        [
+          -1.3996344683753388,
+          2.04188577544948
+        ],
+        [
+          -1.3821820619380554,
+          3.041733470605871
+        ],
+        [
+          -3.381877452250839,
+          3.0766382834804378
+        ],
+        [
+          -3.399329858688122,
+          2.0767905883240467
+        ]
+      ],
+      [
+        [
+          -1.3786915806505988,
+          3.2417030096371495
+        ],
+        [
+          -1.3612391742133154,
+          4.241550704793542
+        ],
+        [
+          -3.360934564526099,
+          4.276455517668109
+        ],
+        [
+          -3.3783869709633825,
+          3.2766078225117163
+        ]
+      ],
+      [
+        [
+          -3.7992689367506776,
+          2.0837715508989603
+        ],
+        [
+          -3.781816530313394,
+          3.0836192460553513
+        ],
+        [
+          -5.781511920626177,
+          3.118524058929918
+        ],
+        [
+          -5.7989643270634605,
+          2.118676363773527
+        ]
+      ],
+      [
+        [
+          -3.778326049025938,
+          3.28358878508663
+        ],
+        [
+          -3.7608736425886544,
+          4.283436480243021
+        ],
+        [
+          -5.760569032901437,
+          4.318341293117588
+        ],
+        [
+          -5.778021439338721,
+          3.3184935979611967
+        ]
+      ]
+    ]
+  },
+  {
+    "rotation": 89,
+    "tilt": 30,
+    "document": {
+      "schema_version": 1,
+      "coordinate_system": {
+        "kind": "local_enu",
+        "unit": "m",
+        "height_reference": "relative_to_project_origin",
+        "north_reference": "unreferenced",
+        "north_source_id": null,
+        "anchor": null
+      },
+      "sources": [
+        {
+          "id": "survey",
+          "kind": "synthetic_fixture",
+          "note": "Analytic synthetic dimensions only",
+          "rights_note": "Owned test data, not a site survey or product datasheet",
+          "reference_url": null,
+          "reference_sha256": null,
+          "acquired_at_utc": null,
+          "spatial_precision_m": null,
+          "calibration_note": "Analytic metre-scale fixture; no real-world precision claim",
+          "rights_basis": "synthetic",
+          "permissions": {
+            "derive": "permitted",
+            "retain": "permitted",
+            "export": "permitted"
+          }
+        }
+      ],
+      "roofs": [
+        {
+          "id": "roof",
+          "name": "Fixture roof",
+          "source_id": "survey",
+          "origin_enu": [
+            1000000000000000.0,
+            0,
+            4
+          ],
+          "u_axis_enu": [
+            1,
+            0,
+            0
+          ],
+          "v_axis_enu": [
+            0,
+            1,
+            0
+          ],
+          "boundary_uv": [
+            [
+              0,
+              0
+            ],
+            [
+              20,
+              0
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              0,
+              20
+            ]
+          ],
+          "holes_uv": []
+        }
+      ],
+      "module_specs": [
+        {
+          "id": "module",
+          "model": "Synthetic 1 x 2 m",
+          "width_m": 1,
+          "length_m": 2,
+          "thickness_m": 0.04,
+          "stc_power_w": 500,
+          "source": {
+            "kind": "user_declared",
+            "note": "Synthetic module, not a product release",
+            "document_sha256": null,
+            "url": null,
+            "page": null
+          }
+        }
+      ],
+      "arrays": [
+        {
+          "id": "array",
+          "name": "Fixture array",
+          "source_id": "survey",
+          "roof_id": "roof",
+          "module_spec_id": "module",
+          "origin_uv": [
+            1,
+            2
+          ],
+          "rotation_deg": 89,
+          "mount_tilt_deg": 30,
+          "lower_edge_clearance_m": 0.1,
+          "rows": 3,
+          "columns": 2,
+          "column_gap_m": 0.2,
+          "row_gap_m": 0.4,
+          "excluded_slots": [
+            "1:1"
+          ],
+          "mounting_note": "Synthetic dimensions, not mounting-system approval"
+        }
+      ],
+      "obstacles": [],
+      "keepouts": [],
+      "layout_rules": [
+        {
+          "roof_id": "roof",
+          "source_id": "survey",
+          "edge_clearance_m": 0,
+          "obstacle_clearance_m": 0,
+          "source_note": "Explicit zero for analytic fixture; not a recommended installation clearance"
+        }
+      ]
+    },
+    "footprints": [
+      [
+        [
+          1.0199969539031277,
+          1.9996509518712544
+        ],
+        [
+          1.0374493603404111,
+          2.9994986470276452
+        ],
+        [
+          -0.7143346014042249,
+          3.030076149820108
+        ],
+        [
+          -0.7317870078415083,
+          2.030228454663717
+        ]
+      ],
+      [
+        [
+          1.0409398416278677,
+          3.199468186058924
+        ],
+        [
+          1.058392248065151,
+          4.199315881215316
+        ],
+        [
+          -0.6933917136794849,
+          4.229893384007778
+        ],
+        [
+          -0.7108441201167683,
+          3.2300456888513867
+        ]
+      ],
+      [
+        [
+          -1.1117291320009373,
+          2.0368603691098848
+        ],
+        [
+          -1.0942767255636539,
+          3.036708064266276
+        ],
+        [
+          -2.8460606873082894,
+          3.0672855670587382
+        ],
+        [
+          -2.863513093745573,
+          2.067437871902347
+        ]
+      ],
+      [
+        [
+          -1.0907862442761973,
+          3.2366776032975544
+        ],
+        [
+          -1.073333837838914,
+          4.236525298453946
+        ],
+        [
+          -2.8251177995835492,
+          4.267102801246409
+        ],
+        [
+          -2.8425702060208327,
+          3.267255106090017
+        ]
+      ],
+      [
+        [
+          -3.2434552179050025,
+          2.074069786348515
+        ],
+        [
+          -3.226002811467719,
+          3.073917481504906
+        ],
+        [
+          -4.977786773212354,
+          3.104494984297369
+        ],
+        [
+          -4.995239179649637,
+          2.1046472891409778
+        ]
+      ],
+      [
+        [
+          -3.2225123301802627,
+          3.2738870205361845
+        ],
+        [
+          -3.2050599237429793,
+          4.2737347156925765
+        ],
+        [
+          -4.956843885487614,
+          4.304312218485039
+        ],
+        [
+          -4.974296291924897,
+          3.3044645233286474
+        ]
+      ]
+    ]
+  },
+  {
+    "rotation": 89,
+    "tilt": 45,
+    "document": {
+      "schema_version": 1,
+      "coordinate_system": {
+        "kind": "local_enu",
+        "unit": "m",
+        "height_reference": "relative_to_project_origin",
+        "north_reference": "unreferenced",
+        "north_source_id": null,
+        "anchor": null
+      },
+      "sources": [
+        {
+          "id": "survey",
+          "kind": "synthetic_fixture",
+          "note": "Analytic synthetic dimensions only",
+          "rights_note": "Owned test data, not a site survey or product datasheet",
+          "reference_url": null,
+          "reference_sha256": null,
+          "acquired_at_utc": null,
+          "spatial_precision_m": null,
+          "calibration_note": "Analytic metre-scale fixture; no real-world precision claim",
+          "rights_basis": "synthetic",
+          "permissions": {
+            "derive": "permitted",
+            "retain": "permitted",
+            "export": "permitted"
+          }
+        }
+      ],
+      "roofs": [
+        {
+          "id": "roof",
+          "name": "Fixture roof",
+          "source_id": "survey",
+          "origin_enu": [
+            1000000000000000.0,
+            0,
+            4
+          ],
+          "u_axis_enu": [
+            1,
+            0,
+            0
+          ],
+          "v_axis_enu": [
+            0,
+            1,
+            0
+          ],
+          "boundary_uv": [
+            [
+              0,
+              0
+            ],
+            [
+              20,
+              0
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              0,
+              20
+            ]
+          ],
+          "holes_uv": []
+        }
+      ],
+      "module_specs": [
+        {
+          "id": "module",
+          "model": "Synthetic 1 x 2 m",
+          "width_m": 1,
+          "length_m": 2,
+          "thickness_m": 0.04,
+          "stc_power_w": 500,
+          "source": {
+            "kind": "user_declared",
+            "note": "Synthetic module, not a product release",
+            "document_sha256": null,
+            "url": null,
+            "page": null
+          }
+        }
+      ],
+      "arrays": [
+        {
+          "id": "array",
+          "name": "Fixture array",
+          "source_id": "survey",
+          "roof_id": "roof",
+          "module_spec_id": "module",
+          "origin_uv": [
+            1,
+            2
+          ],
+          "rotation_deg": 89,
+          "mount_tilt_deg": 45,
+          "lower_edge_clearance_m": 0.1,
+          "rows": 3,
+          "columns": 2,
+          "column_gap_m": 0.2,
+          "row_gap_m": 0.4,
+          "excluded_slots": [
+            "1:1"
+          ],
+          "mounting_note": "Synthetic dimensions, not mounting-system approval"
+        }
+      ],
+      "obstacles": [],
+      "keepouts": [],
+      "layout_rules": [
+        {
+          "roof_id": "roof",
+          "source_id": "survey",
+          "edge_clearance_m": 0,
+          "obstacle_clearance_m": 0,
+          "source_note": "Explicit zero for analytic fixture; not a recommended installation clearance"
+        }
+      ]
+    },
+    "footprints": [
+      [
+        [
+          1.028279963415953,
+          1.9995063714024068
+        ],
+        [
+          1.0457323698532364,
+          2.999354066558798
+        ],
+        [
+          -0.39654576436036515,
+          3.024529125036045
+        ],
+        [
+          -0.41399817079764856,
+          2.024681429879654
+        ]
+      ],
+      [
+        [
+          1.049222851140693,
+          3.1993236055900764
+        ],
+        [
+          1.0666752575779763,
+          4.199171300746468
+        ],
+        [
+          -0.3756028766356252,
+          4.224346359223715
+        ],
+        [
+          -0.3930552830729086,
+          3.2244986640673234
+        ]
+      ],
+      [
+        [
+          -0.7856572854442523,
+          2.0311687638569738
+        ],
+        [
+          -0.7682048790069689,
+          3.031016459013365
+        ],
+        [
+          -2.21048301322057,
+          3.056191517490612
+        ],
+        [
+          -2.2279354196578534,
+          2.0563438223342208
+        ]
+      ],
+      [
+        [
+          -0.7647143977195123,
+          3.2309859980446434
+        ],
+        [
+          -0.7472619912822289,
+          4.230833693201036
+        ],
+        [
+          -2.1895401254958298,
+          4.256008751678282
+        ],
+        [
+          -2.206992531933113,
+          3.2561610565218904
+        ]
+      ],
+      [
+        [
+          -2.5995945343044573,
+          2.062831156311541
+        ],
+        [
+          -2.582142127867174,
+          3.062678851467932
+        ],
+        [
+          -4.024420262080775,
+          3.0878539099451787
+        ],
+        [
+          -4.041872668518058,
+          2.0880062147887877
+        ]
+      ],
+      [
+        [
+          -2.5786516465797176,
+          3.2626483904992107
+        ],
+        [
+          -2.561199240142434,
+          4.262496085655602
+        ],
+        [
+          -4.003477374356035,
+          4.287671144132849
+        ],
+        [
+          -4.020929780793319,
+          3.2878234489764573
+        ]
+      ]
+    ]
+  },
+  {
+    "rotation": 89,
+    "tilt": 90,
+    "document": {
+      "schema_version": 1,
+      "coordinate_system": {
+        "kind": "local_enu",
+        "unit": "m",
+        "height_reference": "relative_to_project_origin",
+        "north_reference": "unreferenced",
+        "north_source_id": null,
+        "anchor": null
+      },
+      "sources": [
+        {
+          "id": "survey",
+          "kind": "synthetic_fixture",
+          "note": "Analytic synthetic dimensions only",
+          "rights_note": "Owned test data, not a site survey or product datasheet",
+          "reference_url": null,
+          "reference_sha256": null,
+          "acquired_at_utc": null,
+          "spatial_precision_m": null,
+          "calibration_note": "Analytic metre-scale fixture; no real-world precision claim",
+          "rights_basis": "synthetic",
+          "permissions": {
+            "derive": "permitted",
+            "retain": "permitted",
+            "export": "permitted"
+          }
+        }
+      ],
+      "roofs": [
+        {
+          "id": "roof",
+          "name": "Fixture roof",
+          "source_id": "survey",
+          "origin_enu": [
+            1000000000000000.0,
+            0,
+            4
+          ],
+          "u_axis_enu": [
+            1,
+            0,
+            0
+          ],
+          "v_axis_enu": [
+            0,
+            1,
+            0
+          ],
+          "boundary_uv": [
+            [
+              0,
+              0
+            ],
+            [
+              20,
+              0
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              0,
+              20
+            ]
+          ],
+          "holes_uv": []
+        }
+      ],
+      "module_specs": [
+        {
+          "id": "module",
+          "model": "Synthetic 1 x 2 m",
+          "width_m": 1,
+          "length_m": 2,
+          "thickness_m": 0.04,
+          "stc_power_w": 500,
+          "source": {
+            "kind": "user_declared",
+            "note": "Synthetic module, not a product release",
+            "document_sha256": null,
+            "url": null,
+            "page": null
+          }
+        }
+      ],
+      "arrays": [
+        {
+          "id": "array",
+          "name": "Fixture array",
+          "source_id": "survey",
+          "roof_id": "roof",
+          "module_spec_id": "module",
+          "origin_uv": [
+            1,
+            2
+          ],
+          "rotation_deg": 89,
+          "mount_tilt_deg": 90,
+          "lower_edge_clearance_m": 0.1,
+          "rows": 3,
+          "columns": 2,
+          "column_gap_m": 0.2,
+          "row_gap_m": 0.4,
+          "excluded_slots": [
+            "1:1"
+          ],
+          "mounting_note": "Synthetic dimensions, not mounting-system approval"
+        }
+      ],
+      "obstacles": [],
+      "keepouts": [],
+      "layout_rules": [
+        {
+          "roof_id": "roof",
+          "source_id": "survey",
+          "edge_clearance_m": 0,
+          "obstacle_clearance_m": 0,
+          "source_note": "Explicit zero for analytic fixture; not a recommended installation clearance"
+        }
+      ]
+    },
+    "footprints": [
+      [
+        [
+          1.0399939078062557,
+          1.9993019037425086
+        ],
+        [
+          1.057446314243539,
+          2.9991495988989
+        ],
+        [
+          1.0174524064372834,
+          2.999847695156391
+        ],
+        [
+          1.0,
+          2.0
+        ]
+      ],
+      [
+        [
+          1.0609367955309956,
+          3.1991191379301784
+        ],
+        [
+          1.078389201968279,
+          4.19896683308657
+        ],
+        [
+          1.0383952941620234,
+          4.1996649293440615
+        ],
+        [
+          1.02094288772474,
+          3.1998172341876696
+        ]
+      ],
+      [
+        [
+          0.6400548297436991,
+          2.006282866317422
+        ],
+        [
+          0.6575072361809825,
+          3.006130561473813
+        ],
+        [
+          0.6175133283747269,
+          3.0068286577313046
+        ],
+        [
+          0.6000609219374435,
+          2.0069809625749135
+        ]
+      ],
+      [
+        [
+          0.660997717468439,
+          3.2061001005050915
+        ],
+        [
+          0.6784501239057225,
+          4.2059477956614835
+        ],
+        [
+          0.6384562160994669,
+          4.206645891918975
+        ],
+        [
+          0.6210038096621835,
+          3.206798196762583
+        ]
+      ],
+      [
+        [
+          0.24011575168114263,
+          2.0132638288923355
+        ],
+        [
+          0.25756815811842604,
+          3.0131115240487265
+        ],
+        [
+          0.21757425031217037,
+          3.0138096203062177
+        ],
+        [
+          0.20012184387488696,
+          2.0139619251498266
+        ]
+      ],
+      [
+        [
+          0.2610586394058826,
+          3.213081063080005
+        ],
+        [
+          0.278511045843166,
+          4.212928758236397
+        ],
+        [
+          0.23851713803691033,
+          4.213626854493889
+        ],
+        [
+          0.22106473159962692,
+          3.2137791593374962
+        ]
+      ]
+    ]
+  },
+  {
+    "rotation": 9007199254740991,
+    "tilt": 0,
+    "document": {
+      "schema_version": 1,
+      "coordinate_system": {
+        "kind": "local_enu",
+        "unit": "m",
+        "height_reference": "relative_to_project_origin",
+        "north_reference": "unreferenced",
+        "north_source_id": null,
+        "anchor": null
+      },
+      "sources": [
+        {
+          "id": "survey",
+          "kind": "synthetic_fixture",
+          "note": "Analytic synthetic dimensions only",
+          "rights_note": "Owned test data, not a site survey or product datasheet",
+          "reference_url": null,
+          "reference_sha256": null,
+          "acquired_at_utc": null,
+          "spatial_precision_m": null,
+          "calibration_note": "Analytic metre-scale fixture; no real-world precision claim",
+          "rights_basis": "synthetic",
+          "permissions": {
+            "derive": "permitted",
+            "retain": "permitted",
+            "export": "permitted"
+          }
+        }
+      ],
+      "roofs": [
+        {
+          "id": "roof",
+          "name": "Fixture roof",
+          "source_id": "survey",
+          "origin_enu": [
+            1000000000000000.0,
+            0,
+            4
+          ],
+          "u_axis_enu": [
+            1,
+            0,
+            0
+          ],
+          "v_axis_enu": [
+            0,
+            1,
+            0
+          ],
+          "boundary_uv": [
+            [
+              0,
+              0
+            ],
+            [
+              20,
+              0
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              0,
+              20
+            ]
+          ],
+          "holes_uv": []
+        }
+      ],
+      "module_specs": [
+        {
+          "id": "module",
+          "model": "Synthetic 1 x 2 m",
+          "width_m": 1,
+          "length_m": 2,
+          "thickness_m": 0.04,
+          "stc_power_w": 500,
+          "source": {
+            "kind": "user_declared",
+            "note": "Synthetic module, not a product release",
+            "document_sha256": null,
+            "url": null,
+            "page": null
+          }
+        }
+      ],
+      "arrays": [
+        {
+          "id": "array",
+          "name": "Fixture array",
+          "source_id": "survey",
+          "roof_id": "roof",
+          "module_spec_id": "module",
+          "origin_uv": [
+            1,
+            2
+          ],
+          "rotation_deg": 9007199254740991,
+          "mount_tilt_deg": 0,
+          "lower_edge_clearance_m": 0.1,
+          "rows": 3,
+          "columns": 2,
+          "column_gap_m": 0.2,
+          "row_gap_m": 0.4,
+          "excluded_slots": [
+            "1:1"
+          ],
+          "mounting_note": "Synthetic dimensions, not mounting-system approval"
+        }
+      ],
+      "obstacles": [],
+      "keepouts": [],
+      "layout_rules": [
+        {
+          "roof_id": "roof",
+          "source_id": "survey",
+          "edge_clearance_m": 0,
+          "obstacle_clearance_m": 0,
+          "source_note": "Explicit zero for analytic fixture; not a recommended installation clearance"
+        }
+      ]
+    },
+    "footprints": [
+      [
+        [
+          1.0,
+          2.0
+        ],
+        [
+          1.8571673007021123,
+          2.5150380749100543
+        ],
+        [
+          0.827091150882004,
+          4.229372676314279
+        ],
+        [
+          -0.03007614982010831,
+          3.7143346014042247
+        ]
+      ],
+      [
+        [
+          2.0286007608425347,
+          2.6180456898920648
+        ],
+        [
+          2.8857680615446473,
+          3.1330837648021195
+        ],
+        [
+          1.855691911724539,
+          4.847418366206345
+        ],
+        [
+          0.9985246110224264,
+          4.332380291296289
+        ]
+      ],
+      [
+        [
+          -0.23609137978412997,
+          4.057201521685069
+        ],
+        [
+          0.6210759209179824,
+          4.572239596595123
+        ],
+        [
+          -0.4090002289021262,
+          6.286574197999348
+        ],
+        [
+          -1.2661675296042385,
+          5.7715361230892945
+        ]
+      ],
+      [
+        [
+          0.7925093810584047,
+          4.675247211577134
+        ],
+        [
+          1.6496766817605173,
+          5.190285286487189
+        ],
+        [
+          0.6196005319404088,
+          6.904619887891414
+        ],
+        [
+          -0.2375667687617038,
+          6.389581812981359
+        ]
+      ],
+      [
+        [
+          -1.47218275956826,
+          6.114403043370139
+        ],
+        [
+          -0.6150154588661476,
+          6.629441118280193
+        ],
+        [
+          -1.6450916086862557,
+          8.343775719684418
+        ],
+        [
+          -2.502258909388368,
+          7.828737644774364
+        ]
+      ],
+      [
+        [
+          -0.44358199872572524,
+          6.732448733262204
+        ],
+        [
+          0.4135853019763873,
+          7.247486808172258
+        ],
+        [
+          -0.6164908478437208,
+          8.961821409576483
+        ],
+        [
+          -1.4736581485458333,
+          8.446783334666428
+        ]
+      ]
+    ]
+  },
+  {
+    "rotation": 9007199254740991,
+    "tilt": 30,
+    "document": {
+      "schema_version": 1,
+      "coordinate_system": {
+        "kind": "local_enu",
+        "unit": "m",
+        "height_reference": "relative_to_project_origin",
+        "north_reference": "unreferenced",
+        "north_source_id": null,
+        "anchor": null
+      },
+      "sources": [
+        {
+          "id": "survey",
+          "kind": "synthetic_fixture",
+          "note": "Analytic synthetic dimensions only",
+          "rights_note": "Owned test data, not a site survey or product datasheet",
+          "reference_url": null,
+          "reference_sha256": null,
+          "acquired_at_utc": null,
+          "spatial_precision_m": null,
+          "calibration_note": "Analytic metre-scale fixture; no real-world precision claim",
+          "rights_basis": "synthetic",
+          "permissions": {
+            "derive": "permitted",
+            "retain": "permitted",
+            "export": "permitted"
+          }
+        }
+      ],
+      "roofs": [
+        {
+          "id": "roof",
+          "name": "Fixture roof",
+          "source_id": "survey",
+          "origin_enu": [
+            1000000000000000.0,
+            0,
+            4
+          ],
+          "u_axis_enu": [
+            1,
+            0,
+            0
+          ],
+          "v_axis_enu": [
+            0,
+            1,
+            0
+          ],
+          "boundary_uv": [
+            [
+              0,
+              0
+            ],
+            [
+              20,
+              0
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              0,
+              20
+            ]
+          ],
+          "holes_uv": []
+        }
+      ],
+      "module_specs": [
+        {
+          "id": "module",
+          "model": "Synthetic 1 x 2 m",
+          "width_m": 1,
+          "length_m": 2,
+          "thickness_m": 0.04,
+          "stc_power_w": 500,
+          "source": {
+            "kind": "user_declared",
+            "note": "Synthetic module, not a product release",
+            "document_sha256": null,
+            "url": null,
+            "page": null
+          }
+        }
+      ],
+      "arrays": [
+        {
+          "id": "array",
+          "name": "Fixture array",
+          "source_id": "survey",
+          "roof_id": "roof",
+          "module_spec_id": "module",
+          "origin_uv": [
+            1,
+            2
+          ],
+          "rotation_deg": 9007199254740991,
+          "mount_tilt_deg": 30,
+          "lower_edge_clearance_m": 0.1,
+          "rows": 3,
+          "columns": 2,
+          "column_gap_m": 0.2,
+          "row_gap_m": 0.4,
+          "excluded_slots": [
+            "1:1"
+          ],
+          "mounting_note": "Synthetic dimensions, not mounting-system approval"
+        }
+      ],
+      "obstacles": [],
+      "keepouts": [],
+      "layout_rules": [
+        {
+          "roof_id": "roof",
+          "source_id": "survey",
+          "edge_clearance_m": 0,
+          "obstacle_clearance_m": 0,
+          "source_note": "Explicit zero for analytic fixture; not a recommended installation clearance"
+        }
+      ]
+    },
+    "footprints": [
+      [
+        [
+          1.0103007614982011,
+          1.9828566539859578
+        ],
+        [
+          1.8674680622003135,
+          2.497894728896012
+        ],
+        [
+          0.9650951871254331,
+          3.999695390312783
+        ],
+        [
+          0.10792788642332074,
+          3.4846573154027283
+        ]
+      ],
+      [
+        [
+          2.0389015223407356,
+          2.6009023438780225
+        ],
+        [
+          2.896068823042848,
+          3.1159404187880773
+        ],
+        [
+          1.993695947967968,
+          4.617741080204848
+        ],
+        [
+          1.1365286472658553,
+          4.102703005294793
+        ]
+      ],
+      [
+        [
+          -0.0877865820424999,
+          3.8103808896695313
+        ],
+        [
+          0.7693807186596124,
+          4.325418964579585
+        ],
+        [
+          -0.13299215641526785,
+          5.8272196259963565
+        ],
+        [
+          -0.9901594571173802,
+          5.312181551086302
+        ]
+      ],
+      [
+        [
+          0.9408141788000348,
+          4.428426579561596
+        ],
+        [
+          1.7979814795021474,
+          4.943464654471651
+        ],
+        [
+          0.8956086044272671,
+          6.445265315888421
+        ],
+        [
+          0.03844130372515453,
+          5.9302272409783665
+        ]
+      ],
+      [
+        [
+          -1.1858739255832011,
+          5.637905125353106
+        ],
+        [
+          -0.3287066248810888,
+          6.152943200263159
+        ],
+        [
+          -1.2310794999559687,
+          7.654743861679929
+        ],
+        [
+          -2.088246800658081,
+          7.139705786769875
+        ]
+      ],
+      [
+        [
+          -0.15727316474066644,
+          6.2559508152451695
+        ],
+        [
+          0.6998941359614461,
+          6.770988890155225
+        ],
+        [
+          -0.20247873911343373,
+          8.272789551571995
+        ],
+        [
+          -1.0596460398155463,
+          7.75775147666194
+        ]
+      ]
+    ]
+  },
+  {
+    "rotation": 9007199254740991,
+    "tilt": 45,
+    "document": {
+      "schema_version": 1,
+      "coordinate_system": {
+        "kind": "local_enu",
+        "unit": "m",
+        "height_reference": "relative_to_project_origin",
+        "north_reference": "unreferenced",
+        "north_source_id": null,
+        "anchor": null
+      },
+      "sources": [
+        {
+          "id": "survey",
+          "kind": "synthetic_fixture",
+          "note": "Analytic synthetic dimensions only",
+          "rights_note": "Owned test data, not a site survey or product datasheet",
+          "reference_url": null,
+          "reference_sha256": null,
+          "acquired_at_utc": null,
+          "spatial_precision_m": null,
+          "calibration_note": "Analytic metre-scale fixture; no real-world precision claim",
+          "rights_basis": "synthetic",
+          "permissions": {
+            "derive": "permitted",
+            "retain": "permitted",
+            "export": "permitted"
+          }
+        }
+      ],
+      "roofs": [
+        {
+          "id": "roof",
+          "name": "Fixture roof",
+          "source_id": "survey",
+          "origin_enu": [
+            1000000000000000.0,
+            0,
+            4
+          ],
+          "u_axis_enu": [
+            1,
+            0,
+            0
+          ],
+          "v_axis_enu": [
+            0,
+            1,
+            0
+          ],
+          "boundary_uv": [
+            [
+              0,
+              0
+            ],
+            [
+              20,
+              0
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              0,
+              20
+            ]
+          ],
+          "holes_uv": []
+        }
+      ],
+      "module_specs": [
+        {
+          "id": "module",
+          "model": "Synthetic 1 x 2 m",
+          "width_m": 1,
+          "length_m": 2,
+          "thickness_m": 0.04,
+          "stc_power_w": 500,
+          "source": {
+            "kind": "user_declared",
+            "note": "Synthetic module, not a product release",
+            "document_sha256": null,
+            "url": null,
+            "page": null
+          }
+        }
+      ],
+      "arrays": [
+        {
+          "id": "array",
+          "name": "Fixture array",
+          "source_id": "survey",
+          "roof_id": "roof",
+          "module_spec_id": "module",
+          "origin_uv": [
+            1,
+            2
+          ],
+          "rotation_deg": 9007199254740991,
+          "mount_tilt_deg": 45,
+          "lower_edge_clearance_m": 0.1,
+          "rows": 3,
+          "columns": 2,
+          "column_gap_m": 0.2,
+          "row_gap_m": 0.4,
+          "excluded_slots": [
+            "1:1"
+          ],
+          "mounting_note": "Synthetic dimensions, not mounting-system approval"
+        }
+      ],
+      "obstacles": [],
+      "keepouts": [],
+      "layout_rules": [
+        {
+          "roof_id": "roof",
+          "source_id": "survey",
+          "edge_clearance_m": 0,
+          "obstacle_clearance_m": 0,
+          "source_note": "Explicit zero for analytic fixture; not a recommended installation clearance"
+        }
+      ]
+    },
+    "footprints": [
+      [
+        [
+          1.0145674766135266,
+          1.9757556475624867
+        ],
+        [
+          1.871734777315639,
+          2.490793722472541
+        ],
+        [
+          1.1287934700257836,
+          3.7272556967857184
+        ],
+        [
+          0.27162616932367123,
+          3.2122176218756646
+        ]
+      ],
+      [
+        [
+          2.043168237456061,
+          2.5938013374545514
+        ],
+        [
+          2.9003355381581737,
+          3.108839412364606
+        ],
+        [
+          2.1573942308683183,
+          4.345301386677784
+        ],
+        [
+          1.300226930166206,
+          3.8302633117677294
+        ]
+      ],
+      [
+        [
+          0.0801784159731761,
+          3.5308401897189965
+        ],
+        [
+          0.9373457166752884,
+          4.04587826462905
+        ],
+        [
+          0.19440440938543335,
+          5.282340238942227
+        ],
+        [
+          -0.662762891316679,
+          4.7673021640321736
+        ]
+      ],
+      [
+        [
+          1.1087791768157107,
+          4.148885879611061
+        ],
+        [
+          1.9659464775178233,
+          4.663923954521116
+        ],
+        [
+          1.2230051702279683,
+          5.900385928834293
+        ],
+        [
+          0.36583786952585573,
+          5.385347853924238
+        ]
+      ],
+      [
+        [
+          -0.8542106446671742,
+          5.085924731875505
+        ],
+        [
+          0.00295665603493811,
+          5.60096280678556
+        ],
+        [
+          -0.7399846512549171,
+          6.837424781098738
+        ],
+        [
+          -1.5971519519570294,
+          6.322386706188683
+        ]
+      ],
+      [
+        [
+          0.1743901161753605,
+          5.70397042176757
+        ],
+        [
+          1.031557416877473,
+          6.219008496677625
+        ],
+        [
+          0.28861610958761785,
+          7.455470470990803
+        ],
+        [
+          -0.5685511911144947,
+          6.940432396080748
+        ]
+      ]
+    ]
+  },
+  {
+    "rotation": 9007199254740991,
+    "tilt": 90,
+    "document": {
+      "schema_version": 1,
+      "coordinate_system": {
+        "kind": "local_enu",
+        "unit": "m",
+        "height_reference": "relative_to_project_origin",
+        "north_reference": "unreferenced",
+        "north_source_id": null,
+        "anchor": null
+      },
+      "sources": [
+        {
+          "id": "survey",
+          "kind": "synthetic_fixture",
+          "note": "Analytic synthetic dimensions only",
+          "rights_note": "Owned test data, not a site survey or product datasheet",
+          "reference_url": null,
+          "reference_sha256": null,
+          "acquired_at_utc": null,
+          "spatial_precision_m": null,
+          "calibration_note": "Analytic metre-scale fixture; no real-world precision claim",
+          "rights_basis": "synthetic",
+          "permissions": {
+            "derive": "permitted",
+            "retain": "permitted",
+            "export": "permitted"
+          }
+        }
+      ],
+      "roofs": [
+        {
+          "id": "roof",
+          "name": "Fixture roof",
+          "source_id": "survey",
+          "origin_enu": [
+            1000000000000000.0,
+            0,
+            4
+          ],
+          "u_axis_enu": [
+            1,
+            0,
+            0
+          ],
+          "v_axis_enu": [
+            0,
+            1,
+            0
+          ],
+          "boundary_uv": [
+            [
+              0,
+              0
+            ],
+            [
+              20,
+              0
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              0,
+              20
+            ]
+          ],
+          "holes_uv": []
+        }
+      ],
+      "module_specs": [
+        {
+          "id": "module",
+          "model": "Synthetic 1 x 2 m",
+          "width_m": 1,
+          "length_m": 2,
+          "thickness_m": 0.04,
+          "stc_power_w": 500,
+          "source": {
+            "kind": "user_declared",
+            "note": "Synthetic module, not a product release",
+            "document_sha256": null,
+            "url": null,
+            "page": null
+          }
+        }
+      ],
+      "arrays": [
+        {
+          "id": "array",
+          "name": "Fixture array",
+          "source_id": "survey",
+          "roof_id": "roof",
+          "module_spec_id": "module",
+          "origin_uv": [
+            1,
+            2
+          ],
+          "rotation_deg": 9007199254740991,
+          "mount_tilt_deg": 90,
+          "lower_edge_clearance_m": 0.1,
+          "rows": 3,
+          "columns": 2,
+          "column_gap_m": 0.2,
+          "row_gap_m": 0.4,
+          "excluded_slots": [
+            "1:1"
+          ],
+          "mounting_note": "Synthetic dimensions, not mounting-system approval"
+        }
+      ],
+      "obstacles": [],
+      "keepouts": [],
+      "layout_rules": [
+        {
+          "roof_id": "roof",
+          "source_id": "survey",
+          "edge_clearance_m": 0,
+          "obstacle_clearance_m": 0,
+          "source_note": "Explicit zero for analytic fixture; not a recommended installation clearance"
+        }
+      ]
+    },
+    "footprints": [
+      [
+        [
+          1.0206015229964023,
+          1.9657133079719156
+        ],
+        [
+          1.8777688236985144,
+          2.48075138288197
+        ],
+        [
+          1.8571673007021123,
+          2.5150380749100543
+        ],
+        [
+          1.0,
+          2.0
+        ]
+      ],
+      [
+        [
+          2.049202283838937,
+          2.5837589978639803
+        ],
+        [
+          2.9063695845410495,
+          3.098797072774035
+        ],
+        [
+          2.8857680615446473,
+          3.1330837648021195
+        ],
+        [
+          2.0286007608425347,
+          2.6180456898920648
+        ]
+      ],
+      [
+        [
+          0.8145862930323805,
+          2.3085802282527603
+        ],
+        [
+          1.6717535937344927,
+          2.8236183031628146
+        ],
+        [
+          1.6511520707380907,
+          2.857904995190899
+        ],
+        [
+          0.7939847700359783,
+          2.342866920280845
+        ]
+      ],
+      [
+        [
+          1.843187053874915,
+          2.926625918144825
+        ],
+        [
+          2.7003543545770277,
+          3.44166399305488
+        ],
+        [
+          2.6797528315806254,
+          3.4759506850829647
+        ],
+        [
+          1.822585530878513,
+          2.96091261017291
+        ]
+      ],
+      [
+        [
+          0.6085710630683588,
+          2.6514471485336055
+        ],
+        [
+          1.465738363770471,
+          3.16648522344366
+        ],
+        [
+          1.445136840774069,
+          3.2007719154717442
+        ],
+        [
+          0.5879695400719567,
+          2.68573384056169
+        ]
+      ],
+      [
+        [
+          1.6371718239108937,
+          3.2694928384256703
+        ],
+        [
+          2.494339124613006,
+          3.784530913335725
+        ],
+        [
+          2.473737601616604,
+          3.8188176053638094
+        ],
+        [
+          1.6165703009144914,
+          3.3037795304537547
+        ]
+      ]
+    ]
+  }
+]

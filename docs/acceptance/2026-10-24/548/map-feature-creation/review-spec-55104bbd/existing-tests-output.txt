@@ -1,0 +1,79 @@
+Independent verification at source 55104bbdbbf9e694eba4785787daaaf109b99ed8.
+Commands, from apps/planner:
+node --test src/domain/mapFeatureDraft.test.ts
+node --no-warnings=ExperimentalWarning --loader ./tests/tsx-loader.mjs --test tests/map-roof-workspace.test.mjs tests/map-roof-recovery.test.mjs tests/workspace-lifecycle.test.mjs
+
+Initial tool output:
+✔ hole prefix reload, explicit command and independent journal identity preserve source/plane and other objects (29.90025ms)
+✔ obstacle prefix reload, explicit command and independent journal identity preserve source/plane and other objects (8.404583ms)
+✔ keepout prefix reload, explicit command and independent journal identity preserve source/plane and other objects (1.919042ms)
+✔ a feature vertex edit, prefix continuation and removal invalidate the source declaration and prepared result (0.711542ms)
+✔ strict feature recovery rejects unknown fields, target/source replacement, cross-kind properties and forged prepared output (1.75125ms)
+✔ obstacle properties require a positive locale-correct height and an explicit direction (0.74725ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 276.097542
+✔ v3 hole recovery separates journal and domain identity and retires only exact confirmed output (121.015708ms)
+
+Continuation tool output (same process, exit 0):
+✔ v3 obstacle recovery separates journal and domain identity and retires only exact confirmed output (33.046458ms)
+✔ v3 keepout recovery separates journal and domain identity and retires only exact confirmed output (28.332833ms)
+✔ drawing journal uses exact CAS, refuses a stale tab, and never deletes its newer copy (11.978041ms)
+✔ the same journal restores unchanged v1 bytes and v2 coordinate pairs, then settles an uncertain ring write before newer edits (21.324292ms)
+✔ a separate ring copy keeps the same edited object and retires only its exact server-confirmed result (25.014959ms)
+✔ serialized writes preserve real new points and invalid fields through pause, hide and recovery (17.491417ms)
+✔ only native-granted prior scopes are exposed; identity changes fence late reads and callbacks (10.572458ms)
+✔ unknown local write outcomes remain retryable; a stale tab can explicitly fork without overwriting (15.399459ms)
+✔ a newer buffer settles exact uncertain bytes before advancing, including repeated lost acknowledgements (12.313458ms)
+✔ a pre-mutation refusal permits correction without retrying the refused bytes (11.144375ms)
+✔ explicit discard confirms an uncertain write before deleting its exact owned copy (11.139208ms)
+✔ prepared geometry survives local application and clears only after an exact confirmed server geometry (19.100333ms)
+✔ new hole UI recovers an unfinished arbitrary outline, reviews its fields and source, edits through Terra and applies one grouped command (263.6115ms)
+✔ new obstacle UI recovers an unfinished arbitrary outline, reviews its fields and source, edits through Terra and applies one grouped command (130.297875ms)
+✔ new keepout UI recovers an unfinished arbitrary outline, reviews its fields and source, edits through Terra and applies one grouped command (107.671167ms)
+✔ real drawing UI resumes a one-point journal, stages a roof, checks inputs and joins one project command (121.89525ms)
+✔ provider replacement restores an open prefix only after the new map loads and keeps its points (35.092959ms)
+✔ real roof_boundary UI keeps pointer edits through reload, refuses its invalid geometry and applies one exact project command (77.161041ms)
+✔ real roof_hole UI keeps pointer edits through reload, refuses its invalid geometry and applies one exact project command (69.025416ms)
+✔ real obstacle UI keeps pointer edits through reload, refuses its invalid geometry and applies one exact project command (75.330375ms)
+✔ real keepout UI keeps pointer edits through reload, refuses its invalid geometry and applies one exact project command (60.943666ms)
+✔ unchanged source-reviewed boundary adds no project command or calculation and keeps a visible result after raw retirement (27.381459ms)
+✔ obstacle cannot infer validation from a missing diagnostic when its invalid parent roof prevented the check (28.1715ms)
+✔ keepout cannot infer validation from a missing diagnostic when its invalid parent roof prevented the check (30.037167ms)
+✔ an unrelated invalid roof remains a layout conflict without blocking a checked edit on this roof (27.199333ms)
+✔ a geometry change while boundary review is pending cannot commit the obsolete result (26.042916ms)
+✔ a identity change while boundary review is pending cannot commit the obsolete result (28.926292ms)
+✔ an obsolete boundary result cannot commit after its prepared journal write was delayed (23.094125ms)
+✔ same identity rechecks retain delayed edits and invalid raw numeric text (722.892584ms)
+✔ reopening the #lp-map-roof-properties property link preserves the roof workspace and map recovery entry (58.70475ms)
+✔ reopening the #lp-map-ring-properties property link preserves the roof workspace and map recovery entry (32.686792ms)
+✔ reopening the #lp-map-feature-properties property link preserves the roof workspace and map recovery entry (29.316708ms)
+✔ Journal workspaces show one task while retaining real input nodes, values and undo history (117.677041ms)
+✔ failed storage and failed identity refresh preserve hidden edits until same owner returns (61.4415ms)
+✔ a confirmed different identity removes the former editor and does not grant its project (38.476916ms)
+✔ the actual project bar is observed after asynchronous draft opening and on resize (41.110125ms)
+✔ creation authentication failure rechecks once and explicitly retries the exact intent (29.79075ms)
+▶ a former identity's delayed creation cannot dispatch or restore cache and navigation
+  ✔ write (16.3915ms)
+  ✔ clear (14.1905ms)
+✔ a former identity's delayed creation cannot dispatch or restore cache and navigation (30.986292ms)
+▶ native confirmation fences pending creation, revision and navigation before React commits
+  ✔ write (14.294291ms)
+  ✔ clear (13.53675ms)
+  ✔ revise (49.733084ms)
+  ✔ close (38.736917ms)
+✔ native confirmation fences pending creation, revision and navigation before React commits (116.824792ms)
+ℹ tests 46
+ℹ suites 0
+ℹ pass 46
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1868.068208
+

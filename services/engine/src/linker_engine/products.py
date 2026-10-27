@@ -301,8 +301,14 @@ class Products:
     def in_class(self, *device_classes: str) -> list[Product]:
         return [p for p in self.products if p.device_class in device_classes]
 
-    def by_model_pattern(self, pattern: str) -> list[Product]:
+    def by_model_pattern(
+        self, pattern: str, *, product_id: int | None = None
+    ) -> list[Product]:
         import re
 
         compiled = re.compile(pattern)
-        return [p for p in self.products if compiled.search(p.model)]
+        return [
+            p
+            for p in self.products
+            if (product_id is None or p.id == product_id) and compiled.search(p.model)
+        ]

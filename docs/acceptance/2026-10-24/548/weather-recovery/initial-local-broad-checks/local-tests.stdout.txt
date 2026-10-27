@@ -1,0 +1,309 @@
+ssssssssssssssssssssssssss.............................................. [ 52%]
+...................................EEEEEEEEEEEEEEEEEEE...........        [100%]
+==================================== ERRORS ====================================
+____________ ERROR at setup of test_two_instances_run_side_by_side _____________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x1089e43e0>, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+>           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed
+___________ ERROR at setup of test_both_run_the_production_versions ____________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x1089e43e0>, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+>           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed
+_____ ERROR at setup of test_each_instance_has_its_own_redis_object_cache ______
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x1089e43e0>, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+>           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed
+________ ERROR at setup of test_pretty_permalinks_and_files_are_served _________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x1089e43e0>, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+>           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed
+_ ERROR at setup of test_the_checkout_endpoints_stay_where_the_checkout_page_is _
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x1089e43e0>, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+>           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed
+___ ERROR at setup of test_a_form_mails_into_the_instance_instead_of_sending ___
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x1089e43e0>, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+>           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed
+___ ERROR at setup of test_mail_that_cannot_be_written_is_reported_as_failed ___
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x1089e43e0>, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+>           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed
+___________ ERROR at setup of test_a_captured_message_keeps_its_bcc ____________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x1089e43e0>, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+>           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed
+______ ERROR at setup of test_wordpress_requests_reach_this_machine_only _______
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x1089e43e0>, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+>           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed
+___ ERROR at setup of test_a_redirect_cannot_lead_wordpress_off_this_machine ___
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x1089e43e0>, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+>           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed
+_ ERROR at setup of test_pages_may_load_from_this_machine_only_and_are_not_indexed _
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x1089e43e0>, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+>           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed
+______________ ERROR at setup of test_a_login_link_signs_in_once _______________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x1089e43e0>, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+>           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed
+____________ ERROR at setup of test_a_login_link_lives_ten_minutes _____________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x1089e43e0>, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+>           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed
+______ ERROR at setup of test_the_server_runs_with_productions_php_limits ______
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x1089e43e0>, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+>           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed
+__ ERROR at setup of test_serve_starts_the_services_and_down_stops_everything __
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x1089e43e0>, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+>           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed
+___ ERROR at setup of test_a_snapshot_brings_its_plugins_themes_and_uploads ____
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x1089e43e0>, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+>           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed
+_ ERROR at setup of test_a_snapshot_activates_only_the_plugins_the_site_ran_active _
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x1089e43e0>, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+>           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed
+_ ERROR at setup of test_a_wrong_snapshot_path_is_refused_before_anything_changes _
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x1089e43e0>, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+>           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed
+_ ERROR at setup of test_reset_rebuilds_one_instance_repeatedly_and_leaves_the_other_alone _
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x1089e43e0>, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+>           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed
+=========================== short test summary info ============================
+ERROR tests/test_stack.py::test_two_instances_run_side_by_side - Failed: the ...
+ERROR tests/test_stack.py::test_both_run_the_production_versions - Failed: th...
+ERROR tests/test_stack.py::test_each_instance_has_its_own_redis_object_cache
+ERROR tests/test_stack.py::test_pretty_permalinks_and_files_are_served - Fail...
+ERROR tests/test_stack.py::test_the_checkout_endpoints_stay_where_the_checkout_page_is
+ERROR tests/test_stack.py::test_a_form_mails_into_the_instance_instead_of_sending
+ERROR tests/test_stack.py::test_mail_that_cannot_be_written_is_reported_as_failed
+ERROR tests/test_stack.py::test_a_captured_message_keeps_its_bcc - Failed: th...
+ERROR tests/test_stack.py::test_wordpress_requests_reach_this_machine_only - ...
+ERROR tests/test_stack.py::test_a_redirect_cannot_lead_wordpress_off_this_machine
+ERROR tests/test_stack.py::test_pages_may_load_from_this_machine_only_and_are_not_indexed
+ERROR tests/test_stack.py::test_a_login_link_signs_in_once - Failed: the loca...
+ERROR tests/test_stack.py::test_a_login_link_lives_ten_minutes - Failed: the ...
+ERROR tests/test_stack.py::test_the_server_runs_with_productions_php_limits
+ERROR tests/test_stack.py::test_serve_starts_the_services_and_down_stops_everything
+ERROR tests/test_stack.py::test_a_snapshot_brings_its_plugins_themes_and_uploads
+ERROR tests/test_stack.py::test_a_snapshot_activates_only_the_plugins_the_site_ran_active
+ERROR tests/test_stack.py::test_a_wrong_snapshot_path_is_refused_before_anything_changes
+ERROR tests/test_stack.py::test_reset_rebuilds_one_instance_repeatedly_and_leaves_the_other_alone
+92 passed, 26 skipped, 19 errors in 3.41s

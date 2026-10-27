@@ -1,0 +1,9 @@
+{
+  "case": "official_controls_pointercancel",
+  "started": 1,
+  "finished": 0,
+  "orbit_enabled_after_cancel": false,
+  "transform_dragging_after_cancel": true,
+  "strictmode_transforms_disposed_before_final_unmount": 1,
+  "strictmode_orbits_disposed_before_final_unmount": 1
+}

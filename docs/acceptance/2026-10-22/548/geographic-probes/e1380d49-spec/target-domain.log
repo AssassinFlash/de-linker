@@ -1,0 +1,16 @@
+✔ browser ECEF/ENU matches frozen independent PROJ positions and full inverse (13.6125ms)
+✔ horizontal-only zero is explicit and never an inferred measured height (1.740709ms)
+✔ horizontal footprint is lifted onto a 3-4-5 plane before roof UV projection (2.063417ms)
+✔ geodetic line intersection retains curvature and supports negative derived heights (0.970791ms)
+✔ polar inverse applies the same output numeric guard as every other branch (0.278667ms)
+✔ actual server import wire joins geometry/reference/source in one project history step (11.016334ms)
+✔ a stale frame, unaligned existing roof and repeated attach are refused without mutation (2.608292ms)
+✔ import wire rejects wrong owner/version/hash, permissive source claims and invalid base64 (9.150083ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 760.098917

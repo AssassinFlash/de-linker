@@ -1,0 +1,489 @@
+[
+  {
+    "url": "https://docs.apify.com/api/v2/act-runs-post",
+    "crawl": {
+      "loadedUrl": "https://docs.apify.com/api/v2/actors-runs-post",
+      "loadedTime": "2026-10-24T04:13:18.654Z",
+      "referrerUrl": "https://docs.apify.com/api/v2/act-runs-post",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 33819,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://docs.apify.com/api/v2/actors-runs-post",
+      "title": "Run Actor | Apify Documentation",
+      "description": "<span id='/reference/actors/run-collection/run-actor'></span><span id='/reference/actors/run-actor'></span><span id='tag/ActorsRun-collection/operation/act_runs_post'></span>Runs an Actor and immediately returns without waiting for the run to finish.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:url",
+          "content": "https://docs.apify.com/api/v2/actors-runs-post"
+        },
+        {
+          "property": "og:locale",
+          "content": "en"
+        },
+        {
+          "property": "og:title",
+          "content": "Run Actor | Apify Documentation"
+        },
+        {
+          "property": "og:description",
+          "content": "<span id='/reference/actors/run-collection/run-actor'></span><span id='/reference/actors/run-actor'></span><span id='tag/ActorsRun-collection/operation/act_runs_post'></span>Runs an Actor and immediately returns without waiting for the run to finish."
+        },
+        {
+          "property": "og:image",
+          "content": "https://apify.com/og-image/docs-article?title=Run+Actor"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "accept-ranges": "bytes",
+        "access-control-allow-origin": "*",
+        "age": "98",
+        "cache-control": "max-age=600",
+        "content-encoding": "gzip",
+        "content-length": "33819",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Sat, 24 Oct 2026 04:13:18 GMT",
+        "etag": "W/\"6adb5cef-71fbf\"",
+        "expires": "Sat, 24 Oct 2026 04:03:50 GMT",
+        "last-modified": "Fri, 23 Oct 2026 13:11:11 GMT",
+        "server": "nginx",
+        "strict-transport-security": "max-age=31556952",
+        "vary": "Accept-Encoding",
+        "via": "1.1 varnish, 1.1 86cc1234e84d8871a09112a1c66d9b78.cloudfront.net (CloudFront)",
+        "x-amz-cf-id": "QSjfSa5x5IkCi0OfcOzt5esYkz9sz-34kfa45-lSrGLRy79U410uLg==",
+        "x-amz-cf-pop": "LAX53-P1",
+        "x-cache": "Miss from cloudfront",
+        "x-cache-hits": "0",
+        "x-fastly-request-id": "e65262488034e0cfde27c6555dd6fb04683bdfdc",
+        "x-frame-options": "SAMEORIGIN",
+        "x-github-edge-region": "iad",
+        "x-github-request-id": "B35E:52245:B8B8BA:CE532B:6ADC2BCD",
+        "x-origin-cache": "HIT",
+        "x-proxy-cache": "MISS",
+        "x-served-by": "cache-iad-kcgs7200057-IAD",
+        "x-timer": "S1792815198.397196,VS0,VE5"
+      }
+    },
+    "retainedTextFile": "docs-act-runs-post-excerpt.txt",
+    "retainedTextKind": "Actor markdown"
+  },
+  {
+    "url": "https://docs.apify.com/api/v2/actor-run-get",
+    "crawl": {
+      "loadedUrl": "https://docs.apify.com/api/v2/actor-run-get",
+      "loadedTime": "2026-10-24T04:13:19.485Z",
+      "referrerUrl": "https://docs.apify.com/api/v2/actor-run-get",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 31744,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://docs.apify.com/api/v2/actor-run-get",
+      "title": "Get Actor run | Apify Documentation",
+      "description": "<span id='/reference/actor-runs/run-object-and-its-storages/get-run'></span><span id='/reference/actor-runs/get-run'></span><span id='tag/Actor-runsRun-object-and-its-storages/operation/actorRun_get'></span>This is not a single endpoint, but an entire group of endpoints that lets",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:url",
+          "content": "https://docs.apify.com/api/v2/actor-run-get"
+        },
+        {
+          "property": "og:locale",
+          "content": "en"
+        },
+        {
+          "property": "og:title",
+          "content": "Get Actor run | Apify Documentation"
+        },
+        {
+          "property": "og:description",
+          "content": "<span id='/reference/actor-runs/run-object-and-its-storages/get-run'></span><span id='/reference/actor-runs/get-run'></span><span id='tag/Actor-runsRun-object-and-its-storages/operation/actorRun_get'></span>This is not a single endpoint, but an entire group of endpoints that lets"
+        },
+        {
+          "property": "og:image",
+          "content": "https://apify.com/og-image/docs-article?title=Get+Actor+run"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "accept-ranges": "bytes",
+        "access-control-allow-origin": "*",
+        "age": "0",
+        "cache-control": "max-age=600",
+        "content-encoding": "gzip",
+        "content-length": "31744",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Sat, 24 Oct 2026 04:13:19 GMT",
+        "etag": "W/\"6adb5cef-61f42\"",
+        "expires": "Sat, 24 Oct 2026 03:46:04 GMT",
+        "last-modified": "Fri, 23 Oct 2026 13:11:11 GMT",
+        "server": "nginx",
+        "strict-transport-security": "max-age=31556952",
+        "vary": "Accept-Encoding",
+        "via": "1.1 varnish, 1.1 62a50da4137e42fe1942f8112fb7d342.cloudfront.net (CloudFront)",
+        "x-amz-cf-id": "vREAy4HsSt0o1L6UAsyAnRLC-NPKMINQnRevK0Pejf41YzCpmc9bYw==",
+        "x-amz-cf-pop": "DFW57-P7",
+        "x-cache": "Miss from cloudfront",
+        "x-cache-hits": "0",
+        "x-fastly-request-id": "cff1a2a1cf9dc845647c1d92dd801af13337d133",
+        "x-frame-options": "SAMEORIGIN",
+        "x-github-edge-region": "iad",
+        "x-github-request-id": "C73A:2D9492:6762C4:81ED52:6ADC27A4",
+        "x-origin-cache": "HIT",
+        "x-proxy-cache": "MISS",
+        "x-served-by": "cache-iad-kcgs7200022-IAD",
+        "x-timer": "S1792815199.339266,VS0,VE16"
+      }
+    },
+    "retainedTextFile": "docs-actor-run-get-excerpt.txt",
+    "retainedTextKind": "Actor markdown"
+  },
+  {
+    "url": "https://docs.apify.com/api/v2/actor-run-abort-post",
+    "crawl": {
+      "loadedUrl": "https://docs.apify.com/api/v2/actor-run-abort-post",
+      "loadedTime": "2026-10-24T04:13:20.081Z",
+      "referrerUrl": "https://docs.apify.com/api/v2/actor-run-abort-post",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 30294,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://docs.apify.com/api/v2/actor-run-abort-post",
+      "title": "Abort Actor run | Apify Documentation",
+      "description": "<span id='/reference/actor-runs/abort-run/abort-run'></span><span id='/reference/actor-runs/abort-run'></span><span id='tag/Actor-runsAbort-run/operation/actorRun_abort_post'></span>Aborts an Actor run and returns an object that contains all the details",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:url",
+          "content": "https://docs.apify.com/api/v2/actor-run-abort-post"
+        },
+        {
+          "property": "og:locale",
+          "content": "en"
+        },
+        {
+          "property": "og:title",
+          "content": "Abort Actor run | Apify Documentation"
+        },
+        {
+          "property": "og:description",
+          "content": "<span id='/reference/actor-runs/abort-run/abort-run'></span><span id='/reference/actor-runs/abort-run'></span><span id='tag/Actor-runsAbort-run/operation/actorRun_abort_post'></span>Aborts an Actor run and returns an object that contains all the details"
+        },
+        {
+          "property": "og:image",
+          "content": "https://apify.com/og-image/docs-article?title=Abort+Actor+run"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "accept-ranges": "bytes",
+        "access-control-allow-origin": "*",
+        "age": "0",
+        "cache-control": "max-age=600",
+        "content-encoding": "gzip",
+        "content-length": "30294",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Sat, 24 Oct 2026 04:13:19 GMT",
+        "etag": "W/\"6adb5cef-591f8\"",
+        "expires": "Sat, 24 Oct 2026 04:12:33 GMT",
+        "last-modified": "Fri, 23 Oct 2026 13:11:11 GMT",
+        "server": "nginx",
+        "strict-transport-security": "max-age=31556952",
+        "vary": "Accept-Encoding",
+        "via": "1.1 varnish, 1.1 6d608495c704c3391c897a110e88cffa.cloudfront.net (CloudFront)",
+        "x-amz-cf-id": "W2yO8PR3YZTslntsaXPwbtXkOIr0vSU47HHRUFKI3-87Yy_AAuJ-wA==",
+        "x-amz-cf-pop": "ORD58-P13",
+        "x-cache": "Miss from cloudfront",
+        "x-cache-hits": "0",
+        "x-fastly-request-id": "fd000f797ccc0fef42d1493712e205921b469b67",
+        "x-frame-options": "SAMEORIGIN",
+        "x-github-edge-region": "iad",
+        "x-github-request-id": "A046:2AD41C:690C86:84BBEC:6ADC2DD9",
+        "x-origin-cache": "HIT",
+        "x-proxy-cache": "MISS",
+        "x-served-by": "cache-iad-kcgs7200067-IAD",
+        "x-timer": "S1792815200.977466,VS0,VE18"
+      }
+    },
+    "retainedTextFile": "docs-actor-run-abort-post-excerpt.txt",
+    "retainedTextKind": "Actor markdown"
+  },
+  {
+    "url": "https://docs.apify.com/api/v2/dataset-items-get",
+    "crawl": {
+      "loadedUrl": "https://docs.apify.com/api/v2/dataset-items-get",
+      "loadedTime": "2026-10-24T04:13:20.677Z",
+      "referrerUrl": "https://docs.apify.com/api/v2/dataset-items-get",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 29077,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://docs.apify.com/api/v2/dataset-items-get",
+      "title": "Get dataset items | Apify Documentation",
+      "description": "<span id='/reference/datasets/item-collection/get-items'></span><span id='/reference/datasets/get-items'></span><span id='tag/DatasetsItem-collection/operation/dataset_items_get'></span>Returns data stored in the dataset in a desired format.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:url",
+          "content": "https://docs.apify.com/api/v2/dataset-items-get"
+        },
+        {
+          "property": "og:locale",
+          "content": "en"
+        },
+        {
+          "property": "og:title",
+          "content": "Get dataset items | Apify Documentation"
+        },
+        {
+          "property": "og:description",
+          "content": "<span id='/reference/datasets/item-collection/get-items'></span><span id='/reference/datasets/get-items'></span><span id='tag/DatasetsItem-collection/operation/dataset_items_get'></span>Returns data stored in the dataset in a desired format."
+        },
+        {
+          "property": "og:image",
+          "content": "https://apify.com/og-image/docs-article?title=Get+dataset+items"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "accept-ranges": "bytes",
+        "access-control-allow-origin": "*",
+        "age": "0",
+        "cache-control": "max-age=600",
+        "content-encoding": "gzip",
+        "content-length": "29077",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Sat, 24 Oct 2026 04:13:20 GMT",
+        "etag": "W/\"6adb5cef-53ef5\"",
+        "expires": "Sat, 24 Oct 2026 04:23:20 GMT",
+        "last-modified": "Fri, 23 Oct 2026 13:11:11 GMT",
+        "server": "nginx",
+        "strict-transport-security": "max-age=31556952",
+        "vary": "Accept-Encoding",
+        "via": "1.1 varnish, 1.1 67b4b104740b2b546a306c1d520c6780.cloudfront.net (CloudFront)",
+        "x-amz-cf-id": "5OooWwH0mdaIdaNbOSwSjvl7zD5z1Jt2X55_-GDXJHrAbLO2QCivwA==",
+        "x-amz-cf-pop": "JFK50-P13",
+        "x-cache": "Miss from cloudfront",
+        "x-cache-hits": "0",
+        "x-fastly-request-id": "4b90ebaf403962ab0ea64c38f22f82f92f01f43e",
+        "x-frame-options": "SAMEORIGIN",
+        "x-github-edge-region": "iad",
+        "x-github-request-id": "5AA8:2A748:E20FF0:F5C618:6ADC3060",
+        "x-origin-cache": "HIT",
+        "x-proxy-cache": "MISS",
+        "x-served-by": "cache-iad-kcgs7200052-IAD",
+        "x-timer": "S1792815200.404403,VS0,VE51"
+      }
+    },
+    "retainedTextFile": "docs-dataset-items-get-excerpt.txt",
+    "retainedTextKind": "Actor markdown"
+  },
+  {
+    "url": "https://docs.apify.com/api/v2/key-value-store-record-get",
+    "crawl": {
+      "loadedUrl": "https://docs.apify.com/api/v2/key-value-store-record-get",
+      "loadedTime": "2026-10-24T04:13:21.199Z",
+      "referrerUrl": "https://docs.apify.com/api/v2/key-value-store-record-get",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 24437,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://docs.apify.com/api/v2/key-value-store-record-get",
+      "title": "Get key-value store record | Apify Documentation",
+      "description": "<span id='/reference/key-value-stores/record/get-record'></span><span id='/reference/key-value-stores/get-record'></span><span id='tag/Key-value-storesRecord/operation/keyValueStore_record_get'></span>Gets a value stored in the key-value store under a specific key.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:url",
+          "content": "https://docs.apify.com/api/v2/key-value-store-record-get"
+        },
+        {
+          "property": "og:locale",
+          "content": "en"
+        },
+        {
+          "property": "og:title",
+          "content": "Get key-value store record | Apify Documentation"
+        },
+        {
+          "property": "og:description",
+          "content": "<span id='/reference/key-value-stores/record/get-record'></span><span id='/reference/key-value-stores/get-record'></span><span id='tag/Key-value-storesRecord/operation/keyValueStore_record_get'></span>Gets a value stored in the key-value store under a specific key."
+        },
+        {
+          "property": "og:image",
+          "content": "https://apify.com/og-image/docs-article?title=Get+key-value+store+record"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "accept-ranges": "bytes",
+        "access-control-allow-origin": "*",
+        "age": "0",
+        "cache-control": "max-age=600",
+        "content-encoding": "gzip",
+        "content-length": "24437",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Sat, 24 Oct 2026 04:13:21 GMT",
+        "etag": "W/\"6adb5cef-461e0\"",
+        "expires": "Sat, 24 Oct 2026 04:12:00 GMT",
+        "last-modified": "Fri, 23 Oct 2026 13:11:11 GMT",
+        "server": "nginx",
+        "strict-transport-security": "max-age=31556952",
+        "vary": "Accept-Encoding",
+        "via": "1.1 varnish, 1.1 5dba293984520549cce3fcdb22e8f12c.cloudfront.net (CloudFront)",
+        "x-amz-cf-id": "nBE4xV0Vh44iMCXF6cqe9vyk55XZhWeAKezBYA33qeqqpK_vORRGcA==",
+        "x-amz-cf-pop": "ORD58-P13",
+        "x-cache": "Miss from cloudfront",
+        "x-cache-hits": "0",
+        "x-fastly-request-id": "e3d2e2a81fc34b2e579a3ad45d177b110fe574e3",
+        "x-frame-options": "SAMEORIGIN",
+        "x-github-edge-region": "iad",
+        "x-github-request-id": "77E0:1D6B1A:6958BF:85045A:6ADC2DB8",
+        "x-origin-cache": "HIT",
+        "x-proxy-cache": "MISS",
+        "x-served-by": "cache-iad-kcgs7200147-IAD",
+        "x-timer": "S1792815201.106620,VS0,VE18"
+      }
+    },
+    "retainedTextFile": "docs-key-value-store-record-get-excerpt.txt",
+    "retainedTextKind": "Actor markdown"
+  },
+  {
+    "url": "https://docs.apify.com/platform/actors/running/runs-and-builds",
+    "crawl": {
+      "loadedUrl": "https://docs.apify.com/actors/running/runs-and-builds",
+      "loadedTime": "2026-10-24T04:13:21.898Z",
+      "referrerUrl": "https://docs.apify.com/platform/actors/running/runs-and-builds",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 13371,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://docs.apify.com/actors/running/runs-and-builds",
+      "title": "Actor runs and builds | Platform | Apify Documentation",
+      "description": "Learn about Actor builds and runs, including their lifecycle, version tagging, storage assignment, sharing options, and data retention policy.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:url",
+          "content": "https://docs.apify.com/actors/running/runs-and-builds"
+        },
+        {
+          "property": "og:locale",
+          "content": "en"
+        },
+        {
+          "property": "og:title",
+          "content": "Actor runs and builds | Platform | Apify Documentation"
+        },
+        {
+          "property": "og:description",
+          "content": "Learn about Actor builds and runs, including their lifecycle, version tagging, storage assignment, sharing options, and data retention policy."
+        },
+        {
+          "property": "og:image",
+          "content": "https://apify.com/og-image/docs-article?title=Actor+runs+and+builds"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "accept-ranges": "bytes",
+        "access-control-allow-origin": "*",
+        "age": "0",
+        "cache-control": "max-age=600",
+        "content-encoding": "gzip",
+        "content-length": "13371",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Sat, 24 Oct 2026 04:13:21 GMT",
+        "etag": "W/\"6adb5cef-ce53\"",
+        "expires": "Sat, 24 Oct 2026 03:56:04 GMT",
+        "last-modified": "Fri, 23 Oct 2026 13:11:11 GMT",
+        "server": "nginx",
+        "strict-transport-security": "max-age=31556952",
+        "vary": "Accept-Encoding",
+        "via": "1.1 varnish, 1.1 131a2271cf94380806b1797b7371b3da.cloudfront.net (CloudFront)",
+        "x-amz-cf-id": "JH47alAdz0dzMX3syIUZQuR1eE7Kh12CuIL5e3G7pX45li1KSg_46A==",
+        "x-amz-cf-pop": "DFW57-P7",
+        "x-cache": "Miss from cloudfront",
+        "x-cache-hits": "0",
+        "x-fastly-request-id": "fda845ca98f3e577d8d16ac6417ab50573e6c876",
+        "x-frame-options": "SAMEORIGIN",
+        "x-github-edge-region": "iad",
+        "x-github-request-id": "212E:31DE2D:D749FB:EA2C42:6ADC29FB",
+        "x-proxy-cache": "MISS",
+        "x-served-by": "cache-iad-kcgs7200070-IAD",
+        "x-timer": "S1792815202.739588,VS0,VE26"
+      }
+    },
+    "retainedTextFile": "docs-runs-and-builds-excerpt.txt",
+    "retainedTextKind": "Actor markdown"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/pvlib/pvlib-python/v0.16.1/pvlib/temperature.py",
+    "crawl": {
+      "loadedUrl": "https://raw.githubusercontent.com/pvlib/pvlib-python/v0.16.1/pvlib/temperature.py",
+      "depth": 0,
+      "referrerUrl": "https://raw.githubusercontent.com/pvlib/pvlib-python/v0.16.1/pvlib/temperature.py",
+      "loadedTime": "2026-10-24T04:13:22.713Z",
+      "httpStatusCode": 200,
+      "contentLengthBytes": 14520,
+      "contentType": "text/plain; charset=utf-8"
+    },
+    "metadata": {
+      "author": null,
+      "canonicalUrl": "https://raw.githubusercontent.com/pvlib/pvlib-python/v0.16.1/pvlib/temperature.py",
+      "description": null,
+      "keywords": null,
+      "languageCode": null,
+      "title": "temperature.py"
+    },
+    "fileUrl": "https://api.apify.com/v2/key-value-stores/nhkKQ8gHiwmVem6qa/records/file-397a297-temperature.py",
+    "temporaryAccessQueryOmitted": true
+  },
+  {
+    "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+    "crawl": {
+      "loadedUrl": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "depth": 0,
+      "referrerUrl": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "loadedTime": "2026-10-24T04:13:34.421Z",
+      "httpStatusCode": 200,
+      "contentLengthBytes": 488969,
+      "contentType": "application/pdf"
+    },
+    "metadata": {
+      "author": null,
+      "canonicalUrl": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "description": null,
+      "keywords": null,
+      "languageCode": null,
+      "title": "240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+    },
+    "fileUrl": "https://api.apify.com/v2/key-value-stores/nhkKQ8gHiwmVem6qa/records/file-c013b20-240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+    "temporaryAccessQueryOmitted": true
+  }
+]

@@ -1,0 +1,199 @@
+- banner:
+  - navigation "Primary navigation":
+    - link "Linker home":
+      - /url: /
+    - button "Products":
+      - text: Products
+    - button "Solutions":
+      - text: Solutions
+    - button "Plan with Linker":
+      - text: Plan with Linker
+    - link "Services":
+      - /url: /services-support/
+    - button "For Partners":
+      - text: For Partners
+    - button "About":
+      - text: About
+    - link "Search products":
+      - /url: http://127.0.0.1:9347/products/#search-box
+      - generic: Search
+    - link "Solution draft":
+      - /url: http://127.0.0.1:9347/cart/
+      - generic: Solution draft
+    - button "My account":
+      - generic: My account
+    - group "Language":
+      - link "EN":
+        - /url: http://127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1
+      - link "DE":
+        - /url: http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1
+    - link "Contact Linker":
+      - /url: http://127.0.0.1:9347/contact/
+- main:
+  - button "Projects"
+  - generic: /
+  - generic: Köln · owned synthetic roof · acceptance
+  - status: Saved · revision 4
+  - button "Undo" [disabled]:
+  - button "Redo" [disabled]:
+  - button "Save project" [disabled]
+  - complementary:
+    - generic: L
+    - generic: Solution Configurator
+    - text: Current project
+    - navigation "Project sections":
+      - link "Project overview":
+        - /url: "#lp-overview"
+        - text: Project overview
+      - link "Site and project":
+        - /url: "#lp-site"
+        - text: Site and project
+      - link "Roof design":
+        - /url: "#lp-design"
+        - text: Roof design
+      - link "Energy inputs":
+        - /url: "#lp-load"
+        - text: Energy inputs
+    - generic: Project information is kept with its source and revision.
+  - text: Current project
+  - heading "Köln · owned synthetic roof · acceptance" [level=1]
+  - paragraph: Site data and roof layouts are saved in the same project.
+  - region "Your project at a glance":
+    - text: Project overview
+    - heading "Your project at a glance" [level=2]
+    - paragraph: Site information, roof layouts and energy inputs share this project. Each workspace can be completed as the design develops.
+    - term: Country
+    - definition: Germany
+    - text: Project location
+    - term: Annual consumption
+    - definition: —
+    - text: Basis not specified
+    - term: Included modules
+    - definition: —
+    - text: Across the current roof layouts
+    - term: Declared DC nameplate power
+    - definition: —
+    - text: Module count and declared specifications
+    - generic: Synthetic 3–4–5 roof · Köln
+    - generic: Current layout
+    - 'img "Roof plane: Synthetic 3–4–5 roof · Köln. U increases to the right; V increases upward."'
+    - button "Open roof workspace":
+      - text: Open roof workspace
+    - complementary "Project workspaces":
+      - heading "Continue your project" [level=3]
+      - button "Site and project Synthetic site at 50.94 N, 6.96 E · not a surveyed building":
+        - strong: Site and project
+        - generic: Synthetic site at 50.94 N, 6.96 E · not a surveyed building
+      - button "Roof design Roof faces, obstacles and module layout":
+        - strong: Roof design
+        - generic: Roof faces, obstacles and module layout
+      - button "Energy inputs Annual consumption and interval data":
+        - strong: Energy inputs
+        - generic: Annual consumption and interval data
+      - paragraph: The overview describes the current inputs. Energy yield, equipment suitability and engineering release require their respective calculations and evidence.
+  - strong: Solution Configurator
+  - generic: by Linker
+  - paragraph: Linker brings your inputs into an editable project for solar and storage planning.
+  - generic "About this tool" [active]
+  - paragraph: Linker provides the project workflow and editing tools. Your inputs and design stay together in the same project, with controls for saving changes and restoring available drafts.
+  - paragraph: All design views use the same project geometry. Source records retain the declared accuracy and permissions; a displayed model provides no engineering approval.
+  - heading "Software and data credits" [level=2]
+  - paragraph:
+    - text: "Interface and project data:"
+    - link "React":
+      - /url: https://react.dev/
+    - text: ","
+    - link "TanStack Query":
+      - /url: https://tanstack.com/query
+    - text: and
+    - link "Ajv":
+      - /url: https://ajv.js.org
+    - text: ". 3D views:"
+    - link "Three.js":
+      - /url: https://threejs.org/
+    - text: and
+    - link "React Three Fiber":
+      - /url: https://r3f.docs.pmnd.rs/getting-started/introduction
+    - text: ". Map display:"
+    - link "MapLibre GL JS":
+      - /url: https://maplibre.org/maplibre-gl-js/docs/
+    - text: .
+  - paragraph:
+    - text: "Street map:"
+    - link "OpenFreeMap":
+      - /url: https://openfreemap.org/
+    - text: .
+    - link "© OpenMapTiles":
+      - /url: https://www.openmaptiles.org/
+    - text: ;
+    - link "© OpenStreetMap contributors":
+      - /url: https://www.openstreetmap.org/copyright
+    - text: .
+  - link "OpenFreeMap privacy policy":
+    - /url: https://openfreemap.org/privacy/
+- contentinfo:
+  - img "Linker"
+  - text: Language
+  - navigation "Language":
+    - link "English":
+      - /url: http://127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1
+    - link "Deutsch":
+      - /url: http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1
+  - paragraph:
+    - generic: Linking
+    - link "products":
+      - /url: /products/
+      - generic: products
+    - generic: ","
+    - link "technology":
+      - /url: /about/capability/
+      - generic: technology
+    - generic: and
+    - link "service":
+      - /url: /services-support/
+      - generic: service
+    - text: to create
+    - strong: lasting value
+    - text: for energy partners in Europe.
+  - tablist "Footer navigation":
+    - tab "Solutions" [selected]:
+      - generic: Solutions
+    - tab "Services":
+      - generic: Services
+    - tab "Plan with Linker":
+      - generic: Plan with Linker
+    - tab "Account":
+      - generic: Account
+    - tab "Contact Linker":
+      - generic: Contact Linker
+  - tabpanel "Solutions":
+    - heading "Solutions" [level=2]
+    - generic: "03"
+    - list:
+      - link "Residential Storage":
+        - /url: /solution/residential-storage/
+        - generic: Residential Storage
+      - link "Commercial Storage":
+        - /url: /solution/commercial-storage/
+        - generic: Commercial Storage
+      - link "Utility-Scale Storage":
+        - /url: /solution/utility-storage/
+        - generic: Utility-Scale Storage
+  - generic: © 2026 Linker. All rights reserved.
+  - navigation "Legal":
+    - link "Imprint":
+      - /url: /imprint/
+    - link "Privacy Policy":
+      - /url: /privacy-policy/
+    - button "Cookie settings"
+    - link "Terms of Sale":
+      - /url: /terms-of-sale/
+    - link "Refund & Returns":
+      - /url: /refund-returns/
+  - text: Product fit
+  - emphasis: ·
+  - text: Inverter compatibility
+  - emphasis: ·
+  - text: Project support
+- button "Ask Genie":
+- status

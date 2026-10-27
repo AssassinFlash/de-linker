@@ -1,0 +1,225 @@
+[
+  {
+    "case": "flat",
+    "rotation": 1,
+    "expected_pairs": 0,
+    "actual_pairs": 0,
+    "passed": true,
+    "missing": [],
+    "extra": []
+  },
+  {
+    "case": "flat",
+    "rotation": 31,
+    "expected_pairs": 0,
+    "actual_pairs": 0,
+    "passed": true,
+    "missing": [],
+    "extra": []
+  },
+  {
+    "case": "flat",
+    "rotation": 89,
+    "expected_pairs": 0,
+    "actual_pairs": 0,
+    "passed": true,
+    "missing": [],
+    "extra": []
+  },
+  {
+    "case": "adjacent_thick",
+    "rotation": 1,
+    "expected_pairs": 9,
+    "actual_pairs": 9,
+    "passed": true,
+    "missing": [],
+    "extra": []
+  },
+  {
+    "case": "adjacent_thick",
+    "rotation": 31,
+    "expected_pairs": 9,
+    "actual_pairs": 9,
+    "passed": true,
+    "missing": [],
+    "extra": []
+  },
+  {
+    "case": "adjacent_thick",
+    "rotation": 89,
+    "expected_pairs": 9,
+    "actual_pairs": 9,
+    "passed": true,
+    "missing": [],
+    "extra": []
+  },
+  {
+    "case": "row_contact",
+    "rotation": 1,
+    "expected_pairs": 0,
+    "actual_pairs": 0,
+    "passed": true,
+    "missing": [],
+    "extra": []
+  },
+  {
+    "case": "row_contact",
+    "rotation": 31,
+    "expected_pairs": 0,
+    "actual_pairs": 0,
+    "passed": true,
+    "missing": [],
+    "extra": []
+  },
+  {
+    "case": "row_contact",
+    "rotation": 89,
+    "expected_pairs": 0,
+    "actual_pairs": 0,
+    "passed": true,
+    "missing": [],
+    "extra": []
+  },
+  {
+    "case": "row_gap",
+    "rotation": 1,
+    "expected_pairs": 0,
+    "actual_pairs": 0,
+    "passed": true,
+    "missing": [],
+    "extra": []
+  },
+  {
+    "case": "row_gap",
+    "rotation": 31,
+    "expected_pairs": 0,
+    "actual_pairs": 0,
+    "passed": true,
+    "missing": [],
+    "extra": []
+  },
+  {
+    "case": "row_gap",
+    "rotation": 89,
+    "expected_pairs": 0,
+    "actual_pairs": 0,
+    "passed": true,
+    "missing": [],
+    "extra": []
+  },
+  {
+    "case": "multirow_thick",
+    "rotation": 1,
+    "expected_pairs": 7,
+    "actual_pairs": 7,
+    "passed": true,
+    "missing": [],
+    "extra": []
+  },
+  {
+    "case": "multirow_thick",
+    "rotation": 31,
+    "expected_pairs": 7,
+    "actual_pairs": 7,
+    "passed": true,
+    "missing": [],
+    "extra": []
+  },
+  {
+    "case": "multirow_thick",
+    "rotation": 89,
+    "expected_pairs": 7,
+    "actual_pairs": 7,
+    "passed": true,
+    "missing": [],
+    "extra": []
+  },
+  {
+    "case": "vertical_nonadjacent",
+    "rotation": 1,
+    "expected_pairs": 24,
+    "actual_pairs": 24,
+    "passed": true,
+    "missing": [],
+    "extra": []
+  },
+  {
+    "case": "vertical_nonadjacent",
+    "rotation": 31,
+    "expected_pairs": 24,
+    "actual_pairs": 24,
+    "passed": true,
+    "missing": [],
+    "extra": []
+  },
+  {
+    "case": "vertical_nonadjacent",
+    "rotation": 89,
+    "expected_pairs": 24,
+    "actual_pairs": 24,
+    "passed": true,
+    "missing": [],
+    "extra": []
+  },
+  {
+    "case": "inclined_nonadjacent",
+    "rotation": 1,
+    "expected_pairs": 14,
+    "actual_pairs": 14,
+    "passed": true,
+    "missing": [],
+    "extra": []
+  },
+  {
+    "case": "inclined_nonadjacent",
+    "rotation": 31,
+    "expected_pairs": 14,
+    "actual_pairs": 14,
+    "passed": true,
+    "missing": [],
+    "extra": []
+  },
+  {
+    "case": "inclined_nonadjacent",
+    "rotation": 89,
+    "expected_pairs": 14,
+    "actual_pairs": 14,
+    "passed": true,
+    "missing": [],
+    "extra": []
+  },
+  {
+    "case": "cross_array_shared_edge_same_grid",
+    "rotation": 1,
+    "passed": true,
+    "actual_pairs": 0
+  },
+  {
+    "case": "cross_array_shared_edge_same_grid",
+    "rotation": 30,
+    "passed": true,
+    "actual_pairs": 0
+  },
+  {
+    "case": "cross_array_shared_edge_same_grid",
+    "rotation": 45,
+    "passed": true,
+    "actual_pairs": 0
+  },
+  {
+    "case": "cross_array_shared_edge_same_grid",
+    "rotation": 89,
+    "passed": true,
+    "actual_pairs": 0
+  },
+  {
+    "case": "cross_array_identical_positive_area",
+    "passed": true,
+    "actual_pairs": 1
+  },
+  {
+    "case": "cross_array_excluded_absent",
+    "passed": true,
+    "actual_pairs": 0
+  }
+]

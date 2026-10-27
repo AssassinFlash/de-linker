@@ -1,0 +1,292 @@
+[
+  {
+    "draft": "Revision %d",
+    "en": "Revision %d",
+    "de": "Version %d"
+  },
+  {
+    "draft": "This result belongs to an earlier saved revision. Its original inputs remain available.",
+    "en": "This result belongs to an earlier saved revision. Its original inputs remain available.",
+    "de": "Dieses Ergebnis gehört zu einer früher gespeicherten Version. Die damaligen Eingaben bleiben verfügbar."
+  },
+  {
+    "draft": "Latitude",
+    "en": "Latitude",
+    "de": "Breitengrad"
+  },
+  {
+    "draft": "Longitude",
+    "en": "Longitude",
+    "de": "Längengrad"
+  },
+  {
+    "draft": "Altitude",
+    "en": "Altitude",
+    "de": "Höhe"
+  },
+  {
+    "draft": "Hourly weather records",
+    "en": "Hourly weather records",
+    "de": "Stündliche Wetterdatensätze"
+  },
+  {
+    "draft": "Modelled PV energy",
+    "en": "Modelled PV generation",
+    "de": "Modellierte PV-Erzeugung"
+  },
+  {
+    "draft": "Start",
+    "en": "Start",
+    "de": "Beginn"
+  },
+  {
+    "draft": "End",
+    "en": "End",
+    "de": "Ende"
+  },
+  {
+    "draft": "This profile is an unshaded reference scenario. Site shading, electrical compatibility and country requirements remain unassessed.",
+    "en": "This is an unshaded reference profile. Site shading, equipment compatibility and country requirements remain unassessed.",
+    "de": "Dieses Referenzprofil berücksichtigt keine Verschattung. Die Verschattung am Standort sowie Gerätekompatibilität und länderspezifische Anforderungen bleiben ungeprüft."
+  },
+  {
+    "draft": "Preparing a source leaves your project inputs unchanged. Selection is recorded in the open draft; Save project confirms it on the server.",
+    "en": "Preparation leaves your project inputs unchanged. Selecting a source updates the current open draft. Save project saves that selection on the server.",
+    "de": "Die Vorbereitung ändert Ihre Projekteingaben nicht. Ihre Auswahl gilt zunächst für den aktuell offenen Projektentwurf. Mit \"Projekt speichern\" wird diese Auswahl auf dem Server gespeichert."
+  },
+  {
+    "draft": "Checking the saved source…",
+    "en": "Checking the saved source…",
+    "de": "Gespeicherte Quelle wird geprüft…"
+  },
+  {
+    "draft": "The saved source could not be checked. Existing project inputs remain unchanged.",
+    "en": "The saved source could not be checked. Existing project inputs remain unchanged.",
+    "de": "Die gespeicherte Quelle konnte nicht geprüft werden. Ihre bisherigen Projekteingaben bleiben unverändert."
+  },
+  {
+    "draft": "Try again",
+    "en": "Try again",
+    "de": "Erneut versuchen"
+  },
+  {
+    "draft": "The source request, roof or model has changed. A source matching the current inputs is required.",
+    "en": "The source request, roof or model has changed. A source matching the current inputs is required.",
+    "de": "Die Vorgaben für die Quelle, die Dachgeometrie oder das Modell haben sich geändert. Für die aktuellen Eingaben wird eine passende Quelle benötigt."
+  },
+  {
+    "draft": "Selected in the open draft",
+    "en": "Selected in the current draft",
+    "de": "Im aktuellen Projektentwurf ausgewählt"
+  },
+  {
+    "draft": "Use this weather source in the open draft",
+    "en": "Use this weather source",
+    "de": "Diese Wetterquelle verwenden"
+  },
+  {
+    "draft": "Use this PV profile in the open draft",
+    "en": "Use this PV profile",
+    "de": "Dieses PV-Profil verwenden"
+  },
+  {
+    "draft": "Source and model records",
+    "en": "Source and task checksums",
+    "de": "Prüfsummen für Quelle und Auftrag"
+  },
+  {
+    "draft": "Input SHA-256",
+    "en": "Input SHA-256",
+    "de": "SHA-256 der Eingabedaten"
+  },
+  {
+    "draft": "Manifest SHA-256",
+    "en": "Task manifest SHA-256",
+    "de": "SHA-256 des Auftragsmanifests"
+  },
+  {
+    "draft": "Result SHA-256",
+    "en": "Result SHA-256",
+    "de": "SHA-256 des Ergebnisses"
+  },
+  {
+    "draft": "Runtime SHA-256",
+    "en": "Execution environment SHA-256",
+    "de": "SHA-256 der Ausführungsumgebung"
+  },
+  {
+    "draft": "Source content SHA-256",
+    "en": "Source content SHA-256",
+    "de": "SHA-256 des Quelleninhalts"
+  },
+  {
+    "draft": "The weather request is waiting to start.",
+    "en": "The weather request is waiting to start.",
+    "de": "Der Wetterabruf wartet auf den Start."
+  },
+  {
+    "draft": "The weather provider is processing the saved request.",
+    "en": "The weather provider is processing the saved request.",
+    "de": "Der Anbieter bearbeitet den gespeicherten Wetterabruf."
+  },
+  {
+    "draft": "The provider is stopping a run that exceeded its time limit. A terminal state has not been confirmed.",
+    "en": "The provider is stopping the run after its time limit was reached. The stop is not yet confirmed.",
+    "de": "Der Anbieter beendet den Abruf, weil das Zeitlimit erreicht wurde. Der Stopp ist noch nicht bestätigt."
+  },
+  {
+    "draft": "The provider has accepted a stop request. Completion of the stop has not been confirmed.",
+    "en": "The provider accepted the stop request. The stop is not yet confirmed.",
+    "de": "Der Anbieter hat die Stoppanforderung angenommen. Der Stopp ist noch nicht bestätigt."
+  },
+  {
+    "draft": "The provider run completed. This alone does not confirm a valid project weather source.",
+    "en": "The provider has finished the request. A project source is ready only after the original data is validated and preparation succeeds.",
+    "de": "Der Anbieter hat den Abruf abgeschlossen. Die Originaldaten müssen die Prüfung bestehen und die Vorbereitung muss erfolgreich abgeschlossen sein, bevor eine Projektquelle bereitsteht."
+  },
+  {
+    "draft": "The original weather data has been validated and retained. The local task state indicates whether the project source was published.",
+    "en": "The original weather data has passed validation and is retained. A project source is available only when the preparation status above shows \"Source ready\".",
+    "de": "Die ursprünglichen Wetterdaten sind geprüft und gespeichert. Als Projektquelle stehen sie erst bereit, wenn oben \"Quelle bereit\" angezeigt wird."
+  },
+  {
+    "draft": "The provider confirmed that the run was stopped.",
+    "en": "The provider confirmed that the run was stopped.",
+    "de": "Der Anbieter hat bestätigt, dass der Abruf gestoppt wurde."
+  },
+  {
+    "draft": "The provider run ended without a usable weather source.",
+    "en": "The provider run ended without a usable weather source.",
+    "de": "Der Abruf beim Anbieter wurde ohne nutzbare Wetterquelle beendet."
+  },
+  {
+    "draft": "The service has not confirmed whether the provider started this request. The original request is retained for verification; another start is not sent automatically.",
+    "en": "The provider may have started this request. Linker must verify the original request. The system will not start it again automatically.",
+    "de": "Ob der Anbieter diesen Abruf gestartet hat, ist noch unklar. Die Klärung liegt bei Linker. Ein erneuter Start erfolgt nicht automatisch."
+  },
+  {
+    "draft": "Weather acquisition status",
+    "en": "Weather request status",
+    "de": "Status des Wetterabrufs"
+  },
+  {
+    "draft": "Reading weather acquisition status…",
+    "en": "Loading weather request status…",
+    "de": "Status des Wetterabrufs wird geladen…"
+  },
+  {
+    "draft": "Weather status could not be refreshed. Any visible state is the last confirmed response.",
+    "en": "Weather status could not be refreshed. Any status shown comes from the last confirmed response.",
+    "de": "Der Wetterstatus konnte nicht aktualisiert werden. Ein angezeigter Status stammt aus der letzten bestätigten Rückmeldung."
+  },
+  {
+    "draft": "The local task ended before a provider start was recorded.",
+    "en": "Weather preparation has ended. No provider start has been recorded.",
+    "de": "Die Wettervorbereitung ist beendet. Ein Start beim Anbieter ist nicht erfasst."
+  },
+  {
+    "draft": "The stop verification is still in progress.",
+    "en": "Confirmation that the provider run has ended is still pending.",
+    "de": "Die Bestätigung, dass der Abruf beim Anbieter beendet ist, steht noch aus."
+  },
+  {
+    "draft": "The stop verification task failed. The last observed provider state is shown.",
+    "en": "The stop check failed. Any provider status shown is the last recorded observation.",
+    "de": "Die Prüfung des Stopps ist fehlgeschlagen. Ein angezeigter Status des Anbieters stammt aus der zuletzt erfassten Rückmeldung."
+  },
+  {
+    "draft": "Linker is verifying the retained provider operation.",
+    "en": "Verification of the recorded weather request is pending or in progress.",
+    "de": "Die Prüfung des gespeicherten Wetterabrufs steht noch aus oder läuft bereits."
+  },
+  {
+    "draft": "Contact Linker",
+    "en": "Contact Linker",
+    "de": "Linker kontaktieren"
+  },
+  {
+    "draft": "Refresh weather status",
+    "en": "Refresh weather status",
+    "de": "Wetterstatus aktualisieren"
+  },
+  {
+    "draft": "Weather acquisition",
+    "en": "Weather data preparation",
+    "de": "Vorbereitung der Wetterdaten"
+  },
+  {
+    "draft": "PV generation profile",
+    "en": "PV generation profile",
+    "de": "PV-Erzeugungsprofil"
+  },
+  {
+    "draft": "Energy calculation",
+    "en": "Energy calculation",
+    "de": "Energieberechnung"
+  },
+  {
+    "draft": "Saved task",
+    "en": "Saved task",
+    "de": "Gespeicherter Auftrag"
+  },
+  {
+    "draft": "Queued",
+    "en": "Queued",
+    "de": "In der Warteschlange"
+  },
+  {
+    "draft": "Preparing source",
+    "en": "Preparing source",
+    "de": "Quelle wird vorbereitet"
+  },
+  {
+    "draft": "Calculating",
+    "en": "Calculating",
+    "de": "Berechnung läuft"
+  },
+  {
+    "draft": "Waiting to retry",
+    "en": "Waiting to retry",
+    "de": "Warten auf erneuten Versuch"
+  },
+  {
+    "draft": "Source ready",
+    "en": "Source ready",
+    "de": "Quelle bereit"
+  },
+  {
+    "draft": "Calculation complete",
+    "en": "Calculation complete",
+    "de": "Berechnung abgeschlossen"
+  },
+  {
+    "draft": "Source preparation failed",
+    "en": "Source preparation failed",
+    "de": "Vorbereitung der Quelle fehlgeschlagen"
+  },
+  {
+    "draft": "Calculation failed",
+    "en": "Calculation failed",
+    "de": "Berechnung fehlgeschlagen"
+  },
+  {
+    "draft": "Source preparation cancelled",
+    "en": "Source preparation cancelled",
+    "de": "Vorbereitung der Quelle abgebrochen"
+  },
+  {
+    "draft": "Calculation cancelled",
+    "en": "Calculation cancelled",
+    "de": "Berechnung abgebrochen"
+  },
+  {
+    "draft": "This source could not be prepared. Your project inputs remain unchanged.",
+    "en": "This source could not be prepared. Your project inputs remain unchanged.",
+    "de": "Diese Quelle konnte nicht vorbereitet werden. Ihre Projekteingaben bleiben unverändert."
+  },
+  {
+    "draft": "This project cannot be edited right now. The source has not been selected.",
+    "en": "This project cannot be edited right now. The source has not been selected.",
+    "de": "Das Projekt lässt sich derzeit nicht bearbeiten. Die Quelle wurde nicht ausgewählt."
+  }
+]

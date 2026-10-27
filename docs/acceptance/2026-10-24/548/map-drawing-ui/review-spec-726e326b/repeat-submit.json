@@ -1,0 +1,14 @@
+{
+  "pin": "726e326b5c3ce322a2e1471008483a10e9e3c3b1",
+  "first_success_focused_result": true,
+  "repeated_success_focused_result": true,
+  "repeated_success_focus_tag": "BUTTON",
+  "accepted_commands": 2,
+  "query_count": 2,
+  "input_changes_between_submits": 0,
+  "geometry_restore_status_truthful": true,
+  "repeated_geometry_identical": true,
+  "undo_redo_did_not_steal_focus": true,
+  "source": "Fixed-pin application loaded in memory; unchanged installed React; existing JSDOM/fake Map and synthetic engine fixture",
+  "boundary": "Focus/effect regression only; does not establish native scroll, actual engine refusal or production acceptance"
+}

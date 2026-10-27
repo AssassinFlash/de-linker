@@ -1,0 +1,140 @@
+{
+  "id": "8c71ef3068ee465d86f093cece8406fa",
+  "title": "Synthetic roof workbench \u00b7 548 native",
+  "revision": 2,
+  "input_sha256": "78025ebe09229872dc603469677c98143cbf64507d8d414c30a931fa73e8e634",
+  "inputs": {
+    "brief": {
+      "annual_load": {
+        "basis": null,
+        "kwh": null,
+        "source_note": ""
+      },
+      "project_note": "",
+      "project_use": null,
+      "schema_version": 1,
+      "site": {
+        "coordinate_basis": "not_provided",
+        "country_code": null,
+        "latitude": null,
+        "location_label": "",
+        "longitude": null,
+        "timezone": null
+      },
+      "system_scope": null
+    },
+    "geometry": {
+      "arrays": [
+        {
+          "column_gap_m": 0.02,
+          "columns": 4,
+          "excluded_slots": [],
+          "id": "array_2bf8f4207b644dab8b9f589a640c8a9c",
+          "lower_edge_clearance_m": 0.15,
+          "module_spec_id": "module_386101a205d744418ddde0e7c6791adb",
+          "mount_tilt_deg": 15,
+          "mounting_note": "Synthetic explicit mounting values; no structural, fire or shading requirement claimed.",
+          "name": "Synthetic tilted commercial array",
+          "origin_uv": [
+            1,
+            1
+          ],
+          "roof_id": "roof_1498d7784ec644d1a5b0cbc7c2238576",
+          "rotation_deg": 0,
+          "row_gap_m": 0.8,
+          "rows": 3,
+          "source_id": "source_121ef0395f7f4ab186605346735b65fd"
+        }
+      ],
+      "coordinate_system": {
+        "anchor": null,
+        "height_reference": "relative_to_project_origin",
+        "kind": "local_enu",
+        "north_reference": "unreferenced",
+        "north_source_id": null,
+        "unit": "m"
+      },
+      "keepouts": [],
+      "layout_rules": [],
+      "module_specs": [
+        {
+          "id": "module_386101a205d744418ddde0e7c6791adb",
+          "length_m": 2.278,
+          "model": "Synthetic module \u00b7 500 W",
+          "source": {
+            "document_sha256": null,
+            "kind": "user_declared",
+            "note": "Synthetic dimensions and power for analytic UI verification; not a manufacturer specification.",
+            "page": null,
+            "url": null
+          },
+          "stc_power_w": 500,
+          "thickness_m": 0.03,
+          "width_m": 1.134
+        }
+      ],
+      "obstacles": [],
+      "roofs": [
+        {
+          "boundary_uv": [
+            [
+              0,
+              0
+            ],
+            [
+              20,
+              0
+            ],
+            [
+              20,
+              12
+            ],
+            [
+              0,
+              12
+            ]
+          ],
+          "holes_uv": [],
+          "id": "roof_1498d7784ec644d1a5b0cbc7c2238576",
+          "name": "Synthetic commercial flat roof",
+          "origin_enu": [
+            0,
+            0,
+            0
+          ],
+          "source_id": "source_121ef0395f7f4ab186605346735b65fd",
+          "u_axis_enu": [
+            -1,
+            0,
+            0
+          ],
+          "v_axis_enu": [
+            0,
+            -1,
+            0
+          ]
+        }
+      ],
+      "schema_version": 1,
+      "sources": [
+        {
+          "acquired_at_utc": null,
+          "calibration_note": "Not recorded.",
+          "id": "source_121ef0395f7f4ab186605346735b65fd",
+          "kind": "user_measurement",
+          "note": "Synthetic analytic dimensions for editor acceptance; no surveyed building.",
+          "permissions": {
+            "derive": "permitted",
+            "export": "unknown",
+            "retain": "permitted"
+          },
+          "reference_sha256": null,
+          "reference_url": null,
+          "rights_basis": "user_attestation",
+          "rights_note": "Synthetic geometry created for the local acceptance fixture.",
+          "spatial_precision_m": null
+        }
+      ]
+    }
+  }
+}

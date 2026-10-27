@@ -1,0 +1,33 @@
+{
+  "provenance": "Read-only p548 SQLite and SHA-256-verified blobs after normal CUA map drawing, real geometry check and Save project. All geometry is explicitly owned synthetic test input, not a measured site.",
+  "project_id": "82a84c56e50c4efb8497d1bfbe106bd1",
+  "kind": "roof_opening",
+  "before_revision": 11,
+  "after_revision": 12,
+  "before_input_sha256": "4bf62b8f25d736062d07963c86e36e3f1b9eb7894449170645c09b89862232d9",
+  "after_input_sha256": "3b32912028bf51024b7d27a42e027afd5564a85890c36e54f282af6ef93c3a16",
+  "new_hole_uv": [
+    [
+      9.839760903776737,
+      11.899973958404257
+    ],
+    [
+      11.662610347118573,
+      11.949344524021926
+    ],
+    [
+      11.662615794181256,
+      10.067045520490472
+    ],
+    [
+      10.725463258470402,
+      10.780970604774618
+    ],
+    [
+      9.840327683354264,
+      10.067040798329923
+    ]
+  ],
+  "only_one_new_hole_appended": true,
+  "all_other_geometry_sources_planes_and_inputs_exactly_unchanged": true
+}

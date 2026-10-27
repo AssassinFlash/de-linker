@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="19" failures="0" skipped="26" tests="137" time="3.389" timestamp="2026-10-24T16:22:52.574710+08:00" hostname="chesterjohn-2.local"><testcase classname="tests.integration.test_planner_native" name="test_native_bootstrap_exposes_only_the_browser_runtime_contract" time="0.000"><skipped type="pytest.skip" message="name the owned local instance explicitly">/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local/tests/integration/test_planner_native.py:203: name the owned local instance explicitly</skipped></testcase><testcase classname="tests.integration.test_planner_native" name="test_native_guest_save_replay_conflict_and_private_ownership" time="0.000"><skipped type="pytest.skip" message="name the owned local instance explicitly">/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local/tests/integration/test_planner_native.py:212: name the owned local instance explicitly</skipped></testcase><testcase classname="tests.integration.test_planner_native" name="test_geometry_import_source_manifest_and_save_use_the_actual_native_gateway" time="0.000"><skipped type="pytest.skip" message="name the owned local instance explicitly">/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local/tests/integration/test_planner_native.py:240: name the owned local instance explicitly</skipped></testcase><testcase classname="tests.integration.test_planner_native" name="test_geometry_review_and_saved_source_use_the_actual_native_gateway" time="0.000"><skipped type="pytest.skip" message="name the owned local instance explicitly">/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local/tests/integration/test_planner_native.py:284: name the owned local instance explicitly</skipped></testcase><testcase classname="tests.integration.test_planner_native" name="test_nonce_origin_body_and_unknown_route_are_private" time="0.000"><skipped type="pytest.skip" message="name the owned local instance explicitly">/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local/tests/integration/test_planner_native.py:317: name the owned local instance explicitly</skipped></testcase><testcase classname="tests.integration.test_planner_native" name="test_native_revoked_tampered_and_expired_cookies_cannot_read" time="0.000"><skipped type="pytest.skip" message="name the owned local instance explicitly">/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local/tests/integration/test_planner_native.py:337: name the owned local instance explicitly</skipped></testcase><testcase classname="tests.integration.test_planner_native" name="test_cart_token_clone_never_inherits_project_ownership" time="0.000"><skipped type="pytest.skip" message="name the owned local instance explicitly">/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local/tests/integration/test_planner_native.py:367: name the owned local instance explicitly</skipped></testcase><testcase classname="tests.integration.test_planner_native" name="test_native_login_claim_survives_upstream_outage_and_logout" time="0.000"><skipped type="pytest.skip" message="name the owned local instance explicitly">/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local/tests/integration/test_planner_native.py:383: name the owned local instance explicitly</skipped></testcase><testcase classname="tests.integration.test_planner_native" name="test_native_recovery_grants_and_original_create_receipt_cross_login" time="0.000"><skipped type="pytest.skip" message="name the owned local instance explicitly">/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local/tests/integration/test_planner_native.py:422: name the owned local instance explicitly</skipped></testcase><testcase classname="tests.integration.test_planner_native" name="test_native_recovery_grants_paginate_without_omission_or_other_account_data" time="0.000"><skipped type="pytest.skip" message="name the owned local instance explicitly">/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local/tests/integration/test_planner_native.py:458: name the owned local instance explicitly</skipped></testcase><testcase classname="tests.integration.test_planner_native" name="test_native_uncommitted_dispatched_guest_intent_can_retry_after_login" time="0.000"><skipped type="pytest.skip" message="name the owned local instance explicitly">/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local/tests/integration/test_planner_native.py:508: name the owned local instance explicitly</skipped></testcase><testcase classname="tests.integration.test_planner_native" name="test_native_insert_failure_tickets_stay_bound_across_shared_browser_accounts" time="0.000"><skipped type="pytest.skip" message="name the owned local instance explicitly">/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local/tests/integration/test_planner_native.py:552: name the owned local instance explicitly</skipped></testcase><testcase classname="tests.integration.test_planner_native" name="test_actual_native_dispatch_refuses_before_its_json_parser" time="0.000"><skipped type="pytest.skip" message="name the owned local instance explicitly">/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local/tests/integration/test_planner_native.py:588: name the owned local instance explicitly</skipped></testcase><testcase classname="tests.integration.test_planner_native" name="test_native_parser_limits_cover_unsupported_methods_and_reused_requests" time="0.000"><skipped type="pytest.skip" message="name the owned local instance explicitly">/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local/tests/integration/test_planner_native.py:627: name the owned local instance explicitly</skipped></testcase><testcase classname="tests.integration.test_planner_native" name="test_native_journal_namespaces_owners_and_exact_engine_keys" time="0.000"><skipped type="pytest.skip" message="name the owned local instance explicitly">/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local/tests/integration/test_planner_native.py:681: name the owned local instance explicitly</skipped></testcase><testcase classname="tests.integration.test_planner_native" name="test_legacy_native_receipt_retries_and_settles_without_new_quota[False]" time="0.000"><skipped type="pytest.skip" message="name the owned local instance explicitly">/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local/tests/integration/test_planner_native.py:710: name the owned local instance explicitly</skipped></testcase><testcase classname="tests.integration.test_planner_native" name="test_legacy_native_receipt_retries_and_settles_without_new_quota[True]" time="0.000"><skipped type="pytest.skip" message="name the owned local instance explicitly">/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local/tests/integration/test_planner_native.py:710: name the owned local instance explicitly</skipped></testcase><testcase classname="tests.integration.test_planner_native" name="test_unused_native_attempts_can_continue_the_same_business_intent[expired-False]" time="0.000"><skipped type="pytest.skip" message="name the owned local instance explicitly">/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local/tests/integration/test_planner_native.py:761: name the owned local instance explicitly</skipped></testcase><testcase classname="tests.integration.test_planner_native" name="test_unused_native_attempts_can_continue_the_same_business_intent[expired-True]" time="0.000"><skipped type="pytest.skip" message="name the owned local instance explicitly">/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local/tests/integration/test_planner_native.py:761: name the owned local instance explicitly</skipped></testcase><testcase classname="tests.integration.test_planner_native" name="test_unused_native_attempts_can_continue_the_same_business_intent[cancelled-False]" time="0.000"><skipped type="pytest.skip" message="name the owned local instance explicitly">/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local/tests/integration/test_planner_native.py:761: name the owned local instance explicitly</skipped></testcase><testcase classname="tests.integration.test_planner_native" name="test_unused_native_attempts_can_continue_the_same_business_intent[cancelled-True]" time="0.000"><skipped type="pytest.skip" message="name the owned local instance explicitly">/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local/tests/integration/test_planner_native.py:761: name the owned local instance explicitly</skipped></testcase><testcase classname="tests.integration.test_planner_native" name="test_permanent_engine_replay_uses_no_new_quota_after_native_receipt_forgetting" time="0.000"><skipped type="pytest.skip" message="name the owned local instance explicitly">/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local/tests/integration/test_planner_native.py:818: name the owned local instance explicitly</skipped></testcase><testcase classname="tests.integration.test_planner_native" name="test_profile_preview_and_csv_issue_cross_the_real_native_gateway" time="0.000"><skipped type="pytest.skip" message="name the owned local instance explicitly">/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local/tests/integration/test_planner_native.py:846: name the owned local instance explicitly</skipped></testcase><testcase classname="tests.integration.test_planner_native" name="test_equivalent_wire_replay_settles_the_same_canonical_native_receipt" time="0.000"><skipped type="pytest.skip" message="name the owned local instance explicitly">/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local/tests/integration/test_planner_native.py:881: name the owned local instance explicitly</skipped></testcase><testcase classname="tests.integration.test_planner_native" name="test_one_public_operation_key_cannot_meter_two_project_resources" time="0.000"><skipped type="pytest.skip" message="name the owned local instance explicitly">/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local/tests/integration/test_planner_native.py:917: name the owned local instance explicitly</skipped></testcase><testcase classname="tests.integration.test_planner_native" name="test_unrepresentable_numbers_are_rejected_without_changing_project_data" time="0.000"><skipped type="pytest.skip" message="name the owned local instance explicitly">/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local/tests/integration/test_planner_native.py:950: name the owned local instance explicitly</skipped></testcase><testcase classname="tests.test_checkout" name="test_finds_the_checkout_and_what_it_puts_into_an_instance" time="0.001" /><testcase classname="tests.test_cli" name="test_an_invalid_name_is_refused_before_anything_is_made" time="0.006" /><testcase classname="tests.test_cli" name="test_commands_on_an_unknown_instance_say_how_to_create_it[down]" time="0.001" /><testcase classname="tests.test_cli" name="test_commands_on_an_unknown_instance_say_how_to_create_it[reset]" time="0.001" /><testcase classname="tests.test_cli" name="test_commands_on_an_unknown_instance_say_how_to_create_it[login]" time="0.001" /><testcase classname="tests.test_cli" name="test_commands_on_an_unknown_instance_say_how_to_create_it[serve]" time="0.005" /><testcase classname="tests.test_cli" name="test_commands_on_an_unknown_instance_say_how_to_create_it[wp]" time="0.003" /><testcase classname="tests.test_cli" name="test_status_without_instances" time="0.001" /><testcase classname="tests.test_cli" name="test_a_missing_snapshot_is_refused_before_anything_is_made" time="0.001" /><testcase classname="tests.test_cli" name="test_without_redis_up_registers_nothing" time="0.001" /><testcase classname="tests.test_cli" name="test_without_redis_reset_deletes_nothing" time="0.003" /><testcase classname="tests.test_downloads" name="test_downloads_once_and_then_serves_the_cached_copy" time="0.556" /><testcase classname="tests.test_downloads" name="test_a_file_with_another_hash_is_refused_every_time" time="0.525" /><testcase classname="tests.test_downloads" name="test_a_failed_download_leaves_nothing_in_the_cache" time="0.521" /><testcase classname="tests.test_instance" name="test_accepts_names_that_fit_a_database_a_directory_and_a_url[a]" time="0.000" /><testcase classname="tests.test_instance" name="test_accepts_names_that_fit_a_database_a_directory_and_a_url[t5]" time="0.000" /><testcase classname="tests.test_instance" name="test_accepts_names_that_fit_a_database_a_directory_and_a_url[review]" time="0.000" /><testcase classname="tests.test_instance" name="test_accepts_names_that_fit_a_database_a_directory_and_a_url[a_b]" time="0.000" /><testcase classname="tests.test_instance" name="test_accepts_names_that_fit_a_database_a_directory_and_a_url[xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]" time="0.000" /><testcase classname="tests.test_instance" name="test_rejects_other_names[]" time="0.000" /><testcase classname="tests.test_instance" name="test_rejects_other_names[A]" time="0.000" /><testcase classname="tests.test_instance" name="test_rejects_other_names[5a]" time="0.000" /><testcase classname="tests.test_instance" name="test_rejects_other_names[a-b]" time="0.000" /><testcase classname="tests.test_instance" name="test_rejects_other_names[a.b]" time="0.000" /><testcase classname="tests.test_instance" name="test_rejects_other_names[../a]" time="0.000" /><testcase classname="tests.test_instance" name="test_rejects_other_names[xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]" time="0.000" /><testcase classname="tests.test_instance" name="test_the_longest_name_makes_a_64_character_database_name" time="0.000" /><testcase classname="tests.test_instance" name="test_derives_every_location_from_the_name_and_the_data_root" time="0.000" /><testcase classname="tests.test_mysql" name="test_like_patterns_match_the_database_name_only" time="0.000" /><testcase classname="tests.test_objectcache" name="test_redis_must_be_running" time="0.000" /><testcase classname="tests.test_objectcache" name="test_a_listening_redis_port_is_enough" time="0.000" /><testcase classname="tests.test_objectcache" name="test_each_instance_keeps_to_its_own_prefix" time="0.000" /><testcase classname="tests.test_objectcache" name="test_a_redis_storm_degrades_the_cache_instead_of_the_request" time="0.000" /><testcase classname="tests.test_objectcache" name="test_forget_deletes_the_instances_keys_and_nothing_else" time="0.028" /><testcase classname="tests.test_planner_worker" name="test_private_policy_preserves_operator_choices" time="0.004" /><testcase classname="tests.test_planner_worker" name="test_numerical_environment_does_not_inherit_credentials" time="0.006" /><testcase classname="tests.test_planner_worker" name="test_another_instances_store_and_readiness_are_refused" time="0.005" /><testcase classname="tests.test_planner_worker" name="test_actual_process_group_generation_and_identity_are_required" time="0.289" /><testcase classname="tests.test_planner_worker" name="test_stale_readiness_without_the_owned_process_is_not_ready" time="0.005" /><testcase classname="tests.test_planner_worker" name="test_expired_drain_preserves_a_live_process_and_pending_tasks" time="0.297" /><testcase classname="tests.test_planner_worker" name="test_pending_tasks_without_a_live_executor_refuse_restart" time="0.005" /><testcase classname="tests.test_planner_worker" name="test_lifecycle_lock_refuses_a_second_manager_and_then_releases" time="0.001" /><testcase classname="tests.test_planner_worker" name="test_local_queue_empty_does_not_pass_unresolved_remote_work" time="0.004" /><testcase classname="tests.test_planner_worker" name="test_legacy_drain_requires_read_only_no_remote_start_proof[False]" time="0.006" /><testcase classname="tests.test_planner_worker" name="test_legacy_drain_requires_read_only_no_remote_start_proof[True]" time="0.004" /><testcase classname="tests.test_planner_worker" name="test_inconsistent_remote_quiescence_from_child_is_rejected" time="0.003" /><testcase classname="tests.test_processes" name="test_starts_a_detached_process_and_stops_it" time="0.088" /><testcase classname="tests.test_processes" name="test_a_terminal_in_another_locale_and_time_zone_finds_the_process" time="0.095" /><testcase classname="tests.test_processes" name="test_a_pid_now_used_by_another_program_is_left_alone" time="0.019" /><testcase classname="tests.test_processes" name="test_a_pid_now_used_by_another_users_process_is_left_alone" time="0.012" /><testcase classname="tests.test_processes" name="test_waits_until_the_port_answers" time="0.166" /><testcase classname="tests.test_processes" name="test_a_process_that_exits_during_start_is_reported_with_its_own_output" time="0.081" /><testcase classname="tests.test_processes" name="test_a_listening_port_is_not_free" time="0.002" /><testcase classname="tests.test_processes" name="test_a_port_whose_server_stopped_is_free_while_its_connections_are_in_time_wait" time="0.001" /><testcase classname="tests.test_registry" name="test_a_new_instance_gets_the_first_three_free_ports" time="0.001" /><testcase classname="tests.test_registry" name="test_instances_never_share_a_port" time="0.002" /><testcase classname="tests.test_registry" name="test_skips_ports_another_program_uses" time="0.001" /><testcase classname="tests.test_registry" name="test_registering_again_keeps_the_ports" time="0.001" /><testcase classname="tests.test_registry" name="test_the_registry_is_kept_in_instances_toml" time="0.001" /><testcase classname="tests.test_registry" name="test_refuses_a_name_that_cannot_name_a_database" time="0.000" /><testcase classname="tests.test_registry" name="test_another_data_root_avoids_the_ports_of_this_macs_instances" time="0.004" /><testcase classname="tests.test_secret" name="test_passwords_are_24_characters_that_need_no_quoting" time="0.001" /><testcase classname="tests.test_server" name="test_php_ini_carries_productions_limits_and_logs_into_the_instance" time="0.002" /><testcase classname="tests.test_server" name="test_install_writes_the_ini_and_copies_the_router" time="0.002" /><testcase classname="tests.test_services" name="test_each_service_has_its_own_port_log_and_option" time="0.000" /><testcase classname="tests.test_services" name="test_planner_config_is_private_isolated_and_preserves_operator_changes" time="0.004" /><testcase classname="tests.test_services" name="test_each_instance_logs_genie_turns_in_its_own_directory" time="0.001" /><testcase classname="tests.test_services" name="test_genie_reads_the_newest_build" time="0.003" /><testcase classname="tests.test_services" name="test_an_explicit_genie_index_wins" time="0.001" /><testcase classname="tests.test_services" name="test_an_explicit_genie_index_that_is_missing_fails" time="0.000" /><testcase classname="tests.test_services" name="test_no_index_fails_and_says_how_to_get_one" time="0.000" /><testcase classname="tests.test_snapshot" name="test_installs_the_plugins_and_uploads_of_a_snapshot" time="0.006" /><testcase classname="tests.test_snapshot" name="test_only_the_plugins_the_site_ran_active_activate" time="0.004" /><testcase classname="tests.test_snapshot" name="test_a_snapshot_without_the_manifest_activates_every_plugin" time="0.004" /><testcase classname="tests.test_snapshot" name="test_a_plugin_from_a_newer_snapshot_replaces_the_installed_one" time="0.005" /><testcase classname="tests.test_snapshot" name="test_installs_themes_and_leaves_choosing_one_to_the_database" time="0.004" /><testcase classname="tests.test_snapshot" name="test_our_plugins_never_come_from_a_snapshot" time="0.001" /><testcase classname="tests.test_snapshot" name="test_the_live_third_party_plugins_install_at_the_live_version" time="0.007" /><testcase classname="tests.test_snapshot" name="test_live_code_installs_the_live_trees_without_it_it_does_not" time="0.003" /><testcase classname="tests.test_snapshot" name="test_live_code_replaces_same_named_plugins_and_mu_files" time="0.007" /><testcase classname="tests.test_snapshot" name="test_a_directory_without_plugins_or_uploads_is_not_a_snapshot" time="0.001" /><testcase classname="tests.test_stack" name="test_two_instances_run_side_by_side" time="0.164"><error message="failed on setup with &quot;Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)&quot;">tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=&lt;pluggy._tracing.TagTracerSub object at 0x1089e43e0&gt;, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -&gt; Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+&gt;           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed</error></testcase><testcase classname="tests.test_stack" name="test_both_run_the_production_versions" time="0.001"><error message="failed on setup with &quot;Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)&quot;">tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=&lt;pluggy._tracing.TagTracerSub object at 0x1089e43e0&gt;, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -&gt; Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+&gt;           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed</error></testcase><testcase classname="tests.test_stack" name="test_each_instance_has_its_own_redis_object_cache" time="0.000"><error message="failed on setup with &quot;Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)&quot;">tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=&lt;pluggy._tracing.TagTracerSub object at 0x1089e43e0&gt;, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -&gt; Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+&gt;           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed</error></testcase><testcase classname="tests.test_stack" name="test_pretty_permalinks_and_files_are_served" time="0.001"><error message="failed on setup with &quot;Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)&quot;">tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=&lt;pluggy._tracing.TagTracerSub object at 0x1089e43e0&gt;, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -&gt; Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+&gt;           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed</error></testcase><testcase classname="tests.test_stack" name="test_the_checkout_endpoints_stay_where_the_checkout_page_is" time="0.001"><error message="failed on setup with &quot;Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)&quot;">tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=&lt;pluggy._tracing.TagTracerSub object at 0x1089e43e0&gt;, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -&gt; Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+&gt;           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed</error></testcase><testcase classname="tests.test_stack" name="test_a_form_mails_into_the_instance_instead_of_sending" time="0.000"><error message="failed on setup with &quot;Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)&quot;">tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=&lt;pluggy._tracing.TagTracerSub object at 0x1089e43e0&gt;, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -&gt; Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+&gt;           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed</error></testcase><testcase classname="tests.test_stack" name="test_mail_that_cannot_be_written_is_reported_as_failed" time="0.000"><error message="failed on setup with &quot;Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)&quot;">tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=&lt;pluggy._tracing.TagTracerSub object at 0x1089e43e0&gt;, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -&gt; Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+&gt;           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed</error></testcase><testcase classname="tests.test_stack" name="test_a_captured_message_keeps_its_bcc" time="0.000"><error message="failed on setup with &quot;Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)&quot;">tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=&lt;pluggy._tracing.TagTracerSub object at 0x1089e43e0&gt;, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -&gt; Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+&gt;           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed</error></testcase><testcase classname="tests.test_stack" name="test_wordpress_requests_reach_this_machine_only" time="0.001"><error message="failed on setup with &quot;Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)&quot;">tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=&lt;pluggy._tracing.TagTracerSub object at 0x1089e43e0&gt;, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -&gt; Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+&gt;           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed</error></testcase><testcase classname="tests.test_stack" name="test_a_redirect_cannot_lead_wordpress_off_this_machine" time="0.000"><error message="failed on setup with &quot;Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)&quot;">tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=&lt;pluggy._tracing.TagTracerSub object at 0x1089e43e0&gt;, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -&gt; Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+&gt;           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed</error></testcase><testcase classname="tests.test_stack" name="test_pages_may_load_from_this_machine_only_and_are_not_indexed" time="0.000"><error message="failed on setup with &quot;Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)&quot;">tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=&lt;pluggy._tracing.TagTracerSub object at 0x1089e43e0&gt;, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -&gt; Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+&gt;           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed</error></testcase><testcase classname="tests.test_stack" name="test_a_login_link_signs_in_once" time="0.000"><error message="failed on setup with &quot;Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)&quot;">tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=&lt;pluggy._tracing.TagTracerSub object at 0x1089e43e0&gt;, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -&gt; Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+&gt;           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed</error></testcase><testcase classname="tests.test_stack" name="test_a_login_link_lives_ten_minutes" time="0.000"><error message="failed on setup with &quot;Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)&quot;">tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=&lt;pluggy._tracing.TagTracerSub object at 0x1089e43e0&gt;, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -&gt; Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+&gt;           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed</error></testcase><testcase classname="tests.test_stack" name="test_the_server_runs_with_productions_php_limits" time="0.000"><error message="failed on setup with &quot;Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)&quot;">tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=&lt;pluggy._tracing.TagTracerSub object at 0x1089e43e0&gt;, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -&gt; Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+&gt;           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed</error></testcase><testcase classname="tests.test_stack" name="test_serve_starts_the_services_and_down_stops_everything" time="0.000"><error message="failed on setup with &quot;Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)&quot;">tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=&lt;pluggy._tracing.TagTracerSub object at 0x1089e43e0&gt;, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -&gt; Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+&gt;           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed</error></testcase><testcase classname="tests.test_stack" name="test_a_snapshot_brings_its_plugins_themes_and_uploads" time="0.000"><error message="failed on setup with &quot;Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)&quot;">tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=&lt;pluggy._tracing.TagTracerSub object at 0x1089e43e0&gt;, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -&gt; Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+&gt;           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed</error></testcase><testcase classname="tests.test_stack" name="test_a_snapshot_activates_only_the_plugins_the_site_ran_active" time="0.000"><error message="failed on setup with &quot;Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)&quot;">tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=&lt;pluggy._tracing.TagTracerSub object at 0x1089e43e0&gt;, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -&gt; Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+&gt;           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed</error></testcase><testcase classname="tests.test_stack" name="test_a_wrong_snapshot_path_is_refused_before_anything_changes" time="0.000"><error message="failed on setup with &quot;Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)&quot;">tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=&lt;pluggy._tracing.TagTracerSub object at 0x1089e43e0&gt;, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -&gt; Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+&gt;           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed</error></testcase><testcase classname="tests.test_stack" name="test_reset_rebuilds_one_instance_repeatedly_and_leaves_the_other_alone" time="0.000"><error message="failed on setup with &quot;Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)&quot;">tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=&lt;pluggy._tracing.TagTracerSub object at 0x1089e43e0&gt;, _basetemp=PosixPath...rs/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-709'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module")
+    def stack(tmp_path_factory: pytest.TempPathFactory) -&gt; Iterator[Stack]:
+        missing = missing_tools()
+        if missing:
+            message = "the local stack needs " + "; ".join(missing)
+            if os.environ.get("CI"):
+                pytest.skip(message)
+&gt;           pytest.fail(message)
+E           Failed: the local stack needs PHP 8.3 is required, php is 8.5: brew install php@8.3, then run through `just` (docs/local-stack.md)
+
+tests/test_stack.py:166: Failed</error></testcase><testcase classname="tests.test_wordpress" name="test_links_our_plugins_to_the_checkout" time="0.004" /><testcase classname="tests.test_wordpress" name="test_linking_from_another_checkout_moves_the_links" time="0.003" /><testcase classname="tests.test_wordpress" name="test_does_not_replace_a_real_plugin_directory" time="0.002" /><testcase classname="tests.test_wordpress" name="test_mu_plugins_are_copied_and_renamed_ones_removed" time="0.003" /><testcase classname="tests.test_wordpress" name="test_wp_config_names_the_instance_and_its_directory" time="0.002" /><testcase classname="tests.test_wordpress" name="test_reads_the_installed_versions" time="0.002" /><testcase classname="tests.test_wordpress" name="test_reads_no_versions_from_an_empty_instance" time="0.001" /><testcase classname="tests.test_wpcli" name="test_runs_wp_cli_under_the_given_php_with_the_instance_ini" time="0.002" /><testcase classname="tests.test_wpcli" name="test_wp_cli_never_offers_to_replace_itself" time="0.001" /><testcase classname="tests.test_wpcli" name="test_accepts_wp_cli_2_12" time="0.034" /><testcase classname="tests.test_wpcli" name="test_refuses_another_wp_cli_version" time="0.036" /></testsuite></testsuites>

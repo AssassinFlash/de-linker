@@ -12,12 +12,11 @@ namespace Linker\Commerce\Account;
 use WP_Post;
 
 /**
- * The one store of saved solutions: products with quantities, the Solution
- * Configurator input that reproduces the design and, when the configurator
- * sent one, its design report PDF. The configurator (#14) saves through
- * SolutionsRoute; the account lists the solutions under "Saved solutions" and
- * "Documents" and can put a saved solution's products into the current
- * solution draft. Each saved solution is a private post of its customer.
+ * Historical solution records and Genie product-list snapshots. Current
+ * engineering projects are saved in the unified planning workspace. Original
+ * records and reports remain private and readable; engineering reuse starts
+ * from the preserved inputs, while signed Genie lists keep their product-only
+ * draft action.
  *
  * A guest's solution waits in their WooCommerce session, which lasts 48 hours
  * for guests (WC_Session_Handler::set_session_expiration()). WooCommerce hands
@@ -318,7 +317,12 @@ final class SavedSolutions {
 			return;
 		}
 		$snapshot = $this->snapshot( $solution_id );
-		$added    = null !== $snapshot ? ( new AtomicSolutionDraft() )->add( $snapshot ) : DesignProof::unavailable();
+		if ( null === $snapshot || 'genie' !== ( $snapshot['kind'] ?? '' ) ) {
+			$url = \Linker\Commerce\Planning\LegacyRoutes::url( $solution_id );
+			wp_safe_redirect( '' !== $url ? $url : self::url( 0 ) );
+			exit;
+		}
+		$added = ( new AtomicSolutionDraft() )->add( $snapshot );
 		if ( $added instanceof \WP_Error ) {
 			wc_add_notice( $added->get_error_message(), 'error' );
 		} else {

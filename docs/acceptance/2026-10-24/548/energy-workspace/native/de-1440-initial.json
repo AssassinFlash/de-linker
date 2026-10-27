@@ -1,0 +1,35 @@
+{
+  "focus": {
+    "classes": "",
+    "rect": {
+      "bottom": 531.96875,
+      "height": 64,
+      "left": 651.515625,
+      "right": 1020.4765625,
+      "top": 467.96875,
+      "width": 368.9609375,
+      "x": 651.515625,
+      "y": 467.96875
+    },
+    "tag": "BUTTON"
+  },
+  "headings": [
+    "Energieberechnung",
+    "Quellen der Zeitreihen",
+    "Gespeicherte Energie zu Beginn",
+    "Software und Datenquellen"
+  ],
+  "scripts": [
+    "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=5515effff1fadfb1649f6ec05bde8838fb3e697e80169e8623c6d89cc0ab8f80"
+  ],
+  "scroll": {
+    "pageWidth": 1440,
+    "x": 0,
+    "y": 333.5
+  },
+  "url": "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be#lp-calculations",
+  "viewport": {
+    "height": 1000,
+    "width": 1440
+  }
+}

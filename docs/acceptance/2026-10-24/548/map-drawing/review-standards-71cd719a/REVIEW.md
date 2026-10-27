@@ -1,0 +1,13 @@
+# Standards: PASS — no open findings
+
+Reviewed the full eleven-file `git diff 66324a39fb449425dd1144b46b4d3abc21dc52d0...71cd719aa67021aee6398ae58f359738005d1f57`, covering `c562676a`, `2464009a` and `71cd719a`. This reuses the exhaustive prior nine-file review and independently verifies every corrective hunk. Current root AGENTS, CONTEXT, the isolated-runtime ADR and existing domain/data conventions apply; no CONTRIBUTING/CODING_STANDARDS file exists.
+
+**Hard documented breaches: none open. Previous P3 closed.** `apps/planner/src/data/MapPickGate.ts:3` now owns the independent gate class; `MapDrawingController.ts:75` is its file's sole class, and the test imports the gate directly. This satisfies root `/Users/chesterjohn/Documents/de-linker/AGENTS.md:78`. The probe verifies the gate body moved byte-identically, the controller differs only by its removal and the test differs only in imports. Previous failure evidence remains intact.
+
+**Fowler baseline judgment calls: none justified.** All twelve supplied smells were considered. The new file reflects the existing viewport/controller lifetime boundary without adding indirection or changing behavior. The domain reconciliation, command conversion and SDK lifecycle responsibilities remain separated. No additional extraction, domain wrapper or dispatch abstraction is warranted by this diff.
+
+The unchanged implementation preserves original metric points, whole-frame command refusal and the existing project writer/history. Real installed-library callbacks, display precision, final-endpoint reconciliation and cleanup error boundaries retain the prior independent audit. The research update explicitly distinguishes its historical snapshot from current installed/import/map/controller state, and keeps future design and acceptance claims bounded.
+
+Independent probes checked all 107 source hashes and seven build hashes; all seven emitted artifacts are byte-identical to base. All 22 real-Terra/JSDOM controller tests were reexecuted successfully through the new imports. The previous twelve domain tests remain bound to identical source; the owner's current 195-test/build/build-check/format receipt was inspected without repeating the unchanged full suite. No legacy identifiers or high-confidence secret patterns were found in the full changed hunks.
+
+No source copy, install, worktree, stack, network or application change was made. The controller remains unmounted. This is Standards source/library acceptance only; customer UI/recovery, native/GPU/physical touch, engineering/country/provider permissions, production and whole-goal acceptance remain outside this verdict.

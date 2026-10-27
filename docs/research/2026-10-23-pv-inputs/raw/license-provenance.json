@@ -1,0 +1,29 @@
+[
+  {
+    "providerURL": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis_en",
+    "loadedURL": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis_en",
+    "file": "official-pvgis-home.md",
+    "sha256": "64b163fcce1e23fbd2e62d4dd4d0d6b983a15372032614c689184d1a6bb0beb0",
+    "apifyRun": "9r9hb3YVpi6U5hb8x",
+    "apifyDataset": "Hauh42KS1qROt8cfo",
+    "capture": "Apify webpage markdown extraction, not original bytes"
+  },
+  {
+    "providerURL": "https://commission.europa.eu/legal-notice_en",
+    "loadedURL": "https://commission.europa.eu/legal-notice_en",
+    "file": "official-commission-legal.md",
+    "sha256": "889ce104d0f36ca205ebf857067d86a9000021e6a93cd798a0445a59ce82ca5a",
+    "apifyRun": "9r9hb3YVpi6U5hb8x",
+    "apifyDataset": "Hauh42KS1qROt8cfo",
+    "capture": "Apify webpage markdown extraction, not original bytes"
+  },
+  {
+    "providerURL": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/getting-started-pvgis/pvgis-data-sources-calculation-methods_en",
+    "loadedURL": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/data-sources-calculation-methods_en",
+    "file": "official-pvgis-methods.md",
+    "sha256": "38d77c2ccccdd969b0508a7c1d4769a175d61a0896d61f09e365d107bff50331",
+    "apifyRun": "9r9hb3YVpi6U5hb8x",
+    "apifyDataset": "Hauh42KS1qROt8cfo",
+    "capture": "Apify webpage markdown extraction, not original bytes"
+  }
+]

@@ -1,0 +1,29 @@
+{
+  "base": "66324a39fb449425dd1144b46b4d3abc21dc52d0",
+  "prior_review_target": "2464009a7456da75154d36bfecb9d24187a99e18",
+  "target": "71cd719aa67021aee6398ae58f359738005d1f57",
+  "verdict": "PASS",
+  "hard_documented_breaches": [],
+  "closed_findings": [
+    {
+      "id": "map-pick-gate-own-file",
+      "priority": 3,
+      "rule": {"file": "/Users/chesterjohn/Documents/de-linker/AGENTS.md", "line": 78},
+      "closure": "MapPickGate now has its own data/MapPickGate.ts file; the controller is its file's sole exported class and tests import the gate directly. The moved gate body is byte-identical; no other controller behavior changed.",
+      "fixed_location": {"file": "apps/planner/src/data/MapPickGate.ts", "line": 3},
+      "previous_failed_evidence": "../review-standards-2464009a/ (preserved unchanged; hashes in probe.json)"
+    }
+  ],
+  "fowler_baseline_judgment_calls": [],
+  "fowler_baseline_considered": [
+    "Mysterious Name", "Duplicated Code", "Feature Envy", "Data Clumps",
+    "Primitive Obsession", "Repeated Switches", "Shotgun Surgery", "Divergent Change",
+    "Speculative Generality", "Message Chains", "Middle Man", "Refused Bequest"
+  ],
+  "independent_evidence": ["probe.py", "probe.json", "controller-tests.log"],
+  "independent_current_test_run": {"controller": 22, "pass": 22, "fail": 0},
+  "unchanged_prior_domain_evidence": {"tests": 12, "source_fingerprints_verified": true},
+  "verified_source_hashes": 107,
+  "emitted_artifacts_byte_identical_to_base": 7,
+  "verification_boundary": "Independent full fixed Standards diff by exhaustive-review reuse plus actual delta verification. No UI mount or source changes, copies, installs, worktrees, stacks, network, new real-adapter DOM/native/GPU/physical-touch execution, engineering/country/provider permissions, production or full-goal acceptance."
+}

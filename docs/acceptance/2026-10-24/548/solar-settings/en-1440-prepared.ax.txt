@@ -1,0 +1,16 @@
+Browser tab: 5, Title: "Planning source consumer fixture", URL: "http://127.0.0.1:50673/tests/preparation-browser.html?view=setup&task=weather&lang=en&blank=1&source=cf951e3d".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+~		3 button Save project
+~					96 text field (settable) First source year, Value: 2005
+~					97 text Whole numbers; no thousands separators.
+~					100 text field (settable) Last source year, Value: 2023
+~					105 pop up button (collapsed, settable) Expected radiation database, Value: PVGIS-SARAH3, Secondary Actions: Expand
+~							107 Choose…
+~							108 (selected) PVGIS-SARAH3
+~					113 pop up button (collapsed, settable) Terrain horizon, Value: Omit terrain horizon, Secondary Actions: Expand
+~							115 Choose…
+~							117 (selected) Omit terrain horizon
+~					123 text field (settable) Synthetic calculation year, Value: 2023
+~			128 text Weather settings prepared in this draft
+~			130 button Prepare weather settings
+The focused UI element is 130 button Prepare weather settings

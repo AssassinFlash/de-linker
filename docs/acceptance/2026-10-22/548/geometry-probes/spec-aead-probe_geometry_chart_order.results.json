@@ -1,0 +1,34 @@
+[
+  {
+    "ring_first_index": 0,
+    "expected_overlap_m2": 0.02,
+    "status": "no_conflicts_detected",
+    "conflicts": 0,
+    "kinds": []
+  },
+  {
+    "ring_first_index": 1,
+    "expected_overlap_m2": 0.02,
+    "status": "conflicts_detected",
+    "conflicts": 1,
+    "kinds": [
+      "panel_projected_overlap"
+    ]
+  },
+  {
+    "ring_first_index": 2,
+    "expected_overlap_m2": 0.02,
+    "status": "conflicts_detected",
+    "conflicts": 1,
+    "kinds": [
+      "panel_projected_overlap"
+    ]
+  },
+  {
+    "ring_first_index": 3,
+    "expected_overlap_m2": 0.02,
+    "status": "no_conflicts_detected",
+    "conflicts": 0,
+    "kinds": []
+  }
+]

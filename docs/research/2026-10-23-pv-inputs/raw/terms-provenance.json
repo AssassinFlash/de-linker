@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/usage-conditions-data-protection_en",
+    "loadedURL": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/usage-conditions-data-protection_en",
+    "file": "official-pvgis-usage-conditions.md",
+    "sha256": "067585a8c5f8460db25ff9d5277d8ba0beac4dc3dad2d6ca61e34b2ded90a408",
+    "apifyRun": "qWk6KyO25MLjsToZ9",
+    "apifyDataset": "5293hgWSwijAUoFF0",
+    "capture": "Apify webpage markdown extraction"
+  },
+  {
+    "url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/frequently-asked-questions_en",
+    "loadedURL": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/frequently-asked-questions_en",
+    "file": "official-pvgis-faq.md",
+    "sha256": "9a472171ba360214988f83ac308e769cd2eb0b09584499fa6405df43dd05efdd",
+    "apifyRun": "qWk6KyO25MLjsToZ9",
+    "apifyDataset": "5293hgWSwijAUoFF0",
+    "capture": "Apify webpage markdown extraction"
+  }
+]

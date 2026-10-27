@@ -1,0 +1,29 @@
+{"probe":"choice-unicode","input_name_well_formed":true,"input_utf16_units":257,"output_utf16_units":256,"output_name_well_formed":false,"last_code_unit":55357}
+✖ independent valid source name does not become an unpaired surrogate at a display cap (1.819958ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 243.931041
+
+✖ failing tests:
+
+test at tests/standards-choice-unicode.test.mjs:6:1
+✖ independent valid source name does not become an unpaired surrogate at a display cap (1.819958ms)
+  AssertionError [ERR_ASSERTION]: a valid source name must not be split inside a Unicode character
+      at TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/roof-import-standards-3225-pinw2cau/apps/planner/tests/standards-choice-unicode.test.mjs:13:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

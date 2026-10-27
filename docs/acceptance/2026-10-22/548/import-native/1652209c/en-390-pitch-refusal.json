@@ -1,0 +1,114 @@
+{
+  "capture": "Page.captureScreenshot explicit CSS viewport clip, captureBeyondViewport=true",
+  "before": {
+    "active": {
+      "invalid": "true",
+      "label": {
+        "bottom": 327.1171875,
+        "height": 117.2890625,
+        "left": 34,
+        "right": 356,
+        "top": 209.828125,
+        "width": 322,
+        "x": 34,
+        "y": 209.828125
+      },
+      "name": "pitch",
+      "rect": {
+        "bottom": 285.0234375,
+        "height": 46.3984375,
+        "left": 34,
+        "right": 356,
+        "top": 238.625,
+        "width": 322,
+        "x": 34,
+        "y": 238.625
+      },
+      "tag": "INPUT",
+      "text": null,
+      "value": "1.."
+    },
+    "bar": {
+      "bottom": 194,
+      "height": 113,
+      "left": 0,
+      "right": 390,
+      "top": 81,
+      "width": 390,
+      "x": 0,
+      "y": 81
+    },
+    "columns": [
+      "322px"
+    ],
+    "documentWidth": 390,
+    "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2",
+    "fontStatus": "loaded",
+    "height": 844,
+    "renderer": [],
+    "scrollWidth": 390,
+    "styles": [
+      "http://127.0.0.1:9347/wp-content/uploads/windpress/cache/tailwind.css?ver=1792758239"
+    ],
+    "url": "http://127.0.0.1:9347/planning-workspace-review/?project=61a9bbc291ff4c1faed3a27f0f56e18b#lp-design",
+    "width": 390,
+    "x": 0,
+    "y": 990
+  },
+  "after": {
+    "active": {
+      "invalid": "true",
+      "label": {
+        "bottom": 327.1171875,
+        "height": 117.2890625,
+        "left": 34,
+        "right": 356,
+        "top": 209.828125,
+        "width": 322,
+        "x": 34,
+        "y": 209.828125
+      },
+      "name": "pitch",
+      "rect": {
+        "bottom": 285.0234375,
+        "height": 46.3984375,
+        "left": 34,
+        "right": 356,
+        "top": 238.625,
+        "width": 322,
+        "x": 34,
+        "y": 238.625
+      },
+      "tag": "INPUT",
+      "text": null,
+      "value": "1.."
+    },
+    "bar": {
+      "bottom": 194,
+      "height": 113,
+      "left": 0,
+      "right": 390,
+      "top": 81,
+      "width": 390,
+      "x": 0,
+      "y": 81
+    },
+    "columns": [
+      "322px"
+    ],
+    "documentWidth": 390,
+    "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2",
+    "fontStatus": "loaded",
+    "height": 844,
+    "renderer": [],
+    "scrollWidth": 390,
+    "styles": [
+      "http://127.0.0.1:9347/wp-content/uploads/windpress/cache/tailwind.css?ver=1792758239"
+    ],
+    "url": "http://127.0.0.1:9347/planning-workspace-review/?project=61a9bbc291ff4c1faed3a27f0f56e18b#lp-design",
+    "width": 390,
+    "x": 0,
+    "y": 990
+  },
+  "scrollStable": true
+}

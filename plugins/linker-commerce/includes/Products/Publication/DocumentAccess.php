@@ -13,7 +13,8 @@ use Linker\Commerce\Products\Publication;
 
 /** No redirect back to a static URL, and no public cache of an allowed result. */
 final class DocumentAccess {
-	public const QUERY_VAR = 'linker_public_document';
+	public const QUERY_VAR         = 'linker_public_document';
+	public const VERSION_QUERY_VAR = 'linker_document_sha256';
 
 	/**
 	 * Native WordPress rewrite block precedes its existing-file shortcut.
@@ -27,7 +28,7 @@ final class DocumentAccess {
 		if ( '' !== $home && str_starts_with( $prefix, $home . '/' ) ) {
 			$prefix = substr( $prefix, strlen( $home ) + 1 );
 		}
-		$gate     = 'RewriteRule ^' . preg_quote( $prefix, '#' ) . '/(.+\\.pdf)$ index.php?' . self::QUERY_VAR . '=$1 [END,NC]';
+		$gate     = 'RewriteRule ^' . preg_quote( $prefix, '#' ) . '/(.+\\.pdf)$ index.php?' . self::QUERY_VAR . '=$1 [END,NC,QSA]';
 		$no_cache = 'RewriteRule ^' . preg_quote( $prefix, '#' ) . '/(.+\\.pdf)$ - [E=Cache-Control:no-cache,NC]';
 		return str_replace( 'RewriteEngine On', "RewriteEngine On\n# Current Woo technical-document permission\n" . $no_cache . "\n" . $gate, $rules );
 	}
@@ -39,11 +40,21 @@ final class DocumentAccess {
 		if ( ! is_string( $value ) ) {
 			return;
 		}
-		$uploads  = wp_upload_dir();
-		$file     = DocumentFiles::resolve( rtrim( $uploads['baseurl'], '/' ) . '/' . ltrim( wp_unslash( $value ), '/' ) );
-		$method   = isset( $_SERVER['REQUEST_METHOD'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) : 'GET';
-		$range    = isset( $_SERVER['HTTP_RANGE'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_RANGE'] ) ) : '';
-		$response = $this->response( $file, $method, $range ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- response() validates method and range, no string is reflected.
+		$uploads = wp_upload_dir();
+		// Preserve original-URL identity even when QSA includes a second query
+		// variable. Direct index.php source links still name their explicit path.
+		$request_path = isset( $_SERVER['REQUEST_URI'] ) ? wp_parse_url( wp_unslash( $_SERVER['REQUEST_URI'] ), PHP_URL_PATH ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- managed resolver validates the complete path.
+		$base_path    = wp_parse_url( $uploads['baseurl'], PHP_URL_PATH );
+		if ( is_string( $request_path ) && is_string( $base_path ) && str_starts_with( $request_path, rtrim( $base_path, '/' ) . '/' ) && 'pdf' === strtolower( pathinfo( $request_path, PATHINFO_EXTENSION ) ) ) {
+			$value = substr( $request_path, strlen( rtrim( $base_path, '/' ) ) + 1 );
+		}
+		$file   = DocumentFiles::resolve( rtrim( $uploads['baseurl'], '/' ) . '/' . ltrim( wp_unslash( $value ), '/' ) );
+		$method = isset( $_SERVER['REQUEST_METHOD'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) : 'GET';
+		$range  = isset( $_SERVER['HTTP_RANGE'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_RANGE'] ) ) : '';
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput -- public source identity; response() validates exact SHA-256 syntax and bytes.
+		$expected = $_GET[ self::VERSION_QUERY_VAR ] ?? '';
+		$expected = is_string( $expected ) ? wp_unslash( $expected ) : 'invalid';
+		$response = $this->response( $file, $method, $range, $expected ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- response() validates method/range/version, no string is reflected.
 		if ( ! defined( 'DONOTCACHEPAGE' ) ) {
 			define( 'DONOTCACHEPAGE', true ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- WordPress cache convention.
 		}
@@ -83,9 +94,10 @@ final class DocumentAccess {
 	 * @param array<string,string>|null $file Resolved local PDF.
 	 * @param string                    $method Request method.
 	 * @param string                    $range Optional HTTP Range header.
+	 * @param string                    $expected Optional recorded file SHA-256.
 	 * @return array{status:int,headers:array<string,string>,start:int,length:int}
 	 */
-	public function response( ?array $file, string $method, string $range = '' ): array {
+	public function response( ?array $file, string $method, string $range = '', string $expected = '' ): array {
 		$denied = array(
 			'status'  => 410,
 			'headers' => array( 'Content-Length' => '0' ),
@@ -105,6 +117,9 @@ final class DocumentAccess {
 			);
 		}
 		if ( null === $file ) {
+			return $denied;
+		}
+		if ( '' !== $expected && ( 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $expected ) || ! hash_equals( $expected, $file['blob_sha256'] ) ) ) {
 			return $denied;
 		}
 		try {

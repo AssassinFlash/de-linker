@@ -1,0 +1,48 @@
+[
+  {
+    "log": "engine-tests.txt",
+    "args": [
+      ".venv/bin/pytest",
+      "-q",
+      "tests/planning/test_release_probe.py",
+      "tests/planning/test_worker_host.py",
+      "tests/planning/test_schema_upgrade.py"
+    ],
+    "code": 0,
+    "seconds": 22.858
+  },
+  {
+    "log": "engine-types.txt",
+    "args": [
+      ".venv/bin/mypy",
+      "--cache-dir=/dev/null",
+      "src",
+      "tests/planning/test_release_probe.py"
+    ],
+    "code": 0,
+    "seconds": 3.292
+  },
+  {
+    "log": "engine-style.txt",
+    "args": [
+      ".venv/bin/ruff",
+      "check",
+      "src/linker_engine/planning/worker_host.py",
+      "tests/planning/test_release_probe.py"
+    ],
+    "code": 0,
+    "seconds": 0.037
+  },
+  {
+    "log": "engine-format.txt",
+    "args": [
+      ".venv/bin/ruff",
+      "format",
+      "--check",
+      "src/linker_engine/planning/worker_host.py",
+      "tests/planning/test_release_probe.py"
+    ],
+    "code": 0,
+    "seconds": 0.012
+  }
+]

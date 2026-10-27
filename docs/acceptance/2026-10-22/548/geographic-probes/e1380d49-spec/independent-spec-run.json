@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/spec-geographic-e138-7isdp4ep/services/engine/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "test_independent_spec.py"
+  ],
+  "cwd": "/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/spec-geographic-e138-7isdp4ep",
+  "exit_code": 0,
+  "log_sha256": "2b1dd884dd3b6adde8f43e495a5c4b09e3862bc7daec848f19c838e989788142"
+}

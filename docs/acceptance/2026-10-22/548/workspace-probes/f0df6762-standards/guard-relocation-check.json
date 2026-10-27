@@ -1,0 +1,8 @@
+{
+  "fixed_sha": "f0df6762fc549bf9251d508a802bb38cd2c258fa",
+  "comparison_sha": "cbf75a9cead3b3c87c0cb2f206a1cd7e6226551e",
+  "single_old_and_new_condition": true,
+  "guard_and_notice_tokens_identical_ignoring_wrapper_and_whitespace": true,
+  "remaining_editor_tokens_identical_ignoring_whitespace": true,
+  "normalized_guard_notice_sha256": "277bf4fdb44cd22b934d33410a369be847f83c409028c8385a5932f8f4c4aef6"
+}

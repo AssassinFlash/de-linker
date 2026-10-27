@@ -10,19 +10,93 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Unit\Products;
 
 use Linker\Commerce\Products\Compatibility;
+use Linker\Commerce\Products\EngineeringData;
+use Linker\Commerce\Products\Publication;
+use Linker\Commerce\Products\Publication\CompatibilityClaims;
+use Linker\Commerce\Products\Publication\CompatibilityEditor;
+use Linker\Commerce\Products\Publication\CompatibilityMigration;
+use Linker\Commerce\Products\Publication\DocumentFiles;
 use WP_Mock;
 use WP_Mock\Tools\TestCase;
 
 /**
- * Tests for Compatibility: the shipped data/compatibility.json decides the
- * known pairs the way the old contract's cells did, with the #14 engine's
- * join semantics — every matching pair applies, the verdict is the most
- * restrictive one (docs/specs/8-engineering-data.md, decisions in
- * docs/specs/8-decisions.md §6).
+ * Reuse the known manufacturer verdicts after one-time migration to Woo.
  *
  * @covers \Linker\Commerce\Products\Compatibility
+ * @covers \Linker\Commerce\Products\Publication\CompatibilityClaims
+ * @covers \Linker\Commerce\Products\Publication\CompatibilityMigration
+ * @covers \Linker\Commerce\Products\Publication\CompatibilityEditor
  */
 final class CompatibilityTest extends TestCase {
+
+	/** Synthetic current Woo authority.
+	 *
+	 * @var array<string,mixed>
+	 */
+	private array $manifest;
+
+	/** Native declaration values.
+	 *
+	 * @var array<int,array<string,mixed>>
+	 */
+	private array $claims = array();
+
+	/** Migrate retained decisions into synthetic Woo records, without a WP writer. */
+	public function setUp(): void {
+		parent::setUp();
+		WP_Mock::userFunction( 'wp_json_encode' )->andReturnUsing( static fn ( mixed $value, int $flags = 0 ): string => (string) json_encode( $value, $flags ) );
+		WP_Mock::userFunction( 'wp_parse_url' )->andReturnUsing( static fn ( string $url, int $part = -1 ): mixed => parse_url( $url, $part ) );
+		WP_Mock::userFunction( 'has_filter' )->andReturn( false );
+		WP_Mock::userFunction( 'sanitize_text_field' )->andReturnUsing( static fn ( string $value ): string => trim( $value ) );
+		WP_Mock::userFunction( 'sanitize_textarea_field' )->andReturnUsing( static fn ( string $value ): string => trim( $value ) );
+		WP_Mock::userFunction( 'get_post_meta' )->andReturnUsing( fn ( int $id, string $key ): mixed => CompatibilityClaims::META_KEY === $key ? ( $this->claims[ $id ] ?? '' ) : '' );
+		WP_Mock::userFunction( 'metadata_exists' )->andReturnUsing( fn ( string $type, int $id, string $key ): bool => CompatibilityClaims::META_KEY === $key && isset( $this->claims[ $id ] ) );
+		$fixture  = json_decode( (string) file_get_contents( dirname( __DIR__, 6 ) . '/services/engine/tests/fixtures/feed.json' ), true );
+		$products = array();
+		foreach ( $fixture['products'] as $product ) {
+			$products[ $product['model'] ] = array(
+				'product_id' => $product['id'],
+				'model'      => $product['model'],
+			);
+		}
+		$models = array( 'BC2-HV1', 'SEC3000C', 'DTSU666', 'EF BD-B-S1', 'EF HD-P1-10K0-S2' );
+		foreach ( $this->known_pairs() as $pair ) {
+			$models = array_merge( $models, array_slice( $pair, 0, 2 ) );
+		}
+		foreach ( $this->on_sale_etr_models() as $model ) {
+			$models[] = $model[0];
+		}
+		foreach ( array_unique( $models ) as $i => $model ) {
+			$products[ $model ] ??= array(
+				'product_id' => 90000 + $i,
+				'model'      => $model,
+			);
+		}
+		$products = array_intersect_key( $products, array_flip( $models ) );
+		$input    = EngineeringData::json( EngineeringData::COMPATIBILITY_FILE );
+		$this->assertIsArray( $input );
+		$documents = array();
+		foreach ( array_merge( $input['pairs'], $input['requirements'] ) as $row ) {
+			foreach ( $row['documents'] as $doc ) {
+				$id               = DocumentFiles::id( $doc['url'] );
+				$documents[ $id ] = array(
+					'document_id'       => $id,
+					'document_revision' => $id,
+					'blob_sha256'       => $id,
+					'url'               => $doc['url'],
+					'product_ids'       => array_column( $products, 'product_id' ),
+				);
+			}
+		}
+		$this->manifest = array(
+			'source_revision' => 'fixture',
+			'products'        => array_values( $products ),
+			'documents'       => array_values( $documents ),
+		);
+		foreach ( CompatibilityMigration::plan( $input, str_repeat( 'a', 64 ), $this->manifest )['changes'] as $change ) {
+			$this->claims[ $change['product_id'] ] = $change['after'];
+		}
+	}
 
 	/**
 	 * Ten known inverter-and-battery pairs decide to the verdict their old
@@ -36,7 +110,7 @@ final class CompatibilityTest extends TestCase {
 	 * @param string|null $verdict  The verdict, null when no entry matches.
 	 */
 	public function test_known_pairs_decide_their_verdict( string $inverter, string $battery, ?string $verdict ): void {
-		$answer = Compatibility::for_models( $inverter, $battery );
+		$answer = Compatibility::for_models( $inverter, $battery, $this->manifest );
 
 		if ( null === $verdict ) {
 			$this->assertNull( $answer );
@@ -92,7 +166,7 @@ final class CompatibilityTest extends TestCase {
 	 * arrays), and documents are the slim {url, page?} references.
 	 */
 	public function test_conditions_are_bilingual_and_documents_are_slim(): void {
-		$answer = Compatibility::for_models( 'GW10K-ET', 'FH9637M' );
+		$answer = Compatibility::for_models( 'GW10K-ET', 'FH9637M', $this->manifest );
 
 		$this->assertNotNull( $answer );
 		foreach ( $answer['conditions'] as $condition ) {
@@ -112,20 +186,21 @@ final class CompatibilityTest extends TestCase {
 	 * require: model pattern, quantity and what it is per.
 	 */
 	public function test_released_with_accessory_names_its_accessory(): void {
-		$answer = Compatibility::for_models( 'H2-10K-T3', 'B2-10.0-HV1' );
+		$answer = Compatibility::for_models( 'H2-10K-T3', 'B2-10.0-HV1', $this->manifest );
 
 		$this->assertNotNull( $answer );
 		$this->assertSame(
 			array(
-				'model'    => '^BC2-HV1$',
-				'quantity' => 1,
-				'per'      => 'system',
+				'product_id' => $this->product_id( 'BC2-HV1' ),
+				'model'      => '^BC2\-HV1$',
+				'quantity'   => 1,
+				'per'        => 'system',
 			),
 			$answer['accessories'][0]
 		);
-		$ecoflow = Compatibility::for_models( 'EF HD-P1-5K-S1', 'EF BD-5.1-S1' );
+		$ecoflow = Compatibility::for_models( 'EF HD-P1-5K-S1', 'EF BD-5.1-S1', $this->manifest );
 		$this->assertNotNull( $ecoflow );
-		$this->assertSame( '^EF BD-B-S1$', $ecoflow['accessories'][0]['model'] );
+		$this->assertSame( '^EF BD\-B\-S1$', $ecoflow['accessories'][0]['model'] );
 		$this->assertSame( 'stack', $ecoflow['accessories'][0]['per'] );
 	}
 
@@ -134,7 +209,7 @@ final class CompatibilityTest extends TestCase {
 	 * released configuration, so the BC2-HV1 line drops.
 	 */
 	public function test_the_not_released_b2_5_0_names_no_bc2_accessory(): void {
-		$answer = Compatibility::for_models( 'H2-10K-T3', 'B2-5.0-HV1' );
+		$answer = Compatibility::for_models( 'H2-10K-T3', 'B2-5.0-HV1', $this->manifest );
 
 		$this->assertNotNull( $answer );
 		$this->assertSame( 'not_released', $answer['verdict'] );
@@ -147,7 +222,7 @@ final class CompatibilityTest extends TestCase {
 	 * answer beside the family constraint.
 	 */
 	public function test_the_model_level_entry_joins_its_family_entry(): void {
-		$answer = Compatibility::for_models( 'EF HD-P3-10K0-S2', 'EF BD-5-S2' );
+		$answer = Compatibility::for_models( 'EF HD-P3-10K0-S2', 'EF BD-5-S2', $this->manifest );
 
 		$this->assertNotNull( $answer );
 		$joined = implode( "\n", array_column( $answer['conditions'], 'en' ) );
@@ -162,7 +237,7 @@ final class CompatibilityTest extends TestCase {
 	 * released_with_accessory family entry.
 	 */
 	public function test_the_most_restrictive_verdict_wins(): void {
-		$answer = Compatibility::for_models( 'EF HD-P1-10K0-S2', 'EF BD-5.1-S1' );
+		$answer = Compatibility::for_models( 'EF HD-P1-10K0-S2', 'EF BD-5.1-S1', $this->manifest );
 
 		$this->assertNotNull( $answer );
 		$this->assertSame( 'not_released', $answer['verdict'] );
@@ -177,7 +252,7 @@ final class CompatibilityTest extends TestCase {
 	 */
 	public function test_every_pattern_of_the_file_compiles(): void {
 		$patterns = array();
-		foreach ( Compatibility::pairs() as $pair ) {
+		foreach ( Compatibility::pairs( $this->manifest ) as $pair ) {
 			$patterns[] = (string) $pair['inverter'];
 			$patterns[] = (string) $pair['battery'];
 		}
@@ -195,11 +270,11 @@ final class CompatibilityTest extends TestCase {
 	 */
 	public function test_the_file_states_known_verdicts(): void {
 		$verdicts = array();
-		foreach ( Compatibility::pairs() as $pair ) {
+		foreach ( Compatibility::pairs( $this->manifest ) as $pair ) {
 			$verdicts[ $pair['verdict'] ] = true;
 		}
 		$this->assertSame( array(), array_values( array_diff( array_keys( $verdicts ), Compatibility::VERDICTS ) ) );
-		$this->assertSame( array( 'released', 'not_released', 'released_with_accessory' ), array_keys( $verdicts ) );
+		$this->assertEqualsCanonicalizing( Compatibility::VERDICTS, array_keys( $verdicts ) );
 	}
 
 	/**
@@ -212,16 +287,17 @@ final class CompatibilityTest extends TestCase {
 	 * @param string $inverter The inverter model (pa_model).
 	 */
 	public function test_the_parallel_controller_requirement_hits_every_on_sale_etr( string $inverter ): void {
-		$answer = Compatibility::requirements( $inverter, 'parallel_controller' );
+		$answer = Compatibility::requirements( $inverter, 'parallel_controller', null, $this->manifest );
 
 		$this->assertCount( 1, $answer, "exactly one parallel_controller requirement for {$inverter}" );
 		$this->assertSame( 'parallel_controller', $answer[0]['kind'] );
 		$this->assertFalse( (bool) $answer[0]['included'] );
 		$this->assertSame(
 			array(
-				'model'    => '^SEC3000C$',
-				'quantity' => 1,
-				'per'      => 'system',
+				'product_id' => $this->product_id( 'SEC3000C' ),
+				'model'      => '^SEC3000C$',
+				'quantity'   => 1,
+				'per'        => 'system',
 			),
 			$answer[0]['accessories'][0]
 		);
@@ -245,52 +321,179 @@ final class CompatibilityTest extends TestCase {
 		);
 	}
 
-	/**
-	 * Two products decide through their pa_model terms, the way the feed
-	 * names them.
-	 */
-	public function test_for_products_reads_the_model_terms(): void {
-		$this->mock_model( 4107, 'H2-10K-T3' );
-		$this->mock_model( 2067, 'B2-10.0-HV1' );
-
-		$answer = Compatibility::for_products( 4107, 2067 );
-
+	/** Exact canonical IDs keep their release when a model label is edited. */
+	public function test_for_products_keeps_identity_on_a_model_rename(): void {
+		$inverter = $this->product_id( 'H2-10K-T3' );
+		$battery  = $this->product_id( 'B2-10.0-HV1' );
+		foreach ( $this->manifest['products'] as &$product ) {
+			if ( $inverter === $product['product_id'] ) {
+				$product['model'] = 'Renamed inverter';
+			}
+		}
+		unset( $product );
+		$answer = Compatibility::for_products( $inverter, $battery, $this->manifest );
 		$this->assertNotNull( $answer );
 		$this->assertSame( 'released_with_accessory', $answer['verdict'] );
-	}
-
-	/**
-	 * A product without a model term answers nothing.
-	 */
-	public function test_for_products_without_a_model_answers_nothing(): void {
-		$this->mock_model( 4107, 'H2-10K-T3' );
-		WP_Mock::userFunction(
-			'get_the_terms',
-			array(
-				'args'   => array( 2067, 'pa_model' ),
-				'return' => false,
-			)
+		$this->manifest['products'][] = array(
+			'product_id' => 999999,
+			'model'      => 'Renamed inverter',
 		);
+		$this->assertNull( Compatibility::for_models( 'Renamed inverter', 'B2-10.0-HV1', $this->manifest ) );
+		$this->assertNull( Compatibility::for_products( 999999, $battery, $this->manifest ) );
+	}
 
-		$this->assertNull( Compatibility::for_products( 4107, 2067 ) );
+	/** A stale restrictive row cannot disappear and expose a positive overlap. */
+	public function test_replaced_document_revokes_the_entire_pair_scope(): void {
+		$inverter                             = $this->product_id( 'H2-10K-T3' );
+		$battery                              = $this->product_id( 'B2-10.0-HV1' );
+		$row                                  = array_values( array_filter( $this->claims[ $inverter ]['pairs'], static fn ( array $row ): bool => $battery === $row['battery_product_id'] ) )[0];
+		$stale                                = $row;
+		$stale['id']                          = 'stale-restriction';
+		$stale['verdict']                     = 'not_released';
+		$stale['documents'][0]['blob_sha256'] = str_repeat( 'b', 64 );
+		$this->claims[ $inverter ]['pairs']   = array( $row, $stale );
+		$this->assertNull( Compatibility::for_products( $inverter, $battery, $this->manifest ) );
+		$this->claims[ $inverter ]['pairs'] = array( $row );
+		$this->assertNotNull( Compatibility::for_products( $inverter, $battery, $this->manifest ) );
+		foreach ( $this->manifest['documents'] as &$document ) {
+			if ( $row['documents'][0]['document_id'] === $document['document_id'] ) {
+				$document['blob_sha256'] = str_repeat( 'c', 64 );
+			}
+		}
+		unset( $document );
+		$this->assertNull( Compatibility::for_products( $inverter, $battery, $this->manifest ) );
+	}
+
+	/** Normal saving keeps old proof; only explicit confirmation adopts new bytes. */
+	public function test_editor_preserves_unchanged_evidence_and_requires_confirmation(): void {
+		$inverter                  = $this->product_id( 'H2-10K-T3' );
+		$row                       = $this->claims[ $inverter ]['pairs'][0];
+		$before                    = array(
+			'schema_version' => 1,
+			'pairs'          => array( $row ),
+			'requirements'   => array(),
+		);
+		$raw                       = json_decode( (string) json_encode( $row ), true );
+		$raw['battery_product_id'] = (string) $raw['battery_product_id'];
+		foreach ( $raw['accessories'] as &$part ) {
+			$part['product_id'] = (string) $part['product_id'];
+			$part['quantity']   = (string) $part['quantity'];
+		}
+		unset( $part );
+		foreach ( $raw['documents'] as &$doc ) {
+			if ( isset( $doc['page'] ) ) {
+				$doc['page'] = (string) $doc['page'];
+			}
+		}
+		unset( $doc );
+		foreach ( $this->manifest['documents'] as &$document ) {
+			$document['blob_sha256'] = str_repeat( 'd', 64 );
+		}
+		unset( $document );
+		$draft = array(
+			'complete'     => '1',
+			'pairs'        => array( $raw ),
+			'requirements' => array(),
+		);
+		$this->assertSame( $before, CompatibilityEditor::prepare( $inverter, $draft, $before, $this->manifest ) );
+		$draft['pairs'][0]['confirm'] = '1';
+		$confirmed                    = CompatibilityEditor::prepare( $inverter, $draft, $before, $this->manifest );
+		$this->assertSame( str_repeat( 'd', 64 ), $confirmed['pairs'][0]['documents'][0]['blob_sha256'] );
+		unset( $draft['pairs'][0]['confirm'] );
+		$draft['pairs'][0]['conditions'][] = array(
+			'en' => 'A changed condition.',
+			'de' => 'Eine geänderte Bedingung.',
+		);
+		$this->expectException( \RuntimeException::class );
+		CompatibilityEditor::prepare( $inverter, $draft, $before, $this->manifest );
+	}
+
+	/** An unchanged migration cannot overwrite maintenance or silently rebind a PDF. */
+	public function test_migration_is_idempotent_and_missing_evidence_stays_unresolved(): void {
+		$input = EngineeringData::json( EngineeringData::COMPATIBILITY_FILE );
+		$this->assertIsArray( $input );
+		$plan = CompatibilityMigration::plan( $input, str_repeat( 'a', 64 ), $this->manifest );
+		$this->assertSame( array(), $plan['changes'] );
+		$this->assertNotEmpty( $plan['preserved'] );
+		$this->claims                = array();
+		$this->manifest['documents'] = array();
+		$plan                        = CompatibilityMigration::plan( $input, str_repeat( 'a', 64 ), $this->manifest );
+		$this->assertNotEmpty( $plan['unresolved'] );
+		foreach ( $plan['changes'] as $change ) {
+			$this->assertSame(
+				array(
+					'exists' => false,
+					'value'  => '',
+				),
+				$change['before']
+			);
+			$this->assertFalse( $change['recovery_meta']['before']['exists'] );
+			$this->assertSame( Publication::revision( $change['after'] ), $change['recovery_meta']['after']['after_sha256'] );
+			$this->claims[ $change['product_id'] ] = $change['after'];
+		}
+		$this->assertSame( array(), Compatibility::pairs( $this->manifest ) );
+		$this->claims = array();
+		$this->assertSame( array(), Compatibility::pairs( $this->manifest ), 'No static runtime fallback.' );
+	}
+
+	/** Conditional declarations survive the native editor and cannot become general requirements. */
+	public function test_native_requirement_scope_stays_bound_and_contextual(): void {
+		$owner                = $this->product_id( 'GW100K-ETR-G10' );
+		$row                  = $this->claims[ $owner ]['requirements'][0];
+		$row['applicability'] = array(
+			'operating_mode'  => 'backup',
+			'topology'        => 'parallel_group',
+			'control_network' => 'lan',
+		);
+		$raw                  = $row;
+		$raw['included']      = $row['included'] ? '1' : '0';
+		$raw['confirm']       = '1';
+		$raw['documents']     = array_map( static fn( array $doc ): array => array_intersect_key( $doc, array_flip( array( 'document_id', 'page' ) ) ), $row['documents'] );
+		$before               = $this->claims[ $owner ];
+		$draft                = array(
+			'complete'     => '1',
+			'pairs'        => array(),
+			'requirements' => array( $raw ),
+		);
+		// Preserve existing pairs while changing only this maintained requirement.
+		$draft['pairs']         = array_map(
+			static function ( array $pair ): array {
+				$pair['documents'] = array_map( static fn( array $doc ): array => array_intersect_key( $doc, array_flip( array( 'document_id', 'page' ) ) ), $pair['documents'] );
+				return $pair;
+			},
+			$before['pairs']
+		);
+		$this->claims[ $owner ] = CompatibilityEditor::prepare( $owner, $draft, $before, $this->manifest );
+		$this->assertSame( $row['applicability'], $this->claims[ $owner ]['requirements'][0]['applicability'] );
+		$this->assertSame( array(), Compatibility::requirements( 'GW100K-ETR-G10', 'parallel_controller', $owner, $this->manifest ) );
+		$this->assertCount( 1, Compatibility::requirements( 'GW100K-ETR-G10', 'parallel_controller', $owner, $this->manifest, $row['applicability'] ) );
+		$row['applicability']['control_network'] = 'wifi';
+		$this->expectException( \RuntimeException::class );
+		CompatibilityClaims::bind_row( $owner, $row, 'requirements', $this->manifest, true );
+	}
+
+	/** Truncated native POST fields cannot erase declarations from later rows. */
+	public function test_truncated_editor_preserves_all_stored_declarations(): void {
+		$owner = $this->product_id( 'H2-10K-T3' );
+		$this->expectException( \RuntimeException::class );
+		CompatibilityEditor::prepare(
+			$owner,
+			array(
+				'complete'     => '1',
+				'pairs'        => array(),
+				'requirements' => array(),
+			),
+			$this->claims[ $owner ],
+			$this->manifest
+		);
 	}
 
 	/**
-	 * Mocks the product's single pa_model term.
+	 * Unique fixture model.
 	 *
-	 * @param int    $id   Product ID.
-	 * @param string $name The term's name.
+	 * @param string $model Unique fixture model.
 	 */
-	private function mock_model( int $id, string $name ): void {
-		$term       = new \stdClass();
-		$term->slug = strtolower( (string) preg_replace( '/[^a-z0-9]+/i', '-', $name ) );
-		$term->name = $name;
-		WP_Mock::userFunction(
-			'get_the_terms',
-			array(
-				'args'   => array( $id, 'pa_model' ),
-				'return' => array( $term ),
-			)
-		);
+	private function product_id( string $model ): int {
+		return array_column( $this->manifest['products'], 'product_id', 'model' )[ $model ];
 	}
 }

@@ -1,0 +1,155 @@
+{
+  "source_pin": "716ae5f456377339f5b41b85430fbb3e92e0ea67",
+  "application_build_pin": "726e326b5c3ce322a2e1471008483a10e9e3c3b1",
+  "increment_base": "43297ecf5673fa5f29c82f90fbe583666a5e3e15",
+  "tests": {
+    "domain_data": 88,
+    "dom_controller": 126,
+    "total": 214,
+    "fail": 0,
+    "act_warnings": 0,
+    "log_sha256": "0bf9f0cae3ce050cd7398487ff0b4b7876c99ee5dc916e6582f8bc8e561645ba"
+  },
+  "source_build_identity": {
+    "exit_code": 0,
+    "readback": "Planner build matches its sources.",
+    "entry_sha256": "60102a96eb9944e47cfe303f50c6a11bb2620ebb9f4f0360993a76738fa0ce91",
+    "native_entry_version_matches": true
+  },
+  "added_source_scans": {
+    "prohibited_legacy_identifiers": 0,
+    "credential_patterns": 0
+  },
+  "full_diff_whitespace": {
+    "exit_code": 2,
+    "first_diagnostic": "plugins/linker-tools/build/planner/assets/MapViewport-DEU-DlpF.js:62: trailing whitespace.",
+    "boundary": "Known generated MapLibre shader whitespace; not a clean full-base diff claim."
+  },
+  "windpress": {
+    "source_volume_sha256": "6dadc4a210a067a8a831ef3834f3c28912f6d096ac1cb188145df99b998e2bb2",
+    "compiled_cache_sha256": "d0554e336a6e56e5e77a9ebc78850bd099ed1e989d82d6e3b9ab6ef56c3ff8a8",
+    "native_generated_ui": "2026-10-24 03:07:50; 836.15 kB",
+    "native_de_phone_grid_columns": [
+      "318px",
+      "318px"
+    ],
+    "document_width": 390,
+    "scroll_width": 390
+  },
+  "native_saved_revision": 5,
+  "native_boundary": "Owned synthetic local data; see NATIVE.md. Full EN/DE state matrix, provider/touch/refusal, engineering and production acceptance remain open.",
+  "screenshots": [
+    {
+      "file": "de-desktop-after-drag.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 128970,
+      "sha256": "4a2c0a248556946465b0ac479c3fae66c7108d35c0ddb506863c090a1ef1bdf3"
+    },
+    {
+      "file": "de-desktop-field-error-final.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 153016,
+      "sha256": "7c997b3d737f8e7ec2098f88a2eaee438cc13e26eb328400cbfe208f726c6d52"
+    },
+    {
+      "file": "de-desktop-invalid-pitch.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 148541,
+      "sha256": "7946421dddb8596573a74d92f11e2abf0e77c2080cf3790c93e8fef0e34140a3"
+    },
+    {
+      "file": "de-desktop-one-point.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 109184,
+      "sha256": "86135028c62f690ef207f23fc4a47ab894bf4a6a59da2e696b04403c016efdaa"
+    },
+    {
+      "file": "de-desktop-scene-pre-save.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 136372,
+      "sha256": "ad5dafc2048a0a66e2f4cc67c39509009f2b859c8d6fc830a13bd636e8b6474a"
+    },
+    {
+      "file": "de-desktop-staged.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 127827,
+      "sha256": "b69e8eb6fd1dd9213cc08bdd429e8db7ae761cb224805dc34eddfeddacac97a2"
+    },
+    {
+      "file": "de-desktop-success-before-feedback-fix.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 265450,
+      "sha256": "37adbb9fdc1bd4589fa5e62fd21e1fdaad1ee30cf0dd01f6797150ebc7682a2b"
+    },
+    {
+      "file": "de-desktop-success-final.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 150803,
+      "sha256": "96253d733d87c9041a41ff593b862e2ae9acd7623bd7b51bed6107d3e5d74972"
+    },
+    {
+      "file": "de-phone-field-error-final.png",
+      "width": 390,
+      "height": 844,
+      "bytes": 62126,
+      "sha256": "4ac68b9c257b9cb04ea9f1aba7f0289c3c1cf5f264243c358b3a664f44d764c5"
+    },
+    {
+      "file": "de-phone-field-error.png",
+      "width": 390,
+      "height": 844,
+      "bytes": 68712,
+      "sha256": "7a1ac05287695f19018377f1f9843ac1ea908ad565d2ed989f11804ac148ade6"
+    },
+    {
+      "file": "de-phone-repeat-success-final.png",
+      "width": 390,
+      "height": 844,
+      "bytes": 60094,
+      "sha256": "1554e2ae6d3247d6aab07fb791c7781948fa1591969fc25a0e0e37ddddb03e3d"
+    },
+    {
+      "file": "de-phone-scene-reentry-final.png",
+      "width": 390,
+      "height": 844,
+      "bytes": 40451,
+      "sha256": "382c3cb4d163b911420c072437b919831c7b8fd5fc2d97dad4c02cd5efe55691"
+    },
+    {
+      "file": "en-desktop-system-identity-final.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 188972,
+      "sha256": "83e5141da9f9f57c3b15b98fa8166fe43c412d8d9fd5d8ee842c9abbb08f6adc"
+    },
+    {
+      "file": "en-desktop-system-identity.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 187140,
+      "sha256": "e8debeac95c919aef6c440a51db37b252e070cf18e8efae48da9491899ad5b5e"
+    },
+    {
+      "file": "en-phone-one-point-map.png",
+      "width": 390,
+      "height": 844,
+      "bytes": 37017,
+      "sha256": "afd46bebc823ba0ba82b31e943864c62db916e4b750c95ca15eb364f683034f7"
+    },
+    {
+      "file": "en-phone-one-point.png",
+      "width": 390,
+      "height": 844,
+      "bytes": 46211,
+      "sha256": "a33b01cf3c61888ccf4fe0b3935457ce749c1d1246fea0e38da09af3e4668072"
+    }
+  ]
+}

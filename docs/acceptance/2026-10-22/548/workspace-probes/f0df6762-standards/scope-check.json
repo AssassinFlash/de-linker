@@ -1,0 +1,32 @@
+{
+  "fixed_sha": "f0df6762fc549bf9251d508a802bb38cd2c258fa",
+  "base_sha": "7e96b88dd902ea64fd27250494d3129783d7f307",
+  "reviewed_full_journal_files": [
+    "apps/planner/src/components/BriefForm.tsx",
+    "apps/planner/src/components/Icon.tsx",
+    "apps/planner/src/components/ProjectEditor.tsx",
+    "apps/planner/src/components/ProjectOverview.tsx",
+    "apps/planner/src/components/design/PlanViewport.tsx",
+    "apps/planner/tests/workspace-lifecycle.test.mjs",
+    "docs/acceptance/2026-10-22/548/WORKSPACE-VISUAL-CORRECTION.md",
+    "plugins/linker-commerce/content/windpress/planner.css",
+    "plugins/linker-tools/build/planner/assets/SceneViewport-jH0p61hj.js",
+    "plugins/linker-tools/build/planner/assets/planner-core-BRyS3-DG.js",
+    "plugins/linker-tools/build/planner/assets/planner-core-BkIGcxZy.js",
+    "plugins/linker-tools/build/planner/assets/planner.js",
+    "plugins/linker-tools/build/planner/source-manifest.json",
+    "plugins/linker-tools/build/planner/vite-manifest.json",
+    "plugins/linker-tools/build/planner/windpress.scan.txt",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal.mo",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal.po"
+  ],
+  "authority_or_physics_implementation_delta": [],
+  "added_legacy_identifier_matches": [],
+  "latest_delta_matches_guard_and_style_relocation": true,
+  "carried_reviews": [
+    "../563e0387-standards/REVIEW.md",
+    "../eefe7c0b-standards/REVIEW.md",
+    "../cbf75a9c-standards/REVIEW.md"
+  ]
+}

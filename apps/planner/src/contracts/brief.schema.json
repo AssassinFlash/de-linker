@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "AnnualLoadBrief": {
+      "additionalProperties": false,
+      "properties": {
+        "kwh": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Kwh"
+        },
+        "basis": {
+          "anyOf": [
+            {
+              "enum": [
+                "bill_total",
+                "user_estimate"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Basis"
+        },
+        "source_note": {
+          "$ref": "#/$defs/Text"
+        }
+      },
+      "required": [
+        "kwh",
+        "basis",
+        "source_note"
+      ],
+      "title": "AnnualLoadBrief",
+      "type": "object"
+    },
+    "Country": {
+      "pattern": "^[A-Z]{2}$",
+      "type": "string"
+    },
+    "SchemaVersion": {
+      "maximum": 1,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "SiteBrief": {
+      "additionalProperties": false,
+      "properties": {
+        "country_code": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Country"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "location_label": {
+          "$ref": "#/$defs/Text"
+        },
+        "latitude": {
+          "anyOf": [
+            {
+              "maximum": 90,
+              "minimum": -90,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Latitude"
+        },
+        "longitude": {
+          "anyOf": [
+            {
+              "maximum": 180,
+              "minimum": -180,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Longitude"
+        },
+        "coordinate_basis": {
+          "enum": [
+            "user_entered",
+            "not_provided"
+          ],
+          "title": "Coordinate Basis",
+          "type": "string"
+        },
+        "timezone": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Timezone"
+        }
+      },
+      "required": [
+        "country_code",
+        "location_label",
+        "latitude",
+        "longitude",
+        "coordinate_basis",
+        "timezone"
+      ],
+      "title": "SiteBrief",
+      "type": "object"
+    },
+    "Text": {
+      "maxLength": 4096,
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "$ref": "#/$defs/SchemaVersion"
+    },
+    "project_use": {
+      "anyOf": [
+        {
+          "enum": [
+            "residential",
+            "commercial",
+            "industrial"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Project Use"
+    },
+    "system_scope": {
+      "anyOf": [
+        {
+          "enum": [
+            "new_pv_storage",
+            "storage_addition",
+            "pv_only"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "System Scope"
+    },
+    "site": {
+      "$ref": "#/$defs/SiteBrief"
+    },
+    "annual_load": {
+      "$ref": "#/$defs/AnnualLoadBrief"
+    },
+    "project_note": {
+      "$ref": "#/$defs/Text"
+    }
+  },
+  "required": [
+    "schema_version",
+    "project_use",
+    "system_scope",
+    "site",
+    "annual_load",
+    "project_note"
+  ],
+  "title": "PlanningBrief",
+  "type": "object"
+}

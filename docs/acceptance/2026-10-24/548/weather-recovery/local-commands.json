@@ -1,0 +1,56 @@
+[
+  {
+    "label": "lint",
+    "command": [
+      ".venv/bin/ruff",
+      "check",
+      "src/linker_local",
+      "tests"
+    ],
+    "cwd": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local",
+    "source_pin": "704c4fddbe2e4de068f1d9f7fe9fd0ad3f16f914",
+    "exit_code": 0,
+    "elapsed_seconds": 0.117
+  },
+  {
+    "label": "format",
+    "command": [
+      ".venv/bin/ruff",
+      "format",
+      "--check",
+      "src/linker_local",
+      "tests/test_planner_worker.py"
+    ],
+    "cwd": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local",
+    "source_pin": "704c4fddbe2e4de068f1d9f7fe9fd0ad3f16f914",
+    "exit_code": 0,
+    "elapsed_seconds": 0.04
+  },
+  {
+    "label": "types",
+    "command": [
+      ".venv/bin/mypy",
+      "src/linker_local"
+    ],
+    "cwd": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local",
+    "source_pin": "704c4fddbe2e4de068f1d9f7fe9fd0ad3f16f914",
+    "exit_code": 0,
+    "elapsed_seconds": 0.311
+  },
+  {
+    "label": "tests",
+    "command": [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "--ignore=tests/test_stack.py",
+      "--ignore=tests/integration",
+      "--junitxml=/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-24/548/weather-recovery/local-tests.xml"
+    ],
+    "cwd": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/tools/local",
+    "source_pin": "704c4fddbe2e4de068f1d9f7fe9fd0ad3f16f914",
+    "exit_code": 0,
+    "elapsed_seconds": 3.427
+  }
+]

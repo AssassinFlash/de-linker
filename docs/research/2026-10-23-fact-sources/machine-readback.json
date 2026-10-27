@@ -1,0 +1,22 @@
+{
+  "home_url": "http://127.0.0.1:9347",
+  "feed_class_file": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/plugins/linker-commerce/includes/Products/EngineeringFeed.php",
+  "feed_class_sha256": "320ac163dac1d84531761fc9dcc6dcffd746268368d2f35c6048fd88a70bd78e",
+  "feed_class_realpath": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/plugins/linker-commerce/includes/Products/EngineeringFeed.php",
+  "observed_at_utc": "2026-10-22T18:19:12.287660+00:00",
+  "public_projection_readback": {
+    "source_url": "http://127.0.0.1:9347/wp-json/linker/v1/engineering-feed",
+    "raw_response_sha256": "e9401e4d2e98ece002a4cbcdf7fa0d0d218f0a7c6a1ba0178d548f6b1e1537d4",
+    "generated_at": "2026-10-22T18:19:12+00:00",
+    "original_projection_sha256": "9e625141d35918613f45b2cbdcab221531f5daf5f5656fec323a50ec9ca4748e",
+    "current_projection_sha256": "9e625141d35918613f45b2cbdcab221531f5daf5f5656fec323a50ec9ca4748e",
+    "unchanged": true,
+    "product_count": 106
+  },
+  "raw_meta_readback": {
+    "observed_at_utc": "2026-10-22T18:24:14.481125+00:00",
+    "products": 106,
+    "different_products": [],
+    "all_raw_figures_and_documents_sha_unchanged": true
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "owner": "unified-planner-548",
+  "purpose": "EN/DE desktop/mobile Computer Use of actual PV input components with synthetic geometry and simulated transport",
+  "worktree": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548",
+  "port": 50673,
+  "new_wordpress_instance": false,
+  "new_worktree": false,
+  "full_backup_created": false,
+  "started_at_utc": "2026-10-24T13:34:09.192853+00:00",
+  "review_by_utc": "2026-10-24T15:34:09.192853+00:00",
+  "reclaim": "Close created fixture tab and stop verified Vite listener before checkpoint ends",
+  "status": "reclaimed",
+  "pid": 6988,
+  "verified_command": "node /Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/apps/planner/node_modules/.bin/vite --host 127.0.0.1 --port 50673 --strictPort",
+  "fixture_tab_closed": true,
+  "original_tab_preserved": true,
+  "viewport_override_reset": true,
+  "listener_closed": true,
+  "stopped_at_utc": "2026-10-24T14:19:34.071429+00:00",
+  "free_bytes_after": 878120779776
+}

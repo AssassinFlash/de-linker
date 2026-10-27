@@ -1,0 +1,108 @@
+✔ independent: all raw controls and original bytes survive Back, unidentified 422, and later typed correction (148.104083ms)
+✔ independent: actual MultiPolygon choice is explicit and sends its original rings and nonzero part indices (45.883708ms)
+✔ independent: existing origin stays fixed and declared negative Up follows the selected vertex geodetic vertical (37.0615ms)
+✔ independent: nonempty unaligned geometry cannot supply implicit origin or dispatch (15.413333ms)
+✔ independent: malformed 3D, CRS and unclosed originals never reach mutation (32.207375ms)
+✔ independent: real IDB quota across other project intents refuses dispatch without evicting originals (49.581917ms)
+✔ independent: incomplete local commit and later native withdrawal cannot dispatch a roof request (11.494959ms)
+✔ independent: dismiss aborts a dispatched request, preserves its durable intent, and fences an ignored late response (13.655166ms)
+✔ independent: current native admission, without dismissal, fences a late successful response (10.360625ms)
+✔ independent: only a native-granted former namespace can be explicitly retried with the same original body/key (17.174375ms)
+✔ independent: unidentified status/code combinations retain retry bytes; only identified pre-mutation pairs release them (22.263042ms)
+✔ independent: changed server options or content hash never produce an attachable prepared roof (10.87375ms)
+✔ independent: CSV identified refusal correction also uses the real client and real IndexedDB original (20.594875ms)
+✔ independent: commercial project preview adds exactly one shared history step; unknown revision retry preserves body; confirmed save clears only that original (198.598625ms)
+▶ SPEC COUNTEREXAMPLE: explicit relative-zero datum releases a previously rejected hidden height
+  ✖ previously required blank (20.410083ms)
+  ✖ previously invalid raw decimal (20.111ms)
+✖ SPEC COUNTEREXAMPLE: explicit relative-zero datum releases a previously rejected hidden height (41.009959ms)
+▶ SPEC COUNTEREXAMPLE: response-shape parsing never proves a pre-mutation refusal
+  ✖ non-object JSON response with HTTP 200 (9.504583ms)
+  ✖ non-object JSON response with HTTP 502 (8.844083ms)
+✖ SPEC COUNTEREXAMPLE: response-shape parsing never proves a pre-mutation refusal (18.60125ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 14
+ℹ fail 6
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1407.2695
+
+✖ failing tests:
+
+test at tests/independent-roof-import.mjs:267:43
+✖ previously required blank (20.410083ms)
+  AssertionError [ERR_ASSERTION]: explicit relative-zero declaration must permit the Source step without fixing an inactive hidden height
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/roof-import-spec-3225-8itr0hjn/apps/planner/tests/independent-roof-import.mjs:277:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/roof-import-spec-3225-8itr0hjn/apps/planner/tests/independent-roof-import.mjs:267:35)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/independent-roof-import.mjs:267:43
+✖ previously invalid raw decimal (20.111ms)
+  AssertionError [ERR_ASSERTION]: explicit relative-zero declaration must permit the Source step without fixing an inactive hidden height
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/roof-import-spec-3225-8itr0hjn/apps/planner/tests/independent-roof-import.mjs:277:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/roof-import-spec-3225-8itr0hjn/apps/planner/tests/independent-roof-import.mjs:267:35)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/independent-roof-import.mjs:284:44
+✖ non-object JSON response with HTTP 200 (9.504583ms)
+  AssertionError [ERR_ASSERTION]: an ambiguous response cannot delete the durable original after dispatch
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/roof-import-spec-3225-8itr0hjn/apps/planner/tests/independent-roof-import.mjs:288:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/roof-import-spec-3225-8itr0hjn/apps/planner/tests/independent-roof-import.mjs:284:36)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/independent-roof-import.mjs:284:44
+✖ non-object JSON response with HTTP 502 (8.844083ms)
+  AssertionError [ERR_ASSERTION]: an ambiguous response cannot delete the durable original after dispatch
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/roof-import-spec-3225-8itr0hjn/apps/planner/tests/independent-roof-import.mjs:288:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/roof-import-spec-3225-8itr0hjn/apps/planner/tests/independent-roof-import.mjs:284:36)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

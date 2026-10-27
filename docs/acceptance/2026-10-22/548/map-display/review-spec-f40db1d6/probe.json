@@ -1,0 +1,334 @@
+{
+  "pinned": "f40db1d6e22f4b7511ddc658024ff2cf8f91f507",
+  "commands": {
+    "diff": "git diff be5711bf...f40db1d6e22f4b7511ddc658024ff2cf8f91f507",
+    "log": "git log be5711bf..f40db1d6e22f4b7511ddc658024ff2cf8f91f507 --oneline",
+    "reproduce": "node /Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-22/548/map-display/review-spec-f40db1d6/probe.mjs"
+  },
+  "commits": [
+    "f40db1d6 Retain map build checks and test-boundary evidence",
+    "910b4751 Add a shared-project map view with bounded provider requests"
+  ],
+  "pinned_current_files": [
+    {
+      "path": "apps/planner/package-lock.json",
+      "sha256": "e177845d57b15d2ef654aa3e2a6c7725198c54393aa37f69dfd9b8525ec49a3a"
+    },
+    {
+      "path": "apps/planner/package.json",
+      "sha256": "b7640607d7d9196f960700c2987991d892d9481a9559866340fcd8180c588fb7"
+    },
+    {
+      "path": "apps/planner/src/components/ProjectEditor.tsx",
+      "sha256": "f5aab51d98cb1f1322bcf5da6eef82983728989865a023186f9bc575fa4d8b39"
+    },
+    {
+      "path": "apps/planner/src/components/design/DesignEditor.tsx",
+      "sha256": "a6e5e81eb1695fa440367843b425286844c2a21cee6965ca4edffaf1a639e339"
+    },
+    {
+      "path": "apps/planner/src/components/design/LazyMapViewport.tsx",
+      "sha256": "7bb8e45d568aa62abf73f7a4771da67a67e14ad7370b1c1efc02247ece217df3"
+    },
+    {
+      "path": "apps/planner/src/components/design/LazySceneViewport.tsx",
+      "sha256": "011f94ed6dd73075627880a98a77d4fa7c340b67fcbd04385d9a4584d29e8747"
+    },
+    {
+      "path": "apps/planner/src/components/design/MapViewport.tsx",
+      "sha256": "2556cec03299d264ea5d57ed7fec0b46294143e28296b2553b32de4b0de16e2f"
+    },
+    {
+      "path": "apps/planner/src/components/design/ViewportBoundary.tsx",
+      "sha256": "6a2e00808146bf9c3081dd6ff6c0f6752a1aadb6301406d7569882075a9d5cce"
+    },
+    {
+      "path": "apps/planner/src/data/config.ts",
+      "sha256": "056d43e91e0df78759239b11fd87f6987363e5a7595ed1c9e983fdfe4133536c"
+    },
+    {
+      "path": "apps/planner/src/data/mapModule.ts",
+      "sha256": "90a72815ea92cec116fdd32036ebd9e43fba388375b6a0af7d8bc74cd42a7e17"
+    },
+    {
+      "path": "apps/planner/src/data/mapRequests.test.ts",
+      "sha256": "a5fa39d6ef167fe628cdafea71bc58f4806a289356b87556c9c56ca620b36956"
+    },
+    {
+      "path": "apps/planner/src/data/mapRequests.ts",
+      "sha256": "fea467369cab044d1fff656336af64c5b426836857dfbecd95fd07384c1d482e"
+    },
+    {
+      "path": "apps/planner/src/data/retryableModule.ts",
+      "sha256": "e8de42cf86d8cc30313c5e5450982eb2566257ea1f49d9a8a82b0b654e6be025"
+    },
+    {
+      "path": "apps/planner/src/data/sceneModule.ts",
+      "sha256": "3d238e55d9db3418ade21214ef6ce6a051ea81d4d1308527f34625cdd0a26927"
+    },
+    {
+      "path": "apps/planner/src/domain/mapGeometry.test.ts",
+      "sha256": "90c7b791368fe81c71e2007bdec4d7432aa9f0e90346b71de46d7cdc1db10631"
+    },
+    {
+      "path": "apps/planner/src/domain/mapGeometry.ts",
+      "sha256": "8ccece1eb0bcc03d8014139de7964d8852b16f98957aada0307772924667b0ea"
+    },
+    {
+      "path": "apps/planner/tests/built-modules.mjs",
+      "sha256": "7e8d0be3ad43fdfd2e3c010d6a7ee6116bdb5f8796f16ca6d858ac80dc363e50"
+    },
+    {
+      "path": "apps/planner/tests/config.test.mjs",
+      "sha256": "62aba3a9129a3d863ba153de44cec1e58ed85ad77a91d9b6c4c27aa901d880b8"
+    },
+    {
+      "path": "apps/planner/tests/design-lazy-failure.test.mjs",
+      "sha256": "3dd6e29745cd9bf2d8b81611d6761a1d0f430cf833834558edcf082fa50bba4b"
+    },
+    {
+      "path": "apps/planner/tests/map-library-fixture.mjs",
+      "sha256": "a2060eac116a90172959dd476a5550a950b38292201b4a026d9377b755e64465"
+    },
+    {
+      "path": "apps/planner/tests/map-library-loader.mjs",
+      "sha256": "2dd6e200b5b9db61a8e487a02be7f6915ff360d51e5ec8c1f58449a2f08ef53d"
+    },
+    {
+      "path": "apps/planner/tests/map-lifecycle.test.mjs",
+      "sha256": "e5b01db2f82291a7c2222b99bc987a24d6c9a20581f46c680e8e13a3f131f0e8"
+    },
+    {
+      "path": "apps/planner/tests/map-vendor.test.mjs",
+      "sha256": "07183204de8289f953d5248aeea84e7d7528d89dd9f6c63249e0227b6ff1226a"
+    },
+    {
+      "path": "apps/planner/tests/scene-failure-loader.mjs",
+      "sha256": "d9d8f948d5c94d8b6cc3381bf9b917a8b5dd486e05b7d2e5df3715c3004ce81b"
+    },
+    {
+      "path": "plugins/linker-commerce/content/windpress/planner-maplibre.css",
+      "sha256": "5b973e5c58584ff41f8ec405c9f8cdf2c5c6d504fb35673b528cbcd8b3b367ca"
+    },
+    {
+      "path": "plugins/linker-commerce/content/windpress/planner.css",
+      "sha256": "98f72162660c25b7a9ed82c8aefb6566769be3c9bc235a98b845f47544a55b8e"
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/assets/MapViewport-CNw4GCpL.js",
+      "sha256": "71f0815a42a9040e7d196e1acaa57c99281b241f6f46bc4219f700f59b8d9a01"
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/assets/planner-core-sJPTB_v8.js",
+      "sha256": "eb3502b613d8e17ecce15af49a8dcfe28e482152e7d12277ba2feec62abcca47"
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/assets/planner.js",
+      "sha256": "e4020fc80f01264e9d5649c240ea824ebd20ff6f1c2e4847f6881f67bb2a59d4"
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/source-manifest.json",
+      "sha256": "e197546198d593998f7c6ed28e381aaa8acb6fe629e1f68b53c8c43b89e06491"
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/vite-manifest.json",
+      "sha256": "d07a24a7d1d73246b3410bc035a94385a756c8ab34c48a33f1e85ab200960986"
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/windpress.scan.txt",
+      "sha256": "291560ef0f858722a416c9ae31781e9ad83dd82dc2bbf013c4f4aaffd71f87a2"
+    },
+    {
+      "path": "plugins/linker-tools/includes/Planner/Application.php",
+      "sha256": "ea50d83f08d9edec1d45cf9c029289db5e7f1c890bd756d92bf0ce660824356d"
+    },
+    {
+      "path": "plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json",
+      "sha256": "0429d176c5959044cde77db1e99841cfea38b332b0ed4aaa8b1a68c648601e71"
+    },
+    {
+      "path": "plugins/linker-tools/languages/linker-tools-de_DE_formal.mo",
+      "sha256": "514654f55c3eef4cc4fcb98ad8b8bb93f44a9e98f4c51a04e1c091f407a31819"
+    },
+    {
+      "path": "plugins/linker-tools/languages/linker-tools-de_DE_formal.po",
+      "sha256": "e679cfe18e8411b383200b06ee352a7b75261c5f742f5b8ebd44876a7eb3cb25"
+    },
+    {
+      "path": "plugins/linker-tools/tests/php/Unit/PlannerApplicationTest.php",
+      "sha256": "fc91186bc6b8c132576bec9b366b4f7c2675522d74de8c09d88989043f24fa34"
+    },
+    {
+      "path": "tools/local/mu/000-linker-local-isolation.php",
+      "sha256": "9a230984633ed6383b4e880abe4dcb72baa4f80e69eb65848812380b85585256"
+    },
+    {
+      "path": "tools/local/tests/test_stack.py",
+      "sha256": "ebc14b6cc8e65f837aa45007784ab8d4005a142257ffe41adaddbc359a43293f"
+    }
+  ],
+  "numerical_support": {
+    "wire_validation": "accepted",
+    "fixture": {
+      "schema_version": 1,
+      "coordinate_system": {
+        "kind": "local_enu",
+        "unit": "m",
+        "height_reference": "relative_to_project_origin",
+        "north_reference": "true_north",
+        "north_source_id": "survey",
+        "anchor": {
+          "latitude_deg": 50.94,
+          "longitude_deg": 6.96,
+          "source_id": "survey",
+          "datum": "EPSG:4326"
+        }
+      },
+      "sources": [
+        {
+          "id": "survey",
+          "kind": "synthetic_fixture",
+          "note": "Analytic synthetic dimensions only",
+          "rights_note": "Owned test data, not a site survey or product datasheet",
+          "reference_url": null,
+          "reference_sha256": null,
+          "acquired_at_utc": null,
+          "spatial_precision_m": null,
+          "calibration_note": "Analytic metre-scale fixture; no real-world precision claim",
+          "rights_basis": "synthetic",
+          "permissions": {
+            "derive": "permitted",
+            "retain": "permitted",
+            "export": "permitted"
+          }
+        }
+      ],
+      "roofs": [
+        {
+          "id": "roof",
+          "name": "Fixture roof",
+          "source_id": "survey",
+          "origin_enu": [
+            0,
+            -141421356237309.5,
+            4
+          ],
+          "u_axis_enu": [
+            0.7071067811865476,
+            0.7071067811865476,
+            0
+          ],
+          "v_axis_enu": [
+            -0.7071067811865476,
+            0.7071067811865476,
+            0
+          ],
+          "boundary_uv": [
+            [
+              100000000000000,
+              100000000000000
+            ],
+            [
+              100000000000020,
+              100000000000000
+            ],
+            [
+              100000000000020,
+              100000000000020
+            ],
+            [
+              100000000000000,
+              100000000000020
+            ]
+          ],
+          "holes_uv": []
+        }
+      ],
+      "module_specs": [
+        {
+          "id": "module",
+          "model": "Synthetic 1 x 2 m",
+          "width_m": 1,
+          "length_m": 2,
+          "thickness_m": 0.04,
+          "stc_power_w": 500,
+          "source": {
+            "kind": "user_declared",
+            "note": "Synthetic module, not a product release",
+            "document_sha256": null,
+            "url": null,
+            "page": null
+          }
+        }
+      ],
+      "arrays": [],
+      "obstacles": [],
+      "keepouts": [],
+      "layout_rules": [
+        {
+          "roof_id": "roof",
+          "source_id": "survey",
+          "edge_clearance_m": 0,
+          "obstacle_clearance_m": 0,
+          "source_note": "Explicit zero for analytic fixture; not a recommended installation clearance"
+        }
+      ]
+    },
+    "uv_resolution_m": 0.015625,
+    "policy_max_uv_resolution_m": 1e-9,
+    "existing_renderer_guard": "geometry_numeric_resolution_unsupported",
+    "map_result": "accepted",
+    "metric_points_used": [
+      [
+        0,
+        0,
+        4
+      ],
+      [
+        14.15625,
+        14.15625,
+        4
+      ],
+      [
+        0,
+        28.3125,
+        4
+      ],
+      [
+        -14.15625,
+        14.15625,
+        4
+      ]
+    ],
+    "map_projected_ring": [
+      [
+        6.959999999999999,
+        50.94
+      ],
+      [
+        6.960201403432157,
+        50.940127250221416
+      ],
+      [
+        6.959999999999999,
+        50.940254500787375
+      ],
+      [
+        6.959798596567842,
+        50.940127250221416
+      ],
+      [
+        6.959999999999999,
+        50.94
+      ]
+    ],
+    "edge_lengths_m": [
+      20.01996074234413,
+      20.01996074234413,
+      20.01996074234413,
+      20.01996074234413
+    ],
+    "expected_analytic_edge_m": 20,
+    "unchanged_input": true
+  }
+}

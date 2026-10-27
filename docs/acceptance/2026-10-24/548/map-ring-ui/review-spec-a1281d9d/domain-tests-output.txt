@@ -1,0 +1,12 @@
+✔ every existing ring restores paired coordinates and applies only its explicit target with original source/plane facts (25.001709ms)
+✔ insert/move/remove recovery retains original metric points and resets the source declaration on a new change (1.398708ms)
+✔ untrusted rings reject unrelated metric pairs, changed targets and forged prepared-result cleanup proofs (3.691209ms)
+✔ a separate ring copy keeps the edited object's identity and selection offers only real rings (0.826166ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 237.954167

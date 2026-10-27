@@ -1,0 +1,50 @@
+{
+  "scope": "Pure presentation parity, no physical calculation",
+  "fields": [
+    {
+      "field": "usable_window_kwh",
+      "label": "Usable stored energy",
+      "unit": "kWh",
+      "scale": 1
+    },
+    {
+      "field": "charge_ac_kw",
+      "label": "AC charging power",
+      "unit": "kW",
+      "scale": 1
+    },
+    {
+      "field": "discharge_ac_kw",
+      "label": "AC discharging power",
+      "unit": "kW",
+      "scale": 1
+    },
+    {
+      "field": "eta_charge",
+      "label": "Charging efficiency",
+      "unit": "%",
+      "scale": 100,
+      "max": 100
+    },
+    {
+      "field": "eta_discharge",
+      "label": "Discharging efficiency",
+      "unit": "%",
+      "scale": 100,
+      "max": 100
+    },
+    {
+      "field": "internal_aux_kw",
+      "label": "Internal auxiliary power",
+      "unit": "kW",
+      "scale": 1
+    },
+    {
+      "field": "standing_loss_rate_per_hour",
+      "label": "Standing-loss coefficient",
+      "unit": "1/h",
+      "scale": 1
+    }
+  ],
+  "allAssertionsPassed": true
+}

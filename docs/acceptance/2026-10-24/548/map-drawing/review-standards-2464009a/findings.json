@@ -1,0 +1,33 @@
+{
+  "base": "66324a39fb449425dd1144b46b4d3abc21dc52d0",
+  "target": "2464009a7456da75154d36bfecb9d24187a99e18",
+  "verdict": "FAIL",
+  "hard_documented_breaches": [
+    {
+      "id": "map-pick-gate-own-file",
+      "priority": 3,
+      "file": "apps/planner/src/data/MapDrawingController.ts",
+      "start_line": 57,
+      "end_line": 65,
+      "title": "Give the independently owned map-pick gate its own module",
+      "rule": {
+        "file": "/Users/chesterjohn/Documents/de-linker/AGENTS.md",
+        "line": 78,
+        "quote": "一个组件/类/模块一个文件"
+      },
+      "trigger": "The changed file exports MapPickGate at line 57 and MapDrawingController at line 87. MapPickGate belongs to the viewport lifetime rather than controller disposal.",
+      "required_change": "Move MapPickGate unchanged to apps/planner/src/data/MapPickGate.ts and update its direct test import. Preserve behavior; no larger refactor is needed.",
+      "reproduction": "probe.py reads the fixed Git object and current root rule; probe.json.exported_classes_in_controller_file records both declarations.",
+      "scope": "Documented organization rule only, not a runtime defect or Fowler file-length finding."
+    }
+  ],
+  "fowler_baseline_judgment_calls": [],
+  "fowler_baseline_considered": [
+    "Mysterious Name", "Duplicated Code", "Feature Envy", "Data Clumps",
+    "Primitive Obsession", "Repeated Switches", "Shotgun Surgery", "Divergent Change",
+    "Speculative Generality", "Message Chains", "Middle Man", "Refused Bequest"
+  ],
+  "independent_evidence": ["probe.py", "probe.json", "domain-tests.log", "controller-tests.log"],
+  "new_targeted_cases_passed": 34,
+  "verification_boundary": "Full fixed Standards diff only; no source changes or source copies, new dependencies/worktrees/stacks/network, native/GPU/touch execution, provider permission, production, engineering or full-goal acceptance."
+}

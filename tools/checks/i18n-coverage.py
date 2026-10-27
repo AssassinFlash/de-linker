@@ -26,6 +26,7 @@ Usage:
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import shutil
@@ -147,6 +148,39 @@ def script_json_problems(catalog: Path) -> list[str]:
         return problems
 
 
+def planner_json_problems(
+    plugin: Path, catalog: Path, references: dict[str, list[tuple[str, int]]]
+) -> list[str]:
+    """PO presence alone does not bind a reused message to this script module."""
+    messages = {
+        msgid
+        for msgid, paths in references.items()
+        if any(
+            path.replace("\\", "/").startswith("../../apps/planner/src/")
+            for path, _ in paths
+        )
+    }
+    if not messages:
+        return []
+    try:
+        manifest = json.loads((plugin / "build/planner/vite-manifest.json").read_text())
+        script = "build/planner/" + manifest["src/main.tsx"]["file"]
+        # Native WP-CLI and wp_set_script_module_translations name JSON by
+        # md5 of the plugin-relative script path; this is not a security hash.
+        suffix = hashlib.md5(script.encode(), usedforsecurity=False).hexdigest()
+        path = catalog.with_name(catalog.stem + "-" + suffix + ".json")
+        data = json.loads(path.read_text())["locale_data"]["messages"]
+    except (OSError, ValueError, KeyError, TypeError):
+        return ["planner script JSON is missing or invalid"]
+    if not isinstance(data, dict):
+        return ["planner script JSON is missing or invalid"]
+    return [
+        f"planner script JSON lacks source msgid: {msgid!r}"
+        for msgid in sorted(messages)
+        if not data.get(msgid)
+    ]
+
+
 def main() -> int:
     exemptions = load_exemptions()
     found = catalogs()
@@ -168,9 +202,10 @@ def main() -> int:
         plugin = (ROOT / catalog).parent.parent
         if plugin.name == "linker-tools":
             messages = set(catalog_msgids(ROOT / catalog))
+            runtime_sources = code_references(plugin)
             missing_source = {
                 msgid: references
-                for msgid, references in code_references(plugin).items()
+                for msgid, references in runtime_sources.items()
                 if msgid not in messages
             }
             for msgid, references in missing_source.items():
@@ -179,6 +214,9 @@ def main() -> int:
                     print(f"  source: {plugin.relative_to(ROOT)}/{path}:{line}")
                 failed = True
             problems = script_json_problems(ROOT / catalog)
+            problems.extend(
+                planner_json_problems(plugin, ROOT / catalog, runtime_sources)
+            )
             for problem in problems:
                 print(f"{catalog}: {problem}")
                 failed = True

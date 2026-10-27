@@ -1,0 +1,32 @@
+Browser tab: 8, Title: "Solution Configurator · Workspace review | Linker", URL: "http://127.0.0.1:9347/planning-workspace-review/?project=8c71ef3068ee465d86f093cece8406fa".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+~					886 button Check layout
++					918 text Layout conflicts detected.
++					919 content list
++						920 container
++							921 button North reference is missing.
++							922 text coordinate_system
++						923 container
++							924 button Source measurement precision is unknown.
++							925 text source_121ef0395f7f4ab186605346735b65fd
++						926 container
++							927 button Roof-edge clearance has not been specified.
++							928 text roof_1498d7784ec644d1a5b0cbc7c2238576
++						929 container
++							930 button Obstacle clearance has not been specified.
++							931 text roof_1498d7784ec644d1a5b0cbc7c2238576
++						932 container
++							933 button A module projection overlaps an obstacle projection.
++							934 text array_2bf8f4207b644dab8b9f589a640c8a9c:0:1  · obstacle_7b3c206db44345f9a5d4aa2e06f748ae
++						935 container
++							936 button A module projection overlaps an obstacle projection.
++							937 text array_2bf8f4207b644dab8b9f589a640c8a9c:0:2  · obstacle_7b3c206db44345f9a5d4aa2e06f748ae
++						938 container
++							939 button A module overlaps a keep-out area.
++							940 text array_2bf8f4207b644dab8b9f589a640c8a9c:2:0  · keepout_d28e7bc42d5f4015a3669980a8035f48
++						941 container
++							942 button A module overlaps a keep-out area.
++							943 text array_2bf8f4207b644dab8b9f589a640c8a9c:2:1  · keepout_d28e7bc42d5f4015a3669980a8035f48
++					944 button (collapsed) Method, inputs and numerical limits, Secondary Actions: Expand
++						945 text Method, inputs and numerical limits
+The focused UI element is 1 AXWebArea Solution Configurator · Workspace review | Linker, URL: 127.0.0.1:9347/planning-workspace-review/?project=8c71ef3068ee465d86f093cece8406fa

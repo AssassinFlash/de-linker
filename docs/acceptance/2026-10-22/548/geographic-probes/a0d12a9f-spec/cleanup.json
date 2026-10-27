@@ -1,0 +1,9 @@
+{
+  "root": "/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/planning-spec-geo-a0d1-4iwo5atx",
+  "reclaimed_fixed_files": 217,
+  "reclaimed_fixed_bytes": 1540108,
+  "reclaimed_generated_cache_files": 112,
+  "reclaimed_generated_cache_bytes": 826467,
+  "preserved_unique_bytes": 133730,
+  "verdict": "FAIL 3 P2"
+}

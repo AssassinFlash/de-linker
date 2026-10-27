@@ -1,0 +1,6 @@
+
+> @linker/planner@0.1.0 lint:format
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!

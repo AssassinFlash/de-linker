@@ -1,0 +1,12 @@
+✔ only a same-site reviewed scene asset can become an executable retry URL (35.26775ms)
+✔ 3D chunk failure and retry preserve unapplied raw properties and the plan path (368.812584ms)
+{"additionalRejectedCandidates":14,"documentBaseCannotChangeTrustOrigin":true}
+✔ entry origin/directory controls executable metadata despite hostile document base and encoded traversal (37.457958ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 930.3875

@@ -1,0 +1,43 @@
+{
+  "before": {
+    "active": "BUTTON",
+    "bar": {
+      "bottom": 194,
+      "height": 113,
+      "left": 0,
+      "right": 375,
+      "top": 81,
+      "width": 375,
+      "x": 0,
+      "y": 81
+    },
+    "documentWidth": 375,
+    "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=a0c7e0cb813b3c08eb4925a354fe73af4bde302675afd669f8ecdeec022e0467",
+    "fontStatus": "loaded",
+    "height": 844,
+    "scrollWidth": 375,
+    "url": "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-design",
+    "width": 390,
+    "x": 0,
+    "y": 641.5
+  },
+  "after": {
+    "bar": {
+      "bottom": 194,
+      "height": 113,
+      "left": 0,
+      "right": 375,
+      "top": 81,
+      "width": 375,
+      "x": 0,
+      "y": 81
+    },
+    "documentWidth": 375,
+    "height": 844,
+    "scrollWidth": 375,
+    "width": 390,
+    "x": 0,
+    "y": 641.5
+  },
+  "scrollStable": true
+}

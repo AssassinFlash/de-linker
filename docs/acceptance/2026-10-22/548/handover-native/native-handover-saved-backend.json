@@ -1,0 +1,56 @@
+{
+  "captured_at_utc": "2026-10-23T03:35:02Z",
+  "phase": "actual native account CSV retry, select/save, reload EN and DE",
+  "project": {
+    "id": "5c9fca3466324c308895cc8b386dc6db",
+    "title": "Synthetic source handover · 548 native",
+    "revision": 2
+  },
+  "input_sha256": "9c889d79e11aba456f317bb46835d1e6dffd9fb8d35241a2e96085a05e4edad3",
+  "inputs": {
+    "brief": {
+      "annual_load": {
+        "basis": null,
+        "kwh": null,
+        "source_note": ""
+      },
+      "project_note": "",
+      "project_use": null,
+      "schema_version": 1,
+      "site": {
+        "coordinate_basis": "not_provided",
+        "country_code": null,
+        "latitude": null,
+        "location_label": "",
+        "longitude": null,
+        "timezone": null
+      },
+      "system_scope": null
+    },
+    "profile_selections": {
+      "schema_version": 1,
+      "selected": {
+        "net_import": "1ffa8ae534e045329aedae25c8bf9118"
+      }
+    }
+  },
+  "source_count": 1,
+  "assets": [
+    {
+      "id": "1ffa8ae534e045329aedae25c8bf9118",
+      "project_id": "5c9fca3466324c308895cc8b386dc6db",
+      "purpose": "csv_profile_v1",
+      "content_sha256": "c3786829889364e06731c2caa91019214bb3e20fff241ed6ba4e89423f9fd6c0",
+      "metadata_sha256": "f29051e2b8871a1f037bb11dcf49aac3e226791f3840234b7489fa05e67f1b9e"
+    }
+  ],
+  "synthetic_creation_count": 1,
+  "creation": [
+    {
+      "id": "71325bf40adb441ca7696896828857e3",
+      "title": "Synthetic lost acknowledgement · 548 native",
+      "revision": 1
+    }
+  ],
+  "all_blob_hashes_verified": true
+}

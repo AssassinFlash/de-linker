@@ -1,0 +1,38 @@
+{"probe":"zero-height-and-site-language","locale":"en-GB","rawKind":"empty","height_zero_sent_only_after_explicit_choice":true,"original_raw_and_validity_retained":true,"unchecked_rights_blocked":true,"site_picker_and_checkbox_words":true}
+✔ independent zero-height bypass keeps original raw validity and localized rights guidance en-GB empty (275.444667ms)
+{"probe":"zero-height-and-site-language","locale":"en-GB","rawKind":"invalid","height_zero_sent_only_after_explicit_choice":true,"original_raw_and_validity_retained":true,"unchecked_rights_blocked":true,"site_picker_and_checkbox_words":true}
+✔ independent zero-height bypass keeps original raw validity and localized rights guidance en-GB invalid (72.361291ms)
+✖ independent preview rounding is presentation only and leaves accepted area unchanged en-GB (45.565833ms)
+{"probe":"zero-height-and-site-language","locale":"de-DE","rawKind":"empty","height_zero_sent_only_after_explicit_choice":true,"original_raw_and_validity_retained":true,"unchecked_rights_blocked":true,"site_picker_and_checkbox_words":true}
+✔ independent zero-height bypass keeps original raw validity and localized rights guidance de-DE empty (63.884ms)
+{"probe":"zero-height-and-site-language","locale":"de-DE","rawKind":"invalid","height_zero_sent_only_after_explicit_choice":true,"original_raw_and_validity_retained":true,"unchecked_rights_blocked":true,"site_picker_and_checkbox_words":true}
+✔ independent zero-height bypass keeps original raw validity and localized rights guidance de-DE invalid (65.39325ms)
+✖ independent preview rounding is presentation only and leaves accepted area unchanged de-DE (33.790916ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 4
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1193.553667
+
+✖ failing tests:
+
+test at tests/standards-correction-boundaries.test.mjs:254:2
+✖ independent preview rounding is presentation only and leaves accepted area unchanged en-GB (45.565833ms)
+  TypeError [Error]: Cannot read properties of undefined (reading 'prepared')
+      at TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/roof-import-standards-eff8-ho43dg81/apps/planner/tests/standards-correction-boundaries.test.mjs:268:81)
+      at runNextTicks (node:internal/process/task_queues:65:5)
+      at process.processImmediate (node:internal/timers:541:9)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at tests/standards-correction-boundaries.test.mjs:254:2
+✖ independent preview rounding is presentation only and leaves accepted area unchanged de-DE (33.790916ms)
+  TypeError [Error]: Cannot read properties of undefined (reading 'prepared')
+      at TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/roof-import-standards-eff8-ho43dg81/apps/planner/tests/standards-correction-boundaries.test.mjs:268:81)
+      at runNextTicks (node:internal/process/task_queues:65:5)
+      at process.processImmediate (node:internal/timers:541:9)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)

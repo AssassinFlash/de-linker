@@ -1,0 +1,22 @@
+[
+  {
+    "path": "apps/planner/tests/controlled-fiber-loader.mjs",
+    "bytes": 409,
+    "sha256": "ad5ad5f59c482ef1079cb1b6bb24a3d8f3e67651e4f39448bd3b6b3bf3019426"
+  },
+  {
+    "path": "apps/planner/tests/controlled-fiber.mjs",
+    "bytes": 623,
+    "sha256": "421479d807e2f394347be49421899c02e113906f2952d570c2e1e100b2bb905e"
+  },
+  {
+    "path": "apps/planner/tests/camera-lifecycle.test.mjs",
+    "bytes": 5916,
+    "sha256": "1d2f0ddfc33e1e195914d8a1ffe6072a9c3e3e1c01bcb91d97d23a2d1f48a766"
+  },
+  {
+    "path": "apps/planner/tests/selected-panel.test.mjs",
+    "bytes": 1777,
+    "sha256": "07abeefc9414881dc45b8a63e5e840ad16ca5cbd356219b7a44d96e31209f049"
+  }
+]

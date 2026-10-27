@@ -1,0 +1,1 @@
+Initial reviewer inventory assertion: Unreviewed new message ids: ["Choose file"]. Corrected classification: new planner reference to an existing approved site catalog term. Prior PO includes msgid "Choose file" / msgstr "Datei auswählen"; the task explicitly approved reuse. No customer text changed.

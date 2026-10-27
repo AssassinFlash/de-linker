@@ -1,0 +1,20 @@
+[
+  {
+    "at_utc": "2026-10-23T12:50:34.324464+00:00",
+    "command": [
+      "node",
+      "--no-warnings=ExperimentalWarning",
+      "--loader",
+      "./tests/tsx-loader.mjs",
+      "--test",
+      "--test-name-pattern=invalid staged properties stay visible until corrected or cancelled",
+      "tests/design-editor.test.mjs"
+    ],
+    "source_sha": "1652209cb0deef904adc70baba9770c8f8ed61b7",
+    "target_sha": "bc714bc628f1555d2ddcbface216dabc7b9371d5",
+    "result": "TIMEOUT",
+    "timeout_seconds": 50,
+    "log": "fixed-focus-test.log",
+    "log_sha256": "0c14d7bb4e6a41238985d560911b44b7f34f8cb14d7199951f2ba5c872d8044f"
+  }
+]

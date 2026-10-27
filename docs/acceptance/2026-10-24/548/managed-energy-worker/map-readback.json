@@ -1,0 +1,11 @@
+{
+  "issue": 548,
+  "url": "https://github.com/AssassinFlash/de-linker/issues/548#issuecomment-6376991159",
+  "comment_id": 6376991159,
+  "body_sha256": "3fdb4f0dd99ec854eba30f399b8cdedb8ee07478f8373a52ed952170eaa8e07c",
+  "readback_exact": true,
+  "implementation_pin": "b87aa3c9b39c0955f381c6847e9c5137f0c2b8f3",
+  "evidence_commit": "198d13fcf848fdbc6ab0af887c021d50814e7471",
+  "issue_stays_open": true,
+  "posting_note": "First post succeeded. URL fragment extraction failed before GET; recovered by reading that existing comment ID. No second post."
+}

@@ -1,0 +1,34 @@
+{
+  "fixed_sha": "47bb44d6ca2ff664d0bf638e394ab6fa842ac2fd",
+  "incremental_base": "8e11c7c3dfbcf658765b53b5f7fa4074e03ed560",
+  "full_base": "8a4a80b132f692062125807e509a57926fb0f518",
+  "axis": "Standards",
+  "verdict": "PASS",
+  "hard_findings": [],
+  "actionable_heuristic_smells": [],
+  "closed_spec_P3": {
+    "?": "rejected",
+    "#": "rejected",
+    "?#": "rejected"
+  },
+  "checks": {
+    "official_config_and_raw_retry_plus_existing_URL_probe": {
+      "pass": 3
+    },
+    "actual_build_source_hash_and_versioned_ESM_graph": {
+      "pass": 1
+    },
+    "unchanged_source_cache_probe": {
+      "pass": 1
+    },
+    "unchanged_actual_emitted_failure_retry_probe": {
+      "pass": 1
+    },
+    "copy_and_PO": "unchanged"
+  },
+  "limits": [
+    "Retain previous8e11 Standards passing scope; no repeated accepted physics",
+    "No browser/native/GPU/production execution; synthetic failure seam only at module boundary",
+    "Full tool goal remains active"
+  ]
+}

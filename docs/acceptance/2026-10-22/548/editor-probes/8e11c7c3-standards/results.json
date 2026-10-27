@@ -1,0 +1,54 @@
+{
+  "fixed_sha": "8e11c7c3dfbcf658765b53b5f7fa4074e03ed560",
+  "base": "8a4a80b132f692062125807e509a57926fb0f518",
+  "corrective_base": "b0080ec15eb2dcab6b2c22b7b029180a2c1f73c2",
+  "axis": "Standards",
+  "verdict": "PASS",
+  "hard_findings": [],
+  "actionable_possible_smells": [],
+  "checks": {
+    "official_domain_data_pass": 46,
+    "official_React_DOM_pass": 52,
+    "official_actual_built_graph_pass": 1,
+    "fixed_PHP_Application_manifest_test": {
+      "tests": 1,
+      "assertions": 7,
+      "code_under_review": "Application and Gateway explicitly required from fixed archive; vendor symlink dependency only"
+    },
+    "additional_PHP_metadata_cases_pass": 10,
+    "additional_client_executable_URL_candidates_rejected": 14,
+    "source_rejection_inflight_success_cache_probe_pass": 1,
+    "actual_built_first_failure_fresh_retry_probe_pass": 1,
+    "reused_unchanged_plan_probe_cases_pass": 12,
+    "new_legacy_identifiers": 0,
+    "copy_PO_final_delta": "none"
+  },
+  "non_findings": [
+    {
+      "case": "directly_importing_successful_scene_again_under_two_new_queries",
+      "observed": "Three multiple-instances warnings; root starts remains 1",
+      "meaning": "diagnostic deliberately bypassed the loader success cache and is not the supported retry path. Source probe proves successful Promise reused. First-failure→fresh-success actual build probe emitted no warning."
+    }
+  ],
+  "limits": [
+    "No native, GPU, browser interaction or production access",
+    "Node ESM and JSDOM are explicit probe hosts; no claimed browser cache/GPU proof",
+    "Source load cache probe injects only scene import module at loader boundary; actual built retry probe injects only first original Scene request failure",
+    "No full tool or whole design B acceptance",
+    "Previous b008 controls/lifetime/copy PASS retained; not rerun unchanged accepted physics"
+  ],
+  "additional_standard_files": [],
+  "separate_spec_issue_known_at_finalisation": {
+    "severity": "P3",
+    "suffixes": [
+      "?",
+      "#",
+      "?#"
+    ],
+    "observed": "accepted",
+    "expected": "reject",
+    "parent_accepts_correction": true,
+    "independent_confirmation_log": "known-spec-p3.log",
+    "not_an_arbitrary_code_or_native_manifest_bypass": true
+  }
+}

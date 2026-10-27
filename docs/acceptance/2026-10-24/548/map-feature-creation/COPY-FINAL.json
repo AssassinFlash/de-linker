@@ -1,0 +1,137 @@
+[
+  {
+    "en": "Add a roof feature",
+    "final_en": "Add a roof feature",
+    "final_de": "Objekt auf der Dachfläche hinzufügen"
+  },
+  {
+    "en": "Check and add feature",
+    "final_en": "Check and add feature",
+    "final_de": "Prüfen und Objekt hinzufügen"
+  },
+  {
+    "en": "Continue adding corners",
+    "final_en": "Continue adding corners",
+    "final_de": "Weitere Eckpunkte hinzufügen"
+  },
+  {
+    "en": "Decimal comma; no thousands separators.",
+    "final_en": "Decimal comma; no thousands separators.",
+    "final_de": "Dezimalkomma; keine Tausendertrennzeichen."
+  },
+  {
+    "en": "Decimal point; no thousands separators.",
+    "final_en": "Decimal point; no thousands separators.",
+    "final_de": "Dezimalpunkt; keine Tausendertrennzeichen."
+  },
+  {
+    "en": "Draw roof feature",
+    "final_en": "Draw a roof feature",
+    "final_de": "Objekt auf der Dachfläche zeichnen"
+  },
+  {
+    "en": "Extrusion direction",
+    "final_en": "Extrusion direction",
+    "final_de": "Extrusionsrichtung"
+  },
+  {
+    "en": "Feature added to the project draft. Choose Save project to save it.",
+    "final_en": "Feature added to the project draft. Choose Save project to save it.",
+    "final_de": "Das Objekt wurde dem Projektentwurf hinzugefügt. Mit „Projekt speichern“ wird es im Projekt gespeichert."
+  },
+  {
+    "en": "Feature properties",
+    "final_en": "Feature properties",
+    "final_de": "Objekteigenschaften"
+  },
+  {
+    "en": "Feature to add",
+    "final_en": "Feature type",
+    "final_de": "Objekttyp"
+  },
+  {
+    "en": "Greater than 0, measured along the selected extrusion direction.",
+    "final_en": "Greater than 0, measured along the selected extrusion direction.",
+    "final_de": "Größer als 0, entlang der gewählten Extrusionsrichtung gemessen."
+  },
+  {
+    "en": "I have checked that the recorded source and permissions cover this new roof feature.",
+    "final_en": "I have checked that the recorded source and permissions cover this new roof feature.",
+    "final_de": "Ich habe geprüft, dass die erfasste Quelle und die Nutzungsberechtigungen dieses neue Objekt abdecken."
+  },
+  {
+    "en": "Keep-out area",
+    "final_en": "Keep-out area",
+    "final_de": "Sperrfläche"
+  },
+  {
+    "en": "Object name",
+    "final_en": "Object name",
+    "final_de": "Objektname"
+  },
+  {
+    "en": "Obstacle",
+    "final_en": "Obstacle",
+    "final_de": "Hindernis"
+  },
+  {
+    "en": "Obstacle height",
+    "final_en": "Obstacle height",
+    "final_de": "Hindernishöhe"
+  },
+  {
+    "en": "Perpendicular to this roof face",
+    "final_en": "Perpendicular to this roof face",
+    "final_de": "Senkrecht zu dieser Dachfläche"
+  },
+  {
+    "en": "Reason or requirement",
+    "final_en": "Reason or requirement",
+    "final_de": "Grund oder Anforderung"
+  },
+  {
+    "en": "Roof face",
+    "final_en": "Roof face",
+    "final_de": "Dachfläche"
+  },
+  {
+    "en": "Roof opening",
+    "final_en": "Roof opening",
+    "final_de": "Dachöffnung"
+  },
+  {
+    "en": "Select a direction",
+    "final_en": "Select a direction",
+    "final_de": "Richtung auswählen"
+  },
+  {
+    "en": "Select a feature",
+    "final_en": "Select a feature type",
+    "final_de": "Objekttyp auswählen"
+  },
+  {
+    "en": "Select a roof face",
+    "final_en": "Select a roof face",
+    "final_de": "Dachfläche auswählen"
+  },
+  {
+    "en": "Some feature or source details are missing or invalid. Your entries have been kept.",
+    "final_en": "Some feature or source details are missing or invalid. Your entries have been kept.",
+    "final_de": "Einige Objekt- oder Quellenangaben fehlen oder sind ungültig. Ihre Eingaben bleiben erhalten."
+  },
+  {
+    "en": "Source reference",
+    "final_en": "Source reference",
+    "final_de": "Quellenreferenz"
+  },
+  {
+    "en": "The outline uses the selected roof plane. Review its source and feature properties before applying.",
+    "final_en": "The outline lies in the selected roof plane. Check the source details and feature properties before adding it to the project draft.",
+    "final_de": "Der Umriss liegt in der gewählten Dachebene. Prüfen Sie die Quellenangaben und Objekteigenschaften, bevor Sie das Objekt zum Projektentwurf hinzufügen."
+  },
+  {
+    "en": "Vertically upward",
+    "final_en": "Vertically upward",
+    "final_de": "Senkrecht nach oben"
+  }
+]

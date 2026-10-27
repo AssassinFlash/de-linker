@@ -1,0 +1,16 @@
+{
+  "entry": "file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/planning-spec-editor-8e11-ug7iol_l/plugins/linker-tools/build/planner/assets/planner.js?ver=spec-fixed-entry",
+  "failed": "file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/planning-spec-editor-8e11-ug7iol_l/plugins/linker-tools/build/planner/assets/SceneViewport-BQc4p_xn.js",
+  "retries": [
+    "file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/planning-spec-editor-8e11-ug7iol_l/plugins/linker-tools/build/planner/assets/SceneViewport-BQc4p_xn.js?planner_retry=1",
+    "file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/planning-spec-editor-8e11-ug7iol_l/plugins/linker-tools/build/planner/assets/SceneViewport-BQc4p_xn.js?planner_retry=2"
+  ],
+  "firstUrlEvaluations": 1,
+  "queriedEntryMountScans": 1,
+  "sameRetryModule": true,
+  "actualSceneDefaults": [
+    "function",
+    "function"
+  ],
+  "scope": "Actual emitted scene/core runtime evaluated; first bare scene failure injected. Empty application DOM; no GPU."
+}

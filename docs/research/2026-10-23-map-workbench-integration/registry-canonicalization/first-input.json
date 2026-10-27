@@ -1,0 +1,29 @@
+{
+  "startUrls": [
+    {
+      "url": "https://registry.npmjs.org/maplibre-gl/5.24.0"
+    },
+    {
+      "url": "https://registry.npmjs.org/terra-draw/1.35.0"
+    },
+    {
+      "url": "https://registry.npmjs.org/terra-draw-maplibre-gl-adapter/1.4.1"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 3,
+  "maxResults": 3,
+  "maxConcurrency": 2,
+  "saveHtml": false,
+  "saveMarkdown": true,
+  "saveContentTypes": "application/json",
+  "respectRobotsTxtFile": true,
+  "htmlTransformer": "none",
+  "useSitemaps": false,
+  "proxyConfiguration": {
+    "useApifyProxy": true
+  },
+  "requestTimeoutSecs": 60,
+  "maxRequestRetries": 2
+}

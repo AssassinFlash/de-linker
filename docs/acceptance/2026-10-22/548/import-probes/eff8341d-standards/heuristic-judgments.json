@@ -1,0 +1,18 @@
+{
+  "fixed_sha": "eff8341d5a0eaf24999f42854da6339032c65c9c",
+  "classification": "Judgment only; documented repository standards override this baseline. Tool-enforced formatting/type/lint issues are excluded.",
+  "judgments": {
+    "Mysterious Name": "No actionable name issue. The response-origin ambiguity is resolved by excluding the shared parser code, and displayName documents its actual presentation/default-name purpose.",
+    "Duplicated Code": "The shared pre-mutation classifier is extracted for three consumers. Format-specific GeoJSON and profile interpretation remain separate. No unrelated generic import framework is required by these hunks.",
+    "Feature Envy": "Plane construction stays with geometryEditing; transaction ownership stays with GeometryImportStore; the UI consumes their typed operations.",
+    "Data Clumps": "GeoJsonChoice, GeometryImportIntent and GeometryImportOptions name the actual travelling aggregates. The hook owns project/session context.",
+    "Primitive Obsession": "Exact body/key remain necessary immutable transport values; the named source/choice/options/intent types describe their domain context. The label cap is a documented UI code-point policy, not an engineering number.",
+    "Repeated Switches": "The error code/status policy is in one map; the small export label/option branches serve their local UI. No additional actionable repeated dispatch structure.",
+    "Shotgun Surgery": "Changes cross expected feature seams: domain input, durable journal, hook, UI, translation and native styles. No single unrelated policy requires scattered manual rewrites.",
+    "Divergent Change": "Store, parsing/choices, plane math, frozen settings, fields and intake controller have separate modules. No line-count criterion is imposed.",
+    "Speculative Generality": "The injected journal seam is exercised by actual storage-failure tests; recovery scopes, immutable settings and original candidates are current requirements.",
+    "Message Chains": "The schema-shaped original/asset metadata access is bounded by validators and named prepared types. No additional actionable chain was found.",
+    "Middle Man": "acknowledge/clear expose distinct safe journal operations around the private transactional change helper. roofPlane is shared computation, not a pointless pass-through.",
+    "Refused Bequest": "No added inheritance or discarded inherited contract. IDBFactory is used by composition as a test dependency."
+  }
+}

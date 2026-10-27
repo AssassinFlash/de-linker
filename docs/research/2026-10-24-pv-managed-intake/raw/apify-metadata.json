@@ -1,0 +1,332 @@
+{
+  "actor": {
+    "endpoint": "https://api.apify.com/v2/acts/aYG0l9s7dbB7j3gbS",
+    "status": 200,
+    "acquiredAt": "2026-10-24T04:12:06.264938+00:00",
+    "responseBytes": 6031,
+    "responseSha256": "843a3ce616f447c1b521d4055558a680dafd535490eb004d81c9795d1a91afd6",
+    "selected": {
+      "id": "aYG0l9s7dbB7j3gbS",
+      "name": "website-content-crawler",
+      "modifiedAt": "2026-10-21T01:13:37.803Z",
+      "taggedBuilds": {
+        "beta": {
+          "buildId": "o4fFSJ5GoWxVHpXki",
+          "finishedAt": "2026-10-19T13:29:49.368Z",
+          "buildNumberInt": 100369,
+          "buildNumber": "0.1.369"
+        },
+        "version-0": {
+          "buildId": "bsZdc9Cal4wAwV0VW",
+          "finishedAt": "2026-10-19T13:00:04.753Z",
+          "buildNumberInt": 300101,
+          "buildNumber": "0.3.101"
+        },
+        "canary": {
+          "buildId": "VzwRsPZJNqqjvO6E4",
+          "finishedAt": "2026-10-15T13:51:08.039Z",
+          "buildNumberInt": 200133,
+          "buildNumber": "0.2.133"
+        },
+        "test": {
+          "buildId": "pvpykKj12zKTaypVy",
+          "finishedAt": "2026-10-21T01:13:37.803Z",
+          "buildNumberInt": 9900278,
+          "buildNumber": "0.99.278"
+        }
+      },
+      "defaultRunOptions": {
+        "build": "version-0",
+        "timeoutSecs": 360000,
+        "memoryMbytes": 8192,
+        "restartOnError": true
+      },
+      "versions": [
+        {
+          "versionNumber": "0.0",
+          "sourceType": "SOURCE_FILES",
+          "buildTag": "beta"
+        },
+        {
+          "versionNumber": "0.1",
+          "sourceType": "SOURCE_FILES",
+          "buildTag": "beta"
+        },
+        {
+          "versionNumber": "0.2",
+          "sourceType": "SOURCE_FILES",
+          "buildTag": "canary"
+        },
+        {
+          "versionNumber": "0.3",
+          "sourceType": "SOURCE_FILES",
+          "buildTag": "version-0"
+        },
+        {
+          "versionNumber": "0.99",
+          "sourceType": "GIT_REPO",
+          "buildTag": "test"
+        }
+      ]
+    }
+  },
+  "known-build": {
+    "endpoint": "https://api.apify.com/v2/actor-builds/bsZdc9Cal4wAwV0VW",
+    "status": 200,
+    "acquiredAt": "2026-10-24T04:12:12.082722+00:00",
+    "responseBytes": 198197,
+    "responseSha256": "8883cebcd2f9e2e2bef4424e20aa057e853274f5975a28b473d0dc81d7f9d2d2",
+    "selected": {
+      "id": "bsZdc9Cal4wAwV0VW",
+      "actId": "aYG0l9s7dbB7j3gbS",
+      "status": "SUCCEEDED",
+      "startedAt": "2026-10-19T12:57:56.958Z",
+      "finishedAt": "2026-10-19T13:00:04.753Z",
+      "buildNumber": "0.3.101",
+      "actorDefinitionSelection": {
+        "inputProperties": {
+          "startUrls": {
+            "title": "Start URLs",
+            "type": "array",
+            "description": "One or more URLs where the crawler will start. By default, it crawls only these URLs and their sub-pages (same URL path); use **Include URL patterns (globs)** to override this behavior.\n\nFor example, for start URL `https://example.com/blog`, it will crawl also `https://example.com/blog/post` or `https://example.com/blog/article`.",
+            "editor": "requestListSources",
+            "prefill": [
+              {
+                "url": "https://docs.apify.com/academy/scraping-basics-javascript"
+              }
+            ]
+          },
+          "crawlerType": {
+            "title": "Crawler type",
+            "type": "string",
+            "enum": [
+              "playwright:adaptive",
+              "playwright:firefox",
+              "cheerio",
+              "jsdom",
+              "playwright:chrome"
+            ],
+            "enumTitles": [
+              "Adaptive switching between browser and raw HTTP. Recommended.",
+              "Headless browser (Firefox+Playwright)",
+              "Raw HTTP client (Cheerio)",
+              "[DEPRECATED] Raw HTTP client with JavaScript (JSDOM) - This crawler will use Cheerio instead.",
+              "[DEPRECATED] Headless browser (Chrome+Playwright) - The crawler will use Firefox+Playwright instead."
+            ],
+            "description": "Select the crawling engine:\n- **Adaptive switching** between browser and raw HTTP: Fast and renders JavaScript content if present. Default and recommended option.\n- **Headless browser** (Firefox+Playwright): Reliable, renders JavaScript content, best in avoiding blocking, but might be slow.\n- **Raw HTTP client** (Cheerio): Fastest, but doesn't render JavaScript content.\n- **Raw HTTP client with JavaScript** (JSDOM): Deprecated, use Cheerio instead.\n- **Headless browser** (Chrome+Playwright): Deprecated, use Firefox+Playwright instead.\n\nMore details about Crawler types are in [readme](https://console.apify.com/actors/aYG0l9s7dbB7j3gbS/information/version-0/readme#crawler-types).",
+            "default": "playwright:firefox",
+            "prefill": "playwright:adaptive"
+          },
+          "maxCrawlDepth": {
+            "title": "Max crawling depth",
+            "type": "integer",
+            "description": "The maximum number of links starting from the start URL that the crawler will recursively follow. The start URLs have depth `0`, the pages linked directly from the start URLs have depth `1`, and so on.\n\nUseful to prevent accidental crawler runaway. By setting it to `0`, the Actor will only crawl the Start URLs.",
+            "minimum": 0,
+            "default": 20
+          },
+          "maxCrawlPages": {
+            "title": "Max pages",
+            "type": "integer",
+            "description": "The maximum number of pages to crawl: defaults to 9999999, which is effectively unlimited; set it to cap the number of pages to prevent accidental crawler runaway.\n\nIt includes the start URLs, pagination pages, pages with no content, etc. The crawler will automatically finish after reaching this number.",
+            "minimum": 0,
+            "default": 9999999
+          },
+          "maxResults": {
+            "title": "Max results",
+            "type": "integer",
+            "description": "The maximum number of web pages and files to store. This setting helps prevent an accidental crawler runaway by automatically stopping the crawl once this limit is reached. Note that the crawler skips pages whose canonical URL matches a page that has already been crawled, so it may crawl more pages than the number of stored results. Similarly, there may be more stored results than crawled web pages because downloaded files also count toward results.",
+            "minimum": 0,
+            "default": 9999999
+          },
+          "maxConcurrency": {
+            "title": "Max concurrency",
+            "type": "integer",
+            "description": "The maximum number of web browsers or HTTP clients running in parallel. This setting is useful to avoid overloading the target websites and to avoid getting blocked.",
+            "minimum": 1,
+            "maximum": 999,
+            "default": 200
+          },
+          "initialConcurrency": {
+            "sectionCaption": "Performance and limits",
+            "sectionDescription": "Adjust how fast or slow the crawler will operate.",
+            "title": "Initial concurrency",
+            "type": "integer",
+            "description": "The initial number of web browsers or HTTP clients running in parallel. The system scales the concurrency up and down based on the current CPU and memory load. If the value is set to 0 (default), the Actor uses the default setting for the specific crawler type.\n\nNote that if you set this value too high, the Actor will run out of memory and crash. If too low, it will be slow at start before it scales the concurrency up.",
+            "minimum": 0,
+            "maximum": 999,
+            "default": 0
+          },
+          "requestTimeoutSecs": {
+            "title": "Page request timeout",
+            "type": "integer",
+            "description": "Timeout in seconds for making the request and processing its response. Defaults to 60s.",
+            "minimum": 1,
+            "maximum": 600,
+            "default": 60,
+            "unit": "seconds"
+          },
+          "maxRequestRetries": {
+            "title": "Maximum number of retries on network / server errors",
+            "type": "integer",
+            "description": "The maximum number of times the crawler will retry the request on network, proxy or server errors. If the (n+1)-th request still fails, the crawler will mark this request as failed.",
+            "minimum": 0,
+            "maximum": 20,
+            "default": 3
+          },
+          "saveContentTypes": {
+            "title": "Save linked files with Content-Type",
+            "description": "The crawler downloads files linked from the web pages, as long as their content type matches the provided value. Select predefined <a href=\"https://www.iana.org/assignments/media-types/media-types.xhtml\">Content-type</a> groups to download common file types, or enter custom HTTP Content-type strings, including wildcards (e.g., application/pdf, text/\\*, image/\\*) for specific downloads. Note that unlike web pages, the files are downloaded regardless if they are under **Start URLs** or not. The files are stored to the default key-value store, and metadata about them to the output dataset, similarly as for web pages.",
+            "type": "string",
+            "editor": "select",
+            "enumSuggestedValues": [
+              "image/*",
+              "application/*, text/csv"
+            ],
+            "enumTitles": [
+              "Images: image/*",
+              "Documents: application/*, text/csv"
+            ]
+          },
+          "minFileDownloadSpeedKBps": {
+            "title": "Minimum file download speed",
+            "type": "integer",
+            "description": "The minimum viable file download speed in kilobytes per seconds. If the file download speed is lower than this value for a prolonged duration, the crawler will consider the file download as failing, abort it, and retry it again (up to \"Maximum number of retries\" times). This is useful to avoid your crawls being stuck on slow file downloads.",
+            "default": 128,
+            "unit": "kilobytes per second"
+          },
+          "saveFiles": {
+            "title": "Save files",
+            "type": "boolean",
+            "description": "Deprecated in favor of the `saveContentTypes` option. Will be removed soon. If enabled, the crawler downloads files linked from the web pages, as long as their URL has one of the following file extensions: PDF, DOC, DOCX, XLS, XLSX, and CSV. Note that unlike web pages, the files are downloaded regardless if they are under **Start URLs** or not. The files are stored to the default key-value store, and metadata about them to the output dataset, similarly as for web pages.",
+            "default": false
+          },
+          "respectRobotsTxtFile": {
+            "title": "Respect the robots.txt file",
+            "type": "boolean",
+            "description": "If enabled, the crawler will consult the robots.txt file for the target website before crawling each page. At the moment, the crawler does not use any specific user agent identifier. The crawl-delay directive is also not supported yet.",
+            "default": false,
+            "prefill": true
+          },
+          "customHttpHeaders": {
+            "title": "Custom HTTP headers",
+            "type": "object",
+            "description": "HTTP headers that will be added to all requests made by the crawler. This is useful for setting custom authentication headers or other headers required by the target website. The value is expected to be a JSON object with `name` and `value` properties pairs. For example: `{ \"name1\": \"value1\", \"Authorization\": \"Basic a1b2c3d4...\" }`.",
+            "default": {},
+            "prefill": {},
+            "editor": "json"
+          },
+          "proxyConfiguration": {
+            "sectionCaption": "Crawler identification",
+            "sectionDescription": "Customize location and identity settings of the crawler.",
+            "title": "Proxy configuration",
+            "type": "object",
+            "description": "Enables loading the websites from IP addresses in specific geographies and to circumvent blocking.",
+            "default": {
+              "useApifyProxy": true
+            },
+            "prefill": {
+              "useApifyProxy": true
+            },
+            "editor": "proxy"
+          },
+          "saveMarkdown": {
+            "title": "Save Markdown",
+            "type": "boolean",
+            "description": "If enabled, the crawler converts the transformed HTML of all pages found to Markdown, and stores it under the `markdown` field in the output dataset.",
+            "default": true
+          },
+          "saveHtml": {
+            "sectionCaption": "Output and results",
+            "title": "Save HTML to dataset (deprecated)",
+            "type": "boolean",
+            "description": "If enabled, the crawler stores full transformed HTML of all pages found to the output dataset under the `html` field. **This option has been deprecated** in favor of the `saveHtmlAsFile` option, because the dataset records have a size of approximately 10MB and it's harder to review the HTML for debugging.",
+            "default": false
+          },
+          "htmlTransformer": {
+            "title": "HTML transformer",
+            "type": "string",
+            "enum": [
+              "readableTextIfPossible",
+              "readableText",
+              "extractus",
+              "defuddle",
+              "none"
+            ],
+            "enumTitles": [
+              "Mozilla Readability with fallback",
+              "Mozilla Readability",
+              "Extractus",
+              "Defuddle",
+              "None"
+            ],
+            "description": "Specify how to transform HTML to get meaningful content, removing extra fluff like navigation or pop-ups. This is applied after any HTML elements are removed or clicked.\n\n- **Readable text with fallback**: Uses Mozilla's Readability to extract content, but keeps the original HTML if it's not a clear article. Great for sites with mixed content like articles and product pages.\n\n- **Readable text** (Default): Also uses Mozilla's Readability but is more aggressive, removing headers, footers, and navigation. Best for blogs and article-heavy sites.\n\n- **Extractus**: An alternative content extraction algorithm that might work better for certain news sites or blogs with unique layouts.\n\n- **Defuddle**: More forgiving than Readability, better preserving elements like math and footnotes, code. It also extracts metadata and uses mobile styles for clean-up.\n\n- **None**: Only performs basic cleaning and removes elements specified by you. This option is best when you need to preserve most of the page's original HTML.",
+            "default": "readableText"
+          }
+        },
+        "inputRequired": [
+          "startUrls",
+          "proxyConfiguration"
+        ],
+        "output": {
+          "$schema": "https://apify-projects.github.io/actor-json-schemas/output.json?v=0.3",
+          "actorOutputSchemaVersion": 1,
+          "title": "Output schema of the Actor",
+          "properties": {
+            "crawlResults": {
+              "type": "string",
+              "title": "Crawl results",
+              "template": "{{links.apiDefaultDatasetUrl}}/items"
+            },
+            "screenshots": {
+              "type": "string",
+              "title": "Screenshots",
+              "template": "{{links.apiDefaultKeyValueStoreUrl}}/keys?collection=screenshots"
+            },
+            "downloadedFiles": {
+              "type": "string",
+              "title": "Downloaded files",
+              "template": "{{links.apiDefaultKeyValueStoreUrl}}/keys?collection=downloaded-files"
+            },
+            "htmlSnapshots": {
+              "type": "string",
+              "title": "HTML snapshots",
+              "template": "{{links.apiDefaultKeyValueStoreUrl}}/keys?collection=html-snapshots"
+            },
+            "crawlErrors": {
+              "type": "string",
+              "title": "Errors",
+              "template": "{{storages.datasets.errors.apiUrl}}/items"
+            }
+          }
+        }
+      },
+      "readmeSha256": "b3f67f69bb6fee240b3a8d94d09691e15c0d296005e183008653eecea5c83b94"
+    }
+  },
+  "known-run": {
+    "endpoint": "https://api.apify.com/v2/actor-runs/YgxlVDzJ8c1fh03tT",
+    "status": 200,
+    "acquiredAt": "2026-10-24T04:12:15.129582+00:00",
+    "responseBytes": 3786,
+    "responseSha256": "5c35f633705b0926fd2eb5c438b26279140869cfab841ab1073c21c433d989f7",
+    "selected": {
+      "id": "YgxlVDzJ8c1fh03tT",
+      "actId": "aYG0l9s7dbB7j3gbS",
+      "status": "SUCCEEDED",
+      "startedAt": "2026-10-24T03:01:29.953Z",
+      "finishedAt": "2026-10-24T03:01:44.196Z",
+      "buildId": "bsZdc9Cal4wAwV0VW",
+      "buildNumber": "0.3.101",
+      "defaultDatasetId": "ipV5QAq6PudF3QyVe",
+      "defaultKeyValueStoreId": "i3OvQkzJuDD6tihWH",
+      "options": {
+        "build": "version-0",
+        "timeoutSecs": 180,
+        "memoryMbytes": 1024,
+        "restartOnError": true,
+        "isMaxTotalChargeUsdSetByUser": false,
+        "diskMbytes": 2048
+      }
+    }
+  }
+}

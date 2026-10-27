@@ -1,0 +1,190 @@
+{
+  "ticket": 548,
+  "date": "2026-10-25",
+  "surface": "Saved energy result: bounded interval chart, table, navigation and CSV",
+  "status": "final",
+  "dimension": "Tools: inspect saved interval values and export the displayed intervals.",
+  "scope": "Copy review and independent formal German wording only. The values are the saved interval means, with stored energy at the end of each interval. No claim of measured peaks, live monitoring, device suitability or country compliance is added.",
+  "sources": [
+    "AGENTS.md: customer-visible copy review, EN first, independently written de_DE_formal",
+    "/Users/chesterjohn/.agents/skills/humanizer/SKILL.md",
+    "/Users/chesterjohn/.agents/skills/linker-copywriting/SKILL.md",
+    "/Users/chesterjohn/.agents/skills/linker-copywriting/references/industry-and-linker-encyclopedia.md",
+    "/Users/chesterjohn/.agents/skills/linker-copywriting/references/anti-patterns.md",
+    "/Users/chesterjohn/.agents/skills/linker-copywriting/references/positive-examples.md",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal.po",
+    "apps/planner/src/components/energy/TraceExplorer.tsx: existing retry button reissues query.refetch()"
+  ],
+  "terminology": [
+    {
+      "existingEN": "Grid import",
+      "existingDE": "Netzbezug",
+      "use": "Exact existing term retained."
+    },
+    {
+      "existingEN": "Grid export limit",
+      "existingDE": "Grenze für die Netzeinspeisung",
+      "use": "Netzeinspeisung retained for the export series."
+    },
+    {
+      "existingEN": "AC charging power / AC discharging power",
+      "existingDE": "AC-Ladeleistung / AC-Entladeleistung",
+      "use": "Ladeleistung and Entladeleistung retained for power values."
+    },
+    {
+      "existingEN": "Stored energy at the end of the calculation",
+      "existingDE": "Speicherenergie am Ende der Berechnung",
+      "use": "Speicherenergie retained; the new description specifies the end of each interval."
+    }
+  ],
+  "opposition": [
+    {
+      "concern": "Explore is an unnecessary invitation before the useful explanation.",
+      "resolution": "The description starts with the saved values and states what the two kinds of value mean."
+    },
+    {
+      "concern": "A reader could treat power as an instantaneous measurement, or stored energy as an interval mean.",
+      "resolution": "Both languages explicitly distinguish mean power within each interval from stored energy at its end. Neither wording calls simulated results measurements."
+    },
+    {
+      "concern": "Charging and Discharging can read as operating states or commands rather than power series.",
+      "resolution": "The final labels say Charging power and Discharging power, with established Ladeleistung and Entladeleistung in German. Available PV also becomes Available PV power."
+    },
+    {
+      "concern": "Window could refer to a browser window, and Download alone could imply the entire trace.",
+      "resolution": "The CSV action names the displayed intervals. Navigation and export refer to the same bounded range; no resampling or complete-trace export is promised."
+    },
+    {
+      "concern": "The draft interval range contains an en dash, which the visible-copy rule prohibits.",
+      "resolution": "Use to in English and bis in German. All three numbered integer placeholders and UTC remain intact."
+    },
+    {
+      "concern": "The jump input could be mistaken for a time or date field.",
+      "resolution": "First interval / Erstes Intervall names the interval index. Show intervals / Intervalle anzeigen names the submission action. The implementation supplies the 1-based integer constraint."
+    },
+    {
+      "concern": "German interface text needs a natural professional register without translating Load as an act of loading data.",
+      "resolution": "The power series uses Last. Loading status uses wird geladen. Neutral German labels fit the formal register without adding an unnecessary pronoun."
+    },
+    {
+      "concern": "The error message repeats Try again immediately before a button with the same label.",
+      "resolution": "The final message states the failed load. The existing retry button supplies the recovery action and calls query.refetch()."
+    },
+    {
+      "concern": "An optional chart failure must not imply that the saved interval data, table or CSV failed to load.",
+      "resolution": "The new message names the chart failure and states that the interval table and CSV remain available, matching the supplied error-boundary behavior."
+    }
+  ],
+  "preDelivery": {
+    "encyclopediaLoadedAndDimensionNamed": true,
+    "hardStops1Through9Checked": true,
+    "noCustomerHomeworkInBodyCopy": true,
+    "noInventedCustomerFuture": true,
+    "noFragmentInflation": true,
+    "noUnsupportedDuration": true,
+    "noSloganFormulas": true,
+    "noBannedBrand": true,
+    "noInventedQuotation": true,
+    "humanizerPatternReviewComplete": true,
+    "independentFormalGermanComplete": true,
+    "finalStringsContainNoEmOrEnDash": true,
+    "formatPlaceholdersPreserved": true
+  },
+  "strings": [
+    {
+      "draftEN": "Energy flows",
+      "finalEN": "Energy flows",
+      "finalDE": "Energieflüsse"
+    },
+    {
+      "draftEN": "Explore the saved interval values. Power is shown as interval means; stored energy is shown at the end of each interval.",
+      "finalEN": "These saved values show mean power for each interval and stored energy at its end.",
+      "finalDE": "Die gespeicherten Werte zeigen die mittlere Leistung je Intervall und die Speicherenergie am jeweiligen Intervallende."
+    },
+    {
+      "draftEN": "Load",
+      "finalEN": "Load",
+      "finalDE": "Last"
+    },
+    {
+      "draftEN": "Available PV",
+      "finalEN": "Available PV power",
+      "finalDE": "Verfügbare PV-Leistung"
+    },
+    {
+      "draftEN": "Charging",
+      "finalEN": "Charging power",
+      "finalDE": "Ladeleistung"
+    },
+    {
+      "draftEN": "Discharging",
+      "finalEN": "Discharging power",
+      "finalDE": "Entladeleistung"
+    },
+    {
+      "draftEN": "Grid import",
+      "finalEN": "Grid import",
+      "finalDE": "Netzbezug"
+    },
+    {
+      "draftEN": "Grid export",
+      "finalEN": "Grid export",
+      "finalDE": "Netzeinspeisung"
+    },
+    {
+      "draftEN": "Stored energy",
+      "finalEN": "Stored energy",
+      "finalDE": "Speicherenergie"
+    },
+    {
+      "draftEN": "Previous intervals",
+      "finalEN": "Previous intervals",
+      "finalDE": "Vorherige Intervalle"
+    },
+    {
+      "draftEN": "Next intervals",
+      "finalEN": "Next intervals",
+      "finalDE": "Nächste Intervalle"
+    },
+    {
+      "draftEN": "Download this window (CSV)",
+      "finalEN": "Download displayed intervals (CSV)",
+      "finalDE": "Angezeigte Intervalle als CSV herunterladen"
+    },
+    {
+      "draftEN": "Interval values",
+      "finalEN": "Interval values",
+      "finalDE": "Intervallwerte"
+    },
+    {
+      "draftEN": "Loading interval values…",
+      "finalEN": "Loading interval values…",
+      "finalDE": "Intervallwerte werden geladen…"
+    },
+    {
+      "draftEN": "These interval values could not be loaded. Try again.",
+      "finalEN": "Interval values could not be loaded.",
+      "finalDE": "Die Intervallwerte konnten nicht geladen werden."
+    },
+    {
+      "draftEN": "Intervals %1$d–%2$d of %3$d · UTC",
+      "finalEN": "Intervals %1$d to %2$d of %3$d · UTC",
+      "finalDE": "Intervalle %1$d bis %2$d von %3$d · UTC"
+    },
+    {
+      "draftEN": "First interval",
+      "finalEN": "First interval",
+      "finalDE": "Erstes Intervall"
+    },
+    {
+      "draftEN": "Show intervals",
+      "finalEN": "Show intervals",
+      "finalDE": "Intervalle anzeigen"
+    },
+    {
+      "draftEN": "The chart could not be displayed. The interval table and CSV remain available.",
+      "finalEN": "The chart could not be displayed. The interval table and CSV remain available.",
+      "finalDE": "Das Diagramm konnte nicht angezeigt werden. Die Intervalltabelle und der CSV-Download sind weiterhin verfügbar."
+    }
+  ]
+}

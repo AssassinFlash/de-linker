@@ -1,0 +1,3 @@
+Browser tab: 2, Title: "Solution Configurator · Workspace review | Linker", URL: "http://127.0.0.1:9347/planning-workspace-review/?project=8c71ef3068ee465d86f093cece8406fa#lp-site".
+There has been no change in the accessibility tree.
+The focused UI element is 150 container Project brief, ID: lp-brief-use

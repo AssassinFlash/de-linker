@@ -1,0 +1,22 @@
+{
+  "at_utc": "2026-10-24T15:48:56.463780+00:00",
+  "operation": "read-only full logical SQLite readback; no Workspace/configuration open/migration",
+  "tables": {
+    "artifacts": 0,
+    "evaluation_routes": 6,
+    "execution_control": 1,
+    "handoffs": 0,
+    "idempotency": 326,
+    "jobs": 6,
+    "ownership_transfers": 43,
+    "principal_closures": 50,
+    "project_assets": 42,
+    "projects": 165,
+    "revisions": 228,
+    "runs": 6
+  },
+  "all_rows_sha256": "b74d9b5e657e3180fc0182233bd1138e7a90f98fee47b3d62e1e9af4e5176295",
+  "same_as_protected_baseline": true,
+  "new_http_worker_pair_installed": false,
+  "production_deployed": false
+}

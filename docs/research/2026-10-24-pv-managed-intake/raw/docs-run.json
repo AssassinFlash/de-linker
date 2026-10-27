@@ -1,0 +1,52 @@
+{
+  "endpoint": "https://api.apify.com/v2/acts/aYG0l9s7dbB7j3gbS/runs?build=0.3.101&timeout=180&memory=1024&restartOnError=false",
+  "status": 201,
+  "acquiredAt": "2026-10-24T04:13:16.387013+00:00",
+  "responseBytes": 2986,
+  "responseSha256": "0c55193a2e99d41a8ac170209e8ecbe5e4373f52195cc443d9023cc59ad50725",
+  "run": {
+    "id": "lXvujgaIwxLKdgr07",
+    "actId": "aYG0l9s7dbB7j3gbS",
+    "status": "READY",
+    "startedAt": "2026-10-24T04:13:16.079Z",
+    "finishedAt": null,
+    "buildId": "bsZdc9Cal4wAwV0VW",
+    "buildNumber": "0.3.101",
+    "defaultDatasetId": "dftNO1TLfoZWg7XyJ",
+    "defaultKeyValueStoreId": "nhkKQ8gHiwmVem6qa",
+    "options": {
+      "build": "0.3.101",
+      "timeoutSecs": 180,
+      "memoryMbytes": 1024,
+      "restartOnError": false,
+      "isMaxTotalChargeUsdSetByUser": false,
+      "diskMbytes": 2048
+    }
+  },
+  "readback": {
+    "status": 200,
+    "acquiredAt": "2026-10-24T04:13:56.870803+00:00",
+    "responseBytes": 3777,
+    "responseSha256": "417a09c3946337fb9f0cf7893ae9377c8dda8d6092ca66dbac2fa37cfed9c8ac",
+    "run": {
+      "id": "lXvujgaIwxLKdgr07",
+      "actId": "aYG0l9s7dbB7j3gbS",
+      "status": "SUCCEEDED",
+      "startedAt": "2026-10-24T04:13:16.079Z",
+      "finishedAt": "2026-10-24T04:13:38.387Z",
+      "buildId": "bsZdc9Cal4wAwV0VW",
+      "buildNumber": "0.3.101",
+      "defaultDatasetId": "dftNO1TLfoZWg7XyJ",
+      "defaultKeyValueStoreId": "nhkKQ8gHiwmVem6qa",
+      "options": {
+        "build": "0.3.101",
+        "timeoutSecs": 180,
+        "memoryMbytes": 1024,
+        "restartOnError": false,
+        "isMaxTotalChargeUsdSetByUser": false,
+        "diskMbytes": 2048
+      },
+      "statusMessage": "Finished! Total 8 requests: 6 succeeded, 2 failed."
+    }
+  }
+}

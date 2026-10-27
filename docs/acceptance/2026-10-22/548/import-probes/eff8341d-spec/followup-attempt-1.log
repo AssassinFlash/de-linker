@@ -1,0 +1,31 @@
+▶ followup: zero datum preserves rejected height through prepare, unchecking, correction and a new explicit request
+  ✔ required blank (173.020667ms)
+  ✔ invalid EN decimal (76.805458ms)
+✔ followup: zero datum preserves rejected height through prepare, unchecking, correction and a new explicit request (250.3875ms)
+▶ followup: unusable replies retain exact originals in both actual IndexedDB stores until typed correction
+  ✔ hook HTTP200 (12.640875ms)
+  ✔ hook HTTP422 (10.9885ms)
+  ✔ hook HTTP500 (11.637125ms)
+  ✔ hook HTTP502 (10.866292ms)
+  ✔ csv HTTP200 (21.268583ms)
+  ✔ csv HTTP422 (19.371ms)
+  ✔ csv HTTP500 (18.317417ms)
+  ✔ csv HTTP502 (20.774ms)
+✔ followup: unusable replies retain exact originals in both actual IndexedDB stores until typed correction (126.854042ms)
+▶ followup: Unicode display boundary keeps complete characters and immutable original selection
+  ✔ name 🙂 (49.980709ms)
+  ✔ name 🙂Z (43.096583ms)
+  ✔ id 🙂 (38.240625ms)
+  ✔ id 🙂Z (41.809459ms)
+✔ followup: Unicode display boundary keeps complete characters and immutable original selection (173.661417ms)
+✔ followup: fixed German catalog supplies file labels and required-retention feedback without native-language text (47.885875ms)
+✔ followup: accepted area and unknown precision remain exact in the prepared object (13.667375ms)
+✔ followup: German preview rounds display only and retains its opening and unknown-precision detail (34.629292ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1491.050208

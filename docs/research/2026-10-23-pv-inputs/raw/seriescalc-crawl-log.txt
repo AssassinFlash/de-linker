@@ -1,0 +1,19 @@
+2026-10-22T17:28:23.246Z ACTOR: Pulling container image of build bsZdc9Cal4wAwV0VW from registry.
+2026-10-22T17:28:23.250Z ACTOR: Creating container.
+2026-10-22T17:28:23.930Z ACTOR: Starting container.
+2026-10-22T17:28:23.935Z ACTOR: Running under "LIMITED_PERMISSIONS".
+2026-10-22T17:28:24.079Z Running on architecture: x86_64
+2026-10-22T17:28:24.116Z Will run command: xvfb-run -a -s "-ac -screen 0 1920x1080x24+32 -nolisten tcp" /bin/bash -o pipefail -c NODE_NO_WARNINGS=1 ./run_protected.sh node dist/main.js
+2026-10-22T17:28:26.206Z INFO  System info {"apifyVersion":"3.7.2","apifyClientVersion":"2.25.0","crawleeVersion":"3.18.0","osType":"Linux","nodeVersion":"v24.22.0"}
+2026-10-22T17:28:26.413Z WARN  A non-zero value of the `dynamicContentWaitSecs` option is not supported by the Cheerio crawler.
+2026-10-22T17:28:26.483Z WARN  A non-zero value of the `dynamicContentWaitSecs` option is not supported by the Cheerio crawler.
+2026-10-22T17:28:26.485Z INFO  Crawling will be started using 2 start URLs and 0 sitemap URLs
+2026-10-22T17:28:26.835Z INFO  CheerioCrawler: Starting the crawler.
+2026-10-22T17:28:28.781Z WARN  CheerioCrawler: Skipping request https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-ERA5&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=crystSi&mountingplace=free&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json (9eKZCgdD1HLMMcQ) because it is disallowed based on robots.txt
+2026-10-22T17:28:28.847Z WARN  Tip: Turn off "Respect the robots.txt file" (`respectRobotsTxtFile`) and retry only if you are authorized to crawl those URLs. Risk: this may go against the website owner's crawling policy or terms and can increase blocking, legal, or compliance risk.
+2026-10-22T17:28:28.869Z WARN  CheerioCrawler: Skipping request https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-SARAH3&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=crystSi&mountingplace=free&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json (uiQdgGzGENkC8qh) because it is disallowed based on robots.txt
+2026-10-22T17:28:28.946Z WARN  Main crawler processed all start URLs, checking if SitemapCrawler can be shut down...
+2026-10-22T17:28:28.954Z WARN  Main crawler finished successfully, waiting for file downloader to finish...
+2026-10-22T17:28:28.955Z WARN  File downloader finished successfully, exiting the run...
+2026-10-22T17:28:29.031Z INFO  CheerioCrawler: Final request statistics: {"requestsFinished":0,"requestsFailed":0,"retryHistogram":[],"requestAvgFailedDurationMillis":null,"requestAvgFinishedDurationMillis":null,"requestsFinishedPerMinute":0,"requestsFailedPerMinute":0,"requestTotalDurationMillis":0,"requestsTotal":0,"crawlerRuntimeMillis":2292}
+2026-10-22T17:28:29.033Z INFO  CheerioCrawler: Finished! Total 0 requests: 0 succeeded, 0 failed. {"terminal":true}

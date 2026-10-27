@@ -1,0 +1,12 @@
+THREE.WARNING: Multiple instances of Three.js being imported.
+THREE.WARNING: Multiple instances of Three.js being imported.
+{"starts":1,"retryIdentities":[1,2],"actualBuiltGraph":true,"gpu":false}
+✔ actual emitted retries preserve the single queried-entry/shared-core module graph (191.824458ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 357.828958

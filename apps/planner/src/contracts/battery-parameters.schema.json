@@ -1,0 +1,70 @@
+{
+  "$defs": {
+    "Nonnegative": {
+      "minimum": 0,
+      "type": "number"
+    },
+    "PositiveEfficiency": {
+      "exclusiveMinimum": 0,
+      "maximum": 1,
+      "type": "number"
+    },
+    "SchemaVersion": {
+      "maximum": 1,
+      "minimum": 1,
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "$ref": "#/$defs/SchemaVersion"
+    },
+    "model": {
+      "const": "constant_window_single_ac_bus_v1",
+      "title": "Model",
+      "type": "string"
+    },
+    "parameter_basis": {
+      "const": "explicit_scenario",
+      "title": "Parameter Basis",
+      "type": "string"
+    },
+    "usable_window_kwh": {
+      "$ref": "#/$defs/Nonnegative"
+    },
+    "charge_ac_kw": {
+      "$ref": "#/$defs/Nonnegative"
+    },
+    "discharge_ac_kw": {
+      "$ref": "#/$defs/Nonnegative"
+    },
+    "eta_charge": {
+      "$ref": "#/$defs/PositiveEfficiency"
+    },
+    "eta_discharge": {
+      "$ref": "#/$defs/PositiveEfficiency"
+    },
+    "internal_aux_kw": {
+      "$ref": "#/$defs/Nonnegative"
+    },
+    "standing_loss_rate_per_hour": {
+      "$ref": "#/$defs/Nonnegative"
+    }
+  },
+  "required": [
+    "schema_version",
+    "model",
+    "parameter_basis",
+    "usable_window_kwh",
+    "charge_ac_kw",
+    "discharge_ac_kw",
+    "eta_charge",
+    "eta_discharge",
+    "internal_aux_kw",
+    "standing_loss_rate_per_hour"
+  ],
+  "title": "BatteryParameters",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

@@ -1,0 +1,40 @@
+{
+  "provenance": "Read-only p548 SQLite and SHA-256-verified blobs after normal CUA three-corner staging, input fields, continued five-corner drawing with fields retained and confirmation invalidated, real geometry check and Save project. Owned synthetic input only.",
+  "project_id": "82a84c56e50c4efb8497d1bfbe106bd1",
+  "kind": "keepout",
+  "before_revision": 13,
+  "after_revision": 14,
+  "before_input_sha256": "aabdeda701caf5e209742132d7baa248ba67643d6d7072379ddd2631ca35eb42",
+  "after_input_sha256": "8a6394917a9a9e6b91db4bfc73c0299dcedd2c51619144a5beffa1664f010288",
+  "new_object": {
+    "footprint_uv": [
+      [
+        1.0957912761072517,
+        8.226030075129211
+      ],
+      [
+        2.9864002400210077,
+        8.226031005522433
+      ],
+      [
+        2.9864015499374825,
+        6.458315185198554
+      ],
+      [
+        2.041096280306182,
+        7.19490929543704
+      ],
+      [
+        1.0957917567730537,
+        6.458314254870793
+      ]
+    ],
+    "id": "keepout_656f57299c1b4641ae7ab9b3ba74c4fc",
+    "name": "Synthetic new keep-out · map acceptance",
+    "reason": "Owned synthetic acceptance region; not a statutory or site-engineering exclusion.",
+    "roof_id": "roof_8cfac87f5edf38bb019d2aedb57676a6",
+    "source_id": "source_8cfac87f5edf38bb019d2aedb57676a6"
+  },
+  "only_one_new_object_appended": true,
+  "all_other_geometry_sources_planes_and_inputs_exactly_unchanged": true
+}

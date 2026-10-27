@@ -1,0 +1,29 @@
+Browser tab: 2, Title: "Solution Configurator · Workspace review | Linker", URL: "http://127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 6-10, 52-57, 62
++			134 pop up button (collapsed) Products, Secondary Actions: Expand
++				135 text Products
++				136 image
++			137 pop up button (collapsed) Solutions, Secondary Actions: Expand
++				138 text Solutions
++				139 image
++			140 pop up button (collapsed) Plan with Linker, Secondary Actions: Expand
++			141 link Description: Services, Value: 127.0.0.1:9347/services-support/
++			142 pop up button (collapsed) For Partners, Secondary Actions: Expand
++			143 pop up button (collapsed) About, Secondary Actions: Expand
++			144 link Description: Solution draft, Value: 127.0.0.1:9347/cart/
++			145 pop up button (collapsed) Description: My account, Secondary Actions: Expand
++			146 container Language
++				147 link Description: EN, Help: English, Value: 127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1
++				148 link Description: DE, Help: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1
++			149 link Description: Contact Linker, Value: 127.0.0.1:9347/contact/
++			150 text Köln · owned synthetic roof · acceptance
++			151 text Solution Configurator CURRENT PROJECT
++			152 container Project sections
++				153 link Description: Project overview, Value: 127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-overview
++				154 link Description: Site and project, Value: 127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-site
++				155 link Description: Roof design, Value: 127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-design
++				156 link Description: Energy inputs, Value: 127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-load
++			157 text Project information is kept with its source and revision. CURRENT PROJECT
++		158 button (collapsed) Description: Ask Genie, Secondary Actions: Expand
+The focused UI element is 109 button (expanded) About this tool, Secondary Actions: Collapse
