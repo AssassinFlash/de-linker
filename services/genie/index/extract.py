@@ -144,7 +144,13 @@ def pages_of(document: DoclingDocument) -> dict[int, list[Block]]:
     return pages
 
 
-def _pdf_model_spans(pdf: object, number: int, sha: str) -> list[SourceSpan]:
+def _pdf_model_spans(
+    pdf: object,
+    number: int,
+    sha: str,
+    *,
+    wrapped_spans: set[tuple[int, int]] | None = None,
+) -> list[SourceSpan]:
     """Read original visible text positions, including a cropped spread's offset."""
     # PDFium's Python helper deliberately ships no type stubs. The object is
     # supplied only by enrich_model_axes, keeping parser dependencies offline.
@@ -221,6 +227,8 @@ def _pdf_model_spans(pdf: object, number: int, sha: str) -> list[SourceSpan]:
                 # Hidden words cannot become the displayed table's model axis.
                 if box[0] < left or box[2] > right or box[1] < bottom or box[3] > top:
                     continue
+                if wrapped_spans is not None and "￾" in written:
+                    wrapped_spans.add((start, end))
                 output.append(
                     SourceSpan(
                         text=match[0],
@@ -327,7 +335,8 @@ def enrich_model_axes(pages: list[Page], pdf_path: Path) -> list[Page]:
             if not any(block.source_cells for block in page.blocks):
                 output.append(page)
                 continue
-            spans = _pdf_model_spans(pdf, page.number, sha)
+            wrapped_spans: set[tuple[int, int]] = set()
+            spans = _pdf_model_spans(pdf, page.number, sha, wrapped_spans=wrapped_spans)
             blocks = []
             for block in page.blocks:
                 cells: list[SourceCell] = []
@@ -371,6 +380,12 @@ def enrich_model_axes(pages: list[Page], pdf_path: Path) -> list[Page]:
                             <= max(box[1], box[3])
                         ]
                         if matched:
+                            # A native header may already be complete while its
+                            # physical axis is newly recovered from a PDF wrap.
+                            recovered = recovered or any(
+                                (s["char_start"], s["char_end"]) in wrapped_spans
+                                for s in matched
+                            )
                             if (
                                 len(matched) == cell["col_end"] - cell["col_start"]
                                 and any(

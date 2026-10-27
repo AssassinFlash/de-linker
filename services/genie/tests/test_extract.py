@@ -103,14 +103,21 @@ def test_clean_collapses_whitespace_and_restores_line_break_hyphens(
 
 
 @pytest.mark.parametrize(
-    ("neighbour_suffix", "mismatched_row"),
-    [(False, False), (True, False), (False, True)],
+    ("neighbour_suffix", "mismatched_row", "complete_header"),
+    [
+        (False, False, False),
+        (True, False, False),
+        (False, True, False),
+        (False, False, True),
+        (False, True, True),
+    ],
 )
 def test_wrapped_pdf_model_needs_its_own_physical_column(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
     neighbour_suffix: bool,
     mismatched_row: bool,
+    complete_header: bool,
 ) -> None:
     # ESA p.2's PDFium U+FFFE joins two visible lines; Docling splits the
     # first model's suffix into the next native cell. Reading order alone
@@ -183,7 +190,11 @@ def test_wrapped_pdf_model_needs_its_own_physical_column(
             row_end=row + 1,
             col_start=col,
             col_end=col + 1,
-            text=text,
+            # Native Docling may already spell the model in full even though
+            # its PDF proof is newly recovered from a physical U+FFFE wrap.
+            text=("GW5K-ETA-G20" if col == 1 else "GW6K-ETA-G20")
+            if complete_header and row == 0 and col > 0
+            else text,
             column_header=row == 0,
             row_header=False,
             row_section=False,
