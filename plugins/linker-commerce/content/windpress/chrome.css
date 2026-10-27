@@ -323,4 +323,30 @@ html:not(.lia-narrow) #tv-header-v2[data-tv-actions-compact="false"] .tv-desktop
 #lc-header #tv-header-v2 .tv-mobile-link-text{align-items:flex-start!important;text-align:left!important}
 #lc-header #tv-header-v2 .tv-mobile-summary{align-items:center!important;justify-content:space-between!important;text-align:left!important}
 #lc-header #tv-header-v2 .tv-mobile-summary.tv-mobile-summary--direct{display:flex!important;font-size:16px!important;font-weight:700!important;letter-spacing:0!important;text-transform:none!important}
+
+/* The frame height already subtracts WordPress's toolbar. A sticky header's
+ * toolbar offset does not reserve that space in normal document flow. */
+body.admin-bar .linker-genie-workspace{margin-block-start:var(--wp-admin--admin-bar--height,32px)}
+
+/* Match the workspace rail's existing 860px overlay breakpoint. Its prototype
+ * had a static header; the live sticky header must stay clear of the close
+ * target while the document scrolls. Keep the workspace itself in flow. */
+@media (max-width:860px){
+	.linker-genie-workspace{--linker-genie-chrome-top:var(--lk-header-h,80px)}
+	body.admin-bar .linker-genie-workspace{--linker-genie-chrome-top:calc(var(--lk-header-h,80px) + var(--wp-admin--admin-bar--height,32px))}
+	.linker-genie-workspace .linker-genie-app--workspace > .linker-genie-rail--docked{
+		position:fixed;
+		inset:var(--linker-genie-chrome-top) auto 0 0;
+	}
+	.linker-genie-workspace .linker-genie-app--workspace > .linker-genie-rail-mask{
+		position:fixed;
+		inset:var(--linker-genie-chrome-top) 0 0;
+	}
+	.linker-genie-workspace .linker-genie-app--workspace :is(.linker-genie-rail__toggle,.linker-genie-app__rail-toggle){
+		width:var(--proto-control-height,2.75rem);
+		height:var(--proto-control-height,2.75rem);
+		min-width:var(--proto-control-height,2.75rem);
+		min-height:var(--proto-control-height,2.75rem);
+	}
+}
 @media (prefers-reduced-motion:reduce){#tv-header-v2 *,#tv-header-v2 *::before,#tv-header-v2 *::after{transition:none!important;animation:none!important}#tv-header-v2 .tv-mega-link:hover .tv-mega-link-thumb,#tv-header-v2 .tv-mega-featured:hover .tv-mega-featured-img,#tv-header-v2 .tv-app-mega-stack-item:hover .tv-app-mega-stack-thumb,#tv-header-v2 .tv-header-cta:hover,#tv-header-v2 .tv-header-utility:hover{transform:none}}
