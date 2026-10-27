@@ -103,7 +103,7 @@ jobs:
           def successful(run):
               return run and run["status"] == "completed" and run["conclusion"] == "success"
 
-          def checked_run(run, commit):
+          def checked_run(run, commit, *, docs_only=False):
               if not successful(run):
                   return False
               workflow = ".github/workflows/check.yml"
@@ -123,6 +123,8 @@ jobs:
               repo = os.environ["REPOSITORY"]
               jobs = api(f"repos/{repo}/actions/runs/{run['id']}/attempts/{run['run_attempt']}/jobs?per_page=100")["jobs"]
               allowed = {"full", "presentation"} if run["event"] == "pull_request" else {"full", "reuse"}
+              if docs_only:
+                  allowed = {"docs"}
               labels = {f"Record validation scope ({mode})" for mode in allowed}
               return any(step["name"] in labels and step.get("conclusion") == "success"
                          for job in jobs if job["name"].startswith("check (")
@@ -136,12 +138,23 @@ jobs:
               return run if checked_run(run, commit) else None
 
           def checked_base(commit):
-              run = latest_run(commit)
-              if checked_run(run, commit):
-                  return True
-              if run and (run["status"] != "completed" or run["conclusion"] != "cancelled"):
-                  return False
-              return bool(checked_pr_tree(commit))
+              while True:
+                  run = latest_run(commit)
+                  if checked_run(run, commit):
+                      return True
+                  # A successful docs run carries its parent's runtime proof;
+                  # it never becomes runtime proof for merge-tree reuse itself.
+                  if checked_run(run, commit, docs_only=True):
+                      parent = git("rev-parse", commit + "^1").decode().strip()
+                      fields = git("diff", "--name-status", "-z", "--find-renames", parent, commit).decode(errors="surrogateescape").split("\0")
+                      changes = list(zip(fields[0:-1:2], fields[1:-1:2]))
+                      if classify(changes) != "docs" or not all(non_runtime_change(status, path, parent, commit) for status, path in changes):
+                          return False
+                      commit = parent
+                      continue
+                  if run and (run["status"] != "completed" or run["conclusion"] != "cancelled"):
+                      return False
+                  return bool(checked_pr_tree(commit))
 
           event = os.environ["EVENT_NAME"]
           head = os.environ["HEAD_SHA"]
