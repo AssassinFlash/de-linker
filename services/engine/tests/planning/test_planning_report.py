@@ -25,6 +25,7 @@ from linker_engine.planning.certificate_evidence import CertificateEvidence
 from linker_engine.planning.certificate_report import certificate_sections
 from linker_engine.planning.certificate_sources import inspect_report_certificates
 from linker_engine.planning.csv_mapping import CsvMapping
+from linker_engine.planning.energy_inputs import EnergyInputs
 from linker_engine.planning.energy_kernel import EnergyKernel
 from linker_engine.planning.energy_service import EnergyService
 from linker_engine.planning.equipment_conditions import review_device_conditions
@@ -76,7 +77,7 @@ from .test_certificate_evidence import (
     evidence,
     inspected_fixture,
 )
-from .test_energy_kernel import BATTERY, PROVENANCE, TOLERANCE
+from .test_energy_kernel import BATTERY, PROVENANCE, TOLERANCE, create_scenario
 from .test_equipment import (
     feed as equipment_feed,  # noqa: F401 -- Shared cited fixture, registered under this name.
 )
@@ -1082,7 +1083,16 @@ def test_report_subset_omits_unrelated_unprepared_device_entries(
     setup = values.pop("equipment_selection")
     setup.pop("product_revisions")
     values["equipment_setup"] = setup
-    project = workspace.create(owner, "Comparison only", values, key="subset")
+    # Reuse valid two-hour profile inputs; no energy calculation is needed.
+    project = create_scenario(workspace, owner)
+    project = workspace.revise(
+        owner,
+        project.id,
+        project.revision,
+        {**project.inputs, **values},
+        key="subset",
+    )
+    scenario = EnergyInputs.read(project.inputs["energy_replay"])
     module = __import__(
         "linker_engine.planning.report_sources", fromlist=["report_sources"]
     )
@@ -1093,7 +1103,7 @@ def test_report_subset_omits_unrelated_unprepared_device_entries(
         lambda _workspace, _actor, _project, identity: SimpleNamespace(
             run=SimpleNamespace(
                 id=identity,
-                revision=1,
+                revision=project.revision,
                 manifest_sha256="c" * 64,
                 result_sha256="d" * 64,
             ),
@@ -1103,6 +1113,8 @@ def test_report_subset_omits_unrelated_unprepared_device_entries(
                 "runtime_sha256": context.code_sha256,
             },
             pinned={},
+            inputs=project.inputs,
+            scenario=scenario,
         ),
     )
     source = report_sources(

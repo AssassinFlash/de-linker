@@ -98,6 +98,7 @@ def launch(
         settings.equipment_service(workspace),
         settings.equipment_search_service(workspace),
         settings.report_service(workspace),
+        settings.pvgis_reference_service(workspace),
     )
     identity = {
         "runtime": energy.kernel.runtime.sha256,

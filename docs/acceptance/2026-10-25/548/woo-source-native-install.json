@@ -1443,7 +1443,7 @@
       "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
     }
   },
-  "current_frontier": "weather_source_quality_published_and_native_readback; managed_roof_ac_reference_integration_and_full_downstream_closure_in_progress",
+  "current_frontier": "managed_roof_ac_reference_native_local_and_Genie_PDF_pass; finalCI_production_FR_readback_and_fullgoal_downstream_closure_pending",
   "shared_dc_core": {
     "status": "implemented_and_reviewed_core_not_connected_to_native_commands",
     "model": "constant_window_shared_dc_bus_v1",
@@ -7252,7 +7252,7 @@
     }
   },
   "managed_roof_ac_reference": {
-    "state": "native_defects_fixed_and_reviewed; corrected_native_retry_pending",
+    "state": "native_local_source_adoption_energy_report_pdf_genie_pass; production_pending_final_CI",
     "model": "pvgis_5_3_roof_ac_reference_v1",
     "kind": "prepare_pvgis_roof_ac_reference_v1",
     "profile_purpose": "pvgis_roof_ac_reference_profile_v1",
@@ -7357,7 +7357,543 @@
       "finding": "Existing browser report link allowlist rejected official JRCseriescalc sourcehref innewPVGIS section; backend report/job/PDF alreadyvalid",
       "correction": "Only knownPVGISsource-section +fixedcredential-free official5.3seriescalc endpoint, completeuniqueallowedrequestkeys, jsonoutput; all otherhrefrestrictions preserved",
       "evidence": "Sameexistingreportreadercase exactnativehref +8host/path/credential/fragment/keymutationsPASS; actualnativepayload readPlanningReport/readReportResult/readRunPASS; tsc/singleVite+manifestcheckPASS; independentrootSpec+StandardsdiffreviewPASS",
-      "native_download": "pending correctedbrowserasset; no report/job/provider rerun required"
+      "native_download": "PASS actualEN+DE customerbuttons; matching retained PDFasset hashes; no new provider/energy request"
+    },
+    "native_local": {
+      "phase": "native_source_adoption_energy_report_consumer_pass",
+      "engine_source_commit": "cc847e39bf14c473a0e53d10ef52537a4761fc3f",
+      "tools_source_commit": "9a8aa64d79bbd66dd15ed08180b37c01e142ef89",
+      "runtime_sha256": "c8f3289f341639c79ab705cd34bd7e59d4e7a172ea43e3d1ff3996e8ae4850c2",
+      "rollback_runtime_sha256": "0f4f57fd3c061f04b3bf5e686d7ab5881da27afe654105816063f8a82a9ee253",
+      "http_worker_match": true,
+      "schema_version": 5,
+      "existing_rows_preserved": true,
+      "feed_preserved": true,
+      "wordpress_pid_preserved": true,
+      "native_case": {
+        "project_id": "c7795bc2c1e14e389622015c809ace45",
+        "owner": "user:wp:1:user:66",
+        "final_revision": 28,
+        "initial_shared_dc_revision": 24,
+        "explicit_separate_ac_revision": 25,
+        "reference_choices_revision": 26,
+        "explicit_ac_adoption_revision": 27,
+        "prepared_ac_energy_revision": 28,
+        "official_source_run_id": "8963c93a7781405b8bc0c83e672da43a",
+        "official_source_attempt": 1,
+        "official_source_asset_id": "76e9cabbe5b246169b93881e59f77808",
+        "official_source_summary": {
+          "end_utc": "2024-01-01T00:00:00+00:00",
+          "energy_kwh": 11008.95012,
+          "interval_count": 8760,
+          "measurement": "pv_available_ac",
+          "model_role": "official_calendar_year_roof_ac_reference",
+          "native_max_interval_seconds": 3600,
+          "origin": "modelled",
+          "reconstructed_means": true,
+          "start_utc": "2023-01-01T00:00:00+00:00"
+        },
+        "original_sha256": "9018be7b46a109333eb20aeb40668c6977cc05e7f3fea1118915167d95eba509",
+        "capture_sha256": "f256d3fe5b197c777f7ea2e4fa29be5a29cfe2fbb133080565d0b8e253951adc",
+        "capture_status": 200,
+        "capture_time_utc": "2026-10-27T17:55:23.736467+00:00",
+        "actual_request": {
+          "api_version": "5.3",
+          "azimuth_north_clockwise_deg": 180.0,
+          "end_year": 2023,
+          "latitude_deg": 52.52,
+          "longitude_deg": 13.405,
+          "mounting_place": "free",
+          "peak_power_kwp": 11.04,
+          "pv_technology": "crystSi",
+          "radiation_database": "PVGIS-SARAH3",
+          "schema_version": 1,
+          "start_year": 2023,
+          "system_loss_percent": 14.0,
+          "tilt_deg": 30.0,
+          "use_terrain_horizon": false
+        },
+        "array0_validated": true,
+        "array0_raw_bytes": 1056013,
+        "source_scope": "Synthetic Berlin city anchor and roof; actual official2023SARAH3 modelled source;14percent explicitly generic JRC reference scenario, not measured/manufacturer loss",
+        "new_source_start_actions_after_code_correction": 1,
+        "total_official_gets_including_retained_initial_failure": 2,
+        "r_and_d_imported": false,
+        "energy_run_id": "0029fbb5b0ac475196233a6726cb2dad",
+        "energy_revision": 28,
+        "energy_kind": "single_ac_energy_replay_v1",
+        "energy_metrics": {
+          "aux_ac_unserved_kwh": 0.0,
+          "charge_conversion_loss_kwh": 0.1285362932175201,
+          "definitions": {
+            "boundary": "single_AC_bus; battery_export_excluded; system_aux_separate_from_customer_load",
+            "inventory_origin": "proportional_mixing; initial_unknown_and_grid_are_not_solar",
+            "pv_input_self_use": "(PV_direct_load + PV_direct_system_aux + PV_charge_input) / PV_generated_after_curtailment",
+            "pv_onsite_available_share": "(PV_direct_load + PV_direct_system_aux + PV_charge_input) / PV_available_before_curtailment",
+            "solar_autarky": "(PV_direct_to_customer_load + PV_origin_battery_to_customer_load) / gross_customer_load_demand",
+            "solar_load_share_of_requested_demand": "(PV_direct_to_requested_load + PV_origin_battery_to_requested_load) / requested_load_demand_in_explicit_scope"
+          },
+          "discharge_conversion_loss_kwh": 0.0,
+          "grid_charge_ac_kwh": 0.0,
+          "grid_import_kwh": 0.0,
+          "grid_origin_battery_to_load_kwh": 0.0,
+          "gross_load_kwh": 1.102572669562,
+          "gross_load_undefined_reason": null,
+          "initial_unknown_battery_to_load_kwh": 0.0,
+          "internal_aux_supplied_kwh": 0.0,
+          "internal_aux_unserved_kwh": 0.0,
+          "load_demand_kwh": 1.102572669562,
+          "load_measurement_scope": "gross_load",
+          "maximum_interval_average_import_kw": 0.0,
+          "pv_available_before_curtail_kwh": 4.31598,
+          "pv_battery_to_load_kwh": 0.0,
+          "pv_charge_ac_kwh": 3.2134073304379998,
+          "pv_curtailed_kwh": 0.0,
+          "pv_direct_aux_ac_kwh": 0.0,
+          "pv_direct_load_kwh": 1.102572669562,
+          "pv_export_kwh": 0.0,
+          "pv_generated_ac_kwh": 4.31598,
+          "pv_input_self_use": {
+            "undefined_reason": null,
+            "value": 1.0
+          },
+          "pv_onsite_available_share": {
+            "undefined_reason": null,
+            "value": 1.0
+          },
+          "pv_potential_before_mode_kwh": 4.31598,
+          "solar_autarky": {
+            "undefined_reason": null,
+            "value": 1.0
+          },
+          "solar_load_kwh": 1.102572669562,
+          "solar_load_share_of_requested_demand": {
+            "undefined_reason": null,
+            "value": 1.0
+          },
+          "standing_loss_kwh": 0.0,
+          "stored_final": {
+            "grid_kwh": 0.0,
+            "initial_unknown_kwh": 0.0,
+            "pv_kwh": 3.0848710372204797
+          },
+          "stored_initial": {
+            "grid_kwh": 0.0,
+            "initial_unknown_kwh": 0.0,
+            "pv_kwh": 0.0
+          },
+          "unserved_load_kwh": 0.0
+        },
+        "energy_period": {
+          "start_utc": "2023-06-16T09:00:00+00:00",
+          "end_utc": "2023-06-16T11:00:00+00:00",
+          "intervals": 2
+        },
+        "report_run_id": "9acfe9f15dc643369dd0433f7a7009df",
+        "report_revision": 28,
+        "report_result_sha256": "903d384e0da6957de6a48be51d136380ceb1598068a829be08f163cc86d1e851",
+        "report_pdf_asset_id": "91c1fe7c551e49d0bb340dae6d566905",
+        "report_pdf_sha256": "00644715291409959927594834891a7b06ee08afaf22dedd10fff86f0d5c3eda",
+        "materials_csv_asset_id": "624fc923ec834c0bb4f624206fe42c63",
+        "report_source_runs": [
+          {
+            "input_sha256": "945bcd69af028b409d71e9c8a53c320424d913b0c0749a74fbef194e966a188a",
+            "kind": "single_ac_energy_replay_v1",
+            "manifest_sha256": "3df1af26ab4d50ee1cc132627f127f66497967227469437b9fc662e6edf9c5b9",
+            "result_sha256": "0b868a033549239c7d7853b72b84e42314b026229e36f4978801a82350fd5877",
+            "revision": 28,
+            "run_id": "0029fbb5b0ac475196233a6726cb2dad",
+            "runtime_sha256": "c8f3289f341639c79ab705cd34bd7e59d4e7a172ea43e3d1ff3996e8ae4850c2"
+          },
+          {
+            "input_sha256": "5c742f20fe34be995cfc20966ffaf3e40570bbb2c99a5b5a7f2deb3070cca697",
+            "kind": "prepare_pvgis_roof_ac_reference_v1",
+            "manifest_sha256": "168c0cbbae27313a018149461d05ac24c2b5c3280f1c17d5bb06a80a525626fb",
+            "result_sha256": "9de54f1c79c60d9ea835abf9078dc246ca63e4fc857aa78ce28d9d38ab9a7b5f",
+            "revision": 26,
+            "run_id": "8963c93a7781405b8bc0c83e672da43a",
+            "runtime_sha256": "c8f3289f341639c79ab705cd34bd7e59d4e7a172ea43e3d1ff3996e8ae4850c2"
+          }
+        ],
+        "old_shared_dc_profile_and_revision_preserved": true,
+        "old_failed_run_and_original_preserved": true,
+        "saved_geometry_unchanged": true,
+        "pdf_download_render_owner": "root IAB9, not performed by frontend agent"
+      },
+      "reader_correction": {
+        "cause": "Native report pvgis-roof-reference-0 official source href rejected by previous de-linker/pvlib-only guard",
+        "scope": "Only fixed official5.3seriescalc URL in indexed source section, complete unique known keys, JSON, no credentials/fragment; other guards unchanged",
+        "same_existing_reader_case": "PASS",
+        "actual_native_readPlanningReport_readReportResult_readRun": "PASS",
+        "typescript": "PASS once",
+        "app_vite_build": "PASS once; both manifest writers/checks PASS",
+        "tools_entry_sha256": "5c8d2e8d0626ba1adde983d77af22d303f24168537f3c457f4fec613a46e5dcb",
+        "native_report_pane": "PASS actual rendered content and PDF/CSV controls on existing report; no new report",
+        "payload_path": "/Users/chesterjohn/de-linker-local/p548/planner/managed-reference-native/report-native-response.json",
+        "payload_sha256": "b3d0509aa38bcf71f0ad478feb8741652a443d915951386b10c6debfd49f2b99",
+        "payload_retention": "One small projection while final goal548 acceptance consumes reader seam; immutable run remains source after reclaim."
+      },
+      "existing_rows_after_native_case_preserved": {
+        "artifacts": true,
+        "evaluation_routes": true,
+        "handoffs": true,
+        "idempotency": true,
+        "jobs": true,
+        "ownership_transfers": true,
+        "principal_closures": true,
+        "project_assets": true,
+        "revisions": true,
+        "runs": true,
+        "weather_downloads": true
+      },
+      "ui": {
+        "verdict": "PASS four affected language/width views and DOM checks",
+        "view_coverage": {
+          "en_1440": "reference setup",
+          "en_390": "reference result/model choices",
+          "de_1440": "reference result/original revision/annual scope",
+          "de_390": "reference setup/model and transfer scope"
+        },
+        "screenshots": {
+          "accepted-setup-en-1440.jpg": {
+            "path": "/Users/chesterjohn/de-linker-local/p548/planner/managed-reference-native/accepted-setup-en-1440.jpg",
+            "sha256": "6752d58d954bc4d5ec824bd9595a07973d958b2ea88b47ab477143b03cdd1c64",
+            "bytes": 117725
+          },
+          "accepted-result-en-390.jpg": {
+            "path": "/Users/chesterjohn/de-linker-local/p548/planner/managed-reference-native/accepted-result-en-390.jpg",
+            "sha256": "f2cfbd8e68e6cba5833a67c1b886673f11eb212744a194b051fbb2f7c9e0f005",
+            "bytes": 42601
+          },
+          "accepted-result-de-1440.jpg": {
+            "path": "/Users/chesterjohn/de-linker-local/p548/planner/managed-reference-native/accepted-result-de-1440.jpg",
+            "sha256": "3df92969655a7397315df7399ea12adc690eba47253e4a0dcfb87cdda78cebf2",
+            "bytes": 141277
+          },
+          "accepted-setup-de-390.jpg": {
+            "path": "/Users/chesterjohn/de-linker-local/p548/planner/managed-reference-native/accepted-setup-de-390.jpg",
+            "sha256": "476b96eef2bf09ea81f09807d3c38e07a02cc77088aecf2f2005bdc09565f8ef",
+            "bytes": 55648
+          }
+        },
+        "viewport_widths_css": [
+          1440,
+          390
+        ],
+        "desktop_document_width": 1425,
+        "mobile_document_width": 375,
+        "horizontal_page_overflow": false,
+        "responsive_grid": "two columns desktop, one343px column mobile,24pxgap",
+        "source_table_cell_padding": "10px12px existing lp-data-table",
+        "viewport_reset": true,
+        "owned_tab_closed": true,
+        "unique_before_records": [
+          "initial-angle-failure-en-1440.jpg",
+          "setup-en-1440.jpg"
+        ],
+        "superseded_clipped_capture_files_removed": [
+          {
+            "name": "setup-en-1440-fixed.jpg",
+            "bytes": 128127
+          },
+          {
+            "name": "setup-en-390.jpg",
+            "bytes": 98820
+          },
+          {
+            "name": "result-en-390.jpg",
+            "bytes": 111846
+          },
+          {
+            "name": "result-en-1440.jpg",
+            "bytes": 122154
+          }
+        ]
+      },
+      "retained_screen_artifacts": {
+        "accepted-setup-en-1440.jpg": {
+          "path": "docs/acceptance/2026-10-25/548/managed-accepted-setup-en-1440.jpg",
+          "sha256": "6752d58d954bc4d5ec824bd9595a07973d958b2ea88b47ab477143b03cdd1c64",
+          "bytes": 117725
+        },
+        "accepted-result-en-390.jpg": {
+          "path": "docs/acceptance/2026-10-25/548/managed-accepted-result-en-390.jpg",
+          "sha256": "f2cfbd8e68e6cba5833a67c1b886673f11eb212744a194b051fbb2f7c9e0f005",
+          "bytes": 42601
+        },
+        "accepted-result-de-1440.jpg": {
+          "path": "docs/acceptance/2026-10-25/548/managed-accepted-result-de-1440.jpg",
+          "sha256": "3df92969655a7397315df7399ea12adc690eba47253e4a0dcfb87cdda78cebf2",
+          "bytes": 141277
+        },
+        "accepted-setup-de-390.jpg": {
+          "path": "docs/acceptance/2026-10-25/548/managed-accepted-setup-de-390.jpg",
+          "sha256": "476b96eef2bf09ea81f09807d3c38e07a02cc77088aecf2f2005bdc09565f8ef",
+          "bytes": 55648
+        },
+        "genie-scope-reply.jpg": {
+          "path": "docs/acceptance/2026-10-25/548/managed-genie-scope-reply.jpg",
+          "sha256": "10f0556b176cfa4136b0f32406241f3d349a5589714a74f37cca3982dfc9be1e",
+          "bytes": 139287
+        }
+      },
+      "pdf": {
+        "en": {
+          "run": "9acfe9f15dc643369dd0433f7a7009df",
+          "result_sha256": "903d384e0da6957de6a48be51d136380ceb1598068a829be08f163cc86d1e851",
+          "pdf_asset": "91c1fe7c551e49d0bb340dae6d566905",
+          "sha256": "00644715291409959927594834891a7b06ee08afaf22dedd10fff86f0d5c3eda",
+          "path": "docs/acceptance/2026-10-25/548/managed-roof-reference-en.pdf",
+          "bytes": 66993,
+          "pages": 7,
+          "actual_native_customer_download": true,
+          "source_roles": "energy0029fbb5…revision28 + PV8963c93a…revision26; no source/energy recomputation forDErender",
+          "visual_readback": "Affected ENpages4-6/DEpages5-6 inspected: module24/11.04kWp once; annual11008.95kWh/8760 separated from2h1.103kWhload/4.316kWhPV; scope/assumptions/unknownhardware qualification explicit; no overlap or clipping"
+        },
+        "de": {
+          "run": "3751967f1b904ff2abaa2187997805df",
+          "result_sha256": "1c40208992c994431484ab054eba5afcb53af6c80b8522db20c4f83b5e83c53a",
+          "pdf_asset": "b630510ab03c4f0e8e190776905448a2",
+          "sha256": "cd8e5f0234e8ae168b703e358c9a8ec89b2e0d25cd76d29941de639aed887316",
+          "path": "docs/acceptance/2026-10-25/548/managed-roof-reference-de.pdf",
+          "bytes": 67977,
+          "pages": 7,
+          "actual_native_customer_download": true,
+          "source_roles": "energy0029fbb5…revision28 + PV8963c93a…revision26; no source/energy recomputation forDErender",
+          "visual_readback": "Affected ENpages4-6/DEpages5-6 inspected: module24/11.04kWp once; annual11008.95kWh/8760 separated from2h1.103kWhload/4.316kWhPV; scope/assumptions/unknownhardware qualification explicit; no overlap or clipping"
+        }
+      },
+      "genie": {
+        "owner": "/root/certificate_conditions_backend",
+        "recorded_at_utc": "2026-10-27T18:32:11.720303+00:00",
+        "state": "native_saved_report_scope_gate_passed",
+        "initial_environment_failure": {
+          "message": "Genie did not answer. Please try again.",
+          "listener_9349": false,
+          "matching_logged_turns": 0,
+          "pending_turn_starts": 0,
+          "diagnosis": "existing Genie service was stopped before model/tool execution"
+        },
+        "recovery": {
+          "command": "GENIE_INDEX=/Users/chesterjohn/de-linker-data/index/builds/20261018T173840Z/index.sqlite UV_OFFLINE=1 just serve p548 --service genie",
+          "existing_instance_reused": true,
+          "source_commit_at_start": "9a8aa64d79bbd66dd15ed08180b37c01e142ef89",
+          "source_project": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/services/genie",
+          "source_binding_sha256": "7193f5505321d6cc390f41b5f4f2cb784b90cbf4432526ebbe95008c959d9755",
+          "source_binding_method": "SHA256 of sorted src/**/*.py relative path + NUL + bytes, then pyproject.toml and uv.lock by same encoding",
+          "python": "3.12.15",
+          "locked_dependency_dry_run": "would make no changes",
+          "native_sync": "79 packages checked; no changes",
+          "wrapper_pid": 18460,
+          "listener_pid": 18463,
+          "listener": "127.0.0.1:9349",
+          "health": {
+            "status": "ok"
+          },
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "base_url": "https://api.deepseek.com",
+          "index": {
+            "path": "/Users/chesterjohn/de-linker-data/index/builds/20261018T173840Z/index.sqlite",
+            "version": "20261018T173840Z",
+            "sha256": "f4da3f64617399d84a7f232cd2240c76bfc1b1e83bb6533b605171a82c9e662a",
+            "quick_check": "ok",
+            "unchanged": true,
+            "binding_basis": "Retained newest native build preceding last successful local turn on 2026-10-26; explicit service-process override avoids later Oct27 candidates",
+            "global_settings_changed": false
+          },
+          "data": {
+            "turn_log_quick_check": "ok",
+            "work_store_quick_check": "ok",
+            "schema_migration": false
+          },
+          "protected_processes": {
+            "server": {
+              "pid": 3336,
+              "pid_file_sha256": "def258a104be9292b6ab6519a45d62d50436ae61f7d8c1a2e97ac04ab961e7c0",
+              "unchanged": true
+            },
+            "engine": {
+              "pid": 4401,
+              "pid_file_sha256": "9577292ba1b3eedcc566acc3fd716638ba0cf16add940f1cfd1f0a731d63c9ae",
+              "unchanged": true
+            },
+            "planner-worker": {
+              "pid": 4440,
+              "pid_file_sha256": "2b1b740ea4ffe4ce1a2945565f3a578a93f7343a74a3badcc0f7fb3c2d90520c",
+              "unchanged": true
+            }
+          },
+          "planner_runtime_sha256": "c8f3289f341639c79ab705cd34bd7e59d4e7a172ea43e3d1ff3996e8ae4850c2",
+          "planner_generation": "fef6cc025c5941c2b68f7e6bdf5f5f03",
+          "wordpress_http_status": 200
+        },
+        "native_query": {
+          "submitted_after_recovery": 1,
+          "pre_recovery_transport_failure_submissions": 1,
+          "followup_prompts": 0,
+          "project_id": "c7795bc2c1e14e389622015c809ace45",
+          "revision": 28,
+          "selected_report_run_id": "3751967f1b904ff2abaa2187997805df",
+          "turn_id": 4,
+          "conversation_id": "8390",
+          "created_at_utc": "2026-10-27 18:30:48",
+          "question": "For this saved project and selected report, please explain which period the PVGIS generation result covers and which period the storage calculation covers. Have the selected equipment combination and the country requirements already been approved? Please identify the saved results and source evidence behind your answer, and explain what the reported percentages do and do not mean.",
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "grounded": true,
+          "failures": [],
+          "fallback": false,
+          "tool_call": {
+            "name": "linker/read-planning-project",
+            "arguments": {
+              "project_id": "c7795bc2c1e14e389622015c809ace45",
+              "revision": 28,
+              "run_ids": [
+                "3751967f1b904ff2abaa2187997805df"
+              ]
+            },
+            "ok": true,
+            "status": "available",
+            "truncated": false,
+            "frozen_context_sha256": "9734d8bd76d56ab010f39f10cf9dab4cdfa5d1e7e890543090fe1d4779c309bd"
+          },
+          "rendered_in_ui": true,
+          "answer_text": "### Saved results behind this answer\nThe project is saved as revision 28, and the latest saved revision is the same 28, so you are looking at the current revision. One saved result is selected: the succeeded planning report recorded against that revision, which matches the revision you are viewing and is marked current. It is the only selected result, and reading it succeeded — that only means the read worked, not that the design passed.\n\nWithin that report, the roof generation reference and the storage calculation are separate saved snapshots. The module layout used in the calculation carries its own, older input revision 26, while a further calculation reference belongs to the viewed revision 28; the recorded evidence therefore mixes an older generation snapshot with the current inputs.\n\n### Which periods the figures cover\n- **PVGIS roof reference:** a whole calendar year, 2023, modelled over 8,760 calculated intervals with the radiation database named in the report, a crystalline-silicon reference technology, free-standing mounting and an assumed system loss of 14 %. It gives modelled AC generation of 11,008.95 kWh for the saved roof. Device-specific inverter behaviour, nearby obstacles and shading between module rows are outside that model.\n- **Storage / energy scenario:** only a short morning window on a single June day of the same year, covering 2 calculated intervals — not the year. It shows simulated load of 1.103 kWh, PV generation of 4.316 kWh, and grid import, PV export, curtailment and unserved load of 0 kWh, 0 kWh, 0 kWh and 0 kWh. Those values come from a general energy-flow model fed with declared example assumptions (usable energy, AC power, efficiency per direction), not from a product datasheet.\n\n### Approval status\nThe selected equipment combination is **not approved**, and neither are the country requirements.\n\n- **Country requirements:** the selected calculations record no country assessment at all, and the report states that country-specific requirements, electrical design and installation checks remain open. A country-compliant installation is not established.\n- **Equipment:** the overall equipment assessment is \"further checks required\". The usable-energy check does pass, with 18 kWh against a requirement of 10 kWh, and the converter output, grid phase, PV input power, module count, parallel arrangement, battery voltage and sales-unit checks also pass. Still open are the PV strings and inputs, the manufacturer pairing, the continuous AC discharge and charge power, storage losses and operating conditions, and the converter ports and system topology.\n- **Certificates:** the declarations of conformity recorded with the result were merely linked when it was saved; their applicability to the models, firmware, configuration and standard editions in this project was not assessed here.\n\n### What the percentages mean — and what they do not\n- The solar share of gross demand of 100 % and the share of PV used or stored on site of 100 % describe that short saved window only: how much of the simulated demand was covered from solar, and how much of the PV energy was used or stored instead of exported.\n- They are outcomes of the general energy-flow model under the example assumptions. They are not annual figures, they do not demonstrate the performance of the inverter or the battery, and they say nothing about manufacturer performance, grid acceptance or a compliant installation. They are also not part of any equipment release.",
+          "answer_text_sha256": "3611bc34211cfe2ccf304ab2b87e1eac9c8ad9cc0b011fb909609a1e5d3fe44b",
+          "scope_check": {
+            "annual_2023_8760_intervals_11008_95_kwh": true,
+            "short_window_2_intervals_load_1_103_pv_4_316_kwh": true,
+            "percentages_explicitly_not_annual": true,
+            "equipment_not_approved": true,
+            "country_not_assessed": true,
+            "certificate_applicability_not_assessed": true,
+            "limitation": "Answer describes a short June morning with two intervals; exact 2023-06-16T09:00:00+00:00 to 11:00 UTC dates are present in frozen tool context but not repeated in prose."
+          },
+          "no_mail_inquiry_or_outward_contact": true,
+          "screenshot": {
+            "path": "/Users/chesterjohn/de-linker-local/p548/planner/managed-reference-native/genie-scope-reply.jpg",
+            "bytes": 139287,
+            "sha256": "10f0556b176cfa4136b0f32406241f3d349a5589714a74f37cca3982dfc9be1e"
+          },
+          "temporary_chrome_tab_closed": true,
+          "parent_iab_tab_untouched": true
+        },
+        "no_source_index_ci_changes": true
+      },
+      "genie_summary": "Actual officialdeepseek-flash groundedturn4/conversation8390, fallback0/failures[]; oneownedplanningtool; annual2023/8760/11008.95 distinguishedfrom2interval storage1.103load/4.316PV andboth100%ratios notannual; equipment/country notapproved. ExactUTC times availableintool butanswer statedshortJune morning instead ofrepeatingdates. Existingstopped9349 restored underoriginalretainedindex; no extra prompts/indexchanges.",
+      "independent_energy_readback": {
+        "energy_run": "0029fbb5b0ac475196233a6726cb2dad",
+        "result_sha256": "0b868a033549239c7d7853b72b84e42314b026229e36f4978801a82350fd5877",
+        "trace_sha256": "bfcdbbd565626b22b115a433e58fdc2a2dc40d9674852b5959c25b0b76f8b860",
+        "role": "pv_available_ac exact newasset/dependencyclosure; noDCpreparedparameters/second14%loss",
+        "pv_kwh": 4.31598,
+        "load_direct_solar_kwh": 1.102572669562,
+        "battery_pv_charge_input_kwh": 3.2134073304379998,
+        "charge_conversion_loss_kwh": 0.1285362932175201,
+        "final_pv_inventory_kwh": 3.0848710372204797,
+        "import_export_curtail_unserved_aux_discharge_kwh": 0,
+        "residual_pv_kwh": "2e-16",
+        "reference_battery": "existing declared10kWh/5kW/.96each, zerointernal/standingloss; no manufacturerperformance claim",
+        "scope": "Read-only immutableCAS/SQLite; no rerun or annualstorageclaim"
+      }
+    },
+    "ci_contract_corrections": {
+      "failed_run": 40554693107,
+      "outcomes": "checklintPASS +mu-smokePASS; Python905PASS/2fixturecontractFAIL",
+      "changes": "ComparisonSide stub now validtypedEnergyInputs+actualinputs/revision; workerlaunchhelper includes same optionalexecutor asactualserve; no productionfallback or weakenedassertions",
+      "focused": "Onlythe2failedexistingcases oncePASS5.83s; mypy2/ruff/formatPASS; independentSpec+StandardsincrementPASS",
+      "runtime_source_unchanged_since": "cc847e39bf14c473a0e53d10ef52537a4761fc3f",
+      "final_ci": "pending finalonepush includingnativeproof andtests-onlycorrection"
+    },
+    "production_candidate_prepared": {
+      "archive_sha256": "19d31beea20a8ae510b96df74e89d7bd8f3ada1fdc054a444a277ed12ed0eed1",
+      "candidate": "/opt/linker-planner/releases/ea0aa282078650e0c6d79cc66934de9d3b083af0b1dfd7059e812646793d2d97",
+      "candidate_logical_bytes": 366844069,
+      "database": {
+        "schema_version": 5,
+        "tables": {
+          "artifacts": 0,
+          "evaluation_routes": 9,
+          "execution_control": 1,
+          "handoffs": 0,
+          "idempotency": 26,
+          "jobs": 9,
+          "ownership_transfers": 1,
+          "principal_closures": 1,
+          "project_assets": 12,
+          "projects": 2,
+          "revisions": 12,
+          "runs": 9,
+          "weather_downloads": 2
+        }
+      },
+      "database_counts_schema_unchanged": true,
+      "environment": "locked offline cache with hardlink mode, in-place release environment",
+      "executable": {
+        "runtime_sha256": "8beaa6186e0c9ac97c6957d808692afafe68cce7be9b8d9ce95da8e628134df6",
+        "schema_version": 1,
+        "storage_schema_version": 5
+      },
+      "expires_at_utc": "2026-10-28T17:56:43.083878+00:00",
+      "free_bytes_after": 46222602240,
+      "free_bytes_before": 46229082112,
+      "live_selection_unchanged": true,
+      "live_unit_ids_unchanged": true,
+      "native_service_uid_source_preflight": true,
+      "new_executor_policy": {
+        "enabled_by_existing_policies": true,
+        "kind": "prepare_pvgis_roof_ac_reference_v1",
+        "uid": 994
+      },
+      "no_activation_restart_or_drain": true,
+      "no_database_snapshot": true,
+      "owner": "/root/device_conditions_standards_review",
+      "prepared_at_utc": "2026-10-27T17:56:43.083878+00:00",
+      "prepared_receipt_sha256": "45438cdb92e3c4dfbd6f34656811890641fcf8a12cc0e47a5f92b46e0c423d6d",
+      "remote_upload_temps_removed": true,
+      "retained_rollback": "/opt/linker-planner/releases/14f603e334dc8e5d28cb13f88526dc8744924f4a5f403923d05d5a17135dd663/.deploy/spec.json",
+      "retention": "One unselected candidate, expire 24h after preparation or reclaim after root activation/abandonment; local archive removed after verified prepare.",
+      "retired_candidate": {
+        "candidate": "/opt/linker-planner/releases/7b65d61a20b43b65bae46cc4dca63570eb93274dbdc50212e73b4c3a9ad4e6bb",
+        "candidate_absent": true,
+        "evaluation_route_count": 9,
+        "free_bytes_after": 46231420928,
+        "free_bytes_before": 46224961536,
+        "job_execution_reference_matches": 0,
+        "job_request_manifest_output_blobs_checked": 26,
+        "job_states": {
+          "failed": 2,
+          "succeeded": 7
+        },
+        "logical_bytes_removed": 366885964,
+        "not_current_or_rollback": true,
+        "prepared_receipt_sha256": "a6856d6991d79513a1508613a00912d9d99b33778b190c5bc8edb3a433a56ecd",
+        "process_references": 0,
+        "reason": "Superseded before activation by reviewed derived-angle fix; exact Git286 source remains rebuildable.",
+        "retired_at_utc": "2026-10-27T17:55:05.241655+00:00",
+        "runtime_sha256": "ead081c32c2aa12efbb8692ef8262cbd13ec81f872335d2257e8abc1c9d1bad3",
+        "selection_unchanged": true,
+        "source_commit": "286d6e2baf42d806df8f14da3bfe3bee298ef665"
+      },
+      "selected_current": "/opt/linker-planner/releases/2a15ff379eba9b2ef0b0397c044ccf28eefd1c24e131b3d4deba89aee1bf7a0c/.deploy/spec.json",
+      "selected_runtime_sha256": "31463ea490cc9f24044542a48017bc74be6dc9241743273949a981eaeeb5490d",
+      "service_pids": {
+        "linker-planner-http.service": "192417",
+        "linker-planner-worker.service": "192544"
+      },
+      "service_uid": 994,
+      "source_commit": "cc847e39bf14c473a0e53d10ef52537a4761fc3f",
+      "source_file_count": 262,
+      "source_tree_hash_algorithm": "sha256(canonical_json({schema_version:1,files:[sorted path,sha256]}))",
+      "source_tree_sha256": "ea0aa282078650e0c6d79cc66934de9d3b083af0b1dfd7059e812646793d2d97",
+      "spec": "/opt/linker-planner/releases/ea0aa282078650e0c6d79cc66934de9d3b083af0b1dfd7059e812646793d2d97/.deploy/spec.json",
+      "status": "prepared_only_verified",
+      "remote_summary": "/opt/linker-planner/releases/ea0aa282078650e0c6d79cc66934de9d3b083af0b1dfd7059e812646793d2d97/.deploy/prepare-summary.json",
+      "remote_summary_sha256": "aae2d0c34f1e563d46528dd35634c0d085bd37e987825ecfe806892cb1777adb",
+      "local_source_archive_removed_after_verified_prepare": true,
+      "local_temporary_bytes_reclaimed": 2309000,
+      "activation_authority": "root only after remaining release gates; no activation by preparation agent"
     }
   }
 }
