@@ -1543,3 +1543,42 @@ This batch is ready for immediate integration handoff. Genie active-project
 reading, remaining engineering/country coverage, final review-site and
 production release/readback remain in the same active full goal. No production
 write, notification email, full backup, extra instance or screenshot was made.
+
+### Genie saved-project reader — native dependency delivered
+
+The existing Genie dock reads the same owned saved project revision and
+selected immutable result(s) through a private read-only projection. The
+browser supplies references and the existing guest nonce header; native
+identity supplies the owner and the service reads the facts. The draft baseline
+revision follows confirmed saves; invalid/unsaved changes cannot be interpreted
+as updated results. This context grants no current Woo product, document or
+price permission. Exact location/private comparison notes are excluded.
+
+Actual official-channel turns read the existing fixtures: EN returned the
+saved4800kWh customer estimate with no selected calculation; DE returned the
+selected81.449%/36.978% scenario and explicitly preserved the older revision,
+violated constraint and unassessed country/equipment scope. All project,
+revision and run rows remained identical; no calculation or report was created.
+The existing acceptance ledger records the runtime and native turn hashes.
+
+Native use exposed and closed three integration defects: the opener must use
+the existing delegated lazy loader; final numeric sealing must preserve only
+each block's cited planning figures; REST return links must use the explicit
+turn locale through native Polylang twins. Missing translated pages remain
+unavailable. Independent final Spec/Standards deltas and copy review passed.
+Changed-layer checks passed; physical/report/PDF and other unchanged evidence
+were reused. No additional product authority or model channel was introduced.
+
+EN1440/390 and DE390 native images are retained. The DE1440 screenshot transport
+produced offset/duplicated compositor output; that invalid image was removed
+and is not counted as visual acceptance. The native DE answer and context were
+read back. The remaining final visual gate stays in this full goal and does
+not block the completed interface handoff. No further capture retries are a
+prerequisite for other chats to use the interface.
+
+The installed engine is3d1a7d7f on the same schema5 store. The superseded6b114eb4
+carrier was retired after every file matched the committed source and no
+process referenced it; only the active release and unique63d348e1 baseline
+remain. No full backup, new instance, production write or notification occurred.
+Remaining engineering/country coverage, review-site and production delivery
+remain active in the same full goal.

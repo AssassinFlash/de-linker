@@ -169,13 +169,13 @@ def hydrate(
         elif (
             isinstance(block, ActionBlock)
             and block.name == "open_configurator"
-            and "size.configurator_url" in facts.facts
+            and (project_link := facts.configurator_link()) is not None
         ):
             # The configurator link is the service's, like a document link: the
             # model copied size-hint's URL wrong twice in a row on trial question
             # 14 (2026-10-17, "action open_configurator url is not from this
             # turn's tools"), so it is filled here from the tool result.
-            url = facts.facts["size.configurator_url"].value
+            url = project_link.value
             blocks.append(block.model_copy(update={"args": {**block.args, "url": url}}))
         elif isinstance(block, DocumentBlock):
             document = facts.documents.get(block.ref)
@@ -290,7 +290,13 @@ def fill(text: str, facts: TurnFacts, locale: str = "en") -> str:
         # printed it.
         if (
             fact.source
-            in ("search-knowledge", "read-page", "read-solution", "read-attachment")
+            in (
+                "search-knowledge",
+                "read-page",
+                "read-solution",
+                "read-attachment",
+                "read-planning-project",
+            )
             and chunk_of(fact.id) is not None
         ):
             value = localize(fact.value, locale)

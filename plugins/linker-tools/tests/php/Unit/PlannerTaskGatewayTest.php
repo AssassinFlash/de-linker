@@ -42,7 +42,7 @@ final class PlannerTaskGatewayTest extends TestCase {
 		foreach ( array( 'runs/energy', 'runs/pv', 'runs/equipment', 'runs/equipment-search', 'runs/report', 'equipment/candidates/read', 'runs/weather', 'runs/weather/status', 'runs/cancel', 'products/current', 'installation/review', 'sources/saved-solution' ) as $path ) {
 			$this->assertSame( 1, preg_match( $pattern, '/planner/rpc/' . $path ), $path );
 		}
-		foreach ( array( 'runs/weather/acknowledge', 'runs/weather/resume', 'runs/weather/stop', 'operations/replay/runs/weather', 'identity/status', 'worker/control', 'runs/weather/status/extra' ) as $path ) {
+		foreach ( array( 'projects/assistant', 'runs/weather/acknowledge', 'runs/weather/resume', 'runs/weather/stop', 'operations/replay/runs/weather', 'identity/status', 'worker/control', 'runs/weather/status/extra' ) as $path ) {
 			$this->assertSame( 0, preg_match( $pattern, '/planner/rpc/' . $path ), $path );
 		}
 		$this->assertConditionsMet();

@@ -963,3 +963,45 @@ Only retirement replies, owned-source redirect, no legacy upstream/write,
 and continued private project access need fresh native verification. Genie
 reading the active project is a separate remaining integration in the same
 full goal; old saved snapshots retain their explicit historical semantics.
+
+
+# Genie reads the saved project view
+
+The two existing React roots share an ephemeral, same-window context event
+and a request/response handshake. It carries the viewed saved project ID and
+revision, at most the selected run or two-result comparison, and whether the
+editor has uncommitted changes. The existing native planner nonce rides only
+in a request header; it is never model input, page data or persisted chat
+metadata. Ordinary Genie entries carry no planning context.
+
+The native shell sanitizes references, uses the existing NativeIdentity
+cookie/nonce guards, and privately calls projects/assistant. That read checks
+the same project/run owner and selected project binding as the workspace.
+Browser-supplied calculations/snapshots are ignored. The projection reads
+only immutable saved facts: current-view versus latest revision and selected
+result revisions/states remain distinct. Uncommitted input produces an
+explicit unsaved state without numerical interpretation. No new job,
+calculation, project revision, report, PDF, product feed or credential channel
+is created. Customer inputs remain marked as inputs; recorded assessments
+remain snapshots and grant no current product/document/price permission.
+
+Genie consumes this projection through its existing bounded tool/fact/tag/
+hydration mechanism. The read has no model-selected project arguments.
+Country/equipment not-assessed, violated scenario constraints, undefined
+ratios, pending/failed results and incomplete/truncated context must survive
+into the explanation. No selected result means no claimed calculation
+figures. The owned project link takes precedence over a generic configurator
+entry. Raw time series, PDF bytes, exact coordinates and free-form project
+notes are not sent; fuller detail stays in the owned workbench/report.
+
+Verification is limited to the new owner/reference/projection seam, fact
+hydration and same-project actions, captured context/recovery, and the changed
+EN/DE desktop/mobile entry and source notice. Existing physical, manufacturer,
+PDF and unrelated Genie/site acceptance is reused. Full goal coverage and
+final review-site/production release remain separate open requirements.
+
+The final prose seal retains planning figures only in blocks citing the owned
+planning root or that exact figure. Other blocks cannot borrow its numeric
+permission. The native return destination uses the explicit turn locale and
+the existing Polylang page twin, including REST requests whose ambient
+language differs; a missing translated page is unavailable.

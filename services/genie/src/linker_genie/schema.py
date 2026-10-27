@@ -279,6 +279,11 @@ class PageContext(Strict):
     # a guest's save waits in the WooCommerce session and has no post yet.
     solution_id: int | None = Field(default=None, ge=1)
 
+    planning_project_id: str | None = Field(default=None, pattern=r"^[a-f0-9]{32}$")
+    planning_revision: int | None = Field(default=None, gt=0, strict=True)
+    planning_run_ids: list[str] | None = Field(default=None, max_length=2)
+    planning_unsaved: bool = False
+
 
 class UserContext(Strict):
     logged_in: bool = False
@@ -465,6 +470,11 @@ class TurnRequest(Strict):
     messages: list[TurnMessage]
     locale: Locale = "en"
     page_context: PageContext = Field(default_factory=PageContext)
+    # Read by the authenticated native shell; never supplied from the browser.
+    # Tool logs retain the bounded tagged facts; do not duplicate the raw snapshot.
+    planning_context: dict[str, Any] | None = Field(
+        default=None, exclude=True, repr=False
+    )
     user: UserContext = Field(default_factory=UserContext)
     # The files of this turn (#236). Separate from `messages`, which the proxy stores
     # as the thread: a file rides once and is read once.

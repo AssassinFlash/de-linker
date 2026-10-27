@@ -215,6 +215,7 @@ msgstr "Bewertete Antworten"
 
 #: includes/Genie/Entries.php src/configurator/report/ReportView.tsx
 #: build/genie.js:19 build/hero.js build/configurator.js
+#: ../../apps/planner/src/components/ProjectEditor.tsx build/planner/assets/planner.js:1
 msgid "Ask Genie"
 msgstr "Genie fragen"
 
@@ -11722,3 +11723,12 @@ msgstr "Einige gespeicherte Angaben werden nicht automatisch übernommen. Sie bl
 #: build/planner/assets/planner.js:1
 msgid "Download original inputs (JSON)"
 msgstr "Ursprüngliche Angaben herunterladen (JSON)"
+
+#: src/genie/App.tsx build/genie.js
+#, javascript-format
+msgid "Saved project · revision %d"
+msgstr "Gespeichertes Projekt · Stand %d"
+
+#: src/genie/App.tsx build/genie.js
+msgid "Save your changes so Genie can read the updated project."
+msgstr "Speichern Sie Ihre Änderungen, damit Genie den aktualisierten Projektstand lesen kann."

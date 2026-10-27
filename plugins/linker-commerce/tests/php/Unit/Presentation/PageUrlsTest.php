@@ -21,6 +21,33 @@ use WP_Post;
  */
 final class PageUrlsTest extends TestCase {
 
+	/** A German REST turn must not inherit the request's English default. */
+	public function test_explicit_language_resolves_the_native_twin(): void {
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'en' ) );
+		WP_Mock::userFunction(
+			'get_page_by_path',
+			array(
+				'args'   => array( 'solution-configurator' ),
+				'return' => new WP_Post( (object) array( 'ID' => 33 ) ),
+			)
+		);
+		WP_Mock::userFunction(
+			'pll_get_post',
+			array(
+				'args'   => array( 33, 'de' ),
+				'return' => 58,
+			)
+		);
+		WP_Mock::userFunction(
+			'get_permalink',
+			array(
+				'args'   => array( 58 ),
+				'return' => 'http://linker.test/de/loesungskonfigurator/',
+			)
+		);
+		$this->assertSame( 'http://linker.test/de/loesungskonfigurator/', PageUrls::translated( 'solution-configurator', 'de' ) );
+	}
+
 	/**
 	 * German is the current language: home and pages are the German twins.
 	 */

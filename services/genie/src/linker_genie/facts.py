@@ -13,7 +13,7 @@ from typing import Any
 
 from linker_genie.figures import swap_decimals
 from linker_genie.stock import phrase
-from linker_genie.tools import READ_ATTACHMENT, READ_PAGE, READ_SOLUTION
+from linker_genie.tools import READ_ATTACHMENT, READ_PAGE, READ_PLANNING, READ_SOLUTION
 
 
 @dataclass
@@ -58,6 +58,10 @@ class TurnFacts:
 
     def add(self, fact: Fact) -> None:
         self.facts[fact.id] = fact
+
+    def configurator_link(self) -> Fact | None:
+        """An owned project destination takes priority over a generic size hint."""
+        return self.facts.get("planning.url") or self.facts.get("size.configurator_url")
 
     def ids(self) -> set[str]:
         return (
@@ -106,6 +110,36 @@ def collect(name: str, payload: Any, locale: str = "en") -> TurnFacts:
         _from_page(gathered, payload)
     elif name == READ_SOLUTION:
         _from_solution(gathered, payload)
+    elif name == READ_PLANNING:
+        if "error" not in payload:
+            gathered.add(
+                Fact(
+                    id="planning",
+                    value=str(payload.get("title") or ""),
+                    source="read-planning-project",
+                )
+            )
+            if isinstance(payload.get("text"), str):
+                gathered.add(
+                    Fact(
+                        id="planning.text",
+                        value=payload["text"],
+                        source="read-planning-project",
+                    )
+                )
+            for figure, value in payload.get("figures", {}).items():
+                if isinstance(figure, str) and isinstance(value, str):
+                    gathered.add(
+                        Fact(id=figure, value=value, source="read-planning-project")
+                    )
+            if isinstance(payload.get("workspace_url"), str):
+                gathered.add(
+                    Fact(
+                        id="planning.url",
+                        value=payload["workspace_url"],
+                        source="read-planning-project",
+                    )
+                )
     elif name == READ_ATTACHMENT:
         _from_attachment(gathered, payload, locale)
     return gathered

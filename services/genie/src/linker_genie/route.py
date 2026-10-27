@@ -22,6 +22,7 @@ from dataclasses import dataclass, field, replace
 from typing import Any, Literal
 
 from linker_genie import page as page_tool
+from linker_genie import planning as planning_tool
 from linker_genie import solution as solution_tool
 from linker_genie.jev import Reading
 from linker_genie.lexicon import MAX_WORDS, MIN_CODE, Match, _words, normalize
@@ -345,6 +346,7 @@ RouteName = Literal[
     # service writes `Route.answer`; size-hint supplies the configurator URL.
     # No model.
     "roof",
+    "planning_project",
 ]
 
 # A kWp or a yearly kWh keeps the turn on sizing. The extreme search uses
@@ -2539,8 +2541,15 @@ def with_page(
     documents route leaves one call to the model (`DOCUMENTS_SPARE`). What does not
     fit is dropped, named in the turn log and, for a pair, in the hint.
     """
-    about_page = about_page or (
-        page.solution_id is not None and _SOLUTION_WORDS.search(message) is not None
+    about_page = (
+        about_page
+        or (
+            page.planning_project_id is not None
+            and (route.name == "sizing" or _SOLUTION_WORDS.search(message) is not None)
+        )
+        or (
+            page.solution_id is not None and _SOLUTION_WORDS.search(message) is not None
+        )
     )
     if not about_page or route.name in (
         "person",
@@ -2566,6 +2575,12 @@ def with_page(
             added.extend(pairs[:DRAFT_PAIRS])
             beyond = pairs[DRAFT_PAIRS:]
         hint = DRAFT_HINT
+    elif page.planning_project_id:
+        added.append(Call(planning_tool.NAME, {}))
+        hint = planning_tool.RULE
+        if route.name == "sizing":
+            # Existing projects are read/explained here, not sent to a blank configurator.
+            route = Route("planning_project", no_cards=True, no_handoff=True)
     elif page.solution_id:
         # The solution the design report's "Ask Genie" saved and opened with
         # (#496): the ability checks the customer's ownership of the post.

@@ -23,6 +23,7 @@ from starlette.types import ASGIApp
 
 from .access import active_actor, positive_integer
 from .assets import Assets
+from .assistant_context import assistant_context
 from .canonical import Json, Object
 from .capacity_window import REFERENCE_CAPACITY
 from .csv_inspection import inspect_csv
@@ -67,6 +68,7 @@ from .http_documents import (
     HandoffRead,
     InstallationReview,
     ProfilePreviewRead,
+    ProjectAssistant,
     ProjectCreate,
     ProjectList,
     ProjectRead,
@@ -378,6 +380,18 @@ def create_private_app(
             workspace.get(
                 verified_actor(request.scope), body.project_id, revision=body.revision
             )
+        )
+
+    @app.post("/projects/assistant")
+    def assistant(body: ProjectAssistant, request: Request) -> Object:
+        return assistant_context(
+            workspace,
+            verified_actor(request.scope),
+            body.project_id,
+            body.revision,
+            list(body.run_ids),
+            body.locale,
+            unsaved_changes=body.unsaved_changes,
         )
 
     @app.post("/projects/revise")

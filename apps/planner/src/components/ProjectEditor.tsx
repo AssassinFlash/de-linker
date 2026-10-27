@@ -44,6 +44,7 @@ import { revealActionResult } from "./revealActionResult.ts";
 import { EnergyWorkspace } from "./energy/EnergyWorkspace.tsx";
 import { invalidateEnergyReplay } from "../domain/energyScenario.ts";
 import { replacePlannerLocation } from "../data/plannerLocation.ts";
+import { useGenieContext } from "../data/useGenieContext.ts";
 import { InstallationEditor } from "./installation/InstallationEditor.tsx";
 import { readInstallation } from "../domain/installation.ts";
 
@@ -270,9 +271,14 @@ export function ProjectEditor({
 			setClosing(false);
 		}
 	}
+	const dirty = draft ? isDirty(draft) : false;
+	useGenieContext(
+		draft?.baseline ?? project,
+		session,
+		!draft || !valid || dirty || Boolean(draft?.pending),
+	);
 	if (!draft)
 		return <p role="status">{__("Opening project…", "linker-tools")}</p>;
-	const dirty = isDirty(draft);
 	let brief;
 	let selections;
 	let geometry;
@@ -344,6 +350,13 @@ export function ProjectEditor({
 					</select>
 				</div>
 				<div className="lp-edit-actions">
+					<button
+						className="lp-text-button"
+						type="button"
+						data-linker-genie-open
+					>
+						{__("Ask Genie", "linker-tools")}
+					</button>
 					<span className="lp-save-state" role="status">
 						{busy
 							? __("Saving…", "linker-tools")

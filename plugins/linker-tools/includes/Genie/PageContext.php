@@ -239,6 +239,7 @@ final class PageContext {
 		$raw  = is_array( $raw ) ? $raw : array();
 		$type = isset( $raw['type'] ) && in_array( $raw['type'], self::TYPES, true ) ? (string) $raw['type'] : 'other';
 		$page = array( 'type' => $type );
+		$page = array_merge( $page, \Linker\Tools\Planner\GenieContext::reference( $raw ) );
 		foreach ( array( 'product_id', 'post_id', 'category_id', 'solution_id' ) as $key ) {
 			$value = isset( $raw[ $key ] ) && is_numeric( $raw[ $key ] ) ? (int) $raw[ $key ] : 0;
 			if ( $value > 0 ) {

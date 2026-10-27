@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Annotated
+from typing import Annotated, Literal
 
 from pydantic import Field, field_validator, model_validator
 
@@ -45,6 +45,14 @@ class Cursor(Document):
 class ProjectList(Command):
     page_size: Annotated[int, Field(strict=True, gt=0)]
     after: Cursor | None
+
+
+class ProjectAssistant(Command):
+    project_id: Id
+    revision: Annotated[int, Field(strict=True, gt=0)]
+    run_ids: Annotated[list[Id], Field(max_length=2)]
+    locale: Literal["en", "de"]
+    unsaved_changes: bool = False
 
 
 class ProjectInputs(Command):

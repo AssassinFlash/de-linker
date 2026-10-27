@@ -496,11 +496,17 @@ body:has(.linker-genie-workspace)
 	color: var(--proto-color-muted, #5a6363);
 }
 
-.linker-genie-app__email-status {
+.linker-genie-app__email-status,
+.linker-genie-app__context-note {
 	margin: var(--proto-space-2, 0.5rem) 0 0;
 	font-size: var(--proto-size-xs, 0.75rem);
 	line-height: var(--proto-leading-caption, 1.55);
 	color: var(--proto-color-muted, #5a6363);
+}
+
+.linker-genie-app__context-note {
+	padding-inline: var(--proto-space-3, 0.75rem);
+	overflow-wrap: anywhere;
 }
 
 /* The confirmation link's outcome, over the conversation. */
