@@ -103,3 +103,5 @@ meter/backup/parallel_controller 角色的随附件替代同角色的泛化未�
 - 2026-10-21（#493）：feed 在版本号之外携带 `compatibility` 全量（`data/compatibility.json` 原对象）；引擎的 `sync-feed.py` 用同一次抓取把 `state/compatibility.json` 一并校验、原子换、失败保旧，合同变更不再人工 scp。合同文件不可读时该键缺席（feed 其余部分照常），引擎保留旧合同。`feed.schema.json` 把该键列为可选对象，合法性由引擎的 `Compatibility` 加载器判定；新引擎对键的有无都接受，部署顺序照旧先 services、后 site。
 
 - 2026-10-25：兼容合同维护权迁入 Woo；上述当前维护与迁移规则取代此前运行时静态文件/pattern 匹配及保留旧合同放行的描述。保留文件与既有冻结产物只作历史/迁移证据，不能授权当前新动作。
+
+When the native document editor saves a recognized specific document type, an empty/generic hidden role (`document`/`Dokument`) must not shadow that explicit type. The save removes only that generic override, preserving dedicated or unknown roles and all other extended metadata. Consumers keep their established role-first precedence; no title-based purpose guess or broader technical scope authorization is added. Shared-file entries must be maintained consistently across the Woo products that publish the same original; warranty applicability remains conditional on the original policy, device and installation facts.
