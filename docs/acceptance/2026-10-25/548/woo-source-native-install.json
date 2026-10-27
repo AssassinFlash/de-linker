@@ -5969,7 +5969,13 @@
       "at_utc": "2026-10-27T13:41:59.956422+00:00"
     },
     "verification_stop": "Changed-layer implementation/CI/reviews reused. Completed missing native DE1440/390 and DE worker PDF; once public assets and native report/download passed, archive and hand off. No new energy/PV/year, commerce matrix or site-wide scan.",
-    "full_goal_open": true
+    "full_goal_open": true,
+    "acceptance_record_encoding": {
+      "cause": "Native IAB screenshot API returned JPEG bytes; four captures were initially saved under PNG names, correctly forcing full CI classification",
+      "fix": "Lossless PNG encoding of the same captured pixels; no new capture, product code, CI waiver or test added",
+      "retired_ci_run": 40514484872,
+      "scope": "Cancel that redundant full run; next head has valid regular PNG/PDF/JSON acceptance records only"
+    }
   },
   "production_source_continuation": {
     "scope": "Current installed owned-principal source read only; no new calculation, product update or service restart",
