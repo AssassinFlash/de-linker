@@ -1,0 +1,251 @@
+{
+  "acquiredAtUTC": "2026-10-24T05:36:44.740196+00:00",
+  "method": "GET",
+  "endpoint": "https://api.apify.com/v2/datasets/dftNO1TLfoZWg7XyJ/items?format=json&clean=true&limit=5&offset=0&fields=url,markdown",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=utf-8",
+  "responseBytes": 554684,
+  "responseSha256": "6f67ef1a4fe8f96caa2f9b4cef996c3d5f38c8a7073d86aeacd3a36e278d4000",
+  "newActorRuns": 0,
+  "records": [
+    {
+      "url": "https://docs.apify.com/api/v2/act-runs-post",
+      "fullActorMarkdownBytes": 152492,
+      "fullActorMarkdownSha256": "936eed5368a47321864330316b8b902016613ad00b7a0756d27afd896d7de2e9",
+      "retainedFile": "act-runs-post-responses.txt",
+      "retainedOriginalLineRanges": [
+        [
+          45,
+          75
+        ],
+        [
+          103,
+          112
+        ],
+        [
+          734,
+          741
+        ],
+        [
+          758,
+          765
+        ],
+        [
+          782,
+          789
+        ],
+        [
+          806,
+          813
+        ],
+        [
+          830,
+          837
+        ],
+        [
+          854,
+          861
+        ],
+        [
+          878,
+          885
+        ],
+        [
+          902,
+          909
+        ],
+        [
+          926,
+          933
+        ],
+        [
+          950,
+          957
+        ]
+      ],
+      "retainedBytes": 7175,
+      "retainedSha256": "c97bc4bbbb7f1c5fa916a3fbdd543af07a1a0e8d1bcfb3c97dcdd37014c7b481",
+      "selection": "exact relevant status/body-envelope and query prose; full examples include official dummy data, not actual private account objects"
+    },
+    {
+      "url": "https://docs.apify.com/api/v2/actor-run-get",
+      "fullActorMarkdownBytes": 113320,
+      "fullActorMarkdownSha256": "ee281364ad0418a2c06b0bc90e197020037790469f891dd205a3d5e5661c9ee5",
+      "retainedFile": "actor-run-get-responses.txt",
+      "retainedOriginalLineRanges": [
+        [
+          46,
+          53
+        ],
+        [
+          675,
+          682
+        ],
+        [
+          699,
+          706
+        ],
+        [
+          723,
+          730
+        ],
+        [
+          747,
+          754
+        ],
+        [
+          771,
+          778
+        ],
+        [
+          795,
+          802
+        ],
+        [
+          819,
+          826
+        ]
+      ],
+      "retainedBytes": 5233,
+      "retainedSha256": "191ee714ca47b72a9884a253bb1eb1a067b56bc2227226667fd93e30e2f0212f",
+      "selection": "exact relevant status/body-envelope and query prose; full examples include official dummy data, not actual private account objects"
+    },
+    {
+      "url": "https://docs.apify.com/api/v2/actor-run-abort-post",
+      "fullActorMarkdownBytes": 98931,
+      "fullActorMarkdownSha256": "f1495940ea8347749a2e857e9f8425da0b8f086048e79c484bfe2c589017c822",
+      "retainedFile": "actor-run-abort-post-responses.txt",
+      "retainedOriginalLineRanges": [
+        [
+          33,
+          40
+        ],
+        [
+          662,
+          669
+        ],
+        [
+          686,
+          693
+        ],
+        [
+          710,
+          717
+        ],
+        [
+          734,
+          741
+        ],
+        [
+          758,
+          765
+        ],
+        [
+          782,
+          789
+        ]
+      ],
+      "retainedBytes": 3847,
+      "retainedSha256": "bf258321a49910101ba61986203fadb96fbd5d43746b8bc1758548ad4ae1b843",
+      "selection": "exact relevant status/body-envelope and query prose; full examples include official dummy data, not actual private account objects"
+    },
+    {
+      "url": "https://docs.apify.com/api/v2/dataset-items-get",
+      "fullActorMarkdownBytes": 97195,
+      "fullActorMarkdownSha256": "bf42f89b7dae68ff35a232a1886d0b6e9b596c4744d1e1f5a22751dfffa1912d",
+      "retainedFile": "dataset-items-get-responses.txt",
+      "retainedOriginalLineRanges": [
+        [
+          281,
+          309
+        ],
+        [
+          362,
+          369
+        ],
+        [
+          386,
+          393
+        ],
+        [
+          410,
+          417
+        ],
+        [
+          434,
+          441
+        ],
+        [
+          458,
+          465
+        ],
+        [
+          482,
+          489
+        ],
+        [
+          506,
+          513
+        ]
+      ],
+      "retainedBytes": 2252,
+      "retainedSha256": "e437e0b1edcb3985bce9a87cb0d682ceb042dff17dbcbc52592e61ba8b6f0478",
+      "selection": "exact relevant status/body-envelope and query prose; full examples include official dummy data, not actual private account objects"
+    },
+    {
+      "url": "https://docs.apify.com/api/v2/key-value-store-record-get",
+      "fullActorMarkdownBytes": 87396,
+      "fullActorMarkdownSha256": "35b5e1ede5eabef0e8dcdbbb9dd2cf941a04e0b49bd155eaa415fcfc0aae8809",
+      "retainedFile": "key-value-store-record-get-responses.txt",
+      "retainedOriginalLineRanges": [
+        [
+          1,
+          53
+        ],
+        [
+          53,
+          60
+        ],
+        [
+          72,
+          85
+        ],
+        [
+          78,
+          85
+        ],
+        [
+          102,
+          109
+        ],
+        [
+          126,
+          133
+        ],
+        [
+          150,
+          157
+        ],
+        [
+          174,
+          181
+        ],
+        [
+          198,
+          205
+        ],
+        [
+          222,
+          229
+        ],
+        [
+          61,
+          66
+        ]
+      ],
+      "retainedBytes": 3919,
+      "retainedSha256": "d71e6ef08d39e939797ef856044c5d5b77cb2a0b66545328e2079ea7b1c821b5",
+      "selection": "exact relevant status/body-envelope and query prose; full examples include official dummy data, not actual private account objects"
+    }
+  ]
+}

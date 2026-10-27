@@ -1,0 +1,103 @@
+{
+  "source_base": "81524ca90795f4f26e80c59e5a63c63e23bd80c9",
+  "creation_pin": "55104bbdbbf9e694eba4785787daaaf109b99ed8",
+  "context_pin": "2b08e309282034e6c2ab77a6f580706d2c713d8d",
+  "final_source_pin": "b57d7dbfe20559ff513b2122500c57fd708996c7",
+  "manifest_entries": {
+    "sources": 125,
+    "build": 7
+  },
+  "copy": {
+    "reviewed_pairs": 27,
+    "new_pairs": 14,
+    "existing_mo_pairs_unchanged": true,
+    "draft_sha256": "810cf1bc78cf733b17002dd2023427a1f2a6fcc61406026afa75c029fb8d0e8a",
+    "final_sha256": "cc2ed09d028f1db3dbad44e7f881427a1bacd68896737d8ab495eec9c5b376c4"
+  },
+  "verification": {
+    "creation_pin_full_app_cases": 246,
+    "creation_domain_data": 98,
+    "creation_dom_controller": 148,
+    "context_regression_old_code_failed": 3,
+    "context_final_complete_workspace_file_passed": 16,
+    "final_policy_focused_domain_passed": 11,
+    "final_policy_dom_journal_workspace_passed": 46,
+    "strict_types_build_manifest_module_format_passed": true,
+    "i18n_coverage_clean": true,
+    "full_base_to_final_source_diff_check_passed": true,
+    "independent_final_spec_confirmed_findings": 0,
+    "independent_final_standards_open_documented": 0,
+    "independent_final_standards_open_heuristics": 0,
+    "real_engine_unique_scenarios": 17,
+    "real_engine_initial_run_note": "16 initial passes and one harness-only signed-zero/JSON comparison failure; corrected isolated seventeenth case passed."
+  },
+  "review_reports": [
+    "review-spec-55104bbd/REPORT.md",
+    "review-spec-b57d7dbf/REPORT.md",
+    "review-standards-b57d7dbf/REPORT.md",
+    "review-standards-2b08e309/REPORT.md"
+  ],
+  "native": {
+    "provenance": "CUA screenshots/read-only DOM plus actual local server/build bytes. No browser application state was injected.",
+    "native_entry_sha256": "dec8b7a3214ae2d9260eed1112c6907002596e876a14d1f6bbca00258704c90d",
+    "native_entry_version_matches_current_file_bytes": true,
+    "post_touch_server_revision": 14,
+    "post_touch_input_sha256": "8a6394917a9a9e6b91db4bfc73c0299dcedd2c51619144a5beffa1664f010288",
+    "touch_test_did_not_write_project": true,
+    "touch_interruption_screenshots_sha256": {
+      "de-phone-touch-edit-after.png": "242a071e628b125c2f1d0a50b5d7c4b60f8508ea4f3aa1bb2ba2d1ed151b2bc5",
+      "de-phone-touch-resumed-after-interruption.png": "242a071e628b125c2f1d0a50b5d7c4b60f8508ea4f3aa1bb2ba2d1ed151b2bc5"
+    },
+    "touch_interruption_entire_png_bytes_equal": true,
+    "touch_interruption_scope": "Native screenshots show the restored handle at its last completed drag position, with 3 corners. No private journal-byte or physical-device accuracy claim."
+  },
+  "restored_user_workspace": {
+    "bar": "Projekte/Köln · owned synthetic roof · acceptanceProjektübersichtStandort und ProjektDachplanungEnergiedatenGespeichert · Version 14Projekt speichern",
+    "drawing_controls": "Zeichnen auf der Karte\nZeichnung beginnen\n\nAus Umriss und Dacheigenschaften entsteht eine bearbeitbare Dachfläche. Sie ist im Projekt in der Plan- und 3D-Ansicht verfügbar; ihre Quellenangaben und Nutzungsberechtigungen bleiben mit ihr verknüpft.\n\nWählen Sie auf der Karte oder in der Objektliste eine Dachfläche, ein Hindernis oder eine Sperrfläche aus. Bei einer Dachfläche können Sie den äußeren Umriss oder eine vorhandene Dachöffnung wählen.\n\nObjekt auf der Dachfläche hinzufügen\nDachfläche\nDachfläche auswählen\nSynthetic 3–4–5 roof · Köln\nSynthetic drawing acceptance · 548 · 24 Oct\nSynthetic phone recovery · 548 · 24 Oct\nObjekttyp\nObjekttyp auswählen\nDachöffnung\nHindernis\nSperrfläche\nObjekt auf der Dachfläche zeichnen",
+    "lang": "de-DE",
+    "map_status": "ready",
+    "url": "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-design",
+    "viewport": {
+      "height": 796,
+      "scrollWidth": 671,
+      "width": 671
+    }
+  },
+  "raw_evidence_whitespace_preserved": {
+    "de-phone-touch-first-tap.txt": 1,
+    "de-phone-system-identity-v14.txt": 10,
+    "en-desktop-obstacle-restored-original-de-locale.txt": 1,
+    "en-desktop-system-identity-v14.txt": 10,
+    "de-phone-touch-interruption.txt": 1,
+    "de-phone-touch-pan-pinch-one-corner.txt": 1,
+    "en-desktop-keepout-continued-fields.txt": 1,
+    "de-phone-opening-saved-v12.txt": 1,
+    "de-phone-touch-reloaded-one-corner.txt": 1,
+    "de-phone-obstacle-zero-height.txt": 1,
+    "chrome-touch-cleanup-signed-out.txt": 1,
+    "de-phone-keyboard-centre.txt": 1,
+    "review-spec-55104bbd/engine-gate-probe-initial-output.txt": 2
+  },
+  "full_goal_status": "active; this is a local increment, not full product or production acceptance",
+  "production_deployed": false,
+  "real_email_sent": false,
+  "known_warning_limits": [
+    "Vite large chunks: performance acceptance not inferred",
+    "Node MODULE_TYPELESS_PACKAGE_JSON in module identity test: remains visible"
+  ],
+  "resource_cleanup": {
+    "new_runtime_instances": 0,
+    "new_worktrees": 0,
+    "new_dependency_trees": 0,
+    "new_full_snapshots": 0,
+    "temporary_auth_files_absent": 2,
+    "logical_bytes_reclaimed": 826,
+    "touch_diagnostic_raw_discarded": true,
+    "chrome_signed_out_and_tab_closed": true,
+    "temporary_touch_emulation_reset": true,
+    "both_viewport_overrides_reset": true
+  },
+  "raw_evidence_eof_blank_lines_preserved": {
+    "review-spec-55104bbd/existing-tests-output.txt": true
+  }
+}

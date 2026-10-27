@@ -1,0 +1,30 @@
+{
+  "axis": "Spec",
+  "target": "e1380d49d267f4ea6ef3083d2c7460432b8e2b22",
+  "base": "787728224cd3b20aec63ca7c5a36471a3e9ea22f",
+  "verdict": "PASS",
+  "findings": {
+    "missing_partial": [],
+    "scope_creep": [],
+    "incorrect": []
+  },
+  "passed": {
+    "target_backend": 115,
+    "target_domain": 8,
+    "target_react_dom": 6,
+    "independent_python": 24,
+    "independent_node": 4
+  },
+  "scope": "Geographic/API/domain increment only; complete issue548/UI/map/provider/touch/engineering/site acceptance remains active",
+  "independent_evidence": [
+    "12 oblique equator analytic plane cases including negative Up",
+    "Local E/N slope invariant at absolute Up1e15",
+    "Separate UV/ENU granularity, facing and inverse-geodetic branch refusals",
+    "Valid near-horizon displaced plane and negative derived height controls",
+    "Original a0 antipodal/horizon HTTP no-publication refusals",
+    "Bound raw hash422 without revision advance; notes and original preserved",
+    "Actual a0 source execution creates legacy receipt; new service exact replay does not convert",
+    "Explicit method changes stable geometry ID; fresh missing/null method refuses and changed method under legacy key conflicts",
+    "Unsupported old prepared candidate refuses; one-step attachment preserves holes and unrelated inputs"
+  ]
+}

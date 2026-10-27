@@ -1,0 +1,290 @@
+{
+  "source_pin": "310bf2f4b6cd9d5a7c8bfcf35965c38905ef08be",
+  "fixture": "actual components, synthetic roof/model, retained original TMY result, simulated transport",
+  "requested_viewports": [
+    {
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "width": 390,
+      "height": 900
+    }
+  ],
+  "client_width_with_scrollbar": {
+    "desktop": 1425,
+    "mobile": 375
+  },
+  "horizontal_overflow_observed": false,
+  "captures": [
+    {
+      "file": "pv-en-1440-modules.jpg",
+      "language": "en",
+      "requested_width": 1440,
+      "section": "modules",
+      "sha256": "2880f161340350270a0aaebb71fcabe5055ec57374fe2574233a79582a409aa0",
+      "bytes": 81729,
+      "format": "jpeg",
+      "dimensions": [
+        "1425",
+        "990"
+      ]
+    },
+    {
+      "file": "pv-en-1440-arrays.jpg",
+      "language": "en",
+      "requested_width": 1440,
+      "section": "arrays",
+      "sha256": "83ae565a4f03d9a91b4bbb2df9a3b10abecfddb8e74c1898bff6279b3ce37a66",
+      "bytes": 75798,
+      "format": "jpeg",
+      "dimensions": [
+        "1425",
+        "990"
+      ]
+    },
+    {
+      "file": "pv-en-1440-conversion.jpg",
+      "language": "en",
+      "requested_width": 1440,
+      "section": "conversion",
+      "sha256": "46382f5b6b18addea1bfa3f12cf4a15f8f9a29c536cc7bb76d4e0a6c6daaebc2",
+      "bytes": 85736,
+      "format": "jpeg",
+      "dimensions": [
+        "1425",
+        "990"
+      ]
+    },
+    {
+      "file": "pv-en-1440-prepared-unsaved.jpg",
+      "language": "en",
+      "requested_width": 1440,
+      "section": "prepared-unsaved",
+      "sha256": "b1ba3d90e1d9b90fbec6bf8645bd0692b4fecc509d3fd9a2278febc75294c18a",
+      "bytes": 69168,
+      "format": "jpeg",
+      "dimensions": [
+        "1425",
+        "990"
+      ]
+    },
+    {
+      "file": "pv-en-1440-queued.jpg",
+      "language": "en",
+      "requested_width": 1440,
+      "section": "shared-queued-history",
+      "sha256": "12350c6fefc0eb202a7a7409a73ee9ddb559bbb58b9bcdf870dfee0a25d435ab",
+      "bytes": 42453,
+      "format": "jpeg",
+      "dimensions": [
+        "1440",
+        "1000"
+      ]
+    },
+    {
+      "file": "pv-de-1440-modules.jpg",
+      "language": "de",
+      "requested_width": 1440,
+      "section": "modules",
+      "sha256": "e305def7973f173d61d9a1d644fa2c190eb950038d47654deaaa4d1c515687eb",
+      "bytes": 95014,
+      "format": "jpeg",
+      "dimensions": [
+        "1425",
+        "990"
+      ]
+    },
+    {
+      "file": "pv-de-1440-percentages.jpg",
+      "language": "de",
+      "requested_width": 1440,
+      "section": "percentage-regression",
+      "sha256": "4446bf8ddb4572089790da4c9270bacb08081fc9f2ce1d5a936302370b0a19b7",
+      "bytes": 91999,
+      "format": "jpeg",
+      "dimensions": [
+        "1425",
+        "990"
+      ]
+    },
+    {
+      "file": "pv-de-1440-conversion.jpg",
+      "language": "de",
+      "requested_width": 1440,
+      "section": "conversion",
+      "sha256": "528a662a3775147dc5b93818571531cec6cfb191dcb1e317c51a8f9d2650bffd",
+      "bytes": 94050,
+      "format": "jpeg",
+      "dimensions": [
+        "1425",
+        "990"
+      ]
+    },
+    {
+      "file": "pv-de-390-overview.jpg",
+      "language": "de",
+      "requested_width": 390,
+      "section": "overview",
+      "sha256": "6159938015167164263d769a01d7477c0bea975e54fd888ceeb438dc84b39c32",
+      "bytes": 55550,
+      "format": "jpeg",
+      "dimensions": [
+        "375",
+        "865"
+      ]
+    },
+    {
+      "file": "pv-de-390-negative-error.jpg",
+      "language": "de",
+      "requested_width": 390,
+      "section": "raw-input-error",
+      "sha256": "1526e497822fe39ebdd996d7ec7ebdd3cc8b51dcb6112386f782e8d08a54be22",
+      "bytes": 50359,
+      "format": "jpeg",
+      "dimensions": [
+        "375",
+        "865"
+      ]
+    },
+    {
+      "file": "pv-de-390-modules.jpg",
+      "language": "de",
+      "requested_width": 390,
+      "section": "modules",
+      "sha256": "1cda12f19c7b1c370e8d4f763c8ae3fd80ba57792c481e8d46e35337b86ddf47",
+      "bytes": 50570,
+      "format": "jpeg",
+      "dimensions": [
+        "375",
+        "865"
+      ]
+    },
+    {
+      "file": "pv-de-390-arrays.jpg",
+      "language": "de",
+      "requested_width": 390,
+      "section": "arrays",
+      "sha256": "c26061db6556ec2ccdc0658906cf5a4a6753af1348e2faa7554761158e8f4ba8",
+      "bytes": 51992,
+      "format": "jpeg",
+      "dimensions": [
+        "375",
+        "865"
+      ]
+    },
+    {
+      "file": "pv-de-390-conversion.jpg",
+      "language": "de",
+      "requested_width": 390,
+      "section": "conversion",
+      "sha256": "5566d7605871d9d67a229ea4479c41af4c02efc4b226b025b44eff41fe9a639f",
+      "bytes": 47301,
+      "format": "jpeg",
+      "dimensions": [
+        "375",
+        "865"
+      ]
+    },
+    {
+      "file": "pv-en-390-overview.jpg",
+      "language": "en",
+      "requested_width": 390,
+      "section": "overview",
+      "sha256": "5bb8c27a0b2fc843f165ecd01492cb704827a0baa1eacb1892a66681649766fe",
+      "bytes": 47205,
+      "format": "jpeg",
+      "dimensions": [
+        "375",
+        "865"
+      ]
+    },
+    {
+      "file": "pv-en-390-modules.jpg",
+      "language": "en",
+      "requested_width": 390,
+      "section": "modules",
+      "sha256": "a603c633667a01f624ce1603536af387818a3e75a706ce4ca7ca57cd59cbf0be",
+      "bytes": 49014,
+      "format": "jpeg",
+      "dimensions": [
+        "375",
+        "865"
+      ]
+    },
+    {
+      "file": "pv-en-390-arrays.jpg",
+      "language": "en",
+      "requested_width": 390,
+      "section": "arrays",
+      "sha256": "9faeb604e63ed691a0a9443966d9e59074c2d81ce67e5d3448ad73dd12479ec4",
+      "bytes": 36185,
+      "format": "jpeg",
+      "dimensions": [
+        "375",
+        "865"
+      ]
+    },
+    {
+      "file": "pv-en-390-conversion.jpg",
+      "language": "en",
+      "requested_width": 390,
+      "section": "conversion",
+      "sha256": "7e6726b734976609bc20fef0ada7069625064e11a1c10fb28c160f0c2bc04529",
+      "bytes": 42695,
+      "format": "jpeg",
+      "dimensions": [
+        "375",
+        "865"
+      ]
+    },
+    {
+      "file": "pv-en-390-incomplete-error.jpg",
+      "language": "en",
+      "requested_width": 390,
+      "section": "incomplete-conversion-error",
+      "sha256": "951c0f0d81f3bbe27d631298270de2720d23ea2985483d7733de74fc57a01536",
+      "bytes": 67781,
+      "format": "jpeg",
+      "dimensions": [
+        "375",
+        "865"
+      ]
+    },
+    {
+      "file": "pv-en-390-empty-module.jpg",
+      "language": "en",
+      "requested_width": 390,
+      "section": "empty-model",
+      "sha256": "0ee4c2bcb52edd2df680d458ef42288de5f3e2a990fd60b598f7a4dcb1855ed4",
+      "bytes": 44144,
+      "format": "jpeg",
+      "dimensions": [
+        "375",
+        "865"
+      ]
+    }
+  ],
+  "warning_error_count": 0,
+  "prepared_unsaved_start_disabled": true,
+  "saved_revision_dispatch": 4,
+  "shared_history_task": "PV generation profile",
+  "de_percentages_exact": [
+    "57",
+    "56"
+  ],
+  "de_partial_negative_preserved_across_views": true,
+  "blank_parameters_not_filled": true,
+  "capture_count": 19,
+  "final_de_1440_readback": {
+    "percentages": [
+      "57",
+      "56"
+    ],
+    "conversion_reference_efficiency": "96,37",
+    "step_label": "Umwandlung",
+    "client_width": 1425,
+    "scroll_width": 1425
+  },
+  "byte_identity_scope": "visual-scope-audit.json"
+}

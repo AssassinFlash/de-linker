@@ -1,0 +1,107 @@
+[
+  {
+    "source_id": "S04",
+    "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Datasheet-EN_V2.1.pdf",
+    "p548_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Datasheet-EN_V2.1.pdf",
+    "previous_sha256": "225c2995448789455b859687748f51d05555ecdfa621eacb073a8b0271e19319",
+    "pages": [
+      2
+    ],
+    "sha256": "225c2995448789455b859687748f51d05555ecdfa621eacb073a8b0271e19319",
+    "bytes": 691412,
+    "matches_prior": true,
+    "current_sha256": "225c2995448789455b859687748f51d05555ecdfa621eacb073a8b0271e19319",
+    "matches_current": true,
+    "scope": "existing reviewed public source absent from current 106 products figures/document/evidence URL union; not included in the 71 URL count"
+  },
+  {
+    "source_id": "S05",
+    "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_Battery-Compatibility-Overview_EMEA-EN_20260910.pdf",
+    "p548_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/GW_Battery-Compatibility-Overview_EMEA-EN_20260910.pdf",
+    "previous_sha256": "8951dd1d8a640ea133d38bcc7f457000560d9ce9e10263aecfbb1037f24cb661",
+    "pages": [
+      6
+    ],
+    "sha256": "8951dd1d8a640ea133d38bcc7f457000560d9ce9e10263aecfbb1037f24cb661",
+    "bytes": 357763,
+    "matches_prior": true,
+    "current_sha256": "8951dd1d8a640ea133d38bcc7f457000560d9ce9e10263aecfbb1037f24cb661",
+    "matches_current": true,
+    "scope": "existing reviewed public source absent from current 106 products figures/document/evidence URL union; not included in the 71 URL count"
+  },
+  {
+    "source_id": "S06",
+    "url": "https://de-linker.com/wp-content/uploads/2026/09/BAT100KWHInverterCompatibilitystatement.pdf",
+    "p548_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/BAT100KWHInverterCompatibilitystatement.pdf",
+    "previous_sha256": "5e40da8282b1a4513d2ae40849317ea154584a182e48c3860e0dfb895b159d8d",
+    "pages": [
+      1,
+      2
+    ],
+    "sha256": "5e40da8282b1a4513d2ae40849317ea154584a182e48c3860e0dfb895b159d8d",
+    "bytes": 185220,
+    "matches_prior": true,
+    "current_sha256": "5e40da8282b1a4513d2ae40849317ea154584a182e48c3860e0dfb895b159d8d",
+    "matches_current": true,
+    "scope": "existing reviewed public source absent from current 106 products figures/document/evidence URL union; not included in the 71 URL count"
+  },
+  {
+    "source_id": "S11",
+    "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_On-grid_User-Manual-EN_V1.0.pdf",
+    "p548_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/GW_ESA-261kWh_On-grid_User-Manual-EN_V1.0.pdf",
+    "previous_sha256": "6bdd27e577fc5eafa47db8fa0a9bbc8dd6a60aa1013e182350a35f305338a7a7",
+    "pages": [
+      1,
+      20,
+      24,
+      25,
+      27,
+      28,
+      29,
+      31
+    ],
+    "sha256": "6bdd27e577fc5eafa47db8fa0a9bbc8dd6a60aa1013e182350a35f305338a7a7",
+    "bytes": 2287995,
+    "matches_prior": true,
+    "current_sha256": "6bdd27e577fc5eafa47db8fa0a9bbc8dd6a60aa1013e182350a35f305338a7a7",
+    "matches_current": true,
+    "scope": "existing reviewed public source absent from current 106 products figures/document/evidence URL union; not included in the 71 URL count"
+  },
+  {
+    "source_id": "S12",
+    "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Microgrid-User-Manual-EN_V1.1.pdf",
+    "p548_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/GW_ESA-261kWh_Microgrid-User-Manual-EN_V1.1.pdf",
+    "previous_sha256": "d5167d27d5e47d8d61d059862c6812963e0bb65d055dfb65aaecdbd32b87cbd1",
+    "pages": [
+      1,
+      21,
+      24,
+      25,
+      30,
+      58
+    ],
+    "sha256": "d5167d27d5e47d8d61d059862c6812963e0bb65d055dfb65aaecdbd32b87cbd1",
+    "bytes": 5060357,
+    "matches_prior": true,
+    "current_sha256": "d5167d27d5e47d8d61d059862c6812963e0bb65d055dfb65aaecdbd32b87cbd1",
+    "matches_current": true,
+    "scope": "existing reviewed public source absent from current 106 products figures/document/evidence URL union; not included in the 71 URL count"
+  },
+  {
+    "source_id": "S17",
+    "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf",
+    "p548_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf",
+    "previous_sha256": "a470d6e1be68e843b42a11a2f4ba05c67b9a8d01bdb6abc1f58bce9762701ea6",
+    "pages": [
+      1,
+      7,
+      8
+    ],
+    "sha256": "a470d6e1be68e843b42a11a2f4ba05c67b9a8d01bdb6abc1f58bce9762701ea6",
+    "bytes": 5055501,
+    "matches_prior": true,
+    "current_sha256": "a470d6e1be68e843b42a11a2f4ba05c67b9a8d01bdb6abc1f58bce9762701ea6",
+    "matches_current": true,
+    "scope": "existing reviewed public source absent from current 106 products figures/document/evidence URL union; not included in the 71 URL count"
+  }
+]

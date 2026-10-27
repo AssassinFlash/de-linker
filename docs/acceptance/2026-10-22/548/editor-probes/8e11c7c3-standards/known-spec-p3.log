@@ -1,0 +1,3 @@
+{"suffix":"?","accepted":true,"result":"https://fixture.invalid/assets/SceneViewport-hash.js?","contractExpected":"reject","severity":"known Spec P3; no executable directory/origin bypass"}
+{"suffix":"#","accepted":true,"result":"https://fixture.invalid/assets/SceneViewport-hash.js#","contractExpected":"reject","severity":"known Spec P3; no executable directory/origin bypass"}
+{"suffix":"?#","accepted":true,"result":"https://fixture.invalid/assets/SceneViewport-hash.js?#","contractExpected":"reject","severity":"known Spec P3; no executable directory/origin bypass"}

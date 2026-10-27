@@ -1,0 +1,33 @@
+{
+  "scope": "Read-only third map view and shared-project selection, provider request/lifecycle, source projection, native module metadata, site WindPress styles and narrow local-CSP integration. Drawing and the full active goal are not complete.",
+  "entry_sha256": "e4020fc80f01264e9d5649c240ea824ebd20ff6f1c2e4847f6881f67bb2a59d4",
+  "verified": {
+    "domain_and_data_tests": 70,
+    "react_dom_tests": 90,
+    "emitted_module_identity": 1,
+    "php_native_manifest_assertions": 8,
+    "phpcs_plugin_files": 2,
+    "phpstan_memory_limit": "512M per invocation; no global PHP setting changed",
+    "translation_source_and_native_json_gaps": 0,
+    "production_build_and_format": "pass",
+    "local_isolation": "PHP syntax and actual p548 HTTP policy readback; no extra instance created"
+  },
+  "native_status": "Earlier native build reached provider ready with HTTP200 style/TileJSON/sprite/glyph responses and the three native attribution links after the precise local CSP correction. The final request-scope build, font correction and responsive matrix still require fresh native verification.",
+  "failures_preserved": {
+    "emitted_dom_missing_blob_url": "JSDOM lacks the Blob URL API; the import-identity fixture now uses the real Node Blob registry and revokes it, without simulating a renderer.",
+    "lifecycle_dom_css_inheritance": "JSDOM lacks inherited custom properties; the library-port fixture declares its palette on its own host.",
+    "initial_provider": "Actual p548 isolation CSP lacked the declared provider; precise origin correction verified by actual HTTP headers and a fresh native load.",
+    "incomplete_phpstan_128M": "Retried the same source with a per-command 512M limit; no errors."
+  },
+  "raw_logs": {
+    "tests-pinned.log": "a5767f02757daaf2f769f467a6bcecd457cf9af25579bbb92c4875715169ed9a",
+    "build-pinned.log": "413ea771835f3df2ad8bfbfaaa6907d596d73b01c5cc752e01d736ae0e29c0a3",
+    "build-check-pinned.log": "33e3b78f6ce23ca4ae1da98723e9369e8d1addfe41c7eada371bb6abcd2458be",
+    "format-pinned.log": "07e3f3d64aaf65e944001a0eb36c2a82af3bbe8f416742d085ac6df60b7ddceb",
+    "request-policy.log": "c9a6668df3b8bb4f601525d13e72d1465e845df878e983d1e253a7b7face486c",
+    "native-manifest-phpunit.log": "e0de4b36be3d2953db6f9ce7f3bf90bb4dcca4251931f6ec281ba6d86ad5728c",
+    "phpcs-pinned.log": "a6396952b21a417af2de22a3c04a49127e57ed1b3378987511aaaf1d54f8e492",
+    "phpstan-pinned.log": "9dd3eeb023e498eff4ab6e14af3d76d6e6c7672da330c9e3edf35753590df0d7",
+    "i18n-coverage.log": "f71c50b58bebe856c098aae4faffae2033e2a346d4e0817632bc09c95d510bfa"
+  }
+}

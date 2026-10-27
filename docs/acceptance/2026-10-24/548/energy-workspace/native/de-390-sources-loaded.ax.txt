@@ -1,0 +1,217 @@
+Browser tab: 2, Title: "Lösungskonfigurator · Arbeitsbereich | Linker", URL: "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be&run=14dacb74cda2451a95d00df374532af8#lp-calculations".
+1 AXWebArea Lösungskonfigurator · Arbeitsbereich | Linker, URL: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be&run=14dacb74cda2451a95d00df374532af8#lp-calculations
+	2 container
+		3 container Primäre Navigation
+			4 link Description: Linker-Startseite, Value: 127.0.0.1:9347/de/
+			5 link Description: Produkte suchen, Value: 127.0.0.1:9347/de/produkte/#search-box
+			6 container Sprache
+				7 link Description: EN, Help: English, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=14dacb74cda2451a95d00df374532af8#lp-calculations
+				8 link Description: DE, Help: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be&run=14dacb74cda2451a95d00df374532af8#lp-calculations
+			9 button (collapsed) Description: Menü öffnen, ID: tv-mobile-toggle, Secondary Actions: Expand
+				10 image
+		11 container
+			12 button Projekte
+			13 pop up button (collapsed, settable) Description: Projektbereiche, Value: Energieberechnung, Secondary Actions: Expand
+				14 menu
+					15 Projektübersicht
+					16 Standort und Projekt
+					17 Dachplanung
+					18 Energiedaten
+					19 (selected) Energieberechnung
+			20 text Gespeichert · Version 5
+			21 button (disabled) Rückgängig
+			22 button (disabled) Wiederholen
+			23 button (disabled) Projekt speichern
+			24 text AKTUELLES PROJEKT
+			25 heading Lyon · synthetic energy scenario · acceptance, Value: 1
+				26 text Lyon · synthetic energy scenario · acceptance
+			27 text Standortdaten und Dachbelegungen werden im selben Projekt gespeichert.
+			28 container Energieberechnung, ID: lp-calculations
+				29 text 07
+				30 heading Energieberechnung, Value: 2, ID: lp-calculations-heading
+					31 text Energieberechnung
+				32 text Berechnen Sie die Energieflüsse dieses Projekts für die gewählten Zeiträume. Mit jedem Ergebnis bleiben die verwendeten Eingaben, Quellen und das Berechnungsmodell gespeichert.
+				33 container Ansicht der Energieberechnung
+					34 checkbox Szenarioeinstellungen, Value: 0
+					35 checkbox Gespeicherte Berechnungen, Value: 1
+				36 container
+					37 heading Bisherige Berechnungen, Value: 3
+						38 text Bisherige Berechnungen
+					39 checkbox Version 5 Berechnung abgeschlossen 24.10.26, 10:16, Value: 1
+						40 text Version 5
+						41 text Berechnung abgeschlossen
+						42 text 24.10.26, 10:16
+					43 checkbox Version 5 Berechnung abgebrochen 24.10.26, 10:14, Value: 0
+						44 text Version 5
+						45 text Berechnung abgebrochen
+						46 text 24.10.26, 10:14
+					47 checkbox Version 4 Berechnung fehlgeschlagen 24.10.26, 10:06, Value: 0
+						48 text Version 4
+						49 text Berechnung fehlgeschlagen
+						50 text 24.10.26, 10:06
+					51 checkbox Version 3 Berechnung abgeschlossen 24.10.26, 09:38, Value: 0
+						52 text Version 3
+						53 text Berechnung abgeschlossen
+						54 text 24.10.26, 09:38
+				55 text GESPEICHERTE BERECHNUNG
+				56 heading Berechnung abgeschlossen, Value: 3
+					57 text Berechnung abgeschlossen
+				58 text Eingabeversion 5
+				59 definition list
+					60 container Solarenergie zur Lastversorgung
+						61 text Solarenergie zur Lastversorgung
+					62 container
+						63 text 3,62 kWh
+					64 container Netzbezug
+						65 text Netzbezug
+					66 container
+						67 text 0,38 kWh
+					68 container Solarer Deckungsanteil am Gesamtbedarf
+						69 text Solarer Deckungsanteil am Gesamtbedarf
+					70 text 90,5 %
+					71 container PV-Energie für Verbrauch und Speicherung vor Ort
+						72 text PV-Energie für Verbrauch und Speicherung vor Ort
+					73 text 100 %
+				74 text Die Werte gelten für die simulierten Zeiträume. Zur solaren Versorgung zählt auch gespeicherte Energie aus PV-Erzeugung. Energie aus dem Netz und Energie unbekannter Herkunft werden getrennt erfasst.
+				75 text Die Eignung der Geräte wird in dieser Berechnung nicht bewertet.
+				76 text Landesspezifische Anforderungen werden in dieser Berechnung nicht bewertet.
+				77 button (collapsed) Energiesummen und Definitionen, Secondary Actions: Expand
+					78 text Energiesummen und Definitionen
+				79 button (collapsed) Details der numerischen Prüfung, Secondary Actions: Expand
+					80 text Details der numerischen Prüfung
+				81 button (collapsed) Berechnungsnachweise, Secondary Actions: Expand
+					82 text Berechnungsnachweise
+				128 container
+					129 button (expanded) Quellen, Zeitraum und Speichermodell, Secondary Actions: Collapse
+						130 text Quellen, Zeitraum und Speichermodell
+					131 text Explicit analytic acceptance scenario: 5 kWh usable, 5 kW AC in/out, separate 90% efficiencies, zero auxiliary and standing losses. No manufacturer, SKU or equipment approval.
+					132 content list
+						133 container
+							134 text Gesamte Standortlast Synthetic gross load · 2 kW for two hours
+							135 definition list
+								136 container SHA-256 des Originalinhalts
+									137 text SHA-256 des Originalinhalts
+								138 text f45e890022e6d424395aa2855d214c24e6ec34c3462ce7edefddcbe3c8dd7e79
+								139 container SHA-256 der Quellenmetadaten
+									140 text SHA-256 der Quellenmetadaten
+								141 text d1a69329ce0f1713fd0c59e8c8919df72ad69a5451b91202590a1e4e44425dc2
+						142 container
+							143 text Verfügbare PV-Leistung · AC Synthetic available PV · 4 kW then 0 kW
+							144 definition list
+								145 container SHA-256 des Originalinhalts
+									146 text SHA-256 des Originalinhalts
+								147 text b132980864da027483e55225e24ff5b07a8fc5e80eec7dad787102315010d581
+								148 container SHA-256 der Quellenmetadaten
+									149 text SHA-256 der Quellenmetadaten
+								150 text a655dc5093f7830c3a36f13da6ad26bc7c16a95854bd80f7588690a540b1f301
+						151 container
+							152 text Externer Hilfsverbrauch · AC Synthetic external AC auxiliary · explicit zero
+							153 definition list
+								154 container SHA-256 des Originalinhalts
+									155 text SHA-256 des Originalinhalts
+								156 text ce20d0bf1b7f7ce919b829946cf9e5529d54c70accd7477a17710ec43aa553ed
+								157 container SHA-256 der Quellenmetadaten
+									158 text SHA-256 der Quellenmetadaten
+								159 text fc50a2f45a16bc11499068eb07c568babde5552f70fb7f2a43830f279e1ff96a
+					160 definition list
+						161 container Nutzbare Speicherenergie
+							162 text Nutzbare Speicherenergie
+						163 container
+							164 text 5 kWh
+						165 container AC-Ladeleistung
+							166 text AC-Ladeleistung
+						167 container
+							168 text 5 kW
+						169 container AC-Entladeleistung
+							170 text AC-Entladeleistung
+						171 container
+							172 text 5 kW
+						173 container Ladewirkungsgrad
+							174 text Ladewirkungsgrad
+						175 container
+							176 text 90 %
+						177 container Entladewirkungsgrad
+							178 text Entladewirkungsgrad
+						179 container
+							180 text 90 %
+						181 container Interner Hilfsverbrauch
+							182 text Interner Hilfsverbrauch
+						183 container
+							184 text 0 kW
+						185 container Koeffizient der zeitabhängigen Speicherverluste
+							186 text Koeffizient der zeitabhängigen Speicherverluste
+						187 container
+							188 text 0 1/h
+					189 text Das Modell rechnet mit einem festen nutzbaren Energiebereich im Speicher und getrennten Wirkungsgraden für die AC-Umwandlung. Die Netzeinspeisung aus dem Speicher, Temperatureinflüsse, Alterung und das Umschaltverhalten werden nicht berechnet.
+					216 container Berechnete Betriebszeiträume (UTC)
+						217 table Berechnete Betriebszeiträume (UTC)
+							218 text Berechnete Betriebszeiträume (UTC)
+							219 row
+								220 cell
+									221 text Beginn
+								222 cell
+									223 text Ende
+								224 cell
+									225 text Netzzustand
+								226 cell
+									227 text Zeitauflösung der Quelle
+							228 row
+								229 cell
+									230 text 2024-03-30T23:00:00+00:00
+								231 cell
+									232 text 2024-03-31T01:00:00+00:00
+								233 cell
+									234 text Mit Netzverbindung
+								235 cell
+									236 container
+										237 text Externer Hilfsverbrauch · AC : 3.600  s → 3.600  s
+									238 container
+										239 text Gesamte Standortlast : 3.600  s → 3.600  s
+									240 container
+										241 text Verfügbare PV-Leistung · AC : 3.600  s → 3.600  s
+					215 text Bei der zeitlichen Angleichung bleibt die Energie je Quellintervall erhalten. Innerhalb dieses Intervalls wird eine konstante mittlere Leistung angenommen. Eine feinere zeitliche Darstellung oder eine zusätzliche Grenze zwischen Betriebszeiträumen liefert keine neuen gemessenen Leistungsspitzen.
+			85 text Lösungskonfigurator
+			86 text von Linker
+			87 text Linker bündelt Ihre Angaben in einem bearbeitbaren Projekt für die PV- und Speicherplanung.
+			88 button (collapsed) Über dieses Werkzeug, Secondary Actions: Expand
+				89 text Über dieses Werkzeug
+		90 container tv-footer-v2
+			91 image Linker
+			92 container
+				93 text Sprache
+				94 container Sprache
+					95 link Description: Englisch, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=14dacb74cda2451a95d00df374532af8#lp-calculations
+					96 link Description: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be&run=14dacb74cda2451a95d00df374532af8#lp-calculations
+			97 text WIR VERBINDEN
+			98 link Description: Produkte, Value: 127.0.0.1:9347/de/produkte/
+			99 text ,
+			100 link Description: Technologie, Value: 127.0.0.1:9347/de/ueber-uns/leistungsfaehigkeit/
+			101 text und
+			102 link Description: Service, Value: 127.0.0.1:9347/de/kundendienst/
+			103 text und schaffen 
+			104 text dauerhaften Wert
+			105 text  für Energiepartner in Europa.
+			106 tab group Fußzeilen-Navigation
+				107 tab (selected, settable, boolean) Lösungen, Value: 1, ID: footer-tab-solutions
+				108 tab (selectable, settable, boolean) Dienstleistungen, Value: 0, ID: footer-tab-services
+				109 tab (selectable, settable, boolean) Planen mit Linker, Value: 0, ID: footer-tab-planning
+				110 tab (selectable, settable, boolean) Konto, Value: 0, ID: footer-tab-account
+				111 tab (selectable, settable, boolean) Linker kontaktieren, Value: 0, ID: footer-tab-contact
+			112 container Description: Lösungen, ID: footer-panel-solutions
+				113 heading Lösungen, Value: 2
+					114 text Lösungen
+				115 content list
+					116 link Description: Heimspeicher, Value: 127.0.0.1:9347/de/loesung/heimspeicher/
+					117 link Description: Gewerbespeicher, Value: 127.0.0.1:9347/de/loesung/gewerbespeicher/
+					118 link Description: Großspeicher, Value: 127.0.0.1:9347/de/loesung/grossspeicher/
+			119 text © 2026 Linker. Alle Rechte vorbehalten.
+			120 container Rechtliches
+				121 link Description: Impressum, Value: 127.0.0.1:9347/de/impressum/
+				122 link Description: Datenschutzerklärung, Value: 127.0.0.1:9347/de/datenschutz/
+				123 button Cookie-Einstellungen
+				124 link Description: Verkaufsbedingungen, Value: 127.0.0.1:9347/de/verkaufsbedingungen/
+				125 link Description: Rückgabe & Erstattung, Value: 127.0.0.1:9347/de/rueckgabe-erstattung/
+			126 container
+				127 text Produkteignung · Wechselrichter-Kompatibilität · Projektunterstützung
+
+The focused UI element is 216 container Berechnete Betriebszeiträume (UTC)

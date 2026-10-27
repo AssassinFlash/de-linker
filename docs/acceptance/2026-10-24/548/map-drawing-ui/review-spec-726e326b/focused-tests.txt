@@ -1,0 +1,11 @@
+✔ a lazy built chunk never executes the versioned WordPress entry again (326.976833ms)
+✔ real drawing UI resumes a one-point journal, stages a roof, checks inputs and joins one project command (382.446208ms)
+✔ provider replacement restores an open prefix only after the new map loads and keeps its points (37.636667ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1700.026542

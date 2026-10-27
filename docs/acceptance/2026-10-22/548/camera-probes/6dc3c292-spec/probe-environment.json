@@ -1,0 +1,18 @@
+{
+  "node": "v24.22.0",
+  "packages": {
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "@react-three/fiber": "9.8.2",
+    "three": "0.186.1",
+    "zustand": "5.0.16",
+    "jsdom": "26.1.0",
+    "fake-indexeddb": "6.2.6"
+  },
+  "source_target": "6dc3c292079ec4f654113ecd3e11b631906e6c04",
+  "controlled_surface": "Canvas/GPU ownership only for original probe; source SceneCamera and actual OrbitControls directly mounted for new controls probe",
+  "actual_focus_path": "React GeometryIntake + useGeometryImport + PlannerClient + actual fake-indexeddb-backed GeometryImportStore; only network reply and explicit read gates controlled",
+  "native_layout": "not available in JSDOM; not claimed",
+  "fixed_generated_mo_in_snapshot": true,
+  "completed_utc": "2026-10-23T12:02:39.838019+00:00"
+}

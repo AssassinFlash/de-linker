@@ -1,0 +1,27 @@
+[
+	{ "target": "parameters", "set": { "eta_charge": 0 }, "delete": [] },
+	{ "target": "parameters", "set": { "eta_discharge": 1.00001 }, "delete": [] },
+	{ "target": "parameters", "set": { "charge_ac_kw": "5" }, "delete": [] },
+	{ "target": "parameters", "set": { "eta_charge": true }, "delete": [] },
+	{ "target": "parameters", "set": { "internal_aux_kw": -1 }, "delete": [] },
+	{ "target": "parameters", "set": { "hidden_soc": 0.5 }, "delete": [] },
+	{
+		"target": "parameters",
+		"set": {},
+		"delete": ["standing_loss_rate_per_hour"]
+	},
+	{
+		"target": "inputs",
+		"set": { "controller": "tariff_optimizer" },
+		"delete": []
+	},
+	{ "target": "inputs", "set": { "terminal_min_kwh": -1 }, "delete": [] },
+	{ "target": "inputs", "set": { "schema_version": "1" }, "delete": [] },
+	{ "target": "inputs", "set": {}, "delete": ["aux_ac_asset_id"] },
+	{ "target": "inputs", "set": { "coupling": "shared_dc" }, "delete": [] },
+	{
+		"target": "inputs",
+		"set": { "coupling": "independent_ac", "pv_converter_id": "converter" },
+		"delete": []
+	}
+]

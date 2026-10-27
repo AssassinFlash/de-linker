@@ -1,0 +1,80 @@
+[
+  {
+    "url": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-ERA5&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=crystSi&mountingplace=free&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json",
+    "crawl": {
+      "loadedUrl": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-ERA5&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=crystSi&mountingplace=free&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json",
+      "loadedTime": "2026-10-22T17:30:08.033Z",
+      "referrerUrl": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-ERA5&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=crystSi&mountingplace=free&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 245,
+      "contentType": "text/html"
+    },
+    "metadata": {
+      "canonicalUrl": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-ERA5&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=crystSi&mountingplace=free&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json",
+      "title": "Request Rejected",
+      "description": null,
+      "author": null,
+      "keywords": null,
+      "languageCode": null,
+      "jsonLd": null,
+      "headers": {
+        "cache-control": "no-store, must-revalidate, no-cache",
+        "connection": "close",
+        "content-length": "245",
+        "content-type": "text/html",
+        "pragma": "no-cache",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-xss-protection": "1; mode=block"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "The requested URL was rejected. Please consult with your administrator.\n\nYour support ID is: <14309747097505447668>\n\n[Go Back]",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "Request Rejected The requested URL was rejected. Please consult with your administrator.  \n  \nYour support ID is: <14309747097505447668>  \n  \n[\\[Go Back\\]](javascript:history.back\\(\\);)",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-SARAH3&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=crystSi&mountingplace=free&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json",
+    "crawl": {
+      "loadedUrl": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-SARAH3&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=crystSi&mountingplace=free&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json",
+      "loadedTime": "2026-10-22T17:30:09.431Z",
+      "referrerUrl": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-SARAH3&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=crystSi&mountingplace=free&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 245,
+      "contentType": "text/html"
+    },
+    "metadata": {
+      "canonicalUrl": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-SARAH3&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=crystSi&mountingplace=free&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json",
+      "title": "Request Rejected",
+      "description": null,
+      "author": null,
+      "keywords": null,
+      "languageCode": null,
+      "jsonLd": null,
+      "headers": {
+        "cache-control": "no-store, must-revalidate, no-cache",
+        "connection": "close",
+        "content-length": "245",
+        "content-type": "text/html",
+        "pragma": "no-cache",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-xss-protection": "1; mode=block"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "The requested URL was rejected. Please consult with your administrator.\n\nYour support ID is: <14309747098654006733>\n\n[Go Back]",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "Request Rejected The requested URL was rejected. Please consult with your administrator.  \n  \nYour support ID is: <14309747098654006733>  \n  \n[\\[Go Back\\]](javascript:history.back\\(\\);)",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  }
+]

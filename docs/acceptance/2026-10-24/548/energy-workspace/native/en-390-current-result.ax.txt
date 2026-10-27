@@ -1,0 +1,130 @@
+Browser tab: 2, Title: "Solution Configurator · Workspace review | Linker", URL: "http://127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=14dacb74cda2451a95d00df374532af8#lp-calculations".
+1 AXWebArea Solution Configurator · Workspace review | Linker, URL: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=14dacb74cda2451a95d00df374532af8#lp-calculations
+	2 container
+		3 container Primary navigation
+			4 link Description: Linker home, Value: 127.0.0.1:9347/
+			5 link Description: Search products, Value: 127.0.0.1:9347/products/#search-box
+			6 container Language
+				7 link Description: EN, Help: English, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=14dacb74cda2451a95d00df374532af8#lp-calculations
+				8 link Description: DE, Help: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be&run=14dacb74cda2451a95d00df374532af8#lp-calculations
+			9 button (collapsed) Description: Open menu, ID: tv-mobile-toggle, Secondary Actions: Expand
+				10 image
+		11 container
+			12 button Projects
+			13 pop up button (collapsed, settable) Description: Project sections, Value: Energy calculation, Secondary Actions: Expand
+				14 menu
+					15 Project overview
+					16 Site and project
+					17 Roof design
+					18 Energy inputs
+					19 (selected) Energy calculation
+			20 text Saved · revision 5
+			21 button (disabled) Undo
+			22 button (disabled) Redo
+			23 button (disabled) Save project
+			24 text CURRENT PROJECT
+			25 heading Lyon · synthetic energy scenario · acceptance, Value: 1
+				26 text Lyon · synthetic energy scenario · acceptance
+			27 text Site data and roof layouts are saved in the same project.
+			28 container Energy calculation, ID: lp-calculations
+				29 text 07
+				30 heading Energy calculation, Value: 2, ID: lp-calculations-heading
+					31 text Energy calculation
+				32 text Calculate this project's energy flows over the selected periods. Each saved result keeps the inputs, sources and model used.
+				33 container Calculation workspace view
+					34 checkbox Scenario settings, Value: 0
+					35 checkbox Saved calculations, Value: 1
+				36 container
+					37 heading Calculation history, Value: 3
+						38 text Calculation history
+					39 checkbox Revision 5 Calculation complete 10/24/26, 10:16 AM, Value: 1
+						40 text Revision 5
+						41 text Calculation complete
+						42 text 10/24/26, 10:16 AM
+					43 checkbox Revision 5 Calculation cancelled 10/24/26, 10:14 AM, Value: 0
+						44 text Revision 5
+						45 text Calculation cancelled
+						46 text 10/24/26, 10:14 AM
+					47 checkbox Revision 4 Calculation failed 10/24/26, 10:06 AM, Value: 0
+						48 text Revision 4
+						49 text Calculation failed
+						50 text 10/24/26, 10:06 AM
+					51 checkbox Revision 3 Calculation complete 10/24/26, 9:38 AM, Value: 0
+						52 text Revision 3
+						53 text Calculation complete
+						54 text 10/24/26, 9:38 AM
+				55 text SAVED CALCULATION
+				56 heading Calculation complete, Value: 3
+					57 text Calculation complete
+				58 text Input revision 5
+				59 definition list
+					60 container Solar supplied to load
+						61 text Solar supplied to load
+					62 container
+						63 text 3.62 kWh
+					64 container Grid import
+						65 text Grid import
+					66 container
+						67 text 0.38 kWh
+					68 container Solar share of gross demand
+						69 text Solar share of gross demand
+					70 text 90.5%
+					71 container PV used or stored on site
+						72 text PV used or stored on site
+					73 text 100%
+				74 text Figures cover the simulated periods. Solar supply includes PV-origin battery energy; grid-origin and unknown-origin inventory remain separate.
+				75 text Equipment suitability: not assessed by this calculation.
+				76 text Country requirements: not assessed by this calculation.
+				77 button (collapsed) Energy totals and definitions, Secondary Actions: Expand
+					78 text Energy totals and definitions
+				79 button (collapsed) Numerical verification details, Secondary Actions: Expand
+					80 text Numerical verification details
+				81 button (collapsed) Calculation records, Secondary Actions: Expand
+					82 text Calculation records
+				83 button (collapsed) Sources, period and storage model, Secondary Actions: Expand
+					84 text Sources, period and storage model
+			85 text Solution Configurator
+			86 text by Linker
+			87 text Linker brings your inputs into an editable project for solar and storage planning.
+			88 button (collapsed) About this tool, Secondary Actions: Expand
+				89 text About this tool
+		90 container tv-footer-v2
+			91 image Linker
+			92 container
+				93 text Language
+				94 container Language
+					95 link Description: English, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=14dacb74cda2451a95d00df374532af8#lp-calculations
+					96 link Description: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be&run=14dacb74cda2451a95d00df374532af8#lp-calculations
+			97 text LINKING
+			98 link Description: products, Value: 127.0.0.1:9347/products/
+			99 text ,
+			100 link Description: technology, Value: 127.0.0.1:9347/about/capability/
+			101 text and
+			102 link Description: service, Value: 127.0.0.1:9347/services-support/
+			103 text to create 
+			104 text lasting value
+			105 text  for energy partners in Europe.
+			106 tab group Footer navigation
+				107 tab (selected, settable, boolean) Solutions, Value: 1, ID: footer-tab-solutions
+				108 tab (selectable, settable, boolean) Services, Value: 0, ID: footer-tab-services
+				109 tab (selectable, settable, boolean) Plan with Linker, Value: 0, ID: footer-tab-planning
+				110 tab (selectable, settable, boolean) Account, Value: 0, ID: footer-tab-account
+				111 tab (selectable, settable, boolean) Contact Linker, Value: 0, ID: footer-tab-contact
+			112 container Description: Solutions, ID: footer-panel-solutions
+				113 heading Solutions, Value: 2
+					114 text Solutions
+				115 content list
+					116 link Description: Residential Storage, Value: 127.0.0.1:9347/solution/residential-storage/
+					117 link Description: Commercial Storage, Value: 127.0.0.1:9347/solution/commercial-storage/
+					118 link Description: Utility-Scale Storage, Value: 127.0.0.1:9347/solution/utility-storage/
+			119 text © 2026 Linker. All rights reserved.
+			120 container Legal
+				121 link Description: Imprint, Value: 127.0.0.1:9347/imprint/
+				122 link Description: Privacy Policy, Value: 127.0.0.1:9347/privacy-policy/
+				123 button Cookie settings
+				124 link Description: Terms of Sale, Value: 127.0.0.1:9347/terms-of-sale/
+				125 link Description: Refund & Returns, Value: 127.0.0.1:9347/refund-returns/
+			126 container
+				127 text Product fit · Inverter compatibility · Project support
+
+The focused UI element is 56 heading Calculation complete, Value: 3

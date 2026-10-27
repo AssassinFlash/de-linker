@@ -1,0 +1,10 @@
+This is fixed-source Standards evidence for 3225fc552a89c406f685bfc5643d50745e58baa9 versus 367e454c23f542632258e1440387c4c9e7825e17. Owner: /root/geographic_standards_e138. No implementation, native browser, production, instance or dependency-copy operation is required.
+
+1. Run rebuild_snapshot.py to reconstruct the SHA-verified minimal graph and link the existing planner node_modules. It refreshes the two-hour retention boundary. Destination must be empty.
+2. Run baseline-runner.py before generating independent tests. This preserves the original 61 domain/data + 66 DOM count and emitted/source graph check.
+3. Run prepare-probes.py to reconstruct four independent test files from the fixed helpers plus retained probe deltas. Application sources stay unchanged.
+4. In the registered temporary apps/planner directory, run Node with --no-warnings=ExperimentalWarning --loader ./tests/tsx-loader.mjs --test and the generated tests/standards-*.test.mjs files. The refusal-origin group deliberately fails three cases on this SHA; the Unicode case deliberately fails once. Storage-warning/quota/project-save group passes four cases, including actual German catalog use.
+5. Run verify-source-catalogs.py for the 76 adopted copy pairs, GEO-010 exception, scoped stylesheet/dependency checks and local Apify original provenance. It performs no external requests or native writes.
+6. After retaining unique results, run cleanup_snapshot.py. It checks source hashes and exact reconstructed probe bytes, then removes only the registered temporary graph and dependency symlink. Shared dependencies are retained.
+
+The original red logs must remain red. Later corrected commits need a separate owned report and unchanged-counterexample replay; do not overwrite this fixed FAIL evidence. Some logs may be ignored by Git and need explicit inclusion when retaining this evidence in a commit. The probe transport/project replies are intentional synthetic fault injection around the real client, hooks, IndexedDB implementation and consumers, not native browser/production acceptance.

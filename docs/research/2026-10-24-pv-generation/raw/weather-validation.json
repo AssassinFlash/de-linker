@@ -1,0 +1,109 @@
+{
+  "rawSHA256": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
+  "rowCount": 8760,
+  "uniqueSourceTimestamps": 8760,
+  "timestampMinutes": [
+    0
+  ],
+  "sourceLabelsMonotonic": false,
+  "sourceYearMatchesSelectedMonth": true,
+  "hasLeapDay": false,
+  "sourceMonthYearCounts": {
+    "1": 744,
+    "2": 672,
+    "3": 744,
+    "4": 720,
+    "5": 744,
+    "6": 720,
+    "7": 744,
+    "8": 744,
+    "9": 720,
+    "10": 744,
+    "11": 720,
+    "12": 744
+  },
+  "allFields": {
+    "G(h)": {
+      "finite": 8760,
+      "min": 0.0,
+      "max": 911.0
+    },
+    "Gb(n)": {
+      "finite": 8760,
+      "min": 0.0,
+      "max": 934.67
+    },
+    "Gd(h)": {
+      "finite": 8760,
+      "min": 0.0,
+      "max": 434.0
+    },
+    "T2m": {
+      "finite": 8760,
+      "min": -14.87,
+      "max": 36.0
+    },
+    "WS10m": {
+      "finite": 8760,
+      "min": 0.0,
+      "max": 8.41
+    },
+    "SP": {
+      "finite": 8760,
+      "min": 98360.0,
+      "max": 104020.0
+    },
+    "RH": {
+      "finite": 8760,
+      "min": 21.5,
+      "max": 100.0
+    },
+    "IR(h)": {
+      "finite": 8760,
+      "min": 192.75,
+      "max": 435.65
+    },
+    "WD10m": {
+      "finite": 8760,
+      "min": 0.0,
+      "max": 360.0
+    }
+  },
+  "solarClockDiagnostic": [
+    {
+      "offsetHours": 0,
+      "offsetSeconds": 0,
+      "daylightDiagnosticCount": 2545,
+      "medianAbsoluteGHIClosureWm2": 6.238825270401321,
+      "rmsGHIClosureWm2": 8.776851290867453,
+      "maximumAbsoluteGHIClosureWm2": 19.947984438663127
+    },
+    {
+      "offsetHours": 0.1838,
+      "offsetSeconds": 661.68,
+      "daylightDiagnosticCount": 2545,
+      "medianAbsoluteGHIClosureWm2": 0.31808542257192585,
+      "rmsGHIClosureWm2": 0.6782771262392573,
+      "maximumAbsoluteGHIClosureWm2": 2.6721739136944507
+    },
+    {
+      "offsetHours": 0.5,
+      "offsetSeconds": 1800.0,
+      "daylightDiagnosticCount": 2545,
+      "medianAbsoluteGHIClosureWm2": 10.970810812665206,
+      "rmsGHIClosureWm2": 14.973107336273827,
+      "maximumAbsoluteGHIClosureWm2": 34.47068249273957
+    }
+  ],
+  "diagnosticPolicy": "No engineering accuracy tolerance inferred. Comparison evaluates the raw original selected-month UTC timestamps, not a coerced year; pressure/temp provided explicitly. All irradiance fields remain provider values.",
+  "solarClockDiagnosticSettings": {
+    "pvlibVersion": "0.16.1",
+    "method": "nrel_numpy",
+    "altitudeMeters": 37,
+    "pressure": "raw SP in Pa, row-aligned",
+    "temperature": "raw T2m in C, row-aligned",
+    "deltaTSeconds": 67.0,
+    "deltaTPolicy": "Pinned pvlib spa_python default used only for this clock diagnostic; not selected as production policy",
+    "selection": "DNI >50 W/m2 only as diagnostic daylight filter, not an engineering acceptance threshold"
+  }
+}

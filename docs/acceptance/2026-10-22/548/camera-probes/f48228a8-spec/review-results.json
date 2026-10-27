@@ -1,0 +1,59 @@
+{
+  "axis": "Spec",
+  "verdict": "FAIL",
+  "target": "f48228a87894c23f68d180675d05b902139d531e",
+  "base": "eff8341d5a0eaf24999f42854da6339032c65c9c",
+  "scope": "same-geometry camera presentation increment only",
+  "findings": [
+    {
+      "priority": 2,
+      "title": "Panel-instance Fit resolves the wrong roof",
+      "spec": "docs/specs/548-roof-import-workflow.md:91-92",
+      "source": "apps/planner/src/domain/sceneCamera.ts:17-24",
+      "executable": "camera-probe.mjs:64",
+      "observed_selected_normal_dot": 0.0016781750203078924
+    },
+    {
+      "priority": 2,
+      "title": "Resize clips current geometry using stale framing",
+      "spec": "docs/specs/548-roof-import-workflow.md:98-99",
+      "source": "apps/planner/src/components/design/SceneViewport.tsx:493-496",
+      "consumer": "apps/planner/src/components/design/SceneCamera.tsx:37-47",
+      "executable": "camera-probe.mjs:71",
+      "outside_after_resize": 4,
+      "all_inside_after_explicit_fit": true
+    }
+  ],
+  "independent": {
+    "tests": 8,
+    "pass": 6,
+    "fail": 2,
+    "log": "independent-attempt-2.log",
+    "exit_code": 1,
+    "excluded_harness_error": "independent-attempt-1.log"
+  },
+  "locked_checks": {
+    "domain_data": {
+      "pass": 64,
+      "fail": 0
+    },
+    "dom": {
+      "pass": 87,
+      "fail": 0
+    },
+    "strict_types": "PASS",
+    "source_build_manifest": "PASS",
+    "emitted_graph": {
+      "pass": 1,
+      "fail": 0
+    }
+  },
+  "not_claimed": [
+    "GPU rendering",
+    "native acceptance",
+    "physical touch",
+    "production deployment",
+    "full A-D acceptance"
+  ],
+  "implementation_edits": false
+}

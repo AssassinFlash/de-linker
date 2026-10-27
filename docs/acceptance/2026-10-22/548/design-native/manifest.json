@@ -1,0 +1,157 @@
+{
+  "project": "8c71ef3068ee465d86f093cece8406fa",
+  "instance": "p548",
+  "kind": "synthetic local native evidence",
+  "files": [
+    {
+      "file": "native-saved-revision2.json",
+      "sha256": "653fa5393053e07b5b4ad90356dc812fc008ba22021e35bb4bcc507f811755b5",
+      "bytes": 3866,
+      "stage": "actual owned native gateway readback; revision in file"
+    },
+    {
+      "file": "native-saved-revision6.json",
+      "sha256": "ade15e018950c9191af010486f6dd34a1ae3d4d9687038e2bb2461cc7a33a278",
+      "bytes": 7196,
+      "stage": "actual owned native gateway readback; revision in file"
+    },
+    {
+      "file": "native-review-revision6.json",
+      "sha256": "63fd6f93d3c9251c40bb51e127bf5449441deb9156fda95c9ce5a93642e2ef23",
+      "bytes": 3947,
+      "stage": "actual owned native gateway readback; revision in file"
+    },
+    {
+      "file": "plan-drag-values.json",
+      "sha256": "5231332dbc5af1891eae548d1003ba4293b74bbc09e942e8c55f7560d47e0380",
+      "bytes": 549,
+      "stage": "native progression before final retry correction"
+    },
+    {
+      "file": "three-drag-values.json",
+      "sha256": "6f75c78ef43e3459d5887ec4f9e467249d846422ea3294ea732c96089e24dd29",
+      "bytes": 122,
+      "stage": "native progression before final retry correction"
+    },
+    {
+      "file": "layout-conflicts-en.txt",
+      "sha256": "a27843ab8f0ad1bcfbc145aadfbefbc306824f1c09988e3ee0c7f1d8156cc2a7",
+      "bytes": 2041,
+      "stage": "native progression before final retry correction"
+    },
+    {
+      "file": "native-lazy-failure.txt",
+      "sha256": "cdc0ea188c5cc91ff631c7fee6869ccaf356bf77535bcf0148067bf2c8521763",
+      "bytes": 29902,
+      "stage": "native progression before final retry correction"
+    },
+    {
+      "file": "native-lazy-retry-result.json",
+      "sha256": "bb4ce0dfbee4335b35c3f36d7dbc80e4e744dc5a35000b7d59eeea2dbfab8fa0",
+      "bytes": 708,
+      "stage": "fresh-URL retry correction, before later entry-directory guard"
+    },
+    {
+      "file": "en-desktop-3d-webgpu.png",
+      "sha256": "74f30b4f97ff918fa3cb825131511ab24b6ba98d6bbef08116313932ca533381",
+      "bytes": 140337,
+      "stage": "native progression before final retry correction"
+    },
+    {
+      "file": "en-desktop-3d-multiple-roofs.png",
+      "sha256": "93560f0740a5e306cb6b7d13f019dfb8b19bb02a9ea535d5d89d549479043fb7",
+      "bytes": 142282,
+      "stage": "native progression before final retry correction"
+    },
+    {
+      "file": "en-desktop-3d-active-preview.png",
+      "sha256": "c0cd90941f5650f10230c58835a653a40e667205d994ea81e439f424550fb501",
+      "bytes": 151358,
+      "stage": "native progression before final retry correction"
+    },
+    {
+      "file": "en-desktop-3d-cancelled.png",
+      "sha256": "69544c01a5a6ec867810554b34e2bdbd82686f48e8967ad6b786051e9840c356",
+      "bytes": 149511,
+      "stage": "native progression before final retry correction"
+    },
+    {
+      "file": "en-desktop-pitch-boundary.png",
+      "sha256": "29d933d19435712f1bd789b59e2c813b624bbb195620906f9443230f878ae608",
+      "bytes": 159548,
+      "stage": "native progression before final retry correction"
+    },
+    {
+      "file": "de-desktop-plan.png",
+      "sha256": "2e41e4b079383216f01dbf3f48b899084ad01fcaa5efc81ce5345b219de27f0c",
+      "bytes": 145334,
+      "stage": "native progression before final retry correction"
+    },
+    {
+      "file": "de-desktop-invalid-rows.png",
+      "sha256": "04790e92c856f56ee09c3f6d1bbc2833fd25f55c9a5e34ac0a38849773fcfcee",
+      "bytes": 165552,
+      "stage": "native progression before final retry correction"
+    },
+    {
+      "file": "de-desktop-3d.png",
+      "sha256": "f9fd27674cf8720161198c9bcf679feaffe4770f3e443e5b4327267361691eba",
+      "bytes": 145980,
+      "stage": "native progression before final retry correction"
+    },
+    {
+      "file": "de-mobile-plan.png",
+      "sha256": "124c892f04c55b01d8055477e842e1087d314fc110b1ed2c031b7b6129bdee84",
+      "bytes": 37613,
+      "stage": "native progression before final retry correction"
+    },
+    {
+      "file": "de-mobile-3d.png",
+      "sha256": "ec97fbd92c63f470eb9207ff0b896c282dd8dffdd686aa0f75a3734e621662a9",
+      "bytes": 52050,
+      "stage": "native progression before final retry correction"
+    },
+    {
+      "file": "en-mobile-plan.png",
+      "sha256": "a0c88bcfada373d3386fbaecc7ccec4f0042906bdaf09652edca61204faa3c88",
+      "bytes": 37955,
+      "stage": "native progression before final retry correction"
+    },
+    {
+      "file": "en-mobile-3d.png",
+      "sha256": "b75c8519d861be5b13870a95e3f474b2a86b92eb26ae08dda28be7dbedb33246",
+      "bytes": 41841,
+      "stage": "native progression before final retry correction"
+    },
+    {
+      "file": "en-mobile-lazy-failure.png",
+      "sha256": "65ef1032ae1b0f7c3ec5f09ebe9c4546379c7ddb80499af399cfc8b71b6bd765",
+      "bytes": 53754,
+      "stage": "native progression before final retry correction"
+    },
+    {
+      "file": "retry-fixed-before.png",
+      "sha256": "2b1d21000310b544a961721ca9d4c9ac8777b79c03d4a9cbc5f24c13cc0788f2",
+      "bytes": 148060,
+      "stage": "fresh-URL retry correction, before later entry-directory guard"
+    },
+    {
+      "file": "retry-fixed-after.png",
+      "sha256": "13ae0925c4afe501cd4f5064c111191990535a7f503b2c607e926e86b5c40e32",
+      "bytes": 151554,
+      "stage": "fresh-URL retry correction, before later entry-directory guard"
+    },
+    {
+      "file": "en-desktop-plan-current.png",
+      "sha256": "c2cf18b80deaad7656eaa77600e29e17dae69099a98558ee58e867e156cb1ddd",
+      "bytes": 140919,
+      "stage": "current native build: scene BQc4p_xn / core BPeYb1o3"
+    },
+    {
+      "file": "en-desktop-3d-current.png",
+      "sha256": "e5a3ac2d3c54429ab22ee3559ccc0d29d48ddd119fe55a56026e3130775cad49",
+      "bytes": 135978,
+      "stage": "current native build: scene BQc4p_xn / core BPeYb1o3"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "arrays": 1,
+  "keep": 2,
+  "obstacle": 3,
+  "selected": "obstacle",
+  "commits": 0,
+  "geometryUnchanged": true,
+  "poses": 6,
+  "summary": {
+    "count": 5,
+    "stc_kwp": 2.5
+  },
+  "scope": "Actual SVG DOM order and direct event routing, not physical browser hit-testing"
+}

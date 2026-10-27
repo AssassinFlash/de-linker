@@ -1,0 +1,21 @@
+{
+  "removed_files": 114,
+  "removed_logical_bytes": 912244,
+  "free_before": 878070333440,
+  "free_after": 878071582720,
+  "retained": [
+    "results.json",
+    "probe-renderer-init.mjs",
+    "copy-recheck-results.json",
+    "archive-manifest.json",
+    "REVIEW.md",
+    "probe-renderer-lifetime-recheck.mjs",
+    "apps/planner/tests/standards-r3f-host.mjs",
+    "apps/planner/tests/standards-unmount-transform-probe.mjs",
+    "apps/planner/tests/standards-lazy-recheck.mjs",
+    "apps/planner/tests/standards-controls-loader.mjs",
+    "apps/planner/tests/standards-lazy-loader.mjs",
+    "apps/planner/tests/standards-lazy-staged-probe.mjs",
+    "apps/planner/tests/standards-lazy-probe.mjs"
+  ]
+}

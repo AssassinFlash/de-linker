@@ -1,0 +1,5 @@
+Minimal fixed-source review only. Owner: /root/geographic_standards_e138. No native writes, dependency copies or new local instance.
+
+Run rebuild_snapshot.py from this folder to create one bounded temporary graph; then run run_review_checks.py. It reconstructs the snapshot from Git hashes, links the already-installed planner dependencies, runs the unchanged client and emitted checks, and regenerates the retained independent probes. A full run expects a fresh rebuilt graph, before generated independent tests exist. --metadata-only reuses recorded successful checks and reruns catalog/guard/native metadata checks. Native readback requires the p548 filesystem to represent this same fixed SHA; a later version is a changed-state observation, not a source failure.
+
+After retaining unique evidence, run cleanup_snapshot.py; it checks the original source hashes and reconstructed probe bytes before removing only the registered temporary graph. Rebuild refreshes the two-hour retention boundary. Do not copy dependencies or run another site instance. Logs may be ignored by Git and need explicit inclusion when preserving this evidence in a commit.

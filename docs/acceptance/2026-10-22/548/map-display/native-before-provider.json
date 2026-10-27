@@ -1,0 +1,47 @@
+{
+  "network": {
+    "phase": "map-open-before-external-action",
+    "cursorFrom": 791,
+    "cursorTo": 804,
+    "hasMore": false,
+    "truncated": false,
+    "providerRequests": [],
+    "mapChunk": [
+      {
+        "url": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/MapViewport-DOBfbGx0.js",
+        "status": 200
+      }
+    ]
+  },
+  "dom": {
+    "attribution": "",
+    "canvas": {
+      "bottom": 1393.2734375,
+      "height": 560,
+      "left": 266.5546875,
+      "right": 1095.5546875,
+      "top": 833.2734375,
+      "width": 829,
+      "x": 266.5546875,
+      "y": 833.2734375
+    },
+    "font": "\"Helvetica Neue\", Arial, Helvetica, sans-serif",
+    "host": {
+      "bottom": 1393.2734375,
+      "height": 560,
+      "left": 266.5546875,
+      "right": 1095.4453125,
+      "top": 833.2734375,
+      "width": 828.890625,
+      "x": 266.5546875,
+      "y": 833.2734375
+    },
+    "map": "ready",
+    "overflow": false,
+    "viewport": [
+      1440,
+      1000
+    ]
+  },
+  "observation": "Renderer ready; vendor font overrides the site font. This state is not final visual acceptance."
+}

@@ -1,0 +1,28 @@
+{
+  "base": "f1a0dee90dd719ce5532724a9f6e9021f1555705",
+  "pin": "6b2a8a4cc43c95d4710fcb42f16d1bd1e4a8c100",
+  "observed_head": "6b2a8a4cc43c95d4710fcb42f16d1bd1e4a8c100",
+  "full_three_dot_diff_reviewed": true,
+  "reviewed_source_and_test_match_pin": true,
+  "manifest_sha256": "e0791102ab86b0ef120c3e94d98c8b1b57f6c7d1ff4a35a943f56c71cb5b62c0",
+  "entry_sha256": "4795217b71926d34187b0c2eaed6daaec14c06cc4606f9af3d23e40a71ca1a8b",
+  "commands": [
+    {
+      "cwd": "apps/planner",
+      "command": "npm run build:check",
+      "exit_code": 0,
+      "passed_tests": 1
+    },
+    {
+      "cwd": "apps/planner",
+      "command": "node --no-warnings=ExperimentalWarning --loader ./tests/tsx-loader.mjs --test tests/workspace-lifecycle.test.mjs",
+      "exit_code": 0,
+      "passed_tests": 16
+    }
+  ],
+  "documented_breaches": [],
+  "actionable_heuristic_concerns": [],
+  "no_native_engineering_or_production_acceptance_claimed": true,
+  "runtime_browser_dependencies_untouched": true,
+  "only_owned_report_directory_written": true
+}

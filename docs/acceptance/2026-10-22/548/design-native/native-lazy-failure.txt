@@ -1,0 +1,909 @@
+Browser tab: 8, Title: "Solution Configurator · Workspace review | Linker", URL: "http://127.0.0.1:9347/planning-workspace-review/?project=8c71ef3068ee465d86f093cece8406fa".
+0 AXWebArea Solution Configurator · Workspace review | Linker, URL: 127.0.0.1:9347/planning-workspace-review/?project=8c71ef3068ee465d86f093cece8406fa
+	1 container
+		2 container Primary navigation
+			3 link Description: Linker home, Value: 127.0.0.1:9347/
+			4 link Description: Search products, Value: 127.0.0.1:9347/products/#search-box
+			5 container Language
+				6 link Description: EN, Help: English, Value: 127.0.0.1:9347/planning-workspace-review/?project=8c71ef3068ee465d86f093cece8406fa
+				7 link Description: DE, Help: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=8c71ef3068ee465d86f093cece8406fa
+			8 button (collapsed) Description: Open menu, ID: tv-mobile-toggle, Secondary Actions: Expand
+				9 image
+		10 container
+			50 button Projects
+			51 text Synthetic roof workbench · 548 native
+			52 text Input needs attention
+			53 button (disabled) Undo
+			54 button (disabled) Redo
+			55 button (disabled) Save project
+			56 text PROJECT
+			57 heading Synthetic roof workbench · 548 native, Value: 1
+				58 text Synthetic roof workbench · 548 native
+			59 text Site data and roof layouts are saved in the same project.
+			60 container Project sections
+				61 link Description: Project brief, Value: 127.0.0.1:9347/planning-workspace-review/?project=8c71ef3068ee465d86f093cece8406fa#lp-brief-use
+				62 link Description: Project location, Value: 127.0.0.1:9347/planning-workspace-review/?project=8c71ef3068ee465d86f093cece8406fa#lp-site
+				63 link Description: Electricity consumption, Value: 127.0.0.1:9347/planning-workspace-review/?project=8c71ef3068ee465d86f093cece8406fa#lp-load
+				64 link Description: Interval data, Value: 127.0.0.1:9347/planning-workspace-review/?project=8c71ef3068ee465d86f093cece8406fa#lp-profiles
+				65 link Description: Roof design, Value: 127.0.0.1:9347/planning-workspace-review/?project=8c71ef3068ee465d86f093cece8406fa#lp-design
+			66 container Project brief, ID: lp-brief-use
+				67 text 01
+				68 heading Project brief, Value: 2, ID: lp-brief-use-heading
+					69 text Project brief
+				70 text Available information can be saved now and completed as the design develops.
+				71 container
+					72 text Site use
+					73 pop up button (collapsed, settable) Site use, Value: Commercial, Secondary Actions: Expand
+						74 menu
+							75 Not specified
+							76 Residential
+							77 (selected) Commercial
+							78 Industrial
+				79 container
+					80 text Planned system
+					81 pop up button (collapsed, settable) Planned system, Value: New PV and storage, Secondary Actions: Expand
+						82 menu
+							83 Not specified
+							84 (selected) New PV and storage
+							85 Storage for existing PV
+							86 PV without storage
+			87 container Project location, ID: lp-site
+				88 text 02
+				89 heading Project location, Value: 2, ID: lp-site-heading
+					90 text Project location
+				91 text The project location and time zone are independent of the interface language.
+				92 container
+					93 text Country
+					94 pop up button (collapsed, settable) Country, Value: France, Secondary Actions: Expand
+						95 menu
+							96 Not specified
+							97 Afghanistan
+							98 Åland Islands
+							99 Albania
+							100 Algeria
+							101 American Samoa
+							102 Andorra
+							103 Angola
+							104 Anguilla
+							105 Antarctica
+							106 Antigua and Barbuda
+							107 Argentina
+							108 Armenia
+							109 Aruba
+							110 Australia
+							111 Austria
+							112 Azerbaijan
+							113 Bahamas
+							114 Bahrain
+							115 Bangladesh
+							116 Barbados
+							117 Belarus
+							118 Belau
+							119 Belgium
+							120 Belize
+							121 Benin
+							122 Bermuda
+							123 Bhutan
+							124 Bolivia
+							125 Bonaire, Saint Eustatius and Saba
+							126 Bosnia and Herzegovina
+							127 Botswana
+							128 Bouvet Island
+							129 Brazil
+							130 British Indian Ocean Territory
+							131 Brunei
+							132 Bulgaria
+							133 Burkina Faso
+							134 Burundi
+							135 Cambodia
+							136 Cameroon
+							137 Canada
+							138 Cape Verde
+							139 Cayman Islands
+							140 Central African Republic
+							141 Chad
+							142 Chile
+							143 China
+							144 Christmas Island
+							145 Cocos (Keeling) Islands
+							146 Colombia
+							147 Comoros
+							148 Congo (Brazzaville)
+							149 Congo (Kinshasa)
+							150 Cook Islands
+							151 Costa Rica
+							152 Croatia
+							153 Cuba
+							154 Curaçao
+							155 Cyprus
+							156 Czech Republic
+							157 Denmark
+							158 Djibouti
+							159 Dominica
+							160 Dominican Republic
+							161 Ecuador
+							162 Egypt
+							163 El Salvador
+							164 Equatorial Guinea
+							165 Eritrea
+							166 Estonia
+							167 Eswatini
+							168 Ethiopia
+							169 Falkland Islands
+							170 Faroe Islands
+							171 Fiji
+							172 Finland
+							173 (selected) France
+							174 French Guiana
+							175 French Polynesia
+							176 French Southern Territories
+							177 Gabon
+							178 Gambia
+							179 Georgia
+							180 Germany
+							181 Ghana
+							182 Gibraltar
+							183 Greece
+							184 Greenland
+							185 Grenada
+							186 Guadeloupe
+							187 Guam
+							188 Guatemala
+							189 Guernsey
+							190 Guinea
+							191 Guinea-Bissau
+							192 Guyana
+							193 Haiti
+							194 Heard Island and McDonald Islands
+							195 Honduras
+							196 Hong Kong
+							197 Hungary
+							198 Iceland
+							199 India
+							200 Indonesia
+							201 Iran
+							202 Iraq
+							203 Ireland
+							204 Isle of Man
+							205 Israel
+							206 Italy
+							207 Ivory Coast
+							208 Jamaica
+							209 Japan
+							210 Jersey
+							211 Jordan
+							212 Kazakhstan
+							213 Kenya
+							214 Kiribati
+							215 Kosovo
+							216 Kuwait
+							217 Kyrgyzstan
+							218 Laos
+							219 Latvia
+							220 Lebanon
+							221 Lesotho
+							222 Liberia
+							223 Libya
+							224 Liechtenstein
+							225 Lithuania
+							226 Luxembourg
+							227 Macao
+							228 Madagascar
+							229 Malawi
+							230 Malaysia
+							231 Maldives
+							232 Mali
+							233 Malta
+							234 Marshall Islands
+							235 Martinique
+							236 Mauritania
+							237 Mauritius
+							238 Mayotte
+							239 Mexico
+							240 Micronesia
+							241 Moldova
+							242 Monaco
+							243 Mongolia
+							244 Montenegro
+							245 Montserrat
+							246 Morocco
+							247 Mozambique
+							248 Myanmar
+							249 Namibia
+							250 Nauru
+							251 Nepal
+							252 Netherlands
+							253 New Caledonia
+							254 New Zealand
+							255 Nicaragua
+							256 Niger
+							257 Nigeria
+							258 Niue
+							259 Norfolk Island
+							260 North Korea
+							261 North Macedonia
+							262 Northern Mariana Islands
+							263 Norway
+							264 Oman
+							265 Pakistan
+							266 Palestinian Territory
+							267 Panama
+							268 Papua New Guinea
+							269 Paraguay
+							270 Peru
+							271 Philippines
+							272 Pitcairn
+							273 Poland
+							274 Portugal
+							275 Puerto Rico
+							276 Qatar
+							277 Reunion
+							278 Romania
+							279 Russia
+							280 Rwanda
+							281 Saint Barthélemy
+							282 Saint Helena
+							283 Saint Kitts and Nevis
+							284 Saint Lucia
+							285 Saint Martin (Dutch part)
+							286 Saint Martin (French part)
+							287 Saint Pierre and Miquelon
+							288 Saint Vincent and the Grenadines
+							289 Samoa
+							290 San Marino
+							291 São Tomé and Príncipe
+							292 Saudi Arabia
+							293 Senegal
+							294 Serbia
+							295 Seychelles
+							296 Sierra Leone
+							297 Singapore
+							298 Slovakia
+							299 Slovenia
+							300 Solomon Islands
+							301 Somalia
+							302 South Africa
+							303 South Georgia/Sandwich Islands
+							304 South Korea
+							305 South Sudan
+							306 Spain
+							307 Sri Lanka
+							308 Sudan
+							309 Suriname
+							310 Svalbard and Jan Mayen
+							311 Sweden
+							312 Switzerland
+							313 Syria
+							314 Taiwan
+							315 Tajikistan
+							316 Tanzania
+							317 Thailand
+							318 Timor-Leste
+							319 Togo
+							320 Tokelau
+							321 Tonga
+							322 Trinidad and Tobago
+							323 Tunisia
+							324 Türkiye
+							325 Turkmenistan
+							326 Turks and Caicos Islands
+							327 Tuvalu
+							328 Uganda
+							329 Ukraine
+							330 United Arab Emirates
+							331 United Kingdom (UK)
+							332 United States (US)
+							333 United States (US) Minor Outlying Islands
+							334 Uruguay
+							335 Uzbekistan
+							336 Vanuatu
+							337 Vatican
+							338 Venezuela
+							339 Vietnam
+							340 Virgin Islands (British)
+							341 Virgin Islands (US)
+							342 Wallis and Futuna
+							343 Western Sahara
+							344 Yemen
+							345 Zambia
+							346 Zimbabwe
+				347 container
+					348 text Address or location reference
+					349 text field (settable) Address or location reference, Value: Synthetic Paris-area fixture; no surveyed site.
+				350 container
+					351 text Latitude
+					352 text °
+					353 text field (settable) Latitude °
+					354 text Decimal point; no thousands separators.
+				355 container
+					356 text Longitude
+					357 text °
+					358 text field (settable) Longitude °
+					359 text Decimal point; no thousands separators.
+				360 container
+					361 text Project time zone
+					362 pop up button (collapsed, settable) Project time zone, Value: Europe/Paris, Secondary Actions: Expand
+						363 menu
+							364 Not specified
+							365 UTC
+							366 Africa/Abidjan
+							367 Africa/Accra
+							368 Africa/Addis_Ababa
+							369 Africa/Algiers
+							370 Africa/Asmera
+							371 Africa/Bamako
+							372 Africa/Bangui
+							373 Africa/Banjul
+							374 Africa/Bissau
+							375 Africa/Blantyre
+							376 Africa/Brazzaville
+							377 Africa/Bujumbura
+							378 Africa/Cairo
+							379 Africa/Casablanca
+							380 Africa/Ceuta
+							381 Africa/Conakry
+							382 Africa/Dakar
+							383 Africa/Dar_es_Salaam
+							384 Africa/Djibouti
+							385 Africa/Douala
+							386 Africa/El_Aaiun
+							387 Africa/Freetown
+							388 Africa/Gaborone
+							389 Africa/Harare
+							390 Africa/Johannesburg
+							391 Africa/Juba
+							392 Africa/Kampala
+							393 Africa/Khartoum
+							394 Africa/Kigali
+							395 Africa/Kinshasa
+							396 Africa/Lagos
+							397 Africa/Libreville
+							398 Africa/Lome
+							399 Africa/Luanda
+							400 Africa/Lubumbashi
+							401 Africa/Lusaka
+							402 Africa/Malabo
+							403 Africa/Maputo
+							404 Africa/Maseru
+							405 Africa/Mbabane
+							406 Africa/Mogadishu
+							407 Africa/Monrovia
+							408 Africa/Nairobi
+							409 Africa/Ndjamena
+							410 Africa/Niamey
+							411 Africa/Nouakchott
+							412 Africa/Ouagadougou
+							413 Africa/Porto-Novo
+							414 Africa/Sao_Tome
+							415 Africa/Tripoli
+							416 Africa/Tunis
+							417 Africa/Windhoek
+							418 America/Adak
+							419 America/Anchorage
+							420 America/Anguilla
+							421 America/Antigua
+							422 America/Araguaina
+							423 America/Argentina/La_Rioja
+							424 America/Argentina/Rio_Gallegos
+							425 America/Argentina/Salta
+							426 America/Argentina/San_Juan
+							427 America/Argentina/San_Luis
+							428 America/Argentina/Tucuman
+							429 America/Argentina/Ushuaia
+							430 America/Aruba
+							431 America/Asuncion
+							432 America/Bahia
+							433 America/Bahia_Banderas
+							434 America/Barbados
+							435 America/Belem
+							436 America/Belize
+							437 America/Blanc-Sablon
+							438 America/Boa_Vista
+							439 America/Bogota
+							440 America/Boise
+							441 America/Buenos_Aires
+							442 America/Cambridge_Bay
+							443 America/Campo_Grande
+							444 America/Cancun
+							445 America/Caracas
+							446 America/Catamarca
+							447 America/Cayenne
+							448 America/Cayman
+							449 America/Chicago
+							450 America/Chihuahua
+							451 America/Ciudad_Juarez
+							452 America/Coral_Harbour
+							453 America/Cordoba
+							454 America/Costa_Rica
+							455 America/Coyhaique
+							456 America/Creston
+							457 America/Cuiaba
+							458 America/Curacao
+							459 America/Danmarkshavn
+							460 America/Dawson
+							461 America/Dawson_Creek
+							462 America/Denver
+							463 America/Detroit
+							464 America/Dominica
+							465 America/Edmonton
+							466 America/Eirunepe
+							467 America/El_Salvador
+							468 America/Fort_Nelson
+							469 America/Fortaleza
+							470 America/Glace_Bay
+							471 America/Godthab
+							472 America/Goose_Bay
+							473 America/Grand_Turk
+							474 America/Grenada
+							475 America/Guadeloupe
+							476 America/Guatemala
+							477 America/Guayaquil
+							478 America/Guyana
+							479 America/Halifax
+							480 America/Havana
+							481 America/Hermosillo
+							482 America/Indiana/Knox
+							483 America/Indiana/Marengo
+							484 America/Indiana/Petersburg
+							485 America/Indiana/Tell_City
+							486 America/Indiana/Vevay
+							487 America/Indiana/Vincennes
+							488 America/Indiana/Winamac
+							489 America/Indianapolis
+							490 America/Inuvik
+							491 America/Iqaluit
+							492 America/Jamaica
+							493 America/Jujuy
+							494 America/Juneau
+							495 America/Kentucky/Monticello
+							496 America/Kralendijk
+							497 America/La_Paz
+							498 America/Lima
+							499 America/Los_Angeles
+							500 America/Louisville
+							501 America/Lower_Princes
+							502 America/Maceio
+							503 America/Managua
+							504 America/Manaus
+							505 America/Marigot
+							506 America/Martinique
+							507 America/Matamoros
+							508 America/Mazatlan
+							509 America/Mendoza
+							510 America/Menominee
+							511 America/Merida
+							512 America/Metlakatla
+							513 America/Mexico_City
+							514 America/Miquelon
+							515 America/Moncton
+							516 America/Monterrey
+							517 America/Montevideo
+							518 America/Montserrat
+							519 America/Nassau
+							520 America/New_York
+							521 America/Nome
+							522 America/Noronha
+							523 America/North_Dakota/Beulah
+							524 America/North_Dakota/Center
+							525 America/North_Dakota/New_Salem
+							526 America/Ojinaga
+							527 America/Panama
+							528 America/Paramaribo
+							529 America/Phoenix
+							530 America/Port-au-Prince
+							531 America/Port_of_Spain
+							532 America/Porto_Velho
+							533 America/Puerto_Rico
+							534 America/Punta_Arenas
+							535 America/Rankin_Inlet
+							536 America/Recife
+							537 America/Regina
+							538 America/Resolute
+							539 America/Rio_Branco
+							540 America/Santarem
+							541 America/Santiago
+							542 America/Santo_Domingo
+							543 America/Sao_Paulo
+							544 America/Scoresbysund
+							545 America/Sitka
+							546 America/St_Barthelemy
+							547 America/St_Johns
+							548 America/St_Kitts
+							549 America/St_Lucia
+							550 America/St_Thomas
+							551 America/St_Vincent
+							552 America/Swift_Current
+							553 America/Tegucigalpa
+							554 America/Thule
+							555 America/Tijuana
+							556 America/Toronto
+							557 America/Tortola
+							558 America/Vancouver
+							559 America/Whitehorse
+							560 America/Winnipeg
+							561 America/Yakutat
+							562 Antarctica/Casey
+							563 Antarctica/Davis
+							564 Antarctica/DumontDUrville
+							565 Antarctica/Macquarie
+							566 Antarctica/Mawson
+							567 Antarctica/McMurdo
+							568 Antarctica/Palmer
+							569 Antarctica/Rothera
+							570 Antarctica/Syowa
+							571 Antarctica/Troll
+							572 Antarctica/Vostok
+							573 Arctic/Longyearbyen
+							574 Asia/Aden
+							575 Asia/Almaty
+							576 Asia/Amman
+							577 Asia/Anadyr
+							578 Asia/Aqtau
+							579 Asia/Aqtobe
+							580 Asia/Ashgabat
+							581 Asia/Atyrau
+							582 Asia/Baghdad
+							583 Asia/Bahrain
+							584 Asia/Baku
+							585 Asia/Bangkok
+							586 Asia/Barnaul
+							587 Asia/Beirut
+							588 Asia/Bishkek
+							589 Asia/Brunei
+							590 Asia/Calcutta
+							591 Asia/Chita
+							592 Asia/Colombo
+							593 Asia/Damascus
+							594 Asia/Dhaka
+							595 Asia/Dili
+							596 Asia/Dubai
+							597 Asia/Dushanbe
+							598 Asia/Famagusta
+							599 Asia/Gaza
+							600 Asia/Hebron
+							601 Asia/Hong_Kong
+							602 Asia/Hovd
+							603 Asia/Irkutsk
+							604 Asia/Jakarta
+							605 Asia/Jayapura
+							606 Asia/Jerusalem
+							607 Asia/Kabul
+							608 Asia/Kamchatka
+							609 Asia/Karachi
+							610 Asia/Katmandu
+							611 Asia/Khandyga
+							612 Asia/Krasnoyarsk
+							613 Asia/Kuala_Lumpur
+							614 Asia/Kuching
+							615 Asia/Kuwait
+							616 Asia/Macau
+							617 Asia/Magadan
+							618 Asia/Makassar
+							619 Asia/Manila
+							620 Asia/Muscat
+							621 Asia/Nicosia
+							622 Asia/Novokuznetsk
+							623 Asia/Novosibirsk
+							624 Asia/Omsk
+							625 Asia/Oral
+							626 Asia/Phnom_Penh
+							627 Asia/Pontianak
+							628 Asia/Pyongyang
+							629 Asia/Qatar
+							630 Asia/Qostanay
+							631 Asia/Qyzylorda
+							632 Asia/Rangoon
+							633 Asia/Riyadh
+							634 Asia/Saigon
+							635 Asia/Sakhalin
+							636 Asia/Samarkand
+							637 Asia/Seoul
+							638 Asia/Shanghai
+							639 Asia/Singapore
+							640 Asia/Srednekolymsk
+							641 Asia/Taipei
+							642 Asia/Tashkent
+							643 Asia/Tbilisi
+							644 Asia/Tehran
+							645 Asia/Thimphu
+							646 Asia/Tokyo
+							647 Asia/Tomsk
+							648 Asia/Ulaanbaatar
+							649 Asia/Urumqi
+							650 Asia/Ust-Nera
+							651 Asia/Vientiane
+							652 Asia/Vladivostok
+							653 Asia/Yakutsk
+							654 Asia/Yekaterinburg
+							655 Asia/Yerevan
+							656 Atlantic/Azores
+							657 Atlantic/Bermuda
+							658 Atlantic/Canary
+							659 Atlantic/Cape_Verde
+							660 Atlantic/Faeroe
+							661 Atlantic/Madeira
+							662 Atlantic/Reykjavik
+							663 Atlantic/South_Georgia
+							664 Atlantic/St_Helena
+							665 Atlantic/Stanley
+							666 Australia/Adelaide
+							667 Australia/Brisbane
+							668 Australia/Broken_Hill
+							669 Australia/Darwin
+							670 Australia/Eucla
+							671 Australia/Hobart
+							672 Australia/Lindeman
+							673 Australia/Lord_Howe
+							674 Australia/Melbourne
+							675 Australia/Perth
+							676 Australia/Sydney
+							677 Europe/Amsterdam
+							678 Europe/Andorra
+							679 Europe/Astrakhan
+							680 Europe/Athens
+							681 Europe/Belgrade
+							682 Europe/Berlin
+							683 Europe/Bratislava
+							684 Europe/Brussels
+							685 Europe/Bucharest
+							686 Europe/Budapest
+							687 Europe/Busingen
+							688 Europe/Chisinau
+							689 Europe/Copenhagen
+							690 Europe/Dublin
+							691 Europe/Gibraltar
+							692 Europe/Guernsey
+							693 Europe/Helsinki
+							694 Europe/Isle_of_Man
+							695 Europe/Istanbul
+							696 Europe/Jersey
+							697 Europe/Kaliningrad
+							698 Europe/Kiev
+							699 Europe/Kirov
+							700 Europe/Lisbon
+							701 Europe/Ljubljana
+							702 Europe/London
+							703 Europe/Luxembourg
+							704 Europe/Madrid
+							705 Europe/Malta
+							706 Europe/Mariehamn
+							707 Europe/Minsk
+							708 Europe/Monaco
+							709 Europe/Moscow
+							710 Europe/Oslo
+							711 (selected) Europe/Paris
+							712 Europe/Podgorica
+							713 Europe/Prague
+							714 Europe/Riga
+							715 Europe/Rome
+							716 Europe/Samara
+							717 Europe/San_Marino
+							718 Europe/Sarajevo
+							719 Europe/Saratov
+							720 Europe/Simferopol
+							721 Europe/Skopje
+							722 Europe/Sofia
+							723 Europe/Stockholm
+							724 Europe/Tallinn
+							725 Europe/Tirane
+							726 Europe/Ulyanovsk
+							727 Europe/Vaduz
+							728 Europe/Vatican
+							729 Europe/Vienna
+							730 Europe/Vilnius
+							731 Europe/Volgograd
+							732 Europe/Warsaw
+							733 Europe/Zagreb
+							734 Europe/Zurich
+							735 Indian/Antananarivo
+							736 Indian/Chagos
+							737 Indian/Christmas
+							738 Indian/Cocos
+							739 Indian/Comoro
+							740 Indian/Kerguelen
+							741 Indian/Mahe
+							742 Indian/Maldives
+							743 Indian/Mauritius
+							744 Indian/Mayotte
+							745 Indian/Reunion
+							746 Pacific/Apia
+							747 Pacific/Auckland
+							748 Pacific/Bougainville
+							749 Pacific/Chatham
+							750 Pacific/Easter
+							751 Pacific/Efate
+							752 Pacific/Enderbury
+							753 Pacific/Fakaofo
+							754 Pacific/Fiji
+							755 Pacific/Funafuti
+							756 Pacific/Galapagos
+							757 Pacific/Gambier
+							758 Pacific/Guadalcanal
+							759 Pacific/Guam
+							760 Pacific/Honolulu
+							761 Pacific/Kiritimati
+							762 Pacific/Kosrae
+							763 Pacific/Kwajalein
+							764 Pacific/Majuro
+							765 Pacific/Marquesas
+							766 Pacific/Midway
+							767 Pacific/Nauru
+							768 Pacific/Niue
+							769 Pacific/Norfolk
+							770 Pacific/Noumea
+							771 Pacific/Pago_Pago
+							772 Pacific/Palau
+							773 Pacific/Pitcairn
+							774 Pacific/Ponape
+							775 Pacific/Port_Moresby
+							776 Pacific/Rarotonga
+							777 Pacific/Saipan
+							778 Pacific/Tahiti
+							779 Pacific/Tarawa
+							780 Pacific/Tongatapu
+							781 Pacific/Truk
+							782 Pacific/Wake
+							783 Pacific/Wallis
+					784 text Used to interpret timestamps in project data.
+			785 container Electricity consumption, ID: lp-load
+				786 text 03
+				787 heading Electricity consumption, Value: 2, ID: lp-load-heading
+					788 text Electricity consumption
+				789 text Annual consumption provides an initial overview. Interval data is needed to assess peaks and battery operation.
+				790 container
+					791 text Annual consumption
+					792 text kWh
+					793 text field (settable) Annual consumption kWh, Value: 100000
+					794 text Decimal point; no thousands separators.
+				795 container
+					796 text Basis for the annual figure
+					797 pop up button (collapsed, settable) Basis for the annual figure, Value: Project estimate, Secondary Actions: Expand
+						798 menu
+							799 Not specified
+							800 Electricity bills
+							801 (selected) Project estimate
+				802 container
+					803 text Source and period
+					804 text field (settable) Source and period, Value: Synthetic annual estimate for native acceptance only; not a measured consumption profile.
+					805 text For example, the billing period or the basis of an estimate.
+			806 container Project notes, ID: lp-notes
+				807 text 04
+				808 heading Project notes, Value: 2, ID: lp-notes-heading
+					809 text Project notes
+				810 container
+					811 text Requirements and site constraints
+					812 text entry area (settable) Requirements and site constraints
+			813 container Interval data, ID: lp-profiles
+				814 text 05
+				815 heading Interval data, Value: 2, ID: lp-profiles-heading
+					816 text Interval data
+				817 text After import, the data's meaning and coverage are shown for review. A profile selection applies to the open draft and is saved with Save project. The annual consumption entry remains separate.
+				818 button Import interval data
+			819 container Roof design, ID: lp-design
+				820 text 06
+				821 heading Roof design, Value: 2, ID: lp-design-heading
+					822 text Roof design
+				823 text Roof geometry and module specifications produce an editable layout and a traceable plan check. The roof step is optional for every project type.
+				824 button (disabled) Add roof face
+				825 button (disabled) Add module specification
+				826 container Design view
+					827 checkbox Plan, Value: 0
+					828 checkbox 3D, Value: 1
+				829 container
+					830 text Active roof face
+					831 pop up button (disabled, collapsed, settable) Active roof face, Value: Synthetic commercial flat roof, Secondary Actions: Expand
+						832 menu
+							833 (selected) Synthetic commercial flat roof
+							834 Synthetic pitched annex
+					835 text NORTH UNREFERENCED
+					931 text The 3D workspace could not be loaded. Plan view and numeric properties remain available.
+					878 button Retry loading 3D
+					845 definition list
+						846 container Included modules
+							847 text Included modules
+						848 text 12
+						849 container Declared DC nameplate power
+							850 text Declared DC nameplate power
+						851 container
+							852 text 6 kWp
+						853 container Roof faces
+							854 text Roof faces
+						855 text 2
+				856 container Design objects and properties
+					879 container
+						880 heading Array properties, Value: 3
+							881 text Array properties
+						882 text Lengths are in metres. Decimal point; no thousands separators. Synthetic commercial flat roof Array name
+						883 text field (settable) Array name, Value: Synthetic tilted commercial array
+						884 text Module specification
+						885 pop up button (collapsed, settable) Module specification, Value: Synthetic module · 500 W, Secondary Actions: Expand
+							886 menu
+								887 Select a module specification
+								888 (selected) Synthetic module · 500 W
+						889 text Layout source
+						890 pop up button (collapsed, settable) Layout source, Value: Synthetic analytic dimensions for editor acceptance; no surveyed building., Secondary Actions: Expand
+							891 menu
+								892 (selected) Synthetic analytic dimensions for editor acceptance; no surveyed building.
+								893 Synthetic 8 by 6 metre sloping face, 30 degree pitch and 90 degree project bearing; no surveyed site.
+						894 text Anchor U
+						895 text m
+						896 text field (settable) Anchor U m, Value: 0.2368786363600952
+						897 text Anchor V
+						898 text m
+						899 text field (settable) Anchor V m, Value: 2.0243478132330885
+						900 text Rows
+						901 text field (settable) Rows Positive whole number., Value: 2.5
+						902 text Positive whole number.
+						903 text Columns
+						904 text field (settable) Columns Positive whole number., Value: 4
+						905 text Positive whole number.
+						906 text Rotation within roof plane
+						907 text °
+						908 text field (settable) Rotation within roof plane ° Counter-clockwise from the roof U axis toward V., Value: 0
+						909 text Counter-clockwise from the roof U axis toward V.
+						910 text Additional module tilt
+						911 text °
+						912 text field (settable) Additional module tilt ° 0 to 90, relative to this roof face. Each row starts at its own lower edge., Value: 15
+						913 text 0 to 90, relative to this roof face. Each row starts at its own lower edge.
+						914 text Gap between columns
+						915 text m
+						916 text field (settable) Gap between columns m 0 or greater., Value: 0.02
+						917 text 0 or greater.
+						918 text Projected gap between rows
+						919 text m
+						920 text field (settable) Value: 0.8, Projected gap between rows m Gap on the roof plane, 0 or greater. Shading and maintenance requirements are assessed separately.
+						921 text Gap on the roof plane, 0 or greater. Shading and maintenance requirements are assessed separately.
+						922 text Lower-edge height above roof
+						923 text m
+						924 text field (settable) Lower-edge height above roof m 0 or greater, measured along the roof normal., Value: 0.16
+						925 text 0 or greater, measured along the roof normal.
+						926 text Mounting assumptions and reference
+						927 text entry area (settable) Mounting assumptions and reference, Value: Synthetic explicit mounting values; no structural, fire or shading requirement claimed.
+						928 text The anchor is the lower-left corner of the first row before tilt and thickness are projected. Resizing preserves excluded module slots; slots outside the new size must be restored first.
+						929 button Apply properties
+						930 button Cancel properties
+				873 container Layout check
+					874 heading Layout check, Value: 3, ID: lp-layout-review-heading
+						875 text Layout check
+					876 button (disabled) Check layout
+					877 text The check compares full module projections, roof boundaries and openings, obstacles, keep-out areas and declared clearances in each roof plane. Structural, fire-safety, electrical and shading assessments are separate.
+		12 container tv-footer-v2
+			13 image Linker
+			14 container
+				15 text Language
+				16 container Language
+					17 link Description: English, Value: 127.0.0.1:9347/planning-workspace-review/?project=8c71ef3068ee465d86f093cece8406fa
+					18 link Description: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=8c71ef3068ee465d86f093cece8406fa
+			19 text LINKING
+			20 link Description: products, Value: 127.0.0.1:9347/products/
+			21 text ,
+			22 link Description: technology, Value: 127.0.0.1:9347/about/capability/
+			23 text and
+			24 link Description: service, Value: 127.0.0.1:9347/services-support/
+			25 text to create 
+			26 text lasting value
+			27 text  for energy partners in Europe.
+			28 tab group Footer navigation
+				29 tab (selected, settable, boolean) Solutions, Value: 1, ID: footer-tab-solutions
+				30 tab (selectable, settable, boolean) Services, Value: 0, ID: footer-tab-services
+				31 tab (selectable, settable, boolean) Plan with Linker, Value: 0, ID: footer-tab-planning
+				32 tab (selectable, settable, boolean) Account, Value: 0, ID: footer-tab-account
+				33 tab (selectable, settable, boolean) Contact Linker, Value: 0, ID: footer-tab-contact
+			34 container Description: Solutions, ID: footer-panel-solutions
+				35 heading Solutions, Value: 2
+					36 text Solutions
+				37 content list
+					38 link Description: Residential Storage, Value: 127.0.0.1:9347/solution/residential-storage/
+					39 link Description: Commercial Storage, Value: 127.0.0.1:9347/solution/commercial-storage/
+					40 link Description: Utility-Scale Storage, Value: 127.0.0.1:9347/solution/utility-storage/
+			41 text © 2026 Linker. All rights reserved.
+			42 container Legal
+				43 link Description: Imprint, Value: 127.0.0.1:9347/imprint/
+				44 link Description: Privacy Policy, Value: 127.0.0.1:9347/privacy-policy/
+				45 button Cookie settings
+				46 link Description: Terms of Sale, Value: 127.0.0.1:9347/terms-of-sale/
+				47 link Description: Refund & Returns, Value: 127.0.0.1:9347/refund-returns/
+			48 container
+				49 text Product fit · Inverter compatibility · Project support
+
+The focused UI element is 828 checkbox 3D, Value: 1

@@ -1,0 +1,120 @@
+[
+  {
+    "case": "normal_finish",
+    "attempts": 1,
+    "commits": 1,
+    "origin": [
+      3,
+      2
+    ],
+    "groupBeforeMatches": true
+  },
+  {
+    "case": "module_changed",
+    "oldAttempts": 0,
+    "commits": 1,
+    "origin": [
+      3,
+      2
+    ]
+  },
+  {
+    "case": "other_array_changed",
+    "oldAttempts": 0,
+    "commits": 1,
+    "origin": [
+      3,
+      2
+    ]
+  },
+  {
+    "case": "north_changed",
+    "oldAttempts": 0,
+    "commits": 1,
+    "origin": [
+      3,
+      2
+    ]
+  },
+  {
+    "case": "roof_parent_before_child",
+    "attempts": 1,
+    "commits": 0,
+    "origin": [
+      1,
+      2
+    ]
+  },
+  {
+    "case": "reference_parent_before_child",
+    "attempts": 1,
+    "commits": 0,
+    "origin": [
+      1,
+      2
+    ]
+  },
+  {
+    "case": "module_parent_before_child",
+    "attempts": 1,
+    "commits": 0,
+    "origin": [
+      1,
+      2
+    ]
+  },
+  {
+    "case": "other_array_parent_before_child",
+    "attempts": 1,
+    "commits": 0,
+    "origin": [
+      1,
+      2
+    ]
+  },
+  {
+    "case": "north_parent_before_child",
+    "attempts": 1,
+    "commits": 0,
+    "origin": [
+      1,
+      2
+    ]
+  },
+  {
+    "case": "deselect",
+    "attempts": 0,
+    "commits": 0,
+    "dragging": false,
+    "group": [
+      21,
+      0,
+      -2
+    ],
+    "disposed": 1
+  },
+  {
+    "case": "disable",
+    "attempts": 0,
+    "commits": 0,
+    "dragging": false,
+    "group": [
+      21,
+      0,
+      -2
+    ],
+    "disposed": 1
+  },
+  {
+    "case": "unmount",
+    "attempts": 0,
+    "commits": 0,
+    "dragging": false,
+    "group": [
+      0,
+      0,
+      0
+    ],
+    "disposed": 1
+  }
+]

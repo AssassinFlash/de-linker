@@ -1,0 +1,870 @@
+{
+  "repo": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548",
+  "target": "a0d12a9f68b17db3ebade24bace5eb8a890c6e3f",
+  "files": [
+    {
+      "path": "apps/planner/package-lock.json",
+      "bytes": 72168
+    },
+    {
+      "path": "apps/planner/package.json",
+      "bytes": 1185
+    },
+    {
+      "path": "apps/planner/src/components/BriefForm.tsx",
+      "bytes": 10396
+    },
+    {
+      "path": "apps/planner/src/components/Icon.tsx",
+      "bytes": 823
+    },
+    {
+      "path": "apps/planner/src/components/NewProject.tsx",
+      "bytes": 6804
+    },
+    {
+      "path": "apps/planner/src/components/Notice.tsx",
+      "bytes": 290
+    },
+    {
+      "path": "apps/planner/src/components/NumberField.tsx",
+      "bytes": 2528
+    },
+    {
+      "path": "apps/planner/src/components/OwnedProfile.tsx",
+      "bytes": 4536
+    },
+    {
+      "path": "apps/planner/src/components/ProfileError.tsx",
+      "bytes": 1990
+    },
+    {
+      "path": "apps/planner/src/components/ProfileImportSettings.tsx",
+      "bytes": 3014
+    },
+    {
+      "path": "apps/planner/src/components/ProfileIntake.tsx",
+      "bytes": 24610
+    },
+    {
+      "path": "apps/planner/src/components/ProfileLabels.ts",
+      "bytes": 4434
+    },
+    {
+      "path": "apps/planner/src/components/ProfileMapping.tsx",
+      "bytes": 8910
+    },
+    {
+      "path": "apps/planner/src/components/ProfileReview.tsx",
+      "bytes": 6197
+    },
+    {
+      "path": "apps/planner/src/components/ProjectEditor.tsx",
+      "bytes": 15083
+    },
+    {
+      "path": "apps/planner/src/components/RevisionComparison.tsx",
+      "bytes": 4550
+    },
+    {
+      "path": "apps/planner/src/components/SessionBoundary.tsx",
+      "bytes": 3481
+    },
+    {
+      "path": "apps/planner/src/components/Workspace.tsx",
+      "bytes": 10788
+    },
+    {
+      "path": "apps/planner/src/components/design/ArrayForm.tsx",
+      "bytes": 5389
+    },
+    {
+      "path": "apps/planner/src/components/design/CoordinatesForm.tsx",
+      "bytes": 3821
+    },
+    {
+      "path": "apps/planner/src/components/design/DesignEditor.tsx",
+      "bytes": 20667
+    },
+    {
+      "path": "apps/planner/src/components/design/GeometryForm.tsx",
+      "bytes": 5842
+    },
+    {
+      "path": "apps/planner/src/components/design/LayoutReviewPanel.tsx",
+      "bytes": 8940
+    },
+    {
+      "path": "apps/planner/src/components/design/LayoutRulesForm.tsx",
+      "bytes": 2393
+    },
+    {
+      "path": "apps/planner/src/components/design/LazySceneViewport.tsx",
+      "bytes": 1604
+    },
+    {
+      "path": "apps/planner/src/components/design/ModuleForm.tsx",
+      "bytes": 3694
+    },
+    {
+      "path": "apps/planner/src/components/design/PlanViewport.tsx",
+      "bytes": 11122
+    },
+    {
+      "path": "apps/planner/src/components/design/RoofForm.tsx",
+      "bytes": 6147
+    },
+    {
+      "path": "apps/planner/src/components/design/SceneControls.tsx",
+      "bytes": 4184
+    },
+    {
+      "path": "apps/planner/src/components/design/SceneViewport.tsx",
+      "bytes": 17077
+    },
+    {
+      "path": "apps/planner/src/components/design/ShapeForm.tsx",
+      "bytes": 4878
+    },
+    {
+      "path": "apps/planner/src/components/design/SourceForm.tsx",
+      "bytes": 3178
+    },
+    {
+      "path": "apps/planner/src/components/revealActionResult.ts",
+      "bytes": 410
+    },
+    {
+      "path": "apps/planner/src/contracts/brief.schema.json",
+      "bytes": 3840
+    },
+    {
+      "path": "apps/planner/src/contracts/geometry-import-command.schema.json",
+      "bytes": 4088
+    },
+    {
+      "path": "apps/planner/src/contracts/geometry-import-options.schema.json",
+      "bytes": 3338
+    },
+    {
+      "path": "apps/planner/src/contracts/geometry-import-policy.json",
+      "bytes": 94
+    },
+    {
+      "path": "apps/planner/src/contracts/geometry-import-selections.schema.json",
+      "bytes": 618
+    },
+    {
+      "path": "apps/planner/src/contracts/geometry-numerics.json",
+      "bytes": 35
+    },
+    {
+      "path": "apps/planner/src/contracts/geometry-policy.json",
+      "bytes": 73
+    },
+    {
+      "path": "apps/planner/src/contracts/geometry.schema.json",
+      "bytes": 14696
+    },
+    {
+      "path": "apps/planner/src/contracts/profile-import.schema.json",
+      "bytes": 3511
+    },
+    {
+      "path": "apps/planner/src/contracts/profile-selections.schema.json",
+      "bytes": 711
+    },
+    {
+      "path": "apps/planner/src/contracts/wgs84-ellipsoid.json",
+      "bytes": 113
+    },
+    {
+      "path": "apps/planner/src/data/DraftStore.ts",
+      "bytes": 18906
+    },
+    {
+      "path": "apps/planner/src/data/PlannerClient.ts",
+      "bytes": 6929
+    },
+    {
+      "path": "apps/planner/src/data/boundedBody.ts",
+      "bytes": 1317
+    },
+    {
+      "path": "apps/planner/src/data/client.test.ts",
+      "bytes": 8340
+    },
+    {
+      "path": "apps/planner/src/data/config.ts",
+      "bytes": 1852
+    },
+    {
+      "path": "apps/planner/src/data/geometryReview.ts",
+      "bytes": 2969
+    },
+    {
+      "path": "apps/planner/src/data/inspectJson.ts",
+      "bytes": 2517
+    },
+    {
+      "path": "apps/planner/src/data/profileIssue.ts",
+      "bytes": 1278
+    },
+    {
+      "path": "apps/planner/src/data/projectIndex.ts",
+      "bytes": 1611
+    },
+    {
+      "path": "apps/planner/src/data/protocol.ts",
+      "bytes": 1847
+    },
+    {
+      "path": "apps/planner/src/data/readProtocol.ts",
+      "bytes": 3081
+    },
+    {
+      "path": "apps/planner/src/data/recovery.test.ts",
+      "bytes": 2386
+    },
+    {
+      "path": "apps/planner/src/data/recoveryIntents.ts",
+      "bytes": 1886
+    },
+    {
+      "path": "apps/planner/src/data/recoveryScopes.test.ts",
+      "bytes": 4766
+    },
+    {
+      "path": "apps/planner/src/data/recoveryScopes.ts",
+      "bytes": 1513
+    },
+    {
+      "path": "apps/planner/src/data/sceneModule.ts",
+      "bytes": 1351
+    },
+    {
+      "path": "apps/planner/src/data/siteIntegration.test.ts",
+      "bytes": 839
+    },
+    {
+      "path": "apps/planner/src/data/useProjectBar.ts",
+      "bytes": 712
+    },
+    {
+      "path": "apps/planner/src/data/useProjectDraft.ts",
+      "bytes": 6757
+    },
+    {
+      "path": "apps/planner/src/data/useSiteIntegration.ts",
+      "bytes": 1731
+    },
+    {
+      "path": "apps/planner/src/domain/brief.ts",
+      "bytes": 1512
+    },
+    {
+      "path": "apps/planner/src/domain/coordinates.ts",
+      "bytes": 1786
+    },
+    {
+      "path": "apps/planner/src/domain/decimal.test.ts",
+      "bytes": 756
+    },
+    {
+      "path": "apps/planner/src/domain/decimal.ts",
+      "bytes": 1131
+    },
+    {
+      "path": "apps/planner/src/domain/draft.test.ts",
+      "bytes": 3455
+    },
+    {
+      "path": "apps/planner/src/domain/draft.ts",
+      "bytes": 4375
+    },
+    {
+      "path": "apps/planner/src/domain/geographic.test.ts",
+      "bytes": 2676
+    },
+    {
+      "path": "apps/planner/src/domain/geographic.ts",
+      "bytes": 5106
+    },
+    {
+      "path": "apps/planner/src/domain/geometry.test.ts",
+      "bytes": 8529
+    },
+    {
+      "path": "apps/planner/src/domain/geometry.ts",
+      "bytes": 3581
+    },
+    {
+      "path": "apps/planner/src/domain/geometryCommands.test.ts",
+      "bytes": 5402
+    },
+    {
+      "path": "apps/planner/src/domain/geometryCommands.ts",
+      "bytes": 7791
+    },
+    {
+      "path": "apps/planner/src/domain/geometryEditing.ts",
+      "bytes": 2471
+    },
+    {
+      "path": "apps/planner/src/domain/geometryImports.test.ts",
+      "bytes": 4167
+    },
+    {
+      "path": "apps/planner/src/domain/geometryImports.ts",
+      "bytes": 8462
+    },
+    {
+      "path": "apps/planner/src/domain/geometryNumerics.ts",
+      "bytes": 1404
+    },
+    {
+      "path": "apps/planner/src/domain/geometrySchema.ts",
+      "bytes": 185
+    },
+    {
+      "path": "apps/planner/src/domain/history.test.ts",
+      "bytes": 1421
+    },
+    {
+      "path": "apps/planner/src/domain/history.ts",
+      "bytes": 1249
+    },
+    {
+      "path": "apps/planner/src/domain/panelPoses.ts",
+      "bytes": 5006
+    },
+    {
+      "path": "apps/planner/src/domain/profiles.ts",
+      "bytes": 9012
+    },
+    {
+      "path": "apps/planner/src/domain/renderGeometry.test.ts",
+      "bytes": 2373
+    },
+    {
+      "path": "apps/planner/src/domain/renderGeometry.ts",
+      "bytes": 4542
+    },
+    {
+      "path": "apps/planner/src/domain/renderLifetime.test.ts",
+      "bytes": 1193
+    },
+    {
+      "path": "apps/planner/src/domain/renderLifetime.ts",
+      "bytes": 1381
+    },
+    {
+      "path": "apps/planner/src/domain/validateGeometry.ts",
+      "bytes": 7817
+    },
+    {
+      "path": "apps/planner/src/i18n.ts",
+      "bytes": 688
+    },
+    {
+      "path": "apps/planner/src/main.tsx",
+      "bytes": 2284
+    },
+    {
+      "path": "apps/planner/tsconfig.json",
+      "bytes": 632
+    },
+    {
+      "path": "apps/planner/vite.config.ts",
+      "bytes": 894
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/GEOGRAPHIC-INTAKE-REVIEW.md",
+      "bytes": 3998
+    },
+    {
+      "path": "docs/research/2026-10-23-map-workbench-integration/IMPLEMENTATION.md",
+      "bytes": 40157
+    },
+    {
+      "path": "docs/specs/548-geographic-intake.md",
+      "bytes": 6434
+    },
+    {
+      "path": "fixtures/planning/geographic-proj-reference.json",
+      "bytes": 13511
+    },
+    {
+      "path": "fixtures/planning/geometry-flat.json",
+      "bytes": 2073
+    },
+    {
+      "path": "fixtures/planning/geometry-import-asset.json",
+      "bytes": 6212
+    },
+    {
+      "path": "fixtures/planning/geometry-import-options.json",
+      "bytes": 918
+    },
+    {
+      "path": "fixtures/planning/geometry-pose-reference.json",
+      "bytes": 22278
+    },
+    {
+      "path": "fixtures/planning/source-roof-wgs84.geojson",
+      "bytes": 405
+    },
+    {
+      "path": "services/engine/pyproject.toml",
+      "bytes": 1520
+    },
+    {
+      "path": "services/engine/src/linker_engine/__init__.py",
+      "bytes": 36
+    },
+    {
+      "path": "services/engine/src/linker_engine/app.py",
+      "bytes": 9057
+    },
+    {
+      "path": "services/engine/src/linker_engine/application.py",
+      "bytes": 247
+    },
+    {
+      "path": "services/engine/src/linker_engine/commercial.py",
+      "bytes": 15926
+    },
+    {
+      "path": "services/engine/src/linker_engine/compatibility.py",
+      "bytes": 5101
+    },
+    {
+      "path": "services/engine/src/linker_engine/eligibility.py",
+      "bytes": 3334
+    },
+    {
+      "path": "services/engine/src/linker_engine/engine.py",
+      "bytes": 2099
+    },
+    {
+      "path": "services/engine/src/linker_engine/explain.py",
+      "bytes": 2041
+    },
+    {
+      "path": "services/engine/src/linker_engine/gate.py",
+      "bytes": 6291
+    },
+    {
+      "path": "services/engine/src/linker_engine/geo.py",
+      "bytes": 1370
+    },
+    {
+      "path": "services/engine/src/linker_engine/htw.py",
+      "bytes": 5802
+    },
+    {
+      "path": "services/engine/src/linker_engine/imagery.py",
+      "bytes": 1090
+    },
+    {
+      "path": "services/engine/src/linker_engine/models.py",
+      "bytes": 12075
+    },
+    {
+      "path": "services/engine/src/linker_engine/pdf.py",
+      "bytes": 8880
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/__init__.py",
+      "bytes": 95
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/access.py",
+      "bytes": 1244
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/archive.py",
+      "bytes": 9322
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/assets.py",
+      "bytes": 6768
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/battery_model.py",
+      "bytes": 2559
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/brief.py",
+      "bytes": 2823
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/canonical.py",
+      "bytes": 1965
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/commands.py",
+      "bytes": 2834
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/csv_inspection.py",
+      "bytes": 2119
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/csv_issue.py",
+      "bytes": 2420
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/csv_mapping.py",
+      "bytes": 3957
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/csv_reader.py",
+      "bytes": 769
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/dependencies.py",
+      "bytes": 677
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/dispatch.py",
+      "bytes": 7109
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/dispatch_checks.py",
+      "bytes": 21473
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/dispatch_delivery_checks.py",
+      "bytes": 6998
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/dispatch_frame.py",
+      "bytes": 2252
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/dispatch_priorities.py",
+      "bytes": 3038
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/energy_inputs.py",
+      "bytes": 5693
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/energy_kernel.py",
+      "bytes": 7831
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/energy_metrics.py",
+      "bytes": 5806
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/energy_origins.py",
+      "bytes": 2631
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/energy_preparation.py",
+      "bytes": 3580
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/energy_service.py",
+      "bytes": 1090
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/errors.py",
+      "bytes": 1043
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/flow_document.py",
+      "bytes": 691
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/frozen_profiles.py",
+      "bytes": 2233
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/frozen_run.py",
+      "bytes": 3444
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/geographic.py",
+      "bytes": 5519
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/geometry.py",
+      "bytes": 12823
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/geometry_documents.py",
+      "bytes": 7506
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/geometry_geojson.py",
+      "bytes": 4693
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/geometry_import.py",
+      "bytes": 7064
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/geometry_import_documents.py",
+      "bytes": 1655
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/geometry_import_selections.py",
+      "bytes": 2153
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/geometry_numerics.py",
+      "bytes": 2344
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/geometry_review.py",
+      "bytes": 13610
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/guest_claims.py",
+      "bytes": 3049
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/http_app.py",
+      "bytes": 13774
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/http_asset_intake.py",
+      "bytes": 3584
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/http_documents.py",
+      "bytes": 3523
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/http_host.py",
+      "bytes": 2647
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/http_index.py",
+      "bytes": 3693
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/http_replay.py",
+      "bytes": 6489
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/http_views.py",
+      "bytes": 1182
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/interval.py",
+      "bytes": 1960
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/inventory_witness.py",
+      "bytes": 4744
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/jobs.py",
+      "bytes": 8309
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/numerical_tolerance.py",
+      "bytes": 807
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/operating_limits.py",
+      "bytes": 1747
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/power_series.py",
+      "bytes": 4108
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/profile_assets.py",
+      "bytes": 885
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/profile_import.py",
+      "bytes": 3633
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/profile_preview.py",
+      "bytes": 4848
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/profile_selections.py",
+      "bytes": 1766
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/profiles.py",
+      "bytes": 7498
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/pvgis_import.py",
+      "bytes": 3374
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/pvgis_metadata.py",
+      "bytes": 3372
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/pvgis_profile.py",
+      "bytes": 2982
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/pvgis_request.py",
+      "bytes": 4710
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/pvgis_response.py",
+      "bytes": 6996
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/records.py",
+      "bytes": 2970
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/regrid.py",
+      "bytes": 3168
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/runtime_config.py",
+      "bytes": 2363
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/runtime_snapshot.py",
+      "bytes": 2045
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/sample_reconstruction.py",
+      "bytes": 1800
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/scenario_frames.py",
+      "bytes": 1359
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/schema.py",
+      "bytes": 4264
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/series_source.py",
+      "bytes": 1663
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/series_transform.py",
+      "bytes": 1645
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/service_boundary.py",
+      "bytes": 9283
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/storage.py",
+      "bytes": 6611
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/timezone_rules.py",
+      "bytes": 2932
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/wire_numbers.py",
+      "bytes": 907
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/worker.py",
+      "bytes": 4719
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/workspace.py",
+      "bytes": 13942
+    },
+    {
+      "path": "services/engine/src/linker_engine/products.py",
+      "bytes": 9005
+    },
+    {
+      "path": "services/engine/src/linker_engine/pvgis.py",
+      "bytes": 5273
+    },
+    {
+      "path": "services/engine/src/linker_engine/report.py",
+      "bytes": 13715
+    },
+    {
+      "path": "services/engine/src/linker_engine/residential.py",
+      "bytes": 34164
+    },
+    {
+      "path": "services/engine/src/linker_engine/roof/__init__.py",
+      "bytes": 63
+    },
+    {
+      "path": "services/engine/src/linker_engine/roof/citygml.py",
+      "bytes": 4228
+    },
+    {
+      "path": "services/engine/src/linker_engine/roof/lod2.py",
+      "bytes": 9669
+    },
+    {
+      "path": "services/engine/src/linker_engine/roof/packing.py",
+      "bytes": 3483
+    },
+    {
+      "path": "services/engine/src/linker_engine/roof/service.py",
+      "bytes": 6736
+    },
+    {
+      "path": "services/engine/src/linker_engine/rules.py",
+      "bytes": 11363
+    },
+    {
+      "path": "services/engine/src/linker_engine/slots.py",
+      "bytes": 2307
+    },
+    {
+      "path": "services/engine/src/linker_engine/stacking.py",
+      "bytes": 3092
+    },
+    {
+      "path": "services/engine/src/linker_engine/strings.py",
+      "bytes": 7079
+    },
+    {
+      "path": "services/engine/src/linker_engine/texts.py",
+      "bytes": 31541
+    },
+    {
+      "path": "services/engine/src/linker_engine/units.py",
+      "bytes": 3516
+    },
+    {
+      "path": "services/engine/src/linker_engine/version.py",
+      "bytes": 759
+    },
+    {
+      "path": "services/engine/tests/conftest.py",
+      "bytes": 4900
+    },
+    {
+      "path": "services/engine/tests/planning/__init__.py",
+      "bytes": 41
+    },
+    {
+      "path": "services/engine/tests/planning/conftest.py",
+      "bytes": 1293
+    },
+    {
+      "path": "services/engine/tests/planning/test_geographic.py",
+      "bytes": 3709
+    },
+    {
+      "path": "services/engine/tests/planning/test_geometry_import.py",
+      "bytes": 8277
+    },
+    {
+      "path": "services/engine/tests/planning/test_private_http.py",
+      "bytes": 56332
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "fixture": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/mu-plugins/linker-planner-cua-ack-548.php",
+  "source_sha256": "b24c5e71cf995d476f3fbcfb24c7b808389bc832a95e037e3ac78573f2deda2a",
+  "purpose": "Synthetic local after-commit unknown-ack CUA acceptance; remove fixture and only this option after native completion.",
+  "observed_fault_records": 2,
+  "fixture_removed": true,
+  "option_removed": true,
+  "cleanup_record_removed": true,
+  "captured_at_utc": "2026-10-23T03:33:14Z"
+}

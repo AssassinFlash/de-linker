@@ -1,0 +1,13 @@
+Repository-root command; existing engine environment; no dependency sync:
+PYTHONDONTWRITEBYTECODE=1 services/engine/.venv/bin/python -B docs/acceptance/2026-10-24/548/managed-energy-worker/review-spec-b87aa3c9/probe_route_closure.py
+
+Exit: 0
+{"pin": "b87aa3c9b39c0955f381c6847e9c5137f0c2b8f3", "batch_size": 1, "earlier_foreign_rows": 5, "own_unknown_route_repaired_on_poll": 6, "own_attempt": 1, "foreign_attempts_unchanged": true, "manifest_unchanged": true, "wraparound_repairs_present_route": true}
+{"present_route_corrupt_request": "failed", "code": "version_unavailable"}
+
+The harness reuses only the preserved af4aa66e probe's memory/import adapters.
+Its original failure-case body is not executed. Every planning module imports
+immutable git bytes at b87aa3c9b39c0955f381c6847e9c5137f0c2b8f3 in memory.
+Only real in-memory SQLite and hash-checked memory blobs are mutated. No service
+is started/signalled, and no on-disk database, runtime config, source, dependency
+tree, Git index or original review evidence is modified.

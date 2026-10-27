@@ -1,0 +1,46 @@
+[
+  {
+    "cwd": ".",
+    "command": [
+      "services/engine/.venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "services/engine/tests/planning/test_geographic.py",
+      "services/engine/tests/planning/test_geometry_import.py",
+      "services/engine/tests/planning/test_private_http.py"
+    ],
+    "exit_code": 0,
+    "passed": 115,
+    "log": "target-backend.log",
+    "capture": "Exact completed tool output retained after initial invocation"
+  },
+  {
+    "cwd": "apps/planner",
+    "command": [
+      "node",
+      "--test",
+      "src/domain/geographic.test.ts",
+      "src/domain/geometryImports.test.ts"
+    ],
+    "exit_code": 0,
+    "passed": 8,
+    "log": "target-domain.log",
+    "capture": "Exact completed tool output retained after initial invocation"
+  },
+  {
+    "cwd": "apps/planner",
+    "command": [
+      "node",
+      "--no-warnings=ExperimentalWarning",
+      "--loader",
+      "./tests/tsx-loader.mjs",
+      "--test",
+      "tests/design-editor.test.mjs"
+    ],
+    "exit_code": 0,
+    "passed": 6,
+    "log": "target-editor-dom.log",
+    "capture": "Exact completed tool output retained after initial invocation"
+  }
+]

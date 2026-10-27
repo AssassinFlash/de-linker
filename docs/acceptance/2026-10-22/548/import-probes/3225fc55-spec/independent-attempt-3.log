@@ -1,0 +1,22 @@
+✔ independent: all raw controls and original bytes survive Back, unidentified 422, and later typed correction (159.581833ms)
+✔ independent: actual MultiPolygon choice is explicit and sends its original rings and nonzero part indices (50.335583ms)
+✔ independent: existing origin stays fixed and declared negative Up follows the selected vertex geodetic vertical (41.196875ms)
+✔ independent: nonempty unaligned geometry cannot supply implicit origin or dispatch (17.785625ms)
+✔ independent: malformed 3D, CRS and unclosed originals never reach mutation (31.12325ms)
+✔ independent: real IDB quota across other project intents refuses dispatch without evicting originals (46.516083ms)
+✔ independent: incomplete local commit and later native withdrawal cannot dispatch a roof request (11.492334ms)
+✔ independent: dismiss aborts a dispatched request, preserves its durable intent, and fences an ignored late response (13.443625ms)
+✔ independent: current native admission, without dismissal, fences a late successful response (9.92375ms)
+✔ independent: only a native-granted former namespace can be explicitly retried with the same original body/key (21.196916ms)
+✔ independent: unidentified status/code combinations retain retry bytes; only identified pre-mutation pairs release them (23.350917ms)
+✔ independent: changed server options or content hash never produce an attachable prepared roof (11.380125ms)
+✔ independent: CSV identified refusal correction also uses the real client and real IndexedDB original (22.280375ms)
+✔ independent: commercial project preview adds exactly one shared history step; unknown revision retry preserves body; confirmed save clears only that original (176.138084ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1505.469375

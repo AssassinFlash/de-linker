@@ -1,0 +1,19 @@
+{
+  "fixed_sha": "eff8341d5a0eaf24999f42854da6339032c65c9c",
+  "base_sha": "367e454c23f542632258e1440387c4c9e7825e17",
+  "verdict": "SCOPED_PASS",
+  "documented_open_findings": [],
+  "heuristic_actionable_findings": [],
+  "baseline_counts": [
+    62,
+    87
+  ],
+  "emitted_graph_checks": 1,
+  "unchanged_independent_cases": 9,
+  "new_independent_cases": 6,
+  "prior_fail_preserved": true,
+  "copy_pairs": 76,
+  "new_unreviewed_customer_wording": 0,
+  "new_planner_reference_to_existing_site_term": "Choose file / Datei ausw\u00e4hlen",
+  "native_camera_or_full_goal_acceptance": false
+}

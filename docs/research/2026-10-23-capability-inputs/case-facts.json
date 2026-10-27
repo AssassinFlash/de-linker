@@ -1,0 +1,929 @@
+{
+  "schema": 1,
+  "purpose": "research evidence for conditional capability compiler, not equipment release",
+  "observed_at_utc": "2026-10-22T17:47:16.572413+00:00",
+  "records": [
+    {
+      "id": "R01",
+      "exact_models": [
+        "BU2-5.0-HV1"
+      ],
+      "proposed_typed_field": "module_energy",
+      "source_value_with_unit_suffixes": {
+        "nominal_kwh": 5,
+        "usable_kwh": 4.5
+      },
+      "measurement_boundary": "one BU2 module",
+      "fact_status": "verified_document_statement_with_explicit_conditions",
+      "current_projection": "feed2090 values present",
+      "conditions": "BEU basis; do not apply90%DOD a second time; not AC delivered-energy guarantee",
+      "sources": [
+        {
+          "source_id": "S15",
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "sha256": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a",
+          "physical_pdf_pages": [
+            2
+          ]
+        }
+      ],
+      "equipment_release": "not_established_by_this_fact",
+      "unit": "kWh"
+    },
+    {
+      "id": "R02",
+      "exact_models": [
+        "B2-5.0-HV1",
+        "B2-10.0-HV1",
+        "B2-15.0-HV1"
+      ],
+      "proposed_typed_field": "usable_energy_by_region_document",
+      "source_value_with_unit_suffixes": {
+        "BEU_kwh": [
+          4.5,
+          9,
+          13.5
+        ],
+        "AU_kwh": [
+          4.8,
+          9.6,
+          14.4
+        ]
+      },
+      "measurement_boundary": "assembled set",
+      "fact_status": "conflicting_document_variant_to_resolve",
+      "current_projection": "B2 nominal/count citeAU, usable citeBEU",
+      "conditions": "Resolve European part/document applicability; keep conflicting variants separate",
+      "sources": [
+        {
+          "source_id": "S15",
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "sha256": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a",
+          "physical_pdf_pages": [
+            2
+          ]
+        },
+        {
+          "source_id": "S18",
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5.0-25.0-HV1HV5_datasheet_en_AU.pdf",
+          "sha256": "99c1d10fae6486e314e4aa6a3767b664aa5637ce88eb2bfddbf8e11cbb85367b",
+          "physical_pdf_pages": [
+            2
+          ]
+        }
+      ],
+      "equipment_release": "not_established_by_this_fact",
+      "unit": "kWh"
+    },
+    {
+      "id": "R03",
+      "exact_models": [
+        "BU2-5.0-HV1"
+      ],
+      "proposed_typed_field": "series_module_count",
+      "source_value_with_unit_suffixes": {
+        "min": 1,
+        "max": 5
+      },
+      "measurement_boundary": "one stack",
+      "fact_status": "verified_document_statement_with_explicit_conditions",
+      "current_projection": "feed2090 min/max present; H2 compatibility narrows2..5",
+      "conditions": "Basic stack range alone is not H2 release or fullSOC availability",
+      "sources": [
+        {
+          "source_id": "S15",
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "sha256": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a",
+          "physical_pdf_pages": [
+            2
+          ]
+        }
+      ],
+      "equipment_release": "not_established_by_this_fact",
+      "unit": "count"
+    },
+    {
+      "id": "R04",
+      "exact_models": [
+        "BU2-5.0-HV1",
+        "BC2-HV1"
+      ],
+      "proposed_typed_field": "stack_voltage_lookup",
+      "source_value_with_unit_suffixes": {
+        "n": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "nominal_v": [
+          102.4,
+          204.8,
+          307.2,
+          409.6,
+          512
+        ],
+        "min_v": [
+          89.6,
+          179.2,
+          268.8,
+          358.4,
+          448
+        ],
+        "max_v": [
+          115.2,
+          230.4,
+          345.6,
+          460.8,
+          576
+        ]
+      },
+      "measurement_boundary": "series DC terminals",
+      "fact_status": "verified_document_statement_with_explicit_conditions",
+      "current_projection": "BU2 module voltage doc-only; BC2 concatenated ranges present",
+      "conditions": "n-conditioned lookup; never parse only first range",
+      "sources": [
+        {
+          "source_id": "S15",
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "sha256": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a",
+          "physical_pdf_pages": [
+            2
+          ]
+        }
+      ],
+      "equipment_release": "not_established_by_this_fact",
+      "unit": "V"
+    },
+    {
+      "id": "R05",
+      "exact_models": [
+        "BU2-5.0-HV1"
+      ],
+      "proposed_typed_field": "current_limits",
+      "source_value_with_unit_suffixes": {
+        "max_charge_a": 30,
+        "max_discharge_a": 30
+      },
+      "measurement_boundary": "series stack DC",
+      "fact_status": "verified_document_statement_with_explicit_conditions",
+      "current_projection": "raw doc-only; absent feed",
+      "conditions": "Series count does not multiply current; maxima are not all-state continuous guarantee",
+      "sources": [
+        {
+          "source_id": "S15",
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "sha256": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a",
+          "physical_pdf_pages": [
+            2
+          ]
+        }
+      ],
+      "equipment_release": "not_established_by_this_fact",
+      "unit": "A"
+    },
+    {
+      "id": "R06",
+      "exact_models": [
+        "B2-5.0-HV1",
+        "B2-10.0-HV1",
+        "B2-15.0-HV1"
+      ],
+      "proposed_typed_field": "rated_power_lookup_kw",
+      "source_value_with_unit_suffixes": [
+        3.072,
+        6.144,
+        9.216
+      ],
+      "measurement_boundary": "battery DC stack",
+      "fact_status": "verified_document_statement_with_explicit_conditions",
+      "current_projection": "raw rated_power_w doc-only; absent feed",
+      "conditions": "Not battery AC load-delivery power",
+      "sources": [
+        {
+          "source_id": "S15",
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "sha256": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a",
+          "physical_pdf_pages": [
+            2
+          ]
+        }
+      ],
+      "equipment_release": "not_established_by_this_fact",
+      "unit": "kW"
+    },
+    {
+      "id": "R07",
+      "exact_models": [
+        "H2-10K-T3",
+        "BU2-5.0-HV1",
+        "BC2-HV1"
+      ],
+      "proposed_typed_field": "required_components",
+      "source_value_with_unit_suffixes": {
+        "inverter": "H2",
+        "battery_module": "BU2",
+        "controller": "BC2",
+        "bc2_per_single_stack": 1
+      },
+      "measurement_boundary": "single-stack topology",
+      "fact_status": "verified_document_statement_with_explicit_conditions",
+      "current_projection": "compatibility BC2 quantity1 per system; source17 table page8",
+      "conditions": "Multi-stack/controller/port allocations still require wiring evidence",
+      "sources": [
+        {
+          "source_id": "S15",
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "sha256": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a",
+          "physical_pdf_pages": [
+            2
+          ]
+        },
+        {
+          "source_id": "S17",
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf",
+          "sha256": "a470d6e1be68e843b42a11a2f4ba05c67b9a8d01bdb6abc1f58bce9762701ea6",
+          "physical_pdf_pages": [
+            8
+          ]
+        }
+      ],
+      "equipment_release": "not_established_by_this_fact",
+      "unit": "count"
+    },
+    {
+      "id": "R08",
+      "exact_models": [
+        "H2-10K-T3"
+      ],
+      "proposed_typed_field": "battery_voltage_window_v",
+      "source_value_with_unit_suffixes": [
+        180,
+        800
+      ],
+      "measurement_boundary": "inverter battery DC",
+      "fact_status": "verified_document_statement_with_explicit_conditions",
+      "current_projection": "feed4107 present",
+      "conditions": "PV start voltage is separate. n2 battery min179.2 below180; lostkWh cannot be inferred",
+      "sources": [
+        {
+          "source_id": "S13",
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "sha256": "0f0e75ad3f318318d1ba3f1d84a0f2c1f4864555b2deb45f4a1d0fd4cfa7acd7",
+          "physical_pdf_pages": [
+            2
+          ]
+        }
+      ],
+      "equipment_release": "not_established_by_this_fact",
+      "unit": "V"
+    },
+    {
+      "id": "R09",
+      "exact_models": [
+        "H2-10K-T3"
+      ],
+      "proposed_typed_field": "battery_ports_and_current",
+      "source_value_with_unit_suffixes": {
+        "ports": 2,
+        "datasheet_charge_discharge_a": "50/50",
+        "manual_a": "2*50"
+      },
+      "measurement_boundary": "BAT1/BAT2",
+      "fact_status": "verified_document_statement_with_explicit_conditions",
+      "current_projection": "raw currents50 each doc-only; no typed ports in feed",
+      "conditions": "Source14 page37 and43; retain granularity, not unconditional total50 or100A",
+      "sources": [
+        {
+          "source_id": "S13",
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "sha256": "0f0e75ad3f318318d1ba3f1d84a0f2c1f4864555b2deb45f4a1d0fd4cfa7acd7",
+          "physical_pdf_pages": [
+            2
+          ]
+        },
+        {
+          "source_id": "S14",
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+          "sha256": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3",
+          "physical_pdf_pages": [
+            37,
+            43
+          ]
+        }
+      ],
+      "equipment_release": "not_established_by_this_fact",
+      "unit": "A and count"
+    },
+    {
+      "id": "R10",
+      "exact_models": [
+        "H2-10K-T3"
+      ],
+      "proposed_typed_field": "grid_nominal_active_power_kw",
+      "source_value_with_unit_suffixes": 10,
+      "measurement_boundary": "AC on-grid",
+      "fact_status": "verified_document_statement_with_explicit_conditions",
+      "current_projection": "feed top and cited figure present",
+      "conditions": "Shared AC path; not another10kW beside PV or proof of battery-only delivery",
+      "sources": [
+        {
+          "source_id": "S13",
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "sha256": "0f0e75ad3f318318d1ba3f1d84a0f2c1f4864555b2deb45f4a1d0fd4cfa7acd7",
+          "physical_pdf_pages": [
+            2
+          ]
+        }
+      ],
+      "equipment_release": "not_established_by_this_fact",
+      "unit": "kW"
+    },
+    {
+      "id": "R11",
+      "exact_models": [
+        "H2-10K-T3"
+      ],
+      "proposed_typed_field": "backup_limits",
+      "source_value_with_unit_suffixes": {
+        "max_kva": 10,
+        "peak_kva": 15,
+        "peak_seconds": 3
+      },
+      "measurement_boundary": "backup AC",
+      "fact_status": "verified_document_statement_with_explicit_conditions",
+      "current_projection": "raw doc-only; absent feed",
+      "conditions": "PF/per-phase/inrush and battery constraints remain; kVA is not kW",
+      "sources": [
+        {
+          "source_id": "S13",
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "sha256": "0f0e75ad3f318318d1ba3f1d84a0f2c1f4864555b2deb45f4a1d0fd4cfa7acd7",
+          "physical_pdf_pages": [
+            2
+          ]
+        }
+      ],
+      "equipment_release": "not_established_by_this_fact",
+      "unit": "kVA and s"
+    },
+    {
+      "id": "R12",
+      "exact_models": [
+        "H2-10K-T3"
+      ],
+      "proposed_typed_field": "published_efficiency_pct",
+      "source_value_with_unit_suffixes": {
+        "maximum": 98,
+        "european": 97.6
+      },
+      "measurement_boundary": "source inverter efficiency category",
+      "fact_status": "verified_document_statement_with_explicit_conditions",
+      "current_projection": "raw doc-only; absent feed",
+      "conditions": "Does not identify separate battery AC charge/discharge efficiencies",
+      "sources": [
+        {
+          "source_id": "S13",
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "sha256": "0f0e75ad3f318318d1ba3f1d84a0f2c1f4864555b2deb45f4a1d0fd4cfa7acd7",
+          "physical_pdf_pages": [
+            2
+          ]
+        }
+      ],
+      "equipment_release": "not_established_by_this_fact",
+      "unit": "percent"
+    },
+    {
+      "id": "R13",
+      "exact_models": [
+        "BU2-5.0-HV1"
+      ],
+      "proposed_typed_field": "operation_temperature_c",
+      "source_value_with_unit_suffixes": {
+        "charge": [
+          0,
+          50
+        ],
+        "discharge": [
+          -10,
+          50
+        ]
+      },
+      "measurement_boundary": "battery",
+      "fact_status": "verified_document_statement_with_explicit_conditions",
+      "current_projection": "raw doc-only; absent feed",
+      "conditions": "Range is not a temperature/SOC power curve",
+      "sources": [
+        {
+          "source_id": "S15",
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "sha256": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a",
+          "physical_pdf_pages": [
+            2
+          ]
+        }
+      ],
+      "equipment_release": "not_established_by_this_fact",
+      "unit": "degC"
+    },
+    {
+      "id": "R14",
+      "exact_models": [
+        "H2-10K-T3"
+      ],
+      "proposed_typed_field": "operation_temperature_c",
+      "source_value_with_unit_suffixes": {
+        "range": [
+          -40,
+          60
+        ],
+        "derating_from": 45
+      },
+      "measurement_boundary": "inverter ambient",
+      "fact_status": "verified_document_statement_with_explicit_conditions",
+      "current_projection": "raw doc-only; absent feed",
+      "conditions": "No full derating function supplied",
+      "sources": [
+        {
+          "source_id": "S13",
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "sha256": "0f0e75ad3f318318d1ba3f1d84a0f2c1f4864555b2deb45f4a1d0fd4cfa7acd7",
+          "physical_pdf_pages": [
+            2
+          ]
+        }
+      ],
+      "equipment_release": "not_established_by_this_fact",
+      "unit": "degC"
+    },
+    {
+      "id": "C01",
+      "exact_models": [
+        "GW125/261-ESA-LCN-G10"
+      ],
+      "proposed_typed_field": "integrated_nameplate",
+      "source_value_with_unit_suffixes": {
+        "nominal_ac_kw": 125,
+        "rack_nominal_kwh": 261.25,
+        "rack_usable_kwh": 261.25
+      },
+      "measurement_boundary": "integrated PCS+battery",
+      "fact_status": "verified_document_statement_with_explicit_conditions",
+      "current_projection": "top scalars exist, figures={} out of15 raw",
+      "conditions": "Equal energy values are in original; do not add a separate125kW inverter or double-deductDOD",
+      "sources": [
+        {
+          "source_id": "S09",
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf",
+          "sha256": "c95aef48b1ea4fbd0ae8729c104774ce2b5ee7137809fc8fe20642be2780bbfe",
+          "physical_pdf_pages": [
+            2
+          ]
+        }
+      ],
+      "equipment_release": "not_established_by_this_fact",
+      "unit": "kW and kWh"
+    },
+    {
+      "id": "C02",
+      "exact_models": [
+        "GW125/261-ESA-LCN-G10"
+      ],
+      "proposed_typed_field": "dc_current_limits",
+      "source_value_with_unit_suffixes": {
+        "continuous_charge_discharge_a": 188,
+        "maximum_charge_discharge_a": 198.5
+      },
+      "measurement_boundary": "battery rack DC",
+      "fact_status": "verified_document_statement_with_explicit_conditions",
+      "current_projection": "raw198.5 only doc-only;188 absent",
+      "conditions": "Maximum duration unspecified; never use198.5 as continuous188",
+      "sources": [
+        {
+          "source_id": "S09",
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf",
+          "sha256": "c95aef48b1ea4fbd0ae8729c104774ce2b5ee7137809fc8fe20642be2780bbfe",
+          "physical_pdf_pages": [
+            2
+          ]
+        }
+      ],
+      "equipment_release": "not_established_by_this_fact",
+      "unit": "A"
+    },
+    {
+      "id": "C03",
+      "exact_models": [
+        "GW125/261-ESA-LCN-G10"
+      ],
+      "proposed_typed_field": "dc_voltage_v",
+      "source_value_with_unit_suffixes": {
+        "nominal": 832,
+        "operating": [
+          676,
+          936
+        ]
+      },
+      "measurement_boundary": "battery DC",
+      "fact_status": "verified_document_statement_with_explicit_conditions",
+      "current_projection": "raw doc-only; absent feed",
+      "conditions": "No completeV-SOC-temperature map",
+      "sources": [
+        {
+          "source_id": "S09",
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf",
+          "sha256": "c95aef48b1ea4fbd0ae8729c104774ce2b5ee7137809fc8fe20642be2780bbfe",
+          "physical_pdf_pages": [
+            2
+          ]
+        }
+      ],
+      "equipment_release": "not_established_by_this_fact",
+      "unit": "V"
+    },
+    {
+      "id": "C04",
+      "exact_models": [
+        "GW125/261-ESA-LCN-G10"
+      ],
+      "proposed_typed_field": "max_ac_output_by_voltage",
+      "source_value_with_unit_suffixes": [
+        {
+          "voltage_v": 400,
+          "power_kw": 137.5
+        },
+        {
+          "voltage_v": 380,
+          "power_kw": 130.6
+        }
+      ],
+      "measurement_boundary": "on/offgrid AC output",
+      "fact_status": "verified_document_statement_with_explicit_conditions",
+      "current_projection": "absent raw/feed",
+      "conditions": "Keep voltage and active/apparent distinction; not unconditional continuous guarantee",
+      "sources": [
+        {
+          "source_id": "S09",
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf",
+          "sha256": "c95aef48b1ea4fbd0ae8729c104774ce2b5ee7137809fc8fe20642be2780bbfe",
+          "physical_pdf_pages": [
+            2
+          ]
+        }
+      ],
+      "equipment_release": "not_established_by_this_fact",
+      "unit": "kW conditional on V"
+    },
+    {
+      "id": "C05",
+      "exact_models": [
+        "GW125/261-ESA-LCN-G10"
+      ],
+      "proposed_typed_field": "efficiency_maxima_pct",
+      "source_value_with_unit_suffixes": {
+        "pcs": 98.6,
+        "system": 92
+      },
+      "measurement_boundary": "different source PCS/system boundaries",
+      "fact_status": "verified_document_statement_with_explicit_conditions",
+      "current_projection": "rawPCS98.6 only; both absent feed",
+      "conditions": "System maximum not provenRTE; no justified square-root one-way split",
+      "sources": [
+        {
+          "source_id": "S09",
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf",
+          "sha256": "c95aef48b1ea4fbd0ae8729c104774ce2b5ee7137809fc8fe20642be2780bbfe",
+          "physical_pdf_pages": [
+            2
+          ]
+        }
+      ],
+      "equipment_release": "not_established_by_this_fact",
+      "unit": "percent"
+    },
+    {
+      "id": "C06",
+      "exact_models": [
+        "GW125/261-ESA-LCN-G10"
+      ],
+      "proposed_typed_field": "environment_thresholds",
+      "source_value_with_unit_suffixes": {
+        "operation_c": [
+          -25,
+          55
+        ],
+        "derating_c": 45,
+        "altitude_derating_m": 2000,
+        "max_altitude_m": 4000
+      },
+      "measurement_boundary": "ambient/altitude",
+      "fact_status": "verified_document_statement_with_explicit_conditions",
+      "current_projection": "raw operation range only; thresholds missing",
+      "conditions": "Need actual derating law",
+      "sources": [
+        {
+          "source_id": "S09",
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf",
+          "sha256": "c95aef48b1ea4fbd0ae8729c104774ce2b5ee7137809fc8fe20642be2780bbfe",
+          "physical_pdf_pages": [
+            2
+          ]
+        }
+      ],
+      "equipment_release": "not_established_by_this_fact",
+      "unit": "degC and m"
+    },
+    {
+      "id": "C07",
+      "exact_models": [
+        "GW125/261-ESA-LCN-G10"
+      ],
+      "proposed_typed_field": "dod_pct",
+      "source_value_with_unit_suffixes": {
+        "range": [
+          90,
+          100
+        ],
+        "recommended": 90
+      },
+      "measurement_boundary": "battery recommendation",
+      "fact_status": "verified_document_statement_with_explicit_conditions",
+      "current_projection": "absent raw/feed",
+      "conditions": "Recommendation is not immutable SOC reserve; keep usable capacity basis separate",
+      "sources": [
+        {
+          "source_id": "S09",
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf",
+          "sha256": "c95aef48b1ea4fbd0ae8729c104774ce2b5ee7137809fc8fe20642be2780bbfe",
+          "physical_pdf_pages": [
+            2
+          ]
+        }
+      ],
+      "equipment_release": "not_established_by_this_fact",
+      "unit": "percent"
+    },
+    {
+      "id": "C08",
+      "exact_models": [
+        "GW125/261-ESA-LCN-G10"
+      ],
+      "proposed_typed_field": "connected_parallel_limit",
+      "source_value_with_unit_suffixes": {
+        "controller": "SEC3000C",
+        "LAN_daisy_or_hybrid": 20,
+        "LAN_star": 15
+      },
+      "measurement_boundary": "mode+topology+controller",
+      "fact_status": "verified_document_statement_with_explicit_conditions",
+      "current_projection": "absent executable feed requirements",
+      "conditions": "Also page29; merged monitoring-platform cell does not mean overseas permits only star",
+      "sources": [
+        {
+          "source_id": "S11",
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_On-grid_User-Manual-EN_V1.0.pdf",
+          "sha256": "6bdd27e577fc5eafa47db8fa0a9bbc8dd6a60aa1013e182350a35f305338a7a7",
+          "physical_pdf_pages": [
+            25,
+            29
+          ]
+        }
+      ],
+      "equipment_release": "not_established_by_this_fact",
+      "unit": "count"
+    },
+    {
+      "id": "C09",
+      "exact_models": [
+        "GW125/261-ESA-LCN-G10"
+      ],
+      "proposed_typed_field": "master_slave_parallel",
+      "source_value_with_unit_suffixes": {
+        "max_units": 8,
+        "region": "China_only",
+        "pv_inverter_connection": false
+      },
+      "measurement_boundary": "specific noexternalEMS layout",
+      "fact_status": "verified_document_statement_with_explicit_conditions",
+      "current_projection": "absent feed",
+      "conditions": "Not European release and not prohibition of other European layouts",
+      "sources": [
+        {
+          "source_id": "S11",
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_On-grid_User-Manual-EN_V1.0.pdf",
+          "sha256": "6bdd27e577fc5eafa47db8fa0a9bbc8dd6a60aa1013e182350a35f305338a7a7",
+          "physical_pdf_pages": [
+            20
+          ]
+        }
+      ],
+      "equipment_release": "not_established_by_this_fact",
+      "unit": "count and condition"
+    },
+    {
+      "id": "C10",
+      "exact_models": [
+        "GW125/261-ESA-LCN-G10"
+      ],
+      "proposed_typed_field": "microgrid_parallel",
+      "source_value_with_unit_suffixes": {
+        "offgrid_ESA_max": 10,
+        "500K_STS_cabinet_max": 5,
+        "250K_STS_cabinet_max": 2
+      },
+      "measurement_boundary": "multiple simultaneous topology constraints",
+      "fact_status": "verified_document_statement_with_explicit_conditions",
+      "current_projection": "absent feed",
+      "conditions": "Also page58; oneSTS cannot simply accept10cabinets",
+      "sources": [
+        {
+          "source_id": "S12",
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Microgrid-User-Manual-EN_V1.1.pdf",
+          "sha256": "d5167d27d5e47d8d61d059862c6812963e0bb65d055dfb65aaecdbd32b87cbd1",
+          "physical_pdf_pages": [
+            24,
+            58
+          ]
+        }
+      ],
+      "equipment_release": "not_established_by_this_fact",
+      "unit": "count"
+    },
+    {
+      "id": "C11",
+      "exact_models": [
+        "GW125/261-ESA-LCN-G10"
+      ],
+      "proposed_typed_field": "remote_black_start_auxiliary",
+      "source_value_with_unit_suffixes": {
+        "ups_between": "STS_and_SEC3000C",
+        "required_for_remote_black_start_in_this_layout": true
+      },
+      "measurement_boundary": "microgrid control power",
+      "fact_status": "verified_document_statement_with_explicit_conditions",
+      "current_projection": "absent feed",
+      "conditions": "WithoutUPS remote black start unavailable in this layout; no global blanketUPS rule",
+      "sources": [
+        {
+          "source_id": "S12",
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Microgrid-User-Manual-EN_V1.1.pdf",
+          "sha256": "d5167d27d5e47d8d61d059862c6812963e0bb65d055dfb65aaecdbd32b87cbd1",
+          "physical_pdf_pages": [
+            21
+          ]
+        }
+      ],
+      "equipment_release": "not_established_by_this_fact",
+      "unit": "condition"
+    },
+    {
+      "id": "X01",
+      "exact_models": [
+        "GW80K-ET-G10"
+      ],
+      "proposed_typed_field": "battery_dc_ports",
+      "source_value_with_unit_suffixes": {
+        "ports": 2,
+        "continuous_charge_a_per_port": 100,
+        "continuous_discharge_a_per_port": 100,
+        "max_charge_kw": 88,
+        "max_discharge_kw": 88
+      },
+      "measurement_boundary": "inverter battery DC",
+      "fact_status": "verified_document_statement_with_explicit_conditions",
+      "current_projection": "raw doc-only, absent feed",
+      "conditions": "Requires actual terminal allocation, BMS limits and sharedAC cap",
+      "sources": [
+        {
+          "source_id": "S01",
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+          "sha256": "4f7178042e8faf03bd926dc33a5ff0b85ffcd4f46e12f1dcf86d6db10befee4d",
+          "physical_pdf_pages": [
+            2
+          ]
+        }
+      ],
+      "equipment_release": "not_established_by_this_fact",
+      "unit": "count, A and kW"
+    },
+    {
+      "id": "X02",
+      "exact_models": [
+        "GW61.4-BAT-AC-G10"
+      ],
+      "proposed_typed_field": "cabinet_energy_power",
+      "source_value_with_unit_suffixes": {
+        "nominal_kwh": 61.4,
+        "usable_kwh": 60,
+        "max_charge_kw": 55.2,
+        "max_discharge_kw": 67.5
+      },
+      "measurement_boundary": "cabinet DC",
+      "fact_status": "verified_document_statement_with_explicit_conditions",
+      "current_projection": "topenergy exists; rawpower55.2/67.5 doc-only; qualifier omitted",
+      "conditions": "UsableBOL100%DOD .2C25+/-2C; power/current derate withSOC and cell/ambienttemperature",
+      "sources": [
+        {
+          "source_id": "S03",
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+          "sha256": "845e51ffb2801f48971c8b53941629dde1e8bc114b9b45dbc4f08c49c5ef815c",
+          "physical_pdf_pages": [
+            2
+          ]
+        },
+        {
+          "source_id": "S04",
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Datasheet-EN_V2.1.pdf",
+          "sha256": "225c2995448789455b859687748f51d05555ecdfa621eacb073a8b0271e19319",
+          "physical_pdf_pages": [
+            2
+          ]
+        }
+      ],
+      "equipment_release": "not_established_by_this_fact",
+      "unit": "kWh and kW"
+    },
+    {
+      "id": "X03",
+      "exact_models": [
+        "GW61.4-BAT-AC-G10"
+      ],
+      "proposed_typed_field": "round_trip_efficiency_pct",
+      "source_value_with_unit_suffixes": 96,
+      "measurement_boundary": "battery system RTE",
+      "fact_status": "verified_document_statement_with_explicit_conditions",
+      "current_projection": "raw doc-only; absent feed",
+      "conditions": "100%DOD .2C25+/-2C; no unique eta_charge/eta_discharge or inverter loss inclusion",
+      "sources": [
+        {
+          "source_id": "S03",
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+          "sha256": "845e51ffb2801f48971c8b53941629dde1e8bc114b9b45dbc4f08c49c5ef815c",
+          "physical_pdf_pages": [
+            2
+          ]
+        }
+      ],
+      "equipment_release": "not_established_by_this_fact",
+      "unit": "percent"
+    },
+    {
+      "id": "X04",
+      "exact_models": [
+        "GW80K-ET-G10",
+        "GW61.4-BAT-AC-G10"
+      ],
+      "proposed_typed_field": "pair_application",
+      "source_value_with_unit_suffixes": {
+        "listed_pair": true,
+        "inverter_full_power_supported": false,
+        "backup_pairing_status": "unverified_in_current_evidence"
+      },
+      "measurement_boundary": "exact pair and application",
+      "fact_status": "verified_pair_with_application_evidence_gap",
+      "current_projection": "compatibility released with human text; no machine mode/power guards",
+      "conditions": "S02 gridp12 lists61.4; backupp17 omits61.4. S05p6 says notfullpower. Missing listing is not proof prohibited",
+      "sources": [
+        {
+          "source_id": "S02",
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-50-100kW_User-Manual-EN_V1.3.pdf",
+          "sha256": "f66efb70d0d8927a92355980e0a0bd09359f580664976e082c4e510320e6d5a0",
+          "physical_pdf_pages": [
+            12,
+            17
+          ]
+        },
+        {
+          "source_id": "S05",
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_Battery-Compatibility-Overview_EMEA-EN_20260910.pdf",
+          "sha256": "8951dd1d8a640ea133d38bcc7f457000560d9ce9e10263aecfbb1037f24cb661",
+          "physical_pdf_pages": [
+            6
+          ]
+        },
+        {
+          "source_id": "S06",
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/BAT100KWHInverterCompatibilitystatement.pdf",
+          "sha256": "5e40da8282b1a4513d2ae40849317ea154584a182e48c3860e0dfb895b159d8d",
+          "physical_pdf_pages": [
+            1,
+            2
+          ]
+        }
+      ],
+      "equipment_release": "not_established_by_this_fact",
+      "unit": "status"
+    }
+  ],
+  "unknown_required_inputs": [
+    "batteryAC directional efficiency maps",
+    "SOC-temperature-voltage/BMS envelope",
+    "SKU internal auxiliaries and standing loss",
+    "pulse recovery and per-phase limits",
+    "multistack controller and port wiring",
+    "exact region/firmware/settings applicability",
+    "project country certification and electrical design"
+  ]
+}

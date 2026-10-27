@@ -198,15 +198,15 @@ final class SavedSolutionsTest extends TestCase {
 		$woocommerce       = new \stdClass();
 		$woocommerce->cart = $cart;
 		WP_Mock::userFunction( 'WC', array( 'return' => $woocommerce ) );
+		WP_Mock::userFunction( 'wc_add_notice', array( 'times' => 0 ) );
+		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://example.test/solution-configurator/' ) );
 		WP_Mock::userFunction(
-			'wc_add_notice',
+			'add_query_arg',
 			array(
-				'times' => 1,
-				'args'  => array( 'This solution needs a new calculation before it can be saved or added to your solution draft.', 'error' ),
+				'args'   => array( array( 'saved_solution' => 45 ), 'https://example.test/solution-configurator/' ),
+				'return' => 'https://example.test/solution-configurator/?saved_solution=45',
 			)
 		);
-		WP_Mock::userFunction( 'wc_get_cart_url', array( 'return' => 'https://example.test/cart/' ) );
-		WP_Mock::userFunction( 'wc_get_account_endpoint_url', array( 'return' => 'https://example.test/my-account/saved-solutions/' ) );
 		WP_Mock::userFunction(
 			'wp_safe_redirect',
 			array(
@@ -220,7 +220,7 @@ final class SavedSolutionsTest extends TestCase {
 			$this->store()->add_to_draft();
 			$this->fail( 'No redirect.' );
 		} catch ( RuntimeException $redirect ) {
-			$this->assertSame( 'https://example.test/my-account/saved-solutions/', $redirect->getMessage() );
+			$this->assertSame( 'https://example.test/solution-configurator/?saved_solution=45', $redirect->getMessage() );
 		} finally {
 			$_POST = array();
 		}

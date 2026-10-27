@@ -1,0 +1,41 @@
+{
+  "active": "lp-overview",
+  "bar": {
+    "bottom": 162,
+    "height": 73,
+    "left": 0,
+    "right": 1425,
+    "top": 89,
+    "width": 1425,
+    "x": 0,
+    "y": 89
+  },
+  "clientWidth": 1425,
+  "header": {
+    "bottom": 89,
+    "height": 89,
+    "left": 0,
+    "right": 1425,
+    "top": 0,
+    "width": 1425,
+    "x": 0,
+    "y": 0
+  },
+  "height": 1000,
+  "invalid": [],
+  "overview": {
+    "bottom": 957.5625,
+    "height": 779.765625,
+    "left": 266.5546875,
+    "right": 1390.4453125,
+    "top": 177.796875,
+    "width": 1123.890625,
+    "x": 266.5546875,
+    "y": 177.796875
+  },
+  "scrollWidth": 1425,
+  "scrollX": 0,
+  "scrollY": 163.5,
+  "width": 1440,
+  "workspace": "overview"
+}

@@ -1,0 +1,26 @@
+{"actualPanelId":"array:0:0","actualRoofId":"second","expectedDirection":[-0.31234752377721214,0.7808688094430304,0.5410017808004594],"actualDirection":[0.274721127897378,0.961523947640823,0],"firstRoofDirection":[0.274721127897378,0.961523947640823,0]}
+✖ selecting an actual panel instance uses the same owning roof as selecting its array (43.977375ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 369.665625
+
+✖ failing tests:
+
+test at tests/selected-panel.test.mjs:10:1
+✖ selecting an actual panel instance uses the same owning roof as selecting its array (43.977375ms)
+  AssertionError [ERR_ASSERTION]: Fit after selecting a panel must face that panel's roof, not the first roof
+      at TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/camera-standards-f482-bjlqozr5/apps/planner/tests/selected-panel.test.mjs:27:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

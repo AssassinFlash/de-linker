@@ -1,0 +1,933 @@
+{
+  "observed_at_utc": "2026-10-22T17:39:43.892390+00:00",
+  "kind": "local_live_snapshot_public_engineering_data",
+  "endpoint": "http://127.0.0.1:9347/wp-json/linker/v1/engineering-feed",
+  "http_status": 200,
+  "response_sha256": "ba687a22fe112af2763cdcd45d8db82976e333dcf8dd7cd4f8baecd50ce7e175",
+  "response_bytes": 475627,
+  "feed_schema_version": 1,
+  "feed_generated_at": "2026-10-22T17:39:43+00:00",
+  "compatibility_version": "5d2a85676432d1501620997a21359782defcd8aa64b644c7799eb32d054a23b8",
+  "feed_published_product_count": 106,
+  "products": [
+    {
+      "id": 1832,
+      "sku": "DLK-SAJ-B250HV1",
+      "device_class": "home-storage",
+      "application": "home",
+      "phase": "unknown",
+      "ac_power_kw": "unknown",
+      "pv_input_kw": "unknown",
+      "usable_kwh": 4.5,
+      "nominal_kwh": 5,
+      "kwh_range": {
+        "min": 5,
+        "max": 25
+      },
+      "figures": {
+        "module_energy_kwh_nominal": {
+          "value": "5.0",
+          "unit": "kWh",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5.0-25.0-HV1HV5_datasheet_en_AU.pdf",
+            "page": 2
+          }
+        },
+        "module_energy_kwh_usable": {
+          "value": "4.5",
+          "unit": "kWh",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+            "page": 2
+          }
+        },
+        "modules_per_stack_max": {
+          "value": "1",
+          "unit": "count",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5.0-25.0-HV1HV5_datasheet_en_AU.pdf",
+            "page": 2
+          }
+        },
+        "modules_per_stack_min": {
+          "value": "1",
+          "unit": "count",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5.0-25.0-HV1HV5_datasheet_en_AU.pdf",
+            "page": 2
+          }
+        }
+      },
+      "documents": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "title": "SAJ B2 Series (5.0-25.0) HV1/HV5 Battery Datasheet (EN, BEU)",
+          "type": "datasheet",
+          "lang": "en"
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf",
+          "title": "SAJ B2 Series (5.0-25.0) HV1/HV5 High Voltage Battery User Manual (EN)",
+          "type": "manual",
+          "lang": "en"
+        }
+      ],
+      "model": "B2-5.0-HV1",
+      "brand": "SAJ",
+      "series": "saj-b2-bu3"
+    },
+    {
+      "id": 1946,
+      "sku": "DLK-GOODWE-GW80KETG10",
+      "device_class": "inverters",
+      "application": "commercial",
+      "phase": 3,
+      "ac_power_kw": 80,
+      "pv_input_kw": 160,
+      "usable_kwh": "unknown",
+      "nominal_kwh": "unknown",
+      "kwh_range": null,
+      "figures": {
+        "ac_output_kw_nominal": {
+          "value": "80",
+          "unit": "kW",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+            "page": 2
+          }
+        },
+        "battery_voltage_range_v": {
+          "value": "300 ~ 800",
+          "unit": "V",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+            "page": 2
+          }
+        },
+        "max_pv_input_power_w": {
+          "value": "160",
+          "unit": "kW",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+            "page": 2
+          }
+        },
+        "max_pv_input_v": {
+          "value": "1000",
+          "unit": "V",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+            "page": 2
+          }
+        },
+        "mppt_voltage_range_v": {
+          "value": "160 ~ 950",
+          "unit": "V",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+            "page": 2
+          }
+        },
+        "n_mppt": {
+          "value": "8",
+          "unit": "",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+            "page": 2
+          }
+        },
+        "phases": {
+          "value": "Three-phase",
+          "unit": "",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+            "page": 1
+          }
+        },
+        "strings_per_mppt": {
+          "value": "2",
+          "unit": "",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+            "page": 2
+          }
+        },
+        "mppt_max_current_a": {
+          "value": "42 × 8",
+          "unit": "A",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+            "page": 2
+          }
+        },
+        "mppt_max_isc_a": {
+          "value": "55 × 8",
+          "unit": "A",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+            "page": 2
+          }
+        }
+      },
+      "documents": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+          "title": "GoodWe ET Series 75–100 kW Datasheet (EN)",
+          "type": "datasheet",
+          "lang": "en"
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-50-100kW_User-Manual-EN_V1.3.pdf",
+          "title": "GoodWe ET 50–100 kW Solution Manual (EN)",
+          "type": "manual",
+          "lang": "en"
+        }
+      ],
+      "model": "GW80K-ET-G10",
+      "brand": "GoodWe",
+      "series": "goodwe-et-80-100k"
+    },
+    {
+      "id": 1954,
+      "sku": "DLK-GOODWE-GW614BATACG10",
+      "device_class": "battery-systems",
+      "application": "commercial",
+      "phase": "unknown",
+      "ac_power_kw": "unknown",
+      "pv_input_kw": "unknown",
+      "usable_kwh": 60,
+      "nominal_kwh": 61.4,
+      "kwh_range": null,
+      "figures": {
+        "module_energy_kwh_nominal": {
+          "value": "10.24",
+          "unit": "kWh",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+            "page": 2
+          }
+        },
+        "modules_per_stack_max": {
+          "value": "6",
+          "unit": "packs",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+            "page": 2
+          }
+        },
+        "modules_per_stack_min": {
+          "value": "6",
+          "unit": "packs",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+            "page": 2
+          }
+        },
+        "stacks_parallel_max": {
+          "value": "4",
+          "unit": "units",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+            "page": 1
+          }
+        },
+        "system_operating_voltage_range_v": {
+          "value": "275.52 ~ 346.56",
+          "unit": "V",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+            "page": 2
+          }
+        }
+      },
+      "documents": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+          "title": "GoodWe BAT-C Series 61.4–112.6 kWh Datasheet (EMEA, EN)",
+          "type": "datasheet",
+          "lang": "en"
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
+          "title": "GW BAT-C-60-112kWh Quick-Installation-Guide-POLY V1.7",
+          "type": "manual",
+          "lang": "en"
+        }
+      ],
+      "model": "GW61.4-BAT-AC-G10",
+      "brand": "GoodWe",
+      "series": "goodwe-bat-c"
+    },
+    {
+      "id": 2067,
+      "sku": "DLK-SAJ-B2100HV1",
+      "device_class": "home-storage",
+      "application": "home",
+      "phase": "unknown",
+      "ac_power_kw": "unknown",
+      "pv_input_kw": "unknown",
+      "usable_kwh": 9,
+      "nominal_kwh": 10,
+      "kwh_range": {
+        "min": 5,
+        "max": 25
+      },
+      "figures": {
+        "module_energy_kwh_nominal": {
+          "value": "10.0",
+          "unit": "kWh",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5.0-25.0-HV1HV5_datasheet_en_AU.pdf",
+            "page": 2
+          }
+        },
+        "module_energy_kwh_usable": {
+          "value": "9.0",
+          "unit": "kWh",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+            "page": 2
+          }
+        },
+        "modules_per_stack_max": {
+          "value": "2",
+          "unit": "count",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5.0-25.0-HV1HV5_datasheet_en_AU.pdf",
+            "page": 2
+          }
+        },
+        "modules_per_stack_min": {
+          "value": "2",
+          "unit": "count",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5.0-25.0-HV1HV5_datasheet_en_AU.pdf",
+            "page": 2
+          }
+        }
+      },
+      "documents": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "title": "SAJ B2 Series (5.0-25.0) HV1/HV5 Battery Datasheet (EN, BEU)",
+          "type": "datasheet",
+          "lang": "en"
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf",
+          "title": "SAJ B2 Series (5.0-25.0) HV1/HV5 High Voltage Battery User Manual (EN)",
+          "type": "manual",
+          "lang": "en"
+        }
+      ],
+      "model": "B2-10.0-HV1",
+      "brand": "SAJ",
+      "series": "saj-b2-bu3"
+    },
+    {
+      "id": 2068,
+      "sku": "DLK-SAJ-B2150HV1",
+      "device_class": "home-storage",
+      "application": "home",
+      "phase": "unknown",
+      "ac_power_kw": "unknown",
+      "pv_input_kw": "unknown",
+      "usable_kwh": 13.5,
+      "nominal_kwh": 15,
+      "kwh_range": {
+        "min": 5,
+        "max": 25
+      },
+      "figures": {
+        "module_energy_kwh_nominal": {
+          "value": "15.0",
+          "unit": "kWh",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5.0-25.0-HV1HV5_datasheet_en_AU.pdf",
+            "page": 2
+          }
+        },
+        "module_energy_kwh_usable": {
+          "value": "13.5",
+          "unit": "kWh",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+            "page": 2
+          }
+        },
+        "modules_per_stack_max": {
+          "value": "3",
+          "unit": "count",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5.0-25.0-HV1HV5_datasheet_en_AU.pdf",
+            "page": 2
+          }
+        },
+        "modules_per_stack_min": {
+          "value": "3",
+          "unit": "count",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5.0-25.0-HV1HV5_datasheet_en_AU.pdf",
+            "page": 2
+          }
+        }
+      },
+      "documents": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "title": "SAJ B2 Series (5.0-25.0) HV1/HV5 Battery Datasheet (EN, BEU)",
+          "type": "datasheet",
+          "lang": "en"
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf",
+          "title": "SAJ B2 Series (5.0-25.0) HV1/HV5 High Voltage Battery User Manual (EN)",
+          "type": "manual",
+          "lang": "en"
+        }
+      ],
+      "model": "B2-15.0-HV1",
+      "brand": "SAJ",
+      "series": "saj-b2-bu3"
+    },
+    {
+      "id": 2090,
+      "sku": "DLK-SAJ-BU250HV1",
+      "device_class": "home-storage",
+      "application": "home",
+      "phase": "unknown",
+      "ac_power_kw": "unknown",
+      "pv_input_kw": "unknown",
+      "usable_kwh": 4.5,
+      "nominal_kwh": 5,
+      "kwh_range": {
+        "min": 5,
+        "max": 25
+      },
+      "figures": {
+        "module_energy_kwh_nominal": {
+          "value": "5.0",
+          "unit": "kWh",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+            "page": 2
+          }
+        },
+        "module_energy_kwh_usable": {
+          "value": "4.5",
+          "unit": "kWh",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+            "page": 2
+          }
+        },
+        "modules_per_stack_max": {
+          "value": "5",
+          "unit": null,
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+            "page": 2
+          }
+        },
+        "modules_per_stack_min": {
+          "value": "1",
+          "unit": null,
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+            "page": 2
+          }
+        }
+      },
+      "documents": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "title": "SAJ B2 Series (5.0-25.0) HV1/HV5 Battery Datasheet (EN, BEU)",
+          "type": "datasheet",
+          "lang": "en"
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf",
+          "title": "SAJ B2 Series (5.0-25.0) HV1/HV5 High Voltage Battery User Manual (EN)",
+          "type": "manual",
+          "lang": "en"
+        }
+      ],
+      "model": "BU2-5.0-HV1",
+      "brand": "SAJ",
+      "series": "saj-b2-hv-5-25kwh"
+    },
+    {
+      "id": 2092,
+      "sku": "DLK-SAJ-BC2HV1",
+      "device_class": "home-storage",
+      "application": "home",
+      "phase": "unknown",
+      "ac_power_kw": "unknown",
+      "pv_input_kw": "unknown",
+      "usable_kwh": "unknown",
+      "nominal_kwh": "unknown",
+      "kwh_range": {
+        "min": 5,
+        "max": 25
+      },
+      "figures": {
+        "modules_per_stack_max": {
+          "value": "5",
+          "unit": null,
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+            "page": 2
+          }
+        },
+        "modules_per_stack_min": {
+          "value": "1",
+          "unit": null,
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+            "page": 2
+          }
+        },
+        "system_operating_voltage_range_v": {
+          "value": "89.6-115.2 / 179.2-230.4 / 268.8-345.6 / 358.4-460.8 / 448-576.0",
+          "unit": "V",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+            "page": 2
+          }
+        }
+      },
+      "documents": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "title": "SAJ B2 Series (5.0-25.0) HV1/HV5 Battery Datasheet (EN, BEU)",
+          "type": "datasheet",
+          "lang": "en"
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf",
+          "title": "SAJ B2 Series (5.0-25.0) HV1/HV5 High Voltage Battery User Manual (EN)",
+          "type": "manual",
+          "lang": "en"
+        }
+      ],
+      "model": "BC2-HV1",
+      "brand": "SAJ",
+      "series": "saj-b2-hv-5-25kwh"
+    },
+    {
+      "id": 4107,
+      "sku": "DLK-SAJ-H210KT3",
+      "device_class": "inverters",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 10,
+      "pv_input_kw": 20,
+      "usable_kwh": "unknown",
+      "nominal_kwh": "unknown",
+      "kwh_range": null,
+      "figures": {
+        "ac_output_kw_nominal": {
+          "value": "10000",
+          "unit": "W",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+            "page": 2
+          }
+        },
+        "battery_voltage_range_v": {
+          "value": "180~800",
+          "unit": "V",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+            "page": 2
+          }
+        },
+        "max_pv_input_power_w": {
+          "value": "20000",
+          "unit": "Wp",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+            "page": 2
+          }
+        },
+        "max_pv_input_v": {
+          "value": "1000",
+          "unit": "V",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+            "page": 2
+          }
+        },
+        "mppt_voltage_range_v": {
+          "value": "180~900",
+          "unit": "V",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+            "page": 2
+          }
+        },
+        "n_mppt": {
+          "value": "3",
+          "unit": "",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+            "page": 2
+          }
+        },
+        "phases": {
+          "value": "Three-phase",
+          "unit": "",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+            "page": 1
+          }
+        },
+        "strings_per_mppt": {
+          "value": "2",
+          "unit": "",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+            "page": 2
+          }
+        },
+        "mppt_max_current_a": {
+          "value": "40",
+          "unit": "A",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+            "page": 2
+          }
+        },
+        "mppt_max_isc_a": {
+          "value": "50",
+          "unit": "A",
+          "citation": {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+            "page": 2
+          }
+        }
+      },
+      "documents": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "title": "SAJ H2 Series (10-30K) T2/T3 Datasheet (EN, BEU)",
+          "type": "datasheet",
+          "lang": "en"
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+          "title": "SAJ H2-(10K-30K)-(T2, T3) Hybrid Solar Inverter User Manual (DE/EN)",
+          "type": "manual",
+          "lang": "de"
+        }
+      ],
+      "model": "H2-10K-T3",
+      "brand": "SAJ",
+      "series": "saj-h2"
+    },
+    {
+      "id": 6321,
+      "sku": "DLK-GOODWE-GW125261ESALCNG10",
+      "device_class": "all-in-one-systems",
+      "application": "commercial",
+      "phase": 3,
+      "ac_power_kw": 125,
+      "pv_input_kw": "unknown",
+      "usable_kwh": 261.25,
+      "nominal_kwh": 261.25,
+      "kwh_range": null,
+      "figures": {},
+      "documents": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf",
+          "title": "GW ESA 261kWh Datasheet EMEA EN V1.1",
+          "type": "datasheet",
+          "lang": "en"
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_User-Manual-EN_V1.6.pdf",
+          "title": "GW ESA 261kWh User Manual EN V1.6",
+          "type": "manual",
+          "lang": "en"
+        }
+      ],
+      "model": "GW125/261-ESA-LCN-G10",
+      "brand": "GoodWe",
+      "series": "goodwe-esa-lcn"
+    }
+  ],
+  "compatibility_pairs": [
+    {
+      "inverter": "^GW(80K|99\\.99K|100K)-ET-G10$",
+      "battery": "^GW(61\\.4|102\\.4|112\\.6)-BAT-AC-G10$",
+      "verdict": "released",
+      "conditions": [
+        {
+          "en": "Two GoodWe documents carry this pair: the Battery Compatibility Overview, ET (80–100 kW) column, and a signed Compatibility Statement of 2025-04-07 naming GW80K-ET-G10, GW99.99K-ET-G10 and GW100K-ET-G10 against GW61.4 to GW112.6-BAT-AC-G10.",
+          "de": "Zwei GoodWe-Dokumente führen diese Kombination auf: die Batterie-Kompatibilitätsübersicht, Spalte ET (80–100 kW), und eine unterzeichnete Kompatibilitätserklärung vom 7. April 2025, die GW80K-ET-G10, GW99.99K-ET-G10 und GW100K-ET-G10 für GW61.4 bis GW112.6-BAT-AC-G10 nennt."
+        }
+      ],
+      "documents": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_Battery-Compatibility-Overview_EMEA-EN_20260910.pdf"
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/BAT100KWHInverterCompatibilitystatement.pdf"
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf"
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf"
+        }
+      ]
+    },
+    {
+      "inverter": "^GW(80K|99\\.99K|100K)-ET-G10$",
+      "battery": "^GW61\\.4-BAT-AC-G10$",
+      "verdict": "released",
+      "conditions": [
+        {
+          "en": "The Battery Compatibility Overview (p. 6) states that GW61.4-BAT-AC-G10 paired with ET (80–100 kW) cannot reach the inverter's full power output. GoodWe's BAT-C datasheet (p. 2) gives the GW61.4-BAT-AC-G10 an operating voltage range of 275.52 to 346.56 V (nominal 307.2 V); the ET 75–100 kW datasheet (p. 2) gives a battery voltage range of 300 to 800 V and a start-up voltage of 300 V.",
+          "de": "Laut der Batterie-Kompatibilitätsübersicht von GoodWe (S. 6) erreicht GW61.4-BAT-AC-G10 an ET (80–100 kW) nicht die volle Wechselrichterleistung. Das BAT-C-Datenblatt von GoodWe (S. 2) gibt für GW61.4-BAT-AC-G10 einen Betriebsspannungsbereich von 275,52 bis 346,56 V an (Nennspannung 307,2 V); das Datenblatt des ET 75–100 kW (S. 2) nennt einen Batteriespannungsbereich von 300 bis 800 V und eine Startspannung von 300 V."
+        }
+      ],
+      "documents": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_Battery-Compatibility-Overview_EMEA-EN_20260910.pdf"
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/BAT100KWHInverterCompatibilitystatement.pdf"
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf"
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf"
+        }
+      ]
+    },
+    {
+      "inverter": "^GW(80K|99\\.99K|100K)-ET-G10$",
+      "battery": "^(B2|BU2|BC2|CB3)-",
+      "verdict": "not_released",
+      "conditions": [
+        {
+          "en": "The cited documents do not list this pair. This states no incompatibility and makes no claim about documents not checked.",
+          "de": "Die zitierten Dokumente führen dieses Paar nicht auf. Das stellt keine Inkompatibilität fest und sagt nichts über nicht geprüfte Dokumente aus."
+        },
+        {
+          "en": "GoodWe's Battery Compatibility Overview and SAJ's H2 / HS2 / HS3 / AS2 / AS3 Configuration Instructions do not list this exact cross-brand pairing. They establish neither compatibility nor incompatibility.",
+          "de": "Die Batterie-Kompatibilitätsübersicht von GoodWe und die SAJ-Konfigurationsanleitung H2 / HS2 / HS3 / AS2 / AS3 führen diese konkrete markenübergreifende Kombination nicht auf. Sie belegen weder Kompatibilität noch Inkompatibilität."
+        },
+        {
+          "en": "GoodWe's Battery Compatibility Overview (p. 1) approves only the batteries it lists for connection under the GoodWe Limited Warranty.",
+          "de": "GoodWes Batterie-Kompatibilitätsübersicht (S. 1) gibt nur die dort aufgeführten Batterien für den Anschluss im Rahmen der GoodWe Limited Warranty frei."
+        }
+      ],
+      "documents": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_Battery-Compatibility-Overview_EMEA-EN_20260910.pdf"
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf"
+        }
+      ]
+    },
+    {
+      "inverter": "^H2-\\d+K-T3(-DE)?$",
+      "battery": "^GW(61\\.4|102\\.4|112\\.6)-BAT-AC-G10$",
+      "verdict": "not_released",
+      "conditions": [
+        {
+          "en": "The cited documents do not list this pair. This states no incompatibility and makes no claim about documents not checked.",
+          "de": "Die zitierten Dokumente führen dieses Paar nicht auf. Das stellt keine Inkompatibilität fest und sagt nichts über nicht geprüfte Dokumente aus."
+        },
+        {
+          "en": "The cited GoodWe and SAJ documents do not list this exact pairing. They establish neither compatibility nor incompatibility.",
+          "de": "Die zitierten GoodWe- und SAJ-Unterlagen führen diese konkrete Kombination nicht auf. Sie belegen weder Kompatibilität noch Inkompatibilität."
+        }
+      ],
+      "documents": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_Battery-Compatibility-Overview_EMEA-EN_20260910.pdf"
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+        }
+      ]
+    },
+    {
+      "inverter": "^H2-\\d+K-T3(-DE)?$",
+      "battery": "(?:^B2-10\\.0-|^B2-15\\.0-|^B2-20\\.0-|^B2-25\\.0-|^BU2-|^BC2-)",
+      "verdict": "released_with_accessory",
+      "conditions": [
+        {
+          "en": "SAJ's B2 datasheet names B2-5.0 to B2-25.0 as one to five BU2-5.0 modules with one BC2-HV1 control module, and the B2 manual (V1.2, PDF p5) says the B2 can only be used as such a set: the control module is an article of its own.",
+          "de": "SAJs B2-Datenblatt nennt B2-5.0 bis B2-25.0 als ein bis fünf BU2-5.0-Module mit einem Steuermodul BC2-HV1, und das B2-Handbuch (V1.2, PDF-S. 5) gibt an, dass die B2 nur als solches Set eingesetzt werden kann: Das Steuermodul ist ein eigener Artikel."
+        },
+        {
+          "en": "SAJ's Configuration Instructions V1.0 (Section 2) give the H2 series system as H2 + BC2 + BU2. SAJ's B2 datasheet names B2-5.0 to B2-25.0 as one to five BU2-5.0 modules with one BC2-HV1 control module, and SAJ's B2 manual (V1.2, PDF p5) says the B2 can only be used as a set with SAJ's H2 high voltage series storage inverter. The listing does not cover the one-module B2-5.0, whose operating voltage lies below the H2 T3's battery voltage range.",
+          "de": "Die SAJ-Konfigurationsanleitung V1.0 (Abschnitt 2) gibt das System der H2-Serie als H2 + BC2 + BU2 an. Das SAJ-Datenblatt der B2 nennt B2-5.0 bis B2-25.0 als ein bis fünf BU2-5.0-Module mit einem Steuermodul BC2-HV1, und das SAJ-Handbuch der B2 (V1.2, PDF-S. 5) gibt an, dass die B2 nur im Verbund mit dem Hochvolt-Speicherwechselrichter der SAJ-H2-Serie eingesetzt werden kann. Die Listung umfasst die B2-5.0 mit einem Modul nicht; ihre Betriebsspannung liegt unter dem Batteriespannungsbereich des H2 T3."
+        }
+      ],
+      "documents": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf"
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf"
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "page": 2
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+          "page": 37
+        }
+      ],
+      "accessories": [
+        {
+          "model": "^BC2-HV1$",
+          "quantity": 1,
+          "per": "system"
+        }
+      ]
+    },
+    {
+      "inverter": "^H2-\\d+K-T3(-DE)?$",
+      "battery": "^B2-5\\.0-HV[15]$",
+      "verdict": "not_released",
+      "conditions": [
+        {
+          "en": "The H2 T3 manual gives a battery voltage range of 180 to 800 V; SAJ's B2 datasheet gives 89.6 to 115.2 V for the one-module B2-5.0.",
+          "de": "Das H2-T3-Handbuch nennt einen Batteriespannungsbereich von 180 bis 800 V; das SAJ-Datenblatt der B2 nennt für die B2-5.0 mit einem Modul 89,6 bis 115,2 V."
+        }
+      ],
+      "documents": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf"
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf"
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "page": 2
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+          "page": 37
+        }
+      ]
+    },
+    {
+      "inverter": "^H2-\\d+K-T3(-DE)?$",
+      "battery": "^B2-10\\.0-HV[15]$",
+      "verdict": "released_with_accessory",
+      "conditions": [
+        {
+          "en": "SAJ's B2 datasheet gives 179.2 to 230.4 V for the two-module B2-10.0; the H2 T3 manual's battery voltage range begins at 180 V.",
+          "de": "Das SAJ-Datenblatt der B2 nennt für die B2-10.0 mit zwei Modulen 179,2 bis 230,4 V; der Batteriespannungsbereich im H2-T3-Handbuch beginnt bei 180 V."
+        }
+      ],
+      "documents": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf"
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf"
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "page": 2
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+          "page": 37
+        }
+      ],
+      "accessories": [
+        {
+          "model": "^BC2-HV1$",
+          "quantity": 1,
+          "per": "system"
+        }
+      ]
+    },
+    {
+      "inverter": "^H2-\\d+K-T3(-DE)?$",
+      "battery": "^BU2-5\\.0-HV[15]$",
+      "verdict": "released_with_accessory",
+      "conditions": [
+        {
+          "en": "One BU2-5.0 module alone operates at 89.6 to 115.2 V (SAJ's B2 datasheet gives this for the one-module B2-5.0), below the H2 T3's battery voltage range of 180 to 800 V; two modules operate at 179.2 to 230.4 V.",
+          "de": "Ein einzelnes BU2-5.0-Modul arbeitet mit 89,6 bis 115,2 V (diese Werte nennt das SAJ-Datenblatt der B2 für die B2-5.0 mit einem Modul), unterhalb des Batteriespannungsbereichs des H2 T3 von 180 bis 800 V; zwei Module arbeiten mit 179,2 bis 230,4 V."
+        }
+      ],
+      "documents": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf"
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf"
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "page": 2
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+          "page": 37
+        }
+      ],
+      "accessories": [
+        {
+          "model": "^BC2-HV1$",
+          "quantity": 1,
+          "per": "system"
+        }
+      ],
+      "modules": {
+        "min": 2,
+        "max": 5
+      }
+    }
+  ],
+  "requirements": [
+    {
+      "inverter": "^GW(80K|99\\.99K|100K)-ET-G10$",
+      "kind": "meter",
+      "included": true,
+      "conditions": [
+        {
+          "en": "The ET 80 to 100 kW ships with a GM330 smart meter for a single-unit system; its CTs (nA/5A, 200 to 5000 A primary) are bought separately (ET 50-100 kW manual, PDF pp. 12 and 19).",
+          "de": "Der ET 80 bis 100 kW wird für eine Einzelanlage mit einem Smart Meter GM330 geliefert; die Stromwandler (nA/5A, 200 bis 5000 A primär) werden separat beschafft (ET-50-100-kW-Handbuch, PDF-S. 12 und 19)."
+        }
+      ],
+      "documents": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-50-100kW_User-Manual-EN_V1.3.pdf"
+        }
+      ]
+    },
+    {
+      "inverter": "^H2-\\d+K-T3(-DE)?$",
+      "kind": "meter",
+      "included": true,
+      "conditions": [
+        {
+          "en": "The H2 T3 ships with a smart meter, three current transformers and a 10 m meter communication cable (H2 manual, section 2.2 Unpacking, PDF p. 36 English / p. 7 German).",
+          "de": "Der H2 T3 wird mit einem Smart Meter, drei Stromwandlern und einem 10 m langen Zähler-Kommunikationskabel geliefert (H2-Handbuch, Abschnitt 2.2 Auspacken, PDF-S. 36 englisch / S. 7 deutsch)."
+        }
+      ],
+      "documents": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+          "page": 36
+        }
+      ]
+    }
+  ]
+}

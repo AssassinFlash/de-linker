@@ -1,0 +1,32 @@
+{
+  "removed": [
+    {
+      "path": "/tmp/planner-548-ui-sample.txt",
+      "bytes": 163926,
+      "reason": "Superseded diagnostic sample with committed canonical evidence",
+      "absent_readback": true
+    },
+    {
+      "path": "/Users/chesterjohn/de-linker-local/p548/planner/cua-admin-login.txt",
+      "bytes": 132,
+      "reason": "Consumed one-time local authentication link; browser customer session already restored",
+      "absent_readback": true
+    },
+    {
+      "path": "/Users/chesterjohn/de-linker-local/p548/planner/cua-customer-login.txt",
+      "bytes": 132,
+      "reason": "Consumed one-time local authentication link; browser customer session already restored",
+      "absent_readback": true
+    }
+  ],
+  "removed_count": 3,
+  "removed_logical_bytes": 164190,
+  "available_before": 886767972352,
+  "available_after": 886768128000,
+  "observed_available_delta": 155648,
+  "attribution_boundary": "APFS and concurrent writes mean observed filesystem change is not attributed exclusively to these files.",
+  "new_instances": 0,
+  "new_worktrees": 0,
+  "new_full_snapshots": 0,
+  "retained": "Existing owned unified-planner-548 worktree and p548 instance remain required by active full goal548; unique code and acceptance evidence retained. No shared process, database or cache was stopped or deleted."
+}

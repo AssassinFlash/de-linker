@@ -1,0 +1,130 @@
+{
+  "fixed_sha": "f0df6762fc549bf9251d508a802bb38cd2c258fa",
+  "unchanged_reviewed_pairs": 21,
+  "prior_19_record": "../563e0387-standards/COPY-REVIEW.md",
+  "prior_2_record": "../cbf75a9c-standards/COPY-REVIEW.md",
+  "catalogs": [
+    {
+      "path": "plugins/linker-tools/languages/linker-tools-de_DE_formal.po",
+      "sha256": "0da9995e27d3c5324e632101ebeedb462b6ee301c139a937c5fc3c7637b4e1e0",
+      "byte_identical_to_cbf": true
+    },
+    {
+      "path": "plugins/linker-tools/languages/linker-tools-de_DE_formal.mo",
+      "sha256": "ea2e38425a93a953285709a99a34ee484a9ed587c1f36b4ed497bbe90bd0a9a3",
+      "byte_identical_to_cbf": true
+    },
+    {
+      "path": "plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json",
+      "sha256": "516232ef3e93467df08e8a174111df5a25b418c51318f3f35edd0d2e7bc4e852",
+      "byte_identical_to_cbf": true
+    }
+  ],
+  "reviewed_pairs": [
+    {
+      "english": "A place for the roof and its layout",
+      "german": "Hier entsteht Ihre Dachplanung",
+      "compiled_gnu_and_wp_agree": true
+    },
+    {
+      "english": "Across the current roof layouts",
+      "german": "Aus den aktuellen Dachbelegungen",
+      "compiled_gnu_and_wp_agree": true
+    },
+    {
+      "english": "Annual consumption and interval data",
+      "german": "Jahresverbrauch und Zeitreihendaten",
+      "compiled_gnu_and_wp_agree": true
+    },
+    {
+      "english": "Basis not specified",
+      "german": "Grundlage nicht angegeben",
+      "compiled_gnu_and_wp_agree": true
+    },
+    {
+      "english": "Continue your project",
+      "german": "Projekt weiterbearbeiten",
+      "compiled_gnu_and_wp_agree": true
+    },
+    {
+      "english": "Current layout",
+      "german": "Aktuelle Belegung",
+      "compiled_gnu_and_wp_agree": true
+    },
+    {
+      "english": "Current project",
+      "german": "Aktuelles Projekt",
+      "compiled_gnu_and_wp_agree": true
+    },
+    {
+      "english": "Energy inputs",
+      "german": "Energiedaten",
+      "compiled_gnu_and_wp_agree": true
+    },
+    {
+      "english": "Location, system scope and site conditions",
+      "german": "Standort, Systemumfang und Bedingungen vor Ort",
+      "compiled_gnu_and_wp_agree": true
+    },
+    {
+      "english": "Module count and declared specifications",
+      "german": "Modulanzahl und angegebene Spezifikationen",
+      "compiled_gnu_and_wp_agree": true
+    },
+    {
+      "english": "Open roof workspace",
+      "german": "Dachplanung öffnen",
+      "compiled_gnu_and_wp_agree": true
+    },
+    {
+      "english": "Project overview",
+      "german": "Projektübersicht",
+      "compiled_gnu_and_wp_agree": true
+    },
+    {
+      "english": "Project workspaces",
+      "german": "Projektbereiche",
+      "compiled_gnu_and_wp_agree": true
+    },
+    {
+      "english": "Roof design is optional. A measured roof can be added here while the project information and energy inputs remain available in their workspaces.",
+      "german": "Die Dachplanung ist optional. Sie können hier ein vermessenes Dach anlegen; Projektangaben und Energiedaten bleiben in ihren Arbeitsbereichen erhalten.",
+      "compiled_gnu_and_wp_agree": true
+    },
+    {
+      "english": "Roof faces, obstacles and module layout",
+      "german": "Dachflächen, Hindernisse und Modulbelegung",
+      "compiled_gnu_and_wp_agree": true
+    },
+    {
+      "english": "Site and project",
+      "german": "Standort und Projekt",
+      "compiled_gnu_and_wp_agree": true
+    },
+    {
+      "english": "Site information, roof layouts and energy inputs share this project. Each workspace can be completed as the design develops.",
+      "german": "Standort, Dachplanung und Energiedaten gehören zu demselben Projekt. Sie können die Angaben in den jeweiligen Arbeitsbereichen nach und nach ergänzen.",
+      "compiled_gnu_and_wp_agree": true
+    },
+    {
+      "english": "The overview describes the current inputs. Energy yield, equipment suitability and engineering release require their respective calculations and evidence.",
+      "german": "Die Übersicht zeigt Ihre aktuellen Eingaben. Für Ertrag, Geräteeignung und technische Freigabe sind die jeweiligen Berechnungen und Nachweise erforderlich.",
+      "compiled_gnu_and_wp_agree": true
+    },
+    {
+      "english": "Your project at a glance",
+      "german": "Ihr Projekt im Überblick",
+      "compiled_gnu_and_wp_agree": true
+    },
+    {
+      "english": "Roof editing in progress",
+      "german": "Dachbearbeitung läuft",
+      "compiled_gnu_and_wp_agree": true
+    },
+    {
+      "english": "Finish or cancel roof editing before leaving this workspace.",
+      "german": "Schließen Sie die Dachbearbeitung ab oder brechen Sie sie ab, bevor Sie den Arbeitsbereich verlassen.",
+      "compiled_gnu_and_wp_agree": true
+    }
+  ]
+}

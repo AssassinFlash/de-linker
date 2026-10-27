@@ -1,0 +1,23 @@
+{
+  "startUrls": [
+    {
+      "url": "https://tiles.openfreemap.org/styles/liberty"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 1,
+  "maxResults": 1,
+  "maxConcurrency": 1,
+  "saveHtml": false,
+  "saveMarkdown": true,
+  "saveContentTypes": "application/json",
+  "respectRobotsTxtFile": true,
+  "htmlTransformer": "none",
+  "useSitemaps": false,
+  "proxyConfiguration": {
+    "useApifyProxy": true
+  },
+  "requestTimeoutSecs": 60,
+  "maxRequestRetries": 2
+}

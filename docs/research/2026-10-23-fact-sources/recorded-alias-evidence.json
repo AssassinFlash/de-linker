@@ -1,0 +1,677 @@
+{
+  "source_files": {
+    "/Users/chesterjohn/Documents/de-linker-project/knowledge/evidence-manifest.json": "df8d1b1e43162db84f874c59bb40aa56881206169f9e038e105e21b52731f188",
+    "/Users/chesterjohn/Documents/de-linker-project/knowledge/document-host-map.json": "ba0967e49620b5f2d0fdc7724be0b9d56525ae62a346650a1a4a33ea46028a99"
+  },
+  "records": [
+    {
+      "alias": "saj_hs3_three_phase_datasheet_uk_en.pdf",
+      "evidence_record_id": "1acf761fc026ef0f",
+      "recorded_file": "1acf761fc026ef0f__hs3-series.pdf",
+      "recorded_recovery_basename": "saj_hs3_three_phase_datasheet_uk_en.pdf",
+      "recorded_also_cited_as": [],
+      "recorded_sha256": "fb371d15b1ea80d8f0288e447a19451075787c22bbf8fa1de0951587cb00c854",
+      "recorded_bytes": 422739,
+      "recorded_hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/hs3-series.pdf",
+      "host_map_urls_same_recorded_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/09/hs3-series.pdf"
+      ],
+      "current_source_urls_same_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/09/hs3-series.pdf"
+      ],
+      "provenance": "exact token in evidence record file/recovery basename/also_cited_as, then SHA identity join; not fuzzy file-name matching",
+      "scope": "historical public source identity data only; current applicability/statement validation not inherited",
+      "verified_current_targets": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/hs3-series.pdf",
+          "sha256": "fb371d15b1ea80d8f0288e447a19451075787c22bbf8fa1de0951587cb00c854",
+          "bytes": 422739,
+          "physical_pdf_page_count": 2,
+          "proof": "exact source alias record + identical recorded SHA in host map + actual current p548 bytes SHA"
+        }
+      ]
+    },
+    {
+      "alias": "ecoflow_ocean2-plus-single-phase_brochure-spec_en_20260601.pdf",
+      "evidence_record_id": "5bd340bd0c269d64",
+      "recorded_file": "5bd340bd0c269d64__ecoflow_ocean2-plus-single-phase_brochure-spec_en_20260601.pdf",
+      "recorded_recovery_basename": "",
+      "recorded_also_cited_as": [],
+      "recorded_sha256": "f49ddd7c553c3db60096824a23b869e8304c91eed39b74bb1ab7411369364e9e",
+      "recorded_bytes": 8112587,
+      "recorded_hosted_url": null,
+      "host_map_urls_same_recorded_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-plus-single-phase_brochure-spec_en_20260601.pdf"
+      ],
+      "current_source_urls_same_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-plus-single-phase_brochure-spec_en_20260601.pdf"
+      ],
+      "provenance": "exact token in evidence record file/recovery basename/also_cited_as, then SHA identity join; not fuzzy file-name matching",
+      "scope": "historical public source identity data only; current applicability/statement validation not inherited",
+      "verified_current_targets": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-plus-single-phase_brochure-spec_en_20260601.pdf",
+          "sha256": "f49ddd7c553c3db60096824a23b869e8304c91eed39b74bb1ab7411369364e9e",
+          "bytes": 8112587,
+          "physical_pdf_page_count": 4,
+          "proof": "exact source alias record + identical recorded SHA in host map + actual current p548 bytes SHA"
+        }
+      ]
+    },
+    {
+      "alias": "ecoflow_ocean2-three-phase_datasheet_en_20260310.pdf",
+      "evidence_record_id": "9025397d4b0d6ccf",
+      "recorded_file": "9025397d4b0d6ccf__ecoflow_ocean2-three-phase_datasheet_en_20260310.pdf",
+      "recorded_recovery_basename": "",
+      "recorded_also_cited_as": [],
+      "recorded_sha256": "831117f4510dce9b3b54d18493c350c48219c4a4f54416b246c49ed48208c941",
+      "recorded_bytes": 632820,
+      "recorded_hosted_url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-three-phase_datasheet_en_20260310.pdf",
+      "host_map_urls_same_recorded_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-three-phase_datasheet_en_20260310.pdf"
+      ],
+      "current_source_urls_same_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-three-phase_datasheet_en_20260310.pdf"
+      ],
+      "provenance": "exact token in evidence record file/recovery basename/also_cited_as, then SHA identity join; not fuzzy file-name matching",
+      "scope": "historical public source identity data only; current applicability/statement validation not inherited",
+      "verified_current_targets": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-three-phase_datasheet_en_20260310.pdf",
+          "sha256": "831117f4510dce9b3b54d18493c350c48219c4a4f54416b246c49ed48208c941",
+          "bytes": 632820,
+          "physical_pdf_page_count": 3,
+          "proof": "exact source alias record + identical recorded SHA in host map + actual current p548 bytes SHA"
+        }
+      ]
+    },
+    {
+      "alias": "GW_ESA-5-30kW_Datasheet-EN.pdf",
+      "evidence_record_id": "2de7670e1d2a4efe",
+      "recorded_file": "2de7670e1d2a4efe__GW_ESA-5-30kW_Datasheet-EN.pdf",
+      "recorded_recovery_basename": "",
+      "recorded_also_cited_as": [],
+      "recorded_sha256": "b681fbb51b1688476883c7f2c23599f12a1e51020b6980c9d61da952cc80543f",
+      "recorded_bytes": 1257524,
+      "recorded_hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+      "host_map_urls_same_recorded_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf"
+      ],
+      "current_source_urls_same_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf"
+      ],
+      "provenance": "exact token in evidence record file/recovery basename/also_cited_as, then SHA identity join; not fuzzy file-name matching",
+      "scope": "historical public source identity data only; current applicability/statement validation not inherited",
+      "verified_current_targets": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "sha256": "b681fbb51b1688476883c7f2c23599f12a1e51020b6980c9d61da952cc80543f",
+          "bytes": 1257524,
+          "physical_pdf_page_count": 3,
+          "proof": "exact source alias record + identical recorded SHA in host map + actual current p548 bytes SHA"
+        }
+      ]
+    },
+    {
+      "alias": "GW_ESA-5-30kW_Datasheet-EN.pdf",
+      "evidence_record_id": "rec_0d10cf6dde41",
+      "recorded_file": "rec_0d10cf6dde41__GW_ESA-5-30kW_Datasheet-EN.pdf",
+      "recorded_recovery_basename": "",
+      "recorded_also_cited_as": [],
+      "recorded_sha256": "b681fbb51b1688476883c7f2c23599f12a1e51020b6980c9d61da952cc80543f",
+      "recorded_bytes": 1257524,
+      "recorded_hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+      "host_map_urls_same_recorded_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf"
+      ],
+      "current_source_urls_same_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf"
+      ],
+      "provenance": "exact token in evidence record file/recovery basename/also_cited_as, then SHA identity join; not fuzzy file-name matching",
+      "scope": "historical public source identity data only; current applicability/statement validation not inherited",
+      "verified_current_targets": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "sha256": "b681fbb51b1688476883c7f2c23599f12a1e51020b6980c9d61da952cc80543f",
+          "bytes": 1257524,
+          "physical_pdf_page_count": 3,
+          "proof": "exact source alias record + identical recorded SHA in host map + actual current p548 bytes SHA"
+        }
+      ]
+    },
+    {
+      "alias": "GW_ESA-5-30kW_User-Manual-EN.pdf",
+      "evidence_record_id": "rec_de01391cb5ba",
+      "recorded_file": "rec_de01391cb5ba__GW_ESA-5-30kW_User-Manual-EN.pdf",
+      "recorded_recovery_basename": "",
+      "recorded_also_cited_as": [],
+      "recorded_sha256": "894ef3bd6daca659dfb5b605d7fe52fc13f89262144d80be3387a8cd2efd0a75",
+      "recorded_bytes": 30846248,
+      "recorded_hosted_url": null,
+      "host_map_urls_same_recorded_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_User-Manual-EN.pdf"
+      ],
+      "current_source_urls_same_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_User-Manual-EN.pdf"
+      ],
+      "provenance": "exact token in evidence record file/recovery basename/also_cited_as, then SHA identity join; not fuzzy file-name matching",
+      "scope": "historical public source identity data only; current applicability/statement validation not inherited",
+      "verified_current_targets": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_User-Manual-EN.pdf",
+          "sha256": "894ef3bd6daca659dfb5b605d7fe52fc13f89262144d80be3387a8cd2efd0a75",
+          "bytes": 30846248,
+          "physical_pdf_page_count": 355,
+          "proof": "exact source alias record + identical recorded SHA in host map + actual current p548 bytes SHA"
+        }
+      ]
+    },
+    {
+      "alias": "saj_emanager_datasheet_en.pdf",
+      "evidence_record_id": "rec_164f4a858a6a",
+      "recorded_file": "rec_164f4a858a6a__saj_emanager_datasheet_en.pdf",
+      "recorded_recovery_basename": "",
+      "recorded_also_cited_as": [],
+      "recorded_sha256": "d623d58abfb819bf98aabc92f4c05c22804208ecde8a3d92ec2ee448cbf8dd33",
+      "recorded_bytes": 392849,
+      "recorded_hosted_url": null,
+      "host_map_urls_same_recorded_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/08/saj_emanager_datasheet_en_beu.pdf"
+      ],
+      "current_source_urls_same_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/08/saj_emanager_datasheet_en_beu.pdf"
+      ],
+      "provenance": "exact token in evidence record file/recovery basename/also_cited_as, then SHA identity join; not fuzzy file-name matching",
+      "scope": "historical public source identity data only; current applicability/statement validation not inherited",
+      "verified_current_targets": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/08/saj_emanager_datasheet_en_beu.pdf",
+          "sha256": "d623d58abfb819bf98aabc92f4c05c22804208ecde8a3d92ec2ee448cbf8dd33",
+          "bytes": 392849,
+          "physical_pdf_page_count": 2,
+          "proof": "exact source alias record + identical recorded SHA in host map + actual current p548 bytes SHA"
+        }
+      ]
+    },
+    {
+      "alias": "saj_h2_10_30k_datasheet_eu_en.pdf",
+      "evidence_record_id": "ev_fbaf08e12542",
+      "recorded_file": "ev_fbaf08e12542__saj_h2_10_30k_datasheet_eu_en.pdf",
+      "recorded_recovery_basename": "saj_h2_10_30k_datasheet_eu_en.pdf",
+      "recorded_also_cited_as": [],
+      "recorded_sha256": "0f0e75ad3f318318d1ba3f1d84a0f2c1f4864555b2deb45f4a1d0fd4cfa7acd7",
+      "recorded_bytes": 430739,
+      "recorded_hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+      "host_map_urls_same_recorded_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+      ],
+      "current_source_urls_same_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+      ],
+      "provenance": "exact token in evidence record file/recovery basename/also_cited_as, then SHA identity join; not fuzzy file-name matching",
+      "scope": "historical public source identity data only; current applicability/statement validation not inherited",
+      "verified_current_targets": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "sha256": "0f0e75ad3f318318d1ba3f1d84a0f2c1f4864555b2deb45f4a1d0fd4cfa7acd7",
+          "bytes": 430739,
+          "physical_pdf_page_count": 2,
+          "proof": "exact source alias record + identical recorded SHA in host map + actual current p548 bytes SHA"
+        }
+      ]
+    },
+    {
+      "alias": "saj_hs2_5_10k_t2_x_datasheet_en.pdf",
+      "evidence_record_id": "ev_51d6f5dabf5f",
+      "recorded_file": "ev_51d6f5dabf5f__saj_hs2_5_10k_t2_x_datasheet_en.pdf",
+      "recorded_recovery_basename": "saj_hs2_5_10k_t2_x_datasheet_en.pdf",
+      "recorded_also_cited_as": [],
+      "recorded_sha256": "259793c56a762754b21030b24bcdec2ecdc89ab044880e95767ec98f4411d8de",
+      "recorded_bytes": 1770225,
+      "recorded_hosted_url": null,
+      "host_map_urls_same_recorded_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/09/saj_hs2_5_10k_t2_x_datasheet_en.pdf"
+      ],
+      "current_source_urls_same_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/09/saj_hs2_5_10k_t2_x_datasheet_en.pdf"
+      ],
+      "provenance": "exact token in evidence record file/recovery basename/also_cited_as, then SHA identity join; not fuzzy file-name matching",
+      "scope": "historical public source identity data only; current applicability/statement validation not inherited",
+      "verified_current_targets": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/saj_hs2_5_10k_t2_x_datasheet_en.pdf",
+          "sha256": "259793c56a762754b21030b24bcdec2ecdc89ab044880e95767ec98f4411d8de",
+          "bytes": 1770225,
+          "physical_pdf_page_count": 2,
+          "proof": "exact source alias record + identical recorded SHA in host map + actual current p548 bytes SHA"
+        }
+      ]
+    },
+    {
+      "alias": "saj_chs2_datasheet_eu_en.pdf",
+      "evidence_record_id": "ev_74cb730ce3d3",
+      "recorded_file": "ev_74cb730ce3d3__saj_chs2_datasheet_eu_en.pdf",
+      "recorded_recovery_basename": "saj_chs2_datasheet_eu_en.pdf",
+      "recorded_also_cited_as": [],
+      "recorded_sha256": "bd64908d87dd1dab007f3b0bbbff0b817cd4390212bfc0ebcd2a28b600907fa7",
+      "recorded_bytes": 465688,
+      "recorded_hosted_url": null,
+      "host_map_urls_same_recorded_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/07/delinker-saj_chs2-datasheet.pdf"
+      ],
+      "current_source_urls_same_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/07/delinker-saj_chs2-datasheet.pdf"
+      ],
+      "provenance": "exact token in evidence record file/recovery basename/also_cited_as, then SHA identity join; not fuzzy file-name matching",
+      "scope": "historical public source identity data only; current applicability/statement validation not inherited",
+      "verified_current_targets": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-saj_chs2-datasheet.pdf",
+          "sha256": "bd64908d87dd1dab007f3b0bbbff0b817cd4390212bfc0ebcd2a28b600907fa7",
+          "bytes": 465688,
+          "physical_pdf_page_count": 4,
+          "proof": "exact source alias record + identical recorded SHA in host map + actual current p548 bytes SHA"
+        }
+      ]
+    },
+    {
+      "alias": "saj_b2_hv1_hv5_datasheet_au_en.pdf",
+      "evidence_record_id": "ev_e8d90fb9f075",
+      "recorded_file": "ev_e8d90fb9f075__saj_b2_hv1_hv5_datasheet_au_en.pdf",
+      "recorded_recovery_basename": "saj_b2_hv1_hv5_datasheet_au_en.pdf",
+      "recorded_also_cited_as": [],
+      "recorded_sha256": "99c1d10fae6486e314e4aa6a3767b664aa5637ce88eb2bfddbf8e11cbb85367b",
+      "recorded_bytes": 1043212,
+      "recorded_hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5.0-25.0-HV1HV5_datasheet_en_AU.pdf",
+      "host_map_urls_same_recorded_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/09/B2-5.0-25.0-HV1HV5_datasheet_en_AU.pdf"
+      ],
+      "current_source_urls_same_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/09/B2-5.0-25.0-HV1HV5_datasheet_en_AU.pdf"
+      ],
+      "provenance": "exact token in evidence record file/recovery basename/also_cited_as, then SHA identity join; not fuzzy file-name matching",
+      "scope": "historical public source identity data only; current applicability/statement validation not inherited",
+      "verified_current_targets": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5.0-25.0-HV1HV5_datasheet_en_AU.pdf",
+          "sha256": "99c1d10fae6486e314e4aa6a3767b664aa5637ce88eb2bfddbf8e11cbb85367b",
+          "bytes": 1043212,
+          "physical_pdf_page_count": 2,
+          "proof": "exact source alias record + identical recorded SHA in host map + actual current p548 bytes SHA"
+        }
+      ]
+    },
+    {
+      "alias": "saj_hs3_three_phase_datasheet_uk_en.pdf",
+      "evidence_record_id": "ev_222694080de8",
+      "recorded_file": "ev_222694080de8__saj_hs3_three_phase_datasheet_uk_en.pdf",
+      "recorded_recovery_basename": "saj_hs3_three_phase_datasheet_uk_en.pdf",
+      "recorded_also_cited_as": [],
+      "recorded_sha256": "fb371d15b1ea80d8f0288e447a19451075787c22bbf8fa1de0951587cb00c854",
+      "recorded_bytes": 422739,
+      "recorded_hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/hs3-series.pdf",
+      "host_map_urls_same_recorded_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/09/hs3-series.pdf"
+      ],
+      "current_source_urls_same_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/09/hs3-series.pdf"
+      ],
+      "provenance": "exact token in evidence record file/recovery basename/also_cited_as, then SHA identity join; not fuzzy file-name matching",
+      "scope": "historical public source identity data only; current applicability/statement validation not inherited",
+      "verified_current_targets": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/hs3-series.pdf",
+          "sha256": "fb371d15b1ea80d8f0288e447a19451075787c22bbf8fa1de0951587cb00c854",
+          "bytes": 422739,
+          "physical_pdf_page_count": 2,
+          "proof": "exact source alias record + identical recorded SHA in host map + actual current p548 bytes SHA"
+        }
+      ]
+    },
+    {
+      "alias": "goodwe_bat_c_208_261kwh_en.pdf",
+      "evidence_record_id": "ev_a587c50ec7b8",
+      "recorded_file": "ev_a587c50ec7b8__goodwe_bat_c_208_261kwh_en.pdf",
+      "recorded_recovery_basename": "goodwe_bat_c_208_261kwh_en.pdf",
+      "recorded_also_cited_as": [],
+      "recorded_sha256": "710d6f3d82664613f56bb72fd5898b5a1f9e5f7315cfc870a48822b1f3729e08",
+      "recorded_bytes": 532308,
+      "recorded_hosted_url": null,
+      "host_map_urls_same_recorded_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc208-datasheet.pdf"
+      ],
+      "current_source_urls_same_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc208-datasheet.pdf"
+      ],
+      "provenance": "exact token in evidence record file/recovery basename/also_cited_as, then SHA identity join; not fuzzy file-name matching",
+      "scope": "historical public source identity data only; current applicability/statement validation not inherited",
+      "verified_current_targets": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc208-datasheet.pdf",
+          "sha256": "710d6f3d82664613f56bb72fd5898b5a1f9e5f7315cfc870a48822b1f3729e08",
+          "bytes": 532308,
+          "physical_pdf_page_count": 2,
+          "proof": "exact source alias record + identical recorded SHA in host map + actual current p548 bytes SHA"
+        }
+      ]
+    },
+    {
+      "alias": "goodwe_bat_c_60_112kwh_en.pdf",
+      "evidence_record_id": "ev_4c590166e041",
+      "recorded_file": "ev_4c590166e041__goodwe_bat_c_60_112kwh_en.pdf",
+      "recorded_recovery_basename": "goodwe_bat_c_60_112kwh_en.pdf",
+      "recorded_also_cited_as": [],
+      "recorded_sha256": "845e51ffb2801f48971c8b53941629dde1e8bc114b9b45dbc4f08c49c5ef815c",
+      "recorded_bytes": 680989,
+      "recorded_hosted_url": null,
+      "host_map_urls_same_recorded_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf"
+      ],
+      "current_source_urls_same_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf"
+      ],
+      "provenance": "exact token in evidence record file/recovery basename/also_cited_as, then SHA identity join; not fuzzy file-name matching",
+      "scope": "historical public source identity data only; current applicability/statement validation not inherited",
+      "verified_current_targets": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+          "sha256": "845e51ffb2801f48971c8b53941629dde1e8bc114b9b45dbc4f08c49c5ef815c",
+          "bytes": 680989,
+          "physical_pdf_page_count": 2,
+          "proof": "exact source alias record + identical recorded SHA in host map + actual current p548 bytes SHA"
+        }
+      ]
+    },
+    {
+      "alias": "saj_ats1_datasheet_es.pdf",
+      "evidence_record_id": "ev_c98e5b26751d",
+      "recorded_file": "ev_c98e5b26751d__saj_ats1_datasheet_es.pdf",
+      "recorded_recovery_basename": "saj_ats1_datasheet_es.pdf",
+      "recorded_also_cited_as": [],
+      "recorded_sha256": "4326828242f2a72bba05c90bc49096d7458f5d00a2846ccd88b076f786583e9d",
+      "recorded_bytes": 369777,
+      "recorded_hosted_url": null,
+      "host_map_urls_same_recorded_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/07/ATS1-Datasheet-ES.pdf"
+      ],
+      "current_source_urls_same_sha": [],
+      "provenance": "exact token in evidence record file/recovery basename/also_cited_as, then SHA identity join; not fuzzy file-name matching",
+      "scope": "historical public source identity data only; current applicability/statement validation not inherited",
+      "verified_current_targets": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/ATS1-Datasheet-ES.pdf",
+          "sha256": "4326828242f2a72bba05c90bc49096d7458f5d00a2846ccd88b076f786583e9d",
+          "bytes": 369777,
+          "physical_pdf_page_count": 2,
+          "proof": "exact source alias record + identical recorded SHA in host map + actual current p548 bytes SHA"
+        }
+      ]
+    },
+    {
+      "alias": "pylontech_optim_us_l260_omni_en.pdf",
+      "evidence_record_id": "ev_0f76164f8e54",
+      "recorded_file": "ev_0f76164f8e54__pylontech_optim_us_l260_omni_en.pdf",
+      "recorded_recovery_basename": "pylontech_optim_us_l260_omni_en.pdf",
+      "recorded_also_cited_as": [],
+      "recorded_sha256": "bb6712735d77af454a30605abc5b93542f723efe3206d73eee5d73bb086a1699",
+      "recorded_bytes": 808044,
+      "recorded_hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/OPTIMUSL260-OMNI_20240926105739A032.pdf",
+      "host_map_urls_same_recorded_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/09/OPTIMUSL260-OMNI_20240926105739A032.pdf"
+      ],
+      "current_source_urls_same_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/09/OPTIMUSL260-OMNI_20240926105739A032.pdf"
+      ],
+      "provenance": "exact token in evidence record file/recovery basename/also_cited_as, then SHA identity join; not fuzzy file-name matching",
+      "scope": "historical public source identity data only; current applicability/statement validation not inherited",
+      "verified_current_targets": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/OPTIMUSL260-OMNI_20240926105739A032.pdf",
+          "sha256": "bb6712735d77af454a30605abc5b93542f723efe3206d73eee5d73bb086a1699",
+          "bytes": 808044,
+          "physical_pdf_page_count": 2,
+          "proof": "exact source alias record + identical recorded SHA in host map + actual current p548 bytes SHA"
+        }
+      ]
+    },
+    {
+      "alias": "goodwe_sts_125kw_datasheet_emea_en.pdf",
+      "evidence_record_id": "ev_24747adbf023",
+      "recorded_file": "ev_24747adbf023__goodwe_sts_125kw_datasheet_emea_en.pdf",
+      "recorded_recovery_basename": "goodwe_sts_125kw_datasheet_emea_en.pdf",
+      "recorded_also_cited_as": [],
+      "recorded_sha256": "348497c21d2f3ba532a9c1c3fa0d3e010355467b5cfbd9f9bff3a57de294f3df",
+      "recorded_bytes": 721308,
+      "recorded_hosted_url": null,
+      "host_map_urls_same_recorded_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/07/goodwe_sts_125kw_datasheet_emea_en-1.pdf"
+      ],
+      "current_source_urls_same_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/07/goodwe_sts_125kw_datasheet_emea_en-1.pdf"
+      ],
+      "provenance": "exact token in evidence record file/recovery basename/also_cited_as, then SHA identity join; not fuzzy file-name matching",
+      "scope": "historical public source identity data only; current applicability/statement validation not inherited",
+      "verified_current_targets": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/goodwe_sts_125kw_datasheet_emea_en-1.pdf",
+          "sha256": "348497c21d2f3ba532a9c1c3fa0d3e010355467b5cfbd9f9bff3a57de294f3df",
+          "bytes": 721308,
+          "physical_pdf_page_count": 2,
+          "proof": "exact source alias record + identical recorded SHA in host map + actual current p548 bytes SHA"
+        }
+      ]
+    },
+    {
+      "alias": "saj_emanager_c1_pro_datasheet_eu_en.pdf",
+      "evidence_record_id": "ev_536192559630",
+      "recorded_file": "ev_536192559630__saj_emanager_c1_pro_datasheet_eu_en.pdf",
+      "recorded_recovery_basename": "saj_emanager_c1_pro_datasheet_eu_en.pdf",
+      "recorded_also_cited_as": [],
+      "recorded_sha256": "f9e736af39f7b50f7760d6369cab6c95ff38882b49ac42496ce5e3751c4b1436",
+      "recorded_bytes": 408562,
+      "recorded_hosted_url": null,
+      "host_map_urls_same_recorded_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/07/delinker-saj_emanager-datasheet.pdf"
+      ],
+      "current_source_urls_same_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/07/delinker-saj_emanager-datasheet.pdf"
+      ],
+      "provenance": "exact token in evidence record file/recovery basename/also_cited_as, then SHA identity join; not fuzzy file-name matching",
+      "scope": "historical public source identity data only; current applicability/statement validation not inherited",
+      "verified_current_targets": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-saj_emanager-datasheet.pdf",
+          "sha256": "f9e736af39f7b50f7760d6369cab6c95ff38882b49ac42496ce5e3751c4b1436",
+          "bytes": 408562,
+          "physical_pdf_page_count": 2,
+          "proof": "exact source alias record + identical recorded SHA in host map + actual current p548 bytes SHA"
+        }
+      ]
+    },
+    {
+      "alias": "chint_dtsu666_catalog_en.pdf",
+      "evidence_record_id": "ev_7e5eb3bdfd0d",
+      "recorded_file": "ev_7e5eb3bdfd0d__chint_dtsu666_catalog_en.pdf",
+      "recorded_recovery_basename": "chint_dtsu666_catalog_en.pdf",
+      "recorded_also_cited_as": [],
+      "recorded_sha256": "15e28e9db71c1071441acf521c91dc3eb8b8ed597a55a2b02718db06054a9488",
+      "recorded_bytes": 505644,
+      "recorded_hosted_url": null,
+      "host_map_urls_same_recorded_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/07/chint_dtsu666_catalog_en.pdf"
+      ],
+      "current_source_urls_same_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/07/chint_dtsu666_catalog_en.pdf"
+      ],
+      "provenance": "exact token in evidence record file/recovery basename/also_cited_as, then SHA identity join; not fuzzy file-name matching",
+      "scope": "historical public source identity data only; current applicability/statement validation not inherited",
+      "verified_current_targets": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/chint_dtsu666_catalog_en.pdf",
+          "sha256": "15e28e9db71c1071441acf521c91dc3eb8b8ed597a55a2b02718db06054a9488",
+          "bytes": 505644,
+          "physical_pdf_page_count": 2,
+          "proof": "exact source alias record + identical recorded SHA in host map + actual current p548 bytes SHA"
+        }
+      ]
+    },
+    {
+      "alias": "DLK-SAJ-BU350TV2PRO_datasheet.pdf",
+      "evidence_record_id": "ev_9c0042ce1d34",
+      "recorded_file": "ev_9c0042ce1d34__DLK-SAJ-BU350TV2PRO_datasheet.pdf",
+      "recorded_recovery_basename": "DLK-SAJ-BU350TV2PRO_datasheet.pdf",
+      "recorded_also_cited_as": [],
+      "recorded_sha256": "c68e43b669c1dad71c56a25455613036eca2991ea8f3a67ca9a5867843613603",
+      "recorded_bytes": 308589,
+      "recorded_hosted_url": null,
+      "host_map_urls_same_recorded_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/09/DLK-SAJ-BU350TV2PRO_datasheet.pdf"
+      ],
+      "current_source_urls_same_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/09/DLK-SAJ-BU350TV2PRO_datasheet.pdf"
+      ],
+      "provenance": "exact token in evidence record file/recovery basename/also_cited_as, then SHA identity join; not fuzzy file-name matching",
+      "scope": "historical public source identity data only; current applicability/statement validation not inherited",
+      "verified_current_targets": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/DLK-SAJ-BU350TV2PRO_datasheet.pdf",
+          "sha256": "c68e43b669c1dad71c56a25455613036eca2991ea8f3a67ca9a5867843613603",
+          "bytes": 308589,
+          "physical_pdf_page_count": 2,
+          "proof": "exact source alias record + identical recorded SHA in host map + actual current p548 bytes SHA"
+        }
+      ]
+    },
+    {
+      "alias": "goodwe_gmk330_datasheet_en.pdf",
+      "evidence_record_id": "ev_7f2058df18d4",
+      "recorded_file": "ev_7f2058df18d4__goodwe_gmk330_datasheet_en.pdf",
+      "recorded_recovery_basename": "goodwe_gmk330_datasheet_en.pdf",
+      "recorded_also_cited_as": [],
+      "recorded_sha256": "a36d7a6c45663da323b605b707c144c187304fa5090907e70a280713e5883d12",
+      "recorded_bytes": 102424,
+      "recorded_hosted_url": null,
+      "host_map_urls_same_recorded_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/07/goodwe_gmk330_datasheet_en-1.pdf"
+      ],
+      "current_source_urls_same_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/07/goodwe_gmk330_datasheet_en-1.pdf"
+      ],
+      "provenance": "exact token in evidence record file/recovery basename/also_cited_as, then SHA identity join; not fuzzy file-name matching",
+      "scope": "historical public source identity data only; current applicability/statement validation not inherited",
+      "verified_current_targets": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/goodwe_gmk330_datasheet_en-1.pdf",
+          "sha256": "a36d7a6c45663da323b605b707c144c187304fa5090907e70a280713e5883d12",
+          "bytes": 102424,
+          "physical_pdf_page_count": 1,
+          "proof": "exact source alias record + identical recorded SHA in host map + actual current p548 bytes SHA"
+        }
+      ]
+    },
+    {
+      "alias": "goodwe_gm330_datasheet_en.pdf",
+      "evidence_record_id": "ev_58d4eddfa12f",
+      "recorded_file": "ev_58d4eddfa12f__goodwe_gm330_datasheet_en.pdf",
+      "recorded_recovery_basename": "goodwe_gm330_datasheet_en.pdf",
+      "recorded_also_cited_as": [],
+      "recorded_sha256": "9ab5bb80ad39bd69eca4e0d54d383447fe76f002fb771e0944fbcffcbb0dec3e",
+      "recorded_bytes": 103242,
+      "recorded_hosted_url": null,
+      "host_map_urls_same_recorded_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/07/goodwe_gm330_datasheet_en-1.pdf"
+      ],
+      "current_source_urls_same_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/07/goodwe_gm330_datasheet_en-1.pdf"
+      ],
+      "provenance": "exact token in evidence record file/recovery basename/also_cited_as, then SHA identity join; not fuzzy file-name matching",
+      "scope": "historical public source identity data only; current applicability/statement validation not inherited",
+      "verified_current_targets": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/goodwe_gm330_datasheet_en-1.pdf",
+          "sha256": "9ab5bb80ad39bd69eca4e0d54d383447fe76f002fb771e0944fbcffcbb0dec3e",
+          "bytes": 103242,
+          "physical_pdf_page_count": 1,
+          "proof": "exact source alias record + identical recorded SHA in host map + actual current p548 bytes SHA"
+        }
+      ]
+    },
+    {
+      "alias": "goodwe_ezmanager3000_datasheet_en.pdf",
+      "evidence_record_id": "ev_93a73562d459",
+      "recorded_file": "ev_93a73562d459__goodwe_ezmanager3000_datasheet_en.pdf",
+      "recorded_recovery_basename": "goodwe_ezmanager3000_datasheet_en.pdf",
+      "recorded_also_cited_as": [],
+      "recorded_sha256": "aeb1d7abaca0833efbbffdb3d6e86a1ffd25e73f6c363cdad40f7fc517ca177d",
+      "recorded_bytes": 123768,
+      "recorded_hosted_url": null,
+      "host_map_urls_same_recorded_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/07/goodwe_ezmanager3000_datasheet_en-1.pdf"
+      ],
+      "current_source_urls_same_sha": [],
+      "provenance": "exact token in evidence record file/recovery basename/also_cited_as, then SHA identity join; not fuzzy file-name matching",
+      "scope": "historical public source identity data only; current applicability/statement validation not inherited",
+      "verified_current_targets": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/goodwe_ezmanager3000_datasheet_en-1.pdf",
+          "sha256": "aeb1d7abaca0833efbbffdb3d6e86a1ffd25e73f6c363cdad40f7fc517ca177d",
+          "bytes": 123768,
+          "physical_pdf_page_count": 1,
+          "proof": "exact source alias record + identical recorded SHA in host map + actual current p548 bytes SHA"
+        }
+      ]
+    },
+    {
+      "alias": "goodwe_et12_30kw_user_manual_en.pdf",
+      "evidence_record_id": "ev_531b37a18905",
+      "recorded_file": "ev_531b37a18905__goodwe_et12_30kw_user_manual_en.pdf",
+      "recorded_recovery_basename": "goodwe_et12_30kw_user_manual_en.pdf",
+      "recorded_also_cited_as": [],
+      "recorded_sha256": "fba3a03ae50f5fbda2f8583c7a44a578a2e439c5fbcd2099ad3307a8fe550532",
+      "recorded_bytes": 23979719,
+      "recorded_hosted_url": null,
+      "host_map_urls_same_recorded_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/09/goodwe_et12_30kw_user_manual_en.pdf"
+      ],
+      "current_source_urls_same_sha": [],
+      "provenance": "exact token in evidence record file/recovery basename/also_cited_as, then SHA identity join; not fuzzy file-name matching",
+      "scope": "historical public source identity data only; current applicability/statement validation not inherited",
+      "verified_current_targets": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/goodwe_et12_30kw_user_manual_en.pdf",
+          "sha256": "fba3a03ae50f5fbda2f8583c7a44a578a2e439c5fbcd2099ad3307a8fe550532",
+          "bytes": 23979719,
+          "physical_pdf_page_count": 286,
+          "proof": "exact source alias record + identical recorded SHA in host map + actual current p548 bytes SHA"
+        }
+      ]
+    },
+    {
+      "alias": "chint_dtsu666_dssu666_user_manual_en.pdf",
+      "evidence_record_id": "ev_39492bc49bff",
+      "recorded_file": "ev_39492bc49bff__chint_dtsu666_dssu666_user_manual_en.pdf",
+      "recorded_recovery_basename": "chint_dtsu666_dssu666_user_manual_en.pdf",
+      "recorded_also_cited_as": [],
+      "recorded_sha256": "4cc6c9d37afa6f50bd300c152aa759408dce34403b38e6c610c1ba693263c592",
+      "recorded_bytes": 1208796,
+      "recorded_hosted_url": null,
+      "host_map_urls_same_recorded_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/07/chint_dtsu666_dssu666_user_manual_en.pdf"
+      ],
+      "current_source_urls_same_sha": [
+        "https://de-linker.com/wp-content/uploads/2026/07/chint_dtsu666_dssu666_user_manual_en.pdf"
+      ],
+      "provenance": "exact token in evidence record file/recovery basename/also_cited_as, then SHA identity join; not fuzzy file-name matching",
+      "scope": "historical public source identity data only; current applicability/statement validation not inherited",
+      "verified_current_targets": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/chint_dtsu666_dssu666_user_manual_en.pdf",
+          "sha256": "4cc6c9d37afa6f50bd300c152aa759408dce34403b38e6c610c1ba693263c592",
+          "bytes": 1208796,
+          "physical_pdf_page_count": 20,
+          "proof": "exact source alias record + identical recorded SHA in host map + actual current p548 bytes SHA"
+        }
+      ]
+    }
+  ]
+}

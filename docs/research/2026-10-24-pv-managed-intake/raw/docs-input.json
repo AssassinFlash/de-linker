@@ -1,0 +1,46 @@
+{
+  "startUrls": [
+    {
+      "url": "https://docs.apify.com/api/v2/act-runs-post"
+    },
+    {
+      "url": "https://docs.apify.com/api/v2/actor-run-get"
+    },
+    {
+      "url": "https://docs.apify.com/api/v2/actor-run-abort-post"
+    },
+    {
+      "url": "https://docs.apify.com/api/v2/dataset-items-get"
+    },
+    {
+      "url": "https://docs.apify.com/api/v2/key-value-store-record-get"
+    },
+    {
+      "url": "https://docs.apify.com/platform/actors/running/runs-and-builds"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/pvlib/pvlib-python/v0.16.1/pvlib/temperature.py"
+    },
+    {
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 8,
+  "maxResults": 8,
+  "maxConcurrency": 1,
+  "initialConcurrency": 1,
+  "saveMarkdown": true,
+  "saveText": true,
+  "saveHtml": false,
+  "saveContentTypes": "application/pdf, text/plain",
+  "htmlTransformer": "none",
+  "respectRobotsTxtFile": false,
+  "requestTimeoutSecs": 45,
+  "maxRequestRetries": 1,
+  "minFileDownloadSpeedKBps": 1,
+  "customHttpHeaders": {
+    "User-Agent": "python-requests/2.32.5"
+  }
+}

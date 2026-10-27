@@ -1,0 +1,92 @@
+{
+  "checked_at_utc": "2026-10-24T10:57:21.304016+00:00",
+  "schema": 2,
+  "table_counts": {
+    "artifacts": 0,
+    "evaluation_routes": 6,
+    "execution_control": 1,
+    "handoffs": 0,
+    "idempotency": 326,
+    "jobs": 6,
+    "ownership_transfers": 43,
+    "principal_closures": 50,
+    "project_assets": 42,
+    "projects": 165,
+    "revisions": 228,
+    "runs": 6
+  },
+  "rows_sha256": "b74d9b5e657e3180fc0182233bd1138e7a90f98fee47b3d62e1e9af4e5176295",
+  "all_table_rows_unchanged": true,
+  "protected_project": {
+    "id": "82a84c56e50c4efb8497d1bfbe106bd1",
+    "revision": 14,
+    "input_sha256": "8a6394917a9a9e6b91db4bfc73c0299dcedd2c51619144a5beffa1664f010288"
+  },
+  "worker_ready": {
+    "execution_key": "dfe60fc2089c920a945bb269da56dcb9debe6ccd5f6e9e7e70b46f6c08f55116",
+    "generation": "4c0db985f9b248b08bf798cf043d254a",
+    "name": "local-p548",
+    "pid": 71736,
+    "runtime_sha256": "9b66656acb26b65b88b09a44b8508a42094059af64b49e7038eedef0d92a10a1",
+    "schema_version": 1,
+    "storage_binding": "ec4c7866c5a15b82fcb94096a143b7e77f8801ac38153cb146e673fe1b3ea0d9"
+  },
+  "worker_process": "71736     1 /opt/homebrew/Cellar/python@3.12/3.12.15_1/Frameworks/Python.framework/Versions/3.12/Resources/Python.app/Contents/MacOS/Python -m linker_engine.planning.worker_host serve --expected-runtime 9b66656acb26b65b88b09a44b8508a42094059af64b49e7038eedef0d92a10a1 --expected-execution dfe60fc2089c920a945bb269da56dcb9debe6ccd5f6e9e7e70b46f6c08f55116 --expected-storage ec4c7866c5a15b82fcb94096a143b7e77f8801ac38153cb146e673fe1b3ea0d9 --generation 4c0db985f9b248b08bf798cf043d254a",
+  "worker_process_present": true,
+  "listeners": {
+    "9347": [
+      "p54888",
+      "cphp",
+      "f5",
+      "n127.0.0.1:9347",
+      "p54891",
+      "cphp",
+      "f5",
+      "n127.0.0.1:9347",
+      "p54892",
+      "cphp",
+      "f5",
+      "n127.0.0.1:9347",
+      "p54893",
+      "cphp",
+      "f5",
+      "n127.0.0.1:9347",
+      "p54894",
+      "cphp",
+      "f5",
+      "n127.0.0.1:9347",
+      "p54895",
+      "cphp",
+      "f5",
+      "n127.0.0.1:9347",
+      "p54896",
+      "cphp",
+      "f5",
+      "n127.0.0.1:9347"
+    ],
+    "9348": [
+      "p27382",
+      "cPython",
+      "f7",
+      "n127.0.0.1:9348"
+    ],
+    "9349": [
+      "p37511",
+      "cPython",
+      "f6",
+      "n127.0.0.1:9349"
+    ],
+    "64056": [],
+    "58673": []
+  },
+  "temporary_fixture_listener_stopped": true,
+  "new_runtime_installed": false,
+  "new_instances": 0,
+  "new_worktrees": 0,
+  "new_full_backups": 0,
+  "disk_free_bytes": 884266737664,
+  "runtime_policy_sha256": "a9703dd31e500d6bee015446a601f5e353995e539597fc817b3b86829be6403a",
+  "worker_policy_sha256": "047079c66c31459cf67aedaba43c61eef5abf1484d27c9ed3fa2369d515aecb6",
+  "source_final_pin": "ee667df1eaacf7d7b8f9972b0d05e8789dc565b3",
+  "temporary_fixture_listeners_stopped": true
+}

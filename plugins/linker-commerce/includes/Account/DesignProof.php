@@ -1,6 +1,6 @@
 <?php
 /**
- * Server-verified designs for new account and solution-draft writes.
+ * Shared current-publication and complete-item validation.
  *
  * @package Linker\Commerce
  */
@@ -9,7 +9,6 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Account;
 
-use Linker\Commerce\Health\Monitor;
 use Linker\Commerce\Products\Publication;
 use WP_Error;
 
@@ -19,70 +18,11 @@ use WP_Error;
  */
 final class DesignProof {
 	/**
-	 * External reads can be replaced by local fixtures; production uses Woo and Tools.
+	 * Current publication reads can be replaced by local fixtures.
 	 *
-	 * @param callable(array<string,mixed>):array<string,mixed>|null        $validate Current authority read.
-	 * @param callable(string,string):(array{0:int,1:string}|WP_Error)|null $fetch Trusted engine transport.
+	 * @param callable(array<string,mixed>):array<string,mixed>|null $validate Current authority read.
 	 */
-	public function __construct( private mixed $validate = null, private mixed $fetch = null ) {}
-
-	/**
-	 * Resolves a fingerprint to the engine's complete, currently valid result.
-	 *
-	 * @param string               $kind        Configurator kind.
-	 * @param array<string, mixed> $input       Original design input.
-	 * @param string               $fingerprint Result confirmed by the customer.
-	 * @param int|null             $system_index Explicit commercial system choice.
-	 * @return array<string, mixed>|WP_Error
-	 */
-	public function verify( string $kind, array $input, string $fingerprint, ?int $system_index = null ): array|WP_Error {
-		if ( ! in_array( $kind, SolutionsRoute::KINDS, true ) || 1 !== preg_match( '/^[a-f0-9]{64}$/D', $fingerprint ) || array() === $input ) {
-			return self::unavailable();
-		}
-		$body = wp_json_encode(
-			array(
-				'kind'                  => $kind,
-				'input'                 => $input,
-				'selection_fingerprint' => $fingerprint,
-			)
-		);
-		if ( ! is_string( $body ) ) {
-			return self::unavailable();
-		}
-		$url = rtrim( (string) get_option( Monitor::ENGINE_URL_OPTION, '' ), '/' ) . '/selection/validate';
-		/**
-		 * Trusted Tools adapter applies resource protection and current publication
-		 * checks in every mode. No direct-HTTP fallback can bypass that adapter.
-		 *
-		 * @since 0.2.0
-		 */
-		$reply = is_callable( $this->fetch ) ? ( $this->fetch )( $url, $body ) : apply_filters( 'linker_tools_engine_request', self::unavailable(), $url, $body ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Shared server-only Tools seam.
-		if ( $reply instanceof WP_Error || ! is_array( $reply ) || count( $reply ) !== 2 ) {
-			return self::verification_failed();
-		}
-		[ $status, $payload ] = $reply;
-		if ( $status >= 500 || in_array( $status, array( 401, 403 ), true ) ) {
-			return self::verification_failed();
-		}
-		$result = is_string( $payload ) ? json_decode( $payload, true ) : null;
-		if ( $status < 200 || $status >= 300 || ! is_array( $result ) || ( $result['selection_fingerprint'] ?? '' ) !== $fingerprint ) {
-			return self::unavailable();
-		}
-		if ( 'commercial' === $kind ) {
-			if ( null === $system_index || $system_index < 0 || ! is_array( $result['systems'][ $system_index ] ?? null ) ) {
-				return self::unavailable();
-			}
-			$result['selected_system_index'] = $system_index;
-		}
-		if ( array() === self::items( $result ) ) {
-			return self::unavailable();
-		}
-		$error = $this->current_error( $result );
-		if ( $error instanceof WP_Error ) {
-			return $error;
-		}
-		return $result;
-	}
+	public function __construct( private mixed $validate = null ) {}
 
 	/**
 	 * A final current-authority check, including all candidates and documents.

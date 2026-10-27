@@ -1,0 +1,63 @@
+{
+  "provenance": "read-only actual p548 SQLite revisions and hash-verified blobs after normal CUA form creation, real pointer edit, geometry check and Save project",
+  "project_id": "82a84c56e50c4efb8497d1bfbe106bd1",
+  "kind": "keepouts",
+  "before_revision": 10,
+  "after_revision": 11,
+  "before_input_sha256": "a298a43640639f16504597a76d0781f4fb9cbf3c77e99478990490c862b89ee6",
+  "after_input_sha256": "4bf62b8f25d736062d07963c86e36e3f1b9eb7894449170645c09b89862232d9",
+  "changed_footprint_vertices": [
+    2
+  ],
+  "all_other_fields_and_inputs_exactly_unchanged": true,
+  "before_object": {
+    "footprint_uv": [
+      [
+        9,
+        2
+      ],
+      [
+        11,
+        2
+      ],
+      [
+        11,
+        3.5
+      ],
+      [
+        9,
+        3.5
+      ]
+    ],
+    "id": "keepout_3df31cc7df90472e8d0e7bd7936c1e2f",
+    "name": "Synthetische Sperrfläche · lokale Prüfung",
+    "reason": "Synthetische Prüfzone für lokale Akzeptanztests; keine baurechtlich festgelegte Fläche.",
+    "roof_id": "roof_8cfac87f5edf38bb019d2aedb57676a6",
+    "source_id": "source_8cfac87f5edf38bb019d2aedb57676a6"
+  },
+  "after_object": {
+    "footprint_uv": [
+      [
+        9,
+        2
+      ],
+      [
+        11,
+        2
+      ],
+      [
+        10.666931399872432,
+        3.9497055650926094
+      ],
+      [
+        9,
+        3.5
+      ]
+    ],
+    "id": "keepout_3df31cc7df90472e8d0e7bd7936c1e2f",
+    "name": "Synthetische Sperrfläche · lokale Prüfung",
+    "reason": "Synthetische Prüfzone für lokale Akzeptanztests; keine baurechtlich festgelegte Fläche.",
+    "roof_id": "roof_8cfac87f5edf38bb019d2aedb57676a6",
+    "source_id": "source_8cfac87f5edf38bb019d2aedb57676a6"
+  }
+}

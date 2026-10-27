@@ -1,0 +1,88 @@
+import type { GeometryDocument, Vec2 } from "./geometry.ts";
+import { readGeometry } from "./validateGeometry.ts";
+import {
+	drawingBridge,
+	mapPolygon,
+	quantizeMapPosition,
+	readMapPolygon,
+} from "./mapDrawingGeometry.ts";
+import policy from "../contracts/geometry-policy.json" with { type: "json" };
+
+/** Application input bound, matching planning/geometry_documents.py's Text
+ * transport limit. Shared raw fields (including unparsed numbers) use this
+ * existing cap; it is not a physical limit or measurement precision. */
+export const mapDrawingTextLimit = 4096;
+
+/** Shared local working data, admitted only by the native project/scope grant. */
+export interface MapDrawingBase {
+	readonly key: string;
+	readonly project_id: string;
+	readonly locale: string;
+	readonly before: GeometryDocument;
+	readonly phase: "collecting" | "staged";
+	readonly vertices: readonly Vec2[];
+	readonly prepared_geometry: GeometryDocument | null;
+}
+const uuid =
+	/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/;
+
+/** Collection is application-owned; hover and library helpers are not vertices. */
+export function appendMapPrefix(
+	draft: MapDrawingBase,
+	value: unknown,
+): readonly Vec2[] {
+	if (
+		draft.phase !== "collecting" ||
+		draft.vertices.length >= policy.max_vertices
+	)
+		throw new Error("map_drawing_vertex_limit");
+	const point = quantizeMapPosition(value);
+	if (draft.vertices.some((old) => old[0] === point[0] && old[1] === point[1]))
+		throw new Error("map_drawing_duplicate_vertex");
+	return [...draft.vertices, point];
+}
+
+/** Each operation separately checks its exact keys and prepared-result proof. */
+export function readMapDrawingBase(
+	row: Record<string, unknown>,
+): MapDrawingBase {
+	if (
+		typeof row.key !== "string" ||
+		!uuid.test(row.key) ||
+		typeof row.project_id !== "string" ||
+		!/^[a-f0-9]{32}$/.test(row.project_id) ||
+		typeof row.locale !== "string" ||
+		row.locale.length > 64 ||
+		(row.phase !== "collecting" && row.phase !== "staged") ||
+		!Array.isArray(row.vertices) ||
+		row.vertices.length > policy.max_vertices
+	)
+		throw new Error("map_drawing_recovery_invalid");
+	new Intl.NumberFormat(row.locale);
+	const vertices = row.vertices.map((point) => {
+		const rounded = quantizeMapPosition(point);
+		if (JSON.stringify(rounded) !== JSON.stringify(point))
+			throw new Error("map_drawing_recovery_invalid");
+		return rounded;
+	});
+	if (
+		new Set(vertices.map((point) => JSON.stringify(point))).size !==
+		vertices.length
+	)
+		throw new Error("map_drawing_recovery_invalid");
+	if (row.phase === "staged") readMapPolygon(mapPolygon(vertices));
+	const before = readGeometry(row.before, policy);
+	drawingBridge(before);
+	return {
+		key: row.key,
+		project_id: row.project_id,
+		locale: row.locale,
+		before,
+		phase: row.phase,
+		vertices,
+		prepared_geometry:
+			row.prepared_geometry === null
+				? null
+				: readGeometry(row.prepared_geometry, policy),
+	};
+}

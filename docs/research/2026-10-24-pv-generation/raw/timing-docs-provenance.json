@@ -1,0 +1,27 @@
+[
+  {
+    "url": "https://ec.europa.eu/jrc/en/PVGIS/tools/tmy",
+    "loadedURL": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/using-pvgis-5/pvgis-5-tools/pvgis-typical-meteorological-year-tmy-generator_en",
+    "httpStatus": 200,
+    "loadedTime": "2026-10-24T03:04:21.372Z",
+    "contentType": "text/html; charset=utf-8",
+    "apifyRun": "KXLQT7QJJzUJlraCP",
+    "markdownBytes": 6256,
+    "markdownSHA256": "42c39e356f90e262ba74d20dfbc80eac26781042072f35df32aff3eb87483f4f",
+    "extract": "official-tmy-format.md",
+    "capture": "Apify page markdown extraction, not provider raw response bytes"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/pvlib/pvlib-python/v0.16.1/docs/tutorials/tmy_to_power.ipynb",
+    "loadedURL": "https://raw.githubusercontent.com/pvlib/pvlib-python/v0.16.1/docs/tutorials/tmy_to_power.ipynb",
+    "httpStatus": 200,
+    "loadedTime": "2026-10-24T03:04:23.691Z",
+    "contentType": "text/plain; charset=utf-8",
+    "apifyRun": "KXLQT7QJJzUJlraCP",
+    "apifyRecord": "https://api.apify.com/v2/key-value-stores/jOXZhjcXeFS5hsuO2/records/file-9e33454-tmy_to_power.ipynb",
+    "providerBytes": 963515,
+    "providerSHA256": "581e27258625d7c4783a1d6e6498151e7d74e38610783053bc2a9739926d770e",
+    "capture": "markdown/code cells extracted from original pinned notebook; outputs/images omitted",
+    "retention": "metadata only: this tutorial uses TMY3 rather than PVGIS timing; do not transfer its half-hour shift. Model API facts are verified against exact local v0.16.1 tag source instead."
+  }
+]

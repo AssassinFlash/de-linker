@@ -1,0 +1,110 @@
+Independent Standards checks
+Source pin: cf951e3d2219015c65943e0fc21b74b55bac7b0a
+Accepted base: 367640fcf09eba92eb77b8e61aaedaa6957cdd7b
+
+No network, live service/database, browser or credential access. TestClient is in process. The sole temporary test store was owned by this Standards reviewer and removed automatically before completion. Existing packages were reused offline; no dependency tree, worktree, backup or running instance was created.
+
+Solar draft/compiler regression
+Command: node --test src/domain/solarSetup.test.ts
+Exit code: 0
+✔ solar drafts retain incomplete explicit choices without inventing parameter values (5.471833ms)
+✔ actual published worker fixture compiles identically, without model defaults or rounding (5.281209ms)
+✔ draft version, identities, constants, structure and numeric types stay strict (0.9425ms)
+✔ weather preparation checks year order, integer/range constraints and non-leap output axis (0.337833ms)
+✔ changing source/model inputs invalidates prepared documents and retains unrelated draft edits (0.590333ms)
+✔ PV preparation requires the current active layout, exact module set and partitioned conversion groups (2.204292ms)
+✔ PV source references require complete safe datasheet evidence before preparation (2.173ms)
+✔ explicit weather replacement clears only the stale binding and prepared replay, so native saving can accept the new request (0.310459ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 390.424
+
+Weather shared-controller DOM regression
+Command: node --no-warnings=ExperimentalWarning --loader ./tests/tsx-loader.mjs --test tests/weather-setup.test.mjs
+Exit code: 0
+✔ weather controls retain unfinished negative coordinates across views, require explicit preparation/save, then dispatch one frozen native request (338.072916ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1367.80725
+
+Backend schema parity and actual TS-to-ASGI save contract
+Command: PYTHONDONTWRITEBYTECODE=1 uv run --offline --no-sync python -B [in-process schema documents comparison; pytest tests/planning/test_browser_solar_contracts.py with cache disabled and TemporaryDirectory basetemp]
+Exit code: 0
+PASS: four exported schemas equal actual backend-generated contracts; no files written
+Temporary fixture: sole in-process contract store; owner Standards reviewer; removed at test completion
+.                                                                        [100%]
+1 passed in 1.50s
+Temporary contract fixture removed: True
+
+Frozen artifact, reviewed source and translation alignment
+Command: Read-only Python: git show frozen blobs; compare every manifest hash, 99 approved source messages and PO/MO/planner JSON
+Exit code: 0
+fatal: path 'apps/planner/src/components/energy/WeatherForm.tsx' exists on disk, but not in '367640fcf09eba92eb77b8e61aaedaa6957cdd7b'
+fatal: path 'apps/planner/src/components/energy/WeatherSetup.tsx' exists on disk, but not in '367640fcf09eba92eb77b8e61aaedaa6957cdd7b'
+Frozen pin: cf951e3d2219015c65943e0fc21b74b55bac7b0a base: 367640fcf09eba92eb77b8e61aaedaa6957cdd7b
+Manifest counts: {'sources': 158, 'build': 7} hash mismatches: []
+Review rows: 99 reviewed not in actual source: [] new source without review: [] PO/MO/JSON mismatches: []
+Added legacy identifier hits: 0
+Planner gateway/identity PHP changes: []
+New schema bindings: {'pv-generation': 'cefe650e88813a579998256efd278d0978becef69c3556ecb4d919cf5e2a6f2c', 'weather-acquisition': 'f851249627d0d499d856bbb43f75473d75cd9b84f1641b37ef756354442cca8b'}
+
+Generated modules and native WordPress i18n
+Command: Read-only Node: parse frozen generated JS, validate named imports and Vite links; load exact frozen planner JSON through installed @wordpress/i18n and compare all 99 approved translations/placeholders
+Exit code: 0
+{"pin":"cf951e3d2219015c65943e0fc21b74b55bac7b0a","parsed_modules":5,"named_imports_resolve":55,"reviewed_ENDE":99,"built_source_and_native_i18n_and_placeholders":"all pass"}
+
+Strict default mypy, uncached
+Command: uv run --offline --no-sync mypy --cache-dir=/dev/null src tests/planning/test_browser_solar_contracts.py scripts/export_planner_schemas.py
+Exit code: 1
+tests/planning/test_pvgis_tmy.py:75: error: Function is missing a return type annotation  [no-untyped-def]
+tests/planning/test_private_http.py:763: error: Argument 2 to "exercise_boundary" has incompatible type "list[dict[str, str]] | list[dict[str, Sequence[object]]]"; expected "list[MutableMapping[str, Any]]"  [arg-type]
+tests/planning/test_private_http.py:775: error: Need type annotation for "extra"  [var-annotated]
+Found 3 errors in 2 files (checked 159 source files)
+
+Notes:
+- The two git-show 'fatal' diagnostics in the artifact check are expected when comparing newly added WeatherForm/WeatherSetup against a base where they do not exist. The script catches absence as an empty baseline; its verification exits zero.
+- The default strict mypy run is retained as FAILED: three followed-import errors in unchanged test_pvgis_tmy.py and test_private_http.py. Neither old test file changes in this diff. No type-error waiver or config change is applied here.
+- Source-only credential/model/private-route indicator scan returned no hits. Planner gateway/identity PHP has no changes. Negative URL fixtures remain data validation tests, not new transport.
+
+Final independent Standards closure
+Source pin: 471755229cf369f4a82711bd7b9f12d05e161154
+Accepted base: 367640fcf09eba92eb77b8e61aaedaa6957cdd7b
+Prior report and failed strict run above remain unchanged.
+
+Uncached strict source/new-contract/generator typing
+Command: MYPY_PATH=src .venv/bin/mypy --cache-dir=/dev/null src tests/planning/test_browser_solar_contracts.py scripts/export_planner_schemas.py
+Exit code: 0
+Success: no issues found in 159 source files
+
+Affected helper and actual TS-to-ASGI regression
+Command: PYTHONDONTWRITEBYTECODE=1 uv run --offline --no-sync python -B; pytest -q -p no:cacheprovider --basetemp=<TemporaryDirectory> tests/planning/test_browser_solar_contracts.py tests/planning/test_pvgis_tmy.py tests/planning/test_private_http.py::test_streamed_cap_disconnect_length_mismatch_and_principal_overwrite tests/planning/test_private_http.py::test_browser_owner_context_and_schema_coercions_are_not_commands
+Exit code: 0
+Temporary in-process fixture: Standards reviewer; reclaimed at completion
+......................                                                   [100%]
+22 passed in 3.74s
+Temporary closure store removed: True
+
+Frozen final manifest, production-byte identity and broad-debt file proof
+Command: Read-only Python git-show comparisons at final pin vs prior pin and accepted base
+Exit code: 0
+Frozen source 471755229cf369f4a82711bd7b9f12d05e161154 manifest {'sources': 158, 'build': 7} mismatches []
+Production module/Vite/scan/PO/MO/planner JSON/CSS changes since prior pin: []
+Whole-mypy remaining-file proof independently compared: 16 mismatches [] reported summary Found 199 errors in 16 files (checked 222 source files)
+Cumulative added legacy identifier hits: 0
+
+Final scope/readback:
+- Initial report preserved byte-identically as standards-initial.md, SHA-256 e0a115188b8886e6797645b4f7b2e2f15a0d4ee68d2b8fb5630a9cdf836f3a67.
+- Inspected all new delta hunks: numeric-source comments, annotation-only helper fixes, development-fixture HMR root disposal, and source-manifest hash update.
+- Production build/CSS/catalog bytes have no changes from the independently checked cf951e3d pin. The 99-message native-i18n/placeholder and generated-module checks above still apply.
+- The reported whole-engine mypy result is still 199 errors in 16 other files, not a green whole-engine gate. All 16 byte/hash comparisons to base passed independently; the whole broad suite was not rerun by this reviewer.
+- The sole in-process test store was automatically removed. No live service, real database, network, credential, browser session, backup, extra worktree or running instance was accessed or changed.

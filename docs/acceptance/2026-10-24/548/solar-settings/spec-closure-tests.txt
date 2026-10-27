@@ -1,0 +1,34 @@
+Independent cumulative Spec closure
+Source cf951e3d2219015c65943e0fc21b74b55bac7b0a
+Accepted base 367640fcf09eba92eb77b8e61aaedaa6957cdd7b
+
+Original independent counterexample rerun using actual TypeScript functions and
+Python ProjectInputs/check_pv_preparation, with retained owned-asset read stub:
+original: native Save preflight PASS
+changed: native Save preflight PASS
+prepared: native Save preflight PASS
+reattached: native Save preflight REJECTED InvalidInput: selected weather differs from the saved source request
+PASS field-only edit retains selection; replacement preparation clears stale
+binding/replay; unchanged preparation retains both; geometry, PV parameters,
+profile selections and unrelated edits retained; original object unmodified.
+
+Actual HTTP/import/storage regression executed independently:
+PYTHONDONTWRITEBYTECODE=1 uv run --no-sync python -B -m pytest -p no:cacheprovider
+  --basetemp <owned temporary test directory>
+  tests/planning/test_browser_solar_contracts.py -q
+1 passed in 2.60s
+Assertions include replacement Save 200, historical owned source/revision intact,
+mismatched old-source reattachment 422, no extra revision from rejected save.
+Independent test temporary workspace removed: True
+
+Node checks executed independently from apps/planner:
+node --test src/domain/solarSetup.test.ts: 8 passed
+node --no-warnings=ExperimentalWarning --loader ./tests/tsx-loader.mjs --test
+  tests/weather-setup.test.mjs tests/energy-operations.test.mjs
+  tests/preparation-ui.test.mjs tests/energy-workspace.test.mjs: 23 passed
+npm run build:check: source/build hashes match; 1 built-module test passed
+Total: 32 Node tests passed.
+
+Exact approved English source/native German JSON catalog match: 99 entries.
+No source, catalog, running service, instance or persistent database modified.
+Only the owned temporary fixture workspace was created and fully reclaimed.

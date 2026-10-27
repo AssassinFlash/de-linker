@@ -41,6 +41,43 @@ final class PublicLedgerTest extends IntegrationTestCase {
 		return hash( 'sha256', 'synthetic request' );
 	}
 
+	/** A legacy retry retains its original debit, even when that quota is full. */
+	public function test_context_lookup_preserves_legacy_receipts_without_cross_context_reuse(): void {
+		$ledger  = new Ledger();
+		$limits  = array( new Allowance( 'day', 'synthetic-legacy', 1, DAY_IN_SECONDS ) );
+		$id      = wp_generate_uuid4();
+		$fp      = $this->fingerprint();
+		$binding = hash( 'sha256', 'synthetic binding' );
+		$this->assertIsArray( $ledger->reserve( $id, $fp, $limits, 60, array(), 'planner_write', $binding ) );
+		$sent = $ledger->dispatch( $id, $fp );
+		$this->assertIsArray( $sent );
+		$this->assertSame( $sent, $ledger->lookup_context( $id, $fp, 'planner_write', $binding ) );
+		foreach ( array(
+			array( wp_generate_uuid4(), $fp, 'planner_write', $binding ),
+			array( $id, $fp, 'other_write', $binding ),
+			array( $id, $fp, 'planner_write', hash( 'sha256', 'different binding' ) ),
+		) as $context ) {
+			$unknown = $ledger->lookup_context( ...$context );
+			$this->assertInstanceOf( WP_Error::class, $unknown );
+			$this->assertSame( 'linker_admission_unknown_receipt', $unknown->get_error_code() );
+		}
+		$changed = $ledger->lookup_context( $id, hash( 'sha256', 'different intent' ), 'planner_write', $binding );
+		$this->assertInstanceOf( WP_Error::class, $changed );
+		$this->assertSame( 'linker_admission_payload_changed', $changed->get_error_code() );
+		$replayed = $ledger->reserve( $id, $fp, $limits, 60, array(), 'planner_write', $binding );
+		$this->assertIsArray( $replayed );
+		$this->assertSame( 0, $replayed['allowances'][0]['remaining'] );
+		$this->assertInstanceOf( WP_Error::class, $ledger->reserve( wp_generate_uuid4(), $fp, $limits, 60, array(), 'planner_write', $binding ) );
+		$this->assertIsArray( $ledger->complete( $id, $fp ) );
+		$confirmed = $ledger->lookup_context( $id, $fp, 'planner_write', $binding );
+		$this->assertIsArray( $confirmed );
+		$this->assertSame( 'completed', $confirmed['status'] );
+		$this->assertIsArray( $ledger->privacy( array( $limits[0]->owner() ), true ) );
+		$erased = $ledger->lookup_context( $id, $fp, 'planner_write', $binding );
+		$this->assertInstanceOf( WP_Error::class, $erased );
+		$this->assertSame( 'linker_admission_erased', $erased->get_error_code() );
+	}
+
 	/** Denying the last dimension must leave all earlier dimensions untouched. */
 	public function test_multiple_dimensions_never_partially_spend(): void {
 		$ledger = new Ledger();

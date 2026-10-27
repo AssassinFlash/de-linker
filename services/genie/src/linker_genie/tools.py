@@ -14,6 +14,7 @@ READ_PAGE = "linker/read-page"
 # The saved solution this process reads through the shell's read-only ability
 # (solution.py, #496).
 READ_SOLUTION = "linker/read-solution"
+READ_PLANNING = "linker/read-planning-project"
 # The attachments this process reads itself (attachments.py, #236): one tool call in
 # the turn log per file read, so the quality check sees what the answer read.
 READ_ATTACHMENT = "linker/read-attachment"

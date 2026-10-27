@@ -1,0 +1,79 @@
+{
+  "review_axis": "Spec",
+  "reviewer_task": "map_feature_spec",
+  "review_kind": "followup_addendum",
+  "created_at_utc": "2026-10-23T22:08:49.020725+00:00",
+  "base": "55104bbdbbf9e694eba4785787daaaf109b99ed8",
+  "source_pin": "b57d7dbfe20559ff513b2122500c57fd708996c7",
+  "head_at_completion": "b57d7dbfe20559ff513b2122500c57fd708996c7",
+  "diff_command": "git diff 55104bbdbbf9e694eba4785787daaaf109b99ed8...b57d7dbfe20559ff513b2122500c57fd708996c7",
+  "commits": [
+    "b57d7dbfe20559ff513b2122500c57fd708996c7 refactor(planner): share sourced drawing input bounds and entry eligibility",
+    "2b08e309282034e6c2ab77a6f580706d2c713d8d fix(planner): retain roof and feature context while collecting corners"
+  ],
+  "changed_file_sha256": {
+    "apps/planner/src/components/design/MapDrawingWorkspace.tsx": "c6ccf1ff289ef4e4dbf5c2f185023e57607a4dac0657f664ec2790ba430ea518",
+    "apps/planner/src/components/design/MapFeatureProperties.tsx": "94aef361ad3a60586b771eada943dde5f40e58c6beb3b0c7d492e0e15d41fee4",
+    "apps/planner/src/components/design/MapRoofProperties.tsx": "068e340cd8ae71866321f021b1d7594d27df8a45158b9ab64dbd22323ed4a9d9",
+    "apps/planner/src/components/design/mapDrawingLabels.ts": "f3fc57c237169a79406adbee283758a4b4052ffb6cd452adf26d349f91d4a15f",
+    "apps/planner/src/domain/mapDrawingBase.ts": "c8e0d5b847970e8ad30dcce2c59566549af791041e379481de740f91b03de063",
+    "apps/planner/src/domain/mapFeatureDraft.ts": "e3985f21ef3f2ff18f29e24cecdb774cb9f2ed5d41dce70e3774da9921f7f5e5",
+    "apps/planner/src/domain/mapRoofDraft.ts": "4ab4f3ad5dd8d9156a6da618f7fb91febfb71c27114e19d6f19592cae7fb6283",
+    "apps/planner/tests/map-roof-workspace.test.mjs": "400c8237fe8da58634688f7e0447b13d436cfff009b598d228929abd7ceb2e7c",
+    "docs/acceptance/2026-10-24/548/map-feature-creation/native-context-final.txt": "aaf4cd5c51a27ecff257c9b5a6dcef690a9e821f498a020e9464757d62af87e1",
+    "docs/acceptance/2026-10-24/548/map-feature-creation/native-context-initial-failure.txt": "75c7d856a044333e624628750285db6124add44ee441471544a1408aa1697261",
+    "docs/specs/548-map-feature-creation.md": "1a6accdcb617638512948bf2bd97c2beac3a1805fb271a8a42279e1d0199ffbc",
+    "plugins/linker-tools/build/planner/assets/MapViewport-u5LDdZOy.js": "68442409459afc7a02179908e26567e426b517812f4f9a8d250d9798b1b88582",
+    "plugins/linker-tools/build/planner/assets/SceneViewport-DQ3XZYvk.js": "cc737e5ef7d2260d31b315b7c15d8decd326bf774dddd733cdaab11554d2c5e4",
+    "plugins/linker-tools/build/planner/assets/planner-core-CroUBThs.js": "16ca10cd7559023c41b6f83a61a3d504c635f9b232c1443780068d35fec3b557",
+    "plugins/linker-tools/build/planner/assets/planner.js": "dec8b7a3214ae2d9260eed1112c6907002596e876a14d1f6bbca00258704c90d",
+    "plugins/linker-tools/build/planner/source-manifest.json": "b0f292e61a97d0d1581c9729b230be66e4f78699d6e94d34ea189bc675343606",
+    "plugins/linker-tools/build/planner/vite-manifest.json": "6bfb3e83e82fc551084b7db4dc28b851378769c5dce4901ecf1ece038070bd20"
+  },
+  "source_and_build_manifest_verified": true,
+  "manifest_source_count": 125,
+  "manifest_build_count": 7,
+  "checks": [
+    {
+      "command": "node --test src/domain/mapRoofDraft.test.ts src/domain/mapFeatureDraft.test.ts",
+      "passed": 11,
+      "failed": 0,
+      "log": "domain-output.txt"
+    },
+    {
+      "command": "node --no-warnings=ExperimentalWarning --loader ./tests/tsx-loader.mjs --test --test-name-pattern '^new (hole|obstacle|keepout) UI' tests/map-roof-workspace.test.mjs",
+      "passed": 3,
+      "failed": 0,
+      "log": "context-ui-output.txt"
+    },
+    {
+      "command": "npm run build:check",
+      "passed": 1,
+      "failed": 0,
+      "log": "build-check-output.txt"
+    }
+  ],
+  "unchanged_geometry_journal_engine_paths": [
+    "apps/planner/src/domain/mapDrawingGeometry.ts",
+    "apps/planner/src/domain/geometryCommands.ts",
+    "apps/planner/src/domain/geographic.ts",
+    "apps/planner/src/data/useMapDrawingDraft.ts",
+    "apps/planner/src/data/MapDrawingDraftStore.ts",
+    "apps/planner/src/data/MapDrawingController.ts",
+    "apps/planner/src/data/MapPrefixController.ts",
+    "apps/planner/src/data/geometryReview.ts",
+    "services/engine/src"
+  ],
+  "prior_evidence_preserved_sha256": {
+    "REPORT.md": "48870f6220421f99db93c2328ae01bdb4dd9a9cc635c8ea0f73e86f87ca93ca7",
+    "identity.json": "abbecd97d3089c00a3cb59a24d724d276d3795237419bfdfdcaf50a3ebcc1539",
+    "engine-gate-probe.test.mjs": "f99e5ee983656465c1f8d1eb19ffcdd9ae50596aa4d4c6eb219419e8789ac7bb",
+    "engine-gate-probe-initial-output.txt": "515c1f36b6ccbd5456f7bce2f9f53f35bfbcf3431ca81ab213cdf0de59a0c74a",
+    "engine-gate-probe-corrected-output.txt": "8986a3824ba37f3eee36a094cd19955bf5148e12278f65291a51fab597e03b5a"
+  },
+  "limitations": "Actual React/journal/controller with labelled JSDOM/MapLibre port. No native browser, HTTP/server, engineering/country/report/site-consumer or production acceptance claimed. Original 17 actual-engine cases were not rerun because their code paths did not change.",
+  "ownership": "Only this addendum directory written. No source/build/browser/runtime/dependency/git/settings mutations; no new instances/copies.",
+  "retention": "Small unique incremental evidence; prior unique review evidence retained. No runtime resource was created.",
+  "confirmed_spec_findings": 0,
+  "full_goal_complete": false
+}

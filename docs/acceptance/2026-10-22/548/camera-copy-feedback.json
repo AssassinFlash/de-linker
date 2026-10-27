@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_adversarial_customer_copy_only",
+  "reviewer": "/root/geographic_standards_e138",
+  "reviewed_at_utc": "2026-10-23T11:38:01.966176+00:00",
+  "verdict": "PASS_UNCHANGED",
+  "source": {
+    "path": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-22/548/camera-copy-draft.json",
+    "sha256": "d44b0cb0f5a415f12996ae429365d53a8343566bd50e0857265ec28966f9a008",
+    "pair_count": 3
+  },
+  "dimension": "Choose an optional display mode within the 3D view without exposing renderer implementation names on the primary customer surface.",
+  "scope": "Only these three copy pairs and the parent-supplied existing explicit display choice were reviewed. Working camera code, default view/fit mathematics, rendered devices, existing Fit wording and the ongoing eff8341d Standards verdict are separate.",
+  "rulers": [
+    "Current AGENTS/CONTEXT vocabulary and formal de_DE_formal register",
+    "linker-copywriting Hard Stops 1–9, loaded encyclopedia/anti-patterns/positive-example rulers",
+    "Humanizer pattern removal only; functional UI guidance is allowed and the formal register is preserved"
+  ],
+  "must_change": [],
+  "recommended_change": [],
+  "final_pairs": [
+    {
+      "id": "CAM-001",
+      "draft": {
+        "en": "View options",
+        "de": "Ansichtsoptionen"
+      },
+      "opposition_and_resolution": "View options / Ansichtsoptionen is a plain disclosure label for display settings. The plural is a normal category heading, not a promise of extra unimplemented controls. It does not promote a renderer API as customer value.",
+      "decision": "keep",
+      "final_proposal": {
+        "en": "View options",
+        "de": "Ansichtsoptionen"
+      }
+    },
+    {
+      "id": "CAM-002",
+      "draft": {
+        "en": "Compatibility mode",
+        "de": "Kompatibilitätsmodus"
+      },
+      "opposition_and_resolution": "Compatibility mode / Kompatibilitätsmodus names the existing optional display choice in context. It must remain beside the 3D-specific help; there it does not imply inverter/battery compatibility, engineering release, automatic repair or support for every device.",
+      "decision": "keep",
+      "final_proposal": {
+        "en": "Compatibility mode",
+        "de": "Kompatibilitätsmodus"
+      }
+    },
+    {
+      "id": "CAM-003",
+      "draft": {
+        "en": "Use this if the 3D view does not display correctly.",
+        "de": "Nutzen Sie diesen Modus, wenn die 3D-Ansicht nicht korrekt dargestellt wird."
+      },
+      "opposition_and_resolution": "The conditional help describes when the reader can try an actual control. It does not say the mode will resolve the problem. Nutzen Sie is natural formal German; the 3D-Ansicht compound is idiomatic. This necessary UI instruction is not marketing homework.",
+      "decision": "keep",
+      "final_proposal": {
+        "en": "Use this if the 3D view does not display correctly.",
+        "de": "Nutzen Sie diesen Modus, wenn die 3D-Ansicht nicht korrekt dargestellt wird."
+      }
+    }
+  ],
+  "implementation_contracts_to_check_at_fixed_sha": [
+    "The disclosure belongs to the 3D display, and its checkbox help remains associated with the actual checkbox so compatibility cannot be confused with electrical suitability.",
+    "The optional checkbox selects the existing explicitly requested WebGL 2 display path. No automatic device-repair, universal-support or successful-render promise is introduced.",
+    "Selecting a display mode changes no roof geometry, energy result, original source, engineering status, project revision or saved-data fact.",
+    "Renderer diagnostics may remain inspectable in data-renderer; hiding API names from the primary label does not erase the underlying evidence.",
+    "The existing accessible control and its EN/DE per-script catalog must actually use these exact strings. This copy review does not establish native loading or visual acceptance."
+  ],
+  "rejected_alternatives": [
+    {
+      "text": "Fix the 3D view",
+      "reason": "Claims a successful repair that this optional existing renderer choice cannot guarantee."
+    },
+    {
+      "text": "Works on all devices / Compatible with every browser",
+      "reason": "Unsupported universal support claim."
+    },
+    {
+      "text": "WebGPU / WebGL 2 as the primary mode labels",
+      "reason": "Implementation names do not explain the customer action; keep technical diagnostics in their inspectable detail surface."
+    }
+  ],
+  "pre_delivery": {
+    "one_dimension_named": true,
+    "hard_stops_1_through_9_checked": true,
+    "functional_instruction_exception_applied": true,
+    "formal_german_independently_checked": true,
+    "no_new_equipment_or_service_term": true,
+    "no_invented_output_precision_or_compliance": true,
+    "no_unsupported_device_or_repair_promise": true,
+    "no_borrowed_credibility_or_proof_inventory": true,
+    "no_slogan_or_invented_customer_future": true,
+    "no_em_or_en_dash_in_customer_copy": true,
+    "no_testimonial_or_external_quote": true,
+    "no_external_research_needed": true,
+    "runtime_and_native_acceptance_proved": false
+  },
+  "handoff": "All three final proposals are unchanged and ready for parent adoption. Record final source/catalog/native evidence separately. This feedback does not change the fixed eff8341d code review or accept the complete workbench goal."
+}

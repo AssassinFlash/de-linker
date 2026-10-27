@@ -1,0 +1,29 @@
+✔ opening history after its first page loads pins the verified visible run in native links, only with current admission (168.162416ms)
+✔ actual scenario controls retain raw input, require confirmed save, use one frozen revision, and preserve edits from a late preparation response (420.355083ms)
+✔ same identity rechecks retain delayed edits and invalid raw numeric text (1226.164083ms)
+✔ reopening the #lp-map-roof-properties property link preserves the roof workspace and map recovery entry (72.563708ms)
+✔ reopening the #lp-map-ring-properties property link preserves the roof workspace and map recovery entry (50.937333ms)
+✔ reopening the #lp-map-feature-properties property link preserves the roof workspace and map recovery entry (42.781041ms)
+✔ Journal workspaces show one task while retaining real input nodes, values and undo history (190.907834ms)
+✔ failed storage and failed identity refresh preserve hidden edits until same owner returns (93.652833ms)
+✔ a confirmed different identity removes the former editor and does not grant its project (49.24425ms)
+✔ the actual project bar is observed after asynchronous draft opening and on resize (31.97875ms)
+✔ creation authentication failure rechecks once and explicitly retries the exact intent (46.644916ms)
+▶ a former identity's delayed creation cannot dispatch or restore cache and navigation
+  ✔ write (356.781834ms)
+  ✔ clear (120.762333ms)
+✔ a former identity's delayed creation cannot dispatch or restore cache and navigation (479.944917ms)
+▶ native confirmation fences pending creation, revision and navigation before React commits
+  ✔ write (63.963292ms)
+  ✔ clear (67.826208ms)
+  ✔ revise (334.174792ms)
+  ✔ close (105.811041ms)
+✔ native confirmation fences pending creation, revision and navigation before React commits (576.802958ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3776.311916

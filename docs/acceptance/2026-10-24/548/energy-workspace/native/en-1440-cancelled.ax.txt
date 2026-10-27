@@ -1,0 +1,114 @@
+Browser tab: 2, Title: "Solution Configurator · Workspace review | Linker", URL: "http://127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=a0f51822d8ee4e0e98ff4112145ed767#lp-calculations".
+1 AXWebArea Solution Configurator · Workspace review | Linker, URL: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=a0f51822d8ee4e0e98ff4112145ed767#lp-calculations
+	2 container
+		3 container Primary navigation
+			4 link Description: Linker home, Value: 127.0.0.1:9347/
+			5 pop up button (collapsed) Products, Secondary Actions: Expand
+				6 text Products
+				7 image
+			8 pop up button (collapsed) Solutions, Secondary Actions: Expand
+				9 text Solutions
+				10 image
+			11 pop up button (collapsed) Plan with Linker, Secondary Actions: Expand
+			12 link Description: Services, Value: 127.0.0.1:9347/services-support/
+			13 pop up button (collapsed) For Partners, Secondary Actions: Expand
+			14 pop up button (collapsed) About, Secondary Actions: Expand
+			15 link Description: Search products, Value: 127.0.0.1:9347/products/#search-box
+			16 link Description: Solution draft, Value: 127.0.0.1:9347/cart/
+			17 pop up button (collapsed) Description: My account, Secondary Actions: Expand
+			18 container Language
+				19 link Description: EN, Help: English, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=a0f51822d8ee4e0e98ff4112145ed767#lp-calculations
+				20 link Description: DE, Help: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be&run=a0f51822d8ee4e0e98ff4112145ed767#lp-calculations
+			21 link Description: Contact Linker, Value: 127.0.0.1:9347/contact/
+		22 container
+			23 button Projects
+			24 text Lyon · synthetic energy scenario · acceptance
+			25 text Saved · revision 5
+			26 button Undo
+			27 button (disabled) Redo
+			28 button (disabled) Save project
+			29 text Solution Configurator CURRENT PROJECT
+			30 container Project sections
+				31 link Description: Project overview, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=a0f51822d8ee4e0e98ff4112145ed767#lp-overview
+				32 link Description: Site and project, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=a0f51822d8ee4e0e98ff4112145ed767#lp-site
+				33 link Description: Roof design, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=a0f51822d8ee4e0e98ff4112145ed767#lp-design
+				34 link Description: Energy inputs, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=a0f51822d8ee4e0e98ff4112145ed767#lp-load
+				35 link Description: Energy calculation, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=a0f51822d8ee4e0e98ff4112145ed767#lp-calculations
+			36 text Project information is kept with its source and revision. CURRENT PROJECT
+			37 heading Lyon · synthetic energy scenario · acceptance, Value: 1
+				38 text Lyon · synthetic energy scenario · acceptance
+			39 text Site data and roof layouts are saved in the same project.
+			40 container Energy calculation, ID: lp-calculations
+				41 text 07
+				42 heading Energy calculation, Value: 2, ID: lp-calculations-heading
+					43 text Energy calculation
+				44 text Calculate this project's energy flows over the selected periods. Each saved result keeps the inputs, sources and model used.
+				45 container Calculation workspace view
+					46 checkbox Scenario settings, Value: 0
+					47 checkbox Saved calculations, Value: 1
+				108 container
+					109 heading Calculation history, Value: 3
+						110 text Calculation history
+					111 checkbox Revision 5 Calculation cancelled 10/24/26, 10:14 AM, Value: 1
+						112 text Revision 5
+						113 text Calculation cancelled
+						114 text 10/24/26, 10:14 AM
+					115 checkbox Revision 4 Calculation failed 10/24/26, 10:06 AM, Value: 0
+						116 text Revision 4
+						117 text Calculation failed
+						118 text 10/24/26, 10:06 AM
+					119 checkbox Revision 3 Calculation complete 10/24/26, 9:38 AM, Value: 0
+						120 text Revision 3
+						121 text Calculation complete
+						122 text 10/24/26, 9:38 AM
+				123 text SAVED CALCULATION
+				124 heading Calculation cancelled, Value: 3
+					125 text Calculation cancelled
+				126 text Input revision 5
+				127 text The server has confirmed cancellation. Any earlier saved results remain available.
+			64 text Solution Configurator
+			65 text by Linker
+			66 text Linker brings your inputs into an editable project for solar and storage planning.
+			67 button (collapsed) About this tool, Secondary Actions: Expand
+				68 text About this tool
+		69 container tv-footer-v2
+			70 image Linker
+			71 container
+				72 text Language
+				73 container Language
+					74 link Description: English, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=a0f51822d8ee4e0e98ff4112145ed767#lp-calculations
+					75 link Description: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be&run=a0f51822d8ee4e0e98ff4112145ed767#lp-calculations
+			76 text LINKING
+			77 link Description: products, Value: 127.0.0.1:9347/products/
+			78 text ,
+			79 link Description: technology, Value: 127.0.0.1:9347/about/capability/
+			80 text and
+			81 link Description: service, Value: 127.0.0.1:9347/services-support/
+			82 text to create 
+			83 text lasting value
+			84 text  for energy partners in Europe.
+			85 tab group Footer navigation
+				86 tab (selected, settable, boolean) Solutions, Value: 1, ID: footer-tab-solutions
+				87 tab (selectable, settable, boolean) Services, Value: 0, ID: footer-tab-services
+				88 tab (selectable, settable, boolean) Plan with Linker, Value: 0, ID: footer-tab-planning
+				89 tab (selectable, settable, boolean) Account, Value: 0, ID: footer-tab-account
+				90 tab (selectable, settable, boolean) Contact Linker, Value: 0, ID: footer-tab-contact
+			91 container Description: Solutions, ID: footer-panel-solutions
+				92 heading Solutions, Value: 2
+					93 text Solutions
+				94 content list
+					95 link Description: Residential Storage, Value: 127.0.0.1:9347/solution/residential-storage/
+					96 link Description: Commercial Storage, Value: 127.0.0.1:9347/solution/commercial-storage/
+					97 link Description: Utility-Scale Storage, Value: 127.0.0.1:9347/solution/utility-storage/
+			98 text © 2026 Linker. All rights reserved.
+			99 container Legal
+				100 link Description: Imprint, Value: 127.0.0.1:9347/imprint/
+				101 link Description: Privacy Policy, Value: 127.0.0.1:9347/privacy-policy/
+				102 button Cookie settings
+				103 link Description: Terms of Sale, Value: 127.0.0.1:9347/terms-of-sale/
+				104 link Description: Refund & Returns, Value: 127.0.0.1:9347/refund-returns/
+			105 container
+				106 text Product fit · Inverter compatibility · Project support
+		107 button (collapsed) Description: Ask Genie, Secondary Actions: Expand
+
+The focused UI element is 1 AXWebArea Solution Configurator · Workspace review | Linker, URL: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=a0f51822d8ee4e0e98ff4112145ed767#lp-calculations

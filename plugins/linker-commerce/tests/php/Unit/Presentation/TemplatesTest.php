@@ -106,8 +106,8 @@ final class TemplatesTest extends TestCase {
 		$this->assertStringContainsString( '[linker_genie_workspace]', (string) file_get_contents( $paths['linker-advisor-de'] ) );
 		// The configurator's page is the application's mount point, in both
 		// languages: the page must never fall back to markup it held before.
-		$this->assertStringContainsString( '[linker_configurator]', (string) file_get_contents( $paths['linker-configurator'] ) );
-		$this->assertStringContainsString( '[linker_configurator]', (string) file_get_contents( $paths['linker-configurator-de'] ) );
+		$this->assertStringContainsString( '[linker_planner]', (string) file_get_contents( $paths['linker-configurator'] ) );
+		$this->assertStringContainsString( '[linker_planner]', (string) file_get_contents( $paths['linker-configurator-de'] ) );
 		// The German product page's own export: its words are German, so it
 		// is not the English file (a shared file would print "Products").
 		$german = (string) file_get_contents( $paths['is_single_product__de'] );

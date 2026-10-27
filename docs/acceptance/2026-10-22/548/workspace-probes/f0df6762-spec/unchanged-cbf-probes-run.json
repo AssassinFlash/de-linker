@@ -1,0 +1,9 @@
+{
+  "name": "unchanged-cbf-probes",
+  "command": [
+    "python3",
+    "run_refusal_probe.py"
+  ],
+  "cwd": ".",
+  "exit_code": 0
+}

@@ -1,0 +1,12 @@
+{
+  "fixed_sha": "eff8341d5a0eaf24999f42854da6339032c65c9c",
+  "all_generated_probes_reproduce_byte_for_byte": true,
+  "files": {
+    "standards-choice-unicode.test.mjs": "b7d0909e955fb81b7c2b902b931d9dac4a502bbdbe4efcf90d58740a76163331",
+    "standards-correction-boundaries.test.mjs": "564f9fa155691f827680efdd476b0bfaba20d971128d24f60381a176c5872572",
+    "standards-refusal-origin.test.mjs": "deec204e7a031ed6da022a951755c508af9fd83ddf8e0db24a1872be7c54dc1f",
+    "standards-project-storage-failure.test.mjs": "5453f29c821eb4e79631ad80b6d742bb89c7ce7defef08dde95305bd21914cab",
+    "standards-storage-warning.test.mjs": "6bf162f9ebd544d9044711c4154f36e6f449ab21168a8b909530a5142f441b26"
+  },
+  "prior_four_probes_remain_identical": "original-probes-unchanged.json"
+}

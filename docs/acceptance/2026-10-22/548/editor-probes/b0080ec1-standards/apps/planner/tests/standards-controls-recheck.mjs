@@ -1,0 +1,52 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import React,{act} from 'react';
+import {PerspectiveCamera,Scene,Group,Vector3} from 'three';
+import {TransformControls} from 'three/addons/controls/TransformControls.js';
+import {setupDom} from './dom-fixture.mjs';
+import flat from '../../../fixtures/planning/geometry-flat.json' with {type:'json'};
+function active(c,o){c._positionStart.copy(o.position);c._quaternionStart.copy(o.quaternion);c._scaleStart.copy(o.scale);c.dragging=true;c.axis='X';c.dispatchEvent({type:'mouseDown',mode:'translate'});o.position.x+=6;}
+for(const mode of ['handles_unmount','frame_change','escape','blur','pointercancel','lostpointercapture','normal_finish'])test('actual Three controller '+mode,async t=>{
+ const fixture=setupDom(),{createRoot}=await import('react-dom/client');
+ const {ArrayTransform,OrbitController}=await import('../src/components/design/SceneControls.tsx');
+ const scene=new Scene(),object={current:new Group()},canvas=document.createElement('canvas'),camera=new PerspectiveCamera(75,1,.01,100);
+ canvas.setPointerCapture=()=>{};canvas.releasePointerCapture=()=>{};canvas.hasPointerCapture=()=>true;
+ object.current.position.set(1,2,3);scene.add(object.current);
+ globalThis.__threeContext={camera,gl:{domElement:canvas},scene,invalidate(){}};
+ const attach=TransformControls.prototype.attach;let controls,cancelled=0,finished=0;
+ TransformControls.prototype.attach=function(...args){controls=this;return attach.apply(this,args);};
+ const root=createRoot(fixture.element),target=new Vector3();
+ const draw=(show,frame='one')=>React.createElement(React.StrictMode,null,React.createElement(OrbitController,{target}),show&&React.createElement(ArrayTransform,{object,frame,start(){},finish(){finished++;},cancel(){cancelled++;object.current?.position.set(1,2,3);}}));
+ t.after(async()=>{await fixture.dispose(root);TransformControls.prototype.attach=attach;delete globalThis.__threeContext;});
+ await act(async()=>root.render(draw(true)));const original=controls;active(original,object.current);
+ await act(async()=>{
+  if(mode==='handles_unmount')root.render(draw(false));
+  else if(mode==='frame_change')root.render(draw(true,'two'));
+  else if(mode==='escape')window.dispatchEvent(new window.KeyboardEvent('keydown',{key:'Escape'}));
+  else if(mode==='blur')window.dispatchEvent(new Event('blur'));
+  else if(mode==='normal_finish')original.pointerUp(null);
+  else canvas.dispatchEvent(new Event(mode));
+ });
+ const expected=mode==='normal_finish'?{x:7,cancelled:0,finished:1}:{x:1,cancelled:1,finished:0};
+ assert.equal(object.current.position.x,expected.x);assert.equal(cancelled,expected.cancelled);assert.equal(finished,expected.finished);assert.equal(original.dragging,false);
+ console.log(JSON.stringify({mode,position:object.current.position.toArray(),cancelled,finished}));
+});
+test('whole Panels unmount clears the group ref before the real controller cancels',async t=>{
+ const fixture=setupDom(),{createRoot}=await import('react-dom/client');
+ const {StandardsPanels}=await import('../src/components/design/SceneViewport.tsx');
+ const scene=new Scene(),canvas=document.createElement('canvas'),camera=new PerspectiveCamera(75,1,.01,100);
+ canvas.setPointerCapture=()=>{};canvas.releasePointerCapture=()=>{};canvas.hasPointerCapture=()=>true;
+ globalThis.__threeContext={camera,gl:{domElement:canvas},scene,invalidate(){}};
+ const attach=TransformControls.prototype.attach;let controls,commits=0;
+ TransformControls.prototype.attach=function(...args){controls=this;return attach.apply(this,args);};
+ const root=createRoot(fixture.element);globalThis.__nullGroupRefs=0;
+ t.after(async()=>{await fixture.dispose(root);TransformControls.prototype.attach=attach;delete globalThis.__threeContext;delete globalThis.__nullGroupRefs;});
+ const geometry=flat,roof=geometry.roofs[0],array=geometry.arrays[0];
+ const props={document:geometry,frame:JSON.stringify(geometry),poses:[],array,roof,reference:[0,0,0],palette:{},selected:array.id,select(){},commit(){commits++;return true;},disabled:false};
+ await act(async()=>root.render(React.createElement(React.StrictMode,null,React.createElement(StandardsPanels,props))));
+ const original=controls,group=original.object,position=group.position.toArray();active(original,group);
+ const nulls=globalThis.__nullGroupRefs;
+ await act(async()=>root.render(null));
+ assert.equal(globalThis.__nullGroupRefs,nulls+1);assert.equal(original.dragging,false);assert.equal(original.object,undefined);assert.equal(commits,0);assert.deepEqual(group.position.toArray(),position);
+ console.log(JSON.stringify({mode:'whole_panels_unmount',refNullBeforePassiveCleanup:true,commits,restoredPosition:group.position.toArray()}));
+});

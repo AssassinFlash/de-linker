@@ -1,0 +1,272 @@
+{
+  "id": "8c71ef3068ee465d86f093cece8406fa",
+  "title": "Synthetic roof workbench \u00b7 548 native",
+  "revision": 6,
+  "input_sha256": "1b21b01ca962ad104ce4dcccbe9eebc989439581e6f59f93c917ca9afd57cf3e",
+  "inputs": {
+    "brief": {
+      "annual_load": {
+        "basis": "user_estimate",
+        "kwh": 100000,
+        "source_note": "Synthetic annual estimate for native acceptance only; not a measured consumption profile."
+      },
+      "project_note": "",
+      "project_use": "commercial",
+      "schema_version": 1,
+      "site": {
+        "coordinate_basis": "not_provided",
+        "country_code": "FR",
+        "latitude": null,
+        "location_label": "Synthetic Paris-area fixture; no surveyed site.",
+        "longitude": null,
+        "timezone": "Europe/Paris"
+      },
+      "system_scope": "new_pv_storage"
+    },
+    "geometry": {
+      "arrays": [
+        {
+          "column_gap_m": 0.02,
+          "columns": 4,
+          "excluded_slots": [],
+          "id": "array_2bf8f4207b644dab8b9f589a640c8a9c",
+          "lower_edge_clearance_m": 0.16,
+          "module_spec_id": "module_386101a205d744418ddde0e7c6791adb",
+          "mount_tilt_deg": 15,
+          "mounting_note": "Synthetic explicit mounting values; no structural, fire or shading requirement claimed.",
+          "name": "Synthetic tilted commercial array",
+          "origin_uv": [
+            0.2368786363600952,
+            2.0243478132330885
+          ],
+          "roof_id": "roof_1498d7784ec644d1a5b0cbc7c2238576",
+          "rotation_deg": 0,
+          "row_gap_m": 0.8,
+          "rows": 3,
+          "source_id": "source_121ef0395f7f4ab186605346735b65fd"
+        }
+      ],
+      "coordinate_system": {
+        "anchor": null,
+        "height_reference": "relative_to_project_origin",
+        "kind": "local_enu",
+        "north_reference": "unreferenced",
+        "north_source_id": null,
+        "unit": "m"
+      },
+      "keepouts": [
+        {
+          "footprint_uv": [
+            [
+              0.5,
+              8
+            ],
+            [
+              1.5,
+              8
+            ],
+            [
+              1.5,
+              9
+            ],
+            [
+              0.5,
+              9
+            ]
+          ],
+          "id": "keepout_d28e7bc42d5f4015a3669980a8035f48",
+          "name": "Synthetic access zone",
+          "reason": "Synthetic conflict fixture; this is not a prescribed fire or access setback.",
+          "roof_id": "roof_1498d7784ec644d1a5b0cbc7c2238576",
+          "source_id": "source_121ef0395f7f4ab186605346735b65fd"
+        }
+      ],
+      "layout_rules": [],
+      "module_specs": [
+        {
+          "id": "module_386101a205d744418ddde0e7c6791adb",
+          "length_m": 2.278,
+          "model": "Synthetic module \u00b7 500 W",
+          "source": {
+            "document_sha256": null,
+            "kind": "user_declared",
+            "note": "Synthetic dimensions and power for analytic UI verification; not a manufacturer specification.",
+            "page": null,
+            "url": null
+          },
+          "stc_power_w": 500,
+          "thickness_m": 0.03,
+          "width_m": 1.134
+        }
+      ],
+      "obstacles": [
+        {
+          "extrusion_axis_enu": [
+            0,
+            0,
+            1
+          ],
+          "footprint_uv": [
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              2,
+              4
+            ]
+          ],
+          "height_m": 2,
+          "id": "obstacle_7b3c206db44345f9a5d4aa2e06f748ae",
+          "name": "Synthetic chimney \u00b7 2 m",
+          "roof_id": "roof_1498d7784ec644d1a5b0cbc7c2238576",
+          "source_id": "source_121ef0395f7f4ab186605346735b65fd"
+        }
+      ],
+      "roofs": [
+        {
+          "boundary_uv": [
+            [
+              0,
+              0
+            ],
+            [
+              20,
+              0
+            ],
+            [
+              20,
+              12
+            ],
+            [
+              0,
+              12
+            ]
+          ],
+          "holes_uv": [
+            [
+              [
+                15,
+                5
+              ],
+              [
+                17,
+                5
+              ],
+              [
+                17,
+                7
+              ],
+              [
+                15,
+                7
+              ]
+            ]
+          ],
+          "id": "roof_1498d7784ec644d1a5b0cbc7c2238576",
+          "name": "Synthetic commercial flat roof",
+          "origin_enu": [
+            0,
+            0,
+            0
+          ],
+          "source_id": "source_121ef0395f7f4ab186605346735b65fd",
+          "u_axis_enu": [
+            -1,
+            0,
+            0
+          ],
+          "v_axis_enu": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "boundary_uv": [
+            [
+              0,
+              0
+            ],
+            [
+              8,
+              0
+            ],
+            [
+              8,
+              6
+            ],
+            [
+              0,
+              6
+            ]
+          ],
+          "holes_uv": [],
+          "id": "roof_a9e16be4611840028f3a79e035da6bbb",
+          "name": "Synthetic pitched annex",
+          "origin_enu": [
+            5,
+            0,
+            5
+          ],
+          "source_id": "source_1f08d2d2924f44d2b63ebc3aaca7e9cb",
+          "u_axis_enu": [
+            0,
+            -1,
+            0
+          ],
+          "v_axis_enu": [
+            0.8660254037844387,
+            0,
+            -0.49999999999999994
+          ]
+        }
+      ],
+      "schema_version": 1,
+      "sources": [
+        {
+          "acquired_at_utc": null,
+          "calibration_note": "Not recorded.",
+          "id": "source_121ef0395f7f4ab186605346735b65fd",
+          "kind": "user_measurement",
+          "note": "Synthetic analytic dimensions for editor acceptance; no surveyed building.",
+          "permissions": {
+            "derive": "permitted",
+            "export": "unknown",
+            "retain": "permitted"
+          },
+          "reference_sha256": null,
+          "reference_url": null,
+          "rights_basis": "user_attestation",
+          "rights_note": "Synthetic geometry created for the local acceptance fixture.",
+          "spatial_precision_m": null
+        },
+        {
+          "acquired_at_utc": null,
+          "calibration_note": "Not recorded.",
+          "id": "source_1f08d2d2924f44d2b63ebc3aaca7e9cb",
+          "kind": "user_measurement",
+          "note": "Synthetic 8 by 6 metre sloping face, 30 degree pitch and 90 degree project bearing; no surveyed site.",
+          "permissions": {
+            "derive": "permitted",
+            "export": "unknown",
+            "retain": "permitted"
+          },
+          "reference_sha256": null,
+          "reference_url": null,
+          "rights_basis": "user_attestation",
+          "rights_note": "Geometry authored for local acceptance.",
+          "spatial_precision_m": null
+        }
+      ]
+    }
+  }
+}

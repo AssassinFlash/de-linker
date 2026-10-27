@@ -1,0 +1,178 @@
+Browser tab: 2, Title: "Solution Configurator · Workspace review | Linker", URL: "http://127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-map-feature-properties".
+1 AXWebArea Solution Configurator · Workspace review | Linker, URL: 127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-map-feature-properties
+	2 container
+		3 container Primary navigation
+			4 link Description: Linker home, Value: 127.0.0.1:9347/
+			51 pop up button (collapsed) Products, Secondary Actions: Expand
+				52 text Products
+				53 image
+			54 pop up button (collapsed) Solutions, Secondary Actions: Expand
+				55 text Solutions
+				56 image
+			57 pop up button (collapsed) Plan with Linker, Secondary Actions: Expand
+			58 link Description: Services, Value: 127.0.0.1:9347/services-support/
+			59 pop up button (collapsed) For Partners, Secondary Actions: Expand
+			60 pop up button (collapsed) About, Secondary Actions: Expand
+			5 link Description: Search products, Value: 127.0.0.1:9347/products/#search-box
+			61 link Description: Solution draft, Value: 127.0.0.1:9347/cart/
+			62 pop up button (collapsed) Description: My account, Secondary Actions: Expand
+			63 container Language
+				64 link Description: EN, Help: English, Value: 127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1
+				65 link Description: DE, Help: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1
+			66 link Description: Contact Linker, Value: 127.0.0.1:9347/contact/
+		11 container
+			67 button Projects
+			68 text Köln · owned synthetic roof · acceptance
+			69 text Saved · revision 14
+			70 button Undo
+			71 button (disabled) Redo
+			72 button (disabled) Save project
+			73 text Solution Configurator CURRENT PROJECT
+			74 container Project sections
+				75 link Description: Project overview, Value: 127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-overview
+				76 link Description: Site and project, Value: 127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-site
+				77 link Description: Roof design, Value: 127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-design
+				78 link Description: Energy inputs, Value: 127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-load
+			79 text Project information is kept with its source and revision. CURRENT PROJECT
+			80 heading Köln · owned synthetic roof · acceptance, Value: 1
+				81 text Köln · owned synthetic roof · acceptance
+			82 text Site data and roof layouts are saved in the same project.
+			128 container Roof design, ID: lp-design
+				129 text 06
+				130 heading Roof design, Value: 2, ID: lp-design-heading
+					131 text Roof design
+				132 text Roof geometry and module specifications produce an editable layout and a traceable plan check. The roof step is optional for every project type.
+				133 button Add roof face
+				134 button Add module specification
+				135 container Design view
+					136 checkbox Plan, Value: 0
+					137 checkbox Map, Value: 0
+					138 checkbox 3D, Value: 1
+				139 button Import roof geometry
+				140 button (collapsed) Imports to review, Secondary Actions: Expand
+					141 text Imports to review
+				142 container
+					249 text Active roof face
+					250 pop up button (collapsed, settable) Active roof face, Value: Synthetic 3–4–5 roof · Köln, Secondary Actions: Expand
+						251 menu
+							252 (selected) Synthetic 3–4–5 roof · Köln
+							253 Synthetic drawing acceptance · 548 · 24 Oct
+							254 Synthetic phone recovery · 548 · 24 Oct
+					255 text NORTH REFERENCE RECORDED
+					256 container Roof design
+					257 button Fit 3D view
+					258 text 3D
+					259 button (collapsed) View options, Secondary Actions: Expand
+						260 text View options
+					261 text Dragging the selected array's handles changes its position in the roof plane. Camera controls change only the view. Lighting is for display; it does not calculate shading losses.
+					159 definition list
+						160 container Included modules
+							161 text Included modules
+						162 text 0
+						163 container Declared DC nameplate power
+							164 text Declared DC nameplate power
+						165 container
+							166 text 0 kWp
+						167 container Roof faces
+							168 text Roof faces
+						169 text 3
+				224 container Design objects and properties
+					225 heading Design objects, Value: 3
+						226 text Design objects
+					227 container Select a design object
+						228 checkbox Synthetic 3–4–5 roof · Köln, Value: 0
+						229 checkbox Synthetisches Hindernis · lokale Prüfung, Value: 0
+						230 checkbox Synthetisches neues Hindernis · Kartenprüfung, Value: 0
+						231 checkbox Synthetische Sperrfläche · lokale Prüfung, Value: 0
+						232 checkbox Synthetic new keep-out · map acceptance, Value: 1
+						233 checkbox Synthetic drawing acceptance · 548 · 24 Oct, Value: 0
+						234 checkbox Synthetic phone recovery · 548 · 24 Oct, Value: 0
+					235 button (disabled) Add module array
+					236 button Add obstacle
+					237 button Add keep-out area
+					238 button Layout clearances
+					239 text A module specification is needed before an array can be placed.
+					240 heading Synthetic new keep-out · map acceptance, Value: 3
+						241 text Synthetic new keep-out · map acceptance
+					242 button Edit numeric properties
+					243 button Remove object
+					244 button Source properties
+					245 button Coordinate references
+					246 container
+						247 button (collapsed) Sources, Secondary Actions: Expand
+							248 text Sources
+				187 container Layout check
+					188 heading Layout check, Value: 3, ID: lp-layout-review-heading
+						189 text Layout check
+					190 button Check layout
+					191 text The check compares full module projections, roof boundaries and openings, obstacles, keep-out areas and declared clearances in each roof plane. Structural, fire-safety, electrical and shading assessments are separate.
+			122 text Solution Configurator
+			123 text by Linker
+			124 text Linker brings your inputs into an editable project for solar and storage planning.
+			262 container
+				263 button (expanded) About this tool, Secondary Actions: Collapse
+					264 text About this tool
+				265 text Linker provides the project workflow and editing tools. Your inputs and design stay together in the same project, with controls for saving changes and restoring available drafts. All design views use the same project geometry. Source records retain the declared accuracy and permissions; a displayed model provides no engineering approval.
+				266 heading Software and data credits, Value: 2
+					267 text Software and data credits
+				268 text Interface and project data: 
+				269 link Description: React, Value: react.dev/
+				270 text , 
+				271 link Description: TanStack Query, Value: tanstack.com/query
+				272 text  and 
+				273 link Description: Ajv, Value: ajv.js.org/
+				274 text . 3D views: 
+				275 link Description: Three.js, Value: threejs.org/
+				276 text  and 
+				277 link Description: React Three Fiber, Value: r3f.docs.pmnd.rs/getting-started/introduction
+				278 text . Map display: 
+				279 link Description: MapLibre GL JS, Value: maplibre.org/maplibre-gl-js/docs/
+				280 text . Street map: 
+				281 link Description: OpenFreeMap, Value: openfreemap.org/
+				282 text . 
+				283 link Description: © OpenMapTiles, Value: openmaptiles.org/
+				284 text ; 
+				285 link Description: © OpenStreetMap contributors, Value: openstreetmap.org/copyright
+				286 text .
+				287 link Description: OpenFreeMap privacy policy, Value: openfreemap.org/privacy/
+		13 container tv-footer-v2
+			14 image Linker
+			15 container
+				16 text Language
+				17 container Language
+					18 link Description: English, Value: 127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1
+					19 link Description: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1
+			20 text LINKING
+			21 link Description: products, Value: 127.0.0.1:9347/products/
+			22 text ,
+			23 link Description: technology, Value: 127.0.0.1:9347/about/capability/
+			24 text and
+			25 link Description: service, Value: 127.0.0.1:9347/services-support/
+			26 text to create 
+			27 text lasting value
+			28 text  for energy partners in Europe.
+			29 tab group Footer navigation
+				30 tab (selected, settable, boolean) Solutions, Value: 1, ID: footer-tab-solutions
+				31 tab (selectable, settable, boolean) Services, Value: 0, ID: footer-tab-services
+				32 tab (selectable, settable, boolean) Plan with Linker, Value: 0, ID: footer-tab-planning
+				33 tab (selectable, settable, boolean) Account, Value: 0, ID: footer-tab-account
+				34 tab (selectable, settable, boolean) Contact Linker, Value: 0, ID: footer-tab-contact
+			35 container Description: Solutions, ID: footer-panel-solutions
+				36 heading Solutions, Value: 2
+					37 text Solutions
+				38 content list
+					39 link Description: Residential Storage, Value: 127.0.0.1:9347/solution/residential-storage/
+					40 link Description: Commercial Storage, Value: 127.0.0.1:9347/solution/commercial-storage/
+					41 link Description: Utility-Scale Storage, Value: 127.0.0.1:9347/solution/utility-storage/
+			42 text © 2026 Linker. All rights reserved.
+			43 container Legal
+				44 link Description: Imprint, Value: 127.0.0.1:9347/imprint/
+				45 link Description: Privacy Policy, Value: 127.0.0.1:9347/privacy-policy/
+				46 button Cookie settings
+				47 link Description: Terms of Sale, Value: 127.0.0.1:9347/terms-of-sale/
+				48 link Description: Refund & Returns, Value: 127.0.0.1:9347/refund-returns/
+			49 container
+				50 text Product fit · Inverter compatibility · Project support
+		127 button (collapsed) Description: Ask Genie, Secondary Actions: Expand
+
+The focused UI element is 263 button (expanded) About this tool, Secondary Actions: Collapse

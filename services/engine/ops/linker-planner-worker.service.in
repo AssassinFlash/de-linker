@@ -1,0 +1,19 @@
+# Candidate only. Render both @...@ fields before validation/installation.
+# RELEASE_PATH is an immutable release with its venv built in that location.
+[Unit]
+Description=Linker planning numerical worker
+After=network.target
+
+[Service]
+Type=exec
+WorkingDirectory=@RELEASE_PATH@
+EnvironmentFile=/etc/linker-planner-worker.env
+ExecStart=@RELEASE_PATH@/.venv/bin/python -m linker_engine.planning.worker_host serve --expected-runtime ${LINKER_PLANNER_RUNTIME_SHA256} --expected-execution ${LINKER_PLANNER_EXECUTION_KEY} --expected-storage ${LINKER_PLANNER_STORAGE_BINDING} --generation ${INVOCATION_ID}
+Restart=on-failure
+RestartSec=2
+TimeoutStopSec=@STOP_BUDGET_SECONDS@
+KillMode=control-group
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

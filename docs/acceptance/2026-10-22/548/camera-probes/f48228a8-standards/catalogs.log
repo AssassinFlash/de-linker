@@ -1,0 +1,40 @@
+{
+  "mo_sha256": "a4ba4a4610901c3fc30d9b05ac4c875c624cfe1846a494ba6188c7e43f31c78c",
+  "checks": [
+    {
+      "id": "CAM-001",
+      "source": true,
+      "emitted": true,
+      "po": true,
+      "wp_json": true,
+      "gnu_mo": false,
+      "actual_gnu": "View options",
+      "expected_de": "Ansichtsoptionen"
+    },
+    {
+      "id": "CAM-002",
+      "source": true,
+      "emitted": true,
+      "po": true,
+      "wp_json": true,
+      "gnu_mo": false,
+      "actual_gnu": "Compatibility mode",
+      "expected_de": "Kompatibilitätsmodus"
+    },
+    {
+      "id": "CAM-003",
+      "source": true,
+      "emitted": true,
+      "po": true,
+      "wp_json": true,
+      "gnu_mo": false,
+      "actual_gnu": "Use this if the 3D view does not display correctly.",
+      "expected_de": "Nutzen Sie diesen Modus, wenn die 3D-Ansicht nicht korrekt dargestellt wird."
+    }
+  ]
+}
+Traceback (most recent call last):
+  File "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-22/548/camera-probes/f48228a8-standards/catalogs.py", line 39, in <module>
+    assert all(all(item[k] for k in ('source', 'emitted', 'po', 'wp_json', 'gnu_mo')) for item in checks), 'Approved camera copy must reach source, emitted module, PO, WP JSON and GNU MO'
+           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Approved camera copy must reach source, emitted module, PO, WP JSON and GNU MO

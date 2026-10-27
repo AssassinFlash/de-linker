@@ -1,0 +1,28 @@
+✔ drawing journal uses exact CAS, refuses a stale tab, and never deletes its newer copy (81.038625ms)
+✔ the same journal restores unchanged v1 bytes and v2 coordinate pairs, then settles an uncertain ring write before newer edits (29.131ms)
+✔ a separate ring copy keeps the same edited object and retires only its exact server-confirmed result (26.437791ms)
+✔ serialized writes preserve real new points and invalid fields through pause, hide and recovery (14.964667ms)
+✔ only native-granted prior scopes are exposed; identity changes fence late reads and callbacks (10.111083ms)
+✔ unknown local write outcomes remain retryable; a stale tab can explicitly fork without overwriting (13.655416ms)
+✔ a newer buffer settles exact uncertain bytes before advancing, including repeated lost acknowledgements (12.696083ms)
+✔ a pre-mutation refusal permits correction without retrying the refused bytes (8.868708ms)
+✔ explicit discard confirms an uncertain write before deleting its exact owned copy (10.848167ms)
+✔ prepared geometry survives local application and clears only after an exact confirmed server geometry (21.154333ms)
+✔ real drawing UI resumes a one-point journal, stages a roof, checks inputs and joins one project command (270.662208ms)
+✔ provider replacement restores an open prefix only after the new map loads and keeps its points (31.234625ms)
+✔ real roof_boundary UI keeps pointer edits through reload, refuses its invalid geometry and applies one exact project command (74.056583ms)
+✔ real roof_hole UI keeps pointer edits through reload, refuses its invalid geometry and applies one exact project command (66.262833ms)
+✔ real obstacle UI keeps pointer edits through reload, refuses its invalid geometry and applies one exact project command (66.616791ms)
+✔ real keepout UI keeps pointer edits through reload, refuses its invalid geometry and applies one exact project command (59.605666ms)
+✔ unchanged source-reviewed boundary adds no project command or calculation and keeps a visible result after raw retirement (30.2765ms)
+✔ a geometry change while boundary review is pending cannot commit the obsolete result (29.629959ms)
+✔ a identity change while boundary review is pending cannot commit the obsolete result (30.744166ms)
+✔ an obsolete boundary result cannot commit after its prepared journal write was delayed (34.726541ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1385.746

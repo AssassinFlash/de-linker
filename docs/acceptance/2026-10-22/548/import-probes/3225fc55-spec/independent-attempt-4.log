@@ -1,0 +1,66 @@
+✔ independent: all raw controls and original bytes survive Back, unidentified 422, and later typed correction (185.861208ms)
+✔ independent: actual MultiPolygon choice is explicit and sends its original rings and nonzero part indices (61.492375ms)
+✔ independent: existing origin stays fixed and declared negative Up follows the selected vertex geodetic vertical (43.655ms)
+✔ independent: nonempty unaligned geometry cannot supply implicit origin or dispatch (19.872625ms)
+✔ independent: malformed 3D, CRS and unclosed originals never reach mutation (35.426375ms)
+✔ independent: real IDB quota across other project intents refuses dispatch without evicting originals (51.80025ms)
+✔ independent: incomplete local commit and later native withdrawal cannot dispatch a roof request (12.210916ms)
+✔ independent: dismiss aborts a dispatched request, preserves its durable intent, and fences an ignored late response (13.910375ms)
+✔ independent: current native admission, without dismissal, fences a late successful response (13.064375ms)
+✔ independent: only a native-granted former namespace can be explicitly retried with the same original body/key (21.089834ms)
+✔ independent: unidentified status/code combinations retain retry bytes; only identified pre-mutation pairs release them (25.395708ms)
+✔ independent: changed server options or content hash never produce an attachable prepared roof (9.950917ms)
+✔ independent: CSV identified refusal correction also uses the real client and real IndexedDB original (21.257791ms)
+✔ independent: commercial project preview adds exactly one shared history step; unknown revision retry preserves body; confirmed save clears only that original (177.98825ms)
+▶ SPEC COUNTEREXAMPLE: explicit relative-zero datum releases a previously rejected hidden height
+  ✖ previously required blank (23.161542ms)
+  ✖ previously invalid raw decimal (26.699083ms)
+✖ SPEC COUNTEREXAMPLE: explicit relative-zero datum releases a previously rejected hidden height (50.5365ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 14
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1634.116125
+
+✖ failing tests:
+
+test at tests/independent-roof-import.mjs:267:43
+✖ previously required blank (23.161542ms)
+  AssertionError [ERR_ASSERTION]: explicit relative-zero declaration must permit the Source step without fixing an inactive hidden height
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/roof-import-spec-3225-8itr0hjn/apps/planner/tests/independent-roof-import.mjs:277:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/roof-import-spec-3225-8itr0hjn/apps/planner/tests/independent-roof-import.mjs:267:35)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/independent-roof-import.mjs:267:43
+✖ previously invalid raw decimal (26.699083ms)
+  AssertionError [ERR_ASSERTION]: explicit relative-zero declaration must permit the Source step without fixing an inactive hidden height
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/roof-import-spec-3225-8itr0hjn/apps/planner/tests/independent-roof-import.mjs:277:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/roof-import-spec-3225-8itr0hjn/apps/planner/tests/independent-roof-import.mjs:267:35)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

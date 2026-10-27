@@ -1,0 +1,13 @@
+{
+  "cache_mtime": 1792804756.953489,
+  "cache_bytes": 847448,
+  "cache_sha256": "ee139f319e923e14488d8a21deeb7ddb20cc3f6dec34e89f8d464c9b35ce5d82",
+  "source_sha256": "a077919fa7748e510800960306882d3b7ae059e8cbd792b7e12a87f9088c0285",
+  "volume_sha256": "a077919fa7748e510800960306882d3b7ae059e8cbd792b7e12a87f9088c0285",
+  "source_equals_volume": true,
+  "workspace_selector": true,
+  "metrics_selector": true,
+  "native_ui_generated": "2026-10-24 09:19:16",
+  "cache_before_mtime": 1792786861.731066,
+  "cache_before_bytes": 837163
+}

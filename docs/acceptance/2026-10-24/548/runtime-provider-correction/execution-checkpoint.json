@@ -1,0 +1,73 @@
+{
+  "at_utc": "2026-10-24T16:13:43.611765+00:00",
+  "removed_redundant_or_superseded_logs": [
+    {
+      "path": "engine-format.txt",
+      "bytes": 44
+    },
+    {
+      "path": "format.txt",
+      "bytes": 45
+    },
+    {
+      "path": "style.txt",
+      "bytes": 39
+    },
+    {
+      "path": "engine-style.txt",
+      "bytes": 19
+    },
+    {
+      "path": "engine-tests.txt",
+      "bytes": 2997
+    },
+    {
+      "path": "engine-commands.json",
+      "bytes": 1115
+    },
+    {
+      "path": "app-commands.json",
+      "bytes": 278
+    },
+    {
+      "path": "app-build-commands.json",
+      "bytes": 442
+    },
+    {
+      "path": "local-types-final.txt",
+      "bytes": 173
+    }
+  ],
+  "post_pruning_transport": {
+    "command": ".venv/bin/pytest -q tests/planning/test_official_weather.py tests/planning/test_weather_deadline.py",
+    "source_commit": "079f1d18",
+    "result": "18 passed in 3.70s",
+    "basis": "actual parent terminal output; not rerun"
+  },
+  "corrected_local_types": {
+    "command": ".venv/bin/mypy src/linker_local/engine_release.py src/linker_local/planner_worker.py src/linker_local/services.py tests/test_planner_worker.py",
+    "result": "Success: no issues found in 4 source files",
+    "basis": "actual parent terminal output; replaces failed pre-assertion log"
+  },
+  "earlier_full_engine_result": {
+    "source": "911839a6",
+    "result": "743 passed in 88.48s",
+    "reused": true,
+    "later_change": "Seven redundant cases removed; production source unchanged"
+  },
+  "initial_errors_resolved": [
+    {
+      "error": "Initial schema test expected version4",
+      "resolution": "uses actual SCHEMA_VERSION5; full engine pass retained"
+    },
+    {
+      "error": "npm script format:check absent",
+      "resolution": "used existing lint:format, pass retained"
+    },
+    {
+      "error": "Initial selected type check missing int assertion for ready pid",
+      "resolution": "narrowed type, 4-file check passed"
+    }
+  ],
+  "rules": "AGENTS.md \u00a70.1, original full goal active; no new all-tree audit"
+}

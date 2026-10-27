@@ -1,0 +1,376 @@
+{
+  "reason": "Native getScreenshot returned original JPEG bytes. Corrected file extensions after checking signatures; no decoding, editing or recompression occurred.",
+  "renamed_native_files": [
+    {
+      "from": "de-1440-cancelled.png",
+      "to": "de-1440-cancelled.jpg",
+      "bytes": 96212,
+      "sha256": "08c26102e9f64b34c9d5a46f8c32a1f009628b5ab2363a0e2d976010a9bd62d3",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "de-1440-current-result.png",
+      "to": "de-1440-current-result.jpg",
+      "bytes": 99338,
+      "sha256": "6410d03cd7b8c247add165c46b3214aa38eafa4f95310fd9b3a77f022cdefbd3",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "de-1440-error.png",
+      "to": "de-1440-error.jpg",
+      "bytes": 102179,
+      "sha256": "dcd330e5d87046d35e845bde9de319fd326766e44e75df9ee2ad99add6745b16",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "de-1440-failure.png",
+      "to": "de-1440-failure.jpg",
+      "bytes": 98270,
+      "sha256": "7b1c3734651400ac4cca3c35364475390bc0af44ac31d23974da0b1d199cdfc0",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "de-1440-first-history-reload.png",
+      "to": "de-1440-first-history-reload.jpg",
+      "bytes": 96212,
+      "sha256": "08c26102e9f64b34c9d5a46f8c32a1f009628b5ab2363a0e2d976010a9bd62d3",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "de-1440-first-history-selection.png",
+      "to": "de-1440-first-history-selection.jpg",
+      "bytes": 95158,
+      "sha256": "50d012c560b7d1157adcf2dc0a2f550c9f07b81ac4c240a8d5b5366b2ded6204",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "de-1440-initial.png",
+      "to": "de-1440-initial.jpg",
+      "bytes": 93170,
+      "sha256": "19528f4a0e08c1c21d2912a0b0ab9a6f0fe10b5468ac08bfd4f4afa906b21a1e",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "de-1440-operation.png",
+      "to": "de-1440-operation.jpg",
+      "bytes": 98900,
+      "sha256": "ecbb35503831c11f42130b3fdb67fbf6cb414168bdd4165741d51ee58aa5cc12",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "de-1440-original-roof-map.png",
+      "to": "de-1440-original-roof-map.jpg",
+      "bytes": 123262,
+      "sha256": "3f7b658facb81b9de400a1cbf970e31aeb41c2d8863a09c53e99afc7fb4c7e80",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "de-1440-result.png",
+      "to": "de-1440-result.jpg",
+      "bytes": 90755,
+      "sha256": "822035f1ce4cde0d411994e2c38acf581bef207d0049a2117b93bd7157ffaa95",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "de-1440-sources.png",
+      "to": "de-1440-sources.jpg",
+      "bytes": 102239,
+      "sha256": "32dffec91c54a712b1b8d5f12071ed418ddff6321167c5102b0c1142893eea14",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "de-1440-storage.png",
+      "to": "de-1440-storage.jpg",
+      "bytes": 99719,
+      "sha256": "89ac83f00c35d23a42f0152290b68e5c3311a60b848abfefd0f980d5c04b79d7",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "de-1440-whole-system-identity-readback.png",
+      "to": "de-1440-whole-system-identity-readback.jpg",
+      "bytes": 105482,
+      "sha256": "5f852dc59075357566fb7469a2af6ae5456cb02b2e848ed9dd8142571cb541e7",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "de-1440-whole-tool-identity.png",
+      "to": "de-1440-whole-tool-identity.jpg",
+      "bytes": 97133,
+      "sha256": "2790306665b17f49b73082b9d07618d36af06fb82769f670dd66b74a81a51ec1",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "de-390-cancelled.png",
+      "to": "de-390-cancelled.jpg",
+      "bytes": 39634,
+      "sha256": "8a209e6c1dd411e9546210b4b0576284a308cabf7e725a0fc1a881e96eb6d66f",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "de-390-current-result.png",
+      "to": "de-390-current-result.jpg",
+      "bytes": 40681,
+      "sha256": "e3ffcda38d94a5403afb26be2e4f187b5b85703080f01be470d5355be4e52c62",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "de-390-error.png",
+      "to": "de-390-error.jpg",
+      "bytes": 39455,
+      "sha256": "7d2ea740088739eb968774c5c617326c0070f9b1f4bad78b7f34fbf41465947a",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "de-390-failure.png",
+      "to": "de-390-failure.jpg",
+      "bytes": 40529,
+      "sha256": "54e01a775dcab2ea6cbd0960206333c69f7647a0f4703ae19798a535940ef614",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "de-390-initial.png",
+      "to": "de-390-initial.jpg",
+      "bytes": 38640,
+      "sha256": "ca7b778ae5a53ffb9688273302943619cd92b68e448bea0455ffb26a48d282c9",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "de-390-operation-fields.png",
+      "to": "de-390-operation-fields.jpg",
+      "bytes": 43861,
+      "sha256": "eb4e1755f964632b0947a24611b9da13f66e5c2b0ec4e9bbc8422b9e31c0f4ca",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "de-390-operation.png",
+      "to": "de-390-operation.jpg",
+      "bytes": 40507,
+      "sha256": "238e89bd8aacec7f35448e4a6fe61953ae2e6fe9393bd3503717ccc1a48353e6",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "de-390-result-reload.png",
+      "to": "de-390-result-reload.jpg",
+      "bytes": 40811,
+      "sha256": "97e7862b7b07bb03e08268a47770dbb2c50eb9d0ebbd986c98b6d246f65ae456",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "de-390-result.png",
+      "to": "de-390-result.jpg",
+      "bytes": 39546,
+      "sha256": "7298b0c182fc0ea3277faf5093e36e8eb1eb3c8b0499880975f29d0db644dd44",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "de-390-sources-loaded.png",
+      "to": "de-390-sources-loaded.jpg",
+      "bytes": 30328,
+      "sha256": "5a52d57b18f0f6bfa7a5905cc8151df8465984753bc4757e680d5014e335f775",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "de-390-storage.png",
+      "to": "de-390-storage.jpg",
+      "bytes": 34986,
+      "sha256": "cc2a0907cb93f13c2ab3c50506bb2c467fe57efef0fb7b4881bd238a33bdf5ca",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "de-handoff-original-roof.png",
+      "to": "de-handoff-original-roof.jpg",
+      "bytes": 102563,
+      "sha256": "107aff6d73d0d2c75c14b6c0abe1d7916ed1540538958ebaa21d406ecc8d78be",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "en-1440-cancelled.png",
+      "to": "en-1440-cancelled.jpg",
+      "bytes": 83299,
+      "sha256": "6f80f046bac00dbf5f5abe34dfb68dae7c597398acd3588350676bd87944e8f5",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "en-1440-current-result.png",
+      "to": "en-1440-current-result.jpg",
+      "bytes": 87656,
+      "sha256": "6ac14a231549792f2b4de5028bc28418308d857b709e4d3e6550a9f98eab18a7",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "en-1440-error-fixed.png",
+      "to": "en-1440-error-fixed.jpg",
+      "bytes": 93181,
+      "sha256": "d554a16af94d25166f1837fa86c7bf11559531c87c17b92c1bf75d3191e53cd9",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "en-1440-failure-final.png",
+      "to": "en-1440-failure-final.jpg",
+      "bytes": 89457,
+      "sha256": "78a5b2de59ac23cd3afc3ffabc94e01f714a865f7480e45262d752b096e22fb8",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "en-1440-failure.png",
+      "to": "en-1440-failure.jpg",
+      "bytes": 76759,
+      "sha256": "8df28542903a3dd243aae93a57565fefea84888b19d7faf616149f8ef1d89129",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "en-1440-incomplete.png",
+      "to": "en-1440-incomplete.jpg",
+      "bytes": 84875,
+      "sha256": "c57fd51f6e710e7ed5de75a947f15fcc6768dc6fd0119a8c780adcaea73e0b6f",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "en-1440-queued.png",
+      "to": "en-1440-queued.jpg",
+      "bytes": 88574,
+      "sha256": "0a935dc323888ebcebc2b04ae2792eae98de37b41b26c47fe8c0cab04d2143c0",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "en-1440-result-19be.png",
+      "to": "en-1440-result-19be.jpg",
+      "bytes": 82577,
+      "sha256": "c3811afc0f72b5558f98372e78c20c05ed1b673110cdff52ea63e6e14c6b5beb",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "en-1440-result-final.png",
+      "to": "en-1440-result-final.jpg",
+      "bytes": 79195,
+      "sha256": "2d3890d4bc10efb271cca835b78719e5496d0e105d7d56cdedc0d07cd45f7557",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "en-1440-result-fixed.png",
+      "to": "en-1440-result-fixed.jpg",
+      "bytes": 81712,
+      "sha256": "9abaa0e10699d3f5496ba2a158d78c5ca4d8fa15e041ba6f358754ea6d01cbf7",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "en-1440-result-initial.png",
+      "to": "en-1440-result-initial.jpg",
+      "bytes": 78832,
+      "sha256": "31da1d130118cfc6d6502841bee79cf1ad0c0bfab13f79e490b9526667532050",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "en-1440-result-reload-pass.png",
+      "to": "en-1440-result-reload-pass.jpg",
+      "bytes": 81759,
+      "sha256": "6a0c1bf879cf3d4c491f44edb22585a5d0521e8a5ce26c093143c2af44cbcfc3",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "en-1440-result.png",
+      "to": "en-1440-result.jpg",
+      "bytes": 83555,
+      "sha256": "76dbd3ca0efe2412ee910d9ea47fbaeb704c6de2cdc386a10a6943bd3dd8df1d",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "en-1440-storage.png",
+      "to": "en-1440-storage.jpg",
+      "bytes": 89896,
+      "sha256": "7ed6871eeaea348b6a5b25164b3762a9ad1352b4527d1d1afc5544a3da98f60d",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "en-390-cancelled.png",
+      "to": "en-390-cancelled.jpg",
+      "bytes": 36664,
+      "sha256": "718c02a7f189cb3e007b0cd987b3121a146426e22a34221a87426fe17557c0af",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "en-390-current-result.png",
+      "to": "en-390-current-result.jpg",
+      "bytes": 37770,
+      "sha256": "32e367b6452eafc6d05fb6fc31b678dcdc752dce5fbf394965f3a688492a92ab",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "en-390-earlier-inputs.png",
+      "to": "en-390-earlier-inputs.jpg",
+      "bytes": 30748,
+      "sha256": "69b1a9d863da872f432b7319accf5d246e526c31d9217bc7e631f8b50087d9a8",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "en-390-earlier-result-confirmed.png",
+      "to": "en-390-earlier-result-confirmed.jpg",
+      "bytes": 40086,
+      "sha256": "d98e312093c25683ef140789c26646aa04e320f0d620fce87a7afe499bafd053",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "en-390-error.png",
+      "to": "en-390-error.jpg",
+      "bytes": 36464,
+      "sha256": "cdfd17bb546ca095758df861a233085b0616663a1aad9f7b20942aec21e6a4be",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "en-390-expanded-records.png",
+      "to": "en-390-expanded-records.jpg",
+      "bytes": 42750,
+      "sha256": "16ea6cd582aed628bf137e23a1fef3b978fda3412391ea73962af0c51815389c",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "en-390-failure.png",
+      "to": "en-390-failure.jpg",
+      "bytes": 34206,
+      "sha256": "d3553417477998c7c918e108aa576fc9df3ce007d2291bc1b56a432d42dd246d",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "en-390-initial.png",
+      "to": "en-390-initial.jpg",
+      "bytes": 35274,
+      "sha256": "f7d6401b8956062daed066e6ab314234292d05be256c78fe0b58bf3d5ad43cfb",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "en-390-operation.png",
+      "to": "en-390-operation.jpg",
+      "bytes": 35855,
+      "sha256": "9443e4a654a164080cb62e719cb88500ca13ebd02c97b4c09755ea2fa5220d04",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "en-390-sources-loaded.png",
+      "to": "en-390-sources-loaded.jpg",
+      "bytes": 41945,
+      "sha256": "a1d4e5f638693a1500951b6cf7cbe85fa48c746fe133cbe4fc310b57cb75a9e3",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "en-390-storage-fields.png",
+      "to": "en-390-storage-fields.jpg",
+      "bytes": 33639,
+      "sha256": "6c14b7c919dcbe8fd66c4605d93a3e2b7aa2f0bf71355ac5c46e10d9c09a0eac",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "en-390-storage.png",
+      "to": "en-390-storage.jpg",
+      "bytes": 37377,
+      "sha256": "14f96594e6129c77ee833d64ebb3a5b204af0c8553ad9afbbb14dd3c93d4d8d3",
+      "media_type": "image/jpeg"
+    },
+    {
+      "from": "en-390-undo-validation-pass.png",
+      "to": "en-390-undo-validation-pass.jpg",
+      "bytes": 36053,
+      "sha256": "6fdbc196854389ed41d3eac6b5c1870ff7269a1b5011b5ebba792a61216b40d6",
+      "media_type": "image/jpeg"
+    }
+  ]
+}

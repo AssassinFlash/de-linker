@@ -1,0 +1,58 @@
+[
+  {
+    "name": "app-format-final",
+    "command": [
+      "npm",
+      "run",
+      "lint:format"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "app-build",
+    "command": [
+      "npm",
+      "run",
+      "build"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "php-tests",
+    "command": [
+      "/opt/homebrew/opt/php@8.3/bin/php",
+      "vendor/bin/phpunit"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "php-style",
+    "command": [
+      "/opt/homebrew/opt/php@8.3/bin/php",
+      "vendor/bin/phpcs",
+      "includes/Planner/Admission.php",
+      "includes/Planner/Gateway.php",
+      "tests/php/Unit/PlannerTaskGatewayTest.php"
+    ],
+    "exit_code": 1
+  },
+  {
+    "name": "php-types",
+    "command": [
+      "/opt/homebrew/opt/php@8.3/bin/php",
+      "vendor/bin/phpstan",
+      "analyse",
+      "--memory-limit=1G",
+      "--no-progress"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "engine-all-types",
+    "command": [
+      ".venv/bin/mypy",
+      "."
+    ],
+    "exit_code": 1
+  }
+]

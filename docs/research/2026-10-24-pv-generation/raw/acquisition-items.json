@@ -1,0 +1,29 @@
+[
+  {
+    "url": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=52.52&lon=13.405&startyear=2005&endyear=2023&usehorizon=0&outputformat=json",
+    "crawl": {
+      "loadedUrl": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=52.52&lon=13.405&startyear=2005&endyear=2023&usehorizon=0&outputformat=json",
+      "depth": 0,
+      "referrerUrl": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=52.52&lon=13.405&startyear=2005&endyear=2023&usehorizon=0&outputformat=json",
+      "loadedTime": "2026-10-24T03:01:41.598Z",
+      "httpStatusCode": 200,
+      "contentLengthBytes": 1268118,
+      "contentType": "application/json"
+    },
+    "html": null,
+    "htmlUrl": null,
+    "text": null,
+    "markdown": null,
+    "metadata": {
+      "author": null,
+      "canonicalUrl": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=52.52&lon=13.405&startyear=2005&endyear=2023&usehorizon=0&outputformat=json",
+      "description": null,
+      "keywords": null,
+      "languageCode": null,
+      "title": "tmy?lat=52.52&lon=13.405&startyear=2005&endyear=2023&usehorizon=0&outputformat=json"
+    },
+    "screenshotUrl": null,
+    "fileUrl": "https://api.apify.com/v2/key-value-stores/i3OvQkzJuDD6tihWH/records/file-c8b3ec8-tmy",
+    "temporaryAccessQueryOmitted": true
+  }
+]

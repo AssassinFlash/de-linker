@@ -1,0 +1,25 @@
+{
+  "files": {
+    "tests/planning/test_apify_transport.py": true,
+    "tests/planning/test_apify_weather_client.py": true,
+    "tests/planning/test_brief.py": true,
+    "tests/planning/test_execution_routes.py": true,
+    "tests/planning/test_geographic.py": true,
+    "tests/planning/test_geometry.py": true,
+    "tests/planning/test_geometry_import.py": true,
+    "tests/planning/test_guest_claims.py": true,
+    "tests/planning/test_http_host.py": true,
+    "tests/planning/test_private_http.py": true,
+    "tests/planning/test_pvgis_tmy.py": true,
+    "tests/planning/test_schema_upgrade.py": true,
+    "tests/planning/test_weather_acquisition.py": true,
+    "tests/planning/test_weather_cleanup.py": true,
+    "tests/planning/test_weather_journal.py": true,
+    "tests/planning/test_weather_kernel.py": true,
+    "tests/planning/test_weather_reconciliation.py": true,
+    "tests/planning/test_worker_host.py": true
+  },
+  "all_unchanged": true,
+  "reported_errors": 202,
+  "full_engine_type_gate_passed": false
+}

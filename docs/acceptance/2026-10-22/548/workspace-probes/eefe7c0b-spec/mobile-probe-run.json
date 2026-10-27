@@ -1,0 +1,16 @@
+{
+  "command": [
+    "node",
+    "--no-warnings=ExperimentalWarning",
+    "--loader",
+    "./tests/tsx-loader.mjs",
+    "--test",
+    "tests/composed-mobile-probe.mjs"
+  ],
+  "cwd": "apps/planner",
+  "exit_code": 1,
+  "unchanged_prior_probe_sha256": "d0cf137f95dc530853ad9ac620afd30531e69250fb65b7631fd2294ce2fff9c8",
+  "appended_probe_sha256": "b9ac02bb38a80271ee1fc578a496fc1979f2162be18d75fbf7ff676e3125caec",
+  "generated_path": "apps/planner/tests/composed-mobile-probe.mjs",
+  "generated_sha256": "f922799fb2c1f159a08e1629ca902b07d93cb3284d2e977a9d35c69adccc4856"
+}

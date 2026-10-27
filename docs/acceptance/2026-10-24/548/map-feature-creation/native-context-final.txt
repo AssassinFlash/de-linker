@@ -1,0 +1,24 @@
+✔ new hole UI recovers an unfinished arbitrary outline, reviews its fields and source, edits through Terra and applies one grouped command (224.859917ms)
+✔ new obstacle UI recovers an unfinished arbitrary outline, reviews its fields and source, edits through Terra and applies one grouped command (124.715458ms)
+✔ new keepout UI recovers an unfinished arbitrary outline, reviews its fields and source, edits through Terra and applies one grouped command (105.309792ms)
+✔ real drawing UI resumes a one-point journal, stages a roof, checks inputs and joins one project command (114.52175ms)
+✔ provider replacement restores an open prefix only after the new map loads and keeps its points (28.938917ms)
+✔ real roof_boundary UI keeps pointer edits through reload, refuses its invalid geometry and applies one exact project command (71.788583ms)
+✔ real roof_hole UI keeps pointer edits through reload, refuses its invalid geometry and applies one exact project command (65.464375ms)
+✔ real obstacle UI keeps pointer edits through reload, refuses its invalid geometry and applies one exact project command (62.174708ms)
+✔ real keepout UI keeps pointer edits through reload, refuses its invalid geometry and applies one exact project command (62.5385ms)
+✔ unchanged source-reviewed boundary adds no project command or calculation and keeps a visible result after raw retirement (24.82275ms)
+✔ obstacle cannot infer validation from a missing diagnostic when its invalid parent roof prevented the check (25.999292ms)
+✔ keepout cannot infer validation from a missing diagnostic when its invalid parent roof prevented the check (22.295292ms)
+✔ an unrelated invalid roof remains a layout conflict without blocking a checked edit on this roof (25.78475ms)
+✔ a geometry change while boundary review is pending cannot commit the obsolete result (23.419375ms)
+✔ a identity change while boundary review is pending cannot commit the obsolete result (22.171917ms)
+✔ an obsolete boundary result cannot commit after its prepared journal write was delayed (26.152958ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1660.138542

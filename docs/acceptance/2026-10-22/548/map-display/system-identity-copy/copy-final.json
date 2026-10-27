@@ -1,0 +1,106 @@
+{
+  "status": "Copy proposal approved after recorded opposition corrections; implementation pending",
+  "placement": {
+    "identity": "Existing product name followed by the compact ownership line at application level, shared by project list and project editor.",
+    "role": "One systemic role line near the product identity.",
+    "disclosure": "Shared native details, summary=about_label. Contribution and geometry/source boundary first; credits under credits_label. Keep discoverable in every application section and on phone.",
+    "attribution": "Retain provider attribution within the map itself. This additional disclosure does not replace the map attribution or bundled licence notices."
+  },
+  "messages": [
+    {
+      "id": "product_name",
+      "en": "Solution Configurator",
+      "de": "Lösungskonfigurator",
+      "reuse_existing": true
+    },
+    {
+      "id": "ownership",
+      "en": "by Linker",
+      "de": "von Linker"
+    },
+    {
+      "id": "system_role",
+      "en": "Linker brings your inputs into an editable project for solar and storage planning.",
+      "de": "Linker bündelt Ihre Angaben in einem bearbeitbaren Projekt für die PV- und Speicherplanung."
+    },
+    {
+      "id": "about_label",
+      "en": "About this tool",
+      "de": "Über dieses Werkzeug"
+    },
+    {
+      "id": "linker_contribution",
+      "en": "Linker provides the project workflow and editing tools. Your inputs and design stay together in the same project, with controls for saving changes and restoring available drafts.",
+      "de": "Linker verbindet die Projektverwaltung mit den Bearbeitungsfunktionen. Ihre Angaben und der Entwurf bleiben im selben Projekt; dort können Sie Änderungen speichern und verfügbare Arbeitsstände wiederherstellen."
+    },
+    {
+      "id": "geometry_source_boundary",
+      "en": "All design views use the same project geometry. Source records retain the declared accuracy and permissions; a displayed model provides no engineering approval.",
+      "de": "Alle Entwurfsansichten verwenden dieselbe Projektgeometrie. Die erfassten Angaben zur Quellengenauigkeit und zu Nutzungsrechten bleiben unverändert. Die Darstellung ersetzt keine fachtechnische Freigabe."
+    },
+    {
+      "id": "credits_label",
+      "en": "Software and data credits",
+      "de": "Software und Datenquellen"
+    },
+    {
+      "id": "software_credits",
+      "en": "Interface and project data: React, TanStack Query and Ajv. 3D views: Three.js and React Three Fiber. Map display: MapLibre GL JS.",
+      "de": "Oberfläche und Projektdaten: React, TanStack Query und Ajv. 3D-Ansichten: Three.js und React Three Fiber. Kartendarstellung: MapLibre GL JS."
+    },
+    {
+      "id": "street_map_credits",
+      "en": "Street map: OpenFreeMap. © OpenMapTiles; © OpenStreetMap contributors.",
+      "de": "Straßenkarte: OpenFreeMap. © OpenMapTiles; © OpenStreetMap-Mitwirkende."
+    },
+    {
+      "id": "provider_privacy",
+      "en": "OpenFreeMap privacy policy",
+      "de": "Datenschutzhinweise von OpenFreeMap",
+      "reuse_existing": true
+    }
+  ],
+  "credit_links": [
+    {
+      "label": "React",
+      "url": "https://react.dev/"
+    },
+    {
+      "label": "TanStack Query",
+      "url": "https://tanstack.com/query"
+    },
+    {
+      "label": "Ajv",
+      "url": "https://ajv.js.org"
+    },
+    {
+      "label": "Three.js",
+      "url": "https://threejs.org/"
+    },
+    {
+      "label": "React Three Fiber",
+      "url": "https://r3f.docs.pmnd.rs/getting-started/introduction"
+    },
+    {
+      "label": "MapLibre GL JS",
+      "url": "https://maplibre.org/maplibre-gl-js/docs/"
+    },
+    {
+      "label": "OpenFreeMap",
+      "url": "https://openfreemap.org/"
+    },
+    {
+      "label": "© OpenMapTiles",
+      "url": "https://www.openmaptiles.org/"
+    },
+    {
+      "label_en": "© OpenStreetMap contributors",
+      "label_de": "© OpenStreetMap-Mitwirkende",
+      "url": "https://www.openstreetmap.org/copyright"
+    },
+    {
+      "message_id": "provider_privacy",
+      "url": "https://openfreemap.org/privacy/"
+    }
+  ]
+}

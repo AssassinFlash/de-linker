@@ -1,0 +1,9 @@
+{
+  "case": "signed_zero_unknown_ack",
+  "calls": 2,
+  "same_frozen_wire": true,
+  "baseline_revision": 2,
+  "pending": null,
+  "local_signed_zero_preserved": true,
+  "undo_enabled": true
+}

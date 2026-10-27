@@ -1,0 +1,53 @@
+{
+  "target": "6dc3c292079ec4f654113ecd3e11b631906e6c04",
+  "base": "eff8341d5a0eaf24999f42854da6339032c65c9c",
+  "diff": "git diff eff8341d5a0eaf24999f42854da6339032c65c9c...6dc3c292079ec4f654113ecd3e11b631906e6c04",
+  "commits": [
+    "6dc3c292 fix(planner): fit current geometry and retain accessible error context",
+    "f48228a8 fix(planner): frame roof surfaces for desktop and narrow 3D views"
+  ],
+  "rule_inventory": [
+    "AGENTS.md"
+  ],
+  "copy": {
+    "draft_sha256": "d44b0cb0f5a415f12996ae429365d53a8343566bd50e0857265ec28966f9a008",
+    "approved_three_pairs_unchanged": true,
+    "final_matches_independent_feedback": true
+  },
+  "fixed_file_hashes": {
+    "AGENTS.md": "afb605acea0a03d946ff0622db70e9893283ac81dc579d9e06db0605da15de26",
+    "CONTEXT.md": "dc8e88975e90091b3d77ddf189f3492bf3ae6fd1f55e80bea3b0ea574a39fe05",
+    "docs/adr/0002-isolated-planner-runtime.md": "d1dfe4eaef64fd3e03bd08a34aef82954dc5422ee4ee5d5cb8ea37e18db2855f",
+    "docs/specs/548-roof-import-workflow.md": "f67f924a81914bc2f2f1a23c92ec382bef50cc8a41e7d0f1e78943ccad4af96c",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal.mo": "c9c0180b615ecdc36635920f59c0246ad5b0587a2799fd715ca4ed0942e2151c",
+    "plugins/linker-tools/build/planner/assets/planner.js": "a0c7e0cb813b3c08eb4925a354fe73af4bde302675afd669f8ecdeec022e0467",
+    "plugins/linker-commerce/content/windpress/planner.css": "e841e48cd89ce46938d7d142db5055b2a2751c575c327d8fb458d0eda44e190a",
+    "apps/planner/src/components/design/DesignEditor.tsx": "15d4f54d20f5fb839110d090ff2dfee3f96ddc028eb09a065596bb120348968c",
+    "apps/planner/src/components/design/SceneCamera.tsx": "ba03471442357aabeedff3a2440250525b1d1a05e7fbea753c9553cffcd78a77",
+    "apps/planner/src/components/design/SceneControls.tsx": "b477c8850bfa73cb32065eb09e0bbf8d9bd1470f78c0c4974521a76daef593a2",
+    "apps/planner/src/components/design/SceneViewport.tsx": "7a250987f8119e34ebec1e3011bb5b7e9985e15cb573abe64881383df9ccbcd7",
+    "apps/planner/src/components/revealActionResult.ts": "06106ea02103765baf1bdb2b81085216b20c67855b72f047a0cc4fedf95da146",
+    "apps/planner/src/data/useGeometryImport.ts": "d554162c6fa3255cfd1c489aeb41c6377e85b81beddeae3cf2ba85edbae4ceb0",
+    "apps/planner/src/domain/geometrySelection.ts": "82e230d7eaa64d45a3d03d73c5159568a2704b9009383c301815a1e3ac0fcf7e",
+    "apps/planner/src/domain/sceneCamera.test.ts": "3497483b91250342f7dd45a84161115d692bd8251a2893b672678e1d03f65cea",
+    "apps/planner/src/domain/sceneCamera.ts": "f02dc151dd19c2081d8b6994ba562af09a9e5e6e200000261ab2015a9e39c7f3"
+  },
+  "legacy_new_source_matches": [],
+  "changed_production_source_files": [
+    "apps/planner/src/components/design/DesignEditor.tsx",
+    "apps/planner/src/components/design/SceneCamera.tsx",
+    "apps/planner/src/components/design/SceneControls.tsx",
+    "apps/planner/src/components/design/SceneViewport.tsx",
+    "apps/planner/src/components/revealActionResult.ts",
+    "apps/planner/src/data/useGeometryImport.ts",
+    "apps/planner/src/domain/geometrySelection.ts",
+    "apps/planner/src/domain/sceneCamera.test.ts",
+    "apps/planner/src/domain/sceneCamera.ts"
+  ],
+  "shared_runtime_or_dependency_changes": [],
+  "worktree_status_readback": [
+    "?? docs/acceptance/2026-10-22/548/camera-probes/6dc3c292-spec/",
+    "?? docs/acceptance/2026-10-22/548/camera-probes/6dc3c292-standards/",
+    "?? docs/acceptance/2026-10-22/548/import-native/6dc3c292/"
+  ]
+}

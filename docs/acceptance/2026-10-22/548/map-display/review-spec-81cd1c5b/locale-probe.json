@@ -1,0 +1,60 @@
+{
+  "pinned": "81cd1c5b1a7d5ff5592131602c12d642d13c162b",
+  "messages": [
+    {
+      "id": "product_name",
+      "mo_matches": true,
+      "wordpress_json_matches": true
+    },
+    {
+      "id": "ownership",
+      "mo_matches": true,
+      "wordpress_json_matches": true
+    },
+    {
+      "id": "system_role",
+      "mo_matches": true,
+      "wordpress_json_matches": true
+    },
+    {
+      "id": "about_label",
+      "mo_matches": true,
+      "wordpress_json_matches": true
+    },
+    {
+      "id": "linker_contribution",
+      "mo_matches": true,
+      "wordpress_json_matches": true
+    },
+    {
+      "id": "geometry_source_boundary",
+      "mo_matches": true,
+      "wordpress_json_matches": true
+    },
+    {
+      "id": "credits_label",
+      "mo_matches": true,
+      "wordpress_json_matches": true
+    },
+    {
+      "id": "software_credits",
+      "mo_matches": true,
+      "wordpress_json_matches": true
+    },
+    {
+      "id": "street_map_credits",
+      "mo_matches": true,
+      "wordpress_json_matches": true
+    },
+    {
+      "id": "provider_privacy",
+      "mo_matches": true,
+      "wordpress_json_matches": true
+    }
+  ],
+  "files": {
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal.mo": "3dd0123316d188a033eb195346b8a0999b56d5d86cd0c5a2a1ad1fe7351936f1",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json": "fd3e9a3d1b5a3f404b531a5db4199c304a1ff843e2651a3c4100d54a34caf8de"
+  },
+  "evidence_limit": "Compiled translation equality, not native rendering."
+}

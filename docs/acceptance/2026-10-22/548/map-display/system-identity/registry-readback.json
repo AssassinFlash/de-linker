@@ -1,0 +1,12 @@
+{
+  "resolved_urls_normalized": 189,
+  "canonical_host": "registry.npmjs.org",
+  "all_other_lock_data_unchanged": true,
+  "versions_and_integrities_unchanged": true,
+  "package_local_replace_registry_host": "always",
+  "global_settings_changed": false,
+  "before_sha256": "e177845d57b15d2ef654aa3e2a6c7725198c54393aa37f69dfd9b8525ec49a3a",
+  "after_sha256": "2b46e5d07ab9e412f10e6b68aa8c0fd8148d66621c260404b9f096309a2d2ff2",
+  "apify_verification": "docs/research/2026-10-23-map-workbench-integration/registry-canonicalization/verification.json",
+  "reason": "README canonical lockfile rule; independent Standards P2 at 81cd1c5b"
+}

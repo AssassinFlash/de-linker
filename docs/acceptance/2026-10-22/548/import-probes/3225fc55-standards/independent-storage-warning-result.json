@@ -1,0 +1,17 @@
+{
+  "fixed_sha": "3225fc552a89c406f685bfc5643d50745e58baa9",
+  "command": [
+    "node",
+    "--no-warnings=ExperimentalWarning",
+    "--loader",
+    "./tests/tsx-loader.mjs",
+    "--test",
+    "tests/standards-storage-warning.test.mjs",
+    "tests/standards-project-storage-failure.test.mjs"
+  ],
+  "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/roof-import-standards-3225-pinw2cau/apps/planner",
+  "exit_code": 0,
+  "log": "independent-storage-warning.log",
+  "source_modified": false,
+  "fixture_changes": "Expose existing journal adapter, load actual German catalog, inject browser acknowledgement/read errors. ProjectEditor, client, geometry history, save and consumers remain unchanged."
+}

@@ -1,0 +1,45 @@
+{
+	"name": "@linker/planner",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"license": "UNLICENSED",
+	"engines": {
+		"node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+	},
+	"scripts": {
+		"dev": "vite --host 127.0.0.1",
+		"build": "tsc --noEmit && vite build && node bin/build-manifest.mjs write",
+		"build:check": "node bin/build-manifest.mjs check && node --test tests/built-modules.mjs",
+		"lint:types": "tsc --noEmit",
+		"lint:js": "node --check bin/build-manifest.mjs",
+		"lint:format": "prettier --check .",
+		"test": "node --test src/domain/*.test.ts src/data/*.test.ts && node --no-warnings=ExperimentalWarning --loader ./tests/tsx-loader.mjs --test tests/*.test.mjs",
+		"postinstall": "node bin/echarts-types.mjs"
+	},
+	"dependencies": {
+		"@react-three/drei": "10.7.9",
+		"@react-three/fiber": "9.8.2",
+		"@tanstack/react-query": "5.104.5",
+		"ajv": "8.20.0",
+		"echarts": "6.1.0",
+		"maplibre-gl": "5.24.0",
+		"react": "19.3.1",
+		"react-dom": "19.3.1",
+		"terra-draw": "1.35.0",
+		"terra-draw-maplibre-gl-adapter": "1.4.1",
+		"three": "0.186.1"
+	},
+	"devDependencies": {
+		"@types/node": "26.6.4",
+		"@types/react": "19.3.0",
+		"@types/react-dom": "19.3.0",
+		"@types/three": "0.186.0",
+		"@vitejs/plugin-react": "6.1.2",
+		"fake-indexeddb": "6.2.6",
+		"jsdom": "26.1.0",
+		"prettier": "3.9.6",
+		"typescript": "6.0.3",
+		"vite": "8.3.5"
+	}
+}

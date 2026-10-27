@@ -1,0 +1,100 @@
+{
+  "target": "6c6680ad4e2eb890b08c58b5a9bffd95ecb48957",
+  "base": "8a4a80b132f692062125807e509a57926fb0f518",
+  "patch_base": "37f2acd3962e8da3f885b1dd669e831b96b1de9c",
+  "axis": "Spec",
+  "verdict": "FAIL",
+  "previous_six_findings": "closed against original inputs, with explicit revised range/API/coordinate-frame assertion adapters preserved separately",
+  "original_probe_hashes": {
+    "apps/planner/tests/spec-lazy-failure-loader.mjs": {
+      "sha256": "ffb03db0a644f69cd092a0c73639c8a769432431d4ab01c0eab4755d49fcd52a",
+      "unchanged": true
+    },
+    "apps/planner/tests/spec-scene-probe.test.mjs": {
+      "sha256": "04e663ffb110ed237cdaf7ddd85161f8495bcc7d77362d4b25a1241ea4a588ae",
+      "unchanged": true
+    },
+    "apps/planner/tests/spec-controls-probe.test.mjs": {
+      "sha256": "dacde65a012aeaafd5983940f2fea3ff9bf383475c64f85e4dcafe950052aa5a",
+      "unchanged": true
+    },
+    "apps/planner/tests/spec-editor-probe.test.mjs": {
+      "sha256": "220be74ec4d9fdb1f028dc778fff7ccf7b08ea803bfe5c60e6d04431d9dc06e6",
+      "unchanged": true
+    },
+    "apps/planner/tests/spec-r3f-host.mjs": {
+      "sha256": "6ec38881dab56853b3fde2a2a2392f7d933889e224b07d7a19d89fcdfc66af2f",
+      "unchanged": true
+    },
+    "apps/planner/tests/spec-lazy-failure.test.mjs": {
+      "sha256": "2912848aa0ae0abfefb792da7999da80dc18439170bce34c51b38ad459221f65",
+      "unchanged": true
+    },
+    "apps/planner/tests/spec-scene-loader.mjs": {
+      "sha256": "600d21b304ff28308b2e3ddaedf3e519448fdea80ecee23a59a2a19932c52310",
+      "unchanged": true
+    }
+  },
+  "fixed_tests": {
+    "domain_data": 45,
+    "all_tracked_dom": 51,
+    "passed": true
+  },
+  "findings": [
+    {
+      "id": "gesture_frame_not_guarded",
+      "priority": 2,
+      "spec": "548-interactive-design.md:24-25,30-33",
+      "quote": "Apply is a guarded immutable command; stale before-values ... rejected without overwriting current work. Local-plane handles move the array ... final movement enters the same command path.",
+      "source": "apps/planner/src/components/design/SceneViewport.tsx:266-303; apps/planner/src/domain/geometryCommands.ts:114-117",
+      "variants": [
+        {
+          "change": "selected second roof origin[30,-20,4] to[40,-20,4], array unchanged",
+          "before_uv": [
+            1,
+            2
+          ],
+          "incorrect_after_uv": [
+            11,
+            2
+          ],
+          "commits": 1
+        },
+        {
+          "change": "first roof origin[10,-20,4] to[20,-20,4], selected roof unchanged, scene reference changes",
+          "before_uv": [
+            1,
+            2
+          ],
+          "incorrect_after_uv": [
+            -9,
+            2
+          ],
+          "commits": 1
+        }
+      ],
+      "cause": "Start captures array and roof but finish only array CAS. R3F applies changed roof/reference group transform; its coordinate shift is counted as user movement.",
+      "probe": "apps/planner/tests/spec-r3f-reference.test.mjs"
+    }
+  ],
+  "scope_creep": [],
+  "other_independent_evidence": [
+    "actual array.name change during drag correctly rejects stale finish",
+    "actual R3F pointercancel/lostpointercapture/Escape/blur after frame change all0attempt/0commit and current origin restored",
+    "full ProjectEditor manual rectangle produces-0, first save503, retry reuses exact same wire, canonical0 ack advances baseline2, clears pending, preserves local-0 and undo",
+    "original1cm opening atUV1e6 now4 real BufferGeometry vertices after applying mesh transform",
+    "camera includes30m obstacle, top in front and inside NDC; failed constructor2 dispose2 on owner unmount; chunk failure retains staged raw input"
+  ],
+  "methods": [
+    "source-level fixed React/DOM tests",
+    "real R3F reconciler and actual Three Group/InstancedMesh/official TransformControls for frame CAS, only GPU render is no-op with frameloop=never",
+    "private component loader adds exports only; original implementation body not changed",
+    "old scene host double separately verifies actual Three buffers/camera and failure control flow; not GPU rendering",
+    "installed dependency versions verified equal fixed declared versions"
+  ],
+  "unverified": [
+    "native/p548/GPU/built artifact query URL identities not executed here",
+    "parent discovered native built-module identity issue separately and is fixing it; not counted as independently reproduced here",
+    "complete B/map/whole-goal acceptance remains outside increment"
+  ]
+}

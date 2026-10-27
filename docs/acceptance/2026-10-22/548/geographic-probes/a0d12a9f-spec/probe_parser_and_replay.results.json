@@ -1,0 +1,98 @@
+[
+  {
+    "case": "invalid_json",
+    "status": 422,
+    "code": null,
+    "published_bytes": false
+  },
+  {
+    "case": "duplicate_members",
+    "status": 422,
+    "code": null,
+    "published_bytes": false
+  },
+  {
+    "case": "unknown_crs",
+    "status": 422,
+    "code": null,
+    "published_bytes": false
+  },
+  {
+    "case": "geometry_crs",
+    "status": 422,
+    "code": null,
+    "published_bytes": false
+  },
+  {
+    "case": "boolean_id",
+    "status": 422,
+    "code": null,
+    "published_bytes": false
+  },
+  {
+    "case": "unsafe_integer_id",
+    "status": 422,
+    "code": null,
+    "published_bytes": false
+  },
+  {
+    "case": "invalid_unicode_id",
+    "status": 422,
+    "code": null,
+    "published_bytes": false
+  },
+  {
+    "case": "overflow_exponent_id",
+    "status": 422,
+    "code": null,
+    "published_bytes": false
+  },
+  {
+    "case": "boolean_coordinate",
+    "status": 422,
+    "code": null,
+    "published_bytes": false
+  },
+  {
+    "case": "string_coordinate",
+    "status": 422,
+    "code": null,
+    "published_bytes": false
+  },
+  {
+    "case": "third_coordinate",
+    "status": 422,
+    "code": null,
+    "published_bytes": false
+  },
+  {
+    "case": "unclosed_ring",
+    "status": 422,
+    "code": null,
+    "published_bytes": false
+  },
+  {
+    "case": "nonunit",
+    "status": 422,
+    "published_bytes": false
+  },
+  {
+    "case": "nonorthogonal",
+    "status": 422,
+    "published_bytes": false
+  },
+  {
+    "case": "vertical",
+    "status": 422,
+    "published_bytes": false
+  },
+  {
+    "case": "receipt_under_changed_runtime",
+    "same_import_status": 200,
+    "permanent_replay_status": 200,
+    "changed_body_status": 409,
+    "foreign_malformed_status": 404,
+    "raw_bytes_identical": true,
+    "missing_original_replay_status": 503
+  }
+]

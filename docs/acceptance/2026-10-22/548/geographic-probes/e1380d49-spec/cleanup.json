@@ -1,0 +1,46 @@
+{
+  "owner": "/root/geographic_spec_e138",
+  "fixed_sha": "e1380d49d267f4ea6ef3083d2c7460432b8e2b22",
+  "staging_root": "/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/spec-geographic-e138-7isdp4ep",
+  "staging_root_removal_condition": "After durable archive byte-for-byte readback",
+  "source_files_sha_checked_and_removed": 221,
+  "source_bytes": 1539443,
+  "source_mismatches": [],
+  "generated_files_removed": 447,
+  "generated_bytes_removed": 80546886,
+  "dependency_links_removed": [
+    "apps/planner/node_modules",
+    "services/engine/.venv"
+  ],
+  "pytest_directories_removed": [
+    "/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-505",
+    "/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-506"
+  ],
+  "pytest_directories_absent": true,
+  "retained_names": [
+    "REPRODUCE.md",
+    "REVIEW.md",
+    "archive_manifest.json",
+    "cleanup.json",
+    "generated_artifact_manifest.json",
+    "independent-browser-run.json",
+    "independent-browser.log",
+    "independent-browser.test.mjs",
+    "independent-spec-run.json",
+    "independent-spec.log",
+    "probe_environment.json",
+    "rebuild_snapshot.py",
+    "review_results.json",
+    "target-backend.log",
+    "target-check-runs.json",
+    "target-domain.log",
+    "target-editor-dom.log",
+    "test_independent_spec.py"
+  ],
+  "free_before_bytes": 895078604800,
+  "free_after_bytes": 895162658816,
+  "observed_free_delta_bytes": 84054016,
+  "completed_utc": "2026-10-23T09:24:52.839838+00:00",
+  "scope": "Only fixed review source files, links and attributable synthetic fixture runtimes removed; existing dependencies/native services/parent WIP/prototype/production untouched. Free-space delta may include concurrent activity. Initial cleanup guard caught its own read-only SQLite audit handle; that handle closed before this completed run.",
+  "staging_root_absent": true
+}

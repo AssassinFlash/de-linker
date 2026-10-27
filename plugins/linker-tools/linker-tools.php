@@ -47,6 +47,16 @@ require_once __DIR__ . '/vendor/autoload.php';
 // loads this plugin's classes (the 2026-10-18 deploy-window fatals).
 \Linker\Tools\Autoload::register();
 
+// Before Woo can migrate a guest session: capture the native event durably.
+$planner_claims  = new \Linker\Tools\Planner\ClaimOutbox(); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- bootstrap-local dependency shared by the gateway and its native lifecycle hooks.
+$planner_gateway = new \Linker\Tools\Planner\Gateway( claims: $planner_claims ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- bootstrap-local route module.
+$planner_claims->register();
+$planner_gateway->lifecycle();
+add_action( 'rest_api_init', array( $planner_gateway, 'register' ) );
+( new \Linker\Tools\Planner\Application( __FILE__ ) )->register();
+( new \Linker\Tools\Planner\ReportAccess() )->register();
+( new \Linker\Tools\Planner\AccountProjects() )->register();
+
 $conversations = new Conversations(); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- bootstrap scope, used four times below.
 $thread        = new Thread(); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- bootstrap scope, used four times below.
 $mail          = new ConversationMail( $conversations, $thread ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- bootstrap scope, used twice below.

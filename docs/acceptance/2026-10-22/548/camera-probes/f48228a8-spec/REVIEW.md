@@ -1,0 +1,11 @@
+# Spec FAIL — fixed f48228a8 camera increment
+
+Target `f48228a87894c23f68d180675d05b902139d531e`; base `eff8341d5a0eaf24999f42854da6339032c65c9c`. Only this increment is reviewed.
+
+1. **P2 — panel-instance Fit chooses the wrong roof.** `docs/specs/548-roof-import-workflow.md:91–92` requires “Initial framing and explicit Fit must face the selected object's roof”. `apps/planner/src/domain/sceneCamera.ts:17–24` resolves arrays/obstacles/keepouts, but excludes rendered panel IDs. These are real selections (`SceneViewport.tsx:208`; `DesignEditor.tsx:148–149`). Reproduction: two roofs, first flat, second north-facing at 89.9°, array on second; select its actual `panelPoses(document)[0].id`, then Fit. Actual camera/selected-normal dot is **0.001678175**, almost edge-on, because composition falls back to the first roof. Resolve the actual selected pose's `roof_id`.
+
+2. **P2 — resize retains stale extents after geometry changes.** Spec `:98–99` requires “Resizing reframes the current extent while keeping the viewing direction.” `SceneViewport.tsx:493–496` retains the initial/last-Fit bounds; `SceneCamera.tsx:37–47` consequently clips the current scene on resize. Reproduction: add a schema-valid 300 m obstacle through ordinary immutable document props, preserving orbit, then resize to 390×700. **Four current bound points are clipped** (NDC z≈1.00004598). Explicit Fit immediately contains the identical points, with the same Canvas and zero commits. Resize must consume current bounds while retaining actual direction.
+
+Independent execution: `independent-attempt-2.log`, **8 tests: 6 PASS / 2 FAIL**. Actual React components, real R3F context/useThree and Three camera/projection execute with a controlled Canvas/GPU boundary. Positive checks cover selection/orbit preservation, four aspect ratios at three scales, pending initialization, retry/backend generation guards, unchanged geometry and zero commits. The first harness attempt is retained and explicitly excluded.
+
+Locked-source checks independently passed: **64 domain/data + 87 DOM tests**, strict types, source/build manifest, emitted graph **1/1**. No additional scope creep or import-kernel changes found. This is neither GPU rendering/native visual acceptance nor full A–D acceptance. The unique probes/logs remain; reconstructible snapshot removal is recorded in `cleanup.json`.

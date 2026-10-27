@@ -1,0 +1,225 @@
+[
+  {
+    "en": "Fit design",
+    "references": [
+      {
+        "file": "apps/planner/src/components/design/MapViewport.tsx",
+        "line": 347
+      }
+    ]
+  },
+  {
+    "en": "Hide street map",
+    "references": [
+      {
+        "file": "apps/planner/src/components/design/MapViewport.tsx",
+        "line": 411
+      }
+    ]
+  },
+  {
+    "en": "Load street map",
+    "references": [
+      {
+        "file": "apps/planner/src/components/design/MapViewport.tsx",
+        "line": 412
+      }
+    ]
+  },
+  {
+    "en": "Loading map workspace…",
+    "references": [
+      {
+        "file": "apps/planner/src/components/design/MapViewport.tsx",
+        "line": 377
+      },
+      {
+        "file": "apps/planner/src/components/design/LazyMapViewport.tsx",
+        "line": 29
+      }
+    ]
+  },
+  {
+    "en": "Loading the street map sends your IP address and the map area to OpenFreeMap and its delivery network. Street-map data is a reference for orientation.",
+    "references": [
+      {
+        "file": "apps/planner/src/components/design/MapViewport.tsx",
+        "line": 400
+      }
+    ]
+  },
+  {
+    "en": "Map",
+    "references": [
+      {
+        "file": "apps/planner/src/components/design/DesignEditor.tsx",
+        "line": 241
+      }
+    ]
+  },
+  {
+    "en": "Map attribution",
+    "references": [
+      {
+        "file": "apps/planner/src/components/design/MapViewport.tsx",
+        "line": 150
+      }
+    ]
+  },
+  {
+    "en": "Map controls",
+    "references": [
+      {
+        "file": "apps/planner/src/components/design/MapViewport.tsx",
+        "line": 337
+      }
+    ]
+  },
+  {
+    "en": "Map feedback",
+    "references": [
+      {
+        "file": "apps/planner/src/components/design/MapViewport.tsx",
+        "line": 153
+      }
+    ]
+  },
+  {
+    "en": "Map provider privacy",
+    "references": [
+      {
+        "file": "apps/planner/src/components/design/MapViewport.tsx",
+        "line": 419
+      }
+    ]
+  },
+  {
+    "en": "North up",
+    "references": [
+      {
+        "file": "apps/planner/src/components/design/MapViewport.tsx",
+        "line": 373
+      }
+    ]
+  },
+  {
+    "en": "Project geometry",
+    "references": [
+      {
+        "file": "apps/planner/src/components/design/MapViewport.tsx",
+        "line": 325
+      }
+    ]
+  },
+  {
+    "en": "Project map",
+    "references": [
+      {
+        "file": "apps/planner/src/components/design/MapViewport.tsx",
+        "line": 148
+      },
+      {
+        "file": "apps/planner/src/components/design/MapViewport.tsx",
+        "line": 178
+      },
+      {
+        "file": "apps/planner/src/components/design/MapViewport.tsx",
+        "line": 321
+      }
+    ]
+  },
+  {
+    "en": "Retry loading map",
+    "references": [
+      {
+        "file": "apps/planner/src/components/design/MapViewport.tsx",
+        "line": 392
+      },
+      {
+        "file": "apps/planner/src/components/design/LazyMapViewport.tsx",
+        "line": 25
+      }
+    ]
+  },
+  {
+    "en": "Some map resources could not be displayed. Your project geometry is unchanged.",
+    "references": [
+      {
+        "file": "apps/planner/src/components/design/MapViewport.tsx",
+        "line": 383
+      }
+    ]
+  },
+  {
+    "en": "Street map",
+    "references": [
+      {
+        "file": "apps/planner/src/components/design/MapViewport.tsx",
+        "line": 324
+      }
+    ]
+  },
+  {
+    "en": "The map needs a geographic origin and a recorded true-north reference for this design.",
+    "references": [
+      {
+        "file": "apps/planner/src/components/design/MapViewport.tsx",
+        "line": 296
+      }
+    ]
+  },
+  {
+    "en": "The map places your recorded geometry at its geographic reference. Roof dimensions and source accuracy stay as declared in the project.",
+    "references": [
+      {
+        "file": "apps/planner/src/components/design/MapViewport.tsx",
+        "line": 330
+      }
+    ]
+  },
+  {
+    "en": "The map workspace could not be loaded. Plan view, 3D and numeric properties remain available.",
+    "references": [
+      {
+        "file": "apps/planner/src/components/design/LazyMapViewport.tsx",
+        "line": 22
+      }
+    ]
+  },
+  {
+    "en": "This geometry cannot be displayed by the map projection. Plan view, 3D and numeric properties remain available.",
+    "references": [
+      {
+        "file": "apps/planner/src/components/design/MapViewport.tsx",
+        "line": 300
+      }
+    ]
+  },
+  {
+    "en": "Use Ctrl + scroll to zoom the map",
+    "references": [
+      {
+        "file": "apps/planner/src/components/design/MapViewport.tsx",
+        "line": 155
+      }
+    ]
+  },
+  {
+    "en": "Use two fingers to move the map",
+    "references": [
+      {
+        "file": "apps/planner/src/components/design/MapViewport.tsx",
+        "line": 163
+      }
+    ]
+  },
+  {
+    "en": "Use ⌘ + scroll to zoom the map",
+    "references": [
+      {
+        "file": "apps/planner/src/components/design/MapViewport.tsx",
+        "line": 159
+      }
+    ]
+  }
+]

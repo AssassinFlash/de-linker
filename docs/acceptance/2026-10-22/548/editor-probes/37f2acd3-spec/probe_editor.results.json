@@ -1,0 +1,25 @@
+[
+  {
+    "case": "pitch90",
+    "edits": 0,
+    "form_retained": true,
+    "generic_refusal": true
+  },
+  {
+    "case": "pointer_lifecycle",
+    "edits": 1,
+    "origin": [
+      5,
+      1
+    ]
+  },
+  {
+    "case": "global_guards_save",
+    "staged_unload_prevented": true,
+    "save_sent": true,
+    "saved_excluded_slots": [
+      "0:0",
+      "1:2"
+    ]
+  }
+]

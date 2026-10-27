@@ -1,0 +1,41 @@
+[
+  {
+    "name": "app-checks",
+    "command": [
+      "npm",
+      "test"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "app-format",
+    "command": [
+      "npm",
+      "run",
+      "lint:format"
+    ],
+    "exit_code": 1
+  },
+  {
+    "name": "engine-source-types",
+    "command": [
+      ".venv/bin/mypy",
+      "src",
+      "tests/planning/export_preparation_fixture.py",
+      "tests/planning/test_run_task_index.py",
+      "--follow-imports=silent"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "engine-source-style",
+    "command": [
+      ".venv/bin/ruff",
+      "check",
+      "src/linker_engine/planning/http_index.py",
+      "tests/planning/export_preparation_fixture.py",
+      "tests/planning/test_run_task_index.py"
+    ],
+    "exit_code": 0
+  }
+]

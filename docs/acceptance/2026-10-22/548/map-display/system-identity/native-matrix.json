@@ -1,0 +1,90 @@
+{
+  "accepted": [
+    {
+      "name": "de-desktop-system-about-open",
+      "size": [
+        1440,
+        1000
+      ],
+      "revision": "Gespeichert \u00b7 Version 3",
+      "links": 10,
+      "identity_fully_framed": true
+    },
+    {
+      "name": "en-desktop-system-about-framed",
+      "size": [
+        1440,
+        1000
+      ],
+      "revision": "Saved \u00b7 revision 3",
+      "links": 10,
+      "identity_fully_framed": true
+    },
+    {
+      "name": "de-phone-system-about-framed",
+      "size": [
+        390,
+        844
+      ],
+      "revision": "Gespeichert \u00b7 Version 3",
+      "links": 10,
+      "identity_fully_framed": true
+    },
+    {
+      "name": "en-phone-system-about-framed",
+      "size": [
+        390,
+        844
+      ],
+      "revision": "Saved \u00b7 revision 3",
+      "links": 10,
+      "identity_fully_framed": true
+    },
+    {
+      "name": "en-desktop-list-system-about-framed",
+      "size": [
+        1440,
+        1000
+      ],
+      "revision": null,
+      "links": 10,
+      "identity_fully_framed": true
+    }
+  ],
+  "removed_superseded_frames": [
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/system-identity/native/de-phone-system-about-open.png",
+      "bytes": 97608,
+      "reason": "Invalid or partial framing superseded by inspected complete native screenshot"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/system-identity/native/de-phone-system-about-open.json",
+      "bytes": 9875,
+      "reason": "Invalid or partial framing superseded by inspected complete native screenshot"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/system-identity/native/de-desktop-map-provider.png",
+      "bytes": 160009,
+      "reason": "Invalid or partial framing superseded by inspected complete native screenshot"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/system-identity/native/de-desktop-map-provider.json",
+      "bytes": 8525,
+      "reason": "Invalid or partial framing superseded by inspected complete native screenshot"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/system-identity/native/de-desktop-map-provider-context.png",
+      "bytes": 242693,
+      "reason": "Invalid or partial framing superseded by inspected complete native screenshot"
+    },
+    {
+      "path": "docs/acceptance/2026-10-22/548/map-display/system-identity/native/de-desktop-map-provider-context.json",
+      "bytes": 8521,
+      "reason": "Invalid or partial framing superseded by inspected complete native screenshot"
+    }
+  ],
+  "new_instances_created": 0,
+  "new_projects_created": 0,
+  "production_changed": false,
+  "png_dimensions": "PNG IHDR via Python standard library; no image dependency installed"
+}

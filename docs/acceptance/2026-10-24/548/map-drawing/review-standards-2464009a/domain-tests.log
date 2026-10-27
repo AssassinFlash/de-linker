@@ -1,0 +1,20 @@
+✔ a geographic vertex edit keeps every untouched source value and rejects a changed whole frame (2.193167ms)
+✔ one grouped edit joins existing project undo/redo without replacing unrelated inputs (0.951ms)
+✔ hole/obstacle/keep-out handles touch only their explicitly bound footprint (1.515417ms)
+✔ new shapes need explicit physical fields and use a real sloped plane without deleting original holes (0.773875ms)
+✔ malformed rings, unknown references, collapsed display handles and unsupported precision remain explicit refusals (0.264459ms)
+✔ new obstacle and keep-out commands retain their explicit source, height, axis and requirement (0.792375ms)
+✔ every winding/start-index arrangement changes only the one moved metric vertex (2.928584ms)
+✔ insertions at every edge and reversed winding preserve the canonical first vertex and exact old points (1.5365ms)
+✔ deletions and no-op winding changes perform no inverse projection (0.806334ms)
+✔ a midpoint insertion followed by a drag still preserves every original UV point (0.139875ms)
+✔ ambiguous display identity, unrelated mutations, crossings and too-small deletion are refused (0.3915ms)
+✔ the resource-bound ring remains linear in projection work (27.989375ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 206.954166

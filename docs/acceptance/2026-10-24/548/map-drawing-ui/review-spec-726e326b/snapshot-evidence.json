@@ -1,0 +1,37 @@
+{
+  "pin": "726e326b5c3ce322a2e1471008483a10e9e3c3b1",
+  "previous_spec_pin": "786d0db99203d35010b6a7fdc38dc984b3058606",
+  "delta_command": "git diff 786d0db9...726e326b",
+  "pinned_manifest_hash_checks": {
+    "sources": 114,
+    "build": 7
+  },
+  "compiled_formal_german_entries_checked": 44,
+  "independent_component_probe": "repeat-submit.json",
+  "independent_test_execution": "focused-tests.txt",
+  "test_count": 3,
+  "tests": "two actual-component Workspace fixtures and one exact emitted ESM identity fixture",
+  "previous_focus_finding": "closed at this pin",
+  "journal_p2": "remains closed",
+  "journal_p2_source_bytes_unchanged": [
+    "apps/planner/src/data/useMapRoofDraft.ts",
+    "apps/planner/src/data/MapRoofDraftStore.ts",
+    "apps/planner/src/domain/mapRoofDraft.ts"
+  ],
+  "journal_probe": "journal-recheck.json",
+  "journal_probe_baseline_note": "The existing independent probe retains a b48 label. The in-memory loader supplies 726 source; hook/store/domain are byte-identical across b48,786 and726. Exact pending replay, public Retry, foreign-version refusal and unknown-discard passed again.",
+  "prior_review_786_files_sha256": {
+    "review-spec-786d0db9/REPORT.md": "dcbe2c5ab955f37f4db24c9e2cf26ed0e075c2456ffb2f6ff8ec28bb71706a3e",
+    "review-spec-786d0db9/built-module-identity.txt": "7464c8bb1edb7c87e48a78f130df0ffd7d0814222b9b3cc142887aaecf345ba8",
+    "review-spec-786d0db9/focused-tests.txt": "eef892109b83005fad862cb71e42d983468f20f2dbfeae74c2d9090206c93600",
+    "review-spec-786d0db9/p2-unchanged-hook-recheck.json": "d451f5b69f3ea3afe58ab2ffe694186299a54736ae943a05067d08dda9dac975",
+    "review-spec-786d0db9/pinned-fixture-loader.mjs": "12a181f51397acab284c2204bb8d2b02f6293a0ff4f5e61e9ba74362fe267550",
+    "review-spec-786d0db9/probe-repeat-submit.mjs": "258f03f3d5e3e276835696d69ed62491c3c2d57e1d3806f93cd33021bc4f4da6",
+    "review-spec-786d0db9/repeat-submit.json": "ee75e8d6172584db9552b377712400650f5cbe37a367bcd4b3704d46944a8a69",
+    "review-spec-786d0db9/snapshot-evidence.json": "d4c0f1a57d347fcab9f654b3aa02e02519dd105e6903fd703f3d950233fabdc7"
+  },
+  "earlier_9efd_b48_hashes_match_previous_snapshot": true,
+  "fixture_boundary": "Real React/domain/library with existing JSDOM, fake Map/IndexedDB and synthetic review responses. Pinned app/test and emitted ESM sources loaded only in memory; no application/test/build files changed.",
+  "native_geometry_refusal": "not proven; remains open",
+  "native_prod_whole_goal_acceptance": "not granted; full goal active"
+}

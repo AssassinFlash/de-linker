@@ -1,0 +1,16 @@
+{
+  "fixed_sha": "3225fc552a89c406f685bfc5643d50745e58baa9",
+  "command": [
+    "node",
+    "--no-warnings=ExperimentalWarning",
+    "--loader",
+    "./tests/tsx-loader.mjs",
+    "--test",
+    "tests/standards-refusal-origin.test.mjs"
+  ],
+  "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/roof-import-standards-3225-pinw2cau/apps/planner",
+  "exit_code": 1,
+  "log": "independent-refusal-origin.log",
+  "source_modified": false,
+  "fixture_change": "Only the real client fetch fixture can return JSON arrays with declared HTTP statuses; actual hook, classifier, IndexedDB store and response parser run unchanged."
+}

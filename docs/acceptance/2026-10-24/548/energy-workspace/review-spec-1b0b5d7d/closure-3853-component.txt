@@ -1,0 +1,9 @@
+✔ actual scenario controls retain raw input, require confirmed save, use one frozen revision, and preserve edits from a late preparation response (304.182416ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1154.515708

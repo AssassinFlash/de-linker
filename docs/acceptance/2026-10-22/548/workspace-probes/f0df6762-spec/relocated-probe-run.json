@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "--no-warnings=ExperimentalWarning",
+    "--loader",
+    "./tests/tsx-loader.mjs",
+    "--test",
+    "--test-name-pattern=^relocated",
+    "tests/composed-relocated-probe.mjs"
+  ],
+  "cwd": "apps/planner",
+  "exit_code": 0,
+  "prior_files_unchanged": true,
+  "new_additions_sha256": "0fc985a595cdd4f975f2ae864955238d01b1fab9bd96937f990bec4d7e275efb",
+  "generated_path": "apps/planner/tests/composed-relocated-probe.mjs",
+  "generated_sha256": "fca83dd0b46434d0505fd49f69a22e861c71a4900393ca8f33163975975132f5"
+}

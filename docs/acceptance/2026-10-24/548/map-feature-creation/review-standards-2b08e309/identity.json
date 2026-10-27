@@ -1,0 +1,81 @@
+{
+  "axis": "Standards",
+  "base": "81524ca90795f4f26e80c59e5a63c63e23bd80c9",
+  "head": "2b08e309282034e6c2ab77a6f580706d2c713d8d",
+  "diff_command": "git diff 81524ca90795f4f26e80c59e5a63c63e23bd80c9...2b08e309282034e6c2ab77a6f580706d2c713d8d",
+  "diff_sha256": "724aa61b35e4c9489b53557be3addd549e1f45651be336e0364915bbddc3746e",
+  "changed_files": [
+    "apps/planner/src/components/ProjectEditor.tsx",
+    "apps/planner/src/components/design/MapDrawingWorkspace.tsx",
+    "apps/planner/src/components/design/MapFeatureProperties.tsx",
+    "apps/planner/src/components/design/MapFeatureSelector.tsx",
+    "apps/planner/src/components/design/MapRingProperties.tsx",
+    "apps/planner/src/components/design/MapSourceDetails.tsx",
+    "apps/planner/src/components/design/mapDrawingLabels.ts",
+    "apps/planner/src/domain/mapDrawingBase.ts",
+    "apps/planner/src/domain/mapDrawingDraft.ts",
+    "apps/planner/src/domain/mapFeatureDraft.test.ts",
+    "apps/planner/src/domain/mapFeatureDraft.ts",
+    "apps/planner/src/domain/mapRoofDraft.ts",
+    "apps/planner/tests/map-roof-recovery.test.mjs",
+    "apps/planner/tests/map-roof-workspace.test.mjs",
+    "apps/planner/tests/workspace-lifecycle.test.mjs",
+    "docs/acceptance/2026-10-24/548/map-feature-creation/COPY-DRAFT.json",
+    "docs/acceptance/2026-10-24/548/map-feature-creation/COPY-FINAL.json",
+    "docs/acceptance/2026-10-24/548/map-feature-creation/COPY-REVIEW.md",
+    "docs/acceptance/2026-10-24/548/map-feature-creation/native-context-final.txt",
+    "docs/acceptance/2026-10-24/548/map-feature-creation/native-context-initial-failure.txt",
+    "docs/acceptance/2026-10-24/548/map-feature-creation/tests-output.txt",
+    "docs/specs/548-map-feature-creation.md",
+    "plugins/linker-tools/build/planner/assets/MapViewport-BIYPV6Pm.js",
+    "plugins/linker-tools/build/planner/assets/SceneViewport-D8UUQICS.js",
+    "plugins/linker-tools/build/planner/assets/planner-core-zj35rFxH.js",
+    "plugins/linker-tools/build/planner/assets/planner.js",
+    "plugins/linker-tools/build/planner/source-manifest.json",
+    "plugins/linker-tools/build/planner/vite-manifest.json",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal.mo",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal.po"
+  ],
+  "source_manifest_entries": 125,
+  "build_manifest_entries": 7,
+  "source_build_hashes_verified": true,
+  "reviewed_en_de_pairs_verified_in_mo_json_and_built_js": 27,
+  "new_compiled_german_pairs": 14,
+  "existing_mo_translations_changed": 0,
+  "old_identifiers_in_planner_sources": [],
+  "tests": [
+    {
+      "command": "node --test src/domain/mapFeatureDraft.test.ts src/domain/mapRoofDraft.test.ts src/domain/mapRingDraft.test.ts",
+      "pass": 15,
+      "fail": 0,
+      "exit": 0
+    },
+    {
+      "command": "node --no-warnings=ExperimentalWarning --loader ./tests/tsx-loader.mjs --test tests/map-roof-workspace.test.mjs tests/map-roof-recovery.test.mjs tests/workspace-lifecycle.test.mjs",
+      "pass": 46,
+      "fail": 0,
+      "exit": 0,
+      "log": "focused-dom.txt"
+    },
+    {
+      "command": "npm run build:check",
+      "pass": 1,
+      "fail": 0,
+      "exit": 0,
+      "log": "build-check.txt"
+    }
+  ],
+  "standards_findings": 1,
+  "heuristic_findings": 1,
+  "native_browser_http_server_provider_engineering_or_full_goal_acceptance": false,
+  "external_requests_or_new_dependencies_instances_worktrees_backups": false,
+  "accidental_empty_apps_planner_docs_removed": true,
+  "evidence_hashes": {
+    "REPORT.md": "d38c7cd98b7bd26d7a2dcdb0b707e2b6645c7e3f7f77e372146e83e75a0d24e8",
+    "focused-dom.txt": "a0990daa43edb3186242ecaaff5687c32a1edef485860a22334823660779e023",
+    "build-check.txt": "56e96134083930458afcf6a8ec9c9f254134fd060aa265301d32da8e9186d2fa"
+  },
+  "report_words": 307,
+  "ownership_released": true
+}

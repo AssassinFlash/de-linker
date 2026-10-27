@@ -1,0 +1,127 @@
+{
+  "pin": "71cd719aa67021aee6398ae58f359738005d1f57",
+  "base": "66324a39fb449425dd1144b46b4d3abc21dc52d0",
+  "diff": "git diff 66324a39fb449425dd1144b46b4d3abc21dc52d0...71cd719aa67021aee6398ae58f359738005d1f57",
+  "commits": [
+    "71cd719a refactor(planner): give the map pick gate its own viewport module (#548)",
+    "2464009a fix(planner): report drawing cleanup failures without aborting owner disposal (#548)",
+    "c562676a feat(planner): add metric map drawing command and controller boundaries (#548)"
+  ],
+  "source_hashes_checked": 107,
+  "unchanged_emitted_artifacts": 7,
+  "controller_sha256": "d63e36f4867328608deea366d60e153a2cae5153509a07cdcabbe9467f258007",
+  "reused_fixture_path": "docs/acceptance/2026-10-24/548/map-drawing/review-spec-c562676a/probe.mjs",
+  "reused_fixture_sha256": "78c82bf078f1b375318d2f332f9937834ad2421e63102b672a4b0b07fc3d2110",
+  "packages": {
+    "terra-draw": "1.35.0",
+    "terra-draw-maplibre-gl-adapter": "1.4.1"
+  },
+  "records": [
+    {
+      "case": "actual-adapter endpoint/closure positive",
+      "transactions": [
+        {
+          "steps": [
+            {
+              "action": "dragCoordinate",
+              "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                  [
+                    [
+                      -0.000751234,
+                      -0.000121234
+                    ],
+                    [
+                      0.002,
+                      0
+                    ],
+                    [
+                      0.002,
+                      -0.002
+                    ],
+                    [
+                      -0.000751234,
+                      -0.000121234
+                    ]
+                  ]
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "unchanged_other_vertices": true,
+      "removed_sources": 3,
+      "removed_layers": 5,
+      "uncaught_errors": []
+    },
+    {
+      "case": "blur interruption",
+      "failed_callbacks": [
+        "map_drawing_cleanup_failed"
+      ],
+      "interrupted_callbacks": 0,
+      "uncaught_errors": [],
+      "owner_remove_reached": true,
+      "transactions": 0,
+      "prior_raw_unchanged": true,
+      "handlers_and_cursor_restored": true,
+      "late_callbacks_duplicated": false
+    },
+    {
+      "case": "invalid endpoint failure",
+      "failed_callbacks": [
+        "map_drawing_failed"
+      ],
+      "interrupted_callbacks": 0,
+      "uncaught_errors": [],
+      "owner_remove_reached": true,
+      "transactions": 0,
+      "prior_raw_unchanged": true,
+      "handlers_and_cursor_restored": true,
+      "late_callbacks_duplicated": false
+    },
+    {
+      "case": "public owner disposal",
+      "failed_callbacks": [
+        "map_drawing_cleanup_failed"
+      ],
+      "interrupted_callbacks": 0,
+      "uncaught_errors": [],
+      "owner_remove_reached": true,
+      "transactions": 0,
+      "prior_raw_unchanged": true,
+      "handlers_and_cursor_restored": true,
+      "late_callbacks_duplicated": false
+    },
+    {
+      "case": "normal cancellation",
+      "interrupted_callbacks": 1,
+      "failed_callbacks": [],
+      "prior_raw_unchanged": true,
+      "transactions": 0
+    },
+    {
+      "case": "one handler refuses",
+      "failed_callbacks": [
+        "map_drawing_cleanup_failed"
+      ],
+      "other_handlers_and_cursor_restored": true,
+      "owner_remove_reached": true,
+      "uncaught_errors": []
+    },
+    {
+      "case": "construction and cleanup both fail",
+      "causes": [
+        "map_drawing_initialization_failed",
+        "map_vertex_identity_ambiguous",
+        "map_drawing_cleanup_failed",
+        "synthetic_remove_layer_refusal"
+      ],
+      "original_shape_unchanged": true,
+      "owner_remove_reached": true
+    }
+  ],
+  "evidence_limit": "Actual installed library/adapter through DOM and a narrow Map port. No native WebGL, provider, browser recovery, complete drawing UI, touch or production acceptance."
+}

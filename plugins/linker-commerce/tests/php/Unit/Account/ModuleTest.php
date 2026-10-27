@@ -21,8 +21,7 @@ use Linker\Commerce\Account\AccountStatusNotice;
 use Linker\Commerce\Account\PrivateFiles;
 use Linker\Commerce\Account\SavedSolutionRemoval;
 use Linker\Commerce\Account\SavedSolutions;
-use Linker\Commerce\Account\SolutionsRoute;
-use Linker\Commerce\Account\SolutionDraftRoute;
+use Linker\Commerce\Planning\LegacyRoutes;
 use Linker\Commerce\Settings\Options;
 use Linker\Commerce\Tests\TestCase;
 use WP_Mock;
@@ -38,16 +37,15 @@ final class ModuleTest extends TestCase {
 	 * The menu, titles, contact card, inquiry list, saved solutions with their route and claim, documents, downloads, the pending review page and the guest auth pages are hooked.
 	 */
 	public function test_register_adds_the_hooks(): void {
-		$menu        = new Menu();
-		$contact     = new ContactCard( new Options() );
-		$inquiries   = new InquiryList();
-		$saved       = new SavedSolutions( new PrivateFiles( SavedSolutions::REPORTS_DIRECTORY ), '/plugin/templates/' );
-		$removal     = new SavedSolutionRemoval();
-		$documents   = new Documents( $saved, '/plugin/templates/' );
-		$download    = new DocumentDownload( new PrivateFiles( 'proforma' ), $saved );
-		$route       = new SolutionsRoute( $saved );
-		$draft_route = new SolutionDraftRoute();
-		$auth        = new AuthTemplates();
+		$menu      = new Menu();
+		$contact   = new ContactCard( new Options() );
+		$inquiries = new InquiryList();
+		$saved     = new SavedSolutions( new PrivateFiles( SavedSolutions::REPORTS_DIRECTORY ), '/plugin/templates/' );
+		$removal   = new SavedSolutionRemoval();
+		$documents = new Documents( $saved, '/plugin/templates/' );
+		$download  = new DocumentDownload( new PrivateFiles( 'proforma' ), $saved );
+		$route     = new LegacyRoutes();
+		$auth      = new AuthTemplates();
 
 		WP_Mock::expectFilterAdded( 'woocommerce_get_query_vars', array( $menu, 'query_vars' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_account_menu_items', array( $menu, 'items' ), 20 );
@@ -67,7 +65,6 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectActionAdded( 'wp_loaded', array( $removal, 'request' ), 30 );
 		WP_Mock::expectActionAdded( 'deleted_post', array( $removal, 'deleted' ), 10, 2 );
 		WP_Mock::expectActionAdded( 'rest_api_init', array( $route, 'register' ) );
-		WP_Mock::expectActionAdded( 'rest_api_init', array( $draft_route, 'register' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_account_documents_endpoint', array( $documents, 'render' ) );
 		WP_Mock::expectActionAdded( 'template_redirect', array( $download, 'serve' ), 1 );
 		WP_Mock::expectFilterAdded( 'woocommerce_get_query_vars', array( $auth, 'query_vars' ) );
@@ -86,7 +83,7 @@ final class ModuleTest extends TestCase {
 			)
 		);
 
-		( new Module( $menu, $contact, $inquiries, $saved, $documents, $download, $route, $pending, $auth, $admin_access, $draft_route, $removal ) )->register();
+		( new Module( $menu, $contact, $inquiries, $saved, $documents, $download, $route, $pending, $auth, $admin_access, $removal ) )->register();
 
 		$this->assertConditionsMet();
 	}

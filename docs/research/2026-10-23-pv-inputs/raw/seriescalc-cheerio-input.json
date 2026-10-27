@@ -1,0 +1,47 @@
+{
+  "startUrls": [
+    {
+      "url": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-ERA5&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=crystSi&mountingplace=free&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json",
+      "userData": {
+        "sample": "era5-berlin-2020",
+        "variant": "full-explicit"
+      }
+    },
+    {
+      "url": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-SARAH3&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=crystSi&mountingplace=free&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json",
+      "userData": {
+        "sample": "sarah3-berlin-2020",
+        "variant": "full-explicit"
+      }
+    },
+    {
+      "url": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-ERA5&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&angle=10&aspect=0&outputformat=json",
+      "userData": {
+        "sample": "era5-berlin-2020",
+        "variant": "explicit-core"
+      }
+    },
+    {
+      "url": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-SARAH3&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&angle=10&aspect=0&outputformat=json",
+      "userData": {
+        "sample": "sarah3-berlin-2020",
+        "variant": "explicit-core"
+      }
+    }
+  ],
+  "respectRobotsTxtFile": false,
+  "linkSelector": "",
+  "maxConcurrency": 1,
+  "maxRequestRetries": 0,
+  "maxPagesPerCrawl": 4,
+  "pageLoadTimeoutSecs": 90,
+  "pageFunctionTimeoutSecs": 30,
+  "proxyConfiguration": {
+    "useApifyProxy": false
+  },
+  "additionalMimeTypes": [
+    "application/json",
+    "text/plain"
+  ],
+  "pageFunction": "async function pageFunction(context) { const { request, response, body } = context; const buf = Buffer.isBuffer(body) ? body : Buffer.from(body || \"\", \"utf8\"); return { requestedUrl: request.url, loadedUrl: request.loadedUrl, requestIdentity: request.userData, statusCode: response.statusCode, headers: response.headers, bodyUtf8: buf.toString(\"utf8\"), bodyBase64: buf.toString(\"base64\"), bodyBytes: buf.length }; }"
+}

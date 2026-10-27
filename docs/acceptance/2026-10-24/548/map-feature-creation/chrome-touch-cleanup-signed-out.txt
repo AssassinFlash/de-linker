@@ -1,0 +1,82 @@
+Browser tab: 329395633, Title: "Beim Partnerkonto anmelden | Linker", URL: "http://127.0.0.1:9347/de/mein-konto/?signed-out=true".
+1 AXWebArea Beim Partnerkonto anmelden | Linker, URL: 127.0.0.1:9347/de/mein-konto/?signed-out=true
+	2 container
+		3 container Primäre Navigation
+			4 link Description: Linker-Startseite, Value: 127.0.0.1:9347/de/
+			5 pop up button (collapsed) Produkte, Secondary Actions: Expand
+				6 text Produkte
+				7 image
+			8 pop up button (collapsed) Lösungen, Secondary Actions: Expand
+				9 text Lösungen
+				10 image
+			11 pop up button (collapsed) Planen mit Linker, Secondary Actions: Expand
+			12 link Description: Dienstleistungen, Value: 127.0.0.1:9347/de/kundendienst/
+			13 pop up button (collapsed) Für Partner, Secondary Actions: Expand
+			14 pop up button (collapsed) Über uns, Secondary Actions: Expand
+			15 link Description: Produkte suchen, Value: 127.0.0.1:9347/de/produkte/#search-box
+			16 link Description: Lösungsentwurf, Value: 127.0.0.1:9347/de/loesungsentwurf/
+			17 pop up button (collapsed) Description: Anmelden, Secondary Actions: Expand
+			18 container Sprache
+				19 link Description: EN, Help: English, Value: 127.0.0.1:9347/my-account/
+				20 link Description: DE, Help: Deutsch, Value: 127.0.0.1:9347/de/mein-konto/?signed-out=true
+			21 link Description: Linker kontaktieren, Value: 127.0.0.1:9347/de/kontakt/
+		22 container Anmelden, ID: linker-signin
+			23 container
+				24 heading Anmelden, Value: 1, ID: linker-auth-signin
+					25 text Anmelden
+				26 text Ihre Anfragen, Dokumente und Preise an einem Ort.
+			27 text Sie wurden abgemeldet.
+			28 container
+				29 text Benutzername oder E-Mail-Adresse  Erforderlich
+				30 text field (settable) Benutzername oder E-Mail-Adresse  Erforderlich
+				31 text Passwort  Erforderlich
+				32 text field (settable) Passwort  Erforderlich
+				33 button Passwort anzeigen
+				34 checkbox (settable, integer) Description: Angemeldet bleiben, Value: 0, ID: rememberme
+				35 text Angemeldet bleiben
+				36 button Anmelden
+			37 link Description: Passwort vergessen?, Value: 127.0.0.1:9347/de/mein-konto/passwort-zuruecksetzen/
+			38 link Description: Noch kein Partner-Konto? Erstellen Sie Ihr Firmenkonto, Value: 127.0.0.1:9347/de/mein-konto/registrieren/
+		39 container tv-footer-v2
+			40 image Linker
+			41 container
+				42 text Sprache
+				43 container Sprache
+					44 link Description: Englisch, Value: 127.0.0.1:9347/my-account/
+					45 link Description: Deutsch, Value: 127.0.0.1:9347/de/mein-konto/?signed-out=true
+			46 text WIR VERBINDEN
+			47 link Description: Produkte, Value: 127.0.0.1:9347/de/produkte/
+			48 text ,
+			49 link Description: Technologie, Value: 127.0.0.1:9347/de/ueber-uns/leistungsfaehigkeit/
+			50 text und
+			51 link Description: Service, Value: 127.0.0.1:9347/de/kundendienst/
+			52 text und schaffen 
+			53 text dauerhaften Wert
+			54 text  für Energiepartner in Europa.
+			55 tab group Fußzeilen-Navigation
+				56 tab (selected, settable, boolean) Lösungen, Value: 1, ID: footer-tab-solutions
+				57 tab (selectable, settable, boolean) Dienstleistungen, Value: 0, ID: footer-tab-services
+				58 tab (selectable, settable, boolean) Planen mit Linker, Value: 0, ID: footer-tab-planning
+				59 tab (selectable, settable, boolean) Konto, Value: 0, ID: footer-tab-account
+				60 tab (selectable, settable, boolean) Linker kontaktieren, Value: 0, ID: footer-tab-contact
+			61 container Description: Lösungen, ID: footer-panel-solutions
+				62 heading Lösungen, Value: 2
+					63 text Lösungen
+				64 content list
+					65 link Description: Heimspeicher, Value: 127.0.0.1:9347/de/loesung/heimspeicher/
+					66 link Description: Gewerbespeicher, Value: 127.0.0.1:9347/de/loesung/gewerbespeicher/
+					67 link Description: Großspeicher, Value: 127.0.0.1:9347/de/loesung/grossspeicher/
+			68 text © 2026 Linker. Alle Rechte vorbehalten.
+			69 container Rechtliches
+				70 link Description: Impressum, Value: 127.0.0.1:9347/de/impressum/
+				71 link Description: Datenschutzerklärung, Value: 127.0.0.1:9347/de/datenschutz/
+				72 button Cookie-Einstellungen
+				73 link Description: Verkaufsbedingungen, Value: 127.0.0.1:9347/de/verkaufsbedingungen/
+				74 link Description: Rückgabe & Erstattung, Value: 127.0.0.1:9347/de/rueckgabe-erstattung/
+			75 container
+				76 text Produkteignung · Wechselrichter-Kompatibilität · Projektunterstützung
+		77 button (collapsed) Description: Genie fragen, Secondary Actions: Expand
+	78 container grammarly-integration
+		79 text {"mode":"full","isActive":true,"isUserDisabled":false}
+
+The focused UI element is 1 AXWebArea Beim Partnerkonto anmelden | Linker, URL: 127.0.0.1:9347/de/mein-konto/?signed-out=true

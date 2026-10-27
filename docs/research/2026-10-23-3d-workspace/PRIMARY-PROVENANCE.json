@@ -1,0 +1,1504 @@
+{
+  "date": "2026-10-23",
+  "timezone": "Asia/Shanghai",
+  "scope": "Official sources acquired through Apify; extracted passages and original capture hashes, not a full mirror. Package source bytes were re-read from Apify file storage and hashed separately.",
+  "runs": [
+    {
+      "actor": "apify/website-content-crawler",
+      "input": {
+        "startUrls": [
+          {
+            "url": "https://threejs.org/manual/en/webgpurenderer.html"
+          },
+          {
+            "url": "https://threejs.org/docs/pages/WebGLRenderer.html"
+          },
+          {
+            "url": "https://threejs.org/docs/pages/WebGPURenderer.html"
+          },
+          {
+            "url": "https://threejs.org/docs/pages/Raycaster.html"
+          },
+          {
+            "url": "https://threejs.org/manual/en/shadows.html"
+          },
+          {
+            "url": "https://threejs.org/manual/en/cleanup.html"
+          },
+          {
+            "url": "https://r3f.docs.pmnd.rs/getting-started/introduction"
+          },
+          {
+            "url": "https://r3f.docs.pmnd.rs/advanced/scaling-performance"
+          },
+          {
+            "url": "https://r3f.docs.pmnd.rs/api/events"
+          },
+          {
+            "url": "https://drei.docs.pmnd.rs/controls/introduction"
+          },
+          {
+            "url": "https://drei.docs.pmnd.rs/gizmos/transform-controls"
+          },
+          {
+            "url": "https://threejs.org/manual/en/load-gltf.html"
+          },
+          {
+            "url": "https://registry.npmjs.org/@react-three/fiber/latest"
+          },
+          {
+            "url": "https://registry.npmjs.org/@react-three/drei/latest"
+          },
+          {
+            "url": "https://registry.npmjs.org/three/latest"
+          },
+          {
+            "url": "https://registry.npmjs.org/@react-three/fiber/8.18.0"
+          },
+          {
+            "url": "https://registry.npmjs.org/@react-three/drei/9.122.0"
+          },
+          {
+            "url": "https://github.com/mrdoob/three.js/blob/dev/LICENSE"
+          },
+          {
+            "url": "https://github.com/pmndrs/react-three-fiber/blob/master/packages/fiber/package.json"
+          },
+          {
+            "url": "https://github.com/pmndrs/drei/blob/master/package.json"
+          }
+        ],
+        "crawlerType": "cheerio",
+        "maxCrawlDepth": 0,
+        "maxCrawlPages": 20,
+        "maxConcurrency": 2,
+        "initialConcurrency": 2,
+        "saveMarkdown": true,
+        "saveHtml": false,
+        "removeCookieWarnings": true,
+        "respectRobotsTxtFile": false
+      },
+      "id": "dgrxIiyrB0DIHohFh",
+      "defaultDatasetId": "H7qcB9bnHZACEndYz",
+      "status": "SUCCEEDED",
+      "startedAt": "2026-10-22T18:24:12.579Z",
+      "finishedAt": "2026-10-22T18:24:46.119Z",
+      "usageTotalUsd": 0.002053979029066033,
+      "statusMessage": "Finished! Total 20 requests: 20 succeeded, 0 failed.",
+      "run_options": {
+        "memory_mbytes": 1024,
+        "max_concurrency": 2
+      }
+    },
+    {
+      "actor": "apify/website-content-crawler",
+      "input": {
+        "startUrls": [
+          {
+            "url": "https://threejs.org/manual/pages/webgpurenderer.html"
+          },
+          {
+            "url": "https://threejs.org/manual/pages/shadows.html"
+          },
+          {
+            "url": "https://threejs.org/manual/pages/cleanup.html"
+          },
+          {
+            "url": "https://threejs.org/manual/pages/load-gltf.html"
+          },
+          {
+            "url": "https://threejs.org/docs/pages/TransformControls.html"
+          },
+          {
+            "url": "https://threejs.org/docs/pages/OrbitControls.html"
+          },
+          {
+            "url": "https://threejs.org/docs/pages/InstancedMesh.html"
+          },
+          {
+            "url": "https://maplibre.org/maplibre-gl-js/docs/API/classes/MercatorCoordinate/"
+          },
+          {
+            "url": "https://threejs.org/docs/pages/GLTFLoader.html"
+          },
+          {
+            "url": "https://github.com/KhronosGroup/glTF-Sample-Assets"
+          },
+          {
+            "url": "https://github.com/mrdoob/three.js/blob/dev/editor/js/History.js"
+          },
+          {
+            "url": "https://www.npmjs.com/package/@react-three/fiber/v/8.18.0"
+          },
+          {
+            "url": "https://www.npmjs.com/package/@react-three/drei/v/9.122.0"
+          },
+          {
+            "url": "https://threejs.org/docs/pages/BufferGeometry.html"
+          },
+          {
+            "url": "https://threejs.org/docs/pages/ExtrudeGeometry.html"
+          },
+          {
+            "url": "https://threejs.org/docs/pages/ShapeUtils.html"
+          },
+          {
+            "url": "https://threejs.org/docs/pages/WebGL.html"
+          }
+        ],
+        "crawlerType": "cheerio",
+        "maxCrawlDepth": 0,
+        "maxCrawlPages": 17,
+        "maxConcurrency": 2,
+        "initialConcurrency": 2,
+        "saveMarkdown": true,
+        "saveHtml": false,
+        "removeCookieWarnings": true,
+        "respectRobotsTxtFile": false
+      },
+      "id": "viuhzT4a6PZP2iXuK",
+      "defaultDatasetId": "MFXDaDdMLxD8LoMRF",
+      "status": "SUCCEEDED",
+      "startedAt": "2026-10-22T18:26:38.171Z",
+      "finishedAt": "2026-10-22T18:27:57.989Z",
+      "usageTotalUsd": 0.006427492509141566,
+      "statusMessage": "Finished! Total 17 requests: 17 succeeded, 0 failed.",
+      "run_options": {
+        "memory_mbytes": 1024,
+        "max_concurrency": 2
+      }
+    },
+    {
+      "actor": "apify/website-content-crawler",
+      "input": {
+        "startUrls": [
+          {
+            "url": "https://registry.npmjs.org/three/latest"
+          },
+          {
+            "url": "https://registry.npmjs.org/@types%2fthree/latest"
+          },
+          {
+            "url": "https://registry.npmjs.org/@react-three%2ffiber/latest"
+          },
+          {
+            "url": "https://registry.npmjs.org/@react-three%2fdrei/latest"
+          },
+          {
+            "url": "https://registry.npmjs.org/@react-three%2ffiber/8.18.0"
+          },
+          {
+            "url": "https://registry.npmjs.org/@react-three%2fdrei/9.122.0"
+          },
+          {
+            "url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/LICENSE"
+          },
+          {
+            "url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/editor/js/History.js"
+          },
+          {
+            "url": "https://threejs.org/docs/pages/Object3D.html"
+          },
+          {
+            "url": "https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html"
+          },
+          {
+            "url": "https://threejs.org/manual/pages/debugging-javascript.html"
+          }
+        ],
+        "crawlerType": "cheerio",
+        "maxCrawlDepth": 0,
+        "maxCrawlPages": 11,
+        "maxConcurrency": 2,
+        "initialConcurrency": 2,
+        "saveMarkdown": true,
+        "saveHtml": false,
+        "saveContentTypes": "application/json, text/plain",
+        "removeCookieWarnings": true,
+        "respectRobotsTxtFile": false
+      },
+      "id": "vn4v5qRLWoDalRScA",
+      "defaultDatasetId": "m0atPGqWMMH4Ea4GN",
+      "defaultKeyValueStoreId": "ducC5BvKVY37ZfN7W",
+      "status": "SUCCEEDED",
+      "startedAt": "2026-10-22T18:27:53.720Z",
+      "finishedAt": "2026-10-22T18:28:38.203Z",
+      "usageTotalUsd": 0.002466663555405206,
+      "statusMessage": "Finished! Total 11 requests: 3 succeeded, 8 failed.",
+      "run_options": {
+        "memory_mbytes": 1024,
+        "max_concurrency": 2
+      }
+    },
+    {
+      "actor": "apify/website-content-crawler",
+      "input": {
+        "startUrls": [
+          {
+            "url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/src/core/Object3D.js"
+          },
+          {
+            "url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/src/renderers/WebGLRenderer.js"
+          },
+          {
+            "url": "https://threejs.org/manual/pages/rendering-on-demand.html"
+          }
+        ],
+        "crawlerType": "cheerio",
+        "maxCrawlDepth": 0,
+        "maxCrawlPages": 3,
+        "maxConcurrency": 2,
+        "initialConcurrency": 2,
+        "saveMarkdown": true,
+        "saveHtml": false,
+        "saveContentTypes": "text/plain",
+        "removeCookieWarnings": true,
+        "respectRobotsTxtFile": false
+      },
+      "id": "ur1uYSEUQgqIqnGCq",
+      "defaultDatasetId": "P31hr0F5xMRUGCSV6",
+      "defaultKeyValueStoreId": "HkqMpNAgP7BOfCFFL",
+      "status": "SUCCEEDED",
+      "startedAt": "2026-10-22T18:30:38.485Z",
+      "finishedAt": "2026-10-22T18:30:46.585Z",
+      "usageTotalUsd": 0.0017761856156455146,
+      "statusMessage": "Finished! Total 3 requests: 1 succeeded, 2 failed.",
+      "run_options": {
+        "memory_mbytes": 1024,
+        "max_concurrency": 2
+      }
+    },
+    {
+      "actor": "apify/website-content-crawler",
+      "input": {
+        "startUrls": [
+          {
+            "url": "https://registry.npmjs.org/react/latest"
+          },
+          {
+            "url": "https://registry.npmjs.org/react-dom/latest"
+          },
+          {
+            "url": "https://registry.npmjs.org/@types%2freact/latest"
+          },
+          {
+            "url": "https://registry.npmjs.org/@types%2freact-dom/latest"
+          },
+          {
+            "url": "https://r3f.docs.pmnd.rs/api/canvas"
+          },
+          {
+            "url": "https://r3f.docs.pmnd.rs/api/hooks"
+          },
+          {
+            "url": "https://react.dev/reference/react-dom/client/createRoot"
+          },
+          {
+            "url": "https://react.dev/versions"
+          }
+        ],
+        "crawlerType": "cheerio",
+        "maxCrawlDepth": 0,
+        "maxCrawlPages": 8,
+        "maxConcurrency": 2,
+        "initialConcurrency": 2,
+        "saveMarkdown": true,
+        "saveHtml": false,
+        "saveContentTypes": "application/json",
+        "removeCookieWarnings": true,
+        "respectRobotsTxtFile": false,
+        "customHttpHeaders": {
+          "User-Agent": "python-requests/2.32.5"
+        }
+      },
+      "id": "SYn9d2SbP4XkjDh3e",
+      "defaultDatasetId": "S2jK4c9C0ozxjyoK3",
+      "defaultKeyValueStoreId": "y0Q6TkarOU24vBqT9",
+      "status": "SUCCEEDED",
+      "startedAt": "2026-10-22T18:31:41.407Z",
+      "finishedAt": "2026-10-22T18:31:49.981Z",
+      "usageTotalUsd": 6.252677336004045e-05,
+      "statusMessage": "Finished! Total 8 requests: 4 succeeded, 4 failed.",
+      "run_options": {
+        "memory_mbytes": 1024,
+        "max_concurrency": 2
+      }
+    },
+    {
+      "actor": "apify/website-content-crawler",
+      "input": {
+        "startUrls": [
+          {
+            "url": "https://registry.npmjs.org/vite/latest"
+          },
+          {
+            "url": "https://registry.npmjs.org/@vitejs%2fplugin-react/latest"
+          },
+          {
+            "url": "https://vite.dev/guide/"
+          },
+          {
+            "url": "https://vite.dev/guide/backend-integration.html"
+          }
+        ],
+        "crawlerType": "cheerio",
+        "maxCrawlDepth": 0,
+        "maxCrawlPages": 4,
+        "maxConcurrency": 2,
+        "initialConcurrency": 2,
+        "saveMarkdown": true,
+        "saveHtml": false,
+        "saveContentTypes": "application/json",
+        "removeCookieWarnings": true,
+        "respectRobotsTxtFile": false,
+        "customHttpHeaders": {
+          "User-Agent": "python-requests/2.32.5"
+        }
+      },
+      "id": "hiwEdQk5K6prVAsa4",
+      "defaultDatasetId": "tjJQ7BFBnbu6qzG36",
+      "defaultKeyValueStoreId": "VKLtFqCqVC8wofM3L",
+      "status": "SUCCEEDED",
+      "startedAt": "2026-10-22T18:36:46.400Z",
+      "finishedAt": "2026-10-22T18:36:52.671Z",
+      "usageTotalUsd": 0.001810844749338097,
+      "statusMessage": "Finished! Total 4 requests: 2 succeeded, 2 failed.",
+      "run_options": {
+        "memory_mbytes": 1024,
+        "max_concurrency": 2
+      }
+    }
+  ],
+  "sources": [
+    {
+      "source_url": "https://threejs.org/manual/en/webgpurenderer.html",
+      "apify_run": "dgrxIiyrB0DIHohFh",
+      "apify_dataset": "H7qcB9bnHZACEndYz",
+      "loaded_url": "https://threejs.org/manual/en/webgpurenderer.html",
+      "retrieved_at_utc": "2026-10-22T18:24:15.976Z",
+      "http_status": 404,
+      "content_type": "text/html; charset=utf-8",
+      "not_used_reason": "redirect/title-only/insufficient extracted body",
+      "captured_text": "Redirecting..."
+    },
+    {
+      "source_url": "https://threejs.org/docs/pages/WebGLRenderer.html",
+      "apify_run": "dgrxIiyrB0DIHohFh",
+      "apify_dataset": "H7qcB9bnHZACEndYz",
+      "loaded_url": "https://threejs.org/docs/pages/WebGLRenderer.html",
+      "retrieved_at_utc": "2026-10-22T18:24:15.949Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "5736dcabd8ce362a46ced47c2635fc78627ff06d5ab4f1ebaf24c61fb496daf3",
+      "captured_text_utf8_bytes": 32208,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 2255,
+          "captured_text_offset_end": 3085,
+          "text": "er.\n*   `onShaderError(gl, program, glVertexShader,glFragmentShader)`: A callback function that can be used for custom error reporting. The callback receives the WebGL context, an instance of WebGLProgram as well two instances of WebGLShader representing the vertex and fragment shader. Assigning a custom function disables the default error reporting.\n\n### .[domElement](https://threejs.org/docs/pages/WebGLRenderer.html#domElement) : HTMLCanvasElement | OffscreenCanvas\n\nA canvas where the renderer draws its output. This is automatically created by the renderer in the constructor (if not provided already); you just need to add it to your page like so:\n\n```\ndocument.body.appendChild( renderer.domElement );\n```\n\n### .[extensions](https://threejs.org/docs/pages/WebGLRenderer.html#extensions) : Object\n\nProvides methods for re"
+        },
+        {
+          "captured_text_offset_start": 7751,
+          "captured_text_offset_end": 8581,
+          "text": "of 3D object to precompile. |\n| **camera** | The camera. |\n| **targetScene** | The target scene.<br><br>Default is `null`. |\n\n**Returns:** The precompiled materials.\n\n### .[compileAsync](https://threejs.org/docs/pages/WebGLRenderer.html#compileAsync)( scene : [Object3D](https://threejs.org/docs/pages/Object3D.html), camera : [Camera](https://threejs.org/docs/pages/Camera.html), targetScene : [Scene](https://threejs.org/docs/pages/Scene.html) ) : Promise (async)\n\nAsynchronous version of [WebGLRenderer#compile](https://threejs.org/docs/pages/WebGLRenderer.html#compile).\n\nThis method makes use of the `KHR_parallel_shader_compile` WebGL extension. Hence, it is recommended to use this version of `compile()` whenever possible.\n\n|     |     |\n| --- | --- |\n| **scene** | The scene or another type of 3D object to precompile. |\n"
+        },
+        {
+          "captured_text_offset_start": 10171,
+          "captured_text_offset_end": 11814,
+          "text": "pages/WebGLRenderer.html#initRenderTarget).\n\n|     |     |\n| --- | --- |\n| **srcTexture** | The source texture. |\n| **dstTexture** | The destination texture. |\n| **srcRegion** | A bounding box which describes the source region. Can be two or three-dimensional.<br><br>Default is `null`. |\n| **dstPosition** | A vector that represents the origin of the destination region. Can be two or three-dimensional.<br><br>Default is `null`. |\n| **srcLevel** | The source mipmap level to copy.<br><br>Default is `0`. |\n| **dstLevel** | The destination mipmap level.<br><br>Default is `0`. |\n\n### .[dispose](https://threejs.org/docs/pages/WebGLRenderer.html#dispose)()\n\nFrees the GPU-related resources allocated by this instance. Call this method whenever this instance is no longer used in your app.\n\n### .[forceContextLoss](https://threejs.org/docs/pages/WebGLRenderer.html#forceContextLoss)()\n\nSimulates a loss of the WebGL context. This requires support for the `WEBGL_lose_context` extension.\n\n### .[forceContextRestore](https://threejs.org/docs/pages/WebGLRenderer.html#forceContextRestore)()\n\nSimulates a restore of the WebGL context. This requires support for the `WEBGL_lose_context` extension.\n\n### .[getActiveCubeFace](https://threejs.org/docs/pages/WebGLRenderer.html#getActiveCubeFace)() : number\n\nReturns the active cube face.\n\n**Returns:** The active cube face.\n\n### .[getActiveMipmapLevel](https://threejs.org/docs/pages/WebGLRenderer.html#getActiveMipmapLevel)() : number\n\nReturns the active mipmap level.\n\n**Returns:** The active mipmap level.\n\n### .[getClearAlpha](https://threejs.org/docs/pages/WebGLRenderer.html#getClearAlpha)() : nu"
+        },
+        {
+          "captured_text_offset_start": 21226,
+          "captured_text_offset_end": 22056,
+          "text": ")\n\nSets a compatibility node builder for rendering node materials with WebGLRenderer. This enables using TSL (Three.js Shading Language) node materials to prepare for migration to WebGPURenderer.\n\n|     |     |\n| --- | --- |\n| **nodesHandler** | The node builder instance. |\n\n### .[setOpaqueSort](https://threejs.org/docs/pages/WebGLRenderer.html#setOpaqueSort)( method : function )\n\nSets a custom opaque sort function for the render lists. Pass `null` to use the default `painterSortStable` function.\n\n|     |     |\n| --- | --- |\n| **method** | The opaque sort function. |\n\n### .[setPixelRatio](https://threejs.org/docs/pages/WebGLRenderer.html#setPixelRatio)( value : number )\n\nSets the given pixel ratio and resizes the canvas if necessary.\n\n|     |     |\n| --- | --- |\n| **value** | The pixel ratio. |\n\n### .[setRenderTarget]("
+        },
+        {
+          "captured_text_offset_start": 23995,
+          "captured_text_offset_end": 24825,
+          "text": "s to (width, height) with device pixel ratio taken into account, and also sets the viewport to fit that size, starting in (0, 0). Setting `updateStyle` to false prevents any style changes to the output canvas.\n\n|     |     |\n| --- | --- |\n| **width** | The width in logical pixels. |\n| **height** | The height in logical pixels. |\n| **updateStyle** | Whether to update the `style` attribute of the canvas or not.<br><br>Default is `true`. |\n\n### .[setTransparentSort](https://threejs.org/docs/pages/WebGLRenderer.html#setTransparentSort)( method : function )\n\nSets a custom transparent sort function for the render lists. Pass `null` to use the default `reversePainterSortStable` function.\n\n|     |     |\n| --- | --- |\n| **method** | The opaque sort function. |\n\n### .[setViewport](https://threejs.org/docs/pages/WebGLRenderer.htm"
+        },
+        {
+          "captured_text_offset_start": 28151,
+          "captured_text_offset_end": 28981,
+          "text": "ocs/pages/WebGLRenderer.html#~InfoRender)\n\nWebGLRenderer Info Render\n\n|     |     |\n| --- | --- |\n| **frame**  <br>number | The frame ID. |\n| **calls**  <br>number | The number of draw calls per frame. |\n| **triangles**  <br>number | The number of rendered triangles primitives per frame. |\n| **points**  <br>number | The number of rendered points primitives per frame. |\n| **lines**  <br>number | The number of rendered lines primitives per frame. |\n\n### .[Options](https://threejs.org/docs/pages/WebGLRenderer.html#~Options)\n\nWebGLRenderer options.\n\n|     |     |\n| --- | --- |\n| **canvas**  <br>HTMLCanvasElement \\| OffscreenCanvas | A canvas element where the renderer draws its output. If not passed in here, a new canvas element will be created by the renderer.<br><br>Default is `null`. |\n| **context**  <br>WebGL2Rendering"
+        }
+      ]
+    },
+    {
+      "source_url": "https://threejs.org/docs/pages/Raycaster.html",
+      "apify_run": "dgrxIiyrB0DIHohFh",
+      "apify_dataset": "H7qcB9bnHZACEndYz",
+      "loaded_url": "https://threejs.org/docs/pages/Raycaster.html",
+      "retrieved_at_utc": "2026-10-22T18:24:16.815Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "b6bf57656a8cbb78d48f09400cd2f51b51dbb0f3dc1396719f2c62c70ac06e22",
+      "captured_text_utf8_bytes": 8083,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 3318,
+          "captured_text_offset_end": 4219,
+          "text": "he back of a face will not be detected. To raycast against both faces of an object, you'll want to set [Material#side](https://threejs.org/docs/pages/Material.html#side) to `THREE.DoubleSide`.\n\nNote that a ray hitting a triangle mesh exactly along an edge shared by two faces may be reported by both faces, resulting in two coincident intersections (identical point and distance) in the returned array.\n\n|     |     |\n| --- | --- |\n| **object** | The 3D object to check for intersection with the ray. |\n| **recursive** | If set to `true`, it also checks all descendants. Otherwise it only checks intersection with the object.<br><br>Default is `true`. |\n| **intersects** | The target array that holds the result of the method.<br><br>Default is `[]`. |\n\n**Returns:** An array holding the intersection points.\n\n### .[intersectObjects](https://threejs.org/docs/pages/Raycaster.html#intersectObjects)( ob"
+        },
+        {
+          "captured_text_offset_start": 7639,
+          "captured_text_offset_end": 8083,
+          "text": "f U,V coordinates at point of intersection. |\n| **normal**  <br>[Vector3](https://threejs.org/docs/pages/Vector3.html) | Interpolated normal vector at point of intersection. |\n| **instanceId**  <br>number | The index number of the instance where the ray intersects the [InstancedMesh](https://threejs.org/docs/pages/InstancedMesh.html). |\n\n## Source\n\n[src/core/Raycaster.js](https://github.com/mrdoob/three.js/blob/master/src/core/Raycaster.js)"
+        }
+      ]
+    },
+    {
+      "source_url": "https://threejs.org/docs/pages/WebGPURenderer.html",
+      "apify_run": "dgrxIiyrB0DIHohFh",
+      "apify_dataset": "H7qcB9bnHZACEndYz",
+      "loaded_url": "https://threejs.org/docs/pages/WebGPURenderer.html",
+      "retrieved_at_utc": "2026-10-22T18:24:17.196Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "0993f77c2bd68ce02c30ce6a92cd2d11590c03ab3b4f9739064ef13e9325b858",
+      "captured_text_utf8_bytes": 1877,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 0,
+          "captured_text_offset_end": 652,
+          "text": "# WebGPURenderer - Three.js Docs\n\n### .[Options](https://threejs.org/docs/pages/WebGPURenderer.html#~Options)\n\nWebGPURenderer options.\n\n|     |     |\n| --- | --- |\n| **logarithmicDepthBuffer**  <br>boolean | Whether logarithmic depth buffer is enabled or not.<br><br>Default is `false`. |\n| **reversedDepthBuffer**  <br>boolean | Whether reversed depth buffer is enabled or not.<br><br>Default is `false`. |\n| **alpha**  <br>boolean | Whether the default framebuffer (which represents the final contents of the canvas) should be transparent or opaque.<br><br>Default is `true`. |\n| **depth**  <br>boolean | Whether the default framebuffer should have a"
+        },
+        {
+          "captured_text_offset_start": 1040,
+          "captured_text_offset_end": 1870,
+          "text": "ault. Set this parameter to any other integer value than 0 to overwrite the default.<br><br>Default is `0`. |\n| **forceWebGL**  <br>boolean | If set to `true`, the renderer uses a WebGL 2 backend no matter if WebGPU is supported or not.<br><br>Default is `false`. |\n| **multiview**  <br>boolean | If set to `true`, the renderer will use multiview during WebXR rendering if supported.<br><br>Default is `false`. |\n| **outputType**  <br>number | Texture type for output to canvas. By default, device's preferred format is used; other formats may incur overhead. |\n| **outputBufferType**  <br>number | Defines the type of output buffers. The default `HalfFloatType` is recommend for best quality. To save memory and bandwidth, `UnsignedByteType` might be used. This will reduce rendering quality though.<br><br>Default is `HalfFloatT"
+        }
+      ]
+    },
+    {
+      "source_url": "https://threejs.org/manual/en/shadows.html",
+      "apify_run": "dgrxIiyrB0DIHohFh",
+      "apify_dataset": "H7qcB9bnHZACEndYz",
+      "loaded_url": "https://threejs.org/manual/en/shadows.html",
+      "retrieved_at_utc": "2026-10-22T18:24:17.353Z",
+      "http_status": 404,
+      "content_type": "text/html; charset=utf-8",
+      "not_used_reason": "redirect/title-only/insufficient extracted body",
+      "captured_text": "Redirecting..."
+    },
+    {
+      "source_url": "https://r3f.docs.pmnd.rs/getting-started/introduction",
+      "apify_run": "dgrxIiyrB0DIHohFh",
+      "apify_dataset": "H7qcB9bnHZACEndYz",
+      "loaded_url": "https://r3f.docs.pmnd.rs/getting-started/introduction",
+      "retrieved_at_utc": "2026-10-22T18:24:18.079Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "eadf89f86b5df2dde27c143aff2e00dae8d133e72746154336fceb764c8beec5",
+      "captured_text_utf8_bytes": 11033,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 112,
+          "captured_text_offset_end": 2371,
+          "text": "scene declaratively with re-usable, self-contained components that react to state, are readily interactive and can participate in [React](https://react.dev/)'s ecosystem.\n\nNote\n\n**v10 is in alpha**, bringing WebGPU support and a new frame-loop scheduler. Preview its docs [here](https://docs.pmnd.rs/react-three-fiber/next/getting-started/introduction), or with the version switcher at the bottom of the sidebar.\n\n[![React Three Fiber banner](https://github.com/pmndrs/react-three-fiber/raw/master/docs/banner-r3f.jpg)](https://r3f.docs.pmnd.rs/getting-started/examples)\n\n```\npnpm add three @types/three @react-three/fiber\n```\n\nWarning\n\nThree-fiber is a React renderer, it must pair with a major version of React, just like react-dom, react-native, etc. @react-three/fiber@8 pairs with react@18, @react-three/fiber@9 pairs with react@19.\n\n[\n\n## Does it have limitations?\n\n](https://r3f.docs.pmnd.rs/getting-started/introduction#does-it-have-limitations?)\n\nNone. Everything that works in Threejs will work here without exception.\n\n[\n\n## Is it slower than plain Threejs?\n\n](https://r3f.docs.pmnd.rs/getting-started/introduction#is-it-slower-than-plain-threejs?)\n\nNo. There is no overhead. Components render outside of React. It outperforms Threejs in scale due to React's scheduling abilities.\n\n[\n\n## Can it keep up with frequent feature updates to Threejs?\n\n](https://r3f.docs.pmnd.rs/getting-started/introduction#can-it-keep-up-with-frequent-feature-updates-to-threejs?)\n\nYes. It merely expresses Threejs in JSX, `<mesh />` dynamically turns into `new THREE.Mesh()`. If a new Threejs version adds, removes or changes features, it will be available to you instantly without depending on updates to this library.\n\n[\n\n## What does it look like?\n\n](https://r3f.docs.pmnd.rs/getting-started/introduction#what-does-it-look-like?)\n\nLet's make a re-usable component that has its own state, reacts to user-input and participates in the render-loop:\n\nimport { createRoot } from 'react-dom/client'\nimport React, { useRef, useState } from 'react'\nimport { Canvas, useFrame } from '@react-three/fiber'\nimport './styles.css'\n\nfunction Box(props) {\n  // This reference will give us direct access to the mesh\n  const meshRef = useRef()\n  // Set up state for the hovered and a"
+        },
+        {
+          "captured_text_offset_start": 9500,
+          "captured_text_offset_end": 10330,
+          "text": "-motion-3d`](https://www.framer.com/docs/three-introduction/) – framer motion, a popular animation library\n*   [`use-gesture`](https://github.com/pmndrs/react-use-gesture) – mouse/touch gestures\n*   [`leva`](https://github.com/pmndrs/leva) – create GUI controls in seconds\n*   [`maath`](https://github.com/pmndrs/maath) – a kitchen sink for math helpers\n*   [`miniplex`](https://github.com/hmans/miniplex) – ECS (entity management system)\n*   [`composer-suite`](https://github.com/hmans/composer-suite) – composing shaders, particles, effects and game mechanics\n\n[\n\n## How to contribute\n\n](https://r3f.docs.pmnd.rs/getting-started/introduction#how-to-contribute)\n\nIf you like this project, please consider helping out. All contributions are welcome as well as donations to [Opencollective](https://opencollective.com/react-three-f"
+        }
+      ]
+    },
+    {
+      "source_url": "https://r3f.docs.pmnd.rs/api/events",
+      "apify_run": "dgrxIiyrB0DIHohFh",
+      "apify_dataset": "H7qcB9bnHZACEndYz",
+      "loaded_url": "https://r3f.docs.pmnd.rs/api/events",
+      "retrieved_at_utc": "2026-10-22T18:24:20.171Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "6e7bcd6bd2364a50ed4c6c50c83430047b1e27d8bf26861a54cd8dfd22668830",
+      "captured_text_utf8_bytes": 8864,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 3263,
+          "captured_text_offset_end": 4093,
+          "text": "vered to the next nearest object, and then its ancestors, and so on. This means objects are transparent to pointer events by default, even if the object handles the event.\n\n`event.stopPropagation()` doesn't just stop this event from bubbling up, it also stops it from being delivered to farther objects (objects behind this one). All other objects, nearer or farther, no longer count as being hit while the pointer is over this object. If they were previously delivered pointerover events, they will immediately be delivered pointerout events. If you want an object to block pointer events from objects behind it, it needs to have an event handler as follows:\n\n```\nonPointerOver={e => {\n  e.stopPropagation()\n  // ...\n}}\n```\n\neven if you don't want this object to respond to the pointer event. If you do want to handle the event a"
+        },
+        {
+          "captured_text_offset_start": 4113,
+          "captured_text_offset_end": 5686,
+          "text": "pPropagation()`, remember that the pointerout events will happen **during** the `stopPropagation()` call. You probably want your other event handling to happen after this.\n\n[\n\n### Pointer capture\n\n](https://r3f.docs.pmnd.rs/api/events#pointer-capture)\n\nBecause events go to all intersected objects, capturing the pointer also works differently. In the DOM, the capturing object **replaces** the hit test, but in React Three Fiber, the capturing object is **added** to the hit test result: if the capturing object was not hit, then all of the hit objects (and their ancestors) get the event first, followed by the capturing object and its ancestors. The capturing object can also use `event.stopPropagation()` so that objects that really were hit get pointerout events.\n\nNote that you can access the `setPointerCapture` and `releasePointerCapture` methods **only** via `event.target`: they don't get added to the `Object3D` instances in the scene graph.\n\n`setPointerCapture` and `releasePointerCapture` take a `pointerId` parameter like in the DOM, but for now they don't have support for multiple active pointers. PRs are welcome!\n\n```\nonPointerDown={e => {\n  // Only the mesh closest to the camera will be processed\n  e.stopPropagation()\n  // You may optionally capture the target\n  e.target.setPointerCapture(e.pointerId)\n}}\nonPointerUp={e => {\n  e.stopPropagation()\n  // Optionally release capture\n  e.target.releasePointerCapture(e.pointerId)\n}}\n```\n\n[\n\n### Customizing the event settings\n\n](https://r3f.docs.pmnd.rs/api/events#customizing-the-event-settings)\n\nFor some"
+        },
+        {
+          "captured_text_offset_start": 7645,
+          "captured_text_offset_end": 8475,
+          "text": "fferent prefix (DOM only)\n\n](https://r3f.docs.pmnd.rs/api/events#using-a-different-prefix-\\(dom-only\\))\n\nBy default Fiber will use offsetX/offsetY to set up the raycaster. You can change this with the `eventPrefix` shortcut.\n\n```\nfunction App() {\n  return (\n    <Canvas eventPrefix=\"client\">\n```\n\n[\n\n### Allow raycast without user interaction\n\n](https://r3f.docs.pmnd.rs/api/events#allow-raycast-without-user-interaction)\n\nBy default Fiber will only raycast when the user is interacting with the canvas. If, for instance, the camera moves a hoverable object underneath the cursor it will not trigger a hover event. If this is wanted behaviour you can force a raycast by executing `update()`, call it whenever necessary.\n\n```\nconst events => useThree(state => state.events)\nuseEffect(() => {\n  // Will trigger a onPointerMove with "
+        }
+      ]
+    },
+    {
+      "source_url": "https://drei.docs.pmnd.rs/controls/introduction",
+      "apify_run": "dgrxIiyrB0DIHohFh",
+      "apify_dataset": "H7qcB9bnHZACEndYz",
+      "loaded_url": "https://drei.docs.pmnd.rs/controls/introduction",
+      "retrieved_at_utc": "2026-10-22T18:24:21.454Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "888caf7abfff21e6cfc86d9b1f2f45f024cc3a9e1770c60879072a0f3755c435",
+      "captured_text_utf8_bytes": 2830,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 0,
+          "captured_text_offset_end": 1304,
+          "text": "# Controls - Drei\n\nIf available controls have damping enabled by default, they manage their own updates, remove themselves on unmount, are compatible with the `frameloop=\"demand\"` canvas-flag. They inherit all props from their underlying [THREE.Controls](https://threejs.org/docs/index.html?q=controls#api/en/extras/Controls). They are the first effects to run before all other useFrames, to ensure that other components may mutate the camera on top of them.\n\n[Some controls](https://github.com/search?q=repo%3Apmndrs%2Fdrei+language%3ATSX+path%3A%2F%5Esrc%5C%2F.*Controls%5C.tsx%2F+makeDefault&type=code) allow you to set `makeDefault`, similar to, for instance, `PerspectiveCamera`. This will set [@react-three/fiber](https://docs.pmnd.rs/react-three-fiber/api/hooks#usethree)'s `controls` field in the root store. This can make it easier in situations where you want controls to be known and other parts of the app could respond to it. Some drei controls already take it into account, like `CameraShake`, `Gizmo` and `TransformControls`.\n\n```\n<CameraControls makeDefault />\n```\n\n```\nconst controls = useThree((state) => state.controls)\n```\n\nDrei currently exports `OrbitControls` [storybook](https://drei.vercel.app/?path=/story/controls-orbitcontrols--orbit-controls-story), `MapControls` [storybook]"
+        }
+      ]
+    },
+    {
+      "source_url": "https://drei.docs.pmnd.rs/gizmos/transform-controls",
+      "apify_run": "dgrxIiyrB0DIHohFh",
+      "apify_dataset": "H7qcB9bnHZACEndYz",
+      "loaded_url": "https://drei.docs.pmnd.rs/gizmos/transform-controls",
+      "retrieved_at_utc": "2026-10-22T18:24:22.609Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "f282652317b1fc38f1fc99df744e8aeeb01158c5e12a3cfdfbedad701c784e66",
+      "captured_text_utf8_bytes": 1110,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 397,
+          "captured_text_offset_end": 1110,
+          "text": " then receive a transform gizmo.\n\n```\n<TransformControls mode=\"translate\">\n  <mesh />\n</TransformControls>\n```\n\nYou could also reference the object which might make it easier to exchange the target. Now the object does not have to be part of the same sub-graph. References can be plain objects or React.RefObjects.\n\n```\n<TransformControls object={mesh} mode=\"translate\" />\n<mesh ref={mesh} />\n```\n\nIf you are using other controls (Orbit, Trackball, etc), you will notice how they interfere, dragging one will affect the other. Default-controls will temporarily be disabled automatically when the user is pulling on the transform gizmo.\n\n```\n<TransformControls mode=\"translate\" />\n<OrbitControls makeDefault />\n```"
+        }
+      ]
+    },
+    {
+      "source_url": "https://r3f.docs.pmnd.rs/advanced/scaling-performance",
+      "apify_run": "dgrxIiyrB0DIHohFh",
+      "apify_dataset": "H7qcB9bnHZACEndYz",
+      "loaded_url": "https://r3f.docs.pmnd.rs/advanced/scaling-performance",
+      "retrieved_at_utc": "2026-10-22T18:24:23.213Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "333b83a5c917ecfb570a6437127e9870c3c8948a2410a344ddf0a7b8e85799e9",
+      "captured_text_utf8_bytes": 16644,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 241,
+          "captured_text_offset_end": 1071,
+          "text": "pplication available to a broad variety of devices, including weaker options, you should look into performance optimizations. This article goes through a couple of them.\n\n[\n\n## On-demand rendering\n\n](https://r3f.docs.pmnd.rs/advanced/scaling-performance#on-demand-rendering)\n\nthree.js apps usually run in a game-loop that executes 60 times a second, React Three Fiber is no different. This is perfectly fine when your scene has _constantly_ moving parts in it. This is what generally drains batteries the most and makes fans spin up.\n\nBut if the moving parts in your scene are allowed to come to rest, then it would be wasteful to keep rendering. In such cases you can opt into on-demand rendering, which will only render when necessary. This saves battery and keeps noisy fans in check.\n\nOpen the sandbox below in a full screen a"
+        },
+        {
+          "captured_text_offset_start": 1257,
+          "captured_text_offset_end": 2415,
+          "text": "aster/docs/advanced/wvgxp.webp)](https://codesandbox.io/s/wvgxp)\n\nAll you need to do is set the canvas `frameloop` prop to `demand`. It will render frames whenever it detects prop changes throughout the component tree.\n\n```\n<Canvas frameloop=\"demand\">\n```\n\n[\n\n### Triggering manual frames\n\n](https://r3f.docs.pmnd.rs/advanced/scaling-performance#triggering-manual-frames)\n\nOne major caveat is that if anything in the tree _mutates_ props, then React cannot be aware of it and the display would be stale. For instance, camera controls just grab into the camera and mutate its values. Here you can use React Three Fiber's `invalidate` function to trigger frames manually.\n\n```\nfunction Controls() {\n  const orbitControlsRef = useRef()\n  const { invalidate, camera, gl } = useThree()\n  useEffect(() => {\n    orbitControlsRef.current.addEventListener('change', invalidate)\n    return () => orbitControlsRef.current.removeEventListener('change', invalidate)\n  }, [])\n  return <orbitControls ref={orbitControlsRef} args={[camera, gl.domElement]} />\n```\n\nNote\n\nDrei's controls do this automatically for you.\n\nGenerally you can call invalidate whenever you need to r"
+        },
+        {
+          "captured_text_offset_start": 5125,
+          "captured_text_offset_end": 6232,
+          "text": "dvanced/dix1y.webp)](https://codesandbox.io/s/dix1y)\n\n```\nfunction Shoe(props) {\n  const { nodes, materials } = useLoader(GLTFLoader, \"/shoe.glb\")\n  return (\n    <group {...props} dispose={null}>\n      <mesh geometry={nodes.shoe.geometry} material={materials.canvas} />\n    </group>\n  )\n}\n\n<Shoe position={[1, 2, 3]} />\n<Shoe position={[4, 5, 6]} />\n```\n\n[\n\n## Instancing\n\n](https://r3f.docs.pmnd.rs/advanced/scaling-performance#instancing)\n\nEach mesh is a draw call, you should be mindful of how many of these you employ: no more than 1000 as the very maximum, and optimally a few hundred or less. You can win performance back by reducing draw calls, for example by instancing repeating objects. This way you can have hundreds of thousands of objects in a single draw call.\n\n[![](https://github.com/pmndrs/react-three-fiber/raw/master/docs/advanced/h873k.webp)](https://codesandbox.io/s/h873k)\n\nSetting up instancing is not so hard, consult [the three.js docs](https://threejs.org/docs/#api/en/objects/InstancedMesh) if you need help.\n\n```\nfunction Instances({ count = 100000, temp = new THREE.Object3D() }"
+        },
+        {
+          "captured_text_offset_start": 14650,
+          "captured_text_offset_end": 15480,
+          "text": "already in the [Drei library](https://github.com/pmndrs/drei/#performance).\n\n[\n\n## Enable concurrency\n\n](https://r3f.docs.pmnd.rs/advanced/scaling-performance#enable-concurrency)\n\nReact 18 introduces concurrent scheduling, specifically time slicing via `startTransition` and `useTransition`. This will virtualize the component graph, which then allows you to prioritise components and actions. Think of how a virtual list avoids scaling issues because it only renders as many items as the screen can take, it is not affected by the amount of items it has to render, be it 10 or 100.000.000.\n\nReact 18 functions very similar to this, it can potentially defer load and heavy tasks in ways that would be hard or impossible to achieve in a vanilla application. It thereby holds on to a stable framerate even in the most demanding situ"
+        }
+      ]
+    },
+    {
+      "source_url": "https://github.com/mrdoob/three.js/blob/dev/LICENSE",
+      "apify_run": "dgrxIiyrB0DIHohFh",
+      "apify_dataset": "H7qcB9bnHZACEndYz",
+      "loaded_url": "https://github.com/mrdoob/three.js/blob/dev/LICENSE",
+      "retrieved_at_utc": "2026-10-22T18:24:29.706Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "not_used_reason": "redirect/title-only/insufficient extracted body",
+      "captured_text": "# three.js/LICENSE at dev · mrdoob/three.js · GitHub\n\n21 lines (17 loc) · 1.06 KB\n\n## LICENSE\n\n## File metadata and controls\n\n21 lines (17 loc) · 1.06 KB\n\n[Raw](https://github.com/mrdoob/three.js/raw/refs/heads/dev/LICENSE)"
+    },
+    {
+      "source_url": "https://github.com/pmndrs/react-three-fiber/blob/master/packages/fiber/package.json",
+      "apify_run": "dgrxIiyrB0DIHohFh",
+      "apify_dataset": "H7qcB9bnHZACEndYz",
+      "loaded_url": "https://github.com/pmndrs/react-three-fiber/blob/master/packages/fiber/package.json",
+      "retrieved_at_utc": "2026-10-22T18:24:31.806Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "not_used_reason": "redirect/title-only/insufficient extracted body",
+      "captured_text": "# react-three-fiber/packages/fiber/package.json at master · pmndrs/react-three-fiber · GitHub\n\n91 lines (91 loc) · 2.15 KB\n\n## package.json\n\n## File metadata and controls\n\n91 lines (91 loc) · 2.15 KB\n\n[Raw](https://github.com/pmndrs/react-three-fiber/raw/refs/heads/master/packages/fiber/package.json)"
+    },
+    {
+      "source_url": "https://github.com/pmndrs/drei/blob/master/package.json",
+      "apify_run": "dgrxIiyrB0DIHohFh",
+      "apify_dataset": "H7qcB9bnHZACEndYz",
+      "loaded_url": "https://github.com/pmndrs/drei/blob/master/package.json",
+      "retrieved_at_utc": "2026-10-22T18:24:38.809Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "not_used_reason": "redirect/title-only/insufficient extracted body",
+      "captured_text": "# drei/package.json at master · pmndrs/drei · GitHub\n\n142 lines (142 loc) · 4.84 KB\n\n## package.json\n\n## File metadata and controls\n\n142 lines (142 loc) · 4.84 KB\n\n[Raw](https://github.com/pmndrs/drei/raw/refs/heads/master/package.json)"
+    },
+    {
+      "source_url": "https://threejs.org/manual/pages/shadows.html",
+      "apify_run": "viuhzT4a6PZP2iXuK",
+      "apify_dataset": "MFXDaDdMLxD8LoMRF",
+      "loaded_url": "https://threejs.org/manual/pages/shadows.html",
+      "retrieved_at_utc": "2026-10-22T18:26:40.123Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "30f338d565533766b3379929460cd09cf0ecd1b7dacb328fd48659b998c8f13b",
+      "captured_text_utf8_bytes": 19137,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 2904,
+          "captured_text_offset_end": 3734,
+          "text": "repeat.set(repeats, repeats);\n\n  const planeGeo = new THREE.PlaneGeometry(planeSize, planeSize);\n  const planeMat = new THREE.MeshBasicMaterial({\n    map: texture,\n    side: THREE.DoubleSide,\n  });\n+  planeMat.color.setRGB(1.5, 1.5, 1.5);\n  const mesh = new THREE.Mesh(planeGeo, planeMat);\n  mesh.rotation.x = Math.PI \\* -.5;\n  scene.add(mesh);\n}\n\nNote we're setting the color to `1.5, 1.5, 1.5`. This will multiply the checkerboard texture's colors by 1.5, 1.5, 1.5. Since the texture's colors are 0x808080 and 0xC0C0C0 which is medium gray and light gray, multiplying them by 1.5 will give us a white and light grey checkerboard.\n\nLet's load the shadow texture\n\nconst shadowTexture = loader.load('resources/images/roundshadow.png');\n\nand make an array to remember each sphere and associated objects.\n\nconst sphereShadowBases = \\"
+        },
+        {
+          "captured_text_offset_start": 13212,
+          "captured_text_offset_end": 14042,
+          "text": "folder = gui.addFolder('Shadow Camera');\n+  folder.open();\n+  folder.add(new DimensionGUIHelper(light.shadow.camera, 'left', 'right'), 'value', 1, 100)\n+    .name('width')\n+    .onChange(updateCamera);\n+  folder.add(new DimensionGUIHelper(light.shadow.camera, 'bottom', 'top'), 'value', 1, 100)\n+    .name('height')\n+    .onChange(updateCamera);\n+  const minMaxGUIHelper = new MinMaxGUIHelper(light.shadow.camera, 'near', 'far', 0.1);\n+  folder.add(minMaxGUIHelper, 'min', 0.1, 50, 0.1).name('near').onChange(updateCamera);\n+  folder.add(minMaxGUIHelper, 'max', 0.1, 50, 0.1).name('far').onChange(updateCamera);\n+  folder.add(light.shadow.camera, 'zoom', 0.01, 1.5, 0.01).onChange(updateCamera);\n+}\n\nWe tell the GUI to call our `updateCamera` function anytime anything changes. Let's write that function to update the light, the h"
+        }
+      ]
+    },
+    {
+      "source_url": "https://threejs.org/manual/pages/webgpurenderer.html",
+      "apify_run": "viuhzT4a6PZP2iXuK",
+      "apify_dataset": "MFXDaDdMLxD8LoMRF",
+      "loaded_url": "https://threejs.org/manual/pages/webgpurenderer.html",
+      "retrieved_at_utc": "2026-10-22T18:26:40.505Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "9feb8da162e51262867aeb86a1e4dfb1b182f958d670682366db5661c7b47b39",
+      "captured_text_utf8_bytes": 6041,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 0,
+          "captured_text_offset_end": 1199,
+          "text": "# WebGPURenderer\n\nThe new \\`WebGPURenderer\\` is the next-generation renderer for three.js. This article provides a short overview about the new renderer and basic guidelines about the usage.\n\n## Overview\n\n\\`WebGPURenderer\\` is designed to be the modern alternative to the long-standing \\`WebGLRenderer\\`. Its primary goal is to use WebGPU, which is a modern, high-performance graphics and compute 3D API. However, it's built to be a universal renderer. If a device/browser doesn't support WebGPU, the renderer can automatically fall back to using a WebGL 2 backend.\n\nProviding a WebGL 2 backend as a fallback is a crucial design decision since it allows applications to benefit from WebGPU but without sacrificing the support for devices which only support WebGL 2.\n\nApart from the fact that \\`WebGPURenderer\\` enables access to WebGPU, it offers an exciting feature set:\n\n*   \\`WebGPURenderer\\` comes with a new node-based material system which allows to develop custom materials with greater flexibility and more robustness.\n*   The renderer supports TSL, the three.js shading language. With TSL, developers can write shader code with JavaScript in a platform-independent manner. Shader code writt"
+        },
+        {
+          "captured_text_offset_start": 1438,
+          "captured_text_offset_end": 6041,
+          "text": "node material.\n\nLet's find out how to integrate \\`WebGPURenderer\\` in three.js applications.\n\n## Usage\n\n\\`WebGPURenderer\\` has different build files so the way you import three.js changes:\n\n\\-  import \\* as THREE from 'three';\n+  import \\* as THREE from 'three/webgpu';\n\nIf you are using an import map, it's recommended to change it to the following (the paths differ depending on your setup):\n\n  <script type=\"importmap\">\n    {\n      \"imports\": {\n        \"three\": \"../build/three.webgpu.js\",\n        \"three/webgpu\": \"../build/three.webgpu.js\",\n        \"three/tsl\": \"../build/three.tsl.js\",\n        \"three/addons/\": \"./jsm/\"\n      }\n    }\n  </script>\n\nYou can create an instance of the renderer just like with \\`WebGLRenderer\\`:\n\nconst renderer = new THREE.WebGPURenderer( { antialias: true } );\nrenderer.setPixelRatio( window.devicePixelRatio );\nrenderer.setSize( window.innerWidth, window.innerHeight );\nrenderer.setAnimationLoop( render );\ndocument.body.appendChild( renderer.domElement );\n\nIt's important to understand that WebGPU is initialized in an asynchronous fashion. Hence, it is recommended to use \\`setAnimationLoop()\\` to define the animation loop of your app since this approach will automatically ensure the renderer is initialized when rendering the first frame. If you prefer to manage your animation loop via \\`window.requestAnimationFrame()\\` or if you have to use the renderer in your init routine, you need an additional line in the above code section.\n\nconst renderer = new THREE.WebGPURenderer( { antialias: true } );\nrenderer.setPixelRatio( window.devicePixelRatio );\nrenderer.setSize( window.innerWidth, window.innerHeight );\nrenderer.setAnimationLoop( render );\ndocument.body.appendChild( renderer.domElement );\n\n+  await renderer.init();\n\nMost common methods known from \\`WebGLRenderer\\` like \\`clear()\\`, \\`setRenderTarget()\\`or \\`dispose()\\` are also present in \\`WebGPURenderer\\`. Please have a look at the [API documentation](https://threejs.org/docs/#Renderer) for a full overview of the renderer's public interface.\n\nLike mentioned in the initial part of the guide, \\`WebGPURenderer\\` uses a WebGPU backend by default and a WebGL 2 backend as a fallback. If you want to force the usage of WebGL 2 for testing purposes or if you want to exclude the usage of WebGPU for certain reasons, you can make use of the \\`forceWebGL\\` parameter.\n\n\\-  const renderer = new THREE.WebGPURenderer( { antialias: true } );\n+  const renderer = new THREE.WebGPURenderer( { antialias: true, forceWebGL: true } );\n\n## Migration\n\nIf you want to give \\`WebGPURenderer\\` a try, you have to be aware of the following.\n\n*   Custom materials based on \\`ShaderMaterial\\`, \\`RawShaderMaterial\\` and modifications of built-in materials via \\`onBeforeCompile()\\` are not supported in \\`WebGPURenderer\\`. This part of your application must be ported to node materials and TSL.\n*   \\`EffectComposer\\` with its effect passes are not supported because \\`WebGPURenderer\\` comes with a new, more modern post-processing stack. Similar to materials, post-processing effects are now written in TSL and the effect chain is expressed as a node composition. All common effects have already been ported to \\`WebGPURenderer\\` and exist in a more performant version as a node class. We have also added new effects like SSGI, SSS or a better DoF exclusively for the new renderer. Check out the [official examples](https://threejs.org/examples/?q=webgpu%20postprocessing) to get an overview of the current supported effects.\n*   The renderer itself is still in an experimental state although its maturity level has been greatly improved in the last years. Still, depending on your application and scene setup, you will encounter missing features or a better performance with \\`WebGLRenderer\\`. Feel free to file an issue at GitHub so we are aware of open tasks. We are improving \\`WebGPURenderer\\` with each release so it's recommended to upgrade to the latest version whenever possible.\n\n## State of WebGLRenderer\n\nAlthough in the meanwhile a lot of work happens in context of \\`WebGPURenderer\\`, the node material and TSL, \\`WebGLRenderer\\` is still maintained and the recommended choice for pure WebGL 2 applications. However, keep in mind that there are no plans to add larger new features to the renderer since the project's focus is now on \\`WebGPURenderer\\` which you can easily see at the latest release notes. That said, we are currently investigating the possibility to add limited node material support to \\`WebGLRenderer\\` in order to make the transition to \\`WebGPURenderer\\` easier for certain projects."
+        }
+      ]
+    },
+    {
+      "source_url": "https://threejs.org/manual/pages/load-gltf.html",
+      "apify_run": "viuhzT4a6PZP2iXuK",
+      "apify_dataset": "MFXDaDdMLxD8LoMRF",
+      "loaded_url": "https://threejs.org/manual/pages/load-gltf.html",
+      "retrieved_at_utc": "2026-10-22T18:26:40.803Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "dfabfcfa23697beaed70c786d115be08fd09f045f4905590b963caf286378d59",
+      "captured_text_utf8_bytes": 27032,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 565,
+          "captured_text_offset_end": 1395,
+          "text": "d into 3 or 4 basic types.\n\n*   3D Editor Formats\n    \n    This are formats specific to a single app. .blend (Blender), .max (3d Studio Max), .mb and .ma (Maya), etc...\n    \n*   Exchange formats\n    \n    These are formats like .OBJ, .DAE (Collada), .FBX. They are designed to help exchange information between 3D editors. As such they are usually much larger than needed with extra info used only inside 3d editors\n    \n*   App formats\n    \n    These are usually specific to certain apps, usually games.\n    \n*   Transmission formats\n    \n    gLTF might be the first true transmission format. I suppose VRML might be considered one but VRML was actually a pretty poor format.\n    \n    gLTF is designed to do some things well that all those other formats don't do\n    \n    1.  Be small for transmission\n        \n        For example"
+        },
+        {
+          "captured_text_offset_start": 3142,
+          "captured_text_offset_end": 3972,
+          "text": "BJ code was\n\nconst mtlLoader = new MTLLoader();\nmtlLoader.loadMtl('resources/models/windmill/windmill-fixed.mtl', (mtl) => {\n  mtl.preload();\n  mtl.materials.Material.side = THREE.DoubleSide;\n  objLoader.setMaterials(mtl);\n  objLoader.load('resources/models/windmill/windmill.obj', (event) => {\n    const root = event.detail.loaderRootNode;\n    scene.add(root);\n    ...\n  });\n});\n\nThe new .GLTF code is\n\n{\n  const gltfLoader = new GLTFLoader();\n  const url = 'resources/models/cartoon\\_lowpoly\\_small\\_city\\_free\\_pack/scene.gltf';\n  gltfLoader.load(url, (gltf) => {\n    const root = gltf.scene;\n    scene.add(root);\n    ...\n  });\n\nI kept the auto framing code as before\n\nWe also need to include the [`GLTFLoader`](https://threejs.org/docs/#examples/loaders/GLTFLoader) and we can get rid of the [`OBJLoader`](https://threejs.org/"
+        }
+      ]
+    },
+    {
+      "source_url": "https://threejs.org/manual/pages/cleanup.html",
+      "apify_run": "viuhzT4a6PZP2iXuK",
+      "apify_dataset": "MFXDaDdMLxD8LoMRF",
+      "loaded_url": "https://threejs.org/manual/pages/cleanup.html",
+      "retrieved_at_utc": "2026-10-22T18:26:40.859Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "6709c8c4492c4fc51395ced52a3a3570b018d3be715ecdfe6f5398a80e301b7d",
+      "captured_text_utf8_bytes": 12875,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 270,
+          "captured_text_offset_end": 1494,
+          "text": "texture takes 4 to 6meg of memory.\n\nMost three.js apps load resources at init time and then use those resources forever until the page is closed. But, what if you want to load and change resources over time?\n\nUnlike most JavaScript, three.js can not automatically clean these resources up. The browser will clean them up if you switch pages but otherwise it's up to you to manage them. This is an issue of how WebGL is designed and so three.js has no recourse but to pass on the responsibility to free resources back to you.\n\nYou free three.js resource this by calling the `dispose` function on [textures](https://threejs.org/manual/pages/textures.html), [geometries](https://threejs.org/manual/pages/primitives.html), and [materials](https://threejs.org/manual/pages/materials.html).\n\nYou could do this manually. At the start you might create some of these resources\n\nconst boxGeometry = new THREE.BoxGeometry(...);\nconst boxTexture = textureLoader.load(...);\nconst boxMaterial = new THREE.MeshPhongMaterial({map: texture});\n\nand then when you're done with them you'd free them\n\nboxGeometry.dispose();\nboxTexture.dispose();\nboxMaterial.dispose();\n\nAs you use more and more resources that would get more and more tedious.\n\nT"
+        },
+        {
+          "captured_text_offset_start": 2003,
+          "captured_text_offset_end": 2833,
+          "text": "  }\n    this.resources.clear();\n  }\n}\n\nLet's use this class with the first example from [the article on textures](https://threejs.org/manual/pages/textures.html). We can create an instance of this class\n\nconst resTracker = new ResourceTracker();\n\nand then just to make it easier to use let's create a bound function for the `track` method\n\nconst resTracker = new ResourceTracker();\n+const track = resTracker.track.bind(resTracker);\n\nNow to use it we just need to call `track` with for each geometry, texture, and material we create\n\nconst boxWidth = 1;\nconst boxHeight = 1;\nconst boxDepth = 1;\n-const geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);\n+const geometry = track(new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth));\n\nconst cubes = \\[\\];  // an array we can use to rotate the cubes\nconst loader = new T"
+        },
+        {
+          "captured_text_offset_start": 5480,
+          "captured_text_offset_end": 6310,
+          "text": "\n\nAnd then let's write some code to add and remove things over time.\n\nfunction waitSeconds(seconds = 0) {\n  return new Promise(resolve => setTimeout(resolve, seconds \\* 1000));\n}\n\nasync function process() {\n  for (;;) {\n    const resTracker = addStuffToScene();\n    await wait(2);\n    cubes.length = 0;  // remove the cubes\n    resTracker.dispose();\n    await wait(1);\n  }\n}\nprocess();\n\nThis code will create the cube, texture and material, wait for 2 seconds, then dispose of them and wait for 1 second and repeat.\n\nSo that seems to work.\n\nFor a loaded file though it's a little more work. Most loaders only return an [`Object3D`](https://threejs.org/docs/#api/en/core/Object3D) as a root of the hierarchy of objects they load so we need to discover what all the resources are.\n\nLet's update our `ResourceTracker` to try to do th"
+        }
+      ]
+    },
+    {
+      "source_url": "https://threejs.org/docs/pages/TransformControls.html",
+      "apify_run": "viuhzT4a6PZP2iXuK",
+      "apify_dataset": "MFXDaDdMLxD8LoMRF",
+      "loaded_url": "https://threejs.org/docs/pages/TransformControls.html",
+      "retrieved_at_utc": "2026-10-22T18:26:41.195Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "de6705836339ff1e69e3f35ad7ce6d03894d354a5c6ac9a082f2edb773f0e23e",
+      "captured_text_utf8_bytes": 9721,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 333,
+          "captured_text_offset_end": 1163,
+          "text": "eejs.org/docs/pages/TransformControls.html#TransformControls)( camera : [Camera](https://threejs.org/docs/pages/Camera.html), domElement : HTMLElement )\n\nConstructs a new controls instance.\n\n|     |     |\n| --- | --- |\n| **camera** | The camera of the rendered scene. |\n| **domElement** | The HTML element used for event listeners.<br><br>Default is `null`. |\n\n## Properties\n\n### .[axis](https://threejs.org/docs/pages/TransformControls.html#axis) : string\n\nThe current transformation axis.\n\n### .[camera](https://threejs.org/docs/pages/TransformControls.html#camera) : [Camera](https://threejs.org/docs/pages/Camera.html)\n\nThe camera of the rendered scene.\n\n### .[dragging](https://threejs.org/docs/pages/TransformControls.html#dragging) : boolean (readonly)\n\nWhether dragging is currently performed or not.\n\nDefault is `false`.\n"
+        },
+        {
+          "captured_text_offset_start": 2110,
+          "captured_text_offset_end": 2940,
+          "text": "y`.\n\n### .[mode](https://threejs.org/docs/pages/TransformControls.html#mode) : 'translate' | 'rotate' | 'scale'\n\nThe current transformation axis.\n\nDefault is `'translate'`.\n\n### .[rotationSnap](https://threejs.org/docs/pages/TransformControls.html#rotationSnap) : number\n\nBy default, 3D objects are continuously rotated. If you set this property to a numeric value (radians), you can define in which steps the 3D object should be rotated.\n\nDefault is `null`.\n\n### .[scaleSnap](https://threejs.org/docs/pages/TransformControls.html#scaleSnap) : number\n\nBy default, 3D objects are continuously scaled. If you set this property to a numeric value, you can define in which steps the 3D object should be scaled.\n\nDefault is `null`.\n\n### .[showE](https://threejs.org/docs/pages/TransformControls.html#showE) : boolean\n\nWhether the e rot"
+        },
+        {
+          "captured_text_offset_start": 4287,
+          "captured_text_offset_end": 5117,
+          "text": "ps://threejs.org/docs/pages/TransformControls.html#space) : 'world' | 'local'\n\nDefines in which coordinate space transformations should be performed.\n\nDefault is `'world'`.\n\n### .[translationSnap](https://threejs.org/docs/pages/TransformControls.html#translationSnap) : number\n\nBy default, 3D objects are continuously translated. If you set this property to a numeric value (world units), you can define in which steps the 3D object should be translated.\n\nDefault is `null`.\n\n### .[viewport](https://threejs.org/docs/pages/TransformControls.html#viewport) : [Vector4](https://threejs.org/docs/pages/Vector4.html)\n\nThe viewport rectangle, in logical (CSS) pixels with the origin at the lower-left of the canvas. Set this when the renderer uses a sub-canvas viewport so pointer coordinates map to the correct region. If `null`, the "
+        },
+        {
+          "captured_text_offset_start": 8615,
+          "captured_text_offset_end": 9721,
+          "text": "l#setTranslationSnap)( translationSnap : number )\n\nSets the translation snap.\n\n|     |     |\n| --- | --- |\n| **translationSnap** | The translation snap to set. |\n\n## Events\n\n### .[change](https://threejs.org/docs/pages/TransformControls.html#event:change)\n\nFires if any type of change (object or property change) is performed. Property changes are separate events you can add event listeners to. The event type is \"propertyname-changed\".\n\n##### Type:\n\n*   Object\n\n### .[mouseDown](https://threejs.org/docs/pages/TransformControls.html#event:mouseDown)\n\nFires if a pointer (mouse/touch) becomes active.\n\n##### Type:\n\n*   Object\n\n### .[mouseUp](https://threejs.org/docs/pages/TransformControls.html#event:mouseUp)\n\nFires if a pointer (mouse/touch) is no longer active.\n\n##### Type:\n\n*   Object\n\n### .[objectChange](https://threejs.org/docs/pages/TransformControls.html#event:objectChange)\n\nFires if the controlled 3D object is changed.\n\n##### Type:\n\n*   Object\n\n## Source\n\n[examples/jsm/controls/TransformControls.js](https://github.com/mrdoob/three.js/blob/master/examples/jsm/controls/TransformControls.js)"
+        }
+      ]
+    },
+    {
+      "source_url": "https://threejs.org/docs/pages/OrbitControls.html",
+      "apify_run": "viuhzT4a6PZP2iXuK",
+      "apify_dataset": "MFXDaDdMLxD8LoMRF",
+      "loaded_url": "https://threejs.org/docs/pages/OrbitControls.html",
+      "retrieved_at_utc": "2026-10-22T18:26:41.327Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "f295f56079f9d29a29e4a89e2931a9e0c9c4e45990decb3f921c91f6d330a337",
+      "captured_text_utf8_bytes": 12596,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 280,
+          "captured_text_offset_end": 2155,
+          "text": "d panning. Unlike [TrackballControls](https://threejs.org/docs/pages/TrackballControls.html), it maintains the \"up\" direction `object.up` (+Y by default).\n\n*   Orbit: Left mouse / touch: one-finger move.\n*   Zoom: Middle mouse, or mousewheel / touch: two-finger spread or squish.\n*   Pan: Right mouse, or left mouse + ctrl/meta/shiftKey, or arrow keys / touch: two-finger move.\n\n## Code Example\n\n```\nconst controls = new OrbitControls( camera, renderer.domElement );\n// controls.update() must be called after any manual changes to the camera's transform\ncamera.position.set( 0, 20, 100 );\ncontrols.update();\nfunction animate() {\n\t// required if controls.enableDamping or controls.autoRotate are set to true\n\tcontrols.update();\n\trenderer.render( scene, camera );\n}\n```\n\n## Import\n\nOrbitControls is an addon, and must be imported explicitly, see [Installation#Addons](https://threejs.org/manual/#installation#addons).\n\n```\nimport { OrbitControls } from 'three/addons/controls/OrbitControls.js';\n```\n\n## Constructor\n\n### new [OrbitControls](https://threejs.org/docs/pages/OrbitControls.html#OrbitControls)( object : [Object3D](https://threejs.org/docs/pages/Object3D.html), domElement : HTMLElement )\n\nConstructs a new controls instance.\n\n|     |     |\n| --- | --- |\n| **object** | The object that is managed by the controls. |\n| **domElement** | The HTML element used for event listeners.<br><br>Default is `null`. |\n\n## Properties\n\n### .[autoRotate](https://threejs.org/docs/pages/OrbitControls.html#autoRotate) : boolean\n\nSet to true to automatically rotate around the target\n\nNote that if this is enabled, you must call `update()` in your animation loop. If you want the auto-rotate speed to be independent of the frame rate (the refresh rate of the display), you must pass the time `deltaTime`, in seconds, to `update()`.\n\nDefault is `false`.\n\n### .[autoRotateSpeed](https:"
+        }
+      ]
+    },
+    {
+      "source_url": "https://maplibre.org/maplibre-gl-js/docs/API/classes/MercatorCoordinate/",
+      "apify_run": "viuhzT4a6PZP2iXuK",
+      "apify_dataset": "MFXDaDdMLxD8LoMRF",
+      "loaded_url": "https://maplibre.org/maplibre-gl-js/docs/API/classes/MercatorCoordinate/",
+      "retrieved_at_utc": "2026-10-22T18:26:41.758Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "d90e610f331263d43dd73a18c5f9a01dba915760e8b04a58ff6ddee66dbd6b35",
+      "captured_text_utf8_bytes": 5511,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 0,
+          "captured_text_offset_end": 652,
+          "text": "# MercatorCoordinate - MapLibre GL JS\n\nDefined in: [geo/mercator\\_coordinate.ts:83](https://github.com/maplibre/maplibre-gl-js/blob/638b3f9ecab4b743fd4d086d3bfd19bce7b7b032/src/geo/mercator_coordinate.ts#L83)\n\nA `MercatorCoordinate` object represents a projected three dimensional position.\n\n`MercatorCoordinate` uses the web mercator projection ([EPSG:3857](https://epsg.io/3857)) with slightly different units:\n\n*   the size of 1 unit is the width of the projected world instead of the \"mercator meter\"\n*   the origin of the coordinate space is at the north-west corner instead of the middle\n\nFor example, `MercatorCoordinate(0, 0, 0)` is the north-w"
+        },
+        {
+          "captured_text_offset_start": 2127,
+          "captured_text_offset_end": 2957,
+          "text": " `y` | `number` | `undefined` | The y component of the position. |\n| `z` | `number` | `0` | The z component of the position. |\n\n#### Returns\n\n`MercatorCoordinate`\n\n## Methods\n\n### meterInMercatorCoordinateUnits()\n\n> **meterInMercatorCoordinateUnits**(): `number`\n\nDefined in: [geo/mercator\\_coordinate.ts:158](https://github.com/maplibre/maplibre-gl-js/blob/638b3f9ecab4b743fd4d086d3bfd19bce7b7b032/src/geo/mercator_coordinate.ts#L158)\n\nReturns the distance of 1 meter in `MercatorCoordinate` units at this latitude.\n\nFor coordinates in real world units using meters, this naturally provides the scale to transform into `MercatorCoordinate`s.\n\n#### Returns\n\n`number`\n\nDistance of 1 meter in `MercatorCoordinate` units.\n\n#### Implementation of\n\n`IMercatorCoordinate.meterInMercatorCoordinateUnits`\n\n* * *\n\n### toAltitude()\n\n> **toA"
+        }
+      ]
+    },
+    {
+      "source_url": "https://threejs.org/docs/pages/InstancedMesh.html",
+      "apify_run": "viuhzT4a6PZP2iXuK",
+      "apify_dataset": "MFXDaDdMLxD8LoMRF",
+      "loaded_url": "https://threejs.org/docs/pages/InstancedMesh.html",
+      "retrieved_at_utc": "2026-10-22T18:26:41.925Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "8cec6bbd6cd4587e439af71a53462c3ed77fe245eab55c45f69a412ead817219",
+      "captured_text_utf8_bytes": 5658,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 0,
+          "captured_text_offset_end": 652,
+          "text": "# InstancedMesh - Three.js Docs\n\n## Constructor\n\n### new [InstancedMesh](https://threejs.org/docs/pages/InstancedMesh.html#InstancedMesh)( geometry : [BufferGeometry](https://threejs.org/docs/pages/BufferGeometry.html), material : [Material](https://threejs.org/docs/pages/Material.html) | Array.<[Material](https://threejs.org/docs/pages/Material.html)\\>, count : number )\n\nConstructs a new instanced mesh.\n\n|     |     |\n| --- | --- |\n| **geometry** | The mesh geometry. |\n| **material** | The mesh material. |\n| **count** | The number of instances. |\n\n## Properties\n\n### .[count](https://threejs.org/docs/pages/InstancedMesh.html#count) : number\n\nTh"
+        },
+        {
+          "captured_text_offset_start": 870,
+          "captured_text_offset_end": 2677,
+          "text": "flag can be used for type testing.\n\nDefault is `true`.\n\n## Methods\n\n### .[computeBoundingBox](https://threejs.org/docs/pages/InstancedMesh.html#computeBoundingBox)()\n\nComputes the bounding box of the instanced mesh, and updates [InstancedMesh#boundingBox](https://threejs.org/docs/pages/InstancedMesh.html#boundingBox). The bounding box is not automatically computed by the engine; this method must be called by your app. You may need to recompute the bounding box if an instance is transformed via [InstancedMesh#setMatrixAt](https://threejs.org/docs/pages/InstancedMesh.html#setMatrixAt).\n\n### .[computeBoundingSphere](https://threejs.org/docs/pages/InstancedMesh.html#computeBoundingSphere)()\n\nComputes the bounding sphere of the instanced mesh, and updates [InstancedMesh#boundingSphere](https://threejs.org/docs/pages/InstancedMesh.html#boundingSphere) The engine automatically computes the bounding sphere when it is needed, e.g., for ray casting or view frustum culling. You may need to recompute the bounding sphere if an instance is transformed via [InstancedMesh#setMatrixAt](https://threejs.org/docs/pages/InstancedMesh.html#setMatrixAt).\n\n### .[dispose](https://threejs.org/docs/pages/InstancedMesh.html#dispose)()\n\nFrees the GPU-related resources allocated by this instance. Call this method whenever this instance is no longer used in your app.\n\n**Overrides:** [Mesh#dispose](https://threejs.org/docs/pages/Mesh.html#dispose)\n\n### .[getColorAt](https://threejs.org/docs/pages/InstancedMesh.html#getColorAt)( index : number, color : [Color](https://threejs.org/docs/pages/Color.html) ) : [Color](https://threejs.org/docs/pages/Color.html)\n\nGets the color of the defined instance.\n\n|     |     |\n| --- | --- |\n| **index** | The instance index. |\n| **color** | The target object that is used to s"
+        }
+      ]
+    },
+    {
+      "source_url": "https://threejs.org/docs/pages/GLTFLoader.html",
+      "apify_run": "viuhzT4a6PZP2iXuK",
+      "apify_dataset": "MFXDaDdMLxD8LoMRF",
+      "loaded_url": "https://threejs.org/docs/pages/GLTFLoader.html",
+      "retrieved_at_utc": "2026-10-22T18:26:42.236Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "45fdc1e791494ca81d7260a77f519ba069e6edc9795894156526bec4114c570d",
+      "captured_text_utf8_bytes": 5334,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 1701,
+          "captured_text_offset_end": 2531,
+          "text": "the loading process has been finished. |\n| **onError** | Executed when errors occur. |\n\n**Overrides:** [Loader#parse](https://threejs.org/docs/pages/Loader.html#parse)\n\n### .[parseAsync](https://threejs.org/docs/pages/GLTFLoader.html#parseAsync)( data : string | ArrayBuffer, path : string ) : Promise.<[GLTFLoader~LoadObject](https://threejs.org/docs/pages/GLTFLoader.html#~LoadObject)\\> (async)\n\n|     |     |\n| --- | --- |\n| **data** | The raw glTF data. |\n| **path** | The URL base path. |\n\n**Returns:** A Promise that resolves with the loaded glTF when the parsing has been finished.\n\n### .[register](https://threejs.org/docs/pages/GLTFLoader.html#register)( callback : function ) : [GLTFLoader](https://threejs.org/docs/pages/GLTFLoader.html)\n\nRegisters a plugin callback. This API is internally used to implement the variou"
+        }
+      ]
+    },
+    {
+      "source_url": "https://github.com/KhronosGroup/glTF-Sample-Assets",
+      "apify_run": "viuhzT4a6PZP2iXuK",
+      "apify_dataset": "MFXDaDdMLxD8LoMRF",
+      "loaded_url": "https://github.com/KhronosGroup/glTF-Sample-Assets",
+      "retrieved_at_utc": "2026-10-22T18:26:42.733Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "457c76de1c226d11bf5f0dd069eceee0c67153e38619679afa2674c9843619e9",
+      "captured_text_utf8_bytes": 7074,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 1004,
+          "captured_text_offset_end": 1834,
+          "text": "ts/main/Models/GlassHurricaneCandleHolder/glTF-Binary/GlassHurricaneCandleHolder.glb)  <br>Credit:  <br>© 2021, Wayfair, LLC. [CC BY 4.0 International](https://creativecommons.org/licenses/by/4.0/legalcode)  <br>\\- Eric Chadwick for everything |\n\nThis Repository is a curated collection of glTF models that illustrate one or more features or capabilities of glTF.\n\nA website for browsing the sample assets can be found at [https://github.khronos.org/glTF-Assets/](https://github.khronos.org/glTF-Assets/). It allows searching for assets based on keywords and filtering the asset list based on tags. It offers an interactive preview of the sample assets, including basic inspection functionality and a summary of the description of the assets and their metadata.\n\nAdditionally, dedicated lists of assets are generated as markdown f"
+        },
+        {
+          "captured_text_offset_start": 6035,
+          "captured_text_offset_end": 6865,
+          "text": "-Models_ repository was archived [in place](https://github.com/KhronosGroup/glTF-Sample-Models). All glTF 1.0 and _sourceModels_ files were removed from this repository. The major changes to the report are:\n\n*   The primary branch name was changed to _main_ (from \\_master).\n    \n*   _2.0_ directory was renamed to _Models_\n    \n*   All non-model folder READMEs were also removed\n    \n*   Assets without licenses or licenses that were not suitable for use in this collection were removed\n    \n    *   2 Cylinder Engine\n    *   Buggy\n    *   Gearbox Assy\n    *   Reciprocating Saw\n*   The following models may be removed if a suitable use cannot be established\n    \n    *   Antique Camera\n    *   Box Textured\n    *   Box Textured not 2^N\n    *   Cesium Man\n    *   Cesium Milk Truck\n\nFor the assets that remained, there were no ch"
+        }
+      ]
+    },
+    {
+      "source_url": "https://github.com/mrdoob/three.js/blob/dev/editor/js/History.js",
+      "apify_run": "viuhzT4a6PZP2iXuK",
+      "apify_dataset": "MFXDaDdMLxD8LoMRF",
+      "loaded_url": "https://github.com/mrdoob/three.js/blob/dev/editor/js/History.js",
+      "retrieved_at_utc": "2026-10-22T18:26:43.420Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "not_used_reason": "redirect/title-only/insufficient extracted body",
+      "captured_text": "# three.js/editor/js/History.js at dev · mrdoob/three.js · GitHub\n\n321 lines (188 loc) · 5.87 KB\n\n## History.js\n\n## File metadata and controls\n\n321 lines (188 loc) · 5.87 KB\n\n[Raw](https://github.com/mrdoob/three.js/raw/refs/heads/dev/editor/js/History.js)"
+    },
+    {
+      "source_url": "https://threejs.org/docs/pages/BufferGeometry.html",
+      "apify_run": "viuhzT4a6PZP2iXuK",
+      "apify_dataset": "MFXDaDdMLxD8LoMRF",
+      "loaded_url": "https://threejs.org/docs/pages/BufferGeometry.html",
+      "retrieved_at_utc": "2026-10-22T18:26:43.895Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "f81408fe8952772066795b48605122faeb7d60056ac0c22d4a97232680943682",
+      "captured_text_utf8_bytes": 18171,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 1528,
+          "captured_text_offset_end": 3085,
+          "text": "e()` to access attributes of this geometry.\n\n### .[boundingBox](https://threejs.org/docs/pages/BufferGeometry.html#boundingBox) : [Box3](https://threejs.org/docs/pages/Box3.html)\n\nBounding box for the geometry which can be calculated with `computeBoundingBox()`.\n\nDefault is `null`.\n\n### .[boundingSphere](https://threejs.org/docs/pages/BufferGeometry.html#boundingSphere) : [Sphere](https://threejs.org/docs/pages/Sphere.html)\n\nBounding sphere for the geometry which can be calculated with `computeBoundingSphere()`.\n\nDefault is `null`.\n\n### .[drawRange](https://threejs.org/docs/pages/BufferGeometry.html#drawRange) : Object\n\nDetermines the part of the geometry to render. This should not be set directly, instead use `setDrawRange()`.\n\n### .[groups](https://threejs.org/docs/pages/BufferGeometry.html#groups) : Array.<Object>\n\nSplit the geometry into groups, each of which will be rendered in a separate draw call. This allows an array of materials to be used with the geometry.\n\nUse `addGroup()` and `clearGroups()` to edit groups, rather than modifying this array directly.\n\nEvery vertex and index must belong to exactly one group — groups must not share vertices or indices, and must not leave vertices or indices unused.\n\n### .[id](https://threejs.org/docs/pages/BufferGeometry.html#id) : number (readonly)\n\nThe ID of the geometry.\n\n### .[index](https://threejs.org/docs/pages/BufferGeometry.html#index) : [BufferAttribute](https://threejs.org/docs/pages/BufferAttribute.html)\n\nAllows for vertices to be re-used across multiple triangles; this is cal"
+        },
+        {
+          "captured_text_offset_start": 3504,
+          "captured_text_offset_end": 4334,
+          "text": "//threejs.org/docs/pages/BufferAttribute.html)\n\nA (storage) buffer attribute which was generated with a compute shader and now defines indirect draw calls.\n\nCan only be used with [WebGPURenderer](https://threejs.org/docs/pages/WebGPURenderer.html) and a WebGPU backend.\n\nDefault is `null`.\n\n### .[indirectOffset](https://threejs.org/docs/pages/BufferGeometry.html#indirectOffset) : number | Array.<number>\n\nThe offset, in bytes, into the indirect drawing buffer where the value data begins. If an array is provided, multiple indirect draw calls will be made for each offset.\n\nCan only be used with [WebGPURenderer](https://threejs.org/docs/pages/WebGPURenderer.html) and a WebGPU backend.\n\nDefault is `0`.\n\n### .[isBufferGeometry](https://threejs.org/docs/pages/BufferGeometry.html#isBufferGeometry) : boolean (readonly)\n\nThis fla"
+        },
+        {
+          "captured_text_offset_start": 4444,
+          "captured_text_offset_end": 5344,
+          "text": "ferGeometry.html#morphAttributes) : Object\n\nThis dictionary holds the morph targets of the geometry.\n\nNote: Once the geometry has been rendered, the morph attribute data cannot be changed. You will have to call `dispose()`, and create a new geometry instance.\n\n### .[morphTargetsRelative](https://threejs.org/docs/pages/BufferGeometry.html#morphTargetsRelative) : boolean\n\nUsed to control the morph target behavior; when set to `true`, the morph target data is treated as relative offsets, rather than as absolute positions/normals.\n\nDefault is `false`.\n\n### .[name](https://threejs.org/docs/pages/BufferGeometry.html#name) : string\n\nThe name of the geometry.\n\n### .[userData](https://threejs.org/docs/pages/BufferGeometry.html#userData) : Object\n\nAn object that can be used to store custom data about the geometry. It should not hold references to functions as these will not be cloned.\n\n### .[uuid]"
+        }
+      ]
+    },
+    {
+      "source_url": "https://threejs.org/docs/pages/ExtrudeGeometry.html",
+      "apify_run": "viuhzT4a6PZP2iXuK",
+      "apify_dataset": "MFXDaDdMLxD8LoMRF",
+      "loaded_url": "https://threejs.org/docs/pages/ExtrudeGeometry.html",
+      "retrieved_at_utc": "2026-10-22T18:26:44.380Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "842589330baee23033b31403cd9e7258759e216aa52818b635f6e68367ff3c3c",
+      "captured_text_utf8_bytes": 3362,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 1176,
+          "captured_text_offset_end": 2318,
+          "text": "/docs/pages/ExtrudeGeometry.html#parameters) : Object\n\nHolds the constructor parameters that have been used to generate the geometry. Any modification after instantiation does not change the geometry.\n\n## Static Methods\n\n### .[fromJSON](https://threejs.org/docs/pages/ExtrudeGeometry.html#.fromJSON)( data : Object, shapes : Array.<[Shape](https://threejs.org/docs/pages/Shape.html)\\> ) : [ExtrudeGeometry](https://threejs.org/docs/pages/ExtrudeGeometry.html)\n\nFactory method for creating an instance of this class from the given JSON object.\n\n|     |     |\n| --- | --- |\n| **data** | A JSON object representing the serialized geometry. |\n| **shapes** | An array of shapes. |\n\n**Returns:** A new instance.\n\n## Type Definitions\n\n### .[Options](https://threejs.org/docs/pages/ExtrudeGeometry.html#~Options)\n\nRepresents the `options` type of the geometry's constructor.\n\n|     |     |\n| --- | --- |\n| **curveSegments**  <br>number | Number of points on the curves.<br><br>Default is `12`. |\n| **steps**  <br>number | Number of points used for subdividing segments along the depth of the extruded spline.<br><br>Default is `1`. |\n| **depth**  <br"
+        }
+      ]
+    },
+    {
+      "source_url": "https://threejs.org/docs/pages/ShapeUtils.html",
+      "apify_run": "viuhzT4a6PZP2iXuK",
+      "apify_dataset": "MFXDaDdMLxD8LoMRF",
+      "loaded_url": "https://threejs.org/docs/pages/ShapeUtils.html",
+      "retrieved_at_utc": "2026-10-22T18:26:44.430Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "301260640872468b8f48abb7324e9f22604fc73874bb0a9ed384e90c73c45754",
+      "captured_text_utf8_bytes": 1419,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 0,
+          "captured_text_offset_end": 1100,
+          "text": "# ShapeUtils - Three.js Docs\n\n## Static Methods\n\n### .[area](https://threejs.org/docs/pages/ShapeUtils.html#.area)( contour : Array.<[Vector2](https://threejs.org/docs/pages/Vector2.html)\\> ) : number\n\nCalculate area of a ( 2D ) contour polygon.\n\n|     |     |\n| --- | --- |\n| **contour** | An array of 2D points. |\n\n**Returns:** The area.\n\n### .[isClockWise](https://threejs.org/docs/pages/ShapeUtils.html#.isClockWise)( pts : Array.<[Vector2](https://threejs.org/docs/pages/Vector2.html)\\> ) : boolean\n\nReturns `true` if the given contour uses a clockwise winding order.\n\n|     |     |\n| --- | --- |\n| **pts** | An array of 2D points defining a polygon. |\n\n**Returns:** Whether the given contour uses a clockwise winding order or not.\n\n### .[triangulateShape](https://threejs.org/docs/pages/ShapeUtils.html#.triangulateShape)( contour : Array.<[Vector2](https://threejs.org/docs/pages/Vector2.html)\\>, holes : Array.<Array.<[Vector2](https://threejs.org/docs/pages/Vector2.html)\\>> ) : Array.<Array.<number>>\n\nTriangulates the given shape definition.\n\n|     |     |\n| --- | --- |\n| **contour** | An"
+        }
+      ]
+    },
+    {
+      "source_url": "https://threejs.org/docs/pages/WebGL.html",
+      "apify_run": "viuhzT4a6PZP2iXuK",
+      "apify_dataset": "MFXDaDdMLxD8LoMRF",
+      "loaded_url": "https://threejs.org/docs/pages/WebGL.html",
+      "retrieved_at_utc": "2026-10-22T18:26:45.206Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "0b07eb46dad2891eca9a7fb096bda4c626cfce62732ae906d255098207904fba",
+      "captured_text_utf8_bytes": 1289,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 0,
+          "captured_text_offset_end": 1100,
+          "text": "# WebGL - Three.js Docs\n\n## Import\n\nWebGL is an addon, and must be imported explicitly, see [Installation#Addons](https://threejs.org/manual/#installation#addons).\n\n```\nimport WebGL from 'three/addons/capabilities/WebGL.js';\n```\n\n## Static Methods\n\n### .[getWebGL2ErrorMessage](https://threejs.org/docs/pages/WebGL.html#.getWebGL2ErrorMessage)() : HTMLDivElement\n\nReturns a `div` element representing a formatted error message that can be appended in web sites if WebGL 2 isn't supported.\n\n**Returns:** A `div` element representing a formatted error message that WebGL 2 isn't supported.\n\n### .[isColorSpaceAvailable](https://threejs.org/docs/pages/WebGL.html#.isColorSpaceAvailable)( colorSpace : string ) : boolean\n\nReturns `true` if the given color space is available. This method can only be used if WebGL 2 is supported.\n\n|     |     |\n| --- | --- |\n| **colorSpace** | The color space to test. |\n\n**Returns:** Whether the given color space is available or not.\n\n### .[isWebGL2Available](https://threejs.org/docs/pages/WebGL.html#.isWebGL2Available)() : boolean\n\nReturns `true` if WebGL 2 is avai"
+        }
+      ]
+    },
+    {
+      "source_url": "https://www.npmjs.com/package/@react-three/drei/v/9.122.0",
+      "apify_run": "viuhzT4a6PZP2iXuK",
+      "apify_dataset": "MFXDaDdMLxD8LoMRF",
+      "loaded_url": "https://www.npmjs.com/package/@react-three/drei/v/9.122.0",
+      "retrieved_at_utc": "2026-10-22T18:27:41.590Z",
+      "http_status": 200,
+      "content_type": "text/html",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "41c2f0de0173f917b264204d5506724830d3a8cfb159930dbe315a591e6d9363",
+      "captured_text_utf8_bytes": 11962,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 8158,
+          "captured_text_offset_end": 8988,
+          "text": "aders/use-font)\n\n[Documentation has moved here](https://pmndrs.github.io/drei/loaders/use-sprite-loader)\n\n[Documentation has moved here](https://pmndrs.github.io/drei/performances/instances)\n\n[Documentation has moved here](https://pmndrs.github.io/drei/performances/merged)\n\n[Documentation has moved here](https://pmndrs.github.io/drei/performances/points)\n\n[Documentation has moved here](https://pmndrs.github.io/drei/performances/segments)\n\n[Documentation has moved here](https://pmndrs.github.io/drei/performances/detailed)\n\n[Documentation has moved here](https://pmndrs.github.io/drei/performances/preload)\n\n[Documentation has moved here](https://pmndrs.github.io/drei/performances/bake-shadows)\n\n[Documentation has moved here](https://pmndrs.github.io/drei/performances/mesh-bounds)\n\n[Documentation has moved here](https://pm"
+        }
+      ]
+    },
+    {
+      "source_url": "https://www.npmjs.com/package/@react-three/fiber/v/8.18.0",
+      "apify_run": "viuhzT4a6PZP2iXuK",
+      "apify_dataset": "MFXDaDdMLxD8LoMRF",
+      "loaded_url": "https://www.npmjs.com/package/@react-three/fiber/v/8.18.0",
+      "retrieved_at_utc": "2026-10-22T18:27:52.422Z",
+      "http_status": 200,
+      "content_type": "text/html",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "a9cb079928ef9289de03e86002bb166c93a112fc63a0197c6221290aba1c5895",
+      "captured_text_utf8_bytes": 12077,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 3575,
+          "captured_text_offset_end": 4405,
+          "text": "ct's scheduling abilities.\n\nYes. It merely expresses Threejs in JSX: `<mesh />` becomes `new THREE.Mesh()`, and that happens dynamically. If a new Threejs version adds, removes or changes features, it will be available to you instantly without depending on updates to this library.\n\n|     |     |\n| --- | --- |\n| Let's make a re-usable component that has its own state, reacts to user-input and participates in the render-loop. ([live demo](https://codesandbox.io/s/rrppl0y8l4?file=/src/App.js)). | [![](https://camo.githubusercontent.com/7202975200fb6808575d2add3e43ade2c49768d9fab7c37a2165fcd73cd0905d/68747470733a2f2f692e696d6775722e636f6d2f7353344172725a2e676966)](https://codesandbox.io/s/rrppl0y8l4) |\n\nimport { createRoot } from 'react-dom/client'\nimport React, { useRef, useState } from 'react'\nimport { Canvas, useFrame }"
+        },
+        {
+          "captured_text_offset_start": 6588,
+          "captured_text_offset_end": 7418,
+          "text": "ive demo: [https://codesandbox.io/s/icy-tree-brnsm?file=/src/App.tsx](https://codesandbox.io/s/icy-tree-brnsm?file=/src/App.tsx)\n\nShow React Native example\n\nThis example relies on react 18 and uses `expo-cli`, but you can create a bare project with their template or with the `react-native` CLI.\n\n# Install expo-cli, this will create our app\nnpm install expo-cli -g\n# Create app and cd into it\nexpo init my-app\ncd my-app\n# Install dependencies\nnpm install three @react-three/fiber@beta react@rc\n# Start\nexpo start\n\nSome configuration may be required to tell the Metro bundler about your assets if you use `useLoader` or Drei abstractions like `useGLTF` and `useTexture`:\n\n// metro.config.js\nmodule.exports \\= {\n  resolver: {\n    sourceExts: \\['js', 'jsx', 'json', 'ts', 'tsx', 'cjs'\\],\n    assetExts: \\['glb', 'png', 'jpg'\\],\n  },"
+        },
+        {
+          "captured_text_offset_start": 10785,
+          "captured_text_offset_end": 11615,
+          "text": " [`react-spring`](https://github.com/pmndrs/react-spring) – a spring-physics-based animation library\n*   [`react-use-gesture`](https://github.com/pmndrs/react-use-gesture) – mouse/touch gestures\n*   [`leva`](https://github.com/pmndrs/leva) – create GUI controls in seconds\n\nIf you like this project, please consider helping out. All contributions are welcome as well as donations to [Opencollective](https://opencollective.com/react-three-fiber), or in crypto `BTC: 36fuguTPxGCNnYZSRdgdh6Ea94brCAjMbH`, `ETH: 0x6E3f79Ea1d0dcedeb33D3fC6c34d2B1f156F2682`.\n\nThank you to all our backers! 🙏\n\n[![](https://camo.githubusercontent.com/44ead208ed7ae2465e2714c17fe121f655d45bdc734ac8e3cab28ae491a9dfff/68747470733a2f2f6f70656e636f6c6c6563746976652e636f6d2f72656163742d74687265652d66696265722f6261636b6572732e7376673f77696474683d383930)](ht"
+        }
+      ]
+    },
+    {
+      "source_url": "https://registry.npmjs.org/@types%2fthree/latest",
+      "apify_run": "vn4v5qRLWoDalRScA",
+      "apify_dataset": "m0atPGqWMMH4Ea4GN",
+      "loaded_url": "https://registry.npmjs.org/@types%2fthree/latest",
+      "retrieved_at_utc": "2026-10-22T18:27:57.332Z",
+      "http_status": 200,
+      "content_type": "application/json",
+      "apify_file_url": "https://api.apify.com/v2/key-value-stores/ducC5BvKVY37ZfN7W/records/file-60f491c-latest",
+      "original_hash_location": "package-primary-metadata.json"
+    },
+    {
+      "source_url": "https://registry.npmjs.org/three/latest",
+      "apify_run": "vn4v5qRLWoDalRScA",
+      "apify_dataset": "m0atPGqWMMH4Ea4GN",
+      "loaded_url": "https://registry.npmjs.org/three/latest",
+      "retrieved_at_utc": "2026-10-22T18:27:57.497Z",
+      "http_status": 200,
+      "content_type": "application/json",
+      "apify_file_url": "https://api.apify.com/v2/key-value-stores/ducC5BvKVY37ZfN7W/records/file-bf0495b-latest",
+      "original_hash_location": "package-primary-metadata.json"
+    },
+    {
+      "source_url": "https://registry.npmjs.org/@react-three%2ffiber/latest",
+      "apify_run": "vn4v5qRLWoDalRScA",
+      "apify_dataset": "m0atPGqWMMH4Ea4GN",
+      "loaded_url": "https://registry.npmjs.org/@react-three%2ffiber/latest",
+      "retrieved_at_utc": "2026-10-22T18:27:58.134Z",
+      "http_status": 200,
+      "content_type": "application/json",
+      "apify_file_url": "https://api.apify.com/v2/key-value-stores/ducC5BvKVY37ZfN7W/records/file-04392fc-latest",
+      "original_hash_location": "package-primary-metadata.json"
+    },
+    {
+      "source_url": "https://registry.npmjs.org/@react-three%2ffiber/8.18.0",
+      "apify_run": "vn4v5qRLWoDalRScA",
+      "apify_dataset": "m0atPGqWMMH4Ea4GN",
+      "loaded_url": "https://registry.npmjs.org/@react-three%2ffiber/8.18.0",
+      "retrieved_at_utc": "2026-10-22T18:27:58.424Z",
+      "http_status": 200,
+      "content_type": "application/json",
+      "apify_file_url": "https://api.apify.com/v2/key-value-stores/ducC5BvKVY37ZfN7W/records/file-6859336-8.18.0",
+      "original_hash_location": "package-primary-metadata.json"
+    },
+    {
+      "source_url": "https://registry.npmjs.org/@react-three%2fdrei/latest",
+      "apify_run": "vn4v5qRLWoDalRScA",
+      "apify_dataset": "m0atPGqWMMH4Ea4GN",
+      "loaded_url": "https://registry.npmjs.org/@react-three%2fdrei/latest",
+      "retrieved_at_utc": "2026-10-22T18:27:58.771Z",
+      "http_status": 200,
+      "content_type": "application/json",
+      "apify_file_url": "https://api.apify.com/v2/key-value-stores/ducC5BvKVY37ZfN7W/records/file-0865169-latest",
+      "original_hash_location": "package-primary-metadata.json"
+    },
+    {
+      "source_url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/LICENSE",
+      "apify_run": "vn4v5qRLWoDalRScA",
+      "apify_dataset": "m0atPGqWMMH4Ea4GN",
+      "loaded_url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/LICENSE",
+      "retrieved_at_utc": "2026-10-22T18:27:59.036Z",
+      "http_status": 200,
+      "content_type": "text/plain; charset=utf-8",
+      "apify_file_url": "https://api.apify.com/v2/key-value-stores/ducC5BvKVY37ZfN7W/records/file-b994e3c-LICENSE",
+      "original_hash_location": "package-primary-metadata.json"
+    },
+    {
+      "source_url": "https://registry.npmjs.org/@react-three%2fdrei/9.122.0",
+      "apify_run": "vn4v5qRLWoDalRScA",
+      "apify_dataset": "m0atPGqWMMH4Ea4GN",
+      "loaded_url": "https://registry.npmjs.org/@react-three%2fdrei/9.122.0",
+      "retrieved_at_utc": "2026-10-22T18:27:59.102Z",
+      "http_status": 200,
+      "content_type": "application/json",
+      "apify_file_url": "https://api.apify.com/v2/key-value-stores/ducC5BvKVY37ZfN7W/records/file-0b25cbe-9.122.0",
+      "original_hash_location": "package-primary-metadata.json"
+    },
+    {
+      "source_url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/editor/js/History.js",
+      "apify_run": "vn4v5qRLWoDalRScA",
+      "apify_dataset": "m0atPGqWMMH4Ea4GN",
+      "loaded_url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/editor/js/History.js",
+      "retrieved_at_utc": "2026-10-22T18:27:59.572Z",
+      "http_status": 200,
+      "content_type": "text/plain; charset=utf-8",
+      "apify_file_url": "https://api.apify.com/v2/key-value-stores/ducC5BvKVY37ZfN7W/records/file-f577e77-History.js",
+      "original_hash_location": "package-primary-metadata.json"
+    },
+    {
+      "source_url": "https://threejs.org/docs/pages/Object3D.html",
+      "apify_run": "vn4v5qRLWoDalRScA",
+      "apify_dataset": "m0atPGqWMMH4Ea4GN",
+      "loaded_url": "https://threejs.org/docs/pages/Object3D.html",
+      "retrieved_at_utc": "2026-10-22T18:27:59.181Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "e4144a04ef37f402e0874cc3a5109c1b400932513a9ec6091baaba4ba350e191",
+      "captured_text_utf8_bytes": 30985,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 555,
+          "captured_text_offset_end": 1385,
+          "text": "children](https://threejs.org/docs/pages/Object3D.html#children) : Array.<[Object3D](https://threejs.org/docs/pages/Object3D.html)\\>\n\nAn array holding the child 3D objects of this instance.\n\n### .[customDepthMaterial](https://threejs.org/docs/pages/Object3D.html#customDepthMaterial) : [Material](https://threejs.org/docs/pages/Material.html) | undefined\n\nCustom depth material to be used when rendering to the depth map. Can only be used in context of meshes. When shadow-casting with a [DirectionalLight](https://threejs.org/docs/pages/DirectionalLight.html) or [SpotLight](https://threejs.org/docs/pages/SpotLight.html), if you are modifying vertex positions in the vertex shader you must specify a custom depth material for proper shadows.\n\nOnly relevant in context of [WebGLRenderer](https://threejs.org/docs/pages/WebGLRende"
+        },
+        {
+          "captured_text_offset_start": 6310,
+          "captured_text_offset_end": 7987,
+          "text": "(https://threejs.org/docs/pages/Object3D.html#static) : boolean\n\nWhether the 3D object is supposed to be static or not. If set to `true`, it means the 3D object is not going to be changed after the initial renderer. This includes geometry and material settings. A static 3D object can be processed by the renderer slightly faster since certain state checks can be bypassed.\n\nOnly relevant in context of [WebGPURenderer](https://threejs.org/docs/pages/WebGPURenderer.html).\n\nDefault is `false`.\n\n### .[type](https://threejs.org/docs/pages/Object3D.html#type) : string (readonly)\n\nThe type property is used for detecting the object type in context of serialization/deserialization.\n\n### .[up](https://threejs.org/docs/pages/Object3D.html#up) : [Vector3](https://threejs.org/docs/pages/Vector3.html)\n\nDefines the `up` direction of the 3D object which influences the orientation via methods like [Object3D#lookAt](https://threejs.org/docs/pages/Object3D.html#lookAt).\n\nThe default values for all 3D objects is defined by `Object3D.DEFAULT_UP`.\n\n### .[userData](https://threejs.org/docs/pages/Object3D.html#userData) : Object\n\nAn object that can be used to store custom data about the 3D object. It should not hold references to functions as these will not be cloned.\n\n### .[uuid](https://threejs.org/docs/pages/Object3D.html#uuid) : string (readonly)\n\nThe UUID of the 3D object.\n\n### .[visible](https://threejs.org/docs/pages/Object3D.html#visible) : boolean\n\nWhen set to `true`, the 3D object gets rendered.\n\nDefault is `true`.\n\n## Methods\n\n### .[add](https://threejs.org/docs/pages/Object3D.html#add)( object : [Object3D](https://threejs.org/docs/pages/Object3D.html) ) : [Object"
+        },
+        {
+          "captured_text_offset_start": 10802,
+          "captured_text_offset_end": 11632,
+          "text": " 3D object to copy. |\n| **recursive** | When set to `true`, descendants of the 3D object are cloned.<br><br>Default is `true`. |\n\n**Returns:** A reference to this instance.\n\n### .[dispose](https://threejs.org/docs/pages/Object3D.html#dispose)()\n\nFrees the GPU-related resources allocated by this instance. Call this method whenever this instance is no longer used in your app.\n\nGeometries, materials and textures are potentially shared with other 3D objects and must be disposed of separately.\n\n##### Fires:\n\n*   [Object3D#event:dispose](https://threejs.org/docs/pages/Object3D.html#event:dispose)\n\n### .[getObjectById](https://threejs.org/docs/pages/Object3D.html#getObjectById)( id : number ) : [Object3D](https://threejs.org/docs/pages/Object3D.html) | undefined\n\nSearches through the 3D object and its children, starting with "
+        }
+      ]
+    },
+    {
+      "source_url": "https://threejs.org/manual/pages/debugging-javascript.html",
+      "apify_run": "vn4v5qRLWoDalRScA",
+      "apify_dataset": "m0atPGqWMMH4Ea4GN",
+      "loaded_url": "https://threejs.org/manual/pages/debugging-javascript.html",
+      "retrieved_at_utc": "2026-10-22T18:28:00.558Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "cc0090c0035c5da2bf040100058f9b3d8aada5f577e1dfe316bd07860f7a0751",
+      "captured_text_utf8_bytes": 20438,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 2256,
+          "captured_text_offset_end": 3086,
+          "text": "s so if you visit a website a second time many of the files used to display the site will not have be downloaded again.\n\nOn the other hand this can be bad for web development. You change a file on your computer, reload the page, and you don't see the changes because the browser uses the version it got last time.\n\nOne solution during web development is to turn off the cache. This way the browser will always get the newest versions of your files.\n\nFirst pick settings from the corner menu\n\n![](https://threejs.org/manual/resources/images/devtools-chrome-settings.jpg)\n\nThen pick \"Disable Cache (while DevTools is open)\".\n\n![](https://threejs.org/manual/resources/images/devtools-chrome-disable-cache.jpg)\n\n## Use the JavaScript console\n\nInside all devtools is a _console_. It shows warnings and error messages.\n\n**READ THE MESSA"
+        }
+      ]
+    },
+    {
+      "source_url": "https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html",
+      "apify_run": "vn4v5qRLWoDalRScA",
+      "apify_dataset": "m0atPGqWMMH4Ea4GN",
+      "loaded_url": "https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html",
+      "retrieved_at_utc": "2026-10-22T18:28:01.952Z",
+      "http_status": 200,
+      "content_type": "text/html",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "001bd7a6ea7ee91fec009ea6a8596a0e219c73dd4b6e937feb566dfa236f0b2f",
+      "captured_text_utf8_bytes": 372838,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 26140,
+          "captured_text_offset_end": 26970,
+          "text": "ml#_material_alphamode)\n        *   [5.19.10. material.alphaCutoff](https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#_material_alphacutoff)\n        *   [5.19.11. material.doubleSided](https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#_material_doublesided)\n    *   [5.20. Material Normal Texture Info](https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#reference-material-normaltextureinfo)\n        *   [5.20.1. material.normalTextureInfo.index](https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#_material_normaltextureinfo_index)\n        *   [5.20.2. material.normalTextureInfo.texCoord](https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#_material_normaltextureinfo_texcoord)\n        *   [5.20.3. material.normalTextureInfo.scale](https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#"
+        },
+        {
+          "captured_text_offset_start": 44646,
+          "captured_text_offset_end": 45476,
+          "text": "Membership Agreement available at [https://www.khronos.org/files/member\\_agreement.pdf](https://www.khronos.org/files/member_agreement.pdf). Khronos grants a conditional copyright license to use and reproduce the unmodified specification for any purpose, without fee or royalty, EXCEPT no licenses to any patent, trademark or other intellectual property rights are granted under these terms. Parties desiring to implement the specification and make use of Khronos trademarks in relation to that implementation, and receive reciprocal patent license protection under the Khronos IP Policy must become Adopters under the process defined by Khronos for this specification; see [https://www.khronos.org/conformance/adopters/file-format-adopter-program](https://www.khronos.org/conformance/adopters/file-format-adopter-program).\n\nSome "
+        },
+        {
+          "captured_text_offset_start": 55071,
+          "captured_text_offset_end": 55901,
+          "text": "The Unicode Standard_ [https://www.unicode.org/versions/latest/](https://www.unicode.org/versions/latest/)\n    \n*   Bray, T., Ed., _The JavaScript Object Notation (JSON) Data Interchange Format_, STD 90, RFC 8259, DOI 10.17487/RFC8259, December 2017, [https://www.rfc-editor.org/info/rfc8259](https://www.rfc-editor.org/info/rfc8259)\n    \n*   ISO/IEC 60559 _Floating-point arithmetic_ [https://www.iso.org/standard/80985.html](https://www.iso.org/standard/80985.html)\n    \n*   ISO/IEC 15948 _Portable Network Graphics (PNG): Functional specification_ [https://www.iso.org/standard/29581.html](https://www.iso.org/standard/29581.html)\n    \n    Note\n    \n    A free version of this standard is available from W3C: [https://www.w3.org/TR/PNG/](https://www.w3.org/TR/PNG/)\n    \n*   ISO/IEC 10918-1 _Digital compression and coding of c"
+        },
+        {
+          "captured_text_offset_start": 72189,
+          "captured_text_offset_end": 73019,
+          "text": "on cares more about single-file deployment, embedding data may be preferred even though it increases the overall size due to base64 encoding and does not support progressive or on-demand loading. Alternatively, an asset could use the GLB container to store JSON and binary data in one file without base64 encoding. See [GLB File Format Specification](https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#glb-file-format-specification) for details.\n\nURIs **SHOULD** undergo syntax-based normalization as defined by [RFC 3986](https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#uri), Section 6.2.2, [RFC 3987](https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#iri), Section 5.3.2, and applicable schema rules (e.g., [RFC 7230](https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#http), Section 2.7.3 for HT"
+        },
+        {
+          "captured_text_offset_start": 76520,
+          "captured_text_offset_end": 77520,
+          "text": "TF usually uses camel case, `likeThis`.\n\n### [](https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#coordinate-system-and-units)3.4. Coordinate System and Units\n\nglTF uses a right-handed coordinate system. glTF defines +Y as up, +Z as forward, and -X as right; the front of a glTF asset faces +Z.\n\nFigure 2. glTF Coordinate System Orientation\n\nThe units for all linear distances are meters.\n\nAll angles are in radians.\n\nPositive rotation is counterclockwise.\n\nRed, Green, and Blue primary colors use [Recommendation ITU-R BT.709](https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#bt709) chromaticity coordinates.\n\nImplementation Note\n\nChromaticity coordinates define the interpretation of each primary color channel of the color model. In the context of a typical display, color primaries describe the color of the red, green, and blue phosphors or filters. Unless a wide color gamut output is explicitly used, client implementations usually do not need to convert colors. Future specif"
+        },
+        {
+          "captured_text_offset_start": 99292,
+          "captured_text_offset_end": 100122,
+          "text": "gistry.khronos.org/glTF/specs/2.0/glTF-2.0.html#meshes-overview)3.7.2.1. Overview\n\nMeshes are defined as arrays of _primitives_. Primitives correspond to the data required for GPU draw calls. Primitives specify one or more `attributes`, corresponding to the vertex attributes used in the draw calls. Indexed primitives also define an `indices` property. Attributes and indices are defined as references to accessors containing corresponding data. Each primitive **MAY** also specify a `material` and a `mode` that corresponds to the GPU topology type (e.g., triangle set).\n\nImplementation Note\n\nSplitting one mesh into several **primitives** can be useful to limit the number of indices per draw call or to assign different materials to different parts of the mesh.\n\nIf `material` is undefined, then a [default material](https://r"
+        },
+        {
+          "captured_text_offset_start": 107446,
+          "captured_text_offset_end": 108276,
+          "text": "esh concept.\n\nA morph target is a morphable Mesh where the primitives' attributes are obtained by adding the original attributes to a weighted sum of the target’s attributes.\n\nFor instance, the morph target vertices `POSITION` for the primitive at index **i** are computed in this way:\n\n```\nprimitives[i].attributes.POSITION +\n  weights[0] * primitives[i].targets[0].POSITION +\n  weights[1] * primitives[i].targets[1].POSITION +\n  weights[2] * primitives[i].targets[2].POSITION + ...\n```\n\nMorph targets are specified via the `targets` property defined in the Mesh `primitives`. Each target in the `targets` array is a plain JSON object mapping a primitive attribute to an accessor containing morph target displacement data (deltas).\n\nFor each morph target attribute, an original attribute **MUST** be present in the mesh primitive"
+        },
+        {
+          "captured_text_offset_start": 162926,
+          "captured_text_offset_end": 163446,
+          "text": "ize and processing overhead, a container format, _Binary glTF_ is introduced that enables a glTF asset, including JSON, buffers, and images, to be stored in a single binary blob.\n\nA Binary glTF asset can still refer to external resources. For example, an application that wants to keep images as separate files may embed everything needed for a scene, except images, in a Binary glTF.\n\n### [](https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#glb-file-format-specification-structure)4.2. Structure\n\nA Binary glTF"
+        }
+      ]
+    },
+    {
+      "source_url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/src/core/Object3D.js",
+      "apify_run": "ur1uYSEUQgqIqnGCq",
+      "apify_dataset": "P31hr0F5xMRUGCSV6",
+      "loaded_url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/src/core/Object3D.js",
+      "retrieved_at_utc": "2026-10-22T18:30:42.681Z",
+      "http_status": 200,
+      "content_type": "text/plain; charset=utf-8",
+      "apify_file_url": "https://api.apify.com/v2/key-value-stores/HkqMpNAgP7BOfCFFL/records/file-04e2010-Object3D.js",
+      "original_hash_location": "package-primary-metadata.json"
+    },
+    {
+      "source_url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/src/renderers/WebGLRenderer.js",
+      "apify_run": "ur1uYSEUQgqIqnGCq",
+      "apify_dataset": "P31hr0F5xMRUGCSV6",
+      "loaded_url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/src/renderers/WebGLRenderer.js",
+      "retrieved_at_utc": "2026-10-22T18:30:43.364Z",
+      "http_status": 200,
+      "content_type": "text/plain; charset=utf-8",
+      "apify_file_url": "https://api.apify.com/v2/key-value-stores/HkqMpNAgP7BOfCFFL/records/file-60d2849-WebGLRenderer.js",
+      "original_hash_location": "package-primary-metadata.json"
+    },
+    {
+      "source_url": "https://threejs.org/manual/pages/rendering-on-demand.html",
+      "apify_run": "ur1uYSEUQgqIqnGCq",
+      "apify_dataset": "P31hr0F5xMRUGCSV6",
+      "loaded_url": "https://threejs.org/manual/pages/rendering-on-demand.html",
+      "retrieved_at_utc": "2026-10-22T18:30:43.354Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "4f5d2433a0794098018271bea8052f6176d364332fea12d5e470137bdc56be2a",
+      "captured_text_utf8_bytes": 7082,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 0,
+          "captured_text_offset_end": 1303,
+          "text": "# Rendering on Demand\n\nThe topic might be obvious to many people but just in case ... most Three.js examples render continuously. In other words they setup a `requestAnimationFrame` loop or \"_rAF loop_\" something like this\n\nfunction render() {\n  ...\n  requestAnimationFrame(render);\n}\nrequestAnimationFrame(render);\n\nFor something that animates this makes sense but what about for something that does not animate? In that case rendering continuously is a waste of the devices power and if the user is on portable device it wastes the user's battery.\n\nThe most obvious way to solve this is to render once at the start and then render only when something changes. Changes include textures or models finally loading, data arriving from some external source, the user adjusting a setting or the camera or giving other relevant input.\n\nLet's take an example from [the article on responsiveness](https://threejs.org/manual/pages/responsive.html) and modify it to render on demand.\n\nFirst we'll add in the [`OrbitControls`](https://threejs.org/docs/#examples/controls/OrbitControls) so there is something that could change that we can render in response to.\n\nimport \\* as THREE from 'three';\n+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';\n\nand set them up\n\nconst fov = 75;\nconst aspect "
+        },
+        {
+          "captured_text_offset_start": 1494,
+          "captured_text_offset_end": 2324,
+          "text": "mera, canvas);\n+controls.target.set(0, 0, 0);\n+controls.update();\n\nSince we won't be animating the cubes anymore we no longer need to keep track of them\n\n\\-const cubes = \\[\n-  makeInstance(geometry, 0x44aa88,  0),\n-  makeInstance(geometry, 0x8844aa, -2),\n-  makeInstance(geometry, 0xaa8844,  2),\n-\\];\n+makeInstance(geometry, 0x44aa88,  0);\n+makeInstance(geometry, 0x8844aa, -2);\n+makeInstance(geometry, 0xaa8844,  2);\n\nWe can remove the code to animate the cubes and the calls to `requestAnimationFrame`\n\n\\-function render(time) {\n-  time \\*= 0.001;\n+function render() {\n\n  if (resizeRendererToDisplaySize(renderer)) {\n    const canvas = renderer.domElement;\n    camera.aspect = canvas.clientWidth / canvas.clientHeight;\n    camera.updateProjectionMatrix();\n  }\n\n-  cubes.forEach((cube, ndx) => {\n-    const speed = 1 + ndx \\* .1;"
+        }
+      ]
+    },
+    {
+      "source_url": "https://registry.npmjs.org/react/latest",
+      "apify_run": "SYn9d2SbP4XkjDh3e",
+      "apify_dataset": "S2jK4c9C0ozxjyoK3",
+      "loaded_url": "https://registry.npmjs.org/react/latest",
+      "retrieved_at_utc": "2026-10-22T18:31:44.363Z",
+      "http_status": 200,
+      "content_type": "application/json",
+      "apify_file_url": "https://api.apify.com/v2/key-value-stores/y0Q6TkarOU24vBqT9/records/file-cce63fd-latest",
+      "original_hash_location": "package-primary-metadata.json"
+    },
+    {
+      "source_url": "https://registry.npmjs.org/react-dom/latest",
+      "apify_run": "SYn9d2SbP4XkjDh3e",
+      "apify_dataset": "S2jK4c9C0ozxjyoK3",
+      "loaded_url": "https://registry.npmjs.org/react-dom/latest",
+      "retrieved_at_utc": "2026-10-22T18:31:44.354Z",
+      "http_status": 200,
+      "content_type": "application/json",
+      "apify_file_url": "https://api.apify.com/v2/key-value-stores/y0Q6TkarOU24vBqT9/records/file-95dc2cd-latest",
+      "original_hash_location": "package-primary-metadata.json"
+    },
+    {
+      "source_url": "https://registry.npmjs.org/@types%2freact-dom/latest",
+      "apify_run": "SYn9d2SbP4XkjDh3e",
+      "apify_dataset": "S2jK4c9C0ozxjyoK3",
+      "loaded_url": "https://registry.npmjs.org/@types%2freact-dom/latest",
+      "retrieved_at_utc": "2026-10-22T18:31:45.288Z",
+      "http_status": 200,
+      "content_type": "application/json",
+      "apify_file_url": "https://api.apify.com/v2/key-value-stores/y0Q6TkarOU24vBqT9/records/file-d7449b2-latest",
+      "original_hash_location": "package-primary-metadata.json"
+    },
+    {
+      "source_url": "https://registry.npmjs.org/@types%2freact/latest",
+      "apify_run": "SYn9d2SbP4XkjDh3e",
+      "apify_dataset": "S2jK4c9C0ozxjyoK3",
+      "loaded_url": "https://registry.npmjs.org/@types%2freact/latest",
+      "retrieved_at_utc": "2026-10-22T18:31:45.387Z",
+      "http_status": 200,
+      "content_type": "application/json",
+      "apify_file_url": "https://api.apify.com/v2/key-value-stores/y0Q6TkarOU24vBqT9/records/file-24f0cf6-latest",
+      "original_hash_location": "package-primary-metadata.json"
+    },
+    {
+      "source_url": "https://r3f.docs.pmnd.rs/api/canvas",
+      "apify_run": "SYn9d2SbP4XkjDh3e",
+      "apify_dataset": "S2jK4c9C0ozxjyoK3",
+      "loaded_url": "https://r3f.docs.pmnd.rs/api/canvas",
+      "retrieved_at_utc": "2026-10-22T18:31:45.253Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "0a9d07253676a315f5b532a40c3934f925c6bdd49e4b7651cae815716677de01",
+      "captured_text_utf8_bytes": 11162,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 552,
+          "captured_text_offset_end": 1966,
+          "text": "n | three.js JSX elements or regular components |     |\n| fallback | optional DOM JSX elements or regular components in case GL is not supported |     |\n| gl  | Renderer props, an instance, or a sync/async factory. See [Renderers](https://r3f.docs.pmnd.rs/api/canvas#renderers). | `{}` |\n| camera | Props that go into the default camera, or your own `THREE.Camera` | `{ fov: 75, near: 0.1, far: 1000, position: [0, 0, 5] }` |\n| scene | Props that go into the default scene, or your own `THREE.Scene` | `{}` |\n| shadows | Props that go into `gl.shadowMap`, can be set true for `PCFsoft` or one of the following: 'basic', 'percentage', 'soft', 'variance' | `false` |\n| raycaster | Props that go into the default raycaster | `{}` |\n| frameloop | Render mode: always, demand, never | `always` |\n| resize | Resize config, see react-use-measure's options | `{ scroll: true, debounce: { scroll: 50, resize: 0 } }` |\n| orthographic | Creates an orthographic camera | `false` |\n| dpr | Pixel-ratio, use `window.devicePixelRatio`, or automatic: \\[min, max\\] | `[1, 2]` |\n| legacy | Enables THREE.ColorManagement in three r139 or later | `false` |\n| linear | Switch off automatic sRGB color space and gamma correction | `false` |\n| events | Configuration for the event manager, as a function of state | `import { events } from \"@react-three/fiber\"` |\n| eventSource | The source where events are being subscribed to, HTMLEleme"
+        },
+        {
+          "captured_text_offset_start": 2385,
+          "captured_text_offset_end": 3215,
+          "text": "`(event) => {}` |\n\n[\n\n## Updating configuration\n\n](https://r3f.docs.pmnd.rs/api/canvas#updating-configuration)\n\nCanvas initializes settings from its props and defaults. Subsequent changes to `dpr`, `frameloop`, `performance`, and `shadows` apply the new prop value. Rerendering with the same values preserves runtime changes made through setters such as `setDpr` and `setFrameloop`, or directly to `gl.shadowMap`. Equivalent inline DPR arrays and shadow or performance option objects count as unchanged.\n\nRemoving `dpr`, `frameloop`, or `shadows` applies its default if that differs from the previous prop value. Performance options merge into the current settings; removing `performance` leaves those settings intact, and supplying it again applies it again.\n\nSize changes update the renderer and camera without reapplying unrela"
+        },
+        {
+          "captured_text_offset_start": 6175,
+          "captured_text_offset_end": 7119,
+          "text": "/>\n```\n\nA factory can return a promise. R3F waits for that promise before rendering the scene. A renderer created with a factory function is owned by R3F and will automatically be disposed while an existing renderer instance is owned by the user and R3F will not control its lifecycle.\n\n[\n\n### WebGPU\n\n](https://r3f.docs.pmnd.rs/api/canvas#webgpu)\n\nTo use `WebGPURenderer`, import it from `three/webgpu` and initialize it in an async `gl` factory:\n\n```\nimport * as THREE from 'three/webgpu'\nimport { Canvas, extend, type ThreeToJSXElements } from '@react-three/fiber'\n\ndeclare module '@react-three/fiber' {\n  interface ThreeElements extends ThreeToJSXElements<typeof THREE> {}\n}\n\nextend(THREE)\n\nexport default () => (\n  <Canvas\n    gl={async (props) => {\n      const renderer = new THREE.WebGPURenderer(props as any)\n      await renderer.init()\n      return renderer\n    }}>\n      <mesh>\n        <meshBasicNodeMaterial />\n        <boxGeometry /"
+        },
+        {
+          "captured_text_offset_start": 7242,
+          "captured_text_offset_end": 8072,
+          "text": "enderer determines who is responsible for disposing it:\n\n| `gl` value | Ownership |\n| --- | --- |\n| Omitted or a props object | R3F owns the renderer it creates and disposes it on unmount. |\n| A sync or async factory | R3F owns the returned renderer and disposes it on unmount. |\n| A renderer instance | You own the renderer and are responsible for calling `dispose()`. |\n\nReturn a renderer dedicated to that root from a factory, including when using `WebGPURenderer`. Passing an instance directly keeps disposal under your control. In v9, unmounting still releases its WebGL context when supported, even though R3F does not call its `dispose()` method.\n\n[\n\n## Custom Canvas\n\n](https://r3f.docs.pmnd.rs/api/canvas#custom-canvas)\n\nR3F can render to a root, similar to how `react-dom` and all the other React renderers work. This al"
+        }
+      ]
+    },
+    {
+      "source_url": "https://r3f.docs.pmnd.rs/api/hooks",
+      "apify_run": "SYn9d2SbP4XkjDh3e",
+      "apify_dataset": "S2jK4c9C0ozxjyoK3",
+      "loaded_url": "https://r3f.docs.pmnd.rs/api/hooks",
+      "retrieved_at_utc": "2026-10-22T18:31:45.490Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "2c01d37719f7898a668f0a67d7d6992672164326b75f628894fbc6fa047b0b63",
+      "captured_text_utf8_bytes": 11026,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 0,
+          "captured_text_offset_end": 1026,
+          "text": "# Hooks - React Three Fiber\n\nHooks are the heart of react-three-fiber\n\nHooks allow you to tie or request specific information to your component. For instance, components that want to participate in the renderloop can use `useFrame`, components that need to be informed of three.js specifics can use `useThree` and so on. All hooks clean up after themselves once the component unmounts.\n\nNote\n\nHooks can only be used inside the Canvas element because they rely on context!\n\n❌ You cannot expect something like this to work:\n\n```\nimport { useThree } from '@react-three/fiber'\n\nfunction App() {\n  const { size } = useThree() // This will just crash\n  return (\n    <Canvas>\n      <mesh>\n```\n\n✅ Do this instead:\n\n```\nfunction Foo() {\n  const { size } = useThree()\n  ...\n}\n\nfunction App() {\n  return (\n    <Canvas>\n      <Foo />\n```\n\n[\n\n## `useThree`\n\n](https://r3f.docs.pmnd.rs/api/hooks#usethree)\n\nThis hook gives you access to the state model which contains the default renderer, the scene, your camera, and so on. It also gives y"
+        },
+        {
+          "captured_text_offset_start": 1157,
+          "captured_text_offset_end": 2813,
+          "text": "Foo() {\n  const state = useThree()\n```\n\nThe hook is reactive, if you resize the browser for instance, you get fresh measurements, same applies to any of the state objects that may change.\n\n[\n\n### `state` properties\n\n](https://r3f.docs.pmnd.rs/api/hooks#state-properties)\n\n| Prop | Description | Type |\n| --- | --- | --- |\n| `gl` | Renderer | `THREE.WebGLRenderer` |\n| `scene` | Scene | `THREE.Scene` |\n| `camera` | Camera | `THREE.PerspectiveCamera` |\n| `raycaster` | Default raycaster | `THREE.Raycaster` |\n| `pointer` | Contains updated, normalized, centric pointer coordinates | `THREE.Vector2` |\n| `mouse` | Note: this is deprecated, use `pointer` instead! Normalized event coordinates | `THREE.Vector2` |\n| `clock` | Running system clock | `THREE.Clock` |\n| `linear` | True when the colorspace is linear | `boolean` |\n| `flat` | True when no tonemapping is used | `boolean` |\n| `legacy` | Disables global color management via `THREE.ColorManagement` | `boolean` |\n| `frameloop` | Render mode: always, demand, never | `always`, `demand`, `never` |\n| `performance` | System regression | `{ current: number, min: number, max: number, debounce: number, regress: () => void }` |\n| `size` | Canvas size in pixels | `{ width: number, height: number, top: number, left: number }` |\n| `viewport` | Canvas viewport size in three.js units. Note: This is different from [`gl.getViewport`](https://threejs.org/docs/#api/en/renderers/WebGLRenderer.getViewport) which returns the drawbuffer size | `{ width: number, height: number, initialDpr: number, dpr: number, factor: number, distance: number, aspect: number, getCurrentViewport: (camera?: Camera, target?: THRE"
+        }
+      ]
+    },
+    {
+      "source_url": "https://react.dev/reference/react-dom/client/createRoot",
+      "apify_run": "SYn9d2SbP4XkjDh3e",
+      "apify_dataset": "S2jK4c9C0ozxjyoK3",
+      "loaded_url": "https://react.dev/reference/react-dom/client/createRoot",
+      "retrieved_at_utc": "2026-10-22T18:31:46.757Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "4e8c889cdc40e4f40fd20fa472d0bdac251e33572fbc7613572ad47cb1a66ca5",
+      "captured_text_utf8_bytes": 20447,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 298,
+          "captured_text_offset_end": 1458,
+          "text": "/react.dev/reference/react-dom/client/createRoot#createroot)\n    *   [`root.render(reactNode)`](https://react.dev/reference/react-dom/client/createRoot#root-render)\n    *   [`root.unmount()`](https://react.dev/reference/react-dom/client/createRoot#root-unmount)\n*   [Usage](https://react.dev/reference/react-dom/client/createRoot#usage)\n    *   [Rendering an app fully built with React](https://react.dev/reference/react-dom/client/createRoot#rendering-an-app-fully-built-with-react)\n    *   [Rendering a page partially built with React](https://react.dev/reference/react-dom/client/createRoot#rendering-a-page-partially-built-with-react)\n    *   [Updating a root component](https://react.dev/reference/react-dom/client/createRoot#updating-a-root-component)\n    *   [Error logging in production](https://react.dev/reference/react-dom/client/createRoot#error-logging-in-production)\n*   [Troubleshooting](https://react.dev/reference/react-dom/client/createRoot#troubleshooting)\n    *   [I’ve created a root, but nothing is displayed](https://react.dev/reference/react-dom/client/createRoot#ive-created-a-root-but-nothing-is-displayed)\n    *   [I’m getting an err"
+        },
+        {
+          "captured_text_offset_start": 4384,
+          "captured_text_offset_end": 5214,
+          "text": ".\n    *   **optional** `identifierPrefix`: A string prefix React uses for IDs generated by [`useId`.](https://react.dev/reference/react/useId) Useful to avoid conflicts when using multiple roots on the same page.\n\n#### Returns[](https://react.dev/reference/react-dom/client/createRoot#returns \"Link for Returns \")\n\n`createRoot` returns an object with two methods: [`render`](https://react.dev/reference/react-dom/client/createRoot#root-render) and [`unmount`.](https://react.dev/reference/react-dom/client/createRoot#root-unmount)\n\n#### Caveats[](https://react.dev/reference/react-dom/client/createRoot#caveats \"Link for Caveats \")\n\n*   If your app is server-rendered, using `createRoot()` is not supported. Use [`hydrateRoot()`](https://react.dev/reference/react-dom/client/hydrateRoot) instead.\n*   You’ll likely have only one `"
+        }
+      ]
+    },
+    {
+      "source_url": "https://react.dev/versions",
+      "apify_run": "SYn9d2SbP4XkjDh3e",
+      "apify_dataset": "S2jK4c9C0ozxjyoK3",
+      "loaded_url": "https://react.dev/versions",
+      "retrieved_at_utc": "2026-10-22T18:31:47.891Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "a3a0e75f32c9a0ad0ca0dc6399cb364c67caa6c12144361858c240fe9b26f97d",
+      "captured_text_utf8_bytes": 491,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 0,
+          "captured_text_offset_end": 489,
+          "text": "# React Versions – React\n\nThe React docs at [react.dev](https://react.dev/) provide documentation for the latest version of React.\n\nWe aim to keep the docs updated within major versions, and do not publish versions for each minor or patch version. When a new major is released, we archive the docs for the previous version as `x.react.dev`. See our [versioning policy](https://react.dev/community/versioning-policy) for more info.\n\nYou can find an archive of previous major versions below."
+        }
+      ]
+    },
+    {
+      "source_url": "https://registry.npmjs.org/vite/latest",
+      "apify_run": "hiwEdQk5K6prVAsa4",
+      "apify_dataset": "tjJQ7BFBnbu6qzG36",
+      "loaded_url": "https://registry.npmjs.org/vite/latest",
+      "retrieved_at_utc": "2026-10-22T18:36:48.900Z",
+      "http_status": 200,
+      "content_type": "application/json",
+      "apify_file_url": "https://api.apify.com/v2/key-value-stores/VKLtFqCqVC8wofM3L/records/file-8a26071-latest",
+      "original_hash_location": "package-primary-metadata.json"
+    },
+    {
+      "source_url": "https://registry.npmjs.org/@vitejs%2fplugin-react/latest",
+      "apify_run": "hiwEdQk5K6prVAsa4",
+      "apify_dataset": "tjJQ7BFBnbu6qzG36",
+      "loaded_url": "https://registry.npmjs.org/@vitejs%2fplugin-react/latest",
+      "retrieved_at_utc": "2026-10-22T18:36:48.996Z",
+      "http_status": 200,
+      "content_type": "application/json",
+      "apify_file_url": "https://api.apify.com/v2/key-value-stores/VKLtFqCqVC8wofM3L/records/file-c231108-latest",
+      "original_hash_location": "package-primary-metadata.json"
+    },
+    {
+      "source_url": "https://vite.dev/guide/",
+      "apify_run": "hiwEdQk5K6prVAsa4",
+      "apify_dataset": "tjJQ7BFBnbu6qzG36",
+      "loaded_url": "https://vite.dev/guide/",
+      "retrieved_at_utc": "2026-10-22T18:36:48.980Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "bfdb05fd1c186b88866fa7f50da52f62c7753b9bccb8c2f7e76e23735ac5bfb6",
+      "captured_text_utf8_bytes": 11086,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 3981,
+          "captured_text_offset_end": 4811,
+          "text": "ate vite\n```\n\nbash\n\n```\n$ pnpm create vite\n```\n\nbash\n\n```\n$ bun create vite\n```\n\nbash\n\n```\n$ deno init --npm vite\n```\n\nThen follow the prompts!\n\nCompatibility Note\n\nVite requires [Node.js](https://nodejs.org/en/) version 20.19+, 22.12+. However, some templates require a higher Node.js version to work, please upgrade if your package manager warns about it.\n\nUsing create vite with command line options\n\nYou can also directly specify the project name and the template you want to use via additional command line options. For example, to scaffold a Vite + Vue project, run:\n\nnpmYarnpnpmBunDeno\n\nbash\n\n```\n# npm 7+, extra double-dash is needed:\n$ npm create vite@latest my-vue-app -- --template vue\n```\n\nbash\n\n```\n$ yarn create vite my-vue-app --template vue\n```\n\nbash\n\n```\n$ pnpm create vite my-vue-app --template vue\n```\n\nbash\n\n``"
+        },
+        {
+          "captured_text_offset_start": 8587,
+          "captured_text_offset_end": 9417,
+          "text": " that Vite will also resolve [its config file (i.e. `vite.config.js`)](https://vite.dev/config/#configuring-vite) inside the project root, so you'll need to move it if the root is changed.\n\n## Command Line Interface [​](https://vite.dev/guide/#command-line-interface)\n\nIn a project where Vite is installed, you can use the `vite` binary in your npm scripts, or run it directly with `npx vite`. Here are the default npm scripts in a scaffolded Vite project:\n\npackage.json\n\njson\n\n```\n{\n  \"scripts\": {\n    \"dev\": \"vite\", // start dev server, aliases: `vite dev`, `vite serve`\n    \"build\": \"vite build\", // build for production\n    \"preview\": \"vite preview\" // locally preview production build\n  }\n}\n```\n\nYou can specify additional CLI options like `--port` or `--open`. For a full list of CLI options, run `npx vite --help` in your p"
+        }
+      ]
+    },
+    {
+      "source_url": "https://vite.dev/guide/backend-integration.html",
+      "apify_run": "hiwEdQk5K6prVAsa4",
+      "apify_dataset": "tjJQ7BFBnbu6qzG36",
+      "loaded_url": "https://vite.dev/guide/backend-integration.html",
+      "retrieved_at_utc": "2026-10-22T18:36:49.452Z",
+      "http_status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "captured_text_field": "markdown",
+      "captured_text_sha256": "12dcc840c36535d47cef563819f3134176c79cf14d37b545d6063126b86623d5",
+      "captured_text_utf8_bytes": 10439,
+      "evidence_excerpts": [
+        {
+          "captured_text_offset_start": 257,
+          "captured_text_offset_end": 1087,
+          "text": "-with-backends).\n\nIf you need a custom integration, you can follow the steps in this guide to configure it manually.\n\n1.  In your Vite config, configure the entry and enable build manifest:\n    \n    vite.config.js\n    \n    js\n    \n    ```\n    export default defineConfig({\n      // overwrite default .html entry\n      input: '/path/to/main.js',\n      server: {\n        cors: {\n          // the origin you will be accessing via browser\n          origin: 'http://my-backend.example.com',\n        },\n      },\n      build: {\n        // generate .vite/manifest.json in outDir\n        manifest: true,\n      },\n    })\n    ```\n    \n    If you haven't disabled the [module preload polyfill](https://vite.dev/config/build-options#build-polyfillmodulepreload), you also need to import the polyfill in your entry\n    \n    js\n    \n    ```\n    "
+        },
+        {
+          "captured_text_offset_start": 9842,
+          "captured_text_offset_end": 10439,
+          "text": "\n          chunks.push(importee)\n        }\n    \n        return chunks\n      }\n    \n      return getImportedChunks(manifest[name])\n    }\n    ```\n    \n    Chunk Import Maps Support (Experimental)\n    \n    If you are using the experimental [`build.chunkImportMap`](https://vite.dev/config/build-options#build-chunkimportmap) option, you also need to inject the import map into the HTML.\n    \n    The import map is output to `importmap.json` in the output directory. Make sure to inject the `<script type=\"importmap\">` tag before any `<script type=\"module\">` tags or `<link rel=\"modulepreload\">` tags."
+        }
+      ]
+    }
+  ],
+  "collection_repair": {
+    "cheerio_scraper": "Start rejected full-permission-actor-not-approved; no approval/settings changed.",
+    "approved_path": "website-content-crawler saveContentTypes; actual file bytes read back from api.apify.com without persisting Authorization.",
+    "counter_caveat": "File download items may increase actor failed-request totals although HTTP200 file records and actual readable bytes exist; per-source records are authority."
+  },
+  "context7_supplement": {
+    "library_ids": [
+      "/mrdoob/three.js",
+      "/pmndrs/react-three-fiber"
+    ],
+    "topics": [
+      "renderer maturity and cleanup",
+      "React pairing and on-demand rendering",
+      "Canvas async WebGPU factory and Canvas-scoped hooks"
+    ],
+    "role": "secondary check of official repository docs after actual Apify collection"
+  }
+}

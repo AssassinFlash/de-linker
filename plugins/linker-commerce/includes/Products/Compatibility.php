@@ -10,16 +10,9 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Products;
 
 /**
- * Pairing an inverter with a battery against data/compatibility.json
- * (docs/specs/8-engineering-data.md): pairs of model patterns with a verdict,
- * bilingual conditions, documents and accessories. A pattern matches the
- * product model (pa_model) with search semantics, carrying its own anchors.
- *
- * Every pair that matches a combination applies, the way the #14 engine
- * reads the same file: the verdict is the most restrictive one
- * (not_released < released_with_accessory < released), conditions, documents
- * and accessories are joined; a combination no pair matches has no
- * documented release (null).
+ * Join current Woo declarations for exact canonical product identities.
+ * Every applicable declaration contributes; the most restrictive verdict wins.
+ * Model-only callers must resolve to exactly one current canonical product.
  */
 final class Compatibility {
 
@@ -33,19 +26,33 @@ final class Compatibility {
 	 * The verdict of an inverter and a battery model, joined from every pair
 	 * that matches them.
 	 *
-	 * @param string $inverter The inverter model (pa_model).
-	 * @param string $battery  The battery model (pa_model).
-	 * @return array{verdict: string, conditions: list<array{en: string, de: string}>, documents: list<array{url: string, page?: int}>, accessories: list<array{model: string, quantity: int, per: string}>}|null Null when no pair matches.
+	 * @param string                   $inverter The inverter model (pa_model).
+	 * @param string                   $battery  The battery model (pa_model).
+	 * @param array<string,mixed>|null $manifest Same current Woo authority read.
+	 * @return array{verdict: string, conditions: list<array{en: string, de: string}>, documents: list<array{url: string, page?: int}>, accessories: list<array{product_id: int, model: string, quantity: int, per: string}>}|null Null when no pair matches.
 	 */
-	public static function for_models( string $inverter, string $battery ): ?array {
+	public static function for_models( string $inverter, string $battery, ?array $manifest = null ): ?array {
+		$manifest  ??= Publication::manifest();
+		$inverter_id = self::identity( $inverter, $manifest );
+		$battery_id  = self::identity( $battery, $manifest );
+		return null === $inverter_id || null === $battery_id ? null : self::for_products( $inverter_id, $battery_id, $manifest );
+	}
+
+	/**
+	 * Join every declaration attached to these exact canonical Woo identities.
+	 *
+	 * @param int                 $inverter_id Canonical inverter.
+	 * @param int                 $battery_id Canonical battery.
+	 * @param array<string,mixed> $manifest Current shared authority.
+	 * @return array{verdict: string, conditions: list<array{en: string, de: string}>, documents: list<array{url: string, page?: int}>, accessories: list<array{product_id: int, model: string, quantity: int, per: string}>}|null
+	 */
+	private static function answer( int $inverter_id, int $battery_id, array $manifest ): ?array {
 		$conditions  = array();
 		$documents   = array();
 		$accessories = array();
 		$verdict     = null;
-		foreach ( self::pairs() as $pair ) {
-			if ( ! self::matches( $pair['inverter'] ?? '', $inverter )
-				|| ! self::matches( $pair['battery'] ?? '', $battery )
-			) {
+		foreach ( self::pairs( $manifest ) as $pair ) {
+			if ( ( $pair['inverter_product_id'] ?? null ) !== $inverter_id || ( $pair['battery_product_id'] ?? null ) !== $battery_id ) {
 				continue;
 			}
 			$verdict = self::most_restrictive( $verdict, (string) ( $pair['verdict'] ?? '' ) );
@@ -71,10 +78,11 @@ final class Compatibility {
 			}
 			foreach ( (array) ( $pair['accessories'] ?? array() ) as $accessory ) {
 				if ( is_array( $accessory ) && is_string( $accessory['model'] ?? null ) ) {
-					$accessories[ $accessory['model'] . ':' . (string) ( $accessory['per'] ?? '' ) ] = array(
-						'model'    => $accessory['model'],
-						'quantity' => (int) ( $accessory['quantity'] ?? 1 ),
-						'per'      => (string) ( $accessory['per'] ?? 'system' ),
+					$accessories[ (string) $accessory['product_id'] . ':' . (string) ( $accessory['per'] ?? '' ) ] = array(
+						'product_id' => $accessory['product_id'],
+						'model'      => $accessory['model'],
+						'quantity'   => (int) ( $accessory['quantity'] ?? 1 ),
+						'per'        => (string) ( $accessory['per'] ?? 'system' ),
 					);
 				}
 			}
@@ -92,30 +100,26 @@ final class Compatibility {
 	}
 
 	/**
-	 * The verdict for two products: their pa_model terms, the way the feed
-	 * names them.
+	 * The verdict for two current canonical Woo products.
 	 *
-	 * @param int $inverter_id Inverter product ID.
-	 * @param int $battery_id  Battery product ID.
-	 * @return array{verdict: string, conditions: list<array{en: string, de: string}>, documents: list<array{url: string, page?: int}>, accessories: list<array{model: string, quantity: int, per: string}>}|null
+	 * @param int                      $inverter_id Inverter product ID.
+	 * @param int                      $battery_id  Battery product ID.
+	 * @param array<string,mixed>|null $manifest Same current Woo authority read.
+	 * @return array{verdict: string, conditions: list<array{en: string, de: string}>, documents: list<array{url: string, page?: int}>, accessories: list<array{product_id: int, model: string, quantity: int, per: string}>}|null
 	 */
-	public static function for_products( int $inverter_id, int $battery_id ): ?array {
-		$inverter = self::model( $inverter_id );
-		$battery  = self::model( $battery_id );
-		if ( null === $inverter || null === $battery ) {
-			return null;
-		}
-
-		return self::for_models( $inverter, $battery );
+	public static function for_products( int $inverter_id, int $battery_id, ?array $manifest = null ): ?array {
+		$manifest ??= Publication::manifest();
+		return self::answer( Publication::canonical_id( $inverter_id ), Publication::canonical_id( $battery_id ), $manifest );
 	}
 
 	/**
-	 * The pairs of the contract, usable ones only: a known verdict.
+	 * Current Woo pairs with a known verdict.
 	 *
+	 * @param array<string,mixed>|null $manifest Same current Woo authority read.
 	 * @return list<array<string, mixed>>
 	 */
-	public static function pairs(): array {
-		$data   = EngineeringData::json( EngineeringData::COMPATIBILITY_FILE );
+	public static function pairs( ?array $manifest = null ): array {
+		$data   = EngineeringData::compatibility( $manifest );
 		$pairs  = is_array( $data['pairs'] ?? null ) ? $data['pairs'] : array();
 		$usable = array();
 		foreach ( $pairs as $pair ) {
@@ -128,29 +132,43 @@ final class Compatibility {
 	}
 
 	/**
-	 * The requirements an inverter of one kind carries, the way the #14
-	 * engine reads the same file: every requirement entry whose kind equals
-	 * and whose inverter pattern matches the model (search semantics, own
-	 * anchors).
+	 * Requirements for the same canonical Woo inverter identity and kind.
 	 *
-	 * @param string $inverter The inverter model (pa_model).
-	 * @param string $kind     The requirement kind (meter, parallel_controller).
-	 * @return list<array<string, mixed>> The matching entries, in file order.
+	 * @param string                   $inverter The inverter model (pa_model).
+	 * @param string                   $kind     The requirement kind (meter, parallel_controller).
+	 * @param int|null                 $inverter_id Exact Woo identity when the caller has it.
+	 * @param array<string,mixed>|null $manifest Same current Woo authority read.
+	 * @param array<string,string>     $context Explicit operating mode/topology/network; absent context never grants a conditional claim.
+	 * @return list<array<string, mixed>> The matching entries.
 	 */
-	public static function requirements( string $inverter, string $kind ): array {
-		$data         = EngineeringData::json( EngineeringData::COMPATIBILITY_FILE );
-		$entries      = is_array( $data['requirements'] ?? null ) ? $data['requirements'] : array();
-		$requirements = array();
+	public static function requirements( string $inverter, string $kind, ?int $inverter_id = null, ?array $manifest = null, array $context = array() ): array {
+		$manifest    ??= Publication::manifest();
+		$inverter_id ??= self::identity( $inverter, $manifest );
+		$data          = EngineeringData::compatibility( $manifest );
+		$entries       = is_array( $data['requirements'] ?? null ) ? $data['requirements'] : array();
+		$requirements  = array();
 		foreach ( $entries as $entry ) {
 			if ( is_array( $entry )
 				&& ( $entry['kind'] ?? '' ) === $kind
-				&& self::matches( (string) ( $entry['inverter'] ?? '' ), $inverter )
+				&& null !== $inverter_id && ( $entry['inverter_product_id'] ?? null ) === Publication::canonical_id( $inverter_id )
+				&& ( ! isset( $entry['applicability'] ) || array() === array_diff_assoc( $entry['applicability'], $context ) )
 			) {
 				$requirements[] = $entry;
 			}
 		}
 
 		return $requirements;
+	}
+
+	/**
+	 * Native declaration data.
+	 *
+	 * @param string              $model A model-only caller.
+	 * @param array<string,mixed> $manifest Current Woo authority.
+	 */
+	private static function identity( string $model, array $manifest ): ?int {
+		$matches = array_values( array_filter( $manifest['products'], static fn( array $product ): bool => ( $product['model'] ?? null ) === $model ) );
+		return 1 === count( $matches ) ? $matches[0]['product_id'] : null;
 	}
 
 	/**
@@ -168,37 +186,5 @@ final class Compatibility {
 		}
 
 		return self::VERDICTS[ min( (int) $held_at, (int) $joined_at ) ];
-	}
-
-	/**
-	 * The product's model (its pa_model term name), null without one.
-	 *
-	 * @param int $product_id Product ID.
-	 */
-	private static function model( int $product_id ): ?string {
-		$terms = get_the_terms( $product_id, 'pa_model' );
-		if ( ! is_array( $terms ) || 1 !== count( $terms ) ) {
-			return null;
-		}
-		$name = reset( $terms )->name;
-
-		return '' === $name ? null : $name;
-	}
-
-	/**
-	 * Whether a pattern of the contract matches a model. The patterns carry
-	 * their own anchors and are tested with search semantics, the way the
-	 * engine tests them; a malformed one is loud (PHP warns) and matches
-	 * nothing, so a broken data file is seen, not silently ignored.
-	 *
-	 * @param string $pattern The pattern of a pair entry.
-	 * @param string $model   The product model.
-	 */
-	private static function matches( string $pattern, string $model ): bool {
-		if ( '' === $pattern || '' === $model ) {
-			return false;
-		}
-
-		return 1 === preg_match( '{' . $pattern . '}', $model );
 	}
 }

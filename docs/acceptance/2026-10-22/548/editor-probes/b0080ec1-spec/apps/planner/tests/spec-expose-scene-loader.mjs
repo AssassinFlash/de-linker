@@ -1,0 +1,2 @@
+import {readFile}from"node:fs/promises";import ts from"typescript";import{load as baseLoad}from"./tsx-loader.mjs";
+export async function load(url,context,nextLoad){if(url.endsWith("/SceneViewport.tsx")){const source=(await readFile(new URL(url),"utf8"))+"\nexport {Panels,RoofMesh,SiteObjects};\n";return{format:"module",shortCircuit:true,source:ts.transpileModule(source,{compilerOptions:{jsx:ts.JsxEmit.ReactJSX,module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2024}}).outputText};}return baseLoad(url,context,nextLoad);}

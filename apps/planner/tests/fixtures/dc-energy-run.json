@@ -1,0 +1,3436 @@
+{
+	"run": {
+		"id": "3e01c889025b45fdbbb95adb87a740d5",
+		"project_id": "2944618584d84e92b5d6d21cd0ce62bf",
+		"revision": 2,
+		"state": "succeeded",
+		"is_current": true,
+		"manifest_sha256": "c9b2d1bfc3206908d4c5898e760d3112e6956e20737a4d84da76902efd9d3cf1",
+		"manifest": {
+			"context": {
+				"assets": {
+					"aux_ac.metadata": "d09fe50c8731b8472f47a5ffb8ab08c3edcaa89c5fbcc400b959960b3af5f3b7",
+					"aux_ac.raw": "4071f1e9e0e52ccea2378ac47b017ce62a614ad6e94e8122c1de84bfbf83a55e",
+					"aux_ac.timezone": "8b85846791ab2c8a5463c83a5be3c043e2570d7448434d41398969ed47e3e6f2",
+					"battery.dc_prepared_parameters": "90c3010f1039c9a650da4c200910c93096403225b527aa287b5c234a625de1cc",
+					"battery.dc_woo_inputs": "9457fcf034dbcb0df9def07da57c6882e78415ef1f9e54314cdd466f1b9c3980",
+					"battery.metadata": "6856d40932cba8d6e6d91902b27c4676f80ac9905dc686cd824428318fcf176e",
+					"battery.raw": "a8615c37aca87f124262b0c4305fd8655806ae39049aabaff396a8c355adc4f9",
+					"equipment.selection": "ccf9897dbc7bf62ef1c2cd39bc4a02b9b5f013fa9459a1bd151ed91b1db530bd",
+					"gross_load.metadata": "2897b4fea04001e3f1d35ae2921d1802170421374342338b5b5813233216a508",
+					"gross_load.raw": "61751443270e113816b07c2d3fa04a740820006f12a10dbfc0bffedafc8d9459",
+					"gross_load.timezone": "8b85846791ab2c8a5463c83a5be3c043e2570d7448434d41398969ed47e3e6f2",
+					"pv_available_dc.metadata": "5dfa48541e8a0e46b521ed8c0f4485fa8fb76f0e0dfd3b6a9166a6aee89acd85",
+					"pv_available_dc.pv_model_inputs": "829c66aac5055fec138610128ca8120265a67e0f8879fd10c7f5c07540f677fa",
+					"pv_available_dc.pv_model_witness": "7138821e4decdea2048a4a72618c0bc362d210b7935bfd8c44502991c050b3ff",
+					"pv_available_dc.raw": "7ce7119f31715d77ec42e55c925904e2a9031f322b9cc1a0a1a261debb0b96f9",
+					"runtime_bundle": "111b17d3d736009e06c398b0b5382858bcd76fbbc29566942519fa408740e61c",
+					"woo.equipment_inputs": "9457fcf034dbcb0df9def07da57c6882e78415ef1f9e54314cdd466f1b9c3980"
+				},
+				"code_sha256": "111b17d3d736009e06c398b0b5382858bcd76fbbc29566942519fa408740e61c",
+				"models": {
+					"battery": "constant_window_shared_dc_bus_v1",
+					"controller": "self_consumption_shared_dc_v1",
+					"equipment_envelope": "selected_woo_dc_scenario_v1",
+					"profiles": "retained_pv_dc_and_csv_ac_demand_v1",
+					"replay": "shared_dc_energy_replay_v1",
+					"source_accounting": "proportional_mixing_v1"
+				},
+				"parameters": {
+					"kind": "shared_dc_energy_replay_v1",
+					"max_intervals": 10,
+					"product_policy": "current_woo_profile_and_selected_equipment_v2",
+					"tolerance": {
+						"absolute_kw": 1e-7,
+						"absolute_kwh": 1e-7,
+						"relative": 1e-9,
+						"role": "floating_point_arithmetic_not_engineering_margin"
+					}
+				}
+			},
+			"input_sha256": "774cc4679a876a321e89456c2773f1c6db7d3d2ebeab7d46dd61e924792224bd",
+			"project_id": "2944618584d84e92b5d6d21cd0ce62bf",
+			"revision": 2,
+			"schema": 1
+		},
+		"result_sha256": "9fe83d3bc772f50c0368e32db59465d89077daa0f20f927a49cdd8351d0bec7c",
+		"result": {
+			"battery_parameter_provenance": {
+				"dependencies": {
+					"dc_prepared_parameters": "90c3010f1039c9a650da4c200910c93096403225b527aa287b5c234a625de1cc",
+					"dc_woo_inputs": "9457fcf034dbcb0df9def07da57c6882e78415ef1f9e54314cdd466f1b9c3980"
+				},
+				"derived_from_revision": 1,
+				"provenance": {
+					"basis": "user_explicit_scenario_not_equipment_release",
+					"label": "Synthetic Woo-derived parameter integration",
+					"rights_basis": "user-declared numeric scenario, no third-party provider asset"
+				},
+				"retention": "permanent"
+			},
+			"country_assessment": {
+				"reason": "country_rules_are_a_separate_assessment",
+				"status": "not_assessed"
+			},
+			"dependencies": {
+				"energy_trace": "5f2f299f3eed2933d918a42216693d369aaa8653c0eddbfc3c6235641eaf54cd"
+			},
+			"equipment_binding": {
+				"assessment": {
+					"bill_of_materials_status": "unresolved",
+					"checks": [
+						{
+							"actual": 10.0,
+							"facts": [
+								{
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "active_power",
+									"raw_unit": "W",
+									"raw_value": "10000",
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "ac_output_kw_nominal",
+										"figure_sha256": "e2d14e115cf2c0908d2c00d06e9a15608e17a0a25dafae9097edc8e5ebe23c8b",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "kW",
+									"value": 10.0
+								}
+							],
+							"id": "converter_identity",
+							"reason": "cited_nominal_active_ac_output_required",
+							"required": null,
+							"status": "satisfied"
+						},
+						{
+							"actual": 3,
+							"facts": [],
+							"id": "grid_phase",
+							"reason": "woocommerce_phase_attribute",
+							"required": 3,
+							"status": "satisfied"
+						},
+						{
+							"actual": 20.0,
+							"facts": [
+								{
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "pv_nameplate_power",
+									"raw_unit": "Wp",
+									"raw_value": "20000",
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "max_pv_input_power_w",
+										"figure_sha256": "d00ce70f480e5fb1aefaaf49ba61b60b87437b509ad4046c84efe58e744d8de7",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "kWp",
+									"value": 20.0
+								}
+							],
+							"id": "pv_dc_input",
+							"reason": "published_limit_comparison",
+							"required": 10.0,
+							"status": "satisfied"
+						},
+						{
+							"actual": null,
+							"facts": [],
+							"id": "pv_electrical_topology",
+							"reason": "string_ports_voltage_current_and_temperature_require_assessment",
+							"required": null,
+							"status": "unresolved"
+						},
+						{
+							"actual": 2092,
+							"facts": [],
+							"id": "required_accessory:2092",
+							"reason": "manufacturer_required_component",
+							"required": null,
+							"status": "satisfied"
+						},
+						{
+							"actual": null,
+							"facts": [],
+							"id": "manufacturer_pair",
+							"reason": "manufacturer_conditions_require_assessment",
+							"required": null,
+							"status": "unresolved"
+						},
+						{
+							"actual": 3,
+							"facts": [],
+							"id": "modules_per_stack",
+							"reason": "manufacturer_pair_module_count",
+							"required": [2, 5],
+							"status": "satisfied"
+						},
+						{
+							"actual": 1,
+							"facts": [],
+							"id": "parallel_stacks",
+							"reason": "single_stack_without_parallel_connection",
+							"required": null,
+							"status": "satisfied"
+						},
+						{
+							"actual": null,
+							"facts": [
+								{
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "voltage",
+									"raw_unit": "V",
+									"raw_value": "180~800",
+									"shape": "interval",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "battery_voltage_range_v",
+										"figure_sha256": "810adddeb9230882d7599c9eaac0e6098789213eba6c6a880c2764d4b46e13eb",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "V",
+									"value": [180.0, 800.0]
+								},
+								{
+									"columns": [
+										{
+											"modules_per_stack": 1
+										},
+										{
+											"modules_per_stack": 2
+										},
+										{
+											"modules_per_stack": 3
+										},
+										{
+											"modules_per_stack": 4
+										},
+										{
+											"modules_per_stack": 5
+										}
+									],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "voltage",
+									"raw_unit": "V",
+									"raw_value": "89.6-115.2 / 179.2-230.4 / 268.8-345.6 / 358.4-460.8 / 448-576.0",
+									"selected_module_count": 3,
+									"shape": "interval",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "system_operating_voltage_range_v",
+										"figure_sha256": "89e3fbf056d4027f920a818d1bf755e99087a1092e616a674d91cd26354a4fe0",
+										"page": 2,
+										"product_id": 2092,
+										"product_revision": "d299deaf2ae480434cda7e12e36668a986d685f84d61bc8d9eb42a95f60b0baa",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "V",
+									"value": [268.8, 345.6]
+								}
+							],
+							"id": "battery_voltage",
+							"reason": "full_voltage_window_containment",
+							"required": null,
+							"status": "satisfied"
+						},
+						{
+							"actual": null,
+							"facts": [
+								{
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": null,
+									"raw_unit": null,
+									"raw_value": "battery_module",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "sales_unit_kind",
+										"figure_sha256": "62869e88c640ef14ed156e81a7e7bea21624891f73df8cdb218f632ab8f11939",
+										"page": 2,
+										"product_id": 2090,
+										"product_revision": "17f9d799fbd3400b65838d169faa219d796053f9b69f71088a83584ee88775c8",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": null,
+									"value": "battery_module"
+								}
+							],
+							"id": "battery_sales_unit",
+							"reason": "cited_sales_unit_basis",
+							"required": null,
+							"status": "satisfied"
+						},
+						{
+							"actual": 13.5,
+							"derivation": {
+								"factors": [4.5, 3],
+								"operation": "multiply",
+								"unit": "kWh"
+							},
+							"facts": [
+								{
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "energy",
+									"raw_unit": "kWh",
+									"raw_value": "4.5",
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "module_energy_kwh_usable",
+										"figure_sha256": "e6721546bf47f9a8520c678046ddf5997cd351ed7c1418f2ba9ca380755e348b",
+										"page": 2,
+										"product_id": 2090,
+										"product_revision": "17f9d799fbd3400b65838d169faa219d796053f9b69f71088a83584ee88775c8",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "kWh",
+									"value": 4.5
+								}
+							],
+							"id": "usable_energy",
+							"reason": "cited_usable_energy_and_sales_basis",
+							"required": 13.5,
+							"status": "satisfied"
+						},
+						{
+							"actual": null,
+							"facts": [],
+							"id": "continuous_battery_ac_output",
+							"reason": "current_cited_limit_missing_or_conditional",
+							"required": 8.064,
+							"status": "unresolved"
+						},
+						{
+							"actual": null,
+							"facts": [],
+							"id": "battery_discharge_path",
+							"reason": "battery_continuous_output_ports_and_conversion_require_assessment",
+							"required": null,
+							"status": "unresolved"
+						},
+						{
+							"actual": null,
+							"facts": [],
+							"id": "scenario_operating_mode",
+							"reason": "scenario_mode_matches_selection",
+							"required": null,
+							"status": "satisfied"
+						},
+						{
+							"actual": null,
+							"facts": [],
+							"id": "scenario_parameter_basis",
+							"reason": "scenario_losses_not_manufacturer_performance",
+							"required": null,
+							"status": "unresolved"
+						},
+						{
+							"actual": null,
+							"facts": [],
+							"id": "scenario_model_domain",
+							"reason": "selected_port_topology_requires_assessment",
+							"required": null,
+							"status": "unresolved"
+						}
+					],
+					"country_assessment": {
+						"country_code": null,
+						"reason": "versioned_country_rules_required",
+						"status": "unresolved"
+					},
+					"equipment_status": "unresolved",
+					"installation_requirements": [
+						{
+							"conditions": [
+								{
+									"de": "Der H2 T3 wird mit einem Smart Meter, drei Stromwandlern und einem 10 m langen Zähler-Kommunikationskabel geliefert (H2-Handbuch, Abschnitt 2.2 Auspacken, PDF-S. 36 englisch / S. 7 deutsch).",
+									"en": "The H2 T3 ships with a smart meter, three current transformers and a 10 m meter communication cable (H2 manual, section 2.2 Unpacking, PDF p. 36 English / p. 7 German)."
+								}
+							],
+							"documents": [
+								{
+									"page": 36,
+									"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+								}
+							],
+							"included": true,
+							"kind": "meter"
+						}
+					],
+					"manufacturer_pair": {
+						"conditions": [
+							{
+								"de": "SAJs B2-Datenblatt nennt B2-5.0 bis B2-25.0 als ein bis fünf BU2-5.0-Module mit einem Steuermodul BC2-HV1, und das B2-Handbuch (V1.2, PDF-S. 5) gibt an, dass die B2 nur als solches Set eingesetzt werden kann: Das Steuermodul ist ein eigener Artikel.",
+								"en": "SAJ's B2 datasheet names B2-5.0 to B2-25.0 as one to five BU2-5.0 modules with one BC2-HV1 control module, and the B2 manual (V1.2, PDF p5) says the B2 can only be used as such a set: the control module is an article of its own."
+							},
+							{
+								"de": "Die SAJ-Konfigurationsanleitung V1.0 (Abschnitt 2) gibt das System der H2-Serie als H2 + BC2 + BU2 an. Das SAJ-Datenblatt der B2 nennt B2-5.0 bis B2-25.0 als ein bis fünf BU2-5.0-Module mit einem Steuermodul BC2-HV1, und das SAJ-Handbuch der B2 (V1.2, PDF-S. 5) gibt an, dass die B2 nur im Verbund mit dem Hochvolt-Speicherwechselrichter der SAJ-H2-Serie eingesetzt werden kann. Die Listung umfasst die B2-5.0 mit einem Modul nicht; ihre Betriebsspannung liegt unter dem Batteriespannungsbereich des H2 T3.",
+								"en": "SAJ's Configuration Instructions V1.0 (Section 2) give the H2 series system as H2 + BC2 + BU2. SAJ's B2 datasheet names B2-5.0 to B2-25.0 as one to five BU2-5.0 modules with one BC2-HV1 control module, and SAJ's B2 manual (V1.2, PDF p5) says the B2 can only be used as a set with SAJ's H2 high voltage series storage inverter. The listing does not cover the one-module B2-5.0, whose operating voltage lies below the H2 T3's battery voltage range."
+							},
+							{
+								"de": "Ein einzelnes BU2-5.0-Modul arbeitet mit 89,6 bis 115,2 V (diese Werte nennt das SAJ-Datenblatt der B2 für die B2-5.0 mit einem Modul), unterhalb des Batteriespannungsbereichs des H2 T3 von 180 bis 800 V; zwei Module arbeiten mit 179,2 bis 230,4 V.",
+								"en": "One BU2-5.0 module alone operates at 89.6 to 115.2 V (SAJ's B2 datasheet gives this for the one-module B2-5.0), below the H2 T3's battery voltage range of 180 to 800 V; two modules operate at 179.2 to 230.4 V."
+							}
+						],
+						"documents": [
+							{
+								"page": null,
+								"url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf"
+							},
+							{
+								"page": null,
+								"url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf"
+							},
+							{
+								"page": 2,
+								"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+							},
+							{
+								"page": 37,
+								"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+							}
+						],
+						"verdict": "released_with_accessory"
+					},
+					"overall_status": "unresolved",
+					"provisional_bill_of_materials": [
+						{
+							"basis": "selected_converter",
+							"brand": "SAJ",
+							"model": "H2-10K-T3",
+							"product_id": 4107,
+							"quantity": 1,
+							"sku": "DLK-SAJ-H210KT3"
+						},
+						{
+							"basis": "manufacturer_required_system",
+							"brand": "SAJ",
+							"model": "BC2-HV1",
+							"product_id": 2092,
+							"quantity": 1,
+							"sku": "DLK-SAJ-BC2HV1"
+						},
+						{
+							"basis": "battery_module",
+							"brand": "SAJ",
+							"model": "BU2-5.0-HV1",
+							"product_id": 2090,
+							"quantity": 3,
+							"sku": "DLK-SAJ-BU250HV1"
+						}
+					],
+					"ranking": "not_performed_before_qualification",
+					"selected_products": [
+						{
+							"brand": "SAJ",
+							"device_class": "home-storage",
+							"facts": {
+								"bms_comms": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": null,
+									"raw_unit": null,
+									"raw_value": "CAN",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "bms_comms",
+										"figure_sha256": "e4ad238f0e0d5903944c6590bbd14a183b09089b759a85914fffbe05b45a8ac1",
+										"page": 2,
+										"product_id": 2090,
+										"product_revision": "17f9d799fbd3400b65838d169faa219d796053f9b69f71088a83584ee88775c8",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": null,
+									"value": "CAN"
+								},
+								"certification_safety": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": null,
+									"raw_unit": null,
+									"raw_value": "IEC 62619(Cell&Pack), EN 62477-1, EN 61000-6-1/2/3/4",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "certification_safety",
+										"figure_sha256": "c27c6a87d89774ce89c1c21b4f3cda47407aa61271b2ce92eb6c2c34275cf0ab",
+										"page": 2,
+										"product_id": 2090,
+										"product_revision": "17f9d799fbd3400b65838d169faa219d796053f9b69f71088a83584ee88775c8",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": null,
+									"value": "IEC 62619(Cell&Pack), EN 62477-1, EN 61000-6-1/2/3/4"
+								},
+								"certification_transport": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": null,
+									"raw_unit": null,
+									"raw_value": "UN38.3",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "certification_transport",
+										"figure_sha256": "e1972205d11ec3699a4a2a402ba78e1e6e2d2883de05d39db239bc976cfccf14",
+										"page": 2,
+										"product_id": 2090,
+										"product_revision": "17f9d799fbd3400b65838d169faa219d796053f9b69f71088a83584ee88775c8",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": null,
+									"value": "UN38.3"
+								},
+								"chemistry": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": null,
+									"raw_unit": null,
+									"raw_value": "LiFePO4",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "chemistry",
+										"figure_sha256": "2d22ac80dbe835fa13942f14ba144807f4db1339bbc0863b4af9ab9e71bc30c8",
+										"page": 1,
+										"product_id": 2090,
+										"product_revision": "17f9d799fbd3400b65838d169faa219d796053f9b69f71088a83584ee88775c8",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": null,
+									"value": "LiFePO4"
+								},
+								"dimensions_mm": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": null,
+									"raw_unit": "mm",
+									"raw_value": "261*626*365",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "dimensions_mm",
+										"figure_sha256": "9c825f257101fcbe28e2d6d86d9f859877bd1a8ae3df5d580858c629080d7422",
+										"page": 2,
+										"product_id": 2090,
+										"product_revision": "17f9d799fbd3400b65838d169faa219d796053f9b69f71088a83584ee88775c8",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": "mm",
+									"value": "261*626*365"
+								},
+								"dod_pct": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "fraction",
+									"raw_unit": "%",
+									"raw_value": "90",
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "dod_pct",
+										"figure_sha256": "6636f933c7b94a5de4f78264c5ae92083bfe30d23899c2c7c4de6fae2c738b46",
+										"page": 1,
+										"product_id": 2090,
+										"product_revision": "17f9d799fbd3400b65838d169faa219d796053f9b69f71088a83584ee88775c8",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "fraction",
+									"value": 0.9
+								},
+								"ip_rating": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": null,
+									"raw_unit": null,
+									"raw_value": "IP65",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "ip_rating",
+										"figure_sha256": "132e039b1d4404103e3c23e93c0f60cfccf0eb68e4aeff26bd5a7f238ea88b59",
+										"page": 2,
+										"product_id": 2090,
+										"product_revision": "17f9d799fbd3400b65838d169faa219d796053f9b69f71088a83584ee88775c8",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": null,
+									"value": "IP65"
+								},
+								"max_charge_current_a": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "current",
+									"raw_unit": "A",
+									"raw_value": 30,
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "max_charge_current_a",
+										"figure_sha256": "c699dbf2d1ad7d0781cdeccf90f85634b612747ca6b2fc1a51102da373f922c8",
+										"page": 2,
+										"product_id": 2090,
+										"product_revision": "17f9d799fbd3400b65838d169faa219d796053f9b69f71088a83584ee88775c8",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "A",
+									"value": 30.0
+								},
+								"max_discharge_current_a": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "current",
+									"raw_unit": "A",
+									"raw_value": 30,
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "max_discharge_current_a",
+										"figure_sha256": "c699dbf2d1ad7d0781cdeccf90f85634b612747ca6b2fc1a51102da373f922c8",
+										"page": 2,
+										"product_id": 2090,
+										"product_revision": "17f9d799fbd3400b65838d169faa219d796053f9b69f71088a83584ee88775c8",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "A",
+									"value": 30.0
+								},
+								"module_energy_kwh_nominal": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "energy",
+									"raw_unit": "kWh",
+									"raw_value": "5.0",
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "module_energy_kwh_nominal",
+										"figure_sha256": "96a18ac87962a006a660bbbb8ac4872aef15b3d27ad1f52bd9edcff50c1c6045",
+										"page": 2,
+										"product_id": 2090,
+										"product_revision": "17f9d799fbd3400b65838d169faa219d796053f9b69f71088a83584ee88775c8",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "kWh",
+									"value": 5.0
+								},
+								"module_energy_kwh_usable": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "energy",
+									"raw_unit": "kWh",
+									"raw_value": "4.5",
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "module_energy_kwh_usable",
+										"figure_sha256": "e6721546bf47f9a8520c678046ddf5997cd351ed7c1418f2ba9ca380755e348b",
+										"page": 2,
+										"product_id": 2090,
+										"product_revision": "17f9d799fbd3400b65838d169faa219d796053f9b69f71088a83584ee88775c8",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "kWh",
+									"value": 4.5
+								},
+								"module_voltage_range_v": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "voltage",
+									"raw_unit": "V",
+									"raw_value": "89.6-115.2",
+									"shape": "interval",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "module_voltage_range_v",
+										"figure_sha256": "d813d6b1b6c75e4f8ee3fe0318cd41c02566691d6b59214f40321bf6dcb84dd1",
+										"page": 2,
+										"product_id": 2090,
+										"product_revision": "17f9d799fbd3400b65838d169faa219d796053f9b69f71088a83584ee88775c8",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "V",
+									"value": [89.6, 115.2]
+								},
+								"module_voltage_v_nominal": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "voltage",
+									"raw_unit": "V",
+									"raw_value": "102.4",
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "module_voltage_v_nominal",
+										"figure_sha256": "88f484f8a603336f379bc00dbac6c2c710bb5ceb1e03132e18400c40f221e209",
+										"page": 2,
+										"product_id": 2090,
+										"product_revision": "17f9d799fbd3400b65838d169faa219d796053f9b69f71088a83584ee88775c8",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "V",
+									"value": 102.4
+								},
+								"modules_per_stack_max": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "count",
+									"raw_unit": null,
+									"raw_value": "5",
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "modules_per_stack_max",
+										"figure_sha256": "21dbbe0afacb0606b0749fb7485e6640c40ddfe25d91b0fdabfeea75a160b6d9",
+										"page": 2,
+										"product_id": 2090,
+										"product_revision": "17f9d799fbd3400b65838d169faa219d796053f9b69f71088a83584ee88775c8",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "count",
+									"value": 5.0
+								},
+								"modules_per_stack_min": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "count",
+									"raw_unit": null,
+									"raw_value": "1",
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "modules_per_stack_min",
+										"figure_sha256": "51ce570b266295c64ca45b4bc0f57acb42de6c8b72fff0795c78c2dd3c353f75",
+										"page": 2,
+										"product_id": 2090,
+										"product_revision": "17f9d799fbd3400b65838d169faa219d796053f9b69f71088a83584ee88775c8",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "count",
+									"value": 1.0
+								},
+								"operating_temp_c": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "temperature",
+									"raw_unit": "°C",
+									"raw_value": "Charging: 0~50℃; Discharging: -10~50℃",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "operating_temp_c",
+										"figure_sha256": "cb039deb84710f33ba6aff7d7e8f45a909cc70533c6849fe2f12b870ee72983c",
+										"page": 2,
+										"product_id": 2090,
+										"product_revision": "17f9d799fbd3400b65838d169faa219d796053f9b69f71088a83584ee88775c8",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": "°C",
+									"value": "Charging: 0~50℃; Discharging: -10~50℃"
+								},
+								"sales_unit_kind": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": null,
+									"raw_unit": null,
+									"raw_value": "battery_module",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "sales_unit_kind",
+										"figure_sha256": "62869e88c640ef14ed156e81a7e7bea21624891f73df8cdb218f632ab8f11939",
+										"page": 2,
+										"product_id": 2090,
+										"product_revision": "17f9d799fbd3400b65838d169faa219d796053f9b69f71088a83584ee88775c8",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": null,
+									"value": "battery_module"
+								},
+								"system_energy_kwh_range": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "energy",
+									"raw_unit": "kWh",
+									"raw_value": "5.0/10.0/15.0/20.0/25.0",
+									"shape": "ordered_values",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "system_energy_kwh_range",
+										"figure_sha256": "f8bb75134b9fb2e75c8eeb1f08606093f12df20efa0bf9bb6365e5a9912aa32b",
+										"page": 2,
+										"product_id": 2090,
+										"product_revision": "17f9d799fbd3400b65838d169faa219d796053f9b69f71088a83584ee88775c8",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "kWh",
+									"value": [
+										{
+											"shape": "scalar",
+											"value": 5.0
+										},
+										{
+											"shape": "scalar",
+											"value": 10.0
+										},
+										{
+											"shape": "scalar",
+											"value": 15.0
+										},
+										{
+											"shape": "scalar",
+											"value": 20.0
+										},
+										{
+											"shape": "scalar",
+											"value": 25.0
+										}
+									]
+								},
+								"weight_kg": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": null,
+									"raw_unit": "kg",
+									"raw_value": "50.5",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "weight_kg",
+										"figure_sha256": "e0909fe01e7060473de26ae65cece14a323699b82a0773ef28b2e6ecec8968ac",
+										"page": 2,
+										"product_id": 2090,
+										"product_revision": "17f9d799fbd3400b65838d169faa219d796053f9b69f71088a83584ee88775c8",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": "kg",
+									"value": "50.5"
+								}
+							},
+							"model": "BU2-5.0-HV1",
+							"product_id": 2090,
+							"product_revision": "17f9d799fbd3400b65838d169faa219d796053f9b69f71088a83584ee88775c8",
+							"sku": "DLK-SAJ-BU250HV1"
+						},
+						{
+							"brand": "SAJ",
+							"device_class": "home-storage",
+							"facts": {
+								"bms_comms": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": null,
+									"raw_unit": null,
+									"raw_value": "CAN",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "bms_comms",
+										"figure_sha256": "e4ad238f0e0d5903944c6590bbd14a183b09089b759a85914fffbe05b45a8ac1",
+										"page": 2,
+										"product_id": 2092,
+										"product_revision": "d299deaf2ae480434cda7e12e36668a986d685f84d61bc8d9eb42a95f60b0baa",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": null,
+									"value": "CAN"
+								},
+								"certification_safety": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": null,
+									"raw_unit": null,
+									"raw_value": "IEC 62619(Cell&Pack), EN 62477-1, EN 61000-6-1/2/3/4",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "certification_safety",
+										"figure_sha256": "c27c6a87d89774ce89c1c21b4f3cda47407aa61271b2ce92eb6c2c34275cf0ab",
+										"page": 2,
+										"product_id": 2092,
+										"product_revision": "d299deaf2ae480434cda7e12e36668a986d685f84d61bc8d9eb42a95f60b0baa",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": null,
+									"value": "IEC 62619(Cell&Pack), EN 62477-1, EN 61000-6-1/2/3/4"
+								},
+								"dimensions_mm": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": null,
+									"raw_unit": "mm",
+									"raw_value": "200*626*365",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "dimensions_mm",
+										"figure_sha256": "7407ffa93f3881a6222e90c78a74f8c2d3d49dd18a86e321dde3091ba2cc86ef",
+										"page": 2,
+										"product_id": 2092,
+										"product_revision": "d299deaf2ae480434cda7e12e36668a986d685f84d61bc8d9eb42a95f60b0baa",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": "mm",
+									"value": "200*626*365"
+								},
+								"ip_rating": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": null,
+									"raw_unit": null,
+									"raw_value": "IP65",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "ip_rating",
+										"figure_sha256": "132e039b1d4404103e3c23e93c0f60cfccf0eb68e4aeff26bd5a7f238ea88b59",
+										"page": 2,
+										"product_id": 2092,
+										"product_revision": "d299deaf2ae480434cda7e12e36668a986d685f84d61bc8d9eb42a95f60b0baa",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": null,
+									"value": "IP65"
+								},
+								"modules_per_stack_max": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "count",
+									"raw_unit": null,
+									"raw_value": "5",
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "modules_per_stack_max",
+										"figure_sha256": "21dbbe0afacb0606b0749fb7485e6640c40ddfe25d91b0fdabfeea75a160b6d9",
+										"page": 2,
+										"product_id": 2092,
+										"product_revision": "d299deaf2ae480434cda7e12e36668a986d685f84d61bc8d9eb42a95f60b0baa",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "count",
+									"value": 5.0
+								},
+								"modules_per_stack_min": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "count",
+									"raw_unit": null,
+									"raw_value": "1",
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "modules_per_stack_min",
+										"figure_sha256": "51ce570b266295c64ca45b4bc0f57acb42de6c8b72fff0795c78c2dd3c353f75",
+										"page": 2,
+										"product_id": 2092,
+										"product_revision": "d299deaf2ae480434cda7e12e36668a986d685f84d61bc8d9eb42a95f60b0baa",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "count",
+									"value": 1.0
+								},
+								"operating_temp_c": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "temperature",
+									"raw_unit": "°C",
+									"raw_value": "Charging: 0~50℃; Discharging: -10~50℃",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "operating_temp_c",
+										"figure_sha256": "cb039deb84710f33ba6aff7d7e8f45a909cc70533c6849fe2f12b870ee72983c",
+										"page": 2,
+										"product_id": 2092,
+										"product_revision": "d299deaf2ae480434cda7e12e36668a986d685f84d61bc8d9eb42a95f60b0baa",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": "°C",
+									"value": "Charging: 0~50℃; Discharging: -10~50℃"
+								},
+								"system_energy_kwh_range": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "energy",
+									"raw_unit": "kWh",
+									"raw_value": "5.0/10.0/15.0/20.0/25.0",
+									"shape": "ordered_values",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "system_energy_kwh_range",
+										"figure_sha256": "f8bb75134b9fb2e75c8eeb1f08606093f12df20efa0bf9bb6365e5a9912aa32b",
+										"page": 2,
+										"product_id": 2092,
+										"product_revision": "d299deaf2ae480434cda7e12e36668a986d685f84d61bc8d9eb42a95f60b0baa",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "kWh",
+									"value": [
+										{
+											"shape": "scalar",
+											"value": 5.0
+										},
+										{
+											"shape": "scalar",
+											"value": 10.0
+										},
+										{
+											"shape": "scalar",
+											"value": 15.0
+										},
+										{
+											"shape": "scalar",
+											"value": 20.0
+										},
+										{
+											"shape": "scalar",
+											"value": 25.0
+										}
+									]
+								},
+								"system_operating_voltage_range_v": {
+									"columns": [
+										{
+											"modules_per_stack": 1
+										},
+										{
+											"modules_per_stack": 2
+										},
+										{
+											"modules_per_stack": 3
+										},
+										{
+											"modules_per_stack": 4
+										},
+										{
+											"modules_per_stack": 5
+										}
+									],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "voltage",
+									"raw_unit": "V",
+									"raw_value": "89.6-115.2 / 179.2-230.4 / 268.8-345.6 / 358.4-460.8 / 448-576.0",
+									"shape": "ordered_values",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "system_operating_voltage_range_v",
+										"figure_sha256": "89e3fbf056d4027f920a818d1bf755e99087a1092e616a674d91cd26354a4fe0",
+										"page": 2,
+										"product_id": 2092,
+										"product_revision": "d299deaf2ae480434cda7e12e36668a986d685f84d61bc8d9eb42a95f60b0baa",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "V",
+									"value": [
+										{
+											"shape": "interval",
+											"value": [89.6, 115.2]
+										},
+										{
+											"shape": "interval",
+											"value": [179.2, 230.4]
+										},
+										{
+											"shape": "interval",
+											"value": [268.8, 345.6]
+										},
+										{
+											"shape": "interval",
+											"value": [358.4, 460.8]
+										},
+										{
+											"shape": "interval",
+											"value": [448.0, 576.0]
+										}
+									]
+								},
+								"weight_kg": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": null,
+									"raw_unit": "kg",
+									"raw_value": "11",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+										"figure_key": "weight_kg",
+										"figure_sha256": "82fc3ef59eb1c6edbf864370d6aff1cbabaf606d5a7db74ebbb172e14f706093",
+										"page": 2,
+										"product_id": 2092,
+										"product_revision": "d299deaf2ae480434cda7e12e36668a986d685f84d61bc8d9eb42a95f60b0baa",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": "kg",
+									"value": "11"
+								}
+							},
+							"model": "BC2-HV1",
+							"product_id": 2092,
+							"product_revision": "d299deaf2ae480434cda7e12e36668a986d685f84d61bc8d9eb42a95f60b0baa",
+							"sku": "DLK-SAJ-BC2HV1"
+						},
+						{
+							"brand": "SAJ",
+							"device_class": "inverters",
+							"facts": {
+								"ac_output_kw_max": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "apparent_power",
+									"raw_unit": "VA",
+									"raw_value": "11000",
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "ac_output_kw_max",
+										"figure_sha256": "72f9348eaae9d2cc80f1a38ade1f764f46f6e4468931429709c543523ae702ed",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "kVA",
+									"value": 11.0
+								},
+								"ac_output_kw_nominal": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "active_power",
+									"raw_unit": "W",
+									"raw_value": "10000",
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "ac_output_kw_nominal",
+										"figure_sha256": "e2d14e115cf2c0908d2c00d06e9a15608e17a0a25dafae9097edc8e5ebe23c8b",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "kW",
+									"value": 10.0
+								},
+								"ac_voltage_range_v": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "voltage",
+									"raw_unit": "V",
+									"raw_value": "3L+N+PE, 220/380, 230/400, 240/415; 180~280/312~485",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "ac_voltage_range_v",
+										"figure_sha256": "894e88f76e34a8d88acbc6dd13f2bafccb00a8dcbfe586c696a3b0ed0343133e",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": "V",
+									"value": "3L+N+PE, 220/380, 230/400, 240/415; 180~280/312~485"
+								},
+								"afci_protection": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": null,
+									"raw_unit": null,
+									"raw_value": "Integrated",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "afci_protection",
+										"figure_sha256": "cd41bac4604e65e0fd8bbbe1efd3e9457149ecc6a7747bc4d31344165fa42723",
+										"page": 1,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": null,
+									"value": "Integrated"
+								},
+								"backup_power_kw": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "apparent_power",
+									"raw_unit": "VA",
+									"raw_value": "10000",
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "backup_power_kw",
+										"figure_sha256": "128d7b5b24400694f8eb3da9588ff567ab1b0022628a83bc427d786f6b3ae41c",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "kVA",
+									"value": 10.0
+								},
+								"battery_type": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": null,
+									"raw_unit": null,
+									"raw_value": "LiFePO4",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "battery_type",
+										"figure_sha256": "10e1feb79c2463c0f9ba6fbc4125b9f99762f7979f0f4d01c2adb1281135cf6d",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": null,
+									"value": "LiFePO4"
+								},
+								"battery_voltage_range_v": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "voltage",
+									"raw_unit": "V",
+									"raw_value": "180~800",
+									"shape": "interval",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "battery_voltage_range_v",
+										"figure_sha256": "810adddeb9230882d7599c9eaac0e6098789213eba6c6a880c2764d4b46e13eb",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "V",
+									"value": [180.0, 800.0]
+								},
+								"cooling_method": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": null,
+									"raw_unit": null,
+									"raw_value": "Intelligent Fan cooling",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "cooling_method",
+										"figure_sha256": "1fa361f4519f225d01815022421c1887a86a7abd03ad5e8d9ea9fbd51800ebd6",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": null,
+									"value": "Intelligent Fan cooling"
+								},
+								"dimensions_mm": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": null,
+									"raw_unit": "mm",
+									"raw_value": "576*659*242",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "dimensions_mm",
+										"figure_sha256": "27d4da1c055ef02129d2e06e80dec5941c512e7511972e5b08ee0593a083a88d",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": "mm",
+									"value": "576*659*242"
+								},
+								"euro_efficiency_pct": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "fraction",
+									"raw_unit": "%",
+									"raw_value": "97.6",
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "euro_efficiency_pct",
+										"figure_sha256": "1576131567f68afdd472b1e1c4fc755e163759c62c498d651843885ca901c8c5",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "fraction",
+									"value": 0.976
+								},
+								"grid_codes": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": null,
+									"raw_unit": null,
+									"raw_value": "EN 62109-1/2, EN 61000-6-2/4, EN 50438, EN 50549, C10/11, IEC 62116, IEC 61727, RD 1699, RD 413, UNE 206006, UNE 206007, NTS, CEI 0-16, CEI 0-21, AS 4777.2, NBR 16149, NBR 16150, VDE-AR-N 4105, VDE 0126-1-1",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "grid_codes",
+										"figure_sha256": "013b6718ae00d589163cdca89ec1d5cc117eb5d4da9a9c41c5bee27d148bfd60",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": null,
+									"value": "EN 62109-1/2, EN 61000-6-2/4, EN 50438, EN 50549, C10/11, IEC 62116, IEC 61727, RD 1699, RD 413, UNE 206006, UNE 206007, NTS, CEI 0-16, CEI 0-21, AS 4777.2, NBR 16149, NBR 16150, VDE-AR-N 4105, VDE 0126-1-1"
+								},
+								"ip_rating": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": null,
+									"raw_unit": null,
+									"raw_value": "IP65",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "ip_rating",
+										"figure_sha256": "6f0462b8b90f2e9401ff4a4c7107388b1869873bfd21eda6898cbdf91b89c5d4",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": null,
+									"value": "IP65"
+								},
+								"max_ac_input_current_a": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "current",
+									"raw_unit": "A",
+									"raw_value": "28.3",
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "max_ac_input_current_a",
+										"figure_sha256": "ed4168e49af21d9b903886cdb92cc257bbac17149b082cc8fb6b5cf16fde9c84",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "A",
+									"value": 28.3
+								},
+								"max_battery_charge_a": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": {
+										"connection": "one_stack_per_port",
+										"scope": "per_battery_port"
+									},
+									"quantity": "current",
+									"raw_unit": "A",
+									"raw_value": 50,
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "max_battery_charge_a",
+										"figure_sha256": "f6792ad8565a86dc98df89fdfecd2b4500974b08dab7b7b2e7915691e9d54601",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "conditional",
+									"unit": "A",
+									"value": 50.0
+								},
+								"max_battery_discharge_a": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": {
+										"connection": "one_stack_per_port",
+										"scope": "per_battery_port"
+									},
+									"quantity": "current",
+									"raw_unit": "A",
+									"raw_value": 50,
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "max_battery_discharge_a",
+										"figure_sha256": "f6792ad8565a86dc98df89fdfecd2b4500974b08dab7b7b2e7915691e9d54601",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "conditional",
+									"unit": "A",
+									"value": 50.0
+								},
+								"max_efficiency_pct": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "fraction",
+									"raw_unit": "%",
+									"raw_value": "98.0",
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "max_efficiency_pct",
+										"figure_sha256": "b56ffd78f03e4f247bba452c9c0969957f84a21c4ad7b3ec3dba3fbe9228dc76",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "fraction",
+									"value": 0.98
+								},
+								"max_input_current_per_mppt_a": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "current",
+									"raw_unit": "A",
+									"raw_value": "40",
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "max_input_current_per_mppt_a",
+										"figure_sha256": "689996747aeb758b1fbd3d386ccbec3ea9daa752899a1c5765ad61a40e968fba",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "A",
+									"value": 40.0
+								},
+								"max_isc_per_mppt_a": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "current",
+									"raw_unit": "A",
+									"raw_value": "50",
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "max_isc_per_mppt_a",
+										"figure_sha256": "f1167c9d85447f84676b90ae5b405cbee72f2f4d4bde6f76866e90cf2e561306",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "A",
+									"value": 50.0
+								},
+								"max_output_current_a_ongrid": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "current",
+									"raw_unit": "A",
+									"raw_value": "16",
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "max_output_current_a_ongrid",
+										"figure_sha256": "25b4dbf9b931ad5b4e0406b0d28d4e50611af174407dbdcbafcb5b8386cdfd51",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "A",
+									"value": 16.0
+								},
+								"max_pv_input_power_w": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "pv_nameplate_power",
+									"raw_unit": "Wp",
+									"raw_value": "20000",
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "max_pv_input_power_w",
+										"figure_sha256": "d00ce70f480e5fb1aefaaf49ba61b60b87437b509ad4046c84efe58e744d8de7",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "kWp",
+									"value": 20.0
+								},
+								"max_pv_input_v": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "voltage",
+									"raw_unit": "V",
+									"raw_value": "1000",
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "max_pv_input_v",
+										"figure_sha256": "97ec0cf9efdd9016a9ab475dda27249d7e2a00d517390f8ed63b9e8b47eb196c",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "V",
+									"value": 1000.0
+								},
+								"mppt_max_current_a": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "current",
+									"raw_unit": "A",
+									"raw_value": "40",
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "mppt_max_current_a",
+										"figure_sha256": "689996747aeb758b1fbd3d386ccbec3ea9daa752899a1c5765ad61a40e968fba",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "A",
+									"value": 40.0
+								},
+								"mppt_max_isc_a": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "current",
+									"raw_unit": "A",
+									"raw_value": "50",
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "mppt_max_isc_a",
+										"figure_sha256": "f1167c9d85447f84676b90ae5b405cbee72f2f4d4bde6f76866e90cf2e561306",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "A",
+									"value": 50.0
+								},
+								"mppt_voltage_range_v": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "voltage",
+									"raw_unit": "V",
+									"raw_value": "180~900",
+									"shape": "interval",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "mppt_voltage_range_v",
+										"figure_sha256": "74c14e72c99814e1d05278e5fc7a49dbf54c87e2392391e4a44eea0b29653225",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "V",
+									"value": [180.0, 900.0]
+								},
+								"n_battery_ports": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "count",
+									"raw_unit": "units",
+									"raw_value": 2,
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "n_battery_ports",
+										"figure_sha256": "39c4ba8a6ef408cc46d9da89ee087299981d80a7e286dc40c07605bde212ccab",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "count",
+									"value": 2.0
+								},
+								"n_mppt": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "count",
+									"raw_unit": null,
+									"raw_value": "3",
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "n_mppt",
+										"figure_sha256": "0e082399beaddf9d459edeeb74c79aa8fad301e3e9376f3984472153c91257c3",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "count",
+									"value": 3.0
+								},
+								"noise_dba": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": null,
+									"raw_unit": "dBA",
+									"raw_value": "<50",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "noise_dba",
+										"figure_sha256": "4ffac1b8802af791d48dc2e977cff25c53a542c8c5b26ad7b3af1e02f9e6e4ba",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": "dBA",
+									"value": "<50"
+								},
+								"operating_temp_c": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "temperature",
+									"raw_unit": "°C",
+									"raw_value": "-40 to +60 (45 and above with derating)",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "operating_temp_c",
+										"figure_sha256": "0d3dc6638e4cb95d07c604dcd4c99dd62c274b99eea768000871e17527375120",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": "°C",
+									"value": "-40 to +60 (45 and above with derating)"
+								},
+								"peak_backup_apparent_power_va": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "apparent_power",
+									"raw_unit": "VA",
+									"raw_value": "15000 (3 s)",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "peak_backup_apparent_power_va",
+										"figure_sha256": "b6e00645d883b380b36978661bd0f3546824cf2a5b8b7b23af964689189a6ecb",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": "kVA",
+									"value": "15000 (3 s)"
+								},
+								"phases": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "count",
+									"raw_unit": null,
+									"raw_value": "Three-phase",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "phases",
+										"figure_sha256": "36464f9a9a301d51c361ced6b8c4978012e05cb7bdb5ebac371724bf641c897e",
+										"page": 1,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": "count",
+									"value": "Three-phase"
+								},
+								"power_factor_range": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": null,
+									"raw_unit": null,
+									"raw_value": "0.8 leading~0.8 lagging",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "power_factor_range",
+										"figure_sha256": "7fef56a75f7183a6228920fa173cd4de0f512c5b6566c042b3af188ccc06a11d",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": null,
+									"value": "0.8 leading~0.8 lagging"
+								},
+								"rated_ac_power_kw": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "active_power",
+									"raw_unit": "kW",
+									"raw_value": 10,
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "rated_ac_power_kw",
+										"figure_sha256": "b2dcdd9993acd1abbcca6a3c372722216ddcd8ad9c42082a3bf5bd271aa3a1e2",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "kW",
+									"value": 10.0
+								},
+								"rated_dc_voltage_v": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "voltage",
+									"raw_unit": "V",
+									"raw_value": "600",
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "rated_dc_voltage_v",
+										"figure_sha256": "681e99a12ca107a7e81158064ed591843aca7b603ccfabe5f48fba40529fdfde",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "V",
+									"value": 600.0
+								},
+								"rated_output_current_a_ongrid": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "current",
+									"raw_unit": "A",
+									"raw_value": "14.5",
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "rated_output_current_a_ongrid",
+										"figure_sha256": "9e60310a0de07b43042ef85b4b178f12b729f3f47228c9e95f7956e88f09637e",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "A",
+									"value": 14.5
+								},
+								"start_voltage_v": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": "voltage",
+									"raw_unit": "V",
+									"raw_value": "180",
+									"shape": "scalar",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "start_voltage_v",
+										"figure_sha256": "24409a97669d3c2f9c7f7ee164ffff045031a838f5886a18a97886081c52eb35",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "typed",
+									"unit": "V",
+									"value": 180.0
+								},
+								"strings_per_mppt": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": null,
+									"raw_unit": null,
+									"raw_value": "2",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "strings_per_mppt",
+										"figure_sha256": "3c04b7b18edb6d31832212f5c7c1b8ac38f03f919817954aeba3c10573317428",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": null,
+									"value": "2"
+								},
+								"topology": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": null,
+									"raw_unit": null,
+									"raw_value": "Non-isolated",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "topology",
+										"figure_sha256": "b212450b808fa48f8c0b22b8dac08776dd74d56196bd8f5be03a6f60604608ce",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": null,
+									"value": "Non-isolated"
+								},
+								"ups_switchover_ms": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": null,
+									"raw_unit": "ms",
+									"raw_value": "≤20",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "ups_switchover_ms",
+										"figure_sha256": "92eeb58a28aa7575fa54a889effbbfeee2c6899bfacfd02fd1b2129847c3b6ed",
+										"page": 1,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": "ms",
+									"value": "≤20"
+								},
+								"weight_kg": {
+									"columns": [],
+									"evidence_refs": [],
+									"qualifier": null,
+									"quantity": null,
+									"raw_unit": "kg",
+									"raw_value": "50",
+									"shape": "text",
+									"source": {
+										"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+										"figure_key": "weight_kg",
+										"figure_sha256": "b54425d6ae901643ade328a0c84f224a8f86b317ed77e5abc897312f7b76484d",
+										"page": 2,
+										"product_id": 4107,
+										"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+										"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+									},
+									"status": "text_evidence",
+									"unit": "kg",
+									"value": "50"
+								}
+							},
+							"model": "H2-10K-T3",
+							"product_id": 4107,
+							"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+							"sku": "DLK-SAJ-H210KT3"
+						}
+					]
+				},
+				"model": "selected_woo_dc_scenario_v1",
+				"performance_status": "not_established_by_scenario_envelope",
+				"scenario_model": {
+					"battery": {
+						"charge_current_a": 30.0,
+						"charge_power_limit_kw": null,
+						"discharge_current_a": 30.0,
+						"discharge_power_limit_kw": null,
+						"id": "woo:2090",
+						"operating_max_v": 345.6,
+						"operating_min_v": 268.8
+					},
+					"battery_export": "excluded_from_this_model",
+					"charge_terminal_kw": 8.064,
+					"command_boundary": "battery_dc_terminal",
+					"connected_bridge": {
+						"eta_forward": 1.0,
+						"eta_reverse": null,
+						"forward_ac_kw": 10.0,
+						"forward_dc_kw": null,
+						"reverse_ac_kw": null,
+						"reverse_dc_kw": null,
+						"reverse_supported": null
+					},
+					"dc_dc_charge_bus_kw": null,
+					"dc_dc_discharge_bus_kw": null,
+					"discharge_terminal_kw": 8.064,
+					"eta_battery_to_bus": 1.0,
+					"eta_bus_to_battery": 1.0,
+					"eta_store_charge": 1.0,
+					"eta_store_discharge": 1.0,
+					"internal_aux_kw": 0.0,
+					"internal_loss_order": "standing_loss_then_internal_aux_before_dc_flows",
+					"outage_bridge": null,
+					"parameters_source_sha256": "90c3010f1039c9a650da4c200910c93096403225b527aa287b5c234a625de1cc",
+					"power_bound_method": "voltage_floor_current_cap_one_selected_port_v1",
+					"priority": "dc_aux_then_ac_load_then_ac_aux_then_storage_then_pv_export",
+					"pv_boundary": "available_dc_at_bus_before_shared_inverter",
+					"pv_input_dc_kw": null,
+					"selected_port": {
+						"charge_current_a": 50.0,
+						"charge_power_limit_kw": null,
+						"discharge_current_a": 50.0,
+						"discharge_power_limit_kw": null,
+						"id": "battery-1",
+						"operating_max_v": 800.0,
+						"operating_min_v": 180.0
+					},
+					"source_accounting": "proportional_mixing_v1",
+					"standing_loss_rate_per_hour": 0.0,
+					"usable_window_kwh": 13.5,
+					"version": "constant_window_shared_dc_bus_v1"
+				},
+				"schema_version": 1,
+				"selection": {
+					"accessory_product_ids": [2092],
+					"battery_product_id": 2090,
+					"grid_phase": 3,
+					"inverter_product_id": 4107,
+					"modules_per_stack": 3,
+					"operating_mode": "grid_connected",
+					"parallel_stacks": 1,
+					"product_revisions": {
+						"2090": "17f9d799fbd3400b65838d169faa219d796053f9b69f71088a83584ee88775c8",
+						"2092": "d299deaf2ae480434cda7e12e36668a986d685f84d61bc8d9eb42a95f60b0baa",
+						"4107": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f"
+					},
+					"pv_dc_kw": 10,
+					"required_discharge_ac_kw": 5,
+					"required_usable_kwh": 10,
+					"schema_version": 1
+				},
+				"selection_sha256": "ccf9897dbc7bf62ef1c2cd39bc4a02b9b5f013fa9459a1bd151ed91b1db530bd"
+			},
+			"equipment_release": {
+				"reason": "explicit_scenario_replay_is_not_equipment_release",
+				"status": "not_assessed"
+			},
+			"input_sha256": "774cc4679a876a321e89456c2773f1c6db7d3d2ebeab7d46dd61e924792224bd",
+			"interval_count": 2,
+			"kind": "shared_dc_energy_replay_v1",
+			"manifest_sha256": "c9b2d1bfc3206908d4c5898e760d3112e6956e20737a4d84da76902efd9d3cf1",
+			"metrics": {
+				"aux_ac_unserved_kwh": 0.0,
+				"aux_dc_unserved_kwh": 0.0,
+				"charge_dc_dc_loss_kwh": 0.0,
+				"charge_internal_loss_kwh": 0.0,
+				"definitions": {
+					"boundary": "shared_DC_bus_and_one_inverter; battery_export_excluded; AC_and_DC_aux_separate_from_customer_load",
+					"inventory_origin": "proportional_mixing; initial_unknown_and_grid_are_not_solar",
+					"pv_generated_dc_kwh": "PV_available_at_DC_bus - PV_curtailed_at_DC_bus; excludes_PV_input_curtailment",
+					"pv_input_self_use": "(PV_generated_DC_at_bus - PV_export_AC/eta_forward) / PV_generated_DC_at_bus",
+					"solar_autarky": "(PV_direct_AC_to_customer_load + PV_origin_battery_AC_to_customer_load) / gross_AC_customer_load_demand"
+				},
+				"discharge_dc_dc_loss_kwh": 0.0,
+				"discharge_internal_loss_kwh": 0.0,
+				"grid_charge_bus_dc_kwh": 0.0,
+				"grid_import_kwh": 2.16,
+				"grid_origin_battery_to_load_kwh": 0.0,
+				"gross_load_kwh": 4.0,
+				"gross_load_undefined_reason": null,
+				"initial_unknown_battery_to_load_kwh": 0.0,
+				"internal_aux_supplied_kwh": 0.0,
+				"internal_aux_unserved_kwh": 0.0,
+				"load_demand_kwh": 4.0,
+				"load_measurement_scope": "gross_load",
+				"maximum_interval_average_import_kw": 2.0,
+				"pv_available_before_curtail_dc_kwh": 1.84,
+				"pv_battery_to_load_kwh": 0.0,
+				"pv_charge_bus_dc_kwh": 0.0,
+				"pv_curtailed_dc_kwh": 0.0,
+				"pv_direct_load_kwh": 1.84,
+				"pv_export_ac_kwh": 0.0,
+				"pv_generated_dc_kwh": 1.84,
+				"pv_input_curtailed_dc_kwh": 0.0,
+				"pv_input_self_use": {
+					"undefined_reason": null,
+					"value": 1.0
+				},
+				"pv_onsite_available_share": {
+					"undefined_reason": null,
+					"value": 1.0
+				},
+				"shared_inverter_forward_loss_kwh": 0.0,
+				"shared_inverter_reverse_loss_kwh": 0.0,
+				"solar_autarky": {
+					"undefined_reason": null,
+					"value": 0.46
+				},
+				"solar_load_kwh": 1.84,
+				"solar_load_share_of_requested_demand": {
+					"undefined_reason": null,
+					"value": 0.46
+				},
+				"standing_loss_kwh": 0.0,
+				"stored_final": {
+					"grid_kwh": 0.0,
+					"initial_unknown_kwh": 0.0,
+					"pv_kwh": 0.0
+				},
+				"stored_initial": {
+					"grid_kwh": 0.0,
+					"initial_unknown_kwh": 0.0,
+					"pv_kwh": 0.0
+				},
+				"unserved_load_kwh": 0.0
+			},
+			"model": {
+				"battery": {
+					"charge_current_a": 30.0,
+					"charge_power_limit_kw": null,
+					"discharge_current_a": 30.0,
+					"discharge_power_limit_kw": null,
+					"id": "woo:2090",
+					"operating_max_v": 345.6,
+					"operating_min_v": 268.8
+				},
+				"battery_export": "excluded_from_this_model",
+				"charge_terminal_kw": 8.064,
+				"command_boundary": "battery_dc_terminal",
+				"connected_bridge": {
+					"eta_forward": 1.0,
+					"eta_reverse": null,
+					"forward_ac_kw": 10.0,
+					"forward_dc_kw": null,
+					"reverse_ac_kw": null,
+					"reverse_dc_kw": null,
+					"reverse_supported": null
+				},
+				"dc_dc_charge_bus_kw": null,
+				"dc_dc_discharge_bus_kw": null,
+				"discharge_terminal_kw": 8.064,
+				"eta_battery_to_bus": 1.0,
+				"eta_bus_to_battery": 1.0,
+				"eta_store_charge": 1.0,
+				"eta_store_discharge": 1.0,
+				"internal_aux_kw": 0.0,
+				"internal_loss_order": "standing_loss_then_internal_aux_before_dc_flows",
+				"outage_bridge": null,
+				"parameters_source_sha256": "90c3010f1039c9a650da4c200910c93096403225b527aa287b5c234a625de1cc",
+				"power_bound_method": "voltage_floor_current_cap_one_selected_port_v1",
+				"priority": "dc_aux_then_ac_load_then_ac_aux_then_storage_then_pv_export",
+				"pv_boundary": "available_dc_at_bus_before_shared_inverter",
+				"pv_input_dc_kw": null,
+				"selected_port": {
+					"charge_current_a": 50.0,
+					"charge_power_limit_kw": null,
+					"discharge_current_a": 50.0,
+					"discharge_power_limit_kw": null,
+					"id": "battery-1",
+					"operating_max_v": 800.0,
+					"operating_min_v": 180.0
+				},
+				"source_accounting": "proportional_mixing_v1",
+				"standing_loss_rate_per_hour": 0.0,
+				"usable_window_kwh": 13.5,
+				"version": "constant_window_shared_dc_bus_v1"
+			},
+			"pinned_assets": {
+				"aux_ac.metadata": "d09fe50c8731b8472f47a5ffb8ab08c3edcaa89c5fbcc400b959960b3af5f3b7",
+				"aux_ac.raw": "4071f1e9e0e52ccea2378ac47b017ce62a614ad6e94e8122c1de84bfbf83a55e",
+				"aux_ac.timezone": "8b85846791ab2c8a5463c83a5be3c043e2570d7448434d41398969ed47e3e6f2",
+				"battery.dc_prepared_parameters": "90c3010f1039c9a650da4c200910c93096403225b527aa287b5c234a625de1cc",
+				"battery.dc_woo_inputs": "9457fcf034dbcb0df9def07da57c6882e78415ef1f9e54314cdd466f1b9c3980",
+				"battery.metadata": "6856d40932cba8d6e6d91902b27c4676f80ac9905dc686cd824428318fcf176e",
+				"battery.raw": "a8615c37aca87f124262b0c4305fd8655806ae39049aabaff396a8c355adc4f9",
+				"equipment.selection": "ccf9897dbc7bf62ef1c2cd39bc4a02b9b5f013fa9459a1bd151ed91b1db530bd",
+				"gross_load.metadata": "2897b4fea04001e3f1d35ae2921d1802170421374342338b5b5813233216a508",
+				"gross_load.raw": "61751443270e113816b07c2d3fa04a740820006f12a10dbfc0bffedafc8d9459",
+				"gross_load.timezone": "8b85846791ab2c8a5463c83a5be3c043e2570d7448434d41398969ed47e3e6f2",
+				"pv_available_dc.metadata": "5dfa48541e8a0e46b521ed8c0f4485fa8fb76f0e0dfd3b6a9166a6aee89acd85",
+				"pv_available_dc.pv_model_inputs": "829c66aac5055fec138610128ca8120265a67e0f8879fd10c7f5c07540f677fa",
+				"pv_available_dc.pv_model_witness": "7138821e4decdea2048a4a72618c0bc362d210b7935bfd8c44502991c050b3ff",
+				"pv_available_dc.raw": "7ce7119f31715d77ec42e55c925904e2a9031f322b9cc1a0a1a261debb0b96f9",
+				"runtime_bundle": "111b17d3d736009e06c398b0b5382858bcd76fbbc29566942519fa408740e61c",
+				"woo.equipment_inputs": "9457fcf034dbcb0df9def07da57c6882e78415ef1f9e54314cdd466f1b9c3980"
+			},
+			"prepared_dc_parameters": {
+				"battery": {
+					"charge_current_a": 30.0,
+					"charge_power_limit_kw": null,
+					"discharge_current_a": 30.0,
+					"discharge_power_limit_kw": null,
+					"id": "woo:2090",
+					"operating_max_v": 345.6,
+					"operating_min_v": 268.8
+				},
+				"connected_bridge": {
+					"eta_forward": 1.0,
+					"eta_reverse": null,
+					"forward_ac_kw": 10.0,
+					"forward_dc_kw": null,
+					"reverse_ac_kw": null,
+					"reverse_dc_kw": null,
+					"reverse_supported": null
+				},
+				"dc_dc_charge_bus_kw": null,
+				"dc_dc_discharge_bus_kw": null,
+				"loss_scenario": {
+					"battery_port_id": "battery-1",
+					"eta_battery_to_bus": 1.0,
+					"eta_bus_to_battery": 1.0,
+					"eta_inverter_forward": 1.0,
+					"eta_inverter_reverse": null,
+					"eta_store_charge": 1.0,
+					"eta_store_discharge": 1.0,
+					"internal_aux_kw": 0.0,
+					"model": "constant_window_shared_dc_bus_v1",
+					"parameter_basis": "explicit_loss_scenario_with_woo_equipment",
+					"schema_version": 1,
+					"source_note": "Synthetic analytic loss assumptions; not manufacturer performance",
+					"standing_loss_rate_per_hour": 0.0
+				},
+				"model": "constant_window_shared_dc_bus_v1",
+				"outage_bridge": null,
+				"parameter_basis": "woo_selected_equipment_with_explicit_loss_scenario",
+				"product_revisions": {
+					"2090": "17f9d799fbd3400b65838d169faa219d796053f9b69f71088a83584ee88775c8",
+					"2092": "d299deaf2ae480434cda7e12e36668a986d685f84d61bc8d9eb42a95f60b0baa",
+					"4107": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f"
+				},
+				"pv_input_dc_kw": null,
+				"schema_version": 1,
+				"selected_port": {
+					"charge_current_a": 50.0,
+					"charge_power_limit_kw": null,
+					"discharge_current_a": 50.0,
+					"discharge_power_limit_kw": null,
+					"id": "battery-1",
+					"operating_max_v": 800.0,
+					"operating_min_v": 180.0
+				},
+				"selection_sha256": "ccf9897dbc7bf62ef1c2cd39bc4a02b9b5f013fa9459a1bd151ed91b1db530bd",
+				"source_facts": {
+					"2090.max_charge_current_a": {
+						"columns": [],
+						"evidence_refs": [],
+						"qualifier": null,
+						"quantity": "current",
+						"raw_unit": "A",
+						"raw_value": 30,
+						"shape": "scalar",
+						"source": {
+							"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+							"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+							"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+							"figure_key": "max_charge_current_a",
+							"figure_sha256": "c699dbf2d1ad7d0781cdeccf90f85634b612747ca6b2fc1a51102da373f922c8",
+							"page": 2,
+							"product_id": 2090,
+							"product_revision": "17f9d799fbd3400b65838d169faa219d796053f9b69f71088a83584ee88775c8",
+							"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+						},
+						"status": "typed",
+						"unit": "A",
+						"value": 30.0
+					},
+					"2090.max_discharge_current_a": {
+						"columns": [],
+						"evidence_refs": [],
+						"qualifier": null,
+						"quantity": "current",
+						"raw_unit": "A",
+						"raw_value": 30,
+						"shape": "scalar",
+						"source": {
+							"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+							"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+							"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+							"figure_key": "max_discharge_current_a",
+							"figure_sha256": "c699dbf2d1ad7d0781cdeccf90f85634b612747ca6b2fc1a51102da373f922c8",
+							"page": 2,
+							"product_id": 2090,
+							"product_revision": "17f9d799fbd3400b65838d169faa219d796053f9b69f71088a83584ee88775c8",
+							"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+						},
+						"status": "typed",
+						"unit": "A",
+						"value": 30.0
+					},
+					"4107.ac_output_kw_nominal": {
+						"columns": [],
+						"evidence_refs": [],
+						"qualifier": null,
+						"quantity": "active_power",
+						"raw_unit": "W",
+						"raw_value": "10000",
+						"shape": "scalar",
+						"source": {
+							"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+							"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+							"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+							"figure_key": "ac_output_kw_nominal",
+							"figure_sha256": "e2d14e115cf2c0908d2c00d06e9a15608e17a0a25dafae9097edc8e5ebe23c8b",
+							"page": 2,
+							"product_id": 4107,
+							"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+							"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+						},
+						"status": "typed",
+						"unit": "kW",
+						"value": 10.0
+					},
+					"4107.max_battery_charge_a": {
+						"columns": [],
+						"evidence_refs": [],
+						"qualifier": {
+							"connection": "one_stack_per_port",
+							"scope": "per_battery_port"
+						},
+						"quantity": "current",
+						"raw_unit": "A",
+						"raw_value": 50,
+						"shape": "scalar",
+						"source": {
+							"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+							"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+							"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+							"figure_key": "max_battery_charge_a",
+							"figure_sha256": "f6792ad8565a86dc98df89fdfecd2b4500974b08dab7b7b2e7915691e9d54601",
+							"page": 2,
+							"product_id": 4107,
+							"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+							"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+						},
+						"status": "conditional",
+						"unit": "A",
+						"value": 50.0
+					},
+					"4107.max_battery_charge_a.condition_match": {
+						"connection_matched": {
+							"connection": "one_stack_per_port",
+							"scope": "per_battery_port"
+						},
+						"parallel_stacks": 1,
+						"scope": "per_battery_port"
+					},
+					"4107.max_battery_discharge_a": {
+						"columns": [],
+						"evidence_refs": [],
+						"qualifier": {
+							"connection": "one_stack_per_port",
+							"scope": "per_battery_port"
+						},
+						"quantity": "current",
+						"raw_unit": "A",
+						"raw_value": 50,
+						"shape": "scalar",
+						"source": {
+							"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+							"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+							"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+							"figure_key": "max_battery_discharge_a",
+							"figure_sha256": "f6792ad8565a86dc98df89fdfecd2b4500974b08dab7b7b2e7915691e9d54601",
+							"page": 2,
+							"product_id": 4107,
+							"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+							"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+						},
+						"status": "conditional",
+						"unit": "A",
+						"value": 50.0
+					},
+					"4107.max_battery_discharge_a.condition_match": {
+						"connection_matched": {
+							"connection": "one_stack_per_port",
+							"scope": "per_battery_port"
+						},
+						"parallel_stacks": 1,
+						"scope": "per_battery_port"
+					},
+					"4107.n_battery_ports": {
+						"columns": [],
+						"evidence_refs": [],
+						"qualifier": null,
+						"quantity": "count",
+						"raw_unit": "units",
+						"raw_value": 2,
+						"shape": "scalar",
+						"source": {
+							"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+							"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+							"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+							"figure_key": "n_battery_ports",
+							"figure_sha256": "39c4ba8a6ef408cc46d9da89ee087299981d80a7e286dc40c07605bde212ccab",
+							"page": 2,
+							"product_id": 4107,
+							"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+							"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+						},
+						"status": "typed",
+						"unit": "count",
+						"value": 2.0
+					},
+					"4107.rated_ac_power_kw": {
+						"columns": [],
+						"evidence_refs": [],
+						"qualifier": null,
+						"quantity": "active_power",
+						"raw_unit": "kW",
+						"raw_value": 10,
+						"shape": "scalar",
+						"source": {
+							"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+							"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+							"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+							"figure_key": "rated_ac_power_kw",
+							"figure_sha256": "b2dcdd9993acd1abbcca6a3c372722216ddcd8ad9c42082a3bf5bd271aa3a1e2",
+							"page": 2,
+							"product_id": 4107,
+							"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+							"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+						},
+						"status": "typed",
+						"unit": "kW",
+						"value": 10.0
+					},
+					"complete_voltage_window": {
+						"actual": null,
+						"facts": [
+							{
+								"columns": [],
+								"evidence_refs": [],
+								"qualifier": null,
+								"quantity": "voltage",
+								"raw_unit": "V",
+								"raw_value": "180~800",
+								"shape": "interval",
+								"source": {
+									"blob_sha256": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+									"document_id": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+									"document_revision": "60a0bc4755825abbfdd2ba48463804694f952f6c39d424d6eedf05c0aa43b929",
+									"figure_key": "battery_voltage_range_v",
+									"figure_sha256": "810adddeb9230882d7599c9eaac0e6098789213eba6c6a880c2764d4b46e13eb",
+									"page": 2,
+									"product_id": 4107,
+									"product_revision": "3209d863f80180f7f52fdac5cf17352ace12c451297e784de709f000bf519e9f",
+									"url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+								},
+								"status": "typed",
+								"unit": "V",
+								"value": [180.0, 800.0]
+							},
+							{
+								"columns": [
+									{
+										"modules_per_stack": 1
+									},
+									{
+										"modules_per_stack": 2
+									},
+									{
+										"modules_per_stack": 3
+									},
+									{
+										"modules_per_stack": 4
+									},
+									{
+										"modules_per_stack": 5
+									}
+								],
+								"evidence_refs": [],
+								"qualifier": null,
+								"quantity": "voltage",
+								"raw_unit": "V",
+								"raw_value": "89.6-115.2 / 179.2-230.4 / 268.8-345.6 / 358.4-460.8 / 448-576.0",
+								"selected_module_count": 3,
+								"shape": "interval",
+								"source": {
+									"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+									"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+									"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+									"figure_key": "system_operating_voltage_range_v",
+									"figure_sha256": "89e3fbf056d4027f920a818d1bf755e99087a1092e616a674d91cd26354a4fe0",
+									"page": 2,
+									"product_id": 2092,
+									"product_revision": "d299deaf2ae480434cda7e12e36668a986d685f84d61bc8d9eb42a95f60b0baa",
+									"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+								},
+								"status": "typed",
+								"unit": "V",
+								"value": [268.8, 345.6]
+							}
+						],
+						"id": "battery_voltage",
+						"reason": "full_voltage_window_containment",
+						"required": null,
+						"status": "satisfied"
+					},
+					"usable_energy_derivation": {
+						"actual": 13.5,
+						"derivation": {
+							"factors": [4.5, 3],
+							"operation": "multiply",
+							"unit": "kWh"
+						},
+						"facts": [
+							{
+								"columns": [],
+								"evidence_refs": [],
+								"qualifier": null,
+								"quantity": "energy",
+								"raw_unit": "kWh",
+								"raw_value": "4.5",
+								"shape": "scalar",
+								"source": {
+									"blob_sha256": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+									"document_id": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+									"document_revision": "bcbc126f5a706308bc7ce153629f78cc066ad9aa70b4a5cf00f8a0f5b1a2618c",
+									"figure_key": "module_energy_kwh_usable",
+									"figure_sha256": "e6721546bf47f9a8520c678046ddf5997cd351ed7c1418f2ba9ca380755e348b",
+									"page": 2,
+									"product_id": 2090,
+									"product_revision": "17f9d799fbd3400b65838d169faa219d796053f9b69f71088a83584ee88775c8",
+									"url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+								},
+								"status": "typed",
+								"unit": "kWh",
+								"value": 4.5
+							}
+						],
+						"id": "usable_energy",
+						"reason": "cited_usable_energy_and_sales_basis",
+						"required": 0.0,
+						"status": "satisfied"
+					}
+				},
+				"usable_window_kwh": 13.5
+			},
+			"profile_interpretation": {
+				"operating_periods": [
+					{
+						"end_utc": "2020-06-21T14:00:00+00:00",
+						"mode": "connected",
+						"profiles": {
+							"aux_ac": {
+								"effective_max_interval_seconds": 3600.0,
+								"measurement": "aux_ac",
+								"reconstructed_means": false,
+								"source": {
+									"details": {
+										"csv_mapping": {
+											"decimal": ".",
+											"delimiter": ",",
+											"end_fold_column": null,
+											"end_timestamp_column": null,
+											"fold_column": null,
+											"interval_seconds": 3600.0,
+											"measurement": "aux_ac",
+											"offset_rule": "explicit_offset_precedes_naive_timezone",
+											"origin": "synthetic",
+											"timestamp_column": "time",
+											"timestamp_role": "start",
+											"timezone": "UTC",
+											"value_column": "power",
+											"value_kind": "interval_average_kw",
+											"within_interval_assumption": "constant_mean_no_new_observations"
+										},
+										"timezone_rules_sha256": "8b85846791ab2c8a5463c83a5be3c043e2570d7448434d41398969ed47e3e6f2"
+									},
+									"native_max_interval_seconds": 3600.0,
+									"origin": "synthetic",
+									"raw_sha256": "4071f1e9e0e52ccea2378ac47b017ce62a614ad6e94e8122c1de84bfbf83a55e",
+									"timezone": "UTC"
+								},
+								"transformations": [
+									{
+										"exact_interval_copy": true,
+										"input_document_sha256": "f22baabf06c88b5087e5d797c8f3453ef03c2a8aa4e65a17f9b5b6ec59a6b9c3",
+										"input_max_interval_seconds": 3600.0,
+										"method": "energy_preserving_overlap_of_interval_means",
+										"output_max_interval_seconds": 3600.0,
+										"target_axis_sha256": "058c2f282ad21b9d53b7a8de8fa8626c1564e3e1db5764fb22b6be1b139cac0c"
+									}
+								]
+							},
+							"gross_load": {
+								"effective_max_interval_seconds": 3600.0,
+								"measurement": "gross_load",
+								"reconstructed_means": false,
+								"source": {
+									"details": {
+										"csv_mapping": {
+											"decimal": ".",
+											"delimiter": ",",
+											"end_fold_column": null,
+											"end_timestamp_column": null,
+											"fold_column": null,
+											"interval_seconds": 3600.0,
+											"measurement": "gross_load",
+											"offset_rule": "explicit_offset_precedes_naive_timezone",
+											"origin": "synthetic",
+											"timestamp_column": "time",
+											"timestamp_role": "start",
+											"timezone": "UTC",
+											"value_column": "power",
+											"value_kind": "interval_average_kw",
+											"within_interval_assumption": "constant_mean_no_new_observations"
+										},
+										"timezone_rules_sha256": "8b85846791ab2c8a5463c83a5be3c043e2570d7448434d41398969ed47e3e6f2"
+									},
+									"native_max_interval_seconds": 3600.0,
+									"origin": "synthetic",
+									"raw_sha256": "61751443270e113816b07c2d3fa04a740820006f12a10dbfc0bffedafc8d9459",
+									"timezone": "UTC"
+								},
+								"transformations": [
+									{
+										"exact_interval_copy": true,
+										"input_document_sha256": "03c40c1bd753927f5701afd5f3aa6b9df075edd4183f0b3709ec03ff7680275a",
+										"input_max_interval_seconds": 3600.0,
+										"method": "energy_preserving_overlap_of_interval_means",
+										"output_max_interval_seconds": 3600.0,
+										"target_axis_sha256": "058c2f282ad21b9d53b7a8de8fa8626c1564e3e1db5764fb22b6be1b139cac0c"
+									}
+								]
+							},
+							"pv_available_dc": {
+								"effective_max_interval_seconds": 3600,
+								"measurement": "pv_available_dc",
+								"reconstructed_means": true,
+								"source": {
+									"details": {
+										"ac_conversion_applied": false,
+										"array_ids": ["array"],
+										"converter_id": "converter",
+										"geometry_sha256": "64ccd81990dd9597268d6482b101367a3b41fd58a14759e98bc89e05b3b43e70",
+										"input_bundle_sha256": "829c66aac5055fec138610128ca8120265a67e0f8879fd10c7f5c07540f677fa",
+										"libraries": {
+											"numpy": "2.5.3",
+											"pandas": "3.0.6",
+											"pvlib": "0.16.1"
+										},
+										"model": "uniform_unshaded_pvlib_reference_v1",
+										"model_conventions": {
+											"atmospheric_refraction_deg": 0.5667,
+											"delta_t": "spa_year_month",
+											"extraterrestrial_epoch_year": 2014,
+											"extraterrestrial_radiation": "spencer",
+											"perez_coefficients": "allsitescomposite1990",
+											"pvwatts_dc_k": null,
+											"pvwatts_dc_reference_temperature_c": 25.0,
+											"pvwatts_optional_low_light_adjustment": false,
+											"relative_airmass": "kastenyoung1989",
+											"sapm_reference_irradiance_w_m2": 1000.0,
+											"solar_constant_w_m2": 1366.1,
+											"solar_position": "nrel_numpy",
+											"spa_numthreads": 1,
+											"zero_irradiance_policy": "zero_ghi_dni_dhi_implies_zero_poa_before_clearness_model_v1"
+										},
+										"model_role": "unshaded_reference_scenario",
+										"model_witness_sha256": "7138821e4decdea2048a4a72618c0bc362d210b7935bfd8c44502991c050b3ff",
+										"not_assessed": [
+											"near_field_and_inter_row_shading",
+											"bifacial_rear_irradiance",
+											"partial_shading_and_string_electrical_mismatch",
+											"real_mppt_and_port_limits",
+											"manufacturer_efficiency_and_operating_envelope",
+											"equipment_and_country_release"
+										],
+										"output_boundary": "array_mpp_sum_after_declared_dc_factors_before_reference_ac_conversion",
+										"parameters_sha256": "60389e3146777266966afcf971897b2a545cbc17ad9d1c7378351bdaf9af3e5b",
+										"temporal_policy": {
+											"energy_preservation_claim": false,
+											"exact_interval_copy": false,
+											"input_document_sha256": "829c66aac5055fec138610128ca8120265a67e0f8879fd10c7f5c07540f677fa",
+											"input_max_interval_seconds": 3600,
+											"interval_assignment_basis": "explicit_model_policy_not_observed_interval_power",
+											"method": "representative_pv_output_over_declared_intervals_v1",
+											"native_value_semantics": "weather_records_with_separate_irradiance_instants",
+											"output_max_interval_seconds": 3600.0,
+											"output_value_semantics": "reconstructed_interval_average",
+											"target_axis_sha256": "058c2f282ad21b9d53b7a8de8fa8626c1564e3e1db5764fb22b6be1b139cac0c"
+										},
+										"weather_document_sha256": "a4ad9375f1c1e27a3ac2660e8ad4aa59a39ce96cc7bcbea056bc7d39872c6eb9",
+										"weather_original_sha256": "7ce7119f31715d77ec42e55c925904e2a9031f322b9cc1a0a1a261debb0b96f9",
+										"weather_source": {
+											"details": {
+												"basis": "synthetic_fixture",
+												"label": "Analytic two-hour fixture; no real customer, weather or SKU",
+												"rights_basis": "created by this test; permanent private retention allowed"
+											},
+											"native_max_interval_seconds": 3600,
+											"origin": "synthetic",
+											"raw_sha256": "7ce7119f31715d77ec42e55c925904e2a9031f322b9cc1a0a1a261debb0b96f9",
+											"timezone": "UTC"
+										}
+									},
+									"native_max_interval_seconds": 3600,
+									"origin": "modelled",
+									"raw_sha256": "829c66aac5055fec138610128ca8120265a67e0f8879fd10c7f5c07540f677fa",
+									"timezone": "UTC"
+								},
+								"transformations": [
+									{
+										"energy_preservation_claim": false,
+										"exact_interval_copy": false,
+										"input_document_sha256": "829c66aac5055fec138610128ca8120265a67e0f8879fd10c7f5c07540f677fa",
+										"input_max_interval_seconds": 3600,
+										"interval_assignment_basis": "explicit_model_policy_not_observed_interval_power",
+										"method": "representative_pv_output_over_declared_intervals_v1",
+										"native_value_semantics": "weather_records_with_separate_irradiance_instants",
+										"output_max_interval_seconds": 3600.0,
+										"output_value_semantics": "reconstructed_interval_average",
+										"target_axis_sha256": "058c2f282ad21b9d53b7a8de8fa8626c1564e3e1db5764fb22b6be1b139cac0c"
+									},
+									{
+										"exact_interval_copy": true,
+										"input_document_sha256": "39eac416847399d3f2c3ac400db3ef2754e8666ef8de803016bbb304018be58e",
+										"input_max_interval_seconds": 3600.0,
+										"method": "energy_preserving_overlap_of_interval_means",
+										"output_max_interval_seconds": 3600.0,
+										"target_axis_sha256": "058c2f282ad21b9d53b7a8de8fa8626c1564e3e1db5764fb22b6be1b139cac0c"
+									}
+								]
+							}
+						},
+						"start_utc": "2020-06-21T12:00:00+00:00"
+					}
+				]
+			},
+			"project_id": "2944618584d84e92b5d6d21cd0ce62bf",
+			"revision": 2,
+			"runtime_sha256": "111b17d3d736009e06c398b0b5382858bcd76fbbc29566942519fa408740e61c",
+			"scenario_constraint_status": "satisfied",
+			"schema": 1,
+			"trace_sha256": "5f2f299f3eed2933d918a42216693d369aaa8653c0eddbfc3c6235641eaf54cd",
+			"verification": {
+				"checks": [
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "nonnegative_flows",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "internal_aux_nonnegative",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": -0.0
+					},
+					{
+						"allowance": 0.0,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "continuous_axis",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "pv_dc_aux_priority",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "pv_ac_load_before_storage",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "pv_surplus_only_charge",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.02e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "load_supplied",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "aux_ac_supplied",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "aux_dc_supplied",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "internal_aux_supplied",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "load_before_ac_aux",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "load_before_pv_export",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "pv_input_stage",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "pv_input_limit",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "pv_bus_allocation",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "dc_bus_balance",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "dc_aux_supply",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "charge_dc_dc",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "discharge_dc_dc",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "forward_dc_sources",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "reverse_dc_sinks",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "shared_forward_conversion",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "one_bridge_direction",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "shared_forward_ac_cap",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "reverse_path_not_available",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "ac_bus_balance",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "load_sources",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "ac_aux_sources",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "import_sinks",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "pv_ac_allocation",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "battery_ac_allocation",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "charge_terminal_cap",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "discharge_terminal_cap",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "mutually_exclusive_battery",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "charge_command",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "discharge_command",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "grid_charge_policy",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "import_cap",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "export_cap",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "internal_aux_supply",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "internal_aux_shortage",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "actual_terminal_withdrawal",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.7763568394002505e-15,
+						"arithmetic_allowance": 1.7763568394002505e-15,
+						"at_interval": 0,
+						"code": "usable_window",
+						"passed": true,
+						"unit": "kWh",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 0.0,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "reserve",
+						"passed": true,
+						"unit": "kWh",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 0.0,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "inventory_charge_power",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 0.0,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "inventory_discharge_power",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 0.0,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "state_continuity",
+						"passed": true,
+						"unit": "kWh",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "standing_loss_sources",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "internal_aux_sources",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "proportional_discharge_sources",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "stored_source_balance",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					},
+					{
+						"allowance": 1.08064e-7,
+						"arithmetic_allowance": 0.0,
+						"at_interval": 0,
+						"code": "load_discharge_sources",
+						"passed": true,
+						"unit": "kW",
+						"worst_violation": 0.0
+					}
+				],
+				"passed": true,
+				"tolerance": {
+					"absolute_kw": 1e-7,
+					"absolute_kwh": 1e-7,
+					"relative": 1e-9,
+					"role": "floating_point_arithmetic_not_engineering_margin"
+				}
+			}
+		},
+		"error": null
+	},
+	"trace": {
+		"schema_version": 1,
+		"run_id": "3e01c889025b45fdbbb95adb87a740d5",
+		"manifest_sha256": "c9b2d1bfc3206908d4c5898e760d3112e6956e20737a4d84da76902efd9d3cf1",
+		"trace_sha256": "5f2f299f3eed2933d918a42216693d369aaa8653c0eddbfc3c6235641eaf54cd",
+		"interval_count": 2,
+		"offset": 0,
+		"rows": [
+			{
+				"interval_index": 0,
+				"start_utc": "2020-06-21T12:00:00+00:00",
+				"end_utc": "2020-06-21T13:00:00+00:00",
+				"load_kw": 2.0,
+				"pv_kw": 1.84,
+				"charge_kw": 0.0,
+				"discharge_kw": 0.0,
+				"import_kw": 0.15999999999999992,
+				"export_kw": 0.0,
+				"stored_kwh": 0.0
+			},
+			{
+				"interval_index": 1,
+				"start_utc": "2020-06-21T13:00:00+00:00",
+				"end_utc": "2020-06-21T14:00:00+00:00",
+				"load_kw": 2.0,
+				"pv_kw": 0.0,
+				"charge_kw": 0.0,
+				"discharge_kw": 0.0,
+				"import_kw": 2.0,
+				"export_kw": 0.0,
+				"stored_kwh": 0.0
+			}
+		],
+		"next_offset": null,
+		"measurement_boundaries": {
+			"pv": "PV_DC_bus",
+			"charge": "battery_DC_terminal",
+			"discharge": "battery_DC_terminal",
+			"import": "grid_AC",
+			"export": "grid_AC"
+		}
+	}
+}

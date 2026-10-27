@@ -1,0 +1,360 @@
+[
+  {
+    "url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/usage-conditions-data-protection_en",
+    "crawl": {
+      "loadedUrl": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/usage-conditions-data-protection_en",
+      "loadedTime": "2026-10-22T17:48:31.955Z",
+      "referrerUrl": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/usage-conditions-data-protection_en",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 18180,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/usage-conditions-data-protection_en",
+      "title": "Usage Conditions & Data Protection - Joint Research Centre",
+      "description": "For information about data protection policies, please see:the European Commission's privacy policynote on the JRC operational environment in the...",
+      "author": null,
+      "keywords": "applied sciences",
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:determiner",
+          "content": "auto"
+        },
+        {
+          "property": "og:site_name",
+          "content": "Joint Research Centre"
+        },
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "property": "og:url",
+          "content": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/usage-conditions-data-protection_en"
+        },
+        {
+          "property": "og:title",
+          "content": "Usage Conditions & Data Protection"
+        },
+        {
+          "property": "og:description",
+          "content": "For information about data protection policies, please see:the European Commission's privacy policynote on the JRC operational environment in the..."
+        },
+        {
+          "property": "og:image",
+          "content": "https://joint-research-centre.ec.europa.eu/profiles/contrib/ewcms/modules/ewcms_seo/assets/images/ec-socialmedia-fallback.png"
+        },
+        {
+          "property": "og:image:alt",
+          "content": "Joint Research Centre"
+        }
+      ],
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "item": {
+                "@id": "https://joint-research-centre.ec.europa.eu/index_en",
+                "name": "Home"
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "item": {
+                "@id": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis_en",
+                "name": "Photovoltaic Geographical Information System (PVGIS)"
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "item": {
+                "@id": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information_en",
+                "name": "General Information"
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 4,
+              "item": {
+                "@id": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/usage-conditions-data-protection_en",
+                "name": "Usage Conditions &amp; Data Protection"
+              }
+            }
+          ]
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "CreativeWork",
+          "name": "Usage Conditions & Data Protection",
+          "description": "For information about data protection policies, please see:the European Commission's privacy policynote on the JRC operational environment in the...",
+          "url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/usage-conditions-data-protection",
+          "about": [
+            {
+              "@type": "DefinedTerm",
+              "name": "applied sciences",
+              "inDefinedTermSet": {
+                "@type": "DefinedTermSet",
+                "name": "Digital Europa Thesaurus",
+                "alternateName": "DET",
+                "url": "http://publications.europa.eu/resource/dataset/det",
+                "description": "Multilingual thesaurus for digital Europe covering EU policy areas.",
+                "publisher": {
+                  "@type": "GovernmentOrganization",
+                  "name": "Publications Office of the European Union",
+                  "url": "http://publications.europa.eu/resource/authority/corporate-body/PUBL"
+                }
+              },
+              "@id": "http://data.europa.eu/uxp/3949"
+            }
+          ],
+          "publisher": [
+            {
+              "@type": [
+                "GovernmentOrganization",
+                "DefinedTerm"
+              ],
+              "identifier": {
+                "@type": "PropertyValue",
+                "propertyID": "http://publications.europa.eu/resource/authority/corporate-body",
+                "value": "JRC",
+                "url": "http://publications.europa.eu/resource/authority/corporate-body/JRC"
+              },
+              "name": "Joint Research Centre",
+              "alternateName": "JRC",
+              "inDefinedTermSet": {
+                "@type": "DefinedTermSet",
+                "name": "Corporate body",
+                "url": "http://publications.europa.eu/resource/authority/corporate-body",
+                "description": "Authority table for EU corporate bodies and organizations",
+                "publisher": {
+                  "@type": "GovernmentOrganization",
+                  "name": "Publications Office of the European Union",
+                  "url": "http://publications.europa.eu/resource/authority/corporate-body/PUBL"
+                }
+              },
+              "@id": "http://publications.europa.eu/resource/authority/corporate-body/JRC"
+            }
+          ],
+          "author": [],
+          "datePublished": "2020-06-19T15:24:41+02:00",
+          "dateModified": "2026-04-30T11:36:26+02:00"
+        }
+      ],
+      "headers": {
+        "accept-ranges": "bytes",
+        "cache-control": "public, max-age=300, s-maxage=300",
+        "content-encoding": "gzip",
+        "content-language": "en",
+        "content-length": "18180",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 22 Oct 2026 17:48:31 GMT",
+        "expires": "Sun, 19 Nov 1978 05:00:00 GMT",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload;",
+        "vary": "Accept-Encoding",
+        "via": "1.1 4073e928c1619b2d429d566d665d6a12.cloudfront.net (CloudFront)",
+        "x-age": "3874",
+        "x-amz-cf-id": "x39xWYdWaxsdtSj3EZXU_jWLNSGmY2H9i295anTK82Pwhnfe3SrJrw==",
+        "x-amz-cf-pop": "DFW56-P8",
+        "x-cache": "Miss from cloudfront",
+        "x-content-type-options": "nosniff",
+        "x-fpfis": "482451 17596",
+        "x-frame-options": "SAMEORIGIN"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Skip to main content \nen\nSearch\nSearch\nJoint Research Centre\nUsage Conditions & Data Protection\n1. Licence & usage conditions\nThe information provided by PVGIS S is free and there are no restrictions on its use. \n2. Data Protection\nFor information about data protection policies, please see:\nthe European Commission's privacy policy\nnote on the JRC operational environment in the Register of the Data Protection Officer\n3. Disclaimer\nPVGIS documentation and output from the online tools do not necessarily reflect the position or opinion of the European Commission. Neither the European Commission nor any person acting on behalf of the Commission is responsible for the use that might be made of this information. The designations employed and the presentation of material on the maps do not imply the expression of any opinion whatsoever on the part of the European Union concerning the legal status of any country, territory, city or area or of its authorities, or concerning the delimitation of its frontiers or boundaries.",
+    "html": "<html>\n        <head>\n            <title>\n                Usage Conditions & Data Protection - Joint Research Centre\n            </title>\n        </head>\n        <body>\n            <a href=\"#main-content\" class=\"ecl-link ecl-link--primary ecl-skip-link\" id=\"skip-id\">Skip to main content</a>\n\n        <div id=\"cck_here\"></div>    \n\n      <div class=\"dialog-off-canvas-main-canvas\" data-off-canvas-main-canvas>\n          <header class=\"ecl-site-header ecl-site-header-with-logo-l ecl-site-header--has-menu\" data-ecl-auto-init=\"SiteHeader\">\n  \n    <div class=\"ecl-site-header__header\">\n        <div class=\"ecl-site-header__inner\">\n      <div class=\"ecl-site-header__background\">\n        <div class=\"ecl-site-header__header\">\n          <div class=\"ecl-site-header__container ecl-container\">\n            <div class=\"ecl-site-header__top\" data-ecl-site-header-top>\n                    <a class=\"ecl-link ecl-link--standalone ecl-site-header__logo-link\" href=\"https://commission.europa.eu/index_en\" aria-label=\"Home - European Commission\" data-aria-label-en=\"Home - European Commission\">\n                                <picture class=\"ecl-picture ecl-site-header__picture\" title=\"European Commission\"><source srcset=\"/themes/contrib/oe_theme/dist/ec/images/logo/positive/logo-ec--en.svg\" media=\"(min-width: 996px)\"><img class=\"ecl-site-header__logo-image ecl-site-header__logo-image--l\" src=\"/themes/contrib/oe_theme/dist/ec/images/logo/logo-ec--mute.svg\" alt=\"European Commission logo\"></picture>  </a>\n\n\n              <div class=\"ecl-site-header__action\">\n                  <div class=\"ecl-site-header__language\"><a class=\"ecl-button ecl-button--tertiary ecl-button--neutral ecl-site-header__language-selector\" href=\"https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/usage-conditions-data-protection_en\" data-ecl-language-selector role=\"button\" aria-label=\"Change language, current language is English - en\" aria-controls=\"language-list-overlay\"><span class=\"ecl-site-header__language-icon\"><span class=\"wt-icon--global ecl-icon ecl-icon--m ecl-site-header__icon ecl-icon--global\" aria-hidden=\"false\" title=\"en\" role=\"img\"></span></span>en</a></div>\n<div class=\"ecl-site-header__search-container\" role=\"search\">\n  <a class=\"ecl-button ecl-button--tertiary ecl-button--neutral ecl-site-header__search-toggle\" href data-ecl-search-toggle=\"true\" aria-controls aria-expanded=\"false\"><span class=\"wt-icon--search ecl-icon ecl-icon--s ecl-site-header__icon ecl-icon--search\" aria-hidden=\"true\" role=\"img\"></span></a>\n  \n<form class=\"ecl-search-form ecl-site-header__search\" data-drupal-selector=\"oe-search-search-form\" action=\"/photovoltaic-geographical-information-system-pvgis/general-information/usage-conditions-data-protection_en\" method=\"post\" id=\"oe-search-search-form\" accept-charset=\"UTF-8\" data-ecl-search-form><div class=\"ecl-form-group\"><label for=\"edit-keys\" id=\"edit-keys-label\" class=\"ecl-form-label-wrapper ecl-search-form__label\"><span class=\"ecl-form-label\">Search</span></label><input id=\"edit-keys\" class=\"ecl-text-input ecl-text-input--m ecl-search-form__text-input form-search ecl-search-form__text-input\" name=\"keys\" type=\"search\"></div><button class=\"ecl-button ecl-button--tertiary ecl-search-form__button ecl-search-form__button ecl-button--icon-only\" type=\"submit\"><span class=\"ecl-button__container\"><span class=\"wt-icon--search ecl-icon ecl-icon--m ecl-button__icon ecl-icon--search\" aria-hidden=\"true\" data-ecl-icon></span><span class=\"ecl-button__label\" data-ecl-label=\"true\">Search</span></span></button><input autocomplete=\"off\" data-drupal-selector=\"form-ip-mr1zngxz864-uf-4elebmeeqaaipx9uzxhmeujue\" type=\"hidden\" name=\"form_build_id\" value=\"form-ip_mR1ZNgXZ864_Uf-4eLeBMeEqAAiPx9uZXHmEUJuE\"><input data-drupal-selector=\"edit-oe-search-search-form\" type=\"hidden\" name=\"form_id\" value=\"oe_search_search_form\"></form>\n  \n</div>\n\n\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  \n  </div>\n      <div>\n    <div id=\"block-machinetranslation\">\n  \n    \n      <div class=\"ecl-lang-select-page ecl-u-pv-m ecl-u-d-none\" id=\"etrans-block\">\n  <div class=\"ecl-container\">\n    <div class=\"webtools-etrans--wrapper\">\n      <div id=\"webtools-etrans\"></div>\n      <div class=\"webtools-etrans--message\">\n              </div>\n    </div>\n  </div>\n</div>\n<div class=\"ecl-lang-select-page ecl-u-pv-m ecl-u-d-none\" id=\"no-etrans-block\">\n  <div class=\"ecl-container\">\n    <div class=\"webtools-etrans--wrapper\">\n      <div id=\"webtools-etrans\"></div>\n      <div class=\"webtools-etrans--message\">\n              </div>\n    </div>\n  </div>\n</div>\n\n  </div>\n\n  </div>\n\n  \n          <div class=\"ecl-site-header__banner\">\n      <div class=\"ecl-container\">\n                  <div class=\"ecl-site-header__site-name\">Joint Research Centre</div>\n                      </div>\n    </div>\n      <div id=\"block-ewcms-theme-megamenu\">\n  \n    \n      \n\n      \n      \n      \n                    \n                                                                  \n                  \n            \n                                  \n                                                                                                                                                                                                                  \n                                  \n                                                                              \n                                  \n            \n                                  \n            \n                                  \n                                                                              \n                      \n                          \n          \n      \n      \n      \n                    \n                                                                  \n                  \n            \n                                  \n            \n                                  \n            \n                                  \n            \n                                  \n            \n                                  \n            \n                                  \n            \n                                  \n            \n                      \n                          \n          \n                                                                  \n                  \n            \n                                  \n            \n                                  \n            \n                                  \n            \n                                  \n            \n                                  \n            \n                      \n                          \n          \n      \n      \n      \n                    \n                                                                  \n                  \n            \n                                  \n            \n                                  \n            \n                                  \n                                                                                                                                                \n                                  \n                                                                              \n                                  \n            \n                                  \n            \n                      \n                          \n          \n            \n\n  </div>\n\n\n\n</header>\n\n            <div class=\"ecl-u-mb-2xl\" id=\"block-ewcms-theme-page-header\">\n  \n    \n      \n                \n  \n\n\n<div class=\"ecl-page-header\"><div class=\"ecl-page-header__container\"><div class=\"ecl-container\"><h1 class=\"ecl-page-header__title\"><span>Usage Conditions &amp; Data Protection</span></h1></div></div></div>\n  </div>\n\n\n  \n\n  <main class=\"ecl-u-pb-xl\" id=\"main-content\" data-inpage-navigation-source-area=\"h2.ecl-u-type-heading-2, div.ecl-featured-item__heading, div.ecl-quiz__title\">\n    <div class=\"ecl-container\">\n      <div class=\"ecl-row\">\n        <div class=\"ecl-col-s-12 ewcms-top-sidebar\">\n            <div>\n    <div data-drupal-messages-fallback class=\"hidden\"></div>\n  </div>\n\n        </div>\n      </div>\n      <div class=\"ecl-row\">\n        <div class=\"ecl-col-s-12\">\n                      <div id=\"block-ewcms-theme-main-page-content\" data-inpage-navigation-source-area=\"h2, div.ecl-featured-item__heading\" class=\"ecl-u-mb-l\">\n  \n    \n      <article dir=\"ltr\">\n\n  \n    \n\n  \n  <div>\n    <div class=\"ecl\"><h2>1. Licence &amp; usage conditions</h2><p>The information provided by PVGIS S is free and there are no restrictions on its use. &#xa0;</p><h2>2. Data Protection</h2><p>For information about data protection policies, please see:</p><ul><li>the <a href=\"https://ec.europa.eu/info/privacy-policy_en\">European Commission&apos;s privacy policy</a></li><li>note on the JRC operational environment in the <a href=\"https://ec.europa.eu/dpo-register/detail/DPO-2067\">Register of the Data Protection Officer</a></li></ul><h2>3. Disclaimer</h2><p>PVGIS documentation and output from the online tools do not necessarily reflect the position or opinion of the European Commission. Neither the European Commission nor any person acting on behalf of the Commission is responsible for the use that might be made of this information. The designations employed and the presentation of material on the maps do not imply the expression of any opinion whatsoever on the part of the European Union concerning the legal status of any country, territory, city or area or of its authorities, or concerning the delimitation of its frontiers or boundaries.</p></div>\n\n  </div>\n\n</article>\n\n  </div>\n\n            \n                  </div>\n      </div>\n      <div class=\"ecl-row\">\n        <div class=\"ecl-col-s-12\">\n          \n          \n        </div>\n      </div>\n    </div>\n  </main>\n\n        <div id=\"block-ewcms-theme-pagefeedbackform\">\n  \n    \n      \n\n  </div>\n  \n\n\n  \n\n  \n\n  \n    \n\n\n    \n    \n  \n\n\n  \n  </div>\n        </body>\n    </html>",
+    "htmlUrl": null,
+    "markdown": "Usage Conditions & Data Protection - Joint Research Centre [Skip to main content](https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/usage-conditions-data-protection_en#main-content)\n\n[![European Commission logo](/themes/contrib/oe_theme/dist/ec/images/logo/logo-ec--mute.svg)](https://commission.europa.eu/index_en)\n\n[en](https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/usage-conditions-data-protection_en)\n\nSearch\n\nSearch\n\nJoint Research Centre\n\n# Usage Conditions & Data Protection\n\n## 1\\. Licence & usage conditions\n\nThe information provided by PVGIS S is free and there are no restrictions on its use. \u00a0\n\n## 2\\. Data Protection\n\nFor information about data protection policies, please see:\n\n*   the [European Commission's privacy policy](https://ec.europa.eu/info/privacy-policy_en)\n*   note on the JRC operational environment in the [Register of the Data Protection Officer](https://ec.europa.eu/dpo-register/detail/DPO-2067)\n\n## 3\\. Disclaimer\n\nPVGIS documentation and output from the online tools do not necessarily reflect the position or opinion of the European Commission. Neither the European Commission nor any person acting on behalf of the Commission is responsible for the use that might be made of this information. The designations employed and the presentation of material on the maps do not imply the expression of any opinion whatsoever on the part of the European Union concerning the legal status of any country, territory, city or area or of its authorities, or concerning the delimitation of its frontiers or boundaries.",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/frequently-asked-questions_en",
+    "crawl": {
+      "loadedUrl": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/frequently-asked-questions_en",
+      "loadedTime": "2026-10-22T17:48:33.162Z",
+      "referrerUrl": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/frequently-asked-questions_en",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 19444,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/frequently-asked-questions_en",
+      "title": "Frequently Asked Questions - Joint Research Centre - European Commission",
+      "description": "Using PVGISWhy doesn't PVGIS work???, or, PVGIS doesn't let me make a calculation!!In 99% of the cases, PVGIS actually works just fine. If PVGIS doesn...",
+      "author": null,
+      "keywords": "applied sciences",
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:determiner",
+          "content": "auto"
+        },
+        {
+          "property": "og:site_name",
+          "content": "Joint Research Centre"
+        },
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "property": "og:url",
+          "content": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/frequently-asked-questions_en"
+        },
+        {
+          "property": "og:title",
+          "content": "Frequently Asked Questions"
+        },
+        {
+          "property": "og:description",
+          "content": "Using PVGISWhy doesn't PVGIS work???, or, PVGIS doesn't let me make a calculation!!In 99% of the cases, PVGIS actually works just fine. If PVGIS doesn..."
+        },
+        {
+          "property": "og:image",
+          "content": "https://joint-research-centre.ec.europa.eu/profiles/contrib/ewcms/modules/ewcms_seo/assets/images/ec-socialmedia-fallback.png"
+        },
+        {
+          "property": "og:image:alt",
+          "content": "Joint Research Centre"
+        }
+      ],
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "item": {
+                "@id": "https://joint-research-centre.ec.europa.eu/index_en",
+                "name": "Home"
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "item": {
+                "@id": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis_en",
+                "name": "Photovoltaic Geographical Information System (PVGIS)"
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "item": {
+                "@id": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information_en",
+                "name": "General Information"
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 4,
+              "item": {
+                "@id": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/frequently-asked-questions_en",
+                "name": "Frequently Asked Questions"
+              }
+            }
+          ]
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "CreativeWork",
+          "name": "Frequently Asked Questions",
+          "description": "Using PVGISWhy doesn't PVGIS work???, or, PVGIS doesn't let me make a calculation!!In 99% of the cases, PVGIS actually works just fine. If PVGIS doesn...",
+          "url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/frequently-asked-questions",
+          "about": [
+            {
+              "@type": "DefinedTerm",
+              "name": "applied sciences",
+              "inDefinedTermSet": {
+                "@type": "DefinedTermSet",
+                "name": "Digital Europa Thesaurus",
+                "alternateName": "DET",
+                "url": "http://publications.europa.eu/resource/dataset/det",
+                "description": "Multilingual thesaurus for digital Europe covering EU policy areas.",
+                "publisher": {
+                  "@type": "GovernmentOrganization",
+                  "name": "Publications Office of the European Union",
+                  "url": "http://publications.europa.eu/resource/authority/corporate-body/PUBL"
+                }
+              },
+              "@id": "http://data.europa.eu/uxp/3949"
+            }
+          ],
+          "publisher": [
+            {
+              "@type": [
+                "GovernmentOrganization",
+                "DefinedTerm"
+              ],
+              "identifier": {
+                "@type": "PropertyValue",
+                "propertyID": "http://publications.europa.eu/resource/authority/corporate-body",
+                "value": "JRC",
+                "url": "http://publications.europa.eu/resource/authority/corporate-body/JRC"
+              },
+              "name": "Joint Research Centre",
+              "alternateName": "JRC",
+              "inDefinedTermSet": {
+                "@type": "DefinedTermSet",
+                "name": "Corporate body",
+                "url": "http://publications.europa.eu/resource/authority/corporate-body",
+                "description": "Authority table for EU corporate bodies and organizations",
+                "publisher": {
+                  "@type": "GovernmentOrganization",
+                  "name": "Publications Office of the European Union",
+                  "url": "http://publications.europa.eu/resource/authority/corporate-body/PUBL"
+                }
+              },
+              "@id": "http://publications.europa.eu/resource/authority/corporate-body/JRC"
+            }
+          ],
+          "author": [],
+          "datePublished": "2023-03-21T07:50:13+01:00",
+          "dateModified": "2026-04-30T12:16:21+02:00"
+        }
+      ],
+      "headers": {
+        "accept-ranges": "bytes",
+        "cache-control": "public, max-age=300, s-maxage=300",
+        "content-encoding": "gzip",
+        "content-language": "en",
+        "content-length": "19444",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 22 Oct 2026 17:48:32 GMT",
+        "expires": "Sun, 19 Nov 1978 05:00:00 GMT",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload;",
+        "vary": "Accept-Encoding",
+        "via": "1.1 f26dfbe988a7b848996c166e29cfa8a2.cloudfront.net (CloudFront)",
+        "x-age": "3885",
+        "x-amz-cf-id": "XvY3Lt09LVDRUBIem966FsMYFHVcmCfXnHQKDC1iMbEEED4B8wh_2A==",
+        "x-amz-cf-pop": "LAX50-P2",
+        "x-cache": "Miss from cloudfront",
+        "x-content-type-options": "nosniff",
+        "x-fpfis": "1449270 996775",
+        "x-frame-options": "SAMEORIGIN"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Skip to main content \nen\nSearch\nSearch\nJoint Research Centre\nFrequently Asked Questions\nWhy doesn't PVGIS work? or PVGIS doesn't let me make a calculation!\nIn 99% of the cases, PVGIS actually works just fine. If PVGIS doesn't allow you to make a calculation because the visualize or download buttons don't work, it is almost always because you have not chosen the location for which you want to make the calculation. You can choose the location by:\nClicking on the map\nEntering an address (or country or city name)\nTyping in latitude and longitude coordinates\nWhere do I enter the PV module efficiency?, and/or, where do I enter the module area?\nIn PVGIS you should enter the nominal power of the PV system (a.k.a. peak power or rated power). If you know the nominal power of your system, you don't need to know the efficiency, except to calculate the area of the modules. This is why:\nThe nominal power or peak power is the power claimed by the manufacturer of the module or system. It is the power output of the module(s) measured at 1000 W/m2 solar irradiance (and a module temperature of 25\u00b0 C and a solar spectrum corresponding to an air mass of 1.5. These conditions are known as Standard Test Conditions (STC)). This means that if your modules were 100% efficient, you would need 1 m2 to get a system with a peak power of 1 kW.\nSince the modules are NOT 100% efficient you need a bigger area. If you have 10% efficient modules you will need 10 m2 to have a 1 kWp system. We will call the module efficiency at Standard Test Conditions as effnom.\nIn other words, if Ppk is the nominal power and A the area of the module(s), we have\nPpk= A*effnom (1)\nThe different PV losses do not add up!\nWe calculate the losses as multiplicative. For instance: if the angle-of-incidence losses are 3.7% and the temperature/irradiance losses are 7.2%, then we first lose 3.7% reflected away at the surface and then we lose 7.2% of the rest of the energy because of high temperature or low irradiance. Finally the system losses may be 14% which is calculated on what is left after the temperature/irradiance losses. The total loss will then be 100*(1-(1-0.037)*(1-0.072)*(1-0.14))=23.1%.\nWhat methods are used for the PVGIS calculations?\nWe often receive questions about the methods used to calculate the PV output or the solar radiation data that PVGIS provides. The following page describes all the methods:\nData sources & calculation methods\nIntroduction to solar radiationThe solar radiation that reaches the top of the atmosphere on a perpendicular plane to the rays, known as solar...\nDo the PVGIS calculations take into account the effect of clouds?\nYes, PVGIS uses solar radiation data based on satellite images which are used to identify the presence and the thickness of clouds. A short overview of these methods is found in the page about methods.",
+    "html": "<html>\n        <head>\n            <title>\n                Frequently Asked Questions - Joint Research Centre - European Commission\n            </title>\n        </head>\n        <body>\n            <a href=\"#main-content\" class=\"ecl-link ecl-link--primary ecl-skip-link\" id=\"skip-id\">Skip to main content</a>\n\n        <div id=\"cck_here\"></div>    \n\n      <div class=\"dialog-off-canvas-main-canvas\" data-off-canvas-main-canvas>\n          <header class=\"ecl-site-header ecl-site-header-with-logo-l ecl-site-header--has-menu\" data-ecl-auto-init=\"SiteHeader\">\n  \n    <div class=\"ecl-site-header__header\">\n        <div class=\"ecl-site-header__inner\">\n      <div class=\"ecl-site-header__background\">\n        <div class=\"ecl-site-header__header\">\n          <div class=\"ecl-site-header__container ecl-container\">\n            <div class=\"ecl-site-header__top\" data-ecl-site-header-top>\n                    <a class=\"ecl-link ecl-link--standalone ecl-site-header__logo-link\" href=\"https://commission.europa.eu/index_en\" aria-label=\"Home - European Commission\" data-aria-label-en=\"Home - European Commission\">\n                                <picture class=\"ecl-picture ecl-site-header__picture\" title=\"European Commission\"><source srcset=\"/themes/contrib/oe_theme/dist/ec/images/logo/positive/logo-ec--en.svg\" media=\"(min-width: 996px)\"><img class=\"ecl-site-header__logo-image ecl-site-header__logo-image--l\" src=\"/themes/contrib/oe_theme/dist/ec/images/logo/logo-ec--mute.svg\" alt=\"European Commission logo\"></picture>  </a>\n\n\n              <div class=\"ecl-site-header__action\">\n                  <div class=\"ecl-site-header__language\"><a class=\"ecl-button ecl-button--tertiary ecl-button--neutral ecl-site-header__language-selector\" href=\"https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/frequently-asked-questions_en\" data-ecl-language-selector role=\"button\" aria-label=\"Change language, current language is English - en\" aria-controls=\"language-list-overlay\"><span class=\"ecl-site-header__language-icon\"><span class=\"wt-icon--global ecl-icon ecl-icon--m ecl-site-header__icon ecl-icon--global\" aria-hidden=\"false\" title=\"en\" role=\"img\"></span></span>en</a></div>\n<div class=\"ecl-site-header__search-container\" role=\"search\">\n  <a class=\"ecl-button ecl-button--tertiary ecl-button--neutral ecl-site-header__search-toggle\" href data-ecl-search-toggle=\"true\" aria-controls aria-expanded=\"false\"><span class=\"wt-icon--search ecl-icon ecl-icon--s ecl-site-header__icon ecl-icon--search\" aria-hidden=\"true\" role=\"img\"></span></a>\n  \n<form class=\"ecl-search-form ecl-site-header__search\" data-drupal-selector=\"oe-search-search-form\" action=\"/photovoltaic-geographical-information-system-pvgis/general-information/frequently-asked-questions_en\" method=\"post\" id=\"oe-search-search-form\" accept-charset=\"UTF-8\" data-ecl-search-form><div class=\"ecl-form-group\"><label for=\"edit-keys\" id=\"edit-keys-label\" class=\"ecl-form-label-wrapper ecl-search-form__label\"><span class=\"ecl-form-label\">Search</span></label><input id=\"edit-keys\" class=\"ecl-text-input ecl-text-input--m ecl-search-form__text-input form-search ecl-search-form__text-input\" name=\"keys\" type=\"search\"></div><button class=\"ecl-button ecl-button--tertiary ecl-search-form__button ecl-search-form__button ecl-button--icon-only\" type=\"submit\"><span class=\"ecl-button__container\"><span class=\"wt-icon--search ecl-icon ecl-icon--m ecl-button__icon ecl-icon--search\" aria-hidden=\"true\" data-ecl-icon></span><span class=\"ecl-button__label\" data-ecl-label=\"true\">Search</span></span></button><input autocomplete=\"off\" data-drupal-selector=\"form-ip-mr1zngxz864-uf-4elebmeeqaaipx9uzxhmeujue\" type=\"hidden\" name=\"form_build_id\" value=\"form-ip_mR1ZNgXZ864_Uf-4eLeBMeEqAAiPx9uZXHmEUJuE\"><input data-drupal-selector=\"edit-oe-search-search-form\" type=\"hidden\" name=\"form_id\" value=\"oe_search_search_form\"></form>\n  \n</div>\n\n\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  \n  </div>\n      <div>\n    <div id=\"block-machinetranslation\">\n  \n    \n      <div class=\"ecl-lang-select-page ecl-u-pv-m ecl-u-d-none\" id=\"etrans-block\">\n  <div class=\"ecl-container\">\n    <div class=\"webtools-etrans--wrapper\">\n      <div id=\"webtools-etrans\"></div>\n      <div class=\"webtools-etrans--message\">\n              </div>\n    </div>\n  </div>\n</div>\n<div class=\"ecl-lang-select-page ecl-u-pv-m ecl-u-d-none\" id=\"no-etrans-block\">\n  <div class=\"ecl-container\">\n    <div class=\"webtools-etrans--wrapper\">\n      <div id=\"webtools-etrans\"></div>\n      <div class=\"webtools-etrans--message\">\n              </div>\n    </div>\n  </div>\n</div>\n\n  </div>\n\n  </div>\n\n  \n          <div class=\"ecl-site-header__banner\">\n      <div class=\"ecl-container\">\n                  <div class=\"ecl-site-header__site-name\">Joint Research Centre</div>\n                      </div>\n    </div>\n      <div id=\"block-ewcms-theme-megamenu\">\n  \n    \n      \n\n      \n      \n      \n                    \n                                                                  \n                  \n            \n                                  \n                                                                                                                                                                                                                  \n                                  \n                                                                              \n                                  \n            \n                                  \n            \n                                  \n                                                                              \n                      \n                          \n          \n      \n      \n      \n                    \n                                                                  \n                  \n            \n                                  \n            \n                                  \n            \n                                  \n            \n                                  \n            \n                                  \n            \n                                  \n            \n                                  \n            \n                      \n                          \n          \n                                                                  \n                  \n            \n                                  \n            \n                                  \n            \n                                  \n            \n                                  \n            \n                                  \n            \n                      \n                          \n          \n      \n      \n      \n                    \n                                                                  \n                  \n            \n                                  \n            \n                                  \n            \n                                  \n                                                                                                                                                \n                                  \n                                                                              \n                                  \n            \n                                  \n            \n                      \n                          \n          \n            \n\n  </div>\n\n\n\n</header>\n\n            <div class=\"ecl-u-mb-2xl\" id=\"block-ewcms-theme-page-header\">\n  \n    \n      \n                \n  \n\n\n<div class=\"ecl-page-header\"><div class=\"ecl-page-header__container\"><div class=\"ecl-container\"><h1 class=\"ecl-page-header__title\"><span>Frequently Asked Questions</span></h1></div></div></div>\n  </div>\n\n\n  \n\n  <main class=\"ecl-u-pb-xl\" id=\"main-content\" data-inpage-navigation-source-area=\"h2.ecl-u-type-heading-2, div.ecl-featured-item__heading, div.ecl-quiz__title\">\n    <div class=\"ecl-container\">\n      <div class=\"ecl-row\">\n        <div class=\"ecl-col-s-12 ewcms-top-sidebar\">\n            <div>\n    <div data-drupal-messages-fallback class=\"hidden\"></div>\n  </div>\n\n        </div>\n      </div>\n      <div class=\"ecl-row\">\n        <div class=\"ecl-col-s-12\">\n                      <div class=\"ecl-row ecl-u-mt-l\">\n              <div class=\"oe-theme-left-sidebar ecl-col-12 ecl-col-l-3\">\n                      \n\n\n              </div>\n              <div class=\"oe-theme-content-region ecl-col-l-9\">\n                <div id=\"block-ewcms-theme-main-page-content\" data-inpage-navigation-source-area=\"h2, div.ecl-featured-item__heading\" class=\"ecl-u-mb-l\">\n  \n    \n      <article dir=\"ltr\">\n\n  \n    \n\n  \n  <div>\n    <div class=\"ecl\"><h2>Why doesn&apos;t PVGIS work? or PVGIS doesn&apos;t let me make a calculation!</h2><p>In 99% of the cases, PVGIS actually works just fine. If PVGIS doesn&apos;t allow you to make a calculation because the visualize or download buttons don&apos;t work, it is almost always because you have not chosen the location for which you want to make the calculation. You can choose the location by:</p><ul><li>Clicking on the map</li><li>Entering an address (or country or city name)</li><li>Typing in latitude and longitude coordinates</li></ul><h2>Where do I enter the PV module efficiency?, and/or, where do I enter the module area?</h2><p>In PVGIS you should enter the <em>nominal power</em> of the PV system (a.k.a. <em>peak power</em> or <em>rated power</em>). If you know the nominal power of your system, you don&apos;t need to know the efficiency, except to calculate the area of the modules. This is why:</p><p>The nominal power or <em>peak power</em> is the power claimed by the manufacturer of the module or system. It is the power output of the module(s) measured at 1000 W/m<sup>2</sup> solar irradiance (and a module temperature of 25&#xb0; C and a solar spectrum corresponding to an air mass of 1.5. These conditions are known as <em>Standard Test Conditions</em> (STC)). This means that if your modules were 100% efficient, you would need 1 m<sup>2</sup> to get a system with a peak power of 1 kW.</p><p>Since the modules are NOT 100% efficient you need a bigger area. If you have 10% efficient modules you will need 10 m<sup>2</sup> to have a 1 kW<sub>p</sub> system. We will call the module efficiency at Standard Test Conditions as <em>eff<sub>nom</sub></em>.</p><p>In other words, if <em>P<sub>pk</sub></em> is the nominal power and <em>A</em> the area of the module(s), we have</p><p><em>P<sub>pk</sub>= A*eff<sub>nom</sub> </em>(1)</p><h2>The different PV losses do not add up!</h2><p>We calculate the losses as <em>multiplicative</em>. For instance: if the angle-of-incidence losses are 3.7% and the temperature/irradiance losses are 7.2%, then we first lose 3.7% reflected away at the surface and then we lose 7.2% <strong>of the rest </strong>of the energy because of high temperature or low irradiance. Finally the system losses may be 14% which is calculated on what is left after the temperature/irradiance losses. The total loss will then be 100*(1-(1-0.037)*(1-0.072)*(1-0.14))=23.1%.</p><h2>What methods are used for the PVGIS calculations?</h2><p>We often receive questions about the methods used to calculate the PV output or the solar radiation data that PVGIS provides. The following page describes all the methods:</p>  \n      \n  \n\n\n\n  \n\n\n  \n\n  <article class=\"ecl-content-item\"><div class=\"ecl-content-block ecl-content-item__content-block\" data-ecl-auto-init=\"ContentBlock\" data-ecl-content-block><div class=\"ecl-content-block__title\"><a href=\"/photovoltaic-geographical-information-system-pvgis/general-information/data-sources-calculation-methods_en\" class=\"ecl-link ecl-link--standalone\" data-ecl-title-link>Data sources &amp; calculation methods</a></div><div class=\"ecl-content-block__description\"><p>Introduction to solar radiationThe solar radiation that reaches the top of the atmosphere on a perpendicular plane to the rays, known as solar...</p></div></div></article>\n<h2>Do the PVGIS calculations take into account the effect of clouds?</h2><p>Yes, PVGIS uses solar radiation data based on satellite images which are used to identify the presence and the thickness of clouds. A short overview of these methods is found in the page about methods.</p></div>\n\n  </div>\n\n</article>\n\n  </div>\n\n                \n              </div>\n            </div>\n                  </div>\n      </div>\n      <div class=\"ecl-row\">\n        <div class=\"ecl-col-s-12\">\n          \n          \n        </div>\n      </div>\n    </div>\n  </main>\n\n        <div id=\"block-ewcms-theme-pagefeedbackform\">\n  \n    \n      \n\n  </div>\n  \n\n\n  \n\n  \n\n  \n    \n\n\n    \n    \n  \n\n\n  \n  </div>\n        </body>\n    </html>",
+    "htmlUrl": null,
+    "markdown": "Frequently Asked Questions - Joint Research Centre - European Commission [Skip to main content](https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/frequently-asked-questions_en#main-content)\n\n[![European Commission logo](/themes/contrib/oe_theme/dist/ec/images/logo/logo-ec--mute.svg)](https://commission.europa.eu/index_en)\n\n[en](https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/frequently-asked-questions_en)\n\nSearch\n\nSearch\n\nJoint Research Centre\n\n# Frequently Asked Questions\n\n## Why doesn't PVGIS work? or PVGIS doesn't let me make a calculation!\n\nIn 99% of the cases, PVGIS actually works just fine. If PVGIS doesn't allow you to make a calculation because the visualize or download buttons don't work, it is almost always because you have not chosen the location for which you want to make the calculation. You can choose the location by:\n\n*   Clicking on the map\n*   Entering an address (or country or city name)\n*   Typing in latitude and longitude coordinates\n\n## Where do I enter the PV module efficiency?, and/or, where do I enter the module area?\n\nIn PVGIS you should enter the _nominal power_ of the PV system (a.k.a. _peak power_ or _rated power_). If you know the nominal power of your system, you don't need to know the efficiency, except to calculate the area of the modules. This is why:\n\nThe nominal power or _peak power_ is the power claimed by the manufacturer of the module or system. It is the power output of the module(s) measured at 1000 W/m2 solar irradiance (and a module temperature of 25\u00b0 C and a solar spectrum corresponding to an air mass of 1.5. These conditions are known as _Standard Test Conditions_ (STC)). This means that if your modules were 100% efficient, you would need 1 m2 to get a system with a peak power of 1 kW.\n\nSince the modules are NOT 100% efficient you need a bigger area. If you have 10% efficient modules you will need 10 m2 to have a 1 kWp system. We will call the module efficiency at Standard Test Conditions as _effnom_.\n\nIn other words, if _Ppk_ is the nominal power and _A_ the area of the module(s), we have\n\n_Ppk\\= A\\*effnom_ (1)\n\n## The different PV losses do not add up!\n\nWe calculate the losses as _multiplicative_. For instance: if the angle-of-incidence losses are 3.7% and the temperature/irradiance losses are 7.2%, then we first lose 3.7% reflected away at the surface and then we lose 7.2% **of the rest** of the energy because of high temperature or low irradiance. Finally the system losses may be 14% which is calculated on what is left after the temperature/irradiance losses. The total loss will then be 100\\*(1-(1-0.037)\\*(1-0.072)\\*(1-0.14))=23.1%.\n\n## What methods are used for the PVGIS calculations?\n\nWe often receive questions about the methods used to calculate the PV output or the solar radiation data that PVGIS provides. The following page describes all the methods:\n\n[Data sources & calculation methods](https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/data-sources-calculation-methods_en)\n\nIntroduction to solar radiationThe solar radiation that reaches the top of the atmosphere on a perpendicular plane to the rays, known as solar...\n\n## Do the PVGIS calculations take into account the effect of clouds?\n\nYes, PVGIS uses solar radiation data based on satellite images which are used to identify the presence and the thickness of clouds. A short overview of these methods is found in the page about methods.",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  }
+]

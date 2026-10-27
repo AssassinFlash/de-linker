@@ -152,7 +152,12 @@ def battery_options(
     """
     fits: list[BatteryFit] = []
     for battery in engine.products.in_class(*BATTERY_CLASSES):
-        pair = engine.compatibility.pair(inverter.model, battery.model)
+        pair = engine.compatibility.pair(
+            inverter.model,
+            battery.model,
+            inverter_id=inverter.id,
+            battery_id=battery.id,
+        )
         configs = stacking.configurations(inverter, battery, pair)
         if reserve_kwh:
             configs = [
@@ -190,7 +195,12 @@ def max_released_kwh(engine: Engine, inverter: Product) -> float | None:
         for config in stacking.configurations(
             inverter,
             battery,
-            engine.compatibility.pair(inverter.model, battery.model),
+            engine.compatibility.pair(
+                inverter.model,
+                battery.model,
+                inverter_id=inverter.id,
+                battery_id=battery.id,
+            ),
         )
     ]
     return max(values) if values else None
@@ -234,7 +244,9 @@ def evaluate(
     kwp = request.pv_kwp
     checks: list[eligibility.Check] = []
     backup_parts = (
-        engine.compatibility.requirements(inverter.model, "backup")
+        engine.compatibility.requirements(
+            inverter.model, "backup", inverter_id=inverter.id
+        )
         if request.backup == "needed_accessory_ok"
         else []
     )
@@ -298,7 +310,7 @@ def related_accessories(engine: Engine, evaluation: Evaluation) -> list[ProductR
         accessory
         for kind in ("meter", "backup", "parallel_controller")
         for requirement in engine.compatibility.requirements(
-            evaluation.inverter.model, kind
+            evaluation.inverter.model, kind, inverter_id=evaluation.inverter.id
         )
         for accessory in requirement.accessories
     ]
@@ -351,7 +363,9 @@ def find_existing(engine: Engine, model: str) -> Product | None:
 
 
 def _accessory_product(engine: Engine, accessory: Accessory) -> Product | None:
-    matches = engine.products.by_model_pattern(accessory.model)
+    matches = engine.products.by_model_pattern(
+        accessory.model, product_id=accessory.product_id
+    )
     return matches[0] if matches else None
 
 
@@ -385,7 +399,7 @@ def stueckliste(
                 + [
                     t("basis.meter_in_box", locale, text=condition.get(locale))
                     for requirement in engine.compatibility.requirements(
-                        inverter.model, "meter"
+                        inverter.model, "meter", inverter_id=inverter.id
                     )
                     if requirement.included
                     for condition in requirement.conditions
@@ -490,7 +504,9 @@ def _requirement_lines(
     lines: list[Line] = []
     meters = [
         r
-        for r in engine.compatibility.requirements(inverter.model, "meter")
+        for r in engine.compatibility.requirements(
+            inverter.model, "meter", inverter_id=inverter.id
+        )
         if not r.included and (r.phase is None or r.phase == request.phase)
     ]
     groups: tuple[tuple[Role, str, list[Requirement]], ...] = (

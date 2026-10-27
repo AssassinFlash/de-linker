@@ -1,0 +1,245 @@
+{
+  "provenance": "read-only running p548 SQLite revision and content-addressed input blob after actual CUA Save project",
+  "project_id": "82a84c56e50c4efb8497d1bfbe106bd1",
+  "revision": 6,
+  "input_sha256": "0174544639e774e0fda588dc6324188ff9c402c6125a3f0336bcf3867082ff91",
+  "changed_first_roof_boundary_vertices": [
+    2
+  ],
+  "unchanged_sources_planes_other_objects_and_inputs": true,
+  "input": {
+    "brief": {
+      "annual_load": {
+        "basis": null,
+        "kwh": null,
+        "source_note": ""
+      },
+      "project_note": "",
+      "project_use": "commercial",
+      "schema_version": 1,
+      "site": {
+        "coordinate_basis": "user_entered",
+        "country_code": "DE",
+        "latitude": 50.94,
+        "location_label": "Synthetic site at 50.94 N, 6.96 E · not a surveyed building",
+        "longitude": 6.96,
+        "timezone": "Europe/Berlin"
+      },
+      "system_scope": "new_pv_storage"
+    },
+    "geometry": {
+      "arrays": [],
+      "coordinate_system": {
+        "anchor": {
+          "datum": "EPSG:4326",
+          "latitude_deg": 50.94,
+          "longitude_deg": 6.96,
+          "source_id": "source_8cfac87f5edf38bb019d2aedb57676a6"
+        },
+        "height_reference": "relative_to_project_origin",
+        "kind": "local_enu",
+        "north_reference": "true_north",
+        "north_source_id": "source_8cfac87f5edf38bb019d2aedb57676a6",
+        "unit": "m"
+      },
+      "keepouts": [],
+      "layout_rules": [],
+      "module_specs": [],
+      "obstacles": [],
+      "roofs": [
+        {
+          "boundary_uv": [
+            [
+              0,
+              0
+            ],
+            [
+              14.057646091088232,
+              2.3814009744514944e-05
+            ],
+            [
+              13.573666840823542,
+              13.296689989227518
+            ],
+            [
+              -2.6992427029122135e-11,
+              13.905883796071086
+            ]
+          ],
+          "holes_uv": [
+            [
+              [
+                5.623050675547586,
+                5.5623616689456865
+              ],
+              [
+                5.623046795074092,
+                8.343538427712893
+              ],
+              [
+                8.434570192672988,
+                8.343543190594023
+              ],
+              [
+                8.434576013290787,
+                5.562366431443335
+              ]
+            ]
+          ],
+          "id": "roof_8cfac87f5edf38bb019d2aedb57676a6",
+          "name": "Synthetic 3–4–5 roof · Köln",
+          "origin_enu": [
+            0,
+            0,
+            5
+          ],
+          "source_id": "source_8cfac87f5edf38bb019d2aedb57676a6",
+          "u_axis_enu": [
+            1,
+            0,
+            0
+          ],
+          "v_axis_enu": [
+            0,
+            0.8,
+            -0.6
+          ]
+        },
+        {
+          "boundary_uv": [
+            [
+              8.810453596188421e-17,
+              -3.4439014616575235e-16
+            ],
+            [
+              2.151872666317455,
+              0.48814074577734473
+            ],
+            [
+              0.26126034599670966,
+              1.4135448711945953
+            ],
+            [
+              -0.4477397640004714,
+              6.0376200821363515
+            ]
+          ],
+          "holes_uv": [],
+          "id": "roof_abc9ec6b81374ed1b85e7146c3a85c54",
+          "name": "Synthetic drawing acceptance · 548 · 24 Oct",
+          "origin_enu": [
+            7.028818806591462,
+            5.5623681569507415,
+            8
+          ],
+          "source_id": "source_abc9ec6b81374ed1b85e7146c3a85c54",
+          "u_axis_enu": [
+            -1,
+            0,
+            0
+          ],
+          "v_axis_enu": [
+            0,
+            -0.8660254037844387,
+            -0.49999999999999994
+          ]
+        },
+        {
+          "boundary_uv": [
+            [
+              -4.4143424094970164e-16,
+              1.2821420420412343e-16
+            ],
+            [
+              4.946180998762227,
+              -5.994588424018768
+            ],
+            [
+              -5.466878124555781,
+              2.999338021418954
+            ]
+          ],
+          "holes_uv": [],
+          "id": "roof_08304480698f4ad7b00911d38c7c954d",
+          "name": "Synthetic phone recovery · 548 · 24 Oct",
+          "origin_enu": [
+            7.028818944065199,
+            5.562368266033913,
+            8.125
+          ],
+          "source_id": "source_08304480698f4ad7b00911d38c7c954d",
+          "u_axis_enu": [
+            -1,
+            0,
+            0
+          ],
+          "v_axis_enu": [
+            0,
+            -0.8660254037844387,
+            -0.49999999999999994
+          ]
+        }
+      ],
+      "schema_version": 1,
+      "sources": [
+        {
+          "acquired_at_utc": null,
+          "calibration_note": "Synthetic 3–4–5 plane; original generated outline, not a measured building. 2026-10-23.",
+          "id": "source_8cfac87f5edf38bb019d2aedb57676a6",
+          "kind": "user_drawing",
+          "note": "Synthetic WGS 84 fixture · Köln · 2026-10-23",
+          "permissions": {
+            "derive": "permitted",
+            "export": "permitted",
+            "retain": "permitted"
+          },
+          "reference_sha256": "47770a0dc5034b54743dd2da28d1c855e2c8c047c7678d3688215d8e89d9eebc",
+          "reference_url": null,
+          "rights_basis": "user_attestation",
+          "rights_note": "Created by Linker for local acceptance. Original and derived geometry may be retained and exported; no actual measured building.",
+          "spatial_precision_m": null
+        },
+        {
+          "acquired_at_utc": null,
+          "calibration_note": "Synthetic coordinates; not a survey.",
+          "id": "source_abc9ec6b81374ed1b85e7146c3a85c54",
+          "kind": "user_drawing",
+          "note": "Synthetic map-test coordinates and roof values; no field survey.",
+          "permissions": {
+            "derive": "permitted",
+            "export": "unknown",
+            "retain": "permitted"
+          },
+          "reference_sha256": null,
+          "reference_url": null,
+          "rights_basis": "user_attestation",
+          "rights_note": "Owned local test data; fixture use permitted.",
+          "spatial_precision_m": null
+        },
+        {
+          "acquired_at_utc": null,
+          "calibration_note": "Synthetic map points; no measured accuracy.",
+          "id": "source_08304480698f4ad7b00911d38c7c954d",
+          "kind": "user_drawing",
+          "note": "Owned synthetic phone test; not a surveyed roof.",
+          "permissions": {
+            "derive": "permitted",
+            "export": "unknown",
+            "retain": "permitted"
+          },
+          "reference_sha256": null,
+          "reference_url": null,
+          "rights_basis": "user_attestation",
+          "rights_note": "Owned local fixture; retention and derived test design permitted.",
+          "spatial_precision_m": null
+        }
+      ]
+    },
+    "geometry_imports": {
+      "schema_version": 1,
+      "selected": {
+        "source_8cfac87f5edf38bb019d2aedb57676a6": "07a83a4c17ad4281a9802e77cbfd66b8"
+      }
+    }
+  }
+}

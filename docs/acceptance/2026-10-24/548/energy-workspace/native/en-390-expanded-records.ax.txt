@@ -1,0 +1,1099 @@
+Browser tab: 2, Title: "Solution Configurator · Workspace review | Linker", URL: "http://127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=14dacb74cda2451a95d00df374532af8#lp-calculations".
+1 AXWebArea Solution Configurator · Workspace review | Linker, URL: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=14dacb74cda2451a95d00df374532af8#lp-calculations
+	2 container
+		3 container Primary navigation
+			4 link Description: Linker home, Value: 127.0.0.1:9347/
+			5 link Description: Search products, Value: 127.0.0.1:9347/products/#search-box
+			6 container Language
+				7 link Description: EN, Help: English, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=14dacb74cda2451a95d00df374532af8#lp-calculations
+				8 link Description: DE, Help: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be&run=14dacb74cda2451a95d00df374532af8#lp-calculations
+			9 button (collapsed) Description: Open menu, ID: tv-mobile-toggle, Secondary Actions: Expand
+				10 image
+		11 container
+			12 button Projects
+			13 pop up button (collapsed, settable) Description: Project sections, Value: Energy calculation, Secondary Actions: Expand
+				14 menu
+					15 Project overview
+					16 Site and project
+					17 Roof design
+					18 Energy inputs
+					19 (selected) Energy calculation
+			20 text Saved · revision 5
+			21 button (disabled) Undo
+			22 button (disabled) Redo
+			23 button (disabled) Save project
+			24 text CURRENT PROJECT
+			25 heading Lyon · synthetic energy scenario · acceptance, Value: 1
+				26 text Lyon · synthetic energy scenario · acceptance
+			27 text Site data and roof layouts are saved in the same project.
+			28 container Energy calculation, ID: lp-calculations
+				29 text 07
+				30 heading Energy calculation, Value: 2, ID: lp-calculations-heading
+					31 text Energy calculation
+				32 text Calculate this project's energy flows over the selected periods. Each saved result keeps the inputs, sources and model used.
+				33 container Calculation workspace view
+					34 checkbox Scenario settings, Value: 0
+					35 checkbox Saved calculations, Value: 1
+				36 container
+					37 heading Calculation history, Value: 3
+						38 text Calculation history
+					39 checkbox Revision 5 Calculation complete 10/24/26, 10:16 AM, Value: 1
+						40 text Revision 5
+						41 text Calculation complete
+						42 text 10/24/26, 10:16 AM
+					43 checkbox Revision 5 Calculation cancelled 10/24/26, 10:14 AM, Value: 0
+						44 text Revision 5
+						45 text Calculation cancelled
+						46 text 10/24/26, 10:14 AM
+					47 checkbox Revision 4 Calculation failed 10/24/26, 10:06 AM, Value: 0
+						48 text Revision 4
+						49 text Calculation failed
+						50 text 10/24/26, 10:06 AM
+					51 checkbox Revision 3 Calculation complete 10/24/26, 9:38 AM, Value: 0
+						52 text Revision 3
+						53 text Calculation complete
+						54 text 10/24/26, 9:38 AM
+				55 text SAVED CALCULATION
+				56 heading Calculation complete, Value: 3
+					57 text Calculation complete
+				58 text Input revision 5
+				59 definition list
+					60 container Solar supplied to load
+						61 text Solar supplied to load
+					62 container
+						63 text 3.62 kWh
+					64 container Grid import
+						65 text Grid import
+					66 container
+						67 text 0.38 kWh
+					68 container Solar share of gross demand
+						69 text Solar share of gross demand
+					70 text 90.5%
+					71 container PV used or stored on site
+						72 text PV used or stored on site
+					73 text 100%
+				74 text Figures cover the simulated periods. Solar supply includes PV-origin battery energy; grid-origin and unknown-origin inventory remain separate.
+				75 text Equipment suitability: not assessed by this calculation.
+				76 text Country requirements: not assessed by this calculation.
+				128 container
+					129 button (expanded) Energy totals and definitions, Secondary Actions: Collapse
+						130 text Energy totals and definitions
+					131 definition list
+						132 container Simulated load demand
+							133 text Simulated load demand
+						134 container
+							135 text 4  kWh
+						136 container Generated AC PV energy
+							137 text Generated AC PV energy
+						138 container
+							139 text 4  kWh
+						140 container Unserved simulated load
+							141 text Unserved simulated load
+						142 container
+							143 text 0  kWh
+						144 container Calculated intervals
+							145 text Calculated intervals
+						146 text 2
+					147 text Solar share of gross demand divides PV energy delivered to gross site load by gross site demand. It is undefined for a mixed or critical-only load scope, or zero gross demand. This percentage divides PV supplied to load, AC auxiliary demand and battery charging by generated PV after curtailment. Battery charging is counted before conversion losses, including energy still stored at the end. Curtailed PV is excluded from the denominator.
+				148 container
+					149 button (expanded) Numerical verification details, Secondary Actions: Collapse
+						150 text Numerical verification details
+					151 text These checks cover the declared energy model and scenario. Their numerical allowances address floating-point arithmetic; they are not installation safety margins.
+					152 table Checks recorded with this result
+						153 text Checks recorded with this result
+						154 row
+							155 cell
+								156 text Check reference
+							157 cell
+								158 text Outcome
+							159 cell
+								160 text Largest deviation
+							161 cell
+								162 text Arithmetic tolerance
+						163 row
+							164 cell
+								165 text initial_pv_kwh
+							166 cell
+								167 text Met
+							168 cell
+								169 text 0 kWh
+							170 cell
+								171 text 0 kWh
+						172 row
+							173 cell
+								174 text initial_grid_kwh
+							175 cell
+								176 text Met
+							177 cell
+								178 text 0 kWh
+							179 cell
+								180 text 0 kWh
+						181 row
+							182 cell
+								183 text initial_initial_unknown_kwh
+							184 cell
+								185 text Met
+							186 cell
+								187 text 0 kWh
+							188 cell
+								189 text 0 kWh
+						190 row
+							191 cell
+								192 text pv_load_priority
+							193 cell
+								194 text Met
+							195 cell
+								196 text 0 kW
+							197 cell
+								198 text 1.04E-7 kW
+						199 row
+							200 cell
+								201 text pv_aux_priority
+							202 cell
+								203 text Met
+							204 cell
+								205 text 0 kW
+							206 cell
+								207 text 1.04E-7 kW
+						208 row
+							209 cell
+								210 text battery_load_priority
+							211 cell
+								212 text Met
+							213 cell
+								214 text 0 kW
+							215 cell
+								216 text 1.04E-7 kW
+						217 row
+							218 cell
+								219 text battery_aux_priority
+							220 cell
+								221 text Met
+							222 cell
+								223 text 0 kW
+							224 cell
+								225 text 1.04E-7 kW
+						226 row
+							227 cell
+								228 text grid_load_priority
+							229 cell
+								230 text Met
+							231 cell
+								232 text 0 kW
+							233 cell
+								234 text 1.04E-7 kW
+						235 row
+							236 cell
+								237 text grid_aux_priority
+							238 cell
+								239 text Met
+							240 cell
+								241 text 0 kW
+							242 cell
+								243 text 1.04E-7 kW
+						244 row
+							245 cell
+								246 text pv_charge_priority
+							247 cell
+								248 text Met
+							249 cell
+								250 text 0 kW
+							251 cell
+								252 text 1.04E-7 kW
+						253 row
+							254 cell
+								255 text grid_charge_priority
+							256 cell
+								257 text Met
+							258 cell
+								259 text 0 kW
+							260 cell
+								261 text 1.04E-7 kW
+						262 row
+							263 cell
+								264 text pv_export_priority
+							265 cell
+								266 text Met
+							267 cell
+								268 text 0 kW
+							269 cell
+								270 text 1.04E-7 kW
+						271 row
+							272 cell
+								273 text pv_curtailment_priority
+							274 cell
+								275 text Met
+							276 cell
+								277 text 0 kW
+							278 cell
+								279 text 1.04E-7 kW
+						280 row
+							281 cell
+								282 text discharge_conversion_kw
+							283 cell
+								284 text Met
+							285 cell
+								286 text 0 kW
+							287 cell
+								288 text 1.04E-7 kW
+						289 row
+							290 cell
+								291 text internal_aux_supplied_kw
+							292 cell
+								293 text Met
+							294 cell
+								295 text 0 kW
+							296 cell
+								297 text 1.04E-7 kW
+						298 row
+							299 cell
+								300 text internal_aux_shortage_nonnegative_kw
+							301 cell
+								302 text Met
+							303 cell
+								304 text 0 kW
+							305 cell
+								306 text 1.04E-7 kW
+						307 row
+							308 cell
+								309 text internal_aux_account_kw
+							310 cell
+								311 text Met
+							312 cell
+								313 text 0 kW
+							314 cell
+								315 text 1.04E-7 kW
+						316 row
+							317 cell
+								318 text standing_loss_model_kw
+							319 cell
+								320 text Met
+							321 cell
+								322 text 0 kW
+							323 cell
+								324 text 1.04E-7 kW
+						325 row
+							326 cell
+								327 text internal_aux_model_kw
+							328 cell
+								329 text Met
+							330 cell
+								331 text 0 kW
+							332 cell
+								333 text 1.04E-7 kW
+						334 row
+							335 cell
+								336 text origin_available_kw_pv_kwh
+							337 cell
+								338 text Met
+							339 cell
+								340 text 0 kW
+							341 cell
+								342 text 1.04E-7 kW
+						343 row
+							344 cell
+								345 text origin_transition_kw_pv_kwh
+							346 cell
+								347 text Met
+							348 cell
+								349 text 0 kW
+							350 cell
+								351 text 6.66134E-16 kW
+						352 row
+							353 cell
+								354 text load_origin_kw_pv_kwh
+							355 cell
+								356 text Met
+							357 cell
+								358 text 0 kW
+							359 cell
+								360 text 1.04E-7 kW
+						361 row
+							362 cell
+								363 text standing_mixing_kw_pv_kwh
+							364 cell
+								365 text Met
+							366 cell
+								367 text 0 kW
+							368 cell
+								369 text 1.04E-7 kW
+						370 row
+							371 cell
+								372 text aux_mixing_kw_pv_kwh
+							373 cell
+								374 text Met
+							375 cell
+								376 text 0 kW
+							377 cell
+								378 text 1.04E-7 kW
+						379 row
+							380 cell
+								381 text discharge_mixing_kw_pv_kwh
+							382 cell
+								383 text Met
+							384 cell
+								385 text 0 kW
+							386 cell
+								387 text 1.04E-7 kW
+						388 row
+							389 cell
+								390 text origin_available_kw_grid_kwh
+							391 cell
+								392 text Met
+							393 cell
+								394 text 0 kW
+							395 cell
+								396 text 1.04E-7 kW
+						397 row
+							398 cell
+								399 text origin_transition_kw_grid_kwh
+							400 cell
+								401 text Met
+							402 cell
+								403 text 0 kW
+							404 cell
+								405 text 0 kW
+						406 row
+							407 cell
+								408 text load_origin_kw_grid_kwh
+							409 cell
+								410 text Met
+							411 cell
+								412 text 0 kW
+							413 cell
+								414 text 1.04E-7 kW
+						415 row
+							416 cell
+								417 text standing_mixing_kw_grid_kwh
+							418 cell
+								419 text Met
+							420 cell
+								421 text 0 kW
+							422 cell
+								423 text 1.04E-7 kW
+						424 row
+							425 cell
+								426 text aux_mixing_kw_grid_kwh
+							427 cell
+								428 text Met
+							429 cell
+								430 text 0 kW
+							431 cell
+								432 text 1.04E-7 kW
+						433 row
+							434 cell
+								435 text discharge_mixing_kw_grid_kwh
+							436 cell
+								437 text Met
+							438 cell
+								439 text 0 kW
+							440 cell
+								441 text 1.04E-7 kW
+						442 row
+							443 cell
+								444 text origin_available_kw_initial_unknown_kwh
+							445 cell
+								446 text Met
+							447 cell
+								448 text 0 kW
+							449 cell
+								450 text 1.04E-7 kW
+						451 row
+							452 cell
+								453 text origin_transition_kw_initial_unknown_kwh
+							454 cell
+								455 text Met
+							456 cell
+								457 text 0 kW
+							458 cell
+								459 text 0 kW
+						460 row
+							461 cell
+								462 text load_origin_kw_initial_unknown_kwh
+							463 cell
+								464 text Met
+							465 cell
+								466 text 0 kW
+							467 cell
+								468 text 1.04E-7 kW
+						469 row
+							470 cell
+								471 text standing_mixing_kw_initial_unknown_kwh
+							472 cell
+								473 text Met
+							474 cell
+								475 text 0 kW
+							476 cell
+								477 text 1.04E-7 kW
+						478 row
+							479 cell
+								480 text aux_mixing_kw_initial_unknown_kwh
+							481 cell
+								482 text Met
+							483 cell
+								484 text 0 kW
+							485 cell
+								486 text 1.04E-7 kW
+						487 row
+							488 cell
+								489 text discharge_mixing_kw_initial_unknown_kwh
+							490 cell
+								491 text Met
+							492 cell
+								493 text 0 kW
+							494 cell
+								495 text 1.04E-7 kW
+						496 row
+							497 cell
+								498 text discharge_available_above_reserve_kw
+							499 cell
+								500 text Met
+							501 cell
+								502 text 0 kW
+							503 cell
+								504 text 1.04E-7 kW
+						505 row
+							506 cell
+								507 text charge_available_headroom_kw
+							508 cell
+								509 text Met
+							510 cell
+								511 text 0 kW
+							512 cell
+								513 text 1.04E-7 kW
+						514 row
+							515 cell
+								516 text capacity_conserved_inventory
+							517 cell
+								518 text Met
+							519 cell
+								520 text 0 kWh
+							521 cell
+								522 text 8.88178E-16 kWh
+						523 row
+							524 cell
+								525 text reserve_conserved_inventory
+							526 cell
+								527 text Met
+							528 cell
+								529 text 0 kWh
+							530 cell
+								531 text 0 kWh
+						532 row
+							533 cell
+								534 text reference_charge_delivery
+							535 cell
+								536 text Met
+							537 cell
+								538 text 0 kW
+							539 cell
+								540 text 1.04E-7 kW
+						541 row
+							542 cell
+								543 text reference_discharge_delivery
+							544 cell
+								545 text Met
+							546 cell
+								547 text 0 kW
+							548 cell
+								549 text 1.04E-7 kW
+						550 row
+							551 cell
+								552 text ac_energy_balance
+							553 cell
+								554 text Met
+							555 cell
+								556 text 0 kWh
+							557 cell
+								558 text 1.04E-7 kWh
+						559 row
+							560 cell
+								561 text stored_energy_balance
+							562 cell
+								563 text Met
+							564 cell
+								565 text 0 kWh
+							566 cell
+								567 text 1.05E-7 kWh
+						568 row
+							569 cell
+								570 text origin_balance_pv_kwh
+							571 cell
+								572 text Met
+							573 cell
+								574 text 0 kWh
+							575 cell
+								576 text 1.05E-7 kWh
+						577 row
+							578 cell
+								579 text standing_origin_pv_kwh
+							580 cell
+								581 text Met
+							582 cell
+								583 text 0 kWh
+							584 cell
+								585 text 1.05E-7 kWh
+						586 row
+							587 cell
+								588 text aux_origin_pv_kwh
+							589 cell
+								590 text Met
+							591 cell
+								592 text 0 kWh
+							593 cell
+								594 text 1.05E-7 kWh
+						595 row
+							596 cell
+								597 text discharge_origin_pv_kwh
+							598 cell
+								599 text Met
+							600 cell
+								601 text 0 kWh
+							602 cell
+								603 text 1.05E-7 kWh
+						604 row
+							605 cell
+								606 text origin_balance_grid_kwh
+							607 cell
+								608 text Met
+							609 cell
+								610 text 0 kWh
+							611 cell
+								612 text 1.05E-7 kWh
+						613 row
+							614 cell
+								615 text standing_origin_grid_kwh
+							616 cell
+								617 text Met
+							618 cell
+								619 text 0 kWh
+							620 cell
+								621 text 1.05E-7 kWh
+						622 row
+							623 cell
+								624 text aux_origin_grid_kwh
+							625 cell
+								626 text Met
+							627 cell
+								628 text 0 kWh
+							629 cell
+								630 text 1.05E-7 kWh
+						631 row
+							632 cell
+								633 text discharge_origin_grid_kwh
+							634 cell
+								635 text Met
+							636 cell
+								637 text 0 kWh
+							638 cell
+								639 text 1.05E-7 kWh
+						640 row
+							641 cell
+								642 text origin_balance_initial_unknown_kwh
+							643 cell
+								644 text Met
+							645 cell
+								646 text 0 kWh
+							647 cell
+								648 text 1.05E-7 kWh
+						649 row
+							650 cell
+								651 text standing_origin_initial_unknown_kwh
+							652 cell
+								653 text Met
+							654 cell
+								655 text 0 kWh
+							656 cell
+								657 text 1.05E-7 kWh
+						658 row
+							659 cell
+								660 text aux_origin_initial_unknown_kwh
+							661 cell
+								662 text Met
+							663 cell
+								664 text 0 kWh
+							665 cell
+								666 text 1.05E-7 kWh
+						667 row
+							668 cell
+								669 text discharge_origin_initial_unknown_kwh
+							670 cell
+								671 text Met
+							672 cell
+								673 text 0 kWh
+							674 cell
+								675 text 1.05E-7 kWh
+						676 row
+							677 cell
+								678 text nonnegative_ac_flows
+							679 cell
+								680 text Met
+							681 cell
+								682 text 0 kW
+							683 cell
+								684 text 1.04E-7 kW
+						685 row
+							686 cell
+								687 text unserved_load_bounds
+							688 cell
+								689 text Met
+							690 cell
+								691 text 0 kW
+							692 cell
+								693 text 1.02E-7 kW
+						694 row
+							695 cell
+								696 text unserved_aux_bounds
+							697 cell
+								698 text Met
+							699 cell
+								700 text 0 kW
+							701 cell
+								702 text 1E-7 kW
+						703 row
+							704 cell
+								705 text pv_allocation
+							706 cell
+								707 text Met
+							708 cell
+								709 text 0 kW
+							710 cell
+								711 text 1.04E-7 kW
+						712 row
+							713 cell
+								714 text grid_allocation
+							715 cell
+								716 text Met
+							717 cell
+								718 text 0 kW
+							719 cell
+								720 text 1.04E-7 kW
+						721 row
+							722 cell
+								723 text charge_allocation
+							724 cell
+								725 text Met
+							726 cell
+								727 text 0 kW
+							728 cell
+								729 text 1.04E-7 kW
+						730 row
+							731 cell
+								732 text load_allocation
+							733 cell
+								734 text Met
+							735 cell
+								736 text 0 kW
+							737 cell
+								738 text 1.04E-7 kW
+						739 row
+							740 cell
+								741 text aux_allocation
+							742 cell
+								743 text Met
+							744 cell
+								745 text 0 kW
+							746 cell
+								747 text 1.04E-7 kW
+						748 row
+							749 cell
+								750 text discharge_conversion
+							751 cell
+								752 text Met
+							753 cell
+								754 text 0 kWh
+							755 cell
+								756 text 1.05E-7 kWh
+						757 row
+							758 cell
+								759 text load_origin_pv_kwh
+							760 cell
+								761 text Met
+							762 cell
+								763 text 0 kWh
+							764 cell
+								765 text 1.05E-7 kWh
+						766 row
+							767 cell
+								768 text load_origin_grid_kwh
+							769 cell
+								770 text Met
+							771 cell
+								772 text 0 kWh
+							773 cell
+								774 text 1.05E-7 kWh
+						775 row
+							776 cell
+								777 text load_origin_initial_unknown_kwh
+							778 cell
+								779 text Met
+							780 cell
+								781 text 0 kWh
+							782 cell
+								783 text 1.05E-7 kWh
+						784 row
+							785 cell
+								786 text standing_loss_model
+							787 cell
+								788 text Met
+							789 cell
+								790 text 0 kWh
+							791 cell
+								792 text 1.05E-7 kWh
+						793 row
+							794 cell
+								795 text internal_aux_model
+							796 cell
+								797 text Met
+							798 cell
+								799 text 0 kWh
+							800 cell
+								801 text 1.05E-7 kWh
+						802 row
+							803 cell
+								804 text internal_aux_shortage_nonnegative
+							805 cell
+								806 text Met
+							807 cell
+								808 text 0 kWh
+							809 cell
+								810 text 1E-7 kWh
+						811 row
+							812 cell
+								813 text internal_aux_account
+							814 cell
+								815 text Met
+							816 cell
+								817 text 0 kWh
+							818 cell
+								819 text 1.05E-7 kWh
+						820 row
+							821 cell
+								822 text Internal auxiliary demand supplied
+								823 text internal_aux_supplied
+							824 cell
+								825 text Met
+							826 cell
+								827 text 0 kWh
+							828 cell
+								829 text 1E-7 kWh
+						830 row
+							831 cell
+								832 text Simulated demand supplied
+								833 text load_supplied
+							834 cell
+								835 text Met
+							836 cell
+								837 text 0 kW
+							838 cell
+								839 text 1.02E-7 kW
+						840 row
+							841 cell
+								842 text AC auxiliary demand supplied
+								843 text aux_ac_supplied
+							844 cell
+								845 text Met
+							846 cell
+								847 text 0 kW
+							848 cell
+								849 text 1E-7 kW
+						850 row
+							851 cell
+								852 text Usable stored-energy limit
+								853 text usable_capacity
+							854 cell
+								855 text Met
+							856 cell
+								857 text 0 kWh
+							858 cell
+								859 text 2.22045E-16 kWh
+						860 row
+							861 cell
+								862 text Stored-energy reserve
+								863 text reserve_maintained
+							864 cell
+								865 text Met
+							866 cell
+								867 text 0 kWh
+							868 cell
+								869 text 2.22045E-16 kWh
+						870 row
+							871 cell
+								872 text AC charging-power limit
+								873 text charge_power
+							874 cell
+								875 text Met
+							876 cell
+								877 text 0 kW
+							878 cell
+								879 text 1.05E-7 kW
+						880 row
+							881 cell
+								882 text AC discharging-power limit
+								883 text discharge_power
+							884 cell
+								885 text Met
+							886 cell
+								887 text 0 kW
+							888 cell
+								889 text 1.05E-7 kW
+						890 row
+							891 cell
+								892 text charge_discharge_exclusive
+							893 cell
+								894 text Met
+							895 cell
+								896 text 0 kW
+							897 cell
+								898 text 1.04E-7 kW
+						899 row
+							900 cell
+								901 text charge_command_account
+							902 cell
+								903 text Met
+							904 cell
+								905 text 0 kW
+							906 cell
+								907 text 1E-7 kW
+						908 row
+							909 cell
+								910 text discharge_command_account
+							911 cell
+								912 text Met
+							913 cell
+								914 text 0 kW
+							915 cell
+								916 text 1E-7 kW
+						917 row
+							918 cell
+								919 text charge_not_above_command
+							920 cell
+								921 text Met
+							922 cell
+								923 text 0 kW
+							924 cell
+								925 text 1E-7 kW
+						926 row
+							927 cell
+								928 text discharge_not_above_command
+							929 cell
+								930 text Met
+							931 cell
+								932 text 0 kW
+							933 cell
+								934 text 1E-7 kW
+						935 row
+							936 cell
+								937 text charge_command_met
+							938 cell
+								939 text Met
+							940 cell
+								941 text 0 kW
+							942 cell
+								943 text 1E-7 kW
+						944 row
+							945 cell
+								946 text discharge_command_met
+							947 cell
+								948 text Met
+							949 cell
+								950 text 0 kW
+							951 cell
+								952 text 1E-7 kW
+						953 row
+							954 cell
+								955 text grid_charge_permission
+							956 cell
+								957 text Met
+							958 cell
+								959 text 0 kW
+							960 cell
+								961 text 1.04E-7 kW
+						962 row
+							963 cell
+								964 text mode_pv_availability
+							965 cell
+								966 text Met
+							967 cell
+								968 text 0 kW
+							969 cell
+								970 text 1E-7 kW
+						971 row
+							972 cell
+								973 text continuous_pv_kwh
+							974 cell
+								975 text Met
+							976 cell
+								977 text 0 kWh
+							978 cell
+								979 text 0 kWh
+						980 row
+							981 cell
+								982 text continuous_grid_kwh
+							983 cell
+								984 text Met
+							985 cell
+								986 text 0 kWh
+							987 cell
+								988 text 0 kWh
+						989 row
+							990 cell
+								991 text continuous_initial_unknown_kwh
+							992 cell
+								993 text Met
+							994 cell
+								995 text 0 kWh
+							996 cell
+								997 text 0 kWh
+				998 container
+					999 button (expanded) Calculation records, Secondary Actions: Collapse
+						1000 text Calculation records
+					1001 definition list
+						1002 container Input SHA-256
+							1003 text Input SHA-256
+						1004 text eacd6a0b685147be60064e04a88a4ecf534563f7f4a499afe5431850677d5c06
+						1005 container Manifest SHA-256
+							1006 text Manifest SHA-256
+						1007 text b182d51b705e65b4b68f0f74c7f462f774cc907ba9f2da5b2e2d5d2d5b5e8335
+						1008 container Result SHA-256
+							1009 text Result SHA-256
+						1010 text 3f1e5d7bd5bb67d71e321bb2ec3f1d6244d04c64810c081594364f02b13c61e1
+						1011 container Runtime SHA-256
+							1012 text Runtime SHA-256
+						1013 text 9b66656acb26b65b88b09a44b8508a42094059af64b49e7038eedef0d92a10a1
+						1014 container Energy trace SHA-256
+							1015 text Energy trace SHA-256
+						1016 text d66c6f417ad62026fdbbf909ecf42738595b2cf491975e2221e92dc8123efa66
+				1017 container
+					1018 button (expanded) Sources, period and storage model, Secondary Actions: Collapse
+						1019 text Sources, period and storage model
+					1077 text Explicit analytic acceptance scenario: 5 kWh usable, 5 kW AC in/out, separate 90% efficiencies, zero auxiliary and standing losses. No manufacturer, SKU or equipment approval.
+					1078 content list
+						1079 container
+							1080 text Total site load Synthetic gross load · 2 kW for two hours
+							1081 definition list
+								1082 container Original content SHA-256
+									1083 text Original content SHA-256
+								1084 text f45e890022e6d424395aa2855d214c24e6ec34c3462ce7edefddcbe3c8dd7e79
+								1085 container Source metadata SHA-256
+									1086 text Source metadata SHA-256
+								1087 text d1a69329ce0f1713fd0c59e8c8919df72ad69a5451b91202590a1e4e44425dc2
+						1088 container
+							1089 text Available PV output · AC Synthetic available PV · 4 kW then 0 kW
+							1090 definition list
+								1091 container Original content SHA-256
+									1092 text Original content SHA-256
+								1093 text b132980864da027483e55225e24ff5b07a8fc5e80eec7dad787102315010d581
+								1094 container Source metadata SHA-256
+									1095 text Source metadata SHA-256
+								1096 text a655dc5093f7830c3a36f13da6ad26bc7c16a95854bd80f7588690a540b1f301
+						1097 container
+							1098 text External auxiliary load · AC Synthetic external AC auxiliary · explicit zero
+							1099 definition list
+								1100 container Original content SHA-256
+									1101 text Original content SHA-256
+								1102 text ce20d0bf1b7f7ce919b829946cf9e5529d54c70accd7477a17710ec43aa553ed
+								1103 container Source metadata SHA-256
+									1104 text Source metadata SHA-256
+								1105 text fc50a2f45a16bc11499068eb07c568babde5552f70fb7f2a43830f279e1ff96a
+					1021 definition list
+						1022 container Usable stored energy
+							1023 text Usable stored energy
+						1024 container
+							1025 text 5 kWh
+						1026 container AC charging power
+							1027 text AC charging power
+						1028 container
+							1029 text 5 kW
+						1030 container AC discharging power
+							1031 text AC discharging power
+						1032 container
+							1033 text 5 kW
+						1034 container Charging efficiency
+							1035 text Charging efficiency
+						1036 container
+							1037 text 90 %
+						1038 container Discharging efficiency
+							1039 text Discharging efficiency
+						1040 container
+							1041 text 90 %
+						1042 container Internal auxiliary power
+							1043 text Internal auxiliary power
+						1044 container
+							1045 text 0 kW
+						1046 container Standing-loss coefficient
+							1047 text Standing-loss coefficient
+						1048 container
+							1049 text 0 1/h
+					1050 text The model uses a fixed internal energy window and separate AC conversion efficiencies. Battery export, temperature effects, ageing and switching behaviour are outside this energy calculation.
+					1051 table Calculated operating periods (UTC)
+						1052 text Calculated operating periods (UTC)
+						1053 row
+							1054 cell
+								1055 text Start
+							1056 cell
+								1057 text End
+							1058 cell
+								1059 text Grid condition
+							1060 cell
+								1061 text Source resolution
+						1062 row
+							1063 cell
+								1064 text 2024-03-30T23:00:00+00:00
+							1065 cell
+								1066 text 2024-03-31T01:00:00+00:00
+							1067 cell
+								1068 text Grid connected
+							1069 cell
+								1070 container
+									1071 text External auxiliary load · AC : 3,600  s → 3,600  s
+								1072 container
+									1073 text Total site load : 3,600  s → 3,600  s
+								1074 container
+									1075 text Available PV output · AC : 3,600  s → 3,600  s
+					1076 text Time alignment preserves interval energy under a constant-mean assumption. A finer display or operating boundary does not create new measured peaks.
+			85 text Solution Configurator
+			86 text by Linker
+			87 text Linker brings your inputs into an editable project for solar and storage planning.
+			88 button (collapsed) About this tool, Secondary Actions: Expand
+				89 text About this tool
+		90 container tv-footer-v2
+			91 image Linker
+			92 container
+				93 text Language
+				94 container Language
+					95 link Description: English, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=14dacb74cda2451a95d00df374532af8#lp-calculations
+					96 link Description: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be&run=14dacb74cda2451a95d00df374532af8#lp-calculations
+			97 text LINKING
+			98 link Description: products, Value: 127.0.0.1:9347/products/
+			99 text ,
+			100 link Description: technology, Value: 127.0.0.1:9347/about/capability/
+			101 text and
+			102 link Description: service, Value: 127.0.0.1:9347/services-support/
+			103 text to create 
+			104 text lasting value
+			105 text  for energy partners in Europe.
+			106 tab group Footer navigation
+				107 tab (selected, settable, boolean) Solutions, Value: 1, ID: footer-tab-solutions
+				108 tab (selectable, settable, boolean) Services, Value: 0, ID: footer-tab-services
+				109 tab (selectable, settable, boolean) Plan with Linker, Value: 0, ID: footer-tab-planning
+				110 tab (selectable, settable, boolean) Account, Value: 0, ID: footer-tab-account
+				111 tab (selectable, settable, boolean) Contact Linker, Value: 0, ID: footer-tab-contact
+			112 container Description: Solutions, ID: footer-panel-solutions
+				113 heading Solutions, Value: 2
+					114 text Solutions
+				115 content list
+					116 link Description: Residential Storage, Value: 127.0.0.1:9347/solution/residential-storage/
+					117 link Description: Commercial Storage, Value: 127.0.0.1:9347/solution/commercial-storage/
+					118 link Description: Utility-Scale Storage, Value: 127.0.0.1:9347/solution/utility-storage/
+			119 text © 2026 Linker. All rights reserved.
+			120 container Legal
+				121 link Description: Imprint, Value: 127.0.0.1:9347/imprint/
+				122 link Description: Privacy Policy, Value: 127.0.0.1:9347/privacy-policy/
+				123 button Cookie settings
+				124 link Description: Terms of Sale, Value: 127.0.0.1:9347/terms-of-sale/
+				125 link Description: Refund & Returns, Value: 127.0.0.1:9347/refund-returns/
+			126 container
+				127 text Product fit · Inverter compatibility · Project support
+
+The focused UI element is 1018 button (expanded) Sources, period and storage model, Secondary Actions: Collapse

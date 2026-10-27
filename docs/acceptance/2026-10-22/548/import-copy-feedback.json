@@ -1,0 +1,1469 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_adversarial_customer_copy_only",
+  "reviewer": "/root/geographic_standards_e138",
+  "reviewed_at_utc": "2026-10-23T11:04:48.751173+00:00",
+  "verdict": "CHANGES_REQUIRED",
+  "scope": "All 76 EN/DE draft pairs. No working implementation, runtime state guards, catalogs, native UI or production was audited or changed.",
+  "dimension": "Understand the GeoJSON roof source, supply a declared roof plane, review a separate preview and explicitly adopt it into the same project history.",
+  "source": {
+    "path": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-22/548/import-copy-draft.json",
+    "sha256": "bb37b972485d69e17ec7c1524913479de0a780d9279b85dc24c6d511e5dd02a0",
+    "bytes": 12893,
+    "pair_count": 76,
+    "existing_pairs": 15,
+    "new_pairs": 61,
+    "earlier_observed_sha256": "a1530c92879c7d440a758bd05fd8160f7672510504cbcab55136e475518301cf",
+    "draft_update": "Parent replaced the two-count boundary-vertex line with Openings in source: %d / Aussparungen in der Quelle: %d; all other 75 pairs unchanged. This review binds the updated SHA."
+  },
+  "summary": {
+    "must_change_pairs": 16,
+    "recommended_change_pairs": 10,
+    "keep_pairs": 50,
+    "all_pairs_receive_an_independent_opposition_record": true,
+    "must_change_is_a_copy_verdict_not_a_finding_against_unreviewed_code": true
+  },
+  "must_change": [
+    {
+      "id": "GEO-003",
+      "reason": "The English subject currently says that the file/settings themselves could not be prepared, while German correctly describes preview preparation. Name the failed action and explicitly retain both the file and entries in both languages.",
+      "replacement_at": "final_pairs/GEO-003/final_proposal"
+    },
+    {
+      "id": "GEO-009",
+      "reason": "Remove dauerhaft: project-save confirmation is not an unlimited retention promise. Keep the distinction between the current editable project draft and its saved version; do not rename this draft Lösungsentwurf.",
+      "replacement_at": "final_pairs/GEO-009/final_proposal"
+    },
+    {
+      "id": "GEO-010",
+      "reason": "Describe the failed recovery copy and its consequence. The original request is an implementation concept; unavailable or full also suggests causes that need not be diagnosed. The last sentence describes this failure’s effect, without promising permanent storage.",
+      "replacement_at": "final_pairs/GEO-010/final_proposal"
+    },
+    {
+      "id": "GEO-016",
+      "reason": "The parent confirmed that the identified InvalidInput refusal occurs before publication. This is not a proven storage defect. Nevertheless, before storage and calibration expose internal phases and suggest a calibration feature that this form does not perform. Give the rejection, retained inputs and correction action. Use only for that identified refusal, never an unknown result.",
+      "replacement_at": "final_pairs/GEO-016/final_proposal"
+    },
+    {
+      "id": "GEO-023",
+      "reason": "Align can imply an automatic transformation, but this increment records references without moving old geometry. The German destination must match the existing exact label Koordinatenbezüge des Projekts, not the invented shortcut Projektkoordinaten. A supplied north reference is not independently verified by the tool.",
+      "replacement_at": "final_pairs/GEO-023/final_proposal"
+    },
+    {
+      "id": "GEO-033",
+      "reason": "A roof face is editable; a history step is undoable. The original German calls the step itself editable and the save target an Auswahl. Describe the single compound addition, then its separate save and undo actions, without asserting that any later Undo necessarily removes this import.",
+      "replacement_at": "final_pairs/GEO-033/final_proposal"
+    },
+    {
+      "id": "GEO-041",
+      "reason": "Enter the roof plane is not an actionable explanation of these three fields. Distinguish the horizontal source outline from the reconstructed sloping surface, and name the actual inputs. The source values are declared, not checked by importing.",
+      "replacement_at": "final_pairs/GEO-041/final_proposal"
+    },
+    {
+      "id": "GEO-043",
+      "reason": "Below 90° alone omits the lower bound and can be read as accepting negative roof pitch. State the non-negative pitch convention and excluded vertical limit together. This is an input-range explanation, not a safety or engineering threshold.",
+      "replacement_at": "final_pairs/GEO-043/final_proposal"
+    },
+    {
+      "id": "GEO-046",
+      "reason": "The parent confirmed that this is always the first vertex of the selected Polygon’s outer ring; there is no independent vertex selection. Describe assigning that point’s relative Up value, not redefining the project’s height reference.",
+      "replacement_at": "final_pairs/GEO-046/final_proposal"
+    },
+    {
+      "id": "GEO-047",
+      "reason": "Differentiate a project-relative height value from terrain and absolute elevation. The zero option assigns a value within the existing height system; it does not rebase existing objects or calibrate a survey. The first point remains defined by the file order.",
+      "replacement_at": "final_pairs/GEO-047/final_proposal"
+    },
+    {
+      "id": "GEO-048",
+      "reason": "Selected vertex incorrectly suggests that the user can choose a vertex. Name the actual fixed anchor and make relative height explicit in the field label.",
+      "replacement_at": "final_pairs/GEO-048/final_proposal"
+    },
+    {
+      "id": "GEO-049",
+      "reason": "Project origin can be read as the geographic longitude/latitude anchor or ground level. This field is project-relative Up at the first outer-ring point. Preserve metres and valid negative values.",
+      "replacement_at": "final_pairs/GEO-049/final_proposal"
+    },
+    {
+      "id": "GEO-053",
+      "reason": "Only an empty unreferenced project may adopt this geographic origin. New does not necessarily mean empty. Distinguish the geographic origin from the relative-height value at the first point; preserve the no-survey-verification qualification.",
+      "replacement_at": "final_pairs/GEO-053/final_proposal"
+    },
+    {
+      "id": "GEO-064",
+      "reason": "The coordinate contract requires explicit retain/derive attestation. The original checkbox mentions upload and retaining only the original; it omits derivation and retention of derived geometry. Export permission remains a separate declaration. This is an attestation, not the tool certifying a licence.",
+      "replacement_at": "final_pairs/GEO-064/final_proposal"
+    },
+    {
+      "id": "GEO-066",
+      "reason": "Frozen settings is internal wording. No new request can falsely suggest that no network request is sent; the invariant is the same logical import, original bytes and settings. Corrected data must use the separate correction flow, not silently mutate this retry.",
+      "replacement_at": "final_pairs/GEO-066/final_proposal"
+    },
+    {
+      "id": "GEO-074",
+      "reason": "This records the declared drawing/survey basis for the plane. It does not perform image-scale calibration, instrument calibration or independent survey verification. Replace calibration in this customer label with the actual reference concept.",
+      "replacement_at": "final_pairs/GEO-074/final_proposal"
+    }
+  ],
+  "recommended_change": [
+    {
+      "id": "GEO-001",
+      "reason": "Begin the error with the customer outcome, then the supported format. Longitude/latitude pairs state the two-dimensional input without suggesting that a third coordinate will be silently discarded.",
+      "replacement_at": "final_pairs/GEO-001/final_proposal"
+    },
+    {
+      "id": "GEO-008",
+      "reason": "Narrow the claim to inclusion of this import in the saved project. It must not imply that all subsequent roof edits are saved, that upload alone saved a project, or that the source was measured or approved.",
+      "replacement_at": "final_pairs/GEO-008/final_proposal"
+    },
+    {
+      "id": "GEO-012",
+      "reason": "Clarify that the roof is added to the project, not the upload operation. The queue may contain both an unconfirmed attempt and a confirmed source awaiting adoption.",
+      "replacement_at": "final_pairs/GEO-012/final_proposal"
+    },
+    {
+      "id": "GEO-045",
+      "reason": "State the clockwise angle convention explicitly. The cardinal examples already imply it, so this is a clarity improvement rather than a demonstrated factual error. Measured here names the angle convention, not a measurement performed by this tool.",
+      "replacement_at": "final_pairs/GEO-045/final_proposal"
+    },
+    {
+      "id": "GEO-051",
+      "reason": "Align the English and German instructions: möglichst currently weakens the English include instruction. Use the actual direction term and a clear reference/date request. This is necessary form guidance, not a marketing request for homework.",
+      "replacement_at": "final_pairs/GEO-051/final_proposal"
+    },
+    {
+      "id": "GEO-057",
+      "reason": "Make the unit explicit beside the provenance instruction. Unknown remains empty rather than becoming 0, a guessed value or a precision claim produced by the coordinate conversion.",
+      "replacement_at": "final_pairs/GEO-057/final_proposal"
+    },
+    {
+      "id": "GEO-071",
+      "reason": "These are metre-valued coordinates, not angles or direction cosines. Keep this read-only technical tuple in expanded original settings, with its unit visible.",
+      "replacement_at": "final_pairs/GEO-071/final_proposal"
+    },
+    {
+      "id": "GEO-072",
+      "reason": "Name the dimensionless unit vector so it is not mistaken for another metre tuple. Use Hoch consistently with the existing Ost-Nord-Hoch-System, rather than the literal Oben. This belongs in technical details, not the first-step headline.",
+      "replacement_at": "final_pairs/GEO-072/final_proposal"
+    },
+    {
+      "id": "GEO-073",
+      "reason": "Same vector/unit and German-axis distinction as the U direction. Retain the actual U/V identifiers because these are inspectable technical values, not promotional jargon.",
+      "replacement_at": "final_pairs/GEO-073/final_proposal"
+    },
+    {
+      "id": "GEO-076",
+      "reason": "Name the conversion method rather than using the developer term legacy on its own. An old receipt may remain reviewable; this status must not promise a newly attachable candidate.",
+      "replacement_at": "final_pairs/GEO-076/final_proposal"
+    }
+  ],
+  "authority": {
+    "current_rules": [
+      "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/AGENTS.md",
+      "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/CONTEXT.md",
+      "/Users/chesterjohn/.agents/skills/linker-copywriting/SKILL.md",
+      "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/specs/548-geographic-intake.md"
+    ],
+    "retained_copy_rulings": [
+      "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-22/548/PROFILE-COPY-REVIEW.md",
+      "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-22/548/design-copy-feedback.json",
+      "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-22/548/workspace-probes/563e0387-standards/COPY-REVIEW.md",
+      "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-22/548/workspace-probes/cbf75a9c-standards/COPY-REVIEW.md"
+    ],
+    "skill_application": "Humanizer pattern removal and the loaded linker-copywriting Hard Stops 1–9, anti-pattern/positive-example and encyclopedia rulers. Current AGENTS/CONTEXT and current owner decisions override obsolete encyclopedia tool names, commerce paths and audience exclusions.",
+    "ui_instruction_exception": "Necessary step instructions, required fields, recovery actions and correction guidance are functional tool copy. They are not rejected mechanically as marketing homework. Formal Sie remains required when addressing the German reader.",
+    "external_research": "No new external fact, licensing determination, industry rule or software API claim is needed for this copy-only review; no external research was performed."
+  },
+  "confirmed_product_facts": [
+    "Parent confirmed: the height anchor is always the first vertex of the selected Polygon outer ring; users choose a roof/Polygon part but cannot choose a different vertex in this increment.",
+    "Only an empty unreferenced project adopts that point as its geographic origin. An existing matching geographic frame retains its origin. Height input remains project-relative Up at the first outer point, not terrain or a measured absolute elevation.",
+    "Parent confirmed: a known InvalidInput code/status refusal precedes conversion/topology publication; generic or unknown 422 outcomes retain the original request. The copy proposal does not claim an unconfirmed request was rejected before storage.",
+    "Import creates a retained owned source/candidate, not a project revision. Explicit adoption is one history operation; server save is a separate acknowledgement. Neither operation proves engineering compliance or site measurement.",
+    "Original bytes/settings/logical request identity remain unchanged for recovery retry; correcting input is a separate action. Original retention, derived-geometry use and export rights are distinct declarations."
+  ],
+  "display_and_state_contracts_to_verify_later": [
+    {
+      "ids": [
+        "GEO-008"
+      ],
+      "contract": "Show only when the import is present in the current design and its actual source/roof association is included in an acknowledged server baseline for this project. A source upload receipt or client recovery write alone is insufficient. Undo/removal must not leave a stale saved-inclusion notice. The wording covers saved import inclusion, not all later roof edits."
+    },
+    {
+      "ids": [
+        "GEO-009"
+      ],
+      "contract": "Show only while this import is actually in the current editable design and the corresponding adoption is not yet in the acknowledged project baseline. No notice after Undo has removed it."
+    },
+    {
+      "ids": [
+        "GEO-010"
+      ],
+      "contract": "This notification is for a failed required browser recovery copy that blocks dispatch/continuation. It must not be reused for an optional local write failure after a project save that was confirmed on the server."
+    },
+    {
+      "ids": [
+        "GEO-016"
+      ],
+      "contract": "Use the correction/refusal notice only for the identified deterministic input rejection. Unknown/generic outcomes, including an unclassified 422, use the unconfirmed-result path with the original request retained."
+    },
+    {
+      "ids": [
+        "GEO-017",
+        "GEO-019",
+        "GEO-020",
+        "GEO-065",
+        "GEO-066"
+      ],
+      "contract": "Unknown result remains unknown. Retry checks/replays the same original bytes, frozen settings and logical import; do not replace them with mutable current form values. Retained original means those actual bytes remain available in the owned context."
+    },
+    {
+      "ids": [
+        "GEO-023",
+        "GEO-031"
+      ],
+      "contract": "Missing alignment or a changed before-document/reference must refuse adoption without moving old objects, losing form values or silently attaching stale geometry."
+    },
+    {
+      "ids": [
+        "GEO-029",
+        "GEO-030",
+        "GEO-039"
+      ],
+      "contract": "Source opening count, retained preview openings and roof-plane area are different facts. The updated source line reports only openings; no raw-ring coordinate count is presented as independent outer-boundary vertices."
+    },
+    {
+      "ids": [
+        "GEO-043",
+        "GEO-044",
+        "GEO-045",
+        "GEO-046",
+        "GEO-048",
+        "GEO-049"
+      ],
+      "contract": "Enforce the stated non-negative pitch below 90 degrees; direction is clockwise from geographic north, not panel azimuth. Height uses the selected outer ring’s first point and project-relative Up; assigning it 0 does not change the project datum. The preview/detail should identify which first point supplies the anchor."
+    },
+    {
+      "ids": [
+        "GEO-057",
+        "GEO-060",
+        "GEO-061",
+        "GEO-062",
+        "GEO-063",
+        "GEO-064"
+      ],
+      "contract": "Precision remains source-declared and blank/unknown is not 0 or measured accuracy. Rights are user declarations. Upload/derive/private retention do not imply export permission or independent legal verification."
+    },
+    {
+      "ids": [
+        "GEO-076"
+      ],
+      "contract": "An earlier immutable receipt can remain reviewable, but an unsupported or missing historical method cannot prepare or newly attach an unsupported candidate. Do not hide its original method/settings or imply a successful new conversion."
+    }
+  ],
+  "surface_placement": {
+    "main_flow": "Keep the file/roof choice, pitch, downslope direction, first-point relative height, source/rights and preview/adoption actions in the normal three-step flow. Error and saved/unsaved notices remain near their actual action.",
+    "expandable_details_ids": [
+      "GEO-052",
+      "GEO-053",
+      "GEO-065",
+      "GEO-066",
+      "GEO-067",
+      "GEO-068",
+      "GEO-069",
+      "GEO-070",
+      "GEO-071",
+      "GEO-072",
+      "GEO-073",
+      "GEO-074",
+      "GEO-075",
+      "GEO-076"
+    ],
+    "details_rule": "Technical coordinates, vectors, conversion method and immutable original settings may be read-only expandable details. Collapsing them must not hide the first-point height explanation, the distinction between preview/adopt/save, necessary input units or required rights."
+  },
+  "rejected_alternatives": [
+    {
+      "text": "Verified / calibrated roof",
+      "reason": "The supplied outline and declared plane are reconstructed, not independently surveyed, calibrated or approved for construction."
+    },
+    {
+      "text": "Permanently saved / dauerhaft gespeichert",
+      "reason": "A confirmed saved project is not a promise of unlimited retention."
+    },
+    {
+      "text": "Selected vertex / gewählter Umrisspunkt",
+      "reason": "There is no vertex-selection control in this increment; the first outer-ring point is fixed."
+    },
+    {
+      "text": "No new request is created / Es wird keine neue Anfrage erzeugt",
+      "reason": "Retries can perform another network request while retaining the same logical import identity."
+    },
+    {
+      "text": "Project coordinate reference settings align or rotate existing geometry",
+      "reason": "The settings record references. Existing geometry must already match them; it is not transformed by recording them."
+    }
+  ],
+  "pre_delivery_checklist": {
+    "encyclopedia_dimension_and_current_domain_authority_loaded": true,
+    "hard_stop_1_no_borrowed_credibility": true,
+    "hard_stop_2_no_public_proof_inventory": true,
+    "hard_stop_3_no_defensive_category_denial": true,
+    "hard_stop_4_no_reassurance_intensifiers": true,
+    "hard_stop_5_no_invented_logistics_or_time_counters": true,
+    "hard_stop_6_no_helpdesk_selling": true,
+    "hard_stop_7_technical_detail_kept_at_its_actual_input_or_detail_surface": true,
+    "hard_stop_8_no_repair_shop_merchant_selling": true,
+    "hard_stop_9_actor_future_weight_duration_checked_with_functional_ui_exception": true,
+    "no_slogan_templates_or_invented_customer_future": true,
+    "no_testimonial_or_brand_claim": true,
+    "formal_german_independently_reviewed": true,
+    "all_76_pairs_reviewed": true,
+    "placeholder_types_and_positions_preserved_in_final_proposals": true,
+    "no_em_or_en_dash_in_proposed_customer_copy": true,
+    "unknown_outcomes_and_declared_precision_not_promoted_to_confirmed_facts": true,
+    "runtime_state_gates_verified_in_this_review": false,
+    "catalog_application_and_native_en_de_visual_acceptance_verified_in_this_review": false
+  },
+  "final_pairs": [
+    {
+      "id": "GEO-001",
+      "draft_index": 1,
+      "existing": false,
+      "decision": "recommended_change",
+      "draft": {
+        "en": "Choose a UTF-8 GeoJSON file up to 4 MiB with closed, two-dimensional WGS 84 roof polygons. Check the file's coordinates and format, then try again.",
+        "de": "Die Datei benötigt geschlossene Dachumrisse mit zweidimensionalen WGS-84-Koordinaten im GeoJSON-Format (UTF-8, höchstens 4 MiB). Bitte prüfen Sie Format und Koordinaten der Datei."
+      },
+      "final_proposal": {
+        "en": "This file could not be used. Choose a UTF-8 GeoJSON file up to 4 MiB with closed roof polygons containing only WGS 84 longitude/latitude pairs.",
+        "de": "Diese Datei kann nicht verwendet werden. Unterstützt wird GeoJSON in UTF-8 bis 4 MiB mit geschlossenen Dachumrissen und WGS-84-Koordinaten aus Längen- und Breitengrad."
+      },
+      "opposition_and_resolution": "Begin the error with the customer outcome, then the supported format. Longitude/latitude pairs state the two-dimensional input without suggesting that a third coordinate will be silently discarded."
+    },
+    {
+      "id": "GEO-002",
+      "draft_index": 2,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Complete this field to continue.",
+        "de": "Bitte füllen Sie dieses Feld aus."
+      },
+      "final_proposal": {
+        "en": "Complete this field to continue.",
+        "de": "Bitte füllen Sie dieses Feld aus."
+      },
+      "opposition_and_resolution": "Necessary required-field instruction. German Bitte/Sie is appropriate; no marketing-homework rule blocks functional validation."
+    },
+    {
+      "id": "GEO-003",
+      "draft_index": 3,
+      "existing": false,
+      "decision": "must_change",
+      "draft": {
+        "en": "The file and roof settings could not be prepared. Your values remain available for correction.",
+        "de": "Die Dachvorschau konnte nicht vorbereitet werden. Ihre Datei und Eingaben bleiben für die Korrektur erhalten."
+      },
+      "final_proposal": {
+        "en": "The roof preview could not be prepared. Your file and entries remain available for correction.",
+        "de": "Die Dachvorschau konnte nicht vorbereitet werden. Ihre Datei und Eingaben bleiben für die Korrektur erhalten."
+      },
+      "opposition_and_resolution": "The English subject currently says that the file/settings themselves could not be prepared, while German correctly describes preview preparation. Name the failed action and explicitly retain both the file and entries in both languages."
+    },
+    {
+      "id": "GEO-004",
+      "draft_index": 4,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "File and roof",
+        "de": "Datei und Dachfläche"
+      },
+      "final_proposal": {
+        "en": "File and roof",
+        "de": "Datei und Dachfläche"
+      },
+      "opposition_and_resolution": "Plain name for the first import step; German explicitly identifies the selected roof face."
+    },
+    {
+      "id": "GEO-005",
+      "draft_index": 5,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Roof plane",
+        "de": "Dachebene"
+      },
+      "final_proposal": {
+        "en": "Roof plane",
+        "de": "Dachebene"
+      },
+      "opposition_and_resolution": "The roof-plane step has an actual plane-definition task. Dachebene is appropriate here, without implying a surveyed plane."
+    },
+    {
+      "id": "GEO-006",
+      "draft_index": 6,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Source",
+        "de": "Quelle"
+      },
+      "final_proposal": {
+        "en": "Source",
+        "de": "Quelle"
+      },
+      "opposition_and_resolution": "Plain source/provenance step label; the detailed rights fields remain below it."
+    },
+    {
+      "id": "GEO-007",
+      "draft_index": 7,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Import roof geometry",
+        "de": "Dachgeometrie importieren"
+      },
+      "final_proposal": {
+        "en": "Import roof geometry",
+        "de": "Dachgeometrie importieren"
+      },
+      "opposition_and_resolution": "Names the actual roof-geometry import action in a working tool. No branded claim, engineering certification or site-measurement promise."
+    },
+    {
+      "id": "GEO-008",
+      "draft_index": 8,
+      "existing": false,
+      "decision": "recommended_change",
+      "draft": {
+        "en": "Imported roof saved with the project.",
+        "de": "Die importierte Dachfläche ist im Projekt gespeichert."
+      },
+      "final_proposal": {
+        "en": "The roof import is included in the saved project.",
+        "de": "Der Dachimport ist im gespeicherten Projekt enthalten."
+      },
+      "opposition_and_resolution": "Narrow the claim to inclusion of this import in the saved project. It must not imply that all subsequent roof edits are saved, that upload alone saved a project, or that the source was measured or approved."
+    },
+    {
+      "id": "GEO-009",
+      "draft_index": 9,
+      "existing": false,
+      "decision": "must_change",
+      "draft": {
+        "en": "Imported roof is in the current design. Save the project to record it.",
+        "de": "Die importierte Dachfläche ist im aktuellen Entwurf enthalten. Mit dem Speichern des Projekts wird sie dauerhaft übernommen."
+      },
+      "final_proposal": {
+        "en": "Imported roof is in the current design. Save the project to record it.",
+        "de": "Die importierte Dachfläche ist im aktuellen Projektentwurf enthalten. Speichern Sie das Projekt, um diesen Stand zu sichern."
+      },
+      "opposition_and_resolution": "Remove dauerhaft: project-save confirmation is not an unlimited retention promise. Keep the distinction between the current editable project draft and its saved version; do not rename this draft Lösungsentwurf."
+    },
+    {
+      "id": "GEO-010",
+      "draft_index": 10,
+      "existing": false,
+      "decision": "must_change",
+      "draft": {
+        "en": "Browser recovery is unavailable or full. The upload needs a retained copy of its original request. Any confirmed project save remains on the server.",
+        "de": "Die Wiederherstellung im Browser ist nicht verfügbar oder ihr Speicher ist voll. Vor dem Hochladen muss die ursprüngliche Anfrage dort gesichert werden. Bestätigte Projektstände bleiben auf dem Server erhalten."
+      },
+      "final_proposal": {
+        "en": "A recovery copy of the original file and import settings could not be saved in this browser, so this upload cannot continue. This does not change any project versions already saved on the server.",
+        "de": "Der Browser konnte die Originaldatei und die Importeinstellungen nicht für die Wiederherstellung speichern. Deshalb kann dieser Upload nicht fortgesetzt werden. Bereits auf dem Server gespeicherte Projektstände werden dadurch nicht verändert."
+      },
+      "opposition_and_resolution": "Describe the failed recovery copy and its consequence. The original request is an implementation concept; unavailable or full also suggests causes that need not be diagnosed. The last sentence describes this failure’s effect, without promising permanent storage."
+    },
+    {
+      "id": "GEO-011",
+      "draft_index": 11,
+      "existing": true,
+      "decision": "keep",
+      "draft": {
+        "en": "Imports to review",
+        "de": "Importe zur Prüfung"
+      },
+      "final_proposal": {
+        "en": "Imports to review",
+        "de": "Importe zur Prüfung"
+      },
+      "opposition_and_resolution": "Previously approved neutral queue label covers unconfirmed attempts and confirmed sources awaiting use; it does not claim all are failures."
+    },
+    {
+      "id": "GEO-012",
+      "draft_index": 12,
+      "existing": false,
+      "decision": "recommended_change",
+      "draft": {
+        "en": "Review an earlier upload before deciding whether to retry it or add it to this project.",
+        "de": "Hier können Sie einen früheren Upload prüfen und anschließend erneut versuchen oder in das Projekt übernehmen."
+      },
+      "final_proposal": {
+        "en": "Review an earlier upload before retrying it or adding its roof to this project.",
+        "de": "Prüfen Sie einen früheren Upload, bevor Sie ihn erneut versuchen oder die Dachfläche in dieses Projekt übernehmen."
+      },
+      "opposition_and_resolution": "Clarify that the roof is added to the project, not the upload operation. The queue may contain both an unconfirmed attempt and a confirmed source awaiting adoption."
+    },
+    {
+      "id": "GEO-013",
+      "draft_index": 13,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Review imported roof",
+        "de": "Importierte Dachfläche prüfen"
+      },
+      "final_proposal": {
+        "en": "Review imported roof",
+        "de": "Importierte Dachfläche prüfen"
+      },
+      "opposition_and_resolution": "Review action only, not a declaration that the imported roof is measured, valid for construction or saved with the project."
+    },
+    {
+      "id": "GEO-014",
+      "draft_index": 14,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Review an earlier upload",
+        "de": "Früheren Upload prüfen"
+      },
+      "final_proposal": {
+        "en": "Review an earlier upload",
+        "de": "Früheren Upload prüfen"
+      },
+      "opposition_and_resolution": "Neutral recovered-upload review title, without claiming a new upload or successful project adoption."
+    },
+    {
+      "id": "GEO-015",
+      "draft_index": 15,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Preview the roof outline and its openings, then add it to your design. Importing a drawing does not verify site dimensions or engineering compliance.",
+        "de": "Die Vorschau zeigt den Dachumriss mit seinen Aussparungen. Anschließend können Sie die Fläche in den Entwurf übernehmen. Der Import ersetzt weder ein Aufmaß vor Ort noch eine technische Prüfung."
+      },
+      "final_proposal": {
+        "en": "Preview the roof outline and its openings, then add it to your design. Importing a drawing does not verify site dimensions or engineering compliance.",
+        "de": "Die Vorschau zeigt den Dachumriss mit seinen Aussparungen. Anschließend können Sie die Fläche in den Entwurf übernehmen. Der Import ersetzt weder ein Aufmaß vor Ort noch eine technische Prüfung."
+      },
+      "opposition_and_resolution": "Shows the outline/openings preview and explicit adoption sequence. The scope qualification correctly avoids a site-survey or engineering-compliance guarantee."
+    },
+    {
+      "id": "GEO-016",
+      "draft_index": 16,
+      "existing": false,
+      "decision": "must_change",
+      "draft": {
+        "en": "The file or roof settings were refused before storage. Check the format and calibration before trying again.",
+        "de": "Die Datei oder die Dachangaben wurden vor dem Speichern abgewiesen. Bitte prüfen Sie Dateiformat und Angaben zur Dachebene."
+      },
+      "final_proposal": {
+        "en": "The file or roof settings could not be accepted. Your file and entries are still available. Check the file format and roof settings, then try again.",
+        "de": "Die Datei oder die Dachangaben konnten nicht übernommen werden. Ihre Datei und Eingaben bleiben erhalten. Bitte prüfen Sie das Dateiformat und die Dachangaben und versuchen Sie es erneut."
+      },
+      "opposition_and_resolution": "The parent confirmed that the identified InvalidInput refusal occurs before publication. This is not a proven storage defect. Nevertheless, before storage and calibration expose internal phases and suggest a calibration feature that this form does not perform. Give the rejection, retained inputs and correction action. Use only for that identified refusal, never an unknown result."
+    },
+    {
+      "id": "GEO-017",
+      "draft_index": 17,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "The upload has not been confirmed. Retry uses the same original file and settings; your current design is kept.",
+        "de": "Der Upload wurde nicht bestätigt. Ein erneuter Versuch verwendet dieselbe Originaldatei und dieselben Angaben. Ihr aktueller Entwurf bleibt erhalten."
+      },
+      "final_proposal": {
+        "en": "The upload has not been confirmed. Retry uses the same original file and settings; your current design is kept.",
+        "de": "Der Upload wurde nicht bestätigt. Ein erneuter Versuch verwendet dieselbe Originaldatei und dieselben Angaben. Ihr aktueller Entwurf bleibt erhalten."
+      },
+      "opposition_and_resolution": "Preserves the unknown acknowledgement as unknown, explicitly reuses original file/settings and keeps the current design. It does not falsely declare success or failure."
+    },
+    {
+      "id": "GEO-018",
+      "draft_index": 18,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Preparing preview…",
+        "de": "Vorschau wird vorbereitet …"
+      },
+      "final_proposal": {
+        "en": "Preparing preview…",
+        "de": "Vorschau wird vorbereitet …"
+      },
+      "opposition_and_resolution": "Ordinary progress wording and natural German spacing before the ellipsis. No fabricated time estimate."
+    },
+    {
+      "id": "GEO-019",
+      "draft_index": 19,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Check or retry this upload",
+        "de": "Upload prüfen oder erneut versuchen"
+      },
+      "final_proposal": {
+        "en": "Check or retry this upload",
+        "de": "Upload prüfen oder erneut versuchen"
+      },
+      "opposition_and_resolution": "Plain recovery action can cover an original-receipt lookup or retry of that same intent. No false new-upload or confirmation claim."
+    },
+    {
+      "id": "GEO-020",
+      "draft_index": 20,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Retained original file",
+        "de": "Gesicherte Originaldatei"
+      },
+      "final_proposal": {
+        "en": "Retained original file",
+        "de": "Gesicherte Originaldatei"
+      },
+      "opposition_and_resolution": "Accept only while the original bytes are actually available in the owned recovery or source context. The label itself does not assert a project save."
+    },
+    {
+      "id": "GEO-021",
+      "draft_index": 21,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Correct this import",
+        "de": "Importangaben korrigieren"
+      },
+      "final_proposal": {
+        "en": "Correct this import",
+        "de": "Importangaben korrigieren"
+      },
+      "opposition_and_resolution": "Actual correction action; it must open the retained editable input, not mutate an unconfirmed immutable request in place."
+    },
+    {
+      "id": "GEO-022",
+      "draft_index": 22,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Import progress",
+        "de": "Importschritte"
+      },
+      "final_proposal": {
+        "en": "Import progress",
+        "de": "Importschritte"
+      },
+      "opposition_and_resolution": "Functional accessible name for the three-step progress indicator, not a fabricated completion percentage."
+    },
+    {
+      "id": "GEO-023",
+      "draft_index": 23,
+      "existing": false,
+      "decision": "must_change",
+      "draft": {
+        "en": "Align the existing design to true north and a geographic origin before importing another roof. Close this import and open Project coordinate references; existing objects are kept in place.",
+        "de": "Für eine weitere Dachfläche benötigt der bestehende Entwurf einen geografischen Ursprung und eine belegte Ausrichtung nach geografisch Nord. Diese Angaben finden Sie nach dem Schließen unter Projektkoordinaten. Vorhandene Objekte werden dabei nicht verschoben."
+      },
+      "final_proposal": {
+        "en": "The existing design needs a geographic origin and a source reference for true north before another roof can be imported. Close this import and open Project coordinate references. These settings do not rotate or move existing objects; the design must already match the references.",
+        "de": "Für eine weitere Dachfläche benötigt der bestehende Entwurf einen geografischen Ursprung und einen Bezug auf geografisch Nord mit Quellenangabe. Schließen Sie den Import und öffnen Sie Koordinatenbezüge des Projekts. Diese Angaben drehen oder verschieben vorhandene Objekte nicht; der Entwurf muss bereits mit diesen Bezügen übereinstimmen."
+      },
+      "opposition_and_resolution": "Align can imply an automatic transformation, but this increment records references without moving old geometry. The German destination must match the existing exact label Koordinatenbezüge des Projekts, not the invented shortcut Projektkoordinaten. A supplied north reference is not independently verified by the tool."
+    },
+    {
+      "id": "GEO-024",
+      "draft_index": 24,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Roof file",
+        "de": "Dachdatei"
+      },
+      "final_proposal": {
+        "en": "Roof file",
+        "de": "Dachdatei"
+      },
+      "opposition_and_resolution": "Short file input label, correctly scoped to the roof import."
+    },
+    {
+      "id": "GEO-025",
+      "draft_index": 25,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "WGS 84 GeoJSON · up to 4 MiB",
+        "de": "GeoJSON in WGS 84 · höchstens 4 MiB"
+      },
+      "final_proposal": {
+        "en": "WGS 84 GeoJSON · up to 4 MiB",
+        "de": "GeoJSON in WGS 84 · höchstens 4 MiB"
+      },
+      "opposition_and_resolution": "Required format and deployment file-size policy, not an accuracy or roof-capacity claim. Technical file format is necessary input guidance."
+    },
+    {
+      "id": "GEO-026",
+      "draft_index": 26,
+      "existing": true,
+      "decision": "keep",
+      "draft": {
+        "en": "Back",
+        "de": "Zurück"
+      },
+      "final_proposal": {
+        "en": "Back",
+        "de": "Zurück"
+      },
+      "opposition_and_resolution": "Existing Back/Zurück wording; preserve the shared application term."
+    },
+    {
+      "id": "GEO-027",
+      "draft_index": 27,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Continue",
+        "de": "Weiter"
+      },
+      "final_proposal": {
+        "en": "Continue",
+        "de": "Weiter"
+      },
+      "opposition_and_resolution": "Normal step navigation label; it must not stand in for upload, adoption or saving."
+    },
+    {
+      "id": "GEO-028",
+      "draft_index": 28,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Prepare roof preview",
+        "de": "Dachvorschau vorbereiten"
+      },
+      "final_proposal": {
+        "en": "Prepare roof preview",
+        "de": "Dachvorschau vorbereiten"
+      },
+      "opposition_and_resolution": "Explicitly prepares a preview; does not imply adding a roof or saving the project."
+    },
+    {
+      "id": "GEO-029",
+      "draft_index": 29,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Roof-plane area",
+        "de": "Fläche in der Dachebene"
+      },
+      "final_proposal": {
+        "en": "Roof-plane area",
+        "de": "Fläche in der Dachebene"
+      },
+      "opposition_and_resolution": "Area is in the roof plane, distinct from horizontal footprint or usable module area. Do not replace with a PV-capacity claim."
+    },
+    {
+      "id": "GEO-030",
+      "draft_index": 30,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Openings retained",
+        "de": "Übernommene Aussparungen"
+      },
+      "final_proposal": {
+        "en": "Openings retained",
+        "de": "Übernommene Aussparungen"
+      },
+      "opposition_and_resolution": "Accept on the actual prepared preview whose rings are retained; the earlier raw-file step uses the separately corrected source-opening count."
+    },
+    {
+      "id": "GEO-031",
+      "draft_index": 31,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "The design or coordinate reference has changed. Your imported source is retained; review it against the current project before adding it.",
+        "de": "Der Entwurf oder sein Koordinatenbezug hat sich geändert. Die importierte Quelle bleibt erhalten. Bitte gleichen Sie die Angaben vor dem Übernehmen mit dem aktuellen Projekt ab."
+      },
+      "final_proposal": {
+        "en": "The design or coordinate reference has changed. Your imported source is retained; review it against the current project before adding it.",
+        "de": "Der Entwurf oder sein Koordinatenbezug hat sich geändert. Die importierte Quelle bleibt erhalten. Bitte gleichen Sie die Angaben vor dem Übernehmen mit dem aktuellen Projekt ab."
+      },
+      "opposition_and_resolution": "States the stale design/reference conflict and retained source without claiming that the candidate was applied. It must remain a refusal until reviewed against the current project."
+    },
+    {
+      "id": "GEO-032",
+      "draft_index": 32,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Add roof to current design",
+        "de": "Dachfläche in den Entwurf übernehmen"
+      },
+      "final_proposal": {
+        "en": "Add roof to current design",
+        "de": "Dachfläche in den Entwurf übernehmen"
+      },
+      "opposition_and_resolution": "Explicit adoption action, separate from preview and server save. Dachfläche is the actual single face, not an entire building or system design."
+    },
+    {
+      "id": "GEO-033",
+      "draft_index": 33,
+      "existing": false,
+      "decision": "must_change",
+      "draft": {
+        "en": "This adds one editable roof to project history. Save the project to keep the selection; Undo removes it from the open design.",
+        "de": "Die Dachfläche wird als ein bearbeitbarer Schritt in den Entwurf übernommen. Durch Speichern bleibt die Auswahl im Projekt erhalten. Rückgängig entfernt sie aus dem offenen Entwurf."
+      },
+      "final_proposal": {
+        "en": "One editable roof face is added as a single step in project history. Save the project to record the addition. You can undo this addition in the open design.",
+        "de": "Die bearbeitbare Dachfläche wird in einem Schritt in den Projektverlauf übernommen. Speichern Sie das Projekt, um sie darin zu sichern. Diese Übernahme lässt sich im offenen Projektentwurf rückgängig machen."
+      },
+      "opposition_and_resolution": "A roof face is editable; a history step is undoable. The original German calls the step itself editable and the save target an Auswahl. Describe the single compound addition, then its separate save and undo actions, without asserting that any later Undo necessarily removes this import."
+    },
+    {
+      "id": "GEO-034",
+      "draft_index": 34,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Close import",
+        "de": "Import schließen"
+      },
+      "final_proposal": {
+        "en": "Close import",
+        "de": "Import schließen"
+      },
+      "opposition_and_resolution": "Plain import-close action. Closing is not an implicit discard of an unresolved owned request."
+    },
+    {
+      "id": "GEO-035",
+      "draft_index": 35,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "%1$s · face %2$d",
+        "de": "%1$s · Fläche %2$d"
+      },
+      "final_proposal": {
+        "en": "%1$s · face %2$d",
+        "de": "%1$s · Fläche %2$d"
+      },
+      "opposition_and_resolution": "File/face disambiguation label. Preserve both typed positional placeholders and their order."
+    },
+    {
+      "id": "GEO-036",
+      "draft_index": 36,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Feature %d",
+        "de": "Objekt %d"
+      },
+      "final_proposal": {
+        "en": "Feature %d",
+        "de": "Objekt %d"
+      },
+      "opposition_and_resolution": "GeoJSON feature index is an appropriate technical selection identifier. German Objekt is customer-readable; this does not name a physical building."
+    },
+    {
+      "id": "GEO-037",
+      "draft_index": 37,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Roof in this file",
+        "de": "Dachfläche in dieser Datei"
+      },
+      "final_proposal": {
+        "en": "Roof in this file",
+        "de": "Dachfläche in dieser Datei"
+      },
+      "opposition_and_resolution": "The selected roof face belongs to this file; German distinguishes the roof face from an entire roof/building."
+    },
+    {
+      "id": "GEO-038",
+      "draft_index": 38,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Select a roof face",
+        "de": "Dachfläche auswählen"
+      },
+      "final_proposal": {
+        "en": "Select a roof face",
+        "de": "Dachfläche auswählen"
+      },
+      "opposition_and_resolution": "Necessary selection prompt; no claim that every GeoJSON feature is an independently measured roof."
+    },
+    {
+      "id": "GEO-039",
+      "draft_index": 39,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Openings in source: %d",
+        "de": "Aussparungen in der Quelle: %d"
+      },
+      "final_proposal": {
+        "en": "Openings in source: %d",
+        "de": "Aussparungen in der Quelle: %d"
+      },
+      "opposition_and_resolution": "The updated draft counts actual source openings only. It no longer mislabels closing coordinates or hole vertices as independent outer-boundary vertices. Preserve the single %d in both languages."
+    },
+    {
+      "id": "GEO-040",
+      "draft_index": 40,
+      "existing": true,
+      "decision": "keep",
+      "draft": {
+        "en": "Roof face name",
+        "de": "Name der Dachfläche"
+      },
+      "final_proposal": {
+        "en": "Roof face name",
+        "de": "Name der Dachfläche"
+      },
+      "opposition_and_resolution": "Existing roof-face name label, consistent with the editor and customer terminology."
+    },
+    {
+      "id": "GEO-041",
+      "draft_index": 41,
+      "existing": false,
+      "decision": "must_change",
+      "draft": {
+        "en": "The file supplies the outline. Enter the roof plane from a survey or drawing so its surface can be reconstructed.",
+        "de": "Der Umriss stammt aus der Datei. Für die räumliche Dachfläche werden zusätzlich Neigung, Ausrichtung und relative Höhe aus Ihrem Aufmaß oder Plan benötigt."
+      },
+      "final_proposal": {
+        "en": "The file provides the horizontal outline. Add the roof pitch, downslope direction and relative height from a survey or drawing to reconstruct the roof surface.",
+        "de": "Die Datei liefert den horizontalen Dachumriss. Für die räumliche Dachfläche werden zusätzlich Neigung, Gefällerichtung und relative Höhe aus Ihrem Aufmaß oder Plan benötigt."
+      },
+      "opposition_and_resolution": "Enter the roof plane is not an actionable explanation of these three fields. Distinguish the horizontal source outline from the reconstructed sloping surface, and name the actual inputs. The source values are declared, not checked by importing."
+    },
+    {
+      "id": "GEO-042",
+      "draft_index": 42,
+      "existing": true,
+      "decision": "keep",
+      "draft": {
+        "en": "Roof pitch",
+        "de": "Dachneigung"
+      },
+      "final_proposal": {
+        "en": "Roof pitch",
+        "de": "Dachneigung"
+      },
+      "opposition_and_resolution": "Existing roof pitch/Dachneigung term; preserve rather than introducing another name for the same angle."
+    },
+    {
+      "id": "GEO-043",
+      "draft_index": 43,
+      "existing": false,
+      "decision": "must_change",
+      "draft": {
+        "en": "0° is flat; enter a value below 90°.",
+        "de": "0° steht für ein flaches Dach. Zulässig sind Werte unter 90°."
+      },
+      "final_proposal": {
+        "en": "Enter 0° for a flat roof, or a value greater than 0° and below 90°.",
+        "de": "Für ein flaches Dach gilt 0°. Bei geneigten Dächern muss der Wert größer als 0° und kleiner als 90° sein."
+      },
+      "opposition_and_resolution": "Below 90° alone omits the lower bound and can be read as accepting negative roof pitch. State the non-negative pitch convention and excluded vertical limit together. This is an input-range explanation, not a safety or engineering threshold."
+    },
+    {
+      "id": "GEO-044",
+      "draft_index": 44,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Downslope direction from true north",
+        "de": "Gefällerichtung ab geografisch Nord"
+      },
+      "final_proposal": {
+        "en": "Downslope direction from true north",
+        "de": "Gefällerichtung ab geografisch Nord"
+      },
+      "opposition_and_resolution": "Correctly distinguishes downslope direction from ridge direction, panel azimuth and magnetic north. The helper explains its clockwise convention."
+    },
+    {
+      "id": "GEO-045",
+      "draft_index": 45,
+      "existing": false,
+      "decision": "recommended_change",
+      "draft": {
+        "en": "0° north · 90° east · 180° south · 270° west. For a flat roof this sets its local drawing axes.",
+        "de": "0° Nord · 90° Ost · 180° Süd · 270° West. Bei einem flachen Dach bestimmt dieser Winkel die lokalen Zeichenachsen."
+      },
+      "final_proposal": {
+        "en": "Measured clockwise from true north: 0° north, 90° east, 180° south, 270° west. For a flat roof this sets its local drawing axes.",
+        "de": "Der Winkel läuft im Uhrzeigersinn ab geografisch Nord: 0° Nord, 90° Ost, 180° Süd, 270° West. Bei einem flachen Dach bestimmt er die lokalen Zeichenachsen."
+      },
+      "opposition_and_resolution": "State the clockwise angle convention explicitly. The cardinal examples already imply it, so this is a clarity improvement rather than a demonstrated factual error. Measured here names the angle convention, not a measurement performed by this tool."
+    },
+    {
+      "id": "GEO-046",
+      "draft_index": 46,
+      "existing": false,
+      "decision": "must_change",
+      "draft": {
+        "en": "Use this roof vertex as relative height 0 m",
+        "de": "Diesen Dachpunkt als relative Höhe 0 m festlegen"
+      },
+      "final_proposal": {
+        "en": "Set the first outline point's relative height to 0 m",
+        "de": "Relative Höhe am ersten Umrisspunkt auf 0 m setzen"
+      },
+      "opposition_and_resolution": "The parent confirmed that this is always the first vertex of the selected Polygon’s outer ring; there is no independent vertex selection. Describe assigning that point’s relative Up value, not redefining the project’s height reference."
+    },
+    {
+      "id": "GEO-047",
+      "draft_index": 47,
+      "existing": false,
+      "decision": "must_change",
+      "draft": {
+        "en": "Relative zero is a drawing reference, not ground level or a measured elevation. Other roofs and obstacles must use the same height reference.",
+        "de": "Der relative Nullpunkt ist ein Bezug für die Zeichnung. Er entspricht weder automatisch dem Gelände noch einer gemessenen Höhe. Weitere Dachflächen und Hindernisse benötigen denselben Höhenbezug."
+      },
+      "final_proposal": {
+        "en": "0 m uses the project's height reference. It does not establish ground level or height above sea level. Other roofs and obstacles must use the same height reference.",
+        "de": "0 m bezieht sich auf den Höhenbezug des Projekts. Daraus ergeben sich weder die Geländehöhe noch eine Höhe über dem Meer. Weitere Dachflächen und Hindernisse müssen denselben Höhenbezug verwenden."
+      },
+      "opposition_and_resolution": "Differentiate a project-relative height value from terrain and absolute elevation. The zero option assigns a value within the existing height system; it does not rebase existing objects or calibrate a survey. The first point remains defined by the file order."
+    },
+    {
+      "id": "GEO-048",
+      "draft_index": 48,
+      "existing": false,
+      "decision": "must_change",
+      "draft": {
+        "en": "Roof height at the selected vertex",
+        "de": "Dachhöhe am gewählten Umrisspunkt"
+      },
+      "final_proposal": {
+        "en": "Relative height at the first outline point",
+        "de": "Relative Höhe am ersten Umrisspunkt"
+      },
+      "opposition_and_resolution": "Selected vertex incorrectly suggests that the user can choose a vertex. Name the actual fixed anchor and make relative height explicit in the field label."
+    },
+    {
+      "id": "GEO-049",
+      "draft_index": 49,
+      "existing": false,
+      "decision": "must_change",
+      "draft": {
+        "en": "Metres relative to the project origin. Negative values are allowed.",
+        "de": "Meter relativ zum Projektursprung. Negative Werte sind zulässig."
+      },
+      "final_proposal": {
+        "en": "Metres relative to the project's height reference. Negative values are allowed.",
+        "de": "Meter relativ zum Höhenbezug des Projekts. Negative Werte sind zulässig."
+      },
+      "opposition_and_resolution": "Project origin can be read as the geographic longitude/latitude anchor or ground level. This field is project-relative Up at the first outer-ring point. Preserve metres and valid negative values."
+    },
+    {
+      "id": "GEO-050",
+      "draft_index": 50,
+      "existing": true,
+      "decision": "keep",
+      "draft": {
+        "en": "Measurement or drawing reference",
+        "de": "Aufmaß- oder Zeichnungsreferenz"
+      },
+      "final_proposal": {
+        "en": "Measurement or drawing reference",
+        "de": "Aufmaß- oder Zeichnungsreferenz"
+      },
+      "opposition_and_resolution": "Existing provenance field label; it asks for the measurement/drawing reference, not a tool-generated accuracy certificate."
+    },
+    {
+      "id": "GEO-051",
+      "draft_index": 51,
+      "existing": false,
+      "decision": "recommended_change",
+      "draft": {
+        "en": "Identify the source of the pitch, direction and relative height, including the drawing date or survey reference.",
+        "de": "Als Grundlage benötigen wir die Plan- oder Aufmaßreferenz für Neigung, Ausrichtung und relative Höhe, möglichst mit Datum."
+      },
+      "final_proposal": {
+        "en": "Identify the drawing or survey used for pitch, downslope direction and relative height. Include its date or identifier.",
+        "de": "Geben Sie an, aus welchem Plan oder Aufmaß Neigung, Gefällerichtung und relative Höhe stammen. Nennen Sie dazu das Datum oder die Referenzkennung."
+      },
+      "opposition_and_resolution": "Align the English and German instructions: möglichst currently weakens the English include instruction. Use the actual direction term and a clear reference/date request. This is necessary form guidance, not a marketing request for homework."
+    },
+    {
+      "id": "GEO-052",
+      "draft_index": 52,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Position and coordinate reference",
+        "de": "Position und Koordinatenbezug"
+      },
+      "final_proposal": {
+        "en": "Position and coordinate reference",
+        "de": "Position und Koordinatenbezug"
+      },
+      "opposition_and_resolution": "A suitable heading for expanded coordinate details. The reference is declared, not independently verified."
+    },
+    {
+      "id": "GEO-053",
+      "draft_index": 53,
+      "existing": false,
+      "decision": "must_change",
+      "draft": {
+        "en": "The project keeps its existing geographic origin. A new unreferenced project uses the selected outline's first vertex as its origin, with true north from WGS 84. These choices set coordinates; they do not verify the survey.",
+        "de": "Ein vorhandener geografischer Projektursprung bleibt erhalten. Bei einem neuen Projekt ohne Bezug wird der erste Punkt des gewählten Umrisses zum Ursprung; die Nordrichtung folgt WGS 84. Damit wird das Koordinatensystem festgelegt, das Aufmaß jedoch nicht geprüft."
+      },
+      "final_proposal": {
+        "en": "An existing geographic project origin is kept. For an empty, unreferenced project, the first point of the selected outer outline becomes the geographic origin, with WGS 84 true north. This sets the coordinate reference; it does not verify the survey.",
+        "de": "Ein vorhandener geografischer Projektursprung bleibt erhalten. Bei einem leeren Projekt ohne geografischen Bezug wird der erste Punkt des gewählten äußeren Dachumrisses zum geografischen Ursprung; der Nordbezug ist geografisch Nord nach WGS 84. Die Genauigkeit des Aufmaßes wird damit nicht geprüft."
+      },
+      "opposition_and_resolution": "Only an empty unreferenced project may adopt this geographic origin. New does not necessarily mean empty. Distinguish the geographic origin from the relative-height value at the first point; preserve the no-survey-verification qualification."
+    },
+    {
+      "id": "GEO-054",
+      "draft_index": 54,
+      "existing": true,
+      "decision": "keep",
+      "draft": {
+        "en": "Source reference",
+        "de": "Quellenreferenz"
+      },
+      "final_proposal": {
+        "en": "Source reference",
+        "de": "Quellenreferenz"
+      },
+      "opposition_and_resolution": "Existing source reference label; keep the single canonical term."
+    },
+    {
+      "id": "GEO-055",
+      "draft_index": 55,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Name the drawing, survey or data export used for this roof.",
+        "de": "Bezeichnung des Plans, Aufmaßes oder Datenexports für diese Dachfläche."
+      },
+      "final_proposal": {
+        "en": "Name the drawing, survey or data export used for this roof.",
+        "de": "Bezeichnung des Plans, Aufmaßes oder Datenexports für diese Dachfläche."
+      },
+      "opposition_and_resolution": "Necessary field description for the actual drawing/survey/export source. German noun phrase is natural form copy, not an incomplete marketing sentence."
+    },
+    {
+      "id": "GEO-056",
+      "draft_index": 56,
+      "existing": true,
+      "decision": "keep",
+      "draft": {
+        "en": "Declared spatial precision",
+        "de": "Angegebene räumliche Genauigkeit"
+      },
+      "final_proposal": {
+        "en": "Declared spatial precision",
+        "de": "Angegebene räumliche Genauigkeit"
+      },
+      "opposition_and_resolution": "Declared is essential: precision belongs to the supplied source, not numerical projection parity. Unknown must remain unknown."
+    },
+    {
+      "id": "GEO-057",
+      "draft_index": 57,
+      "existing": false,
+      "decision": "recommended_change",
+      "draft": {
+        "en": "Use the precision stated by the source. Leave empty if unknown.",
+        "de": "Die Genauigkeitsangabe der Quelle kann hier übernommen werden. Ohne belegte Angabe bleibt das Feld leer."
+      },
+      "final_proposal": {
+        "en": "Source-stated precision, in metres. Leave blank if unknown.",
+        "de": "Genauigkeitsangabe der Quelle in Metern. Ohne Angabe bleibt das Feld leer."
+      },
+      "opposition_and_resolution": "Make the unit explicit beside the provenance instruction. Unknown remains empty rather than becoming 0, a guessed value or a precision claim produced by the coordinate conversion."
+    },
+    {
+      "id": "GEO-058",
+      "draft_index": 58,
+      "existing": true,
+      "decision": "keep",
+      "draft": {
+        "en": "Permission or licence basis",
+        "de": "Berechtigungs- oder Lizenzgrundlage"
+      },
+      "final_proposal": {
+        "en": "Permission or licence basis",
+        "de": "Berechtigungs- oder Lizenzgrundlage"
+      },
+      "opposition_and_resolution": "Existing basis-for-rights label. It records the user’s declaration, not legal clearance by Linker."
+    },
+    {
+      "id": "GEO-059",
+      "draft_index": 59,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Explain your permission to use and privately retain this original file and its derived geometry.",
+        "de": "Grundlage Ihrer Berechtigung zur Nutzung und privaten Speicherung der Originaldatei und der daraus erzeugten Geometrie."
+      },
+      "final_proposal": {
+        "en": "Explain your permission to use and privately retain this original file and its derived geometry.",
+        "de": "Grundlage Ihrer Berechtigung zur Nutzung und privaten Speicherung der Originaldatei und der daraus erzeugten Geometrie."
+      },
+      "opposition_and_resolution": "Explains the declaration needed for original and derived geometry. Pair with the corrected checkbox that explicitly covers deriving and retaining both."
+    },
+    {
+      "id": "GEO-060",
+      "draft_index": 60,
+      "existing": true,
+      "decision": "keep",
+      "draft": {
+        "en": "Permission to export geometry",
+        "de": "Berechtigung zum Export der Geometrie"
+      },
+      "final_proposal": {
+        "en": "Permission to export geometry",
+        "de": "Berechtigung zum Export der Geometrie"
+      },
+      "opposition_and_resolution": "Keep export permission separate from private upload/retention. Neither unknown nor permitted is a tool-verified licence opinion."
+    },
+    {
+      "id": "GEO-061",
+      "draft_index": 61,
+      "existing": true,
+      "decision": "keep",
+      "draft": {
+        "en": "Unknown",
+        "de": "Unbekannt"
+      },
+      "final_proposal": {
+        "en": "Unknown",
+        "de": "Unbekannt"
+      },
+      "opposition_and_resolution": "Existing unknown state; do not change missing permission evidence into permitted."
+    },
+    {
+      "id": "GEO-062",
+      "draft_index": 62,
+      "existing": true,
+      "decision": "keep",
+      "draft": {
+        "en": "Permitted",
+        "de": "Erlaubt"
+      },
+      "final_proposal": {
+        "en": "Permitted",
+        "de": "Erlaubt"
+      },
+      "opposition_and_resolution": "Existing declared-permission option. It is the user’s stated status, not independent approval."
+    },
+    {
+      "id": "GEO-063",
+      "draft_index": 63,
+      "existing": true,
+      "decision": "keep",
+      "draft": {
+        "en": "Prohibited",
+        "de": "Untersagt"
+      },
+      "final_proposal": {
+        "en": "Prohibited",
+        "de": "Untersagt"
+      },
+      "opposition_and_resolution": "Existing prohibited option; preserve the separate restriction instead of silently enabling export."
+    },
+    {
+      "id": "GEO-064",
+      "draft_index": 64,
+      "existing": false,
+      "decision": "must_change",
+      "draft": {
+        "en": "I have permission to upload this original and retain it privately with this project.",
+        "de": "Ich bin berechtigt, diese Originaldatei hochzuladen und privat mit diesem Projekt zu speichern."
+      },
+      "final_proposal": {
+        "en": "I have permission to upload this original file, derive roof geometry from it and retain both privately with this project.",
+        "de": "Ich bin berechtigt, die Originaldatei für dieses Projekt hochzuladen, daraus Dachgeometrie zu erzeugen und beides privat mit dem Projekt zu speichern."
+      },
+      "opposition_and_resolution": "The coordinate contract requires explicit retain/derive attestation. The original checkbox mentions upload and retaining only the original; it omits derivation and retention of derived geometry. Export permission remains a separate declaration. This is an attestation, not the tool certifying a licence."
+    },
+    {
+      "id": "GEO-065",
+      "draft_index": 65,
+      "existing": true,
+      "decision": "keep",
+      "draft": {
+        "en": "Original import settings",
+        "de": "Ursprüngliche Importeinstellungen"
+      },
+      "final_proposal": {
+        "en": "Original import settings",
+        "de": "Ursprüngliche Importeinstellungen"
+      },
+      "opposition_and_resolution": "Existing original-settings label, suitable for a read-only expandable recovery record."
+    },
+    {
+      "id": "GEO-066",
+      "draft_index": 66,
+      "existing": false,
+      "decision": "must_change",
+      "draft": {
+        "en": "A retry uses this original file and these frozen settings. It does not create a different request.",
+        "de": "Ein erneuter Versuch verwendet genau diese Originaldatei und diese unveränderten Angaben. Es wird keine neue Anfrage erzeugt."
+      },
+      "final_proposal": {
+        "en": "A retry uses this original file and these unchanged settings for the same import.",
+        "de": "Ein erneuter Versuch verwendet für denselben Import diese Originaldatei und die unveränderten Einstellungen."
+      },
+      "opposition_and_resolution": "Frozen settings is internal wording. No new request can falsely suggest that no network request is sent; the invariant is the same logical import, original bytes and settings. Corrected data must use the separate correction flow, not silently mutate this retry."
+    },
+    {
+      "id": "GEO-067",
+      "draft_index": 67,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Feature in original file",
+        "de": "Objekt in der Originaldatei"
+      },
+      "final_proposal": {
+        "en": "Feature in original file",
+        "de": "Objekt in der Originaldatei"
+      },
+      "opposition_and_resolution": "A technical feature identifier in the original file, placed in expanded settings; not an invented customer entity."
+    },
+    {
+      "id": "GEO-068",
+      "draft_index": 68,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Roof face in feature",
+        "de": "Dachfläche im Objekt"
+      },
+      "final_proposal": {
+        "en": "Roof face in feature",
+        "de": "Dachfläche im Objekt"
+      },
+      "opposition_and_resolution": "Identifies the selected Polygon/part within its feature. Keep the actual stored selection, without merging buildings or silently selecting another part."
+    },
+    {
+      "id": "GEO-069",
+      "draft_index": 69,
+      "existing": true,
+      "decision": "keep",
+      "draft": {
+        "en": "Project origin longitude",
+        "de": "Längengrad des Projektursprungs"
+      },
+      "final_proposal": {
+        "en": "Project origin longitude",
+        "de": "Längengrad des Projektursprungs"
+      },
+      "opposition_and_resolution": "Existing geographic longitude label, distinct from east metres and roof U coordinates."
+    },
+    {
+      "id": "GEO-070",
+      "draft_index": 70,
+      "existing": true,
+      "decision": "keep",
+      "draft": {
+        "en": "Project origin latitude",
+        "de": "Breitengrad des Projektursprungs"
+      },
+      "final_proposal": {
+        "en": "Project origin latitude",
+        "de": "Breitengrad des Projektursprungs"
+      },
+      "opposition_and_resolution": "Existing geographic latitude label, distinct from north metres and roof V coordinates."
+    },
+    {
+      "id": "GEO-071",
+      "draft_index": 71,
+      "existing": false,
+      "decision": "recommended_change",
+      "draft": {
+        "en": "Plane origin east, north and relative height",
+        "de": "Ebenenursprung: Ost, Nord und relative Höhe"
+      },
+      "final_proposal": {
+        "en": "Plane origin: east, north and relative height (m)",
+        "de": "Ebenenursprung: Ost, Nord und relative Höhe (m)"
+      },
+      "opposition_and_resolution": "These are metre-valued coordinates, not angles or direction cosines. Keep this read-only technical tuple in expanded original settings, with its unit visible."
+    },
+    {
+      "id": "GEO-072",
+      "draft_index": 72,
+      "existing": false,
+      "decision": "recommended_change",
+      "draft": {
+        "en": "Plane U direction in east, north and up",
+        "de": "U-Richtung der Ebene: Ost, Nord und Oben"
+      },
+      "final_proposal": {
+        "en": "Plane U unit vector (east, north, up)",
+        "de": "U-Einheitsvektor der Dachebene (Ost, Nord, Hoch)"
+      },
+      "opposition_and_resolution": "Name the dimensionless unit vector so it is not mistaken for another metre tuple. Use Hoch consistently with the existing Ost-Nord-Hoch-System, rather than the literal Oben. This belongs in technical details, not the first-step headline."
+    },
+    {
+      "id": "GEO-073",
+      "draft_index": 73,
+      "existing": false,
+      "decision": "recommended_change",
+      "draft": {
+        "en": "Plane V direction in east, north and up",
+        "de": "V-Richtung der Ebene: Ost, Nord und Oben"
+      },
+      "final_proposal": {
+        "en": "Plane V unit vector (east, north, up)",
+        "de": "V-Einheitsvektor der Dachebene (Ost, Nord, Hoch)"
+      },
+      "opposition_and_resolution": "Same vector/unit and German-axis distinction as the U direction. Retain the actual U/V identifiers because these are inspectable technical values, not promotional jargon."
+    },
+    {
+      "id": "GEO-074",
+      "draft_index": 74,
+      "existing": false,
+      "decision": "must_change",
+      "draft": {
+        "en": "Plane calibration basis",
+        "de": "Grundlage der Dachebene"
+      },
+      "final_proposal": {
+        "en": "Roof-plane reference",
+        "de": "Referenz der Dachebene"
+      },
+      "opposition_and_resolution": "This records the declared drawing/survey basis for the plane. It does not perform image-scale calibration, instrument calibration or independent survey verification. Replace calibration in this customer label with the actual reference concept."
+    },
+    {
+      "id": "GEO-075",
+      "draft_index": 75,
+      "existing": false,
+      "decision": "keep",
+      "draft": {
+        "en": "Conversion method",
+        "de": "Umrechnungsmethode"
+      },
+      "final_proposal": {
+        "en": "Conversion method",
+        "de": "Umrechnungsmethode"
+      },
+      "opposition_and_resolution": "Appropriate inspectable technical method label. The exact operation/version may be shown in detail, without advertising it as engineering approval."
+    },
+    {
+      "id": "GEO-076",
+      "draft_index": 76,
+      "existing": false,
+      "decision": "recommended_change",
+      "draft": {
+        "en": "Unsupported legacy method",
+        "de": "Nicht unterstützte frühere Methode"
+      },
+      "final_proposal": {
+        "en": "Unsupported earlier conversion method",
+        "de": "Frühere Umrechnungsmethode nicht unterstützt"
+      },
+      "opposition_and_resolution": "Name the conversion method rather than using the developer term legacy on its own. An old receipt may remain reviewable; this status must not promise a newly attachable candidate."
+    }
+  ],
+  "handoff": "These are complete adoptable EN/DE final proposals for the reviewed draft, not proof that they are implemented. Parent selects/applies final text and retains draft → opposition → selected-final provenance. A formal fixed-SHA Standards review and EN/DE native states remain separate gates. The complete unified-workbench goal remains active."
+}

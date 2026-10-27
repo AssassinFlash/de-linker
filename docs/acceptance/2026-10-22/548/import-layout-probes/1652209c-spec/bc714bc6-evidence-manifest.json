@@ -1,0 +1,82 @@
+{
+  "review_owner": "/root/import_layout_spec",
+  "target": "bc714bc628f1555d2ddcbface216dabc7b9371d5",
+  "files": {
+    "bc714bc6-cleanup.json": {
+      "bytes": 1039,
+      "sha256": "791217c5e6741b9f2e88347b924dde59dedd2b8c0c9c6c7ce9847ebb49dea296"
+    },
+    "bc714bc6-generated-inspection.json": {
+      "bytes": 8887,
+      "sha256": "e574aeec19db2b654ab1fe5c77c9e7d78c774004949085f61082ff9d80b9e8c7"
+    },
+    "bc714bc6-REVIEW.md": {
+      "bytes": 2414,
+      "sha256": "03d02f60c5a0df208b3d115165b27438e6109c04c3cce6106afbda14f30a0947"
+    },
+    "bc714bc6-review-results.json": {
+      "bytes": 1086,
+      "sha256": "033470c4c98abcdbc91c483287901a23084eb4ce3ae2a3481f8a0db1abf6e647"
+    },
+    "bc714bc6-initial-focus-run.json": {
+      "bytes": 434,
+      "sha256": "47e8abc8cdffac57efab86a71c51a3deb5dc8dea0a7d06fd23e951f8fae70eca"
+    },
+    "bc714bc6-build-check.log": {
+      "bytes": 352,
+      "sha256": "437715fd98739e0cb06a650dbb8724e749bae608e773334d2c9ad0f7355413e4"
+    },
+    "bc714bc6-initial-focus.mjs": {
+      "bytes": 1644,
+      "sha256": "a44be8eba66be7fd62d020ec459477c8ebf0b48da8b4f10fee841dd2c31770ad"
+    },
+    "bc714bc6-build-check-run.json": {
+      "bytes": 347,
+      "sha256": "80e7020ffed041112d399037e4aca75224ba2868fe4b13cdb7424b37e07c05c8"
+    },
+    "bc714bc6-css-probe-run.json": {
+      "bytes": 306,
+      "sha256": "af4c05ff3dd70fe121dd4d1cf1d9a7bd787a3596113fbe98cabfef8625aab87a"
+    },
+    "bc714bc6-css-probe.log": {
+      "bytes": 10251,
+      "sha256": "657dc8656125d7d7e27149eba3c4ef0984db9201b6fe6451199c4bdabafde2bb"
+    },
+    "bc714bc6-diff-metadata.json": {
+      "bytes": 1765,
+      "sha256": "174c75c119ebf3a552770321e5d44abf3d13c75f03f41cb9e009080f6d008f03"
+    },
+    "bc714bc6-design-editor.log": {
+      "bytes": 677,
+      "sha256": "d624648338eac298e3ea46961440e9bdbbbe2cb28205ec1840056d5e3adaf614"
+    },
+    "bc714bc6-initial-focus.log": {
+      "bytes": 285,
+      "sha256": "d43c92aa9f19da359318ab8a6c07884ff4924c49f0dad6de379ad4971aab28e8"
+    },
+    "commits.txt": {
+      "bytes": 64,
+      "sha256": "ef39a7057a06a6df177098e3f81f724cfbc9ce1f9630eb1524f46228e1da719d"
+    },
+    "diff-metadata.json": {
+      "bytes": 770,
+      "sha256": "483a7735afd45c2ac1991d67f816aa68cd57c7208d140371841c599da2eebfa9"
+    },
+    "snapshot-manifest.json": {
+      "bytes": 31663,
+      "sha256": "4e94ae47a1fe0b8cd329a1e784282f6126cbd086a7679fba8f531394d6c2f388"
+    },
+    "bc714bc6-design-editor-run.json": {
+      "bytes": 543,
+      "sha256": "082689f7b10e839e70aac81b215d116c8ef2711f976d4a0cb25ef4e7a3a31a15"
+    },
+    "bc714bc6-css-probe.mjs": {
+      "bytes": 3099,
+      "sha256": "5061085ea6e3def59c5bbcc0ef4aee6c323a6031ac5551a1040907dd6608d50d"
+    },
+    "bc714bc6-generated-equivalence.json": {
+      "bytes": 1414,
+      "sha256": "850f5cbda93088e44a2bc9f4b76a4993b0c3adfba77c78c34db23d6de6d27810"
+    }
+  }
+}

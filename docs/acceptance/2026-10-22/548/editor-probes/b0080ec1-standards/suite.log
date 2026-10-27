@@ -1,0 +1,116 @@
+
+> @linker/planner@0.1.0 test
+> node --test src/domain/*.test.ts src/data/*.test.ts && node --no-warnings=ExperimentalWarning --loader ./tests/tsx-loader.mjs --test tests/*.test.mjs
+
+✔ scope admission follows native confirmation immediately, independently of React cleanup (52.81075ms)
+✔ native bootstrap confirms the presented cookie before any private RPC (1.924875ms)
+✔ account nonce failure blocks bootstrap and cannot silently downgrade to guest (0.750791ms)
+✔ a failed save has no automatic retry; an explicit retry sends the frozen bytes (0.480209ms)
+✔ authentication refusal clears private admission even when its reply is malformed (0.647208ms)
+✔ bounded replies preserve split UTF-8 and cancel an oversized chunked stream (1.915875ms)
+✔ protocol validation rejects unsafe local values before recursive parsing or encoding (0.264417ms)
+✔ wire schemas reject coercion and extra response fields without changing the input (0.306792ms)
+✔ recovery retains the baseline, local edits and exact uncertain intent (2.472375ms)
+✔ tampered recovery cannot substitute a pending snapshot, project or acknowledgement (0.456584ms)
+✔ invalid recovered creation is rejected before IndexedDB or a network call (2.460875ms)
+✔ native recovery discovery consumes every ordered page without inventing a scope (1.379042ms)
+✔ malformed, unordered and nonadvancing grant pages cannot release browser data (0.515541ms)
+✔ a delayed grant reply after native withdrawal cannot be used (0.290625ms)
+✔ discovered immutable intents retain exact original namespaces and bodies (12.974958ms)
+✔ import discovery stays on the currently authorised project in every approved namespace (1.775458ms)
+✔ aggregate recovery ceilings report inability to read rather than truncate or evict (52.735542ms)
+✔ native language destinations retain the current project without inventing a route (0.723583ms)
+✔ EN/DE numeric input rejects grouping instead of silently changing magnitude (41.682542ms)
+✔ a late acknowledgement preserves newer edits and their undo/redo history (3.041917ms)
+✔ conflict resolution is explicit and preserves the local branch until chosen (0.301334ms)
+✔ incorrect save acknowledgements cannot advance the confirmed baseline (0.26625ms)
+✔ wire-equivalent signed zeroes acknowledge saved geometry without rewriting the local input (0.140791ms)
+node:internal/modules/esm/resolve:272
+    throw new ERR_MODULE_NOT_FOUND(
+          ^
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-b008-_buw2n9_/fixtures/planning/geometry-flat.json' imported from /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-b008-_buw2n9_/apps/planner/src/domain/geometry.test.ts
+    at finalizeResolution (node:internal/modules/esm/resolve:272:11)
+    at moduleResolve (node:internal/modules/esm/resolve:879:10)
+    at defaultResolve (node:internal/modules/esm/resolve:1006:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:705:20)
+    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:725:38)
+    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:763:56)
+    at #resolve (node:internal/modules/esm/loader:687:17)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:607:35)
+    at ModuleJob.syncLink (node:internal/modules/esm/module_job:276:33)
+    at ModuleJob.link (node:internal/modules/esm/module_job:381:17) {
+  code: 'ERR_MODULE_NOT_FOUND',
+  url: 'file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-b008-_buw2n9_/fixtures/planning/geometry-flat.json'
+}
+
+Node.js v24.22.0
+✖ src/domain/geometry.test.ts (230.673791ms)
+node:internal/modules/esm/resolve:272
+    throw new ERR_MODULE_NOT_FOUND(
+          ^
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-b008-_buw2n9_/fixtures/planning/geometry-flat.json' imported from /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-b008-_buw2n9_/apps/planner/src/domain/geometryCommands.test.ts
+    at finalizeResolution (node:internal/modules/esm/resolve:272:11)
+    at moduleResolve (node:internal/modules/esm/resolve:879:10)
+    at defaultResolve (node:internal/modules/esm/resolve:1006:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:705:20)
+    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:725:38)
+    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:763:56)
+    at #resolve (node:internal/modules/esm/loader:687:17)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:607:35)
+    at ModuleJob.syncLink (node:internal/modules/esm/module_job:276:33)
+    at ModuleJob.link (node:internal/modules/esm/module_job:381:17) {
+  code: 'ERR_MODULE_NOT_FOUND',
+  url: 'file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-b008-_buw2n9_/fixtures/planning/geometry-flat.json'
+}
+
+Node.js v24.22.0
+✖ src/domain/geometryCommands.test.ts (232.626917ms)
+✔ undo/redo preserve document versions and a divergent edit closes the redo branch (3.415416ms)
+✔ history resource limit bounds retained snapshots without altering the current input (0.45225ms)
+node:internal/modules/esm/resolve:272
+    throw new ERR_MODULE_NOT_FOUND(
+          ^
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-b008-_buw2n9_/fixtures/planning/geometry-flat.json' imported from /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-b008-_buw2n9_/apps/planner/src/domain/renderGeometry.test.ts
+    at finalizeResolution (node:internal/modules/esm/resolve:272:11)
+    at moduleResolve (node:internal/modules/esm/resolve:879:10)
+    at defaultResolve (node:internal/modules/esm/resolve:1006:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:705:20)
+    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:725:38)
+    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:763:56)
+    at #resolve (node:internal/modules/esm/loader:687:17)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:607:35)
+    at ModuleJob.syncLink (node:internal/modules/esm/module_job:276:33)
+    at ModuleJob.link (node:internal/modules/esm/module_job:381:17) {
+  code: 'ERR_MODULE_NOT_FOUND',
+  url: 'file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-b008-_buw2n9_/fixtures/planning/geometry-flat.json'
+}
+
+Node.js v24.22.0
+✖ src/domain/renderGeometry.test.ts (251.842833ms)
+✔ unowned failed renderer releases both partial backends and preserves cleanup isolation (2.010125ms)
+✔ initialised renderer owns current backend disposal and previous fallback remains separate (0.214041ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 27
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 411.672125
+
+✖ failing tests:
+
+test at src/domain/geometry.test.ts:1:1
+✖ src/domain/geometry.test.ts (230.673791ms)
+  'test failed'
+
+test at src/domain/geometryCommands.test.ts:1:1
+✖ src/domain/geometryCommands.test.ts (232.626917ms)
+  'test failed'
+
+test at src/domain/renderGeometry.test.ts:1:1
+✖ src/domain/renderGeometry.test.ts (251.842833ms)
+  'test failed'

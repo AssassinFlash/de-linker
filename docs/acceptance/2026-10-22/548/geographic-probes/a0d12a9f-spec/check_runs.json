@@ -1,0 +1,56 @@
+[
+  {
+    "name": "target-py18",
+    "command": [
+      "/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/planning-spec-geo-a0d1-4iwo5atx/services/engine/.venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "-p",
+      "no:cacheprovider",
+      "tests/planning/test_geographic.py",
+      "tests/planning/test_geometry_import.py"
+    ],
+    "cwd": "/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/planning-spec-geo-a0d1-4iwo5atx/services/engine",
+    "returncode": 0,
+    "expected_on_a0_fixed": 0
+  },
+  {
+    "name": "target-ts6",
+    "command": [
+      "node",
+      "--test",
+      "src/domain/geographic.test.ts",
+      "src/domain/geometryImports.test.ts"
+    ],
+    "cwd": "/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/planning-spec-geo-a0d1-4iwo5atx/apps/planner",
+    "returncode": 0,
+    "expected_on_a0_fixed": 0
+  },
+  {
+    "name": "counterexamples-py4",
+    "command": [
+      "/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/planning-spec-geo-a0d1-4iwo5atx/services/engine/.venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "-p",
+      "no:cacheprovider",
+      "test_spec_geographic_counterexamples.py"
+    ],
+    "cwd": "/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/planning-spec-geo-a0d1-4iwo5atx",
+    "returncode": 1,
+    "expected_on_a0_fixed": 1
+  },
+  {
+    "name": "counterexample-browser-plane",
+    "command": [
+      "node",
+      "--test",
+      "probe_plane.test.mjs"
+    ],
+    "cwd": "/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/planning-spec-geo-a0d1-4iwo5atx",
+    "returncode": 1,
+    "expected_on_a0_fixed": 1
+  }
+]

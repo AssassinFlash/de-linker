@@ -1,0 +1,35 @@
+{
+  "focus": {
+    "classes": "",
+    "rect": {
+      "bottom": 549.6328125,
+      "height": 40,
+      "left": 1188.4375,
+      "right": 1271.4453125,
+      "top": 509.6328125,
+      "width": 83.0078125,
+      "x": 1188.4375,
+      "y": 509.6328125
+    },
+    "tag": "BUTTON"
+  },
+  "headings": [
+    "Dachplanung",
+    "Planungsobjekte",
+    "Belegung prüfen",
+    "Software und Datenquellen"
+  ],
+  "scripts": [
+    "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=52fb733a2fc7884b846623f07279ab9ca6d9cb6d788c73163c09cd088c1d197b"
+  ],
+  "scroll": {
+    "pageWidth": 1440,
+    "x": 0,
+    "y": 0
+  },
+  "url": "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-design",
+  "viewport": {
+    "height": 1000,
+    "width": 1440
+  }
+}

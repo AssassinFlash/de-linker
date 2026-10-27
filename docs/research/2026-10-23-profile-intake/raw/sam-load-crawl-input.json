@@ -1,0 +1,24 @@
+{
+  "startUrls": [
+    {
+      "url": "https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/index.html"
+    },
+    {
+      "url": "https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electric_load.html"
+    },
+    {
+      "url": "https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electric-load.html"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 3,
+  "saveMarkdown": true,
+  "saveText": true,
+  "saveHtml": false,
+  "htmlTransformer": "none",
+  "respectRobotsTxtFile": true,
+  "maxConcurrency": 2,
+  "requestTimeoutSecs": 60,
+  "maxRequestRetries": 1
+}

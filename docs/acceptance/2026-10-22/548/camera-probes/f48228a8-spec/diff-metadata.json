@@ -1,0 +1,30 @@
+{
+  "command": [
+    "git",
+    "diff",
+    "eff8341d5a0eaf24999f42854da6339032c65c9c...f48228a87894c23f68d180675d05b902139d531e"
+  ],
+  "sha256": "27aca968870374b151831052bfdb63f8ac844207e9485b3f31ace7e6877eb624",
+  "bytes": 1164843,
+  "retained_full_patch": false,
+  "changed_paths": [
+    "apps/planner/src/components/design/SceneCamera.tsx",
+    "apps/planner/src/components/design/SceneViewport.tsx",
+    "apps/planner/src/domain/sceneCamera.test.ts",
+    "apps/planner/src/domain/sceneCamera.ts",
+    "docs/acceptance/2026-10-22/548/CAMERA-FRAMING.md",
+    "docs/acceptance/2026-10-22/548/camera-copy-draft.json",
+    "docs/acceptance/2026-10-22/548/camera-copy-feedback.json",
+    "docs/acceptance/2026-10-22/548/camera-copy-final.json",
+    "docs/acceptance/2026-10-22/548/camera-owner-build.log",
+    "docs/acceptance/2026-10-22/548/camera-owner-tests.log",
+    "docs/specs/548-roof-import-workflow.md",
+    "plugins/linker-tools/build/planner/assets/SceneViewport-V6NpERFd.js",
+    "plugins/linker-tools/build/planner/assets/planner-core-BOaHUlv1.js",
+    "plugins/linker-tools/build/planner/assets/planner.js",
+    "plugins/linker-tools/build/planner/source-manifest.json",
+    "plugins/linker-tools/build/planner/vite-manifest.json",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal.po"
+  ]
+}

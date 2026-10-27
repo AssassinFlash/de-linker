@@ -175,6 +175,40 @@ export function App( { config }: { config: GenieConfig } ) {
 	// before React has re-rendered, and the first turn must carry it too.
 	const [ page, setPage ] = useState< PageContext >( config.page );
 	const pageRef = useRef( config.page );
+	const plannerNonce = useRef< string | undefined >( undefined );
+	useEffect( () => {
+		const receive = ( event: Event ) => {
+			const detail = ( event as CustomEvent ).detail;
+			const next = detail?.page;
+			if ( detail === null ) {
+				pageRef.current = config.page;
+				plannerNonce.current = undefined;
+				setPage( config.page );
+			} else if (
+				next &&
+				typeof next.planning_project_id === 'string' &&
+				/^[a-f0-9]{32}$/.test( next.planning_project_id ) &&
+				Number.isSafeInteger( next.planning_revision ) &&
+				next.planning_revision > 0
+			) {
+				pageRef.current = next;
+				plannerNonce.current =
+					typeof detail.plannerNonce === 'string'
+						? detail.plannerNonce
+						: undefined;
+				setPage( next );
+			}
+		};
+		window.addEventListener( 'linker-genie-planning-context', receive );
+		window.dispatchEvent(
+			new CustomEvent( 'linker-genie-planning-context-request' )
+		);
+		return () =>
+			window.removeEventListener(
+				'linker-genie-planning-context',
+				receive
+			);
+	}, [ config.page ] );
 	const handOverSolution = useCallback( ( solution: number ) => {
 		const next = { ...pageRef.current, solution_id: solution };
 		pageRef.current = next;
@@ -964,6 +998,7 @@ export function App( { config }: { config: GenieConfig } ) {
 						locale: config.locale,
 						messages: next,
 						page: postedPage,
+						plannerNonce: plannerNonce.current,
 						uploads,
 						onOperation: ( operationId ) => {
 							if ( ! draftContext.owns( lease ) ) {
@@ -1130,6 +1165,7 @@ export function App( { config }: { config: GenieConfig } ) {
 					locale: config.locale,
 					messages: next,
 					page: postedPage,
+					plannerNonce: plannerNonce.current,
 					uploads: payload.uploads,
 					onOperation: ( operationId ) => {
 						if ( ! draftContext.owns( lease ) ) {
@@ -2253,6 +2289,9 @@ export function App( { config }: { config: GenieConfig } ) {
 											key={ index }
 											block={ block }
 											accountUrl={ config.accountUrl }
+											configuratorLinks={
+												config.configuratorLinks
+											}
 											onAsk={ ask }
 											parts={ {
 												onAsk: ask,
@@ -2612,6 +2651,28 @@ export function App( { config }: { config: GenieConfig } ) {
 											) }
 								</button>
 							</div>
+						) : null }
+						{ ! historyView && page.planning_project_id ? (
+							<p
+								className="linker-genie-app__context-note"
+								role="status"
+							>
+								<strong>{ page.title }</strong>
+								{ ' · ' }
+								{ page.planning_unsaved
+									? __(
+											'Save your changes so Genie can read the updated project.',
+											'linker-tools'
+										)
+									: sprintf(
+											/* translators: %d is the saved planning input revision. */
+											__(
+												'Saved project · revision %d',
+												'linker-tools'
+											),
+											page.planning_revision ?? 0
+										) }
+							</p>
 						) : null }
 						{ ! historyView ? (
 							<form

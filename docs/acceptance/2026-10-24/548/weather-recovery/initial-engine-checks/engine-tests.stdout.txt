@@ -1,0 +1,75 @@
+........................................................................ [  8%]
+........................................................................ [ 17%]
+........................................................................ [ 26%]
+........................................................................ [ 35%]
+........................................................................ [ 44%]
+........................................................................ [ 53%]
+........................................................................ [ 61%]
+..................................................F..................... [ 70%]
+........................................................................ [ 79%]
+........................................................................ [ 88%]
+........................................................................ [ 97%]
+.....................                                                    [100%]
+=================================== FAILURES ===================================
+___ test_database_read_failure_cannot_replace_lease_loss_or_authorize_abort ____
+
+workspace = <linker_engine.planning.workspace.Workspace object at 0x11a062c60>
+owner = Actor(kind='user', subject='wordpress:17')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11a0600b0>
+caplog = <_pytest.logging.LogCaptureFixture object at 0x11a0615e0>
+
+    def test_database_read_failure_cannot_replace_lease_loss_or_authorize_abort(
+        workspace: Workspace,
+        owner: Actor,
+        monkeypatch: pytest.MonkeyPatch,
+        caplog: pytest.LogCaptureFixture,
+    ) -> None:
+        run, lease = operation(workspace, owner)
+        journal = WeatherJournal(workspace)
+        intent = journal.begin(lease, plan())
+        control = Control()
+    
+        @contextmanager
+        def unavailable() -> Iterator[sqlite3.Connection]:
+            raise sqlite3.OperationalError("private outage sentinel")
+            yield  # pragma: no cover - retain the context-manager shape
+    
+        def cancelled_with_read_outage() -> None:
+            workspace.cancel(owner, run.id)
+            control.revoke()
+            monkeypatch.setattr(workspace.database, "read", unavailable)
+    
+        source, adapter = client(
+            Reply(201, provider("READY"), after=cancelled_with_read_outage)
+        )
+        try:
+            with pytest.raises(LeaseLost):
+>               WeatherAcquisition(journal, source).acquire(lease, plan(), control)
+
+tests/planning/test_weather_acquisition.py:342: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/linker_engine/planning/weather_acquisition.py:178: in acquire
+    return KnownWeatherRun(self.journal, self.client, task, intent).capture()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/linker_engine/planning/weather_known_run.py:29: in __init__
+    self.intent = journal.current(intent)
+                  ^^^^^^^^^^^^^^^^^^^^^^^
+src/linker_engine/planning/weather_journal.py:138: in current
+    with self.workspace.database.read() as connection:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.12/3.12.15_1/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    @contextmanager
+    def unavailable() -> Iterator[sqlite3.Connection]:
+>       raise sqlite3.OperationalError("private outage sentinel")
+E       sqlite3.OperationalError: private outage sentinel
+
+tests/planning/test_weather_acquisition.py:329: OperationalError
+------------------------------ Captured log call -------------------------------
+WARNING  linker_engine.planning.weather_acquisition:weather_acquisition.py:104 weather abort unconfirmed for task b0cfce582caa4c1796d8cfac767b33e3: unexpected_cleanup_failure
+=========================== short test summary info ============================
+FAILED tests/planning/test_weather_acquisition.py::test_database_read_failure_cannot_replace_lease_loss_or_authorize_abort
+1 failed, 812 passed in 136.69s (0:02:16)

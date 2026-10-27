@@ -1,0 +1,321 @@
+{
+  "project": {
+    "id": "61a9bbc291ff4c1faed3a27f0f56e18b",
+    "title": "Amsterdam \u00b7 synthetic roof acceptance",
+    "revision": 3
+  },
+  "input_sha256": "17c1b9c0aae000987bcd8720fadfd047056ff98700328a5459407ada1970146a",
+  "inputs": {
+    "brief": {
+      "annual_load": {
+        "basis": null,
+        "kwh": null,
+        "source_note": ""
+      },
+      "project_note": "",
+      "project_use": "commercial",
+      "schema_version": 1,
+      "site": {
+        "coordinate_basis": "user_entered",
+        "country_code": "NL",
+        "latitude": 52.37,
+        "location_label": "Synthetic position 52.37 N, 4.89 E \u00b7 not a surveyed building",
+        "longitude": 4.89,
+        "timezone": "Europe/Amsterdam"
+      },
+      "system_scope": "new_pv_storage"
+    },
+    "geometry": {
+      "arrays": [],
+      "coordinate_system": {
+        "anchor": {
+          "datum": "EPSG:4326",
+          "latitude_deg": 52.37,
+          "longitude_deg": 4.89,
+          "source_id": "source_d4cfa122faba1b4a9ed242048fd285f4"
+        },
+        "height_reference": "relative_to_project_origin",
+        "kind": "local_enu",
+        "north_reference": "true_north",
+        "north_source_id": "source_d4cfa122faba1b4a9ed242048fd285f4",
+        "unit": "m"
+      },
+      "keepouts": [],
+      "layout_rules": [],
+      "module_specs": [],
+      "obstacles": [],
+      "roofs": [
+        {
+          "boundary_uv": [
+            [
+              0,
+              0
+            ],
+            [
+              13.62208302218732,
+              2.3536375220801566e-05
+            ],
+            [
+              13.622034473880571,
+              13.909312887038713
+            ],
+            [
+              -2.112048096724843e-11,
+              13.909289351069164
+            ]
+          ],
+          "holes_uv": [
+            [
+              [
+                5.4488254412037955,
+                5.563723847942698
+              ],
+              [
+                5.448821557329258,
+                8.345581717692435
+              ],
+              [
+                8.173232335834788,
+                8.345586424671014
+              ],
+              [
+                8.173238161648454,
+                5.563728555269976
+              ]
+            ]
+          ],
+          "id": "roof_d4cfa122faba1b4a9ed242048fd285f4",
+          "name": "Synthetic Amsterdam roof with opening; generated coordinates",
+          "origin_enu": [
+            0,
+            0,
+            5
+          ],
+          "source_id": "source_d4cfa122faba1b4a9ed242048fd285f4",
+          "u_axis_enu": [
+            1,
+            0,
+            0
+          ],
+          "v_axis_enu": [
+            0,
+            0.8,
+            -0.6
+          ]
+        }
+      ],
+      "schema_version": 1,
+      "sources": [
+        {
+          "acquired_at_utc": null,
+          "calibration_note": "Synthetic 3\u20134\u20135 plane; generated Amsterdam coordinates, not a survey. 2026-10-23.",
+          "id": "source_d4cfa122faba1b4a9ed242048fd285f4",
+          "kind": "user_drawing",
+          "note": "Synthetic Amsterdam WGS 84 source \u00b7 2026-10-23",
+          "permissions": {
+            "derive": "permitted",
+            "export": "permitted",
+            "retain": "permitted"
+          },
+          "reference_sha256": "9920f8378f6b55dbd5a8a143087683648f6da6f65f96dcb233c7fcd7b0fb0a33",
+          "reference_url": null,
+          "rights_basis": "user_attestation",
+          "rights_note": "Created by Linker for local acceptance; original and derived geometry may be privately retained and exported. Generated coordinates, not a survey.",
+          "spatial_precision_m": null
+        }
+      ]
+    },
+    "geometry_imports": {
+      "schema_version": 1,
+      "selected": {
+        "source_d4cfa122faba1b4a9ed242048fd285f4": "c60f8de596d14780bd82a3cb4203169f"
+      }
+    }
+  },
+  "assets": [
+    {
+      "id": "c60f8de596d14780bd82a3cb4203169f",
+      "content_sha256": "9920f8378f6b55dbd5a8a143087683648f6da6f65f96dcb233c7fcd7b0fb0a33",
+      "metadata_sha256": "9971181084a423d9b5ba570f57546de8de59f4f3014107eb234d1dd6cba0a148",
+      "original_exact": true,
+      "original_bytes": 841,
+      "metadata": {
+        "geometry_import": {
+          "area_roof_plane_m2": 181.8942304163585,
+          "elevation_basis": "user_declared_plane_relative_to_project_origin",
+          "engineering_status": "not_evaluated",
+          "geometry": {
+            "arrays": [],
+            "coordinate_system": {
+              "anchor": {
+                "datum": "EPSG:4326",
+                "latitude_deg": 52.37,
+                "longitude_deg": 4.89,
+                "source_id": "source_d4cfa122faba1b4a9ed242048fd285f4"
+              },
+              "height_reference": "relative_to_project_origin",
+              "kind": "local_enu",
+              "north_reference": "true_north",
+              "north_source_id": "source_d4cfa122faba1b4a9ed242048fd285f4",
+              "unit": "m"
+            },
+            "keepouts": [],
+            "layout_rules": [],
+            "module_specs": [],
+            "obstacles": [],
+            "roofs": [
+              {
+                "boundary_uv": [
+                  [
+                    0.0,
+                    0.0
+                  ],
+                  [
+                    13.62208302218732,
+                    2.3536375220801566e-05
+                  ],
+                  [
+                    13.622034473880571,
+                    13.909312887038713
+                  ],
+                  [
+                    -2.112048096724843e-11,
+                    13.909289351069164
+                  ]
+                ],
+                "holes_uv": [
+                  [
+                    [
+                      5.4488254412037955,
+                      5.563723847942698
+                    ],
+                    [
+                      5.448821557329258,
+                      8.345581717692435
+                    ],
+                    [
+                      8.173232335834788,
+                      8.345586424671014
+                    ],
+                    [
+                      8.173238161648454,
+                      5.563728555269976
+                    ]
+                  ]
+                ],
+                "id": "roof_d4cfa122faba1b4a9ed242048fd285f4",
+                "name": "Synthetic Amsterdam roof with opening; generated coordinates",
+                "origin_enu": [
+                  0.0,
+                  0.0,
+                  5.0
+                ],
+                "source_id": "source_d4cfa122faba1b4a9ed242048fd285f4",
+                "u_axis_enu": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "v_axis_enu": [
+                  0.0,
+                  0.8,
+                  -0.6
+                ]
+              }
+            ],
+            "schema_version": 1,
+            "sources": [
+              {
+                "acquired_at_utc": null,
+                "calibration_note": "Synthetic 3\u20134\u20135 plane; generated Amsterdam coordinates, not a survey. 2026-10-23.",
+                "id": "source_d4cfa122faba1b4a9ed242048fd285f4",
+                "kind": "user_drawing",
+                "note": "Synthetic Amsterdam WGS 84 source \u00b7 2026-10-23",
+                "permissions": {
+                  "derive": "permitted",
+                  "export": "permitted",
+                  "retain": "permitted"
+                },
+                "reference_sha256": "9920f8378f6b55dbd5a8a143087683648f6da6f65f96dcb233c7fcd7b0fb0a33",
+                "reference_url": null,
+                "rights_basis": "user_attestation",
+                "rights_note": "Created by Linker for local acceptance; original and derived geometry may be privately retained and exported. Generated coordinates, not a survey.",
+                "spatial_precision_m": null
+              }
+            ]
+          },
+          "geometry_sha256": "544b6da19478dfc0bf10564bc3fd7ffab30dcfa3bb3baaf1d91cad70ba41fb0d",
+          "original_content_sha256": "9920f8378f6b55dbd5a8a143087683648f6da6f65f96dcb233c7fcd7b0fb0a33",
+          "plane_intersection_method": "geodetic_vertical_line_v1",
+          "projection": {
+            "grid_dependencies": [],
+            "input_axis_order": "longitude_latitude_ellipsoid_height",
+            "input_crs": "EPSG:4979",
+            "operation": "+proj=pipeline +step +proj=unitconvert +xy_in=deg +xy_out=rad +step +proj=cart +ellps=WGS84 +step +proj=topocentric +ellps=WGS84 +lon_0=4.89 +lat_0=52.37 +h_0=0.0",
+            "output_axes": "east_north_up_metres",
+            "proj": "9.8.1",
+            "pyproj": "3.8.0",
+            "reference": {
+              "ellipsoid_height_m": 0.0,
+              "height_basis": "zero_height_horizontal_convention",
+              "latitude_deg": 52.37,
+              "longitude_deg": 4.89,
+              "method": "wgs84_cart_topocentric_v1",
+              "schema_version": 1
+            },
+            "schema_version": 1
+          },
+          "schema_version": 1,
+          "source_feature_id": "synthetic-amsterdam-roof-not-surveyed"
+        },
+        "geometry_import_options": {
+          "feature_index": 0,
+          "format": "geojson_wgs84_horizontal_v1",
+          "plane": {
+            "basis_note": "Synthetic 3\u20134\u20135 plane; generated Amsterdam coordinates, not a survey. 2026-10-23.",
+            "origin_enu": [
+              0.0,
+              0.0,
+              5.0
+            ],
+            "u_axis_enu": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "v_axis_enu": [
+              0.0,
+              0.8,
+              -0.6
+            ]
+          },
+          "plane_intersection_method": "geodetic_vertical_line_v1",
+          "polygon_index": 0,
+          "reference": {
+            "ellipsoid_height_m": 0.0,
+            "height_basis": "zero_height_horizontal_convention",
+            "latitude_deg": 52.37,
+            "longitude_deg": 4.89,
+            "method": "wgs84_cart_topocentric_v1",
+            "schema_version": 1
+          },
+          "roof_name": "Synthetic Amsterdam roof with opening; generated coordinates",
+          "schema_version": 1,
+          "source": {
+            "export_permission": "permitted",
+            "label": "Synthetic Amsterdam WGS 84 source \u00b7 2026-10-23",
+            "rights_note": "Created by Linker for local acceptance; original and derived geometry may be privately retained and exported. Generated coordinates, not a survey.",
+            "spatial_precision_m": null
+          }
+        },
+        "provenance": {
+          "basis": "user_owned_geometry_file_declaration",
+          "label": "Synthetic Amsterdam WGS 84 source \u00b7 2026-10-23",
+          "rights_basis": "Created by Linker for local acceptance; original and derived geometry may be privately retained and exported. Generated coordinates, not a survey."
+        },
+        "retention": "permanent",
+        "schema_version": 1
+      }
+    }
+  ]
+}

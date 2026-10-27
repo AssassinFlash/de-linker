@@ -1,6 +1,6 @@
 <?php
 /**
- * The engineering data files this plugin ships and the feed builds on.
+ * Current Woo engineering declarations and explicit one-time migration inputs.
  *
  * @package Linker\Commerce
  */
@@ -10,13 +10,13 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Products;
 
 /**
- * The compatibility contract and the retained one-time reference migration
- * input. Runtime reference facts and document permissions are maintained in Woo.
+ * Runtime facts, declarations and document permissions are maintained in Woo.
+ * Shipped JSON is available only to explicitly invoked migration tools.
  */
 final class EngineeringData {
 
 	/**
-	 * The compatibility contract: pair patterns, verdicts, conditions, documents.
+	 * Retained one-time migration input; runtime declarations live in Woo.
 	 */
 	public const COMPATIBILITY_FILE = 'data/compatibility.json';
 
@@ -69,15 +69,25 @@ final class EngineeringData {
 	}
 
 	/**
-	 * The compatibility contract's version: the `version` the file itself
-	 * states, or "missing" when the file is unreadable. The feed reports this
-	 * value as its compatibility_version (docs/specs/8-engineering-data.md
-	 * target shape 5, feed.schema.json).
+	 * Content version of the current Woo projection, or missing when malformed.
+	 *
+	 * @param array<string,mixed>|null $manifest Reuse the caller's authority read.
 	 */
-	public static function compatibility_version(): string {
-		$data = self::json( self::COMPATIBILITY_FILE );
+	public static function compatibility_version( ?array $manifest = null ): string {
+		$data = self::compatibility( $manifest );
 
 		return is_string( $data['version'] ?? null ) && '' !== $data['version'] ? $data['version'] : 'missing';
+	}
+
+	/**
+	 * One current Woo projection for PHP consumers and the engineering feed.
+	 *
+	 * @param array<string,mixed>|null $manifest Reuse the caller's authority read.
+	 * @return array<string,mixed>|null No file fallback on absent or malformed claims.
+	 */
+	public static function compatibility( ?array $manifest = null ): ?array {
+		$manifest ??= Publication::manifest();
+		return Publication\CompatibilityClaims::projection( $manifest['products'], $manifest['documents'] );
 	}
 
 	/**

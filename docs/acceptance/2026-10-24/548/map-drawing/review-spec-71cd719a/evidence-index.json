@@ -1,0 +1,41 @@
+{
+  "pin": "71cd719aa67021aee6398ae58f359738005d1f57",
+  "base": "66324a39fb449425dd1144b46b4d3abc21dc52d0",
+  "verdict": "pass_scoped_source_increment",
+  "findings": 0,
+  "previous_p2": "closed by independent actual-adapter reproduction",
+  "review_words": 299,
+  "focused_tests": {
+    "pass": 34,
+    "fail": 0
+  },
+  "commands": [
+    "node docs/acceptance/2026-10-24/548/map-drawing/review-spec-71cd719a/probe.mjs",
+    "cd apps/planner && node --test src/domain/mapDrawingGeometry.test.ts src/domain/mapRingEdit.test.ts tests/map-drawing-controller.test.mjs"
+  ],
+  "files": {
+    "REVIEW.md": {
+      "bytes": 2683,
+      "sha256": "8ed2ac8e6d19fd8f0eacdb093bd0ba35c75cda48abaaa8dc57ae6bce73238868"
+    },
+    "focused-tests.log": {
+      "bytes": 3892,
+      "sha256": "d9596c3953c64db9331743960a8cd7a9ab67729acd95bfa70713b3335c61cd21"
+    },
+    "probe.json": {
+      "bytes": 3975,
+      "sha256": "52856ed2c4fc8bf182be05ae97f572def5801323beba1758832df588fc8c2e7b"
+    },
+    "probe.mjs": {
+      "bytes": 7617,
+      "sha256": "9f95c14517f37c86b455a16c8a02332a7a345f257e8471903f43d48e03c64746"
+    }
+  },
+  "storage": {
+    "new_instances": 0,
+    "new_worktrees": 0,
+    "new_dependency_installations": 0,
+    "new_source_copies": 0,
+    "old_failure_evidence": "preserved; fixture reused in memory"
+  }
+}

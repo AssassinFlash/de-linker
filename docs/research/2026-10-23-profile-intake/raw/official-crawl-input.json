@@ -1,0 +1,24 @@
+{
+  "startUrls": [
+    {
+      "url": "https://support.opensolar.com/hc/en-us/articles/13183853699215-How-to-upload-interval-data"
+    },
+    {
+      "url": "https://support.opensolar.com/hc/en-us/articles/13183763473295-How-to-customize-electricity-usage"
+    },
+    {
+      "url": "https://natlabrockies.github.io/SAM/doc/reference/release_notes.html"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 3,
+  "saveMarkdown": true,
+  "saveText": true,
+  "saveHtml": false,
+  "htmlTransformer": "none",
+  "respectRobotsTxtFile": true,
+  "maxConcurrency": 2,
+  "requestTimeoutSecs": 60,
+  "maxRequestRetries": 1
+}

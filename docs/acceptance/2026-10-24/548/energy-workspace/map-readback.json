@@ -1,0 +1,22 @@
+{
+  "application_source_pin": "ceb4a896bd39ffaa4ca72ae24eff6b73f3af6f8a",
+  "evidence_commit": "6a021906f44bbbcaeedec630eb3da9f1ec4c32c8",
+  "remote_head_verified_before_readback_commit": "6a021906f44bbbcaeedec630eb3da9f1ec4c32c8",
+  "map": {
+    "url": "https://github.com/AssassinFlash/de-linker/issues/548",
+    "state": "open",
+    "updated_at": "2026-10-24T02:51:59Z",
+    "before_body_sha256": "fee1078e11720c5ab0c778171a48874233e4fae480330687b352f40217d4fbd2",
+    "after_body_sha256": "831f4a52617f1d79bad641d6b57dd4b2a0179d34ebd6c965f2b8a6d928baa93b",
+    "body_write_readback_equal": true
+  },
+  "comment": {
+    "url": "https://github.com/AssassinFlash/de-linker/issues/548#issuecomment-6378971047",
+    "id": 6378971047,
+    "created_at": "2026-10-24T02:52:05Z",
+    "body": "统一工作台的“输入 → 保存版本 → 真实托管计算 → 历史结果”已完成一段本地客户路径验收，完整重构目标继续进行。\n\n- 应用源码：`ceb4a896bd39ffaa4ca72ae24eff6b73f3af6f8a`；已推送证据提交：`6a021906f44bbbcaeedec630eb3da9f1ec4c32c8`。此前所有后续修复均已包含，分支为 `codex/unified-planner-548`。\n- [完整本地验收与边界](https://github.com/AssassinFlash/de-linker/blob/6a021906f44bbbcaeedec630eb3da9f1ec4c32c8/docs/acceptance/2026-10-24/548/energy-workspace/VALIDATION.md)：客户在法国工商业合成项目中导入三条时间序列、显式录入七项储能参数，准备并保存后交给真实 worker。两次成功结果匹配两小时独立手算；一次真实失败无结果；一次原生取消收到服务器确认，worker 恢复后正常计算成功。精确运行/资产/输入/输出哈希均留档，不从两小时推导全年，也未评估设备或国家放行。\n- [英德 × 1440/390 的十二个终态与实际资产版本](https://github.com/AssassinFlash/de-linker/blob/6a021906f44bbbcaeedec630eb3da9f1ec4c32c8/docs/acceptance/2026-10-24/548/energy-workspace/NATIVE-MATRIX.json)：成功、失败、取消及刷新/语言恢复；[实际界面](https://github.com/AssassinFlash/de-linker/blob/6a021906f44bbbcaeedec630eb3da9f1ec4c32c8/docs/acceptance/2026-10-24/548/energy-workspace/native/en-1440-current-result.jpg)。旧的遮挡/焦点/Undo/初始历史选择问题已修复；失败中间证据明确保留为失败。\n- [独立 Spec、Standards 与证据复核](https://github.com/AssassinFlash/de-linker/blob/6a021906f44bbbcaeedec630eb3da9f1ec4c32c8/docs/acceptance/2026-10-24/548/energy-workspace/REVIEWS.md)：源码零未解决发现，证据包两项发现已修正；272 项前端测试、615 项引擎测试及构建/源码/实际懒加载图检查通过。测试边界和原始日志均可查，不代替生产或全欧洲工程验收。\n- 系统使用“Solution Configurator · by Linker / Lösungskonfigurator · von Linker”产品身份；[实际系统级介绍及来源说明](https://github.com/AssassinFlash/de-linker/blob/6a021906f44bbbcaeedec630eb3da9f1ec4c32c8/docs/acceptance/2026-10-24/548/energy-workspace/native/de-1440-whole-system-identity-readback.jpg)体现 Linker 的项目、编辑、保存恢复与版本贡献，软件和数据来源各自列明。\n- 164 个既有项目未变，原屋顶项目仍为保存版本14；复用原 p548 和原工作树，Genie/PHP/运行策略未改。已删除46360字节的已证实重复备份，将私有后台截图移出仓库；没有生产写入、测试邮件、新实例或新账号。\n\n地图 Notes 和过时的“仍待原型”段落已同步并读回。屋顶/位置/组件/遮挡到发电曲线的验证、详细分析、厂家/国家规则、选型、完整 BOM/报告/PDF、全站消费者与迁移、评审站及生产发布读回仍在同一完整目标内。本次不关闭地图，不将局部通过冒称完整重构或上线。",
+    "body_sha256": "4575097a981346bc380c5b7cce4ee698e59eaa355f8f630f2bd18bccbd97d04e",
+    "write_readback_equal": true
+  },
+  "scope": "Progress synchronization only. Complete goal and map remain active/open; no merge, deployment or production write."
+}

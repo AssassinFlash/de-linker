@@ -1,0 +1,32 @@
+{
+  "fixed_sha": "eefe7c0b060214b60ba7a012ff206e668dbce6d3",
+  "prior_independent_review": "../563e0387-standards/COPY-REVIEW.md",
+  "catalogs": [
+    {
+      "path": "plugins/linker-tools/languages/linker-tools-de_DE_formal.po",
+      "previous_sha256": "a32e457d1b24be46e413f207b70b0be48b8c06080811b10a60c159707475a1d8",
+      "fixed_sha256": "a32e457d1b24be46e413f207b70b0be48b8c06080811b10a60c159707475a1d8",
+      "unchanged": true
+    },
+    {
+      "path": "plugins/linker-tools/languages/linker-tools-de_DE_formal.mo",
+      "previous_sha256": "669a4f3f2c0cfaf2c52cb3f2429b40632da0292cbc6bc73e561392a0a0b062b9",
+      "fixed_sha256": "669a4f3f2c0cfaf2c52cb3f2429b40632da0292cbc6bc73e561392a0a0b062b9",
+      "unchanged": true
+    },
+    {
+      "path": "plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json",
+      "previous_sha256": "4ec12fee619825cb3825aa07667cdb9aa2597c270638ec9b642fabbe56baf8be",
+      "fixed_sha256": "4ec12fee619825cb3825aa07667cdb9aa2597c270638ec9b642fabbe56baf8be",
+      "unchanged": true
+    }
+  ],
+  "rechecked_prior_pairs": 19,
+  "selector_reuses_existing_messages": [
+    "Project sections",
+    "Project overview",
+    "Site and project",
+    "Roof design",
+    "Energy inputs"
+  ]
+}

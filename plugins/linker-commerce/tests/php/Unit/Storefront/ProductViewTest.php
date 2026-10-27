@@ -30,6 +30,40 @@ final class ProductViewTest extends TestCase {
 	}
 
 	/**
+	 * New engineering classification must not leak a machine value onto PDPs.
+	 *
+	 * @covers \Linker\Commerce\Storefront\ProductView::figures
+	 */
+	public function test_engineering_sales_unit_preserves_public_specification_rows(): void {
+		$figures = array(
+			'module_energy_kwh_usable' => array(
+				'value' => '4.5',
+				'unit'  => 'kWh',
+			),
+			'sales_unit_kind'          => array(
+				'value' => 'battery_module',
+				'unit'  => null,
+			),
+		);
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'args'   => array( 2090, '_tv_b2b_figures', true ),
+				'return' => (string) json_encode( $figures ),
+			)
+		);
+		$this->assertSame(
+			array(
+				array(
+					'label' => 'module_energy_kwh_usable',
+					'value' => '4.5 kWh',
+				),
+			),
+			( new ProductView( new CommerceState() ) )->figures( 2090 )
+		);
+	}
+
+	/**
 	 * Translation and escaping return their input.
 	 */
 	public function setUp(): void {

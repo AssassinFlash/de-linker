@@ -1,0 +1,30 @@
+Planner build matches its sources.
+(node:30573) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/plugins/linker-tools/build/planner/assets/planner.js?ver=wordpress-version is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/plugins/linker-tools/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ a lazy built chunk never executes the versioned WordPress entry again (198.998208ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 449.597083
+✔ double activation dispatches one durably saved request; a lost response retries the exact original revision/key (90.588041ms)
+✔ storage failure prevents dispatch, remains visible and requires an explicit successful storage check (14.014208ms)
+✔ unmount while persistence is pending never sends a mutation and retains the eventual durable intent (6.483166ms)
+✔ a verified account transition discovers the guest intent but never submits it automatically (14.626667ms)
+✔ only a specific proven pre-mutation stale-revision refusal releases a calculation intent (11.293834ms)
+✔ acknowledged battery settings remain recoverable until that asset is saved, or explicitly dismissed (18.320084ms)
+✔ native scope withdrawal before persistence finishes prevents dispatch and preserves the exact guest intent (10.189916ms)
+✔ actual scenario controls retain raw input, require confirmed save, use one frozen revision, and preserve edits from a late preparation response (237.965125ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 923.941542

@@ -1,0 +1,115 @@
+{
+  "owner": "/root/managed_worker_standards",
+  "purpose": "primary-source evidence for managed PV intake and sourced declared model inputs",
+  "acquiredDateUTC": "2026-10-24",
+  "retention": "one copy of the exact required PDF and tagged source; compact official-doc excerpts and metadata; no new weather body or running copy",
+  "files": [
+    {
+      "file": "FINDINGS.md",
+      "bytes": 12800,
+      "sha256": "772b86c25aabcdaa2cb70dfd0ae0a74b5069fa6b2f08a63fce5ea9d66ebae2ca"
+    },
+    {
+      "file": "raw/apify-metadata.json",
+      "bytes": 17237,
+      "sha256": "ee388a95d69e562764764f4173df540dab9f7a89df41d6cea6b3fc01509fe46f"
+    },
+    {
+      "file": "raw/dataset-provenance.json",
+      "bytes": 378,
+      "sha256": "3e0360f20d64f2223bc936c8525b4efae85eeca4a8143e938a6e7d4e243208d4"
+    },
+    {
+      "file": "raw/docs-act-runs-post-excerpt.txt",
+      "bytes": 4249,
+      "sha256": "d751312e6865ff0b6328609ae73c4cc3722f13befef4dd94edefb3ad43798481"
+    },
+    {
+      "file": "raw/docs-actor-run-abort-post-excerpt.txt",
+      "bytes": 795,
+      "sha256": "fd35e04734573799beb20af074de0f5ef7f5db1b72967f0fd3e8fe3e62af7b10"
+    },
+    {
+      "file": "raw/docs-actor-run-get-excerpt.txt",
+      "bytes": 1839,
+      "sha256": "d92a28118935f3a380ea7ef47ac9ba10470d003760df643994b4098bf6d83c7b"
+    },
+    {
+      "file": "raw/docs-dataset-items-get-excerpt.txt",
+      "bytes": 11051,
+      "sha256": "cf5f3cff6ff71f71f023c19a5f3cc87c2756611f0e7d5425ff36a20978d75273"
+    },
+    {
+      "file": "raw/docs-effective-input.json",
+      "bytes": 2104,
+      "sha256": "c9e527b04008aa52b42030e22dea741f2254d973a36fd5043510570080b49cb0"
+    },
+    {
+      "file": "raw/docs-excerpt-provenance.json",
+      "bytes": 5896,
+      "sha256": "314948ecd674a23588f00342c10bb570744692dc90b07e0509f6ea50989b570a"
+    },
+    {
+      "file": "raw/docs-input.json",
+      "bytes": 1220,
+      "sha256": "b8105e07f619727a00ead4583f0f050ddd58ab0f87c878be484663aa723e374e"
+    },
+    {
+      "file": "raw/docs-items.json",
+      "bytes": 20889,
+      "sha256": "12eacd32de2234404660e9a6728659d38925273ce7ac96a40292c9093a0280ce"
+    },
+    {
+      "file": "raw/docs-key-value-store-record-get-excerpt.txt",
+      "bytes": 1809,
+      "sha256": "8b77833f51bdd0f378b14f12127b5aab9f315c35a6d17103edf8bb2e891c72de"
+    },
+    {
+      "file": "raw/docs-log-selection.json",
+      "bytes": 1763,
+      "sha256": "6cc5cf614b60268958d830aab59be333855de0bddf4b57e5aad919400e12114f"
+    },
+    {
+      "file": "raw/docs-run.json",
+      "bytes": 1743,
+      "sha256": "f83ba272e5dbe3633248d9299be22d87c15a8b013b2afcf86c77b7a55e87d577"
+    },
+    {
+      "file": "raw/docs-runs-and-builds-excerpt.txt",
+      "bytes": 6606,
+      "sha256": "9cee716b60d9236d040de6b9ab98a4d4790977330a12b7953f9f858672c5c213"
+    },
+    {
+      "file": "raw/files-provenance.json",
+      "bytes": 2108,
+      "sha256": "cf19ff557908cea31aabecaef8b3ea4b3a18fd25c1c70bf0dfa2b3c42c61e9d9"
+    },
+    {
+      "file": "raw/input-readback.json",
+      "bytes": 2869,
+      "sha256": "78f837fbb6de0bc25dd30e21a3bed8f3df63560d32353f5dbe46f9e4522fdda2"
+    },
+    {
+      "file": "raw/model-input-verification.json",
+      "bytes": 2166,
+      "sha256": "27ce47036dfb1c5fd0f674be781c01cfdc3de939e64f9f1aeb08ec8f0ef1509c"
+    },
+    {
+      "file": "raw/pvlib-0.16.1-temperature.py",
+      "bytes": 60724,
+      "sha256": "2adbab834d25836007bad5fc429acd2b53b83dc99b7be6d288bc1644d5a18319"
+    },
+    {
+      "file": "raw/trina-neg9r28-en-2024c.pdf",
+      "bytes": 488969,
+      "sha256": "f4d280f9a0d89475cf575fbb99906e2b091da27f08b848fc51877cc1d24e8e22"
+    }
+  ],
+  "totalBytesExcludingManifest": 647215,
+  "checks": {
+    "localMarkdownTargetsExist": true,
+    "actualAPIFY_TOKENAbsent": true,
+    "temporaryCredentialURLQueryAbsent": true,
+    "temperatureSourceMatchesRetainedV0161Tree": true
+  }
+}

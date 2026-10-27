@@ -1,0 +1,16 @@
+{
+  "fixed_sha": "a0d12a9f68b17db3ebade24bace5eb8a890c6e3f",
+  "sha_matched_reconstructed_files_removed": 245,
+  "logical_bytes_reclaimed": 3774352,
+  "mismatch_retained": [],
+  "dependency_links_removed": [
+    "apps/planner/node_modules",
+    "services/engine/.venv"
+  ],
+  "owned_synthetic_runtime_and_bytecode_files_removed": 434,
+  "owned_synthetic_runtime_and_bytecode_bytes_removed": 80521341,
+  "free_before_fixed_reclaim_bytes": 887208562688,
+  "free_after_fixed_reclaim_bytes": 887213047808,
+  "observed_free_delta_during_fixed_reclaim": 4485120,
+  "note": "Free-space delta includes concurrent work; no shared cleanup, no parent/native touch. Unique probes/logs/report retained."
+}

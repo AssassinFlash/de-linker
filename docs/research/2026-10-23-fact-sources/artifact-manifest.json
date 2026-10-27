@@ -1,0 +1,119 @@
+{
+  "observed_at_utc": "2026-10-22T18:24:43.514961+00:00",
+  "scope": "Only public fact/source research artifacts. No PDF copies; document identities verified against existing local uploads. Manifest excludes itself.",
+  "source_counts": {
+    "products": 106,
+    "raw_figures": 2482,
+    "raw_document_records": 210,
+    "figures_with_evidence_refs": 2140,
+    "figures_with_qualifier": 4,
+    "figures_with_note": 3,
+    "figures_with_value_de": 429,
+    "alias_no_declared_candidate": 8,
+    "alias_single_declared_target_with_prior_review": 7,
+    "alias_declared_target_unreviewed": 22,
+    "alias_multiple_distinct_candidate_artifacts": 1,
+    "feed_figures": 610,
+    "unique_aliases_citation_and_refs": 38,
+    "unique_urls_all_scoped_sources": 71,
+    "existing_local_files": 71,
+    "unique_content_sha256": 71,
+    "urls_with_prior_selected_review": 12,
+    "association_claim_rows": 1097,
+    "alias_url_pairs": 32,
+    "opaque_evidence_ref_occurrences": 8,
+    "opaque_evidence_ref_tokens": 3,
+    "evidence_ref_entries": 2148,
+    "unique_direct_citation_urls": 29,
+    "unique_product_document_urls": 63,
+    "source_url_bytes_locally_hashed": 549966707,
+    "candidate_page_out_of_bounds_claim_rows": 1,
+    "additional_reviewed_documents_not_in_current_source_urls": 6,
+    "aliases_with_recorded_identity_and_current_sha": 23,
+    "additional_recorded_alias_document_urls": 3,
+    "alias_evidence_records": 25,
+    "source_urls_plus_additional_registered_alias_urls": 74
+  },
+  "bootstrap": {
+    "document_versions": 80,
+    "unique_content_sha256": 80,
+    "alias_records": 38,
+    "products": 106,
+    "content_sha256": "2962ccf863bbb18fe89716ed51c928e9051f38a02a4c90cd8d61ebe1a0399087",
+    "prior_document_page_review_count": 18,
+    "explicit_model_fact_review_document_count": 14
+  },
+  "validation_errors": [],
+  "files": [
+    {
+      "file": "SOURCE-BINDINGS.md",
+      "bytes": 20158,
+      "sha256": "71ac2bf89a8cca6ac65f33013b2692dff34594a573af5f49f79db2a5804995b6"
+    },
+    {
+      "file": "additional-recorded-alias-documents.json",
+      "bytes": 1676,
+      "sha256": "e53f79b07d908025cf3d7bd7f6dbf1d9cd49a1e1b94a230d02ea3d1741fc0e61"
+    },
+    {
+      "file": "additional-reviewed-documents.json",
+      "bytes": 5015,
+      "sha256": "729ecca43c1fdd18704c1dab44a053ec4e9d9dba64c27d3692163eb225161fce"
+    },
+    {
+      "file": "alias-inventory.json",
+      "bytes": 579871,
+      "sha256": "a223492d5fbf7192bd23f4c8711421cb4eee8b7e349b3bf18236e12477541e1d"
+    },
+    {
+      "file": "binding-claims.json",
+      "bytes": 476250,
+      "sha256": "386a1c0453e3b0e212fcb3aaf0f815c5a3ec034ac010d6b44b7c110ae76b93fa"
+    },
+    {
+      "file": "binding-conflicts.json",
+      "bytes": 612,
+      "sha256": "689f04307352d41011a814f91ef1375a73339782f969268a525ff2a9591cc727"
+    },
+    {
+      "file": "binding-summary.json",
+      "bytes": 3959,
+      "sha256": "06ba71201a9bba9fb72f147a860c70bc3c8db052d613d5d60f3df8878869b9ee"
+    },
+    {
+      "file": "document-inventory.json",
+      "bytes": 389102,
+      "sha256": "02792d7704cfb635fe3dd371ae11a35d0b0590a230491ec56fe6e4be1e863172"
+    },
+    {
+      "file": "figure-source-index.json",
+      "bytes": 1107355,
+      "sha256": "c897438ce0c7fc626bc091deb67fe1a31a37d5af41eac5a8737902bb933009c3"
+    },
+    {
+      "file": "machine-readback.json",
+      "bytes": 1212,
+      "sha256": "a7e0d1e8cfae449fff39a20905f4c504c855ab9a36265cef95dd8040cd3dc8b5"
+    },
+    {
+      "file": "p548-feed-public.json",
+      "bytes": 231120,
+      "sha256": "3e174e8d893947d6c3f6440d9223cbb86db7a8afbcad0dab97e8bba710670fd0"
+    },
+    {
+      "file": "p548-source-public.json",
+      "bytes": 547608,
+      "sha256": "23531fe6c6fcb9db7a2bd59ecac39ad7bda26d6e587e03d5c9a120e996e9fb31"
+    },
+    {
+      "file": "recorded-alias-evidence.json",
+      "bytes": 36886,
+      "sha256": "7076c37482251025fda5b3cbbe19ad060c2ef19f92c53ec5e6fe6093194a1e4a"
+    },
+    {
+      "file": "registry-bootstrap.json",
+      "bytes": 186767,
+      "sha256": "f877c6d981783fc55038fe58ebba54f986ebb9480bfc38adda8decc362794ab3"
+    }
+  ]
+}

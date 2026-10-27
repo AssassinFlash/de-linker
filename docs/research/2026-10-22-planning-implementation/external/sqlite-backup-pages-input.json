@@ -1,0 +1,14 @@
+{
+  "startUrls": [
+    {"url": "https://www.sqlite.org/backup.html"},
+    {"url": "https://www.sqlite.org/wal.html"},
+    {"url": "https://docs.python.org/3.12/library/sqlite3.html"}
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 3,
+  "maxConcurrency": 2,
+  "saveHtml": false,
+  "saveMarkdown": true,
+  "respectRobotsTxtFile": true
+}

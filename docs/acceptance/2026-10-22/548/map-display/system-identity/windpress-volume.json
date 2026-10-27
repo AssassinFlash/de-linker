@@ -1,0 +1,15 @@
+{
+  "instance": "p548",
+  "path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/windpress/data/planner.css",
+  "before_sha256": "98f72162660c25b7a9ed82c8aefb6566769be3c9bc235a98b845f47544a55b8e",
+  "before_recovery": "git show f40db1d6:plugins/linker-commerce/content/windpress/planner.css",
+  "after_sha256": "6438cadd51f0b2bae05e31837ce3dc74e21e278ab2b298cad5c2790e290b1bd5",
+  "source_sha256": "6438cadd51f0b2bae05e31837ce3dc74e21e278ab2b298cad5c2790e290b1bd5",
+  "other_instances_changed": false,
+  "native_generate_pending": false,
+  "native_ui_readback": {
+    "last_generated": "2026-10-23 22:48:25",
+    "cache_size": "833.34 kB",
+    "button": "Generate enabled"
+  }
+}

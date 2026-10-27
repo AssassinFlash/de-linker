@@ -170,7 +170,7 @@ def status(args: argparse.Namespace) -> int:
 def serve(args: argparse.Namespace) -> int:
     instance = _built(args.name)
     for line in services.serve(
-        instance, Checkout.here(), WpCli(require_php(), instance)
+        instance, Checkout.here(), WpCli(require_php(), instance), only=args.service
     ):
         print(f"{instance.name}: {line}")
     return 0
@@ -215,6 +215,7 @@ def _parser() -> argparse.ArgumentParser:
     command("status", status, "list the instances")
     sub = command("serve", serve, "(re)start the engine and Genie of the instance")
     sub.add_argument("name")
+    sub.add_argument("--service", choices=("engine", "genie"))
     sub = command("wp", wp, "run WP-CLI against the instance")
     sub.add_argument("name")
     sub.add_argument("args", nargs=argparse.REMAINDER)

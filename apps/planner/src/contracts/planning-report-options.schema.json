@@ -1,0 +1,104 @@
+{
+  "$defs": {
+    "ComparisonSelection": {
+      "additionalProperties": false,
+      "properties": {
+        "baseline_run_id": {
+          "$ref": "#/$defs/RunId"
+        },
+        "candidate_run_id": {
+          "$ref": "#/$defs/RunId"
+        }
+      },
+      "required": [
+        "baseline_run_id",
+        "candidate_run_id"
+      ],
+      "title": "ComparisonSelection",
+      "type": "object"
+    },
+    "RunId": {
+      "pattern": "^[a-f0-9]{32}$",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "locale": {
+      "enum": [
+        "en",
+        "de"
+      ],
+      "title": "Locale",
+      "type": "string"
+    },
+    "energy_run_id": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RunId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "pv_run_id": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RunId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "equipment_run_id": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RunId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "logo": {
+      "anyOf": [
+        {
+          "maxLength": 700000,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Logo"
+    },
+    "comparison": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ComparisonSelection"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "include_installation": {
+      "default": false,
+      "title": "Include Installation",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "locale",
+    "energy_run_id",
+    "pv_run_id",
+    "equipment_run_id",
+    "logo"
+  ],
+  "title": "ReportOptions",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

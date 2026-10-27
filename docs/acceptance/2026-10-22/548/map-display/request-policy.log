@@ -1,0 +1,10 @@
+✔ a map view cannot infer an external request grant or widen its provider origin (0.863333ms)
+✔ an old library callback remains refused after release and a different view's explicit grant (0.144542ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 83.961292

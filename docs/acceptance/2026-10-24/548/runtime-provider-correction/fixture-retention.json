@@ -1,0 +1,19 @@
+{
+  "owner": "unified-planner-548",
+  "purpose": "EN/DE desktop/mobile official-source weather states; actual components, simulated transport",
+  "port": 50673,
+  "pid": 50027,
+  "verified_command": "node /Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/apps/planner/node_modules/.bin/vite --host 127.0.0.1 --port 50673 --strictPort",
+  "new_instance": false,
+  "new_worktree": false,
+  "started_at_utc": "2026-10-24T15:21:55.226639+00:00",
+  "review_by_utc": "2026-10-24T17:21:55.226639+00:00",
+  "reclaim": "Close created tab, reset viewport and stop verified Vite process before checkpoint",
+  "status": "stopped",
+  "free_bytes_before": 882341990400,
+  "stopped_at_utc": "2026-10-24T15:39:04.556591+00:00",
+  "created_tab_closed": true,
+  "viewport_reset": true,
+  "original_user_tab_preserved": true,
+  "free_bytes_after": 885910376448
+}

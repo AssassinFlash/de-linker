@@ -1,0 +1,15 @@
+{
+  "node": "v24.22.0",
+  "packages": {
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "@react-three/fiber": "9.8.2",
+    "three": "0.186.1",
+    "zustand": "5.0.16",
+    "jsdom": "26.1.0"
+  },
+  "fixed_source": "f48228a87894c23f68d180675d05b902139d531e",
+  "boundary": "Actual React source components and actual R3F context/useThree selectors; controlled Canvas host and renderer init/dispose, no GPU/native drawing",
+  "harness_correction": "Attempt 1 passed a vanilla StoreApi to R3F; attempt 2 uses installed Zustand callable bound store; source unchanged",
+  "created_utc": "2026-10-23T11:52:55.723315+00:00"
+}

@@ -1,0 +1,9 @@
+{
+  "node": "v24.22.0",
+  "fixed_source_root": "/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/workspace-spec-eefe-5teovmwd",
+  "dependency_link": {
+    "path": "apps/planner/node_modules",
+    "target": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/apps/planner/node_modules"
+  },
+  "rendering": "Actual fixed React/Query/JSDOM components; transport/storage synthetic fixtures; no browser automation"
+}

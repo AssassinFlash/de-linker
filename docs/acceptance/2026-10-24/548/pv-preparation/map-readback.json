@@ -1,0 +1,29 @@
+{
+  "checked_at_utc": "2026-10-24T04:52:27.402565+00:00",
+  "map_title": "地图：统一方案工作台重构与全站交付",
+  "map_url": "https://github.com/AssassinFlash/de-linker/issues/548",
+  "map_state": "OPEN",
+  "source_pin": "a14567de149e79c837d2053ae67073b1d62c413e",
+  "evidence_commit": "91f467bda8390fc7872e4cdf776542236230293b",
+  "before_body_sha256": "4e2ab1daf843152277e1dffafb6a5eee93d315970b48d5a2bf32a9ffe0caf6ea",
+  "readback_body_sha256": "78be2af85084f2e438e6bb990ea5aa7a32fd0839b44cfd9d2f0ce925d82cbbc3",
+  "body_verified_exact": true,
+  "comment_url": "https://github.com/AssassinFlash/de-linker/issues/548#issuecomment-6380066058",
+  "comment_sha256": "a568c54d1ad4cba6310643e6c261881160e858052e6bb626b7bc6586fdee75a0",
+  "comment_verified_exact": true,
+  "comment_body": "继续推进统一系统的实际运行链。本轮已完成可信留存气象 → 冻结屋顶/参数 → 托管PV准备 → 原子发布owned profile → 同一项目完整年度能流复用。\n\n- 实际独立后台进程同时执行PV准备和能流任务；取消、执行权过期、晚到结果、跨项目发布、访客转账号、历史输入与备份恢复都有真实SQLite/CAS夹具。\n- 独立Spec发现预览仍同步重跑完整PV模型，现已改为校验并读取已有输入/见证中的曲线值；实际HTTP测试禁止所有PV生成入口，仍能展示原值、时间轴与来源。后台计算保留完整物理复现。\n- Standards指出三处重复执行器配置，已由一个类型明确的工厂承接HTTP、worker启动及CLI身份。两条独立评审分别闭合，最终各0开放问题；并发槽限制下独立串行执行，如实保留报告。\n- 完整691项引擎回归、lint/format、100个源文件严格类型检查通过。源码 `a14567de149e79c837d2053ae67073b1d62c413e`；[验证记录](https://github.com/AssassinFlash/de-linker/blob/91f467bda8390fc7872e4cdf776542236230293b/docs/acceptance/2026-10-24/548/pv-preparation/VALIDATION.md)、[评审闭合](https://github.com/AssassinFlash/de-linker/blob/91f467bda8390fc7872e4cdf776542236230293b/docs/acceptance/2026-10-24/548/pv-preparation/REVIEWS.md)。\n- 新外部核实继续只经Apify，保留精确运行/build、官方API原文及Trina原厂/固定pvlib证据。未重复获取年度气象。Apify启动响应丢失不能盲重发，下一实现前沿是持久意图/已确认run ID/不确定启动恢复及原生来源、模型、任务操作。\n- 全部164个基线项目、原屋顶版本14及完整运行worker身份读回未变；无新实例、部署、生产写入、询盘或邮件。当前p548仍运行上一版，本增量未冒称原生或生产验收。\n\n系统级Linker归属说明维持此前业主裁定：讲清统一项目、编辑、保存恢复、版本与可追溯结果的实际贡献；地图、软件与数据来源分别署名。未交付的设备选型、BOM/报告和国家放行能力不提前宣传。\n\n详细遮挡、电气/设备/国家方法、BOM/报告/PDF、全站消费者、迁移、评审站和生产发布读回继续属于同一次完整交付。目标保持进行中。\n",
+  "temporary_request_files_removed": [
+    {
+      "path": "/tmp/p548-pv-preparation-map.body.md",
+      "bytes": 13183
+    },
+    {
+      "path": "/tmp/p548-pv-preparation-map.comment.md",
+      "bytes": 2315
+    },
+    {
+      "path": "/tmp/p548-pv-preparation-map.state.json",
+      "bytes": 220
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "source_pin": "ceb4a896bd39ffaa4ca72ae24eff6b73f3af6f8a",
+  "checked_at_unix": 1792809171.194002,
+  "control": [
+    {
+      "id": 1,
+      "schema_version": 1,
+      "draining": 0
+    }
+  ],
+  "owned_synthetic_project_runs": [
+    {
+      "id": "2c360c4679fe41cf8bd8f874036e58c4",
+      "revision": 3,
+      "state": "succeeded",
+      "attempt": 1,
+      "worker": "local-p548",
+      "result_sha256": "ea9b0e81630d6f3d52d10488f66e14ddd4a473bb473c4da1b8ae71fd7c37423f",
+      "error_sha256": null
+    },
+    {
+      "id": "43310088cfe74ba19bdb155fb3ce1598",
+      "revision": 4,
+      "state": "failed",
+      "attempt": 1,
+      "worker": "local-p548",
+      "result_sha256": null,
+      "error_sha256": "e2adee2d8341af92093b22349046131f70573705f299efdf25a8d39ed6980928"
+    },
+    {
+      "id": "a0f51822d8ee4e0e98ff4112145ed767",
+      "revision": 5,
+      "state": "cancelled",
+      "attempt": 0,
+      "worker": null,
+      "result_sha256": null,
+      "error_sha256": null
+    },
+    {
+      "id": "14dacb74cda2451a95d00df374532af8",
+      "revision": 5,
+      "state": "succeeded",
+      "attempt": 1,
+      "worker": "local-p548",
+      "result_sha256": "3f1e5d7bd5bb67d71e321bb2ec3f1d6244d04c64810c081594364f02b13c61e1",
+      "error_sha256": null
+    }
+  ],
+  "protected_roof_project": {
+    "revision": 14,
+    "input_sha256": "8a6394917a9a9e6b91db4bfc73c0299dcedd2c51619144a5beffa1664f010288"
+  },
+  "worker_pid": 27398,
+  "worker_status": "S"
+}

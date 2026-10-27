@@ -1,0 +1,14 @@
+{
+  "owner": "unified-planner-548",
+  "path": "/Users/chesterjohn/de-linker-local/p548/planner/runtime-releases/9b66656acb26b65b88b09a44b8508a42094059af64b49e7038eedef0d92a10a1",
+  "purpose": "Restore the actually absent schema-2 local numerical worker using its retained exact source/lock bundle and existing venv; never import current schema-4 source into the live schema-2 store.",
+  "created_at": "2026-10-24T08:39:46.891316+00:00",
+  "review_by": "2026-10-25T08:39:46.891316+00:00",
+  "reclaim_when": "After accepted paired HTTP/worker upgrade has no process reference to this carrier; delete the rebuildable carrier, retain the original immutable CAS bundle.",
+  "expected_runtime_sha256": "9b66656acb26b65b88b09a44b8508a42094059af64b49e7038eedef0d92a10a1",
+  "bytes": 689144,
+  "bundle_files": 83,
+  "added_files": [
+    "src/linker_engine/__init__.py"
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "exit_code": 1,
+  "error_files": [
+    "tests/planning/test_apify_transport.py",
+    "tests/planning/test_apify_weather_client.py",
+    "tests/planning/test_brief.py",
+    "tests/planning/test_execution_routes.py",
+    "tests/planning/test_geographic.py",
+    "tests/planning/test_geometry.py",
+    "tests/planning/test_geometry_import.py",
+    "tests/planning/test_guest_claims.py",
+    "tests/planning/test_http_host.py",
+    "tests/planning/test_schema_upgrade.py",
+    "tests/planning/test_weather_acquisition.py",
+    "tests/planning/test_weather_cleanup.py",
+    "tests/planning/test_weather_journal.py",
+    "tests/planning/test_weather_kernel.py",
+    "tests/planning/test_weather_reconciliation.py",
+    "tests/planning/test_worker_host.py"
+  ],
+  "summary": "Found 199 errors in 16 files (checked 222 source files)",
+  "remaining_file_proof": [
+    {
+      "path": "services/engine/tests/planning/test_apify_transport.py",
+      "unchanged_from_base": true,
+      "sha256": "f03d4976b26ace59587a6a990ac6301177250c20daed66b9b8a52f456883b141"
+    },
+    {
+      "path": "services/engine/tests/planning/test_apify_weather_client.py",
+      "unchanged_from_base": true,
+      "sha256": "be3a7937da53096cd485ed93acac96ba1c6574bc75fd0cb6a261e8bb84015bd1"
+    },
+    {
+      "path": "services/engine/tests/planning/test_brief.py",
+      "unchanged_from_base": true,
+      "sha256": "1680fc5cd77a4f1176bd1274999a7bea809d42bb20ec6ac7a1a8a2007c2f6f8d"
+    },
+    {
+      "path": "services/engine/tests/planning/test_execution_routes.py",
+      "unchanged_from_base": true,
+      "sha256": "00ef8ddc1ac8f4743a8466cc7d91a99372d8b4d6d404d7d13697be83449be88c"
+    },
+    {
+      "path": "services/engine/tests/planning/test_geographic.py",
+      "unchanged_from_base": true,
+      "sha256": "0be38127f7734c92dbdf34c96c30387ae211a58deced79bd5a8111250ddf2fb8"
+    },
+    {
+      "path": "services/engine/tests/planning/test_geometry.py",
+      "unchanged_from_base": true,
+      "sha256": "e077cef15948ab8e241c07c089e42073d16c8048924521ba156eb1f07b1647fb"
+    },
+    {
+      "path": "services/engine/tests/planning/test_geometry_import.py",
+      "unchanged_from_base": true,
+      "sha256": "1ab0092443a46b5fcf956ca417ca3a3d288f94c998179fa09747d699c6ee4c5f"
+    },
+    {
+      "path": "services/engine/tests/planning/test_guest_claims.py",
+      "unchanged_from_base": true,
+      "sha256": "ee64701163385ac36bf3e06f145a696250998fe76894a5e3f0ab1319fbb5487e"
+    },
+    {
+      "path": "services/engine/tests/planning/test_http_host.py",
+      "unchanged_from_base": true,
+      "sha256": "92876e0249814fdfd69528684fb868123b050fc3387770b278fdc456989c71b3"
+    },
+    {
+      "path": "services/engine/tests/planning/test_schema_upgrade.py",
+      "unchanged_from_base": true,
+      "sha256": "7a38b4cab92ff694fa53d3d27ae9559200f6ff77c64f8a05fa84449f373d16c7"
+    },
+    {
+      "path": "services/engine/tests/planning/test_weather_acquisition.py",
+      "unchanged_from_base": true,
+      "sha256": "4b2ce60b260cebd9016a4cd85cd9c0d7e1ee7f5ed6ce4dba1ce0ae230281e387"
+    },
+    {
+      "path": "services/engine/tests/planning/test_weather_cleanup.py",
+      "unchanged_from_base": true,
+      "sha256": "37f44910417506fb70c80fd984023f8911c34c5bf34a455bfa4d83635dc496cf"
+    },
+    {
+      "path": "services/engine/tests/planning/test_weather_journal.py",
+      "unchanged_from_base": true,
+      "sha256": "35fc5b0eea4ba2a677d069428db6560a85d1b4fb3e0e662f128a30fd13dc573b"
+    },
+    {
+      "path": "services/engine/tests/planning/test_weather_kernel.py",
+      "unchanged_from_base": true,
+      "sha256": "f6e86e6abae09194133081642b74458e3692c01015827869f90f9e98ea2ce9ef"
+    },
+    {
+      "path": "services/engine/tests/planning/test_weather_reconciliation.py",
+      "unchanged_from_base": true,
+      "sha256": "e7a73c4ef7bfbffcaf103f7092520f6110b733cad6a61fb09b78e09dd2d5df0b"
+    },
+    {
+      "path": "services/engine/tests/planning/test_worker_host.py",
+      "unchanged_from_base": true,
+      "sha256": "e15019b614aff95e08b19257d300367a8909b6c563ec8886df7a474343f79117"
+    }
+  ],
+  "all_remaining_files_unchanged": true
+}

@@ -1,0 +1,352 @@
+{
+  "before": {
+    "details": false,
+    "entry": [
+      "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=590f6efccb8f8b4e8937a8c481df7fea9a19b440fd37eee575aa12453fadbf1b"
+    ],
+    "fields": [
+      {
+        "checked": false,
+        "id": "",
+        "name": "",
+        "type": "select-one",
+        "value": "commercial"
+      },
+      {
+        "checked": false,
+        "id": "",
+        "name": "",
+        "type": "select-one",
+        "value": "new_pv_storage"
+      },
+      {
+        "checked": false,
+        "id": "",
+        "name": "",
+        "type": "select-one",
+        "value": "DE"
+      },
+      {
+        "checked": false,
+        "id": "",
+        "name": "",
+        "type": "text",
+        "value": "Synthetic site at 50.94 N, 6.96 E · not a surveyed building"
+      },
+      {
+        "checked": false,
+        "id": "_r_1_",
+        "name": "",
+        "type": "text",
+        "value": "50,94"
+      },
+      {
+        "checked": false,
+        "id": "_r_2_",
+        "name": "",
+        "type": "text",
+        "value": "6,96"
+      },
+      {
+        "checked": false,
+        "id": "",
+        "name": "",
+        "type": "select-one",
+        "value": "Europe/Berlin"
+      },
+      {
+        "checked": false,
+        "id": "_r_3_",
+        "name": "",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "checked": false,
+        "id": "",
+        "name": "",
+        "type": "select-one",
+        "value": ""
+      },
+      {
+        "checked": false,
+        "id": "",
+        "name": "",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "checked": false,
+        "id": "",
+        "name": "",
+        "type": "textarea",
+        "value": ""
+      }
+    ],
+    "fonts": "loaded",
+    "identity": "Lösungskonfigurator\nvon Linker\n\nLinker bündelt Ihre Angaben in einem bearbeitbaren Projekt für die PV- und Speicherplanung.\n\nÜber dieses Werkzeug",
+    "identityBox": {
+      "bottom": 1469.40625,
+      "height": 115.4453125,
+      "left": 0,
+      "right": 1440,
+      "top": 1353.9609375,
+      "width": 1440,
+      "x": 0,
+      "y": 1353.9609375
+    },
+    "links": [
+      {
+        "href": "https://react.dev/",
+        "label": "React",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://tanstack.com/query",
+        "label": "TanStack Query",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://ajv.js.org",
+        "label": "Ajv",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://threejs.org/",
+        "label": "Three.js",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://r3f.docs.pmnd.rs/getting-started/introduction",
+        "label": "React Three Fiber",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://maplibre.org/maplibre-gl-js/docs/",
+        "label": "MapLibre GL JS",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://openfreemap.org/",
+        "label": "OpenFreeMap",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://www.openmaptiles.org/",
+        "label": "© OpenMapTiles",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://www.openstreetmap.org/copyright",
+        "label": "© OpenStreetMap-Mitwirkende",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://openfreemap.org/privacy/",
+        "label": "Datenschutzhinweise von OpenFreeMap",
+        "rel": "noopener noreferrer"
+      }
+    ],
+    "mapBox": {
+      "bottom": 857.7734375,
+      "height": 560,
+      "left": 266.5546875,
+      "right": 1095.4453125,
+      "top": 297.7734375,
+      "width": 828.890625,
+      "x": 266.5546875,
+      "y": 297.7734375
+    },
+    "mapFont": "\"Plus Jakarta Sans\", Inter, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+    "mapStatus": "ready",
+    "revision": "Gespeichert · Version 3",
+    "scroll": [
+      0,
+      565
+    ],
+    "url": "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-design",
+    "viewport": [
+      1440,
+      1000
+    ],
+    "widths": [
+      1440,
+      1440
+    ]
+  },
+  "after": {
+    "details": false,
+    "entry": [
+      "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=590f6efccb8f8b4e8937a8c481df7fea9a19b440fd37eee575aa12453fadbf1b"
+    ],
+    "fields": [
+      {
+        "checked": false,
+        "id": "",
+        "name": "",
+        "type": "select-one",
+        "value": "commercial"
+      },
+      {
+        "checked": false,
+        "id": "",
+        "name": "",
+        "type": "select-one",
+        "value": "new_pv_storage"
+      },
+      {
+        "checked": false,
+        "id": "",
+        "name": "",
+        "type": "select-one",
+        "value": "DE"
+      },
+      {
+        "checked": false,
+        "id": "",
+        "name": "",
+        "type": "text",
+        "value": "Synthetic site at 50.94 N, 6.96 E · not a surveyed building"
+      },
+      {
+        "checked": false,
+        "id": "_r_1_",
+        "name": "",
+        "type": "text",
+        "value": "50,94"
+      },
+      {
+        "checked": false,
+        "id": "_r_2_",
+        "name": "",
+        "type": "text",
+        "value": "6,96"
+      },
+      {
+        "checked": false,
+        "id": "",
+        "name": "",
+        "type": "select-one",
+        "value": "Europe/Berlin"
+      },
+      {
+        "checked": false,
+        "id": "_r_3_",
+        "name": "",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "checked": false,
+        "id": "",
+        "name": "",
+        "type": "select-one",
+        "value": ""
+      },
+      {
+        "checked": false,
+        "id": "",
+        "name": "",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "checked": false,
+        "id": "",
+        "name": "",
+        "type": "textarea",
+        "value": ""
+      }
+    ],
+    "fonts": "loaded",
+    "identity": "Lösungskonfigurator\nvon Linker\n\nLinker bündelt Ihre Angaben in einem bearbeitbaren Projekt für die PV- und Speicherplanung.\n\nÜber dieses Werkzeug",
+    "identityBox": {
+      "bottom": 1469.40625,
+      "height": 115.4453125,
+      "left": 0,
+      "right": 1440,
+      "top": 1353.9609375,
+      "width": 1440,
+      "x": 0,
+      "y": 1353.9609375
+    },
+    "links": [
+      {
+        "href": "https://react.dev/",
+        "label": "React",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://tanstack.com/query",
+        "label": "TanStack Query",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://ajv.js.org",
+        "label": "Ajv",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://threejs.org/",
+        "label": "Three.js",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://r3f.docs.pmnd.rs/getting-started/introduction",
+        "label": "React Three Fiber",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://maplibre.org/maplibre-gl-js/docs/",
+        "label": "MapLibre GL JS",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://openfreemap.org/",
+        "label": "OpenFreeMap",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://www.openmaptiles.org/",
+        "label": "© OpenMapTiles",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://www.openstreetmap.org/copyright",
+        "label": "© OpenStreetMap-Mitwirkende",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://openfreemap.org/privacy/",
+        "label": "Datenschutzhinweise von OpenFreeMap",
+        "rel": "noopener noreferrer"
+      }
+    ],
+    "mapBox": {
+      "bottom": 857.7734375,
+      "height": 560,
+      "left": 266.5546875,
+      "right": 1095.4453125,
+      "top": 297.7734375,
+      "width": 828.890625,
+      "x": 266.5546875,
+      "y": 297.7734375
+    },
+    "mapFont": "\"Plus Jakarta Sans\", Inter, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+    "mapStatus": "ready",
+    "revision": "Gespeichert · Version 3",
+    "scroll": [
+      0,
+      565
+    ],
+    "url": "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-design",
+    "viewport": [
+      1440,
+      1000
+    ],
+    "widths": [
+      1440,
+      1440
+    ]
+  }
+}

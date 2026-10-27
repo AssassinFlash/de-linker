@@ -1,0 +1,14 @@
+{
+  "sha": "8e11c7c3dfbcf658765b53b5f7fa4074e03ed560",
+  "sha_matched_fixed_files_removed": 129,
+  "logical_bytes_reclaimed": 2899250,
+  "mismatches_retained": [],
+  "dependency_links_removed": [
+    "apps/planner/node_modules",
+    "plugins/linker-tools/vendor"
+  ],
+  "free_before_bytes": 881478303744,
+  "free_after_bytes": 881481576448,
+  "observed_free_delta_bytes": 3272704,
+  "note": "Free-space delta includes other agents; logical removed bytes attributable only to this fixed minimal archive. Unique probes/logs/report retained; no shared directory removed."
+}

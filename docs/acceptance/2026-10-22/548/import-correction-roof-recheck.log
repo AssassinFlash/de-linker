@@ -1,0 +1,27 @@
+✔ a lost acknowledgement retains original bytes/key across review and an explicit retry (212.765916ms)
+✔ unknown 422 keeps the frozen intent while a typed input refusal releases it (10.845917ms)
+✔ HTTP 200 [] cannot erase a dispatched roof original (16.884708ms)
+✔ HTTP 200 null cannot erase a dispatched roof original (14.352ms)
+✔ HTTP 200 {} cannot erase a dispatched roof original (15.360458ms)
+✔ HTTP 422 [] cannot erase a dispatched roof original (12.556375ms)
+✔ HTTP 422 null cannot erase a dispatched roof original (13.161416ms)
+✔ HTTP 422 {} cannot erase a dispatched roof original (13.735708ms)
+✔ HTTP 500 [] cannot erase a dispatched roof original (11.482375ms)
+✔ HTTP 500 null cannot erase a dispatched roof original (15.28125ms)
+✔ HTTP 500 {} cannot erase a dispatched roof original (13.932709ms)
+✔ withdrawn native admission during the recovery write prevents dispatch (10.862834ms)
+✔ a failed journal write prevents upload and keeps an explicit retry in memory (6.706084ms)
+✔ dismissal and a different native scope cannot accept a delayed server result (8.80475ms)
+✔ a native-granted previous namespace replays and cleans up that exact original (12.637667ms)
+✔ guided import retains raw locale input and source holes across Back and a typed refusal (96.698958ms)
+✔ explicit zero-height datum bypasses "" while keeping its correction available (51.813791ms)
+✔ explicit zero-height datum bypasses "1," while keeping its correction available (42.829417ms)
+✔ an earlier upload is explicitly reviewed before its actual fixture roof can join history (40.685042ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1312.713292

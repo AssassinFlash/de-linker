@@ -1,0 +1,90 @@
+{
+  "capture": "Page.captureScreenshot explicit CSS viewport clip, captureBeyondViewport=true",
+  "before": {
+    "active": {
+      "invalid": null,
+      "name": null,
+      "rect": {
+        "bottom": 2424.8984375,
+        "height": 2741.3984375,
+        "left": 0,
+        "right": 1440,
+        "top": -316.5,
+        "width": 1440,
+        "x": 0,
+        "y": -316.5
+      },
+      "tag": "BODY",
+      "text": null,
+      "value": ""
+    },
+    "bar": {
+      "bottom": 162,
+      "height": 73,
+      "left": 0,
+      "right": 1440,
+      "top": 89,
+      "width": 1440,
+      "x": 0,
+      "y": 89
+    },
+    "columns": [],
+    "documentWidth": 1440,
+    "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2",
+    "fontStatus": "loaded",
+    "height": 1000,
+    "renderer": [],
+    "scrollWidth": 1440,
+    "styles": [
+      "http://127.0.0.1:9347/wp-content/uploads/windpress/cache/tailwind.css?ver=1792758239"
+    ],
+    "url": "http://127.0.0.1:9347/planning-workspace-review/?project=61a9bbc291ff4c1faed3a27f0f56e18b#lp-design",
+    "width": 1440,
+    "x": 0,
+    "y": 316.5
+  },
+  "after": {
+    "active": {
+      "invalid": null,
+      "name": null,
+      "rect": {
+        "bottom": 2424.8984375,
+        "height": 2741.3984375,
+        "left": 0,
+        "right": 1440,
+        "top": -316.5,
+        "width": 1440,
+        "x": 0,
+        "y": -316.5
+      },
+      "tag": "BODY",
+      "text": null,
+      "value": ""
+    },
+    "bar": {
+      "bottom": 162,
+      "height": 73,
+      "left": 0,
+      "right": 1440,
+      "top": 89,
+      "width": 1440,
+      "x": 0,
+      "y": 89
+    },
+    "columns": [],
+    "documentWidth": 1440,
+    "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2",
+    "fontStatus": "loaded",
+    "height": 1000,
+    "renderer": [],
+    "scrollWidth": 1440,
+    "styles": [
+      "http://127.0.0.1:9347/wp-content/uploads/windpress/cache/tailwind.css?ver=1792758239"
+    ],
+    "url": "http://127.0.0.1:9347/planning-workspace-review/?project=61a9bbc291ff4c1faed3a27f0f56e18b#lp-design",
+    "width": 1440,
+    "x": 0,
+    "y": 316.5
+  },
+  "scrollStable": true
+}

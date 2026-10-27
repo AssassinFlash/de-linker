@@ -1,17 +1,18 @@
 """Release verdicts for inverter and battery pairs, and the parts named around an inverter.
 
-Reads data/compatibility.json in the shape of `schemas/compatibility.schema.json`
-(docs/specs/8-engineering-data.md, target shape 3). The verdict has three
-values plus `unknown`, as the industry states releases: released, released
-with an accessory, not released (docs/research/2026-10-09/
-pv-wholesale-selection-tools.md, section 2.3). Only a manufacturer document
-makes a release; a pair no entry covers is `unknown`, never assumed.
+Reads the Woo-maintained projection in the shared engineering feed. New claims
+bind canonical product IDs as well as their descriptive model patterns. An
+ID-bound claim never applies to another product with the same model text.
+Older unbound data remains readable for retained migration inputs and fixtures.
+Only a current manufacturer statement makes a release; no matching statement
+means unknown, never an assumed pairing.
 """
 
 from __future__ import annotations
 
 import json
 import re
+from copy import deepcopy
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
@@ -47,6 +48,7 @@ class Accessory:
     model: str
     quantity: int
     per: Literal["system", "stack", "unit"]
+    product_id: int | None = None
 
 
 @dataclass(frozen=True)
@@ -63,6 +65,27 @@ class PairResult:
 
 
 @dataclass(frozen=True)
+class RequirementScope:
+    operating_mode: Literal["grid_connected", "backup"]
+    topology: Literal["single_converter", "parallel_group"]
+    control_network: Literal["lan", "rs485"] | None = None
+
+    def matches(
+        self,
+        operating_mode: str | None,
+        topology: str | None,
+        control_network: str | None,
+    ) -> bool:
+        return (
+            self.operating_mode == operating_mode
+            and self.topology == topology
+            and (
+                self.control_network is None or self.control_network == control_network
+            )
+        )
+
+
+@dataclass(frozen=True)
 class Requirement:
     kind: Literal["meter", "backup", "parallel_controller"]
     included: bool
@@ -71,6 +94,7 @@ class Requirement:
     accessories: tuple[Accessory, ...]
     conditions: tuple[Text, ...]
     documents: tuple[DocumentRef, ...]
+    applicability: RequirementScope | None = None
 
 
 @lru_cache(maxsize=512)
@@ -88,7 +112,8 @@ def _documents(raw: list[dict[str, Any]]) -> tuple[DocumentRef, ...]:
 
 def _accessories(raw: list[dict[str, Any]]) -> tuple[Accessory, ...]:
     return tuple(
-        Accessory(item["model"], item["quantity"], item["per"]) for item in raw
+        Accessory(item["model"], item["quantity"], item["per"], item.get("product_id"))
+        for item in raw
     )
 
 
@@ -109,12 +134,27 @@ class Compatibility:
     def load(cls, path: Path) -> Compatibility:
         return cls(json.loads(path.read_text()))
 
-    def pair(self, inverter_model: str, battery_model: str) -> PairResult:
+    def pair(
+        self,
+        inverter_model: str,
+        battery_model: str,
+        *,
+        inverter_id: int | None = None,
+        battery_id: int | None = None,
+    ) -> PairResult:
         matches = [
             pair
             for pair in self._pairs
             if _pattern(pair["inverter"]).search(inverter_model)
             and _pattern(pair["battery"]).search(battery_model)
+            and (
+                "inverter_product_id" not in pair
+                or pair["inverter_product_id"] == inverter_id
+            )
+            and (
+                "battery_product_id" not in pair
+                or pair["battery_product_id"] == battery_id
+            )
         ]
         if not matches:
             return PairResult("unknown")
@@ -149,7 +189,21 @@ class Compatibility:
             ),
         )
 
-    def requirements(self, inverter_model: str, kind: str) -> list[Requirement]:
+    def requirements(
+        self,
+        inverter_model: str,
+        kind: str,
+        *,
+        inverter_id: int | None = None,
+        operating_mode: str | None = None,
+        topology: str | None = None,
+        control_network: str | None = None,
+    ) -> list[Requirement]:
+        """Scoped claims require matching context, including a known network.
+
+        Callers without that context retain only their older unscoped claims;
+        they cannot turn a new conditional declaration into a general release.
+        """
         return [
             Requirement(
                 kind=item["kind"],
@@ -159,8 +213,32 @@ class Compatibility:
                 accessories=_accessories(item.get("accessories", [])),
                 conditions=_texts(item["conditions"]),
                 documents=_documents(item["documents"]),
+                applicability=RequirementScope(**item["applicability"])
+                if "applicability" in item
+                else None,
             )
             for item in self._requirements
             if item["kind"] == kind
             and _pattern(item["inverter"]).search(inverter_model)
+            and (
+                "inverter_product_id" not in item
+                or item["inverter_product_id"] == inverter_id
+            )
+            and (
+                "applicability" not in item
+                or RequirementScope(**item["applicability"]).matches(
+                    operating_mode, topology, control_network
+                )
+            )
         ]
+
+    def snapshot(self) -> dict[str, Any]:
+        """The exact scoped contract, including its unfulfilled conditions."""
+        return deepcopy(
+            {
+                "schema_version": 1,
+                "version": self.version,
+                "pairs": self._pairs,
+                "requirements": self._requirements,
+            }
+        )

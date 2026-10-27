@@ -1,0 +1,30 @@
+✔ raw polygon previews never become completed transactions and the toolbar uses only committed points (36.715208ms)
+✔ click closure uses the library's actual winding; completion click stays blocked after disposal (5.436667ms)
+✔ midpoint insertion and its drag produce one transaction with two immutable snapshots (4.934042ms)
+✔ all drag movements including the fifth update the candidate; native Delete cannot erase the feature (3.992667ms)
+✔ interrupted gesture (cancel) retains raw input, cancels pending work and restores exact map handler states (3.628375ms)
+✔ interrupted gesture (lostcapture) retains raw input, cancels pending work and restores exact map handler states (3.524542ms)
+✔ interrupted gesture (outsideup) retains raw input, cancels pending work and restores exact map handler states (3.04325ms)
+✔ interrupted gesture (blur) retains raw input, cancels pending work and restores exact map handler states (3.005916ms)
+✔ interrupted gesture (hidden) retains raw input, cancels pending work and restores exact map handler states (3.232292ms)
+✔ interrupted gesture (secondary) retains raw input, cancels pending work and restores exact map handler states (6.289833ms)
+✔ interrupted gesture (dispose) retains raw input, cancels pending work and restores exact map handler states (3.147334ms)
+✔ disposing after a queued finish invalidates its late transaction callback (2.650209ms)
+✔ the release endpoint, even without a final move event, replaces only the actually dragged vertex (2.868542ms)
+✔ an unresolved release vertex is refused instead of assigning the cursor to an arbitrary point (2.262042ms)
+✔ a midpoint release corrects the inserted point and keeps all original display coordinates (2.354417ms)
+✔ a release onto another vertex is refused before API backfill or project submission (2.298833ms)
+✔ a midpoint transaction cannot silently drag an unrelated original vertex (2.037834ms)
+✔ real library midpoint callbacks enter one metric project history step and undo/redo retains every source input (5.323042ms)
+✔ adapter cleanup refusal still reports one terminal failure and lets the owner finish disposal (interrupt) (2.498959ms)
+✔ adapter cleanup refusal still reports one terminal failure and lets the owner finish disposal (failure) (2.149667ms)
+✔ adapter cleanup refusal still reports one terminal failure and lets the owner finish disposal (dispose) (2.163083ms)
+✔ one refused handler restore does not skip other handlers or the cursor and is reported (2.15475ms)
+ℹ tests 22
+ℹ suites 0
+ℹ pass 22
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 857.617916

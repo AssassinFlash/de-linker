@@ -1,0 +1,14 @@
+Independent evidence-package audit: **no unresolved content, integrity or privacy finding.** Application source remains `ceb4a896bd39ffaa4ca72ae24eff6b73f3af6f8a`; this audits the local acceptance package, not production or the complete goal.
+
+Read the new package's documentation, scripts, review reports/raw outputs, native metadata/AX text, CSV inputs and runtime/customer/storage records. Automated read-only checks decoded all 184 text/code/log files and parsed all 72 JSON files in the initial 237-file inventory. All 53 JPEGs were checked against recorded size, SHA-256, signature and rename destination; all 12 terminal-state matrix screenshots were also visually inspected.
+
+Two issues were reported and corrected during audit:
+
+- The reader's `math.isclose` used `abs_tol=1e-12` with Python's default relative tolerance. Both checks now specify `rel_tol=0.0`. Independent strict comparisons of both retained successful results pass; the operator's new `reader-final.log` records successful read-only reconciliation and Ruff output.
+- Referenced raw `.log` files were ignored by default. The required final and reviewer logs are now explicitly staged. The narrow evidence-folder `.gitattributes` preserves native AX/process-output bytes; source and prose retain whitespace checking.
+
+The 12 matrix entries match actual metadata, file hashes/sizes, real run URLs and page widths. All four current-success captures have H3 focus and the final emitted script hash. The desktop pointer cancellation records BODY focus and is expressly excluded from keyboard-focus proof. Failed/occluded/loading intermediates retain explicit exclusions and replacements. Capture versions are not relabelled; a reader checkout pin is distinguished from historical browser/run creation.
+
+All four customer records agree with immutable on-disk CAS manifest/result/trace/error bytes and job states. Runtime/binding fingerprints, original-project preservation records, live worker identity, bounded hold/resume evidence and the unchanged policy attribution agree. The duplicate backup's hash matches committed base content; its path is absent. The private admin image exists outside the repository with the recorded hash and is excluded from staged evidence. Active WindPress source/volume and generated-cache hashes match. No credential literals, credential-bearing JSON keys, auth URL parameters or broken Markdown links were found.
+
+Final packaging step: restage the latest `VALIDATION.md` and this audit's two files before final index/hash readback. All other indexed evidence matched working bytes at the audit checkpoint; cached whitespace checks passed. No worker fixture, browser flow, build, service, project or application mutation was performed by this reviewer. Full-goal and production gates remain explicitly open.

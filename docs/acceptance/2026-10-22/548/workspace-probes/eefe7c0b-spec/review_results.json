@@ -1,0 +1,33 @@
+{
+  "axis": "Spec",
+  "target": "eefe7c0b060214b60ba7a012ff206e668dbce6d3",
+  "base": "7e96b88dd902ea64fd27250494d3129783d7f307",
+  "verdict": "FAIL",
+  "findings": {
+    "missing_partial": [],
+    "scope_creep": [],
+    "incorrect": [
+      {
+        "priority": 2,
+        "id": "resolved_refusal_reappears_for_valid_staged_geometry",
+        "source": "apps/planner/src/components/ProjectEditor.tsx:109-113,155-158,424-438; apps/planner/src/components/design/DesignEditor.tsx:94-97",
+        "spec": "docs/acceptance/2026-10-22/548/WORKSPACE-VISUAL-CORRECTION.md:27-31",
+        "quote": "Unapplied/invalid geometry properties prevent navigation until the user applies, corrects or cancels them.",
+        "evidence": "Actual React DOM: invalid English annual input blocks selector; Escape corrects, Undo returns Saved revision7; switch Design and open unchanged existing roof properties. Old highlighted-input refusal reappears with zero invalid fields.",
+        "probe": "mobile-probe-additions.mjs:79-95"
+      }
+    ]
+  },
+  "prior563_counterexample": {
+    "unchanged": true,
+    "sha256": "d0cf137f95dc530853ad9ac620afd30531e69250fb65b7631fd2294ce2fff9c8",
+    "passed_cases": 19
+  },
+  "execution": {
+    "fixed_domain_data_pass": 54,
+    "fixed_dom_pass": 54,
+    "combined_independent_pass": 35,
+    "combined_product_counterexample_fail": 1
+  },
+  "scope": "Journal presentation/source increment only. No native/browser/other-chat fixture/production operation, physical touch or full A-D acceptance. Prior563 FAIL remains unchanged."
+}

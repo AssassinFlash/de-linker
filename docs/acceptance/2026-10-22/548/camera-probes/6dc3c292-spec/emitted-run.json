@@ -1,0 +1,11 @@
+{
+  "command": [
+    "npm",
+    "run",
+    "build:check"
+  ],
+  "cwd": "apps/planner",
+  "target": "6dc3c292079ec4f654113ecd3e11b631906e6c04",
+  "exit_code": 0,
+  "completed_utc": "2026-10-23T11:57:57.485523+00:00"
+}

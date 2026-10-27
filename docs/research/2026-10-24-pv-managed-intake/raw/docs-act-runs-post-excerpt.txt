@@ -1,0 +1,102 @@
+Run Actor | Apify Documentation
+
+# Run Actor
+
+POST 
+
+## /v2/actors/:actorId/runs
+
+Runs an Actor and immediately returns without waiting for the run to finish.
+
+The POST payload including its `Content-Type` header is passed as `INPUT` to the Actor (usually `application/json`).
+
+The Actor is started with the default options; you can override them using various URL query parameters.
+
+The response is the Run object as returned by the [Get run](https://docs.apify.com/api/v2/actors-runs-post#/reference/actor-runs/run-object-and-its-storages/get-run) API endpoint.
+
+If you want to wait for the run to finish and receive the actual output of the Actor as the response, please use one of the [Run Actor synchronously](https://docs.apify.com/api/v2/actors-runs-post#/reference/actors/run-actor-synchronously) API endpoints instead.
+
+To fetch the Actor run results that are typically stored in the default dataset, you'll need to pass the ID received in the `defaultDatasetId` field received in the response JSON to the [Get dataset items](https://docs.apify.com/api/v2/actors-runs-post#/reference/datasets/item-collection/get-items) API endpoint.
+
+## Request[](https://docs.apify.com/api/v2/actors-runs-post#request)
+
+### Path Parameters
+
+**actorId** string required
+
+Actor ID or the username of the Actor owner and the Actor name, separated by a tilde (`~`).
+
+  
+**Example:** `compass~google-maps-extractor`
+
+### Query Parameters
+
+**timeout** double
+
+Optional timeout for the run, in seconds. By default, the run uses the timeout from its configuration.
+
+  
+**Example:** `60`
+
+**memory** double
+
+Memory limit for the run, in megabytes. You can set the amount of memory to a power of 2 with a minimum of 128. By default, the run uses the memory limit from its configuration. Don't change this value unless the Actor's documentation recommends it or you're aware of the consequences.
+
+  
+**Example:** `256`
+
+**maxItems** double
+
+Specifies the maximum number of dataset items that will be charged for pay-per-result Actors. This does NOT guarantee that the Actor will return only this many items. It only ensures you won't be charged for more than this number of items. Only works for pay-per-result Actors. Value can be accessed in the actor run using `ACTOR_MAX_PAID_DATASET_ITEMS` environment variable.
+
+  
+**Example:** `1000`
+
+**maxTotalChargeUsd** double
+
+Specifies the maximum total cost of the run. Use it to cap the total amount charged for all pricing models. You can access the maximum cost in your Actor by using the `ACTOR_MAX_TOTAL_CHARGE_USD` environment variable.
+
+  
+**Example:** `5`
+
+**restartOnError** boolean
+
+Determines whether the run will be restarted if it fails.
+
+  
+**Example:** `false`
+
+**build** string
+
+Specifies the Actor build to run. It can be either a build tag or build number. By default, the run uses the build from its configuration (typically `latest`).
+
+  
+**Example:** `0.1.234`
+
+**waitForFinish** double
+
+The maximum number of seconds the server waits for the run to finish. By default it is `0`, the maximum value is `60`. If the run finishes in time then the returned run object will have a terminal status (e.g. `SUCCEEDED`), otherwise it will have a transitional status (e.g. `RUNNING`).
+
+  
+**Example:** `60`
+
+**webhooks** string
+
+Specifies optional webhooks associated with the Actor run, which can be used to receive a notification e.g. when the Actor finished or failed. The value is a Base64-encoded JSON array whose items follow the WebhookRepresentation schema. For more information, see [Webhooks documentation](https://docs.apify.com/platform/integrations/webhooks).
+
+  
+**Example:** `dGhpcyBpcyBqdXN0IGV4YW1wbGUK...`
+
+**forcePermissionLevel** string
+
+**Possible values:** \[`LIMITED_PERMISSIONS`, `FULL_PERMISSIONS`\]
+
+Overrides the Actor's permission level for this specific run. Use to test restricted permissions before deploying changes to your Actor or to temporarily elevate or restrict access. If you don't specify this parameter, the Actor uses its configured default permission level. For more information on permissions, see the [documentation](https://docs.apify.com/platform/actors/development/permissions).
+
+  
+**Example:** `LIMITED_PERMISSIONS`
+
+### Bodyrequired
+
+*   **object** object
+

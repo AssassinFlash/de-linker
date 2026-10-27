@@ -1,0 +1,12 @@
+{
+  "bar": "Projekte/Köln · owned synthetic roof · acceptanceProjektübersichtStandort und ProjektDachplanungEnergiedatenGespeichert · Version 14Projekt speichern",
+  "drawing_controls": "Zeichnen auf der Karte\nZeichnung beginnen\n\nAus Umriss und Dacheigenschaften entsteht eine bearbeitbare Dachfläche. Sie ist im Projekt in der Plan- und 3D-Ansicht verfügbar; ihre Quellenangaben und Nutzungsberechtigungen bleiben mit ihr verknüpft.\n\nWählen Sie auf der Karte oder in der Objektliste eine Dachfläche, ein Hindernis oder eine Sperrfläche aus. Bei einer Dachfläche können Sie den äußeren Umriss oder eine vorhandene Dachöffnung wählen.\n\nObjekt auf der Dachfläche hinzufügen\nDachfläche\nDachfläche auswählen\nSynthetic 3–4–5 roof · Köln\nSynthetic drawing acceptance · 548 · 24 Oct\nSynthetic phone recovery · 548 · 24 Oct\nObjekttyp\nObjekttyp auswählen\nDachöffnung\nHindernis\nSperrfläche\nObjekt auf der Dachfläche zeichnen",
+  "lang": "de-DE",
+  "map_status": "ready",
+  "url": "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-design",
+  "viewport": {
+    "height": 796,
+    "scrollWidth": 671,
+    "width": 671
+  }
+}

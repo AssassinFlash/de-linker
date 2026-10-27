@@ -1,0 +1,12 @@
+{
+  "source_pin": "cf310435d60749b89dd0de182c3bfe8189ef47a6",
+  "scope": "Complete contents at source pin of every file in cumulative managed-weather source diff; evidence excluded",
+  "pattern_names": [
+    "legacy_identifiers",
+    "unfinished_markers",
+    "apify_secrets"
+  ],
+  "file_count": 31,
+  "findings": [],
+  "note": "Structural and domain review is independent; string search alone does not prove runtime acceptance."
+}

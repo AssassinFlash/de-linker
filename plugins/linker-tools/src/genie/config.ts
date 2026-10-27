@@ -55,6 +55,7 @@ export interface GenieConfig {
 	restNonce: string;
 	disclosure: string;
 	accountUrl: string;
+	configuratorLinks?: { en: string; de: string; current: string };
 	workspaceUrl: string;
 	prompts: string[];
 	/** The page context the turn carries; the proxy checks it key by key. */
@@ -111,6 +112,14 @@ export function readConfig( element: HTMLElement ): GenieConfig {
 		restNonce: data.restNonce ?? '',
 		disclosure: data.disclosure ?? '',
 		accountUrl: data.accountUrl ?? '',
+		configuratorLinks: {
+			en: data.configuratorEnUrl ?? '',
+			de: data.configuratorDeUrl ?? '',
+			current:
+				( data.locale === 'de'
+					? data.configuratorDeUrl
+					: data.configuratorEnUrl ) ?? '',
+		},
 		workspaceUrl: data.workspaceUrl ?? '/genie/',
 		prompts: data.prompts ? JSON.parse( data.prompts ) : [],
 		page: readPage( data.page, pageType, productId ),

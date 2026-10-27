@@ -1,0 +1,11 @@
+# Standards: FAIL for the fixed diff
+
+Reviewed `git diff be5711bf429c86dc5118e55227c0a48bb78d26b1...81cd1c5b1a7d5ff5592131602c12d642d13c162b`, covering `910b4751`, `f40db1d6` and `81cd1c5b` across 98 changed files. The review includes source/tests, dependencies, emitted modules/manifests, languages, native PHP and local CSP.
+
+**Hard documented breach: one (P2).** `apps/planner/package-lock.json:186` and the other 27 added `resolved` fields use `registry.npmmirror.com`. `README.md:60` requires canonical `registry.npmjs.org` lock URLs and `replace-registry-host=always` for the configured machine registry. The isolated app permission does not change this rule; pre-existing mirror URLs do not waive it. Normalize the lock without changing versions/integrities or global registry settings. `findings.json` retains every affected added entry and exact line.
+
+**Fowler baseline judgment calls: none justified.** The shared lazy boundary/retry extraction removes real repetition; converter, request owner and native manifest retain distinct responsibilities. No speculative abstraction or necessary corrective smell was found.
+
+Other checks found no breach: styling stays in the WindPress volume; the vendor stylesheet exactly matches its recorded upstream SHA, retains the full licence and is scoped. All 102 source and seven build hashes match. The 32 unique reviewed messages match GNU MO and WordPress JSON, with draft/opposition/final records. PHP supplies reviewed module metadata without presentation decisions. Request grants start false, remain origin-limited/transient and are released across lifecycle/consent changes. The read-only projection preserves the domain boundary and reuses the established numerical guard. No added legacy identifiers were found; no engine/model routing was changed.
+
+Existing 71-domain/data plus 90-DOM tests, build/check/format, PHP and locale logs were inspected; suites were not repeated. `probe.py` performs only bounded fixed-object, vendor and locale readback. No source copy, checkout, stack change or network was created. Native EN/DE × 1440/390 remains with the parent. This verdict makes no engineering/country/legal/production or whole-goal acceptance claim.

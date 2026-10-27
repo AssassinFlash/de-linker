@@ -1,0 +1,27 @@
+{
+  "observed_at_utc": "2026-10-24T12:07:07.281280+00:00",
+  "database_mode": "read-only",
+  "table_count": 12,
+  "schema_version": 2,
+  "projects": 165,
+  "revisions": 228,
+  "all_table_rows_sha256": "b74d9b5e657e3180fc0182233bd1138e7a90f98fee47b3d62e1e9af4e5176295",
+  "matches_previous_accepted_snapshot": true,
+  "protected_project": {
+    "id": "82a84c56e50c4efb8497d1bfbe106bd1",
+    "revision": 14,
+    "input_sha256": "8a6394917a9a9e6b91db4bfc73c0299dcedd2c51619144a5beffa1664f010288"
+  },
+  "processes": [
+    "27382 27379 /opt/homebrew/Ce    10:55:28",
+    "37511 37508 /opt/homebrew/Ce 01-02:59:43",
+    "71736     1 /opt/homebrew/Ce    03:26:05"
+  ],
+  "final_observed_at_utc": "2026-10-24T12:39:21.212913+00:00",
+  "final_all_table_rows_sha256": "b74d9b5e657e3180fc0182233bd1138e7a90f98fee47b3d62e1e9af4e5176295",
+  "final_processes": [
+    "27382 27379 /opt/homebrew/Ce    11:27:42",
+    "37511 37508 /opt/homebrew/Ce 01-03:31:57",
+    "71736     1 /opt/homebrew/Ce    03:58:19"
+  ]
+}

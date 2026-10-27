@@ -1,0 +1,147 @@
+[
+  {
+    "en": "Select a roof face, obstacle or keep-out area to edit its boundary on the map.",
+    "final_en": "Select a roof face, obstacle or keep-out area on the map or in the object list. For a roof face, choose its outer boundary or an existing opening.",
+    "final_de": "Wählen Sie auf der Karte oder in der Objektliste eine Dachfläche, ein Hindernis oder eine Sperrfläche aus. Bei einer Dachfläche können Sie den äußeren Umriss oder eine vorhandene Dachöffnung wählen."
+  },
+  {
+    "en": "Boundary to edit",
+    "final_en": "Boundary to edit",
+    "final_de": "Zu bearbeitender Umriss"
+  },
+  {
+    "en": "Edit boundary on map",
+    "final_en": "Edit boundary on map",
+    "final_de": "Umriss auf der Karte bearbeiten"
+  },
+  {
+    "en": "Boundary properties",
+    "final_en": "Boundary properties",
+    "final_de": "Eigenschaften des Umrisses"
+  },
+  {
+    "en": "Drag a corner or an edge midpoint to edit this boundary. The existing roof plane, other boundaries and source statements are retained.",
+    "final_en": "Drag a corner to move it, or use an edge midpoint to add a corner. The roof plane, other boundaries and recorded source details stay unchanged.",
+    "final_de": "Verschieben Sie einen Eckpunkt durch Ziehen oder fügen Sie an einem Kantenmittelpunkt einen Eckpunkt hinzu. Dachebene, andere Umrisse und erfasste Quellenangaben bleiben unverändert."
+  },
+  {
+    "en": "Measurement or drawing reference",
+    "final_en": "Measurement or drawing reference",
+    "final_de": "Aufmaß- oder Zeichnungsreferenz"
+  },
+  {
+    "en": "Declared spatial precision (m)",
+    "final_en": "Declared spatial precision (m)",
+    "final_de": "Angegebene räumliche Genauigkeit (m)"
+  },
+  {
+    "en": "Unknown",
+    "final_en": "Unknown",
+    "final_de": "Unbekannt"
+  },
+  {
+    "en": "Calibration and measurement conditions",
+    "final_en": "Calibration and measurement conditions",
+    "final_de": "Kalibrierung und Messbedingungen"
+  },
+  {
+    "en": "Basis for using these measurements",
+    "final_en": "Basis for using these measurements",
+    "final_de": "Grundlage für die Verwendung dieser Maße"
+  },
+  {
+    "en": "I have checked that the recorded source and permissions cover these boundary edits.",
+    "final_en": "I have checked that the recorded source and permissions cover these boundary edits.",
+    "final_de": "Ich habe geprüft, dass die erfasste Quelle und die Nutzungsberechtigungen diese Änderungen am Umriss abdecken."
+  },
+  {
+    "en": "Check and apply boundary",
+    "final_en": "Check and apply changes",
+    "final_de": "Änderungen prüfen und übernehmen"
+  },
+  {
+    "en": "The geometry check does not verify measurements or source permissions. If the recorded source does not cover these edits, pause the drawing and review the project inputs.",
+    "final_en": "The geometry check does not verify measurements or source permissions. Your confirmation does not change the recorded export permission. If the source or permissions do not cover your changes, pause the drawing and review the project's source details.",
+    "final_de": "Die Geometrieprüfung bestätigt weder Messdaten noch Nutzungsberechtigungen. Ihre Bestätigung ändert die erfasste Berechtigung zum Export der Geometrie nicht. Wenn die Quelle oder die Berechtigungen Ihre Änderungen nicht abdecken, pausieren Sie die Zeichnung und prüfen Sie die Quellenangaben im Projekt."
+  },
+  {
+    "en": "This boundary cannot be edited on the map. Numeric properties remain available.",
+    "final_en": "This boundary cannot be edited on the map. Numeric properties remain available.",
+    "final_de": "Dieser Umriss kann auf der Karte nicht bearbeitet werden. Die numerischen Eigenschaften bleiben verfügbar."
+  },
+  {
+    "en": "Review the boundary and its source declaration. Your edits have been kept.",
+    "final_en": "Review the boundary and its recorded source details. Your edits have been kept.",
+    "final_de": "Prüfen Sie den Umriss und die dazu erfassten Quellenangaben. Ihre Änderungen bleiben erhalten."
+  },
+  {
+    "en": "This boundary did not pass the geometry check. Its points are kept for correction.",
+    "final_en": "The geometry check could not validate this boundary. Your edits remain available for correction.",
+    "final_de": "Die Geometrieprüfung für diesen Umriss war nicht erfolgreich. Ihre Änderungen bleiben zur Korrektur verfügbar."
+  },
+  {
+    "en": "The project changed before this boundary edit could be applied. Your edit has been kept.",
+    "final_en": "The project changed before this boundary edit could be applied. Your edit has been kept.",
+    "final_de": "Das Projekt wurde geändert, bevor die Änderung am Umriss übernommen werden konnte. Ihre Änderungen bleiben erhalten."
+  },
+  {
+    "en": "The boundary check or local save could not be completed. Your edits remain available.",
+    "final_en": "The boundary check or browser save could not be completed. Your edits remain available.",
+    "final_de": "Die Prüfung des Umrisses oder das Speichern in diesem Browser konnte nicht abgeschlossen werden. Ihre Änderungen sind weiterhin verfügbar."
+  },
+  {
+    "en": "Checking boundary geometry…",
+    "final_en": "Checking boundary geometry…",
+    "final_de": "Geometrie des Umrisses wird geprüft…"
+  },
+  {
+    "en": "Boundary unchanged. No project edit was added.",
+    "final_en": "The boundary is unchanged. No project change was made.",
+    "final_de": "Der Umriss ist unverändert. Im Projekt wurde nichts geändert."
+  },
+  {
+    "en": "Boundary edit added to the project draft. Save project stores it with the project.",
+    "final_en": "Boundary changes applied to the project draft. Choose Save project to save them.",
+    "final_de": "Die Änderungen am Umriss wurden in den Projektentwurf übernommen. Mit „Projekt speichern“ werden sie im Projekt gespeichert."
+  },
+  {
+    "en": "Map drawing",
+    "final_en": "Map drawing",
+    "final_de": "Zeichnen auf der Karte"
+  },
+  {
+    "en": "Edit existing boundary",
+    "final_en": "Edit an existing boundary",
+    "final_de": "Vorhandenen Umriss bearbeiten"
+  },
+  {
+    "en": "The selected boundary is edited in the existing roof plane. Confirmed changes use the same project, plan and 3D views.",
+    "final_en": "The roof plane stays fixed while you edit this boundary. Applied changes appear in this project's map, plan and 3D views.",
+    "final_de": "Die Dachebene bleibt beim Bearbeiten dieses Umrisses unverändert. Übernommene Änderungen erscheinen in der Karten-, Plan- und 3D-Ansicht dieses Projekts."
+  },
+  {
+    "en": "The map, plan and 3D views use the same project geometry. Map controls change the view; confirmed boundary edits change the project.",
+    "final_en": "The map, plan and 3D views use the same project geometry. Panning and zooming change the view. Boundary edits update the project when you apply them.",
+    "final_de": "Karten-, Plan- und 3D-Ansicht verwenden dieselbe Projektgeometrie. Verschieben und Zoomen ändern nur die Ansicht. Änderungen am Umriss wirken sich erst nach dem Übernehmen auf das Projekt aus."
+  },
+  {
+    "en": "Roof boundary",
+    "final_en": "Roof boundary",
+    "final_de": "Dachrand"
+  },
+  {
+    "en": "Opening %d",
+    "final_en": "Opening %d",
+    "final_de": "Dachöffnung %d"
+  },
+  {
+    "en": "Obstacle footprint",
+    "final_en": "Obstacle footprint",
+    "final_de": "Grundriss des Hindernisses"
+  },
+  {
+    "en": "Keep-out boundary",
+    "final_en": "Keep-out boundary",
+    "final_de": "Umriss der Sperrfläche"
+  }
+]

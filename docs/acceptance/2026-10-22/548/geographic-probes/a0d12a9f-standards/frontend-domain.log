@@ -1,0 +1,14 @@
+✔ browser ECEF/ENU matches frozen independent PROJ positions and full inverse (2.344333ms)
+✔ horizontal-only zero is explicit and never an inferred measured height (1.208709ms)
+✔ horizontal footprint is lifted onto a 3-4-5 plane before roof UV projection (0.516875ms)
+✔ actual server import wire joins geometry/reference/source in one project history step (4.916334ms)
+✔ a stale frame, unaligned existing roof and repeated attach are refused without mutation (1.74825ms)
+✔ import wire rejects wrong owner/version/hash, permissive source claims and invalid base64 (4.95075ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 245.8675

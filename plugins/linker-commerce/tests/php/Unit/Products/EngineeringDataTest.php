@@ -34,16 +34,20 @@ final class EngineeringDataTest extends TestCase {
 	}
 
 	/**
-	 * The compatibility version is the `version` the file itself states, a
-	 * 64-hex content hash — the value the feed reports as
-	 * compatibility_version.
+	 * An empty current Woo set yields its own version without shipped pairs.
 	 */
-	public function test_the_compatibility_version_is_the_files_own(): void {
-		$version = EngineeringData::compatibility_version();
-		$data    = EngineeringData::json( EngineeringData::COMPATIBILITY_FILE );
+	public function test_the_compatibility_version_is_the_woo_projections_own(): void {
+		\WP_Mock::userFunction( 'wp_json_encode' )->andReturnUsing( static fn ( mixed $value, int $flags = 0 ): string => (string) json_encode( $value, $flags ) );
+		$manifest = array(
+			'products'  => array(),
+			'documents' => array(),
+		);
+		$version  = EngineeringData::compatibility_version( $manifest );
+		$data     = EngineeringData::compatibility( $manifest );
 
 		$this->assertIsArray( $data );
 		$this->assertSame( $data['version'], $version );
+		$this->assertSame( array(), $data['pairs'] );
 		$this->assertMatchesRegularExpression( '/^[0-9a-f]{64}$/', $version );
 	}
 

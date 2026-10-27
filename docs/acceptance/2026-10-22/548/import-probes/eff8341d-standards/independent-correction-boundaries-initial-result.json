@@ -1,0 +1,16 @@
+{
+  "fixed_sha": "eff8341d5a0eaf24999f42854da6339032c65c9c",
+  "command": [
+    "node",
+    "--no-warnings=ExperimentalWarning",
+    "--loader",
+    "./tests/tsx-loader.mjs",
+    "--test",
+    "tests/standards-correction-boundaries.test.mjs"
+  ],
+  "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/roof-import-standards-eff8-ho43dg81/apps/planner",
+  "exit_code": 1,
+  "log": "independent-correction-boundaries.log",
+  "source_modified": false,
+  "fixture_scope": "Original helper with actual target controls, real client/journal and actual German catalog. A known typed refusal terminates the deliberately synthetic zero-height upload; no survey result is invented."
+}

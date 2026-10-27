@@ -1,0 +1,20 @@
+{"probe":"zero-height-and-site-language","locale":"en-GB","rawKind":"empty","height_zero_sent_only_after_explicit_choice":true,"original_raw_and_validity_retained":true,"unchecked_rights_blocked":true,"site_picker_and_checkbox_words":true}
+✔ independent zero-height bypass keeps original raw validity and localized rights guidance en-GB empty (265.21325ms)
+{"probe":"zero-height-and-site-language","locale":"en-GB","rawKind":"invalid","height_zero_sent_only_after_explicit_choice":true,"original_raw_and_validity_retained":true,"unchecked_rights_blocked":true,"site_picker_and_checkbox_words":true}
+✔ independent zero-height bypass keeps original raw validity and localized rights guidance en-GB invalid (59.932ms)
+{"probe":"area-presentation","locale":"en-GB","shown":"187.66","accepted_area_unchanged":true}
+✔ independent preview rounding is presentation only and leaves accepted area unchanged en-GB (42.065542ms)
+{"probe":"zero-height-and-site-language","locale":"de-DE","rawKind":"empty","height_zero_sent_only_after_explicit_choice":true,"original_raw_and_validity_retained":true,"unchecked_rights_blocked":true,"site_picker_and_checkbox_words":true}
+✔ independent zero-height bypass keeps original raw validity and localized rights guidance de-DE empty (54.468083ms)
+{"probe":"zero-height-and-site-language","locale":"de-DE","rawKind":"invalid","height_zero_sent_only_after_explicit_choice":true,"original_raw_and_validity_retained":true,"unchecked_rights_blocked":true,"site_picker_and_checkbox_words":true}
+✔ independent zero-height bypass keeps original raw validity and localized rights guidance de-DE invalid (55.117042ms)
+{"probe":"area-presentation","locale":"de-DE","shown":"187,66","accepted_area_unchanged":true}
+✔ independent preview rounding is presentation only and leaves accepted area unchanged de-DE (33.158292ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1046.52775

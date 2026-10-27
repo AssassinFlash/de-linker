@@ -1,0 +1,28 @@
+{
+  "verdict": "request_changes",
+  "findings": 1,
+  "worst": "P2",
+  "review_words": 277,
+  "files": {
+    "probe.mjs": {
+      "bytes": 6784,
+      "sha256": "78c82bf078f1b375318d2f332f9937834ad2421e63102b672a4b0b07fc3d2110"
+    },
+    "probe.json": {
+      "bytes": 3055,
+      "sha256": "f4614fe50be3a241028bb2de672a50f248ad11ac5758c9ae2fb9d52c08966f59"
+    },
+    "REVIEW.md": {
+      "bytes": 2443,
+      "sha256": "5666156c4e638257edd160b58655f6e1a8bae483b0a0f76a08540f8c8043ed7a"
+    }
+  },
+  "resources_created": {
+    "instance": 0,
+    "worktree": 0,
+    "source_copy": 0,
+    "dependency_install": 0,
+    "network_request": 0
+  },
+  "command": "node docs/acceptance/2026-10-24/548/map-drawing/review-spec-c562676a/probe.mjs"
+}

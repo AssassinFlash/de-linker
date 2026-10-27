@@ -75,6 +75,7 @@ final class Snapshot {
 				'vat'          => $user > 0 ? get_user_meta( $user, \Linker\Commerce\Registration\VatProfile::VAT_META, true ) : '',
 			),
 			'products'   => $products,
+			'planning'   => \Linker\Commerce\Planning\Context::stored( $order ),
 			'context'    => $evidence,
 		);
 	}

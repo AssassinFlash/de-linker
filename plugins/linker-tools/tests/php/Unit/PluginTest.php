@@ -142,10 +142,8 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( 'edited_term', array( $page_cache, 'term_saved' ), 10, 3 );
 		WP_Mock::expectActionAdded( 'set_object_terms', array( $page_cache, 'object_terms_set' ), 10, 6 );
 
-		$replies       = new \Linker\Tools\Protection\Replies();
-		$native_engine = new \Linker\Tools\Protection\NativeEngine();
-		$resources     = new \Linker\Tools\Protection\Resources( $replies, $native_engine );
-		WP_Mock::expectFilterAdded( 'linker_tools_engine_request', array( $native_engine, 'request' ), 10, 3 );
+		$replies         = new \Linker\Tools\Protection\Replies();
+		$resources       = new \Linker\Tools\Protection\Resources( $replies );
 		$provider_budget = new \Linker\Tools\Protection\ProviderBudget();
 		WP_Mock::expectFilterAdded( 'linker_tools_provider_debit', array( $provider_budget, 'take' ), 10, 2 );
 		WP_Mock::expectFilterAdded( 'rest_dispatch_request', array( $resources, 'dispatch' ), 10, 4 );

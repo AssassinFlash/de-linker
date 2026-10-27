@@ -473,6 +473,10 @@ final class ProductView {
 		}
 		$rows = array();
 		foreach ( $decoded as $key => $figure ) {
+			// Engineering's SKU classification is not a public specification row.
+			if ( 'sales_unit_kind' === $key ) {
+				continue;
+			}
 			if ( ! \is_array( $figure ) || ! isset( $figure['value'] ) ) {
 				continue;
 			}

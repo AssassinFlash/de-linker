@@ -1,0 +1,29 @@
+▶ legacy initial fragment links reveal the corresponding active workspace without revising inputs
+  ✔ #lp-site (1071.476542ms)
+  ✔ #lp-brief-use (212.615625ms)
+  ✔ #lp-notes (259.400458ms)
+  ✔ #lp-load (164.776667ms)
+  ✔ #lp-profiles (138.9405ms)
+  ✔ #lp-design (83.531666ms)
+  ✔ #lp-overview (121.21925ms)
+✔ legacy initial fragment links reveal the corresponding active workspace without revising inputs (2056.077ms)
+▶ missing inputs render unknown quantities; an explicitly empty layout can honestly render zero
+  ✔ missing (77.082291ms)
+  ✔ all explicitly excluded (83.11ms)
+✔ missing inputs render unknown quantities; an explicitly empty layout can honestly render zero (160.831083ms)
+✔ multiple roof quantities use included objects across the document while preview names its first roof (71.467375ms)
+✔ overview plan is read-only and does not offer editor controls or create edits (102.424167ms)
+✔ switching workspaces retains the same raw inputs and one shared undo/redo document including source metadata (177.786917ms)
+✔ unapplied geometry form blocks navigation until explicit cancel and keeps the raw values (59.6585ms)
+✔ an in-progress CSV file selection and raw delimiter remain mounted across workspace switches (46.874292ms)
+✔ revoked scope cannot switch the workspaces or alter its URL fragment (28.820375ms)
+✔ a completed geometry property edit remains one shared history step across the overview (83.850041ms)
+✔ SPEC COUNTEREXAMPLE: Site workspace navigation must reveal its first project-use/system-scope section (36.977708ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3873.976042

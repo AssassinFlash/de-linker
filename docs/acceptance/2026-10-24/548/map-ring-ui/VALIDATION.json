@@ -1,0 +1,74 @@
+{
+  "recorded_at": "2026-10-23T21:17:19.978800+00:00",
+  "source_pin": "6b2a8a4cc43c95d4710fcb42f16d1bd1e4a8c100",
+  "increment_base": "252a022e41f8ca5426d6463206c8346eb89da5f1",
+  "scope": "existing map boundaries, parent-invalid refusal, map-property entry, native shared project and whole-product identity readback",
+  "application_tests": {
+    "domain_data_pass": 92,
+    "dom_controller_pass": 141,
+    "total_pass": 233,
+    "fail": 0,
+    "log": "tests-final-output.txt",
+    "prior_fixture_failure_retained": "tests-anchor-fixture-failure.txt"
+  },
+  "independent_reviews": {
+    "spec_full": "review-spec-a1281d9d/REPORT.md",
+    "spec_repair": "review-spec-f1a0dee9/REPORT.md",
+    "spec_route_final": "review-spec-6b2a8a4c/REPORT.md",
+    "standards_full": "review-standards-f1a0dee9/REVIEW.md",
+    "standards_route_final": "review-standards-6b2a8a4c/REVIEW.md",
+    "open_findings": 0
+  },
+  "native": {
+    "project_id": "82a84c56e50c4efb8497d1bfbe106bd1",
+    "saved_revision": 11,
+    "input_sha256": "4bf62b8f25d736062d07963c86e36e3f1b9eb7894449170645c09b89862232d9",
+    "actual_renderer": "WebGPU",
+    "surfaces": [
+      {
+        "width": 1440,
+        "height": 1000
+      },
+      {
+        "width": 390,
+        "height": 844
+      }
+    ],
+    "languages": [
+      "en",
+      "de"
+    ],
+    "pointer_targets": [
+      "roof boundary",
+      "roof opening",
+      "obstacle footprint",
+      "keep-out footprint"
+    ],
+    "physical_touch_proven": false,
+    "full_state_matrix_proven": false,
+    "provider_load_in_this_increment": false,
+    "record": "NATIVE.md"
+  },
+  "product_identity": {
+    "source": "docs/specs/548-product-identity.md",
+    "whole_product_owner": "Linker",
+    "map_provider_is_not_the_whole_product": true,
+    "new_public_copy_in_native_increment": false
+  },
+  "whole_goal": {
+    "status": "active",
+    "production_published": false,
+    "remaining_obligations_include": [
+      "new arbitrary map openings, obstacles and keep-out shapes",
+      "full native touch and EN/DE state matrix",
+      "accepted calculations, qualified equipment, country coverage and proposal/BOM/report/PDF",
+      "all site and commerce consumers, migration, review environment, production and readback"
+    ]
+  },
+  "diff_checks": {
+    "source_increment_clean": true,
+    "literal_native_ax_and_independent_terminal_capture_trailing_space_lines": 16,
+    "capture_bytes_preserved": true,
+    "other_staged_whitespace_findings": 0
+  }
+}

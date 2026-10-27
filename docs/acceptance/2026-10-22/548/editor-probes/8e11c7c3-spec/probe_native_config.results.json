@@ -1,0 +1,104 @@
+{
+    "php": "8.5.11",
+    "method": "Actual fixed Application, local manifest variants, native function stubs; not WordPress acceptance",
+    "cases": [
+        {
+            "case": "valid",
+            "input": "assets/SceneViewport-BQc4p_xn.js",
+            "scene_module_url": "https://fixture.invalid/wp-content/plugins/linker-tools/build/planner/assets/SceneViewport-BQc4p_xn.js",
+            "entry_registered_once": true,
+            "duplicate_mount_refused": true
+        },
+        {
+            "case": "missing",
+            "input": null,
+            "scene_module_url": null,
+            "entry_registered_once": true,
+            "duplicate_mount_refused": true
+        },
+        {
+            "case": "query",
+            "input": "assets/SceneViewport-abc.js?x=1",
+            "scene_module_url": null,
+            "entry_registered_once": true,
+            "duplicate_mount_refused": true
+        },
+        {
+            "case": "fragment",
+            "input": "assets/SceneViewport-abc.js#x",
+            "scene_module_url": null,
+            "entry_registered_once": true,
+            "duplicate_mount_refused": true
+        },
+        {
+            "case": "external",
+            "input": "https://foreign.invalid/SceneViewport-abc.js",
+            "scene_module_url": null,
+            "entry_registered_once": true,
+            "duplicate_mount_refused": true
+        },
+        {
+            "case": "relative_escape",
+            "input": "../assets/SceneViewport-abc.js",
+            "scene_module_url": null,
+            "entry_registered_once": true,
+            "duplicate_mount_refused": true
+        },
+        {
+            "case": "nested",
+            "input": "assets/nested/SceneViewport-abc.js",
+            "scene_module_url": null,
+            "entry_registered_once": true,
+            "duplicate_mount_refused": true
+        },
+        {
+            "case": "other_module",
+            "input": "assets/planner-core-abc.js",
+            "scene_module_url": null,
+            "entry_registered_once": true,
+            "duplicate_mount_refused": true
+        },
+        {
+            "case": "bad_extension",
+            "input": "assets/SceneViewport-abc.mjs",
+            "scene_module_url": null,
+            "entry_registered_once": true,
+            "duplicate_mount_refused": true
+        },
+        {
+            "case": "empty_hash",
+            "input": "assets/SceneViewport-.js",
+            "scene_module_url": null,
+            "entry_registered_once": true,
+            "duplicate_mount_refused": true
+        },
+        {
+            "case": "linebreak",
+            "input": "assets/SceneViewport-abc.js\n",
+            "scene_module_url": null,
+            "entry_registered_once": true,
+            "duplicate_mount_refused": true
+        },
+        {
+            "case": "percent_path",
+            "input": "assets/%53ceneViewport-abc.js",
+            "scene_module_url": null,
+            "entry_registered_once": true,
+            "duplicate_mount_refused": true
+        },
+        {
+            "case": "wrong_type",
+            "input": 12,
+            "scene_module_url": null,
+            "entry_registered_once": true,
+            "duplicate_mount_refused": true
+        },
+        {
+            "case": "array",
+            "input": [],
+            "scene_module_url": null,
+            "entry_registered_once": true,
+            "duplicate_mount_refused": true
+        }
+    ]
+}

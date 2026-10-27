@@ -32,10 +32,19 @@ Anfrage eingegangen · Proforma invoice issued / Proformarechnung ausgestellt ·
 Completed / Abgeschlossen · Cancelled / Storniert. German cart words
 (Warenkorb …) are banned; stock tells status only, never amounts.
 
+Planning terms: a **weather source** is a retained original with its provenance
+and declared time interpretation. **Weather acquisition** obtains that source;
+selection into a project is a separate saved choice. **Remote cleanup** records
+the external provider's completion or stop status for a cancelled acquisition.
+**Weather reconciliation** verifies an issued external operation or retains its
+original data; it does not select a source or complete the original evaluation.
+
 ## Architecture in one breath
 
-React+TS on WordPress's own React (`@wordpress/scripts`, one npm package per
-plugin); PHP 8.3 Composer PSR-4, PHPUnit/WP-Mock, PHPStan L8, WPCS+Woo sniffs;
+React+TS on WordPress's own React for the existing plugin entries; the unified
+planner is being built with an isolated modern runtime (see
+`docs/adr/0002-isolated-planner-runtime.md`).
+PHP 8.3 Composer PSR-4, PHPUnit/WP-Mock, PHPStan L8, WPCS+Woo sniffs;
 FastAPI services on the VPS (engine: sizing/PVGIS/LoD2/report; genie:
 grounded deepseek-flash chat over a hosted-PDF index, FTS5+sqlite-vec);
 Polylang free + our narrow i18n companion plugin; presentation layer =

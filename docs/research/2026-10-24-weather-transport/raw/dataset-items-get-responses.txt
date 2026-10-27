@@ -1,0 +1,100 @@
+ORIGINAL LINES 281-309
+### Status 200
+
+**Response Headers**
+
+*   **X-Apify-Pagination-Offset**
+    
+    The offset of the first item in the current page.
+    
+*   **X-Apify-Pagination-Limit**
+    
+    The maximum number of items returned per page.
+    
+*   **X-Apify-Pagination-Count**
+    
+    The number of items returned in the current page.
+    
+*   **X-Apify-Pagination-Total**
+    
+    The total number of items available.
+    
+*   **X-Apify-Pagination-Desc**
+    
+    Whether the items are sorted in descending order.
+    
+
+```
+[  {    "foo": "bar"  },  {    "foo2": "bar2"  }]
+```
+
+
+ORIGINAL LINES 362-369
+### Status 400
+
+Bad request - invalid input parameters or request body.
+
+```
+{  "error": {    "type": "invalid-input",    "message": "Invalid input: The request body contains invalid data."  }}
+```
+
+
+ORIGINAL LINES 386-393
+### Status 401
+
+Unauthorized - authentication required or invalid token.
+
+```
+{  "error": {    "type": "invalid-token",    "message": "Authentication token is not valid."  }}
+```
+
+
+ORIGINAL LINES 410-417
+### Status 402
+
+Payment required - the user has exceeded their usage limit, does not have enough credits, or the request lacks authentication and payment credentials.
+
+```
+{  "error": {    "type": "x402-payment-required",    "message": "Please provide X402-PAYMENT-SIGNATURE header with the payment. See https://x402.org."  }}
+```
+
+
+ORIGINAL LINES 434-441
+### Status 403
+
+Forbidden - insufficient permissions to perform this action.
+
+```
+{  "error": {    "type": "insufficient-permissions",    "message": "You do not have permission to perform this action."  }}
+```
+
+
+ORIGINAL LINES 458-465
+### Status 404
+
+Not found - the requested resource does not exist.
+
+```
+{  "error": {    "type": "record-not-found",    "message": "The requested resource was not found."  }}
+```
+
+
+ORIGINAL LINES 482-489
+### Status 405
+
+Method not allowed.
+
+```
+{  "error": {    "type": "method-not-allowed",    "message": "This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET"  }}
+```
+
+
+ORIGINAL LINES 506-513
+### Status 429
+
+Too many requests - rate limit exceeded.
+
+```
+{  "error": {    "type": "rate-limit-exceeded",    "message": "You have exceeded the rate limit. Please try again later."  }}
+```
+

@@ -1,0 +1,346 @@
+[
+  {
+    "url": "https://openfreemap.org/quick_start/",
+    "crawl": {
+      "loadedUrl": "https://openfreemap.org/quick_start/",
+      "loadedTime": "2026-10-23T11:04:54.687Z",
+      "referrerUrl": "https://openfreemap.org/quick_start/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 17413,
+      "contentType": "text/html"
+    },
+    "metadata": {
+      "canonicalUrl": "https://openfreemap.org/quick_start/",
+      "title": "OpenFreeMap Quick Start Guide",
+      "description": "Use OpenFreeMap with MapLibre, Mapbox GL, Leaflet, OpenLayers or mobile apps: style URLs, setup code, custom styles and self-hosting.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:site_name",
+          "content": "OpenFreeMap"
+        },
+        {
+          "property": "og:title",
+          "content": "OpenFreeMap Quick Start Guide"
+        },
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "property": "og:url",
+          "content": "https://openfreemap.org/quick_start/"
+        },
+        {
+          "property": "og:description",
+          "content": "Use OpenFreeMap with MapLibre, Mapbox GL, Leaflet, OpenLayers or mobile apps: style URLs, setup code, custom styles and self-hosting."
+        },
+        {
+          "property": "og:image",
+          "content": "https://openfreemap.org/og/_index.png"
+        },
+        {
+          "property": "og:image:alt",
+          "content": "OpenFreeMap Quick Start Guide - OpenFreeMap"
+        },
+        {
+          "property": "og:image:width",
+          "content": "1200"
+        },
+        {
+          "property": "og:image:height",
+          "content": "630"
+        },
+        {
+          "property": "og:locale",
+          "content": "en_US"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "cf-cache-status": "HIT",
+        "cf-ray": "a4f0437d3aa7e1b4-ORD",
+        "content-encoding": "br",
+        "content-type": "text/html",
+        "date": "Fri, 23 Oct 2026 11:04:54 GMT",
+        "etag": "W/\"eb4380f073a7585d9c18a4defcb21812\"",
+        "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+        "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=DUUM4zvEhKn9VdkRgbN5UQtUJvHYI5lI9V41OJG2VxiXxuh4PxgUik%2BwaS80zB%2BhrhbiqrfLybctXqUDmsjnyXfCHBuq%2BXoqq2wCsHV4xpyZf%2BAAvGBf4OmbnnTCGgw8gw%3D%3D\"}]}",
+        "server": "cloudflare",
+        "strict-transport-security": "max-age=15552000; includeSubDomains; preload",
+        "x-content-type-options": "nosniff"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "OpenFreeMap\nQuick Start Guide\nThis guide provides step-by-step instructions for integrating OpenFreeMap into your website or mobile application.\nTo get started, choose a style from the default styles provided below. Later, there’ll be options to use custom styles as well.\n(You can navigate the map, it’s interactive!)\nOpenFreeMap © OpenMapTiles Data from OpenStreetMap\nPositronBrightLibertyDarkFiord3D\nUse the following style in a MapLibre map:\nhttps://tiles.openfreemap.org/styles/liberty\nHow to load MapLibre?\nInstall MapLibre GL JS:\nnpm install maplibre-gl\nAdd a map container to your page:\n<div id=\"map\" style=\"height: 500px\"></div>\nThen initialize the map:\nimport { Map, setWorkerUrl } from 'maplibre-gl' import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url' import 'maplibre-gl/dist/maplibre-gl.css' // Vite worker setup setWorkerUrl(workerUrl) new Map({ container: 'map', style: 'https://tiles.openfreemap.org/styles/liberty', center: [13.388, 52.517], zoom: 9.5, })\nFor other bundlers, see MapLibre’s installation guide.\nUsing Mapbox?\nIf you are currently using Mapbox, please change your libraries to MapLibre GL JS. MapLibre is based on the last open-source version of Mapbox GL JS before it went closed-source. Migrating should be as simple as changing the libraries, as long as you are not using any features specific to the 2.x or later releases.\nUsing Leaflet\nMapLibre GL Leaflet lets you add OpenFreeMap vector tiles to a Leaflet map.\nnpm install leaflet maplibre-gl @maplibre/maplibre-gl-leaflet\nimport * as L from 'leaflet' import { maplibreGL } from '@maplibre/maplibre-gl-leaflet' import { setWorkerUrl } from 'maplibre-gl' import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url' import 'leaflet/dist/leaflet.css' import 'maplibre-gl/dist/maplibre-gl.css' // Vite worker setup setWorkerUrl(workerUrl) const map = L.map('map').setView([52.517, 13.388], 10) maplibreGL({ style: 'https://tiles.openfreemap.org/styles/liberty' }).addTo(map)\nUsing OpenLayers\nol-mapbox-style creates OpenLayers layers from a MapLibre style.\nnpm install ol ol-mapbox-style\nimport Map from 'ol/Map.js' import View from 'ol/View.js' import LayerGroup from 'ol/layer/Group.js' import { fromLonLat } from 'ol/proj.js' import { apply } from 'ol-mapbox-style' import 'ol/ol.css' const openfreemap = new LayerGroup() apply(openfreemap, 'https://tiles.openfreemap.org/styles/liberty') new Map({ target: 'map', layers: [openfreemap], view: new View({ center: fromLonLat([13.388, 52.517]), zoom: 10.5 }), })\nMobile Apps\nFor mobile apps, you can use the same styles with MapLibre Native.\nOffline downloads are allowed up to 3,000 tiles or 50 MB per download, with at most 4 parallel requests and a unique User-Agent. For anything larger, please contact us.\nCustom styles\nYou can customize the styles using the Maputnik editor. For example, you can remove labels, POIs, or change colors.\nWhen you use a customized style, you need to host the style JSON yourself and use its URL in MapLibre.\nCustomize Bright\nCustomize Liberty\nCustomize Positron\nSelf-hosting\nYou can also download our processed full planet Btrfs images if you want to self-host yourself. Details can be found on GitHub.\nStart by copying config/linux_host/config.sample.jsonc to a named config such as config/linux_host/self-hosted.jsonc, then fill out your domain, certificate settings, areas (use [\"monaco\"] first, then [\"planet\", \"monaco\"]), and auto_update before running ./linux_host/deploy_linux_host.py --config self-hosted.\nHow can I sponsor the project?\nIf this project helps you save on your map hosting costs, please consider sponsoring me on GitHub Sponsors.\nIf possible, please choose a monthly donation, even if it’s a smaller amount. The nature of this project needs recurring donations to cover the server costs.\nSponsor me",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "OpenFreeMap Quick Start Guide\n\n![logo](/logo.jpg)\n\n# OpenFreeMap  \nQuick Start Guide\n\n[![github](/github.svg)](https://github.com/hyperknot/openfreemap)[![x](/x.svg)](https://x.com/hyperknot)[![bsky](/bsky.svg)](https://bsky.app/profile/hyperknot.com)\n\nThis guide provides step-by-step instructions for integrating OpenFreeMap into your website or mobile application.\n\nTo get started, choose a style from the default styles provided below. Later, there’ll be options to use custom styles as well.\n\n(You can navigate the map, it’s interactive!)\n\n![](/_astro/berlin.D4nxvW5V_zOgH5.webp)\n\n[OpenFreeMap](https://openfreemap.org/) [© OpenMapTiles](https://www.openmaptiles.org/) Data from [OpenStreetMap](https://www.openstreetmap.org/copyright)\n\nPositronBrightLibertyDarkFiord3D\n\nUse the following style in a MapLibre map:\n\n`https://tiles.openfreemap.org/styles/liberty`\n\n## How to load MapLibre?\n\nInstall [MapLibre GL JS](https://maplibre.org/maplibre-gl-js/docs/):\n\n```\nnpm install maplibre-gl\n```\n\nAdd a map container to your page:\n\n```\n<div id=\"map\" style=\"height: 500px\"></div>\n```\n\nThen initialize the map:\n\n```\nimport { Map, setWorkerUrl } from 'maplibre-gl'\nimport workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url'\nimport 'maplibre-gl/dist/maplibre-gl.css'\n\n// Vite worker setup\nsetWorkerUrl(workerUrl)\n\nnew Map({\n  container: 'map',\n  style: 'https://tiles.openfreemap.org/styles/liberty',\n  center: [13.388, 52.517],\n  zoom: 9.5,\n})\n```\n\nFor other bundlers, see MapLibre’s [installation guide](https://maplibre.org/maplibre-gl-js/docs/#installation).\n\n## Using Mapbox?\n\nIf you are currently using Mapbox, please change your libraries to [MapLibre GL JS](https://maplibre.org/maplibre-gl-js/docs/). MapLibre is based on the last open-source version of Mapbox GL JS before it went closed-source. Migrating should be as simple as changing the libraries, as long as you are not using any features specific to the 2.x or later releases.\n\n## Using Leaflet\n\n[MapLibre GL Leaflet](https://github.com/maplibre/maplibre-gl-leaflet) lets you add OpenFreeMap vector tiles to a Leaflet map.\n\n```\nnpm install leaflet maplibre-gl @maplibre/maplibre-gl-leaflet\n```\n\n```\nimport * as L from 'leaflet'\nimport { maplibreGL } from '@maplibre/maplibre-gl-leaflet'\nimport { setWorkerUrl } from 'maplibre-gl'\nimport workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url'\nimport 'leaflet/dist/leaflet.css'\nimport 'maplibre-gl/dist/maplibre-gl.css'\n\n// Vite worker setup\nsetWorkerUrl(workerUrl)\n\nconst map = L.map('map').setView([52.517, 13.388], 10)\nmaplibreGL({ style: 'https://tiles.openfreemap.org/styles/liberty' }).addTo(map)\n```\n\n## Using OpenLayers\n\n[ol-mapbox-style](https://openlayers.org/ol-mapbox-style/) creates OpenLayers layers from a MapLibre style.\n\n```\nnpm install ol ol-mapbox-style\n```\n\n```\nimport Map from 'ol/Map.js'\nimport View from 'ol/View.js'\nimport LayerGroup from 'ol/layer/Group.js'\nimport { fromLonLat } from 'ol/proj.js'\nimport { apply } from 'ol-mapbox-style'\nimport 'ol/ol.css'\n\nconst openfreemap = new LayerGroup()\napply(openfreemap, 'https://tiles.openfreemap.org/styles/liberty')\n\nnew Map({\n  target: 'map',\n  layers: [openfreemap],\n  view: new View({ center: fromLonLat([13.388, 52.517]), zoom: 10.5 }),\n})\n```\n\n## Mobile Apps\n\nFor mobile apps, you can use the same styles with [MapLibre Native](https://maplibre.org/).\n\nOffline downloads are allowed up to 3,000 tiles or 50 MB per download, with at most 4 parallel requests and a unique User-Agent. For anything larger, please [contact us](mailto:info@openfreemap.org).\n\n## Custom styles\n\nYou can customize the styles using the [Maputnik](https://maputnik.github.io/) editor. For example, you can remove labels, POIs, or change colors.\n\nWhen you use a customized style, you need to host the style JSON yourself and use its URL in MapLibre.\n\n[Customize Bright](https://maputnik.github.io/editor?style=https://tiles.openfreemap.org/styles/bright)\n\n[Customize Liberty](https://maputnik.github.io/editor?style=https://tiles.openfreemap.org/styles/liberty)\n\n[Customize Positron](https://maputnik.github.io/editor?style=https://tiles.openfreemap.org/styles/positron)\n\n## Self-hosting\n\nYou can also download our processed full planet Btrfs images if you want to self-host yourself. Details can be found on [GitHub](https://github.com/hyperknot/openfreemap).\n\nStart by copying `config/linux_host/config.sample.jsonc` to a named config such as `config/linux_host/self-hosted.jsonc`, then fill out your domain, certificate settings, `areas` (use `[\"monaco\"]` first, then `[\"planet\", \"monaco\"]`), and `auto_update` before running `./linux_host/deploy_linux_host.py --config self-hosted`.\n\n## How can I sponsor the project?\n\nIf this project helps you save on your map hosting costs, please consider sponsoring me on [GitHub Sponsors](https://github.com/sponsors/hyperknot).\n\nIf possible, please choose a monthly donation, even if it’s a smaller amount. The nature of this project needs recurring donations to cover the server costs.\n\n[Sponsor me](https://github.com/sponsors/hyperknot)",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://openfreemap.org/",
+    "crawl": {
+      "loadedUrl": "https://openfreemap.org/",
+      "loadedTime": "2026-10-23T11:04:54.789Z",
+      "referrerUrl": "https://openfreemap.org/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 12371,
+      "contentType": "text/html"
+    },
+    "metadata": {
+      "canonicalUrl": "https://openfreemap.org/",
+      "title": "OpenFreeMap",
+      "description": "OpenFreeMap – Open-Source Map Hosting lets you display custom maps on your website and apps for free.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:site_name",
+          "content": "OpenFreeMap"
+        },
+        {
+          "property": "og:title",
+          "content": "OpenFreeMap"
+        },
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "property": "og:url",
+          "content": "https://openfreemap.org/"
+        },
+        {
+          "property": "og:description",
+          "content": "OpenFreeMap – Open-Source Map Hosting lets you display custom maps on your website and apps for free."
+        },
+        {
+          "property": "og:image",
+          "content": "https://openfreemap.org/og/_index.png"
+        },
+        {
+          "property": "og:image:alt",
+          "content": "OpenFreeMap - OpenFreeMap"
+        },
+        {
+          "property": "og:image:width",
+          "content": "1200"
+        },
+        {
+          "property": "og:image:height",
+          "content": "630"
+        },
+        {
+          "property": "og:locale",
+          "content": "en_US"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "cf-cache-status": "HIT",
+        "cf-ray": "a4f0437dee283875-DFW",
+        "content-encoding": "br",
+        "content-type": "text/html",
+        "date": "Fri, 23 Oct 2026 11:04:54 GMT",
+        "etag": "W/\"bef6f2ed4045f8f0d5ed7f8aa9316966\"",
+        "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+        "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=rBg6J%2F%2FRcU2B8r7MlulV3umIS8uP5kh7%2FpngjAfceJGBHmzJRYQJpl%2B4afTWivvbj7vs1xTWL4im9HHrWazqThl%2BCCSE0tlzFgLj1e9IhX8GwvJGW9jxGvJ%2BE5gRerDIFQ%3D%3D\"}]}",
+        "server": "cloudflare",
+        "strict-transport-security": "max-age=15552000; includeSubDomains; preload",
+        "x-content-type-options": "nosniff"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "OpenFreeMap\nWhat is OpenFreeMap?\nOpenFreeMap lets you display custom maps on your website and apps for free.\nYou can either self-host or use our public instance. Everything is open-source, including the full production setup — there’s no ‘open-core’ model here. Check out our GitHub. The map data comes from OpenStreetMap.\nUsing our public instance is completely free: there are no limits on the number of map views or requests. There’s no registration, no user database, no API keys, and no cookies. We aim to cover the running costs of our public instance through donations.\nWe also provide weekly full planet downloads both in Btrfs and MBTiles formats.\nHow can I use it?\nOpenFreeMap © OpenMapTiles Data from OpenStreetMap\nPositronBrightLibertyDarkFiord3D\nHave a look at the default styles and read more about how to integrate it to your website or app:\nQuick Start Guide\nWho is behind this project and how can I follow it?\nI’m Zsolt Ero (blog, email).\nAfter 9 years of running my own map tile infrastructure for MapHub, I’ve open-sourced it and launched OpenFreeMap.\nX: @hyperknot (details) \nX: @OpenFreeMapOrg (announcements) \nbsky: @hyperknot.com\nGitHub: openfreemap and openfreemap-styles\nWhy did you build this project?\nOpenStreetMap is one of the most important collective projects in history. It began 20 years ago, and today, 3 million edits are made each day!\nFor a long time, when you wanted to use the map on your website or app, you had to look for a commercial map tile provider and hope your site didn’t become too popular. Otherwise, you might end up with a $10,000 bill in a single day, as Hoodmaps did.\nSelf-hosting was an option, but it required a big server and a lot of time to get it right.\nSince I’ve spent many years developing the map tile infrastructure for MapHub, I decided to open-source it so anyone can use it. With OpenFreeMap, you now have the option to either set up your own server or use our public instance.\nHow can you offer a free public instance?\nThere is no technical reason why map hosting costs as much as it does today. Vector tiles are just static files. It’s true that serving hundreds of millions of files is not easy, but at the end of the day, they are just files.\nFinancially, the plan is to keep renting servers until they cover the bandwidth. I believe it can be self-sustainable if enough people subscribe to the support plans.\nIf this project helps you save on your map hosting costs, please consider subscribing to a support plan.\nHow can I sponsor the project?\nIf this project helps you save on your map hosting costs, please consider sponsoring me on GitHub Sponsors.\nIf possible, please choose a monthly donation, even if it’s a smaller amount. The nature of this project needs recurring donations to cover the server costs.\nSponsor me\nIs commercial usage allowed?\nYes.\nCan my app download areas for offline use?\nYes, as long as each download is at most 3,000 tiles or 50 MB, uses at most 4 parallel requests, and sends a unique User-Agent identifying your app. For anything larger, please contact us. See the Terms of Service.\nDo you offer support and SLA guarantees?\nAt the moment, I don’t offer SLA guarantees or personalized support. However, if there’s enough interest, I may introduce a Pro plan in the future. If you’re interested, please let me know by sending an email.\nWhat is the tech stack?\nThere is no tile server running; only nginx serving a Btrfs image with 300 million hard-linked files. This was my idea; I haven’t read about anyone else doing this in production, but it works really well. (You can read more about it on GitHub.)\nThere is no cloud, just dedicated servers.\nSpecial thanks go to Michael Barry for developing Planetiler. It made it possible to generate the tiles in 5 hours instead of 5 weeks.\nThe styles are forked and heavily modified. The map schema is unmodified OpenMapTiles.\nAttribution\nAttribution is required. If you are using MapLibre, they are automatically added, you have nothing to do.\nIf you are using alternative clients, or if you are using this in printed media or video, you must add the following attribution:\nOpenFreeMap © OpenMapTiles Data from OpenStreetMap\nYou do not need to display the OpenFreeMap part, but it is nice if you do.\nLicense\nThe license of this project is MIT. Map data is from OpenStreetMap. The licenses for included projects are listed in LICENSE.md.",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "OpenFreeMap\n\n![logo](/logo.jpg)\n\n# OpenFreeMap\n\n[![github](/github.svg)](https://github.com/hyperknot/openfreemap)[![x](/x.svg)](https://x.com/hyperknot)[![bsky](/bsky.svg)](https://bsky.app/profile/hyperknot.com)\n\n## What is OpenFreeMap?\n\nOpenFreeMap lets you display custom maps on your website and apps for free.\n\nYou can either self-host or use our public instance. Everything is **open-source**, including the full production setup — there’s no ‘open-core’ model here. Check out our [GitHub](https://github.com/hyperknot/openfreemap). The map data comes from OpenStreetMap.\n\nUsing our **public instance** is completely free: there are no limits on the number of map views or requests. There’s no registration, no user database, no API keys, and no cookies. We aim to cover the running costs of our public instance through donations.\n\nWe also provide **weekly** full planet downloads both in Btrfs and MBTiles formats.\n\n## How can I use it?\n\n![](/_astro/berlin.D4nxvW5V_zOgH5.webp)\n\n[OpenFreeMap](https://openfreemap.org/) [© OpenMapTiles](https://www.openmaptiles.org/) Data from [OpenStreetMap](https://www.openstreetmap.org/copyright)\n\nPositronBrightLibertyDarkFiord3D\n\nHave a look at the default styles and read more about how to integrate it to your website or app:\n\n[Quick Start Guide](https://openfreemap.org/quick_start/)\n\n## Who is behind this project and how can I follow it?\n\nI’m Zsolt Ero ([blog](https://blog.hyperknot.com/), [email](mailto:zsolt@openfreemap.org)).\n\nAfter 9 years of running my own map tile infrastructure for [MapHub](https://maphub.net/), I’ve open-sourced it and launched OpenFreeMap.\n\nX: [@hyperknot](https://x.com/hyperknot) (details)  \nX: [@OpenFreeMapOrg](https://x.com/OpenFreeMapOrg) (announcements)  \nbsky: [@hyperknot.com](https://bsky.app/profile/hyperknot.com)\n\nGitHub: [openfreemap](https://github.com/hyperknot/openfreemap) and [openfreemap-styles](https://github.com/hyperknot/openfreemap-styles)\n\n## Why did you build this project?\n\nOpenStreetMap is one of the most important collective projects in history. It began 20 years ago, and today, 3 million edits are made each day!\n\nFor a long time, when you wanted to use the map on your website or app, you had to look for a commercial map tile provider and hope your site didn’t become too popular. Otherwise, you might end up with a $10,000 bill in a single day, as Hoodmaps [did](https://x.com/levelsio/status/1730659933232730443).\n\nSelf-hosting was an option, but it required a big server and a lot of time to get it right.\n\nSince I’ve spent many years developing the map tile infrastructure for [MapHub](https://maphub.net/), I decided to open-source it so anyone can use it. With OpenFreeMap, you now have the option to either set up your own server or use our public instance.\n\n## How can you offer a free public instance?\n\nThere is no technical reason why map hosting costs as much as it does today. Vector tiles are just static files. It’s true that serving hundreds of millions of files is not easy, but at the end of the day, they are just files.\n\nFinancially, the plan is to keep renting servers until they cover the bandwidth. I believe it can be self-sustainable if enough people subscribe to the support plans.\n\nIf this project helps you save on your map hosting costs, please consider subscribing to a support plan.\n\n## How can I sponsor the project?\n\nIf this project helps you save on your map hosting costs, please consider sponsoring me on [GitHub Sponsors](https://github.com/sponsors/hyperknot).\n\nIf possible, please choose a monthly donation, even if it’s a smaller amount. The nature of this project needs recurring donations to cover the server costs.\n\n[Sponsor me](https://github.com/sponsors/hyperknot)\n\n## Is commercial usage allowed?\n\nYes.\n\n## Can my app download areas for offline use?\n\nYes, as long as each download is at most 3,000 tiles or 50 MB, uses at most 4 parallel requests, and sends a unique User-Agent identifying your app. For anything larger, please [contact us](mailto:info@openfreemap.org). See the [Terms of Service](https://openfreemap.org/tos).\n\n## Do you offer support and SLA guarantees?\n\nAt the moment, I don’t offer SLA guarantees or personalized support. However, if there’s enough interest, I may introduce a Pro plan in the future. If you’re interested, please let me know by sending an [email](mailto:zsolt@openfreemap.org).\n\n## What is the tech stack?\n\nThere is no tile server running; only nginx serving a Btrfs image with 300 million hard-linked files. This was my idea; I haven’t read about anyone else doing this in production, but it works really well. (You can read more about it on [GitHub](https://github.com/hyperknot/openfreemap).)\n\nThere is no cloud, just dedicated servers.\n\nSpecial thanks go to [Michael Barry](https://github.com/msbarry) for developing [Planetiler](https://github.com/onthegomap/planetiler). It made it possible to generate the tiles in 5 hours instead of 5 weeks.\n\nThe [styles](https://github.com/hyperknot/openfreemap-styles) are forked and heavily modified. The map schema is unmodified [OpenMapTiles](https://github.com/openmaptiles/openmaptiles).\n\n## Attribution\n\nAttribution is required. If you are using MapLibre, they are automatically added, you have nothing to do.\n\nIf you are using alternative clients, or if you are using this in printed media or video, you must add the following attribution:\n\n[OpenFreeMap](https://openfreemap.org/) [© OpenMapTiles](https://www.openmaptiles.org/) Data from [OpenStreetMap](https://www.openstreetmap.org/copyright)\n\nYou do not need to display the OpenFreeMap part, but it is nice if you do.\n\n## License\n\nThe license of this project is [MIT](https://www.tldrlegal.com/license/mit-license). Map data is from [OpenStreetMap](https://www.openstreetmap.org/copyright). The licenses for included projects are listed in [LICENSE.md](https://github.com/hyperknot/openfreemap/blob/main/LICENSE.md).",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://openfreemap.org/privacy/",
+    "crawl": {
+      "loadedUrl": "https://openfreemap.org/privacy/",
+      "loadedTime": "2026-10-23T11:04:57.131Z",
+      "referrerUrl": "https://openfreemap.org/quick_start/",
+      "httpStatusCode": 200,
+      "depth": 1,
+      "contentLengthBytes": 7891,
+      "contentType": "text/html"
+    },
+    "metadata": {
+      "canonicalUrl": "https://openfreemap.org/privacy/",
+      "title": "Privacy Policy",
+      "description": "OpenFreeMap Privacy Policy.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:site_name",
+          "content": "OpenFreeMap"
+        },
+        {
+          "property": "og:title",
+          "content": "Privacy Policy"
+        },
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "property": "og:url",
+          "content": "https://openfreemap.org/privacy/"
+        },
+        {
+          "property": "og:description",
+          "content": "OpenFreeMap Privacy Policy."
+        },
+        {
+          "property": "og:image",
+          "content": "https://openfreemap.org/og/_index.png"
+        },
+        {
+          "property": "og:image:alt",
+          "content": "Privacy Policy - OpenFreeMap"
+        },
+        {
+          "property": "og:image:width",
+          "content": "1200"
+        },
+        {
+          "property": "og:image:height",
+          "content": "630"
+        },
+        {
+          "property": "og:locale",
+          "content": "en_US"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "cf-cache-status": "HIT",
+        "cf-ray": "a4f0438ca87e5179-ORD",
+        "content-encoding": "br",
+        "content-type": "text/html",
+        "date": "Fri, 23 Oct 2026 11:04:57 GMT",
+        "etag": "W/\"c8b6fb011780dc160f4c757955e2a7a1\"",
+        "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+        "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=kEY%2Fd4HjcDJJ1T0kQlYvPogHZpWTzbP81d5hsL8RSCicyq6SOWcmRyYMHC5OXK1zwTkH756KW%2B%2BVGD%2F7VTF79xGT3bunwTRzpAKJQMPJ31iCVKoCXnYyj%2F4W7bFGW2XRiQ%3D%3D\"}]}",
+        "server": "cloudflare",
+        "strict-transport-security": "max-age=15552000; includeSubDomains; preload",
+        "x-content-type-options": "nosniff"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "OpenFreeMap Privacy Policy\nLast Updated: October 8, 2026\nSummary\nOpenFreeMap is completely free and collects minimal data. We believe your privacy is essential.\nWhat We Do NOT Collect:\nWe do not have user accounts\nWe do not use cookies or tracking technologies\nWe do not collect email addresses or send newsletters\nWe do not process any payments\nWe do not store IP addresses in our access logs\nWhat We DO Collect:\nAccess Logs: We collect anonymized logs that include browser type, referring pages, date/time stamps, and operating system—but no IP addresses by default\nError Logs: If the server encounters an error, the error log may include the IP address and requested URL. These logs are deleted after 7 days\nTemporary IP Logs (Only During Security Incidents): If we detect abuse or a security threat, we may temporarily enable IP logging for up to 30 days to investigate. These logs are deleted after the investigation or 30 days, whichever comes first\nUpdates & Communication: All announcements are shared exclusively through our X and Bluesky accounts.\nFull Privacy Policy\nYour privacy matters to us. Hyperknot Software Kft., based in Hungary, has created this Privacy Policy to explain what information we collect when you visit our Site https://openfreemap.org, why we collect it, and how we use it. This policy also covers our public tile service at https://tiles.openfreemap.org, including when our maps are embedded in other websites or apps.\nThe terms “You” and “User” refer to anyone using our Site. “We,” “Us,” and “Our” refer to Hyperknot Software Kft.\nThis Privacy Policy is governed by our Terms of Service.\nFor questions about this policy or data processing, contact us at privacy@openfreemap.org.\n1. INFORMATION WE COLLECT\nWe collect minimal data to maintain functionality and security:\nAccess Logs: We collect anonymized logs that include browser type, referring/exit pages, date/time stamps, and operating system. These logs do not contain IP addresses.\nError Logs: If the server encounters an error, the error log may include the IP address and requested URL. These logs are deleted after 7 days.\nIP Addresses (Temporary & Limited): By default, our access logs do not contain IP addresses. However, if we detect a security incident (such as an attack on our service) or misuse, we may temporarily enable IP logging for a maximum of 30 days to investigate and resolve the issue. After this period or once the issue is resolved (whichever comes first), any logs containing IP addresses are permanently deleted.\nCloudflare: We may use Cloudflare as a CDN to improve service delivery. Cloudflare may collect certain information as described in their privacy policy.\n2. HOW WE USE YOUR INFORMATION\nWe use the collected information to:\nMaintain and improve our services\nProtect against security threats and misuse\nComply with legal obligations\nWe process your information based on our legitimate interest in providing a secure, functional service in accordance with GDPR principles.\n3. INFORMATION WE DO NOT COLLECT\nWe do not collect or process:\nUser accounts or authentication data\nCookies or other tracking technologies\nPayment information\nEmail addresses (except when you contact us directly)\nSensitive personal information (political opinions, religious beliefs, health data, etc.)\n4. INFORMATION FROM MINORS\nOur Site is not intended for persons under 18. We do not knowingly collect information from minors.\n5. RETENTION\nAll server logs are automatically deleted after 7 days, except logs collected during security incidents, which are deleted after a maximum of 30 days.\n6. SECURITY\nWe implement reasonable security measures to protect your information. For security-related questions, contact security@openfreemap.org.\n7. YOUR RIGHTS UNDER GDPR\nYou have the right to:\nAccess any personal data we hold about you\nRequest correction of inaccurate data\nRequest deletion of your data\nObject to processing\nFile a complaint with your local Data Protection Authority\nTo exercise these rights, contact us at privacy@openfreemap.org.\n8. CHANGES TO THIS POLICY\nWe may update this Policy periodically. Changes will be posted here, and we encourage users to follow our X and Bluesky accounts for updates.\n9. ACCEPTANCE\nBy using our Site, you agree to this Policy. If you disagree, please refrain from using the Site.",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "Privacy Policy\n\n# OpenFreeMap Privacy Policy\n\n**Last Updated:** October 8, 2026\n\n## Summary\n\nOpenFreeMap is completely free and collects minimal data. We believe your privacy is essential.\n\n**What We Do NOT Collect:**\n\n*   We do **not** have user accounts\n*   We do **not** use cookies or tracking technologies\n*   We do **not** collect email addresses or send newsletters\n*   We do **not** process any payments\n*   We do **not** store IP addresses in our access logs\n\n**What We DO Collect:**\n\n*   **Access Logs:** We collect anonymized logs that include browser type, referring pages, date/time stamps, and operating system—but no IP addresses by default\n*   **Error Logs:** If the server encounters an error, the error log may include the IP address and requested URL. These logs are deleted after 7 days\n*   **Temporary IP Logs (Only During Security Incidents):** If we detect abuse or a security threat, we may temporarily enable IP logging for up to 30 days to investigate. These logs are deleted after the investigation or 30 days, whichever comes first\n\n**Updates & Communication:** All announcements are shared exclusively through our X and Bluesky accounts.\n\n* * *\n\n## Full Privacy Policy\n\nYour privacy matters to us. Hyperknot Software Kft., based in Hungary, has created this Privacy Policy to explain what information we collect when you visit our Site [https://openfreemap.org](https://openfreemap.org/), why we collect it, and how we use it. This policy also covers our public tile service at [https://tiles.openfreemap.org](https://tiles.openfreemap.org/), including when our maps are embedded in other websites or apps.\n\nThe terms “You” and “User” refer to anyone using our Site. “We,” “Us,” and “Our” refer to Hyperknot Software Kft.\n\nThis Privacy Policy is governed by our [Terms of Service](https://openfreemap.org/tos).\n\nFor questions about this policy or data processing, contact us at [privacy@openfreemap.org](mailto:privacy@openfreemap.org).\n\n### 1\\. INFORMATION WE COLLECT\n\nWe collect minimal data to maintain functionality and security:\n\n*   **Access Logs:** We collect anonymized logs that include browser type, referring/exit pages, date/time stamps, and operating system. These logs **do not** contain IP addresses.\n    \n*   **Error Logs:** If the server encounters an error, the error log may include the IP address and requested URL. These logs are deleted after 7 days.\n    \n*   **IP Addresses (Temporary & Limited):** By default, our access logs do not contain IP addresses. However, if we detect a security incident (such as an attack on our service) or misuse, we may temporarily enable IP logging for a maximum of 30 days to investigate and resolve the issue. After this period or once the issue is resolved (whichever comes first), any logs containing IP addresses are permanently deleted.\n    \n*   **Cloudflare:** We may use Cloudflare as a CDN to improve service delivery. Cloudflare may collect certain information as described in their [privacy policy](https://www.cloudflare.com/privacypolicy/).\n    \n\n### 2\\. HOW WE USE YOUR INFORMATION\n\nWe use the collected information to:\n\n*   Maintain and improve our services\n*   Protect against security threats and misuse\n*   Comply with legal obligations\n\nWe process your information based on our legitimate interest in providing a secure, functional service in accordance with GDPR principles.\n\n### 3\\. INFORMATION WE DO NOT COLLECT\n\nWe do **not** collect or process:\n\n*   User accounts or authentication data\n*   Cookies or other tracking technologies\n*   Payment information\n*   Email addresses (except when you contact us directly)\n*   Sensitive personal information (political opinions, religious beliefs, health data, etc.)\n\n### 4\\. INFORMATION FROM MINORS\n\nOur Site is not intended for persons under 18. We do not knowingly collect information from minors.\n\n### 5\\. RETENTION\n\nAll server logs are automatically deleted after 7 days, except logs collected during security incidents, which are deleted after a maximum of 30 days.\n\n### 6\\. SECURITY\n\nWe implement reasonable security measures to protect your information. For security-related questions, contact [security@openfreemap.org](mailto:security@openfreemap.org).\n\n### 7\\. YOUR RIGHTS UNDER GDPR\n\nYou have the right to:\n\n*   Access any personal data we hold about you\n*   Request correction of inaccurate data\n*   Request deletion of your data\n*   Object to processing\n*   File a complaint with your local Data Protection Authority\n\nTo exercise these rights, contact us at [privacy@openfreemap.org](mailto:privacy@openfreemap.org).\n\n### 8\\. CHANGES TO THIS POLICY\n\nWe may update this Policy periodically. Changes will be posted here, and we encourage users to follow our X and Bluesky accounts for updates.\n\n### 9\\. ACCEPTANCE\n\nBy using our Site, you agree to this Policy. If you disagree, please refrain from using the Site.",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://openfreemap.org/tos/",
+    "crawl": {
+      "loadedUrl": "https://openfreemap.org/tos/",
+      "loadedTime": "2026-10-23T11:04:57.264Z",
+      "referrerUrl": "https://openfreemap.org/quick_start/",
+      "httpStatusCode": 200,
+      "depth": 1,
+      "contentLengthBytes": 5919,
+      "contentType": "text/html"
+    },
+    "metadata": {
+      "canonicalUrl": "https://openfreemap.org/tos/",
+      "title": "Terms of Service",
+      "description": "OpenFreeMap Terms of Service.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:site_name",
+          "content": "OpenFreeMap"
+        },
+        {
+          "property": "og:title",
+          "content": "Terms of Service"
+        },
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "property": "og:url",
+          "content": "https://openfreemap.org/tos/"
+        },
+        {
+          "property": "og:description",
+          "content": "OpenFreeMap Terms of Service."
+        },
+        {
+          "property": "og:image",
+          "content": "https://openfreemap.org/og/_index.png"
+        },
+        {
+          "property": "og:image:alt",
+          "content": "Terms of Service - OpenFreeMap"
+        },
+        {
+          "property": "og:image:width",
+          "content": "1200"
+        },
+        {
+          "property": "og:image:height",
+          "content": "630"
+        },
+        {
+          "property": "og:locale",
+          "content": "en_US"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "cf-cache-status": "HIT",
+        "cf-ray": "a4f0438d483f0c4e-LAX",
+        "content-encoding": "br",
+        "content-type": "text/html",
+        "date": "Fri, 23 Oct 2026 11:04:57 GMT",
+        "etag": "W/\"e42a47cbce1038654553cb43bfb4764e\"",
+        "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+        "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=38OXswgpOQ%2FrnoVZscriPsZNQHuiXKPRvPAppgrMzJ6GA%2FFfv5WSS9JL3CHlLS9Fc8hozMsfWO%2B5fGx1kh3gseFu0jsVIJPG%2Fs5AOZdD%2FdChKwxx1MpwNATXyc2DSD8TYw%3D%3D\"}]}",
+        "server": "cloudflare",
+        "strict-transport-security": "max-age=15552000; includeSubDomains; preload",
+        "x-content-type-options": "nosniff"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "OpenFreeMap Terms of Service\nLast Updated: October 14, 2026\nOverview\nThis Terms of Service agreement (“Agreement”) is between Hyperknot Software Kft., located at Petofi Sandor utca 48., Ujlengyel, 2724, Hungary (“we,” “us,” “our”), and you (“you,” “user”). It becomes effective when you use https://openfreemap.org (“Site”).\nOpenFreeMap is a completely free service provided “as-is,” with no warranties. By using this Site, you accept these terms. If you disagree with them, please do not use the Site.\nEligibility\nYou must be at least 18 years old and legally able to enter into this Agreement to integrate our public service into a website or application. If representing an organization, you must have authority to bind it.\nThis age requirement does not apply to end users who merely view or interact with embedded maps. Websites and applications using OpenFreeMap may serve users of any age.\nUser Conduct\nYou agree to use the Site legally and responsibly. You will not:\nUse it for illegal activities\nDisrupt the service or introduce harmful code\nViolate intellectual property rights\nCollect data from the service in automated ways, except for offline downloads as described below\nOffline Downloads\nYour app may let users download areas for offline use if each download is:\nat most 3,000 tiles or 50 MB\nmade with at most 4 parallel requests\nsent with a unique User-Agent identifying your app\nFor anything larger, please contact us at info@openfreemap.org.\nIntellectual Property\nOur content is owned or licensed by us and protected by law.\nThird-Party Links\nWe are not responsible for any third-party websites linked from our Site.\nDisclaimer of Warranties\nTHE SITE IS PROVIDED “AS-IS,” “AS AVAILABLE,” AND “WITH ALL FAULTS.” WE MAKE NO WARRANTIES REGARDING ACCURACY, AVAILABILITY, OR FITNESS FOR ANY PURPOSE. YOUR USE IS AT YOUR OWN RISK.\nLimitation of Liability\nTO THE FULLEST EXTENT PERMITTED BY LAW, WE ARE NOT LIABLE FOR ANY DAMAGES ARISING FROM YOUR USE OF THE SITE, INCLUDING DIRECT, INDIRECT, INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES.\nSite Availability and Changes\nWe aim to maintain the Site’s availability but may discontinue it at any time without notice. When possible, we will announce changes through our X and Bluesky accounts.\nCloudflare CDN\nWe may use Cloudflare as a CDN to deliver content more efficiently. By using the Site, you consent to Cloudflare’s processing of your requests.\nGoverning Law\nThis Agreement is governed by Hungarian law.\nDispute Resolution\nAny dispute will be resolved by binding arbitration in Budapest, Hungary, on an individual basis.\nChanges to Terms\nWe may update these Terms at any time. Updates will be announced on X and Bluesky. Your continued use after changes constitutes acceptance.\nContact Information\nFor questions about these Terms, email info@openfreemap.org.\nBy using this Site, you also accept our Privacy Policy.",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "Terms of Service\n\n# OpenFreeMap Terms of Service\n\n**Last Updated:** October 14, 2026\n\n## Overview\n\nThis Terms of Service agreement (“Agreement”) is between Hyperknot Software Kft., located at Petofi Sandor utca 48., Ujlengyel, 2724, Hungary (“we,” “us,” “our”), and you (“you,” “user”). It becomes effective when you use [https://openfreemap.org](https://openfreemap.org/) (“Site”).\n\nOpenFreeMap is a completely free service provided “as-is,” with no warranties. By using this Site, you accept these terms. If you disagree with them, please do not use the Site.\n\n## Eligibility\n\nYou must be at least 18 years old and legally able to enter into this Agreement to integrate our public service into a website or application. If representing an organization, you must have authority to bind it.\n\nThis age requirement does not apply to end users who merely view or interact with embedded maps. Websites and applications using OpenFreeMap may serve users of any age.\n\n## User Conduct\n\nYou agree to use the Site legally and responsibly. You will not:\n\n*   Use it for illegal activities\n*   Disrupt the service or introduce harmful code\n*   Violate intellectual property rights\n*   Collect data from the service in automated ways, except for offline downloads as described below\n\n## Offline Downloads\n\nYour app may let users download areas for offline use if each download is:\n\n*   at most 3,000 tiles or 50 MB\n*   made with at most 4 parallel requests\n*   sent with a unique User-Agent identifying your app\n\nFor anything larger, please contact us at [info@openfreemap.org](mailto:info@openfreemap.org).\n\n## Intellectual Property\n\nOur content is owned or licensed by us and protected by law.\n\n## Third-Party Links\n\nWe are not responsible for any third-party websites linked from our Site.\n\n## Disclaimer of Warranties\n\nTHE SITE IS PROVIDED “AS-IS,” “AS AVAILABLE,” AND “WITH ALL FAULTS.” WE MAKE NO WARRANTIES REGARDING ACCURACY, AVAILABILITY, OR FITNESS FOR ANY PURPOSE. YOUR USE IS AT YOUR OWN RISK.\n\n## Limitation of Liability\n\nTO THE FULLEST EXTENT PERMITTED BY LAW, WE ARE NOT LIABLE FOR ANY DAMAGES ARISING FROM YOUR USE OF THE SITE, INCLUDING DIRECT, INDIRECT, INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES.\n\n## Site Availability and Changes\n\nWe aim to maintain the Site’s availability but may discontinue it at any time without notice. When possible, we will announce changes through our X and Bluesky accounts.\n\n## Cloudflare CDN\n\nWe may use Cloudflare as a CDN to deliver content more efficiently. By using the Site, you consent to Cloudflare’s processing of your requests.\n\n## Governing Law\n\nThis Agreement is governed by Hungarian law.\n\n## Dispute Resolution\n\nAny dispute will be resolved by binding arbitration in Budapest, Hungary, on an individual basis.\n\n## Changes to Terms\n\nWe may update these Terms at any time. Updates will be announced on X and Bluesky. Your continued use after changes constitutes acceptance.\n\n## Contact Information\n\nFor questions about these Terms, email [info@openfreemap.org](mailto:info@openfreemap.org).\n\nBy using this Site, you also accept our [Privacy Policy](https://openfreemap.org/privacy).",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  }
+]

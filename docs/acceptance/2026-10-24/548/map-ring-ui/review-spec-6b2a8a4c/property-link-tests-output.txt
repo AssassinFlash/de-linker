@@ -1,0 +1,10 @@
+✔ reopening the #lp-map-roof-properties property link preserves the roof workspace and map recovery entry (592.86675ms)
+✔ reopening the #lp-map-ring-properties property link preserves the roof workspace and map recovery entry (53.531625ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1165.259209

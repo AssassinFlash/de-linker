@@ -1,0 +1,61 @@
+Browser tab: 4, Title: "Planning source consumer fixture", URL: "http://127.0.0.1:58673/tests/preparation-browser.html?lang=de&task=weather".
+1 AXWebArea Planning source consumer fixture, URL: 127.0.0.1:58673/tests/preparation-browser.html?lang=de&task=weather
+	2 container
+		3 heading Vorbereitung der Wetterdaten, Value: 3
+			4 text Vorbereitung der Wetterdaten
+		5 text Quelle bereit
+		6 text Version 2
+		7 container Status des Wetterabrufs
+			8 heading Status des Wetterabrufs, Value: 4
+				9 text Status des Wetterabrufs
+			10 text Die ursprünglichen Wetterdaten sind geprüft und gespeichert. Als Projektquelle stehen sie erst bereit, wenn oben "Quelle bereit" angezeigt wird.
+			11 button Wetterstatus aktualisieren
+		12 definition list
+			13 container Breitengrad
+				14 text Breitengrad
+			15 container
+				16 text 52,52  °
+			17 container Längengrad
+				18 text Längengrad
+			19 container
+				20 text 13,405  °
+			21 container Höhe
+				22 text Höhe
+			23 container
+				24 text 37  m
+			25 container Stündliche Wetterdatensätze
+				26 text Stündliche Wetterdatensätze
+			27 text 8.760
+		28 text Die Vorbereitung ändert Ihre Projekteingaben nicht. Ihre Auswahl gilt zunächst für den aktuell offenen Projektentwurf. Mit "Projekt speichern" wird diese Auswahl auf dem Server gespeichert.
+		29 button Diese Wetterquelle verwenden
+		30 container
+			31 definition list
+				32 container Wetterquelle
+					33 text Wetterquelle
+				34 container
+					35 text JRC PVGIS typical meteorological year  · PVGIS  5.3
+				36 container Strahlungsdatenbank
+					37 text Strahlungsdatenbank
+				38 text PVGIS-SARAH3
+				39 container Meteorologische Datenbank
+					40 text Meteorologische Datenbank
+				41 text ERA5
+				42 container Angefragter Zeitraum
+					43 text Angefragter Zeitraum
+				44 container
+					45 text 2005  /  2023
+				46 container Synthetisches Berechnungsjahr
+					47 text Synthetisches Berechnungsjahr
+				48 text 2023
+			49 text Ein typisches meteorologisches Jahr setzt sich aus ausgewählten Monaten verschiedener Jahre zusammen.
+			50 button (collapsed) Originalquelle und Interpretationsprotokoll, Secondary Actions: Expand
+				51 text Originalquelle und Interpretationsprotokoll
+		52 button (collapsed) Prüfsummen für Quelle und Auftrag, Secondary Actions: Expand
+			53 text Prüfsummen für Quelle und Auftrag
+		54 text Lösungskonfigurator
+		55 text von Linker
+		56 text Linker bündelt Ihre Angaben in einem bearbeitbaren Projekt für die PV- und Speicherplanung.
+		57 button (collapsed) Über dieses Werkzeug, Secondary Actions: Expand
+			58 text Über dieses Werkzeug
+
+The focused UI element is 1 AXWebArea Planning source consumer fixture, URL: 127.0.0.1:58673/tests/preparation-browser.html?lang=de&task=weather

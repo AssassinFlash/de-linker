@@ -1,0 +1,17 @@
+..[31mE[0m 3 / 3 (100%)
+
+
+
+[1mFILE: ...planner-548/plugins/linker-tools/tests/php/Unit/PlannerTaskGatewayTest.php[0m
+--------------------------------------------------------------------------------
+[1mFOUND 1 ERROR AND 1 WARNING AFFECTING 2 LINES[0m
+--------------------------------------------------------------------------------
+ 16 | [31mERROR[0m   | [1mMissing short description in doc comment[0m
+    |         | (Generic.Commenting.DocComment.MissingShort)
+ 26 | [33mWARNING[0m | [1mIt is recommended not to use reserved keyword "namespace" as[0m
+    |         | [1mfunction parameter name. Found: $namespace[0m
+    |         | (Universal.NamingConventions.NoReservedKeywordParameterNames.namespaceFound)
+--------------------------------------------------------------------------------
+
+Time: 1.37 secs; Memory: 22MB
+

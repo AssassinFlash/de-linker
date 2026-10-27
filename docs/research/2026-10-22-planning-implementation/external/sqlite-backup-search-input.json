@@ -1,0 +1,7 @@
+{
+  "queries": "site:sqlite.org backup API WAL database backup integrity",
+  "maxPagesPerQuery": 1,
+  "resultsPerPage": 5,
+  "saveHtml": false,
+  "saveHtmlToKeyValueStore": false
+}

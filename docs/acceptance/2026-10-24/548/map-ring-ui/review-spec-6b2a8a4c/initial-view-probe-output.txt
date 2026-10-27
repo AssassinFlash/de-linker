@@ -1,0 +1,10 @@
+{"pin":"6b2a8a4cc43c95d4710fcb42f16d1bd1e4a8c100","initial_map":true,"chosen_plan_preserved_on_rerender":true,"default_plan":true,"domain_commands":0,"queries":0}
+✔ map entry initializes once, later renders preserve a chosen Plan, and normal entry defaults to Plan (145.714458ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1035.778709

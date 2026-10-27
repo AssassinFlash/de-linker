@@ -1,0 +1,8 @@
+{
+	"schema_version": 1,
+	"selected": {
+		"gross_load": "cccccccccccccccccccccccccccccccc",
+		"pv_available_ac": "dddddddddddddddddddddddddddddddd",
+		"aux_ac": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+	}
+}

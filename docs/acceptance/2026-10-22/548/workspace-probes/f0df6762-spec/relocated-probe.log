@@ -1,0 +1,15 @@
+✔ relocated staged refusal preserves the exact bar, selector, form and raw input until cancel (446.685042ms)
+✔ relocated invalid brief refusal appears once and clears after correction without a document edit (117.046416ms)
+✔ relocated refusal retains brief-error precedence then switches to staged guidance without duplication (94.165292ms)
+✔ relocated refusal survives acknowledgement without replacing an unapplied form or its raw text (76.165875ms)
+✔ relocated refusal cancellation leaves uncertain save status and retry bytes intact (74.542667ms)
+✔ relocated recovery refusal stays actionable and close protection survives validation cleanup (69.990666ms)
+✔ relocated refusal is not created by a navigation attempt after native admission is withdrawn (29.690333ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1546.6935

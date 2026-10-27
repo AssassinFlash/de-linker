@@ -1,0 +1,90 @@
+{
+  "capture": "Page.captureScreenshot explicit CSS viewport clip, captureBeyondViewport=true",
+  "before": {
+    "active": {
+      "invalid": null,
+      "name": null,
+      "rect": {
+        "bottom": 444.1640625,
+        "height": 44,
+        "left": 16,
+        "right": 242.1953125,
+        "top": 400.1640625,
+        "width": 226.1953125,
+        "x": 16,
+        "y": 400.1640625
+      },
+      "tag": "BUTTON",
+      "text": "Dachgeometrie importieren",
+      "value": ""
+    },
+    "bar": {
+      "bottom": 204.390625,
+      "height": 123.390625,
+      "left": 0,
+      "right": 390,
+      "top": 81,
+      "width": 390,
+      "x": 0,
+      "y": 81
+    },
+    "columns": [],
+    "documentWidth": 390,
+    "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2",
+    "fontStatus": "loaded",
+    "height": 844,
+    "renderer": [],
+    "scrollWidth": 390,
+    "styles": [
+      "http://127.0.0.1:9347/wp-content/uploads/windpress/cache/tailwind.css?ver=1792757967"
+    ],
+    "url": "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-design",
+    "width": 390,
+    "x": 0,
+    "y": 381.5
+  },
+  "after": {
+    "active": {
+      "invalid": null,
+      "name": null,
+      "rect": {
+        "bottom": 444.1640625,
+        "height": 44,
+        "left": 16,
+        "right": 242.1953125,
+        "top": 400.1640625,
+        "width": 226.1953125,
+        "x": 16,
+        "y": 400.1640625
+      },
+      "tag": "BUTTON",
+      "text": "Dachgeometrie importieren",
+      "value": ""
+    },
+    "bar": {
+      "bottom": 204.390625,
+      "height": 123.390625,
+      "left": 0,
+      "right": 390,
+      "top": 81,
+      "width": 390,
+      "x": 0,
+      "y": 81
+    },
+    "columns": [],
+    "documentWidth": 390,
+    "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2",
+    "fontStatus": "loaded",
+    "height": 844,
+    "renderer": [],
+    "scrollWidth": 390,
+    "styles": [
+      "http://127.0.0.1:9347/wp-content/uploads/windpress/cache/tailwind.css?ver=1792757967"
+    ],
+    "url": "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-design",
+    "width": 390,
+    "x": 0,
+    "y": 381.5
+  },
+  "scrollStable": true
+}

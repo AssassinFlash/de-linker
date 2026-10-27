@@ -1,0 +1,17 @@
+{
+  "bar": "Projects/Köln · owned synthetic roof · acceptanceProject overviewSite and projectRoof designEnergy inputsSaved · revision 14Save project",
+  "identity": "Solution Configurator\nby Linker\n\nLinker brings your inputs into an editable project for solar and storage planning.\n\nAbout this tool\n\nLinker provides the project workflow and editing tools. Your inputs and design stay together in the same project, with controls for saving changes and restoring available drafts.\n\nAll design views use the same project geometry. Source records retain the declared accuracy and permissions; a displayed model provides no engineering approval.\n\nSoftware and data credits\n\nInterface and project data: React, TanStack Query and Ajv. 3D views: Three.js and React Three Fiber. Map display: MapLibre GL JS.\n\nStreet map: OpenFreeMap. © OpenMapTiles; © OpenStreetMap contributors.\n\nOpenFreeMap privacy policy",
+  "lang": "en-US",
+  "renderers": [
+    "WebGPU"
+  ],
+  "scripts": [
+    "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=dec8b7a3214ae2d9260eed1112c6907002596e876a14d1f6bbca00258704c90d"
+  ],
+  "url": "http://127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-map-feature-properties",
+  "viewport": {
+    "height": 1000,
+    "scrollWidth": 1440,
+    "width": 1440
+  }
+}

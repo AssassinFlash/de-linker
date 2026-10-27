@@ -1,0 +1,5 @@
+{
+	"max_file_bytes": 4194304,
+	"max_scope_intents": 32,
+	"max_scope_intent_bytes": 33554432
+}

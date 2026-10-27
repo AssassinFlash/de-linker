@@ -1,0 +1,22 @@
+{
+  "source_pin": "a14567de149e79c837d2053ae67073b1d62c413e",
+  "junit": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "691",
+    "time": "66.225",
+    "timestamp": "2026-10-24T12:46:39.875551+08:00",
+    "hostname": "chesterjohn-2.local"
+  },
+  "command_count": 4,
+  "json_documents_parsed": 17,
+  "primary_research_manifest_entries_verified": 20,
+  "markdown_local_links_missing": [],
+  "original_capture_root_relative_assets": [],
+  "changed_source_and_research_files": 47,
+  "legacy_identifier_or_todo_added_line_hits": 0,
+  "credential_pattern_file_hits": [],
+  "live_runtime_scope": "previous accepted runtime unchanged; no native or production claim"
+}

@@ -1,0 +1,382 @@
+{
+  "$defs": {
+    "Efficiency": {
+      "exclusiveMinimum": 0,
+      "maximum": 1,
+      "type": "number"
+    },
+    "Fraction": {
+      "maximum": 1,
+      "minimum": 0,
+      "type": "number"
+    },
+    "Hash": {
+      "pattern": "^[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "Identifier": {
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+      "type": "string"
+    },
+    "ModuleSource": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "datasheet",
+            "user_declared"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "note": {
+          "$ref": "#/$defs/Text"
+        },
+        "document_sha256": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Hash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "url": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Text"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "page": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PositiveInteger"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "woo": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/WooReference"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "kind",
+        "note",
+        "document_sha256",
+        "url",
+        "page"
+      ],
+      "title": "ModuleSource",
+      "type": "object"
+    },
+    "Positive": {
+      "exclusiveMinimum": 0,
+      "type": "number"
+    },
+    "PositiveInteger": {
+      "exclusiveMinimum": 0,
+      "maximum": 9007199254740991,
+      "type": "integer"
+    },
+    "PvArrayParameters": {
+      "additionalProperties": false,
+      "properties": {
+        "array_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "transposition": {
+          "enum": [
+            "isotropic",
+            "haydavies",
+            "perez",
+            "perez-driesse"
+          ],
+          "title": "Transposition",
+          "type": "string"
+        },
+        "albedo": {
+          "$ref": "#/$defs/Fraction"
+        },
+        "thermal": {
+          "$ref": "#/$defs/SapmParameters"
+        },
+        "beam_iam_model": {
+          "const": "ashrae",
+          "title": "Beam Iam Model",
+          "type": "string"
+        },
+        "beam_iam_b": {
+          "$ref": "#/$defs/linker_engine__planning__pv_parameters__Number__2"
+        },
+        "sky_diffuse_iam_factor": {
+          "$ref": "#/$defs/Fraction"
+        },
+        "ground_diffuse_iam_factor": {
+          "$ref": "#/$defs/Fraction"
+        },
+        "spectral_factor": {
+          "$ref": "#/$defs/Fraction"
+        },
+        "soiling_factor": {
+          "$ref": "#/$defs/Fraction"
+        },
+        "dc_wiring_factor": {
+          "$ref": "#/$defs/Fraction"
+        },
+        "dc_mismatch_factor": {
+          "$ref": "#/$defs/Fraction"
+        },
+        "source_note": {
+          "$ref": "#/$defs/Text"
+        }
+      },
+      "required": [
+        "array_id",
+        "transposition",
+        "albedo",
+        "thermal",
+        "beam_iam_model",
+        "beam_iam_b",
+        "sky_diffuse_iam_factor",
+        "ground_diffuse_iam_factor",
+        "spectral_factor",
+        "soiling_factor",
+        "dc_wiring_factor",
+        "dc_mismatch_factor",
+        "source_note"
+      ],
+      "title": "PvArrayParameters",
+      "type": "object"
+    },
+    "PvConversionParameters": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "array_ids": {
+          "items": {
+            "$ref": "#/$defs/Identifier"
+          },
+          "minItems": 1,
+          "title": "Array Ids",
+          "type": "array"
+        },
+        "model": {
+          "const": "pvwatts",
+          "title": "Model",
+          "type": "string"
+        },
+        "input_assumption": {
+          "const": "independent_mppt_array_mpp_sum",
+          "title": "Input Assumption",
+          "type": "string"
+        },
+        "reference_dc_power_w": {
+          "$ref": "#/$defs/Positive"
+        },
+        "eta_nominal": {
+          "$ref": "#/$defs/Efficiency"
+        },
+        "eta_reference": {
+          "$ref": "#/$defs/Efficiency"
+        },
+        "source_note": {
+          "$ref": "#/$defs/Text"
+        }
+      },
+      "required": [
+        "id",
+        "array_ids",
+        "model",
+        "input_assumption",
+        "reference_dc_power_w",
+        "eta_nominal",
+        "eta_reference",
+        "source_note"
+      ],
+      "title": "PvConversionParameters",
+      "type": "object"
+    },
+    "PvModuleParameters": {
+      "additionalProperties": false,
+      "properties": {
+        "module_spec_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "gamma_pdc_per_c": {
+          "$ref": "#/$defs/linker_engine__planning__pv_parameters__Number__1"
+        },
+        "source": {
+          "$ref": "#/$defs/ModuleSource"
+        }
+      },
+      "required": [
+        "module_spec_id",
+        "gamma_pdc_per_c",
+        "source"
+      ],
+      "title": "PvModuleParameters",
+      "type": "object"
+    },
+    "SapmParameters": {
+      "additionalProperties": false,
+      "properties": {
+        "model": {
+          "const": "sapm_cell",
+          "title": "Model",
+          "type": "string"
+        },
+        "a": {
+          "$ref": "#/$defs/linker_engine__planning__pv_parameters__Number__1"
+        },
+        "b": {
+          "$ref": "#/$defs/linker_engine__planning__pv_parameters__Number__1"
+        },
+        "delta_t_c": {
+          "$ref": "#/$defs/linker_engine__planning__pv_parameters__Number__2"
+        },
+        "source_note": {
+          "$ref": "#/$defs/Text"
+        }
+      },
+      "required": [
+        "model",
+        "a",
+        "b",
+        "delta_t_c",
+        "source_note"
+      ],
+      "title": "SapmParameters",
+      "type": "object"
+    },
+    "SchemaVersion": {
+      "maximum": 1,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "Text": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "type": "string"
+    },
+    "WooReference": {
+      "additionalProperties": false,
+      "properties": {
+        "product_id": {
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991,
+          "title": "Product Id",
+          "type": "integer"
+        },
+        "product_revision": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Product Revision",
+          "type": "string"
+        },
+        "reference_input_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Reference Input Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "product_id",
+        "product_revision",
+        "reference_input_id"
+      ],
+      "title": "WooReference",
+      "type": "object"
+    },
+    "linker_engine__planning__pv_parameters__Number__1": {
+      "type": "number"
+    },
+    "linker_engine__planning__pv_parameters__Number__2": {
+      "minimum": 0,
+      "type": "number"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "$ref": "#/$defs/SchemaVersion"
+    },
+    "model": {
+      "const": "uniform_unshaded_pvlib_reference_v1",
+      "title": "Model",
+      "type": "string"
+    },
+    "pvlib_version": {
+      "const": "0.16.1",
+      "title": "Pvlib Version",
+      "type": "string"
+    },
+    "temporal_policy": {
+      "const": "representative_pv_output_over_declared_intervals_v1",
+      "title": "Temporal Policy",
+      "type": "string"
+    },
+    "shading_policy": {
+      "const": "explicit_unshaded_reference",
+      "title": "Shading Policy",
+      "type": "string"
+    },
+    "modules": {
+      "items": {
+        "$ref": "#/$defs/PvModuleParameters"
+      },
+      "minItems": 1,
+      "title": "Modules",
+      "type": "array"
+    },
+    "arrays": {
+      "items": {
+        "$ref": "#/$defs/PvArrayParameters"
+      },
+      "minItems": 1,
+      "title": "Arrays",
+      "type": "array"
+    },
+    "converters": {
+      "items": {
+        "$ref": "#/$defs/PvConversionParameters"
+      },
+      "minItems": 1,
+      "title": "Converters",
+      "type": "array"
+    },
+    "source_note": {
+      "$ref": "#/$defs/Text"
+    }
+  },
+  "required": [
+    "schema_version",
+    "model",
+    "pvlib_version",
+    "temporal_policy",
+    "shading_policy",
+    "modules",
+    "arrays",
+    "converters",
+    "source_note"
+  ],
+  "title": "PvGenerationParameters",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

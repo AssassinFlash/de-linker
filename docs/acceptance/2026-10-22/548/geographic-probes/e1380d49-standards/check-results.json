@@ -1,0 +1,90 @@
+{
+  "fixed_sha": "e1380d49d267f4ea6ef3083d2c7460432b8e2b22",
+  "run_utc": "2026-10-23T09:18:14.417620+00:00",
+  "results": [
+    {
+      "name": "backend-fixed",
+      "command": [
+        "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/services/engine/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/planning/test_geographic.py",
+        "tests/planning/test_geometry_import.py",
+        "tests/planning/test_private_http.py",
+        "-q",
+        "--basetemp=/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/geographic-standards-e138-naz6b_xp/pytest-runtime"
+      ],
+      "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/geographic-standards-e138-naz6b_xp/services/engine",
+      "exit_code": 0,
+      "log": "backend-fixed.log",
+      "summary": "........................................................................ [ 62%]\n...........................................                              [100%]\n115 passed in 3.34s\n"
+    },
+    {
+      "name": "independent-import",
+      "command": [
+        "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/services/engine/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/planning/standards_import_boundary_probe.py",
+        "-q",
+        "--basetemp=/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/geographic-standards-e138-naz6b_xp/probe-runtime"
+      ],
+      "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/geographic-standards-e138-naz6b_xp/services/engine",
+      "exit_code": 0,
+      "log": "independent-import.log",
+      "summary": ".........                                                                [100%]\n9 passed in 0.79s\n"
+    },
+    {
+      "name": "frontend-fixed",
+      "command": [
+        "node",
+        "--test",
+        "src/domain/geographic.test.ts",
+        "src/domain/geometryImports.test.ts"
+      ],
+      "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/geographic-standards-e138-naz6b_xp/apps/planner",
+      "exit_code": 0,
+      "log": "frontend-fixed.log",
+      "summary": "nd full inverse (1.843667ms)\n\u2714 horizontal-only zero is explicit and never an inferred measured height (1.213625ms)\n\u2714 horizontal footprint is lifted onto a 3-4-5 plane before roof UV projection (0.321542ms)\n\u2714 geodetic line intersection retains curvature and supports negative derived heights (1.698625ms)\n\u2714 polar inverse applies the same output numeric guard as every other branch (0.378833ms)\n\u2714 actual server import wire joins geometry/reference/source in one project history step (7.304583ms)\n\u2714 a stale frame, unaligned existing roof and repeated attach are refused without mutation (1.61025ms)\n\u2714 import wire rejects wrong owner/version/hash, permissive source claims and invalid base64 (6.546209ms)\n\u2139 tests 8\n\u2139 suites 0\n\u2139 pass 8\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 292.795375\n"
+    },
+    {
+      "name": "independent-browser",
+      "command": [
+        "node",
+        "--test",
+        "src/domain/standards_browser_boundary_probe.mjs"
+      ],
+      "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/geographic-standards-e138-naz6b_xp/apps/planner",
+      "exit_code": 0,
+      "log": "independent-browser.log",
+      "summary": "\u2714 both polar branches refuse unsupported computed heights and retain valid negative heights (0.904709ms)\n\u2714 large absolute Up does not change local horizontal slope and geographic branch remains distinct (0.738ms)\n\u2714 legacy method declaration is never defaulted into a newly attachable result (5.4735ms)\n\u2139 tests 3\n\u2139 suites 0\n\u2139 pass 3\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 218.516334\n"
+    },
+    {
+      "name": "editor-fixed",
+      "command": [
+        "node",
+        "--no-warnings=ExperimentalWarning",
+        "--loader",
+        "./tests/tsx-loader.mjs",
+        "--test",
+        "tests/design-editor.test.mjs"
+      ],
+      "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/geographic-standards-e138-naz6b_xp/apps/planner",
+      "exit_code": 0,
+      "log": "editor-fixed.log",
+      "summary": "\u2714 measured roof intake preserves decimal locale, explicit source and one command (415.065583ms)\n\u2714 invalid staged properties stay visible until corrected or cancelled (91.443958ms)\n\u2714 a bound original hash stays immutable while its source notes can be edited (48.250667ms)\n\u2714 module exclusion updates the same plan, object selection and derived quantity (74.786917ms)\n\u2714 a late layout check is retained as previous output and cannot select current objects (60.267208ms)\n\u2714 manual roof intake marks the unsupported vertical boundary at its field (35.762292ms)\n\u2139 tests 6\n\u2139 suites 0\n\u2139 pass 6\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 1639.76025\n"
+    },
+    {
+      "name": "build-fixed",
+      "command": [
+        "npm",
+        "run",
+        "build:check"
+      ],
+      "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/geographic-standards-e138-naz6b_xp/apps/planner",
+      "exit_code": 0,
+      "log": "build-fixed.log",
+      "summary": "\n> @linker/planner@0.1.0 build:check\n> node bin/build-manifest.mjs check && node --test tests/built-modules.mjs\n\nPlanner build matches its sources.\n\u2714 a lazy built chunk never executes the versioned WordPress entry again (172.599417ms)\n\u2139 tests 1\n\u2139 suites 0\n\u2139 pass 1\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 420.921958\n"
+    }
+  ]
+}

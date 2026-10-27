@@ -1,0 +1,63 @@
+{
+  "$defs": {
+    "GridPhase": {
+      "enum": [
+        1,
+        3
+      ],
+      "type": "integer"
+    },
+    "Nonnegative": {
+      "minimum": 0,
+      "type": "number"
+    },
+    "SchemaVersion": {
+      "maximum": 1,
+      "minimum": 1,
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "$ref": "#/$defs/SchemaVersion"
+    },
+    "grid_phase": {
+      "$ref": "#/$defs/GridPhase"
+    },
+    "operating_mode": {
+      "enum": [
+        "grid_connected",
+        "backup"
+      ],
+      "title": "Operating Mode",
+      "type": "string"
+    },
+    "pv_dc_kw": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "required_usable_kwh": {
+      "$ref": "#/$defs/Nonnegative"
+    },
+    "required_discharge_ac_kw": {
+      "$ref": "#/$defs/Nonnegative"
+    }
+  },
+  "required": [
+    "schema_version",
+    "grid_phase",
+    "operating_mode",
+    "pv_dc_kw",
+    "required_usable_kwh",
+    "required_discharge_ac_kw"
+  ],
+  "title": "EquipmentRequirements",
+  "type": "object"
+}

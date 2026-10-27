@@ -1,0 +1,937 @@
+[
+  {
+    "text": "The scenario needs gross-load, available-PV and separate AC auxiliary interval profiles.",
+    "file": "src/components/energy/EnergyError.tsx",
+    "line": 9
+  },
+  {
+    "text": "The storage parameters need a source or assumption note.",
+    "file": "src/components/energy/EnergyError.tsx",
+    "line": 14
+  },
+  {
+    "text": "Storage values need attention. Efficiencies must be greater than 0% and no more than 100%; other storage values must be zero or greater.",
+    "file": "src/components/energy/EnergyError.tsx",
+    "line": 19
+  },
+  {
+    "text": "The three starting-energy amounts and their basis are required. An empty starting inventory can be selected explicitly.",
+    "file": "src/components/energy/EnergyError.tsx",
+    "line": 24
+  },
+  {
+    "text": "Initial stored energy exceeds the usable energy window.",
+    "file": "src/components/energy/EnergyError.tsx",
+    "line": 29
+  },
+  {
+    "text": "The final-inventory requirement needs a choice and, when applicable, a minimum value.",
+    "file": "src/components/energy/EnergyError.tsx",
+    "line": 34
+  },
+  {
+    "text": "An operating period is incomplete. An outage also needs a critical-load profile.",
+    "file": "src/components/energy/EnergyError.tsx",
+    "line": 39
+  },
+  {
+    "text": "Period timestamps need a date, time and Z or a numeric UTC offset.",
+    "file": "src/components/energy/EnergyError.tsx",
+    "line": 44
+  },
+  {
+    "text": "Reserved energy exceeds the usable energy window.",
+    "file": "src/components/energy/EnergyError.tsx",
+    "line": 49
+  },
+  {
+    "text": "A specified import or export cap needs its value in kW. Zero is allowed.",
+    "file": "src/components/energy/EnergyError.tsx",
+    "line": 54
+  },
+  {
+    "text": "Grid charging cannot be enabled during an outage.",
+    "file": "src/components/energy/EnergyError.tsx",
+    "line": 59
+  },
+  {
+    "text": "The storage settings have changed and need to be prepared again.",
+    "file": "src/components/energy/EnergyError.tsx",
+    "line": 64
+  },
+  {
+    "text": "The inputs changed before preparation finished. Your current draft remains open.",
+    "file": "src/components/energy/EnergyError.tsx",
+    "line": 69
+  },
+  {
+    "text": "The required profiles have no shared time range.",
+    "file": "src/components/energy/EnergyError.tsx",
+    "line": 74
+  },
+  {
+    "text": "New calculations are temporarily unavailable. This request remains available for retry.",
+    "file": "src/components/energy/EnergyError.tsx",
+    "line": 79
+  },
+  {
+    "text": "The saved revision or request has changed. The open inputs and original request are kept for review.",
+    "file": "src/components/energy/EnergyError.tsx",
+    "line": 84
+  },
+  {
+    "text": "A newer input revision is saved on the server. This request did not create a calculation. Reopen the project to review the saved inputs.",
+    "file": "src/components/energy/EnergyError.tsx",
+    "line": 89
+  },
+  {
+    "text": "The scenario could not be accepted. Profile coverage, operating periods and storage settings need review.",
+    "file": "src/components/energy/EnergyError.tsx",
+    "line": 95
+  },
+  {
+    "text": "This calculation reply could not be verified. Saved calculations and the original request remain available.",
+    "file": "src/components/energy/EnergyError.tsx",
+    "line": 105
+  },
+  {
+    "text": "The request could not be confirmed. Your inputs remain open here.",
+    "file": "src/components/energy/EnergyError.tsx",
+    "line": 110
+  },
+  {
+    "text": "Energy calculation",
+    "file": "src/components/ProjectEditor.tsx",
+    "line": 465
+  },
+  {
+    "text": "Calculate this project's energy flows over the selected periods. Each saved result keeps the inputs, sources and model used.",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 399
+  },
+  {
+    "text": "Calculation workspace view",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 409
+  },
+  {
+    "text": "Scenario settings",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 416
+  },
+  {
+    "text": "Saved calculations",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 423
+  },
+  {
+    "text": "This browser could not save or read the information needed to recover calculation requests. New requests are paused until this is available.",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 430
+  },
+  {
+    "text": "Check browser storage",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 440
+  },
+  {
+    "text": "Stored requests",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 449
+  },
+  {
+    "text": "Retrying a calculation uses its original request and saved input revision. Restoring storage settings replaces those settings in your open draft.",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 451
+  },
+  {
+    "text": "Saved storage settings",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 463
+  },
+  {
+    "text": "Calculation request · revision %d",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 464
+  },
+  {
+    "text": "Restore and retry storage settings",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 479
+  },
+  {
+    "text": "Retry original calculation request",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 480
+  },
+  {
+    "text": "Dismiss confirmed request",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 489
+  },
+  {
+    "text": "This scenario-settings format cannot be edited here. Its saved input and calculation history remain available.",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 499
+  },
+  {
+    "text": "Interval sources",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 508
+  },
+  {
+    "text": "Selected in this draft",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 516
+  },
+  {
+    "text": "Required",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 517
+  },
+  {
+    "text": "Review energy inputs",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 529
+  },
+  {
+    "text": "Storage",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 546
+  },
+  {
+    "text": "Starting state",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 548
+  },
+  {
+    "text": "Operation",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 549
+  },
+  {
+    "text": "Scenario prepared in this draft",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 569
+  },
+  {
+    "text": "Scenario settings need preparation",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 570
+  },
+  {
+    "text": "Save project records these inputs before a new calculation can start.",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 574
+  },
+  {
+    "text": "A new calculation uses saved input revision %d.",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 578
+  },
+  {
+    "text": "Confirming request…",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 601
+  },
+  {
+    "text": "Prepare scenario settings",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 602
+  },
+  {
+    "text": "Calculate saved scenario",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 610
+  },
+  {
+    "text": "Saved calculation history could not be refreshed.",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 620
+  },
+  {
+    "text": "Refresh calculation history",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 630
+  },
+  {
+    "text": "Reading saved calculations…",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 636
+  },
+  {
+    "text": "Calculation history",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 641
+  },
+  {
+    "text": "No saved calculation is available on this page.",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 644
+  },
+  {
+    "text": "Latest calculations",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 676
+  },
+  {
+    "text": "Earlier calculations",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 685
+  },
+  {
+    "text": "The selected calculation could not be refreshed. Any visible state is the last confirmed response.",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 695
+  },
+  {
+    "text": "Refresh calculation status",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 705
+  },
+  {
+    "text": "Reading the saved calculation…",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 711
+  },
+  {
+    "text": "Confirming cancellation…",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 738
+  },
+  {
+    "text": "Cancel calculation",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 739
+  },
+  {
+    "text": "Cancellation could not be confirmed. The calculation may still be running; its server status can be refreshed.",
+    "file": "src/components/energy/EnergyWorkspace.tsx",
+    "line": 744
+  },
+  {
+    "text": "Operating period %d",
+    "file": "src/components/energy/OperatingPeriodForm.tsx",
+    "line": 43
+  },
+  {
+    "text": "Start with UTC or offset",
+    "file": "src/components/energy/OperatingPeriodForm.tsx",
+    "line": 47
+  },
+  {
+    "text": "End with UTC or offset",
+    "file": "src/components/energy/OperatingPeriodForm.tsx",
+    "line": 56
+  },
+  {
+    "text": "Grid condition",
+    "file": "src/components/energy/RunBasis.tsx",
+    "line": 254
+  },
+  {
+    "text": "Choose an option",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 295
+  },
+  {
+    "text": "Grid connected",
+    "file": "src/components/energy/RunBasis.tsx",
+    "line": 266
+  },
+  {
+    "text": "Grid outage",
+    "file": "src/components/energy/RunBasis.tsx",
+    "line": 265
+  },
+  {
+    "text": "Reserved stored energy",
+    "file": "src/components/energy/OperatingPeriodForm.tsx",
+    "line": 85
+  },
+  {
+    "text": "PV available in this period",
+    "file": "src/components/energy/OperatingPeriodForm.tsx",
+    "line": 93
+  },
+  {
+    "text": "Available",
+    "file": "src/components/energy/OperatingPeriodForm.tsx",
+    "line": 106
+  },
+  {
+    "text": "Unavailable",
+    "file": "src/components/energy/OperatingPeriodForm.tsx",
+    "line": 107
+  },
+  {
+    "text": "Grid charging allowed",
+    "file": "src/components/energy/OperatingPeriodForm.tsx",
+    "line": 112
+  },
+  {
+    "text": "Allowed",
+    "file": "src/components/energy/OperatingPeriodForm.tsx",
+    "line": 129
+  },
+  {
+    "text": "Not allowed",
+    "file": "src/components/energy/OperatingPeriodForm.tsx",
+    "line": 130
+  },
+  {
+    "text": "Grid import limit",
+    "file": "src/components/energy/OperatingPeriodForm.tsx",
+    "line": 137
+  },
+  {
+    "text": "No cap in this scenario",
+    "file": "src/components/energy/OperatingPeriodForm.tsx",
+    "line": 184
+  },
+  {
+    "text": "Specified cap",
+    "file": "src/components/energy/OperatingPeriodForm.tsx",
+    "line": 187
+  },
+  {
+    "text": "Import cap",
+    "file": "src/components/energy/OperatingPeriodForm.tsx",
+    "line": 161
+  },
+  {
+    "text": "Grid export limit",
+    "file": "src/components/energy/OperatingPeriodForm.tsx",
+    "line": 170
+  },
+  {
+    "text": "Export cap",
+    "file": "src/components/energy/OperatingPeriodForm.tsx",
+    "line": 194
+  },
+  {
+    "text": "During an outage, grid import, export and charging are zero. A critical-load profile and an explicit PV availability choice are required.",
+    "file": "src/components/energy/OperatingPeriodForm.tsx",
+    "line": 207
+  },
+  {
+    "text": "Remove operating period",
+    "file": "src/components/energy/OperatingPeriodForm.tsx",
+    "line": 215
+  },
+  {
+    "text": "Usable stored energy",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 12
+  },
+  {
+    "text": "AC charging power",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 14
+  },
+  {
+    "text": "AC discharging power",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 16
+  },
+  {
+    "text": "Charging efficiency",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 18
+  },
+  {
+    "text": "Discharging efficiency",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 20
+  },
+  {
+    "text": "Internal auxiliary power",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 22
+  },
+  {
+    "text": "Standing-loss coefficient",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 24
+  },
+  {
+    "text": "Sources, period and storage model",
+    "file": "src/components/energy/RunBasis.tsx",
+    "line": 161
+  },
+  {
+    "text": "Reading the sources used for this result…",
+    "file": "src/components/energy/RunBasis.tsx",
+    "line": 167
+  },
+  {
+    "text": "The sources used for this result could not be read. The saved result still refers to its original sources.",
+    "file": "src/components/energy/RunBasis.tsx",
+    "line": 173
+  },
+  {
+    "text": "Retry reading sources",
+    "file": "src/components/energy/RunBasis.tsx",
+    "line": 183
+  },
+  {
+    "text": "Original content SHA-256",
+    "file": "src/components/energy/RunBasis.tsx",
+    "line": 198
+  },
+  {
+    "text": "Source metadata SHA-256",
+    "file": "src/components/energy/RunBasis.tsx",
+    "line": 205
+  },
+  {
+    "text": "The model uses a fixed internal energy window and separate AC conversion efficiencies. Battery export, temperature effects, ageing and switching behaviour are outside this energy calculation.",
+    "file": "src/components/energy/RunBasis.tsx",
+    "line": 240
+  },
+  {
+    "text": "Calculated operating periods (UTC)",
+    "file": "src/components/energy/RunBasis.tsx",
+    "line": 248
+  },
+  {
+    "text": "Source resolution",
+    "file": "src/components/energy/RunBasis.tsx",
+    "line": 255
+  },
+  {
+    "text": "Reconstructed interval means",
+    "file": "src/components/energy/RunBasis.tsx",
+    "line": 279
+  },
+  {
+    "text": "Time alignment preserves interval energy under a constant-mean assumption. A finer display or operating boundary does not create new measured peaks.",
+    "file": "src/components/energy/RunBasis.tsx",
+    "line": 296
+  },
+  {
+    "text": "Queued",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 10
+  },
+  {
+    "text": "Calculating",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 12
+  },
+  {
+    "text": "Waiting to retry",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 14
+  },
+  {
+    "text": "Calculation complete",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 16
+  },
+  {
+    "text": "Calculation failed",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 18
+  },
+  {
+    "text": "Calculation cancelled",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 20
+  },
+  {
+    "text": "A model or source used by this calculation is unavailable. Its original inputs remain saved.",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 26
+  },
+  {
+    "text": "The saved scenario could not be calculated. Source coverage, operating periods or storage settings need attention.",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 31
+  },
+  {
+    "text": "The calculation exceeded the service's current processing limit. Its original inputs remain saved.",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 36
+  },
+  {
+    "text": "The numerical checks could not establish a usable result. The saved inputs remain available.",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 41
+  },
+  {
+    "text": "The calculation stopped before a result was published. Its original inputs remain saved.",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 46
+  },
+  {
+    "text": "Saved calculation",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 93
+  },
+  {
+    "text": "Input revision %d",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 98
+  },
+  {
+    "text": "This calculation uses an earlier input snapshot. Open or newer project changes are excluded from its result.",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 103
+  },
+  {
+    "text": "Leaving this workspace does not cancel the calculation. Its status is saved on the server.",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 111
+  },
+  {
+    "text": "The server has confirmed cancellation. Any earlier saved results remain available.",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 120
+  },
+  {
+    "text": "The calculation checks need attention. The detailed checks identify unmet requirements or inconsistencies.",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 130
+  },
+  {
+    "text": "Solar supplied to load",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 141
+  },
+  {
+    "text": "Grid import",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 147
+  },
+  {
+    "text": "Solar share of gross demand",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 153
+  },
+  {
+    "text": "PV used or stored on site",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 157
+  },
+  {
+    "text": "Figures cover the simulated periods. Solar supply includes PV-origin battery energy; grid-origin and unknown-origin inventory remain separate.",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 162
+  },
+  {
+    "text": "This calculation includes critical-load periods. A whole-site gross-demand percentage is therefore undefined.",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 169
+  },
+  {
+    "text": "The solar share is undefined when gross demand is zero.",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 178
+  },
+  {
+    "text": "The PV-use percentage is undefined when generated PV energy is zero.",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 186
+  },
+  {
+    "text": "Equipment suitability: not assessed by this calculation.",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 194
+  },
+  {
+    "text": "Country requirements: not assessed by this calculation.",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 200
+  },
+  {
+    "text": "Energy totals and definitions",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 208
+  },
+  {
+    "text": "Simulated load demand",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 212
+  },
+  {
+    "text": "Generated AC PV energy",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 216
+  },
+  {
+    "text": "Unserved simulated load",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 220
+  },
+  {
+    "text": "Calculated intervals",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 224
+  },
+  {
+    "text": "Solar share of gross demand divides PV energy delivered to gross site load by gross site demand. It is undefined for a mixed or critical-only load scope, or zero gross demand.",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 229
+  },
+  {
+    "text": "This percentage divides PV supplied to load, AC auxiliary demand and battery charging by generated PV after curtailment. Battery charging is counted before conversion losses, including energy still stored at the end. Curtailed PV is excluded from the denominator.",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 235
+  },
+  {
+    "text": "Numerical verification details",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 242
+  },
+  {
+    "text": "These checks cover the declared energy model and scenario. Their numerical allowances address floating-point arithmetic; they are not installation safety margins.",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 244
+  },
+  {
+    "text": "Checks recorded with this result",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 252
+  },
+  {
+    "text": "Check reference",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 256
+  },
+  {
+    "text": "Outcome",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 257
+  },
+  {
+    "text": "Largest deviation",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 258
+  },
+  {
+    "text": "Arithmetic tolerance",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 259
+  },
+  {
+    "text": "Met",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 272
+  },
+  {
+    "text": "Needs attention",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 273
+  },
+  {
+    "text": "Calculation records",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 291
+  },
+  {
+    "text": "Input SHA-256",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 295
+  },
+  {
+    "text": "Manifest SHA-256",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 301
+  },
+  {
+    "text": "Result SHA-256",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 307
+  },
+  {
+    "text": "Runtime SHA-256",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 313
+  },
+  {
+    "text": "Energy trace SHA-256",
+    "file": "src/components/energy/RunResult.tsx",
+    "line": 319
+  },
+  {
+    "text": "Storage parameters",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 60
+  },
+  {
+    "text": "These values define a storage scenario at one AC connection. This calculation does not assess product suitability.",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 62
+  },
+  {
+    "text": "Source or assumption for storage parameters",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 112
+  },
+  {
+    "text": "Storage model and units",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 126
+  },
+  {
+    "text": "Usable stored energy is the model's internal energy window. Charging and discharging power are measured at the AC connection. The two efficiencies describe their separate conversion directions.",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 128
+  },
+  {
+    "text": "Internal auxiliary power is drawn from stored energy. Separate AC auxiliary demand comes from its interval profile. Standing loss uses E × (1 − exp(−r × hours)), with r in 1/h. Zero losses are explicit scenario assumptions.",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 134
+  },
+  {
+    "text": "This model uses fixed capacity, power and efficiency. Temperature effects, ageing, shared DC ports, phase limits and switching behaviour require their own assessment.",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 140
+  },
+  {
+    "text": "Initial stored energy",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 148
+  },
+  {
+    "text": "Stored energy keeps its origin throughout the calculation. Energy from the grid or an unknown source is excluded from the solar-supplied total.",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 150
+  },
+  {
+    "text": "From PV",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 163
+  },
+  {
+    "text": "From the grid",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 165
+  },
+  {
+    "text": "Origin unknown",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 166
+  },
+  {
+    "text": "Empty stored-energy inventory selected for the start of this scenario.",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 192
+  },
+  {
+    "text": "Start with an empty battery",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 200
+  },
+  {
+    "text": "Basis for the initial state",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 203
+  },
+  {
+    "text": "Operating periods",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 220
+  },
+  {
+    "text": "Periods must join without gaps or overlaps and stay within the source data. Timestamps include Z for UTC or an explicit offset, such as +01:00.",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 222
+  },
+  {
+    "text": "Checking profile coverage…",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 234
+  },
+  {
+    "text": "Use the shared profile range",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 235
+  },
+  {
+    "text": "Add operating period",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 281
+  },
+  {
+    "text": "Stored energy at the end of the calculation",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 284
+  },
+  {
+    "text": "No minimum required",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 297
+  },
+  {
+    "text": "Specify a minimum",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 300
+  },
+  {
+    "text": "Minimum final stored energy",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 307
+  },
+  {
+    "text": "How storage is operated",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 318
+  },
+  {
+    "text": "PV supplies the simulated load and AC auxiliary demand first. Surplus PV charges the battery within the specified power and energy limits. The battery supplies remaining demand using stored energy above the reserve. When connected, the grid supplies any remaining demand within the import limit. This controller does not request grid charging. Remaining PV is exported within the export limit, then curtailed.",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 320
+  },
+  {
+    "text": "Stored energy continues across every period. The model excludes battery export and does not reset the battery at midnight or at the start of an outage.",
+    "file": "src/components/energy/ScenarioForm.tsx",
+    "line": 326
+  },
+  {
+    "text": "Simulated demand supplied",
+    "file": "src/components/energy/verificationLabel.ts",
+    "line": 7
+  },
+  {
+    "text": "AC auxiliary demand supplied",
+    "file": "src/components/energy/verificationLabel.ts",
+    "line": 8
+  },
+  {
+    "text": "Internal auxiliary demand supplied",
+    "file": "src/components/energy/verificationLabel.ts",
+    "line": 9
+  },
+  {
+    "text": "Stored-energy reserve",
+    "file": "src/components/energy/verificationLabel.ts",
+    "line": 10
+  },
+  {
+    "text": "Usable stored-energy limit",
+    "file": "src/components/energy/verificationLabel.ts",
+    "line": 11
+  },
+  {
+    "text": "Final stored-energy requirement",
+    "file": "src/components/energy/verificationLabel.ts",
+    "line": 12
+  },
+  {
+    "text": "AC charging-power limit",
+    "file": "src/components/energy/verificationLabel.ts",
+    "line": 13
+  },
+  {
+    "text": "AC discharging-power limit",
+    "file": "src/components/energy/verificationLabel.ts",
+    "line": 14
+  },
+  {
+    "text": "Scenario settings and saved calculations",
+    "file": "src/components/ProjectOverview.tsx",
+    "line": 193
+  }
+]

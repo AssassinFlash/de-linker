@@ -22,7 +22,16 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field, replace
 from typing import Any, Protocol
 
-from linker_genie import attachments, contact, knowledge, page, parts, solution, timing
+from linker_genie import (
+    attachments,
+    contact,
+    knowledge,
+    page,
+    parts,
+    planning,
+    solution,
+    timing,
+)
 from linker_genie.abilities import Abilities, AbilityError
 from linker_genie.conversation import customer_messages, last_customer_message
 from linker_genie.embedding import EmbeddingError
@@ -516,6 +525,11 @@ def _run_calls(
                     language,
                 )
                 return call.arguments, payload, gathered
+            if call.ability == planning.NAME:
+                payload, gathered = planning.record(
+                    request.planning_context, request.page_context
+                )
+                return {}, payload, gathered
             if call.ability == knowledge.NAME:
                 # The document search runs in this process (knowledge.py, #257).
                 arguments = with_tool_lang(knowledge.NAME, call.arguments, language)

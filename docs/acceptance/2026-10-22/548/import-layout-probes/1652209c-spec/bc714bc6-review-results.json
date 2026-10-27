@@ -1,0 +1,32 @@
+{
+  "verdict": "PASS",
+  "findings": [],
+  "base": "6dc3c292079ec4f654113ecd3e11b631906e6c04",
+  "target": "bc714bc628f1555d2ddcbface216dabc7b9371d5",
+  "diff_command": "git diff 6dc3c292079ec4f654113ecd3e11b631906e6c04...bc714bc628f1555d2ddcbface216dabc7b9371d5",
+  "scope": "GeometryForm focus context; import-only responsive fields; read-only roof preview padding/touch scrolling; existing regression assertion and generated assets/manifests",
+  "checks": {
+    "snapshot_hashes": "148/148",
+    "design_editor_dom_tests": "6/6",
+    "initial_focus_strict_mode": "PASS",
+    "css_cascade_widths": [
+      390,
+      640,
+      641,
+      768,
+      980,
+      1180,
+      1440
+    ],
+    "source_build_manifest": "PASS",
+    "emitted_module_test": "1/1",
+    "generated_complete_byte_equivalence_after_declared_changes": "3/3"
+  },
+  "native_browser_claim": false,
+  "gpu_claim": false,
+  "full_548_claim": false,
+  "production_claim": false,
+  "cleanup_evidence": "bc714bc6-cleanup.json",
+  "review_file": "bc714bc6-REVIEW.md",
+  "checked_utc": "2026-10-23T12:41:34.695528+00:00"
+}

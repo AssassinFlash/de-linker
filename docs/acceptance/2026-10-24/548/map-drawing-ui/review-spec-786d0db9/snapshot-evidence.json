@@ -1,0 +1,33 @@
+{
+  "pin": "786d0db99203d35010b6a7fdc38dc984b3058606",
+  "previous_spec_pin": "b48ffda68aeb2e9f17dd27b84f7449e05b321873",
+  "full_base": "43297ecf5673fa5f29c82f90fbe583666a5e3e15",
+  "delta_command": "git diff b48ffda6...786d0db9",
+  "delta_files": 11,
+  "pinned_manifest_hash_checks": {
+    "sources": 114,
+    "build": 7
+  },
+  "compiled_formal_german_entries_checked": 44,
+  "p2_code_byte_identical_to_previous_review": [
+    "apps/planner/src/data/useMapRoofDraft.ts",
+    "apps/planner/src/data/MapRoofDraftStore.ts",
+    "apps/planner/src/domain/mapRoofDraft.ts"
+  ],
+  "p2_recheck_output": "p2-unchanged-hook-recheck.json",
+  "p2_recheck_note": "Prior probe retains its b48 baseline label; the pinned loader supplies 786 source, and these three closure modules are byte-identical. Exact uncertain replay, public Retry, competing-tab guard and discard all passed again.",
+  "fixture_loading": "Application and test sources loaded in memory from Git pin; exported test harness only in the isolated probe URL; no app/test files changed. Built-module test receives fixed-pin manifest and exact emitted ESM bytes.",
+  "prior_review_files_sha256": {
+    "review-spec-9efd14fc/REPORT.md": "4f47a7fa99471cc3e9361e77450919c3e1c67cdd39c14c663ba4e89ab148513f",
+    "review-spec-9efd14fc/probe-unknown-ack.mjs": "9f18f63a0239a674501246ca0692d0330ab02248b367475d573fdc4862442fd9",
+    "review-spec-9efd14fc/snapshot-evidence.json": "8bea181c0bd8702ccabf66d87e2563505abd134173f739f8f8c89c95b9f34d2a",
+    "review-spec-9efd14fc/unknown-ack.json": "897430f9633476495c9f12c89541eed6965be935bad92908e04efd75111d09f9",
+    "review-spec-b48ffda6/REPORT.md": "6b15b756d6cc849c948399a0f5ad78a8549f1188be5843d8c404fc80cb9f181e",
+    "review-spec-b48ffda6/final-recovery.json": "65af8f3c693475f764369ed8a27bf5ac6f600ffc5447bbbd5b8a1d9c0c53ec14",
+    "review-spec-b48ffda6/focused-tests.txt": "39235e7c5c1f3b0bd39e89e29b382b9b9ef6857f5a9aea7bd3e8c89658323df7",
+    "review-spec-b48ffda6/probe-final-recovery.mjs": "ee6fe407bb6ac303facc9580bf229888e2fd24221584954f47f8a7052d8cb386",
+    "review-spec-b48ffda6/snapshot-evidence.json": "f3bb6017fda18bda4168d8c9040be4a1ba9a02246b5220bfab5d1903b74ef6c7"
+  },
+  "native_geometry_refusal": "still open; fixture engine refusal is synthetic and no native refusal is claimed",
+  "native_acceptance": "owner evidence separate; no native/prod/whole-goal acceptance by this review"
+}

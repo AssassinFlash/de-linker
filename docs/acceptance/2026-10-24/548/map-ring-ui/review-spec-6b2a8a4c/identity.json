@@ -1,0 +1,71 @@
+{
+  "previous_pin": "f1a0dee90dd719ce5532724a9f6e9021f1555705",
+  "pin": "6b2a8a4cc43c95d4710fcb42f16d1bd1e4a8c100",
+  "head_verified": true,
+  "diff_command": "git diff f1a0dee90dd719ce5532724a9f6e9021f1555705...6b2a8a4cc43c95d4710fcb42f16d1bd1e4a8c100",
+  "commits": [
+    "6b2a8a4cc43c95d4710fcb42f16d1bd1e4a8c100 test(planner): provide browser timers for restored map entry checks",
+    "df750434d03f0fe8491360d718132069035dba39 fix(planner): restore the map workspace from property links"
+  ],
+  "delta_files": [
+    "M\tapps/planner/src/components/ProjectEditor.tsx",
+    "M\tapps/planner/src/components/design/DesignEditor.tsx",
+    "M\tapps/planner/tests/workspace-lifecycle.test.mjs",
+    "R099\tplugins/linker-tools/build/planner/assets/MapViewport-UQ-6e4HB.js\tplugins/linker-tools/build/planner/assets/MapViewport-BX6sYlkO.js",
+    "R099\tplugins/linker-tools/build/planner/assets/SceneViewport-Dq4MY0tH.js\tplugins/linker-tools/build/planner/assets/SceneViewport-DE8mc7QF.js",
+    "A\tplugins/linker-tools/build/planner/assets/planner-core-Bdp5Gh4z.js",
+    "D\tplugins/linker-tools/build/planner/assets/planner-core-DFB-X0pb.js",
+    "M\tplugins/linker-tools/build/planner/assets/planner.js",
+    "M\tplugins/linker-tools/build/planner/source-manifest.json",
+    "M\tplugins/linker-tools/build/planner/vite-manifest.json"
+  ],
+  "manifest": {
+    "sources": {
+      "count": 121,
+      "committed_hashes_match": true,
+      "working_bytes_match_pin": true
+    },
+    "build": {
+      "count": 7,
+      "committed_hashes_match": true,
+      "working_bytes_match_pin": true
+    }
+  },
+  "parent_evidence": {
+    "anchor-reload-before.txt": {
+      "bytes": 450,
+      "sha256": "0622ede579f6035c6dd75bb634a370a09f403f0395e8aadf78f84645b03cd226"
+    },
+    "anchor-reload-after.txt": {
+      "bytes": 450,
+      "sha256": "0622ede579f6035c6dd75bb634a370a09f403f0395e8aadf78f84645b03cd226"
+    },
+    "tests-anchor-fixture-failure.txt": {
+      "bytes": 30898,
+      "sha256": "ec918fad0daba98e0588fd6dd312796b56b5561ab8932bc891026ac3d76a1d23"
+    },
+    "tests-final-output.txt": {
+      "bytes": 23803,
+      "sha256": "006f5e2693548a2046e6c7957e63e87d2c98b32f4ea857d8a87d95e60a08a9af"
+    }
+  },
+  "parent_anchor_text_logs_identical": true,
+  "fixture_failure_at_first_commit": {
+    "domain_pass": 92,
+    "react_pass": 134,
+    "react_fail": 7,
+    "reason": "Undefined requestAnimationFrame.bind in plain JSDOM; final pin replaces it with explicit test timers."
+  },
+  "parent_final_full_suite_record": {
+    "domain_pass": 92,
+    "react_pass": 141,
+    "fail": 0,
+    "independently_rerun": false
+  },
+  "independent_checks": [
+    "two property-link tests",
+    "one actual DesignEditor initialization/rerender/default probe",
+    "read-only build-manifest check"
+  ],
+  "boundary": "No browser/instance/native reload operated; no engineering/production/full-goal acceptance."
+}

@@ -1,0 +1,48 @@
+{
+  "base": "367640fcf09eba92eb77b8e61aaedaa6957cdd7b",
+  "final_source": "471755229cf369f4a82711bd7b9f12d05e161154",
+  "app": {
+    "domain_and_data_pass": 135,
+    "dom_pass": 172,
+    "fail": 0,
+    "skip": 0,
+    "todo": 0,
+    "log": "app-tests-final.txt",
+    "production_build_and_manifest": "passed",
+    "formatting": "passed"
+  },
+  "engine": {
+    "schema_and_real_browser_asgi_contract_tests": 3,
+    "related_tmy_and_native_gateway_tests": 110,
+    "strict_type_files": 159,
+    "strict_type_command": "MYPY_PATH=src .venv/bin/mypy --cache-dir=/dev/null src tests/planning/test_browser_solar_contracts.py scripts/export_planner_schemas.py",
+    "strict_type_exit_code": 0,
+    "whole_tree_type_status": "failed;199 errors in16 unchanged test files, not waived",
+    "changed_python_style": "ruff passed"
+  },
+  "i18n": {
+    "reviewed_messages": 99,
+    "native_wordpress_i18n": "passed",
+    "source_and_script_catalog_coverage": "passed",
+    "catalog_validity_count": 8,
+    "german_copy": "passed"
+  },
+  "browser": {
+    "views": "EN/DE at requested1440/390; actual client content width excludes scrollbar",
+    "captures": 10,
+    "native_installation_proved": false,
+    "external_provider_started": false,
+    "fixture_hmr": "0 duplicate-root warnings; probe removed and resources reclaimed"
+  },
+  "legacy_added_line_hits": {
+    "tv_b2b_": 0,
+    "Linker_AI_": 0,
+    "dlk-": 0
+  },
+  "secret_added_line_hits": {
+    "apify_api_": 0,
+    "sk-proj-": 0,
+    "ghp_": 0
+  },
+  "full_goal_accepted": false
+}

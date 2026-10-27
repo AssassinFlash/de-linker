@@ -1,0 +1,35 @@
+{"case":"transform_removed_while_gesture_active","position":[1,2,3],"cancelled":1,"finished":0,"expectedProjectPosition":[1,2,3]}
+✖ unmounting an active actual transform preserves its preview instead of cancelling (110.571334ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 923.77425
+
+✖ failing tests:
+
+test at tests/standards-unmount-transform-probe.mjs:2:1
+✖ unmounting an active actual transform preserves its preview instead of cancelling (110.571334ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+  +   1,
+  -   7,
+      2,
+      3
+    ]
+  
+      at TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-b008-_buw2n9_/apps/planner/tests/standards-unmount-transform-probe.mjs:8:9)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 1, 2, 3 ],
+    expected: [ 7, 2, 3 ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

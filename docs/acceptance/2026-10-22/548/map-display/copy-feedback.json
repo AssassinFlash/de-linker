@@ -1,0 +1,125 @@
+[
+  {
+    "en": "Fit design",
+    "de": "Gesamte Planung anzeigen",
+    "concern": "This calls fitBounds and changes the camera. Fit design can imply changing the geometry or checking whether the design fits.",
+    "proposed_en": "Show full design"
+  },
+  {
+    "en": "Hide street map",
+    "de": "Straßenkarte ausblenden",
+    "concern": ""
+  },
+  {
+    "en": "Load street map",
+    "de": "Straßenkarte laden",
+    "concern": ""
+  },
+  {
+    "en": "Loading map workspace…",
+    "de": "Karte wird geladen…",
+    "concern": "Workspace exposes the application's structure. The visitor is opening a map view.",
+    "proposed_en": "Loading map…"
+  },
+  {
+    "en": "Loading the street map sends your IP address and the map area to OpenFreeMap and its delivery network. Street-map data is a reference for orientation.",
+    "de": "Wenn Sie die Straßenkarte laden, erhalten OpenFreeMap und die beteiligten Dienste Ihre IP-Adresse und Angaben zum angezeigten Kartenausschnitt. Die Straßenkarte dient der Orientierung.",
+    "concern": "Keep the supported IP/service disclosure. Area shown and for orientation are clearer than map area and data is a reference. This wording does not establish privacy or licensing acceptance.",
+    "proposed_en": "Loading the street map sends your IP address and the area shown to OpenFreeMap and its delivery network. The street map is for orientation."
+  },
+  {
+    "en": "Map",
+    "de": "Karte",
+    "concern": ""
+  },
+  {
+    "en": "Map attribution",
+    "de": "Quellenangaben zur Karte",
+    "concern": ""
+  },
+  {
+    "en": "Map controls",
+    "de": "Bedienelemente der Karte",
+    "concern": ""
+  },
+  {
+    "en": "Map feedback",
+    "de": "Rückmeldung zur Karte",
+    "concern": ""
+  },
+  {
+    "en": "Map provider privacy",
+    "de": "Datenschutzhinweise von OpenFreeMap",
+    "concern": "The link opens OpenFreeMap's privacy page. Naming that destination is clearer than the abstract provider label.",
+    "proposed_en": "OpenFreeMap privacy policy"
+  },
+  {
+    "en": "North up",
+    "de": "Norden oben",
+    "concern": ""
+  },
+  {
+    "en": "Project geometry",
+    "de": "Projektgeometrie",
+    "concern": ""
+  },
+  {
+    "en": "Project map",
+    "de": "Projektkarte",
+    "concern": ""
+  },
+  {
+    "en": "Retry loading map",
+    "de": "Karte erneut laden",
+    "concern": ""
+  },
+  {
+    "en": "Some map resources could not be displayed. Your project geometry is unchanged.",
+    "de": "Die Karte konnte nicht vollständig angezeigt werden. Die Geometrie Ihres Projekts ist unverändert.",
+    "concern": "This notice also handles complete initialization or graphics-context failure. Some resources understates those states and exposes an internal term.",
+    "proposed_en": "The map could not be fully displayed. Your project geometry is unchanged."
+  },
+  {
+    "en": "Street map",
+    "de": "Straßenkarte",
+    "concern": ""
+  },
+  {
+    "en": "The map needs a geographic origin and a recorded true-north reference for this design.",
+    "de": "Die Kartenansicht benötigt einen geografischen Ursprung und einen im Projekt hinterlegten Bezug auf geografisch Nord.",
+    "concern": ""
+  },
+  {
+    "en": "The map places your recorded geometry at its geographic reference. Roof dimensions and source accuracy stay as declared in the project.",
+    "de": "Die Karte zeigt die erfasste Geometrie anhand des geografischen Projektbezugs. Dachmaße und die im Projekt angegebene Quellengenauigkeit bleiben unverändert.",
+    "concern": "Places geometry at its reference is abstract. Name the display operation and retain declared accuracy so the map cannot imply a survey check.",
+    "proposed_en": "The map displays your recorded geometry using the project's geographic reference. Roof dimensions and declared source accuracy remain unchanged."
+  },
+  {
+    "en": "The map workspace could not be loaded. Plan view, 3D and numeric properties remain available.",
+    "de": "Die Karte konnte nicht geladen werden. Sie können weiterhin die Ansicht wechseln oder numerische Eigenschaften bearbeiten.",
+    "concern": "Workspace is internal language. The boundary can also catch rendering failure, so 3D remains available may overpromise successful graphics rendering. State the surviving UI actions.",
+    "proposed_en": "The map could not be loaded. You can still switch views or edit numeric properties."
+  },
+  {
+    "en": "This geometry cannot be displayed by the map projection. Plan view, 3D and numeric properties remain available.",
+    "de": "Diese Geometrie lässt sich auf der Karte nicht darstellen. Sie können weiterhin die Ansicht wechseln oder numerische Eigenschaften bearbeiten.",
+    "concern": "Name the failed map view without making the projection an actor. State accessible actions rather than an unconditional promise that other renderers will display every rejected geometry.",
+    "proposed_en": "This geometry cannot be shown on the map. You can still switch views or edit numeric properties."
+  },
+  {
+    "en": "Use Ctrl + scroll to zoom the map",
+    "de": "Zum Zoomen der Karte Strg gedrückt halten und scrollen.",
+    "concern": ""
+  },
+  {
+    "en": "Use two fingers to move the map",
+    "de": "Die Karte mit zwei Fingern verschieben.",
+    "concern": ""
+  },
+  {
+    "en": "Use ⌘ + scroll to zoom the map",
+    "de": "Zum Zoomen der Karte ⌘ gedrückt halten und scrollen.",
+    "concern": ""
+  }
+]

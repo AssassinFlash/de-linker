@@ -1,0 +1,12 @@
+{
+  "pin": "786d0db99203d35010b6a7fdc38dc984b3058606",
+  "first_success_focused_result": true,
+  "repeated_success_focused_result": false,
+  "repeated_success_focus_tag": "BODY",
+  "accepted_commands": 2,
+  "query_count": 2,
+  "input_changes_between_submits": 0,
+  "geometry_restore_status_truthful": true,
+  "source": "Fixed-pin application loaded in memory; unchanged installed React; existing JSDOM/fake Map and synthetic engine fixture",
+  "boundary": "Focus/effect regression only; does not establish native scroll, actual engine refusal or production acceptance"
+}

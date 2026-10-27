@@ -1,0 +1,102 @@
+{
+  "pin": "c562676a2af2a73864d75c34b79d7b8db357ed63",
+  "base": "66324a39fb449425dd1144b46b4d3abc21dc52d0",
+  "diff": "git diff 66324a39...c562676a2af2a73864d75c34b79d7b8db357ed63",
+  "commits": [
+    "c562676a feat(planner): add metric map drawing command and controller boundaries (#548)"
+  ],
+  "source_hashes_checked": 106,
+  "controller_sha256": "c93bc5568adef4f674f4fbf40f65003cf1827422c1b0f7e13604e5437ee9cb2d",
+  "packages": {
+    "terra-draw": {
+      "version": "1.35.0"
+    },
+    "terra-draw-maplibre-gl-adapter": {
+      "version": "1.4.1"
+    }
+  },
+  "records": [
+    {
+      "case": "actual-adapter positive endpoint control",
+      "transactions": [
+        {
+          "steps": [
+            {
+              "action": "dragCoordinate",
+              "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                  [
+                    [
+                      -0.000751234,
+                      -0.000121234
+                    ],
+                    [
+                      0.002,
+                      0
+                    ],
+                    [
+                      0.002,
+                      -0.002
+                    ],
+                    [
+                      -0.000751234,
+                      -0.000121234
+                    ]
+                  ]
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "remaining_sources": 0,
+      "remaining_layers": 0,
+      "errors": []
+    },
+    {
+      "case": "blur interruption",
+      "terminal_failed_callbacks": [],
+      "terminal_interrupted_callbacks": 0,
+      "uncaught_dom_errors": [
+        "synthetic_remove_layer_refusal"
+      ],
+      "escaped_dispose_error": null,
+      "transactions": 0,
+      "raw_preserved": true,
+      "handlers_and_cursor_restored": true,
+      "remaining_sources": 3,
+      "remaining_layers": 5,
+      "owner_remove_reached": false
+    },
+    {
+      "case": "invalid endpoint failure",
+      "terminal_failed_callbacks": [],
+      "terminal_interrupted_callbacks": 0,
+      "uncaught_dom_errors": [
+        "synthetic_remove_layer_refusal"
+      ],
+      "escaped_dispose_error": null,
+      "transactions": 0,
+      "raw_preserved": true,
+      "handlers_and_cursor_restored": true,
+      "remaining_sources": 3,
+      "remaining_layers": 5,
+      "owner_remove_reached": false
+    },
+    {
+      "case": "public owner disposal",
+      "terminal_failed_callbacks": [],
+      "terminal_interrupted_callbacks": 0,
+      "uncaught_dom_errors": [],
+      "escaped_dispose_error": "synthetic_remove_layer_refusal",
+      "transactions": 0,
+      "raw_preserved": true,
+      "handlers_and_cursor_restored": true,
+      "remaining_sources": 3,
+      "remaining_layers": 5,
+      "owner_remove_reached": false
+    }
+  ],
+  "evidence_limit": "Real library and actual adapter with DOM/Map port plus injected removeLayer failure. Not native WebGL/touch/provider/full drawing acceptance; owner cleanup sequence is an illustrative consumer, not a mounted application path."
+}

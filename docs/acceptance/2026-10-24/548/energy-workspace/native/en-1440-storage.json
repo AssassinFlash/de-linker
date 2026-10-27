@@ -1,0 +1,35 @@
+{
+  "focus": {
+    "classes": "lp-section lp-energy-workspace",
+    "rect": {
+      "bottom": 1697.5703125,
+      "height": 1519.7734375,
+      "left": 266.5546875,
+      "right": 1405.4453125,
+      "top": 177.796875,
+      "width": 1138.890625,
+      "x": 266.5546875,
+      "y": 177.796875
+    },
+    "tag": "SECTION"
+  },
+  "headings": [
+    "Energy calculation",
+    "Interval sources",
+    "Storage parameters",
+    "Software and data credits"
+  ],
+  "scripts": [
+    "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=572eaa2c195d8262b261e13eacc761a4ac094b3bf6ce9eb51cf285d28abe4c59"
+  ],
+  "scroll": {
+    "pageWidth": 1440,
+    "x": 0,
+    "y": 163.5
+  },
+  "url": "http://127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be#lp-calculations",
+  "viewport": {
+    "height": 1000,
+    "width": 1440
+  }
+}

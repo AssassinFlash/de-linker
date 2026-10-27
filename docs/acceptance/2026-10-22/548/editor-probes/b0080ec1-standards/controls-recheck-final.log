@@ -1,0 +1,24 @@
+{"mode":"handles_unmount","position":[1,2,3],"cancelled":1,"finished":0}
+✔ actual Three controller handles_unmount (114.533333ms)
+{"mode":"frame_change","position":[1,2,3],"cancelled":1,"finished":0}
+✔ actual Three controller frame_change (21.411375ms)
+{"mode":"escape","position":[1,2,3],"cancelled":1,"finished":0}
+✔ actual Three controller escape (11.13725ms)
+{"mode":"blur","position":[1,2,3],"cancelled":1,"finished":0}
+✔ actual Three controller blur (12.572834ms)
+{"mode":"pointercancel","position":[1,2,3],"cancelled":1,"finished":0}
+✔ actual Three controller pointercancel (11.15825ms)
+{"mode":"lostpointercapture","position":[1,2,3],"cancelled":1,"finished":0}
+✔ actual Three controller lostpointercapture (11.10925ms)
+{"mode":"normal_finish","position":[7,2,3],"cancelled":0,"finished":1}
+✔ actual Three controller normal_finish (10.902458ms)
+{"mode":"whole_panels_unmount","refNullBeforePassiveCleanup":true,"commits":0,"restoredPosition":[11,4,18]}
+✔ whole Panels unmount clears the group ref before the real controller cancels (93.572542ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 806.630166

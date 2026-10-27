@@ -1,0 +1,17 @@
+{
+  "removed_files": 106,
+  "removed_logical_bytes": 798568,
+  "free_before": 875564986368,
+  "free_after": 875566100480,
+  "retained": [
+    "COPY-FEEDBACK.json",
+    "results.json",
+    "COPY-REVIEW.md",
+    "probe-renderer-init.mjs",
+    "archive-manifest.json",
+    "REVIEW.md",
+    "apps/planner/tests/standards-lazy-loader.mjs",
+    "apps/planner/tests/standards-lazy-staged-probe.mjs",
+    "apps/planner/tests/standards-lazy-probe.mjs"
+  ]
+}

@@ -1,0 +1,395 @@
+[
+  {
+    "en": "Roof-to-PV model",
+    "final_en": "PV generation model",
+    "de": "PV-Ertragsmodell",
+    "reasoning": "Names the model without an invented roof-to-PV product label."
+  },
+  {
+    "en": "This reference calculation estimates available AC generation from the saved roof layout and selected typical-year weather. It uses a uniform, unshaded pvlib model. Site shading, electrical strings and equipment or country approval need their own assessment.",
+    "final_en": "This reference calculation estimates available AC generation from the saved roof layout and selected typical-year weather. It uses a uniform, unshaded array model implemented with pvlib. Site shading, string design, equipment suitability and country-specific approval need separate assessment.",
+    "de": "Diese Referenzberechnung schätzt die verfügbare AC-Erzeugung anhand der gespeicherten Dachbelegung und des ausgewählten typischen Wetterjahrs. Jedes Modulfeld wird mit pvlib als unverschattete Referenz bei gleichmäßiger Einstrahlung modelliert. Standortverschattung, Strangplanung, Geräteeignung und länderspezifische Freigaben sind gesondert zu prüfen.",
+    "reasoning": "Preserves reference-model scope, selected typical-year source, actual pvlib use and all unassessed work; makes no engineering or country approval claim."
+  },
+  {
+    "en": "Current roof layout: %d active arrays.",
+    "final_en": "Active arrays in the current roof layout: %d.",
+    "de": "Aktive Modulfelder in der aktuellen Dachbelegung: %d.",
+    "reasoning": "Neutral count label independently approved after rendered singular-case observation: correct for counts of zero, one or multiple arrays without a singular/plural sentence mismatch."
+  },
+  {
+    "en": "Update parameters to current roof layout",
+    "final_en": "Update parameters for current roof layout",
+    "de": "Parameter an aktuelle Dachbelegung anpassen"
+  },
+  {
+    "en": "Updating retains parameters for matching arrays and module specifications, adds empty fields for new ones and removes entries outside the active layout. It does not assign model values or conversion groups.",
+    "final_en": "The update keeps parameters for matching arrays and module specifications, creates empty fields for new entries and removes entries outside the active layout. It does not supply new model values or assign new arrays to conversion groups.",
+    "de": "Beim Abgleich bleiben die Parameter passender Modulfelder und Modulspezifikationen erhalten. Neue Einträge erhalten leere Eingabefelder; Einträge außerhalb der aktiven Dachbelegung werden entfernt. Neue Modellwerte oder Gruppenzuordnungen werden dabei nicht festgelegt.",
+    "reasoning": "Explains layout synchronization without assigning physical coefficients or silently creating group membership."
+  },
+  {
+    "en": "Modules",
+    "final_en": "Modules",
+    "de": "Module"
+  },
+  {
+    "en": "Array models",
+    "final_en": "Array models",
+    "de": "Modelle der Modulfelder"
+  },
+  {
+    "en": "Power conversion",
+    "final_en": "Power conversion",
+    "de": "Umwandlung"
+  },
+  {
+    "en": "Updating to the current roof layout creates the module parameter fields.",
+    "final_en": "Module parameter fields are created when the parameters are updated for the current roof layout.",
+    "de": "Die Eingabefelder für Modulparameter entstehen beim Abgleich mit der aktuellen Dachbelegung."
+  },
+  {
+    "en": "Updating to the current roof layout creates the array model fields.",
+    "final_en": "Array model fields are created when the parameters are updated for the current roof layout.",
+    "de": "Die Eingabefelder für Modulfeldmodelle entstehen beim Abgleich mit der aktuellen Dachbelegung."
+  },
+  {
+    "en": "Array outside the current layout",
+    "final_en": "Array outside the current layout",
+    "de": "Modulfeld außerhalb der aktuellen Dachbelegung"
+  },
+  {
+    "en": "Shared power conversion",
+    "final_en": "Shared power conversion",
+    "de": "Gemeinsame Leistungsumwandlung"
+  },
+  {
+    "en": "Each active array belongs to one conversion group. The model sums the arrays' DC maximum power before one shared conversion curve and AC cap. It assumes independent maximum-power tracking; it does not model electrical strings or verify a physical inverter.",
+    "final_en": "Each active array must belong to exactly one conversion group. The model sums each group's array DC power after the declared losses, then applies one shared PVWatts conversion curve and AC output limit. Each array is assumed to have independent maximum-power tracking. Electrical strings and physical inverter suitability need separate assessment.",
+    "de": "Jedes aktive Modulfeld muss genau einer Umwandlungsgruppe zugeordnet sein. Das Modell addiert die DC-Leistungen der Gruppe nach den angegebenen Verlusten und wendet eine gemeinsame PVWatts-Kennlinie mit einer AC-Leistungsgrenze an. Es setzt eine unabhängige MPP-Regelung je Modulfeld voraus. Strangplanung und Eignung eines konkreten Wechselrichters sind gesondert zu prüfen.",
+    "reasoning": "Describes the actual DC-after-losses sum before one group conversion/clipping stage and independent-array MPPT assumption."
+  },
+  {
+    "en": "Add conversion group",
+    "final_en": "Add conversion group",
+    "de": "Umwandlungsgruppe hinzufügen"
+  },
+  {
+    "en": "Overall PV model assumptions",
+    "final_en": "Overall PV model assumptions",
+    "de": "Übergreifende Annahmen des PV-Modells"
+  },
+  {
+    "en": "Power temperature coefficient",
+    "final_en": "Temperature coefficient of maximum power",
+    "de": "Temperaturkoeffizient der maximalen Leistung"
+  },
+  {
+    "en": "This coefficient describes the change in maximum DC power per degree of cell temperature relative to 25 °C. A datasheet value of −0.29%/°C is entered as −0.29.",
+    "final_en": "The coefficient gives the relative change in maximum DC power for each 1 °C change in cell temperature, referenced to 25 °C. For a datasheet value of -0.29%/°C, the field value is -0.29.",
+    "de": "Der Koeffizient beschreibt die relative Änderung der maximalen DC-Leistung je 1 °C Zelltemperaturänderung, bezogen auf 25 °C. Bei einer Datenblattangabe von -0,29 %/°C lautet der Eingabewert -0,29.",
+    "reasoning": "25 °C reference and percent-to-per-degree meaning match PVWatts DC. ASCII minus and locale decimal separators are accepted by the real number parser."
+  },
+  {
+    "en": "Temperature-coefficient evidence",
+    "final_en": "Temperature-coefficient source",
+    "de": "Quelle des Temperaturkoeffizienten",
+    "reasoning": "A chosen source is not verified documentary evidence."
+  },
+  {
+    "en": "Choose a source",
+    "final_en": "Choose a source",
+    "de": "Quelle auswählen"
+  },
+  {
+    "en": "User-declared values",
+    "final_en": "User-declared values",
+    "de": "Vom Nutzer angegebene Werte",
+    "reasoning": "Reuses the existing approved EN/DE catalog entry unchanged."
+  },
+  {
+    "en": "Referenced datasheet",
+    "final_en": "Referenced datasheet",
+    "de": "Referenziertes Datenblatt",
+    "reasoning": "Reuses the existing approved EN/DE catalog entry unchanged."
+  },
+  {
+    "en": "Coefficient source and conditions",
+    "final_en": "Coefficient source and conditions",
+    "de": "Quelle und Bedingungen des Koeffizienten"
+  },
+  {
+    "en": "Coefficient document reference",
+    "final_en": "Coefficient document reference",
+    "de": "Dokumentverweis zum Koeffizienten"
+  },
+  {
+    "en": "A datasheet reference needs its URL, SHA-256 and page. This records the reference; it does not fetch or verify the document.",
+    "final_en": "A datasheet reference requires its URL, SHA-256 checksum and page number. This records the reference without downloading or verifying the document.",
+    "de": "Ein Datenblattverweis benötigt die URL, die SHA-256-Prüfsumme und die Seitenzahl. Der Verweis wird erfasst; das Dokument wird dabei weder heruntergeladen noch geprüft.",
+    "reasoning": "SHA-256 is identified as a checksum; reference entry does not imply acquisition or content verification."
+  },
+  {
+    "en": "Source document URL",
+    "final_en": "Source document URL",
+    "de": "URL des Quelldokuments",
+    "reasoning": "Reuses the existing approved EN/DE catalog entry unchanged."
+  },
+  {
+    "en": "Source document SHA-256",
+    "final_en": "Source document SHA-256",
+    "de": "SHA-256 des Quelldokuments",
+    "reasoning": "Reuses the existing approved EN/DE catalog entry unchanged."
+  },
+  {
+    "en": "Source page",
+    "final_en": "Source page",
+    "de": "Seite im Quelldokument",
+    "reasoning": "Reuses the existing approved EN/DE catalog entry unchanged."
+  },
+  {
+    "en": "Conversion group %d",
+    "final_en": "Conversion group %d",
+    "de": "Umwandlungsgruppe %d"
+  },
+  {
+    "en": "Arrays converted together",
+    "final_en": "Arrays converted together",
+    "de": "Modulfelder mit gemeinsamer Umwandlung"
+  },
+  {
+    "en": "PVWatts DC reference power",
+    "final_en": "PVWatts DC reference power",
+    "de": "PVWatts-DC-Referenzleistung"
+  },
+  {
+    "en": "Nominal conversion efficiency",
+    "final_en": "Nominal conversion efficiency",
+    "de": "Nennwirkungsgrad der Umwandlung"
+  },
+  {
+    "en": "Reference curve efficiency",
+    "final_en": "PVWatts reference efficiency",
+    "de": "PVWatts-Referenzwirkungsgrad",
+    "reasoning": "Names the specific PVWatts curve parameter, distinct from nominal conversion efficiency."
+  },
+  {
+    "en": "DC reference power must be greater than zero. It is the PVWatts curve reference, not the array's STC rating or a hardware input limit. Both efficiencies must be greater than 0% and no more than 100%.",
+    "final_en": "This reference power sets the PVWatts conversion curve; the model's AC output limit is reference power × nominal efficiency. It must be greater than zero. Array STC power and inverter hardware input limits are separate values. Both efficiencies must be greater than 0% and no more than 100%.",
+    "de": "Diese DC-Referenzleistung bestimmt die PVWatts-Kennlinie. Die AC-Leistungsgrenze des Modells entspricht Referenzleistung × Nennwirkungsgrad. Die Referenzleistung muss größer als null sein; beide Wirkungsgrade müssen über 0 % und höchstens 100 % betragen. STC-Leistung des Modulfelds und Hardware-Eingangsgrenzen des Wechselrichters sind gesonderte Werte.",
+    "reasoning": "States the actual model cap formula and positive/efficiency bounds; physical array rating and hardware port limits remain distinct."
+  },
+  {
+    "en": "Conversion-model source and assumptions",
+    "final_en": "Conversion-model source and assumptions",
+    "de": "Quelle und Annahmen des Umwandlungsmodells"
+  },
+  {
+    "en": "Remove conversion group",
+    "final_en": "Remove conversion group",
+    "de": "Umwandlungsgruppe entfernen"
+  },
+  {
+    "en": "Ground reflectance",
+    "final_en": "Ground reflectance",
+    "de": "Bodenreflexionsgrad"
+  },
+  {
+    "en": "ASHRAE incidence coefficient b",
+    "final_en": "ASHRAE incidence-angle coefficient b",
+    "de": "ASHRAE-Koeffizient b für den Einfallswinkel"
+  },
+  {
+    "en": "Sky-diffuse transmission",
+    "final_en": "Retained sky-diffuse irradiance",
+    "de": "Verbleibender Anteil der Himmelsdiffusstrahlung",
+    "reasoning": "Names an irradiance share retained rather than a loss percentage."
+  },
+  {
+    "en": "Ground-diffuse transmission",
+    "final_en": "Retained ground-reflected irradiance",
+    "de": "Verbleibende bodenreflektierte Einstrahlung",
+    "reasoning": "Ground-diffuse input here is ground-reflected irradiance; the factor is the share retained."
+  },
+  {
+    "en": "Spectral factor",
+    "final_en": "Spectral factor",
+    "de": "Spektraler Korrekturfaktor"
+  },
+  {
+    "en": "Soiling transmission",
+    "final_en": "Irradiance retained after soiling",
+    "de": "Verbleibende Einstrahlung nach Verschmutzung",
+    "reasoning": "Soiling factor multiplies irradiance before the DC model."
+  },
+  {
+    "en": "DC wiring transmission",
+    "final_en": "DC power retained after wiring losses",
+    "de": "Verbleibende DC-Leistung nach Leitungsverlusten",
+    "reasoning": "Wiring factor multiplies modelled DC power after PVWatts DC."
+  },
+  {
+    "en": "DC mismatch transmission",
+    "final_en": "DC power retained after mismatch losses",
+    "de": "Verbleibende DC-Leistung nach Mismatch-Verlusten",
+    "reasoning": "Mismatch factor multiplies modelled DC power after PVWatts DC."
+  },
+  {
+    "en": "Irradiance transposition",
+    "final_en": "Irradiance transposition",
+    "de": "Umrechnung der Einstrahlung auf die Modulebene"
+  },
+  {
+    "en": "Choose a model",
+    "final_en": "Choose a model",
+    "de": "Modell auswählen"
+  },
+  {
+    "en": "Isotropic",
+    "final_en": "Isotropic",
+    "de": "Isotrop"
+  },
+  {
+    "en": "Transposition estimates irradiance on each module plane using the saved roof and mounting orientation. Transmission factors are the percentage retained: 98% means a 2% reduction. Ground reflectance is a reflected fraction.",
+    "final_en": "Transposition estimates irradiance on each module plane using the saved roof and mounting orientation. Ground reflectance is the share reflected by the ground. The remaining percentage factors describe the share retained: 98% means a 2% reduction.",
+    "de": "Die Umrechnung bestimmt die Einstrahlung auf die jeweilige Modulebene anhand der gespeicherten Dach- und Montageausrichtung. Der Bodenreflexionsgrad gibt den vom Boden reflektierten Anteil an. Alle übrigen Prozentfaktoren beschreiben den verbleibenden Anteil: 98 % entsprechen einer Minderung um 2 %.",
+    "reasoning": "Separates reflected albedo from the remaining retained-share percentages, preventing a 98% loss inversion."
+  },
+  {
+    "en": "Irradiance and loss assumptions",
+    "final_en": "Irradiance and loss assumptions",
+    "de": "Annahmen zu Einstrahlung und Verlusten"
+  },
+  {
+    "en": "Cell temperature model",
+    "final_en": "Cell temperature model",
+    "de": "Modell der Zelltemperatur"
+  },
+  {
+    "en": "SAPM uses plane irradiance, air temperature and wind at 10 m. Its a, b and ΔT coefficients depend on module construction and mounting. This form applies no mounting preset.",
+    "final_en": "SAPM estimates cell temperature from plane-of-array irradiance, air temperature and wind speed at 10 m. Its a, b and ΔT coefficients depend on module construction and mounting; ΔT is specified at 1000 W/m². No mounting preset is applied.",
+    "de": "Das SAPM-Modell berechnet die Zelltemperatur aus der Einstrahlung auf die Modulebene, der Lufttemperatur und der Windgeschwindigkeit in 10 m Höhe. Die Koeffizienten a, b und ΔT hängen von Modulaufbau und Montage ab; ΔT bezieht sich auf 1000 W/m². Es wird kein Montageparametersatz vorausgewählt.",
+    "reasoning": "SAPM uses incident plane irradiance, ambient temperature and 10 m wind; ΔT is the difference at the pinned 1000 W/m² reference."
+  },
+  {
+    "en": "SAPM coefficient a",
+    "final_en": "SAPM coefficient a",
+    "de": "SAPM-Koeffizient a"
+  },
+  {
+    "en": "SAPM coefficient b",
+    "final_en": "SAPM coefficient b",
+    "de": "SAPM-Koeffizient b"
+  },
+  {
+    "en": "Cell-to-module temperature difference ΔT",
+    "final_en": "Cell-to-module ΔT at 1000 W/m²",
+    "de": "Zell-Modul-Temperaturdifferenz ΔT bei 1000 W/m²",
+    "reasoning": "Avoids presenting the SAPM reference ΔT as an invariant instantaneous temperature difference."
+  },
+  {
+    "en": "Temperature-model source and mounting conditions",
+    "final_en": "Temperature-model source and mounting conditions",
+    "de": "Quelle des Temperaturmodells und Montagebedingungen"
+  },
+  {
+    "en": "PV model settings need an editable roof layout. Saved inputs and previous calculations remain in the project.",
+    "final_en": "PV model settings need an editable roof layout. Saved inputs and previous calculations remain in the project.",
+    "de": "Die PV-Modelleinstellungen benötigen eine bearbeitbare Dachbelegung. Gespeicherte Eingaben und bisherige Berechnungen bleiben im Projekt erhalten."
+  },
+  {
+    "en": "Review roof design",
+    "final_en": "Review roof design",
+    "de": "Dachplanung ansehen"
+  },
+  {
+    "en": "Weather for this PV calculation",
+    "final_en": "Weather for this PV calculation",
+    "de": "Wetter für diese PV-Berechnung"
+  },
+  {
+    "en": "A weather source is selected in this draft. The calculation checks its saved source and location against the roof.",
+    "final_en": "A weather source is selected in this draft. Before calculation, the saved weather record and its location are checked against the roof inputs.",
+    "de": "In diesem Entwurf ist eine Wetterquelle ausgewählt. Vor der Berechnung werden der gespeicherte Wetterdatensatz und sein Standort mit den Angaben zur Dachplanung abgeglichen.",
+    "reasoning": "Source-record and location checks do not imply weather accuracy or physical equipment validation."
+  },
+  {
+    "en": "A weather result must be selected from Saved calculations before PV generation can start.",
+    "final_en": "A completed weather result must be selected in Saved calculations before PV generation can start.",
+    "de": "Für die PV-Berechnung muss in der Ansicht Gespeicherte Berechnungen ein abgeschlossener Wetterdatensatz ausgewählt sein."
+  },
+  {
+    "en": "PV model prepared in this draft",
+    "final_en": "PV model prepared in this draft",
+    "de": "PV-Modell in diesem Entwurf vorbereitet"
+  },
+  {
+    "en": "PV model settings need preparation",
+    "final_en": "PV model settings need preparation",
+    "de": "PV-Modelleinstellungen noch nicht vorbereitet"
+  },
+  {
+    "en": "Save project records the roof, model and weather selection before PV generation can start.",
+    "final_en": "The roof layout, PV model and weather selection must be recorded with Save project before PV generation can start.",
+    "de": "Für die PV-Berechnung müssen Dachplanung, PV-Modell und Wetterauswahl mit Projekt speichern gesichert sein.",
+    "reasoning": "Saving remains an explicit precondition; preparing does not save or start calculation."
+  },
+  {
+    "en": "PV generation uses saved input revision %d.",
+    "final_en": "PV generation uses saved input revision %d.",
+    "de": "Die PV-Berechnung verwendet den gespeicherten Eingabestand %d."
+  },
+  {
+    "en": "Prepare PV model",
+    "final_en": "Prepare PV model",
+    "de": "PV-Modell vorbereiten"
+  },
+  {
+    "en": "Calculate PV for saved inputs",
+    "final_en": "Calculate PV for saved inputs",
+    "de": "PV für gespeicherte Eingaben berechnen"
+  },
+  {
+    "en": "PV generation",
+    "final_en": "PV generation",
+    "de": "PV-Erzeugung"
+  },
+  {
+    "en": "The PV model needs complete module, array and conversion parameters with source notes. Fractions must be between 0% and 100%; conversion efficiencies and reference power must be greater than zero.",
+    "final_en": "The PV model needs complete module, array and conversion parameters with source notes. Percentage factors must be between 0% and 100%; conversion efficiencies must be greater than 0% and no more than 100%, and DC reference power must be greater than zero.",
+    "de": "Für das PV-Modell fehlen gültige Modul-, Modulfeld- oder Umwandlungsparameter einschließlich Quellenangaben. Prozentfaktoren müssen zwischen 0 % und 100 % liegen. Umwandlungswirkungsgrade müssen über 0 % und höchstens 100 % betragen; die DC-Referenzleistung muss größer als null sein.",
+    "reasoning": "All fraction values are closed 0–100% in this named model, efficiencies are open at zero and closed at 100%, and DC reference power is positive."
+  },
+  {
+    "en": "PV parameters must match the current active roof layout. Each array needs one parameter set and exactly one conversion group, and each module specification needs its coefficient.",
+    "final_en": "PV parameters must match the active roof layout. Each array needs one parameter set and exactly one conversion group; each module specification needs its temperature coefficient.",
+    "de": "Die PV-Parameter müssen zur aktiven Dachbelegung passen. Jedes Modulfeld benötigt einen Parametersatz und genau eine Umwandlungsgruppe; für jede Modulspezifikation muss der Temperaturkoeffizient vorliegen.",
+    "reasoning": "Preserves exact coverage of active arrays, unique group membership and temperature coefficients for each referenced module specification."
+  },
+  {
+    "en": "PV generation needs roof coordinates and a declared north reference. These can be set in Roof design.",
+    "final_en": "PV generation needs roof coordinates and a declared north reference. These can be set in Roof design.",
+    "de": "Die PV-Berechnung benötigt Dachkoordinaten und einen festgelegten Nordbezug. Beides lässt sich in der Dachplanung einstellen."
+  },
+  {
+    "en": "PV generation needs a selected weather source. A completed weather result can be selected from Saved calculations.",
+    "final_en": "PV generation needs a selected weather source. A completed weather result can be selected in Saved calculations.",
+    "de": "Für die PV-Berechnung muss eine Wetterquelle ausgewählt sein. Ein abgeschlossener Wetterdatensatz lässt sich in der Ansicht Gespeicherte Berechnungen auswählen."
+  },
+  {
+    "en": "The weather coordinates differ from the roof reference point. Weather and roof location must match for this model.",
+    "final_en": "The weather coordinates differ from the roof reference point. This model requires weather and roof coordinates to match.",
+    "de": "Die Wetterkoordinaten stimmen nicht mit dem Dachbezugspunkt überein. Für dieses Modell müssen Wetter- und Dachkoordinaten identisch sein."
+  },
+  {
+    "en": "Module specification outside the current layout",
+    "final_en": "Module specification outside the current layout",
+    "de": "Modulspezifikation außerhalb der aktuellen Dachbelegung"
+  },
+  {
+    "en": "The coefficient document reference needs a credential-free HTTP or HTTPS URL, a 64-character SHA-256 and a positive whole page number.",
+    "final_en": "The coefficient document reference needs an HTTP or HTTPS URL without login credentials, a SHA-256 checksum with 64 characters (0-9 and a-f) and a page number that is a whole number greater than zero.",
+    "de": "Der Dokumentverweis zum Koeffizienten benötigt eine HTTP- oder HTTPS-URL ohne Anmeldedaten, eine SHA-256-Prüfsumme aus 64 Zeichen (0-9 und a-f) und eine ganzzahlige Seitenzahl größer als null.",
+    "reasoning": "Matches the actual credential-free URL, lowercase 64-hex hash and positive safe-integer page checks; avoids implying automatic document verification."
+  }
+]

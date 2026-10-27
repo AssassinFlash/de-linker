@@ -249,6 +249,19 @@ class ReportRow(BaseModel):
 class ReportTable(BaseModel):
     columns: list[str]
     rows: list[list[str]]
+    # Relative presentation widths. These are document layout, not engineering
+    # quantities; absent hints retain the existing bill-of-materials layout.
+    column_weights: list[Annotated[float, Field(gt=0, allow_inf_nan=False)]] | None = (
+        None
+    )
+
+    @model_validator(mode="after")
+    def matching_column_weights(self) -> ReportTable:
+        if self.column_weights is not None and len(self.column_weights) != len(
+            self.columns
+        ):
+            raise ValueError("table layout must name every column")
+        return self
 
 
 class ReportSection(BaseModel):

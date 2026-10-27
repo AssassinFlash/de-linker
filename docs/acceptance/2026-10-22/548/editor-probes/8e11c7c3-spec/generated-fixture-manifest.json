@@ -1,0 +1,14 @@
+[
+  {
+    "path": "native-manifest-fixture/build/planner/vite-manifest.json",
+    "bytes": 104,
+    "sha256": "f613d5bdb0b822fd0d061ea098d82219fc9fa045af18456be3cd865f22995b6c",
+    "rebuild": "php probe_native_config.php"
+  },
+  {
+    "path": "native-manifest-fixture/build/planner/assets/planner.js",
+    "bytes": 10,
+    "sha256": "2e29cd9a98755c46896f7a2d56524db2d6d96b248e36db46de14c30bf47c8d05",
+    "rebuild": "php probe_native_config.php"
+  }
+]

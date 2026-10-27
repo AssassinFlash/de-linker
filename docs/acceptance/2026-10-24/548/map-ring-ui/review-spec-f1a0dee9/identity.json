@@ -1,0 +1,40 @@
+{
+  "base": "252a022e41f8ca5426d6463206c8346eb89da5f1",
+  "previous_pin": "a1281d9d1e4829b866cef89f8c23e6aecb7b91ce",
+  "pin": "f1a0dee90dd719ce5532724a9f6e9021f1555705",
+  "head_verified": true,
+  "merge_base": "252a022e41f8ca5426d6463206c8346eb89da5f1",
+  "delta_command": "git diff a1281d9d1e4829b866cef89f8c23e6aecb7b91ce...f1a0dee90dd719ce5532724a9f6e9021f1555705",
+  "delta_commits": [
+    "f1a0dee9 fix(planner): refuse boundary checks skipped by an invalid parent roof"
+  ],
+  "delta_files": [
+    "M\tapps/planner/src/components/design/MapDrawingWorkspace.tsx",
+    "M\tapps/planner/tests/map-roof-workspace.test.mjs",
+    "R099\tplugins/linker-tools/build/planner/assets/MapViewport-vp_6q1r8.js\tplugins/linker-tools/build/planner/assets/MapViewport-UQ-6e4HB.js",
+    "R099\tplugins/linker-tools/build/planner/assets/SceneViewport-fCPgTwg6.js\tplugins/linker-tools/build/planner/assets/SceneViewport-Dq4MY0tH.js",
+    "R093\tplugins/linker-tools/build/planner/assets/planner-core-CNtQBvDU.js\tplugins/linker-tools/build/planner/assets/planner-core-DFB-X0pb.js",
+    "M\tplugins/linker-tools/build/planner/assets/planner.js",
+    "M\tplugins/linker-tools/build/planner/source-manifest.json",
+    "M\tplugins/linker-tools/build/planner/vite-manifest.json"
+  ],
+  "manifest": {
+    "sources": {
+      "count": 121,
+      "all_committed_hashes_match": true,
+      "all_working_bytes_match_pin": true
+    },
+    "build": {
+      "count": 7,
+      "all_committed_hashes_match": true,
+      "all_working_bytes_match_pin": true
+    }
+  },
+  "preserved_previous_artifact_sha256": {
+    "REPORT.md": "b1eb382fa53b230fee7c342b66d7e55370de10859127167c6726b13807bc6b1c",
+    "engine-gate-probe.test.mjs": "e620cbe862a2f7a9d8dc3bd7f2b007d692e92671dd2b97995b3d8fb189316afb",
+    "engine-gate-probe-output.txt": "b5576adee9e6087c4a4baca6b30f9575b23d68f5375b504a80b2afa0083a292e",
+    "identity.json": "b7c7e6623df51c5678ab0ddbbe65c750dbae26d788153b0873c9088a3e167e95"
+  },
+  "boundary": "Fixed source/build plus fixture identity; no native/provider/engineering/production/full-goal acceptance."
+}

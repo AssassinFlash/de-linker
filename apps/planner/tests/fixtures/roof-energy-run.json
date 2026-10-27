@@ -1,0 +1,1363 @@
+{
+	"id": "ab8810c5ffe64587a4664c26cb1fe9fc",
+	"project_id": "c7795bc2c1e14e389622015c809ace45",
+	"revision": 7,
+	"state": "succeeded",
+	"is_current": true,
+	"manifest_sha256": "73706e86385934a978fee845ef5f6854fb109a5c2f5eca52aadd1b2ece83d065",
+	"manifest": {
+		"context": {
+			"assets": {
+				"aux_ac.metadata": "ffc153f1b5e868222f620ad8724eb0381420a2aa24862a815ad6e0d9040db89c",
+				"aux_ac.raw": "2b41d5383235e18148275238251a10f7e5acd9c8205d7a0e17e675bb03d46266",
+				"aux_ac.timezone": "8b85846791ab2c8a5463c83a5be3c043e2570d7448434d41398969ed47e3e6f2",
+				"battery.metadata": "44421447dd4c426cc00960a23943b2349eb300f4be5228c74fb500cae278aac9",
+				"battery.raw": "9a629dbb25e4569261495cde47786575d0e0d10e103ce3ae81eaffcbbef9cefa",
+				"gross_load.metadata": "6ec319235f32b332b531a02c6cdf86d687fbab51eed4c9891d2b17301662ef44",
+				"gross_load.raw": "2845417076df3e2ef2c9e04122e1c2fd7b45e95ad877e3d8c4ba523936de379f",
+				"gross_load.timezone": "8b85846791ab2c8a5463c83a5be3c043e2570d7448434d41398969ed47e3e6f2",
+				"pv_available_ac.metadata": "f34124127b08a34d06da34c1d9386fac07000e8945311808e4135eef91abf76b",
+				"pv_available_ac.pv_model_inputs": "81435cba2b1c465d2f1062516093283f85425a041368ec1f4faaa766bd8598bc",
+				"pv_available_ac.pv_model_witness": "3d4e78c3495a4a04dbc77742bbdce0d0907c045632ed9e2998399e60fdc1287f",
+				"pv_available_ac.raw": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
+				"runtime_bundle": "052c98c14da24a7d5d04b9b09dbe201c1753285d20124900982711e7d2bfc1df"
+			},
+			"code_sha256": "052c98c14da24a7d5d04b9b09dbe201c1753285d20124900982711e7d2bfc1df",
+			"models": {
+				"battery": "constant_window_single_ac_bus_v1",
+				"controller": "self_consumption_with_reserve_v1",
+				"profiles": "csv_pvgis_and_geometry_bound_pv_reference_v2",
+				"replay": "single_ac_energy_replay_v1",
+				"source_accounting": "proportional_mixing_v1"
+			},
+			"parameters": {
+				"kind": "single_ac_energy_replay_v1",
+				"max_intervals": 100000,
+				"tolerance": {
+					"absolute_kw": 1e-7,
+					"absolute_kwh": 1e-7,
+					"relative": 1e-9,
+					"role": "floating_point_arithmetic_not_engineering_margin"
+				}
+			}
+		},
+		"input_sha256": "5769b5d106000d3639dea6897f7e830c5ad267fb8d8e29db70b690f73b7e8774",
+		"project_id": "c7795bc2c1e14e389622015c809ace45",
+		"revision": 7,
+		"schema": 1
+	},
+	"result_sha256": "bf72f1ea57399fc79af1e02180a05f5b65e015a032593e4d7eea6aa5105c737e",
+	"result": {
+		"battery_parameter_provenance": {
+			"provenance": {
+				"basis": "user_explicit_scenario_not_equipment_release",
+				"label": "Deklariertes Beispiel: 10 kWh nutzbar, 5 kW AC, je Richtung 96 % Wirkungsgrad, keine Hilfs- oder Standverluste. Kein Produktdatenblatt und keine Gerätefreigabe.",
+				"rights_basis": "user-declared numeric scenario, no third-party provider asset"
+			},
+			"retention": "permanent"
+		},
+		"country_assessment": {
+			"reason": "country_rules_are_a_separate_assessment",
+			"status": "not_assessed"
+		},
+		"dependencies": {
+			"energy_trace": "f006b292b5ed0e3883ceeb692ea266047276733311b5191ee646a6a7d4e23e49"
+		},
+		"equipment_release": {
+			"reason": "explicit_scenario_replay_is_not_equipment_release",
+			"status": "not_assessed"
+		},
+		"input_sha256": "5769b5d106000d3639dea6897f7e830c5ad267fb8d8e29db70b690f73b7e8774",
+		"interval_count": 8760,
+		"kind": "single_ac_energy_replay_v1",
+		"manifest_sha256": "73706e86385934a978fee845ef5f6854fb109a5c2f5eca52aadd1b2ece83d065",
+		"metrics": {
+			"aux_ac_unserved_kwh": 0.0,
+			"charge_conversion_loss_kwh": 112.84488133538889,
+			"definitions": {
+				"boundary": "single_AC_bus; battery_export_excluded; system_aux_separate_from_customer_load",
+				"inventory_origin": "proportional_mixing; initial_unknown_and_grid_are_not_solar",
+				"pv_input_self_use": "(PV_direct_load + PV_direct_system_aux + PV_charge_input) / PV_generated_after_curtailment",
+				"pv_onsite_available_share": "(PV_direct_load + PV_direct_system_aux + PV_charge_input) / PV_available_before_curtailment",
+				"solar_autarky": "(PV_direct_to_customer_load + PV_origin_battery_to_customer_load) / gross_customer_load_demand",
+				"solar_load_share_of_requested_demand": "(PV_direct_to_requested_load + PV_origin_battery_to_requested_load) / requested_load_demand_in_explicit_scope"
+			},
+			"discharge_conversion_loss_kwh": 108.29108608197333,
+			"grid_charge_ac_kwh": 0.0,
+			"grid_import_kwh": 1113.0359659857572,
+			"grid_origin_battery_to_load_kwh": 0.0,
+			"gross_load_kwh": 6000.00000000089,
+			"gross_load_undefined_reason": null,
+			"initial_unknown_battery_to_load_kwh": 0.0,
+			"internal_aux_supplied_kwh": 0.0,
+			"internal_aux_unserved_kwh": 0.0,
+			"load_demand_kwh": 6000.00000000089,
+			"load_measurement_scope": "gross_load",
+			"maximum_interval_average_import_kw": 1.303040427665,
+			"pv_available_before_curtail_kwh": 13816.651031867383,
+			"pv_battery_to_load_kwh": 2598.9860659673573,
+			"pv_charge_ac_kwh": 2821.1220333847195,
+			"pv_curtailed_kwh": 0.0,
+			"pv_direct_aux_ac_kwh": 0.0,
+			"pv_direct_load_kwh": 2287.9779680477754,
+			"pv_export_kwh": 8707.551030434888,
+			"pv_generated_ac_kwh": 13816.651031867383,
+			"pv_input_self_use": {
+				"undefined_reason": null,
+				"value": 0.3697784643795825
+			},
+			"pv_onsite_available_share": {
+				"undefined_reason": null,
+				"value": 0.3697784643795825
+			},
+			"pv_potential_before_mode_kwh": 13816.651031867383,
+			"solar_autarky": {
+				"undefined_reason": null,
+				"value": 0.8144940056690679
+			},
+			"solar_load_kwh": 4886.964034015133,
+			"solar_load_share_of_requested_demand": {
+				"undefined_reason": null,
+				"value": 0.8144940056690679
+			},
+			"standing_loss_kwh": 0.0,
+			"stored_final": {
+				"grid_kwh": 0.0,
+				"initial_unknown_kwh": 0.0,
+				"pv_kwh": 1.0
+			},
+			"stored_initial": {
+				"grid_kwh": 0.0,
+				"initial_unknown_kwh": 0.0,
+				"pv_kwh": 0.0
+			},
+			"unserved_load_kwh": 0.0
+		},
+		"model": {
+			"battery_export": "excluded_from_this_model",
+			"charge_ac_kw": 5.0,
+			"discharge_ac_kw": 5.0,
+			"eta_charge": 0.96,
+			"eta_discharge": 0.96,
+			"internal_aux_kw": 0.0,
+			"internal_loss_order": "standing_loss_then_internal_aux_before_ac_flows",
+			"parameters_source_sha256": "9a629dbb25e4569261495cde47786575d0e0d10e103ce3ae81eaffcbbef9cefa",
+			"source_accounting": "proportional_mixing_v1",
+			"standing_loss_rate_per_hour": 0.0,
+			"usable_window_kwh": 10.0,
+			"version": "constant_window_single_ac_bus_v1"
+		},
+		"pinned_assets": {
+			"aux_ac.metadata": "ffc153f1b5e868222f620ad8724eb0381420a2aa24862a815ad6e0d9040db89c",
+			"aux_ac.raw": "2b41d5383235e18148275238251a10f7e5acd9c8205d7a0e17e675bb03d46266",
+			"aux_ac.timezone": "8b85846791ab2c8a5463c83a5be3c043e2570d7448434d41398969ed47e3e6f2",
+			"battery.metadata": "44421447dd4c426cc00960a23943b2349eb300f4be5228c74fb500cae278aac9",
+			"battery.raw": "9a629dbb25e4569261495cde47786575d0e0d10e103ce3ae81eaffcbbef9cefa",
+			"gross_load.metadata": "6ec319235f32b332b531a02c6cdf86d687fbab51eed4c9891d2b17301662ef44",
+			"gross_load.raw": "2845417076df3e2ef2c9e04122e1c2fd7b45e95ad877e3d8c4ba523936de379f",
+			"gross_load.timezone": "8b85846791ab2c8a5463c83a5be3c043e2570d7448434d41398969ed47e3e6f2",
+			"pv_available_ac.metadata": "f34124127b08a34d06da34c1d9386fac07000e8945311808e4135eef91abf76b",
+			"pv_available_ac.pv_model_inputs": "81435cba2b1c465d2f1062516093283f85425a041368ec1f4faaa766bd8598bc",
+			"pv_available_ac.pv_model_witness": "3d4e78c3495a4a04dbc77742bbdce0d0907c045632ed9e2998399e60fdc1287f",
+			"pv_available_ac.raw": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
+			"runtime_bundle": "052c98c14da24a7d5d04b9b09dbe201c1753285d20124900982711e7d2bfc1df"
+		},
+		"profile_interpretation": {
+			"operating_periods": [
+				{
+					"end_utc": "2024-01-01T00:00:00+00:00",
+					"mode": "connected",
+					"profiles": {
+						"aux_ac": {
+							"effective_max_interval_seconds": 3600.0,
+							"measurement": "aux_ac",
+							"reconstructed_means": false,
+							"source": {
+								"details": {
+									"csv_mapping": {
+										"decimal": ".",
+										"delimiter": ",",
+										"end_fold_column": null,
+										"end_timestamp_column": null,
+										"fold_column": null,
+										"interval_seconds": 3600.0,
+										"measurement": "aux_ac",
+										"offset_rule": "explicit_offset_precedes_naive_timezone",
+										"origin": "synthetic",
+										"timestamp_column": "time",
+										"timestamp_role": "start",
+										"timezone": "UTC",
+										"value_column": "power",
+										"value_kind": "interval_average_kw",
+										"within_interval_assumption": "constant_mean_no_new_observations"
+									},
+									"timezone_rules_sha256": "8b85846791ab2c8a5463c83a5be3c043e2570d7448434d41398969ed47e3e6f2"
+								},
+								"native_max_interval_seconds": 3600.0,
+								"origin": "synthetic",
+								"raw_sha256": "2b41d5383235e18148275238251a10f7e5acd9c8205d7a0e17e675bb03d46266",
+								"timezone": "UTC"
+							},
+							"transformations": [
+								{
+									"exact_interval_copy": true,
+									"input_document_sha256": "42374a131858b84fd645df2eb527ba122ee856ed94e8b8c043060505690fd6d7",
+									"input_max_interval_seconds": 3600.0,
+									"method": "energy_preserving_overlap_of_interval_means",
+									"output_max_interval_seconds": 3600.0,
+									"target_axis_sha256": "14a224c7124465732da27e330e6665c15a1dd095cea3cc43b55e84677b5fc070"
+								}
+							]
+						},
+						"gross_load": {
+							"effective_max_interval_seconds": 3600.0,
+							"measurement": "gross_load",
+							"reconstructed_means": false,
+							"source": {
+								"details": {
+									"csv_mapping": {
+										"decimal": ".",
+										"delimiter": ",",
+										"end_fold_column": null,
+										"end_timestamp_column": null,
+										"fold_column": null,
+										"interval_seconds": 3600.0,
+										"measurement": "gross_load",
+										"offset_rule": "explicit_offset_precedes_naive_timezone",
+										"origin": "synthetic",
+										"timestamp_column": "time",
+										"timestamp_role": "start",
+										"timezone": "UTC",
+										"value_column": "power",
+										"value_kind": "interval_average_kw",
+										"within_interval_assumption": "constant_mean_no_new_observations"
+									},
+									"timezone_rules_sha256": "8b85846791ab2c8a5463c83a5be3c043e2570d7448434d41398969ed47e3e6f2"
+								},
+								"native_max_interval_seconds": 3600.0,
+								"origin": "synthetic",
+								"raw_sha256": "2845417076df3e2ef2c9e04122e1c2fd7b45e95ad877e3d8c4ba523936de379f",
+								"timezone": "UTC"
+							},
+							"transformations": [
+								{
+									"exact_interval_copy": true,
+									"input_document_sha256": "9f08a3205c9321019cfd32d9d4f8fee36ada4927ba3b389522b20629b8725497",
+									"input_max_interval_seconds": 3600.0,
+									"method": "energy_preserving_overlap_of_interval_means",
+									"output_max_interval_seconds": 3600.0,
+									"target_axis_sha256": "14a224c7124465732da27e330e6665c15a1dd095cea3cc43b55e84677b5fc070"
+								}
+							]
+						},
+						"pv_available_ac": {
+							"effective_max_interval_seconds": 3600,
+							"measurement": "pv_available_ac",
+							"reconstructed_means": true,
+							"source": {
+								"details": {
+									"geometry_sha256": "57e8e764adf89e47fab7b7ffd6038d1b06636a6cdeb2ee64b5ab995ac9f3b0bf",
+									"input_bundle_sha256": "81435cba2b1c465d2f1062516093283f85425a041368ec1f4faaa766bd8598bc",
+									"libraries": {
+										"numpy": "2.5.3",
+										"pandas": "3.0.6",
+										"pvlib": "0.16.1"
+									},
+									"model": "uniform_unshaded_pvlib_reference_v1",
+									"model_conventions": {
+										"atmospheric_refraction_deg": 0.5667,
+										"delta_t": "spa_year_month",
+										"extraterrestrial_epoch_year": 2014,
+										"extraterrestrial_radiation": "spencer",
+										"perez_coefficients": "allsitescomposite1990",
+										"pvwatts_dc_k": null,
+										"pvwatts_dc_reference_temperature_c": 25.0,
+										"pvwatts_optional_low_light_adjustment": false,
+										"relative_airmass": "kastenyoung1989",
+										"sapm_reference_irradiance_w_m2": 1000.0,
+										"solar_constant_w_m2": 1366.1,
+										"solar_position": "nrel_numpy",
+										"spa_numthreads": 1,
+										"zero_irradiance_policy": "zero_ghi_dni_dhi_implies_zero_poa_before_clearness_model_v1"
+									},
+									"model_role": "unshaded_reference_scenario",
+									"not_assessed": [
+										"near_field_and_inter_row_shading",
+										"bifacial_rear_irradiance",
+										"partial_shading_and_string_electrical_mismatch",
+										"real_mppt_and_port_limits",
+										"manufacturer_efficiency_and_operating_envelope",
+										"equipment_and_country_release"
+									],
+									"output_boundary": "scenario_ac_potential_before_site_export_and_storage_control",
+									"parameters_sha256": "b01e7181bfbfbc4a718ce0520707a9c9c391651e83631e4cbaee19996e4c11cf",
+									"temporal_policy": {
+										"energy_preservation_claim": false,
+										"exact_interval_copy": false,
+										"input_document_sha256": "81435cba2b1c465d2f1062516093283f85425a041368ec1f4faaa766bd8598bc",
+										"input_max_interval_seconds": 3600,
+										"interval_assignment_basis": "explicit_model_policy_not_observed_interval_power",
+										"method": "representative_pv_output_over_declared_intervals_v1",
+										"native_value_semantics": "weather_records_with_separate_irradiance_instants",
+										"output_max_interval_seconds": 3600.0,
+										"output_value_semantics": "reconstructed_interval_average",
+										"target_axis_sha256": "14a224c7124465732da27e330e6665c15a1dd095cea3cc43b55e84677b5fc070"
+									},
+									"weather_document_sha256": "f94f776e8f28845c4ba119653a363fdcedd9dd6db6d4e8ee3c08334b881efca2",
+									"weather_original_sha256": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
+									"weather_source": {
+										"details": {
+											"ac_interval_energy_preservation_claim": false,
+											"adapter": "pvgis_5_3_tmy_explicit_two_axes_v1",
+											"capture": {
+												"capture_basis": "official_jrc_https_get_original_v1",
+												"content_type": "application/json",
+												"loaded_url": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=52.52&lon=13.405&startyear=2005&endyear=2023&usehorizon=0&outputformat=json",
+												"received_at_utc": "2026-10-24T16:10:52.213786+00:00",
+												"requested_url": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=52.52&lon=13.405&startyear=2005&endyear=2023&usehorizon=0&outputformat=json",
+												"schema_version": 1,
+												"source_identifiers": {
+													"api_version": "5.3",
+													"provider": "EC_JRC_PVGIS"
+												},
+												"status": 200
+											},
+											"energy_axis_basis": "nonleap_synthetic_utc_hourly_scenario_v1",
+											"interpretation": {
+												"output_axis_policy": "nonleap_synthetic_utc_hourly_scenario_v1",
+												"power_reconstruction": "representative_pv_output_over_declared_intervals_v1",
+												"schema_version": 1,
+												"solar_date_policy": "original_selected_year_plus_reported_irradiance_offset",
+												"synthetic_energy_year": 2023
+											},
+											"irradiance_offset_microseconds": 661680000,
+											"irradiance_time_offset_hours": 0.1838,
+											"meteo_database": "ERA5",
+											"meteorology_time_basis": "provider_hourly_conditions_no_new_subhourly_observations",
+											"months_selected": [
+												{ "month": 1, "year": 2021 },
+												{ "month": 2, "year": 2019 },
+												{ "month": 3, "year": 2006 },
+												{ "month": 4, "year": 2018 },
+												{ "month": 5, "year": 2010 },
+												{ "month": 6, "year": 2009 },
+												{ "month": 7, "year": 2018 },
+												{ "month": 8, "year": 2015 },
+												{ "month": 9, "year": 2009 },
+												{ "month": 10, "year": 2008 },
+												{ "month": 11, "year": 2011 },
+												{ "month": 12, "year": 2014 }
+											],
+											"native_radiation_semantics": "sarah_instantaneous",
+											"provider_inputs": {
+												"location": {
+													"elevation": 37.0,
+													"irradiance_time_offset": 0.1838,
+													"latitude": 52.52,
+													"longitude": 13.405
+												},
+												"meteo_data": {
+													"horizon_db": null,
+													"meteo_db": "ERA5",
+													"radiation_db": "PVGIS-SARAH3",
+													"use_horizon": false,
+													"year_max": 2023,
+													"year_min": 2005
+												}
+											},
+											"provider_metadata": {
+												"inputs": {
+													"location": {
+														"description": "Selected location",
+														"variables": {
+															"elevation": {
+																"description": "Elevation",
+																"units": "m"
+															},
+															"latitude": {
+																"description": "Latitude",
+																"units": "decimal degree"
+															},
+															"longitude": {
+																"description": "Longitude",
+																"units": "decimal degree"
+															}
+														}
+													},
+													"meteo_data": {
+														"description": "Sources of meteorological data",
+														"variables": {
+															"horizon_db": {
+																"description": "Source of horizon data"
+															},
+															"meteo_db": {
+																"description": "Database used for meteorological variables other than solar radiation"
+															},
+															"radiation_db": {
+																"description": "Solar radiation database"
+															},
+															"use_horizon": {
+																"description": "Include horizon shadows"
+															},
+															"year_max": {
+																"description": "Last year of the calculations"
+															},
+															"year_min": {
+																"description": "First year of the calculations"
+															}
+														}
+													}
+												},
+												"outputs": {
+													"months_selected": {
+														"description": "months selected for the TMY",
+														"timestamp": "monthly",
+														"type": "time series"
+													},
+													"tmy_hourly": {
+														"timestamp": "hourly",
+														"type": "time series",
+														"variables": {
+															"G(h)": {
+																"description": "Global irradiance on the horizontal plane",
+																"units": "W/m2"
+															},
+															"Gb(n)": {
+																"description": "Beam/direct irradiance on a plane always normal to sun rays",
+																"units": "W/m2"
+															},
+															"Gd(h)": {
+																"description": "Diffuse irradiance on the horizontal plane",
+																"units": "W/m2"
+															},
+															"IR(h)": {
+																"description": "Surface infrared (thermal) irradiance on a horizontal plane",
+																"units": "W/m2"
+															},
+															"RH": {
+																"description": "relative humidity",
+																"units": "%"
+															},
+															"SP": {
+																"description": "Surface (air) pressure",
+																"units": "Pa"
+															},
+															"T2m": {
+																"description": "2-m air temperature",
+																"units": "degree Celsius"
+															},
+															"WD10m": {
+																"description": "10-m wind direction (0 = N, 90 = E)",
+																"units": "degree"
+															},
+															"WS10m": {
+																"description": "10-m total wind speed",
+																"units": "m/s"
+															}
+														}
+													}
+												}
+											},
+											"radiation_database": "PVGIS-SARAH3",
+											"request": {
+												"api_version": "5.3",
+												"end_year": 2023,
+												"expected_meteo_database": "ERA5",
+												"expected_radiation_database": "PVGIS-SARAH3",
+												"latitude_deg": 52.52,
+												"longitude_deg": 13.405,
+												"radiation_database_policy": "provider_default_with_verified_echo",
+												"schema_version": 1,
+												"start_year": 2005,
+												"use_terrain_horizon": false
+											},
+											"solar_date_basis": "original_selected_year_plus_reported_irradiance_offset",
+											"weather_kind": "stitched_typical_months_not_observed_historical_year"
+										},
+										"native_max_interval_seconds": 3600,
+										"origin": "template",
+										"raw_sha256": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
+										"timezone": "UTC"
+									}
+								},
+								"native_max_interval_seconds": 3600,
+								"origin": "modelled",
+								"raw_sha256": "81435cba2b1c465d2f1062516093283f85425a041368ec1f4faaa766bd8598bc",
+								"timezone": "UTC"
+							},
+							"transformations": [
+								{
+									"energy_preservation_claim": false,
+									"exact_interval_copy": false,
+									"input_document_sha256": "81435cba2b1c465d2f1062516093283f85425a041368ec1f4faaa766bd8598bc",
+									"input_max_interval_seconds": 3600,
+									"interval_assignment_basis": "explicit_model_policy_not_observed_interval_power",
+									"method": "representative_pv_output_over_declared_intervals_v1",
+									"native_value_semantics": "weather_records_with_separate_irradiance_instants",
+									"output_max_interval_seconds": 3600.0,
+									"output_value_semantics": "reconstructed_interval_average",
+									"target_axis_sha256": "14a224c7124465732da27e330e6665c15a1dd095cea3cc43b55e84677b5fc070"
+								},
+								{
+									"exact_interval_copy": true,
+									"input_document_sha256": "d3863a2f7446f0e95d4cfb3694f184c29dd3d8195d94e00369fe421af6c82ee2",
+									"input_max_interval_seconds": 3600.0,
+									"method": "energy_preserving_overlap_of_interval_means",
+									"output_max_interval_seconds": 3600.0,
+									"target_axis_sha256": "14a224c7124465732da27e330e6665c15a1dd095cea3cc43b55e84677b5fc070"
+								}
+							]
+						}
+					},
+					"start_utc": "2023-01-01T00:00:00+00:00"
+				}
+			]
+		},
+		"project_id": "c7795bc2c1e14e389622015c809ace45",
+		"revision": 7,
+		"runtime_sha256": "052c98c14da24a7d5d04b9b09dbe201c1753285d20124900982711e7d2bfc1df",
+		"scenario_constraint_status": "violated",
+		"schema": 1,
+		"trace_sha256": "f006b292b5ed0e3883ceeb692ea266047276733311b5191ee646a6a7d4e23e49",
+		"verification": {
+			"checks": [
+				{
+					"allowance": 0.0,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "initial_pv_kwh",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 0.0,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "initial_grid_kwh",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 0.0,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "initial_initial_unknown_kwh",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "pv_load_priority",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "pv_aux_priority",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "battery_load_priority",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "battery_aux_priority",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "grid_load_priority",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "grid_aux_priority",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "pv_charge_priority",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "grid_charge_priority",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "pv_export_priority",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "pv_curtailment_priority",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "discharge_conversion_kw",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "internal_aux_supplied_kw",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "internal_aux_shortage_nonnegative_kw",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": -0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "internal_aux_account_kw",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "standing_loss_model_kw",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "internal_aux_model_kw",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "origin_available_kw_pv_kwh",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 0.0,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "origin_transition_kw_pv_kwh",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "load_origin_kw_pv_kwh",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "standing_mixing_kw_pv_kwh",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "aux_mixing_kw_pv_kwh",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "discharge_mixing_kw_pv_kwh",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "origin_available_kw_grid_kwh",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 0.0,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "origin_transition_kw_grid_kwh",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "load_origin_kw_grid_kwh",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "standing_mixing_kw_grid_kwh",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "aux_mixing_kw_grid_kwh",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "discharge_mixing_kw_grid_kwh",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "origin_available_kw_initial_unknown_kwh",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 0.0,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "origin_transition_kw_initial_unknown_kwh",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "load_origin_kw_initial_unknown_kwh",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "standing_mixing_kw_initial_unknown_kwh",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "aux_mixing_kw_initial_unknown_kwh",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "discharge_mixing_kw_initial_unknown_kwh",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163757968364e-7,
+					"arithmetic_allowance": 4.263256414560601e-16,
+					"at_interval": 0,
+					"code": "discharge_available_above_reserve_kw",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070164085410141e-7,
+					"arithmetic_allowance": 3.700743415417189e-15,
+					"at_interval": 0,
+					"code": "charge_available_headroom_kw",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.7763568394002505e-15,
+					"arithmetic_allowance": 1.7763568394002505e-15,
+					"at_interval": 0,
+					"code": "capacity_conserved_inventory",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 2.220446049250313e-16,
+					"arithmetic_allowance": 2.220446049250313e-16,
+					"at_interval": 0,
+					"code": "reserve_conserved_inventory",
+					"passed": false,
+					"unit": "kWh",
+					"worst_violation": 1.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "reference_charge_delivery",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163824581745e-7,
+					"arithmetic_allowance": 1.092459456231154e-15,
+					"at_interval": 5451,
+					"code": "reference_discharge_delivery",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 7.66053886991358e-15
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 744,
+					"code": "ac_energy_balance",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 5.551115123125783e-17
+				},
+				{
+					"allowance": 1.0999999999999999e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 903,
+					"code": "stored_energy_balance",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 1.7763568394002505e-15
+				},
+				{
+					"allowance": 1.0999999999999999e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 903,
+					"code": "origin_balance_pv_kwh",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 1.7763568394002505e-15
+				},
+				{
+					"allowance": 1.0999999999999999e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "standing_origin_pv_kwh",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0999999999999999e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "aux_origin_pv_kwh",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0999999999999999e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 234,
+					"code": "discharge_origin_pv_kwh",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 2.220446049250313e-16
+				},
+				{
+					"allowance": 1.0999999999999999e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "origin_balance_grid_kwh",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0999999999999999e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "standing_origin_grid_kwh",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0999999999999999e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "aux_origin_grid_kwh",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0999999999999999e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "discharge_origin_grid_kwh",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0999999999999999e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "origin_balance_initial_unknown_kwh",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0999999999999999e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "standing_origin_initial_unknown_kwh",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0999999999999999e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "aux_origin_initial_unknown_kwh",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0999999999999999e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "discharge_origin_initial_unknown_kwh",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "nonnegative_ac_flows",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": -0.0
+				},
+				{
+					"allowance": 1.00350818576679e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "unserved_load_bounds",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "unserved_aux_bounds",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "pv_allocation",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "grid_allocation",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "charge_allocation",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 1634,
+					"code": "load_allocation",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 2.7755575615628914e-17
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 744,
+					"code": "aux_allocation",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 5.551115123125783e-17
+				},
+				{
+					"allowance": 1.0999999999999999e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "discharge_conversion",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0999999999999999e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 1004,
+					"code": "load_origin_pv_kwh",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 1.1102230246251565e-16
+				},
+				{
+					"allowance": 1.0999999999999999e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "load_origin_grid_kwh",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0999999999999999e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "load_origin_initial_unknown_kwh",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0999999999999999e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "standing_loss_model",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0999999999999999e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "internal_aux_model",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "internal_aux_shortage_nonnegative",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": -0.0
+				},
+				{
+					"allowance": 1.0999999999999999e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "internal_aux_account",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "internal_aux_supplied",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.00350818576679e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "load_supplied",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "aux_ac_supplied",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 0.0,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "usable_capacity",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 0.0,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "reserve_maintained",
+					"passed": false,
+					"unit": "kWh",
+					"worst_violation": 1.0
+				},
+				{
+					"allowance": 1.05e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "charge_power",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.05e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "discharge_power",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "charge_discharge_exclusive",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "charge_command_account",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "discharge_command_account",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "charge_not_above_command",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "discharge_not_above_command",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "charge_command_met",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "discharge_command_met",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1.0070163715335799e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "grid_charge_permission",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 1e-7,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 0,
+					"code": "mode_pv_availability",
+					"passed": true,
+					"unit": "kW",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 0.0,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 1,
+					"code": "continuous_pv_kwh",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 0.0,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 1,
+					"code": "continuous_grid_kwh",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 0.0
+				},
+				{
+					"allowance": 0.0,
+					"arithmetic_allowance": 0.0,
+					"at_interval": 1,
+					"code": "continuous_initial_unknown_kwh",
+					"passed": true,
+					"unit": "kWh",
+					"worst_violation": 0.0
+				}
+			],
+			"passed": false,
+			"tolerance": {
+				"absolute_kw": 1e-7,
+				"absolute_kwh": 1e-7,
+				"relative": 1e-9,
+				"role": "floating_point_arithmetic_not_engineering_margin"
+			}
+		}
+	},
+	"error": null
+}

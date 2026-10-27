@@ -1,0 +1,1106 @@
+[
+  {
+    "requestURL": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-ERA5&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=crystSi2025&mountingplace=building&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json",
+    "requestParameters": {
+      "lat": [
+        "52.52"
+      ],
+      "lon": [
+        "13.405"
+      ],
+      "raddatabase": [
+        "PVGIS-ERA5"
+      ],
+      "startyear": [
+        "2020"
+      ],
+      "endyear": [
+        "2020"
+      ],
+      "pvcalculation": [
+        "1"
+      ],
+      "peakpower": [
+        "1"
+      ],
+      "loss": [
+        "14"
+      ],
+      "pvtechchoice": [
+        "crystSi2025"
+      ],
+      "mountingplace": [
+        "building"
+      ],
+      "angle": [
+        "10"
+      ],
+      "aspect": [
+        "0"
+      ],
+      "trackingtype": [
+        "0"
+      ],
+      "usehorizon": [
+        "1"
+      ],
+      "components": [
+        "1"
+      ],
+      "optimalinclination": [
+        "0"
+      ],
+      "optimalangles": [
+        "0"
+      ],
+      "outputformat": [
+        "json"
+      ]
+    },
+    "responseSHA256": "fb1ef4233a2f8adbcf42c821545c90f33dcbb73fcb1e0674440d3d625ebd0d61",
+    "responseBytes": 1057760,
+    "responseRootFields": [
+      "inputs",
+      "outputs",
+      "meta"
+    ],
+    "inputs": {
+      "location": {
+        "latitude": 52.52,
+        "longitude": 13.405,
+        "elevation": 37.0
+      },
+      "meteo_data": {
+        "radiation_db": "PVGIS-ERA5",
+        "meteo_db": "ERA5",
+        "year_min": 2020,
+        "year_max": 2020,
+        "use_horizon": true,
+        "horizon_db": null,
+        "horizon_data": "DEM-calculated"
+      },
+      "mounting_system": {
+        "fixed": {
+          "slope": {
+            "value": 10,
+            "optimal": false
+          },
+          "azimuth": {
+            "value": 0,
+            "optimal": false
+          },
+          "type": "building-integrated"
+        }
+      },
+      "pv_module": {
+        "technology": "c-Si2025",
+        "peak_power": 1.0,
+        "system_loss": 14.0
+      }
+    },
+    "meta": {
+      "inputs": {
+        "location": {
+          "description": "Selected location",
+          "variables": {
+            "latitude": {
+              "description": "Latitude",
+              "units": "decimal degree"
+            },
+            "longitude": {
+              "description": "Longitude",
+              "units": "decimal degree"
+            },
+            "elevation": {
+              "description": "Elevation",
+              "units": "m"
+            }
+          }
+        },
+        "meteo_data": {
+          "description": "Sources of meteorological data",
+          "variables": {
+            "radiation_db": {
+              "description": "Solar radiation database"
+            },
+            "meteo_db": {
+              "description": "Database used for meteorological variables other than solar radiation"
+            },
+            "year_min": {
+              "description": "First year of the calculations"
+            },
+            "year_max": {
+              "description": "Last year of the calculations"
+            },
+            "use_horizon": {
+              "description": "Include horizon shadows"
+            },
+            "horizon_db": {
+              "description": "Source of horizon data"
+            }
+          }
+        },
+        "mounting_system": {
+          "description": "Mounting system",
+          "choices": "fixed, vertical_axis, inclined_axis, two_axis",
+          "fields": {
+            "slope": {
+              "description": "Inclination angle from the horizontal plane",
+              "units": "degree"
+            },
+            "azimuth": {
+              "description": "Orientation (azimuth) angle of the (fixed) PV system (0 = S, 90 = W, -90 = E)",
+              "units": "degree"
+            }
+          }
+        },
+        "pv_module": {
+          "description": "PV module parameters",
+          "variables": {
+            "technology": {
+              "description": "PV technology"
+            },
+            "peak_power": {
+              "description": "Nominal (peak) power of the PV module",
+              "units": "kW"
+            },
+            "system_loss": {
+              "description": "Sum of system losses",
+              "units": "%"
+            }
+          }
+        }
+      },
+      "outputs": {
+        "hourly": {
+          "type": "time series",
+          "timestamp": "hourly averages",
+          "variables": {
+            "P": {
+              "description": "PV system power",
+              "units": "W"
+            },
+            "Gb(i)": {
+              "description": "Beam (direct) irradiance on the inclined plane (plane of the array)",
+              "units": "W/m2"
+            },
+            "Gd(i)": {
+              "description": "Diffuse irradiance on the inclined plane (plane of the array)",
+              "units": "W/m2"
+            },
+            "Gr(i)": {
+              "description": "Reflected irradiance on the inclined plane (plane of the array)",
+              "units": "W/m2"
+            },
+            "H_sun": {
+              "description": "Sun height",
+              "units": "degree"
+            },
+            "T2m": {
+              "description": "2-m air temperature",
+              "units": "degree Celsius"
+            },
+            "WS10m": {
+              "description": "10-m total wind speed",
+              "units": "m/s"
+            },
+            "Int": {
+              "description": "1 means solar radiation values are reconstructed"
+            }
+          }
+        }
+      }
+    },
+    "rowCount": 8784,
+    "apifyRun": "HFCHIVy161ErUxfkV",
+    "apifyDataset": "2Gu9QL16ONyztUcNE",
+    "apifyRecord": "https://api.apify.com/v2/key-value-stores/ZvwluHImMIL89LE6l/records/file-62fe5eb-seriescalc",
+    "loadedTime": "2026-10-22T17:47:22.283Z",
+    "capture": "metadata extracted from exact response bytes in memory; full body remains in Apify record, not duplicated locally",
+    "capabilityAudit": {
+      "sourceBodyHashRechecked": "fb1ef4233a2f8adbcf42c821545c90f33dcbb73fcb1e0674440d3d625ebd0d61",
+      "rows": 8784,
+      "hasPvcalculationEcho": false,
+      "hasPVPowerUnit": true,
+      "fields": {
+        "P": {
+          "rowsWithField": 8784,
+          "finiteNumericRows": 8784,
+          "zeroCount": 4366,
+          "min": 0.0,
+          "max": 719.89,
+          "distinctCount": 4174
+        },
+        "T2m": {
+          "rowsWithField": 8784,
+          "finiteNumericRows": 8784,
+          "zeroCount": 6,
+          "min": -4.54,
+          "max": 35.09,
+          "distinctCount": 2788
+        },
+        "WS10m": {
+          "rowsWithField": 8784,
+          "finiteNumericRows": 8784,
+          "zeroCount": 0,
+          "min": 0.07,
+          "max": 10.21,
+          "distinctCount": 134
+        },
+        "Gb(i)": {
+          "rowsWithField": 8784,
+          "finiteNumericRows": 8784,
+          "zeroCount": 4911,
+          "min": 0.0,
+          "max": 786.3,
+          "distinctCount": 3625
+        },
+        "Gd(i)": {
+          "rowsWithField": 8784,
+          "finiteNumericRows": 8784,
+          "zeroCount": 4366,
+          "min": 0.0,
+          "max": 385.71,
+          "distinctCount": 3936
+        },
+        "Gr(i)": {
+          "rowsWithField": 8784,
+          "finiteNumericRows": 8784,
+          "zeroCount": 4390,
+          "min": 0.0,
+          "max": 1.29,
+          "distinctCount": 129
+        }
+      },
+      "systemOutputAvailable": true,
+      "scope": "Provider P/unit availability and meteorological field audit only; not full adapter acceptance or electrical validation."
+    }
+  },
+  {
+    "requestURL": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-ERA5&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=CIS&mountingplace=free&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json",
+    "requestParameters": {
+      "lat": [
+        "52.52"
+      ],
+      "lon": [
+        "13.405"
+      ],
+      "raddatabase": [
+        "PVGIS-ERA5"
+      ],
+      "startyear": [
+        "2020"
+      ],
+      "endyear": [
+        "2020"
+      ],
+      "pvcalculation": [
+        "1"
+      ],
+      "peakpower": [
+        "1"
+      ],
+      "loss": [
+        "14"
+      ],
+      "pvtechchoice": [
+        "CIS"
+      ],
+      "mountingplace": [
+        "free"
+      ],
+      "angle": [
+        "10"
+      ],
+      "aspect": [
+        "0"
+      ],
+      "trackingtype": [
+        "0"
+      ],
+      "usehorizon": [
+        "1"
+      ],
+      "components": [
+        "1"
+      ],
+      "optimalinclination": [
+        "0"
+      ],
+      "optimalangles": [
+        "0"
+      ],
+      "outputformat": [
+        "json"
+      ]
+    },
+    "responseSHA256": "af8bce9a02be14faff34d43cac68f8e56212db77b72976a2debdc056f25ebccc",
+    "responseBytes": 1057577,
+    "responseRootFields": [
+      "inputs",
+      "outputs",
+      "meta"
+    ],
+    "inputs": {
+      "location": {
+        "latitude": 52.52,
+        "longitude": 13.405,
+        "elevation": 37.0
+      },
+      "meteo_data": {
+        "radiation_db": "PVGIS-ERA5",
+        "meteo_db": "ERA5",
+        "year_min": 2020,
+        "year_max": 2020,
+        "use_horizon": true,
+        "horizon_db": null,
+        "horizon_data": "DEM-calculated"
+      },
+      "mounting_system": {
+        "fixed": {
+          "slope": {
+            "value": 10,
+            "optimal": false
+          },
+          "azimuth": {
+            "value": 0,
+            "optimal": false
+          },
+          "type": "free-standing"
+        }
+      },
+      "pv_module": {
+        "technology": "CIS",
+        "peak_power": 1.0,
+        "system_loss": 14.0
+      }
+    },
+    "meta": {
+      "inputs": {
+        "location": {
+          "description": "Selected location",
+          "variables": {
+            "latitude": {
+              "description": "Latitude",
+              "units": "decimal degree"
+            },
+            "longitude": {
+              "description": "Longitude",
+              "units": "decimal degree"
+            },
+            "elevation": {
+              "description": "Elevation",
+              "units": "m"
+            }
+          }
+        },
+        "meteo_data": {
+          "description": "Sources of meteorological data",
+          "variables": {
+            "radiation_db": {
+              "description": "Solar radiation database"
+            },
+            "meteo_db": {
+              "description": "Database used for meteorological variables other than solar radiation"
+            },
+            "year_min": {
+              "description": "First year of the calculations"
+            },
+            "year_max": {
+              "description": "Last year of the calculations"
+            },
+            "use_horizon": {
+              "description": "Include horizon shadows"
+            },
+            "horizon_db": {
+              "description": "Source of horizon data"
+            }
+          }
+        },
+        "mounting_system": {
+          "description": "Mounting system",
+          "choices": "fixed, vertical_axis, inclined_axis, two_axis",
+          "fields": {
+            "slope": {
+              "description": "Inclination angle from the horizontal plane",
+              "units": "degree"
+            },
+            "azimuth": {
+              "description": "Orientation (azimuth) angle of the (fixed) PV system (0 = S, 90 = W, -90 = E)",
+              "units": "degree"
+            }
+          }
+        },
+        "pv_module": {
+          "description": "PV module parameters",
+          "variables": {
+            "technology": {
+              "description": "PV technology"
+            },
+            "peak_power": {
+              "description": "Nominal (peak) power of the PV module",
+              "units": "kW"
+            },
+            "system_loss": {
+              "description": "Sum of system losses",
+              "units": "%"
+            }
+          }
+        }
+      },
+      "outputs": {
+        "hourly": {
+          "type": "time series",
+          "timestamp": "hourly averages",
+          "variables": {
+            "P": {
+              "description": "PV system power",
+              "units": "W"
+            },
+            "Gb(i)": {
+              "description": "Beam (direct) irradiance on the inclined plane (plane of the array)",
+              "units": "W/m2"
+            },
+            "Gd(i)": {
+              "description": "Diffuse irradiance on the inclined plane (plane of the array)",
+              "units": "W/m2"
+            },
+            "Gr(i)": {
+              "description": "Reflected irradiance on the inclined plane (plane of the array)",
+              "units": "W/m2"
+            },
+            "H_sun": {
+              "description": "Sun height",
+              "units": "degree"
+            },
+            "T2m": {
+              "description": "2-m air temperature",
+              "units": "degree Celsius"
+            },
+            "WS10m": {
+              "description": "10-m total wind speed",
+              "units": "m/s"
+            },
+            "Int": {
+              "description": "1 means solar radiation values are reconstructed"
+            }
+          }
+        }
+      }
+    },
+    "rowCount": 8784,
+    "apifyRun": "HFCHIVy161ErUxfkV",
+    "apifyDataset": "2Gu9QL16ONyztUcNE",
+    "apifyRecord": "https://api.apify.com/v2/key-value-stores/ZvwluHImMIL89LE6l/records/file-0dc2d8f-seriescalc",
+    "loadedTime": "2026-10-22T17:47:23.936Z",
+    "capture": "metadata extracted from exact response bytes in memory; full body remains in Apify record, not duplicated locally",
+    "capabilityAudit": {
+      "sourceBodyHashRechecked": "af8bce9a02be14faff34d43cac68f8e56212db77b72976a2debdc056f25ebccc",
+      "rows": 8784,
+      "hasPvcalculationEcho": false,
+      "hasPVPowerUnit": true,
+      "fields": {
+        "P": {
+          "rowsWithField": 8784,
+          "finiteNumericRows": 8784,
+          "zeroCount": 4376,
+          "min": 0.0,
+          "max": 717.85,
+          "distinctCount": 4134
+        },
+        "T2m": {
+          "rowsWithField": 8784,
+          "finiteNumericRows": 8784,
+          "zeroCount": 6,
+          "min": -4.54,
+          "max": 35.09,
+          "distinctCount": 2788
+        },
+        "WS10m": {
+          "rowsWithField": 8784,
+          "finiteNumericRows": 8784,
+          "zeroCount": 0,
+          "min": 0.07,
+          "max": 10.21,
+          "distinctCount": 134
+        },
+        "Gb(i)": {
+          "rowsWithField": 8784,
+          "finiteNumericRows": 8784,
+          "zeroCount": 4911,
+          "min": 0.0,
+          "max": 786.3,
+          "distinctCount": 3625
+        },
+        "Gd(i)": {
+          "rowsWithField": 8784,
+          "finiteNumericRows": 8784,
+          "zeroCount": 4366,
+          "min": 0.0,
+          "max": 385.71,
+          "distinctCount": 3936
+        },
+        "Gr(i)": {
+          "rowsWithField": 8784,
+          "finiteNumericRows": 8784,
+          "zeroCount": 4390,
+          "min": 0.0,
+          "max": 1.29,
+          "distinctCount": 129
+        }
+      },
+      "systemOutputAvailable": true,
+      "scope": "Provider P/unit availability and meteorological field audit only; not full adapter acceptance or electrical validation."
+    }
+  },
+  {
+    "requestURL": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-ERA5&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=CdTe&mountingplace=free&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json",
+    "requestParameters": {
+      "lat": [
+        "52.52"
+      ],
+      "lon": [
+        "13.405"
+      ],
+      "raddatabase": [
+        "PVGIS-ERA5"
+      ],
+      "startyear": [
+        "2020"
+      ],
+      "endyear": [
+        "2020"
+      ],
+      "pvcalculation": [
+        "1"
+      ],
+      "peakpower": [
+        "1"
+      ],
+      "loss": [
+        "14"
+      ],
+      "pvtechchoice": [
+        "CdTe"
+      ],
+      "mountingplace": [
+        "free"
+      ],
+      "angle": [
+        "10"
+      ],
+      "aspect": [
+        "0"
+      ],
+      "trackingtype": [
+        "0"
+      ],
+      "usehorizon": [
+        "1"
+      ],
+      "components": [
+        "1"
+      ],
+      "optimalinclination": [
+        "0"
+      ],
+      "optimalangles": [
+        "0"
+      ],
+      "outputformat": [
+        "json"
+      ]
+    },
+    "responseSHA256": "955c410cd714e15eabc3a14a4e4b1d209564fbebd3f3182a7c764d6b2f7d9943",
+    "responseBytes": 1056863,
+    "responseRootFields": [
+      "inputs",
+      "outputs",
+      "meta"
+    ],
+    "inputs": {
+      "location": {
+        "latitude": 52.52,
+        "longitude": 13.405,
+        "elevation": 37.0
+      },
+      "meteo_data": {
+        "radiation_db": "PVGIS-ERA5",
+        "meteo_db": "ERA5",
+        "year_min": 2020,
+        "year_max": 2020,
+        "use_horizon": true,
+        "horizon_db": null,
+        "horizon_data": "DEM-calculated"
+      },
+      "mounting_system": {
+        "fixed": {
+          "slope": {
+            "value": 10,
+            "optimal": false
+          },
+          "azimuth": {
+            "value": 0,
+            "optimal": false
+          },
+          "type": "free-standing"
+        }
+      },
+      "pv_module": {
+        "technology": "CdTe",
+        "peak_power": 1.0,
+        "system_loss": 14.0
+      }
+    },
+    "meta": {
+      "inputs": {
+        "location": {
+          "description": "Selected location",
+          "variables": {
+            "latitude": {
+              "description": "Latitude",
+              "units": "decimal degree"
+            },
+            "longitude": {
+              "description": "Longitude",
+              "units": "decimal degree"
+            },
+            "elevation": {
+              "description": "Elevation",
+              "units": "m"
+            }
+          }
+        },
+        "meteo_data": {
+          "description": "Sources of meteorological data",
+          "variables": {
+            "radiation_db": {
+              "description": "Solar radiation database"
+            },
+            "meteo_db": {
+              "description": "Database used for meteorological variables other than solar radiation"
+            },
+            "year_min": {
+              "description": "First year of the calculations"
+            },
+            "year_max": {
+              "description": "Last year of the calculations"
+            },
+            "use_horizon": {
+              "description": "Include horizon shadows"
+            },
+            "horizon_db": {
+              "description": "Source of horizon data"
+            }
+          }
+        },
+        "mounting_system": {
+          "description": "Mounting system",
+          "choices": "fixed, vertical_axis, inclined_axis, two_axis",
+          "fields": {
+            "slope": {
+              "description": "Inclination angle from the horizontal plane",
+              "units": "degree"
+            },
+            "azimuth": {
+              "description": "Orientation (azimuth) angle of the (fixed) PV system (0 = S, 90 = W, -90 = E)",
+              "units": "degree"
+            }
+          }
+        },
+        "pv_module": {
+          "description": "PV module parameters",
+          "variables": {
+            "technology": {
+              "description": "PV technology"
+            },
+            "peak_power": {
+              "description": "Nominal (peak) power of the PV module",
+              "units": "kW"
+            },
+            "system_loss": {
+              "description": "Sum of system losses",
+              "units": "%"
+            }
+          }
+        }
+      },
+      "outputs": {
+        "hourly": {
+          "type": "time series",
+          "timestamp": "hourly averages",
+          "variables": {
+            "P": {
+              "description": "PV system power",
+              "units": "W"
+            },
+            "Gb(i)": {
+              "description": "Beam (direct) irradiance on the inclined plane (plane of the array)",
+              "units": "W/m2"
+            },
+            "Gd(i)": {
+              "description": "Diffuse irradiance on the inclined plane (plane of the array)",
+              "units": "W/m2"
+            },
+            "Gr(i)": {
+              "description": "Reflected irradiance on the inclined plane (plane of the array)",
+              "units": "W/m2"
+            },
+            "H_sun": {
+              "description": "Sun height",
+              "units": "degree"
+            },
+            "T2m": {
+              "description": "2-m air temperature",
+              "units": "degree Celsius"
+            },
+            "WS10m": {
+              "description": "10-m total wind speed",
+              "units": "m/s"
+            },
+            "Int": {
+              "description": "1 means solar radiation values are reconstructed"
+            }
+          }
+        }
+      }
+    },
+    "rowCount": 8784,
+    "apifyRun": "HFCHIVy161ErUxfkV",
+    "apifyDataset": "2Gu9QL16ONyztUcNE",
+    "apifyRecord": "https://api.apify.com/v2/key-value-stores/ZvwluHImMIL89LE6l/records/file-a77a0c8-seriescalc",
+    "loadedTime": "2026-10-22T17:47:35.230Z",
+    "capture": "metadata extracted from exact response bytes in memory; full body remains in Apify record, not duplicated locally",
+    "capabilityAudit": {
+      "sourceBodyHashRechecked": "955c410cd714e15eabc3a14a4e4b1d209564fbebd3f3182a7c764d6b2f7d9943",
+      "rows": 8784,
+      "hasPvcalculationEcho": false,
+      "hasPVPowerUnit": true,
+      "fields": {
+        "P": {
+          "rowsWithField": 8784,
+          "finiteNumericRows": 8784,
+          "zeroCount": 4790,
+          "min": 0.0,
+          "max": 750.65,
+          "distinctCount": 3831
+        },
+        "T2m": {
+          "rowsWithField": 8784,
+          "finiteNumericRows": 8784,
+          "zeroCount": 6,
+          "min": -4.54,
+          "max": 35.09,
+          "distinctCount": 2788
+        },
+        "WS10m": {
+          "rowsWithField": 8784,
+          "finiteNumericRows": 8784,
+          "zeroCount": 0,
+          "min": 0.07,
+          "max": 10.21,
+          "distinctCount": 134
+        },
+        "Gb(i)": {
+          "rowsWithField": 8784,
+          "finiteNumericRows": 8784,
+          "zeroCount": 4911,
+          "min": 0.0,
+          "max": 786.3,
+          "distinctCount": 3625
+        },
+        "Gd(i)": {
+          "rowsWithField": 8784,
+          "finiteNumericRows": 8784,
+          "zeroCount": 4366,
+          "min": 0.0,
+          "max": 385.71,
+          "distinctCount": 3936
+        },
+        "Gr(i)": {
+          "rowsWithField": 8784,
+          "finiteNumericRows": 8784,
+          "zeroCount": 4390,
+          "min": 0.0,
+          "max": 1.29,
+          "distinctCount": 129
+        }
+      },
+      "systemOutputAvailable": true,
+      "scope": "Provider P/unit availability and meteorological field audit only; not full adapter acceptance or electrical validation."
+    }
+  },
+  {
+    "requestURL": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-ERA5&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=Unknown&mountingplace=free&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json",
+    "requestParameters": {
+      "lat": [
+        "52.52"
+      ],
+      "lon": [
+        "13.405"
+      ],
+      "raddatabase": [
+        "PVGIS-ERA5"
+      ],
+      "startyear": [
+        "2020"
+      ],
+      "endyear": [
+        "2020"
+      ],
+      "pvcalculation": [
+        "1"
+      ],
+      "peakpower": [
+        "1"
+      ],
+      "loss": [
+        "14"
+      ],
+      "pvtechchoice": [
+        "Unknown"
+      ],
+      "mountingplace": [
+        "free"
+      ],
+      "angle": [
+        "10"
+      ],
+      "aspect": [
+        "0"
+      ],
+      "trackingtype": [
+        "0"
+      ],
+      "usehorizon": [
+        "1"
+      ],
+      "components": [
+        "1"
+      ],
+      "optimalinclination": [
+        "0"
+      ],
+      "optimalangles": [
+        "0"
+      ],
+      "outputformat": [
+        "json"
+      ]
+    },
+    "responseSHA256": "c38933f99d34b4f723f3879cd6544d26fbd8e1ce4135aadc149a9bad45ff9c08",
+    "responseBytes": 956061,
+    "responseRootFields": [
+      "inputs",
+      "outputs",
+      "meta"
+    ],
+    "inputs": {
+      "location": {
+        "latitude": 52.52,
+        "longitude": 13.405,
+        "elevation": 37.0
+      },
+      "meteo_data": {
+        "radiation_db": "PVGIS-ERA5",
+        "meteo_db": "ERA5",
+        "year_min": 2020,
+        "year_max": 2020,
+        "use_horizon": true,
+        "horizon_db": null,
+        "horizon_data": "DEM-calculated"
+      },
+      "mounting_system": {
+        "fixed": {
+          "slope": {
+            "value": 10,
+            "optimal": false
+          },
+          "azimuth": {
+            "value": 0,
+            "optimal": false
+          },
+          "type": "free-standing"
+        }
+      },
+      "pv_module": {
+        "technology": "Unknown type",
+        "peak_power": 1.0,
+        "system_loss": 14.0
+      }
+    },
+    "meta": {
+      "inputs": {
+        "location": {
+          "description": "Selected location",
+          "variables": {
+            "latitude": {
+              "description": "Latitude",
+              "units": "decimal degree"
+            },
+            "longitude": {
+              "description": "Longitude",
+              "units": "decimal degree"
+            },
+            "elevation": {
+              "description": "Elevation",
+              "units": "m"
+            }
+          }
+        },
+        "meteo_data": {
+          "description": "Sources of meteorological data",
+          "variables": {
+            "radiation_db": {
+              "description": "Solar radiation database"
+            },
+            "meteo_db": {
+              "description": "Database used for meteorological variables other than solar radiation"
+            },
+            "year_min": {
+              "description": "First year of the calculations"
+            },
+            "year_max": {
+              "description": "Last year of the calculations"
+            },
+            "use_horizon": {
+              "description": "Include horizon shadows"
+            },
+            "horizon_db": {
+              "description": "Source of horizon data"
+            }
+          }
+        },
+        "mounting_system": {
+          "description": "Mounting system",
+          "choices": "fixed, vertical_axis, inclined_axis, two_axis",
+          "fields": {
+            "slope": {
+              "description": "Inclination angle from the horizontal plane",
+              "units": "degree"
+            },
+            "azimuth": {
+              "description": "Orientation (azimuth) angle of the (fixed) PV system (0 = S, 90 = W, -90 = E)",
+              "units": "degree"
+            }
+          }
+        },
+        "pv_module": {
+          "description": "PV module parameters",
+          "variables": {
+            "technology": {
+              "description": "PV technology"
+            },
+            "peak_power": {
+              "description": "Nominal (peak) power of the PV module",
+              "units": "kW"
+            },
+            "system_loss": {
+              "description": "Sum of system losses",
+              "units": "%"
+            }
+          }
+        }
+      },
+      "outputs": {
+        "hourly": {
+          "type": "time series",
+          "timestamp": "hourly averages",
+          "variables": {
+            "Gb(i)": {
+              "description": "Beam (direct) irradiance on the inclined plane (plane of the array)",
+              "units": "W/m2"
+            },
+            "Gd(i)": {
+              "description": "Diffuse irradiance on the inclined plane (plane of the array)",
+              "units": "W/m2"
+            },
+            "Gr(i)": {
+              "description": "Reflected irradiance on the inclined plane (plane of the array)",
+              "units": "W/m2"
+            },
+            "H_sun": {
+              "description": "Sun height",
+              "units": "degree"
+            },
+            "T2m": {
+              "description": "2-m air temperature",
+              "units": "degree Celsius"
+            },
+            "WS10m": {
+              "description": "10-m total wind speed",
+              "units": "m/s"
+            },
+            "Int": {
+              "description": "1 means solar radiation values are reconstructed"
+            }
+          }
+        }
+      }
+    },
+    "rowCount": 8784,
+    "apifyRun": "HFCHIVy161ErUxfkV",
+    "apifyDataset": "2Gu9QL16ONyztUcNE",
+    "apifyRecord": "https://api.apify.com/v2/key-value-stores/ZvwluHImMIL89LE6l/records/file-2973f47-seriescalc",
+    "loadedTime": "2026-10-22T17:48:12.285Z",
+    "capture": "metadata extracted from exact response bytes in memory; full body remains in Apify record, not duplicated locally",
+    "capabilityAudit": {
+      "sourceBodyHashRechecked": "c38933f99d34b4f723f3879cd6544d26fbd8e1ce4135aadc149a9bad45ff9c08",
+      "rows": 8784,
+      "hasPvcalculationEcho": false,
+      "hasPVPowerUnit": false,
+      "fields": {
+        "P": {
+          "rowsWithField": 0,
+          "finiteNumericRows": 0,
+          "zeroCount": 0,
+          "min": null,
+          "max": null,
+          "distinctCount": 0
+        },
+        "T2m": {
+          "rowsWithField": 8784,
+          "finiteNumericRows": 8784,
+          "zeroCount": 8784,
+          "min": 0.0,
+          "max": 0.0,
+          "distinctCount": 1
+        },
+        "WS10m": {
+          "rowsWithField": 8784,
+          "finiteNumericRows": 8784,
+          "zeroCount": 8784,
+          "min": 0.0,
+          "max": 0.0,
+          "distinctCount": 1
+        },
+        "Gb(i)": {
+          "rowsWithField": 8784,
+          "finiteNumericRows": 8784,
+          "zeroCount": 4911,
+          "min": 0.0,
+          "max": 786.3,
+          "distinctCount": 3625
+        },
+        "Gd(i)": {
+          "rowsWithField": 8784,
+          "finiteNumericRows": 8784,
+          "zeroCount": 4366,
+          "min": 0.0,
+          "max": 385.71,
+          "distinctCount": 3936
+        },
+        "Gr(i)": {
+          "rowsWithField": 8784,
+          "finiteNumericRows": 8784,
+          "zeroCount": 4390,
+          "min": 0.0,
+          "max": 1.29,
+          "distinctCount": 129
+        }
+      },
+      "systemOutputAvailable": false,
+      "scope": "Provider P/unit availability and meteorological field audit only; not full adapter acceptance or electrical validation."
+    }
+  }
+]

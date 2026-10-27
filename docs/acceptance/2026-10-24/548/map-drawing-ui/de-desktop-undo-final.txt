@@ -1,0 +1,189 @@
+- banner:
+  - navigation "Primäre Navigation":
+    - link "Linker-Startseite":
+      - /url: /de/
+    - button "Produkte":
+      - text: Produkte
+    - button "Lösungen":
+      - text: Lösungen
+    - button "Planen mit Linker":
+      - text: Planen mit Linker
+    - link "Dienstleistungen":
+      - /url: /de/kundendienst/
+    - button "Für Partner":
+      - text: Für Partner
+    - button "Über uns":
+      - text: Über uns
+    - link "Produkte suchen":
+      - /url: http://127.0.0.1:9347/de/produkte/#search-box
+      - generic: Suchen
+    - link "Lösungsentwurf":
+      - /url: http://127.0.0.1:9347/de/loesungsentwurf/
+      - generic: Lösungsentwurf
+    - button "Mein Konto":
+      - generic: Mein Konto
+    - group "Sprache":
+      - link "EN":
+        - /url: http://127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1
+      - link "DE":
+        - /url: http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1
+    - link "Linker kontaktieren":
+      - /url: http://127.0.0.1:9347/de/kontakt/
+- main:
+  - button "Projekte"
+  - generic: /
+  - generic: Köln · owned synthetic roof · acceptance
+  - status: Gespeichert · Version 3
+  - button "Rückgängig" [disabled]:
+  - button "Wiederholen":
+  - button "Projekt speichern" [disabled]
+  - complementary:
+    - generic: L
+    - generic: Lösungskonfigurator
+    - text: Aktuelles Projekt
+    - navigation "Projektbereiche":
+      - link "Projektübersicht":
+        - /url: "#lp-overview"
+        - text: Projektübersicht
+      - link "Standort und Projekt":
+        - /url: "#lp-site"
+        - text: Standort und Projekt
+      - link "Dachplanung":
+        - /url: "#lp-design"
+        - text: Dachplanung
+      - link "Energiedaten":
+        - /url: "#lp-load"
+        - text: Energiedaten
+    - generic: Projektangaben bleiben mit ihrer Quelle und Version verknüpft.
+  - text: Aktuelles Projekt
+  - heading "Köln · owned synthetic roof · acceptance" [level=1]
+  - paragraph: Standortdaten und Dachbelegungen werden im selben Projekt gespeichert.
+  - region "Dachplanung":
+    - generic: "06"
+    - heading "Dachplanung" [level=2]
+    - paragraph: Dachgeometrie und Modulspezifikationen bilden die Grundlage für eine bearbeitbare Belegung und eine nachvollziehbare Prüfung in der Dachfläche. Die Dachplanung ist bei jedem Projekttyp optional.
+    - button "Dachfläche hinzufügen":
+      - text: Dachfläche hinzufügen
+    - button "Modulspezifikation hinzufügen"
+    - group "Planungsansicht":
+      - button "Draufsicht"
+      - button "Karte" [pressed]
+      - button "3D"
+    - button "Dachgeometrie importieren"
+    - generic "Importe zur Prüfung"
+    - region "Dachfläche auf der Karte zeichnen":
+      - heading "Dachfläche zeichnen" [level=3]
+      - paragraph: Aus Umriss und Dacheigenschaften entsteht eine bearbeitbare Dachfläche. Sie ist im Projekt in der Plan- und 3D-Ansicht verfügbar; ihre Quellenangaben und Nutzungsberechtigungen bleiben mit ihr verknüpft.
+      - status: Zeichnung pausiert und in diesem Browser gespeichert.
+      - button "Zeichnung fortsetzen"
+      - button "Zeichnung verwerfen"
+    - region "Projektkarte":
+      - heading "Projektkarte" [level=3]
+      - generic: Projektgeometrie
+      - paragraph: Die Karte zeigt die erfasste Geometrie anhand des geografischen Projektbezugs. Dachmaße und die im Projekt angegebene Quellengenauigkeit bleiben unverändert.
+      - group "Bedienelemente der Karte":
+        - button "Gesamte Planung anzeigen"
+        - button "Vergrößern": +
+        - button "Verkleinern": −
+        - button "Norden oben"
+      - region "Projektkarte"
+      - generic: Zum Zoomen der Karte ⌘ gedrückt halten und scrollen.
+      - paragraph: Wenn Sie die Straßenkarte laden, erhalten OpenFreeMap und die beteiligten Dienste Ihre IP-Adresse und Angaben zum angezeigten Kartenausschnitt. Die Straßenkarte dient der Orientierung.
+      - button "Straßenkarte laden"
+      - link "Datenschutzhinweise von OpenFreeMap":
+        - /url: https://openfreemap.org/privacy/
+    - term: Berücksichtigte Module
+    - definition: "0"
+    - term: Angegebene DC-Nennleistung
+    - definition: 0 kWp
+    - term: Dachflächen
+    - definition: "1"
+    - complementary "Planungsobjekte und Eigenschaften":
+      - heading "Planungsobjekte" [level=3]
+      - group "Planungsobjekt auswählen":
+        - button "Synthetic 3–4–5 roof · Köln":
+          - text: Synthetic 3–4–5 roof · Köln
+      - button "Modulfeld hinzufügen" [disabled]:
+        - text: Modulfeld hinzufügen
+      - button "Hindernis hinzufügen":
+        - text: Hindernis hinzufügen
+      - button "Sperrfläche hinzufügen":
+        - text: Sperrfläche hinzufügen
+      - button "Abstandsvorgaben der Belegung"
+      - paragraph: Vor dem Platzieren eines Modulfelds ist eine Modulspezifikation erforderlich.
+      - button "Koordinatenbezüge"
+      - generic "Quellen"
+    - region "Belegung prüfen":
+      - heading "Belegung prüfen" [level=3]
+      - button "Belegung prüfen"
+      - paragraph: Die Prüfung vergleicht vollständige Modulprojektionen, Dachränder und Öffnungen, Hindernisse, Sperrflächen und angegebene Abstände in der jeweiligen Dachfläche. Statik, Brandschutz, elektrische Auslegung und Verschattung werden gesondert beurteilt.
+  - strong: Lösungskonfigurator
+  - generic: von Linker
+  - paragraph: Linker bündelt Ihre Angaben in einem bearbeitbaren Projekt für die PV- und Speicherplanung.
+  - generic "Über dieses Werkzeug"
+- contentinfo:
+  - img "Linker"
+  - text: Sprache
+  - navigation "Sprache":
+    - link "Englisch":
+      - /url: http://127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1
+    - link "Deutsch":
+      - /url: http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1
+  - paragraph:
+    - generic: Wir verbinden
+    - link "Produkte":
+      - /url: /de/produkte/
+      - generic: Produkte
+    - generic: ","
+    - link "Technologie":
+      - /url: /de/ueber-uns/leistungsfaehigkeit/
+      - generic: Technologie
+    - generic: und
+    - link "Service":
+      - /url: /de/kundendienst/
+      - generic: Service
+    - text: und schaffen
+    - strong: dauerhaften Wert
+    - text: für Energiepartner in Europa.
+  - tablist "Fußzeilen-Navigation":
+    - tab "Lösungen" [selected]:
+      - generic: Lösungen
+    - tab "Dienstleistungen":
+      - generic: Dienstleistungen
+    - tab "Planen mit Linker":
+      - generic: Planen mit Linker
+    - tab "Konto":
+      - generic: Konto
+    - tab "Linker kontaktieren":
+      - generic: Linker kontaktieren
+  - tabpanel "Lösungen":
+    - heading "Lösungen" [level=2]
+    - generic: "03"
+    - list:
+      - link "Heimspeicher":
+        - /url: /de/loesung/heimspeicher/
+        - generic: Heimspeicher
+      - link "Gewerbespeicher":
+        - /url: /de/loesung/gewerbespeicher/
+        - generic: Gewerbespeicher
+      - link "Großspeicher":
+        - /url: /de/loesung/grossspeicher/
+        - generic: Großspeicher
+  - generic: © 2026 Linker. Alle Rechte vorbehalten.
+  - navigation "Rechtliches":
+    - link "Impressum":
+      - /url: /de/impressum/
+    - link "Datenschutzerklärung":
+      - /url: /de/datenschutz/
+    - button "Cookie-Einstellungen"
+    - link "Verkaufsbedingungen":
+      - /url: /de/verkaufsbedingungen/
+    - link "Rückgabe & Erstattung":
+      - /url: /de/rueckgabe-erstattung/
+  - text: Produkteignung
+  - emphasis: ·
+  - text: Wechselrichter-Kompatibilität
+  - emphasis: ·
+  - text: Projektunterstützung
+- button "Genie fragen":
+- status

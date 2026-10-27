@@ -1,0 +1,29 @@
+{
+  "checked_at_utc": "2026-10-24T05:32:38.254720+00:00",
+  "map_title": "地图：统一方案工作台重构与全站交付",
+  "map_url": "https://github.com/AssassinFlash/de-linker/issues/548",
+  "map_state": "OPEN",
+  "source_pin": "a1eaecfc46290743c67a50661e498f8a2de5dc03",
+  "evidence_commit": "1e08d4a8c30855f2db0443c3215218604fc76c43",
+  "before_body_sha256": "78be2af85084f2e438e6bb990ea5aa7a32fd0839b44cfd9d2f0ce925d82cbbc3",
+  "readback_body_sha256": "ea2b06e0b425c716cb8c2ec5f7c3556599506ccf5d5cf655f2fa61664d1235ad",
+  "body_verified_exact": true,
+  "comment_url": "https://github.com/AssassinFlash/de-linker/issues/548#issuecomment-6380419076",
+  "comment_sha256": "5ccfa6dbf962e10de62a0abc24857c0c429552a5542ba1168069f75d4b56ed50",
+  "comment_verified_exact": true,
+  "comment_body": "统一方案工作台继续推进。本轮将新的气象获取所需持久记录实现为实际SQLite/CAS基础，而非仅留下方案。\n\n- 只有当前有效任务执行权可创建意图、原子消耗一次POST许可。尚未消耗的许可可安全继续；已消耗却没有回执的状态保持“不确定”，重开、并发和替换worker都不能再领取一次许可。只有原先冻结在run内的精确计划可进入此记录。\n- 晚到的远端编号/回执、进度、终态与abort回执可以留存，但不给任务新的执行权，也不能发布成功结果或项目owned asset。终态不会被晚到的运行中回执覆盖。\n- 使用原有完整TMY解释器核对气象原件，保存不可变原始字节与来源。来源/证据子项及获取记录都进入真实备份恢复；访客转账号后仍归同一个项目，其他所有者保持not-found。\n- 新增25项公共接口夹具，完整716项引擎回归（66.71秒）、lint/format135、严格types104通过；独立Spec与Standards完整九文件差异评审均0发现。原始测试和两条报告已留存。\n- 源码 `a1eaecfc46290743c67a50661e498f8a2de5dc03`；[验证记录](https://github.com/AssassinFlash/de-linker/blob/1e08d4a8c30855f2db0443c3215218604fc76c43/docs/acceptance/2026-10-24/548/weather-journal/VALIDATION.md)、[独立评审](https://github.com/AssassinFlash/de-linker/blob/1e08d4a8c30855f2db0443c3215218604fc76c43/docs/acceptance/2026-10-24/548/weather-journal/REVIEWS.md)。164个基线项目、原屋顶版本14、完整运行worker身份参数均读回未变，运行数据库没有新增journal表。没有新Actor、外部获取、实例、部署、生产写入、询盘或邮件。\n\n当前是获取记录基础，不是已完成新网络获取。下一步实现实际有界Apify通道、远端INPUT/dataset/KV核对、持久恢复和abort执行，注册托管气象任务并接原生来源/模型/任务操作；全部仍在同一完整交付内。详细遮挡、电气/设备/国家、BOM/报告/PDF、全站消费者、迁移、评审站与生产读回继续推进，目标保持进行中。\n",
+  "temporary_request_files_removed": [
+    {
+      "path": "/tmp/p548-weather-journal-map.body.md",
+      "bytes": 13321
+    },
+    {
+      "path": "/tmp/p548-weather-journal-map.comment.md",
+      "bytes": 2118
+    },
+    {
+      "path": "/tmp/p548-weather-journal-map.state.json",
+      "bytes": 220
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+Browser tab: 2, Title: "Solution Configurator · Workspace review | Linker", URL: "http://127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be#lp-calculations".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+~			25 text Unsaved changes
+~			26 button Undo
+~			28 button Save project
++				152 container
++					153 text The storage parameters need a source or assumption note.
+~					101 text entry area (settable) Source or assumption for storage parameters
+~				105 text Save project records these inputs before a new calculation can start.
+The focused UI element is 152 container

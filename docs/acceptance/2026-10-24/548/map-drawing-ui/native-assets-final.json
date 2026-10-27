@@ -1,0 +1,18 @@
+{
+  "saved": [
+    "Saved · revision 5",
+    "",
+    ""
+  ],
+  "scripts": [
+    "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=60102a96eb9944e47cfe303f50c6a11bb2620ebb9f4f0360993a76738fa0ce91"
+  ],
+  "styles": [
+    "http://127.0.0.1:9347/wp-content/uploads/windpress/cache/tailwind.css?ver=1792782470"
+  ],
+  "url": "http://127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1",
+  "viewport": {
+    "height": 1000,
+    "width": 1440
+  }
+}

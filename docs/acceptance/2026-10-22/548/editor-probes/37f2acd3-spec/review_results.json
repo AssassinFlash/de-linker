@@ -1,0 +1,94 @@
+{
+  "target": "37f2acd3962e8da3f885b1dd669e831b96b1de9c",
+  "base": "8a4a80b132f692062125807e509a57926fb0f518",
+  "axis": "Spec",
+  "verdict": "FAIL",
+  "findings": [
+    {
+      "id": "pitch90_mismatched_range",
+      "priority": 2,
+      "spec": "docs/specs/548-interactive-design.md:21-22",
+      "quote": "locale-specific decimals and required ranges are checked",
+      "source": "apps/planner/src/components/design/RoofForm.tsx:73,119; apps/planner/src/domain/validateGeometry.ts:154-156",
+      "evidence": "Actual React/StrictMode intake advertises0to90 and allows90 through field range checks, but actual command returns invalid_roof_basis. Edits0, generic refusal, raw form retained.",
+      "probe": "apps/planner/tests/spec-editor-probe.test.mjs"
+    },
+    {
+      "id": "supported_hole_float32_collapse",
+      "priority": 2,
+      "spec": "docs/specs/548-interactive-design.md:30-31",
+      "quote": "rebase-before-add ... Roof holes and extruded objects use real geometry",
+      "source": "apps/planner/src/components/design/SceneViewport.tsx:99-113",
+      "evidence": "Actual RoofMesh creates real Three ShapeGeometry with rawUV1e6. A supported0.01m square opening becomes4 Float32 entries at the same coordinate[1000001,1000001,0], distinct count1. GPU rendering cannot recover these lost vertices.",
+      "probe": "apps/planner/tests/spec-scene-probe.test.mjs"
+    },
+    {
+      "id": "fit_camera_omits_obstacle_extent",
+      "priority": 2,
+      "spec": "docs/specs/548-interactive-design.md:31-34",
+      "quote": "Roof holes and extruded objects use real geometry ... Camera/lighting/backend never become engineering inputs",
+      "source": "apps/planner/src/components/design/SceneViewport.tsx:370-406,419-425",
+      "evidence": "Implementation offers Fit3D view but bounds contain roofs/panels only. Actual component with2x2m roof and30m vertical obstacle chooses camera[2.697,1.838,.980], target[1,0,-1]; real Three camera transform places obstacle top behind camera, cameraSpaceZ+14.118. This is a view-fit defect, not an engineering calculation error.",
+      "probe": "apps/planner/tests/spec-scene-probe.test.mjs"
+    },
+    {
+      "id": "failed_renderer_never_disposed",
+      "priority": 2,
+      "spec": "docs/specs/548-interactive-design.md:35",
+      "quote": "Resources and controls clean up on unmount",
+      "source": "apps/planner/src/components/design/SceneViewport.tsx:482-491",
+      "evidence": "Controlled failure of actual WebGPURenderer.init during actual component callback produces2 owned renderer constructions in StrictMode, disposal0 even after owner unmount. Callback rejects without returning the instance to R3F. Fallback text is displayed. No claim about measured real GPU memory is made.",
+      "probe": "apps/planner/tests/spec-scene-probe.test.mjs"
+    },
+    {
+      "id": "native_control_cancel_not_released",
+      "priority": 2,
+      "spec": "docs/specs/548-interactive-design.md:31-35",
+      "quote": "camera controls paused during manipulation ... Failure/retry preserves numeric/plan editing",
+      "source": "apps/planner/src/components/design/SceneControls.tsx:61-79",
+      "evidence": "Real official TransformControls/OrbitControls on real DOM canvas, controlled entered drag state and native pointercancel: Orbit remains enabled=false, transform dragging=true, finish0. Correct pointer-capture fixture primitives are present. This tests cancellation handling, not GPU picking accuracy.",
+      "probe": "apps/planner/tests/spec-controls-probe.test.mjs"
+    },
+    {
+      "id": "lazy_chunk_failure_unmounts_editor",
+      "priority": 2,
+      "spec": "docs/specs/548-interactive-design.md:34-35",
+      "quote": "Failure/retry preserves numeric/plan editing",
+      "source": "apps/planner/src/components/design/DesignEditor.tsx:281-296; apps/planner/src/main.tsx:24-43",
+      "evidence": "Actual React.lazy import rejection simulating3D chunk failure escapes Suspense to outer workspace boundary. Staged rows text2.5 and Plan switch disappear; local scene boundary is not loaded yet. Whole-app reload is required.",
+      "probe": "apps/planner/tests/spec-lazy-failure.test.mjs"
+    }
+  ],
+  "scope_creep": [],
+  "existing_checks": {
+    "domain_data_tests_passed": 39,
+    "original_design_dom_passed": 4,
+    "other_existing_dom_not_rerun": 45
+  },
+  "independent_probes": {
+    "cases": 8,
+    "passed": 2,
+    "failed": 6
+  },
+  "passed_behaviors": [
+    "actual SVG cancellation writes0 and pointerup1 guarded move",
+    "full ProjectEditor staged text protects beforeunload/save/undo/leave; cancel restores action; exclusion saved with same geometry and acknowledged baseline2"
+  ],
+  "method_limits": [
+    "React19/StrictMode actual components and actual Three geometry/camera/controls",
+    "Canvas host replaced; no GPU was initialized/rendered",
+    "renderer init fault injected; no real GPU allocation measurements",
+    "control started state controlled; no real raycast picking/physical touch gesture claimed",
+    "no p548/native/production/browser automation",
+    "copy draft/DE/GPU/native gates not considered passed"
+  ],
+  "probe_hashes": {
+    "apps/planner/tests/spec-lazy-failure-loader.mjs": "ffb03db0a644f69cd092a0c73639c8a769432431d4ab01c0eab4755d49fcd52a",
+    "apps/planner/tests/spec-scene-probe.test.mjs": "04e663ffb110ed237cdaf7ddd85161f8495bcc7d77362d4b25a1241ea4a588ae",
+    "apps/planner/tests/spec-controls-probe.test.mjs": "dacde65a012aeaafd5983940f2fea3ff9bf383475c64f85e4dcafe950052aa5a",
+    "apps/planner/tests/spec-editor-probe.test.mjs": "220be74ec4d9fdb1f028dc778fff7ccf7b08ea803bfe5c60e6d04431d9dc06e6",
+    "apps/planner/tests/spec-r3f-host.mjs": "6ec38881dab56853b3fde2a2a2392f7d933889e224b07d7a19d89fcdfc66af2f",
+    "apps/planner/tests/spec-lazy-failure.test.mjs": "2912848aa0ae0abfefb792da7999da80dc18439170bce34c51b38ad459221f65",
+    "apps/planner/tests/spec-scene-loader.mjs": "600d21b304ff28308b2e3ddaedf3e519448fdea80ecee23a59a2a19932c52310"
+  }
+}

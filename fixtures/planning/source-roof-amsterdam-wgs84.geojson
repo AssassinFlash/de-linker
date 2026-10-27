@@ -1,0 +1,56 @@
+{
+  "type": "Feature",
+  "id": "synthetic-amsterdam-roof-not-surveyed",
+  "properties": {
+    "name": "Synthetic Amsterdam roof with opening; generated coordinates"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          4.89,
+          52.37
+        ],
+        [
+          4.8902,
+          52.37
+        ],
+        [
+          4.8902,
+          52.3701
+        ],
+        [
+          4.89,
+          52.3701
+        ],
+        [
+          4.89,
+          52.37
+        ]
+      ],
+      [
+        [
+          4.89008,
+          52.37004
+        ],
+        [
+          4.89008,
+          52.37006
+        ],
+        [
+          4.89012,
+          52.37006
+        ],
+        [
+          4.89012,
+          52.37004
+        ],
+        [
+          4.89008,
+          52.37004
+        ]
+      ]
+    ]
+  }
+}

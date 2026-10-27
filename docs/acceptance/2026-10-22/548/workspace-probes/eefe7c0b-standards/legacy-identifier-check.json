@@ -1,0 +1,14 @@
+{
+  "fixed_sha": "eefe7c0b060214b60ba7a012ff206e668dbce6d3",
+  "scanned": [
+    "apps/planner/src/components/BriefForm.tsx",
+    "apps/planner/src/components/Icon.tsx",
+    "apps/planner/src/components/ProjectEditor.tsx",
+    "apps/planner/src/components/ProjectOverview.tsx",
+    "apps/planner/src/components/design/PlanViewport.tsx",
+    "plugins/linker-commerce/content/windpress/planner.css",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal.po"
+  ],
+  "matches": []
+}

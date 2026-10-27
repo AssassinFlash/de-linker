@@ -1,0 +1,22 @@
+{
+  "review_owner": "/root/import_layout_spec",
+  "takeover_authority": "Parent explicitly released interrupted previous reviewer snapshot for this fixed review",
+  "previous_owner": "/root/geographic_spec_e138",
+  "snapshot_target": "1652209cb0deef904adc70baba9770c8f8ed61b7",
+  "review_target": "bc714bc628f1555d2ddcbface216dabc7b9371d5",
+  "removed_root": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/import-layout-spec-1652209c-0t_749d2",
+  "removed_directories": 1,
+  "verified_files": 148,
+  "verified_symlinks": 1,
+  "logical_file_bytes": 2993262,
+  "allocated_file_bytes_before": 3346432,
+  "unexpected_files": [],
+  "active_process_references": [],
+  "original_failure_archive_preserved_files": 43,
+  "free_before_bytes": 887849185280,
+  "free_after_bytes": 887852441600,
+  "observed_free_delta_bytes": 3256320,
+  "free_delta_note": "Observed shared-volume change; concurrent work may affect free space. No dependency target was deleted.",
+  "removed_root_absent": true,
+  "checked_utc": "2026-10-23T12:40:57.052172+00:00"
+}

@@ -1,0 +1,62 @@
+{
+  "base": "252a022e41f8ca5426d6463206c8346eb89da5f1",
+  "pin": "a1281d9d1e4829b866cef89f8c23e6aecb7b91ce",
+  "head_verified": true,
+  "merge_base": "252a022e41f8ca5426d6463206c8346eb89da5f1",
+  "diff_command": "git diff 252a022e41f8ca5426d6463206c8346eb89da5f1...a1281d9d1e4829b866cef89f8c23e6aecb7b91ce",
+  "commits": [
+    "a1281d9d feat(planner): edit existing map boundaries through the shared project journal"
+  ],
+  "diff_name_status": [
+    "M\tapps/planner/src/components/design/DesignEditor.tsx",
+    "R059\tapps/planner/src/components/design/MapRoofWorkspace.tsx\tapps/planner/src/components/design/MapDrawingWorkspace.tsx",
+    "A\tapps/planner/src/components/design/MapRingProperties.tsx",
+    "A\tapps/planner/src/components/design/MapRingSelector.tsx",
+    "M\tapps/planner/src/components/design/MapRoofProperties.tsx",
+    "M\tapps/planner/src/components/design/MapViewport.tsx",
+    "A\tapps/planner/src/components/design/mapDrawingLabels.ts",
+    "A\tapps/planner/src/components/design/useMapPropertyFeedback.ts",
+    "R088\tapps/planner/src/data/MapRoofDraftStore.ts\tapps/planner/src/data/MapDrawingDraftStore.ts",
+    "R089\tapps/planner/src/data/useMapRoofDraft.ts\tapps/planner/src/data/useMapDrawingDraft.ts",
+    "A\tapps/planner/src/domain/mapDrawingBase.ts",
+    "A\tapps/planner/src/domain/mapDrawingDraft.ts",
+    "M\tapps/planner/src/domain/mapDrawingGeometry.ts",
+    "A\tapps/planner/src/domain/mapRingDraft.test.ts",
+    "A\tapps/planner/src/domain/mapRingDraft.ts",
+    "M\tapps/planner/src/domain/mapRoofDraft.ts",
+    "M\tapps/planner/tests/map-roof-recovery.test.mjs",
+    "M\tapps/planner/tests/map-roof-workspace.test.mjs",
+    "A\tdocs/acceptance/2026-10-24/548/map-ring-ui/COPY-DRAFT.json",
+    "A\tdocs/acceptance/2026-10-24/548/map-ring-ui/COPY-FINAL.json",
+    "A\tdocs/acceptance/2026-10-24/548/map-ring-ui/COPY-REVIEW.md",
+    "A\tdocs/acceptance/2026-10-24/548/map-ring-ui/SPEC.md",
+    "A\tdocs/acceptance/2026-10-24/548/map-ring-ui/tests-output.txt",
+    "M\tdocs/research/2026-10-23-map-workbench-integration/IMPLEMENTATION.md",
+    "M\tplugins/linker-commerce/content/windpress/planner.css",
+    "R099\tplugins/linker-tools/build/planner/assets/MapViewport-DEU-DlpF.js\tplugins/linker-tools/build/planner/assets/MapViewport-vp_6q1r8.js",
+    "R099\tplugins/linker-tools/build/planner/assets/SceneViewport-DNKhJOvs.js\tplugins/linker-tools/build/planner/assets/SceneViewport-fCPgTwg6.js",
+    "D\tplugins/linker-tools/build/planner/assets/planner-core-BH4esR2_.js",
+    "A\tplugins/linker-tools/build/planner/assets/planner-core-CNtQBvDU.js",
+    "M\tplugins/linker-tools/build/planner/assets/planner.js",
+    "M\tplugins/linker-tools/build/planner/source-manifest.json",
+    "M\tplugins/linker-tools/build/planner/vite-manifest.json",
+    "M\tplugins/linker-tools/build/planner/windpress.scan.txt",
+    "M\tplugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json",
+    "M\tplugins/linker-tools/languages/linker-tools-de_DE_formal.mo",
+    "M\tplugins/linker-tools/languages/linker-tools-de_DE_formal.po"
+  ],
+  "manifest": {
+    "sources": {
+      "count": 121,
+      "all_committed_hashes_match": true
+    },
+    "build": {
+      "count": 7,
+      "all_committed_hashes_match": true
+    }
+  },
+  "post_probe_root_fix_worktree_drift": [
+    "apps/planner/src/components/design/MapDrawingWorkspace.tsx"
+  ],
+  "boundary": "Committed source/build identity. Root began authorized repair after the failing probe; its uncommitted files are excluded from this pinned review. No native/provider/production acceptance."
+}

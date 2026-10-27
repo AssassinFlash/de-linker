@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import subprocess
 from html.parser import HTMLParser
@@ -25,10 +26,14 @@ SOURCE_SUFFIXES = {".php", ".js", ".jsx", ".ts", ".tsx", ".html"}
 def code_references(plugin: Path) -> dict[str, list[tuple[str, int]]]:
     """Gettext messages in runtime PHP/JS/TS, including the committed bundles."""
     found: dict[str, list[tuple[str, int]]] = {}
-    for path in sorted(plugin.rglob("*")):
+    paths = list(plugin.rglob("*"))
+    planner = plugin.parent.parent / "apps" / "planner" / "src"
+    if plugin.name == "linker-tools" and planner.is_dir():
+        paths.extend(planner.rglob("*"))
+    for path in sorted(paths):
         if (
             path.suffix not in SOURCE_SUFFIXES - {".html"}
-            or EXCLUDED.intersection(path.relative_to(plugin).parts)
+            or EXCLUDED.intersection(path.parts)
             or re.search(r"\.(?:test|stories)\.[jt]sx?$", path.name)
         ):
             continue
@@ -37,7 +42,7 @@ def code_references(plugin: Path) -> dict[str, list[tuple[str, int]]]:
             php=path.suffix == ".php",
             domain=plugin.name,
         ):
-            reference = (str(path.relative_to(plugin)), line)
+            reference = (os.path.relpath(path, plugin), line)
             if reference not in found.setdefault(msgid, []):
                 found[msgid].append(reference)
     return found
@@ -99,10 +104,13 @@ def gettext_domain(source: str, start: int) -> str | None:
     """Read the final literal argument, respecting nested count expressions."""
     depth = 0
     argument = start
+    previous = ""
     for token in ARGUMENT_TOKEN.finditer(source, start):
         value = token[0]
         if value == ")" and depth == 0:
             literal = source[argument : token.start()].strip()
+            if not literal:
+                literal = previous
             if QUOTED.fullmatch(literal):
                 return quoted_strings(literal)[0][0]
             return None
@@ -111,6 +119,7 @@ def gettext_domain(source: str, start: int) -> str | None:
         elif value in {")", "]", "}"}:
             depth -= 1
         elif value == "," and depth == 0:
+            previous = source[argument : token.start()].strip()
             argument = token.end()
     return None
 

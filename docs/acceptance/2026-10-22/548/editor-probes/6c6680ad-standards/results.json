@@ -1,0 +1,53 @@
+{
+  "closed_lazy_with_raw": {
+    "command": [
+      "node",
+      "--no-warnings=ExperimentalWarning",
+      "--loader",
+      "./tests/standards-lazy-loader.mjs",
+      "--test",
+      "tests/standards-lazy-recheck.mjs"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-6c66-odck7mdz/apps/planner",
+    "exit": 0,
+    "stdout": "Error: synthetic_3d_chunk_unavailable\n    at file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-6c66-odck7mdz/apps/planner/src/components/design/SceneViewport.tsx:1:7\n    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)\n    at async node:internal/modules/esm/loader:647:26 {\n  [stack]: [Getter/Setter],\n  [message]: 'synthetic_3d_chunk_unavailable'\n}\n\nThe above error occurred in one of your React components.\n\nReact will try to recreate this component tree from scratch using the error boundary you provided, ChunkBoundary.\n\n{\"case\":\"rejected_lazy_3d_chunk_with_staged_raw\",\"stagedBefore\":\"2.5\",\"rejection\":null,\"fallbackVisible\":true,\"remainingInputs\":18}\nError: synthetic_3d_chunk_unavailable\n    at file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-6c66-odck7mdz/apps/planner/src/components/design/SceneViewport.tsx:1:7\n    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)\n    at async node:internal/modules/esm/loader:647:26 {\n  [stack]: [Getter/Setter],\n  [message]: 'synthetic_3d_chunk_unavailable'\n}\n\nThe above error occurred in one of your React components.\n\nReact will try to recreate this component tree from scratch using the error boundary you provided, ChunkBoundary.\n\n✔ independent rejected 3D chunk probe (283.267833ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 814.683\n",
+    "stderr": ""
+  },
+  "closed_renderer_factory": {
+    "command": [
+      "node",
+      "probe-renderer-lifetime-recheck.mjs"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-6c66-odck7mdz",
+    "exit": 0,
+    "stdout": "[\n  {\n    \"mode\": \"failed\",\n    \"calls\": [\n      \"initial\",\n      \"renderer\"\n    ],\n    \"failed\": 1,\n    \"error\": \"synthetic_gpu_init_failure\",\n    \"returnedRenderer\": false\n  },\n  {\n    \"mode\": \"fallback_failed\",\n    \"calls\": [\n      \"fallback\",\n      \"initial\",\n      \"renderer\"\n    ],\n    \"failed\": 1,\n    \"error\": \"synthetic_gpu_init_failure\",\n    \"returnedRenderer\": false\n  },\n  {\n    \"mode\": \"fallback_success\",\n    \"calls\": [\n      \"initial\"\n    ],\n    \"failed\": 0,\n    \"error\": null,\n    \"returnedRenderer\": true\n  },\n  {\n    \"mode\": \"late_generation\",\n    \"calls\": [\n      \"renderer\",\n      \"initial\"\n    ],\n    \"failed\": 0,\n    \"error\": \"scene_unmounted\",\n    \"returnedRenderer\": false\n  },\n  {\n    \"mode\": \"cleanup_errors\",\n    \"calls\": [\n      \"initial\",\n      \"renderer\"\n    ],\n    \"failed\": 1,\n    \"error\": \"synthetic_gpu_init_failure\",\n    \"returnedRenderer\": false\n  }\n]\n",
+    "stderr": ""
+  },
+  "remaining_active_transform_unmount": {
+    "command": [
+      "node",
+      "--no-warnings=ExperimentalWarning",
+      "--loader",
+      "./tests/standards-controls-loader.mjs",
+      "--test",
+      "tests/standards-unmount-transform-probe.mjs"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-6c66-odck7mdz/apps/planner",
+    "exit": 0,
+    "stdout": "{\"case\":\"transform_removed_while_gesture_active\",\"position\":[7,2,3],\"cancelled\":0,\"finished\":0,\"expectedProjectPosition\":[1,2,3]}\n✔ unmounting an active actual transform preserves its preview instead of cancelling (103.660125ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 464.117209\n",
+    "stderr": ""
+  },
+  "original_probes": {
+    "lazy_staged": "Unmodified original observed raw2.5 retained,18inputs/buttons,ChunkBoundary fallback;old assertion expecting editor removal fails as expected. Kept original unchanged.",
+    "renderer_factory": "Unmodified original fixture no longer binds newly introduced releaseUnownedRenderer free variable. Only probe adaptation is needed; adapted original callback injects the real helper and tests five lifecycle modes."
+  },
+  "official_suite": {
+    "command": "npm test",
+    "observed_exit": 0,
+    "domain_data": "45 passed,0 failed,510.372208ms",
+    "react_dom": "51 passed,0 failed,3384.86975ms",
+    "note": "Recorded from independently completed run; no rerun for report generation."
+  },
+  "legacy_identifier_hits": [],
+  "commit": "6c6680ad4e2eb890b08c58b5a9bffd95ecb48957"
+}

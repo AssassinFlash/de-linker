@@ -1,0 +1,112 @@
+{
+  "base": "66324a39fb449425dd1144b46b4d3abc21dc52d0",
+  "source_pin": "71cd719aa67021aee6398ae58f359738005d1f57",
+  "checks": {
+    "npm_test": {
+      "exit_code": 0,
+      "suites": [
+        {
+          "tests": 83,
+          "pass": 83,
+          "fail": 0
+        },
+        {
+          "tests": 112,
+          "pass": 112,
+          "fail": 0
+        }
+      ],
+      "total": 195
+    },
+    "strict_tsc_vite_build": "PASS",
+    "build_check_and_built_module_test": "PASS (1 test)",
+    "prettier": "PASS",
+    "new_targeted_cases": 34
+  },
+  "emitted_artifacts_unchanged_from_base": true,
+  "verified_build_artifacts": [
+    {
+      "path": "assets/MapViewport-DOKp8Xb1.js",
+      "sha256": "8e3c91876fea6785e49511d6ac80354ffd9271b52adfd05949d32807ac6dcd9a",
+      "bytes": 1039061
+    },
+    {
+      "path": "assets/SceneViewport-VJ3GRgC6.js",
+      "sha256": "12e25c8e98ae5ba972fac64cb54fe5b504ff6dfa7b5f6a7aedc437044c71a15f",
+      "bytes": 1548465
+    },
+    {
+      "path": "assets/planner-core-DnhRbFyr.js",
+      "sha256": "630a0dede67742cf506488f17e4e33d82435e66986749cd67b345542d1c166da",
+      "bytes": 607322
+    },
+    {
+      "path": "assets/planner.js",
+      "sha256": "590f6efccb8f8b4e8937a8c481df7fea9a19b440fd37eee575aa12453fadbf1b",
+      "bytes": 1310
+    },
+    {
+      "path": "assets/rolldown-runtime-BWaJ3C7D.js",
+      "sha256": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3",
+      "bytes": 911
+    },
+    {
+      "path": "vite-manifest.json",
+      "sha256": "4adf0e774a8c1151da6df8652f4e2284373d8e35e9604248d6dc72966d6507be",
+      "bytes": 1254
+    },
+    {
+      "path": "windpress.scan.txt",
+      "sha256": "b52f9c950b01c108a06e3933c638bf4ad57d09f7756294bd28177f574d4ebee4",
+      "bytes": 1911
+    }
+  ],
+  "existing_source_hash_changes": {},
+  "added_runtime_sources": [
+    "src/data/MapDrawingController.ts",
+    "src/data/MapPickGate.ts",
+    "src/domain/mapDrawingGeometry.ts",
+    "src/domain/mapRingEdit.ts"
+  ],
+  "customer_mount_changed": false,
+  "native_new_drawing_claim": false,
+  "warnings_retained": [
+    "Vite chunks above500kB: unchanged existing map/3D/app chunks; whole-goal performance gate remains",
+    "Node built-module test MODULE_TYPELESS_PACKAGE_JSON diagnostic: fixture Node import, no package type mutation"
+  ],
+  "storage": {
+    "new_instances": 0,
+    "new_worktrees": 0,
+    "new_snapshots": 0,
+    "new_dependency_installations": 0,
+    "retained_instances": [
+      "p548 (active owned application)",
+      "approved Journal baseline8794 (design comparison)"
+    ],
+    "available_space_observed": {
+      "start": "825 GiB",
+      "end": "830 GiB",
+      "delta_observed": "approximately +5 GiB; includes other sessions and is not attributed to this work"
+    },
+    "removed_superseded_test_logs": 2,
+    "retained_test_output": "tests-output.txt (final successful source pin)"
+  },
+  "source_manifest_entries_verified": 107,
+  "review_execution": {
+    "mode": "independent sequential reviews",
+    "reason": "parallel review dispatch rejected by platform agent thread limit; two unrelated pending_init agents occupy slots",
+    "spec_final": {
+      "source_pin": "71cd719aa67021aee6398ae58f359738005d1f57",
+      "status": "PASS",
+      "findings": 0,
+      "report": "review-spec-71cd719a/REVIEW.md"
+    },
+    "standards_final": {
+      "source_pin": "71cd719aa67021aee6398ae58f359738005d1f57",
+      "status": "PASS",
+      "hard_violations": 0,
+      "supported_smells": 0,
+      "report": "review-standards-71cd719a/REVIEW.md"
+    }
+  }
+}

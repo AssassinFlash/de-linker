@@ -1,0 +1,28 @@
+{"reference":{"schema_version":1,"method":"wgs84_cart_topocentric_v1","longitude_deg":0,"latitude_deg":90,"ellipsoid_height_m":0,"height_basis":"known_wgs84_ellipsoid"},"input":[0,0,9007199254740991],"actual":[0,90,9007199254740992],"outputWithinSupport":false,"expected":"explicit numeric support refusal"}
+✖ polar inverse refuses a computed value beyond the documented numeric window (1.615167ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 90.394166
+
+✖ failing tests:
+
+test at src/domain/standards-geographic-pole-probe.mjs:2:1
+✖ polar inverse refuses a computed value beyond the documented numeric window (1.615167ms)
+  AssertionError [ERR_ASSERTION]: polar branch returned unsupported output instead of refusing
+      at TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/apps/planner/src/domain/standards-geographic-pole-probe.mjs:6:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

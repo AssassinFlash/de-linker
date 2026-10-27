@@ -1,0 +1,44 @@
+{
+  "before": {
+    "active": "INPUT",
+    "bar": {
+      "bottom": 162,
+      "height": 73,
+      "left": 0,
+      "right": 1425,
+      "top": 89,
+      "width": 1425,
+      "x": 0,
+      "y": 89
+    },
+    "documentWidth": 1425,
+    "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=effd05f58a3051fcd39deb4c9f5872d1c9dfaea4dd0f679f749453f08d8138ba",
+    "fontStatus": "loaded",
+    "height": 1000,
+    "importHeading": "Dachebene",
+    "scrollWidth": 1425,
+    "url": "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-design",
+    "width": 1440,
+    "x": 0,
+    "y": 970.5
+  },
+  "after": {
+    "bar": {
+      "bottom": 162,
+      "height": 73,
+      "left": 0,
+      "right": 1425,
+      "top": 89,
+      "width": 1425,
+      "x": 0,
+      "y": 89
+    },
+    "documentWidth": 1425,
+    "height": 1000,
+    "scrollWidth": 1425,
+    "width": 1440,
+    "x": 0,
+    "y": 970.5
+  },
+  "scrollStable": true
+}

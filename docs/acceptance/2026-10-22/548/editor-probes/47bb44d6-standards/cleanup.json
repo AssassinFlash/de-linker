@@ -1,0 +1,11 @@
+{
+  "fixed_sha": "47bb44d6ca2ff664d0bf638e394ab6fa842ac2fd",
+  "sha_matched_reconstructible_files_removed": 112,
+  "logical_bytes_reclaimed": 2685911,
+  "mismatch_retained": [],
+  "dependency_link_removed": true,
+  "free_before_bytes": 881536016384,
+  "free_after_bytes": 881539014656,
+  "observed_free_delta_bytes": 2998272,
+  "note": "Free delta includes concurrent work; only logical bytes attributed to this review. Unique probes/report/results/logs retained; no shared cleanup."
+}

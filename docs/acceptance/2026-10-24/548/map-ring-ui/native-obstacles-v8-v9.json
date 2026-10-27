@@ -1,0 +1,73 @@
+{
+  "provenance": "read-only actual p548 SQLite revisions and hash-verified blobs after normal CUA form creation, real pointer edit, geometry check and Save project",
+  "project_id": "82a84c56e50c4efb8497d1bfbe106bd1",
+  "kind": "obstacles",
+  "before_revision": 8,
+  "after_revision": 9,
+  "before_input_sha256": "9abc6f9eb4aec74c66cd249ff63dd716b21f3439f2d5c24c2a0b94dbfda1665e",
+  "after_input_sha256": "cc78c48996ec90637c7f4c7c949aa39fc3d9f7b74dcfa647d12027f5d364da9e",
+  "changed_footprint_vertices": [
+    3
+  ],
+  "all_other_fields_and_inputs_exactly_unchanged": true,
+  "before_object": {
+    "extrusion_axis_enu": [
+      0,
+      0,
+      1
+    ],
+    "footprint_uv": [
+      [
+        2,
+        2
+      ],
+      [
+        3.5,
+        2
+      ],
+      [
+        3.5,
+        3.2
+      ],
+      [
+        2,
+        3.2
+      ]
+    ],
+    "height_m": 0.8,
+    "id": "obstacle_69ea43d0db31456d9b06ef47ee4f341a",
+    "name": "Synthetisches Hindernis · lokale Prüfung",
+    "roof_id": "roof_8cfac87f5edf38bb019d2aedb57676a6",
+    "source_id": "source_8cfac87f5edf38bb019d2aedb57676a6"
+  },
+  "after_object": {
+    "extrusion_axis_enu": [
+      0,
+      0,
+      1
+    ],
+    "footprint_uv": [
+      [
+        2,
+        2
+      ],
+      [
+        3.5,
+        2
+      ],
+      [
+        3.5,
+        3.2
+      ],
+      [
+        2.277406889687114,
+        3.6550266272921985
+      ]
+    ],
+    "height_m": 0.8,
+    "id": "obstacle_69ea43d0db31456d9b06ef47ee4f341a",
+    "name": "Synthetisches Hindernis · lokale Prüfung",
+    "roof_id": "roof_8cfac87f5edf38bb019d2aedb57676a6",
+    "source_id": "source_8cfac87f5edf38bb019d2aedb57676a6"
+  }
+}

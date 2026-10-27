@@ -1,0 +1,10 @@
+{"starts":1,"originalFailed":true,"freshRetrySucceeded":true,"actualBuiltGraph":true,"gpu":false}
+✔ failed original emitted scene recovers through a fresh identity and the same queried-entry/shared-core graph (153.602417ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 370.25925

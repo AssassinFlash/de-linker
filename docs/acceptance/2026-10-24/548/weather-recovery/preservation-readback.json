@@ -1,0 +1,73 @@
+{
+  "checked_at_utc": "2026-10-24T09:00:13.366403+00:00",
+  "all_table_rows_unchanged": true,
+  "rows_sha256": "b74d9b5e657e3180fc0182233bd1138e7a90f98fee47b3d62e1e9af4e5176295",
+  "schema": 2,
+  "project_count": 165,
+  "revision_count": 228,
+  "protected_project": {
+    "id": "82a84c56e50c4efb8497d1bfbe106bd1",
+    "revision": 14,
+    "input_sha256": "8a6394917a9a9e6b91db4bfc73c0299dcedd2c51619144a5beffa1664f010288"
+  },
+  "ready": {
+    "execution_key": "dfe60fc2089c920a945bb269da56dcb9debe6ccd5f6e9e7e70b46f6c08f55116",
+    "generation": "4c0db985f9b248b08bf798cf043d254a",
+    "name": "local-p548",
+    "pid": 71736,
+    "runtime_sha256": "9b66656acb26b65b88b09a44b8508a42094059af64b49e7038eedef0d92a10a1",
+    "schema_version": 1,
+    "storage_binding": "ec4c7866c5a15b82fcb94096a143b7e77f8801ac38153cb146e673fe1b3ea0d9"
+  },
+  "listeners": {
+    "9347": [
+      "p54888",
+      "cphp",
+      "f5",
+      "n127.0.0.1:9347",
+      "p54891",
+      "cphp",
+      "f5",
+      "n127.0.0.1:9347",
+      "p54892",
+      "cphp",
+      "f5",
+      "n127.0.0.1:9347",
+      "p54893",
+      "cphp",
+      "f5",
+      "n127.0.0.1:9347",
+      "p54894",
+      "cphp",
+      "f5",
+      "n127.0.0.1:9347",
+      "p54895",
+      "cphp",
+      "f5",
+      "n127.0.0.1:9347",
+      "p54896",
+      "cphp",
+      "f5",
+      "n127.0.0.1:9347"
+    ],
+    "9348": [
+      "p27382",
+      "cPython",
+      "f7",
+      "n127.0.0.1:9348"
+    ],
+    "9349": [
+      "p37511",
+      "cPython",
+      "f6",
+      "n127.0.0.1:9349"
+    ]
+  },
+  "source_final_pin": "c1ddef08c34075f1667972a62a95e3a0d2f55a6d",
+  "new_runtime_installed": false,
+  "retained_carrier_bytes": 689144,
+  "new_instances": 0,
+  "new_worktrees": 0,
+  "new_full_backups": 0,
+  "disk_free_bytes": 903044235264
+}

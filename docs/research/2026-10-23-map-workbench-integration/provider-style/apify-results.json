@@ -1,0 +1,27 @@
+[
+  {
+    "url": "https://tiles.openfreemap.org/styles/liberty",
+    "crawl": {
+      "loadedUrl": "https://tiles.openfreemap.org/styles/liberty",
+      "depth": 0,
+      "referrerUrl": "https://tiles.openfreemap.org/styles/liberty",
+      "loadedTime": "2026-10-23T13:52:49.590Z",
+      "httpStatusCode": 200,
+      "contentType": "application/json"
+    },
+    "html": null,
+    "htmlUrl": null,
+    "text": null,
+    "markdown": null,
+    "metadata": {
+      "author": null,
+      "canonicalUrl": "https://tiles.openfreemap.org/styles/liberty",
+      "description": null,
+      "keywords": null,
+      "languageCode": null,
+      "title": "liberty"
+    },
+    "screenshotUrl": null,
+    "fileUrl": "https://api.apify.com/v2/key-value-stores/klRTubKYGmtftnnwS/records/file-e309a2c-liberty"
+  }
+]

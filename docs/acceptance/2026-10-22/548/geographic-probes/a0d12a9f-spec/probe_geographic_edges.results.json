@@ -1,0 +1,150 @@
+[
+  {
+    "case": "local",
+    "status": 200,
+    "source_bounds": [
+      [
+        1e-05,
+        0
+      ],
+      [
+        0.0001,
+        9e-05
+      ]
+    ],
+    "area_m2": 99.70348384213099,
+    "boundary_uv": [
+      [
+        1.1131949079327301,
+        0.0
+      ],
+      [
+        11.131949079321707,
+        0.0
+      ],
+      [
+        11.131949079308065,
+        9.951684823939484
+      ],
+      [
+        1.113194907931366,
+        9.951684823939484
+      ]
+    ],
+    "full_source_enu": [
+      1.1131949079327301,
+      0.0,
+      -9.685754776000977e-08
+    ],
+    "roof_point_inverse": [
+      9.999992160726278e-06,
+      0.0,
+      5.00000009778887
+    ],
+    "source_to_candidate_surface_distance_m": 8.726639590443891e-07,
+    "geometry_stored": true,
+    "engineering_status": "not_evaluated"
+  },
+  {
+    "case": "antipodal",
+    "status": 200,
+    "source_bounds": [
+      [
+        179.9999,
+        0
+      ],
+      [
+        179.99999,
+        9e-05
+      ]
+    ],
+    "area_m2": 99.70348384173016,
+    "boundary_uv": [
+      [
+        11.131949078799177,
+        0.0
+      ],
+      [
+        1.1131949074504792,
+        0.0
+      ],
+      [
+        1.1131949074491152,
+        9.951684823939484
+      ],
+      [
+        11.131949078785537,
+        9.951684823939484
+      ]
+    ],
+    "full_source_enu": [
+      11.131949078799177,
+      0.0,
+      -12756273.999990284
+    ],
+    "roof_point_inverse": [
+      9.999992160241805e-05,
+      0.0,
+      5.000009714625776
+    ],
+    "source_to_candidate_surface_distance_m": 20003931.45493326,
+    "geometry_stored": true,
+    "engineering_status": "not_evaluated"
+  },
+  {
+    "case": "near_horizon",
+    "status": 200,
+    "source_bounds": [
+      [
+        89.9999,
+        0
+      ],
+      [
+        89.99999,
+        9e-05
+      ]
+    ],
+    "area_m2": 9.57129981152928e-05,
+    "boundary_uv": [
+      [
+        6378136.999990285,
+        0.0
+      ],
+      [
+        6378136.999999903,
+        0.0
+      ],
+      [
+        6378136.9999920875,
+        9.951684823939484
+      ],
+      [
+        6378136.99998247,
+        9.951684823939484
+      ]
+    ],
+    "full_source_enu": [
+      6378136.999990285,
+      0.0,
+      -6378125.86805092
+    ],
+    "roof_point_inverse": [
+      44.999977542083066,
+      0.0,
+      2641914.383601375
+    ],
+    "source_to_candidate_surface_distance_m": 5009368.453752109,
+    "geometry_stored": true,
+    "engineering_status": "not_evaluated"
+  },
+  {
+    "case": "source_reference_hash_changed_while_bound",
+    "status": 200,
+    "source_id": "source_68bc12b7d9b1c7e5f0cd9c0231e97cb1",
+    "asset_id": "838658271265414fbfb015a69dd81286",
+    "original_hash": "47770a0dc5034b54743dd2da28d1c855e2c8c047c7678d3688215d8e89d9eebc",
+    "current_reference_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+    "notes_only_status": 200,
+    "response_code": null
+  }
+]

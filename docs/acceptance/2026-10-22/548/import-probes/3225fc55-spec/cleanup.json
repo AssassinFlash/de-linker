@@ -1,0 +1,51 @@
+{
+  "owner": "/root/geographic_spec_e138",
+  "target": "3225fc552a89c406f685bfc5643d50745e58baa9",
+  "base": "367e454c23f542632258e1440387c4c9e7825e17",
+  "completed_utc": "2026-10-23T11:26:52.158542+00:00",
+  "temporary_root": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/roof-import-spec-3225-8itr0hjn",
+  "temporary_root_absent": true,
+  "source_files_sha_verified_removed": 144,
+  "source_bytes_removed": 2973608,
+  "generated_copies_removed": [
+    {
+      "path": "apps/planner/tests/independent-roof-import.mjs",
+      "sha256": "0eb6a82132b93609646ce5c1180ea7b1fe2127e3bfa19a920df3127040c45430",
+      "bytes": 29239,
+      "retained_original": "independent-roof-import.mjs"
+    },
+    {
+      "path": "apps/planner/tests/independent-revision-refusal.mjs",
+      "sha256": "f4d95de00ab4581a9846f5569ee3b30fe04752487eca9ae46dfbfb0a0129e540",
+      "bytes": 4003,
+      "retained_original": "independent-revision-refusal.mjs"
+    }
+  ],
+  "dependency_symlinks_removed": [
+    {
+      "path": "apps/planner/node_modules",
+      "target": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/apps/planner/node_modules"
+    }
+  ],
+  "dependency_targets_untouched": true,
+  "reconstructible_patch_removed": {
+    "command": [
+      "git",
+      "diff",
+      "367e454c23f542632258e1440387c4c9e7825e17...3225fc552a89c406f685bfc5643d50745e58baa9"
+    ],
+    "sha256": "0c390beb224e27627eb18be0e29bf8307efd36ccb8bd01825f96b838914867df",
+    "bytes": 2089141,
+    "retention": "Reconstructible full patch is reclaimed after review; fixed git objects, exact command and hashes retained"
+  },
+  "unique_probe_logs_retained": true,
+  "prior_fail_archives_files_verified_unchanged": 55,
+  "active_snapshot_processes": [],
+  "all_test_runs_completed": true,
+  "source_mismatches": [],
+  "new_sites_worktrees_processes_or_external_databases": 0,
+  "disk_free_before_bytes": 888899371008,
+  "disk_free_after_bytes": 888904871936,
+  "observed_free_space_delta_bytes": 5500928,
+  "disk_delta_caveat": "Global APFS free-space delta is affected by concurrent writers and allocation; listed logical deletion sizes are exact"
+}

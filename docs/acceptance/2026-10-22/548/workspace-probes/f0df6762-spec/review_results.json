@@ -1,0 +1,42 @@
+{
+  "verdict": "PASS",
+  "axis": "Spec",
+  "target": "f0df6762fc549bf9251d508a802bb38cd2c258fa",
+  "base": "7e96b88dd902ea64fd27250494d3129783d7f307",
+  "scope": "Journal workspaces and relocated refusal feedback; source/DOM only",
+  "findings": [],
+  "tests": {
+    "fixed_domain_data": {
+      "pass": 54,
+      "fail": 0
+    },
+    "fixed_DOM": {
+      "pass": 54,
+      "fail": 0
+    },
+    "retained_composed_unchanged": {
+      "pass": 54,
+      "fail": 0
+    },
+    "additional_relocated": {
+      "pass": 7,
+      "fail": 0
+    }
+  },
+  "prior_counterexamples": [
+    "first Site section reveal",
+    "resolved invalid brief then clean Undo then unchanged roof form has no stale warning",
+    "refusal explanation is contained by persistent project bar"
+  ],
+  "not_accepted": [
+    "native visual matrix",
+    "physical touch",
+    "production",
+    "full A-D planner goal"
+  ],
+  "prior_fail_records_preserved": [
+    "563e0387-spec",
+    "eefe7c0b-spec",
+    "cbf75a9c-spec"
+  ]
+}

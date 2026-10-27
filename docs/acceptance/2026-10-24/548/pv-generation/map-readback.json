@@ -1,0 +1,29 @@
+{
+  "checked_at_utc": "2026-10-24T04:05:05.467218+00:00",
+  "map_title": "地图：统一方案工作台重构与全站交付",
+  "map_url": "https://github.com/AssassinFlash/de-linker/issues/548",
+  "map_state": "OPEN",
+  "source_pin": "94d4b31c169a4e04197b9b33d6dcadd70d54e3a1",
+  "evidence_commit": "b764e6728c4ebde33e1e0a8cc3fa783507d7db31",
+  "before_body_sha256": "831f4a52617f1d79bad641d6b57dd4b2a0179d34ebd6c965f2b8a6d928baa93b",
+  "readback_body_sha256": "4e2ab1daf843152277e1dffafb6a5eee93d315970b48d5a2bf32a9ffe0caf6ea",
+  "body_verified_exact": true,
+  "comment_url": "https://github.com/AssassinFlash/de-linker/issues/548#issuecomment-6379635676",
+  "comment_sha256": "80b65aabd7da8b2d11fb03e1ff67b1336d67078eeb05d9ebf33173604c2d0ce9",
+  "comment_verified_exact": true,
+  "comment_body": "已按业主补充继续落实系统级Linker产品身份：产品介绍说明统一项目、编辑/保存恢复、版本与可追溯结果的贡献，软件/地图/数据来源各自说明；不把地图供应商的署名当成整个系统的价值介绍。当前可见身份说明沿用已验收实现，未提前宣传尚未验收的功能。\n\n本次实际完成的后端增量：\n\n- 将实际纳入排布的组件、屋面与支架组合姿态，连接到显式气象/POA/温度/DC/共享AC转换模型。仅为无遮挡参考场景；详细遮挡和真实电气/设备/国家验证仍在同一完整目标内。\n- 通过Apify取得并保留官方完整典型年原件；保留原始月份年份、661.68秒辐照偏移及独立合成年时间轴，不冒称实测年度发电。\n- 原件、模型输入与详细见证作为owned assets冻结；改屋顶或模型参数会阻止新计算沿用旧曲线。已排队任务仍能使用原版本完成并成为历史结果。真实Worker的8,760小时能流夹具通过。\n- 完整672项引擎测试、lint/format和92个源文件严格类型检查通过；两条独立评审的两项P3重复合同问题均已修正，最终零开放问题。并发槽限制导致两个独立轴串行执行，证据如实记录。\n- 源码 `94d4b31c169a4e04197b9b33d6dcadd70d54e3a1`；[验证记录](https://github.com/AssassinFlash/de-linker/blob/b764e672/docs/acceptance/2026-10-24/548/pv-generation/VALIDATION.md)、[评审闭合](https://github.com/AssassinFlash/de-linker/blob/b764e672/docs/acceptance/2026-10-24/548/pv-generation/REVIEWS.md)。164个既有项目、原屋顶版本14、当前运行worker及运行策略读回未变；没有新实例、部署、询盘或邮件。\n\n当前p548仍运行上一版；本次后端代码已推到本线分支，尚无新模型的原生页面/生产验收。下一执行前沿为可信托管气象/模型任务与原生呈现、详细遮挡及电气链；全站消费者、BOM/报告/PDF、迁移和评审站/生产读回继续属于同一次交付。完整目标保持进行中。\n",
+  "temporary_request_files_removed": [
+    {
+      "path": "/tmp/p548-pv-generation-map.body.md",
+      "bytes": 12818
+    },
+    {
+      "path": "/tmp/p548-pv-generation-map.comment.md",
+      "bytes": 2064
+    },
+    {
+      "path": "/tmp/p548-pv-generation-map.state.json",
+      "bytes": 493
+    }
+  ]
+}

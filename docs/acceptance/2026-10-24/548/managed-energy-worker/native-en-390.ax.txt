@@ -1,0 +1,3 @@
+Browser tab: 2, Title: "Solution Configurator · Workspace review | Linker", URL: "http://127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1".
+There has been no change in the accessibility tree.
+The focused UI element is 109 button (expanded) About this tool, Secondary Actions: Collapse

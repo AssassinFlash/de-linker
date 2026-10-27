@@ -1205,7 +1205,7 @@ def _route(output: TurnOutput, facts: TurnFacts, route: Route) -> list[str]:
             )
     if route.no_cards and cards:
         failures.append(f"a {route.name} turn shows no product cards")
-    if route.action and "size.configurator_url" in facts.facts:
+    if route.action and facts.configurator_link() is not None:
         if not any(
             isinstance(b, ActionBlock) and b.name == route.action for b in output.blocks
         ):
@@ -1576,7 +1576,7 @@ def _actions(output: TurnOutput, facts: TurnFacts) -> list[str]:
         # view_inquiry URL, which no tool returns — is refused here; the
         # shell links such actions to the account page itself.
         url = args.get("url")
-        if block.name == "open_configurator" and "size.configurator_url" in facts.facts:
+        if block.name == "open_configurator" and facts.configurator_link() is not None:
             # The service writes this URL from size-hint (hydrate.py); what the
             # model put there is replaced, not checked.
             continue

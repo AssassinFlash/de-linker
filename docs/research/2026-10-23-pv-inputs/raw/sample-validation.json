@@ -1,0 +1,190 @@
+[
+  {
+    "fixture": "era5-berlin-2020.seriescalc.json",
+    "sha256": "9c0b24cf9828cac4c118c4695922fcbbb7aa7213ae80350019f67e00e5eaf6ca",
+    "rows": 8784,
+    "first": "20200101:0030",
+    "last": "20201231:2330",
+    "unique": 8784,
+    "deltaSeconds": {
+      "3600": 8783
+    },
+    "minutes": {
+      "30": 8784
+    },
+    "leapDayRows": 24,
+    "IntDistribution": {
+      "0.0": 8784
+    },
+    "minP_W": 0.0,
+    "maxP_W": 727.73,
+    "rawSumP_W": "946436.92000",
+    "rectangularHourSum_kWh": "946.43692",
+    "energyMeaning": "ERA5 interval-mean scenario integral",
+    "inputs": {
+      "location": {
+        "latitude": 52.52,
+        "longitude": 13.405,
+        "elevation": 37.0
+      },
+      "meteo_data": {
+        "radiation_db": "PVGIS-ERA5",
+        "meteo_db": "ERA5",
+        "year_min": 2020,
+        "year_max": 2020,
+        "use_horizon": true,
+        "horizon_db": null,
+        "horizon_data": "DEM-calculated"
+      },
+      "mounting_system": {
+        "fixed": {
+          "slope": {
+            "value": 10,
+            "optimal": false
+          },
+          "azimuth": {
+            "value": 0,
+            "optimal": false
+          },
+          "type": "free-standing"
+        }
+      },
+      "pv_module": {
+        "technology": "c-Si",
+        "peak_power": 1.0,
+        "system_loss": 14.0
+      }
+    },
+    "metaHourly": {
+      "type": "time series",
+      "timestamp": "hourly averages",
+      "variables": {
+        "P": {
+          "description": "PV system power",
+          "units": "W"
+        },
+        "Gb(i)": {
+          "description": "Beam (direct) irradiance on the inclined plane (plane of the array)",
+          "units": "W/m2"
+        },
+        "Gd(i)": {
+          "description": "Diffuse irradiance on the inclined plane (plane of the array)",
+          "units": "W/m2"
+        },
+        "Gr(i)": {
+          "description": "Reflected irradiance on the inclined plane (plane of the array)",
+          "units": "W/m2"
+        },
+        "H_sun": {
+          "description": "Sun height",
+          "units": "degree"
+        },
+        "T2m": {
+          "description": "2-m air temperature",
+          "units": "degree Celsius"
+        },
+        "WS10m": {
+          "description": "10-m total wind speed",
+          "units": "m/s"
+        },
+        "Int": {
+          "description": "1 means solar radiation values are reconstructed"
+        }
+      }
+    }
+  },
+  {
+    "fixture": "sarah3-berlin-2020.seriescalc.json",
+    "sha256": "bfaeeebf8257067e90e9571551d8b31063ce8d5e6277f1ab81e6ab953369af39",
+    "rows": 8784,
+    "first": "20200101:0011",
+    "last": "20201231:2311",
+    "unique": 8784,
+    "deltaSeconds": {
+      "3600": 8783
+    },
+    "minutes": {
+      "11": 8784
+    },
+    "leapDayRows": 24,
+    "IntDistribution": {
+      "0.0": 8784
+    },
+    "minP_W": 0.0,
+    "maxP_W": 779.24,
+    "rawSumP_W": "979729.21000",
+    "rectangularHourSum_kWh": "979.72921",
+    "energyMeaning": "not accepted as interval energy without explicit SARAH reconstruction policy",
+    "inputs": {
+      "location": {
+        "latitude": 52.52,
+        "longitude": 13.405,
+        "elevation": 37.0
+      },
+      "meteo_data": {
+        "radiation_db": "PVGIS-SARAH3",
+        "meteo_db": "ERA5",
+        "year_min": 2020,
+        "year_max": 2020,
+        "use_horizon": true,
+        "horizon_db": null,
+        "horizon_data": "DEM-calculated"
+      },
+      "mounting_system": {
+        "fixed": {
+          "slope": {
+            "value": 10,
+            "optimal": false
+          },
+          "azimuth": {
+            "value": 0,
+            "optimal": false
+          },
+          "type": "free-standing"
+        }
+      },
+      "pv_module": {
+        "technology": "c-Si",
+        "peak_power": 1.0,
+        "system_loss": 14.0
+      }
+    },
+    "metaHourly": {
+      "type": "time series",
+      "timestamp": "hourly averages",
+      "variables": {
+        "P": {
+          "description": "PV system power",
+          "units": "W"
+        },
+        "Gb(i)": {
+          "description": "Beam (direct) irradiance on the inclined plane (plane of the array)",
+          "units": "W/m2"
+        },
+        "Gd(i)": {
+          "description": "Diffuse irradiance on the inclined plane (plane of the array)",
+          "units": "W/m2"
+        },
+        "Gr(i)": {
+          "description": "Reflected irradiance on the inclined plane (plane of the array)",
+          "units": "W/m2"
+        },
+        "H_sun": {
+          "description": "Sun height",
+          "units": "degree"
+        },
+        "T2m": {
+          "description": "2-m air temperature",
+          "units": "degree Celsius"
+        },
+        "WS10m": {
+          "description": "10-m total wind speed",
+          "units": "m/s"
+        },
+        "Int": {
+          "description": "1 means solar radiation values are reconstructed"
+        }
+      }
+    }
+  }
+]

@@ -1,0 +1,102 @@
+{
+  "observed_at_utc": "2026-10-22T18:12:15.818887+00:00",
+  "scope": "actual p548 canonical IDs; public fields; association candidates are not document identity proof",
+  "counts": {
+    "products": 106,
+    "raw_figures": 2482,
+    "raw_document_records": 210,
+    "figures_with_evidence_refs": 2140,
+    "figures_with_qualifier": 4,
+    "figures_with_note": 3,
+    "figures_with_value_de": 429,
+    "alias_no_declared_candidate": 8,
+    "alias_single_declared_target_with_prior_review": 7,
+    "alias_declared_target_unreviewed": 22,
+    "alias_multiple_distinct_candidate_artifacts": 1,
+    "feed_figures": 610,
+    "unique_aliases_citation_and_refs": 38,
+    "unique_urls_all_scoped_sources": 71,
+    "existing_local_files": 71,
+    "unique_content_sha256": 71,
+    "urls_with_prior_selected_review": 12,
+    "association_claim_rows": 1097,
+    "alias_url_pairs": 32,
+    "opaque_evidence_ref_occurrences": 8,
+    "opaque_evidence_ref_tokens": 3,
+    "evidence_ref_entries": 2148,
+    "unique_direct_citation_urls": 29,
+    "unique_product_document_urls": 63,
+    "source_url_bytes_locally_hashed": 549966707,
+    "candidate_page_out_of_bounds_claim_rows": 1,
+    "additional_reviewed_documents_not_in_current_source_urls": 6,
+    "aliases_with_recorded_identity_and_current_sha": 23,
+    "additional_recorded_alias_document_urls": 3,
+    "alias_evidence_records": 25,
+    "source_urls_plus_additional_registered_alias_urls": 74
+  },
+  "citation_shapes": {
+    "doc+page": 1137,
+    "none": 735,
+    "page+url": 610
+  },
+  "brands": {
+    "SAJ": 34,
+    "GoodWe": 49,
+    "Pylontech": 1,
+    "Chint": 1,
+    "EcoFlow": 21
+  },
+  "alias_states": {
+    "no_declared_candidate": 8,
+    "single_declared_target_with_prior_review": 7,
+    "declared_target_unreviewed": 22,
+    "multiple_distinct_candidate_artifacts": 1
+  },
+  "opaque_refs": {
+    "goodwe_hca_etr_docs_2026_07_28": 6,
+    "ecoflow_powerocean_component_docs_2026_07_28": 1,
+    "saj_accessory_docs_2026_07_28": 1
+  },
+  "source_git_head": "37198e86d3bb93c41a06360d8d34bbb15a1ded2b",
+  "source_files_sha256": {
+    "tools/migrate/8-engineering.json": "f21b6b01ebe0d95072a33693089816d45a531c62d633ab37e5adf397ee6f81b2",
+    "plugins/linker-commerce/includes/Products/EngineeringFeed.php": "320ac163dac1d84531761fc9dcc6dcffd746268368d2f35c6048fd88a70bd78e",
+    "services/engine/schemas/feed.schema.json": "5a8c32341978b5b4d29af3926a34674136934bdf9ca93c0dbeb59126ddf8fbbc",
+    "docs/research/2026-10-23-capability-inputs/case-facts.json": "8ff191761fb4c248ad76c13a9e7f175386087308d70ea77f5d0c1b97b9e36a83",
+    "docs/research/2026-10-23-capability-inputs/p548-document-manifest.json": "78730a402831852d3c58360520dbc18dddcace6a1e03aafb941ed7ca9d264346"
+  },
+  "alias_resolution_states": {
+    "recorded_alias_identity_sha_matched": 23,
+    "declared_target_has_prior_selected_model_page_review": 3,
+    "unresolved_with_exact_name_locator_lead_only": 2,
+    "declared_association_candidate_only": 9,
+    "invalid_co_support_as_identity_has_reviewed_locator_lead": 1
+  },
+  "figure_citation_resolution_states": {
+    "recorded_alias_identity_sha_matched": 889,
+    "no_citation": 735,
+    "direct_url": 610,
+    "declared_target_has_prior_selected_model_page_review": 96,
+    "unresolved_with_exact_name_locator_lead_only": 20,
+    "declared_association_candidate_only": 131,
+    "url_token_in_doc_key": 1
+  },
+  "canonical_translation_dedup": {
+    "canonical_english_ids": 106,
+    "distinct_german_counterpart_ids": 106,
+    "all_english_translation_ids_match": true
+  },
+  "bootstrap": {
+    "document_versions": 80,
+    "unique_content_sha256": 80,
+    "alias_records": 38,
+    "products": 106,
+    "content_sha256": "2962ccf863bbb18fe89716ed51c928e9051f38a02a4c90cd8d61ebe1a0399087",
+    "prior_document_page_review_count": 18,
+    "explicit_model_fact_review_document_count": 14
+  },
+  "uncited_figure_states": {
+    "no_citation_or_evidence_refs": 217,
+    "with_evidence_refs": 518
+  }
+}

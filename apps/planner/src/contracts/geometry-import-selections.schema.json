@@ -1,0 +1,36 @@
+{
+	"$defs": {
+		"Identifier": {
+			"pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+			"type": "string"
+		},
+		"SchemaVersion": {
+			"maximum": 1,
+			"minimum": 1,
+			"type": "integer"
+		}
+	},
+	"additionalProperties": false,
+	"properties": {
+		"schema_version": {
+			"$ref": "#/$defs/SchemaVersion"
+		},
+		"selected": {
+			"additionalProperties": {
+				"pattern": "^[a-f0-9]{32}$",
+				"type": "string"
+			},
+			"propertyNames": {
+				"$ref": "#/$defs/Identifier"
+			},
+			"title": "Selected",
+			"type": "object"
+		}
+	},
+	"required": [
+		"schema_version",
+		"selected"
+	],
+	"title": "GeometryImports",
+	"type": "object"
+}

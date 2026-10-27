@@ -66,9 +66,10 @@ final class PageUrls {
 	/**
 	 * The current language's address of one of the site's own pages.
 	 *
-	 * @param string $slug The page's path (its English slug, as the site keeps it).
+	 * @param string      $slug The page's path (its English slug, as the site keeps it).
+	 * @param string|null $locale Explicit saved/REST language, or current page language.
 	 */
-	public static function translated( string $slug ): string {
+	public static function translated( string $slug, ?string $locale = null ): string {
 		if ( ! function_exists( 'get_page_by_path' ) ) {
 			return '';
 		}
@@ -77,7 +78,12 @@ final class PageUrls {
 			return '';
 		}
 		$id = (int) $page->ID;
-		if ( function_exists( 'pll_get_post' ) && function_exists( 'pll_current_language' ) && 'de' === pll_current_language() ) {
+		if ( null !== $locale ) {
+			$id = self::twin( $id, $locale );
+			if ( $id < 1 ) {
+				return '';
+			}
+		} elseif ( function_exists( 'pll_get_post' ) && function_exists( 'pll_current_language' ) && 'de' === pll_current_language() ) {
 			$twin = (int) pll_get_post( $id, 'de' );
 			if ( $twin > 0 ) {
 				$id = $twin;

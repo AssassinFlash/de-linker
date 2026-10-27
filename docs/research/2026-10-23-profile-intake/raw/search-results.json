@@ -1,0 +1,152 @@
+[
+  {
+    "searchQuery": {
+      "term": "site:help.valentin-software.com/pvsol/en load profile import csv",
+      "url": "http://www.google.com/search?q=site%3Ahelp.valentin-software.com%2Fpvsol%2Fen+load+profile+import+csv&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Ahelp.valentin-software.com%2Fpvsol%2Fen+load+profile+import+csv&gl=us",
+    "hasNextPage": false,
+    "serpProviderCode": "A",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "Consumption :: PV*SOL® help",
+        "websiteTitle": "Valentin Software",
+        "url": "https://help.valentin-software.com/pvsol/en/pages/consumption/",
+        "displayedUrl": "https://help.valentin-software.com › pvsol › pages › cons...",
+        "description": "Use to select the file or load profile you want to import. The file must be a text file in *.txt or *.csv format and must consist of a column with values, ...Read more",
+        "emphasizedKeywords": [
+          "Use to select the file or load profile you want to import"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "Consumption (Calculation) :: PV*SOL® help",
+        "websiteTitle": "Valentin Software",
+        "url": "https://help.valentin-software.com/pvsol/en/calculation/consumption/",
+        "displayedUrl": "https://help.valentin-software.com › pvsol › consumption",
+        "description": "The following load profiles are supplied in PV*SOL®. They have a temporal resolution of 1min, 15min or 1h.",
+        "emphasizedKeywords": [
+          "load"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null
+  },
+  {
+    "searchQuery": {
+      "term": "site:samrepo.nrelcloud.org/help electricity load csv daylight",
+      "url": "http://www.google.com/search?q=site%3Asamrepo.nrelcloud.org%2Fhelp+electricity+load+csv+daylight&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Asamrepo.nrelcloud.org%2Fhelp+electricity+load+csv+daylight&gl=us",
+    "hasNextPage": false,
+    "serpProviderCode": "L",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null
+  },
+  {
+    "searchQuery": {
+      "term": "site:support.opensolar.com consumption csv interval data",
+      "url": "http://www.google.com/search?q=site%3Asupport.opensolar.com+consumption+csv+interval+data&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Asupport.opensolar.com+consumption+csv+interval+data&gl=us",
+    "hasNextPage": true,
+    "serpProviderCode": "OX",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "How to upload interval data",
+        "websiteTitle": "OpenSolar",
+        "url": "https://support.opensolar.com/hc/en-us/articles/13183853699215-How-to-upload-interval-data",
+        "displayedUrl": "https://support.opensolar.com › en-us › articles › 13183...",
+        "description": "Summary: Uploading interval data is the most accurate way to model a customer's energy consumption and calculate potential solar savings.Read more",
+        "date": "2026-05-08T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "interval data",
+          "consumption"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "Use UtilityAPI to import usage data (US only)",
+        "websiteTitle": "OpenSolar",
+        "url": "https://support.opensolar.com/hc/en-us/articles/4407439610009-Use-UtilityAPI-to-import-usage-data-US-only",
+        "displayedUrl": "https://support.opensolar.com › en-us › articles › 44074...",
+        "description": "Data includes: PDF bills, TOU breakdowns, tariff, intervals (when available), bill breakdown, and demand charges. Data is made available in PDF, ...Read more",
+        "date": "2023-03-28T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "Data",
+          "intervals",
+          "Data"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "How to customize electricity usage",
+        "websiteTitle": "OpenSolar",
+        "url": "https://support.opensolar.com/hc/en-us/articles/13183763473295-How-to-customize-electricity-usage",
+        "displayedUrl": "https://support.opensolar.com › en-us › articles › 13183...",
+        "description": "Options include: - Daily Consumption (Monthly avg) Interval Data (15/30/60-min intervals) Upload 15, 30, or 60-minute interval data for an ...",
+        "date": "2026-05-08T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "Daily Consumption (Monthly avg) Interval Data"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null
+  }
+]

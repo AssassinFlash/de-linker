@@ -1,0 +1,4 @@
+Note: Using configuration file /Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/plugins/linker-tools/phpstan.neon.dist.
+
+ [OK] No errors                                                                 
+

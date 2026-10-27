@@ -1,0 +1,11 @@
+{
+  "exit": 0,
+  "stdout": "",
+  "stderr": "",
+  "staged_file_removed": true,
+  "kind": "candidate syntax/path check only; no install/reload/start",
+  "release_path_used_for_path_validation": "/opt/linker-engine/20261023T220643104029Z",
+  "stop_budget_for_syntax_test_only": 30,
+  "rendered_unit": "# Candidate only. Render both @...@ fields before validation/installation.\n# RELEASE_PATH is an immutable release with its venv built in that location.\n[Unit]\nDescription=Linker planning numerical worker\nAfter=network.target\n\n[Service]\nType=exec\nWorkingDirectory=/opt/linker-engine/20261023T220643104029Z\nEnvironmentFile=/etc/linker-planner-worker.env\nExecStart=/opt/linker-engine/20261023T220643104029Z/.venv/bin/python -m linker_engine.planning.worker_host serve --expected-runtime ${LINKER_PLANNER_RUNTIME_SHA256} --expected-execution ${LINKER_PLANNER_EXECUTION_KEY} --expected-storage ${LINKER_PLANNER_STORAGE_BINDING} --generation ${INVOCATION_ID}\nRestart=on-failure\nRestartSec=2\nTimeoutStopSec=30\nKillMode=control-group\nUMask=0077\n\n[Install]\nWantedBy=multi-user.target\n",
+  "host_systemd": "255 (255.4-1ubuntu8.18)"
+}

@@ -1,0 +1,85 @@
+{
+  "url": "http://127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1",
+  "revision": "Saved · revision 3",
+  "fields": [
+    {
+      "checked": false,
+      "id": "",
+      "name": "",
+      "type": "select-one",
+      "value": "commercial"
+    },
+    {
+      "checked": false,
+      "id": "",
+      "name": "",
+      "type": "select-one",
+      "value": "new_pv_storage"
+    },
+    {
+      "checked": false,
+      "id": "",
+      "name": "",
+      "type": "select-one",
+      "value": "DE"
+    },
+    {
+      "checked": false,
+      "id": "",
+      "name": "",
+      "type": "text",
+      "value": "Synthetic site at 50.94 N, 6.96 E · not a surveyed building"
+    },
+    {
+      "checked": false,
+      "id": "_r_7_",
+      "name": "",
+      "type": "text",
+      "value": "50.94"
+    },
+    {
+      "checked": false,
+      "id": "_r_8_",
+      "name": "",
+      "type": "text",
+      "value": "6.96"
+    },
+    {
+      "checked": false,
+      "id": "",
+      "name": "",
+      "type": "select-one",
+      "value": "Europe/Berlin"
+    },
+    {
+      "checked": false,
+      "id": "_r_9_",
+      "name": "",
+      "type": "text",
+      "value": ""
+    },
+    {
+      "checked": false,
+      "id": "",
+      "name": "",
+      "type": "select-one",
+      "value": ""
+    },
+    {
+      "checked": false,
+      "id": "",
+      "name": "",
+      "type": "text",
+      "value": ""
+    },
+    {
+      "checked": false,
+      "id": "",
+      "name": "",
+      "type": "textarea",
+      "value": ""
+    }
+  ],
+  "identityCount": 1,
+  "aboutOpen": true
+}

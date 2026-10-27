@@ -1,0 +1,165 @@
+{
+  "at_utc": "2026-10-23T16:54:43.594515+00:00",
+  "base": "66324a39fb449425dd1144b46b4d3abc21dc52d0",
+  "prior_review_target": "2464009a7456da75154d36bfecb9d24187a99e18",
+  "target": "71cd719aa67021aee6398ae58f359738005d1f57",
+  "full_diff_command": "git diff 66324a39fb449425dd1144b46b4d3abc21dc52d0...71cd719aa67021aee6398ae58f359738005d1f57",
+  "full_diff_files": 11,
+  "diff_bytes": 111458,
+  "diff_sha256": "2609036da35f3c1fe0012fb1a17c379a6f9efc1d7b5c14a72aca81af8f0942be",
+  "commits": [
+    "c562676a feat(planner): add metric map drawing command and controller boundaries (#548)",
+    "2464009a fix(planner): report drawing cleanup failures without aborting owner disposal (#548)",
+    "71cd719a refactor(planner): give the map pick gate its own viewport module (#548)"
+  ],
+  "file_inventory": [
+    {
+      "path": "apps/planner/src/data/MapDrawingController.ts",
+      "bytes": 16557,
+      "sha256": "d63e36f4867328608deea366d60e153a2cae5153509a07cdcabbe9467f258007"
+    },
+    {
+      "path": "apps/planner/src/data/MapPickGate.ts",
+      "bytes": 297,
+      "sha256": "f4dcb00da34c7e58e346e63a96a43124c916e8587d78a106a2606e877160b1d8"
+    },
+    {
+      "path": "apps/planner/src/domain/mapDrawingGeometry.test.ts",
+      "bytes": 10186,
+      "sha256": "020b9f3f20593af491877d80735e0b79cbfd55fe5aaaa9ac6702dd085b1cc844"
+    },
+    {
+      "path": "apps/planner/src/domain/mapDrawingGeometry.ts",
+      "bytes": 9763,
+      "sha256": "70916bf981ea32756d8f85540ad423bac2afdde7628ef9cf025edfe99b8d87bd"
+    },
+    {
+      "path": "apps/planner/src/domain/mapRingEdit.test.ts",
+      "bytes": 5670,
+      "sha256": "b3ec5cc1726149ccaf93be77862349eb1824c6f3e5b3a59d8bed06a0403580c5"
+    },
+    {
+      "path": "apps/planner/src/domain/mapRingEdit.ts",
+      "bytes": 4696,
+      "sha256": "fb298d549733119599090cf8f8a255d7e5b1cefb87d83a2adf1dbcfdad7a6528"
+    },
+    {
+      "path": "apps/planner/tests/map-drawing-controller.test.mjs",
+      "bytes": 18957,
+      "sha256": "311bfc4b65cb57ba7eb14743989947db7712b27a1b5d76fb3148f15b82545ae7"
+    },
+    {
+      "path": "docs/acceptance/2026-10-24/548/map-drawing/SPEC.md",
+      "bytes": 6123,
+      "sha256": "2040c42d8bbb0122d7d0fd49f6cf20512ae4e5f41bdddab26363bf4edfef20ec"
+    },
+    {
+      "path": "docs/research/2026-10-23-map-workbench-integration/DRAW-CONTROLLER.md",
+      "bytes": 29812,
+      "sha256": "a60581983ff876d5fb45478742448a86ffb19ada4917306a38d56b61fa0216e5"
+    },
+    {
+      "path": "docs/research/2026-10-23-map-workbench-integration/IMPLEMENTATION.md",
+      "bytes": 41104,
+      "sha256": "7854d75b88ff50ec622713e5c17675e8acef056a35b2dcfb0ca08ead103cead6"
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/source-manifest.json",
+      "bytes": 12080,
+      "sha256": "d009049ba789d2e38ca23cb60166f1da0c53d393ea76ff098106389dd470048c"
+    }
+  ],
+  "correction_delta": [
+    "apps/planner/src/data/MapDrawingController.ts",
+    "apps/planner/src/data/MapPickGate.ts",
+    "apps/planner/tests/map-drawing-controller.test.mjs",
+    "docs/research/2026-10-23-map-workbench-integration/IMPLEMENTATION.md",
+    "plugins/linker-tools/build/planner/source-manifest.json"
+  ],
+  "gate_body_moved_byte_identically": true,
+  "controller_changed_only_by_gate_removal": true,
+  "test_changed_only_by_direct_import": true,
+  "old_p3": "CLOSED; one independent exported class per file now satisfies current root AGENTS.md:78.",
+  "applicable_rules": {
+    "/Users/chesterjohn/Documents/de-linker/AGENTS.md": "56ced81dfdc89fb2818c0a4db463120f11251204bb0346f3649f54ce383da309",
+    "CONTEXT.md": "dc8e88975e90091b3d77ddf189f3492bf3ae6fd1f55e80bea3b0ea574a39fe05",
+    "apps/planner/tsconfig.json": "8bf99f16740f30987aa8b59ce3d3c98bab67bbaf096e0e050bf428b9889accfd",
+    "docs/adr/0002-isolated-planner-runtime.md": "d1dfe4eaef64fd3e03bd08a34aef82954dc5422ee4ee5d5cb8ea37e18db2855f"
+  },
+  "contributing_or_coding_standards": [],
+  "prior_exhaustive_review_preserved": {
+    "REVIEW.md": "03a849ab2f29d56db54bfff62cfbdd3d6ba8c374d3d55042345c4b1fb60a35db",
+    "controller-tests.log": "97196c9bb4de21960de4bafc86f59fb0a1984c83da95db901d5a81690f3c3e34",
+    "domain-tests.log": "add8d5de73749ec80d0a7d899aec611a5d198ada41aa8c92f0f88ceb2a6c4ce9",
+    "findings.json": "61df4924975fa0bb03b921edce191b30af4bb589b35b4bedd101324aebcc81a8",
+    "probe.json": "57e59826622c4dcc4e3baf6543430bc97863b406060cf19838d316bb454c7a5f",
+    "probe.py": "8a5a55bca7dc2e834fa31764495e271e41703b07946b2f926fea931cd9be70da"
+  },
+  "unchanged_prior_source_test_dossier_hunks": true,
+  "prior_targeted_tests_carried_forward": {
+    "total": 34,
+    "domain": 12,
+    "controller": 22,
+    "binding": "Previous tested source fingerprints match 2464009a; domain files unchanged, controller body and gate implementation unchanged after the move."
+  },
+  "controller_tests_reexecuted_for_new_import": {
+    "command": [
+      "node",
+      "--no-warnings=ExperimentalWarning",
+      "--loader",
+      "./tests/tsx-loader.mjs",
+      "--test",
+      "tests/map-drawing-controller.test.mjs"
+    ],
+    "exit_code": 0,
+    "totals": {
+      "tests": 22,
+      "pass": 22,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "log": "controller-tests.log",
+    "sha256": "8b3fbadd81302c46a6ca3ba9c78c3c59d4b1a89a420cfdcc0b19e57920feb972"
+  },
+  "manifest": {
+    "sources_checked": 107,
+    "build_checked": 7,
+    "hash_gaps": [],
+    "all_base_source_hashes_unchanged": true,
+    "all_seven_emitted_artifacts_byte_identical_to_base": true,
+    "source_manifest_sha256": "d009049ba789d2e38ca23cb60166f1da0c53d393ea76ff098106389dd470048c",
+    "artifacts": {
+      "assets/MapViewport-DOKp8Xb1.js": "8e3c91876fea6785e49511d6ac80354ffd9271b52adfd05949d32807ac6dcd9a",
+      "assets/SceneViewport-VJ3GRgC6.js": "12e25c8e98ae5ba972fac64cb54fe5b504ff6dfa7b5f6a7aedc437044c71a15f",
+      "assets/planner-core-DnhRbFyr.js": "630a0dede67742cf506488f17e4e33d82435e66986749cd67b345542d1c166da",
+      "assets/planner.js": "590f6efccb8f8b4e8937a8c481df7fea9a19b440fd37eee575aa12453fadbf1b",
+      "assets/rolldown-runtime-BWaJ3C7D.js": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3",
+      "vite-manifest.json": "4adf0e774a8c1151da6df8652f4e2284373d8e35e9604248d6dc72966d6507be",
+      "windpress.scan.txt": "b52f9c950b01c108a06e3933c638bf4ad57d09f7756294bd28177f574d4ebee4"
+    }
+  },
+  "research_update": "Exactly two inserted lines clearly distinguish historical b008 status and unaccepted design from current installed/import/map/controller boundaries; no new whole-goal claim.",
+  "legacy_identifier_hits": [],
+  "high_confidence_secret_pattern_hits": [],
+  "secret_check_limit": "Pattern scan plus manual full-hunk inspection, not a universal secret detector.",
+  "installed_primary_source_shas_match_prior_independent_audit": true,
+  "no_customer_mount": true,
+  "owner_validation_receipt": {
+    "path": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-24/548/map-drawing/validation.json",
+    "sha256": "30c9d89577daa5d4f8e995bf7cd06b5526be8f08f549569332aa606ef8dd0b25",
+    "source_pin_matches": true,
+    "scope": "Inspected 195 tests/build/build-check/format receipt; did not repeat the unchanged full suite or claim its execution as this review's own."
+  },
+  "resources_created": {
+    "source_copies": 0,
+    "worktrees": 0,
+    "dependency_installs": 0,
+    "stacks": 0,
+    "network_requests": 0
+  },
+  "verdict": "PASS",
+  "hard_documented_breaches": [],
+  "fowler_baseline_judgment_calls": [],
+  "boundary": "Independent full fixed Standards diff. Real Terra Draw with callback adapter/JSDOM and domain evidence only; no new real-MapLibre-adapter DOM, native/GPU/touch, customer mounting/recovery, engineering, provider/legal, production or full-goal acceptance."
+}

@@ -1,0 +1,137 @@
+{
+  "target": "eff8341d5a0eaf24999f42854da6339032c65c9c",
+  "base": "367e454c23f542632258e1440387c4c9e7825e17",
+  "verdict": "PASS",
+  "retained_files": [
+    {
+      "path": "REPRODUCE.md",
+      "sha256": "583c76d9bc3fe987050fcb1c4f95dc4886f7db504df962ceaa1ebfcfe72c4bba",
+      "bytes": 2466
+    },
+    {
+      "path": "REVIEW.md",
+      "sha256": "9fed0f6c707c4218bbc376f48994f74fcc190ec6f4a3421d7f15d34acab77d10",
+      "bytes": 2512
+    },
+    {
+      "path": "cleanup.json",
+      "sha256": "9da4fb92067f9df0d793483ef9a2e87777411eeb7eb9a4870c107a31c1ee7f44",
+      "bytes": 2750
+    },
+    {
+      "path": "client-run.json",
+      "sha256": "1221b925e7af1f132126038e46d8e9a31506bd150c64ab9d776d00fb4914d744",
+      "bytes": 199
+    },
+    {
+      "path": "client.log",
+      "sha256": "0e9966937b2a8082446c65f10022a8e2faf9693e311fd897d9ed100bfca124cd",
+      "bytes": 14227
+    },
+    {
+      "path": "commits.txt",
+      "sha256": "b6dc61d3f4bff97dbe513f52b962f04c2fa7c5e7082c4281bfbe7ec2893b4377",
+      "bytes": 150
+    },
+    {
+      "path": "diff-metadata.json",
+      "sha256": "37fdc1c8786e5c926bc5b41ae8b8efb6fe34957c882aa6e58843c366c4d44618",
+      "bytes": 344
+    },
+    {
+      "path": "emitted-run.json",
+      "sha256": "2bd19ba0bcbb22ef31c9cde994ebe0d1a682be432ac701f13d8182bacd636a7a",
+      "bytes": 217
+    },
+    {
+      "path": "emitted.log",
+      "sha256": "cda3e81d2ad9d8b87bdd062f51add3d5eaf49ed9d1f1444d909d7b41dc6c2bf7",
+      "bytes": 352
+    },
+    {
+      "path": "followup-additions.mjs",
+      "sha256": "11009ec9b9d04f866d39d3e295da712cff605478073da8a84a8cc3466158549c",
+      "bytes": 10464
+    },
+    {
+      "path": "followup-attempt-1.json",
+      "sha256": "109b7788b519c3eac5025e2db1fcdcd10ad9c995ef5b4ffced08696d2f519a90",
+      "bytes": 729
+    },
+    {
+      "path": "followup-attempt-1.log",
+      "sha256": "833c352275068b5cb1113f767bbab0ce928ff6d68c9983b37bfc7e857b8860ed",
+      "bytes": 1603
+    },
+    {
+      "path": "probe-environment.json",
+      "sha256": "ba9b7ae262a95532b02a6613cf742677e33ba6faacc565b3caa087418e0e6aeb",
+      "bytes": 1160
+    },
+    {
+      "path": "rebuild_snapshot.py",
+      "sha256": "0b55d6b8e40811ecc5a0a1002f769fa3b31397275afd4836a1fec47faef20a14",
+      "bytes": 1598
+    },
+    {
+      "path": "review-results.json",
+      "sha256": "588336512fdda91ef503d124a3665a4f7c73ab4bf9fb839fce2078378ab20253",
+      "bytes": 1061
+    },
+    {
+      "path": "revision-parser-attempt-1.json",
+      "sha256": "9e6f0e36b03cd1b4158b85b26ba2310a55aae05651683daf9c7a7bd0165f6ed4",
+      "bytes": 697
+    },
+    {
+      "path": "revision-parser-attempt-1.log",
+      "sha256": "d3a16688c897237c94fa414dbc423bcd28fbf6d31555229148c778f7f8bd109a",
+      "bytes": 277
+    },
+    {
+      "path": "revision-parser-probe.mjs",
+      "sha256": "6ef58d3b331e45aa268adb718b6d658fc4b3b90f9faef34cb9c5a6d014254071",
+      "bytes": 4048
+    },
+    {
+      "path": "run_followups.py",
+      "sha256": "dc19de0c04396c9bff0aa69a098afe2e424c1ae29c872bf088cbb4546ab67f4b",
+      "bytes": 3186
+    },
+    {
+      "path": "snapshot-manifest.json",
+      "sha256": "218657696f6acb3095c80c85e1ad3442ef23b464f83b558f0030644364f44c35",
+      "bytes": 31350
+    },
+    {
+      "path": "types-run.json",
+      "sha256": "990123f3e71a00ef1f11fb7f8081f0f50f1b989fb469eedda0c0765e637c1beb",
+      "bytes": 216
+    },
+    {
+      "path": "types.log",
+      "sha256": "fb7214a441e2b429aa43fce4db1d0911e9e6b638dc1d2f33682197312a418623",
+      "bytes": 52
+    },
+    {
+      "path": "unchanged-main-run.json",
+      "sha256": "b5f1071ee2cb3b42abf52adf7021db7ca58e170eee4039f89a6953befcf39b0e",
+      "bytes": 330
+    },
+    {
+      "path": "unchanged-main.log",
+      "sha256": "b92ef02267ced978294ac58cbe1d3aa9ff6b30e31b85b10b960cae1e8b122e87",
+      "bytes": 2450
+    },
+    {
+      "path": "unchanged-revision-run.json",
+      "sha256": "2ef06a097396c0fceef1d8c49d4f17752d13279c6aef42359fcb6453bf598b99",
+      "bytes": 335
+    },
+    {
+      "path": "unchanged-revision.log",
+      "sha256": "84ca6d333b6a80eb3239eaf75550254696e8f93ed29b71264a17f91ec69a6b24",
+      "bytes": 271
+    }
+  ]
+}

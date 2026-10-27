@@ -1,0 +1,57 @@
+........................................................................ [  9%]
+........................................................................ [ 18%]
+........................................................................ [ 27%]
+...........................................F............................ [ 36%]
+........................................................................ [ 45%]
+........................................................................ [ 54%]
+........................................................................ [ 63%]
+........................................................................ [ 72%]
+........................................................................ [ 81%]
+........................................................................ [ 90%]
+........................................................................ [ 99%]
+.....                                                                    [100%]
+=================================== FAILURES ===================================
+_____ test_v1_archive_upgrades_before_publication_without_changing_source ______
+
+workspace = <linker_engine.planning.workspace.Workspace object at 0x1183f8530>
+tmp_path = PosixPath('/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-687/test_v1_archive_upgrades_befor0')
+
+    def test_v1_archive_upgrades_before_publication_without_changing_source(
+        workspace: Workspace,
+        tmp_path: Path,
+    ) -> None:
+        project = workspace.create(
+            GUEST, "Legacy schema fixture", {"retained": True}, key="create"
+        )
+        snapshot = tmp_path / "v1-snapshot"
+        archive.backup(workspace, snapshot)
+        # Build the exact legacy table layout in this isolated archive, not in a
+        # live v2 Workspace. Live connections now fence unsupported versions.
+        connection = sqlite3.connect(snapshot / "workspace.sqlite")
+        for trigger in (
+            "retired_guest_insert",
+            "retired_guest_owner_update",
+            "guest_closure_requires_complete_transfer",
+        ):
+            connection.execute(f"DROP TRIGGER {trigger}")
+        connection.execute("DROP TABLE principal_closures")
+        connection.execute("PRAGMA user_version=1")
+        connection.commit()
+        connection.close()
+        import json
+    
+        manifest = json.loads((snapshot / "backup.json").read_bytes())
+        manifest["database_sha256"] = digest((snapshot / "workspace.sqlite").read_bytes())
+        (snapshot / "backup.json").write_text(json.dumps(manifest))
+        before = (snapshot / "workspace.sqlite").read_bytes()
+        restored = archive.restore(snapshot, tmp_path / "v2-restored")
+        assert (snapshot / "workspace.sqlite").read_bytes() == before
+        assert restored.get(GUEST, project.id).input_sha256 == project.input_sha256
+        with restored.database.read() as connection:
+>           assert connection.execute("PRAGMA user_version").fetchone()[0] == 2
+E           assert 3 == 2
+
+tests/planning/test_guest_claims.py:313: AssertionError
+=========================== short test summary info ============================
+FAILED tests/planning/test_guest_claims.py::test_v1_archive_upgrades_before_publication_without_changing_source
+1 failed, 796 passed in 76.77s (0:01:16)
