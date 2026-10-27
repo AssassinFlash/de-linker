@@ -1443,7 +1443,7 @@
       "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
     }
   },
-  "current_frontier": "managed_roof_ac_reference_native_local_and_Genie_PDF_pass; finalCI_production_FR_readback_and_fullgoal_downstream_closure_pending",
+  "current_frontier": "Actual production FR weather/PV/2hourenergy and EN/DE42parameter reports accepted; PR716 acknowledgment10.914s accepted; legacy8207 recovered as projecta664 with EN/DEreload. PR718merged; matched Genie runtime/index/builder activation and changed-answer readback pending. Native downloads Maclocked; complete engineering and downstream full-goal coverage remain open.",
   "shared_dc_core": {
     "status": "implemented_and_reviewed_core_not_connected_to_native_commands",
     "model": "constant_window_shared_dc_bus_v1",
@@ -9958,7 +9958,35 @@
       "fix_scope": "Known-unit JSONquote boundary preservesunit/punctuation/SKU; planningRULE answersaskedactualsources/periodsfromavailablefacts,no hardcoding/modelroutechange",
       "focused_checks": "Existingfigures+planning60PASS0.19s;4filemypy/ruff/format/diffPASS",
       "independent_review": "C Spec/Standards/internalrulecopy PASS exactfreeze; no modelrerun",
-      "production_after": "Pending deployment andonechanged-implementation actualquestion; beforeanswer retained"
+      "production_after": "Pending deployment andonechanged-implementation actualquestion; beforeanswer retained",
+      "release_gate": {
+        "source_commit": "cd77d4941253d293e21ae7b4b952fea8dd20754d",
+        "pr": 718,
+        "merge_commit": "591c7322ffab3485e349e5b7ae49e6a089b05be3",
+        "final_ci": 40600786330,
+        "conclusion": "success",
+        "activation": "pending matched runtime/index/native worker handoff; not yet actual answer acceptance"
+      }
+    },
+    "report_admission_performance": {
+      "state": "fixed_and_actual_production_request_passed",
+      "source_commit": "b34b6bd159a6fc3e4abd138cfe1589e62f350bd9",
+      "pr": 716,
+      "merge_commit": "7cc134018c3fb6d3676727d7971672c5db114ee8",
+      "final_ci": 40597443535,
+      "runtime_sha256": "dad71003f18f310f75b4bfa93b8ebe98a71e0536cd3b342d20f588554404c23c",
+      "actual_run": "0a55dd3d50764d40b90f2054fb99ad6d",
+      "actual_job": "cd83cca100cb4407a3ae45647f75e084",
+      "state_readback": "succeeded; attempt1; noerror",
+      "http_ack": {
+        "status": 200,
+        "seconds": 10.914,
+        "response_bytes": 1262,
+        "request_id": "41c5f5646f1f24667e8dda406b354fd9"
+      },
+      "owner_ui": "One actual Generate click; firstrequest entered result without retry",
+      "content_comparison": "Frozen source and model identical to accepted DE b5a3 except generated_at; all42parameter rows, sections, BOM and dependencies retained",
+      "verification_stop": "Reuse prior actual PDF visuals; no duplicate download/rerender/profile/report"
     }
   },
   "production_direct_ac_reference": {
@@ -10123,12 +10151,12 @@
     }
   },
   "production_legacy_recovery": {
-    "state": "actual_account_to_original_input_entry_read; creation_and_download_pending",
+    "state": "actual_project_created_reloaded_account_listed_and_reopened; native_download_unverified",
     "at_utc": "2026-10-27T21:43:17.252914+00:00",
     "owner_user_id": 1,
     "saved_solution_id": 8207,
     "source_sha256": "6dfee710c8f17869436d9cf79ba7625d241b16aee45d535b24062f00b91e7859",
-    "observed": "Account saved solutions lists3current projects andoriginalrecord. Old solution opens newproject review; carriesphase3/backupnone only; zeroannual/PV andemptypostcode flagged insteadof guessed; historical product2090 quantity1 kept onlyasreference, no automaticproductadoption. Originalsolutionstaysavailable. NoCreateprojectclicked/noDBwrites.",
+    "observed": "Original account record retained alongside4currentprojects. OneCreateprojectaction recovered historical user inputs into projecta664 revision1; no products/calculations/geometry inferred. Actual DE account link reopened SavedVersion1 overview; language link carries sameproject and lp-overview.",
     "screenshot": {
       "path": "/Users/chesterjohn/de-linker-local/p548/planner/managed-reference-native/production-legacy-input-entry-en.jpg",
       "bytes": 59203,
@@ -10166,6 +10194,40 @@
       "positive_artifact": null,
       "next_step": "Resume native inspection only after the Mac is manually unlocked; inspect any pending confirmation before considering another download click.",
       "retention": "One bounded Chrome failure receipt only; no downloaded artifact, duplicate original, screenshot or report created. Existing source screenshot and prior unverified IAB note retained."
+    },
+    "created_project": {
+      "project_id": "a664752eed334e3e99396be095cad9c9",
+      "revision": 1,
+      "created_click_at_utc": "2026-10-27T23:26:03.914Z",
+      "title": "Linker · legacy input recovery · owned acceptance",
+      "owner_user_id": 1,
+      "source_solution_id": 8207,
+      "source_sha256": "6dfee710c8f17869436d9cf79ba7625d241b16aee45d535b24062f00b91e7859",
+      "original_inputs_after_reload": {
+        "annual_kwh": 0,
+        "backup": "none",
+        "electric_vehicle": false,
+        "heat_pump": false,
+        "locale": "en",
+        "phase": 3,
+        "plz": "",
+        "pv_kwp": 0
+      },
+      "historical_recorded_items": [
+        {
+          "product_id": 2090,
+          "quantity": 1
+        }
+      ],
+      "authority": "historical_user_input",
+      "country_annual_consumption_module_count_dc_power": "unset; overview displays em dash",
+      "installation_devices_and_routes": 0,
+      "original_record_retained": true,
+      "account_screenshot": "/Users/chesterjohn/de-linker-local/p548/planner/managed-reference-native/production-legacy-account-recovered-de.jpg",
+      "de_account_reopen": "Saved · Version1 and overview actually observed",
+      "en_language_link": "sameproject and lp-overview observed afterclick",
+      "recorded_at_utc": "2026-10-27T23:47:55.750247+00:00",
+      "en_reopen": "Actual English workspace loaded Saved · revision1, original-input disclosure and sameproject/overview links; unknown country/annual consumption/modules/DC power remain unset."
     }
   }
 }
