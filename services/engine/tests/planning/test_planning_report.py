@@ -1299,8 +1299,24 @@ def test_absent_device_inputs_keep_legacy_report_source_shape(
         equipment_run_id=None,
         logo=None,
     )
+    permission_checks: list[Object] = []
+
+    def confirm_once(basis: Object, *, require_reference: bool = True) -> None:
+        permission_checks.append(basis)
+
+    monkeypatch.setattr(products, "confirm_basis", confirm_once)
     explicit = report_sources(workspace, products, owner, first, options)
     assert len(json_object(explicit)["pvlib_references"]) == 1
+    assert len(permission_checks) == 1
+    assert permission_checks[0] == module_proof
+    with monkeypatch.context() as denied:
+
+        def withdrawn(*args: Any, **kwargs: Any) -> None:
+            raise ProductEvidenceChanged("current Woo permission changed")
+
+        denied.setattr(products, "confirm_basis", withdrawn)
+        with pytest.raises(ProductEvidenceChanged):
+            report_sources(workspace, products, owner, first, options)
     for dependency in json_object(explicit)["dependencies"].values():
         workspace.blobs.read(dependency)
     pinned: dict[str, str] = {}
@@ -1393,7 +1409,7 @@ def test_absent_device_inputs_keep_legacy_report_source_shape(
     dc_runs = []
     dc_projects = []
     for converter_id in ("converter", "other_converter"):
-        values = json_object(first.inputs)
+        values = copy.deepcopy(json_object(first.inputs))
         values["energy_replay"].update(
             coupling="shared_dc", pv_converter_id=converter_id, aux_dc_kw=0
         )
@@ -1497,6 +1513,49 @@ def test_absent_device_inputs_keep_legacy_report_source_shape(
         "baseline",
         "candidate",
     ]
+
+    # Deferring live permission checks never admits an asset with no Woo proof.
+    missing = Assets(workspace).add(
+        owner,
+        first.id,
+        workspace.blobs.read(originals),
+        "application/json",
+        asset.purpose,
+        {k: v for k, v in asset.metadata.items() if k != "woo_module_inputs"},
+        key="retained-missing-proof",
+    )
+    missing_inputs = copy.deepcopy(json_object(first.inputs))
+    missing_inputs["energy_replay"]["pv_available_asset_id"] = missing.id
+    missing_project = workspace.revise(
+        owner,
+        first.id,
+        workspace.get(owner, first.id).revision,
+        missing_inputs,
+        key="missing-proof-inputs",
+    )
+    missing_run = completed(
+        missing_project,
+        {
+            "kind": EnergyKernel.kind,
+            "pinned_assets": {
+                **pinned,
+                **profile_dependencies(
+                    missing, "pv_available_ac", missing_project.inputs, workspace.blobs
+                ),
+            },
+        },
+        "missing-proof-energy",
+    )
+    with pytest.raises(InvalidInput, match="current Woo-maintained module"):
+        report_sources(
+            workspace,
+            products,
+            owner,
+            missing_project,
+            options.model_copy(
+                update={"pv_run_id": None, "energy_run_id": missing_run.id}
+            ),
+        )
 
 
 def test_report_subset_omits_unrelated_unprepared_device_entries(
