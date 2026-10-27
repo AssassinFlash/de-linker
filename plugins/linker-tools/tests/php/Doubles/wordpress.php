@@ -63,6 +63,7 @@ if ( ! class_exists( 'WP_Post' ) ) {
 		public $post_status   = 'publish';
 		public $post_content  = '';
 		public $post_name     = '';
+		public $post_parent   = 0;
 			public $post_date_gmt     = '1970-01-01 00:00:00';
 			public $post_modified_gmt = '1970-01-01 00:00:00';
 		public function __construct( $post ) {
@@ -79,6 +80,7 @@ if ( ! class_exists( 'WP_Post' ) ) {
 		public string $post_type = 'post';
 		public string $post_status = 'publish';
 		public string $post_name = '';
+		public int $post_parent = 0;
 	}
 }
 

@@ -20,6 +20,7 @@ use Linker\Tools\Genie\Hero;
 use Linker\Tools\Genie\ConversationMail;
 use Linker\Tools\Genie\InquiryRequest;
 use Linker\Tools\Genie\PageCache;
+use Linker\Tools\Genie\PageIndexing;
 use Linker\Tools\Genie\Preview;
 use Linker\Tools\Genie\RateLimit;
 use Linker\Tools\Genie\Proxy;
@@ -87,6 +88,7 @@ final class PluginTest extends TestCase {
 		$inquiry_card  = new InquiryRequest( $conversations, new Thread(), new PageContext() );
 		$hero          = new Hero();
 		$page_cache    = new PageCache( null, 'token' );
+		$page_indexing = new PageIndexing();
 
 		WP_Mock::expectActionAdded( 'init', array( $assets, 'register' ) );
 		WP_Mock::expectActionAdded( 'init', array( $assets, 'load_text_domain' ) );
@@ -141,6 +143,9 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( 'edit_terms', array( $page_cache, 'before_term_saved' ), 10, 2 );
 		WP_Mock::expectActionAdded( 'edited_term', array( $page_cache, 'term_saved' ), 10, 3 );
 		WP_Mock::expectActionAdded( 'set_object_terms', array( $page_cache, 'object_terms_set' ), 10, 6 );
+		// The workspace page stays out of the index and the XML sitemap.
+		WP_Mock::expectFilterAdded( 'seopress_titles_noindex_bypass', array( $page_indexing, 'noindex' ) );
+		WP_Mock::expectFilterAdded( 'seopress_sitemaps_single_url', array( $page_indexing, 'drop_from_sitemap' ), 10, 2 );
 
 		$replies       = new \Linker\Tools\Protection\Replies();
 		$native_engine = new \Linker\Tools\Protection\NativeEngine();
@@ -155,7 +160,7 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( 'wp_print_footer_scripts', array( $resources, 'assets' ), 0 );
 		WP_Mock::userFunction( 'wp_next_scheduled', array( 'return' => 1 ) );
 
-		( new Plugin( $assets, $redirects, $chrome, $conversations, $proxy, $entries, $retention, $user_context, $windpress, $mount, $engine, $quality, $quality_route, $quality_page, $preview, $mail, $contact, $inquiry, $inquiry_card, $hero, $page_cache, $resources, $provider_budget ) )->register();
+		( new Plugin( $assets, $redirects, $chrome, $conversations, $proxy, $entries, $retention, $user_context, $windpress, $mount, $engine, $quality, $quality_route, $quality_page, $preview, $mail, $contact, $inquiry, $inquiry_card, $hero, $page_cache, $page_indexing, $resources, $provider_budget ) )->register();
 
 		$this->assertSame( array( 'registered' ), $entries->calls );
 		$this->assertTrue( $user_context->registered, 'the identity seam is hooked' );

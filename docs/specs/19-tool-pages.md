@@ -28,6 +28,12 @@
 
 业主 2026-10-12 选定方案 A 后，这一页是 Genie 的全页工作区，不再 301 到目录。LiveCanvas 每页模板（`linker-advisor` / `linker-advisor-de`）只印 `[linker_genie_workspace]`；会话、历史和投票仍由 `linker-tools` 的 Genie 应用与 `linker-ai/v1/genie/conversations` 承担。右下助手与这一页读写同一条 cookie 会话。页面地址 2026-10-13 业主裁定改为 `/genie/`（德语 `/de/genie/`，不保留旧 slug）；旧 `/linker-advisor/`、`/de/linker-berater/`、`/de/linker-advisor/` 一律 301。
 
+**2026-10-27 · 两页不进索引、退出 XML sitemap。** 线上核实：英文 `/genie/` 已被 Google 收录（2026-10-26 抓取），`/de/genie/` 被抓取未收录，两个地址都列在 SEOPress 的 `page-sitemap1.xml`。未登录访客在这两页只看到登录入口（工具名 + Anmelden / Konto erstellen），不是内容页，所以两页都输出 `noindex` 并退出该 sitemap。
+
+落点是 `linker-tools` 的 `Linker\Tools\Genie\PageIndexing`，挂 SEOPress 自己的两个扩展点：`seopress_titles_noindex_bypass`（meta robots 的有效判定，`Presentation\FamilyNavigation` 已用同一过滤器）与 `seopress_sitemaps_single_url`（XML sitemap 丢弃条目的位置；SEOPress 对带 `_seopress_robots_index` 的 post 返回 null 用的就是它）。没有改两页的 SEOPress per-post robots 选项：那是生产数据，而这两页由迁移与 `present` 重建，重新导入后不带该 meta 就会悄悄回到索引；代码规则随插件发布，不需要生产写入。页面按两语言共用的 slug（`genie`）且必须是顶级页面识别，`/父页/genie/` 不会被误伤。
+
+后果是 SEOPress 的既有行为（与 per-post 选项逐字相同）：noindex 的 URL 不再输出 canonical，Polylang 的 hreflang 互指在该页被移除；英德两页的 Polylang 配对本身不变，两侧同时如此，不会只断一边。
+
 ## 3. /faq-download/（en / de）——静态目录化
 
 > **2026-10-15：本节的三段式组成已被票 #176 重做取代**（页头 + tab + 左目录右内容 +

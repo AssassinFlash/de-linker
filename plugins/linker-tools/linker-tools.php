@@ -30,6 +30,7 @@ use Linker\Tools\Genie\InquiryRequest;
 use Linker\Tools\Genie\InquirySummary;
 use Linker\Tools\Genie\PageCache;
 use Linker\Tools\Genie\PageContext;
+use Linker\Tools\Genie\PageIndexing;
 use Linker\Tools\Genie\Preview;
 use Linker\Tools\Genie\Proxy;
 use Linker\Tools\Genie\QualityPage;
@@ -74,5 +75,6 @@ $genie_preview = new Preview( $page_context ); // phpcs:ignore WordPress.NamingC
 	new InquirySummary( $conversations, $thread ),
 	new InquiryRequest( $conversations, $thread, $page_context ),
 	new Hero(),
-	new PageCache()
+	new PageCache(),
+	new PageIndexing()
 ) )->register();
