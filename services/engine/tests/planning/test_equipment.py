@@ -22,7 +22,7 @@ from conftest import (
 from fastapi.testclient import TestClient
 
 from linker_engine.engine import Engine
-from linker_engine.planning.canonical import Object
+from linker_engine.planning.dc_energy_parameters import DcLossScenario
 from linker_engine.planning.energy_equipment import assess_energy_equipment
 from linker_engine.planning.energy_inputs import BatteryParameters
 from linker_engine.planning.energy_kernel import EnergyKernel
@@ -55,13 +55,14 @@ from linker_engine.planning.workspace import Workspace
 from linker_engine.products import Products
 from linker_engine.publication import Publication, PublicationUnavailable
 
+from .conftest import FixtureObject, json_object, mapping_role
 from .test_energy_kernel import BATTERY, TOLERANCE, create_scenario
 from .test_energy_kernel import worker as energy_worker
 from .test_private_http import TOKEN, USER, headers
 
 
 @pytest.fixture
-def feed() -> dict:
+def feed() -> FixtureObject:
     raw = json.loads((FIXTURES / "feed.json").read_text())
     # The source study identifies these five module-count columns. This
     # explicit synthetic maintenance field exercises the producer contract;
@@ -84,7 +85,7 @@ def feed() -> dict:
     )
 
 
-def inputs(feed: dict, count: int) -> Object:
+def inputs(feed: FixtureObject, count: int) -> FixtureObject:
     ids = [4107, 2090, 2092]
     return {
         "equipment_selection": {
@@ -108,7 +109,7 @@ def inputs(feed: dict, count: int) -> Object:
     }
 
 
-def plant_inputs(feed: dict, *, coordinated: bool = False) -> Object:
+def plant_inputs(feed: FixtureObject, *, coordinated: bool = False) -> FixtureObject:
     unit = inputs(feed, 3)["equipment_selection"]
     requirements = {
         k: v for k, v in unit.items() if k in EquipmentRequirements.model_fields
@@ -135,13 +136,15 @@ def plant_inputs(feed: dict, *, coordinated: bool = False) -> Object:
     }
 
 
-def test_cabinet_sales_unit_and_factory_count_share_cited_woo_basis(feed: dict) -> None:
+def test_cabinet_sales_unit_and_factory_count_share_cited_woo_basis(
+    feed: FixtureObject,
+) -> None:
     from linker_engine.planning.battery_assembly import battery_assembly
     from linker_engine.planning.equipment_inputs import EquipmentSelection
 
     basis = copy.deepcopy(feed)
     cabinet = next(p for p in basis["products"] if p["id"] == 1955)
-    original = compile_product(cabinet)
+    original = json_object(compile_product(cabinet))
     assert battery_assembly(original) is None
     # Explicit synthetic Woo maintenance entry, using the fixture's existing
     # whole-system source. It is not an independent runtime product registry.
@@ -152,7 +155,7 @@ def test_cabinet_sales_unit_and_factory_count_share_cited_woo_basis(feed: dict) 
             cabinet["figures"]["modules_per_stack_min"]["citation"]
         ),
     }
-    assembly = battery_assembly(compile_product(cabinet))
+    assembly = battery_assembly(json_object(compile_product(cabinet)))
     assert assembly is not None and assembly["fixed_modules_per_stack"] == 11
     assert assembly["documents"] == [
         {"url": cabinet["figures"]["sales_unit_kind"]["citation"]["url"], "page": 2}
@@ -172,8 +175,10 @@ def test_cabinet_sales_unit_and_factory_count_share_cited_woo_basis(feed: dict) 
             },
         }
     )
-    result = assess_equipment(
-        {"equipment_selection": selection.model_dump(mode="json")}, basis
+    result = json_object(
+        assess_equipment(
+            {"equipment_selection": selection.model_dump(mode="json")}, basis
+        )
     )
     assert [
         row["quantity"]
@@ -181,20 +186,22 @@ def test_cabinet_sales_unit_and_factory_count_share_cited_woo_basis(feed: dict) 
         if row["product_id"] == 1955
     ] == [1]
     cabinet["figures"]["modules_per_stack_max"]["qualifier"] = {"unassessed": True}
-    conditional = battery_assembly(compile_product(cabinet))
+    conditional = battery_assembly(json_object(compile_product(cabinet)))
     assert conditional is not None and conditional["fixed_modules_per_stack"] is None
     del cabinet["figures"]["sales_unit_kind"]
-    assert battery_assembly(compile_product(cabinet)) is None
+    assert battery_assembly(json_object(compile_product(cabinet))) is None
     assert not any(
         row["product_id"] == 1955
-        for row in assess_equipment(
-            {"equipment_selection": selection.model_dump(mode="json")}, basis
+        for row in json_object(
+            assess_equipment(
+                {"equipment_selection": selection.model_dump(mode="json")}, basis
+            )
         )["provisional_bill_of_materials"]
     )
 
 
 def test_multi_converter_plant_keeps_unit_ownership_and_source_revisions(
-    feed: dict,
+    feed: FixtureObject,
 ) -> None:
     from pydantic import ValidationError
 
@@ -232,7 +239,7 @@ def test_multi_converter_plant_keeps_unit_ownership_and_source_revisions(
 
 
 def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
-    feed: dict,
+    feed: FixtureObject,
     engine: Engine,
     workspace: Workspace,
     monkeypatch: pytest.MonkeyPatch,
@@ -247,7 +254,7 @@ def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
         version="plant-fixture",
     )
 
-    def current(self):
+    def current(self: Publication) -> FixtureObject:
         manifest = publication_manifest(self.feed)
         for row in manifest["products"]:
             row["ready"]["engineering"] = True
@@ -406,20 +413,24 @@ def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
         logo=None,
     )
     with pytest.raises(InvalidInput):
-        report_sources(
-            workspace,
-            sources,
-            actor,
-            replace(
-                workspace.get(actor, project["id"]),
-                inputs={"equipment_plant_setup": setup, "equipment_candidate": {}},
-            ),
-            options,
+        json_object(
+            report_sources(
+                workspace,
+                sources,
+                actor,
+                replace(
+                    workspace.get(actor, project["id"]),
+                    inputs={"equipment_plant_setup": setup, "equipment_candidate": {}},
+                ),
+                options,
+            )
         )
-    source = report_sources(
-        workspace, sources, actor, workspace.get(actor, project["id"]), options
+    source = json_object(
+        report_sources(
+            workspace, sources, actor, workspace.get(actor, project["id"]), options
+        )
     )
-    materials = project_materials(source)
+    materials = json_object(project_materials(source))
     quantities = {
         row["product_id"]: row["quantity"]
         for row in materials["lines"]
@@ -450,14 +461,16 @@ def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
     )
     wrong = copy.deepcopy(plant)
     wrong["requirements"]["pv_dc_kw"] = 21
-    assessment = assess_plant({"equipment_plant": wrong}, sources.equipment_basis())
+    assessment = json_object(
+        assess_plant({"equipment_plant": wrong}, json_object(sources.equipment_basis()))
+    )
     assert any(
         c["id"] == "plant:allocation:pv_dc_kw" and c["status"] == "violated"
         for c in assessment["checks"]
     )
     # A deliberately synthetic source bound tests the group constraint. It
     # does not assert that these SAJ devices actually use a GoodWe controller.
-    limited = copy.deepcopy(sources.equipment_basis())
+    limited = copy.deepcopy(json_object(sources.equipment_basis()))
     limited["compatibility"]["requirements"].append(
         {
             "kind": "parallel_controller",
@@ -482,20 +495,20 @@ def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
             "documents": [{"url": controller["documents"][0]["url"]}],
         }
     )
-    restricted = assess_plant({"equipment_plant": plant}, limited)
+    restricted = json_object(assess_plant({"equipment_plant": plant}, limited))
     assert any(
         c["id"].endswith(":parallel_count") and c["status"] == "violated"
         for c in restricted["checks"]
     )
     scoped_row = limited["compatibility"]["requirements"][-1]
     scoped_row["applicability"]["operating_mode"] = "backup"
-    wrong_mode = assess_plant({"equipment_plant": plant}, limited)
+    wrong_mode = json_object(assess_plant({"equipment_plant": plant}, limited))
     assert not any(
         c["id"].endswith(":parallel_count") and c["status"] != "unresolved"
         for c in wrong_mode["checks"]
     )
     del scoped_row["applicability"]
-    legacy = assess_plant({"equipment_plant": plant}, limited)
+    legacy = json_object(assess_plant({"equipment_plant": plant}, limited))
     assert all(
         c["status"] == "unresolved"
         for c in legacy["checks"]
@@ -505,8 +518,10 @@ def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
         actor, project["id"], 1, {"equipment_plant": wrong}, key="change-plant-demand"
     )
     with pytest.raises(InvalidInput):
-        report_sources(
-            workspace, sources, actor, workspace.get(actor, project["id"]), options
+        json_object(
+            report_sources(
+                workspace, sources, actor, workspace.get(actor, project["id"]), options
+            )
         )
 
     # The same private command/worker/store/report path can now search a whole
@@ -541,7 +556,7 @@ def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
         ],
         "parallel_groups": raw_search["parallel_groups"],
     }
-    request_inputs = {
+    request_inputs: FixtureObject = {
         "equipment_plant_setup": raw_search,
         "equipment_plant_requirements": plan,
     }
@@ -573,7 +588,7 @@ def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
         assert executor.run_once()
         searched = workspace.run(actor, queued.json()["id"])
         assert searched.state == "succeeded", searched.error
-        result = searched.result["search"]
+        result = json_object(searched.result)["search"]
         assert (
             result["coverage"]["template"]
             == "declared_plant_one_external_assembly_per_converter"
@@ -607,7 +622,7 @@ def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
             )["quantity"]
             == 1
         )
-        compact = workspace.blobs.object(candidate["assessment_sha256"])
+        compact = json_object(workspace.blobs.object(candidate["assessment_sha256"]))
         assert all(
             "facts" not in c
             for u in compact["systems"]
@@ -651,12 +666,14 @@ def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
             },
         )
         assert adopted.status_code == 200, adopted.text
-    selected_source = report_sources(
-        workspace,
-        sources,
-        actor,
-        workspace.get(actor, project["id"]),
-        options.model_copy(update={"equipment_run_id": None}),
+    selected_source = json_object(
+        report_sources(
+            workspace,
+            sources,
+            actor,
+            workspace.get(actor, project["id"]),
+            options.model_copy(update={"equipment_run_id": None}),
+        )
     )
     assert selected_source["equipment"] == assessment
     assert selected_source["equipment_plant"] == chosen
@@ -686,7 +703,7 @@ def test_plant_packaging_only_covers_the_owning_units_included_items() -> None:
 
     # Synthetic packaging identities exercise scope, not a manufacturer's
     # real contents. B's unquantified included meter must survive A's package.
-    source = {
+    source: FixtureObject = {
         "project_id": "synthetic",
         "revision": 1,
         "input_sha256": "0" * 64,
@@ -740,7 +757,7 @@ def test_plant_packaging_only_covers_the_owning_units_included_items() -> None:
             ],
         },
     }
-    material = project_materials(source)
+    material = json_object(project_materials(source))
     unknown = [
         r for r in material["lines"] if r.get("basis") == "manufacturer_included"
     ]
@@ -752,12 +769,19 @@ def test_plant_packaging_only_covers_the_owning_units_included_items() -> None:
 
 
 def prepared_dc_fixture_source(
-    feed: dict,
+    feed: FixtureObject,
     engine: Engine,
     monkeypatch: pytest.MonkeyPatch,
     *,
     reverse_ac_kw: float | None = None,
-) -> tuple[dict, ProductSources, SimpleNamespace, dict, dict, dict]:
+) -> tuple[
+    FixtureObject,
+    ProductSources,
+    SimpleNamespace,
+    FixtureObject,
+    FixtureObject,
+    FixtureObject,
+]:
     """Reuse one synthetic maintained-source fixture; no runtime product data.
 
     Extra reverse-conversion figures cite an explicitly synthetic fixture file.
@@ -767,7 +791,11 @@ def prepared_dc_fixture_source(
     battery = next(row for row in feed["products"] if row["id"] == 2090)
 
     def figure(
-        product: dict, key: str, value: float | str | bool, unit: str, citation: dict
+        product: FixtureObject,
+        key: str,
+        value: float | str | bool,
+        unit: str,
+        citation: FixtureObject,
     ) -> None:
         product["figures"][key] = {
             "value": value,
@@ -810,6 +838,7 @@ def prepared_dc_fixture_source(
 
     voltage = controller["figures"]["system_operating_voltage_range_v"]
     _, _, _, values = numeric_value(voltage["value"], voltage["unit"])
+    assert isinstance(values, list)
     voltage["qualifier"] = {
         "quantity_kind": "operating_range",
         "scope": "battery_system",
@@ -818,8 +847,8 @@ def prepared_dc_fixture_source(
     voltage["columns"] = [
         {
             "module_count": i,
-            "min": column["value"][0],
-            "max": column["value"][1],
+            "min": json_object(column)["value"][0],
+            "max": json_object(column)["value"][1],
             "unit": "V",
         }
         for i, column in enumerate(values, 1)
@@ -871,7 +900,7 @@ def prepared_dc_fixture_source(
         version="fixture",
     )
 
-    def current(publication: Publication) -> dict:
+    def current(publication: Publication) -> FixtureObject:
         result = publication_manifest(publication.feed)
         for row in result["products"]:
             row["ready"]["engineering"] = True
@@ -882,7 +911,7 @@ def prepared_dc_fixture_source(
     return feed, source, loaded, inverter, battery, controller
 
 
-def dc_loss_fixture():
+def dc_loss_fixture() -> DcLossScenario:
     """Shared explicit source-only assumptions, never a device-efficiency fact."""
     from linker_engine.planning.dc_energy_parameters import DcLossScenario
 
@@ -911,7 +940,7 @@ def dc_loss_fixture():
     [(None, "DE", 10), (6, "DE", 6), (None, "CL", None), (None, None, None)],
 )
 def test_reverse_input_ceiling_and_battery_terminal_power_keep_their_boundaries(
-    feed: dict,
+    feed: FixtureObject,
     engine: Engine,
     monkeypatch: pytest.MonkeyPatch,
     active_limit: int | None,
@@ -925,7 +954,7 @@ def test_reverse_input_ceiling_and_battery_terminal_power_keep_their_boundaries(
     feed, source, _, _, _, _ = prepared_dc_fixture_source(
         feed, engine, monkeypatch, reverse_ac_kw=6
     )
-    basis = source.equipment_basis()
+    basis = json_object(source.equipment_basis())
     inverter = next(p for p in basis["products"] if p["canonical_product_id"] == 4107)
     figures = inverter["figures"]
     capability = figures["battery_grid_charging_supported"]
@@ -974,7 +1003,7 @@ def test_reverse_input_ceiling_and_battery_terminal_power_keep_their_boundaries(
     assert prepared.selected_port.charge_power_limit_kw == 2
     assert prepared.selected_port.discharge_power_limit_kw == 3
     assert prepared.battery_model("0" * 64).charge_terminal_kw == 2
-    ceiling = prepared.source_facts["reverse_ac_input_ceiling"]
+    ceiling = json_object(prepared.source_facts)["reverse_ac_input_ceiling"]
     assert ceiling["role"] == "necessary_upper_bound_only"
     assert ceiling["apparent_power_limit_kva"] == 10
     assert ceiling["active_power_limit_kw"] == active_limit
@@ -988,14 +1017,14 @@ def test_reverse_input_ceiling_and_battery_terminal_power_keep_their_boundaries(
 
 
 def test_reference_capacity_is_explicit_and_does_not_resolve_operating_conditions(
-    feed: dict, engine: Engine, monkeypatch: pytest.MonkeyPatch
+    feed: FixtureObject, engine: Engine, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     from linker_engine.planning.capacity_window import REFERENCE_CAPACITY
     from linker_engine.planning.dc_parameter_source import prepare_dc_parameters
     from linker_engine.planning.errors import EvidenceMissing
 
     feed, source, _, _, _, _ = prepared_dc_fixture_source(feed, engine, monkeypatch)
-    basis = source.equipment_basis()
+    basis = json_object(source.equipment_basis())
     battery = next(p for p in basis["products"] if p["canonical_product_id"] == 2090)
     fact = battery["figures"]["module_energy_kwh_usable"]
     fact["qualifier"] = {
@@ -1032,15 +1061,19 @@ def test_reference_capacity_is_explicit_and_does_not_resolve_operating_condition
     assert (
         prepared.usable_window_kwh == 13.5
     )  # 3 × 4.5 usable kWh; no second DOD reduction.
-    recorded = prepared.source_facts["capacity_window_assumption"]
+    recorded = json_object(prepared.source_facts)["capacity_window_assumption"]
     assert recorded["rating_conditions_status"] == "not_established"
     assert recorded["manufacturer_qualifier"] == fact["qualifier"]
     assert (
         recorded["internal_window_mapping"] == "published_usable_energy_as_model_window"
     )
-    assert prepared.source_facts["usable_energy_derivation"]["status"] == "unresolved"
     assert (
-        "condition_match" not in prepared.source_facts["2090.module_energy_kwh_usable"]
+        json_object(prepared.source_facts)["usable_energy_derivation"]["status"]
+        == "unresolved"
+    )
+    assert (
+        "condition_match"
+        not in json_object(prepared.source_facts)["2090.module_energy_kwh_usable"]
     )
     # Explicit model selection never interprets a new unknown source condition.
     fact["qualifier"]["unrecognized_operating_condition"] = "unknown"
@@ -1049,7 +1082,7 @@ def test_reference_capacity_is_explicit_and_does_not_resolve_operating_condition
 
 
 def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
-    feed: dict,
+    feed: FixtureObject,
     engine: Engine,
     workspace: Workspace,
     owner: Actor,
@@ -1083,7 +1116,7 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
     )
     layout = geometry()
     module_id = layout["module_specs"][0]["id"]
-    module_basis = source.module_basis()["module"]
+    module_basis = json_object(source.module_basis())["module"]
     layout["module_specs"] = [{**module_basis["specification"], "id": module_id}]
     parameter_data = parameter_document()
     parameter_data["modules"] = [
@@ -1146,52 +1179,69 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
         source=SeriesSource(raw_hash, "synthetic", "UTC", 3600, encode(PROVENANCE)),
     )
     generated = generate_pv(
-        project.inputs["geometry"], meteo, parameters, max_array_steps=10
+        json_object(project.inputs)["geometry"], meteo, parameters, max_array_steps=10
     )
-    metadata = {
+    metadata: FixtureObject = {
         "schema": 1,
         "profile_type": PROFILE_PURPOSE,
         "retention": "permanent",
         "provenance": PROVENANCE,
-        "geometry_sha256": digest(encode(project.inputs["geometry"])),
-        "parameters_sha256": digest(encode(project.inputs["pv_generation"])),
-        "woo_module_inputs": source.module_basis(),
+        "geometry_sha256": digest(encode(json_object(project.inputs)["geometry"])),
+        "parameters_sha256": digest(
+            encode(json_object(project.inputs)["pv_generation"])
+        ),
+        "woo_module_inputs": json_object(source.module_basis()),
         "dependencies": {
             "pv_model_inputs": workspace.blobs.put(generated.inputs_json),
             "pv_model_witness": workspace.blobs.put(generated.witness_json),
         },
     }
-    full_parts = pv_components(workspace.blobs, raw_hash, metadata)
+    full_parts = json_object(pv_components(workspace.blobs, raw_hash, metadata))
     assert full_parts["components"][0]["quantity"] == 6
-    roof_parts = saved_roof_components(
-        layout, source.module_basis(), workspace.blobs, project.revision
+    roof_parts = json_object(
+        saved_roof_components(
+            layout,
+            json_object(source.module_basis()),
+            workspace.blobs,
+            project.revision,
+        )
     )
     assert roof_parts["components"] == full_parts["components"]
     assert roof_parts["scope"] == "saved_roof"
-    group_parts = pv_components(
-        workspace.blobs, raw_hash, metadata, converter_id=parameters.converters[0].id
-    )
-    assert group_parts["components"][0]["quantity"] == 5
-    assert "array:1:2" not in group_parts["components"][0]["module_ids"]
-    assert pv_components(workspace.blobs, raw_hash, {})["reason"] == "no_saved_layout"
-    without_proof = {k: v for k, v in metadata.items() if k != "woo_module_inputs"}
-    assert (
-        pv_components(workspace.blobs, raw_hash, without_proof)["reason"]
-        == "no_woo_module_proof"
-    )
-    corrupted = generated.witness()
-    corrupted["arrays"][0]["module_count"] += 1
-    with pytest.raises(VersionUnavailable):
+    group_parts = json_object(
         pv_components(
             workspace.blobs,
             raw_hash,
-            {
-                **metadata,
-                "dependencies": {
-                    **metadata["dependencies"],
-                    "pv_model_witness": workspace.blobs.put_object(corrupted),
+            metadata,
+            converter_id=parameters.converters[0].id,
+        )
+    )
+    assert group_parts["components"][0]["quantity"] == 5
+    assert "array:1:2" not in group_parts["components"][0]["module_ids"]
+    assert (
+        json_object(pv_components(workspace.blobs, raw_hash, {}))["reason"]
+        == "no_saved_layout"
+    )
+    without_proof = {k: v for k, v in metadata.items() if k != "woo_module_inputs"}
+    assert (
+        json_object(pv_components(workspace.blobs, raw_hash, without_proof))["reason"]
+        == "no_woo_module_proof"
+    )
+    corrupted = json_object(generated.witness())
+    corrupted["arrays"][0]["module_count"] += 1
+    with pytest.raises(VersionUnavailable):
+        json_object(
+            pv_components(
+                workspace.blobs,
+                raw_hash,
+                {
+                    **metadata,
+                    "dependencies": {
+                        **metadata["dependencies"],
+                        "pv_model_witness": workspace.blobs.put_object(corrupted),
+                    },
                 },
-            },
+            )
         )
     pv = Assets(workspace).add(
         owner,
@@ -1220,7 +1270,7 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
                 CsvMapping(
                     "time",
                     "power",
-                    role,
+                    mapping_role(role),
                     "interval_average_kw",
                     "start",
                     "UTC",
@@ -1263,7 +1313,7 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
         }
     )
     with TestClient(app) as client:
-        body = {
+        body: FixtureObject = {
             "schema_version": 1,
             "project_id": project.id,
             "expected_revision": project.revision,
@@ -1321,9 +1371,9 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
             == prepared.json()
         )
         asset = prepared.json()
-        assert workspace.blobs.object(asset["content_sha256"]) == scenario.model_dump(
-            mode="json"
-        )
+        assert json_object(
+            workspace.blobs.object(asset["content_sha256"])
+        ) == scenario.model_dump(mode="json")
         project = workspace.revise(
             owner,
             project.id,
@@ -1389,65 +1439,78 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
     assert executor.run_once()
     saved = workspace.run(owner, evaluated.json()["id"])
     assert saved.state == "succeeded", saved.error
-    assert saved.result["kind"] == dc.kind
-    assert saved.result["model"]["usable_window_kwh"] == 13.5
-    assert saved.result["model"]["charge_terminal_kw"] == pytest.approx(8.064)
-    assert saved.result["metrics"]["load_demand_kwh"] == 4
-    assert saved.result["scenario_constraint_status"] == "satisfied"
-    assert "pv_generated_ac_kwh" not in saved.result["metrics"]
+    assert json_object(saved.result)["kind"] == dc.kind
+    assert json_object(saved.result)["model"]["usable_window_kwh"] == 13.5
+    assert json_object(saved.result)["model"]["charge_terminal_kw"] == pytest.approx(
+        8.064
+    )
+    assert json_object(saved.result)["metrics"]["load_demand_kwh"] == 4
+    assert json_object(saved.result)["scenario_constraint_status"] == "satisfied"
+    assert "pv_generated_ac_kwh" not in json_object(saved.result)["metrics"]
     assert (
-        saved.result["prepared_dc_parameters"]["product_revisions"]
-        == project.inputs["equipment_selection"]["product_revisions"]
+        json_object(saved.result)["prepared_dc_parameters"]["product_revisions"]
+        == json_object(project.inputs)["equipment_selection"]["product_revisions"]
     )
     from linker_engine.planning.dc_energy_parameters import DcPreparedParameters
     from linker_engine.planning.energy_equipment import assess_dc_energy_equipment
     from linker_engine.planning.trace_window import TraceWindow
 
-    page = TraceWindow(workspace).page(owner, saved.id, offset=0, page_size=2)
+    page = json_object(
+        TraceWindow(workspace).page(owner, saved.id, offset=0, page_size=2)
+    )
     assert page["measurement_boundaries"]["pv"] == "PV_DC_bus"
     assert page["measurement_boundaries"]["charge"] == "battery_DC_terminal"
-    witness = workspace.blobs.object(metadata["dependencies"]["pv_model_witness"])
+    witness = json_object(
+        workspace.blobs.object(metadata["dependencies"]["pv_model_witness"])
+    )
     selected_pv = next(
         group
         for group in witness["converters"]
-        if group["id"] == project.inputs["energy_replay"]["pv_converter_id"]
+        if group["id"]
+        == json_object(project.inputs)["energy_replay"]["pv_converter_id"]
     )
     assert page["rows"][0]["pv_kw"] == selected_pv["dc_available_w"][0] / 1000
     assert page["rows"][0]["pv_kw"] > selected_pv["available_ac_w"][0] / 1000
     # Reuse the saved physical model and source to check the hardware mode.
     # This does not replay physics or invent a backup rating for the fixture.
-    outage_inputs = copy.deepcopy(project.inputs)
+    outage_inputs = json_object(copy.deepcopy(project.inputs))
     outage_inputs["energy_replay"]["schedule"][0]["mode"] = "outage"
     prepared_model = DcPreparedParameters.read(
-        saved.result["prepared_dc_parameters"]
-    ).battery_model(saved.result["pinned_assets"]["battery.dc_prepared_parameters"])
-    mismatch = assess_dc_energy_equipment(
-        outage_inputs, source.equipment_basis(), prepared_model
+        json_object(saved.result)["prepared_dc_parameters"]
+    ).battery_model(
+        json_object(saved.result)["pinned_assets"]["battery.dc_prepared_parameters"]
+    )
+    mismatch = json_object(
+        assess_dc_energy_equipment(
+            outage_inputs, json_object(source.equipment_basis()), prepared_model
+        )
     )
     assert any(
         check["id"] == "scenario_operating_mode" and check["status"] == "violated"
         for check in mismatch["assessment"]["checks"]
     )
     for locale in ("en", "de"):
-        frozen_report = report_sources(
-            workspace,
-            source,
-            owner,
-            project,
-            ReportOptions(
-                locale=locale,
-                energy_run_id=saved.id,
-                pv_run_id=None,
-                equipment_run_id=None,
-                logo=None,
-            ),
+        frozen_report = json_object(
+            report_sources(
+                workspace,
+                source,
+                owner,
+                project,
+                ReportOptions(
+                    locale=locale,
+                    energy_run_id=saved.id,
+                    pv_run_id=None,
+                    equipment_run_id=None,
+                    logo=None,
+                ),
+            )
         )
         report = build_report(
             {**frozen_report, "locale": locale, "generated_at": "2026-10-25T00:00:00Z"}
         )
         assert (
             frozen_report["equipment"]
-            == saved.result["equipment_binding"]["assessment"]
+            == json_object(saved.result)["equipment_binding"]["assessment"]
         )
         assert (
             frozen_report["woo_bases"]["equipment"]
@@ -1485,7 +1548,7 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
         dc_rows = [row for row in section.rows if "(DC)" in row.label]
         assert len(dc_rows) == 2 and all(row.value.endswith("kWh") for row in dc_rows)
         assert "DC" in section.paragraphs[0] and "AC" in section.paragraphs[0]
-    facts = saved.result["prepared_dc_parameters"]["source_facts"]
+    facts = json_object(saved.result)["prepared_dc_parameters"]["source_facts"]
     assert (
         facts["4107.max_battery_charge_a"]["qualifier"]
         == inverter["figures"]["max_battery_charge_a"]["qualifier"]
@@ -1498,7 +1561,9 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
     assert facts["2090.rated_power_w"]["value"] == 9.216
     assert facts["2090.rated_power_w"]["selected_module_count"] == 3
     assert (
-        saved.result["prepared_dc_parameters"]["battery"]["charge_power_limit_kw"]
+        json_object(saved.result)["prepared_dc_parameters"]["battery"][
+            "charge_power_limit_kw"
+        ]
         == 9.216
     )
     # A table declared in W cannot silently carry a mismatching duplicate cell.
@@ -1508,10 +1573,10 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
     )
     from linker_engine.planning.equipment_inputs import EquipmentSelection
 
-    bad = copy.deepcopy(compile_product(battery)["facts"]["rated_power_w"])
+    bad = copy.deepcopy(json_object(compile_product(battery))["facts"]["rated_power_w"])
     bad["columns"][2]["unit"] = "Wp"
     context = FactContext(
-        EquipmentSelection.read(project.inputs["equipment_selection"]),
+        EquipmentSelection.read(json_object(project.inputs)["equipment_selection"]),
         {p["canonical_product_id"]: p for p in feed["products"]},
         20,
         "BAT1",
@@ -1540,7 +1605,7 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
 
 
 def test_pv_reference_proof_tracks_its_component_instead_of_sales_compatibility(
-    feed: dict, engine: Engine, monkeypatch: pytest.MonkeyPatch
+    feed: FixtureObject, engine: Engine, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     loaded = SimpleNamespace(
         engine=replace(engine, products=Products.from_feed(feed)),
@@ -1549,7 +1614,7 @@ def test_pv_reference_proof_tracks_its_component_instead_of_sales_compatibility(
     )
     withdrawn = False
 
-    def current(self: Publication) -> dict:
+    def current(self: Publication) -> FixtureObject:
         manifest = publication_manifest(self.feed)
         for row in manifest["products"]:
             row["ready"]["engineering"] = True
@@ -1563,10 +1628,10 @@ def test_pv_reference_proof_tracks_its_component_instead_of_sales_compatibility(
 
     monkeypatch.setattr(Publication, "read", current)
     source = ProductSources(lambda: loaded)
-    proof = source.module_basis()
+    proof = json_object(source.module_basis())
     proof["publication"]["compatibility_revision"] = "0" * 64
     source.confirm_basis(proof)
-    electrical = source.electrical_module_basis()
+    electrical = json_object(source.electrical_module_basis())
     source.confirm_basis(electrical)
     changed_electrical = copy.deepcopy(electrical)
     changed_electrical["electrical_product"]["figures"]["voc_v"]["value"] = 1
@@ -1586,7 +1651,7 @@ def test_pv_reference_proof_tracks_its_component_instead_of_sales_compatibility(
 
 
 def test_cited_quantities_keep_apparent_power_conditions_and_table_columns(
-    feed: dict,
+    feed: FixtureObject,
 ) -> None:
     row = copy.deepcopy(next(p for p in feed["products"] if p["id"] == 1946))
     original = row["figures"]["backup_power_kw"]
@@ -1606,7 +1671,7 @@ def test_cited_quantities_keep_apparent_power_conditions_and_table_columns(
             battery["figures"]["module_energy_kwh_usable"]["citation"]
         ),
     }
-    generic = compile_product(battery)["facts"]["rated_power_w"]
+    generic = json_object(compile_product(battery))["facts"]["rated_power_w"]
     context = FactContext(
         EquipmentSelection.read(inputs(feed, 3)["equipment_selection"]),
         {p["canonical_product_id"]: p for p in feed["products"]},
@@ -1616,7 +1681,7 @@ def test_cited_quantities_keep_apparent_power_conditions_and_table_columns(
         == "system_power_basis_required"
     )
 
-    compiled = compile_product(row)
+    compiled = json_object(compile_product(row))
     figure = compiled["facts"]["backup_power_kw"]
     assert figure["quantity"] == "apparent_power" and figure["unit"] == "kVA"
     assert (
@@ -1624,21 +1689,23 @@ def test_cited_quantities_keep_apparent_power_conditions_and_table_columns(
         and figure["source"]["page"] == original["citation"]["page"]
     )
     assert "ac_power_kw" not in compiled and "nominal_kwh" not in compiled
-    controller = compile_product(next(p for p in feed["products"] if p["id"] == 2092))
+    controller = json_object(
+        compile_product(next(p for p in feed["products"] if p["id"] == 2092))
+    )
     ranges = controller["facts"]["system_operating_voltage_range_v"]
     assert ranges["shape"] == "ordered_values" and len(ranges["value"]) == 5
     assert "max_fault_current_a" not in controller["facts"]
 
 
 def test_energy_uses_its_simulated_window_instead_of_the_manual_sizing_target(
-    feed: dict, workspace: Workspace, owner: Actor
+    feed: FixtureObject, workspace: Workspace, owner: Actor
 ) -> None:
     scenario = create_scenario(workspace, owner)
     proposed = {**scenario.inputs, **inputs(feed, 3)}
     basis = {"products": feed["products"], "compatibility": feed["compatibility"]}
     model = BatteryParameters.read(BATTERY).battery("a" * 64)
-    binding = assess_energy_equipment(
-        proposed, basis, replace(model, usable_window_kwh=15)
+    binding = json_object(
+        assess_energy_equipment(proposed, basis, replace(model, usable_window_kwh=15))
     )
     assessment = binding["assessment"]
     checks = {check["id"]: check for check in assessment["checks"]}
@@ -1653,7 +1720,7 @@ def test_energy_uses_its_simulated_window_instead_of_the_manual_sizing_target(
 
 
 def test_energy_freezes_woo_selection_and_keeps_mode_failure_separate_from_replay(
-    feed: dict,
+    feed: FixtureObject,
     engine: Engine,
     workspace: Workspace,
     owner: Actor,
@@ -1667,7 +1734,7 @@ def test_energy_freezes_woo_selection_and_keeps_mode_failure_separate_from_repla
     )
     withdrawn = False
 
-    def current(self: Publication) -> dict:
+    def current(self: Publication) -> FixtureObject:
         manifest = publication_manifest(self.feed)
         for row in manifest["products"]:
             row["ready"]["engineering"] = True
@@ -1693,12 +1760,14 @@ def test_energy_freezes_woo_selection_and_keeps_mode_failure_separate_from_repla
     assert energy_worker(workspace, kernel).run_once()
     saved = workspace.run(owner, run.id)
     assert saved.state == "succeeded"
-    result = saved.result
+    result = json_object(saved.result)
     assert result is not None
     binding = result["equipment_binding"]
-    assert binding["selection"] == project.inputs["equipment_selection"]
+    assert binding["selection"] == json_object(project.inputs)["equipment_selection"]
     assert (
-        workspace.blobs.object(result["pinned_assets"]["equipment.selection"])
+        json_object(
+            workspace.blobs.object(result["pinned_assets"]["equipment.selection"])
+        )
         == binding["selection"]
     )
     checks = {check["id"]: check for check in binding["assessment"]["checks"]}
@@ -1721,7 +1790,9 @@ def test_energy_freezes_woo_selection_and_keeps_mode_failure_separate_from_repla
         equipment_run_id=None,
         logo=None,
     )
-    report_source = report_sources(workspace, source, owner, project, options)
+    report_source = json_object(
+        report_sources(workspace, source, owner, project, options)
+    )
     assert report_source["energy_equipment"] == binding
     assert (
         report_source["woo_bases"]["energy_equipment"]
@@ -1744,10 +1815,14 @@ def test_energy_freezes_woo_selection_and_keeps_mode_failure_separate_from_repla
         )
         assert any("H2-10K-T3" in row.value for row in section.rows)
         assert any(row.href and "2" in row.label for row in section.rows)
-    bad_voltage = assess_energy_equipment(
-        {**project.inputs, **inputs(feed, 1)},
-        workspace.blobs.object(result["pinned_assets"]["woo.equipment_inputs"]),
-        BatteryParameters.read(BATTERY).battery("a" * 64),
+    bad_voltage = json_object(
+        assess_energy_equipment(
+            {**project.inputs, **inputs(feed, 1)},
+            json_object(
+                workspace.blobs.object(result["pinned_assets"]["woo.equipment_inputs"])
+            ),
+            BatteryParameters.read(BATTERY).battery("a" * 64),
+        )
     )
     report = build_report({**report_source, "energy_equipment": bad_voltage})
     section = next(
@@ -1766,25 +1841,27 @@ def test_energy_freezes_woo_selection_and_keeps_mode_failure_separate_from_repla
         {
             **project.inputs,
             "equipment_selection": {
-                **project.inputs["equipment_selection"],
+                **json_object(project.inputs)["equipment_selection"],
                 "modules_per_stack": 4,
             },
         },
         key="different-equipment-same-energy-input",
     )
     with pytest.raises(ReportInputsChanged):
-        report_sources(workspace, source, owner, changed, options)
+        json_object(report_sources(workspace, source, owner, changed, options))
 
 
 @pytest.mark.parametrize(
     ("count", "voltage_status"), [(1, "violated"), (2, "unresolved"), (3, "satisfied")]
 )
 def test_stack_window_is_not_a_flattened_range_or_a_fault_current_power(
-    feed: dict, count: int, voltage_status: str
+    feed: FixtureObject, count: int, voltage_status: str
 ) -> None:
-    result = assess_equipment(
-        inputs(feed, count),
-        {"products": feed["products"], "compatibility": feed["compatibility"]},
+    result = json_object(
+        assess_equipment(
+            inputs(feed, count),
+            {"products": feed["products"], "compatibility": feed["compatibility"]},
+        )
     )
     checks = {item["id"]: item for item in result["checks"]}
     assert checks["battery_voltage"]["status"] == voltage_status
@@ -1800,12 +1877,14 @@ def test_stack_window_is_not_a_flattened_range_or_a_fault_current_power(
         del next(p for p in unlabeled["products"] if p["id"] == 2092)["figures"][
             "system_operating_voltage_range_v"
         ]["columns"]
-        unproven = assess_equipment(
-            inputs(feed, count),
-            {
-                "products": unlabeled["products"],
-                "compatibility": unlabeled["compatibility"],
-            },
+        unproven = json_object(
+            assess_equipment(
+                inputs(feed, count),
+                {
+                    "products": unlabeled["products"],
+                    "compatibility": unlabeled["compatibility"],
+                },
+            )
         )
         assert (
             next(c for c in unproven["checks"] if c["id"] == "battery_voltage")[
@@ -1817,12 +1896,14 @@ def test_stack_window_is_not_a_flattened_range_or_a_fault_current_power(
         del next(p for p in unknown_unit["products"] if p["id"] == 2090)["figures"][
             "sales_unit_kind"
         ]
-        unresolved = assess_equipment(
-            inputs(feed, 3),
-            {
-                "products": unknown_unit["products"],
-                "compatibility": unknown_unit["compatibility"],
-            },
+        unresolved = json_object(
+            assess_equipment(
+                inputs(feed, 3),
+                {
+                    "products": unknown_unit["products"],
+                    "compatibility": unknown_unit["compatibility"],
+                },
+            )
         )
         assert not any(
             line["product_id"] == 2090
@@ -1835,9 +1916,14 @@ def test_stack_window_is_not_a_flattened_range_or_a_fault_current_power(
         table["value"] = "268.8~345.6"
         no_count = inputs(feed, 3)
         no_count["equipment_selection"]["modules_per_stack"] = None
-        unresolved = assess_equipment(
-            no_count,
-            {"products": scalar["products"], "compatibility": scalar["compatibility"]},
+        unresolved = json_object(
+            assess_equipment(
+                no_count,
+                {
+                    "products": scalar["products"],
+                    "compatibility": scalar["compatibility"],
+                },
+            )
         )
         assert (
             next(c for c in unresolved["checks"] if c["id"] == "battery_voltage")[
@@ -1848,7 +1934,7 @@ def test_stack_window_is_not_a_flattened_range_or_a_fault_current_power(
 
 
 def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_pool(
-    feed: dict,
+    feed: FixtureObject,
     engine: Engine,
     workspace: Workspace,
     owner: Actor,
@@ -1863,7 +1949,7 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
     source = ProductSources(lambda: shared)
     withdrawn, offline = False, False
 
-    def current(self: Publication) -> dict:
+    def current(self: Publication) -> FixtureObject:
         if offline:
             raise PublicationUnavailable("fixture source offline")
         manifest = publication_manifest(self.feed)
@@ -1877,10 +1963,10 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
 
     monkeypatch.setattr(Publication, "read", current)
     with pytest.raises(VersionUnavailable):
-        source.equipment_basis()
+        json_object(source.equipment_basis())
     feed["figure_projection_version"] = 2
     with pytest.raises(VersionUnavailable):
-        source.equipment_basis()
+        json_object(source.equipment_basis())
     feed["compatibility_origin"] = "woocommerce"
     equipment = EquipmentService(
         workspace, EquipmentKernel(workspace, source), max_attempts=1
@@ -1950,8 +2036,10 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
         assert worker.run_once()
         completed = workspace.run(owner, first)
         assert completed.state == "succeeded" and completed.result is not None
-        proof = completed.result["pinned_assets"]["woo.equipment_inputs"]
-        assert workspace.blobs.object(proof)["figure_projection_version"] == 2
+        proof = json_object(completed.result)["pinned_assets"]["woo.equipment_inputs"]
+        assert (
+            json_object(workspace.blobs.object(proof))["figure_projection_version"] == 2
+        )
         search_command = {**command, "key": "search-first"}
         found = client.post(
             "/runs/equipment-search", json=search_command, headers=headers()
@@ -1960,7 +2048,7 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
         assert worker.run_once()
         searched = workspace.run(owner, found.json()["id"])
         assert searched.state == "succeeded", searched.error
-        candidate = searched.result["search"]["candidates"][0]
+        candidate = json_object(searched.result)["search"]["candidates"][0]
         detail = client.post(
             "/equipment/candidates/read",
             json={
@@ -1975,7 +2063,7 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
             and detail.json()["assessment_sha256"] == candidate["assessment_sha256"]
         )
         assert detail.json()["assessment"]["selected_products"]
-        selected_inputs = {
+        selected_inputs: FixtureObject = {
             # Native browser JSON writes whole-valued floats as integers.
             "equipment_selection": {
                 **candidate["selection"],
@@ -2036,9 +2124,11 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
         assert second.status_code == 200, second.text
         original = assess_equipment
 
-        def withdraw_after_assessment(*args):
+        def withdraw_after_assessment(
+            inputs: FixtureObject, basis: FixtureObject
+        ) -> FixtureObject:
             nonlocal withdrawn
-            result = original(*args)
+            result = json_object(original(inputs, basis))
             withdrawn = True
             return result
 
@@ -2049,18 +2139,18 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
         assert worker.run_once()
         refused = workspace.run(owner, second.json()["id"])
         assert refused.state == "failed" and refused.result is None
-        assert refused.error["code"] == "product_evidence_changed"
+        assert json_object(refused.error)["code"] == "product_evidence_changed"
         assert workspace.run(owner, first).result == completed.result
 
 
 def test_search_enumerates_documented_counts_and_keeps_budget_exhaustion_visible(
-    feed: dict, workspace: Workspace
+    feed: FixtureObject, workspace: Workspace
 ) -> None:
     basis = {
         "products": [p for p in feed["products"] if p["id"] in [4107, 2090, 2092]],
         "compatibility": feed["compatibility"],
     }
-    demand = {
+    demand: FixtureObject = {
         "equipment_requirements": {
             "schema_version": 1,
             "grid_phase": 3,
@@ -2075,8 +2165,10 @@ def test_search_enumerates_documented_counts_and_keeps_budget_exhaustion_visible
         EquipmentRequirements.read(
             {**demand["equipment_requirements"], "grid_phase": True}
         )
-    result = search_equipment(
-        demand, basis, EquipmentSearchLimits(work_budget=100), store, lambda: None
+    result = json_object(
+        search_equipment(
+            demand, basis, EquipmentSearchLimits(work_budget=100), store, lambda: None
+        )
     )
     assert result["completion"] == "exhausted_supported_domain"
     rows = result["candidates"]
@@ -2084,11 +2176,13 @@ def test_search_enumerates_documented_counts_and_keeps_budget_exhaustion_visible
     assert all(r["selection"]["accessory_product_ids"] == [2092] for r in rows)
     assert rows[1]["status"] == "violated" and rows[2]["status"] == "unresolved"
     assert result["qualified_count"] == 0
-    compact = workspace.blobs.object(rows[2]["assessment_sha256"])
+    compact = json_object(workspace.blobs.object(rows[2]["assessment_sha256"]))
     assert "facts" not in compact["selected_products"][0]
     assert all("facts" not in c for c in compact["checks"])
-    limited = search_equipment(
-        demand, basis, EquipmentSearchLimits(work_budget=2), store, lambda: None
+    limited = json_object(
+        search_equipment(
+            demand, basis, EquipmentSearchLimits(work_budget=2), store, lambda: None
+        )
     )
     assert (
         limited["completion"] == "budget_exhausted" and len(limited["candidates"]) == 1
@@ -2098,7 +2192,7 @@ def test_search_enumerates_documented_counts_and_keeps_budget_exhaustion_visible
     # replacing the separate missing continuous battery-output evidence.
     ceiling_inputs = inputs(feed, 3)
     ceiling_inputs["equipment_selection"]["required_discharge_ac_kw"] = 50
-    bounded = assess_equipment(ceiling_inputs, basis)
+    bounded = json_object(assess_equipment(ceiling_inputs, basis))
     check = next(c for c in bounded["checks"] if c["id"] == "grid_output_ceiling")
     assert (
         check["status"] == "violated"
@@ -2119,7 +2213,7 @@ def test_search_enumerates_documented_counts_and_keeps_budget_exhaustion_visible
     ceiling_inputs["equipment_selection"]["operating_mode"] = "backup"
     assert not any(
         c["id"] == "grid_output_ceiling"
-        for c in assess_equipment(ceiling_inputs, basis)["checks"]
+        for c in json_object(assess_equipment(ceiling_inputs, basis))["checks"]
     )
 
     from linker_engine.planning.plant_search import search_plant
@@ -2149,9 +2243,18 @@ def test_search_enumerates_documented_counts_and_keeps_budget_exhaustion_visible
         ],
         "parallel_groups": [],
     }
-    plant_demand = {"equipment_plant_requirements": plan, "equipment_plant_setup": raw}
-    whole = search_plant(
-        plant_demand, basis, EquipmentSearchLimits(work_budget=100), store, lambda: None
+    plant_demand: FixtureObject = {
+        "equipment_plant_requirements": plan,
+        "equipment_plant_setup": raw,
+    }
+    whole = json_object(
+        search_plant(
+            plant_demand,
+            basis,
+            EquipmentSearchLimits(work_budget=100),
+            store,
+            lambda: None,
+        )
     )
     assert whole["completion"] == "exhausted_supported_domain"
     # Count2 remains unresolved on its source window, so it cannot be pruned
@@ -2162,15 +2265,21 @@ def test_search_enumerates_documented_counts_and_keeps_budget_exhaustion_visible
     } == {(a, b) for a in (2, 4, 5) for b in (2, 4, 5)}
     assert len({c["id"] for c in whole["candidates"]}) == 9
     assert whole["coverage"]["identical_demand_cache_entries"] == 1
-    partial = search_plant(
-        plant_demand, basis, EquipmentSearchLimits(work_budget=8), store, lambda: None
+    partial = json_object(
+        search_plant(
+            plant_demand,
+            basis,
+            EquipmentSearchLimits(work_budget=8),
+            store,
+            lambda: None,
+        )
     )
     assert partial["completion"] == "budget_exhausted"
     assert len(partial["candidates"]) == 1 and partial["work_used"] == 8
     # A large declared layout must pay for the expanded selection before a
     # result entry is created. This is an execution bound, not a device limit.
-    large_plan = copy.deepcopy(plan)
-    large_raw = copy.deepcopy(raw)
+    large_plan: FixtureObject = copy.deepcopy(plan)
+    large_raw: FixtureObject = copy.deepcopy(raw)
     large_plan["units"] = [
         {"id": f"u{i}", "name": f"U{i}", "requirements": unit_requirements}
         for i in range(300)
@@ -2183,22 +2292,24 @@ def test_search_enumerates_documented_counts_and_keeps_budget_exhaustion_visible
         }
         for i in range(300)
     ]
-    weighted = search_plant(
-        {
-            "equipment_plant_requirements": large_plan,
-            "equipment_plant_setup": large_raw,
-        },
-        basis,
-        EquipmentSearchLimits(work_budget=400),
-        store,
-        lambda: None,
+    weighted = json_object(
+        search_plant(
+            {
+                "equipment_plant_requirements": large_plan,
+                "equipment_plant_setup": large_raw,
+            },
+            basis,
+            EquipmentSearchLimits(work_budget=400),
+            store,
+            lambda: None,
+        )
     )
     assert weighted["completion"] == "budget_exhausted"
     assert weighted["candidates"] == [] and weighted["work_used"] <= 400
 
 
 def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
-    feed: dict, engine: Engine, monkeypatch: pytest.MonkeyPatch
+    feed: FixtureObject, engine: Engine, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """One wiring representative: series voltage, parallel current and stale IDs."""
     from linker_engine.planning.geometry import panel_poses, read_geometry
@@ -2209,7 +2320,10 @@ def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
     from .test_pv_generation import geometry
 
     reference = feed["overlay"][0]
-    proof = {"module": module_template(reference), "electrical_product": reference}
+    proof = {
+        "module": json_object(module_template(reference)),
+        "electrical_product": reference,
+    }
     layout = geometry()
     layout["module_specs"] = [{**proof["module"]["specification"], "id": "module"}]
     layout["arrays"][0].update(rows=2, columns=6, excluded_slots=[])
@@ -2233,7 +2347,7 @@ def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
         "compatibility": engine.compatibility.snapshot(),
         "pv_module_inputs": proof,
     }
-    result = assess_pv_strings(value, basis)
+    result = json_object(assess_pv_strings(value, basis))
     checks = {c["id"]: c for c in result["checks"]}
     assert checks["pv_cold_voc:s_a"]["actual"] == pytest.approx(6 * 53.8 * 1.084)
     assert checks["pv_stc_mppt:s_a"]["actual"] == pytest.approx(6 * 45.4)
@@ -2245,7 +2359,7 @@ def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
     assert checks["pv_input:s_a"]["status"] == "unresolved"
     assert checks["pv_operating_temperatures"]["status"] == "unresolved"
     assert checks["pv_design_current"]["status"] == "unresolved"
-    assessment = assess_equipment(value, basis)
+    assessment = json_object(assess_equipment(value, basis))
     assert assessment["pv_electrical"] == result
     assert assessment["overall_status"] != "satisfied"
     operating_value = copy.deepcopy(value)
@@ -2255,7 +2369,9 @@ def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
         "cold_cell_c": 20,
         "source_note": "Explicit synthetic uniform operating cases, not site extremes",
     }
-    operating = assess_equipment(operating_value, basis)["pv_electrical"]["operating"]
+    operating = json_object(assess_equipment(operating_value, basis))["pv_electrical"][
+        "operating"
+    ]
     model = operating["model"]
     assert model["status"] == "available"
     assert len(operating["points"]) == 4
@@ -2279,7 +2395,7 @@ def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
             "input_sha256": "b" * 64,
             "generated_at": "2026-10-26T00:00:00+00:00",
             "source_runs": [],
-            "equipment": assess_equipment(operating_value, basis),
+            "equipment": json_object(assess_equipment(operating_value, basis)),
         }
     )
     assert any(section.id == "pv-operating" for section in presentation.sections)
@@ -2291,7 +2407,9 @@ def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
     assert op_checks["pv_hot_current:1"]["actual"] < op_checks["pv_hot_isc:1"]["actual"]
     invalid_conditions = copy.deepcopy(operating_value)
     invalid_conditions["pv_string_plan"]["operating_conditions"]["hot_cell_c"] = 100
-    outside = assess_equipment(invalid_conditions, basis)["pv_electrical"]["operating"]
+    outside = json_object(assess_equipment(invalid_conditions, basis))["pv_electrical"][
+        "operating"
+    ]
     assert outside["points"] == []
     assert (
         next(c for c in outside["checks"] if c["id"] == "pv_operating_conditions")[
@@ -2314,12 +2432,12 @@ def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
             ),
         )
         assert (
-            pv_iv_model.derive_iv_model(compile_facts(reference))["status"]
+            pv_iv_model.derive_iv_model(json_object(compile_facts(reference)))["status"]
             == "unavailable"
         )
     without_target = copy.deepcopy(value)
     without_target["equipment_selection"]["pv_dc_kw"] = None
-    no_target_assessment = assess_equipment(without_target, basis)
+    no_target_assessment = json_object(assess_equipment(without_target, basis))
     assert no_target_assessment["pv_electrical"]["strings"] == result["strings"]
     assert (
         next(
@@ -2331,7 +2449,7 @@ def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
     )
     saved = copy.deepcopy(value)
     saved["pv_string_plan"]["minimum_ambient_c"] = None
-    unknown = assess_pv_strings(saved, basis)
+    unknown = json_object(assess_pv_strings(saved, basis))
     assert (
         next(c for c in unknown["checks"] if c["id"] == "pv_cold_voc:s_a")["status"]
         == "unresolved"
@@ -2343,4 +2461,4 @@ def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
     saved = copy.deepcopy(value)
     saved["geometry"]["arrays"][0]["excluded_slots"] = ["0:0"]
     with pytest.raises(InvalidInput, match="removed or excluded"):
-        assess_pv_strings(saved, basis)
+        json_object(assess_pv_strings(saved, basis))

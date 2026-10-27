@@ -2649,28 +2649,27 @@ export function App( { config }: { config: GenieConfig } ) {
 								</button>
 							</div>
 						) : null }
-						{ ! historyView ? (
-							page.planning_project_id ? (
-								<p
-									className="linker-genie-app__context-note"
-									role="status"
-								>
-									<strong>{ page.title }</strong>
-									{ ' · ' }
-									{ page.planning_unsaved
-										? __(
-												'Save your changes so Genie can read the updated project.',
+						{ ! historyView && page.planning_project_id ? (
+							<p
+								className="linker-genie-app__context-note"
+								role="status"
+							>
+								<strong>{ page.title }</strong>
+								{ ' · ' }
+								{ page.planning_unsaved
+									? __(
+											'Save your changes so Genie can read the updated project.',
+											'linker-tools'
+										)
+									: sprintf(
+											/* translators: %d is the saved planning input revision. */
+											__(
+												'Saved project · revision %d',
 												'linker-tools'
-											)
-										: sprintf(
-												__(
-													'Saved project · revision %d',
-													'linker-tools'
-												),
-												page.planning_revision ?? 0
-											) }
-								</p>
-							) : null
+											),
+											page.planning_revision ?? 0
+										) }
+							</p>
 						) : null }
 						{ ! historyView ? (
 							<form

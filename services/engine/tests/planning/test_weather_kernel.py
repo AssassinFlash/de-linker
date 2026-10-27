@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import sqlite3
+from importlib.metadata import version as distribution_version
 from pathlib import Path
 
 import pytest
@@ -11,11 +12,14 @@ from fastapi.testclient import TestClient
 
 from linker_engine.planning import runtime_snapshot
 from linker_engine.planning.assets import Assets
-from linker_engine.planning.canonical import Object, encode
+from linker_engine.planning.canonical import encode
 from linker_engine.planning.energy_kernel import EnergyKernel
 from linker_engine.planning.energy_service import EnergyService
 from linker_engine.planning.errors import InvalidInput, LeaseLost, NotFound
-from linker_engine.planning.execution_registry import service_registry
+from linker_engine.planning.execution_registry import (
+    ExecutionRegistry,
+    service_registry,
+)
 from linker_engine.planning.http_app import HttpLimits, create_private_app
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.pv_preparation import (
@@ -24,7 +28,7 @@ from linker_engine.planning.pv_preparation import (
     check_pv_preparation,
 )
 from linker_engine.planning.pvgis_http_transfer import PvgisHttpTransfer
-from linker_engine.planning.records import Actor
+from linker_engine.planning.records import Actor, Context, Run
 from linker_engine.planning.weather_journal import WeatherJournal
 from linker_engine.planning.weather_kernel import WeatherKernel
 from linker_engine.planning.weather_service import WeatherService
@@ -32,7 +36,7 @@ from linker_engine.planning.weather_status import weather_status
 from linker_engine.planning.worker import Control, Worker
 from linker_engine.planning.workspace import Workspace
 
-from .conftest import Clock
+from .conftest import Clock, FixtureObject, json_object
 from .test_energy_kernel import TOLERANCE, create_scenario
 from .test_official_weather import Reply, SequenceAdapter, plan
 from .test_private_http import TOKEN, headers
@@ -48,7 +52,7 @@ from .test_worker_host import (
 )
 
 
-def source_inputs() -> Object:
+def source_inputs() -> FixtureObject:
     p = plan()
     return {
         "weather_acquisition": {
@@ -63,7 +67,9 @@ def valid_adapter() -> SequenceAdapter:
     return SequenceAdapter(Reply(200, raw()))
 
 
-def services(workspace: Workspace, adapter: SequenceAdapter):
+def services(
+    workspace: Workspace, adapter: SequenceAdapter
+) -> tuple[WeatherService, EnergyService]:
     weather = WeatherService(
         workspace,
         WeatherKernel(
@@ -81,7 +87,7 @@ def services(workspace: Workspace, adapter: SequenceAdapter):
     return weather, energy
 
 
-def worker(workspace: Workspace, registry):
+def worker(workspace: Workspace, registry: ExecutionRegistry) -> Worker:
     return Worker(
         Jobs(workspace),
         "weather-integration",
@@ -120,18 +126,24 @@ def test_shared_registry_acquires_source_then_explicit_saved_selection_prepares_
     run = weather.evaluate(owner, roof.id, roof.revision, key="acquire")
     assert adapter.calls == [] and asset_count(workspace) == 0
     assert (
-        weather_status(workspace, owner, run.id)["acquisition_state"] == "not_started"
+        json_object(weather_status(workspace, owner, run.id))["acquisition_state"]
+        == "not_started"
     )
     assert worker(workspace, registry).run_once()
     completed = workspace.run(owner, run.id)
     assert completed.state == "succeeded" and completed.result is not None
-    source_id = completed.result["prepared_asset"]["id"]
+    prepared = json_object(completed.result)["prepared_asset"]
+    assert isinstance(prepared, dict)
+    source_id = prepared["id"]
+    assert isinstance(source_id, str)
     source = Assets(workspace).get(owner, roof.id, source_id)
     assert Assets(workspace).content(owner, roof.id, source_id) == raw()
-    assert source.metadata["weather"]["interval_count"] == 8760
+    weather_metadata = json_object(source.metadata)["weather"]
+    assert isinstance(weather_metadata, dict)
+    assert weather_metadata["interval_count"] == 8760
     assert workspace.get(owner, roof.id).revision == roof.revision
     assert "pv_preparation" not in workspace.get(owner, roof.id).inputs
-    selected = {
+    selected: FixtureObject = {
         **roof.inputs,
         "pv_preparation": {"schema_version": 1, "weather_asset_id": source_id},
     }
@@ -142,10 +154,10 @@ def test_shared_registry_acquires_source_then_explicit_saved_selection_prepares_
     pv_run = pv.evaluate(owner, roof.id, saved.revision, key="prepare")
     assert worker(workspace, registry).run_once()
     result = workspace.run(owner, pv_run.id)
-    assert (
-        result.state == "succeeded"
-        and result.result["profile_summary"]["interval_count"] == 8760
-    )
+    assert result.state == "succeeded" and result.result is not None
+    summary = json_object(result.result)["profile_summary"]
+    assert isinstance(summary, dict)
+    assert summary["interval_count"] == 8760
     assert len(adapter.calls) == 1 and all(
         call.method == "GET" for call in adapter.calls
     )
@@ -233,7 +245,7 @@ def test_new_request_cannot_silently_use_an_old_selected_weather_source(
     weather, energy = services(workspace, adapter)
     run = weather.evaluate(owner, project.id, 1, key="acquire")
     worker(workspace, service_registry(energy, None, weather)).run_once()
-    source_id = workspace.run(owner, run.id).result["prepared_asset"]["id"]
+    source_id = json_object(workspace.run(owner, run.id).result)["prepared_asset"]["id"]
     changed = json.loads(encode(source_inputs()))
     changed["weather_acquisition"]["request"]["latitude_deg"] = 53
     changed["pv_preparation"] = {"schema_version": 1, "weather_asset_id": source_id}
@@ -327,7 +339,7 @@ def test_private_queue_receipt_status_and_disabled_history_use_no_provider_on_ht
 def test_one_registry_executes_energy_and_weather_without_claiming_other_runtime(
     workspace: Workspace,
     owner: Actor,
-    context,
+    context: Context,
 ) -> None:
     project = workspace.create(owner, "Weather", source_inputs(), key="project")
     adapter = valid_adapter()
@@ -360,13 +372,13 @@ def test_guest_transfer_keeps_pending_source_and_completed_asset_with_project(
     workspace.claim_guest(guest, user, project.id, key="claim")
     assert worker(workspace, service_registry(energy, None, weather)).run_once()
     result = workspace.run(user, run.id)
-    source_id = result.result["prepared_asset"]["id"]
+    source_id = json_object(result.result)["prepared_asset"]["id"]
     assert Assets(workspace).content(user, project.id, source_id) == raw()
     assert (
         WeatherJournal(workspace).view(user, run.id)["acquisition_state"] == "captured"
     )
     with pytest.raises(NotFound):
-        weather_status(workspace, guest, run.id)
+        json_object(weather_status(workspace, guest, run.id))
 
 
 def test_new_saved_request_does_not_replace_frozen_historical_weather_or_select_it(
@@ -382,7 +394,7 @@ def test_new_saved_request_does_not_replace_frozen_historical_weather_or_select_
     assert worker(workspace, service_registry(energy, None, weather)).run_once()
     historical = workspace.run(owner, run.id)
     assert historical.state == "succeeded" and not historical.is_current
-    source = historical.result["prepared_asset"]["metadata"]
+    source = json_object(historical.result)["prepared_asset"]["metadata"]
     assert source["weather_request"]["latitude_deg"] == 52.52
     latest = workspace.get(owner, project.id)
     assert latest.revision == 2 and "pv_preparation" not in latest.inputs
@@ -438,7 +450,7 @@ def test_independent_managed_process_resumes_weather_capture_then_runs_energy_an
         finished = completed(workspace, owner, source_run)
         assert finished.state == "succeeded"
         assert completed(workspace, owner, energy_run).state == "succeeded"
-        source_id = finished.result["prepared_asset"]["id"]
+        source_id = json_object(finished.result)["prepared_asset"]["id"]
         assert Assets(workspace).content(owner, roof.id, source_id) == raw()
         saved = workspace.revise(
             owner,
@@ -478,7 +490,7 @@ def test_installed_transport_version_changes_execution_identity_and_leaves_old_w
     adapter = valid_adapter()
     original, energy = services(workspace, adapter)
     run = original.evaluate(owner, project.id, 1, key="weather")
-    version = runtime_snapshot.version
+    version = distribution_version
     monkeypatch.setattr(
         runtime_snapshot,
         "version",
@@ -508,7 +520,7 @@ def test_status_does_not_turn_ownership_denial_during_guest_transfer_into_not_st
     original = workspace.run
     calls = 0
 
-    def transfer_before_second_owned_read(actor: Actor, run_id: str):
+    def transfer_before_second_owned_read(actor: Actor, run_id: str) -> Run:
         nonlocal calls
         calls += 1
         if calls == 2:

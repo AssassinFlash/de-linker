@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import sqlite3
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -15,6 +16,8 @@ from linker_engine.planning.records import Actor, Context
 from linker_engine.planning.schema import SCHEMA_VERSION
 from linker_engine.planning.storage import Database
 from linker_engine.planning.workspace import Workspace
+
+from .conftest import FixtureObject
 
 LEGACY_JOBS = """
 CREATE TABLE jobs_old (
@@ -62,7 +65,7 @@ def legacy(path: Path, *, version: int = 2) -> None:
         connection.close()
 
 
-def rows(path: Path) -> dict:
+def rows(path: Path) -> FixtureObject:
     connection = sqlite3.connect(path)
     try:
         return {
@@ -121,12 +124,12 @@ def test_failed_migration_after_parent_drop_rolls_back_original_version_and_rows
     before = rows(workspace.database.path)
 
     class FailedConnection(sqlite3.Connection):
-        def execute(self, sql: str, parameters=()):
+        def execute(self, sql: str, parameters: Any = ()) -> sqlite3.Cursor:
             if sql == "ALTER TABLE jobs_upgrade RENAME TO jobs":
                 raise sqlite3.OperationalError("fixture after parent drop")
             return super().execute(sql, parameters)
 
-    def failing_open(self):
+    def failing_open(self: Database) -> sqlite3.Connection:
         connection = sqlite3.connect(
             self.path, isolation_level=None, factory=FailedConnection
         )

@@ -13,6 +13,7 @@ from conftest import publication_manifest
 from fastapi.testclient import TestClient
 from pypdf import PdfReader
 
+from linker_engine.engine import Engine
 from linker_engine.planning.assets import Assets
 from linker_engine.planning.canonical import digest, encode
 from linker_engine.planning.energy_kernel import EnergyKernel
@@ -26,13 +27,16 @@ from linker_engine.planning.installation_inputs import InstallationInputs
 from linker_engine.planning.installation_takeoff import product_basis, route_takeoff
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.product_sources import ProductSources
+from linker_engine.planning.records import Actor
 from linker_engine.planning.report_inputs import ReportOptions
 from linker_engine.planning.report_kernel import ReportKernel, ReportService
 from linker_engine.planning.report_sources import ReportInputsChanged, report_sources
 from linker_engine.planning.worker import Worker
+from linker_engine.planning.workspace import Workspace
 from linker_engine.products import Products
 from linker_engine.publication import Publication
 
+from .conftest import FixtureObject, json_object
 from .test_energy_kernel import TOLERANCE
 from .test_equipment import feed as equipment_feed  # noqa: F401
 from .test_equipment import inputs
@@ -41,12 +45,16 @@ from .test_private_http import TOKEN, headers
 
 
 def test_physical_lengths_unknowns_and_owned_frozen_exports(
-    engine, workspace, owner, request, monkeypatch
-):
+    engine: Engine,
+    workspace: Workspace,
+    owner: Actor,
+    request: pytest.FixtureRequest,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     feed = request.getfixturevalue("equipment_feed")
     feed.update(figure_projection_version=2, compatibility_origin="woocommerce")
 
-    def current(self):
+    def current(self: Publication) -> FixtureObject:
         manifest = publication_manifest(self.feed)
         for row in manifest["products"]:
             row["ready"]["engineering"] = True
@@ -59,7 +67,7 @@ def test_physical_lengths_unknowns_and_owned_frozen_exports(
         version="fixture",
     )
     sources = ProductSources(lambda: shared)
-    basis = sources.equipment_basis()
+    basis = json_object(sources.equipment_basis())
     inverter = next(p for p in basis["products"] if p["id"] == 4107)
     geometry = fixture()
     for key in (
@@ -72,11 +80,11 @@ def test_physical_lengths_unknowns_and_owned_frozen_exports(
     ):
         geometry[key] = []
 
-    def point(e, n, h):
+    def point(e: float, n: float, h: float) -> dict[str, float]:
         return {"east_m": e, "north_m": n, "height_m": h}
 
     start, end = point(0, 0, 1), point(6, 8, 5)
-    plan = {
+    plan: FixtureObject = {
         "schema_version": 1,
         "geometry_sha256": digest(encode(geometry)),
         "instances": [
@@ -127,9 +135,9 @@ def test_physical_lengths_unknowns_and_owned_frozen_exports(
         ],
     }
     saved = {**inputs(feed, 3), "geometry": geometry, "installation": plan}
-    selected = product_basis(InstallationInputs.read(plan), basis)
+    selected = json_object(product_basis(InstallationInputs.read(plan), basis))
     assert [p["product_id"] for p in selected["publication"]["products"]] == [4107]
-    output = route_takeoff(saved, basis)
+    output = json_object(route_takeoff(saved, basis))
     assert len(output["instances"]) == 2 and output["qualified"] is False
     assert [
         (c["plan_length_m"], c["route_length_m"], c["quantity"])
@@ -154,7 +162,7 @@ def test_physical_lengths_unknowns_and_owned_frozen_exports(
             draft["installation"][field] = value
         else:
             draft["installation"]["routes"][0][field] = value
-        rows = route_takeoff(draft, basis)["cables"]
+        rows = json_object(route_takeoff(draft, basis))["cables"]
         assert all(c["quantity"] is None and reason in c["reasons"] for c in rows), (
             field,
             rows,
@@ -163,7 +171,7 @@ def test_physical_lengths_unknowns_and_owned_frozen_exports(
     unsafe["installation"]["routes"][0]["source_id"] = "absent"
     unsafe["geometry"]["sources"][0]["permissions"]["export"] = "prohibited"
     assert {"source_missing", "source_export_unconfirmed"} <= set(
-        route_takeoff(unsafe, basis)["cables"][0]["reasons"]
+        json_object(route_takeoff(unsafe, basis))["cables"][0]["reasons"]
     )
     false_fact = copy.deepcopy(plan)
     false_fact["instances"][0]["rated_kw"] = 10
@@ -172,7 +180,7 @@ def test_physical_lengths_unknowns_and_owned_frozen_exports(
     stale = copy.deepcopy(plan)
     stale["instances"][0]["product_revision"] = "a" * 64
     with pytest.raises(ProductEvidenceChanged):
-        product_basis(InstallationInputs.read(stale), basis)
+        json_object(product_basis(InstallationInputs.read(stale), basis))
 
     project = workspace.create(
         owner, "Physical routing fixture", saved, key="route-project"
@@ -196,14 +204,14 @@ def test_physical_lengths_unknowns_and_owned_frozen_exports(
     )
     checked = equipment.evaluate(owner, project.id, 1, key="one-inverter-assessment")
     assert worker.run_once() and workspace.run(owner, checked.id).state == "succeeded"
-    legacy_options = {
+    legacy_options: FixtureObject = {
         "locale": "en",
         "energy_run_id": None,
         "pv_run_id": None,
         "equipment_run_id": None,
         "logo": None,
     }
-    assert ReportOptions.read(legacy_options).intent() == {
+    assert json_object(ReportOptions.read(legacy_options).intent()) == {
         "kind": "planning_report_v1",
         "options_sha256": digest(encode(legacy_options)),
     }
@@ -211,15 +219,17 @@ def test_physical_lengths_unknowns_and_owned_frozen_exports(
         {**legacy_options, "equipment_run_id": checked.id, "include_installation": True}
     )
     with pytest.raises(ReportInputsChanged):
-        report_sources(workspace, sources, owner, project, mixed)
+        json_object(report_sources(workspace, sources, owner, project, mixed))
     unsafe_project = replace(project, inputs=unsafe)
     with pytest.raises(InvalidInput, match="export permission"):
-        report_sources(
-            workspace,
-            sources,
-            owner,
-            unsafe_project,
-            ReportOptions.read({**legacy_options, "include_installation": True}),
+        json_object(
+            report_sources(
+                workspace,
+                sources,
+                owner,
+                unsafe_project,
+                ReportOptions.read({**legacy_options, "include_installation": True}),
+            )
         )
     app = create_private_app(
         workspace,
@@ -267,9 +277,9 @@ def test_physical_lengths_unknowns_and_owned_frozen_exports(
             assert worker.run_once()
             run = workspace.run(owner, accepted.json()["id"])
             assert run.state == "succeeded", run.error
-            result = run.result
+            result = json_object(run.result)
             assert not any(s["id"] == "basis" for s in result["report"]["sections"])
-            materials = workspace.blobs.object(result["materials_sha256"])
+            materials = json_object(workspace.blobs.object(result["materials_sha256"]))
             assert (
                 materials["kind"] == "project_materials_v3"
                 and len(materials["lines"]) == 3

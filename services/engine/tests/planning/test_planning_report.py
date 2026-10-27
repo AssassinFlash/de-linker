@@ -7,6 +7,7 @@ import csv
 import io
 from dataclasses import replace
 from types import SimpleNamespace
+from typing import Any
 
 import pytest
 from conftest import publication_manifest
@@ -31,11 +32,12 @@ from linker_engine.planning.project_materials import materials_csv
 from linker_engine.planning.records import Actor
 from linker_engine.planning.report_kernel import ReportKernel, ReportService
 from linker_engine.planning.report_sources import renew_module_permission
-from linker_engine.planning.worker import Worker
+from linker_engine.planning.worker import Control, Worker
 from linker_engine.planning.workspace import Workspace
 from linker_engine.products import Products
 from linker_engine.publication import Publication, PublicationUnavailable
 
+from .conftest import FixtureObject, json_object
 from .test_energy_kernel import TOLERANCE
 from .test_equipment import (
     feed as equipment_feed,  # noqa: F401 -- Shared cited fixture, registered under this name.
@@ -53,19 +55,23 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
 ) -> None:
     owner = Actor("guest", "report:guest")
 
-    def caller_headers():
+    def caller_headers() -> dict[str, str]:
         return {
             **headers(),
             "X-Linker-Planner-Principal-Kind": owner.kind,
             "X-Linker-Planner-Principal-Subject": owner.subject,
         }
 
-    old_proof = {"schema_version": 1, "module": {"frozen_fact": "same"}}
-    current_proof = {**old_proof, "publication": {"revision": "renewed"}}
-    assert renew_module_permission(old_proof, current_proof) == current_proof
+    old_proof: FixtureObject = {"schema_version": 1, "module": {"frozen_fact": "same"}}
+    current_proof: FixtureObject = {**old_proof, "publication": {"revision": "renewed"}}
+    assert (
+        json_object(renew_module_permission(old_proof, current_proof)) == current_proof
+    )
     with pytest.raises(ProductEvidenceChanged):
-        renew_module_permission(
-            old_proof, {**current_proof, "module": {"frozen_fact": "changed"}}
+        json_object(
+            renew_module_permission(
+                old_proof, {**current_proof, "module": {"frozen_fact": "changed"}}
+            )
         )
     feed = request.getfixturevalue("equipment_feed")
     feed.update(figure_projection_version=2, compatibility_origin="woocommerce")
@@ -109,7 +115,7 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
     offline = False
     withdrawn = False
 
-    def current(self):
+    def current(self: Publication) -> FixtureObject:
         if offline:
             raise PublicationUnavailable("fixture authority offline")
         manifest = publication_manifest(self.feed)
@@ -128,8 +134,13 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
     )
     original_compute = EquipmentKernel.compute
 
-    def historical_bom(self, *args):
-        output = original_compute(self, *args)
+    def historical_bom(
+        self: EquipmentKernel,
+        inputs: FixtureObject,
+        basis: FixtureObject,
+        control: Control,
+    ) -> FixtureObject:
+        output = json_object(original_compute(self, inputs, basis, control))
         for line in output["assessment"]["provisional_bill_of_materials"]:
             for field in ("brand", "model", "sku"):
                 line.pop(field, None)
@@ -184,16 +195,16 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
         assert worker.run_once()
         run = workspace.run(owner, accepted.json()["id"])
         assert run.state == "succeeded", run.error
-        result = run.result
+        result = json_object(run.result)
         assert result is not None
         assert result["report_sha256"] == digest(encode(result["report"]))
         asset = result["prepared_asset"]
-        materials = workspace.blobs.object(result["materials_sha256"])
+        materials = json_object(workspace.blobs.object(result["materials_sha256"]))
         assert (
             materials
-            == workspace.blobs.object(result["pinned_assets"]["report.source"])[
-                "materials"
-            ]
+            == json_object(
+                workspace.blobs.object(result["pinned_assets"]["report.source"])
+            )["materials"]
         )
         csv_asset = result["prepared_attachments"]["bill_of_materials_csv"]
         original_csv = Assets(workspace).content(owner, project.id, csv_asset["id"])
@@ -213,7 +224,9 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
         assert all(row[9] == "pc" for row in csv_rows[1:])
         from linker_engine.planning.project_materials import material_quantity
 
-        assert material_quantity({"quantity": 0.00001, "unit": "m"}, "en") == "0.00001 m"
+        assert (
+            material_quantity({"quantity": 0.00001, "unit": "m"}, "en") == "0.00001 m"
+        )
         assert material_quantity({"quantity": 1234.5, "unit": "m"}, "de") == "1.234,5 m"
         unsafe = copy.deepcopy(materials)
         unsafe["lines"][0]["brand"], unsafe["lines"][0]["model"] = "", " =1+1"
@@ -299,9 +312,10 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
             "linker_engine.planning.report_kernel", fromlist=["render"]
         ).render
 
-        def withdraw_during_render(*args, **kwargs):
+        def withdraw_during_render(*args: Any, **kwargs: Any) -> bytes:
             nonlocal withdrawn
             output = original(*args, **kwargs)
+            assert isinstance(output, bytes)
             withdrawn = True
             return output
 
@@ -318,7 +332,7 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
         failed = workspace.run(owner, second.json()["id"])
         assert (
             failed.state == "failed"
-            and failed.error["code"] == "product_evidence_changed"
+            and json_object(failed.error)["code"] == "product_evidence_changed"
         )
         with workspace.database.read() as connection:
             assert (

@@ -30,13 +30,15 @@ from linker_engine.planning.records import Actor, Project
 from linker_engine.planning.worker import Worker
 from linker_engine.planning.workspace import Workspace
 
+from .conftest import FixtureObject, json_object
+
 TOLERANCE = Tolerance(1e-7, 1e-7, 1e-9)
-PROVENANCE: Object = {
+PROVENANCE: FixtureObject = {
     "label": "Analytic two-hour fixture; no real customer, weather or SKU",
     "basis": "synthetic_fixture",
     "rights_basis": "created by this test; permanent private retention allowed",
 }
-BATTERY: Object = {
+BATTERY: FixtureObject = {
     "schema_version": 1,
     "model": "constant_window_single_ac_bus_v1",
     "parameter_basis": "explicit_scenario",
@@ -131,7 +133,7 @@ def create_scenario(
                 "export_cap_kw": 0,
             }
         )
-    inputs: Object = {
+    inputs: FixtureObject = {
         "site": {"country": "FR"},
         "energy_replay": {
             "schema_version": 1,
@@ -166,7 +168,7 @@ def worker(workspace: Workspace, kernel: EnergyKernel) -> Worker:
     )
 
 
-def object_field(document: Object, name: str) -> Object:
+def object_field(document: FixtureObject, name: str) -> FixtureObject:
     field = document[name]
     assert isinstance(field, dict)
     return field
@@ -191,7 +193,7 @@ def test_real_csv_to_durable_run_keeps_analytic_energy_and_frozen_history(
     assert worker(workspace, kernel).run_once()
     result_run = workspace.run(owner, run.id)
     assert result_run.state == "succeeded" and not result_run.is_current
-    result = result_run.result
+    result = json_object(result_run.result)
     assert result is not None and result["scenario_constraint_status"] == "satisfied"
     assert result["revision"] == 2 and result["input_sha256"] == project.input_sha256
     energy = object_field(result, "metrics")
@@ -203,12 +205,14 @@ def test_real_csv_to_durable_run_keeps_analytic_energy_and_frozen_history(
     assert object_field(result, "country_assessment")["status"] == "not_assessed"
     trace_hash = result["trace_sha256"]
     assert isinstance(trace_hash, str)
-    trace = workspace.blobs.object(trace_hash)
+    trace = json_object(workspace.blobs.object(trace_hash))
     assert trace["manifest_sha256"] == run.manifest_sha256
     assert isinstance(trace["flows"], list) and len(trace["flows"]) == 2
     reopened = Workspace(workspace.database.path.parent)
     assert reopened.run(owner, run.id).result == result
-    assert reopened.get(owner, project.id).inputs["site"] == {"country": "FR"}
+    assert json_object(reopened.get(owner, project.id).inputs)["site"] == {
+        "country": "FR"
+    }
 
 
 def test_replay_uses_imported_tzif_without_installed_host_timezone(
@@ -233,7 +237,7 @@ def test_operating_boundary_splits_hourly_means_without_claiming_new_measurement
         owner, project.id, 2, key="run"
     )
     assert worker(workspace, kernel).run_once()
-    result = workspace.run(owner, run.id).result
+    result = json_object(workspace.run(owner, run.id).result)
     assert result is not None and result["interval_count"] == 3
     energy = object_field(result, "metrics")
     assert energy["load_measurement_scope"] == "mixed"
@@ -546,7 +550,7 @@ def test_backup_detects_missing_profile_child_before_any_evaluation(
 ) -> None:
     project = workspace.create(owner, "Not yet evaluated", {}, key="new")
     asset_id = add_profile(workspace, owner, project.id, "gross_load", (2, 2))
-    metadata = Assets(workspace).get(owner, project.id, asset_id).metadata
+    metadata = json_object(Assets(workspace).get(owner, project.id, asset_id).metadata)
     child = metadata["timezone_rules_sha256"]
     assert isinstance(child, str)
     (workspace.blobs.directory / child[:2] / child).unlink()

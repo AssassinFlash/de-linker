@@ -4,12 +4,30 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, cast
 
 import pytest
 
 from linker_engine.planning.canonical import digest
+from linker_engine.planning.power_series import MEASUREMENTS, Measurement
 from linker_engine.planning.records import Actor, Context
 from linker_engine.planning.workspace import Workspace
+
+# Mutable protocol fixtures include deliberate invalid values. Their assertions
+# inspect the serialized fields; production retains its stricter Json model.
+type FixtureObject = dict[str, Any]
+
+
+def json_object(value: object) -> FixtureObject:
+    """Read a real serialized result before assertions on its dynamic fields."""
+    assert isinstance(value, dict)
+    assert all(isinstance(key, str) for key in value)
+    return value
+
+
+def mapping_role(value: str) -> Measurement:
+    assert value in MEASUREMENTS
+    return cast(Measurement, value)
 
 
 @dataclass

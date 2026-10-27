@@ -15,7 +15,7 @@ from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.records import Actor, Context, Lease, Run
 from linker_engine.planning.workspace import Workspace
 
-from .conftest import Clock
+from .conftest import Clock, FixtureObject
 
 
 @pytest.fixture
@@ -131,7 +131,7 @@ def test_related_report_files_publish_and_replay_atomically(
     workspace: Workspace, owner: Actor, run: Run
 ) -> None:
     jobs, lease = Jobs(workspace), take(Jobs(workspace))
-    metadata = {
+    metadata: FixtureObject = {
         "retention": "permanent",
         "provenance": {
             "label": "Owned report",

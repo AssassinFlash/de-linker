@@ -6,20 +6,28 @@ from datetime import timedelta
 import pytest
 from fastapi.testclient import TestClient
 
+from linker_engine.engine import Engine
 from linker_engine.planning.dispatch_frame import Command
 from linker_engine.planning.energy_origins import EnergyOrigins
 from linker_engine.planning.interval import Interval
 from linker_engine.planning.plant_energy_checks import verify
 from linker_engine.planning.plant_energy_dispatch import replay, self_consumption, step
 from linker_engine.planning.plant_energy_model import PlantFrame, StorageUnit
+from linker_engine.planning.records import Actor
+from linker_engine.planning.workspace import Workspace
 
+from .conftest import FixtureObject, json_object, mapping_role
 from .test_dispatch import TOLERANCE, battery, frame
 from .test_equipment import feed as feed
 from .test_equipment import plant_inputs, prepared_dc_fixture_source
 
 
 def test_native_joint_parameters_run_trace_and_report_share_one_owned_plant(
-    feed, engine, workspace, owner, monkeypatch
+    feed: FixtureObject,
+    engine: Engine,
+    workspace: Workspace,
+    owner: Actor,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     from linker_engine.planning.energy_kernel import EnergyKernel
     from linker_engine.planning.energy_service import EnergyService
@@ -37,7 +45,7 @@ def test_native_joint_parameters_run_trace_and_report_share_one_owned_plant(
         feed, engine, monkeypatch, reverse_ac_kw=5
     )
     project = create_scenario(workspace, owner)
-    previous = project.inputs["energy_replay"]
+    previous = json_object(project.inputs)["energy_replay"]
     plant = plant_inputs(feed, coordinated=False)
     plant["requirements"]["pv_dc_kw"] = 0
     for unit in plant["units"]:
@@ -165,7 +173,7 @@ def test_native_joint_parameters_run_trace_and_report_share_one_owned_plant(
         assert executor.run_once()
         run = workspace.run(owner, rid)
         assert run.state == "succeeded", run.error
-        result = run.result
+        result = json_object(run.result)
         assert result["kind"] == joint.kind
         assert result["verification"]["physical_passed"]
         assert result["metrics"]["grid_import_kwh"] == pytest.approx(0.38)
@@ -206,7 +214,7 @@ def test_native_joint_parameters_run_trace_and_report_share_one_owned_plant(
         assert executor.run_once()
         report = workspace.run(owner, report_id)
         assert report.state == "succeeded", report.error
-        assert report.result["prepared_asset"]["content_sha256"]
+        assert json_object(report.result)["prepared_asset"]["content_sha256"]
 
         # The new model must be admitted by the existing comparison consumer;
         # no new physical replay is needed to read its frozen state keys.
@@ -215,9 +223,9 @@ def test_native_joint_parameters_run_trace_and_report_share_one_owned_plant(
         from linker_engine.planning.plant_energy_inputs import PlantEnergyInputs
 
         side = comparison_side(workspace, owner, project.id, rid)
-        assert set(side.inventory_key()) == {"a", "b"}
-        assert side.reference()["coupling"] == "plant_ac"
-        assert side.reference()["usable_window_kwh"] > 0
+        assert set(json_object(side.inventory_key())) == {"a", "b"}
+        assert json_object(side.reference())["coupling"] == "plant_ac"
+        assert json_object(side.reference())["usable_window_kwh"] > 0
         wrong_unit = {
             **scenario,
             "units": [
@@ -268,17 +276,21 @@ def test_native_joint_parameters_run_trace_and_report_share_one_owned_plant(
             Path(capture).write_bytes(
                 encode(
                     {
-                        "run": run_view(run),
-                        "project": project_view(project),
+                        "run": json_object(run_view(run)),
+                        "project": json_object(project_view(project)),
                         "trace": trace.json(),
-                        "report": run_view(report),
+                        "report": json_object(run_view(report)),
                     }
                 )
             )
 
 
 def test_native_dc_plant_projects_owned_pv_groups_and_keeps_report_stages(
-    feed, engine, workspace, owner, monkeypatch
+    feed: FixtureObject,
+    engine: Engine,
+    workspace: Workspace,
+    owner: Actor,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """One two-hour producer/command/worker/trace/report path, reused by the UI."""
     import os
@@ -313,7 +325,10 @@ def test_native_dc_plant_projects_owned_pv_groups_and_keeps_report_stages(
     layout, parameters = geometry(), parameter_document()
     module_id = layout["module_specs"][0]["id"]
     layout["module_specs"] = [
-        {**source.module_basis()["module"]["specification"], "id": module_id}
+        {
+            **json_object(source.module_basis())["module"]["specification"],
+            "id": module_id,
+        }
     ]
     for identifier, position in (("dc-b", 10), ("ac-pv", 14)):
         layout["arrays"].append(
@@ -351,7 +366,7 @@ def test_native_dc_plant_projects_owned_pv_groups_and_keeps_report_stages(
         source=SeriesSource(raw_hash, "synthetic", "UTC", 3600, encode(PROVENANCE)),
     )
     generated = generate_pv(layout, meteo, declared, max_array_steps=10)
-    witness = generated.witness()
+    witness = json_object(generated.witness())
     array_power = {row["id"]: row["stc_power_w"] / 1000 for row in witness["arrays"]}
     plant = plant_inputs(feed, coordinated=False)
     groups = {"a": declared.converters[0].id, "b": "dc-b"}
@@ -382,8 +397,10 @@ def test_native_dc_plant_projects_owned_pv_groups_and_keeps_report_stages(
             "retention": "permanent",
             "provenance": PROVENANCE,
             "geometry_sha256": digest(encode(layout)),
-            "parameters_sha256": digest(encode(project.inputs["pv_generation"])),
-            "woo_module_inputs": source.module_basis(),
+            "parameters_sha256": digest(
+                encode(json_object(project.inputs)["pv_generation"])
+            ),
+            "woo_module_inputs": json_object(source.module_basis()),
             "dependencies": {
                 "pv_model_inputs": workspace.blobs.put(generated.inputs_json),
                 "pv_model_witness": workspace.blobs.put(generated.witness_json),
@@ -409,7 +426,7 @@ def test_native_dc_plant_projects_owned_pv_groups_and_keeps_report_stages(
                 CsvMapping(
                     "time",
                     "power",
-                    role,
+                    mapping_role(role),
                     "interval_average_kw",
                     "start",
                     "UTC",
@@ -521,7 +538,7 @@ def test_native_dc_plant_projects_owned_pv_groups_and_keeps_report_stages(
             ],
             "controller": "local_dc_then_proportional_ac_self_consumption_v1",
         }
-        inputs = {
+        inputs: FixtureObject = {
             **project.inputs,
             "energy_plant": scenario,
             "profile_selections": {
@@ -547,9 +564,9 @@ def test_native_dc_plant_projects_owned_pv_groups_and_keeps_report_stages(
         assert executor.run_once()
         run = workspace.run(owner, response.json()["id"])
         assert run.state == "succeeded", run.error
-        assert run.result["metrics"]["solar_load_kwh"] > 0
-        assert run.result["metrics"]["pv_generated_dc_kwh"] > 0
-        assert run.result["metrics"]["pv_input_self_use"] == {
+        assert json_object(run.result)["metrics"]["solar_load_kwh"] > 0
+        assert json_object(run.result)["metrics"]["pv_generated_dc_kwh"] > 0
+        assert json_object(run.result)["metrics"]["pv_input_self_use"] == {
             "value": None,
             "undefined_reason": "mixed_pv_measurement_stages",
         }
@@ -595,16 +612,16 @@ def test_native_dc_plant_projects_owned_pv_groups_and_keeps_report_stages(
         from linker_engine.planning.energy_comparison import comparison_side
 
         side = comparison_side(workspace, owner, project.id, run.id)
-        assert side.joint and set(side.inventory_key()) == {"a", "b"}
+        assert side.joint and set(json_object(side.inventory_key())) == {"a", "b"}
         capture = os.environ.get("PLANNER_DC_CLIENT_FIXTURE")
         if capture:
             Path(capture).write_bytes(
                 encode(
                     {
-                        "project": project_view(project),
-                        "run": run_view(run),
+                        "project": json_object(project_view(project)),
+                        "run": json_object(run_view(run)),
                         "trace": trace.json(),
-                        "report": run_view(report),
+                        "report": json_object(run_view(report)),
                     }
                 )
             )

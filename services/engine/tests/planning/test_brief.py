@@ -12,8 +12,10 @@ from linker_engine.planning.brief import PlanningBrief, brief_schema, validate_n
 from linker_engine.planning.errors import InvalidInput
 from linker_engine.planning.http_documents import ProjectCreate
 
+from .conftest import FixtureObject, json_object
 
-def incomplete_brief() -> dict[str, object]:
+
+def incomplete_brief() -> FixtureObject:
     return {
         "schema_version": 1,
         "project_use": None,
@@ -60,7 +62,7 @@ def test_annual_load_never_coerces_or_fills_missing_facts(value: object) -> None
 
 def test_timezone_and_country_are_not_selected_by_interface_language() -> None:
     brief = incomplete_brief()
-    site = dict(brief["site"])  # type: ignore[call-overload]
+    site = dict(brief["site"])
     site.update(
         country_code="NO", timezone="Europe/Oslo", latitude=59.91, longitude=10.75
     )
@@ -77,7 +79,7 @@ def test_timezone_and_country_are_not_selected_by_interface_language() -> None:
 )
 def test_host_tzif_aliases_are_not_project_iana_names(name: str) -> None:
     brief = incomplete_brief()
-    site = dict(brief["site"])  # type: ignore[call-overload]
+    site = dict(brief["site"])
     site["timezone"] = name
     brief["site"] = site
     with pytest.raises(InvalidInput, match="known IANA"):
@@ -112,4 +114,6 @@ def test_supported_command_numbers_remain_unchanged(value: int | float) -> None:
             "inputs": inputs,
         }
     )
-    assert command.inputs == inputs and type(command.inputs["n"]) is type(value)
+    assert command.inputs == inputs and type(json_object(command.inputs)["n"]) is type(
+        value
+    )

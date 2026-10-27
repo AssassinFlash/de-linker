@@ -13,11 +13,13 @@ from linker_engine.planning.errors import ServiceDraining
 from linker_engine.planning.execution_control import ExecutionControl
 from linker_engine.planning.execution_identity import EvaluationRouting, execution_key
 from linker_engine.planning.jobs import Jobs
-from linker_engine.planning.records import Actor, Context
+from linker_engine.planning.records import Actor, Context, Run
 from linker_engine.planning.workspace import Workspace
 
+from .conftest import Clock, json_object
 
-def enqueue(workspace: Workspace, owner: Actor, context: Context, name: str):
+
+def enqueue(workspace: Workspace, owner: Actor, context: Context, name: str) -> Run:
     project = workspace.create(owner, name, {"fixture_only": True}, key=name)
     return workspace.evaluate(owner, project.id, 1, context, key="run", max_attempts=2)
 
@@ -41,7 +43,7 @@ def test_matching_claim_skips_other_execution_without_spending_attempts(
     )
     foreign = enqueue(workspace, owner, other, "first-other")
     own = enqueue(workspace, owner, context, "later-matching")
-    routing = EvaluationRouting(execution_key(context.document()), 8)
+    routing = EvaluationRouting(execution_key(json_object(context.document())), 8)
     lease = Jobs(workspace).claim(
         "matching", kinds=("evaluate",), lease_seconds=30, routing=routing
     )
@@ -58,7 +60,7 @@ def test_matching_claim_skips_other_execution_without_spending_attempts(
         "other",
         kinds=("evaluate",),
         lease_seconds=30,
-        routing=EvaluationRouting(execution_key(other.document()), 8),
+        routing=EvaluationRouting(execution_key(json_object(other.document())), 8),
     )
     assert second is not None and second.run_id == foreign.id
 
@@ -67,7 +69,7 @@ def test_unindexed_v2_jobs_are_routed_in_batches_without_changing_frozen_bytes(
     workspace: Workspace,
     owner: Actor,
     context: Context,
-    clock,
+    clock: Clock,
 ) -> None:
     foreign = replace(context, code_sha256=digest(b"retained-old-release"))
     old = enqueue(workspace, owner, foreign, "old-first")
@@ -75,7 +77,7 @@ def test_unindexed_v2_jobs_are_routed_in_batches_without_changing_frozen_bytes(
     own = enqueue(workspace, owner, context, "own-last")
     with workspace.database.transaction() as connection:
         connection.execute("DELETE FROM evaluation_routes")
-    key = execution_key(context.document())
+    key = execution_key(json_object(context.document()))
     jobs = Jobs(workspace)
     assert (
         jobs.claim(
@@ -98,7 +100,7 @@ def test_unindexed_v2_jobs_are_routed_in_batches_without_changing_frozen_bytes(
 
 
 def test_unknown_cached_key_is_repaired_after_bounded_rotation_past_foreign_rows(
-    workspace: Workspace, owner: Actor, context: Context, clock
+    workspace: Workspace, owner: Actor, context: Context, clock: Clock
 ) -> None:
     other = replace(context, code_sha256=digest(b"other-retained-release"))
     foreign = []
@@ -113,7 +115,7 @@ def test_unknown_cached_key_is_repaired_after_bounded_rotation_past_foreign_rows
             (digest(b"nonexistent-worker"), own.id),
         )
     jobs = Jobs(workspace)
-    routing = EvaluationRouting(execution_key(context.document()), 1)
+    routing = EvaluationRouting(execution_key(json_object(context.document())), 1)
     for _ in range(5):
         assert (
             jobs.claim(
@@ -144,7 +146,7 @@ def test_wrong_cached_route_is_repaired_before_a_foreign_worker_can_lease_it(
 ) -> None:
     other = replace(context, parameters={"fixture_only": "other"})
     run = enqueue(workspace, owner, other, "cache-target")
-    key = execution_key(context.document())
+    key = execution_key(json_object(context.document()))
     with workspace.database.transaction() as connection:
         connection.execute("UPDATE evaluation_routes SET execution_sha256=?", (key,))
     assert (
@@ -165,7 +167,7 @@ def test_wrong_cached_route_is_repaired_before_a_foreign_worker_can_lease_it(
         "right",
         kinds=("evaluate",),
         lease_seconds=30,
-        routing=EvaluationRouting(execution_key(other.document()), 8),
+        routing=EvaluationRouting(execution_key(json_object(other.document())), 8),
     )
     assert lease is not None and lease.run_id == run.id
 
@@ -184,7 +186,9 @@ def test_missing_old_request_fails_by_name_without_claiming_another_owner(
             "current",
             kinds=("evaluate",),
             lease_seconds=30,
-            routing=EvaluationRouting(execution_key(context.document()), 8),
+            routing=EvaluationRouting(
+                execution_key(json_object(context.document())), 8
+            ),
         )
         is None
     )
@@ -229,7 +233,7 @@ def test_concurrent_admission_and_drain_have_one_transactional_order(
     project = workspace.create(owner, "Drain race fixture", {}, key="race")
     barrier = Barrier(2)
 
-    def submit():
+    def submit() -> Run | None:
         barrier.wait()
         try:
             return workspace.evaluate(
@@ -238,7 +242,7 @@ def test_concurrent_admission_and_drain_have_one_transactional_order(
         except ServiceDraining:
             return None
 
-    def drain():
+    def drain() -> None:
         barrier.wait()
         ExecutionControl(workspace).set_draining(True)
 
@@ -258,7 +262,7 @@ def test_concurrent_matching_workers_do_not_share_a_lease(
     context: Context,
 ) -> None:
     run = enqueue(workspace, owner, context, "one-lease")
-    routing = EvaluationRouting(execution_key(context.document()), 8)
+    routing = EvaluationRouting(execution_key(json_object(context.document())), 8)
     with ThreadPoolExecutor(max_workers=2) as pool:
         leases = list(
             pool.map(

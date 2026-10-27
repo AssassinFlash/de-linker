@@ -130,7 +130,11 @@ def test_parallel_limits_come_from_the_controller_documents(
     assert [
         r.max_units
         for r in scoped.requirements(
-            "GW100K-ETR-G10", "parallel_controller", operating_mode="backup", **context
+            "GW100K-ETR-G10",
+            "parallel_controller",
+            operating_mode="backup",
+            topology=context["topology"],
+            control_network=context["control_network"],
         )
     ] == [6]
     assert (

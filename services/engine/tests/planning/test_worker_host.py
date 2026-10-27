@@ -26,7 +26,9 @@ from linker_engine.planning.profile_import import ProfileImport
 from linker_engine.planning.records import Actor, Project, Run
 from linker_engine.planning.runtime_config import RuntimeConfig
 from linker_engine.planning.worker_policy import WorkerPolicy
+from linker_engine.planning.workspace import Workspace
 
+from .conftest import json_object
 from .test_energy_kernel import PROVENANCE, create_scenario, mapping
 
 
@@ -67,7 +69,7 @@ def launch(
     label: str = "a",
     ready: Path | None = None,
     mismatch: str | None = None,
-):
+) -> tuple[subprocess.Popen[bytes], Path, str]:
     root.mkdir(parents=True, exist_ok=True)
     runtime_file = root / (label + "-runtime.json")
     runtime_file.write_text(settings.model_dump_json())
@@ -140,12 +142,14 @@ def stop(process: subprocess.Popen[bytes]) -> None:
 
 def ready_generation(path: Path) -> str | None:
     try:
-        return json.loads(path.read_bytes())["generation"]
+        generation = json.loads(path.read_bytes())["generation"]
+        assert isinstance(generation, str)
+        return generation
     except (FileNotFoundError, ValueError):
         return None
 
 
-def completed(workspace, owner: Actor, run: Run) -> Run:
+def completed(workspace: Workspace, owner: Actor, run: Run) -> Run:
     return wait_for(
         lambda: workspace.run(owner, run.id),
         lambda value: value.state in ("succeeded", "failed", "cancelled"),
@@ -153,7 +157,7 @@ def completed(workspace, owner: Actor, run: Run) -> Run:
 
 
 def long_scenario(
-    workspace, owner: Actor, project: Project, rows: int = 5000
+    workspace: Workspace, owner: Actor, project: Project, rows: int = 5000
 ) -> Project:
     # Explicit synthetic 1-minute means: PV meets load directly. This gives
     # enough real CPU work to observe SIGKILL/cancellation, not fake sleeps.
@@ -179,7 +183,7 @@ def long_scenario(
             )
             .id
         )
-    replay = dict(cast(Object, project.inputs["energy_replay"]))
+    replay = dict(cast(Object, json_object(project.inputs)["energy_replay"]))
     replay.update(
         {
             "gross_load_asset_id": selected["gross_load"],
@@ -239,12 +243,12 @@ def test_two_actual_workers_execute_only_their_own_numerical_settings(
         assert finished_b.state == "succeeded"
         for run in (finished_a, finished_b):
             assert run.result is not None
-            metric = cast(Object, run.result["metrics"])
+            metric = cast(Object, json_object(run.result)["metrics"])
             assert metric["gross_load_kwh"] == 4
             assert metric["solar_load_kwh"] == pytest.approx(3.62)
             assert metric["grid_import_kwh"] == pytest.approx(0.38)
             assert (
-                cast(Object, run.result["equipment_release"])["status"]
+                cast(Object, json_object(run.result)["equipment_release"])["status"]
                 == "not_assessed"
             )
         assert a.poll() is None and b.poll() is None
@@ -322,7 +326,7 @@ def test_sigkill_recovers_the_real_energy_lease_in_a_fresh_process(
         )
         finished = completed(workspace, owner, run)
         assert finished.state == "succeeded" and finished.result is not None
-        assert cast(Object, finished.result["metrics"])[
+        assert cast(Object, json_object(finished.result)["metrics"])[
             "gross_load_kwh"
         ] == pytest.approx(5000 / 60)
         with workspace.database.read() as connection:

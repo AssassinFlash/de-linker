@@ -76,18 +76,17 @@ def test_facts_hydrate_without_granting_product_or_document_permission() -> None
         gathered,
     )
     sealed = seal(quoted, gathered, Route("model"), "Explain this project", "other")
-    assert "81,449 %" in sealed.blocks[0].text
+    sealed_text = sealed.blocks[0]
+    assert isinstance(sealed_text, TextBlock)
+    assert "81,449 %" in sealed_text.text
     unrelated = quoted.model_copy(
         update={"blocks": [TextBlock(text="Ergebnis: 81,449 %", refs=[])]}
     )
-    assert (
-        "81,449"
-        not in seal(
-            unrelated, gathered, Route("model"), "Explain this project", "other"
-        )
-        .blocks[0]
-        .text
-    )
+    unrelated_text = seal(
+        unrelated, gathered, Route("model"), "Explain this project", "other"
+    ).blocks[0]
+    assert isinstance(unrelated_text, TextBlock)
+    assert "81,449" not in unrelated_text.text
     assert gathered.product_ids == set() and gathered.documents == {}
     gathered.add(
         Fact(
@@ -97,7 +96,9 @@ def test_facts_hydrate_without_granting_product_or_document_permission() -> None
         )
     )
     output = TurnOutput(language="en", blocks=[ActionBlock(name="open_configurator")])
-    assert hydrate(output, gathered).blocks[0].args["url"] == URL
+    action = hydrate(output, gathered).blocks[0]
+    assert isinstance(action, ActionBlock)
+    assert action.args["url"] == URL
     request = TurnRequest(
         conversation_id="00000000-0000-4000-8000-000000000001",
         messages=[],

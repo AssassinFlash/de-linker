@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import copy
 import io
+from typing import Never
 
 import pytest
 from fastapi.testclient import TestClient
@@ -28,6 +29,7 @@ from linker_engine.planning.report_kernel import ReportKernel, ReportService
 from linker_engine.planning.worker import Worker
 from linker_engine.planning.workspace import Workspace
 
+from .conftest import FixtureObject, json_object
 from .test_brief import incomplete_brief
 from .test_energy_kernel import BATTERY, PROVENANCE, TOLERANCE, create_scenario
 from .test_private_http import TOKEN, headers
@@ -70,8 +72,10 @@ def test_joint_comparison_report_keeps_list_periods_and_named_final_requirements
             ]
         }
     )
-    side = EnergyComparisonSide(run, run.result, fixture["project"]["inputs"], scenario)
-    reference = side.reference()
+    side = EnergyComparisonSide(
+        run, json_object(run.result), fixture["project"]["inputs"], scenario
+    )
+    reference = json_object(side.reference())
     assert isinstance(reference["operating_periods"], list)
     sections = comparison_sections(
         {
@@ -108,7 +112,7 @@ def test_saved_comparison_keeps_original_conditions_and_publishes_report(
         workspace, EnergyKernel(workspace, TOLERANCE, max_intervals=10), max_attempts=1
     )
 
-    def no_product_lookup():
+    def no_product_lookup() -> Never:
         raise AssertionError("isolated numeric comparison must not invent a Woo source")
 
     reports = ReportService(
@@ -137,7 +141,7 @@ def test_saved_comparison_keeps_original_conditions_and_publishes_report(
         {"retention": "permanent", "provenance": PROVENANCE},
         key="comparison-storage",
     )
-    inputs = copy.deepcopy(p.inputs)
+    inputs = json_object(copy.deepcopy(p.inputs))
     inputs["energy_replay"]["battery_parameters_asset_id"] = battery.id
     p = workspace.revise(owner, p.id, p.revision, inputs, key="comparison-design")
     candidate = energy.evaluate(owner, p.id, p.revision, key="comparison-candidate")
@@ -192,7 +196,7 @@ def test_saved_comparison_keeps_original_conditions_and_publishes_report(
         )
         # The stored requirement conflict remains a readable original result;
         # it cannot generate a claimed performance delta.
-        different = copy.deepcopy(p.inputs)
+        different = json_object(copy.deepcopy(p.inputs))
         different["energy_replay"]["schedule"][0]["reserve_kwh"] = 1
         different["brief"]["site"]["location_label"] = "Current head-only site B"
         p = workspace.revise(
@@ -208,7 +212,7 @@ def test_saved_comparison_keeps_original_conditions_and_publishes_report(
         assert blocked.status_code == 200, blocked.text
         assert blocked.json()["conditions_aligned"] is False
         assert all(row["delta"] is None for row in blocked.json()["metrics"])
-        options = {
+        options: FixtureObject = {
             "locale": "en",
             "energy_run_id": None,
             "pv_run_id": None,
@@ -216,13 +220,12 @@ def test_saved_comparison_keeps_original_conditions_and_publishes_report(
             "logo": None,
         }
         # Absent and explicit-empty additive options preserve old receipts.
-        assert ReportOptions.read(options).intent()["options_sha256"] == digest(
-            encode(options)
-        )
-        assert (
+        assert json_object(ReportOptions.read(options).intent())[
+            "options_sha256"
+        ] == digest(encode(options))
+        assert json_object(
             ReportOptions.read({**options, "comparison": None}).intent()
-            == ReportOptions.read(options).intent()
-        )
+        ) == json_object(ReportOptions.read(options).intent())
         accepted = client.post(
             "/runs/report",
             json={
@@ -244,7 +247,11 @@ def test_saved_comparison_keeps_original_conditions_and_publishes_report(
         assert worker.run_once()
         report = workspace.run(owner, accepted.json()["id"])
         assert report.state == "succeeded", report.error
-        source = workspace.blobs.object(report.result["pinned_assets"]["report.source"])
+        source = json_object(
+            workspace.blobs.object(
+                json_object(report.result)["pinned_assets"]["report.source"]
+            )
+        )
         assert source["comparison"] == comparison
         assert source["energy"] is None and source["candidate"] is None
         assert source["brief"] is None
@@ -254,7 +261,7 @@ def test_saved_comparison_keeps_original_conditions_and_publishes_report(
             == "Original comparison site A"
         )
         pdf = Assets(workspace).content(
-            owner, p.id, report.result["prepared_asset"]["id"]
+            owner, p.id, json_object(report.result)["prepared_asset"]["id"]
         )
         text = "\n".join(
             page.extract_text() for page in PdfReader(io.BytesIO(pdf)).pages

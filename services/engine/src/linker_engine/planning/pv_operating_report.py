@@ -107,9 +107,21 @@ def operating_sections(
             ],
             rows=[
                 *documents.values(),
-                ReportRow(label=text("pv_fitting_method",locale),value="Batzelis",href="https://pvlib-python.readthedocs.io/en/v0.16.1/reference/generated/pvlib.ivtools.sdm.fit_desoto_batzelis.html"),
-                ReportRow(label=text("pv_refinement_method",locale),value="De Soto",href="https://pvlib-python.readthedocs.io/en/v0.16.1/reference/generated/pvlib.ivtools.sdm.fit_desoto.html"),
-                ReportRow(label=text("pv_translation_method",locale),value="De Soto",href="https://pvlib-python.readthedocs.io/en/v0.16.1/reference/generated/pvlib.pvsystem.calcparams_desoto.html"),
+                ReportRow(
+                    label=text("pv_fitting_method", locale),
+                    value="Batzelis",
+                    href="https://pvlib-python.readthedocs.io/en/v0.16.1/reference/generated/pvlib.ivtools.sdm.fit_desoto_batzelis.html",
+                ),
+                ReportRow(
+                    label=text("pv_refinement_method", locale),
+                    value="De Soto",
+                    href="https://pvlib-python.readthedocs.io/en/v0.16.1/reference/generated/pvlib.ivtools.sdm.fit_desoto.html",
+                ),
+                ReportRow(
+                    label=text("pv_translation_method", locale),
+                    value="De Soto",
+                    href="https://pvlib-python.readthedocs.io/en/v0.16.1/reference/generated/pvlib.pvsystem.calcparams_desoto.html",
+                ),
                 ReportRow(
                     label=text("pv_model_identity", locale), value=str(model["sha256"])
                 ),

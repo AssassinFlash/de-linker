@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -16,6 +17,8 @@ from linker_engine.planning.http_host import EngineApplications, configured_priv
 from linker_engine.planning.records import Actor
 from linker_engine.planning.runtime_config import RuntimeConfig
 from linker_engine.planning.workspace import Workspace
+
+from .conftest import json_object
 
 TOKEN = "synthetic-host-token"
 
@@ -99,9 +102,9 @@ def test_planning_bypasses_neither_its_auth_nor_legacy_isolation(
         )
         assert read.json() == project
         assert "access-control-allow-origin" not in result.headers
-    assert Workspace(tmp_path / "private").blobs.object(project["input_sha256"]) == {
-        "site": {"country": "FR"}
-    }
+    assert json_object(
+        Workspace(tmp_path / "private").blobs.object(project["input_sha256"])
+    ) == {"site": {"country": "FR"}}
 
 
 def test_missing_or_bad_configuration_keeps_legacy_available_and_private_closed(
@@ -151,7 +154,7 @@ def test_legacy_lifespan_is_forwarded_once() -> None:
     calls: list[str] = []
 
     @asynccontextmanager
-    async def lifespan(_app: FastAPI):
+    async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
         calls.append("start")
         yield
         calls.append("stop")

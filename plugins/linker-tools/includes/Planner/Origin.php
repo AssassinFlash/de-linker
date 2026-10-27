@@ -20,7 +20,7 @@ final class Origin {
 	 * @param WP_REST_Request $request Native REST request.
 	 */
 	public static function allows( WP_REST_Request $request ): bool {
-		$site   = self::origin( home_url( '/' ) );
+		$site   = self::origin( home_url() );
 		$origin = (string) $request->get_header( 'origin' );
 		$fetch  = (string) $request->get_header( 'sec-fetch-site' );
 		if ( in_array( $fetch, array( 'cross-site', 'same-site' ), true ) || null === $site ) {

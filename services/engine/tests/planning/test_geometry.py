@@ -22,6 +22,8 @@ from linker_engine.planning.geometry_review import review_geometry
 from linker_engine.planning.records import Actor
 from linker_engine.planning.workspace import Workspace
 
+from .conftest import FixtureObject, json_object
+
 ROOT = Path(__file__).resolve().parents[4]
 
 
@@ -32,7 +34,7 @@ def fixture() -> dict[str, Any]:
     )
 
 
-def kinds(report: Object) -> list[str]:
+def kinds(report: FixtureObject) -> list[str]:
     return [str(item["kind"]) for item in cast(list[Object], report["issues"])]
 
 
@@ -65,7 +67,7 @@ def test_exact_slot_ids_declared_rating_and_excluded_quantity() -> None:
     assert poses[0].id == "array:0:0" and poses[-1].id == "array:1:2"
     assert poses[0].centre_enu == pytest.approx((11.5, -17, 4.12))
     assert not poses[-1].included
-    report = review_geometry(value)
+    report = json_object(review_geometry(value))
     assert report["module_count"] == 5 and report["declared_stc_kwp"] == 2.5
     assert (
         report["conflict_count"] == 0
@@ -123,7 +125,7 @@ def test_slope_length_and_tilted_rows_use_their_own_lower_edges() -> None:
     uv0 = roof_coordinates(roof, poses[0].centre_enu)
     uv1 = roof_coordinates(roof, poses[3].centre_enu)
     assert uv1[1] - uv0[1] == pytest.approx(math.sqrt(3) + 0.4)
-    assert review_geometry(value)["conflict_count"] == 0
+    assert json_object(review_geometry(value))["conflict_count"] == 0
 
 
 @pytest.mark.parametrize("field,value", [("schema_version", True), ("extra", 1)])
@@ -169,18 +171,20 @@ def test_unsafe_or_unresolved_wire_data_is_rejected(change: Any) -> None:
 def test_opening_outside_edge_clearance_and_no_hidden_setback() -> None:
     value = one_panel()
     value["arrays"][0]["origin_uv"] = [0, 0]
-    assert review_geometry(value)["conflict_count"] == 0  # exact zero-contact
+    assert (
+        json_object(review_geometry(value))["conflict_count"] == 0
+    )  # exact zero-contact
     value["layout_rules"][0]["edge_clearance_m"] = 0.2
-    assert "panel_edge_clearance" in kinds(review_geometry(value))
+    assert "panel_edge_clearance" in kinds(json_object(review_geometry(value)))
     value["arrays"][0]["origin_uv"] = [-0.01, 0]
-    assert "panel_outside_roof" in kinds(review_geometry(value))
+    assert "panel_outside_roof" in kinds(json_object(review_geometry(value)))
     value["arrays"][0]["origin_uv"] = [1, 2]
     value["roofs"][0]["holes_uv"] = [
         [[1.25, 2.25], [1.75, 2.25], [1.75, 3.75], [1.25, 3.75]]
     ]
-    assert "panel_over_opening" in kinds(review_geometry(value))
+    assert "panel_over_opening" in kinds(json_object(review_geometry(value)))
     value["layout_rules"] = []
-    report = review_geometry(value)
+    report = json_object(review_geometry(value))
     assert "edge_clearance_unspecified" in kinds(
         report
     ) and "obstacle_clearance_unspecified" in kinds(report)
@@ -190,7 +194,7 @@ def test_invalid_boundary_is_preserved_and_diagnosed_without_repair() -> None:
     value = one_panel()
     value["roofs"][0]["boundary_uv"] = [[0, 0], [10, 10], [0, 10], [10, 0]]
     before = copy.deepcopy(value)
-    assert kinds(review_geometry(value))[-1] == "invalid_roof_polygon"
+    assert kinds(json_object(review_geometry(value)))[-1] == "invalid_roof_polygon"
     assert value == before
 
 
@@ -198,9 +202,9 @@ def test_thickness_and_slope_are_in_full_projected_footprints() -> None:
     value = one_panel()
     value["arrays"][0].update(mount_tilt_deg=30, origin_uv=[1, 0.01])
     # A 4cm thick panel shifts .02m towards the lower side when tilted 30deg.
-    assert "panel_outside_roof" in kinds(review_geometry(value))
+    assert "panel_outside_roof" in kinds(json_object(review_geometry(value)))
     value["arrays"][0]["origin_uv"] = [1, 0.03]
-    assert "panel_outside_roof" not in kinds(review_geometry(value))
+    assert "panel_outside_roof" not in kinds(json_object(review_geometry(value)))
 
 
 def test_rotated_keepout_and_obstacle_clearance_are_not_invented_collision_claims() -> (
@@ -218,7 +222,7 @@ def test_rotated_keepout_and_obstacle_clearance_are_not_invented_collision_claim
             "reason": "Synthetic keepout",
         }
     ]
-    assert "panel_in_keepout" in kinds(review_geometry(value))
+    assert "panel_in_keepout" in kinds(json_object(review_geometry(value)))
     value["keepouts"] = []
     value["obstacles"] = [
         {
@@ -232,11 +236,11 @@ def test_rotated_keepout_and_obstacle_clearance_are_not_invented_collision_claim
         }
     ]
     value["layout_rules"][0]["obstacle_clearance_m"] = 0.2
-    report = review_geometry(value)
+    report = json_object(review_geometry(value))
     assert "panel_obstacle_clearance" in kinds(report)
     assert "panel_projected_obstacle_overlap" not in kinds(report)
     value["arrays"][0]["excluded_slots"] = ["0:0"]
-    assert review_geometry(value)["conflict_count"] == 0
+    assert json_object(review_geometry(value))["conflict_count"] == 0
 
 
 def test_indexed_overlap_matches_independent_brute_force_rectangles() -> None:
@@ -254,7 +258,7 @@ def test_indexed_overlap_matches_independent_brute_force_rectangles() -> None:
         }
         for i in range(60)
     ]
-    report = review_geometry(value)
+    report = json_object(review_geometry(value))
     expected = set()
     rectangles = [
         (a["id"], Polygon([(x, y), (x + 1, y), (x + 1, y + 2), (x, y + 2)]))
@@ -287,13 +291,15 @@ def test_concave_obstacle_recess_is_not_filled_by_a_convex_hull() -> None:
             "height_m": 1,
         }
     ]
-    report = review_geometry(value)
+    report = json_object(review_geometry(value))
     assert "panel_projected_obstacle_overlap" not in kinds(report)
     assert report["conflict_count"] == 0
     # A diagonal extrusion sweeps into that same initially empty recess.
     value["obstacles"][0]["extrusion_axis_enu"] = [math.sqrt(0.5), 0, math.sqrt(0.5)]
     value["obstacles"][0]["height_m"] = 3
-    assert "panel_projected_obstacle_overlap" in kinds(review_geometry(value))
+    assert "panel_projected_obstacle_overlap" in kinds(
+        json_object(review_geometry(value))
+    )
 
 
 def test_resource_limits_never_turn_a_partial_check_into_clear(
@@ -304,7 +310,7 @@ def test_resource_limits_never_turn_a_partial_check_into_clear(
     value["arrays"] = [{**base, "id": f"a{i}"} for i in range(8)]
     monkeypatch.setattr(geometry_review, "MAX_CANDIDATE_CHECKS", 3)
     monkeypatch.setattr(geometry_review, "MAX_DIAGNOSTICS", 2)
-    report = review_geometry(value)
+    report = json_object(review_geometry(value))
     assert report["geometry_status"] == "incomplete" and not report["review_complete"]
     assert (
         report["diagnostics_truncated"]
@@ -317,7 +323,7 @@ def test_saved_geometries_replay_reopen_and_refuse_foreign_writers(
 ) -> None:
     user, foreign = Actor("user", "geometry-owner"), Actor("user", "geometry-foreign")
     data = fixture()
-    inputs: Object = {"geometry": data}
+    inputs: FixtureObject = {"geometry": data}
     project = workspace.create(user, "Synthetic geometry", inputs, key="create")
     revised = workspace.revise(
         user, project.id, 1, {"geometry": data, "note": "kept"}, key="revise"
@@ -356,7 +362,7 @@ def test_roof_rotation_and_translation_do_not_break_zero_contact(
         v_axis_enu=[-math.sin(angle), math.cos(angle), 0],
         boundary_uv=[[0, 0], [1, 0], [1, 2], [0, 2]],
     )
-    assert review_geometry(value)["conflict_count"] == 0
+    assert json_object(review_geometry(value))["conflict_count"] == 0
 
 
 def test_one_centimetre_overlap_survives_large_enu_translation() -> None:
@@ -366,7 +372,7 @@ def test_one_centimetre_overlap_survives_large_enu_translation() -> None:
     )
     for origin in (0, 1e15):
         value["roofs"][0]["origin_enu"] = [origin, 0, 4]
-        report = review_geometry(value)
+        report = json_object(review_geometry(value))
         assert report["conflict_count"] == 1
         assert "panel_projected_overlap" in kinds(report)
 
@@ -382,7 +388,7 @@ def test_large_uv_chart_is_explicitly_outside_numeric_review_support() -> None:
         [1e15, 1e15 + 10],
     ]
     before = copy.deepcopy(value)
-    report = review_geometry(value)
+    report = json_object(review_geometry(value))
     assert report["geometry_status"] == "incomplete" and report["conflict_count"] == 0
     assert "numeric_resolution_unsupported" in kinds(report)
     assert value == before
@@ -412,7 +418,7 @@ def test_extreme_uv_extent_and_ring_order_never_return_false_clear() -> None:
     ring = [[-9e15, -10], [10, -10], [10, 10], [-9e15, 10]]
     for start in range(4):
         value["roofs"][0]["boundary_uv"] = ring[start:] + ring[:start]
-        report = review_geometry(value)
+        report = json_object(review_geometry(value))
         assert (
             report["geometry_status"] == "incomplete" and not report["review_complete"]
         )
@@ -428,9 +434,9 @@ def test_rotated_shared_grid_edges_are_contacts_and_thick_rows_still_overlap(
     value["arrays"][0].update(
         origin_uv=[5, 5], columns=2, column_gap_m=0, rotation_deg=angle
     )
-    assert "panel_projected_overlap" not in kinds(review_geometry(value))
+    assert "panel_projected_overlap" not in kinds(json_object(review_geometry(value)))
     value["arrays"][0].update(rows=2, row_gap_m=0, mount_tilt_deg=30)
-    report = review_geometry(value)
+    report = json_object(review_geometry(value))
     overlaps = [
         issue
         for issue in report["issues"]
@@ -452,12 +458,12 @@ def test_numeric_gate_includes_full_corners_obstacle_top_and_clearance_search() 
             "height_m": 1e14,
         }
     ]
-    report = review_geometry(value)
+    report = json_object(review_geometry(value))
     assert not report["review_complete"] and report["uv_resolution_m"] >= 0.0078125
     value["obstacles"] = []
     value["arrays"][0]["origin_uv"] = [2**23 - 2, 0]
     value["module_specs"][0]["width_m"] = 2
-    assert not review_geometry(value)["review_complete"]
+    assert not json_object(review_geometry(value))["review_complete"]
     value = one_panel()
     value["layout_rules"][0]["obstacle_clearance_m"] = 1e14
-    assert not review_geometry(value)["review_complete"]
+    assert not json_object(review_geometry(value))["review_complete"]

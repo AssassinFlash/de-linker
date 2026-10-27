@@ -68,6 +68,7 @@ def test_frozen_proj_oracle_and_ellipsoid_contract_are_current() -> None:
         (ROOT / "apps/planner/src/contracts/wgs84-ellipsoid.json").read_text()
     )
     wgs84 = CRS.from_epsg(4979).ellipsoid
+    assert wgs84 is not None
     assert ellipsoid["semi_major_axis_m"] == wgs84.semi_major_metre
     assert ellipsoid["inverse_flattening"] == wgs84.inverse_flattening
 

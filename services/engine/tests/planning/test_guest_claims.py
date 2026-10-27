@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sqlite3
+from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from threading import Barrier, Event
@@ -13,7 +14,7 @@ from starlette.types import Receive, Scope, Send
 
 from linker_engine.planning import archive, commands
 from linker_engine.planning.assets import Assets
-from linker_engine.planning.canonical import Object, digest
+from linker_engine.planning.canonical import digest
 from linker_engine.planning.energy_kernel import EnergyKernel
 from linker_engine.planning.energy_service import EnergyService
 from linker_engine.planning.errors import Conflict, NotFound, VersionUnavailable
@@ -25,6 +26,8 @@ from linker_engine.planning.records import Actor, Context
 from linker_engine.planning.schema import SCHEMA_VERSION
 from linker_engine.planning.service_boundary import PREVIOUS_GUEST_SCOPE
 from linker_engine.planning.workspace import Workspace
+
+from .conftest import FixtureObject, json_object
 
 GUEST = Actor("guest", "woocommerce:t_verified_fixture")
 USER = Actor("user", "wordpress:17")
@@ -82,10 +85,10 @@ def test_all_projects_assets_and_frozen_history_transfer_without_input_mutation(
     }
     with pytest.raises(Conflict):
         claims.claim(GUEST, OTHER, key="different-account")
-    checks = [
+    checks: list[Callable[[], object]] = [
         lambda: workspace.get(GUEST, first.id),
         lambda: workspace.projects(GUEST),
-        lambda: project_page(workspace, GUEST, 10, None),
+        lambda: json_object(project_page(workspace, GUEST, 10, None)),
         lambda: workspace.create(GUEST, "Late request", {}, key="late"),
         lambda: workspace.revise(GUEST, first.id, 2, {}, key="late-revise"),
         lambda: workspace.evaluate(
@@ -131,7 +134,7 @@ def test_request_admitted_before_login_cannot_publish_a_late_guest_project(
     admitted, resume = Event(), Event()
     original = commands.command_hash
 
-    def pause(value: Object, key: str) -> str:
+    def pause(value: FixtureObject, key: str) -> str:
         result = original(value, key)
         if value.get("inputs") == {"late": True}:
             admitted.set()
@@ -162,14 +165,14 @@ def test_a_create_already_holding_the_write_lock_is_included_in_login_transfer(
     publishing, resume, claim_started = Event(), Event(), Event()
     original = workspace.blobs.put_object
 
-    def pause(value: Object) -> str:
+    def pause(value: FixtureObject) -> str:
         result = original(value)
         if value == {"inflight": True}:
             publishing.set()
             assert resume.wait(timeout=10)
         return result
 
-    def claim() -> Object:
+    def claim() -> FixtureObject:
         claim_started.set()
         return GuestClaims(workspace).claim(GUEST, USER, key="login")
 
@@ -225,7 +228,7 @@ def test_failed_receipt_publication_rolls_back_transfer_and_retirement(
     project = workspace.create(GUEST, "Before login", {}, key="create")
     original = workspace.blobs.put_object
 
-    def fail(value: Object) -> str:
+    def fail(value: FixtureObject) -> str:
         if value.get("status") == "claimed":
             raise OSError("synthetic receipt disk failure")
         return original(value)

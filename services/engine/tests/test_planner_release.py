@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 from types import SimpleNamespace
+from typing import Any
 
 import pytest
 
@@ -19,8 +20,8 @@ SPEC.loader.exec_module(ops)
 
 
 def test_prepared_policy_is_frozen_and_numerical_operator_has_no_credentials(
-    tmp_path, monkeypatch
-):
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     monkeypatch.setattr(
         ops.pwd,
         "getpwnam",
@@ -71,7 +72,9 @@ def test_prepared_policy_is_frozen_and_numerical_operator_has_no_credentials(
         "runtime_sha256": "c" * 64,
     }
 
-    def run(arguments, *, env=None, timeout=30):
+    def run(
+        arguments: list[str], *, env: dict[str, str] | None = None, timeout: float = 30
+    ) -> str:
         calls.append((arguments, env))
         if "-c" in arguments:
             return json.dumps(
@@ -99,7 +102,7 @@ def test_prepared_policy_is_frozen_and_numerical_operator_has_no_credentials(
     }
     operator_calls = [(a, e) for a, e in calls if a[0] == "runuser"]
     assert operator_calls and all(
-        "GENIE_SERVICE_TOKEN" not in e and "APIFY_TOKEN" not in e
+        e is not None and "GENIE_SERVICE_TOKEN" not in e and "APIFY_TOKEN" not in e
         for _, e in operator_calls
     )
     assert any(
@@ -108,9 +111,9 @@ def test_prepared_policy_is_frozen_and_numerical_operator_has_no_credentials(
     )
     assert os.stat(private / "http.env").st_mode & 0o777 == 0o600
     target.preflight()
-    ordinary_command = ops.command
+    ordinary_command = run
 
-    def unreadable_source(arguments, **kwargs):
+    def unreadable_source(arguments: list[str], **kwargs: Any) -> str:
         if "Services(Settings.from_environment(),SOURCE)" in arguments[-1]:
             raise RuntimeError("operator command failed: runuser")
         return ordinary_command(arguments, **kwargs)
@@ -147,16 +150,16 @@ def test_prepared_policy_is_frozen_and_numerical_operator_has_no_credentials(
     requests = []
 
     class RejectedSocket:
-        def __init__(self, host, port, timeout):
+        def __init__(self, host: str, port: int, timeout: float) -> None:
             requests.append((host, port))
 
-        def request(self, *args, **kwargs):
+        def request(self, *args: Any, **kwargs: Any) -> None:
             pass
 
-        def getresponse(self):
+        def getresponse(self) -> SimpleNamespace:
             return SimpleNamespace(status=302, read=lambda _: b"")
 
-        def close(self):
+        def close(self) -> None:
             pass
 
     monkeypatch.setattr(ops, "HTTPConnection", RejectedSocket)
@@ -170,21 +173,21 @@ def test_prepared_policy_is_frozen_and_numerical_operator_has_no_credentials(
 
 
 def test_one_activation_lifecycle_refuses_pending_restores_failure_and_retires_only_old_pair(
-    tmp_path, monkeypatch
-):
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     root = tmp_path / "linker-planner-test"
     root.mkdir()
     events = []
     items = {}
 
     class Candidate:
-        def __init__(self, letter):
+        def __init__(self, letter: str) -> None:
             self.root = root
             self.path = root / "releases" / (letter * 64)
             self.path.mkdir(parents=True)
             self.spec_file = self.path / "spec.json"
             self.spec_file.write_text("{}")
-            self.spec = {
+            self.spec: dict[str, Any] = {
                 "prefix": root.name,
                 "port": 18911,
                 "user": "planner-test",
@@ -196,35 +199,35 @@ def test_one_activation_lifecycle_refuses_pending_restores_failure_and_retires_o
             self.broken = False
             items[str(self.spec_file)] = self
 
-        def preflight(self):
+        def preflight(self) -> dict[str, Any]:
             return {}
 
-        def namespace(self):
+        def namespace(self) -> tuple[Path, str, int, str]:
             return self.root, self.spec["prefix"], self.spec["port"], self.spec["user"]
 
-        def own_units(self):
+        def own_units(self) -> None:
             pass
 
-        def probe(self):
+        def probe(self) -> dict[str, Any]:
             return {
                 "runtime_sha256": "c" * 64,
                 "execution_key": "d" * 64,
                 "storage_binding": "e" * 64,
             }
 
-        def ready(self, _):
+        def ready(self, _: object) -> dict[str, Any]:
             return {"pid": 123}
 
-        def operator(self, *args):
+        def operator(self, *args: Any) -> dict[str, Any]:
             events.append((self.path.name[:1], *args))
             return {"draining": False}
 
-        def stop(self):
+        def stop(self) -> None:
             if self.pending:
                 raise RuntimeError("pending")
             events.append((self.path.name[:1], "stop"))
 
-        def start(self):
+        def start(self) -> dict[str, Any]:
             events.append((self.path.name[:1], "start"))
             if self.broken:
                 raise RuntimeError("candidate failed")

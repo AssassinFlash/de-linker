@@ -19,7 +19,7 @@ from linker_engine.planning.weather_status import weather_status
 from linker_engine.planning.worker import Control
 from linker_engine.planning.workspace import Workspace
 
-from .conftest import Clock
+from .conftest import Clock, json_object
 from .test_official_weather import Reply, SequenceAdapter, plan
 from .test_pvgis_tmy import raw
 from .test_weather_kernel import services, source_inputs, valid_adapter, worker
@@ -37,7 +37,10 @@ def test_begin_replays_the_same_original_deadline(
     first = journal.begin(lease, plan())
     clock.advance(3)
     assert journal.begin(lease, plan()) == first
-    assert weather_status(workspace, owner, run.id)["acquisition_state"] == "fetching"
+    assert (
+        json_object(weather_status(workspace, owner, run.id))["acquisition_state"]
+        == "fetching"
+    )
 
 
 def test_elapsed_original_deadline_cannot_be_reset_by_retry(
@@ -66,7 +69,11 @@ def test_cancellation_during_get_fences_capture_and_source(
     adapter = valid_adapter()
     weather, _ = services(workspace, adapter)
     run = weather.evaluate(owner, project.id, 1, key="weather")
-    adapter.on_send = lambda: workspace.cancel(owner, run.id)
+
+    def cancel_source_run() -> None:
+        workspace.cancel(owner, run.id)
+
+    adapter.on_send = cancel_source_run
     lease = Jobs(workspace).claim("weather", kinds=("evaluate",), lease_seconds=300)
     assert lease is not None
     with pytest.raises(LeaseLost):
@@ -112,5 +119,8 @@ def test_download_capture_survives_verified_archive_restore(
     archive.backup(workspace, destination)
     archive.verify(destination)
     restored = archive.restore(destination, tmp_path / "restored")
-    assert weather_status(restored, owner, run.id)["acquisition_state"] == "captured"
+    assert (
+        json_object(weather_status(restored, owner, run.id))["acquisition_state"]
+        == "captured"
+    )
     assert restored.run(owner, run.id).result == workspace.run(owner, run.id).result

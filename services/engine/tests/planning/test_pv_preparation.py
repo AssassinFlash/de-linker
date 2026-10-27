@@ -9,6 +9,7 @@ from typing import cast
 
 import pytest
 from conftest import publication_manifest
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from linker_engine.planning import archive
@@ -43,7 +44,7 @@ from linker_engine.planning.worker import Control, Worker
 from linker_engine.planning.workspace import Workspace
 from linker_engine.publication import Publication
 
-from .conftest import Clock
+from .conftest import Clock, FixtureObject, json_object
 from .test_energy_kernel import TOLERANCE, create_scenario
 from .test_private_http import TOKEN, headers
 from .test_pv_profile import LIMITS, PROVENANCE, annual_scenario, project_with_roof
@@ -72,7 +73,7 @@ def pv_task(
     )
     inputs = dict(project.inputs)
     if products is not None:
-        template = cast(Object, products.module_basis()["module"])
+        template = cast(Object, json_object(products.module_basis())["module"])
         geometry = cast(Object, inputs["geometry"])
         identifier = str(cast(list[Object], geometry["module_specs"])[0]["id"])
         geometry["module_specs"] = [
@@ -117,7 +118,7 @@ def test_actual_shared_worker_prepares_pv_then_uses_it_in_full_year_energy(
 ) -> None:
     withdrawn = False
 
-    def current(publication: Publication) -> dict:
+    def current(publication: Publication) -> FixtureObject:
         value = publication_manifest(publication.feed)
         for row in value["products"]:
             row["ready"]["engineering"] = True
@@ -130,6 +131,7 @@ def test_actual_shared_worker_prepares_pv_then_uses_it_in_full_year_energy(
         return value
 
     monkeypatch.setattr(Publication, "read", current)
+    assert isinstance(client.app, FastAPI)
     products = ProductSources(client.app.state.planning_product_provider)
     roof, pv, pv_run = pv_task(workspace, owner, products)
     energy_project = create_scenario(workspace, owner)
@@ -163,7 +165,7 @@ def test_actual_shared_worker_prepares_pv_then_uses_it_in_full_year_energy(
     assert workspace.run(owner, energy_run.id).state == "succeeded"
     completed = workspace.run(owner, pv_run.id)
     assert completed.state == "succeeded" and completed.result is not None
-    result = completed.result
+    result = json_object(completed.result)
     record = cast(Object, result["prepared_asset"])
     asset = Assets(workspace).get(owner, roof.id, str(record["id"]))
     assert "woo_module_inputs" in asset.metadata
@@ -178,7 +180,7 @@ def test_actual_shared_worker_prepares_pv_then_uses_it_in_full_year_energy(
         owner, roof.id, replay_project.revision, key="pv-to-energy"
     )
     assert worker.run_once()
-    replay_result = workspace.run(owner, replay.id).result
+    replay_result = json_object(workspace.run(owner, replay.id).result)
     assert replay_result is not None and replay_result["interval_count"] == 8760
     metrics = cast(Object, replay_result["metrics"])
     assert metrics["gross_load_kwh"] == 87600
@@ -194,7 +196,7 @@ def test_actual_shared_worker_prepares_pv_then_uses_it_in_full_year_energy(
     )
     before = asset_count(workspace, roof.id)
 
-    def previously_proven_profile(*_args: object, **_kwargs: object) -> Object:
+    def previously_proven_profile(*_args: object, **_kwargs: object) -> FixtureObject:
         # Reuse the already verified physical output: only the publication
         # boundary changes here, so another numerical replay adds no evidence.
         nonlocal withdrawn
@@ -328,7 +330,7 @@ def test_actual_private_command_receipt_worker_result_and_disabled_receipt_read(
     )
     pv = PvPreparationService(workspace, kernel, max_attempts=2)
     limits = HttpLimits(2_000_000, 1_000_000, 20, 32)
-    command: Object = {
+    command: FixtureObject = {
         "schema_version": 1,
         "project_id": project.id,
         "expected_revision": project.revision,
@@ -423,7 +425,7 @@ def test_prepared_profile_http_preview_reads_original_output_without_pv_calculat
         retry_seconds=1,
         routing=registry.routing(8),
     ).run_once()
-    result = workspace.run(owner, run.id).result
+    result = json_object(workspace.run(owner, run.id).result)
     assert result is not None
     record = cast(Object, result["prepared_asset"])
     asset = Assets(workspace).get(owner, project.id, str(record["id"]))
@@ -436,12 +438,11 @@ def test_prepared_profile_http_preview_reads_original_output_without_pv_calculat
 
     for module in ("pv_generation", "pv_profile", "pv_profile_preparation"):
         monkeypatch.setattr(f"linker_engine.planning.{module}.generate_pv", forbidden)
-    assert (
+    assert json_object(
         prepared_profile(
             workspace.blobs, asset.content_sha256, asset.metadata
         ).document()
-        == expected.document()
-    )
+    ) == json_object(expected.document())
     with TestClient(
         create_private_app(
             workspace,
@@ -464,9 +465,9 @@ def test_prepared_profile_http_preview_reads_original_output_without_pv_calculat
             )
             assert response.status_code == 200
             page = response.json()
-            assert page["source"] == expected.source.document()
+            assert page["source"] == json_object(expected.source.document())
             assert page["transformations"] == [
-                item.document() for item in expected.transformations
+                json_object(item.document()) for item in expected.transformations
             ]
             assert page["summary"]["energy_kwh"] == expected.total_kwh
             assert page["summary"]["interval_count"] == 8760
@@ -533,7 +534,9 @@ def test_publication_follows_project_after_guest_transfer(
     ).run_once()
     completed_run = workspace.run(owner, run.id)
     assert completed_run.result is not None
-    asset_id = str(cast(Object, completed_run.result["prepared_asset"])["id"])
+    asset_id = str(
+        cast(Object, json_object(completed_run.result)["prepared_asset"])["id"]
+    )
     assert Assets(workspace).get(owner, project.id, asset_id)
     with pytest.raises(NotFound):
         Assets(workspace).get(guest, project.id, asset_id)
@@ -554,8 +557,8 @@ def test_pv_task_retains_queued_roof_and_does_not_overwrite_new_design(
     owner: Actor,
 ) -> None:
     project, kernel, run = pv_task(workspace, owner)
-    original_hash = digest(encode(project.inputs["geometry"]))
-    geo = cast(Object, project.inputs["geometry"])
+    original_hash = digest(encode(json_object(project.inputs)["geometry"]))
+    geo = cast(Object, json_object(project.inputs)["geometry"])
     cast(list[Object], geo["arrays"])[0]["mount_tilt_deg"] = 31
     edited = workspace.revise(
         owner, project.id, project.revision, project.inputs, key="new-roof"
@@ -571,7 +574,7 @@ def test_pv_task_retains_queued_roof_and_does_not_overwrite_new_design(
     completed_run = workspace.run(owner, run.id)
     assert completed_run.state == "succeeded" and not completed_run.is_current
     assert completed_run.result is not None
-    record = cast(Object, completed_run.result["prepared_asset"])
+    record = cast(Object, json_object(completed_run.result)["prepared_asset"])
     assert cast(Object, record["metadata"])["geometry_sha256"] == original_hash
     assert workspace.get(owner, project.id).input_sha256 == edited.input_sha256
     assert "profile_selections" not in workspace.get(owner, project.id).inputs
@@ -591,7 +594,7 @@ def test_prepared_source_and_children_survive_real_backup_restore(
         heartbeat_seconds=1,
         retry_seconds=1,
     ).run_once()
-    result = workspace.run(owner, run.id).result
+    result = json_object(workspace.run(owner, run.id).result)
     assert result is not None
     record, dependencies = (
         cast(Object, result["prepared_asset"]),

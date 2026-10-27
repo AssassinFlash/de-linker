@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 
 import pytest
+from pydantic import BaseModel
 
 from linker_engine.planning.assets import Assets
 from linker_engine.planning.canonical import digest
@@ -32,6 +33,8 @@ from linker_engine.planning.http_documents import GeometryImportCommand
 from linker_engine.planning.records import Actor
 from linker_engine.planning.workspace import Workspace
 
+from .conftest import json_object
+
 ROOT = Path(__file__).resolve().parents[4]
 USER = Actor("user", "geometry-import-owner")
 FOREIGN = Actor("user", "geometry-import-foreign")
@@ -51,11 +54,12 @@ def source() -> bytes:
 
 def test_browser_schemas_and_file_policy_match_the_server() -> None:
     contracts = ROOT / "apps/planner/src/contracts"
-    for name, model in [
+    models: list[tuple[str, type[BaseModel]]] = [
         ("geometry-import-options", GeometryImportOptions),
         ("geometry-import-command", GeometryImportCommand),
         ("geometry-import-selections", GeometryImports),
-    ]:
+    ]
+    for name, model in models:
         assert (
             json.loads((contracts / f"{name}.schema.json").read_text())
             == model.model_json_schema()
@@ -78,7 +82,7 @@ def test_original_bytes_manifest_opening_slope_and_receipt_are_preserved(
     content = b" \n" + source() + b"\n "
     asset = intake.prepare(USER, project.id, content, options(), key="source")
     assert assets.content(USER, project.id, asset.id) == content
-    prepared = asset.metadata["geometry_import"]
+    prepared = json_object(asset.metadata)["geometry_import"]
     assert isinstance(prepared, dict)
     assert prepared["original_content_sha256"] == digest(content)
     geometry = read_geometry(prepared["geometry"])
@@ -99,7 +103,7 @@ def test_original_bytes_manifest_opening_slope_and_receipt_are_preserved(
         update={"plane": options().plane.model_copy(update={"v_axis_enu": [0, 1, 0]})}
     )
     flat_asset = intake.prepare(USER, project.id, content, flat, key="flat")
-    flat_manifest = flat_asset.metadata["geometry_import"]
+    flat_manifest = json_object(flat_asset.metadata)["geometry_import"]
     assert isinstance(flat_manifest, dict)
     flat_roof = read_geometry(flat_manifest["geometry"]).roofs[0]
     # Each declared plane must inverse to the actual original lon/lat. A pitched
@@ -199,7 +203,7 @@ def test_attachment_requires_the_same_project_asset_and_source(tmp_path: Path) -
     asset = GeometryImport(assets).prepare(
         USER, project.id, source(), options(), key="source"
     )
-    prepared = asset.metadata["geometry_import"]
+    prepared = json_object(asset.metadata)["geometry_import"]
     assert isinstance(prepared, dict)
     geometry = read_geometry(prepared["geometry"])
     inputs = {
@@ -237,7 +241,9 @@ def test_method_is_part_of_command_identity_and_missing_method_only_replays_exis
     assert intake.logical(legacy)["geometry_import_options"] == legacy_values
     with pytest.raises(VersionUnavailable):
         intake.prepare(USER, project.id, source(), legacy, key="not-an-old-receipt")
-    assert intake.command(source(), legacy) != intake.command(source(), options())
+    assert json_object(intake.command(source(), legacy)) != json_object(
+        intake.command(source(), options())
+    )
     # This represents a pre-upgrade immutable receipt. Its marker is never a
     # newly qualified candidate; replay must not rerun or rewrite its operation.
     old = assets.add(

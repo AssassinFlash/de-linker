@@ -12,6 +12,7 @@ from typing import cast
 
 import pytest
 from conftest import publication_manifest
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from starlette.types import Message, Receive, Scope, Send
 
@@ -35,13 +36,15 @@ from linker_engine.planning.worker import Worker
 from linker_engine.planning.workspace import Workspace
 from linker_engine.publication import Publication, PublicationUnavailable
 
+from .conftest import FixtureObject, json_object
+
 TOKEN = "synthetic-private-service-token"
 USER = Actor("user", "wordpress:17")
 FOREIGN = Actor("user", "wordpress:18")
 TEAM = Actor("team", "wordpress:auditor")
 
 
-def brief_inputs(timezone: str) -> Object:
+def brief_inputs(timezone: str) -> FixtureObject:
     return {
         "brief": {
             "schema_version": 1,
@@ -75,7 +78,9 @@ class Rig:
     kernel: EnergyKernel
     client: TestClient
 
-    def post(self, path: str, body: Object, actor: Actor = USER) -> Object:
+    def post(
+        self, path: str, body: FixtureObject, actor: Actor = USER
+    ) -> FixtureObject:
         response = self.client.post(
             path, json={"schema_version": 1, **body}, headers=headers(actor)
         )
@@ -92,7 +97,9 @@ class Rig:
         assert "owner" not in project
         return str(project["id"])
 
-    def replay(self, path: str, body: Object, actor: Actor = USER) -> Object:
+    def replay(
+        self, path: str, body: FixtureObject, actor: Actor = USER
+    ) -> FixtureObject:
         return self.post("/operations/replay" + path, body, actor)
 
 
@@ -105,7 +112,7 @@ def test_geometry_import_has_owned_original_receipt_and_separate_project_save(
         (root / "fixtures/planning/geometry-import-options.json").read_text()
     )
     project_id = rig.create("geometry-import")
-    command: Object = {
+    command: FixtureObject = {
         "project_id": project_id,
         "content_base64": base64.b64encode(source).decode(),
         "options": options,
@@ -123,7 +130,7 @@ def test_geometry_import_has_owned_original_receipt_and_separate_project_save(
     prepared = cast(Object, metadata["geometry_import"])
     geometry = cast(Object, prepared["geometry"])
     source_id = str(cast(list[Object], geometry["sources"])[0]["id"])
-    inputs: Object = {
+    inputs: FixtureObject = {
         "geometry": geometry,
         "geometry_imports": {"schema_version": 1, "selected": {source_id: asset["id"]}},
     }
@@ -204,7 +211,7 @@ def test_geometry_review_uses_owned_draft_without_publishing_or_saving(
     geometry = json.loads(path.read_text())
     project_id = rig.create("geometry")
     before = set(rig.workspace.blobs.directory.rglob("*"))
-    body: Object = {"project_id": project_id, "geometry": geometry}
+    body: FixtureObject = {"project_id": project_id, "geometry": geometry}
     report = rig.post("/geometry/review", body)
     assert (
         report["module_count"] == 5 and report["engineering_status"] == "not_evaluated"
@@ -282,6 +289,7 @@ def test_current_products_use_shared_woo_preparation_and_close_on_change(
     rig: Rig, client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     # Reuse the site's actual service loader and real engineering fixture.
+    assert isinstance(client.app, FastAPI)
     provider = client.app.state.planning_product_provider
     loaded = provider()
     manifest = publication_manifest(loaded.publication.feed)
@@ -296,7 +304,7 @@ def test_current_products_use_shared_woo_preparation_and_close_on_change(
     calls = 0
     mode = "current"
 
-    def current(_self: Publication) -> dict:
+    def current(_self: Publication) -> FixtureObject:
         nonlocal calls
         calls += 1
         if mode == "unavailable":
@@ -304,7 +312,7 @@ def test_current_products_use_shared_woo_preparation_and_close_on_change(
         value = json.loads(json.dumps(manifest))
         if mode == "changed" and calls > 1:
             value["products"][0]["ready"]["engineering"] = False
-        return value
+        return json_object(value)
 
     monkeypatch.setattr(Publication, "read", current)
     service = EnergyService(rig.workspace, rig.kernel, max_attempts=1)
@@ -518,13 +526,13 @@ def test_http_rejects_unrepresentable_numbers_before_any_durable_write(
 def test_saved_intake_receipts_survive_an_installed_timezone_name_change(
     rig: Rig, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    create: Object = {
+    create: FixtureObject = {
         "title": "Zone receipt fixture",
         "inputs": brief_inputs("Europe/Berlin"),
         "key": "create-zone",
     }
     original = rig.post("/projects/create", create)
-    revise: Object = {
+    revise: FixtureObject = {
         "project_id": original["id"],
         "expected_revision": 1,
         "inputs": brief_inputs("Europe/Oslo"),
@@ -564,7 +572,7 @@ def test_new_brief_rejects_non_iana_names_before_publishing_any_bytes(
     rig: Rig, zone: str
 ) -> None:
     before = set(rig.workspace.blobs.directory.rglob("*"))
-    body: Object = {
+    body: FixtureObject = {
         "title": "Invalid zone fixture",
         "inputs": brief_inputs(zone),
         "key": "new-zone",
@@ -591,7 +599,7 @@ def test_depth_check_ignores_brackets_quotes_and_escapes_inside_strings(
 def test_permanent_http_replay_survives_days_without_writes_or_latest_revision(
     rig: Rig, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    command: Object = {
+    command: FixtureObject = {
         "title": "Permanent retry",
         "inputs": {"object": {}, "list": [], "fraction": 1.0},
         "key": "permanent",
@@ -604,7 +612,7 @@ def test_permanent_http_replay_survives_days_without_writes_or_latest_revision(
     assert set(rig.workspace.blobs.directory.rglob("*")) == before
     created = rig.post("/projects/create", command)
     assert rig.replay("/projects/create", command)["command_sha256"] == command_hash
-    revision_command: Object = {
+    revision_command: FixtureObject = {
         "project_id": created["id"],
         "expected_revision": 1,
         "inputs": {"changed": True},
@@ -902,7 +910,7 @@ def test_streamed_cap_disconnect_length_mismatch_and_principal_overwrite() -> No
 
 
 def test_browser_owner_context_and_schema_coercions_are_not_commands(rig: Rig) -> None:
-    extra_commands: tuple[Object, ...] = (
+    extra_commands: tuple[FixtureObject, ...] = (
         {"owner": FOREIGN.key},
         {"actor": {"kind": "team"}},
         {"context": {"models": {}}},
@@ -1031,10 +1039,10 @@ def test_full_http_csv_enqueue_worker_result_history_and_private_bytes(
             ",",
             ".",
         )
-        command: Object = {
+        command: FixtureObject = {
             "project_id": project_id,
             "content_base64": base64.b64encode(content).decode(),
-            "mapping": mapping.document(),
+            "mapping": json_object(mapping.document()),
             "source_label": "Synthetic analytic fixture",
             "rights_note": "created by this test",
             "key": role,
@@ -1062,7 +1070,7 @@ def test_full_http_csv_enqueue_worker_result_history_and_private_bytes(
             ).status_code
             == 404
         )
-    battery_command: Object = {
+    battery_command: FixtureObject = {
         "project_id": project_id,
         "source_note": "Analytic scenario, no actual SKU",
         "key": "battery",
@@ -1082,7 +1090,7 @@ def test_full_http_csv_enqueue_worker_result_history_and_private_bytes(
     assert rig.replay("/battery/scenario", battery_command)["status"] == "absent"
     battery = rig.post("/battery/scenario", battery_command)
     assert rig.replay("/battery/scenario", battery_command)["result"] == battery
-    energy: Object = {
+    energy: FixtureObject = {
         "schema_version": 1,
         "gross_load_asset_id": profiles["gross_load"],
         "critical_load_asset_id": None,
@@ -1124,7 +1132,7 @@ def test_full_http_csv_enqueue_worker_result_history_and_private_bytes(
         "/runs/energy",
         {"project_id": project_id, "expected_revision": 2, "key": "evaluate"},
     )
-    evaluate_command: Object = {
+    evaluate_command: FixtureObject = {
         "project_id": project_id,
         "expected_revision": 2,
         "key": "evaluate",
@@ -1224,7 +1232,7 @@ def test_full_http_csv_enqueue_worker_result_history_and_private_bytes(
 def test_file_page_caps_and_foreign_writes_do_not_publish_input_blobs(rig: Rig) -> None:
     project_id = rig.create("create")
     initial = set(rig.workspace.blobs.directory.rglob("*"))
-    body: Object = {
+    body: FixtureObject = {
         "schema_version": 1,
         "project_id": project_id,
         "expected_revision": 1,
@@ -1305,24 +1313,26 @@ def test_csv_file_ceiling_and_bad_base64_are_rejected_before_asset_publication(
 ) -> None:
     project_id = rig.create("csv-limit")
     initial = set(rig.workspace.blobs.directory.rglob("*"))
-    body: Object = {
+    body: FixtureObject = {
         "schema_version": 1,
         "project_id": project_id,
         "content_base64": "!!"
         if content is None
         else base64.b64encode(content).decode(),
-        "mapping": CsvMapping(
-            "time",
-            "power",
-            "gross_load",
-            "interval_average_kw",
-            "start",
-            "UTC",
-            "synthetic",
-            3600,
-            ",",
-            ".",
-        ).document(),
+        "mapping": json_object(
+            CsvMapping(
+                "time",
+                "power",
+                "gross_load",
+                "interval_average_kw",
+                "start",
+                "UTC",
+                "synthetic",
+                3600,
+                ",",
+                ".",
+            ).document()
+        ),
         "source_label": "Synthetic file rejection fixture",
         "rights_note": "created by this test",
         "key": "file",
@@ -1335,23 +1345,25 @@ def test_csv_file_ceiling_and_bad_base64_are_rejected_before_asset_publication(
     assert set(rig.workspace.blobs.directory.rglob("*")) == initial
 
 
-def csv_preview_command(project_id: str, content: bytes, key: str) -> Object:
+def csv_preview_command(project_id: str, content: bytes, key: str) -> FixtureObject:
     return {
         "schema_version": 1,
         "project_id": project_id,
         "content_base64": base64.b64encode(content).decode(),
-        "mapping": CsvMapping(
-            "time",
-            "power",
-            "gross_load",
-            "interval_average_kw",
-            "start",
-            "Europe/Berlin",
-            "synthetic",
-            900,
-            ";",
-            ",",
-        ).document(),
+        "mapping": json_object(
+            CsvMapping(
+                "time",
+                "power",
+                "gross_load",
+                "interval_average_kw",
+                "start",
+                "Europe/Berlin",
+                "synthetic",
+                900,
+                ";",
+                ",",
+            ).document()
+        ),
         "source_label": "Synthetic source for interpretation",
         "rights_note": "Created by this test",
         "key": key,
@@ -1364,7 +1376,11 @@ def test_http_unknown_creation_and_csv_import_recover_original_after_native_clai
     from linker_engine.planning.guest_claims import GuestClaims
 
     guest = Actor("guest", "synthetic-native-handover")
-    create: Object = {"title": "Synthetic handover", "inputs": {}, "key": "lost-create"}
+    create: FixtureObject = {
+        "title": "Synthetic handover",
+        "inputs": {},
+        "key": "lost-create",
+    }
     original = rig.post("/projects/create", create, guest)
     project_id = cast(str, original["id"])
     command = csv_preview_command(
@@ -1412,7 +1428,7 @@ def test_csv_column_inspection_is_owned_read_only_and_not_a_quality_release(
     project_id = rig.create("csv-columns")
     raw = b'time;power;note\n\nPRIVATE-TIME;PRIVATE-NUMBER;"two\nlines"\nnext;2;last\n'
     before = set(rig.workspace.blobs.directory.rglob("*"))
-    command: Object = {
+    command: FixtureObject = {
         "project_id": project_id,
         "content_base64": base64.b64encode(raw).decode(),
         "delimiter": ";",
@@ -1587,7 +1603,7 @@ def test_source_selection_cannot_relabel_measurement_or_reference_another_projec
     }
     asset = rig.post("/profiles/csv", command)
 
-    def revision(project: str, role: str, key: str) -> Object:
+    def revision(project: str, role: str, key: str) -> FixtureObject:
         return {
             "schema_version": 1,
             "project_id": project,
@@ -1662,7 +1678,7 @@ def test_profile_preview_uses_full_pinned_interpretation_and_pages_without_filli
         raise AssertionError("preview must use captured TZif bytes")
 
     monkeypatch.setattr(timezone_rules, "load_timezone", no_recapture)
-    command: Object = {
+    command: FixtureObject = {
         "project_id": project_id,
         "asset_id": asset["id"],
         "offset": 0,
@@ -1750,7 +1766,7 @@ def test_profile_preview_checks_owner_before_parsing_and_enforces_wire_page_boun
     monkeypatch.setattr(
         "linker_engine.planning.frozen_profiles.read_profile", forbidden_parse
     )
-    body: Object = {
+    body: FixtureObject = {
         "schema_version": 1,
         "project_id": project_id,
         "asset_id": asset["id"],

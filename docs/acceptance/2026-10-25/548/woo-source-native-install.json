@@ -260,17 +260,17 @@
     "copy_review": {
       "dimension": "Module selection and fact/source intake, not equipment qualification",
       "pairs": {
-        "Choose a module": "Modul ausw\u00e4hlen",
-        "Loading module data\u2026": "Moduldaten werden geladen \u2026",
+        "Choose a module": "Modul auswählen",
+        "Loading module data…": "Moduldaten werden geladen …",
         "Module data could not be loaded.": "Die Moduldaten konnten nicht geladen werden.",
         "Reload module data": "Moduldaten neu laden",
-        "No module specification is currently available.": "Derzeit ist keine Modulspezifikation verf\u00fcgbar.",
+        "No module specification is currently available.": "Derzeit ist keine Modulspezifikation verfügbar.",
         "Dimensions, rated power at STC and the temperature coefficient come from Linker's product data.": "Abmessungen, STC-Nennleistung und Temperaturkoeffizient stammen aus den Produktdaten von Linker.",
-        "\u201cApply properties\u201d updates the module values in this draft. \u201cSave project\u201d saves the changes.": "\u201eEigenschaften anwenden\u201c aktualisiert die Modulwerte in diesem Entwurf. \u201eProjekt speichern\u201c speichert die \u00c4nderungen.",
-        "A new calculation requires an updated module selection.": "F\u00fcr eine neue Berechnung muss die Modulauswahl aktualisiert werden.",
+        "“Apply properties” updates the module values in this draft. “Save project” saves the changes.": "„Eigenschaften anwenden“ aktualisiert die Modulwerte in diesem Entwurf. „Projekt speichern“ speichert die Änderungen.",
+        "A new calculation requires an updated module selection.": "Für eine neue Berechnung muss die Modulauswahl aktualisiert werden.",
         "Source document": "Quelldokument",
         "Page %d": "Seite %d",
-        "The update takes the temperature coefficient and its source from the current product selection. Other settings for matching arrays are kept; entries for arrays outside the layout are removed. New arrays need model settings and a conversion group.": "Die Aktualisierung \u00fcbernimmt den Temperaturkoeffizienten und dessen Quelle aus der aktuellen Produktauswahl. Die \u00fcbrigen Einstellungen passender Teilfelder bleiben erhalten; Eintr\u00e4ge f\u00fcr Teilfelder au\u00dferhalb der Belegung werden entfernt. Neue Teilfelder ben\u00f6tigen Modelleinstellungen und eine Zuordnung zur Leistungsumwandlung."
+        "The update takes the temperature coefficient and its source from the current product selection. Other settings for matching arrays are kept; entries for arrays outside the layout are removed. New arrays need model settings and a conversion group.": "Die Aktualisierung übernimmt den Temperaturkoeffizienten und dessen Quelle aus der aktuellen Produktauswahl. Die übrigen Einstellungen passender Teilfelder bleiben erhalten; Einträge für Teilfelder außerhalb der Belegung werden entfernt. Neue Teilfelder benötigen Modelleinstellungen und eine Zuordnung zur Leistungsumwandlung."
       },
       "review": "Independent energy_trace_copy review; revised STC condition, exact Apply/Save labels and coefficient-only update semantics",
       "pre_delivery": {
@@ -523,19 +523,19 @@
     "final_pairs": [
       {
         "en": "Equipment",
-        "de": "Ger\u00e4te"
+        "de": "Geräte"
       },
       {
         "en": "Equipment checks",
-        "de": "Pr\u00fcfung der Ger\u00e4teauswahl"
+        "de": "Prüfung der Geräteauswahl"
       },
       {
         "en": "Checking equipment selection",
-        "de": "Ger\u00e4teauswahl wird gepr\u00fcft"
+        "de": "Geräteauswahl wird geprüft"
       },
       {
         "en": "Equipment check complete",
-        "de": "Pr\u00fcfung der Ger\u00e4teauswahl abgeschlossen"
+        "de": "Prüfung der Geräteauswahl abgeschlossen"
       },
       {
         "en": "Requirement",
@@ -551,7 +551,7 @@
       },
       {
         "en": "Provisional bill of materials",
-        "de": "Vorl\u00e4ufige St\u00fcckliste"
+        "de": "Vorläufige Stückliste"
       },
       {
         "en": "Quantity not determined",
@@ -563,7 +563,7 @@
       },
       {
         "en": "Choose a product",
-        "de": "Produkt ausw\u00e4hlen"
+        "de": "Produkt auswählen"
       },
       {
         "en": "Product data could not be loaded.",
@@ -587,7 +587,7 @@
       },
       {
         "en": "Choose an operating mode",
-        "de": "Betriebsart ausw\u00e4hlen"
+        "de": "Betriebsart auswählen"
       },
       {
         "en": "Grid-connected",
@@ -607,43 +607,43 @@
       },
       {
         "en": "Required usable energy",
-        "de": "Ben\u00f6tigte nutzbare Speicherenergie"
+        "de": "Benötigte nutzbare Speicherenergie"
       },
       {
         "en": "Required continuous AC discharge power",
-        "de": "Ben\u00f6tigte AC-Dauerleistung bei Entladung"
+        "de": "Benötigte AC-Dauerleistung bei Entladung"
       },
       {
         "en": "Additional products",
-        "de": "Zus\u00e4tzliche Produkte"
+        "de": "Zusätzliche Produkte"
       },
       {
         "en": "Use current product data",
-        "de": "Aktuelle Produktdaten \u00fcbernehmen"
+        "de": "Aktuelle Produktdaten übernehmen"
       },
       {
         "en": "Equipment selection prepared in this draft",
-        "de": "Ger\u00e4teauswahl in diesem Entwurf vorbereitet"
+        "de": "Geräteauswahl in diesem Entwurf vorbereitet"
       },
       {
         "en": "Prepare equipment selection",
-        "de": "Ger\u00e4teauswahl vorbereiten"
+        "de": "Geräteauswahl vorbereiten"
       },
       {
         "en": "Check saved equipment selection",
-        "de": "Gespeicherte Ger\u00e4teauswahl pr\u00fcfen"
+        "de": "Gespeicherte Geräteauswahl prüfen"
       },
       {
         "en": "Checked requirements met",
-        "de": "Gepr\u00fcfte Anforderungen erf\u00fcllt"
+        "de": "Geprüfte Anforderungen erfüllt"
       },
       {
         "en": "Requirements not met",
-        "de": "Anforderungen nicht erf\u00fcllt"
+        "de": "Anforderungen nicht erfüllt"
       },
       {
         "en": "Further checks required",
-        "de": "Weitere Pr\u00fcfung erforderlich"
+        "de": "Weitere Prüfung erforderlich"
       },
       {
         "en": "Converter output",
@@ -659,7 +659,7 @@
       },
       {
         "en": "PV strings and inputs",
-        "de": "PV-Strings und Eing\u00e4nge"
+        "de": "PV-Strings und Eingänge"
       },
       {
         "en": "Manufacturer pairing",
@@ -675,7 +675,7 @@
       },
       {
         "en": "Required accessory",
-        "de": "Erforderliches Zubeh\u00f6r"
+        "de": "Erforderliches Zubehör"
       },
       {
         "en": "Battery voltage",
@@ -703,27 +703,27 @@
       },
       {
         "en": "Accessory quantity",
-        "de": "Menge des Zubeh\u00f6rs"
+        "de": "Menge des Zubehörs"
       },
       {
         "en": "The documented voltage ranges do not overlap.",
-        "de": "Die dokumentierten Spannungsbereiche \u00fcberschneiden sich nicht."
+        "de": "Die dokumentierten Spannungsbereiche überschneiden sich nicht."
       },
       {
         "en": "A new check requires current product data. Reload the data and prepare the selection again.",
-        "de": "F\u00fcr eine neue Pr\u00fcfung sind aktuelle Produktdaten erforderlich. Laden Sie die Daten neu und bereiten Sie die Auswahl erneut vor."
+        "de": "Für eine neue Prüfung sind aktuelle Produktdaten erforderlich. Laden Sie die Daten neu und bereiten Sie die Auswahl erneut vor."
       },
       {
         "en": "Choose products and prepare the selection before saving the project.",
-        "de": "W\u00e4hlen Sie Produkte aus und bereiten Sie die Auswahl vor, bevor Sie das Projekt speichern."
+        "de": "Wählen Sie Produkte aus und bereiten Sie die Auswahl vor, bevor Sie das Projekt speichern."
       },
       {
         "en": "Choose products to check their combination against the requirements entered here.",
-        "de": "W\u00e4hlen Sie Produkte aus, um die Kombination anhand der hier angegebenen Anforderungen zu pr\u00fcfen."
+        "de": "Wählen Sie Produkte aus, um die Kombination anhand der hier angegebenen Anforderungen zu prüfen."
       },
       {
         "en": "Equipment selection requires a product and valid quantities.",
-        "de": "F\u00fcr die Ger\u00e4teauswahl sind ein Produkt und g\u00fcltige Mengenangaben erforderlich."
+        "de": "Für die Geräteauswahl sind ein Produkt und gültige Mengenangaben erforderlich."
       },
       {
         "en": "Product properties come from Linker's product data. Each result records the product data and documents used.",
@@ -731,23 +731,23 @@
       },
       {
         "en": "Quantities are shown only when the product's sales unit and selected configuration are established.",
-        "de": "Mengen werden nur angegeben, wenn Verkaufseinheit und gew\u00e4hlte Konfiguration feststehen."
+        "de": "Mengen werden nur angegeben, wenn Verkaufseinheit und gewählte Konfiguration feststehen."
       },
       {
         "en": "The cited data does not establish whether this requirement is met.",
-        "de": "Die angegebenen Daten zeigen nicht, ob diese Anforderung erf\u00fcllt ist."
+        "de": "Die angegebenen Daten zeigen nicht, ob diese Anforderung erfüllt ist."
       },
       {
         "en": "The voltage ranges overlap only partly. The usable storage energy for this connection has not been established.",
-        "de": "Die Spannungsbereiche \u00fcberschneiden sich nur teilweise. Die \u00fcber diesen Anschluss nutzbare Speicherenergie ist nicht belegt."
+        "de": "Die Spannungsbereiche überschneiden sich nur teilweise. Die über diesen Anschluss nutzbare Speicherenergie ist nicht belegt."
       },
       {
         "en": "This configuration requires a documented operating voltage range.",
-        "de": "F\u00fcr diese Konfiguration ist ein belegter Betriebsspannungsbereich erforderlich."
+        "de": "Für diese Konfiguration ist ein belegter Betriebsspannungsbereich erforderlich."
       },
       {
         "en": "This result records the proposed equipment and the checks covered here. Further assessment of the complete system is required.",
-        "de": "Dieses Ergebnis dokumentiert die vorgeschlagene Ger\u00e4teauswahl und die hier gepr\u00fcften Anforderungen. Die Gesamtanlage muss noch weiter gepr\u00fcft werden."
+        "de": "Dieses Ergebnis dokumentiert die vorgeschlagene Geräteauswahl und die hier geprüften Anforderungen. Die Gesamtanlage muss noch weiter geprüft werden."
       }
     ]
   },
@@ -795,7 +795,7 @@
     "usable_energy": {
       "actual_kwh": 13.5,
       "requirement_kwh": 10,
-      "formula": "4.5 kWh \u00d7 3 = 13.5 kWh",
+      "formula": "4.5 kWh × 3 = 13.5 kWh",
       "document_url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
       "page": 2
     },
@@ -836,7 +836,7 @@
       "full_backups_added": 0
     },
     "handoff": {
-      "thread_title": "\u5c06 EcoFlow \u4ea7\u54c1\u4e0b\u67b6\u4e3a\u8349\u7a3f",
+      "thread_title": "将 EcoFlow 产品下架为草稿",
       "sent": true,
       "scope": "Woo-native declarations, shared projection, source/runtime, native adoption evidence; no repeated source verification requested"
     },
@@ -1082,39 +1082,39 @@
       "pairs": [
         [
           "Add selected products to solution draft",
-          "Ausgew\u00e4hlte Produkte zum L\u00f6sungsentwurf hinzuf\u00fcgen"
+          "Ausgewählte Produkte zum Lösungsentwurf hinzufügen"
         ],
         [
-          "Adding selected products\u2026",
-          "Ausgew\u00e4hlte Produkte werden hinzugef\u00fcgt\u2026"
+          "Adding selected products…",
+          "Ausgewählte Produkte werden hinzugefügt…"
         ],
         [
           "View solution draft",
-          "L\u00f6sungsentwurf ansehen"
+          "Lösungsentwurf ansehen"
         ],
         [
           "These are the products selected in this report. Adding them does not replace any outstanding engineering checks.",
-          "Dies sind die im Bericht ausgew\u00e4hlten Produkte. Die \u00dcbernahme ersetzt keine noch ausstehenden technischen Pr\u00fcfungen."
+          "Dies sind die im Bericht ausgewählten Produkte. Die Übernahme ersetzt keine noch ausstehenden technischen Prüfungen."
         ],
         [
           "The selected products could not be added. Review your solution draft and try again.",
-          "Die ausgew\u00e4hlten Produkte konnten nicht hinzugef\u00fcgt werden. Pr\u00fcfen Sie Ihren L\u00f6sungsentwurf und versuchen Sie es erneut."
+          "Die ausgewählten Produkte konnten nicht hinzugefügt werden. Prüfen Sie Ihren Lösungsentwurf und versuchen Sie es erneut."
         ],
         [
           "Your solution draft has changed. Refresh this page and try again.",
-          "Ihr L\u00f6sungsentwurf wurde ge\u00e4ndert. Laden Sie diese Seite neu und versuchen Sie es erneut."
+          "Ihr Lösungsentwurf wurde geändert. Laden Sie diese Seite neu und versuchen Sie es erneut."
         ],
         [
           "The previous transfer is not yet confirmed. Retry the same transfer.",
-          "Die vorherige \u00dcbernahme ist noch nicht best\u00e4tigt. Versuchen Sie dieselbe \u00dcbernahme erneut."
+          "Die vorherige Übernahme ist noch nicht bestätigt. Versuchen Sie dieselbe Übernahme erneut."
         ],
         [
           "Planning project",
           "Planungsprojekt"
         ],
         [
-          "%1$s \u00b7 input revision %2$d",
-          "%1$s \u00b7 Eingabeversion %2$d"
+          "%1$s · input revision %2$d",
+          "%1$s · Eingabeversion %2$d"
         ],
         [
           "Planning report",
@@ -1126,7 +1126,7 @@
         ],
         [
           "Selected products added to solution draft.",
-          "Die ausgew\u00e4hlten Produkte wurden zum L\u00f6sungsentwurf hinzugef\u00fcgt."
+          "Die ausgewählten Produkte wurden zum Lösungsentwurf hinzugefügt."
         ],
         [
           "Quantities differ from the planning report.",
@@ -1134,7 +1134,7 @@
         ],
         [
           "Review the changes to this project's products in your solution draft.",
-          "Pr\u00fcfen Sie die \u00c4nderungen an den Produkten dieses Projekts in Ihrem L\u00f6sungsentwurf."
+          "Prüfen Sie die Änderungen an den Produkten dieses Projekts in Ihrem Lösungsentwurf."
         ],
         [
           "Current quantity",
@@ -1146,27 +1146,27 @@
         ],
         [
           "Confirm changes",
-          "\u00c4nderungen best\u00e4tigen"
+          "Änderungen bestätigen"
         ],
         [
           "Generate a report for the project's current saved inputs before adding products.",
-          "Erstellen Sie einen Bericht f\u00fcr die aktuell gespeicherten Projekteingaben, bevor Sie Produkte hinzuf\u00fcgen."
+          "Erstellen Sie einen Bericht für die aktuell gespeicherten Projekteingaben, bevor Sie Produkte hinzufügen."
         ],
         [
-          "Preparing changes\u2026",
-          "\u00c4nderungen werden vorbereitet\u2026"
+          "Preparing changes…",
+          "Änderungen werden vorbereitet…"
         ],
         [
           "Retry transfer",
-          "\u00dcbernahme erneut versuchen"
+          "Übernahme erneut versuchen"
         ],
         [
-          "Product transfer \u00b7 input revision %d",
-          "Produkt\u00fcbernahme \u00b7 Eingabeversion %d"
+          "Product transfer · input revision %d",
+          "Produktübernahme · Eingabeversion %d"
         ],
         [
           "Quantities have not been determined for some selected products. Update the equipment selection and generate a new report.",
-          "F\u00fcr einige ausgew\u00e4hlte Produkte wurde keine Menge ermittelt. Aktualisieren Sie die Ger\u00e4teauswahl und erstellen Sie einen neuen Bericht."
+          "Für einige ausgewählte Produkte wurde keine Menge ermittelt. Aktualisieren Sie die Geräteauswahl und erstellen Sie einen neuen Bericht."
         ]
       ]
     },
@@ -1664,7 +1664,7 @@
     },
     "native_scenario": {
       "project_id": "c7795bc2c1e14e389622015c809ace45",
-      "title": "Berlin \u00b7 Beispielprojekt \u00b7 PV und Speicher",
+      "title": "Berlin · Beispielprojekt · PV und Speicher",
       "prior_revision": 14,
       "prior_input_sha256": "32b9f95c200fe0c286e9e7552ccaf5377bfcbc63cae14bb6114125ba4ea43f1f",
       "revision": 18,
@@ -1677,7 +1677,7 @@
         "pv_available_ac": "4790cc9c56a44d32b59fe91fe1e1b519"
       },
       "declared_assumptions": {
-        "source_note": "Declared reference assumptions: DC/DC 98% each way, storage 99% each way, forward inverter 96%, fixed battery temperature 20 \u00b0C, zero internal and DC auxiliary demand and standing loss. No reverse charging. These are scenario assumptions, not manufacturer performance data.",
+        "source_note": "Declared reference assumptions: DC/DC 98% each way, storage 99% each way, forward inverter 96%, fixed battery temperature 20 °C, zero internal and DC auxiliary demand and standing loss. No reverse charging. These are scenario assumptions, not manufacturer performance data.",
         "pv_converter_id": "converter",
         "battery_port_id": "BAT1",
         "battery_temperature_c": 20,
@@ -2370,7 +2370,7 @@
     "owner_correction": "2026-10-27: the owner again identified endless validation as blocking other tasks. Enforce AGENTS 0.1 in execution: no new verification without a named delivery decision, hand off satisfied interfaces immediately, close the current increment after its actual failures are repaired.",
     "dependency_readback": {
       "thread_id": "01a1684e-e0ef-7951-9c25-64cc89eda28f",
-      "title": "\u5c06 EcoFlow \u4ea7\u54c1\u4e0b\u67b6\u4e3a\u8349\u7a3f",
+      "title": "将 EcoFlow 产品下架为草稿",
       "latest_status": "Shared Woo product, document and knowledge line has completed production readback and closure; no new dependency on planner validation.",
       "notification_sent": true,
       "shared_woo_source": "ee916454e451c0769097294afaf0bef0a73823b79b319c7f3f828f6408ff625d"
@@ -2457,8 +2457,8 @@
           "evidence_refs": [],
           "qualifier": null,
           "quantity": "temperature",
-          "raw_unit": "\u00b0C",
-          "raw_value": "43 (\u00b12)",
+          "raw_unit": "°C",
+          "raw_value": "43 (±2)",
           "shape": "text",
           "source": {
             "blob_sha256": "f4d280f9a0d89475cf575fbb99906e2b091da27f08b848fc51877cc1d24e8e22",
@@ -2472,8 +2472,8 @@
             "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf"
           },
           "status": "text_evidence",
-          "unit": "\u00b0C",
-          "value": "43 (\u00b12)"
+          "unit": "°C",
+          "value": "43 (±2)"
         }
       },
       "stc": {
@@ -2488,7 +2488,7 @@
       "cold_cell_c": 20.0,
       "hot_cell_c": 60.0,
       "irradiance_w_m2": 1000.0,
-      "source_note": "Illustrative uniform operating cases for this saved example: effective irradiance 1000 W/m\u00b2; hot cell 60 \u00b0C, cold cell 20 \u00b0C. Mounting, ventilation, wind and local design extremes have not been established. These are entered scenario conditions, not site measurements or manufacturer release."
+      "source_note": "Illustrative uniform operating cases for this saved example: effective irradiance 1000 W/m²; hot cell 60 °C, cold cell 20 °C. Mounting, ventilation, wind and local design extremes have not been established. These are entered scenario conditions, not site measurements or manufacturer release."
     },
     "points": [
       {
@@ -2619,12 +2619,12 @@
     "before_templates": [
       {
         "id": 6973,
-        "post_content": "<!--\n  The Solution Configurator's page (/solution-configurator/, /de/loesungskonfigurator/).\n  Both languages render this one file: it is a mount point, and every word in\n  it comes from the app, which localizes itself from the page's lang\n  (linker-tools src/configurator/config.ts) \u2014 there is no static copy to\n  translate. Measured 2026-10-12 on the live site: its planner page prints the\n  theme's entry title above the application, which the application's own h1\n  then duplicates; the app owns the heading here.\n-->\n<section class=\"linker-configurator-page py-0\">\n\t[linker_configurator]\n</section>",
+        "post_content": "<!--\n  The Solution Configurator's page (/solution-configurator/, /de/loesungskonfigurator/).\n  Both languages render this one file: it is a mount point, and every word in\n  it comes from the app, which localizes itself from the page's lang\n  (linker-tools src/configurator/config.ts) — there is no static copy to\n  translate. Measured 2026-10-12 on the live site: its planner page prints the\n  theme's entry title above the application, which the application's own h1\n  then duplicates; the app owns the heading here.\n-->\n<section class=\"linker-configurator-page py-0\">\n\t[linker_configurator]\n</section>",
         "sha256": "39c5a3be20773412f5926e812021593f88f2022c00a67a1f5511209bea300e5b"
       },
       {
         "id": 6974,
-        "post_content": "<!--\n  The Solution Configurator's page (/solution-configurator/, /de/loesungskonfigurator/).\n  Both languages render this one file: it is a mount point, and every word in\n  it comes from the app, which localizes itself from the page's lang\n  (linker-tools src/configurator/config.ts) \u2014 there is no static copy to\n  translate. Measured 2026-10-12 on the live site: its planner page prints the\n  theme's entry title above the application, which the application's own h1\n  then duplicates; the app owns the heading here.\n-->\n<section class=\"linker-configurator-page py-0\">\n\t[linker_configurator]\n</section>",
+        "post_content": "<!--\n  The Solution Configurator's page (/solution-configurator/, /de/loesungskonfigurator/).\n  Both languages render this one file: it is a mount point, and every word in\n  it comes from the app, which localizes itself from the page's lang\n  (linker-tools src/configurator/config.ts) — there is no static copy to\n  translate. Measured 2026-10-12 on the live site: its planner page prints the\n  theme's entry title above the application, which the application's own h1\n  then duplicates; the app owns the heading here.\n-->\n<section class=\"linker-configurator-page py-0\">\n\t[linker_configurator]\n</section>",
         "sha256": "39c5a3be20773412f5926e812021593f88f2022c00a67a1f5511209bea300e5b"
       }
     ],
@@ -2644,7 +2644,7 @@
       "included": {
         "id": "9fcb23092e6a4a389cc9a7d717e0a8b2",
         "owner": "user:wp:1:user:66",
-        "title": "Cologne \u00b7 customer link example",
+        "title": "Cologne · customer link example",
         "revision": 1,
         "input_sha256": "04f2a9cba1b7f864b9e87e75942faa5beda856e2fce5167825a2586114f5c797",
         "inputs": {
@@ -2686,7 +2686,7 @@
       "excluded": {
         "id": "36b61cbf618e4ebeb39dee46788285e0",
         "owner": "user:wp:1:user:66",
-        "title": "K\u00f6ln \u00b7 Dachplanung ohne Linkwerte",
+        "title": "Köln · Dachplanung ohne Linkwerte",
         "revision": 1,
         "input_sha256": "58023034feb9dcff2b262d759587aaf4b75898750e5aff1c8afd3c5a1a4c908e",
         "inputs": {
@@ -4418,7 +4418,7 @@
       "preparation_revision": 9,
       "country_preserved": "FR",
       "source_revision": "e1773a35f189b2eec9267b9f757a55c60bd996e62df9e5d1812d90f0b8c337d4",
-      "source_context": "Manufacturer reference capacity, original unit temperatures25/20\u00b0C retained; no site/country approval",
+      "source_context": "Manufacturer reference capacity, original unit temperatures25/20°C retained; no site/country approval",
       "parameter_assets": {
         "system_a176991d-c5a2-49cb-9dfc-dcfc9f3cffc3": "f35503eaa34a4457a6040beffaadbb1b",
         "system_cbb2b6ac-a9d0-417b-8f4a-a66ef5edbc1f": "a06365c6fc834407b683e1a52a5bf537"
@@ -4870,7 +4870,7 @@
         "save": 410,
         "former_pdf_generator": 410,
         "type": "application/json; charset=UTF-8",
-        "message": "L\u00f6sungskonfigurator \u00f6ffnen",
+        "message": "Lösungskonfigurator öffnen",
         "url": "http://127.0.0.1:9347/de/loesungskonfigurator/"
       },
       "owned_old_form": {
@@ -5001,15 +5001,15 @@
       "final_pairs": [
         {
           "en": "Certificates and related product documents",
-          "de": "Zertifikate und zugeh\u00f6rige Produktunterlagen"
+          "de": "Zertifikate und zugehörige Produktunterlagen"
         },
         {
-          "en": "These documents were linked to the selected products when this result was recorded. Their applicability to this project\u2019s models, firmware, configuration, standard editions and annexes has not been assessed here. Compliance with country-specific requirements, installation approval and grid-operator acceptance require separate evidence.",
-          "de": "Diese Unterlagen waren den ausgew\u00e4hlten Produkten zugeordnet, als dieses Ergebnis gespeichert wurde. Ob sie f\u00fcr die Modelle, Firmwarest\u00e4nde und Konfigurationen dieses Projekts gelten und welche Normausgaben und Anh\u00e4nge ma\u00dfgeblich sind, wurde hier nicht gepr\u00fcft. Die Erf\u00fcllung landesspezifischer Anforderungen, die Freigabe der Installation und die Zustimmung des Netzbetreibers m\u00fcssen gesondert nachgewiesen werden."
+          "en": "These documents were linked to the selected products when this result was recorded. Their applicability to this project’s models, firmware, configuration, standard editions and annexes has not been assessed here. Compliance with country-specific requirements, installation approval and grid-operator acceptance require separate evidence.",
+          "de": "Diese Unterlagen waren den ausgewählten Produkten zugeordnet, als dieses Ergebnis gespeichert wurde. Ob sie für die Modelle, Firmwarestände und Konfigurationen dieses Projekts gelten und welche Normausgaben und Anhänge maßgeblich sind, wurde hier nicht geprüft. Die Erfüllung landesspezifischer Anforderungen, die Freigabe der Installation und die Zustimmung des Netzbetreibers müssen gesondert nachgewiesen werden."
         },
         {
           "en": "No certificates or related product documents were recorded for the selected products.",
-          "de": "F\u00fcr die ausgew\u00e4hlten Produkte wurden keine Zertifikate oder zugeh\u00f6rigen Produktunterlagen erfasst."
+          "de": "Für die ausgewählten Produkte wurden keine Zertifikate oder zugehörigen Produktunterlagen erfasst."
         },
         {
           "en": "The document sources could not be loaded. Try again.",
@@ -5017,7 +5017,7 @@
         },
         {
           "en": "Open document",
-          "de": "Dokument \u00f6ffnen"
+          "de": "Dokument öffnen"
         },
         {
           "en": "Recorded source details",
@@ -5025,11 +5025,11 @@
         },
         {
           "en": "This document is currently unavailable.",
-          "de": "Dieses Dokument ist derzeit nicht verf\u00fcgbar."
+          "de": "Dieses Dokument ist derzeit nicht verfügbar."
         },
         {
           "en": "This file differs from the version recorded with this result.",
-          "de": "Diese Datei unterscheidet sich von der f\u00fcr dieses Ergebnis erfassten Fassung."
+          "de": "Diese Datei unterscheidet sich von der für dieses Ergebnis erfassten Fassung."
         },
         {
           "en": "Recorded document revision",
@@ -5237,7 +5237,7 @@
       "first_failure": "plan: whole-PR whitespace check included original evidence and generated third-party shader text; downstream required jobs exited on failed plan before running business tests.",
       "correction": "Use native .gitattributes only for generated output/captured source records and exact historical probe/CSV paths. Preserve their bytes. Authored runtime/source/tests and hand-written specs retain ordinary whitespace checks; build manifests and selected CI checks are unchanged.",
       "local_readback": "Full PR git diff --check origin/main passed. TS/Python/PHP maintained sources retain whitespace:unspecified; captured/generated inputs have whitespace:unset.",
-      "status": "native integration passed at33ed6e723; identified PHP static defects repaired locally; next candidate CI pending",
+      "status": "Concentrated static repair and incremental reviews passed locally; candidate CI pending.",
       "existing_runtime_evidence_reused": true,
       "native_job": {
         "run_id": 40438016189,
@@ -5251,6 +5251,25 @@
         "existing_runtime_fixtures": "Design/current-source, package and publication cases passed; corrected AccountTemplates fixture passed; native old saved-record removal/Undo/retirement passed. No test file or matrix was added.",
         "review": "Incremental Spec and Standards PASS; no old endpoint restored or permission loosened.",
         "reuse": "Unchanged engine runtime, numerical/PDF/UI evidence and accepted native interfaces remain valid."
+      },
+      "last_completed_candidate": {
+        "head": "f864e25f43b84f1909e435b4009577c648f10104",
+        "run_id": 40441786493,
+        "plan": "success",
+        "native_mu_smoke": "success",
+        "check": "failed at two Genie JS lint findings after all five PHP checks passed"
+      },
+      "static_convergence": {
+        "reason": "Owner correction: stop serial validation churn and release already-ready dependencies. Collect the remaining configured static gates once, repair the shared fixture boundary, then submit one candidate.",
+        "changes": "Keep production JSON types strict. Reuse one checked raw-object fixture boundary, narrow nullable reads and explicit mock signatures, preserve all existing business scenarios. Pure formatting keeps the production report AST unchanged. Origin admission reads the host without a path literal; its origin is unchanged.",
+        "local_acceptance": "JS lint/types/format and e2e types/format passed. Engine Ruff/format/strict mypy passed. Genie and local tooling static checks passed. German copy, internal URLs, i18n coverage/validity and rebuilt asset manifests passed. Existing release, geographic, brief and representative equipment fixture passed.",
+        "evidence_reuse": "Unchanged six Python harnesses and pull/cutover source+locks match accepted main ae442a040. Reuse its successful CI. Existing numerical, native worker, PDF, server lifecycle and EN/DE visual evidence is retained; no replay for type or format edits.",
+        "scope_control": "No new test scenario, visual matrix, runtime instance, numerical run or backup. Exact numeric tokens in the captured native DC run remain unchanged; only that record is excluded from Prettier.",
+        "exit_condition": "Final incremental Spec/Standards review, one candidate CI, then advance review/release. Extra checks require a changed dependency or a real new failure.",
+        "incremental_review": {
+          "spec": "PASS: assertions, parameters, product semantics and exact fixture data preserved; no test execution or new report.",
+          "standards": "PASS: Any confined to test protocol/mock boundaries, valid None preserved, production AST and source/build proof reused; no test execution or new report."
+        }
       }
     }
   }
