@@ -12,15 +12,53 @@
 	// The inquiry and Woo draft are separate forms. Unsaved edits and in-flight
 	// writes must both stop the inquiry from sending the previous server lines.
 	const inquiry = document.querySelector( '.linker-inquiry' );
-	const draftBusy = () => Boolean( inquiry?.querySelector( '.woocommerce-cart-form.processing' ) );
-	const draftChanged = () => [ ...( inquiry?.querySelectorAll( '.woocommerce-cart-form input.qty' ) || [] ) ]
+	const draftSurface = document.querySelector( '.linker-inquiry, #tv-storefront-cart' );
+	const draftBusy = () => Boolean( draftSurface?.querySelector( '.woocommerce-cart-form.processing' ) );
+	const draftChanged = () => [ ...( draftSurface?.querySelectorAll( '.woocommerce-cart-form input.qty' ) || [] ) ]
 		.some( ( quantity ) => quantity.value !== quantity.defaultValue );
 	const draftBlocked = () => draftBusy() || draftChanged();
+	const send = inquiry?.querySelector( '.linker-inquiry-form button[type="submit"]' );
+	const pending = draftSurface?.querySelector( '[data-inquiry-draft-pending]' );
+	const syncDraftState = () => {
+		if ( send ) {
+			send.disabled = draftBlocked();
+		}
+		draftSurface?.querySelectorAll( '.wc-proceed-to-checkout a' ).forEach( ( link ) => {
+			link.setAttribute( 'aria-disabled', String( draftBlocked() ) );
+			if ( pending?.id ) {
+				link.setAttribute( 'aria-describedby', pending.id );
+			}
+		} );
+		if ( pending ) {
+			pending.hidden = ! draftBlocked();
+		}
+	};
+	if ( draftSurface ) {
+		new MutationObserver( syncDraftState ).observe( draftSurface, {
+			childList: true,
+			subtree: true,
+			attributes: true,
+			attributeFilter: [ 'class' ],
+		} );
+		draftSurface.addEventListener( 'input', syncDraftState );
+		draftSurface.addEventListener( 'change', syncDraftState );
+		draftSurface.addEventListener( 'click', ( event ) => {
+			if ( event.target.closest( '.wc-proceed-to-checkout a' ) && draftBlocked() ) {
+				event.preventDefault();
+				syncDraftState();
+				const update = draftSurface.querySelector( '[name="update_cart"]' );
+				if ( update && ! update.disabled ) {
+					update.focus();
+				} else {
+					pending?.focus();
+				}
+			}
+		} );
+		syncDraftState();
+	}
 	const inquiryStorageKey = 'linker-inquiry-edit';
 	if ( inquiry ) {
 		const form = inquiry.querySelector( '.linker-inquiry-form' );
-		const send = inquiry.querySelector( '.linker-inquiry-form button[type="submit"]' );
-		const pending = inquiry.querySelector( '[data-inquiry-draft-pending]' );
 		const retentionError = inquiry.querySelector( '[data-inquiry-retention-error]' );
 		const names = [ 'name', 'email', 'company', 'message' ];
 		const context = form?.dataset.inquiryContext || '';
@@ -62,25 +100,6 @@
 			// An unavailable or invalid bridge never replaces the current form.
 		}
 
-		const syncDraftState = () => {
-			if ( send ) {
-				send.disabled = draftBlocked();
-			}
-			if ( pending ) {
-				pending.hidden = ! draftChanged();
-			}
-		};
-		if ( send ) {
-			new MutationObserver( syncDraftState ).observe( inquiry, {
-				childList: true,
-				subtree: true,
-				attributes: true,
-				attributeFilter: [ 'class' ],
-			} );
-			inquiry.addEventListener( 'input', syncDraftState );
-			inquiry.addEventListener( 'change', syncDraftState );
-			syncDraftState();
-		}
 
 		document.addEventListener( 'click', ( event ) => {
 			const link = event.target.closest( '[data-inquiry-edit], a[lang], a[hreflang]' );
@@ -111,9 +130,8 @@
 				}
 			}
 		} );
-	} else {
-		// The same asset runs on account and confirmation pages, never the cart.
-		// An authentication detour or completed inquiry retires a pending bridge.
+	} else if ( ! draftSurface ) {
+		// Account and confirmation pages retire the bridge; editing the draft keeps it.
 		try {
 			window.sessionStorage.removeItem( inquiryStorageKey );
 		} catch {

@@ -68,14 +68,15 @@ final class Module {
 	 * workspace forms, and the register card's two steps (ticket #225, which
 	 * initializes WooCommerce's selectWoo on the country field). The strength
 	 * meter is WooCommerce's own (wc-password-strength-meter), which Woo
-	 * enqueues on the pages that carry a password field. Only the account
-	 * chain loads this file. selectWoo and country-select are WooCommerce's
+	 * enqueues on the pages that carry a password field. The account chain and
+	 * standalone draft load this file. selectWoo and country-select are WooCommerce's
 	 * scripts: the latter also localizes the select's translations, and both
 	 * must precede this file (the register script is appended after them).
 	 */
 	public function enqueue_account_scripts(): void {
 		$is_chain = ( function_exists( 'is_account_page' ) && is_account_page() )
-			|| ( function_exists( 'is_checkout' ) && is_checkout() );
+			|| ( function_exists( 'is_checkout' ) && is_checkout() )
+			|| ( function_exists( 'is_cart' ) && is_cart() );
 		if ( ! $is_chain ) {
 			return;
 		}
