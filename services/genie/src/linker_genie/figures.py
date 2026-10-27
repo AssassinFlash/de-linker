@@ -47,6 +47,9 @@ _DATE = re.compile(r"\d{4}-\d{2}-\d{2}|\d{1,2}\.\d{1,2}\.\d{4}")
 _IN_WORD = re.compile(rf"(?<![\d.,]){_NUMBER}(?:{_UNIT})?(?![\d])")
 _NUMBER_UNIT = re.compile(rf"{_NUMBER}(?:{_UNIT})")
 _LONE_UNIT = re.compile(rf"(?:{_UNIT})[.,:;]?")
+# A JSON string may close immediately after its known unit. Only the unit
+# belongs to the figure; the closing quote and punctuation stay in the text.
+_FOLLOWING_UNIT = re.compile(rf'({_UNIT})"?[.,:;]?')
 # A written-out date is one figure: the warranty table's "produced on/after 1 st
 # January 2026" (issue #257) loses its meaning as "1" and "2026".
 _MONTHS = (
@@ -115,16 +118,21 @@ def tag(chunk_id: str, text: str) -> Tagged:
                 start -= 1
             last = position == len(found) - 1
             following = words[index + 1] if index + 1 < len(words) else None
+            following_unit = (
+                _FOLLOWING_UNIT.fullmatch(following.group(0))
+                if following is not None
+                else None
+            )
             if (
                 last
                 and following is not None
                 and match.end() == len(bare)
                 and not _NUMBER_UNIT.fullmatch(match.group(0))
                 and text[end : following.start()] == " "
-                and _LONE_UNIT.fullmatch(following.group(0))
+                and following_unit is not None
             ):
                 # "20000 Wp": the unit is the next word.
-                end = following.start() + len(following.group(0).rstrip(_TRIM))
+                end = following.start() + len(following_unit.group(1))
                 skip_to = following.end()
             spans.append((start, end))
     figures: dict[str, str] = {}

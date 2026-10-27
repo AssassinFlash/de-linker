@@ -30,6 +30,8 @@ def test_model_codes_stay_names() -> None:
         ("40/40/40", ["40", "40", "40"]),
         ("section 6.6 Export limit", ["6.6"]),
         ("capacity should reach 1.5 tons.", ["1.5 tons"]),
+        ('{"power": "460 W", "capacity": "10 kWh"}', ["460 W", "10 kWh"]),
+        ("Plain power 460.0 W", ["460.0 W"]),
     ],
 )
 def test_a_figure_keeps_the_unit_written_next_to_it(

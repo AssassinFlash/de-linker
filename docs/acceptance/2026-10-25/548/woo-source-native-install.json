@@ -9017,7 +9017,7 @@
       "adopted_in_following_revision": 12
     },
     "production_report_projection_failure": {
-      "state": "locally_fixed_reviewed_production_pending",
+      "state": "Fixed in merged/live713; actual EN/DE42row owner UI and4pagegenerated originalsverified; browser SaveAs remainsseparate lockedMacgate",
       "source_commit": "3d6aa97d2574b5594856adb2a5d255ac8e348e64",
       "actual_report_runs": {
         "en": "ee2e7568e6e740f4b685b14f177cb1fe",
@@ -9079,7 +9079,7 @@
         "trigger": "CI40582327768:two existing native shared-DC/plant report cases omitted official TMY capture by legitimate synthetic WeatherSeries contract",
         "behavior": "Retain generic frozen weather/model/geometry/output; derive only absent summary fields from validated retained axis/witness; preserve existing equivalent timestamps; reject mismatched summary or partial/mismatched TMY provenance; never invent official capture/URL/year/database",
         "focused_validation": "Exactly two failed native cases plus existing retained report projection:3passed3.62s; strict one-file mypy/ruff/format/diff check passed",
-        "production_state": "Not yet deployed; final independent delta review and repaired final CI required",
+        "production_state": "Merged/live713 sourcecb0; actualENDEreportsaccepted; admissionlatencyfollowthrough716separate",
         "unchanged_fr_evidence": "Four retained SHA-verified CAS documents read without execution: all five profile summary fields and original representation match; report summary equals metadata interpretation and TMY triplet crossbinding unchanged. Existing actual FR42-row/PDF-body evidence reused.",
         "independent_delta_review": "F Spec+Standards PASS for exact9ffcc8c20c799d8a9754ab5e45d5b142118cc1431cfd27a514a1795cef16c726; root integration PASS; prior unchanged reviews reused"
       }
@@ -9932,6 +9932,33 @@
       "existing_fixture_sha256": "29a26c421fe4e9fb5455748fedf849ed1abbf436ff14ff12e931310ce4d336a3",
       "checks": "Existingpoint/scopedDC/comparisoncasefinalPASS1.28s; strict2-filemypy/ruff/format/diffPASS; unchangedroofACcasePASSreused",
       "independent_review": "F Spec+Standards PASS: localrequiredproofguard +all distinctcurrentpermissions +workerbefore/after preserved; no crossrequestcache/timeoutchange"
+    },
+    "production_genie_consumer": {
+      "state": "Actual grounded integration passed; two outputquality P2 fixes locallyreviewed, afterdeploymentanswer notyetverified",
+      "project_id": "1812286480344d6d8cec94e2f5f2c00e",
+      "revision": 12,
+      "selected_report": "b5a3b45c2358483a8ca1cd3d252ac29c",
+      "send_utc": "2026-10-27T22:43:30.226Z",
+      "before_turn": 696,
+      "before_conversation": 8412,
+      "owner_user_id": 1,
+      "private_owner_verified": true,
+      "actual_model": "deepseek-flash",
+      "actual_provider_host": "api.deepseek.com",
+      "grounded": 1,
+      "fallback": 0,
+      "failures": [],
+      "planning_tool": "read-planning-project available/truncatedfalse; exactproject/rev/report",
+      "actual_answer_sha256": "5b16257f13222a85b3ec55120723cda14f319407bb223f3f162450983f12ba21",
+      "actual_answer_path": "/Users/chesterjohn/de-linker-local/p548/planner/managed-reference-native/production-genie-answer-de.txt",
+      "actual_quality_findings": [
+        "Available actualSARAH3/ERA5/2014–2023/synthetic2023/PVand2hUTCperiods omitted inanswer; notcontextloss",
+        "QuotedJSONknownunit notbound: n10=460 whiletextfollowingunitW; answer je460. Plain460.0W factcorrect"
+      ],
+      "fix_scope": "Known-unit JSONquote boundary preservesunit/punctuation/SKU; planningRULE answersaskedactualsources/periodsfromavailablefacts,no hardcoding/modelroutechange",
+      "focused_checks": "Existingfigures+planning60PASS0.19s;4filemypy/ruff/format/diffPASS",
+      "independent_review": "C Spec/Standards/internalrulecopy PASS exactfreeze; no modelrerun",
+      "production_after": "Pending deployment andonechanged-implementation actualquestion; beforeanswer retained"
     }
   },
   "production_direct_ac_reference": {
