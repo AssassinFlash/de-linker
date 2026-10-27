@@ -27,7 +27,7 @@
 }
 .sf-card-price>.linker-create-account{display:inline-block;margin-left:8px;font-size:12px}
 .pdp-price .linker-create-account,.pdp-app-price .linker-create-account{display:inline-block;margin-left:12px;font-size:13px}
-.sf-cart-empty__actions>.linker-create-account{display:inline-flex;align-items:center;min-height:44px;padding:12px 4px;border:1px solid transparent}
+.sf-cart-empty__actions>.linker-create-account{display:inline-flex;align-items:center;min-height:44px;padding:12px;border:1px solid transparent;font-size:.875rem}
 .linker-auth-links>.linker-create-account{display:inline-block}
 .linker-guest-account-links{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px 20px;padding:10px 16px;background:#fff;color:var(--proto-ink,#172636);font-size:13px;line-height:1.5}
 /* The mobile dock scrim has auto stack order (genie.css); keep its sibling links above it. */
@@ -49,12 +49,6 @@ body #linker-products.sf-products .sf-card-actions:has(>.linker-create-account)>
 
 /* Keep the two recovery links on the original link row. */
 .linker-auth-links:has(>.linker-create-account){flex-direction:row;flex-wrap:wrap;justify-content:center;gap:10px 20px}
-.sf-cart-empty__actions:has(>.linker-create-account){gap:8px}
-#tv-storefront-cart .sf-cart-empty__actions:has(>.linker-create-account)>.sf-cart-btn,.sf-cart-empty__actions>.linker-create-account{padding-inline:4px;font-size:.875rem}
-/* The DE 390px reference wraps the original primary/secondary actions into
-   45px and 47px rows with a 12px gap. Deduct the ghost border from its padding
-   when it shares the primary row, preserving that measured 104px total. */
-#tv-storefront-cart .sf-cart-empty__actions:has(>.linker-create-account)>.sf-cart-btn--ghost{padding-block:11px}
 
 /* Comparison stays on the live LC shell and table geometry. Only its guest
    price cell gains a second destination (#223 review round 2). */
