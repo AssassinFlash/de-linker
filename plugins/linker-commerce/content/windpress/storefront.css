@@ -2000,6 +2000,8 @@ body.woocommerce-order-received #container-content-page > div {
 }
 #tv-woo-b2b-checkout .shop_table.woocommerce-table--order-details:not(:has(> tbody > tr)) > tfoot > tr:has(> th:not([scope], .order-actions--heading)) > td {
   text-align: start;
+}
+#tv-woo-b2b-checkout .shop_table.woocommerce-table--order-details > tfoot > tr:has(> th:not([scope], .order-actions--heading)) > td {
   overflow-wrap: anywhere;
 }
 
