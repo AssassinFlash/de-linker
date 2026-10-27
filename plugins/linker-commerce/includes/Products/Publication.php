@@ -590,16 +590,18 @@ final class Publication {
 	 * @return list<array<string,mixed>>
 	 */
 	public static function document_rows( int $id ): array {
-		$rows = get_post_meta( self::canonical_id( $id ), EngineeringData::DOCUMENTS_META_KEY, true );
+		// Resolve this relation read once; the next call still asks the language authority again.
+		$id   = self::canonical_id( $id );
+		$rows = get_post_meta( $id, EngineeringData::DOCUMENTS_META_KEY, true );
 		if ( is_string( $rows ) ) {
 			$rows = json_decode( $rows, true );
 		}
 		$rows = is_array( $rows ) ? array_values( array_filter( $rows, 'is_array' ) ) : array();
-		if ( '1' === get_post_meta( self::canonical_id( $id ), '_linker_documents_managed', true ) ) {
+		if ( '1' === get_post_meta( $id, '_linker_documents_managed', true ) ) {
 			return $rows;
 		}
 		$urls      = array_column( $rows, 'url' );
-		$figures   = get_post_meta( self::canonical_id( $id ), SelectionFacts::FIGURES_META_KEY, true );
+		$figures   = get_post_meta( $id, SelectionFacts::FIGURES_META_KEY, true );
 		$figures   = is_string( $figures ) ? json_decode( $figures, true ) : $figures;
 		$citations = array();
 		foreach ( is_array( $figures ) ? $figures : array() as $figure ) {
@@ -608,13 +610,13 @@ final class Publication {
 			}
 		}
 		foreach ( array( '_delinker_datasheet_url', '_delinker_manual_url' ) as $key ) {
-			$legacy = get_post_meta( self::canonical_id( $id ), $key, true );
+			$legacy = get_post_meta( $id, $key, true );
 			if ( is_string( $legacy ) && '' !== $legacy ) {
 				$citations[] = $legacy;
 			}
 		}
 		foreach ( array( '_tv_legacy_acf_json', '_linker_de_acf_json' ) as $key ) {
-			$raw = get_post_meta( self::canonical_id( $id ), $key, true );
+			$raw = get_post_meta( $id, $key, true );
 			$acf = is_string( $raw ) ? json_decode( $raw, true ) : $raw;
 			foreach ( is_array( $acf ) && is_array( $acf['downloads'] ?? null ) ? $acf['downloads'] : array() as $download ) {
 				if ( ! is_array( $download ) ) {
