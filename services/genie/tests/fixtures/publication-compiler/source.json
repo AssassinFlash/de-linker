@@ -33,5 +33,17 @@
       "0abea746ac338562cfa63d7e4976ca1d8204271f6d7c2f1d08a8dc4a1ca04465",
       "b4a653fd2c0bdbff01337165df0567eb71488634eaa1c1420070fc170526c1c3"
     ]
+  },
+  "conditional_warranty": {
+    "file": "warranty-procedure.json.gz",
+    "sha256": "863853606b45b10c8a4b220ddb535413c1dccb15382a481988212d924138bee0",
+    "build": "20261027T132159Z-730994000",
+    "source_revision": "46172e73be6be7ffb3349e27a6be29c062620905e9f080d7f25e7973fa8975fd",
+    "basis": "Unmodified native corpus excerpts, original warranty TableItem cells, and existing validated exactmodel tableprojection; three originalPDF SHA identities retained. No fullPDF/parser/vector copies.",
+    "original_pdf_sha256s": [
+      "525182a7f9690ff11fbeeab35dc021f9a44b7267f6c143e2125447fee87ef36a",
+      "a786dcf5aeef1f4ed6b2299a445ef01d489001b6963cf0758193f9f379fa06bf",
+      "b681fbb51b1688476883c7f2c23599f12a1e51020b6980c9d61da952cc80543f"
+    ]
   }
 }

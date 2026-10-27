@@ -86,6 +86,7 @@ class ScopeProof(TypedDict):
     table_projection: NotRequired[dict[str, Any]]
     family_scope: NotRequired[dict[str, Any]]
     author_restrictions: NotRequired[list[dict[str, Any]]]
+    warranty_scope: NotRequired[dict[str, Any]]
 
 
 def _table_columns(
