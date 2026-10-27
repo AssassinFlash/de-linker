@@ -145,7 +145,12 @@ jobs:
                   # A successful docs run carries its parent's runtime proof;
                   # it never becomes runtime proof for merge-tree reuse itself.
                   if checked_run(run, commit, docs_only=True):
-                      parent = git("rev-parse", commit + "^1").decode().strip()
+                      try:
+                          parent = git("rev-parse", commit + "^1").decode().strip()
+                      except subprocess.CalledProcessError:
+                          # Deepen only this verified carrier at the shallow boundary.
+                          git("fetch", "--deepen=1", "origin", commit)
+                          parent = git("rev-parse", commit + "^1").decode().strip()
                       fields = git("diff", "--name-status", "-z", "--find-renames", parent, commit).decode(errors="surrogateescape").split("\0")
                       changes = list(zip(fields[0:-1:2], fields[1:-1:2]))
                       if classify(changes) != "docs" or not all(non_runtime_change(status, path, parent, commit) for status, path in changes):
