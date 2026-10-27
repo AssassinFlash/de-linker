@@ -17,6 +17,7 @@ use Linker\Commerce\Products\Materials;
 use Linker\Commerce\Products\SelectionFactSet;
 use Linker\Commerce\Products\SelectionFacts;
 use Linker\Commerce\Products\Publication;
+use Linker\Commerce\Products\Publication\DocumentFiles;
 
 /**
  * What the product page shows, in the order the template prints it
@@ -604,9 +605,39 @@ final class ProductView {
 		}
 		// Download links consume current listing metadata, not product revisions
 		// or preparation state. The original PDF gate still authorizes its bytes.
-		$id         = Publication::canonical_id( $product_id );
-		$documents  = array();
-		$manifest ??= Publication::product_library_read( $id );
+		$id           = Publication::canonical_id( $product_id );
+		$documents    = array();
+		$product_rows = null === $manifest;
+		$manifest   ??= Publication::product_library_read( $id );
+		if ( $product_rows ) {
+			// Shared identities grant permission; the product's own maintained
+			// rows supply its display fields and within-type ordering.
+			$allowed = array();
+			foreach ( $manifest['documents'] as $document ) {
+				if ( in_array( $id, $document['product_ids'], true ) ) {
+					$allowed[ $document['document_id'] ] = $document;
+				}
+			}
+			foreach ( Publication::document_rows( $id ) as $row ) {
+				if ( false === ( $row['active'] ?? true ) || '0' === (string) ( $row['active'] ?? '1' ) ) {
+					continue;
+				}
+				$file = DocumentFiles::locate( (string) ( $row['url'] ?? '' ) );
+				$key  = null === $file ? '' : DocumentFiles::id( $file['url'] );
+				if ( ! isset( $allowed[ $key ] ) ) {
+					continue;
+				}
+				$documents[] = array(
+					'title'    => (string) ( $row['title'] ?? '' ),
+					'url'      => $allowed[ $key ]['url'],
+					'type'     => (string) ( $row['type'] ?? 'document' ),
+					'role'     => (string) ( $row['role'] ?? '' ),
+					'language' => (string) ( $row['lang'] ?? '' ),
+				);
+				unset( $allowed[ $key ] );
+			}
+			return $documents;
+		}
 		foreach ( $manifest['documents'] as $document ) {
 			if ( ! in_array( $id, $document['product_ids'], true ) ) {
 				continue;

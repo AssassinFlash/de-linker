@@ -319,6 +319,9 @@ final class DocumentLibraryTest extends TestCase {
 		$this->assertSame( 'document', $documents['A brochure']['type'] );
 		$this->assertSame( 'EN', $documents['A brochure']['language'] );
 		$this->assertSame( 'MUL', $documents['Family certificate']['language'] );
+		$this->assertSame( 'manual', DocumentLibrary::type( 'manual', 'document' ) );
+		$this->assertSame( 'warranty', DocumentLibrary::type( 'warranty', 'manual' ) );
+		$this->assertSame( 'certificate', DocumentLibrary::type( 'document', 'certificate' ) );
 	}
 
 	/**

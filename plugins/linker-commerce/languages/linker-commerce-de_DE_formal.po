@@ -3195,11 +3195,8 @@ msgid "Linker's read"
 msgstr "Unsere Einschätzung"
 
 #: includes/Presentation/ProductShortcodes.php:1341
-msgid ""
-"No documents are attached to this product yet. Ask us and we will add them."
-msgstr ""
-"Für dieses Produkt sind noch keine Dokumente hinterlegt. Fragen Sie uns, wir "
-"ergänzen sie."
+msgid "No documents are available for this product."
+msgstr "Für dieses Produkt sind keine Dokumente verfügbar."
 
 #: includes/Presentation/ProductShortcodes.php:1436
 msgid "On the compatibility list on file"

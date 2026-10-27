@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Unit\Presentation;
 
+use Linker\Commerce\Gating\CommerceState;
 use Linker\Commerce\Presentation\LanguageLinks;
 use Linker\Commerce\Presentation\ProductShortcodes;
 use Linker\Commerce\Storefront\ProductFilters;
@@ -1488,5 +1489,72 @@ final class ProductShortcodesTest extends TestCase {
 			return array_map( self::encode_query_value( ... ), $value );
 		}
 		return rawurlencode( $value );
+	}
+	/** Current document data wins over retained rows; an empty current list stays empty. */
+	public function test_product_documents_consume_the_current_assembly_once(): void {
+		unset( $GLOBALS['product'] );
+		$this->pdp(
+			true,
+			array(
+				'downloads' => array(
+					array(
+						'download_file'     => 6503,
+						'download_title'    => 'Retained document title',
+						'download_type'     => 'document',
+						'download_language' => 'EN',
+					),
+				),
+			)
+		);
+		WP_Mock::userFunction( 'wp_get_attachment_url' )->andReturn( 'http://linker.test/retained.pdf' );
+		$documents = array(
+			array(
+				'title'    => 'Current manual',
+				'url'      => 'http://linker.test/manual.pdf',
+				'type'     => 'manual',
+				'role'     => 'document',
+				'language' => 'en',
+			),
+			array(
+				'title'    => 'Current datasheet',
+				'url'      => 'http://linker.test/datasheet.pdf',
+				'type'     => 'datasheet',
+				'role'     => 'document',
+				'language' => 'DE',
+			),
+			array(
+				'title'    => 'Current warranty',
+				'url'      => 'http://linker.test/warranty.pdf',
+				'type'     => 'warranty',
+				'role'     => 'document',
+				'language' => 'MULTI',
+			),
+		);
+		$reads     = 0;
+		$view      = new ProductView(
+			new CommerceState(),
+			static function ( int $id ) use ( &$documents, &$reads ): array {
+				if ( self::PDP !== $id ) {
+					return array();
+				}
+				++$reads;
+				return $documents;
+			}
+		);
+		$html      = ( new ProductShortcodes( new ProductFilters(), $view ) )->pdp_downloads();
+		$this->assertStringContainsString( 'Current manual', $html );
+		$this->assertStringContainsString( 'Manual · PDF · EN', $html );
+		$this->assertStringContainsString( 'Warranty · PDF · Multilingual', $html );
+		$this->assertStringNotContainsString( 'retained.pdf', $html );
+		$this->assertLessThan( strpos( $html, 'Current manual' ), strpos( $html, 'Current datasheet' ) );
+		$this->assertLessThan( strpos( $html, 'Current warranty' ), strpos( $html, 'Current manual' ) );
+		$this->assertSame( 1, $reads, 'Reuse the current page assembly instead of reading documents twice.' );
+
+		$documents = array();
+		$empty     = ( new ProductShortcodes( new ProductFilters(), $view ) )->pdp_downloads();
+		$this->assertStringContainsString( 'No documents are available for this product.', $empty );
+		$this->assertStringNotContainsString( 'pdp-doc"', $empty );
+		$this->assertStringNotContainsString( 'retained.pdf', $empty );
+		$this->assertSame( 2, $reads );
 	}
 }
