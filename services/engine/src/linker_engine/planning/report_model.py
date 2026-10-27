@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from typing import Any, Literal, cast
 
 from linker_engine.models import Report, ReportRow, ReportSection, ReportTable
@@ -584,27 +585,50 @@ def build_report(source: Object) -> Report:
             "plant_ac_energy_replay_v1",
             "plant_shared_dc_energy_replay_v1",
         }
-        energy_rows = [
-            row(label, number(metrics.get(key), locale, "kWh"))
-            for label, key in (
-                ("load", "load_demand_kwh"),
-                (
-                    "plant_common_ac_generation"
-                    if joint_dc
-                    else "generation_dc"
-                    if dc
-                    else "generation",
-                    "pv_generated_dc_kwh" if dc else "pv_generated_ac_kwh",
-                ),
-                ("import", "grid_import_kwh"),
-                ("export", "pv_export_ac_kwh" if dc else "pv_export_kwh"),
-                (
-                    "curtailed_dc" if dc or joint_dc else "curtailed",
-                    "pv_curtailed_dc_kwh" if dc or joint_dc else "pv_curtailed_kwh",
-                ),
-                ("unserved", "unserved_load_kwh"),
-            )
-        ]
+        # The report resolves this scenario against the selected frozen run.
+        # Display each actual segment, rather than suggesting an annual total
+        # or merging different operating states. The label explicitly says UTC.
+        scenario = source.get("energy_scenario")
+        schedule = scenario.get("schedule") if isinstance(scenario, dict) else None
+        energy_rows = (
+            [
+                row(
+                    "period",
+                    " – ".join(
+                        datetime.fromisoformat(str(segment[key]))
+                        .astimezone(UTC)
+                        .isoformat()
+                        for key in ("start_utc", "end_utc")
+                    ),
+                )
+                for segment in cast(list[Object], schedule)
+            ]
+            if isinstance(schedule, list) and schedule
+            else [row("period", None)]
+        )
+        energy_rows.extend(
+            [
+                row(label, number(metrics.get(key), locale, "kWh"))
+                for label, key in (
+                    ("load", "load_demand_kwh"),
+                    (
+                        "plant_common_ac_generation"
+                        if joint_dc
+                        else "generation_dc"
+                        if dc
+                        else "generation",
+                        "pv_generated_dc_kwh" if dc else "pv_generated_ac_kwh",
+                    ),
+                    ("import", "grid_import_kwh"),
+                    ("export", "pv_export_ac_kwh" if dc else "pv_export_kwh"),
+                    (
+                        "curtailed_dc" if dc or joint_dc else "curtailed",
+                        "pv_curtailed_dc_kwh" if dc or joint_dc else "pv_curtailed_kwh",
+                    ),
+                    ("unserved", "unserved_load_kwh"),
+                )
+            ]
+        )
         if joint_dc:
             energy_rows.append(
                 row(

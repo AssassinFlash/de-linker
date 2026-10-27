@@ -1799,7 +1799,34 @@ def test_energy_freezes_woo_selection_and_keeps_mode_failure_separate_from_repla
         == result["pinned_assets"]["woo.equipment_inputs"]
     )
     for locale in ("en", "de"):
-        report = build_report({**report_source, "locale": locale})
+        displayed_source = copy.deepcopy(report_source)
+        # The existing two-segment fixture spans the DST transition. These
+        # equivalent offsets must be printed as actual UTC calculation periods.
+        displayed_source["energy_scenario"]["schedule"][0].update(
+            start_utc="2024-03-31T00:00:00+01:00",
+            end_utc="2024-03-31T00:30:00+01:00",
+        )
+        displayed_source["energy_scenario"]["schedule"][1].update(
+            start_utc="2024-03-31T00:30:00+01:00",
+            end_utc="2024-03-31T03:00:00+02:00",
+        )
+        report = build_report({**displayed_source, "locale": locale})
+        energy_section = next(s for s in report.sections if s.id == "energy")
+        assert [r.value for r in energy_section.rows[:2]] == [
+            "2024-03-30T23:00:00+00:00 – 2024-03-30T23:30:00+00:00",
+            "2024-03-30T23:30:00+00:00 – 2024-03-31T01:00:00+00:00",
+        ]
+        assert all("UTC" in r.label for r in energy_section.rows[:2])
+        # Historical report sources predate energy_scenario. Genie renders
+        # those same sources in another language; do not read today's project
+        # to invent a period or make the retained report unreadable.
+        legacy_source = {**report_source, "locale": locale}
+        legacy_source.pop("energy_scenario")
+        legacy_energy = next(
+            s for s in build_report(legacy_source).sections if s.id == "energy"
+        )
+        assert legacy_energy.rows[0].value == "—"
+        assert legacy_energy.rows[1:] == energy_section.rows[2:]
         section = next(
             section for section in report.sections if section.id == "energy-equipment"
         )
