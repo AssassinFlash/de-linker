@@ -134,6 +134,7 @@ class KnowledgeSearch:
                     "section": hit.section,
                     "text": tagged.text,
                     "figures": tagged.figures,
+                    **({"scope_note": hit.scope_note} if hit.scope_note else {}),
                 }
             )
         return {
