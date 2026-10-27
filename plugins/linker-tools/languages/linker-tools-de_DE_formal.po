@@ -2552,15 +2552,6 @@ msgstr ""
 "Für die PV-Berechnung muss in der Ansicht Gespeicherte Berechnungen ein "
 "abgeschlossener Wetterdatensatz ausgewählt sein."
 
-#. translators: %s is the email address the confirmation link went to.
-#: build/genie.js:7 build/hero.js
-msgid ""
-"A confirmation link is on its way to %s. The conversation follows once the "
-"link is opened."
-msgstr ""
-"Ein Bestätigungslink an %s ist unterwegs. Das Gespräch folgt, sobald der "
-"Link geöffnet wird."
-
 #: build/planner/assets/planner.js
 #: ../../apps/planner/src/components/design/ModuleForm.tsx:125
 msgid ""

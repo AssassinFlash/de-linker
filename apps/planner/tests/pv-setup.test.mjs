@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { IDBFactory } from "fake-indexeddb";
 import { setupDom, until, enter } from "./dom-fixture.mjs";
 import { EnergyWorkspace } from "../src/components/energy/EnergyWorkspace.tsx";
+import { readSolarSetup } from "../src/domain/solarSetup.ts";
 import {
 	beginDraft,
 	editDraft,
@@ -12,6 +13,39 @@ import {
 	acknowledgeSave,
 } from "../src/domain/draft.ts";
 import fixture from "./fixtures/preparation-flow.json" with { type: "json" };
+
+// The existing synthetic model is served through the maintained-source
+// contract. This fixture is never a runtime product or manufacturer fact.
+function maintainedInputs(value) {
+	const inputs = structuredClone(value);
+	const source = {
+		kind: "datasheet",
+		note: "Synthetic maintained-source contract fixture",
+		url: "https://example.test/module.pdf",
+		document_sha256: "b".repeat(64),
+		page: 1,
+		woo: {
+			product_id: 42,
+			product_revision: "a".repeat(64),
+			reference_input_id: "synthetic_woo_reference",
+		},
+	};
+	for (const module of inputs.geometry.module_specs) module.source = source;
+	for (const module of inputs.pv_generation?.modules ?? [])
+		module.source = source;
+	return inputs;
+}
+const maintained = maintainedInputs(fixture.pv_project.inputs);
+const moduleReply = {
+	schema_version: 1,
+	provider: "woocommerce",
+	pv_modules: [
+		{
+			specification: maintained.geometry.module_specs[0],
+			parameters: maintained.pv_generation.modules[0],
+		},
+	],
+};
 
 const visible = (node) => !node.closest("[hidden]");
 const button = (text) =>
@@ -40,6 +74,7 @@ async function choose(text, value) {
 	});
 }
 async function mount(t, inputs, locale = "en-GB") {
+	inputs = maintainedInputs(inputs);
 	const dom = setupDom(),
 		previous = Object.getOwnPropertyDescriptor(globalThis, "indexedDB");
 	Object.defineProperty(globalThis, "indexedDB", {
@@ -52,6 +87,7 @@ async function mount(t, inputs, locale = "en-GB") {
 		session = {
 			query_scope: scope,
 			runtime: {
+				models: {},
 				limits: {
 					max_json_depth: 32,
 					max_body_bytes: 16777216,
@@ -94,6 +130,7 @@ async function mount(t, inputs, locale = "en-GB") {
 			return serverRun;
 		},
 		async query(path) {
+			if (path === "products/current") return moduleReply;
 			if (path === "projects/runs")
 				return {
 					items: serverRun
@@ -179,6 +216,9 @@ async function mount(t, inputs, locale = "en-GB") {
 	);
 	await click("PV generation");
 	await until(() => !button("Prepare PV model").disabled);
+	await until(
+		() => !button("Update parameters for current roof layout").disabled,
+	);
 	return {
 		current: () => current,
 		requests,
@@ -191,7 +231,7 @@ test("blank PV model can be completed through actual controls, keeps unfinished 
 	delete inputs.pv_generation;
 	inputs.unrelated = "retained";
 	const h = await mount(t, inputs),
-		expected = fixture.pv_project.inputs.pv_generation,
+		expected = maintained.pv_generation,
 		note = expected.source_note;
 	assert.equal(button("Calculate PV for saved inputs").disabled, true);
 	await click("Prepare PV model");
@@ -200,27 +240,23 @@ test("blank PV model can be completed through actual controls, keeps unfinished 
 		/complete module, array and conversion/,
 	);
 	await click("Update parameters for current roof layout");
-	const coefficient = control("Temperature coefficient of maximum power");
-	assert.equal(coefficient.value, "");
-	await enter(coefficient, "-");
-	assert.equal(coefficient.getAttribute("aria-invalid"), "true");
-	assert.equal(button("Confirm project save fixture").disabled, true);
+	assert.equal(control("Temperature coefficient of maximum power"), undefined);
+	assert.match(document.querySelector(".lp-pv-parameters").textContent, /-0.4/);
 	await click("Array models");
+	const reflectance = control("Ground reflectance");
+	await enter(reflectance, "-");
+	assert.equal(reflectance.getAttribute("aria-invalid"), "true");
+	assert.equal(button("Confirm project save fixture").disabled, true);
 	await click("Weather source");
 	await click("PV generation");
-	await click("Modules");
-	assert.equal(
-		control("Temperature coefficient of maximum power"),
-		coefficient,
-	);
-	assert.equal(coefficient.value, "-");
-	await enter(coefficient, "-0.4");
-	await enter(control("Coefficient source and conditions"), note);
-	assert.equal(
-		h.current().history.current.solar_setup.pv.modules[0].gamma_pdc_per_c,
-		-0.004,
-	);
 	await click("Array models");
+	assert.equal(control("Ground reflectance"), reflectance);
+	assert.equal(reflectance.value, "-");
+	await enter(reflectance, "20");
+	assert.equal(
+		h.current().history.current.solar_setup.pv.arrays[0].albedo,
+		0.2,
+	);
 	await choose("Irradiance transposition", "perez");
 	for (const [label, value] of [
 		["Ground reflectance", "20"],
@@ -339,14 +375,29 @@ test("PV dispatch refuses a weather/roof location mismatch and tolerates unsuppo
 	assert.ok(document.querySelector(".lp-energy-workspace"));
 });
 
-test("module headings hide internal identifiers and incomplete document references explain the required evidence", async (t) => {
+test("module evidence is read-only and historical missing bindings explain the required selection", async (t) => {
 	const inputs = structuredClone(fixture.pv_project.inputs);
 	const h = await mount(t, inputs);
-	await choose("Temperature-coefficient source", "datasheet");
-	await click("Prepare PV model");
+	assert.equal(control("Temperature coefficient of maximum power"), undefined);
+	await h.edit((current) => {
+		const setup = readSolarSetup(current);
+		return {
+			...current,
+			solar_setup: {
+				...setup,
+				pv: {
+					...setup.pv,
+					modules: setup.pv.modules.map((module) => ({
+						...module,
+						source: fixture.pv_project.inputs.pv_generation.modules[0].source,
+					})),
+				},
+			},
+		};
+	});
 	assert.match(
-		document.querySelector(".lp-focus-target").textContent,
-		/64 characters \(0-9 and a-f\)/,
+		document.querySelector(".lp-pv-parameters").textContent,
+		/requires an updated module selection/,
 	);
 	assert.equal(h.requests.length, 0);
 	await h.edit((current) => ({
@@ -376,15 +427,8 @@ test("module headings hide internal identifiers and incomplete document referenc
 
 test("German percentage edits retain exact text and decimal separators while storing model fractions", async (t) => {
 	const h = await mount(t, structuredClone(fixture.pv_project.inputs), "de-DE");
-	const gamma = control("Temperature coefficient of maximum power");
-	await enter(gamma, "-0,");
-	assert.equal(gamma.value, "-0,");
-	await enter(gamma, "-0,29");
-	assert.equal(gamma.value, "-0,29");
-	assert.equal(
-		h.current().history.current.solar_setup.pv.modules[0].gamma_pdc_per_c,
-		-0.0029,
-	);
+	assert.equal(control("Temperature coefficient of maximum power"), undefined);
+	assert.match(document.querySelector(".lp-pv-parameters").textContent, /-0,4/);
 	await click("Array models");
 	await enter(control("Ground reflectance"), "57");
 	assert.equal(control("Ground reflectance").value, "57");

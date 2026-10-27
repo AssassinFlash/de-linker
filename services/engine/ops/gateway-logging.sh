@@ -35,7 +35,7 @@ guard() {
 [[ $# -ge 1 && -f "$TARGET" && ! -L "$TARGET" ]] || usage
 if [[ "$1" == backup ]]; then
     [[ $# == 1 ]] || usage
-    tar -C "$ROOT" -cpf - "$RELATIVE"
+    COPYFILE_DISABLE=1 tar -C "$ROOT" -cpf - "$RELATIVE"
     exit 0
 fi
 [[ $# == 2 && ( "$1" == apply || "$1" == rollback ) ]] || usage

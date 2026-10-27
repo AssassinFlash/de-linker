@@ -92,7 +92,12 @@ def launch(
     pv = settings.pv_service(workspace)
     weather = settings.weather_service(workspace)
     registry = service_registry(
-        energy, pv, weather, settings.equipment_service(workspace)
+        energy,
+        pv,
+        weather,
+        settings.equipment_service(workspace),
+        settings.equipment_search_service(workspace),
+        settings.report_service(workspace),
     )
     identity = {
         "runtime": energy.kernel.runtime.sha256,

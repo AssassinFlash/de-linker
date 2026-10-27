@@ -54,6 +54,7 @@ test("weather controls retain unfinished negative coordinates across views, requ
 	const session = {
 		query_scope: scope,
 		runtime: {
+			models: {},
 			limits: {
 				max_json_depth: 32,
 				max_body_bytes: 16777216,

@@ -46,6 +46,7 @@ export function setupDom() {
 		"navigator",
 		"HTMLElement",
 		"Event",
+		"CustomEvent",
 		"ResizeObserver",
 		"IS_REACT_ACT_ENVIRONMENT",
 	];

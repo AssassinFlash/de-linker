@@ -15,7 +15,12 @@ from linker_engine.planning.assets import Assets
 from linker_engine.planning.canonical import encode
 from linker_engine.planning.energy_kernel import EnergyKernel
 from linker_engine.planning.energy_service import EnergyService
-from linker_engine.planning.errors import InvalidInput, LeaseLost, NotFound
+from linker_engine.planning.errors import (
+    InvalidInput,
+    LeaseLost,
+    NotFound,
+    VersionUnavailable,
+)
 from linker_engine.planning.execution_registry import (
     ExecutionRegistry,
     service_registry,
@@ -400,7 +405,7 @@ def test_new_saved_request_does_not_replace_frozen_historical_weather_or_select_
     assert latest.revision == 2 and "pv_preparation" not in latest.inputs
 
 
-def test_independent_managed_process_resumes_weather_capture_then_runs_energy_and_pv(
+def test_independent_managed_process_resumes_weather_then_refuses_pv_without_woo(
     tmp_path: Path,
 ) -> None:
     settings = configuration(tmp_path, rows=9000).model_copy(
@@ -464,8 +469,8 @@ def test_independent_managed_process_resumes_weather_capture_then_runs_energy_an
         )
         pv = settings.pv_service(workspace)
         assert pv is not None
-        pv_run = pv.evaluate(owner, roof.id, saved.revision, key="pv")
-        assert completed(workspace, owner, pv_run).state == "succeeded"
+        with pytest.raises(VersionUnavailable, match="current Woo module data"):
+            pv.evaluate(owner, roof.id, saved.revision, key="pv")
         with workspace.database.read() as connection:
             assert (
                 connection.execute(

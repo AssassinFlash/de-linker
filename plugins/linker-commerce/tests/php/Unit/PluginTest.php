@@ -73,6 +73,9 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( 'add_meta_boxes', array( new AnyInstance( \Linker\Commerce\Products\Publication\CompatibilityEditor::class ), 'box' ) ); // @phpstan-ignore argument.type (WP_Mock matcher)
 		WP_Mock::expectActionAdded( 'save_post_product', array( new AnyInstance( \Linker\Commerce\Products\Publication\CompatibilityEditor::class ), 'save' ), 30 ); // @phpstan-ignore argument.type (WP_Mock matcher)
 		WP_Mock::expectActionAdded( 'admin_notices', array( new AnyInstance( \Linker\Commerce\Products\Publication\CompatibilityEditor::class ), 'notice' ) ); // @phpstan-ignore argument.type (WP_Mock matcher)
+		WP_Mock::expectActionAdded( 'add_meta_boxes', array( new AnyInstance( \Linker\Commerce\Products\Publication\PackageContentsEditor::class ), 'box' ) ); // @phpstan-ignore argument.type (WP_Mock matcher)
+		WP_Mock::expectActionAdded( 'save_post_product', array( new AnyInstance( \Linker\Commerce\Products\Publication\PackageContentsEditor::class ), 'save' ), 30 ); // @phpstan-ignore argument.type (WP_Mock matcher)
+		WP_Mock::expectActionAdded( 'admin_notices', array( new AnyInstance( \Linker\Commerce\Products\Publication\PackageContentsEditor::class ), 'notice' ) ); // @phpstan-ignore argument.type (WP_Mock matcher)
 		WP_Mock::expectActionAdded( 'cli_init', array( $plugin, 'register_cli' ) );
 		WP_Mock::expectActionAdded( 'plugins_loaded', array( $plugin, 'stand_down_legacy_template_preemption' ) );
 

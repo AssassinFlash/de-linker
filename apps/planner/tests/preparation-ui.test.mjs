@@ -15,6 +15,7 @@ const scope = "a".repeat(64);
 const session = {
 	query_scope: scope,
 	runtime: {
+		models: {},
 		limits: {
 			max_json_depth: 32,
 			max_body_bytes: 16777216,

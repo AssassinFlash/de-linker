@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pytest
 
-from linker_genie import knowledge, page
+from linker_genie import knowledge, page, planning
 from linker_genie.abilities import ABILITY_NAMES
 from linker_genie.agent import INPUT_DOCS, TOOL_NAMES
 
@@ -46,7 +46,11 @@ def _device_classes_in_php() -> tuple[str, ...]:
 
 def test_input_docs_covers_every_tool() -> None:
     assert set(INPUT_DOCS) == set(TOOL_NAMES)
-    assert set(TOOL_NAMES) - set(ABILITY_NAMES) == {knowledge.NAME, page.NAME}
+    assert set(TOOL_NAMES) - set(ABILITY_NAMES) == {
+        knowledge.NAME,
+        page.NAME,
+        planning.NAME,
+    }
 
 
 def test_the_document_search_input_doc_names_the_fields_it_validates() -> None:

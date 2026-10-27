@@ -5237,7 +5237,7 @@
       "first_failure": "plan: whole-PR whitespace check included original evidence and generated third-party shader text; downstream required jobs exited on failed plan before running business tests.",
       "correction": "Use native .gitattributes only for generated output/captured source records and exact historical probe/CSV paths. Preserve their bytes. Authored runtime/source/tests and hand-written specs retain ordinary whitespace checks; build manifests and selected CI checks are unchanged.",
       "local_readback": "Full PR git diff --check origin/main passed. TS/Python/PHP maintained sources retain whitespace:unspecified; captured/generated inputs have whitespace:unset.",
-      "status": "Concentrated static repair and incremental reviews passed locally; candidate CI pending.",
+      "status": "All collected static and runtime failure causes repaired and independently reviewed. Final candidate including current production main is being prepared.",
       "existing_runtime_evidence_reused": true,
       "native_job": {
         "run_id": 40438016189,
@@ -5270,6 +5270,19 @@
           "spec": "PASS: assertions, parameters, product semantics and exact fixture data preserved; no test execution or new report.",
           "standards": "PASS: Any confined to test protocol/mock boundaries, valid None preserved, production AST and source/build proof reused; no test execution or new report."
         }
+      },
+      "candidate_runtime_followthrough": {
+        "ci_run": 40447813036,
+        "static": "all configured checks passed",
+        "native_mu_smoke": "success",
+        "failure": "Four Commerce PHPUnit expectations still referred to the retired calculator, omitted current planning/package hooks or omitted the native query function.",
+        "correction": "Align existing expectations to owned input restoration and current hooks; retain nonce/owner/never-add protection and precise module callbacks.",
+        "collected_once": "Other PHP units, engine/Genie and JS unit/DOM suites were collected together to avoid another serial CI failure cycle. Existing passing cases are reused.",
+        "shared_causes": "Managed-process fixture registry lacked the existing equipment search/report executors. The common DOM fixture mixed Node CustomEvent with Window events. Existing sparse session fixtures omitted models. Tool inventory lacked the existing planning reader. A no-consumer translation remained. BSD tar added AppleDouble metadata.",
+        "retired_coverage": "Remove only the retired calculator response-replay generator; its raw historical JSON/CSV and historical PDF readers remain. Spec/Standards confirmed the owned-project/PV/energy/report/native path supplies replacement coverage. Historical stories now identify their recordings.",
+        "source_policy": "Port the existing PV control scenarios to the maintained Woo module response contract. Synthetic values/identity reuse the existing fixtures and are labelled test-only. Gamma is read-only; input persistence/locale/dispatch checks use editable scenario assumptions. A process without Woo must refuse PV at submission; weather retry/capture and energy results remain asserted.",
+        "verification": "Corrected PHP cases/static, shared lifecycle DOM, remaining affected DOM paths, existing worker/process cases, source-policy refusal, tar archive and tool/i18n cases passed. Engine strict mypy, i18n coverage/validity and all build manifests passed. Incremental Spec/Standards review passed; no new scenario or browser/numerical matrix.",
+        "production_protection": "Read back main522ca089 and live deployment20261027T025330Z-model-permission-a74c4200. Integrate that current permission batching before any site deployment; preserve its source authority and unrelated changes."
       }
     }
   }
