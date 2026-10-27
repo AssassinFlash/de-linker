@@ -2289,6 +2289,9 @@ export function App( { config }: { config: GenieConfig } ) {
 											key={ index }
 											block={ block }
 											accountUrl={ config.accountUrl }
+											configuratorLinks={
+												config.configuratorLinks
+											}
 											onAsk={ ask }
 											parts={ {
 												onAsk: ask,

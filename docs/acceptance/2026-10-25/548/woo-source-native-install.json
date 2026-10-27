@@ -4971,7 +4971,14 @@
     "selected_scenario_run": "ab8810c5ffe64587a4664c26cb1fe9fc",
     "production_changed": false,
     "coverage_reuse": "unchanged physical kernels, Woo authority, saved calculations, original reports/PDFs, native identity and commerce acceptance",
-    "remaining_full_goal": "engineering/country coverage, final site-wide review/release and native visual/readback; DE1440 compositor capture is not accepted"
+    "remaining_full_goal": "engineering/country coverage, final site-wide review/release and native visual/readback; DE1440 compositor capture is not accepted",
+    "historical_navigation_correction": {
+      "problem": "Stored German conversation action retained its old English workspace URL; fresh-turn localization did not repair this current navigation consumer.",
+      "change": "Entries supplies actual EN/DE PageUrls::translated addresses; Genie app and homepage pass the same optional mapping. Only exact known same-origin paths are localized, preserving project/run/compare query and hash. Missing/native-unknown/foreign addresses remain unchanged; history and numerical results never rewritten.",
+      "verification": "Existing ActionView/config cases and Entries30 passed; JS lint/types/build/manifest and PHPStan/PHPCS passed. Spec/Standards incremental review PASS after homepage consumer and missing-twin safeguards corrected.",
+      "visual_evidence": "genie-project-de-desktop-native.png is native1280x720 supplemental evidence. Emulated1440 compositor output is invalid and not accepted. No further blind capture retries.",
+      "native_readback": "Existing German conversation reopened under native owner at project revision24. Original historical result81.449%/36.978% unchanged; action now targets /de/loesungskonfigurator/?project=c7795bc2c1e14e389622015c809ace45&run=ab8810c5ffe64587a4664c26cb1fe9fc#lp-calculations. No model turn or numerical run."
+    }
   },
   "certificate_evidence": {
     "status": "local-interface-and-report-delivered",
@@ -5237,7 +5244,7 @@
       "first_failure": "plan: whole-PR whitespace check included original evidence and generated third-party shader text; downstream required jobs exited on failed plan before running business tests.",
       "correction": "Use native .gitattributes only for generated output/captured source records and exact historical probe/CSV paths. Preserve their bytes. Authored runtime/source/tests and hand-written specs retain ordinary whitespace checks; build manifests and selected CI checks are unchanged.",
       "local_readback": "Full PR git diff --check origin/main passed. TS/Python/PHP maintained sources retain whitespace:unspecified; captured/generated inputs have whitespace:unset.",
-      "status": "All collected static and runtime failure causes repaired and independently reviewed. Final candidate including current production main is being prepared.",
+      "status": "Production pair prepared and activated privately; website release still pending final navigation increment and CI.",
       "existing_runtime_evidence_reused": true,
       "native_job": {
         "run_id": 40438016189,
@@ -5283,7 +5290,66 @@
         "source_policy": "Port the existing PV control scenarios to the maintained Woo module response contract. Synthetic values/identity reuse the existing fixtures and are labelled test-only. Gamma is read-only; input persistence/locale/dispatch checks use editable scenario assumptions. A process without Woo must refuse PV at submission; weather retry/capture and energy results remain asserted.",
         "verification": "Corrected PHP cases/static, shared lifecycle DOM, remaining affected DOM paths, existing worker/process cases, source-policy refusal, tar archive and tool/i18n cases passed. Engine strict mypy, i18n coverage/validity and all build manifests passed. Incremental Spec/Standards review passed; no new scenario or browser/numerical matrix.",
         "production_protection": "Read back main522ca089 and live deployment20261027T025330Z-model-permission-a74c4200. Integrate that current permission batching before any site deployment; preserve its source authority and unrelated changes."
+      },
+      "final_runtime_parity": {
+        "head": "127febbd8da700d4f95c5f691679ca0c93abea6d",
+        "run_id": 40453065745,
+        "static": "success",
+        "native_mu_smoke": "success",
+        "runtime": "Commerce/Tools/i18n/Genie passed; engine 882 passed and one cross-platform inverse-height oracle failure",
+        "diagnosis": "Linux/macOS binary64 Earth-scale subtraction differs by two ULPs (1.862645149230957e-9 m). Production geometry unchanged. Angle now rel=0/abs1e-10; height four ULPs at WGS84 semi-major axis only. Existing geographic cases passed; incremental Spec/Standards PASS.",
+        "next_head": "fd148bc59addca35a703046621e85de5392bf101",
+        "next_run_id": 40454937700,
+        "next_run_last_observed": "in_progress; plan and mu-smoke success"
       }
     }
+  },
+  "production_release": {
+    "state": "active private pair, public routing unchanged",
+    "root": "/opt/linker-planner",
+    "port": 8911,
+    "release": "/opt/linker-planner/releases/cac8fb43f1b6a189eba6d57b8f15591884b752e655e3939521ac63f1b8ee64f5",
+    "source_tree_sha256": "cac8fb43f1b6a189eba6d57b8f15591884b752e655e3939521ac63f1b8ee64f5",
+    "stage_receipt": {
+      "release": "/opt/linker-planner/releases/cac8fb43f1b6a189eba6d57b8f15591884b752e655e3939521ac63f1b8ee64f5",
+      "files_verified": 245,
+      "obsolete_staged_directory_exists": false,
+      "public_routing_changed": false
+    },
+    "native_source_readback": {
+      "exit": 0,
+      "result": {
+        "http": 200,
+        "cache_control": "no-store, private",
+        "keys": [
+          "battery_assemblies",
+          "compatibility_origin",
+          "dc_battery_ports",
+          "figure_projection_version",
+          "loaded_engine_version",
+          "loaded_source_revision",
+          "module_diagnostics",
+          "parallel_controller_product_ids",
+          "products",
+          "provider",
+          "publication",
+          "pv_modules",
+          "references",
+          "schema_version"
+        ],
+        "products": 85,
+        "references": 1,
+        "pv_modules": 1,
+        "loaded_source_revision": "726308c3eaa0ab7835d3b6576027f0141834473c132f03c0a5e1c2768a44d53f",
+        "error": null
+      }
+    },
+    "retention": "Current release and one rollback only. If production activation is abandoned, stop any owned units and reclaim reproducible candidate by 2026-10-27T16:00:00Z, preserving unique receipts and recovery.",
+    "private_pair_identity": {
+      "execution_key": "3328f1c0b1625f4bf7899b8bd2d7553603caa42bdcadd1561407127c30c45215",
+      "runtime_sha256": "eaeb0472a1690e6a424e8f342fbd86b74ff1e98b8bf9380236cff941b02ae39d",
+      "storage_binding": "f91b6338e5204a220d7163fde4277f900fc0c12ca913edec9d7c1560f0eb06d4"
+    },
+    "source_publisher": "Existing public_generation permissions installed; bytes unchanged, current feed85 products/one reference/one PV module read successfully. Old engine and Genie not restarted by this change; public TLS and WordPress entry remain unchanged."
   }
 }

@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Tools\Genie;
 
+use Linker\Commerce\Presentation\PageUrls;
+
 /**
  * Prints the opening prompts per page type and the dock on every page. The
  * chips and the dock only print markup; the React app is loaded on the first
@@ -644,7 +646,7 @@ JS,
 		$stamp       = ConversationMail::stamp();
 		$guest_links = shortcode_exists( 'linker_guest_account_links' ) ? do_shortcode( '[linker_guest_account_links]' ) : '';
 		return $guest_links . sprintf(
-			'<div data-linker-app="genie" data-surface="%1$s" data-locale="%2$s" data-page-type="%3$s" data-product-id="%4$s" data-turn-url="%5$s" data-thread-url="%6$s" data-conversations-url="%7$s" data-vote-url="%8$s" data-rest-url="%9$s" data-rest-nonce="%10$s" data-disclosure="%11$s" data-account-url="%12$s" data-workspace-url="%13$s" data-prompts=\'%14$s\' data-page=\'%15$s\' data-signed-in="%16$s" data-retention-days="%17$s" data-mail-started="%18$s" data-mail-started-nonce="%19$s" data-contact-url="%20$s" data-inquiry-url="%21$s" data-request-page-url="%22$s"></div>',
+			'<div data-linker-app="genie" data-surface="%1$s" data-locale="%2$s" data-page-type="%3$s" data-product-id="%4$s" data-turn-url="%5$s" data-thread-url="%6$s" data-conversations-url="%7$s" data-vote-url="%8$s" data-rest-url="%9$s" data-rest-nonce="%10$s" data-disclosure="%11$s" data-account-url="%12$s" data-workspace-url="%13$s" data-prompts=\'%14$s\' data-page=\'%15$s\' data-signed-in="%16$s" data-retention-days="%17$s" data-mail-started="%18$s" data-mail-started-nonce="%19$s" data-contact-url="%20$s" data-inquiry-url="%21$s" data-request-page-url="%22$s" data-configurator-en-url="%23$s" data-configurator-de-url="%24$s"></div>',
 			esc_attr( $surface ),
 			esc_attr( $locale ),
 			esc_attr( $page['type'] ),
@@ -669,7 +671,9 @@ JS,
 			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . ContactRequest::ROUTE ) ) ),
 			// The inquiry confirmation card's route (#250).
 			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . InquiryRequest::ROUTE ) ) ),
-			esc_attr( esc_url_raw( (string) apply_filters( 'linker_genie_inquiry_page', '', $locale ) ) ) // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Existing native inquiry-page seam owned by InquiryRequest.
+			esc_attr( esc_url_raw( (string) apply_filters( 'linker_genie_inquiry_page', '', $locale ) ) ), // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Existing native inquiry-page seam owned by InquiryRequest.
+			esc_attr( esc_url_raw( class_exists( PageUrls::class ) ? PageUrls::translated( 'solution-configurator', 'en' ) : '' ) ),
+			esc_attr( esc_url_raw( class_exists( PageUrls::class ) ? PageUrls::translated( 'solution-configurator', 'de' ) : '' ) )
 		);
 	}
 

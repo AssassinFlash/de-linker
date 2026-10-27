@@ -15,19 +15,58 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import type { ActionBlock } from '../api/turn';
+import type { GenieConfig } from '../config';
+
+/**
+ * Localize navigation only; preserve saved project/run parameters and history.
+ *
+ * @param url   Saved, grounded action address.
+ * @param links Native page addresses in both languages.
+ */
+function configuratorLink(
+	url: string,
+	links: GenieConfig[ 'configuratorLinks' ]
+): string {
+	if ( ! links?.current ) {
+		return url;
+	}
+	try {
+		const original = new URL( url );
+		const current = new URL( links.current );
+		const known = [ links.en, links.de ]
+			.filter( Boolean )
+			.map( ( value ) => new URL( value ).href );
+		if (
+			original.origin !== current.origin ||
+			! known.includes( original.origin + original.pathname )
+		) {
+			return url;
+		}
+		current.search = original.search;
+		current.hash = original.hash;
+		return current.href;
+	} catch {
+		return url;
+	}
+}
 
 export function ActionView( {
 	block,
 	accountUrl,
+	configuratorLinks,
 }: {
 	block: ActionBlock;
 	accountUrl: string;
+	configuratorLinks?: GenieConfig[ 'configuratorLinks' ];
 } ) {
 	const url = 'string' === typeof block.args.url ? block.args.url : '';
 	if ( 'open_configurator' === block.name && url ) {
 		return (
 			<p>
-				<a className="linker-genie-app__action" href={ url }>
+				<a
+					className="linker-genie-app__action"
+					href={ configuratorLink( url, configuratorLinks ) }
+				>
 					{ __( 'Open the configurator', 'linker-tools' ) }
 				</a>
 			</p>

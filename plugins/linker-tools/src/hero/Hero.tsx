@@ -1051,6 +1051,7 @@ export function HeroConversation( {
 								key={ index }
 								block={ block }
 								accountUrl={ config.accountUrl }
+								configuratorLinks={ config.configuratorLinks }
 								onAsk={ askCard }
 								parts={ {
 									onAsk: askCard,

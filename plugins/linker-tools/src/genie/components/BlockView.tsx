@@ -7,6 +7,7 @@
  * Internal dependencies
  */
 import type { Block } from '../api/turn';
+import type { GenieConfig } from '../config';
 import { ActionView } from './ActionView';
 import { Ask } from './Ask';
 import { DocumentLink } from './DocumentLink';
@@ -16,11 +17,13 @@ import { PartsCard, type PartsActions } from './PartsCard';
 export function BlockView( {
 	block,
 	accountUrl,
+	configuratorLinks,
 	onAsk,
 	parts,
 }: {
 	block: Block;
 	accountUrl: string;
+	configuratorLinks?: GenieConfig[ 'configuratorLinks' ];
 	onAsk: ( text: string ) => void;
 	parts: PartsActions;
 } ) {
@@ -31,7 +34,13 @@ export function BlockView( {
 		return <p className="linker-genie-app__text">{ block.text }</p>;
 	}
 	if ( block.type === 'action' ) {
-		return <ActionView block={ block } accountUrl={ accountUrl } />;
+		return (
+			<ActionView
+				block={ block }
+				accountUrl={ accountUrl }
+				configuratorLinks={ configuratorLinks }
+			/>
+		);
 	}
 	if ( block.type === 'handoff' ) {
 		return <Handoff block={ block } />;
