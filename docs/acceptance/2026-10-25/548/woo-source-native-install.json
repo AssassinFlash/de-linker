@@ -5372,6 +5372,24 @@
       "runtime_sha256": "eaeb0472a1690e6a424e8f342fbd86b74ff1e98b8bf9380236cff941b02ae39d",
       "storage_binding": "f91b6338e5204a220d7163fde4277f900fc0c12ca913edec9d7c1560f0eb06d4"
     },
-    "source_publisher": "Existing public_generation permissions installed; bytes unchanged, current feed85 products/one reference/one PV module read successfully. Old engine and Genie not restarted by this change; public TLS and WordPress entry remain unchanged."
+    "source_publisher": "Existing public_generation permissions installed; bytes unchanged, current feed85 products/one reference/one PV module read successfully. Old engine and Genie not restarted by this change; public TLS and WordPress entry remain unchanged.",
+    "prewrite_backup": {
+      "directory": "/Users/chesterjohn/de-linker-data/cutover-20261027-0548",
+      "state": "complete and verified",
+      "files": 40048,
+      "unchanged_hardlinks_to_previous": 39277,
+      "database_sha256": "56006a3b631d82af438c2199c3636236ce6dc591a5214be313d5ac674d8e51a3",
+      "gzip_crc_read_to_end": true,
+      "database_reused_without_redump": true,
+      "full_scope": "All database tables; current uploads/plugins/mu-plugins/themes; wp-config/.htaccess/options and both current external configuration dependencies.",
+      "verified_at": "2026-10-27T06:32:20.171841+00:00",
+      "retention_review": "Completed production points remain within newest3 plus last daily7days and the existing explicit baseline; separate local-drill recovery is not this source. No obsolete failed copy was created by this interrupted/resumed same-point transport."
+    },
+    "source_refresh_correction": {
+      "diagnosis": "The entry point overrode configured_private_app default current-generation provider with legacy HTTP holder. Worker reloaded each operation; HTTP retained old feed after native Woo publication.",
+      "change": "Remove that override. HTTP and worker both use the existing current-generation Services supplier, keeping each operation on one resolved generation and the same Publication before/after proof. Classic engine snapshot seam remains unchanged; no new product source/cache or publication restart workflow.",
+      "verification": "Incremental Spec/Standards PASS; Ruff/format/mypy and existing private HTTP host/current-source contracts passed. No new test file, fixture matrix or numerical run.",
+      "deployment": "Existing private pair still runs its earlier exact release. The corrected source must be installed as a new matched pair before the public planning entry is switched."
+    }
   }
 }

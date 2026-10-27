@@ -168,8 +168,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 )
             return holder["services"]
 
-    # The private planner consumes this same loader; it has no second product
-    # registry or mutable feed cache. Construction remains lazy and locked.
+    # Explicit consumers may read this app's immutable snapshot. The private
+    # deployment uses the current-generation supplier shared with its worker.
     app.state.planning_product_provider = services
 
     def unavailable(error: Exception, code: str) -> HTTPException:
