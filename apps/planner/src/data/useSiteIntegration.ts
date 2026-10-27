@@ -1,6 +1,6 @@
 import { savedSolutionId } from "../domain/savedSolution.ts";
 import { useEffect } from "react";
-import { PLANNER_NAVIGATION } from "./plannerLocation.ts";
+import { initialEnergyView, PLANNER_NAVIGATION } from "./plannerLocation.ts";
 import { measurePlannerChrome } from "./measurePlannerChrome.ts";
 import { ENTRY_QUERY_KEYS, readEntryHints } from "../domain/entryHints.ts";
 
@@ -39,6 +39,7 @@ export function projectLanguageUrl(
 	else target.searchParams.delete("project");
 	target.searchParams.delete("run");
 	target.searchParams.delete("compare");
+	target.searchParams.delete("energy_view");
 	for (const key of ENTRY_QUERY_KEYS) target.searchParams.delete(key);
 	const saved = id === null ? savedSolutionId(page.searchParams) : null;
 	if (saved !== null) target.searchParams.set("saved_solution", String(saved));
@@ -55,6 +56,9 @@ export function projectLanguageUrl(
 			if (value !== null) target.searchParams.set(key, String(value));
 	target.hash = "";
 	if (id && page.searchParams.get("project") === id) {
+		const view = page.searchParams.get("energy_view");
+		if (view && initialEnergyView(page) === view)
+			target.searchParams.set("energy_view", view);
 		const run = page.searchParams.get("run");
 		if (run && /^[a-f0-9]{32}$/.test(run)) target.searchParams.set("run", run);
 		const comparison = page.searchParams.get("compare");

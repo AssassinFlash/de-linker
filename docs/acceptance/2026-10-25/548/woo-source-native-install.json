@@ -5996,5 +5996,20 @@
     "collaboration": "Production source/publisher and compatibility-origin completion sent to previously waiting source-authority conversation01a1684e; privacy/publisher owner informed of exact failure and subsequent success.",
     "recorded_at_utc": "2026-10-27T11:51:26.964447+00:00",
     "observation_time_basis": "First failed native HTTP request is logged at2026-10-27T11:42:32Z. Subsequent original-loader and original-HTTP success are recorded in observation order; no precise successful-response wall-clock time was captured."
+  },
+  "workspace_usability_continuation": {
+    "baseline": "c126e9b09",
+    "owner": "548",
+    "state": "implementation; native acceptance pending",
+    "problems": [
+      "Native language switching discarded the chosen energy workspace form view and opened scenario settings.",
+      "Result h3 headings were not programmatically focusable, preventing the existing late sticky-bar correction while restoring a saved report."
+    ],
+    "impact": "Energy-view route, same-project native language links and result-heading focus; no model, product source, calculation or report content change",
+    "minimum_verification": {
+      "passed": "Existing siteIntegration cases extended for same-project report view, unrelated-project refusal and saved-result precedence; existing actual-project-bar case extended for heading focus and unchanged native button tab order; TypeScript passed",
+      "pending": "Native cold restored-report heading on mobile and desktop; EN/DE report-view language roundtrip with existing reports; independent final Spec/Standards; publish/readback"
+    },
+    "stop": "Reuse all accepted physics, Woo, PDF and commerce evidence. No new numerical runs, test files, instance, matrix or full-site scan."
   }
 }

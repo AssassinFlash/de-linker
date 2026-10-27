@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { projectLanguageUrl } from "./useSiteIntegration.ts";
+import { initialEnergyView } from "./plannerLocation.ts";
 
 test("native language destinations retain the current project without inventing a route", () => {
 	const id = "a".repeat(32);
@@ -45,6 +46,28 @@ test("language switches keep only validated result/workspace references for the 
 		run = "b".repeat(32),
 		target = "/de/native/";
 	const current = `https://site.example/en/?project=${project}&run=${run}&nonce=private#lp-calculations`;
+	const reportPage = `https://site.example/en/?project=${project}&energy_view=reports&nonce=private#lp-calculations`;
+	const reportDestination = new URL(
+		projectLanguageUrl(target, reportPage, project),
+	);
+	assert.equal(initialEnergyView(reportDestination), "reports");
+	assert.equal(reportDestination.searchParams.has("nonce"), false);
+	assert.equal(
+		new URL(
+			projectLanguageUrl(target, reportPage, "c".repeat(32)),
+		).searchParams.has("energy_view"),
+		false,
+	);
+	assert.equal(
+		initialEnergyView(
+			new URL(current.replace("&nonce=private", "&energy_view=reports")),
+		),
+		"runs",
+	);
+	assert.equal(
+		initialEnergyView(new URL(reportPage.replace("=reports", "=unknown"))),
+		"scenario",
+	);
 	assert.equal(
 		new URL(
 			projectLanguageUrl(

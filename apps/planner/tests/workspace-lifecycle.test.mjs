@@ -463,6 +463,14 @@ test("the actual project bar is observed after asynchronous draft opening and on
 	assert.equal(revealActionResult(target), true);
 	assert.deepEqual(measuredAtScroll, ["88px", "144px"]);
 	assert.ok(document.activeElement === target);
+	assert.equal(target.hasAttribute("tabindex"), false);
+	const heading = document.createElement("h3");
+	heading.textContent = "Restored planning report";
+	root.append(heading);
+	heading.scrollIntoView = target.scrollIntoView;
+	assert.equal(revealActionResult(heading), true);
+	assert.equal(document.activeElement, heading);
+	assert.equal(heading.tabIndex, -1);
 });
 
 test("creation authentication failure rechecks once and explicitly retries the exact intent", async (t) => {
