@@ -82,8 +82,8 @@
     "src/components/energy/PvModuleParameters.tsx": "e20e496907f28e45f1c859257628ea228d8e04638785dd07a1976004b5943070",
     "src/components/energy/PvSetup.tsx": "e4b847a11dffd6aa1537a9e0c1d1308fc6bcd939583182f94910b245fa5e1d3d",
     "src/components/energy/PvgisReferenceResult.tsx": "36012d38faa08e9e7a3d3f10e46b636609eb490b269a32dd666c8333667db640",
-    "src/components/energy/PvgisReferenceSetup.tsx": "2b913eaf55f9e77d6a5c3229cf4c58eaa82b01c4ae7e3af7b3b7f046dd4d230c",
-    "src/components/energy/PvgisRoofFacts.tsx": "33a9871744848ec536071b43e456a2ad5b403f32e3ae36b5097f6bc2b06b141b",
+    "src/components/energy/PvgisReferenceSetup.tsx": "23bd3829f906e1c4a9e9d89de2800fa6ec312a5f0171d0cc434ee539bc93e6cc",
+    "src/components/energy/PvgisRoofFacts.tsx": "4f97de29d732adbdeb770ec714fe176a3f9fdbbe62e1f4b67d8decd0dd1b1d31",
     "src/components/energy/RunBasis.tsx": "a1647f5f13f0ea48e84bd2920e0cb01004cdd2159a127957a264660a8a7c51ac",
     "src/components/energy/RunResult.tsx": "15c70112b986035258cb07f8d47803894939d0758c2ef6582e7e6dc841395fa1",
     "src/components/energy/ScenarioForm.tsx": "7046aa3760d69c1f631b89eeb6bf6f205071e7adc94b413ae038a390d53d90a5",
@@ -252,13 +252,13 @@
     "vite.config.ts": "124325835376cd0382f1a8c0652d2264597cb7ae6f054f05b7e1807bbf98916d"
   },
   "build": {
-    "assets/EnergyFlowChart-Bd8EhSNF.js": "28dc308ca6257eedb8f7496c9ab3b314f242e7877a932a67d0ee701aa8648ca9",
-    "assets/MapViewport-CSxfPL9Y.js": "f68d8a3e30ec4e0b2f699bbd37d7bea928a2382bfb518ac42224964fbed11210",
-    "assets/SceneViewport-8-pGNYC-.js": "74f02479fb61172a67e4067f6396b46400bc3d0a6794a1dc81cf9e0428c693ba",
-    "assets/planner-core-C1uqjXH0.js": "f83b4628329beb6c0564ca67111241a11397188b376d331a1a12df96bcd01922",
-    "assets/planner.js": "b93460b90cee3cf93c4a9b870ea29493e56b7b61cbb5b0971d61dbcc4c711752",
+    "assets/EnergyFlowChart-FpBXz-qw.js": "4a5c22b7fa9aa4c204bef0f8dd09cd9530118983698ca5265e11e1999d123d17",
+    "assets/MapViewport-DWrQKdZi.js": "74011d6871c29dc3e45ccef797c2053a9553f0cf85f4b36f455dfb2c67d57ae7",
+    "assets/SceneViewport-BTBwlmLy.js": "492835eb86fea2888ad90a8e01dde5f6244943b9030dc34776d7aed8f1ca5222",
+    "assets/planner-core-D2VOj2Wx.js": "92970364f206517364a23803d83abd3bea4f3128d677908c406ca70e18207fa4",
+    "assets/planner.js": "b1df190270534918bde6267290930b9e57bfd7d03c175881cf013e2fef015e91",
     "assets/rolldown-runtime-BWaJ3C7D.js": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3",
-    "vite-manifest.json": "0ac15f7681c1d99cdf6d5f9b7c8235e2717ea46f948f445bfae85b96422fae00",
+    "vite-manifest.json": "ad7e4a0bac37f4dbd4bbb1fa70f6d83dde3bb5ee6d877ecceb438028299e17dd",
     "windpress.scan.txt": "1097e62d108022acd8a5bc911b30255d9ccee966d411148a1022e14a17f2daeb"
   }
 }

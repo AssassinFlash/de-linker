@@ -30,7 +30,7 @@ export function PvgisRoofFacts({
 				</dd>
 			</dl>
 			<div className="lp-table-scroll">
-				<table>
+				<table className="lp-data-table">
 					<thead>
 						<tr>
 							{[

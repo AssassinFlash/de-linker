@@ -1,6 +1,7 @@
 """Project included module poses without inventing weather or device parameters."""
 
 import math
+import sys
 
 from .canonical import Object, digest, encode
 from .errors import InvalidInput
@@ -11,6 +12,14 @@ from .pvgis_reference_inputs import PvgisReferenceInputs
 from .pvgis_reference_plan import PvgisReferencePlan
 from .pvgis_request import PvgisRequest
 from .weather_fetch_plan import WeatherFetchLimits
+
+
+def _canonical_derived_angle(value: float) -> float:
+    # float_info.dig is the platform's guaranteed decimal precision, not an
+    # engineering tolerance. Simplify atan2 conversion noise only within one
+    # binary representable step (ulp); preserve all larger angular differences.
+    candidate = float(format(value, f".{sys.float_info.dig}g"))
+    return candidate if abs(candidate - value) <= math.ulp(value) else value
 
 
 def reference_plan(
@@ -41,12 +50,20 @@ def reference_plan(
         if any(p.normal_enu != normal for p in included):
             raise InvalidInput("a PVGIS array must have one actual module orientation")
         horizontal = math.hypot(normal[0], normal[1])
-        tilt = math.degrees(math.atan2(horizontal, normal[2]))
+        tilt = _canonical_derived_angle(math.degrees(math.atan2(horizontal, normal[2])))
         if not 0 <= tilt <= 90:
             raise InvalidInput("PVGIS fixed-plane inclination is outside its domain")
         azimuth = (
-            math.degrees(math.atan2(normal[0], normal[1])) % 360 if horizontal else 0.0
+            _canonical_derived_angle(
+                math.degrees(math.atan2(normal[0], normal[1])) % 360
+            )
+            if horizontal
+            else 0.0
         )
+        # A candidate reaches the equivalent 360/0 boundary only under the
+        # same ULP condition above; this does not snap other north bearings.
+        if azimuth == 360:
+            azimuth = 0.0
         power = math.fsum(p.stc_power_w for p in included)
         arrays.append(
             PvgisReferenceArray(

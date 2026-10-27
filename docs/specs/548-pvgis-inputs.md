@@ -163,3 +163,15 @@ The production model claim requires a native official request from the real
 customer path, profile adoption and downstream energy/report readback. Synthetic
 transport fixtures establish boundaries and arithmetic only; they do not prove
 that a current Paris response has succeeded or demonstrate installation accuracy.
+
+
+Native validation of the derived-angle path exposed one floating-point identity
+issue: a saved 30-degree mounting angle reconstructed as 29.999999999999996,
+while JRC echoed 30. Only derived request angles may use a decimal spelling
+based on the platform's `float_info.dig`, and only when it differs by at most
+`math.ulp` of the derived binary value. Larger differences remain unchanged.
+The equivalent 360/0 azimuth boundary follows that same bound. Saved geometry,
+provider originals/capture identity and the global exact parser are unchanged;
+the observed one-degree north echo remains a rejection. The original failed
+native run stays quarantined, and a corrected executable requires a new owned
+request rather than relabelling its receipt.

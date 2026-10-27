@@ -150,7 +150,7 @@ export function PvgisReferenceSetup({
 				</Notice>
 			) : (
 				<fieldset disabled={disabled}>
-					<div className="lp-scenario-fields">
+					<div className="lp-geometry-fields">
 						<label className="lp-field">
 							<span>{__("Radiation database", "linker-tools")}</span>
 							<select

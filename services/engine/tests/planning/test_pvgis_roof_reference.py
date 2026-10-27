@@ -33,7 +33,10 @@ from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.product_sources import ProductSources
 from linker_engine.planning.pvgis_reference_artifacts import prepare_reference_asset
 from linker_engine.planning.pvgis_reference_download import ReferenceCapture
-from linker_engine.planning.pvgis_reference_geometry import reference_plan
+from linker_engine.planning.pvgis_reference_geometry import (
+    _canonical_derived_angle,
+    reference_plan,
+)
 from linker_engine.planning.pvgis_reference_http import PvgisReferenceHttp
 from linker_engine.planning.pvgis_reference_inputs import PvgisReferenceInputs
 from linker_engine.planning.pvgis_reference_journal import PvgisReferenceJournal
@@ -163,7 +166,7 @@ def fixture_inputs(basis: FixtureObject) -> FixtureObject:
     first.update(rows=2, columns=5, excluded_slots=[], mount_tilt_deg=10)
     second = copy.deepcopy(first)
     second.update(
-        id="other", name="Second synthetic array", origin_uv=[10, 2], mount_tilt_deg=20
+        id="other", name="Second synthetic array", origin_uv=[10, 2], mount_tilt_deg=30
     )
     layout["arrays"].append(second)
     return {"geometry": layout, "pvgis_reference": settings()}
@@ -254,7 +257,11 @@ def test_managed_reference_freezes_both_arrays_and_refuses_stale_or_partial_use(
     assert sum(a.module_count for a in plan.arrays) == 20
     expected_kwp = 20 * layout["module_specs"][0]["stc_power_w"] / 1000
     assert sum(a.request.peak_power_kwp for a in plan.arrays) == expected_kwp
-    assert [a.request.tilt_deg for a in plan.arrays] == pytest.approx([10, 20])
+    # The actual ENU atan2 conversion of the second mount produces
+    # 29.999999999999996; JRC echoes the equivalent requested slope as 30.
+    assert [a.request.tilt_deg for a in plan.arrays] == [10, 30]
+    # Two binary steps away from 30 is beyond the canonicalization allowance.
+    assert _canonical_derived_angle(30.000000000000007) == 30.000000000000007
     tampered = copy.deepcopy(values)
     tampered["geometry"]["module_specs"][0]["stc_power_w"] += 1
     with pytest.raises(InvalidInput):
@@ -397,7 +404,7 @@ def test_managed_reference_freezes_both_arrays_and_refuses_stale_or_partial_use(
     resumed_asset = json_object(json_object(resumed.result)["prepared_asset"])
     resumed_metadata = resumed_asset["metadata"]
     acquisition = resumed_metadata["acquisition"]
-    assert [r.tilt_deg for r in bad.requests] == pytest.approx([10, 20, 20])
+    assert [r.tilt_deg for r in bad.requests] == [10, 30, 30]
     assert bad.deadlines == [retained["deadline_at"]] * 3
     assert bad.byte_limits[2] == limits().max_response_bytes - used
     assert acquisition["started_at"] == retained["started_at"]
