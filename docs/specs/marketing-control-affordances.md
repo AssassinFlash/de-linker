@@ -126,3 +126,13 @@ languages at1440/390: author names, pressed state, Enter/Space and arrow
 selection, complete active card visibility, and no horizontal page overflow.
 Use the existing snapshot-backed instance and paired-write/backup/readback
 mechanism. No new carousel implementation, quote, wording or page layout.
+
+The actual phone resize/Space sequence also exposed a pre-existing follow
+race: the counter selected story1 while story2 remained visible. The current
+calculation combines an in-flight transformed rectangle with the last requested
+translation. Use the active card's native layout `offsetLeft`, retaining the
+existing clamping, transition and click/resize handlers. Remove the obsolete
+requested-offset state. Include these exact spans in the same complete paired
+planner guard. The existing real EPC fixture carries the identical saved
+function; reuse it for one interrupted-transition regression, then verify the
+actual phone controls return to the selected card.

@@ -107,7 +107,30 @@ def _capability(content: str) -> tuple[str, str]:
         "\n        });",
         "\n          p.setAttribute('aria-pressed', String(i === idx));\n        });",
     )
-    edits = [(old_handler, new_handler)]
+    track = "  var lkTestiTrack=document.getElementById('testi-track');\n"
+    old_position = (
+        "    var x=active.getBoundingClientRect().left-vp.getBoundingClientRect().left+lkTestiX;\n"
+        "    var max=lkTestiTrack.scrollWidth-vp.clientWidth;\n"
+        "    x=Math.max(0,Math.min(Math.round(x),max));\n"
+        "    lkTestiX=x;"
+    )
+    new_position = (
+        "    var x=active.offsetLeft;\n"
+        "    var max=lkTestiTrack.scrollWidth-vp.clientWidth;\n"
+        "    x=Math.max(0,Math.min(Math.round(x),max));"
+    )
+    edits = [
+        (old_handler, new_handler),
+        (
+            track + "  var lkTestiX=0;\n  function lkTestiFollow(){",
+            track + "  function lkTestiFollow(){",
+        ),
+        (
+            "if(fits){lkTestiX=0;lkTestiTrack.style.transform='';return;}",
+            "if(fits){lkTestiTrack.style.transform='';return;}",
+        ),
+        (old_position, new_position),
+    ]
     for index, name in enumerate(names):
         classes = "lk-testi-pill-bar" + (" active" if index == 0 else "")
         attributes = f'class="{classes}" data-index="{index}"'

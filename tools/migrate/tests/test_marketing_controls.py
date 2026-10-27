@@ -133,6 +133,11 @@ PAGES = {"utility": utility, "services": services}
 
 
 def capability() -> str:
+    # Capability and EPC share this saved follow function; reuse the existing
+    # real source fixture instead of storing another carousel copy.
+    source = (Path(__file__).parent / "fixtures/epc-media/old-en.html").read_text()
+    start = source.index("  var lkTestiTrack=document.getElementById('testi-track');")
+    follow = source[start : source.index("  if(lkTestiTrack){", start)]
     return (
         '<main id="tv-cp-page-v1">'
         '<div class="lk-story-name mb-1">Stefan &quot;S&quot; &amp; Team</div>'
@@ -142,7 +147,7 @@ def capability() -> str:
         + UNCHANGED
         + "<script>testiPills.forEach(function(p, i) {\n"
         "          p.classList.toggle('active', i === idx);\n"
-        "        });</script></main>"
+        "        });\n" + follow + "</script></main>"
     )
 
 
@@ -156,6 +161,27 @@ def test_capability_native_markers_preserve_source_and_author_names() -> None:
     assert 'aria-label="Stefan &quot;S&quot; &amp; Team" aria-pressed="true"' in en
     assert 'aria-label="Dirk van de Berg" aria-pressed="false"' in en
     assert "p.setAttribute('aria-pressed', String(i === idx));" in en
+    start = en.index("  var lkTestiTrack=document.getElementById('testi-track');")
+    script = en[start : en.index("</script>", start)]
+    program = r"""
+const assert = require('node:assert/strict');
+const vm = require('node:vm');
+const active = {offsetLeft:0,getBoundingClientRect(){return {left:-333}}};
+const viewport = {clientWidth:342,getBoundingClientRect(){return {left:24}}};
+const track = {parentElement:viewport,scrollWidth:712,style:{},querySelector(){return active}};
+const context = {document:{getElementById(){return track}}};
+vm.runInNewContext(JSON.parse(process.argv[1]), context);
+context.lkTestiFollow();
+assert.equal(track.style.transform, 'translateX(-0px)');
+// A second selection arrives while the previous transform is still moving.
+active.offsetLeft=370;
+context.lkTestiFollow();
+assert.equal(track.style.transform, 'translateX(-370px)');
+active.offsetLeft=0;
+context.lkTestiFollow();
+assert.equal(track.style.transform, 'translateX(-0px)');
+"""
+    subprocess.run(["node", "-e", program, json.dumps(script)], check=True)
 
 
 def test_capability_refuses_partial_controls_pair_and_changed_sources() -> None:
