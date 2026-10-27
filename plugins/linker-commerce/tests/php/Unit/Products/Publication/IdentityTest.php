@@ -31,7 +31,15 @@ final class IdentityTest extends TestCase {
 		$this->current_faq_product( 12, array() );
 		WP_Mock::userFunction( 'nocache_headers' );
 		WP_Mock::userFunction( 'is_wp_error' )->andReturnUsing( static fn ( mixed $value ): bool => $value instanceof \WP_Error );
-		WP_Mock::userFunction( 'wp_get_object_terms' )->andReturn( array( 'MODEL-12' ) )->byDefault();
+		WP_Mock::userFunction( 'wp_get_object_terms' )->andReturnUsing(
+			static fn ( array $ids ): array => array_map(
+				static fn ( int $id ): object => (object) array(
+					'object_id' => $id,
+					'name'      => 'MODEL-12',
+				),
+				$ids
+			)
+		)->byDefault();
 	}
 
 	/** Remove only the fixture's generated upload. */
@@ -54,14 +62,68 @@ final class IdentityTest extends TestCase {
 				return true;
 			}
 		);
-		foreach ( array( array( 'models' => array( 'MODEL-12', 'UNKNOWN' ) ), array( 'text' => 'Use MODEL-12 here.' ) ) as $body ) {
-			$refreshes = 0;
-			$response  = $this->identify( $body );
+		$ids = array( 12, 13 );
+		WP_Mock::userFunction( 'get_posts' )->andReturnUsing(
+			static function () use ( &$ids ): array {
+				return $ids;
+			}
+		);
+		WP_Mock::userFunction( 'get_post_type' )->with( 13 )->andReturn( 'product' );
+		WP_Mock::userFunction( 'get_post_status' )->with( 13 )->andReturn( 'draft' );
+		$primes = array();
+		WP_Mock::userFunction( '_prime_post_caches' )->andReturnUsing(
+			static function ( array $product_ids, bool $terms, bool $meta ) use ( &$primes ): void {
+				$primes[] = array( $product_ids, $terms, $meta );
+			}
+		);
+		$term_reads = array();
+		WP_Mock::userFunction( 'wp_get_object_terms' )->andReturnUsing(
+			static function ( mixed $product_ids, string $taxonomy, array $args ) use ( &$term_reads ): array {
+				$term_reads[] = array( $product_ids, $taxonomy, $args );
+				if ( ! is_array( $product_ids ) ) {
+					return array( 12 === $product_ids ? 'MODEL-12' : 'DRAFT-13' );
+				}
+				// Native relationship IDs, not term IDs or return order, own each label.
+				return array(
+					(object) array(
+						'term_id'          => 12,
+						'term_taxonomy_id' => 112,
+						'object_id'        => 13,
+						'name'             => 'DRAFT-13',
+					),
+					(object) array(
+						'term_id'          => 13,
+						'term_taxonomy_id' => 113,
+						'object_id'        => 12,
+						'name'             => 'MODEL-12',
+					),
+				);
+			}
+		);
+		foreach ( array( array( 'models' => array( 'MODEL-12', 'UNKNOWN', 'DRAFT-13' ) ), array( 'text' => 'Use MODEL-12 alongside DRAFT-13 here.' ) ) as $body ) {
+			$refreshes  = 0;
+			$primes     = array();
+			$term_reads = array();
+			$response   = $this->identify( $body );
 			$this->assertInstanceOf( \WP_REST_Response::class, $response );
 			$data = $response->get_data();
 			$this->assertSame( 'published', $data['models'][0]['status'] );
 			$this->assertSame( 12, $data['models'][0]['product_id'] );
 			$this->assertSame( 1, $refreshes );
+			$this->assertSame(
+				array(
+					array(
+						array( 12, 13 ),
+						'pa_model',
+						array(
+							'fields' => 'all_with_object_id',
+							'lang'   => '',
+						),
+					),
+				),
+				$term_reads
+			);
+			$this->assertSame( array( array( array( 12, 13 ), false, true ) ), $primes );
 			$this->assertSame( 'no-store, private, max-age=0', $response->get_headers()['Cache-Control'] );
 			$this->assertSame( array( 'model', 'status', 'product_id' ), array_keys( $data['models'][0] ) );
 			if ( isset( $body['models'] ) ) {
@@ -73,7 +135,22 @@ final class IdentityTest extends TestCase {
 					$data['models'][1]
 				);
 			}
+			$this->assertSame(
+				array(
+					'model'  => isset( $body['models'] ) ? 'DRAFT-13' : 'draft-13',
+					'status' => 'unavailable',
+				),
+				$data['models'][ isset( $body['models'] ) ? 2 : 1 ]
+			);
 		}
+		$ids        = array();
+		$primes     = array();
+		$term_reads = array();
+		$response   = $this->identify( array( 'text' => 'MODEL-12 DRAFT-13' ) );
+		$this->assertInstanceOf( \WP_REST_Response::class, $response );
+		$this->assertSame( array( 'models' => array() ), $response->get_data() );
+		$this->assertSame( array(), $primes );
+		$this->assertSame( array(), $term_reads );
 	}
 
 	/** Native status and role changes are read again on each call, without a TTL. */
@@ -162,7 +239,24 @@ final class IdentityTest extends TestCase {
 	/** Duplicate labels still prefer the currently published ordinary source. */
 	public function test_duplicate_labels_preserve_the_published_preference(): void {
 		WP_Mock::userFunction( 'get_post_type' )->with( 13 )->andReturn( 'product' );
-		WP_Mock::userFunction( 'get_post_status' )->with( 13 )->andReturn( 'draft' );
+		$status = 'draft';
+		WP_Mock::userFunction( 'get_post_status' )->with( 13 )->andReturnUsing(
+			static function () use ( &$status ): string {
+				return $status;
+			}
+		);
+		WP_Mock::userFunction( 'wp_get_object_terms' )->andReturn(
+			array(
+				(object) array(
+					'object_id' => 13,
+					'name'      => 'MODEL-12',
+				),
+				(object) array(
+					'object_id' => 12,
+					'name'      => 'MODEL-12',
+				),
+			)
+		);
 		$ids = array();
 		WP_Mock::userFunction( 'get_posts' )->andReturnUsing(
 			function ( array $query ) use ( &$ids ): array {
@@ -172,7 +266,12 @@ final class IdentityTest extends TestCase {
 				return $ids;
 			}
 		);
-		foreach ( array( array( 12, 13 ), array( 13, 12 ) ) as $order ) {
+		foreach ( array(
+			array( array( 12, 13 ), 'draft', 12 ),
+			array( array( 13, 12 ), 'draft', 12 ),
+			array( array( 12, 13 ), 'publish', 13 ),
+			array( array( 13, 12 ), 'publish', 12 ),
+		) as [ $order, $status, $expected ] ) {
 			$ids      = $order;
 			$response = $this->identify( array( 'models' => array( 'MODEL-12' ) ) );
 			$this->assertInstanceOf( \WP_REST_Response::class, $response );
@@ -180,7 +279,7 @@ final class IdentityTest extends TestCase {
 				array(
 					'model'      => 'MODEL-12',
 					'status'     => 'published',
-					'product_id' => 12,
+					'product_id' => $expected,
 				),
 				$response->get_data()['models'][0]
 			);
