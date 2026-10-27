@@ -41,7 +41,7 @@ EN 50549-1/-2 的公开 scope 均明确：DSO、TSO、成员国或监管机构�
 
 上述 TÜV 符合性证书均将结论限定于指定产品样本及所列评价要求，且说明不包含生产评估。历史 intake 中另一份同样由 Woo 标为 `type=certificate` 的 [GoodWe ET EU Declaration of Conformity](https://de-linker.com/wp-content/uploads/2026/10/GW_ET-G10_EU-Declaration-of-Conformity.pdf#page=1) 列的是 RED / EMC / LVD / RoHS 等产品合规事项；此次四份证书的安装读回不扩展到该声明。**附件类型 `certificate` 不能单独区分产品声明、单元并网证据和设施批准。**
 
-**版次缺口：**当前 FNN 4105 页面已列 2026-03，上表两份 4105 证书采用 2018-11。本轮取得的公开页面没有解决旧版证书的过渡承认、存量项目条件或具体 DSO 接受情况。应记录“版次/过渡适用性未核实”；既不能自动声称符合 2026-03，也不能仅凭年份将证书判为无效。本轮也没有访问签发机构实时证书状态库，PDF 印出的日期/有效期不等于当前有效状态已核实。
+**版次缺口：**当前 FNN 4105 页面已列 2026-03，上表两份 4105 证书采用 2018-11。本轮取得的公开页面没有解决旧版证书的过渡承认、存量项目条件或具体 DSO 接受情况。应记录“版次/过渡适用性未核实”；既不能自动声称符合 2026-03，也不能仅凭年份将证书判为无效。初轮未访问签发机构实时证书状态库；后续仅对 SGS 250008RECO14-CER 完成了数据库状态读回，见第 7 节。其他证书仍不能仅凭 PDF 印出的日期/有效期视为已核实当前状态。
 
 ### 可复用的文件身份（当前安装 feed 版本）
 
@@ -62,7 +62,7 @@ EN 50549-1/-2 的公开 scope 均明确：DSO、TSO、成员国或监管机构�
 4. **输出范围化结果。**每一义务使用“有证据支持 / 有条件 / 信息不足 / 明确冲突”，附命中的文件、版本、条件和缺项。另列“项目接网评估 / 所需设施证明 / DSO 运行许可”的真实状态；本模块的设备文件匹配不会把这些状态改为批准。缺附件或未知固件属于信息不足；只有与明确条件矛盾才是冲突。
 5. **报告与保存保留同一边界。**屏幕、PDF、BOM 和冻结 run 引用相同来源修订与结论。商品/文件下线、hash、设备固件/配置、规则版次或接网条件变化时，仅使受影响判断待复核；旧 run 仍说明当时采用的文件，当前商品/文档可见性由既有发布机制判断。示例输出为“已找到与所选型号关联的单元证书；固件、国家设置及项目接网资料待核实”，不使用“欧洲已批准”“整站合规”之类合并结论。
 
-本轮完成的是上述边界和可引用来源。**尚未完成**各国规则包、现场版本/设置核实、SGS 附录补齐、旧 4105 版次过渡承认、签发机构实时有效性核验，以及任何项目的保护/电网评估与 DSO 许可。它们应保留为具体缺项，不由计算成功或产品文件存在抵消。
+本轮完成的是上述边界和可引用来源。**尚未完成**各国规则包、现场版本/设置核实、SGS 附录补齐、旧 4105 版次过渡承认、其余证书的签发机构实时有效性核验，以及任何项目的保护/电网评估与 DSO 许可。它们应保留为具体缺项，不由计算成功或产品文件存在抵消。
 
 ## 6. 本轮 Apify 取证索引
 
@@ -77,3 +77,37 @@ EN 50549-1/-2 的公开 scope 均明确：DSO、TSO、成员国或监管机构�
 | `apify/website-content-crawler` · `i2AQfhVBU0cjbVX7S` | `UtmdZdqIJes4JKyiM` | VDE FNN 4105、EVS -1/-2 含 A1:2023 的公开 scope，00:31 UTC |
 
 取证故障已在同一通道内处理：初始并发默认内存触发账户总内存限制，后续显式用 1024 MB 的 actor 请求完成；RAG 的 raw-http 不接受 PDF，产品证书改为复用现有本地原件，标准范围读取官方 HTML；猜测的旧 4105 路径返回 404 后，经 Apify 搜索定位有效官方地址。未改账户设置，未使用普通网络搜索或其他抓取通道作为替代。
+
+## 7. SGS 250008RECO14-CER 完整附录定向追索
+
+2026-10-27 08:49–09:20 UTC，仅追索现有 Woo 附件所指的 **164 页附录、revision 0、2026-01-30**，没有扩大产品或标准研究。
+
+- **SGS 同号记录已核实，附录未取得。**从现有 PDF 二维码解出[专属 ProCert 入口](https://procert.sgs.com/Cert/3002712263688306/549a5f08-3a2e-4a4a-a2ed-3bdbd1f9ecce.html)，沿其 iframe 读取 [SGS 证书详情](https://procert.sgs.com/CertWebService/3002712263688306/549a5f08-3a2e-4a4a-a2ed-3bdbd1f9ecce.html)。08:51 UTC 的数据库记录与原件的证书号、2026-01-30 签发日期、四款 ET / 四款 BT 型号和软件 **010101** 一致；状态显示 **Valid**，到期日期 2031-01-30，报告号为 `250008RECO14` 与 `250008RECO14-TG4`。该公开 HTML 只有元数据，没有附件或下载链接；SGS 同时明确该网页不是证书。此状态读回不填补附录内容和项目批准。
+- **GoodWe 的真实 Download 入口仍只给同一封面。**读取[官方 ET 75–100 kW 下载页](https://en.goodwe.com/download-et-series-50-100kw)，依其实际接口读取 `catid=5334`、Certificate `type=12`、DEU `country=14` 的两页，共 12 条文件名/链接。对应条目为 `GW_ET 75-100kW_Certificate-VDE4110_VDE4120`；[Preview，id=4116/type=1](https://admin.goodwe.com/En/Api/downloadFile?id=4116&mid=60&type=1) 和独立的 [Download，id=4116/type=2](https://admin.goodwe.com/En/Api/downloadFile?id=4116&mid=60&type=2) 均实际取回 **629,561 字节、1 页** PDF，SHA-256 均为 `da4d0f336bb0b6e7828ad18f4e89534698383d0191c28a4c4dedbb7a94f4c61f`，与 Woo 附件完全相同。证书号、全部八个型号、010101、签发日期及 revision 0 / 164 页附录引用均逐项匹配；不是另一张封面。该相同 PDF 没有嵌入附件或 Portfolio。查到的这两页证书文件列表也没有单列该附录；这不等于其他入口不存在。
+- **具体检索与工具修复。**先查 `"250008RECO14"`、证书号配 `site:goodwe.com` / `site:sgs.com`，再查型号与 VDE 关键词；精确编号没有有效索引结果，放宽检索后转入上述官方系列页。普通内容抽取跳过 JSON，通用 Cheerio / Web Scraper actor 又返回 `full-permission-actor-not-approved`；没有变更账户权限。最终沿用已批准的 `apify/website-content-crawler`，以完整查询参数和 `saveContentTypes` 保存原始 JSON / PDF，修复读取。下载触发导航时页面统计显示 failed，原始文件实际成功存入 Apify KV；本文依据实际字节、PDF 页数和 hash 读回，不以运行状态代替文件验证。
+
+**本次外部限度：**已核实的 SGS 公开详情只给证书元数据，GoodWe 对应 Preview 与 Download 都只给现有单页文件；没有取得附录正文，不能核实其中的配置、辅助设备和完整限制。尚无法判断完整附录是否由持有人另行提供、位于其他未发现入口或未公开，不能称其不存在。继续核对所需的明确原件仍是 **250008RECO14-CER 对应的 164 页 Annex，revision 0，2026-01-30**。外部检索结果没有写回 Woo，也不授权新增型号、资料或接网放行。本轮未对外联系；因只取得重复封面，未另存本地副本。
+
+| 本次有效来源 / 目的 | Apify run | 实际保留的远端证据定位 |
+| --- | --- | --- |
+| SGS 同号详情 | `y18V1Z84FIToiChd3` | dataset `7TKZGJuhMJBQkU5Ho` |
+| GoodWe DEU 证书列表第 1 / 2 页 | `qgPFmrKDCbHho1kdN` / `6IhRkhvIZao3seDgu` | KV `WETTthwY2NTURJYUT` · `file-82704b8-getfilenew.html` / KV `eaVQDw3sE5TkbU01d` · `file-13056f6-getfilenew.html` |
+| GoodWe Preview 实际 PDF | `NIUQ5hdh9GeqAWaHS` | KV `CP42HAOhduugEjZEm` · `file-d145cc8-downloadFile` |
+| GoodWe Download 实际 PDF | `T1nN38s6Am0ixmeLC` | KV `WopsxJMzGnf4GVvvJ` · `file-037ff3f-downloadFile` |
+
+## 8. 4105:2026-03 对 2018-11 单元证书的过渡条件
+
+2026-10-27，限定核查旧版单元证书继续被承认的申请/投运时间条件。**未取得能够确定该条件的正式原文，当前判断继续为“版次/过渡适用性未核实”。**本次具体来源边界如下：
+
+- 复用[既有 FNN 4105 官方页面](https://www.vde.com/de/fnn/themen/tar/tar-niederspannung/erzeugungsanlagen-am-niederspannungsnetz-vde-ar-n-4105-2018)：已取内容确认 2026-03 版并包含 FAQ 介绍，没有提供目标过渡条款。[VDE VERLAG 的公开规范说明](https://www.vde-verlag.de/p/normen/vde-ar-n-4105-vde-ar-n-4105-anwendungsregel-2026-03/0100940-DE-PR)进一步明确其替代 2018-11 及 2020-10 勘误，但公开说明没有给出旧单元证书继续使用的申请或投运截止。**标准替代关系不能直接转成旧证书的失效日期或继续承认条件。**
+- 读取 FNN 公开的[新版 Anhang F 表单原件](https://www.vde.com/resource/blob/1785304/f23a9f50f050aaad54dc4a280aa82377/vde-ar-n-4105-formulare-anhang-e-data.pdf)，实际为 23 页；这份表单材料没有补足本次所需的 2018-11 证书过渡原文，不能由新表单的存在推出旧证书的接受期限。
+- 核查签发机构的[TÜV Rheinland 官方并网认证入口](https://www.tuv.com/germany/de/netzanschluss-von-pv-anlagen.html)。该页的明确日期条件涉及 **2019-04-27** 投运与 **2018-05-18** 主要部件购买的旧一轮转换，没有标识为 4105:2026-03 的过渡说明；这些旧日期不能移用于本次 2018→2026 判断。
+
+**尚缺的明确原件：**VDE-AR-N 4105:2026-03 中针对既有 **2018-11 Einheitenzertifikate** 的过渡适用原文，或 FNN / 签发机构正式发布的对应解释，明确继续承认范围、申请/报装与投运条件及例外。所查公开入口未给出该原文，不等于没有过渡规定。本次没有新增可用于放行或判定失效的期限，也没有改变任何产品、证书或项目状态；到此来源边界停止检索。
+
+| 本次实际采用的官方入口 | Apify 定位 |
+| --- | --- |
+| 复用 FNN 4105 页面 | 既有 run `i2AQfhVBU0cjbVX7S` · dataset `UtmdZdqIJes4JKyiM` |
+| VDE VERLAG 2026-03 公开说明 | run `dWZlf2D8gof8pgjFa` · dataset `pGBGhyd3DPcUcxdtf` |
+| FNN Anhang F 免费表单 | run `tLHzkBrvIBYyseb0O` · KV `dQYiswxE1Q9cdeCW4` · `file-7680133-vde-ar-n-4105-formulare-anhang-e-data.pdf` |
+| TÜV Rheinland 并网认证说明 | run `J9E1uZJHIkDQyeOCV` · dataset `ctZr4RcJDzjZjFINQ` |
