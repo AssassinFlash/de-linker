@@ -5300,7 +5300,14 @@
         "diagnosis": "Linux/macOS binary64 Earth-scale subtraction differs by two ULPs (1.862645149230957e-9 m). Production geometry unchanged. Angle now rel=0/abs1e-10; height four ULPs at WGS84 semi-major axis only. Existing geographic cases passed; incremental Spec/Standards PASS.",
         "next_head": "fd148bc59addca35a703046621e85de5392bf101",
         "next_run_id": 40454937700,
-        "next_run_last_observed": "in_progress; plan and mu-smoke success"
+        "next_run_last_observed": "failure: all other engine cases882, Genie2409 and native mu-smoke passed. Frozen forward ENU also used a sub-ULP absolute oracle; not a production algorithm failure.",
+        "linux_full_oracle_diagnostic": {
+          "points": 28,
+          "max_forward_error_m": 1.0454290090742787e-09,
+          "max_inverse_angle_error_deg": 1.4210854715202004e-14,
+          "max_inverse_height_error_m": 1.862645149230957e-09,
+          "correction": "One explicit four-Earth-scale-ULP absolute metric boundary for forward ENU and inverse height; keep angle abs1e-10/rel0. Actual locked production Linux executable evaluated all28 original points read-only; no new fixture or model run."
+        }
       }
     }
   },
