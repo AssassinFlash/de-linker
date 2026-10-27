@@ -346,11 +346,20 @@ def test_chunk_scope_requires_explicit_model_and_rejects_mixed_withdrawn_or_unkn
     assert applicability(chunks, raw, authority(raw)) == {"A": [1]}
 
 
-def test_engineering_tokens_do_not_become_unknown_models() -> None:
+@pytest.mark.parametrize(
+    ("quantity", "model_variant"), [("10-min", "10-min-X"), ("30dB", "30dB-X")]
+)
+def test_engineering_tokens_do_not_become_unknown_models(
+    quantity: str, model_variant: str
+) -> None:
     raw = manifest()
     text = "| Model | MODEL-1 |\n| Protection | IP65 |\n| Frequency | 50Hz |\n| Power | 10kW |\n| Standard | IEC62109-1 |"
-    chunk = Chunk("ratings", SHA, 1, "", "table", "", text, "en", 30)
+    chunk = Chunk("ratings", SHA, 1, quantity, "table", "", text, "en", 30)
     assert applicability([chunk], raw, authority(raw)) == {"ratings": [1]}
+    # A model-like suffix does not inherit a physical quantity's exemption,
+    # even when the passage itself also names a current product.
+    foreign = Chunk("variant", SHA, 1, model_variant, "table", "", text, "en", 30)
+    assert applicability([foreign], raw, authority(raw)) == {}
 
 
 def test_single_authored_current_scope_propagates_without_using_generated_header() -> (

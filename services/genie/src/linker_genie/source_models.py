@@ -14,7 +14,7 @@ MODEL_FIELD = re.compile(
 ENGINEERING = re.compile(
     r"(?:IP\d{2}[A-Z]?|(?:IEC|ISO|IEEE|VDE|EN|DIN|UN|UL)\d[\dA-Z./-]*"
     r"|(?:RS|MPPT|PV|COM|DI|DO|AI|AO)\d+"
-    r"|[\d./-]+(?:[kmunMGT]?(?:Hz|Wh|W|VA|V|Ah|A|Ohm)|Vac|Vdc|Vd\.c|Ad\.c)"
+    r"|[\d./-]+(?:[kmunMGT]?(?:Hz|Wh|W|VA|V|Ah|A|Ohm)|Vac|Vdc|Vd\.c|Ad\.c|min|dB)"
     r"|\d+(?:-\d+)?K)",
     re.IGNORECASE,
 )

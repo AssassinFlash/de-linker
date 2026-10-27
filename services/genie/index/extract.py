@@ -10,6 +10,7 @@ and is left out, as Docling classifies it.
 from __future__ import annotations
 
 import hashlib
+import re
 from collections.abc import Iterable
 from dataclasses import dataclass, field, replace
 from pathlib import Path
@@ -143,7 +144,13 @@ def pages_of(document: DoclingDocument) -> dict[int, list[Block]]:
     return pages
 
 
-def _pdf_model_spans(pdf: object, number: int, sha: str) -> list[SourceSpan]:
+def _pdf_model_spans(
+    pdf: object,
+    number: int,
+    sha: str,
+    *,
+    wrapped_spans: set[tuple[int, int]] | None = None,
+) -> list[SourceSpan]:
     """Read original visible text positions, including a cropped spread's offset."""
     # PDFium's Python helper deliberately ships no type stubs. The object is
     # supplied only by enrich_model_axes, keeping parser dependencies offline.
@@ -167,8 +174,22 @@ def _pdf_model_spans(pdf: object, number: int, sha: str) -> list[SourceSpan]:
                     parts.append(value)
                     indices.extend([index] * len(value))
                 text = "".join(parts)
+
+            def bounds(begin: int, end: int) -> tuple[float, float, float, float]:
+                first = indices[begin] if indices is not None else begin
+                last = indices[end - 1] + 1 if indices is not None else end
+                boxes = [text_page.get_charbox(index) for index in range(first, last)]
+                return (
+                    min(b[0] for b in boxes),
+                    min(b[1] for b in boxes),
+                    max(b[2] for b in boxes),
+                    max(b[3] for b in boxes),
+                )
+
             output: list[SourceSpan] = []
-            for match in TOKEN.finditer(text):
+            # The same one-character normalization as clean(), retaining original
+            # char offsets. An explicit PDFium wrap must also occupy one column.
+            for match in TOKEN.finditer(text.replace("￾", "-")):
                 if not (
                     any(c.isalpha() for c in match[0])
                     and any(c.isdigit() for c in match[0])
@@ -178,17 +199,36 @@ def _pdf_model_spans(pdf: object, number: int, sha: str) -> list[SourceSpan]:
                 end = (
                     indices[match.end() - 1] + 1 if indices is not None else match.end()
                 )
-                boxes = [text_page.get_charbox(index) for index in range(start, end)]
-                box = (
-                    min(b[0] for b in boxes),
-                    min(b[1] for b in boxes),
-                    max(b[2] for b in boxes),
-                    max(b[3] for b in boxes),
-                )
+                written = text[match.start() : match.end()]
+                if "￾" in written:
+                    fragments = []
+                    offset = match.start()
+                    for part in written.split("￾"):
+                        if not part:
+                            break
+                        fragments.append(bounds(offset, offset + len(part)))
+                        offset += len(part) + 1
+                    if (
+                        len(fragments) != len(written.split("￾"))
+                        or any(
+                            not (
+                                a[0] <= (b[0] + b[2]) / 2 <= a[2]
+                                and b[0] <= (a[0] + a[2]) / 2 <= b[2]
+                                # Adjacent original text lines: the gap cannot exceed
+                                # either fragment's own glyph height.
+                                and 0 <= a[1] - b[3] <= min(a[3] - a[1], b[3] - b[1])
+                            )
+                            for a, b in zip(fragments, fragments[1:], strict=False)
+                        )
+                    ):
+                        continue
+                box = bounds(match.start(), match.end())
                 # A PDF spread can contain an entire off-crop page's text.
                 # Hidden words cannot become the displayed table's model axis.
                 if box[0] < left or box[2] > right or box[1] < bottom or box[3] > top:
                     continue
+                if wrapped_spans is not None and "￾" in written:
+                    wrapped_spans.add((start, end))
                 output.append(
                     SourceSpan(
                         text=match[0],
@@ -201,6 +241,74 @@ def _pdf_model_spans(pdf: object, number: int, sha: str) -> list[SourceSpan]:
                     )
                 )
             return output
+        finally:
+            text_page.close()
+    finally:
+        page.close()
+
+
+def _single_line_cells(
+    pdf: object, number: int, cells: list[SourceCell]
+) -> list[SourceCell]:
+    """A recovered axis cannot release body cells merged across physical lines."""
+    from typing import Any, cast
+
+    page = cast(Any, pdf)[number - 1]
+    try:
+        left, bottom, right, top = page.get_bbox()
+        text_page = page.get_textpage()
+        try:
+            text = text_page.get_text_range().replace("￾", "-")
+            # Ambiguous character offsets cannot supply physical cell evidence.
+            if len(text) != text_page.count_chars():
+                text = ""
+            retained = []
+            for cell in cells:
+                if cell["column_header"] or cell["row_section"]:
+                    retained.append(cell)
+                    continue
+                box = cell["bbox"]
+                if box is None or cell["bbox_origin"] != "TOPLEFT" or not cell["text"]:
+                    continue
+                pattern = (
+                    r"(?<!\S)"
+                    + r"\s+".join(re.escape(word) for word in cell["text"].split())
+                    + r"(?!\S)"
+                )
+                proven = 0
+                proven_box = None
+                for match in re.finditer(pattern, text):
+                    characters = [
+                        (text[i], text_page.get_charbox(i))
+                        for i in range(match.start(), match.end())
+                        if not text[i].isspace()
+                    ]
+                    glyphs = [b for char, b in characters if char.isalnum()]
+                    # A shared vertical glyph band proves one original line.
+                    # Punctuation may sit below that band; it still must be visible.
+                    if not glyphs or max(b[1] for b in glyphs) >= min(
+                        b[3] for b in glyphs
+                    ):
+                        continue
+                    x0 = min(b[0] for _, b in characters)
+                    y0 = min(b[1] for _, b in characters)
+                    x1 = max(b[2] for _, b in characters)
+                    y1 = max(b[3] for _, b in characters)
+                    if (
+                        left <= x0 <= x1 <= right
+                        and bottom <= y0 <= y1 <= top
+                        and box[0] <= (x0 + x1) / 2 - left <= box[2]
+                        and min(box[1], box[3])
+                        <= top - (y0 + y1) / 2
+                        <= max(box[1], box[3])
+                    ):
+                        proven += 1
+                        proven_box = (x0 - left, top - y1, x1 - left, top - y0)
+                if proven == 1 and proven_box is not None:
+                    # Later row/column alignment must use the matched visible
+                    # glyphs, never a parser box spanning neighbouring lines.
+                    retained.append({**cell, "bbox": proven_box})
+            return retained
         finally:
             text_page.close()
     finally:
@@ -227,10 +335,12 @@ def enrich_model_axes(pages: list[Page], pdf_path: Path) -> list[Page]:
             if not any(block.source_cells for block in page.blocks):
                 output.append(page)
                 continue
-            spans = _pdf_model_spans(pdf, page.number, sha)
+            wrapped_spans: set[tuple[int, int]] = set()
+            spans = _pdf_model_spans(pdf, page.number, sha, wrapped_spans=wrapped_spans)
             blocks = []
             for block in page.blocks:
                 cells: list[SourceCell] = []
+                recovered = False
                 for cell in block.source_cells:
                     own: SourceCell = {**cell}
                     box = cell["bbox"]
@@ -242,13 +352,26 @@ def enrich_model_axes(pages: list[Page], pdf_path: Path) -> list[Page]:
                         and box is not None
                         and cell["bbox_origin"] == "TOPLEFT"
                     ):
-                        labels = {
+                        original = {
                             token.casefold() for token in TOKEN.findall(cell["text"])
+                        }
+                        labels = {
+                            token.casefold()
+                            for token in TOKEN.findall(
+                                re.sub(r"(?<=-)\s+", "", cell["text"])
+                            )
                         }
                         matched = [
                             span
                             for span in spans
-                            if span["text"].casefold() in labels
+                            if (
+                                span["text"].casefold() in labels
+                                or any(
+                                    token.endswith("-")
+                                    and span["text"].casefold().startswith(token)
+                                    for token in original
+                                )
+                            )
                             and box[0]
                             <= (span["bbox"][0] + span["bbox"][2]) / 2
                             <= box[2]
@@ -257,8 +380,39 @@ def enrich_model_axes(pages: list[Page], pdf_path: Path) -> list[Page]:
                             <= max(box[1], box[3])
                         ]
                         if matched:
+                            # A native header may already be complete while its
+                            # physical axis is newly recovered from a PDF wrap.
+                            recovered = recovered or any(
+                                (s["char_start"], s["char_end"]) in wrapped_spans
+                                for s in matched
+                            )
+                            if (
+                                len(matched) == cell["col_end"] - cell["col_start"]
+                                and any(
+                                    s["text"].casefold() not in original
+                                    for s in matched
+                                )
+                                and all(
+                                    any(
+                                        s["text"].casefold().startswith(token)
+                                        or s["text"].casefold().endswith(token)
+                                        for s in matched
+                                    )
+                                    for token in original
+                                )
+                            ):
+                                # Only the in-memory header is recovered from exact
+                                # visible PDF labels. Cached cells and body rows stay
+                                # unchanged, including a suffix misplaced by Docling.
+                                own["text"] = " ".join(
+                                    s["text"]
+                                    for s in sorted(matched, key=lambda s: s["bbox"][0])
+                                )
+                                recovered = True
                             own["model_spans"] = matched
                     cells.append(own)
+                if recovered:
+                    cells = _single_line_cells(pdf, page.number, cells)
                 blocks.append(replace(block, source_cells=tuple(cells)))
             output.append(Page(page.number, page.source, blocks))
     finally:
