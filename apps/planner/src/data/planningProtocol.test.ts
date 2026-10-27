@@ -120,6 +120,19 @@ test("report output keeps serialized fields mandatory and old column layout opti
 	assert.doesNotThrow(() =>
 		readPlanningReport({ ...report, sections: [pvgisSection] }),
 	);
+	// Frozen original request from the native Paris weather-based PV reference.
+	const tmyHref =
+		"https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=48.8566&lon=2.3522&startyear=2014&endyear=2023&usehorizon=0&outputformat=json";
+	const tmySection = {
+		...pvgisSection,
+		id: "pvlib-reference-0",
+		rows: [
+			{ label: "Original request", value: "PVGIS 5.3 TMY", href: tmyHref },
+		],
+	};
+	assert.doesNotThrow(() =>
+		readPlanningReport({ ...report, sections: [tmySection] }),
+	);
 	for (const [id, href] of [
 		["checks", pvgisHref],
 		[pvgisSection.id, pvgisHref.replace("re.jrc.ec.europa.eu", "example.com")],
@@ -129,6 +142,16 @@ test("report output keeps serialized fields mandatory and old column layout opti
 		[pvgisSection.id, `${pvgisHref}&callback=other`],
 		[pvgisSection.id, `${pvgisHref}&lat=52.52`],
 		[pvgisSection.id, pvgisHref.replace("&components=1", "")],
+		["checks", tmyHref],
+		[pvgisSection.id, tmyHref],
+		[tmySection.id, pvgisHref],
+		[tmySection.id, tmyHref.replace("https://", "http://")],
+		[tmySection.id, tmyHref.replace("https://", "https://user:secret@")],
+		[tmySection.id, `${tmyHref}#fragment`],
+		[tmySection.id, `${tmyHref}&callback=other`],
+		[tmySection.id, `${tmyHref}&lat=48.8566`],
+		[tmySection.id, tmyHref.replace("&usehorizon=0", "")],
+		[tmySection.id, tmyHref.replace("outputformat=json", "outputformat=csv")],
 	])
 		assert.throws(() =>
 			readPlanningReport({

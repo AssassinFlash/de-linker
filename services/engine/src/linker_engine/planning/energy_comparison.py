@@ -43,6 +43,7 @@ _NON_NUMERICAL = {
     "report_kernel.py",
     "report_model.py",
     "report_pv_components.py",
+    "report_pvlib.py",
     "report_sources.py",
 }
 

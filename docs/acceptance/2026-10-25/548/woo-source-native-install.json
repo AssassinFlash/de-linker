@@ -8431,7 +8431,1149 @@
       "review": "Independent worker boundary probe plus root complete3-line diff review PASS",
       "screenshot_preserved": true,
       "runtime_changes": false,
-      "next_gate": "One required full check for the control-plane change; no new planner runtime test run requested separately"
+      "next_gate": "CI-only change completed; report implementation is a distinct final candidate.",
+      "final_ci": {
+        "run": 40574491282,
+        "state": "success",
+        "head": "4b7ebdd2e065b8f5255eb7aba062c769a6eaf4d7",
+        "pr": 710,
+        "merge": "aeb89a73f31f3b049d5c85ce96a27cf058df1980"
+      }
+    },
+    "production_energy_expected": {
+      "frozen_at_utc": "2026-10-27T20:06:07.900610+00:00",
+      "purpose": "Independent pre-run arithmetic for the new two-hour PV/load-only integration; not an annual storage validation",
+      "pv_run_id": "e9875888ea9d4273ae162448554de1ab",
+      "window_utc": [
+        "2023-06-16T09:00:00Z",
+        "2023-06-16T11:00:00Z"
+      ],
+      "original_profile_powers_w": [
+        "5827.485897944584",
+        "6513.171078694197"
+      ],
+      "gross_load_each_kw": "0.551286334781",
+      "aux_each_kw": "0",
+      "battery": "Existing explicitly zero capacity and power; no device-performance assertion",
+      "expected_kwh": {
+        "pv_available": "12.340656976638781",
+        "load": "1.102572669562",
+        "direct_pv_to_load": "1.102572669562",
+        "export": "11.238084307076781",
+        "grid_import": "0",
+        "battery_charge": "0",
+        "battery_discharge": "0",
+        "curtailment": "0",
+        "unserved": "0",
+        "losses": "0"
+      },
+      "source_and_scope": "2023 synthetic scenario profiles plus a typical-weather roof reference; no observed2023 or annual load/ratio inference",
+      "actual_readback": {
+        "state": "matches_predeclared_independent_arithmetic",
+        "run_id": "f32e226aa7d74ae9a65e655dffb4cc22",
+        "revision": 12,
+        "results": {
+          "pv_available": {
+            "actual_kwh": 12.34065697663878,
+            "difference_ulps": 1.0
+          },
+          "load": {
+            "actual_kwh": 1.102572669562,
+            "difference_ulps": 0.0
+          },
+          "direct_pv_to_load": {
+            "actual_kwh": 1.102572669562,
+            "difference_ulps": 0.0
+          },
+          "export": {
+            "actual_kwh": 11.23808430707678,
+            "difference_ulps": 0.0
+          },
+          "grid_import": {
+            "actual_kwh": 0,
+            "difference_ulps": 0
+          },
+          "battery_charge": {
+            "actual_kwh": 0,
+            "difference_ulps": 0
+          },
+          "battery_discharge": {
+            "actual_kwh": 0,
+            "difference_ulps": 0
+          },
+          "curtailment": {
+            "actual_kwh": 0,
+            "difference_ulps": 0
+          },
+          "unserved": {
+            "actual_kwh": 0,
+            "difference_ulps": 0
+          }
+        },
+        "losses_all_zero": true,
+        "rounding": "At most one binary floating-point ULP; no input/output condition changed",
+        "scope": "two synthetic hours, zero-storage reference; not annual or hardware qualification"
+      }
+    },
+    "production_energy_inputs": {
+      "state": "native_assets_prepared_not_selected",
+      "owner": "/root/certificate_conditions_backend",
+      "at_utc": "2026-10-27T19:56:10.013869+00:00",
+      "project_id": "1812286480344d6d8cec94e2f5f2c00e",
+      "owner_user_id": 1,
+      "existing_same_rawhash_assets": 0,
+      "project_revision_before": 10,
+      "input_sha256_before": "4d522c5a4e94f3052c731649c57ee8d0d4194742c0b33ed6aede2316b798b7e2",
+      "compiler_functions": [
+        "ProfileMapping.tsx:mappedProfile",
+        "profiles.ts:fileBase64",
+        "profiles.ts:readImport",
+        "readProtocol.ts:wire"
+      ],
+      "compiler_sha256": {
+        "src/components/ProfileMapping.tsx": "c60b9615ee146cd4aee4af95073cda0a66dadcf8f1dcb5ea970266c51cc030d0",
+        "src/domain/profiles.ts": "12b296809903401885c01bb0fa1d0058bf047d4c4fd0643b4b435dfd726ee784",
+        "src/data/readProtocol.ts": "cc5ed373b3b0f3e99f2dbebe2729d6b999f7c294927aa5c61f81fe5163cfdae5"
+      },
+      "intents": [
+        {
+          "role": "gross_load",
+          "raw_sha256": "2845417076df3e2ef2c9e04122e1c2fd7b45e95ad877e3d8c4ba523936de379f",
+          "raw_bytes": 359171,
+          "key": "185ba6e4-0efe-4be2-8fd0-d6cbee3367d4",
+          "label": "Synthetic 2023 gross load · Paris reference scenario",
+          "rights_note": "Existing Linker-owned synthetic full-year 2023 example CSV reused byte-for-byte for this synthetic Paris project. Not measured French consumption, provider weather data or manufacturer performance. Permanent private project storage is authorized.",
+          "mapping": {
+            "timestamp_column": "time",
+            "value_column": "power",
+            "measurement": "gross_load",
+            "value_kind": "interval_average_kw",
+            "timestamp_role": "start",
+            "timezone": "UTC",
+            "origin": "synthetic",
+            "interval_seconds": 3600,
+            "delimiter": ",",
+            "decimal": ".",
+            "end_timestamp_column": null,
+            "fold_column": null,
+            "end_fold_column": null,
+            "offset_rule": "explicit_offset_precedes_naive_timezone",
+            "within_interval_assumption": "constant_mean_no_new_observations"
+          },
+          "wire_request_sha256": "f8623308004d17fe83e87ffbfd8502fdc716d80a563b498e68c711f70714bdcd",
+          "wire_request_bytes": 479794
+        },
+        {
+          "role": "aux_ac",
+          "raw_sha256": "2b41d5383235e18148275238251a10f7e5acd9c8205d7a0e17e675bb03d46266",
+          "raw_bytes": 359171,
+          "key": "3a72f308-63de-418a-bf9a-8d2245ac6808",
+          "label": "Synthetic 2023 zero external AC auxiliary load · Paris reference scenario",
+          "rights_note": "Existing Linker-owned synthetic full-year 2023 example CSV reused byte-for-byte for this synthetic Paris project. Not measured French consumption, provider weather data or manufacturer performance. Permanent private project storage is authorized.",
+          "mapping": {
+            "timestamp_column": "time",
+            "value_column": "power",
+            "measurement": "aux_ac",
+            "value_kind": "interval_average_kw",
+            "timestamp_role": "start",
+            "timezone": "UTC",
+            "origin": "synthetic",
+            "interval_seconds": 3600,
+            "delimiter": ",",
+            "decimal": ".",
+            "end_timestamp_column": null,
+            "fold_column": null,
+            "end_fold_column": null,
+            "offset_rule": "explicit_offset_precedes_naive_timezone",
+            "within_interval_assumption": "constant_mean_no_new_observations"
+          },
+          "wire_request_sha256": "7e7ba26c93ca53d49fa9545846faadf465f4a0e459c682fdbfa2abaaf83387ae",
+          "wire_request_bytes": 479811
+        }
+      ],
+      "native_admission_required": true,
+      "project_input_mutations_authorized": 0,
+      "task_dispatches_authorized": 0,
+      "completed_at_utc": "2026-10-27T19:57:35.469007+00:00",
+      "project_revision_after": 10,
+      "project_input_sha256_after": "4d522c5a4e94f3052c731649c57ee8d0d4194742c0b33ed6aede2316b798b7e2",
+      "project_inputs_and_selections_unchanged": true,
+      "actual_native_admission": true,
+      "intake_requests": 2,
+      "retries": 0,
+      "created_assets": 2,
+      "reused_assets": 0,
+      "cas_hashes_verified": true,
+      "no_pv_energy_report_task_dispatched": true,
+      "no_original_2024_asset_modified": true,
+      "existing_frontend_asset_and_project_readers_passed": true,
+      "native_results": [
+        {
+          "role": "gross_load",
+          "raw_sha256": "2845417076df3e2ef2c9e04122e1c2fd7b45e95ad877e3d8c4ba523936de379f",
+          "raw_bytes": 359171,
+          "key": "185ba6e4-0efe-4be2-8fd0-d6cbee3367d4",
+          "label": "Synthetic 2023 gross load · Paris reference scenario",
+          "rights_note": "Existing Linker-owned synthetic full-year 2023 example CSV reused byte-for-byte for this synthetic Paris project. Not measured French consumption, provider weather data or manufacturer performance. Permanent private project storage is authorized.",
+          "mapping": {
+            "timestamp_column": "time",
+            "value_column": "power",
+            "measurement": "gross_load",
+            "value_kind": "interval_average_kw",
+            "timestamp_role": "start",
+            "timezone": "UTC",
+            "origin": "synthetic",
+            "interval_seconds": 3600,
+            "delimiter": ",",
+            "decimal": ".",
+            "end_timestamp_column": null,
+            "fold_column": null,
+            "end_fold_column": null,
+            "offset_rule": "explicit_offset_precedes_naive_timezone",
+            "within_interval_assumption": "constant_mean_no_new_observations"
+          },
+          "wire_request_sha256": "f8623308004d17fe83e87ffbfd8502fdc716d80a563b498e68c711f70714bdcd",
+          "wire_request_bytes": 479794,
+          "status": 200,
+          "response_sha256": "055b4b07ce07f8694276ae0c060ee656170e5f70d1f6f90a1791728660da5df5",
+          "asset": {
+            "id": "894b23393ccb4dfb9a34f299a58fc481",
+            "project_id": "1812286480344d6d8cec94e2f5f2c00e",
+            "content_sha256": "2845417076df3e2ef2c9e04122e1c2fd7b45e95ad877e3d8c4ba523936de379f",
+            "media_type": "text/csv; charset=utf-8",
+            "purpose": "csv_profile_v1",
+            "metadata_sha256": "dbc84e0be65c82a6e3c080392f61d6b905fbd818b8aeabf81e85d431253e1749",
+            "metadata": {
+              "csv_mapping": {
+                "decimal": ".",
+                "delimiter": ",",
+                "end_fold_column": null,
+                "end_timestamp_column": null,
+                "fold_column": null,
+                "interval_seconds": 3600,
+                "measurement": "gross_load",
+                "offset_rule": "explicit_offset_precedes_naive_timezone",
+                "origin": "synthetic",
+                "timestamp_column": "time",
+                "timestamp_role": "start",
+                "timezone": "UTC",
+                "value_column": "power",
+                "value_kind": "interval_average_kw",
+                "within_interval_assumption": "constant_mean_no_new_observations"
+              },
+              "dependencies": {
+                "timezone_rules": "8b85846791ab2c8a5463c83a5be3c043e2570d7448434d41398969ed47e3e6f2"
+              },
+              "interpretation": {
+                "end_utc": "2024-01-01T00:00:00+00:00",
+                "energy_kwh": 6000.00000000089,
+                "interval_count": 8760,
+                "measurement": "gross_load",
+                "native_max_interval_seconds": 3600,
+                "origin": "synthetic",
+                "start_utc": "2023-01-01T00:00:00+00:00"
+              },
+              "provenance": {
+                "basis": "user_upload_declaration",
+                "label": "Synthetic 2023 gross load · Paris reference scenario",
+                "rights_basis": "Existing Linker-owned synthetic full-year 2023 example CSV reused byte-for-byte for this synthetic Paris project. Not measured French consumption, provider weather data or manufacturer performance. Permanent private project storage is authorized."
+              },
+              "retention": "permanent",
+              "schema": 1,
+              "timezone_rules_sha256": "8b85846791ab2c8a5463c83a5be3c043e2570d7448434d41398969ed47e3e6f2"
+            }
+          },
+          "durable_idempotency": {
+            "actor": "user:wp:1:user:1",
+            "scope": "asset:1812286480344d6d8cec94e2f5f2c00e",
+            "key": "185ba6e4-0efe-4be2-8fd0-d6cbee3367d4",
+            "command_sha256": "a8eed9e33c4c9cd82218421c7b57c5c24d680d98e212860e900e2f5967b503fa",
+            "receipt_sha256": "5100d3b32f3f2373ed7554147f313d36de2df2cc2ec71ac63dc23648841b1c41"
+          }
+        },
+        {
+          "role": "aux_ac",
+          "raw_sha256": "2b41d5383235e18148275238251a10f7e5acd9c8205d7a0e17e675bb03d46266",
+          "raw_bytes": 359171,
+          "key": "3a72f308-63de-418a-bf9a-8d2245ac6808",
+          "label": "Synthetic 2023 zero external AC auxiliary load · Paris reference scenario",
+          "rights_note": "Existing Linker-owned synthetic full-year 2023 example CSV reused byte-for-byte for this synthetic Paris project. Not measured French consumption, provider weather data or manufacturer performance. Permanent private project storage is authorized.",
+          "mapping": {
+            "timestamp_column": "time",
+            "value_column": "power",
+            "measurement": "aux_ac",
+            "value_kind": "interval_average_kw",
+            "timestamp_role": "start",
+            "timezone": "UTC",
+            "origin": "synthetic",
+            "interval_seconds": 3600,
+            "delimiter": ",",
+            "decimal": ".",
+            "end_timestamp_column": null,
+            "fold_column": null,
+            "end_fold_column": null,
+            "offset_rule": "explicit_offset_precedes_naive_timezone",
+            "within_interval_assumption": "constant_mean_no_new_observations"
+          },
+          "wire_request_sha256": "7e7ba26c93ca53d49fa9545846faadf465f4a0e459c682fdbfa2abaaf83387ae",
+          "wire_request_bytes": 479811,
+          "status": 200,
+          "response_sha256": "d474b45f1dfe2334d62b3dd29ccb0df04a866a02fb7981d988cc9e1268818ec5",
+          "asset": {
+            "id": "0c39f0f9fc7141fbbca5e82232b45c50",
+            "project_id": "1812286480344d6d8cec94e2f5f2c00e",
+            "content_sha256": "2b41d5383235e18148275238251a10f7e5acd9c8205d7a0e17e675bb03d46266",
+            "media_type": "text/csv; charset=utf-8",
+            "purpose": "csv_profile_v1",
+            "metadata_sha256": "c6d0c2edfc14e1d2826a3cb65ad8a0e38e9298ff30aab764f8c80f018da8b9fb",
+            "metadata": {
+              "csv_mapping": {
+                "decimal": ".",
+                "delimiter": ",",
+                "end_fold_column": null,
+                "end_timestamp_column": null,
+                "fold_column": null,
+                "interval_seconds": 3600,
+                "measurement": "aux_ac",
+                "offset_rule": "explicit_offset_precedes_naive_timezone",
+                "origin": "synthetic",
+                "timestamp_column": "time",
+                "timestamp_role": "start",
+                "timezone": "UTC",
+                "value_column": "power",
+                "value_kind": "interval_average_kw",
+                "within_interval_assumption": "constant_mean_no_new_observations"
+              },
+              "dependencies": {
+                "timezone_rules": "8b85846791ab2c8a5463c83a5be3c043e2570d7448434d41398969ed47e3e6f2"
+              },
+              "interpretation": {
+                "end_utc": "2024-01-01T00:00:00+00:00",
+                "energy_kwh": 0,
+                "interval_count": 8760,
+                "measurement": "aux_ac",
+                "native_max_interval_seconds": 3600,
+                "origin": "synthetic",
+                "start_utc": "2023-01-01T00:00:00+00:00"
+              },
+              "provenance": {
+                "basis": "user_upload_declaration",
+                "label": "Synthetic 2023 zero external AC auxiliary load · Paris reference scenario",
+                "rights_basis": "Existing Linker-owned synthetic full-year 2023 example CSV reused byte-for-byte for this synthetic Paris project. Not measured French consumption, provider weather data or manufacturer performance. Permanent private project storage is authorized."
+              },
+              "retention": "permanent",
+              "schema": 1,
+              "timezone_rules_sha256": "8b85846791ab2c8a5463c83a5be3c043e2570d7448434d41398969ed47e3e6f2"
+            }
+          },
+          "durable_idempotency": {
+            "actor": "user:wp:1:user:1",
+            "scope": "asset:1812286480344d6d8cec94e2f5f2c00e",
+            "key": "3a72f308-63de-418a-bf9a-8d2245ac6808",
+            "command_sha256": "04a754774fbf15df6a606b3a28aab253a32b3026074655d7f0dbb6155b429766",
+            "receipt_sha256": "70fc8ddc7bfaedfdf4ccc06a58e6453bfbebb6b44cda30a90540a8d2670663b5"
+          }
+        }
+      ],
+      "temporary_intake_copies_reclaimed": [
+        {
+          "path": "/tmp/p548-fr-energy-input-intents.json",
+          "bytes": 962553
+        },
+        {
+          "path": "/tmp/p548-fr-energy-input-responses.json",
+          "bytes": 20353
+        },
+        {
+          "path": "/tmp/p548-fr-energy-input-accepted.json",
+          "bytes": 6180
+        }
+      ],
+      "temporary_bytes_reclaimed": 989086
+    },
+    "production_roof_pv": {
+      "state": "api_prepared_not_adopted_ui_pending",
+      "owner": "/root/certificate_conditions_backend",
+      "at_utc": "2026-10-27T20:00:23.681902+00:00",
+      "project_id": "1812286480344d6d8cec94e2f5f2c00e",
+      "owner_user_id": 1,
+      "base_revision": 10,
+      "base_input_sha256": "4d522c5a4e94f3052c731649c57ee8d0d4194742c0b33ed6aede2316b798b7e2",
+      "compiled_handoff_path": "/Users/chesterjohn/de-linker-local/p548/planner/managed-reference-native/fr-pv-compiled-handoff.json",
+      "compiled_handoff_sha256": "8879c3da662bb982c38d317a7e3365b580b8ff710ae08af9633709d52d83d32b",
+      "current_woo_response_sha256": "2a9e0f696b426832058ebcace0ed7048b1108c752a56d278a554d15a8301af71",
+      "module_woo": {
+        "product_id": 8349,
+        "product_revision": "0ca883dc8cba13b4cbb90ff77f730c7fd92eb243e96568899985a4ced1bd4a8a",
+        "reference_input_id": "mat_trina_solar_tsm_460neg9r_28"
+      },
+      "changed_input_fields": [
+        "pv_generation",
+        "solar_setup"
+      ],
+      "validated_with": [
+        "readProject",
+        "readModuleTemplates",
+        "matchesModule",
+        "readSolarSetup",
+        "compilePv",
+        "preparePvInputs",
+        "checkPvWeather",
+        "prepareSave",
+        "wire",
+        "readPlanningOperation"
+      ],
+      "save": {
+        "key": "ae52543f-8925-4ec6-a9e4-6daa474d97aa",
+        "projectId": "1812286480344d6d8cec94e2f5f2c00e",
+        "expectedRevision": 10,
+        "wire_request_sha256": "73ddc31761483e36a24ffcf9ff045ced86c2bd660f4c5fdcd5531011a76d1722",
+        "status": 200,
+        "response_sha256": "ae2db166cab7d000d5ef59d92b1dc73cfb46da35e43b07212644379c1a86777e",
+        "acknowledged_by_existing_function": true,
+        "attempts": 1,
+        "retries": 0,
+        "native_admission": true
+      },
+      "dispatch": {
+        "path": "runs/pv",
+        "key": "cb00be15-6997-4665-8524-1fde779e6407",
+        "expected_revision": 11,
+        "body": "{\"expected_revision\":11,\"schema_version\":1,\"project_id\":\"1812286480344d6d8cec94e2f5f2c00e\",\"key\":\"cb00be15-6997-4665-8524-1fde779e6407\"}",
+        "wire_request_sha256": "a6dfe218f55132d4887e92450c57daabc2499feaf4ac43d6396db42104287be7",
+        "attempts": 1,
+        "status": 200,
+        "response_sha256": "3113bb658f8c831971cc518c488ed3e34a94dcc971048b0b483ee39679c11537",
+        "response_state": "queued",
+        "run_id": "e9875888ea9d4273ae162448554de1ab",
+        "retries": 0,
+        "native_admission": true,
+        "existing_readRun_passed": true
+      },
+      "native_admission_required": true,
+      "pv_profile_adopted": false,
+      "ui_acceptance_completed": false,
+      "energy_or_report_dispatched": false,
+      "saved_revision": 11,
+      "saved_input_sha256": "82b0fd7eef0d3ff1db63560749448f16b9c1fb2e4c238715e3e0f91d4ecc60c3",
+      "updated_at_utc": "2026-10-27T20:01:22.757134+00:00",
+      "completed_at_utc": "2026-10-27T20:06:26.073753+00:00",
+      "run_id": "e9875888ea9d4273ae162448554de1ab",
+      "terminal_state": "succeeded",
+      "job_attempt": 1,
+      "manifest_sha256": "c5a3d6af769d8f948a9095d1f9a83294d3129446cd87987e6142a3835edb62de",
+      "result_sha256": "1838486616bdcfcb57e353d0b9bab539591b4353c97701de96aca4dc99dd9e91",
+      "runtime_sha256": "8beaa6186e0c9ac97c6957d808692afafe68cce7be9b8d9ce95da8e628134df6",
+      "profile_asset": {
+        "id": "2c3e93cbb49243be8bfe0b3f6f98054f",
+        "project_id": "1812286480344d6d8cec94e2f5f2c00e",
+        "purpose": "pvlib_reference_profile_v1",
+        "content_sha256": "c0ec4d04ad4293a1e008e7b09919dac75a5dbd39a4f81b4a3c77d7a5245790e5",
+        "metadata_sha256": "f5cb1d4646e840bbaeb3c5d05f2d6bf33cb7df613e71045e8f09e82b92de5ce1",
+        "media_type": "application/json"
+      },
+      "profile_content_binding": "The pvlib reference asset retains the original weather bytes; immutable AC values are in pv_model_witness with their exact axis in pv_model_inputs. It is not a raw AC CSV.",
+      "pv_model_inputs_sha256": "2dcfd9ee1501d537a173efe7f3dff143a4a39e9bcf108fc0a9383b314d10047b",
+      "pv_model_witness_sha256": "12ac831be719340e4d8a843587a5b8fa2e09b1cea8cc6eb1cdd3f8e92325a1bc",
+      "pinned_assets": {
+        "runtime_bundle": "8beaa6186e0c9ac97c6957d808692afafe68cce7be9b8d9ce95da8e628134df6",
+        "weather.metadata": "7186b0011e10ab51f66ea589c522c96d085c592e182306c523bdbd0aa938b5e8",
+        "weather.raw": "c0ec4d04ad4293a1e008e7b09919dac75a5dbd39a4f81b4a3c77d7a5245790e5",
+        "woo.module_inputs": "1a4fe043ad8fc30a2e37cdbf582f50da25ff19bbeb7d7c21846b378a751fbf55"
+      },
+      "native_reply_hashes": {
+        "project": "ae2db166cab7d000d5ef59d92b1dc73cfb46da35e43b07212644379c1a86777e",
+        "run": "8266cabefbdc91b217ce3e124e0860793f12966d951ac97b00ea329473629522",
+        "asset": "b33708fe87347162b748fa110642986885bfc3fead0d032e5e51776f37990d0a"
+      },
+      "existing_strict_terminal_readers_passed": true,
+      "frozen_readback": {
+        "checked_at_utc": "2026-10-27T20:04:22.525765+00:00",
+        "source_weather_original_sha256": "c0ec4d04ad4293a1e008e7b09919dac75a5dbd39a4f81b4a3c77d7a5245790e5",
+        "weather_chain_reused_without_reverification": true,
+        "new_pv_metadata_inputs_witness_hashes_verified": true,
+        "annual_summary": {
+          "end_utc": "2024-01-01T00:00:00+00:00",
+          "energy_kwh": 9315.200808684325,
+          "interval_count": 8760,
+          "measurement": "pv_available_ac",
+          "model_role": "unshaded_reference_scenario",
+          "native_max_interval_seconds": 3600,
+          "origin": "modelled",
+          "reconstructed_means": true,
+          "start_utc": "2023-01-01T00:00:00+00:00",
+          "transformations": [
+            {
+              "energy_preservation_claim": false,
+              "exact_interval_copy": false,
+              "input_document_sha256": "2dcfd9ee1501d537a173efe7f3dff143a4a39e9bcf108fc0a9383b314d10047b",
+              "input_max_interval_seconds": 3600,
+              "interval_assignment_basis": "explicit_model_policy_not_observed_interval_power",
+              "method": "representative_pv_output_over_declared_intervals_v1",
+              "native_value_semantics": "weather_records_with_separate_irradiance_instants",
+              "output_max_interval_seconds": 3600,
+              "output_value_semantics": "reconstructed_interval_average",
+              "target_axis_sha256": "14a224c7124465732da27e330e6665c15a1dd095cea3cc43b55e84677b5fc070"
+            }
+          ]
+        },
+        "annual_energy_matches_retained_witness": true,
+        "arrays": [
+          {
+            "id": "array_b4e6aac277b644bbad5eaece725b993f",
+            "module_spec_id": "module_617ffe652fe644fb82f8223a3911dab6",
+            "module_count": 20,
+            "stc_power_w": 9200,
+            "normal_enu": [
+              0,
+              0.17364817766693033,
+              0.984807753012208
+            ],
+            "tilt_deg": 10,
+            "azimuth_north_clockwise_deg": 0,
+            "azimuth_basis": "project_enu_normal",
+            "transposition": "perez"
+          }
+        ],
+        "sample_rows": [
+          {
+            "start_utc": "2023-06-16T09:00:00+00:00",
+            "end_utc": "2023-06-16T10:00:00+00:00",
+            "available_ac_w": 5827.485897944584,
+            "available_ac_kw": 5.827485897944585,
+            "converter_dc_available_w": 6054.383298454484,
+            "one_converter_output_matches_final": true
+          },
+          {
+            "start_utc": "2023-06-16T10:00:00+00:00",
+            "end_utc": "2023-06-16T11:00:00+00:00",
+            "available_ac_w": 6513.171078694197,
+            "available_ac_kw": 6.513171078694197,
+            "converter_dc_available_w": 6767.041281854768,
+            "one_converter_output_matches_final": true
+          }
+        ],
+        "equipment_release": {
+          "status": "not_assessed"
+        },
+        "country_assessment": {
+          "status": "not_assessed"
+        },
+        "near_shading_assessment": {
+          "policy": "explicit_unshaded_reference",
+          "status": "not_assessed"
+        },
+        "no_double_loss": {
+          "whole_profile_equals_single_converter_output": true,
+          "converter_groups": 1,
+          "no_inherited_seriescalc_14_percent_loss": true,
+          "dc_wiring_factor": 1,
+          "dc_mismatch_factor": 1,
+          "method": "retained witness read only; no model replay or independent annual integration"
+        }
+      },
+      "new_weather_request": false,
+      "source_and_model_limits": "Explicit unshaded pvlib reference; generic Perez/albedo/retention/PVWatts and SAPM open-rack assumptions; thermal fit at0.15m clearance is unestablished. No equipment/country/near-shading release.",
+      "handoff_json": {
+        "path": "/Users/chesterjohn/de-linker-local/p548/planner/managed-reference-native/fr-pv-api-handoff.json",
+        "bytes": 37007,
+        "sha256": "d96d8ad606afa90b0af0a95e489e767d9f93f23ad0522b36f4bddb45326344ef",
+        "owner": "/root",
+        "purpose": "Actual production rev11 project, succeeded PV run and owned asset for next existing selectPreparation/energy compiler",
+        "reclaim_condition": "After next FR consumer native acceptance retains required bindings; keep one current PV handoff",
+        "review_by_utc": "2026-10-28T23:59:00Z"
+      },
+      "temporary_copies_reclaimed": [
+        {
+          "path": "/tmp/p548-fr-pv-native-preflight.json",
+          "bytes": 8396
+        },
+        {
+          "path": "/tmp/p548-fr-pv-intents.json",
+          "bytes": 24774
+        },
+        {
+          "path": "/tmp/p548-fr-pv-save-response.json",
+          "bytes": 14160
+        },
+        {
+          "path": "/tmp/p548-fr-pv-save-accepted.json",
+          "bytes": 11506
+        },
+        {
+          "path": "/tmp/p548-fr-pv-dispatch-response.json",
+          "bytes": 1784
+        },
+        {
+          "path": "/tmp/p548-fr-pv-dispatch-accepted.json",
+          "bytes": 1231
+        },
+        {
+          "path": "/tmp/p548-fr-pv-terminal-native.json",
+          "bytes": 27993
+        }
+      ],
+      "temporary_bytes_reclaimed": 89844,
+      "adopted_in_following_revision": 12
+    },
+    "production_report_projection_failure": {
+      "state": "locally_fixed_reviewed_production_pending",
+      "source_commit": "3d6aa97d2574b5594856adb2a5d255ac8e348e64",
+      "actual_report_runs": {
+        "en": "ee2e7568e6e740f4b685b14f177cb1fe",
+        "de": "4cf3c32652584391993f4e9b60c27f59"
+      },
+      "actual_pdfs": {
+        "en_sha256": "d73b1c46ad525627c66e114706f53e34044e45e76bf51766e6e09c3c2e9b6c8d",
+        "de_sha256": "86a16e688774c9eb2372536bb6c222fa5aa8a6e526835c9e2fbc6e742e54c558",
+        "pages_each": 2,
+        "retention": "Retain original PDFs as before; new render gets separate filenames."
+      },
+      "evidence": "Actual report JSON pv section has only energy/period/intervals and actual PDFs omit frozen TMY period/databases/irradiance offset and PVlib/thermal/converter parameters and source notes, while claiming original assumptions are presented. Missing in report projection, not calculation failure.",
+      "root_cause": "report_sources/report_model project only three generic pv fields; dedicated complete PVGIS AC reference provenance is not an equivalent projection for the weather-based PVlib result.",
+      "repair_scope": "Frozen provenance in common report JSON/PDF and narrow frontend source-link permission; preserve model source and per-scenario identity",
+      "reuse": "All successful source/PV/energy computations and arithmetic remain valid. Only affected report render/reader/copy/visual gates need new evidence.",
+      "next_ci": "One final candidate after backend/frontend report fix and independent increment review",
+      "baseline_ci": {
+        "run": 40574491282,
+        "state": "success"
+      },
+      "increment_reviews": {
+        "spec_standards": "C and F final independent PASS; selected-DC converter scope finding closed, plant exact-all-group partition verified without invented scenario",
+        "copy_privacy": "C final EN/formalDE and selected-DC privacy/relocalization PASS; notes/coordinate URLs/editableIDs excluded, safe numeric scope retained"
+      },
+      "local_validation": {
+        "real_frozen_source": true,
+        "pages_per_language": 4,
+        "new_source_rows": 42,
+        "reader": "Actual EN/DE JSON accepted by unchanged strictreader",
+        "visual": "Root sourcepages inspected; ASCII glyph and DErow split fixed; kernel-equivalent credits verified",
+        "physics_reused": true,
+        "focused_checks": "Existing retainedwitness scope/dependency case and existing locale/privacy/relocalization cases, strictmypy/ruff, existing reader case and actualbuild entry guard PASS; no model recomputation."
+      },
+      "pdf_evidence": {
+        "before_en": {
+          "file": "docs/acceptance/2026-10-25/548/pvlib-report-before-en.pdf",
+          "sha256": "d73b1c46ad525627c66e114706f53e34044e45e76bf51766e6e09c3c2e9b6c8d",
+          "bytes": 45948
+        },
+        "after-local_en": {
+          "file": "docs/acceptance/2026-10-25/548/pvlib-report-after-local-en.pdf",
+          "sha256": "3135ff6fdccbda1170cae8f1e89e02e81e8ece56812b5f998993f51c313bbddd",
+          "bytes": 54039
+        },
+        "before_de": {
+          "file": "docs/acceptance/2026-10-25/548/pvlib-report-before-de.pdf",
+          "sha256": "86a16e688774c9eb2372536bb6c222fa5aa8a6e526835c9e2fbc6e742e54c558",
+          "bytes": 46562
+        },
+        "after-local_de": {
+          "file": "docs/acceptance/2026-10-25/548/pvlib-report-after-local-de.pdf",
+          "sha256": "89d3a12974bfdff0cb03d31758e2e6a12604c076e15760fea7b28333d68c60a2",
+          "bytes": 55276
+        }
+      },
+      "build": "Planner source build +outermanifest +existing one built-module entry guard PASS; no manual broad suite",
+      "native_source_contract_correction": {
+        "source_sha256": "9ffcc8c20c799d8a9754ab5e45d5b142118cc1431cfd27a514a1795cef16c726",
+        "trigger": "CI40582327768:two existing native shared-DC/plant report cases omitted official TMY capture by legitimate synthetic WeatherSeries contract",
+        "behavior": "Retain generic frozen weather/model/geometry/output; derive only absent summary fields from validated retained axis/witness; preserve existing equivalent timestamps; reject mismatched summary or partial/mismatched TMY provenance; never invent official capture/URL/year/database",
+        "focused_validation": "Exactly two failed native cases plus existing retained report projection:3passed3.62s; strict one-file mypy/ruff/format/diff check passed",
+        "production_state": "Not yet deployed; final independent delta review and repaired final CI required",
+        "unchanged_fr_evidence": "Four retained SHA-verified CAS documents read without execution: all five profile summary fields and original representation match; report summary equals metadata interpretation and TMY triplet crossbinding unchanged. Existing actual FR42-row/PDF-body evidence reused.",
+        "independent_delta_review": "F Spec+Standards PASS for exact9ffcc8c20c799d8a9754ab5e45d5b142118cc1431cfd27a514a1795cef16c726; root integration PASS; prior unchanged reviews reused"
+      }
+    },
+    "production_energy": {
+      "state": "api_calculated_ui_pending",
+      "project_id": "1812286480344d6d8cec94e2f5f2c00e",
+      "run_id": "f32e226aa7d74ae9a65e655dffb4cc22",
+      "saved_revision": 12,
+      "saved_input_sha256": "f16177fee78370ce09e9929ed0a05088dd58e9cd06eaeb5e60e20572b8c091de",
+      "manifest_sha256": "411b70febcfec4f50ca243c6f8fdd50dae5adf971c38596810989873721e4cfd",
+      "result_sha256": "adb21a189ecdc8cd3f8cda738f1b2cbbedbfdbed5b3924cdefec0741a24a3f40",
+      "trace_sha256": "6bd0fe67a8bc9ee62d290f2bcf2e95d6cda334fc26b024814406760b77d699c0",
+      "runtime_sha256": "8beaa6186e0c9ac97c6957d808692afafe68cce7be9b8d9ce95da8e628134df6",
+      "interval_count": 2,
+      "metrics": {
+        "aux_ac_unserved_kwh": 0,
+        "charge_conversion_loss_kwh": 0,
+        "definitions": {
+          "boundary": "single_AC_bus; battery_export_excluded; system_aux_separate_from_customer_load",
+          "inventory_origin": "proportional_mixing; initial_unknown_and_grid_are_not_solar",
+          "pv_input_self_use": "(PV_direct_load + PV_direct_system_aux + PV_charge_input) / PV_generated_after_curtailment",
+          "pv_onsite_available_share": "(PV_direct_load + PV_direct_system_aux + PV_charge_input) / PV_available_before_curtailment",
+          "solar_autarky": "(PV_direct_to_customer_load + PV_origin_battery_to_customer_load) / gross_customer_load_demand",
+          "solar_load_share_of_requested_demand": "(PV_direct_to_requested_load + PV_origin_battery_to_requested_load) / requested_load_demand_in_explicit_scope"
+        },
+        "discharge_conversion_loss_kwh": 0,
+        "grid_charge_ac_kwh": 0,
+        "grid_import_kwh": 0,
+        "grid_origin_battery_to_load_kwh": 0,
+        "gross_load_kwh": 1.102572669562,
+        "gross_load_undefined_reason": null,
+        "initial_unknown_battery_to_load_kwh": 0,
+        "internal_aux_supplied_kwh": 0,
+        "internal_aux_unserved_kwh": 0,
+        "load_demand_kwh": 1.102572669562,
+        "load_measurement_scope": "gross_load",
+        "maximum_interval_average_import_kw": 0,
+        "pv_available_before_curtail_kwh": 12.34065697663878,
+        "pv_battery_to_load_kwh": 0,
+        "pv_charge_ac_kwh": 0,
+        "pv_curtailed_kwh": 0,
+        "pv_direct_aux_ac_kwh": 0,
+        "pv_direct_load_kwh": 1.102572669562,
+        "pv_export_kwh": 11.23808430707678,
+        "pv_generated_ac_kwh": 12.340656976638781,
+        "pv_input_self_use": {
+          "undefined_reason": null,
+          "value": 0.08934473032101951
+        },
+        "pv_onsite_available_share": {
+          "undefined_reason": null,
+          "value": 0.08934473032101953
+        },
+        "pv_potential_before_mode_kwh": 12.34065697663878,
+        "solar_autarky": {
+          "undefined_reason": null,
+          "value": 1
+        },
+        "solar_load_kwh": 1.102572669562,
+        "solar_load_share_of_requested_demand": {
+          "undefined_reason": null,
+          "value": 1
+        },
+        "standing_loss_kwh": 0,
+        "stored_final": {
+          "grid_kwh": 0,
+          "initial_unknown_kwh": 0,
+          "pv_kwh": 0
+        },
+        "stored_initial": {
+          "grid_kwh": 0,
+          "initial_unknown_kwh": 0,
+          "pv_kwh": 0
+        },
+        "unserved_load_kwh": 0
+      },
+      "verification": {
+        "passed": true,
+        "checks": 92,
+        "all_recorded_checks_passed": true,
+        "maximum_recorded_worst_violation": 8.881784197001252e-16,
+        "tolerance": {
+          "absolute_kw": 1e-07,
+          "absolute_kwh": 1e-07,
+          "relative": 1e-09,
+          "role": "floating_point_arithmetic_not_engineering_margin"
+        }
+      },
+      "scenario_constraint_status": "satisfied",
+      "equipment_release": {
+        "reason": "explicit_scenario_replay_is_not_equipment_release",
+        "status": "not_assessed"
+      },
+      "country_assessment": {
+        "reason": "country_rules_are_a_separate_assessment",
+        "status": "not_assessed"
+      },
+      "source_bindings_verified": true,
+      "ui_acceptance_completed": false,
+      "handoff_json": {
+        "path": "/Users/chesterjohn/de-linker-local/p548/planner/managed-reference-native/fr-energy-api-handoff.json",
+        "bytes": 74112,
+        "sha256": "c375eb25133a576d554adf631af1c416c9dd1e0f84d1f7bbd469b6ebad23ad27",
+        "owner": "/root",
+        "purpose": "Actual native project12, succeeded two-hour energy run/result and trace for next EN/DE report compiler",
+        "reclaim_condition": "After affected downstream report/UI acceptance retains required source/result bindings; keep one current energy handoff",
+        "review_by_utc": "2026-10-28T23:59:00Z"
+      }
+    },
+    "production_reports_before": {
+      "state": "api_reports_downloaded_visual_ui_pending",
+      "owner": "/root/certificate_conditions_backend",
+      "at_utc": "2026-10-27T20:17:32.948286+00:00",
+      "base": {
+        "project_id": "1812286480344d6d8cec94e2f5f2c00e",
+        "expected_revision": 12,
+        "input_sha256": "f16177fee78370ce09e9929ed0a05088dd58e9cd06eaeb5e60e20572b8c091de",
+        "project_save_required": false
+      },
+      "compiled_handoff_path": "/Users/chesterjohn/de-linker-local/p548/planner/managed-reference-native/fr-report-compiled-handoff.json",
+      "compiled_handoff_sha256": "e9504be0f03600b7cca614a6ef21f4a348a88834d31462730dcec7aedb984a77",
+      "validated_with": [
+        "readPlanningOperation",
+        "readReportOptions"
+      ],
+      "requests": {
+        "en": {
+          "path": "runs/report",
+          "key": "7b7d0dfe-911d-4515-90ab-ee0dc6914b6c",
+          "options": {
+            "locale": "en",
+            "energy_run_id": "f32e226aa7d74ae9a65e655dffb4cc22",
+            "pv_run_id": "e9875888ea9d4273ae162448554de1ab",
+            "equipment_run_id": null,
+            "logo": null
+          },
+          "body": "{\"expected_revision\":12,\"options\":{\"locale\":\"en\",\"energy_run_id\":\"f32e226aa7d74ae9a65e655dffb4cc22\",\"pv_run_id\":\"e9875888ea9d4273ae162448554de1ab\",\"equipment_run_id\":null,\"logo\":null},\"schema_version\":1,\"project_id\":\"1812286480344d6d8cec94e2f5f2c00e\",\"key\":\"7b7d0dfe-911d-4515-90ab-ee0dc6914b6c\"}",
+          "body_sha256": "7f9d37d0b51387b739e3cbcf7c9eb22c1200e61f5bb982d5821fe6deec756786",
+          "body_bytes": 296
+        },
+        "de": {
+          "path": "runs/report",
+          "key": "eb745c78-57e9-4e31-be3e-2d63a151b49e",
+          "options": {
+            "locale": "de",
+            "energy_run_id": "f32e226aa7d74ae9a65e655dffb4cc22",
+            "pv_run_id": "e9875888ea9d4273ae162448554de1ab",
+            "equipment_run_id": null,
+            "logo": null
+          },
+          "body": "{\"expected_revision\":12,\"options\":{\"locale\":\"de\",\"energy_run_id\":\"f32e226aa7d74ae9a65e655dffb4cc22\",\"pv_run_id\":\"e9875888ea9d4273ae162448554de1ab\",\"equipment_run_id\":null,\"logo\":null},\"schema_version\":1,\"project_id\":\"1812286480344d6d8cec94e2f5f2c00e\",\"key\":\"eb745c78-57e9-4e31-be3e-2d63a151b49e\"}",
+          "body_sha256": "f30c0b45661acc5e43509b80440532df142999875a90165b4f6334e5a03ae43d",
+          "body_bytes": 296
+        }
+      },
+      "native_admission_required": true,
+      "project_input_saves": 0,
+      "new_weather_pv_energy_tasks": false,
+      "csv_downloads": 0,
+      "ui_acceptance_completed": false,
+      "pdf_visual_acceptance_completed": false,
+      "completed_at_utc": "2026-10-27T20:22:09.225028+00:00",
+      "project_revision_unchanged": 12,
+      "project_input_sha256_unchanged": "f16177fee78370ce09e9929ed0a05088dd58e9cd06eaeb5e60e20572b8c091de",
+      "existing_readers_passed": [
+        "readProject",
+        "readRun",
+        "readReportResult"
+      ],
+      "retries": 0,
+      "handoff_json": {
+        "path": "/Users/chesterjohn/de-linker-local/p548/planner/managed-reference-native/fr-report-api-handoff.json",
+        "bytes": 59958,
+        "sha256": "3c1ff20030a47c24fd81c33ba0f97151f101c273de368198869b59f1e72e28dc",
+        "owner": "/root",
+        "purpose": "Actual EN/DE report runs/models/assets and native PDF captures for affected PDF and consumer acceptance",
+        "reclaim_condition": "After affected PDF/consumer acceptance has retained the unique required files and provenance; keep one actual pair",
+        "review_by_utc": "2026-10-28T23:59:00Z"
+      },
+      "reports": {
+        "en": {
+          "run_id": "ee2e7568e6e740f4b685b14f177cb1fe",
+          "state": "succeeded",
+          "revision": 12,
+          "manifest_sha256": "2e81129e17e8816b200dcfcad0b0ef28740017699c98a275a9eb0114a82b6f56",
+          "result_sha256": "79d616e192d68660f0c923830558d0c7b828d46b25ca77205e8e21c6beb48601",
+          "report_model_sha256": "6dc583bea2c3792d8952d604a00913677d998b365bbf45caa481696518aad817",
+          "report_source_sha256": "4203a1b55e96e3464755b9a337556487c5f0eca06cae4124bbf7d55ba0a7de57",
+          "source_runs": [
+            {
+              "input_sha256": "f16177fee78370ce09e9929ed0a05088dd58e9cd06eaeb5e60e20572b8c091de",
+              "kind": "single_ac_energy_replay_v1",
+              "manifest_sha256": "411b70febcfec4f50ca243c6f8fdd50dae5adf971c38596810989873721e4cfd",
+              "result_sha256": "adb21a189ecdc8cd3f8cda738f1b2cbbedbfdbed5b3924cdefec0741a24a3f40",
+              "revision": 12,
+              "run_id": "f32e226aa7d74ae9a65e655dffb4cc22",
+              "runtime_sha256": "8beaa6186e0c9ac97c6957d808692afafe68cce7be9b8d9ce95da8e628134df6"
+            },
+            {
+              "input_sha256": "82b0fd7eef0d3ff1db63560749448f16b9c1fb2e4c238715e3e0f91d4ecc60c3",
+              "kind": "prepare_roof_pv_reference_v1",
+              "manifest_sha256": "c5a3d6af769d8f948a9095d1f9a83294d3129446cd87987e6142a3835edb62de",
+              "result_sha256": "1838486616bdcfcb57e353d0b9bab539591b4353c97701de96aca4dc99dd9e91",
+              "revision": 11,
+              "run_id": "e9875888ea9d4273ae162448554de1ab",
+              "runtime_sha256": "8beaa6186e0c9ac97c6957d808692afafe68cce7be9b8d9ce95da8e628134df6"
+            }
+          ],
+          "asset": {
+            "id": "bce5b0e9a54c402db693cbb54818d5cc",
+            "project_id": "1812286480344d6d8cec94e2f5f2c00e",
+            "content_sha256": "d73b1c46ad525627c66e114706f53e34044e45e76bf51766e6e09c3c2e9b6c8d",
+            "metadata_sha256": "871ce394d87407fa0313b4a3af9563b4971e141f7d07d38567609b971bcada1f",
+            "media_type": "application/pdf",
+            "purpose": "planning_report_pdf_v1"
+          },
+          "native_run_response_sha256": "5a742cd84929e3ffaed848d3835eec9f8a4475cf30a878935e49cdb5d58564e7",
+          "dispatch_response_sha256": "d674c318cb439a0abd044fd3269d3a211b58910b2e8a7944711d41d2ad22a5f0",
+          "dispatch_attempts": 1,
+          "job_attempts": 1,
+          "pdf": {
+            "native_user_id": 1,
+            "asset_id": "bce5b0e9a54c402db693cbb54818d5cc",
+            "metadata_sha256": "871ce394d87407fa0313b4a3af9563b4971e141f7d07d38567609b971bcada1f",
+            "asset_media_type": "application/pdf",
+            "content_response_status": 200,
+            "content_response_mime": "application/octet-stream",
+            "content_response_sha256": "d73b1c46ad525627c66e114706f53e34044e45e76bf51766e6e09c3c2e9b6c8d",
+            "content_response_bytes": 45948,
+            "owned_asset_response_sha256": "eb1b545b4e66c9b2914f9ef08cfa40ead8693e664066266d9e311c8c3212f696",
+            "operation": "assets/content",
+            "path": "/Users/chesterjohn/de-linker-local/p548/planner/managed-reference-native/fr-report-en.pdf",
+            "captured_at_utc": "2026-10-27T20:20:17.772551+00:00",
+            "capture_method": "Native production WordPress CLI owner1 -> existing Planner Transport assets/read then assets/content -> exact stdout bytes over existing SSH. No browser download claimed.",
+            "pdf_signature_verified": true,
+            "run_id": "ee2e7568e6e740f4b685b14f177cb1fe"
+          }
+        },
+        "de": {
+          "run_id": "4cf3c32652584391993f4e9b60c27f59",
+          "state": "succeeded",
+          "revision": 12,
+          "manifest_sha256": "0a80691f9b098a0ebe1310b0f5ccf810b5f097c33958da08e949d087831e51ff",
+          "result_sha256": "2f48d2d480f4d4aa4fa6e633a169e87617e3b325f4bfe55bc761cf47f77e673d",
+          "report_model_sha256": "e15b497f5f024b9f786d9d44467917fe9ec118cdb20caaa30afecb034a9aae9a",
+          "report_source_sha256": "8c33e9dfc81c11ea3b8a05215dd71e6859ca65cc3fc9521d51163c3027dbbf0d",
+          "source_runs": [
+            {
+              "input_sha256": "f16177fee78370ce09e9929ed0a05088dd58e9cd06eaeb5e60e20572b8c091de",
+              "kind": "single_ac_energy_replay_v1",
+              "manifest_sha256": "411b70febcfec4f50ca243c6f8fdd50dae5adf971c38596810989873721e4cfd",
+              "result_sha256": "adb21a189ecdc8cd3f8cda738f1b2cbbedbfdbed5b3924cdefec0741a24a3f40",
+              "revision": 12,
+              "run_id": "f32e226aa7d74ae9a65e655dffb4cc22",
+              "runtime_sha256": "8beaa6186e0c9ac97c6957d808692afafe68cce7be9b8d9ce95da8e628134df6"
+            },
+            {
+              "input_sha256": "82b0fd7eef0d3ff1db63560749448f16b9c1fb2e4c238715e3e0f91d4ecc60c3",
+              "kind": "prepare_roof_pv_reference_v1",
+              "manifest_sha256": "c5a3d6af769d8f948a9095d1f9a83294d3129446cd87987e6142a3835edb62de",
+              "result_sha256": "1838486616bdcfcb57e353d0b9bab539591b4353c97701de96aca4dc99dd9e91",
+              "revision": 11,
+              "run_id": "e9875888ea9d4273ae162448554de1ab",
+              "runtime_sha256": "8beaa6186e0c9ac97c6957d808692afafe68cce7be9b8d9ce95da8e628134df6"
+            }
+          ],
+          "asset": {
+            "id": "ecad13dd78ec4881affbf2f560138f83",
+            "project_id": "1812286480344d6d8cec94e2f5f2c00e",
+            "content_sha256": "86a16e688774c9eb2372536bb6c222fa5aa8a6e526835c9e2fbc6e742e54c558",
+            "metadata_sha256": "58689280daa92fbbe952d3c374631b1a8b64c4c17b856b0a6e6482658648c888",
+            "media_type": "application/pdf",
+            "purpose": "planning_report_pdf_v1"
+          },
+          "native_run_response_sha256": "759af04be16c1635b0b4e72cd99023e05468a36c297e17f0bec23529d6aa4db9",
+          "dispatch_response_sha256": "d92db2bfd07ce55a1565893b10b0cb02ee7d7d4ab04a47139027a3efbde53f52",
+          "dispatch_attempts": 1,
+          "job_attempts": 1,
+          "pdf": {
+            "native_user_id": 1,
+            "asset_id": "ecad13dd78ec4881affbf2f560138f83",
+            "metadata_sha256": "58689280daa92fbbe952d3c374631b1a8b64c4c17b856b0a6e6482658648c888",
+            "asset_media_type": "application/pdf",
+            "content_response_status": 200,
+            "content_response_mime": "application/octet-stream",
+            "content_response_sha256": "86a16e688774c9eb2372536bb6c222fa5aa8a6e526835c9e2fbc6e742e54c558",
+            "content_response_bytes": 46562,
+            "owned_asset_response_sha256": "e9ac988364cce7e2243fd6d41f6f8985faef828247db71e7ba4e491b48182806",
+            "operation": "assets/content",
+            "path": "/Users/chesterjohn/de-linker-local/p548/planner/managed-reference-native/fr-report-de.pdf",
+            "captured_at_utc": "2026-10-27T20:20:26.045826+00:00",
+            "capture_method": "Native production WordPress CLI owner1 -> existing Planner Transport assets/read then assets/content -> exact stdout bytes over existing SSH. No browser download claimed.",
+            "pdf_signature_verified": true,
+            "run_id": "4cf3c32652584391993f4e9b60c27f59"
+          }
+        }
+      },
+      "temporary_copies_reclaimed": [
+        {
+          "path": "/tmp/p548-fr-report-intents.json",
+          "bytes": 1827
+        },
+        {
+          "path": "/tmp/p548-fr-report-dispatch-responses.json",
+          "bytes": 18411
+        },
+        {
+          "path": "/tmp/p548-fr-report-terminal-native.json",
+          "bytes": 35728
+        },
+        {
+          "path": "/tmp/p548-fr-report-accepted.json",
+          "bytes": 34967
+        },
+        {
+          "path": "/tmp/p548-fr-report-download-captures.json",
+          "bytes": 1944
+        }
+      ],
+      "temporary_bytes_reclaimed": 92877
+    },
+    "production_source_owner_ui": {
+      "state": "actual_owner_browser_selected",
+      "observed_at_utc": "2026-10-27T21:28:00Z",
+      "project_id": "1812286480344d6d8cec94e2f5f2c00e",
+      "saved_revision": 12,
+      "weather_run_id": "2af1501692834982b6356709cd942c89",
+      "pv_run_id": "e9875888ea9d4273ae162448554de1ab",
+      "weather_ui": "Selected in current project draft; disabled; SARAH3/ERA5;2014–2023;synthetic2023",
+      "pv_ui": "Selected in current project draft; disabled;9315.201kWh;2023 annual profile; unshaded and country/equipment unassessed",
+      "report_after_release_pending": true,
+      "method": "Existing owner1 IAB session, native rendered controls; no credentials/cookies injected; one full reload after external API adoption; no new numerical runs"
+    }
+  },
+  "production_direct_ac_reference": {
+    "schema_version": 1,
+    "state": "verified",
+    "verified_at_utc": "2026-10-27T20:32:21.847368+00:00",
+    "native_user_id": 1,
+    "principal_subject": "wp:1:user:1",
+    "project": {
+      "id": "33904b101d3f42a8938c6154b87b64d9",
+      "title": "Linker · managed AC reference · synthetic south roof",
+      "revision": 1,
+      "input_sha256": "9434ccae7ec646ba7f2cf8a39cde889cad82eec1bb3d4665159d08997ab65629"
+    },
+    "reference_model": "pvgis_5_3_roof_ac_reference_v1",
+    "project_inputs_scope": [
+      "geometry",
+      "pvgis_reference_setup",
+      "pvgis_reference"
+    ],
+    "parameters": {
+      "schema_version": 1,
+      "model": "pvgis_5_3_roof_ac_reference_v1",
+      "radiation_database": "PVGIS-SARAH3",
+      "year": 2023,
+      "pv_technology": "crystSi",
+      "mounting_place": "free",
+      "system_loss_percent": 14,
+      "use_terrain_horizon": false,
+      "source_note": "Explicit synthetic JRC calendar-year AC reference: SARAH3 2023, crystSi, free-standing mounting, 14% generic system-loss setting and no terrain horizon. The 14% is the named generic JRC scenario assumption, not a measured roof loss or manufacturer/device performance. Berlin south-roof QA geometry is synthetic; this is not the FR project roof or an engineering release."
+    },
+    "geometry": {
+      "anchor": {
+        "datum": "EPSG:4326",
+        "latitude_deg": 52.52,
+        "longitude_deg": 13.405,
+        "source_id": "survey"
+      },
+      "module_count": 24,
+      "stc_power_w": 11040,
+      "included_normals": [
+        [
+          0,
+          -0.49999999999999994,
+          0.8660254037844387
+        ]
+      ],
+      "tilt_deg": 30,
+      "azimuth_north_clockwise_deg": 180,
+      "geometry_sha256": "4690a826829a906900f1ed8b8fc2d3b744dffe8fa445c5dbab8bdbf6fea709b6"
+    },
+    "woo_binding": {
+      "document_sha256": "f4d280f9a0d89475cf575fbb99906e2b091da27f08b848fc51877cc1d24e8e22",
+      "kind": "datasheet",
+      "note": "Trina Solar TSM-460NEG9R.28",
+      "page": 2,
+      "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+      "woo": {
+        "product_id": 8349,
+        "product_revision": "0ca883dc8cba13b4cbb90ff77f730c7fd92eb243e96568899985a4ced1bd4a8a",
+        "reference_input_id": "mat_trina_solar_tsm_460neg9r_28"
+      }
+    },
+    "run": {
+      "id": "d26de1dcb20f4b468cf6f5a085b52115",
+      "project_id": "33904b101d3f42a8938c6154b87b64d9",
+      "revision": 1,
+      "state": "succeeded",
+      "manifest_sha256": "20f4c1d66f72f077432083faeb2a9fd8e4e289ff9461385cf8dfb98f4427b6cd",
+      "result_sha256": "a5f3d0afc3111bbd2825b6416d096041b600ee727ee50fb1e79494a7a9168778"
+    },
+    "runtime_sha256": "8beaa6186e0c9ac97c6957d808692afafe68cce7be9b8d9ce95da8e628134df6",
+    "models": {
+      "acquisition": "official_jrc_https_get_original_v1",
+      "aggregate": "exact_same_axis_array_ac_sum_v1",
+      "generation": "pvgis_5_3_roof_ac_reference_v1",
+      "task": "prepare_pvgis_roof_ac_reference_v1"
+    },
+    "asset": {
+      "id": "b5c59c93ec1c453a9ac308bdebcefce6",
+      "project_id": "33904b101d3f42a8938c6154b87b64d9",
+      "content_sha256": "82be688546dc9228fc98c5b1df1032a3998161e2429d799b38e9f5d06215f96c",
+      "metadata_sha256": "ed078176055a0df9eb524486f40daf598bc069798bfeccb091a0d06c965ae7d2",
+      "media_type": "application/json",
+      "purpose": "pvgis_roof_ac_reference_profile_v1"
+    },
+    "profile_summary": {
+      "end_utc": "2024-01-01T00:00:00+00:00",
+      "energy_kwh": 11008.95012,
+      "interval_count": 8760,
+      "measurement": "pv_available_ac",
+      "model_role": "official_calendar_year_roof_ac_reference",
+      "native_max_interval_seconds": 3600,
+      "origin": "modelled",
+      "reconstructed_means": true,
+      "start_utc": "2023-01-01T00:00:00+00:00"
+    },
+    "official_source": {
+      "receipt": {
+        "capture_basis": "official_jrc_https_get_original_v1",
+        "content_type": "application/json",
+        "loaded_url": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-SARAH3&startyear=2023&endyear=2023&pvcalculation=1&peakpower=11.04&loss=14.0&pvtechchoice=crystSi&mountingplace=free&angle=30.0&aspect=0.0&trackingtype=0&usehorizon=0&components=1&optimalinclination=0&optimalangles=0&outputformat=json",
+        "received_at_utc": "2026-10-27T20:28:47.937397+00:00",
+        "requested_url": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-SARAH3&startyear=2023&endyear=2023&pvcalculation=1&peakpower=11.04&loss=14.0&pvtechchoice=crystSi&mountingplace=free&angle=30.0&aspect=0.0&trackingtype=0&usehorizon=0&components=1&optimalinclination=0&optimalangles=0&outputformat=json",
+        "schema_version": 1,
+        "source_identifiers": {
+          "api_version": "5.3",
+          "provider": "EC_JRC_PVGIS"
+        },
+        "status": 200
+      },
+      "capture_sha256": "19ec50ef5d808909b30bd044a2d13e33c7f5b9864a9f429a1b25855489fa9e8a",
+      "original_sha256": "9018be7b46a109333eb20aeb40668c6977cc05e7f3fea1118915167d95eba509",
+      "original_bytes": 1056013,
+      "acquisition_plan_sha256": "93a14a663043f5f9676d08063864493c4b85515c99de0c34e9583f48efc4944f",
+      "received_within_frozen_task_deadline": true,
+      "validated_array_count": 1,
+      "native_calculation_requests_dispatched": 1
+    },
+    "acceptance": {
+      "verified_at_utc": "2026-10-27T20:32:21.847368+00:00",
+      "native_rpc_owner_verified": true,
+      "owned_asset_readback": true,
+      "saved_input_hash_matches": true,
+      "geometry_hash_matches_saved_inputs_plan_and_asset": true,
+      "array_count": 1,
+      "module_count": 24,
+      "stc_power_kwp": 11.04,
+      "tilt_deg": 30,
+      "azimuth_north_clockwise_deg": 180,
+      "source_https_origin_path_verified": true,
+      "official_http_status": 200,
+      "source_receipt_sha256": "19ec50ef5d808909b30bd044a2d13e33c7f5b9864a9f429a1b25855489fa9e8a",
+      "interval_count": 8760,
+      "annual_energy_kwh": 11008.95012,
+      "source_profile_adopted": false,
+      "energy_report_or_genie_run": false,
+      "fr_project_touched": false,
+      "scope": "Independent synthetic Berlin south-roof official JRC calendar-year AC reference; not a real measured roof, the FR roof, equipment qualification or engineering release."
+    },
+    "native_boundary": {
+      "wordpress_user": 1,
+      "body_gate": true,
+      "json_numbers": true,
+      "admission": true,
+      "transport": true,
+      "quotas_unchanged": true,
+      "new_credentials_or_cookie_copy": false,
+      "create_transport_recovery": "Initial SSH255; read-only SSH succeeded; identical create wire/key recovered through Admission replay. No new key."
+    },
+    "private_handoff": "/Users/chesterjohn/de-linker-local/p548/planner/managed-reference-native/production-direct-ac-reference-handoff.json",
+    "private_handoff_sha256": "d232d946aacc3f9f59fae063fe48449ea98423b4bc3cc22c1095ba97d49b8724",
+    "retention": {
+      "purpose": "Unique production direct-method positive acceptance record; retain synthetic owned project and immutable source/run as task evidence. No new instance, backup or original-byte copy.",
+      "owner": "goal548/root; frontend delegated native direct-method readback",
+      "reclaim_condition": "After root archives this proof, deduplicate only reconstructible handoff payload; retain the immutable owned project/run/source proof and frozen intent needed for recovery."
+    },
+    "owner_ui": {
+      "state": "actual_owner_browser_read",
+      "screenshot_path": "/Users/chesterjohn/de-linker-local/p548/planner/managed-reference-native/production-direct-ac-ui.jpg",
+      "scope": "Independent synthetic south roof; Source ready;11008.95kWh;2023;14%genericJRCassumption;not adopted;no FR change"
     }
   }
 }

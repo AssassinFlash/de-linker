@@ -164,6 +164,22 @@ def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
                     row.get("label") == text("pvgis_reference_note", locale)
                 ):
                     continue  # The owned report retains this free-form assumption.
+                if str(section.get("id", "")).startswith("pvlib-reference-") and (
+                    row.get("label")
+                    in {
+                        text(key, locale)
+                        for key in (
+                            "pvlib_note",
+                            "pvlib_original_request",
+                            "pvlib_array",
+                            "pvlib_converter",
+                            "pvlib_selected_dc_group",
+                        )
+                    }
+                ):
+                    # Notes, editable identifiers and the coordinate-bearing
+                    # request remain in the owner's report, not assistant input.
+                    continue
                 # Original report text is history; current document access is separate.
                 rows.append(
                     {"label": f"{title}: {row['label']}", "value": row["value"]}
