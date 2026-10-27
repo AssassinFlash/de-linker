@@ -11,6 +11,7 @@ from typing import Any
 
 import pytest
 from conftest import publication_manifest
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from pypdf import PdfReader
 
@@ -18,27 +19,46 @@ from linker_engine import pdf
 from linker_engine.engine import Engine
 from linker_engine.models import Report
 from linker_engine.planning.assets import Assets
-from linker_engine.planning.assistant_context import assistant_context
+from linker_engine.planning.assistant_context import _result_rows, assistant_context
 from linker_engine.planning.canonical import digest, encode
 from linker_engine.planning.certificate_evidence import CertificateEvidence
 from linker_engine.planning.certificate_report import certificate_sections
 from linker_engine.planning.certificate_sources import inspect_report_certificates
+from linker_engine.planning.csv_mapping import CsvMapping
+from linker_engine.planning.energy_inputs import EnergyInputs
 from linker_engine.planning.energy_kernel import EnergyKernel
 from linker_engine.planning.energy_service import EnergyService
 from linker_engine.planning.equipment_conditions import review_device_conditions
 from linker_engine.planning.equipment_kernel import EquipmentKernel
 from linker_engine.planning.equipment_service import EquipmentService
-from linker_engine.planning.errors import NotFound, ProductEvidenceChanged
+from linker_engine.planning.errors import (
+    EvidenceMissing,
+    InvalidInput,
+    NotFound,
+    ProductEvidenceChanged,
+)
 from linker_engine.planning.execution_registry import service_registry
+from linker_engine.planning.frozen_profiles import frozen_profile
 from linker_engine.planning.guest_claims import GuestClaims
 from linker_engine.planning.handoffs import Handoffs
 from linker_engine.planning.http_app import HttpLimits, create_private_app
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.product_sources import ProductSources
+from linker_engine.planning.profile_assets import profile_dependencies
+from linker_engine.planning.profile_import import ProfileImport
+from linker_engine.planning.profile_preview import ProfilePreview
+from linker_engine.planning.profile_selections import check_profile_selections
 from linker_engine.planning.project_materials import materials_csv
+from linker_engine.planning.pvgis_reference_artifacts import prepare_reference_asset
+from linker_engine.planning.pvgis_reference_download import ReferenceCapture
+from linker_engine.planning.pvgis_reference_geometry import reference_plan
+from linker_engine.planning.pvgis_reference_kernel import PvgisRoofReferenceKernel
+from linker_engine.planning.pvgis_response import PvgisCapture
 from linker_engine.planning.records import Actor, Context
-from linker_engine.planning.report_inputs import ReportOptions
+from linker_engine.planning.report_copy import text
+from linker_engine.planning.report_inputs import ComparisonSelection, ReportOptions
 from linker_engine.planning.report_kernel import ReportKernel, ReportService
+from linker_engine.planning.report_model import build_report
 from linker_engine.planning.report_sources import (
     ReportInputsChanged,
     renew_module_permission,
@@ -50,19 +70,21 @@ from linker_engine.products import Products
 from linker_engine.publication import Publication, PublicationUnavailable
 from linker_engine.texts import t
 
-from .conftest import FixtureObject, json_object
+from .conftest import FixtureObject, json_object, mapping_role
 from .test_certificate_evidence import (
     certificate_pdf,
     condition_project,
     evidence,
     inspected_fixture,
 )
-from .test_energy_kernel import TOLERANCE
+from .test_energy_kernel import BATTERY, PROVENANCE, TOLERANCE, create_scenario
 from .test_equipment import (
     feed as equipment_feed,  # noqa: F401 -- Shared cited fixture, registered under this name.
 )
 from .test_equipment import inputs
 from .test_private_http import TOKEN, headers
+from .test_pvgis_roof_reference import limits as reference_limits
+from .test_pvgis_roof_reference import prepared_reference_fixture
 
 
 def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
@@ -596,6 +618,407 @@ def test_device_report_keeps_each_documents_result_and_unanswered_device(
     assert len(reader.pages) > 1
 
 
+def test_roof_ac_reference_consumption_and_frozen_report_keep_actual_model_scope(
+    client: TestClient,
+    workspace: Workspace,
+    owner: Actor,
+    context: Context,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def current(publication: Publication) -> FixtureObject:
+        value = publication_manifest(publication.feed)
+        for product in value["products"]:
+            product["ready"]["engineering"] = True
+        return value
+
+    monkeypatch.setattr(Publication, "read", current)
+    assert isinstance(client.app, FastAPI)
+    products = ProductSources(client.app.state.planning_product_provider)
+    roof, asset = prepared_reference_fixture(workspace, owner, products)
+    assets = Assets(workspace)
+    profile = frozen_profile(
+        workspace.blobs, asset.content_sha256, asset.metadata_sha256, None
+    )
+    assert profile.measurement == "pv_available_ac"
+    preview = ProfilePreview(assets).page(
+        owner, roof.id, asset.id, offset=0, page_size=1
+    )
+    assert preview["measurement"] == "pv_available_ac"
+    assert len(json_object(preview)["rows"]) == 1
+    assert len(profile.intervals) == 8784  # Complete leap calendar year 2020.
+    choices: FixtureObject = {
+        "schema_version": 1,
+        "selected": {"pv_available_ac": asset.id},
+    }
+    check_profile_selections(assets, owner, roof.id, {"profile_selections": choices})
+    with pytest.raises(InvalidInput):
+        check_profile_selections(
+            assets,
+            owner,
+            roof.id,
+            {"profile_selections": {**choices, "selected": {"pv_reference": asset.id}}},
+        )
+    with pytest.raises(EvidenceMissing, match="pv_dc_stage"):
+        profile_dependencies(asset, "pv_available_dc", roof.inputs, workspace.blobs)
+    stale = copy.deepcopy(json_object(roof.inputs))
+    stale["pvgis_reference"]["system_loss_percent"] = 15
+    with pytest.raises(InvalidInput, match="saved roof or model choices"):
+        profile_dependencies(asset, "pv_available_ac", stale, workspace.blobs)
+
+    # A saved producer result selects this exact owned artifact. Producer
+    # execution/transport are covered by the shared multi-array fixture.
+    pv_run = workspace.evaluate(owner, roof.id, 1, context, key="pv", max_attempts=1)
+    jobs = Jobs(workspace)
+    lease = jobs.claim("fixture", kinds=("evaluate",), lease_seconds=30)
+    assert lease is not None
+    jobs.complete(
+        lease,
+        {
+            "kind": PvgisRoofReferenceKernel.kind,
+            "runtime_sha256": context.code_sha256,
+            "pinned_assets": {},
+            "profile_summary": asset.metadata["interpretation"],
+            "equipment_release": {"status": "not_assessed"},
+            "country_assessment": {"status": "not_assessed"},
+            "near_shading_assessment": {"status": "not_assessed"},
+            "prepared_asset": {
+                "id": asset.id,
+                "project_id": roof.id,
+                "purpose": asset.purpose,
+                "content_sha256": asset.content_sha256,
+                "metadata_sha256": asset.metadata_sha256,
+                "metadata": asset.metadata,
+            },
+        },
+    )
+    explicit = report_sources(
+        workspace,
+        products,
+        owner,
+        roof,
+        ReportOptions(
+            locale="en",
+            energy_run_id=None,
+            pv_run_id=pv_run.id,
+            equipment_run_id=None,
+            logo=None,
+        ),
+    )
+    assert len(json_object(explicit)["pvgis_roof_ac_references"]) == 1
+    for locale in ("en", "de"):
+        context_view = json_object(
+            assistant_context(workspace, owner, roof.id, 1, [pv_run.id], locale)
+        )
+        rows = {r["label"]: r["value"] for r in context_view["runs"][0]["rows"]}
+        assert rows["reference_model_choices.year"] == "2020"
+        assert rows["reference_model_choices.radiation_database"] == "PVGIS-ERA5"
+        assert rows["reference_model_choices.pv_technology"] == "crystSi"
+        assert rows["reference_model_choices.mounting_place"] == "free"
+        assert rows["reference_model_choices.system_loss_percent"] == "14"
+        assert rows["reference_model_choices.use_terrain_horizon"] is True
+        assert rows["included_modules[0].quantity"] == "20"
+
+    # Only two operating hours are replayed. The retained annual source is
+    # read as supplied; no weather/PV model or annual physics is rerun here.
+    source_ids: dict[str, str] = {}
+    for role, power in (("gross_load", 2), ("aux_ac", 0)):
+        source_ids[role] = (
+            ProfileImport(assets)
+            .csv(
+                owner,
+                roof.id,
+                f"time,power\n2020-01-01T00:00:00Z,{power}\n2020-01-01T01:00:00Z,{power}\n".encode(),
+                CsvMapping(
+                    "time",
+                    "power",
+                    mapping_role(role),
+                    "interval_average_kw",
+                    "start",
+                    "UTC",
+                    "synthetic",
+                    3600,
+                    ",",
+                    ".",
+                ),
+                PROVENANCE,
+                key=role,
+            )
+            .id
+        )
+    battery = assets.add(
+        owner,
+        roof.id,
+        encode(BATTERY),
+        "application/json",
+        "battery_parameters_v1",
+        {"retention": "permanent", "provenance": PROVENANCE},
+        key="battery",
+    )
+    values = json_object(roof.inputs)
+    values["profile_selections"] = choices
+    values["energy_replay"] = {
+        "schema_version": 1,
+        "gross_load_asset_id": source_ids["gross_load"],
+        "critical_load_asset_id": None,
+        "pv_available_asset_id": asset.id,
+        "aux_ac_asset_id": source_ids["aux_ac"],
+        "battery_parameters_asset_id": battery.id,
+        "initial_inventory": {
+            "pv_kwh": 0,
+            "grid_kwh": 0,
+            "initial_unknown_kwh": 0,
+            "basis": "synthetic_fixture",
+            "source_note": "Synthetic empty starting storage",
+        },
+        "schedule": [
+            {
+                "start_utc": "2020-01-01T00:00:00Z",
+                "end_utc": "2020-01-01T02:00:00Z",
+                "mode": "connected",
+                "reserve_kwh": 0,
+                "import_cap_kw": None,
+                "export_cap_kw": 0,
+                "pv_enabled": True,
+                "allow_grid_charge": False,
+            }
+        ],
+        "controller": "self_consumption_with_reserve_v1",
+        "terminal_min_kwh": 0,
+    }
+    project = workspace.revise(owner, roof.id, 1, values, key="adopt-ac")
+    energy_kernel = EnergyKernel(
+        workspace, TOLERANCE, max_intervals=4, products=products
+    )
+    energy_run = EnergyService(workspace, energy_kernel, max_attempts=1).evaluate(
+        owner, project.id, project.revision, key="energy"
+    )
+    energy_worker = Worker(
+        jobs,
+        "energy-reference",
+        {"evaluate": energy_kernel},
+        lease_seconds=30,
+        heartbeat_seconds=1,
+        retry_seconds=1,
+    )
+    assert energy_worker.run_once()
+    assert workspace.run(owner, energy_run.id).state == "succeeded"
+    options = ReportOptions(
+        locale="en",
+        energy_run_id=energy_run.id,
+        pv_run_id=None,
+        equipment_run_id=None,
+        logo=None,
+    )
+    reports = ReportService(
+        workspace, ReportKernel(workspace, products), max_attempts=1
+    )
+    report_run = reports.evaluate(
+        owner, project.id, project.revision, options, key="report"
+    )
+    pinned_source = json_object(report_run.manifest["context"])["assets"][
+        "report.source"
+    ]
+    frozen = workspace.blobs.object(pinned_source)
+    reference = json_object(frozen)["pvgis_roof_ac_references"][0]
+    assert reference["parameters"] == values["pvgis_reference"]
+    assert reference["used_by"] == [
+        {"run_id": energy_run.id, "revision": 2, "binding": "pv_available_ac"}
+    ]
+    components = json_object(frozen)["pv_components"]
+    assert components["status"] == "available"
+    assert sum(c["quantity"] for c in components["components"]) == 20
+    assert (
+        components["components"][0]["model"]
+        == values["geometry"]["module_specs"][0]["model"]
+    )
+    for locale, title, mounting in (
+        ("en", "PVGIS roof AC reference", "Free-standing (free)"),
+        ("de", "PVGIS-Referenz der AC-PV-Erzeugung", "Freistehend (free)"),
+    ):
+        model = build_report({**frozen, "locale": locale})
+        section = next(s for s in model.sections if s.id == "pvgis-roof-reference-0")
+        assert section.title == title
+        displayed = {r.value for r in section.rows}
+        assert {"2020", "PVGIS-ERA5", "crystSi", "14 %", mounting}.issubset(displayed)
+        assert all(s.id != "pv" for s in model.sections)
+        assert "source_note" not in values["pvgis_reference"]
+        assert all(
+            r.label != text("pvgis_reference_note", locale)
+            for s in model.sections
+            if s.id == "pvgis-roof-reference-0"
+            for r in s.rows
+        )
+    changed = copy.deepcopy(values)
+    changed["pvgis_reference"]["source_note"] = "Later project assumption"
+    project = workspace.revise(owner, project.id, 2, changed, key="change-assumption")
+    with pytest.raises(ReportInputsChanged):
+        report_sources(workspace, products, owner, project, options)
+    # Already admitted reports use their frozen assumption and original module
+    # proof even if the current editable project has moved on.
+    report_worker = Worker(
+        jobs,
+        "report-reference",
+        {"evaluate": reports.kernel},
+        lease_seconds=30,
+        heartbeat_seconds=1,
+        retry_seconds=1,
+    )
+    assert report_worker.run_once()
+    completed = workspace.run(owner, report_run.id)
+    assert completed.state == "succeeded", completed.error
+    assert workspace.blobs.object(pinned_source) == frozen
+    pdf_asset = json_object(completed.result)["prepared_asset"]
+    reader = PdfReader(io.BytesIO(workspace.blobs.read(pdf_asset["content_sha256"])))
+    written = "\n".join(page.extract_text() for page in reader.pages)
+    assert "PVGIS roof AC reference" in written
+    assert "Later project assumption" not in written
+
+    # Reuse the completed two-hour result: changing a source note and an array
+    # name changes its source identity without changing any numerical input.
+    # The candidate original bytes/HTTP receipts are the retained first ones.
+    candidate_values = copy.deepcopy(changed)
+    candidate_values["geometry"]["arrays"][0]["name"] = "Candidate roof name"
+    candidate_values["pvgis_reference"]["source_note"] = "Candidate frozen assumption"
+    basis = json_object(asset.metadata["woo_module_inputs"])
+    plan = reference_plan(
+        candidate_values, workspace.blobs.put_object(basis), reference_limits(), 20_000
+    )
+    original = workspace.blobs.object(asset.content_sha256)
+    captures = [
+        ReferenceCapture(
+            workspace.blobs.read(a["original_sha256"]),
+            PvgisCapture.read(workspace.blobs.object(a["capture_sha256"])),
+        )
+        for a in json_object(original)["arrays"]
+    ]
+    publication, _ = prepare_reference_asset(
+        workspace.blobs, project.id, 4, candidate_values, basis, plan, captures
+    )
+    candidate_asset = assets.add(
+        owner,
+        project.id,
+        workspace.blobs.read(publication.content_sha256),
+        publication.media_type,
+        publication.purpose,
+        workspace.blobs.object(publication.metadata_sha256),
+        key="candidate-reference",
+    )
+    candidate_values["profile_selections"]["selected"]["pv_available_ac"] = (
+        candidate_asset.id
+    )
+    candidate_values["energy_replay"]["pv_available_asset_id"] = candidate_asset.id
+    project = workspace.revise(
+        owner,
+        project.id,
+        project.revision,
+        candidate_values,
+        key="candidate-reference-inputs",
+    )
+    candidate_context = energy_kernel.context(owner, project.id, project.inputs)
+    candidate_run = workspace.evaluate(
+        owner,
+        project.id,
+        project.revision,
+        candidate_context,
+        key="candidate-result",
+        max_attempts=1,
+    )
+    candidate_result = copy.deepcopy(
+        json_object(workspace.run(owner, energy_run.id).result)
+    )
+    candidate_result.update(
+        revision=project.revision,
+        input_sha256=project.input_sha256,
+        manifest_sha256=candidate_run.manifest_sha256,
+        pinned_assets=candidate_context.assets,
+    )
+    lease = jobs.claim("comparison-fixture", kinds=("evaluate",), lease_seconds=30)
+    assert lease is not None
+    jobs.complete(lease, candidate_result)
+    candidate_reference = replace(
+        workspace.run(owner, candidate_run.id),
+        result={
+            **json_object(workspace.run(owner, pv_run.id).result),
+            "profile_summary": candidate_asset.metadata["interpretation"],
+            "prepared_asset": {
+                "id": candidate_asset.id,
+                "project_id": project.id,
+                "purpose": candidate_asset.purpose,
+                "content_sha256": candidate_asset.content_sha256,
+                "metadata_sha256": candidate_asset.metadata_sha256,
+                "metadata": candidate_asset.metadata,
+            },
+        },
+    )
+    for locale in ("en", "de"):
+        private_projection = _result_rows(workspace, candidate_reference, locale)
+        assert "Candidate frozen assumption" not in str(private_projection)
+        assert "PVGIS-ERA5" in str(private_projection)
+    current_values = copy.deepcopy(candidate_values)
+    current_values["pvgis_reference"]["source_note"] = (
+        "Current unsimulated third assumption"
+    )
+    project = workspace.revise(
+        owner, project.id, project.revision, current_values, key="third-assumption"
+    )
+    comparison_source = report_sources(
+        workspace,
+        products,
+        owner,
+        project,
+        ReportOptions(
+            locale="en",
+            energy_run_id=None,
+            pv_run_id=None,
+            equipment_run_id=None,
+            logo=None,
+            comparison=ComparisonSelection(
+                baseline_run_id=energy_run.id, candidate_run_id=candidate_run.id
+            ),
+        ),
+    )
+    references = json_object(comparison_source)["pvgis_roof_ac_references"]
+    assert len(references) == 2
+    assert [r["parameters"].get("source_note") for r in references] == [
+        None,
+        "Candidate frozen assumption",
+    ]
+    assert [r["used_by"][0]["comparison_role"] for r in references] == [
+        "baseline",
+        "candidate",
+    ]
+    assert [r["used_by"][0]["run_id"] for r in references] == [
+        energy_run.id,
+        candidate_run.id,
+    ]
+    assert references[0]["geometry_sha256"] != references[1]["geometry_sha256"]
+    assert all(
+        sum(c["quantity"] for c in r["pv_components"]["components"]) == 20
+        for r in references
+    )
+    assert comparison_source["pv_components"] is None  # Alternatives are never summed.
+    for locale in ("en", "de"):
+        compared = build_report({**comparison_source, "locale": locale})
+        reference_sections = [
+            s for s in compared.sections if s.id.startswith("pvgis-roof-reference-")
+        ]
+        assert len(reference_sections) == 2
+        assert any(
+            r.value == "Candidate frozen assumption"
+            for s in reference_sections
+            for r in s.rows
+        )
+        assert all(
+            s.table is not None and s.table.rows[0][0] == "20"
+            for s in reference_sections
+        )
+        assert (
+            "Current unsimulated third assumption"
+            not in encode(compared.model_dump(mode="json")).decode()
+        )
+        assert any(s.id == "comparison-values" for s in compared.sections)
+
+
 def test_absent_device_inputs_keep_legacy_report_source_shape(
     workspace: Workspace,
     owner: Actor,
@@ -642,6 +1065,7 @@ def test_absent_device_inputs_keep_legacy_report_source_shape(
     )
     assert "equipment_condition_inputs" not in source
     assert "certificate_context" not in source
+    assert "pvgis_roof_ac_references" not in source
     assert "inspect_certificate_declarations" not in source
     assert "condition_review" not in json_object(source["certificates"])
     assert len(certificate_sections(json_object(source["certificates"]), "en")) == 1
@@ -659,7 +1083,16 @@ def test_report_subset_omits_unrelated_unprepared_device_entries(
     setup = values.pop("equipment_selection")
     setup.pop("product_revisions")
     values["equipment_setup"] = setup
-    project = workspace.create(owner, "Comparison only", values, key="subset")
+    # Reuse valid two-hour profile inputs; no energy calculation is needed.
+    project = create_scenario(workspace, owner)
+    project = workspace.revise(
+        owner,
+        project.id,
+        project.revision,
+        {**project.inputs, **values},
+        key="subset",
+    )
+    scenario = EnergyInputs.read(project.inputs["energy_replay"])
     module = __import__(
         "linker_engine.planning.report_sources", fromlist=["report_sources"]
     )
@@ -670,7 +1103,7 @@ def test_report_subset_omits_unrelated_unprepared_device_entries(
         lambda _workspace, _actor, _project, identity: SimpleNamespace(
             run=SimpleNamespace(
                 id=identity,
-                revision=1,
+                revision=project.revision,
                 manifest_sha256="c" * 64,
                 result_sha256="d" * 64,
             ),
@@ -680,6 +1113,8 @@ def test_report_subset_omits_unrelated_unprepared_device_entries(
                 "runtime_sha256": context.code_sha256,
             },
             pinned={},
+            inputs=project.inputs,
+            scenario=scenario,
         ),
     )
     source = report_sources(

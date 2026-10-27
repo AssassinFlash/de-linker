@@ -17,6 +17,8 @@ from .product_sources import ProductSources
 from .pv_parameters import PvGenerationParameters
 from .pv_profile_artifacts import model_dependencies
 from .pv_profile_preparation import PROFILE_PURPOSE
+from .pvgis_reference_profile import PROFILE_PURPOSE as ROOF_AC_PURPOSE
+from .pvgis_reference_profile import reference_bundle
 from .storage import Blobs
 
 
@@ -33,6 +35,23 @@ def pv_components(
     *,
     converter_id: str | None = None,
 ) -> Object:
+    if metadata.get("profile_type") == ROOF_AC_PURPOSE:
+        if converter_id is not None:
+            raise VersionUnavailable("an AC reference has no DC converter group")
+        bundle = reference_bundle(blobs, raw_sha256, metadata)
+        return _components(
+            read_geometry(bundle["geometry"]),
+            _object(bundle["woo_module_inputs"]),
+            blobs,
+            metadata.get("derived_from_revision"),
+            selected=None,
+            scope="pvgis_roof_ac_reference",
+            converter_id=None,
+            dependencies={
+                **_object(metadata.get("dependencies")),
+                "reference_manifest": raw_sha256,
+            },
+        )
     if metadata.get("profile_type") != PROFILE_PURPOSE:
         return {"status": "unavailable", "reason": "no_saved_layout"}
     proof = metadata.get("woo_module_inputs")

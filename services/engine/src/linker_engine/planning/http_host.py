@@ -54,6 +54,9 @@ def configured_private_app(
             limits=settings.http_limits(),
             pv=settings.pv_service(workspace, products=products),
             weather=settings.weather_service(workspace),
+            pvgis_reference=settings.pvgis_reference_service(
+                workspace, products=products
+            ),
             product_provider=provider,
             equipment=settings.equipment_service(workspace, products=products),
             reports=settings.report_service(workspace, products=products),

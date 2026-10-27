@@ -546,6 +546,27 @@ def test_native_dc_plant_projects_owned_pv_groups_and_keeps_report_stages(
                 "selected": {**profiles, "pv_reference": pv.id},
             },
         }
+        from linker_engine.planning.dc_plant_inputs import DcPlantEnergyInputs
+        from linker_engine.planning.errors import EvidenceMissing
+        from linker_engine.planning.plant_energy_kernel import (
+            check_plant_profile_boundary,
+        )
+
+        frozen_scenario = DcPlantEnergyInputs.read(json_object(scenario))
+        for purpose in (
+            "pvlib_reference_profile_v1",
+            "pvgis_roof_ac_reference_profile_v1",
+        ):
+            with pytest.raises(EvidenceMissing, match="plant_dc_duplicate_pv_source"):
+                check_plant_profile_boundary(
+                    frozen_scenario, "pv_available_ac", {"profile_type": purpose}
+                )
+        # A distinct external AC profile remains admissible alongside roof DC.
+        check_plant_profile_boundary(
+            frozen_scenario,
+            "pv_available_ac",
+            {"profile_type": "pvgis_system_profile_v1"},
+        )
         check_profile_selections(assets, owner, project.id, inputs)
         project = workspace.revise(
             owner, project.id, project.revision, inputs, key="dc-plant-inputs"

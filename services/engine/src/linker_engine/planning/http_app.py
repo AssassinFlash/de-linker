@@ -89,6 +89,7 @@ from .product_sources import ProductProvider, ProductSources
 from .profile_preview import ProfilePreview
 from .profile_selections import check_profile_selections
 from .pv_preparation import PvPreparationService, check_pv_preparation
+from .pvgis_reference_service import PvgisRoofReferenceService
 from .records import Actor
 from .report_kernel import ReportService
 from .service_boundary import ServiceBoundary, verified_actor, verified_previous_guest
@@ -129,6 +130,7 @@ def create_private_app(
     equipment: EquipmentService | None = None,
     equipment_search: EquipmentService | None = None,
     reports: ReportService | None = None,
+    pvgis_reference: PvgisRoofReferenceService | None = None,
 ) -> ASGIApp:
     if energy.workspace is not workspace or energy.kernel.workspace is not workspace:
         raise InvalidInput("HTTP and energy service must share the same authority")
@@ -160,8 +162,16 @@ def create_private_app(
         or product_provider is None
     ):
         raise InvalidInput("reports require shared project and Woo authority")
+    if pvgis_reference is not None and (
+        pvgis_reference.workspace is not workspace
+        or pvgis_reference.kernel.workspace is not workspace
+        or product_provider is None
+    ):
+        raise InvalidInput(
+            "PVGIS roof reference requires shared project and Woo authority"
+        )
     registry = service_registry(
-        energy, pv, weather, equipment, equipment_search, reports
+        energy, pv, weather, equipment, equipment_search, reports, pvgis_reference
     )
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
     assets = Assets(workspace)
@@ -284,6 +294,11 @@ def create_private_app(
                     else {}
                 ),
                 **({"report": reports.kernel.kind} if reports is not None else {}),
+                **(
+                    {"pvgis_roof_reference": pvgis_reference.kernel.kind}
+                    if pvgis_reference is not None
+                    else {}
+                ),
                 **(
                     {
                         "equipment_search": equipment_search.kernel.kind,
@@ -526,6 +541,20 @@ def create_private_app(
             raise VersionUnavailable("PV preparation is not configured")
         return run_view(
             pv.evaluate(actor, body.project_id, body.expected_revision, key=body.key)
+        )
+
+    @app.post("/runs/pvgis-reference")
+    def prepare_pvgis_reference(body: EnergyEvaluate, request: Request) -> Object:
+        actor = verified_actor(request.scope, write=True)
+        previous = previous_result(actor, "runs/pvgis-reference", body)
+        if previous is not None:
+            return previous
+        if pvgis_reference is None:
+            raise VersionUnavailable("PVGIS roof reference is not configured")
+        return run_view(
+            pvgis_reference.evaluate(
+                actor, body.project_id, body.expected_revision, key=body.key
+            )
         )
 
     @app.post("/runs/equipment")

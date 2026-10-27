@@ -23,6 +23,7 @@ from linker_engine.planning.installation_inputs import InstallationInputs
 from linker_engine.planning.plant_energy_inputs import PlantEnergyInputs
 from linker_engine.planning.plant_search_plan import PlantSearchPlan
 from linker_engine.planning.pv_parameters import PvGenerationParameters
+from linker_engine.planning.pvgis_reference_inputs import PvgisReferenceInputs
 from linker_engine.planning.report_inputs import ReportOptions
 from linker_engine.planning.weather_inputs import WeatherAcquisitionInputs
 
@@ -77,6 +78,7 @@ def documents() -> dict[str, str]:
             ("energy-inputs", EnergyInputs),
             ("pv-generation", PvGenerationParameters),
             ("weather-acquisition", WeatherAcquisitionInputs),
+            ("pvgis-roof-reference", PvgisReferenceInputs),
             ("planning-report", Report),
             ("planning-report-options", ReportOptions),
             ("installation", InstallationInputs),

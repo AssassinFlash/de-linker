@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import cast
 
-from .assets import Assets
+from .assets import Asset, Assets
 from .canonical import Json, Object
 from .certificate_evidence import certificate_documents
 from .dc_energy_kernel import DcEnergyKernel
@@ -28,6 +28,9 @@ from .plant_energy_kernel import PlantEnergyKernel
 from .product_sources import ProductSources
 from .profile_assets import profile_dependencies
 from .pv_preparation import PvReferenceKernel
+from .pvgis_reference_kernel import PvgisRoofReferenceKernel
+from .pvgis_reference_profile import PROFILE_PURPOSE as ROOF_AC_PURPOSE
+from .pvgis_reference_profile import prepared_reference_profile, reference_bundle
 from .records import Actor, Project, Run
 from .report_inputs import ReportOptions
 from .report_pv_components import pv_components, saved_roof_components
@@ -59,6 +62,43 @@ def report_sources(
     sources: list[Json] = []
     bases: dict[str, Json] = {}
     labels: list[str] = []
+    roof_references: dict[str, Object] = {}
+
+    def roof_reference(
+        asset: Asset, run: Run, binding: str, *, comparison_role: str | None = None
+    ) -> None:
+        # Read the retained output and its original proof, never a current
+        # product snapshot or a second provider/model calculation.
+        prepared_reference_profile(
+            workspace.blobs, asset.content_sha256, asset.metadata
+        )
+        bundle = reference_bundle(workspace.blobs, asset.content_sha256, asset.metadata)
+        reference = roof_references.setdefault(
+            asset.metadata_sha256,
+            {
+                "asset_id": asset.id,
+                "content_sha256": asset.content_sha256,
+                "metadata_sha256": asset.metadata_sha256,
+                "parameters": bundle["parameters"],
+                "profile_summary": asset.metadata["interpretation"],
+                "arrays": cast(Object, bundle["manifest"])["arrays"],
+                "geometry_sha256": asset.metadata["geometry_sha256"],
+                "woo_module_inputs": bundle["woo_module_inputs"],
+                "dependencies": asset.metadata["dependencies"],
+                "pv_components": pv_components(
+                    workspace.blobs, asset.content_sha256, asset.metadata
+                ),
+                "used_by": [],
+            },
+        )
+        cast(list[Json], reference["used_by"]).append(
+            {
+                "run_id": run.id,
+                "revision": run.revision,
+                "binding": binding,
+                **({"comparison_role": comparison_role} if comparison_role else {}),
+            }
+        )
 
     def provenance(metadata: Object) -> None:
         source = metadata.get("provenance")
@@ -271,6 +311,12 @@ def report_sources(
                 raise ReportInputsChanged(
                     "report energy source dependencies have changed"
                 )
+            if asset.purpose == ROOF_AC_PURPOSE:
+                products.check_profile(asset.metadata)
+                roof_reference(asset, run, role)
+                component_list = pv_components(
+                    workspace.blobs, asset.content_sha256, asset.metadata
+                )
         for name, sha in cast(Object, energy["pinned_assets"]).items():
             if name.endswith(".metadata") and isinstance(sha, str):
                 metadata = workspace.blobs.object(sha)
@@ -300,10 +346,17 @@ def report_sources(
 
     pv: Object | None = None
     if options.pv_run_id is not None:
+        selected_run = workspace.run(actor, options.pv_run_id)
+        roof_ac = (
+            selected_run.result is not None
+            and selected_run.result.get("kind") == PvgisRoofReferenceKernel.kind
+        )
         run = owned(
             options.pv_run_id,
-            PvReferenceKernel.kind,
-            ("geometry", "pv_generation", "pv_preparation", "weather_acquisition"),
+            PvgisRoofReferenceKernel.kind if roof_ac else PvReferenceKernel.kind,
+            ("geometry", "pvgis_reference")
+            if roof_ac
+            else ("geometry", "pv_generation", "pv_preparation", "weather_acquisition"),
         )
         pv = run.result
         assert pv is not None
@@ -318,10 +371,29 @@ def report_sources(
         for name, sha in cast(Object, pv["pinned_assets"]).items():
             if name.endswith(".metadata") and isinstance(sha, str):
                 provenance(workspace.blobs.object(sha))
-        bases["pv"] = workspace.blobs.put_object(products.pv_basis(project.inputs))
         # An explicitly selected complete PV result defines the report scope.
         # Without it, the energy profile's actual AC/DC group defines the list.
         prepared_pv = cast(Object, pv["prepared_asset"])
+        if roof_ac:
+            asset = Assets(workspace).get(actor, project.id, str(prepared_pv["id"]))
+            if (
+                asset.purpose != ROOF_AC_PURPOSE
+                or asset.content_sha256 != prepared_pv.get("content_sha256")
+                or asset.metadata_sha256 != prepared_pv.get("metadata_sha256")
+                or asset.metadata != prepared_pv.get("metadata")
+            ):
+                raise VersionUnavailable("the saved roof AC reference asset differs")
+            profile_dependencies(
+                asset, "pv_available_ac", project.inputs, workspace.blobs
+            )
+            products.check_profile(asset.metadata)
+            provenance(asset.metadata)
+            roof_reference(asset, run, "pv_available_ac")
+            bases["pv"] = workspace.blobs.put_object(
+                cast(Object, asset.metadata["woo_module_inputs"])
+            )
+        else:
+            bases["pv"] = workspace.blobs.put_object(products.pv_basis(project.inputs))
         component_list = pv_components(
             workspace.blobs,
             cast(str, prepared_pv["content_sha256"]),
@@ -365,6 +437,32 @@ def report_sources(
                         bases[f"energy.comparison.{index}.{name}"] = (
                             workspace.blobs.put_object(module_basis)
                         )
+            comparison_profiles = (
+                PlantEnergyKernel.profile_bindings(side.scenario)
+                if isinstance(side.scenario, (PlantEnergyInputs, DcPlantEnergyInputs))
+                else {
+                    role: (role, asset_id)
+                    for role, asset_id in side.scenario.profiles().items()
+                }
+            )
+            for role, (measurement, asset_id) in comparison_profiles.items():
+                asset = Assets(workspace).get(actor, project.id, asset_id)
+                if asset.purpose != ROOF_AC_PURPOSE:
+                    continue
+                # Comparisons retain each original side's roof and choices;
+                # the current editable project may describe a third scenario.
+                bindings = profile_dependencies(
+                    asset, measurement, side.inputs, workspace.blobs, binding=role
+                )
+                if any(side.pinned.get(name) != sha for name, sha in bindings.items()):
+                    raise VersionUnavailable("comparison PV source bindings differ")
+                products.check_profile(asset.metadata)
+                roof_reference(
+                    asset,
+                    side.run,
+                    role,
+                    comparison_role="baseline" if index == 0 else "candidate",
+                )
 
     installation: Object | None = None
     if options.include_installation:
@@ -454,6 +552,11 @@ def report_sources(
     if component_list is not None and component_list.get("status") == "available":
         for name, sha in cast(Object, component_list["dependencies"]).items():
             dependencies[f"pv_components.{name}"] = sha
+    for index, reference in enumerate(roof_references.values()):
+        dependencies[f"pvgis_reference.{index}.manifest"] = reference["content_sha256"]
+        dependencies[f"pvgis_reference.{index}.metadata"] = reference["metadata_sha256"]
+        for name, sha in cast(Object, reference["dependencies"]).items():
+            dependencies[f"pvgis_reference.{index}.{name}"] = sha
     condition_inputs: Object | None = None
     certificate_context: Object | None = None
     if assessment is not None and "equipment" in bases:
@@ -511,6 +614,11 @@ def report_sources(
         "energy_equipment": energy.get("equipment_binding") if energy else None,
         "pv_components": component_list,
         "pv": pv,
+        **(
+            {"pvgis_roof_ac_references": list(roof_references.values())}
+            if roof_references
+            else {}
+        ),
         "source_runs": sources,
         "woo_bases": bases,
         "historical_woo_bases": historical_bases,

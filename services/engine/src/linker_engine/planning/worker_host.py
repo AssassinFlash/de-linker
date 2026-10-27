@@ -84,6 +84,7 @@ def serve(
             settings.equipment_service(workspace),
             settings.equipment_search_service(workspace),
             settings.report_service(workspace),
+            settings.pvgis_reference_service(workspace),
         )
         if (registry.runtime.sha256, registry.execution_key()) != (
             expected_runtime,
@@ -201,6 +202,7 @@ def main(argv: list[str] | None = None) -> int:
                 settings.equipment_service(workspace),
                 settings.equipment_search_service(workspace),
                 settings.report_service(workspace),
+                settings.pvgis_reference_service(workspace),
             )
             print(
                 encode(

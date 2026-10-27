@@ -562,7 +562,7 @@ def build_report(source: Object) -> Report:
         )
 
     pv = source.get("pv")
-    if isinstance(pv, dict):
+    if isinstance(pv, dict) and pv.get("kind") != "prepare_pvgis_roof_ac_reference_v1":
         profile = cast(Object, pv["profile_summary"])
         sections.append(
             ReportSection(
@@ -576,6 +576,103 @@ def build_report(source: Object) -> Report:
                 ],
             )
         )
+    roof_references = source.get("pvgis_roof_ac_references")
+    if isinstance(roof_references, list):
+        for index, roof_reference in enumerate(cast(list[Object], roof_references)):
+            parameters = cast(Object, roof_reference["parameters"])
+            summary = cast(Object, roof_reference["profile_summary"])
+            reference_rows = [
+                row("pvgis_calendar_year", parameters["year"]),
+                row("pvgis_radiation_database", parameters["radiation_database"]),
+                row("pvgis_reference_technology", parameters["pv_technology"]),
+                row(
+                    "pvgis_mounting_type",
+                    text("pvgis_mounting_" + str(parameters["mounting_place"]), locale),
+                ),
+                row(
+                    "pvgis_system_loss",
+                    number(parameters["system_loss_percent"], locale, "%"),
+                ),
+                row(
+                    "pvgis_terrain_horizon",
+                    text(
+                        "pvgis_horizon_included"
+                        if parameters["use_terrain_horizon"]
+                        else "pvgis_horizon_omitted",
+                        locale,
+                    ),
+                ),
+                *(
+                    [row("pvgis_reference_note", parameters["source_note"])]
+                    if isinstance(parameters.get("source_note"), str)
+                    and str(parameters["source_note"]).strip()
+                    else []
+                ),
+                row("pvgis_ac_energy", number(summary["energy_kwh"], locale, "kWh")),
+                row("period", f"{summary['start_utc']} – {summary['end_utc']}"),
+                row("intervals", number(summary["interval_count"], locale)),
+            ]
+            reference_uses = cast(list[Object], roof_reference["used_by"])
+            reference_rows.extend(
+                row(
+                    "comparison_" + str(use["comparison_role"])
+                    if "comparison_role" in use
+                    else "pvgis_source_run",
+                    f"{use['run_id']} / {use['revision']}",
+                )
+                for use in reference_uses
+            )
+            for array in cast(list[Object], roof_reference["arrays"]):
+                native_source = cast(Object, array["source_document"])
+                capture = cast(Object, native_source["capture"])
+                reference_rows.append(
+                    row(
+                        "pvgis_array_source",
+                        array["id"],
+                        cast(str, capture["requested_url"]),
+                    )
+                )
+            reference_table: ReportTable | None = None
+            reference_paragraphs = [text("pvgis_roof_reference_scope", locale)]
+            if any("comparison_role" in use for use in reference_uses):
+                reference_parts = cast(Object, roof_reference["pv_components"])
+                components = cast(list[Object], reference_parts["components"])
+                reference_paragraphs.append(text("pv_components_scope", locale))
+                reference_rows.append(
+                    row(
+                        "pv_components_capacity",
+                        number(reference_parts["nameplate_kwp"], locale, "kWp"),
+                    )
+                )
+                for component in components:
+                    citation = cast(Object, component["source"])
+                    reference_rows.append(
+                        row("source", component["model"], cast(str, citation["url"]))
+                    )
+                reference_table = ReportTable(
+                    columns=[
+                        text(key, locale)
+                        for key in ("quantity", "model", "pv_components_module_power")
+                    ],
+                    rows=[
+                        [
+                            number(component["quantity"], locale),
+                            str(component["model"]),
+                            number(component["stc_power_w"], locale, "W"),
+                        ]
+                        for component in components
+                    ],
+                    column_weights=[1, 3, 2],
+                )
+            sections.append(
+                ReportSection(
+                    id=f"pvgis-roof-reference-{index}",
+                    title=text("pvgis_roof_reference", locale),
+                    paragraphs=reference_paragraphs,
+                    rows=reference_rows,
+                    table=reference_table,
+                )
+            )
     energy = source.get("energy")
     if isinstance(energy, dict):
         metrics = cast(Object, energy["metrics"])

@@ -19,7 +19,11 @@ from .errors import EvidenceMissing, InvalidInput, NumericalFailure, VersionUnav
 from .frozen_profiles import frozen_profile
 from .frozen_run import FrozenEnergyExecution
 from .plant_assessment import assess_plant, plant_products
-from .plant_energy_kernel import PlantEnergyKernel, PlantScenario
+from .plant_energy_kernel import (
+    PlantEnergyKernel,
+    PlantScenario,
+    check_plant_profile_boundary,
+)
 from .plant_pv_profiles import PlantPvProfiles, project
 from .pv_profile_artifacts import model_dependencies
 from .worker import Control
@@ -153,14 +157,7 @@ class DcPlantEnergyKernel(PlantEnergyKernel):
                 execution.dependency(role + ".metadata")
             )
             self.products.check_profile(metadata)
-            if (
-                role == "pv_available_ac"
-                and scenario.pv_reference_asset_id is not None
-                and metadata.get("profile_type") == "pvlib_reference_profile_v1"
-            ):
-                raise InvalidInput(
-                    "assign the roof reference's AC groups explicitly; its total AC output would duplicate the DC groups"
-                )
+            check_plant_profile_boundary(scenario, role, metadata)
             profiles[role] = frozen_profile(
                 self.workspace.blobs,
                 execution.dependency(role + ".raw"),

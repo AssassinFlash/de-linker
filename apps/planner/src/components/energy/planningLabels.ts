@@ -5,6 +5,7 @@ import type { RunState } from "../../data/planningProtocol.ts";
 import { PV_TASK, WEATHER_TASK } from "../../data/readPreparationResult.ts";
 import { SEARCH_TASK } from "../../data/equipmentSearch.ts";
 import { EQUIPMENT_TASK } from "../../data/readEquipmentResult.ts";
+import { PVGIS_REFERENCE_TASK } from "../../domain/pvgisReference.ts";
 
 export function taskLabel(kind: string | null | undefined): string {
 	if (kind === REPORT_TASK) return __("Planning report", "linker-tools");
@@ -13,11 +14,14 @@ export function taskLabel(kind: string | null | undefined): string {
 	if (kind === WEATHER_TASK)
 		return __("Weather data preparation", "linker-tools");
 	if (kind === PV_TASK) return __("PV generation profile", "linker-tools");
+	if (kind === PVGIS_REFERENCE_TASK)
+		return __("PVGIS annual AC reference", "linker-tools");
 	if (isEnergyTask(kind)) return __("Energy calculation", "linker-tools");
 	return __("Saved task", "linker-tools");
 }
 export function runStateLabel(state: RunState, kind?: string | null): string {
-	const preparing = kind === WEATHER_TASK || kind === PV_TASK;
+	const preparing =
+		kind === WEATHER_TASK || kind === PV_TASK || kind === PVGIS_REFERENCE_TASK;
 	switch (state) {
 		case "queued":
 			return __("Queued", "linker-tools");

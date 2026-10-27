@@ -37,6 +37,7 @@ class ProfilePreview:
             "csv_profile_v1": None,
             "pvgis_system_profile_v1": "pvgis_system_profile_v1",
             PURPOSE: PURPOSE,
+            "pvgis_roof_ac_reference_profile_v1": "pvgis_roof_ac_reference_profile_v1",
         }
         if (
             asset.purpose not in expected_type

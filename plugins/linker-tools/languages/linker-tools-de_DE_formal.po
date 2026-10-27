@@ -12085,3 +12085,159 @@ msgstr "Die Antwort der offiziellen Wetterquelle hat die Prüfung nicht bestande
 #: ../../apps/planner/src/components/energy/WeatherFailureNotice.tsx:38 build/planner/assets/planner.js:1
 msgid "Source value"
 msgstr "Wert in den Quelldaten"
+
+#: ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:1299 ../../apps/planner/src/components/energy/PvgisReferenceSetup.tsx:117 ../../apps/planner/src/components/energy/planningLabels.ts:18 build/planner/assets/planner.js
+msgid "PVGIS annual AC reference"
+msgstr "PVGIS-Referenz für den AC-Jahresertrag"
+
+#: ../../apps/planner/src/components/energy/PvgisReferenceSetup.tsx:120 build/planner/assets/planner.js
+msgid "Estimate AC generation for a selected calendar year with JRC PVGIS 5.3. This method uses PV reference technology and a system loss setting; it does not model device-specific inverter behavior, nearby obstacles or shading between module rows. Electrical design and grid acceptance require separate assessment."
+msgstr "Schätzen Sie mit JRC PVGIS 5.3 die AC-Erzeugung für ein ausgewähltes Kalenderjahr. Diese Methode verwendet ein PV-Technologiemodell und eine Einstellung für die Systemverluste. Das Verhalten eines bestimmten Wechselrichters, nahe Hindernisse und die Verschattung zwischen Modulreihen werden nicht abgebildet. Elektrische Auslegung und Freigabe durch den Netzbetreiber müssen gesondert geprüft werden."
+
+#: ../../apps/planner/src/components/energy/PvgisReferenceSetup.tsx:126 build/planner/assets/planner.js
+msgid "The calculation sends the roof location, array power and orientation, and the model choices below to the European Commission's PVGIS service. Your project title and private note are not sent."
+msgstr "Für die Berechnung werden der Dachstandort, die Leistung und Ausrichtung der Modulfelder sowie die unten gewählten Modellangaben an den PVGIS-Dienst der Europäischen Kommission übermittelt. Ihr Projekttitel und Ihre private Notiz werden nicht übermittelt."
+
+#: ../../apps/planner/src/components/energy/PvgisReferenceSetup.tsx:139 build/planner/assets/planner.js
+msgid "This calculation method is unavailable in the current service version. Saved inputs and earlier results remain available."
+msgstr "Diese Berechnungsmethode ist in der aktuellen Dienstversion nicht verfügbar. Gespeicherte Eingaben und frühere Ergebnisse bleiben verfügbar."
+
+#: ../../apps/planner/src/components/energy/PvgisReferenceSetup.tsx:147 build/planner/assets/planner.js
+msgid "These reference settings cannot be edited in this version. Saved inputs and previous calculations remain available."
+msgstr "Diese Referenzeinstellungen können in dieser Version nicht bearbeitet werden. Gespeicherte Eingaben und frühere Berechnungen bleiben verfügbar."
+
+#: ../../apps/planner/src/components/energy/PvgisReferenceSetup.tsx:168 build/planner/assets/planner.js
+msgid "Choose a database"
+msgstr "Datenbank auswählen"
+
+#: ../../apps/planner/src/components/energy/PvgisReferenceResult.tsx:205 ../../apps/planner/src/components/energy/PvgisReferenceSetup.tsx:179 build/planner/assets/planner.js
+msgid "Calendar year"
+msgstr "Kalenderjahr"
+
+#: ../../apps/planner/src/components/energy/PvgisReferenceResult.tsx:209 ../../apps/planner/src/components/energy/PvgisReferenceSetup.tsx:190 build/planner/assets/planner.js
+msgid "PV reference technology"
+msgstr "PV-Technologie im Referenzmodell"
+
+#: ../../apps/planner/src/components/energy/PvgisReferenceSetup.tsx:202 build/planner/assets/planner.js
+msgid "Choose a reference technology"
+msgstr "Referenztechnologie auswählen"
+
+#: ../../apps/planner/src/components/energy/PvgisReferenceResult.tsx:211 ../../apps/planner/src/components/energy/PvgisReferenceSetup.tsx:212 build/planner/assets/planner.js
+msgid "PVGIS mounting type"
+msgstr "PVGIS-Montageart"
+
+#: ../../apps/planner/src/components/energy/PvgisReferenceSetup.tsx:225 build/planner/assets/planner.js
+msgid "Choose a mounting type"
+msgstr "Montageart auswählen"
+
+#: ../../apps/planner/src/components/energy/PvgisReferenceResult.tsx:214 ../../apps/planner/src/components/energy/PvgisReferenceSetup.tsx:228 build/planner/assets/planner.js
+msgid "Free-standing (free)"
+msgstr "Freistehend (free)"
+
+#: ../../apps/planner/src/components/energy/PvgisReferenceResult.tsx:215 ../../apps/planner/src/components/energy/PvgisReferenceSetup.tsx:231 build/planner/assets/planner.js
+msgid "Building-integrated (building)"
+msgstr "Gebäudeintegriert (building)"
+
+#: ../../apps/planner/src/components/energy/PvgisReferenceResult.tsx:217 ../../apps/planner/src/components/energy/PvgisReferenceSetup.tsx:237 build/planner/assets/planner.js
+msgid "PVGIS system loss setting"
+msgstr "Systemverluste im PVGIS-Modell"
+
+#: ../../apps/planner/src/components/energy/PvgisReferenceSetup.tsx:266 build/planner/assets/planner.js
+msgid "Choose a horizon setting"
+msgstr "Horizonteinstellung auswählen"
+
+#: ../../apps/planner/src/components/energy/PvgisReferenceResult.tsx:237 ../../apps/planner/src/components/energy/PvgisReferenceSetup.tsx:278 build/planner/assets/planner.js
+msgid "Private assumption note (optional)"
+msgstr "Private Notiz zu den Annahmen (optional)"
+
+#: ../../apps/planner/src/components/energy/PvgisRoofFacts.tsx:18 build/planner/assets/planner.js
+msgid "Inputs from the roof design"
+msgstr "Eingaben aus dem Dachentwurf"
+
+#: ../../apps/planner/src/components/energy/PvgisReferenceResult.tsx:227 ../../apps/planner/src/components/energy/PvgisRoofFacts.tsx:22 build/planner/assets/planner.js
+msgid "Module nameplate power"
+msgstr "Modul-Nennleistung"
+
+#: ../../apps/planner/src/components/energy/PvgisRoofFacts.tsx:26 build/planner/assets/planner.js
+msgid "Location"
+msgstr "Standort"
+
+#: ../../apps/planner/src/components/energy/PvgisReferenceSetup.tsx:301 build/planner/assets/planner.js
+msgid "Array power and orientation are taken from the modules included in your roof design. You can change them in the roof design."
+msgstr "Die Leistung und Ausrichtung der Modulfelder werden aus den im Dachentwurf berücksichtigten Modulen übernommen. Sie können diese Angaben im Dachentwurf ändern."
+
+#: ../../apps/planner/src/components/energy/PvgisReferenceSetup.tsx:309 build/planner/assets/planner.js
+msgid "Choose modules and add a location and north reference in the roof design before calculating."
+msgstr "Wählen Sie im Dachentwurf Module aus und ergänzen Sie Standort und Nordausrichtung, bevor Sie die Berechnung starten."
+
+#: ../../apps/planner/src/components/energy/PvgisReferenceSetup.tsx:335 build/planner/assets/planner.js
+msgid "Save the roof and reference choices before starting this calculation."
+msgstr "Speichern Sie den Dachentwurf und die Referenzeinstellungen, bevor Sie diese Berechnung starten."
+
+#: ../../apps/planner/src/components/energy/PvgisReferenceSetup.tsx:362 build/planner/assets/planner.js
+msgid "Calculate annual AC reference"
+msgstr "AC-Jahresreferenz berechnen"
+
+#: ../../apps/planner/src/components/energy/PvgisReferenceResult.tsx:162 build/planner/assets/planner.js
+msgid "Modelled annual AC generation"
+msgstr "Modellierte jährliche AC-Erzeugung"
+
+#: ../../apps/planner/src/components/energy/PvgisReferenceResult.tsx:164 build/planner/assets/planner.js
+msgid "Calculation period (UTC)"
+msgstr "Berechnungszeitraum (UTC)"
+
+#: ../../apps/planner/src/components/energy/PvgisReferenceResult.tsx:171 build/planner/assets/planner.js
+msgid "This PVGIS reference includes its selected system loss setting. Device-specific inverter behavior, nearby obstacles, shading between module rows, electrical design and grid acceptance remain outside this result."
+msgstr "Diese PVGIS-Referenz berücksichtigt die gewählte Einstellung für Systemverluste. Das Verhalten eines bestimmten Wechselrichters, nahe Hindernisse, die Verschattung zwischen Modulreihen, die elektrische Auslegung und die Freigabe durch den Netzbetreiber werden mit diesem Ergebnis nicht geprüft."
+
+#: ../../apps/planner/src/components/energy/PvgisReferenceResult.tsx:223 build/planner/assets/planner.js
+msgid "Omitted"
+msgstr "Nicht berücksichtigt"
+
+#: ../../apps/planner/src/components/energy/PvgisReferenceResult.tsx:276 build/planner/assets/planner.js
+msgid "Use this result only as an AC generation profile. It cannot supply the DC or detailed PV model role. Selecting it updates the open draft; Save project records the selection."
+msgstr "Verwenden Sie dieses Ergebnis ausschließlich als Profil der AC-Erzeugung. Es kann nicht als Eingabe für die DC-Berechnung oder das detaillierte PV-Modell dienen. Die Auswahl ändert den offenen Entwurf; mit „Projekt speichern“ wird sie im Projekt gespeichert."
+
+#: ../../apps/planner/src/components/energy/PvgisReferenceResult.tsx:320 build/planner/assets/planner.js
+msgid "Use as AC profile"
+msgstr "Als AC-Erzeugungsprofil verwenden"
+
+#: ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:1285 build/planner/assets/planner.js
+msgid "PV generation method"
+msgstr "Methode zur PV-Ertragsberechnung"
+
+#: ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:1292 build/planner/assets/planner.js
+msgid "Weather-based PV reference"
+msgstr "Wetterbasierte PV-Referenz"
+
+#: ../../apps/planner/src/components/energy/PvgisReferenceResult.tsx:177 ../../apps/planner/src/components/energy/PvgisReferenceSetup.tsx:132 build/planner/assets/planner.js
+msgid "ERA5 uses hourly averages. In this reference, each SARAH3 sample is treated as representative of its containing UTC hour."
+msgstr "ERA5 verwendet Stundenmittelwerte. In dieser Referenz wird jeder SARAH3-Wert als repräsentativ für die jeweils zugehörige UTC-Stunde behandelt."
+
+#: ../../apps/planner/src/components/energy/PvgisRoofFacts.tsx:37 build/planner/assets/planner.js
+msgid "Array"
+msgstr "Modulfeld"
+
+#: ../../apps/planner/src/components/energy/PvgisRoofFacts.tsx:38 build/planner/assets/planner.js
+msgid "Module model"
+msgstr "Modulmodell"
+
+#: ../../apps/planner/src/components/energy/PvgisRoofFacts.tsx:40 build/planner/assets/planner.js
+msgid "Nameplate power (kWp)"
+msgstr "Nennleistung (kWp)"
+
+#: ../../apps/planner/src/components/energy/PvgisRoofFacts.tsx:41 build/planner/assets/planner.js
+msgid "Tilt (°)"
+msgstr "Neigung (°)"
+
+#: ../../apps/planner/src/components/energy/PvgisRoofFacts.tsx:42 build/planner/assets/planner.js
+msgid "Azimuth from north, clockwise (°)"
+msgstr "Azimut ab Norden im Uhrzeigersinn (°)"
+
+#: ../../apps/planner/src/components/energy/PvgisReferenceResult.tsx:255 build/planner/assets/planner.js
+msgid "This whole-roof reference can be used only for an AC scenario for this roof. Change the topology or explicitly remove its DC PV input before selecting it. Your existing selections remain unchanged."
+msgstr "Diese Referenz für das gesamte Dach kann nur in einem AC-Szenario für dieses Dach verwendet werden. Ändern Sie die Topologie oder entfernen Sie ausdrücklich den DC-PV-Eingang, bevor Sie das Profil auswählen. Ihre bisherigen Auswahlen bleiben unverändert."
+
+#: ../../apps/planner/src/components/energy/PvgisRoofFacts.tsx:114 build/planner/assets/planner.js
+msgid "Page"
+msgstr "Seite"
