@@ -51,7 +51,7 @@ const pvModelMethods = new Set([
 	"https://pvlib-python.readthedocs.io/en/v0.16.1/reference/generated/pvlib.ivtools.sdm.fit_desoto.html",
 	"https://pvlib-python.readthedocs.io/en/v0.16.1/reference/generated/pvlib.pvsystem.calcparams_desoto.html",
 ]);
-// The managed source uses the complete fixed request identity from PvgisRequest.
+// Managed sources use the fixed identities from PvgisRequest/PvgisTmyRequest.
 // Numerical validation belongs to the frozen backend request/parser contract.
 const pvgisRequestKeys = new Set([
 	"lat",
@@ -73,18 +73,28 @@ const pvgisRequestKeys = new Set([
 	"optimalangles",
 	"outputformat",
 ]);
+const pvgisTmyRequestKeys = new Set([
+	"lat",
+	"lon",
+	"startyear",
+	"endyear",
+	"usehorizon",
+	"outputformat",
+]);
 function pvgisSourceReference(sectionId: string, url: URL): boolean {
-	const keys = [...url.searchParams.keys()];
+	const tmy = /^pvlib-reference-[0-9]+$/.test(sectionId),
+		requestKeys = tmy ? pvgisTmyRequestKeys : pvgisRequestKeys,
+		keys = [...url.searchParams.keys()];
 	return (
-		/^pvgis-roof-reference-[0-9]+$/.test(sectionId) &&
+		(tmy || /^pvgis-roof-reference-[0-9]+$/.test(sectionId)) &&
 		url.origin === "https://re.jrc.ec.europa.eu" &&
-		url.pathname === "/api/v5_3/seriescalc" &&
+		url.pathname === (tmy ? "/api/v5_3/tmy" : "/api/v5_3/seriescalc") &&
 		!url.username &&
 		!url.password &&
 		!url.hash &&
-		keys.length === pvgisRequestKeys.size &&
+		keys.length === requestKeys.size &&
 		new Set(keys).size === keys.length &&
-		keys.every((key) => pvgisRequestKeys.has(key)) &&
+		keys.every((key) => requestKeys.has(key)) &&
 		url.searchParams.get("outputformat") === "json"
 	);
 }

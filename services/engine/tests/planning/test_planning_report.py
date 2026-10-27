@@ -7,7 +7,7 @@ import csv
 import io
 from dataclasses import replace
 from types import SimpleNamespace
-from typing import Any
+from typing import Any, cast
 
 import pytest
 from conftest import publication_manifest
@@ -20,11 +20,12 @@ from linker_engine.engine import Engine
 from linker_engine.models import Report
 from linker_engine.planning.assets import Assets
 from linker_engine.planning.assistant_context import _result_rows, assistant_context
-from linker_engine.planning.canonical import digest, encode
+from linker_engine.planning.canonical import Object, digest, encode
 from linker_engine.planning.certificate_evidence import CertificateEvidence
 from linker_engine.planning.certificate_report import certificate_sections
 from linker_engine.planning.certificate_sources import inspect_report_certificates
 from linker_engine.planning.csv_mapping import CsvMapping
+from linker_engine.planning.dc_energy_kernel import DcEnergyKernel
 from linker_engine.planning.energy_inputs import EnergyInputs
 from linker_engine.planning.energy_kernel import EnergyKernel
 from linker_engine.planning.energy_service import EnergyService
@@ -49,6 +50,9 @@ from linker_engine.planning.profile_import import ProfileImport
 from linker_engine.planning.profile_preview import ProfilePreview
 from linker_engine.planning.profile_selections import check_profile_selections
 from linker_engine.planning.project_materials import materials_csv
+from linker_engine.planning.pv_parameters import PvGenerationParameters
+from linker_engine.planning.pv_preparation import PvReferenceKernel
+from linker_engine.planning.pv_reconstruction import PvReconstruction
 from linker_engine.planning.pvgis_reference_artifacts import prepare_reference_asset
 from linker_engine.planning.pvgis_reference_download import ReferenceCapture
 from linker_engine.planning.pvgis_reference_geometry import reference_plan
@@ -59,6 +63,7 @@ from linker_engine.planning.report_copy import text
 from linker_engine.planning.report_inputs import ComparisonSelection, ReportOptions
 from linker_engine.planning.report_kernel import ReportKernel, ReportService
 from linker_engine.planning.report_model import build_report
+from linker_engine.planning.report_pvlib import pvlib_sections
 from linker_engine.planning.report_sources import (
     ReportInputsChanged,
     renew_module_permission,
@@ -83,6 +88,7 @@ from .test_equipment import (
 )
 from .test_equipment import inputs
 from .test_private_http import TOKEN, headers
+from .test_pv_generation import geometry, parameter_document, weather
 from .test_pvgis_roof_reference import limits as reference_limits
 from .test_pvgis_roof_reference import prepared_reference_fixture
 
@@ -1069,6 +1075,428 @@ def test_absent_device_inputs_keep_legacy_report_source_shape(
     assert "inspect_certificate_declarations" not in source
     assert "condition_review" not in json_object(source["certificates"])
     assert len(certificate_sections(json_object(source["certificates"]), "en")) == 1
+
+    # A small, explicitly synthetic retained output exercises report projection,
+    # not physical generation. No provider/model/energy calculation is invoked.
+    roof = create_scenario(workspace, owner)
+    geo, parameters = geometry(), parameter_document()
+    geo["arrays"].append(
+        {
+            **geo["arrays"][0],
+            "id": "other_array",
+            "rows": 1,
+            "columns": 1,
+            "excluded_slots": [],
+            "origin_uv": [15, 15],
+        }
+    )
+    parameters["arrays"].append(
+        {**copy.deepcopy(parameters["arrays"][0]), "array_id": "other_array"}
+    )
+    parameters["converters"].append(
+        {
+            **parameters["converters"][0],
+            "id": "other_converter",
+            "array_ids": ["other_array"],
+        }
+    )
+    module_source = {
+        **geo["module_specs"][0]["source"],
+        "kind": "datasheet",
+        "document_sha256": "c" * 64,
+        "url": "https://de-linker.com/wp-content/uploads/synthetic-report-module.pdf",
+        "page": 1,
+        "woo": {
+            "product_id": 999,
+            "product_revision": "b" * 64,
+            "reference_input_id": "synthetic_report_module",
+        },
+    }
+    geo["module_specs"][0]["source"] = module_source
+    parameters["modules"][0]["source"] = module_source
+    module_proof = {
+        "schema_version": 1,
+        "module": {
+            "specification": geo["module_specs"][0],
+            "parameters": parameters["modules"][0],
+        },
+    }
+    monkeypatch.setattr(products, "module_basis", lambda: module_proof)
+    originals = workspace.blobs.put(
+        b"Synthetic retained report weather, not provider data"
+    )
+    details = {
+        "request": {"start_year": 2014, "end_year": 2023, "use_terrain_horizon": False},
+        "capture": {
+            "requested_url": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=52.52&lon=13.405&startyear=2014&endyear=2023&usehorizon=0&outputformat=json",
+            "received_at_utc": "2026-10-28T00:00:00Z",
+        },
+        "interpretation": {"synthetic_energy_year": 2023},
+        "radiation_database": "PVGIS-SARAH3",
+        "meteo_database": "ERA5",
+        "irradiance_time_offset_hours": 0.1805,
+        "irradiance_offset_microseconds": 649800000,
+        "months_selected": [{"month": 1, "year": 2014}],
+        "solar_date_basis": "original_selected_year_plus_reported_irradiance_offset",
+        "native_radiation_semantics": "sarah_instantaneous",
+    }
+
+    def retained(note: str, key: str) -> tuple[Any, Any]:
+        par = copy.deepcopy(parameters)
+        par["source_note"] = note
+        typed = PvGenerationParameters.read(par).model_dump(mode="json")
+        meteo = json_object(weather().document())
+        meteo["source"].update(raw_sha256=originals, details=details)
+        model_input = {
+            "schema_version": 1,
+            "kind": par["model"],
+            "geometry": geo,
+            "parameters": typed,
+            "weather": meteo,
+        }
+        input_sha = workspace.blobs.put_object(model_input)
+        axis: FixtureObject = {
+            "intervals": [
+                {"start_utc": p["start_utc"], "end_utc": p["end_utc"]}
+                for p in meteo["points"]
+            ]
+        }
+        # Retain only the identities actually included in the geometry.
+        from linker_engine.planning.geometry import panel_poses, read_geometry
+
+        poses = [p for p in panel_poses(read_geometry(geo)) if p.included]
+        witness = {
+            "schema_version": 1,
+            "kind": par["model"],
+            "available_ac_w": [1000],
+            "energy_kwh": 1.0,
+            "inputs": {
+                "model": par["model"],
+                "input_bundle_sha256": input_sha,
+                "geometry_sha256": digest(encode(geo)),
+                "parameters_sha256": digest(encode(typed)),
+                "weather_document_sha256": digest(encode(meteo)),
+                "weather_original_sha256": originals,
+                "weather_source": meteo["source"],
+                "temporal_policy": PvReconstruction(
+                    input_sha, digest(encode(axis)), 3600, 3600.0
+                ).document(),
+            },
+            "arrays": [
+                {
+                    "id": array_id,
+                    "module_spec_id": "module",
+                    "module_ids": [p.id for p in poses if p.array_id == array_id],
+                    "module_count": sum(p.array_id == array_id for p in poses),
+                    "stc_power_w": sum(
+                        p.stc_power_w for p in poses if p.array_id == array_id
+                    ),
+                    "normal_enu": [0, 0, 1],
+                    "tilt_deg": 0,
+                    "azimuth_north_clockwise_deg": 0,
+                    "azimuth_basis": "horizontal_orientation_invariant",
+                }
+                for array_id in ("array", "other_array")
+            ],
+            "converters": [
+                {
+                    "id": name,
+                    "model_ac_cap_w": 9600,
+                    "array_ids": arrays,
+                    "input_assumption": "independent_mppt_array_mpp_sum",
+                    "dc_available_w": [power],
+                }
+                for name, arrays, power in (
+                    ("converter", ["array"], 1500),
+                    ("other_converter", ["other_array"], 2500),
+                )
+            ],
+        }
+        metadata = {
+            "schema": 1,
+            "profile_type": "pvlib_reference_profile_v1",
+            "retention": "permanent",
+            "provenance": PROVENANCE,
+            "derived_from_revision": roof.revision + 1,
+            "geometry_sha256": digest(encode(geo)),
+            "parameters_sha256": digest(encode(par)),
+            "woo_module_inputs": module_proof,
+            **{
+                "weather_" + k: details[k]
+                for k in ("request", "capture", "interpretation")
+            },
+            "dependencies": {
+                "pv_model_inputs": input_sha,
+                "pv_model_witness": workspace.blobs.put_object(witness),
+            },
+            "interpretation": {
+                "energy_kwh": 1.0,
+                "interval_count": 1,
+                "start_utc": meteo["points"][0]["start_utc"],
+                "end_utc": meteo["points"][0]["end_utc"],
+            },
+        }
+        asset = Assets(workspace).add(
+            owner,
+            roof.id,
+            workspace.blobs.read(originals),
+            "application/json",
+            "pvlib_reference_profile_v1",
+            cast(Object, metadata),
+            key=key,
+        )
+        values = json_object({**roof.inputs, "geometry": geo, "pv_generation": par})
+        values["energy_replay"] = {
+            **values["energy_replay"],
+            "pv_available_asset_id": asset.id,
+        }
+        saved = workspace.revise(
+            owner,
+            roof.id,
+            workspace.get(owner, roof.id).revision,
+            values,
+            key=key + "-inputs",
+        )
+        return saved, asset
+
+    first, asset = retained("PRIVATE frozen first assumption", "retained-first")
+
+    def completed(project: Any, result: dict[str, Any], key: str) -> Any:
+        run = workspace.evaluate(
+            owner, project.id, project.revision, context, key=key, max_attempts=1
+        )
+        lease = jobs.claim("fixture", kinds=("evaluate",), lease_seconds=30)
+        assert lease is not None
+        jobs.complete(
+            lease,
+            {
+                **result,
+                "runtime_sha256": context.code_sha256,
+                "input_sha256": project.input_sha256,
+            },
+        )
+        return workspace.run(owner, run.id)
+
+    pv_run = completed(
+        first,
+        {
+            "kind": PvReferenceKernel.kind,
+            "pinned_assets": {},
+            "profile_summary": asset.metadata["interpretation"],
+            "prepared_asset": {
+                "id": asset.id,
+                "content_sha256": asset.content_sha256,
+                "metadata_sha256": asset.metadata_sha256,
+                "metadata": asset.metadata,
+            },
+        },
+        "pvlib-source",
+    )
+    options = ReportOptions(
+        locale="en",
+        energy_run_id=None,
+        pv_run_id=pv_run.id,
+        equipment_run_id=None,
+        logo=None,
+    )
+    explicit = report_sources(workspace, products, owner, first, options)
+    assert len(json_object(explicit)["pvlib_references"]) == 1
+    for dependency in json_object(explicit)["dependencies"].values():
+        workspace.blobs.read(dependency)
+    pinned: dict[str, str] = {}
+    for role, identity in EnergyInputs.from_project(first.inputs).profiles().items():
+        pinned.update(
+            profile_dependencies(
+                Assets(workspace).get(owner, first.id, identity),
+                role,
+                first.inputs,
+                workspace.blobs,
+            )
+        )
+    energy_run = completed(
+        first,
+        {"kind": EnergyKernel.kind, "pinned_assets": pinned},
+        "frozen-energy-source",
+    )
+    energy_source = report_sources(
+        workspace,
+        products,
+        owner,
+        first,
+        options.model_copy(update={"pv_run_id": None, "energy_run_id": energy_run.id}),
+    )
+    assert (
+        json_object(energy_source)["pvlib_references"][0]["used_by"][0]["run_id"]
+        == energy_run.id
+    )
+    second, candidate_asset = retained(
+        "PRIVATE frozen candidate assumption", "retained-candidate"
+    )
+    candidate_pinned = {
+        **pinned,
+        **profile_dependencies(
+            candidate_asset, "pv_available_ac", second.inputs, workspace.blobs
+        ),
+    }
+    candidate = completed(
+        second,
+        {"kind": EnergyKernel.kind, "pinned_assets": candidate_pinned},
+        "frozen-energy-candidate",
+    )
+    import importlib
+
+    source_module = importlib.import_module("linker_engine.planning.report_sources")
+    monkeypatch.setattr(source_module, "compare_energy_runs", lambda *a: {})
+    sides = {
+        r.id: SimpleNamespace(
+            run=r,
+            result=r.result,
+            pinned=r.result["pinned_assets"],
+            inputs=p.inputs,
+            scenario=EnergyInputs.from_project(p.inputs),
+        )
+        for r, p in ((energy_run, first), (candidate, second))
+    }
+    monkeypatch.setattr(source_module, "comparison_side", lambda *a: sides[a[-1]])
+    comparison = report_sources(
+        workspace,
+        products,
+        owner,
+        second,
+        options.model_copy(
+            update={
+                "pv_run_id": None,
+                "comparison": ComparisonSelection(
+                    baseline_run_id=energy_run.id, candidate_run_id=candidate.id
+                ),
+            }
+        ),
+    )
+    references = json_object(comparison)["pvlib_references"]
+    assert [r["parameters"]["source_note"] for r in references] == [
+        "PRIVATE frozen first assumption",
+        "PRIVATE frozen candidate assumption",
+    ]
+    assert [r["used_by"][0]["comparison_role"] for r in references] == [
+        "baseline",
+        "candidate",
+    ]
+    for locale in ("en", "de"):
+        sections = pvlib_sections(comparison, locale)
+        assert [s.id for s in sections] == ["pvlib-reference-0", "pvlib-reference-1"]
+        shown = str([s.model_dump() for s in sections])
+        assert "2014–2023" in shown and "0.1805" in shown and "0.9637" in shown
+        assert "PRIVATE frozen first assumption" in shown and originals in shown
+
+    # The same immutable source has two DC groups. A report's selected group
+    # must follow its own frozen scenario, even when metadata hashes coincide.
+    dc_runs = []
+    dc_projects = []
+    for converter_id in ("converter", "other_converter"):
+        values = json_object(first.inputs)
+        values["energy_replay"].update(
+            coupling="shared_dc", pv_converter_id=converter_id, aux_dc_kw=0
+        )
+        dc_project = workspace.revise(
+            owner,
+            first.id,
+            workspace.get(owner, first.id).revision,
+            values,
+            key="dc-" + converter_id,
+        )
+        dc_pinned = {}
+        for role, identity in (
+            EnergyInputs.from_project(dc_project.inputs).profiles().items()
+        ):
+            dc_pinned.update(
+                profile_dependencies(
+                    Assets(workspace).get(owner, first.id, identity),
+                    role,
+                    dc_project.inputs,
+                    workspace.blobs,
+                )
+            )
+        dc_run = completed(
+            dc_project,
+            {"kind": DcEnergyKernel.kind, "pinned_assets": dc_pinned},
+            "dc-source-" + converter_id,
+        )
+        dc_runs.append(dc_run)
+        dc_projects.append(dc_project)
+    selected_dc = report_sources(
+        workspace,
+        products,
+        owner,
+        dc_projects[0],
+        options.model_copy(update={"pv_run_id": None, "energy_run_id": dc_runs[0].id}),
+    )
+    selected = json_object(selected_dc)["pvlib_references"][0]
+    assert selected["converter_id"] == "converter"
+    assert selected["profile_summary"]["measurement"] == "pv_available_dc"
+    assert selected["profile_summary"]["energy_kwh"] == 1.5
+    assert selected["used_by"][0]["converter_id"] == "converter"
+    assert [a["id"] for a in selected["arrays"]] == ["array"]
+    assert [c["id"] for c in selected["parameters"]["converters"]] == ["converter"]
+    assert selected["pv_components"]["components"][0]["array_ids"] == ["array"]
+    for locale in ("en", "de"):
+        section = pvlib_sections(selected_dc, locale)[0]
+        assert any(
+            r.label == text("pvlib_dc_energy", locale) and r.value == "1.5 kWh"
+            for r in section.rows
+        )
+        assert "other_converter" not in str(section.model_dump())
+        assert "other_array" not in str(section.model_dump())
+    both = report_sources(
+        workspace,
+        products,
+        owner,
+        dc_projects[0],
+        options.model_copy(update={"energy_run_id": dc_runs[0].id}),
+    )
+    assert [r.get("converter_id") for r in json_object(both)["pvlib_references"]] == [
+        "converter",
+        None,
+    ]
+    full = json_object(both)["pvlib_references"][1]
+    assert len(full["arrays"]) == len(full["parameters"]["converters"]) == 2
+    assert full["profile_summary"]["energy_kwh"] == 1.0
+    sides.update(
+        {
+            r.id: SimpleNamespace(
+                run=r,
+                result=r.result,
+                pinned=r.result["pinned_assets"],
+                inputs=p.inputs,
+                scenario=EnergyInputs.from_project(p.inputs),
+            )
+            for r, p in zip(dc_runs, dc_projects, strict=True)
+        }
+    )
+    grouped_comparison = report_sources(
+        workspace,
+        products,
+        owner,
+        dc_projects[1],
+        options.model_copy(
+            update={
+                "pv_run_id": None,
+                "comparison": ComparisonSelection(
+                    baseline_run_id=dc_runs[0].id, candidate_run_id=dc_runs[1].id
+                ),
+            }
+        ),
+    )
+    grouped = json_object(grouped_comparison)["pvlib_references"]
+    assert (
+        len(grouped) == 2
+        and grouped[0]["metadata_sha256"] == grouped[1]["metadata_sha256"]
+    )
+    assert [r["converter_id"] for r in grouped] == ["converter", "other_converter"]
+    assert [r["profile_summary"]["energy_kwh"] for r in grouped] == [1.5, 2.5]
+    assert [r["used_by"][0]["comparison_role"] for r in grouped] == [
+        "baseline",
+        "candidate",
+    ]
 
 
 def test_report_subset_omits_unrelated_unprepared_device_entries(

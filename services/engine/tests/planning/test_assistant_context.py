@@ -7,7 +7,7 @@ from typing import cast
 import pytest
 
 from linker_engine.planning.assistant_context import assistant_context
-from linker_engine.planning.canonical import Object
+from linker_engine.planning.canonical import Json, Object
 from linker_engine.planning.errors import InvalidInput, NotFound
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.records import Actor, Context
@@ -168,6 +168,41 @@ def test_report_omits_comparison_location_and_private_note(
                             },
                         ],
                     },
+                    {
+                        "id": "pvlib-reference-0",
+                        "title": "Weather-based PV reference",
+                        "rows": cast(
+                            list[Json],
+                            [
+                                {"label": text(key, locale), "value": "PRIVATE SOURCE"}
+                                for key in (
+                                    "pvlib_note",
+                                    "pvlib_original_request",
+                                    "pvlib_array",
+                                    "pvlib_converter",
+                                    "pvlib_selected_dc_group",
+                                )
+                            ]
+                            + [
+                                {
+                                    "label": text("pvlib_model", locale),
+                                    "value": "pvlib 0.16.1",
+                                },
+                                {
+                                    "label": text("pvlib_weather_period", locale),
+                                    "value": "2014–2023",
+                                },
+                                {
+                                    "label": text("pvlib_offset", locale),
+                                    "value": "0.1805 h",
+                                },
+                                {
+                                    "label": text("pvlib_dc_energy", locale),
+                                    "value": "1.5 kWh",
+                                },
+                            ],
+                        ),
+                    },
                 ],
             },
         },
@@ -177,6 +212,8 @@ def test_report_omits_comparison_location_and_private_note(
     assert "6.000 kWh" in str(result["runs"]) and "DE" in str(result["runs"])
     assert "010101" in str(result["runs"])
     assert "2020" in str(result["runs"])
+    assert "pvlib 0.16.1" in str(result["runs"]) and "0.1805 h" in str(result["runs"])
+    assert "1.5 kWh" in str(result["runs"])
 
     # A report stored in the other language is rebuilt from the same frozen
     # source. Comparison reference notes are still private after relocalizing.
@@ -218,6 +255,51 @@ def test_report_omits_comparison_location_and_private_note(
                 "pv_components": {"components": [], "nameplate_kwp": 0},
             }
         ],
+        "pvlib_references": [
+            {
+                "converter_id": "PRIVATE SELECTED DC GROUP",
+                "parameters": {
+                    "model": "uniform_unshaded_pvlib_reference_v1",
+                    "pvlib_version": "0.16.1",
+                    "temporal_policy": "representative_pv_output_over_declared_intervals_v1",
+                    "source_note": "PRIVATE PVLIB RELOCALIZED NOTE",
+                    "modules": [],
+                    "arrays": [],
+                    "converters": [],
+                },
+                "profile_summary": {
+                    "energy_kwh": 1.5,
+                    "measurement": "pv_available_dc",
+                    "interval_count": 8760,
+                    "start_utc": "2023-01-01T00:00:00Z",
+                    "end_utc": "2024-01-01T00:00:00Z",
+                },
+                "weather": {
+                    "request": {
+                        "start_year": 2014,
+                        "end_year": 2023,
+                        "use_terrain_horizon": False,
+                    },
+                    "capture": {
+                        "requested_url": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=48.8566&lon=2.3522&startyear=2014&endyear=2023&usehorizon=0&outputformat=json",
+                        "received_at_utc": "2026-10-28T00:00:00Z",
+                    },
+                    "interpretation": {"synthetic_energy_year": 2023},
+                    "radiation_database": "PVGIS-SARAH3",
+                    "meteo_database": "ERA5",
+                    "irradiance_time_offset_hours": 0.1805,
+                    "irradiance_offset_microseconds": 649800000,
+                    "months_selected": [{"month": 1, "year": 2014}],
+                    "solar_date_basis": "original_selected_year_plus_reported_irradiance_offset",
+                    "native_radiation_semantics": "sarah_instantaneous",
+                },
+                "pv_components": {"nameplate_kwp": 9.2, "components": []},
+                "used_by": [],
+                "arrays": [],
+                "converters": [],
+                "dependencies": {"pv_model_inputs": "a" * 64},
+            }
+        ],
     }
     recorded = build_report(source).model_dump(mode="json")
     assert "PRIVATE COMPARISON REFERENCE NOTE" in str(recorded)
@@ -240,3 +322,8 @@ def test_report_omits_comparison_location_and_private_note(
         )
         assert "PRIVATE" not in str(projection)
         assert "PVGIS-ERA5" in str(projection) and "2020" in str(projection)
+        assert "48.8566" not in str(projection) and "https://re.jrc" not in str(
+            projection
+        )
+        assert "0.1805" in str(projection) and "pvlib 0.16.1" in str(projection)
+        assert "1.5 kWh" in str(projection)

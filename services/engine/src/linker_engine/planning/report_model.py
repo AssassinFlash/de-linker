@@ -21,6 +21,7 @@ from .project_materials import (
 from .pv_operating_report import operating_sections
 from .report_capacity import capacity_section
 from .report_copy import TEXT, check_label, text
+from .report_pvlib import pvlib_sections
 
 
 def number(value: Any, locale: str, unit: str = "") -> str:
@@ -576,6 +577,7 @@ def build_report(source: Object) -> Report:
                 ],
             )
         )
+    sections.extend(pvlib_sections(source, locale))
     roof_references = source.get("pvgis_roof_ac_references")
     if isinstance(roof_references, list):
         for index, roof_reference in enumerate(cast(list[Object], roof_references)):

@@ -3,6 +3,134 @@
 from __future__ import annotations
 
 TEXT = {
+    "pvlib_selected_dc_group": (
+        "Selected DC converter group",
+        "Ausgewählte DC-Umwandlungsgruppe",
+    ),
+    "pvlib_dc_energy": (
+        "Modelled DC generation of the selected group",
+        "Modellierte DC-Erzeugung der ausgewählten Gruppe",
+    ),
+    "pvlib_dc_scope": (
+        "This section covers only the selected converter group's arrays and retained DC output after the declared DC factors, before reference AC conversion. The reference AC conversion parameters are source context and are not applied to this DC output. The source period and synthetic time axis retain their original meaning; the separate energy calculation has its own operating period. Nearby and inter-row shading, real MPPT limits and equipment or country approval are not assessed. Array azimuth is measured clockwise from north.",
+        "Dieser Abschnitt umfasst nur die Modulfelder der ausgewählten Umwandlungsgruppe und deren gespeicherte DC-Erzeugung nach Anwendung der angegebenen DC-Faktoren, vor der Referenzumwandlung in AC. Die AC-Umwandlungsparameter dienen als Quellenkontext und werden auf diese DC-Erzeugung nicht angewendet. Quellzeitraum und synthetische Zeitachse behalten ihre ursprüngliche Bedeutung; die gesonderte Energieberechnung hat ihren eigenen Betriebszeitraum. Verschattung durch nahe Objekte und zwischen Modulreihen, reale MPPT-Grenzen sowie Geräte- oder Länderfreigaben werden nicht bewertet. Der Azimut des Modulfelds wird ab Norden im Uhrzeigersinn angegeben.",
+    ),
+    "pvlib_reference": (
+        "Weather-based PV reference: sources and assumptions",
+        "Wetterbasierte PV-Referenz: Quellen und Annahmen",
+    ),
+    "pvlib_reference_scope": (
+        "This unshaded reference uses typical weather assembled from the selected source months. Its synthetic calculation year defines only the output time axis. The calculated generation is neither measured generation nor a forecast for that year. Nearby and inter-row shading, real MPPT limits, device-specific inverter behavior and equipment or country approval are not assessed. The generic conversion model uses only the stated parameters; no additional PVGIS system-loss percentage is applied. The AC total shown covers the complete retained PV reference period. The separate energy calculation uses its own period and AC or DC input selection. Array azimuth is measured clockwise from north.",
+        "Diese unverschattete Referenz verwendet ein aus den ausgewählten Quellmonaten zusammengesetztes typisches Wetterjahr. Das synthetische Berechnungsjahr legt nur die Zeitachse der Ausgabe fest. Die berechnete Erzeugung ist weder ein Messwert noch eine Prognose für dieses Jahr. Verschattung durch nahe Objekte und zwischen Modulreihen, reale MPPT-Grenzen, das gerätespezifische Verhalten eines Wechselrichters sowie Geräte- oder Länderfreigaben werden nicht bewertet. Das allgemeine Umwandlungsmodell verwendet nur die angegebenen Parameter; es wird kein zusätzlicher PVGIS-Systemverlust angesetzt. Die angegebene AC-Gesamtenergie gilt für den vollständigen Zeitraum der gespeicherten PV-Referenz. Für die gesonderte Energieberechnung gelten ihr eigener Zeitraum und die gewählte AC- oder DC-Eingangsgröße. Der Azimut des Modulfelds wird ab Norden im Uhrzeigersinn angegeben.",
+    ),
+    "pvlib_thermal_scope": (
+        "The stated SAPM thermal coefficients are reference assumptions. Their applicability to the saved module clearance and actual ventilation has not been established. Source notes retain the original declared wording. Each source below belongs to its named calculation; different scenarios are not added together.",
+        "Die angegebenen thermischen SAPM-Koeffizienten sind Referenzannahmen. Ihre Eignung für den gespeicherten Abstand der Modulunterkante zur Dachfläche und die tatsächliche Hinterlüftung ist nicht nachgewiesen. Die Quellenhinweise bleiben im ursprünglichen Wortlaut erhalten. Jede nachfolgende Quelle gehört zur genannten Berechnung; unterschiedliche Szenarien werden nicht addiert.",
+    ),
+    "pvlib_model": (
+        "PV model / library version",
+        "PV-Modell / Bibliotheksversion",
+    ),
+    "pvlib_weather_period": (
+        "Typical-weather source selection period",
+        "Auswahlzeitraum des typischen Wetterjahres",
+    ),
+    "pvlib_meteo_database": (
+        "Meteorological database",
+        "Meteorologische Datenbank",
+    ),
+    "pvlib_synthetic_year": (
+        "Synthetic energy-axis year",
+        "Synthetisches Jahr der Energiezeitachse",
+    ),
+    "pvlib_offset": (
+        "Original irradiance time offset (hours / microseconds)",
+        "Ursprünglicher Strahlungszeitversatz (Stunden / Mikrosekunden)",
+    ),
+    "pvlib_selected_months": (
+        "Selected source month: year (January to December)",
+        "Ausgewählter Quellmonat: Jahr (Januar bis Dezember)",
+    ),
+    "pvlib_temporal": (
+        "PV interval reconstruction policy",
+        "Rekonstruktionsverfahren der PV-Zeitintervalle",
+    ),
+    "pvlib_solar_dates": (
+        "Solar-position date basis",
+        "Datumsgrundlage der Sonnenposition",
+    ),
+    "pvlib_radiation_semantics": (
+        "Native radiation time semantics",
+        "Ursprüngliche zeitliche Bedeutung der Strahlungswerte",
+    ),
+    "pvlib_original_request": (
+        "Original official JRC weather request",
+        "Ursprüngliche offizielle JRC-Wetteranfrage",
+    ),
+    "pvlib_capture_time": (
+        "Original response received (UTC)",
+        "Ursprüngliche Antwort empfangen (UTC)",
+    ),
+    "pvlib_note": (
+        "Original reference assumption or applicability note",
+        "Ursprünglicher Hinweis zu Referenzannahmen oder Anwendbarkeit",
+    ),
+    "pvlib_module": (
+        "Included modules: quantity × model / module STC; document SHA-256 / page",
+        "Enthaltene Module: Anzahl × Modell / Modul-STC; Dokument-SHA-256 / Seite",
+    ),
+    "pvlib_array": (
+        "Array identity",
+        "Kennung des Modulfelds",
+    ),
+    "pvlib_array_geometry": (
+        "Array: module count / STC / tilt / azimuth clockwise from north / ENU normal",
+        "Modulfeld: Module / STC / Neigung / Azimut / ENU-Normale",
+    ),
+    "pvlib_clearance": (
+        "Saved module lower-edge clearance",
+        "Gespeicherter Abstand der Modulunterkante zur Dachfläche",
+    ),
+    "pvlib_gamma": (
+        "Module power temperature coefficient",
+        "Temperaturkoeffizient der Modulleistung",
+    ),
+    "pvlib_transposition": (
+        "Transposition model / albedo",
+        "Transpositionsmodell / Albedo",
+    ),
+    "pvlib_iam": (
+        "Incidence modifier: model / beam b0 / sky diffuse / ground diffuse",
+        "Einfallswinkelkorrektur: Modell / direkt b0 / Himmel diffus / Boden diffus",
+    ),
+    "pvlib_retention": (
+        "Retained fractions: spectral / soiling / DC wiring / DC mismatch",
+        "Verbleibende Anteile: Spektrum / Verschmutzung / DC-Verkabelung / DC-Mismatch",
+    ),
+    "pvlib_thermal": (
+        "Thermal model: a / b (s/m) / delta T (°C)",
+        "Temperaturmodell: a / b (s/m) / delta T (°C)",
+    ),
+    "pvlib_converter": (
+        "Generic converter identity / assigned arrays",
+        "Kennung des allgemeinen Umwandlungsmodells / zugeordnete Modulfelder",
+    ),
+    "pvlib_conversion": (
+        "Conversion model / DC input assumption",
+        "Umwandlungsmodell / Annahme zum DC-Eingang",
+    ),
+    "pvlib_conversion_power": (
+        "Converter reference DC power / modelled AC cap",
+        "DC-Referenzleistung des Umwandlungsmodells / modellierte AC-Obergrenze",
+    ),
+    "pvlib_conversion_eta": (
+        "Conversion efficiency: nominal / reference",
+        "Umwandlungswirkungsgrad: nominal / Referenz",
+    ),
+    "pvlib_evidence": (
+        "Frozen source artifact / SHA-256",
+        "Eingefrorener Quellnachweis / SHA-256",
+    ),
     "pvgis_roof_reference": (
         "PVGIS roof AC reference",
         "PVGIS-Referenz der AC-PV-Erzeugung",
