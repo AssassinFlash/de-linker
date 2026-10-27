@@ -132,10 +132,16 @@ class Worker:
             failure = {"code": error.code, "retryable": True}
             retry_after = self.retry_seconds
         except PlanningError as error:
+            # A local import avoids the existing retry-class import direction.
+            from .weather_fetch_errors import WeatherSourceQualityInvalid
+
             failure = {"code": error.code, "retryable": False}
-            if isinstance(error, EvidenceMissing) and error.public_details:
-                # The error constructor admits only canonical public IDs.
-                # Exception messages and operational details remain private.
+            if (
+                isinstance(error, (EvidenceMissing, WeatherSourceQualityInvalid))
+                and error.public_details
+            ):
+                # These constructors admit public IDs or bounded typed source
+                # values. Messages, URLs and diagnostic dependencies stay private.
                 failure["details"] = {
                     key: value for key, value in error.public_details.items()
                 }

@@ -12,10 +12,12 @@ import {
 	preparationPvRole,
 } from "../../domain/preparationSelection.ts";
 import { readPreparationWeather } from "../../data/preparationBasis.ts";
+import { weatherFailureFromRun } from "../../data/weatherStatus.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
 import { runStateLabel, taskLabel } from "./planningLabels.ts";
 import { WeatherProgress } from "./WeatherProgress.tsx";
+import { WeatherFailureNotice } from "./WeatherFailureNotice.tsx";
 import { PreparationBasis } from "./PreparationBasis.tsx";
 
 export function PreparationResult({
@@ -44,6 +46,12 @@ export function PreparationResult({
 		weather = kind === WEATHER_TASK,
 		asset = run.result ? readObject(run.result.prepared_asset) : null;
 	const assetId = asset && typeof asset.id === "string" ? asset.id : null;
+	const weatherFailure =
+		weather &&
+		run.state === "failed" &&
+		client.isCurrentScope(session.query_scope)
+			? weatherFailureFromRun(run.error)
+			: null;
 	const source = useQuery({
 		queryKey: [
 			session.query_scope,
@@ -165,6 +173,8 @@ export function PreparationResult({
 					client={client}
 					recheck={recheck}
 					active={active}
+					locale={locale}
+					showFailure={weatherFailure === null}
 				/>
 			)}
 			{!run.is_current && (
@@ -175,7 +185,10 @@ export function PreparationResult({
 					)}
 				</Notice>
 			)}
-			{run.state === "failed" && (
+			{weatherFailure && (
+				<WeatherFailureNotice failure={weatherFailure} locale={locale} />
+			)}
+			{run.state === "failed" && !weatherFailure && (
 				<Notice error>
 					{__(
 						"This source could not be prepared. Your project inputs remain unchanged.",

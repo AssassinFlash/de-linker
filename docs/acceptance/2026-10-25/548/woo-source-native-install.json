@@ -6899,5 +6899,45 @@
       "screenshot": "production-device-conditions-de.png",
       "viewport": "DefaultIAB587x796; no390/1440claim"
     }
+  },
+  "weather_source_quality": {
+    "state": "source_reviewed_and_packaged; native_release_pending",
+    "production_failure": {
+      "project": "1812286480344d6d8cec94e2f5f2c00e",
+      "revision": 8,
+      "run": "128017d6b05c4220962f8c5dd9783af1",
+      "http": 200,
+      "content_type": "application/json",
+      "receipt_sha256": "f924214876682bc1563419428c12f9615be6fed9036a6df7b58cca58080e439d",
+      "original": "Not retained by old implementation; its byte identity cannot be reconstructed from later requests",
+      "failure": "First attempt invalid_input/nonretryable before validated source publication"
+    },
+    "rd_evidence": {
+      "apify_run": "2OLe4wCzbsO2bxDVK",
+      "sha256": "d69d50b73dd277e88da0ce6558b66bb1dd8b6f1d0cc82170f0df6c3b3da39e00",
+      "bytes": 1268366,
+      "scope": "Later exact-URL official response, R&D only; never assigned to old production run or registered as runtime source",
+      "rows": 8760,
+      "negative_values": 1,
+      "field": "WS10m",
+      "value": -0.29,
+      "unit": "m/s",
+      "source_timestamp_utc": "2006-02-01T07:00:00+00:00",
+      "row_index": 751
+    },
+    "behavior": "Keep physical rejection. Retain bounded unvalidated original/receipt under private jobs.output dependency only; capture/result/project asset remain absent. Expose enumerated safe field/value/sourceUTC, not rawexceptions/URLs/coordinates/fences. Retained rejection cannot be refetched or treated as captured source. Rejected status appears only after failure transaction commits.",
+    "checks": "One existing deterministic journal fixture red/green including retention-before-fail race, owner and no-capture/no-refetch; one actual R&D parser read. Scoped strict mypy/ruff passed. One existing frontend fixture typed/legacy/ownership with -0.29 m/s plus tsc passed. No whole-year numerical replay/full-site matrix.",
+    "reviews": {
+      "root": "Independent Spec+Standards review of frontend and backend; phase-race finding corrected and verified",
+      "frontend_agent": "Independent final backend Spec+Standards PASS; no extra backend tests",
+      "copy": "6 exact EN/formalDE pairs independently reviewed and nativecatalog compiled/reproduced"
+    },
+    "packaging": {
+      "build/planner/assets/planner.js": "3cb9b3a1397c55d3e7dddc14416ae2b7b2f5296f721926f1d32db80de8402dd9",
+      "build/planner/source-manifest.json": "a02dfa4b6f9bb602429a529c90455f08bfdba20e3464db1733364a4e3727d115",
+      "build/planner/vite-manifest.json": "4227dbe01d56d873028c31450cc541ef5d2af4c1b2cccf84199805afd2b36b94",
+      "build/manifest.json": "8490071c7629605df5abe7095ed2dfd69416fcaa5dc67154683e8d354386b698",
+      "languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json": "09c046539ddc808c7e0445b435ea29519a221cc32c9baa4883b48564d89c184f"
+    }
   }
 }

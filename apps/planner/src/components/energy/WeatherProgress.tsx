@@ -10,6 +10,7 @@ import type { AcquisitionState } from "../../data/weatherStatus.ts";
 import { runPending } from "../../data/planningProtocol.ts";
 import { __ } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
+import { WeatherFailureNotice } from "./WeatherFailureNotice.tsx";
 
 function statusText(state: AcquisitionState): string {
 	switch (state) {
@@ -25,6 +26,11 @@ function statusText(state: AcquisitionState): string {
 				'The original weather data has passed validation and is retained. A project source is available only when the preparation status above shows "Source ready".',
 				"linker-tools",
 			);
+		case "rejected":
+			return __(
+				"The official weather response did not pass validation and cannot be used for PV calculation.",
+				"linker-tools",
+			);
 	}
 }
 export function WeatherProgress({
@@ -33,16 +39,21 @@ export function WeatherProgress({
 	client,
 	recheck,
 	active,
+	locale = "en",
+	showFailure = true,
 }: {
 	runId: string;
 	session: Session;
 	client: PlannerClient;
 	recheck: () => void;
 	active: boolean;
+	locale?: string;
+	showFailure?: boolean;
 }) {
+	const admitted = client.isCurrentScope(session.query_scope);
 	const status = useQuery({
 		queryKey: [session.query_scope, "weather-status", runId],
-		enabled: active && client.isCurrentScope(session.query_scope),
+		enabled: active && admitted,
 		retry: false,
 		queryFn: async ({ signal }) => {
 			try {
@@ -75,12 +86,12 @@ export function WeatherProgress({
 			aria-label={__("Weather request status", "linker-tools")}
 		>
 			<h4>{__("Weather request status", "linker-tools")}</h4>
-			{status.isPending && (
+			{admitted && status.isPending && (
 				<p role="status">
 					{__("Loading weather request status…", "linker-tools")}
 				</p>
 			)}
-			{status.error && (
+			{admitted && status.error && (
 				<Notice error>
 					{__(
 						"Weather status could not be refreshed. Any status shown comes from the last confirmed response.",
@@ -88,7 +99,13 @@ export function WeatherProgress({
 					)}
 				</Notice>
 			)}
-			{status.data && (
+			{admitted && status.data?.validationFailure && showFailure && (
+				<WeatherFailureNotice
+					failure={status.data.validationFailure}
+					locale={locale}
+				/>
+			)}
+			{admitted && status.data && !status.data.validationFailure && (
 				<p role="status">
 					{status.data.acquisitionState !== "captured" &&
 					!runPending(status.data.taskState)
