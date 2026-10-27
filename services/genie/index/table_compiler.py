@@ -442,4 +442,17 @@ def compile_scopes(
     )
     output.extend(manual_units)
     result.update(manual_scopes)
+    from index.warranty import compile_procedures
+
+    procedures, procedure_scopes = compile_procedures(
+        relevant,
+        output,
+        result,
+        source,
+        tokenizer,
+        max_tokens,
+        restricted_contexts=contexts,
+    )
+    output.extend(procedures)
+    result.update(procedure_scopes)
     return output, result

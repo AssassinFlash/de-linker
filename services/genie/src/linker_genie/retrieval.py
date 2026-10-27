@@ -38,6 +38,7 @@ import sqlite_vec
 from linker_genie.embedding import Embedder, query_encoder
 from linker_genie.preparation import RUNTIME_SERVING_REVISION
 from linker_genie.publication_scope import authorize_chunk, table_header
+from linker_genie.warranty_scope import CONDITIONAL_CLAIMS_NOTE
 
 # The release layout of ops/publish_index.py: /opt/linker-genie/index/<version>/ and a
 # `current` link. GENIE_INDEX points elsewhere (a local build, a test fixture).
@@ -104,6 +105,7 @@ class DocumentHit:
     document_id: str = ""
     document_revision: str = ""
     product_ids: tuple[int, ...] = ()
+    scope_note: str = ""
 
     @property
     def link(self) -> str:
@@ -141,6 +143,7 @@ class Permit(TypedDict):
     url: str
     product_ids: list[int]
     table_header: NotRequired[str]
+    scope_note: NotRequired[str]
 
 
 class _Auto:
@@ -534,6 +537,7 @@ class DocumentIndex:
                     document_revision=permit["document_revision"],
                     product_ids=tuple(permit["product_ids"]),
                     text=text,
+                    scope_note=permit.get("scope_note", ""),
                 )
             )
         return output
@@ -674,6 +678,7 @@ class DocumentIndex:
                 associations.get(sha, []),
                 scopes.get(cid),
                 products=snapshot.products,
+                documents=snapshot.documents,
                 chunk_id=cid,
                 text=text,
             )
@@ -695,6 +700,8 @@ class DocumentIndex:
                     "product_ids": sorted(ids),
                     "table_header": header,
                 }
+                if scopes.get(cid, {}).get("basis") == "warranty_procedure":
+                    output[row]["scope_note"] = CONDITIONAL_CLAIMS_NOTE
         return output
 
     def chunks(self, chunk_ids: Sequence[str], lang: str) -> list[DocumentHit]:

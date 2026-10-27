@@ -172,6 +172,7 @@ def export(directory: Path, path: Path) -> None:
                     links,
                     scope,
                     products=products,
+                    documents=by_id,
                     chunk_id=cid,
                     text=chunk.text,
                 )

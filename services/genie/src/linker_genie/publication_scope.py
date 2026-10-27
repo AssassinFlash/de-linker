@@ -18,6 +18,7 @@ from linker_genie.source_roles import (
     pack_model_row,
 )
 from linker_genie.table_projection import valid_projection
+from linker_genie.warranty_scope import valid_warranty_scope
 
 
 def binding(association: Mapping[str, Any]) -> tuple[str, str, str, int, str]:
@@ -67,6 +68,7 @@ def authorize_chunk(
     scope: Mapping[str, Any] | None = None,
     *,
     products: Mapping[int, Mapping[str, Any]] | None = None,
+    documents: Mapping[str, Mapping[str, Any]] | None = None,
     chunk_id: str = "",
     text: str = "",
 ) -> list[dict[str, Any]]:
@@ -81,6 +83,23 @@ def authorize_chunk(
     wanted = set(product_ids)
     if not wanted:
         return []
+    if scope is not None and (
+        scope.get("basis") == "warranty_procedure" or "warranty_scope" in scope
+    ):
+        if (
+            products is None
+            or documents is None
+            or not valid_warranty_scope(
+                scope,
+                product_ids,
+                products,
+                documents,
+                sha=sha,
+                chunk_id=chunk_id,
+                text=text,
+            )
+        ):
+            return []
     if scope is not None and "author_restrictions" in scope:
         if products is None or not author_scope_allows(scope, wanted, products):
             return []

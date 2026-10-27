@@ -21,7 +21,9 @@ from index.chunking import Chunk, DocumentMeta, chunk_document
 from index.corpus import DocumentRow
 from index.extract import Block, Page, enrich_model_axes, pages_of
 from index.inventory import doc_type_of
-from index.publication import ScopeProof, compile_publication, scope_proofs
+from index.publication import ScopeProof, _recognized, compile_publication, scope_proofs
+from index.table_compiler import _author_contexts
+from index.warranty import compile_procedures
 from linker_genie.figures import tag
 from linker_genie.publication import Snapshot
 from linker_genie.publication_scope import authorize_chunk
@@ -30,6 +32,176 @@ from linker_genie.table_projection import cells_digest, projection_id
 
 FIXTURES = Path(__file__).parent / "fixtures" / "publication-compiler"
 H2_DE = "be488dc6630cddc8381e38c61c6bc7b41c50c711042cdb2547170bd85e68a752"
+
+
+def warranty_fixture() -> tuple[dict[str, Any], list[Chunk], Chunk, ScopeProof]:
+    value = json.loads(
+        gzip.decompress((FIXTURES / "warranty-procedure.json.gz").read_bytes())
+    )
+    return (
+        value["manifest"],
+        [Chunk(**c) for c in value["original"]],
+        Chunk(**value["model_chunk"]),
+        value["model_scope"],
+    )
+
+
+@pytest.mark.parametrize("lang", ["en", "de"])
+def test_original_series_bound_claims_procedure_reaches_sqlite_and_revokes(
+    tmp_path: Path, lang: str
+) -> None:
+    raw, original, model, model_scope = warranty_fixture()
+    units, proofs = compile_procedures(
+        original,
+        [model],
+        {model.id: model_scope},
+        Snapshot.read(raw),
+        Words(),
+        512,
+        restricted_contexts=_author_contexts(
+            original, Snapshot.read(raw), _recognized(original, authority(raw))
+        ),
+    )
+    assert units and {c.lang for c in units} == {"en", "de"}
+    assert all(
+        c.page == 2 and "coverage and duration unverified" in c.header for c in units
+    )
+    all_scopes = {model.id: model_scope, **proofs}
+    source = tmp_path / "corpus"
+    corpus.write(
+        source,
+        corpus.Meta(
+            "conditional-warranty",
+            None,
+            None,
+            "original cached source",
+            512,
+            publication={
+                "manifest": raw,
+                "chunk_products": {
+                    cid: p["product_ids"] for cid, p in all_scopes.items()
+                },
+                "chunk_scopes": all_scopes,
+            },
+        ),
+        [
+            DocumentRow(
+                d["blob_sha256"],
+                (d["url"],),
+                d["title"],
+                "",
+                (),
+                (),
+                doc_type_of(d["type"], d.get("role", "")),
+                d["lang"],
+                6,
+                "indexed",
+            )
+            for d in raw["documents"]
+        ],
+        [(6512, "GW5K-ETA-G20")],
+        [model, *units],
+    )
+    target = tmp_path / "index.sqlite"
+    store.export(source, target)
+    loaded = DocumentIndex(target, encoder=None)
+    try:
+        query = (
+            "distributor installer warranty claim"
+            if lang == "en"
+            else "Vertriebshändler Installateur Garantieantrag"
+        )
+        hits = loaded.search(query, lang, [6512], publication=Snapshot.read(raw))
+        procedure = [h for h in hits if "-warranty-" in h.chunk_id]
+        assert procedure and all(
+            h.product_ids == (6512,) and h.page == 2 for h in procedure
+        )
+        assert all("does not establish coverage" in h.scope_note for h in procedure)
+        assert all(
+            "10 years" not in h.text and "10 Jahre" not in h.text for h in procedure
+        )
+        if lang == "en":
+            # Distinct current-authority fences: the supporting original, its
+            # bytes, the cited policy relationship, and role-first purpose.
+            ds = next(
+                d["document_id"] for d in raw["documents"] if d["type"] == "datasheet"
+            )
+            en = next(
+                d["document_id"]
+                for d in raw["documents"]
+                if d["type"] == "warranty" and d["lang"].casefold() == "en"
+            )
+            for field, value, did in [
+                ("remove", None, ds),
+                ("blob_sha256", "0" * 64, ds),
+                ("product_ids", [], en),
+                ("role", "document", en),
+            ]:
+                changed = deepcopy(raw)
+                if field == "remove":
+                    changed["documents"] = [
+                        d for d in changed["documents"] if d["document_id"] != did
+                    ]
+                else:
+                    next(d for d in changed["documents"] if d["document_id"] == did)[
+                        field
+                    ] = value
+                assert not any(
+                    "-warranty-" in h.chunk_id and h.lang == "en"
+                    for h in loaded.search(
+                        query, "en", [6512], publication=Snapshot.read(changed)
+                    )
+                )
+    finally:
+        loaded.close()
+
+
+def test_claims_chain_cannot_use_generated_cover_or_numeric_warranty_benefits() -> None:
+    raw, original, model, model_scope = warranty_fixture()
+    from linker_genie.warranty_scope import claims_procedure
+
+    assert not claims_procedure(
+        "Contact your distributor and installer to claim a 10 year warranty."
+    )
+    fake = [
+        replace(c, section="", text="", header="ESA Series 5-30kW")
+        if c.doc_sha256 == model.doc_sha256 and c.page == 1
+        else c
+        for c in original
+    ]
+    units, _ = compile_procedures(
+        fake,
+        [model],
+        {model.id: model_scope},
+        Snapshot.read(raw),
+        Words(),
+        512,
+        restricted_contexts=_author_contexts(
+            fake, Snapshot.read(raw), _recognized(fake, authority(raw))
+        ),
+    )
+    assert not units
+    for heading in ["GW5K-ETA-G20 only", "Energy Cabinet Pro"]:
+        restricted = [
+            replace(c, section=heading, source_headings=(heading,))
+            if claims_procedure(c.text)
+            else c
+            for c in original
+        ]
+        client = authority(raw, extra_models={"Energy Cabinet Pro": "unavailable"})
+        contexts = _author_contexts(
+            restricted, Snapshot.read(raw), _recognized(restricted, client)
+        )
+        units, _ = compile_procedures(
+            restricted,
+            [model],
+            {model.id: model_scope},
+            Snapshot.read(raw),
+            Words(),
+            512,
+            restricted_contexts=contexts,
+        )
+        assert not units
 
 
 def manifest() -> dict[str, Any]:
