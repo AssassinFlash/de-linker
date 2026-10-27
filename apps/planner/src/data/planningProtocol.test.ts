@@ -109,6 +109,35 @@ test("report output keeps serialized fields mandatory and old column layout opti
 		},
 	])
 		assert.throws(() => readPlanningReport({ ...report, sections: [section] }));
+	// Exact native Berlin source URL from the managed reference/report seam.
+	const pvgisHref =
+		"https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-SARAH3&startyear=2023&endyear=2023&pvcalculation=1&peakpower=11.04&loss=14.0&pvtechchoice=crystSi&mountingplace=free&angle=30.0&aspect=0.0&trackingtype=0&usehorizon=0&components=1&optimalinclination=0&optimalangles=0&outputformat=json";
+	const pvgisSection = {
+		...report.sections[0],
+		id: "pvgis-roof-reference-0",
+		rows: [{ label: "Original request", value: "PVGIS 5.3", href: pvgisHref }],
+	};
+	assert.doesNotThrow(() =>
+		readPlanningReport({ ...report, sections: [pvgisSection] }),
+	);
+	for (const [id, href] of [
+		["checks", pvgisHref],
+		[pvgisSection.id, pvgisHref.replace("re.jrc.ec.europa.eu", "example.com")],
+		[pvgisSection.id, pvgisHref.replace("/seriescalc?", "/tmy?")],
+		[pvgisSection.id, pvgisHref.replace("https://", "https://user:secret@")],
+		[pvgisSection.id, `${pvgisHref}#fragment`],
+		[pvgisSection.id, `${pvgisHref}&callback=other`],
+		[pvgisSection.id, `${pvgisHref}&lat=52.52`],
+		[pvgisSection.id, pvgisHref.replace("&components=1", "")],
+	])
+		assert.throws(() =>
+			readPlanningReport({
+				...report,
+				sections: [
+					{ ...pvgisSection, id, rows: [{ ...pvgisSection.rows[0], href }] },
+				],
+			}),
+		);
 	const sha = "a".repeat(64),
 		modelSha = "b".repeat(64),
 		materialsSha = "c".repeat(64),

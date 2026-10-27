@@ -7285,10 +7285,10 @@
       "Existing3.84sconsumer/report fixture proves new direct-run Genie typedfacts+20modules inEN/DE while private notes/coordinates/providerURLs remain excluded; mypy2/ruffPASS"
     ],
     "packaging": {
-      "build/planner/assets/planner.js": "b1df190270534918bde6267290930b9e57bfd7d03c175881cf013e2fef015e91",
-      "build/planner/vite-manifest.json": "ad7e4a0bac37f4dbd4bbb1fa70f6d83dde3bb5ee6d877ecceb438028299e17dd",
-      "build/planner/source-manifest.json": "f93f92f8be748f3319c05aedf9fec45d64c2c91cc396ae9459f0bf35f526defb",
-      "build/manifest.json": "7567244722b444b4321f623c757c01e7988d652b8ff5264272f59983889ae135",
+      "build/planner/assets/planner.js": "5c8d2e8d0626ba1adde983d77af22d303f24168537f3c457f4fec613a46e5dcb",
+      "build/planner/vite-manifest.json": "6fe4fbebfab4fba654201e26ba9128b9e0007d51de91381b6d248244400f5c81",
+      "build/planner/source-manifest.json": "9d5ef827f0b25108ffa2430f5466d924b812021ace646099c8029f74737817dd",
+      "build/manifest.json": "f922f351ae20885dbc8a615566eed907220caaa40b8d96b0fe2bb7efdfc23cdb",
       "languages/linker-tools-de_DE_formal.po": "411eae1efe479f5228068498078ab0c67842311525b450afba52ff800fbf9f51",
       "languages/linker-tools-de_DE_formal.mo": "8eca5c1c13927b64a4cf437fa3577bf31227f5f5960c98ebca9e75b88df44059",
       "languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json": "ea957685f232b019dfb25ae6ab3fd50156899fbad7056b0670ed6efd91df73ea"
@@ -7328,6 +7328,36 @@
     "native_fixes": {
       "derived_angle": "Spec+Standards independently approved; decimal candidate based on platform float_info.dig accepted only<=math.ulp; larger differences unchanged and globalparser/true1degree refusal unchanged. Same existingfixture secondarray30 exactrequest; oncePASS2.87s,mypy2/ruff/formatPASS",
       "style": "Nativebeforeimage exposed missing sharedtable/gridclasses. Two JSXclass substitutions reuse existing lp-data-table/lp-geometry-fields; no newCSS/copy/behavior. Singleaffectedproductionbuild/tsc+outermanifestPASS; nativeafterpending"
+    },
+    "native_source_decimal_readback": {
+      "original_sha256": "9018be7b46a109333eb20aeb40668c6977cc05e7f3fea1118915167d95eba509",
+      "rows": 8760,
+      "first_sample": "20230101:0011",
+      "last_sample": "20231231:2311",
+      "decimal_sum_p_w_times_declared_1h_over1000_kwh": "11008.95012",
+      "native_profile_agrees": true,
+      "temporal_policy": "SARAH instantaneoussample treated representative of containingUTC hour, not measuredhourly means",
+      "existing_2h_window_samples": [
+        {
+          "time": "20230616:0911",
+          "P_W": "968.65"
+        },
+        {
+          "time": "20230616:1011",
+          "P_W": "3347.33"
+        }
+      ],
+      "existing_2h_source_energy_kwh": "4.31598",
+      "scope": "One retained-body Decimal read; no provider call/annual energy replay or independent field-accuracy claim"
+    },
+    "native_report_consumer_fix": {
+      "report_run": "9acfe9f15dc643369dd0433f7a7009df",
+      "actual_http_status": 200,
+      "payload_bytes": 23986,
+      "finding": "Existing browser report link allowlist rejected official JRCseriescalc sourcehref innewPVGIS section; backend report/job/PDF alreadyvalid",
+      "correction": "Only knownPVGISsource-section +fixedcredential-free official5.3seriescalc endpoint, completeuniqueallowedrequestkeys, jsonoutput; all otherhrefrestrictions preserved",
+      "evidence": "Sameexistingreportreadercase exactnativehref +8host/path/credential/fragment/keymutationsPASS; actualnativepayload readPlanningReport/readReportResult/readRunPASS; tsc/singleVite+manifestcheckPASS; independentrootSpec+StandardsdiffreviewPASS",
+      "native_download": "pending correctedbrowserasset; no report/job/provider rerun required"
     }
   }
 }

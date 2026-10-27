@@ -51,6 +51,43 @@ const pvModelMethods = new Set([
 	"https://pvlib-python.readthedocs.io/en/v0.16.1/reference/generated/pvlib.ivtools.sdm.fit_desoto.html",
 	"https://pvlib-python.readthedocs.io/en/v0.16.1/reference/generated/pvlib.pvsystem.calcparams_desoto.html",
 ]);
+// The managed source uses the complete fixed request identity from PvgisRequest.
+// Numerical validation belongs to the frozen backend request/parser contract.
+const pvgisRequestKeys = new Set([
+	"lat",
+	"lon",
+	"raddatabase",
+	"startyear",
+	"endyear",
+	"pvcalculation",
+	"peakpower",
+	"loss",
+	"pvtechchoice",
+	"mountingplace",
+	"angle",
+	"aspect",
+	"trackingtype",
+	"usehorizon",
+	"components",
+	"optimalinclination",
+	"optimalangles",
+	"outputformat",
+]);
+function pvgisSourceReference(sectionId: string, url: URL): boolean {
+	const keys = [...url.searchParams.keys()];
+	return (
+		/^pvgis-roof-reference-[0-9]+$/.test(sectionId) &&
+		url.origin === "https://re.jrc.ec.europa.eu" &&
+		url.pathname === "/api/v5_3/seriescalc" &&
+		!url.username &&
+		!url.password &&
+		!url.hash &&
+		keys.length === pvgisRequestKeys.size &&
+		new Set(keys).size === keys.length &&
+		keys.every((key) => pvgisRequestKeys.has(key)) &&
+		url.searchParams.get("outputformat") === "json"
+	);
+}
 export function readReportOptions(value: unknown): ReportOptions {
 	if (!validateOptions(value))
 		throw new ApiError(422, "invalid_report_options");
@@ -85,7 +122,8 @@ export function readPlanningReport(value: unknown): PlanningReport {
 					throw new ApiError(502, "invalid_planning_report");
 				}
 				const methodReference =
-					section.id === "pv-iv-model" && pvModelMethods.has(url.href);
+					(section.id === "pv-iv-model" && pvModelMethods.has(url.href)) ||
+					pvgisSourceReference(section.id, url);
 				if (
 					(url.origin !== "https://de-linker.com" && !methodReference) ||
 					url.username ||
