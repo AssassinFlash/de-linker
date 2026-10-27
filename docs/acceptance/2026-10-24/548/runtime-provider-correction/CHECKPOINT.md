@@ -1615,3 +1615,10 @@ no process referenced it. Only the active carrier and verified63d348e1 baseline
 remain. No extra instance, full backup, production or mail write occurred.
 Certificate applicability/remaining engineering coverage and coordinated
 review-site/production release/readback remain in the active full goal.
+
+Draft PR683 now contains the current implementation. Main ae442a040 was
+merged for review: the only conflict was the generated Commerce German MO,
+recompiled from the merged authoritative PO. The auto-merged ProductView
+intersection passed its existing fixture and level8 typing. The main CI scope/
+reuse policy is retained alongside548 integration checks. All unaffected
+acceptance is reused; no numerical or rendering matrix was repeated.

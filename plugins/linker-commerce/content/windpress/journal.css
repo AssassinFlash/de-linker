@@ -70,8 +70,13 @@
 :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-suggestion-date { display: block; margin-top: var(--proto-space-2); color: var(--proto-neutral-500); font-size: .6875rem; }
 :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-pagination { margin-top: var(--proto-space-7); }
 :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-pagination :is(.page-numbers,.pagination) { display: flex; flex-wrap: wrap; gap: var(--proto-space-2); padding: 0; list-style: none; }
-:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-pagination :is(a,span.page-numbers) { display: inline-flex; align-items: center; justify-content: center; min-width: var(--proto-control-height); min-height: var(--proto-control-height); padding: var(--proto-space-2) var(--proto-space-3); border: var(--journal-hairline) solid var(--proto-neutral-300); border-radius: var(--proto-radius-lg); background: #fff; font-size: .8125rem; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-pagination :where(a,span.page-numbers,span.page-link) { display: inline-flex; align-items: center; justify-content: center; min-width: var(--proto-control-height); min-height: var(--proto-control-height); padding: var(--proto-space-2) var(--proto-space-3); border: var(--journal-hairline) solid var(--proto-neutral-300); border-radius: var(--proto-radius-lg); background: #fff; font-size: .8125rem; }
 :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-pagination .current { background: var(--proto-teal-700); color: #fff; border-color: var(--proto-teal-700); }
+/* LiveCanvas's native pagination heading remains available to screen readers. */
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-pagination .visually-hidden {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
 :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-empty { padding: var(--proto-space-7) 0; }
 :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-empty h3 { font-size: 1.125rem; font-weight: 600; }
 :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-empty p { margin-block: var(--proto-space-3); color: var(--proto-ink-muted-deep); font-size: .9375rem; }

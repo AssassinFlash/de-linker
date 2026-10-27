@@ -5222,6 +5222,14 @@
       "Certificate applicability is not assessed by this association viewer; the sourced firmware/annex/edition/country/DSO requirements remain open where not established.",
       "Remaining engineering coverage and final coordinated review-site/production release/readback stay in the same active goal."
     ],
-    "completed_at_utc": "2026-10-27T01:57:05.422117+00:00"
+    "completed_at_utc": "2026-10-27T01:57:05.422117+00:00",
+    "main_integration": {
+      "main_commit": "ae442a040",
+      "conflict": "Generated Commerce German MO only; retain automatically merged PO from both parents and compile it with msgfmt --check.",
+      "shared_auto_merge": "ProductView native maintained-document display and existing tool integration coexist; targeted ProductView fixture and level8 PHPStan passed.",
+      "ci_policy": "Preserve main scope/reuse planner and this branch calculation/native integration checks; first complete PR candidate runs required CI once.",
+      "reused": "All unchanged548 source/physics/native/visual/report checks plus accepted upstream document/pagination reviews; no engine rebuild, physical replay, instance or backup.",
+      "remaining": "Review-site/production acceptance and the full-goal engineering/source boundaries remain open."
+    }
   }
 }

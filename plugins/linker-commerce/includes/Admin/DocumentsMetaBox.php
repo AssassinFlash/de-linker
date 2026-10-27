@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Admin;
 
 use Linker\Commerce\Products\EngineeringData;
+use Linker\Commerce\Products\DocumentLibrary;
 use Linker\Commerce\Products\Publication;
 use Linker\Commerce\Products\Publication\DocumentFiles;
 
@@ -31,7 +32,7 @@ final class DocumentsMetaBox {
 	/**
 	 * The document types the list uses, from the migrated data.
 	 */
-	private const TYPES = array( 'datasheet', 'manual', 'warranty', 'document' );
+	private const TYPES = DocumentLibrary::TYPE_ORDER;
 
 	/**
 	 * Empty rows offered below the stored ones, so an editor can add a
@@ -79,7 +80,7 @@ final class DocumentsMetaBox {
 
 		echo '<p>' . esc_html__( 'The documents shown on the product page and used as citations: datasheets, manuals and warranty terms of our own media library.', 'linker-commerce' ) . '</p>';
 		echo '<p>' . esc_html__( 'The file itself is uploaded to the media library; the address here is the media file\'s URL. What a document may state is decided item by item — do not change a value or a claim without that confirmation.', 'linker-commerce' ) . '</p>';
-		echo '<table class="widefat striped"><thead><tr>'
+		echo '<table class="widefat striped" style="table-layout:auto"><thead><tr>'
 		. '<th style="width:36%">' . esc_html__( 'Title', 'linker-commerce' ) . '</th>'
 		. '<th style="width:38%">' . esc_html__( 'URL', 'linker-commerce' ) . '</th>'
 		. '<th style="width:12%">' . esc_html__( 'Type', 'linker-commerce' ) . '</th>'
@@ -155,7 +156,7 @@ final class DocumentsMetaBox {
 			esc_attr( $url ),
 			esc_attr__( 'URL', 'linker-commerce' )
 		);
-		echo '<td><select style="width:100%" name="' . esc_attr( $field( 'type' ) ) . '" aria-label="' . esc_attr__( 'Type', 'linker-commerce' ) . '"><option value=""></option>';
+		echo '<td><select name="' . esc_attr( $field( 'type' ) ) . '" aria-label="' . esc_attr__( 'Type', 'linker-commerce' ) . '"><option value=""></option>';
 		foreach ( array_unique( array_merge( self::TYPES, '' === $type ? array() : array( $type ) ) ) as $option ) {
 			printf(
 				'<option value="%1$s"%2$s>%1$s</option>',
@@ -164,12 +165,26 @@ final class DocumentsMetaBox {
 			);
 		}
 		echo '</select></td>';
-		echo '<td><select style="width:100%" name="' . esc_attr( $field( 'lang' ) ) . '" aria-label="' . esc_attr__( 'Language', 'linker-commerce' ) . '">';
+		echo '<td><select name="' . esc_attr( $field( 'lang' ) ) . '" aria-label="' . esc_attr__( 'Language', 'linker-commerce' ) . '">';
+		$languages = array();
+		$stored    = DocumentLibrary::language( $lang );
 		foreach ( array(
-			''   => '—',
-			'en' => 'EN',
-			'de' => 'DE',
+			''      => '—',
+			'en'    => 'EN',
+			'de'    => 'DE',
+			'mul'   => 'MUL',
+			'en/de' => 'EN/DE',
+			'de/en' => 'DE/EN',
 		) as $value => $label ) {
+			if ( '' !== $lang && $label === $stored ) {
+				$value = $lang;
+			}
+			$languages[ $value ] = $label;
+		}
+		if ( '' !== $lang && ! array_key_exists( $lang, $languages ) ) {
+			$languages[ $lang ] = $stored;
+		}
+		foreach ( $languages as $value => $label ) {
 			printf(
 				'<option value="%1$s"%2$s>%3$s</option>',
 				esc_attr( (string) $value ),

@@ -21,6 +21,13 @@ use WP_Mock;
  * @covers \Linker\Commerce\Storefront\ProductView::scenarios
  */
 final class ProductViewTest extends TestCase {
+	use \Linker\Commerce\Tests\Support\CurrentFaqProduct;
+
+	/** Reclaim the single generated PDF when a document-boundary case uses it. */
+	public function tearDown(): void {
+		$this->remove_managed_documents();
+		parent::tearDown();
+	}
 
 	/**
 	 * New engineering classification must not leak a machine value onto PDPs.
@@ -214,5 +221,39 @@ final class ProductViewTest extends TestCase {
 		$this->assertStringStartsWith( 'http://linker.test/de/kontakt/?', $url );
 		$this->assertStringContainsString( 'intent=product', $url );
 		$this->assertStringContainsString( 'product_id=7', $url );
+	}
+
+	/** Rejected URLs cannot borrow an allowed path's identity or consume its row. */
+	public function test_download_labels_come_only_from_permitted_native_rows(): void {
+		$this->current_faq_product( 12, array() );
+		$url  = 'https://de-linker.com/wp-content/uploads/2026/manual.pdf';
+		$rows = array();
+		foreach ( array( str_replace( 'de-linker.com', 'other.example', $url ), $url . '?override=1' ) as $rejected ) {
+			$rows[] = array(
+				'url'   => $rejected,
+				'title' => 'Rejected title',
+				'type'  => 'datasheet',
+				'lang'  => 'DE',
+			);
+		}
+		$rows[] = array(
+			'url'   => $url,
+			'title' => 'Current product manual',
+			'type'  => 'manual',
+			'lang'  => 'EN',
+		);
+		$this->current_faq_meta[ \Linker\Commerce\Products\EngineeringData::DOCUMENTS_META_KEY ] = $rows;
+		$this->assertSame(
+			array(
+				array(
+					'title'    => 'Current product manual',
+					'url'      => $url,
+					'type'     => 'manual',
+					'role'     => '',
+					'language' => 'EN',
+				),
+			),
+			( new ProductView() )->downloads( 12 )
+		);
 	}
 }

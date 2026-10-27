@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Presentation;
 
+use Linker\Commerce\Products\DocumentLibrary;
 use Linker\Commerce\Products\Materials;
 use Linker\Commerce\Products\EngineeringReference;
 use Linker\Commerce\Products\Publication;
@@ -1336,24 +1337,44 @@ final class ProductShortcodes {
 		if ( null === $view ) {
 			return '';
 		}
-		$product = wc_get_product( (int) $view['id'] );
-		$docs    = $product instanceof WC_Product ? Materials::documents( $product ) : array();
+		/**
+		 * Current permitted documents from the existing page assembly.
+		 *
+		 * @var list<array{title:string,url:string,type:string,role:string,language:string}> $docs
+		 */
+		$docs = $view['downloads'];
 		if ( array() === $docs ) {
-			return '<p class="tv-empty-state">' . esc_html__( 'No documents are attached to this product yet. Ask us and we will add them.', 'linker-commerce' ) . '</p>';
+			return '<p class="tv-empty-state">' . esc_html__( 'No documents are available for this product.', 'linker-commerce' ) . '</p>';
 		}
+		$rank = array(
+			'datasheet' => 0,
+			'manual'    => 1,
+			'warranty'  => 2,
+		);
+		usort(
+			$docs,
+			static fn( array $left, array $right ): int =>
+				( $rank[ DocumentLibrary::type( $left['type'], $left['role'] ) ] ?? 3 )
+				<=> ( $rank[ DocumentLibrary::type( $right['type'], $right['role'] ) ] ?? 3 )
+		);
 		$html = '';
 		foreach ( $docs as $document ) {
-			$meta  = array_filter(
+			$kind     = DocumentLibrary::type( $document['type'], $document['role'] );
+			$language = DocumentLibrary::language( $document['language'] );
+			$language = 'MUL' === $language ? __( 'Multilingual', 'linker-commerce' ) : $language;
+			$title    = trim( $document['title'] );
+			$title    = Materials::document_title_display( '' !== $title ? $title : Materials::document_kind_label( $kind ) );
+			$meta     = array_filter(
 				array(
-					Materials::document_kind_label( (string) $document['kind'] ),
+					Materials::document_kind_label( $kind ),
 					'PDF',
-					(string) $document['language'],
+					$language,
 				),
 				static fn( string $part ): bool => '' !== $part
 			);
-			$html .= '<a class="pdp-doc" href="' . esc_url( (string) $document['url'] ) . '" target="_blank" rel="noopener">';
-			$html .= '<span class="pdp-doc-icon">' . self::icon( 'file' ) . '</span>';
-			$html .= '<span class="grow">' . esc_html( (string) $document['title'] )
+			$html    .= '<a class="pdp-doc" href="' . esc_url( (string) $document['url'] ) . '" target="_blank" rel="noopener">';
+			$html    .= '<span class="pdp-doc-icon">' . self::icon( 'file' ) . '</span>';
+			$html    .= '<span class="grow">' . esc_html( $title )
 				. '<span class="pdp-doc-meta">' . esc_html( implode( ' · ', $meta ) ) . '</span>'
 				. '</span>' . self::icon( 'download' ) . '</a>';
 		}
