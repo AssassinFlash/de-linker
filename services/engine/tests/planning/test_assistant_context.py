@@ -88,8 +88,9 @@ def test_unsaved_and_pending_views_do_not_supply_numbers(
     assert unsaved["runs"] == unsaved["rows"] == []
 
 
+@pytest.mark.parametrize("locale", ["en", "de"])
 def test_report_omits_comparison_location_and_private_note(
-    workspace: Workspace, owner: Actor, context: Context
+    workspace: Workspace, owner: Actor, context: Context, locale: str
 ) -> None:
     project = workspace.create(owner, "Private source", {}, key="new")
     run = workspace.evaluate(owner, project.id, 1, context, key="run", max_attempts=1)
@@ -101,7 +102,7 @@ def test_report_omits_comparison_location_and_private_note(
         {
             "kind": "planning_report_v1",
             "report": {
-                "locale": "de",
+                "locale": locale,
                 "sections": [
                     {
                         "id": "comparison-baseline",
@@ -109,17 +110,36 @@ def test_report_omits_comparison_location_and_private_note(
                         "paragraphs": ["PRIVATE NOTE"],
                         "rows": [
                             {
-                                "label": text("location", "de"),
+                                "label": text("location", locale),
                                 "value": "PRIVATE PRECISE LOCATION",
                             },
-                            {"label": text("country", "de"), "value": "DE"},
+                            {"label": text("country", locale), "value": "DE"},
                             {"label": "Recorded energy", "value": "6.000 kWh"},
                         ],
-                    }
+                    },
+                    {
+                        "id": "certificate-device-0",
+                        "title": "Inverter · Selected model",
+                        "rows": [
+                            {
+                                "label": text(
+                                    "certificate_condition_source_note", locale
+                                ),
+                                "value": "PRIVATE DEVICE SOURCE NOTE",
+                            },
+                            {
+                                "label": text(
+                                    "certificate_condition_declared_firmware", locale
+                                ),
+                                "value": "010101",
+                            },
+                        ],
+                    },
                 ],
             },
         },
     )
-    result = assistant_context(workspace, owner, project.id, 1, [run.id], "de")
+    result = assistant_context(workspace, owner, project.id, 1, [run.id], locale)
     assert "PRIVATE" not in str(result["runs"])
     assert "6.000 kWh" in str(result["runs"]) and "DE" in str(result["runs"])
+    assert "010101" in str(result["runs"])

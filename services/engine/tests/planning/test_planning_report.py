@@ -14,7 +14,9 @@ from conftest import publication_manifest
 from fastapi.testclient import TestClient
 from pypdf import PdfReader
 
+from linker_engine import pdf
 from linker_engine.engine import Engine
+from linker_engine.models import Report
 from linker_engine.planning.assets import Assets
 from linker_engine.planning.assistant_context import assistant_context
 from linker_engine.planning.canonical import digest, encode
@@ -46,6 +48,7 @@ from linker_engine.planning.worker import Control, Worker
 from linker_engine.planning.workspace import Workspace
 from linker_engine.products import Products
 from linker_engine.publication import Publication, PublicationUnavailable
+from linker_engine.texts import t
 
 from .conftest import FixtureObject, json_object
 from .test_certificate_evidence import (
@@ -561,6 +564,36 @@ def test_device_report_keeps_each_documents_result_and_unanswered_device(
     assert (
         digest(encode(source)) == frozen_sha
     )  # Presentation never rewrites its input.
+    # The wire accepts these full-length private entries. A single token and
+    # a spaced note both need lossless continuation across PDF pages.
+    long_model = "GW-" + "W" * 4093
+    long_note = "W " * 2047 + "<&"
+    declared = inputs["equipment_condition_inputs"]["devices"][0]
+    declared.update(declared_model=long_model, source_note=long_note)
+    source["condition_review"] = review_device_conditions(inputs, source)
+    long_sections = certificate_sections(source, "en")
+    device_section = next(s for s in long_sections if s.id == "certificate-device-0")
+    assert {row.value for row in device_section.rows} >= {long_model, long_note}
+    document = pdf.render(
+        Report(
+            title="Synthetic long device entries",
+            subtitle="Lossless page continuation",
+            generated_at="2026-10-27T00:00:00Z",
+            locale="en",
+            sections=long_sections,
+        )
+    )
+    reader = PdfReader(io.BytesIO(document))
+    # Page furniture must not interrupt a field continued onto another page.
+    written = "".join(
+        "".join(line.split())
+        for number, page in enumerate(reader.pages, start=1)
+        for line in page.extract_text().splitlines()
+        if line not in {str(number), t("pdf.footer", "en"), t("pdf.credits", "en")}
+    )
+    assert long_model in written
+    assert long_note.replace(" ", "") in written
+    assert len(reader.pages) > 1
 
 
 def test_absent_device_inputs_keep_legacy_report_source_shape(

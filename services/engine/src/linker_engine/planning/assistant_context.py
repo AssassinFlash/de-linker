@@ -147,6 +147,13 @@ def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
                 # The comparison also repeats site fields outside the site section.
                 if row.get("label") == text("location", locale):
                     continue
+                # Device source notes stay in the owned report like other private
+                # project notes; they are not part of the assistant projection.
+                if str(section.get("id", "")).startswith("certificate-device-") and (
+                    row.get("label")
+                    == text("certificate_condition_source_note", locale)
+                ):
+                    continue
                 # Original report text is history; current document access is separate.
                 rows.append(
                     {"label": f"{title}: {row['label']}", "value": row["value"]}
