@@ -132,6 +132,77 @@ def services(language: str, final: bool = False) -> str:
 PAGES = {"utility": utility, "services": services}
 
 
+def capability() -> str:
+    # Capability and EPC share this saved follow function; reuse the existing
+    # real source fixture instead of storing another carousel copy.
+    source = (Path(__file__).parent / "fixtures/epc-media/old-en.html").read_text()
+    start = source.index("  var lkTestiTrack=document.getElementById('testi-track');")
+    follow = source[start : source.index("  if(lkTestiTrack){", start)]
+    return (
+        '<main id="tv-cp-page-v1">'
+        '<div class="lk-story-name mb-1">Stefan &quot;S&quot; &amp; Team</div>'
+        '<div class="lk-story-name">Dirk van de Berg</div>'
+        '<div class="lk-testi-pill-bar active" data-index="0"></div>'
+        '<div class="lk-testi-pill-bar" data-index="1"></div>'
+        + UNCHANGED
+        + "<script>testiPills.forEach(function(p, i) {\n"
+        "          p.classList.toggle('active', i === idx);\n"
+        "        });\n" + follow + "</script></main>"
+    )
+
+
+def test_capability_native_markers_preserve_source_and_author_names() -> None:
+    old = capability()
+    en, de = controls.plan_pair("capability", old, old)
+    assert en == de
+    assert controls.plan_pair("capability", en, de) == (en, de)
+    assert UNCHANGED in en and en.count("\\") == old.count("\\")
+    assert en.count('<button type="button" class="lk-testi-pill-bar') == 2
+    assert 'aria-label="Stefan &quot;S&quot; &amp; Team" aria-pressed="true"' in en
+    assert 'aria-label="Dirk van de Berg" aria-pressed="false"' in en
+    assert "p.setAttribute('aria-pressed', String(i === idx));" in en
+    start = en.index("  var lkTestiTrack=document.getElementById('testi-track');")
+    script = en[start : en.index("</script>", start)]
+    program = r"""
+const assert = require('node:assert/strict');
+const vm = require('node:vm');
+const active = {offsetLeft:0,getBoundingClientRect(){return {left:-333}}};
+const viewport = {clientWidth:342,getBoundingClientRect(){return {left:24}}};
+const track = {parentElement:viewport,scrollWidth:712,style:{},querySelector(){return active}};
+const context = {document:{getElementById(){return track}}};
+vm.runInNewContext(JSON.parse(process.argv[1]), context);
+context.lkTestiFollow();
+assert.equal(track.style.transform, 'translateX(-0px)');
+// A second selection arrives while the previous transform is still moving.
+active.offsetLeft=370;
+context.lkTestiFollow();
+assert.equal(track.style.transform, 'translateX(-370px)');
+active.offsetLeft=0;
+context.lkTestiFollow();
+assert.equal(track.style.transform, 'translateX(-0px)');
+"""
+    subprocess.run(["node", "-e", program, json.dumps(script)], check=True)
+
+
+def test_capability_refuses_partial_controls_pair_and_changed_sources() -> None:
+    old = capability()
+    final = controls.plan_pair("capability", old, old)[0]
+    for changed in (
+        old.replace('<div class="lk-story-name">Dirk van de Berg</div>', "").replace(
+            '<div class="lk-testi-pill-bar" data-index="1"></div>', ""
+        ),
+        old.replace('data-index="1"', 'data-index="2"'),
+        old.replace('class="lk-story-name"', 'class="renamed"'),
+        old.replace("testiPills.forEach", "otherPills.forEach"),
+        old.replace('<div class="lk-testi-pill-bar" data-index="1"></div>', ""),
+        final.replace('aria-pressed="false"', 'aria-pressed="true"'),
+    ):
+        with pytest.raises(ValueError):
+            controls.plan_pair("capability", changed, old)
+    with pytest.raises(ValueError, match="Partially changed language pair"):
+        controls.plan_pair("capability", old, final)
+
+
 @pytest.mark.parametrize("family", PAGES)
 def test_complete_old_pair_changes_only_control_spans(family: str) -> None:
     page = PAGES[family]
@@ -228,7 +299,7 @@ def test_service_changed_or_ambiguous_handler_is_refused(tabs: str, fault: str) 
 
 
 def test_unreviewed_page_family_is_refused() -> None:
-    with pytest.raises(ValueError, match="Only Utility, Services and Installer"):
+    with pytest.raises(ValueError, match="Unknown marketing control family"):
         controls.plan_pair("home", utility("en"), utility("de"))
 
 

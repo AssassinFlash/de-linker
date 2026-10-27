@@ -485,3 +485,47 @@ html[lang^="de"] #tv-utility-page-v1 .lk-hero-utility h1 {
 	outline: 2px solid var(--proto-teal-700);
 	outline-offset: 4px;
 }
+
+/* Capability's two existing stories fit on desktop. Safe alignment keeps
+   them centered when they fit and preserves the original start when narrow. */
+#tv-cp-page-v1 #testi-track {
+	justify-content: safe center;
+}
+
+/* Match the existing site's44px actions. Keep the original6px story marker
+   inside a named native button; its pressed state uses the existing handler. */
+#tv-cp-page-v1 #testimonials .lk-testi-arrow-btn,
+#tv-cp-page-v1 #testimonials .lk-testi-pill-bar {
+	min-width: 44px;
+	min-height: 44px;
+}
+
+#tv-cp-page-v1 #testimonials .lk-testi-pill-bar {
+	position: relative;
+	height: 44px;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	cursor: pointer;
+}
+
+#tv-cp-page-v1 #testimonials .lk-testi-pill-bar::before {
+	position: absolute;
+	top: calc(50% - 3px);
+	right: 0;
+	left: 0;
+	height: 6px;
+	border-radius: inherit;
+	background: var(--proto-line-journal);
+	content: "";
+}
+
+#tv-cp-page-v1 #testimonials .lk-testi-pill-bar.active::before {
+	background: var(--proto-navy-deep);
+}
+
+#tv-cp-page-v1 #testimonials
+	:is(.lk-testi-arrow-btn, .lk-testi-pill-bar):focus-visible {
+	outline: var(--proto-focus-ring);
+	outline-offset: var(--proto-focus-offset);
+}

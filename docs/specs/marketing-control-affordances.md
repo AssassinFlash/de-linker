@@ -109,3 +109,30 @@ pages on the existing local instance; never stop the shared database server.
 The native wrapper adopts reviewed EN/DE baselines without a model client,
 protects the four baseline keys and checks complete paired source bytes. It
 does not replace current i18n runtime classes or change the model route.
+
+Capability follow-up: the two existing story markers are clickable6px DIVs
+with no accessible name or keyboard activation, and both arrows are36px. Use
+native `button type="button"` markers, named from each existing story author,
+and set `aria-pressed` through the existing selection function. Preserve the
+current click handlers, wrapping, stories and all customer copy. The paired
+planner accepts only a complete original or final state; changed counts,
+labels, duplicate handlers or partial language pairs must fail closed.
+
+WindPress gives all four controls the site's existing44px hit area, retaining
+the original6px visible marker, selection colors and focus tokens. Center the
+two cards with safe flex alignment when they fit; overflowing phone tracks
+keep their original start and existing follow logic. Verify both actual
+languages at1440/390: author names, pressed state, Enter/Space and arrow
+selection, complete active card visibility, and no horizontal page overflow.
+Use the existing snapshot-backed instance and paired-write/backup/readback
+mechanism. No new carousel implementation, quote, wording or page layout.
+
+The actual phone resize/Space sequence also exposed a pre-existing follow
+race: the counter selected story1 while story2 remained visible. The current
+calculation combines an in-flight transformed rectangle with the last requested
+translation. Use the active card's native layout `offsetLeft`, retaining the
+existing clamping, transition and click/resize handlers. Remove the obsolete
+requested-offset state. Include these exact spans in the same complete paired
+planner guard. The existing real EPC fixture carries the identical saved
+function; reuse it for one interrupted-transition regression, then verify the
+actual phone controls return to the selected card.
