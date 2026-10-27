@@ -8418,6 +8418,20 @@
       "source_commit": "3d6aa97d2574b5594856adb2a5d255ac8e348e64",
       "pr": 706,
       "merge_commit": "b1777caa495e4e4215d6bc02d78da20140d09ec1"
+    },
+    "acceptance_ci_scope": {
+      "problem": "PR710 documentation plus actual JPEG receipt selected full runtime checks because JPEG was absent from acceptance artifact classification",
+      "cancelled_run": 40573384729,
+      "fix": ".github/workflows/check.yml: recognize only docs/acceptance regular100644 jpg/jpeg with FF D8 FF magic; runtime and unknown paths retain full checks",
+      "changed_lines": {
+        "added": 3,
+        "removed": 1
+      },
+      "focused_validation": "One AST-extracted actual-plan probe: real JPEG/doc diff accepted; invalid JPEG, invalid old side, symlink, executable, runtime/outside-acceptance/unknown rejected; existing PNG/PDF/JSON/text behavior preserved",
+      "review": "Independent worker boundary probe plus root complete3-line diff review PASS",
+      "screenshot_preserved": true,
+      "runtime_changes": false,
+      "next_gate": "One required full check for the control-plane change; no new planner runtime test run requested separately"
     }
   }
 }
