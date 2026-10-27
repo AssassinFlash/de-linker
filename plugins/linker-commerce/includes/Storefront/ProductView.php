@@ -619,8 +619,12 @@ final class ProductView {
 				}
 			}
 			foreach ( Publication::document_rows( $id ) as $row ) {
-				$key = DocumentFiles::id( (string) ( $row['url'] ?? '' ) );
-				if ( ! isset( $allowed[ $key ] ) || false === ( $row['active'] ?? true ) || '0' === (string) ( $row['active'] ?? '1' ) ) {
+				if ( false === ( $row['active'] ?? true ) || '0' === (string) ( $row['active'] ?? '1' ) ) {
+					continue;
+				}
+				$file = DocumentFiles::locate( (string) ( $row['url'] ?? '' ) );
+				$key  = null === $file ? '' : DocumentFiles::id( $file['url'] );
+				if ( ! isset( $allowed[ $key ] ) ) {
 					continue;
 				}
 				$documents[] = array(
