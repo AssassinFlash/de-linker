@@ -7250,5 +7250,70 @@
         }
       }
     }
+  },
+  "managed_roof_ac_reference": {
+    "state": "source_packaged_and_independently_reviewed; native_installation_pending",
+    "model": "pvgis_5_3_roof_ac_reference_v1",
+    "kind": "prepare_pvgis_roof_ac_reference_v1",
+    "profile_purpose": "pvgis_roof_ac_reference_profile_v1",
+    "authority": "Server-derived saved included roof modules and current Woo maintained module proof; no independent productsource or browser URL",
+    "explicit_choices": [
+      "calendar year",
+      "radiation database",
+      "reference PV technology",
+      "mounting model",
+      "system loss %",
+      "terrain horizon"
+    ],
+    "private_note": "optional; absent/null/blank accepted, nonblank exact; not sent to JRC or Genie",
+    "source_scope": "Explicitly selected JRC5.3 calendar-year system AC reference. No automatic TMY fallback, no device-specific inverter/shading/electrical or grid approval claim",
+    "durability": "Private lease-fenced journal preserves per-array originals/captures before validation, original start/deadline and cumulative complete-original bytes across attempts; retry reuses retained arrays; quarantined originals do not refetch. Remaining cap applies before each transfer. Partial-network traffic is bounded by finite attempts/per-transfer limit/deadline, not claimed globally metered",
+    "roles": "pv_available_ac only; same-roof sharedDC conflict rejected at adoption/admission/worker without clearing priorselections; distinct imported AC remains allowed",
+    "reviews": {
+      "producer": "Independent Spec+Standards PASS including4file journal increment; R1retention/budget corrected",
+      "wiring": "Independent6Python+3PHP delta PASS",
+      "consumer_report_ui": "Root Spec+Standards PASS; direct Genie projection independent final increment Spec+Standards PASS at exact frozen hashes0e774b0a/f0e64832",
+      "copy": "39 EN/formalDE pairs independently approved, nativecatalogcompiled"
+    },
+    "focused_evidence": [
+      "One existing managed multi-array fixture with realHTTP admission/version/ownedreplay/foreignprincipal and one annualaxis result",
+      "Samecase transient second-array→retry reuses firstcapture, originaldeadline/start, decreasingresponsebudget, no partialasset/result;2byteJSONquarantine/leasefence;6.89s",
+      "Existing consumer/report/comparison/private-note fixtures reused;preview/omittednote case3.03s",
+      "Existing2hDCcase bothwhole-roofpurposes rejected, distinctexternalAC allowed;3.06s",
+      "One integratedexisting UI case explicitchoices→save→request→lostresponse/exactrecovery→history→ACadoption;327ms;10protocolcasesPASS",
+      "Strictchangedmypy/ruff/format;native39translations exact inMO/scriptJSON;singleproductionbuild/tscPASS",
+      "Existing3.84sconsumer/report fixture proves new direct-run Genie typedfacts+20modules inEN/DE while private notes/coordinates/providerURLs remain excluded; mypy2/ruffPASS"
+    ],
+    "packaging": {
+      "build/planner/assets/planner.js": "b93460b90cee3cf93c4a9b870ea29493e56b7b61cbb5b0971d61dbcc4c711752",
+      "build/planner/vite-manifest.json": "0ac15f7681c1d99cdf6d5f9b7c8235e2717ea46f948f445bfae85b96422fae00",
+      "build/planner/source-manifest.json": "dd239628882c80459c0617ce960947c4cd50ee4f66b98da18ed432dedb6b6f02",
+      "build/manifest.json": "7046c1376746071cbbef5aa803b3e8da3e7c47016e713b1ffcb7082429d32de2",
+      "languages/linker-tools-de_DE_formal.po": "411eae1efe479f5228068498078ab0c67842311525b450afba52ff800fbf9f51",
+      "languages/linker-tools-de_DE_formal.mo": "8eca5c1c13927b64a4cf437fa3577bf31227f5f5960c98ebca9e75b88df44059",
+      "languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json": "ea957685f232b019dfb25ae6ab3fd50156899fbad7056b0670ed6efd91df73ea"
+    },
+    "native_plan": {
+      "existing_local_project": "c7795bc2c1e14e389622015c809ace45",
+      "owner": "user66",
+      "current_revision": 24,
+      "roof": "Owned synthetic Berlin52.52/13.405;24Woo8349 modules at460W=11.04kWp;30degree south",
+      "load": "Existing explicitlysynthetic6000kWh/8760h2023load and zeroaux; no newloadsource",
+      "required_choice": "Explicitly switch oldsharedDC toseparateAC fornewwhole-roofACprofile; retainoldhistory",
+      "loss_assumption": "14% may be chosen only as labelled generic JRC syntheticreference scenario from retainedPVGIS dossier; not known roofloss or manufacturerparameter",
+      "scope": "No nativeofficialseriescalc success or actualenergy/report/PDF claimed yet",
+      "evaluation_window": "Reuse existing2023-06-16T09:00Z..11:00Z connected schedule. Annualgeneration source remains distinct from2hstorage result; no repeatedannualenergy stressrun."
+    },
+    "downstream_scan": {
+      "affected_fix": "Direct PVGIS preparation result→Genie now preserves explicit model choices and frozen module/document IDs via owned retained-bundle projection",
+      "unchanged_generic_consumers": [
+        "AccountProjects/ownership/claim",
+        "CASbackup/restore inclprivatejournal joboutput graph",
+        "planning_report_v1/Handoffs",
+        "planning_products_v1 native draft preview/transfer",
+        "Inquiry Planning Context and authorized PDF readback"
+      ],
+      "proforma_boundary": "Proforma PDF uses actual Woo inquiry items; it does not embed planning model sections. Its issued email links to inquiry page, where frozen report access is retained. No live inquiry/mail test or model call performed."
+    }
   }
 }

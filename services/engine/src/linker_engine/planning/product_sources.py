@@ -296,6 +296,28 @@ class ProductSources:
             basis = product_basis(plan, self.equipment_basis())
             self.confirm_basis(basis, require_reference=False)
 
+    def roof_basis(self, inputs: Object) -> Object:
+        """Current included roof identity without requiring a detailed PV model."""
+        basis = self.module_basis()
+        self.check_roof_inputs(inputs, basis)
+        return basis
+
+    @staticmethod
+    def check_roof_inputs(inputs: Object, basis: Object) -> None:
+        """The same geometry/fact identity check also reads frozen historical proofs."""
+        from .geometry import panel_poses, read_geometry
+
+        geometry = read_geometry(inputs.get("geometry"))
+        included = {p.array_id for p in panel_poses(geometry) if p.included}
+        used = {a.module_spec_id for a in geometry.arrays if a.id in included}
+        if not used:
+            raise InvalidInput("roof PV preparation requires included Woo modules")
+        for module in geometry.module_specs:
+            if module.id in used:
+                if module.source.woo is None:
+                    raise InvalidInput("choose a Woo-maintained roof module")
+                ProductSources._check_module(module, basis)
+
     def pv_basis(self, inputs: Object) -> Object:
         basis = self.module_basis()
         self.check_pv_inputs(inputs, basis)
@@ -319,7 +341,10 @@ class ProductSources:
                 )
 
     def check_profile(self, metadata: Object) -> None:
-        if metadata.get("profile_type") != PROFILE_PURPOSE:
+        if metadata.get("profile_type") not in (
+            PROFILE_PURPOSE,
+            "pvgis_roof_ac_reference_profile_v1",
+        ):
             return
         basis = metadata.get("woo_module_inputs")
         if not isinstance(basis, dict):

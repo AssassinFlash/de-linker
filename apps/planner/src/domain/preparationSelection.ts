@@ -9,6 +9,12 @@ import { invalidateEnergyReplay } from "./energyScenario.ts";
 import { readSelections } from "./profiles.ts";
 import { readEquipmentPlant } from "./equipmentPlant.ts";
 import { plantEnergyDraft } from "./plantEnergy.ts";
+import {
+	PVGIS_REFERENCE_TASK,
+	referencePrepared,
+	referenceRoof,
+	assertReferenceAcTopology,
+} from "./pvgisReference.ts";
 
 export function preparationPvRole(
 	inputs: JsonObject,
@@ -53,6 +59,26 @@ export function selectPreparation(
 		return {
 			...inputs,
 			pv_preparation: { schema_version: 1, weather_asset_id: assetId },
+		};
+	}
+	if (runTask(run) === PVGIS_REFERENCE_TASK) {
+		referenceRoof(inputs);
+		if (
+			!sameJson(inputs.geometry, historical.inputs.geometry) ||
+			!sameJson(inputs.pvgis_reference, historical.inputs.pvgis_reference) ||
+			!referencePrepared(inputs)
+		)
+			throw new ApiError(409, "preparation_source_changed");
+		assertReferenceAcTopology(inputs);
+		return {
+			...invalidateEnergyReplay(inputs),
+			profile_selections: {
+				schema_version: 1,
+				selected: {
+					...readSelections(inputs.profile_selections).selected,
+					pv_available_ac: assetId,
+				},
+			},
 		};
 	}
 	if (

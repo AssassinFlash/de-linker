@@ -20,10 +20,12 @@ import {
 import { readPreparationResult } from "./readPreparationResult.ts";
 import { SEARCH_TASK, readEquipmentSearchResult } from "./equipmentSearch.ts";
 import { EQUIPMENT_TASK, readEquipmentResult } from "./readEquipmentResult.ts";
+import { PVGIS_REFERENCE_TASK } from "../domain/pvgisReference.ts";
 
 export const RUN_OPERATIONS = {
 	"runs/energy": "single_ac_energy_replay_v1",
 	"runs/pv": "prepare_roof_pv_reference_v1",
+	"runs/pvgis-reference": PVGIS_REFERENCE_TASK,
 	"runs/weather": "acquire_pvgis_tmy_weather_v1",
 	"runs/equipment": EQUIPMENT_TASK,
 	"runs/equipment-search": SEARCH_TASK,
@@ -265,6 +267,7 @@ function readRunDocument(
 			task === SEARCH_TASK ||
 			task === REPORT_TASK ||
 			task === RUN_OPERATIONS["runs/pv"] ||
+			task === PVGIS_REFERENCE_TASK ||
 			task === RUN_OPERATIONS["runs/weather"]) &&
 			models.task !== task)
 	)
@@ -273,6 +276,7 @@ function readRunDocument(
 	if (row.result !== null) {
 		if (
 			task === RUN_OPERATIONS["runs/pv"] ||
+			task === PVGIS_REFERENCE_TASK ||
 			task === RUN_OPERATIONS["runs/weather"]
 		)
 			readPreparationResult(row.result, row, manifest, task);

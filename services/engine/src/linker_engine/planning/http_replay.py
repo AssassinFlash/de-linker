@@ -29,6 +29,7 @@ from .http_documents import (
 )
 from .http_views import asset_view, project_view, run_view
 from .pv_preparation import PvReferenceKernel
+from .pvgis_reference_kernel import PvgisRoofReferenceKernel
 from .records import Actor
 from .weather_kernel import WeatherKernel
 from .workspace import Workspace
@@ -140,6 +141,7 @@ class HttpReplay:
         elif path in (
             "runs/energy",
             "runs/pv",
+            "runs/pvgis-reference",
             "runs/weather",
             "runs/equipment",
             "runs/equipment-search",
@@ -159,6 +161,8 @@ class HttpReplay:
                         if path == "runs/energy"
                         else PvReferenceKernel.kind
                         if path == "runs/pv"
+                        else PvgisRoofReferenceKernel.kind
+                        if path == "runs/pvgis-reference"
                         else EquipmentKernel.kind
                         if path == "runs/equipment"
                         else EquipmentSearchKernel.kind

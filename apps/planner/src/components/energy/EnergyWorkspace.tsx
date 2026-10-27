@@ -102,6 +102,15 @@ import { PreparationResult } from "./PreparationResult.tsx";
 import { RunBasis } from "./RunBasis.tsx";
 import { WeatherSetup } from "./WeatherSetup.tsx";
 import { PvSetup } from "./PvSetup.tsx";
+import { PvgisReferenceSetup } from "./PvgisReferenceSetup.tsx";
+import { PvgisReferenceResult } from "./PvgisReferenceResult.tsx";
+import {
+	PVGIS_REFERENCE_TASK,
+	compilePvgisReference,
+	readPvgisReference,
+	referenceDraft,
+	referenceRoof,
+} from "../../domain/pvgisReference.ts";
 import {
 	compileWeather,
 	compilePv,
@@ -857,7 +866,11 @@ export function EnergyWorkspace({
 	}
 	async function startSolar(
 		path:
-			"runs/weather" | "runs/pv" | "runs/equipment" | "runs/equipment-search",
+			| "runs/weather"
+			| "runs/pv"
+			| "runs/pvgis-reference"
+			| "runs/equipment"
+			| "runs/equipment-search",
 	) {
 		if (
 			dirty ||
@@ -874,9 +887,10 @@ export function EnergyWorkspace({
 			return;
 		try {
 			const inputs = draft.baseline.inputs;
-			const setup = path.startsWith("runs/equipment")
-				? null
-				: readSolarSetup(inputs);
+			const setup =
+				path.startsWith("runs/equipment") || path === "runs/pvgis-reference"
+					? null
+					: readSolarSetup(inputs);
 			if (path === "runs/equipment-search" && hasPlant(inputs)) {
 				if (
 					!sameJson(
@@ -897,6 +911,19 @@ export function EnergyWorkspace({
 			} else if (path === "runs/equipment") {
 				if (hasPlant(inputs)) readEquipmentPlant(inputs.equipment_plant);
 				else readEquipmentSelection(inputs.equipment_selection);
+			} else if (path === "runs/pvgis-reference") {
+				if (
+					session.runtime.models.pvgis_roof_reference !== PVGIS_REFERENCE_TASK
+				)
+					return;
+				referenceRoof(inputs);
+				if (
+					!sameJson(
+						compilePvgisReference(referenceDraft(inputs)),
+						readPvgisReference(inputs.pvgis_reference),
+					)
+				)
+					return;
 			} else if (path === "runs/weather" && setup) {
 				if (
 					!sameJson(compileWeather(setup.weather), inputs.weather_acquisition)
@@ -1084,8 +1111,12 @@ export function EnergyWorkspace({
 				</button>
 				<button
 					type="button"
-					aria-pressed={view === "pv"}
-					onClick={() => chooseView("pv")}
+					aria-pressed={view === "pv" || view === "pvgis-reference"}
+					onClick={() =>
+						chooseView(
+							selectedView === "pvgis-reference" ? "pvgis-reference" : "pv",
+						)
+					}
 				>
 					{__("PV generation", "linker-tools")}
 				</button>
@@ -1247,30 +1278,78 @@ export function EnergyWorkspace({
 					start={() => void startSolar("runs/weather")}
 				/>
 			</div>
-			<div hidden={view !== "pv"}>
-				<PvSetup
-					client={client}
-					scope={session.query_scope}
-					active={active && view === "pv"}
-					draft={draft}
-					edit={edit}
-					locale={locale}
-					disabled={blocked || operations.busy || !admitted}
-					actionsDisabled={
-						blocked ||
-						!admitted ||
-						!syntaxValid ||
-						operations.busy ||
-						operations.checking ||
-						operations.storageFailed ||
-						unconfirmed.length > 0
-					}
-					valid={pvValid}
-					onValidity={setPvValid}
-					onError={setError}
-					start={() => void startSolar("runs/pv")}
-					openDesign={openDesign}
-				/>
+			<div hidden={view !== "pv" && view !== "pvgis-reference"}>
+				<div
+					className="lp-energy-switch"
+					role="group"
+					aria-label={__("PV generation method", "linker-tools")}
+				>
+					<button
+						type="button"
+						aria-pressed={view === "pv"}
+						onClick={() => chooseView("pv")}
+					>
+						{__("Weather-based PV reference", "linker-tools")}
+					</button>
+					<button
+						type="button"
+						aria-pressed={view === "pvgis-reference"}
+						onClick={() => chooseView("pvgis-reference")}
+					>
+						{__("PVGIS annual AC reference", "linker-tools")}
+					</button>
+				</div>
+				{view === "pvgis-reference" ? (
+					<PvgisReferenceSetup
+						draft={draft}
+						edit={edit}
+						client={client}
+						scope={session.query_scope}
+						active={active && view === "pvgis-reference"}
+						locale={locale}
+						disabled={blocked || operations.busy || !admitted}
+						actionsDisabled={
+							blocked ||
+							!admitted ||
+							!syntaxValid ||
+							operations.busy ||
+							operations.checking ||
+							operations.storageFailed ||
+							unconfirmed.length > 0
+						}
+						onValidity={setPvValid}
+						start={() => void startSolar("runs/pvgis-reference")}
+						openDesign={openDesign}
+						supported={
+							session.runtime.models.pvgis_roof_reference ===
+							PVGIS_REFERENCE_TASK
+						}
+					/>
+				) : (
+					<PvSetup
+						client={client}
+						scope={session.query_scope}
+						active={active && view === "pv"}
+						draft={draft}
+						edit={edit}
+						locale={locale}
+						disabled={blocked || operations.busy || !admitted}
+						actionsDisabled={
+							blocked ||
+							!admitted ||
+							!syntaxValid ||
+							operations.busy ||
+							operations.checking ||
+							operations.storageFailed ||
+							unconfirmed.length > 0
+						}
+						valid={pvValid}
+						onValidity={setPvValid}
+						onError={setError}
+						start={() => void startSolar("runs/pv")}
+						openDesign={openDesign}
+					/>
+				)}
 			</div>
 			<div
 				hidden={view !== "equipment"}
@@ -1715,9 +1794,22 @@ export function EnergyWorkspace({
 					)}
 					{runs.run.data && (
 						<>
-							{[WEATHER_TASK, PV_TASK].includes(
-								runTask(runs.run.data) ?? "",
-							) ? (
+							{runTask(runs.run.data) === PVGIS_REFERENCE_TASK ? (
+								<PvgisReferenceResult
+									key={runs.run.data.id}
+									run={runs.run.data}
+									inputs={draft.history.current}
+									edit={edit}
+									session={session}
+									client={client}
+									recheck={recheck}
+									locale={locale}
+									blocked={blocked || !syntaxValid}
+									active={active && view === "runs"}
+								/>
+							) : [WEATHER_TASK, PV_TASK].includes(
+									runTask(runs.run.data) ?? "",
+							  ) ? (
 								<PreparationResult
 									key={runs.run.data.id}
 									run={runs.run.data}

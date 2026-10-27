@@ -17,6 +17,9 @@ import {
 } from "../src/domain/draft.ts";
 import { DeviceConditionInputs } from "../src/components/equipment/DeviceConditionInputs.tsx";
 import { ApiError } from "../src/data/protocol.ts";
+import { readRun } from "../src/data/planningProtocol.ts";
+import { selectPreparation } from "../src/domain/preparationSelection.ts";
+import { projectLanguageUrl } from "../src/data/useSiteIntegration.ts";
 import fixture from "./fixtures/preparation-flow.json" with { type: "json" };
 import plantFixture from "./fixtures/plant-energy-run.json" with { type: "json" };
 
@@ -304,6 +307,232 @@ test("mixed history opens a real PV preparation result without invoking energy-r
 		/Battery parameters|Self-sufficiency/,
 	);
 	assert.ok(calls.includes("runs/read"));
+});
+
+test("PVGIS method keeps explicit saved choices, recovers its exact request and adopts only AC", async (t) => {
+	const original = fixture.pvgis_reference_run;
+	assert.equal(
+		readRun(original, original.project_id).result.kind,
+		"prepare_pvgis_roof_ac_reference_v1",
+	);
+	const initial = structuredClone(fixture.pvgis_reference_project);
+	delete initial.inputs.pvgis_reference;
+	let current = beginDraft(initial),
+		setter,
+		returnedRun,
+		attempts = 0;
+	const sent = [],
+		calls = [],
+		task = "prepare_pvgis_roof_ac_reference_v1";
+	const referenceSession = {
+		...session,
+		runtime: { ...session.runtime, models: { pvgis_roof_reference: task } },
+	};
+	const template =
+		original.result.prepared_asset.metadata.woo_module_inputs.module;
+	const client = {
+		isCurrentScope: (value) => value === scope,
+		async query(path, body) {
+			calls.push(path);
+			if (path === "products/current")
+				return {
+					schema_version: 1,
+					provider: "woocommerce",
+					pv_modules: [template],
+					products: [],
+				};
+			if (path === "projects/runs") return { items: [], next: null };
+			if (path === "runs/read") return returnedRun;
+			if (path === "projects/read") {
+				assert.equal(body.revision, 2);
+				return current.baseline;
+			}
+			if (path === "assets/read") return returnedRun.result.prepared_asset;
+			throw new Error("Unexpected query " + path);
+		},
+		async send(path, body) {
+			assert.equal(path, "runs/pvgis-reference");
+			sent.push(body);
+			attempts++;
+			if (attempts === 1)
+				throw new Error("Synthetic lost response after admission");
+			assert.equal(
+				body,
+				sent[0],
+				"durable retry keeps original key/body/revision",
+			);
+			return returnedRun;
+		},
+	};
+	function Harness() {
+		const [draft, setDraft] = useState(current);
+		setter = setDraft;
+		return React.createElement(EnergyWorkspace, {
+			draft,
+			edit(operation) {
+				current = editDraft(current, operation(current.history.current));
+				setDraft(current);
+				return true;
+			},
+			flush: async () => true,
+			session: referenceSession,
+			client,
+			recheck() {
+				throw new Error("No identity error expected");
+			},
+			locale: "en-GB",
+			active: true,
+			blocked: false,
+			onValidity() {},
+			openProfiles() {},
+		});
+	}
+	// The existing DOM fixture owns the page; set its initial method on render.
+	function MethodHarness() {
+		window.history.replaceState(
+			null,
+			"",
+			`?project=${initial.id}&energy_view=pvgis-reference#lp-calculations`,
+		);
+		return React.createElement(Harness);
+	}
+	await mount(t, React.createElement(MethodHarness));
+	const form = () =>
+		[...document.querySelectorAll("section.lp-scenario-block")].find(
+			(node) =>
+				node.querySelector("h3")?.textContent === "PVGIS annual AC reference",
+		);
+	await until(() => form() && calls.includes("products/current"));
+	assert.ok(
+		[...form().querySelectorAll("select,input,textarea")].every(
+			(node) => node.value === "",
+		),
+		"no model choice or numeric assumption is autofilled",
+	);
+	const byLabel = (label) =>
+		[...form().querySelectorAll("label")]
+			.find(
+				(node) =>
+					node.querySelector("span")?.firstChild?.textContent.trim() === label,
+			)
+			?.querySelector("input,select,textarea");
+	async function choose(label, value) {
+		await act(async () => {
+			const node = byLabel(label);
+			node.value = value;
+			node.dispatchEvent(new window.Event("change", { bubbles: true }));
+		});
+	}
+	await choose("Radiation database", "PVGIS-ERA5");
+	await enter(byLabel("Calendar year"), "2020");
+	await choose("PV reference technology", "crystSi");
+	await choose("PVGIS mounting type", "free");
+	await enter(byLabel("PVGIS system loss setting"), "14");
+	await choose("Terrain horizon", "true");
+	const calculate = () =>
+		[...form().querySelectorAll("button")].find(
+			(node) => node.textContent === "Calculate annual AC reference",
+		);
+	assert.equal(
+		calculate().disabled,
+		true,
+		"unsaved choices cannot start a job",
+	);
+	assert.equal(current.history.current.pvgis_reference.source_note, null);
+	const language = projectLanguageUrl(
+		"https://fixture.invalid/de/",
+		window.location.href,
+		initial.id,
+	);
+	assert.equal(
+		new URL(language).searchParams.get("energy_view"),
+		"pvgis-reference",
+	);
+	await act(async () => {
+		current = prepareSave(current, crypto.randomUUID(), {
+			maxDepth: 32,
+			maxBytes: 16777216,
+		});
+		const intent = current.pending;
+		current = acknowledgeSave(current, intent, {
+			...current.baseline,
+			revision: 2,
+			inputs: intent.inputs,
+			input_sha256: "d".repeat(64),
+		});
+		setter(current);
+	});
+	// Keep the captured native result structure; only this synthetic Save's
+	// immutable identity/revision fields change. No numerical values are edited.
+	returnedRun = structuredClone(original);
+	returnedRun.revision = 2;
+	returnedRun.manifest.revision = 2;
+	returnedRun.manifest.input_sha256 = current.baseline.input_sha256;
+	returnedRun.result.revision = 2;
+	returnedRun.result.input_sha256 = current.baseline.input_sha256;
+	returnedRun.result.prepared_asset.metadata.derived_from_revision = 2;
+	await until(() => calculate() && !calculate().disabled);
+	await act(async () => calculate().click());
+	const retry = () =>
+		[...document.querySelectorAll("button")].find(
+			(node) => node.textContent === "Retry original calculation request",
+		);
+	await until(() => retry() && !retry().disabled);
+	assert.equal(attempts, 1);
+	await act(async () => retry().click());
+	await until(() => selectButton() && !selectButton().disabled);
+	assert.equal(attempts, 2);
+	assert.equal(JSON.parse(sent[0]).expected_revision, 2);
+	assert.match(
+		document.querySelector(".lp-run-result").textContent,
+		/PVGIS-ERA5/,
+	);
+	assert.match(
+		document.querySelector(".lp-run-result").textContent,
+		/SARAH3 sample/,
+	);
+	assert.equal(
+		document.querySelector(".lp-run-result pre"),
+		null,
+		"source details are semantic fields, not an internal JSON dump",
+	);
+	assert.ok(document.querySelector(".lp-run-result table"));
+	await act(async () => selectButton().click());
+	assert.equal(
+		current.history.current.profile_selections.selected.pv_available_ac,
+		returnedRun.result.prepared_asset.id,
+	);
+	assert.equal(
+		current.history.current.profile_selections.selected.pv_reference,
+		undefined,
+	);
+	const before = structuredClone(current.history.current);
+	assert.throws(
+		() =>
+			selectPreparation(
+				{ ...before, energy_scenario: { coupling: "shared_dc" } },
+				returnedRun,
+				current.baseline,
+				returnedRun.result.prepared_asset,
+			),
+		(error) => error.code === "pvgis_reference_dc_conflict",
+	);
+	assert.deepEqual(
+		current.history.current,
+		before,
+		"DC refusal preserves saved choices",
+	);
+	assert.ok(
+		calls.every((path) =>
+			[
+				"products/current",
+				"projects/runs",
+				"runs/read",
+				"projects/read",
+				"assets/read",
+			].includes(path),
+		),
+	);
 });
 
 for (const state of ["not_started", "fetching"]) {

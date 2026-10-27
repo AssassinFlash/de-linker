@@ -5,6 +5,11 @@ import { GeometryInputError } from "../../domain/validateGeometry.ts";
 
 export function energyConstraintText(constraintId: unknown): string | null {
 	switch (constraintId) {
+		case "plant_dc_duplicate_pv_source":
+			return __(
+				"The same roof PV source cannot also be counted as an additional AC source.",
+				"linker-tools",
+			);
 		case "plant_dc_pv_nameplate_mismatch":
 			return __(
 				"Each converter’s allocated DC PV nameplate rating must match the STC rating of its assigned roof PV group.",

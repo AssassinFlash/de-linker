@@ -107,3 +107,59 @@ successful energy task cannot turn those into a release.
 
 These are computational and persistence checks. They do not validate an actual
 customer installation or give a field-accuracy percentage to this weather model.
+
+
+## Managed roof-derived calendar-year AC reference
+
+The project can explicitly select `pvgis_5_3_roof_ac_reference_v1` as a second
+PV-generation method inside the same workspace. It never replaces a failed TMY
+or detailed PV task automatically. The server derives site coordinates, actual
+included module count and STC power, and each array's inclination/azimuth from
+the saved georeferenced, conflict-free layout and the current Woo-maintained
+module specification. The browser cannot submit a provider URL or an independent
+module-power table.
+
+The customer explicitly chooses the calendar year, ERA5 or SARAH3 database,
+provider technology model, mounting model, total system-loss percentage and
+terrain-horizon policy. A private explanatory note is optional. These are
+scenario choices, not device specifications or manufacturer releases. The
+versioned request is the documented JRC `seriescalc` interface; it is distinct
+from the typical-year weather interface. No database/year or roof-angle change
+is made to obtain a successful response.
+
+`runs/pvgis-reference` queues the registered
+`prepare_pvgis_roof_ac_reference_v1` worker. HTTP admission, worker execution,
+operator identity and readonly idempotency replay use the same executor set.
+The native WordPress identity/origin/nonce, source-operation timeout and
+calculation-admission policies apply unchanged. The existing configured weather
+transfer limits and PV array/hour limits bound this model; no new engineering
+or operational default is introduced.
+
+Every included array has a frozen official request and retained original,
+capture and source identity. Acquisition is supervised and cancellable. A private lease-fenced journal
+retains complete per-array originals and captures immediately, with one saved
+operation start/deadline across retries. Completed arrays reuse those bytes;
+invalid originals stay quarantined and cannot become a usable profile. The
+shared budget counts complete retained originals and supplies the remaining
+allowance before each uncaptured response. It does not claim to meter every
+byte of an interrupted stream; such transfers remain bounded by the remaining
+per-response cap, finite attempts and original deadline. No new table is used,
+and journal data never becomes a partial project asset or run result. All arrays must validate and
+have exactly matching calendar axes before their AC output is summed. A partial
+array response cannot publish a project profile. The resulting
+`pvgis_roof_ac_reference_profile_v1` is available only as `pv_available_ac`; it
+cannot be selected as DC input or sent through a second complete loss chain.
+
+New energy calculations check the exact selected profile against its frozen
+roof/model parameters and current Woo permission/specification proof. Historical
+results retain their own originals. Reports and comparison reports identify
+this method, each alternative's own roof/module quantities and assumptions,
+without summing alternatives into the current bill of materials. Optional
+private notes remain in owner-facing reports and are excluded from Genie
+summaries. Actual inverter behavior, nearby/inter-row shading, electrical
+qualification and country/grid release remain separate assessments.
+
+The production model claim requires a native official request from the real
+customer path, profile adoption and downstream energy/report readback. Synthetic
+transport fixtures establish boundaries and arithmetic only; they do not prove
+that a current Paris response has succeeded or demonstrate installation accuracy.

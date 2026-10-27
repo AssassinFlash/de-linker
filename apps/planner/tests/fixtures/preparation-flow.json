@@ -1122,5 +1122,352 @@
 		"acquisition_state": "captured",
 		"plan_sha256": "cba7b972160b1324fa878de1a68983e7deff5db8d653ebbd74938bb7358806b0",
 		"capture_sha256": "e7580ae493fae7167f91a54ebf24966cbb23ef94c19a9cbe1dc81d5af0a6c492"
+	},
+	"pvgis_reference_run": {
+		"id": "c6d6399b1c4b47a5aa4af97fe7857cea",
+		"project_id": "9df2f6ee692842e982dece7d9b649201",
+		"revision": 1,
+		"state": "succeeded",
+		"is_current": true,
+		"manifest_sha256": "1b5c2ed6a03638b63c6f35fbe01724742961a2dfa3d539fa445449e9336f6134",
+		"manifest": {
+			"context": {
+				"assets": {
+					"pvgis_reference.plan": "8b547b4053efcfe2af487bcf2be3525b53d6f1603c64560a7b66567dcfbabf92",
+					"runtime_bundle": "1c20e05ef398f0a9eeb63c721b7749e1380545c457fbdbc542c4d149286e81fc",
+					"woo.module_inputs": "19a96a2c178da7c9c66a67ba768e50b8d27ad1a6cf031e6cc27334f322d668cf"
+				},
+				"code_sha256": "1c20e05ef398f0a9eeb63c721b7749e1380545c457fbdbc542c4d149286e81fc",
+				"models": {
+					"acquisition": "official_jrc_https_get_original_v1",
+					"aggregate": "exact_same_axis_array_ac_sum_v1",
+					"generation": "pvgis_5_3_roof_ac_reference_v1",
+					"task": "prepare_pvgis_roof_ac_reference_v1"
+				},
+				"parameters": {
+					"kind": "prepare_pvgis_roof_ac_reference_v1",
+					"limits": {
+						"connect_timeout_seconds": 5.0,
+						"max_elapsed_seconds": 60.0,
+						"max_metadata_bytes": 100000,
+						"max_response_bytes": 8000000,
+						"max_weather_rows": 9000,
+						"read_timeout_seconds": 20.0
+					},
+					"max_array_steps": 20000,
+					"product_policy": "current_woo_included_roof_module_v1",
+					"total_response_bytes_policy": "shared_task_response_budget"
+				}
+			},
+			"input_sha256": "5e3208281deda13dcbe5ac7d6535cc5c8a4a38efd25cb2fbbe5110a77372bcab",
+			"project_id": "9df2f6ee692842e982dece7d9b649201",
+			"revision": 1,
+			"schema": 1
+		},
+		"result_sha256": "c8e8756cce4a7464ae7e448e604e6ff3b01fe68d496cb9e9c82181028a37f556",
+		"result": {
+			"country_assessment": {
+				"status": "not_assessed"
+			},
+			"dependencies": {
+				"array.0.capture": "0b299227fe12b1901c9ce0ee6a6fd57a6d8f28e48a93372d0062736b9fd36983",
+				"array.0.original": "27b24174f8749a17cb093c10799093c2a8f6861eea64de8ca2bf322de2bebed5",
+				"array.1.capture": "0f257f09ee3bd15fa94b9c565bf9bcd0922fdc25bebd7734886cef29e79b6627",
+				"array.1.original": "5cf38fe6847acf6461dbe3820ac97021a6286a9bb1b67c04deb46786b1311a2d",
+				"prepared_asset_content": "013bd7f6fd8fc5f9eee992831e703067ed0b83f5a1e7a581ee32b87c877d6dd6",
+				"prepared_asset_metadata": "ea609529f4e9c072863fa917232f576095bbd26293ffcaf5d76ede8608f0823b",
+				"reference_geometry": "e9c9765cea76fcdb70e6ab041173ff0c56342d99130d16f49898c0504a366c09",
+				"reference_output": "d4e9d1cc8c23603c9688009a07ba723cab0944ee6ef4fe0adb6e017695ea42c4",
+				"reference_parameters": "6e779825f213428fd1ff3f570d9a2d05f0b3e2099014a2ce0426b483cb7ce413",
+				"reference_plan": "8b547b4053efcfe2af487bcf2be3525b53d6f1603c64560a7b66567dcfbabf92",
+				"reference_woo_module": "19a96a2c178da7c9c66a67ba768e50b8d27ad1a6cf031e6cc27334f322d668cf"
+			},
+			"equipment_release": {
+				"status": "not_assessed"
+			},
+			"input_sha256": "5e3208281deda13dcbe5ac7d6535cc5c8a4a38efd25cb2fbbe5110a77372bcab",
+			"kind": "prepare_pvgis_roof_ac_reference_v1",
+			"manifest_sha256": "1b5c2ed6a03638b63c6f35fbe01724742961a2dfa3d539fa445449e9336f6134",
+			"near_shading_assessment": {
+				"status": "not_assessed"
+			},
+			"pinned_assets": {
+				"pvgis_reference.plan": "8b547b4053efcfe2af487bcf2be3525b53d6f1603c64560a7b66567dcfbabf92",
+				"runtime_bundle": "1c20e05ef398f0a9eeb63c721b7749e1380545c457fbdbc542c4d149286e81fc",
+				"woo.module_inputs": "19a96a2c178da7c9c66a67ba768e50b8d27ad1a6cf031e6cc27334f322d668cf"
+			},
+			"prepared_asset": {
+				"content_sha256": "013bd7f6fd8fc5f9eee992831e703067ed0b83f5a1e7a581ee32b87c877d6dd6",
+				"id": "502968e31920440e9235c62dd90ba23d",
+				"media_type": "application/json",
+				"metadata": {
+					"dependencies": {
+						"array.0.capture": "0b299227fe12b1901c9ce0ee6a6fd57a6d8f28e48a93372d0062736b9fd36983",
+						"array.0.original": "27b24174f8749a17cb093c10799093c2a8f6861eea64de8ca2bf322de2bebed5",
+						"array.1.capture": "0f257f09ee3bd15fa94b9c565bf9bcd0922fdc25bebd7734886cef29e79b6627",
+						"array.1.original": "5cf38fe6847acf6461dbe3820ac97021a6286a9bb1b67c04deb46786b1311a2d",
+						"reference_geometry": "e9c9765cea76fcdb70e6ab041173ff0c56342d99130d16f49898c0504a366c09",
+						"reference_output": "d4e9d1cc8c23603c9688009a07ba723cab0944ee6ef4fe0adb6e017695ea42c4",
+						"reference_parameters": "6e779825f213428fd1ff3f570d9a2d05f0b3e2099014a2ce0426b483cb7ce413",
+						"reference_plan": "8b547b4053efcfe2af487bcf2be3525b53d6f1603c64560a7b66567dcfbabf92",
+						"reference_woo_module": "19a96a2c178da7c9c66a67ba768e50b8d27ad1a6cf031e6cc27334f322d668cf"
+					},
+					"derived_from_revision": 1,
+					"geometry_sha256": "e9c9765cea76fcdb70e6ab041173ff0c56342d99130d16f49898c0504a366c09",
+					"interpretation": {
+						"end_utc": "2021-01-01T00:00:00+00:00",
+						"energy_kwh": 8707.219664,
+						"interval_count": 8784,
+						"measurement": "pv_available_ac",
+						"model_role": "official_calendar_year_roof_ac_reference",
+						"native_max_interval_seconds": 3600,
+						"origin": "modelled",
+						"reconstructed_means": false,
+						"start_utc": "2020-01-01T00:00:00+00:00"
+					},
+					"parameters_sha256": "6e779825f213428fd1ff3f570d9a2d05f0b3e2099014a2ce0426b483cb7ce413",
+					"profile_type": "pvgis_roof_ac_reference_profile_v1",
+					"provenance": {
+						"basis": "Official modelled system output; selected year and model assumptions, not measured generation or specific-device performance",
+						"label": "JRC PVGIS calendar-year roof AC reference",
+						"rights_basis": "JRC PVGIS usage conditions; source attribution and private permanent original retention"
+					},
+					"retention": "permanent",
+					"schema": 1,
+					"woo_module_inputs": {
+						"module": {
+							"parameters": {
+								"gamma_pdc_per_c": -0.0029,
+								"module_spec_id": "woo_90000001",
+								"source": {
+									"document_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
+									"kind": "datasheet",
+									"note": "Trina Solar TSM-460NEG9R.28",
+									"page": 2,
+									"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+									"woo": {
+										"product_id": 90000001,
+										"product_revision": "d2819fff951df5ea7fb842b8d7a23aaba7947f409f7d2cae24fc5803c649df31",
+										"reference_input_id": "mat_trina_solar_tsm_460neg9r_28"
+									}
+								}
+							},
+							"specification": {
+								"id": "woo_90000001",
+								"length_m": 1.762,
+								"model": "Trina Solar TSM-460NEG9R.28",
+								"source": {
+									"document_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
+									"kind": "datasheet",
+									"note": "Trina Solar TSM-460NEG9R.28",
+									"page": 2,
+									"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+									"woo": {
+										"product_id": 90000001,
+										"product_revision": "d2819fff951df5ea7fb842b8d7a23aaba7947f409f7d2cae24fc5803c649df31",
+										"reference_input_id": "mat_trina_solar_tsm_460neg9r_28"
+									}
+								},
+								"stc_power_w": 460.0,
+								"thickness_m": 0.03,
+								"width_m": 1.134
+							}
+						},
+						"publication": {
+							"compatibility_revision": "002c64c1e575da2b9c871f1637fed6df12b591358cadd4048dc403739dbadde9",
+							"documents": [
+								{
+									"blob_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
+									"document_id": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
+									"document_revision": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
+									"product_id": 90000001
+								},
+								{
+									"blob_sha256": "42cf1e6839e1934446d563087c657a79c41a2957d7930d611b316bb690e63d1c",
+									"document_id": "42cf1e6839e1934446d563087c657a79c41a2957d7930d611b316bb690e63d1c",
+									"document_revision": "42cf1e6839e1934446d563087c657a79c41a2957d7930d611b316bb690e63d1c",
+									"product_id": 90000001
+								}
+							],
+							"engineering_contract": 2,
+							"products": [
+								{
+									"product_id": 90000001,
+									"product_revision": "d2819fff951df5ea7fb842b8d7a23aaba7947f409f7d2cae24fc5803c649df31"
+								}
+							],
+							"reference_inputs": [
+								{
+									"product_id": 90000001,
+									"product_revision": "d2819fff951df5ea7fb842b8d7a23aaba7947f409f7d2cae24fc5803c649df31",
+									"reference_input_id": "mat_trina_solar_tsm_460neg9r_28",
+									"reference_revision": "d2819fff951df5ea7fb842b8d7a23aaba7947f409f7d2cae24fc5803c649df31"
+								}
+							],
+							"source_revision": "c46a7be2f74a6f999fd71251a9444111f49ac9bbb22951f743550b6d6e2c7bf0"
+						},
+						"schema_version": 1
+					}
+				},
+				"metadata_sha256": "ea609529f4e9c072863fa917232f576095bbd26293ffcaf5d76ede8608f0823b",
+				"project_id": "9df2f6ee692842e982dece7d9b649201",
+				"purpose": "pvgis_roof_ac_reference_profile_v1"
+			},
+			"profile_summary": {
+				"end_utc": "2021-01-01T00:00:00+00:00",
+				"energy_kwh": 8707.219664,
+				"interval_count": 8784,
+				"measurement": "pv_available_ac",
+				"model_role": "official_calendar_year_roof_ac_reference",
+				"native_max_interval_seconds": 3600,
+				"origin": "modelled",
+				"reconstructed_means": false,
+				"start_utc": "2020-01-01T00:00:00+00:00"
+			},
+			"project_id": "9df2f6ee692842e982dece7d9b649201",
+			"revision": 1,
+			"runtime_sha256": "1c20e05ef398f0a9eeb63c721b7749e1380545c457fbdbc542c4d149286e81fc",
+			"schema": 1
+		},
+		"error": null
+	},
+	"pvgis_reference_project": {
+		"id": "9df2f6ee692842e982dece7d9b649201",
+		"title": "Synthetic multi-array reference",
+		"revision": 1,
+		"input_sha256": "5e3208281deda13dcbe5ac7d6535cc5c8a4a38efd25cb2fbbe5110a77372bcab",
+		"inputs": {
+			"geometry": {
+				"arrays": [
+					{
+						"column_gap_m": 0.2,
+						"columns": 5,
+						"excluded_slots": [],
+						"id": "array",
+						"lower_edge_clearance_m": 0.1,
+						"module_spec_id": "module",
+						"mount_tilt_deg": 10,
+						"mounting_note": "Synthetic dimensions, not mounting-system approval",
+						"name": "Fixture array",
+						"origin_uv": [1, 2],
+						"roof_id": "roof",
+						"rotation_deg": 0,
+						"row_gap_m": 0.4,
+						"rows": 2,
+						"source_id": "survey"
+					},
+					{
+						"column_gap_m": 0.2,
+						"columns": 5,
+						"excluded_slots": [],
+						"id": "other",
+						"lower_edge_clearance_m": 0.1,
+						"module_spec_id": "module",
+						"mount_tilt_deg": 20,
+						"mounting_note": "Synthetic dimensions, not mounting-system approval",
+						"name": "Second synthetic array",
+						"origin_uv": [10, 2],
+						"roof_id": "roof",
+						"rotation_deg": 0,
+						"row_gap_m": 0.4,
+						"rows": 2,
+						"source_id": "survey"
+					}
+				],
+				"coordinate_system": {
+					"anchor": {
+						"datum": "EPSG:4326",
+						"latitude_deg": 52.52,
+						"longitude_deg": 13.405,
+						"source_id": "survey"
+					},
+					"height_reference": "relative_to_project_origin",
+					"kind": "local_enu",
+					"north_reference": "user_declared",
+					"north_source_id": "survey",
+					"unit": "m"
+				},
+				"keepouts": [],
+				"layout_rules": [
+					{
+						"edge_clearance_m": 0,
+						"obstacle_clearance_m": 0,
+						"roof_id": "roof",
+						"source_id": "survey",
+						"source_note": "Explicit zero for analytic fixture; not a recommended installation clearance"
+					}
+				],
+				"module_specs": [
+					{
+						"id": "module",
+						"length_m": 1.762,
+						"model": "Trina Solar TSM-460NEG9R.28",
+						"source": {
+							"document_sha256": "58845d212f0a3c849bd3e13911332736700e6701ec080f90ab3a9ace5c773cd7",
+							"kind": "datasheet",
+							"note": "Trina Solar TSM-460NEG9R.28",
+							"page": 2,
+							"url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+							"woo": {
+								"product_id": 90000001,
+								"product_revision": "d2819fff951df5ea7fb842b8d7a23aaba7947f409f7d2cae24fc5803c649df31",
+								"reference_input_id": "mat_trina_solar_tsm_460neg9r_28"
+							}
+						},
+						"stc_power_w": 460.0,
+						"thickness_m": 0.03,
+						"width_m": 1.134
+					}
+				],
+				"obstacles": [],
+				"roofs": [
+					{
+						"boundary_uv": [
+							[0, 0],
+							[20, 0],
+							[20, 20],
+							[0, 20]
+						],
+						"holes_uv": [],
+						"id": "roof",
+						"name": "Fixture roof",
+						"origin_enu": [10, -20, 4],
+						"source_id": "survey",
+						"u_axis_enu": [1, 0, 0],
+						"v_axis_enu": [0, 1, 0]
+					}
+				],
+				"schema_version": 1,
+				"sources": [
+					{
+						"acquired_at_utc": null,
+						"calibration_note": "Analytic metre-scale fixture; no real-world precision claim",
+						"id": "survey",
+						"kind": "synthetic_fixture",
+						"note": "Analytic synthetic dimensions only",
+						"permissions": {
+							"derive": "permitted",
+							"export": "permitted",
+							"retain": "permitted"
+						},
+						"reference_sha256": null,
+						"reference_url": null,
+						"rights_basis": "synthetic",
+						"rights_note": "Owned test data, not a site survey or product datasheet",
+						"spatial_precision_m": null
+					}
+				]
+			},
+			"pvgis_reference": {
+				"model": "pvgis_5_3_roof_ac_reference_v1",
+				"mounting_place": "free",
+				"pv_technology": "crystSi",
+				"radiation_database": "PVGIS-ERA5",
+				"schema_version": 1,
+				"system_loss_percent": 14,
+				"use_terrain_horizon": true,
+				"year": 2020
+			}
+		}
 	}
 }

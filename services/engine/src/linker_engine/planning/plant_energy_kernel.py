@@ -18,7 +18,7 @@ from .dc_plant_inputs import DcPlantEnergyInputs
 from .energy_preparation import prepare_energy
 from .equipment_candidate_choice import check_equipment_candidate
 from .equipment_plant import EquipmentPlant
-from .errors import InvalidInput, NumericalFailure, VersionUnavailable
+from .errors import EvidenceMissing, InvalidInput, NumericalFailure, VersionUnavailable
 from .execution_identity import execution_key
 from .frozen_profiles import frozen_profile
 from .frozen_run import FrozenEnergyExecution, frozen_energy_execution
@@ -38,6 +38,24 @@ from .worker import Control
 from .workspace import Workspace
 
 type PlantScenario = PlantEnergyInputs | DcPlantEnergyInputs
+
+
+def check_plant_profile_boundary(
+    scenario: PlantScenario, role: str, metadata: Object
+) -> None:
+    if (
+        isinstance(scenario, DcPlantEnergyInputs)
+        and role == "pv_available_ac"
+        and scenario.pv_reference_asset_id is not None
+        and metadata.get("profile_type")
+        in {"pvlib_reference_profile_v1", "pvgis_roof_ac_reference_profile_v1"}
+    ):
+        # Both roof producers bind to this project's exact geometry. Imported
+        # distinct external AC sources do not have either of these purposes.
+        raise EvidenceMissing(
+            "plant_dc_duplicate_pv_source: the whole roof AC profile would duplicate its retained PV groups",
+            constraint_id="plant_dc_duplicate_pv_source",
+        )
 
 
 class PlantEnergyKernel:
@@ -208,6 +226,7 @@ class PlantEnergyKernel:
         }
         for role, (measurement, asset_id) in self.profile_bindings(scenario).items():
             asset = assets.get(actor, project_id, asset_id)
+            check_plant_profile_boundary(scenario, role, asset.metadata)
             self.products.check_profile(asset.metadata)
             pinned.update(
                 profile_dependencies(

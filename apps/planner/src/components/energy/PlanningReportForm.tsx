@@ -4,6 +4,8 @@ import type { RunSummary } from "../../data/planningProtocol.ts";
 import type { ReportOptions } from "../../data/planningReport.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
+import { PVGIS_REFERENCE_TASK } from "../../domain/pvgisReference.ts";
+import { taskLabel } from "./planningLabels.ts";
 
 export function PlanningReportForm({
 	runs,
@@ -67,7 +69,9 @@ export function PlanningReportForm({
 					.filter((run) =>
 						kind === "single_ac_energy_replay_v1"
 							? isEnergyTask(run.task_kind)
-							: run.task_kind === kind,
+							: kind === "prepare_roof_pv_reference_v1"
+								? [kind, PVGIS_REFERENCE_TASK].includes(run.task_kind ?? "")
+								: run.task_kind === kind,
 					)
 					.map((run) => (
 						<option key={run.id} value={run.id}>
@@ -80,6 +84,8 @@ export function PlanningReportForm({
 								dateStyle: "short",
 								timeStyle: "short",
 							}).format(run.created_at * 1000)}
+							{kind === "prepare_roof_pv_reference_v1" &&
+								` · ${taskLabel(run.task_kind)}`}
 						</option>
 					))}
 			</select>

@@ -12,6 +12,7 @@ from .energy_inputs import Document, SchemaVersion
 from .errors import InvalidInput, VersionUnavailable
 from .power_series import Measurement
 from .pv_profile import PURPOSE
+from .pvgis_reference_profile import PROFILE_PURPOSE as ROOF_AC_PURPOSE
 from .records import Actor
 
 type ProfileRole = Measurement | Literal["pv_reference"]
@@ -48,7 +49,7 @@ def check_profile_selections(
         elif asset.purpose == PURPOSE:
             if measurement not in {"pv_available_ac", "pv_reference"}:
                 raise InvalidInput("PV source cannot become a consumption profile")
-        elif asset.purpose == "pvgis_system_profile_v1":
+        elif asset.purpose in {"pvgis_system_profile_v1", ROOF_AC_PURPOSE}:
             if measurement != "pv_available_ac":
                 raise InvalidInput("PV source cannot become a consumption profile")
         else:

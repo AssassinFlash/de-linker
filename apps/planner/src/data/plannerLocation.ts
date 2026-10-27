@@ -3,6 +3,7 @@ export const PLANNER_NAVIGATION = "linker-planner:navigation";
 const energyViews = [
 	"weather",
 	"pv",
+	"pvgis-reference",
 	"scenario",
 	"equipment",
 	"runs",

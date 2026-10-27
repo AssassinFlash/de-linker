@@ -6,6 +6,8 @@ from .assets import Asset
 from .canonical import Object
 from .errors import EvidenceMissing, InvalidInput, VersionUnavailable
 from .pv_profile import PURPOSE, reference_dependencies
+from .pvgis_reference_profile import PROFILE_PURPOSE as ROOF_AC_PURPOSE
+from .pvgis_reference_profile import reference_dependencies as roof_ac_dependencies
 from .storage import Blobs
 
 
@@ -31,6 +33,13 @@ def profile_dependencies(
             {
                 f"{name}.{key}": value
                 for key, value in reference_dependencies(asset, inputs, blobs).items()
+            }
+        )
+    elif asset.purpose == ROOF_AC_PURPOSE and role == "pv_available_ac":
+        result.update(
+            {
+                f"{name}.{key}": value
+                for key, value in roof_ac_dependencies(asset, inputs, blobs).items()
             }
         )
     elif asset.purpose != "pvgis_system_profile_v1" or role != "pv_available_ac":

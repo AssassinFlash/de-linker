@@ -28,6 +28,8 @@ from .plant_energy_kernel import PlantEnergyKernel
 from .product_sources import ProductSources, worker_product_provider
 from .pv_parameters import PvGenerationLimits
 from .pv_preparation import PvPreparationService, PvReferenceKernel
+from .pvgis_reference_kernel import PvgisRoofReferenceKernel
+from .pvgis_reference_service import PvgisRoofReferenceService
 from .report_kernel import ReportKernel, ReportService
 from .weather_fetch_plan import WeatherFetchLimits
 from .weather_kernel import WeatherKernel
@@ -138,6 +140,24 @@ class RuntimeConfig(Document):
                 workspace,
                 self.pv_preparation,
                 products=products or ProductSources(worker_product_provider),
+            ),
+            max_attempts=self.max_attempts,
+        )
+
+    def pvgis_reference_service(
+        self, workspace: Workspace, *, products: ProductSources | None = None
+    ) -> PvgisRoofReferenceService | None:
+        # Reuse installed acquisition and array/hour resource policies. These
+        # enable the named model; they do not supply engineering assumptions.
+        if self.weather_acquisition is None or self.pv_preparation is None:
+            return None
+        return PvgisRoofReferenceService(
+            workspace,
+            PvgisRoofReferenceKernel(
+                workspace,
+                products or ProductSources(worker_product_provider),
+                self.weather_acquisition,
+                max_array_steps=self.pv_preparation.max_array_steps,
             ),
             max_attempts=self.max_attempts,
         )

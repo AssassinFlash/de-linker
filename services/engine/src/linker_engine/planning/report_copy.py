@@ -3,6 +3,37 @@
 from __future__ import annotations
 
 TEXT = {
+    "pvgis_roof_reference": (
+        "PVGIS roof AC reference",
+        "PVGIS-Referenz der AC-PV-Erzeugung",
+    ),
+    "pvgis_roof_reference_scope": (
+        "PVGIS models AC generation for the saved roof in the stated calendar year, using the stated reference technology, mounting type and system loss setting. Device-specific inverter behavior, nearby obstacles and shading between module rows are outside this model. Electrical design and grid acceptance require separate assessment.",
+        "Die AC-Erzeugung der gespeicherten Dachbelegung wird mit PVGIS für das angegebene Kalenderjahr berechnet. Es gelten die angegebene Referenztechnologie, Montageart und Verlustannahme. Das gerätespezifische Verhalten eines Wechselrichters, nahe Hindernisse und die Verschattung zwischen Modulreihen bildet dieses Modell nicht ab. Elektrische Auslegung und Netzfreigabe sind gesondert zu prüfen.",
+    ),
+    "pvgis_calendar_year": ("Calendar year", "Kalenderjahr"),
+    "pvgis_radiation_database": ("Radiation database", "Strahlungsdatenbank"),
+    "pvgis_reference_technology": ("PV reference technology", "PV-Referenztechnologie"),
+    "pvgis_mounting_type": ("PVGIS mounting type", "PVGIS-Montageart"),
+    "pvgis_mounting_free": ("Free-standing (free)", "Freistehend (free)"),
+    "pvgis_mounting_building": (
+        "Building-integrated (building)",
+        "Gebäudeintegriert (building)",
+    ),
+    "pvgis_system_loss": ("PVGIS system loss setting", "PVGIS-Systemverlustannahme"),
+    "pvgis_terrain_horizon": ("Terrain horizon", "Geländehorizont"),
+    "pvgis_horizon_included": ("Included", "Berücksichtigt"),
+    "pvgis_horizon_omitted": ("Omitted", "Nicht berücksichtigt"),
+    "pvgis_reference_note": (
+        "Reference model assumption note",
+        "Annahmen zum Referenzmodell",
+    ),
+    "pvgis_ac_energy": ("Modelled AC generation", "Modellierte AC-Erzeugung"),
+    "pvgis_source_run": (
+        "Source calculation / input revision",
+        "Quellberechnung / Eingabeversion",
+    ),
+    "pvgis_array_source": ("PVGIS source for array", "PVGIS-Quelle der Modulfläche"),
     "certificate_condition_title": (
         "Project device details",
         "Geräteangaben im Projekt",

@@ -9,10 +9,16 @@ from __future__ import annotations
 from typing import cast
 
 from .brief import PlanningBrief
-from .canonical import Json, Object, encode
+from .canonical import Json, Object, digest, encode
 from .certificate_information import report_source_with_information
 from .equipment_candidate_store import EquipmentCandidateStore
 from .errors import InvalidInput
+from .pvgis_reference_inputs import PvgisReferenceInputs
+from .pvgis_reference_profile import (
+    PROFILE_PURPOSE,
+    prepared_reference_profile,
+    reference_bundle,
+)
 from .records import Actor, Run
 from .report_copy import text
 from .report_model import build_report, number
@@ -154,6 +160,10 @@ def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
                     == text("certificate_condition_source_note", locale)
                 ):
                     continue
+                if str(section.get("id", "")).startswith("pvgis-roof-reference-") and (
+                    row.get("label") == text("pvgis_reference_note", locale)
+                ):
+                    continue  # The owned report retains this free-form assumption.
                 # Original report text is history; current document access is separate.
                 rows.append(
                     {"label": f"{title}: {row['label']}", "value": row["value"]}
@@ -182,6 +192,65 @@ def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
                     "model",
                     "battery_parameter_provenance",
                 )
+            },
+            locale,
+        )
+    if kind == "prepare_pvgis_roof_ac_reference_v1":
+        asset = cast(Object, result.get("prepared_asset", {}))
+        metadata = cast(Object, asset.get("metadata", {}))
+        inputs = workspace.pinned_inputs(run.manifest)
+        if (
+            asset.get("project_id") != run.project_id
+            or asset.get("purpose") != PROFILE_PURPOSE
+            or metadata.get("derived_from_revision") != run.revision
+            or metadata.get("geometry_sha256") != digest(encode(inputs.get("geometry")))
+            or metadata.get("parameters_sha256")
+            != digest(encode(inputs.get("pvgis_reference")))
+            or result.get("profile_summary") != metadata.get("interpretation")
+            or workspace.blobs.object(str(asset.get("metadata_sha256"))) != metadata
+        ):
+            raise InvalidInput("saved roof reference differs from its source")
+        raw_sha = str(asset.get("content_sha256"))
+        prepared_reference_profile(workspace.blobs, raw_sha, metadata)
+        bundle = reference_bundle(workspace.blobs, raw_sha, metadata)
+        parameters = PvgisReferenceInputs.read(bundle["parameters"])
+        geometry, plan = cast(Object, bundle["geometry"]), cast(Object, bundle["plan"])
+        arrays = cast(list[Object], plan["arrays"])
+        modules: list[Json] = []
+        for module in cast(list[Object], geometry["module_specs"]):
+            count = sum(
+                cast(int, a["module_count"])
+                for a in arrays
+                if a["module_spec_id"] == module["id"]
+            )
+            if not count:
+                continue
+            source = cast(Object, module["source"])
+            modules.append(
+                {
+                    "model": module["model"],
+                    "quantity": count,
+                    "stc_power_w": module["stc_power_w"],
+                    "woo": source.get("woo"),
+                    "document_sha256": source.get("document_sha256"),
+                    "page": source.get("page"),
+                }
+            )
+        return _rows(
+            {
+                "profile_summary": result["profile_summary"],
+                "reference_model_choices": {
+                    **cast(
+                        Object,
+                        parameters.model_dump(mode="json", exclude={"source_note"}),
+                    ),
+                    "year": str(parameters.year),
+                },
+                "included_modules": modules,
+                "source_dependencies": metadata["dependencies"],
+                "country_assessment": result.get("country_assessment"),
+                "equipment_release": result.get("equipment_release"),
+                "near_shading_assessment": result.get("near_shading_assessment"),
             },
             locale,
         )

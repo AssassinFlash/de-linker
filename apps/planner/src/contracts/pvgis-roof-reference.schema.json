@@ -1,0 +1,88 @@
+{
+  "$defs": {
+    "SchemaVersion": {
+      "maximum": 1,
+      "minimum": 1,
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "$ref": "#/$defs/SchemaVersion"
+    },
+    "model": {
+      "const": "pvgis_5_3_roof_ac_reference_v1",
+      "title": "Model",
+      "type": "string"
+    },
+    "radiation_database": {
+      "enum": [
+        "PVGIS-ERA5",
+        "PVGIS-SARAH3"
+      ],
+      "title": "Radiation Database",
+      "type": "string"
+    },
+    "year": {
+      "maximum": 9998,
+      "minimum": 1,
+      "title": "Year",
+      "type": "integer"
+    },
+    "pv_technology": {
+      "enum": [
+        "crystSi",
+        "crystSi2025",
+        "CIS",
+        "CdTe"
+      ],
+      "title": "Pv Technology",
+      "type": "string"
+    },
+    "mounting_place": {
+      "enum": [
+        "free",
+        "building"
+      ],
+      "title": "Mounting Place",
+      "type": "string"
+    },
+    "system_loss_percent": {
+      "maximum": 100,
+      "minimum": 0,
+      "title": "System Loss Percent",
+      "type": "number"
+    },
+    "use_terrain_horizon": {
+      "title": "Use Terrain Horizon",
+      "type": "boolean"
+    },
+    "source_note": {
+      "anyOf": [
+        {
+          "maxLength": 4096,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source Note"
+    }
+  },
+  "required": [
+    "schema_version",
+    "model",
+    "radiation_database",
+    "year",
+    "pv_technology",
+    "mounting_place",
+    "system_loss_percent",
+    "use_terrain_horizon"
+  ],
+  "title": "PvgisReferenceInputs",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}
