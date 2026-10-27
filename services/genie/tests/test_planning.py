@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from typing import Any
 
 from linker_genie import planning
@@ -59,9 +60,27 @@ def source() -> tuple[dict[str, Any], PageContext]:
 
 def test_facts_hydrate_without_granting_product_or_document_permission() -> None:
     raw, page = source()
+    raw["runs"][0]["rows"].extend(
+        [
+            {
+                "label": "Reference module",
+                "value": {"model": "TSM-460NEG9R.28", "power": "460 W"},
+            },
+            {"label": "Plain reference power", "value": "460.0 W"},
+        ]
+    )
     payload, gathered = planning.record(raw, page)
     assert "not_assessed" in payload["text"] and "violated" in payload["text"]
     assert "matches_view_revision=False" in payload["text"]
+    module_row = next(
+        line.removeprefix("Reference module: ")
+        for line in payload["text"].splitlines()
+        if line.startswith("Reference module: ")
+    )
+    assert json.loads(module_row)["model"] == "TSM-460NEG9R.28"
+    for value in ("460 W", "460.0 W"):
+        power = next(key for key, item in payload["figures"].items() if item == value)
+        assert fill("{fact:" + power + "}", gathered) == value
     figure = next(
         key for key, value in payload["figures"].items() if value == "81,449 %"
     )
