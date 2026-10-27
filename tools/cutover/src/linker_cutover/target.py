@@ -304,7 +304,11 @@ class Target:
             # whole, because nothing else would carry it.
             with_children = {path.rpartition("/")[0] for path in directories}
             chunks = (
-                [(path, False) for path in files]
+                [
+                    (path, False)
+                    for path in files
+                    if "/" not in path or path.partition("/")[0] in with_children
+                ]
                 + [(path, True) for path in directories]
                 + [(path, True) for path in first_level if path not in with_children]
             )
