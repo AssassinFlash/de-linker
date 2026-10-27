@@ -667,6 +667,20 @@ test( 'unsent ordinary PDF and text survive helper Close/open as editing, then A
 	await screen.findByRole( 'button', {
 		name: 'Remove attachment ' + filename,
 	} );
+	// Remove is available during preparation; this case closes a ready PDF.
+	await waitFor( () => {
+		const chip = screen
+			.getByRole( 'button', { name: 'Remove attachment ' + filename } )
+			.closest( '.linker-genie-app__attachment' );
+		expect( chip ).not.toBeNull();
+		expect(
+			chip?.querySelector( '[role="status"], [role="alert"]' )
+		).toBeNull();
+		expect(
+			screen.getByRole< HTMLButtonElement >( 'button', { name: 'Send' } )
+				.disabled
+		).toBe( false );
+	} );
 	await act( async () =>
 		fireEvent.click( screen.getByRole( 'button', { name: 'Close' } ) )
 	);
