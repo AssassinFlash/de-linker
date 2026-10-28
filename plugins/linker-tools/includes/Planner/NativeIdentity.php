@@ -57,9 +57,13 @@ final class NativeIdentity {
 	 * A new cookie is never accepted as a presented ownership proof here.
 	 *
 	 * @param WP_REST_Request $request Native bootstrap request.
+	 * @param bool            $existing_owner_only Refuse instead of creating or repairing a session.
 	 * @return array{principal:Principal,confirmed:bool,expires:int,query_scope:string,nonce:string}|WP_Error Native bootstrap context.
 	 */
-	public function bootstrap( WP_REST_Request $request ): array|WP_Error {
+	public function bootstrap( WP_REST_Request $request, bool $existing_owner_only = false ): array|WP_Error {
+		if ( $existing_owner_only ) {
+			return $this->existing( $request );
+		}
 		if ( get_current_user_id() > 0 ) {
 			$principal = $this->resolve( $request );
 			if ( is_wp_error( $principal ) ) {
@@ -101,6 +105,49 @@ final class NativeIdentity {
 			$expiry = min( $expiry, $proof['expires'] );
 		}
 		return $this->context( new Principal( 'guest', self::guest_subject( $id ) ), $confirmed, $expiry, $id, wp_create_nonce( self::NONCE_ACTION ) );
+	}
+
+	/**
+	 * Read an existing native proof without Woo initialization or migration.
+	 *
+	 * @param WP_REST_Request $request Native existing-owner request.
+	 * @return array{principal:Principal,confirmed:bool,expires:int,query_scope:string,nonce:string}|WP_Error Existing native context.
+	 */
+	private function existing( WP_REST_Request $request ): array|WP_Error {
+		if ( get_current_user_id() > 0 ) {
+			$principal = $this->resolve( $request );
+			if ( is_wp_error( $principal ) ) {
+				return $principal;
+			}
+			$cookie = wp_parse_auth_cookie( '', 'logged_in' );
+			return $this->context( $principal, true, is_array( $cookie ) ? (int) $cookie['expiration'] : 0, wp_get_session_token(), wp_create_nonce( 'wp_rest' ) );
+		}
+		if ( false !== wp_validate_auth_cookie( '', 'logged_in' ) ) {
+			return Failure::make( 'rest_nonce', 403 );
+		}
+		if ( ! function_exists( 'WC' ) || ! class_exists( WC_Session_Handler::class ) ) {
+			return Failure::make( 'woocommerce', 503 );
+		}
+		// The public reader verifies Woo's HMAC without init(), whose cookie
+		// lifecycle can reset, renew, clone or migrate a session before refusal.
+		$session = WC()->session;
+		$session = $session instanceof WC_Session_Handler ? $session : new WC_Session_Handler();
+		$proof   = $this->guest_cookie( $session );
+		$current = (string) $session->get_customer_id();
+		$expiry  = null === $proof ? 0 : $this->row_expiry( $proof['id'] );
+		if ( null === $proof || ( '' !== $current && $current !== $proof['id'] ) || $expiry <= time() ) {
+			return Failure::make( 'guest_cookie', 401 );
+		}
+		// Use WordPress's nonce algorithm with only this verified guest/action
+		// binding. No session object or general logged-out nonce is replaced.
+		$bind = static fn ( mixed $user, mixed $action ): mixed => self::NONCE_ACTION === $action ? $proof['id'] : $user;
+		add_filter( 'nonce_user_logged_out', $bind, 20, 2 );
+		try {
+			$nonce = wp_create_nonce( self::NONCE_ACTION );
+		} finally {
+			remove_filter( 'nonce_user_logged_out', $bind, 20 );
+		}
+		return $this->context( new Principal( 'guest', self::guest_subject( $proof['id'] ) ), true, min( $expiry, $proof['expires'] ), $proof['id'], $nonce );
 	}
 
 	/**
