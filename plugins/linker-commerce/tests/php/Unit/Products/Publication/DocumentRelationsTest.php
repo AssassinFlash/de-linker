@@ -21,6 +21,38 @@ use WP_Mock;
  * @covers \Linker\Commerce\Products\Publication
  */
 final class DocumentRelationsTest extends TestCase {
+	/** Each relation read resolves one source, without retaining it for the next read. */
+	public function test_relation_read_resolves_identity_once_and_next_read_uses_current_source(): void {
+		$source = 12;
+		$reads  = 0;
+		WP_Mock::userFunction( 'has_filter', array( 'return' => true ) );
+		$this->filter_returns(
+			'linker_commerce_facts_product_id',
+			new \WP_Mock\InvokedFilterValue(
+				static function () use ( &$source, &$reads ): int {
+					++$reads;
+					return $source;
+				}
+			),
+			array( 22 )
+		);
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'return' => static fn ( int $id, string $key ): mixed => match ( $key ) {
+					EngineeringData::DOCUMENTS_META_KEY => array( array( 'url' => 'https://example.test/source-' . $id . '.pdf' ) ),
+					'_linker_documents_managed' => '',
+					default => '',
+				},
+			)
+		);
+		$this->assertSame( array( array( 'url' => 'https://example.test/source-12.pdf' ) ), Publication::document_rows( 22 ) );
+		$this->assertSame( 1, $reads, 'One relation assembly must not repeatedly resolve the same native identity.' );
+		$source = 13;
+		$this->assertSame( array( array( 'url' => 'https://example.test/source-13.pdf' ) ), Publication::document_rows( 22 ) );
+		$this->assertSame( 2, $reads, 'The next read must resolve its current source again.' );
+	}
+
 	/**
 	 * Legacy associations remain stored but no longer grant publication rights.
 	 *
