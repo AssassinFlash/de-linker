@@ -125,23 +125,38 @@ final class LanguageLinks {
 				$url = $base;
 			}
 		}
+		// Polylang's directory switch can retain a search form's old `lang`
+		// query argument. Keep query-mode URLs, but make any such argument agree
+		// with the requested target rather than filtering results by the source.
+		$native_query = array();
+		parse_str( (string) wp_parse_url( $url, PHP_URL_QUERY ), $native_query );
+		if ( array_key_exists( 'lang', $native_query ) && $lang !== $native_query['lang'] ) {
+			$url = (string) add_query_arg( 'lang', rawurlencode( $lang ), $url );
+		}
 		// The request's own query, not the query vars WordPress rewrites:
 		// a catalogue page sets orderby to its default even when the address
 		// carried none. `key` is the order key the confirmation page needs —
 		// without it Woo renders the thank-you page without order details.
 		// `admin-access` keeps the explanation selected in the other language;
 		// its visibility still requires Woo's recorded session decision.
-		$kept = array();
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- public GET navigation, exact known type only.
+		$journal_search = isset( $_GET['s'], $_GET['post_type'] ) && \is_string( $_GET['s'] ) && \is_string( $_GET['post_type'] ) && 'post' === sanitize_text_field( wp_unslash( $_GET['post_type'] ) );
+		$kept           = array();
 		foreach ( self::LANGUAGE_QUERY_KEYS as $query_key ) {
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- the public address, not a submitted form.
-			if ( ! isset( $_GET[ $query_key ] ) || ! \is_string( $_GET[ $query_key ] ) || '' === $_GET[ $query_key ] ) {
+			if ( ! isset( $_GET[ $query_key ] ) || ! \is_string( $_GET[ $query_key ] ) || ( '' === $_GET[ $query_key ] && ! ( 's' === $query_key && $journal_search ) ) ) {
 				continue;
 			}
-			$kept[ $query_key ] = rawurlencode( sanitize_text_field( wp_unslash( $_GET[ $query_key ] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- same public address.
+			$value = wp_unslash( $_GET[ $query_key ] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- encoded below and escaped at output.
+			// A journal search is visitor text: the text sanitizer would strip
+			// literal percent sequences and collapse spaces, changing the search.
+			if ( 's' !== $query_key || ! $journal_search ) {
+				$value = sanitize_text_field( $value );
+			}
+			$kept[ $query_key ] = rawurlencode( $value );
 		}
 		// Preserve the journal form's explicit scope when general search spans the site.
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- public GET navigation, exact known type only.
-		if ( isset( $kept['s'], $_GET['post_type'] ) && \is_string( $_GET['post_type'] ) && 'post' === sanitize_text_field( wp_unslash( $_GET['post_type'] ) ) ) {
+		if ( $journal_search ) {
 			$kept['post_type'] = 'post';
 		}
 		// A Contact handoff is revalidated, rather than retaining arbitrary transport JSON.

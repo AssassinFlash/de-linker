@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\I18n\Tests\Unit;
 
 use Linker\I18n\CanonicalQuery;
+use Linker\I18n\CoverAlt;
 use Linker\I18n\DynamicTemplates;
 use Linker\I18n\Plugin;
 use Linker\I18n\RenderLinks;
@@ -96,6 +97,15 @@ final class PluginTest extends TestCase {
 		array( 'action', 'created_term', Jobs::class, 'term_saved', 10, 3 ),
 		array( 'action', 'edited_term', Jobs::class, 'term_saved', 10, 3 ),
 		array( 'action', 'linker_i18n_translate', Jobs::class, 'run', 10, 4 ),
+		array( 'filter', 'get_post_metadata', CoverAlt::class, 'display', 10, 3 ),
+		array( 'filter', 'add_post_metadata', CoverAlt::class, 'before_meta', 20, 3 ),
+		array( 'filter', 'update_post_metadata', CoverAlt::class, 'before_meta', 20, 3 ),
+		array( 'filter', 'delete_post_metadata', CoverAlt::class, 'before_meta', 20, 3 ),
+		array( 'action', 'added_post_meta', CoverAlt::class, 'after_meta', 20, 3 ),
+		array( 'action', 'updated_post_meta', CoverAlt::class, 'after_meta', 20, 3 ),
+		array( 'action', 'deleted_post_meta', CoverAlt::class, 'after_meta', 20, 3 ),
+		array( 'action', 'delete_attachment', CoverAlt::class, 'before_attachment_delete', 10, 1 ),
+		array( 'action', 'deleted_post', CoverAlt::class, 'after_post_delete', 10, 1 ),
 		array( 'action', 'woocommerce_new_product', Projection::class, 'changed', 20, 1 ),
 		array( 'action', 'woocommerce_update_product', Projection::class, 'changed', 20, 1 ),
 		array( 'action', 'woocommerce_product_set_stock_status', Projection::class, 'changed', 20, 1 ),

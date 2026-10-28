@@ -35,6 +35,21 @@ final class Planner {
 	}
 
 	/**
+	 * Fingerprint non-translatable portions of a plain-text field.
+	 *
+	 * @param Document $document Plain-text document.
+	 */
+	public function literal_hash( Document $document ): string {
+		$literals = '';
+		foreach ( $document->parts as $part ) {
+			if ( is_string( $part ) && '' !== trim( $part ) ) {
+				$literals .= strlen( $part ) . ':' . $part;
+			}
+		}
+		return hash( 'sha256', $literals );
+	}
+
+	/**
 	 * Plans one field.
 	 *
 	 * @param string                                                           $value    English value.

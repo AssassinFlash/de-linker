@@ -475,6 +475,16 @@ final class Twins {
 				update_post_meta( $twin, $key, wp_slash( maybe_unserialize( $meta[0] ) ) );
 			}
 		}
+		$this->translated_post_meta( $twin, $values );
+	}
+
+	/**
+	 * Writes only translated metadata, without touching post content or structure.
+	 *
+	 * @param int                   $twin German post ID.
+	 * @param array<string, string> $values Changed translated fields.
+	 */
+	public function translated_post_meta( int $twin, array $values ): int {
 		foreach ( $values as $field => $value ) {
 			if ( ! str_starts_with( $field, Fields::META ) ) {
 				continue;
@@ -486,6 +496,7 @@ final class Twins {
 				update_post_meta( $twin, $key, wp_slash( $value ) );
 			}
 		}
+		return $twin;
 	}
 
 	/**

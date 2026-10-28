@@ -167,6 +167,16 @@ final class Plugin {
 		add_action( 'created_term', array( $jobs, 'term_saved' ), 10, 3 );
 		add_action( 'edited_term', array( $jobs, 'term_saved' ), 10, 3 );
 		add_action( Jobs::HOOK, array( $jobs, 'run' ), 10, 4 );
+		$cover_alt = new CoverAlt( $languages, $translator, $jobs, $twins, $state );
+		add_filter( 'get_post_metadata', array( $cover_alt, 'display' ), 10, 3 );
+		foreach ( array( 'add_post_metadata', 'update_post_metadata', 'delete_post_metadata' ) as $filter ) {
+			add_filter( $filter, array( $cover_alt, 'before_meta' ), 20, 3 );
+		}
+		foreach ( array( 'added_post_meta', 'updated_post_meta', 'deleted_post_meta' ) as $action ) {
+			add_action( $action, array( $cover_alt, 'after_meta' ), 20, 3 );
+		}
+		add_action( 'delete_attachment', array( $cover_alt, 'before_attachment_delete' ) );
+		add_action( 'deleted_post', array( $cover_alt, 'after_post_delete' ) );
 
 		// WooCommerce: commerce fields, the storefront, orders and their emails.
 		foreach ( array( 'woocommerce_new_product', 'woocommerce_update_product', 'woocommerce_product_set_stock_status', 'woocommerce_updated_product_stock' ) as $action ) {

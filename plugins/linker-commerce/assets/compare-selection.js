@@ -6,7 +6,8 @@
  * server-normalized source of truth — opening the page writes its list back
  * into the tab. Everything the script changes is state, never design: a
  * product's compare control gets `data-compare-selected` and `aria-pressed`,
- * the chip gets its visibility, its address and its count
+ * the chip gets its visibility, its address, its count and its position below
+ * the current header
  * (docs/specs/19-tool-pages.md). The words and the look of both belong to the
  * markup and the stylesheet, so nothing here needs translating.
  *
@@ -22,6 +23,10 @@
 
 	var storageKey = 'linkerCompareIds';
 	var aliases = {};
+	var compactChip = window.matchMedia ? window.matchMedia('(max-width: 1279px)') : null;
+	var alignmentFrame = null;
+	var alignmentTracking = false;
+	var headerObserver = null;
 
 	function identities() {
 		var map = {};
@@ -46,6 +51,59 @@
 
 	function chip() {
 		return document.querySelector('[data-compare-chip]');
+	}
+
+	function alignChip() {
+		var el = chip();
+		var header = document.getElementById('lc-header');
+		if (!el || el.hidden || !header || (compactChip && !compactChip.matches)) {
+			return;
+		}
+		// The phone admin bar scrolls away with the header. Its actual bottom
+		// includes every intermediate position; header height alone cannot.
+		el.style.setProperty('--compare-chip-top', Math.max(0, header.getBoundingClientRect().bottom) + 'px');
+	}
+
+	function scheduleChipAlignment() {
+		var el = chip();
+		if (!el || el.hidden || alignmentFrame !== null || (compactChip && !compactChip.matches)) {
+			return;
+		}
+		alignmentFrame = window.requestAnimationFrame(function () {
+			alignmentFrame = null;
+			alignChip();
+		});
+	}
+
+	function trackChip(visible) {
+		var header = document.getElementById('lc-header');
+		if (visible && header) {
+			if (!alignmentTracking) {
+				window.addEventListener('scroll', scheduleChipAlignment, { passive: true });
+				window.addEventListener('resize', scheduleChipAlignment, { passive: true });
+				if (window.ResizeObserver) {
+					headerObserver = new window.ResizeObserver(scheduleChipAlignment);
+					headerObserver.observe(header);
+				}
+				alignmentTracking = true;
+			}
+			alignChip();
+			return;
+		}
+		if (!alignmentTracking) {
+			return;
+		}
+		window.removeEventListener('scroll', scheduleChipAlignment);
+		window.removeEventListener('resize', scheduleChipAlignment);
+		if (headerObserver) {
+			headerObserver.disconnect();
+			headerObserver = null;
+		}
+		if (alignmentFrame !== null) {
+			window.cancelAnimationFrame(alignmentFrame);
+			alignmentFrame = null;
+		}
+		alignmentTracking = false;
 	}
 
 	function max() {
@@ -129,6 +187,7 @@
 
 		var el = chip();
 		if (!el) {
+			trackChip(false);
 			return;
 		}
 		el.hidden = ids.length === 0;
@@ -140,6 +199,7 @@
 		if (count) {
 			count.textContent = ids.length + '/' + limit;
 		}
+		trackChip(!el.hidden);
 	}
 
 	function toggle(id) {

@@ -1321,6 +1321,7 @@
 #tv-storefront-pdp #pdp-image-viewer {
 	max-width: calc(100vw - 24px);
 	max-height: calc(100dvh - 24px);
+	margin: auto;
 	padding: 12px 12px 16px;
 	border: 0;
 	border-radius: var(--proto-radius-card);

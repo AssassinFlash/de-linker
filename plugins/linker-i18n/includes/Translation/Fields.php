@@ -33,15 +33,19 @@ final class Fields {
 	 */
 	public const META = 'meta:';
 
+	/** German post meta for the translation of a blog post's featured-image alt. */
+	public const COVER_ALT = '_linker_i18n_cover_alt';
+
 	/**
 	 * The fields of a post: title, excerpt (a product's short description),
 	 * content (a product's description) and the translatable meta that has
 	 * a value.
 	 *
 	 * @param \WP_Post $post Post.
+	 * @param bool     $target Whether this is the German post rather than the source.
 	 * @return array<string, array{string, bool}> Field => [value, whether it is HTML].
 	 */
-	public function of_post( \WP_Post $post ): array {
+	public function of_post( \WP_Post $post, bool $target = false ): array {
 		$fields = array(
 			'post_title'   => array( $post->post_title, false ),
 			'post_excerpt' => array( $post->post_excerpt, true ),
@@ -52,6 +56,12 @@ final class Fields {
 			if ( is_string( $value ) && '' !== trim( $value ) ) {
 				$fields[ self::META . $key ] = array( $value, false );
 			}
+		}
+		if ( 'post' === $post->post_type ) {
+			$image = (int) get_post_thumbnail_id( $post->ID );
+			$alt   = $target ? get_post_meta( $post->ID, self::COVER_ALT, true ) : ( $image ? get_post_meta( $image, '_wp_attachment_image_alt', true ) : '' );
+			// Include emptiness: removing the source alt must clear its translation.
+			$fields[ self::META . self::COVER_ALT ] = array( is_string( $alt ) ? $alt : '', false );
 		}
 		return $fields;
 	}
