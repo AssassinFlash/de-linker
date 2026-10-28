@@ -8,6 +8,7 @@ import sqlite3
 from copy import deepcopy
 from dataclasses import replace
 from pathlib import Path
+from typing import Any
 from unittest.mock import patch
 
 import pytest
@@ -16,16 +17,17 @@ from test_chunking import Words
 from test_publication import authority
 from test_publication_compiler import warranty_fixture
 
-from index import build, corpus, parse, store
+from index import build, corpus, extract, parse, store
 from index.chunking import Chunk
 from index.corpus import DocumentRow
 from index.extract import Block, Page, pdf_series_cover
 from index.inventory import doc_type_of
+from index.publication import ScopeProof
 from index.table_compiler import external_axis_anchors
 from index.warranty import _family_cover, compile_procedures, compile_terms
 from linker_genie import agent
-from linker_genie.cycle import run
-from linker_genie.facts import collect, merge
+from linker_genie.cycle import Generate, run
+from linker_genie.facts import TurnFacts, collect, merge
 from linker_genie.figures import localize
 from linker_genie.hydrate import hydrate
 from linker_genie.knowledge import KnowledgeSearch, model_view
@@ -37,6 +39,7 @@ from linker_genie.schema import (
     AskBlock,
     DocumentBlock,
     HandoffBlock,
+    Locale,
     PageContext,
     TextBlock,
     TurnMessage,
@@ -46,11 +49,31 @@ from linker_genie.schema import (
 from linker_genie.warranty_scope import exclusion_category, terms_id, terms_text
 
 
-def _generation(output, facts):
-    return lambda _request, _retry: (output, facts)
+def _generation(output: TurnOutput, facts: TurnFacts) -> Generate:
+    def generate(
+        _request: TurnRequest, _retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        return output, facts
+
+    return generate
 
 
-def _compile():
+def _text(output: TurnOutput, index: int = 0) -> str:
+    block = output.blocks[index]
+    assert isinstance(block, TextBlock)
+    return block.text
+
+
+def _compile() -> tuple[
+    dict[str, Any],
+    list[Chunk],
+    Chunk,
+    ScopeProof,
+    list[Chunk],
+    dict[str, ScopeProof],
+    list[Chunk],
+    dict[str, ScopeProof],
+]:
     raw, original, model, model_scope = warranty_fixture()
     source = Snapshot.read(raw)
     procedures, procedure_scopes = compile_procedures(
@@ -100,7 +123,9 @@ def test_cover_repeated_section_inherits_range_but_conflicting_range_fails() -> 
         section="",
         text="Die ET-Serie 80-100kW kombiniert sich mit der BAT-Serie.",
     )
-    assert _family_cover([et_with_battery])[1] == ("et", "8E+1", "1E+2")
+    family = _family_cover([et_with_battery])
+    assert family is not None
+    assert family[1] == ("et", "8E+1", "1E+2")
     raw, original, model, model_scope = warranty_fixture()
     procedures, _ = compile_procedures(
         original,
@@ -228,7 +253,7 @@ def test_normal_chunk_preparation_persists_physical_cover(
         lambda _: parse.ParseStatus(pdf.stem, "fixture", "ok", 1),
     )
     monkeypatch.setattr(
-        build.extract,
+        extract,
         "extract",
         lambda *args, **kwargs: [
             Page(1, "docling", [Block(kind="text", text="Parsed content.")])
@@ -244,7 +269,7 @@ def test_normal_chunk_preparation_persists_physical_cover(
 
 @pytest.mark.parametrize("lang", ["en", "de"])
 def test_original_policy_row_conditions_reach_consumer_and_revoke(
-    tmp_path: Path, lang: str
+    tmp_path: Path, lang: Locale
 ) -> None:
     raw, original, model, model_scope, procedures, proc_scopes, terms, term_scopes = (
         _compile()
@@ -260,7 +285,9 @@ def test_original_policy_row_conditions_reach_consumer_and_revoke(
     proof = term_scopes[target.id]
     source = Snapshot.read(raw)
 
-    def allowed(candidate, current=source):
+    def allowed(
+        candidate: ScopeProof, current: Snapshot = source
+    ) -> list[dict[str, Any]]:
         return authorize_chunk(
             target.doc_sha256,
             [6512],
@@ -378,7 +405,11 @@ def test_original_policy_row_conditions_reach_consumer_and_revoke(
             )
         ):
             assert phrase in output.text
-        links = [b.url for b in answer.blocks if isinstance(b, DocumentBlock)]
+        links: list[str] = []
+        for block in answer.blocks:
+            if isinstance(block, DocumentBlock):
+                assert block.url is not None
+                links.append(block.url)
         assert any("#page=3" in link for link in links)
         assert any(("#page=5" if lang == "en" else "#page=6") in link for link in links)
         # Conditions remain attached even when a nonnumeric statement cites a row.
@@ -388,9 +419,9 @@ def test_original_policy_row_conditions_reach_consumer_and_revoke(
             ),
             facts,
         )
-        assert (
-            "first installed" if lang == "en" else "Herstellungsdatum"
-        ) in ref_only.blocks[0].text
+        assert ("first installed" if lang == "en" else "Herstellungsdatum") in _text(
+            ref_only, 0
+        )
     finally:
         index.close()
 
@@ -612,7 +643,9 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
     cover_id = proof["warranty_scope"]["datasheet"]["cover_chunk_id"]
     assert "-pdf-cover-" in cover_id and cover_id in anchors
 
-    def allowed(candidate, current_anchors):
+    def allowed(
+        candidate: ScopeProof, current_anchors: dict[str, dict[str, Any]]
+    ) -> list[dict[str, Any]]:
         return authorize_chunk(
             eha.doc_sha256,
             [6528],
@@ -735,7 +768,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
         search = KnowledgeSearch(lambda: index, publication=authority(raw))
         # Long route prefetches must retain complete policies, including both
         # production-date rows, rather than slicing through a JSON hit.
-        for pid, lang, question in (
+        prefetch_cases: tuple[tuple[int, Locale, str], ...] = (
             (
                 3556,
                 "en",
@@ -751,7 +784,8 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
                 "de",
                 "Wie lange gilt die Garantie für GW80K-ET-G10, wenn es vor dem 1. Januar 2026 hergestellt wurde?",
             ),
-        ):
+        )
+        for pid, lang, question in prefetch_cases:
             args = {"query": question, "lang": lang, "product_ids": [pid]}
             payload = search(args)
             items = [
@@ -807,6 +841,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
                 ]
                 assert hits and all(hit["qualification_required"] for hit in hits)
         for lang in ("en", "de"):
+            locale: Locale = "en" if lang == "en" else "de"
             result = search(
                 {
                     "query": "inverter damage battery pack not compatible warranty"
@@ -828,7 +863,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
             facts = collect("linker/search-knowledge", result, lang)
             answer = hydrate(
                 TurnOutput(
-                    language=lang,
+                    language=locale,
                     blocks=[TextBlock(text="Details.", refs=[battery["chunk_id"]])],
                 ),
                 facts,
@@ -837,10 +872,10 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
                 "not compatible"
                 if lang == "en"
                 else "nicht mit dem GOODWE-Wechselrichter kompatibel"
-            ) in answer.blocks[0].text
+            ) in _text(answer, 0)
             assert (
                 "first installed" if lang == "en" else "Herstellungsdatum"
-            ) in answer.blocks[0].text
+            ) in _text(answer, 0)
             claim = (
                 "GoodWe may treat inverter damage caused by an incompatible battery as not covered."
                 if lang == "en"
@@ -848,7 +883,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
             )
             request = TurnRequest(
                 conversation_id="warranty-fixture",
-                locale=lang,
+                locale=locale,
                 messages=[
                     TurnMessage(
                         role="user",
@@ -863,7 +898,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
             )
             route = Route("documents")
             bad = TurnOutput(
-                language=lang,
+                language=locale,
                 blocks=[
                     TextBlock(text=claim, refs=[]),
                     DocumentBlock(ref=battery["chunk_id"]),
@@ -876,7 +911,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
                 for block in denied.output.blocks
             )
             good = TurnOutput(
-                language=lang,
+                language=locale,
                 blocks=[
                     TextBlock(
                         text=battery["warranty_answers"]["battery_compatibility"],
@@ -891,7 +926,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
                 "not compatible"
                 if lang == "en"
                 else "nicht mit dem GOODWE-Wechselrichter kompatibel"
-            ) in shipped.output.blocks[0].text
+            ) in _text(shipped.output, 0)
             # A valid but unrelated policy row, or another model's policy, is
             # not a citation for this particular battery exclusion.
             base = next(
@@ -905,7 +940,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
                 )
             )
             wrong = TurnOutput(
-                language=lang,
+                language=locale,
                 blocks=[
                     TextBlock(text=claim, refs=[base["chunk_id"]]),
                     DocumentBlock(ref=battery["chunk_id"]),
@@ -925,7 +960,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
                 }
             )
             summary = TurnOutput(
-                language=lang,
+                language=locale,
                 blocks=[
                     TextBlock(
                         text=base["warranty_answers"]["general"],
@@ -935,7 +970,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
             )
             shipped_summary = run(summary_request, _generation(summary, facts), route)
             assert shipped_summary.grounded and not shipped_summary.fallback
-            direct = shipped_summary.output.blocks[0].text.split("\n\n", 1)[0]
+            direct = _text(shipped_summary.output, 0).split("\n\n", 1)[0]
             for phrase in (
                 ("10 years", "non-transferable", "first installed", "manufacturing")
                 if lang == "en"
@@ -943,7 +978,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
             ):
                 assert phrase in direct
             coverage = TurnOutput(
-                language=lang,
+                language=locale,
                 blocks=[
                     TextBlock(
                         text=base["warranty_answers"]["coverage"],
@@ -965,7 +1000,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
             )
             coverage_result = run(coverage_request, _generation(coverage, facts), route)
             assert coverage_result.grounded and not coverage_result.fallback
-            direct_coverage = coverage_result.output.blocks[0].text.split("\n\n", 1)[0]
+            direct_coverage = _text(coverage_result.output, 0).split("\n\n", 1)[0]
             assert (
                 "manufacturing and material defects"
                 if lang == "en"
@@ -993,7 +1028,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
                 [facts, collect("linker/search-knowledge", other_result, lang)]
             )
             wrong_model = TurnOutput(
-                language=lang,
+                language=locale,
                 blocks=[
                     TextBlock(
                         text=other["warranty_answers"]["battery_compatibility"],
@@ -1021,7 +1056,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
             assert run(explicit_model, _generation(wrong_model, mixed), route).fallback
             only_wrong = collect("linker/search-knowledge", other_result, lang)
             only_wrong_output = TurnOutput(
-                language=lang,
+                language=locale,
                 blocks=[
                     TextBlock(
                         text=other["warranty_answers"]["battery_compatibility"],
@@ -1047,7 +1082,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
                 lower_case_model, _generation(only_wrong_output, only_wrong), route
             ).fallback
             mismatched_document = TurnOutput(
-                language=lang,
+                language=locale,
                 blocks=[
                     TextBlock(
                         text=battery["warranty_answers"]["battery_compatibility"],
@@ -1058,7 +1093,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
             )
             assert run(request, _generation(mismatched_document, mixed), route).fallback
             categorical = TurnOutput(
-                language=lang,
+                language=locale,
                 blocks=[
                     TextBlock(
                         text="An incompatible battery always voids the warranty."
@@ -1070,7 +1105,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
             )
             assert run(request, _generation(categorical, facts), route).fallback
             reversed_condition = TurnOutput(
-                language=lang,
+                language=locale,
                 blocks=[
                     TextBlock(
                         text=(
@@ -1104,7 +1139,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
             )
             for statement in unsupported_claims:
                 unsafe = TurnOutput(
-                    language=lang,
+                    language=locale,
                     blocks=[TextBlock(text=statement, refs=[battery["chunk_id"]])],
                 )
                 general_request = request.model_copy(
@@ -1121,7 +1156,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
                 )
                 assert run(general_request, _generation(unsafe, facts), route).fallback
             raw_number = TurnOutput(
-                language=lang,
+                language=locale,
                 blocks=[
                     TextBlock(
                         text="The warranty lasts 99 years."
@@ -1209,7 +1244,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
                 cases, ("period", "production", "start", "effective"), strict=True
             ):
                 numeric = TurnOutput(
-                    language=lang,
+                    language=locale,
                     blocks=[
                         TextBlock(
                             text=battery["warranty_answers"][topic],
@@ -1230,8 +1265,8 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
                     topic,
                     numeric_result.failures,
                 )
-                assert value in numeric_result.output.blocks[0].text
-                direct = numeric_result.output.blocks[0].text.split("\n\n", 1)[0]
+                assert value in _text(numeric_result.output, 0)
+                direct = _text(numeric_result.output, 0).split("\n\n", 1)[0]
                 assert localize(value, lang) in direct
                 if topic == "start":
                     assert (
@@ -1274,7 +1309,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
                 (effective_question, effective_response, production_id),
             ):
                 swapped = TurnOutput(
-                    language=lang,
+                    language=locale,
                     blocks=[
                         TextBlock(
                             text=response.format(value=f"{{fact:{wrong_id}}}"),
@@ -1287,7 +1322,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
                 )
                 assert run(swapped_request, _generation(swapped, facts), route).fallback
             mixed_dates = TurnOutput(
-                language=lang,
+                language=locale,
                 blocks=[
                     TextBlock(
                         text=(
@@ -1335,7 +1370,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
                 }
             )
             report_answer = TurnOutput(
-                language=lang,
+                language=locale,
                 blocks=[
                     TextBlock(
                         text=reporting["warranty_answers"]["reporting"],
@@ -1347,13 +1382,11 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
                 report_request, _generation(report_answer, facts), route
             )
             assert shipped_report.grounded and not shipped_report.fallback
-            assert report_value in shipped_report.output.blocks[0].text
-            assert (
-                report_value in shipped_report.output.blocks[0].text.split("\n\n", 1)[0]
-            )
+            assert report_value in _text(shipped_report.output, 0)
+            assert report_value in _text(shipped_report.output, 0).split("\n\n", 1)[0]
             if lang == "de":
                 prefaced = TurnOutput(
-                    language=lang,
+                    language=locale,
                     blocks=[
                         TextBlock(
                             text="Zur Meldefrist nennen die Garantiebedingungen:",
@@ -1364,12 +1397,12 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
                 )
 
                 def retry_generation(
-                    _request,
-                    retry,
-                    _prefaced=prefaced,
-                    _answer=report_answer,
-                    _facts=facts,
-                ):
+                    _request: TurnRequest,
+                    retry: str | None,
+                    _prefaced: TurnOutput = prefaced,
+                    _answer: TurnOutput = report_answer,
+                    _facts: TurnFacts = facts,
+                ) -> tuple[TurnOutput, TurnFacts]:
                     return (_prefaced if retry is None else _answer), _facts
 
                 recovered = run(report_request, retry_generation, route)
@@ -1377,9 +1410,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
                 assert any(
                     "Remove introductory" in reason for reason in recovered.retried
                 )
-                assert (
-                    report_value in recovered.output.blocks[0].text.split("\n\n", 1)[0]
-                )
+                assert report_value in _text(recovered.output, 0).split("\n\n", 1)[0]
             wrong_deadline = next(
                 key
                 for key, value in reporting["figures"].items()
@@ -1445,7 +1476,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
                 }
             )
             wireless = TurnOutput(
-                language=lang,
+                language=locale,
                 blocks=[
                     TextBlock(text=manual_text, refs=[manual_id]),
                     DocumentBlock(ref=manual_id),
@@ -1465,7 +1496,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
                 }
             )
             mixed_answer = TurnOutput(
-                language=lang,
+                language=locale,
                 blocks=[
                     TextBlock(text=manual_text, refs=[manual_id]),
                     TextBlock(
@@ -1476,14 +1507,14 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
             )
             mixed_result = run(mixed_request, _generation(mixed_answer, joined), route)
             assert mixed_result.grounded and not mixed_result.fallback
-            assert mixed_result.output.blocks[0].text == (
+            assert _text(mixed_result.output, 0) == (
                 f"Technical source excerpt: “{manual_text}”"
                 if lang == "en"
                 else f"Technischer Quellenauszug: „{manual_text}“"
             )
-            assert (
-                "10 years" if lang == "en" else "10 Jahre"
-            ) in mixed_result.output.blocks[1].text
+            assert ("10 years" if lang == "en" else "10 Jahre") in _text(
+                mixed_result.output, 1
+            )
             distance_text = (
                 f"The antenna range is {{fact:{manual_id}.n1}}."
                 if lang == "en"
@@ -1501,7 +1532,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
                 mixed_request, _generation(numeric_mixed, joined), route
             )
             assert numeric_result.grounded and not numeric_result.fallback
-            assert "30 m" in numeric_result.output.blocks[0].text
+            assert "30 m" in _text(numeric_result.output, 0)
             wrong_manual = deepcopy(manual_facts)
             wrong_manual.knowledge_products[manual_id] = (6527,)
             assert run(
@@ -1543,11 +1574,15 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
                 for line in technical_hit["text"].splitlines()
                 if line.strip().startswith("|") and "[n" in line
             )
+
+            def replace_figure(
+                match: re.Match[str], cid: str = technical_hit["chunk_id"]
+            ) -> str:
+                return f"{{fact:{cid}.n{match.group(1)}}}"
+
             technical_quote = re.sub(
                 r"\[n([1-9]\d*)=[^\[\]\n]+\]",
-                lambda match, cid=technical_hit["chunk_id"]: (
-                    f"{{fact:{cid}.n{match.group(1)}}}"
-                ),
+                replace_figure,
                 technical_line,
             )
             real_mixed = mixed_answer.model_copy(
@@ -1565,7 +1600,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
             assert real_result.grounded and not real_result.fallback, (
                 real_result.failures
             )
-            assert real_result.output.blocks[0].text.startswith(
+            assert _text(real_result.output, 0).startswith(
                 "Technical source excerpt:"
                 if lang == "en"
                 else "Technischer Quellenauszug:"
@@ -1604,7 +1639,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
                 ),
             ):
                 false_lead = TurnOutput(
-                    language=lang,
+                    language=locale,
                     blocks=[
                         TextBlock(text=statement, refs=[manual_id]),
                         TextBlock(
@@ -1682,9 +1717,11 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
             )
         index = DocumentIndex(db, encoder=None)
         try:
-            result = KnowledgeSearch(
-                lambda index=index: index, publication=authority(raw)
-            )(
+
+            def current_index(current: DocumentIndex = index) -> DocumentIndex:
+                return current
+
+            result = KnowledgeSearch(current_index, publication=authority(raw))(
                 {
                     "query": "warranty period conditions",
                     "lang": "en",

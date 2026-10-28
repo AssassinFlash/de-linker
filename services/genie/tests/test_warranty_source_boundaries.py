@@ -6,12 +6,14 @@ import json
 from copy import deepcopy
 from dataclasses import replace
 from pathlib import Path
+from typing import Any
 
 import pytest
 from test_chunking import Words
 from test_publication_compiler import warranty_fixture
 
 from index.chunking import Chunk
+from index.publication import ScopeProof
 from index.table_compiler import external_axis_anchors
 from index.warranty import _family_cover, compile_procedures, compile_terms
 from linker_genie.publication import Snapshot
@@ -19,7 +21,13 @@ from linker_genie.publication_scope import authorize_chunk
 from linker_genie.warranty_scope import terms_id
 
 
-def _procedures(raw, original, model, model_scope, restricted=None):
+def _procedures(
+    raw: dict[str, Any],
+    original: list[Chunk],
+    model: Chunk,
+    model_scope: ScopeProof,
+    restricted: dict[str, list[dict[str, Any]]] | None = None,
+) -> tuple[list[Chunk], dict[str, ScopeProof]]:
     return compile_procedures(
         original,
         [model],
@@ -31,7 +39,12 @@ def _procedures(raw, original, model, model_scope, restricted=None):
     )
 
 
-def _allowed(chunk, proof, source, anchors):
+def _allowed(
+    chunk: Chunk,
+    proof: ScopeProof,
+    source: Snapshot,
+    anchors: dict[str, dict[str, Any]],
+) -> list[dict[str, Any]]:
     return authorize_chunk(
         chunk.doc_sha256,
         proof["product_ids"],
@@ -46,7 +59,7 @@ def _allowed(chunk, proof, source, anchors):
     )
 
 
-def test_policy_cell_must_match_whole_native_row_at_compile_and_authorization():
+def test_policy_cell_must_match_whole_native_row_at_compile_and_authorization() -> None:
     raw, original, model, model_scope = warranty_fixture()
     source = Snapshot.read(raw)
     procedures, procedure_scopes = _procedures(raw, original, model, model_scope)
@@ -117,7 +130,9 @@ def test_policy_cell_must_match_whole_native_row_at_compile_and_authorization():
         ),
     ],
 )
-def test_all_four_policy_columns_must_agree_with_native_row(column, replacement):
+def test_all_four_policy_columns_must_agree_with_native_row(
+    column: int, replacement: str
+) -> None:
     raw, original, model, model_scope = warranty_fixture()
     native = next(c for c in original if c.id == "a786dcf5aeef-p1-b113c4fc")
     cells = deepcopy(native.source_cells)
@@ -139,7 +154,7 @@ def test_all_four_policy_columns_must_agree_with_native_row(column, replacement)
     )
 
 
-def test_split_policy_row_requires_each_original_fragment_in_order():
+def test_split_policy_row_requires_each_original_fragment_in_order() -> None:
     path = (
         Path(__file__).parent / "fixtures/publication-compiler/warranty-current.json.gz"
     )
@@ -187,7 +202,7 @@ def test_split_policy_row_requires_each_original_fragment_in_order():
     assert not _allowed(term, changed, source, anchors)
 
 
-def _cover_fragment(cover, text):
+def _cover_fragment(cover: Chunk, text: str) -> Chunk:
     digest = hashlib.sha256(("text\0" + text).encode()).hexdigest()[:8]
     return replace(
         cover,
@@ -207,7 +222,9 @@ def _cover_fragment(cover, text):
     ],
 )
 @pytest.mark.parametrize("restricted", [False, True])
-def test_mixed_family_conflict_across_cover_chunks_rejects_procedure(text, restricted):
+def test_mixed_family_conflict_across_cover_chunks_rejects_procedure(
+    text: str, restricted: bool
+) -> None:
     raw, original, model, model_scope = warranty_fixture()
     cover = next(
         c for c in original if c.doc_sha256 == model.doc_sha256 and c.page == 1
@@ -233,12 +250,14 @@ def test_mixed_family_conflict_across_cover_chunks_rejects_procedure(text, restr
         "BAT Series 3-10kW battery combined with ESA Series 5-30kW",
     ],
 )
-def test_unrelated_family_does_not_create_a_conflict(text):
+def test_unrelated_family_does_not_create_a_conflict(text: str) -> None:
     raw, original, model, model_scope = warranty_fixture()
     cover = next(
         c for c in original if c.doc_sha256 == model.doc_sha256 and c.page == 1
     )
     addition = _cover_fragment(cover, text)
-    assert _family_cover([cover, addition])[1] == ("esa", "5", "3E+1")
+    family = _family_cover([cover, addition])
+    assert family is not None
+    assert family[1] == ("esa", "5", "3E+1")
     procedures, _ = _procedures(raw, [*original, addition], model, model_scope)
     assert {c.lang for c in procedures} == {"en", "de"}

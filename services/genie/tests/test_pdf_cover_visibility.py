@@ -60,9 +60,13 @@ def test_same_text_layer_is_accepted_only_when_rendered(tmp_path: Path) -> None:
     assert visible["source_sha256"] == path.stem
     assert visible["source_page"] == 1
     assert visible["page_size"] == [595, 808]
-    assert visible["line_end"] - visible["line_start"] == len(LINE)
-    assert visible["family"]["text"] == "ESA Series"
-    assert visible["power"]["text"] == "3-10kW"
+    line_end, line_start = visible["line_end"], visible["line_start"]
+    family, power = visible["family"], visible["power"]
+    assert isinstance(line_end, int) and isinstance(line_start, int)
+    assert isinstance(family, dict) and isinstance(power, dict)
+    assert line_end - line_start == len(LINE)
+    assert family["text"] == "ESA Series"
+    assert power["text"] == "3-10kW"
     assert pdf_series_cover(_pdf(tmp_path, _text("3 Tr"))) is None
 
 
@@ -177,7 +181,7 @@ def test_render_failure_restores_the_disabled_object(
 
     def record_set_active(obj: object, active: bool) -> int:
         calls.append(active)
-        return set_active(obj, active)
+        return int(set_active(obj, active))
 
     monkeypatch.setattr(pypdfium2.PdfPage, "render", fail_second_render)
     monkeypatch.setattr(pdfium, "FPDFPageObj_SetIsActive", record_set_active)
