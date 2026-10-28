@@ -163,6 +163,45 @@ export interface ContactBlock {
 	reason: ContactReason;
 }
 
+/** Server-owned immutable calculation metadata; the chat model cannot write it. */
+export type PlanningSourcesBlock =
+	| PlanningSourcesAvailableBlock
+	| {
+			type: 'planning_sources';
+			schema_version: 1;
+			status: 'unavailable';
+	  };
+export interface PlanningSourcesAvailableBlock {
+	type: 'planning_sources';
+	schema_version: 1;
+	status: 'available';
+	binding: {
+		planning_project_id: string;
+		planning_revision: number;
+		planning_run_ids: string[];
+		runs: {
+			id: string;
+			revision: number;
+			manifest_sha256: string;
+			result_sha256: string;
+		}[];
+	};
+	results: { revision: number; groups: CalculationSourceGroup[] }[];
+	url: string;
+}
+export interface CalculationSourceGroup {
+	kind: 'pv' | 'energy';
+	role: 'selected' | 'baseline' | 'candidate';
+	input_quantity?: 'pv_available_ac' | 'pv_available_dc' | null;
+	source_scope?: 'whole_reference' | 'selected_dc_group' | null;
+	timezone: string | null;
+	radiation_database?: string | null;
+	meteorological_database?: string | null;
+	weather_selection_period?: { start_year: number; end_year: number } | null;
+	synthetic_calculation_year?: number | null;
+	periods_utc: ( { start_utc: string; end_utc: string } | null )[];
+}
+
 export type Block =
 	| ContactBlock
 	| TextBlock
@@ -172,7 +211,8 @@ export type Block =
 	| ActionBlock
 	| HandoffBlock
 	| DocumentBlock
-	| PartsBlock;
+	| PartsBlock
+	| PlanningSourcesBlock;
 
 export interface TurnMeta {
 	/** The logged turn; the vote buttons address it. */
@@ -536,16 +576,25 @@ export function assistantMessage( turn: Turn ): TurnMessage {
  * answered turn and that turn's stream on the conversation post, and this
  * reads them back in the same shapes a live turn uses.
  *
- * @param threadUrl Proxy route that answers `{ conversation_id, messages, stream, contacts, inquiries }`.
- * @param nonce     wp_rest nonce.
- * @param fetcher   Fetch for tests.
- * @param artifacts Current page context for refreshing stored artifact UI.
+ * @param threadUrl                         Proxy route that answers `{ conversation_id, messages, stream, contacts, inquiries }`.
+ * @param nonce                             wp_rest nonce.
+ * @param fetcher                           Fetch for tests.
+ * @param artifacts                         Current page context for refreshing stored artifact UI.
+ * @param proof                             Existing native owner proof.
+ * @param proof.plannerNonce                Current in-memory native nonce.
+ * @param proof.allowExistingOwnerBootstrap Explicit history interaction permits one read-only proof refresh.
+ * @param proof.onPlannerNonce              Remember refreshed proof in existing app memory.
  */
 export async function readThread(
 	threadUrl: string,
 	nonce: string,
 	fetcher: Fetch = ( ...args ) => fetch( ...args ),
-	artifacts?: ArtifactContext
+	artifacts?: ArtifactContext,
+	proof?: {
+		plannerNonce?: string;
+		allowExistingOwnerBootstrap?: boolean;
+		onPlannerNonce?: ( value: string ) => void;
+	}
 ): Promise< {
 	messages: TurnMessage[];
 	turn: Turn | null;
@@ -560,11 +609,19 @@ export async function readThread(
 } > {
 	const empty = { messages: [], turn: null, contacts: [], inquiries: [] };
 	try {
-		const response = await resourceFetch( fetcher, threadUrl, {
+		const destination = artifacts
+			? `${ threadUrl }${ threadUrl.includes( '?' ) ? '&' : '?' }locale=${ artifacts.locale }`
+			: threadUrl;
+		const response = await resourceFetch( fetcher, destination, {
 			credentials: 'same-origin',
 			// A per-visitor answer: never from the browser's cache.
 			cache: 'no-store',
-			headers: { 'X-WP-Nonce': nonce },
+			headers: {
+				'X-WP-Nonce': nonce,
+				...( proof?.plannerNonce
+					? { 'X-Linker-Planner-Nonce': proof.plannerNonce }
+					: {} ),
+			},
 		} );
 		if ( ! response.ok ) {
 			return empty;
@@ -605,6 +662,69 @@ export async function readThread(
 				// A stream the service never finished is not an answer: the
 				// thread's words stay, its blocks do not.
 				turn = null;
+			}
+		}
+		if (
+			turn &&
+			identity.conversationId &&
+			artifacts &&
+			proof?.allowExistingOwnerBootstrap &&
+			turn.blocks.some(
+				( block ) =>
+					block.type === 'planning_sources' &&
+					block.status === 'unavailable'
+			)
+		) {
+			// This mode cannot create/reset/claim a Woo owner. A fresh native
+			// cookie proof only authorizes the stored references in the reread.
+			try {
+				const bootstrap = await resourceFetch(
+					fetcher,
+					`${ artifacts.restUrl.replace( /\/?$/, '/' ) }linker/v1/planner/bootstrap`,
+					{
+						method: 'POST',
+						credentials: 'same-origin',
+						cache: 'no-store',
+						headers: {
+							'Content-Type': 'application/json',
+							'X-WP-Nonce': nonce,
+						},
+						body: JSON.stringify( {
+							schema_version: 1,
+							existing_owner_only: true,
+						} ),
+					}
+				);
+				const session = bootstrap.ok ? await bootstrap.json() : null;
+				if (
+					session &&
+					session.schema_version === 1 &&
+					session.cookie_confirmed === true &&
+					[ 'guest', 'user' ].includes( session.kind ) &&
+					Number.isSafeInteger( session.expires_at ) &&
+					session.expires_at > Date.now() / 1000 &&
+					typeof session.query_scope === 'string' &&
+					/^[a-f0-9]{64}$/.test( session.query_scope ) &&
+					typeof session.nonce === 'string' &&
+					/^\S{1,128}$/.test( session.nonce )
+				) {
+					proof.onPlannerNonce?.( session.nonce );
+					const restored = await readThread(
+						threadUrl,
+						nonce,
+						fetcher,
+						artifacts,
+						{ plannerNonce: session.nonce }
+					);
+					if (
+						restored.turn &&
+						restored.conversationId === identity.conversationId
+					) {
+						return restored;
+					}
+				}
+			} catch {
+				// Refusal leaves the verified-unavailable hint and original words.
 			}
 		}
 		if ( turn && artifacts ) {
@@ -914,7 +1034,16 @@ export function parseStream( stream: string ): Turn {
 		if ( name[ 1 ] === 'meta' ) {
 			turn.meta = payload as TurnMeta;
 		} else if ( name[ 1 ] === 'block' ) {
-			turn.blocks.push( payload as Block );
+			turn.blocks.push(
+				payload?.type === 'planning_sources' &&
+					! validPlanningSources( payload )
+					? {
+							type: 'planning_sources',
+							schema_version: 1,
+							status: 'unavailable',
+						}
+					: ( payload as Block )
+			);
 		} else if ( name[ 1 ] === 'attachment' ) {
 			turn.attachments = [
 				...( turn.attachments ?? [] ),
@@ -928,6 +1057,145 @@ export function parseStream( stream: string ): Turn {
 		throw new UnfinishedStreamError();
 	}
 	return turn;
+}
+
+/**
+ * Unknown or malformed source cards cannot contribute dates or destinations.
+ * @param raw The received server-owned block.
+ */
+function validPlanningSources( raw: unknown ): raw is PlanningSourcesBlock {
+	const object = ( value: unknown ): value is Record< string, unknown > =>
+		!! value && typeof value === 'object' && ! Array.isArray( value );
+	const positive = ( value: unknown ): value is number =>
+		typeof value === 'number' && Number.isSafeInteger( value ) && value > 0;
+	const hash = ( value: unknown ) =>
+		typeof value === 'string' && /^[a-f0-9]{64}$/.test( value );
+	const id = ( value: unknown ) =>
+		typeof value === 'string' && /^[a-f0-9]{32}$/.test( value );
+	if (
+		object( raw ) &&
+		raw.schema_version === 1 &&
+		raw.status === 'unavailable'
+	) {
+		return Object.keys( raw ).every( ( key ) =>
+			[ 'type', 'schema_version', 'status' ].includes( key )
+		);
+	}
+	if (
+		! object( raw ) ||
+		raw.schema_version !== 1 ||
+		raw.status !== 'available' ||
+		! object( raw.binding ) ||
+		! id( raw.binding.planning_project_id ) ||
+		! positive( raw.binding.planning_revision ) ||
+		! Array.isArray( raw.binding.planning_run_ids ) ||
+		! raw.binding.planning_run_ids.every( id ) ||
+		! Array.isArray( raw.binding.runs ) ||
+		! raw.binding.runs.length ||
+		! raw.binding.runs.every(
+			( run ) =>
+				object( run ) &&
+				id( run.id ) &&
+				positive( run.revision ) &&
+				hash( run.manifest_sha256 ) &&
+				hash( run.result_sha256 ) &&
+				(
+					raw.binding as PlanningSourcesAvailableBlock[ 'binding' ]
+				 ).planning_run_ids.includes( run.id as string )
+		) ||
+		! Array.isArray( raw.results ) ||
+		raw.results.length !== raw.binding.runs.length ||
+		typeof raw.url !== 'string'
+	) {
+		return false;
+	}
+	return raw.results.every( ( result, index ) => {
+		if (
+			! object( result ) ||
+			! positive( result.revision ) ||
+			result.revision !==
+				( raw.binding as PlanningSourcesAvailableBlock[ 'binding' ] )
+					.runs[ index ]?.revision ||
+			! Array.isArray( result.groups )
+		) {
+			return false;
+		}
+		return result.groups.every( ( group ) => {
+			if (
+				! object( group ) ||
+				! [ 'pv', 'energy' ].includes( group.kind as string ) ||
+				! [ 'selected', 'baseline', 'candidate' ].includes(
+					group.role as string
+				) ||
+				! Object.hasOwn( group, 'timezone' ) ||
+				! Array.isArray( group.periods_utc )
+			) {
+				return false;
+			}
+			if (
+				[
+					'timezone',
+					'radiation_database',
+					'meteorological_database',
+				].some(
+					( key ) =>
+						group[ key ] !== undefined &&
+						group[ key ] !== null &&
+						typeof group[ key ] !== 'string'
+				)
+			) {
+				return false;
+			}
+			if (
+				group.kind === 'pv' &&
+				( ! Object.hasOwn( group, 'input_quantity' ) ||
+					! Object.hasOwn( group, 'source_scope' ) ||
+					! [ null, 'pv_available_ac', 'pv_available_dc' ].includes(
+						group.input_quantity as string | null
+					) ||
+					! [ null, 'whole_reference', 'selected_dc_group' ].includes(
+						group.source_scope as string | null
+					) )
+			) {
+				return false;
+			}
+			if (
+				group.synthetic_calculation_year !== undefined &&
+				group.synthetic_calculation_year !== null &&
+				! positive( group.synthetic_calculation_year )
+			) {
+				return false;
+			}
+			const selection = group.weather_selection_period;
+			if (
+				selection !== undefined &&
+				selection !== null &&
+				( ! object( selection ) ||
+					! positive( selection.start_year ) ||
+					! positive( selection.end_year ) ||
+					selection.start_year > selection.end_year )
+			) {
+				return false;
+			}
+			return group.periods_utc.every(
+				( period ) =>
+					period === null ||
+					( object( period ) &&
+						[ 'start_utc', 'end_utc' ].every(
+							( key ) =>
+								typeof period[ key ] === 'string' &&
+								/(?:Z|\+00:00)$/.test(
+									period[ key ] as string
+								) &&
+								Number.isFinite(
+									Date.parse( period[ key ] as string )
+								)
+						) &&
+						Date.parse( period.start_utc as string ) <
+							Date.parse( period.end_utc as string ) )
+			);
+		} );
+	} );
 }
 
 /**

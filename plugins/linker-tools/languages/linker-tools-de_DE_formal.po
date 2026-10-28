@@ -4886,6 +4886,7 @@ msgstr "Messpunkt"
 msgid "Met"
 msgstr "Erfüllt"
 
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 #: build/planner/assets/planner.js
 msgid "Meteorological database"
 msgstr "Meteorologische Datenbank"
@@ -5828,6 +5829,7 @@ msgstr "Projekte aus der Gastsitzung werden noch Ihrem Konto zugeordnet."
 msgid "Queued"
 msgstr "In der Warteschlange"
 
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 #: build/planner/assets/planner.js
 msgid "Radiation database"
 msgstr "Strahlungsdatenbank"
@@ -6964,6 +6966,7 @@ msgid "Surface length, greater than 0; this is not its horizontal projection."
 msgstr ""
 "Oberflächenlänge, größer als 0. Dieser Wert ist keine horizontale Projektion."
 
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 #: build/planner/assets/planner.js
 msgid "Synthetic calculation year"
 msgstr "Synthetisches Berechnungsjahr"
@@ -9703,6 +9706,7 @@ msgstr ""
 "Die Werte oder Einheiten der ausgewählten Produkttabelle ließen sich nicht "
 "konsistent zuordnen. Die Berechnung konnte nicht vorbereitet werden."
 
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 #: build/planner/assets/planner.js
 msgid "Baseline calculation"
 msgstr "Referenzberechnung"
@@ -9739,6 +9743,7 @@ msgstr ""
 msgid "Comparison basis"
 msgstr "Vergleichsgrundlage"
 
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 #: build/planner/assets/planner.js
 msgid "Comparison calculation"
 msgstr "Vergleichsberechnung"
@@ -12357,3 +12362,64 @@ msgstr "PV-DC-Stromkreis nicht verfügbar: %s"
 #: ../../apps/planner/src/components/installation/InstallationEditor.tsx build/planner/assets/planner.js
 msgid "The saved project changed. Your edits remain open. Reopen the project before reviewing routes or string links."
 msgstr "Das gespeicherte Projekt wurde geändert. Ihre Eingaben bleiben hier geöffnet. Öffnen Sie das Projekt erneut, bevor Sie Leitungswege oder Stringzuordnungen prüfen."
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+msgid "Calculation sources and periods"
+msgstr "Quellen und Zeiträume der Berechnung"
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+msgid "From the selected saved result."
+msgstr "Aus dem ausgewählten gespeicherten Ergebnis."
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+#, javascript-format
+msgid "Saved revision %d"
+msgstr "Gespeicherter Stand %d"
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+msgid "Weather selection period"
+msgstr "Auswahlzeitraum der Wetterdaten"
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+msgid "PV calculation period (UTC)"
+msgstr "PV-Berechnungszeitraum (UTC)"
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+msgid "Energy calculation period (UTC)"
+msgstr "Zeitraum der Energieberechnung (UTC)"
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+msgid "Saved project time zone"
+msgstr "Zeitzone des gespeicherten Projekts"
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+msgid "Not recorded in this saved result"
+msgstr "In diesem gespeicherten Ergebnis nicht erfasst"
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+msgid "Open saved result"
+msgstr "Gespeichertes Ergebnis öffnen"
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+msgid "The saved calculation details could not be verified for this response."
+msgstr "Die Angaben zur gespeicherten Berechnung konnten für diese Antwort nicht geprüft werden."
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+msgid "PV input to the calculation"
+msgstr "PV-Eingangsgröße der Berechnung"
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+msgid "PV source scope"
+msgstr "Umfang der PV-Quelle"
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+msgid "Whole PV reference"
+msgstr "Gesamte PV-Referenz"
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+msgid "Selected DC group"
+msgstr "Ausgewählte DC-Gruppe"
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+msgid "Not identified in this saved result"
+msgstr "In diesem gespeicherten Ergebnis nicht eindeutig angegeben"

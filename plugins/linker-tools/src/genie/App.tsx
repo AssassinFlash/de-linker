@@ -159,14 +159,6 @@ export function resetTurnLane(): void {
  * @param root0.config
  */
 export function App( { config }: { config: GenieConfig } ) {
-	const loadThread = useCallback(
-		() =>
-			readThread( config.threadUrl, config.restNonce, undefined, {
-				restUrl: config.restUrl,
-				locale: config.locale,
-			} ),
-		[ config.threadUrl, config.restNonce, config.restUrl, config.locale ]
-	);
 	const [ open, setOpen ] = useState( false );
 	// The page context every turn carries (#234). The mount sets it, and the
 	// design report's "Ask Genie" adds the saved solution's id (#496): it is
@@ -176,6 +168,32 @@ export function App( { config }: { config: GenieConfig } ) {
 	const [ page, setPage ] = useState< PageContext >( config.page );
 	const pageRef = useRef( config.page );
 	const plannerNonce = useRef< string | undefined >( undefined );
+	const plannerProofEpoch = useRef( 0 );
+	const loadThread = useCallback(
+		( allowExistingOwnerBootstrap = false ) => {
+			const before = plannerProofEpoch.current;
+			window.dispatchEvent(
+				new CustomEvent( 'linker-genie-planning-context-request' )
+			);
+			const freshBridgeProof =
+				plannerProofEpoch.current !== before && !! plannerNonce.current;
+			return readThread(
+				config.threadUrl,
+				config.restNonce,
+				undefined,
+				{ restUrl: config.restUrl, locale: config.locale },
+				{
+					plannerNonce: plannerNonce.current,
+					allowExistingOwnerBootstrap:
+						allowExistingOwnerBootstrap && ! freshBridgeProof,
+					onPlannerNonce: ( value ) => {
+						plannerNonce.current = value;
+					},
+				}
+			);
+		},
+		[ config.threadUrl, config.restNonce, config.restUrl, config.locale ]
+	);
 	useEffect( () => {
 		const receive = ( event: Event ) => {
 			const detail = ( event as CustomEvent ).detail;
@@ -192,6 +210,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				next.planning_revision > 0
 			) {
 				pageRef.current = next;
+				plannerProofEpoch.current += 1;
 				plannerNonce.current =
 					typeof detail.plannerNonce === 'string'
 						? detail.plannerNonce
@@ -727,26 +746,29 @@ export function App( { config }: { config: GenieConfig } ) {
 		setPhase( 'error' );
 	};
 
-	const showStored = useCallback( async () => {
-		await draftContext.verify();
-		const lease = draftContext.capture();
-		if ( ! lease ) {
-			return;
-		}
-		setRevealingAt( null );
-		const stored = await loadThread();
-		if ( ! ( await draftContext.settle( lease ) ) ) {
-			return;
-		}
-		currentThread.current = stored.messages;
-		setThread( stored.messages );
-		setTurn( stored.turn );
-		turnAt.current = stored.turn ? stored.messages.length - 1 : -1;
-		setContacts( stored.contacts ?? [] );
-		setInquiries( stored.inquiries ?? [] );
-		await applyRecord( stored.messages, true );
-		setMail( 'idle' );
-	}, [ loadThread, applyRecord, draftContext ] );
+	const showStored = useCallback(
+		async ( allowExistingOwnerBootstrap = false ) => {
+			await draftContext.verify();
+			const lease = draftContext.capture();
+			if ( ! lease ) {
+				return;
+			}
+			setRevealingAt( null );
+			const stored = await loadThread( allowExistingOwnerBootstrap );
+			if ( ! ( await draftContext.settle( lease ) ) ) {
+				return;
+			}
+			currentThread.current = stored.messages;
+			setThread( stored.messages );
+			setTurn( stored.turn );
+			turnAt.current = stored.turn ? stored.messages.length - 1 : -1;
+			setContacts( stored.contacts ?? [] );
+			setInquiries( stored.inquiries ?? [] );
+			await applyRecord( stored.messages, true );
+			setMail( 'idle' );
+		},
+		[ loadThread, applyRecord, draftContext ]
+	);
 
 	const previousNativeScope = useRef< string | undefined >( undefined );
 	useEffect( () => {
@@ -1346,7 +1368,7 @@ export function App( { config }: { config: GenieConfig } ) {
 					}
 					setOpen( true );
 					resetEntryComposer.current();
-					await showStored();
+					await showStored( typeof id === 'number' && id > 0 );
 				} catch {
 					if ( ! draftContext.valid( lease ) ) {
 						return;
@@ -1720,7 +1742,9 @@ export function App( { config }: { config: GenieConfig } ) {
 				! detail?.message &&
 				! detail?.refresh
 			) {
-				void enqueue( showStored ).catch( () => undefined );
+				void enqueue( () => showStored( true ) ).catch(
+					() => undefined
+				);
 			}
 			if ( detail?.entry ) {
 				receiveEntry( detail.entry );
@@ -2017,7 +2041,12 @@ export function App( { config }: { config: GenieConfig } ) {
 									type="button"
 									className="linker-genie-app__toggle"
 									aria-expanded={ open }
-									onClick={ () => setOpen( true ) }
+									onClick={ () => {
+										setOpen( true );
+										void enqueue( () =>
+											showStored( true )
+										).catch( () => undefined );
+									} }
 								>
 									{ __( 'Open', 'linker-tools' ) }
 								</button>

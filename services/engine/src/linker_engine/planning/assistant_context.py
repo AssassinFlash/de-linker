@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from typing import cast
 
+from .assistant_calculation_sources import calculation_sources
 from .brief import PlanningBrief
 from .canonical import Json, Object, digest, encode
 from .certificate_information import report_source_with_information
@@ -408,6 +409,13 @@ def assistant_context(
                 "rows": rows[: max(0, remaining)],
                 "truncated": omitted,
                 "details_available": bool(rows),
+                **(
+                    {"calculation_sources": calculation_sources(workspace, run)}
+                    if run.state == "succeeded"
+                    and run.result
+                    and run.result.get("kind") == "planning_report_v1"
+                    else {}
+                ),
             }
         )
         remaining -= min(max(0, remaining), len(rows))
