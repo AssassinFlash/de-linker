@@ -47,6 +47,7 @@ TEXT = {
         "Synthetic interval (UTC)",
         "Synthetisches Intervall (UTC)",
     ),
+    "direct_beam_row": ("Selected source row", "Ausgewählte Quellenzeile"),
     "direct_beam_source_time": (
         "Original source label (UTC)",
         "Ursprünglicher Quellenzeitstempel (UTC)",
@@ -1129,8 +1130,8 @@ TEXT = {
         "Referenzierte Stromkreise ohne erfasste Leitungen oder Leiter",
     ),
     "pv_components_roof_scope": (
-        "Module counts come from the saved roof used by the selected equipment check. The modules are design references; electrical and mounting suitability require project-specific assessment.",
-        "Die Stückzahlen stammen aus der gespeicherten Dachbelegung der ausgewählten Geräteprüfung. Die Module dienen als Auslegungsreferenz; ihre elektrische Eignung und ihre Eignung für die Montage müssen projektspezifisch geprüft werden.",
+        "Module counts come from the saved roof layout retained for this report. The modules are design references; electrical and mounting suitability require project-specific assessment.",
+        "Die Stückzahlen stammen aus der für diesen Bericht gespeicherten Dachbelegung. Die Module dienen als Auslegungsreferenz; ihre elektrische Eignung und ihre Eignung für die Montage müssen projektspezifisch geprüft werden.",
     ),
     "material_snapshot": ("Materials snapshot SHA-256", "SHA-256 des Materialstands"),
     "material_woo_product": ("Selected equipment", "Ausgewählte Geräte"),

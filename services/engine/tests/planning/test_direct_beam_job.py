@@ -350,7 +350,20 @@ def test_owned_frozen_weather_runs_only_in_worker_and_fails_closed_on_source_or_
     geometric = next(
         item for item in cast(list[Object], sections) if item["id"] == "direct-beam-0"
     )
-    assert len(cast(list[object], cast(Object, geometric["table"])["rows"])) == 2
+    assert geometric["table"] is None
+    samples = [
+        item
+        for item in cast(list[Object], sections)
+        if str(item["id"]).startswith("direct-beam-row-")
+    ]
+    assert [item["id"] for item in samples] == [
+        "direct-beam-row-0",
+        "direct-beam-row-12",
+    ]
+    assert all(
+        item["table"] is None and len(cast(list[object], item["rows"])) == 6
+        for item in samples
+    )
     assert "not power or energy losses" in str(geometric["paragraphs"])
     report_source = workspace.blobs.object(
         str(cast(Object, report_result["dependencies"])["report_source"])

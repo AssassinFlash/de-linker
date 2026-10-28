@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Literal, cast
 
-from linker_engine.models import ReportRow, ReportSection, ReportTable
+from linker_engine.models import ReportRow, ReportSection
 
 from .canonical import Object
 from .direct_beam_read import direct_beam_facts
@@ -62,7 +62,7 @@ def direct_beam_sections(
         ReportRow(label=key + " SHA-256", value=str(sha))
         for key, sha in cast(Object, reference["dependencies"]).items()
     )
-    return [
+    sections = [
         ReportSection(
             id="direct-beam-0",
             title=text("direct_beam_title", locale),
@@ -71,25 +71,31 @@ def direct_beam_sections(
                 text("direct_beam_axes", locale),
             ],
             rows=rows,
-            table=ReportTable(
-                columns=[
-                    text(key, locale)
-                    for key in (
-                        "direct_beam_interval",
-                        "direct_beam_source_time",
-                        "direct_beam_irradiance_time",
-                        "direct_beam_modules",
-                        "direct_beam_range",
-                        "direct_beam_delta",
-                    )
-                ],
+        )
+    ]
+    # Long UTC timestamps and German labels need the report's established
+    # two-column fact layout, rather than six narrow A4 columns. Every selected
+    # source row stays identifiable without shrinking the normal report type.
+    for item, aggregate in zip(
+        cast(list[Object], witness["rows"]),
+        cast(list[Object], facts["rows"]),
+        strict=True,
+    ):
+        sections.append(
+            ReportSection(
+                id=f"direct-beam-row-{item['source_row_index']}",
+                title=f"{text('direct_beam_row', locale)} {item['source_row_index']}",
                 rows=[
-                    [
-                        f"{item['interval_start_utc']} – {item['interval_end_utc']}",
-                        str(item["source_label_utc"]),
-                        str(item["irradiance_at_utc"]),
+                    row(
+                        "direct_beam_interval",
+                        f"{aggregate['interval_start_utc']} – {aggregate['interval_end_utc']}",
+                    ),
+                    row("direct_beam_source_time", aggregate["source_label_utc"]),
+                    row("direct_beam_irradiance_time", aggregate["irradiance_at_utc"]),
+                    row(
+                        "direct_beam_modules",
                         " / ".join(
-                            str(item[key])
+                            str(aggregate[key])
                             for key in (
                                 "module_count",
                                 "sampled_module_count",
@@ -97,11 +103,16 @@ def direct_beam_sections(
                                 "back_facing_or_tangent_module_count",
                             )
                         ),
-                        f"{value(item['fine_visible_fraction_min'])} – {value(item['fine_visible_fraction_max'])}",
-                        value(item["observed_absolute_delta_max"]),
-                    ]
-                    for item in cast(list[Object], facts["rows"])
+                    ),
+                    row(
+                        "direct_beam_range",
+                        f"{value(aggregate['fine_visible_fraction_min'])} – {value(aggregate['fine_visible_fraction_max'])}",
+                    ),
+                    row(
+                        "direct_beam_delta",
+                        value(aggregate["observed_absolute_delta_max"]),
+                    ),
                 ],
-            ),
+            )
         )
-    ]
+    return sections
