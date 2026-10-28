@@ -379,16 +379,25 @@ def test_physical_lengths_unknowns_and_owned_frozen_exports(
             "bind_geometry": True,
         }
         assert client.post("/installation/review", json=body).status_code == 401
-        assert (
-            client.post("/installation/review", json=body, headers=headers()).json()[
-                "cables"
-            ][0]["quantity"]
-            == 16
-        )
-        linked_body = {**body, "installation": linked["installation"]}
-        owned_review = client.post(
-            "/installation/review", json=linked_body, headers=headers()
+        legacy_review = client.post(
+            "/installation/review", json=body, headers=headers()
         ).json()
+        assert legacy_review["cables"][0]["quantity"] == 16
+        assert "project_revision" not in legacy_review
+        linked_body = {**body, "installation": linked["installation"]}
+        stale_response = client.post(
+            "/installation/review",
+            json={**linked_body, "expected_revision": 1},
+            headers=headers(),
+        )
+        assert stale_response.status_code == 409
+        assert stale_response.json()["error"]["code"] == "conflict"
+        owned_review = client.post(
+            "/installation/review",
+            json={**linked_body, "expected_revision": project.revision},
+            headers=headers(),
+        ).json()
+        assert owned_review["project_revision"] == project.revision
         assert owned_review["pv_string_reconciliation"][
             "pv_string_plan_sha256"
         ] == digest(encode(linked["pv_string_plan"]))

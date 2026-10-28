@@ -484,6 +484,11 @@ def create_private_app(
         from .installation_takeoff import product_basis, route_takeoff
 
         project = workspace.get(verified_actor(request.scope), body.project_id)
+        if (
+            body.expected_revision is not None
+            and body.expected_revision != project.revision
+        ):
+            raise Conflict("project inputs have changed")
         if products is None:
             raise VersionUnavailable("current Woo installation evidence is unavailable")
         inputs: Object = {"geometry": body.geometry, "installation": body.installation}
@@ -495,6 +500,8 @@ def create_private_app(
         reply = route_takeoff(inputs, basis, bind_geometry=body.bind_geometry)
         products.confirm_basis(basis, require_reference=False)
         reply["project_id"] = body.project_id
+        if body.expected_revision is not None:
+            reply["project_revision"] = project.revision
         reply["runtime_sha256"] = energy.kernel.runtime.sha256
         return reply
 

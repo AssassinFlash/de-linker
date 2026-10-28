@@ -126,6 +126,7 @@ class ProjectCreate(ProjectInputs):
 
 class InstallationReview(Command):
     project_id: Id
+    expected_revision: Revision | None = None
     geometry: Object
     installation: Object
     bind_geometry: bool

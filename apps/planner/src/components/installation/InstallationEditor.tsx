@@ -13,6 +13,7 @@ import { sameJson } from "../../domain/draft.ts";
 import { formatDecimal } from "../../domain/decimal.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import type { JsonObject, Session } from "../../data/protocol.ts";
+import { ApiError } from "../../data/protocol.ts";
 import { readObject } from "../../data/readProtocol.ts";
 import { useEquipmentProducts } from "../../data/equipmentProducts.ts";
 import { panelPoses } from "../../domain/panelPoses.ts";
@@ -33,6 +34,9 @@ import {
 } from "../design/GeometryForm.tsx";
 import { manualSource } from "../../domain/geometryEditing.ts";
 import { installationId } from "../../domain/installation.ts";
+import { readPvStringPlan } from "../../domain/pvStrings.ts";
+import type { PvStringPlan } from "../../domain/pvStrings.ts";
+import { PvStringLinks } from "./PvStringLinks.tsx";
 
 type Kind = "instances" | "circuits" | "routes" | "cable_runs";
 const reason = (code: string) =>
@@ -67,6 +71,8 @@ const reason = (code: string) =>
 	)[code] ?? __("Input needs attention", "linker-tools");
 export function InstallationEditor({
 	inputs,
+	savedInputs,
+	savedRevision,
 	geometry,
 	client,
 	session,
@@ -78,6 +84,8 @@ export function InstallationEditor({
 	editGeometry,
 }: {
 	inputs: JsonObject;
+	savedInputs: JsonObject;
+	savedRevision: number;
 	geometry: GeometryDocument;
 	client: PlannerClient;
 	session: Session;
@@ -89,6 +97,18 @@ export function InstallationEditor({
 	editGeometry: (command: GeometryCommand) => boolean;
 }) {
 	const plan = readInstallation(inputs.installation);
+	const savedInstallation = readInstallation(savedInputs.installation);
+	let savedStrings: PvStringPlan | null = null;
+	try {
+		if (savedInputs.pv_string_plan !== undefined)
+			savedStrings = readPvStringPlan(savedInputs.pv_string_plan);
+	} catch {
+		// Preserve the declaration; it must be corrected in the string editor.
+	}
+	const stringPlanChanged = !sameJson(
+		inputs.pv_string_plan,
+		savedInputs.pv_string_plan,
+	);
 	const products = useEquipmentProducts(client, session.query_scope, true);
 	const [form, setForm] = useState<{ kind: Kind; id: string | null } | null>(
 			null,
@@ -100,9 +120,27 @@ export function InstallationEditor({
 			null,
 		),
 		[busy, setBusy] = useState(false),
-		[failed, setFailed] = useState(false);
-	const latest = useRef({ plan, geometry });
-	latest.current = { plan, geometry };
+		[failed, setFailed] = useState(false),
+		[conflicted, setConflicted] = useState(false),
+		[linksValid, setLinksValid] = useState(true),
+		[reviewStrings, setReviewStrings] = useState<unknown>(null),
+		[reviewRevision, setReviewRevision] = useState<number | null>(null);
+	const latest = useRef({
+		projectId,
+		savedRevision,
+		plan,
+		geometry,
+		strings: savedInputs.pv_string_plan,
+		draftStrings: inputs.pv_string_plan,
+	});
+	latest.current = {
+		projectId,
+		savedRevision,
+		plan,
+		geometry,
+		strings: savedInputs.pv_string_plan,
+		draftStrings: inputs.pv_string_plan,
+	};
 	const active = useRef(true);
 	useEffect(() => {
 		active.current = true;
@@ -111,13 +149,17 @@ export function InstallationEditor({
 		};
 	}, []);
 	useEffect(() => {
-		onValidity(form === null && !newSource);
+		onValidity(form === null && !newSource && linksValid);
 		return () => onValidity(true);
-	}, [form, newSource, onValidity]);
+	}, [form, newSource, linksValid, onValidity]);
 	const shown =
 		review &&
+		reviewRevision === savedRevision &&
 		sameJson(plan, review.prepared_inputs) &&
-		sameJson(geometry, reviewGeometry)
+		sameJson(geometry, reviewGeometry) &&
+		(plan.pv_string_links === undefined ||
+			(!stringPlanChanged &&
+				sameJson(reviewStrings, savedInputs.pv_string_plan)))
 			? review
 			: null;
 	function edit(kind: Kind, row: unknown): boolean {
@@ -156,15 +198,24 @@ export function InstallationEditor({
 	}
 	async function check() {
 		if (busy) return;
-		const before = { plan, geometry };
+		const before = {
+			projectId,
+			savedRevision,
+			plan,
+			geometry,
+			strings: savedInputs.pv_string_plan,
+			draftStrings: inputs.pv_string_plan,
+		};
 		setBusy(true);
 		setFailed(false);
+		setConflicted(false);
 		try {
 			const raw = await client.query(
 				"installation/review",
 				{
 					schema_version: 1,
 					project_id: projectId,
+					expected_revision: savedRevision,
 					geometry: readObject(geometry),
 					installation: readObject(plan),
 					bind_geometry: true,
@@ -177,12 +228,32 @@ export function InstallationEditor({
 				!sameJson(before, latest.current)
 			)
 				return;
-			const result = readInstallationReview(raw, plan, projectId);
+			const result = readInstallationReview(
+				raw,
+				plan,
+				projectId,
+				savedStrings,
+				savedRevision,
+			);
 			if (!change(result.prepared_inputs)) throw new Error("not_applied");
 			setReview(result);
 			setReviewGeometry(geometry);
-		} catch {
-			if (active.current) setFailed(true);
+			setReviewStrings(savedInputs.pv_string_plan);
+			setReviewRevision(savedRevision);
+		} catch (error) {
+			if (
+				active.current &&
+				client.isCurrentScope(session.query_scope) &&
+				sameJson(before, latest.current)
+			) {
+				if (
+					error instanceof ApiError &&
+					error.status === 409 &&
+					error.code === "conflict"
+				)
+					setConflicted(true);
+				else setFailed(true);
+			}
 		} finally {
 			if (active.current) setBusy(false);
 		}
@@ -250,6 +321,14 @@ export function InstallationEditor({
 				<Notice error>
 					{__(
 						"Installation quantities could not be confirmed. Check the device data, sources and route inputs; your recorded work remains available.",
+						"linker-tools",
+					)}
+				</Notice>
+			)}
+			{conflicted && (
+				<Notice error>
+					{__(
+						"The saved project changed. Your edits remain open. Reopen the project before reviewing routes or string links.",
 						"linker-tools",
 					)}
 				</Notice>
@@ -368,6 +447,7 @@ export function InstallationEditor({
 					<button
 						type="button"
 						className="lp-text-button"
+						disabled={!linksValid}
 						onClick={() => setNewSource(true)}
 					>
 						{__("Add measurement or drawing source", "linker-tools")}
@@ -424,13 +504,14 @@ export function InstallationEditor({
 										<div className="lp-inline-actions">
 											<button
 												className="lp-text-button"
+												disabled={!linksValid}
 												onClick={() => setForm({ kind, id: row.id })}
 											>
 												{__("Edit", "linker-tools")}
 											</button>
 											<button
 												className="lp-text-button"
-												disabled={dependent}
+												disabled={dependent || !linksValid}
 												title={
 													dependent
 														? __(
@@ -453,6 +534,7 @@ export function InstallationEditor({
 												) && (
 													<button
 														className="lp-text-button"
+														disabled={!linksValid}
 														onClick={() => {
 															const p = products.data!.products.find(
 																(p) => p.id === row.product_id,
@@ -473,6 +555,7 @@ export function InstallationEditor({
 							<button
 								className="lp-button lp-button-secondary"
 								disabled={
+									!linksValid ||
 									!geometry.sources.length ||
 									(kind === "instances"
 										? products.isFetching || !products.data?.prepared
@@ -496,16 +579,34 @@ export function InstallationEditor({
 							{__("Reload product data", "linker-tools")}
 						</button>
 					)}
+					<PvStringLinks
+						plan={plan}
+						savedInstallation={savedInstallation}
+						savedStrings={savedStrings}
+						stringPlanChanged={stringPlanChanged}
+						review={shown?.pv_string_reconciliation ?? null}
+						locale={locale}
+						disabled={busy}
+						change={change}
+						onValidity={setLinksValid}
+					/>
 					<button
 						className="lp-button"
-						disabled={busy || !plan.cable_runs.length}
+						disabled={
+							busy ||
+							!linksValid ||
+							(!plan.cable_runs.length && plan.pv_string_links === undefined) ||
+							(plan.pv_string_links !== undefined && stringPlanChanged)
+						}
 						onClick={() => void check()}
 					>
 						{busy
 							? __("Checking…", "linker-tools")
-							: __("Check route quantities", "linker-tools")}
+							: plan.pv_string_links !== undefined
+								? __("Review routes and string links", "linker-tools")
+								: __("Check route quantities", "linker-tools")}
 					</button>
-					{shown && (
+					{shown && shown.cables.length > 0 && (
 						<div className="lp-table-scroll">
 							<table>
 								<thead>

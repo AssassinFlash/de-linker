@@ -846,6 +846,8 @@ export function ProjectEditor({
 						>
 							<InstallationEditor
 								inputs={draft.history.current}
+								savedInputs={draft.baseline.inputs}
+								savedRevision={draft.baseline.revision}
 								geometry={geometry}
 								client={client}
 								session={session}
