@@ -5209,7 +5209,50 @@
           "sha256": "61df912d199f06925d9afbb3af9fe1b30cb854e3a3392d44526329eb2868081c",
           "bytes": 88184
         }
-      ]
+      ],
+      "cold_open_recovery": {
+        "at_utc": "2026-10-28T05:52:24.309571+00:00",
+        "state": "actual_local_fullpage_recovered_CI_and_production_pending",
+        "commits": [
+          "f3f97cd3ce6ec28b8fbc8d77ddec2dd728886e87",
+          "d104b00dd33f0d3acd87eeb252ce26364f7ff295",
+          "057320975079571e2f4f9324321b10a250c76be0"
+        ],
+        "CI_failure": "40632944319: 27 frontend failures; source-only history refresh fixes actual reset; locale-aware history fixture retains original assertions",
+        "reviews": "Root Spec and independent C Standards PASS for each source increment; reused 90 App/history +16context +2source/fullpage +1Hero cases; static checks PASS",
+        "native_failure": "With d104, newer entry-context lookup completed first, stale initial rejection left visible fullpage Loading conversations. Unique failure retained.",
+        "fix": "Ready/settle fall through to current capture/valid original lease after superseded rejection; generation/alive/phase/scope/epoch unchanged.",
+        "native_readback": {
+          "URL": "http://127.0.0.1:9347/genie/",
+          "action": "Reload same tab after new build; no Open/history selection before assertion",
+          "result": "Conversation list and selected disposable8392 sourcecard restored; revision28, full PV2023 and June16 09–11UTC energy bounds, composer enabled",
+          "unsent_draft": "Typed local-only text, hide/show preserved it; cleared without sending, selected and read original8390 answer",
+          "console_errors_or_warnings": [],
+          "limitation": "Logged-in native cold-open rendering; controlled existing owner-only bootstrap evidence remains separately necessary. No production claim."
+        },
+        "bundle": {
+          "genie_version": "ebb36d65f49875205556",
+          "genie_sha256": "23312c19bdcdc51e6d42f70de4cd9c1fdce312f1722f742a3293d5b5289643a5",
+          "hero_version": "3906b422c7336359aded",
+          "hero_sha256": "7e7d48d553651cadd48e19408f2a3e1fcceffe9ad1d3ff416db78cd12109092e",
+          "outer_sha256": "9782bf7a9fad6dc970c586971878903e7dd4166a414cc5f1099ac9f4df53e779",
+          "planner": "9 accepted files byte-identical; no rebuild",
+          "preservation_stage": "Reclaimed9files/4429901bytes; absent"
+        },
+        "artifacts": [
+          {
+            "path": "docs/acceptance/2026-10-25/548/source-proof-fullpage-observed.jpg",
+            "sha256": "f557bc41133926a704babf9c18f43c2896f96cfef2bb2e8ebbd68b4853ad2121",
+            "bytes": 34529
+          },
+          {
+            "path": "docs/acceptance/2026-10-25/548/source-proof-fullpage-recovered.jpg",
+            "sha256": "12bf3e98e81cea8ea4a1bb515731d4c203ab59cf7d06f51300208d25be8f94e0",
+            "bytes": 59030
+          }
+        ],
+        "fixture_cleanup": "Original8390 restored via UI; B authorized delete ONLY8392, readback pending"
+      }
     }
   },
   "certificate_evidence": {
