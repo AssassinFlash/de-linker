@@ -11,10 +11,12 @@ import argparse
 import fcntl
 import json
 import os
+import re
 import shlex
 import shutil
 import subprocess
 import sys
+import syslog
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -35,6 +37,32 @@ from index.publication import inventory as fetch_inventory  # noqa: E402
 from linker_genie.preparation import RUNTIME_SERVING_REVISION  # noqa: E402
 from linker_genie.publication import Snapshot  # noqa: E402
 from publish_index import publish  # noqa: E402
+
+
+def report_failure(phase: str, error: BaseException) -> None:
+    """Report only code location and safe error metadata to the system log."""
+    details = [
+        "linker-knowledge-publication",
+        f"phase={phase}",
+        f"error={type(error).__name__}",
+    ]
+    if isinstance(error, httpx.HTTPStatusError):
+        details.append(f"http_status={error.response.status_code}")
+    if isinstance(error, OSError) and isinstance(error.errno, int):
+        details.append(f"errno={error.errno}")
+    trace = error.__traceback__
+    if trace is not None:
+        while trace.tb_next is not None:
+            trace = trace.tb_next
+        filename = Path(trace.tb_frame.f_code.co_filename).name
+        if re.fullmatch(r"[A-Za-z0-9_.-]{1,97}\.py", filename):
+            details.append(f"location={filename}:{trace.tb_lineno}")
+    message = " ".join(details)
+    try:
+        syslog.syslog(syslog.LOG_ERR, message)
+    except OSError:
+        print(message, file=sys.stderr)
+
 
 _LOADED_PROGRAM = """import json, sys, urllib.request
 try:
@@ -299,21 +327,27 @@ class Worker:
         job = self.claim(before, unavailable)
         if job is None:
             return False
-        snapshot = Snapshot.read(job["manifest"])
-        revision = snapshot.source_revision
-        if revision != job["source_revision"]:
-            raise RuntimeError("job manifest revision differs from its claimed source")
-        if job.get("recipe_revision", "") not in {"", self.recipe}:
-            raise RuntimeError("job recipe differs from the running worker")
+        phase = "job_validation"
         try:
             self._active_job = job
+            snapshot = Snapshot.read(job["manifest"])
+            revision = snapshot.source_revision
+            if revision != job["source_revision"]:
+                raise RuntimeError(
+                    "job manifest revision differs from its claimed source"
+                )
+            if job.get("recipe_revision", "") not in {"", self.recipe}:
+                raise RuntimeError("job recipe differs from the running worker")
             if self.recipe and (
                 type(job.get("activation_epoch")) is not int
                 or job["activation_epoch"] < 1
             ):
                 raise RuntimeError("native knowledge job has no activation lease epoch")
+            phase = "prepare"
             version = prepare(job["manifest"])
+            phase = "loaded_readback"
             actual = loaded()
+            phase = "loaded_validation"
             if (
                 actual.get("source_revision") != revision
                 or actual.get("index_version") != version
@@ -357,6 +391,7 @@ class Worker:
                 and not partial
                 and not actual.get("unprepared_documents")
             )
+            phase = "ready_ack"
             self.ack(
                 job,
                 str(actual["source_revision"]),
@@ -380,9 +415,15 @@ class Worker:
         except (
             Exception,
             SystemExit,
-        ):  # safe failure, including the native publish CLI
+        ) as error:  # safe failure, including the native publish CLI
             # No request URL, auth header or exception repr enters Woo/logs.
-            self.ack(job, "", "knowledge preparation or loaded verification failed")
+            report_failure(phase, error)
+            try:
+                self.ack(job, "", "knowledge preparation or loaded verification failed")
+            except (Exception, SystemExit) as ack_error:
+                # A transport or stale-job error can leave the job preparing.
+                # Keep the original failure and separately expose the ack result.
+                report_failure("failure_ack", ack_error)
             raise
         finally:
             self._active_job = None
@@ -456,33 +497,48 @@ def main() -> int:
         worker = Worker(jobs, user, password, args.worker_id, args.lease_seconds)
 
         def prepare(manifest: dict[str, Any]) -> str:
-            source = inventory.RestClient(args.rest_config)
-            # Prevent an operator accidentally building one site and acking another.
-            if urlsplit(source.base).netloc != urlsplit(jobs).netloc:
-                raise RuntimeError(
-                    "inventory and publication queue belong to different sites"
+            phase = "inventory_source"
+            try:
+                source = inventory.RestClient(args.rest_config)
+                # Prevent an operator accidentally building one site and acking another.
+                if urlsplit(source.base).netloc != urlsplit(jobs).netloc:
+                    raise RuntimeError(
+                        "inventory and publication queue belong to different sites"
+                    )
+                phase = "inventory"
+                fetch_inventory(source, INVENTORY_PATH, PDF_DIR, manifest)
+                phase = "parse"
+                parse.run(INVENTORY_PATH, PDF_DIR, PARSED_DIR, parse.WORKERS)
+                phase = "language_setup"
+                import py3langid
+
+                from index.tokenizer import HFTokenizer
+
+                phase = "embedding_setup"
+                embedder = build.document_embedder(build.DEFAULT_MODEL)
+                phase = "tokenizer_setup"
+                tokenizer = HFTokenizer.from_pretrained(build.CHUNK_TOKENIZER)
+                phase = "build"
+                directory = build.build(
+                    INVENTORY_PATH,
+                    PDF_DIR,
+                    PARSED_DIR,
+                    INDEX_DIR,
+                    embedder,
+                    tokenizer,
+                    lambda text: str(py3langid.classify(text)[0]),
+                    activation_epoch=worker.activation()["epoch"],
+                    on_created=lambda directory: record_build(INDEX_DIR, directory),
                 )
-            fetch_inventory(source, INVENTORY_PATH, PDF_DIR, manifest)
-            parse.run(INVENTORY_PATH, PDF_DIR, PARSED_DIR, parse.WORKERS)
-            import py3langid
-
-            from index.tokenizer import HFTokenizer
-
-            directory = build.build(
-                INVENTORY_PATH,
-                PDF_DIR,
-                PARSED_DIR,
-                INDEX_DIR,
-                build.document_embedder(build.DEFAULT_MODEL),
-                HFTokenizer.from_pretrained(build.CHUNK_TOKENIZER),
-                lambda text: str(py3langid.classify(text)[0]),
-                activation_epoch=worker.activation()["epoch"],
-                on_created=lambda directory: record_build(INDEX_DIR, directory),
-            )
-            activation = worker.activation()
-            activation.update(loaded_url=args.loaded_url, service_token=token)
-            report = publish(directory, args.root, args.host, activation=activation)
-            return str(report["index_version"])
+                phase = "activation"
+                activation = worker.activation()
+                activation.update(loaded_url=args.loaded_url, service_token=token)
+                phase = "publish"
+                report = publish(directory, args.root, args.host, activation=activation)
+                return str(report["index_version"])
+            except (Exception, SystemExit) as error:
+                report_failure(f"prepare.{phase}", error)
+                raise
 
         def loaded() -> dict[str, Any]:
             # The serving process reopens the resolved current file under the same
@@ -491,7 +547,8 @@ def main() -> int:
 
         try:
             run_job(worker, prepare, loaded, INDEX_DIR)
-        except (Exception, SystemExit):  # noqa: BLE001 - safe status, no private URLs or credentials
+        except (Exception, SystemExit) as error:  # noqa: BLE001 - safe status, no private URLs or credentials
+            report_failure("run_job", error)
             print(
                 "Knowledge preparation failed; Woo retains the pending job.",
                 file=sys.stderr,

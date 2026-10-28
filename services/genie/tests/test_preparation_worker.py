@@ -3,15 +3,22 @@
 from __future__ import annotations
 
 import json
+import syslog
 from typing import Any
 
 import httpx
 import pytest
 
 from linker_genie.preparation import RUNTIME_SERVING_REVISION
+from linker_genie.publication import PublicationUnavailable
 from publication_worker import Worker
 
 RECIPE = "a" * 64
+
+
+@pytest.fixture(autouse=True)
+def no_real_system_log(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(syslog, "syslog", lambda *_args: None)
 
 
 def source(revision: str = "source-1") -> dict[str, Any]:
@@ -261,4 +268,90 @@ def test_activation_context_is_bound_to_current_lease_and_cleared_after_ack() ->
     assert worker.one(prepare, loaded)
     with pytest.raises(RuntimeError, match="current native lease"):
         worker.activation()
+    worker.close()
+
+
+def test_prepare_and_failed_ack_keep_distinct_safe_diagnostics(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A failed receipt must not hide the failure that left a job preparing."""
+    queue = Queue()
+    events: list[str] = []
+    monkeypatch.setattr(
+        syslog, "syslog", lambda _priority, message: events.append(message)
+    )
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.path.endswith("/ack"):
+            return httpx.Response(503, request=request)
+        return queue.handle(request)
+
+    worker = Worker(
+        "https://site.test/jobs",
+        "fixture",
+        "fixture",
+        "mac",
+        600,
+        recipe=RECIPE,
+        transport=httpx.MockTransport(handler),
+    )
+
+    def prepare(_manifest: dict[str, Any]) -> str:
+        raise ValueError("private fixture detail must not be logged")
+
+    with pytest.raises(ValueError, match="private fixture detail"):
+        worker.one(prepare, loaded)
+    assert any(
+        "phase=prepare" in event and "error=ValueError" in event for event in events
+    )
+    assert any(
+        "phase=failure_ack" in event
+        and "error=HTTPStatusError" in event
+        and "http_status=503" in event
+        for event in events
+    )
+    assert all("private fixture detail" not in event for event in events)
+    assert all("site.test" not in event and "lease" not in event for event in events)
+    worker.close()
+
+
+def test_unsupported_manifest_with_valid_claim_is_acknowledged_as_failed() -> None:
+    queue = Queue()
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.path.endswith("/ack"):
+            receipt = json.loads(request.content)
+            identity = {
+                "job_id": "job-" + queue.recipe,
+                "lease_token": "lease",
+                "source_revision": queue.source["source_revision"],
+                "recipe_revision": queue.recipe,
+                "activation_epoch": queue.epoch,
+            }
+            if (
+                any(receipt.get(key) != value for key, value in identity.items())
+                or type(receipt.get("activation_epoch")) is not int
+                or queue.epoch < 1
+            ):
+                return httpx.Response(409, json={"code": "stale_job"})
+        response = queue.handle(request)
+        if request.url.path.endswith("/claim"):
+            body = response.json()
+            body["job"]["manifest"]["schema_version"] = 2
+            return httpx.Response(200, json=body)
+        return response
+
+    worker = Worker(
+        "https://site.test/jobs",
+        "fixture",
+        "fixture",
+        "mac",
+        600,
+        recipe=RECIPE,
+        transport=httpx.MockTransport(handler),
+    )
+    with pytest.raises(PublicationUnavailable, match="unsupported"):
+        worker.one(lambda _: "unused", loaded)
+    assert queue.receipts[-1]["status"] == "failed"
+    assert queue.receipts[-1]["source_revision"] == queue.source["source_revision"]
     worker.close()
