@@ -44,8 +44,8 @@ html[lang^="de"]
 
 /* Keep the German planning preview in the existing video frame, with the
    complete image visible and the original tool action beside it. */
-#tv-rs-page-v1 #engineering-tools #tool-pane-0 .lk-tooldeck-media > img.rs-tool-preview,
-#tv-cs-page-v1 #engineering-tools #tool-pane-0 .lk-tooldeck-media > img.cs-tool-preview {
+#tv-rs-page-v1 #engineering-tools :is(#tool-pane-0, #tool-pane-1) .lk-tooldeck-media > img.rs-tool-preview,
+#tv-cs-page-v1 #engineering-tools :is(#tool-pane-0, #tool-pane-1) .lk-tooldeck-media > img.cs-tool-preview {
 	display: block;
 	width: 100%;
 	height: auto;
@@ -57,7 +57,7 @@ html[lang^="de"]
 
 /* The active tab already names this pane. Its duplicate overlay would cover
    the German preview's first question; other video badges keep their place. */
-#tv-cs-page-v1 #engineering-tools #tool-pane-0 .lk-tooldeck-media:has(> img.cs-tool-preview) > .lk-tooldeck-badge {
+#tv-cs-page-v1 #engineering-tools :is(#tool-pane-0, #tool-pane-1) .lk-tooldeck-media:has(> img.cs-tool-preview) > .lk-tooldeck-badge {
 	display: none;
 }
 
