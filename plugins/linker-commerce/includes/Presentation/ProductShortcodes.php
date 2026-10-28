@@ -788,7 +788,7 @@ final class ProductShortcodes {
 		}
 		$html = '';
 		foreach ( Materials::key_stats( $product, 4 ) as $stat ) {
-			$html .= '<div><span class="pdp-app-stat-icon" aria-hidden="true">' . self::icon( (string) $stat['icon'] ) . '</span>'
+			$html .= '<div><span class="pdp-app-stat-icon" data-pdp-fact="' . esc_attr( (string) $stat['key'] ) . '" aria-hidden="true"></span>'
 				. '<dt>' . esc_html( (string) $stat['label'] ) . '</dt><dd>' . self::pdp_stat_value( (string) $stat['value'] ) . '</dd></div>';
 		}
 		return $html;
@@ -2179,17 +2179,8 @@ final class ProductShortcodes {
 			'ask'      => '<path d="M21 15a4 4 0 0 1-4 4H8l-5 4V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>',
 			'file'     => '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8ZM14 2v6h6M8 13h8M8 17h6"/>',
 			'download' => '<path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/>',
-			'energy'   => '<rect x="3" y="6" width="17" height="12" rx="3"/><path d="M22 10v4M7 10v4m4-4v4m4-4v4"/>',
-			'power'    => '<path d="m13 2-8 12h6l-1 8 9-12h-6z"/>',
-			'grid'     => '<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>',
-			'gauge'    => '<path d="M4 18a9 9 0 1 1 16 0M12 12l5-5M5 18h14"/>',
 		);
 		$open  = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
-		if ( 'energy' === $name || 'power' === $name || 'grid' === $name || 'gauge' === $name ) {
-			// The purchase panel's figure icons carry no pixel size; the CSS
-			// sizes them in the row.
-			$open = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">';
-		}
 		return $open . ( $paths[ $name ] ?? '' ) . '</svg>';
 	}
 
