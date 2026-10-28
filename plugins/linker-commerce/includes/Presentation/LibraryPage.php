@@ -37,6 +37,9 @@ use Linker\Commerce\Products\TradeRules;
  */
 final class LibraryPage {
 
+	/** English page key; Polylang resolves its translated slug. */
+	private const PAGE_SLUG = 'faq-download';
+
 	/**
 	 * Rows one page of a card or of the search results shows: the accepted
 	 * prototype's page size.
@@ -144,6 +147,40 @@ final class LibraryPage {
 		add_shortcode( 'linker_library_faq', array( $this, 'faq' ) );
 		add_shortcode( 'linker_library_documents', array( $this, 'documents' ) );
 		add_shortcode( 'linker_library_config', array( $this, 'config' ) );
+	}
+
+	/**
+	 * Keep this library's finite display state in native language links.
+	 *
+	 * Search text already belongs to LanguageLinks' shared query contract.
+	 * Native page twins identify the library even when LiveCanvas renders
+	 * its shortcodes from an assigned template instead of the page body.
+	 *
+	 * @param array<string,mixed> $query Public, unslashed request query.
+	 * @return array<string,string>
+	 */
+	public static function language_query( array $query ): array {
+		$kept = array();
+		if ( 'documents' === ( $query['tab'] ?? null ) ) {
+			$kept['tab'] = 'documents';
+		}
+		$type = $query['type'] ?? null;
+		if ( is_string( $type ) && in_array( $type, self::CHIP_ORDER, true ) ) {
+			$kept['type'] = $type;
+		}
+		if ( array() === $kept ) {
+			return array();
+		}
+		$page = get_queried_object();
+		if ( ! $page instanceof \WP_Post || 'page' !== $page->post_type ) {
+			return array();
+		}
+		if ( self::PAGE_SLUG === $page->post_name ) {
+			return $kept;
+		}
+		$source_id = function_exists( 'pll_get_post' ) ? (int) pll_get_post( (int) $page->ID, 'en' ) : 0;
+		$source    = $source_id > 0 ? get_post( $source_id ) : null;
+		return $source instanceof \WP_Post && self::PAGE_SLUG === $source->post_name ? $kept : array();
 	}
 
 	/**

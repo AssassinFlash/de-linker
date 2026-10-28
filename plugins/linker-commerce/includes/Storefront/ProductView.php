@@ -89,21 +89,37 @@ final class ProductView {
 		if ( ! $product instanceof \WC_Product ) {
 			return array();
 		}
-		$facts = SelectionFacts::for_product( $product_id );
-		$model = $this->term_name( $product_id, 'pa_model' );
+		$facts  = SelectionFacts::for_product( $product_id );
+		$model  = $this->term_name( $product_id, 'pa_model' );
+		$titles = $this->card_titles( $product );
 
 		return array(
 			'id'           => $product_id,
-			'title'        => Materials::apply_terms( $product->get_name() ),
+			'title'        => $titles['title'],
 			'model'        => '' !== $model ? $model : $product->get_name(),
-			'brand'        => $this->term_name( $product_id, 'pa_brand' ),
+			'brand'        => $titles['brand'],
 			'brand_slug'   => $this->term_slug( $product_id, 'pa_brand' ),
 			'sku'          => $product->get_sku(),
 			'gallery'      => $this->gallery( $product ),
 			'stats'        => $this->key_numbers( $facts ),
 			'price'        => $this->price( $product ),
 			'availability' => $product->is_in_stock() ? __( 'In stock', 'linker-commerce' ) : __( 'Currently unavailable', 'linker-commerce' ),
-			'series'       => self::series_label( $this->legacy_field( $product_id, 'product_series' ), Materials::is_de() ),
+			'series'       => $titles['series'],
+		);
+	}
+
+	/**
+	 * The card's title sources, without its price, gallery or selection facts.
+	 *
+	 * @param \WC_Product $product The English or German product.
+	 * @return array{title: string, brand: string, series: string}
+	 */
+	public function card_titles( \WC_Product $product ): array {
+		$product_id = $product->get_id();
+		return array(
+			'title'  => Materials::apply_terms( $product->get_name() ),
+			'brand'  => $this->term_name( $product_id, 'pa_brand' ),
+			'series' => self::series_label( $this->legacy_field( $product_id, 'product_series' ), Materials::is_de() ),
 		);
 	}
 

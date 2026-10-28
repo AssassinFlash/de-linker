@@ -97,7 +97,9 @@ final class Approval {
 	 * the theme's blanket line.
 	 */
 	public function register(): void {
-		add_filter( 'wp_authenticate_user', array( $this, 'gate_login' ) );
+		// Core checks credentials at 20 and spam at 99. Preserve those failures
+		// before showing an authenticated customer's approval refusal.
+		add_filter( 'authenticate', array( $this, 'gate_login' ), 100 );
 		// Priority 20: the theme's own blanket sign-in line is registered on
 		// this filter at 10, and the last callback's return is the one the
 		// customer reads.
@@ -286,8 +288,8 @@ final class Approval {
 	 * names the state and the way back (ticket 73: the login gate shows the
 	 * state).
 	 *
-	 * @param WP_User|WP_Error $user The authenticated user, or an error from an earlier check.
-	 * @return WP_User|WP_Error
+	 * @param WP_User|WP_Error|null $user The authenticated user, or an earlier failure.
+	 * @return WP_User|WP_Error|null
 	 */
 	public function gate_login( $user ) {
 		if ( ! $user instanceof WP_User || self::REJECTED !== $this->status( $user->ID ) ) {

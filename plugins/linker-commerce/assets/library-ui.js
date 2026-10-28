@@ -215,7 +215,7 @@
 
 	var state = {
 		tab: tabFromLocation(),
-		q: "",
+		q: new URLSearchParams(scope.location.search).get("q") || "",
 		type: "all",
 		pages: {},
 		searchPage: 1,
@@ -226,6 +226,42 @@
 		rendering: false,
 		spyLock: 0,
 	};
+
+	/** Only the native page-language switchers carry this public library selection. */
+	function syncSelection(updateUrl) {
+		function selectedUrl(url) {
+			["q", "tab", "type"].forEach(function (key) {
+				url.searchParams.delete(key);
+			});
+			if (state.q) {
+				url.searchParams.set("q", state.q);
+			}
+			if (state.tab === "documents") {
+				url.searchParams.set("tab", "documents");
+			}
+			if (state.type !== "all") {
+				url.searchParams.set("type", state.type);
+			}
+			return url;
+		}
+		if (updateUrl) {
+			var current = selectedUrl(new URL(scope.location.href));
+			scope.history.replaceState(null, "", current.pathname + current.search + current.hash);
+		}
+		slice.call(scope.document.querySelectorAll("a[data-linker-language-choice][hreflang]")).forEach(function (link) {
+			var url = new URL(link.href, scope.location.href);
+			if (url.origin === scope.location.origin) {
+				link.href = selectedUrl(url).href;
+			}
+		});
+	}
+
+	function typeFromLocation() {
+		var type = new URLSearchParams(scope.location.search).get("type");
+		return slice.call(root.querySelectorAll("[data-library-filters] button[data-library-type]")).some(function (chip) {
+			return chip.getAttribute("data-library-type") === type;
+		}) ? type : "all";
+	}
 
 	/** The cards: their rows, their count, their pager and their soft empty. */
 	var cards = slice.call(root.querySelectorAll("[data-library-card]")).map(function (element) {
@@ -444,6 +480,7 @@
 			revealReaderStart(state.q.trim() ? resultsHost() : activePanel);
 		}
 		markActive();
+		syncSelection(options && options.url);
 	}
 
 	/* ---------- cards: pagination and the soft empty ---------- */
@@ -556,6 +593,7 @@
 			});
 		});
 		renderCards();
+		syncSelection(true);
 	}
 
 	/* ---------- the search ---------- */
@@ -706,6 +744,7 @@
 			keepResultsVisible();
 		}
 		markActive();
+		syncSelection(true);
 	}
 
 	/* ---------- the suggestions ---------- */
@@ -895,7 +934,13 @@
 
 	/** Native hash/history navigation selects content without replacing history. */
 	function restoreLocation() {
+		state.q = new URLSearchParams(scope.location.search).get("q") || "";
+		if (input) {
+			input.value = state.q;
+		}
 		setTab(tabFromLocation(), { url: false, reveal: false });
+		setType(typeFromLocation());
+		applySearch();
 		var target = hashTarget();
 		if (target && !state.q.trim() && !target.closest("[hidden]")) {
 			scrollToElement(target);
@@ -1204,7 +1249,11 @@
 		measureSticky();
 		setTab(state.tab, { url: false });
 		resetCounts();
-		setType("all");
+		setType(typeFromLocation());
+		if (input) {
+			input.value = state.q;
+		}
+		applySearch();
 		var target = hashTarget();
 		if (target && !target.closest("[hidden]")) {
 			scrollToElement(target);
