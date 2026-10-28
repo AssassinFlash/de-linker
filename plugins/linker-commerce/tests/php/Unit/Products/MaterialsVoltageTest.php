@@ -229,7 +229,14 @@ final class MaterialsVoltageTest extends TestCase {
 		$this->assertSame( '12 kW (Fußnote *: 11 kW für die Irland-Variante)', $german['value'] );
 	}
 
-	/** A voltage suffix needs an identical, explicitly measured fact on the same product. */
+	/**
+	 * A voltage suffix needs an identical, explicitly measured fact on the same product.
+	 *
+	 * Isolate the language function mock so it does not affect other tests.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
 	public function test_key_stats_only_add_verified_companion_voltage_units(): void {
 		$german = false;
 		WP_Mock::userFunction(
