@@ -296,22 +296,26 @@ def chunk_all(
                 header = context_header(_meta(document), "", 1)
                 tokens = tokenizer.count(header + "\n" + title)
                 if tokens <= MAX_TOKENS and not any(c.id == cid for c in chunks):
-                    chunks.append(
-                        Chunk(
-                            cid,
-                            document.sha256,
-                            1,
-                            "",
-                            "text",
-                            header,
-                            title,
-                            document.lang
-                            if document.lang in {"en", "de"}
-                            else detect_lang(title),
-                            tokens,
-                            source_pdf_cover=cover,
-                        )
+                    cover_chunk = Chunk(
+                        cid,
+                        document.sha256,
+                        1,
+                        "",
+                        "text",
+                        header,
+                        title,
+                        document.lang
+                        if document.lang in {"en", "de"}
+                        else detect_lang(title),
+                        tokens,
+                        source_pdf_cover=cover,
                     )
+                    # Keep page order: the recovered page-one title must not
+                    # inherit a later page's narrower authored context.
+                    after_first_page = next(
+                        (i for i, c in enumerate(chunks) if c.page > 1), len(chunks)
+                    )
+                    chunks.insert(after_first_page, cover_chunk)
         result.chunks.extend(chunks)
         with_chunks = {chunk.page for chunk in chunks}
         empty = [

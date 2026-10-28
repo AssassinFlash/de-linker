@@ -74,6 +74,17 @@ def test_cover_repeated_section_inherits_range_but_conflicting_range_fails() -> 
     assert _family_cover([cover, repetition, conflict]) is None
     other_title = replace(cover, id="other", section="ET Series", text="80-100kW")
     assert _family_cover([cover, other_title]) is None
+    raw, original, model, model_scope = warranty_fixture()
+    procedures, _ = compile_procedures(
+        original,
+        [model],
+        {model.id: model_scope},
+        Snapshot.read(raw),
+        Words(),
+        512,
+        restricted_contexts={cover.id: [{"kind": "heading", "quote": "other model"}]},
+    )
+    assert not procedures
 
 
 def _pdf_fixture(tmp_path: Path, lines: list[tuple[int, str]]) -> Path:

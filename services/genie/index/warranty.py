@@ -164,7 +164,9 @@ def compile_procedures(
         ):
             continue
         sha = document["blob_sha256"]
-        cover_result = _family_cover(by_sha.get(sha, []))
+        cover_result = _family_cover(
+            [c for c in by_sha.get(sha, []) if c.id not in restricted_contexts]
+        )
         if cover_result is None:
             continue
         cover, family = cover_result
