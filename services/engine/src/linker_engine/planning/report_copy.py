@@ -985,6 +985,88 @@ TEXT = {
         "A positive route length is required",
         "Die Leitungsweglänge muss größer als null sein",
     ),
+    "installation_string_links": (
+        "PV string and circuit links",
+        "Zuordnung von PV-Strings und Stromkreisen",
+    ),
+    "installation_string_link_scope": (
+        "These links record the project's declared string and circuit identities. Listed cable runs retain their separately measured quantities. A link does not establish a complete circuit, conductor or connector counts, cable sizing, manufacturer terminal allocation or electrical approval.",
+        "Diese Zuordnungen halten die im Projekt angegebenen PV-Strings und Stromkreise fest. Aufgeführte Leitungen behalten ihre separat ermittelten Längen. Eine Zuordnung bestätigt weder einen vollständigen Stromkreis noch Leiter- oder Steckverbinderzahlen, Leitungsauslegung, herstellerseitige Anschlussbelegung oder elektrische Freigabe.",
+    ),
+    "installation_string": ("PV string ID", "PV-String-Kennung"),
+    "installation_link_circuit": ("Circuit ID", "Stromkreis-Kennung"),
+    "installation_link_cables": (
+        "Recorded cable runs",
+        "Erfasste Leitungen und Leiter",
+    ),
+    "installation_string_link_linked": (
+        "Project identities linked",
+        "Projektangaben zugeordnet",
+    ),
+    "installation_string_link_unlinked": (
+        "No circuit link declared",
+        "Keine Stromkreiszuordnung angegeben",
+    ),
+    "installation_string_link_stale_string": (
+        "Referenced PV string is missing",
+        "Referenzierter PV-String fehlt",
+    ),
+    "installation_string_link_stale_circuit": (
+        "Referenced circuit is missing",
+        "Referenzierter Stromkreis fehlt",
+    ),
+    "installation_string_link_wrong_circuit_kind": (
+        "Referenced circuit is not PV DC",
+        "Referenzierter Stromkreis ist kein PV-DC-Stromkreis",
+    ),
+    "installation_string_link_inverter_endpoint_unresolved": (
+        "Exactly one selected-inverter endpoint has not been established",
+        "Im Stromkreis ist nicht genau ein Anschlusspunkt des ausgewählten Wechselrichters angegeben.",
+    ),
+    "installation_string_cable_runs_missing": (
+        "No cable runs recorded",
+        "Keine Leitungen oder Leiter erfasst",
+    ),
+    "installation_string_plan_missing": (
+        "No saved PV string plan is available for this review.",
+        "Für diese Prüfung liegt kein gespeicherter PV-Stringplan vor.",
+    ),
+    "installation_string_plan_empty": (
+        "The saved PV string plan contains no strings.",
+        "Der gespeicherte PV-Stringplan enthält keine Strings.",
+    ),
+    "installation_string_plan_hash": (
+        "Saved PV string plan SHA-256",
+        "SHA-256 des gespeicherten PV-Stringplans",
+    ),
+    "installation_input_hash": (
+        "Installation input SHA-256",
+        "SHA-256 der Installationseingaben",
+    ),
+    "installation_geometry_hash": (
+        "Saved geometry SHA-256",
+        "SHA-256 der gespeicherten Geometrie",
+    ),
+    "installation_string_link_review": (
+        "PV string/circuit link review",
+        "Prüfung der PV-String-/Stromkreiszuordnung",
+    ),
+    "installation_string_link_material_scope": (
+        "Project identity review · no material quantity",
+        "Prüfung der Projektzuordnung · keine Materialmenge",
+    ),
+    "installation_string_linked_count": (
+        "Linked project identities",
+        "Zugeordnete Projektangaben",
+    ),
+    "installation_string_unresolved_count": (
+        "Unresolved string or circuit identities",
+        "Ungeklärte String- oder Stromkreiszuordnungen",
+    ),
+    "installation_string_cable_gaps": (
+        "Referenced circuits without recorded cable runs",
+        "Referenzierte Stromkreise ohne erfasste Leitungen oder Leiter",
+    ),
     "pv_components_roof_scope": (
         "Module counts come from the saved roof used by the selected equipment check. The modules are design references; electrical and mounting suitability require project-specific assessment.",
         "Die Stückzahlen stammen aus der gespeicherten Dachbelegung der ausgewählten Geräteprüfung. Die Module dienen als Auslegungsreferenz; ihre elektrische Eignung und ihre Eignung für die Montage müssen projektspezifisch geprüft werden.",

@@ -68,11 +68,32 @@ const permission = {
 	],
 };
 
-function fetchWith( current: unknown = product, ok = true ) {
-	return vi.fn( async ( url: RequestInfo | URL ) => ( {
-		ok: String( url ) === '/thread' || ok,
+interface ThreadRequest {
+	locale: 'en' | 'de';
+	plannerNonce?: string;
+}
+
+function isThreadRequest(
+	url: RequestInfo | URL,
+	options?: RequestInit,
+	request: ThreadRequest = { locale: 'en' }
+) {
+	return (
+		String( url ) === `/thread?locale=${ request.locale }` &&
+		new Headers( options?.headers ).get( 'X-Linker-Planner-Nonce' ) ===
+			( request.plannerNonce ?? null )
+	);
+}
+
+function fetchWith(
+	current: unknown = product,
+	ok = true,
+	request: ThreadRequest = { locale: 'en' }
+) {
+	return vi.fn( async ( url: RequestInfo | URL, options?: RequestInit ) => ( {
+		ok: isThreadRequest( url, options, request ) || ok,
 		json: async () => {
-			if ( String( url ) === '/thread' ) {
+			if ( isThreadRequest( url, options, request ) ) {
 				return {
 					messages: [
 						{ role: 'user', content: 'Bitte das Datenblatt.' },
@@ -122,12 +143,26 @@ test( 'current native product and publication reads may finish after five second
 } );
 
 test( 'a restored approved price becomes the current visitor line, without changing German transcript or PDF facts', async () => {
-	const fetcher = fetchWith();
+	const plannerNonce = 'current-planner-nonce';
+	const fetcher = fetchWith( product, true, { ...context, plannerNonce } );
 	const restored = await readThread(
 		'/thread',
 		'current-nonce',
 		fetcher,
-		context
+		context,
+		{ plannerNonce }
+	);
+	expect( fetcher ).toHaveBeenNthCalledWith(
+		1,
+		'/thread?locale=en',
+		expect.objectContaining( {
+			credentials: 'same-origin',
+			cache: 'no-store',
+			headers: {
+				'X-WP-Nonce': 'current-nonce',
+				'X-Linker-Planner-Nonce': plannerNonce,
+			},
+		} )
 	);
 	expect( restored.messages.map( ( message ) => message.content ) ).toEqual( [
 		'Bitte das Datenblatt.',
@@ -184,11 +219,24 @@ test.each( [
 );
 
 test( 'current approved authority supplies the current amount', async () => {
-	const fetcher = fetchWith( {
-		...product,
-		commerce: { price_visible: true, price_line: '€1,700.00' },
+	const locale = 'de' as const;
+	const fetcher = fetchWith(
+		{
+			...product,
+			commerce: { price_visible: true, price_line: '€1,700.00' },
+		},
+		true,
+		{ locale }
+	);
+	const restored = await readThread( '/thread', 'n', fetcher, {
+		...context,
+		locale,
 	} );
-	const restored = await readThread( '/thread', 'n', fetcher, context );
+	expect( fetcher ).toHaveBeenNthCalledWith(
+		1,
+		'/thread?locale=de',
+		expect.objectContaining( { headers: { 'X-WP-Nonce': 'n' } } )
+	);
 	expect( restored.turn?.blocks[ 1 ] ).toMatchObject( {
 		prices: [ { text: '€1,700.00' } ],
 	} );
@@ -428,7 +476,7 @@ test.each( [ 'headers', 'body' ] )(
 				'/thread',
 				'n',
 				( ( url, options ) =>
-					String( url ) === '/thread'
+					isThreadRequest( url, options )
 						? fetchWith()( url, options )
 						: fetcher( url, options ) ) as typeof fetch,
 				context

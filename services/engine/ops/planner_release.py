@@ -220,7 +220,9 @@ class Release:
         )
         return result
 
-    def preflight(self, *, prepared: bool = True) -> dict[str, Any]:
+    def preflight(
+        self, *, prepared: bool = True, check_inputs: bool = True
+    ) -> dict[str, Any]:
         self.check_paths()
         origin = json.loads(
             command(
@@ -293,6 +295,8 @@ class Release:
         for key in ("runtime_sha256",):
             if HASH.fullmatch(str(release.get(key))) is None:
                 raise ValueError("invalid executable identity")
+        if check_inputs:
+            self.input_compatibility(release)
         receipt = self.deploy / "prepared.json"
         if prepared:
             frozen = json.loads(receipt.read_text())
@@ -311,6 +315,49 @@ class Release:
                 raise RuntimeError("prepared executable or configuration changed")
         return release
 
+    def input_compatibility(self, release: dict[str, Any]) -> None:
+        """The operator's current guard can reject even an older rollback binary.
+
+        Read as the service UID with a read-only SQLite snapshot, not through
+        the candidate's Workspace constructor. start() repeats preflight after
+        the old HTTP has stopped, closing the final concurrent-save window.
+        """
+        directory = Path(self.runtime["directory"])
+        if (
+            not (self.root / "selection.json").exists()
+            and not (directory / "workspace.sqlite").exists()
+            and (not directory.exists() or not any(directory.iterdir()))
+        ):
+            return  # First unselected, wholly empty deployment only.
+        guard_source = Path(__file__).resolve().parents[1] / "src"
+        try:
+            command(
+                [
+                    "runuser",
+                    "--preserve-environment",
+                    "-u",
+                    self.spec["user"],
+                    "--",
+                    str(self.path / ".venv/bin/python"),
+                    "-c",
+                    "import json,sys; from pathlib import Path; "
+                    "sys.path.insert(0,sys.argv[1]); "
+                    "from linker_engine.planning.project_input_floor import check_project_input_contracts; "
+                    "check_project_input_contracts(Path(sys.argv[2]),json.loads(sys.argv[3]))",
+                    str(guard_source),
+                    str(directory),
+                    json.dumps(release.get("project_input_contracts", [])),
+                ],
+                env={
+                    "PATH": "/usr/sbin:/usr/bin:/sbin:/bin",
+                    "PYTHONDONTWRITEBYTECODE": "1",
+                },
+            )
+        except (OSError, ValueError, RuntimeError) as error:
+            raise RuntimeError(
+                "retained project input compatibility refused; a compatible executable is required"
+            ) from error
+
     def prepare(self, source_env: Path, publication_url: str) -> None:
         self.check_paths()
         selected = self.root / "selection.json"
@@ -318,7 +365,7 @@ class Release:
             old = Release(Path(json.loads(selected.read_text())["current"]))
             if old.namespace() != self.namespace():
                 raise RuntimeError("deployment namespace changed")
-            old.preflight()
+            old.preflight(check_inputs=False)
         source = environment(source_env)
         public = {k: source[k] for k in PUBLIC_SOURCE_KEYS if k in source}
         endpoint = urlsplit(publication_url)
@@ -620,7 +667,10 @@ def activate(target: Release) -> dict[str, Any]:
         if old:
             if old.namespace() != target.namespace():
                 raise RuntimeError("deployment namespace changed")
-            old.preflight()
+            # Verify the stopped/replaced binary's identity, not its ability to
+            # admit new writes. The target and every fallback start check the
+            # floor; an old declaration must not prevent a compatible upgrade.
+            old.preflight(check_inputs=False)
         if old and (old.spec["prefix"], old.spec["port"], old.spec["user"]) != (
             target.spec["prefix"],
             target.spec["port"],

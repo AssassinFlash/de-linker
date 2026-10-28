@@ -13,6 +13,7 @@ import { Ask } from './Ask';
 import { DocumentLink } from './DocumentLink';
 import { Handoff } from './Handoff';
 import { PartsCard, type PartsActions } from './PartsCard';
+import { PlanningSourcesCard } from './PlanningSourcesCard';
 
 export function BlockView( {
 	block,
@@ -27,6 +28,14 @@ export function BlockView( {
 	onAsk: ( text: string ) => void;
 	parts: PartsActions;
 } ) {
+	if ( block.type === 'planning_sources' ) {
+		return (
+			<PlanningSourcesCard
+				block={ block }
+				configuratorLinks={ configuratorLinks }
+			/>
+		);
+	}
 	if ( block.type === 'ask' ) {
 		return <Ask block={ block } onAsk={ onAsk } />;
 	}

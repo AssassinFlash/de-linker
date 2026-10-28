@@ -28,6 +28,11 @@ from .http_documents import (
     ReportEvaluate,
 )
 from .http_views import asset_view, project_view, run_view
+from .project_input_contracts import (
+    create_command,
+    require_input_contract,
+    revise_command,
+)
 from .pv_preparation import PvReferenceKernel
 from .pvgis_reference_kernel import PvgisRoofReferenceKernel
 from .records import Actor
@@ -59,8 +64,12 @@ class HttpReplay:
                 actor,
                 command_scope,
                 create.key,
-                {"title": create.title, "inputs": create.inputs},
+                create_command(
+                    create.title, create.inputs, input_contract=create.input_contract
+                ),
             )
+            if receipt is None:
+                require_input_contract(None, create.inputs, create.input_contract)
             result = (
                 None
                 if receipt is None
@@ -79,12 +88,19 @@ class HttpReplay:
                 actor,
                 command_scope,
                 revise.key,
-                {
-                    "expected_revision": revise.expected_revision,
-                    "inputs": revise.inputs,
-                },
+                revise_command(
+                    revise.expected_revision,
+                    revise.inputs,
+                    input_contract=revise.input_contract,
+                ),
                 project_id=revise.project_id,
             )
+            if receipt is None:
+                previous = self.workspace.get(actor, revise.project_id)
+                if previous.revision == revise.expected_revision:
+                    require_input_contract(
+                        previous.inputs, revise.inputs, revise.input_contract
+                    )
             result = (
                 None
                 if receipt is None

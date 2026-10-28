@@ -27,6 +27,7 @@ export function useProjectDraft(
 	const [busy, setBusy] = useState(false);
 	const [failed, setFailed] = useState(false);
 	const [sourceChanged, setSourceChanged] = useState(false);
+	const [inputContractRequired, setInputContractRequired] = useState(false);
 	const [recoveryFailed, setRecoveryFailed] = useState(false);
 	const [recovered, setRecovered] = useState(false);
 	const [recoveries, setRecoveries] = useState<readonly RecoveryCandidate[]>(
@@ -153,6 +154,7 @@ export function useProjectDraft(
 		setBusy(true);
 		setFailed(false);
 		setSourceChanged(false);
+		setInputContractRequired(false);
 		try {
 			// Local recovery failure is reported, and does not make an available
 			// server unavailable. The in-memory intent remains frozen for retry.
@@ -178,6 +180,11 @@ export function useProjectDraft(
 			setFailed(true);
 			setSourceChanged(
 				error instanceof ApiError && error.code === "product_evidence_changed",
+			);
+			setInputContractRequired(
+				error instanceof ApiError &&
+					error.status === 422 &&
+					error.code === "project_input_contract_required",
 			);
 			if (
 				error instanceof ApiError &&
@@ -242,6 +249,7 @@ export function useProjectDraft(
 		busy,
 		failed,
 		sourceChanged,
+		inputContractRequired,
 		recoveryFailed,
 		recovered,
 		recoveries,

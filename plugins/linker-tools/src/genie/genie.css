@@ -1141,6 +1141,26 @@ body:has(.linker-genie-workspace)
 	overflow-wrap: anywhere;
 }
 
+/* Source periods use the card width so translated labels cannot narrow their values. */
+.linker-genie-attachment__facts--sources {
+	grid-template-columns: minmax(0, 1fr);
+	gap: 8px;
+}
+
+.linker-genie-attachment__facts--sources > div {
+	display: block;
+	min-inline-size: 0;
+}
+
+.linker-genie-attachment__facts--sources dt {
+	margin-block-end: 2px;
+}
+
+.linker-genie-attachment__facts--sources time {
+	display: inline-block;
+	max-inline-size: 100%;
+}
+
 .linker-genie-attachment__status {
 	margin: 0;
 }

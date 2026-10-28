@@ -14,6 +14,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from native_planner import planner_wp
 
 from linker_cutover import atomic, backup, cli, plan, steps
 from linker_cutover.target import CutoverError, Target
@@ -21,6 +22,9 @@ from linker_cutover.target import CutoverError, Target
 
 class CliTarget(Target):
     """Real filesystem transport, with WP/HTTP boundaries isolated."""
+
+    def wp_on_target(self) -> list[str]:
+        return planner_wp()
 
     def wp(self, *args: str, check: bool = True) -> str:
         del check

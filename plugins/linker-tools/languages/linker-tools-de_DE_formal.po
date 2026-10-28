@@ -4886,6 +4886,7 @@ msgstr "Messpunkt"
 msgid "Met"
 msgstr "Erfüllt"
 
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 #: build/planner/assets/planner.js
 msgid "Meteorological database"
 msgstr "Meteorologische Datenbank"
@@ -5828,6 +5829,7 @@ msgstr "Projekte aus der Gastsitzung werden noch Ihrem Konto zugeordnet."
 msgid "Queued"
 msgstr "In der Warteschlange"
 
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 #: build/planner/assets/planner.js
 msgid "Radiation database"
 msgstr "Strahlungsdatenbank"
@@ -6964,6 +6966,7 @@ msgid "Surface length, greater than 0; this is not its horizontal projection."
 msgstr ""
 "Oberflächenlänge, größer als 0. Dieser Wert ist keine horizontale Projektion."
 
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 #: build/planner/assets/planner.js
 msgid "Synthetic calculation year"
 msgstr "Synthetisches Berechnungsjahr"
@@ -9703,6 +9706,7 @@ msgstr ""
 "Die Werte oder Einheiten der ausgewählten Produkttabelle ließen sich nicht "
 "konsistent zuordnen. Die Berechnung konnte nicht vorbereitet werden."
 
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 #: build/planner/assets/planner.js
 msgid "Baseline calculation"
 msgstr "Referenzberechnung"
@@ -9739,6 +9743,7 @@ msgstr ""
 msgid "Comparison basis"
 msgstr "Vergleichsgrundlage"
 
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 #: build/planner/assets/planner.js
 msgid "Comparison calculation"
 msgstr "Vergleichsberechnung"
@@ -12241,3 +12246,184 @@ msgstr "Diese Referenz für das gesamte Dach kann nur in einem AC-Szenario für 
 #: ../../apps/planner/src/components/energy/PvgisRoofFacts.tsx:114 build/planner/assets/planner.js
 msgid "Page"
 msgstr "Seite"
+
+#: ../../apps/planner/src/components/installation/PvStringLinks.tsx:279 build/planner/assets/planner.js
+msgid "Apply changes"
+msgstr "Änderungen übernehmen"
+
+#: ../../apps/planner/src/components/installation/PvStringLinks.tsx:28 build/planner/assets/planner.js
+msgid "Choose a PV DC circuit"
+msgstr "PV-DC-Stromkreis auswählen"
+
+#: ../../apps/planner/src/components/installation/PvStringLinks.tsx:258 build/planner/assets/planner.js
+msgid "Choose a saved PV DC circuit"
+msgstr "Gespeicherten PV-DC-Stromkreis auswählen"
+
+#: ../../apps/planner/src/components/installation/PvStringLinks.tsx:231 build/planner/assets/planner.js
+msgid "Choose a saved PV string"
+msgstr "Gespeicherten PV-String auswählen"
+
+#: ../../apps/planner/src/components/installation/PvStringLinks.tsx:326 build/planner/assets/planner.js
+msgid "Connection points"
+msgstr "Anschlusspunkte"
+
+#: ../../apps/planner/src/components/installation/PvStringLinks.tsx:30 build/planner/assets/planner.js
+msgid "Inverter connection needs review"
+msgstr "Wechselrichteranschluss muss geprüft werden"
+
+#: ../../apps/planner/src/components/installation/PvStringLinks.tsx:108 build/planner/assets/planner.js
+msgid "Link saved PV strings to recorded circuits. Cable sizes, conductor counts, connector compatibility and electrical approval require separate checks."
+msgstr "Ordnen Sie gespeicherte PV-Strings den erfassten Stromkreisen zu. Leitungsquerschnitte, Leiterzahlen, die Kompatibilität der Steckverbinder und die elektrische Freigabe müssen separat geprüft werden."
+
+#: ../../apps/planner/src/components/installation/PvStringLinks.tsx:302 build/planner/assets/planner.js
+msgid "Link string to circuit"
+msgstr "String einem Stromkreis zuordnen"
+
+#: ../../apps/planner/src/components/installation/PvStringLinks.tsx:156 ../../apps/planner/src/components/installation/PvStringLinks.tsx:237 build/planner/assets/planner.js
+#, javascript-format
+msgid "Missing PV string: %s"
+msgstr "PV-String nicht vorhanden: %s"
+
+#: ../../apps/planner/src/components/installation/PvStringLinks.tsx:163 build/planner/assets/planner.js
+#, javascript-format
+msgid "Missing circuit: %s"
+msgstr "Stromkreis nicht vorhanden: %s"
+
+#: ../../apps/planner/src/components/installation/PvStringLinks.tsx:365 build/planner/assets/planner.js
+msgid "No cable runs recorded"
+msgstr "Keine Leitungen oder Leiter erfasst"
+
+#: ../../apps/planner/src/components/installation/PvStringLinks.tsx:25 build/planner/assets/planner.js
+msgid "No circuit selected"
+msgstr "Kein Stromkreis ausgewählt"
+
+#: ../../apps/planner/src/components/installation/PvStringLinks.tsx:311 build/planner/assets/planner.js
+msgid "No saved PV string plan is available for this review."
+msgstr "Für diese Prüfung liegt kein gespeicherter PV-Stringplan vor."
+
+#: ../../apps/planner/src/components/installation/PvStringLinks.tsx:223 ../../apps/planner/src/components/installation/PvStringLinks.tsx:324 build/planner/assets/planner.js
+msgid "PV string"
+msgstr "PV-String"
+
+#: ../../apps/planner/src/components/installation/PvStringLinks.tsx:105 build/planner/assets/planner.js
+msgid "PV string connections"
+msgstr "PV-String-Verbindungen"
+
+#: ../../apps/planner/src/components/installation/PvStringLinks.tsx:328 build/planner/assets/planner.js
+msgid "Recorded cable runs"
+msgstr "Erfasste Leitungen und Leiter"
+
+#: ../../apps/planner/src/components/installation/PvStringLinks.tsx:190 build/planner/assets/planner.js
+msgid "Remove link"
+msgstr "Zuordnung entfernen"
+
+#: ../../apps/planner/src/components/installation/PvStringLinks.tsx:131 build/planner/assets/planner.js
+msgid "Remove the links before turning off this review."
+msgstr "Entfernen Sie die Zuordnungen, bevor Sie diese Prüfung deaktivieren."
+
+#: ../../apps/planner/src/components/installation/PvStringLinks.tsx:126 build/planner/assets/planner.js
+msgid "Review PV string connections"
+msgstr "PV-String-Verbindungen prüfen"
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx:565 build/planner/assets/planner.js
+msgid "Review routes and string links"
+msgstr "Leitungswege und Stringzuordnungen prüfen"
+
+#: ../../apps/planner/src/components/installation/PvStringLinks.tsx:141 build/planner/assets/planner.js
+msgid "Save the PV string plan and PV DC circuits before linking them. Changes to the string plan must be saved before reviewing links."
+msgstr "Speichern Sie den PV-Stringplan und die PV-DC-Stromkreise vor der Zuordnung. Änderungen am Stringplan müssen vor der Prüfung der Zuordnungen gespeichert werden."
+
+#: ../../apps/planner/src/components/installation/PvStringLinks.tsx:27 build/planner/assets/planner.js
+msgid "Saved circuit unavailable"
+msgstr "Gespeicherter Stromkreis nicht verfügbar"
+
+#: ../../apps/planner/src/components/installation/PvStringLinks.tsx:26 build/planner/assets/planner.js
+msgid "Saved string unavailable"
+msgstr "Gespeicherter String nicht verfügbar"
+
+#: ../../apps/planner/src/components/installation/PvStringLinks.tsx:24 build/planner/assets/planner.js
+msgid "String linked to circuit"
+msgstr "String dem Stromkreis zugeordnet"
+
+#: ../../apps/planner/src/components/installation/PvStringLinks.tsx:199 build/planner/assets/planner.js
+msgid "The link could not be applied. Check the selected string and circuit."
+msgstr "Die Zuordnung konnte nicht übernommen werden. Prüfen Sie den ausgewählten String und Stromkreis."
+
+#: ../../apps/planner/src/components/installation/PvStringLinks.tsx:315 build/planner/assets/planner.js
+msgid "The saved PV string plan contains no strings."
+msgstr "Der gespeicherte PV-Stringplan enthält keine Strings."
+
+#: ../../apps/planner/src/components/installation/PvStringLinks.tsx:264 build/planner/assets/planner.js
+#, javascript-format
+msgid "Unavailable PV DC circuit: %s"
+msgstr "PV-DC-Stromkreis nicht verfügbar: %s"
+
+
+#: ../../apps/planner/src/components/installation/InstallationEditor.tsx build/planner/assets/planner.js
+msgid "The saved project changed. Your edits remain open. Reopen the project before reviewing routes or string links."
+msgstr "Das gespeicherte Projekt wurde geändert. Ihre Eingaben bleiben hier geöffnet. Öffnen Sie das Projekt erneut, bevor Sie Leitungswege oder Stringzuordnungen prüfen."
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+msgid "Calculation sources and periods"
+msgstr "Quellen und Zeiträume der Berechnung"
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+msgid "From the selected saved result."
+msgstr "Aus dem ausgewählten gespeicherten Ergebnis."
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+#, javascript-format
+msgid "Saved revision %d"
+msgstr "Gespeicherter Stand %d"
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+msgid "Weather selection period"
+msgstr "Auswahlzeitraum der Wetterdaten"
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+msgid "PV calculation period (UTC)"
+msgstr "PV-Berechnungszeitraum (UTC)"
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+msgid "Energy calculation period (UTC)"
+msgstr "Zeitraum der Energieberechnung (UTC)"
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+msgid "Saved project time zone"
+msgstr "Zeitzone des gespeicherten Projekts"
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+msgid "Not recorded in this saved result"
+msgstr "In diesem gespeicherten Ergebnis nicht erfasst"
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+msgid "Open saved result"
+msgstr "Gespeichertes Ergebnis öffnen"
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+msgid "The saved calculation details could not be verified for this response."
+msgstr "Die Angaben zur gespeicherten Berechnung konnten für diese Antwort nicht geprüft werden."
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+msgid "PV input to the calculation"
+msgstr "PV-Eingangsgröße der Berechnung"
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+msgid "PV source scope"
+msgstr "Umfang der PV-Quelle"
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+msgid "Whole PV reference"
+msgstr "Gesamte PV-Referenz"
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+msgid "Selected DC group"
+msgstr "Ausgewählte DC-Gruppe"
+
+#: src/genie/components/PlanningSourcesCard.tsx build/genie.js
+msgid "Not identified in this saved result"
+msgstr "In diesem gespeicherten Ergebnis nicht eindeutig angegeben"
+
+#: ../../apps/planner/src/components/ProjectEditor.tsx ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js
+msgid "This workspace version cannot safely save projects with PV string connection data. Keep your local draft and reload the workspace before saving again."
+msgstr "Diese Version des Arbeitsbereichs kann Projekte mit PV-String-Zuordnungen nicht sicher speichern. Behalten Sie Ihren lokalen Entwurf und laden Sie den Arbeitsbereich neu, bevor Sie erneut speichern."

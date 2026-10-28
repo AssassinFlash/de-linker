@@ -18,6 +18,7 @@ from starlette.types import Message, Receive, Scope, Send
 
 from linker_engine.planning import timezone_rules
 from linker_engine.planning.canonical import Object, digest, encode
+from linker_engine.planning.commands import command_hash as canonical_command_hash
 from linker_engine.planning.csv_mapping import CsvMapping
 from linker_engine.planning.energy_kernel import EnergyKernel
 from linker_engine.planning.energy_service import EnergyService
@@ -26,6 +27,10 @@ from linker_engine.planning.http_app import HttpLimits, create_private_app
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.numerical_tolerance import Tolerance
 from linker_engine.planning.power_series import Measurement
+from linker_engine.planning.project_input_contracts import (
+    INPUT_CONTRACT,
+    create_command,
+)
 from linker_engine.planning.records import Actor, Context
 from linker_engine.planning.service_boundary import (
     ACTOR_SCOPE,
@@ -620,6 +625,92 @@ def test_permanent_http_replay_survives_days_without_writes_or_latest_revision(
     }
     assert rig.replay("/projects/revise", revision_command)["status"] == "absent"
     revised = rig.post("/projects/revise", revision_command)
+    aware: FixtureObject = {
+        "title": "Contract-aware complete inputs",
+        "inputs": {
+            "installation": {
+                "schema_version": 1,
+                "geometry_sha256": None,
+                "instances": [],
+                "circuits": [],
+                "routes": [],
+                "cable_runs": [],
+                "pv_string_links": [],
+            }
+        },
+        "input_contract": INPUT_CONTRACT,
+        "key": "aware-create",
+    }
+    before_refusal = set(rig.workspace.blobs.directory.rglob("*"))
+    unaware = {key: value for key, value in aware.items() if key != "input_contract"}
+    refused = rig.client.post(
+        "/operations/replay/projects/create",
+        json={"schema_version": 1, **unaware},
+        headers=headers(),
+    )
+    assert (
+        refused.status_code == 422
+        and refused.json()["error"]["code"] == "project_input_contract_required"
+    )
+    assert set(rig.workspace.blobs.directory.rglob("*")) == before_refusal
+    created_aware = rig.post("/projects/create", aware)
+    assert rig.replay("/projects/create", aware)[
+        "command_sha256"
+    ] == canonical_command_hash(
+        create_command(
+            str(aware["title"]),
+            json_object(aware["inputs"]),
+            input_contract=INPUT_CONTRACT,
+        ),
+        str(aware["key"]),
+    )
+    removing: FixtureObject = {
+        "project_id": created_aware["id"],
+        "expected_revision": 1,
+        "inputs": {},
+        "key": "clear-aware",
+    }
+    refused = rig.client.post(
+        "/projects/revise", json={"schema_version": 1, **removing}, headers=headers()
+    )
+    assert (
+        refused.status_code == 422
+        and refused.json()["error"]["code"] == "project_input_contract_required"
+    )
+    removing["input_contract"] = INPUT_CONTRACT
+    cleared = rig.post("/projects/revise", removing)
+    assert (
+        cleared["inputs"] == {}
+        and rig.replay("/projects/revise", removing)["result"] == cleared
+    )
+    assert (
+        rig.client.post(
+            "/projects/create",
+            json={"schema_version": 1, **aware, "input_contract": None},
+            headers=headers(),
+        ).status_code
+        == 422
+    )
+    assert (
+        rig.client.post(
+            "/inputs/contracts", json={"schema_version": 1}, headers=headers()
+        ).status_code
+        == 404
+    )
+    floor = rig.post("/inputs/contracts", {}, TEAM)
+    assert (
+        floor["required_input_contracts"]
+        == floor["supported_input_contracts"]
+        == [INPUT_CONTRACT]
+    )
+    assert set(floor) == {
+        "schema_version",
+        "required_input_contracts",
+        "supported_input_contracts",
+        "input_inventory_sha256",
+        "retained_revision_count",
+        "retained_input_count",
+    }
     before = set(rig.workspace.blobs.directory.rglob("*"))
     now = rig.workspace.clock()
     monkeypatch.setattr(rig.workspace, "clock", lambda: now + 2 * 86400)

@@ -6,6 +6,7 @@ import shutil
 from pathlib import Path
 
 import pytest
+from native_planner import planner_wp
 
 from linker_cutover import atomic
 from linker_cutover.target import CutoverError, Target
@@ -90,8 +91,27 @@ def test_rollback_restores_whole_batch_and_reports_actual_identities(
     tmp_path: Path,
 ) -> None:
     """Trees, owned files and first-time additions share one reversible batch."""
-    target = target_at(tmp_path / "site")
-    old_tree = Path(target.path_of("wp-content/plugins/first"))
+    state_file = tmp_path / "private-state.json"
+    state = {
+        "schema_version": 1,
+        "input_inventory_sha256": "a" * 64,
+        "retained_revision_count": 0,
+        "retained_input_count": 0,
+        "required_input_contracts": [],
+        "supported_input_contracts": ["installation_pv_string_links_v1"],
+    }
+    state_file.write_text(json.dumps(state))
+
+    # Real PHP guard/rename code; only the already-tested private transport is
+    # replaced by an exact team-only status reply in this filesystem fixture.
+    class NativeGuardTarget(Target):
+        def wp_on_target(self) -> list[str]:
+            return planner_wp(state_file)
+
+    target = NativeGuardTarget(
+        "fixture", str(tmp_path / "site"), "http://127.0.0.1", (), None, None
+    )
+    old_tree = Path(target.path_of("wp-content/plugins/linker-tools"))
     old_tree.mkdir(parents=True)
     (old_tree / "plugin.php").write_text("old plugin")
     old_inode = old_tree.stat().st_ino
@@ -101,14 +121,37 @@ def test_rollback_restores_whole_batch_and_reports_actual_identities(
     source = tmp_path / "release"
     source.mkdir()
     (source / "plugin.php").write_text("new plugin")
+    (source / "project-input-contracts.json").write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "project_input_contracts": ["installation_pv_string_links_v1"],
+            }
+        )
+    )
+    (source / "build/planner").mkdir(parents=True)
+    (source / "build/planner/source-manifest.json").write_text(
+        json.dumps({"project_input_contracts": ["installation_pv_string_links_v1"]})
+    )
     new_file = tmp_path / "new.php"
     new_file.write_text("new file")
     artifacts = [
-        atomic.Artifact(source, "wp-content/plugins/first"),
+        atomic.Artifact(source, "wp-content/plugins/linker-tools"),
         atomic.Artifact(new_file, "wp-content/themes/child/functions.php"),
         atomic.Artifact(new_file, "wp-content/mu-plugins/added.php"),
     ]
     atomic.publish(target, artifacts, deploy_id="20261018T000000Z-abc123")
+
+    # No retained link inputs are needed to refuse an old UI: the active
+    # backend's write capabilities alone protect its next complete-input save.
+    with pytest.raises(CutoverError, match="planner UI input compatibility refused"):
+        atomic.rollback(target, [entry.relative for entry in artifacts])
+    assert (old_tree / "plugin.php").read_text() == "new plugin"
+    assert theme.read_text() == "new file"
+    assert not theme.with_name(".functions.php.next").exists()
+    # A legitimate backend rollback is allowed here because history is empty.
+    state["supported_input_contracts"] = []
+    state_file.write_text(json.dumps(state))
 
     restored = atomic.rollback(target, [entry.relative for entry in artifacts])
 
@@ -117,7 +160,7 @@ def test_rollback_restores_whole_batch_and_reports_actual_identities(
     assert theme.read_text() == "old theme"
     assert not Path(target.path_of("wp-content/mu-plugins/added.php")).exists()
     assert any(
-        "wp-content/plugins/first" in line and str(old_inode) in line
+        "wp-content/plugins/linker-tools" in line and str(old_inode) in line
         for line in restored.readbacks
     )
     assert any("added.php: absent" in line for line in restored.readbacks)

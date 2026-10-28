@@ -151,6 +151,69 @@ final class PreparationJobs {
 	}
 
 	/**
+	 * Abandon one operator-confirmed interrupted lease through native WP-CLI only.
+	 *
+	 * This is not a receipt: current Woo facts, the activation epoch and every
+	 * previously loaded field remain unchanged. A later claim gets a new fence.
+	 *
+	 * @param string $job_id         Exact observed knowledge job.
+	 * @param string $source         Exact observed and current Woo source.
+	 * @param string $recipe         Exact observed compiler identity.
+	 * @param int    $epoch          Exact observed activation epoch.
+	 * @param string $worker_id      Exact observed interrupted worker.
+	 * @param bool   $worker_stopped Operator has independently confirmed it stopped.
+	 * @param bool   $apply          Preview by default; explicit application only.
+	 * @return array<string,mixed>|WP_Error
+	 */
+	public function abandon_interrupted_knowledge( string $job_id, string $source, string $recipe, int $epoch, string $worker_id, bool $worker_stopped, bool $apply = false ): array|WP_Error {
+		if ( ! defined( 'WP_CLI' ) || ! WP_CLI || ! current_user_can( 'manage_woocommerce' ) ) {
+			return new WP_Error( 'interrupted_lease_cli_required', 'This recovery requires a privileged native WP-CLI operator.', array( 'status' => 403 ) );
+		}
+		if ( 1 !== preg_match( '/^[a-f0-9]{64}$/D', $job_id ) || 1 !== preg_match( '/^[a-f0-9]{64}$/D', $source ) || 1 !== preg_match( '/^[a-f0-9]{64}$/D', $recipe ) || $epoch < 1 || '' === $worker_id ) {
+			return new WP_Error( 'invalid_interrupted_lease', 'Recovery requires exact job, source, recipe, epoch and worker identities.', array( 'status' => 400 ) );
+		}
+		if ( $apply && ! $worker_stopped ) {
+			return new WP_Error( 'interrupted_worker_confirmation_required', 'Confirm that the exact worker has stopped before abandoning its lease.', array( 'status' => 400 ) );
+		}
+		$result = new WP_Error( 'interrupted_lease_changed', 'The knowledge job, current source or interrupted worker has changed.', array( 'status' => 409 ) );
+		$taken  = Lock::run(
+			'publication-jobs',
+			static function () use ( $job_id, $source, $recipe, $epoch, $worker_id, $apply, &$result ): void {
+				$manifest = Publication::manifest();
+				$state    = get_option( self::OPTION, array() );
+				$job      = $state['knowledge'] ?? array();
+				if ( 'preparing' !== ( $job['status'] ?? '' ) || ( $job['job_id'] ?? null ) !== $job_id || ( $job['source_revision'] ?? null ) !== $source || $manifest['source_revision'] !== $source || ( $job['recipe_revision'] ?? null ) !== $recipe || ( $job['worker_id'] ?? null ) !== $worker_id || ! self::same_epoch( $job, array( 'activation_epoch' => $epoch ) ) ) {
+					return;
+				}
+				// Explicit whitelist: the lease token is never selected for output or
+				// used as worker credentials.
+				$result = array(
+					'applied'                   => $apply,
+					'consumer'                  => 'knowledge',
+					'job_id'                    => $job_id,
+					'source_revision'           => $source,
+					'recipe_revision'           => $recipe,
+					'activation_epoch'          => $epoch,
+					'worker_id'                 => $worker_id,
+					'previous_status'           => 'preparing',
+					'previous_lease_expires_at' => $job['lease_expires_at'] ?? 0,
+					'target_status'             => 'failed',
+					'target_lease_expires_at'   => 0,
+					'removes_lease_token'       => true,
+				);
+				if ( $apply ) {
+					$job['status']           = 'failed';
+					$job['lease_expires_at'] = 0;
+					unset( $job['lease_token'] );
+					$state['knowledge'] = $job;
+					update_option( self::OPTION, $state, false );
+				}
+			}
+		);
+		return $taken ? $result : new WP_Error( 'publication_busy', 'Preparation queue is busy.', array( 'status' => 503 ) );
+	}
+
+	/**
 	 * Reactivate an installed older compiler during an explicitly verified rollback.
 	 *
 	 * Internal only: no REST route. The operator verifies the installed worker code

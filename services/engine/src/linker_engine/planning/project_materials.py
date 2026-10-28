@@ -180,6 +180,38 @@ def project_materials(source: Object) -> Object:
                     },
                 }
             )
+        reconciliation = installation.get("pv_string_reconciliation")
+        if isinstance(reconciliation, dict):
+            # Review requirements carry identity gaps into the existing export.
+            # They have no material quantity and never become Woo sale rows.
+            reviewed = cast(list[Object], reconciliation["rows"])
+            review_rows: list[Object | None] = list(reviewed) if reviewed else [None]
+            for link in review_rows:
+                lines.append(
+                    {
+                        "id": f"installation-link:{link['string_id'] if link else 'plan'}",
+                        "handling": "installation_requirement",
+                        "label": {
+                            locale: text("installation_string_link_review", locale)
+                            for locale in ("en", "de")
+                        },
+                        "quantity": None,
+                        "unit": "piece",
+                        "basis": "pv_string_circuit_identity_v1",
+                        "source": {
+                            "scope": reconciliation["scope"],
+                            "pv_string_plan_sha256": reconciliation[
+                                "pv_string_plan_sha256"
+                            ],
+                            "installation_input_sha256": reconciliation[
+                                "installation_input_sha256"
+                            ],
+                            "geometry_sha256": reconciliation["geometry_sha256"],
+                            "plan_status": reconciliation["plan_status"],
+                            "link": link,
+                        },
+                    }
+                )
     return {
         "schema_version": 3,
         "kind": "project_materials_v3",
@@ -213,6 +245,15 @@ def material_reference(line: Object) -> str:
 
 
 def material_scope(line: Object, locale: str) -> str:
+    if line.get("basis") == "pv_string_circuit_identity_v1":
+        source = cast(Object, line["source"])
+        link = source["link"]
+        status = (
+            text(f"installation_string_link_{link['status']}", locale)
+            if isinstance(link, dict)
+            else text(f"installation_string_plan_{source['plan_status']}", locale)
+        )
+        return f"{text('installation_string_link_material_scope', locale)} · {status}"
     if line["handling"] == "manufacturer_included" and line.get("quantity") is not None:
         scope = text("material_included_documented", locale)
         parent = line.get("parent_label")

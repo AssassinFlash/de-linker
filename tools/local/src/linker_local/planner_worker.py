@@ -15,6 +15,7 @@ from pathlib import Path
 from uuid import uuid4
 
 from .checkout import Checkout
+from .engine_release import require_input_compatibility
 from .instance import Instance
 from .private_config import publish_once
 from .processes import POLL, Background, ProcessError
@@ -153,13 +154,31 @@ class PlannerWorker:
         if (
             not isinstance(value, dict)
             or set(value)
-            != {"schema_version", "runtime_sha256", "storage_schema_version"}
+            - {
+                "schema_version",
+                "runtime_sha256",
+                "storage_schema_version",
+                "project_input_contracts",
+            }
+            or not {
+                "schema_version",
+                "runtime_sha256",
+                "storage_schema_version",
+            }.issubset(value)
             or type(value["schema_version"]) is not int
             or value["schema_version"] != 1
             or not isinstance(value["runtime_sha256"], str)
             or re.fullmatch(r"[a-f0-9]{64}", value["runtime_sha256"]) is None
             or type(value["storage_schema_version"]) is not int
             or value["storage_schema_version"] <= 0
+            or not isinstance(value.get("project_input_contracts", []), list)
+            or any(
+                not isinstance(item, str)
+                or re.fullmatch(r"[a-z][a-z0-9_]*", item) is None
+                for item in value.get("project_input_contracts", [])
+            )
+            or len(set(value.get("project_input_contracts", [])))
+            != len(value.get("project_input_contracts", []))
         ):
             raise ProcessError("planning release probe returned an invalid version")
         return value
@@ -168,6 +187,7 @@ class PlannerWorker:
         """Refuse implicit migration/downgrade and mismatched live executors."""
         release = self.release()
         database = self._workspace() / "workspace.sqlite"
+        empty = not database.exists()
         if database.exists():
             try:
                 with closing(
@@ -188,10 +208,33 @@ class PlannerWorker:
                             "planning storage/executable versions differ; "
                             "a verified paired upgrade and recovery point are required"
                         )
+                    empty = empty and version == 0
             except sqlite3.Error as error:
                 raise ProcessError(
                     "planning storage version could not be read"
                 ) from error
+        directory = self._workspace()
+        # Only the first genuinely empty/unselected local store may be created
+        # later by normal startup. Retained selections and blob bytes require
+        # the strict read-only floor, even if their SQLite file is missing.
+        fresh = (
+            empty
+            and not (self.instance.dir / "planner/engine-release.json").exists()
+            and (
+                not directory.exists()
+                or not any(
+                    path.is_file() or path.is_symlink()
+                    for path in directory.rglob("*")
+                    if path.name != "workspace.sqlite"
+                )
+            )
+        )
+        if not fresh:
+            require_input_compatibility(
+                self.checkout.service("engine"),
+                directory,
+                release.get("project_input_contracts", []),
+            )
         if self.process.pid() is not None:
             ready = self.readiness({"runtime_sha256": release["runtime_sha256"]})
             if ready is None:

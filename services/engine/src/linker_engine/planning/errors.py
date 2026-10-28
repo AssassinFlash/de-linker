@@ -57,6 +57,12 @@ class InvalidInput(PlanningError):
     code = "invalid_input"
 
 
+class ProjectInputContractRequired(InvalidInput):
+    """An unaware editor was refused before replacing complete project inputs."""
+
+    code = "project_input_contract_required"
+
+
 class NumericalFailure(PlanningError):
     """A calculation produced values outside finite numerical representation."""
 

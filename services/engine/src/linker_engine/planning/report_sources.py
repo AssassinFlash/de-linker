@@ -540,7 +540,7 @@ def report_sources(
     installation: Object | None = None
     if options.include_installation:
         plan = InstallationInputs.read(project.inputs.get("installation"))
-        if not plan.cable_runs:
+        if not plan.cable_runs and "pv_string_links" not in plan.model_fields_set:
             raise InvalidInput(
                 "select at least one physical cable for the routing report"
             )

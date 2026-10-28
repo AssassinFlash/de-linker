@@ -56,3 +56,46 @@ claim-first and commit-first interleavings; another account/guest cannot list or
 replay the records; collision, migration, pagination, storage failure and delayed
 identity checks; native UI login, explicit retry, saved revision and source
 readback, logout isolation; independent Spec/Standards and EN/DE native states.
+
+## Input contracts across old tabs and code rollback
+
+The installation string-link addition introduces an application-data requirement
+without changing SQLite schema 5. Optional input syntax alone does not prove old
+clients or old releases can edit the new records safely. A stale client can
+resolve a revision conflict against a newer baseline while retaining a draft
+that omits `installation.pv_string_links`; a subsequent full-input save could
+then erase the field. This is a confirmed code path, not observed production
+loss. Publication remains blocked until the following protection is verified.
+
+Create/revise commands may declare the exact command metadata
+`input_contract: "installation_pv_string_links_v1"`. Omission preserves legacy
+command hashes and exact receipt replay. Invalid explicit declarations are
+rejected, including null. A new write requires that contract whenever either
+stored or incoming installation contains the `pv_string_links` key, including
+an empty list. Ownership and revision checks precede the contract check; the
+check precedes CAS, revision and receipt writes in the same transaction. An
+aware client can explicitly clear or opt out. The server must not silently
+merge, project or restore customer fields. Only new browser intents declare the
+contract; pending frozen request bodies and business keys remain unchanged.
+
+Release compatibility reads all retained revision inputs through read-only
+SQLite and verified CAS bytes. Head-only inspection is insufficient after an
+opt out. Missing or corrupt dependencies prevent release selection. Backend
+prepare, activation and rollback compare actual candidate capabilities against
+retained requirements, repeating the check after the old HTTP service stops
+and before starting the candidate. Retaining an old runtime as evidence does
+not establish it as a usable rollback.
+
+The UI's generated contract declaration and built source manifest must agree.
+Native Tools publication and rollback inspect this static candidate declaration
+before rename and require support for retained requirements plus the active
+backend's write contracts. A private, team-authorized status read supplies only
+contract capabilities and requirements; it exposes no owners or project inputs
+and is not a public Gateway/bootstrap operation. This conservative UI floor
+also protects the first linked save during a cross-host code switch.
+
+Existing unlinked projects remain editable by legacy commands. Once linked
+revisions are retained, downgrade is limited to backend/UI versions supporting
+the contract. Restoring an old database or deleting fields is not a rollback
+strategy. Focused acceptance extends the existing stale-tab scenario and native
+release fixtures; unchanged physics and visual evidence are reused.

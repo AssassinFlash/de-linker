@@ -139,8 +139,20 @@ final class PublicationPreparationRecipeTest extends IntegrationTestCase {
 		$this->assertInstanceOf( WP_Error::class, ( new PreparationJobs() )->acknowledge( $this->receipt( $old, 'no_proven_passage' ) ) );
 	}
 
-	/** Existing authenticated dispatch verifies only the exact current activation lease. */
+	/**
+	 * Existing dispatch and CLI recovery preserve the exact activation fence.
+	 *
+	 * Isolate the native WP-CLI constant from other WordPress fixtures.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
 	public function test_native_activation_verification_and_monotonic_retry_fence(): void {
+		if ( ! defined( 'WP_CLI' ) ) {
+			define( 'WP_CLI', true ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- Native CLI context is isolated in this fixture process.
+		}
+		$seed = $this->claim( str_repeat( 'e', 64 ) );
+		$this->assertIsArray( ( new PreparationJobs() )->acknowledge( $this->receipt( $seed, 'no_proven_passage' ) ) );
 		$first = $this->claim( str_repeat( 'a', 64 ) );
 		$this->assertGreaterThan( 0, $first['activation_epoch'] );
 		$body = array_merge(
@@ -159,7 +171,39 @@ final class PublicationPreparationRecipeTest extends IntegrationTestCase {
 		$this->assertInstanceOf( WP_REST_Response::class, $verified );
 		$this->assertTrue( $verified->get_data()['verified'] );
 		$this->assertSame( $before, get_option( PreparationJobs::OPTION ) );
-		( new PreparationJobs() )->acknowledge( $this->receipt( $first, 'document_unparsed' ) );
+		$identity = array(
+			'job_id'           => $first['job_id'],
+			'source_revision'  => $first['source_revision'],
+			'recipe_revision'  => $first['recipe_revision'],
+			'activation_epoch' => $first['activation_epoch'],
+			'worker_id'        => 'native-fixture',
+		);
+		$recover  = static fn ( array $expected, bool $stopped, bool $apply ): array|WP_Error => ( new PreparationJobs() )->abandon_interrupted_knowledge( $expected['job_id'], $expected['source_revision'], $expected['recipe_revision'], $expected['activation_epoch'], $expected['worker_id'], $stopped, $apply );
+		wp_set_current_user( 0 );
+		$this->assertInstanceOf( WP_Error::class, $recover( $identity, true, true ) );
+		wp_set_current_user( 1 );
+		$this->assertTrue( current_user_can( 'manage_woocommerce' ) );
+		$preview = $recover( $identity, false, false );
+		$this->assertIsArray( $preview );
+		$this->assertFalse( $preview['applied'] );
+		$this->assertStringNotContainsString( $first['lease_token'], (string) wp_json_encode( $preview ) );
+		$this->assertSame( $before, get_option( PreparationJobs::OPTION ) );
+		$this->assertInstanceOf( WP_Error::class, $recover( $identity, false, true ) );
+		foreach ( array_keys( $identity ) as $field ) {
+			$wrong           = $identity;
+			$wrong[ $field ] = 'activation_epoch' === $field ? $first['activation_epoch'] + 1 : ( 'worker_id' === $field ? 'another-worker' : str_repeat( 'f', 64 ) );
+			$this->assertInstanceOf( WP_Error::class, $recover( $wrong, true, true ) );
+			$this->assertSame( $before, get_option( PreparationJobs::OPTION ) );
+		}
+		$this->assertIsArray( $recover( $identity, true, true ) );
+		$expected_state                                  = $before;
+		$expected_state['knowledge']['status']           = 'failed';
+		$expected_state['knowledge']['lease_expires_at'] = 0;
+		unset( $expected_state['knowledge']['lease_token'] );
+		$this->assertSame( $expected_state, get_option( PreparationJobs::OPTION ) );
+		$this->assertInstanceOf( WP_Error::class, $recover( $identity, true, true ) );
+		$this->assertInstanceOf( WP_Error::class, ( new Controller() )->dispatch( 'jobs/claim', $request ) );
+		$this->assertInstanceOf( WP_Error::class, ( new PreparationJobs() )->acknowledge( $this->receipt( $first, 'no_proven_passage' ) ) );
 		$second = $this->claim( $first['recipe_revision'] );
 		$this->assertSame( $first['activation_epoch'] + 1, $second['activation_epoch'] );
 		$this->assertInstanceOf( WP_Error::class, ( new Controller() )->dispatch( 'jobs/claim', $request ) );

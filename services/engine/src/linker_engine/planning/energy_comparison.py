@@ -31,6 +31,8 @@ KINDS = {
 # All other source files, dependencies and interpreter bindings stay included;
 # adding an unknown module cannot silently exempt it from the comparison.
 _NON_NUMERICAL = {
+    "assistant_context.py",
+    "assistant_calculation_sources.py",
     "energy_comparison.py",
     "comparison_report.py",
     "http_app.py",

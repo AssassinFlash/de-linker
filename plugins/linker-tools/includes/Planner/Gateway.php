@@ -129,8 +129,8 @@ final class Gateway {
 		if ( ! Origin::allows( $request ) ) {
 			return Failure::make( 'origin', 403 );
 		}
-		$command = $this->command( $request );
-		return is_wp_error( $command ) ? $command : ( array( 'schema_version' => 1 ) === $command ? true : Failure::make( 'input', 400 ) );
+		$command = $this->bootstrap_command( $request );
+		return is_wp_error( $command ) ? $command : true;
 	}
 
 	/**
@@ -154,12 +154,21 @@ final class Gateway {
 	 * @return WP_REST_Response|WP_Error Confirmed context or a cookie confirmation step.
 	 */
 	public function bootstrap( WP_REST_Request $request ): WP_REST_Response|WP_Error {
-		$context = $this->identity->bootstrap( $request );
+		$command = $this->bootstrap_command( $request );
+		if ( is_wp_error( $command ) ) {
+			return $command;
+		}
+		$existing_only = true === ( $command['existing_owner_only'] ?? false );
+		$context       = $this->identity->bootstrap( $request, $existing_only );
 		if ( is_wp_error( $context ) ) {
 			return $context;
 		}
-		$recovered = $this->claims->recover();
-		$this->claims->settle( get_current_user_id() );
+		if ( $existing_only ) {
+			$recovered = array() === ( new TransitionTicket() )->read_all();
+		} else {
+			$recovered = $this->claims->recover();
+			$this->claims->settle( get_current_user_id() );
+		}
 		$principal = $context['principal'];
 		if ( $context['confirmed'] ) {
 			$status = $this->transport->object( $principal, 'identity/status', array( 'schema_version' => 1 ) );
@@ -170,7 +179,7 @@ final class Gateway {
 				return Failure::make( 'invalid_reply', 502 );
 			}
 			if ( 'retired' === $status['status'] ) {
-				if ( 'guest' !== $principal->kind ) {
+				if ( $existing_only || 'guest' !== $principal->kind ) {
 					return Failure::make( 'identity', 403 );
 				}
 				$session = $this->identity->session();
@@ -353,5 +362,24 @@ final class Gateway {
 		}
 		$data = json_decode( (string) $request->get_body(), false, self::MAX_JSON_DEPTH + 1 );
 		return $data instanceof \stdClass && JsonNumbers::supported( $data ) ? get_object_vars( $data ) : Failure::make( 'input', 400 );
+	}
+
+	/**
+	 * Accept the legacy command or a strict, order-independent read-only mode.
+	 *
+	 * @param WP_REST_Request $request Bounded bootstrap command.
+	 * @return array<string,mixed>|WP_Error Valid command or explicit refusal.
+	 */
+	private function bootstrap_command( WP_REST_Request $request ): array|WP_Error {
+		$command = $this->command( $request );
+		if ( is_wp_error( $command ) ) {
+			return $command;
+		}
+		$keys = array_keys( $command );
+		sort( $keys );
+		if ( 1 !== ( $command['schema_version'] ?? null ) || ( array( 'schema_version' ) !== $keys && ( array( 'existing_owner_only', 'schema_version' ) !== $keys || true !== $command['existing_owner_only'] ) ) ) {
+			return Failure::make( 'input', 400 );
+		}
+		return $command;
 	}
 }

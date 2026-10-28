@@ -88,6 +88,7 @@ from .http_views import asset_view, project_view, run_view
 from .product_sources import ProductProvider, ProductSources
 from .profile_preview import ProfilePreview
 from .profile_selections import check_profile_selections
+from .project_input_contracts import SUPPORTED_INPUT_CONTRACTS
 from .pv_preparation import PvPreparationService, check_pv_preparation
 from .pvgis_reference_service import PvgisRoofReferenceService
 from .records import Actor
@@ -191,7 +192,13 @@ def create_private_app(
         # never becomes a new operation or asks for current product permission.
         if products is None:
             return None
-        result = replays.read(actor, path, cast(Object, body.model_dump(mode="json")))
+        command = cast(Object, body.model_dump(mode="json"))
+        if (
+            isinstance(body, (ProjectCreate, ProjectRevise))
+            and "input_contract" not in body.model_fields_set
+        ):
+            command.pop("input_contract", None)
+        result = replays.read(actor, path, command)
         return (
             cast(Object, result["result"]) if result["status"] == "replayed" else None
         )
@@ -328,6 +335,21 @@ def create_private_app(
                 return {"schema_version": 1, "status": "retired"}
         return {"schema_version": 1, "status": "active"}
 
+    @app.post("/inputs/contracts")
+    def input_contract_status(_body: Command, request: Request) -> Object:
+        if verified_actor(request.scope).kind != "team":
+            raise NotFound("operator state not found")
+        from .project_input_floor import read_project_input_floor
+
+        try:
+            floor = read_project_input_floor(workspace.database.path.parent)
+        except ValueError as error:
+            raise VersionUnavailable("project input floor is unavailable") from error
+        return {
+            **floor,
+            "supported_input_contracts": list(SUPPORTED_INPUT_CONTRACTS),
+        }
+
     @app.post("/products/current")
     def current_products(_body: Command, request: Request) -> Object:
         actor = verified_actor(request.scope)
@@ -380,7 +402,13 @@ def create_private_app(
         if products is not None:
             products.check_project(body.inputs)
         return project_view(
-            workspace.create(actor, body.title, body.inputs, key=body.key)
+            workspace.create(
+                actor,
+                body.title,
+                body.inputs,
+                key=body.key,
+                input_contract=body.input_contract,
+            )
         )
 
     @app.post("/projects/list")
@@ -439,6 +467,7 @@ def create_private_app(
                 body.expected_revision,
                 body.inputs,
                 key=body.key,
+                input_contract=body.input_contract,
             )
         )
 
@@ -483,16 +512,25 @@ def create_private_app(
         from .installation_inputs import InstallationInputs
         from .installation_takeoff import product_basis, route_takeoff
 
-        workspace.get(verified_actor(request.scope), body.project_id)
+        project = workspace.get(verified_actor(request.scope), body.project_id)
+        if (
+            body.expected_revision is not None
+            and body.expected_revision != project.revision
+        ):
+            raise Conflict("project inputs have changed")
         if products is None:
             raise VersionUnavailable("current Woo installation evidence is unavailable")
         inputs: Object = {"geometry": body.geometry, "installation": body.installation}
+        if "pv_string_plan" in project.inputs:
+            inputs["pv_string_plan"] = project.inputs["pv_string_plan"]
         basis = product_basis(
             InstallationInputs.read(body.installation), products.equipment_basis()
         )
         reply = route_takeoff(inputs, basis, bind_geometry=body.bind_geometry)
         products.confirm_basis(basis, require_reference=False)
         reply["project_id"] = body.project_id
+        if body.expected_revision is not None:
+            reply["project_revision"] = project.revision
         reply["runtime_sha256"] = energy.kernel.runtime.sha256
         return reply
 

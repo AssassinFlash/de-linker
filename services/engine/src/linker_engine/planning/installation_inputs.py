@@ -74,6 +74,11 @@ class CableRun(Document):
     construction: Literal["single_conductor", "multicore_cable", "unspecified"]
 
 
+class PvStringLink(Document):
+    string_id: Identifier
+    circuit_id: Identifier
+
+
 class InstallationInputs(Document):
     schema_version: SchemaVersion
     geometry_sha256: Hash | None
@@ -81,9 +86,22 @@ class InstallationInputs(Document):
     circuits: list[InstallationCircuit]
     routes: list[InstallationRoute]
     cable_runs: list[CableRun]
+    # Absent retains the historical routing scope; [] explicitly requests a
+    # review with no declared links. Cross-document stale IDs remain saveable.
+    pv_string_links: list[PvStringLink] = Field(default_factory=list)
+
+    def project_document(self) -> Object:
+        value = self.model_dump(mode="json")
+        if "pv_string_links" not in self.model_fields_set:
+            value.pop("pv_string_links")
+        return value
 
     @model_validator(mode="after")
     def references(self) -> Self:
+        for key in ("string_id", "circuit_id"):
+            identities = [getattr(link, key) for link in self.pv_string_links]
+            if len(identities) != len(set(identities)):
+                raise ValueError("PV string links must not have competing assignments")
         for rows in (self.instances, self.circuits, self.routes, self.cable_runs):
             if len({row.id for row in rows}) != len(rows):
                 raise ValueError("installation IDs must be distinct in their scope")

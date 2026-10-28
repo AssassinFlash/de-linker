@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import cast
 
 import pytest
@@ -226,6 +227,27 @@ def test_report_omits_comparison_location_and_private_note(
         "generated_at": "2026-10-28T00:00:00Z",
         "source_runs": [],
         "locale": other_locale,
+        "brief": {
+            "site": {
+                "timezone": "Europe/Paris",
+                "country_code": "FR",
+                "location_label": "PRIVATE LOCATION",
+            },
+            "project_note": "PRIVATE PROJECT NOTE",
+        },
+        "energy": {
+            "kind": "single_ac_energy_replay_v1",
+            "interval_count": 2,
+            "metrics": {
+                "solar_autarky": {"value": None},
+                "pv_input_self_use": {"value": None},
+            },
+        },
+        "energy_scenario": {
+            "schedule": [
+                {"start_utc": "2023-06-16T09:00:00Z", "end_utc": "2023-06-16T11:00:00Z"}
+            ]
+        },
         "pvgis_roof_ac_references": [
             {
                 "parameters": {
@@ -249,7 +271,7 @@ def test_report_omits_comparison_location_and_private_note(
                         "revision": 1,
                         "binding": "pv_available_ac",
                         "comparison_role": "baseline",
-                    }
+                    },
                 ],
                 "arrays": [],
                 "pv_components": {"components": [], "nameplate_kwp": 0},
@@ -294,13 +316,27 @@ def test_report_omits_comparison_location_and_private_note(
                     "native_radiation_semantics": "sarah_instantaneous",
                 },
                 "pv_components": {"nameplate_kwp": 9.2, "components": []},
-                "used_by": [],
+                "used_by": [
+                    {"run_id": run.id, "revision": 1, "binding": "pv_available_dc"},
+                    {"run_id": run.id, "revision": 1, "binding": "legacy_quantity"},
+                ],
                 "arrays": [],
                 "converters": [],
                 "dependencies": {"pv_model_inputs": "a" * 64},
             }
         ],
     }
+    # A whole pvlib reference may feed AC and a plant's retained DC binding.
+    # Keep this distinct from the selected DC converter and the AC-only JRC source.
+    pvlib = cast(list[Object], source["pvlib_references"])
+    whole = deepcopy(pvlib[0])
+    del whole["converter_id"]
+    cast(Object, whole["profile_summary"])["measurement"] = "pv_available_ac"
+    whole["used_by"] = [
+        {"run_id": run.id, "revision": 1, "binding": "pv_available_ac"},
+        {"run_id": run.id, "revision": 1, "binding": "pv_reference"},
+    ]
+    pvlib.append(whole)
     recorded = build_report(source).model_dump(mode="json")
     assert "PRIVATE COMPARISON REFERENCE NOTE" in str(recorded)
     localized = workspace.evaluate(
@@ -327,3 +363,59 @@ def test_report_omits_comparison_location_and_private_note(
         )
         assert "0.1805" in str(projection) and "pvlib 0.16.1" in str(projection)
         assert "1.5 kWh" in str(projection)
+        sources = cast(
+            Object, cast(list[Object], projection["runs"])[0]["calculation_sources"]
+        )
+        groups = cast(list[Object], sources["groups"])
+        assert len(groups) == 6
+        annual = next(
+            group for group in groups if group.get("radiation_database") == "PVGIS-ERA5"
+        )
+        tmy = next(
+            group
+            for group in groups
+            if group.get("source_scope") == "selected_dc_group"
+            and group.get("input_quantity") == "pv_available_dc"
+        )
+        energy = next(group for group in groups if group["kind"] == "energy")
+        assert annual["periods_utc"] == [
+            {
+                "start_utc": "2020-01-01T00:00:00+00:00",
+                "end_utc": "2021-01-01T00:00:00+00:00",
+            }
+        ]
+        assert "synthetic_calculation_year" not in annual
+        assert "weather_selection_period" not in annual
+        assert annual["input_quantity"] == "pv_available_ac"
+        assert annual["source_scope"] == "whole_reference"
+        assert {
+            group.get("input_quantity")
+            for group in groups
+            if group.get("source_scope") == "whole_reference"
+            and group["role"] == "selected"
+        } == {"pv_available_ac", "pv_available_dc"}
+        assert tmy["weather_selection_period"] == {
+            "start_year": 2014,
+            "end_year": 2023,
+        }
+        assert tmy["synthetic_calculation_year"] == 2023
+        assert tmy["input_quantity"] == "pv_available_dc"
+        assert tmy["source_scope"] == "selected_dc_group"
+        assert any(
+            group.get("source_scope") == "selected_dc_group"
+            and group.get("input_quantity") is None
+            for group in groups
+        )
+        assert tmy["timezone"] == "Europe/Paris"
+        assert tmy["periods_utc"] == [
+            {
+                "start_utc": "2023-01-01T00:00:00+00:00",
+                "end_utc": "2024-01-01T00:00:00+00:00",
+            }
+        ]
+        assert energy["periods_utc"] == [
+            {
+                "start_utc": "2023-06-16T09:00:00+00:00",
+                "end_utc": "2023-06-16T11:00:00+00:00",
+            }
+        ]

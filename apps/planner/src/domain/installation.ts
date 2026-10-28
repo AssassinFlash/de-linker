@@ -4,6 +4,7 @@ import type { JsonObject } from "../data/protocol.ts";
 import { ApiError } from "../data/protocol.ts";
 import { readObject } from "../data/readProtocol.ts";
 import { sameJson } from "./draft.ts";
+import type { PvStringPlan } from "./pvStrings.ts";
 
 export interface RoutePoint {
 	east_m: number;
@@ -50,6 +51,10 @@ export interface CableRun {
 	route_id: string;
 	construction: "single_conductor" | "multicore_cable" | "unspecified";
 }
+export interface PvStringLink {
+	string_id: string;
+	circuit_id: string;
+}
 export interface InstallationInputs {
 	schema_version: 1;
 	geometry_sha256: string | null;
@@ -57,6 +62,7 @@ export interface InstallationInputs {
 	circuits: InstallationCircuit[];
 	routes: InstallationRoute[];
 	cable_runs: CableRun[];
+	pv_string_links?: PvStringLink[];
 }
 export const installationId = (prefix: string) =>
 	prefix + "_" + crypto.randomUUID().replaceAll("-", "");
@@ -113,6 +119,12 @@ export function readInstallation(value: unknown): InstallationInputs {
 		)
 	)
 		throw new ApiError(422, "invalid_installation");
+	const links = value.pv_string_links ?? [];
+	if (
+		!distinct(links.map((link) => link.string_id)) ||
+		!distinct(links.map((link) => link.circuit_id))
+	)
+		throw new ApiError(422, "invalid_installation");
 	return value;
 }
 export interface CableQuantity extends JsonObject {
@@ -131,11 +143,149 @@ export interface InstallationReview {
 	prepared_inputs: InstallationInputs;
 	geometry_sha256: string;
 	cables: CableQuantity[];
+	pv_string_reconciliation?: PvStringReconciliation;
+}
+export type PvStringLinkStatus =
+	| "linked"
+	| "unlinked"
+	| "stale_string"
+	| "stale_circuit"
+	| "wrong_circuit_kind"
+	| "inverter_endpoint_unresolved";
+export interface PvStringLinkReview {
+	string_id: string;
+	mppt: number | null;
+	input: number | null;
+	circuit_id: string | null;
+	status: PvStringLinkStatus;
+	endpoints: {
+		side: "start" | "end";
+		instance_id: string;
+		port_id: string;
+		product_id: number | null;
+		product_revision: string | null;
+	}[];
+	cable_runs: CableQuantity[];
+	reasons: "cable_runs_missing"[];
+}
+export interface PvStringReconciliation {
+	pv_string_plan_sha256: string | null;
+	installation_input_sha256: string;
+	geometry_sha256: string;
+	plan_status: "missing" | "empty" | "available";
+	rows: PvStringLinkReview[];
+}
+function readStringReconciliation(
+	value: unknown,
+	requested: InstallationInputs,
+	strings: PvStringPlan | null,
+	cables: CableQuantity[],
+	geometrySha: string,
+	inputSha: unknown,
+): PvStringReconciliation {
+	const result = readObject(value),
+		hash = (v: unknown): v is string =>
+			typeof v === "string" && /^[a-f0-9]{64}$/.test(v),
+		fail = (): never => {
+			throw new ApiError(502, "invalid_installation_review");
+		},
+		known = new Map(strings?.strings.map((s) => [s.id, s]) ?? []),
+		links = new Map(requested.pv_string_links?.map((l) => [l.string_id, l])),
+		ids = [
+			...known.keys(),
+			...[...links.keys()].filter((id) => !known.has(id)),
+		],
+		planStatus = !strings ? "missing" : known.size ? "available" : "empty";
+	if (
+		result.schema_version !== 1 ||
+		result.scope !== "declared_project_identity_only" ||
+		result.qualified !== false ||
+		result.plan_status !== planStatus ||
+		!hash(inputSha) ||
+		result.installation_input_sha256 !== inputSha ||
+		result.geometry_sha256 !== geometrySha ||
+		(strings
+			? !hash(result.pv_string_plan_sha256)
+			: result.pv_string_plan_sha256 !== null) ||
+		!Array.isArray(result.rows) ||
+		result.rows.length !== ids.length
+	)
+		fail();
+	const rows = (result.rows as unknown[]).map(
+		(raw, index): PvStringLinkReview => {
+			const row = readObject(raw),
+				id = ids[index]!,
+				string = known.get(id),
+				link = links.get(id),
+				circuit = requested.circuits.find((c) => c.id === link?.circuit_id),
+				endpoints: PvStringLinkReview["endpoints"] = circuit
+					? (["start", "end"] as const).map((side) => {
+							const endpoint = circuit[side],
+								instance = requested.instances.find(
+									(i) => i.id === endpoint.instance_id,
+								)!;
+							return {
+								side,
+								instance_id: instance.id,
+								port_id: endpoint.port_id,
+								product_id: instance.product_id,
+								product_revision: instance.product_revision,
+							};
+						})
+					: [],
+				recorded = cables.filter((c) => circuit && c.circuit_id === circuit.id),
+				status: PvStringLinkStatus = !string
+					? "stale_string"
+					: !link
+						? "unlinked"
+						: !circuit
+							? "stale_circuit"
+							: circuit.kind !== "pv_dc"
+								? "wrong_circuit_kind"
+								: endpoints.filter(
+											(e) => e.product_id === strings?.inverter_product_id,
+									  ).length !== 1
+									? "inverter_endpoint_unresolved"
+									: "linked",
+				reasons: PvStringLinkReview["reasons"] =
+					circuit && !recorded.length ? ["cable_runs_missing"] : [];
+			if (
+				row.string_id !== id ||
+				row.mppt !== (string?.mppt ?? null) ||
+				row.input !== (string?.input ?? null) ||
+				row.circuit_id !== (link?.circuit_id ?? null) ||
+				row.status !== status ||
+				!sameJson(row.endpoints, endpoints) ||
+				!sameJson(row.cable_runs, recorded) ||
+				!sameJson(row.reasons, reasons)
+			)
+				fail();
+			return {
+				string_id: id,
+				mppt: string?.mppt ?? null,
+				input: string?.input ?? null,
+				circuit_id: link?.circuit_id ?? null,
+				status,
+				endpoints,
+				cable_runs: recorded,
+				reasons,
+			};
+		},
+	);
+	return {
+		pv_string_plan_sha256: result.pv_string_plan_sha256 as string | null,
+		installation_input_sha256: inputSha as string,
+		geometry_sha256: geometrySha,
+		plan_status: planStatus,
+		rows,
+	};
 }
 export function readInstallationReview(
 	value: unknown,
 	requested: InstallationInputs,
 	projectId: string,
+	savedStrings?: PvStringPlan | null,
+	expectedRevision?: number,
 ): InstallationReview {
 	const row = readObject(value);
 	const prepared = readInstallation(row.prepared_inputs);
@@ -143,6 +293,8 @@ export function readInstallationReview(
 		row.schema_version !== 1 ||
 		row.method !== "installation_route_takeoff_v1" ||
 		row.project_id !== projectId ||
+		(expectedRevision !== undefined &&
+			row.project_revision !== expectedRevision) ||
 		row.qualified !== false ||
 		typeof row.geometry_sha256 !== "string" ||
 		!/^[a-f0-9]{64}$/.test(row.geometry_sha256) ||
@@ -193,9 +345,28 @@ export function readInstallationReview(
 			throw new ApiError(502, "invalid_installation_review");
 		return c as CableQuantity;
 	});
+	const optedIn = requested.pv_string_links !== undefined;
+	if (
+		(optedIn &&
+			(savedStrings === undefined || expectedRevision === undefined)) ||
+		(!optedIn && row.pv_string_reconciliation !== undefined)
+	)
+		throw new ApiError(502, "invalid_installation_review");
 	return {
 		prepared_inputs: prepared,
 		geometry_sha256: row.geometry_sha256,
 		cables,
+		...(optedIn
+			? {
+					pv_string_reconciliation: readStringReconciliation(
+						row.pv_string_reconciliation,
+						requested,
+						savedStrings ?? null,
+						cables,
+						row.geometry_sha256,
+						row.input_sha256,
+					),
+				}
+			: {}),
 	};
 }

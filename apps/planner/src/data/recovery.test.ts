@@ -3,6 +3,7 @@ import test from "node:test";
 import { decodeDraft, DraftStore } from "./DraftStore.ts";
 import { beginDraft, editDraft, prepareSave } from "../domain/draft.ts";
 import type { Project } from "./protocol.ts";
+import { IDBFactory } from "fake-indexeddb";
 
 const project: Project = {
 	id: "1".repeat(32),
@@ -26,7 +27,7 @@ const record = {
 	updated_at: 1,
 };
 
-test("recovery retains the baseline, local edits and exact uncertain intent", () => {
+test("recovery retains the baseline, local edits and exact uncertain intent", async () => {
 	const restored = decodeDraft(structuredClone(record), scope, project.id);
 	assert.deepEqual(restored, draft);
 	assert.equal(restored.pending?.body, draft.pending?.body);
@@ -34,6 +35,67 @@ test("recovery retains the baseline, local edits and exact uncertain intent", ()
 	assert.equal(restored.baseline.inputs.value, 10);
 	assert.throws(() => decodeDraft(record, "4".repeat(64), project.id));
 	assert.throws(() => decodeDraft(record, scope, "5".repeat(32)));
+	const legacy = structuredClone(record);
+	const oldCommand = JSON.parse(legacy.draft.pending!.body);
+	delete oldCommand.input_contract;
+	legacy.draft = {
+		...legacy.draft,
+		pending: { ...legacy.draft.pending!, body: JSON.stringify(oldCommand) },
+	};
+	assert.equal(
+		decodeDraft(legacy, scope, project.id).pending?.body,
+		legacy.draft.pending!.body,
+	);
+	const previous = Object.getOwnPropertyDescriptor(globalThis, "indexedDB");
+	Object.defineProperty(globalThis, "indexedDB", {
+		value: new IDBFactory(),
+		configurable: true,
+	});
+	try {
+		const store = new DraftStore();
+		await store.write(scope, draft);
+		assert.equal(
+			(await new DraftStore().read(scope, project.id))?.pending?.body,
+			draft.pending!.body,
+		);
+		await store.write(scope, { ...draft, pending: null });
+		const afterRefusal = await new DraftStore().read(scope, project.id);
+		assert.equal(afterRefusal?.pending, null);
+		assert.deepEqual(afterRefusal?.history.current, draft.history.current);
+		assert.deepEqual(afterRefusal?.baseline, draft.baseline);
+		const create = {
+			schema_version: 1,
+			title: "Recovered creation",
+			inputs: {},
+			key: crypto.randomUUID(),
+		};
+		const legacyBody = JSON.stringify(create);
+		await store.writeCreation(scope, legacyBody);
+		const awareBody = JSON.stringify({
+			...create,
+			key: crypto.randomUUID(),
+			input_contract: "installation_pv_string_links_v1",
+		});
+		await store.writeCreation(scope, awareBody);
+		assert.deepEqual(
+			new Set(
+				(await new DraftStore().readCreations(scope)).map(
+					(value) => value.body,
+				),
+			),
+			new Set([legacyBody, awareBody]),
+		);
+		await assert.rejects(
+			store.writeCreation(
+				scope,
+				JSON.stringify({ ...create, input_contract: null }),
+			),
+			/invalid_creation_recovery/,
+		);
+	} finally {
+		if (previous) Object.defineProperty(globalThis, "indexedDB", previous);
+		else Reflect.deleteProperty(globalThis, "indexedDB");
+	}
 });
 
 test("tampered recovery cannot substitute a pending snapshot, project or acknowledgement", () => {

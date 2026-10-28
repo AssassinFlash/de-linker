@@ -13,6 +13,7 @@ import ts from "typescript";
 const root = fileURLToPath(new URL("..", import.meta.url));
 const output = resolve(root, "../../plugins/linker-tools/build/planner");
 const manifestName = "source-manifest.json";
+const inputContractFile = "src/contracts/project-input-contracts.json";
 function files(directory) {
 	return readdirSync(directory)
 		.sort()
@@ -75,6 +76,14 @@ function hash(paths, directory) {
 	);
 }
 function snapshot() {
+	const inputContracts = JSON.parse(
+		readFileSync(resolve(root, inputContractFile), "utf8"),
+	);
+	const pluginContracts = JSON.parse(
+		readFileSync(resolve(output, "../../project-input-contracts.json"), "utf8"),
+	);
+	if (JSON.stringify(inputContracts) !== JSON.stringify(pluginContracts))
+		throw new Error("Planner and Tools input contracts differ");
 	const modules = JSON.parse(
 		readFileSync(resolve(output, "vite-manifest.json"), "utf8"),
 	);
@@ -94,7 +103,11 @@ function snapshot() {
 	);
 	if (built.some((path) => path.endsWith(".css")))
 		throw new Error("Planner styles must use the site WindPress volume");
-	return { sources: hash(sources, root), build: hash(built, output) };
+	return {
+		sources: hash(sources, root),
+		build: hash(built, output),
+		project_input_contracts: inputContracts.project_input_contracts,
+	};
 }
 const mode = process.argv[2];
 if (mode === "write") {

@@ -16,9 +16,15 @@ from linker_engine.planning.errors import (
     EvaluationRevisionChanged,
     InvalidInput,
     NotFound,
+    ProjectInputContractRequired,
     VersionUnavailable,
 )
 from linker_engine.planning.jobs import Jobs
+from linker_engine.planning.project_input_contracts import (
+    INPUT_CONTRACT,
+    create_command,
+    revise_command,
+)
 from linker_engine.planning.records import Actor, Context, Project
 from linker_engine.planning.workspace import Workspace
 
@@ -92,6 +98,94 @@ def test_old_tab_cannot_overwrite_a_newer_revision(
     assert workspace.get(owner, project.id) == successful[0]
     with workspace.database.read() as connection:
         assert connection.execute("PRAGMA foreign_key_check").fetchall() == []
+
+    # A current-revision old tab can still omit a newly introduced optional
+    # field after rebasing. Its complete-input write must not erase that data.
+    legacy = workspace.get(owner, project.id)
+    installation: Object = {
+        "schema_version": 1,
+        "geometry_sha256": None,
+        "instances": [],
+        "circuits": [],
+        "routes": [],
+        "cable_runs": [],
+        "pv_string_links": [],
+    }
+    linked: Object = {**legacy.inputs, "installation": installation}
+    assert create_command("legacy", legacy.inputs) == {
+        "title": "legacy",
+        "inputs": legacy.inputs,
+    }
+    assert revise_command(legacy.revision, legacy.inputs) == {
+        "expected_revision": legacy.revision,
+        "inputs": legacy.inputs,
+    }
+    with pytest.raises(ProjectInputContractRequired):
+        workspace.create(owner, "Unaware incoming data", linked, key="unaware-create")
+    known = workspace.revise(
+        owner,
+        project.id,
+        legacy.revision,
+        linked,
+        key="aware-links",
+        input_contract=INPUT_CONTRACT,
+    )
+    before_files = sorted(
+        str(p) for p in workspace.blobs.directory.rglob("*") if p.is_file()
+    )
+    with workspace.database.read() as connection:
+        before_counts = [
+            connection.execute(f"SELECT count(*) FROM {table}").fetchone()[0]
+            for table in ("revisions", "idempotency")
+        ]
+    with pytest.raises(Conflict):
+        workspace.revise(
+            owner, project.id, legacy.revision, legacy.inputs, key="stale-old-tab"
+        )
+    with pytest.raises(ProjectInputContractRequired):
+        workspace.revise(
+            owner, project.id, known.revision, legacy.inputs, key="rebased-old-tab"
+        )
+    assert workspace.get(owner, project.id) == known
+    with workspace.database.read() as connection:
+        assert before_counts == [
+            connection.execute(f"SELECT count(*) FROM {table}").fetchone()[0]
+            for table in ("revisions", "idempotency")
+        ]
+    assert before_files == sorted(
+        str(p) for p in workspace.blobs.directory.rglob("*") if p.is_file()
+    )
+    assert (
+        workspace.revise(
+            owner,
+            project.id,
+            legacy.revision,
+            linked,
+            key="aware-links",
+            input_contract=INPUT_CONTRACT,
+        )
+        == known
+    )
+    with pytest.raises(Conflict):
+        workspace.revise(owner, project.id, legacy.revision, linked, key="aware-links")
+    without_links: Object = {
+        **linked,
+        "installation": {
+            key: value
+            for key, value in installation.items()
+            if key != "pv_string_links"
+        },
+    }
+    opted_out = workspace.revise(
+        owner,
+        project.id,
+        known.revision,
+        without_links,
+        key="aware-opt-out",
+        input_contract=INPUT_CONTRACT,
+    )
+    assert opted_out.inputs == without_links
+    assert workspace.get(owner, project.id, revision=known.revision).inputs == linked
 
 
 def test_new_stale_evaluation_has_a_distinct_premutation_refusal(

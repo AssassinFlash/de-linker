@@ -7,6 +7,7 @@ import { creationIntents, intentId } from "../data/recoveryIntents.ts";
 import type { ScopedCreation } from "../data/recoveryIntents.ts";
 import { readProject, wire } from "../data/readProtocol.ts";
 import { emptyBrief } from "../domain/brief.ts";
+import { projectInputContract } from "../domain/draft.ts";
 import { __ } from "../i18n.ts";
 import { Icon } from "./Icon.tsx";
 import { Notice } from "./Notice.tsx";
@@ -46,6 +47,7 @@ export function NewProject({
 	const [title, setTitle] = useState(initialProject?.title ?? "");
 	const [busy, setBusy] = useState(false);
 	const [failed, setFailed] = useState(false);
+	const [inputContractRequired, setInputContractRequired] = useState(false);
 	const [recoveryFailed, setRecoveryFailed] = useState(false);
 	const [checking, setChecking] = useState(true);
 	const [requests, setRequests] = useState<readonly ScopedCreation[]>([]);
@@ -115,10 +117,12 @@ export function NewProject({
 
 		setBusy(true);
 		setFailed(false);
+		setInputContractRequired(false);
 		try {
 			intent.current ??= wire(
 				{
 					schema_version: 1,
+					input_contract: projectInputContract,
 					title: title.trim(),
 					inputs:
 						initialProject && useHints
@@ -175,6 +179,11 @@ export function NewProject({
 		} catch (error) {
 			if (lifetime.current !== instance) return;
 			setFailed(true);
+			setInputContractRequired(
+				error instanceof ApiError &&
+					error.status === 422 &&
+					error.code === "project_input_contract_required",
+			);
 			if (
 				error instanceof ApiError &&
 				(error.status === 401 ||
@@ -370,10 +379,15 @@ export function NewProject({
 			</div>
 			{failed && (
 				<Notice error>
-					{__(
-						"Project creation was not confirmed. Retrying uses the same request.",
-						"linker-tools",
-					)}
+					{inputContractRequired
+						? __(
+								"This workspace version cannot safely save projects with PV string connection data. Keep your local draft and reload the workspace before saving again.",
+								"linker-tools",
+							)
+						: __(
+								"Project creation was not confirmed. Retrying uses the same request.",
+								"linker-tools",
+							)}
 				</Notice>
 			)}
 			{recoveryFailed && (
