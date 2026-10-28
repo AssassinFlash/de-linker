@@ -391,6 +391,87 @@ test( 'saved source card shows exact UTC ranges without private bindings or sizi
 	interrupted.unmount();
 } );
 
+test( 'full-page source recovery waits for visible owned restore and runs once', async () => {
+	const saved: Awaited< ReturnType< typeof readThread > > = {
+		conversationId: 12,
+		messages: [
+			{ role: 'user', content: 'Explain the saved result.' },
+			{ role: 'assistant', content: '' },
+		],
+		turn: {
+			meta: null,
+			blocks: [
+				{
+					type: 'planning_sources',
+					schema_version: 1,
+					status: 'unavailable',
+				},
+			],
+		},
+	};
+	const previous = Object.getOwnPropertyDescriptor(
+		document,
+		'visibilityState'
+	);
+	let visibility = 'hidden';
+	Object.defineProperty( document, 'visibilityState', {
+		configurable: true,
+		get: () => visibility,
+	} );
+	try {
+		vi.mocked( readThread ).mockResolvedValue( saved );
+		const hidden = await renderOwned(
+			<App config={ { ...config(), surface: 'workspace' } } />
+		);
+		expect( readThread ).toHaveBeenCalledTimes( 1 );
+		await act( async () => {
+			document.dispatchEvent( new Event( 'visibilitychange' ) );
+		} );
+		expect( readThread ).toHaveBeenCalledTimes( 1 ); // Hidden mount cannot refresh native owner proof.
+		visibility = 'visible';
+		await act( async () => {
+			document.dispatchEvent( new Event( 'visibilitychange' ) );
+		} );
+		await waitFor( () => expect( readThread ).toHaveBeenCalledTimes( 2 ) );
+		expect( vi.mocked( readThread ).mock.calls[ 1 ][ 4 ] ).toMatchObject( {
+			allowExistingOwnerBootstrap: true,
+		} );
+		visibility = 'hidden';
+		await act( async () => {
+			document.dispatchEvent( new Event( 'visibilitychange' ) );
+		} );
+		visibility = 'visible';
+		await act( async () => {
+			document.dispatchEvent( new Event( 'visibilitychange' ) );
+		} );
+		expect( readThread ).toHaveBeenCalledTimes( 2 ); // Failed verification is not a retry loop.
+		hidden.unmount();
+		resetTurnLane();
+		vi.mocked( readThread ).mockClear();
+		const cold = await renderOwned(
+			<App config={ { ...config(), surface: 'workspace' } } />
+		);
+		await waitFor( () => expect( readThread ).toHaveBeenCalledTimes( 2 ) );
+		expect( vi.mocked( readThread ).mock.calls[ 0 ][ 4 ] ).toMatchObject( {
+			allowExistingOwnerBootstrap: false,
+		} );
+		expect( vi.mocked( readThread ).mock.calls[ 1 ][ 4 ] ).toMatchObject( {
+			allowExistingOwnerBootstrap: true,
+		} );
+		await act( async () => {
+			document.dispatchEvent( new Event( 'visibilitychange' ) );
+		} );
+		expect( readThread ).toHaveBeenCalledTimes( 2 );
+		cold.unmount();
+	} finally {
+		if ( previous ) {
+			Object.defineProperty( document, 'visibilityState', previous );
+		} else {
+			Reflect.deleteProperty( document, 'visibilityState' );
+		}
+	}
+} );
+
 test( 'the disclosure is spoken once and a prompt sends the first turn', async () => {
 	vi.mocked( sendTurn ).mockResolvedValue( {
 		meta: {

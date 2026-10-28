@@ -798,8 +798,17 @@ export function App( { config }: { config: GenieConfig } ) {
 		) {
 			return;
 		}
-		const lease = draftContext.capture();
-		if ( ! lease ) {
+		const scope = draftContext.identity?.scope;
+		// Visibility already starts native owner revalidation. Wait for that
+		// same check rather than consuming this one-shot while capture is null.
+		const lease = await draftContext.ready();
+		if (
+			! lease ||
+			lease.scope !== scope ||
+			epoch !== historyEpoch ||
+			snapshot !== currentThread.current ||
+			sending.current
+		) {
 			return;
 		}
 		const refreshed = await loadThread( true, false );
@@ -1360,6 +1369,28 @@ export function App( { config }: { config: GenieConfig } ) {
 	// of an empty panel (docs/specs/13-genie.md).
 	useEffect( () => {
 		let cancelled = false;
+		let restored = false;
+		let sourceRefreshRequested = false;
+		const onWorkspaceVisible = () => {
+			if (
+				cancelled ||
+				! workspace ||
+				! restored ||
+				sourceRefreshRequested ||
+				document.visibilityState !== 'visible'
+			) {
+				return;
+			}
+			sourceRefreshRequested = true;
+			document.removeEventListener(
+				'visibilitychange',
+				onWorkspaceVisible
+			);
+			void enqueue( refreshSavedSource ).catch( () => undefined );
+		};
+		if ( workspace ) {
+			document.addEventListener( 'visibilitychange', onWorkspaceVisible );
+		}
 		const pending = deferred< {
 			messages: TurnMessage[];
 			turn: Turn | null;
@@ -1390,9 +1421,11 @@ export function App( { config }: { config: GenieConfig } ) {
 				}
 			}
 			await applyRecord( stored.messages );
+			restored = true;
 		} )
 			.then( () => {
 				if ( ! cancelled ) {
+					onWorkspaceVisible();
 					return refreshHistory();
 				}
 				return undefined;
@@ -1400,6 +1433,10 @@ export function App( { config }: { config: GenieConfig } ) {
 			.catch( () => undefined );
 		return () => {
 			cancelled = true;
+			document.removeEventListener(
+				'visibilitychange',
+				onWorkspaceVisible
+			);
 			// A superseded mount must not hold the lane. The replacement
 			// reads the thread itself.
 			pending.resolve( {
@@ -1409,7 +1446,14 @@ export function App( { config }: { config: GenieConfig } ) {
 				inquiries: [],
 			} );
 		};
-	}, [ loadThread, refreshHistory, applyRecord, draftContext ] );
+	}, [
+		loadThread,
+		refreshHistory,
+		applyRecord,
+		draftContext,
+		workspace,
+		refreshSavedSource,
+	] );
 
 	const continueConversation = useCallback(
 		( id?: number ) => {
