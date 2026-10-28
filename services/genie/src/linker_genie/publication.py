@@ -8,13 +8,35 @@ exact supplied-model identification and dependency validation expose permission 
 from __future__ import annotations
 
 import os
+import time
 from collections.abc import Iterator, Mapping, Sequence
 from dataclasses import dataclass
+from datetime import UTC
+from email.utils import parsedate_to_datetime
 from typing import Any
 
 import httpx
 
 PREFIX = "/wp-json/linker/v1/publication"
+_IDENTIFY_ATTEMPTS = 3
+_RETRY_AFTER_CAP = 2.0
+
+
+def _retry_after(response: httpx.Response) -> float:
+    """Honor a bounded Retry-After without trusting a response body."""
+    raw = response.headers.get("retry-after", "").strip()
+    delay = 0.0
+    if raw.isascii() and raw.isdecimal() and len(raw) <= 8:
+        delay = float(int(raw))
+    elif 0 < len(raw) <= 128:
+        try:
+            when = parsedate_to_datetime(raw)
+            if when.tzinfo is None:
+                when = when.replace(tzinfo=UTC)
+            delay = max(0.0, when.timestamp() - time.time())
+        except (TypeError, ValueError, OverflowError, IndexError):
+            pass
+    return min(_RETRY_AFTER_CAP, delay)
 
 
 class PublicationUnavailable(RuntimeError):
@@ -151,8 +173,15 @@ def document_urls(value: Any) -> Iterator[str]:
 
 class PublicationClient:
     def __init__(
-        self, base_url: str, transport: httpx.BaseTransport | None = None
+        self,
+        base_url: str,
+        transport: httpx.BaseTransport | None = None,
+        *,
+        identify_deadline: int | None = None,
     ) -> None:
+        if identify_deadline is not None and type(identify_deadline) is not int:
+            raise ValueError("identify deadline must be a native lease expiry")
+        self._identify_deadline = identify_deadline
         # Same loopback budget as AbilityClient; no cached success on outage.
         self._client = httpx.Client(
             base_url=base_url.rstrip("/"),
@@ -164,14 +193,53 @@ class PublicationClient:
     def _request(
         self, method: str, path: str, body: Mapping[str, Any] | None = None
     ) -> Any:
-        try:
-            response = self._client.request(method, PREFIX + path, json=body)
-            response.raise_for_status()
-            return response.json()
-        except (httpx.HTTPError, ValueError) as error:
-            raise PublicationUnavailable(
-                "Woo publication permission unavailable"
-            ) from error
+        # The leased compiler opts in; interactive reads and every other endpoint
+        # retain their original one-attempt behavior. /identify is read-only even
+        # though it uses POST to keep supplied text out of URLs.
+        deadline = (
+            self._identify_deadline
+            if method == "POST" and path == "/identify"
+            else None
+        )
+        attempts = _IDENTIFY_ATTEMPTS if deadline is not None else 1
+        for attempt in range(attempts):
+            if deadline is not None:
+                remaining = deadline - time.time() - 1
+                if remaining <= 0:
+                    raise PublicationUnavailable("native knowledge lease expired")
+            try:
+                if deadline is None:
+                    response = self._client.request(method, PREFIX + path, json=body)
+                else:
+                    response = self._client.request(
+                        method, PREFIX + path, json=body, timeout=min(20.0, remaining)
+                    )
+                response.raise_for_status()
+                result = response.json()
+                if deadline is not None and deadline <= time.time() + 1:
+                    raise PublicationUnavailable("native knowledge lease expired")
+                return result
+            except (httpx.HTTPError, ValueError) as error:
+                retryable = isinstance(error, httpx.TransportError) or (
+                    isinstance(error, httpx.HTTPStatusError)
+                    and error.response.status_code == 503
+                )
+                if not retryable or attempt + 1 == attempts or deadline is None:
+                    raise PublicationUnavailable(
+                        "Woo publication permission unavailable"
+                    ) from error
+                suggested = (
+                    _retry_after(error.response)
+                    if isinstance(error, httpx.HTTPStatusError)
+                    else 0.0
+                )
+                delay = max(float(2**attempt), suggested)
+                if time.time() + delay + 1 >= deadline:
+                    raise PublicationUnavailable(
+                        "native knowledge lease expired before retry"
+                    ) from error
+                time.sleep(delay)
+        raise PublicationUnavailable("Woo publication permission unavailable")
 
     def snapshot(self) -> Snapshot:
         return Snapshot.read(self._request("GET", "/manifest"))
