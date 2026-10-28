@@ -42,6 +42,7 @@ from linker_genie.template import (
     DEGRADED,
     LOGIN_PLACEHOLDER,
     LOGIN_REQUIRED,
+    clearance_question,
     fallback,
     finish,
     seal,
@@ -168,8 +169,9 @@ def _seal_and_finish(
     """Required sentences after hydration, then the route's next step.
 
     `seal` adds no timing phase. A language miss falls back to the pre-seal
-    text for ordinary turns; a qualified turn retries instead so that discarded
-    numbers cannot be reintroduced. `finish` adds the route's next step.
+    text for ordinary turns; a qualified or clearance turn retries instead so
+    that discarded numbers cannot be reintroduced. `finish` adds the route's
+    next step.
     """
     sealed = seal(
         protected,
@@ -180,11 +182,19 @@ def _seal_and_finish(
         original=original,
     )
     sealed = _restore_qualified(sealed, replacements)
+    if clearance_question(customer_message(request)) and not any(
+        (block.text if isinstance(block, TextBlock) else block.summary).strip()
+        for block in sealed.blocks
+        if isinstance(block, (TextBlock, HandoffBlock))
+    ):
+        return "The cited source does not establish the clearance claim."
     cited = _cited_prose(priced_facts)
     mismatch = language_failure(sealed, expected, cited)
-    if mismatch is not None and replacements:
-        # Returning pre-seal text here would also restore unrelated numbers
-        # the seal just rejected. Let the normal language retry handle it.
+    if mismatch is not None and (
+        replacements or clearance_question(customer_message(request))
+    ):
+        # Returning pre-seal text here would restore numbers the seal rejected.
+        # Let the normal language retry handle a qualified or clearance turn.
         return mismatch
     if mismatch is not None:
         sealed = priced

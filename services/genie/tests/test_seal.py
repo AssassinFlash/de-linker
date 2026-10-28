@@ -389,6 +389,259 @@ def test_clearance_completion_does_not_assert_a_negated_value() -> None:
     assert "400 mm" in _text(sealed)
 
 
+def test_cycle_does_not_use_another_or_negated_figure_as_clearance() -> None:
+    cases = (
+        (
+            "en",
+            "Minimum clearance 500 mm; enclosure height 1500 mm.",
+            "a.n2",
+            "1500 mm",
+            "500 mm",
+        ),
+        (
+            "de",
+            "Minimum clearance 500 mm; enclosure height 1500 mm.",
+            "a.n2",
+            "1500 mm",
+            "500 mm",
+        ),
+        (
+            "en",
+            "The clearance is not 500 mm; use a minimum of 400 mm.",
+            "a.n1",
+            "500 mm",
+            "400 mm",
+        ),
+        (
+            "en",
+            "Minimum clearance 500 mm; enclosure height 500 mm.",
+            "a.n2",
+            None,
+            "500 mm",
+        ),
+    )
+    for language, source, ref, forbidden, expected in cases:
+        facts = _scoped_hit("a", 1, source)
+        request = TurnRequest(
+            conversation_id="clearance",
+            messages=[
+                TurnMessage(
+                    role="user",
+                    content="What minimum clearance?"
+                    if language == "en"
+                    else "Welcher Mindestabstand?",
+                )
+            ],
+            locale=language,
+        )
+        output = TurnOutput(
+            language=language,
+            blocks=[
+                TextBlock(
+                    text=(
+                        f"The minimum clearance is {{fact:{ref}}}."
+                        if language == "en"
+                        else f"Der Mindestabstand beträgt {{fact:{ref}}}."
+                    )
+                )
+            ],
+        )
+
+        result = run(
+            request,
+            lambda _request, _retry, out=output, gathered=facts: (out, gathered),
+            Route("documents"),
+        )
+
+        assert result.grounded and not result.fallback
+        answer = _text(result.output)
+        if forbidden:
+            assert forbidden not in answer
+        else:
+            assert "The minimum clearance is 500 mm" not in answer
+        assert expected in answer
+        assert any(block.type == "document" for block in result.output.blocks)
+
+    facts = _scoped_hit("a", 1, "Minimum clearance 500 mm; enclosure height 1500 mm.")
+    request = TurnRequest(
+        conversation_id="clearance",
+        messages=[TurnMessage(role="user", content="What minimum clearance?")],
+        locale="en",
+    )
+    for claim in (
+        "The minimum clearance is {fact:a.n1}.",
+        "The minimum clearance is not {fact:a.n1}.",
+    ):
+        output = TurnOutput(language="en", blocks=[TextBlock(text=claim)])
+        result = run(
+            request,
+            lambda _request, _retry, out=output: (out, facts),
+            Route("documents"),
+        )
+        assert result.grounded and not result.fallback
+        assert "500 mm" in _text(result.output)
+        assert "not 500 mm" not in _text(result.output)
+
+    both = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(
+                text="The enclosure height is {fact:a.n2}. The minimum clearance is {fact:a.n1}."
+            )
+        ],
+    )
+    result = run(request, lambda _request, _retry: (both, facts), Route("documents"))
+    assert result.grounded and not result.fallback
+    assert "height is 1500 mm" in _text(result.output)
+    assert "clearance is 500 mm" in _text(result.output)
+
+    mixed = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(
+                text="The enclosure height is {fact:a.n2}. The minimum clearance is {fact:a.n2}."
+            )
+        ],
+    )
+    result = run(request, lambda _request, _retry: (mixed, facts), Route("documents"))
+    assert result.grounded and not result.fallback
+    assert "height is 1500 mm" in _text(result.output)
+    assert "clearance is 1500 mm" not in _text(result.output)
+    assert "500 mm" in _text(result.output)
+
+
+def test_cycle_preserves_a_qualified_fact_when_removing_a_wrong_clearance() -> None:
+    plain = _scoped_hit("a", 1, "Minimum clearance 500 mm; enclosure height 1500 mm.")
+    conditioned = collect(
+        "linker/search-knowledge",
+        {
+            "hits": [
+                {
+                    "chunk_id": "b",
+                    "doc_url": "https://example.test/data.pdf",
+                    "title": "Sample data",
+                    "page": 2,
+                    "product_ids": [1],
+                    "text": "| Current | [n1=5 A] |\n*6: The interface is required. (p. 3)",
+                    "figures": {"b.n1": "5 A"},
+                    "qualification_required": True,
+                    "qualifications": [
+                        {
+                            "chunk_id": "b-p3",
+                            "page": 3,
+                            "quote": "*6: The interface is required.",
+                            "lang": "en",
+                        }
+                    ],
+                }
+            ]
+        },
+    )
+    request = TurnRequest(
+        conversation_id="clearance",
+        messages=[TurnMessage(role="user", content="What minimum clearance?")],
+        locale="en",
+    )
+    output = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(text="The clearance is {fact:a.n2}; current is {fact:b.n1}.")
+        ],
+    )
+
+    result = run(
+        request,
+        lambda _request, _retry: (output, merge([plain, conditioned])),
+        Route("documents"),
+    )
+
+    assert result.grounded and not result.fallback
+    answer = _text(result.output)
+    assert "1500 mm" not in answer and "500 mm" in answer and "5 A" in answer
+    assert '"The interface is required."' in answer
+    assert any(
+        isinstance(block, DocumentBlock) and block.url.endswith("#page=3")
+        for block in result.output.blocks
+    )
+
+
+def test_cycle_rejects_a_qualified_height_as_clearance() -> None:
+    facts = collect(
+        "linker/search-knowledge",
+        {
+            "hits": [
+                {
+                    "chunk_id": "q",
+                    "doc_url": "https://example.test/data.pdf",
+                    "title": "Sample",
+                    "page": 2,
+                    "product_ids": [1],
+                    "text": "| Minimum clearance *6 | [n1=500 mm] |\n| Enclosure height *6 | [n2=1500 mm] |\n*6: The interface is required. (p. 3)",
+                    "figures": {"q.n1": "500 mm", "q.n2": "1500 mm"},
+                    "qualification_required": True,
+                    "qualifications": [
+                        {
+                            "chunk_id": "q-p3",
+                            "page": 3,
+                            "quote": "*6: The interface is required.",
+                            "lang": "en",
+                        }
+                    ],
+                }
+            ]
+        },
+    )
+    request = TurnRequest(
+        conversation_id="clearance",
+        messages=[TurnMessage(role="user", content="What minimum clearance?")],
+        locale="en",
+    )
+    wrong = TurnOutput(
+        language="en", blocks=[TextBlock(text="The minimum clearance is {fact:q.n2}.")]
+    )
+    result = run(request, lambda _request, _retry: (wrong, facts), Route("documents"))
+    assert "1500 mm" not in _text(result.output)
+
+    correct = TurnOutput(
+        language="en", blocks=[TextBlock(text="The minimum clearance is {fact:q.n1}.")]
+    )
+    result = run(request, lambda _request, _retry: (correct, facts), Route("documents"))
+    assert result.grounded and not result.fallback
+    assert "500 mm" in _text(result.output)
+    assert '"The interface is required."' in _text(result.output)
+    links = [
+        block.url for block in result.output.blocks if isinstance(block, DocumentBlock)
+    ]
+    assert links == [
+        "https://example.test/data.pdf#page=2",
+        "https://example.test/data.pdf#page=3",
+    ]
+
+
+def test_cycle_does_not_restore_rejected_clearance_on_language_retry() -> None:
+    from unittest.mock import patch
+
+    facts = _scoped_hit("a", 1, "Minimum clearance 500 mm; enclosure height 1500 mm.")
+    request = TurnRequest(
+        conversation_id="clearance",
+        messages=[TurnMessage(role="user", content="What minimum clearance?")],
+        locale="en",
+    )
+    output = TurnOutput(
+        language="en", blocks=[TextBlock(text="The minimum clearance is {fact:a.n2}.")]
+    )
+    with patch(
+        "linker_genie.cycle.language_failure",
+        side_effect=[None, "language mismatch", None, "language mismatch"],
+    ):
+        result = run(
+            request, lambda _request, _retry: (output, facts), Route("documents")
+        )
+
+    assert result.fallback and result.attempts == 2
+    assert "1500 mm" not in _text(result.output)
+
+
 def test_clearance_completion_uses_real_figures_and_keeps_conditions() -> None:
     for language, source, question in (
         ("en", "Minimum clearance 725 mm.", "What minimum clearance?"),
