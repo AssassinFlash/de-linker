@@ -23,7 +23,7 @@ html[lang^="de"]
 		#service-redesign .service-hero-rest,
 		#tv-cs-page-v1 .lk-hero-title,
 		#installer-journal .lk-hero-title,
-		#about-journal .scene-title,
+		#about-journal :is(.scene-title, h2, h3),
 		#home-a :is(.home-h2, .home-h3),
 		:is(
 			#tv-solution-v1,
@@ -61,6 +61,14 @@ html[lang^="de"]
 	display: none;
 }
 
+/* Static German previews use the installer's existing 8/5 media frame. */
+#installer-journal #tools .lk-stage-preview.lk-stage-static-preview > .lk-stage-poster {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+
 /* Services audience tabs on EN2748/DE6700 use the existing14px action
    type and44px target. Two IDs outrank retained desktop11px/mobile10px rules. */
 #service-redesign #solutions .service-role-nav button {
@@ -94,6 +102,12 @@ html[lang^="de"]
 @media (max-width: 760px) {
 	#tv-rs-page-v1 #engineering-tools .lk-tooldeck-nav {
 		grid-template-columns: minmax(0, 1fr);
+	}
+
+	/* A full-width label leaves room for both languages above the detail. */
+	#about-journal .c-case-line {
+		grid-template-columns: minmax(0, 1fr);
+		row-gap: var(--proto-space-2);
 	}
 }
 
