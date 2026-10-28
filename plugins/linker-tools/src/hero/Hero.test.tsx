@@ -956,3 +956,100 @@ test.each( [ 'same-operation', 'other-file', 'other-context' ] )(
 		}
 	}
 );
+
+test( 'the real hero keeps a pending check distinct from a dispatched message and returns the prompt on failure', async () => {
+	const actual =
+		await vi.importActual< typeof import( '../genie/api/turn' ) >(
+			'../genie/api/turn'
+		);
+	vi.stubGlobal( 'crypto', webcrypto );
+	window.linkerPublicProtectionConfig = {
+		api: '/proof',
+		nonce: 'n',
+		mode: 'enforce',
+		language: 'en',
+	};
+	let failProof: ( error: Error ) => void = () => undefined;
+	const proof = vi.fn( async ( action: string, container: HTMLElement ) => {
+		container.dispatchEvent(
+			new CustomEvent( 'linker:protection', {
+				detail: { action, state: 'interactive' },
+			} )
+		);
+		return new Promise< string >( ( _resolve, reject ) => {
+			failProof = ( error ) => {
+				container.dispatchEvent(
+					new CustomEvent( 'linker:protection', {
+						detail: { action, state: 'failed' },
+					} )
+				);
+				reject( error );
+			};
+		} );
+	} );
+	window.linkerPublicProtection = { proof, reset: vi.fn() };
+	const transport = vi.fn< typeof fetch >();
+	const native = new HeroSession(
+		SESSION_CONFIG,
+		async () => ( { messages: [], turn: null } ),
+		( request ) => actual.sendTurn( { ...request, fetcher: transport } )
+	);
+	const oldDock = document.createElement( 'section' );
+	oldDock.innerHTML =
+		'<form><textarea>Old dock focus</textarea></form><div data-linker-resource-verification-slot></div>';
+	document.body.append( oldDock );
+	oldDock.querySelector( 'form' )!.getClientRects = () =>
+		( { length: 1 } ) as DOMRectList;
+	oldDock
+		.querySelector( 'textarea' )!
+		.dispatchEvent( new FocusEvent( 'focusin', { bubbles: true } ) );
+	try {
+		const view = await renderHero( native );
+		await act( async () => {
+			view.bridge().ask( 'My hero question awaiting verification' );
+		} );
+		await waitFor( () => expect( proof ).toHaveBeenCalledOnce() );
+		expect(
+			screen.getByText( 'My hero question awaiting verification' )
+		).toBeVisible();
+		expect(
+			screen.getByText(
+				'No request has been sent in this attempt. Please complete the verification.'
+			)
+		).toBeVisible();
+		expect( transport ).not.toHaveBeenCalled();
+		expect(
+			screen.queryByText( 'Genie is thinking…' )
+		).not.toBeInTheDocument();
+		expect( screen.getByText( 'Checking verification…' ) ).toBeVisible();
+		const slot = document.querySelector< HTMLElement >(
+			'.linker-genie-hero__surface [data-linker-resource-verification-slot]'
+		)!;
+		const widget = document.querySelector(
+			'[data-linker-resource-verification="genie"]'
+		);
+		expect( widget?.parentElement ).toBe( slot );
+
+		await act( async () =>
+			failProof( new Error( 'verification_network_timeout' ) )
+		);
+		await waitFor( () =>
+			expect( screen.getByRole( 'alert' ) ).toHaveTextContent(
+				'Verification could not be completed. No request has been sent in this attempt.'
+			)
+		);
+		expect( view.setPrompt ).toHaveBeenCalledWith(
+			'My hero question awaiting verification'
+		);
+		expect(
+			screen.queryByText( 'Genie did not answer. Please try again.' )
+		).not.toBeInTheDocument();
+		expect( transport ).not.toHaveBeenCalled();
+		expect( slot.hidden ).toBe( true );
+		expect( slot.children ).toHaveLength( 0 );
+	} finally {
+		oldDock.remove();
+		delete window.linkerPublicProtection;
+		delete window.linkerPublicProtectionConfig;
+	}
+} );

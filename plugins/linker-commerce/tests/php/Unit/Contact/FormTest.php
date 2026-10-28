@@ -230,6 +230,25 @@ final class FormTest extends TestCase {
 		$_GET = array( Form::STATE_PARAM => 'throttled' );
 		$this->assertStringContainsString( 'You can try again later', ( new Form() )->render() );
 
+		// Both verification states say what the browser says: this attempt sent
+		// nothing, so the customer knows the inquiry was not submitted.
+		foreach ( array( 'verification_failed', 'verification_unavailable' ) as $state ) {
+			$_GET   = array( Form::STATE_PARAM => $state );
+			$notice = ( new Form() )->render();
+			$this->assertStringContainsString( 'role="alert"', $notice, $state );
+			$this->assertStringContainsString( 'No request has been sent in this attempt.', $notice, $state );
+			$this->assertStringContainsString( 'Your entries are still here.', $notice, $state );
+		}
+
+		// Every review-store refusal keeps its own honest sentence rather than a
+		// generic verification verdict.
+		foreach ( array( 'review_full', 'review_size', 'grouped', 'reception_full', 'pending' ) as $state ) {
+			$_GET = array( Form::STATE_PARAM => $state );
+			$this->assertStringContainsString( 'role="alert"', ( new Form() )->render(), $state );
+		}
+		$_GET = array( Form::STATE_PARAM => 'grouped' );
+		$this->assertStringContainsString( 'repeated spam submission', ( new Form() )->render() );
+
 		$_GET = array( Form::STATE_PARAM => 'something-else' );
 		$this->assertStringNotContainsString( 'role="status"', ( new Form() )->render() );
 		$_GET = array();

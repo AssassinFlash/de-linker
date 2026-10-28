@@ -27,6 +27,7 @@ import { CoordinatesForm } from "./CoordinatesForm.tsx";
 import { LazySceneViewport } from "./LazySceneViewport.tsx";
 import { MapDrawingWorkspace } from "./MapDrawingWorkspace.tsx";
 import type { MapCamera } from "./MapViewport.tsx";
+import type { SceneViewState } from "../../domain/sceneCamera.ts";
 
 type FormKind =
 	| "roof"
@@ -93,6 +94,7 @@ export function DesignEditor({
 			initialMapView ? "map" : "plan",
 		);
 	const mapCamera = useRef<MapCamera | null>(null);
+	const sceneCamera = useRef<SceneViewState | null>(null);
 	const [importOpen, setImportOpen] = useState(false);
 	const [drawingOpen, setDrawingOpen] = useState(false);
 	const [form, setForm] = useState<FormState | null>(null),
@@ -357,6 +359,7 @@ export function DesignEditor({
 									select={choose}
 									commit={edit}
 									disabled={!!form || importOpen || drawingOpen}
+									camera={sceneCamera}
 								/>
 							)}
 						</>

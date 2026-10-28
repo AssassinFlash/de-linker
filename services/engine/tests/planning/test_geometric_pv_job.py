@@ -27,9 +27,14 @@ from linker_engine.planning.errors import (
     VersionUnavailable,
 )
 from linker_engine.planning.execution_registry import service_registry
+from linker_engine.planning.frozen_documents import FrozenDocuments
 from linker_engine.planning.geometric_pv_inputs import GeometricPvLimits
 from linker_engine.planning.geometric_pv_job import GeometricPvKernel
-from linker_engine.planning.geometric_pv_profile import prepared_profile
+from linker_engine.planning.geometric_pv_profile import (
+    prepared_profile,
+    reference_bundle,
+)
+from linker_engine.planning.geometric_pv_report import geometric_pv_reference
 from linker_engine.planning.geometric_pv_service import GeometricPvService
 from linker_engine.planning.http_app import HttpLimits, create_private_app
 from linker_engine.planning.http_views import asset_view, project_view, run_view
@@ -48,6 +53,7 @@ from linker_engine.planning.pv_source import PvSource
 from linker_engine.planning.records import Actor
 from linker_engine.planning.report_inputs import ReportOptions
 from linker_engine.planning.report_kernel import ReportKernel, ReportService
+from linker_engine.planning.report_pv_components import pv_components
 from linker_engine.planning.weather_import import WeatherImport
 from linker_engine.planning.worker import Worker
 from linker_engine.planning.workspace import Workspace
@@ -210,6 +216,42 @@ def test_owned_complete_weather_to_profile_two_hour_energy_report_and_frozen_rea
     monkeypatch.setattr(job, "generate_geometric_pv", no_recompute)
     preview = ProfilePreview(Assets(workspace)).page(
         owner, project.id, asset.id, offset=3995, page_size=2
+    )
+
+    # One report reads the same retained artifacts for the profile, the rows and
+    # the component list. A shared reader must reach the store once per artifact
+    # even though each consumer re-verifies the manifest.
+    class CountingBlobs:
+        def __init__(self, blobs: Any) -> None:
+            self.blobs = blobs
+            self.reads: list[str] = []
+
+        def read(self, sha256: str) -> bytes:
+            self.reads.append(sha256)
+            return cast(bytes, self.blobs.read(sha256))
+
+        def object(self, sha256: str) -> Object:
+            raise AssertionError("the shared reader verifies through read")
+
+    store = CountingBlobs(workspace.blobs)
+    shared = FrozenDocuments(store)  # type: ignore[arg-type]
+    geometric_pv_reference(
+        workspace.blobs, asset.content_sha256, asset.metadata, shared
+    )
+    prepared_profile(workspace.blobs, asset.content_sha256, asset.metadata, shared)
+    bundle = reference_bundle(
+        workspace.blobs, asset.content_sha256, asset.metadata, shared
+    )
+    pv_components(
+        workspace.blobs,
+        asset.content_sha256,
+        asset.metadata,
+        documents=shared,
+        geometric_bundle=bundle,
+    )
+    dependencies = cast(Object, asset.metadata["dependencies"])
+    assert sorted(store.reads) == sorted(
+        [asset.content_sha256, *cast(list[str], list(dependencies.values()))]
     )
     with pytest.raises(EvidenceMissing):
         profile_dependencies(asset, "pv_available_dc", project.inputs, workspace.blobs)
@@ -379,13 +421,25 @@ def test_owned_complete_weather_to_profile_two_hour_energy_report_and_frozen_rea
     withdrawn = False
     # Native seam for browser readers: actual completed objects and hashes;
     # no provider originals, runtime bytes or live site/customer claim.
+    # Every key of the committed browser fixture is produced here, so the
+    # fixture can be regenerated from this test instead of being hand-edited.
     seam = {
         "project": before_project,
         "run": run_view(run),
         "weather_asset": asset_view(source),
         "profile_asset": asset_view(asset),
         "profile_preview": preview,
+        "profile_preview_initial": ProfilePreview(Assets(workspace)).page(
+            owner, project.id, asset.id, offset=0, page_size=2
+        ),
         "report_run": run_view(report_run),
+        "run_assistant": assistant_context(
+            workspace, owner, project.id, run.revision, [run.id], "en"
+        ),
+        "report_run_assistant": assistant_context(
+            workspace, owner, project.id, report_run.revision, [report_run.id], "en"
+        ),
+        "calculation_sources": calculation_sources(workspace, report_run),
         "source_note": "Actual retained complete weather; synthetic one-module layout and declared scenario; native task/asset/report, not site/equipment approval",
     }
     out = tmp_path / "geometric-pv-native-seam.json"

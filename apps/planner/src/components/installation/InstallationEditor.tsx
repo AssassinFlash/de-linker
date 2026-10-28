@@ -37,6 +37,7 @@ import { installationId } from "../../domain/installation.ts";
 import { readPvStringPlan } from "../../domain/pvStrings.ts";
 import type { PvStringPlan } from "../../domain/pvStrings.ts";
 import { PvStringLinks } from "./PvStringLinks.tsx";
+import { conductorLabel } from "./installationLabels.ts";
 
 type Kind = "instances" | "circuits" | "routes" | "cable_runs";
 const reason = (code: string) =>
@@ -631,6 +632,7 @@ export function InstallationEditor({
 										<th>{__("Name", "linker-tools")}</th>
 										<th>{__("Calculated length (m)", "linker-tools")}</th>
 										<th>{__("Quantity basis", "linker-tools")}</th>
+										<th>{__("Conductor", "linker-tools")}</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -647,6 +649,7 @@ export function InstallationEditor({
 													? c.reasons.map(reason).join("; ")
 													: `${formatDecimal(c.route_length_m, locale)} + ${formatDecimal(c.extra_length_m, locale)}`}
 											</td>
+											<td>{conductorLabel(c.conductor, locale)}</td>
 										</tr>
 									))}
 								</tbody>

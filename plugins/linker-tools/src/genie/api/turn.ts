@@ -278,13 +278,23 @@ export class UnfinishedStreamError extends Error {
 }
 
 /**
- * Bound verification preparation and the dispatched response separately, each
- * using the existing 90-second client limit. The response phase covers the
- * native resource operation window (Protection/Resources.php); verification
- * precedes that operation and must not consume its response time. The service
- * budget and admission lease stay unchanged (spec 13).
+ * Bound the dispatched response. It covers the native resource operation
+ * window (Protection/Resources.php). The service budget and admission lease
+ * stay unchanged (spec 13).
  */
 export const TURN_TIMEOUT_MS = 90_000;
+
+/**
+ * Preparation bound for a turn that carries a verification context: the shared
+ * client's own attempt lifetime, three 15-second network steps (prepare,
+ * official script, verify) plus its 120-second human interaction window (spec
+ * 519, "Shared runtime and initial verification bounds", 2026-10-28). A turn
+ * without verification never uses it.
+ *
+ * The numbers live once, in the Commerce client (src/protection/client.ts);
+ * turnPublicVerification.test.ts fails if the two drift apart.
+ */
+export const TURN_VERIFICATION_TIMEOUT_MS = 165_000;
 
 /**
  * The commit was refused because the stored thread moved while Genie was
@@ -383,6 +393,8 @@ export interface ConversationList {
 
 /** One turn. The test seams sit on the object, not further positional arguments. */
 export interface TurnRequest {
+	/** Current mounted surface, pre-dispatch cancellation and actual transport stage. */
+	verification?: TurnVerification;
 	/** Existing planner guest CSRF proof; never part of page data or logs. */
 	plannerNonce?: string;
 	/** Current REST root for document presentation from existing product metadata. */
@@ -404,10 +416,34 @@ export interface TurnRequest {
 	/** Fetch for tests. */
 	fetcher?: Fetch;
 	/**
-	 * Bounds proof preparation, then the dispatched request and response body.
-	 * Each phase defaults to `TURN_TIMEOUT_MS`.
+	 * Bounds the dispatched request and response body, and a turn that carries
+	 * no verification context as a whole.
 	 */
 	timeoutMs?: number;
+}
+
+/**
+ * Browser-only ownership of one pre-dispatch verification; none of these
+ * values enter the model request. `slot` answers the mounted node the native
+ * widget lives in, which is why this contract exists in a browser (jsdom in
+ * the tests) and nowhere else.
+ */
+export interface TurnVerification {
+	/** The mounted verification slot; null while it is not in the document. */
+	slot: () => HTMLElement | null;
+	/** Aborted when the visitor withdraws the attempt before dispatch. */
+	signal: AbortSignal;
+	/**
+	 * Whether the shared client actually runs a challenge for this attempt.
+	 * False in a deployment whose protection is off or only observing: the
+	 * context still owns cancellation and the draft guard, but there is no
+	 * challenge window to wait for.
+	 */
+	challenge: boolean;
+	/** Runs after the proof is ready and before the request leaves. */
+	beforeDispatch?: () => Promise< void >;
+	/** Called once, immediately before the transport is used. */
+	onDispatch: () => void;
 }
 
 /**
@@ -437,27 +473,48 @@ export async function sendTurn( request: TurnRequest ): Promise< Turn > {
 	const timedOut = new Promise< never >( ( _resolve, reject ) => {
 		controller.signal.addEventListener(
 			'abort',
-			() => reject( timeoutError ),
+			() => reject( controller.signal.reason ?? timeoutError ),
 			{ once: true }
 		);
 	} );
-	const restartDeadline = () => {
+	const external = request.verification?.signal;
+	const cancel = () =>
+		controller.abort(
+			external?.reason ?? new Error( 'verification_cancelled' )
+		);
+	if ( external?.aborted ) {
+		cancel();
+	} else {
+		external?.addEventListener( 'abort', cancel, { once: true } );
+	}
+	const restartDeadline = ( duration = timeoutMs ) => {
 		if ( timer !== undefined ) {
 			clearTimeout( timer );
 		}
-		timer = setTimeout( () => controller.abort(), timeoutMs );
+		timer = setTimeout( () => controller.abort( timeoutError ), duration );
 	};
-	restartDeadline();
+	// Only a real challenge may take the shared client's whole attempt bound:
+	// three network steps plus the human interaction window. An ordinary turn,
+	// or one whose protection is off or only observing, keeps its single
+	// response limit for everything it does.
+	restartDeadline(
+		request.verification?.challenge
+			? TURN_VERIFICATION_TIMEOUT_MS
+			: timeoutMs
+	);
 	// `fetcher` is called inside the promise. A throw before the request
 	// leaves is a rejection, so the timer below is cleared with every other
 	// failure. Promise.resolve(fetcher()) would let that throw escape first.
 	const attempt = Promise.resolve()
 		.then( () =>
 			resourceFetch(
-				( ...args ) => {
+				async ( ...args ) => {
 					// resourceFetch calls its transport only after proof is ready.
 					// A late proof must never dispatch an already timed-out turn.
 					controller.signal.throwIfAborted();
+					await request.verification?.beforeDispatch?.();
+					controller.signal.throwIfAborted();
+					request.verification?.onDispatch();
 					restartDeadline();
 					return fetcher( ...args );
 				},
@@ -485,7 +542,8 @@ export async function sendTurn( request: TurnRequest ): Promise< Turn > {
 					} ),
 					signal: controller.signal,
 				},
-				request.onOperation
+				request.onOperation,
+				request.verification?.slot
 			)
 		)
 		.then(
@@ -545,6 +603,7 @@ export async function sendTurn( request: TurnRequest ): Promise< Turn > {
 				)
 			: turn;
 	} finally {
+		external?.removeEventListener( 'abort', cancel );
 		won = true;
 		if ( timer !== undefined ) {
 			clearTimeout( timer );

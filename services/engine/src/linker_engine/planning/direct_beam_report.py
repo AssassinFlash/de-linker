@@ -6,9 +6,10 @@ from typing import Literal, cast
 
 from linker_engine.models import ReportRow, ReportSection
 
-from .canonical import Object
+from .canonical import Json, Object
 from .direct_beam_read import direct_beam_facts
 from .report_copy import text
+from .report_numbers import number, significant, span
 
 
 def direct_beam_sections(
@@ -22,11 +23,8 @@ def direct_beam_sections(
     def row(key: str, value: object) -> ReportRow:
         return ReportRow(label=text(key, locale), value=str(value))
 
-    def value(raw: object) -> str:
-        if raw is None:
-            return "—"
-        shown = f"{raw:.6g}" if isinstance(raw, float) else str(raw)
-        return shown.replace(".", ",") if locale == "de" else shown
+    def value(raw: Json) -> str:
+        return "—" if raw is None else significant(raw, locale)
 
     rows = [
         row("direct_beam_source", f"{reference['run_id']} / {reference['revision']}"),
@@ -40,12 +38,15 @@ def direct_beam_sections(
         ),
         row(
             "direct_beam_counters",
-            f"{sampling['sample_count']} / {sampling['ray_face_checks']} / {sampling['bounds_checks']}",
+            " / ".join(
+                number(sampling[key], locale)
+                for key in ("sample_count", "ray_face_checks", "bounds_checks")
+            ),
         ),
         row(
             "direct_beam_limits",
             " / ".join(
-                str(limits[key])
+                number(limits[key], locale)
                 for key in (
                     "max_selected_rows",
                     "max_samples",
@@ -88,7 +89,11 @@ def direct_beam_sections(
                 rows=[
                     row(
                         "direct_beam_interval",
-                        f"{aggregate['interval_start_utc']} – {aggregate['interval_end_utc']}",
+                        span(
+                            aggregate["interval_start_utc"],
+                            aggregate["interval_end_utc"],
+                            locale,
+                        ),
                     ),
                     row("direct_beam_source_time", aggregate["source_label_utc"]),
                     row("direct_beam_irradiance_time", aggregate["irradiance_at_utc"]),
@@ -106,7 +111,11 @@ def direct_beam_sections(
                     ),
                     row(
                         "direct_beam_range",
-                        f"{value(aggregate['fine_visible_fraction_min'])} – {value(aggregate['fine_visible_fraction_max'])}",
+                        span(
+                            aggregate["fine_visible_fraction_min"],
+                            aggregate["fine_visible_fraction_max"],
+                            locale,
+                        ),
                     ),
                     row(
                         "direct_beam_delta",

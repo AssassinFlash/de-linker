@@ -47,6 +47,19 @@ def generate_geometric_pv(
     parameters = request.parameters
     if pvlib.__version__ != parameters.pvlib_version:
         raise VersionUnavailable("the pinned geometric PV library is unavailable")
+    # `electrical_policy` declares that every module runs at its own MPP and the
+    # results are summed. Inter-module mismatch loss exists only because a
+    # series string cannot hold every module at its own MPP, so the declared
+    # array mismatch factor would contradict that policy. Refuse rather than
+    # silently apply a derate the policy says is not modelled.
+    misdeclared = [
+        item.array_id for item in parameters.arrays if item.dc_mismatch_factor != 1
+    ]
+    if misdeclared:
+        raise InvalidInput(
+            "geometric PV independent-module MPP policy requires a unit DC mismatch factor: "
+            + ", ".join(sorted(misdeclared))
+        )
     arrays = generation_arrays(geometry, weather, parameters)
     scene = build_scene(geometry)
     size = len(weather.points)
@@ -65,7 +78,7 @@ def generate_geometric_pv(
     )
     if upper_samples > limits.max_samples:
         raise InvalidInput("geometric PV requested sampling exceeds work policy")
-    budget = VisibilityBudget(limits.visibility_limits(max_weather_rows))
+    budget = VisibilityBudget(limits.visibility_ray_limits())
     index = DirectBeamIndex.from_scene(scene, leaf_size=limits.index_leaf_size)
     checkpoint()
     solar = sun(weather)
@@ -193,6 +206,11 @@ def generate_geometric_pv(
         "diffuse_policy": request.diffuse_policy,
         "thermal_policy": request.thermal_policy,
         "electrical_policy": request.electrical_policy,
+        "electrical_policy_scope": {
+            "module_mpp": "independent_per_module",
+            "dc_wiring_factor": "applied_per_module",
+            "dc_mismatch_factor": "unit_required_not_applied",
+        },
         "output_boundary": "scenario_ac_potential_before_site_export_and_storage_control",
         "sampling": request.sampling.model_dump(mode="json"),
         "work": {

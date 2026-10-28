@@ -23,9 +23,12 @@ from .equipment_inputs import EquipmentSelection
 from .equipment_kernel import EquipmentKernel
 from .equipment_plant import EquipmentPlant, assert_plant_exclusivity
 from .errors import InvalidInput, ProductEvidenceChanged, VersionUnavailable
+from .frozen_documents import FrozenDocuments
 from .geometric_pv_inputs import KIND as GEOMETRIC_PV_KIND
 from .geometric_pv_inputs import PROFILE_PURPOSE as GEOMETRIC_PV_PURPOSE
 from .geometric_pv_report import geometric_pv_reference
+from .geometry import read_geometry
+from .geometry_documents import GeometryDocument
 from .installation_inputs import InstallationInputs
 from .installation_takeoff import product_basis, route_takeoff
 from .plant_energy_inputs import PlantEnergyInputs
@@ -72,6 +75,10 @@ def report_sources(
     roof_references: dict[str, Object] = {}
     pvlib_references: dict[tuple[str, str | None], Object] = {}
     geometric_pv_references: dict[str, Object] = {}
+    # One request resolves the same retained witness for the selected PV
+    # reference, the energy profiles and the component list. Sharing the
+    # reader keeps that to one verified parse per document.
+    documents = FrozenDocuments(workspace.blobs)
 
     def require_profile_proof(asset: Asset) -> None:
         if not isinstance(asset.metadata.get("woo_module_inputs"), dict):
@@ -87,7 +94,10 @@ def report_sources(
             asset.metadata_sha256,
             {
                 **geometric_pv_reference(
-                    workspace.blobs, asset.content_sha256, asset.metadata
+                    workspace.blobs,
+                    asset.content_sha256,
+                    asset.metadata,
+                    documents,
                 ),
                 "asset_id": asset.id,
                 "content_sha256": asset.content_sha256,
@@ -142,11 +152,15 @@ def report_sources(
     ) -> None:
         require_profile_proof(asset)
         # Read the retained output and its original proof, never a current
-        # product snapshot or a second provider/model calculation.
+        # product snapshot or a second provider/model calculation. The report's
+        # own reader is reused, so the manifest and children of this reference
+        # are verified once for every section that reads it.
         prepared_reference_profile(
-            workspace.blobs, asset.content_sha256, asset.metadata
+            workspace.blobs, asset.content_sha256, asset.metadata, documents
         )
-        bundle = reference_bundle(workspace.blobs, asset.content_sha256, asset.metadata)
+        bundle = reference_bundle(
+            workspace.blobs, asset.content_sha256, asset.metadata, documents
+        )
         reference = roof_references.setdefault(
             asset.metadata_sha256,
             {
@@ -160,7 +174,10 @@ def report_sources(
                 "woo_module_inputs": bundle["woo_module_inputs"],
                 "dependencies": asset.metadata["dependencies"],
                 "pv_components": pv_components(
-                    workspace.blobs, asset.content_sha256, asset.metadata
+                    workspace.blobs,
+                    asset.content_sha256,
+                    asset.metadata,
+                    documents=documents,
                 ),
                 "used_by": [],
             },
@@ -291,8 +308,6 @@ def report_sources(
                 "report PV strings differ from the saved roof or wiring plan"
             )
         if isinstance(assessment.get("pv_electrical"), dict):
-            from .geometry import read_geometry
-
             if any(
                 s.permissions.export != "permitted"
                 for s in read_geometry(project.inputs.get("geometry")).sources
@@ -391,7 +406,10 @@ def report_sources(
             elif asset.purpose == ROOF_AC_PURPOSE:
                 roof_reference(asset, run, role)
                 component_list = pv_components(
-                    workspace.blobs, asset.content_sha256, asset.metadata
+                    workspace.blobs,
+                    asset.content_sha256,
+                    asset.metadata,
+                    documents=documents,
                 )
             elif asset.purpose == PVLIB_PURPOSE:
                 weather_reference(
@@ -425,6 +443,7 @@ def report_sources(
                         if name == "pv_available_dc.metadata"
                         and isinstance(scenario, EnergyInputs)
                         else None,
+                        documents=documents,
                     )
                 module_basis = metadata.get("woo_module_inputs")
                 if isinstance(module_basis, dict):
@@ -644,8 +663,6 @@ def report_sources(
             )
         basis = product_basis(plan, products.equipment_basis())
         installation = route_takeoff(project.inputs, basis)
-        from .geometry_documents import GeometryDocument
-
         geometry = GeometryDocument.read(project.inputs.get("geometry"))
         instance_sources = {instance.source_id for instance in plan.instances}
         if any(

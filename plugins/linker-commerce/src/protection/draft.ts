@@ -1,4 +1,4 @@
-import { __ } from '@wordpress/i18n';
+import { verificationFailedText, verificationPendingText } from './messages';
 
 interface DraftJQuery {
 	( element: HTMLElement ): {
@@ -26,6 +26,10 @@ export function connectDraftLinks(): void {
 		{ proof: string; id: string }
 	>();
 	const busy = new WeakSet< HTMLElement >();
+	const surfaces = new WeakMap<
+		HTMLElement,
+		{ widget: HTMLElement; status: HTMLElement }
+	>();
 	window
 		.jQuery?.( document.body )
 		.on( 'adding_to_cart', ( _event, button, data ) => {
@@ -66,15 +70,32 @@ export function connectDraftLinks(): void {
 				return;
 			}
 			busy.add( link );
+			// A failed explicit attempt leaves one useful status. The next
+			// attempt replaces it, so a later success cannot retain stale failure.
+			const previous = surfaces.get( link );
+			previous?.widget.remove();
+			previous?.status.remove();
 			const widget = document.createElement( 'div' );
 			const status = document.createElement( 'p' );
+			surfaces.set( link, { widget, status } );
 			status.setAttribute( 'role', 'status' );
-			status.textContent = __(
-				'Checking verification…',
-				'linker-commerce'
-			);
+			status.setAttribute( 'aria-live', 'polite' );
+			status.textContent = verificationPendingText( 'checking' );
 			link.insertAdjacentElement( 'afterend', widget );
 			widget.insertAdjacentElement( 'afterend', status );
+			widget.addEventListener(
+				'linker:protection',
+				( protectionEvent ) => {
+					const state = (
+						protectionEvent as CustomEvent< { state: string } >
+					 ).detail.state;
+					if ( state === 'interactive' || state === 'retrying' ) {
+						status.textContent = verificationPendingText( state );
+					} else if ( state === 'ready' ) {
+						status.textContent = '';
+					}
+				}
+			);
 			try {
 				const proof = await window.linkerPublicProtection?.proof(
 					'draft_write',
@@ -111,10 +132,7 @@ export function connectDraftLinks(): void {
 					form.submit();
 				}
 			} catch {
-				status.textContent = __(
-					'Verification could not be completed. Your solution draft is unchanged. Please try again.',
-					'linker-commerce'
-				);
+				status.textContent = verificationFailedText();
 			} finally {
 				busy.delete( link );
 			}

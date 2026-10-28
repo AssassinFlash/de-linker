@@ -368,7 +368,7 @@ msgstr "Prüfen Sie die Angaben und senden Sie die Anfrage an das Linker-Team."
 msgid "Check this value."
 msgstr "Prüfen Sie diesen Wert."
 
-#: build/genie.js build/hero.js build/configurator.js
+#: build/genie.js build/hero.js
 msgid "Checking verification…"
 msgstr "Die Überprüfung läuft …"
 
@@ -2112,14 +2112,6 @@ msgstr "Bewertung"
 #: includes/Genie/QualityPage.php
 msgid "Verdicts"
 msgstr "Bewertungen"
-
-#: build/genie.js build/hero.js build/configurator.js
-msgid ""
-"Verification could not be completed. Your input is still here. Please try "
-"again."
-msgstr ""
-"Die Überprüfung konnte nicht abgeschlossen werden. Ihre Eingaben sind "
-"erhalten. Bitte versuchen Sie es erneut."
 
 #: build/genie.js:1 build/hero.js
 msgid "View your inquiry"
@@ -12815,3 +12807,75 @@ msgstr "Jede aktive Modulfläche gehört zu einer Umwandlungsgruppe. Das Modell 
 #: build/planner/assets/planner.js:1
 msgid "Saved weather source"
 msgstr "Gespeicherte Wetterquelle"
+
+#: build/genie.js build/hero.js build/configurator.js
+msgid "Checking verification. No request has been sent in this attempt."
+msgstr "Die Prüfung läuft. Bei diesem Versuch wurde noch keine Anfrage gesendet."
+
+#: build/genie.js build/hero.js build/configurator.js
+msgid "No request has been sent in this attempt. Please complete the verification."
+msgstr "Bei diesem Versuch wurde noch keine Anfrage gesendet. Bitte schließen Sie die Prüfung ab."
+
+#: build/genie.js build/hero.js build/configurator.js
+msgid "Verification is being retried. No request has been sent in this attempt."
+msgstr "Die Prüfung wird wiederholt. Bei diesem Versuch wurde noch keine Anfrage gesendet."
+
+#: build/genie.js build/hero.js build/configurator.js
+msgid "Verification could not be completed. No request has been sent in this attempt. Please try again."
+msgstr "Die Prüfung konnte nicht abgeschlossen werden. Bei diesem Versuch wurde noch keine Anfrage gesendet. Bitte versuchen Sie es erneut."
+
+#: build/planner/assets/planner.js:1
+msgid "Conductor"
+msgstr "Leiter"
+
+#: build/planner/assets/planner.js:1
+msgid "Cross-section not declared"
+msgstr "Querschnitt nicht angegeben"
+
+#: build/planner/assets/planner.js:1
+msgid "One cross-section declared"
+msgstr "Ein Querschnitt angegeben"
+
+#: build/planner/assets/planner.js:1
+msgid "Cross-section missing for a recorded run"
+msgstr "Querschnitt für eine erfasste Leitung fehlt"
+
+#: build/planner/assets/planner.js:1
+msgid "Recorded runs declare different cross-sections"
+msgstr "Erfasste Leitungen haben unterschiedliche Querschnitte"
+
+#: build/planner/assets/planner.js:1
+msgid "No run recorded"
+msgstr "Keine Leitung erfasst"
+
+#: build/planner/assets/planner.js:1
+msgid "Conductor and quantities"
+msgstr "Leiter und Mengen"
+
+#: build/planner/assets/planner.js:1
+msgid "Cross-section and all quantities recorded"
+msgstr "Querschnitt und alle Mengen erfasst"
+
+#: build/planner/assets/planner.js:1
+msgid "Cross-section or quantity still open"
+msgstr "Querschnitt oder Menge weiterhin offen"
+
+#: build/planner/assets/planner.js:1
+msgid "Declared cross-section"
+msgstr "Angegebener Querschnitt"
+
+#: build/planner/assets/planner.js:1
+msgid "Basis for the declared cross-section"
+msgstr "Grundlage des angegebenen Querschnitts"
+
+#: build/planner/assets/planner.js:1
+msgid "Enter the declared cross-section and where the value comes from, or leave both empty."
+msgstr "Geben Sie den angegebenen Querschnitt und seine Quelle an oder lassen Sie beide Felder leer."
+
+#: build/planner/assets/planner.js:1
+msgid "Leave empty while the cross-section is still open. This is the project's own declaration, not a sizing result."
+msgstr "Lassen Sie das Feld leer, solange der Querschnitt offen ist. Dies ist eine Projektangabe und kein Ergebnis einer Auslegung."
+
+#: build/planner/assets/planner.js:1
+msgid "Required together with the cross-section, for example the project cable list or the installer's instruction."
+msgstr "Zusammen mit dem Querschnitt erforderlich, zum Beispiel die Leitungsliste des Projekts oder die Vorgabe des Installateurs."

@@ -7,6 +7,7 @@ from .assets import Asset
 from .canonical import Json, Object, digest, encode
 from .dependencies import verify_dependencies
 from .errors import InvalidInput, VersionUnavailable
+from .frozen_documents import FrozenReader
 from .interval import Interval
 from .power_series import PowerSeries
 from .product_sources import ProductSources
@@ -25,7 +26,16 @@ def obj(value: Json | None) -> Object:
     return value
 
 
-def reference_bundle(blobs: Blobs, raw_sha256: str, metadata: Object) -> Object:
+def reference_bundle(
+    blobs: Blobs,
+    raw_sha256: str,
+    metadata: Object,
+    documents: FrozenReader | None = None,
+) -> Object:
+    # A caller that already read this asset for another consumer of the same
+    # report passes its reader, so the manifest and every child are verified
+    # once per request instead of once per section.
+    reader: FrozenReader = blobs if documents is None else documents
     if (
         metadata.get("schema") != 1
         or type(metadata.get("schema")) is not int
@@ -35,7 +45,7 @@ def reference_bundle(blobs: Blobs, raw_sha256: str, metadata: Object) -> Object:
         or metadata.get("timezone_rules_sha256") is not None
     ):
         raise VersionUnavailable("unsupported roof AC reference profile")
-    manifest = blobs.object(raw_sha256)
+    manifest = reader.object(raw_sha256)
     dependencies = obj(metadata.get("dependencies"))
     arrays = manifest.get("arrays")
     if (
@@ -59,11 +69,11 @@ def reference_bundle(blobs: Blobs, raw_sha256: str, metadata: Object) -> Object:
         not isinstance(v, str) for v in dependencies.values()
     ):
         raise VersionUnavailable("roof reference dependencies differ from originals")
-    verify_dependencies(blobs, metadata)
-    plan = PvgisReferencePlan.read(blobs.object(str(dependencies["reference_plan"])))
-    geometry = blobs.object(str(dependencies["reference_geometry"]))
-    parameters = blobs.object(str(dependencies["reference_parameters"]))
-    basis = blobs.object(str(dependencies["reference_woo_module"]))
+    verify_dependencies(reader, metadata)
+    plan = PvgisReferencePlan.read(reader.object(str(dependencies["reference_plan"])))
+    geometry = reader.object(str(dependencies["reference_geometry"]))
+    parameters = reader.object(str(dependencies["reference_parameters"]))
+    basis = reader.object(str(dependencies["reference_woo_module"]))
     try:
         ProductSources.check_roof_inputs({"geometry": geometry}, basis)
         regenerated = reference_plan(
@@ -90,7 +100,7 @@ def reference_bundle(blobs: Blobs, raw_sha256: str, metadata: Object) -> Object:
             key: value for key, value in row.items() if key in type(array).model_fields
         }
         capture = PvgisCapture.read(
-            blobs.object(str(dependencies[f"array.{index}.capture"]))
+            reader.object(str(dependencies[f"array.{index}.capture"]))
         )
         source = obj(row.get("source_document"))
         semantics = (
@@ -114,7 +124,7 @@ def reference_bundle(blobs: Blobs, raw_sha256: str, metadata: Object) -> Object:
             or source.get("native_value_semantics") != semantics
         ):
             raise VersionUnavailable("roof reference array/capture binding changed")
-    output = blobs.object(str(dependencies["reference_output"]))
+    output = reader.object(str(dependencies["reference_output"]))
     if (
         output.get("schema_version") != 1
         or output.get("kind") != "pvgis_5_3_roof_ac_reference_output_v1"
@@ -132,9 +142,12 @@ def reference_bundle(blobs: Blobs, raw_sha256: str, metadata: Object) -> Object:
 
 
 def prepared_reference_profile(
-    blobs: Blobs, raw_sha256: str, metadata: Object
+    blobs: Blobs,
+    raw_sha256: str,
+    metadata: Object,
+    documents: FrozenReader | None = None,
 ) -> PowerSeries:
-    bundle = reference_bundle(blobs, raw_sha256, metadata)
+    bundle = reference_bundle(blobs, raw_sha256, metadata, documents)
     manifest, output = obj(bundle["manifest"]), obj(bundle["output"])
     plan = PvgisReferencePlan.read(bundle["plan"])
     start = datetime(plan.parameters.year, 1, 1, tzinfo=UTC)

@@ -1,9 +1,10 @@
 import { Component, useEffect, useId, useMemo, useRef, useState } from "react";
-import type { ReactNode } from "react";
+import type { ReactNode, RefObject } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { ArrayTransform } from "./SceneControls.tsx";
 import { SceneCamera } from "./SceneCamera.tsx";
 import { SCENE_FOV_DEG, sceneViewDirection } from "../../domain/sceneCamera.ts";
+import type { SceneViewState } from "../../domain/sceneCamera.ts";
 import {
 	Box3,
 	Color,
@@ -52,6 +53,11 @@ import {
 	releaseBackend,
 	releaseUnownedRenderer,
 } from "../../domain/renderLifetime.ts";
+import {
+	SCENE_INIT_DEADLINE_MS,
+	withInitDeadline,
+} from "../../domain/sceneInit.ts";
+import { useHiddenAncestor } from "./useHiddenAncestor.ts";
 
 interface Palette {
 	roof: string;
@@ -71,6 +77,8 @@ interface SceneProps {
 	routes?: readonly (readonly Vec3[])[];
 	/** A validated row for this exact frozen document; null is not zero visibility. */
 	directBeam?: ReadonlyMap<string, number | null> | undefined;
+	/** Viewer's own orbit, retained across a released-and-restored surface. */
+	camera?: RefObject<SceneViewState | null> | undefined;
 }
 const vector = (point: Vec3) => new Vector3(...point);
 const sceneLens = { fov: SCENE_FOV_DEG };
@@ -505,6 +513,9 @@ export default function SceneViewport(props: SceneProps) {
 	const [forceWebGL, setForceWebGL] = useState(false);
 	const alive = useRef(true);
 	const generation = useRef(0);
+	// The workspace keeps inactive sections mounted, so a displayed 3D canvas can
+	// remain resident behind another section. Its GPU device is released instead.
+	const hidden = useHiddenAncestor(host);
 	const fail = () => {
 		generation.current++;
 		setBackend("");
@@ -517,6 +528,13 @@ export default function SceneViewport(props: SceneProps) {
 			generation.current++;
 		};
 	}, []);
+	useEffect(() => {
+		if (!hidden) return;
+		// The surface unmounts while hidden, so the read-back backend no longer
+		// describes anything on screen; a returning view reports its own.
+		generation.current++;
+		setBackend("");
+	}, [hidden]);
 	useEffect(() => {
 		if (!host.current) return;
 		const style = getComputedStyle(host.current),
@@ -588,7 +606,7 @@ export default function SceneViewport(props: SceneProps) {
 						"linker-tools",
 					)}
 				</Notice>
-			) : (
+			) : hidden ? null : (
 				palette && (
 					<SceneBoundary key={attempt + String(forceWebGL)} failed={fail}>
 						<Canvas
@@ -609,8 +627,23 @@ export default function SceneViewport(props: SceneProps) {
 								renderer.onDeviceLost = () => {
 									if (alive.current && identity === generation.current) fail();
 								};
+								// A wedged GPU process never settles init. Without a deadline the
+								// surface would claim progress forever with no way to recover.
+								let disposed = false;
+								const release = async () => {
+									if (disposed) return;
+									disposed = true;
+									await releaseUnownedRenderer(renderer, initialBackend);
+								};
 								try {
-									await renderer.init();
+									await withInitDeadline(
+										renderer.init(),
+										SCENE_INIT_DEADLINE_MS,
+										() =>
+											// Arrived after the deadline: R3F never receives it, so this
+											// factory still owns the device that init has just created.
+											release(),
+									);
 									if (initialBackend !== renderer.backend) {
 										await releaseBackend(initialBackend);
 										initialBackend = null;
@@ -620,7 +653,7 @@ export default function SceneViewport(props: SceneProps) {
 									}
 								} catch (error) {
 									// A rejected init never hands this instance to R3F for disposal.
-									await releaseUnownedRenderer(renderer, initialBackend);
+									await release();
 									if (alive.current && identity === generation.current) fail();
 									throw error;
 								}
@@ -678,7 +711,11 @@ export default function SceneViewport(props: SceneProps) {
 								palette={palette}
 								select={props.select}
 							/>
-							<SceneCamera extent={bounds} request={fitRequest} />
+							<SceneCamera
+								extent={bounds}
+								request={fitRequest}
+								view={props.camera}
+							/>
 							{props.routes && (
 								<RouteLines
 									paths={props.routes}
@@ -691,7 +728,7 @@ export default function SceneViewport(props: SceneProps) {
 					</SceneBoundary>
 				)
 			)}
-			{!failed && bounds && reference && (
+			{!failed && !hidden && bounds && reference && (
 				<div className="lp-canvas-caption">
 					<button
 						type="button"

@@ -98,6 +98,7 @@ import { newEntryId } from './shared/entryDraft';
 import { useEntryInbox } from './shared/useEntryInbox';
 import { useHelperDialog } from './shared/useHelperDialog';
 import { useComposerSize } from './shared/useComposerSize';
+import { useVerificationStage } from './shared/useVerificationStage';
 import { MissingFiles } from './components/MissingFiles';
 import { OwnedRecovery } from './components/OwnedRecovery';
 import { EntryInbox } from './components/EntryInbox';
@@ -261,6 +262,12 @@ export function App( { config }: { config: GenieConfig } ) {
 	// there, whatever is asked after it.
 	const turnAt = useRef( -1 );
 	const [ phase, setPhase ] = useState< Phase >( 'ask' );
+	const {
+		slot: verificationSlot,
+		pending: verificationPending,
+		begin: beginVerification,
+		cancel: cancelVerification,
+	} = useVerificationStage( phase === 'waiting' );
 	// The request still returns one complete answer. This index only opts the
 	// newly received answer into a short local reveal; stored history is instant.
 	const [ revealingAt, setRevealingAt ] = useState< number | null >( null );
@@ -882,6 +889,25 @@ export function App( { config }: { config: GenieConfig } ) {
 			const settled = settleTurnFailure( error, before, draft );
 			// A newly accepted next question is a different editor from this turn.
 			draftContext.checkpoint();
+			if ( 'cancelled' === settled.action ) {
+				// The visitor withdrew this attempt before it was sent (closing
+				// the surface, a switch, a lost owner). Nothing reached the
+				// server and nothing went wrong: the question comes back with
+				// no banner, so reopening shows what was being typed.
+				const returned = returnToEditing( {
+					text: settled.field,
+					uploads: draft.uploads,
+					missing: draft.omitted,
+				} );
+				setThread( before );
+				currentThread.current = before;
+				if ( returned ) {
+					placeChips( draft.uploads );
+					setInput( settled.field );
+				}
+				setPhase( 'ask' );
+				return;
+			}
 			if ( 'resource' === settled.action ) {
 				const returned = returnToEditing( {
 					text: settled.field,
@@ -1045,6 +1071,11 @@ export function App( { config }: { config: GenieConfig } ) {
 			requestWitness.current = null;
 			setOpen( true );
 			setDockHistory( false );
+			const turnVerification = beginVerification( {
+				owns: () => draftContext.owns( lease ),
+				settle: () => draftContext.settle( lease ),
+				valid: () => draftContext.valid( lease ),
+			} );
 			setPhase( 'waiting' );
 			setRevealingAt( null );
 			setInput( '' );
@@ -1101,6 +1132,7 @@ export function App( { config }: { config: GenieConfig } ) {
 					const postedPage = pageRef.current;
 					const pageWitness = JSON.stringify( postedPage );
 					const answer = await sendTurn( {
+						verification: turnVerification,
 						turnUrl: config.turnUrl,
 						restUrl: config.restUrl,
 						nonce: config.restNonce,
@@ -1180,6 +1212,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			commitFailure,
 			onTurnError,
 			retainUnverifiedTurn,
+			beginVerification,
 		]
 	);
 
@@ -1198,6 +1231,11 @@ export function App( { config }: { config: GenieConfig } ) {
 		sending.current = true;
 		setOpen( true );
 		setDockHistory( false );
+		const turnVerification = beginVerification( {
+			owns: () => draftContext.owns( lease ),
+			settle: () => draftContext.settle( lease ),
+			valid: () => draftContext.valid( lease ),
+		} );
 		setPhase( 'waiting' );
 		setRevealingAt( null );
 		setInput( '' );
@@ -1268,6 +1306,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				const postedPage = pageRef.current;
 				const pageWitness = JSON.stringify( postedPage );
 				const answer = await sendTurn( {
+					verification: turnVerification,
 					turnUrl: config.turnUrl,
 					restUrl: config.restUrl,
 					nonce: config.restNonce,
@@ -1350,6 +1389,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		payloadOrRestore,
 		draftContext,
 		retainUnverifiedTurn,
+		beginVerification,
 	] );
 
 	// "Type the model": the way out of a nameplate the customer does not
@@ -1461,6 +1501,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			// this switch captured the old epoch and must drop itself.
 			historyEpoch += 1;
 			stopDictation();
+			cancelVerification();
 			draftContext.invalidate();
 			setInput( '' );
 			setOmitted( [] );
@@ -1509,6 +1550,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			draftContext,
 			setOmitted,
 			stopDictation,
+			cancelVerification,
 		]
 	);
 
@@ -1520,6 +1562,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			historyEpoch += 1;
 			if ( id === shownId.current ) {
 				stopDictation();
+				cancelVerification();
 				draftContext.invalidate();
 				setInput( '' );
 				setOmitted( [] );
@@ -1572,6 +1615,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			draftContext,
 			setOmitted,
 			stopDictation,
+			cancelVerification,
 		]
 	);
 
@@ -2389,10 +2433,15 @@ export function App( { config }: { config: GenieConfig } ) {
 													className="linker-genie-wait__dot"
 													aria-hidden="true"
 												/>
-												{ __(
-													'Genie is thinking…',
-													'linker-tools'
-												) }
+												{ verificationPending
+													? __(
+															'Checking verification…',
+															'linker-tools'
+														)
+													: __(
+															'Genie is thinking…',
+															'linker-tools'
+														) }
 											</div>
 											<div
 												className="linker-genie-wait__lines"
@@ -2824,6 +2873,12 @@ export function App( { config }: { config: GenieConfig } ) {
 										) }
 							</p>
 						) : null }
+						<div
+							ref={ verificationSlot }
+							data-linker-resource-verification-slot
+							className="linker-genie-app__status"
+							hidden
+						/>
 						{ ! historyView ? (
 							<form
 								className="linker-genie-app__composer"

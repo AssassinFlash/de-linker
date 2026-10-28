@@ -8,6 +8,7 @@ from linker_engine.models import ReportRow, ReportSection, ReportTable
 
 from .canonical import Object
 from .report_copy import text
+from .report_numbers import number as display
 
 
 def operating_sections(
@@ -17,18 +18,10 @@ def operating_sections(
     points = cast(list[dict[str, Any]], value["points"])
     numbers = {s["id"]: i + 1 for i, s in enumerate(strings)}
 
-    def display(number: Any, unit: str = "") -> str:
+    def row(key: str, value: Any, unit: str = "") -> ReportRow:
         # Significant-digit presentation retains small diode-current values;
         # it is not model precision or a physical uncertainty statement.
-        if isinstance(number, bool) or not isinstance(number, (int, float)):
-            return "—"
-        shown = f"{number:.6g}"
-        return (shown.replace(".", ",") if locale == "de" else shown) + (
-            f" {unit}" if unit else ""
-        )
-
-    def row(key: str, value: Any, unit: str = "") -> ReportRow:
-        return ReportRow(label=text(key, locale), value=display(value, unit))
+        return ReportRow(label=text(key, locale), value=display(value, locale, unit))
 
     sections = [
         ReportSection(
@@ -58,9 +51,9 @@ def operating_sections(
                     [
                         str(numbers[p["string_id"]]),
                         text("pv_" + p["case"] + "_case", locale),
-                        display(p["v_mp_v"], "V"),
-                        display(p["i_mp_a"], "A"),
-                        display(p["i_sc_a"], "A"),
+                        display(p["v_mp_v"], locale, "V"),
+                        display(p["i_mp_a"], locale, "A"),
+                        display(p["i_sc_a"], locale, "A"),
                     ]
                     for p in points
                 ],
@@ -144,7 +137,7 @@ def operating_sections(
             id="pv-iv-parameters",
             title=text("pv_fitted_parameters", locale),
             rows=[
-                ReportRow(label=label, value=display(parameters[key], unit))
+                ReportRow(label=label, value=display(parameters[key], locale, unit))
                 for key, label, unit in (
                     ("a_ref", "a,ref", "V"),
                     ("I_L_ref", "IL,ref", "A"),
@@ -183,7 +176,7 @@ def operating_sections(
                 ReportRow(
                     label=text("pv_noct_cell_interval", locale),
                     value=" – ".join(
-                        display(t, "°C")
+                        display(t, locale, "°C")
                         for t in cast(list[float], noct["cell_c_interval"])
                     ),
                 ),
@@ -197,7 +190,7 @@ def operating_sections(
                 ReportRow(
                     label=text("pv_noct_model_limits", locale),
                     value=" / ".join(
-                        display(v, "W")
+                        display(v, locale, "W")
                         for v in cast(list[float], noct["p_mp_at_cell_limits_w"])
                     ),
                 ),

@@ -26,11 +26,12 @@ from linker_engine.planning.errors import InvalidInput, ProductEvidenceChanged
 from linker_engine.planning.execution_registry import service_registry
 from linker_engine.planning.http_app import HttpLimits, create_private_app
 from linker_engine.planning.installation_inputs import InstallationInputs
+from linker_engine.planning.installation_report import installation_sections
 from linker_engine.planning.installation_takeoff import product_basis, route_takeoff
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.product_sources import ProductSources
 from linker_engine.planning.project_input_contracts import INPUT_CONTRACT
-from linker_engine.planning.project_materials import project_materials
+from linker_engine.planning.project_materials import material_scope, project_materials
 from linker_engine.planning.records import Actor
 from linker_engine.planning.report_copy import text
 from linker_engine.planning.report_inputs import ReportOptions
@@ -150,14 +151,32 @@ def test_physical_lengths_unknowns_and_owned_frozen_exports(
     ] == [(10, 14, 16)] * 3
     assert len(output["sources"]) == 1
     # Optional linking must leave historical prepared bytes and hashes intact.
+    # An undeclared conductor is not invented into the frozen bytes either.
     assert output["prepared_inputs"] == json_object(
-        InstallationInputs.read(plan).model_dump(
-            mode="json", exclude={"pv_string_links"}
-        )
+        InstallationInputs.read(plan).project_document()
     )
     assert output["input_sha256"] == digest(encode(output["prepared_inputs"]))
     assert "pv_string_links" not in output["prepared_inputs"]
+    assert all("conductor" not in c for c in output["prepared_inputs"]["cable_runs"])
     assert "pv_string_reconciliation" not in output
+    assert all(
+        c["conductor"] is None and c["specification"] == "open"
+        for c in output["cables"]
+    )
+
+    # An omitted conductor and an explicit null describe the same physical run,
+    # so both drop the key: one project cannot freeze into two input hashes.
+    explicit_null = copy.deepcopy(saved)
+    for run in explicit_null["installation"]["cable_runs"]:
+        run["conductor"] = None
+    assert (
+        json_object(route_takeoff(explicit_null, basis))["input_sha256"]
+        == (output["input_sha256"])
+    )
+    assert (
+        json_object(route_takeoff(explicit_null, basis))["prepared_inputs"]
+        == output["prepared_inputs"]
+    )
 
     linked = copy.deepcopy(saved)
     linked["installation"]["circuits"][0]["kind"] = "pv_dc"
@@ -191,6 +210,66 @@ def test_physical_lengths_unknowns_and_owned_frozen_exports(
         ("private_string_b", "unlinked"),
     ]
     assert [c["quantity"] for c in reconciliation["rows"][0]["cable_runs"]] == [16] * 3
+    # No run declares a cross-section, so the linkage is not yet a closed BOM:
+    # the identities and lengths are recorded and the specification stays open.
+    assert reconciliation["rows"][0]["closure"] == {
+        "conductor": "unconfirmed",
+        "quantity": "confirmed",
+        "recorded": False,
+        "approval": "not_assessed",
+    }
+    declared = copy.deepcopy(linked)
+    for cable in declared["installation"]["cable_runs"]:
+        cable["conductor"] = {
+            "cross_section_mm2": 6,
+            "source_note": "Synthetic project declaration for this fixture",
+        }
+    declared_review = json_object(route_takeoff(declared, basis))
+    declared_rows = declared_review["pv_string_reconciliation"]["rows"]
+    assert declared_rows[0]["closure"] == {
+        "conductor": "declared",
+        "quantity": "confirmed",
+        "recorded": True,
+        "approval": "not_assessed",
+    }
+    # An unlinked string stays open even when every run is fully specified.
+    assert declared_rows[1]["closure"]["recorded"] is False
+    assert [c["conductor"]["cross_section_mm2"] for c in declared_review["cables"]] == [
+        6
+    ] * 3
+    # One specification per physical run; a differing section is a real conflict
+    # rather than a silent choice of one value.
+    conflicting = copy.deepcopy(declared)
+    conflicting["installation"]["cable_runs"][1]["conductor"]["cross_section_mm2"] = 10
+    assert (
+        json_object(route_takeoff(conflicting, basis))["pv_string_reconciliation"][
+            "rows"
+        ][0]["closure"]["conductor"]
+        == "conflicting"
+    )
+    # A run left undeclared keeps the circuit open and is never filled in.
+    partial = copy.deepcopy(declared)
+    partial["installation"]["cable_runs"][2].pop("conductor")
+    partial_review = json_object(route_takeoff(partial, basis))
+    assert partial_review["pv_string_reconciliation"]["rows"][0]["closure"] == {
+        "conductor": "unconfirmed",
+        "quantity": "confirmed",
+        "recorded": False,
+        "approval": "not_assessed",
+    }
+    assert [c["specification"] for c in partial_review["cables"]] == [
+        "declared",
+        "declared",
+        "open",
+    ]
+    # Declared conductor bytes are frozen input, so the hash covers them.
+    assert declared_review["prepared_inputs"]["cable_runs"][0]["conductor"] == {
+        "cross_section_mm2": 6,
+        "source_note": "Synthetic project declaration for this fixture",
+    }
+    assert declared_review["input_sha256"] == digest(
+        encode(declared_review["prepared_inputs"])
+    )
     renamed = copy.deepcopy(linked)
     renamed["pv_string_plan"]["strings"].reverse()
     renamed["installation"]["circuits"][0]["name"] = "Renamed circuit"
@@ -353,6 +432,37 @@ def test_physical_lengths_unknowns_and_owned_frozen_exports(
     assert (
         len(unresolved_source["installation"]["pv_string_reconciliation"]["rows"]) == 2
     )
+    # A circuit with no recorded run is the fourth closure state; every state
+    # must resolve to its own copy in both locales rather than raise.
+    blank_rows = unresolved_source["installation"]["pv_string_reconciliation"]["rows"]
+    assert {row["closure"]["conductor"] for row in blank_rows} == {"not_recorded"}
+    for locale in ("en", "de"):
+        rendered = installation_sections(unresolved_source, locale)
+        links = next(s for s in rendered if s.id == "installation-pv-string-links")
+        assert links.table is not None
+        assert all(row[5] for row in links.table.rows)
+        assert any(
+            text("installation_conductor_not_recorded", locale) == row[5]
+            for row in links.table.rows
+        )
+        # A report saved before the closure existed keeps its rows and says the
+        # closure was not recorded, instead of raising or inventing one.
+        historical = copy.deepcopy(unresolved_source)
+        for row in historical["installation"]["pv_string_reconciliation"]["rows"]:
+            row.pop("closure")
+        legacy_rendered = installation_sections(historical, locale)
+        legacy_links = next(
+            s for s in legacy_rendered if s.id == "installation-pv-string-links"
+        )
+        assert legacy_links.table is not None
+        assert all(
+            row[6] == text("installation_closure_not_recorded", locale)
+            for row in legacy_links.table.rows
+        )
+        assert all(
+            row[5] == text("installation_conductor_not_recorded", locale)
+            for row in legacy_links.table.rows
+        )
     mixed = ReportOptions.read(
         {**legacy_options, "equipment_run_id": checked.id, "include_installation": True}
     )
@@ -491,3 +601,66 @@ def test_physical_lengths_unknowns_and_owned_frozen_exports(
                 if locale == "en"
                 else "Leitungswege der Installation" in shown
             )
+        # The declared cross-section reaches every consumer of one frozen
+        # revision: routing table, BOM scope, CSV provenance and the PDF.
+        declared_project = workspace.revise(
+            owner,
+            project.id,
+            project.revision,
+            declared,
+            key="save-declared-conductors",
+            input_contract=INPUT_CONTRACT,
+        )
+        accepted = client.post(
+            "/runs/report",
+            json={
+                "schema_version": 1,
+                "project_id": project.id,
+                "expected_revision": declared_project.revision,
+                "key": "declared-conductors",
+                "options": {**legacy_options, "include_installation": True},
+            },
+            headers=headers(),
+        )
+        assert accepted.status_code == 200, accepted.text
+        assert worker.run_once()
+        declared_run = workspace.run(owner, accepted.json()["id"])
+        assert declared_run.state == "succeeded", declared_run.error
+        declared_result = json_object(declared_run.result)
+        routing = next(
+            s
+            for s in declared_result["report"]["sections"]
+            if s["id"] == "installation-routing"
+        )
+        assert [row[4] for row in routing["table"]["rows"]] == ["6 mm²"] * 3
+        declared_materials = json_object(
+            workspace.blobs.object(declared_result["materials_sha256"])
+        )
+        cable_lines = [
+            line
+            for line in declared_materials["lines"]
+            if line["handling"] == "installation_requirement"
+            and line.get("quantity") is not None
+        ]
+        assert [
+            line["source"]["conductor"]["cross_section_mm2"] for line in cable_lines
+        ] == [6] * 3
+        assert text("material_installation_declared", "en") in material_scope(
+            cable_lines[0], "en"
+        )
+        declared_csv = Assets(workspace).content(
+            owner,
+            project.id,
+            declared_result["prepared_attachments"]["bill_of_materials_csv"]["id"],
+        )
+        declared_rows = list(csv.reader(io.StringIO(declared_csv.decode("utf-8-sig"))))
+        provenance = json.loads(declared_rows[1][6])["source"]
+        assert provenance["conductor"]["cross_section_mm2"] == 6
+        assert declared_rows[1][5] == text("material_installation_declared", "en")
+        declared_pdf = Assets(workspace).content(
+            owner, project.id, declared_result["prepared_asset"]["id"]
+        )
+        declared_shown = "\n".join(
+            page.extract_text() for page in PdfReader(io.BytesIO(declared_pdf)).pages
+        )
+        assert "6 mm²" in declared_shown

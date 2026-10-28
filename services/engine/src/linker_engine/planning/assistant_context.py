@@ -28,7 +28,8 @@ from .pvgis_reference_profile import (
 )
 from .records import Actor, Run
 from .report_copy import text
-from .report_model import build_report, number
+from .report_model import build_report
+from .report_numbers import number, percent
 from .workspace import Workspace
 
 # Assistant context resource policies, not numerical/engineering limits.
@@ -75,9 +76,7 @@ def _rows(value: Json, locale: str, prefix: str = "") -> list[Json]:
             ratio = item.get("value")
             if isinstance(ratio, (int, float)) and not isinstance(ratio, bool):
                 # Same ratio-to-percent presentation as report_model.build_report.
-                result.append(
-                    {"label": label, "value": number(ratio * 100, locale, "%")}
-                )
+                result.append({"label": label, "value": percent(ratio * 100, locale)})
             else:
                 result.append(
                     {

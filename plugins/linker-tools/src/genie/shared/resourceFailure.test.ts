@@ -1,6 +1,9 @@
 import { expect, test } from 'vitest';
 import { TurnError } from '../api/turn';
-import { resourceRefusalReason } from './resourceFailure';
+import {
+	isVerificationCancellation,
+	resourceRefusalReason,
+} from './resourceFailure';
 import { settleTurnFailure } from './failure';
 
 test( 'current-source revocation is distinct from an authority outage and retains the question', () => {
@@ -25,4 +28,46 @@ test( 'current-source revocation is distinct from an authority outage and retain
 		action: 'resource',
 		field: 'My product question',
 	} );
+} );
+
+test( 'verification failure names the check and preserves the draft without blaming a model outage', () => {
+	const reason =
+		'Verification could not be completed. No request has been sent in this attempt. Please try again.';
+	for ( const error of [
+		new Error( 'verification_widget_110100' ),
+		new Error( 'verification_timeout' ),
+		new TurnError( 400, 'linker_verification_expired' ),
+	] ) {
+		expect( resourceRefusalReason( error ) ).toBe( reason );
+		expect(
+			settleTurnFailure( error, [], {
+				text: 'My project question',
+				question: 'My project question',
+				uploads: [],
+				omitted: [],
+			} )
+		).toMatchObject( {
+			action: 'resource',
+			reason,
+			field: 'My project question',
+		} );
+	}
+} );
+
+test( 'a withdrawal is neutral, and only a real verification failure is explained', () => {
+	// Closing the surface, a conversation switch or a lost owner aborts this
+	// attempt before anything is sent. Reopening then owes the customer their
+	// question, not a report of a failure that never happened.
+	expect(
+		isVerificationCancellation( new Error( 'verification_cancelled' ) )
+	).toBe( true );
+	expect(
+		resourceRefusalReason( new Error( 'verification_cancelled' ) )
+	).toBeNull();
+	expect(
+		isVerificationCancellation( new Error( 'verification_timeout' ) )
+	).toBe( false );
+	expect(
+		resourceRefusalReason( new Error( 'verification_timeout' ) )
+	).not.toBeNull();
 } );

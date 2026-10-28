@@ -254,6 +254,19 @@ def material_scope(line: Object, locale: str) -> str:
             else text(f"installation_string_plan_{source['plan_status']}", locale)
         )
         return f"{text('installation_string_link_material_scope', locale)} · {status}"
+    if line["handling"] == "installation_requirement":
+        # A recorded cross-section is still not a sizing result, so the scope
+        # names what is declared instead of claiming the specification is done.
+        origin = line.get("source")
+        specification = (
+            origin.get("specification") if isinstance(origin, dict) else None
+        )
+        return text(
+            "material_installation_declared"
+            if specification == "declared"
+            else "material_installation_requirement",
+            locale,
+        )
     if line["handling"] == "manufacturer_included" and line.get("quantity") is not None:
         scope = text("material_included_documented", locale)
         parent = line.get("parent_label")
@@ -263,6 +276,23 @@ def material_scope(line: Object, locale: str) -> str:
 
 def material_unit(line: Object, locale: str) -> str:
     return text(f"material_unit_{line.get('unit', 'piece')}", locale)
+
+
+def conductor_specification(line: Object, locale: str) -> str:
+    """A declared cross-section shown as declared, never as a sizing result."""
+    # Routing rows carry the run at top level; BOM lines nest it as source.
+    source = line.get("source")
+    declared = line.get("conductor")
+    if declared is None and isinstance(source, dict):
+        declared = source.get("conductor")
+    if not isinstance(declared, dict):
+        return text("installation_conductor_open", locale)
+    value = format(Decimal(str(declared["cross_section_mm2"])), ",f")
+    if "." in value:
+        value = value.rstrip("0").rstrip(".")
+    if locale == "de":
+        value = value.translate(str.maketrans(",.", ".,"))
+    return f"{value} mm²"
 
 
 def material_quantity(line: Object, locale: str) -> str:

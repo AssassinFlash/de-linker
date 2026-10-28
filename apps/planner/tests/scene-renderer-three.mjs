@@ -18,6 +18,10 @@ export class WebGPURenderer {
 				this.fallbackDisposed = true;
 			},
 		};
+		if (behavior.mode === "hang") {
+			// A wedged GPU process: init never settles and never rejects.
+			return new Promise(() => {});
+		}
 		if (behavior.mode === "ready") {
 			this.initialized = true;
 			return;

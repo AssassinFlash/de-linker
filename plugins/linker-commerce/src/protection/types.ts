@@ -1,4 +1,5 @@
-export type ProtectionState = 'checking' | 'ready' | 'failed' | 'expired';
+export type ProtectionState =
+	'checking' | 'interactive' | 'retrying' | 'ready' | 'failed' | 'expired';
 
 export interface ProtectionConfig {
 	api: string;
@@ -12,15 +13,22 @@ export interface TurnstileOptions {
 	sitekey: string;
 	action: string;
 	language: 'en' | 'de';
-	appearance: 'interaction-only';
+	appearance: 'always';
+	size: 'flexible';
+	retry: 'auto';
+	'retry-interval': number;
+	'refresh-timeout': 'manual';
 	callback: ( token: string ) => void;
-	'error-callback': () => void;
+	'error-callback': ( code?: string ) => void;
+	'before-interactive-callback': () => void;
+	'unsupported-callback': () => void;
 	'expired-callback': () => void;
 	'timeout-callback': () => void;
 }
 
 export interface TurnstileApi {
 	render: ( container: HTMLElement, options: TurnstileOptions ) => string;
+	reset: ( id: string ) => void;
 	remove: ( id: string ) => void;
 }
 
@@ -29,6 +37,7 @@ export interface PublicProtection {
 	warm: ( action: string, container: HTMLElement ) => Promise< string >;
 	proof: ( action: string, container: HTMLElement ) => Promise< string >;
 	complete?: ( action: string, proof: string ) => boolean;
+	cancel?: ( action: string, container: HTMLElement ) => boolean;
 	reset: ( action: string ) => void;
 }
 

@@ -23,6 +23,17 @@
           ],
           "title": "Construction",
           "type": "string"
+        },
+        "conductor": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ConductorSpecification"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
@@ -33,6 +44,23 @@
         "construction"
       ],
       "title": "CableRun",
+      "type": "object"
+    },
+    "ConductorSpecification": {
+      "additionalProperties": false,
+      "properties": {
+        "cross_section_mm2": {
+          "$ref": "#/$defs/Positive"
+        },
+        "source_note": {
+          "$ref": "#/$defs/Text"
+        }
+      },
+      "required": [
+        "cross_section_mm2",
+        "source_note"
+      ],
+      "title": "ConductorSpecification",
       "type": "object"
     },
     "ConnectionPoint": {
@@ -235,6 +263,10 @@
     "Number": {
       "maximum": 9007199254740991,
       "minimum": -9007199254740991,
+      "type": "number"
+    },
+    "Positive": {
+      "exclusiveMinimum": 0,
       "type": "number"
     },
     "PvStringLink": {

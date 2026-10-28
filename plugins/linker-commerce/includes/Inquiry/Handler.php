@@ -97,7 +97,15 @@ final class Handler {
 				$fields[ $key ] = isset( $post[ $key ] ) && is_string( $post[ $key ] ) ? sanitize_textarea_field( $post[ $key ] ) : '';
 			}
 			$fields['consent'] = '1' === ( $post['consent'] ?? '' ) ? '1' : '';
-			$blocked           = 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode() && \Linker\Commerce\Protection\Campaign::recovery_matches( $post, false );
+			// A definite refusal returns to fresh verification. Unknown/pending
+			// outcomes may first recover their existing UUID without a new proof.
+			$fields['linker_recovery_available'] = \Linker\Commerce\Protection\FormRecovery::after_error( $result ) ? '1' : '0';
+			if ( \Linker\Commerce\Protection\FormRecovery::superseded( $result ) ) {
+				// The journal holds this UUID for other input; a new one is the
+				// only way past the changed-input refusal.
+				$fields['linker_request_id'] = '';
+			}
+			$blocked = 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode() && \Linker\Commerce\Protection\Campaign::recovery_matches( $post, false );
 			WC()->session->set( 'linker_inquiry_fields', $blocked ? null : $fields );
 			$language = isset( $post['lang'] ) && is_string( $post['lang'] ) ? sanitize_key( $post['lang'] ) : null;
 			WC()->session->set( 'linker_inquiry_error', $result->get_error_message() );

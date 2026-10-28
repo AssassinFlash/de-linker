@@ -12,12 +12,15 @@ export function useRetainedWeather(
 	projectId: string,
 	assetId: string | null,
 	active: boolean,
+	options: { pageSize?: number } = {},
 ) {
 	const scope = session.query_scope,
-		pageSize = session.runtime.limits.max_page_size,
+		// A shorter page is a reading preference of one setup, so it stays part
+		// of the key: pages fetched at one width must not answer the other.
+		pageSize = options.pageSize ?? session.runtime.limits.max_page_size,
 		owned = client.isCurrentScope(scope);
 	const sources = useInfiniteQuery({
-		queryKey: [scope, "retained-weather-assets", projectId],
+		queryKey: [scope, "retained-weather-assets", projectId, pageSize],
 		initialPageParam: 0,
 		enabled: active && owned,
 		retry: false,

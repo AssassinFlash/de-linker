@@ -145,7 +145,7 @@ test( 'an old response cannot clear the status of a newer proof', async () => {
 		{ method: 'POST', body: '{}' }
 	);
 	expect( document.querySelector( '[role="status"]' )?.textContent ).toBe(
-		'Checking verification…'
+		'Checking verification. No request has been sent in this attempt.'
 	);
 } );
 
@@ -179,9 +179,9 @@ test( 'a failed proof performs no resource request and leaves the composer untou
 	expect( document.querySelector( 'textarea' )?.value ).toBe(
 		'Keep this project question'
 	);
-	expect(
-		resourceRefusalReason( new Error( 'verification_expired' ) )
-	).toContain( 'inquiry' );
+	expect( resourceRefusalReason( new Error( 'verification_expired' ) ) ).toBe(
+		'Verification could not be completed. No request has been sent in this attempt. Please try again.'
+	);
 } );
 
 test( 'a definite service refusal allows the next explicit operation UUID', async () => {
@@ -221,6 +221,49 @@ test.each( [ 502, 503 ] )(
 		expect( ids[ 0 ] ).toBe( ids[ 1 ] );
 	}
 );
+
+test.each( [ 500, 502, 503 ] )(
+	'a turn the proxy marked as unrecorded gets a fresh attempt at %i',
+	async ( status ) => {
+		const ids: string[] = [];
+		const fetcher = vi.fn< typeof fetch >( async ( input, init ) => {
+			ids.push(
+				new Headers( init?.headers ).get( 'X-Linker-Operation' )!
+			);
+			return new Response(
+				JSON.stringify( { code: 'linker_genie_upstream' } ),
+				{
+					status,
+					headers: { 'X-Linker-Resource-Outcome': 'failed' },
+				}
+			);
+		} );
+		const url = 'https://site.test/wp-json/linker-ai/v1/genie/turn';
+		const input = { method: 'POST', body: '{"synthetic":"turn"}' };
+		await resourceFetch( fetcher, url, input );
+		await resourceFetch( fetcher, url, input );
+		expect( ids[ 0 ] ).not.toBe( ids[ 1 ] );
+		expect( ids[ 0 ] ).toMatch( /^[0-9a-f-]{36}$/ );
+	}
+);
+
+test( 'a turn without the marker still keeps its logical UUID', async () => {
+	const ids: string[] = [];
+	const fetcher = vi.fn< typeof fetch >( async ( input, init ) => {
+		ids.push( new Headers( init?.headers ).get( 'X-Linker-Operation' )! );
+		return new Response(
+			JSON.stringify( { code: 'linker_genie_upstream' } ),
+			{
+				status: 502,
+			}
+		);
+	} );
+	const url = 'https://site.test/wp-json/linker-ai/v1/genie/turn';
+	const input = { method: 'POST', body: '{"synthetic":"ambiguous"}' };
+	await resourceFetch( fetcher, url, input );
+	await resourceFetch( fetcher, url, input );
+	expect( ids[ 0 ] ).toBe( ids[ 1 ] );
+} );
 
 test( 'a trusted pre-dispatch quota refusal permits a new explicit UUID', async () => {
 	const ids: string[] = [];
@@ -349,4 +392,97 @@ test( 'signed Genie product-list writes retain the native draft and save admissi
 			'POST'
 		)
 	).toBe( 'solution_save' );
+} );
+
+test( 'an unrelated design keeps its native form even when a hidden Genie slot exists', async () => {
+	document.body.innerHTML =
+		'<section hidden><div data-linker-resource-verification-slot id="hidden-dock"></div></section><main><form><textarea>Design input</textarea></form></main>';
+	const form = document.querySelector( 'form' )!;
+	form.getClientRects = () => ( { length: 1 } ) as DOMRectList;
+	const proof = vi.fn( async ( action: string, container: HTMLElement ) => {
+		expect( action ).toBe( 'design' );
+		expect( container.parentElement ).toBe( form.parentElement );
+		return 'design-proof';
+	} );
+	window.linkerPublicProtection = { proof, reset: vi.fn() };
+	const fetcher = vi.fn< typeof fetch >( async () => new Response( '{}' ) );
+	await resourceFetch(
+		fetcher,
+		'https://site.test/wp-json/linker-ai/v1/engine/design/residential',
+		{ method: 'POST', body: '{}' }
+	);
+	expect( proof ).toHaveBeenCalledOnce();
+	expect( document.getElementById( 'hidden-dock' )!.children ).toHaveLength(
+		0
+	);
+} );
+
+test( 'an explicit Hero slot owns its challenge despite an older focused dock form', async () => {
+	document.body.innerHTML =
+		'<section><form><textarea>Dock</textarea></form><div data-linker-resource-verification-slot id="dock-slot"></div></section><section><div data-linker-resource-verification-slot id="hero-slot"></div></section>';
+	const form = document.querySelector( 'form' )!;
+	form.getClientRects = () => ( { length: 1 } ) as DOMRectList;
+	form.querySelector( 'textarea' )!.dispatchEvent(
+		new FocusEvent( 'focusin', { bubbles: true } )
+	);
+	const hero = document.getElementById( 'hero-slot' )!;
+	const proof = vi.fn( async ( _action: string, container: HTMLElement ) => {
+		expect( container.parentElement ).toBe( hero );
+		return 'hero-proof';
+	} );
+	window.linkerPublicProtection = { proof, reset: vi.fn() };
+	await resourceFetch(
+		async () => new Response( '{}' ),
+		'https://site.test/wp-json/linker-ai/v1/genie/turn',
+		{ method: 'POST', body: '{}' },
+		undefined,
+		() => hero
+	);
+	expect( proof ).toHaveBeenCalledOnce();
+	expect( document.getElementById( 'dock-slot' )!.children ).toHaveLength(
+		0
+	);
+} );
+
+test( 'an older transport outcome cannot hide a newer attempt in the same slot', async () => {
+	const slot = document.createElement( 'div' );
+	slot.dataset.linkerResourceVerificationSlot = '';
+	document.body.append( slot );
+	let firstReply: ( response: Response ) => void = () => undefined;
+	let nextReply: ( response: Response ) => void = () => undefined;
+	const firstFetch = vi.fn< typeof fetch >(
+		async () =>
+			new Promise( ( resolve ) => {
+				firstReply = resolve;
+			} )
+	);
+	const nextFetch = vi.fn< typeof fetch >(
+		async () =>
+			new Promise( ( resolve ) => {
+				nextReply = resolve;
+			} )
+	);
+	const url = 'https://site.test/wp-json/linker-ai/v1/genie/turn';
+	const first = resourceFetch(
+		firstFetch,
+		url,
+		{ method: 'POST', body: '{"question":"older"}' },
+		undefined,
+		() => slot
+	);
+	await vi.waitFor( () => expect( firstFetch ).toHaveBeenCalledOnce() );
+	const next = resourceFetch(
+		nextFetch,
+		url,
+		{ method: 'POST', body: '{"question":"newer"}' },
+		undefined,
+		() => slot
+	);
+	await vi.waitFor( () => expect( nextFetch ).toHaveBeenCalledOnce() );
+	firstReply( new Response( '{}', { status: 503 } ) );
+	await first;
+	expect( slot.hidden ).toBe( false );
+	nextReply( new Response( '{}' ) );
+	await next;
+	expect( slot.hidden ).toBe( true );
 } );

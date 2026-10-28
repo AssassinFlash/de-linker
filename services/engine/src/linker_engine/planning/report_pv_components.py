@@ -11,6 +11,7 @@ from typing import cast
 
 from .canonical import Json, Object, digest, encode
 from .errors import InvalidInput, VersionUnavailable
+from .frozen_documents import FrozenDocuments
 from .geometric_pv_inputs import PROFILE_PURPOSE as GEOMETRIC_PV_PURPOSE
 from .geometric_pv_profile import reference_bundle as geometric_pv_bundle
 from .geometry import panel_poses, read_geometry
@@ -36,13 +37,21 @@ def pv_components(
     metadata: Object,
     *,
     converter_id: str | None = None,
+    documents: FrozenDocuments | None = None,
+    geometric_bundle: Object | None = None,
 ) -> Object:
     if metadata.get("profile_type") == GEOMETRIC_PV_PURPOSE:
         if converter_id is not None:
             raise VersionUnavailable(
                 "this geometric PV reference exposes AC output only"
             )
-        bundle = geometric_pv_bundle(blobs, raw_sha256, metadata)
+        # The caller that already verified the geometric bundle passes it here;
+        # a second manifests-and-witness read would only repeat the same work.
+        bundle = (
+            geometric_bundle
+            if geometric_bundle is not None
+            else geometric_pv_bundle(blobs, raw_sha256, metadata, documents)
+        )
         return saved_roof_components(
             _object(bundle["inputs"])["geometry"],
             _object(bundle["woo_module_inputs"]),
@@ -52,7 +61,9 @@ def pv_components(
     if metadata.get("profile_type") == ROOF_AC_PURPOSE:
         if converter_id is not None:
             raise VersionUnavailable("an AC reference has no DC converter group")
-        bundle = reference_bundle(blobs, raw_sha256, metadata)
+        # The report already verified this asset for its own section; reuse the
+        # same reader instead of verifying the manifest and children again.
+        bundle = reference_bundle(blobs, raw_sha256, metadata, documents)
         return _components(
             read_geometry(bundle["geometry"]),
             _object(bundle["woo_module_inputs"]),

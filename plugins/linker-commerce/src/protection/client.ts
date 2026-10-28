@@ -8,6 +8,9 @@ import type {
 // Initial interaction/network bounds are documented in spec 519.
 const NETWORK_MS = 15000;
 const CHALLENGE_MS = 120000;
+// Cloudflare's documented default retry interval; the original challenge
+// deadline stays absolute across retries (widget-configurations, 2026-10-28).
+const RETRY_MS = 8000;
 const API_SCRIPT =
 	'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
 
@@ -18,6 +21,8 @@ interface Attempt {
 	expires: number;
 	widget?: string;
 	reject?: ( reason: Error ) => void;
+	/** The provider's own expiry already told the listener; it outranks `failed`. */
+	expired?: boolean;
 }
 
 export class ProtectionClient implements PublicProtection {
@@ -31,6 +36,10 @@ export class ProtectionClient implements PublicProtection {
 		action: string,
 		state: ProtectionState
 	) {
+		container.dataset.linkerVerificationState = state;
+		if ( state === 'checking' || state === 'ready' ) {
+			delete container.dataset.linkerVerificationError;
+		}
 		container.dispatchEvent(
 			new CustomEvent( 'linker:protection', {
 				bubbles: true,
@@ -105,6 +114,22 @@ export class ProtectionClient implements PublicProtection {
 				throw new Error( `verification_http_${ response.status }` );
 			}
 			result = ( await response.json() ) as T;
+		} catch ( error: unknown ) {
+			if (
+				error instanceof Error &&
+				error.message.startsWith( 'verification_' )
+			) {
+				throw error;
+			}
+			// These requests precede the protected operation. Preserve that
+			// boundary even when fetch/abort/JSON throws an unrelated error type.
+			let reason = 'verification_network';
+			if ( controller.signal.aborted ) {
+				reason = 'verification_network_timeout';
+			} else if ( error instanceof SyntaxError ) {
+				reason = 'verification_response';
+			}
+			throw new Error( reason, { cause: error } );
 		} finally {
 			clearTimeout( timer );
 		}
@@ -134,7 +159,9 @@ export class ProtectionClient implements PublicProtection {
 		this.reset( action );
 		const attempt: Attempt = {
 			container,
-			expires: Date.now() + CHALLENGE_MS,
+			// Preparation, script load and validation each retain their network
+			// bound. They must not expire an otherwise pending human challenge.
+			expires: Date.now() + CHALLENGE_MS + 3 * NETWORK_MS,
 			promise: Promise.resolve( '' ),
 		};
 		this.attempts.set( action, attempt );
@@ -144,7 +171,11 @@ export class ProtectionClient implements PublicProtection {
 				if ( this.attempts.get( action ) === attempt ) {
 					this.attempts.delete( action );
 					this.remove( attempt );
-					this.state( container, action, 'failed' );
+					// The provider's expiry already published the accurate state;
+					// `failed` here would overwrite it in the same tick.
+					if ( ! attempt.expired ) {
+						this.state( container, action, 'failed' );
+					}
 				}
 				throw error;
 			}
@@ -168,8 +199,18 @@ export class ProtectionClient implements PublicProtection {
 			throw new Error( 'verification_cancelled' );
 		}
 		const token = await new Promise< string >( ( resolve, reject ) => {
-			const fail = ( reason: string ) => {
+			let settled = false;
+			let resetTimer: ReturnType< typeof setTimeout > | undefined;
+			const clearTimers = () => {
 				clearTimeout( timer );
+				clearTimeout( resetTimer );
+			};
+			const fail = ( reason: string ) => {
+				if ( settled ) {
+					return;
+				}
+				settled = true;
+				clearTimers();
 				reject( new Error( reason ) );
 			};
 			const timer = setTimeout(
@@ -177,29 +218,107 @@ export class ProtectionClient implements PublicProtection {
 				CHALLENGE_MS
 			);
 			attempt.reject = ( reason: Error ) => {
-				clearTimeout( timer );
+				settled = true;
+				clearTimers();
 				reject( reason );
+			};
+			const retry = ( reset = false ) => {
+				if ( settled ) {
+					return;
+				}
+				this.state( attempt.container, action, 'retrying' );
+				// Official 110600/110620 timeout recovery requires reset(),
+				// unlike native auto-retry for iframe/generic challenge errors.
+				// Neither branch can move the original challenge deadline.
+				if ( reset && resetTimer === undefined ) {
+					resetTimer = setTimeout( () => {
+						resetTimer = undefined;
+						if ( ! settled && attempt.widget !== undefined ) {
+							try {
+								api.reset( attempt.widget );
+							} catch {
+								fail( 'verification_widget' );
+							}
+						}
+					}, RETRY_MS );
+				}
 			};
 			try {
 				attempt.widget = api.render( attempt.container, {
 					sitekey: prepared.site_key,
 					action,
 					language: this.config.language,
-					appearance: 'interaction-only',
+					// Loaded only after interaction. Keep the provider's check,
+					// failure feedback and recovery visible in that interaction.
+					appearance: 'always',
+					size: 'flexible',
+					retry: 'auto',
+					'retry-interval': RETRY_MS,
+					'refresh-timeout': 'manual',
 					callback: ( value ) => {
-						clearTimeout( timer );
+						if ( settled ) {
+							return;
+						}
+						settled = true;
+						clearTimers();
 						resolve( value );
 					},
-					'error-callback': () => fail( 'verification_widget' ),
+					'error-callback': ( code ) => {
+						if ( settled ) {
+							return;
+						}
+						// Keep only the provider's fixed numeric diagnostic, never
+						// a token or arbitrary provider response, for local inspection.
+						const diagnostic = /^\d{6}$/.test( code ?? '' )
+							? code!
+							: '';
+						if ( diagnostic ) {
+							attempt.container.dataset.linkerVerificationError =
+								diagnostic;
+						}
+						// The official error table marks these failures retryable.
+						// Removing the widget here cancels the provider's native
+						// retry and makes a genuine customer start over forever.
+						if (
+							/^(300|600)\d{3}$/.test( diagnostic ) ||
+							[ '110600', '110620', '200500' ].includes(
+								diagnostic
+							)
+						) {
+							retry(
+								[ '110600', '110620' ].includes( diagnostic )
+							);
+							return;
+						}
+						fail(
+							`verification_widget${ diagnostic ? `_${ diagnostic }` : '' }`
+						);
+					},
+					'before-interactive-callback': () => {
+						if ( ! settled ) {
+							attempt.container.hidden = false;
+							this.state(
+								attempt.container,
+								action,
+								'interactive'
+							);
+						}
+					},
+					'unsupported-callback': () =>
+						fail( 'verification_unsupported' ),
 					'expired-callback': () => {
 						if ( this.attempts.get( action ) !== attempt ) {
 							return;
 						}
+						// The listener's own `expired` state must survive the
+						// rejection below; `failed` would overwrite it in the same
+						// tick and make the state unreachable.
+						attempt.expired = true;
 						attempt.expires = 0;
 						this.state( attempt.container, action, 'expired' );
 						fail( 'verification_expired' );
 					},
-					'timeout-callback': () => fail( 'verification_timeout' ),
+					'timeout-callback': () => retry( true ),
 				} );
 			} catch {
 				fail( 'verification_widget' );
@@ -257,5 +376,17 @@ export class ProtectionClient implements PublicProtection {
 		if ( attempt ) {
 			this.remove( attempt );
 		}
+	}
+	/**
+	 * Cancel only the widget owned by the closing surface.
+	 * @param action    Current resource scope.
+	 * @param container Actual widget of the closing surface.
+	 */
+	cancel( action: string, container: HTMLElement ): boolean {
+		if ( this.attempts.get( action )?.container !== container ) {
+			return false;
+		}
+		this.reset( action );
+		return true;
 	}
 }

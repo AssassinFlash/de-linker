@@ -9,7 +9,7 @@ from pydantic import Field, model_validator
 from .canonical import Object
 from .energy_inputs import Document, SchemaVersion
 from .equipment_inputs import Count
-from .geometry_documents import Hash, Identifier, Nonnegative, Number, Text
+from .geometry_documents import Hash, Identifier, Nonnegative, Number, Positive, Text
 
 
 class RoutePoint(Document):
@@ -65,6 +65,14 @@ class InstallationRoute(Document):
     extra_length_note: Text | None
 
 
+class ConductorSpecification(Document):
+    # The declared cross-section of this physical run. Ampacity, voltage drop,
+    # protection and the manufacturer terminal rating are separate assessments.
+    cross_section_mm2: Positive
+    # Where the project's choice comes from; a declaration, not an approval.
+    source_note: Text
+
+
 class CableRun(Document):
     id: Identifier
     name: Text
@@ -72,6 +80,9 @@ class CableRun(Document):
     route_id: Identifier
     # Each row is one physical length. No core-count multiplier is inferred.
     construction: Literal["single_conductor", "multicore_cable", "unspecified"]
+    # Absent leaves the specification explicitly open; it never inherits a
+    # neighbouring run, a module count or a manufacturer package quantity.
+    conductor: ConductorSpecification | None = None
 
 
 class PvStringLink(Document):
@@ -94,6 +105,13 @@ class InstallationInputs(Document):
         value = self.model_dump(mode="json")
         if "pv_string_links" not in self.model_fields_set:
             value.pop("pv_string_links")
+        # A run without a declared conductor keeps its historical bytes, so the
+        # frozen input hash of an unchanged project revision does not move.
+        # Omitted and explicit null describe the same physical run, so both
+        # drop the key instead of splitting one project into two input hashes.
+        for run, dumped in zip(self.cable_runs, value["cable_runs"], strict=True):
+            if run.conductor is None:
+                dumped.pop("conductor")
         return value
 
     @model_validator(mode="after")

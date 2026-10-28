@@ -24,7 +24,7 @@ function fixture( api = 'https://example.test/wp-json/linker/v1/protection' ) {
 		queueMicrotask( () => received.callback( 'synthetic-token' ) );
 		return 'widget-id';
 	} );
-	window.turnstile = { render, remove: vi.fn() };
+	window.turnstile = { render, reset: vi.fn(), remove: vi.fn() };
 	const fetch = vi.fn<
 		(
 			url: string,
@@ -63,7 +63,10 @@ test.each( [
 	expect( f.options() ).toMatchObject( {
 		action: 'inquiry',
 		language: 'de',
-		appearance: 'interaction-only',
+		appearance: 'always',
+		size: 'flexible',
+		retry: 'auto',
+		'retry-interval': 8000,
 	} );
 	const [ url, input ] = f.fetch.mock.calls[ 1 ] as unknown as [
 		string,
@@ -113,6 +116,26 @@ test( 'expiry requires a new scoped proof and never reuses the completed one', a
 	f.client.reset( 'inquiry' );
 } );
 
+test( 'a provider expiry publishes its own state instead of the generic failure', async () => {
+	const f = fixture();
+	const states: string[] = [];
+	f.container.addEventListener( 'linker:protection', ( event ) =>
+		states.push( ( event as CustomEvent ).detail.state )
+	);
+	f.render.mockImplementation( ( _container, options ) => {
+		queueMicrotask( () => options[ 'expired-callback' ]() );
+		return 'expiring-widget';
+	} );
+	await expect( f.client.proof( 'inquiry', f.container ) ).rejects.toThrow(
+		'verification_expired'
+	);
+	// `failed` in the same tick would hide the accurate state from every
+	// listener, leaving `expired` unreachable in ProtectionState.
+	expect( states ).toEqual( [ 'checking', 'expired' ] );
+	expect( f.container.dataset.linkerVerificationState ).toBe( 'expired' );
+	expect( f.client.ready( 'inquiry', f.container ) ).toBe( '' );
+} );
+
 test( 'completed proof removes its widget and ignores its late expiry', async () => {
 	const f = fixture();
 	const states: string[] = [];
@@ -157,6 +180,8 @@ test( 'old completion and callbacks cannot retire or overwrite a newer scoped at
 	expect( f.client.complete( 'design', first ) ).toBe( false );
 	old[ 'expired-callback' ]();
 	old[ 'error-callback' ]();
+	old[ 'error-callback' ]( '300030' );
+	old[ 'before-interactive-callback' ]();
 	expect( f.client.ready( 'design', f.container ) ).toBe( 'new-proof' );
 	expect( states ).toEqual( [ 'checking', 'ready', 'checking', 'ready' ] );
 	expect( window.turnstile?.remove ).toHaveBeenCalledTimes( 1 );
@@ -202,6 +227,34 @@ test.each( [ 'expired-callback', 'error-callback' ] as const )(
 	}
 );
 
+test( 'a nonretryable configuration error stays failed and retains only its fixed diagnostic', async () => {
+	const f = fixture();
+	f.render.mockImplementation( ( _container, options ) => {
+		queueMicrotask( () => options[ 'error-callback' ]( '110100' ) );
+		return 'invalid-widget';
+	} );
+	await expect(
+		f.client.proof( 'registration', f.container )
+	).rejects.toThrow( 'verification_widget_110100' );
+	expect( f.fetch ).toHaveBeenCalledOnce();
+	expect( window.turnstile?.remove ).toHaveBeenCalledOnce();
+	expect( f.container.dataset.linkerVerificationError ).toBe( '110100' );
+	expect( f.container.dataset.linkerVerificationState ).toBe( 'failed' );
+} );
+
+test( 'an unsupported client cannot obtain a proof or dispatch validation', async () => {
+	const f = fixture();
+	f.render.mockImplementation( ( _container, options ) => {
+		queueMicrotask( () => options[ 'unsupported-callback' ]() );
+		return 'unsupported-widget';
+	} );
+	await expect(
+		f.client.proof( 'registration', f.container )
+	).rejects.toThrow( 'verification_unsupported' );
+	expect( f.fetch ).toHaveBeenCalledOnce();
+	expect( f.container.dataset.linkerVerificationState ).toBe( 'failed' );
+} );
+
 test( 'provider script failure is retryable and never sends a token to validation', async () => {
 	const f = fixture();
 	delete window.turnstile;
@@ -219,9 +272,145 @@ test( 'provider script failure is retryable and never sends a token to validatio
 		?.dispatchEvent( new Event( 'error' ) );
 	expect( await failure ).toEqual( new Error( 'verification_script' ) );
 	expect( f.fetch ).toHaveBeenCalledTimes( 1 );
-	window.turnstile = { render: f.render, remove: vi.fn() };
+	window.turnstile = { render: f.render, reset: vi.fn(), remove: vi.fn() };
 	await expect( f.client.proof( 'inquiry', f.container ) ).resolves.toBe(
 		'server-proof'
 	);
 	f.client.reset( 'inquiry' );
+} );
+
+test.each( [ '110600', '110620', '200500' ] )(
+	'official retryable %s uses its reset/auto contract within the same attempt',
+	async ( code ) => {
+		vi.useFakeTimers();
+		const f = fixture();
+		let options: TurnstileOptions;
+		f.render.mockImplementation( ( _container, received ) => {
+			options = received;
+			queueMicrotask( () => received[ 'error-callback' ]( code ) );
+			if ( code === '200500' ) {
+				setTimeout(
+					() => received.callback( 'native-retry-token' ),
+					8000
+				);
+			}
+			return 'retry-widget';
+		} );
+		const reset = vi.fn( () => options.callback( 'native-reset-token' ) );
+		window.turnstile!.reset = reset;
+		const work = f.client.proof( 'registration', f.container );
+		await vi.waitFor( () => expect( f.render ).toHaveBeenCalledOnce() );
+		expect( f.container.dataset.linkerVerificationState ).toBe(
+			'retrying'
+		);
+		expect( f.fetch ).toHaveBeenCalledOnce();
+		expect( window.turnstile?.remove ).not.toHaveBeenCalled();
+		await vi.advanceTimersByTimeAsync( 8000 );
+		await expect( work ).resolves.toBe( 'server-proof' );
+		expect( f.fetch ).toHaveBeenCalledTimes( 2 );
+		expect( f.render ).toHaveBeenCalledOnce();
+		expect( reset.mock.calls ).toEqual(
+			code === '200500' ? [] : [ [ 'retry-widget' ] ]
+		);
+		expect( vi.getTimerCount() ).toBe( 0 );
+		f.client.reset( 'registration' );
+	}
+);
+
+test.each( [ 'prepare', 'verify' ] )(
+	'%s network/JSON failure stays a pre-dispatch verification failure',
+	async ( operation ) => {
+		for ( const cause of [
+			new TypeError( 'synthetic network failure' ),
+			new SyntaxError( 'synthetic invalid response' ),
+		] ) {
+			const f = fixture();
+			if ( operation === 'verify' ) {
+				f.fetch.mockResolvedValueOnce( {
+					ok: true,
+					json: async () => ( {
+						site_key: 'public',
+						prepare: 'stamp',
+					} ),
+				} );
+			}
+			if ( cause instanceof SyntaxError ) {
+				f.fetch.mockResolvedValueOnce( {
+					ok: true,
+					json: async () => {
+						throw cause;
+					},
+				} );
+			} else {
+				f.fetch.mockRejectedValueOnce( cause );
+			}
+			const error = await f.client
+				.proof( 'genie', f.container )
+				.catch( ( failure: unknown ) => failure );
+			expect( error ).toMatchObject( {
+				message:
+					cause instanceof SyntaxError
+						? 'verification_response'
+						: 'verification_network',
+				cause,
+			} );
+			expect( f.client.ready( 'genie', f.container ) ).toBe( '' );
+			expect( f.fetch ).toHaveBeenCalledTimes(
+				operation === 'prepare' ? 1 : 2
+			);
+		}
+	}
+);
+
+test( 'the verification network deadline is distinct from the model deadline', async () => {
+	vi.useFakeTimers();
+	const f = fixture();
+	f.fetch.mockImplementationOnce(
+		async ( _url, init ) =>
+			new Promise( ( _resolve, reject ) => {
+				init.signal!.addEventListener( 'abort', () =>
+					reject(
+						new DOMException(
+							'synthetic network abort',
+							'AbortError'
+						)
+					)
+				);
+			} )
+	);
+	const outcome = f.client
+		.proof( 'genie', f.container )
+		.catch( ( error: unknown ) => error );
+	await vi.advanceTimersByTimeAsync( 15000 );
+	expect( await outcome ).toMatchObject( {
+		message: 'verification_network_timeout',
+		cause: { name: 'AbortError' },
+	} );
+	expect( f.render ).not.toHaveBeenCalled();
+	expect( f.fetch ).toHaveBeenCalledOnce();
+	expect( vi.getTimerCount() ).toBe( 0 );
+} );
+
+test( 'closing a surface cancels only its widget and ignores a late challenge response', async () => {
+	vi.useFakeTimers();
+	const f = fixture();
+	let options: TurnstileOptions;
+	f.render.mockImplementation( ( _container, received ) => {
+		options = received;
+		return 'owned-widget';
+	} );
+	const outcome = f.client
+		.proof( 'genie', f.container )
+		.catch( ( error: unknown ) => error );
+	await vi.waitFor( () => expect( f.render ).toHaveBeenCalledOnce() );
+	expect( f.client.cancel( 'genie', document.createElement( 'div' ) ) ).toBe(
+		false
+	);
+	expect( f.client.cancel( 'genie', f.container ) ).toBe( true );
+	expect( await outcome ).toEqual( new Error( 'verification_cancelled' ) );
+	options!.callback( 'late-provider-token' );
+	await vi.advanceTimersByTimeAsync( 0 );
+	expect( f.fetch ).toHaveBeenCalledOnce();
+	expect( window.turnstile?.remove ).toHaveBeenCalledOnce();
+	expect( vi.getTimerCount() ).toBe( 0 );
 } );

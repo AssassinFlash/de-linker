@@ -4,6 +4,12 @@ import { add, cross, scale, toRender } from "./coordinates.ts";
 import { panelPoses } from "./panelPoses.ts";
 import { selectedRoofId } from "./geometrySelection.ts";
 
+/** A viewer's own orbit around the scene. View state, never engineering input. */
+export interface SceneViewState {
+	position: Vec3;
+	target: Vec3;
+}
+
 // Internal display policy: retain the existing 75-degree perspective lens and
 // leave 10% distance margin around the scene's enclosing sphere.
 export const SCENE_FOV_DEG = 75;

@@ -7,9 +7,11 @@ from typing import cast
 from .assets import Asset
 from .canonical import Object, digest, encode
 from .errors import InvalidInput, VersionUnavailable
+from .frozen_documents import FrozenDocuments
 from .geometric_pv_inputs import MODEL, PROFILE_PURPOSE, GeometricPvInputs
 from .interval import Interval
 from .power_series import PowerSeries
+from .product_sources import ProductSources
 from .pv_profile_artifacts import _instant, _number, _object
 from .pv_reconstruction import PvReconstruction
 from .series_source import SeriesSource
@@ -25,7 +27,19 @@ DEPENDENCIES = {
 }
 
 
-def reference_bundle(blobs: Blobs, raw_sha256: str, metadata: Object) -> Object:
+def reference_bundle(
+    blobs: Blobs,
+    raw_sha256: str,
+    metadata: Object,
+    documents: FrozenDocuments | None = None,
+) -> Object:
+    """Verify the manifest, then read its artifacts through one bounded reader.
+
+    `documents` lets the callers of a single report share the parsed witness
+    instead of re-reading it per section. Without one, this call is the reader,
+    so a standalone read keeps its original behaviour.
+    """
+    documents = FrozenDocuments(blobs) if documents is None else documents
     if (
         type(metadata.get("schema")) is not int
         or metadata.get("schema") != 1
@@ -35,7 +49,7 @@ def reference_bundle(blobs: Blobs, raw_sha256: str, metadata: Object) -> Object:
         or "csv_mapping" in metadata
     ):
         raise VersionUnavailable("unsupported geometric PV reference metadata")
-    manifest = blobs.object(raw_sha256)
+    manifest = documents.object(raw_sha256)
     dependencies = _object(metadata.get("dependencies"))
     if (
         manifest.get("schema_version") != 1
@@ -46,16 +60,16 @@ def reference_bundle(blobs: Blobs, raw_sha256: str, metadata: Object) -> Object:
     ):
         raise VersionUnavailable("geometric PV dependency manifest differs")
     for sha in dependencies.values():
-        blobs.read(str(sha))
-    inputs = blobs.object(str(dependencies["model.inputs"]))
-    witness = blobs.object(str(dependencies["model.witness"]))
-    original_parameters = blobs.object(str(dependencies["project.parameters"]))
+        documents.read(str(sha))
+    inputs = documents.object(str(dependencies["model.inputs"]))
+    witness = documents.object(str(dependencies["model.witness"]))
+    original_parameters = documents.object(str(dependencies["project.parameters"]))
     parameters = GeometricPvInputs.read(original_parameters)
     weather = _object(inputs.get("weather"))
     source = _object(weather.get("source"))
     details = _object(witness.get("inputs"))
-    basis = blobs.object(str(dependencies["woo.module_inputs"]))
-    weather_metadata = blobs.object(str(dependencies["weather.metadata"]))
+    basis = documents.object(str(dependencies["woo.module_inputs"]))
+    weather_metadata = documents.object(str(dependencies["weather.metadata"]))
     if (
         any(
             document.get("schema_version") != 1 or document.get("kind") != MODEL
@@ -80,8 +94,6 @@ def reference_bundle(blobs: Blobs, raw_sha256: str, metadata: Object) -> Object:
     for name in ("request", "capture", "interpretation"):
         if source_details.get(name) != weather_metadata.get("weather_" + name):
             raise VersionUnavailable("geometric PV weather provenance differs")
-    from .product_sources import ProductSources
-
     ProductSources.check_pv_inputs(
         {
             "geometry": inputs.get("geometry"),
@@ -99,9 +111,20 @@ def reference_bundle(blobs: Blobs, raw_sha256: str, metadata: Object) -> Object:
     }
 
 
-def prepared_profile(blobs: Blobs, raw_sha256: str, metadata: Object) -> PowerSeries:
-    bundle = reference_bundle(blobs, raw_sha256, metadata)
-    inputs, witness = _object(bundle["inputs"]), _object(bundle["witness"])
+def prepared_profile(
+    blobs: Blobs,
+    raw_sha256: str,
+    metadata: Object,
+    documents: FrozenDocuments | None = None,
+    *,
+    bundle: Object | None = None,
+) -> PowerSeries:
+    verified = (
+        reference_bundle(blobs, raw_sha256, metadata, documents)
+        if bundle is None
+        else bundle
+    )
+    inputs, witness = _object(verified["inputs"]), _object(verified["witness"])
     weather = _object(inputs["weather"])
     points = weather.get("points")
     values = witness.get("available_ac_w")
@@ -124,7 +147,7 @@ def prepared_profile(blobs: Blobs, raw_sha256: str, metadata: Object) -> PowerSe
         source = _object(weather["source"])
         native = _number(source.get("native_max_interval_seconds"))
         transform = PvReconstruction(
-            str(_object(bundle["dependencies"])["model.inputs"]),
+            str(_object(verified["dependencies"])["model.inputs"]),
             digest(encode(axis)),
             native,
             max(p.hours * 3600 for p in intervals),
@@ -137,7 +160,7 @@ def prepared_profile(blobs: Blobs, raw_sha256: str, metadata: Object) -> PowerSe
             tuple(_number(value) / 1000 for value in values),
             "pv_available_ac",
             SeriesSource(
-                str(_object(bundle["dependencies"])["model.inputs"]),
+                str(_object(verified["dependencies"])["model.inputs"]),
                 "modelled",
                 "UTC",
                 native,

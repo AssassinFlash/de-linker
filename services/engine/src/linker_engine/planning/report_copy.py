@@ -1040,10 +1040,14 @@ TEXT = {
         "Installation requirement · specification pending",
         "Installationsbedarf · Spezifikation offen",
     ),
+    "material_installation_declared": (
+        "Installation requirement · cross-section as declared",
+        "Installationsbedarf · Querschnitt gemäß Projektangabe",
+    ),
     "installation": ("Installation routing", "Leitungswege der Installation"),
     "installation_scope": (
-        "Each listed cable or conductor is one physical run. Lengths use the saved three-dimensional path and explicitly declared extra length. Cable sizing, connector matching, protection, earthing, mounting and country requirements have not been assessed by this route calculation.",
-        "Jede Zeile steht für eine einzelne Leitung oder einen separat geführten Leiter. Die Länge ergibt sich aus dem gespeicherten dreidimensionalen Leitungsweg zuzüglich der ausdrücklich angegebenen Zusatzlänge. Die Auslegung der Leitungen, die Kompatibilität der Steckverbinder, Schutzmaßnahmen, Erdung, Montage und länderspezifische Anforderungen werden durch diese Längenberechnung nicht geprüft.",
+        "Each listed cable or conductor is one physical run. Lengths use the saved three-dimensional path and explicitly declared extra length. A declared cross-section is the project's own statement about that run; it is not a sizing result. Cable sizing, connector matching, protection, earthing, mounting and country requirements have not been assessed by this route calculation.",
+        "Jede Zeile steht für eine einzelne Leitung oder einen separat geführten Leiter. Die Länge ergibt sich aus dem gespeicherten dreidimensionalen Leitungsweg zuzüglich der ausdrücklich angegebenen Zusatzlänge. Ein angegebener Querschnitt ist eine Projektangabe zu dieser Leitung und kein Ergebnis einer Auslegung. Die Auslegung der Leitungen, die Kompatibilität der Steckverbinder, Schutzmaßnahmen, Erdung, Montage und länderspezifische Anforderungen werden durch diese Längenberechnung nicht geprüft.",
     ),
     "installation_instances": (
         "Physical devices and site connections",
@@ -1061,6 +1065,53 @@ TEXT = {
     "installation_site_point": ("Site connection", "Anschluss am Standort"),
     "installation_circuit": ("Circuit / route", "Stromkreis / Leitungsweg"),
     "installation_pending": ("Quantity not confirmed", "Menge nicht bestätigt"),
+    "installation_conductor": ("Conductor", "Leiter"),
+    "installation_conductor_open": (
+        "Cross-section not declared",
+        "Querschnitt nicht angegeben",
+    ),
+    "installation_conductor_declared": (
+        "One cross-section declared",
+        "Ein Querschnitt angegeben",
+    ),
+    "installation_conductor_unconfirmed": (
+        "Cross-section missing for a recorded run",
+        "Querschnitt für eine erfasste Leitung fehlt",
+    ),
+    "installation_conductor_conflicting": (
+        "Recorded runs declare different cross-sections",
+        "Erfasste Leitungen haben unterschiedliche Querschnitte",
+    ),
+    "installation_conductor_not_recorded": (
+        "No run recorded",
+        "Keine Leitung erfasst",
+    ),
+    "installation_closure": (
+        "Conductor and quantities",
+        "Leiter und Mengen",
+    ),
+    "installation_closure_recorded": (
+        "Cross-section and all quantities recorded",
+        "Querschnitt und alle Mengen erfasst",
+    ),
+    "installation_closure_open": (
+        "Cross-section or quantity still open",
+        "Querschnitt oder Menge weiterhin offen",
+    ),
+    # A report saved before the closure existed keeps the fact it recorded
+    # nothing, instead of being read as an open or a recorded closure today.
+    "installation_closure_not_recorded": (
+        "Not recorded in this saved report",
+        "In diesem gespeicherten Bericht nicht erfasst",
+    ),
+    "installation_string_recorded_count": (
+        "Strings with cross-section and quantities recorded",
+        "Strings mit erfasstem Querschnitt und erfassten Mengen",
+    ),
+    "installation_string_open_count": (
+        "Strings with an open cross-section or quantity",
+        "Strings mit offenem Querschnitt oder offener Menge",
+    ),
     "installation_length": (
         "Route length + extra length",
         "Leitungsweglänge + Zusatzlänge",
@@ -1095,8 +1146,8 @@ TEXT = {
         "Zuordnung von PV-Strings und Stromkreisen",
     ),
     "installation_string_link_scope": (
-        "These links record the project's declared string and circuit identities. Listed cable runs retain their separately measured quantities. A link does not establish a complete circuit, conductor or connector counts, cable sizing, manufacturer terminal allocation or electrical approval.",
-        "Diese Zuordnungen halten die im Projekt angegebenen PV-Strings und Stromkreise fest. Aufgeführte Leitungen behalten ihre separat ermittelten Längen. Eine Zuordnung bestätigt weder einen vollständigen Stromkreis noch Leiter- oder Steckverbinderzahlen, Leitungsauslegung, herstellerseitige Anschlussbelegung oder elektrische Freigabe.",
+        "These links record the project's declared string and circuit identities together with the cross-section and measured length of each recorded run. Conductor sizing, voltage drop, connector counts, protection, manufacturer terminal allocation and electrical approval remain unassessed.",
+        "Diese Zuordnungen halten die im Projekt angegebenen PV-Strings und Stromkreise zusammen mit dem Querschnitt und der ermittelten Länge jeder erfassten Leitung fest. Leiterauslegung, Spannungsfall, Steckverbinderzahlen, Schutzmaßnahmen, herstellerseitige Anschlussbelegung und elektrische Freigabe bleiben ungeprüft.",
     ),
     "installation_string": ("PV string ID", "PV-String-Kennung"),
     "installation_link_circuit": ("Circuit ID", "Stromkreis-Kennung"),

@@ -342,14 +342,20 @@ def test_mail_that_cannot_be_written_is_reported_as_failed(stack: Stack) -> None
 
 def test_a_captured_message_keeps_its_bcc(stack: Stack) -> None:
     a = stack.instance(A)
+    # The isolation file mailer, not the commerce outbox. The outbox answers
+    # wp_mail() true once it has stored the call, including when it never
+    # sends, so it steps aside for this check.
+    stack.wp(a.name, "plugin", "deactivate", "linker-commerce")
     before = set(a.mail_dir.glob("*.eml"))
-
-    sent = stack.wp(
-        a.name,
-        "eval",
-        "var_export( wp_mail( 'sales@example.test', 'Inquiry', 'Body',"
-        " array( 'Bcc: archive@example.test' ) ) );",
-    )
+    try:
+        sent = stack.wp(
+            a.name,
+            "eval",
+            "var_export( wp_mail( 'sales@example.test', 'Inquiry', 'Body',"
+            " array( 'Bcc: archive@example.test' ) ) );",
+        )
+    finally:
+        stack.wp(a.name, "plugin", "activate", "linker-commerce")
 
     assert sent == "true"
     (captured,) = set(a.mail_dir.glob("*.eml")) - before
@@ -535,7 +541,9 @@ def test_serve_starts_the_services_and_down_stops_everything(stack: Stack) -> No
         assert (health.status, json.loads(health.body)) == (200, {"status": "ok"})
         assert stack.wp(a.name, "option", "get", option) == f"http://127.0.0.1:{port}"
     assert re.search(
-        rf"^{A}\s.*\srunning\s+engine, genie\s", stack.cli("status").stdout, re.M
+        rf"^{A}\s.*\srunning\s+planner-worker, engine, genie\s",
+        stack.cli("status").stdout,
+        re.M,
     )
 
     stack.cli("down", a.name)

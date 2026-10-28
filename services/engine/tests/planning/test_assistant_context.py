@@ -373,7 +373,7 @@ def test_report_omits_comparison_location_and_private_note(
         {
             "model": "opaque_direct_uniform_pvlib_reference_v1",
             "parameters": {"parameters": geometric_parameters},
-            "summary": deepcopy(whole["profile_summary"]),
+            "profile_summary": deepcopy(whole["profile_summary"]),
             "weather_source": {"details": geometric_weather},
             "weather_metadata": {
                 "weather_request": geometric_request,
@@ -423,28 +423,64 @@ def test_report_omits_comparison_location_and_private_note(
     assert "Near shading is not modelled." in str(geometric_section)
     assert text("geometric_pv_notes_scope", other_locale) in str(geometric_section)
     assert text("geometric_pv_original_note", other_locale) in str(geometric_section)
-    for expected in (
-        "isotropic / 0.3",
-        "ashrae / 0.05 / 0.95 / 0.9",
-        "0.99 / 0.72 / 0.88 / 0.91",
-        "a=-3.47; b=-0.0594 s/m; delta T=3 °C",
-        "10416.7 W / 10000 W",
-        "0.96 / 0.9637",
-        "-0.0029 / °C",
-        "30° / 180° / [0; -0.5; 0.866025]",
-        "1: 2014",
-        "649800000 µs",
+    for en, de in (
+        ("isotropic / 0.3", "isotropic / 0,3"),
+        ("ashrae / 0.05 / 0.95 / 0.9", "ashrae / 0,05 / 0,95 / 0,9"),
+        ("0.99 / 0.72 / 0.88 / 0.91", "0,99 / 0,72 / 0,88 / 0,91"),
+        (
+            "a=-3.47; b=-0.0594 s/m; delta T=3 °C",
+            "a=-3,47; b=-0,0594 s/m; delta T=3 °C",
+        ),
+        # Every section groups and marks its numbers the same way, so the
+        # converter power reads identically wherever it appears.
+        ("10,416.667 W / 10,000 W", "10.416,667 W / 10.000 W"),
+        ("0.96 / 0.9637", "0,96 / 0,9637"),
+        ("-0.0029 / °C", "-0,0029 / °C"),
+        ("30° / 180° / [0; -0.5; 0.866025]", "30° / 180° / [0; -0,5; 0,866025]"),
+        ("1: 2014", "1: 2014"),
+        ("649,800,000 µs", "649.800.000 µs"),
     ):
-        assert (
-            expected.replace(".", ",") if other_locale == "de" else expected
-        ) in str(geometric_section)
-    # The shared helper remains opt-in: old unshaded report rendering preserves
-    # its stored display conventions rather than acquiring this new formatter.
+        assert (de if other_locale == "de" else en) in str(geometric_section)
+    # A report saved when this reference still called its period `summary` must
+    # render in both languages from that saved object. The new name is not
+    # required, and no electrical scope is invented for a bundle that has none.
     geometric_reference = cast(list[Object], source["geometric_pv_references"])[0]
+    historical_reference = deepcopy(geometric_reference)
+    historical_reference["summary"] = historical_reference.pop("profile_summary")
+    for report_locale in ("en", "de"):
+        historical_report = build_report(
+            {
+                **source,
+                "locale": report_locale,
+                "geometric_pv_references": [historical_reference],
+            }
+        )
+        historical_section = next(
+            section
+            for section in historical_report.sections
+            if section.id == "geometric-pv-reference-0"
+        )
+        assert any(
+            row.label == text("geometric_pv_energy", report_locale)
+            and row.value == ("1.5 kWh" if report_locale == "en" else "1,5 kWh")
+            for row in historical_section.rows
+        )
+        assert any(
+            row.label == text("geometric_pv_original_note", report_locale)
+            for row in historical_section.rows
+        )
+        shown = str(historical_section.model_dump())
+        assert "independent_per_module" not in shown
+        assert "applied_per_module" not in shown
+        assert "unit_required_not_applied" not in shown
+    assert "profile_summary" not in historical_reference
+    # One report, one display convention: the same unshaded reference rendered
+    # through the plain saved shape now rounds its numbers the same way, so no
+    # binary float repr reaches a reader from either section.
     legacy_projection: Object = {
         "parameters": geometric_parameters,
         "weather": geometric_weather,
-        "profile_summary": geometric_reference["summary"],
+        "profile_summary": geometric_reference["profile_summary"],
         **{
             key: geometric_reference[key]
             for key in (
@@ -459,8 +495,24 @@ def test_report_omits_comparison_location_and_private_note(
     legacy_rows = pvlib_sections({"pvlib_references": [legacy_projection]}, locale)[
         0
     ].rows
-    assert "29.999999999999996°" in str(legacy_rows)
-    assert "10416.666666666666 W" in str(legacy_rows)
+    legacy_shown = str(legacy_rows)
+    assert "29.999999999999996°" not in legacy_shown
+    assert "10416.666666666666 W" not in legacy_shown
+    assert "30°" in legacy_shown
+    assert ("10,416.667 W" if locale == "en" else "10.416,667 W") in legacy_shown
+    # A reference saved before component identities were retained has no
+    # `pv_components` key at all. It still renders its own rows, and no
+    # capacity claim is invented for it from a layout that is not in the bundle.
+    without_components = {
+        key: value for key, value in legacy_projection.items() if key != "pv_components"
+    }
+    historical_rows = pvlib_sections(
+        {"pvlib_references": [without_components]}, locale
+    )[0].rows
+    assert all(
+        row.label != text("pv_components_capacity", locale) for row in historical_rows
+    )
+    assert any(row.label == text("pvlib_array", locale) for row in historical_rows)
     localized = workspace.evaluate(
         owner, project.id, 1, context, key="localized-report", max_attempts=1
     )
@@ -483,19 +535,26 @@ def test_report_omits_comparison_location_and_private_note(
         assert "48.8566" not in str(projection) and "https://re.jrc" not in str(
             projection
         )
-        assert "0.1805" in str(projection) and "pvlib 0.16.1" in str(projection)
-        assert "1.5 kWh" in str(projection)
+        assert "pvlib 0.16.1" in str(projection)
+        # The context reads the report rows, so it inherits that report's own
+        # decimal mark instead of announcing the value in English digits.
+        assert ("0.1805" if requested_locale == "en" else "0,1805") in str(projection)
+        assert ("1.5 kWh" if requested_locale == "en" else "1,5 kWh") in str(projection)
         assert "opaque_direct_uniform_pvlib_reference_v1" in str(projection)
-        for expected in (
-            "0.99 / 0.72 / 0.88 / 0.91",
-            "a=-3.47; b=-0.0594 s/m; delta T=3 °C",
-            "10416.7 W / 10000 W",
-            "-0.0029 / °C",
+        for en, de in (
+            ("0.99 / 0.72 / 0.88 / 0.91", "0,99 / 0,72 / 0,88 / 0,91"),
+            (
+                "a=-3.47; b=-0.0594 s/m; delta T=3 °C",
+                "a=-3,47; b=-0,0594 s/m; delta T=3 °C",
+            ),
+            ("10,416.667 W / 10,000 W", "10.416,667 W / 10.000 W"),
+            ("-0.0029 / °C", "-0,0029 / °C"),
         ):
-            assert (
-                expected.replace(".", ",") if requested_locale == "de" else expected
-            ) in str(projection)
-        assert "1: 2014" in str(projection) and "649800000 µs" in str(projection)
+            assert (de if requested_locale == "de" else en) in str(projection)
+        assert "1: 2014" in str(projection)
+        assert (
+            "649,800,000 µs" if requested_locale == "en" else "649.800.000 µs"
+        ) in str(projection)
         assert "Near shading is not modelled." not in str(projection)
         assert "29.999999999999996" not in str(projection)
         sources = cast(
@@ -554,3 +613,118 @@ def test_report_omits_comparison_location_and_private_note(
                 "end_utc": "2023-06-16T11:00:00+00:00",
             }
         ]
+
+
+def _historical_period(start: str, end: str) -> Object:
+    return {"summary": {"start_utc": start, "end_utc": end}}
+
+
+def test_historical_summary_period_survives_assistant_readback(
+    workspace: Workspace, owner: Actor, context: Context
+) -> None:
+    """A saved object that still calls its period `summary` keeps that period.
+
+    The assistant reads the same frozen object the report renderer does. The
+    old name is not a missing period, and the instants are normalized to UTC.
+    """
+    project = workspace.create(owner, "Historical summary", {}, key="historical")
+    references = workspace.evaluate(
+        owner, project.id, 1, context, key="historical-references", max_attempts=1
+    )
+    jobs = Jobs(workspace)
+    lease = jobs.claim("fixture", kinds=("evaluate",), lease_seconds=30)
+    assert lease is not None
+    reference_source: Object = {
+        "project_id": project.id,
+        "revision": 1,
+        "input_sha256": project.input_sha256,
+        "geometric_pv_references": [
+            _historical_period("2020-01-01T01:00:00+01:00", "2021-01-01T01:00:00+01:00")
+        ],
+        "pvlib_references": [
+            _historical_period("2023-01-01T00:00:00Z", "2024-01-01T00:00:00Z")
+        ],
+        "pvgis_roof_ac_references": [
+            _historical_period("2019-06-01T22:00:00-02:00", "2020-06-01T22:00:00-02:00")
+        ],
+    }
+    assert "profile_summary" not in str(reference_source)
+    jobs.complete(
+        lease,
+        {
+            "kind": "planning_report_v1",
+            "report": {"locale": "en", "sections": []},
+            "dependencies": {
+                "report_source": workspace.blobs.put_object(reference_source)
+            },
+        },
+    )
+    projection = assistant_context(
+        workspace, owner, project.id, 1, [references.id], "en"
+    )
+    groups = cast(
+        list[Object],
+        cast(Object, cast(list[Object], projection["runs"])[0]["calculation_sources"])[
+            "groups"
+        ],
+    )
+    periods = [group["periods_utc"] for group in groups]
+    assert [None] not in periods
+    assert [
+        {
+            "start_utc": "2020-01-01T00:00:00+00:00",
+            "end_utc": "2021-01-01T00:00:00+00:00",
+        }
+    ] in periods
+    assert [
+        {
+            "start_utc": "2023-01-01T00:00:00+00:00",
+            "end_utc": "2024-01-01T00:00:00+00:00",
+        }
+    ] in periods
+    assert [
+        {
+            "start_utc": "2019-06-02T00:00:00+00:00",
+            "end_utc": "2020-06-02T00:00:00+00:00",
+        }
+    ] in periods
+    legacy = workspace.evaluate(
+        owner, project.id, 1, context, key="historical-pv", max_attempts=1
+    )
+    lease = jobs.claim("fixture", kinds=("evaluate",), lease_seconds=30)
+    assert lease is not None
+    legacy_source: Object = {
+        "project_id": project.id,
+        "revision": 1,
+        "input_sha256": project.input_sha256,
+        "pv": _historical_period(
+            "2022-06-01T02:00:00+02:00", "2022-06-01T04:00:00+02:00"
+        ),
+    }
+    assert "profile_summary" not in cast(Object, legacy_source["pv"])
+    jobs.complete(
+        lease,
+        {
+            "kind": "planning_report_v1",
+            "report": {"locale": "en", "sections": []},
+            "dependencies": {
+                "report_source": workspace.blobs.put_object(legacy_source)
+            },
+        },
+    )
+    legacy_projection = assistant_context(
+        workspace, owner, project.id, 1, [legacy.id], "en"
+    )
+    legacy_groups = cast(
+        list[Object],
+        cast(
+            Object,
+            cast(list[Object], legacy_projection["runs"])[0]["calculation_sources"],
+        )["groups"],
+    )
+    assert legacy_groups[0]["periods_utc"] == [
+        {
+            "start_utc": "2022-06-01T00:00:00+00:00",
+            "end_utc": "2022-06-01T02:00:00+00:00",
+        }
+    ]

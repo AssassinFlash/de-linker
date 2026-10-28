@@ -1,8 +1,23 @@
 """Explicit work envelope for full-source geometric PV preparation."""
 
-from .direct_beam_inputs import DirectBeamLimits
+from dataclasses import dataclass
+
 from .energy_inputs import Document
 from .geometry_documents import PositiveInteger
+
+
+@dataclass(frozen=True)
+class VisibilityRayLimits:
+    """Only the ray budgets the full-axis model spends.
+
+    The diagnostic direct-beam task also caps how many source rows may be
+    selected; this model selects every retained row and has no such choice, so
+    it does not carry that policy under another name.
+    """
+
+    max_samples: int
+    max_ray_face_checks: int
+    max_bounds_checks: int
 
 
 class GeometricPvLimits(Document):
@@ -14,8 +29,9 @@ class GeometricPvLimits(Document):
     max_bounds_checks: PositiveInteger
     index_leaf_size: PositiveInteger
 
-    def visibility_limits(self, max_weather_rows: int) -> DirectBeamLimits:
-        return DirectBeamLimits(
-            max_selected_rows=max_weather_rows,
-            **self.model_dump(exclude={"max_module_steps"}),
+    def visibility_ray_limits(self) -> VisibilityRayLimits:
+        return VisibilityRayLimits(
+            max_samples=self.max_samples,
+            max_ray_face_checks=self.max_ray_face_checks,
+            max_bounds_checks=self.max_bounds_checks,
         )

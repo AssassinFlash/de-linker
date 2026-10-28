@@ -40,6 +40,13 @@ const selectButton = () =>
 
 test("the geometric PV workspace uses all retained intervals, adopts frozen AC explicitly and selects its report run", async (t) => {
 	const native = fixture.geometric_pv;
+	// The retained source is listed exactly as the service derives it from the
+	// owned asset, so the setup must recognise a real selection instead of
+	// falling back to a saved identifier placeholder.
+	const retained = native.weather_asset,
+		retainedLabel = retained.metadata.provenance.label,
+		retainedYear =
+			retained.metadata.weather_interpretation.synthetic_energy_year;
 	const runtimeSession = {
 		...session,
 		runtime: {
@@ -70,14 +77,24 @@ test("the geometric PV workspace uses all retained intervals, adopts frozen AC e
 					products: [],
 				};
 			assert.equal(body.project_id, native.project.id);
-			if (path === "weather/assets")
+			if (path === "weather/assets") {
 				return {
 					schema_version: 1,
 					project_id: native.project.id,
 					offset: 0,
-					assets: [],
+					assets: [
+						{
+							asset_id: retained.id,
+							content_sha256: retained.content_sha256,
+							metadata_sha256: retained.metadata_sha256,
+							label: retainedLabel,
+							synthetic_year: retainedYear,
+							interval_count: retained.metadata.weather.interval_count,
+						},
+					],
 					next_offset: null,
 				};
+			}
 			if (path === "assets/read")
 				return body.asset_id === native.weather_asset.id
 					? native.weather_asset
@@ -159,7 +176,34 @@ test("the geometric PV workspace uses all retained intervals, adopts frozen AC e
 		document.body.textContent,
 		/All 8,760 retained weather intervals/,
 	);
-	assert.match(document.body.textContent, /Saved weather source/);
+	// The setup resolves the retained asset from the real listing: the saved
+	// identifier placeholder is not what a user is shown when the source exists.
+	const source = () => {
+		// The direct-beam setup names the same field; only the PV reference
+		// scope lists its own retained source here.
+		const section = [...document.querySelectorAll("section")].find(
+			(node) =>
+				node.querySelector("h3")?.textContent ===
+				"PV reference with roof shading",
+		);
+		return [...section.querySelectorAll("label")]
+			.find((node) => node.textContent.includes("Project weather source"))
+			.querySelector("select");
+	};
+	await until(() =>
+		[...source().options].some((option) => option.value === retained.id),
+	);
+	assert.equal(source().value, retained.id);
+	assert.equal(
+		source().selectedOptions[0].textContent,
+		`${retainedLabel} · ${retainedYear}`,
+	);
+	assert.equal(
+		[...source().options].some((option) =>
+			option.textContent.startsWith("Saved weather source"),
+		),
+		false,
+	);
 	assert.doesNotMatch(
 		document.body.textContent,
 		/This project has no retained weather source/,

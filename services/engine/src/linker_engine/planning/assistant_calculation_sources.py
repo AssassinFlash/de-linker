@@ -15,6 +15,19 @@ def _object(value: Json) -> Object:
     return value if isinstance(value, dict) else {}
 
 
+def _saved_summary(value: Object) -> Object:
+    """The frozen period object, under either retained name.
+
+    Reports saved before this object was called `profile_summary` keep it as
+    `summary`. Either name is that saved object. A missing object stays
+    missing; this does not invent a period.
+    """
+    saved = value.get("profile_summary")
+    if not isinstance(saved, dict):
+        saved = value.get("summary")
+    return _object(saved)
+
+
 def _period(value: Object) -> Object | None:
     values = [value.get(key) for key in ("start_utc", "end_utc")]
     if all(item is None for item in values):
@@ -148,15 +161,7 @@ def calculation_sources(workspace: Workspace, run: Run) -> Object | None:
                             if typical_year
                             else {}
                         ),
-                        "periods_utc": [
-                            _period(
-                                _object(
-                                    reference.get(
-                                        "profile_summary", reference.get("summary")
-                                    )
-                                )
-                            )
-                        ],
+                        "periods_utc": [_period(_saved_summary(reference))],
                     }
                 )
     if not groups and isinstance(source.get("pv"), dict):
@@ -167,9 +172,7 @@ def calculation_sources(workspace: Workspace, run: Run) -> Object | None:
                 "input_quantity": None,
                 "source_scope": None,
                 "timezone": timezone,
-                "periods_utc": [
-                    _period(_object(_object(source["pv"]).get("profile_summary")))
-                ],
+                "periods_utc": [_period(_saved_summary(_object(source["pv"])))],
             }
         )
     scenario = _object(source.get("energy_scenario"))

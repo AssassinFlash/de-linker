@@ -7,8 +7,34 @@ from typing import cast
 from linker_engine.models import ReportRow, ReportSection, ReportTable
 
 from .canonical import Object
-from .project_materials import material_quantity
+from .project_materials import conductor_specification, material_quantity
 from .report_copy import text
+
+# Reports created before the string-link closure existed keep their original
+# rows. An absent closure is presented as not recorded: reading the old bundle
+# must show what it actually saved instead of failing or inventing a closure.
+HISTORICAL_CLOSURE: Object = {
+    "conductor": "not_recorded",
+    "quantity": "not_recorded",
+    "recorded": False,
+    "approval": "not_assessed",
+}
+
+
+def _saved_closure(row: Object) -> Object:
+    closure = row.get("closure")
+    return closure if isinstance(closure, dict) else HISTORICAL_CLOSURE
+
+
+def _closure_label(closure: Object, locale: str) -> str:
+    if closure["conductor"] == "not_recorded" and closure["quantity"] == "not_recorded":
+        return text("installation_closure_not_recorded", locale)
+    return text(
+        "installation_closure_recorded"
+        if closure["recorded"] is True
+        else "installation_closure_open",
+        locale,
+    )
 
 
 def installation_sections(source: Object, locale: str) -> list[ReportSection]:
@@ -61,8 +87,9 @@ def installation_sections(source: Object, locale: str) -> list[ReportSection]:
                     text("installation_circuit", locale),
                     text("quantity", locale),
                     text("installation_length", locale),
+                    text("installation_conductor", locale),
                 ],
-                column_weights=[1.3, 1.4, 0.8, 2],
+                column_weights=[1.2, 1.2, 0.7, 1.7, 1.2],
                 rows=[
                     [
                         cast(str, cable["name"]),
@@ -73,6 +100,7 @@ def installation_sections(source: Object, locale: str) -> list[ReportSection]:
                             for reason in cast(list[str], cable["reasons"])
                         )
                         or f"{material_quantity({'quantity': cable['route_length_m'], 'unit': 'm'}, locale)} + {material_quantity({'quantity': cable['extra_length_m'], 'unit': 'm'}, locale)} · {cable['extra_length_note']}",
+                        conductor_specification(cable, locale),
                     ]
                     for cable in cables
                 ],
@@ -82,6 +110,7 @@ def installation_sections(source: Object, locale: str) -> list[ReportSection]:
     reconciliation = plan.get("pv_string_reconciliation")
     if isinstance(reconciliation, dict):
         reviewed = cast(list[Object], reconciliation["rows"])
+        closures = [_saved_closure(row) for row in reviewed]
         paragraphs = [text("installation_string_link_scope", locale)]
         if reconciliation["plan_status"] != "available":
             paragraphs.append(
@@ -112,6 +141,16 @@ def installation_sections(source: Object, locale: str) -> list[ReportSection]:
                             "installation_string_cable_gaps",
                             sum(bool(row["reasons"]) for row in reviewed),
                         ),
+                        (
+                            "installation_string_recorded_count",
+                            sum(closure["recorded"] is True for closure in closures),
+                        ),
+                        (
+                            "installation_string_open_count",
+                            sum(
+                                closure["recorded"] is not True for closure in closures
+                            ),
+                        ),
                     )
                 ]
                 + [
@@ -132,8 +171,10 @@ def installation_sections(source: Object, locale: str) -> list[ReportSection]:
                         text("installation_ports", locale),
                         text("status", locale),
                         text("installation_link_cables", locale),
+                        text("installation_conductor", locale),
+                        text("installation_closure", locale),
                     ],
-                    column_weights=[1, 1, 1.5, 1.5, 1.5],
+                    column_weights=[0.8, 0.8, 1.2, 1.1, 1.2, 0.9, 1.3],
                     rows=[
                         [
                             cast(str, row["string_id"]),
@@ -149,8 +190,13 @@ def installation_sections(source: Object, locale: str) -> list[ReportSection]:
                                 for cable in cast(list[Object], row["cable_runs"])
                             )
                             or text("installation_string_cable_runs_missing", locale),
+                            text(
+                                f"installation_conductor_{closure['conductor']}",
+                                locale,
+                            ),
+                            _closure_label(closure, locale),
                         ]
-                        for row in reviewed
+                        for row, closure in zip(reviewed, closures, strict=True)
                     ],
                 ),
             )

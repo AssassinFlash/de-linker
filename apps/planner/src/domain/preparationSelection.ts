@@ -52,7 +52,8 @@ export function selectPreparation(
 	const assetId = ownedAsset.id;
 	if (typeof assetId !== "string" || !/^[a-f0-9]{32}$/.test(assetId))
 		throw new ApiError(502, "preparation_source_mismatch");
-	if (runTask(run) === WEATHER_TASK) {
+	const task = runTask(run);
+	if (task === WEATHER_TASK) {
 		if (inputs.weather_acquisition === undefined)
 			throw new ApiError(409, "preparation_source_changed");
 		const requested = readObject(inputs.weather_acquisition);
@@ -66,36 +67,30 @@ export function selectPreparation(
 			pv_preparation: { schema_version: 1, weather_asset_id: assetId },
 		};
 	}
-	if (runTask(run) === PVGIS_REFERENCE_TASK) {
-		referenceRoof(inputs);
-		if (
-			!sameJson(inputs.geometry, historical.inputs.geometry) ||
-			!sameJson(inputs.pvgis_reference, historical.inputs.pvgis_reference) ||
-			!referencePrepared(inputs)
-		)
-			throw new ApiError(409, "preparation_source_changed");
-		assertReferenceAcTopology(inputs);
-		return {
-			...invalidateEnergyReplay(inputs),
-			profile_selections: {
-				schema_version: 1,
-				selected: {
-					...readSelections(inputs.profile_selections).selected,
-					pv_available_ac: assetId,
-				},
-			},
-		};
-	}
-	if (runTask(run) === GEOMETRIC_PV_TASK) {
-		compileGeometricPv(geometricPvDraft(inputs), inputs.geometry);
-		if (
-			!sameJson(inputs.geometry, historical.inputs.geometry) ||
-			!sameJson(
-				inputs.geometric_pv_preparation,
-				historical.inputs.geometric_pv_preparation,
+	if (task === PVGIS_REFERENCE_TASK || task === GEOMETRIC_PV_TASK) {
+		// Both reference methods publish a single AC profile and adopt it the
+		// same way; only the frozen inputs that must still match differ. Each
+		// guard keeps its own reader so a mismatched source is refused before
+		// anything is returned.
+		if (task === PVGIS_REFERENCE_TASK) {
+			referenceRoof(inputs);
+			if (
+				!sameJson(inputs.geometry, historical.inputs.geometry) ||
+				!sameJson(inputs.pvgis_reference, historical.inputs.pvgis_reference) ||
+				!referencePrepared(inputs)
 			)
-		)
-			throw new ApiError(409, "preparation_source_changed");
+				throw new ApiError(409, "preparation_source_changed");
+		} else {
+			compileGeometricPv(geometricPvDraft(inputs), inputs.geometry);
+			if (
+				!sameJson(inputs.geometry, historical.inputs.geometry) ||
+				!sameJson(
+					inputs.geometric_pv_preparation,
+					historical.inputs.geometric_pv_preparation,
+				)
+			)
+				throw new ApiError(409, "preparation_source_changed");
+		}
 		assertReferenceAcTopology(inputs);
 		return {
 			...invalidateEnergyReplay(inputs),
@@ -109,7 +104,7 @@ export function selectPreparation(
 		};
 	}
 	if (
-		runTask(run) !== PV_TASK ||
+		task !== PV_TASK ||
 		!sameJson(inputs.geometry, historical.inputs.geometry) ||
 		!sameJson(inputs.pv_preparation, historical.inputs.pv_preparation) ||
 		!sameJson(inputs.pv_generation, historical.inputs.pv_generation)

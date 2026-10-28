@@ -137,7 +137,10 @@ final class Form {
 		$html .= '<input type="hidden" name="' . esc_attr( self::BACK_FIELD ) . '" value="' . esc_url( $this->current_url() ) . '" />';
 		$html .= wp_nonce_field( self::NONCE_ACTION, self::NONCE_FIELD, true, false );
 		$html .= ( new \Linker\Commerce\Inquiry\PublicGuard() )->fields();
-		$html .= \Linker\Commerce\Protection\FormFields::render( 'contact', $previous['linker_request_id'] ?? '', $individual );
+
+		$recover = ! isset( $previous['linker_recovery_available'] ) || '1' === $previous['linker_recovery_available'];
+
+		$html .= \Linker\Commerce\Protection\FormFields::render( 'contact', $previous['linker_request_id'] ?? '', $individual, $recover );
 
 		if ( '' !== $state ) {
 			$html .= $state;
@@ -292,8 +295,8 @@ final class Form {
 			'sent'      => $this->notice( 'sent', __( 'Thank you. Your message is with the Linker team.', 'linker-commerce' ) ),
 			'invalid'   => $this->notice( 'invalid', __( 'Please check your entries and send the form again.', 'linker-commerce' ) ),
 			'throttled' => $this->notice( 'invalid', __( 'The message limit has been reached. Your entries are still here. You can try again later or email sales@de-linker.com.', 'linker-commerce' ) ),
-			'verification_failed' => $this->notice( 'invalid', __( 'Verification expired or could not be confirmed. Your entries are still here. Please try again.', 'linker-commerce' ) ),
-			'verification_unavailable' => $this->notice( 'invalid', __( 'Verification is temporarily unavailable. Your entries are still here. Please try again or email sales@de-linker.com.', 'linker-commerce' ) ),
+			'verification_failed' => $this->notice( 'invalid', \Linker\Commerce\Protection\Business::verification_message( 'failed' ) ),
+			'verification_unavailable' => $this->notice( 'invalid', \Linker\Commerce\Protection\Business::verification_message( 'unavailable' ) ),
 			'pending' => $this->notice( 'invalid', __( 'The request status could not be confirmed. Please check before sending it again.', 'linker-commerce' ) ),
 			default     => '',
 		};

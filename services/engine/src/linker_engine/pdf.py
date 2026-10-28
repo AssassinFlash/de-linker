@@ -230,6 +230,11 @@ def render(
         rightMargin=margin,
         topMargin=margin,
         bottomMargin=margin + 6 * mm,
+        # The PDF is stored content-addressed, so identical report content must
+        # produce identical bytes. reportlab otherwise stamps its own creation
+        # time, which changes the hash of a report nothing changed in. The
+        # report's own generated_at still carries when it was made.
+        invariant=True,
         title=report.title,
         author="Linker Technology GmbH",
         subject=report.subtitle,
