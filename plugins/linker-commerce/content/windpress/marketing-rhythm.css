@@ -55,6 +55,12 @@ html[lang^="de"]
 	border-radius: var(--proto-radius-photo);
 }
 
+/* The active tab already names this pane. Its duplicate overlay would cover
+   the German preview's first question; other video badges keep their place. */
+#tv-cs-page-v1 #engineering-tools #tool-pane-0 .lk-tooldeck-media:has(> img.cs-tool-preview) > .lk-tooldeck-badge {
+	display: none;
+}
+
 /* Services audience tabs on EN2748/DE6700 use the existing14px action
    type and44px target. Two IDs outrank retained desktop11px/mobile10px rules. */
 #service-redesign #solutions .service-role-nav button {
