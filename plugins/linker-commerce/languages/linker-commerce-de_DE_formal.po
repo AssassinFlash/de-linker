@@ -2647,6 +2647,10 @@ msgid_plural "%s products"
 msgstr[0] "%s Produkt"
 msgstr[1] "%s Produkte"
 
+#: includes/Presentation/BlogShortcodes.php:79
+msgid "All posts"
+msgstr "Alle Beiträge"
+
 #. translators: %s: social network name.
 #: includes/Presentation/BlogShortcodes.php:98
 #, php-format

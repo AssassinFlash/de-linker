@@ -76,7 +76,7 @@ final class BlogShortcodes {
 		if ( ! is_search() || 'post' !== get_query_var( 'post_type' ) || '' !== get_search_query( false ) ) {
 			return $title;
 		}
-		$heading = 'de' === $this->request_language() ? 'Alle Beiträge' : 'All posts';
+		$heading = __( 'All posts', 'linker-commerce' );
 		$suffix  = strstr( $title, '|' );
 		return $heading . ( false === $suffix ? '' : ' ' . $suffix );
 	}

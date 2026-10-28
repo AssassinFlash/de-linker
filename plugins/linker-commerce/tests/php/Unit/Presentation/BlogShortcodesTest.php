@@ -36,10 +36,18 @@ use WP_Term;
 final class BlogShortcodesTest extends TestCase {
 
 	/**
-	 * Translation and escaping return their input.
+	 * The translated search heading supplied by the active test.
+	 *
+	 * @var string
+	 */
+	private string $search_heading = 'All posts';
+
+	/**
+	 * Translation and escaping return their input except the search heading.
 	 */
 	public function setUp(): void {
 		parent::setUp();
+		WP_Mock::userFunction( '__' )->with( 'All posts', 'linker-commerce' )->andReturnUsing( fn(): string => $this->search_heading );
 		$this->plain_text();
 		// These native fragment fixtures have no Polylang source-pair data.
 		WP_Mock::userFunction( 'pll_get_post_language', array( 'return' => false ) );
@@ -86,15 +94,15 @@ final class BlogShortcodesTest extends TestCase {
 	 * @param bool   $is_search Whether the request is a search.
 	 * @param mixed  $type      The search's post type.
 	 * @param string $query     The actual search text.
-	 * @param string $language  The current language.
+	 * @param string $heading   The translated heading.
 	 * @param string $title     The SEOPress title.
 	 * @param string $expected  The expected title.
 	 */
-	public function test_only_empty_journal_search_gets_a_named_title( bool $is_search, mixed $type, string $query, string $language, string $title, string $expected ): void {
+	public function test_only_empty_journal_search_gets_a_named_title( bool $is_search, mixed $type, string $query, string $heading, string $title, string $expected ): void {
 		WP_Mock::userFunction( 'is_search' )->andReturn( $is_search );
 		WP_Mock::userFunction( 'get_query_var' )->with( 'post_type' )->andReturn( $type );
 		WP_Mock::userFunction( 'get_search_query' )->with( false )->andReturn( $query );
-		WP_Mock::userFunction( 'pll_current_language' )->andReturn( $language );
+		$this->search_heading = $heading;
 		$this->assertSame( $expected, ( new BlogShortcodes() )->empty_search_title( $title ) );
 	}
 
@@ -105,12 +113,12 @@ final class BlogShortcodesTest extends TestCase {
 	 */
 	public static function search_title_cases(): array {
 		return array(
-			'empty German journal'  => array( true, 'post', '', 'de', 'Suchergebnisse für „“ | Linker', 'Alle Beiträge | Linker' ),
-			'empty English journal' => array( true, 'post', '', 'en', '" " | Linker', 'All posts | Linker' ),
-			'zero is a query'       => array( true, 'post', '0', 'de', '0 | Linker', '0 | Linker' ),
-			'normal journal'        => array( true, 'post', 'backup', 'en', 'backup | Linker', 'backup | Linker' ),
-			'general search'        => array( true, array( 'post', 'page', 'product' ), '', 'de', 'Search | Linker', 'Search | Linker' ),
-			'not search'            => array( false, 'post', '', 'en', 'Page | Linker', 'Page | Linker' ),
+			'empty German journal'  => array( true, 'post', '', 'Alle Beiträge', 'Suchergebnisse für „“ | Linker', 'Alle Beiträge | Linker' ),
+			'empty English journal' => array( true, 'post', '', 'All posts', '" " | Linker', 'All posts | Linker' ),
+			'zero is a query'       => array( true, 'post', '0', 'Alle Beiträge', '0 | Linker', '0 | Linker' ),
+			'normal journal'        => array( true, 'post', 'backup', 'All posts', 'backup | Linker', 'backup | Linker' ),
+			'general search'        => array( true, array( 'post', 'page', 'product' ), '', 'Alle Beiträge', 'Search | Linker', 'Search | Linker' ),
+			'not search'            => array( false, 'post', '', 'All posts', 'Page | Linker', 'Page | Linker' ),
 		);
 	}
 
