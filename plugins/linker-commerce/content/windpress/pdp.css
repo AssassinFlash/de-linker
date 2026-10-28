@@ -348,6 +348,11 @@
 	text-align: right;
 }
 
+/* A semicolon-delimited source fact keeps each complete option together. */
+#tv-storefront-pdp .pdp-spec-list .pdp-spec-option {
+	display: block;
+}
+
 /* Availability */
 #tv-storefront-pdp .pdp-avail {
 	margin-top: 18px;
@@ -1569,7 +1574,9 @@
 
 	#tv-storefront-pdp .pdp-spec-list > div {
 		display: grid;
-		grid-template-columns: 32px minmax(0, 1fr) minmax(0, 1fr);
+		/* The label may use at most its former half of the space after the
+		   32px icon and two 10px gaps; short labels yield room to the value. */
+		grid-template-columns: 32px fit-content(calc((100% - 52px) / 2)) minmax(0, 1fr);
 		align-items: center;
 		gap: 10px;
 		min-height: 60px;
@@ -1597,7 +1604,10 @@
 	}
 
 	#tv-storefront-pdp .pdp-spec-list dt {
+		min-width: 0;
 		font-size: 12px;
+		overflow-wrap: anywhere;
+		hyphens: auto;
 	}
 
 	#tv-storefront-pdp .pdp-spec-list dd {

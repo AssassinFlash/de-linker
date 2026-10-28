@@ -785,9 +785,45 @@ final class ProductShortcodes {
 		$html = '';
 		foreach ( Materials::key_stats( $product, 4 ) as $stat ) {
 			$html .= '<div><span class="pdp-app-stat-icon" aria-hidden="true">' . self::icon( (string) $stat['icon'] ) . '</span>'
-				. '<dt>' . esc_html( (string) $stat['label'] ) . '</dt><dd>' . esc_html( (string) $stat['value'] ) . '</dd></div>';
+				. '<dt>' . esc_html( (string) $stat['label'] ) . '</dt><dd>' . self::pdp_stat_value( (string) $stat['value'] ) . '</dd></div>';
 		}
 		return $html;
+	}
+
+	/**
+	 * Preserve the source text while marking distinct semicolon-separated facts.
+	 * A semicolon inside parentheses belongs to the same fact, not a new one.
+	 *
+	 * @param string $value The complete formatted fact from Materials.
+	 */
+	private static function pdp_stat_value( string $value ): string {
+		$parts = array();
+		$start = 0;
+		$depth = 0;
+		$size  = strlen( $value );
+		for ( $i = 0; $i < $size; ++$i ) {
+			if ( '(' === $value[ $i ] ) {
+				++$depth;
+			} elseif ( ')' === $value[ $i ] ) {
+				if ( 0 === $depth ) {
+					return esc_html( $value );
+				}
+				--$depth;
+			} elseif ( ';' === $value[ $i ] && 0 === $depth ) {
+				$parts[] = substr( $value, $start, $i - $start + 1 );
+				$start   = $i + 1;
+			}
+		}
+		if ( 0 !== $depth || array() === $parts ) {
+			return esc_html( $value );
+		}
+		$parts[] = substr( $value, $start );
+		foreach ( $parts as $part ) {
+			if ( '' === trim( $part, " \t\n\r\0\x0B;" ) ) {
+				return esc_html( $value );
+			}
+		}
+		return implode( '', array_map( static fn( string $part ): string => '<span class="pdp-spec-option">' . esc_html( $part ) . '</span>', $parts ) );
 	}
 
 	/**
