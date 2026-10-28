@@ -88,13 +88,7 @@ final class LibraryPageTest extends TestCase {
 				'times'  => '0+',
 			)
 		);
-		WP_Mock::userFunction(
-			'pll_get_post',
-			array(
-				'return' => 0,
-				'times'  => '0+',
-			)
-		);
+		WP_Mock::userFunction( 'pll_get_post' )->andReturn( 0 )->byDefault();
 		WP_Mock::userFunction( 'sanitize_title', array( 'return' => static fn ( string $value ): string => strtolower( str_replace( ' ', '-', $value ) ) ) );
 		WP_Mock::userFunction( 'wpautop', array( 'return' => static fn ( string $value ): string => '<p>' . $value . '</p>' ) );
 		WP_Mock::userFunction(
@@ -384,6 +378,136 @@ final class LibraryPageTest extends TestCase {
 		// template is free to call the fragments in any order.
 		$this->assertSame( 1, $this->authority_reads );
 		$this->assertSame( 2, $this->post_queries );
+	}
+
+	/** The native switcher retains only this library's supported display state. */
+	public function test_language_query_keeps_library_tab_and_type_without_loading_products(): void {
+		WP_Mock::userFunction(
+			'get_queried_object',
+			array(
+				'return' => new \WP_Post(
+					(object) array(
+						'post_type'    => 'page',
+						'post_name'    => 'faq-download',
+						'post_content' => '',
+					)
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				'tab'  => 'documents',
+				'type' => 'certificate',
+			),
+			LibraryPage::language_query(
+				array(
+					'q'       => 'GW10K-EHA-G20',
+					'tab'     => 'documents',
+					'type'    => 'certificate',
+					'private' => 'discard',
+				)
+			)
+		);
+		$this->assertSame( 0, $this->authority_reads );
+	}
+
+	/** A translated page can have an empty, template-driven body. */
+	public function test_language_query_uses_the_native_page_twin(): void {
+		WP_Mock::userFunction(
+			'get_queried_object',
+			array(
+				'return' => new \WP_Post(
+					(object) array(
+						'ID'           => 6863,
+						'post_type'    => 'page',
+						'post_name'    => 'faq-dokumente',
+						'post_content' => '',
+					)
+				),
+			)
+		);
+		WP_Mock::userFunction(
+			'pll_get_post',
+			array(
+				'args'   => array( 6863, 'en' ),
+				'return' => 932,
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post',
+			array(
+				'args'   => array( 932 ),
+				'return' => new \WP_Post(
+					(object) array(
+						'ID'        => 932,
+						'post_type' => 'page',
+						'post_name' => 'faq-download',
+					)
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				'tab'  => 'documents',
+				'type' => 'manual',
+			),
+			LibraryPage::language_query(
+				array(
+					'tab'  => 'documents',
+					'type' => 'manual',
+				)
+			)
+		);
+	}
+
+	/** Defaults, invalid values and array inputs cannot create query state. */
+	public function test_language_query_omits_default_and_invalid_display_state(): void {
+		$this->assertSame(
+			array(),
+			LibraryPage::language_query(
+				array(
+					'tab'  => 'faq',
+					'type' => 'all',
+				)
+			)
+		);
+		$this->assertSame(
+			array(),
+			LibraryPage::language_query(
+				array(
+					'tab'  => array( 'documents' ),
+					'type' => 'unsupported',
+				)
+			)
+		);
+	}
+
+	/** Other pages cannot inherit a library-only tab or filter. */
+	public function test_language_query_does_not_add_library_state_to_other_pages(): void {
+		WP_Mock::userFunction(
+			'get_queried_object',
+			array(
+				'return' => new \WP_Post(
+					(object) array(
+						'post_type' => 'page',
+						'ID'        => 28,
+						'post_name' => 'contact',
+					)
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(),
+			LibraryPage::language_query(
+				array(
+					'tab'  => 'documents',
+					'type' => 'manual',
+				)
+			)
+		);
 	}
 
 	/**

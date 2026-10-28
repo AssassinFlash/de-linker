@@ -114,8 +114,28 @@ final class ApprovalTest extends IntegrationTestCase {
 			'Approved sends through the Proforma gateway alone'
 		);
 
+		// Normal credentials still pass through the native authentication chain.
+		$approved_login = wp_authenticate( $customer->get_username(), self::PASSWORD );
+		$this->assertInstanceOf( WP_User::class, $approved_login );
+		$this->assertSame( $customer->get_id(), $approved_login->ID );
+
 		// A rejection ends in a blocked sign-in, shown on the login form.
 		$this->set_state( $customer, Approval::REJECTED, 'We could not verify the business.' );
+		// Approval is private until core has checked the supplied password.
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Native credential verification, without a real browser login or provider call.
+		$wrong_password = wp_signon(
+			array(
+				'user_login'    => $customer->get_username(),
+				'user_password' => self::PASSWORD . '-incorrect',
+				'remember'      => false,
+			)
+		);
+		$this->assertInstanceOf( WP_Error::class, $wrong_password );
+		$this->assertSame( 'incorrect_password', $wrong_password->get_error_code() );
+		$this->assertSame(
+			__( 'The username or the password is not correct.', 'linker-commerce' ),
+			apply_filters( 'login_errors', $wrong_password->get_error_message() ) // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- Actual native sign-in error presentation.
+		);
 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WordPress's own hook, observed as the real login path.
 		$sign_in = wp_signon(
 			array(

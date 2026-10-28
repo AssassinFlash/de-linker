@@ -86,3 +86,52 @@ test('withdrawing marketing only leaves analytics denied', () => {
 	assert.equal(window.__reloads, 0);
 	assert.match(window.document.cookie, /_ga=/);
 });
+
+test('late CookieYes preferences receive focus and return to their real opener', async () => {
+	const window = page('<button class="cky-banner-element">Cookie-Einstellungen</button>');
+	await new Promise((resolve) => window.document.addEventListener('DOMContentLoaded', resolve, { once: true }));
+	const opener = window.document.querySelector('button');
+	// CookieYes inserts its modal after loading configuration. Its native
+	// revisit handler toggles this class but does not move or retain focus.
+	window.document.body.insertAdjacentHTML('beforeend', `
+		<div class="cky-modal"><section id="ckyPreferenceCenter" aria-label="Customise Consent Preferences">
+			<h2 data-cky-tag="detail-title">Ihre Cookie-Auswahl</h2>
+			<button data-cky-tag="detail-close">Schließen</button>
+			<input type="checkbox" checked>
+		</section></div>`);
+	const modal = window.document.querySelector('.cky-modal');
+	const panel = window.document.querySelector('#ckyPreferenceCenter');
+	const close = panel.querySelector('button');
+	close.addEventListener('click', () => modal.classList.remove('cky-modal-open'));
+	await new Promise(window.queueMicrotask);
+	opener.focus();
+	modal.classList.add('cky-modal-open');
+	await new Promise(window.queueMicrotask);
+	assert.equal(panel.ownerDocument.activeElement, close);
+	assert.equal(panel.getAttribute('aria-labelledby'), panel.querySelector('h2').id);
+	close.click();
+	await new Promise(window.queueMicrotask);
+	assert.equal(panel.ownerDocument.activeElement, opener);
+
+	// Native CookieYes transitions visibility: the first focus attempt can
+	// occur while the opening panel is still hidden.
+	const focus = close.focus.bind(close);
+	let starting = true;
+	close.focus = () => {
+		if (!starting) {
+			focus();
+		}
+	};
+	modal.classList.add('cky-modal-open');
+	await new Promise(window.queueMicrotask);
+	assert.equal(panel.ownerDocument.activeElement, opener);
+	starting = false;
+	modal.dispatchEvent(new window.Event('transitionstart', { bubbles: true }));
+	assert.equal(panel.ownerDocument.activeElement, close);
+	close.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+	await new Promise(window.queueMicrotask);
+	assert.equal(modal.classList.contains('cky-modal-open'), false);
+	assert.equal(panel.ownerDocument.activeElement, opener);
+	assert.equal(panel.querySelector('input').checked, true);
+	assert.equal(window.__reloads, 0);
+});

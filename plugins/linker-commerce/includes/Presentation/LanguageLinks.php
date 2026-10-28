@@ -155,7 +155,12 @@ final class LanguageLinks {
 		foreach ( ComparePage::language_query( wp_unslash( $_GET ), $lang ) as $key => $value ) {
 			$kept[ $key ] = rawurlencode( $value );
 		}
-		$url = (string) add_query_arg( $kept, remove_query_arg( array_merge( self::LANGUAGE_QUERY_KEYS, array( 'ids', 'capped', 'post_type', 'cbq', 'intent', \Linker\Commerce\Contact\SelectionContext::FIELD ) ), $url ) );
+		// Library-only tab and type state share the header/footer implementation.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- public GET navigation.
+		foreach ( LibraryPage::language_query( wp_unslash( $_GET ) ) as $key => $value ) {
+			$kept[ $key ] = rawurlencode( $value );
+		}
+		$url = (string) add_query_arg( $kept, remove_query_arg( array_merge( self::LANGUAGE_QUERY_KEYS, array( 'ids', 'capped', 'post_type', 'cbq', 'intent', \Linker\Commerce\Contact\SelectionContext::FIELD ), array_keys( $kept ) ), $url ) );
 		/**
 		 * Reapply Polylang's native URL translation after retaining request context.
 		 *

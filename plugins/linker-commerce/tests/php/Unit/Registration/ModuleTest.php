@@ -91,7 +91,7 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'option_woocommerce_default_country', array( $address, 'base_location' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_get_country_locale', array( $address, 'country_locale' ) );
 		// @phpstan-ignore argument.type (an AnyInstance callback, see expect_action_on_any)
-		WP_Mock::expectFilterAdded( 'wp_authenticate_user', array( new WP_Mock\Matcher\AnyInstance( Approval::class ), 'gate_login' ) );
+		WP_Mock::expectFilterAdded( 'authenticate', array( new WP_Mock\Matcher\AnyInstance( Approval::class ), 'gate_login' ), 100 );
 		// @phpstan-ignore argument.type (an AnyInstance callback, see expect_action_on_any)
 		WP_Mock::expectFilterAdded( 'login_errors', array( new WP_Mock\Matcher\AnyInstance( Approval::class ), 'login_errors' ), 20 );
 		// @phpstan-ignore argument.type (an AnyInstance callback, see expect_action_on_any)

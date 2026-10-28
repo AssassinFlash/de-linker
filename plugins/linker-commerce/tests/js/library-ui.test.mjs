@@ -131,6 +131,60 @@ function boot(dom) {
  return dom.window.document;
 }
 
+test('language links retain library query, tab and type on the native translated route', () => {
+ const dom = fixture();
+ const language = dom.window.document.createElement('a');
+ language.hreflang = 'de';
+ language.setAttribute('data-linker-language-choice', 'de');
+ language.href = '/de/faq-dokumente/';
+ dom.window.document.body.appendChild(language);
+ const doc = boot(dom);
+ doc.querySelector('#linker-library-tab-documents').click();
+ doc.querySelector('[data-library-filters] [data-library-type="manual"]').click();
+ const input = doc.querySelector('.linker-library-q');
+ input.value = 'Chint & "DTSU666"';
+ input.dispatchEvent(new dom.window.Event('input', {bubbles: true}));
+ const target = new URL(language.href);
+ assert.equal(target.pathname, '/de/faq-dokumente/');
+ assert.equal(target.searchParams.get('q'), input.value);
+ assert.equal(target.searchParams.get('tab'), 'documents');
+ assert.equal(target.searchParams.get('type'), 'manual');
+ const translated = fixture();
+ translated.reconfigure({url: target.href});
+ const next = boot(translated);
+ assert.equal(next.querySelector('.linker-library-q').value, input.value);
+ assert.equal(next.querySelector('#linker-library-tab-documents').getAttribute('aria-selected'), 'true');
+ assert.equal(next.querySelector('[data-library-filters] [data-library-type="manual"]').getAttribute('aria-pressed'), 'true');
+ assert.equal(next.querySelector('#linker-library-suggest').hidden, true, 'restoration does not open suggestions');
+ translated.window.history.replaceState(null, '', '?q=Chint&type=datasheet');
+ translated.window.dispatchEvent(new translated.window.PopStateEvent('popstate'));
+ assert.equal(next.querySelector('.linker-library-q').value, 'Chint');
+ assert.equal(next.querySelector('#linker-library-tab-faq').getAttribute('aria-selected'), 'true');
+ assert.equal(next.querySelector('[data-library-filters] [data-library-type="datasheet"]').getAttribute('aria-pressed'), 'true');
+ doc.querySelector('[data-library-clear]').click();
+ assert.equal(new URL(language.href).searchParams.has('q'), false);
+ assert.equal(new URL(language.href).searchParams.get('type'), 'manual');
+ dom.window.close();
+ translated.window.close();
+});
+
+test('invalid library discriminators reset without changing unrelated or external language links', () => {
+ const dom = fixture();
+ dom.reconfigure({url: 'https://de-linker.test/faq-download/?tab=invalid&type=unrecognized'});
+ const doc = dom.window.document;
+ doc.body.insertAdjacentHTML('beforeend', '<a hreflang="de" href="/other/">Other translation</a><a data-linker-language-choice="de" hreflang="de" href="https://external.test/de/">External</a>');
+ boot(dom);
+ assert.equal(doc.querySelector('#linker-library-tab-faq').getAttribute('aria-selected'), 'true');
+ assert.equal(doc.querySelector('[data-library-filters] [data-library-type="all"]').getAttribute('aria-pressed'), 'true');
+ const input = doc.querySelector('.linker-library-q');
+ input.value = 'chint';
+ input.dispatchEvent(new dom.window.Event('input', {bubbles: true}));
+ assert.equal(doc.querySelector('a[href="/other/"]').getAttribute('href'), '/other/');
+ assert.equal(doc.querySelector('a[href="https://external.test/de/"]').href, 'https://external.test/de/');
+ assert.equal(new URL(dom.window.location.href).searchParams.has('type'), false);
+ dom.window.close();
+});
+
 for (const [reduced, behavior] of [[true, 'instant'], [false, 'smooth']]) {
  test(`native anchor navigation requests ${behavior} scrolling for reduced-motion=${reduced}`, () => {
   const dom = fixture();

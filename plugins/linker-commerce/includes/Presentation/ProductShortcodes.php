@@ -1766,6 +1766,19 @@ final class ProductShortcodes {
 				'ids'  => $members,
 			);
 		}
+		if ( 'name' === $this->filters->requested_sort() ) {
+			// Sort complete families before pagination by the title the card prints.
+			$titles = array();
+			foreach ( $rows as $row ) {
+				$product                = wc_get_product( $row['lead'] );
+				$card                   = $product instanceof \WC_Product ? $this->views->card_titles( $product ) : array();
+				$title                  = (string) ( $card['title'] ?? '' );
+				$titles[ $row['lead'] ] = \count( $row['ids'] ) > 1
+					? self::series_title( (string) ( $card['series'] ?? '' ), (string) ( $card['brand'] ?? '' ), $title )
+					: $title;
+			}
+			usort( $rows, static fn( array $a, array $b ): int => strcasecmp( $titles[ $a['lead'] ], $titles[ $b['lead'] ] ) );
+		}
 		return $rows;
 	}
 

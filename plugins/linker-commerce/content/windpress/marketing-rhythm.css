@@ -128,6 +128,34 @@ body #service-redesign a:is(.lk-btn-primary, .lk-btn-secondary, .linker-contact-
 	overflow-wrap: break-word;
 }
 
+/* The remaining project and product guidance still uses 10–13px labels.
+   Match the existing action size without reducing larger authored targets.
+   The homepage selectors reach its reference chapter, not the resting hero. */
+#tv-rs-page-v1 a.lk-topo-cta,
+#tv-cs-page-v1 a:is(.lk-btn, .cs-cta-primary),
+#installer-journal a:is(.lk-btn-primary, .lk-btn-secondary, .lk-btn-query, .lk-chip),
+#installer-journal #tools .lk-tool-slide-controls button,
+#about-journal a:is(.button, .scene-primary, .scene-card-action),
+#home-a .home-reference-scene a:is(.scene-primary, .scene-card-action),
+#tv-solutions-developers-v1 a:is(.lk-btn-primary, .lk-btn-secondary, .lk-sp-btn-main),
+#tv-solutions-developers-v1 .epc-cover a:is(.lk-btn-intake-primary, .lk-btn-intake-secondary),
+#tv-utility-page-v1 .lk-container a:is(.lk-btn-primary, .lk-btn-secondary, .lk-btn-teal, .lk-btn-hero-ghost, .linker-contact-primary) {
+	max-width: 100%;
+	font-size: var(--proto-size-sm);
+	white-space: normal;
+}
+
+/* These particular targets were 39px/43px; retain all larger native actions. */
+#installer-journal a.lk-chip,
+#installer-journal #tools .lk-tool-slide-controls button,
+#tv-utility-page-v1 .lk-runway-actions a {
+	min-height: var(--proto-control-height);
+}
+
+#installer-journal #tools .lk-tool-slide-controls .lk-tool-prev {
+	min-width: var(--proto-control-height);
+}
+
 /* Installer tool choices, EPC FAQ topics and residential planning choices
    retain their native states and targets; use the existing14px action token.
    Their separate ordinal-only spans keep the authored caption size. */

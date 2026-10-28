@@ -8,6 +8,7 @@
 
 	// The account chain's forms: the guest cards, the workspace and the gates.
 	const FORMS = '.linker-auth form, .linker-account form, .linker-gate form, .linker-inquiry-form';
+	const submittingButtons = new WeakMap();
 
 	// The inquiry and Woo draft are separate forms. Unsaved edits and in-flight
 	// writes must both stop the inquiry from sending the previous server lines.
@@ -231,11 +232,37 @@
 			if ( ! button ) {
 				return;
 			}
+			submittingButtons.set( form, { button, disabled: button.disabled } );
 			button.classList.add( 'is-loading' );
 			button.setAttribute( 'aria-busy', 'true' );
 		},
 		true
 	);
+
+	// Back/forward-cache restoration resumes this document without its old
+	// request. Keep entered values and unrelated disabled controls intact.
+	window.addEventListener( 'pageshow', ( event ) => {
+		if ( ! event.persisted ) {
+			return;
+		}
+		for ( const form of document.querySelectorAll( FORMS ) ) {
+			if ( form.dataset.accountState !== 'submitting' ) {
+				continue;
+			}
+			delete form.dataset.accountState;
+			const submitted = submittingButtons.get( form );
+			const button = submitted?.button || form.querySelector( 'button[type="submit"], input[type="submit"]' );
+			button?.classList.remove( 'is-loading' );
+			button?.removeAttribute( 'aria-busy' );
+			// Woo's lost-password handler disables this previously usable button
+			// when it posts. Other forms keep their native disabled decisions.
+			if ( submitted && form.matches( '.lost_reset_password' ) ) {
+				submitted.button.disabled = submitted.disabled;
+			}
+			submittingButtons.delete( form );
+		}
+		syncDraftState();
+	} );
 
 	// While the two fields are typed, the line follows them: it appears when
 	// they differ and clears itself once they agree again.
