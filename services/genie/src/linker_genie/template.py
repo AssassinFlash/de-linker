@@ -1887,11 +1887,16 @@ def _clearance_answer(
     eligible_chunks = {chunk_of(figure_id) for figure_id in minimum_by_id}
     other_measurements: set[tuple[str, str, bool]] = set()
     for fact_id, source in sources.facts.items():
-        if not fact_id.endswith(".text") or fact_id[:-5] not in eligible_chunks:
+        chunk = fact_id[:-5]
+        if not fact_id.endswith(".text") or (
+            chunk not in eligible_chunks and chunk not in sources.qualifications
+        ):
             continue
-        for segment in _source_segments(source.value):
+        for segment in _source_segments(
+            _clearance_source_content(sources, chunk, source.value)
+        ):
             for clause in segment.split(";"):
-                measurement = _independent_measurement(sources, fact_id[:-5], clause)
+                measurement = _independent_measurement(sources, chunk, clause)
                 if measurement:
                     other_measurements.add(measurement)
     retained: set[str] = set()
@@ -1942,24 +1947,6 @@ def _clearance_answer(
                     measurement = _independent_measurement(sources, chunk, probe)
                     if measurement in other_measurements:
                         retained.add(figure_id)
-                        return match.group(0)
-                if chunk in facts.qualifications:
-                    # Qualified figures for another property (for example a
-                    # current reported beside the clearance) keep their
-                    # condition. The nearest property in the authored clause
-                    # identifies which claim the placeholder supports.
-                    properties = list(
-                        re.finditer(
-                            r"(?i)\b(?:clearances?|mindestabstand\w*|abstand\w*|"
-                            r"abstände\w*|current|strom|power|leistung|voltage|spannung|"
-                            r"height|höhe|width|breite|depth|tiefe|weight|gewicht)\b",
-                            authored_piece[: match.start()],
-                        )
-                    )
-                    if properties and not re.fullmatch(
-                        r"(?i)clearances?|mindestabstand\w*|abstand\w*|abstände\w*",
-                        properties[-1].group(),
-                    ):
                         return match.group(0)
                 if (
                     figure_id in minimum_by_id
@@ -2194,6 +2181,18 @@ def _independent_measurement(
     return figure.id, label, bool(match.group("phi"))
 
 
+def _clearance_source_content(sources: TurnFacts, chunk: str, text: str) -> str:
+    notes = sources.qualifications.get(chunk, ())
+    note_lines = {f"{note.quote} (p. {note.page})" for note in notes}
+    content = "\n".join(
+        line for line in text.splitlines() if line.strip() not in note_lines
+    )
+    for note in notes:
+        marker = note.quote.split(":", 1)[0]
+        content = re.sub(rf"{re.escape(marker)}(?!\d)", "", content)
+    return content
+
+
 def _source_clearances(sources: TurnFacts) -> list[tuple[str, int, bool]]:
     values: list[tuple[str, int, bool]] = []
     for fact_id, fact in sources.facts.items():
@@ -2201,14 +2200,7 @@ def _source_clearances(sources: TurnFacts) -> list[tuple[str, int, bool]]:
             continue
         chunk = fact_id[:-5]
         chunk_values: list[tuple[str, int, bool]] = []
-        notes = sources.qualifications.get(chunk, ())
-        note_lines = {f"{note.quote} (p. {note.page})" for note in notes}
-        source_text = "\n".join(
-            line for line in fact.value.splitlines() if line.strip() not in note_lines
-        )
-        for note in notes:
-            marker = note.quote.split(":", 1)[0]
-            source_text = re.sub(rf"{re.escape(marker)}(?!\d)", "", source_text)
+        source_text = _clearance_source_content(sources, chunk, fact.value)
         for segment in _source_segments(source_text):
             if not segment.strip():
                 continue

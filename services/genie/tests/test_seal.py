@@ -602,6 +602,15 @@ def test_cycle_rejects_a_qualified_height_as_clearance() -> None:
     result = run(request, lambda _request, _retry: (wrong, facts), Route("documents"))
     assert "1500 mm" not in _text(result.output)
 
+    compound = TurnOutput(
+        language="en",
+        blocks=[TextBlock(text="The minimum clearance and height are {fact:q.n2}.")],
+    )
+    result = run(
+        request, lambda _request, _retry: (compound, facts), Route("documents")
+    )
+    assert "1500 mm" not in _text(result.output)
+
     correct = TurnOutput(
         language="en", blocks=[TextBlock(text="The minimum clearance is {fact:q.n1}.")]
     )
@@ -616,6 +625,36 @@ def test_cycle_rejects_a_qualified_height_as_clearance() -> None:
         "https://example.test/data.pdf#page=2",
         "https://example.test/data.pdf#page=3",
     ]
+
+    separate = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(
+                text="The enclosure height is {fact:q.n2}. The minimum clearance is {fact:q.n1}."
+            )
+        ],
+    )
+    result = run(
+        request, lambda _request, _retry: (separate, facts), Route("documents")
+    )
+    assert result.grounded and not result.fallback
+    assert "height is 1500 mm" in _text(result.output)
+    assert "clearance is 500 mm" in _text(result.output)
+    assert _text(result.output).count('"The interface is required."') == 1
+
+    negated = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(
+                text="The minimum clearance is {fact:q.n1}; the enclosure height is not {fact:q.n2}."
+            )
+        ],
+    )
+    result = run(request, lambda _request, _retry: (negated, facts), Route("documents"))
+    assert result.grounded and not result.fallback
+    assert "500 mm" in _text(result.output)
+    assert "1500 mm" not in _text(result.output)
+    assert _text(result.output).count('"The interface is required."') == 1
 
 
 def test_cycle_does_not_restore_rejected_clearance_on_language_retry() -> None:
