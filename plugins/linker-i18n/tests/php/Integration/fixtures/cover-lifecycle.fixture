@@ -221,8 +221,16 @@ try {
 	$check( $old_body === get_post( $pairs[0][1] )->post_content, 'title update changed the German body' );
 	$check( '456' === get_post_meta( $pairs[0][1], CoverAlt::DISPLAY, true ), 'unrelated title run certified the modified output' );
 	$check( $previous_cover === $state->units( State::POST, $pairs[0][1] )[ $cover_field ], 'title run changed established cover provenance' );
+	$check( State::SYNCED === $translator->adopt_current( State::POST, $pairs[0][0] ), 'explicit adopt-current failed' );
+	$check( '789' === get_post_meta( $pairs[0][1], CoverAlt::DISPLAY, true ), 'explicit adopt-current did not accept the supplied German' );
+	$import = array_map( static fn( array $field ): string => $field[0], ( new Fields() )->of_post( get_post( $pairs[0][1] ), true ) );
+	$import[ $cover_field ] = '777';
+	$check( State::SYNCED === $translator->adopt( State::POST, $pairs[0][0], $import ), 'explicit import failed' );
+	$check( '777' === get_post_meta( $pairs[0][1], CoverAlt::DISPLAY, true ), 'explicit import did not accept its German cover' );
+	$check( $old_body === get_post( $pairs[0][1] )->post_content, 'explicit import changed the German body' );
 	update_post_meta( $pairs[0][1], Fields::COVER_ALT, '456' );
-	$check( '456' === get_post_meta( $pairs[0][1], CoverAlt::DISPLAY, true ), 'restored output did not match established provenance' );
+	$translator->adopt_current( State::POST, $pairs[0][0] );
+	$check( '456' === get_post_meta( $pairs[0][1], CoverAlt::DISPLAY, true ), 'explicit adoption did not rebaseline the restored output' );
 	$before[ $pairs[0][1] ] = array( get_post( $pairs[0][1] )->to_array(), wp_get_object_terms( $pairs[0][1], array( 'category', 'post_tag' ), array( 'fields' => 'ids' ) ), array_keys( wp_get_post_revisions( $pairs[0][1] ) ) );
 	$updates = 0;
 	$unschedule( $pairs[0][0] );
@@ -247,6 +255,81 @@ try {
 	$jobs->run( State::POST, $pairs[0][0] );
 	$check( 'Erstes Dach. Neues Dach.' === get_post_meta( $pairs[0][1], Fields::COVER_ALT, true ), 'unchanged German sentence was not preserved' );
 	$check( 0 === $updates, 'incremental cover translation rewrote the article' );
+	update_post_meta( $pairs[0][1], Fields::COVER_ALT, 'Manipuliertes Dach. Neues Dach.' );
+	update_post_meta( $image2, '_wp_attachment_image_alt', 'First roof. Changed roof.' );
+	$call_count = count( $client->calls );
+	$jobs->run( State::POST, $pairs[0][0] );
+	$check( State::STRUCTURE_MISMATCH === $state->status( State::POST, $pairs[0][0] ), 'partial translation reused an untrusted German sentence' );
+	$check( $call_count === count( $client->calls ), 'unsafe partial translation called the model' );
+	$check( 'First roof. Changed roof.' === get_post_meta( $pairs[0][1], CoverAlt::DISPLAY, true ), 'unsafe partial translation lost source fallback' );
+
+	// Both jobs planned from the same old source. The inner job finishes
+	// first, then the outer job writes its own independently valid output.
+	update_post_meta( $image2, '_wp_attachment_image_alt', 'Old roof view' );
+	update_post_meta( $pairs[0][1], Fields::COVER_ALT, 'Altes Dach' );
+	$translator->adopt_current( State::POST, $pairs[0][0] );
+	update_post_meta( $image2, '_wp_attachment_image_alt', 'Fresh roof view' );
+	$client->responses['Fresh roof view'] = 'Äußeres Dach';
+	$client->during = static function () use ( $client, $jobs, $pairs ): void {
+		$client->responses['Fresh roof view'] = 'Inneres Dach';
+		$jobs->run( State::POST, $pairs[0][0] );
+		$client->responses['Fresh roof view'] = 'Äußeres Dach';
+	};
+	$call_count = count( $client->calls );
+	$jobs->run( State::POST, $pairs[0][0] );
+	$check( 2 === count( $client->calls ) - $call_count, 'two overlapping translation jobs did not run' );
+	$check( 'Äußeres Dach' === get_post_meta( $pairs[0][1], CoverAlt::DISPLAY, true ), 'later writer retained the earlier job provenance' );
+	$check( State::SYNCED === $state->status( State::POST, $pairs[0][0] ), 'overlapping jobs did not finish synced' );
+
+	// Reverse the record order: while the first writer is still returning
+	// from its metadata update, a second job writes and records another
+	// valid value. The first job must retain that completed unit.
+	update_post_meta( $image2, '_wp_attachment_image_alt', 'Old roof view' );
+	update_post_meta( $pairs[0][1], Fields::COVER_ALT, 'Altes Dach' );
+	$translator->adopt_current( State::POST, $pairs[0][0] );
+	update_post_meta( $image2, '_wp_attachment_image_alt', 'Fresh roof view' );
+	$client->responses['Fresh roof view'] = 'Erstes Dach';
+	$fired = false;
+	$interleave = static function ( $meta_id, $id, $key ) use ( &$fired, $client, $jobs, $pairs ): void {
+		if ( ! $fired && $pairs[0][1] === $id && Fields::COVER_ALT === $key ) {
+			$fired = true;
+			$client->responses['Fresh roof view'] = 'Zweites Dach';
+			$jobs->run( State::POST, $pairs[0][0] );
+			$client->responses['Fresh roof view'] = 'Erstes Dach';
+		}
+	};
+	add_action( 'updated_post_meta', $interleave, 30, 3 );
+	$call_count = count( $client->calls );
+	$jobs->run( State::POST, $pairs[0][0] );
+	remove_action( 'updated_post_meta', $interleave, 30 );
+	$check( $fired, 'overlapping write fixture did not fire' );
+	$check( 2 === count( $client->calls ) - $call_count, 'two interleaved translation jobs did not run' );
+	$check( 'Zweites Dach' === get_post_meta( $pairs[0][1], CoverAlt::DISPLAY, true ), 'later record replaced the matching completed unit' );
+	$check( State::SYNCED === $state->status( State::POST, $pairs[0][0] ), 'interleaved writes did not finish synced' );
+
+	// A title translation may be writing a full post while another job
+	// translates a newly changed cover. It must not restore its old cover.
+	$client->responses['Another fixture title'] = 'Weiterer Titel';
+	$client->responses['Newest roof view'] = 'Neues Zieldach';
+	wp_update_post( array( 'ID' => $pairs[0][0], 'post_title' => 'Another fixture title' ) );
+	$fired = false;
+	$title_interleave = static function ( $id ) use ( &$fired, $image2, $jobs, $pairs ): void {
+		if ( ! $fired && $pairs[0][1] === $id ) {
+			$fired = true;
+			update_post_meta( $image2, '_wp_attachment_image_alt', 'Newest roof view' );
+			$jobs->run( State::POST, $pairs[0][0] );
+		}
+	};
+	add_action( 'pre_post_update', $title_interleave, 20 );
+	$jobs->run( State::POST, $pairs[0][0] );
+	remove_action( 'pre_post_update', $title_interleave, 20 );
+	$check( $fired, 'title and cover interleave did not fire' );
+	$check( 'Neues Zieldach' === get_post_meta( $pairs[0][1], Fields::COVER_ALT, true ), 'unrelated title write overwrote the newer cover' );
+	$check( 'Neues Zieldach' === get_post_meta( $pairs[0][1], CoverAlt::DISPLAY, true ), 'newer cover was not displayed after title write' );
+	$jobs->run( State::POST, $pairs[0][0] );
+	$check( State::SYNCED === $state->status( State::POST, $pairs[0][0] ), 'title and cover successor did not sync' );
+	$before[ $pairs[0][1] ] = array( get_post( $pairs[0][1] )->to_array(), wp_get_object_terms( $pairs[0][1], array( 'category', 'post_tag' ), array( 'fields' => 'ids' ) ), array_keys( wp_get_post_revisions( $pairs[0][1] ) ) );
+	$updates = 0;
 
 	// When a protected-only piece inside mixed prose changes, do not certify
 	// the old German: retain it with a visible structure exception instead.

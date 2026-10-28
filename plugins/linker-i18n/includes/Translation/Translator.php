@@ -82,6 +82,11 @@ final class Translator {
 				if ( null !== $twin && array( Fields::META . Fields::COVER_ALT ) === array_keys( $changed ) ) {
 					return $this->twins->translated_post_meta( $twin, $changed );
 				}
+				// A full write for another field must not overwrite a newer cover
+				// produced by a concurrent translation after this run planned it.
+				if ( null !== $twin && ! array_key_exists( Fields::META . Fields::COVER_ALT, $changed ) ) {
+					unset( $values[ Fields::META . Fields::COVER_ALT ] );
+				}
 				return $this->twins->post( $source_id, $values, null, false );
 			},
 			$force
@@ -183,7 +188,7 @@ final class Translator {
 				$missing[] = $field;
 			}
 		}
-		$this->record( $kind, $twin, $fields, $missing );
+		$this->record( $kind, $twin, $fields, $missing, array_map( static fn( array $field ): string => $field[0], $german ), true );
 		$status = array() === $missing ? State::SYNCED : State::PENDING;
 		$this->state->set_status( $kind, $source_id, $status, array() === $missing ? '' : 'no German for ' . implode( ', ', $missing ) );
 		return $status;
@@ -225,7 +230,7 @@ final class Translator {
 			}
 		}
 		$twin = State::POST === $kind ? $this->twins->post( $source_id, $values, $slug ) : $this->twins->term( $source_id, $values, $slug );
-		$this->record( $kind, $twin, $fields, $missing );
+		$this->record( $kind, $twin, $fields, $missing, $values, true );
 		$status = array() === $missing ? State::SYNCED : State::PENDING;
 		$this->state->set_status( $kind, $source_id, $status, array() === $missing ? '' : 'no German for ' . implode( ', ', $missing ) );
 		return $status;
@@ -284,24 +289,28 @@ final class Translator {
 		unset( $force );
 		$fingerprint = self::fingerprint( $source );
 		$units       = null === $twin ? array() : $this->state->units( $kind, $twin );
+		$cover_field = Fields::META . Fields::COVER_ALT;
+		$cover_unit  = $units[ $cover_field ] ?? null;
 		if ( null !== $twin && ( array() === $units || $this->state->source_hash( $kind, $twin ) === $fingerprint ) ) {
 			// Refresh old paragraph-level fingerprints without rewriting German.
-			$this->record( $kind, $twin, $source );
+			$this->record( $kind, $twin, $source, array(), null, false, $cover_unit );
 			$status = State::SYNCED;
 			$this->state->set_status( $kind, $source_id, $status );
 			return $status;
 		}
 
-		$current = $this->german_fields( $kind, $twin );
-		$plans   = array();
+		$current        = $this->german_fields( $kind, $twin );
+		$plans          = array();
+		$cover_produced = false;
 		foreach ( $source as $field => list( $value, $html ) ) {
 			$unit = $units[ $field ] ?? null;
-			if ( Fields::META . Fields::COVER_ALT === $field ) {
+			if ( $cover_field === $field ) {
 				$english = $this->planner->split( $value, false );
 				$german  = $current[ $field ][0] ?? '';
-				$changed = isset( $unit['src_raw'] ) && ! hash_equals( $unit['src_raw'], hash( 'sha256', $value ) );
-				if ( '' === trim( $value ) || ( array() === $english->segments && ( $changed || ( ! isset( $unit['src_raw'] ) && '' === trim( $german ) ) ) ) ) {
+				$changed = ! isset( $unit['src_raw'] ) || ! hash_equals( $unit['src_raw'], hash( 'sha256', $value ) );
+				if ( '' === trim( $value ) || ( array() === $english->segments && ( $changed && ( isset( $unit['src_raw'] ) || '' === trim( $german ) ) ) ) ) {
 					$plans[ $field ] = FieldPlan::keep( $english, $value );
+					$cover_produced  = $changed;
 					continue;
 				}
 				// Sentence hashes omit pure model/number-only pieces. Do not
@@ -310,6 +319,15 @@ final class Translator {
 					$plans[ $field ] = FieldPlan::blocked( $english, $german );
 					continue;
 				}
+				$plan         = $this->planner->plan( $value, $html, $current[ $field ] ?? null, $unit, false );
+				$known_output = isset( $unit['out_raw'] ) && hash_equals( $unit['out_raw'], hash( 'sha256', $german ) );
+				if ( $changed && isset( $unit['out_raw'] ) && ! $known_output && ! $this->cover_is_fully_rebuilt( $plan ) ) {
+					$plans[ $field ] = FieldPlan::blocked( $english, $german );
+					continue;
+				}
+				$cover_produced  = $changed && ( null === $plan->kept || ( $known_output && $unit['src'] === $english->hashes() ) );
+				$plans[ $field ] = $plan;
+				continue;
 			}
 			$plans[ $field ] = $this->planner->plan( $value, $html, $current[ $field ] ?? null, $unit, false );
 		}
@@ -336,10 +354,25 @@ final class Translator {
 			$twin = $write( $values, $changed );
 		}
 
-		$this->record( $kind, $twin, $source, array(), $values );
+		$this->record( $kind, $twin, $source, array(), $values, false, $cover_unit, $cover_produced );
 		$status = State::SYNCED;
 		$this->state->set_status( $kind, $source_id, $status );
 		return $status;
+	}
+
+	/**
+	 * Whether a new plain-text cover replaces every part of an untrusted target.
+	 *
+	 * @param FieldPlan $plan Planned cover translation.
+	 */
+	private function cover_is_fully_rebuilt( FieldPlan $plan ): bool {
+		if ( null !== $plan->kept || count( $plan->missing() ) !== count( $plan->english->segments ) ) {
+			return false;
+		}
+		if ( null === $plan->target ) {
+			return true;
+		}
+		return array() === $plan->splices && count( $plan->mapping ) === count( $plan->english->segments ) && count( $plan->mapping ) === count( $plan->target->segments ) && $this->planner->literal_hash( $plan->target ) === $this->planner->literal_hash( $this->planner->split( '', false ) );
 	}
 
 	/**
@@ -420,13 +453,16 @@ final class Translator {
 	/**
 	 * Records the English and German segment fingerprints after a successful write.
 	 *
-	 * @param string                             $kind State::POST or State::TERM.
-	 * @param int                                $twin German object ID.
-	 * @param array<string, array{string, bool}> $source English fields.
-	 * @param array<int, string>                 $missing Fields left without German during import.
-	 * @param array<string, string>|null         $expected Values produced by this run, before concurrent writes.
+	 * @param string                                                                                                                      $kind State::POST or State::TERM.
+	 * @param int                                                                                                                         $twin German object ID.
+	 * @param array<string, array{string, bool}>                                                                                          $source English fields.
+	 * @param array<int, string>                                                                                                          $missing Fields left without German during import.
+	 * @param array<string, string>|null                                                                                                  $expected Values observed or produced by this run.
+	 * @param bool                                                                                                                        $adopting Explicitly adopt the supplied German values.
+	 * @param array{src: list<string>, out: list<string>, conflict: bool, src_raw?: string, out_raw?: string, src_literals?: string}|null $observed_cover Cover state observed before planning.
+	 * @param bool                                                                                                                        $cover_produced Whether this run made a trusted result for changed English.
 	 */
-	private function record( string $kind, int $twin, array $source, array $missing = array(), ?array $expected = null ): void {
+	private function record( string $kind, int $twin, array $source, array $missing = array(), ?array $expected = null, bool $adopting = false, ?array $observed_cover = null, bool $cover_produced = false ): void {
 		$stored = $this->german_fields( $kind, $twin );
 		$prior  = $this->state->units( $kind, $twin );
 		$units  = array();
@@ -434,21 +470,29 @@ final class Translator {
 			if ( in_array( $field, $missing, true ) ) {
 				continue;
 			}
-			// An unrelated run must not certify a German cover value modified
-			// since the last successful translation of this English value.
 			$previous = $prior[ $field ] ?? null;
-			if ( Fields::META . Fields::COVER_ALT === $field && isset( $previous['src_raw'], $previous['out_raw'] ) && hash_equals( $previous['src_raw'], hash( 'sha256', $value ) ) ) {
-				$units[ $field ] = $previous;
-				continue;
+			if ( Fields::META . Fields::COVER_ALT === $field && ! $adopting ) {
+				$known = isset( $previous['src_raw'], $previous['out_raw'] ) ? $previous : $observed_cover;
+				if ( ! $cover_produced && isset( $known['src_raw'], $known['out_raw'] ) ) {
+					$units[ $field ] = $known;
+					continue;
+				}
+				// Another completed run can win after this run's write. Preserve
+				// its unit only when it matches the value actually stored now.
+				if ( $cover_produced && isset( $previous['src_raw'], $previous['out_raw'] ) && hash_equals( $previous['src_raw'], hash( 'sha256', $value ) ) && hash_equals( $previous['out_raw'], hash( 'sha256', $stored[ $field ][0] ?? '' ) ) ) {
+					$units[ $field ] = $previous;
+					continue;
+				}
 			}
+			$output          = Fields::META . Fields::COVER_ALT === $field ? ( $expected[ $field ] ?? $stored[ $field ][0] ?? '' ) : ( $stored[ $field ][0] ?? '' );
 			$units[ $field ] = array(
 				'src'      => $this->planner->split( $value, $html )->hashes(),
-				'out'      => $this->planner->split( $stored[ $field ][0] ?? '', $html )->hashes(),
+				'out'      => $this->planner->split( $output, $html )->hashes(),
 				'conflict' => false,
 			);
 			if ( Fields::META . Fields::COVER_ALT === $field ) {
 				$units[ $field ]['src_raw']      = hash( 'sha256', $value );
-				$units[ $field ]['out_raw']      = hash( 'sha256', $expected[ $field ] ?? $stored[ $field ][0] ?? '' );
+				$units[ $field ]['out_raw']      = hash( 'sha256', $output );
 				$units[ $field ]['src_literals'] = $this->planner->literal_hash( $this->planner->split( $value, false ) );
 			}
 		}
