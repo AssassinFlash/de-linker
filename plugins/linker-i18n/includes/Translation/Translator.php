@@ -428,9 +428,17 @@ final class Translator {
 	 */
 	private function record( string $kind, int $twin, array $source, array $missing = array(), ?array $expected = null ): void {
 		$stored = $this->german_fields( $kind, $twin );
+		$prior  = $this->state->units( $kind, $twin );
 		$units  = array();
 		foreach ( $source as $field => list( $value, $html ) ) {
 			if ( in_array( $field, $missing, true ) ) {
+				continue;
+			}
+			// An unrelated run must not certify a German cover value modified
+			// since the last successful translation of this English value.
+			$previous = $prior[ $field ] ?? null;
+			if ( Fields::META . Fields::COVER_ALT === $field && isset( $previous['src_raw'], $previous['out_raw'] ) && hash_equals( $previous['src_raw'], hash( 'sha256', $value ) ) ) {
+				$units[ $field ] = $previous;
 				continue;
 			}
 			$units[ $field ] = array(

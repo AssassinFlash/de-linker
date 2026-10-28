@@ -203,9 +203,29 @@ try {
 		}
 		$check( $call_count === count( $client->calls ), 'pure model or figure called the translator' );
 	}
+	$cover_field = Fields::META . Fields::COVER_ALT;
+	$previous_cover = $state->units( State::POST, $pairs[0][1] )[ $cover_field ];
 	update_post_meta( $pairs[0][1], Fields::COVER_ALT, '789' );
 	$check( '456' === get_post_meta( $pairs[0][1], CoverAlt::DISPLAY, true ), 'changed pure output bypassed provenance' );
+	$call_count = count( $client->calls );
+	$translator->post( $pairs[0][0] );
+	$check( $call_count === count( $client->calls ), 'unchanged English called the model after output tampering' );
+	$check( '456' === get_post_meta( $pairs[0][1], CoverAlt::DISPLAY, true ), 'no-op run certified the modified output' );
+	$check( $previous_cover === $state->units( State::POST, $pairs[0][1] )[ $cover_field ], 'no-op run changed established cover provenance' );
+	$old_body = get_post( $pairs[0][1] )->post_content;
+	$client->responses['Fixture changed'] = 'Geänderte Überschrift';
+	wp_update_post( array( 'ID' => $pairs[0][0], 'post_title' => 'Fixture changed' ) );
+	$jobs->run( State::POST, $pairs[0][0] );
+	$check( State::SYNCED === $state->status( State::POST, $pairs[0][0] ), 'unrelated title translation failed' );
+	$check( 'Geänderte Überschrift' === get_post( $pairs[0][1] )->post_title, 'unrelated title did not translate' );
+	$check( $old_body === get_post( $pairs[0][1] )->post_content, 'title update changed the German body' );
+	$check( '456' === get_post_meta( $pairs[0][1], CoverAlt::DISPLAY, true ), 'unrelated title run certified the modified output' );
+	$check( $previous_cover === $state->units( State::POST, $pairs[0][1] )[ $cover_field ], 'title run changed established cover provenance' );
 	update_post_meta( $pairs[0][1], Fields::COVER_ALT, '456' );
+	$check( '456' === get_post_meta( $pairs[0][1], CoverAlt::DISPLAY, true ), 'restored output did not match established provenance' );
+	$before[ $pairs[0][1] ] = array( get_post( $pairs[0][1] )->to_array(), wp_get_object_terms( $pairs[0][1], array( 'category', 'post_tag' ), array( 'fields' => 'ids' ) ), array_keys( wp_get_post_revisions( $pairs[0][1] ) ) );
+	$updates = 0;
+	$unschedule( $pairs[0][0] );
 
 	// A German-only SEO field changes field order. A translated sentence
 	// which produces identical German must not trigger a post update.
