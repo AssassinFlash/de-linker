@@ -98,10 +98,10 @@ use Linker\I18n\Woo\Projection;
 	if ( ! in_array( $pair['mode'], array( 'adopt', 'restore' ), true ) ) {
 		throw new RuntimeException( 'Unknown reviewed pair operation.' );
 	}
-	foreach ( $pair['changes'] as $change ) {
-		if ( $change['before'] === $change['after'] ) {
-			throw new RuntimeException( 'A write requires both pages to change; inspect no-op pairs separately.' );
-		}
+	$en_changed = $pair['changes'][0]['before'] !== $pair['changes'][0]['after'];
+	$de_changed = $pair['changes'][1]['before'] !== $pair['changes'][1]['after'];
+	if ( ! $en_changed && ! $de_changed ) {
+		throw new RuntimeException( 'A write requires at least one reviewed page to change.' );
 	}
 	$locked         = false;
 	$adopted        = false;
@@ -178,7 +178,7 @@ use Linker\I18n\Woo\Projection;
 		}
 		$adopted = true;
 	};
-	$verify         = static function ( string $query ) use ( $en, $pair, $read, $translator, &$locked, &$adopted, &$expected, $wpdb ): string {
+	$verify         = static function ( string $query ) use ( $en, $de, $de_changed, $pair, $read, $translator, $adopt, &$locked, &$adopted, &$expected, $wpdb ): string {
 		if ( 'START TRANSACTION' === $query ) {
 			// Limit this to the next transaction, after the writer's preflight.
 			// Native reads must see current locked values and protect absent keys;
@@ -190,6 +190,11 @@ use Linker\I18n\Woo\Projection;
 		}
 		if ( 'COMMIT' !== $query ) {
 			return $query;
+		}
+		if ( $locked && ! $adopted && ! $de_changed ) {
+			// An unchanged German page has no post_updated event. The same
+			// adoption guard verifies both after texts before recording the baseline.
+			$adopt( $de );
 		}
 		$valid = 'restore' === $pair['mode'] ? $read() === $pair['metadata_restore'] : $translator->current( State::POST, $en ) && $read() === $expected;
 		if ( ! $locked || ! $adopted || ! $valid ) {

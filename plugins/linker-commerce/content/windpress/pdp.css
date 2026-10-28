@@ -223,7 +223,7 @@
 	max-height: calc(100dvh - var(--lk-header-h, 80px) - 32px);
 	padding-bottom: 8px;
 	overflow-y: auto;
-	overscroll-behavior: contain;
+	overscroll-behavior-x: contain;
 	scrollbar-width: thin;
 	background: var(--pdp-paper);
 }
@@ -882,8 +882,13 @@
 #tv-storefront-pdp .pdp-spec-deck {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
-	align-items: stretch;
+	align-items: start;
 	gap: 16px;
+}
+
+#tv-storefront-pdp .pdp-spec-deck > .pdp-info-panel {
+	container-name: pdp-spec-card;
+	container-type: inline-size;
 }
 
 #tv-storefront-pdp .pdp-spec-deck .pdp-info-tabs {
@@ -895,8 +900,8 @@
    `display: none !important` from inside `@layer base` — a layered important
    declaration beats an unlayered one whatever the specificity, so the card
    display is written with the same importance and in the same layer, where
-   this selector's own specificity decides. The panel is a grid so its card
-   stretches to the row's height. (The contract is asserted live in
+   this selector's own specificity decides. Panels remain grids, and each
+   card follows its own content height. (The contract is asserted live in
    tests/e2e/specs/products.spec.ts — a preflight that moved layers would
    fail it.) */
 @layer base {
@@ -947,6 +952,15 @@
 	font-size: 13px;
 	font-weight: 400;
 	line-height: 1.5;
+}
+
+/* Reuse the <=860px phone row's reading layout when the specification card
+   itself is narrow; wider cards retain the label/value columns above. */
+@container pdp-spec-card (max-width: 860px) {
+	#tv-storefront-pdp .pdp-stat-row {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 4px;
+	}
 }
 
 #tv-storefront-pdp details.pdp-tab-disclosure {
