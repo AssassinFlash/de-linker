@@ -4,6 +4,9 @@ node_modules
 package-lock.json
 storybook-static
 vendor
+# Written by engine export_planner_schemas.py; keep the same canonical bytes as
+# apps/planner/src/contracts/project-input-contracts.json, not a second format.
+project-input-contracts.json
 # Written by services/engine (scripts/export_schemas.py, tests/test_ui_fixtures.py)
 # and compared byte for byte there; formatting them here would make them stale.
 src/configurator/schema
