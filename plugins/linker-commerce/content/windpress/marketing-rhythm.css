@@ -34,7 +34,7 @@ html[lang^="de"]
 			#tv-cp-page-v1,
 			#service-redesign
 		) :is(.lk-h2, .lk-h3),
-		#tv-rs-page-v1 .lk-tooldeck-content h3
+		:is(#tv-rs-page-v1, #tv-cs-page-v1) .lk-tooldeck-content h3
 	) {
 	-webkit-hyphens: manual;
 	hyphens: manual;
