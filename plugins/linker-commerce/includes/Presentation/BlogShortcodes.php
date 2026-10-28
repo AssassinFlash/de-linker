@@ -60,9 +60,25 @@ final class BlogShortcodes {
 	 */
 	public function register(): void {
 		add_action( 'init', array( JournalTitles::class, 'register' ) );
+		add_filter( 'pre_get_document_title', array( $this, 'empty_search_title' ), 60 );
 		add_shortcode( 'linker_blog_post_categories', array( $this, 'post_categories' ) );
 		add_shortcode( 'linker_blog_related_posts', array( $this, 'related_posts' ) );
 		add_shortcode( 'linker_blog_share', array( $this, 'share' ) );
+	}
+
+	/**
+	 * Name the cleared journal search after SEOPress and the German title filter
+	 * have composed the browser title. Keep its site suffix and other searches.
+	 *
+	 * @param string $title The composed browser title.
+	 */
+	public function empty_search_title( string $title ): string {
+		if ( ! is_search() || 'post' !== get_query_var( 'post_type' ) || '' !== get_search_query( false ) ) {
+			return $title;
+		}
+		$heading = 'de' === $this->request_language() ? 'Alle Beiträge' : 'All posts';
+		$suffix  = strstr( $title, '|' );
+		return $heading . ( false === $suffix ? '' : ' ' . $suffix );
 	}
 
 	/**
@@ -233,12 +249,12 @@ final class BlogShortcodes {
 				. '</svg></div>';
 		}
 		$srcset = wp_get_attachment_image_srcset( $image_id, self::CARD_IMAGE_SIZE );
-		$alt    = (string) get_post_meta( $image_id, '_wp_attachment_image_alt', true );
 		$html   = '<img src="' . esc_url( $src ) . '"';
 		if ( \is_string( $srcset ) && '' !== $srcset ) {
 			$html .= ' srcset="' . esc_attr( $srcset ) . '"';
 		}
-		$html .= ' sizes="' . esc_attr( self::CARD_IMAGE_SIZES ) . '" loading="lazy" alt="' . esc_attr( $alt ) . '">';
+		// The linked card already names the article in its heading; the thumbnail is decorative.
+		$html .= ' sizes="' . esc_attr( self::CARD_IMAGE_SIZES ) . '" loading="lazy" alt="">';
 		return $html;
 	}
 

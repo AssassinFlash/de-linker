@@ -145,7 +145,16 @@ final class ProductShortcodesTest extends TestCase {
 			)
 		);
 		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn( $value ) => $value ) );
-		WP_Mock::userFunction( 'sanitize_text_field', array( 'return' => static fn( string $value ): string => $value ) );
+		// Model the native text sanitizer's whitespace and percent-sequence handling.
+		WP_Mock::userFunction(
+			'sanitize_text_field',
+			array(
+				'return' => static function ( string $value ): string {
+					$collapsed = (string) preg_replace( '/[\r\n\t ]+/', ' ', trim( $value ) );
+					return trim( (string) preg_replace( '/%[a-f0-9]{2}/i', '', $collapsed ) );
+				},
+			)
+		);
 		WP_Mock::userFunction( 'user_trailingslashit', array( 'return' => static fn( string $url ): string => rtrim( $url, '/' ) . '/' ) );
 		WP_Mock::userFunction( 'untrailingslashit', array( 'return' => static fn( string $url ): string => rtrim( $url, '/' ) ) );
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => static fn( $thing ): bool => $thing instanceof \WP_Error ) );
@@ -354,6 +363,80 @@ final class ProductShortcodesTest extends TestCase {
 		$this->assertSame( 'http://linker.test/de/?s=inverter&post_type=post', $this->url( 'de' ), 'Journal scope must not silently become a general search in the other language.' );
 		$_GET['post_type'] = array( 'post' );
 		$this->assertSame( 'http://linker.test/de/?s=inverter', $this->url( 'de' ), 'Malformed type lists do not become preserved journal scope.' );
+	}
+
+	/**
+	 * Journal search keeps the visitor's text and uses the target language,
+	 * including when the native switcher uses a language query parameter.
+	 *
+	 * @dataProvider journal_search_language_urls
+	 * @param string $current Current language.
+	 * @param string $target Target language.
+	 * @param string $native_url Polylang switcher URL.
+	 * @param string $search Visitor's search text.
+	 * @param string $before URL produced by the previous adapter.
+	 * @param string $expected Expected URL passed through the native filter.
+	 */
+	public function test_journal_search_switch_targets_the_requested_language( string $current, string $target, string $native_url, string $search, string $before, string $expected ): void {
+		WP_Mock::userFunction( 'get_queried_object', array( 'return' => null ) );
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => $current ) );
+		WP_Mock::userFunction( 'pll_the_languages', array( 'return' => array( $target => array( 'url' => $native_url ) ) ) );
+		$_SERVER['REQUEST_URI'] = '/?post_type=post&lang=' . $current . '&s=' . rawurlencode( $search );
+		$_GET                   = array(
+			'post_type' => 'post',
+			'lang'      => $current,
+			's'         => $search,
+		);
+		foreach ( array_unique( array( $before, $expected ) ) as $filtered_url ) {
+			$this->filter_returns( 'pll_translation_url', $filtered_url, array( $filtered_url, $target ) );
+		}
+
+		$url = $this->url( $target );
+		parse_str( (string) parse_url( $url, PHP_URL_QUERY ), $query );
+		self::assertSame( $expected, $url );
+		self::assertSame( $target, $query['lang'] ?? null );
+		self::assertSame( $search, $query['s'] ?? null );
+		self::assertSame( 'post', $query['post_type'] ?? null );
+	}
+
+	/**
+	 * Native directory and query-mode switcher answers.
+	 *
+	 * @return array<string, array{string, string, string, string, string, string}>
+	 */
+	public function journal_search_language_urls(): array {
+		return array(
+			'german directory to english with stale query' => array( 'de', 'en', 'http://linker.test/?lang=de&s=Notstrom&post_type=post', 'Notstrom', 'http://linker.test/?lang=de&s=Notstrom&post_type=post', 'http://linker.test/?lang=en&s=Notstrom&post_type=post' ),
+			'query mode to german'                         => array( 'en', 'de', 'http://linker.test/?lang=de&s=inverter', 'inverter', 'http://linker.test/?lang=de&s=inverter&post_type=post', 'http://linker.test/?lang=de&s=inverter&post_type=post' ),
+			'explicit default language path and query'     => array( 'de', 'en', 'http://linker.test/en/?lang=en&s=Notstrom', 'Notstrom', 'http://linker.test/en/?lang=en&s=Notstrom&post_type=post', 'http://linker.test/en/?lang=en&s=Notstrom&post_type=post' ),
+			'encoded visitor text'                         => array( 'de', 'en', 'http://linker.test/?lang=de', 'SMA + Speicher & Akku', 'http://linker.test/?lang=de&s=SMA%20%2B%20Speicher%20%26%20Akku&post_type=post', 'http://linker.test/?lang=en&s=SMA%20%2B%20Speicher%20%26%20Akku&post_type=post' ),
+			'literal percent and repeated spaces'          => array( 'de', 'en', 'http://linker.test/?lang=en', 'PV%20  battery', 'http://linker.test/?lang=en&s=PV%20battery&post_type=post', 'http://linker.test/?lang=en&s=PV%2520%20%20battery&post_type=post' ),
+			'markup is encoded in the URL'                 => array( 'de', 'en', 'http://linker.test/?lang=en', '"><script>alert(1)</script>', 'http://linker.test/?lang=en&s=%22%3E%3Cscript%3Ealert%281%29%3C%2Fscript%3E&post_type=post', 'http://linker.test/?lang=en&s=%22%3E%3Cscript%3Ealert%281%29%3C%2Fscript%3E&post_type=post' ),
+		);
+	}
+
+	/** An empty journal search stays a search for posts after switching. */
+	public function test_empty_journal_search_keeps_its_search_key_and_post_scope(): void {
+		WP_Mock::userFunction( 'get_queried_object', array( 'return' => null ) );
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'de' ) );
+		WP_Mock::userFunction( 'pll_the_languages', array( 'return' => array( 'en' => array( 'url' => 'http://linker.test/?lang=de' ) ) ) );
+		$_SERVER['REQUEST_URI'] = '/de/?post_type=post&lang=de&s=';
+		$_GET                   = array(
+			'post_type' => 'post',
+			'lang'      => 'de',
+			's'         => '',
+		);
+		$before                 = 'http://linker.test/?lang=de';
+		$expected               = 'http://linker.test/?lang=en&s=&post_type=post';
+		$this->filter_returns( 'pll_translation_url', $before, array( $before, 'en' ) );
+		$this->filter_returns( 'pll_translation_url', $expected, array( $expected, 'en' ) );
+
+		$url = $this->url( 'en' );
+		parse_str( (string) parse_url( $url, PHP_URL_QUERY ), $query );
+		self::assertArrayHasKey( 's', $query );
+		self::assertSame( '', $query['s'] );
+		self::assertSame( 'post', $query['post_type'] ?? null );
+		self::assertSame( 'en', $query['lang'] ?? null );
 	}
 
 	/**
