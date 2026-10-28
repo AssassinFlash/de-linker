@@ -1425,6 +1425,9 @@ final class Materials {
 		if ( ! \is_array( $voltage ) || 'V' !== ( $voltage['unit'] ?? null ) || ! \is_string( $voltage['value'] ?? null ) || 1 !== \preg_match( '/^\s*[123]\s*\+\s*N\s*\+\s*PE\s*,\s*\d{2,4}\s*\/\s*\d{2,4}\s*$/iD', $voltage['value'] ) ) {
 			return $display;
 		}
+		if ( $display !== $voltage['value'] ) {
+			return $display;
+		}
 		foreach ( array( 'phase', 'phases' ) as $field ) {
 			$phase = $facts[ $field ] ?? null;
 			if ( ! \is_array( $phase ) || '' !== trim( (string) ( $phase['unit'] ?? '' ) ) || ( $phase['value'] ?? null ) !== $voltage['value'] ) {

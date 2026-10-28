@@ -287,6 +287,22 @@ final class MaterialsVoltageTest extends TestCase {
 				),
 			),
 		);
+		$materials['translated-phase-only']    = array(
+			'bindings'  => array( 'woo_product_ids' => array( 9015 ) ),
+			'identity'  => array( 'kind' => 'all_in_one_system' ),
+			'technical' => array(
+				'specifications' => array(
+					'phases'           => array(
+						'value'    => '3+N+PE, 380/400',
+						'value_de' => '3-phasig',
+					),
+					'rated_ac_voltage' => array(
+						'value' => '3+N+PE, 380/400',
+						'unit'  => 'V',
+					),
+				),
+			),
+		);
 		$this->seed_registry( $materials );
 		foreach ( array( false, true ) as $language ) {
 			$german = $language;
@@ -296,6 +312,7 @@ final class MaterialsVoltageTest extends TestCase {
 			$actual_stats = array_column( Materials::key_stats( $this->product( 9013 ) ), 'value', 'key' );
 			$this->assertSame( '3+N+PE, 380/400 V', $actual_stats['phase'] );
 			$this->assertSame( $language ? '3-phasig' : '3-phase', Materials::key_stats( $this->product( 9014 ) )[0]['value'] );
+			$this->assertSame( $language ? '3-phasig' : '3+N+PE, 380/400 V', Materials::key_stats( $this->product( 9015 ) )[0]['value'] );
 		}
 	}
 
