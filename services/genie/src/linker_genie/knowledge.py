@@ -37,6 +37,7 @@ from linker_genie.publication import (
     current,
 )
 from linker_genie.retrieval import LANGS, DocumentIndex, ServingMismatch, default_index
+from linker_genie.warranty_answer import answers as warranty_answers
 
 NAME = "linker/search-knowledge"
 # The input the model is told about (agent.INPUT_DOCS); `validate` reads the same shape.
@@ -176,6 +177,12 @@ class KnowledgeSearch:
             tagged = tag(hit.chunk_id, hit.text, excluded_spans=tuple(protected))
             entry["text"] = tagged.text
             entry["figures"] = tagged.figures
+            if hit.warranty_terms:
+                checked = knowledge_qualifications(entry)
+                rendered = warranty_answers(entry, checked) if checked else {}
+                if not rendered:
+                    continue
+                entry["warranty_answers"] = rendered
             payload_hits.append(entry)
         return {
             "ranking": index.ranking,
@@ -265,6 +272,7 @@ def model_view(payload: dict[str, Any]) -> dict[str, Any]:
                     "product_ids": hit.get("product_ids", []),
                     "product_models": hit.get("product_models", []),
                     "warranty_terms": True,
+                    "warranty_answers": hit.get("warranty_answers", {}),
                 }
                 if hit.get("warranty_terms") is True
                 else {}

@@ -211,6 +211,42 @@ def valid_pdf_cover(anchor: Any, sha: str, chunk_id: str, text: str) -> bool:
     )
 
 
+def _policy_fragments(
+    row: Mapping[str, Any], sha: str, source_ids: Sequence[str]
+) -> list[dict[str, Any]] | None:
+    """Reconstruct the original pieces of a row without trusting their metadata."""
+    fragments, source, number = row.get("fragments"), row.get("source"), row.get("row")
+    if not isinstance(fragments, list) or not fragments or not isinstance(source, dict):
+        return None
+    page = source.get("page")
+    if type(page) is not int or page < 1 or type(number) is not int:
+        return None
+    result: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for index, fragment in enumerate(fragments):
+        if not isinstance(fragment, dict):
+            return None
+        cid = source.get("chunk_id") if index == 0 else fragment.get("chunk_id")
+        text = source.get("text") if index == 0 else fragment.get("text")
+        rows = fragment.get("rows")
+        if (
+            not isinstance(cid, str)
+            or cid in seen
+            or cid not in source_ids
+            or not isinstance(text, str)
+            or not isinstance(rows, list)
+            or any(type(item) is not int or item < 0 for item in rows)
+            or number not in rows
+            or len(rows) != len(text.splitlines())
+            or cid
+            != f"{sha[:12]}-p{page}-{hashlib.sha256(('table' + chr(0) + text).encode()).hexdigest()[:8]}"
+        ):
+            return None
+        seen.add(cid)
+        result.append({"chunk_id": cid, "text": text, "rows": rows})
+    return result
+
+
 def terms_text(
     value: Mapping[str, Any], source_ids: Sequence[str]
 ) -> tuple[str, list[dict[str, Any]]] | None:
@@ -284,14 +320,36 @@ def terms_text(
     if not token or not period or not production:
         return None
 
-    # The row fragment must physically contain all three selected cells; this
-    # also rejects detached continuations and inferred neighbouring rows.
+    # Compare complete original cells at their column boundaries. Substring
+    # containment would, for example, accept "0 years" inside "10 years".
+    # Long native rows can span chunks; join only the recorded pieces of this
+    # row, whose identities and order are checked against the external anchor.
     def norm(text: str) -> str:
         return " ".join(text.split()).casefold()
 
+    if "fragments" in row:
+        fragments = _policy_fragments(row, sha, source_ids)
+        if fragments is None:
+            return None
+        pieces = [
+            line
+            for fragment in fragments
+            for line, line_row in zip(
+                fragment["text"].splitlines(), fragment["rows"], strict=True
+            )
+            if line_row == number
+        ]
+        candidates = [" ".join(pieces)]
+    else:
+        # Existing complete-row proofs do not need any continuation metadata.
+        candidates = row_text.splitlines()
+    expected = [norm(cell) for cell in selected]
     if not any(
-        all(norm(x) in norm(line) for x in (period, production, token))
-        for line in row_text.splitlines()
+        len(fields := line.split("|")) == 6
+        and not fields[0].strip()
+        and not fields[-1].strip()
+        and [norm(cell) for cell in fields[1:-1]] == expected
+        for line in candidates
     ):
         return None
     kinds = ("overview", "start", "effective", "geography", "exclusions")
@@ -618,6 +676,9 @@ def valid_warranty_scope(
             or anchor.get("kind") != "policy_table"
             or table_id not in source_ids
             or not isinstance(source, dict)
+            or not isinstance(source.get("text"), str)
+            or type(row.get("row")) is not int
+            or row["row"] < 1
             or cells is None
             or anchor.get("source_sha256") != sha
             or anchor.get("source_page") != source.get("page")
@@ -634,6 +695,40 @@ def valid_warranty_scope(
             )
         ):
             return False
+        if "fragments" in row:
+            fragments = _policy_fragments(row, sha, source_ids)
+            if fragments is None or fragments != [
+                fragment
+                for fragment in anchor["fragments"]
+                if isinstance(fragment, dict)
+                and isinstance(fragment.get("rows"), list)
+                and row.get("row") in fragment["rows"]
+            ]:
+                return False
+        else:
+            # Legacy proofs can use a single complete row only. Without the
+            # recorded line-to-row mapping, a multi-row fragment could borrow
+            # an identical-looking value from its neighbour.
+            matching = [
+                fragment
+                for fragment in anchor["fragments"]
+                if isinstance(fragment, dict)
+                and fragment.get("chunk_id") == source.get("chunk_id")
+                and fragment.get("text") == source.get("text")
+            ]
+            if len(matching) != 1:
+                return False
+            rows = matching[0].get("rows")
+            if (
+                not isinstance(rows, list)
+                or len(rows) != len(source["text"].splitlines())
+                or rows.count(row.get("row")) != 1
+                or any(
+                    type(item) is not int or item not in {0, row["row"]}
+                    for item in rows
+                )
+            ):
+                return False
         term_sources = policy.get("term_sources")
         if not isinstance(term_sources, dict):
             return False

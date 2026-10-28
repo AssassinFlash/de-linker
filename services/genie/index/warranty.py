@@ -62,7 +62,9 @@ def _rows(chunk: Chunk) -> list[tuple[str, str]]:
     return output
 
 
-def _family_cover(parts: list[Chunk]) -> tuple[Chunk, tuple[str, str, str]] | None:
+def _family_cover(
+    parts: list[Chunk], *, page_parts: list[Chunk] | None = None
+) -> tuple[Chunk, tuple[str, str, str]] | None:
     """Resolve a cover title and its range across chunks of the same page.
 
     Chunking repeats a section heading even where only the first chunk carries
@@ -126,7 +128,34 @@ def _family_cover(parts: list[Chunk]) -> tuple[Chunk, tuple[str, str, str]] | No
     elif len({f[0] for _, f in candidates}) != 1:
         return None
     ranged = {(f[1], f[2]) for _, f in candidates if f[1] or f[2]}
-    if len(ranged) > 1:
+    name = candidates[0][1][0]
+    # A chunk that names another family cannot itself be a cover candidate,
+    # but it can still explicitly contradict the chosen family's range. Stop
+    # each association at the next family name so a battery's rating does not
+    # become the inverter's. Inspect restricted passages for contradictions as
+    # well: restriction prevents using a passage as cover, not seeing it.
+    observed = set(ranged)
+    for chunk in parts if page_parts is None else page_parts:
+        if chunk.page != 1 or chunk.kind != "text" or chunk.source_picture:
+            continue
+        context = chunk.section + "\n" + chunk.text
+        families = list(FAMILY.finditer(context))
+        for index, match in enumerate(families):
+            if match.group(1).casefold() != name:
+                continue
+            end = (
+                families[index + 1].start()
+                if index + 1 < len(families)
+                else len(context)
+            )
+            for lower, upper in POWER_RANGE.findall(context[match.end() : end]):
+                observed.add(
+                    (
+                        str(Decimal(lower.replace(",", ".")).normalize()),
+                        str(Decimal(upper.replace(",", ".")).normalize()),
+                    )
+                )
+    if len(observed) > 1 or (observed and not ranged):
         return None
     if ranged:
         signature = (candidates[0][1][0], *next(iter(ranged)))
@@ -183,8 +212,10 @@ def compile_procedures(
         ):
             continue
         sha = document["blob_sha256"]
+        page_parts = by_sha.get(sha, [])
         cover_result = _family_cover(
-            [c for c in by_sha.get(sha, []) if c.id not in restricted_contexts]
+            [c for c in page_parts if c.id not in restricted_contexts],
+            page_parts=page_parts,
         )
         if cover_result is None:
             continue
@@ -486,6 +517,20 @@ def compile_terms(
             if cells is None:
                 continue
             for row_index in chunk.source_rows:
+                row_fragments = [
+                    part
+                    for part in parts
+                    if part.kind == "table"
+                    and part.page == chunk.page
+                    and part.source_table == chunk.source_table
+                    and row_index in part.source_rows
+                ]
+                if (
+                    not row_fragments
+                    or row_fragments[0].id != chunk.id
+                    or any(part.id in restricted_contexts for part in row_fragments)
+                ):
+                    continue
                 series_cells = [
                     c
                     for c in cells
@@ -523,12 +568,22 @@ def compile_terms(
                         "page": chunk.page,
                         "text": chunk.text,
                     },
+                    "fragments": [
+                        {"rows": list(part.source_rows)}
+                        if index == 0
+                        else {
+                            "chunk_id": part.id,
+                            "text": part.text,
+                            "rows": list(part.source_rows),
+                        }
+                        for index, part in enumerate(row_fragments)
+                    ],
                 }
                 scoped["source_chunk_ids"] = list(
                     dict.fromkeys(
                         [
                             *scoped["source_chunk_ids"],
-                            chunk.id,
+                            *(part.id for part in row_fragments),
                             table_anchor.id if table_anchor else "",
                             *(str(c["chunk_id"]) for c in term_sources.values()),
                         ]

@@ -15,6 +15,7 @@ from typing import Any
 from linker_genie.figures import chunk_of, swap_decimals
 from linker_genie.stock import phrase
 from linker_genie.tools import READ_ATTACHMENT, READ_PAGE, READ_PLANNING, READ_SOLUTION
+from linker_genie.warranty_answer import answers as warranty_answers
 
 
 @dataclass
@@ -63,8 +64,8 @@ class TurnFacts:
     warranty_chunks: set[str] = field(default_factory=set)
     warranty_procedures: set[str] = field(default_factory=set)
     warranty_models: dict[str, tuple[str, ...]] = field(default_factory=dict)
-    # Figure role follows the original policy row or verified source condition.
-    warranty_figure_roles: dict[str, str] = field(default_factory=dict)
+    # Only these source-derived strings can be emitted as policy claims.
+    warranty_answers: dict[str, dict[str, str]] = field(default_factory=dict)
     # The current Woo product association for each returned knowledge chunk.
     knowledge_products: dict[str, tuple[int, ...]] = field(default_factory=dict)
     # Product ID → the commerce object a product ability returned for this
@@ -286,10 +287,12 @@ def merge(parts: list[TurnFacts]) -> TurnFacts:
         combined.qualifications.update(part.qualifications)
         combined.warranty_chunks.update(part.warranty_chunks)
         combined.warranty_procedures.update(part.warranty_procedures)
-        for figure, role in part.warranty_figure_roles.items():
-            previous_role = combined.warranty_figure_roles.get(figure)
-            combined.warranty_figure_roles[figure] = (
-                role if previous_role is None or previous_role == role else ""
+        for cid, answers in part.warranty_answers.items():
+            previous_answers = combined.warranty_answers.get(cid)
+            combined.warranty_answers[cid] = (
+                answers
+                if previous_answers is None or previous_answers == answers
+                else {}
             )
         for cid, models in part.warranty_models.items():
             previous_models = combined.warranty_models.get(cid)
@@ -806,10 +809,11 @@ def _from_knowledge(gathered: TurnFacts, payload: dict[str, Any]) -> None:
             ):
                 continue
             if hit.get("warranty_terms") is True:
+                rendered = warranty_answers(hit, notes)
+                if not rendered or hit.get("warranty_answers") != rendered:
+                    continue
                 gathered.warranty_chunks.add(chunk_id)
-                gathered.warranty_figure_roles.update(
-                    _warranty_figure_roles(chunk_id, hit, notes)
-                )
+                gathered.warranty_answers[chunk_id] = rendered
             else:
                 gathered.warranty_procedures.add(chunk_id)
             gathered.warranty_models[chunk_id] = tuple(models)
@@ -864,38 +868,6 @@ def _from_knowledge(gathered: TurnFacts, payload: dict[str, Any]) -> None:
         for figure, value in (figures if isinstance(figures, dict) else {}).items():
             if isinstance(figure, str) and isinstance(value, str) and value:
                 gathered.add(Fact(id=figure, value=value, source="search-knowledge"))
-
-
-def _warranty_figure_roles(
-    chunk_id: str, hit: dict[str, Any], notes: tuple[Qualification, ...]
-) -> dict[str, str]:
-    """Keep the role of each number in the verified original policy evidence."""
-    from linker_genie.warranty_scope import exclusion_category
-
-    text = hit.get("text")
-    if not isinstance(text, str) or len(notes) < 6:
-        return {}
-    lines = text.splitlines()
-    roles: dict[str, str] = {}
-
-    def record(line: str, role: str) -> None:
-        for number in re.findall(r"\[n([1-9]\d*)=[^\[\]\n]+\]", line):
-            roles[f"{chunk_id}.n{number}"] = role
-
-    for line in lines:
-        if line.casefold().startswith("| warranty / garantie |"):
-            record(line, "period")
-    for index, note in enumerate(notes):
-        role = {0: "production", 2: "start", 3: "effective"}.get(index, "")
-        if index >= 6 and exclusion_category(note.quote) == "reporting":
-            role = "reporting"
-        if not role:
-            continue
-        marker = note.quote.split(":", 1)[0] + ":"
-        for line in lines:
-            if line.startswith(marker):
-                record(line, role)
-    return roles
 
 
 def _from_inquiry(
