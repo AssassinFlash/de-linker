@@ -6892,5 +6892,15 @@ msgid "Partially documented"
 msgstr "Teilweise dokumentiert"
 
 #: includes/Presentation/ProductShortcodes.php
+#. translators: %s: manufacturer.
+#, php-format
+msgid "Documented by %s"
+msgstr "Von %s dokumentiert"
+
+#: includes/Presentation/ProductShortcodes.php
+msgid "Compatibility documented"
+msgstr "Kompatibilität dokumentiert"
+
+#: includes/Presentation/ProductShortcodes.php
 msgid "Compatibility information unavailable"
 msgstr "Keine Kompatibilitätsangabe verfügbar"

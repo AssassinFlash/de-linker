@@ -1588,9 +1588,14 @@ final class ProductShortcodesTest extends TestCase {
 		$rows     = $registry['materials']['mat_goodwe_gw125k_etr_g10']['technical']['relationships'];
 		$method   = new \ReflectionMethod( ProductShortcodes::class, 'pairing_status' );
 		foreach ( $rows as $row ) {
-			$expected = 'one_way' === $row['status'] ? 'Partially documented' : "On GoodWe's compatibility list";
+			$expected = 'one_way' === $row['status'] ? 'Partially documented' : 'Documented by GoodWe';
 			$this->assertSame( $expected, $method->invoke( null, $row, 'en' ) );
 		}
+		$eha_rows = $registry['materials']['mat_goodwe_gw10k_eha_g20']['technical']['relationships'];
+		foreach ( $eha_rows as $row ) {
+			$this->assertSame( 'Documented by GoodWe', $method->invoke( null, $row, 'en' ) );
+		}
+		$this->assertSame( 'Compatibility documented', $method->invoke( null, array( 'status' => 'listed' ), 'en' ) );
 		$contract = \Linker\Commerce\Products\Materials::contract();
 		foreach ( $contract['cells'] as $cell ) {
 			if ( 'one_way' === $cell['status'] ) {
