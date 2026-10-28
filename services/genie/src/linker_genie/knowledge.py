@@ -21,13 +21,14 @@ on the turn's tool call.
 from __future__ import annotations
 
 import logging
+import re
 import sqlite3
 import threading
 from collections.abc import Callable
 from typing import Any
 
 from linker_genie.embedding import EmbeddingError
-from linker_genie.facts import TurnFacts, collect
+from linker_genie.facts import TurnFacts, collect, knowledge_qualifications
 from linker_genie.figures import tag
 from linker_genie.publication import (
     PublicationChanged,
@@ -121,22 +122,45 @@ class KnowledgeSearch:
         )
         payload_hits = []
         for hit in hits:
-            tagged = tag(hit.chunk_id, hit.text)
-            payload_hits.append(
-                {
-                    "chunk_id": hit.chunk_id,
-                    "document_id": hit.document_id,
-                    "document_revision": hit.document_revision,
-                    "product_ids": list(hit.product_ids),
-                    "doc_url": hit.doc_url,
-                    "title": hit.title,
-                    "page": hit.page,
-                    "section": hit.section,
-                    "text": tagged.text,
-                    "figures": tagged.figures,
-                    **({"scope_note": hit.scope_note} if hit.scope_note else {}),
-                }
-            )
+            if bool(hit.qualifications) != hit.qualification_required:
+                continue
+            entry: dict[str, Any] = {
+                "chunk_id": hit.chunk_id,
+                "document_id": hit.document_id,
+                "document_revision": hit.document_revision,
+                "product_ids": list(hit.product_ids),
+                "doc_url": hit.doc_url,
+                "title": hit.title,
+                "page": hit.page,
+                "section": hit.section,
+                "text": hit.text,
+                **({"scope_note": hit.scope_note} if hit.scope_note else {}),
+                **(
+                    {
+                        "qualification_required": True,
+                        "qualifications": list(hit.qualifications),
+                    }
+                    if hit.qualification_required
+                    else {}
+                ),
+            }
+            notes = knowledge_qualifications(entry)
+            if notes is None or bool(notes) != hit.qualification_required:
+                continue
+            protected: list[tuple[int, int]] = []
+            for note in notes:
+                annotation = f"{note.quote} (p. {note.page})"
+                start = hit.text.index(annotation)
+                protected.append((start, start + len(annotation)))
+                marker = note.quote.split(":", 1)[0]
+                protected.extend(
+                    match.span()
+                    for match in re.finditer(re.escape(marker) + r"(?!\d)", hit.text)
+                )
+            tagged = tag(hit.chunk_id, hit.text, excluded_spans=tuple(protected))
+            entry["text"] = tagged.text
+            entry["figures"] = tagged.figures
+            payload_hits.append(entry)
         return {
             "ranking": index.ranking,
             "encoder": encoder,
@@ -159,7 +183,7 @@ def record(
     figure table and URLs included: the quality check rebuilds the turn's facts
     from the log (quality.citations).
     """
-    payload = search(arguments)
+    payload = _qualified_hits(search(arguments))
     gathered = collect(NAME, payload, locale)
     gathered.tool_calls.append(
         {
@@ -173,6 +197,23 @@ def record(
         }
     )
     return payload, gathered
+
+
+def _qualified_hits(payload: dict[str, Any]) -> dict[str, Any]:
+    """Reject incomplete projections while preserving retrieval order.
+
+    Equal values and footnote markers do not establish that two language
+    variants describe the same parameter. An other-language source remains
+    usable with an explicitly labelled original quote.
+    """
+    if not isinstance(payload.get("hits"), list):
+        return payload
+    hits = [
+        hit
+        for hit in payload["hits"]
+        if isinstance(hit, dict) and knowledge_qualifications(hit) is not None
+    ]
+    return {**payload, "hits": hits}
 
 
 def validate(arguments: dict[str, Any]) -> tuple[str, str, list[int]]:

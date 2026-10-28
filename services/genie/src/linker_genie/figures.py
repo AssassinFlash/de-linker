@@ -77,8 +77,15 @@ def figure_id(chunk_id: str, number: int) -> str:
     return f"{chunk_id}.n{number}"
 
 
-def tag(chunk_id: str, text: str) -> Tagged:
-    """`text` with each figure shown as `[nK=VALUE]`, and `{CHUNK_ID.nK: VALUE}`."""
+def tag(
+    chunk_id: str, text: str, *, excluded_spans: tuple[tuple[int, int], ...] = ()
+) -> Tagged:
+    """Tag figures, leaving explicitly protected source annotations untouched.
+
+    A qualified table's original footnotes and their page labels are source
+    context, not additional table values. Their spans are supplied by the
+    knowledge tool after it has checked the projection's source metadata.
+    """
     phrases = [match.span() for match in _DATE_PHRASE.finditer(text)]
     spans: list[tuple[int, int]] = list(phrases)
     words = list(_WORD.finditer(text))
@@ -139,6 +146,8 @@ def tag(chunk_id: str, text: str) -> Tagged:
     parts: list[str] = []
     cursor = 0
     for start, end in sorted(spans):
+        if any(start < stop and begin < end for begin, stop in excluded_spans):
+            continue
         number = len(figures) + 1
         value = text[start:end] + _row_unit(text, start, text[start:end])
         figures[figure_id(chunk_id, number)] = value

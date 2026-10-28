@@ -12,9 +12,13 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from docling_core.types.doc.base import BoundingBox
+from docling_core.types.doc.common.reference import ProvenanceItem
 from docling_core.types.doc.document import DoclingDocument
+from docling_core.types.doc.labels import DocItemLabel
 from test_chunking import Words
 from test_publication import authority
+from test_publication import manifest as basic_manifest
 
 from index import corpus, store
 from index.chunking import Chunk, DocumentMeta, chunk_document
@@ -32,6 +36,195 @@ from linker_genie.table_projection import cells_digest, projection_id
 
 FIXTURES = Path(__file__).parent / "fixtures" / "publication-compiler"
 H2_DE = "be488dc6630cddc8381e38c61c6bc7b41c50c711042cdb2547170bd85e68a752"
+
+
+def test_picture_heading_does_not_restrict_a_later_authored_section() -> None:
+    """A model printed in a figure is not a heading for subsequent chapters."""
+    raw = basic_manifest()
+    sha = raw["documents"][0]["blob_sha256"]
+
+    def prov(page: int) -> ProvenanceItem:
+        return ProvenanceItem(
+            page_no=page,
+            bbox=BoundingBox(l=0, t=0, r=100, b=100),
+            charspan=(0, 1),
+        )
+
+    def compile_document(
+        picture_heading: bool,
+    ) -> tuple[list[Chunk], dict[str, ScopeProof]]:
+        document = DoclingDocument(name="figure-scope")
+        document.add_heading("2.2.3 Smart Meter", prov=prov(1))
+        picture = document.add_picture(prov=prov(1))
+        group = document.add_group(parent=picture)
+        document.add_heading(
+            "Only GM330", parent=group if picture_heading else None, prov=prov(1)
+        )
+        document.add_text(DocItemLabel.TEXT, "75 mm", parent=picture, prov=prov(1))
+        document.add_heading("2.5 Features", prov=prov(2))
+        document.add_text(
+            DocItemLabel.TEXT, "MODEL-1 and MODEL-2 feature AFCI.", prov=prov(2)
+        )
+        pages = [Page(n, "docling", blocks) for n, blocks in pages_of(document).items()]
+        meta = DocumentMeta(sha, "Test manual", "", (), (), "manual", "en")
+        original = chunk_document(meta, pages, Words(), lambda _: "en")
+        return compile_publication(
+            original,
+            raw,
+            authority(raw, extra_models={"GM330": "unavailable"}),
+            Words(),
+        )
+
+    selected, proofs = compile_document(picture_heading=True)
+    figure = next(c for c in selected if "Only GM330" in c.text)
+    dimensions = next(c for c in selected if "75 mm" in c.text)
+    assert figure.source_picture and dimensions.source_picture == figure.source_picture
+    target = next(c for c in selected if "feature AFCI" in c.text)
+    proof = proofs[target.id]
+    assert proof["product_ids"] == [1, 2]
+    current = Snapshot.read(raw)
+    assert authorize_chunk(
+        sha,
+        [1, 2],
+        proof["associations"],
+        proof,
+        products=current.products,
+        documents=current.documents,
+        chunk_id=target.id,
+        text=target.text,
+    )
+    assert not authorize_chunk(
+        sha,
+        [1, 2],
+        proof["associations"][:1],
+        proof,
+        products=current.products,
+        documents=current.documents,
+        chunk_id=target.id,
+        text=target.text,
+    )
+
+    selected, proofs = compile_document(picture_heading=False)
+    target = next(c for c in selected if "feature AFCI" in c.text)
+    assert target.id not in proofs
+
+
+def test_picture_model_does_not_authorize_generic_body_text() -> None:
+    raw = basic_manifest()
+    sha = raw["documents"][0]["blob_sha256"]
+    prov = ProvenanceItem(
+        page_no=1, bbox=BoundingBox(l=0, t=0, r=100, b=100), charspan=(0, 1)
+    )
+    document = DoclingDocument(name="figure-origin")
+    document.add_heading("Overview", prov=prov)
+    picture = document.add_picture(prov=prov)
+    document.add_heading("MODEL-1", parent=picture, prov=prov)
+    document.add_text(
+        DocItemLabel.TEXT, "MODEL-2 uses 75 mm.", parent=picture, prov=prov
+    )
+    document.add_text(DocItemLabel.TEXT, "Generic installation guidance.", prov=prov)
+    pages = [Page(n, "docling", blocks) for n, blocks in pages_of(document).items()]
+    original = chunk_document(
+        DocumentMeta(sha, "Test datasheet", "", (), (), "datasheet", "en"),
+        pages,
+        Words(),
+        lambda _: "en",
+    )
+    selected, proofs = compile_publication(original, raw, authority(raw), Words())
+    target = next(c for c in selected if "Generic installation guidance" in c.text)
+    assert target.id not in proofs
+    figure_detail = next(c for c in selected if "MODEL-2 uses 75 mm" in c.text)
+    assert figure_detail.id not in proofs
+
+
+def test_picture_table_interrupts_a_prior_body_table_heading() -> None:
+    sha = basic_manifest()["documents"][0]["blob_sha256"]
+    figure_table = Block(
+        "table",
+        rows=(("unrelated", "table"),),
+        source_id="figure-table",
+        source_picture="#/pictures/0",
+    )
+    body_table = Block("table", rows=(("actual", "table"),), source_id="body-table")
+    chunks = chunk_document(
+        DocumentMeta(sha, "Test", "", (), (), "datasheet", "en"),
+        [
+            Page(
+                1,
+                "docling",
+                [
+                    Block("text", "Technical Data MODEL-1 MODEL-2"),
+                    figure_table,
+                    body_table,
+                ],
+            )
+        ],
+        Words(),
+        lambda _: "en",
+    )
+    target = next(c for c in chunks if c.source_table.endswith("body-table"))
+    assert target.preceding_text == ()
+
+
+def test_range_title_is_not_mistaken_for_a_model_restriction() -> None:
+    raw = basic_manifest()
+    sha = raw["documents"][0]["blob_sha256"]
+    title = "5-30kW/5-108kWh I Dreiphasig All-in-One (HV)"
+    generic = Chunk(
+        "generic",
+        sha,
+        1,
+        title,
+        "text",
+        "",
+        "System overview",
+        "de",
+        5,
+        source_headings=(title,),
+    )
+    assert _author_contexts([generic], Snapshot.read(raw), {})["generic"][0][
+        "rating_cover"
+    ]
+
+    # A real model-shaped prefix or an explicit narrower current model must
+    # still constrain later content, even when a power range follows it.
+    unknown = replace(
+        generic,
+        id="unknown",
+        section="X5-30kW/5-108kWh only",
+        source_headings=("X5-30kW/5-108kWh only",),
+    )
+    current = replace(
+        generic,
+        id="current",
+        section="MODEL-1 only 5-30kW/5-108kWh",
+        source_headings=("MODEL-1 only 5-30kW/5-108kWh",),
+    )
+    bounded = replace(
+        generic,
+        id="bounded",
+        section="Only 5-30kW/5-108kWh models",
+        source_headings=("Only 5-30kW/5-108kWh models",),
+    )
+    assert "unknown" in _author_contexts([unknown], Snapshot.read(raw), {})
+    assert "current" in _author_contexts([current], Snapshot.read(raw), {})
+    assert "bounded" in _author_contexts([bounded], Snapshot.read(raw), {})
+    for chunk in (unknown, current, bounded):
+        assert not any(
+            boundary.get("rating_cover")
+            for boundary in _author_contexts([chunk], Snapshot.read(raw), {})[chunk.id]
+        )
+
+    target = replace(
+        generic,
+        id="ordinary-model-passage",
+        page=2,
+        section="General information",
+        source_headings=("General information",),
+        text="MODEL-1 works.",
+    )
+    _, proof = compile_publication([generic, target], raw, authority(raw), Words())
+    assert target.id not in proof
 
 
 def warranty_fixture() -> tuple[dict[str, Any], list[Chunk], Chunk, ScopeProof]:

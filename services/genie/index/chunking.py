@@ -79,6 +79,9 @@ class Chunk:
     # even empty heading transitions prevents a generic child from erasing a
     # narrower authored parent before the applicability compiler sees it.
     source_headings: tuple[str, ...] = ()
+    # A figure may contain its own model labels and restrictions. They must
+    # not become headings or document-wide scope for later body passages.
+    source_picture: str = ""
 
 
 def context_header(meta: DocumentMeta, section: str, page: int) -> str:
@@ -120,6 +123,8 @@ class _Chunker:
         self._ids: set[str] = set()
         self._preceding_text: list[str] = []
         self._pending_headings: list[str] = []
+        self._source_picture = ""
+        self._body_preceding_text: list[str] = []
 
     def _tokens(self, header: str, lines: Sequence[str]) -> int:
         return self.tokenizer.count(header + "\n" + "\n".join(lines))
@@ -161,6 +166,7 @@ class _Chunker:
                 preceding_text=preceding_text,
                 source_rows=source_rows,
                 source_headings=tuple(self._pending_headings),
+                source_picture=self._source_picture,
             )
         )
         self._pending_headings = []
@@ -269,10 +275,26 @@ class _Chunker:
         """The chunks of one page; returns the section in force at its end."""
         texts: list[str] = []
         for block_index, block in enumerate(page.blocks):
+            if block.source_picture != self._source_picture:
+                if texts:
+                    self._text(page.number, section, texts)
+                    texts = []
+                # Keep body and figure text separate. A non-table figure may
+                # sit between two body fragments of a real table heading.
+                if not self._source_picture:
+                    self._body_preceding_text = self._preceding_text
+                self._preceding_text = (
+                    [] if block.source_picture else self._body_preceding_text
+                )
+                self._source_picture = block.source_picture
             if block.kind != "text" and texts:
                 self._text(page.number, section, texts)
                 texts = []
-            if block.kind == "heading":
+            if block.kind == "heading" and block.source_picture:
+                # Keep the figure label as an isolated original text passage.
+                # It can constrain that figure, but is not a document heading.
+                self._text(page.number, section, [block.text])
+            elif block.kind == "heading":
                 section = block.text
                 self._pending_headings.append(block.text)
                 self._preceding_text = []
@@ -288,6 +310,9 @@ class _Chunker:
                 else:
                     texts.append(block.text)
             else:
+                if block.source_picture:
+                    # An independent table interrupts any earlier body axis.
+                    self._body_preceding_text = []
                 header_rows, rows = table_lines(block)
                 start = len(self.chunks)
                 self._pack(

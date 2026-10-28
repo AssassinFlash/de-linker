@@ -5,6 +5,7 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from typing import Any
 
+import pytest
 from pydantic import TypeAdapter
 from pydantic_ai.messages import (
     ModelMessage,
@@ -17,7 +18,7 @@ from pydantic_ai.models.function import AgentInfo, FunctionModel
 from linker_genie.abilities import AbilityClient, AbilityError
 from linker_genie.agent import make_generate
 from linker_genie.cycle import run
-from linker_genie.facts import Fact, TurnFacts, collect
+from linker_genie.facts import Fact, TurnFacts, collect, merge
 from linker_genie.route import Route
 from linker_genie.schema import (
     AskBlock,
@@ -57,6 +58,210 @@ def _facts() -> TurnFacts:
     gathered.add(Fact(id="p4107.ac_power_kw", value="10", source="selection-facts"))
     gathered.unknown_fields = ["backup"]
     return gathered
+
+
+def _qualified_table(value: str, condition: str) -> TurnFacts:
+    """Synthetic projection for exercising the post-hydration seal."""
+    hit = {
+        "chunk_id": "sample-p2",
+        "doc_url": "https://example.test/sample.pdf",
+        "title": "Sample",
+        "page": 2,
+        "product_ids": [1],
+        "text": f"| Reading | [n1={value}] |\n{condition} (p. 3)",
+        "figures": {"sample-p2.n1": value},
+        "qualification_required": True,
+        "qualifications": [
+            {"quote": condition, "page": 3, "chunk_id": "sample-p3", "lang": "en"}
+        ],
+    }
+    return collect("linker/search-knowledge", {"hits": [hit]})
+
+
+@pytest.mark.parametrize("language", ["en", "de"])
+def test_seal_preserves_a_qualified_figure_and_numbers_in_its_original_condition(
+    language: Locale,
+) -> None:
+    condition = "*6: This synthetic condition applies above 30.5 A."
+    facts = _qualified_table("125.7 A", condition)
+    request = TurnRequest(
+        conversation_id="sample",
+        messages=[
+            TurnMessage(
+                role="user",
+                content="What is the rated current?"
+                if language == "en"
+                else "Wie hoch ist der Nennstrom?",
+            )
+        ],
+        locale=language,
+    )
+    output = TurnOutput(
+        language=language,
+        blocks=[
+            TextBlock(
+                text="The current is {fact:sample-p2.n1}."
+                if language == "en"
+                else "Der Strom beträgt {fact:sample-p2.n1}."
+            )
+        ],
+    )
+
+    result = run(request, lambda _request, _retry: (output, facts), Route("products"))
+
+    assert result.grounded and not result.fallback
+    answer = result.output.blocks[0]
+    assert isinstance(answer, TextBlock)
+    assert "125.7 A" in answer.text
+    assert condition.split(": ", 1)[1] in answer.text
+    if language == "de":
+        assert "Herstellerbedingung (englisches Original):" in answer.text
+    assert "\ue000" not in answer.text and "\ue001" not in answer.text
+    links = [
+        block.url for block in result.output.blocks if isinstance(block, DocumentBlock)
+    ]
+    assert links == [
+        "https://example.test/sample.pdf#page=2",
+        "https://example.test/sample.pdf#page=3",
+    ]
+
+
+def test_seal_protects_the_qualified_occurrence_not_an_equal_other_fact() -> None:
+    qualified = _qualified_table("5", "*6: This synthetic condition applies.")
+    other = collect(
+        "linker/search-knowledge",
+        {
+            "hits": [
+                {
+                    "chunk_id": "other-p2",
+                    "doc_url": "https://example.test/other.pdf",
+                    "title": "Other model",
+                    "page": 2,
+                    "product_ids": [2],
+                    "text": "| Power | [n1=5 kW] |",
+                    "figures": {"other-p2.n1": "5 kW"},
+                }
+            ]
+        },
+    )
+    request = TurnRequest(
+        conversation_id="sample",
+        messages=[TurnMessage(role="user", content="What is the reading?")],
+        locale="en",
+    )
+    output = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(
+                text="The reading is {fact:sample-p2.n1}. The power is {fact:other-p2.n1}."
+            )
+        ],
+    )
+
+    result = run(
+        request,
+        lambda _request, _retry: (output, merge([qualified, other])),
+        Route("products"),
+    )
+
+    assert result.grounded and not result.fallback
+    answer = result.output.blocks[0]
+    assert isinstance(answer, TextBlock)
+    assert "reading is 5" in answer.text
+    assert "5 kW" not in answer.text
+    assert "This synthetic condition applies." in answer.text
+
+
+def test_qualified_digit_does_not_protect_an_unrelated_regulation_tail() -> None:
+    qualified = _qualified_table("5", "*6: This synthetic condition applies.")
+    other = collect(
+        "linker/search-knowledge",
+        {
+            "hits": [
+                {
+                    "chunk_id": "other-p2",
+                    "doc_url": "https://example.test/other.pdf",
+                    "title": "Other model",
+                    "page": 2,
+                    "product_ids": [2],
+                    "text": "VDE-AR-N [n1=4105]",
+                    "figures": {"other-p2.n1": "4105"},
+                }
+            ]
+        },
+    )
+    request = TurnRequest(
+        conversation_id="sample",
+        messages=[TurnMessage(role="user", content="What does the datasheet say?")],
+        locale="en",
+    )
+    output = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(
+                text="The reading is {fact:sample-p2.n1}. The number is {fact:other-p2.n1}."
+            )
+        ],
+    )
+
+    result = run(
+        request,
+        lambda _request, _retry: (output, merge([qualified, other])),
+        Route("documents"),
+    )
+
+    assert result.grounded and not result.fallback
+    answer = result.output.blocks[0]
+    assert isinstance(answer, TextBlock)
+    assert "reading is 5" in answer.text
+    assert "4105" not in answer.text
+    assert "This synthetic condition applies." in answer.text
+
+
+@pytest.mark.parametrize(
+    "question", ["What is the usable capacity?", "What is the clearance?"]
+)
+def test_seal_cannot_append_an_uncited_or_conditioned_number_from_the_blob(
+    question: str,
+) -> None:
+    facts = _qualified_table("260 kWh", "*6: This synthetic condition applies.")
+    other = collect(
+        "linker/search-knowledge",
+        {
+            "hits": [
+                {
+                    "chunk_id": "other-p2",
+                    "doc_url": "https://example.test/other.pdf",
+                    "title": "Other model",
+                    "page": 2,
+                    "text": "| Nominal Capacity (kWh) | [n1=260 kWh] |\n| Clearance (mm) | [n2=500 mm] |",
+                    "figures": {"other-p2.n1": "260 kWh", "other-p2.n2": "500 mm"},
+                }
+            ]
+        },
+    )
+    request = TurnRequest(
+        conversation_id="sample",
+        messages=[TurnMessage(role="user", content=question)],
+        locale="en",
+    )
+    output = TurnOutput(
+        language="en",
+        blocks=[TextBlock(text="Please see the document.", refs=["sample-p2"])],
+    )
+
+    result = run(
+        request,
+        lambda _request, _retry: (output, merge([facts, other])),
+        Route("documents"),
+    )
+
+    assert result.grounded and not result.fallback
+    answer = result.output.blocks[0]
+    assert isinstance(answer, TextBlock)
+    assert "260" not in answer.text
+    assert "500" not in answer.text
+    assert "do not state a usable capacity" not in answer.text
 
 
 def test_a_grounded_turn_is_hydrated_without_fallback() -> None:

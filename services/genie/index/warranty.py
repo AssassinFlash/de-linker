@@ -66,6 +66,9 @@ def compile_procedures(
     restricted_contexts: Mapping[str, list[dict[str, Any]]],
 ) -> tuple[list[Chunk], dict[str, ScopeProof]]:
     """Leave existing grants intact and append individually bound procedure units."""
+    from index.table_compiler import external_axis_anchors
+
+    axis_anchors = external_axis_anchors(original)
     # Reuse the authority-aware compiler's context, including non-public model
     # labels. A public snapshot alone cannot reconstruct narrower boundaries.
     links = [
@@ -115,6 +118,8 @@ def compile_procedures(
                 documents=source.documents,
                 chunk_id=chunk.id,
                 text=chunk.text,
+                external_axis_anchors=axis_anchors,
+                require_table_anchor=True,
             ):
                 continue
             for pid in proof["product_ids"]:

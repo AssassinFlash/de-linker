@@ -3,12 +3,14 @@
 import gzip
 import hashlib
 import shutil
+from dataclasses import replace
 from pathlib import Path
 from unittest.mock import MagicMock
 
 import pytest
+from docling_core.types.doc.document import DoclingDocument
 
-from index.extract import Block, Page, clean, enrich_model_axes, extract
+from index.extract import Block, Page, clean, enrich_model_axes, extract, pages_of
 from linker_genie.table_projection import SourceCell, model_axis, render_projection
 
 FIXTURES = Path(__file__).parent / "fixtures" / "parsed"
@@ -49,9 +51,254 @@ def test_a_datasheet_table_keeps_its_rows_and_page(tmp_path: Path) -> None:
 
 
 def test_headings_are_their_own_blocks(tmp_path: Path) -> None:
-    pages = extract(unpack(STS, tmp_path), page_count=2, garbled=[])
+    pages = extract(unpack(OCEAN2, tmp_path), page_count=3, garbled=[])
 
-    assert pages[0].blocks[0] == Block(kind="heading", text="STS Series")
+    assert pages[0].blocks[0] == Block(
+        kind="heading", text="EcoFlow OCEAN 2 Single-Phase"
+    )
+
+    # This cover label is a child of a picture in the cached parse. Its text
+    # remains available, but it is not a heading for later document content.
+    cover = extract(unpack(STS, tmp_path), page_count=2, garbled=[])[0].blocks[0]
+    assert cover == Block(kind="heading", text="STS Series")
+    assert cover.source_picture
+
+
+def test_external_axis_requires_immediately_preceding_original_text() -> None:
+    sha = "710d6f3d82664613f56bb72fd5898b5a1f9e5f7315cfc870a48822b1f3729e08"
+    fixture = Path(__file__).parent / "fixtures" / "external-model-axis"
+    document = DoclingDocument.model_validate_json(
+        gzip.decompress((fixture / f"{sha}.json.gz").read_bytes())
+    )
+    original = pages_of(document)[2]
+    table_at = next(i for i, block in enumerate(original) if block.kind == "table")
+    page = Page(2, "docling", original)
+    enriched = enrich_model_axes([page], fixture / f"{sha}.pdf")[0]
+    table = enriched.blocks[table_at]
+    axis = next(
+        cell["external_axis"] for cell in table.source_cells if "external_axis" in cell
+    )
+    assert axis["source_ids"] == ["#/texts/27"]
+    assert len(axis["source_spans"]) == 2
+    assert [span["text"] for span in axis["model_spans"]] == [
+        "GW208.9-BAT-LC-G10",
+        "GW208.9-BAT-LCD-G10",
+        "GW261.2-BAT-LCD-G10",
+    ]
+    assert original[table_at].rows == table.rows
+    assert not any("external_axis" in cell for cell in original[table_at].source_cells)
+
+    intervening = [
+        *original[:table_at],
+        Block("text", "Different heading"),
+        *original[table_at:],
+    ]
+    no_axis = enrich_model_axes(
+        [Page(2, "docling", intervening)], fixture / f"{sha}.pdf"
+    )[0]
+    table = no_axis.blocks[table_at + 1]
+    assert not any("external_axis" in cell for cell in table.source_cells)
+
+
+def test_external_axis_missing_values_do_not_create_a_fake_section() -> None:
+    sha = "76df70ea8474531fb1f1d168b6faf3262cf2242358be9ba9d17b5f2fb5e75afd"
+    fixture = Path(__file__).parent / "fixtures" / "external-model-axis"
+    document = DoclingDocument.model_validate_json(
+        gzip.decompress((fixture / f"{sha}.json.gz").read_bytes())
+    )
+    source_pages = pages_of(document)
+    original = source_pages[2]
+    table_at = next(i for i, block in enumerate(original) if block.kind == "table")
+    table = original[table_at]
+    # Reproduce the dangerous parser case: the original PDF still contains
+    # values, but the cached native table no longer contains row 2's value cells.
+    missing = replace(
+        table,
+        source_cells=tuple(
+            cell
+            for cell in table.source_cells
+            if not (cell["row_start"] == 2 and cell["col_start"] > 0)
+        ),
+    )
+    blocks = [*original[:table_at], missing, *original[table_at + 1 :]]
+    enriched = enrich_model_axes(
+        [
+            Page(1, "docling", source_pages[1]),
+            Page(2, "docling", blocks),
+            Page(3, "docling", source_pages[3]),
+        ],
+        fixture / f"{sha}.pdf",
+    )[1]
+    axis = next(
+        cell["external_axis"]
+        for cell in enriched.blocks[table_at].source_cells
+        if "external_axis" in cell
+    )
+    assert 2 in axis["section_barriers"]
+    assert 2 not in axis["section_rows"]
+    assert {0, 8, 18}.issubset(axis["section_rows"])
+    footnote = next(
+        note for note in axis["footnotes"] if note["text"].startswith("*6:")
+    )
+    assert footnote["source_id"] == "#/texts/51"
+    assert footnote["pdf_span"]["page"] == 3
+    assert footnote["text"] == footnote["pdf_span"]["text"]
+
+    duplicate = next(
+        block for block in source_pages[3] if block.source_id == "#/texts/51"
+    )
+    repeated = enrich_model_axes(
+        [
+            Page(1, "docling", source_pages[1]),
+            Page(2, "docling", blocks),
+            Page(3, "docling", [*source_pages[3], duplicate]),
+        ],
+        fixture / f"{sha}.pdf",
+    )[1]
+    axis = next(
+        cell["external_axis"]
+        for cell in repeated.blocks[table_at].source_cells
+        if "external_axis" in cell
+    )
+    assert not any(note["text"].startswith("*6:") for note in axis["footnotes"])
+
+
+@pytest.mark.parametrize("competition", ["native", "pdf"])
+def test_cross_page_note_cannot_be_borrowed_from_a_competing_table(
+    competition: str,
+) -> None:
+    sha = "76df70ea8474531fb1f1d168b6faf3262cf2242358be9ba9d17b5f2fb5e75afd"
+    fixture = Path(__file__).parent / "fixtures" / "external-model-axis"
+    document = DoclingDocument.model_validate_json(
+        gzip.decompress((fixture / f"{sha}.json.gz").read_bytes())
+    )
+    source = pages_of(document)
+    original = source[2]
+    table_at = next(i for i, block in enumerate(original) if block.kind == "table")
+    next_page = list(source[3])
+    next_table_at = next(
+        i for i, block in enumerate(next_page) if block.kind == "table"
+    )
+
+    if competition == "native":
+        # The second table also names *6; the one declaration cannot prove
+        # which table owns it, even though the first table's *6 is real.
+        other = next_page[next_table_at]
+        next_page[next_table_at] = replace(
+            other,
+            source_cells=tuple(
+                {**cell, "text": cell["text"] + " *6"}
+                if cell["text"].endswith("*5")
+                else cell
+                for cell in other.source_cells
+            ),
+        )
+        assert any(
+            "*6" in cell["text"] for cell in next_page[next_table_at].source_cells
+        )
+        rejected, kept = "*6:", "*3:"
+    else:
+        # *5 is physically in the p3 table. Simulate its omission there by
+        # Docling and a conflicting reference in the native p2 table.
+        table = original[table_at]
+        original = list(original)
+        original[table_at] = replace(
+            table,
+            source_cells=tuple(
+                {**cell, "text": cell["text"] + " *5"}
+                if cell["text"].endswith("*6")
+                else cell
+                for cell in table.source_cells
+            ),
+        )
+        other = next_page[next_table_at]
+        next_page[next_table_at] = replace(
+            other,
+            rows=tuple(
+                tuple(text.replace("*5", "") for text in row) for row in other.rows
+            ),
+            source_cells=tuple(
+                {**cell, "text": cell["text"].replace("*5", "")}
+                for cell in other.source_cells
+            ),
+        )
+        assert not any(
+            "*5" in cell["text"] for cell in next_page[next_table_at].source_cells
+        )
+        assert not any(
+            "*5" in text for row in next_page[next_table_at].rows for text in row
+        )
+        assert any("*5" in cell["text"] for cell in original[table_at].source_cells)
+        rejected, kept = "*5:", "*6:"
+
+    enriched = enrich_model_axes(
+        [
+            Page(1, "docling", source[1]),
+            Page(2, "docling", original),
+            Page(3, "docling", next_page),
+        ],
+        fixture / f"{sha}.pdf",
+    )[1]
+    axis = next(
+        cell["external_axis"]
+        for cell in enriched.blocks[table_at].source_cells
+        if "external_axis" in cell
+    )
+    assert not any(note["text"].startswith(rejected) for note in axis["footnotes"])
+    assert any(note["text"].startswith(kept) for note in axis["footnotes"])
+
+
+def test_external_axis_keeps_native_offset_for_battery_columns() -> None:
+    sha = "ce3e2552a6a21ff8b78988006f344619776c7cf01796cf172338040119569f9a"
+    fixture = Path(__file__).parent / "fixtures" / "external-model-axis"
+    document = DoclingDocument.model_validate_json(
+        gzip.decompress((fixture / f"{sha}.json.gz").read_bytes())
+    )
+    source_pages = pages_of(document)
+    original = source_pages[3]
+    table_at = next(i for i, block in enumerate(original) if block.kind == "table")
+    enriched = next(
+        page
+        for page in enrich_model_axes(
+            [Page(n, "docling", blocks) for n, blocks in source_pages.items()],
+            fixture / f"{sha}.pdf",
+        )
+        if page.number == 3
+    )
+    axis = next(
+        cell["external_axis"]
+        for cell in enriched.blocks[table_at].source_cells
+        if "external_axis" in cell
+    )
+    assert axis["source_ids"] == ["#/texts/55"]
+    assert axis["value_col_start"] == 2
+    assert axis["first_row_is_data"] is True
+    assert len(axis["model_spans"]) == 4
+    assert enriched.blocks[table_at].rows == original[table_at].rows
+    note = next(note for note in axis["footnotes"] if note["text"].startswith("*3:"))
+    assert note["source_id"] == "#/texts/59" and note["pdf_span"]["page"] == 3
+    assert any(
+        cell["row_start"] == 7 and cell["col_start"] == 0 and "*3" in cell["text"]
+        for cell in enriched.blocks[table_at].source_cells
+    )
+
+    native = original[table_at]
+    conflict = replace(
+        native,
+        source_cells=tuple(
+            {**cell, "text": "GW5.1-BAT-D-G20"}
+            if cell["row_start"] == 0 and cell["col_start"] == 2
+            else cell
+            for cell in native.source_cells
+        ),
+    )
+    blocks = [*original[:table_at], conflict, *original[table_at + 1 :]]
+    rejected = enrich_model_axes([Page(3, "docling", blocks)], fixture / f"{sha}.pdf")[
+        0
+    ]
+    assert not any(
+        "external_axis" in cell for cell in rejected.blocks[table_at].source_cells
+    )
 
 
 def test_an_unreadable_page_takes_the_ocr_of_its_rendered_image(tmp_path: Path) -> None:

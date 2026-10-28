@@ -46,6 +46,12 @@ final class ProductShortcodesTest extends TestCase {
 	 */
 	private ?WC_Product $pdp_product = null;
 
+	/** The card model for the current fixture.
+	 *
+	 * @var string
+	 */
+	private string $pdp_model = 'GW60K-STS-G10';
+
 	/**
 	 * The legacy ACF JSON the current test's reads answer with.
 	 *
@@ -1396,6 +1402,50 @@ final class ProductShortcodesTest extends TestCase {
 		);
 
 		return new ProductShortcodes( new ProductFilters(), $this->published_document_view() );
+	}
+
+	/** A single-product model is not prefixed with a fact, unlike a family picker. */
+	public function test_single_product_card_model_uses_only_the_model(): void {
+		WP_Mock::userFunction(
+			'get_the_terms',
+			array(
+				'return' => fn( int $id, string $taxonomy ) => match ( $taxonomy ) {
+					'pa_model'       => '' === $this->pdp_model ? false : array(
+						(object) array(
+							'slug' => 'model',
+							'name' => $this->pdp_model,
+						),
+					),
+					'pa_brand'       => array(
+						(object) array(
+							'slug' => 'goodwe',
+							'name' => 'GoodWe',
+						),
+					),
+					'pa_application' => array( (object) array( 'slug' => 'commercial' ) ),
+					'pa_phase'       => array( (object) array( 'slug' => 'three-phase' ) ),
+					default          => false,
+				},
+			)
+		);
+		WP_Mock::userFunction( 'pll_get_post', array( 'return' => static fn( int $id, string $lang ): int => 'en' === $lang ? $id : 0 ) );
+		$shortcodes = $this->pdp( true );
+		WP_Mock::userFunction( 'get_option', array( 'return' => 'no' ) );
+		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'http://linker.test/product/goodwe-gw60k-sts-g10/' ) );
+		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn( $value ): string => (string) json_encode( $value ) ) );
+		$html = $shortcodes->products_card();
+		$this->assertStringContainsString( '<small>Model</small><strong data-card-selection>GW60K-STS-G10</strong>', $html );
+		$this->assertStringContainsString( '<dt>Communication</dt><dd>RS485</dd>', $html );
+
+		$card = ( new ProductView() )->card_fields( self::PDP );
+		$line = new \ReflectionMethod( ProductShortcodes::class, 'selection_line' );
+		$this->assertSame( 'RS485 · GW60K-STS-G10', $line->invoke( $shortcodes, $this->pdp_product, $card ) );
+
+		$this->pdp_model = '';
+
+		$without_model = $shortcodes->products_card();
+		$this->assertStringContainsString( 'GoodWe GW60K-STS-G10</a>', $without_model );
+		$this->assertStringNotContainsString( 'data-linker-exact-product', $without_model );
 	}
 
 	/** Distinct options keep their source text; a semicolon inside a note is not a separator. */

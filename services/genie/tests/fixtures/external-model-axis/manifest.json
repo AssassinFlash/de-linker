@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "compatibility_revision": "e90acaa602fd9b0e23eb24696e48667f81a2cab9ff2c5f409c9ab1706221aa2c",
+  "products": [
+    {
+      "product_id": 1956,
+      "title": "GoodWe GW208.9-BAT-LC-G10",
+      "model": "GW208.9-BAT-LC-G10",
+      "brand": "GoodWe",
+      "engineering_role": "",
+      "engineering_id": "",
+      "locale_product_ids": {
+        "en": 1956,
+        "de": 6801
+      },
+      "published_locale_ids": [
+        1956,
+        6801
+      ],
+      "documents": [],
+      "product_revision": "d1a8430b0562571863b856ee3bccf78262e8727a3af5099c0c4abff2b5e6784e",
+      "ready": {
+        "knowledge": true,
+        "engineering": true
+      }
+    },
+    {
+      "product_id": 1957,
+      "title": "GoodWe GW208.9-BAT-LCD-G10",
+      "model": "GW208.9-BAT-LCD-G10",
+      "brand": "GoodWe",
+      "engineering_role": "",
+      "engineering_id": "",
+      "locale_product_ids": {
+        "en": 1957,
+        "de": 6800
+      },
+      "published_locale_ids": [
+        1957,
+        6800
+      ],
+      "documents": [
+        "doc-f5ff86503d325bd3141aa78c9dbbdef6338e6667de02bd3aeb965e9112920594"
+      ],
+      "product_revision": "a6e2bf6326fb9d6ccfa8acba1b20bf8cac0e804ec3e1285490e5a7d93bd2b6b7",
+      "ready": {
+        "knowledge": true,
+        "engineering": true
+      }
+    },
+    {
+      "product_id": 1958,
+      "title": "GoodWe GW261.2-BAT-LCD-G10",
+      "model": "GW261.2-BAT-LCD-G10",
+      "brand": "GoodWe",
+      "engineering_role": "",
+      "engineering_id": "",
+      "locale_product_ids": {
+        "en": 1958,
+        "de": 6799
+      },
+      "published_locale_ids": [
+        1958,
+        6799
+      ],
+      "documents": [],
+      "product_revision": "dbb5542f16b4e8e5591f42bbe69551dd27a6f3c9fc720e61a6b97b38e0d2161e",
+      "ready": {
+        "knowledge": true,
+        "engineering": true
+      }
+    }
+  ],
+  "documents": [
+    {
+      "document_id": "doc-f5ff86503d325bd3141aa78c9dbbdef6338e6667de02bd3aeb965e9112920594",
+      "blob_sha256": "710d6f3d82664613f56bb72fd5898b5a1f9e5f7315cfc870a48822b1f3729e08",
+      "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc208-datasheet.pdf",
+      "aliases": [
+        "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc208-datasheet.pdf"
+      ],
+      "product_ids": [
+        1957
+      ],
+      "title": "GoodWe BAT-C Series 208.9–261.2 kWh Datasheet (EMEA, EN, V1.0)",
+      "type": "datasheet",
+      "lang": "en",
+      "role": "",
+      "citation_aliases": [],
+      "document_revision": "5b766d0bc73a6847b4df5aecdd3065aac127cfafbaaf5aeb242822f1054dc93e"
+    }
+  ],
+  "source_revision": "70bee27911b6f152da6295cb68500b9f6701686a8144955c80066719d113449d"
+}

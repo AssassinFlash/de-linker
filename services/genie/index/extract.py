@@ -10,17 +10,30 @@ and is left out, as Docling classifies it.
 from __future__ import annotations
 
 import hashlib
+import math
 import re
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Literal
 
+from docling_core.types.doc.base import BoundingBox
+from docling_core.types.doc.common.reference import ProvenanceItem
 from docling_core.types.doc.document import DoclingDocument
+from docling_core.types.doc.items.node import NodeItem
+from docling_core.types.doc.items.picture.picture import PictureItem
 from docling_core.types.doc.items.table.table import TableItem
 from docling_core.types.doc.items.text import SectionHeaderItem, TextItem, TitleItem
 
-from linker_genie.table_projection import TOKEN, SourceCell, SourceSpan
+from linker_genie.table_projection import (
+    TOKEN,
+    ExternalAxis,
+    SourceCell,
+    SourceFootnote,
+    SourceFragment,
+    SourceSpan,
+    SourceTextSpan,
+)
 
 BlockKind = Literal["heading", "text", "table"]
 
@@ -37,6 +50,11 @@ class Block:
     source_id: str = field(default="", compare=False)
     row_indices: tuple[int, ...] = field(default=(), compare=False)
     source_cells: tuple[SourceCell, ...] = field(default=(), compare=False)
+    # Text inside a picture is local to that figure, not a document heading.
+    source_picture: str = field(default="", compare=False)
+    # Exact Docling provenance stays in memory for physical table-axis proof.
+    source_original: str = field(default="", compare=False)
+    source_prov: tuple[ProvenanceItem, ...] = field(default=(), compare=False)
 
 
 @dataclass
@@ -69,10 +87,21 @@ def _table_rows(item: TableItem) -> tuple[tuple[tuple[str, ...], ...], int]:
     return rows, min(header_rows, len(rows))
 
 
+def _picture_ancestor(document: DoclingDocument, item: NodeItem) -> str:
+    parent = item.parent
+    while parent is not None:
+        node = parent.resolve(document)
+        if isinstance(node, PictureItem):
+            return node.self_ref
+        parent = node.parent
+    return ""
+
+
 def _blocks(document: DoclingDocument) -> Iterable[tuple[int, Block]]:
     """(page number, block) in reading order, for every body item that holds text."""
     for item, _level in document.iterate_items(traverse_pictures=True):
         if isinstance(item, TableItem) and item.prov:
+            picture = _picture_ancestor(document, item)
             rows, header_rows = _table_rows(item)
             if rows:
                 yield (
@@ -82,6 +111,8 @@ def _blocks(document: DoclingDocument) -> Iterable[tuple[int, Block]]:
                         rows=rows,
                         header_rows=header_rows,
                         source_id=item.self_ref,
+                        source_picture=picture,
+                        source_prov=tuple(item.prov),
                         row_indices=tuple(
                             i
                             for i, row in enumerate(item.data.grid)
@@ -120,6 +151,7 @@ def _blocks(document: DoclingDocument) -> Iterable[tuple[int, Block]]:
         elif isinstance(item, TextItem) and item.prov:
             text = clean(item.text)
             if text:
+                picture = _picture_ancestor(document, item)
                 heading = isinstance(item, (SectionHeaderItem, TitleItem))
                 yield (
                     item.prov[0].page_no,
@@ -127,6 +159,9 @@ def _blocks(document: DoclingDocument) -> Iterable[tuple[int, Block]]:
                         kind="heading" if heading else "text",
                         text=text,
                         source_id=item.self_ref,
+                        source_picture=picture,
+                        source_original=item.text,
+                        source_prov=tuple(item.prov),
                     ),
                 )
 
@@ -200,13 +235,35 @@ def _pdf_model_spans(
                     indices[match.end() - 1] + 1 if indices is not None else match.end()
                 )
                 written = text[match.start() : match.end()]
+                source_fragments: list[SourceFragment] = []
                 if "￾" in written:
                     fragments = []
                     offset = match.start()
                     for part in written.split("￾"):
                         if not part:
                             break
-                        fragments.append(bounds(offset, offset + len(part)))
+                        end_offset = offset + len(part)
+                        box_part = bounds(offset, end_offset)
+                        fragments.append(box_part)
+                        source_fragments.append(
+                            SourceFragment(
+                                text=part,
+                                bbox=(
+                                    box_part[0] - left,
+                                    top - box_part[3],
+                                    box_part[2] - left,
+                                    top - box_part[1],
+                                ),
+                                char_start=indices[offset]
+                                if indices is not None
+                                else offset,
+                                char_end=(
+                                    indices[end_offset - 1] + 1
+                                    if indices is not None
+                                    else end_offset
+                                ),
+                            )
+                        )
                         offset += len(part) + 1
                     if (
                         len(fragments) != len(written.split("￾"))
@@ -229,17 +286,18 @@ def _pdf_model_spans(
                     continue
                 if wrapped_spans is not None and "￾" in written:
                     wrapped_spans.add((start, end))
-                output.append(
-                    SourceSpan(
-                        text=match[0],
-                        bbox=(box[0] - left, top - box[3], box[2] - left, top - box[1]),
-                        char_start=start,
-                        char_end=end,
-                        page=number,
-                        source_sha256=sha,
-                        page_size=(right - left, top - bottom),
-                    )
+                span = SourceSpan(
+                    text=match[0],
+                    bbox=(box[0] - left, top - box[3], box[2] - left, top - box[1]),
+                    char_start=start,
+                    char_end=end,
+                    page=number,
+                    source_sha256=sha,
+                    page_size=(right - left, top - bottom),
                 )
+                if source_fragments:
+                    span["fragments"] = source_fragments
+                output.append(span)
             return output
         finally:
             text_page.close()
@@ -248,7 +306,11 @@ def _pdf_model_spans(
 
 
 def _single_line_cells(
-    pdf: object, number: int, cells: list[SourceCell]
+    pdf: object,
+    number: int,
+    cells: list[SourceCell],
+    *,
+    section_rows: set[int] | None = None,
 ) -> list[SourceCell]:
     """A recovered axis cannot release body cells merged across physical lines."""
     from typing import Any, cast
@@ -264,17 +326,31 @@ def _single_line_cells(
                 text = ""
             retained = []
             for cell in cells:
-                if cell["column_header"] or cell["row_section"]:
+                if (
+                    cell["column_header"]
+                    or cell["row_section"]
+                    or cell.get("external_axis")
+                    or (
+                        section_rows is not None
+                        and cell["col_start"] == 0
+                        and cell["row_start"] in section_rows
+                    )
+                ):
                     retained.append(cell)
                     continue
                 box = cell["bbox"]
                 if box is None or cell["bbox_origin"] != "TOPLEFT" or not cell["text"]:
                     continue
-                pattern = (
-                    r"(?<!\S)"
-                    + r"\s+".join(re.escape(word) for word in cell["text"].split())
-                    + r"(?!\S)"
-                )
+                words = cell["text"].split()
+                if not words:
+                    continue
+                pattern = r"(?<!\S)" + re.escape(words[0])
+                for word in words[1:]:
+                    # Docling may add a space before an original superscript
+                    # note marker; all other word boundaries stay strict.
+                    pattern += r"\s*" if re.fullmatch(r"\*\d+", word) else r"\s+"
+                    pattern += re.escape(word)
+                pattern += r"(?!\S)"
                 proven = 0
                 proven_box = None
                 for match in re.finditer(pattern, text):
@@ -315,6 +391,560 @@ def _single_line_cells(
         page.close()
 
 
+def _visible_box(
+    box: BoundingBox, width: float, height: float
+) -> tuple[float, float, float, float] | None:
+    """A native box expressed in the same visible page coordinates as PDF spans."""
+    if box.coord_origin.value == "BOTTOMLEFT":
+        bounds = (box.l, height - box.t, box.r, height - box.b)
+    elif box.coord_origin.value == "TOPLEFT":
+        bounds = (box.l, box.t, box.r, box.b)
+    else:
+        return None
+    if not all(math.isfinite(value) for value in bounds):
+        return None
+    x0, y0, x1, y1 = bounds
+    return bounds if 0 <= x0 < x1 <= width and 0 <= y0 < y1 <= height else None
+
+
+def _external_sections(
+    pdf: object,
+    number: int,
+    cells: Sequence[SourceCell],
+    table_bbox: tuple[float, float, float, float],
+) -> tuple[list[int], list[int]]:
+    """Verify native section labels and keep unverified empty rows as barriers."""
+    from typing import Any, cast
+
+    candidates = [
+        cell
+        for cell in cells
+        if cell["col_start"] == 0
+        and cell["row_end"] == cell["row_start"] + 1
+        and cell["text"]
+        and not any(
+            other is not cell
+            and other["col_start"] >= 1
+            and other["row_start"] <= cell["row_start"] < other["row_end"]
+            and other["text"]
+            for other in cells
+        )
+    ]
+    barriers = sorted({cell["row_start"] for cell in candidates})
+    page = cast(Any, pdf)[number - 1]
+    try:
+        left, bottom, right, top = page.get_bbox()
+        text_page = page.get_textpage()
+        try:
+            text = text_page.get_text_range()
+            if len(text) != text_page.count_chars():
+                return [], barriers
+            indexes = [index for index, char in enumerate(text) if not char.isspace()]
+            compact = "".join(text[index] for index in indexes).replace("￾", "-")
+            boxes = {index: text_page.get_charbox(index) for index in indexes}
+            proven: list[int] = []
+            for cell in candidates:
+                native = cell["bbox"]
+                if native is None or cell["bbox_origin"] != "TOPLEFT":
+                    continue
+                written = "".join(cell["text"].split()).replace("￾", "-")
+                hits = []
+                start = compact.find(written)
+                while start >= 0:
+                    selected = indexes[start : start + len(written)]
+                    glyphs = [
+                        boxes[index] for index in selected if text[index].isalnum()
+                    ]
+                    if glyphs and max(box[1] for box in glyphs) < min(
+                        box[3] for box in glyphs
+                    ):
+                        x0 = min(boxes[index][0] for index in selected)
+                        x1 = max(boxes[index][2] for index in selected)
+                        y0 = min(boxes[index][1] for index in selected)
+                        y1 = max(boxes[index][3] for index in selected)
+                        if (
+                            left <= x0 < x1 <= right
+                            and bottom <= y0 < y1 <= top
+                            and native[0] <= (x0 + x1) / 2 - left <= native[2]
+                            and native[1] <= top - (y0 + y1) / 2 <= native[3]
+                        ):
+                            hits.append(
+                                (
+                                    x1,
+                                    max(box[1] for box in glyphs),
+                                    min(box[3] for box in glyphs),
+                                )
+                            )
+                    start = compact.find(written, start + 1)
+                if len(hits) != 1:
+                    continue
+                x1, band_bottom, band_top = hits[0]
+                right_text = any(
+                    x1 < (box[0] + box[2]) / 2 - left <= table_bbox[2]
+                    and band_bottom <= (box[1] + box[3]) / 2 <= band_top
+                    and left <= box[0] < box[2] <= right
+                    and bottom <= box[1] < box[3] <= top
+                    for box in boxes.values()
+                )
+                if not right_text:
+                    proven.append(cell["row_start"])
+            return sorted(set(proven)), barriers
+        finally:
+            text_page.close()
+    finally:
+        page.close()
+
+
+def _native_footnotes(
+    pages: Sequence[Page],
+    pdf: object,
+    sha: str,
+    table_page: Page,
+    table: Block,
+    pdf_counts: dict[str, dict[int, int]],
+    pdf_references: dict[
+        str, list[tuple[int, tuple[float, float, float, float] | None]]
+    ],
+    complete_pages: bool,
+) -> list[SourceFootnote]:
+    """Capture complete, unambiguous source notes for one original table."""
+    from typing import Any, cast
+
+    candidates: dict[str, list[tuple[Page, Block]]] = {}
+    for page in pages:
+        for block in page.blocks:
+            raw = block.source_original or block.text
+            for marker in re.findall(r"(?<!\S)\*(\d+)\s*:", raw):
+                candidates.setdefault(marker, []).append((page, block))
+    output: list[SourceFootnote] = []
+    for marker, entries in candidates.items():
+        same_page = [entry for entry in entries if entry[0].number == table_page.number]
+        if same_page:
+            tables = [
+                item
+                for item in table_page.blocks
+                if item.kind == "table" and not item.source_picture
+            ]
+            if (
+                len(same_page) != 1
+                or len(tables) != 1
+                or tables[0].source_id != table.source_id
+                or pdf_counts.get(marker, {}).get(table_page.number) != 1
+            ):
+                continue
+            source_page, block = same_page[0]
+            table_index = next(
+                i
+                for i, item in enumerate(table_page.blocks)
+                if item.source_id == table.source_id
+            )
+            note_index = next(
+                i
+                for i, item in enumerate(table_page.blocks)
+                if item.source_id == block.source_id
+            )
+            if note_index <= table_index:
+                continue
+        elif (
+            len(entries) == 1
+            and complete_pages
+            and sum(pdf_counts.get(marker, {}).values()) == 1
+            and entries[0][0].number > table_page.number
+            and _uncontested_cross_page_marker(
+                marker, pages, pdf, table_page, table, pdf_references
+            )
+        ):
+            source_page, block = entries[0]
+        else:
+            continue
+        text = block.source_original
+        if (
+            block.kind != "text"
+            or block.source_picture
+            or not block.source_id
+            or text != block.text
+            or re.fullmatch(r"\*\d+:\s+\S[^\r\n]*", text) is None
+            or len(block.source_prov) != 1
+        ):
+            continue
+        prov = block.source_prov[0]
+        if prov.page_no != source_page.number or prov.charspan != (0, len(text)):
+            continue
+        page = cast(Any, pdf)[source_page.number - 1]
+        try:
+            left, bottom, right, top = page.get_bbox()
+            if page.get_rotation() != 0 or left != 0 or bottom != 0:
+                continue
+            width, height = right - left, top - bottom
+            source_box = _visible_box(prov.bbox, width, height)
+            if source_box is None:
+                continue
+            text_page = page.get_textpage()
+            try:
+                body = text_page.get_text_range()
+                start = body.find(text)
+                if (
+                    len(body) != text_page.count_chars()
+                    or start < 0
+                    or body.find(text, start + 1) >= 0
+                ):
+                    continue
+                glyphs = [
+                    text_page.get_charbox(index)
+                    for index in range(start, start + len(text))
+                    if not body[index].isspace()
+                ]
+                if not glyphs or any(
+                    not (
+                        left <= box[0] < box[2] <= right
+                        and bottom <= box[1] < box[3] <= top
+                        and source_box[0]
+                        <= (box[0] + box[2]) / 2 - left
+                        <= source_box[2]
+                        and source_box[1]
+                        <= top - (box[1] + box[3]) / 2
+                        <= source_box[3]
+                    )
+                    for box in glyphs
+                ):
+                    continue
+                bounds = (
+                    min(box[0] for box in glyphs) - left,
+                    top - max(box[3] for box in glyphs),
+                    max(box[2] for box in glyphs) - left,
+                    top - min(box[1] for box in glyphs),
+                )
+                output.append(
+                    SourceFootnote(
+                        source_id=block.source_id,
+                        text=text,
+                        source_span=SourceTextSpan(
+                            source_id=block.source_id,
+                            bbox=source_box,
+                            char_start=0,
+                            char_end=len(text),
+                        ),
+                        pdf_span=SourceSpan(
+                            text=text,
+                            bbox=bounds,
+                            char_start=start,
+                            char_end=start + len(text),
+                            page=source_page.number,
+                            source_sha256=sha,
+                            page_size=(width, height),
+                        ),
+                    )
+                )
+            finally:
+                text_page.close()
+        finally:
+            page.close()
+    return output
+
+
+def _uncontested_cross_page_marker(
+    marker: str,
+    pages: Sequence[Page],
+    pdf: object,
+    table_page: Page,
+    table: Block,
+    pdf_references: dict[
+        str, list[tuple[int, tuple[float, float, float, float] | None]]
+    ],
+) -> bool:
+    """A cross-page note must not be claimed by another original table."""
+    from typing import Any, cast
+
+    if any(page.source != "docling" for page in pages):
+        return False
+    pattern = re.compile(r"\*\s*" + re.escape(marker) + r"(?!\d)")
+    if not any(pattern.search(cell["text"]) for cell in table.source_cells):
+        return False
+    for page in pages:
+        for other in page.blocks:
+            if other is table or other.kind != "table":
+                continue
+            if any(pattern.search(cell["text"]) for cell in other.source_cells) or any(
+                pattern.search(text) for row in other.rows for text in row
+            ):
+                return False
+    references = pdf_references.get(marker, [])
+    if not references or len(table.source_prov) != 1:
+        return False
+    physical_page = cast(Any, pdf)[table_page.number - 1]
+    try:
+        left, bottom, right, top = physical_page.get_bbox()
+        if physical_page.get_rotation() != 0 or left != 0 or bottom != 0:
+            return False
+        table_box = _visible_box(table.source_prov[0].bbox, right - left, top - bottom)
+    finally:
+        physical_page.close()
+    if table_box is None or table.source_prov[0].page_no != table_page.number:
+        return False
+    x0, y0, x1, y1 = table_box
+    return all(
+        page == table_page.number
+        and box is not None
+        and x0 <= box[0] < box[2] <= x1
+        and y0 <= box[1] < box[3] <= y1
+        for page, box in references
+    )
+
+
+def _pdf_footnote_counts(
+    pages: Sequence[Page], pdf: object
+) -> tuple[
+    dict[str, dict[int, int]],
+    dict[str, list[tuple[int, tuple[float, float, float, float] | None]]],
+]:
+    """Find original numbered declarations and visible marker references."""
+    from typing import Any, cast
+
+    counts: dict[str, dict[int, int]] = {}
+    references: dict[
+        str, list[tuple[int, tuple[float, float, float, float] | None]]
+    ] = {}
+    for source_page in pages:
+        page = cast(Any, pdf)[source_page.number - 1]
+        try:
+            text_page = page.get_textpage()
+            try:
+                body = text_page.get_text_range()
+                left, bottom, right, top = page.get_bbox()
+                visible = (
+                    len(body) == text_page.count_chars()
+                    and page.get_rotation() == 0
+                    and left == 0
+                    and bottom == 0
+                )
+                for match in re.finditer(r"\*\s*(\d+)(?!\d)", body):
+                    marker = match.group(1)
+                    if re.match(r"\s*:", body[match.end() :]):
+                        per_page = counts.setdefault(marker, {})
+                        per_page[source_page.number] = (
+                            per_page.get(source_page.number, 0) + 1
+                        )
+                        continue
+                    bounds = None
+                    if visible:
+                        glyphs = [
+                            text_page.get_charbox(index)
+                            for index in range(match.start(), match.end())
+                            if not body[index].isspace()
+                        ]
+                        if glyphs and all(
+                            all(math.isfinite(value) for value in box)
+                            and left <= box[0] < box[2] <= right
+                            and bottom <= box[1] < box[3] <= top
+                            for box in glyphs
+                        ):
+                            bounds = (
+                                min(box[0] for box in glyphs) - left,
+                                top - max(box[3] for box in glyphs),
+                                max(box[2] for box in glyphs) - left,
+                                top - min(box[1] for box in glyphs),
+                            )
+                    references.setdefault(marker, []).append(
+                        (source_page.number, bounds)
+                    )
+            finally:
+                text_page.close()
+        finally:
+            page.close()
+    return counts, references
+
+
+def _external_axis(
+    pdf: object,
+    page: int,
+    previous: Sequence[Block],
+    table: Block,
+    spans: list[SourceSpan],
+) -> ExternalAxis | None:
+    """Capture consecutive, visible original body text preceding a native table."""
+    from typing import Any, cast
+
+    if (
+        not previous
+        or table.source_picture
+        or any(
+            block.kind != "text"
+            or not block.source_id
+            or block.source_picture
+            or block.source_original != block.text
+            or not block.source_prov
+            for block in previous
+        )
+        or len({block.source_id for block in previous}) != len(previous)
+        or len(table.source_prov) != 1
+        or table.source_prov[0].page_no != page
+    ):
+        return None
+    source_text = "\n".join(block.text for block in previous)
+    match = re.fullmatch(
+        r"(?:Technical\s+Data|Technische\s+Daten)\s+"
+        r"[A-Za-z0-9][A-Za-z0-9./\s-]*",
+        source_text,
+        re.IGNORECASE,
+    )
+    if match is None:
+        return None
+    header = [
+        cell
+        for cell in table.source_cells
+        if cell["row_start"] == 0 and cell["row_end"] == 1 and cell["text"]
+    ]
+    first = [cell for cell in header if cell["col_start"] == 0]
+    if len(first) != 1:
+        return None
+    value_col_start = first[0]["col_end"]
+    first_row_is_data = any(cell["col_start"] >= value_col_start for cell in header)
+    if (
+        value_col_start < 1
+        or (not first_row_is_data and value_col_start != 1)
+        or (first_row_is_data and (value_col_start != 2 or first[0]["column_header"]))
+        or any(
+            cell is not first[0] and cell["col_start"] < value_col_start
+            for cell in header
+        )
+    ):
+        return None
+    physical_page = cast(Any, pdf)[page - 1]
+    try:
+        left, bottom, right, top = physical_page.get_bbox()
+        if physical_page.get_rotation() != 0 or left != 0 or bottom != 0:
+            return None
+        width, height = right - left, top - bottom
+    finally:
+        physical_page.close()
+    table_bbox = _visible_box(table.source_prov[0].bbox, width, height)
+    if table_bbox is None:
+        return None
+    source_spans: list[SourceTextSpan] = []
+    offset = 0
+    for block in previous:
+        for prov in block.source_prov:
+            box = _visible_box(prov.bbox, width, height)
+            start, end = prov.charspan
+            if (
+                prov.page_no != page
+                or box is None
+                or not 0 <= start < end <= len(block.text)
+            ):
+                return None
+            source_spans.append(
+                SourceTextSpan(
+                    source_id=block.source_id,
+                    bbox=box,
+                    char_start=offset + start,
+                    char_end=offset + end,
+                )
+            )
+        offset += len(block.text) + 1
+
+    def original_piece(
+        piece: SourceFragment | SourceSpan, *, wrapped_prefix: bool
+    ) -> tuple[int, int] | None:
+        box = piece["bbox"]
+        pattern = re.compile(
+            r"(?<![A-Za-z0-9./-])"
+            + re.escape(piece["text"])
+            + (r"-?" if wrapped_prefix else "")
+            + r"(?![A-Za-z0-9./-])",
+            re.IGNORECASE,
+        )
+        occurrences = [
+            (s["char_start"] + match.start(), s["char_start"] + match.end())
+            for s in source_spans
+            if s["bbox"][0] <= (box[0] + box[2]) / 2 <= s["bbox"][2]
+            and s["bbox"][1] <= (box[1] + box[3]) / 2 <= s["bbox"][3]
+            for match in pattern.finditer(source_text[s["char_start"] : s["char_end"]])
+        ]
+        return occurrences[0] if len(occurrences) == 1 else None
+
+    matched: list[SourceSpan] = []
+    covered: set[tuple[int, int]] = set()
+    for span in spans:
+        pieces: list[SourceFragment | SourceSpan] = list(span.get("fragments", [])) or [
+            span
+        ]
+        positions = [
+            original_piece(piece, wrapped_prefix=index < len(pieces) - 1)
+            for index, piece in enumerate(pieces)
+        ]
+        if all(position is not None for position in positions):
+            matched.append(span)
+            covered.update(position for position in positions if position is not None)
+    heading = re.match(r"(?:Technical\s+Data|Technische\s+Daten)\s+", source_text, re.I)
+    assert heading is not None
+    if (
+        len(matched) < 2
+        or max((cell["col_end"] for cell in table.source_cells), default=0)
+        != len(matched) + value_col_start
+        or len({s["text"].casefold() for s in matched}) != len(matched)
+        or any(
+            m.span() not in covered for m in TOKEN.finditer(source_text, heading.end())
+        )
+        or any(s["bbox"][3] > table_bbox[1] for s in matched)
+        or (
+            first_row_is_data
+            and any(
+                "-" in token
+                and any(c.isalpha() for c in token)
+                and any(c.isdigit() for c in token)
+                for cell in header
+                if cell is not first[0]
+                for token in TOKEN.findall(cell["text"])
+            )
+        )
+        or (
+            first_row_is_data
+            and any(
+                re.search(
+                    r"(?<![\w./-])" + re.escape(span["text"]) + r"(?![\w./-])",
+                    cell["text"],
+                    re.IGNORECASE,
+                )
+                for cell in header
+                if cell is not first[0]
+                for span in matched
+            )
+        )
+    ):
+        return None
+    section_rows, section_barriers = _external_sections(
+        pdf, page, table.source_cells, table_bbox
+    )
+    return ExternalAxis(
+        source_ids=[block.source_id for block in previous],
+        source_text=source_text,
+        source_spans=source_spans,
+        table_bbox=table_bbox,
+        model_spans=matched,
+        section_rows=section_rows,
+        section_barriers=section_barriers,
+        footnotes=[],
+        value_col_start=value_col_start,
+        first_row_is_data=first_row_is_data,
+    )
+
+
+def _preceding_axis_blocks(blocks: Sequence[Block]) -> list[Block]:
+    """Keep only the contiguous body axis; figures supply no heading text."""
+    result: list[Block] = []
+    for block in reversed(blocks):
+        if block.source_picture:
+            if block.kind == "table":
+                break
+            continue
+        if block.kind != "text":
+            break
+        result.append(block)
+        if re.match(r"^(?:Technical\s+Data|Technische\s+Daten)\b", block.text, re.I):
+            return list(reversed(result))
+    return []
+
+
 def enrich_model_axes(pages: list[Page], pdf_path: Path) -> list[Page]:
     """Supplement cached native cells with original physical model-label order.
 
@@ -330,6 +960,17 @@ def enrich_model_axes(pages: list[Page], pdf_path: Path) -> list[Page]:
         raise ValueError("source PDF bytes do not match their content identity")
     output: list[Page] = []
     pdf = pypdfium2.PdfDocument(pdf_path)
+    footnotes: dict[tuple[int, str], list[SourceFootnote]] = {}
+    pdf_notes: (
+        tuple[
+            dict[str, dict[int, int]],
+            dict[str, list[tuple[int, tuple[float, float, float, float] | None]]],
+        ]
+        | None
+    ) = None
+    complete_pages = len(pages) == len(pdf) and {page.number for page in pages} == set(
+        range(1, len(pdf) + 1)
+    )
     try:
         for page in pages:
             if not any(block.source_cells for block in page.blocks):
@@ -338,11 +979,41 @@ def enrich_model_axes(pages: list[Page], pdf_path: Path) -> list[Page]:
             wrapped_spans: set[tuple[int, int]] = set()
             spans = _pdf_model_spans(pdf, page.number, sha, wrapped_spans=wrapped_spans)
             blocks = []
-            for block in page.blocks:
+            for index, block in enumerate(page.blocks):
                 cells: list[SourceCell] = []
                 recovered = False
+                external = (
+                    _external_axis(
+                        pdf,
+                        page.number,
+                        _preceding_axis_blocks(page.blocks[:index]),
+                        block,
+                        spans,
+                    )
+                    if index and block.kind == "table" and block.source_cells
+                    else None
+                )
+                if external:
+                    key = (page.number, block.source_id)
+                    if key not in footnotes:
+                        if pdf_notes is None:
+                            pdf_notes = _pdf_footnote_counts(pages, pdf)
+                        footnotes[key] = _native_footnotes(
+                            pages,
+                            pdf,
+                            sha,
+                            page,
+                            block,
+                            pdf_notes[0],
+                            pdf_notes[1],
+                            complete_pages,
+                        )
+                    external["footnotes"] = footnotes[key]
                 for cell in block.source_cells:
                     own: SourceCell = {**cell}
+                    if external and cell["row_start"] == 0 and cell["col_start"] == 0:
+                        own["external_axis"] = external
+                        recovered = True
                     box = cell["bbox"]
                     if (
                         cell["row_start"] == 0
@@ -412,7 +1083,14 @@ def enrich_model_axes(pages: list[Page], pdf_path: Path) -> list[Page]:
                             own["model_spans"] = matched
                     cells.append(own)
                 if recovered:
-                    cells = _single_line_cells(pdf, page.number, cells)
+                    cells = _single_line_cells(
+                        pdf,
+                        page.number,
+                        cells,
+                        section_rows=set(external["section_rows"])
+                        if external
+                        else None,
+                    )
                 blocks.append(replace(block, source_cells=tuple(cells)))
             output.append(Page(page.number, page.source, blocks))
     finally:

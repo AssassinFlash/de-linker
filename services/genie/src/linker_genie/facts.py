@@ -8,10 +8,11 @@ Chunk IDs come from search-knowledge, and so do the figures of each chunk
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from typing import Any
 
-from linker_genie.figures import swap_decimals
+from linker_genie.figures import chunk_of, swap_decimals
 from linker_genie.stock import phrase
 from linker_genie.tools import READ_ATTACHMENT, READ_PAGE, READ_PLANNING, READ_SOLUTION
 
@@ -34,6 +35,16 @@ class Document:
     page: int | None
 
 
+@dataclass(frozen=True)
+class Qualification:
+    """An original condition and the verified chunk containing it."""
+
+    quote: str
+    page: int
+    chunk_id: str
+    lang: str
+
+
 @dataclass
 class TurnFacts:
     """Everything this turn's tools returned that an answer may cite."""
@@ -47,6 +58,10 @@ class TurnFacts:
     # Fact or chunk ID → the document it names (search-knowledge hits, pairing
     # documents), so a document block can link it instead of printing the URL.
     documents: dict[str, Document] = field(default_factory=dict)
+    # A table projection's figures all carry these original conditions.
+    qualifications: dict[str, tuple[Qualification, ...]] = field(default_factory=dict)
+    # The current Woo product association for each returned knowledge chunk.
+    knowledge_products: dict[str, tuple[int, ...]] = field(default_factory=dict)
     # Product ID → the commerce object a product ability returned for this
     # customer (price_visible, price, price_line, price_reason; #242), from which
     # the service fills the product cards' price lines (prices.fill).
@@ -263,6 +278,13 @@ def merge(parts: list[TurnFacts]) -> TurnFacts:
         combined.chunk_ids.update(part.chunk_ids)
         combined.tool_calls.extend(part.tool_calls)
         combined.documents.update(part.documents)
+        combined.qualifications.update(part.qualifications)
+        for chunk_id in part.chunk_ids | set(part.knowledge_products):
+            products = part.knowledge_products.get(chunk_id, ())
+            previous = combined.knowledge_products.get(chunk_id)
+            combined.knowledge_products[chunk_id] = (
+                products if previous is None or previous == products else ()
+            )
         combined.commerce.update(part.commerce)
         combined.stock_flags.update(part.stock_flags)
         for field_name in part.unknown_fields:
@@ -641,6 +663,70 @@ def _from_attachment(gathered: TurnFacts, payload: dict[str, Any], locale: str) 
             )
 
 
+_PROJECTION_NOTE = re.compile(r"\*\d+:\s+\S.* \(p\. [1-9]\d*\)")
+
+
+def knowledge_qualifications(hit: dict[str, Any]) -> tuple[Qualification, ...] | None:
+    """Validate the conditions accompanying a verified table projection.
+
+    None means malformed or missing metadata; an empty tuple is an ordinary
+    hit. A projection renders each source quote with its page on a line of
+    its own. Requiring the same lines here prevents an omitted or changed
+    condition from turning that projection into unqualified figures.
+    """
+    required = hit.get("qualification_required", False)
+    raw = hit.get("qualifications", [])
+    text = hit.get("text")
+    if type(required) is not bool or not isinstance(raw, (list, tuple)):
+        return None
+    if not isinstance(text, str):
+        return () if not required and not raw else None
+    annotations = [
+        line for line in text.splitlines() if _PROJECTION_NOTE.fullmatch(line)
+    ]
+    if not required:
+        return None if raw or annotations else ()
+    if not raw or not isinstance(hit.get("doc_url"), str) or not hit["doc_url"]:
+        return None
+    figures = hit.get("figures")
+    if figures is not None and (
+        not isinstance(figures, dict)
+        or any(
+            not isinstance(figure, str)
+            or chunk_of(figure) != hit.get("chunk_id")
+            or not isinstance(value, str)
+            or not value
+            for figure, value in figures.items()
+        )
+    ):
+        return None
+    notes: list[Qualification] = []
+    for item in raw:
+        if not isinstance(item, dict):
+            return None
+        quote, page, chunk_id, lang = (
+            item.get("quote"),
+            item.get("page"),
+            item.get("chunk_id"),
+            item.get("lang"),
+        )
+        if (
+            not isinstance(quote, str)
+            or re.fullmatch(r"\*\d+:\s+\S[^\n]*", quote) is None
+            or type(page) is not int
+            or page < 1
+            or not isinstance(chunk_id, str)
+            or not chunk_id
+            or lang not in ("en", "de")
+        ):
+            return None
+        notes.append(Qualification(quote, page, chunk_id, lang))
+    expected = [f"{note.quote} (p. {note.page})" for note in notes]
+    if len(set(expected)) != len(expected) or sorted(annotations) != sorted(expected):
+        return None
+    return tuple(notes)
+
+
 def _from_knowledge(gathered: TurnFacts, payload: dict[str, Any]) -> None:
     """Chunk IDs, the documents they stand in, and their figures.
 
@@ -655,7 +741,24 @@ def _from_knowledge(gathered: TurnFacts, payload: dict[str, Any]) -> None:
         chunk_id = hit.get("chunk_id")
         if not isinstance(chunk_id, str) or not chunk_id:
             continue
+        notes = knowledge_qualifications(hit)
+        if notes is None:
+            continue
         gathered.chunk_ids.add(chunk_id)
+        products = hit.get("product_ids")
+        scope = (
+            tuple(sorted(set(products)))
+            if (
+                isinstance(products, list)
+                and products
+                and all(type(product) is int and product > 0 for product in products)
+            )
+            else ()
+        )
+        previous = gathered.knowledge_products.get(chunk_id)
+        gathered.knowledge_products[chunk_id] = (
+            scope if previous is None or previous == scope else ()
+        )
         page = hit.get("page")
         title = hit.get("title") or ""
         if isinstance(page, int):
@@ -678,6 +781,16 @@ def _from_knowledge(gathered: TurnFacts, payload: dict[str, Any]) -> None:
                 title=str(title) or _file_name(url),
                 page=page if isinstance(page, int) else None,
             )
+            if notes:
+                gathered.qualifications[chunk_id] = notes
+                for note in notes:
+                    # This registers only the verified note's page as a link;
+                    # it does not add that chunk's text or figures to the turn.
+                    gathered.documents[note.chunk_id] = Document(
+                        url=url,
+                        title=str(title) or _file_name(url),
+                        page=note.page,
+                    )
         figures = hit.get("figures")
         for figure, value in (figures if isinstance(figures, dict) else {}).items():
             if isinstance(figure, str) and isinstance(value, str) and value:
