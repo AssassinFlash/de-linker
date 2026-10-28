@@ -3474,6 +3474,15 @@
         "initial_actual_preview": "ONEEnglishownedReview returned MPPT1/input1 linked todeclaredcircuit, MPPT1/input2 unlinked; bothnocableruns. No cable/route/ratings inferred; nojob/report/annualcalculation",
         "resolved_save_regression": "Reviewboundgeometryandmadepreparedinputsunsaved; ownSave31retainedexactpreviewbasis but table vanished because strict reviewRevision===savedRevision. ActualAX Saved31 removedtable153–186. Keepstrictasyncversionguard, fixcachedrenderbyactualbasis/scopeinstead"
       }
+    },
+    "input_contract_release_blocker": {
+      "state": "implementation_in_parallel_not_yet_verified",
+      "risk": "Stale client rebases baseline but retains draft omitting new pv_string_links, then full-input save may erase links; code-permitted, no observed production loss",
+      "core_owner": "certificate_conditions_backend",
+      "release_owner": "device_conditions_standards_review",
+      "contract": "installation_pv_string_links_v1",
+      "publication_allowed": false,
+      "spec": "docs/specs/548-native-recovery-handover.md#input-contracts-across-old-tabs-and-code-rollback"
     }
   },
   "paired_release_lifecycle": {
@@ -5088,6 +5097,20 @@
         "genie-project-de-1440.png"
       ],
       "temporary_browser_state": "A single existing local QA login cookie was reused in the owned Chrome validation tab, never displayed or written to disk. Its temporary copy was removed, viewport reset and owned tab closed; original IAB login unchanged."
+    },
+    "saved_source_card_release": {
+      "state": "source_committed_reviewed_unbuilt_not_deployed",
+      "source_commit": "4d71700f",
+      "owner_refresh_commit": "28c17475c",
+      "root_spec": "PASS: retained-source AC/DC and scope; exact periods and saved project timezone; native owner-bound historical restoration; one existing-owner proof refresh; model schema unchanged",
+      "standards_and_copy": "Reuse existing independent C final-source PASS; no repeat review or model call",
+      "remaining": [
+        "one combined build after input-contract protection",
+        "deterministic local rendered card acceptance",
+        "matched native release and real publication acknowledgement",
+        "one new production answer after runtime/source gates"
+      ],
+      "legacy_697": "Retained unchanged; cannot prove the new source card and must not be backfilled from current-page facts"
     }
   },
   "certificate_evidence": {
