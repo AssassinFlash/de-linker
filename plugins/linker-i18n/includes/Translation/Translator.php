@@ -78,7 +78,12 @@ final class Translator {
 			$source_id,
 			$this->fields->of_post( $source ),
 			$twin,
-			fn( array $values ): int => $this->twins->post( $source_id, $values, null, false ),
+			function ( array $values, array $changed ) use ( $source_id, $twin ): int {
+				if ( null !== $twin && array( Fields::META . Fields::COVER_ALT ) === array_keys( $changed ) ) {
+					return $this->twins->translated_post_meta( $twin, $changed );
+				}
+				return $this->twins->post( $source_id, $values, null, false );
+			},
 			$force
 		);
 	}
@@ -237,6 +242,13 @@ final class Translator {
 		// old object in its runtime cache. Re-read the source before claiming sync.
 		if ( State::POST === $kind ) {
 			clean_post_cache( $source_id );
+			$post = get_post( $source_id );
+			if ( $post instanceof \WP_Post && 'post' === $post->post_type ) {
+				$image = (int) get_post_thumbnail_id( $source_id );
+				if ( $image ) {
+					clean_post_cache( $image );
+				}
+			}
 		} else {
 			$term = get_term( $source_id );
 			if ( $term instanceof \WP_Term ) {
@@ -265,7 +277,7 @@ final class Translator {
 	 * @return string The status afterwards.
 	 * @throws TranslationFailed When a translation is missing or fails its checks.
 	 *
-	 * @phpstan-param callable(array<string, string>): int $write
+	 * @phpstan-param callable(array<string, string>, array<string, string>): int $write
 	 */
 	private function run( string $kind, int $source_id, array $source, ?int $twin, callable $write, bool $force = false ): string {
 		// Legacy forced actions must obey the owner's German-preservation ruling.
@@ -283,7 +295,9 @@ final class Translator {
 		$current = $this->german_fields( $kind, $twin );
 		$plans   = array();
 		foreach ( $source as $field => list( $value, $html ) ) {
-			$plans[ $field ] = $this->planner->plan( $value, $html, $current[ $field ] ?? null, $units[ $field ] ?? null, false );
+			$plans[ $field ] = Fields::META . Fields::COVER_ALT === $field && '' === trim( $value )
+				? FieldPlan::keep( $this->planner->split( '', false ), '' )
+				: $this->planner->plan( $value, $html, $current[ $field ] ?? null, $units[ $field ] ?? null, false );
 		}
 		if ( array() !== array_filter( $plans, static fn( FieldPlan $plan ): bool => $plan->mismatch ) ) {
 			$this->state->set_status( $kind, $source_id, State::STRUCTURE_MISMATCH, State::structure_reason() );
@@ -301,8 +315,10 @@ final class Translator {
 			}
 		}
 		// Baseline adoption must not pass preserved markup through a content writer.
-		if ( null === $twin || array_map( static fn( array $field ): string => $field[0], $current ) !== $values ) {
-			$twin = $write( $values );
+		$before  = array_map( static fn( array $field ): string => $field[0], $current );
+		$changed = array_diff_assoc( $values, $before );
+		if ( null === $twin || $before !== $values ) {
+			$twin = $write( $values, $changed );
 		}
 
 		$this->record( $kind, $twin, $source );
@@ -423,7 +439,7 @@ final class Translator {
 		}
 		$object = State::POST === $kind ? get_post( $twin ) : get_term( $twin );
 		if ( $object instanceof \WP_Post ) {
-			return $this->fields->of_post( $object );
+			return $this->fields->of_post( $object, true );
 		}
 		return $object instanceof \WP_Term ? $this->fields->of_term( $object ) : array();
 	}

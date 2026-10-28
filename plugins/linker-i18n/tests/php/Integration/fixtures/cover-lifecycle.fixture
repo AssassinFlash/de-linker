@@ -1,0 +1,203 @@
+<?php
+/** Temporary WordPress fixture for CoverAltTest. */
+
+use Linker\I18n\CoverAlt;
+use Linker\I18n\Jobs;
+use Linker\I18n\Languages;
+use Linker\I18n\LinkLocalizer;
+use Linker\I18n\Twins;
+use Linker\I18n\Translation\Aligner;
+use Linker\I18n\Translation\Client;
+use Linker\I18n\Translation\Fields;
+use Linker\I18n\Translation\HtmlTokenizer;
+use Linker\I18n\Translation\Planner;
+use Linker\I18n\Translation\Rules;
+use Linker\I18n\Translation\Segmenter;
+use Linker\I18n\Translation\State;
+use Linker\I18n\Translation\TranslationFailed;
+use Linker\I18n\Translation\Translator;
+use Linker\I18n\Translation\Validator;
+use Linker\I18n\Woo\Projection;
+
+$check = static function ( bool $ok, string $message ): void {
+	if ( ! $ok ) {
+		throw new RuntimeException( $message );
+	}
+};
+$languages = new Languages();
+$tokenizer = new HtmlTokenizer();
+$segmenter = new Segmenter( $tokenizer );
+$links = new LinkLocalizer( $languages, $tokenizer );
+$twins = new Twins( $languages, $links, new Projection( $languages ) );
+$state = new State();
+$rules = Rules::load( dirname( __DIR__, 4 ) . '/data' );
+$client = new class() implements Client {
+	public array $calls = array();
+	public bool $fail = false;
+	public ?Closure $during = null;
+	public function available(): bool { return true; }
+	public function translate( array $texts, string $feedback = '' ): array {
+		$this->calls[] = $texts;
+		if ( $this->fail ) {
+			throw new TranslationFailed( 'fixture failure', false );
+		}
+		if ( null !== $this->during ) {
+			$callback = $this->during;
+			$this->during = null;
+			$callback();
+		}
+		return array_map( static fn( string $text ): string => 'Dach "Süd" & Speicher', $texts );
+	}
+};
+$translator = new Translator( $languages, new Planner( $segmenter, new Aligner() ), new Fields(), $state, $client, new Validator( $rules ), $twins, $links );
+$jobs = new Jobs( $languages, $translator, $twins, $state );
+$posts = array();
+$images = array();
+$pending = static fn( int $id ): mixed => as_has_scheduled_action( Jobs::HOOK, array( State::POST, $id, false, 1 ), Jobs::GROUP );
+$unschedule = static function ( int $id ): void {
+	foreach ( array( 1, 2, 3 ) as $attempt ) {
+		as_unschedule_all_actions( Jobs::HOOK, array( State::POST, $id, false, $attempt ), Jobs::GROUP );
+	}
+};
+$render = static function ( int $id ): array {
+	$GLOBALS['post'] = get_post( $id );
+	setup_postdata( $GLOBALS['post'] );
+	$template = file_get_contents( dirname( __DIR__, 5 ) . '/linker-commerce/content/livecanvas/de/blog_single.html' );
+	if ( 1 !== preg_match( '/<img src="\{Field image_url\}"[^>]*>/', $template, $match ) ) {
+		throw new RuntimeException( 'The German template has no native cover image.' );
+	}
+	$html = tangible_template()->render( '<Loop type="post" id="' . $id . '">' . $match[0] . '</Loop>' );
+	$doc = new DOMDocument();
+	$doc->loadHTML( '<!doctype html><html><head><meta charset="utf-8"></head><body>' . $html . '</body></html>' );
+	return array( $html, $doc->getElementsByTagName( 'img' )->item( 0 )->getAttribute( 'alt' ) );
+};
+try {
+	$image = wp_insert_attachment( array( 'post_mime_type' => 'image/png', 'post_title' => 'Fixture image', 'guid' => 'https://example.test/fixture.png' ) );
+	$images[] = $image;
+	update_post_meta( $image, '_wp_attachment_image_alt', 'Roof & storage' );
+	$pairs = array();
+	foreach ( array( 1, 2 ) as $number ) {
+		$en = wp_insert_post( array( 'post_type' => 'post', 'post_status' => 'publish', 'post_title' => 'Fixture ' . $number, 'post_excerpt' => 'Original excerpt', 'post_content' => '<p>English content.</p>' ) );
+		$de = wp_insert_post( array( 'post_type' => 'post', 'post_status' => 'publish', 'post_title' => 'Beispiel ' . $number, 'post_excerpt' => 'Vorhandener Auszug', 'post_content' => '<p>Vorhandener deutscher Inhalt.</p>' ) );
+		$posts[] = $en;
+		$posts[] = $de;
+		pll_set_post_language( $en, 'en' );
+		pll_set_post_language( $de, 'de' );
+		pll_save_post_translations( array( 'en' => $en, 'de' => $de ) );
+		update_post_meta( $en, '_thumbnail_id', $image );
+		$check( (int) get_post_thumbnail_id( $de ) === $image, 'Polylang did not sync the featured image' );
+		delete_post_meta( $de, State::UNITS );
+		delete_post_meta( $de, State::SOURCE_HASH );
+		$pairs[] = array( $en, $de );
+	}
+	$before = array();
+	foreach ( $pairs as list( $en, $de ) ) {
+		$before[ $de ] = array( get_post( $de )->to_array(), wp_get_object_terms( $de, array( 'category', 'post_tag' ), array( 'fields' => 'ids' ) ), array_keys( wp_get_post_revisions( $de ) ) );
+		$check( State::SYNCED === $translator->post( $en ), 'first baseline failed' );
+		$check( State::SYNCED === $translator->post( $en ), 'unchanged baseline failed' );
+	}
+	$check( array() === $client->calls, 'first or unchanged baseline called the translator' );
+	// Reproduce the actual old-schema baseline: the three article fields were
+	// recorded before the cover field was registered.
+	foreach ( $pairs as list( $en, $de ) ) {
+		$units = $state->units( State::POST, $de );
+		unset( $units[ Fields::META . Fields::COVER_ALT ] );
+		$fields = ( new Fields() )->of_post( get_post( $en ) );
+		unset( $fields[ Fields::META . Fields::COVER_ALT ] );
+		$parts = array();
+		foreach ( $fields as $field => $value ) { $parts[] = $field . "\0" . $value[0]; }
+		$state->save( State::POST, $de, sha1( implode( "\1", $parts ) ), $units );
+	}
+	$updates = 0;
+	add_action( 'pre_post_update', static function ( int $id ) use ( &$updates, $pairs ): void {
+		foreach ( $pairs as $pair ) {
+			if ( $id === $pair[1] ) { ++$updates; }
+		}
+	} );
+	foreach ( $pairs as list( $en, $de ) ) {
+		$check( State::SYNCED === $translator->post( $en ), 'cover translation failed' );
+		$check( 'Dach "Süd" & Speicher' === get_post_meta( $de, CoverAlt::DISPLAY, true ), 'translated alt not displayed' );
+		$unschedule( $en );
+	}
+	$check( 0 === $updates, 'cover-only translation updated a German post' );
+	$check( array( array( 'Roof & storage' ), array( 'Roof & storage' ) ) === $client->calls, 'model saw non-cover fields' );
+	$call_count = count( $client->calls );
+	$check( State::SYNCED === $translator->post( $pairs[0][0] ) && $call_count === count( $client->calls ), 'unchanged translated source called the model' );
+	list( $rendered, $actual_alt ) = $render( $pairs[0][1] );
+	$check( 'Dach "Süd" & Speicher' === $actual_alt, 'native attribute did not preserve quotes and ampersand: ' . wp_json_encode( array( $rendered, $actual_alt ) ) );
+	$check( str_contains( $rendered, '&quot;' ) && str_contains( $rendered, '&amp;' ), 'native attribute was not escaped' );
+
+	update_post_meta( $image, '_wp_attachment_image_alt', 'New roof view' );
+	foreach ( $pairs as list( $en, $de ) ) {
+		$check( (bool) $pending( $en ), 'shared image did not queue both sources' );
+		$check( 'New roof view' === get_post_meta( $de, CoverAlt::DISPLAY, true ), 'stale translation remained visible' );
+	}
+	$client->fail = true;
+	$jobs->run( State::POST, $pairs[0][0] );
+	$check( State::FAILED === $state->status( State::POST, $pairs[0][0] ), 'failure was not visible' );
+	$check( 'New roof view' === get_post_meta( $pairs[0][1], CoverAlt::DISPLAY, true ), 'failure exposed stale German' );
+	$check( 'Dach "Süd" & Speicher' === get_post_meta( $pairs[0][1], Fields::COVER_ALT, true ), 'failure discarded stored German' );
+	$client->fail = false;
+	$jobs->run( State::POST, $pairs[0][0] );
+	$jobs->run( State::POST, $pairs[1][0] );
+	foreach ( $pairs as list( $en ) ) { $unschedule( $en ); }
+
+	update_post_meta( $image, '_wp_attachment_image_alt', 'West roof view' );
+	$client->during = static function () use ( $image ): void { update_post_meta( $image, '_wp_attachment_image_alt', 'East roof view' ); };
+	$jobs->run( State::POST, $pairs[0][0] );
+	$check( 'East roof view' === get_post_meta( $pairs[0][1], CoverAlt::DISPLAY, true ), 'stale in-flight job exposed old German' );
+	$check( (bool) $pending( $pairs[0][0] ), 'stale job did not leave a successor' );
+	$jobs->run( State::POST, $pairs[0][0] );
+	$jobs->run( State::POST, $pairs[1][0] );
+	foreach ( $pairs as list( $en ) ) { $unschedule( $en ); }
+
+	delete_post_meta( $image, '_wp_attachment_image_alt' );
+	foreach ( $pairs as list( $en, $de ) ) {
+		$check( '' === get_post_meta( $de, CoverAlt::DISPLAY, true ), 'cleared English alt exposed stale German' );
+		$jobs->run( State::POST, $en );
+		$check( '' === get_post_meta( $de, Fields::COVER_ALT, true ), 'cleared alt was not removed' );
+		$unschedule( $en );
+	}
+	list( $empty_html, $empty_alt ) = $render( $pairs[0][1] );
+	$check( '' === $empty_alt, 'native empty alt was not empty' );
+
+	$image2 = wp_insert_attachment( array( 'post_mime_type' => 'image/png', 'post_title' => 'Second fixture image', 'guid' => 'https://example.test/fixture2.png' ) );
+	$images[] = $image2;
+	update_post_meta( $image2, '_wp_attachment_image_alt', 'Garden canopy' );
+	update_post_meta( $pairs[0][0], '_thumbnail_id', $image2 );
+	$check( (bool) $pending( $pairs[0][0] ), 'thumbnail change was not queued' );
+	$check( 'Garden canopy' === get_post_meta( $pairs[0][1], CoverAlt::DISPLAY, true ), 'new image did not use its own alt' );
+	$jobs->run( State::POST, $pairs[0][0] );
+	$unschedule( $pairs[0][0] );
+	update_post_meta( $image, '_wp_attachment_image_alt', 'Old image updated' );
+	$check( ! $pending( $pairs[0][0] ) && (bool) $pending( $pairs[1][0] ), 'old image queued a post which no longer uses it' );
+	$unschedule( $pairs[1][0] );
+	update_post_meta( $pairs[1][0], '_thumbnail_id', $image2 );
+	$jobs->run( State::POST, $pairs[1][0] );
+	$unschedule( $pairs[1][0] );
+	wp_delete_attachment( $image2, true );
+	foreach ( $pairs as list( $en, $de ) ) {
+		$check( (bool) $pending( $en ), 'shared attachment deletion did not queue both consumers' );
+		$jobs->run( State::POST, $en );
+		$check( '' === get_post_meta( $de, Fields::COVER_ALT, true ), 'deleted attachment left translated alt' );
+	}
+
+	foreach ( $pairs as list( $en, $de ) ) {
+		$after = array( get_post( $de )->to_array(), wp_get_object_terms( $de, array( 'category', 'post_tag' ), array( 'fields' => 'ids' ) ), array_keys( wp_get_post_revisions( $de ) ) );
+		$check( $before[ $de ] === $after, 'German article fields or revisions changed' );
+	}
+	$check( 0 === $updates, 'cover lifecycle rewrote German post data' );
+	return array( 'result' => 'passed', 'native_with_quotes' => $rendered, 'native_empty_alt' => $empty_alt );
+} finally {
+	foreach ( $posts as $id ) { if ( get_post( $id ) ) { wp_delete_post( $id, true ); } }
+	foreach ( $images as $id ) { if ( get_post( $id ) ) { wp_delete_attachment( $id, true ); } }
+	foreach ( $posts as $id ) {
+		foreach ( array( 1, 2, 3 ) as $attempt ) {
+			foreach ( array( 'pending', 'canceled', 'complete', 'failed', 'in-progress' ) as $status ) {
+				$actions = as_get_scheduled_actions( array( 'hook' => Jobs::HOOK, 'group' => Jobs::GROUP, 'args' => array( State::POST, $id, false, $attempt ), 'status' => $status, 'per_page' => -1 ), 'ids' );
+				foreach ( $actions as $action ) { ActionScheduler::store()->delete_action( $action ); }
+			}
+		}
+	}
+	wp_reset_postdata();
+}
