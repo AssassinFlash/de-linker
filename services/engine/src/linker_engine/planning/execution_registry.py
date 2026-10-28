@@ -15,6 +15,7 @@ from .worker import Control
 from .workspace import Workspace
 
 if TYPE_CHECKING:
+    from .direct_beam_service import DirectBeamService
     from .energy_service import EnergyService
     from .equipment_service import EquipmentService
     from .pv_preparation import PvPreparationService
@@ -31,6 +32,7 @@ def service_registry(
     equipment_search: EquipmentService | None = None,
     reports: ReportService | None = None,
     pvgis_reference: PvgisRoofReferenceService | None = None,
+    direct_beam: DirectBeamService | None = None,
 ) -> ExecutionRegistry:
     """One executor-set authority for HTTP, worker startup and operator identity."""
     return ExecutionRegistry(
@@ -41,6 +43,7 @@ def service_registry(
         *(() if equipment_search is None else (equipment_search.kernel,)),
         *(() if reports is None else (reports.kernel,)),
         *(() if pvgis_reference is None else (pvgis_reference.kernel,)),
+        *(() if direct_beam is None else (direct_beam.kernel,)),
     )
 
 

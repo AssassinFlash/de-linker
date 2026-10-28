@@ -10553,5 +10553,26 @@
       "recorded_at_utc": "2026-10-27T23:47:55.750247+00:00",
       "en_reopen": "Actual English workspace loaded Saved · revision1, original-input disclosure and sameproject/overview links; unknown country/annual consumption/modules/DC power remain unset."
     }
+  },
+  "w12_direct_beam_visibility": {
+    "state": "integrated_candidate_native_UI_and_CI_pending",
+    "backend_commit": "5856d747cbdcdd3598848d8d19584066c4783b4a",
+    "frontend_commit": "818349b1f6b1b6c9aa4236e9704c6b7c96eb4a09",
+    "features": [
+      "Saved-source and input-version protection",
+      "Owned original weather selection, durable geometry task and strict frozen result read",
+      "Bilingual geometric table/3D, report/PDF/Genie consumers"
+    ],
+    "review": "Spec+Standards PASS; unchanged prior engine/protocol/PHP/frontend/static/build evidence reused. Current changed adapter fixture1PASS2.95s. Actual owner save/tasks/report UI acceptance remains in progress.",
+    "scope": "Selected-time geometric direct-beam visibility. Not a power profile, diffuse/reflected irradiance, bypass/MPPT electrical mismatch, annual loss or equipment/country approval. Full goal548 remains active."
+  },
+  "genie_saved_report_weather_route": {
+    "state": "reviewed_candidate_not_live",
+    "commit": "1418dc26e",
+    "before": "Actual production selected saved report question was intercepted by generic weather scripted route; no planning tool or source card ran. Original failure retained.",
+    "after": "Verified matching saved-result context with explicit EN/DE saved or this/that/current references reads existing planning tool; ordinary weather and foreign/missing/dirty/mismatched context retain previous routes.",
+    "checks": "Existing Understander+planning suites22PASS0.50s; strictmypy3 sourcefiles and Ruff/format4files PASS; independent Spec+Standards PASS",
+    "model_or_source_changes": false,
+    "production_fix_readback": false
   }
 }

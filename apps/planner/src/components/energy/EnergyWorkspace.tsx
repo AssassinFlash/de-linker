@@ -104,6 +104,14 @@ import { WeatherSetup } from "./WeatherSetup.tsx";
 import { PvSetup } from "./PvSetup.tsx";
 import { PvgisReferenceSetup } from "./PvgisReferenceSetup.tsx";
 import { PvgisReferenceResult } from "./PvgisReferenceResult.tsx";
+import { DirectBeamSetup } from "./DirectBeamSetup.tsx";
+import { DirectBeamResult } from "./DirectBeamResult.tsx";
+import {
+	DIRECT_BEAM_TASK,
+	compileDirectBeam,
+	directBeamDraft,
+} from "../../domain/directBeam.ts";
+import { readDirectBeamLimits } from "../../data/directBeamResult.ts";
 import {
 	PVGIS_REFERENCE_TASK,
 	compilePvgisReference,
@@ -136,6 +144,7 @@ export function EnergyWorkspace({
 	equipmentFocus = false,
 	openEquipment,
 	openResults,
+	sceneModuleUrl = null,
 }: {
 	draft: Draft;
 	edit: (operation: (inputs: JsonObject) => JsonObject) => boolean;
@@ -154,6 +163,7 @@ export function EnergyWorkspace({
 	equipmentFocus?: boolean;
 	openEquipment?: () => void;
 	openResults?: () => void;
+	sceneModuleUrl?: string | null;
 }) {
 	const joint = hasPlant(draft.history.current);
 	const jointContext = useMemo(() => {
@@ -225,6 +235,7 @@ export function EnergyWorkspace({
 		[weatherValid, setWeatherValid] = useState(true),
 		[pvValid, setPvValid] = useState(true),
 		[equipmentValid, setEquipmentValid] = useState(true),
+		[beamValid, setBeamValid] = useState(true),
 		[error, setError] = useState<unknown>(null),
 		[rangeBusy, setRangeBusy] = useState(false);
 	const view = equipmentFocus ? "equipment" : selectedView;
@@ -242,7 +253,8 @@ export function EnergyWorkspace({
 	const projectId = draft.baseline.id,
 		admitted = client.isCurrentScope(session.query_scope),
 		dirty = isDirty(draft),
-		syntaxValid = scenarioValid && weatherValid && pvValid && equipmentValid;
+		syntaxValid =
+			scenarioValid && weatherValid && pvValid && equipmentValid && beamValid;
 	useEffect(() => {
 		lifetime.current++;
 		return () => {
@@ -869,6 +881,7 @@ export function EnergyWorkspace({
 			| "runs/weather"
 			| "runs/pv"
 			| "runs/pvgis-reference"
+			| "runs/direct-beam"
 			| "runs/equipment"
 			| "runs/equipment-search",
 	) {
@@ -888,7 +901,9 @@ export function EnergyWorkspace({
 		try {
 			const inputs = draft.baseline.inputs;
 			const setup =
-				path.startsWith("runs/equipment") || path === "runs/pvgis-reference"
+				path.startsWith("runs/equipment") ||
+				path === "runs/pvgis-reference" ||
+				path === "runs/direct-beam"
 					? null
 					: readSolarSetup(inputs);
 			if (path === "runs/equipment-search" && hasPlant(inputs)) {
@@ -911,6 +926,13 @@ export function EnergyWorkspace({
 			} else if (path === "runs/equipment") {
 				if (hasPlant(inputs)) readEquipmentPlant(inputs.equipment_plant);
 				else readEquipmentSelection(inputs.equipment_selection);
+			} else if (path === "runs/direct-beam") {
+				if (session.runtime.models.direct_beam_visibility !== DIRECT_BEAM_TASK)
+					return;
+				const limits = readDirectBeamLimits(
+					session.runtime.limits.direct_beam_visibility,
+				);
+				compileDirectBeam(directBeamDraft(inputs), limits);
 			} else if (path === "runs/pvgis-reference") {
 				if (
 					session.runtime.models.pvgis_roof_reference !== PVGIS_REFERENCE_TASK
@@ -1122,6 +1144,13 @@ export function EnergyWorkspace({
 				</button>
 				<button
 					type="button"
+					aria-pressed={view === "direct-beam"}
+					onClick={() => chooseView("direct-beam")}
+				>
+					{__("Direct-beam visibility", "linker-tools")}
+				</button>
+				<button
+					type="button"
 					aria-pressed={view === "scenario"}
 					onClick={() => chooseView("scenario")}
 				>
@@ -1257,6 +1286,30 @@ export function EnergyWorkspace({
 					))}
 				</details>
 			)}
+			<div hidden={view !== "direct-beam"}>
+				<DirectBeamSetup
+					draft={draft}
+					locale={locale}
+					edit={edit}
+					session={session}
+					client={client}
+					active={active && view === "direct-beam"}
+					disabled={blocked || operations.busy || !admitted}
+					actionsDisabled={
+						blocked ||
+						!admitted ||
+						!syntaxValid ||
+						operations.busy ||
+						operations.checking ||
+						operations.storageFailed ||
+						unconfirmed.length > 0
+					}
+					onValidity={setBeamValid}
+					start={() => void startSolar("runs/direct-beam")}
+					openWeather={() => chooseView("weather")}
+					openDesign={openDesign}
+				/>
+			</div>
 			<div hidden={view !== "weather"}>
 				<WeatherSetup
 					draft={draft}
@@ -1794,7 +1847,16 @@ export function EnergyWorkspace({
 					)}
 					{runs.run.data && (
 						<>
-							{runTask(runs.run.data) === PVGIS_REFERENCE_TASK ? (
+							{runTask(runs.run.data) === DIRECT_BEAM_TASK ? (
+								<DirectBeamResult
+									key={runs.run.data.id}
+									run={runs.run.data}
+									session={session}
+									client={client}
+									locale={locale}
+									sceneModuleUrl={sceneModuleUrl}
+								/>
+							) : runTask(runs.run.data) === PVGIS_REFERENCE_TASK ? (
 								<PvgisReferenceResult
 									key={runs.run.data.id}
 									run={runs.run.data}

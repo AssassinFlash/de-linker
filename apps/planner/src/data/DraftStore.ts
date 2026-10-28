@@ -1,5 +1,5 @@
 import type { Draft, SaveIntent } from "../domain/draft.ts";
-import { projectInputContract, sameJson } from "../domain/draft.ts";
+import { isProjectInputContract, sameJson } from "../domain/draft.ts";
 import type { JsonObject, Project } from "./protocol.ts";
 import { readObject, readProject } from "./readProtocol.ts";
 import { readImport } from "../domain/profiles.ts";
@@ -587,7 +587,7 @@ export function decodeDraft(
 		const inputs = readObject(intent.inputs);
 		const command = readObject(JSON.parse(intent.body));
 		const declaredContract = Object.hasOwn(command, "input_contract");
-		if (declaredContract && command.input_contract !== projectInputContract)
+		if (declaredContract && !isProjectInputContract(command.input_contract))
 			throw new Error("invalid_recovery_intent");
 		const expected: JsonObject = {
 			schema_version: 1,
@@ -595,7 +595,7 @@ export function decodeDraft(
 			expected_revision: intent.expectedRevision,
 			inputs,
 			key: intent.key,
-			...(declaredContract ? { input_contract: projectInputContract } : {}),
+			...(declaredContract ? { input_contract: command.input_contract! } : {}),
 		};
 		if (!sameJson(command, expected))
 			throw new Error("invalid_recovery_intent");
@@ -629,7 +629,7 @@ export function decodeDraft(
 function validWriteContract(command: JsonObject, legacyKeys: string): boolean {
 	const keys = Object.keys(command).sort().join();
 	return Object.hasOwn(command, "input_contract")
-		? command.input_contract === projectInputContract &&
+		? isProjectInputContract(command.input_contract) &&
 				keys === ["input_contract", ...legacyKeys.split(",")].sort().join()
 		: keys === legacyKeys;
 }

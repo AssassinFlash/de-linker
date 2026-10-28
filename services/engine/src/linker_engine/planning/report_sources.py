@@ -11,6 +11,8 @@ from .certificate_evidence import certificate_documents
 from .dc_energy_kernel import DcEnergyKernel
 from .dc_plant_inputs import DcPlantEnergyInputs
 from .dc_plant_kernel import DcPlantEnergyKernel
+from .direct_beam_read import KIND as DIRECT_BEAM_KIND
+from .direct_beam_read import direct_beam_bundle
 from .energy_comparison import compare_energy_runs, comparison_side
 from .energy_inputs import EnergyInputs
 from .energy_kernel import EnergyKernel
@@ -188,6 +190,7 @@ def report_sources(
         and all(
             identity is None
             for identity in (
+                options.direct_beam_run_id,
                 options.energy_run_id,
                 options.pv_run_id,
                 options.equipment_run_id,
@@ -537,6 +540,31 @@ def report_sources(
                         else None,
                     )
 
+    direct_beam: Object | None = None
+    if options.direct_beam_run_id is not None:
+        run = owned(
+            options.direct_beam_run_id,
+            DIRECT_BEAM_KIND,
+            ("geometry", "direct_beam_visibility"),
+        )
+        direct_beam = {
+            **direct_beam_bundle(workspace, run),
+            "run_id": run.id,
+            "revision": run.revision,
+            "result_sha256": run.result_sha256,
+            "manifest_sha256": run.manifest_sha256,
+        }
+        bases["direct_beam"] = cast(Object, direct_beam["dependencies"])[
+            "woo.module_inputs"
+        ]
+        if component_list is None:
+            component_list = saved_roof_components(
+                direct_beam["geometry"],
+                cast(Object, direct_beam["woo_module_inputs"]),
+                workspace.blobs,
+                run.revision,
+            )
+
     installation: Object | None = None
     if options.include_installation:
         plan = InstallationInputs.read(project.inputs.get("installation"))
@@ -634,6 +662,9 @@ def report_sources(
         dependencies[f"pvlib_reference.{index}.metadata"] = reference["metadata_sha256"]
         for name, sha in cast(Object, reference["dependencies"]).items():
             dependencies[f"pvlib_reference.{index}.{name}"] = sha
+    if direct_beam is not None:
+        for name, sha in cast(Object, direct_beam["dependencies"]).items():
+            dependencies[f"direct_beam.{name}"] = sha
     condition_inputs: Object | None = None
     certificate_context: Object | None = None
     if assessment is not None and "equipment" in bases:
@@ -691,6 +722,7 @@ def report_sources(
         "energy_equipment": energy.get("equipment_binding") if energy else None,
         "pv_components": component_list,
         "pv": pv,
+        **({"direct_beam": direct_beam} if direct_beam is not None else {}),
         **(
             {"pvgis_roof_ac_references": list(roof_references.values())}
             if roof_references

@@ -12,6 +12,7 @@ export interface ReportOptions extends JsonObject {
 	locale: "en" | "de";
 	energy_run_id: string | null;
 	pv_run_id: string | null;
+	direct_beam_run_id?: string | null;
 	equipment_run_id: string | null;
 	logo: string | null;
 	comparison?: { baseline_run_id: string; candidate_run_id: string } | null;

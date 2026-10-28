@@ -2520,6 +2520,8 @@ def with_page(
     logged_in: bool,
     subject: Subject,
     message: str = "",
+    *,
+    planning_context: dict[str, Any] | None = None,
 ) -> Route:
     """The route with the page's content added when the message is about the page.
 
@@ -2541,6 +2543,21 @@ def with_page(
     documents route leaves one call to the model (`DOCUMENTS_SPARE`). What does not
     fit is dropped, named in the turn log and, for a pair, in the hint.
     """
+    if (
+        route.name == "scripted"
+        and "scripted: weather" in route.reasons
+        and planning_tool.saved_result_question(planning_context, page, message)
+    ):
+        # A verified saved result's weather is historical calculation input.
+        # Keep live-weather requests and missing/foreign context on their
+        # existing fixed route; the planning tool still owns the actual facts.
+        route = Route(
+            "model",
+            no_cards=True,
+            no_handoff=True,
+            reasons=(*route.reasons, "matching native saved-result context"),
+        )
+        about_page = True
     about_page = (
         about_page
         or (

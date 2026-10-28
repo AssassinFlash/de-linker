@@ -38,9 +38,268 @@ const session = {
 const selectButton = () =>
 	document.querySelector(".lp-run-result > .lp-button");
 
-async function mount(t, component) {
+test("owned geometric setup saves with the cumulative contract and shows frozen night/daylight separately from PV", async (t) => {
+	const native = fixture.direct_beam;
+	const beamSession = {
+		...session,
+		runtime: {
+			...session.runtime,
+			models: {
+				direct_beam_visibility: "prepare_direct_beam_visibility_v1",
+				report: "planning_report_v1",
+			},
+			limits: {
+				...session.runtime.limits,
+				direct_beam_visibility: native.visibility_limits,
+			},
+		},
+	};
+	let current = beginDraft(native.project),
+		submitted,
+		setHarness,
+		valid;
+	const sent = [];
+	const summary = (run, created_at, task_kind) =>
+		Object.fromEntries(
+			Object.entries({ ...run, created_at, task_kind }).filter(
+				([key]) => !["manifest", "result", "error"].includes(key),
+			),
+		);
+	const client = {
+		origin: "https://fixture.invalid",
+		isCurrentScope: (v) => v === scope,
+		async query(path, body) {
+			assert.equal(body.schema_version, 1);
+			if (path === "products/current")
+				return {
+					schema_version: 1,
+					provider: "woocommerce",
+					pv_modules: [native.module_template],
+					products: [],
+				};
+			if (path === "runs/read")
+				return body.run_id === native.report_run.id
+					? native.report_run
+					: native.run;
+			assert.equal(body.project_id, native.project.id);
+			if (path === "weather/assets") return native.weather_assets;
+			if (path === "assets/read") {
+				assert.equal(body.asset_id, native.weather_asset.id);
+				return native.weather_asset;
+			}
+			if (path === "weather/preview") {
+				if (body.offset === 0) return native.weather_preview;
+				assert.equal(body.offset, 12);
+				const row = native.run.result.visibility.rows[1];
+				// This bounded page uses the exact same retained weather row as
+				// the native daylight witness, not a fabricated visibility value.
+				return {
+					...native.weather_preview,
+					offset: 12,
+					rows: [
+						Object.fromEntries(
+							[
+								"source_row_index",
+								"interval_start_utc",
+								"interval_end_utc",
+								"source_label_utc",
+								"irradiance_at_utc",
+							].map((key) => [key, row[key]]),
+						),
+					],
+					next_offset: 13,
+				};
+			}
+			if (path === "projects/runs")
+				return {
+					items: [
+						summary(native.report_run, 200, "planning_report_v1"),
+						summary(native.run, 100, "prepare_direct_beam_visibility_v1"),
+					],
+					next: null,
+				};
+			throw new Error("unexpected geometric read " + path);
+		},
+		async send(path, body, requestedScope) {
+			const command = JSON.parse(body);
+			assert.equal(requestedScope, scope);
+			assert.equal(command.project_id, native.project.id);
+			assert.equal(command.expected_revision, 2);
+			sent.push({ path, body });
+			if (path === "runs/report") {
+				submitted = command.options;
+				return native.report_run;
+			}
+			assert.equal(path, "runs/direct-beam");
+			return native.run;
+		},
+	};
+	function Harness() {
+		const [value, setValue] = useState(current),
+			[runtimeSession, setRuntimeSession] = useState(beamSession);
+		setHarness = (next, nextSession = beamSession) => {
+			current = next;
+			setValue(next);
+			setRuntimeSession(nextSession);
+		};
+		return React.createElement(EnergyWorkspace, {
+			draft: value,
+			session: runtimeSession,
+			client,
+			locale: "en-GB",
+			active: true,
+			blocked: false,
+			recoveryScopes: [scope],
+			onValidity(value) {
+				valid = value;
+			},
+			recheck() {},
+			flush: async () => true,
+			openProfiles() {},
+			openDesign() {},
+			sceneModuleUrl: null,
+			edit(operation) {
+				current = editDraft(current, operation(current.history.current));
+				setValue(current);
+				return true;
+			},
+		});
+	}
+	await mount(
+		t,
+		React.createElement(Harness),
+		`?project=${native.project.id}&energy_view=direct-beam`,
+	);
+	const button = (name) =>
+		[...document.querySelectorAll("button")].find(
+			(b) => b.textContent === name,
+		);
+	await until(
+		() =>
+			button("Calculate direct-beam visibility") &&
+			!button("Calculate direct-beam visibility").disabled,
+	);
+	const date = document.querySelector('input[type="datetime-local"]');
+	await enter(
+		date,
+		native.run.result.visibility.rows[1].interval_start_utc.slice(0, 16),
+	);
+	await act(async () => button("Show interval page").click());
+	await until(() =>
+		[...document.querySelectorAll('input[type="checkbox"]')].some((input) =>
+			input
+				.getAttribute("aria-label")
+				?.includes(native.run.result.visibility.rows[1].interval_start_utc),
+		),
+	);
+	await act(async () => button("Calculate direct-beam visibility").click());
+	await until(
+		() =>
+			document.querySelector(".lp-run-result h3")?.textContent ===
+			"Geometric direct-beam visibility",
+	);
+	assert.equal(sent[0].path, "runs/direct-beam");
+	assert.match(
+		document.querySelector(".lp-run-result").textContent,
+		/Sun at or below horizon/,
+	);
+	const timestamp = [...document.querySelectorAll("label")]
+		.find((label) =>
+			label.textContent.includes("Selected source irradiance timestamp"),
+		)
+		.querySelector("select");
+	await act(async () => {
+		timestamp.value = "1";
+		timestamp.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	assert.match(document.querySelector(".lp-run-result").textContent, /Sampled/);
+	assert.ok(
+		document
+			.querySelector(".lp-run-result")
+			.textContent.includes(
+				native.run.result.visibility.rows[1].irradiance_at_utc,
+			),
+	);
+	assert.match(
+		document.querySelector(".lp-run-result").textContent,
+		/frozen geometry/,
+	);
+	await act(async () => button("Planning report").click());
+	await until(() =>
+		[...document.querySelectorAll(".lp-scenario-fields select")].some(
+			(select) => [...select.options].some((o) => o.value === native.run.id),
+		),
+	);
+	const reportChoice = [
+		...document.querySelectorAll(".lp-scenario-fields select"),
+	].find((select) =>
+		[...select.options].some((o) => o.value === native.run.id),
+	);
+	await act(async () => {
+		reportChoice.value = native.run.id;
+		reportChoice.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	await act(async () => button("Generate planning report").click());
+	await until(() => submitted !== undefined);
+	assert.equal(submitted.direct_beam_run_id, native.run.id);
+	assert.equal(submitted.pv_run_id, null);
+	await until(
+		() =>
+			new URL(window.location.href).searchParams.get("run") ===
+			native.report_run.id,
+	);
+	await act(async () => button("Direct-beam visibility").click());
+	await until(() => !button("Calculate direct-beam visibility").disabled);
+	const fine = [...document.querySelectorAll("label")]
+		.find((label) =>
+			label.textContent.includes("Fine grid cells per module edge"),
+		)
+		.querySelector("input");
+	await enter(fine, "3");
+	assert.equal(button("Calculate direct-beam visibility").disabled, true);
+	const pending = prepareSave(current, "30000000-0000-4000-8000-000000000001", {
+		maxDepth: 32,
+		maxBytes: 1000000,
+	});
+	assert.equal(
+		JSON.parse(pending.pending.body).input_contract,
+		"pv_string_links_direct_beam_visibility_v1",
+	);
+	assert.equal(
+		JSON.parse(pending.pending.body).inputs.direct_beam_visibility.sampling
+			.fine_cells_per_edge,
+		3,
+	);
+	// Optional runtime configuration must not invalidate canonical saved data.
+	await act(async () => setHarness(beginDraft(native.project), session));
+	await until(() =>
+		document.body.textContent.includes(
+			"unavailable in the current service version",
+		),
+	);
+	assert.equal(valid, true);
+	assert.equal(button("Calculate direct-beam visibility").disabled, true);
+	// Geometry edits retain old weather; detect that explicit reconciliation
+	// is required before the user dispatches another native worker job.
+	const moved = structuredClone(native.project);
+	moved.inputs.geometry.coordinate_system.anchor.latitude_deg += 1;
+	await act(async () => setHarness(beginDraft(moved)));
+	await until(() =>
+		document.body.textContent.includes(
+			"coordinates do not match the saved roof location",
+		),
+	);
+	assert.equal(button("Calculate direct-beam visibility").disabled, true);
+	assert.equal(
+		sent.filter((request) => request.path === "runs/direct-beam").length,
+		1,
+	);
+});
+
+async function mount(t, component, initialUrl) {
 	const dom = setupDom(),
 		previous = Object.getOwnPropertyDescriptor(globalThis, "indexedDB");
+	if (initialUrl) window.history.replaceState(null, "", initialUrl);
 	Object.defineProperty(globalThis, "indexedDB", {
 		value: new IDBFactory(),
 		configurable: true,

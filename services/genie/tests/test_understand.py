@@ -78,6 +78,96 @@ def _reading(intent: str, confidence: float = 0.99) -> Reading:
     return Reading(intent, confidence, 0.1, 0.05, 0.2, 2.6, 0.00003)  # type: ignore[arg-type]
 
 
+def test_saved_report_weather_uses_only_matching_native_planning_context(
+    vocabulary: Vocabulary,
+) -> None:
+    from linker_genie import planning
+
+    project, run = "a" * 32, "b" * 32
+    raw = {
+        "schema_version": 1,
+        "status": "available",
+        "project": {"id": project, "title": "Owned fixture", "revision": 3},
+        "rows": [],
+        "runs": [
+            {
+                "id": run,
+                "revision": 3,
+                "kind": "planning_report_v1",
+                "state": "succeeded",
+                "rows": [{"label": "recorded_source", "value": "retained weather"}],
+                "details_available": True,
+            }
+        ],
+        "truncated": False,
+    }
+    # The retained production failure's exact question and Jev decision: the
+    # fixed weather sentence ran before the selected report could be read.
+    question = (
+        "For the selected saved report, please explain the exact UTC start and end of "
+        "the PV generation and energy calculation periods, the weather databases, "
+        "the time zone and the TMY selection years. Are the equipment and country "
+        "checks approved? Keep the two calculation periods separate and identify "
+        "the saved results behind your answer."
+    )
+    reading = Reading("documents_specs", 0.46, 0.76, 0.05, 0.84, 0.167, 0.000041622)
+    for message, locale, context, expected in (
+        (question, "en", raw, "model"),
+        (
+            "Welche Wetterdaten und Zeiträume verwendet der ausgewählte gespeicherte Bericht?",
+            "de",
+            raw,
+            "model",
+        ),
+        ("Which weather data were used for this report?", "en", raw, "model"),
+        (
+            "Welche Wetterdaten wurden für diesen Bericht verwendet?",
+            "de",
+            raw,
+            "model",
+        ),
+        ("What is the weather tomorrow?", "en", raw, "scripted"),
+        ("Explain tomorrow's weather report", "en", raw, "scripted"),
+        ("Wie wird das Wetter morgen?", "de", raw, "scripted"),
+        (question, "en", None, "scripted"),
+        (
+            question,
+            "en",
+            {**raw, "project": {"id": "c" * 32, "revision": 3}},
+            "scripted",
+        ),
+        (question, "en", {**raw, "status": "unsaved_changes"}, "scripted"),
+        (
+            question,
+            "en",
+            {**raw, "project": {"id": project, "revision": 2}},
+            "scripted",
+        ),
+        (question, "en", {**raw, "runs": []}, "scripted"),
+    ):
+        request = _request(
+            message,
+            locale,
+            planning_project_id=project,
+            planning_revision=3,
+            planning_run_ids=[run],
+        ).model_copy(update={"planning_context": context})
+        seen: list[httpx.Request] = []
+        prepared = Understander(lambda: vocabulary, FakeJev(reading)).prepare(
+            request, _abilities(seen)
+        )
+        assert prepared.route.name == expected
+        assert seen == []
+        if expected == "model":
+            assert not prepared.route.answer
+            assert [call.ability for call in prepared.route.calls] == [planning.NAME]
+            assert prepared.results[0]["result"]["status"] == "available"
+            assert "retained weather" in prepared.results[0]["result"]["text"]
+        else:
+            assert prepared.route.calls == ()
+            assert prepared.facts.facts == {}
+
+
 def test_saj_is_searched_by_code_before_the_model(vocabulary: Vocabulary) -> None:
     seen: list[httpx.Request] = []
     understander = Understander(lambda: vocabulary, FakeJev(_reading("find_products")))

@@ -87,6 +87,10 @@ class ProjectInputs(Command):
             from .geometry_import_selections import GeometryImports
 
             GeometryImports.model_validate(value["geometry_imports"])
+        if "direct_beam_visibility" in value:
+            from .direct_beam_inputs import DirectBeamTaskInputs
+
+            DirectBeamTaskInputs.model_validate(value["direct_beam_visibility"])
         if "pv_generation" in value:
             from .pv_parameters import PvGenerationParameters
 
@@ -243,6 +247,12 @@ class HandoffPrepare(Command):
 
 class HandoffRead(Command):
     handoff_id: Id
+
+
+class WeatherAssetsRead(Command):
+    project_id: Id
+    offset: Annotated[int, Field(strict=True, ge=0)]
+    page_size: Annotated[int, Field(strict=True, gt=0)]
 
 
 class ProfilePreviewRead(AssetRead):

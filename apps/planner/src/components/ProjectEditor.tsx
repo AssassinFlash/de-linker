@@ -606,7 +606,7 @@ export function ProjectEditor({
 						<Notice error>
 							{inputContractRequired
 								? __(
-										"This workspace version cannot safely save projects with PV string connection data. Keep your local draft and reload the workspace before saving again.",
+										"This workspace version cannot safely save all data in this project. Keep your local draft and reload the workspace before saving again.",
 										"linker-tools",
 									)
 								: __(
@@ -894,6 +894,7 @@ export function ProjectEditor({
 								onValidity={setEnergyValid}
 								openProfiles={() => chooseWorkspace("energy")}
 								openDesign={() => chooseWorkspace("design")}
+								sceneModuleUrl={config.sceneModuleUrl ?? null}
 								blocked={
 									busy ||
 									recoveries.length > 0 ||

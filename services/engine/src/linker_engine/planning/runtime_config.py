@@ -15,6 +15,9 @@ from pydantic import Field, model_validator
 
 from .dc_energy_kernel import DcEnergyKernel
 from .dc_plant_kernel import DcPlantEnergyKernel
+from .direct_beam_inputs import DirectBeamLimits
+from .direct_beam_job import DirectBeamKernel
+from .direct_beam_service import DirectBeamService
 from .energy_inputs import Document, Nonnegative, SchemaVersion
 from .energy_kernel import EnergyKernel
 from .energy_service import EnergyService
@@ -22,6 +25,7 @@ from .equipment_kernel import EquipmentKernel
 from .equipment_search_kernel import EquipmentSearchKernel
 from .equipment_search_limits import EquipmentSearchLimits
 from .equipment_service import EquipmentService
+from .errors import InvalidInput
 from .http_app import HttpLimits
 from .numerical_tolerance import Tolerance
 from .plant_energy_kernel import PlantEnergyKernel
@@ -56,6 +60,7 @@ class RuntimeConfig(Document):
     pv_preparation: PvGenerationLimits | None = None
     weather_acquisition: WeatherFetchLimits | None = None
     equipment_search: EquipmentSearchLimits | None = None
+    direct_beam_visibility: DirectBeamLimits | None = None
 
     @model_validator(mode="after")
     def absolute_directory(self) -> Self:
@@ -63,6 +68,8 @@ class RuntimeConfig(Document):
             raise ValueError("planning directory must be absolute")
         if self.max_csv_bytes > self.max_body_bytes:
             raise ValueError("CSV limit exceeds the request limit")
+        if self.direct_beam_visibility is not None and self.pv_preparation is None:
+            raise ValueError("direct-beam visibility requires explicit weather limits")
         return self
 
     @classmethod
@@ -139,6 +146,24 @@ class RuntimeConfig(Document):
             PvReferenceKernel(
                 workspace,
                 self.pv_preparation,
+                products=products or ProductSources(worker_product_provider),
+            ),
+            max_attempts=self.max_attempts,
+        )
+
+    def direct_beam_service(
+        self, workspace: Workspace, *, products: ProductSources | None = None
+    ) -> DirectBeamService | None:
+        if self.direct_beam_visibility is None:
+            return None
+        if self.pv_preparation is None:
+            raise InvalidInput("direct-beam weather limits are absent")
+        return DirectBeamService(
+            workspace,
+            DirectBeamKernel(
+                workspace,
+                self.pv_preparation,
+                self.direct_beam_visibility,
                 products=products or ProductSources(worker_product_provider),
             ),
             max_attempts=self.max_attempts,
