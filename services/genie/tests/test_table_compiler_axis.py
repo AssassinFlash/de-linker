@@ -823,27 +823,77 @@ def test_cannot_downgrade_external_axis_to_forged_native_header(tmp_path: Path) 
         loaded.close()
 
 
-def test_old_column_sections_keep_their_condition_across_chunk_boundaries() -> None:
+@pytest.mark.parametrize("provenance", ["legacy", "mixed", "unscoped"])
+def test_old_column_sections_keep_their_condition_across_chunk_boundaries(
+    provenance: str,
+) -> None:
     sha = "a" * 64
-    first = "| Input | | |\n| Nominal Current (A) | 32 | 16 |\n| Battery Side *6 | | |"
+    first = (
+        "| Input | | |\n| Nominal Current (A) | 32 | 16 |\n| | 11 | 22 |\n"
+        "| Safe Power (kW) | 20 | 30 |\n| Battery Side *6 | | |"
+    )
     second = "| Nominal Voltage (V) | 400 | 400 |\n| Grid Side | | |\n| Rated Power (kW) | 80 | 100 |"
 
     def cid(text: str) -> str:
         digest = hashlib.sha256(f"table\0{text}".encode()).hexdigest()[:8]
         return f"{sha[:12]}-p2-{digest}"
 
-    chunks = [(sha, 2, "table", cid(text), text) for text in (first, second)]
-    scopes = {
-        item[3]: {"basis": "table_columns", "table_columns": {"source_table": "table"}}
-        for item in chunks
+    independent = (
+        "| Grid Side | | |\n| Rated Power (kW) | 125 | 150 |\n"
+        "| Dimension (W*D*H mm) | 950*1300*2480 | 950*1300*2480 |\n"
+        "| Dimensions | 500*600*700*1 | 500*600*700*1 |\n"
+        "| Working Temperature Range | -25-50* | -25-50* |\n"
+        "| Ingress Protection Rating | IP66*2 | IP66*2 |"
+    )
+    chunks = [
+        (sha, 2, "table", cid(text), text) for text in (first, second, independent)
+    ]
+    scopes: dict[str, dict[str, Any]] = {
+        cid(first): {"basis": "passage"},
+        cid(second): {"basis": "section"},
+        cid(independent): {"basis": "passage"},
     }
+    if provenance != "legacy":
+        for name in (cid(first), cid(second)):
+            scopes[name]["native_table"] = {
+                "source_table": "first",
+                "source_chunk_ids": [cid(first), cid(second)],
+            }
+        scopes[cid(independent)]["native_table"] = {
+            "source_table": "second",
+            "source_chunk_ids": [cid(independent)],
+        }
+        if provenance == "unscoped":
+            del scopes[cid(first)]
     safe = unqualified_table_columns(chunks, scopes)
     assert "Nominal Current (A)" in safe[cid(first)]
+    assert "Safe Power (kW)" in safe[cid(first)]
     assert "Battery Side *6" not in safe[cid(first)]
     assert "Nominal Voltage" not in safe[cid(second)]
     # Legacy whole-table fragments have no physical proof that "Grid Side"
     # is a real section rather than a parameter whose values were omitted.
     assert "Rated Power (kW)" not in safe[cid(second)]
+    assert ("125 | 150" in safe[cid(independent)]) is (provenance != "legacy")
+    assert ("950*1300*2480" in safe[cid(independent)]) is (provenance != "legacy")
+    assert "500*600*700*1" not in safe[cid(independent)]
+    assert "-25-50*" not in safe[cid(independent)]
+    assert "IP66*2" not in safe[cid(independent)]
+
+
+def test_note_in_value_only_continuation_revokes_prior_fragment_row() -> None:
+    sha = "a" * 64
+    first = "| Safe (A) | 1 | 2 |\n| Qualified (V) | 10 | 20 |"
+    second = "| | *4 | *4 |\n| Unknown (W) | 30 | 40 |"
+
+    def cid(text: str) -> str:
+        digest = hashlib.sha256(f"table\0{text}".encode()).hexdigest()[:8]
+        return f"{sha[:12]}-p2-{digest}"
+
+    chunks = [(sha, 2, "table", cid(text), text) for text in (first, second)]
+    safe = unqualified_table_columns(chunks, {})
+    assert "Safe (A)" in safe[cid(first)]
+    assert "Qualified (V)" not in safe[cid(first)]
+    assert not safe[cid(second)]
 
 
 def test_old_schema_native_projection_remains_retrievable(tmp_path: Path) -> None:

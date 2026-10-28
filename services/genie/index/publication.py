@@ -72,6 +72,13 @@ class TableColumns(TypedDict):
     excluded_role_rows: NotRequired[list[dict[str, Any]]]
 
 
+class NativeTable(TypedDict):
+    """All original fragments of one native table, in source order."""
+
+    source_table: str
+    source_chunk_ids: list[str]
+
+
 class ScopeProof(TypedDict):
     """The authored or explicit Woo document scope behind an allowed passage."""
 
@@ -81,6 +88,7 @@ class ScopeProof(TypedDict):
     document_ids: list[str]
     associations: list[dict[str, Any]]
     table_columns: NotRequired[TableColumns]
+    native_table: NotRequired[NativeTable]
     referenced_products: NotRequired[list[dict[str, Any]]]
     manual_scope: NotRequired[dict[str, Any]]
     table_projection: NotRequired[dict[str, Any]]
@@ -561,6 +569,12 @@ def scope_proofs(
     for document in source.documents.values():
         documents.setdefault(document["blob_sha256"], []).append(document)
     relevant = [chunk for chunk in chunks if chunk.doc_sha256 in documents]
+    native_tables: dict[tuple[str, str], list[str]] = {}
+    for chunk in relevant:
+        if chunk.kind == "table" and chunk.source_table:
+            native_tables.setdefault((chunk.doc_sha256, chunk.source_table), []).append(
+                chunk.id
+            )
     statuses = _recognized(relevant, authority) if _statuses is None else _statuses
     labels = set(statuses).union(current_labels)
     families = _family_labels(labels)
@@ -723,6 +737,13 @@ def scope_proofs(
             }
             if basis == "table_columns":
                 result[chunk.id]["table_columns"] = columns[chunk.id]
+            if chunk.kind == "table" and chunk.source_table:
+                result[chunk.id]["native_table"] = {
+                    "source_table": chunk.source_table,
+                    "source_chunk_ids": native_tables[
+                        (chunk.doc_sha256, chunk.source_table)
+                    ],
+                }
             if basis == "manual_peripheral":
                 assert declaration is not None
                 result[chunk.id]["referenced_products"] = references

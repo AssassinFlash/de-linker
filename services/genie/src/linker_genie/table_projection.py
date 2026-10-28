@@ -1045,56 +1045,136 @@ def native_chunk_id_matches(
     )
 
 
+def _unresolved_table_marker(line: str, label: str) -> bool:
+    """Keep visibly multiplied dimensions while rejecting actual note markers."""
+    if re.search(r"\b(?:dimensions?|abmessungen|maße)\b", label, re.IGNORECASE):
+        line = re.sub(
+            r"\b(?:[WwHhDdLl]\s*\*\s*){2,}[WwHhDdLl]\b",
+            "",
+            line,
+        )
+        line = re.sub(
+            r"(?<![\w.])\d+(?:[.,]\d+)?(?:\s*\*\s*\d+(?:[.,]\d+)?){2}(?![\w.*])",
+            "",
+            line,
+        )
+    return re.search(r"[*†‡]", line) is not None
+
+
 def unqualified_table_columns(
     chunks: Sequence[tuple[str, int, str, str, str]],
     scopes: Mapping[str, Mapping[str, Any]],
 ) -> dict[str, str]:
     """Retain only complete native rows without unresolved note conditions.
 
-    Whole-table column proofs predate qualified projections. Walk the original
-    fragments in source order. A marker on a row with values affects that row;
-    a marked row without values remains a barrier because this legacy format
-    does not prove whether a later empty row is a section or a missing value.
+    The applicability proof's basis does not change the source's conditions.
+    Walk every native table, including fragments without an individual scope,
+    in source order. Old indexes without fragment provenance use a conservative
+    same-page grouping. Qualified projections already have their own validator.
     """
-    groups: dict[tuple[str, str], list[tuple[str, str]]] = {}
-    for sha, page, kind, cid, text in chunks:
-        scope = scopes.get(cid, {})
-        columns = scope.get("table_columns")
-        if scope.get("basis") != "table_columns" or not isinstance(columns, dict):
-            continue
-        table = columns.get("source_table")
-        if not isinstance(table, str) or not table:
-            continue
-        if kind != "table" or not native_chunk_id_matches(sha, page, kind, text, cid):
-            # An invalid fragment cannot establish that its surrounding rows
-            # are outside a conditional section.
-            groups.setdefault((sha, table), []).append((cid, ""))
-        else:
-            groups.setdefault((sha, table), []).append((cid, text))
+    records: dict[str, tuple[str, int, str, int]] = {}
     result: dict[str, str] = {}
+    for position, (sha, page, kind, cid, text) in enumerate(chunks):
+        if kind != "table":
+            continue
+        scope = scopes.get(cid, {})
+        if scope.get("basis") == "table_projection" or "table_projection" in scope:
+            continue
+        if not native_chunk_id_matches(sha, page, kind, text, cid):
+            result[cid] = ""
+            continue
+        records[cid] = (sha, page, text, position)
+
+    claims: dict[tuple[str, int, str], tuple[str, ...]] = {}
+    bad_pages: set[tuple[str, int]] = set()
+    owners: dict[str, tuple[str, int, str]] = {}
+    for cid, (sha, page, _, _) in records.items():
+        scope = scopes.get(cid, {})
+        native = scope.get("native_table")
+        if native is None:
+            continue
+        ids = native.get("source_chunk_ids") if isinstance(native, dict) else None
+        table = native.get("source_table") if isinstance(native, dict) else None
+        if (
+            not isinstance(table, str)
+            or not table
+            or not isinstance(ids, list)
+            or not ids
+            or not all(isinstance(item, str) for item in ids)
+            or len(set(ids)) != len(ids)
+            or cid not in ids
+            or any(
+                item not in records or records[item][:2] != (sha, page) for item in ids
+            )
+            or [records[item][3] for item in ids]
+            != sorted(records[item][3] for item in ids)
+        ):
+            bad_pages.add((sha, page))
+            continue
+        key = (sha, page, table)
+        part_ids = tuple(ids)
+        if key in claims and claims[key] != part_ids:
+            bad_pages.add((sha, page))
+        claims[key] = part_ids
+        for item in ids:
+            if item in owners and owners[item] != key:
+                bad_pages.add((sha, page))
+            owners[item] = key
+
+    groups: dict[tuple[str, int, str], list[tuple[str, str]]] = {}
+    for cid, (sha, page, text, _) in records.items():
+        owner = owners.get(cid)
+        if owner is None or (sha, page) in bad_pages:
+            # Older indexes have no table membership; include every native
+            # table fragment on the page rather than dropping a condition.
+            owner = (sha, page, "")
+        groups.setdefault(owner, []).append((cid, text))
     for parts in groups.values():
         conditional = False
+        text_by_id: dict[str, list[str]] = {}
+        data_by_id: dict[str, int] = {}
+        last_data: tuple[str, int] | None = None
         for cid, text in parts:
             lines: list[str] = []
-            has_data = False
+            text_by_id[cid] = lines
+            data_by_id[cid] = 0
             for line in text.splitlines() if text else [""]:
                 if not line.startswith("|") or not line.endswith("|"):
                     conditional = True
                     continue
                 cells = [cell.strip() for cell in line.split("|")[1:-1]]
-                if len(cells) < 2 or not cells[0]:
+                if len(cells) < 2:
                     conditional = True
                     continue
-                marked = re.search(r"[*†‡]", line) is not None
+                if not cells[0]:
+                    # A bare value continuation cannot be a section heading.
+                    # A note marker on it may qualify the preceding row, even
+                    # if that row was emitted in the previous fragment.
+                    if _unresolved_table_marker(line, ""):
+                        if last_data is not None:
+                            previous, index = last_data
+                            del text_by_id[previous][index]
+                            data_by_id[previous] -= 1
+                            last_data = None
+                        conditional = True
+                    continue
+                marked = _unresolved_table_marker(line, cells[0])
                 section = not any(cells[1:])
                 if section:
+                    last_data = None
                     conditional = conditional or marked
                     if not conditional:
                         lines.append(line)
                 elif not conditional and not marked:
                     lines.append(line)
-                    has_data = True
-            result[cid] = "\n".join(lines) if has_data else ""
+                    data_by_id[cid] += 1
+                    last_data = (cid, len(lines) - 1)
+        result.update(
+            {
+                cid: "\n".join(lines) if data_by_id[cid] else ""
+                for cid, lines in text_by_id.items()
+            }
+        )
     return result
 
 

@@ -18,7 +18,7 @@ from index import corpus, store
 from index.chunking import Chunk, DocumentMeta, chunk_document
 from index.corpus import DocumentRow
 from index.extract import Block, Page, pages_of
-from index.publication import scope_proofs
+from index.publication import ScopeProof, compile_publication, scope_proofs
 from linker_genie.publication import Snapshot
 from linker_genie.retrieval import DocumentIndex
 
@@ -63,9 +63,15 @@ def chunks(sha: str = HCA, source: list[Page] | None = None) -> list[Chunk]:
     )
 
 
-def index(path: Path, selected: list[Chunk]) -> DocumentIndex:
+def index(
+    path: Path,
+    selected: list[Chunk],
+    *,
+    scopes: dict[str, ScopeProof] | None = None,
+) -> DocumentIndex:
     raw = manifest()
-    scopes = scope_proofs(selected, raw, authority(raw))
+    if scopes is None:
+        scopes = scope_proofs(selected, raw, authority(raw))
     source = path / "corpus"
     corpus.write(
         source,
@@ -372,5 +378,45 @@ def test_hca_conditioned_rows_do_not_reach_consumers_as_bare_values(
             assert "-30 ~ +50 *1" not in text
             assert "IP66 *2" not in text
             assert ordinary in text
+    finally:
+        loaded.close()
+
+
+def test_native_model_passage_does_not_bypass_table_footnote_filter(
+    tmp_path: Path,
+) -> None:
+    source = pages(HCA)
+    position = next(
+        i for i, block in enumerate(source[1].blocks) if block.kind == "table"
+    )
+    table = source[1].blocks[position]
+    rows = list(table.rows)
+    rows[1] = (rows[1][0] + " *6", *rows[1][1:])
+    rows.insert(0, ("Model", *LABELS))
+    source[1].blocks[position] = replace(
+        table, rows=tuple(rows), header_rows=0, row_indices=tuple(range(len(rows)))
+    )
+    original = chunks(source=source)
+    selected, proof = compile_publication(
+        original, manifest(), authority(manifest()), Words()
+    )
+    affected = next(c for c in original if "Nominal Input Voltage (V) *6" in c.text)
+    assert proof[affected.id]["basis"] == "passage"
+    assert set(proof[affected.id]["product_ids"]) == set(ORDER)
+    loaded = index(tmp_path, selected, scopes=proof)
+    try:
+        hits = loaded.search(
+            "Nominal Input Voltage",
+            "en",
+            [3586],
+            neighbours=True,
+            publication=Snapshot.read(manifest()),
+        )
+        text = "\n".join(hit.text for hit in hits)
+        assert "Nominal Input Voltage (V) *6" not in text
+        assert "Nominal Input Current (A)" in text
+        assert "Over Temperature Protection" in text
+        assert "-30 ~ +50 *1" not in text
+        assert "IP66 *2" not in text
     finally:
         loaded.close()

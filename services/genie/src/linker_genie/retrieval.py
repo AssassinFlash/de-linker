@@ -733,8 +733,7 @@ class DocumentIndex:
                 )
                 if header is None:
                     continue
-                scope = scopes.get(cid, {})
-                if scope.get("basis") == "table_columns" and not column_texts.get(cid):
+                if cid in column_texts and not column_texts[cid]:
                     continue
                 association = authorized[0]
                 output[row] = {

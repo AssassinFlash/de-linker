@@ -191,11 +191,7 @@ def export(directory: Path, path: Path) -> None:
             chunk = chunks_by_id.get(cid)
             if chunk is not None and ids and is_passage(chunk.text):
                 scope = proof.get("chunk_scopes", {}).get(cid)
-                if (
-                    scope
-                    and scope.get("basis") == "table_columns"
-                    and not column_texts.get(cid)
-                ):
+                if cid in column_texts and not column_texts[cid]:
                     continue
                 if (
                     table_header(scope, ids, products, chunk_id=cid, text=chunk.text)
