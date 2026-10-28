@@ -20,10 +20,11 @@
    hyphens; emergency wrapping still protects an unusually long token. */
 html[lang^="de"]
 	:is(
-		#service-redesign .service-hero-rest,
+		#service-redesign :is(.service-hero-rest, h2, h3),
 		#tv-cs-page-v1 .lk-hero-title,
 		#installer-journal .lk-hero-title,
 		#about-journal :is(.scene-title, h2, h3),
+		#tv-cp-page-v1 :is(h2, h3),
 		#home-a :is(.home-h2, .home-h3),
 		:is(
 			#tv-solution-v1,
@@ -76,6 +77,35 @@ html[lang^="de"]
 	font-size: var(--proto-size-sm);
 	line-height: 1.4;
 	white-space: normal;
+}
+
+/* Keep the complete planning input illustration inside each native frame. */
+#service-redesign :is(.lk-pair-media, .lk-sstage-media) > img.service-planning-input-preview,
+#tv-solutions-developers-v1 #sp-slide-1 > img.epc-planning-input-preview {
+	object-fit: contain;
+}
+
+/* The stage tab and content already identify this illustrated pane. */
+#service-redesign #service-stage-1 .lk-sstage-media > img.service-planning-input-preview + .lk-sstage-media-tag,
+#tv-solutions-developers-v1 #sp-slide-1 > img.epc-planning-input-preview + .lk-sp-slide-badge {
+	display: none;
+}
+
+/* Services actions share the existing action type and native touch target.
+   Body and anchor types outrank the retained page action group. */
+body #service-redesign a:is(.lk-btn-primary, .lk-btn-secondary, .linker-contact-primary, .lk-twin-hero-btn-primary, .lk-twin-hero-btn-secondary),
+#service-redesign #services .ss-stage-tab {
+	min-width: 0;
+	min-height: var(--proto-control-height);
+	font-size: var(--proto-size-sm);
+	line-height: 1.4;
+	white-space: normal;
+}
+
+#service-redesign #services .lk-sstage-arrow-btn {
+	width: var(--proto-control-height);
+	height: var(--proto-control-height);
+	flex-shrink: 0;
 }
 
 /* Installer tool choices, EPC FAQ topics and residential planning choices
