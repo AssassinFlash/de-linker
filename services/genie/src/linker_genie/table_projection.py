@@ -1059,12 +1059,10 @@ def _unresolved_table_marker(line: str, label: str, notes: set[str]) -> bool:
 
         def dimensions(match: re.Match[str]) -> str:
             values = re.findall(r"\d+(?:[.,]\d+)?", match.group())
-            # A shorter numeric suffix can be a footnote attached to a
-            # two-dimensional value. Source declarations take precedence
-            # over even a similarly formatted dimension.
+            # A same-number source declaration takes precedence over
+            # the label's three-axis multiplication notation.
             if any(
                 value.split(".")[0].split(",")[0].lstrip("0") in notes
-                or len(value) < len(values[0])
                 for value in values[1:]
             ):
                 return match.group()

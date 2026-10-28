@@ -932,20 +932,27 @@ def test_invalid_middle_native_fragment_never_erases_its_condition(issue: str) -
 def test_ambiguous_dimension_and_declared_numeric_note_stay_unqualified() -> None:
     sha = "a" * 64
     table = (
-        "| Dimension (W*D*H mm) | 950*1300*2480 |\n| Dimension (W*D*H mm) | 500*600*1 |"
+        "| Dimension (W*D*H mm) | 950*1300*2480 |\n"
+        "| Dimension (W*D*H mm) | 1000*800*600 |\n"
+        "| Dimension (mm) | 500*600*1 |\n"
+        "| Dimension (W*D*H mm) | 700*800*1 |"
     )
     digest = hashlib.sha256(f"table\0{table}".encode()).hexdigest()[:8]
     cid = f"{sha[:12]}-p2-{digest}"
     rows = [(sha, 2, "table", cid, table)]
     safe = unqualified_table_columns(rows, {})[cid]
     assert "950*1300*2480" in safe
+    assert "1000*800*600" in safe
     assert "500*600*1" not in safe
+    assert "700*800*1" in safe
 
-    note = "*2480: Applies only under stated conditions."
+    note = "*1: Applies only under stated conditions.\n*2480: Also conditional."
     note_digest = hashlib.sha256(f"text\0{note}".encode()).hexdigest()[:8]
     rows.append((sha, 3, "text", f"{sha[:12]}-p3-{note_digest}", note))
     safe = unqualified_table_columns(rows, {})[cid]
     assert "950*1300*2480" not in safe
+    assert "1000*800*600" in safe
+    assert "700*800*1" not in safe
 
 
 def test_old_schema_native_projection_remains_retrievable(tmp_path: Path) -> None:
