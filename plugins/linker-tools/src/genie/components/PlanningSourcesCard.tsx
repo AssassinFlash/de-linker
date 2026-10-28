@@ -108,7 +108,7 @@ export function PlanningSourcesCard( {
 											) }
 								</p>
 							) }
-							<dl className="linker-genie-attachment__facts">
+							<dl className="linker-genie-attachment__facts linker-genie-attachment__facts--sources">
 								{ group.kind === 'pv' && (
 									<>
 										<div>
