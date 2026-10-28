@@ -167,7 +167,7 @@ final class Plugin {
 		add_action( 'created_term', array( $jobs, 'term_saved' ), 10, 3 );
 		add_action( 'edited_term', array( $jobs, 'term_saved' ), 10, 3 );
 		add_action( Jobs::HOOK, array( $jobs, 'run' ), 10, 4 );
-		$cover_alt = new CoverAlt( $languages, $translator, $jobs, $twins, $state, new Segmenter( $tokenizer ) );
+		$cover_alt = new CoverAlt( $languages, $translator, $jobs, $twins, $state );
 		add_filter( 'get_post_metadata', array( $cover_alt, 'display' ), 10, 3 );
 		foreach ( array( 'add_post_metadata', 'update_post_metadata', 'delete_post_metadata' ) as $filter ) {
 			add_filter( $filter, array( $cover_alt, 'before_meta' ), 20, 3 );

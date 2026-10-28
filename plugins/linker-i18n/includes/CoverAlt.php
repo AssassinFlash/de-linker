@@ -10,7 +10,6 @@ declare( strict_types = 1 );
 namespace Linker\I18n;
 
 use Linker\I18n\Translation\Fields;
-use Linker\I18n\Translation\Segmenter;
 use Linker\I18n\Translation\State;
 use Linker\I18n\Translation\Translator;
 
@@ -33,15 +32,13 @@ final class CoverAlt {
 	 * @param Jobs       $jobs Background translation queue.
 	 * @param Twins      $twins German writer.
 	 * @param State      $state Translation fingerprints.
-	 * @param Segmenter  $segmenter Fingerprints plain text.
 	 */
 	public function __construct(
 		private readonly Languages $languages,
 		private readonly Translator $translator,
 		private readonly Jobs $jobs,
 		private readonly Twins $twins,
-		private readonly State $state,
-		private readonly Segmenter $segmenter
+		private readonly State $state
 	) {}
 
 	/**
@@ -72,7 +69,7 @@ final class CoverAlt {
 		$field = Fields::META . Fields::COVER_ALT;
 		$unit  = $this->state->units( State::POST, $post_id )[ $field ] ?? null;
 		$alt   = (string) get_post_meta( $post_id, Fields::COVER_ALT, true );
-		if ( null === $unit || $unit['conflict'] || '' === trim( $alt ) || $unit['src'] !== $this->segmenter->text( $fallback )->hashes() || $unit['out'] !== $this->segmenter->text( $alt )->hashes() ) {
+		if ( null === $unit || $unit['conflict'] || '' === trim( $alt ) || ! hash_equals( $unit['src_raw'] ?? '', hash( 'sha256', $fallback ) ) || ! hash_equals( $unit['out_raw'] ?? '', hash( 'sha256', $alt ) ) ) {
 			return array( $fallback );
 		}
 		return array( $alt );
