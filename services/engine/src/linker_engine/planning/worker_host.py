@@ -87,6 +87,7 @@ def serve(
             settings.report_service(workspace),
             settings.pvgis_reference_service(workspace),
             settings.direct_beam_service(workspace),
+            settings.geometric_pv_service(workspace),
         )
         if (registry.runtime.sha256, registry.execution_key()) != (
             expected_runtime,
@@ -207,6 +208,7 @@ def main(argv: list[str] | None = None) -> int:
                 settings.report_service(workspace),
                 settings.pvgis_reference_service(workspace),
                 settings.direct_beam_service(workspace),
+                settings.geometric_pv_service(workspace),
             )
             print(
                 encode(

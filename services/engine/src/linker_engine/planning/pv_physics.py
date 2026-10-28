@@ -117,6 +117,8 @@ def array_power(
     module: PvModuleParameters,
     weather: WeatherSeries,
     solar: dict[str, Vector],
+    *,
+    direct_beam_fraction: Vector | None = None,
 ) -> ArrayPower:
     size = len(weather.points)
     zenith, azimuth = solar["apparent_zenith_deg"], solar["azimuth_deg"]
@@ -168,6 +170,26 @@ def array_power(
             components[key][lit] = checked(
                 poa[key], int(np.count_nonzero(lit)), key, nonnegative=True
             )
+    unoccluded: Object | None = None
+    if direct_beam_fraction is not None:
+        fraction = checked(
+            direct_beam_fraction,
+            size,
+            "geometric direct-beam fraction",
+            nonnegative=True,
+        )
+        if np.any(fraction > 1):
+            raise InvalidInput("geometric direct-beam fraction exceeds one")
+        unoccluded = {key: values(value) for key, value in components.items()}
+        components["poa_direct"] = components["poa_direct"] * fraction
+        # Only the declared direct beam is occluded. Diffuse components retain
+        # their unobstructed reference assumption; module temperature uses the
+        # resulting mean POA, not a local cell/sub-string temperature model.
+        components["poa_global"] = (
+            components["poa_direct"]
+            + components["poa_sky_diffuse"]
+            + components["poa_ground_diffuse"]
+        )
     incidence = checked(
         irradiance.aoi(
             array.tilt_deg,
@@ -246,6 +268,14 @@ def array_power(
             "dc_mpp_before_wiring_mismatch_w": values(dc),
             "dc_available_w": values(delivered),
             "dc_declared_factor_reduction_w": values(dc - delivered),
+            **(
+                {
+                    "unobstructed_poa_components_w_m2": unoccluded,
+                    "direct_beam_visible_fraction": values(direct_beam_fraction),
+                }
+                if direct_beam_fraction is not None
+                else {}
+            ),
         },
     )
 

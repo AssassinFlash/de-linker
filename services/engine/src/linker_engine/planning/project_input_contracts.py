@@ -15,12 +15,17 @@ if TYPE_CHECKING:
 type InputContract = Literal[
     "installation_pv_string_links_v1",
     "pv_string_links_direct_beam_visibility_v1",
+    "pv_string_links_direct_beam_geometric_pv_v1",
 ]
 INPUT_CONTRACT: InputContract = "installation_pv_string_links_v1"
 DIRECT_BEAM_INPUT_CONTRACT: InputContract = "pv_string_links_direct_beam_visibility_v1"
+GEOMETRIC_PV_INPUT_CONTRACT: InputContract = (
+    "pv_string_links_direct_beam_geometric_pv_v1"
+)
 SUPPORTED_INPUT_CONTRACTS: tuple[str, ...] = (
     INPUT_CONTRACT,
     DIRECT_BEAM_INPUT_CONTRACT,
+    GEOMETRIC_PV_INPUT_CONTRACT,
 )
 
 
@@ -31,6 +36,8 @@ def required_contracts(inputs: Mapping[str, object]) -> tuple[str, ...]:
         required.append(INPUT_CONTRACT)
     if "direct_beam_visibility" in inputs:
         required.append(DIRECT_BEAM_INPUT_CONTRACT)
+    if "geometric_pv_preparation" in inputs:
+        required.append(GEOMETRIC_PV_INPUT_CONTRACT)
     return tuple(required)
 
 
@@ -49,7 +56,9 @@ def require_input_contract(
     # The new writer explicitly understands both features. Keep these concrete
     # coverage sets separate: neither token silently covers future additions.
     covered = (
-        (INPUT_CONTRACT, DIRECT_BEAM_INPUT_CONTRACT)
+        (INPUT_CONTRACT, DIRECT_BEAM_INPUT_CONTRACT, GEOMETRIC_PV_INPUT_CONTRACT)
+        if input_contract == GEOMETRIC_PV_INPUT_CONTRACT
+        else (INPUT_CONTRACT, DIRECT_BEAM_INPUT_CONTRACT)
         if input_contract == DIRECT_BEAM_INPUT_CONTRACT
         else (INPUT_CONTRACT,)
         if input_contract == INPUT_CONTRACT

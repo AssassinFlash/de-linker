@@ -12715,3 +12715,103 @@ msgstr "Die Koordinaten der gespeicherten Wetterquelle stimmen nicht mit dem ges
 #: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
 msgid "The selected weather source could not be verified. Review the source selection before calculating."
 msgstr "Die ausgewählte Wetterquelle konnte nicht geprüft werden. Prüfen Sie die Quellenauswahl, bevor Sie die Berechnung starten."
+
+#: ../../apps/planner/src/components/ProfileCurve.tsx
+#: build/planner/assets/planner.js:1
+msgid "PV profile · visible intervals"
+msgstr "PV-Kurve · angezeigte Zeitintervalle"
+
+#: ../../apps/planner/src/components/ProfileCurve.tsx
+#: build/planner/assets/planner.js:1
+msgid "The chart shows only the visible interval page. The source summary and the saved energy calculation use their complete declared periods. The steps represent interval mean power; no finer measurements are implied."
+msgstr "Das Diagramm zeigt nur die Zeitintervalle auf dieser Seite. Die Quellenübersicht und die gespeicherte Energieberechnung beziehen sich auf ihre jeweils vollständig angegebenen Zeiträume. Die Stufen zeigen die mittlere Leistung je Intervall; sie stellen keine zeitlich feineren Messwerte dar."
+
+#: ../../apps/planner/src/components/energy/EnergyError.tsx
+#: build/planner/assets/planner.js:1
+msgid "The PV reference needs a retained weather source, two ordered sampling grids and complete PV model parameters."
+msgstr "Für diese PV-Referenz werden eine gespeicherte Wetterquelle, zwei Abtastraster mit zunehmender Auflösung und vollständige PV-Modellparameter benötigt."
+
+#: ../../apps/planner/src/components/energy/EnergyError.tsx
+#: build/planner/assets/planner.js:1
+msgid "The calculation service did not provide valid limits for this PV method. Saved inputs remain available."
+msgstr "Der Berechnungsdienst hat für dieses PV-Verfahren keine gültigen Berechnungsgrenzen bereitgestellt. Ihre gespeicherten Eingaben bleiben verfügbar."
+
+#: ../../apps/planner/src/components/energy/EnergyWorkspace.tsx ../../apps/planner/src/components/energy/GeometricPvSetup.tsx ../../apps/planner/src/components/energy/planningLabels.ts
+#: build/planner/assets/planner.js:1
+msgid "PV reference with roof shading"
+msgstr "PV-Referenz mit Dachverschattung"
+
+#: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx
+#: build/planner/assets/planner.js:1
+msgid "Estimate available AC generation across the complete retained weather year using the declared roof, obstacle volumes and included modules. Geometric shading reduces direct sunlight at each module; sky and ground diffuse light remain unobstructed reference components."
+msgstr "Berechnen Sie die verfügbare AC-Erzeugung für das vollständige gespeicherte Wetterjahr anhand des angegebenen Dachs, der Hindernisvolumen und der berücksichtigten Module. Die geometrische Verschattung verringert die Direktstrahlung auf jedem Modul. Die diffuse Himmels- und Bodenstrahlung bleibt als unverschatteter Referenzanteil erhalten."
+
+#: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx
+#: build/planner/assets/planner.js:1
+msgid "Module temperature follows the declared SAPM model using mean irradiance across each module. Electrical response is uniform per module, with independent maximum-power outputs summed before the declared conversion groups. Cell substrings, bypass diodes, string I–V curves and actual inverter tracking are not modelled."
+msgstr "Die Modultemperatur wird mit dem angegebenen SAPM-Modell aus der mittleren Einstrahlung je Modul berechnet. Jedes Modul wird elektrisch als gleichmäßig bestrahlt behandelt. Seine unabhängig bestimmte maximale Leistung wird vor den angegebenen Umwandlungsgruppen mit den übrigen Modulleistungen summiert. Zellteilstränge, Bypassdioden, String-I–V-Kennlinien und die tatsächliche MPP-Regelung des Wechselrichters werden nicht modelliert."
+
+#: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx
+#: build/planner/assets/planner.js:1
+msgid "The retained weather source must match the saved roof location and weather interpretation. Review the source or roof settings before calculating."
+msgstr "Die gespeicherte Wetterquelle muss zum gespeicherten Dachstandort und zur festgelegten Wetterinterpretation passen. Prüfen Sie vor der Berechnung die Quelle oder die Dacheinstellungen."
+
+#: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx
+#: build/planner/assets/planner.js:1
+msgid "All %s retained weather intervals are calculated. The selected rows in the geometric visibility diagnostic do not restrict this PV profile."
+msgstr "Alle %s gespeicherten Wetterintervalle werden berechnet. Die ausgewählten Zeilen der geometrischen Sichtbarkeitsprüfung begrenzen diese PV-Kurve nicht."
+
+#: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx
+#: build/planner/assets/planner.js:1
+msgid "Requested module intervals: %s / %s. Maximum midpoint samples: %s / %s."
+msgstr "Angeforderte Modul-Zeitintervalle: %s / %s. Maximale Anzahl der Abtastpunkte: %s / %s."
+
+#: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx
+#: build/planner/assets/planner.js:1
+msgid "The complete weather year exceeds this service's calculation budget at the selected sampling resolution. Reduce the sampling resolution or roof scope; the calculation does not silently omit weather intervals."
+msgstr "Das vollständige Wetterjahr überschreitet bei der gewählten Rasterauflösung die Berechnungsgrenzen dieses Dienstes. Verringern Sie die Rasterauflösung oder die berücksichtigte Dachfläche. Wetterintervalle werden nicht stillschweigend ausgelassen."
+
+#: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx
+#: build/planner/assets/planner.js:1
+msgid "Remove this PV reference setup from the draft"
+msgstr "Diese PV-Referenzeinstellungen aus dem Entwurf entfernen"
+
+#: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx
+#: build/planner/assets/planner.js:1
+msgid "The weather source, both sampling grids and all PV parameters must be complete before saving this setup."
+msgstr "Die Wetterquelle, beide Abtastraster und alle PV-Parameter müssen vollständig angegeben sein, bevor Sie diese Einstellungen speichern können."
+
+#: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx
+#: build/planner/assets/planner.js:1
+msgid "This method creates a separate AC profile. Earlier unshaded results stay in the calculation history. Selecting the new profile for energy calculation is an explicit action after preparation."
+msgstr "Dieses Verfahren erstellt eine eigene AC-Kurve. Frühere unverschattete Ergebnisse bleiben im Berechnungsverlauf erhalten. Nach der Berechnung können Sie die neue Kurve ausdrücklich für die Energieberechnung auswählen."
+
+#: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx
+#: build/planner/assets/planner.js:1
+msgid "Calculate saved PV reference with roof shading"
+msgstr "Gespeicherte PV-Referenz mit Dachverschattung berechnen"
+
+#: ../../apps/planner/src/components/energy/PreparationResult.tsx
+#: build/planner/assets/planner.js:1
+msgid "This profile uses geometric shading of direct sunlight and a uniform module response across the complete retained weather source. Sky and ground diffuse light remain unobstructed reference components. Substrings, bypass diodes, string I–V curves and actual inverter tracking remain unmodelled."
+msgstr "Diese Kurve berücksichtigt die geometrische Verschattung der Direktstrahlung und eine gleichmäßige elektrische Modulantwort für die vollständige gespeicherte Wetterquelle. Die diffuse Himmels- und Bodenstrahlung bleibt als unverschatteter Referenzanteil erhalten. Zellteilstränge, Bypassdioden, String-I–V-Kennlinien und die tatsächliche MPP-Regelung des Wechselrichters werden nicht modelliert."
+
+#: ../../apps/planner/src/components/energy/PreparationResult.tsx
+#: build/planner/assets/planner.js:1
+msgid "This profile supplies AC generation only. It cannot also supply a shared inverter's DC PV input. Review the topology before selecting it."
+msgstr "Diese Kurve liefert ausschließlich AC-Erzeugung. Sie kann nicht zugleich den DC-PV-Eingang eines gemeinsam genutzten Wechselrichters speisen. Prüfen Sie vor der Auswahl die Topologie."
+
+#: ../../apps/planner/src/components/energy/PvForm.tsx
+#: build/planner/assets/planner.js:1
+msgid "The coefficients and conversion groups below belong to the geometric shading reference. Module parameters follow the current product data; thermal, optical and conversion assumptions remain explicit."
+msgstr "Die folgenden Koeffizienten und Umwandlungsgruppen gehören zur Referenz mit geometrischer Verschattung. Die Modulparameter stammen aus den aktuellen Produktdaten. Thermische und optische Annahmen sowie Annahmen zur Umwandlung werden ausdrücklich angegeben."
+
+#: ../../apps/planner/src/components/energy/PvForm.tsx
+#: build/planner/assets/planner.js:1
+msgid "Each active array belongs to one conversion group. The model sums independent uniform module maximum-power outputs into each array and applies the declared shared PVWatts conversion curve and AC limit. It does not reconstruct physical strings or manufacturer inverter tracking."
+msgstr "Jede aktive Modulfläche gehört zu einer Umwandlungsgruppe. Das Modell summiert die unabhängig bestimmten maximalen Leistungen der gleichmäßig behandelten Module je Modulfläche und wendet die angegebene gemeinsame PVWatts-Umwandlungskennlinie sowie die AC-Leistungsgrenze an. Physische Strings und die MPP-Regelung des Herstellerwechselrichters werden nicht nachgebildet."
+
+#: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx
+#: build/planner/assets/planner.js:1
+msgid "Saved weather source"
+msgstr "Gespeicherte Wetterquelle"

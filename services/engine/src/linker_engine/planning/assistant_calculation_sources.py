@@ -54,7 +54,11 @@ def calculation_sources(workspace: Workspace, run: Run) -> Object | None:
     groups: list[Json] = []
     timezone = _timezone(source)
     comparison = _object(source.get("comparison"))
-    for key, tmy in (("pvlib_references", True), ("pvgis_roof_ac_references", False)):
+    for key, tmy in (
+        ("pvlib_references", True),
+        ("geometric_pv_references", True),
+        ("pvgis_roof_ac_references", False),
+    ):
         references = source.get(key, [])
         if not isinstance(references, list):
             raise InvalidInput("saved calculation sources are invalid")
@@ -62,7 +66,11 @@ def calculation_sources(workspace: Workspace, run: Run) -> Object | None:
             if not isinstance(raw, dict):
                 raise InvalidInput("saved calculation sources are invalid")
             reference = _object(raw)
-            weather = _object(reference.get("weather"))
+            weather = (
+                _object(_object(reference.get("weather_source")).get("details"))
+                if key == "geometric_pv_references"
+                else _object(reference.get("weather"))
+            )
             request = _object(weather.get("request"))
             interpretation = _object(weather.get("interpretation"))
             typical_year = tmy and any(
@@ -141,7 +149,13 @@ def calculation_sources(workspace: Workspace, run: Run) -> Object | None:
                             else {}
                         ),
                         "periods_utc": [
-                            _period(_object(reference.get("profile_summary")))
+                            _period(
+                                _object(
+                                    reference.get(
+                                        "profile_summary", reference.get("summary")
+                                    )
+                                )
+                            )
                         ],
                     }
                 )

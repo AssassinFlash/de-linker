@@ -10555,7 +10555,7 @@
     }
   },
   "w12_direct_beam_visibility": {
-    "state": "integrated_candidate_native_UI_and_CI_pending",
+    "state": "production_published_native_geometry_complete_3D_Chrome_remaining",
     "backend_commit": "5856d747cbdcdd3598848d8d19584066c4783b4a",
     "frontend_commit": "818349b1f6b1b6c9aa4236e9704c6b7c96eb4a09",
     "features": [
@@ -10564,15 +10564,51 @@
       "Bilingual geometric table/3D, report/PDF/Genie consumers"
     ],
     "review": "Spec+Standards PASS; unchanged prior engine/protocol/PHP/frontend/static/build evidence reused. Current changed adapter fixture1PASS2.95s. Actual owner save/tasks/report UI acceptance remains in progress.",
-    "scope": "Selected-time geometric direct-beam visibility. Not a power profile, diffuse/reflected irradiance, bypass/MPPT electrical mismatch, annual loss or equipment/country approval. Full goal548 remains active."
+    "scope": "Selected-time geometric direct-beam visibility. Not a power profile, diffuse/reflected irradiance, bypass/MPPT electrical mismatch, annual loss or equipment/country approval. Full goal548 remains active.",
+    "production": {
+      "PR": 732,
+      "source": "55c47cce86f4070e6d707acf6b7da7e685992b82",
+      "merge": "cf030a7cffab2afb54bb22e636c1cfe04e5ee6bf",
+      "CI": "40657260768 allSUCCESS",
+      "planner": "Matched HTTP/worker active;13business tables unchanged before business acceptance",
+      "Tools": "Native atomic publication;6active planner resources200/exactSHA;one nativeWindPress Generate",
+      "native": "Existing owned synthetic project saved13;one retained-source geometry task succeeded;20daylight modules/coarse=fine100percent,680actualsamples;no new provider request",
+      "remaining": "Chrome3D context unavailable; observed failure-status contradiction fixed in next full candidate. Full geometric/diffuse/electrical model goal remains open."
+    }
   },
   "genie_saved_report_weather_route": {
-    "state": "reviewed_candidate_not_live",
+    "state": "paired_runtime_and_native_index_ACK23_live_human_entry_failed",
     "commit": "1418dc26e",
     "before": "Actual production selected saved report question was intercepted by generic weather scripted route; no planning tool or source card ran. Original failure retained.",
     "after": "Verified matching saved-result context with explicit EN/DE saved or this/that/current references reads existing planning tool; ordinary weather and foreign/missing/dirty/mismatched context retain previous routes.",
     "checks": "Existing Understander+planning suites22PASS0.50s; strictmypy3 sourcefiles and Ruff/format4files PASS; independent Spec+Standards PASS",
     "model_or_source_changes": false,
-    "production_fix_readback": false
+    "production_fix_readback": false,
+    "production": {
+      "runtime": "Approved source actually running;real nativeACK23+stable scheduler complete",
+      "index": "142documents/12780chunks cached;0new parse/embedding calls",
+      "original_failure": "Retained weather-scripted production turn698 unchanged",
+      "latest_attempt": "Blocked by Turnstile before service; native latest698 unchanged. User manually retried and also failed; no successful semantic acceptance claimed. Shared verification chain is now a confirmed user-path defect being diagnosed."
+    }
+  },
+  "geometric_pv_reference": {
+    "state": "local_native_complete_browser_download_receipt_unconfirmed",
+    "model": "opaque_direct_uniform_pvlib_reference_v1",
+    "method": "All retained source intervals;module direct geometric sampling;explicit unchanged sky/ground reference;module-mean SAPM thermal and uniformPVWatts;per-array sum and one shared AC conversion. Does not model substring/bypass/stringIV/actualMPPT.",
+    "native_local": "24included modules×8760retained weather intervals;frozenACprofile explicitly adopted/saved→two-hour energy→EN/DE reports;no provider request or repeated PV calculation for consumers",
+    "reference_output_kwh": 13153.331537980335,
+    "energy_scope": "Two hours;not annual storage performance",
+    "consumer_repairs": [
+      "Strict new model/weather/witness dependencies in energy reader",
+      "Constrained geometric TMY source-link whitelist",
+      "Complete source/parameter report projection;EN/DE display precision and original-note attribution",
+      "Genie privacy/source-period projection",
+      "Shared3D failure/loading/retry lifecycle"
+    ],
+    "review": "Full Spec+Standards/source/privacy/EN-DEcopy PASS;final report5file increment and3D independently reviewed",
+    "checks": "Existing meaningful numerical/owned-adapter/permission/recovery/consumer fixtures,strictstaticandbuild checks passed;unchanged coverage reused",
+    "PDF": "Final EN/DE original frozenPDFs generated/rendered/affected sections visually inspected;browserdownload Fetch200 then browser/automation cancellation,with no application abort orcleanupobserved;receipt not established",
+    "production": false,
+    "full_goal548": "active"
   }
 }

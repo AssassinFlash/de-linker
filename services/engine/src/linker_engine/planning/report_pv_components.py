@@ -11,6 +11,8 @@ from typing import cast
 
 from .canonical import Json, Object, digest, encode
 from .errors import InvalidInput, VersionUnavailable
+from .geometric_pv_inputs import PROFILE_PURPOSE as GEOMETRIC_PV_PURPOSE
+from .geometric_pv_profile import reference_bundle as geometric_pv_bundle
 from .geometry import panel_poses, read_geometry
 from .geometry_documents import GeometryDocument, ModuleSpec
 from .product_sources import ProductSources
@@ -35,6 +37,18 @@ def pv_components(
     *,
     converter_id: str | None = None,
 ) -> Object:
+    if metadata.get("profile_type") == GEOMETRIC_PV_PURPOSE:
+        if converter_id is not None:
+            raise VersionUnavailable(
+                "this geometric PV reference exposes AC output only"
+            )
+        bundle = geometric_pv_bundle(blobs, raw_sha256, metadata)
+        return saved_roof_components(
+            _object(bundle["inputs"])["geometry"],
+            _object(bundle["woo_module_inputs"]),
+            blobs,
+            cast(int, metadata["derived_from_revision"]),
+        )
     if metadata.get("profile_type") == ROOF_AC_PURPOSE:
         if converter_id is not None:
             raise VersionUnavailable("an AC reference has no DC converter group")

@@ -112,6 +112,12 @@ import {
 	directBeamDraft,
 } from "../../domain/directBeam.ts";
 import { readDirectBeamLimits } from "../../data/directBeamResult.ts";
+import { GeometricPvSetup } from "./GeometricPvSetup.tsx";
+import {
+	GEOMETRIC_PV_TASK,
+	compileGeometricPv,
+	geometricPvDraft,
+} from "../../domain/geometricPv.ts";
 import {
 	PVGIS_REFERENCE_TASK,
 	compilePvgisReference,
@@ -882,6 +888,7 @@ export function EnergyWorkspace({
 			| "runs/pv"
 			| "runs/pvgis-reference"
 			| "runs/direct-beam"
+			| "runs/geometric-pv"
 			| "runs/equipment"
 			| "runs/equipment-search",
 	) {
@@ -903,6 +910,7 @@ export function EnergyWorkspace({
 			const setup =
 				path.startsWith("runs/equipment") ||
 				path === "runs/pvgis-reference" ||
+				path === "runs/geometric-pv" ||
 				path === "runs/direct-beam"
 					? null
 					: readSolarSetup(inputs);
@@ -926,6 +934,12 @@ export function EnergyWorkspace({
 			} else if (path === "runs/equipment") {
 				if (hasPlant(inputs)) readEquipmentPlant(inputs.equipment_plant);
 				else readEquipmentSelection(inputs.equipment_selection);
+			} else if (path === "runs/geometric-pv") {
+				if (
+					session.runtime.models.geometric_pv_generation !== GEOMETRIC_PV_TASK
+				)
+					return;
+				compileGeometricPv(geometricPvDraft(inputs), inputs.geometry);
 			} else if (path === "runs/direct-beam") {
 				if (session.runtime.models.direct_beam_visibility !== DIRECT_BEAM_TASK)
 					return;
@@ -1133,10 +1147,17 @@ export function EnergyWorkspace({
 				</button>
 				<button
 					type="button"
-					aria-pressed={view === "pv" || view === "pvgis-reference"}
+					aria-pressed={
+						view === "pv" ||
+						view === "pvgis-reference" ||
+						view === "geometric-pv"
+					}
 					onClick={() =>
 						chooseView(
-							selectedView === "pvgis-reference" ? "pvgis-reference" : "pv",
+							selectedView === "pvgis-reference" ||
+								selectedView === "geometric-pv"
+								? selectedView
+								: "pv",
 						)
 					}
 				>
@@ -1331,7 +1352,11 @@ export function EnergyWorkspace({
 					start={() => void startSolar("runs/weather")}
 				/>
 			</div>
-			<div hidden={view !== "pv" && view !== "pvgis-reference"}>
+			<div
+				hidden={
+					view !== "pv" && view !== "pvgis-reference" && view !== "geometric-pv"
+				}
+			>
 				<div
 					className="lp-energy-switch"
 					role="group"
@@ -1351,8 +1376,38 @@ export function EnergyWorkspace({
 					>
 						{__("PVGIS annual AC reference", "linker-tools")}
 					</button>
+					<button
+						type="button"
+						aria-pressed={view === "geometric-pv"}
+						onClick={() => chooseView("geometric-pv")}
+					>
+						{__("PV reference with roof shading", "linker-tools")}
+					</button>
 				</div>
-				{view === "pvgis-reference" ? (
+				{view === "geometric-pv" ? (
+					<GeometricPvSetup
+						draft={draft}
+						edit={edit}
+						session={session}
+						client={client}
+						active={active && view === "geometric-pv"}
+						locale={locale}
+						disabled={blocked || operations.busy || !admitted}
+						actionsDisabled={
+							blocked ||
+							!admitted ||
+							!syntaxValid ||
+							operations.busy ||
+							operations.checking ||
+							operations.storageFailed ||
+							unconfirmed.length > 0
+						}
+						onValidity={setPvValid}
+						start={() => void startSolar("runs/geometric-pv")}
+						openDesign={openDesign}
+						openWeather={() => chooseView("weather")}
+					/>
+				) : view === "pvgis-reference" ? (
 					<PvgisReferenceSetup
 						draft={draft}
 						edit={edit}
@@ -1869,7 +1924,7 @@ export function EnergyWorkspace({
 									blocked={blocked || !syntaxValid}
 									active={active && view === "runs"}
 								/>
-							) : [WEATHER_TASK, PV_TASK].includes(
+							) : [WEATHER_TASK, PV_TASK, GEOMETRIC_PV_TASK].includes(
 									runTask(runs.run.data) ?? "",
 							  ) ? (
 								<PreparationResult

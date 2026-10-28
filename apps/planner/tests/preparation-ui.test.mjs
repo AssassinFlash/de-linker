@@ -38,6 +38,186 @@ const session = {
 const selectButton = () =>
 	document.querySelector(".lp-run-result > .lp-button");
 
+test("the geometric PV workspace uses all retained intervals, adopts frozen AC explicitly and selects its report run", async (t) => {
+	const native = fixture.geometric_pv;
+	const runtimeSession = {
+		...session,
+		runtime: {
+			...session.runtime,
+			models: {
+				geometric_pv_generation: native.run.result.kind,
+				report: "planning_report_v1",
+			},
+			limits: {
+				...session.runtime.limits,
+				geometric_pv_generation: native.run.manifest.context.parameters.limits,
+			},
+		},
+	};
+	let current = beginDraft(native.project),
+		submitted,
+		setter;
+	const sent = [];
+	const client = {
+		origin: "https://fixture.invalid",
+		isCurrentScope: (value) => value === scope,
+		async query(path, body) {
+			if (path === "products/current")
+				return {
+					schema_version: 1,
+					provider: "woocommerce",
+					pv_modules: [fixture.direct_beam.module_template],
+					products: [],
+				};
+			assert.equal(body.project_id, native.project.id);
+			if (path === "weather/assets")
+				return {
+					schema_version: 1,
+					project_id: native.project.id,
+					offset: 0,
+					assets: [],
+					next_offset: null,
+				};
+			if (path === "assets/read")
+				return body.asset_id === native.weather_asset.id
+					? native.weather_asset
+					: native.profile_asset;
+			if (path === "runs/read")
+				return body.run_id === native.report_run.id
+					? native.report_run
+					: native.run;
+			if (path === "projects/read") return native.project;
+			if (path === "profiles/preview") return native.profile_preview_initial;
+			if (path === "projects/runs")
+				return {
+					items: [
+						Object.fromEntries(
+							Object.entries({
+								...native.run,
+								task_kind: native.run.result.kind,
+								created_at: 100,
+							}).filter(
+								([key]) => !["manifest", "result", "error"].includes(key),
+							),
+						),
+					],
+					next: null,
+				};
+			throw new Error("unexpected geometric PV read " + path);
+		},
+		async send(path, body) {
+			const command = JSON.parse(body);
+			sent.push(path);
+			assert.equal(command.expected_revision, current.baseline.revision);
+			if (path === "runs/report") {
+				submitted = command.options;
+				return native.report_run;
+			}
+			assert.equal(path, "runs/geometric-pv");
+			return native.run;
+		},
+	};
+	function Harness() {
+		const [value, setValue] = useState(current);
+		setter = setValue;
+		return React.createElement(EnergyWorkspace, {
+			draft: value,
+			session: runtimeSession,
+			client,
+			locale: "en-GB",
+			active: true,
+			blocked: false,
+			recoveryScopes: [scope],
+			onValidity() {},
+			recheck() {},
+			flush: async () => true,
+			openProfiles() {},
+			openDesign() {},
+			sceneModuleUrl: null,
+			edit(operation) {
+				current = editDraft(current, operation(current.history.current));
+				setValue(current);
+				return true;
+			},
+		});
+	}
+	await mount(
+		t,
+		React.createElement(Harness),
+		`?project=${native.project.id}&energy_view=geometric-pv`,
+	);
+	const button = (name) =>
+		[...document.querySelectorAll("button")].find(
+			(node) => node.textContent === name,
+		);
+	await until(
+		() =>
+			button("Calculate saved PV reference with roof shading") &&
+			!button("Calculate saved PV reference with roof shading").disabled,
+	);
+	assert.match(
+		document.body.textContent,
+		/All 8,760 retained weather intervals/,
+	);
+	assert.match(document.body.textContent, /Saved weather source/);
+	assert.doesNotMatch(
+		document.body.textContent,
+		/This project has no retained weather source/,
+	);
+	assert.equal(current.history.current.profile_selections, undefined);
+	await act(async () =>
+		button("Calculate saved PV reference with roof shading").click(),
+	);
+	await until(
+		() =>
+			button("Use this PV profile") && !button("Use this PV profile").disabled,
+	);
+	await until(() => document.querySelector('svg[role="img"]'));
+	assert.match(document.querySelector(".lp-run-result").textContent, /8,760/);
+	assert.match(
+		document.querySelector(".lp-run-result").textContent,
+		/unobstructed reference components/,
+	);
+	assert.equal(current.history.current.profile_selections, undefined);
+	await act(async () => button("Use this PV profile").click());
+	assert.deepEqual(current.history.current.profile_selections.selected, {
+		pv_available_ac: native.profile_asset.id,
+	});
+	// Selecting a curve edits the draft; acknowledge that save before creating a report.
+	await act(async () => {
+		current = prepareSave(current, crypto.randomUUID(), {
+			maxDepth: 32,
+			maxBytes: 1000000,
+		});
+		current = acknowledgeSave(current, current.pending, {
+			...native.project,
+			revision: 3,
+			inputs: current.pending.inputs,
+			input_sha256: "d".repeat(64),
+		});
+		setter(current);
+	});
+	await act(async () => button("Planning report").click());
+	await until(() =>
+		[...document.querySelectorAll("select")].some((node) =>
+			[...node.options].some((option) => option.value === native.run.id),
+		),
+	);
+	const choice = [...document.querySelectorAll("select")].find((node) =>
+		[...node.options].some((option) => option.value === native.run.id),
+	);
+	assert.match(choice.textContent, /PV reference with roof shading/);
+	await act(async () => {
+		choice.value = native.run.id;
+		choice.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	await act(async () => button("Generate planning report").click());
+	await until(() => submitted !== undefined);
+	assert.equal(submitted.pv_run_id, native.run.id);
+	assert.equal(submitted.direct_beam_run_id, undefined);
+	assert.deepEqual(sent, ["runs/geometric-pv", "runs/report"]);
+});
+
 test("owned geometric setup saves with the cumulative contract and shows frozen night/daylight separately from PV", async (t) => {
 	const native = fixture.direct_beam;
 	const beamSession = {
@@ -263,7 +443,7 @@ test("owned geometric setup saves with the cumulative contract and shows frozen 
 	});
 	assert.equal(
 		JSON.parse(pending.pending.body).input_contract,
-		"pv_string_links_direct_beam_visibility_v1",
+		"pv_string_links_direct_beam_geometric_pv_v1",
 	);
 	assert.equal(
 		JSON.parse(pending.pending.body).inputs.direct_beam_visibility.sampling

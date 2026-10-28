@@ -4,6 +4,13 @@ import assert from "node:assert/strict";
 import fixture from "../../tests/fixtures/preparation-flow.json" with { type: "json" };
 import { ApiError } from "../data/protocol.ts";
 import {
+	emptyGeometricPv,
+	geometricPvDraft,
+	compileGeometricPv,
+	geometricPvInputs,
+	removeGeometricPv,
+} from "./geometricPv.ts";
+import {
 	readSolarSetup,
 	solarInputs,
 	compileWeather,
@@ -18,6 +25,59 @@ import {
 const inputs = () => structuredClone(fixture.pv_project.inputs);
 const refusal = (code: string) => (error: unknown) =>
 	error instanceof ApiError && error.code === code;
+
+test("the geometric PV scenario keeps explicit choices separate from old profiles and invalidates energy preparation", () => {
+	const original = inputs(),
+		blank = emptyGeometricPv(readSolarSetup(original).pv),
+		request = {
+			...blank,
+			weather_asset_id: original.pv_preparation.weather_asset_id,
+			sampling: { coarse_cells_per_edge: 3, fine_cells_per_edge: 5 },
+		};
+	assert.equal(blank.weather_asset_id, null);
+	assert.equal(blank.sampling.coarse_cells_per_edge, null);
+	assert.throws(() => compileGeometricPv(blank, original.geometry));
+	assert.deepEqual(compileGeometricPv(request, original.geometry), request);
+	const changed = geometricPvInputs(
+		{ ...original, energy_replay: { prepared: true } },
+		request,
+	);
+	assert.deepEqual(changed.pv_generation, original.pv_generation);
+	assert.deepEqual(changed.pv_preparation, original.pv_preparation);
+	assert.equal(changed.energy_replay, undefined);
+	assert.equal(changed.profile_selections, undefined);
+	assert.deepEqual(geometricPvDraft(changed), request);
+	assert.equal(geometricPvInputs(changed, request), changed);
+	assert.equal(
+		removeGeometricPv({ ...changed, energy_replay: { prepared: true } })
+			.energy_replay,
+		undefined,
+	);
+	assert.equal(removeGeometricPv(changed).geometric_pv_preparation, undefined);
+	const incomplete = {
+		...request,
+		sampling: { coarse_cells_per_edge: 2.5, fine_cells_per_edge: null },
+	};
+	assert.deepEqual(
+		geometricPvDraft({ geometric_pv_preparation: incomplete }),
+		incomplete,
+	);
+	assert.throws(() => compileGeometricPv(incomplete, original.geometry));
+	assert.throws(() =>
+		geometricPvDraft({
+			geometric_pv_preparation: { ...request, row_indices: [0, 12] },
+		}),
+	);
+	assert.throws(() =>
+		compileGeometricPv(
+			{
+				...request,
+				sampling: { coarse_cells_per_edge: 3, fine_cells_per_edge: 3 },
+			},
+			original.geometry,
+		),
+	);
+});
 
 test("solar drafts retain incomplete explicit choices without inventing parameter values", () => {
 	const blank = readSolarSetup({});

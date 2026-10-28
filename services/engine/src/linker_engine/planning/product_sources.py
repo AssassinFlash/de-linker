@@ -323,7 +323,8 @@ class ProductSources:
         self.check_pv_inputs(inputs, basis)
         return basis
 
-    def check_pv_inputs(self, inputs: Object, basis: Object) -> None:
+    @staticmethod
+    def check_pv_inputs(inputs: Object, basis: Object) -> None:
         geometry = GeometryDocument.read(inputs.get("geometry"))
         parameters = PvGenerationParameters.read(inputs.get("pv_generation"))
         template = cast(Object, basis["module"])
@@ -333,8 +334,8 @@ class ProductSources:
             module = modules.get(item.module_spec_id)
             if module is None:
                 raise InvalidInput("PV module is outside the saved roof layout")
-            self._check_module(module, basis)
-            self._check_binding(item.source, expected.source)
+            ProductSources._check_module(module, basis)
+            ProductSources._check_binding(item.source, expected.source)
             if item != expected.model_copy(update={"module_spec_id": module.id}):
                 raise InvalidInput(
                     "PV coefficient must match its current Woo-maintained figure"
@@ -344,6 +345,7 @@ class ProductSources:
         if metadata.get("profile_type") not in (
             PROFILE_PURPOSE,
             "pvgis_roof_ac_reference_profile_v1",
+            "geometric_pv_reference_profile_v1",
         ):
             return
         basis = metadata.get("woo_module_inputs")

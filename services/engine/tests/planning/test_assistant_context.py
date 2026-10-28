@@ -14,7 +14,10 @@ from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.records import Actor, Context
 from linker_engine.planning.report_copy import text
 from linker_engine.planning.report_model import build_report
+from linker_engine.planning.report_pvlib import pvlib_sections
 from linker_engine.planning.workspace import Workspace
+
+from .test_pv_generation import parameter_document
 
 
 def test_owned_snapshot_preserves_scope_revision_units_and_store(
@@ -337,8 +340,127 @@ def test_report_omits_comparison_location_and_private_note(
         {"run_id": run.id, "revision": 1, "binding": "pv_reference"},
     ]
     pvlib.append(whole)
+    geometric_parameters = parameter_document()
+    geometric_parameters["source_note"] = "PRIVATE GEOMETRIC REFERENCE NOTE"
+    geometric_parameters["modules"][0]["gamma_pdc_per_c"] = -0.0029
+    geometric_parameters["arrays"][0].update(
+        array_id="PRIVATE GEOMETRIC ARRAY",
+        albedo=0.3,
+        beam_iam_b=0.05,
+        sky_diffuse_iam_factor=0.95,
+        ground_diffuse_iam_factor=0.9,
+        spectral_factor=0.99,
+        soiling_factor=0.72,
+        dc_wiring_factor=0.88,
+        dc_mismatch_factor=0.91,
+        source_note="PRIVATE GEOMETRIC ARRAY NOTE: Near shading is not modelled.",
+    )
+    geometric_parameters["arrays"][0]["thermal"].update(
+        a=-3.47, b=-0.0594, delta_t_c=3, source_note="PRIVATE GEOMETRIC THERMAL NOTE"
+    )
+    geometric_parameters["converters"][0].update(
+        id="PRIVATE GEOMETRIC CONVERTER",
+        array_ids=["PRIVATE GEOMETRIC ARRAY"],
+        reference_dc_power_w=10416.666666666666,
+        source_note="PRIVATE GEOMETRIC CONVERTER NOTE",
+    )
+    geometric_weather = deepcopy(cast(Object, whole["weather"]))
+    geometric_request = cast(Object, geometric_weather["request"])
+    geometric_request.update(
+        expected_radiation_database="PVGIS-SARAH3", expected_meteo_database="ERA5"
+    )
+    source["geometric_pv_references"] = [
+        {
+            "model": "opaque_direct_uniform_pvlib_reference_v1",
+            "parameters": {"parameters": geometric_parameters},
+            "summary": deepcopy(whole["profile_summary"]),
+            "weather_source": {"details": geometric_weather},
+            "weather_metadata": {
+                "weather_request": geometric_request,
+                "weather_interpretation": geometric_weather["interpretation"],
+            },
+            "model_facts": {
+                "sampling": {"coarse_cells_per_edge": 1, "fine_cells_per_edge": 2}
+            },
+            "arrays": [
+                {
+                    "id": "PRIVATE GEOMETRIC ARRAY",
+                    "module_spec_id": "module",
+                    "module_count": 2,
+                    "stc_power_w": 1000,
+                    "tilt_deg": 29.999999999999996,
+                    "azimuth_north_clockwise_deg": 180,
+                    "normal_enu": [0, -0.49999999999999994, 0.8660254037844386],
+                    "mounting_note": "PRIVATE GEOMETRIC MOUNTING NOTE",
+                    "lower_edge_clearance_m": 0.2,
+                }
+            ],
+            "converters": [
+                {
+                    "id": "PRIVATE GEOMETRIC CONVERTER",
+                    "model_ac_cap_w": 9999.999999999998,
+                }
+            ],
+            "pv_components": {"nameplate_kwp": 1, "components": []},
+            "used_by": [
+                {"run_id": run.id, "revision": 1, "binding": "pv_available_ac"}
+            ],
+            "dependencies": {},
+        }
+    ]
+    original_source = deepcopy(source)
     recorded = build_report(source).model_dump(mode="json")
+    assert source == original_source
     assert "PRIVATE COMPARISON REFERENCE NOTE" in str(recorded)
+    geometric_section = next(
+        section
+        for section in cast(list[Object], recorded["sections"])
+        if section["id"] == "geometric-pv-reference-0"
+    )
+    assert "PRIVATE GEOMETRIC" in str(geometric_section)
+    assert "opaque_direct_uniform_pvlib_reference_v1" in str(geometric_section)
+    assert "uniform_unshaded_pvlib_reference_v1" not in str(geometric_section)
+    assert "Near shading is not modelled." in str(geometric_section)
+    assert text("geometric_pv_notes_scope", other_locale) in str(geometric_section)
+    assert text("geometric_pv_original_note", other_locale) in str(geometric_section)
+    for expected in (
+        "isotropic / 0.3",
+        "ashrae / 0.05 / 0.95 / 0.9",
+        "0.99 / 0.72 / 0.88 / 0.91",
+        "a=-3.47; b=-0.0594 s/m; delta T=3 °C",
+        "10416.7 W / 10000 W",
+        "0.96 / 0.9637",
+        "-0.0029 / °C",
+        "30° / 180° / [0; -0.5; 0.866025]",
+        "1: 2014",
+        "649800000 µs",
+    ):
+        assert (
+            expected.replace(".", ",") if other_locale == "de" else expected
+        ) in str(geometric_section)
+    # The shared helper remains opt-in: old unshaded report rendering preserves
+    # its stored display conventions rather than acquiring this new formatter.
+    geometric_reference = cast(list[Object], source["geometric_pv_references"])[0]
+    legacy_projection: Object = {
+        "parameters": geometric_parameters,
+        "weather": geometric_weather,
+        "profile_summary": geometric_reference["summary"],
+        **{
+            key: geometric_reference[key]
+            for key in (
+                "pv_components",
+                "arrays",
+                "converters",
+                "used_by",
+                "dependencies",
+            )
+        },
+    }
+    legacy_rows = pvlib_sections({"pvlib_references": [legacy_projection]}, locale)[
+        0
+    ].rows
+    assert "29.999999999999996°" in str(legacy_rows)
+    assert "10416.666666666666 W" in str(legacy_rows)
     localized = workspace.evaluate(
         owner, project.id, 1, context, key="localized-report", max_attempts=1
     )
@@ -363,11 +485,24 @@ def test_report_omits_comparison_location_and_private_note(
         )
         assert "0.1805" in str(projection) and "pvlib 0.16.1" in str(projection)
         assert "1.5 kWh" in str(projection)
+        assert "opaque_direct_uniform_pvlib_reference_v1" in str(projection)
+        for expected in (
+            "0.99 / 0.72 / 0.88 / 0.91",
+            "a=-3.47; b=-0.0594 s/m; delta T=3 °C",
+            "10416.7 W / 10000 W",
+            "-0.0029 / °C",
+        ):
+            assert (
+                expected.replace(".", ",") if requested_locale == "de" else expected
+            ) in str(projection)
+        assert "1: 2014" in str(projection) and "649800000 µs" in str(projection)
+        assert "Near shading is not modelled." not in str(projection)
+        assert "29.999999999999996" not in str(projection)
         sources = cast(
             Object, cast(list[Object], projection["runs"])[0]["calculation_sources"]
         )
         groups = cast(list[Object], sources["groups"])
-        assert len(groups) == 6
+        assert len(groups) == 7
         annual = next(
             group for group in groups if group.get("radiation_database") == "PVGIS-ERA5"
         )

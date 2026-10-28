@@ -39,7 +39,7 @@ final class PlannerTaskGatewayTest extends TestCase {
 		$this->assertSame( 'POST', $registered[1][2]['methods'] );
 		$this->assertSame( 'permission', $registered[1][2]['permission_callback'][1] );
 		$pattern = '~\A' . $registered[1][1] . '\z~';
-		foreach ( array( 'runs/energy', 'runs/pv', 'runs/direct-beam', 'weather/assets', 'weather/preview', 'runs/pvgis-reference', 'runs/equipment', 'runs/equipment-search', 'runs/report', 'equipment/candidates/read', 'equipment/certificates/read', 'runs/weather', 'runs/weather/status', 'runs/cancel', 'products/current', 'installation/review', 'sources/saved-solution' ) as $path ) {
+		foreach ( array( 'runs/energy', 'runs/pv', 'runs/direct-beam', 'runs/geometric-pv', 'weather/assets', 'weather/preview', 'runs/pvgis-reference', 'runs/equipment', 'runs/equipment-search', 'runs/report', 'equipment/candidates/read', 'equipment/certificates/read', 'runs/weather', 'runs/weather/status', 'runs/cancel', 'products/current', 'installation/review', 'sources/saved-solution' ) as $path ) {
 			$this->assertSame( 1, preg_match( $pattern, '/planner/rpc/' . $path ), $path );
 		}
 		foreach ( array( 'projects/assistant', 'runs/weather/acknowledge', 'runs/weather/resume', 'runs/weather/stop', 'operations/replay/runs/weather', 'identity/status', 'worker/control', 'runs/weather/status/extra' ) as $path ) {

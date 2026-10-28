@@ -176,7 +176,31 @@ export function verifyEnergyDetails(
 			// bundle as the series source. The asset's raw bytes remain the
 			// original weather; CSV/system-output profiles identify raw bytes.
 			let sourceMatches = source.raw_sha256 === pinned[key + ".raw"];
-			if (modelInput !== undefined) {
+			const geometricInput = pinned[key + ".model.inputs"];
+			if (geometricInput !== undefined) {
+				const details = readObject(source.details);
+				sourceMatches =
+					!reference &&
+					!dc &&
+					role === "pv_available_ac" &&
+					source.origin === "modelled" &&
+					details.model === "opaque_direct_uniform_pvlib_reference_v1" &&
+					details.model_role ===
+						"direct_only_geometry_uniform_module_reference_scenario" &&
+					details.output_boundary ===
+						"scenario_ac_potential_before_site_export_and_storage_control" &&
+					energyHash(geometricInput) &&
+					energyHash(pinned[key + ".model.witness"]) &&
+					energyHash(pinned[key + ".weather.raw"]) &&
+					energyHash(pinned[key + ".weather.metadata"]) &&
+					energyHash(pinned[key + ".project.parameters"]) &&
+					energyHash(pinned[key + ".woo.module_inputs"]) &&
+					energyHash(details.geometry_sha256) &&
+					energyHash(details.parameters_sha256) &&
+					source.raw_sha256 === geometricInput &&
+					details.input_bundle_sha256 === geometricInput &&
+					details.weather_original_sha256 === pinned[key + ".weather.raw"];
+			} else if (modelInput !== undefined) {
 				const details = readObject(source.details);
 				sourceMatches =
 					(reference ||

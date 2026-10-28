@@ -10,6 +10,7 @@ from .assets import Assets
 from .canonical import Object
 from .energy_inputs import Document, SchemaVersion
 from .errors import InvalidInput, VersionUnavailable
+from .geometric_pv_inputs import PROFILE_PURPOSE as GEOMETRIC_PV_PURPOSE
 from .power_series import Measurement
 from .pv_profile import PURPOSE
 from .pvgis_reference_profile import PROFILE_PURPOSE as ROOF_AC_PURPOSE
@@ -49,7 +50,11 @@ def check_profile_selections(
         elif asset.purpose == PURPOSE:
             if measurement not in {"pv_available_ac", "pv_reference"}:
                 raise InvalidInput("PV source cannot become a consumption profile")
-        elif asset.purpose in {"pvgis_system_profile_v1", ROOF_AC_PURPOSE}:
+        elif asset.purpose in {
+            "pvgis_system_profile_v1",
+            ROOF_AC_PURPOSE,
+            GEOMETRIC_PV_PURPOSE,
+        }:
             if measurement != "pv_available_ac":
                 raise InvalidInput("PV source cannot become a consumption profile")
         else:

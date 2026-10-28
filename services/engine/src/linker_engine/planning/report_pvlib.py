@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from datetime import datetime
 from typing import cast
 
@@ -172,7 +173,12 @@ def pvlib_reference(
     }
 
 
-def pvlib_sections(source: Object, locale: str) -> list[ReportSection]:
+def pvlib_sections(
+    source: Object,
+    locale: str,
+    *,
+    format_number: Callable[[Json], str] | None = None,
+) -> list[ReportSection]:
     references = source.get("pvlib_references")
     if not isinstance(references, list):
         return []  # Historical report bundles keep their original shape.
@@ -180,6 +186,7 @@ def pvlib_sections(source: Object, locale: str) -> list[ReportSection]:
     def row(key: str, value: Json, href: str | None = None) -> ReportRow:
         return ReportRow(label=text(key, locale), value=str(value), href=href)
 
+    number = str if format_number is None else format_number
     sections = []
     for index, value in enumerate(references):
         reference = _object(value)
@@ -227,7 +234,7 @@ def pvlib_sections(source: Object, locale: str) -> list[ReportSection]:
                 row("intervals", summary["interval_count"]),
                 row(
                     "pvlib_dc_energy" if dc_group else "pvgis_ac_energy",
-                    f"{summary['energy_kwh']} kWh",
+                    f"{number(summary['energy_kwh'])} kWh",
                 ),
             ]
         )
@@ -236,7 +243,7 @@ def pvlib_sections(source: Object, locale: str) -> list[ReportSection]:
                 [
                     row(
                         "pvlib_offset",
-                        f"{weather['irradiance_time_offset_hours']} h / {weather['irradiance_offset_microseconds']} µs",
+                        f"{number(weather['irradiance_time_offset_hours'])} h / {number(weather['irradiance_offset_microseconds'])} µs",
                     ),
                     row(
                         "pvlib_selected_months",
@@ -273,7 +280,7 @@ def pvlib_sections(source: Object, locale: str) -> list[ReportSection]:
             )
         rows.extend(
             [
-                row("pv_components_capacity", f"{parts['nameplate_kwp']} kWp"),
+                row("pv_components_capacity", f"{number(parts['nameplate_kwp'])} kWp"),
                 row("pvlib_note", parameters["source_note"]),
             ]
         )
@@ -293,7 +300,7 @@ def pvlib_sections(source: Object, locale: str) -> list[ReportSection]:
             rows.append(
                 row(
                     "pvlib_module",
-                    f"{component['quantity']} × {component['model']} / {component['stc_power_w']} W; {citation.get('document_sha256')} / p. {citation.get('page')}",
+                    f"{number(component['quantity'])} × {component['model']} / {number(component['stc_power_w'])} W; {citation.get('document_sha256')} / p. {citation.get('page')}",
                 )
             )
         modules = {
@@ -307,33 +314,43 @@ def pvlib_sections(source: Object, locale: str) -> list[ReportSection]:
         for array in cast(list[Object], reference["arrays"]):
             parameter = array_parameters[str(array["id"])]
             thermal = _object(parameter["thermal"])
+            normal = (
+                str(array["normal_enu"])
+                if format_number is None
+                else "["
+                + "; ".join(number(v) for v in cast(list[Json], array["normal_enu"]))
+                + "]"
+            )
             rows.extend(
                 [
                     row("pvlib_array", array["id"]),
                     row(
                         "pvlib_array_geometry",
-                        f"{array['module_count']} / {array['stc_power_w']} W / {array['tilt_deg']}° / {array['azimuth_north_clockwise_deg']}° / {array['normal_enu']}",
+                        f"{number(array['module_count'])} / {number(array['stc_power_w'])} W / {number(array['tilt_deg'])}° / {number(array['azimuth_north_clockwise_deg'])}° / {normal}",
                     ),
-                    row("pvlib_clearance", f"{array.get('lower_edge_clearance_m')} m"),
+                    row(
+                        "pvlib_clearance",
+                        f"{number(array.get('lower_edge_clearance_m'))} m",
+                    ),
                     row(
                         "pvlib_gamma",
-                        f"{modules[str(array['module_spec_id'])]['gamma_pdc_per_c']} / °C",
+                        f"{number(modules[str(array['module_spec_id'])]['gamma_pdc_per_c'])} / °C",
                     ),
                     row(
                         "pvlib_transposition",
-                        f"{parameter['transposition']} / {parameter['albedo']}",
+                        f"{parameter['transposition']} / {number(parameter['albedo'])}",
                     ),
                     row(
                         "pvlib_iam",
-                        f"{parameter['beam_iam_model']} / {parameter['beam_iam_b']} / {parameter['sky_diffuse_iam_factor']} / {parameter['ground_diffuse_iam_factor']}",
+                        f"{parameter['beam_iam_model']} / {number(parameter['beam_iam_b'])} / {number(parameter['sky_diffuse_iam_factor'])} / {number(parameter['ground_diffuse_iam_factor'])}",
                     ),
                     row(
                         "pvlib_retention",
-                        f"{parameter['spectral_factor']} / {parameter['soiling_factor']} / {parameter['dc_wiring_factor']} / {parameter['dc_mismatch_factor']}",
+                        f"{number(parameter['spectral_factor'])} / {number(parameter['soiling_factor'])} / {number(parameter['dc_wiring_factor'])} / {number(parameter['dc_mismatch_factor'])}",
                     ),
                     row(
                         "pvlib_thermal",
-                        f"{thermal['model']}; a={thermal['a']}; b={thermal['b']} s/m; delta T={thermal['delta_t_c']} °C",
+                        f"{thermal['model']}; a={number(thermal['a'])}; b={number(thermal['b'])} s/m; delta T={number(thermal['delta_t_c'])} °C",
                     ),
                     row("pvlib_note", parameter["source_note"]),
                     row("pvlib_note", thermal["source_note"]),
@@ -361,11 +378,11 @@ def pvlib_sections(source: Object, locale: str) -> list[ReportSection]:
                     ),
                     row(
                         "pvlib_conversion_power",
-                        f"{converter['reference_dc_power_w']} W / {converters[str(converter['id'])]['model_ac_cap_w']} W",
+                        f"{number(converter['reference_dc_power_w'])} W / {number(converters[str(converter['id'])]['model_ac_cap_w'])} W",
                     ),
                     row(
                         "pvlib_conversion_eta",
-                        f"{converter['eta_nominal']} / {converter['eta_reference']}",
+                        f"{number(converter['eta_nominal'])} / {number(converter['eta_reference'])}",
                     ),
                     row("pvlib_note", converter["source_note"]),
                 ]

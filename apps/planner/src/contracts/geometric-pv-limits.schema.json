@@ -1,0 +1,38 @@
+{
+  "$defs": {
+    "PositiveInteger": {
+      "exclusiveMinimum": 0,
+      "maximum": 9007199254740991,
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Deployment work budgets, not accuracy claims or manufacturer limits.",
+  "properties": {
+    "max_module_steps": {
+      "$ref": "#/$defs/PositiveInteger"
+    },
+    "max_samples": {
+      "$ref": "#/$defs/PositiveInteger"
+    },
+    "max_ray_face_checks": {
+      "$ref": "#/$defs/PositiveInteger"
+    },
+    "max_bounds_checks": {
+      "$ref": "#/$defs/PositiveInteger"
+    },
+    "index_leaf_size": {
+      "$ref": "#/$defs/PositiveInteger"
+    }
+  },
+  "required": [
+    "max_module_steps",
+    "max_samples",
+    "max_ray_face_checks",
+    "max_bounds_checks",
+    "index_leaf_size"
+  ],
+  "title": "GeometricPvLimits",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

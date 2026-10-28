@@ -505,6 +505,11 @@ export default function SceneViewport(props: SceneProps) {
 	const [forceWebGL, setForceWebGL] = useState(false);
 	const alive = useRef(true);
 	const generation = useRef(0);
+	const fail = () => {
+		generation.current++;
+		setBackend("");
+		setFailed(true);
+	};
 	useEffect(() => {
 		alive.current = true;
 		return () => {
@@ -585,10 +590,7 @@ export default function SceneViewport(props: SceneProps) {
 				</Notice>
 			) : (
 				palette && (
-					<SceneBoundary
-						key={attempt + String(forceWebGL)}
-						failed={() => setFailed(true)}
-					>
+					<SceneBoundary key={attempt + String(forceWebGL)} failed={fail}>
 						<Canvas
 							role="img"
 							aria-label={__("Roof design", "linker-tools")}
@@ -605,8 +607,7 @@ export default function SceneViewport(props: SceneProps) {
 								let initialBackend: typeof renderer.backend | null =
 									renderer.backend;
 								renderer.onDeviceLost = () => {
-									if (alive.current && identity === generation.current)
-										setFailed(true);
+									if (alive.current && identity === generation.current) fail();
 								};
 								try {
 									await renderer.init();
@@ -620,8 +621,7 @@ export default function SceneViewport(props: SceneProps) {
 								} catch (error) {
 									// A rejected init never hands this instance to R3F for disposal.
 									await releaseUnownedRenderer(renderer, initialBackend);
-									if (alive.current && identity === generation.current)
-										setFailed(true);
+									if (alive.current && identity === generation.current) fail();
 									throw error;
 								}
 								const backend = renderer.backend as unknown as {
@@ -686,26 +686,28 @@ export default function SceneViewport(props: SceneProps) {
 									color={palette.module}
 								/>
 							)}
-							<RendererLifecycle fail={() => setFailed(true)} />
+							<RendererLifecycle fail={fail} />
 						</Canvas>
 					</SceneBoundary>
 				)
 			)}
-			<div className="lp-canvas-caption">
-				<button
-					type="button"
-					className="lp-tool-button"
-					disabled={failed || !bounds}
-					onClick={() => {
-						setFitRequest((value) => value + 1);
-					}}
-				>
-					{__("Fit 3D view", "linker-tools")}
-				</button>
-				<span data-renderer={backend || undefined}>
-					{backend ? "3D" : __("Preparing 3D…", "linker-tools")}
-				</span>
-			</div>
+			{!failed && bounds && reference && (
+				<div className="lp-canvas-caption">
+					<button
+						type="button"
+						className="lp-tool-button"
+						disabled={!backend}
+						onClick={() => {
+							setFitRequest((value) => value + 1);
+						}}
+					>
+						{__("Fit 3D view", "linker-tools")}
+					</button>
+					<span data-renderer={backend || undefined}>
+						{backend ? "3D" : __("Preparing 3D…", "linker-tools")}
+					</span>
+				</div>
+			)}
 			<details className="lp-comparison">
 				<summary>{__("View options", "linker-tools")}</summary>
 				<label className="lp-geometry-check">

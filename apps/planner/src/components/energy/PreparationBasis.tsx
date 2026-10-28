@@ -6,10 +6,12 @@ export function PreparationBasis({
 	weather,
 	project,
 	pv,
+	geometric = false,
 }: {
 	weather: JsonObject;
 	project: Project;
 	pv: boolean;
+	geometric?: boolean;
 }) {
 	const request = readObject(weather.weather_request),
 		interpretation = readObject(weather.weather_interpretation),
@@ -68,7 +70,15 @@ export function PreparationBasis({
 				{pv && (
 					<>
 						<h4>{__("PV model settings", "linker-tools")}</h4>
-						<pre>{JSON.stringify(project.inputs.pv_generation, null, 2)}</pre>
+						<pre>
+							{JSON.stringify(
+								geometric
+									? project.inputs.geometric_pv_preparation
+									: project.inputs.pv_generation,
+								null,
+								2,
+							)}
+						</pre>
 					</>
 				)}
 			</details>

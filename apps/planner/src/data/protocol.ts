@@ -38,6 +38,13 @@ export interface Session {
 				readonly max_bounds_checks: number;
 				readonly index_leaf_size: number;
 			};
+			readonly geometric_pv_generation?: {
+				readonly max_module_steps: number;
+				readonly max_samples: number;
+				readonly max_ray_face_checks: number;
+				readonly max_bounds_checks: number;
+				readonly index_leaf_size: number;
+			};
 		};
 	};
 }
@@ -60,6 +67,7 @@ export const RPC_PATHS = [
 	"runs/pv",
 	"runs/pvgis-reference",
 	"runs/direct-beam",
+	"runs/geometric-pv",
 	"weather/assets",
 	"weather/preview",
 	"runs/equipment",

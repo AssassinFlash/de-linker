@@ -11,6 +11,7 @@ from .canonical import Object
 from .certificate_report import certificate_sections
 from .comparison_report import comparison_sections
 from .direct_beam_report import direct_beam_sections
+from .geometric_pv_report import geometric_pv_sections
 from .installation_report import installation_sections
 from .project_materials import (
     material_name,
@@ -77,6 +78,9 @@ def build_report(source: Object) -> Report:
     direct_beam = source.get("direct_beam")
     if isinstance(direct_beam, dict):
         sections.extend(direct_beam_sections(direct_beam, locale))
+    geometric_pv = source.get("geometric_pv_references")
+    if isinstance(geometric_pv, list):
+        sections.extend(geometric_pv_sections(geometric_pv, locale))
 
     assessment = source.get("equipment")
     if isinstance(assessment, dict):

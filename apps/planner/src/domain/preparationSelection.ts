@@ -15,6 +15,11 @@ import {
 	referenceRoof,
 	assertReferenceAcTopology,
 } from "./pvgisReference.ts";
+import {
+	GEOMETRIC_PV_TASK,
+	compileGeometricPv,
+	geometricPvDraft,
+} from "./geometricPv.ts";
 
 export function preparationPvRole(
 	inputs: JsonObject,
@@ -67,6 +72,28 @@ export function selectPreparation(
 			!sameJson(inputs.geometry, historical.inputs.geometry) ||
 			!sameJson(inputs.pvgis_reference, historical.inputs.pvgis_reference) ||
 			!referencePrepared(inputs)
+		)
+			throw new ApiError(409, "preparation_source_changed");
+		assertReferenceAcTopology(inputs);
+		return {
+			...invalidateEnergyReplay(inputs),
+			profile_selections: {
+				schema_version: 1,
+				selected: {
+					...readSelections(inputs.profile_selections).selected,
+					pv_available_ac: assetId,
+				},
+			},
+		};
+	}
+	if (runTask(run) === GEOMETRIC_PV_TASK) {
+		compileGeometricPv(geometricPvDraft(inputs), inputs.geometry);
+		if (
+			!sameJson(inputs.geometry, historical.inputs.geometry) ||
+			!sameJson(
+				inputs.geometric_pv_preparation,
+				historical.inputs.geometric_pv_preparation,
+			)
 		)
 			throw new ApiError(409, "preparation_source_changed");
 		assertReferenceAcTopology(inputs);

@@ -54,6 +54,7 @@ def configured_private_app(
             limits=settings.http_limits(),
             pv=settings.pv_service(workspace, products=products),
             direct_beam=settings.direct_beam_service(workspace, products=products),
+            geometric_pv=settings.geometric_pv_service(workspace, products=products),
             weather=settings.weather_service(workspace),
             pvgis_reference=settings.pvgis_reference_service(
                 workspace, products=products

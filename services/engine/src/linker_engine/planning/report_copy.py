@@ -3,6 +3,49 @@
 from __future__ import annotations
 
 TEXT = {
+    "geometric_pv_title": (
+        "PV reference with geometric direct-beam shading",
+        "PV-Referenz: geometrische Verschattung der Direktstrahlung",
+    ),
+    "geometric_pv_scope": (
+        "The declared opaque geometry reduces only direct irradiance. Sky and ground diffuse irradiance retain an unobstructed reference. Each module is treated as uniformly irradiated, and its temperature uses the mean plane-of-array irradiance. Partial-cell shading, bypass diodes, string I–V and real MPPT behavior are not modelled. This scenario does not establish actual device performance or equipment or country approval.",
+        "Die angegebene undurchsichtige Geometrie verringert ausschließlich die direkte Einstrahlung. Diffuse Himmels- und Bodenstrahlung bleiben als unverschattete Referenz erhalten. Für Leistung und Zelltemperatur wird die über das jeweilige Modul gemittelte Einstrahlung angesetzt. Teilzellverschattung, Bypassdioden, die I–V-Kennlinie der Strings und das reale MPPT-Verhalten werden nicht modelliert. Dieses Szenario belegt weder die tatsächliche Geräteleistung noch eine Geräte- oder Länderfreigabe.",
+    ),
+    "geometric_pv_axes": (
+        "All rows of the retained weather source are used. Interval boundaries belong to the synthetic energy year; solar position retains the original source-month irradiance instants. Calculated point outputs are assigned to those intervals under the stated reconstruction policy. The difference between coarse and fine sampling is not an error bound.",
+        "Alle Zeilen der gespeicherten Wetterquelle werden verwendet. Die Intervallgrenzen gehören zum synthetischen Energiejahr; für den Sonnenstand gelten die Strahlungszeitpunkte der ursprünglichen Quellenmonate. Die berechneten Punktwerte werden den Intervallen nach der angegebenen Rekonstruktionsregel zugeordnet. Die Differenz zwischen grobem und feinem Raster ist keine Fehlerschranke.",
+    ),
+    "geometric_pv_notes_scope": (
+        "Notes on coefficients and mounting are preserved verbatim from the reference inputs. Their descriptions of the original unshaded reference are source context. This calculation applies the geometric direct-beam model and the diffuse, thermal and electrical assumptions stated above. Displayed numbers are rounded; the frozen source retains full precision.",
+        "Hinweise zu Koeffizienten und Montage werden im ursprünglichen Wortlaut der Referenzeingaben wiedergegeben. Aussagen darin zur ursprünglichen unverschatteten Referenz dienen als Quellenkontext. Für diese Berechnung gelten das oben erläuterte geometrische Direktstrahlungsmodell und die angegebenen Annahmen zu diffuser Einstrahlung, Temperatur und elektrischem Verhalten. Zahlen sind für die Anzeige gerundet; die gespeicherte Quelle enthält die volle Genauigkeit.",
+    ),
+    "geometric_pv_original_note": (
+        "Original coefficient or mounting note (verbatim; current method above)",
+        "Ursprünglicher Hinweis zu Koeffizienten oder Montage (Wortlaut; aktuelle Methode oben)",
+    ),
+    "geometric_pv_model": ("Reference model", "Referenzmodell"),
+    "geometric_pv_period": (
+        "Complete PV calculation period (UTC)",
+        "Vollständiger PV-Berechnungszeitraum (UTC)",
+    ),
+    "geometric_pv_rows": (
+        "Retained source intervals",
+        "Gespeicherte Quellenintervalle",
+    ),
+    "geometric_pv_energy": ("Scenario AC energy", "AC-Energie des Szenarios"),
+    "geometric_pv_sampling": (
+        "Cells per module edge: coarse / fine",
+        "Zellen je Modulkante: grob / fein",
+    ),
+    "geometric_pv_weather": (
+        "TMY source years / radiation / weather database",
+        "TMY-Quellenjahre / Strahlungs- / Wetterdatenbank",
+    ),
+    "geometric_pv_year": ("Synthetic interval year", "Synthetisches Intervalljahr"),
+    "geometric_pv_used_by": (
+        "Used by saved run / revision",
+        "Verwendet von Berechnung / Revision",
+    ),
     "direct_beam_title": (
         "Geometric direct-beam visibility",
         "Geometrische Sichtbarkeit direkter Sonnenstrahlung",

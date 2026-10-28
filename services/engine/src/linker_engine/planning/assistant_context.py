@@ -16,6 +16,10 @@ from .direct_beam_read import KIND as DIRECT_BEAM_KIND
 from .direct_beam_read import direct_beam_bundle, direct_beam_facts
 from .equipment_candidate_store import EquipmentCandidateStore
 from .errors import InvalidInput
+from .geometric_pv_inputs import KIND as GEOMETRIC_PV_KIND
+from .geometric_pv_inputs import PROFILE_PURPOSE as GEOMETRIC_PV_PURPOSE
+from .geometric_pv_profile import prepared_profile as geometric_pv_profile
+from .geometric_pv_profile import reference_bundle as geometric_pv_bundle
 from .pvgis_reference_inputs import PvgisReferenceInputs
 from .pvgis_reference_profile import (
     PROFILE_PURPOSE,
@@ -174,12 +178,15 @@ def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
                     row.get("label") == text("pvgis_reference_note", locale)
                 ):
                     continue  # The owned report retains this free-form assumption.
-                if str(section.get("id", "")).startswith("pvlib-reference-") and (
+                if str(section.get("id", "")).startswith(
+                    ("pvlib-reference-", "geometric-pv-reference-")
+                ) and (
                     row.get("label")
                     in {
                         text(key, locale)
                         for key in (
                             "pvlib_note",
+                            "geometric_pv_original_note",
                             "pvlib_original_request",
                             "pvlib_array",
                             "pvlib_converter",
@@ -222,6 +229,79 @@ def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
                     "model",
                     "battery_parameter_provenance",
                 )
+            },
+            locale,
+        )
+    if kind == GEOMETRIC_PV_KIND:
+        asset = cast(Object, result.get("prepared_asset", {}))
+        metadata = cast(Object, asset.get("metadata", {}))
+        inputs = workspace.pinned_inputs(run.manifest)
+        if (
+            asset.get("project_id") != run.project_id
+            or asset.get("purpose") != GEOMETRIC_PV_PURPOSE
+            or metadata.get("derived_from_revision") != run.revision
+            or metadata.get("geometry_sha256") != digest(encode(inputs.get("geometry")))
+            or metadata.get("parameters_sha256")
+            != digest(encode(inputs.get("geometric_pv_preparation")))
+            or result.get("profile_summary") != metadata.get("interpretation")
+            or workspace.blobs.object(str(asset.get("metadata_sha256"))) != metadata
+        ):
+            raise InvalidInput("saved geometric PV reference differs from its source")
+        raw_sha = str(asset.get("content_sha256"))
+        geometric_pv_profile(workspace.blobs, raw_sha, metadata)
+        bundle = geometric_pv_bundle(workspace.blobs, raw_sha, metadata)
+        model_inputs = cast(Object, bundle["inputs"])
+        witness = cast(Object, bundle["witness"])
+        weather = cast(Object, model_inputs["weather"])
+        weather_source = cast(Object, weather["source"])
+        weather_details = cast(Object, weather_source["details"])
+        request = cast(Object, weather_details["request"])
+        interpretation = cast(Object, weather_details["interpretation"])
+        geometry = cast(Object, model_inputs["geometry"])
+        specifications = {
+            str(item["id"]): item
+            for item in cast(list[Object], geometry["module_specs"])
+        }
+        counts: dict[str, int] = {}
+        for array in cast(list[Object], witness["arrays"]):
+            identity = str(array["module_spec_id"])
+            counts[identity] = counts.get(identity, 0) + cast(
+                int, array["module_count"]
+            )
+        return _rows(
+            {
+                "profile_summary": result["profile_summary"],
+                "model": result["model"],
+                "scope": result["scope"],
+                "weather_reference": {
+                    "selection_start_year": request["start_year"],
+                    "selection_end_year": request["end_year"],
+                    "radiation_database": request["expected_radiation_database"],
+                    "meteo_database": request["expected_meteo_database"],
+                    "synthetic_energy_year": interpretation["synthetic_energy_year"],
+                    "irradiance_time_offset_hours": weather_details[
+                        "irradiance_time_offset_hours"
+                    ],
+                    "months_selected": weather_details["months_selected"],
+                },
+                "included_modules": [
+                    {
+                        "model": specifications[identity]["model"],
+                        "quantity": count,
+                        "module_power_w": number(
+                            specifications[identity]["stc_power_w"], locale, "W"
+                        ),
+                    }
+                    for identity, count in counts.items()
+                ],
+                **{
+                    key: result[key]
+                    for key in (
+                        "country_assessment",
+                        "equipment_release",
+                        "near_shading_assessment",
+                    )
+                },
             },
             locale,
         )

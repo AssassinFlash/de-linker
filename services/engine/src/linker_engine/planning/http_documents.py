@@ -91,6 +91,10 @@ class ProjectInputs(Command):
             from .direct_beam_inputs import DirectBeamTaskInputs
 
             DirectBeamTaskInputs.model_validate(value["direct_beam_visibility"])
+        if "geometric_pv_preparation" in value:
+            from .geometric_pv_inputs import GeometricPvInputs
+
+            GeometricPvInputs.model_validate(value["geometric_pv_preparation"])
         if "pv_generation" in value:
             from .pv_parameters import PvGenerationParameters
 

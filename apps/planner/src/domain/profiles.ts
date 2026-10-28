@@ -55,6 +55,7 @@ export interface ProfileAsset extends JsonObject {
 		| "csv_profile_v1"
 		| "pvgis_system_profile_v1"
 		| "pvlib_reference_profile_v1"
+		| "geometric_pv_reference_profile_v1"
 		| "pvgis_roof_ac_reference_profile_v1";
 	readonly metadata: JsonObject;
 }
@@ -147,6 +148,7 @@ export function readAsset(value: unknown, projectId: string): ProfileAsset {
 			"csv_profile_v1",
 			"pvgis_system_profile_v1",
 			"pvlib_reference_profile_v1",
+			"geometric_pv_reference_profile_v1",
 			"pvgis_roof_ac_reference_profile_v1",
 		].includes(String(item.purpose))
 	)

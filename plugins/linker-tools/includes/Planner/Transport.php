@@ -24,7 +24,7 @@ final class Transport {
 	 * RPCs retain their existing five-second budget.
 	 */
 	private const SOURCE_OPERATION_TIMEOUT = 30.0;
-	private const SOURCE_OPERATIONS        = array( 'products/current', 'projects/create', 'projects/revise', 'installation/review', 'battery/scenario', 'runs/pv', 'runs/direct-beam', 'runs/pvgis-reference', 'runs/energy', 'runs/equipment', 'runs/equipment-search', 'runs/report' );
+	private const SOURCE_OPERATIONS        = array( 'products/current', 'projects/create', 'projects/revise', 'installation/review', 'battery/scenario', 'runs/pv', 'runs/direct-beam', 'runs/geometric-pv', 'runs/pvgis-reference', 'runs/energy', 'runs/equipment', 'runs/equipment-search', 'runs/report' );
 
 	/**
 	 * Select the native HTTP transport or a test adapter.
