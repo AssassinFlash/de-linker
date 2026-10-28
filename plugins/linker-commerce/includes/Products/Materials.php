@@ -1373,12 +1373,11 @@ final class Materials {
 
 	/**
 	 * The key figures of a product's purchase panel: the product type's first
-	 * spec keys, in the type's own order, each with the symbol it shows. The
-	 * order and the symbol are type vocabulary, not page design.
+	 * spec keys in the type's own order.
 	 *
 	 * @param WC_Product $product The product.
 	 * @param int        $limit   How many rows the panel holds.
-	 * @return list<array{key: string, label: string, value: string, icon: string}>
+	 * @return list<array{key: string, label: string, value: string}>
 	 */
 	public static function key_stats( WC_Product $product, int $limit = 4 ): array {
 		$order = array(
@@ -1391,16 +1390,12 @@ final class Materials {
 			'accessory' => array( 'ac_power', 'interface', 'ip', 'temp', 'weight', 'dimensions' ),
 			'other'     => array( 'nom_voltage', 'interface', 'ip', 'temp', 'weight', 'dimensions' ),
 		);
-		$icons = array(
-			'phase'       => 'grid',
-			'mppt'        => 'grid',
-			'usable_kwh'  => 'energy',
-			'nominal_kwh' => 'energy',
-			'efficiency'  => 'gauge',
-		);
 		$kind  = self::contract_type( (string) self::identity( $product )['kind'] );
 		$specs = self::specs( $product );
-		$out   = array();
+		if ( isset( $specs['phase']['value'] ) ) {
+			$specs['phase']['value'] = self::phase_voltage_unit( $product, (string) $specs['phase']['value'] );
+		}
+		$out = array();
 		foreach ( $order[ $kind ] ?? $order['other'] as $key ) {
 			if ( ! isset( $specs[ $key ] ) ) {
 				continue;
@@ -1409,13 +1404,40 @@ final class Materials {
 				'key'   => (string) $key,
 				'label' => (string) $specs[ $key ]['label'],
 				'value' => self::de_number( (string) $specs[ $key ]['value'] ),
-				'icon'  => (string) ( $icons[ $key ] ?? 'power' ),
 			);
 			if ( count( $out ) >= $limit ) {
 				break;
 			}
 		}
 		return $out;
+	}
+
+	/**
+	 * Carry a voltage unit only when this same product states the identical
+	 * combined phase/voltage value as an explicitly measured AC voltage.
+	 *
+	 * @param WC_Product $product Product owning both facts.
+	 * @param string     $display Formatted phase value selected for the panel.
+	 */
+	private static function phase_voltage_unit( WC_Product $product, string $display ): string {
+		$facts   = self::facts( $product );
+		$voltage = $facts['rated_ac_voltage'] ?? null;
+		if ( ! \is_array( $voltage ) || 'V' !== ( $voltage['unit'] ?? null ) || ! \is_string( $voltage['value'] ?? null ) || 1 !== \preg_match( '/^\s*[123]\s*\+\s*N\s*\+\s*PE\s*,\s*\d{2,4}\s*\/\s*\d{2,4}\s*$/iD', $voltage['value'] ) ) {
+			return $display;
+		}
+		if ( $display !== $voltage['value'] ) {
+			return $display;
+		}
+		foreach ( array( 'phase', 'phases' ) as $field ) {
+			$phase = $facts[ $field ] ?? null;
+			if ( ! \is_array( $phase ) || '' !== trim( (string) ( $phase['unit'] ?? '' ) ) || ( $phase['value'] ?? null ) !== $voltage['value'] ) {
+				continue;
+			}
+			if ( self::spec_text( $product, 'phase', $field, $phase, self::is_de() )['value'] === $display ) {
+				return self::value_with_unit( $display, 'V' );
+			}
+		}
+		return $display;
 	}
 
 	/**

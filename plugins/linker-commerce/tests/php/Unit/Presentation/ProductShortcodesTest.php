@@ -1448,6 +1448,25 @@ final class ProductShortcodesTest extends TestCase {
 		$this->assertStringNotContainsString( 'data-linker-exact-product', $without_model );
 	}
 
+	/** The shared component carries semantic facts and a neutral visual fallback. */
+	public function test_key_stats_emit_semantic_fact_keys_and_css_covers_the_component(): void {
+		$html = $this->pdp( true )->pdp_key_stats();
+		$this->assertStringContainsString( 'data-pdp-fact="interface"', $html );
+		$this->assertStringContainsString( 'data-pdp-fact="weight"', $html );
+		$this->assertStringNotContainsString( '<svg', $html );
+
+		$css = (string) file_get_contents( dirname( __DIR__, 4 ) . '/content/windpress/pdp.css' );
+		foreach ( array( 'ac_power', 'phase', 'mppt', 'usable_kwh', 'nominal_kwh', 'efficiency', 'batt_voltage', 'nom_voltage', 'ip', 'weight', 'dimensions', 'chemistry', 'charge_a', 'discharge_a', 'accuracy', 'ratio', 'interface', 'burden', 'devices', 'temp' ) as $key ) {
+			$this->assertStringContainsString( 'data-pdp-fact="' . $key . '"', $css );
+		}
+		$this->assertMatchesRegularExpression( '/\.pdp-app-stat-icon\s*\{\s*--pdp-fact-icon:\s*url\(/', $css );
+		preg_match( '/data-pdp-fact="weight"\][^{]*\{\s*--pdp-fact-icon:\s*([^;]+);/', $css, $weight );
+		preg_match( '/data-pdp-fact="ac_power"\][^{]*\{\s*--pdp-fact-icon:\s*([^;]+);/', $css, $power );
+		$this->assertNotEmpty( $weight[1] ?? '' );
+		$this->assertNotEmpty( $power[1] ?? '' );
+		$this->assertNotSame( $power[1], $weight[1] );
+	}
+
 	/** Distinct options keep their source text; a semicolon inside a note is not a separator. */
 	public function test_key_stat_options_preserve_the_complete_source_facts(): void {
 		$render = new \ReflectionMethod( ProductShortcodes::class, 'pdp_stat_value' );
