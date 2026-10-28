@@ -22,7 +22,7 @@ final class Gateway {
 	public const MAX_BODY_BYTES = 16 * 1024 * 1024;
 	public const MAX_JSON_DEPTH = 32;
 	/** The account-claim and identity-status commands are deliberately private. */
-	private const PATHS = 'projects/(?:create|list|read|revise|runs)|runs/(?:read|compare|cancel|energy|report|pv|pvgis-reference|equipment(?:-search)?|weather(?:/status)?|trace)|assets/(?:read|content)|profiles/(?:csv|inspect|preview)|geometry/(?:review|import)|installation/review|battery/scenario|products/current|equipment/(?:candidates|certificates)/read|recovery/scopes|sources/saved-solution|draft/(?:apply|preview|read)';
+	private const PATHS = 'projects/(?:create|list|read|revise|runs)|runs/(?:read|compare|cancel|energy|report|pv|direct-beam|pvgis-reference|equipment(?:-search)?|weather(?:/status)?|trace)|assets/(?:read|content)|profiles/(?:csv|inspect|preview)|weather/(?:assets|preview)|geometry/(?:review|import)|installation/review|battery/scenario|products/current|equipment/(?:candidates|certificates)/read|recovery/scopes|sources/saved-solution|draft/(?:apply|preview|read)';
 	/**
 	 * A rejected request stays rejected if an installed integration returns null.
 	 *
@@ -198,7 +198,7 @@ final class Gateway {
 		if ( is_wp_error( $version ) ) {
 			return $version;
 		}
-		if ( 1 !== ( $version['schema_version'] ?? null ) || ! is_string( $version['runtime_sha256'] ?? null ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $version['runtime_sha256'] ) || ! is_array( $version['limits'] ?? null ) ) {
+		if ( 1 !== ( $version['schema_version'] ?? null ) || ! is_string( $version['runtime_sha256'] ?? null ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $version['runtime_sha256'] ) || ! is_array( $version['limits'] ?? null ) || ! is_array( $version['models'] ?? null ) ) {
 			return Failure::make( 'invalid_reply', 502 );
 		}
 		foreach ( array( 'max_body_bytes', 'max_csv_bytes', 'max_page_size', 'max_json_depth' ) as $limit ) {
@@ -206,12 +206,30 @@ final class Gateway {
 				return Failure::make( 'invalid_reply', 502 );
 			}
 		}
+		$has_visibility = array_key_exists( 'direct_beam_visibility', $version['models'] ) || array_key_exists( 'direct_beam_visibility', $version['limits'] );
+		if ( $has_visibility ) {
+			$visibility_limits = $version['limits']['direct_beam_visibility'] ?? null;
+			$names             = array( 'index_leaf_size', 'max_bounds_checks', 'max_ray_face_checks', 'max_samples', 'max_selected_rows' );
+			if ( 'prepare_direct_beam_visibility_v1' !== ( $version['models']['direct_beam_visibility'] ?? null ) || ! is_array( $visibility_limits ) ) {
+				return Failure::make( 'invalid_reply', 502 );
+			}
+			$keys = array_keys( $visibility_limits );
+			sort( $keys );
+			if ( $names !== $keys ) {
+				return Failure::make( 'invalid_reply', 502 );
+			}
+			foreach ( $names as $name ) {
+				if ( ! is_int( $visibility_limits[ $name ] ) || $visibility_limits[ $name ] < 1 ) {
+					return Failure::make( 'invalid_reply', 502 );
+				}
+			}
+		}
 		$version['limits']['max_body_bytes'] = min( self::MAX_BODY_BYTES, $version['limits']['max_body_bytes'] );
 		$version['limits']['max_json_depth'] = min( self::MAX_JSON_DEPTH, $version['limits']['max_json_depth'] );
 		// Keep operator process/storage identities on the private protocol; the
 		// browser uses its stable, strict runtime view during normal bootstrap.
 		$version           = array_intersect_key( $version, array_flip( array( 'schema_version', 'runtime_sha256', 'models', 'limits' ) ) );
-		$version['limits'] = array_intersect_key( $version['limits'], array_flip( array( 'max_body_bytes', 'max_csv_bytes', 'max_page_size', 'max_json_depth' ) ) );
+		$version['limits'] = array_intersect_key( $version['limits'], array_flip( array( 'max_body_bytes', 'max_csv_bytes', 'max_page_size', 'max_json_depth', 'direct_beam_visibility' ) ) );
 		return new WP_REST_Response(
 			array(
 				'schema_version'   => 1,

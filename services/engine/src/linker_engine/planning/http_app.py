@@ -29,6 +29,8 @@ from .capacity_window import REFERENCE_CAPACITY
 from .certificate_evidence import CertificateEvidence
 from .csv_inspection import inspect_csv
 from .csv_issue import CsvIssue
+from .direct_beam_service import DirectBeamService
+from .direct_beam_weather import check_direct_beam, weather_assets, weather_preview
 from .energy_comparison import compare_energy_runs
 from .energy_service import EnergyService
 from .equipment_candidate_choice import check_equipment_candidate
@@ -81,6 +83,7 @@ from .http_documents import (
     RunRead,
     SessionClaim,
     TraceRead,
+    WeatherAssetsRead,
 )
 from .http_index import project_page, run_page
 from .http_replay import HttpReplay
@@ -132,6 +135,7 @@ def create_private_app(
     equipment_search: EquipmentService | None = None,
     reports: ReportService | None = None,
     pvgis_reference: PvgisRoofReferenceService | None = None,
+    direct_beam: DirectBeamService | None = None,
 ) -> ASGIApp:
     if energy.workspace is not workspace or energy.kernel.workspace is not workspace:
         raise InvalidInput("HTTP and energy service must share the same authority")
@@ -171,8 +175,23 @@ def create_private_app(
         raise InvalidInput(
             "PVGIS roof reference requires shared project and Woo authority"
         )
+    if direct_beam is not None and (
+        direct_beam.workspace is not workspace
+        or direct_beam.kernel.workspace is not workspace
+        or product_provider is None
+    ):
+        raise InvalidInput(
+            "direct-beam visibility requires shared project and Woo authority"
+        )
     registry = service_registry(
-        energy, pv, weather, equipment, equipment_search, reports, pvgis_reference
+        energy,
+        pv,
+        weather,
+        equipment,
+        equipment_search,
+        reports,
+        pvgis_reference,
+        direct_beam,
     )
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
     assets = Assets(workspace)
@@ -302,6 +321,11 @@ def create_private_app(
                 ),
                 **({"report": reports.kernel.kind} if reports is not None else {}),
                 **(
+                    {"direct_beam_visibility": direct_beam.kernel.kind}
+                    if direct_beam is not None
+                    else {}
+                ),
+                **(
                     {"pvgis_roof_reference": pvgis_reference.kernel.kind}
                     if pvgis_reference is not None
                     else {}
@@ -322,6 +346,15 @@ def create_private_app(
                 "max_csv_bytes": limits.max_csv_bytes,
                 "max_page_size": limits.max_page_size,
                 "max_json_depth": limits.max_json_depth,
+                **(
+                    {
+                        "direct_beam_visibility": direct_beam.kernel.limits.model_dump(
+                            mode="json"
+                        )
+                    }
+                    if direct_beam is not None
+                    else {}
+                ),
             },
         }
 
@@ -396,6 +429,7 @@ def create_private_app(
         check_profile_selections(assets, actor, None, body.inputs)
         check_geometry_imports(assets, actor, None, body.inputs)
         check_pv_preparation(assets, actor, None, body.inputs)
+        check_direct_beam(assets, actor, None, body.inputs)
         check_equipment_candidate(
             workspace, actor, None, body.inputs, products=products
         )
@@ -450,6 +484,7 @@ def create_private_app(
         check_profile_selections(assets, actor, body.project_id, body.inputs)
         check_geometry_imports(assets, actor, body.project_id, body.inputs)
         check_pv_preparation(assets, actor, body.project_id, body.inputs)
+        check_direct_beam(assets, actor, body.project_id, body.inputs)
         check_equipment_candidate(
             workspace,
             actor,
@@ -581,6 +616,20 @@ def create_private_app(
             pv.evaluate(actor, body.project_id, body.expected_revision, key=body.key)
         )
 
+    @app.post("/runs/direct-beam")
+    def prepare_direct_beam(body: EnergyEvaluate, request: Request) -> Object:
+        actor = verified_actor(request.scope, write=True)
+        previous = previous_result(actor, "runs/direct-beam", body)
+        if previous is not None:
+            return previous
+        if direct_beam is None:
+            raise VersionUnavailable("direct-beam visibility is not configured")
+        return run_view(
+            direct_beam.evaluate(
+                actor, body.project_id, body.expected_revision, key=body.key
+            )
+        )
+
     @app.post("/runs/pvgis-reference")
     def prepare_pvgis_reference(body: EnergyEvaluate, request: Request) -> Object:
         actor = verified_actor(request.scope, write=True)
@@ -696,6 +745,36 @@ def create_private_app(
     @app.post("/runs/weather/status")
     def read_weather(body: RunRead, request: Request) -> Object:
         return weather_status(workspace, verified_actor(request.scope), body.run_id)
+
+    @app.post("/weather/assets")
+    def owned_weather(body: WeatherAssetsRead, request: Request) -> Object:
+        if direct_beam is None:
+            raise VersionUnavailable("direct-beam visibility is not configured")
+        if body.page_size > limits.max_page_size:
+            raise InvalidInput("weather page exceeds deployment limit")
+        return weather_assets(
+            assets,
+            verified_actor(request.scope),
+            body.project_id,
+            offset=body.offset,
+            page_size=body.page_size,
+        )
+
+    @app.post("/weather/preview")
+    def preview_weather(body: ProfilePreviewRead, request: Request) -> Object:
+        if direct_beam is None:
+            raise VersionUnavailable("direct-beam visibility is not configured")
+        if body.page_size > limits.max_page_size:
+            raise InvalidInput("weather page exceeds deployment limit")
+        return weather_preview(
+            assets,
+            verified_actor(request.scope),
+            body.project_id,
+            body.asset_id,
+            direct_beam.kernel.weather_limits,
+            offset=body.offset,
+            page_size=body.page_size,
+        )
 
     @app.post("/assets/read")
     def asset_read(body: AssetRead, request: Request) -> Object:

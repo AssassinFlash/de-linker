@@ -4,7 +4,12 @@ import type { JsonObject, Project } from "../data/protocol.ts";
 import { wire } from "../data/readProtocol.ts";
 import inputContracts from "../contracts/project-input-contracts.json" with { type: "json" };
 
-export const projectInputContract = inputContracts.project_input_contracts[0]!;
+// Canonical declarations are cumulative and ordered from oldest to newest.
+export const projectInputContract =
+	inputContracts.project_input_contracts.at(-1)!;
+export const isProjectInputContract = (value: unknown): value is string =>
+	typeof value === "string" &&
+	(inputContracts.project_input_contracts as readonly string[]).includes(value);
 
 /** A save intent is immutable, even when further local edits are made. */
 export interface SaveIntent {

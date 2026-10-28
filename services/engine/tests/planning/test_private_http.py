@@ -29,6 +29,7 @@ from linker_engine.planning.numerical_tolerance import Tolerance
 from linker_engine.planning.power_series import Measurement
 from linker_engine.planning.project_input_contracts import (
     INPUT_CONTRACT,
+    SUPPORTED_INPUT_CONTRACTS,
     create_command,
 )
 from linker_engine.planning.records import Actor, Context
@@ -698,11 +699,8 @@ def test_permanent_http_replay_survives_days_without_writes_or_latest_revision(
         == 404
     )
     floor = rig.post("/inputs/contracts", {}, TEAM)
-    assert (
-        floor["required_input_contracts"]
-        == floor["supported_input_contracts"]
-        == [INPUT_CONTRACT]
-    )
+    assert floor["required_input_contracts"] == [INPUT_CONTRACT]
+    assert floor["supported_input_contracts"] == list(SUPPORTED_INPUT_CONTRACTS)
     assert set(floor) == {
         "schema_version",
         "required_input_contracts",

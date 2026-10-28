@@ -74,6 +74,17 @@
       ],
       "title": "Logo"
     },
+    "direct_beam_run_id": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RunId"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
     "comparison": {
       "anyOf": [
         {

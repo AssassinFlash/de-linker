@@ -14,6 +14,83 @@ import { selectPreparation } from "../domain/preparationSelection.ts";
 import { readAsset } from "../domain/profiles.ts";
 import { readPreparationWeather } from "./preparationBasis.ts";
 import type { JsonObject } from "./protocol.ts";
+import { readDirectBeamResult } from "./directBeamResult.ts";
+import {
+	readBeamWeatherAssets,
+	readBeamWeatherPreview,
+} from "./directBeamWeather.ts";
+import { compileDirectBeam, readDirectBeam } from "../domain/directBeam.ts";
+
+test("actual geometric witness retains night/daylight, exact source proofs and a separate report role", () => {
+	const native = fixture.direct_beam;
+	const run = readRun(
+		native.run,
+		native.project.id,
+		native.run.id,
+		RUN_OPERATIONS["runs/direct-beam"],
+	);
+	const result = readDirectBeamResult(
+		run.result,
+		run as unknown as JsonObject,
+		run.manifest,
+	);
+	assert.equal(result.rows[0]!.modules[0]!.status, "night");
+	assert.equal(result.rows[0]!.modules[0]!.fine, null);
+	assert.equal(result.rows[1]!.modules[0]!.status, "sampled");
+	assert.ok(result.rows[1]!.modules[0]!.fine);
+	assert.equal(
+		result.rows[1]!.irradiance_at_utc,
+		native.run.result.visibility.rows[1]!.irradiance_at_utc,
+	);
+	const assets = readBeamWeatherAssets(
+		native.weather_assets,
+		native.project.id,
+		0,
+		100,
+	);
+	const preview = readBeamWeatherPreview(
+		native.weather_preview,
+		native.project.id,
+		assets.assets[0]!,
+		0,
+		100,
+	);
+	assert.equal(
+		preview.weatherDocumentSha256,
+		native.run.result.visibility.sources.weather_document_sha256,
+	);
+	assert.deepEqual(
+		compileDirectBeam(
+			readDirectBeam(native.project.inputs.direct_beam_visibility),
+			native.visibility_limits,
+		),
+		native.project.inputs.direct_beam_visibility,
+	);
+	assert.doesNotThrow(() => readRun(native.report_run, native.project.id));
+	assert.equal(native.report_options.direct_beam_run_id, run.id);
+	const incomplete = structuredClone(native.run) as unknown as {
+		manifest: { context: { assets: Record<string, unknown> } };
+		result: {
+			pinned_assets: Record<string, unknown>;
+			dependencies: Record<string, unknown>;
+			visibility: { sources: Record<string, unknown> };
+		};
+	};
+	delete incomplete.manifest.context.assets.geometry;
+	delete incomplete.result.pinned_assets.geometry;
+	delete incomplete.result.dependencies.geometry;
+	delete incomplete.result.visibility.sources.geometry_sha256;
+	assert.throws(() => readRun(incomplete, native.project.id));
+	const changed = structuredClone(native.run);
+	changed.result.visibility.rows[1]!.modules[0]!.module_id = "unrelated:0:0";
+	assert.throws(() => readRun(changed, native.project.id));
+	assert.throws(() =>
+		readDirectBeam({
+			...native.project.inputs.direct_beam_visibility,
+			sampling: { coarse_cells_per_edge: 2, fine_cells_per_edge: 2 },
+		}),
+	);
+});
 
 test("actual managed weather and complete-year PV publication are consumed as their own task kinds", () => {
 	for (const [raw, path] of [

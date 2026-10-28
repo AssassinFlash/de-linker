@@ -21,8 +21,10 @@ from linker_engine.planning.errors import (
 )
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.project_input_contracts import (
+    DIRECT_BEAM_INPUT_CONTRACT,
     INPUT_CONTRACT,
     create_command,
+    required_contracts,
     revise_command,
 )
 from linker_engine.planning.records import Actor, Context, Project
@@ -186,6 +188,107 @@ def test_old_tab_cannot_overwrite_a_newer_revision(
     )
     assert opted_out.inputs == without_links
     assert workspace.get(owner, project.id, revision=known.revision).inputs == linked
+
+    # A PV-only aware editor is still unaware of later saved direct-beam
+    # inputs. Presence protects incomplete/empty values as well as full plans.
+    incomplete_beam_values: tuple[object, ...] = ({}, [], None)
+    for value in incomplete_beam_values:
+        assert required_contracts({"direct_beam_visibility": value}) == (
+            DIRECT_BEAM_INPUT_CONTRACT,
+        )
+    beam_inputs: Object = {**linked, "direct_beam_visibility": {}}
+    assert required_contracts(beam_inputs) == (
+        INPUT_CONTRACT,
+        DIRECT_BEAM_INPUT_CONTRACT,
+    )
+    with pytest.raises(ProjectInputContractRequired):
+        workspace.revise(
+            owner,
+            project.id,
+            opted_out.revision,
+            beam_inputs,
+            key="pv-only-incoming-beam",
+            input_contract=INPUT_CONTRACT,
+        )
+    beam = workspace.revise(
+        owner,
+        project.id,
+        opted_out.revision,
+        beam_inputs,
+        key="aware-beam",
+        input_contract=DIRECT_BEAM_INPUT_CONTRACT,
+    )
+    before_files = sorted(
+        str(p) for p in workspace.blobs.directory.rglob("*") if p.is_file()
+    )
+    with workspace.database.read() as connection:
+        before_counts = [
+            connection.execute(f"SELECT count(*) FROM {table}").fetchone()[0]
+            for table in ("revisions", "idempotency")
+        ]
+    for contract in (None, INPUT_CONTRACT):
+        with pytest.raises(ProjectInputContractRequired):
+            workspace.revise(
+                owner,
+                project.id,
+                beam.revision,
+                without_links,
+                key=f"unaware-clear-beam-{contract}",
+                input_contract=contract,
+            )
+    assert workspace.get(owner, project.id) == beam
+    with workspace.database.read() as connection:
+        assert before_counts == [
+            connection.execute(f"SELECT count(*) FROM {table}").fetchone()[0]
+            for table in ("revisions", "idempotency")
+        ]
+    assert before_files == sorted(
+        str(p) for p in workspace.blobs.directory.rglob("*") if p.is_file()
+    )
+    assert (
+        workspace.revise(
+            owner,
+            project.id,
+            opted_out.revision,
+            beam_inputs,
+            key="aware-beam",
+            input_contract=DIRECT_BEAM_INPUT_CONTRACT,
+        )
+        == beam
+    )
+    with pytest.raises(Conflict):
+        workspace.revise(
+            owner,
+            project.id,
+            opted_out.revision,
+            beam_inputs,
+            key="aware-beam",
+            input_contract=INPUT_CONTRACT,
+        )
+    cleared = workspace.revise(
+        owner,
+        project.id,
+        beam.revision,
+        without_links,
+        key="aware-clear-beam-and-links",
+        input_contract=DIRECT_BEAM_INPUT_CONTRACT,
+    )
+    assert cleared.inputs == without_links
+    assert (
+        workspace.get(owner, project.id, revision=beam.revision).inputs == beam_inputs
+    )
+    # The original PV-only receipt remains a frozen read after later features.
+    assert (
+        workspace.revise(
+            owner,
+            project.id,
+            legacy.revision,
+            linked,
+            key="aware-links",
+            input_contract=INPUT_CONTRACT,
+        )
+        == known
+    )
 
 
 def test_new_stale_evaluation_has_a_distinct_premutation_refusal(

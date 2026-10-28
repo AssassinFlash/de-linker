@@ -16,6 +16,7 @@ from linker_engine.planning.dc_energy_parameters import (
     DcPreparedParameters,
 )
 from linker_engine.planning.dc_plant_inputs import DcPlantEnergyInputs
+from linker_engine.planning.direct_beam_inputs import DirectBeamTaskInputs
 from linker_engine.planning.energy_inputs import BatteryParameters, EnergyInputs
 from linker_engine.planning.equipment_condition_inputs import EquipmentConditionInputs
 from linker_engine.planning.equipment_plant import EquipmentPlant
@@ -79,6 +80,7 @@ def documents() -> dict[str, str]:
             ("energy-inputs", EnergyInputs),
             ("pv-generation", PvGenerationParameters),
             ("weather-acquisition", WeatherAcquisitionInputs),
+            ("direct-beam", DirectBeamTaskInputs),
             ("pvgis-roof-reference", PvgisReferenceInputs),
             ("planning-report", Report),
             ("planning-report-options", ReportOptions),

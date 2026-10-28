@@ -12,6 +12,8 @@ from .assistant_calculation_sources import calculation_sources
 from .brief import PlanningBrief
 from .canonical import Json, Object, digest, encode
 from .certificate_information import report_source_with_information
+from .direct_beam_read import KIND as DIRECT_BEAM_KIND
+from .direct_beam_read import direct_beam_bundle, direct_beam_facts
 from .equipment_candidate_store import EquipmentCandidateStore
 from .errors import InvalidInput
 from .pvgis_reference_inputs import PvgisReferenceInputs
@@ -115,6 +117,13 @@ def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
     kind = result.get("kind")
     if not isinstance(kind, str):
         raise InvalidInput("saved result kind is missing")
+    if kind == DIRECT_BEAM_KIND:
+        return _rows(
+            direct_beam_facts(
+                cast(Object, direct_beam_bundle(workspace, run)["witness"])
+            ),
+            locale,
+        )
     if kind == "planning_report_v1":
         report = result.get("report")
         if not isinstance(report, dict):

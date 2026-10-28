@@ -46,6 +46,21 @@ test("recovery retains the baseline, local edits and exact uncertain intent", as
 		decodeDraft(legacy, scope, project.id).pending?.body,
 		legacy.draft.pending!.body,
 	);
+	const pvOnly = structuredClone(legacy);
+	pvOnly.draft = {
+		...pvOnly.draft,
+		pending: {
+			...pvOnly.draft.pending!,
+			body: JSON.stringify({
+				...oldCommand,
+				input_contract: "installation_pv_string_links_v1",
+			}),
+		},
+	};
+	assert.equal(
+		decodeDraft(pvOnly, scope, project.id).pending?.body,
+		pvOnly.draft.pending!.body,
+	);
 	const previous = Object.getOwnPropertyDescriptor(globalThis, "indexedDB");
 	Object.defineProperty(globalThis, "indexedDB", {
 		value: new IDBFactory(),
@@ -77,13 +92,19 @@ test("recovery retains the baseline, local edits and exact uncertain intent", as
 			input_contract: "installation_pv_string_links_v1",
 		});
 		await store.writeCreation(scope, awareBody);
+		const cumulativeBody = JSON.stringify({
+			...create,
+			key: crypto.randomUUID(),
+			input_contract: "pv_string_links_direct_beam_visibility_v1",
+		});
+		await store.writeCreation(scope, cumulativeBody);
 		assert.deepEqual(
 			new Set(
 				(await new DraftStore().readCreations(scope)).map(
 					(value) => value.body,
 				),
 			),
-			new Set([legacyBody, awareBody]),
+			new Set([legacyBody, awareBody, cumulativeBody]),
 		);
 		await assert.rejects(
 			store.writeCreation(

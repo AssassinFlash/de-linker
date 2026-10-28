@@ -1,5 +1,6 @@
 gap-5
 grid
+lp-actions
 lp-brand-symbol
 lp-breadcrumb
 lp-brief

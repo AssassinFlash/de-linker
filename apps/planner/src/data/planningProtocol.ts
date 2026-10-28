@@ -21,11 +21,14 @@ import { readPreparationResult } from "./readPreparationResult.ts";
 import { SEARCH_TASK, readEquipmentSearchResult } from "./equipmentSearch.ts";
 import { EQUIPMENT_TASK, readEquipmentResult } from "./readEquipmentResult.ts";
 import { PVGIS_REFERENCE_TASK } from "../domain/pvgisReference.ts";
+import { DIRECT_BEAM_TASK } from "../domain/directBeam.ts";
+import { readDirectBeamResult } from "./directBeamResult.ts";
 
 export const RUN_OPERATIONS = {
 	"runs/energy": "single_ac_energy_replay_v1",
 	"runs/pv": "prepare_roof_pv_reference_v1",
 	"runs/pvgis-reference": PVGIS_REFERENCE_TASK,
+	"runs/direct-beam": DIRECT_BEAM_TASK,
 	"runs/weather": "acquire_pvgis_tmy_weather_v1",
 	"runs/equipment": EQUIPMENT_TASK,
 	"runs/equipment-search": SEARCH_TASK,
@@ -268,6 +271,7 @@ function readRunDocument(
 			task === REPORT_TASK ||
 			task === RUN_OPERATIONS["runs/pv"] ||
 			task === PVGIS_REFERENCE_TASK ||
+			task === DIRECT_BEAM_TASK ||
 			task === RUN_OPERATIONS["runs/weather"]) &&
 			models.task !== task)
 	)
@@ -280,6 +284,8 @@ function readRunDocument(
 			task === RUN_OPERATIONS["runs/weather"]
 		)
 			readPreparationResult(row.result, row, manifest, task);
+		else if (task === DIRECT_BEAM_TASK)
+			readDirectBeamResult(row.result, row, manifest);
 		else if (isEnergyTask(task)) readEnergyResult(row.result, row, manifest);
 		else if (task === SEARCH_TASK)
 			readEquipmentSearchResult(row.result, row, manifest);

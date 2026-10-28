@@ -10,6 +10,7 @@ from __future__ import annotations
 from . import commands
 from .access import active_actor, project_row
 from .canonical import Object
+from .direct_beam_job import DirectBeamKernel
 from .energy_service import EnergyService
 from .equipment_kernel import EquipmentKernel
 from .equipment_search_kernel import EquipmentSearchKernel
@@ -158,6 +159,7 @@ class HttpReplay:
             "runs/energy",
             "runs/pv",
             "runs/pvgis-reference",
+            "runs/direct-beam",
             "runs/weather",
             "runs/equipment",
             "runs/equipment-search",
@@ -179,6 +181,8 @@ class HttpReplay:
                         if path == "runs/pv"
                         else PvgisRoofReferenceKernel.kind
                         if path == "runs/pvgis-reference"
+                        else DirectBeamKernel.kind
+                        if path == "runs/direct-beam"
                         else EquipmentKernel.kind
                         if path == "runs/equipment"
                         else EquipmentSearchKernel.kind

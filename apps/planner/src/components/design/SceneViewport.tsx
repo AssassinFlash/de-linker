@@ -69,6 +69,8 @@ interface SceneProps {
 	commit: (command: GeometryCommand) => boolean;
 	disabled: boolean;
 	routes?: readonly (readonly Vec3[])[];
+	/** A validated row for this exact frozen document; null is not zero visibility. */
+	directBeam?: ReadonlyMap<string, number | null> | undefined;
 }
 const vector = (point: Vec3) => new Vector3(...point);
 const sceneLens = { fov: SCENE_FOV_DEG };
@@ -150,12 +152,14 @@ function PanelBatch({
 	palette,
 	selected,
 	select,
+	directBeam,
 }: {
 	batch: ReturnType<typeof panelBatches>[number];
 	array: PanelArray;
 	palette: Palette;
 	selected: string | null;
 	select: (id: string) => void;
+	directBeam?: ReadonlyMap<string, number | null> | undefined;
 }) {
 	const mesh = useRef<InstancedMesh>(null!);
 	const { invalidate } = useThree();
@@ -175,15 +179,23 @@ function PanelBatch({
 			);
 			requireRenderCoordinates(matrix.elements);
 			instance.setMatrixAt(index, matrix);
+			const visibility = directBeam?.get(pose.id);
 			instance.setColorAt(
 				index,
-				new Color(
-					pose.id === selected || selected === array.id
-						? palette.selected
-						: pose.included
-							? palette.module
-							: palette.roof,
-				),
+				directBeam && pose.included
+					? visibility === null || visibility === undefined
+						? new Color(palette.roof)
+						: new Color(palette.module).lerp(
+								new Color(palette.selected),
+								visibility,
+							)
+					: new Color(
+							pose.id === selected || selected === array.id
+								? palette.selected
+								: pose.included
+									? palette.module
+									: palette.roof,
+						),
 			);
 		});
 		instance.instanceMatrix.needsUpdate = true;
@@ -191,7 +203,7 @@ function PanelBatch({
 		instance.computeBoundingBox();
 		instance.computeBoundingSphere();
 		invalidate();
-	}, [batch, array.id, selected, palette, invalidate]);
+	}, [batch, array.id, selected, palette, invalidate, directBeam]);
 	return (
 		<group
 			position={[
@@ -228,6 +240,7 @@ function Panels({
 	select,
 	commit,
 	disabled,
+	directBeam,
 }: {
 	document: GeometryDocument;
 	frame: string;
@@ -240,6 +253,7 @@ function Panels({
 	select: (id: string) => void;
 	commit: (command: GeometryCommand) => boolean;
 	disabled: boolean;
+	directBeam?: ReadonlyMap<string, number | null> | undefined;
 }) {
 	const group = useRef<Group>(null!);
 	const start = useRef<{
@@ -270,6 +284,7 @@ function Panels({
 						palette={palette}
 						selected={selected}
 						select={select}
+						directBeam={directBeam}
 					/>
 				))}
 			</group>
@@ -654,6 +669,7 @@ export default function SceneViewport(props: SceneProps) {
 									select={props.select}
 									commit={props.commit}
 									disabled={props.disabled}
+									directBeam={props.directBeam}
 								/>
 							))}
 							<SiteObjects
