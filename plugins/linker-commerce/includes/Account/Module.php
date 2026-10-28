@@ -63,6 +63,9 @@ final class Module {
 
 		add_filter( 'woocommerce_account_orders_columns', array( $this->inquiries, 'columns' ) );
 		add_filter( 'woocommerce_my_account_my_orders_actions', array( $this->inquiries, 'actions' ), 10, 2 );
+		add_filter( 'woocommerce_get_order_item_totals', array( $this->inquiries, 'customer_totals' ), 20 );
+		add_filter( 'woocommerce_order_shipping_to_display_shipped_via', array( $this->inquiries, 'customer_shipping_via' ), 20 );
+		add_filter( 'woocommerce_order_shipping_to_display', array( $this->inquiries, 'customer_shipping_value' ), 20, 3 );
 		add_action( 'woocommerce_order_item_meta_end', array( $this->inquiries, 'datasheet_link' ), 10, 4 );
 
 		add_action( 'init', array( $this->solutions, 'register_post_type' ) );

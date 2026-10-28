@@ -1460,9 +1460,9 @@ final class ProductShortcodes {
 		}
 		$by = trim( Materials::localized_text( $relationship, 'listed_by', $locale ) );
 		if ( '' === $by ) {
-			return __( 'On the compatibility list on file', 'linker-commerce' );
+			return __( 'Compatibility documented', 'linker-commerce' );
 		}
-		return sprintf( /* translators: %s: manufacturer */ __( "On %s's compatibility list", 'linker-commerce' ), $by );
+		return sprintf( /* translators: %s: manufacturer */ __( 'Documented by %s', 'linker-commerce' ), $by );
 	}
 
 	/**

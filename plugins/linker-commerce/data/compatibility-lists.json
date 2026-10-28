@@ -248,7 +248,7 @@
    "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
    "first_party": true,
    "short": "GoodWe ESA G20 datasheet",
-   "note": "PDF p3 names GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 battery modules and prints Scalability 12 pcs. Its footnote describes single-column stacked installations; this contract does not derive a per-string maximum from it.",
+   "note": "PDF p3 names GW5.1-BAT-D-G20, GW8.3-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 battery modules and prints Scalability 12 pcs. Its footnote describes single-column stacked installations; this contract does not derive a per-string maximum from it.",
    "verified_on": "2026-09-27",
    "date": "2026-06-16"
   },
@@ -346,7 +346,7 @@
    "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
    "first_party": true,
    "short": "GoodWe ESA G20 user manual",
-   "note": "PDF p79 states that one column can stack up to six batteries. The same paragraph says configurations needing more capacity or a lower column require the battery expansion kit. This is a per-column installation limit; the datasheet separately prints system scalability of 12 pcs.",
+   "note": "Printed p79 (PDF p80) states that one column can stack up to six batteries. For capacity expansion, including where installation conditions require a lower stack per column, the manual directs customers to GoodWe or a distributor for the battery expansion kit. This is a per-column installation limit; the datasheet separately prints system scalability of 12 pcs.",
    "verified_on": "2026-10-07"
   },
   "G6": {
@@ -2307,8 +2307,8 @@
     "G4",
     "G5"
    ],
-   "constraint": "The GoodWe ESA datasheet lists GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints scalability of 12 pcs (p. 3). The user manual limits one column to six batteries and names a battery expansion kit for higher capacity or a lower column (p. 79).",
-   "constraint_de": "Das GoodWe-ESA-Datenblatt nennt die Module GW6.0-BAT-D-G20 und GW9.0-BAT-D-G20 und gibt eine Skalierbarkeit von 12 Stück an (S. 3). Das Benutzerhandbuch begrenzt eine Säule auf sechs Batterien und nennt ein Batterie-Erweiterungsset für mehr Kapazität oder eine niedrigere Säule (S. 79).",
+   "constraint": "The GoodWe ESA datasheet lists GW5.1-BAT-D-G20, GW8.3-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints scalability of 12 pcs (p. 3). The user manual limits one column to six batteries. For capacity expansion, including installations that require a lower stack per column, it refers to a battery expansion kit (printed p. 79; PDF p. 80).",
+   "constraint_de": "Das GoodWe-ESA-Datenblatt nennt die Module GW5.1-BAT-D-G20, GW8.3-BAT-D-G20, GW5.1-BAT-D-G21, GW8.3-BAT-D-G21, GW6.0-BAT-D-G20 und GW9.0-BAT-D-G20 und gibt eine Skalierbarkeit von 12 Stück an (S. 3). Das Benutzerhandbuch begrenzt eine Säule auf sechs Batterien. Für eine Kapazitätserweiterung nennt es ein Batterie-Erweiterungsset, auch wenn die Installationsbedingungen eine geringere Stapelhöhe je Säule erfordern (gedruckte S. 79; PDF-S. 80).",
    "verified_on": "2026-09-27"
   },
   "pyl-h3x|pyl-fh3": {

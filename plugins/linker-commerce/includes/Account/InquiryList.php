@@ -12,6 +12,7 @@ namespace Linker\Commerce\Account;
 use Linker\Commerce\Products\Publication;
 
 use Linker\Commerce\Proforma\Issuer;
+use WC_Abstract_Order;
 use WC_Order;
 use WC_Order_Item;
 use WC_Order_Item_Product;
@@ -81,6 +82,57 @@ final class InquiryList {
 			);
 		}
 		return $ours;
+	}
+
+	/**
+	 * Older Woo orders can carry a payment method, even though the customer
+	 * inquiry workspace offers no payment flow. Keep the stored order and Woo's
+	 * other totals intact; this affects only the native account detail render.
+	 *
+	 * @param array<string, array<string, string>> $totals Woo's total rows.
+	 * @return array<string, array<string, string>>
+	 */
+	public function customer_totals( array $totals ): array {
+		if ( doing_action( 'woocommerce_view_order' ) ) {
+			unset( $totals['payment_method'] );
+		}
+		return $totals;
+	}
+
+	/**
+	 * Woo calculates and formats the historical delivery charge in the current
+	 * tax display mode. The old carrier or delivery method is not an offer for a
+	 * new inquiry, so omit only its suffix in the account detail.
+	 *
+	 * @param string $via Woo's formatted method suffix.
+	 */
+	public function customer_shipping_via( string $via ): string {
+		return doing_action( 'woocommerce_view_order' ) ? '' : $via;
+	}
+
+	/**
+	 * For a zero-cost delivery Woo returns the method name instead of an amount.
+	 * Show the recorded amount, with shipping tax only in inclusive mode.
+	 *
+	 * @param string            $value Woo's formatted shipping value.
+	 * @param WC_Abstract_Order $order Woo's order or refund.
+	 * @param string            $tax_display Woo's tax display mode.
+	 */
+	public function customer_shipping_value( string $value, WC_Abstract_Order $order, string $tax_display ): string {
+		if ( ! $order instanceof WC_Order || ! doing_action( 'woocommerce_view_order' ) || 0.0 !== (float) $order->get_shipping_total() ) {
+			return $value;
+		}
+		$tax      = (float) $order->get_shipping_tax();
+		$excludes = 'excl' === $tax_display;
+		$value    = wc_price( $excludes ? 0.0 : $tax, array( 'currency' => $order->get_currency() ) );
+		// Match Woo's own tax labels when its stored and display modes differ.
+		$stored_including_tax = $order->get_prices_include_tax();
+		if ( $tax > 0.0 && ( ( $excludes && $stored_including_tax ) || ( ! $excludes && ! $stored_including_tax ) ) ) {
+			$label = $excludes ? WC()->countries->ex_tax_or_vat() : WC()->countries->inc_tax_or_vat();
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- Same native filter and markup used by WC_Order::get_shipping_to_display().
+			$value .= apply_filters( 'woocommerce_order_shipping_to_display_tax_label', '&nbsp;<small class="tax_label">' . $label . '</small>', $order, $tax_display );
+		}
+		return $value;
 	}
 
 	/**
