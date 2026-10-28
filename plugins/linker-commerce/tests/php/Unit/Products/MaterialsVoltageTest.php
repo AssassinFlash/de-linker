@@ -230,6 +230,100 @@ final class MaterialsVoltageTest extends TestCase {
 	}
 
 	/**
+	 * A voltage suffix needs an identical, explicitly measured fact on the same product.
+	 *
+	 * Isolate the language function mock so it does not affect other tests.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function test_key_stats_only_add_verified_companion_voltage_units(): void {
+		$german = false;
+		WP_Mock::userFunction(
+			'linker_i18n_is_de',
+			array(
+				'return' => static function () use ( &$german ): bool {
+					return $german;
+				},
+			)
+		);
+		WP_Mock::userFunction( 'get_post_meta', array( 'return' => '' ) );
+		$materials = array();
+		foreach ( array(
+			9010 => array(
+				'value' => '3+N+PE, 380/400',
+				'unit'  => 'V',
+			),
+			9011 => array(
+				'value' => '3+N+PE, 220/230',
+				'unit'  => 'V',
+			),
+			9012 => array(
+				'value' => '3+N+PE, 380/400',
+				'unit'  => '',
+			),
+		) as $id => $voltage ) {
+			$materials[ 'fixture-' . $id ] = array(
+				'bindings'  => array( 'woo_product_ids' => array( $id ) ),
+				'identity'  => array( 'kind' => 'all_in_one_system' ),
+				'technical' => array(
+					'specifications' => array(
+						'phases'           => array(
+							'value' => '3+N+PE, 380/400',
+							'unit'  => '',
+						),
+						'rated_ac_voltage' => $voltage,
+					),
+				),
+			);
+		}
+		$registry                              = json_decode( (string) file_get_contents( dirname( __DIR__, 4 ) . '/data/material-registry.json' ), true );
+		$actual                                = $registry['materials']['mat_saj_chs2_29_9k_t4_x'];
+		$actual['bindings']['woo_product_ids'] = array( 9013 );
+		$materials['actual-chs2']              = $actual;
+		$materials['phase-count']              = array(
+			'bindings'  => array( 'woo_product_ids' => array( 9014 ) ),
+			'identity'  => array( 'kind' => 'all_in_one_system' ),
+			'technical' => array(
+				'specifications' => array(
+					'phases'           => array( 'value' => '3' ),
+					'rated_ac_voltage' => array(
+						'value' => '3',
+						'unit'  => 'V',
+					),
+				),
+			),
+		);
+		$materials['translated-phase-only']    = array(
+			'bindings'  => array( 'woo_product_ids' => array( 9015 ) ),
+			'identity'  => array( 'kind' => 'all_in_one_system' ),
+			'technical' => array(
+				'specifications' => array(
+					'phases'           => array(
+						'value'    => '3+N+PE, 380/400',
+						'value_de' => '3-phasig',
+					),
+					'rated_ac_voltage' => array(
+						'value' => '3+N+PE, 380/400',
+						'unit'  => 'V',
+					),
+				),
+			),
+		);
+		$this->seed_registry( $materials );
+		foreach ( array( false, true ) as $language ) {
+			$german = $language;
+			$this->assertSame( '3+N+PE, 380/400 V', Materials::key_stats( $this->product( 9010 ) )[0]['value'] );
+			$this->assertSame( '3+N+PE, 380/400', Materials::key_stats( $this->product( 9011 ) )[0]['value'] );
+			$this->assertSame( '3+N+PE, 380/400', Materials::key_stats( $this->product( 9012 ) )[0]['value'] );
+			$actual_stats = array_column( Materials::key_stats( $this->product( 9013 ) ), 'value', 'key' );
+			$this->assertSame( '3+N+PE, 380/400 V', $actual_stats['phase'] );
+			$this->assertSame( $language ? '3-phasig' : '3-phase', Materials::key_stats( $this->product( 9014 ) )[0]['value'] );
+			$this->assertSame( $language ? '3-phasig' : '3+N+PE, 380/400 V', Materials::key_stats( $this->product( 9015 ) )[0]['value'] );
+		}
+	}
+
+	/**
 	 * A WC_Product double with just the id.
 	 *
 	 * @param int $id The product id.

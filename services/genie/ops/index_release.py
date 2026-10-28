@@ -24,9 +24,12 @@ import shutil
 import sqlite3
 import sys
 import time
+from datetime import UTC
+from email.utils import parsedate_to_datetime
+from http.client import HTTPException
 from pathlib import Path
 from typing import Any
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
@@ -36,6 +39,19 @@ INDEX_FILE = "index.sqlite"
 KEEP = 3
 FENCE = ".activation.json"
 UPLOAD_OWNER = ".upload-owner.json"
+VERIFY_ATTEMPTS = 3
+RETRY_AFTER_CAP = 2.0
+VERIFY_REJECTION_EXIT = 72
+
+
+class NativeVerifyFailure(RuntimeError):
+    """A definite rejection before the activation journal is written."""
+
+    def __init__(
+        self, reason: str, status: int | None = None, transport: bool = False
+    ) -> None:
+        super().__init__("native Woo lease verification rejected")
+        self.reason, self.status, self.transport = reason, status, transport
 
 
 def _sha256(path: Path) -> str:
@@ -114,6 +130,86 @@ def _post(url: str, body: dict[str, Any], headers: dict[str, str]) -> dict[str, 
         ) from None
 
 
+def _lease_expiry(activation: dict[str, Any]) -> int:
+    expiry = activation.get("lease_expires_at")
+    # Leave one second for the activation boundary; never start a request with
+    # an already expired or malformed lease.
+    if type(expiry) is not int or expiry <= time.time() + 1:
+        raise NativeVerifyFailure("expired")
+    return expiry
+
+
+def _retry_after(error: HTTPError) -> float:
+    raw = (error.headers.get("Retry-After", "") if error.headers else "").strip()
+    delay = 0.0
+    if raw.isascii() and raw.isdecimal() and len(raw) <= 8:
+        delay = float(int(raw))
+    elif 0 < len(raw) <= 128:
+        try:
+            when = parsedate_to_datetime(raw)
+            if when.tzinfo is None:
+                when = when.replace(tzinfo=UTC)
+            delay = max(0.0, when.timestamp() - time.time())
+        except (TypeError, ValueError, OverflowError, IndexError):
+            pass
+    return min(RETRY_AFTER_CAP, delay)
+
+
+def _post_verify(
+    activation: dict[str, Any], body: dict[str, Any], headers: dict[str, str]
+) -> dict[str, Any]:
+    """Retry only native read-only verification, inside activate's lock."""
+    for attempt in range(VERIFY_ATTEMPTS):
+        expiry = _lease_expiry(activation)
+        remaining = expiry - time.time() - 1
+        if remaining <= 0:
+            raise NativeVerifyFailure("expired")
+        request = Request(
+            str(activation["verify_url"]),
+            data=json.dumps(body).encode(),
+            headers={"Content-Type": "application/json", **headers},
+            method="POST",
+        )
+        suggested = 0.0
+        status: int | None = None
+        transport = False
+        try:
+            with build_opener(_NoRedirect()).open(
+                request, timeout=min(30.0, remaining)
+            ) as response:
+                result = json.load(response)
+            _lease_expiry(activation)
+            if (
+                not isinstance(result, dict)
+                or result.get("verified") is not True
+                or any(
+                    result.get(name) != activation.get(name)
+                    for name in ("job_id", "source_revision", "recipe_revision")
+                )
+                or type(result.get("activation_epoch")) is not int
+                or result.get("activation_epoch") != activation.get("epoch")
+            ):
+                raise NativeVerifyFailure("response_identity")
+            return result
+        except HTTPError as error:
+            if error.code != 503:
+                raise NativeVerifyFailure("http_rejected", status=error.code) from None
+            status = 503
+            suggested = _retry_after(error)
+        except (URLError, TimeoutError, ConnectionError, OSError, HTTPException):
+            transport = True
+        except (ValueError, TypeError):
+            raise NativeVerifyFailure("invalid_response") from None
+        if attempt + 1 == VERIFY_ATTEMPTS:
+            raise NativeVerifyFailure("retry_exhausted", status, transport)
+        delay = max(float(2**attempt), suggested)
+        if time.time() + delay + 1 >= expiry:
+            # The authority failed and no further retry fits within this lease.
+            raise NativeVerifyFailure("retry_exhausted", status, transport)
+        time.sleep(delay)
+    raise NativeVerifyFailure("retry_exhausted")
+
+
 def _verify_activation(activation: dict[str, Any]) -> None:
     """Fresh native lease and actual imported serving rules; secrets stay in RAM."""
     verify_url = urlsplit(str(activation.get("verify_url", "")))
@@ -150,23 +246,31 @@ def _verify_activation(activation: dict[str, Any]) -> None:
     ):
         raise ValueError("activation requires a native knowledge lease")
     for name in ("job_id", "source_revision", "recipe_revision"):
-        if body.get(name) != activation.get(name):
+        if (
+            not isinstance(activation.get(name), str)
+            or not activation[name]
+            or body.get(name) != activation[name]
+        ):
             raise ValueError("activation lease identities differ")
-    if body.get("activation_epoch") != activation.get("epoch") or not body.get(
-        "lease_token"
+    if (
+        type(activation.get("epoch")) is not int
+        or activation["epoch"] < 1
+        or type(body.get("activation_epoch")) is not int
+        or body.get("activation_epoch") != activation["epoch"]
+        or not isinstance(body.get("lease_token"), str)
+        or not body["lease_token"]
     ):
         raise ValueError("activation lease epoch differs")
+    _lease_expiry(activation)
     credential = f"{activation['username']}:{activation['password']}".encode()
-    verified = _post(
-        str(activation["verify_url"]),
+    _post_verify(
+        activation,
         body,
         {
             "Authorization": "Basic " + base64.b64encode(credential).decode(),
             "Cache-Control": "no-cache",
         },
     )
-    if verified.get("verified") is not True:
-        raise RuntimeError("native Woo lease no longer authorizes activation")
     loaded = _post(
         str(activation["loaded_url"]),
         {},
@@ -176,6 +280,7 @@ def _verify_activation(activation: dict[str, Any]) -> None:
     )
     if loaded.get("serving_revision") != activation.get("serving_revision"):
         raise RuntimeError("running Genie has incompatible knowledge serving rules")
+    _lease_expiry(activation)
 
 
 def status(root: Path) -> dict[str, object]:
@@ -199,7 +304,8 @@ def status(root: Path) -> dict[str, object]:
         finally:
             db.close()
         report["index_version"] = meta.get("version")
-        report["sha256_ok"] = _sha256(index) == manifest["file"]["sha256"]
+        report["sha256"] = _sha256(index)
+        report["sha256_ok"] = report["sha256"] == manifest["file"]["sha256"]
     return report
 
 
@@ -287,6 +393,15 @@ def activate(
         actual = _sha256(candidate / INDEX_FILE)
         if actual != sha256:
             raise SystemExit(f"uploaded {INDEX_FILE} differs from the manifest sha256")
+        manifest = json.loads((candidate / "manifest.json").read_text(encoding="utf-8"))
+        if (
+            not isinstance(manifest, dict)
+            or manifest.get("version") != version
+            or not isinstance(manifest.get("file"), dict)
+            or manifest["file"].get("name") != INDEX_FILE
+            or manifest["file"].get("sha256") != actual
+        ):
+            raise RuntimeError("uploaded index manifest differs from candidate")
         previous = (
             json.loads((root / FENCE).read_text()) if (root / FENCE).is_file() else None
         )
@@ -310,6 +425,19 @@ def activate(
                 "index_version": version,
                 "sha256": sha256,
             }
+            if (
+                type(manifest.get("activation_epoch")) is not int
+                or manifest.get("activation_epoch") != epoch
+                or any(
+                    manifest.get(name) != identity[name]
+                    for name in (
+                        "source_revision",
+                        "recipe_revision",
+                        "serving_revision",
+                    )
+                )
+            ):
+                raise RuntimeError("candidate manifest does not match its native lease")
             if previous is not None and (
                 previous["site"] != identity["site"]
                 or epoch < previous["epoch"]
@@ -371,14 +499,46 @@ def main(argv: list[str]) -> int:
         activation = json.load(sys.stdin) if "--activation-stdin" in argv else None
         result = prepare(root, argv[2], activation)
     elif command == "discard":
-        result = discard(root, argv[2], argv[3])
+        if len(argv) != 4 or argv[3] != "--owner-stdin":
+            raise ValueError("discard requires an owner token on stdin")
+        owner = json.load(sys.stdin)
+        if not isinstance(owner, dict) or not isinstance(owner.get("owner_token"), str):
+            raise ValueError("invalid discard owner")
+        result = discard(root, argv[2], owner["owner_token"])
     elif command == "activate":
         activation = json.load(sys.stdin) if "--activation-stdin" in argv else None
-        result = activate(root, argv[2], argv[3], activation)
+        try:
+            result = activate(root, argv[2], argv[3], activation)
+        except NativeVerifyFailure as error:
+            if not isinstance(activation, dict):
+                raise
+            print(
+                json.dumps(
+                    {
+                        "result": "native_verify_rejected",
+                        "reason": error.reason,
+                        "http_status": error.status,
+                        "transport": error.transport,
+                        "job_id": activation.get("job_id"),
+                        "source_revision": activation.get("source_revision"),
+                        "recipe_revision": activation.get("recipe_revision"),
+                        "epoch": activation.get("epoch"),
+                    }
+                ),
+                file=sys.stderr,
+            )
+            return VERIFY_REJECTION_EXIT
     elif command == "rollback":
         result = rollback(root)
     elif command == "status":
-        result = status(root)
+        if "--locked" in argv:
+            # A publisher resolving an ambiguous SSH outcome must observe the
+            # journal and current link after any active switch has finished.
+            with (root / ".activation.lock").open("r") as lock:
+                fcntl.flock(lock, fcntl.LOCK_SH)
+                result = status(root)
+        else:
+            result = status(root)
     else:
         raise SystemExit(f"unknown command {command}")
     print(json.dumps(result, indent=1))

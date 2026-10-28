@@ -10,6 +10,12 @@ import hashlib
 from collections.abc import Mapping, Sequence
 from typing import Any
 
+from linker_genie.certificate_scope import (
+    certificate_document,
+    has_explicit_exclusion,
+    valid_certificate_fragment,
+    valid_certificate_scope,
+)
 from linker_genie.family_scope import valid_family_scope
 from linker_genie.source_models import model_pattern
 from linker_genie.source_roles import (
@@ -17,7 +23,7 @@ from linker_genie.source_roles import (
     meter_references,
     pack_model_row,
 )
-from linker_genie.table_projection import valid_projection
+from linker_genie.table_projection import external_axis_anchored, valid_projection
 from linker_genie.warranty_scope import valid_warranty_scope
 
 
@@ -50,6 +56,8 @@ def author_scope_allows(
             or boundary.get("source_chunk_id") not in scope.get("source_chunk_ids", [])
         ):
             return False
+        if has_explicit_exclusion(boundary["quote"]):
+            return False
         subjects = {
             pid
             for pid, product in products.items()
@@ -61,7 +69,7 @@ def author_scope_allows(
     return True
 
 
-def authorize_chunk(
+def _authorize_core(
     sha: str,
     product_ids: Sequence[int],
     associations: Sequence[dict[str, Any]],
@@ -71,6 +79,8 @@ def authorize_chunk(
     documents: Mapping[str, Mapping[str, Any]] | None = None,
     chunk_id: str = "",
     text: str = "",
+    external_axis_anchors: Mapping[str, Any] | None = None,
+    require_table_anchor: bool = False,
 ) -> list[dict[str, Any]]:
     """Authorize the complete model set with its explicit association group.
 
@@ -83,6 +93,23 @@ def authorize_chunk(
     wanted = set(product_ids)
     if not wanted:
         return []
+    if scope is not None and (
+        scope.get("basis") == "certificate_subject" or "certificate_scope" in scope
+    ):
+        if (
+            products is None
+            or documents is None
+            or not valid_certificate_scope(
+                scope,
+                product_ids,
+                products,
+                documents,
+                sha=sha,
+                chunk_id=chunk_id,
+                text=text,
+            )
+        ):
+            return []
     if scope is not None and (
         scope.get("basis") == "warranty_procedure" or "warranty_scope" in scope
     ):
@@ -118,13 +145,19 @@ def authorize_chunk(
     if scope is not None and (
         scope.get("basis") == "table_projection" or "table_projection" in scope
     ):
-        if products is None or not valid_projection(
-            scope,
-            product_ids,
-            products,
-            sha=sha,
-            chunk_id=chunk_id,
-            text=text,
+        if (
+            products is None
+            or not valid_projection(
+                scope,
+                product_ids,
+                products,
+                sha=sha,
+                chunk_id=chunk_id,
+                text=text,
+            )
+            or not external_axis_anchored(
+                scope, external_axis_anchors, required=require_table_anchor
+            )
         ):
             return []
     if scope is not None and (
@@ -187,6 +220,84 @@ def authorize_chunk(
     if {item["product_id"] for item in available} != wanted:
         return []
     return sorted(available, key=binding)
+
+
+def authorize_chunk(
+    sha: str,
+    product_ids: Sequence[int],
+    associations: Sequence[dict[str, Any]],
+    scope: Mapping[str, Any] | None = None,
+    *,
+    products: Mapping[int, Mapping[str, Any]] | None = None,
+    documents: Mapping[str, Mapping[str, Any]] | None = None,
+    chunk_id: str = "",
+    text: str = "",
+    external_axis_anchors: Mapping[str, Any] | None = None,
+    require_table_anchor: bool = False,
+) -> list[dict[str, Any]]:
+    """Only verified subject or safe projections may use a certificate grant."""
+    if documents is None:
+        return []
+    args: dict[str, Any] = {
+        "products": products,
+        "documents": documents,
+        "external_axis_anchors": external_axis_anchors,
+        "require_table_anchor": require_table_anchor,
+    }
+    basis = scope.get("basis") if scope is not None else None
+    if basis == "certificate_fragment":
+        if (
+            products is None
+            or scope is None
+            or not valid_certificate_fragment(
+                scope,
+                product_ids,
+                products,
+                documents,
+                sha=sha,
+                chunk_id=chunk_id,
+                text=text,
+            )
+        ):
+            return []
+        fragment = scope["certificate_fragment"]
+        origin = fragment["origin_scope"]
+        original = _authorize_core(
+            sha,
+            origin["product_ids"],
+            associations,
+            origin,
+            chunk_id=fragment["source_chunk_id"],
+            text=fragment["source_text"],
+            **args,
+        )
+        if not any(
+            item["document_id"] == fragment["document_id"]
+            and item["product_id"] == fragment["product_id"]
+            for item in original
+        ):
+            return []
+        return _authorize_core(
+            sha, product_ids, associations, scope, chunk_id=chunk_id, text=text, **args
+        )
+    available = _authorize_core(
+        sha, product_ids, associations, scope, chunk_id=chunk_id, text=text, **args
+    )
+    if basis == "certificate_subject":
+        return available
+    # The complete original group is checked before choosing a non-certificate
+    # relation. A certificate relation never carries raw technical source text.
+    non_certificates = [
+        item
+        for item in available
+        if item["document_id"] in documents
+        and not certificate_document(documents[item["document_id"]])
+    ]
+    return (
+        non_certificates
+        if {item["product_id"] for item in non_certificates} == set(product_ids)
+        else []
+    )
 
 
 def table_header(

@@ -9,12 +9,17 @@ from __future__ import annotations
 
 import argparse
 import fcntl
+import hashlib
 import json
 import os
+import re
 import shlex
 import shutil
+import sqlite3
 import subprocess
 import sys
+import syslog
+import time
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -34,7 +39,77 @@ from index.preparation import recipe_revision  # noqa: E402
 from index.publication import inventory as fetch_inventory  # noqa: E402
 from linker_genie.preparation import RUNTIME_SERVING_REVISION  # noqa: E402
 from linker_genie.publication import Snapshot  # noqa: E402
-from publish_index import publish  # noqa: E402
+from publish_index import (  # noqa: E402
+    ActivationOutcomeUnconfirmed,
+    NativeVerificationRejected,
+    publish,
+)
+
+
+def report_failure(phase: str, error: BaseException) -> None:
+    """Report only code location and safe error metadata to the system log."""
+    details = [
+        "linker-knowledge-publication",
+        f"phase={phase}",
+        f"error={type(error).__name__}",
+    ]
+    if isinstance(error, NativeVerificationRejected) and error.reason in {
+        "retry_exhausted",
+        "http_rejected",
+        "expired",
+        "response_identity",
+        "invalid_response",
+    }:
+        details.append(f"native_verify={error.reason}")
+        if type(error.status) is int and 100 <= error.status <= 599:
+            details.append(f"http_status={error.status}")
+        if error.transport:
+            details.append("transport=remote")
+        if error.cleanup_unconfirmed:
+            details.append("upload_cleanup=unconfirmed")
+    # PublicationUnavailable deliberately hides request details, but retains
+    # its cause. Report only its safe type/status so an outage is diagnosable.
+    cause: BaseException | None = error
+    seen: set[int] = set()
+    while cause is not None and id(cause) not in seen:
+        seen.add(id(cause))
+        if isinstance(cause, httpx.HTTPStatusError):
+            if cause is not error:
+                details.append("cause=HTTPStatusError")
+            details.append(f"http_status={cause.response.status_code}")
+            break
+        if isinstance(cause, httpx.TransportError):
+            allowed = {
+                "ConnectError",
+                "ConnectTimeout",
+                "ReadError",
+                "ReadTimeout",
+                "WriteError",
+                "WriteTimeout",
+                "RemoteProtocolError",
+                "PoolTimeout",
+            }
+            name = type(cause).__name__
+            details.append(
+                f"transport={name if name in allowed else 'other_transport'}"
+            )
+            break
+        cause = cause.__cause__
+    if isinstance(error, OSError) and isinstance(error.errno, int):
+        details.append(f"errno={error.errno}")
+    trace = error.__traceback__
+    if trace is not None:
+        while trace.tb_next is not None:
+            trace = trace.tb_next
+        filename = Path(trace.tb_frame.f_code.co_filename).name
+        if re.fullmatch(r"[A-Za-z0-9_.-]{1,97}\.py", filename):
+            details.append(f"location={filename}:{trace.tb_lineno}")
+    message = " ".join(details)
+    try:
+        syslog.syslog(syslog.LOG_ERR, message)
+    except OSError:
+        print(message, file=sys.stderr)
+
 
 _LOADED_PROGRAM = """import json, sys, urllib.request
 try:
@@ -171,6 +246,85 @@ def retain_builds(index_dir: Path, current: Path) -> None:
     ledger.write_text(json.dumps(owned[-2:], indent=1))
 
 
+def retain_review_build(index_dir: Path, error: NativeVerificationRejected) -> Path:
+    """Keep at most one validated exhausted build, for review only."""
+    if error.reason != "retry_exhausted":
+        raise RuntimeError("only exhausted verification can retain a review build")
+    ledger = index_dir / "publication-worker-pending.json"
+    raw = json.loads(ledger.read_text())
+    recorded = Path(raw["path"])
+    directory = pending_build(index_dir)
+    identity = error.identity
+    if (
+        directory is None
+        or recorded.is_symlink()
+        or not directory.is_dir()
+        or directory.parent != (index_dir / "builds").resolve()
+        or directory.name != identity.get("version")
+        or not isinstance(identity.get("job_id"), str)
+        or not identity["job_id"]
+        or type(identity.get("activation_epoch")) is not int
+        or identity["activation_epoch"] < 1
+        or not isinstance(identity.get("sha256"), str)
+        or re.fullmatch(r"[0-9a-f]{64}", identity["sha256"]) is None
+    ):
+        raise RuntimeError("review candidate ownership or identity differs")
+    manifest_path, index_path = directory / "manifest.json", directory / "index.sqlite"
+    if any(
+        path.is_symlink() or not path.is_file() for path in (manifest_path, index_path)
+    ):
+        raise RuntimeError("review candidate files are not regular")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    with index_path.open("rb") as handle:
+        digest = hashlib.file_digest(handle, "sha256").hexdigest()
+    expected = {
+        name: identity.get(name)
+        for name in (
+            "version",
+            "source_revision",
+            "recipe_revision",
+            "serving_revision",
+            "activation_epoch",
+        )
+    }
+    if (
+        not isinstance(manifest, dict)
+        or not isinstance(manifest.get("file"), dict)
+        or manifest["file"].get("name") != "index.sqlite"
+        or manifest["file"].get("sha256") != digest
+        or digest != identity["sha256"]
+        or type(manifest.get("activation_epoch")) is not int
+        or any(manifest.get(key) != value for key, value in expected.items())
+    ):
+        raise RuntimeError("review candidate manifest or hash differs")
+    db = sqlite3.connect(f"file:{index_path}?mode=ro", uri=True)
+    try:
+        meta = dict(db.execute("SELECT key,value FROM meta"))
+    finally:
+        db.close()
+    if any(meta.get(key) != str(value) for key, value in expected.items()):
+        raise RuntimeError("review candidate SQLite identity differs")
+    quarantine = index_dir.resolve() / "publication-review-builds"
+    if quarantine.is_symlink() or (quarantine.exists() and not quarantine.is_dir()):
+        raise RuntimeError("review candidate root is unsafe")
+    quarantine.mkdir(mode=0o700, exist_ok=True)
+    if quarantine.stat().st_mode & 0o077 or any(quarantine.iterdir()):
+        raise RuntimeError("review candidate slot is not private and empty")
+    (directory / ".publication-review.json").write_text(
+        json.dumps(
+            {
+                **identity,
+                "reason": "native verification retries exhausted",
+                "usage": "review only; a new native lease and reviewed rebinding are required",
+            }
+        ),
+        encoding="utf-8",
+    )
+    destination = quarantine / directory.name
+    directory.rename(destination)
+    return destination
+
+
 class Worker:
     def __init__(
         self,
@@ -247,6 +401,13 @@ class Worker:
             "password": self._credentials[1],
         }
 
+    def lease_expiry(self) -> int:
+        """The compiler may retry only while its native lease remains current."""
+        expiry = self.activation().get("lease_expires_at")
+        if type(expiry) is not int or expiry <= time.time() + 1:
+            raise RuntimeError("native knowledge lease expired or missing")
+        return expiry
+
     def ack(
         self,
         job: dict[str, Any],
@@ -299,21 +460,27 @@ class Worker:
         job = self.claim(before, unavailable)
         if job is None:
             return False
-        snapshot = Snapshot.read(job["manifest"])
-        revision = snapshot.source_revision
-        if revision != job["source_revision"]:
-            raise RuntimeError("job manifest revision differs from its claimed source")
-        if job.get("recipe_revision", "") not in {"", self.recipe}:
-            raise RuntimeError("job recipe differs from the running worker")
+        phase = "job_validation"
         try:
             self._active_job = job
+            snapshot = Snapshot.read(job["manifest"])
+            revision = snapshot.source_revision
+            if revision != job["source_revision"]:
+                raise RuntimeError(
+                    "job manifest revision differs from its claimed source"
+                )
+            if job.get("recipe_revision", "") not in {"", self.recipe}:
+                raise RuntimeError("job recipe differs from the running worker")
             if self.recipe and (
                 type(job.get("activation_epoch")) is not int
                 or job["activation_epoch"] < 1
             ):
                 raise RuntimeError("native knowledge job has no activation lease epoch")
+            phase = "prepare"
             version = prepare(job["manifest"])
+            phase = "loaded_readback"
             actual = loaded()
+            phase = "loaded_validation"
             if (
                 actual.get("source_revision") != revision
                 or actual.get("index_version") != version
@@ -357,6 +524,7 @@ class Worker:
                 and not partial
                 and not actual.get("unprepared_documents")
             )
+            phase = "ready_ack"
             self.ack(
                 job,
                 str(actual["source_revision"]),
@@ -380,9 +548,20 @@ class Worker:
         except (
             Exception,
             SystemExit,
-        ):  # safe failure, including the native publish CLI
+        ) as error:  # safe failure, including the native publish CLI
             # No request URL, auth header or exception repr enters Woo/logs.
-            self.ack(job, "", "knowledge preparation or loaded verification failed")
+            report_failure(phase, error)
+            if isinstance(error, ActivationOutcomeUnconfirmed):
+                # The lost remote process might still pass its in-lock native
+                # verification. Do not release its lease with a failed ACK;
+                # Woo will let a later worker claim after the lease expires.
+                raise
+            try:
+                self.ack(job, "", "knowledge preparation or loaded verification failed")
+            except (Exception, SystemExit) as ack_error:
+                # A transport or stale-job error can leave the job preparing.
+                # Keep the original failure and separately expose the ack result.
+                report_failure("failure_ack", ack_error)
             raise
         finally:
             self._active_job = None
@@ -408,6 +587,13 @@ def run_job(
                 retain_builds(index_dir, prepared)
                 (index_dir / "publication-worker-pending.json").unlink(missing_ok=True)
         return completed
+    except NativeVerificationRejected as error:
+        if error.reason == "retry_exhausted":
+            try:
+                retain_review_build(index_dir, error)
+            except (Exception, SystemExit) as retention_error:
+                report_failure("review_retention", retention_error)
+        raise
     finally:
         # Includes build/publish failure, not just failures after a Path returns.
         # A killed process is recovered by the next locked invocation.
@@ -456,33 +642,49 @@ def main() -> int:
         worker = Worker(jobs, user, password, args.worker_id, args.lease_seconds)
 
         def prepare(manifest: dict[str, Any]) -> str:
-            source = inventory.RestClient(args.rest_config)
-            # Prevent an operator accidentally building one site and acking another.
-            if urlsplit(source.base).netloc != urlsplit(jobs).netloc:
-                raise RuntimeError(
-                    "inventory and publication queue belong to different sites"
+            phase = "inventory_source"
+            try:
+                source = inventory.RestClient(args.rest_config)
+                # Prevent an operator accidentally building one site and acking another.
+                if urlsplit(source.base).netloc != urlsplit(jobs).netloc:
+                    raise RuntimeError(
+                        "inventory and publication queue belong to different sites"
+                    )
+                phase = "inventory"
+                fetch_inventory(source, INVENTORY_PATH, PDF_DIR, manifest)
+                phase = "parse"
+                parse.run(INVENTORY_PATH, PDF_DIR, PARSED_DIR, parse.WORKERS)
+                phase = "language_setup"
+                import py3langid
+
+                from index.tokenizer import HFTokenizer
+
+                phase = "embedding_setup"
+                embedder = build.document_embedder(build.DEFAULT_MODEL)
+                phase = "tokenizer_setup"
+                tokenizer = HFTokenizer.from_pretrained(build.CHUNK_TOKENIZER)
+                phase = "build"
+                directory = build.build(
+                    INVENTORY_PATH,
+                    PDF_DIR,
+                    PARSED_DIR,
+                    INDEX_DIR,
+                    embedder,
+                    tokenizer,
+                    lambda text: str(py3langid.classify(text)[0]),
+                    activation_epoch=worker.activation()["epoch"],
+                    publication_deadline=worker.lease_expiry(),
+                    on_created=lambda directory: record_build(INDEX_DIR, directory),
                 )
-            fetch_inventory(source, INVENTORY_PATH, PDF_DIR, manifest)
-            parse.run(INVENTORY_PATH, PDF_DIR, PARSED_DIR, parse.WORKERS)
-            import py3langid
-
-            from index.tokenizer import HFTokenizer
-
-            directory = build.build(
-                INVENTORY_PATH,
-                PDF_DIR,
-                PARSED_DIR,
-                INDEX_DIR,
-                build.document_embedder(build.DEFAULT_MODEL),
-                HFTokenizer.from_pretrained(build.CHUNK_TOKENIZER),
-                lambda text: str(py3langid.classify(text)[0]),
-                activation_epoch=worker.activation()["epoch"],
-                on_created=lambda directory: record_build(INDEX_DIR, directory),
-            )
-            activation = worker.activation()
-            activation.update(loaded_url=args.loaded_url, service_token=token)
-            report = publish(directory, args.root, args.host, activation=activation)
-            return str(report["index_version"])
+                phase = "activation"
+                activation = worker.activation()
+                activation.update(loaded_url=args.loaded_url, service_token=token)
+                phase = "publish"
+                report = publish(directory, args.root, args.host, activation=activation)
+                return str(report["index_version"])
+            except (Exception, SystemExit) as error:
+                report_failure(f"prepare.{phase}", error)
+                raise
 
         def loaded() -> dict[str, Any]:
             # The serving process reopens the resolved current file under the same
@@ -491,7 +693,8 @@ def main() -> int:
 
         try:
             run_job(worker, prepare, loaded, INDEX_DIR)
-        except (Exception, SystemExit):  # noqa: BLE001 - safe status, no private URLs or credentials
+        except (Exception, SystemExit) as error:  # noqa: BLE001 - safe status, no private URLs or credentials
+            report_failure("run_job", error)
             print(
                 "Knowledge preparation failed; Woo retains the pending job.",
                 file=sys.stderr,

@@ -42,6 +42,7 @@ from linker_genie.template import (
     DEGRADED,
     LOGIN_PLACEHOLDER,
     LOGIN_REQUIRED,
+    clearance_question,
     fallback,
     finish,
     seal,
@@ -125,39 +126,96 @@ def _hydrate_priced(
     expected: str,
     commerce: Lookup | None,
     clock: timing.Timing | None,
-) -> tuple[TurnOutput, TurnFacts, tuple[str, ...]]:
+) -> tuple[TurnOutput, TurnFacts, tuple[str, ...], TurnOutput, dict[str, str]]:
     """Login alignment, pairing cards, hydration and prices. One hydrate phase."""
     aligned = align_login(output, facts, expected)
     with timing.phase(clock, timing.HYDRATE):
         completed = complete_pairing_cards(aligned, facts, route)
         hydrated = hydrate(completed, facts, expected)
         priced, priced_facts, missed = fill(hydrated, facts, commerce)
-    return priced, priced_facts, tuple(missed)
+        replacements: dict[str, str] = {}
+        source_text = str(completed.model_dump()) + " ".join(
+            fact.value for fact in facts.facts.values()
+        )
+
+        def token(value: str) -> str:
+            marker = "\ue000" + "Q" * (len(replacements) + 1) + "\ue001"
+            while marker in source_text or marker in replacements:
+                marker = marker[:-1] + "Q\ue001"
+            replacements[marker] = value
+            return marker
+
+        if facts.qualifications:
+            # Rehydrate from the exact original placeholders. Only the
+            # qualified placeholder occurrence and its appended source quote
+            # are masked; equal values from other facts stay visible to seal.
+            protected = hydrate(completed, facts, expected, qualified_mask=token)
+            protected, _, _ = fill(protected, priced_facts)
+        else:
+            protected = priced
+    return priced, priced_facts, tuple(missed), protected, replacements
 
 
 def _seal_and_finish(
     request: TurnRequest,
+    original: TurnOutput,
     priced: TurnOutput,
     priced_facts: TurnFacts,
     route: Route | None,
     expected: Locale,
-) -> TurnOutput:
+    protected: TurnOutput,
+    replacements: dict[str, str],
+) -> TurnOutput | str:
     """Required sentences after hydration, then the route's next step.
 
-    `seal` adds no timing phase. If the sealed prose is the wrong language,
-    the pre-seal text ships: the ask chips `finish` adds are not checked again.
+    `seal` adds no timing phase. A language miss falls back to the pre-seal
+    text for ordinary turns; a qualified or clearance turn retries instead so
+    that discarded numbers cannot be reintroduced. `finish` adds the route's
+    next step.
     """
     sealed = seal(
-        priced,
+        protected,
         priced_facts,
         route,
         customer_message(request),
         request.page_context.type,
+        original=original,
     )
+    sealed = _restore_qualified(sealed, replacements)
+    if clearance_question(customer_message(request)) and not any(
+        (block.text if isinstance(block, TextBlock) else block.summary).strip()
+        for block in sealed.blocks
+        if isinstance(block, (TextBlock, HandoffBlock))
+    ):
+        return "The cited source does not establish the clearance claim."
     cited = _cited_prose(priced_facts)
-    if language_failure(sealed, expected, cited) is not None:
+    mismatch = language_failure(sealed, expected, cited)
+    if mismatch is not None and (
+        replacements or clearance_question(customer_message(request))
+    ):
+        # Returning pre-seal text here would restore numbers the seal rejected.
+        # Let the normal language retry handle a qualified or clearance turn.
+        return mismatch
+    if mismatch is not None:
         sealed = priced
     return finish(sealed, priced_facts, route, customer_message(request))
+
+
+def _restore_qualified(output: TurnOutput, replacements: dict[str, str]) -> TurnOutput:
+    if not replacements:
+        return output
+    blocks = list(output.blocks)
+    for index, block in enumerate(blocks):
+        if isinstance(block, TextBlock):
+            text, field = block.text, "text"
+        elif isinstance(block, HandoffBlock):
+            text, field = block.summary, "summary"
+        else:
+            continue
+        for marker, original in replacements.items():
+            text = text.replace(marker, original)
+        blocks[index] = block.model_copy(update={field: text})
+    return output.model_copy(update={"blocks": blocks})
 
 
 def _cited_prose(facts: TurnFacts) -> str:
@@ -193,13 +251,24 @@ def _ship_number_correction(
         result = check(corrected, facts, route)
     if not result.ok:
         return None
-    priced, priced_facts, missed = _hydrate_priced(
+    priced, priced_facts, missed, protected, replacements = _hydrate_priced(
         corrected, facts, route, expected, commerce, clock
     )
     mismatch = language_failure(priced, expected, _cited_prose(priced_facts))
     if mismatch is not None:
         return mismatch
-    sealed = _seal_and_finish(request, priced, priced_facts, route, expected)
+    sealed = _seal_and_finish(
+        request,
+        corrected,
+        priced,
+        priced_facts,
+        route,
+        expected,
+        protected,
+        replacements,
+    )
+    if isinstance(sealed, str):
+        return sealed
     return TurnResult(
         output=sealed,
         facts=priced_facts,
@@ -380,7 +449,7 @@ def run(
                     continue
             retry_reason = result.reason
             continue
-        priced, priced_facts, missed = _hydrate_priced(
+        priced, priced_facts, missed, protected, replacements = _hydrate_priced(
             output, last_facts, route, expected, commerce, clock
         )
         mismatch = language_failure(priced, expected, _cited_prose(priced_facts))
@@ -405,9 +474,24 @@ def run(
             last_failures = tuple(item.text for item in tool_failures)
             retry_reason = last_failures[0]
             continue
-        priced = _seal_and_finish(request, priced, priced_facts, route, expected)
+        finished = _seal_and_finish(
+            request,
+            output,
+            priced,
+            priced_facts,
+            route,
+            expected,
+            protected,
+            replacements,
+        )
+        if isinstance(finished, str):
+            last_failures = (finished,)
+            last_citations = ()
+            _remember(recorded, RecordedFailure(finished))
+            retry_reason = finished
+            continue
         return TurnResult(
-            output=priced,
+            output=finished,
             facts=priced_facts,
             grounded=True,
             failures=(),

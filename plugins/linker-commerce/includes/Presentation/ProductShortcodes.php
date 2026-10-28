@@ -625,8 +625,12 @@ final class ProductShortcodes {
 			// The live page's family card: the model picker replaces the
 			// single-article model row.
 			$html .= $this->family_picker( (array) $family['ids'], $product_id, $card, $stats, $selection );
-		} elseif ( array() !== $stats ) {
-			$html .= '<span class="card-product" data-linker-exact-product><small>' . esc_html__( 'Model', 'linker-commerce' ) . '</small><strong data-card-selection>' . esc_html( $selection ) . '</strong></span>';
+		} else {
+			$model_terms = get_the_terms( $product_id, 'pa_model' );
+			$model       = \is_array( $model_terms ) && array() !== $model_terms ? (string) reset( $model_terms )->name : '';
+			if ( '' !== trim( $model ) ) {
+				$html .= '<span class="card-product" data-linker-exact-product><small>' . esc_html__( 'Model', 'linker-commerce' ) . '</small><strong data-card-selection>' . esc_html( $model ) . '</strong></span>';
+			}
 		}
 		$facts = $product instanceof WC_Product ? Materials::card_facts( $product, 4 ) : array();
 		if ( array() !== $facts ) {
@@ -784,10 +788,46 @@ final class ProductShortcodes {
 		}
 		$html = '';
 		foreach ( Materials::key_stats( $product, 4 ) as $stat ) {
-			$html .= '<div><span class="pdp-app-stat-icon" aria-hidden="true">' . self::icon( (string) $stat['icon'] ) . '</span>'
-				. '<dt>' . esc_html( (string) $stat['label'] ) . '</dt><dd>' . esc_html( (string) $stat['value'] ) . '</dd></div>';
+			$html .= '<div><span class="pdp-app-stat-icon" data-pdp-fact="' . esc_attr( (string) $stat['key'] ) . '" aria-hidden="true"></span>'
+				. '<dt>' . esc_html( (string) $stat['label'] ) . '</dt><dd>' . self::pdp_stat_value( (string) $stat['value'] ) . '</dd></div>';
 		}
 		return $html;
+	}
+
+	/**
+	 * Preserve the source text while marking distinct semicolon-separated facts.
+	 * A semicolon inside parentheses belongs to the same fact, not a new one.
+	 *
+	 * @param string $value The complete formatted fact from Materials.
+	 */
+	private static function pdp_stat_value( string $value ): string {
+		$parts = array();
+		$start = 0;
+		$depth = 0;
+		$size  = strlen( $value );
+		for ( $i = 0; $i < $size; ++$i ) {
+			if ( '(' === $value[ $i ] ) {
+				++$depth;
+			} elseif ( ')' === $value[ $i ] ) {
+				if ( 0 === $depth ) {
+					return esc_html( $value );
+				}
+				--$depth;
+			} elseif ( ';' === $value[ $i ] && 0 === $depth ) {
+				$parts[] = substr( $value, $start, $i - $start + 1 );
+				$start   = $i + 1;
+			}
+		}
+		if ( 0 !== $depth || array() === $parts ) {
+			return esc_html( $value );
+		}
+		$parts[] = substr( $value, $start );
+		foreach ( $parts as $part ) {
+			if ( '' === trim( $part, " \t\n\r\0\x0B;" ) ) {
+				return esc_html( $value );
+			}
+		}
+		return implode( '', array_map( static fn( string $part ): string => '<span class="pdp-spec-option">' . esc_html( $part ) . '</span>', $parts ) );
 	}
 
 	/**
@@ -1460,9 +1500,9 @@ final class ProductShortcodes {
 		}
 		$by = trim( Materials::localized_text( $relationship, 'listed_by', $locale ) );
 		if ( '' === $by ) {
-			return __( 'On the compatibility list on file', 'linker-commerce' );
+			return __( 'Compatibility documented', 'linker-commerce' );
 		}
-		return sprintf( /* translators: %s: manufacturer */ __( "On %s's compatibility list", 'linker-commerce' ), $by );
+		return sprintf( /* translators: %s: manufacturer */ __( 'Documented by %s', 'linker-commerce' ), $by );
 	}
 
 	/**
@@ -2139,17 +2179,8 @@ final class ProductShortcodes {
 			'ask'      => '<path d="M21 15a4 4 0 0 1-4 4H8l-5 4V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>',
 			'file'     => '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8ZM14 2v6h6M8 13h8M8 17h6"/>',
 			'download' => '<path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/>',
-			'energy'   => '<rect x="3" y="6" width="17" height="12" rx="3"/><path d="M22 10v4M7 10v4m4-4v4m4-4v4"/>',
-			'power'    => '<path d="m13 2-8 12h6l-1 8 9-12h-6z"/>',
-			'grid'     => '<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>',
-			'gauge'    => '<path d="M4 18a9 9 0 1 1 16 0M12 12l5-5M5 18h14"/>',
 		);
 		$open  = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
-		if ( 'energy' === $name || 'power' === $name || 'grid' === $name || 'gauge' === $name ) {
-			// The purchase panel's figure icons carry no pixel size; the CSS
-			// sizes them in the row.
-			$open = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">';
-		}
 		return $open . ( $paths[ $name ] ?? '' ) . '</svg>';
 	}
 

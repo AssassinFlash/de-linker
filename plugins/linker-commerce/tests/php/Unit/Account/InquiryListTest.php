@@ -14,6 +14,7 @@ use Linker\Commerce\Inquiry\Statuses;
 use Linker\Commerce\Proforma\Issuer;
 use Linker\Commerce\Tests\TestCase;
 use Mockery;
+use WC_Abstract_Order;
 use WC_Order;
 use WC_Order_Item_Product;
 use WP_Mock;
@@ -121,6 +122,82 @@ final class InquiryListTest extends TestCase {
 		foreach ( array( 'view-order', 'order-received' ) as $endpoint ) {
 			$this->assertSame( array( 'view', 'proforma' ), array_keys( $list->actions( $woo_list, $this->inquiry( 'PI-2026-0001', true ) ) ), $endpoint );
 		}
+	}
+
+	/** The account detail retains historical amounts but omits old methods. */
+	public function test_customer_details_keep_amounts_without_old_methods(): void {
+		$view = false;
+		WP_Mock::userFunction(
+			'doing_action',
+			array(
+				'args'   => array( 'woocommerce_view_order' ),
+				'return' => static function () use ( &$view ): bool {
+					return $view;
+				},
+			)
+		);
+		$totals = array(
+			'cart_subtotal'  => array(
+				'label' => 'Subtotal:',
+				'value' => '38.00',
+			),
+			'shipping'       => array(
+				'label' => 'Shipping:',
+				'value' => '14.90',
+			),
+			'tax_1'          => array(
+				'label' => 'VAT:',
+				'value' => '10.05',
+			),
+			'order_total'    => array(
+				'label' => 'Total:',
+				'value' => '62.95',
+			),
+			'payment_method' => array(
+				'label' => 'Payment method:',
+				'value' => 'legacy card',
+			),
+		);
+		$list   = new InquiryList();
+		$this->assertSame( $totals, $list->customer_totals( $totals ), 'Other Woo consumers retain the original rows.' );
+		$this->assertSame( ' via legacy delivery', $list->customer_shipping_via( ' via legacy delivery' ) );
+		$view     = true;
+		$expected = $totals;
+		unset( $expected['payment_method'] );
+		$this->assertSame( $expected, $list->customer_totals( $totals ) );
+		$this->assertSame( array(), $list->customer_totals( array() ), 'A price gate remains empty.' );
+		$this->assertSame( '', $list->customer_shipping_via( ' via legacy delivery' ) );
+		$refund = Mockery::mock( WC_Abstract_Order::class );
+		$this->assertSame( 'Refund value', $list->customer_shipping_value( 'Refund value', $refund, 'excl' ), 'An abstract non-order remains unchanged even during the account action.' );
+
+		$shipping = '14.90';
+		$order    = Mockery::mock( WC_Order::class );
+		$order->allows( 'get_shipping_total' )->andReturnUsing(
+			static function () use ( &$shipping ): string {
+				return $shipping;
+			}
+		);
+		$order->allows( 'get_shipping_tax' )->andReturn( '2.83' );
+		$order->allows( 'get_currency' )->andReturn( 'EUR' );
+		$stored_including_tax = false;
+		$order->allows( 'get_prices_include_tax' )->andReturnUsing(
+			static function () use ( &$stored_including_tax ): bool {
+				return $stored_including_tax;
+			}
+		);
+		WP_Mock::userFunction(
+			'wc_price',
+			array(
+				'return' => static fn ( float $amount, array $args ): string => $args['currency'] . ':' . $amount,
+			)
+		);
+		$this->assertSame( 'Woo amount and tax label', $list->customer_shipping_value( 'Woo amount and tax label', $order, 'excl' ) );
+		$shipping = '0';
+		$this->assertSame( 'EUR:0', $list->customer_shipping_value( 'Legacy method', $order, 'excl' ) );
+		$stored_including_tax = true;
+		$this->assertSame( 'EUR:2.83', $list->customer_shipping_value( 'Legacy method', $order, 'incl' ) );
+		$view = false;
+		$this->assertSame( 'Legacy method', $list->customer_shipping_value( 'Legacy method', $order, 'incl' ) );
 	}
 
 	/** A withdrawn product never supplies a new download link to historical inquiries. */

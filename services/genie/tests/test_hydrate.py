@@ -412,3 +412,185 @@ def test_two_adjacent_placeholders_both_fill() -> None:
     text = "{fact:770c-p37-63a0.n1}–{fact:770c-p37-63a0.n2}."
 
     assert fill(text, _knowledge()) == "3–5000 W."
+
+
+_ETR_EN_NOTE = (
+    "*6: Battery-side parameters are only applicable with proprietary battery systems "
+    "or DC/DC-supported battery interface."
+)
+_ETR_DE_NOTE = (
+    "*6: Batterieseitige Parameter gelten nur für proprietäre Batteriesysteme "
+    "oder DC/DC-unterstützte Batterieschnittstellen."
+)
+
+
+def _qualified_etr(lang: str = "en") -> dict[str, Any]:
+    quote = _ETR_DE_NOTE if lang == "de" else _ETR_EN_NOTE
+    return {
+        "chunk_id": "etr-p2",
+        "doc_url": "https://de-linker.com/etr.pdf",
+        "title": "ETR",
+        "page": 2,
+        "text": (
+            "| Battery Side *6 | |\n"
+            "| Max. Current (A) | [n1=125.7 A] |\n"
+            "| Voltage (V) | [n2=860 V] |\n"
+            f"{quote} (p. 3)"
+        ),
+        "figures": {"etr-p2.n1": "125.7 A", "etr-p2.n2": "860 V"},
+        "qualification_required": True,
+        "qualifications": [
+            {"quote": quote, "page": 3, "chunk_id": "etr-p3", "lang": lang}
+        ],
+    }
+
+
+@pytest.mark.parametrize("language", ["en", "de"])
+def test_qualified_figures_keep_one_original_condition_and_each_page_link(
+    language: str,
+) -> None:
+    hit = _qualified_etr(language)
+    facts = collect("linker/search-knowledge", {"hits": [hit]}, language)
+    outputs = {
+        "en": ("The current is {fact:etr-p2.n1}.", "The voltage is {fact:etr-p2.n2}."),
+        "de": (
+            "Der Strom beträgt {fact:etr-p2.n1}.",
+            "Die Spannung beträgt {fact:etr-p2.n2}.",
+        ),
+    }
+    output = TurnOutput(
+        language=language,  # type: ignore[arg-type]
+        blocks=[TextBlock(text=text) for text in outputs[language]],
+    )
+
+    hydrated = hydrate(output, facts)
+    texts = [block.text for block in hydrated.blocks if isinstance(block, TextBlock)]
+    note = _ETR_DE_NOTE if language == "de" else _ETR_EN_NOTE
+    assert sum(text.count(note.split(": ", 1)[1]) for text in texts) == 1
+    assert "125.7 A" in texts[0] and "860 V" in texts[1]
+    assert _links(hydrated.blocks) == [
+        (
+            "etr-p2",
+            f"ETR · {'S.' if language == 'de' else 'p.'}\u00a02",
+            "https://de-linker.com/etr.pdf#page=2",
+        ),
+        (
+            "etr-p3",
+            f"ETR · {'S.' if language == 'de' else 'p.'}\u00a03",
+            "https://de-linker.com/etr.pdf#page=3",
+        ),
+    ]
+
+
+def test_qualified_value_and_condition_pages_stay_clickable_beside_page_one() -> None:
+    first_page = {
+        "chunk_id": "etr-p1",
+        "doc_url": "https://de-linker.com/etr.pdf",
+        "title": "ETR",
+        "page": 1,
+        "text": "Product overview",
+    }
+    facts = collect("linker/search-knowledge", {"hits": [first_page, _qualified_etr()]})
+    output = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(text="The current is {fact:etr-p2.n1}.", refs=["etr-p1"]),
+            DocumentBlock(ref="etr-p1"),
+        ],
+    )
+
+    links = _links(hydrate(output, facts).blocks)
+
+    assert [url for _, _, url in links] == [
+        "https://de-linker.com/etr.pdf#page=1",
+        "https://de-linker.com/etr.pdf#page=2",
+        "https://de-linker.com/etr.pdf#page=3",
+    ]
+
+
+@pytest.mark.parametrize(
+    ("answer_language", "source_language", "label"),
+    [
+        ("de", "en", "Herstellerbedingung (englisches Original):"),
+        ("en", "de", "Manufacturer's condition (German original):"),
+    ],
+)
+def test_foreign_source_is_explicitly_labelled_as_an_original_quote(
+    answer_language: str, source_language: str, label: str
+) -> None:
+    from linker_genie.language import language_failure
+
+    hit = _qualified_etr(source_language)
+    facts = collect("linker/search-knowledge", {"hits": [hit]}, answer_language)
+    text = (
+        "Der Strom beträgt {fact:etr-p2.n1}."
+        if answer_language == "de"
+        else "The current is {fact:etr-p2.n1}."
+    )
+    output = TurnOutput(
+        language=answer_language,  # type: ignore[arg-type]
+        blocks=[TextBlock(text=text)],
+    )
+
+    hydrated = hydrate(output, facts)
+    rendered = hydrated.blocks[0]
+    assert isinstance(rendered, TextBlock)
+    original = (_ETR_DE_NOTE if source_language == "de" else _ETR_EN_NOTE).split(
+        ": ", 1
+    )[1]
+    assert f'{label} "{original}"' in rendered.text
+    assert language_failure(hydrated, answer_language) is None  # type: ignore[arg-type]
+    assert [url for _, _, url in _links(hydrated.blocks)] == [
+        "https://de-linker.com/etr.pdf#page=2",
+        "https://de-linker.com/etr.pdf#page=3",
+    ]
+
+
+def test_a_negated_source_quote_cannot_suppress_the_independent_condition() -> None:
+    facts = collect("linker/search-knowledge", {"hits": [_qualified_etr("en")]}, "de")
+    original = _ETR_EN_NOTE.split(": ", 1)[1]
+    text = (
+        f'Der Strom beträgt {{fact:etr-p2.n1}}. Es trifft nicht zu, dass "{original}".'
+    )
+
+    answer = fill(text, facts, "de")
+
+    assert answer.count(original) == 2
+    assert f'\n\nHerstellerbedingung (englisches Original): "{original}"' in answer
+
+    english = f"The current is {{fact:etr-p2.n1}}. It is not true that {original}"
+    english_answer = fill(english, facts, "en")
+    assert english_answer.count(original) == 2
+    assert f'\n\nManufacturer\'s condition: "{original}"' in english_answer
+
+
+@pytest.mark.parametrize(
+    "corruption",
+    ["missing", "removed", "changed", "wrong_page", "wrong_language", "wrong_figure"],
+)
+def test_broken_condition_metadata_never_creates_a_bare_figure(corruption: str) -> None:
+    hit = _qualified_etr()
+    if corruption == "missing":
+        hit["qualifications"] = []
+    elif corruption == "removed":
+        del hit["qualification_required"]
+        del hit["qualifications"]
+    elif corruption == "changed":
+        hit["qualifications"][0]["quote"] += " Altered."
+    elif corruption == "wrong_page":
+        hit["qualifications"][0]["page"] = 2
+    elif corruption == "wrong_language":
+        hit["qualifications"][0]["lang"] = "unknown"
+    else:
+        hit["figures"] = {"other-p2.n1": "125.7 A"}
+
+    facts = collect("linker/search-knowledge", {"hits": [hit]})
+
+    assert "etr-p2.n1" not in facts.facts
+    assert "etr-p2" not in facts.chunk_ids
+
+
+def test_a_qualified_chunk_text_is_not_a_backdoor_to_untagged_values() -> None:
+    facts = collect("linker/search-knowledge", {"hits": [_qualified_etr()]})
+
+    assert fill("{fact:etr-p2.text}", facts) == "unavailable"

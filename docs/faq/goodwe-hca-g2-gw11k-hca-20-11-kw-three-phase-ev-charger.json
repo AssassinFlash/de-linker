@@ -9,7 +9,7 @@
       "question": "Does the 11 kW charger still need an external Type A RCD?",
       "answer": "Yes. The datasheet lists under Protection: \"External Type A RCD is needed\". The technical data table for GW11K-HCA-20 states: \"An external Type A residual current device (RCD) is required.\"",
       "question_de": "Braucht das 11-kW-Ladegerät noch einen externen FI Typ A?",
-      "answer_de": "Ja. Im Datenblatt steht unter Schutz: „External Type A RCD is needed“. In den technischen Daten für GW11K-HCA-20 steht: „An external Type A residual current device (RCD) is required.“",
+      "answer_de": "Ja. Laut Datenblatt ist ein externer FI-Schutzschalter vom Typ A erforderlich. Auch die technischen Daten für GW11K-HCA-20 nennen diese Anforderung.",
       "citation": {
         "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_HCA-G2_Datasheet_EMEA-EN_V1.1.pdf",
         "page": 2,
@@ -21,9 +21,9 @@
     },
     {
       "question": "What comes with the charger?",
-      "answer": "The scope of delivery includes: Charger x 1, AC connector x 1, Dummy socket x 1, fastening screws x 4, Expansion bolt x 4, RS485 communication connector x 1, LAN communication connector x 1, Screwdriver x 1, AC cable pin terminal x 2, RS485 cable pin terminal x 1, RFID card x 5, RJ45 terminal x 4, Waterproof rubber plug x 2, Documents x 1.",
+      "answer": "The scope of delivery includes: Charger x 1, AC connector x 1, dummy socket x 1, dummy socket fastening screws x 4, expansion bolts x 4, RS485 communication connector x 1, LAN communication connector x 1, Phillips screwdriver x 1, flat-head screwdriver x 1, AC cable pin terminals x 5, RS485 cable pin terminals x 4, RFID cards x 2, RJ45 terminal x 1, waterproof rubber plugs x 2 and documents x 1.",
       "question_de": "Was gehört zum Lieferumfang?",
-      "answer_de": "Zum Lieferumfang gehören: Charger x 1, AC connector x 1, Dummy socket x 1, Befestigungsschrauben x 4, Expansion bolt x 4, RS485 communication connector x 1, LAN communication connector x 1, Schraubendreher x 1, AC cable pin terminal x 2, RS485 cable pin terminal x 1, RFID card x 5, RJ45 terminal x 4, Waterproof rubber plug x 2, Documents x 1.",
+      "answer_de": "Zum Lieferumfang gehören: eine Ladestation, ein AC-Steckverbinder, eine Blindbuchse, vier Befestigungsschrauben für die Blindbuchse, vier Spreizbolzen, je ein RS485- und LAN-Kommunikationssteckverbinder, je ein Kreuzschlitz- und Schlitzschraubendreher, fünf AC-Aderendhülsen, vier RS485-Aderendhülsen, zwei RFID-Karten, ein RJ45-Stecker, zwei wasserdichte Gummistopfen und ein Satz Dokumente.",
       "citation": {
         "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_HCA-G2_User-Manual-EN.pdf",
         "page": 33,
@@ -35,9 +35,9 @@
     },
     {
       "question": "Is GW11K-HCA-20 prepared for §14a EnWG?",
-      "answer": "The manual describes an EnWG 14a setting: \"EnWG 14a: According to the German EnWG (Energy Industry Act) 14a, all SteuVEs (controllable loads) need to be subject to emergency dimming by the grid. The grid operator can temporarily reduce the maximum grid-bought power consumption of controllable loads to 4.2 kW. If only need to use DI4-EnWG 14a, other DI ports no need to wire.\"",
+      "answer": "The manual describes an EnWG §14a grid-dispatch setting. It says that, when enabled, the function is intended to limit the power drawn from the grid by a single device to 4.2 kW, and that the grid-import limit should be set according to the actual requirements.",
       "question_de": "Ist GW11K-HCA-20 für §14a EnWG vorbereitet?",
-      "answer_de": "Das Handbuch beschreibt eine EnWG-14a-Einstellung: „EnWG 14a: According to the German EnWG (Energy Industry Act) 14a, all SteuVEs (controllable loads) need to be subject to emergency dimming by the grid. The grid operator can temporarily reduce the maximum grid-bought power consumption of controllable loads to 4.2 kW. If only need to use DI4-EnWG 14a, other DI ports no need to wire.“",
+      "answer_de": "Das Handbuch beschreibt eine Einstellung für die Netzsteuerung nach § 14a EnWG. Demnach soll die Funktion im aktivierten Zustand die aus dem Netz bezogene Leistung eines einzelnen Geräts auf 4,2 kW begrenzen; der Netzbezugsgrenzwert ist entsprechend den tatsächlichen Anforderungen einzustellen.",
       "citation": {
         "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_HCA-G2_User-Manual-EN.pdf",
         "page": 72,

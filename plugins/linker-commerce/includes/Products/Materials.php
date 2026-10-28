@@ -45,9 +45,9 @@ final class Materials {
 	private static ?array $policies = null;
 
 	/**
-	 * Product ID to material ID, built once per request.
+	 * Product ID to its bound material IDs, built once per request.
 	 *
-	 * @var array<int, string>|null
+	 * @var array<int, list<string>>|null
 	 */
 	private static ?array $product_index = null;
 
@@ -129,8 +129,9 @@ final class Materials {
 	}
 
 	/**
-	 * The material that speaks for a product, as the live lookup resolves it:
-	 * the registry material bound to the product id.
+	 * The registry material bound to the product. Where several materials
+	 * share a binding, only the one matching the Woo product's model can speak
+	 * for it; an internal component cannot stand in for the complete product.
 	 *
 	 * @param int $product_id The product.
 	 * @return array<string, mixed>|null
@@ -144,23 +145,42 @@ final class Materials {
 				}
 				foreach ( $material['bindings']['woo_product_ids'] ?? array() as $bound ) {
 					$bound = (int) $bound;
-					if ( $bound > 0 && ! isset( self::$product_index[ $bound ] ) ) {
-						self::$product_index[ $bound ] = (string) $id;
+					if ( $bound > 0 && ! \in_array( (string) $id, self::$product_index[ $bound ] ?? array(), true ) ) {
+						self::$product_index[ $bound ][] = (string) $id;
 					}
 				}
 			}
 		}
-		$material_id = self::$product_index[ $product_id ] ?? '';
-		if ( '' === $material_id ) {
+		$source = $product_id;
+		$bound  = self::$product_index[ $source ] ?? array();
+		if ( array() === $bound ) {
 			// A German twin carries no registry binding of its own: the
 			// English source row is the bound one.
-			$source      = self::source_product_id( $product_id );
-			$material_id = $source === $product_id ? '' : ( self::$product_index[ $source ] ?? '' );
+			$source = self::source_product_id( $product_id );
+			$bound  = self::$product_index[ $source ] ?? array();
 		}
-		if ( '' === $material_id ) {
+		if ( array() === $bound ) {
 			return null;
 		}
-		$material = self::registry()['materials'][ $material_id ] ?? null;
+		if ( \count( $bound ) > 1 ) {
+			$model   = \trim( (string) \get_post_meta( $source, '_delinker_model', true ) );
+			$matches = array();
+			foreach ( $bound as $material_id ) {
+				$identity = self::registry()['materials'][ $material_id ]['identity'] ?? array();
+				foreach ( array( 'model', 'manufacturer_part_number' ) as $field ) {
+					$candidate = \is_array( $identity ) ? \trim( (string) ( $identity[ $field ] ?? '' ) ) : '';
+					if ( '' !== $model && '' !== $candidate && 0 === \strcasecmp( $model, $candidate ) ) {
+						$matches[] = $material_id;
+						break;
+					}
+				}
+			}
+			if ( 1 !== \count( $matches ) ) {
+				return null;
+			}
+			$bound = $matches;
+		}
+		$material = self::registry()['materials'][ $bound[0] ] ?? null;
 		return \is_array( $material ) ? $material : null;
 	}
 
@@ -242,18 +262,34 @@ final class Materials {
 	/**
 	 * The contract facts of a product, keyed by the shop's own spec
 	 * vocabulary: the registry's specifications, or the product's own figures
-	 * when no material is bound.
+	 * when no material is bound. A registry value explicitly marked as a
+	 * merged upper limit is not a product capacity; the native product's range
+	 * is used when present, and the misleading scalar is otherwise omitted.
 	 *
 	 * @param WC_Product $product The product.
 	 * @return array<string, array<string, mixed>>
 	 */
 	public static function facts( WC_Product $product ): array {
-		$material = self::material_for_product( (int) $product->get_id() );
+		$id       = (int) $product->get_id();
+		$material = self::material_for_product( $id );
 		if ( \is_array( $material ) ) {
 			$specs = $material['technical']['specifications'] ?? array();
-			return \is_array( $specs ) ? $specs : array();
+			if ( ! \is_array( $specs ) ) {
+				return array();
+			}
+			$energy = $specs['battery_rated_energy'] ?? array();
+			if ( \is_array( $energy ) && \str_contains( \strtolower( (string) ( $energy['unit'] ?? '' ) ), 'merged value' ) ) {
+				$own   = \json_decode( (string) \get_post_meta( self::source_product_id( $id ), '_tv_b2b_figures', true ), true );
+				$range = \is_array( $own ) ? ( $own['battery_rated_energy'] ?? null ) : null;
+				if ( \is_array( $range ) && 0 === \strcasecmp( \trim( (string) ( $range['unit'] ?? '' ) ), 'kWh' )
+					&& 1 === \preg_match( '/^\s*\d+(?:[.,]\d+)?\s*[-–~]\s*\d+(?:[.,]\d+)?\s*$/u', (string) ( $range['value'] ?? '' ) ) ) {
+					$specs['battery_rated_energy'] = $range;
+				} else {
+					unset( $specs['battery_rated_energy'] );
+				}
+			}
+			return $specs;
 		}
-		$id  = (int) $product->get_id();
 		$own = \json_decode( (string) \get_post_meta( $id, '_tv_b2b_figures', true ), true );
 		if ( ! \is_array( $own ) ) {
 			$source = self::source_product_id( $id );
@@ -1337,12 +1373,11 @@ final class Materials {
 
 	/**
 	 * The key figures of a product's purchase panel: the product type's first
-	 * spec keys, in the type's own order, each with the symbol it shows. The
-	 * order and the symbol are type vocabulary, not page design.
+	 * spec keys in the type's own order.
 	 *
 	 * @param WC_Product $product The product.
 	 * @param int        $limit   How many rows the panel holds.
-	 * @return list<array{key: string, label: string, value: string, icon: string}>
+	 * @return list<array{key: string, label: string, value: string}>
 	 */
 	public static function key_stats( WC_Product $product, int $limit = 4 ): array {
 		$order = array(
@@ -1355,16 +1390,12 @@ final class Materials {
 			'accessory' => array( 'ac_power', 'interface', 'ip', 'temp', 'weight', 'dimensions' ),
 			'other'     => array( 'nom_voltage', 'interface', 'ip', 'temp', 'weight', 'dimensions' ),
 		);
-		$icons = array(
-			'phase'       => 'grid',
-			'mppt'        => 'grid',
-			'usable_kwh'  => 'energy',
-			'nominal_kwh' => 'energy',
-			'efficiency'  => 'gauge',
-		);
 		$kind  = self::contract_type( (string) self::identity( $product )['kind'] );
 		$specs = self::specs( $product );
-		$out   = array();
+		if ( isset( $specs['phase']['value'] ) ) {
+			$specs['phase']['value'] = self::phase_voltage_unit( $product, (string) $specs['phase']['value'] );
+		}
+		$out = array();
 		foreach ( $order[ $kind ] ?? $order['other'] as $key ) {
 			if ( ! isset( $specs[ $key ] ) ) {
 				continue;
@@ -1373,13 +1404,40 @@ final class Materials {
 				'key'   => (string) $key,
 				'label' => (string) $specs[ $key ]['label'],
 				'value' => self::de_number( (string) $specs[ $key ]['value'] ),
-				'icon'  => (string) ( $icons[ $key ] ?? 'power' ),
 			);
 			if ( count( $out ) >= $limit ) {
 				break;
 			}
 		}
 		return $out;
+	}
+
+	/**
+	 * Carry a voltage unit only when this same product states the identical
+	 * combined phase/voltage value as an explicitly measured AC voltage.
+	 *
+	 * @param WC_Product $product Product owning both facts.
+	 * @param string     $display Formatted phase value selected for the panel.
+	 */
+	private static function phase_voltage_unit( WC_Product $product, string $display ): string {
+		$facts   = self::facts( $product );
+		$voltage = $facts['rated_ac_voltage'] ?? null;
+		if ( ! \is_array( $voltage ) || 'V' !== ( $voltage['unit'] ?? null ) || ! \is_string( $voltage['value'] ?? null ) || 1 !== \preg_match( '/^\s*[123]\s*\+\s*N\s*\+\s*PE\s*,\s*\d{2,4}\s*\/\s*\d{2,4}\s*$/iD', $voltage['value'] ) ) {
+			return $display;
+		}
+		if ( $display !== $voltage['value'] ) {
+			return $display;
+		}
+		foreach ( array( 'phase', 'phases' ) as $field ) {
+			$phase = $facts[ $field ] ?? null;
+			if ( ! \is_array( $phase ) || '' !== trim( (string) ( $phase['unit'] ?? '' ) ) || ( $phase['value'] ?? null ) !== $voltage['value'] ) {
+				continue;
+			}
+			if ( self::spec_text( $product, 'phase', $field, $phase, self::is_de() )['value'] === $display ) {
+				return self::value_with_unit( $display, 'V' );
+			}
+		}
+		return $display;
 	}
 
 	/**

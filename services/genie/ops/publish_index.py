@@ -25,14 +25,137 @@ from index_release import _sha256
 RELEASE_SCRIPT = Path(__file__).with_name("index_release.py")
 # The VPS layout of the spec (Build 5); `linker_genie.retrieval.DEFAULT_INDEX` reads it.
 DEFAULT_ROOT = "/opt/linker-genie/index"
+# Three 30-second native verifications, two backoffs and one 30-second loaded
+# readback leave 57 seconds for SSH, the activation lock and index hashing.
+ACTIVATION_TIMEOUT = 180
+
+
+class ActivationOutcomeUnconfirmed(RuntimeError):
+    """The remote switch may still complete; its Woo lease must not be released."""
+
+
+class NativeVerificationRejected(RuntimeError):
+    """The remote command reported a definite in-lock rejection before journaling."""
+
+    def __init__(
+        self,
+        reason: str,
+        status: int | None,
+        transport: bool,
+        identity: dict[str, Any],
+    ) -> None:
+        super().__init__("native Woo lease verification rejected")
+        self.reason, self.status, self.transport = reason, status, transport
+        self.identity = identity
+        self.cleanup_unconfirmed = False
+
+
+def _native_rejection(
+    error: subprocess.CalledProcessError,
+    args: tuple[str, ...],
+    activation: dict[str, Any],
+) -> NativeVerificationRejected | None:
+    """Accept only the exact bounded rejection emitted by our remote command."""
+    if (
+        error.returncode != 72
+        or len(args) != 4
+        or args[0] != "activate"
+        or not isinstance(error.stderr, str)
+        or len(error.stderr) > 4096
+    ):
+        return None
+    try:
+        value = json.loads(error.stderr)
+    except ValueError:
+        return None
+    keys = {
+        "result",
+        "reason",
+        "http_status",
+        "transport",
+        "job_id",
+        "source_revision",
+        "recipe_revision",
+        "epoch",
+    }
+    if not isinstance(value, dict) or set(value) != keys:
+        return None
+    if (
+        value.get("result") != "native_verify_rejected"
+        or type(value.get("epoch")) is not int
+        or type(activation.get("epoch")) is not int
+        or value["epoch"] != activation["epoch"]
+        or value["epoch"] < 1
+        or any(
+            not isinstance(activation.get(name), str)
+            or not activation[name]
+            or value.get(name) != activation[name]
+            for name in ("job_id", "source_revision", "recipe_revision")
+        )
+        or type(value.get("transport")) is not bool
+    ):
+        return None
+    reason, status, transport = (
+        value["reason"],
+        value["http_status"],
+        value["transport"],
+    )
+    if not isinstance(reason, str):
+        return None
+    if reason == "retry_exhausted":
+        valid = (type(status) is int and status == 503 and not transport) or (
+            status is None and transport
+        )
+    elif reason == "http_rejected":
+        valid = (
+            type(status) is int
+            and 100 <= status <= 599
+            and status != 503
+            and not transport
+        )
+    else:
+        valid = (
+            reason in {"expired", "response_identity", "invalid_response"}
+            and status is None
+            and not transport
+        )
+    if not valid:
+        return None
+    identity = {
+        "job_id": value["job_id"],
+        "source_revision": value["source_revision"],
+        "recipe_revision": value["recipe_revision"],
+        "serving_revision": activation.get("serving_revision"),
+        "activation_epoch": value["epoch"],
+        "version": args[2],
+        "sha256": args[3],
+    }
+    return NativeVerificationRejected(reason, status, transport, identity)
 
 
 def release(
-    host: str | None, *args: str, activation: dict[str, Any] | None = None
+    host: str | None,
+    *args: str,
+    activation: dict[str, Any] | None = None,
+    owner_token: str | None = None,
+    timeout: float | None = None,
 ) -> dict[str, object]:
     """Run index_release.py with `args` on the host (or here) and return its report."""
-    if activation is not None:
-        arguments = [*args, "--activation-stdin"]
+    if owner_token is not None and (
+        activation is not None
+        or len(args) != 3
+        or args[0] != "discard"
+        or not owner_token
+    ):
+        raise ValueError("invalid discard owner request")
+    if activation is not None or owner_token is not None:
+        arguments = [
+            *args,
+            "--activation-stdin" if activation is not None else "--owner-stdin",
+        ]
+        private_input = (
+            activation if activation is not None else {"owner_token": owner_token}
+        )
         command = (
             [sys.executable, str(RELEASE_SCRIPT), *arguments]
             if host is None
@@ -45,16 +168,29 @@ def release(
                 + shlex.join(arguments),
             ]
         )
-        result = subprocess.run(
-            command,
-            input=json.dumps(activation),
-            check=True,
-            capture_output=True,
-            text=True,
-        )
+        try:
+            result = subprocess.run(
+                command,
+                input=json.dumps(private_input),
+                check=True,
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+            )
+        except subprocess.CalledProcessError as error:
+            rejected = (
+                _native_rejection(error, args, activation)
+                if activation is not None
+                else None
+            )
+            if rejected is not None:
+                raise rejected from None
+            raise
     elif host is None:
         command = [sys.executable, str(RELEASE_SCRIPT), *args]
-        result = subprocess.run(command, check=True, capture_output=True, text=True)
+        result = subprocess.run(
+            command, check=True, capture_output=True, text=True, timeout=timeout
+        )
     else:
         command = ["ssh", host, "python3", "-", *args]
         result = subprocess.run(
@@ -63,9 +199,59 @@ def release(
             check=True,
             capture_output=True,
             text=True,
+            timeout=timeout,
         )
-    report: dict[str, object] = json.loads(result.stdout)
+    report = json.loads(result.stdout)
+    if not isinstance(report, dict):
+        raise ValueError("invalid index release report")
     return report
+
+
+def _confirmed_activation(
+    report: dict[str, object],
+    version: str,
+    sha256: str,
+    activation: dict[str, Any],
+) -> bool:
+    """Only a matching current index and complete durable fence prove a switch."""
+    expected = {
+        "site": str(activation.get("verify_url", "")),
+        "consumer": "knowledge",
+        "epoch": activation.get("epoch"),
+        "job_id": activation.get("job_id"),
+        "source_revision": activation.get("source_revision"),
+        "recipe_revision": activation.get("recipe_revision"),
+        "serving_revision": activation.get("serving_revision"),
+        "index_version": version,
+        "sha256": sha256,
+    }
+    fence = report.get("activation")
+    return (
+        report.get("current") == version
+        and report.get("index_version") == version
+        and report.get("sha256_ok") is True
+        and report.get("sha256") == sha256
+        and type(activation.get("epoch")) is int
+        and isinstance(fence, dict)
+        and type(fence.get("epoch")) is int
+        and fence == expected
+    )
+
+
+def _inspect_activation(
+    host: str | None,
+    root: str,
+    version: str,
+    sha256: str,
+    activation: dict[str, Any],
+) -> dict[str, object]:
+    try:
+        observed = release(host, "status", root, "--locked", timeout=30)
+    except (OSError, ValueError, subprocess.SubprocessError):
+        observed = {}
+    if not _confirmed_activation(observed, version, sha256, activation):
+        raise ActivationOutcomeUnconfirmed("index activation outcome unconfirmed")
+    return observed
 
 
 def publish(
@@ -85,6 +271,7 @@ def publish(
     incoming = str(prepared["incoming"])
     owner_token = str(prepared["owner_token"])
     target = incoming if host is None else f"{host}:{incoming}"
+    discard_upload = True
     try:
         subprocess.run(
             [
@@ -96,23 +283,50 @@ def publish(
             ],
             check=True,
         )
-        report = release(
-            host, "activate", root, version, expected, activation=activation
-        )
+        try:
+            report = release(
+                host,
+                "activate",
+                root,
+                version,
+                expected,
+                activation=activation,
+                timeout=ACTIVATION_TIMEOUT if activation is not None else None,
+            )
+            # Activation renamed the incoming directory; no cleanup SSH call is
+            # needed and a cleanup failure must not mask a successful switch.
+            discard_upload = False
+            if activation is not None and not _confirmed_activation(
+                report, version, expected, activation
+            ):
+                report = _inspect_activation(host, root, version, expected, activation)
+        except NativeVerificationRejected as error:
+            # This bounded, identity-checked response is emitted before journal
+            # or switch; an owned upload can be discarded without losing proof.
+            discard_upload = False
+            try:
+                release(host, "discard", root, version, owner_token=owner_token)
+            except (OSError, ValueError, subprocess.SubprocessError):
+                error.cleanup_unconfirmed = True
+            raise
+        except (OSError, ValueError, subprocess.SubprocessError):
+            if activation is None:
+                raise
+            # The SSH command can fail after the remote switch. Never replay it.
+            # An unconfirmed upload stays owned until native expiry/pruning, so
+            # a still-running command or a journal recovery target survives.
+            discard_upload = False
+            report = _inspect_activation(host, root, version, expected, activation)
     finally:
-        release(host, "discard", root, version, owner_token)
-    reported_activation = report.get("activation")
+        if discard_upload:
+            release(host, "discard", root, version, owner_token=owner_token)
     if (
         report.get("current") != version
         or report.get("index_version") != version
         or not report.get("sha256_ok")
         or (
             activation is not None
-            and (
-                not isinstance(reported_activation, dict)
-                or reported_activation.get("epoch") != activation.get("epoch")
-                or reported_activation.get("index_version") != version
-            )
+            and not _confirmed_activation(report, version, expected, activation)
         )
     ):
         raise SystemExit(f"published {version}, but the host reports {report}")

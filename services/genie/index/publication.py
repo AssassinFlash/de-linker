@@ -12,12 +12,25 @@ import re
 import tempfile
 import urllib.request
 from collections.abc import Iterator
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from pathlib import Path
-from typing import Any, NotRequired, TypedDict
+from typing import Any, NotRequired, TypedDict, cast
 
 from index.chunking import MAX_TOKENS, Chunk, Tokenizer
 from index.inventory import doc_type_of, document_kind_of, lang_of
+from linker_genie.certificate_scope import (
+    certificate_boundaries_allow,
+    certificate_document,
+    certificate_fragment_id,
+    certificate_fragment_text,
+    certificate_id,
+    certificate_registration,
+    certificate_text,
+    lcie_declaration,
+    lcie_limitation,
+    split_declaration,
+    valid_certificate_scope,
+)
 from linker_genie.embedding import sha256_of
 from linker_genie.publication import PublicationClient, Snapshot
 from linker_genie.source_models import (
@@ -72,6 +85,13 @@ class TableColumns(TypedDict):
     excluded_role_rows: NotRequired[list[dict[str, Any]]]
 
 
+class NativeTable(TypedDict):
+    """All original fragments of one native table, in source order."""
+
+    source_table: str
+    source_chunk_ids: list[str]
+
+
 class ScopeProof(TypedDict):
     """The authored or explicit Woo document scope behind an allowed passage."""
 
@@ -81,12 +101,15 @@ class ScopeProof(TypedDict):
     document_ids: list[str]
     associations: list[dict[str, Any]]
     table_columns: NotRequired[TableColumns]
+    native_table: NotRequired[NativeTable]
     referenced_products: NotRequired[list[dict[str, Any]]]
     manual_scope: NotRequired[dict[str, Any]]
     table_projection: NotRequired[dict[str, Any]]
     family_scope: NotRequired[dict[str, Any]]
     author_restrictions: NotRequired[list[dict[str, Any]]]
     warranty_scope: NotRequired[dict[str, Any]]
+    certificate_scope: NotRequired[dict[str, Any]]
+    certificate_fragment: NotRequired[dict[str, Any]]
 
 
 def _table_columns(
@@ -266,7 +289,11 @@ def _manual_scopes(
     """
     output: dict[str, dict[str, Any]] = {}
     for chunk in chunks:
-        listed = manual_scope_models(chunk.text) if chunk.kind == "text" else set()
+        listed = (
+            manual_scope_models(chunk.text)
+            if chunk.kind == "text" and not chunk.source_picture
+            else set()
+        )
         if not listed:
             continue
         associated = {
@@ -557,6 +584,12 @@ def scope_proofs(
     for document in source.documents.values():
         documents.setdefault(document["blob_sha256"], []).append(document)
     relevant = [chunk for chunk in chunks if chunk.doc_sha256 in documents]
+    native_tables: dict[tuple[str, str], list[str]] = {}
+    for chunk in relevant:
+        if chunk.kind == "table" and chunk.source_table:
+            native_tables.setdefault((chunk.doc_sha256, chunk.source_table), []).append(
+                chunk.id
+            )
     statuses = _recognized(relevant, authority) if _statuses is None else _statuses
     labels = set(statuses).union(current_labels)
     families = _family_labels(labels)
@@ -597,14 +630,18 @@ def scope_proofs(
             )
         )
         observed[chunk.id] = matched, blocked
-        positive = matched.intersection(associated)
+        # A model written inside a diagram can prove that diagram's own text;
+        # it does not establish the subject of unrelated body or document text.
+        positive = (
+            matched.intersection(associated) if not chunk.source_picture else set()
+        )
         doc_models.setdefault(chunk.doc_sha256, set()).update(positive)
         section_key = chunk.doc_sha256, chunk.section
         sections.setdefault(section_key, set()).update(positive)
         if positive:
             origins.setdefault(chunk.doc_sha256, []).append(chunk.id)
             section_origins.setdefault(section_key, []).append(chunk.id)
-        if COMMON_SCOPE.search(chunk.text):
+        if not chunk.source_picture and COMMON_SCOPE.search(chunk.text):
             common.setdefault(chunk.doc_sha256, []).append(chunk.id)
         if blocked:
             ambiguous.add(chunk.doc_sha256)
@@ -715,11 +752,357 @@ def scope_proofs(
             }
             if basis == "table_columns":
                 result[chunk.id]["table_columns"] = columns[chunk.id]
+            if chunk.kind == "table" and chunk.source_table:
+                result[chunk.id]["native_table"] = {
+                    "source_table": chunk.source_table,
+                    "source_chunk_ids": native_tables[
+                        (chunk.doc_sha256, chunk.source_table)
+                    ],
+                }
             if basis == "manual_peripheral":
                 assert declaration is not None
                 result[chunk.id]["referenced_products"] = references
                 result[chunk.id]["manual_scope"] = declaration
     return result
+
+
+def compile_certificate_subjects(
+    chunks: list[Chunk],
+    source: Snapshot,
+    tokenizer: Tokenizer,
+    max_tokens: int,
+    contexts: dict[str, list[dict[str, Any]]],
+) -> tuple[list[Chunk], dict[str, ScopeProof]]:
+    """Bind a safe certificate excerpt to one current document/model relation."""
+    output: list[Chunk] = []
+    scopes: dict[str, ScopeProof] = {}
+    covered: set[tuple[str, int, str]] = set()
+    originals = {chunk.id: chunk for chunk in chunks}
+    certificates: dict[str, list[tuple[str, dict[str, Any]]]] = {}
+    for did, document in source.documents.items():
+        if certificate_document(document):
+            certificates.setdefault(document["blob_sha256"], []).append((did, document))
+    for chunk in chunks:
+        if (
+            chunk.kind != "text"
+            or chunk.source_picture
+            or chunk.doc_sha256 not in certificates
+        ):
+            continue
+        boundaries = []
+        for boundary in contexts.get(chunk.id, []):
+            prior = originals.get(boundary.get("source_chunk_id", ""))
+            if (
+                prior is None
+                or prior.doc_sha256 != chunk.doc_sha256
+                or prior.kind != "text"
+            ):
+                break
+            boundaries.append(
+                {
+                    "kind": boundary.get("kind"),
+                    "quote": boundary.get("quote"),
+                    "source_chunk_id": prior.id,
+                    "source_page": prior.page,
+                    "source_text": prior.text,
+                    "source_section": prior.section,
+                    "source_headings": list(prior.source_headings),
+                }
+            )
+        else:
+            for did, document in certificates[chunk.doc_sha256]:
+                for pid in document["product_ids"]:
+                    product = source.products.get(pid)
+                    if product is None or (did, pid, chunk.lang) in covered:
+                        continue
+                    model = str(product.get("model", ""))
+                    text = certificate_text(chunk.text, model)
+                    if text is None or not certificate_boundaries_allow(
+                        boundaries,
+                        sha=chunk.doc_sha256,
+                        page=chunk.page,
+                        original=chunk.id,
+                        source_text=chunk.text,
+                        model=model,
+                    ):
+                        continue
+                    cid = certificate_id(
+                        chunk.doc_sha256, chunk.page, model, chunk.id, did, text
+                    )
+                    header = f"{model} | {document['title']} | p. {chunk.page}"
+                    tokens = tokenizer.count(header + "\n" + text)
+                    if tokens > max_tokens:
+                        continue
+                    proof: ScopeProof = {
+                        "product_ids": [pid],
+                        "basis": "certificate_subject",
+                        "source_chunk_ids": list(
+                            dict.fromkeys(
+                                [
+                                    chunk.id,
+                                    *(
+                                        cast(str, b["source_chunk_id"])
+                                        for b in boundaries
+                                    ),
+                                ]
+                            )
+                        ),
+                        "document_ids": [did],
+                        "associations": [
+                            {
+                                "document_id": did,
+                                "document_revision": document["document_revision"],
+                                "blob_sha256": chunk.doc_sha256,
+                                "product_id": pid,
+                                "product_revision": product["product_revision"],
+                            }
+                        ],
+                        "certificate_scope": {
+                            "product_id": pid,
+                            "document_id": did,
+                            "model": model,
+                            "source_sha256": chunk.doc_sha256,
+                            "source_page": chunk.page,
+                            "source_chunk_id": chunk.id,
+                            "source_text": chunk.text,
+                            "author_boundaries": boundaries,
+                            "text_sha256": hashlib.sha256(text.encode()).hexdigest(),
+                        },
+                    }
+                    if not valid_certificate_scope(
+                        proof,
+                        [pid],
+                        source.products,
+                        source.documents,
+                        sha=chunk.doc_sha256,
+                        chunk_id=cid,
+                        text=text,
+                    ):
+                        continue
+                    output.append(
+                        replace(
+                            chunk,
+                            id=cid,
+                            header=header,
+                            text=text,
+                            tokens=tokens,
+                            source_headings=(),
+                            preceding_text=(),
+                            source_cells=(),
+                            source_rows=(),
+                        )
+                    )
+                    scopes[cid] = proof
+                    covered.add((did, pid, chunk.lang))
+    return output, scopes
+
+
+def compile_certificate_fragments(
+    chunks: list[Chunk],
+    source: Snapshot,
+    proofs: dict[str, ScopeProof],
+    tokenizer: Tokenizer,
+    max_tokens: int,
+) -> tuple[list[Chunk], dict[str, ScopeProof]]:
+    """Retain positive certificate facts only when their original proof holds."""
+    from linker_genie.publication_scope import authorize_chunk
+
+    originals = {chunk.id: chunk for chunk in chunks}
+    positions = {chunk.id: position for position, chunk in enumerate(chunks)}
+    links = [
+        {
+            "document_id": did,
+            "document_revision": document["document_revision"],
+            "blob_sha256": document["blob_sha256"],
+            "product_id": pid,
+            "product_revision": source.products[pid]["product_revision"],
+        }
+        for did, document in source.documents.items()
+        for pid in document["product_ids"]
+        if pid in source.products
+    ]
+    output: list[Chunk] = []
+    result: dict[str, ScopeProof] = {}
+    for original_id, origin in proofs.items():
+        chunk = originals.get(original_id)
+        if (
+            chunk is None
+            or chunk.source_picture
+            or origin["basis"]
+            not in {
+                "passage",
+                "section",
+                "section_model",
+                "document_model",
+                "common_terms",
+            }
+        ):
+            continue
+        for did in origin["document_ids"]:
+            document = source.documents.get(did)
+            if document is None or not certificate_document(document):
+                continue
+            for pid in origin["product_ids"]:
+                product = source.products.get(pid)
+                if product is None or pid not in document["product_ids"]:
+                    continue
+                model = str(product.get("model", ""))
+                anchors = [
+                    originals[anchor_id]
+                    for anchor_id in origin["source_chunk_ids"]
+                    if anchor_id in originals
+                    and originals[anchor_id].doc_sha256 == chunk.doc_sha256
+                    and _model_pattern(model).search(originals[anchor_id].text)
+                ]
+                anchors.sort(key=lambda anchor: anchor.page != chunk.page)
+                if not anchors:
+                    continue
+                anchor = anchors[0]
+                middle: list[Chunk] = []
+                if split_declaration(chunk.text):
+                    distance = positions[anchor.id] - positions[chunk.id]
+                    middle = chunks[positions[chunk.id] + 1 : positions[anchor.id]]
+                    if (
+                        anchor.page != chunk.page
+                        or anchor.lang != chunk.lang
+                        or distance not in (1, 2)
+                        or any(
+                            c.doc_sha256 != chunk.doc_sha256
+                            or c.page != chunk.page
+                            or not re.fullmatch(r"[A-Za-z]{1,8}", c.text.strip())
+                            for c in middle
+                        )
+                    ):
+                        continue
+                registration = None
+                if anchor.page != chunk.page:
+                    number = certificate_registration(anchor.text)
+                    registration = next(
+                        (
+                            candidate
+                            for candidate in chunks
+                            if candidate.doc_sha256 == chunk.doc_sha256
+                            and candidate.page == chunk.page
+                            and number
+                            and certificate_registration(candidate.text) == number
+                        ),
+                        None,
+                    )
+                    if registration is None:
+                        continue
+                limitation = None
+                if lcie_declaration(chunk.text):
+                    limitation = next(
+                        (
+                            candidate
+                            for candidate in chunks
+                            if candidate.doc_sha256 == chunk.doc_sha256
+                            and candidate.page == chunk.page
+                            and lcie_limitation(candidate.text)
+                        ),
+                        None,
+                    )
+                    if limitation is None:
+                        continue
+                text = certificate_fragment_text(
+                    chunk.text,
+                    model,
+                    subject_text=anchor.text,
+                    limitation_text=limitation.text if limitation else "",
+                )
+                if text is None:
+                    continue
+
+                def anchor_evidence(item: Chunk) -> dict[str, Any]:
+                    return {
+                        "page": item.page,
+                        "chunk_id": item.id,
+                        "kind": item.kind,
+                        "text": item.text,
+                        "lang": item.lang,
+                    }
+
+                cid = certificate_fragment_id(
+                    chunk.doc_sha256, chunk.page, model, chunk.id, did, text
+                )
+                header = f"{model} | {document['title']} | p. {chunk.page}"
+                tokens = tokenizer.count(header + "\n" + text)
+                if tokens > max_tokens:
+                    continue
+                proof: ScopeProof = {
+                    "product_ids": [pid],
+                    "basis": "certificate_fragment",
+                    "source_chunk_ids": list(
+                        dict.fromkeys(
+                            [
+                                chunk.id,
+                                *origin["source_chunk_ids"],
+                                *(c.id for c in middle),
+                                *([registration.id] if registration else []),
+                                *([limitation.id] if limitation else []),
+                            ]
+                        )
+                    ),
+                    "document_ids": [did],
+                    "associations": [
+                        {
+                            "document_id": did,
+                            "document_revision": document["document_revision"],
+                            "blob_sha256": chunk.doc_sha256,
+                            "product_id": pid,
+                            "product_revision": product["product_revision"],
+                        }
+                    ],
+                    "certificate_fragment": {
+                        "product_id": pid,
+                        "document_id": did,
+                        "model": model,
+                        "source_sha256": chunk.doc_sha256,
+                        "source_page": chunk.page,
+                        "source_chunk_id": chunk.id,
+                        "source_kind": chunk.kind,
+                        "source_text": chunk.text,
+                        "origin_scope": origin,
+                        "subject_anchor": anchor_evidence(anchor),
+                        "registration_anchor": (
+                            anchor_evidence(registration) if registration else None
+                        ),
+                        "limitation_anchor": (
+                            anchor_evidence(limitation) if limitation else None
+                        ),
+                        "between_anchors": [anchor_evidence(c) for c in middle],
+                        "source_lang": chunk.lang,
+                        "text_sha256": hashlib.sha256(text.encode()).hexdigest(),
+                    },
+                }
+                if not authorize_chunk(
+                    chunk.doc_sha256,
+                    [pid],
+                    links,
+                    proof,
+                    products=source.products,
+                    documents=source.documents,
+                    chunk_id=cid,
+                    text=text,
+                ):
+                    continue
+                output.append(
+                    replace(
+                        chunk,
+                        id=cid,
+                        kind="text",
+                        header=header,
+                        text=text,
+                        tokens=tokens,
+                        source_table="",
+                        source_headings=(),
+                        preceding_text=(),
+                        source_cells=(),
+                        source_rows=(),
+                    )
+                )
+                result[cid] = proof
+    return output, result
 
 
 def compile_publication(

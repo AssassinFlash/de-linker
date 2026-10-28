@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "compatibility_revision": "e90acaa602fd9b0e23eb24696e48667f81a2cab9ff2c5f409c9ab1706221aa2c",
+  "products": [
+    {
+      "product_id": 3595,
+      "title": "GoodWe GW125K-ETR-G10 (125 kW three-phase hybrid inverter)",
+      "model": "GW125K-ETR-G10",
+      "brand": "GoodWe",
+      "engineering_role": "",
+      "engineering_id": "",
+      "locale_product_ids": {
+        "en": 3595,
+        "de": 6654
+      },
+      "published_locale_ids": [
+        3595,
+        6654
+      ],
+      "documents": [
+        "doc-9d1586fc259587ba13630c6bbee83c6a3e506dfea48ed10916cd63c8fbdc00d1"
+      ],
+      "product_revision": "99cff11e93bc0cff6c2e933d6d0974e5c51fb36e97e69525194380d762a341b0",
+      "ready": {
+        "knowledge": true,
+        "engineering": true
+      }
+    },
+    {
+      "product_id": 6507,
+      "title": "GoodWe GW80K-ETR-G10 (80 kW three-phase hybrid inverter)",
+      "model": "GW80K-ETR-G10",
+      "brand": "GoodWe",
+      "engineering_role": "",
+      "engineering_id": "",
+      "locale_product_ids": {
+        "en": 6507,
+        "de": 6588
+      },
+      "published_locale_ids": [
+        6507,
+        6588
+      ],
+      "documents": [
+        "doc-9d1586fc259587ba13630c6bbee83c6a3e506dfea48ed10916cd63c8fbdc00d1"
+      ],
+      "product_revision": "4803773a6676223b536ca8f0e8485792ed003b7cbfe44f5bedec5bbe3794f1be",
+      "ready": {
+        "knowledge": true,
+        "engineering": true
+      }
+    },
+    {
+      "product_id": 6508,
+      "title": "GoodWe GW99.99K-ETR-G10 (99.99 kW three-phase hybrid inverter)",
+      "model": "GW99.99K-ETR-G10",
+      "brand": "GoodWe",
+      "engineering_role": "",
+      "engineering_id": "",
+      "locale_product_ids": {
+        "en": 6508,
+        "de": 6587
+      },
+      "published_locale_ids": [
+        6508,
+        6587
+      ],
+      "documents": [
+        "doc-9d1586fc259587ba13630c6bbee83c6a3e506dfea48ed10916cd63c8fbdc00d1"
+      ],
+      "product_revision": "e56e57e6e97cdbd48bf4da6a30a6e82b7887ffdd8bc0ca759e4c25c7e3074507",
+      "ready": {
+        "knowledge": true,
+        "engineering": true
+      }
+    },
+    {
+      "product_id": 6509,
+      "title": "GoodWe GW100K-ETR-G10 (100 kW three-phase hybrid inverter)",
+      "model": "GW100K-ETR-G10",
+      "brand": "GoodWe",
+      "engineering_role": "",
+      "engineering_id": "",
+      "locale_product_ids": {
+        "en": 6509,
+        "de": 6586
+      },
+      "published_locale_ids": [
+        6509,
+        6586
+      ],
+      "documents": [
+        "doc-9d1586fc259587ba13630c6bbee83c6a3e506dfea48ed10916cd63c8fbdc00d1"
+      ],
+      "product_revision": "cbf203c7eef8abcb2acda3bf2b14de59d21421c9bac9bb9530d50ae3f790bc83",
+      "ready": {
+        "knowledge": true,
+        "engineering": true
+      }
+    },
+    {
+      "product_id": 6510,
+      "title": "GoodWe GW110K-ETR-G10 (110 kW three-phase hybrid inverter)",
+      "model": "GW110K-ETR-G10",
+      "brand": "GoodWe",
+      "engineering_role": "",
+      "engineering_id": "",
+      "locale_product_ids": {
+        "en": 6510,
+        "de": 6585
+      },
+      "published_locale_ids": [
+        6510,
+        6585
+      ],
+      "documents": [
+        "doc-9d1586fc259587ba13630c6bbee83c6a3e506dfea48ed10916cd63c8fbdc00d1"
+      ],
+      "product_revision": "f13a537fd990b08e97aee092b0c2f068f12993c4804ae8ae91e83e45bc83b585",
+      "ready": {
+        "knowledge": true,
+        "engineering": true
+      }
+    },
+    {
+      "product_id": 6511,
+      "title": "GoodWe GW124.99K-ETR-G10 (124.99 kW three-phase hybrid inverter)",
+      "model": "GW124.99K-ETR-G10",
+      "brand": "GoodWe",
+      "engineering_role": "",
+      "engineering_id": "",
+      "locale_product_ids": {
+        "en": 6511,
+        "de": 6584
+      },
+      "published_locale_ids": [
+        6511,
+        6584
+      ],
+      "documents": [
+        "doc-9d1586fc259587ba13630c6bbee83c6a3e506dfea48ed10916cd63c8fbdc00d1"
+      ],
+      "product_revision": "e21f66661ed3ee8796f62e6695dacd746eb98dd337481e1b4eb1e200b0464ab9",
+      "ready": {
+        "knowledge": true,
+        "engineering": true
+      }
+    }
+  ],
+  "documents": [
+    {
+      "document_id": "doc-9d1586fc259587ba13630c6bbee83c6a3e506dfea48ed10916cd63c8fbdc00d1",
+      "blob_sha256": "8ced72d8cec02f6b69f82f42097c8a206ed3a5bf298b52178849f74292090b81",
+      "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ETR-50-125kW_Datasheet_EMEA-DE_V1.1.pdf",
+      "aliases": [
+        "https://de-linker.com/wp-content/uploads/2026/10/GW_ETR-50-125kW_Datasheet_EMEA-DE_V1.1.pdf"
+      ],
+      "product_ids": [
+        3595,
+        6507,
+        6508,
+        6509,
+        6510,
+        6511
+      ],
+      "title": "GoodWe ETR Series 80–125 kW Datasheet (EMEA, DE)",
+      "type": "datasheet",
+      "lang": "DE",
+      "role": "datasheet",
+      "citation_aliases": [],
+      "document_revision": "7ae3132aa234b3414a13361b8f324484e65e91b172dfd6f92220c62a10e2b245"
+    }
+  ],
+  "source_revision": "70bee27911b6f152da6295cb68500b9f6701686a8144955c80066719d113449d"
+}

@@ -52,8 +52,106 @@ final class MaterialsKindTest extends TestCase {
 		// The twin lookup a material-less product walks: function_exists is
 		// stubbed true by the suite's pll handling, so answer the language
 		// call the way an unpaired product does.
-		WP_Mock::userFunction( 'pll_get_post_language', array( 'return' => false ) );
-		WP_Mock::userFunction( 'pll_get_post', array( 'return' => 0 ) );
+		WP_Mock::userFunction( 'pll_get_post_language', array( 'return' => static fn( int $id ) => 9295 === $id ? 'de' : false ) );
+		WP_Mock::userFunction( 'pll_get_post', array( 'return' => static fn( int $id ) => 9295 === $id ? 9294 : 0 ) );
+	}
+
+	/** A cabinet and its internal inverter must not share the inverter's figures. */
+	public function test_duplicate_binding_uses_the_woo_models_matching_material_for_both_languages(): void {
+		$this->seed_registry(
+			array(
+				'inverter' => array(
+					'bindings'    => array( 'woo_product_ids' => array( 9294 ) ),
+					'identity'    => array( 'model' => 'CH2-29.9K-T4' ),
+					'material_id' => 'inverter',
+					'technical'   => array( 'specifications' => array( 'weight' => array( 'value' => '76' ) ) ),
+				),
+				'cabinet'  => array(
+					'bindings'    => array( 'woo_product_ids' => array( 9294 ) ),
+					'identity'    => array( 'model' => 'CHS2-29.9K-T4-X' ),
+					'material_id' => 'cabinet',
+					'technical'   => array(
+						'specifications' => array(
+							'weight'               => array( 'value' => '1035 (57.3 kWh); 1365 (100.3 kWh)' ),
+							'battery_rated_energy' => array(
+								'value' => '100.3',
+								'unit'  => 'kWh (merged value printed across all CHS2 models; see notes)',
+							),
+						),
+					),
+				),
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'return' => static function ( int $id, string $key ): string {
+					if ( 9294 !== $id ) {
+						return '';
+					}
+					return match ( $key ) {
+						'_delinker_model' => 'CHS2-29.9K-T4-X',
+						'_tv_b2b_figures' => (string) json_encode(
+							array(
+								'battery_rated_energy' => array(
+									'value'    => '57.3–100.3',
+									'value_de' => '57,3–100,3',
+									'unit'     => 'kWh',
+								),
+							)
+						),
+						default => '',
+					};
+				},
+			)
+		);
+
+		$this->assertSame( 'cabinet', Materials::material_for_product( 9294 )['material_id'] ?? null );
+		$this->assertSame( 'cabinet', Materials::material_for_product( 9295 )['material_id'] ?? null );
+		$this->assertSame( '1035 (57.3 kWh); 1365 (100.3 kWh)', Materials::facts( $this->product( 9294 ) )['weight']['value'] );
+		$this->assertSame( '57.3–100.3', Materials::facts( $this->product( 9294 ) )['battery_rated_energy']['value'] );
+		$this->assertSame( '57,3–100,3', Materials::facts( $this->product( 9295 ) )['battery_rated_energy']['value_de'] );
+	}
+
+	/** A merged upper limit alone is not a product-specific capacity. */
+	public function test_merged_capacity_without_a_native_range_is_not_exposed_as_a_scalar(): void {
+		$this->seed_registry(
+			array(
+				'cabinet' => array(
+					'bindings'  => array( 'woo_product_ids' => array( 9297 ) ),
+					'technical' => array(
+						'specifications' => array(
+							'battery_rated_energy' => array(
+								'value' => '100.3',
+								'unit'  => 'kWh (merged value printed across all CHS2 models; see notes)',
+							),
+						),
+					),
+				),
+			)
+		);
+		WP_Mock::userFunction( 'get_post_meta', array( 'return' => '' ) );
+
+		$this->assertArrayNotHasKey( 'battery_rated_energy', Materials::facts( $this->product( 9297 ) ) );
+	}
+
+	/** A missing or non-matching Woo model must not guess a material by order. */
+	public function test_duplicate_binding_without_an_exact_model_is_not_selected(): void {
+		$this->seed_registry(
+			array(
+				'inverter' => array(
+					'bindings' => array( 'woo_product_ids' => array( 9296 ) ),
+					'identity' => array( 'model' => 'CH2-29.9K-T4' ),
+				),
+				'cabinet'  => array(
+					'bindings' => array( 'woo_product_ids' => array( 9296 ) ),
+					'identity' => array( 'model' => 'CHS2-29.9K-T4-X' ),
+				),
+			)
+		);
+		WP_Mock::userFunction( 'get_post_meta', array( 'return' => static fn( int $id, string $key ) => '_delinker_model' === $key ? 'unknown model' : '' ) );
+
+		$this->assertNull( Materials::material_for_product( 9296 ) );
 	}
 
 	/**

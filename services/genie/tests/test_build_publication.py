@@ -32,7 +32,9 @@ class CapturingEmbedder(CountingEmbedder):
         return super().embed_documents(passages)
 
 
-def actual_input(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+def actual_input(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, deadlines: list[int] | None = None
+) -> Path:
     raw = manifest()
     document = next(d for d in raw["documents"] if d["blob_sha256"] == H2_DE)
     selected = chunks(H2_DE[:12])
@@ -59,8 +61,14 @@ def actual_input(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     # The compiler/runtime tests exercise extraction of the native original.
     # Here the seam under test is compile -> embed -> SQLite, using those exact cells.
     monkeypatch.setattr(builder, "chunk_all", lambda *_: original)
+
+    def publication_client(_source: str, **options: int) -> object:
+        if deadlines is not None:
+            deadlines.append(options["identify_deadline"])
+        return authority(raw)
+
     monkeypatch.setattr(
-        "linker_genie.publication.PublicationClient", lambda _: authority(raw)
+        "linker_genie.publication.PublicationClient", publication_client
     )
     inventory = tmp_path / "inventory.json"
     inventory.write_text(
@@ -72,7 +80,8 @@ def actual_input(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
 def test_current_model_projections_are_embedded_before_store_and_answer_the_right_column(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    inventory = actual_input(tmp_path, monkeypatch)
+    deadlines: list[int] = []
+    inventory = actual_input(tmp_path, monkeypatch, deadlines)
     embedder = CapturingEmbedder()
     directory = builder.build(
         inventory,
@@ -83,7 +92,9 @@ def test_current_model_projections_are_embedded_before_store_and_answer_the_righ
         Words(),
         lambda _: "de",
         activation_epoch=23,
+        publication_deadline=2_000_000_000,
     )
+    assert deadlines == [2_000_000_000]
     meta = corpus.read_meta(directory / "corpus")
     rows = list(corpus.read_chunks(directory / "corpus"))
     assert meta.recipe_revision == recipe_revision()

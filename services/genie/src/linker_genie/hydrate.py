@@ -19,8 +19,15 @@ unit the model repeats after it is dropped.
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 
-from linker_genie.facts import Document, Fact, TurnFacts, pairing_card_sets
+from linker_genie.facts import (
+    Document,
+    Fact,
+    Qualification,
+    TurnFacts,
+    pairing_card_sets,
+)
 from linker_genie.figures import chunk_of, localize
 from linker_genie.route import Route
 from linker_genie.schema import (
@@ -140,7 +147,11 @@ def complete_pairing_cards(
 
 
 def hydrate(
-    output: TurnOutput, facts: TurnFacts, language: str | None = None
+    output: TurnOutput,
+    facts: TurnFacts,
+    language: str | None = None,
+    *,
+    qualified_mask: Callable[[str], str] | None = None,
 ) -> TurnOutput:
     """Return a copy whose text blocks and handoff summaries are filled.
 
@@ -148,22 +159,56 @@ def hydrate(
     sentence, the login sentence), document page labels and the decimal mark
     of a document figure. Callers that omit it keep the output's own language.
 
-    Document blocks become links, one per file: two refs to the same file (two
-    batteries citing the same configuration instructions, trial question 4,
-    2026-10-17) are one link, its cited pages joined ("pp. 3, 7").
+    Ordinary document blocks become one link per file, with cited pages joined.
+    A used qualified figure's page and every original condition page keep
+    separate links so each opens directly at the relevant source page.
+
+    `qualified_mask` is used only during the final seal: it hides the exact
+    qualified value and source quote at their hydration sites until the seal
+    restores them. Other occurrences of the same value are not affected.
     """
     language = language or output.language
     blocks: list[Block] = []
-    # File URL → (index of its link in `blocks`, the document, its cited pages).
-    links: dict[str, tuple[int, Document, list[int]]] = {}
+    # Ordinary citations share one file link. A qualification on another page
+    # needs its own link, so the reader can open the actual condition directly.
+    links: dict[tuple[str, int | None], tuple[int, Document, list[int]]] = {}
+    condition_refs = {
+        note.chunk_id for notes in _used_qualifications(output, facts) for note in notes
+    }
+    parameter_refs = {
+        chunk
+        for block in output.blocks
+        if isinstance(block, (TextBlock, HandoffBlock))
+        for fact_id in PLACEHOLDER.findall(
+            block.text if isinstance(block, TextBlock) else block.summary
+        )
+        if fact_id in facts.facts
+        if (chunk := chunk_of(fact_id)) is not None
+        if chunk in facts.qualifications
+    }
+    emitted: set[tuple[str, str]] = set()
     for block in [*output.blocks, *cited_documents(output, facts)]:
         if isinstance(block, TextBlock):
-            text = fill(block.text, facts, language)
+            text = fill(
+                block.text,
+                facts,
+                language,
+                emitted=emitted,
+                qualified_mask=qualified_mask,
+            )
             blocks.append(block.model_copy(update={"text": text}))
         elif isinstance(block, HandoffBlock):
             blocks.append(
                 block.model_copy(
-                    update={"summary": fill(block.summary, facts, language)}
+                    update={
+                        "summary": fill(
+                            block.summary,
+                            facts,
+                            language,
+                            emitted=emitted,
+                            qualified_mask=qualified_mask,
+                        )
+                    }
                 )
             )
         elif (
@@ -181,12 +226,16 @@ def hydrate(
             document = facts.documents.get(block.ref)
             if document is None:
                 continue
-            if document.url in links:
-                index, first, pages = links[document.url]
+            key = (
+                document.url,
+                document.page if block.ref in condition_refs | parameter_refs else None,
+            )
+            if key in links:
+                index, first, pages = links[key]
             else:
                 index, first, pages = len(blocks), document, []
                 blocks.append(block)
-                links[document.url] = (index, first, pages)
+                links[key] = (index, first, pages)
             if document.page is not None and document.page not in pages:
                 pages.append(document.page)
             blocks[index] = blocks[index].model_copy(
@@ -205,18 +254,46 @@ def cited_documents(output: TurnOutput, facts: TurnFacts) -> list[DocumentBlock]
     linked = {block.ref for block in output.blocks if isinstance(block, DocumentBlock)}
     cited: list[str] = []
     for block in output.blocks:
-        if not isinstance(block, TextBlock):
+        if isinstance(block, TextBlock):
+            cited.extend(ref for ref in block.refs if ref in facts.chunk_ids)
+            text = block.text
+        elif isinstance(block, HandoffBlock):
+            text = block.summary
+        else:
             continue
-        cited.extend(ref for ref in block.refs if ref in facts.chunk_ids)
-        for fact_id in PLACEHOLDER.findall(block.text):
+        for fact_id in PLACEHOLDER.findall(text):
             chunk = chunk_of(fact_id)
             if chunk is not None and chunk in facts.chunk_ids:
                 cited.append(chunk)
+                cited.extend(
+                    note.chunk_id for note in facts.qualifications.get(chunk, ())
+                )
     return [
         DocumentBlock(ref=chunk)
         for chunk in dict.fromkeys(cited)
         if chunk not in linked and chunk in facts.documents
     ]
+
+
+def _used_qualifications(
+    output: TurnOutput, facts: TurnFacts
+) -> list[tuple[Qualification, ...]]:
+    """Conditions of figures actually requested by the answer's placeholders."""
+    used: list[tuple[Qualification, ...]] = []
+    for block in output.blocks:
+        if isinstance(block, TextBlock):
+            text = block.text
+        elif isinstance(block, HandoffBlock):
+            text = block.summary
+        else:
+            continue
+        for fact_id in PLACEHOLDER.findall(text):
+            chunk = chunk_of(fact_id)
+            if fact_id in facts.facts and chunk in facts.qualifications:
+                notes = facts.qualifications[chunk]
+                if all(_quote(note) is not None for note in notes):
+                    used.append(notes)
+    return used
 
 
 def document_label(
@@ -269,7 +346,14 @@ def document_url(document: Document, pages: list[int] | None = None) -> str:
 UNITS = (("_kwh", "kWh"), ("kwh_range", "kWh"), ("_kw", "kW"))
 
 
-def fill(text: str, facts: TurnFacts, locale: str = "en") -> str:
+def fill(
+    text: str,
+    facts: TurnFacts,
+    locale: str = "en",
+    *,
+    emitted: set[tuple[str, str]] | None = None,
+    qualified_mask: Callable[[str], str] | None = None,
+) -> str:
     """Replace each `{fact:ID}` with the stored value; unknown IDs stay as-is
     so a later check can still see them.
 
@@ -279,10 +363,26 @@ def fill(text: str, facts: TurnFacts, locale: str = "en") -> str:
     dropped ("1000 W W", issue #257 trial run).
     """
 
+    seen = emitted if emitted is not None else set()
+    used: list[Qualification] = []
+
     def replace(match: re.Match[str]) -> str:
         fact = _render_fact(facts, match.group(1), locale)
         if fact is None:
             return match.group(0)
+        # A source chunk's `.text` is internal grounding material, not a
+        # customer-ready rendering of a qualified table.
+        if fact.id.endswith(".text") and fact.id[:-5] in facts.qualifications:
+            return "nicht verfügbar" if locale.startswith("de") else "unavailable"
+        chunk = chunk_of(fact.id)
+        notes = facts.qualifications.get(chunk, ()) if chunk is not None else ()
+        if notes and any(_quote(note) is None for note in notes):
+            return "nicht verfügbar" if locale.startswith("de") else "unavailable"
+        for note in notes:
+            key = (note.lang, note.quote)
+            if key not in seen:
+                seen.add(key)
+                used.append(note)
         after = match.group(2)
         # A figure of a document chunk, of the customer's page (page.py, #234), of
         # their saved solution (solution.py, #496) or of a file the customer
@@ -301,6 +401,8 @@ def fill(text: str, facts: TurnFacts, locale: str = "en") -> str:
         ):
             value = localize(fact.value, locale)
             unit = _UNIT_TAIL.search(value)
+            if notes and qualified_mask is not None:
+                value = qualified_mask(value)
             if unit and after and after.strip() == unit.group(1):
                 return value
             return value + after
@@ -310,7 +412,39 @@ def fill(text: str, facts: TurnFacts, locale: str = "en") -> str:
             return f"{fact.value} {unit_word}{after}"
         return fact.value + after
 
-    return _PLACEHOLDER_AND_WORD.sub(replace, text)
+    filled = _PLACEHOLDER_AND_WORD.sub(replace, text)
+    for note in used:
+        rendered = _quote(note)
+        if rendered is not None:
+            label = _qualification_label(locale, note.lang)
+            if qualified_mask is not None:
+                rendered = qualified_mask(rendered)
+            filled += f"\n\n{label} {rendered}"
+    return filled
+
+
+def _quote(note: Qualification) -> str | None:
+    """Keep the manufacturer's wording in an unambiguous quotation."""
+    body = note.quote.split(":", 1)[1].strip()
+    if '"' not in body:
+        return f'"{body}"'
+    if "“" not in body and "”" not in body:
+        return f"„{body}“"
+    return None
+
+
+def _qualification_label(locale: str, source_language: str) -> str:
+    if locale.startswith("de"):
+        return (
+            "Herstellerbedingung:"
+            if source_language == "de"
+            else "Herstellerbedingung (englisches Original):"
+        )
+    return (
+        "Manufacturer's condition:"
+        if source_language == "en"
+        else "Manufacturer's condition (German original):"
+    )
 
 
 def _unit(fact_id: str) -> str | None:

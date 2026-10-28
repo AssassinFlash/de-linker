@@ -46,6 +46,12 @@ final class ProductShortcodesTest extends TestCase {
 	 */
 	private ?WC_Product $pdp_product = null;
 
+	/** The card model for the current fixture.
+	 *
+	 * @var string
+	 */
+	private string $pdp_model = 'GW60K-STS-G10';
+
 	/**
 	 * The legacy ACF JSON the current test's reads answer with.
 	 *
@@ -1398,6 +1404,96 @@ final class ProductShortcodesTest extends TestCase {
 		return new ProductShortcodes( new ProductFilters(), $this->published_document_view() );
 	}
 
+	/** A single-product model is not prefixed with a fact, unlike a family picker. */
+	public function test_single_product_card_model_uses_only_the_model(): void {
+		WP_Mock::userFunction(
+			'get_the_terms',
+			array(
+				'return' => fn( int $id, string $taxonomy ) => match ( $taxonomy ) {
+					'pa_model'       => '' === $this->pdp_model ? false : array(
+						(object) array(
+							'slug' => 'model',
+							'name' => $this->pdp_model,
+						),
+					),
+					'pa_brand'       => array(
+						(object) array(
+							'slug' => 'goodwe',
+							'name' => 'GoodWe',
+						),
+					),
+					'pa_application' => array( (object) array( 'slug' => 'commercial' ) ),
+					'pa_phase'       => array( (object) array( 'slug' => 'three-phase' ) ),
+					default          => false,
+				},
+			)
+		);
+		WP_Mock::userFunction( 'pll_get_post', array( 'return' => static fn( int $id, string $lang ): int => 'en' === $lang ? $id : 0 ) );
+		$shortcodes = $this->pdp( true );
+		WP_Mock::userFunction( 'get_option', array( 'return' => 'no' ) );
+		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'http://linker.test/product/goodwe-gw60k-sts-g10/' ) );
+		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn( $value ): string => (string) json_encode( $value ) ) );
+		$html = $shortcodes->products_card();
+		$this->assertStringContainsString( '<small>Model</small><strong data-card-selection>GW60K-STS-G10</strong>', $html );
+		$this->assertStringContainsString( '<dt>Communication</dt><dd>RS485</dd>', $html );
+
+		$card = ( new ProductView() )->card_fields( self::PDP );
+		$line = new \ReflectionMethod( ProductShortcodes::class, 'selection_line' );
+		$this->assertSame( 'RS485 · GW60K-STS-G10', $line->invoke( $shortcodes, $this->pdp_product, $card ) );
+
+		$this->pdp_model = '';
+
+		$without_model = $shortcodes->products_card();
+		$this->assertStringContainsString( 'GoodWe GW60K-STS-G10</a>', $without_model );
+		$this->assertStringNotContainsString( 'data-linker-exact-product', $without_model );
+	}
+
+	/** The shared component carries semantic facts and a neutral visual fallback. */
+	public function test_key_stats_emit_semantic_fact_keys_and_css_covers_the_component(): void {
+		$html = $this->pdp( true )->pdp_key_stats();
+		$this->assertStringContainsString( 'data-pdp-fact="interface"', $html );
+		$this->assertStringContainsString( 'data-pdp-fact="weight"', $html );
+		$this->assertStringNotContainsString( '<svg', $html );
+
+		$css = (string) file_get_contents( dirname( __DIR__, 4 ) . '/content/windpress/pdp.css' );
+		foreach ( array( 'ac_power', 'phase', 'mppt', 'usable_kwh', 'nominal_kwh', 'efficiency', 'batt_voltage', 'nom_voltage', 'ip', 'weight', 'dimensions', 'chemistry', 'charge_a', 'discharge_a', 'accuracy', 'ratio', 'interface', 'burden', 'devices', 'temp' ) as $key ) {
+			$this->assertStringContainsString( 'data-pdp-fact="' . $key . '"', $css );
+		}
+		$this->assertMatchesRegularExpression( '/\.pdp-app-stat-icon\s*\{\s*--pdp-fact-icon:\s*url\(/', $css );
+		preg_match( '/data-pdp-fact="weight"\][^{]*\{\s*--pdp-fact-icon:\s*([^;]+);/', $css, $weight );
+		preg_match( '/data-pdp-fact="ac_power"\][^{]*\{\s*--pdp-fact-icon:\s*([^;]+);/', $css, $power );
+		$this->assertNotEmpty( $weight[1] ?? '' );
+		$this->assertNotEmpty( $power[1] ?? '' );
+		$this->assertNotSame( $power[1], $weight[1] );
+	}
+
+	/** Distinct options keep their source text; a semicolon inside a note is not a separator. */
+	public function test_key_stat_options_preserve_the_complete_source_facts(): void {
+		$render = new \ReflectionMethod( ProductShortcodes::class, 'pdp_stat_value' );
+		$value  = '1035 kg (57.3 kWh); 1145 kg (71.6 kWh); 1255 kg (85.9 kWh); 1365 kg (100.3 kWh)';
+		$html   = $render->invoke( null, $value );
+		$dom    = new \DOMDocument();
+		$dom->loadHTML( '<div>' . $html . '</div>', LIBXML_NOERROR | LIBXML_NOWARNING );
+		$parts = array();
+		foreach ( $dom->getElementsByTagName( 'span' ) as $span ) {
+			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- DOM's native property name.
+			$parts[] = $span->textContent;
+		}
+		$this->assertSame(
+			array( '1035 kg (57.3 kWh);', ' 1145 kg (71.6 kWh);', ' 1255 kg (85.9 kWh);', ' 1365 kg (100.3 kWh)' ),
+			$parts
+		);
+		$this->assertSame( $value, strip_tags( $html ) );
+		$this->assertSame( '15 kg', $render->invoke( null, '15 kg' ) );
+		$this->assertSame( '15 kg (including base; without packaging)', $render->invoke( null, '15 kg (including base; without packaging)' ) );
+		$with_note = '15 kg (including base; without packaging); 20 kg (alternate)';
+		$marked    = $render->invoke( null, $with_note );
+		$this->assertSame( $with_note, strip_tags( $marked ) );
+		$this->assertSame( 2, substr_count( $marked, '<span class="pdp-spec-option">' ) );
+		$this->assertSame( '15 kg; ', $render->invoke( null, '15 kg; ' ) );
+		$this->assertSame( '15 kg (including base; 20 kg', $render->invoke( null, '15 kg (including base; 20 kg' ) );
+	}
+
 	/**
 	 * The availability dot follows the product's own stock state: the base
 	 * class for a product in stock, `is-wait` for one that is not (the live
@@ -1588,9 +1684,14 @@ final class ProductShortcodesTest extends TestCase {
 		$rows     = $registry['materials']['mat_goodwe_gw125k_etr_g10']['technical']['relationships'];
 		$method   = new \ReflectionMethod( ProductShortcodes::class, 'pairing_status' );
 		foreach ( $rows as $row ) {
-			$expected = 'one_way' === $row['status'] ? 'Partially documented' : "On GoodWe's compatibility list";
+			$expected = 'one_way' === $row['status'] ? 'Partially documented' : 'Documented by GoodWe';
 			$this->assertSame( $expected, $method->invoke( null, $row, 'en' ) );
 		}
+		$eha_rows = $registry['materials']['mat_goodwe_gw10k_eha_g20']['technical']['relationships'];
+		foreach ( $eha_rows as $row ) {
+			$this->assertSame( 'Documented by GoodWe', $method->invoke( null, $row, 'en' ) );
+		}
+		$this->assertSame( 'Compatibility documented', $method->invoke( null, array( 'status' => 'listed' ), 'en' ) );
 		$contract = \Linker\Commerce\Products\Materials::contract();
 		foreach ( $contract['cells'] as $cell ) {
 			if ( 'one_way' === $cell['status'] ) {

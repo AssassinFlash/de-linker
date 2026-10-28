@@ -15,7 +15,8 @@ from typing import Literal
 from baseline.grade import Turn, answer_text, check, untraceable_numbers
 
 from linker_genie.cycle import run
-from linker_genie.facts import Fact, TurnFacts
+from linker_genie.facts import Fact, Qualification, TurnFacts, collect, merge
+from linker_genie.figures import tag
 from linker_genie.ground import (
     blob_has_figure,
     cites_outside_turn,
@@ -28,7 +29,7 @@ from linker_genie.ground import (
     check as ground_check,
 )
 from linker_genie.language import language_failure
-from linker_genie.route import Route
+from linker_genie.route import NamedModel, Route
 from linker_genie.schema import (
     ActionBlock,
     AskBlock,
@@ -60,6 +61,7 @@ def _facts(value: str = "") -> TurnFacts:
     gathered.qualified_ids = {4107}
     if value:
         gathered.add(Fact(id="c1.text", value=value, source="search-knowledge"))
+        gathered.knowledge_products["c1"] = (4107,)
     return gathered
 
 
@@ -195,7 +197,7 @@ def test_clearance_appends_only_a_figure_the_documents_contain() -> None:
     )
     sealed = seal(
         output,
-        _facts(DOC),
+        _scoped_hit("c1", 4107, DOC),
         Route("documents"),
         str(ROWS["b15-de"]["question"]),
         "other",
@@ -209,7 +211,7 @@ def test_clearance_appends_only_a_figure_the_documents_contain() -> None:
 
     invented = seal(
         output,
-        _facts("Clearances 1500 mm and 400 mm."),
+        _scoped_hit("c1", 4107, "Clearances 1500 mm and 400 mm."),
         Route("documents"),
         str(ROWS["b15-de"]["question"]),
         "other",
@@ -237,7 +239,7 @@ def test_a_clearance_answer_drops_datasheet_energy() -> None:
     )
     sealed = seal(
         output,
-        _facts(blob),
+        _scoped_hit("c1", 4107, blob),
         Route("documents"),
         str(ROWS["b15-en"]["question"]),
         "other",
@@ -321,9 +323,12 @@ def test_a_german_usable_paraphrase_that_already_matches_is_not_repeated() -> No
 def test_a_model_code_does_not_invent_a_usable_figure() -> None:
     output = TurnOutput(
         language="en",
-        blocks=[TextBlock(text="The documents discuss this battery.")],
+        blocks=[
+            TextBlock(text="The documents discuss this battery."),
+            DocumentBlock(ref="c1"),
+        ],
     )
-    blob = "Model L260 Omni."
+    blob = "Model L260 Omni. Usable capacity is not stated."
     assert blob_has_figure(blob, 260) is False
     sealed = seal(
         output,
@@ -334,6 +339,562 @@ def test_a_model_code_does_not_invent_a_usable_figure() -> None:
     )
     assert "260 kWh" not in _text(sealed)
     assert "The documents do not state a usable capacity." in _text(sealed)
+
+
+def _scoped_hit(
+    chunk: str, product: int, text: str, *, url: str = "https://example.test/data.pdf"
+) -> TurnFacts:
+    tagged = tag(chunk, text)
+    return collect(
+        "linker/search-knowledge",
+        {
+            "hits": [
+                {
+                    "chunk_id": chunk,
+                    "doc_url": url,
+                    "title": "Sample data",
+                    "page": 2,
+                    "product_ids": [product],
+                    "text": tagged.text,
+                    "figures": tagged.figures,
+                }
+            ]
+        },
+    )
+
+
+def test_clearance_completion_binds_the_value_to_the_property() -> None:
+    facts = _scoped_hit("a", 1, "Minimum clearance 500 mm; enclosure height 1500 mm.")
+    output = TurnOutput(
+        language="en",
+        blocks=[TextBlock(text="See the installation guide.", refs=["a"])],
+    )
+
+    sealed = seal(output, facts, Route("documents"), "What minimum clearance?", "other")
+
+    assert "500 mm" in _text(sealed)
+    assert "1500 mm" not in _text(sealed)
+
+
+def test_clearance_completion_does_not_assert_a_negated_value() -> None:
+    facts = _scoped_hit("a", 1, "The clearance is not 500 mm; use a minimum of 400 mm.")
+    output = TurnOutput(
+        language="en",
+        blocks=[TextBlock(text="See the installation guide.", refs=["a"])],
+    )
+
+    sealed = seal(output, facts, Route("documents"), "What minimum clearance?", "other")
+
+    assert "500 mm" not in _text(sealed)
+    assert "400 mm" in _text(sealed)
+
+
+def test_cycle_does_not_use_another_or_negated_figure_as_clearance() -> None:
+    cases: tuple[tuple[Literal["en", "de"], str, str, str | None, str], ...] = (
+        (
+            "en",
+            "Minimum clearance 500 mm; enclosure height 1500 mm.",
+            "a.n2",
+            "1500 mm",
+            "500 mm",
+        ),
+        (
+            "de",
+            "Minimum clearance 500 mm; enclosure height 1500 mm.",
+            "a.n2",
+            "1500 mm",
+            "500 mm",
+        ),
+        (
+            "en",
+            "The clearance is not 500 mm; use a minimum of 400 mm.",
+            "a.n1",
+            "500 mm",
+            "400 mm",
+        ),
+        (
+            "en",
+            "Minimum clearance 500 mm; enclosure height 500 mm.",
+            "a.n2",
+            None,
+            "500 mm",
+        ),
+    )
+    for language, source, ref, forbidden, expected in cases:
+        facts = _scoped_hit("a", 1, source)
+        request = TurnRequest(
+            conversation_id="clearance",
+            messages=[
+                TurnMessage(
+                    role="user",
+                    content="What minimum clearance?"
+                    if language == "en"
+                    else "Welcher Mindestabstand?",
+                )
+            ],
+            locale=language,
+        )
+        output = TurnOutput(
+            language=language,
+            blocks=[
+                TextBlock(
+                    text=(
+                        f"The minimum clearance is {{fact:{ref}}}."
+                        if language == "en"
+                        else f"Der Mindestabstand beträgt {{fact:{ref}}}."
+                    )
+                )
+            ],
+        )
+
+        def generate_case(
+            _request: TurnRequest,
+            _retry: str | None,
+            out: TurnOutput = output,
+            gathered: TurnFacts = facts,
+        ) -> tuple[TurnOutput, TurnFacts]:
+            return out, gathered
+
+        result = run(request, generate_case, Route("documents"))
+
+        assert result.grounded and not result.fallback
+        answer = _text(result.output)
+        if forbidden:
+            assert forbidden not in answer
+        else:
+            assert "The minimum clearance is 500 mm" not in answer
+        assert expected in answer
+        assert any(block.type == "document" for block in result.output.blocks)
+
+    facts = _scoped_hit("a", 1, "Minimum clearance 500 mm; enclosure height 1500 mm.")
+    request = TurnRequest(
+        conversation_id="clearance",
+        messages=[TurnMessage(role="user", content="What minimum clearance?")],
+        locale="en",
+    )
+    for claim in (
+        "The minimum clearance is {fact:a.n1}.",
+        "The minimum clearance is not {fact:a.n1}.",
+    ):
+        output = TurnOutput(language="en", blocks=[TextBlock(text=claim)])
+
+        def generate_claim(
+            _request: TurnRequest,
+            _retry: str | None,
+            out: TurnOutput = output,
+            gathered: TurnFacts = facts,
+        ) -> tuple[TurnOutput, TurnFacts]:
+            return out, gathered
+
+        result = run(request, generate_claim, Route("documents"))
+        assert result.grounded and not result.fallback
+        assert "500 mm" in _text(result.output)
+        assert "not 500 mm" not in _text(result.output)
+
+    both = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(
+                text="The enclosure height is {fact:a.n2}. The minimum clearance is {fact:a.n1}."
+            )
+        ],
+    )
+    result = run(request, lambda _request, _retry: (both, facts), Route("documents"))
+    assert result.grounded and not result.fallback
+    assert "height is 1500 mm" in _text(result.output)
+    assert "clearance is 500 mm" in _text(result.output)
+
+    mixed = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(
+                text="The enclosure height is {fact:a.n2}. The minimum clearance is {fact:a.n2}."
+            )
+        ],
+    )
+    result = run(request, lambda _request, _retry: (mixed, facts), Route("documents"))
+    assert result.grounded and not result.fallback
+    assert "height is 1500 mm" in _text(result.output)
+    assert "clearance is 1500 mm" not in _text(result.output)
+    assert "500 mm" in _text(result.output)
+
+
+def test_cycle_preserves_a_qualified_fact_when_removing_a_wrong_clearance() -> None:
+    plain = _scoped_hit("a", 1, "Minimum clearance 500 mm; enclosure height 1500 mm.")
+    conditioned = collect(
+        "linker/search-knowledge",
+        {
+            "hits": [
+                {
+                    "chunk_id": "b",
+                    "doc_url": "https://example.test/data.pdf",
+                    "title": "Sample data",
+                    "page": 2,
+                    "product_ids": [1],
+                    "text": "| Current | [n1=5 A] |\n*6: The interface is required. (p. 3)",
+                    "figures": {"b.n1": "5 A"},
+                    "qualification_required": True,
+                    "qualifications": [
+                        {
+                            "chunk_id": "b-p3",
+                            "page": 3,
+                            "quote": "*6: The interface is required.",
+                            "lang": "en",
+                        }
+                    ],
+                }
+            ]
+        },
+    )
+    request = TurnRequest(
+        conversation_id="clearance",
+        messages=[TurnMessage(role="user", content="What minimum clearance?")],
+        locale="en",
+    )
+    output = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(text="The clearance is {fact:a.n2}; current is {fact:b.n1}.")
+        ],
+    )
+
+    result = run(
+        request,
+        lambda _request, _retry: (output, merge([plain, conditioned])),
+        Route("documents"),
+    )
+
+    assert result.grounded and not result.fallback
+    answer = _text(result.output)
+    assert "1500 mm" not in answer and "500 mm" in answer and "5 A" in answer
+    assert '"The interface is required."' in answer
+    assert any(
+        isinstance(block, DocumentBlock)
+        and block.url is not None
+        and block.url.endswith("#page=3")
+        for block in result.output.blocks
+    )
+
+
+def test_cycle_rejects_a_qualified_height_as_clearance() -> None:
+    facts = collect(
+        "linker/search-knowledge",
+        {
+            "hits": [
+                {
+                    "chunk_id": "q",
+                    "doc_url": "https://example.test/data.pdf",
+                    "title": "Sample",
+                    "page": 2,
+                    "product_ids": [1],
+                    "text": "| Minimum clearance *6 | [n1=500 mm] |\n| Enclosure height *6 | [n2=1500 mm] |\n*6: The interface is required. (p. 3)",
+                    "figures": {"q.n1": "500 mm", "q.n2": "1500 mm"},
+                    "qualification_required": True,
+                    "qualifications": [
+                        {
+                            "chunk_id": "q-p3",
+                            "page": 3,
+                            "quote": "*6: The interface is required.",
+                            "lang": "en",
+                        }
+                    ],
+                }
+            ]
+        },
+    )
+    request = TurnRequest(
+        conversation_id="clearance",
+        messages=[TurnMessage(role="user", content="What minimum clearance?")],
+        locale="en",
+    )
+    wrong = TurnOutput(
+        language="en", blocks=[TextBlock(text="The minimum clearance is {fact:q.n2}.")]
+    )
+    result = run(request, lambda _request, _retry: (wrong, facts), Route("documents"))
+    assert "1500 mm" not in _text(result.output)
+
+    compound = TurnOutput(
+        language="en",
+        blocks=[TextBlock(text="The minimum clearance and height are {fact:q.n2}.")],
+    )
+    result = run(
+        request, lambda _request, _retry: (compound, facts), Route("documents")
+    )
+    assert "1500 mm" not in _text(result.output)
+
+    correct = TurnOutput(
+        language="en", blocks=[TextBlock(text="The minimum clearance is {fact:q.n1}.")]
+    )
+    result = run(request, lambda _request, _retry: (correct, facts), Route("documents"))
+    assert result.grounded and not result.fallback
+    assert "500 mm" in _text(result.output)
+    assert '"The interface is required."' in _text(result.output)
+    links = [
+        block.url for block in result.output.blocks if isinstance(block, DocumentBlock)
+    ]
+    assert links == [
+        "https://example.test/data.pdf#page=2",
+        "https://example.test/data.pdf#page=3",
+    ]
+
+    separate = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(
+                text="The enclosure height is {fact:q.n2}. The minimum clearance is {fact:q.n1}."
+            )
+        ],
+    )
+    result = run(
+        request, lambda _request, _retry: (separate, facts), Route("documents")
+    )
+    assert result.grounded and not result.fallback
+    assert "height is 1500 mm" in _text(result.output)
+    assert "clearance is 500 mm" in _text(result.output)
+    assert _text(result.output).count('"The interface is required."') == 1
+
+    negated = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(
+                text="The minimum clearance is {fact:q.n1}; the enclosure height is not {fact:q.n2}."
+            )
+        ],
+    )
+    result = run(request, lambda _request, _retry: (negated, facts), Route("documents"))
+    assert result.grounded and not result.fallback
+    assert "500 mm" in _text(result.output)
+    assert "1500 mm" not in _text(result.output)
+    assert _text(result.output).count('"The interface is required."') == 1
+
+
+def test_cycle_does_not_restore_rejected_clearance_on_language_retry() -> None:
+    from unittest.mock import patch
+
+    facts = _scoped_hit("a", 1, "Minimum clearance 500 mm; enclosure height 1500 mm.")
+    request = TurnRequest(
+        conversation_id="clearance",
+        messages=[TurnMessage(role="user", content="What minimum clearance?")],
+        locale="en",
+    )
+    output = TurnOutput(
+        language="en", blocks=[TextBlock(text="The minimum clearance is {fact:a.n2}.")]
+    )
+    with patch(
+        "linker_genie.cycle.language_failure",
+        side_effect=[None, "language mismatch", None, "language mismatch"],
+    ):
+        result = run(
+            request, lambda _request, _retry: (output, facts), Route("documents")
+        )
+
+    assert result.fallback and result.attempts == 2
+    assert "1500 mm" not in _text(result.output)
+
+
+def test_clearance_completion_uses_real_figures_and_keeps_conditions() -> None:
+    examples: tuple[tuple[Literal["en", "de"], str, str], ...] = (
+        ("en", "Minimum clearance 725 mm.", "What minimum clearance?"),
+        ("de", "Mindestabstand 725 mm.", "Welcher Mindestabstand?"),
+        ("en", "| Minimum clearance (mm) | 725 |", "What minimum clearance?"),
+    )
+    for language, source, question in examples:
+        output = TurnOutput(
+            language=language, blocks=[TextBlock(text="Info.", refs=["a"])]
+        )
+        sealed = seal(
+            output, _scoped_hit("a", 1, source), Route("documents"), question, "other"
+        )
+        assert "725 mm" in _text(sealed)
+        assert ("minimum clearance" if language == "en" else "Mindestabstand") in _text(
+            sealed
+        )
+
+    for source in (
+        "Minimum clearance 500 mm when installed outdoors.",
+        "Minimum clearance 500 mm; for outdoor use only.",
+        "Minimum clearance 500 mm. For outdoor use only.",
+        "Minimum clearance 500 mm. This requirement applies only outdoors.",
+        "For outdoor use only. Minimum clearance 500 mm.",
+        "Outdoor installation. Minimum clearance 500 mm.",
+    ):
+        output = TurnOutput(
+            language="en", blocks=[TextBlock(text="See the guide.", refs=["a"])]
+        )
+        sealed = seal(
+            output,
+            _scoped_hit("a", 1, source),
+            Route("documents"),
+            "What minimum clearance?",
+            "other",
+        )
+        assert "500 mm" not in _text(sealed)
+
+    no_figure = _scoped_hit("a", 1, "Minimum clearance 500 mm.")
+    no_figure.facts.pop("a.n1")
+    assert "500 mm" not in _text(
+        seal(output, no_figure, Route("documents"), "What minimum clearance?", "other")
+    )
+
+
+def test_seal_uses_only_the_cited_model_for_automatic_document_values() -> None:
+    first = _scoped_hit("a", 1, "Model A. Nominal capacity is not stated.")
+    other = _scoped_hit(
+        "b",
+        2,
+        "| Nominal Capacity (kWh) | 260 |\n| Depth of Discharge | 98% |",
+        url="https://example.test/other.pdf",
+    )
+    output = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(text="The documents describe model A.", refs=["a"]),
+            DocumentBlock(ref="a"),
+            DocumentBlock(ref="b"),
+        ],
+    )
+
+    sealed = seal(
+        output,
+        merge([first, other]),
+        Route("documents"),
+        "What is the usable capacity?",
+        "other",
+    )
+
+    assert "260" not in _text(sealed) and "98%" not in _text(sealed)
+
+
+def test_seal_still_uses_the_cited_unqualified_source_when_another_hit_is_conditional() -> (
+    None
+):
+    first = _scoped_hit(
+        "a", 1, "| Nominal Capacity (kWh) | 260 |\n| Depth of Discharge | 98% |"
+    )
+    conditional = collect(
+        "linker/search-knowledge",
+        {
+            "hits": [
+                {
+                    "chunk_id": "b",
+                    "doc_url": "https://example.test/other.pdf",
+                    "title": "Other model",
+                    "page": 2,
+                    "product_ids": [2],
+                    "text": "| Reading | [n1=5 A] |\n*6: Synthetic condition. (p. 3)",
+                    "figures": {"b.n1": "5 A"},
+                    "qualification_required": True,
+                    "qualifications": [
+                        {
+                            "chunk_id": "b-p3",
+                            "page": 3,
+                            "quote": "*6: Synthetic condition.",
+                            "lang": "en",
+                        }
+                    ],
+                }
+            ]
+        },
+    )
+    output = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(text="The document describes model A.", refs=["a"]),
+            DocumentBlock(ref="a"),
+        ],
+    )
+    facts = merge([first, conditional])
+
+    capacity = seal(
+        output, facts, Route("documents"), "What is the usable capacity?", "other"
+    )
+    support = seal(output, facts, Route("documents"), "Does it support EnWG?", "other")
+
+    assert "260 kWh" in _text(capacity) and "98%" in _text(capacity)
+    assert "do not state whether it supports this" in _text(support)
+
+
+def test_seal_does_not_treat_an_unrelated_same_source_number_as_capacity() -> None:
+    facts = _scoped_hit(
+        "a",
+        1,
+        "Nominal voltage 260 V and maximum energy 260 kWh.\n"
+        "| Nominal Voltage (V) | 260 |\n"
+        "| Maximum Energy (kWh) | 260 |\n"
+        "| Usable Capacity (kWh) | 260 |\n"
+        "| Round Trip Efficiency | 98% |",
+    )
+    output = TurnOutput(
+        language="en", blocks=[TextBlock(text="See the data.", refs=["a"])]
+    )
+
+    sealed = seal(
+        output, facts, Route("documents"), "What is usable capacity?", "other"
+    )
+
+    assert "260 kWh" not in _text(sealed) and "98%" not in _text(sealed)
+
+
+def test_a_multi_model_chunk_cannot_be_relabelled_as_one_models_values() -> None:
+    facts = _scoped_hit("a", 1, "| Nominal Capacity (kWh) | 260 |")
+    facts.knowledge_products["a"] = (1, 2)
+    output = TurnOutput(
+        language="en", blocks=[TextBlock(text="See the data.", refs=["a"])]
+    )
+    route = Route(
+        "documents", named_models=(NamedModel(code="MODEL-1", product_ids=(1,)),)
+    )
+
+    unambiguous = seal(output, facts, route, "What is usable capacity?", "other")
+    ambiguous = seal(
+        output, facts, Route("documents"), "What is usable capacity?", "other"
+    )
+
+    assert "260 kWh" not in _text(unambiguous)
+    assert "260 kWh" not in _text(ambiguous)
+
+
+def test_seal_can_combine_explicitly_cited_chunks_of_the_same_model_and_pdf() -> None:
+    first = _scoped_hit("a", 1, "| Nominal Capacity (kWh) | 260 |")
+    second = _scoped_hit("b", 1, "| Depth of Discharge | 98% |")
+    output = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(text="See the data."),
+            DocumentBlock(ref="a"),
+            DocumentBlock(ref="b"),
+        ],
+    )
+
+    sealed = seal(
+        output,
+        merge([first, second]),
+        Route("documents"),
+        "What is the usable capacity?",
+        "other",
+    )
+
+    assert "260 kWh" in _text(sealed) and "98%" in _text(sealed)
+
+
+def test_conflicting_or_missing_model_scope_never_licenses_automatic_values() -> None:
+    first = _scoped_hit("a", 1, "| Nominal Capacity (kWh) | 260 |")
+    conflicting = _scoped_hit("a", 2, "| Nominal Capacity (kWh) | 260 |")
+    missing = collect(
+        "linker/search-knowledge",
+        {"hits": [{"chunk_id": "a", "text": "Nominal capacity 260 kWh."}]},
+    )
+    output = TurnOutput(
+        language="en", blocks=[TextBlock(text="See the data.", refs=["a"])]
+    )
+
+    for other in (conflicting, missing):
+        facts = merge([first, other])
+        sealed = seal(
+            output, facts, Route("documents"), "What is usable capacity?", "other"
+        )
+        assert facts.knowledge_products["a"] == ()
+        assert "260 kWh" not in _text(sealed)
 
 
 def test_support_absence_is_written_once_and_stays_a_denial() -> None:
@@ -375,6 +936,69 @@ def test_support_absence_is_written_once_and_stays_a_denial() -> None:
     assert re.search(r"(?i)\bunterstützt\b", text) is None
     assert not any(item.startswith("missing /") for item in _grade("b25-de", added))
     assert not any("clause asserts" in item for item in _grade("b25-de", added))
+
+
+def test_cited_support_answer_is_not_followed_by_a_false_absence() -> None:
+    examples: tuple[tuple[Literal["en", "de"], str, str, str], ...] = (
+        (
+            "en",
+            "The device supports EnWG §14a.",
+            "The device supports EnWG §14a.",
+            "Does it support EnWG?",
+        ),
+        (
+            "de",
+            "Das Gerät unterstützt EnWG §14a.",
+            "Das Gerät unterstützt EnWG §14a.",
+            "Unterstützt es EnWG?",
+        ),
+        (
+            "en",
+            "The device does not support EnWG §14a.",
+            "The device does not support EnWG §14a.",
+            "Does it support EnWG?",
+        ),
+        (
+            "de",
+            "Das Gerät unterstützt EnWG §14a nicht.",
+            "Das Gerät unterstützt EnWG §14a nicht.",
+            "Unterstützt es EnWG?",
+        ),
+        (
+            "en",
+            "EnWG §14a is supported.",
+            "The device supports EnWG §14a.",
+            "Does it support EnWG?",
+        ),
+    )
+    for language, source, answer, question in examples:
+        facts = _scoped_hit("a", 1, source)
+        output = TurnOutput(
+            language=language, blocks=[TextBlock(text=answer, refs=["a"])]
+        )
+
+        sealed = seal(output, facts, Route("documents"), question, "other")
+
+        assert _text(sealed) == answer
+
+    conditional = _scoped_hit("a", 1, "Supports EnWG §14a with the required interface.")
+    conditional.qualifications["a"] = (
+        Qualification("*1: The interface is required.", 3, "a-p3", "en"),
+    )
+    supported = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(
+                text="The device supports EnWG §14a with the required interface.",
+                refs=["a"],
+            )
+        ],
+    )
+    assert _text(
+        seal(
+            supported, conditional, Route("documents"), "Does it support EnWG?", "other"
+        )
+    ) == _text(supported)
 
 
 def test_a_product_page_is_not_sealed() -> None:

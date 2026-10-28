@@ -10,10 +10,12 @@ from typing import Any
 
 import httpx
 import pytest
+from test_chunking import Words
 
 from index import corpus, store
-from index.chunking import Chunk
+from index.chunking import Chunk, DocumentMeta, chunk_document
 from index.corpus import DocumentRow
+from index.extract import Block, Page
 from index.publication import applicability, scope_proofs
 from index.publication import inventory as publication_inventory
 from linker_genie.knowledge import KnowledgeSearch
@@ -786,20 +788,35 @@ def test_joint_model_passage_requires_each_exact_current_document_relation(
     ]
     raw["products"][0]["documents"] = ["doc-A"]
     raw["products"][1]["documents"] = ["doc-B"]
-    chunk = Chunk(
-        "AB",
-        SHA,
-        1,
-        "",
-        "table",
-        "",
-        "| Model | MODEL-1 | MODEL-2 |\n| Nominal power | 10kW | 8kW |",
-        "en",
-        20,
+    original_chunks = chunk_document(
+        DocumentMeta(SHA, "Manual", "", (), ("MODEL-1", "MODEL-2"), "manual", "en"),
+        [
+            Page(
+                1,
+                "docling",
+                [
+                    Block(
+                        "table",
+                        rows=(
+                            ("Model", "MODEL-1", "MODEL-2"),
+                            ("Nominal power", "10kW", "8kW"),
+                        ),
+                        source_id="#/tables/0",
+                    )
+                ],
+            )
+        ],
+        Words(),
+        lambda _: "en",
     )
+    assert len(original_chunks) == 1
+    chunk = original_chunks[0]
+    assert chunk.source_table == "docling:p1:#/tables/0"
+    assert chunk.text == "| Model | MODEL-1 | MODEL-2 |\n| Nominal power | 10kW | 8kW |"
     proof = scope_proofs([chunk], raw, authority(raw))
-    assert proof["AB"]["product_ids"] == [1, 2]
-    assert proof["AB"]["associations"] == [
+    assert proof[chunk.id]["basis"] == "passage"
+    assert proof[chunk.id]["product_ids"] == [1, 2]
+    assert proof[chunk.id]["associations"] == [
         {
             "document_id": "doc-A",
             "document_revision": "dA",
@@ -826,7 +843,7 @@ def test_joint_model_passage_requires_each_exact_current_document_relation(
             512,
             publication={
                 "manifest": raw,
-                "chunk_products": {"AB": [1, 2]},
+                "chunk_products": {chunk.id: [1, 2]},
                 "chunk_scopes": proof,
             },
         ),
@@ -872,9 +889,10 @@ def test_joint_model_passage_requires_each_exact_current_document_relation(
         current["documents"][1]["document_id"] = "another-public-identity"
         current["documents"][1]["url"] = "https://site.test/another.pdf"
     hits = index.search("power", "en", [1], publication=Snapshot.read(current))
-    assert [h.chunk_id for h in hits] == (["AB"] if change == "none" else [])
+    assert [h.chunk_id for h in hits] == ([chunk.id] if change == "none" else [])
     if hits:
         assert hits[0].product_ids == (1, 2)
+        assert hits[0].text == chunk.text
         assert {
             item["product_id"]
             for item in Snapshot.read(raw).dependencies()["documents"]
