@@ -36,10 +36,18 @@ use WP_Term;
 final class BlogShortcodesTest extends TestCase {
 
 	/**
-	 * Translation and escaping return their input.
+	 * The translated search heading supplied by the active test.
+	 *
+	 * @var string
+	 */
+	private string $search_heading = 'All posts';
+
+	/**
+	 * Translation and escaping return their input except the search heading.
 	 */
 	public function setUp(): void {
 		parent::setUp();
+		WP_Mock::userFunction( '__' )->with( 'All posts', 'linker-commerce' )->andReturnUsing( fn(): string => $this->search_heading );
 		$this->plain_text();
 		// These native fragment fixtures have no Polylang source-pair data.
 		WP_Mock::userFunction( 'pll_get_post_language', array( 'return' => false ) );
@@ -73,9 +81,45 @@ final class BlogShortcodesTest extends TestCase {
 		);
 
 		WP_Mock::expectActionAdded( 'init', array( JournalTitles::class, 'register' ) );
+		WP_Mock::expectFilterAdded( 'pre_get_document_title', array( $codes, 'empty_search_title' ), 60 );
 		$codes->register();
 
 		$this->assertConditionsMet();
+	}
+
+	/**
+	 * A cleared journal search gets a useful title without altering other pages.
+	 *
+	 * @dataProvider search_title_cases
+	 * @param bool   $is_search Whether the request is a search.
+	 * @param mixed  $type      The search's post type.
+	 * @param string $query     The actual search text.
+	 * @param string $heading   The translated heading.
+	 * @param string $title     The SEOPress title.
+	 * @param string $expected  The expected title.
+	 */
+	public function test_only_empty_journal_search_gets_a_named_title( bool $is_search, mixed $type, string $query, string $heading, string $title, string $expected ): void {
+		WP_Mock::userFunction( 'is_search' )->andReturn( $is_search );
+		WP_Mock::userFunction( 'get_query_var' )->with( 'post_type' )->andReturn( $type );
+		WP_Mock::userFunction( 'get_search_query' )->with( false )->andReturn( $query );
+		$this->search_heading = $heading;
+		$this->assertSame( $expected, ( new BlogShortcodes() )->empty_search_title( $title ) );
+	}
+
+	/**
+	 * Search-title cases for both languages and the unaffected requests.
+	 *
+	 * @return array<string, array{bool, mixed, string, string, string, string}>
+	 */
+	public static function search_title_cases(): array {
+		return array(
+			'empty German journal'  => array( true, 'post', '', 'Alle Beiträge', 'Suchergebnisse für „“ | Linker', 'Alle Beiträge | Linker' ),
+			'empty English journal' => array( true, 'post', '', 'All posts', '" " | Linker', 'All posts | Linker' ),
+			'zero is a query'       => array( true, 'post', '0', 'Alle Beiträge', '0 | Linker', '0 | Linker' ),
+			'normal journal'        => array( true, 'post', 'backup', 'All posts', 'backup | Linker', 'backup | Linker' ),
+			'general search'        => array( true, array( 'post', 'page', 'product' ), '', 'Alle Beiträge', 'Search | Linker', 'Search | Linker' ),
+			'not search'            => array( false, 'post', '', 'All posts', 'Page | Linker', 'Page | Linker' ),
+		);
 	}
 
 	/**
@@ -288,14 +332,13 @@ final class BlogShortcodesTest extends TestCase {
 				'return' => 'https://linker.test/up/card-300x200.jpg 300w, https://linker.test/up/card.jpg 600w',
 			)
 		);
-		WP_Mock::userFunction( 'get_post_meta', array( 'return' => 'A three-phase smart meter' ) );
 
 		$html = ( new BlogShortcodes() )->related_posts();
 
 		$this->assertStringContainsString( '<article class="lc-block"><a href="https://linker.test/installer-checklist/" class="tv-blog-single-related-card">', $html );
 		$this->assertStringContainsString( '<div class="tv-blog-single-related-img">', $html );
 		$this->assertStringContainsString(
-			'<img src="https://linker.test/up/card.jpg" srcset="https://linker.test/up/card-300x200.jpg 300w, https://linker.test/up/card.jpg 600w" sizes="(max-width: 300px) 100vw, 300px" loading="lazy" alt="A three-phase smart meter">',
+			'<img src="https://linker.test/up/card.jpg" srcset="https://linker.test/up/card-300x200.jpg 300w, https://linker.test/up/card.jpg 600w" sizes="(max-width: 300px) 100vw, 300px" loading="lazy" alt="">',
 			$html
 		);
 		$this->assertStringContainsString( '<time datetime="2026-05-29T00:00:00+00:00">May 29, 2026</time>', $html );

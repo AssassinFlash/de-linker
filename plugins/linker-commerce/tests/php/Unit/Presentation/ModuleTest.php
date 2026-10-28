@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Unit\Presentation;
 
 use Linker\Commerce\Presentation\AccountTemplates;
+use Linker\Commerce\Presentation\BlogShortcodes;
 use Linker\Commerce\Presentation\ComparePage;
 use Linker\Commerce\Presentation\FamilyNavigation;
 use Linker\Commerce\Presentation\LibraryPage;
@@ -64,7 +65,8 @@ final class ModuleTest extends TestCase {
 		$compare    = new ComparePage();
 		$library    = new LibraryPage();
 		$account    = new AccountTemplates();
-		$module     = new Module( $shortcodes, $gate, $windpress, null, $compare, $library, $account );
+		$blog       = new BlogShortcodes();
+		$module     = new Module( $shortcodes, $gate, $windpress, null, $compare, $library, $account, $blog );
 
 		// 64 (including the four guest account entry tags for #223): the product, checkout, comparison, library and account shortcodes,
 		// the empty-draft state, the contact invitation band, the catalogue's
@@ -80,6 +82,7 @@ final class ModuleTest extends TestCase {
 		// The current Woo supply-name fragment adds one data-only registration.
 		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 66 ) );
 		WP_Mock::expectFilterAdded( 'wc_get_template', array( $account, 'template' ), 20, 2 );
+		WP_Mock::expectFilterAdded( 'pre_get_document_title', array( $blog, 'empty_search_title' ), 60 );
 		WP_Mock::expectFilterAdded( 'woocommerce_my_account_my_orders_query', array( $account, 'orders_query' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_checkout_redirect_empty_cart', array( $gate, 'keep_empty_checkout' ) );
 		WP_Mock::expectFilterAdded( 'f!windpress/core/cache:compile.providers', array( $windpress, 'providers' ) );
