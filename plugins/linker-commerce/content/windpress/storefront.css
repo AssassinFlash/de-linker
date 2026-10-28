@@ -892,7 +892,7 @@ body.tv-product-dialog-open { overflow: hidden; }
   body:has(#compare-chip:not([hidden])) { --lk-header-h: 133px; }
   body:has(#compare-chip:not([hidden])) header#lc-header { margin-bottom: 52px; }
   body #compare-chip {
-    top: 81px;
+    top: var(--compare-chip-top, 81px);
     right: 0;
     bottom: auto;
     left: 0;
@@ -917,10 +917,10 @@ body.tv-product-dialog-open { overflow: hidden; }
     background: var(--shop-teal);
     color: white;
   }
-  body.admin-bar #compare-chip { top: 113px; }
+  body.admin-bar #compare-chip { top: var(--compare-chip-top, 113px); }
 }
 @media (max-width: 782px) {
-  body.admin-bar #compare-chip { top: 127px; }
+  body.admin-bar #compare-chip { top: var(--compare-chip-top, 127px); }
 }
 .sf-compare {
   font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
