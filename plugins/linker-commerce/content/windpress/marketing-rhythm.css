@@ -100,8 +100,25 @@ html[lang^="de"]
    Stack its three choices like the existing About phone chapter tabs: the
    full German Kompatibilität label must fit at the action size. */
 @media (max-width: 760px) {
-	#tv-rs-page-v1 #engineering-tools .lk-tooldeck-nav {
+	#tv-rs-page-v1 #engineering-tools .lk-tooldeck-nav,
+	#tv-cs-page-v1 #engineering-tools .lk-tooldeck-nav {
 		grid-template-columns: minmax(0, 1fr);
+	}
+
+	/* The numbered commercial label already contains the complete tab name. */
+	#tv-cs-page-v1 #engineering-tools .lk-tooldeck-btn .tool-name {
+		display: none;
+	}
+
+	#tv-cs-page-v1 #engineering-tools .lk-tooldeck-btn .tool-num {
+		font-size: var(--proto-size-sm);
+		line-height: 1.5;
+	}
+
+	#tv-cs-page-v1 #engineering-tools :is(.lk-tooldeck-btn, .lk-tooldeck-content a) {
+		-webkit-hyphens: manual;
+		hyphens: manual;
+		overflow-wrap: break-word;
 	}
 
 	/* A full-width label leaves room for both languages above the detail. */
