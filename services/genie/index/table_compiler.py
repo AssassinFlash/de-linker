@@ -13,9 +13,11 @@ from index.inventory import document_kind_of
 from index.publication import (
     ScopeProof,
     _recognized,
+    compile_certificate_fragments,
     compile_certificate_subjects,
     scope_proofs,
 )
+from linker_genie.certificate_scope import has_explicit_exclusion
 from linker_genie.family_scope import family_id
 from linker_genie.publication import PublicationClient, Snapshot
 from linker_genie.publication_scope import author_scope_allows
@@ -96,7 +98,10 @@ def _author_contexts(
                     previous_figure = figure_active.get(sha)
                     if previous_figure and previous_figure[0] == chunk.source_picture:
                         boundaries.extend(previous_figure[1])
-                elif chunk.kind != "text" or SCOPE_DECLARATION.search(text) is None:
+                elif chunk.kind != "text" or (
+                    SCOPE_DECLARATION.search(text) is None
+                    and not has_explicit_exclusion(text)
+                ):
                     continue
             if kind == "heading":
                 numbered = re.match(r"^\s*(\d+(?:\.\d+)*)(?:[.)]\s*|\s+)", text)
@@ -662,4 +667,9 @@ def compile_scopes(
     )
     output.extend(certificates)
     result.update(certificate_scopes)
+    fragments, fragment_scopes = compile_certificate_fragments(
+        relevant, source, result, tokenizer, max_tokens
+    )
+    output.extend(fragments)
+    result.update(fragment_scopes)
     return output, result

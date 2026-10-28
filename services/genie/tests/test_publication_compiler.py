@@ -942,6 +942,7 @@ def test_finer_manual_declaration_never_broadens_its_following_paragraph() -> No
                 proof["associations"],
                 proof,
                 products=Snapshot.read(raw).products,
+                documents=Snapshot.read(raw).documents,
                 chunk_id=chunk.id,
                 text=chunk.text,
             )
@@ -1407,8 +1408,10 @@ def test_actual_eta_certificate_subjects_are_bounded_and_revocable(
         cert_hits = [h for h in hits if "-certificate-" in h.chunk_id]
         assert cert_hits and all(h.product_ids == (pid,) for h in cert_hits)
         assert all(
-            "Vmax" not in h.text and "Rated Output Power" not in h.text
-            for h in cert_hits
+            "Vmax" not in h.text and "Rated Output Power" not in h.text for h in hits
+        )
+        assert all(
+            "Firmware Version" not in h.text and "010101" not in h.text for h in hits
         )
         revoked = deepcopy(raw)
         for d in revoked["documents"]:
@@ -1538,3 +1541,482 @@ def test_certificate_subject_rejects_unrelated_model_role_and_tampering() -> Non
     }
     assert "GW5K-ETA-G20" not in by_model
     assert "GW8K-ETA-G20" in by_model
+
+
+@pytest.mark.parametrize(
+    ("mixed_line", "forbidden"),
+    [
+        ("IEC 62109-1:2010, frequency 50 Hz", "50 Hz"),
+        ("IEC 62109-1:2010/50Hz", "50Hz"),
+        ("EN 50549-1:2019/5KW", "5KW"),
+        ("IEC 62109-1:2010/12KG", "12KG"),
+    ],
+)
+def test_certificate_mixed_standard_line_cannot_return_technical_values(
+    tmp_path: Path,
+    mixed_line: str,
+    forbidden: str,
+) -> None:
+    """A standards line with a rating is not a certificate-only source excerpt."""
+    fixture = json.loads(
+        gzip.decompress((FIXTURES / "eta-certificates.json.gz").read_bytes())
+    )
+    raw = deepcopy(fixture["manifest"])
+    document = next(d for d in raw["documents"] if d["title"].startswith("EN 50549-2"))
+    product = next(p for p in raw["products"] if p["model"] == "GW10K-ETA-G20")
+    pid, did = product["product_id"], document["document_id"]
+    raw["documents"] = [document]
+    raw["products"] = [product]
+    document["product_ids"] = [pid]
+    product["documents"] = [did]
+    chunk = next(
+        Chunk(**c)
+        for c in fixture["chunks"]
+        if c["doc_sha256"] == document["blob_sha256"]
+    )
+    text = chunk.text.replace("EN 50549-2:2019+A1 EN 50549-10:2022", mixed_line)
+    assert text != chunk.text
+    digest = hashlib.sha256(f"text\0{text}".encode()).hexdigest()[:8]
+    chunk = replace(
+        chunk, id=f"{chunk.doc_sha256[:12]}-p{chunk.page}-{digest}", text=text
+    )
+    selected, proofs = compile_publication([chunk], raw, authority(raw), Words())
+    units = [
+        c
+        for c in selected
+        if proofs.get(c.id, {}).get("basis") == "certificate_subject"
+    ]
+    assert units and all(forbidden not in c.text for c in units)
+
+    directory = tmp_path / "corpus"
+    corpus.write(
+        directory,
+        corpus.Meta(
+            "mixed-standard",
+            None,
+            None,
+            "synthetic certificate source",
+            512,
+            publication={
+                "manifest": raw,
+                "chunk_products": {k: p["product_ids"] for k, p in proofs.items()},
+                "chunk_scopes": proofs,
+            },
+        ),
+        [
+            DocumentRow(
+                document["blob_sha256"],
+                (document["url"],),
+                document["title"],
+                "",
+                (),
+                (product["model"],),
+                "certificate",
+                "en",
+                1,
+                "indexed",
+            )
+        ],
+        [(pid, product["model"])],
+        selected,
+    )
+    index = tmp_path / "index.sqlite"
+    store.export(directory, index)
+    loaded = DocumentIndex(index, encoder=None)
+    try:
+        hits = loaded.search(
+            "GW10K-ETA-G20 certificate",
+            "en",
+            [pid],
+            k=20,
+            neighbours=False,
+            publication=Snapshot.read(raw),
+        )
+        certificate_hits = [h for h in hits if "-certificate-" in h.chunk_id]
+        assert certificate_hits
+        assert all(forbidden not in h.text for h in hits)
+    finally:
+        loaded.close()
+
+
+@pytest.mark.parametrize(
+    ("language", "notice"),
+    [
+        ("en", "This certificate excludes GW5K-ETA-G20."),
+        ("de", "Dieses Zertifikat gilt nicht für GW5K-ETA-G20."),
+        ("de", "GW5K-ETA-G20 ist von diesem Zertifikat ausgenommen."),
+        ("de", "GW5K-ETA-G20 ist nicht zertifiziert."),
+        ("de", "GW5K-ETA-G20 ist nicht enthalten."),
+        ("de", "GW5K-ETA-G20 ist nicht abgedeckt."),
+    ],
+)
+def test_prior_certificate_exclusion_cannot_become_subject_proof(
+    tmp_path: Path,
+    language: str,
+    notice: str,
+) -> None:
+    """An exclusion in an earlier authored chunk stays a denying boundary."""
+    fixture = json.loads(
+        gzip.decompress((FIXTURES / "eta-certificates.json.gz").read_bytes())
+    )
+    raw = deepcopy(fixture["manifest"])
+    document = next(
+        d
+        for d in raw["documents"]
+        if d["title"].startswith("EU declaration" if language == "de" else "EN 50549-2")
+    )
+    product = next(p for p in raw["products"] if p["model"] == "GW5K-ETA-G20")
+    pid, did = product["product_id"], document["document_id"]
+    raw["documents"], raw["products"] = [document], [product]
+    document["product_ids"], product["documents"] = [pid], [did]
+    original = next(
+        Chunk(**c)
+        for c in fixture["chunks"]
+        if c["doc_sha256"] == document["blob_sha256"] and c["lang"] == language
+    )
+    text = notice
+    digest = hashlib.sha256(f"text\0{text}".encode()).hexdigest()[:8]
+    prior = replace(
+        original,
+        id=f"{original.doc_sha256[:12]}-p1-{digest}",
+        page=1,
+        section="Notice",
+        text=text,
+        source_headings=(),
+    )
+    selected, proofs = compile_publication(
+        [prior, original], raw, authority(raw), Words()
+    )
+    assert not any(p.get("basis") == "certificate_subject" for p in proofs.values())
+    directory = tmp_path / "corpus"
+    corpus.write(
+        directory,
+        corpus.Meta(
+            "excluded-subject",
+            None,
+            None,
+            "synthetic certificate source",
+            512,
+            publication={
+                "manifest": raw,
+                "chunk_products": {k: p["product_ids"] for k, p in proofs.items()},
+                "chunk_scopes": proofs,
+            },
+        ),
+        [
+            DocumentRow(
+                document["blob_sha256"],
+                (document["url"],),
+                document["title"],
+                "",
+                (),
+                (product["model"],),
+                "certificate",
+                "en",
+                1,
+                "indexed",
+            )
+        ],
+        [(pid, product["model"])],
+        selected,
+    )
+    index = tmp_path / "index.sqlite"
+    store.export(directory, index)
+    loaded = DocumentIndex(index, encoder=None)
+    try:
+        hits = loaded.search(
+            "GW5K-ETA-G20 certificate",
+            "en",
+            [pid],
+            k=20,
+            neighbours=False,
+            publication=Snapshot.read(raw),
+        )
+        assert hits == []
+    finally:
+        loaded.close()
+
+
+def test_certificate_ordinary_proof_cannot_expose_technical_rating(
+    tmp_path: Path,
+) -> None:
+    """Generic certificate proof is not a path around the subject-only excerpt."""
+    fixture = json.loads(
+        gzip.decompress((FIXTURES / "eta-certificates.json.gz").read_bytes())
+    )
+    raw = deepcopy(fixture["manifest"])
+    document = next(d for d in raw["documents"] if d["title"].startswith("EN 50549-2"))
+    product = next(p for p in raw["products"] if p["model"] == "GW5K-ETA-G20")
+    pid, did = product["product_id"], document["document_id"]
+    raw["documents"], raw["products"] = [document], [product]
+    document["product_ids"], product["documents"] = [pid], [did]
+    original = next(
+        Chunk(**c)
+        for c in fixture["chunks"]
+        if c["doc_sha256"] == document["blob_sha256"]
+    )
+    text = (
+        "Certificate No.: R 12345 0001 Product: GW5K-ETA-G20 Rated Output Power: 5 kW"
+    )
+    digest = hashlib.sha256(f"text\0{text}".encode()).hexdigest()[:8]
+    original = replace(
+        original,
+        id=f"{original.doc_sha256[:12]}-p1-{digest}",
+        page=1,
+        text=text,
+        source_headings=(),
+    )
+    selected, proofs = compile_publication([original], raw, authority(raw), Words())
+    directory = tmp_path / "corpus"
+    corpus.write(
+        directory,
+        corpus.Meta(
+            "certificate-rating",
+            None,
+            None,
+            "synthetic certificate source",
+            512,
+            publication={
+                "manifest": raw,
+                "chunk_products": {k: p["product_ids"] for k, p in proofs.items()},
+                "chunk_scopes": proofs,
+            },
+        ),
+        [
+            DocumentRow(
+                document["blob_sha256"],
+                (document["url"],),
+                document["title"],
+                "",
+                (),
+                (product["model"],),
+                "certificate",
+                "en",
+                1,
+                "indexed",
+            )
+        ],
+        [(pid, product["model"])],
+        selected,
+    )
+    index = tmp_path / "index.sqlite"
+    store.export(directory, index)
+    loaded = DocumentIndex(index, encoder=None)
+    try:
+        hits = loaded.search(
+            "GW5K-ETA-G20 certificate",
+            "en",
+            [pid],
+            k=20,
+            neighbours=False,
+            publication=Snapshot.read(raw),
+        )
+        assert any("-certificate-" in hit.chunk_id for hit in hits)
+        assert all(
+            "5 kW" not in hit.text and "Rated Output Power" not in hit.text
+            for hit in hits
+        )
+    finally:
+        loaded.close()
+
+
+def test_actual_legacy_certificates_keep_only_bound_safe_facts(tmp_path: Path) -> None:
+    """Replay original certificates and their existing Woo associations."""
+    fixture = json.loads(
+        gzip.decompress((FIXTURES / "legacy-certificates.json.gz").read_bytes())
+    )
+    raw = fixture["manifest"]
+    originals = [Chunk(**row) for row in fixture["chunks"]]
+    selected, proofs = compile_publication(originals, raw, authority(raw), Words())
+    snapshot = Snapshot.read(raw)
+    expected = {
+        (document["document_id"], pid)
+        for document in raw["documents"]
+        for pid in document["product_ids"]
+    }
+    projected = {
+        (p["document_ids"][0], p["product_ids"][0])
+        for p in proofs.values()
+        if p["basis"] in {"certificate_subject", "certificate_fragment"}
+    }
+    assert len(expected) == 29
+    assert projected == expected
+
+    # The DEKRA fragment is anchored to its actual same-page model list.
+    fragment = next(
+        c
+        for c in selected
+        if c.doc_sha256.startswith("2fa451ad7aae")
+        and proofs.get(c.id, {}).get("basis") == "certificate_fragment"
+    )
+    proof = proofs[fragment.id]
+    pid = proof["product_ids"][0]
+    assert authorize_chunk(
+        fragment.doc_sha256,
+        [pid],
+        proof["certificate_fragment"]["origin_scope"]["associations"],
+        proof,
+        products=snapshot.products,
+        documents=snapshot.documents,
+        chunk_id=fragment.id,
+        text=fragment.text,
+    )
+    changed = deepcopy(proof)
+    changed["certificate_fragment"]["subject_anchor"]["text"] += " altered"
+    assert not authorize_chunk(
+        fragment.doc_sha256,
+        [pid],
+        proof["certificate_fragment"]["origin_scope"]["associations"],
+        changed,
+        products=snapshot.products,
+        documents=snapshot.documents,
+        chunk_id=fragment.id,
+        text=fragment.text,
+    )
+    # Both SAJ language pages independently name the product; the LCIE
+    # statement is linked to the model page by the same source certificate ID.
+    emanager = [
+        c
+        for c in selected
+        if c.doc_sha256.startswith("ced067135172")
+        and proofs.get(c.id, {}).get("basis") == "certificate_fragment"
+    ]
+    assert {c.lang for c in emanager} == {"en", "de"}
+    assert all("eManager-C1 Pro" in c.text and "IP 65" not in c.text for c in emanager)
+    lcie = next(
+        c
+        for c in selected
+        if c.doc_sha256.startswith("00c7f5ee7b9f")
+        and proofs.get(c.id, {}).get("basis") == "certificate_fragment"
+    )
+    assert "validity of the present certificate is limited" in lcie.text
+    lcie_proof = proofs[lcie.id]
+    changed = deepcopy(lcie_proof)
+    changed["certificate_fragment"]["registration_anchor"]["text"] += " altered"
+    assert not authorize_chunk(
+        lcie.doc_sha256,
+        lcie_proof["product_ids"],
+        lcie_proof["certificate_fragment"]["origin_scope"]["associations"],
+        changed,
+        products=snapshot.products,
+        documents=snapshot.documents,
+        chunk_id=lcie.id,
+        text=lcie.text,
+    )
+
+    # An original legacy proof cannot authorize the technical source itself.
+    original = next(c for c in originals if c.id == "d7b7f3908f84-p1-6d3f6d9f")
+    original_proof = fixture["legacy_proof"]
+    assert "Firmware Version : 010101" in original.text
+    assert not authorize_chunk(
+        original.doc_sha256,
+        original_proof["product_ids"],
+        original_proof["associations"],
+        original_proof,
+        products=snapshot.products,
+        documents=snapshot.documents,
+        chunk_id=original.id,
+        text=original.text,
+    )
+
+    directory = tmp_path / "corpus"
+    corpus.write(
+        directory,
+        corpus.Meta(
+            "legacy-certificates",
+            None,
+            None,
+            "actual indexed originals",
+            512,
+            publication={
+                "manifest": raw,
+                "chunk_products": {k: p["product_ids"] for k, p in proofs.items()},
+                "chunk_scopes": proofs,
+            },
+        ),
+        [
+            DocumentRow(
+                d["blob_sha256"],
+                (d["url"],),
+                d["title"],
+                "",
+                (),
+                tuple(
+                    p["model"]
+                    for p in raw["products"]
+                    if p["product_id"] in d["product_ids"]
+                ),
+                "certificate",
+                d["lang"],
+                4,
+                "indexed",
+            )
+            for d in raw["documents"]
+        ],
+        [(p["product_id"], p["model"]) for p in raw["products"]],
+        selected,
+    )
+    index = tmp_path / "index.sqlite"
+    store.export(directory, index)
+    with sqlite3.connect(index) as db:
+        meta = dict(db.execute("SELECT key,value FROM meta"))
+        assert json.loads(meta["unprepared_documents"]) == []
+    loaded = DocumentIndex(index, encoder=None)
+    try:
+        for model in ("GW5K-ETA-G20", "GM330", "GMK330", "GW125K-STS-G10"):
+            target = next(p for p in raw["products"] if p["model"] == model)
+            hits = loaded.search(
+                f"{model} certificate",
+                "en",
+                [target["product_id"]],
+                k=20,
+                neighbours=False,
+                publication=snapshot,
+            )
+            assert hits
+            assert all(
+                "Rated Output Power" not in hit.text
+                and "Firmware Version" not in hit.text
+                and "204.8V" not in hit.text
+                for hit in hits
+            )
+        sts = next(p for p in raw["products"] if p["model"] == "GW125K-STS-G10")
+        hits = loaded.search(
+            "GW125K-STS-G10 Low Voltage",
+            "en",
+            [sts["product_id"]],
+            k=20,
+            neighbours=False,
+            publication=snapshot,
+        )
+        assert any(
+            "tested sample" in hit.text and "series-production" in hit.text
+            for hit in hits
+        )
+        emanager_pid = next(
+            p["product_id"] for p in raw["products"] if p["model"] == "eManager-C1 Pro"
+        )
+        for language, term in (("en", "responsibility"), ("de", "Verantwortung")):
+            hits = loaded.search(
+                "eManager-C1 Pro",
+                language,
+                [emanager_pid],
+                k=20,
+                neighbours=False,
+                publication=snapshot,
+            )
+            assert any(term in hit.text and "IP 65" not in hit.text for hit in hits)
+        lcie_pid = lcie_proof["product_ids"][0]
+        hits = loaded.search(
+            "EzManager3000 LCIE",
+            "en",
+            [lcie_pid],
+            k=20,
+            neighbours=False,
+            publication=snapshot,
+        )
+        assert any(
+            "validity of the present certificate is limited" in hit.text for hit in hits
+        )
+    finally:
+        loaded.close()
