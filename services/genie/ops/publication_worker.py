@@ -9,14 +9,17 @@ from __future__ import annotations
 
 import argparse
 import fcntl
+import hashlib
 import json
 import os
 import re
 import shlex
 import shutil
+import sqlite3
 import subprocess
 import sys
 import syslog
+import time
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -36,7 +39,11 @@ from index.preparation import recipe_revision  # noqa: E402
 from index.publication import inventory as fetch_inventory  # noqa: E402
 from linker_genie.preparation import RUNTIME_SERVING_REVISION  # noqa: E402
 from linker_genie.publication import Snapshot  # noqa: E402
-from publish_index import publish  # noqa: E402
+from publish_index import (  # noqa: E402
+    ActivationOutcomeUnconfirmed,
+    NativeVerificationRejected,
+    publish,
+)
 
 
 def report_failure(phase: str, error: BaseException) -> None:
@@ -46,8 +53,48 @@ def report_failure(phase: str, error: BaseException) -> None:
         f"phase={phase}",
         f"error={type(error).__name__}",
     ]
-    if isinstance(error, httpx.HTTPStatusError):
-        details.append(f"http_status={error.response.status_code}")
+    if isinstance(error, NativeVerificationRejected) and error.reason in {
+        "retry_exhausted",
+        "http_rejected",
+        "expired",
+        "response_identity",
+        "invalid_response",
+    }:
+        details.append(f"native_verify={error.reason}")
+        if type(error.status) is int and 100 <= error.status <= 599:
+            details.append(f"http_status={error.status}")
+        if error.transport:
+            details.append("transport=remote")
+        if error.cleanup_unconfirmed:
+            details.append("upload_cleanup=unconfirmed")
+    # PublicationUnavailable deliberately hides request details, but retains
+    # its cause. Report only its safe type/status so an outage is diagnosable.
+    cause: BaseException | None = error
+    seen: set[int] = set()
+    while cause is not None and id(cause) not in seen:
+        seen.add(id(cause))
+        if isinstance(cause, httpx.HTTPStatusError):
+            if cause is not error:
+                details.append("cause=HTTPStatusError")
+            details.append(f"http_status={cause.response.status_code}")
+            break
+        if isinstance(cause, httpx.TransportError):
+            allowed = {
+                "ConnectError",
+                "ConnectTimeout",
+                "ReadError",
+                "ReadTimeout",
+                "WriteError",
+                "WriteTimeout",
+                "RemoteProtocolError",
+                "PoolTimeout",
+            }
+            name = type(cause).__name__
+            details.append(
+                f"transport={name if name in allowed else 'other_transport'}"
+            )
+            break
+        cause = cause.__cause__
     if isinstance(error, OSError) and isinstance(error.errno, int):
         details.append(f"errno={error.errno}")
     trace = error.__traceback__
@@ -199,6 +246,85 @@ def retain_builds(index_dir: Path, current: Path) -> None:
     ledger.write_text(json.dumps(owned[-2:], indent=1))
 
 
+def retain_review_build(index_dir: Path, error: NativeVerificationRejected) -> Path:
+    """Keep at most one validated exhausted build, for review only."""
+    if error.reason != "retry_exhausted":
+        raise RuntimeError("only exhausted verification can retain a review build")
+    ledger = index_dir / "publication-worker-pending.json"
+    raw = json.loads(ledger.read_text())
+    recorded = Path(raw["path"])
+    directory = pending_build(index_dir)
+    identity = error.identity
+    if (
+        directory is None
+        or recorded.is_symlink()
+        or not directory.is_dir()
+        or directory.parent != (index_dir / "builds").resolve()
+        or directory.name != identity.get("version")
+        or not isinstance(identity.get("job_id"), str)
+        or not identity["job_id"]
+        or type(identity.get("activation_epoch")) is not int
+        or identity["activation_epoch"] < 1
+        or not isinstance(identity.get("sha256"), str)
+        or re.fullmatch(r"[0-9a-f]{64}", identity["sha256"]) is None
+    ):
+        raise RuntimeError("review candidate ownership or identity differs")
+    manifest_path, index_path = directory / "manifest.json", directory / "index.sqlite"
+    if any(
+        path.is_symlink() or not path.is_file() for path in (manifest_path, index_path)
+    ):
+        raise RuntimeError("review candidate files are not regular")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    with index_path.open("rb") as handle:
+        digest = hashlib.file_digest(handle, "sha256").hexdigest()
+    expected = {
+        name: identity.get(name)
+        for name in (
+            "version",
+            "source_revision",
+            "recipe_revision",
+            "serving_revision",
+            "activation_epoch",
+        )
+    }
+    if (
+        not isinstance(manifest, dict)
+        or not isinstance(manifest.get("file"), dict)
+        or manifest["file"].get("name") != "index.sqlite"
+        or manifest["file"].get("sha256") != digest
+        or digest != identity["sha256"]
+        or type(manifest.get("activation_epoch")) is not int
+        or any(manifest.get(key) != value for key, value in expected.items())
+    ):
+        raise RuntimeError("review candidate manifest or hash differs")
+    db = sqlite3.connect(f"file:{index_path}?mode=ro", uri=True)
+    try:
+        meta = dict(db.execute("SELECT key,value FROM meta"))
+    finally:
+        db.close()
+    if any(meta.get(key) != str(value) for key, value in expected.items()):
+        raise RuntimeError("review candidate SQLite identity differs")
+    quarantine = index_dir.resolve() / "publication-review-builds"
+    if quarantine.is_symlink() or (quarantine.exists() and not quarantine.is_dir()):
+        raise RuntimeError("review candidate root is unsafe")
+    quarantine.mkdir(mode=0o700, exist_ok=True)
+    if quarantine.stat().st_mode & 0o077 or any(quarantine.iterdir()):
+        raise RuntimeError("review candidate slot is not private and empty")
+    (directory / ".publication-review.json").write_text(
+        json.dumps(
+            {
+                **identity,
+                "reason": "native verification retries exhausted",
+                "usage": "review only; a new native lease and reviewed rebinding are required",
+            }
+        ),
+        encoding="utf-8",
+    )
+    destination = quarantine / directory.name
+    directory.rename(destination)
+    return destination
+
+
 class Worker:
     def __init__(
         self,
@@ -274,6 +400,13 @@ class Worker:
             "username": self._credentials[0],
             "password": self._credentials[1],
         }
+
+    def lease_expiry(self) -> int:
+        """The compiler may retry only while its native lease remains current."""
+        expiry = self.activation().get("lease_expires_at")
+        if type(expiry) is not int or expiry <= time.time() + 1:
+            raise RuntimeError("native knowledge lease expired or missing")
+        return expiry
 
     def ack(
         self,
@@ -418,6 +551,11 @@ class Worker:
         ) as error:  # safe failure, including the native publish CLI
             # No request URL, auth header or exception repr enters Woo/logs.
             report_failure(phase, error)
+            if isinstance(error, ActivationOutcomeUnconfirmed):
+                # The lost remote process might still pass its in-lock native
+                # verification. Do not release its lease with a failed ACK;
+                # Woo will let a later worker claim after the lease expires.
+                raise
             try:
                 self.ack(job, "", "knowledge preparation or loaded verification failed")
             except (Exception, SystemExit) as ack_error:
@@ -449,6 +587,13 @@ def run_job(
                 retain_builds(index_dir, prepared)
                 (index_dir / "publication-worker-pending.json").unlink(missing_ok=True)
         return completed
+    except NativeVerificationRejected as error:
+        if error.reason == "retry_exhausted":
+            try:
+                retain_review_build(index_dir, error)
+            except (Exception, SystemExit) as retention_error:
+                report_failure("review_retention", retention_error)
+        raise
     finally:
         # Includes build/publish failure, not just failures after a Path returns.
         # A killed process is recovered by the next locked invocation.
@@ -528,6 +673,7 @@ def main() -> int:
                     tokenizer,
                     lambda text: str(py3langid.classify(text)[0]),
                     activation_epoch=worker.activation()["epoch"],
+                    publication_deadline=worker.lease_expiry(),
                     on_created=lambda directory: record_build(INDEX_DIR, directory),
                 )
                 phase = "activation"

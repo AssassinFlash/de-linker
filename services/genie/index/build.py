@@ -378,6 +378,7 @@ def build(
     mariadb_prefix: str | None = None,
     on_created: Callable[[Path], None] | None = None,
     activation_epoch: int = 0,
+    publication_deadline: int | None = None,
 ) -> Path:
     """Chunk, embed and store; report the newly created generation before writing it."""
     started = time.monotonic()
@@ -392,7 +393,13 @@ def build(
         from index.publication import compile_publication
         from linker_genie.publication import PublicationClient
 
-        authority = PublicationClient(str(source["source"]))
+        authority = (
+            PublicationClient(str(source["source"]))
+            if publication_deadline is None
+            else PublicationClient(
+                str(source["source"]), identify_deadline=publication_deadline
+            )
+        )
         try:
             chunks, scopes = compile_publication(
                 chunks, source["publication_manifest"], authority, tokenizer
