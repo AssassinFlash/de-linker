@@ -546,6 +546,11 @@ final class Materials {
 		if ( ! $german ) {
 			return $unit;
 		}
+		// The HS3 registry's W, VA and A notes qualify the Ireland variant;
+		// localize their words while retaining the source marker and quantity.
+		if ( \preg_match( '/^(W|VA|A @230Vac) \(footnote (\*{1,2}): (\d+(?:\.\d+)? (?:W|VA|A)) for Ireland variant\)$/D', $bare, $note ) ) {
+			return $note[1] . ' (Fußnote ' . $note[2] . ': ' . $note[3] . ' für die Irland-Variante)';
+		}
 		$words = array(
 			'phase'     => '',
 			'phases'    => '',

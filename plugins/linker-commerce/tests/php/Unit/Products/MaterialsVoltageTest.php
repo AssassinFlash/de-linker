@@ -180,6 +180,56 @@ final class MaterialsVoltageTest extends TestCase {
 	}
 
 	/**
+	 * Ireland-variant qualifiers keep their source number, unit and footnote marker.
+	 *
+	 * @dataProvider ireland_unit_notes
+	 * @param string $unit    The registry unit with its qualifier.
+	 * @param string $german  The localized qualifier, or the unchanged unknown note.
+	 */
+	public function test_ireland_unit_notes_are_localized_without_rewriting_unknown_notes( string $unit, string $german ): void {
+		$this->assertSame( $unit, Materials::unit_label( $unit, 'en' ) );
+		$this->assertSame( $german, Materials::unit_label( $unit, 'de' ) );
+	}
+
+	/**
+	 * The three qualifier shapes in the SAJ HS3 registry and one unsupported country.
+	 *
+	 * @return array<string, array{string, string}>
+	 */
+	public static function ireland_unit_notes(): array {
+		return array(
+			'active power'   => array( 'W (footnote *: 11000 W for Ireland variant)', 'W (Fußnote *: 11000 W für die Irland-Variante)' ),
+			'apparent power' => array( 'VA (footnote *: 11000 VA for Ireland variant)', 'VA (Fußnote *: 11000 VA für die Irland-Variante)' ),
+			'current'        => array( 'A @230Vac (footnote **: 15.9 A for Ireland variant)', 'A @230Vac (Fußnote **: 15.9 A für die Irland-Variante)' ),
+			'unknown note'   => array( 'W (footnote *: 11000 W for Finland variant)', 'W (footnote *: 11000 W for Finland variant)' ),
+		);
+	}
+
+	/**
+	 * The hero formatter retains its English bytes and the German variant limit.
+	 */
+	public function test_the_power_formatter_keeps_the_ireland_qualifier(): void {
+		$fact = array(
+			'value' => '12000*',
+			'unit'  => 'W (footnote *: 11000 W for Ireland variant)',
+		);
+		$this->seed_registry(
+			array(
+				'mat_test_hs3' => array(
+					'bindings'  => array( 'woo_product_ids' => array( 9001 ) ),
+					'technical' => array( 'specifications' => array( 'ac_output_kw_nominal' => $fact ) ),
+				),
+			)
+		);
+		$product = $this->product( 9001 );
+		$english = Materials::spec_text( $product, 'ac_power', 'ac_output_kw_nominal', $fact, false );
+		$german  = Materials::spec_text( $product, 'ac_power', 'ac_output_kw_nominal', $fact, true );
+
+		$this->assertSame( '12 kW (footnote *: 11 kW for Ireland variant)', $english['value'] );
+		$this->assertSame( '12 kW (Fußnote *: 11 kW für die Irland-Variante)', $german['value'] );
+	}
+
+	/**
 	 * A WC_Product double with just the id.
 	 *
 	 * @param int $id The product id.
