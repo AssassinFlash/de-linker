@@ -1289,6 +1289,7 @@ export function EnergyWorkspace({
 			<div hidden={view !== "direct-beam"}>
 				<DirectBeamSetup
 					draft={draft}
+					locale={locale}
 					edit={edit}
 					session={session}
 					client={client}

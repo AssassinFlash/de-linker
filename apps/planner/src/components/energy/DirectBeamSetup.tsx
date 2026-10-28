@@ -37,6 +37,7 @@ export function DirectBeamSetup({
 	start,
 	openWeather,
 	openDesign,
+	locale,
 }: {
 	draft: Draft;
 	edit: (operation: (inputs: JsonObject) => JsonObject) => boolean;
@@ -49,6 +50,7 @@ export function DirectBeamSetup({
 	start: () => void;
 	openWeather: () => void;
 	openDesign: (() => void) | undefined;
+	locale: string;
 }) {
 	const inputs = draft.history.current,
 		projectId = draft.baseline.id,
@@ -744,9 +746,9 @@ export function DirectBeamSetup({
 				<p>
 					{sprintf(
 						__("Maximum requested midpoint samples: %s", "linker-tools"),
-						samples.toLocaleString(),
+						samples.toLocaleString(locale),
 					)}
-					{limits ? ` / ${limits.max_samples.toLocaleString()}` : ""}
+					{limits ? ` / ${limits.max_samples.toLocaleString(locale)}` : ""}
 				</p>
 			)}
 			{samples !== null && !allowedSamples && (
