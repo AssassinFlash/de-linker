@@ -44,7 +44,8 @@ html[lang^="de"]
 
 /* Keep the German planning preview in the existing video frame, with the
    complete image visible and the original tool action beside it. */
-#tv-rs-page-v1 #engineering-tools #tool-pane-0 .lk-tooldeck-media > img.rs-tool-preview {
+#tv-rs-page-v1 #engineering-tools #tool-pane-0 .lk-tooldeck-media > img.rs-tool-preview,
+#tv-cs-page-v1 #engineering-tools #tool-pane-0 .lk-tooldeck-media > img.cs-tool-preview {
 	display: block;
 	width: 100%;
 	height: auto;
