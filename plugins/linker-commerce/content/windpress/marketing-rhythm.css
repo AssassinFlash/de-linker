@@ -178,6 +178,11 @@ body #service-redesign a:is(.lk-btn-primary, .lk-btn-secondary, .linker-contact-
    Stack its three choices like the existing About phone chapter tabs: the
    full German Kompatibilität label must fit at the action size. */
 @media (max-width: 760px) {
+	/* Give every EPC FAQ topic room for the full German label. */
+	#tv-solutions-developers-v1 #faq .epc-faq-topics {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
 	/* Give the long scale names the same full-width choice as the tool decks. */
 	#tv-solution-v1 #arenas .sol-scale-tabs {
 		grid-template-columns: minmax(0, 1fr);
