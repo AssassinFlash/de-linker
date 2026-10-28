@@ -1446,13 +1446,18 @@ final class ProductShortcodes {
 	}
 
 	/**
-	 * What the contract says about one relationship
-	 * (tv_b2b_pdp_pairing_status).
+	 * The relationship's recorded evidence status; qualifications remain below the cards.
 	 *
 	 * @param array<string, mixed> $relationship The registry relationship.
 	 * @param string               $locale       'de' or 'en'.
 	 */
 	private static function pairing_status( array $relationship, string $locale ): string {
+		if ( 'one_way' === ( $relationship['status'] ?? '' ) ) {
+			return __( 'Partially documented', 'linker-commerce' );
+		}
+		if ( 'listed' !== ( $relationship['status'] ?? '' ) ) {
+			return __( 'Compatibility information unavailable', 'linker-commerce' );
+		}
 		$by = trim( Materials::localized_text( $relationship, 'listed_by', $locale ) );
 		if ( '' === $by ) {
 			return __( 'On the compatibility list on file', 'linker-commerce' );

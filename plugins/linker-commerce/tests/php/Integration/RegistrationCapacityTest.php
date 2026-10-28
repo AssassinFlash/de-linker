@@ -1786,8 +1786,7 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		$customer = $this->customer();
 		update_user_meta( $customer->get_id(), Approval::STATUS_META, Approval::PENDING );
 		$this->as_user( $customer->get_id() );
-		$before = $this->summary();
-		$this->assertIsArray( RegistrationSlots::reserve( wp_generate_uuid4(), RegistrationSlots::MAX_BYTES - $before['business_bytes'] ) );
+		$before      = $this->summary();
 		$user        = $this->native_user( $customer->get_id() );
 		$first       = get_user_meta( $user->ID, 'first_name', true );
 		$old_request = $_REQUEST;
@@ -1798,6 +1797,24 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 			}
 		);
 		wc_clear_notices();
+		$_POST                                  = array(
+			'action'               => 'save_account_details',
+			'account_first_name'   => 'Retained first name',
+			'account_last_name'    => '',
+			'account_display_name' => 'Retained display name',
+			'account_email'        => '',
+		);
+		$_REQUEST['save-account-details-nonce'] = wp_create_nonce( 'save_account_details' );
+		\WC_Form_Handler::save_account_details();
+		$this->assertSame( 2, wc_notice_count( 'error' ), 'Native required-field validation remains in charge.' );
+		foreach ( array( 'account_first_name', 'account_last_name', 'account_display_name', 'account_email' ) as $key ) {
+			$this->assertSame( $_POST[ $key ], \Linker\Commerce\Registration\PendingProfileCapacity::account_value( $key, 'OLD' ), 'A present submitted field, including an empty string, survives the native error.' );
+		}
+		$this->assertSame( $first, get_user_meta( $user->ID, 'first_name', true ) );
+		$this->assertSame( $user->display_name, $this->native_user( $user->ID )->display_name );
+		$this->assertSame( $user->user_email, $this->native_user( $user->ID )->user_email );
+		wc_clear_notices();
+		$this->assertIsArray( RegistrationSlots::reserve( wp_generate_uuid4(), RegistrationSlots::MAX_BYTES - $before['business_bytes'] ) );
 		$_POST                                  = array(
 			'action'               => 'save_account_details',
 			'account_first_name'   => 'Maria extra business data',
