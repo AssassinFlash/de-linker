@@ -162,7 +162,8 @@ def export(directory: Path, path: Path) -> None:
             for cid, anchor in external_axis_anchors(
                 list(chunks_by_id.values())
             ).items()
-            if (anchor["source_sha256"], anchor["source_table"]) in projected_tables
+            if anchor.get("kind") == "pdf_cover"
+            or (anchor["source_sha256"], anchor["source_table"]) in projected_tables
         }
         if axis_anchors:
             db.execute(
@@ -170,6 +171,7 @@ def export(directory: Path, path: Path) -> None:
                 ("external_axis_anchors", json.dumps(axis_anchors, sort_keys=True)),
             )
         covered: dict[int, set[str]] = {}
+        prepared: dict[int, set[str]] = {}
         by_id = {d["document_id"]: d for d in manifest.get("documents", [])}
         revisions = {
             p["product_id"]: p["product_revision"] for p in manifest.get("products", [])
@@ -214,6 +216,12 @@ def export(directory: Path, path: Path) -> None:
                     covered.setdefault(item["product_id"], set()).add(
                         item["document_id"]
                     )
+                    # A first-contact procedure makes a passage available, but
+                    # alone does not prepare the policy's duration or terms.
+                    if not scope or scope.get("basis") != "warranty_procedure":
+                        prepared.setdefault(item["product_id"], set()).add(
+                            item["document_id"]
+                        )
         ready = []
         unprepared = []
         document_status = {d.sha256: d.status for d in corpus.read_documents(directory)}
@@ -228,7 +236,7 @@ def export(directory: Path, path: Path) -> None:
                     or document_status.get(document["blob_sha256"]) != "indexed"
                 ):
                     reason = "document_unparsed"
-                elif did not in covered.get(pid, set()):
+                elif did not in prepared.get(pid, set()):
                     reason = "no_proven_passage"
                 else:
                     continue

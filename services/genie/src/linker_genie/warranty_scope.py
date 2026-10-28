@@ -7,6 +7,7 @@ coverage, a warranty period, a technical parameter or an individual entitlement.
 from __future__ import annotations
 
 import hashlib
+import math
 import re
 from collections.abc import Mapping, Sequence
 from decimal import Decimal
@@ -17,7 +18,7 @@ from linker_genie.table_projection import model_axis, read_cells
 
 # Literal manufacturer cover vocabulary in the hosted ESA/ET/STSs originals.
 # Power ranges must agree; an ESA family name alone cannot cross its ranges.
-FAMILY = re.compile(r"\b([a-z][a-z0-9]*)\s+(?:series|serie)\b", re.IGNORECASE)
+FAMILY = re.compile(r"\b([a-z][a-z0-9]*)[-\s]+(?:series|serie)\b", re.IGNORECASE)
 POWER_RANGE = re.compile(
     r"(?<!\w)(\d+(?:[.,]\d+)?)\s*[-–]\s*(\d+(?:[.,]\d+)?)\s*kW\b",
     re.IGNORECASE,
@@ -99,6 +100,296 @@ def procedure_id(sha: str, page: int, model: str, original: str, text: str) -> s
     return f"{sha[:12]}-p{page}-warranty-{digest}"
 
 
+def terms_id(sha: str, page: int, model: str, original: str, text: str) -> str:
+    digest = hashlib.sha256(f"{model}\0{original}\0{text}".encode()).hexdigest()[:16]
+    return f"{sha[:12]}-p{page}-warranty-terms-{digest}"
+
+
+def _series_token(cell: str, family: Sequence[str]) -> str | None:
+    if len(family) != 3 or not series_matches(cell, family):
+        return None
+    name, lower, upper = family
+    if lower and upper:
+        pattern = (
+            rf"\b{re.escape(name)}\s+(\d+(?:[.,]\d+)?)\s*[-–]\s*"
+            r"(\d+(?:[.,]\d+)?)\s*k(?:W)?\b"
+        )
+        matches = [
+            m.group(0)
+            for m in re.finditer(pattern, cell, re.I)
+            if tuple(str(Decimal(n.replace(",", ".")).normalize()) for n in m.groups())
+            == (lower, upper)
+        ]
+    else:
+        pattern = rf"\b{re.escape(name)}[-\s]+(?:series|serie)\b"
+        matches = [m.group(0) for m in re.finditer(pattern, cell, re.I)]
+    return matches[0] if len(matches) == 1 else None
+
+
+def _text_source(source: Any, sha: str, ids: Sequence[str]) -> bool:
+    if not isinstance(source, dict):
+        return False
+    text, cid, page = source.get("text"), source.get("chunk_id"), source.get("page")
+    if not isinstance(text, str) or not text or type(page) is not int or page < 1:
+        return False
+    digest = hashlib.sha256(("text\0" + text).encode()).hexdigest()[:8]
+    return cid == f"{sha[:12]}-p{page}-{digest}" and cid in ids
+
+
+def valid_pdf_cover(anchor: Any, sha: str, chunk_id: str, text: str) -> bool:
+    """Check a persisted physical title anchor against its source and text."""
+    if not isinstance(anchor, dict) or anchor.get("kind") != "pdf_cover":
+        return False
+    start, end, size = (
+        anchor.get("line_start"),
+        anchor.get("line_end"),
+        anchor.get("page_size"),
+    )
+    if (
+        anchor.get("source_sha256") != sha
+        or anchor.get("source_page") != 1
+        or anchor.get("text") != text
+        or chunk_id
+        != f"{sha[:12]}-p1-pdf-cover-{hashlib.sha256(('text' + chr(0) + text).encode()).hexdigest()[:8]}"
+        or type(start) is not int
+        or type(end) is not int
+        or start < 0
+        or end - start != len(text)
+        or not isinstance(size, (list, tuple))
+        or len(size) != 2
+        or any(
+            type(v) not in (int, float) or not math.isfinite(v) or v <= 0 for v in size
+        )
+    ):
+        return False
+    spans = []
+    for name in ("family", "power"):
+        span = anchor.get(name)
+        if not isinstance(span, dict):
+            return False
+        a, b, box = span.get("char_start"), span.get("char_end"), span.get("bbox")
+        if (
+            type(a) is not int
+            or type(b) is not int
+            or not start <= a < b <= end
+            or span.get("text") != text[a - start : b - start]
+            or not isinstance(box, (list, tuple))
+            or len(box) != 4
+            or any(type(v) not in (int, float) or not math.isfinite(v) for v in box)
+            or not (0 <= box[0] < box[2] <= size[0] and 0 <= box[1] < box[3] <= size[1])
+        ):
+            return False
+        spans.append(span)
+    family, power = spans
+    return (
+        family["char_end"] <= power["char_start"]
+        and family["bbox"][2] < power["bbox"][0]
+        and max(family["bbox"][1], power["bbox"][1])
+        < min(family["bbox"][3], power["bbox"][3])
+        and family_signature(text) is not None
+    )
+
+
+def terms_text(
+    value: Mapping[str, Any], source_ids: Sequence[str]
+) -> tuple[str, list[dict[str, Any]]] | None:
+    """Render a single native policy row and its inseparable source conditions.
+
+    This deliberately requires the complete purchaser, start-date, territory,
+    installation-date and exclusion language. A different policy layout stays
+    unprepared rather than receiving guessed terms.
+    """
+    policy = value.get("policy")
+    if not isinstance(policy, dict):
+        return None
+    row = policy.get("term_row")
+    sources = policy.get("term_sources")
+    sha, family = policy.get("blob_sha256"), value.get("family")
+    if (
+        not isinstance(sha, str)
+        or not isinstance(row, dict)
+        or not isinstance(sources, dict)
+        or not isinstance(family, list)
+    ):
+        return None
+    cells = read_cells(row.get("cells", []))
+    number, source = row.get("row"), row.get("source")
+    if (
+        cells is None
+        or type(number) is not int
+        or number < 1
+        or not isinstance(source, dict)
+    ):
+        return None
+    row_text, row_id, row_page = (
+        source.get("text"),
+        source.get("chunk_id"),
+        source.get("page"),
+    )
+    if not isinstance(row_text, str) or type(row_page) is not int or row_page < 1:
+        return None
+    digest = hashlib.sha256(("table\0" + row_text).encode()).hexdigest()[:8]
+    if row_id != f"{sha[:12]}-p{row_page}-{digest}" or row_id not in source_ids:
+        return None
+    headers = [c for c in cells if c["column_header"] and c["row_start"] == 0]
+    labels = {c["col_start"]: re.sub(r"\s+", "", c["text"]).casefold() for c in headers}
+    if labels != {
+        0: "warrantyperiod",
+        1: "dateofmanufacture",
+        2: "product",
+        3: "series",
+    } and labels != {
+        0: "garantiezeitraum",
+        1: "herstellungsdatum",
+        2: "produktgruppe",
+        3: "serien",
+    }:
+        return None
+    selected = []
+    for col in range(4):
+        matches = [
+            c
+            for c in cells
+            if not c["column_header"]
+            and c["col_start"] == col
+            and c["col_end"] == col + 1
+            and c["row_start"] <= number < c["row_end"]
+        ]
+        if len(matches) != 1:
+            return None
+        selected.append(matches[0]["text"])
+    period, production, _product, series = selected
+    token = _series_token(series, family)
+    if not token or not period or not production:
+        return None
+
+    # The row fragment must physically contain all three selected cells; this
+    # also rejects detached continuations and inferred neighbouring rows.
+    def norm(text: str) -> str:
+        return " ".join(text.split()).casefold()
+
+    if not any(
+        all(norm(x) in norm(line) for x in (period, production, token))
+        for line in row_text.splitlines()
+    ):
+        return None
+    kinds = ("overview", "start", "effective", "geography", "exclusions")
+    if set(sources) != set(kinds):
+        return None
+    notes: list[dict[str, Any]] = []
+    for kind in kinds:
+        item = sources[kind]
+        if not _text_source(item, sha, source_ids) or item.get("lang") not in {
+            "en",
+            "de",
+        }:
+            return None
+        original = str(item["text"])
+        low = original.casefold()
+        if kind == "overview":
+            ok = (
+                "original purchaser" in low
+                and "non-transferable" in low
+                and "exclusions" in low
+            ) or (
+                "ursprünglichen käufer" in low
+                and "nicht übertragbar" in low
+                and "ausschlüssen" in low
+            )
+            match = re.search(
+                r"This warranty only applies.+?exclusions and limitations set out below"
+                r"|diese Garantie nur für.+?Ausschlüssen und Begrenzungen",
+                original,
+                re.I | re.S,
+            )
+            ok = ok and match is not None
+            excerpt = match.group(0) if match else ""
+        elif kind == "start":
+            ok = (
+                "earlier" in low
+                and "first installed" in low
+                and "production" in low
+                and "months" in low
+            ) or (
+                "früheren" in low
+                and "installiert" in low
+                and "herstellungsdatum" in low
+                and "monate" in low
+            )
+            excerpt = original
+        elif kind == "effective":
+            match = re.search(
+                r"This Limited Warranty is effective|Diese beschränkte Garantie gilt",
+                original,
+                re.I,
+            )
+            ok = bool(match) and (
+                ("installed" in low and "unless" in low and "newer" in low)
+                or ("installiert" in low and "es sei denn" in low and "neuere" in low)
+            )
+            excerpt = original[match.start() :] if match else ""
+        elif kind == "geography":
+            ok = (
+                "authorized" in low
+                and "installed" in low
+                and "norway" in low
+                and "switzerland" in low
+            ) or (
+                "autorisierten" in low
+                and "installiert" in low
+                and "norwegen" in low
+                and "schweiz" in low
+            )
+            excerpt = original.split(". ", 1)[0].rstrip(".") + "."
+        else:
+            ok = (
+                "manufacturing and material defects" in low
+                and "normal wear and tear" in low
+            ) or (
+                "herstellungs- und materialfehler" in low
+                and "normaler verschleiss" in low
+            )
+            lines = original.splitlines()
+            if len(lines) < 3:
+                return None
+            # Preserve the complete exclusion up to its illustrative example;
+            # the remainder of this long source line describes only that example.
+            installation = re.split(
+                r",\s*(?:e\.g\.|z\.\s*B\.)", lines[2], maxsplit=1, flags=re.I
+            )[0]
+            excerpt = "\n".join([*lines[:2], installation])
+        if not ok:
+            return None
+        notes.append(
+            {
+                "quote": " ".join(excerpt.split()),
+                "page": item["page"],
+                "chunk_id": item["chunk_id"],
+                "lang": item["lang"],
+            }
+        )
+    notes.insert(
+        0,
+        {
+            "quote": production,
+            "page": row_page,
+            "chunk_id": row_id,
+            "lang": sources["overview"]["lang"],
+        },
+    )
+    annotations = [
+        {**item, "quote": f"*{i}: {item['quote']}"} for i, item in enumerate(notes, 1)
+    ]
+    text = "\n".join(
+        [
+            f"| Warranty / Garantie | {period} |",
+            f"| Series / Serie | {token} |",
+            *(f"{n['quote']} (p. {n['page']})" for n in annotations),
+        ]
+    )
+    return text, annotations
+
+
 def _purpose_is(document: Mapping[str, Any], purpose: str) -> bool:
     # Keep the established role-first precedence. A generic/dedicated role is
     # not overridden by the type while validating a new conditional grant.
@@ -121,10 +412,15 @@ def valid_warranty_scope(
     sha: str,
     chunk_id: str,
     text: str,
+    external_axis_anchors: Mapping[str, Any] | None = None,
 ) -> bool:
     """Recheck both document grants and the exact model/series/procedure chain."""
     value = scope.get("warranty_scope")
-    if not isinstance(value, dict) or scope.get("basis") != "warranty_procedure":
+    basis = scope.get("basis")
+    if not isinstance(value, dict) or basis not in {
+        "warranty_procedure",
+        "warranty_terms",
+    }:
         return False
     pid = value.get("product_id")
     if (
@@ -138,7 +434,7 @@ def valid_warranty_scope(
         or value.get("text_sha256") != hashlib.sha256(text.encode()).hexdigest()
         or type(value.get("source_page")) is not int
         or value["source_page"] <= 0
-        or not claims_procedure(text)
+        or (basis == "warranty_procedure" and not claims_procedure(text))
     ):
         return False
     source_ids = scope.get("source_chunk_ids", [])
@@ -180,6 +476,36 @@ def valid_warranty_scope(
     ):
         return False
     family = family_signature(str(sheet.get("cover_quote", "")))
+    cover_pdf = sheet.get("cover_pdf")
+    if "-pdf-cover-" in str(sheet.get("cover_chunk_id", "")) and cover_pdf is None:
+        return False
+    if cover_pdf is not None:
+        cover_id = sheet.get("cover_chunk_id")
+        if (
+            not isinstance(cover_id, str)
+            or not isinstance(external_axis_anchors, Mapping)
+            or external_axis_anchors.get(cover_id) != cover_pdf
+            or not valid_pdf_cover(
+                cover_pdf,
+                sheet["blob_sha256"],
+                cover_id,
+                str(cover_pdf.get("text", "")) if isinstance(cover_pdf, dict) else "",
+            )
+            or str(sheet.get("cover_quote", "")).strip() != cover_pdf["text"]
+        ):
+            return False
+    if "cover_source_text" in sheet:
+        cover_source = {
+            "chunk_id": sheet.get("cover_chunk_id"),
+            "page": 1,
+            "text": sheet["cover_source_text"],
+        }
+        if (
+            not _text_source(cover_source, sheet["blob_sha256"], source_ids)
+            or str(sheet.get("cover_quote", "")).strip()
+            not in sheet["cover_source_text"]
+        ):
+            return False
     model_quote = sheet.get("model_quote", "")
     header_cells = sheet.get("model_header_cells", [])
     if header_cells:
@@ -222,6 +548,16 @@ def valid_warranty_scope(
                 or not cid.startswith(evidence["blob_sha256"][:12] + "-p")
             ):
                 return False
+    if basis == "warranty_terms":
+        rendered = terms_text(value, source_ids)
+        return (
+            rendered is not None
+            and rendered[0] == text
+            and original in source_ids
+            and policy["blob_sha256"] == sha
+            and chunk_id
+            == terms_id(sha, value["source_page"], str(value["model"]), original, text)
+        )
     return (
         original in source_ids
         and policy["blob_sha256"] == sha

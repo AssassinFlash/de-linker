@@ -179,6 +179,117 @@ def pages_of(document: DoclingDocument) -> dict[int, list[Block]]:
     return pages
 
 
+def pdf_series_cover(pdf_path: Path) -> dict[str, object] | None:
+    """Recover a single visible first-page series/range line from a PDF footer.
+
+    Docling can classify the product title as page furniture. The original ESA
+    datasheet prints the series and its power range on one physical line there.
+    Keep only this explicit title form, with one same-line, on-page range; a
+    filename, competing title, hidden text or unrelated body mention is not proof.
+    """
+    import pypdfium2
+
+    with pdf_path.open("rb") as handle:
+        sha = hashlib.file_digest(handle, "sha256").hexdigest()
+    if pdf_path.stem != sha:
+        raise ValueError("source PDF bytes do not match their content identity")
+    pdf = pypdfium2.PdfDocument(pdf_path)
+    try:
+        if not len(pdf):
+            return None
+        page = pdf[0]
+        try:
+            if page.get_rotation() != 0:
+                return None
+            left, bottom, right, top = page.get_bbox()
+            textpage = page.get_textpage()
+            try:
+                text = textpage.get_text_range()
+                # Offsets must address the exact original physical characters.
+                if len(text) != textpage.count_chars():
+                    return None
+                pattern = re.compile(
+                    r"(?im)^[ \t]*(?P<family>[a-z][a-z0-9]*[ \t]+series)"
+                    r"[ \t]+Residential Energy Storage System[ \t]+I[ \t]+"
+                    r"(?P<power>\d+(?:[.,]\d+)?[ \t]*[-–][ \t]*"
+                    r"\d+(?:[.,]\d+)?[ \t]*kW)"
+                    r"[ \t]*/[ \t]*\d+(?:[.,]\d+)?[ \t]*[-–][ \t]*"
+                    r"\d+(?:[.,]\d+)?[ \t]*kWh[ \t\r]*$"
+                )
+                matches = list(pattern.finditer(text))
+                if len(matches) != 1:
+                    return None
+                match = matches[0]
+
+                def bounds(group: str) -> tuple[float, float, float, float]:
+                    boxes = [
+                        textpage.get_charbox(i)
+                        for i in range(match.start(group), match.end(group))
+                        if not text[i].isspace()
+                    ]
+                    return (
+                        min(b[0] for b in boxes),
+                        min(b[1] for b in boxes),
+                        max(b[2] for b in boxes),
+                        max(b[3] for b in boxes),
+                    )
+
+                family, power = bounds("family"), bounds("power")
+                if not all(
+                    left <= box[0] < box[2] <= right
+                    and bottom <= box[1] < box[3] <= top
+                    for box in (family, power)
+                ):
+                    return None
+                if family[2] >= power[0] or max(family[1], power[1]) >= min(
+                    family[3], power[3]
+                ):
+                    return None
+                line = match.group(0).strip(" \t\r")
+                line_start = (
+                    match.start()
+                    + len(match.group(0))
+                    - len(match.group(0).lstrip(" \t"))
+                )
+                return {
+                    "kind": "pdf_cover",
+                    "source_sha256": sha,
+                    "source_page": 1,
+                    "text": line,
+                    "line_start": line_start,
+                    "line_end": line_start + len(line),
+                    "page_size": [right - left, top - bottom],
+                    "family": {
+                        "text": match.group("family"),
+                        "char_start": match.start("family"),
+                        "char_end": match.end("family"),
+                        "bbox": [
+                            family[0] - left,
+                            family[1] - bottom,
+                            family[2] - left,
+                            family[3] - bottom,
+                        ],
+                    },
+                    "power": {
+                        "text": match.group("power"),
+                        "char_start": match.start("power"),
+                        "char_end": match.end("power"),
+                        "bbox": [
+                            power[0] - left,
+                            power[1] - bottom,
+                            power[2] - left,
+                            power[3] - bottom,
+                        ],
+                    },
+                }
+            finally:
+                textpage.close()
+        finally:
+            page.close()
+    finally:
+        pdf.close()
+
+
 def _pdf_model_spans(
     pdf: object,
     number: int,

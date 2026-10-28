@@ -42,7 +42,11 @@ from linker_genie.table_projection import (
     native_chunk_id_matches,
     unqualified_table_columns,
 )
-from linker_genie.warranty_scope import CONDITIONAL_CLAIMS_NOTE
+from linker_genie.warranty_scope import (
+    CONDITIONAL_CLAIMS_NOTE,
+    terms_text,
+    valid_pdf_cover,
+)
 
 # The release layout of ops/publish_index.py: /opt/linker-genie/index/<version>/ and a
 # `current` link. GENIE_INDEX points elsewhere (a local build, a test fixture).
@@ -747,6 +751,24 @@ class DocumentIndex:
                     output[row]["table_text"] = column_texts[cid]
                 if scopes.get(cid, {}).get("basis") == "warranty_procedure":
                     output[row]["scope_note"] = CONDITIONAL_CLAIMS_NOTE
+                if scopes.get(cid, {}).get("basis") == "warranty_terms":
+                    proof = scopes[cid]
+                    rendered = terms_text(
+                        proof["warranty_scope"], proof["source_chunk_ids"]
+                    )
+                    if rendered is None or rendered[0] != text:
+                        output.pop(row, None)
+                        continue
+                    output[row]["qualifications"] = [
+                        Qualification(
+                            quote=source["quote"],
+                            page=source["page"],
+                            chunk_id=source["chunk_id"],
+                            lang=source["lang"],
+                        )
+                        for source in rendered[1]
+                    ]
+                    output[row]["qualification_required"] = True
                 projection = scopes.get(cid, {}).get("table_projection", {})
                 if isinstance(projection, dict) and projection.get("footnote_sources"):
                     output[row]["qualifications"] = [
@@ -777,6 +799,24 @@ class DocumentIndex:
         verified: dict[str, Any] = {}
         for table_id, anchor in anchors.items():
             if not isinstance(table_id, str) or not isinstance(anchor, dict):
+                continue
+            if anchor.get("kind") == "pdf_cover":
+                sha, page, cover_text = (
+                    anchor.get("source_sha256"),
+                    anchor.get("source_page"),
+                    anchor.get("text"),
+                )
+                if (
+                    isinstance(sha, str)
+                    and isinstance(cover_text, str)
+                    and self._db.execute(
+                        "SELECT doc_sha256,page,kind,text FROM chunks WHERE id = ?",
+                        (table_id,),
+                    ).fetchone()
+                    == (sha, page, "text", cover_text)
+                    and valid_pdf_cover(anchor, sha, table_id, cover_text)
+                ):
+                    verified[table_id] = anchor
                 continue
             origins = anchor.get("axis_source")
             sha, page = anchor.get("source_sha256"), anchor.get("source_page")

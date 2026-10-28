@@ -454,6 +454,13 @@ def external_axis_anchors(chunks: list[Chunk]) -> dict[str, dict[str, Any]]:
     by_id = {chunk.id: chunk for chunk in chunks}
     anchors: dict[str, dict[str, Any]] = {}
     for chunk in chunks:
+        if chunk.source_pdf_cover:
+            from linker_genie.warranty_scope import valid_pdf_cover
+
+            if valid_pdf_cover(
+                chunk.source_pdf_cover, chunk.doc_sha256, chunk.id, chunk.text
+            ):
+                anchors[chunk.id] = chunk.source_pdf_cover
         if chunk.kind != "table" or not chunk.source_table:
             continue
         cells = read_cells(chunk.source_cells)
@@ -649,7 +656,7 @@ def compile_scopes(
     )
     output.extend(manual_units)
     result.update(manual_scopes)
-    from index.warranty import compile_procedures
+    from index.warranty import compile_procedures, compile_terms
 
     procedures, procedure_scopes = compile_procedures(
         relevant,
@@ -662,6 +669,16 @@ def compile_scopes(
     )
     output.extend(procedures)
     result.update(procedure_scopes)
+    terms, term_scopes = compile_terms(
+        relevant,
+        procedures,
+        procedure_scopes,
+        tokenizer,
+        max_tokens,
+        restricted_contexts=contexts,
+    )
+    output.extend(terms)
+    result.update(term_scopes)
     certificates, certificate_scopes = compile_certificate_subjects(
         relevant, source, tokenizer, max_tokens, contexts
     )
