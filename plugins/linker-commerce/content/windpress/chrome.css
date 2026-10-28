@@ -28,8 +28,14 @@ header#lc-header{position:sticky;top:0;z-index:1000;background:#fff;border-botto
  * Switch the reading surface immediately so body copy cannot show through;
  * retain the existing border transition and every inner menu transition. */
 html body[data-page] header#lc-header{transition-property:border-color}
-body.admin-bar header#lc-header{top:32px;--lk-toolbar-offset:32px}
-@media (max-width:782px){body.admin-bar header#lc-header{top:46px;--lk-toolbar-offset:46px}}
+/* Picostrap disables WordPress's normal admin-bar bump. Restore that document
+ * space so the sticky header and everything following it start below the bar. */
+html:has(> body.admin-bar:not(.wp-admin)){margin-block-start:var(--wp-admin--admin-bar--height,32px)}
+body.admin-bar{--lk-toolbar-offset:var(--wp-admin--admin-bar--height,32px)}
+body.admin-bar header#lc-header{top:var(--lk-toolbar-offset)}
+/* WordPress scrolls its toolbar out of view at this width. The header follows
+ * it until it reaches the viewport top, then sticks there. */
+@media (max-width:600px){body.admin-bar header#lc-header{top:0}}
 #tv-header-v2{font-family:var(--proto-font-sans);position:relative;background:transparent;padding-top:0!important;padding-bottom:0!important;color:var(--proto-ink)}
 #tv-header-v2 .tv-container{max-width:1360px!important;margin:0 auto;padding-left:1rem;padding-right:1rem}
 #tv-header-v2 :where(a,button,input,summary,[tabindex]):focus-visible{outline:2px solid var(--proto-teal-600);outline-offset:2px;border-radius:4px}
@@ -323,10 +329,6 @@ html:not(.lia-narrow) #tv-header-v2[data-tv-actions-compact="false"] .tv-desktop
 #lc-header #tv-header-v2 .tv-mobile-link-text{align-items:flex-start!important;text-align:left!important}
 #lc-header #tv-header-v2 .tv-mobile-summary{align-items:center!important;justify-content:space-between!important;text-align:left!important}
 #lc-header #tv-header-v2 .tv-mobile-summary.tv-mobile-summary--direct{display:flex!important;font-size:16px!important;font-weight:700!important;letter-spacing:0!important;text-transform:none!important}
-
-/* The frame height already subtracts WordPress's toolbar. A sticky header's
- * toolbar offset does not reserve that space in normal document flow. */
-body.admin-bar .linker-genie-workspace{margin-block-start:var(--wp-admin--admin-bar--height,32px)}
 
 /* Match the workspace rail's existing 860px overlay breakpoint. Its prototype
  * had a static header; the live sticky header must stay clear of the close
