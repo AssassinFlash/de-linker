@@ -28,6 +28,7 @@ from linker_genie.publication import Snapshot
 from linker_genie.publication_scope import authorize_chunk
 from linker_genie.retrieval import DocumentIndex
 from linker_genie.schema import DocumentBlock, TextBlock, TurnOutput
+from linker_genie.warranty_scope import exclusion_category
 
 
 def _compile():
@@ -404,6 +405,23 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
     pairs = {(term_scopes[c.id]["product_ids"][0], c.lang) for c in terms}
     assert pairs == {(pid, lang) for pid in source.products for lang in ("en", "de")}
     assert len(pairs) == 44
+    for lang in ("en", "de"):
+        categories = {
+            exclusion_category(extra["text"].splitlines()[extra["line"]])
+            for c in terms
+            if term_scopes[c.id]["product_ids"] == [6528] and c.lang == lang
+            if (
+                extra := term_scopes[c.id]["warranty_scope"]["policy"].get(
+                    "additional_exclusion"
+                )
+            )
+        }
+        assert categories == {
+            "modification",
+            "force_majeure",
+            "battery_compatibility",
+            "reporting",
+        }
     anchors = external_axis_anchors(original)
     for c in terms:
         proof = term_scopes[c.id]
@@ -437,7 +455,10 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
             rows = [
                 c.text
                 for c in terms
-                if term_scopes[c.id]["product_ids"] == [pid] and c.lang == lang
+                if term_scopes[c.id]["product_ids"] == [pid]
+                and c.lang == lang
+                and "additional_exclusion"
+                not in term_scopes[c.id]["warranty_scope"]["policy"]
             ]
             assert len(rows) == 2
             assert any(
@@ -558,6 +579,40 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
                     if "-warranty-terms-" in hit["chunk_id"]
                 ]
                 assert hits and all(hit["qualification_required"] for hit in hits)
+        for lang in ("en", "de"):
+            result = search(
+                {
+                    "query": "inverter damage battery pack not compatible warranty"
+                    if lang == "en"
+                    else "Wechselrichterschaden Batteriepack nicht kompatibel Garantie",
+                    "lang": lang,
+                    "product_ids": [6528],
+                }
+            )
+            battery = next(
+                hit
+                for hit in result["hits"]
+                if any(
+                    exclusion_category(note["quote"]) == "battery_compatibility"
+                    for note in hit.get("qualifications", [])
+                )
+            )
+            facts = collect("linker/search-knowledge", result, lang)
+            answer = hydrate(
+                TurnOutput(
+                    language=lang,
+                    blocks=[TextBlock(text="Details.", refs=[battery["chunk_id"]])],
+                ),
+                facts,
+            )
+            assert (
+                "not compatible"
+                if lang == "en"
+                else "nicht mit dem GOODWE-Wechselrichter kompatibel"
+            ) in answer.blocks[0].text
+            assert (
+                "first installed" if lang == "en" else "Herstellungsdatum"
+            ) in answer.blocks[0].text
         changed_source = deepcopy(raw)
         sheet = proof["warranty_scope"]["datasheet"]["document_id"]
         next(d for d in changed_source["documents"] if d["document_id"] == sheet)[

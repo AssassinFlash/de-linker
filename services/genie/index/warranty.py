@@ -17,6 +17,7 @@ from linker_genie.source_models import model_pattern
 from linker_genie.table_projection import model_axis, read_cells
 from linker_genie.warranty_scope import (
     claims_procedure,
+    exclusion_category,
     family_signature,
     procedure_id,
     series_matches,
@@ -534,6 +535,60 @@ def compile_terms(
                         source_rows=(),
                         source_table="",
                     )
+                )
+                added[cid] = scoped
+    # Additional complete exclusion paragraphs remain separately retrievable,
+    # each carrying the same purchaser, production, start and policy conditions.
+    for base in list(output):
+        original_proof = added[base.id]
+        seen: set[str] = set()
+        for chunk in by_sha.get(base.doc_sha256, []):
+            if (
+                chunk.kind != "text"
+                or chunk.id in restricted_contexts
+                or chunk.source_picture
+                or chunk.section not in {"WARRANTY EXCEPTIONS", "AUSSCHLUSSBEDINGUNGEN"}
+                or chunk.lang != base.lang
+            ):
+                continue
+            for line in range(len(chunk.text.splitlines())):
+                category = exclusion_category(chunk.text.splitlines()[line])
+                if not category or category in seen:
+                    continue
+                scoped = deepcopy(original_proof)
+                evidence = scoped["warranty_scope"]
+                evidence["policy"]["additional_exclusion"] = {
+                    "chunk_id": chunk.id,
+                    "page": chunk.page,
+                    "lang": chunk.lang,
+                    "section": chunk.section,
+                    "text": chunk.text,
+                    "line": line,
+                }
+                scoped["source_chunk_ids"] = list(
+                    dict.fromkeys([*scoped["source_chunk_ids"], chunk.id])
+                )
+                rendered = terms_text(evidence, scoped["source_chunk_ids"])
+                if rendered is None:
+                    continue
+                text, _ = rendered
+                cid = terms_id(
+                    base.doc_sha256,
+                    base.page,
+                    evidence["model"],
+                    evidence["source_chunk_id"],
+                    text,
+                )
+                if cid in added:
+                    continue
+                header = f"{evidence['model']} | conditional warranty exclusions | p. {base.page}"
+                tokens = tokenizer.count(header + "\n" + text)
+                if tokens > max_tokens:
+                    continue
+                seen.add(category)
+                evidence["text_sha256"] = hashlib.sha256(text.encode()).hexdigest()
+                output.append(
+                    replace(base, id=cid, header=header, text=text, tokens=tokens)
                 )
                 added[cid] = scoped
     return output, added

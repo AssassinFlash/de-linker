@@ -136,6 +136,27 @@ def _text_source(source: Any, sha: str, ids: Sequence[str]) -> bool:
     return cid == f"{sha[:12]}-p{page}-{digest}" and cid in ids
 
 
+def exclusion_category(text: str) -> str:
+    """Recognize explicit, complete examples in the manufacturer's exceptions."""
+    if re.search(r"\b(?:disassembly|demontage)\b", text, re.I):
+        return "modification"
+    if re.search(r"\b(?:force majeure|höhere Gewalt)\b", text, re.I):
+        return "force_majeure"
+    if re.search(
+        r"inverter damage.+not compatible|wechselrichterschaden.+nicht.+kompatibel",
+        text,
+        re.I,
+    ):
+        return "battery_compatibility"
+    if re.search(
+        r"reported.+(?:one|1) month.+first|gemeldet.+(?:eines Monats|1 Monat).+Auftreten",
+        text,
+        re.I,
+    ):
+        return "reporting"
+    return ""
+
+
 def valid_pdf_cover(anchor: Any, sha: str, chunk_id: str, text: str) -> bool:
     """Check a persisted physical title anchor against its source and text."""
     if not isinstance(anchor, dict) or anchor.get("kind") != "pdf_cover":
@@ -328,6 +349,9 @@ def terms_text(
                 or ("installiert" in low and "es sei denn" in low and "neuere" in low)
             )
             excerpt = original[match.start() :] if match else ""
+            excerpt = re.split(
+                r"(?i)\s+(?:Always check|Prüfen Sie immer)\b", excerpt, maxsplit=1
+            )[0]
         elif kind == "geography":
             ok = (
                 "authorized" in low
@@ -358,6 +382,8 @@ def terms_text(
                 r",\s*(?:e\.g\.|z\.\s*B\.)", lines[2], maxsplit=1, flags=re.I
             )[0]
             excerpt = "\n".join([*lines[:2], installation])
+            if policy.get("additional_exclusion") is not None:
+                excerpt = lines[0].split(". ", 1)[0].rstrip(".") + "."
         if not ok:
             return None
         notes.append(
@@ -377,6 +403,36 @@ def terms_text(
             "lang": sources["overview"]["lang"],
         },
     )
+    extra = policy.get("additional_exclusion")
+    if extra is not None:
+        if (
+            not _text_source(extra, sha, source_ids)
+            or extra.get("lang") != sources["overview"]["lang"]
+            or extra.get("section")
+            not in {"WARRANTY EXCEPTIONS", "AUSSCHLUSSBEDINGUNGEN"}
+            or type(extra.get("line")) is not int
+        ):
+            return None
+        lines = extra["text"].splitlines()
+        line = extra["line"]
+        if not 0 <= line < len(lines):
+            return None
+        excerpt = lines[line].strip()
+        if (
+            not re.match(r"^[A-ZÄÖÜ]", excerpt)
+            or not excerpt.endswith(".")
+            or len(excerpt.split()) < 4
+            or not exclusion_category(excerpt)
+        ):
+            return None
+        notes.append(
+            {
+                "quote": " ".join(excerpt.split()),
+                "page": extra["page"],
+                "chunk_id": extra["chunk_id"],
+                "lang": extra["lang"],
+            }
+        )
     annotations = [
         {**item, "quote": f"*{i}: {item['quote']}"} for i, item in enumerate(notes, 1)
     ]
