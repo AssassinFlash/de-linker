@@ -66,6 +66,7 @@ import re
 
 from linker_genie.facts import (
     RELEASED_VERDICTS,
+    Fact,
     TurnFacts,
     pairing_card_sets,
     stock_rows,
@@ -1421,7 +1422,6 @@ _DOD_LABEL = {
 }
 _KWH_260 = re.compile(r"260 ?kWh")
 _PERCENT_98 = re.compile(r"98\s*%")
-_CLEARANCE_MM = (1500, 1000, 500, 400)
 _STRIP_ROUTES = frozenset({"products", "compare", "pairing", "sizing", "model"})
 _DOCUMENT_PHRASES = (
     "usable capacity",
@@ -1488,15 +1488,22 @@ def seal(
     if _clearance_question(question):
         stripped = grounding.strip_unlicensed_numbers(
             output,
-            grounding.clearance_allowance(TurnFacts(facts=source_texts), question),
+            grounding.clearance_allowance(_clearance_source_texts(scoped), question),
         )
-        return _append_clearance(stripped, blob)
+        return _append_clearance(stripped, scoped)
     if _document_like(route, question):
         stripped = grounding.strip_detached_code_tails(
             output, grounding.code_tail_blob(facts)
         )
         rebound = grounding.rebind_figures_past_decimal(stripped)
-        return _append_document_sentences(rebound, scoped, blob, question)
+        support_sources = (
+            _seal_sources(original or output, facts, route, include_qualified=True)
+            if _support_question(question)
+            else scoped
+        )
+        return _append_document_sentences(
+            rebound, scoped, blob, question, support_sources
+        )
     if (
         route.name in _STRIP_ROUTES
         and not route.stock_beside
@@ -1506,8 +1513,14 @@ def seal(
     return output
 
 
-def _seal_sources(output: TurnOutput, facts: TurnFacts, route: Route) -> TurnFacts:
-    """Only the first answer's cited, unqualified chunks for one current model.
+def _seal_sources(
+    output: TurnOutput,
+    facts: TurnFacts,
+    route: Route,
+    *,
+    include_qualified: bool = False,
+) -> TurnFacts:
+    """Only the first answer's cited chunks for one current model.
 
     Automatic sentences are appended to the first text block. They may use
     that block's actual chunk refs and figure placeholders; when it names none,
@@ -1516,6 +1529,8 @@ def _seal_sources(output: TurnOutput, facts: TurnFacts, route: Route) -> TurnFac
     all chunks refer to the same PDF. A multi-model table is not a single
     product projection even when the question names one of its models.
     A condition-bound projection is never a source for bare synthesized values.
+    The support-absence check may inspect it only to avoid a false absence;
+    this does not synthesize a fact or remove the original qualification.
     """
     first = next(
         (block for block in output.blocks if isinstance(block, TextBlock)), None
@@ -1560,7 +1575,7 @@ def _seal_sources(output: TurnOutput, facts: TurnFacts, route: Route) -> TurnFac
     selected = {
         f"{ref}.text": facts.facts[f"{ref}.text"]
         for ref in refs
-        if ref not in facts.qualifications
+        if (include_qualified or ref not in facts.qualifications)
         and f"{ref}.text" in facts.facts
         and facts.facts[f"{ref}.text"].source == "search-knowledge"
     }
@@ -1676,13 +1691,17 @@ def _append_sentence(output: TurnOutput, sentence: str) -> TurnOutput:
 
 
 def _append_document_sentences(
-    output: TurnOutput, sources: TurnFacts, blob: str, question: str
+    output: TurnOutput,
+    sources: TurnFacts,
+    blob: str,
+    question: str,
+    support_sources: TurnFacts,
 ) -> TurnOutput:
     sealed = output
     if _usable_question(question) and blob:
         sealed = _append_usable(sealed, sources, blob)
     if _support_question(question):
-        sealed = _append_support(sealed)
+        sealed = _append_support(sealed, support_sources, question)
     return sealed
 
 
@@ -1782,41 +1801,263 @@ def _figure_sentence(language: str, capacity: bool, discharge: bool) -> str:
     return ""
 
 
-def _append_support(output: TurnOutput) -> TurnOutput:
+def _append_support(
+    output: TurnOutput, sources: TurnFacts, question: str
+) -> TurnOutput:
     language = output.language
     if _SUPPORT_PRESENT[language].search(_prose(output)):
         return output
+    question_key = re.sub(r"[^a-z0-9äöü]+", "", question.casefold())
+    for fact_id, fact in sources.facts.items():
+        if not fact_id.endswith(".text") or fact.source != "search-knowledge":
+            continue
+        source = re.sub(r"\[n[1-9]\d*=([^\]]+)\]", r"\1", fact.value)
+        source_key = re.sub(r"[^a-z0-9äöü]+", "", source.casefold())
+        if (
+            ("enwg" in question_key and "enwg" in source_key)
+            or ("14a" in question_key and "14a" in source_key)
+            or (
+                "leistungsreduzierung" in question_key
+                and (
+                    "leistungsreduzierung" in source_key
+                    or "powerreduction" in source_key
+                )
+            )
+        ):
+            # A cited source discusses the subject. We cannot infer support
+            # from a mention, or assert that the document is silent about it.
+            return output
     return _append_sentence(output, _SUPPORT_ABSENCE[language])
 
 
-def _append_clearance(output: TurnOutput, blob: str) -> TurnOutput:
-    clearances = " ".join(
-        segment
-        for segment in _source_segments(blob)
-        if re.search(
-            r"(?i)\b(?:clearances?|mindestabstand\w*|abstand\w*|abstände\w*)\b", segment
+_CLEARANCE_LABEL = (
+    r"(?:(?:minimum|minimum\s+required|minimaler|minimale|minimalen)\s+)?"
+    r"(?:clearances?|mindestabstand|mindestabstände|abstand|abstände)"
+)
+_CLEARANCE_ATOM = r"(?:≥|>=)?\s*\[n[1-9]\d*=[^\[\]]+\]"
+_CLEARANCE_LIST = (
+    rf"{_CLEARANCE_ATOM}(?:\s*(?:(?:/|,|\band\b|\bund\b)\s*|(?=≥|>=))"
+    rf"{_CLEARANCE_ATOM})*"
+)
+_CLEARANCE_TOKEN = re.compile(r"\[n([1-9]\d*)=([^\[\]]+)\]")
+
+
+def _clearance_source_texts(sources: TurnFacts) -> TurnFacts:
+    """Restore verified figures in their original context for the strip step.
+
+    Treating figures as isolated words would turn the ``10`` in ``Φ10`` into
+    an allowed installation number; the original source context prevents it.
+    """
+    texts: dict[str, Fact] = {}
+    for fact_id, fact in sources.facts.items():
+        if not fact_id.endswith(".text") or fact.source != "search-knowledge":
+            continue
+        chunk = fact_id[:-5]
+
+        def restore(match: re.Match[str], chunk_id: str = chunk) -> str:
+            figure = sources.facts.get(f"{chunk_id}.n{match.group(1)}")
+            if (
+                figure
+                and figure.source == "search-knowledge"
+                and figure.value == match.group(2)
+            ):
+                return figure.value
+            return ""
+
+        texts[fact_id] = Fact(
+            id=fact_id,
+            source=fact.source,
+            value=_CLEARANCE_TOKEN.sub(restore, fact.value),
         )
-        and re.search(r"(?i)\bmm\b", segment)
+    return TurnFacts(facts=texts)
+
+
+def _clearance_values(
+    sources: TurnFacts, chunk: str, expression: str, *, unit_in_label: bool = False
+) -> list[int] | None:
+    """Read only an intact list of figure facts with a supported mm unit."""
+    if re.fullmatch(_CLEARANCE_LIST, expression, re.IGNORECASE) is None:
+        return None
+    tokens = list(_CLEARANCE_TOKEN.finditer(expression))
+    values: list[int] = []
+    explicit_units: list[bool] = []
+    for token in tokens:
+        value = token.group(2)
+        number = re.fullmatch(r"(\d+)(\s*mm)?", value, re.IGNORECASE)
+        figure = sources.facts.get(f"{chunk}.n{token.group(1)}")
+        if (
+            number is None
+            or figure is None
+            or figure.source != "search-knowledge"
+            or figure.value != value
+        ):
+            return None
+        values.append(int(number.group(1)))
+        explicit_units.append(number.group(2) is not None)
+    if not tokens or not (
+        all(explicit_units)
+        or unit_in_label
+        or (explicit_units[-1] and not any(explicit_units[:-1]))
+    ):
+        return None
+    return values
+
+
+def _clearance_clauses(
+    sources: TurnFacts, chunk: str, segment: str
+) -> list[tuple[int, bool]] | None:
+    """Bind clearance values to complete clauses, including explicit negation.
+
+    Unknown clauses make the sentence ambiguous: they can be conditions on a
+    previous value. A following correction can refer to the immediately
+    preceding negated clearance, but an unrelated property cannot supply one.
+    """
+    result: list[tuple[int, bool]] = []
+    negated = False
+    for clause in segment.rstrip(".!").split(";"):
+        clause = clause.strip()
+        direct = re.fullmatch(
+            rf"(?:the\s+|der\s+|die\s+)?(?P<label>{_CLEARANCE_LABEL})"
+            rf"(?:\s+(?:is|are|of|ist|sind|beträgt|betragen|von))?\s*[:=]?\s*"
+            rf"(?P<not>not\s+|nicht\s+)?(?P<values>{_CLEARANCE_LIST})",
+            clause,
+            re.IGNORECASE,
+        )
+        correction = re.fullmatch(
+            rf"(?:use|verwenden\s+sie)\s+(?:a\s+)?(?:minimum|mindestens)\s+"
+            rf"(?:of|von)?\s*(?P<values>{_CLEARANCE_LIST})",
+            clause,
+            re.IGNORECASE,
+        )
+        other = re.fullmatch(
+            rf"(?:the\s+)?(?:enclosure|cabinet|device|unit)\s+(?:height|width|depth)"
+            rf"(?:\s+(?:is|of))?\s*[:=]?\s*(?P<values>{_CLEARANCE_LIST})",
+            clause,
+            re.IGNORECASE,
+        )
+        if direct:
+            values = _clearance_values(sources, chunk, direct.group("values"))
+            if values is None:
+                return None
+            negated = direct.group("not") is not None
+            if not negated:
+                minimum = bool(re.search(r"(?i)minimum|minimal|mindest|≥|>=", clause))
+                result.extend((value, minimum) for value in values)
+        elif correction and negated:
+            values = _clearance_values(sources, chunk, correction.group("values"))
+            if values is None:
+                return None
+            result.extend((value, True) for value in values)
+            negated = False
+        elif other:
+            if _clearance_values(sources, chunk, other.group("values")) is None:
+                return None
+            negated = False
+        else:
+            return None
+    return result
+
+
+def _independent_measurement(sources: TurnFacts, chunk: str, segment: str) -> bool:
+    """Recognize a separate single-property measurement, not free context."""
+    line = segment.strip().rstrip(".!")
+    cells = [cell.strip() for cell in line.strip("|").split("|")]
+    if line.startswith("|") and len(cells) == 2:
+        line = f"{cells[0]} {cells[1]}"
+    match = re.fullmatch(
+        r"(?:the\s+)?(?:(?:rated|usable|nominal|maximum|minimum|enclosure|cabinet|device|unit)\s+)?"
+        r"(?:height|width|depth|energy|power|voltage|current|weight|mass|torque|load|drill\s+bit)"
+        r"(?:\s+(?:is|of))?\s*[:=]?\s*Φ?\[n(?P<id>[1-9]\d*)=(?P<value>[^\[\]]+)\]",
+        line,
+        re.IGNORECASE,
     )
-    missing = [
-        value
-        for value in _CLEARANCE_MM
-        if re.search(rf"(?<!\d){value}(?!\d)", clearances)
-        and not re.search(rf"(?<!\d){value} ?mm", _prose(output), re.IGNORECASE)
-    ]
-    return _append_sentence(output, _clearance_sentence(output.language, missing))
+    if match is None:
+        return False
+    figure = sources.facts.get(f"{chunk}.n{match.group('id')}")
+    return bool(
+        figure
+        and figure.source == "search-knowledge"
+        and figure.value == match.group("value")
+    )
 
 
-def _clearance_sentence(language: str, values: list[int]) -> str:
+def _source_clearances(sources: TurnFacts) -> list[tuple[int, bool]]:
+    values: list[tuple[int, bool]] = []
+    for fact_id, fact in sources.facts.items():
+        if not fact_id.endswith(".text") or fact.source != "search-knowledge":
+            continue
+        chunk = fact_id[:-5]
+        chunk_values: list[tuple[int, bool]] = []
+        for segment in _source_segments(fact.value):
+            if not segment.strip():
+                continue
+            cells = [cell.strip() for cell in segment.strip().strip("|").split("|")]
+            if segment.strip().startswith("|") and len(cells) == 2:
+                label = re.fullmatch(
+                    rf"(?P<label>{_CLEARANCE_LABEL})\s*(?:\(mm\)|\[mm\])?",
+                    cells[0],
+                    re.IGNORECASE,
+                )
+                if label:
+                    found = _clearance_values(
+                        sources,
+                        chunk,
+                        cells[1],
+                        unit_in_label="mm" in cells[0].casefold(),
+                    )
+                    if found is not None:
+                        minimum = bool(
+                            re.search(r"(?i)minimum|minimal|mindest|≥|>=", segment)
+                        )
+                        chunk_values.extend((value, minimum) for value in found)
+                        continue
+                elif re.fullmatch(
+                    r"(?i)parameter|property|eigenschaft", cells[0]
+                ) and re.fullmatch(r"(?i)value|wert", cells[1]):
+                    continue
+            else:
+                found_clauses = _clearance_clauses(sources, chunk, segment)
+                if found_clauses is not None:
+                    chunk_values.extend(found_clauses)
+                    continue
+            if not _independent_measurement(sources, chunk, segment):
+                # A surrounding heading or prose can qualify the measurement.
+                # Leave it to the cited, conditioned answer path instead of
+                # producing a bare automatic statement.
+                break
+        else:
+            values.extend(chunk_values)
+    return list(dict.fromkeys(values))
+
+
+def _append_clearance(output: TurnOutput, sources: TurnFacts) -> TurnOutput:
+    for minimum in (True, False):
+        missing = [
+            value
+            for value, is_minimum in _source_clearances(sources)
+            if is_minimum == minimum
+            and not re.search(rf"(?<!\d){value}\s*mm\b", _prose(output), re.IGNORECASE)
+        ]
+        output = _append_sentence(
+            output, _clearance_sentence(output.language, missing, minimum)
+        )
+    return output
+
+
+def _clearance_sentence(language: str, values: list[int], minimum: bool) -> str:
     if not values:
         return ""
     if language == "de":
         if len(values) == 1:
-            return f"Die Montageunterlagen nennen einen Abstand von {values[0]} mm."
-        return f"Die Montageunterlagen nennen Abstände von {_join_mm(values, 'und')}."
+            label = "Mindestabstand" if minimum else "Abstand"
+            return f"Die Montageunterlagen nennen einen {label} von {values[0]} mm."
+        label = "Mindestabstände" if minimum else "Abstände"
+        return f"Die Montageunterlagen nennen {label} von {_join_mm(values, 'und')}."
     if len(values) == 1:
-        return f"The installation documents state a clearance of {values[0]} mm."
-    return f"The installation documents state clearances of {_join_mm(values, 'and')}."
+        label = "minimum clearance" if minimum else "clearance"
+        return f"The installation documents state a {label} of {values[0]} mm."
+    label = "minimum clearances" if minimum else "clearances"
+    return f"The installation documents state {label} of {_join_mm(values, 'and')}."
 
 
 def _join_mm(values: list[int], conjunction: str) -> str:

@@ -15,7 +15,7 @@ from typing import Literal
 from baseline.grade import Turn, answer_text, check, untraceable_numbers
 
 from linker_genie.cycle import run
-from linker_genie.facts import Fact, TurnFacts, collect, merge
+from linker_genie.facts import Fact, Qualification, TurnFacts, collect, merge
 from linker_genie.figures import tag
 from linker_genie.ground import (
     blob_has_figure,
@@ -197,7 +197,7 @@ def test_clearance_appends_only_a_figure_the_documents_contain() -> None:
     )
     sealed = seal(
         output,
-        _facts(DOC),
+        _scoped_hit("c1", 4107, DOC),
         Route("documents"),
         str(ROWS["b15-de"]["question"]),
         "other",
@@ -211,7 +211,7 @@ def test_clearance_appends_only_a_figure_the_documents_contain() -> None:
 
     invented = seal(
         output,
-        _facts("Clearances 1500 mm and 400 mm."),
+        _scoped_hit("c1", 4107, "Clearances 1500 mm and 400 mm."),
         Route("documents"),
         str(ROWS["b15-de"]["question"]),
         "other",
@@ -239,7 +239,7 @@ def test_a_clearance_answer_drops_datasheet_energy() -> None:
     )
     sealed = seal(
         output,
-        _facts(blob),
+        _scoped_hit("c1", 4107, blob),
         Route("documents"),
         str(ROWS["b15-en"]["question"]),
         "other",
@@ -360,6 +360,76 @@ def _scoped_hit(
                 }
             ]
         },
+    )
+
+
+def test_clearance_completion_binds_the_value_to_the_property() -> None:
+    facts = _scoped_hit("a", 1, "Minimum clearance 500 mm; enclosure height 1500 mm.")
+    output = TurnOutput(
+        language="en",
+        blocks=[TextBlock(text="See the installation guide.", refs=["a"])],
+    )
+
+    sealed = seal(output, facts, Route("documents"), "What minimum clearance?", "other")
+
+    assert "500 mm" in _text(sealed)
+    assert "1500 mm" not in _text(sealed)
+
+
+def test_clearance_completion_does_not_assert_a_negated_value() -> None:
+    facts = _scoped_hit("a", 1, "The clearance is not 500 mm; use a minimum of 400 mm.")
+    output = TurnOutput(
+        language="en",
+        blocks=[TextBlock(text="See the installation guide.", refs=["a"])],
+    )
+
+    sealed = seal(output, facts, Route("documents"), "What minimum clearance?", "other")
+
+    assert "500 mm" not in _text(sealed)
+    assert "400 mm" in _text(sealed)
+
+
+def test_clearance_completion_uses_real_figures_and_keeps_conditions() -> None:
+    for language, source, question in (
+        ("en", "Minimum clearance 725 mm.", "What minimum clearance?"),
+        ("de", "Mindestabstand 725 mm.", "Welcher Mindestabstand?"),
+        ("en", "| Minimum clearance (mm) | 725 |", "What minimum clearance?"),
+    ):
+        output = TurnOutput(
+            language=language, blocks=[TextBlock(text="Info.", refs=["a"])]
+        )
+        sealed = seal(
+            output, _scoped_hit("a", 1, source), Route("documents"), question, "other"
+        )
+        assert "725 mm" in _text(sealed)
+        assert ("minimum clearance" if language == "en" else "Mindestabstand") in _text(
+            sealed
+        )
+
+    for source in (
+        "Minimum clearance 500 mm when installed outdoors.",
+        "Minimum clearance 500 mm; for outdoor use only.",
+        "Minimum clearance 500 mm. For outdoor use only.",
+        "Minimum clearance 500 mm. This requirement applies only outdoors.",
+        "For outdoor use only. Minimum clearance 500 mm.",
+        "Outdoor installation. Minimum clearance 500 mm.",
+    ):
+        output = TurnOutput(
+            language="en", blocks=[TextBlock(text="See the guide.", refs=["a"])]
+        )
+        sealed = seal(
+            output,
+            _scoped_hit("a", 1, source),
+            Route("documents"),
+            "What minimum clearance?",
+            "other",
+        )
+        assert "500 mm" not in _text(sealed)
+
+    no_figure = _scoped_hit("a", 1, "Minimum clearance 500 mm.")
+    no_figure.facts.pop("a.n1")
+    assert "500 mm" not in _text(
+        seal(output, no_figure, Route("documents"), "What minimum clearance?", "other")
     )
 
 
@@ -562,6 +632,68 @@ def test_support_absence_is_written_once_and_stays_a_denial() -> None:
     assert re.search(r"(?i)\bunterstützt\b", text) is None
     assert not any(item.startswith("missing /") for item in _grade("b25-de", added))
     assert not any("clause asserts" in item for item in _grade("b25-de", added))
+
+
+def test_cited_support_answer_is_not_followed_by_a_false_absence() -> None:
+    for language, source, answer, question in (
+        (
+            "en",
+            "The device supports EnWG §14a.",
+            "The device supports EnWG §14a.",
+            "Does it support EnWG?",
+        ),
+        (
+            "de",
+            "Das Gerät unterstützt EnWG §14a.",
+            "Das Gerät unterstützt EnWG §14a.",
+            "Unterstützt es EnWG?",
+        ),
+        (
+            "en",
+            "The device does not support EnWG §14a.",
+            "The device does not support EnWG §14a.",
+            "Does it support EnWG?",
+        ),
+        (
+            "de",
+            "Das Gerät unterstützt EnWG §14a nicht.",
+            "Das Gerät unterstützt EnWG §14a nicht.",
+            "Unterstützt es EnWG?",
+        ),
+        (
+            "en",
+            "EnWG §14a is supported.",
+            "The device supports EnWG §14a.",
+            "Does it support EnWG?",
+        ),
+    ):
+        facts = _scoped_hit("a", 1, source)
+        output = TurnOutput(
+            language=language, blocks=[TextBlock(text=answer, refs=["a"])]
+        )
+
+        sealed = seal(output, facts, Route("documents"), question, "other")
+
+        assert _text(sealed) == answer
+
+    conditional = _scoped_hit("a", 1, "Supports EnWG §14a with the required interface.")
+    conditional.qualifications["a"] = (
+        Qualification("*1: The interface is required.", 3, "a-p3", "en"),
+    )
+    supported = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(
+                text="The device supports EnWG §14a with the required interface.",
+                refs=["a"],
+            )
+        ],
+    )
+    assert _text(
+        seal(
+            supported, conditional, Route("documents"), "Does it support EnWG?", "other"
+        )
+    ) == _text(supported)
 
 
 def test_a_product_page_is_not_sealed() -> None:
