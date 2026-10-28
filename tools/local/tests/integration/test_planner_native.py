@@ -231,8 +231,9 @@ def native_account(local: tuple[Instance, WpCli]) -> Iterator[Account]:
 
 def test_native_bootstrap_exposes_only_the_browser_runtime_contract(
     local: tuple[Instance, WpCli],
+    account: Account,
 ) -> None:
-    instance, _ = local
+    instance, wp = local
     context = Browser(instance.url).bootstrap()
     assert set(context["runtime"]) == {
         "schema_version",
@@ -246,6 +247,186 @@ def test_native_bootstrap_exposes_only_the_browser_runtime_contract(
         "max_page_size",
         "max_json_depth",
     }
+    # Exercise the same native classes with Woo's own signed-cookie reader
+    # and nonce filter, without another HTTP probe or private-service task.
+    result = wp.run(
+        "eval",
+        r"""
+use Linker\Tools\Planner\ClaimOutbox;
+use Linker\Tools\Planner\Gateway;
+use Linker\Tools\Planner\NativeIdentity;
+use Linker\Tools\Planner\TransitionTicket;
+use Linker\Tools\Planner\Transport;
+
+global $wpdb;
+$table = $wpdb->prefix . 'woocommerce_sessions';
+$original_cookies = $_COOKIE;
+$original_session = WC()->session;
+$original_user = get_current_user_id();
+$handler = new WC_Session_Handler();
+$guest = $handler->generate_customer_id();
+$expiry = time() + 3600;
+$cookie_name = apply_filters('woocommerce_cookie', 'wp_woocommerce_session_' . COOKIEHASH);
+$hash = new ReflectionMethod($handler, 'hash');
+$signed = static fn($expires) => $guest . '|' . $expires . '|' . ($expires - 7200) . '|' . $hash->invoke($handler, $guest . '|' . $expires);
+$cookie = $signed($expiry);
+$wpdb->insert($table, array('session_key' => $guest, 'session_value' => maybe_serialize(array('fixture' => 'existing-owner')), 'session_expiry' => $expiry));
+$status = 'active';
+$calls = array();
+$transport = new Transport(static function ($url, $args) use (&$status, &$calls) {
+    $path = str_ends_with($url, '/identity/status') ? 'identity/status' : (str_ends_with($url, '/version') ? 'version' : 'unexpected');
+    $calls[] = $path;
+    $data = 'identity/status' === $path ? array('schema_version' => 1, 'status' => $status) : array('schema_version' => 1, 'runtime_sha256' => str_repeat('a', 64), 'models' => array(), 'limits' => array('max_body_bytes' => 1000000, 'max_csv_bytes' => 100000, 'max_page_size' => 20, 'max_json_depth' => 32));
+    return array('response' => array('code' => 200), 'headers' => array('content-type' => 'application/json'), 'body' => wp_json_encode($data));
+});
+$gateway = new Gateway(new NativeIdentity(), $transport, new ClaimOutbox($transport));
+$request = static function (array $body) {
+    $request = new WP_REST_Request('POST', '/linker/v1/planner/bootstrap');
+    $request->set_header('content-type', 'application/json');
+    $request->set_header('origin', home_url());
+    $request->set_body(wp_json_encode($body));
+    return $request;
+};
+$writes = 0;
+$cookie_writes = 0;
+$migrations = 0;
+$query_guard = static function ($sql) use (&$writes) {
+    if (preg_match('/^\s*(INSERT|UPDATE|DELETE|REPLACE)\b/i', $sql)) { ++$writes; }
+    return $sql;
+};
+$cookie_guard = static function ($enabled) use (&$cookie_writes) { ++$cookie_writes; return $enabled; };
+$migration_guard = static function () use (&$migrations) { ++$migrations; };
+$run = static function (array $body, string $nonce = '') use ($gateway, $request, &$writes, &$cookie_writes, &$migrations, &$calls) {
+    $request = $request($body);
+    if ('' !== $nonce) { $request->set_header('x-wp-nonce', $nonce); }
+    $before = array($writes, $cookie_writes, $migrations, $_COOKIE, WC()->session);
+    $permission = $gateway->bootstrap_permission($request);
+    $reply = is_wp_error($permission) ? $permission : $gateway->bootstrap($request);
+    return array(
+        'status' => is_wp_error($reply) ? $reply->get_error_data()['status'] : $reply->get_status(),
+        'unchanged' => $before === array($writes, $cookie_writes, $migrations, $_COOKIE, WC()->session),
+        'data' => is_wp_error($reply) ? null : $reply->get_data(),
+    );
+};
+$mode = array('schema_version' => 1, 'existing_owner_only' => true);
+$user = (int) getenv('LINKER_PLANNER_FIXTURE_USER');
+$token = '';
+try {
+    wp_set_current_user(0);
+    WC()->session = null;
+    $_COOKIE = array();
+    add_filter('query', $query_guard);
+    add_filter('woocommerce_set_cookie_enabled', $cookie_guard);
+    add_action('woocommerce_guest_session_to_user_id', $migration_guard);
+    $cases = array();
+    $cases['absent'] = $run($mode);
+    $_COOKIE[$cookie_name] = substr($cookie, 0, -1) . ('a' === substr($cookie, -1) ? 'b' : 'a');
+    $cases['forged'] = $run($mode);
+    $_COOKIE[$cookie_name] = $signed(time() - 60);
+    $cases['expired'] = $run($mode);
+    $_COOKIE[$cookie_name] = $cookie;
+    $cases['valid'] = $run(array('existing_owner_only' => true, 'schema_version' => 1));
+    $nonce = $cases['valid']['data']['nonce'] ?? '';
+    // Only the fixture sets an in-memory native customer ID. Verification
+    // uses Woo's real public nonce filter, not the new binding's closure.
+    $native = new WC_Session_Handler();
+    $customer = new ReflectionProperty(WC_Session::class, '_customer_id');
+    $customer->setValue($native, $guest);
+    add_filter('nonce_user_logged_out', array($native, 'maybe_update_nonce_user_logged_out'), 10, 2);
+    $native_nonce = false !== wp_verify_nonce($nonce, NativeIdentity::NONCE_ACTION);
+    $wrong_action = false === wp_verify_nonce($nonce, 'wp_rest');
+    remove_filter('nonce_user_logged_out', array($native, 'maybe_update_nonce_user_logged_out'), 10);
+    $customer->setValue($native, 't_' . str_repeat('z', 30));
+    WC()->session = $native;
+    $cases['mismatched_handler'] = $run($mode);
+    WC()->session = null;
+    $status = 'retired';
+    $cases['retired'] = $run($mode);
+    $status = 'active';
+    $malformed = array();
+    foreach (array(false, 0, 'true', null) as $flag) {
+        $malformed[] = $run(array('schema_version' => 1, 'existing_owner_only' => $flag));
+    }
+    $malformed[] = $run($mode + array('extra' => true));
+    $legacy_allowed = true === $gateway->bootstrap_permission($request(array('schema_version' => 1)));
+    // A valid native transition remains visible but is neither enqueued nor
+    // cleared. The same mode never performs foreground claim delivery.
+    remove_filter('query', $query_guard);
+    $ticket = new TransitionTicket();
+    $ticket->issue(NativeIdentity::guest_subject($guest), $expiry, $user);
+    add_filter('query', $query_guard);
+    $cases['pending_ticket'] = $run($mode);
+    $row_before = $wpdb->get_row($wpdb->prepare('SELECT * FROM %i WHERE session_key=%s', $table, $guest), ARRAY_A);
+    $cases['valid_again'] = $run($mode);
+    $row_unchanged = $row_before === $wpdb->get_row($wpdb->prepare('SELECT * FROM %i WHERE session_key=%s', $table, $guest), ARRAY_A);
+    remove_filter('query', $query_guard);
+    $wpdb->delete($table, array('session_key' => $guest));
+    add_filter('query', $query_guard);
+    $cases['revoked'] = $run($mode);
+    // Authenticated REST proof is independent of Woo migration/session state.
+    remove_filter('query', $query_guard);
+    wp_set_current_user($user);
+    $token = WP_Session_Tokens::get_instance($user)->create(time() + 3600);
+    $_COOKIE[LOGGED_IN_COOKIE] = wp_generate_auth_cookie($user, time() + 3600, 'logged_in', $token);
+    $rest_nonce = wp_create_nonce('wp_rest');
+    add_filter('query', $query_guard);
+    $cases['account'] = $run($mode, $rest_nonce);
+    $cases['account_without_nonce'] = $run($mode);
+    $output = array('cases' => array_map(static function ($case) {
+        unset($case['data']['nonce'], $case['data']['query_scope']);
+        return $case;
+    }, $cases), 'malformed' => $malformed, 'legacy_allowed' => $legacy_allowed, 'native_nonce' => $native_nonce, 'wrong_action_refused' => $wrong_action, 'row_unchanged' => $row_unchanged, 'writes' => $writes, 'cookie_writes' => $cookie_writes, 'migrations' => $migrations, 'transport_paths' => $calls);
+} finally {
+    remove_filter('query', $query_guard);
+    remove_filter('woocommerce_set_cookie_enabled', $cookie_guard);
+    remove_action('woocommerce_guest_session_to_user_id', $migration_guard);
+    $wpdb->delete($table, array('session_key' => $guest));
+    if ('' !== $token) { WP_Session_Tokens::get_instance($user)->destroy($token); }
+    WC()->session = $original_session;
+    $_COOKIE = $original_cookies;
+    wp_set_current_user($original_user);
+}
+echo wp_json_encode($output);
+""",
+        env={"LINKER_PLANNER_FIXTURE_USER": str(account.user)},
+    )
+    evidence = json.loads(result)
+    cases = evidence["cases"]
+    for name in (
+        "absent",
+        "forged",
+        "expired",
+        "mismatched_handler",
+        "revoked",
+        "account_without_nonce",
+    ):
+        assert cases[name]["status"] == 401, name
+    assert cases["retired"]["status"] == 403
+    for name in ("valid", "valid_again", "pending_ticket", "account"):
+        assert cases[name]["status"] == 200, name
+        assert cases[name]["data"]["cookie_confirmed"] is True
+        assert set(cases[name]["data"]["runtime"]) == set(context["runtime"])
+    assert cases["valid"]["data"]["kind"] == "guest"
+    assert cases["account"]["data"]["kind"] == "user"
+    assert cases["pending_ticket"]["data"]["claim_pending"] is True
+    assert all(case["status"] == 400 for case in evidence["malformed"])
+    assert all(case["unchanged"] for case in [*cases.values(), *evidence["malformed"]])
+    assert evidence["legacy_allowed"] and evidence["native_nonce"]
+    assert evidence["wrong_action_refused"] and evidence["row_unchanged"]
+    assert (
+        evidence["writes"] == evidence["cookie_writes"] == evidence["migrations"] == 0
+    )
+    assert evidence["transport_paths"] == [
+        "identity/status",
+        "version",
+        "identity/status",  # Retired: no version request and no identity reset.
+        "identity/status",
+        "version",
+        "identity/status",
+        "version",
+        "identity/status",
+        "version",
+    ]
 
 
 def test_native_guest_save_replay_conflict_and_private_ownership(

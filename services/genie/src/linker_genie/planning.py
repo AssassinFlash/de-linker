@@ -8,6 +8,8 @@ No chat model, new calculator, product feed or browser snapshot is an authority.
 from __future__ import annotations
 
 import json
+import re
+from datetime import datetime
 from typing import Any
 
 from linker_genie import facts
@@ -141,6 +143,154 @@ def view(raw: Any, page: PageContext) -> dict[str, Any]:
 
 def model_view(payload: dict[str, Any]) -> dict[str, Any]:
     return {key: value for key, value in payload.items() if key != "figures"}
+
+
+def source_card(raw: Any, page: PageContext) -> dict[str, Any] | None:
+    """Code's block, never part of the model-writable output schema."""
+    payload = view(raw, page)
+    if "error" in payload or payload.get("truncated") or not isinstance(raw, dict):
+        return None
+    bindings, results = [], []
+    for run in raw["runs"]:
+        if run.get("state") != "succeeded" or run.get("truncated"):
+            return None
+        summary = run.get("calculation_sources")
+        if summary is None:
+            continue  # Legacy/non-report sources remain compatible.
+        if not isinstance(summary, dict) or summary.get("schema_version") != 1:
+            return None
+        groups = summary.get("groups")
+        if not isinstance(groups, list) or not all(_source_group(g) for g in groups):
+            return None
+        binding = {
+            key: run.get(key)
+            for key in ("id", "revision", "manifest_sha256", "result_sha256")
+        }
+        if (
+            not isinstance(binding["revision"], int)
+            or isinstance(binding["revision"], bool)
+            or binding["revision"] < 1
+        ):
+            return None
+        if any(
+            not isinstance(binding[key], str)
+            or not re.fullmatch(r"[a-f0-9]{64}", binding[key])
+            for key in ("manifest_sha256", "result_sha256")
+        ):
+            return None
+        bindings.append(binding)
+        results.append({"revision": binding["revision"], "groups": groups})
+    if not results:
+        return None
+    return {
+        "type": "planning_sources",
+        "schema_version": 1,
+        "status": "available",
+        "binding": {
+            "planning_project_id": page.planning_project_id,
+            "planning_revision": page.planning_revision,
+            "planning_run_ids": page.planning_run_ids or [],
+            "runs": bindings,
+        },
+        "results": results,
+        "url": raw.get("workspace_url"),
+    }
+
+
+def _source_group(raw: Any) -> bool:
+    if (
+        not isinstance(raw, dict)
+        or raw.get("kind") not in ("pv", "energy")
+        or raw.get("role") not in ("selected", "baseline", "candidate")
+    ):
+        return False
+    if set(raw) - {
+        "kind",
+        "role",
+        "timezone",
+        "radiation_database",
+        "meteorological_database",
+        "weather_selection_period",
+        "synthetic_calculation_year",
+        "periods_utc",
+        "input_quantity",
+        "source_scope",
+    }:
+        return False
+    if raw["kind"] == "pv" and (
+        "input_quantity" not in raw
+        or "source_scope" not in raw
+        or raw["input_quantity"] not in (None, "pv_available_ac", "pv_available_dc")
+        or raw["source_scope"] not in (None, "whole_reference", "selected_dc_group")
+    ):
+        return False
+    for key in ("timezone", "radiation_database", "meteorological_database"):
+        if raw.get(key) is not None and not isinstance(raw[key], str):
+            return False
+    year = raw.get("synthetic_calculation_year")
+    # Python datetime's supported calendar years, not a weather-source default.
+    if year is not None and (type(year) is not int or not 1 <= year <= 9999):
+        return False
+    selection = raw.get("weather_selection_period")
+    if selection is not None and (
+        not isinstance(selection, dict)
+        or set(selection) != {"start_year", "end_year"}
+        or any(type(selection[k]) is not int for k in selection)
+        or not 1 <= selection["start_year"] <= selection["end_year"] <= 9999
+    ):
+        return False
+    periods = raw.get("periods_utc")
+    if not isinstance(periods, list):
+        return False
+    for period in periods:
+        if period is None:
+            continue
+        if not isinstance(period, dict) or set(period) != {"start_utc", "end_utc"}:
+            return False
+        try:
+            start, end = (
+                datetime.fromisoformat(period[k]) for k in ("start_utc", "end_utc")
+            )
+            if start.utcoffset() is None or end.utcoffset() is None or start >= end:
+                return False
+        except (TypeError, ValueError):
+            return False
+    return True
+
+
+def add_source_card(
+    shipped: dict[str, Any], raw: Any, page: PageContext, question: str, route: str
+) -> None:
+    card = source_card(raw, page)
+    if card is None:
+        if isinstance(raw, dict) and raw.get("runs"):
+            shipped["blocks"].append(
+                {
+                    "type": "planning_sources",
+                    "schema_version": 1,
+                    "status": "unavailable",
+                }
+            )
+        return
+    # A recorded-result explanation already has its own relevant next step.
+    # A sizing route, or a message asking for new selection/sizing work, keeps
+    # the existing follow-up policy. This is never a browser-side filter.
+    explanation = re.search(
+        r"\b(?:explain\w*|interpret\w*|erkl[aä]r\w*|erl[aä]uter\w*)\b", question, re.I
+    )
+    recorded_result = re.search(
+        r"\b(?:report\w*|result\w*|calculation\w*|bericht\w*|ergebnis\w*|berechnung\w*)\b",
+        question,
+        re.I,
+    )
+    sizing = re.search(
+        r"\b(?:size|sizing|choose|select|configur\w*|recommend\w*|dimension\w*|ausleg\w*|ausw[aä]hl\w*|w[aä]hl\w*|konfigur\w*|empfehl\w*)\b",
+        question,
+        re.I,
+    )
+    if route == "model" and explanation and recorded_result and not sizing:
+        shipped["blocks"] = [b for b in shipped["blocks"] if b.get("type") != "ask"]
+    shipped["blocks"].append(card)
 
 
 def record(raw: Any, page: PageContext) -> tuple[dict[str, Any], TurnFacts]:

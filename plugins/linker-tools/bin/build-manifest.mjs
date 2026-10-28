@@ -19,11 +19,15 @@ import { fileURLToPath } from 'node:url';
 const root = process.argv[ 3 ]
 	? resolve( process.argv[ 3 ] )
 	: fileURLToPath( new URL( '..', import.meta.url ) );
+const isTools =
+	JSON.parse( readFileSync( join( root, 'package.json' ), 'utf8' ) ).name ===
+	'linker-tools';
 const manifestPath = 'build/manifest.json';
 const buildInputs = [
 	'package.json',
 	'package-lock.json',
 	'webpack.config.js',
+	...( isTools ? [ 'project-input-contracts.json' ] : [] ),
 ];
 const notBuilt = /\.(test|stories)\.[jt]sx?$/;
 
@@ -51,6 +55,30 @@ function hashFiles( files ) {
 }
 
 function snapshot() {
+	if ( isTools ) {
+		const contracts = JSON.parse(
+			readFileSync( join( root, 'project-input-contracts.json' ), 'utf8' )
+		);
+		const plannerManifest = join(
+			root,
+			'build/planner/source-manifest.json'
+		);
+		// wp-scripts cleans build/ before the planner's second build phase. A
+		// present planner bundle must agree; publication also requires its presence.
+		if ( existsSync( plannerManifest ) ) {
+			const planner = JSON.parse(
+				readFileSync( plannerManifest, 'utf8' )
+			);
+			if (
+				JSON.stringify( planner.project_input_contracts ) !==
+				JSON.stringify( contracts.project_input_contracts )
+			) {
+				throw new Error(
+					'Planner build and Tools input contracts differ'
+				);
+			}
+		}
+	}
 	return {
 		sources: hashFiles( [
 			...buildInputs,

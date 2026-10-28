@@ -237,6 +237,23 @@
       "minimum": -9007199254740991,
       "type": "number"
     },
+    "PvStringLink": {
+      "additionalProperties": false,
+      "properties": {
+        "string_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "circuit_id": {
+          "$ref": "#/$defs/Identifier"
+        }
+      },
+      "required": [
+        "string_id",
+        "circuit_id"
+      ],
+      "title": "PvStringLink",
+      "type": "object"
+    },
     "RoutePoint": {
       "additionalProperties": false,
       "properties": {
@@ -317,6 +334,13 @@
         "$ref": "#/$defs/CableRun"
       },
       "title": "Cable Runs",
+      "type": "array"
+    },
+    "pv_string_links": {
+      "items": {
+        "$ref": "#/$defs/PvStringLink"
+      },
+      "title": "Pv String Links",
       "type": "array"
     }
   },

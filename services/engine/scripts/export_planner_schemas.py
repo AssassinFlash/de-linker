@@ -22,6 +22,7 @@ from linker_engine.planning.equipment_plant import EquipmentPlant
 from linker_engine.planning.installation_inputs import InstallationInputs
 from linker_engine.planning.plant_energy_inputs import PlantEnergyInputs
 from linker_engine.planning.plant_search_plan import PlantSearchPlan
+from linker_engine.planning.project_input_contracts import SUPPORTED_INPUT_CONTRACTS
 from linker_engine.planning.pv_parameters import PvGenerationParameters
 from linker_engine.planning.pvgis_reference_inputs import PvgisReferenceInputs
 from linker_engine.planning.report_inputs import ReportOptions
@@ -59,7 +60,7 @@ def closed_document(
 
 
 def documents() -> dict[str, str]:
-    return {
+    result = {
         f"{name}.schema.json": json.dumps(
             {
                 **closed_document(
@@ -89,8 +90,21 @@ def documents() -> dict[str, str]:
             ("plant-search-plan", PlantSearchPlan),
         )
     }
+    result["project-input-contracts.json"] = (
+        json.dumps(
+            {
+                "schema_version": 1,
+                "project_input_contracts": list(SUPPORTED_INPUT_CONTRACTS),
+            },
+            indent=2,
+        )
+        + "\n"
+    )
+    return result
 
 
 if __name__ == "__main__":
     for name, text in documents().items():
         (TARGET / name).write_text(text)
+        if name == "project-input-contracts.json":
+            (TARGET.parents[3] / "plugins/linker-tools" / name).write_text(text)

@@ -95,9 +95,11 @@ export class DraftContext {
 			try {
 				await pending;
 			} catch {
-				if ( ! this.pending || this.pending === pending ) {
+				if ( this.pending === pending ) {
 					return null;
 				}
+				// A newer check may already have settled. Only its current
+				// capture can authorize readiness, never this stale response.
 			}
 		}
 		return this.capture();
@@ -169,7 +171,7 @@ export class DraftContext {
 			try {
 				await pending;
 			} catch {
-				if ( this.pending === pending || ! this.pending ) {
+				if ( this.pending === pending ) {
 					return false;
 				}
 			}

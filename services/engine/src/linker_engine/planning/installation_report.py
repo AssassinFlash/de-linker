@@ -17,7 +17,7 @@ def installation_sections(source: Object, locale: str) -> list[ReportSection]:
         return []
     devices = cast(list[Object], plan["instances"])
     cables = cast(list[Object], plan["cables"])
-    return [
+    sections = [
         ReportSection(
             id="installation-instances",
             title=text("installation_instances", locale),
@@ -79,3 +79,80 @@ def installation_sections(source: Object, locale: str) -> list[ReportSection]:
             ),
         ),
     ]
+    reconciliation = plan.get("pv_string_reconciliation")
+    if isinstance(reconciliation, dict):
+        reviewed = cast(list[Object], reconciliation["rows"])
+        paragraphs = [text("installation_string_link_scope", locale)]
+        if reconciliation["plan_status"] != "available":
+            paragraphs.append(
+                text(
+                    f"installation_string_plan_{reconciliation['plan_status']}", locale
+                )
+            )
+        sections.append(
+            ReportSection(
+                id="installation-pv-string-links",
+                title=text("installation_string_links", locale),
+                paragraphs=paragraphs,
+                rows=[
+                    ReportRow(
+                        label=text(label, locale),
+                        value=str(count),
+                    )
+                    for label, count in (
+                        (
+                            "installation_string_linked_count",
+                            sum(row["status"] == "linked" for row in reviewed),
+                        ),
+                        (
+                            "installation_string_unresolved_count",
+                            sum(row["status"] != "linked" for row in reviewed),
+                        ),
+                        (
+                            "installation_string_cable_gaps",
+                            sum(bool(row["reasons"]) for row in reviewed),
+                        ),
+                    )
+                ]
+                + [
+                    ReportRow(
+                        label=text(label, locale),
+                        value=cast(str, reconciliation[key]) or "—",
+                    )
+                    for key, label in (
+                        ("pv_string_plan_sha256", "installation_string_plan_hash"),
+                        ("installation_input_sha256", "installation_input_hash"),
+                        ("geometry_sha256", "installation_geometry_hash"),
+                    )
+                ],
+                table=ReportTable(
+                    columns=[
+                        text("installation_string", locale),
+                        text("installation_link_circuit", locale),
+                        text("installation_ports", locale),
+                        text("status", locale),
+                        text("installation_link_cables", locale),
+                    ],
+                    column_weights=[1, 1, 1.5, 1.5, 1.5],
+                    rows=[
+                        [
+                            cast(str, row["string_id"]),
+                            cast(str, row["circuit_id"]) or "—",
+                            " → ".join(
+                                f"{endpoint['instance_id']}/{endpoint['port_id']}"
+                                for endpoint in cast(list[Object], row["endpoints"])
+                            )
+                            or "—",
+                            text(f"installation_string_link_{row['status']}", locale),
+                            "; ".join(
+                                f"{cable['id']}: {material_quantity(cable, locale)}"
+                                for cable in cast(list[Object], row["cable_runs"])
+                            )
+                            or text("installation_string_cable_runs_missing", locale),
+                        ]
+                        for row in reviewed
+                    ],
+                ),
+            )
+        )
+    return sections

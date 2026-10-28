@@ -920,6 +920,7 @@ final class ProxyTest extends TestCase {
 	 */
 	public function test_conversation_returns_the_stored_thread(): void {
 		$this->wp_functions();
+		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn( mixed $value ): string|false => json_encode( $value ) ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Native wire fixture.
 		$thread         = new RecordingThread();
 		$thread->stored = array(
 			'messages' => array(
@@ -969,6 +970,88 @@ final class ProxyTest extends TestCase {
 			$data['contacts']
 		);
 		$this->assertSame( array(), $data['inquiries'] );
+		// A source card reopens its stored references, never the new page's project.
+		$bound   = array(
+			'id'              => str_repeat( 'b', 32 ),
+			'revision'        => 2,
+			'manifest_sha256' => str_repeat( 'c', 64 ),
+			'result_sha256'   => str_repeat( 'd', 64 ),
+		);
+		$groups  = array(
+			array(
+				'kind'        => 'energy',
+				'role'        => 'selected',
+				'timezone'    => 'Europe/Paris',
+				'periods_utc' => array(
+					array(
+						'start_utc' => '2023-06-16T09:00:00+00:00',
+						'end_utc'   => '2023-06-16T11:00:00+00:00',
+					),
+				),
+			),
+		);
+		$binding = array(
+			'planning_project_id' => str_repeat( 'a', 32 ),
+			'planning_revision'   => 3,
+			'planning_run_ids'    => array( $bound['id'] ),
+			'runs'                => array( $bound ),
+		);
+		$card    = array(
+			'type'           => 'planning_sources',
+			'schema_version' => 1,
+			'status'         => 'available',
+			'binding'        => $binding,
+			'results'        => array(
+				array(
+					'revision' => 2,
+					'groups'   => $groups,
+				),
+			),
+			'url'            => 'https://de-linker.test/old',
+		);
+		$stream  = "event: block\ndata: " . wp_json_encode( $card ) . "\n\nevent: done\ndata: {}\n\n";
+		$fresh   = array(
+			'status'        => 'available',
+			'project'       => array(
+				'id'       => $binding['planning_project_id'],
+				'revision' => 3,
+			),
+			'runs'          => array(
+				$bound + array(
+					'state'               => 'succeeded',
+					'calculation_sources' => array(
+						'schema_version' => 1,
+						'groups'         => $groups,
+					),
+				),
+			),
+			'workspace_url' => 'https://de-linker.test/verified',
+		);
+		$seen    = null;
+		$reader  = new \Linker\Tools\Planner\GenieSources(
+			static function ( $request, $reference, $locale ) use ( &$seen, &$fresh ): ?array {
+				if ( 'de' !== $locale ) {
+					return null;
+				}
+				$seen = $reference;
+				return $fresh;
+			}
+		);
+		$request = new WP_REST_Request( 'GET' );
+		$request->set_param( 'project', str_repeat( 'e', 32 ) );
+		$restored = $reader->restore( $stream, $request, 'de' );
+		$this->assertIsArray( $seen );
+		$this->assertSame( $binding['planning_project_id'], $seen['planning_project_id'] );
+		$this->assertStringContainsString( '2023-06-16T09:00:00+00:00', $restored );
+		$this->assertStringContainsString( '/verified', $restored );
+		$replayed = \Linker\Tools\Planner\GenieSources::replayed( new WP_REST_Response( array( 'stream' => $stream ) ), array() );
+		$this->assertInstanceOf( WP_REST_Response::class, $replayed );
+		$this->assertStringContainsString( '"status":"unavailable"', $replayed->get_data()['stream'] );
+		$this->assertStringNotContainsString( 'planning_project_id', $replayed->get_data()['stream'] );
+		$fresh['runs'][0]['result_sha256'] = str_repeat( 'f', 64 );
+		$this->assertStringNotContainsString( '2023-06-16', $reader->restore( $stream, $request, 'de' ) );
+		$fresh = null;
+		$this->assertStringNotContainsString( 'planning_project_id', $reader->restore( $stream, $request, 'de' ) );
 		// The answer depends on the visitor's cookie: it is never cacheable.
 		$this->assertStringContainsString(
 			'no-store',

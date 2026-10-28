@@ -170,6 +170,8 @@ def _serve(
         # Dependency synchronization must not replace files underneath either
         # half of the old pair. Both identities were checked before draining.
         SERVICES[0].process(instance).stop()
+        # A save admitted just before the old HTTP stopped is part of history.
+        worker.compatible_release()
     urls = []
     for service in selected:
         project = (

@@ -159,14 +159,6 @@ export function resetTurnLane(): void {
  * @param root0.config
  */
 export function App( { config }: { config: GenieConfig } ) {
-	const loadThread = useCallback(
-		() =>
-			readThread( config.threadUrl, config.restNonce, undefined, {
-				restUrl: config.restUrl,
-				locale: config.locale,
-			} ),
-		[ config.threadUrl, config.restNonce, config.restUrl, config.locale ]
-	);
 	const [ open, setOpen ] = useState( false );
 	// The page context every turn carries (#234). The mount sets it, and the
 	// design report's "Ask Genie" adds the saved solution's id (#496): it is
@@ -176,6 +168,48 @@ export function App( { config }: { config: GenieConfig } ) {
 	const [ page, setPage ] = useState< PageContext >( config.page );
 	const pageRef = useRef( config.page );
 	const plannerNonce = useRef< string | undefined >( undefined );
+	const plannerProofEpoch = useRef( 0 );
+	const savedSourceRead = useRef< Awaited<
+		ReturnType< typeof readThread >
+	> | null >( null );
+	const loadThread = useCallback(
+		( allowExistingOwnerBootstrap = false, rememberSource = true ) => {
+			const before = plannerProofEpoch.current;
+			window.dispatchEvent(
+				new CustomEvent( 'linker-genie-planning-context-request' )
+			);
+			const freshBridgeProof =
+				plannerProofEpoch.current !== before && !! plannerNonce.current;
+			return readThread(
+				config.threadUrl,
+				config.restNonce,
+				undefined,
+				{ restUrl: config.restUrl, locale: config.locale },
+				{
+					plannerNonce: plannerNonce.current,
+					allowExistingOwnerBootstrap:
+						allowExistingOwnerBootstrap && ! freshBridgeProof,
+					onPlannerNonce: ( value ) => {
+						plannerNonce.current = value;
+					},
+				}
+			).then( ( stored ) => {
+				if ( rememberSource ) {
+					savedSourceRead.current =
+						stored.conversationId &&
+						stored.turn?.blocks.some(
+							( block ) =>
+								block.type === 'planning_sources' &&
+								block.status === 'unavailable'
+						)
+							? stored
+							: null;
+				}
+				return stored;
+			} );
+		},
+		[ config.threadUrl, config.restNonce, config.restUrl, config.locale ]
+	);
 	useEffect( () => {
 		const receive = ( event: Event ) => {
 			const detail = ( event as CustomEvent ).detail;
@@ -192,6 +226,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				next.planning_revision > 0
 			) {
 				pageRef.current = next;
+				plannerProofEpoch.current += 1;
 				plannerNonce.current =
 					typeof detail.plannerNonce === 'string'
 						? detail.plannerNonce
@@ -727,26 +762,100 @@ export function App( { config }: { config: GenieConfig } ) {
 		setPhase( 'error' );
 	};
 
-	const showStored = useCallback( async () => {
-		await draftContext.verify();
-		const lease = draftContext.capture();
-		if ( ! lease ) {
+	const showStored = useCallback(
+		async ( allowExistingOwnerBootstrap = false ) => {
+			await draftContext.verify();
+			const lease = draftContext.capture();
+			if ( ! lease ) {
+				return;
+			}
+			setRevealingAt( null );
+			const stored = await loadThread( allowExistingOwnerBootstrap );
+			if ( ! ( await draftContext.settle( lease ) ) ) {
+				return;
+			}
+			currentThread.current = stored.messages;
+			setThread( stored.messages );
+			setTurn( stored.turn );
+			turnAt.current = stored.turn ? stored.messages.length - 1 : -1;
+			setContacts( stored.contacts ?? [] );
+			setInquiries( stored.inquiries ?? [] );
+			await applyRecord( stored.messages, true );
+			setMail( 'idle' );
+		},
+		[ loadThread, applyRecord, draftContext ]
+	);
+
+	const refreshSavedSource = useCallback( async () => {
+		const saved = savedSourceRead.current;
+		const snapshot = currentThread.current;
+		const epoch = historyEpoch;
+		if (
+			! saved?.turn ||
+			! saved.conversationId ||
+			saved.messages !== snapshot ||
+			sending.current
+		) {
 			return;
 		}
-		setRevealingAt( null );
-		const stored = await loadThread();
-		if ( ! ( await draftContext.settle( lease ) ) ) {
+		const scope = draftContext.identity?.scope;
+		// Visibility already starts native owner revalidation. Wait for that
+		// same check rather than consuming this one-shot while capture is null.
+		const lease = await draftContext.ready();
+		if (
+			! lease ||
+			lease.scope !== scope ||
+			epoch !== historyEpoch ||
+			snapshot !== currentThread.current ||
+			sending.current
+		) {
 			return;
 		}
-		currentThread.current = stored.messages;
-		setThread( stored.messages );
-		setTurn( stored.turn );
-		turnAt.current = stored.turn ? stored.messages.length - 1 : -1;
-		setContacts( stored.contacts ?? [] );
-		setInquiries( stored.inquiries ?? [] );
-		await applyRecord( stored.messages, true );
-		setMail( 'idle' );
-	}, [ loadThread, applyRecord, draftContext ] );
+		const refreshed = await loadThread( true, false );
+		if (
+			! ( await draftContext.settle( lease ) ) ||
+			epoch !== historyEpoch ||
+			snapshot !== currentThread.current ||
+			sending.current ||
+			refreshed.conversationId !== saved.conversationId ||
+			! refreshed.turn
+		) {
+			return;
+		}
+		const words = ( messages: TurnMessage[] ) =>
+			JSON.stringify(
+				messages.map( ( message ) => [
+					message.role,
+					message.content,
+					message.turnId ?? null,
+				] )
+			);
+		if ( words( refreshed.messages ) !== words( snapshot ) ) {
+			return;
+		}
+		const prior = saved.turn.blocks.filter(
+			( block ) => block.type === 'planning_sources'
+		);
+		const next = refreshed.turn.blocks.filter(
+			( block ) => block.type === 'planning_sources'
+		);
+		if ( prior.length !== 1 || next.length !== 1 ) {
+			return;
+		}
+		// Refresh this server-owned block only. Reapplying ordinary history or
+		// the failure journal here can duplicate files and reset mail/editor UI.
+		const updated = {
+			...saved.turn,
+			blocks: saved.turn.blocks.map( ( block ) =>
+				block.type === 'planning_sources' ? next[ 0 ] : block
+			),
+		};
+		setTurn( updated );
+		savedSourceRead.current =
+			next[ 0 ].status === 'unavailable'
+				? { ...saved, turn: updated }
+				: null;
+	}, [ loadThread, draftContext ] );
 
 	const previousNativeScope = useRef< string | undefined >( undefined );
 	useEffect( () => {
@@ -1260,6 +1369,28 @@ export function App( { config }: { config: GenieConfig } ) {
 	// of an empty panel (docs/specs/13-genie.md).
 	useEffect( () => {
 		let cancelled = false;
+		let restored = false;
+		let sourceRefreshRequested = false;
+		const onWorkspaceVisible = () => {
+			if (
+				cancelled ||
+				! workspace ||
+				! restored ||
+				sourceRefreshRequested ||
+				document.visibilityState !== 'visible'
+			) {
+				return;
+			}
+			sourceRefreshRequested = true;
+			document.removeEventListener(
+				'visibilitychange',
+				onWorkspaceVisible
+			);
+			void enqueue( refreshSavedSource ).catch( () => undefined );
+		};
+		if ( workspace ) {
+			document.addEventListener( 'visibilitychange', onWorkspaceVisible );
+		}
 		const pending = deferred< {
 			messages: TurnMessage[];
 			turn: Turn | null;
@@ -1290,9 +1421,11 @@ export function App( { config }: { config: GenieConfig } ) {
 				}
 			}
 			await applyRecord( stored.messages );
+			restored = true;
 		} )
 			.then( () => {
 				if ( ! cancelled ) {
+					onWorkspaceVisible();
 					return refreshHistory();
 				}
 				return undefined;
@@ -1300,6 +1433,10 @@ export function App( { config }: { config: GenieConfig } ) {
 			.catch( () => undefined );
 		return () => {
 			cancelled = true;
+			document.removeEventListener(
+				'visibilitychange',
+				onWorkspaceVisible
+			);
 			// A superseded mount must not hold the lane. The replacement
 			// reads the thread itself.
 			pending.resolve( {
@@ -1309,7 +1446,14 @@ export function App( { config }: { config: GenieConfig } ) {
 				inquiries: [],
 			} );
 		};
-	}, [ loadThread, refreshHistory, applyRecord, draftContext ] );
+	}, [
+		loadThread,
+		refreshHistory,
+		applyRecord,
+		draftContext,
+		workspace,
+		refreshSavedSource,
+	] );
 
 	const continueConversation = useCallback(
 		( id?: number ) => {
@@ -1346,7 +1490,7 @@ export function App( { config }: { config: GenieConfig } ) {
 					}
 					setOpen( true );
 					resetEntryComposer.current();
-					await showStored();
+					await showStored( typeof id === 'number' && id > 0 );
 				} catch {
 					if ( ! draftContext.valid( lease ) ) {
 						return;
@@ -1720,7 +1864,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				! detail?.message &&
 				! detail?.refresh
 			) {
-				void enqueue( showStored ).catch( () => undefined );
+				void enqueue( refreshSavedSource ).catch( () => undefined );
 			}
 			if ( detail?.entry ) {
 				receiveEntry( detail.entry );
@@ -1772,6 +1916,7 @@ export function App( { config }: { config: GenieConfig } ) {
 	}, [
 		ask,
 		showStored,
+		refreshSavedSource,
 		handOverSolution,
 		receiveEntry,
 		rememberOpener,
@@ -2017,7 +2162,12 @@ export function App( { config }: { config: GenieConfig } ) {
 									type="button"
 									className="linker-genie-app__toggle"
 									aria-expanded={ open }
-									onClick={ () => setOpen( true ) }
+									onClick={ () => {
+										setOpen( true );
+										void enqueue(
+											refreshSavedSource
+										).catch( () => undefined );
+									} }
 								>
 									{ __( 'Open', 'linker-tools' ) }
 								</button>

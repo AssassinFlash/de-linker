@@ -165,6 +165,7 @@ class Proxy {
 	public function register(): void {
 		( new DraftActions() )->register();
 		add_filter( 'linker_tools_restored_reply', array( PublicationGuard::class, 'restored' ), 10, 2 );
+		add_filter( 'linker_tools_restored_reply', array( \Linker\Tools\Planner\GenieSources::class, 'replayed' ), 11, 2 );
 		register_rest_route(
 			self::NAMESPACE,
 			self::ROUTE,
@@ -368,12 +369,18 @@ class Proxy {
 	 * Read-only by design: a request without a conversation gets an empty
 	 * answer, never a new conversation post (`Conversations::existing_id`).
 	 *
+	 * @param WP_REST_Request|null $request Current native owner proof for stored source cards.
 	 * @return WP_REST_Response
 	 */
-	public function conversation(): WP_REST_Response {
-		$id    = $this->conversations->existing_id();
-		$store = $this->thread->read( $id );
-		$reply = new WP_REST_Response(
+	public function conversation( ?WP_REST_Request $request = null ): WP_REST_Response {
+		$id              = $this->conversations->existing_id();
+		$store           = $this->thread->read( $id );
+		$store['stream'] = ( new \Linker\Tools\Planner\GenieSources() )->restore(
+			$store['stream'],
+			$request ?? new WP_REST_Request( 'GET' ),
+			'de' === $request?->get_param( 'locale' ) ? 'de' : 'en'
+		);
+		$reply           = new WP_REST_Response(
 			array(
 				'conversation_id' => $id,
 				'messages'        => $store['messages'],

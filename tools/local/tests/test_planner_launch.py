@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from linker_local import services
+from linker_local import planner_worker, services
 from linker_local.checkout import Checkout
 from linker_local.instance import Instance
 from linker_local.planner_worker import PlannerWorker
@@ -18,7 +18,7 @@ from linker_local.processes import ProcessError
 from linker_local.wpcli import WpCli
 
 
-@pytest.mark.parametrize("mismatch", ["schema", "http"])
+@pytest.mark.parametrize("mismatch", ["schema", "http", "late_inputs"])
 def test_serve_refuses_before_drain_stop_sync_or_wp_write(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, mismatch: str
 ) -> None:
@@ -32,14 +32,21 @@ def test_serve_refuses_before_drain_stop_sync_or_wp_write(
     directory.mkdir(parents=True)
     database = directory / "workspace.sqlite"
     with sqlite3.connect(database) as connection:
-        connection.execute("CREATE TABLE projects(id TEXT)")
-        connection.execute("INSERT INTO projects VALUES ('retained')")
+        connection.execute("CREATE TABLE projects(id TEXT,revision INTEGER)")
+        connection.execute(
+            "CREATE TABLE revisions(project_id TEXT,number INTEGER,input_sha256 TEXT)"
+        )
         connection.execute(
             "PRAGMA user_version=" + ("2" if mismatch == "schema" else "4")
         )
     before = database.read_bytes()
     monkeypatch.setattr(services, "_uv", lambda: Path(sys.executable))
     monkeypatch.setattr(services, "service_token", lambda _: "synthetic-service")
+    # Read-only floor subprocess is covered by the real retained-input fixture;
+    # this case isolates the pre-existing schema/HTTP refusal ordering.
+    monkeypatch.setattr(
+        planner_worker, "require_input_compatibility", lambda *args: None
+    )
     monkeypatch.setattr(
         PlannerWorker,
         "release",
@@ -61,6 +68,29 @@ def test_serve_refuses_before_drain_stop_sync_or_wp_write(
         wp, "run", lambda *a, **k: pytest.fail("WordPress write called")
     )
 
+    order: list[str] = []
+    if mismatch == "late_inputs":
+
+        def compatible(_: PlannerWorker) -> dict[str, object]:
+            order.append("preflight")
+            if order.count("preflight") == 2:
+                raise ProcessError("retained inputs require a verified paired upgrade")
+            return {"runtime_sha256": "a" * 64}
+
+        class StoppedHttp:
+            def pid(self) -> None:
+                return None
+
+            def stop(self) -> None:
+                order.append("http-stop")
+
+        monkeypatch.setattr(PlannerWorker, "compatible_release", compatible)
+        monkeypatch.setattr(PlannerWorker, "drain", lambda _: order.append("drain"))
+        monkeypatch.setattr(
+            PlannerWorker, "stop", lambda _: order.append("worker-stop")
+        )
+        monkeypatch.setattr(services.Service, "process", lambda *a: StoppedHttp())
+
     if mismatch == "http":
 
         class RunningHttp:
@@ -75,6 +105,8 @@ def test_serve_refuses_before_drain_stop_sync_or_wp_write(
         services.serve(instance, checkout, wp, only="engine")
     assert database.read_bytes() == before
     assert sorted(path.name for path in directory.iterdir()) == ["workspace.sqlite"]
+    if mismatch == "late_inputs":
+        assert order == ["preflight", "drain", "worker-stop", "http-stop", "preflight"]
 
 
 def test_genie_launch_omits_weather_credential_and_keeps_its_own_model_environment(

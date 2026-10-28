@@ -11,7 +11,7 @@ from collections.abc import Callable
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
-from linker_cutover import public_assets
+from linker_cutover import planner_contracts, public_assets
 from linker_cutover.target import CutoverError, Target
 
 
@@ -409,7 +409,20 @@ def publish(
     script = (
         "set -eu\n"
         + "if ! "
+        + "{ "
         + (public_assets.check_script(target, public_inventory, public_proof) or ":")
+        + " && "
+        + (
+            planner_contracts.check_script(
+                target,
+                [
+                    (item.relative, target.path_of(_siblings(item.relative).next))
+                    for item in artifacts
+                ],
+            )
+            or ":"
+        )
+        + "; }"
         + "; then\n"
         + _discard_unswitched_preparation(target, manifest, directory, before)
         + "\nexit 1\nfi\nrestore_all() {\ntrap - EXIT HUP INT TERM\nset +e\n"
@@ -624,6 +637,16 @@ def rollback(target: Target, relatives: list[str]) -> Receipt:
         + "\n".join(recover)
         + "\n}\ntrap restore_all EXIT\ntrap 'exit 1' HUP INT TERM\n"
     )
+    script += (
+        planner_contracts.check_script(
+            target,
+            [
+                (entry.relative, path if entry.existed else None)
+                for entry, path in zip(manifest.backups, paths, strict=True)
+            ],
+        )
+        or ":"
+    ) + "\n"
     script += (
         "TIMEFORMAT='LINKER_CUTOVER_SWITCH_SECONDS=%R'\n{ time {\n"
         + "\n".join(switch)

@@ -54,6 +54,90 @@ test( 'meta and every block come out in order', () => {
 		'cards',
 		'handoff',
 	] );
+	const source = {
+		type: 'planning_sources',
+		schema_version: 1,
+		status: 'available',
+		binding: {
+			planning_project_id: 'a'.repeat( 32 ),
+			planning_revision: 3,
+			planning_run_ids: [ 'b'.repeat( 32 ) ],
+			runs: [
+				{
+					id: 'b'.repeat( 32 ),
+					revision: 2,
+					manifest_sha256: 'c'.repeat( 64 ),
+					result_sha256: 'd'.repeat( 64 ),
+				},
+			],
+		},
+		results: [
+			{
+				revision: 2,
+				groups: [
+					{
+						kind: 'pv',
+						role: 'selected',
+						input_quantity: 'pv_available_ac',
+						source_scope: 'whole_reference',
+						timezone: 'Europe/Paris',
+						periods_utc: [
+							{
+								start_utc: '2023-06-16T09:00:00+00:00',
+								end_utc: '2023-06-16T11:00:00+00:00',
+							},
+						],
+					},
+				],
+			},
+		],
+		url: 'https://de-linker.test/solution-configurator/',
+	};
+	const sourceStream = ( block: unknown ) =>
+		`event: block\ndata: ${ JSON.stringify( block ) }\n\nevent: done\ndata: {}\n\n`;
+	const unavailable = [
+		{ type: 'planning_sources', schema_version: 1, status: 'unavailable' },
+	];
+	expect( parseStream( sourceStream( source ) ).blocks ).toEqual( [
+		source,
+	] );
+	expect(
+		parseStream(
+			sourceStream( {
+				...source,
+				results: [
+					{
+						revision: 2,
+						groups: [
+							{
+								...source.results[ 0 ].groups[ 0 ],
+								input_quantity: 'guessed-port',
+							},
+						],
+					},
+				],
+			} )
+		).blocks
+	).toEqual( unavailable );
+	expect(
+		parseStream(
+			sourceStream( {
+				...source,
+				binding: {
+					...source.binding,
+					planning_project_id: 'not-an-owned-reference',
+				},
+			} )
+		).blocks
+	).toEqual( unavailable );
+	expect(
+		parseStream(
+			sourceStream( {
+				...source,
+				results: [ { ...source.results[ 0 ], revision: 4 } ],
+			} )
+		).blocks
+	).toEqual( unavailable );
 } );
 
 test( 'a stream without done is an error, not a partial answer', () => {
@@ -296,6 +380,108 @@ test( 'a reload reads the stored thread back and re-adds the last answer', async
 	expect( thread.turn?.blocks ).toHaveLength( 2 );
 	expect( thread.conversationId ).toBe( 12 );
 	expect( thread.messages[ 1 ].turnId ).toBe( 9 );
+	const unavailable = {
+		type: 'planning_sources',
+		schema_version: 1,
+		status: 'unavailable',
+	};
+	const stored = {
+		conversation_id: 12,
+		messages: [ { role: 'user', content: 'Explain the saved result.' } ],
+		stream: `event: block\ndata: ${ JSON.stringify( unavailable ) }\n\nevent: done\ndata: {}\n\n`,
+	};
+	const context = { restUrl: '/wp-json/', locale: 'en' as const };
+	const session = {
+		schema_version: 1,
+		kind: 'guest',
+		cookie_confirmed: true,
+		expires_at: Math.floor( Date.now() / 1000 ) + 3600,
+		query_scope: 'a'.repeat( 64 ),
+		nonce: 'fresh-proof',
+	};
+	const readback = vi.fn< typeof fetch >(
+		async () => new Response( JSON.stringify( stored ) )
+	);
+	// A passive reload forwards cached proof but cannot bootstrap an owner.
+	await readThread( '/thread', 'n', readback, context, {
+		plannerNonce: 'cached-proof',
+	} );
+	expect(
+		readback.mock.calls.filter(
+			( [ url ] ) => ! String( url ).endsWith( '/publication/manifest' )
+		)
+	).toHaveLength( 1 );
+	expect( readback.mock.calls[ 0 ][ 1 ] ).toMatchObject( {
+		headers: { 'X-Linker-Planner-Nonce': 'cached-proof' },
+	} );
+	readback.mockClear();
+	readback
+		.mockResolvedValueOnce( new Response( JSON.stringify( stored ) ) )
+		.mockResolvedValueOnce( new Response( JSON.stringify( session ) ) )
+		.mockResolvedValueOnce( new Response( JSON.stringify( stored ) ) );
+	const remember = vi.fn();
+	const recovered = await readThread( '/thread', 'n', readback, context, {
+		plannerNonce: 'expired-proof',
+		allowExistingOwnerBootstrap: true,
+		onPlannerNonce: remember,
+	} );
+	expect(
+		readback.mock.calls.filter(
+			( [ url ] ) => ! String( url ).endsWith( '/publication/manifest' )
+		)
+	).toHaveLength( 3 );
+	expect( readback.mock.calls[ 1 ] ).toEqual( [
+		'/wp-json/linker/v1/planner/bootstrap',
+		expect.objectContaining( {
+			method: 'POST',
+			credentials: 'same-origin',
+			body: JSON.stringify( {
+				schema_version: 1,
+				existing_owner_only: true,
+			} ),
+		} ),
+	] );
+	expect( readback.mock.calls[ 2 ][ 1 ] ).toMatchObject( {
+		headers: { 'X-Linker-Planner-Nonce': 'fresh-proof' },
+	} );
+	expect( remember ).toHaveBeenCalledWith( 'fresh-proof' );
+	expect( recovered.turn?.blocks ).toEqual( [ unavailable ] ); // No retry loop on revoked/mismatched result proof.
+	readback.mockClear();
+	readback
+		.mockResolvedValueOnce( new Response( JSON.stringify( stored ) ) )
+		.mockResolvedValueOnce(
+			new Response(
+				JSON.stringify( { ...session, cookie_confirmed: false } )
+			)
+		);
+	const refused = await readThread( '/thread', 'n', readback, context, {
+		allowExistingOwnerBootstrap: true,
+	} );
+	expect(
+		readback.mock.calls.filter(
+			( [ url ] ) => ! String( url ).endsWith( '/publication/manifest' )
+		)
+	).toHaveLength( 2 );
+	expect( refused.turn?.blocks ).toEqual( [ unavailable ] );
+	readback.mockClear();
+	readback
+		.mockResolvedValueOnce( new Response( JSON.stringify( stored ) ) )
+		.mockResolvedValueOnce( new Response( JSON.stringify( session ) ) )
+		.mockResolvedValueOnce(
+			new Response(
+				JSON.stringify( {
+					...stored,
+					stream: 'event: meta\ndata: {}\n\n',
+				} )
+			)
+		);
+	const incomplete = await readThread( '/thread', 'n', readback, context, {
+		allowExistingOwnerBootstrap: true,
+	} );
+	expect( incomplete.turn?.blocks ).toEqual( [ unavailable ] );
+	expect( incomplete.messages[ 0 ].content ).toBe(
+		'Explain the saved result.'
+	);
 } );
 
 test( 'a reload without a conversation answers empty, and a truncated stream keeps the words', async () => {

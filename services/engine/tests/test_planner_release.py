@@ -2,14 +2,22 @@
 
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import json
 import os
+import sqlite3
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
 import pytest
+
+from linker_engine.planning.project_input_contracts import INPUT_CONTRACT
+from linker_engine.planning.project_input_floor import (
+    check_project_input_contracts,
+    read_project_input_floor,
+)
 
 SPEC = importlib.util.spec_from_file_location(
     "planner_release", Path(__file__).resolve().parents[1] / "ops/planner_release.py"
@@ -76,6 +84,8 @@ def test_prepared_policy_is_frozen_and_numerical_operator_has_no_credentials(
         arguments: list[str], *, env: dict[str, str] | None = None, timeout: float = 30
     ) -> str:
         calls.append((arguments, env))
+        if any("pragma user_version" in item for item in arguments):
+            return "5"
         if "-c" in arguments:
             return json.dumps(
                 {
@@ -111,6 +121,57 @@ def test_prepared_policy_is_frozen_and_numerical_operator_has_no_credentials(
     )
     assert os.stat(private / "http.env").st_mode & 0o777 == 0o600
     target.preflight()
+    # Latest inputs may omit a feature while an immutable older revision still
+    # needs it. Duplicate CAS references are read once; no schema/open upgrade.
+    store = root / "state/workspace"
+    database = store / "workspace.sqlite"
+    historical = b'{"installation":{"pv_string_links":[]}}'
+    latest = b"{}"
+    hashes = []
+    for body in (historical, latest):
+        sha = hashlib.sha256(body).hexdigest()
+        path = store / "blobs" / sha[:2] / sha
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(body)
+        hashes.append(sha)
+    with sqlite3.connect(database) as db:
+        db.execute("CREATE TABLE projects(id TEXT, revision INTEGER)")
+        db.execute(
+            "CREATE TABLE revisions(project_id TEXT, number INTEGER, input_sha256 TEXT)"
+        )
+        db.execute("PRAGMA user_version=5")
+        db.execute("INSERT INTO projects VALUES (?,3)", ("a" * 32,))
+        db.executemany(
+            "INSERT INTO revisions VALUES (?,?,?)",
+            [
+                ("a" * 32, index, sha)
+                for index, sha in enumerate([hashes[0], hashes[1], hashes[1]], 1)
+            ],
+        )
+    before_storage = {
+        str(path.relative_to(store)): path.read_bytes()
+        for path in store.rglob("*")
+        if path.is_file()
+    }
+    floor = read_project_input_floor(store)
+    assert floor["required_input_contracts"] == [INPUT_CONTRACT]
+    assert floor["retained_revision_count"] == 3 and floor["retained_input_count"] == 2
+    assert check_project_input_contracts(store, [INPUT_CONTRACT]) == floor
+    with pytest.raises(ValueError, match="does not support"):
+        check_project_input_contracts(store, [])
+    assert before_storage == {
+        str(path.relative_to(store)): path.read_bytes()
+        for path in store.rglob("*")
+        if path.is_file()
+    }
+    missing = store / "blobs" / hashes[0][:2] / hashes[0]
+    missing.unlink()
+    with pytest.raises(ValueError, match="could not be verified"):
+        read_project_input_floor(store)
+    missing.write_bytes(b"corrupt")
+    with pytest.raises(ValueError, match="could not be verified"):
+        read_project_input_floor(store)
+    missing.write_bytes(historical)
     ordinary_command = run
 
     def unreadable_source(arguments: list[str], **kwargs: Any) -> str:
@@ -179,6 +240,7 @@ def test_one_activation_lifecycle_refuses_pending_restores_failure_and_retires_o
     root.mkdir()
     events = []
     items = {}
+    required = False
 
     class Candidate:
         def __init__(self, letter: str) -> None:
@@ -197,9 +259,13 @@ def test_one_activation_lifecycle_refuses_pending_restores_failure_and_retires_o
             self.worker_unit = "worker"
             self.pending = False
             self.broken = False
+            self.capable = True
+            self.write_on_stop = False
             items[str(self.spec_file)] = self
 
-        def preflight(self) -> dict[str, Any]:
+        def preflight(self, *, check_inputs: bool = True) -> dict[str, Any]:
+            if check_inputs and required and not self.capable:
+                raise RuntimeError("retained input contract")
             return {}
 
         def namespace(self) -> tuple[Path, str, int, str]:
@@ -223,11 +289,15 @@ def test_one_activation_lifecycle_refuses_pending_restores_failure_and_retires_o
             return {"draining": False}
 
         def stop(self) -> None:
+            nonlocal required
             if self.pending:
                 raise RuntimeError("pending")
             events.append((self.path.name[:1], "stop"))
+            if self.write_on_stop:
+                required = True
 
         def start(self) -> dict[str, Any]:
+            self.preflight()  # The real start repeats this after the old HTTP stops.
             events.append((self.path.name[:1], "start"))
             if self.broken:
                 raise RuntimeError("candidate failed")
@@ -247,12 +317,26 @@ def test_one_activation_lifecycle_refuses_pending_restores_failure_and_retires_o
         ops.activate(b)
     assert json.loads((root / "selection.json").read_text()) == first
     a.pending = False
+    a.write_on_stop = True
+    b.capable = False
+    stopped_at = len(events)
+    with pytest.raises(RuntimeError, match="retained input contract"):
+        ops.activate(b)
+    assert ("a", "stop") in events[stopped_at:]
+    assert ("b", "start") not in events[stopped_at:]
+    assert json.loads((root / "selection.json").read_text()) == first
+    assert events[-2:] == [("a", "start"), ("a", "control", "resume")]
+    b.capable = True
+    a.write_on_stop = False
     b.broken = True
     with pytest.raises(RuntimeError, match="candidate failed"):
         ops.activate(b)
     assert json.loads((root / "selection.json").read_text()) == first
     assert events[-2:] == [("a", "start"), ("a", "control", "resume")]
     b.broken = False
+    # Replacing an already-incompatible old declaration is legitimate; it is
+    # only identity-checked before stop, never started without its own floor.
+    a.capable = False
     second = ops.activate(b)
     assert second["previous"] == str(a.spec_file)
     third = ops.activate(c)

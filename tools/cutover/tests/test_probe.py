@@ -9,9 +9,17 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 import pytest
+from native_planner import planner_wp
 
 from linker_cutover import atomic, plan, probe
 from linker_cutover.target import CutoverError, Target
+
+
+class ProbeTarget(Target):
+    """Real HTTP/filesystem target with an unconfigured native planner boundary."""
+
+    def wp_on_target(self) -> list[str]:
+        return planner_wp()
 
 
 @pytest.fixture
@@ -55,7 +63,7 @@ def proof_site(tmp_path: Path) -> Iterator[tuple[Target, dict[str, str]]]:
     (root / "wp-content/uploads/wc-logs").mkdir(parents=True)
     try:
         yield (
-            Target(
+            ProbeTarget(
                 "fixture",
                 str(root),
                 f"http://127.0.0.1:{server.server_port}",
@@ -183,7 +191,7 @@ def test_probe_samples_slowly_until_switch_then_densely_through_readback(
     active, peak = 0, 0
     request_lock = threading.Lock()
 
-    class ObservedTarget(Target):
+    class ObservedTarget(ProbeTarget):
         def http(
             self, path: str, *, cache_buster: str | None = None
         ) -> tuple[int, str]:

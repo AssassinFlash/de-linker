@@ -109,6 +109,51 @@ final class PublicationCommand {
 	}
 
 	/**
+	 * Preview or abandon one confirmed interrupted knowledge lease.
+	 *
+	 * ## OPTIONS
+	 *
+	 * --job-id=<sha256>
+	 * : Exact observed knowledge job identity.
+	 * --source-revision=<sha256>
+	 * : Exact observed and current Woo source revision.
+	 * --recipe-revision=<sha256>
+	 * : Exact observed compiler identity.
+	 * --activation-epoch=<epoch>
+	 * : Exact observed positive activation epoch.
+	 * --worker-id=<worker>
+	 * : Exact worker independently verified to have stopped.
+	 * [--confirm-worker-stopped]
+	 * : Required with --apply; confirm the exact worker no longer runs.
+	 * [--apply]
+	 * : Apply the previewed cancellation; otherwise do not write.
+	 *
+	 * @subcommand abandon-interrupted-knowledge
+	 * @param array<int,string>   $args       Positional arguments.
+	 * @param array<string,mixed> $assoc_args Native CLI options.
+	 */
+	public function abandon_interrupted_knowledge( array $args, array $assoc_args ): void {
+		unset( $args );
+		$epoch = $assoc_args['activation-epoch'] ?? '';
+		if ( ! is_string( $epoch ) || ! ctype_digit( $epoch ) || (int) $epoch < 1 || (string) (int) $epoch !== $epoch ) {
+			\WP_CLI::error( 'The activation epoch must be the exact observed positive integer.' );
+		}
+		$result = ( new PreparationJobs() )->abandon_interrupted_knowledge(
+			(string) ( $assoc_args['job-id'] ?? '' ),
+			(string) ( $assoc_args['source-revision'] ?? '' ),
+			(string) ( $assoc_args['recipe-revision'] ?? '' ),
+			(int) $epoch,
+			(string) ( $assoc_args['worker-id'] ?? '' ),
+			true === ( $assoc_args['confirm-worker-stopped'] ?? false ),
+			true === ( $assoc_args['apply'] ?? false )
+		);
+		if ( $result instanceof \WP_Error ) {
+			\WP_CLI::error( $result->get_error_code() . ': ' . $result->get_error_message() );
+		}
+		\WP_CLI::log( (string) wp_json_encode( $result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+	}
+
+	/**
 	 * Bind the current existing published Woo facts once, preserving later stale bindings.
 	 *
 	 * @subcommand bind-figures

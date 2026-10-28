@@ -22,6 +22,8 @@ import { afterEach, beforeEach, expect, test, vi } from 'vitest';
  */
 import type { GenieConfig } from './config';
 import { App, resetTurnLane, type Dictation } from './App';
+import { PlanningSourcesCard } from './components/PlanningSourcesCard';
+import type { PlanningSourcesBlock } from './api/turn';
 
 vi.mock( './api/turn', async ( importOriginal ) => {
 	const actual = await importOriginal< typeof import( './api/turn' ) >();
@@ -157,6 +159,319 @@ afterEach( () => {
 	resetTurnLane();
 } );
 
+test( 'saved source card shows exact UTC ranges without private bindings or sizing choices', async () => {
+	const project = 'a'.repeat( 32 ),
+		run = 'b'.repeat( 32 );
+	const block: PlanningSourcesBlock = {
+		type: 'planning_sources',
+		schema_version: 1,
+		status: 'available',
+		binding: {
+			planning_project_id: project,
+			planning_revision: 12,
+			planning_run_ids: [ run ],
+			runs: [
+				{
+					id: run,
+					revision: 11,
+					manifest_sha256: 'c'.repeat( 64 ),
+					result_sha256: 'd'.repeat( 64 ),
+				},
+			],
+		},
+		results: [
+			{
+				revision: 11,
+				groups: [
+					{
+						kind: 'pv',
+						role: 'selected',
+						input_quantity: 'pv_available_ac',
+						source_scope: 'whole_reference',
+						timezone: 'Europe/Paris',
+						radiation_database: 'PVGIS-SARAH3',
+						meteorological_database: 'ERA5',
+						weather_selection_period: {
+							start_year: 2014,
+							end_year: 2023,
+						},
+						synthetic_calculation_year: 2023,
+						periods_utc: [
+							{
+								start_utc: '2023-01-01T00:00:00+00:00',
+								end_utc: '2024-01-01T00:00:00+00:00',
+							},
+						],
+					},
+					{
+						kind: 'energy',
+						role: 'selected',
+						timezone: null,
+						periods_utc: [
+							{
+								start_utc: '2023-06-16T09:00:00+00:00',
+								end_utc: '2023-06-16T11:00:00+00:00',
+							},
+						],
+					},
+				],
+			},
+		],
+		url: `https://de-linker.test/solution-configurator/?project=${ project }&run=${ run }#lp-calculations`,
+	};
+	block.results[ 0 ].groups.splice( 1, 0, {
+		...block.results[ 0 ].groups[ 0 ],
+		input_quantity: 'pv_available_dc',
+		source_scope: 'selected_dc_group',
+		meteorological_database: null,
+	} );
+	const { container, rerender, unmount } = await renderOwned(
+		<PlanningSourcesCard
+			block={ block }
+			configuratorLinks={ {
+				en: 'https://de-linker.test/solution-configurator/',
+				de: '',
+				current: '',
+			} }
+		/>
+	);
+	expect( screen.getByText( 'Saved revision 11' ) ).toBeInTheDocument();
+	for ( const value of [
+		'PVGIS-SARAH3',
+		'ERA5',
+		'2014–2023',
+		'2023-01-01T00:00:00+00:00',
+		'2024-01-01T00:00:00+00:00',
+		'2023-06-16T09:00:00+00:00',
+		'2023-06-16T11:00:00+00:00',
+	] ) {
+		expect( screen.getAllByText( value ).length ).toBeGreaterThan( 0 );
+	}
+	expect(
+		screen.getAllByText( 'Not recorded in this saved result' ).length
+	).toBeGreaterThan( 0 );
+	expect( screen.getByText( 'AC' ) ).toBeInTheDocument();
+	expect( screen.getByText( 'DC' ) ).toBeInTheDocument();
+	expect( screen.getByText( 'Whole PV reference' ) ).toBeInTheDocument();
+	expect( screen.getByText( 'Selected DC group' ) ).toBeInTheDocument();
+	expect(
+		screen.getByRole( 'link', { name: 'Open saved result' } )
+	).toHaveAttribute( 'href', block.url );
+	expect( container.textContent ).not.toContain( project );
+	expect( container.textContent ).not.toContain( run );
+	expect( container.textContent ).not.toContain( 'Backup' );
+	const annual = structuredClone( block );
+	annual.results[ 0 ].groups = [ annual.results[ 0 ].groups[ 0 ] ];
+	delete annual.results[ 0 ].groups[ 0 ].weather_selection_period;
+	delete annual.results[ 0 ].groups[ 0 ].synthetic_calculation_year;
+	annual.results[ 0 ].groups[ 0 ].meteorological_database = null;
+	annual.results[ 0 ].groups[ 0 ].input_quantity = null;
+	annual.results[ 0 ].groups[ 0 ].source_scope = null;
+	rerender( <PlanningSourcesCard block={ annual } /> );
+	expect(
+		screen.queryByText( 'Weather selection period' )
+	).not.toBeInTheDocument();
+	expect(
+		screen.queryByText( 'Synthetic calculation year' )
+	).not.toBeInTheDocument();
+	expect(
+		screen.getAllByText( 'Not identified in this saved result' )
+	).toHaveLength( 2 );
+	rerender(
+		<PlanningSourcesCard
+			block={ {
+				type: 'planning_sources',
+				schema_version: 1,
+				status: 'unavailable',
+			} }
+		/>
+	);
+	expect(
+		screen.getByText(
+			'The saved calculation details could not be verified for this response.'
+		)
+	).toBeInTheDocument();
+	expect( container.querySelector( 'time' ) ).toBeNull();
+	expect( container.querySelector( 'a' ) ).toBeNull();
+	unmount();
+	const unavailable: Awaited< ReturnType< typeof readThread > > = {
+		conversationId: 12,
+		messages: [
+			{ role: 'user', content: 'Explain the saved result.' },
+			{ role: 'assistant', content: 'Saved explanation' },
+		],
+		turn: {
+			meta: null,
+			blocks: [
+				{ type: 'text', text: 'Saved explanation', refs: [] },
+				{
+					type: 'planning_sources',
+					schema_version: 1,
+					status: 'unavailable',
+				},
+			],
+		},
+	};
+	const verified = {
+		...unavailable,
+		messages: unavailable.messages.map( ( message ) => ( { ...message } ) ),
+		turn: {
+			meta: null,
+			blocks: [
+				{ type: 'text' as const, text: 'Saved explanation', refs: [] },
+				block,
+			],
+		},
+	};
+	vi.mocked( readThread )
+		.mockResolvedValueOnce( unavailable )
+		.mockResolvedValueOnce( verified );
+	const opened = await renderOwned( <App config={ config() } /> );
+	await act( async () => {
+		fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	} );
+	await waitFor( () =>
+		expect(
+			screen.getAllByText( '2023-06-16T09:00:00+00:00' )
+		).toHaveLength( 1 )
+	);
+	expect( readThread ).toHaveBeenCalledTimes( 2 );
+	expect( vi.mocked( readThread ).mock.calls[ 1 ][ 4 ] ).toMatchObject( {
+		allowExistingOwnerBootstrap: true,
+	} );
+	expect( screen.getByText( 'Saved explanation' ) ).toBeInTheDocument();
+	fireEvent.click( screen.getByRole( 'button', { name: 'Close' } ) );
+	await act( async () => {
+		fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	} );
+	expect( readThread ).toHaveBeenCalledTimes( 2 ); // No repeat after successful verification.
+	opened.unmount();
+	resetTurnLane();
+	vi.mocked( readThread )
+		.mockReset()
+		.mockResolvedValue( { messages: [], turn: null } );
+	let finishProof!: (
+		value: Awaited< ReturnType< typeof readThread > >
+	) => void;
+	let finishSwitch!: (
+		value: Awaited< ReturnType< typeof selectConversation > >
+	) => void;
+	vi.mocked( readThread )
+		.mockResolvedValueOnce( unavailable )
+		.mockImplementationOnce(
+			() =>
+				new Promise( ( resolve ) => {
+					finishProof = resolve;
+				} )
+		);
+	vi.mocked( selectConversation ).mockImplementationOnce(
+		() =>
+			new Promise( ( resolve ) => {
+				finishSwitch = resolve;
+			} )
+	);
+	const interrupted = await renderOwned( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	await waitFor( () => expect( readThread ).toHaveBeenCalledTimes( 2 ) );
+	fireEvent.click(
+		screen.getByRole( 'button', { name: 'New conversation' } )
+	);
+	await act( async () => {
+		finishProof( verified );
+	} );
+	await waitFor( () =>
+		expect( selectConversation ).toHaveBeenCalledTimes( 1 )
+	);
+	// The next native history operation is still pending: a late proof must
+	// never insert the prior calculation's dates during this transition.
+	expect( screen.queryByText( '2023-06-16T09:00:00+00:00' ) ).toBeNull();
+	await act( async () => {
+		finishSwitch( { currentId: 0, conversations: [], ok: true } );
+	} );
+	interrupted.unmount();
+} );
+
+test( 'full-page source recovery waits for visible owned restore and runs once', async () => {
+	const saved: Awaited< ReturnType< typeof readThread > > = {
+		conversationId: 12,
+		messages: [
+			{ role: 'user', content: 'Explain the saved result.' },
+			{ role: 'assistant', content: '' },
+		],
+		turn: {
+			meta: null,
+			blocks: [
+				{
+					type: 'planning_sources',
+					schema_version: 1,
+					status: 'unavailable',
+				},
+			],
+		},
+	};
+	const previous = Object.getOwnPropertyDescriptor(
+		document,
+		'visibilityState'
+	);
+	let visibility = 'hidden';
+	Object.defineProperty( document, 'visibilityState', {
+		configurable: true,
+		get: () => visibility,
+	} );
+	try {
+		vi.mocked( readThread ).mockResolvedValue( saved );
+		const hidden = await renderOwned(
+			<App config={ { ...config(), surface: 'workspace' } } />
+		);
+		expect( readThread ).toHaveBeenCalledTimes( 1 );
+		await act( async () => {
+			document.dispatchEvent( new Event( 'visibilitychange' ) );
+		} );
+		expect( readThread ).toHaveBeenCalledTimes( 1 ); // Hidden mount cannot refresh native owner proof.
+		visibility = 'visible';
+		await act( async () => {
+			document.dispatchEvent( new Event( 'visibilitychange' ) );
+		} );
+		await waitFor( () => expect( readThread ).toHaveBeenCalledTimes( 2 ) );
+		expect( vi.mocked( readThread ).mock.calls[ 1 ][ 4 ] ).toMatchObject( {
+			allowExistingOwnerBootstrap: true,
+		} );
+		visibility = 'hidden';
+		await act( async () => {
+			document.dispatchEvent( new Event( 'visibilitychange' ) );
+		} );
+		visibility = 'visible';
+		await act( async () => {
+			document.dispatchEvent( new Event( 'visibilitychange' ) );
+		} );
+		expect( readThread ).toHaveBeenCalledTimes( 2 ); // Failed verification is not a retry loop.
+		hidden.unmount();
+		resetTurnLane();
+		vi.mocked( readThread ).mockClear();
+		const cold = await renderOwned(
+			<App config={ { ...config(), surface: 'workspace' } } />
+		);
+		await waitFor( () => expect( readThread ).toHaveBeenCalledTimes( 2 ) );
+		expect( vi.mocked( readThread ).mock.calls[ 0 ][ 4 ] ).toMatchObject( {
+			allowExistingOwnerBootstrap: false,
+		} );
+		expect( vi.mocked( readThread ).mock.calls[ 1 ][ 4 ] ).toMatchObject( {
+			allowExistingOwnerBootstrap: true,
+		} );
+		await act( async () => {
+			document.dispatchEvent( new Event( 'visibilitychange' ) );
+		} );
+		expect( readThread ).toHaveBeenCalledTimes( 2 );
+		cold.unmount();
+	} finally {
+		if ( previous ) {
+			Object.defineProperty( document, 'visibilityState', previous );
+		} else {
+			Reflect.deleteProperty( document, 'visibilityState' );
+		}
+	}
+} );
+
 test( 'the disclosure is spoken once and a prompt sends the first turn', async () => {
 	vi.mocked( sendTurn ).mockResolvedValue( {
 		meta: {
@@ -175,7 +490,17 @@ test( 'the disclosure is spoken once and a prompt sends the first turn', async (
 		],
 	} );
 	await renderOwned( <App config={ config() } /> );
+	expect( readThread ).toHaveBeenCalledWith(
+		expect.any( String ),
+		'n',
+		undefined,
+		expect.any( Object ),
+		expect.objectContaining( { allowExistingOwnerBootstrap: false } )
+	);
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	await act( async () => undefined );
+	// Opening a legacy conversation does not repeat history/journal restore.
+	expect( readThread ).toHaveBeenCalledTimes( 1 );
 
 	expect(
 		screen.getAllByText(
@@ -217,6 +542,41 @@ test( 'the disclosure is spoken once and a prompt sends the first turn', async (
 			"Hi, I'm Genie, Linker's AI assistant. You're chatting with an AI system."
 		)
 	).toHaveLength( 1 );
+	const bridge = () =>
+		window.dispatchEvent(
+			new CustomEvent( 'linker-genie-planning-context', {
+				detail: {
+					page: {
+						type: 'configurator',
+						planning_project_id: 'a'.repeat( 32 ),
+						planning_revision: 12,
+					},
+					plannerNonce: 'bridge-proof',
+				},
+			} )
+		);
+	window.addEventListener( 'linker-genie-planning-context-request', bridge, {
+		once: true,
+	} );
+	await act( async () => {
+		window.dispatchEvent(
+			new CustomEvent( 'linker-genie-open', {
+				detail: { refresh: true },
+			} )
+		);
+	} );
+	await waitFor( () =>
+		expect( readThread ).toHaveBeenCalledWith(
+			expect.any( String ),
+			'n',
+			undefined,
+			expect.any( Object ),
+			expect.objectContaining( {
+				plannerNonce: 'bridge-proof',
+				allowExistingOwnerBootstrap: false,
+			} )
+		)
+	);
 } );
 
 test( 'a German turn keeps the thread and renders the chips in German', async () => {

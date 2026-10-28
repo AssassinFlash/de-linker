@@ -5,6 +5,9 @@ from __future__ import annotations
 import json
 from typing import Any
 
+import pytest
+from pydantic import ValidationError
+
 from linker_genie import planning
 from linker_genie.facts import Fact
 from linker_genie.hydrate import fill, hydrate
@@ -60,6 +63,80 @@ def source() -> tuple[dict[str, Any], PageContext]:
 
 def test_facts_hydrate_without_granting_product_or_document_permission() -> None:
     raw, page = source()
+    raw["runs"][0].update(
+        manifest_sha256="c" * 64,
+        result_sha256="d" * 64,
+        calculation_sources={
+            "schema_version": 1,
+            "groups": [
+                {
+                    "kind": "pv",
+                    "role": "selected",
+                    "input_quantity": "pv_available_ac",
+                    "source_scope": "whole_reference",
+                    "timezone": "Europe/Paris",
+                    "radiation_database": "PVGIS-SARAH3",
+                    "meteorological_database": "ERA5",
+                    "weather_selection_period": {"start_year": 2014, "end_year": 2023},
+                    "synthetic_calculation_year": 2023,
+                    "periods_utc": [
+                        {
+                            "start_utc": "2023-01-01T00:00:00+00:00",
+                            "end_utc": "2024-01-01T00:00:00+00:00",
+                        }
+                    ],
+                },
+                {
+                    "kind": "energy",
+                    "role": "selected",
+                    "timezone": "Europe/Paris",
+                    "periods_utc": [
+                        {
+                            "start_utc": "2023-06-16T09:00:00+00:00",
+                            "end_utc": "2023-06-16T11:00:00+00:00",
+                        }
+                    ],
+                },
+            ],
+        },
+    )
+    card = planning.source_card(raw, page)
+    assert card is not None and card["results"][0]["revision"] == 2
+    with pytest.raises(ValidationError):
+        TurnOutput.model_validate({"language": "de", "blocks": [card]})
+    assert (
+        card["results"][0]["groups"][1]["periods_utc"][0]["start_utc"]
+        == "2023-06-16T09:00:00+00:00"
+    )
+    assert planning.source_card({**raw, "status": "unsaved_changes"}, page) is None
+    assert planning.source_card({**raw, "truncated": True}, page) is None
+    assert (
+        planning.source_card(
+            raw, page.model_copy(update={"planning_project_id": "e" * 32})
+        )
+        is None
+    )
+    explanation: dict[str, Any] = {
+        "blocks": [
+            {"type": "text", "text": "Saved explanation"},
+            {"type": "ask", "field": "backup", "options": ["needed", "none"]},
+        ]
+    }
+    planning.add_source_card(
+        explanation,
+        raw,
+        page,
+        "Bitte erklären Sie mir die Ergebnisse dieses gespeicherten Projekts und des ausgewählten Berichts: Auf welchen Quellen und Zeiträumen beruhen PV-Erzeugung und Energiebilanz, wie sind die Kennzahlen zu verstehen, und welche Aussagen lassen sich daraus zur Geräteauswahl, Installation und zum Netzanschluss treffen?",
+        "model",
+    )
+    assert [b["type"] for b in explanation["blocks"]] == ["text", "planning_sources"]
+    sizing: dict[str, Any] = {
+        "blocks": [{"type": "ask", "field": "backup", "options": ["needed", "none"]}]
+    }
+    planning.add_source_card(
+        sizing, raw, page, "Explain the report and size a new battery", "model"
+    )
+    assert sizing["blocks"][0]["type"] == "ask"
     raw["runs"][0]["rows"].extend(
         [
             {

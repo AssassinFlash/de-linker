@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from typing import cast
 
+from .assistant_calculation_sources import calculation_sources
 from .brief import PlanningBrief
 from .canonical import Json, Object, digest, encode
 from .certificate_information import report_source_with_information
@@ -185,6 +186,10 @@ def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
                     {"label": f"{title}: {row['label']}", "value": row["value"]}
                 )
             table = section.get("table")
+            if section.get("id") == "installation-pv-string-links":
+                # Keep the fixed scope/missing-plan explanation above, while
+                # user-defined string/circuit/endpoint IDs stay owner-only.
+                continue
             if isinstance(table, dict):
                 columns = cast(list[str], table["columns"])
                 for cells in cast(list[list[str]], table["rows"]):
@@ -404,6 +409,13 @@ def assistant_context(
                 "rows": rows[: max(0, remaining)],
                 "truncated": omitted,
                 "details_available": bool(rows),
+                **(
+                    {"calculation_sources": calculation_sources(workspace, run)}
+                    if run.state == "succeeded"
+                    and run.result
+                    and run.result.get("kind") == "planning_report_v1"
+                    else {}
+                ),
             }
         )
         remaining -= min(max(0, remaining), len(rows))

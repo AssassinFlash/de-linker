@@ -32,7 +32,17 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from linker_judges.budget import BudgetError, take
 from pydantic import BaseModel, ConfigDict
 
-from linker_genie import contact, ground, inquiry, jev, page, parts, summary, timing
+from linker_genie import (
+    contact,
+    ground,
+    inquiry,
+    jev,
+    page,
+    parts,
+    planning,
+    summary,
+    timing,
+)
 from linker_genie.abilities import Abilities, AbilityClient
 from linker_genie.agent import (
     deepseek_access,
@@ -317,6 +327,17 @@ def _compute_turn(
         # logged with the turn, never swallowed (prices.fill).
         prepared.log["price_failures"] = list(result.price_failures)
     shipped = result.output.model_dump()
+    if any(
+        call.get("name") == planning.NAME and call.get("ok") is True
+        for call in result.facts.tool_calls
+    ):
+        planning.add_source_card(
+            shipped,
+            body.planning_context,
+            body.page_context,
+            last_customer_message(body),
+            prepared.route.name,
+        )
     offer = None
     if service_block is not None:
         # A parts list's card (#251): code's block, never the model's. The inquiry

@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "project_input_contracts": [
+    "installation_pv_string_links_v1"
+  ]
+}

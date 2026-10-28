@@ -62,6 +62,60 @@ test( 'in-progress same-owner revalidation quarantines settlements, then permits
 	await pending;
 	await settlement;
 	expect( settled ).toBe( true );
+
+	// Native pageshow/focus can finish its fresh check before the cold read
+	// being awaited by initialization. The stale read is never authority.
+	const outOfOrder = async ( nextScope: string | null ) => {
+		const original = context.capture();
+		const responses: Array< ( value: string | null ) => void > = [];
+		vi.stubGlobal(
+			'fetch',
+			vi.fn(
+				() =>
+					new Promise( ( resolve ) => {
+						responses.push( ( value ) =>
+							resolve( {
+								ok: value !== null,
+								json: async () => ( { scope: value } ),
+							} )
+						);
+					} )
+			)
+		);
+		const stale = context.verify().catch( ( error: unknown ) => error );
+		const initialized = context.initialized().catch( () => null );
+		const readiness = context.ready();
+		const accepted = context.settle( original );
+		const current = context.verify();
+		const currentResult = current.catch( () => null );
+		responses[ 1 ]( nextScope );
+		await currentResult;
+		responses[ 0 ]( A );
+		expect( await stale ).toEqual(
+			new Error( 'draft-context-superseded' )
+		);
+		return {
+			initialized: await initialized,
+			ready: await readiness,
+			settled: await accepted,
+			original,
+		};
+	};
+	const unchanged = await outOfOrder( A );
+	expect( unchanged.initialized?.scope ).toBe( A );
+	expect( unchanged.ready ).toEqual( unchanged.original );
+	expect( unchanged.settled ).toBe( true );
+	const rotated = await outOfOrder( B );
+	expect( rotated.initialized?.scope ).toBe( B );
+	expect( rotated.ready?.scope ).toBe( B );
+	expect( rotated.settled ).toBe( false );
+	expect( context.valid( rotated.original ) ).toBe( false );
+	expect( changed ).toHaveBeenCalledOnce();
+	const failed = await outOfOrder( null );
+	expect( failed.initialized ).toBeNull();
+	expect( failed.ready ).toBeNull();
+	expect( failed.settled ).toBe( false );
+	expect( context.capture() ).toBeNull();
 } );
 test( 'same account with a rotated native session is a different owner, and late A cannot settle or unlock B', async () => {
 	await context.verify( false );
