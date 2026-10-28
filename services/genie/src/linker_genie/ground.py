@@ -345,13 +345,74 @@ def check(
 _WARRANTY_CONTEXT = re.compile(
     r"\b(?:warrant\w*|guarantee\w*|garantie\w*|gewährleist\w*)\b", re.I
 )
-# This only separates policy claims from independently cited technical blocks.
-# It never judges a policy claim: those must equal a source-derived answer.
-_POLICY_CLAIM = re.compile(
-    r"\b(?:damage|defects?|claims?|covered|transfer\w*|exclu\w*|lasts|duration|"
-    r"schad\w*|mängel|mangel|anspruch\w*|übertrag\w*|ausschl\w*|gedeckt|abgedeckt|garantiedauer)\b",
-    re.I,
-)
+
+
+def _warranty_turn(output: TurnOutput, facts: TurnFacts, question: str) -> bool:
+    policy = facts.warranty_chunks | facts.warranty_procedures
+    return bool(
+        _WARRANTY_CONTEXT.search(question)
+        or any(
+            isinstance(block, TextBlock)
+            and (set(block.refs) & policy or _WARRANTY_CONTEXT.search(block.text))
+            or isinstance(block, DocumentBlock)
+            and block.ref in policy
+            for block in output.blocks
+        )
+    )
+
+
+def _technical_source(block: TextBlock, facts: TurnFacts) -> str | None:
+    """Find the one authorized manual line reproduced in this text block."""
+    policy = facts.warranty_chunks | facts.warranty_procedures
+    chunk_refs = set(block.refs) & facts.chunk_ids
+    technical = chunk_refs & (facts.technical_chunks - policy)
+    if len(technical) != 1 or chunk_refs != technical:
+        return None
+    cid = next(iter(technical))
+    source = facts.facts.get(f"{cid}.text")
+    if source is None:
+        return None
+
+    def source_line(line: str) -> str | None:
+        valid = True
+
+        def tag(match: re.Match[str]) -> str:
+            nonlocal valid
+            fid = f"{cid}.n{match.group(1)}"
+            fact = facts.facts.get(fid)
+            if fact is None or fact.value != match.group(2):
+                valid = False
+            return f"{{fact:{fid}}}"
+
+        rendered = re.sub(r"\[n([1-9]\d*)=([^\[\]\n]+)\]", tag, line)
+        return " ".join(rendered.split()) if valid else None
+
+    candidate = " ".join(block.text.split())
+    if not candidate or not any(
+        source_line(line) == candidate for line in source.value.splitlines()
+    ):
+        return None
+    return cid
+
+
+def frame_warranty_technical(
+    output: TurnOutput, facts: TurnFacts, question: str, language: str
+) -> TurnOutput:
+    """Identify source-verified technical excerpts in a mixed policy answer."""
+    if not _warranty_turn(output, facts, question):
+        return output
+    blocks: list[Block] = []
+    for block in output.blocks:
+        if isinstance(block, TextBlock) and _technical_source(block, facts) is not None:
+            text = (
+                f"Technischer Quellenauszug: „{block.text}“"
+                if language.startswith("de")
+                else f"Technical source excerpt: “{block.text}”"
+            )
+            blocks.append(block.model_copy(update={"text": text}))
+        else:
+            blocks.append(block)
+    return output.model_copy(update={"blocks": blocks})
 
 
 def _warranty_sources(
@@ -364,19 +425,7 @@ def _warranty_sources(
     """Bind each policy block to one source-derived answer for this product."""
     policy_chunks = facts.warranty_chunks | facts.warranty_procedures
     question_policy = bool(_WARRANTY_CONTEXT.search(question))
-    linked = any(
-        isinstance(block, DocumentBlock) and block.ref in policy_chunks
-        for block in output.blocks
-    )
-    prose_policy = any(
-        isinstance(block, TextBlock) and _WARRANTY_CONTEXT.search(block.text)
-        for block in output.blocks
-    )
-    cited_policy = any(
-        isinstance(block, TextBlock) and (set(block.refs) & policy_chunks)
-        for block in output.blocks
-    )
-    if not (question_policy or linked or prose_policy or cited_policy):
+    if not _warranty_turn(output, facts, question):
         return []
     expected = {
         pid
@@ -418,17 +467,14 @@ def _warranty_sources(
             expected = set.intersection(*requested)
     used: set[str] = set()
     for block in output.blocks:
-        if isinstance(block, HandoffBlock) and (
-            _WARRANTY_CONTEXT.search(block.summary)
-            or (question_policy and _POLICY_CLAIM.search(block.summary))
-        ):
-            return ["warranty claims require a source-derived policy answer"]
-        if isinstance(block, AskBlock) and any(
-            _WARRANTY_CONTEXT.search(option)
-            or (question_policy and _POLICY_CLAIM.search(option))
-            for option in block.options
-        ):
-            return ["warranty claims require a source-derived policy answer"]
+        if isinstance(block, HandoffBlock) and block.summary.strip() not in {
+            "{fact:handoff.sentence}",
+            "{fact:handoff.sentence_en}",
+            "{fact:handoff.sentence_de}",
+        }:
+            return ["a mixed warranty handoff must use its verified sentence"]
+        if isinstance(block, AskBlock) and block.options:
+            return ["a mixed warranty turn cannot add unverified answer options"]
         if not isinstance(block, TextBlock) or not block.text.strip():
             continue
         cited = set(block.refs) & policy_chunks
@@ -441,18 +487,11 @@ def _warranty_sources(
             cited or policy_figures or _WARRANTY_CONTEXT.search(block.text)
         )
         if not is_policy:
-            # Independently cited technical statements in mixed questions keep
-            # the ordinary document path; an unsupported policy claim does not.
-            other_sources = set(block.refs) & (facts.ids() - policy_chunks)
-            other_sources.update(
-                fact_id
-                for fact_id in leftover_placeholders(block.text)
-                if fact_id in facts.facts and chunk_of(fact_id) not in policy_chunks
-            )
-            if question_policy and (
-                not other_sources or _POLICY_CLAIM.search(block.text)
+            cid = _technical_source(block, facts)
+            if cid is None or (
+                expected and not set(facts.knowledge_products.get(cid, ())) & expected
             ):
-                return ["warranty statement needs a qualified policy answer"]
+                return ["use an exact, product-scoped technical source excerpt"]
             continue
         if len(cited) != 1 or policy_figures - cited:
             return ["warranty statement must cite its own qualified policy passage"]

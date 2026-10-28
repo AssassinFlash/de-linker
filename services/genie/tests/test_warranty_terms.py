@@ -3,6 +3,7 @@
 import gzip
 import hashlib
 import json
+import re
 import sqlite3
 from copy import deepcopy
 from dataclasses import replace
@@ -1320,6 +1321,11 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
                 else "Die Funkabdeckung hängt von der Installationsumgebung ab."
             )
             manual_id = "independent-wireless-manual"
+            distance_source = (
+                "The antenna range is [n1=30 m]."
+                if lang == "en"
+                else "Die Reichweite der Antenne beträgt [n1=30 m]."
+            )
             manual_facts = collect(
                 "linker/search-knowledge",
                 {
@@ -1328,10 +1334,11 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
                             "chunk_id": manual_id,
                             "product_ids": [6528],
                             "title": "Wireless manual",
+                            "doc_type": "manual",
                             "page": 1,
                             "doc_url": "https://example.test/manual.pdf",
-                            "text": manual_text,
-                            "figures": {},
+                            "text": manual_text + "\n" + distance_source,
+                            "figures": {f"{manual_id}.n1": "30 m"},
                         }
                     ]
                 },
@@ -1382,10 +1389,154 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
             )
             mixed_result = run(mixed_request, _generation(mixed_answer, joined), route)
             assert mixed_result.grounded and not mixed_result.fallback
-            assert mixed_result.output.blocks[0].text == manual_text
+            assert mixed_result.output.blocks[0].text == (
+                f"Technical source excerpt: “{manual_text}”"
+                if lang == "en"
+                else f"Technischer Quellenauszug: „{manual_text}“"
+            )
             assert (
                 "10 years" if lang == "en" else "10 Jahre"
             ) in mixed_result.output.blocks[1].text
+            distance_text = (
+                f"The antenna range is {{fact:{manual_id}.n1}}."
+                if lang == "en"
+                else f"Die Reichweite der Antenne beträgt {{fact:{manual_id}.n1}}."
+            )
+            numeric_mixed = mixed_answer.model_copy(
+                update={
+                    "blocks": [
+                        TextBlock(text=distance_text, refs=[manual_id]),
+                        mixed_answer.blocks[1],
+                    ]
+                }
+            )
+            numeric_result = run(
+                mixed_request, _generation(numeric_mixed, joined), route
+            )
+            assert numeric_result.grounded and not numeric_result.fallback
+            assert "30 m" in numeric_result.output.blocks[0].text
+            wrong_manual = deepcopy(manual_facts)
+            wrong_manual.knowledge_products[manual_id] = (6527,)
+            assert run(
+                mixed_request,
+                _generation(mixed_answer, merge([facts, wrong_manual])),
+                route,
+            ).fallback
+            untyped_manual = deepcopy(manual_facts)
+            untyped_manual.technical_chunks.clear()
+            assert run(
+                mixed_request,
+                _generation(mixed_answer, merge([facts, untyped_manual])),
+                route,
+            ).fallback
+            # The same source-type marker must also come from the real index
+            # and its current product authorization, not just a caller fixture.
+            technical_payload = search(
+                {
+                    "query": "rated output power voltage current",
+                    "lang": lang,
+                    "product_ids": [6528],
+                }
+            )
+            technical_hit = next(
+                (
+                    hit
+                    for hit in technical_payload["hits"]
+                    if hit.get("doc_type") in {"manual", "datasheet"}
+                ),
+                None,
+            )
+            assert technical_hit is not None, technical_payload["hits"]
+            technical_facts = collect(
+                "linker/search-knowledge", technical_payload, lang
+            )
+            assert technical_hit["chunk_id"] in technical_facts.technical_chunks
+            technical_line = next(
+                line
+                for line in technical_hit["text"].splitlines()
+                if line.strip().startswith("|") and "[n" in line
+            )
+            technical_quote = re.sub(
+                r"\[n([1-9]\d*)=[^\[\]\n]+\]",
+                lambda match, cid=technical_hit["chunk_id"]: (
+                    f"{{fact:{cid}.n{match.group(1)}}}"
+                ),
+                technical_line,
+            )
+            real_mixed = mixed_answer.model_copy(
+                update={
+                    "blocks": [
+                        TextBlock(
+                            text=technical_quote, refs=[technical_hit["chunk_id"]]
+                        ),
+                        mixed_answer.blocks[1],
+                    ]
+                }
+            )
+            real_facts = merge([facts, technical_facts])
+            real_result = run(mixed_request, _generation(real_mixed, real_facts), route)
+            assert real_result.grounded and not real_result.fallback, (
+                real_result.failures
+            )
+            assert real_result.output.blocks[0].text.startswith(
+                "Technical source excerpt:"
+                if lang == "en"
+                else "Technischer Quellenauszug:"
+            )
+            assert any(
+                isinstance(block, DocumentBlock)
+                and block.url
+                and block.url.startswith(technical_hit["doc_url"])
+                for block in real_result.output.blocks
+            )
+            for statement, topic, question in (
+                (
+                    "It starts immediately." if lang == "en" else "Sie beginnt sofort.",
+                    "start",
+                    "When does the warranty start?"
+                    if lang == "en"
+                    else "Wann beginnt die Garantie?",
+                ),
+                (
+                    "Every purchaser is eligible."
+                    if lang == "en"
+                    else "Alle Käufer sind anspruchsberechtigt.",
+                    "overview",
+                    "Who is eligible for the warranty?"
+                    if lang == "en"
+                    else "Wer hat Anspruch auf die Garantie?",
+                ),
+                (
+                    "The policy applies to subsequent owners."
+                    if lang == "en"
+                    else "Die Regelung gilt für spätere Eigentümer.",
+                    "overview",
+                    "Can the warranty be transferred?"
+                    if lang == "en"
+                    else "Ist die Garantie übertragbar?",
+                ),
+            ):
+                false_lead = TurnOutput(
+                    language=lang,
+                    blocks=[
+                        TextBlock(text=statement, refs=[manual_id]),
+                        TextBlock(
+                            text=battery["warranty_answers"][topic],
+                            refs=[battery["chunk_id"]],
+                        ),
+                    ],
+                )
+                policy_request = request.model_copy(
+                    update={"messages": [TurnMessage(role="user", content=question)]}
+                )
+                result_with_false_lead = run(
+                    policy_request, _generation(false_lead, joined), route
+                )
+                assert result_with_false_lead.fallback
+                assert all(
+                    not isinstance(block, TextBlock) or block.text != statement
+                    for block in result_with_false_lead.output.blocks
+                )
             stray_claim = mixed_answer.model_copy(
                 update={
                     "blocks": [

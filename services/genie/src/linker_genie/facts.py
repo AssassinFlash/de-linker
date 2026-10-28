@@ -63,6 +63,7 @@ class TurnFacts:
     qualifications: dict[str, tuple[Qualification, ...]] = field(default_factory=dict)
     warranty_chunks: set[str] = field(default_factory=set)
     warranty_procedures: set[str] = field(default_factory=set)
+    technical_chunks: set[str] = field(default_factory=set)
     warranty_models: dict[str, tuple[str, ...]] = field(default_factory=dict)
     # Only these source-derived strings can be emitted as policy claims.
     warranty_answers: dict[str, dict[str, str]] = field(default_factory=dict)
@@ -287,6 +288,7 @@ def merge(parts: list[TurnFacts]) -> TurnFacts:
         combined.qualifications.update(part.qualifications)
         combined.warranty_chunks.update(part.warranty_chunks)
         combined.warranty_procedures.update(part.warranty_procedures)
+        combined.technical_chunks.update(part.technical_chunks)
         for cid, answers in part.warranty_answers.items():
             previous_answers = combined.warranty_answers.get(cid)
             combined.warranty_answers[cid] = (
@@ -791,6 +793,14 @@ def _from_knowledge(gathered: TurnFacts, payload: dict[str, Any]) -> None:
         notes = knowledge_qualifications(hit)
         if notes is None:
             continue
+        if (
+            hit.get("doc_type") in {"manual", "datasheet"}
+            and isinstance(hit.get("doc_url"), str)
+            and hit["doc_url"]
+            and hit.get("warranty_terms") is not True
+            and hit.get("warranty_procedure") is not True
+        ):
+            gathered.technical_chunks.add(chunk_id)
         if hit.get("warranty_terms") is True or hit.get("warranty_procedure") is True:
             models = hit.get("product_models")
             products = hit.get("product_ids")

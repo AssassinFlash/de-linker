@@ -132,6 +132,7 @@ class KnowledgeSearch:
                 "product_ids": list(hit.product_ids),
                 "doc_url": hit.doc_url,
                 "title": hit.title,
+                "doc_type": hit.doc_type,
                 "page": hit.page,
                 "section": hit.section,
                 "text": hit.text,
@@ -264,7 +265,7 @@ def model_view(payload: dict[str, Any]) -> dict[str, Any]:
         "hits": [
             {
                 key: hit[key]
-                for key in ("chunk_id", "title", "page", "section", "text")
+                for key in ("chunk_id", "title", "page", "section", "text", "doc_type")
                 if key in hit
             }
             | (

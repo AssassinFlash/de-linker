@@ -95,6 +95,7 @@ def test_the_model_reads_no_url_and_no_figure_table() -> None:
             {
                 "chunk_id": "770c-p37-63a0",
                 "title": "SAJ H2 manual",
+                "doc_type": "manual",
                 "page": 37,
                 "section": "Datasheet",
                 "text": "| No. of MPPT | [n1=3] | [n2=3] |",
