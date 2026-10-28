@@ -22,6 +22,7 @@ from linker_engine.planning.pv_preparation import (
 )
 from linker_engine.planning.pv_source import PvSource
 from linker_engine.planning.records import Actor
+from linker_engine.planning.runtime_snapshot import RuntimeSnapshot
 from linker_engine.planning.weather_import import WeatherImport
 from linker_engine.planning.worker import Worker
 from linker_engine.planning.workspace import Workspace
@@ -279,41 +280,28 @@ process.stdout.write(JSON.stringify(prepared));
 def test_preparation_fixture_export_reproduces_the_committed_fixture() -> None:
     """The committed browser fixture is exactly what this engine produces.
 
-    The whole document is compared, not a subset: a key that the exporter
-    stopped producing, or that someone edited by hand, must fail here rather
-    than keep passing while the browser consumes something the engine no
-    longer saves.
-
-    One declared normalisation keeps this reproducible across machines: the
-    runtime snapshot hashes the interpreter, platform and installed library
-    versions, so the values that chain from it identify *where* a run happened
-    rather than *what* it computed. Everything else — inputs, assets, previews,
-    reports and the assistant projections — is compared as it stands.
+    The whole document is compared field by field. Nothing is rewritten to hide
+    a hash. The exporter pins a synthetic Python, platform and dependency
+    identity, so the hashes that chain from that snapshot are the same on macOS
+    and Linux. That identity is not this machine's live snapshot.
     """
     committed_text = (APP / "tests/fixtures/preparation-flow.json").read_text()
     committed = json.loads(committed_text)
     produced = export_preparation_fixture.capture()
     assert set(produced) == set(committed) == set(EXPECTED_FIXTURE_KEYS)
-    assert _without_runtime_identity(produced) == _without_runtime_identity(committed)
+    assert produced == committed
+    pinned = export_preparation_fixture.fixture_runtime_snapshot()
+    live = RuntimeSnapshot.capture()
+    assert pinned.sha256 != live.sha256
+    weather_run = cast(Object, produced["weather_run"])
+    manifest = cast(Object, weather_run["manifest"])
+    context = cast(Object, manifest["context"])
+    assert context["code_sha256"] == pinned.sha256
     # The browser package owns this file's whitespace: it formats its own JSON
     # with Prettier, which may expand a short array or break a long string.
     # Whatever that formatting did, it changed no saved value, so re-reading
     # the committed bytes must yield exactly the document the exporter produced.
     assert json.loads(export_preparation_fixture.rendered()) == produced
-
-
-def _without_runtime_identity(value: object) -> object:
-    """Replace only the values a runtime snapshot hash chains into."""
-    if isinstance(value, dict):
-        return {
-            key: f"<runtime:{key}>"
-            if key in RUNTIME_IDENTITY_KEYS
-            else _without_runtime_identity(item)
-            for key, item in value.items()
-        }
-    if isinstance(value, list):
-        return [_without_runtime_identity(item) for item in value]
-    return value
 
 
 # Every top-level key the browser fixture carries, produced by the exporter.
@@ -332,5 +320,3 @@ EXPECTED_FIXTURE_KEYS = frozenset(
         "geometric_pv",
     }
 )
-# The only values that differ between two machines running this same export.
-RUNTIME_IDENTITY_KEYS = frozenset({"code_sha256", "runtime_sha256", "runtime_bundle"})

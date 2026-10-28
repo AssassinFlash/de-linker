@@ -45,10 +45,28 @@ final class AsyncRunner extends WP_Async_Request {
 	 * @param int $id Existing inquiry; never a customer-supplied destination.
 	 */
 	public static function enqueue( int $id ): void {
+		// The status mail runs inside the inquiry's transaction. A loopback started
+		// there cannot see the uncommitted order, so request submissions missed the
+		// wake and waited for the shared runner. Dispatch only after that commit.
+		if ( \Linker\Commerce\Mail\NativeTransaction::after_commit(
+			static function () use ( $id ): void {
+				self::dispatch_now( $id );
+			}
+		) ) {
+			return;
+		}
+		self::dispatch_now( $id );
+	}
+
+	/**
+	 * Issue the one-use wake. Failures leave the durable scheduler as the fallback.
+	 *
+	 * @param int $id Persisted inquiry.
+	 */
+	private static function dispatch_now( int $id ): void {
 		try {
 			self::dispatch_record( $id );
 		} catch ( \Throwable $error ) {
-			// Persistence/randomness failure must leave the durable fallback alone.
 			return;
 		}
 	}

@@ -10665,7 +10665,7 @@
     "unique_acceptance_and_recovery_points": "preserved"
   },
   "final_candidate_2026_10_29": {
-    "state": "merged_local_release_and_consumers_validated;PR_CI_review_and_production_pending",
+    "state": "local_and_review_validated;final_PR_CI_and_production_pending",
     "candidate": {
       "base_commit": "1a123dab8879a84d2c40da7197d396e6590a563e",
       "implementation_commit": "e1b5e17a6",
@@ -10731,11 +10731,28 @@
       "evidence": "/Users/chesterjohn/de-linker-local/p548/mail/20261028-164827-86b717d7-34ac-4949-8703-9503eda1ca71.eml",
       "scope": "One tester-only local delivery; team, customer-receipt and Bcc routing verified as Outbox recipient data without multiple real sends"
     },
+    "review_site": {
+      "snapshot": "/Users/chesterjohn/de-linker-data/20261029-0433",
+      "loaded": "172 published products, 2756 attachments, zero missing files and zero residual live addresses; licences applied",
+      "affected_e2e": "50 passed: contact selection continuity, Genie failure ownership, public inquiry, registration two-step and inquiry draft actions",
+      "visual": "/Users/chesterjohn/de-linker-local/review/acceptance-548/visual/record.json",
+      "visual_scope": "Solution Configurator, Proforma request and account entries passed EN/DE × 1440/390 with loaded Planner chunks, visible key controls and no horizontal overflow; no form or model submission",
+      "repairs": [
+        "Pinned a synthetic fixture-only runtime identity so the real exporter and all 11 fixture sections compare equally across platforms without masking hashes",
+        "Copied live FileList values and preserved the editor question with the attachment in one turn",
+        "Made concurrent first guest-scope claims atomic and closed a claim after its cookie was presented, preserving later independent guests",
+        "Removed excluded selection data from the posted referer while retaining nonce and intent",
+        "Deferred the inquiry assessment wake until after the native transaction commit",
+        "Separated assessment_pending from daily_cap receipt states and used a deterministic local verdict plus native queue draining for the browser fixture",
+        "Updated outdated contact-exclusion and local-stack expectations without changing the approved product copy"
+      ],
+      "evidence_retention": "Original failures and final traces/screens remain under /Users/chesterjohn/de-linker-local/review/acceptance-548/ rather than the product diff"
+    },
     "production": false,
     "full_goal548": "active",
     "remaining": [
       "Push the merged candidate, run final PR #738 CI and merge only after it is green",
-      "Complete review-site snapshot preparation and affected-chain acceptance, then coordinated production deployment, backups and actual consumer readback",
+      "Complete coordinated production deployment, backups and actual consumer readback",
       "Country/DSO evidence packs, manufacturer operating envelopes and complete installation BOS remain open beyond this batch"
     ]
   }

@@ -13,6 +13,7 @@ use Linker\Commerce\Inquiry\PublicGuard;
 use Linker\Commerce\Inquiry\Sender;
 use Linker\Commerce\Inquiry\ReceiptLimit;
 use Linker\Commerce\Presentation\PageUrls;
+use WC_Order;
 use WP_Error;
 use Linker\Commerce\Protection\Business;
 use Linker\Commerce\Protection\Outcome;
@@ -36,6 +37,13 @@ final class Handler {
 	 */
 	private ?WP_Error $last_error = null;
 
+	/**
+	 * The inquiry just saved, so the confirmation can follow its receipt decision.
+	 *
+	 * @var WC_Order|null
+	 */
+	private ?WC_Order $last_order = null;
+
 
 	/**
 	 * The action the form posts (admin_post[_nopriv]_linker_contact).
@@ -58,7 +66,7 @@ final class Handler {
 		$post  = wp_unslash( $_POST );
 		$back  = $this->back_url( $post );
 		$state = $this->process( $post );
-		if ( ! in_array( $state, array( 'sent', 'sent_no_receipt', 'saved_review' ), true ) ) {
+		if ( ! in_array( $state, array( 'sent', 'sent_no_receipt', 'receipt_pending', 'saved_review' ), true ) ) {
 			\Linker\Commerce\Protection\FormRecovery::save( 'contact', $post, $this->last_error );
 		}
 		$this->back( $back, $state );
@@ -72,10 +80,11 @@ final class Handler {
 	 *
 	 * @param  array<string, mixed> $post The posted values, unslashed.
 	 * @return string One of `Contact\Form`'s state names: `sent`, `sent_no_receipt`,
-	 *                `saved_review`, or a refusal state the form renders.
+	 *                `receipt_pending`, `saved_review`, or a refusal state the form renders.
 	 */
 	public function process( array $post ): string {
 		$this->last_error = null;
+		$this->last_order = null;
 		$nonce            = isset( $post[ Form::NONCE_FIELD ] ) && is_string( $post[ Form::NONCE_FIELD ] ) ? sanitize_text_field( $post[ Form::NONCE_FIELD ] ) : '';
 		if ( ! wp_verify_nonce( $nonce, Form::NONCE_ACTION ) ) {
 			$this->last_error = new WP_Error( 'linker_contact_invalid', 'The form expired.' );
@@ -111,11 +120,46 @@ final class Handler {
 			// native code cannot be reported as a verification verdict.
 			return Outcome::contact_state( (string) $order->get_error_code() );
 		}
+		$this->last_order = $order;
 		if ( $order->get_meta( \Linker\Commerce\Protection\Intake::META ) ) {
 			\Linker\Commerce\Protection\IntakeAdmin::remember( $order );
 			return 'saved_review';
 		}
-		return ! in_array( $order->get_meta( ReceiptLimit::SKIPPED_META ), array( '', 'assessment_pending' ), true ) ? 'sent_no_receipt' : 'sent';
+		return self::receipt_state( $order );
+	}
+
+	/**
+	 * What the confirmation may claim about the optional receipt.
+	 *
+	 * `assessment_pending` has not been decided, so it is neither a sent receipt
+	 * nor an omission. A later handoff that records `daily_cap` is an omission.
+	 *
+	 * @param WC_Order $order Saved contact inquiry.
+	 */
+	public static function receipt_state( WC_Order $order ): string {
+		$order->read_meta_data( true );
+		$skipped = (string) $order->get_meta( ReceiptLimit::SKIPPED_META );
+		if ( 'assessment_pending' === $skipped ) {
+			// The handoff still calls ReceiptLimit::take(). When that allowance is
+			// already spent, the confirmation can say so on the first page instead
+			// of waiting for a later reload to discover daily_cap.
+			return self::receipt_allowance_exhausted() ? 'sent_no_receipt' : 'receipt_pending';
+		}
+		return '' === $skipped ? 'sent' : 'sent_no_receipt';
+	}
+
+	/**
+	 * Whether the site-wide public receipt allowance is already spent.
+	 *
+	 * Enforce mode decides this through the separate receipt budget at handoff,
+	 * so this peek must not guess that outcome.
+	 */
+	private static function receipt_allowance_exhausted(): bool {
+		if ( 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode() ) {
+			return false;
+		}
+		$spent = ( new \Linker\Commerce\Inquiry\RateLimit( 'public_receipts', ReceiptLimit::DAILY_CAP, DAY_IN_SECONDS ) )->spent( '' );
+		return is_int( $spent ) && $spent >= ReceiptLimit::DAILY_CAP;
 	}
 
 	/**
@@ -143,7 +187,11 @@ final class Handler {
 	 * @param string $state One of the states `Contact\Form` renders.
 	 */
 	private function back( string $back, string $state ): void {
-		wp_safe_redirect( add_query_arg( Form::STATE_PARAM, $state, $back ) . '#' . Form::ANCHOR );
+		$args = array( Form::STATE_PARAM => $state );
+		if ( 'receipt_pending' === $state && $this->last_order instanceof WC_Order ) {
+			$args[ Form::ORDER_PARAM ] = $this->last_order->get_order_key();
+		}
+		wp_safe_redirect( add_query_arg( $args, $back ) . '#' . Form::ANCHOR );
 		exit;
 	}
 }

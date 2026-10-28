@@ -4,8 +4,9 @@ Uses the retained real TMY and explicit synthetic model/roof with a simulated
 provider adapter. Never connects to a live service, account, or project store.
 
 The export is reproducible: identifiers and clock values come from a fixed
-sequence, so two runs produce identical bytes and a fixture diff means the
-saved objects changed rather than that a random ID did.
+sequence, and the runtime snapshot uses a synthetic Python, platform and
+dependency identity. Two runs on macOS and Linux therefore produce identical
+bytes. A fixture diff means the saved objects changed, not that the host did.
 
 Every key of the browser fixture is produced here, one saved workflow at a
 time: weather acquisition, PV preparation, the managed roof AC reference, the
@@ -23,6 +24,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Any, cast
+from unittest.mock import patch
 
 from conftest import publication_feed, publication_manifest
 
@@ -32,7 +34,7 @@ from linker_engine.planning import workspace as workspace_module
 from linker_engine.planning.assets import Assets
 from linker_engine.planning.assistant_calculation_sources import calculation_sources
 from linker_engine.planning.assistant_context import assistant_context
-from linker_engine.planning.canonical import Object, encode
+from linker_engine.planning.canonical import Object, decode_object, digest, encode
 from linker_engine.planning.csv_mapping import CsvMapping
 from linker_engine.planning.direct_beam_inputs import DirectBeamLimits
 from linker_engine.planning.direct_beam_job import DirectBeamKernel
@@ -63,6 +65,7 @@ from linker_engine.planning.pvgis_reference_service import PvgisRoofReferenceSer
 from linker_engine.planning.records import Actor, Run
 from linker_engine.planning.report_inputs import ReportOptions
 from linker_engine.planning.report_kernel import ReportKernel, ReportService
+from linker_engine.planning.runtime_snapshot import RuntimeSnapshot
 from linker_engine.planning.weather_import import WeatherImport
 from linker_engine.planning.weather_status import weather_status
 from linker_engine.planning.workspace import Workspace
@@ -107,6 +110,70 @@ def fixed_identity() -> Iterator[None]:
     finally:
         for module, name, value in saved:
             setattr(module, name, value)
+
+
+# Host fields in RuntimeSnapshot. Their values are this export's identity, not
+# the machine that happens to run it. The recorded source files stay real, so a
+# source change still changes the snapshot hash.
+FIXTURE_RUNTIME_IDENTITY: Object = {
+    "python": "3.12.0",
+    "python_implementation": "CPython",
+    "platform": "fixture",
+    "machine": "fixture",
+    "libc": ["", ""],
+    "sqlite": "0.0.0",
+    "dependencies": {
+        "pydantic": "fixture",
+        "pypdf": "fixture",
+        "pillow": "fixture",
+        "jsonschema": "fixture",
+        "requests": "fixture",
+        "urllib3": "fixture",
+        "pvlib": "fixture",
+        "numpy": "fixture",
+        "pandas": "fixture",
+        "scipy": "fixture",
+        "pyproj": "fixture",
+        "shapely": "fixture",
+    },
+}
+
+
+def fixture_runtime_snapshot() -> RuntimeSnapshot:
+    """One snapshot: real source bytes, synthetic host identity.
+
+    Reads whichever ``RuntimeSnapshot.capture`` is installed. The export calls
+    this before the stand-in, so the recorded source files are the files on disk.
+    """
+    document = decode_object(RuntimeSnapshot.capture().content)
+    recorded = document.get("dependencies")
+    expected = FIXTURE_RUNTIME_IDENTITY["dependencies"]
+    if not isinstance(recorded, dict) or not isinstance(expected, dict):
+        raise RuntimeError("runtime snapshot dependencies are not an object")
+    if set(recorded) != set(expected):
+        raise RuntimeError(
+            "fixture runtime identity does not name the same dependencies as RuntimeSnapshot"
+        )
+    pinned = {**document, **FIXTURE_RUNTIME_IDENTITY}
+    content = encode(pinned)
+    return RuntimeSnapshot(content, digest(content))
+
+
+@contextmanager
+def fixed_runtime() -> Iterator[None]:
+    """Install the fixture snapshot for this export only.
+
+    Kernels call ``RuntimeSnapshot.capture`` when they are constructed. The
+    stand-in is active only inside this block and is removed when it ends, so a
+    production process still records the host it actually runs on.
+    """
+    snapshot = fixture_runtime_snapshot()
+
+    def pinned_capture() -> RuntimeSnapshot:
+        return snapshot
+
+    with patch.object(RuntimeSnapshot, "capture", pinned_capture):
+        yield
 
 
 @contextmanager
@@ -157,7 +224,7 @@ def product_sources(directory: Path) -> ProductSources:
 
 def capture() -> Object:
     with TemporaryDirectory(prefix="p548-preparation-fixture-") as directory:
-        with fixed_identity():
+        with fixed_identity(), fixed_runtime():
             return _capture(Path(directory))
 
 

@@ -44,6 +44,7 @@ final class FormTest extends TestCase {
 		$this->assertStringContainsString( 'name="lang" value="en"', $html );
 		$this->assertStringContainsString( 'name="linker_contact_back" value="http://site/contact/"', $html );
 		$this->assertStringContainsString( 'name="linker_contact_nonce"', $html );
+		$this->assertStringContainsString( 'name="_wp_http_referer" value="/contact/"', $html );
 
 		// The heading block: eyebrow, heading, lead.
 		$this->assertStringContainsString( 'linker-contact-head', $html );
@@ -212,6 +213,16 @@ final class FormTest extends TestCase {
 		$_GET = array();
 		$this->assertStringNotContainsString( 'role="status"', ( new Form() )->render() );
 
+		$_GET            = array( Form::STATE_PARAM => 'receipt_pending' );
+		$pending_receipt = ( new Form() )->render();
+		$this->assertStringContainsString( 'linker-form-success', $pending_receipt );
+		$this->assertStringContainsString( 'Thank you. Your message is with the Linker team.', $pending_receipt );
+		$this->assertStringNotContainsString( 'We have not sent a confirmation email.', $pending_receipt, 'An undecided receipt must not claim that the confirmation was omitted.' );
+		$this->assertStringNotContainsString( 'http-equiv="refresh"', $pending_receipt, 'Without the saved inquiry there is nothing later to follow.' );
+
+		$_GET = array( Form::STATE_PARAM => 'sent_no_receipt' );
+		$this->assertStringContainsString( 'We have not sent a confirmation email.', ( new Form() )->render() );
+
 		$_GET = array( Form::STATE_PARAM => 'sent' );
 		$sent = ( new Form() )->render();
 		$this->assertStringContainsString( 'role="status"', $sent );
@@ -243,8 +254,10 @@ final class FormTest extends TestCase {
 		// Every review-store refusal keeps its own honest sentence rather than a
 		// generic verification verdict.
 		foreach ( array( 'review_full', 'review_size', 'grouped', 'reception_full', 'pending' ) as $state ) {
-			$_GET = array( Form::STATE_PARAM => $state );
-			$this->assertStringContainsString( 'role="alert"', ( new Form() )->render(), $state );
+			$_GET   = array( Form::STATE_PARAM => $state );
+			$notice = ( new Form() )->render();
+			$this->assertStringContainsString( 'role="alert"', $notice, $state );
+			$this->assertStringNotContainsString( 'We have not sent a confirmation email.', $notice, $state );
 		}
 		$_GET = array( Form::STATE_PARAM => 'grouped' );
 		$this->assertStringContainsString( 'repeated spam submission', ( new Form() )->render() );
@@ -296,7 +309,7 @@ final class FormTest extends TestCase {
 		WP_Mock::passthruFunction( 'esc_textarea' );
 		$this->form_environment();
 		$this->english_site();
-		$raw  = json_encode(
+		$raw                    = json_encode(
 			array(
 				'source'    => 'http://site/products/%c3%a4/',
 				'selection' => array(
@@ -305,64 +318,81 @@ final class FormTest extends TestCase {
 				),
 			)
 		);
-		$_GET = array( \Linker\Commerce\Contact\SelectionContext::FIELD => $raw );
-		$html = ( new Form() )->render();
-		$this->assertSame( 1, preg_match( '/data-linker-contact-draft-context="([a-f0-9]+)"/', $html, $context_attribute ) );
-		$navigation_context = $context_attribute[1] ?? '';
-		$this->assertStringContainsString( 'Include these details with my message', $html );
-		$this->assertStringContainsString( 'SAJ with no match', $html );
-		$this->assertStringContainsString( ' checked /><span>', $html );
-		$this->assertStringContainsString( 'required></textarea>', $html, 'Context never pre-fills the message.' );
-
-		$store   = array();
-		$session = \Mockery::mock( \WC_Session_Handler::class );
-		$session->shouldReceive( 'has_session' )->andReturn( true );
-		$session->shouldReceive( 'get_customer_id' )->andReturn( 'guest-fixture' );
-		$session->shouldReceive( 'set' )->andReturnUsing(
-			static function ( string $key, $value ) use ( &$store ): void {
-				$store[ $key ] = $value;
-			}
-		);
-		$session->shouldReceive( 'get' )->andReturnUsing(
-			static function ( string $key ) use ( &$store ) {
-				return $store[ $key ] ?? null;
-			}
-		);
-		$session->shouldReceive( 'set_customer_session_cookie' )->twice()->with( true );
-		WP_Mock::userFunction( 'WC', array( 'return' => (object) array( 'session' => $session ) ) );
-		WP_Mock::userFunction( 'wc_load_cart' );
-		$old_cookies                               = $_COOKIE;
-		$_COOKIE['wp_woocommerce_session_fixture'] = 'native-presence';
+		$previous_uri           = $_SERVER['REQUEST_URI'] ?? null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- test restores the process request path.
+		$_SERVER['REQUEST_URI'] = '/contact/?intent=product&' . \Linker\Commerce\Contact\SelectionContext::FIELD . '=' . rawurlencode( (string) $raw ) . '&search=SAJ+with+no+match&source=' . rawurlencode( 'http://site/products/?q=SAJ%20with%20no%20match' );
 		try {
-			$post = array(
-				'message'           => 'My unchanged question.',
-				'intent'            => 'product',
-				'linker_request_id' => 'original-logical-request',
-				\Linker\Commerce\Contact\SelectionContext::FIELD => $raw,
-				\Linker\Commerce\Contact\SelectionContext::INCLUDE_FIELD => '0',
-				'linker_proof'      => 'not-recovered',
-			);
-			\Linker\Commerce\Protection\FormRecovery::save( 'contact', $post );
-			$this->assertSame( 'original-logical-request', $store['linker_form_recovery_contact']['fields']['linker_request_id'] );
-			$this->assertArrayNotHasKey( 'linker_proof', $store['linker_form_recovery_contact']['fields'] );
+			$_GET = array( \Linker\Commerce\Contact\SelectionContext::FIELD => $raw );
 			$html = ( new Form() )->render();
-			$this->assertStringContainsString( 'required>My unchanged question.</textarea>', $html );
-			$this->assertStringContainsString( 'http://site/products/%c3%a4/', $html, 'Native percent-encoded canonical paths survive recovery.' );
+			$this->assertSame( 1, preg_match( '/data-linker-contact-draft-context="([a-f0-9]+)"/', $html, $context_attribute ) );
+			$navigation_context = $context_attribute[1] ?? '';
+			$this->assertStringContainsString( 'Include these details with my message', $html );
+			$this->assertStringContainsString( 'SAJ with no match', $html );
 			$this->assertStringContainsString( ' checked /><span>', $html );
-			unset( $post[ \Linker\Commerce\Contact\SelectionContext::FIELD ] );
-			\Linker\Commerce\Protection\FormRecovery::save( 'contact', $post );
-			$html = ( new Form() )->render();
-			$this->assertStringContainsString( 'required>My unchanged question.</textarea>', $html );
-			$this->assertStringContainsString( 'These details will not be sent.', $html );
-			$this->assertStringContainsString( 'data-linker-contact-draft-context="' . $navigation_context . '"', $html, 'The native language URL keeps the public source identity after explicit exclusion.' );
-			$this->assertStringContainsString( 'data-linker-contact-recovered="1"', $html );
-			$this->assertStringNotContainsString( 'SAJ with no match', $html );
-			$this->assertStringNotContainsString( 'name="' . \Linker\Commerce\Contact\SelectionContext::FIELD . '"', $html );
-			$this->assertNull( $store['linker_form_recovery_contact'] );
+			$this->assertStringContainsString( 'required></textarea>', $html, 'Context never pre-fills the message.' );
+			$this->assertGreaterThan( 0, preg_match_all( '/<input type="hidden"[^>]*>/', $html, $hidden ) );
+			foreach ( $hidden[0] as $field ) {
+				$this->assertSame( 1, preg_match( '/\bvalue="([^"]*)"/', $field, $value ), $field );
+				$decoded = html_entity_decode( $value[1] ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+				$this->assertStringNotContainsString( 'SAJ with no match', $decoded, $field );
+			}
+			$this->assertStringContainsString( 'name="_wp_http_referer" value="/contact/?intent=product"', $html );
 
+			$store   = array();
+			$session = \Mockery::mock( \WC_Session_Handler::class );
+			$session->shouldReceive( 'has_session' )->andReturn( true );
+			$session->shouldReceive( 'get_customer_id' )->andReturn( 'guest-fixture' );
+			$session->shouldReceive( 'set' )->andReturnUsing(
+				static function ( string $key, $value ) use ( &$store ): void {
+					$store[ $key ] = $value;
+				}
+			);
+			$session->shouldReceive( 'get' )->andReturnUsing(
+				static function ( string $key ) use ( &$store ) {
+					return $store[ $key ] ?? null;
+				}
+			);
+			$session->shouldReceive( 'set_customer_session_cookie' )->twice()->with( true );
+			WP_Mock::userFunction( 'WC', array( 'return' => (object) array( 'session' => $session ) ) );
+			WP_Mock::userFunction( 'wc_load_cart' );
+			$old_cookies                               = $_COOKIE;
+			$_COOKIE['wp_woocommerce_session_fixture'] = 'native-presence';
+			try {
+				$post = array(
+					'message'           => 'My unchanged question.',
+					'intent'            => 'product',
+					'linker_request_id' => 'original-logical-request',
+					\Linker\Commerce\Contact\SelectionContext::FIELD => $raw,
+					\Linker\Commerce\Contact\SelectionContext::INCLUDE_FIELD => '0',
+					'linker_proof'      => 'not-recovered',
+				);
+				\Linker\Commerce\Protection\FormRecovery::save( 'contact', $post );
+				$this->assertSame( 'original-logical-request', $store['linker_form_recovery_contact']['fields']['linker_request_id'] );
+				$this->assertArrayNotHasKey( 'linker_proof', $store['linker_form_recovery_contact']['fields'] );
+				$html = ( new Form() )->render();
+				$this->assertStringContainsString( 'required>My unchanged question.</textarea>', $html );
+				$this->assertStringContainsString( 'http://site/products/%c3%a4/', $html, 'Native percent-encoded canonical paths survive recovery.' );
+				$this->assertStringContainsString( ' checked /><span>', $html );
+				unset( $post[ \Linker\Commerce\Contact\SelectionContext::FIELD ] );
+				\Linker\Commerce\Protection\FormRecovery::save( 'contact', $post );
+				$html = ( new Form() )->render();
+				$this->assertStringContainsString( 'required>My unchanged question.</textarea>', $html );
+				$this->assertStringContainsString( 'These details will not be sent.', $html );
+				$this->assertStringContainsString( 'data-linker-contact-draft-context="' . $navigation_context . '"', $html, 'The native language URL keeps the public source identity after explicit exclusion.' );
+				$this->assertStringContainsString( 'data-linker-contact-recovered="1"', $html );
+				$this->assertStringNotContainsString( 'SAJ with no match', $html );
+				$this->assertStringNotContainsString( 'name="' . \Linker\Commerce\Contact\SelectionContext::FIELD . '"', $html );
+				$this->assertNull( $store['linker_form_recovery_contact'] );
+
+			} finally {
+				$_COOKIE = $old_cookies;
+				$_GET    = array();
+			}
 		} finally {
-			$_COOKIE = $old_cookies;
-			$_GET    = array();
+			if ( null === $previous_uri ) {
+				unset( $_SERVER['REQUEST_URI'] );
+			} else {
+				$_SERVER['REQUEST_URI'] = $previous_uri;
+			}
 		}
 	}
 
@@ -407,6 +437,7 @@ final class FormTest extends TestCase {
 		);
 		WP_Mock::userFunction( 'sanitize_key', array( 'return' => static fn ( string $key ): string => strtolower( preg_replace( '/[^a-z0-9_-]/i', '', $key ) ?? '' ) ) );
 		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn ( $value ) => $value ) );
+			WP_Mock::userFunction( 'wp_parse_url', array( 'return' => static fn ( string $url, int $component = -1 ) => parse_url( $url, $component ) ) );
 	}
 
 	/**
@@ -432,7 +463,13 @@ final class FormTest extends TestCase {
 		WP_Mock::userFunction( 'get_option', array( 'return' => '' ) );
 		WP_Mock::userFunction( 'sanitize_email', array( 'return' => static fn ( string $email ): string => $email ) );
 		WP_Mock::userFunction( 'admin_url', array( 'return' => 'http://site/wp-admin/admin-post.php' ) );
-		WP_Mock::userFunction( 'wp_nonce_field', array( 'return' => '<input type="hidden" name="linker_contact_nonce" value="nonce" />' ) );
+		WP_Mock::userFunction(
+			'wp_nonce_field',
+			array(
+				'args'   => array( Form::NONCE_ACTION, Form::NONCE_FIELD, false, false ),
+				'return' => '<input type="hidden" name="linker_contact_nonce" value="nonce" />',
+			)
+		);
 		WP_Mock::userFunction( 'get_privacy_policy_url', array( 'return' => 'http://site/privacy-policy/' ) );
 	}
 }

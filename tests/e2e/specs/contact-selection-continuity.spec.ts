@@ -119,8 +119,8 @@ for (const locale of ['en', 'de'] as const) {
 				field.locator('.linker-contact-selection__excluded')
 			).toHaveText(
 				locale === 'de'
-					? 'Diese Auswahl wird nicht mitgesendet.'
-					: 'This selection will not be sent.'
+					? 'Diese Angaben werden nicht mitgesendet.'
+					: 'These details will not be sent.'
 			);
 			await expect(question).toHaveValue(
 				'My own question. / Meine eigene Frage. \\ unchanged'

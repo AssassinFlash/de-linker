@@ -12,7 +12,42 @@ const evidence = join(
 const fixture = join(REPO_ROOT, 'tests/e2e/fixtures/public-inquiry.php');
 const run = (...args: string[]) => wp(['eval-file', fixture, ...args]);
 
-test.setTimeout(60_000);
+// Queue::WAIT_SECONDS is the claimed model attempt; queue delay is excluded
+// (Inquiry/Assessment/Queue.php). After the success page that delay is the
+// nonblocking wake-up plus the Outbox write, not the minute recovery cron.
+// AsyncRunner's 0.01s fire-and-forget is not a 10ms ceiling: Requests rounds
+// that dispatch to at least 1s (docs/specs/543-assessment-dispatch.md). Lock
+// allows at most 1s for the DB handoff (Inquiry/Assessment/Lock.php).
+// AssessmentAsyncTest budgets 12s after the customer response to observe an 8s
+// attempt of this same race, so the poll allows that 4s on top of the full 10s
+// attempt. expect.poll returns when the handoff is visible; this is a ceiling.
+// A live unknown verdict does not hand off inside that ceiling: the first retry
+// waits Outbox::RETRY_DELAYS[0] (60s). The fixture answers only this run's
+// classifier call so the first SendAuthorization attempt can reach Outbox.
+const MODEL_ATTEMPT_MS = 10_000;
+const SCHEDULE_MARGIN_MS = 4_000;
+const HANDOFF_TIMEOUT_MS = MODEL_ATTEMPT_MS + SCHEDULE_MARGIN_MS;
+
+test.setTimeout(60_000 + HANDOFF_TIMEOUT_MS);
+
+type InquiryReadback = {
+	orders?: Array<{ skipped?: string }>;
+	mail?: Array<{ to?: string[] }>;
+};
+
+function authorizationHandoff(readback: InquiryReadback, email: string) {
+	const orders = readback.orders ?? [];
+	const mail = readback.mail ?? [];
+	return {
+		orders: orders.length,
+		jobs: mail.length,
+		receipt: mail.filter(
+			(item) => Array.isArray(item.to) && item.to.includes(email)
+		).length,
+		dailyCap: orders[0]?.skipped === 'daily_cap',
+	};
+}
+
 for (const language of ['en', 'de']) {
 	for (const width of [1440, 390]) {
 		for (const door of ['contact', 'request']) {
@@ -82,7 +117,34 @@ for (const language of ['en', 'de']) {
 						await expect(
 							page.locator('.linker-form-success')
 						).toBeVisible();
-						const readback = JSON.parse(run('read'));
+						let readback: ReturnType<typeof JSON.parse> | undefined;
+						await expect
+							.poll(
+								() => {
+									readback = JSON.parse(run('read'));
+									return authorizationHandoff(
+										readback,
+										email
+									);
+								},
+								{
+									message:
+										'SendAuthorization hands the inquiry to Outbox after the success page',
+									timeout: HANDOFF_TIMEOUT_MS,
+									intervals: [500, 1_000],
+								}
+							)
+							.toEqual({
+								orders: 1,
+								jobs: capped ? 1 : 2,
+								receipt: capped ? 0 : 1,
+								dailyCap: capped,
+							});
+						if (readback === undefined) {
+							throw new Error(
+								'SendAuthorization readback was not captured.'
+							);
+						}
 						expect(readback.orders).toHaveLength(1);
 						expect(readback.orders[0].customer).toBe(0);
 						expect(readback.orders[0].items).toBe(
