@@ -507,20 +507,25 @@ body.woocommerce-account .linker-account-undo:focus-visible { outline: 2px solid
 .linker-account .linker-account-stages {
 	display: flex;
 	align-items: center;
+	flex-wrap: wrap;
+	gap: 10px 0;
 	margin: 0;
 	padding: 20px 22px;
 	border-bottom: 1px solid var(--acct-line-soft);
 	list-style: none;
 }
 
-.linker-account .linker-account-stage { display: flex; align-items: center; gap: 8px; flex: none; font-size: 13px; font-weight: 600; color: var(--acct-faint); }
+.linker-account .linker-account-stage { display: flex; align-items: center; gap: 8px; flex: 0 1 auto; min-width: 0; font-size: 13px; font-weight: 600; color: var(--acct-faint); }
+
+.linker-account .linker-account-stage-label { min-width: 0; overflow-wrap: anywhere; }
 
 .linker-account .linker-account-stage + .linker-account-stage::before {
 	content: "";
-	flex: 1 1 auto;
-	width: 24px;
+	flex: 0 1 10px;
+	min-width: 4px;
+	width: 10px;
 	height: 2px;
-	margin: 0 10px;
+	margin: 0 3px;
 	background: var(--acct-line);
 }
 
@@ -529,6 +534,7 @@ body.woocommerce-account .linker-account-undo:focus-visible { outline: 2px solid
 
 .linker-account .linker-account-stage-dot {
 	display: grid;
+	flex: 0 0 22px;
 	place-items: center;
 	width: 22px;
 	height: 22px;
@@ -567,9 +573,8 @@ body.woocommerce-account .linker-account-undo:focus-visible { outline: 2px solid
 }
 
 @media (max-width: 700px) {
-	.linker-account .linker-account-stage-label { display: none; }
-	.linker-account .linker-account-stage[data-state="done"] .linker-account-stage-label,
-	.linker-account .linker-account-stage[aria-current="step"] .linker-account-stage-label { display: inline; }
+	.linker-account .linker-account-stages { flex-direction: column; align-items: stretch; }
+	.linker-account .linker-account-stage + .linker-account-stage::before { display: none; }
 }
 
 .linker-account .linker-account-kv { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; margin: 12px 0 0; }

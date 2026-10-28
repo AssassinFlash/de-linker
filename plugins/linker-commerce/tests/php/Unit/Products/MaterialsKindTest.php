@@ -106,8 +106,8 @@ final class MaterialsKindTest extends TestCase {
 			)
 		);
 
-		$this->assertSame( 'cabinet', Materials::material_for_product( 9294 )['material_id'] );
-		$this->assertSame( 'cabinet', Materials::material_for_product( 9295 )['material_id'] );
+		$this->assertSame( 'cabinet', Materials::material_for_product( 9294 )['material_id'] ?? null );
+		$this->assertSame( 'cabinet', Materials::material_for_product( 9295 )['material_id'] ?? null );
 		$this->assertSame( '1035 (57.3 kWh); 1365 (100.3 kWh)', Materials::facts( $this->product( 9294 ) )['weight']['value'] );
 		$this->assertSame( '57.3–100.3', Materials::facts( $this->product( 9294 ) )['battery_rated_energy']['value'] );
 		$this->assertSame( '57,3–100,3', Materials::facts( $this->product( 9295 ) )['battery_rated_energy']['value_de'] );

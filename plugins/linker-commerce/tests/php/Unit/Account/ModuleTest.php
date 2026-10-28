@@ -57,6 +57,9 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectActionAdded( 'linker_account_after_content', array( $contact, 'render' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_account_orders_columns', array( $inquiries, 'columns' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_my_account_my_orders_actions', array( $inquiries, 'actions' ), 10, 2 );
+		WP_Mock::expectFilterAdded( 'woocommerce_get_order_item_totals', array( $inquiries, 'customer_totals' ), 20 );
+		WP_Mock::expectFilterAdded( 'woocommerce_order_shipping_to_display_shipped_via', array( $inquiries, 'customer_shipping_via' ), 20 );
+		WP_Mock::expectFilterAdded( 'woocommerce_order_shipping_to_display', array( $inquiries, 'customer_shipping_value' ), 20, 3 );
 		WP_Mock::expectActionAdded( 'woocommerce_order_item_meta_end', array( $inquiries, 'datasheet_link' ), 10, 4 );
 		WP_Mock::expectActionAdded( 'init', array( $saved, 'register_post_type' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_account_saved-solutions_endpoint', array( $saved, 'render' ) );
