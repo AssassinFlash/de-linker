@@ -10,6 +10,7 @@ import httpx
 import pytest
 
 from linker_genie.preparation import RUNTIME_SERVING_REVISION
+from linker_genie.publication import PublicationUnavailable
 from publication_worker import Worker
 
 RECIPE = "a" * 64
@@ -314,14 +315,29 @@ def test_prepare_and_failed_ack_keep_distinct_safe_diagnostics(
     worker.close()
 
 
-def test_invalid_claim_is_acknowledged_as_failed() -> None:
+def test_unsupported_manifest_with_valid_claim_is_acknowledged_as_failed() -> None:
     queue = Queue()
 
     def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.path.endswith("/ack"):
+            receipt = json.loads(request.content)
+            identity = {
+                "job_id": "job-" + queue.recipe,
+                "lease_token": "lease",
+                "source_revision": queue.source["source_revision"],
+                "recipe_revision": queue.recipe,
+                "activation_epoch": queue.epoch,
+            }
+            if (
+                any(receipt.get(key) != value for key, value in identity.items())
+                or type(receipt.get("activation_epoch")) is not int
+                or queue.epoch < 1
+            ):
+                return httpx.Response(409, json={"code": "stale_job"})
         response = queue.handle(request)
         if request.url.path.endswith("/claim"):
             body = response.json()
-            body["job"]["source_revision"] = "different-source"
+            body["job"]["manifest"]["schema_version"] = 2
             return httpx.Response(200, json=body)
         return response
 
@@ -334,7 +350,8 @@ def test_invalid_claim_is_acknowledged_as_failed() -> None:
         recipe=RECIPE,
         transport=httpx.MockTransport(handler),
     )
-    with pytest.raises(RuntimeError, match="manifest revision"):
+    with pytest.raises(PublicationUnavailable, match="unsupported"):
         worker.one(lambda _: "unused", loaded)
     assert queue.receipts[-1]["status"] == "failed"
+    assert queue.receipts[-1]["source_revision"] == queue.source["source_revision"]
     worker.close()
