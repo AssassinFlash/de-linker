@@ -625,8 +625,8 @@ final class ProductShortcodes {
 			// The live page's family card: the model picker replaces the
 			// single-article model row.
 			$html .= $this->family_picker( (array) $family['ids'], $product_id, $card, $stats, $selection );
-		} elseif ( array() !== $stats ) {
-			$html .= '<span class="card-product" data-linker-exact-product><small>' . esc_html__( 'Model', 'linker-commerce' ) . '</small><strong data-card-selection>' . esc_html( $selection ) . '</strong></span>';
+		} elseif ( '' !== trim( (string) $card['model'] ) ) {
+			$html .= '<span class="card-product" data-linker-exact-product><small>' . esc_html__( 'Model', 'linker-commerce' ) . '</small><strong data-card-selection>' . esc_html( (string) $card['model'] ) . '</strong></span>';
 		}
 		$facts = $product instanceof WC_Product ? Materials::card_facts( $product, 4 ) : array();
 		if ( array() !== $facts ) {
