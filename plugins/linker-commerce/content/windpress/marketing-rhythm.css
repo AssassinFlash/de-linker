@@ -25,6 +25,7 @@ html[lang^="de"]
 		#installer-journal .lk-hero-title,
 		#about-journal :is(.scene-title, h2, h3),
 		#tv-cp-page-v1 :is(h2, h3),
+		#tv-solution-v1 :is(h2, h3),
 		#home-a :is(.home-h2, .home-h3),
 		:is(
 			#tv-solution-v1,
@@ -108,6 +109,25 @@ body #service-redesign a:is(.lk-btn-primary, .lk-btn-secondary, .linker-contact-
 	flex-shrink: 0;
 }
 
+/* Application actions use the existing readable action size and touch target.
+   The cover class and anchor type outrank its retained small-button rules. */
+#tv-solution-v1 .sol-cover a:is(.lk-btn-primary, .lk-btn-secondary),
+#tv-solution-v1 a.lk-arena-link {
+	min-height: var(--proto-control-height);
+	font-size: var(--proto-size-sm);
+	line-height: 1.4;
+	white-space: normal;
+}
+
+/* Size the actual nested tab text, including its original numbered label. */
+#tv-solution-v1 #arenas .sol-scale-tabs .lk-arena-tag {
+	font-size: var(--proto-size-sm);
+	line-height: 1.4;
+	-webkit-hyphens: manual;
+	hyphens: manual;
+	overflow-wrap: break-word;
+}
+
 /* Installer tool choices, EPC FAQ topics and residential planning choices
    retain their native states and targets; use the existing14px action token.
    Their separate ordinal-only spans keep the authored caption size. */
@@ -130,6 +150,11 @@ body #service-redesign a:is(.lk-btn-primary, .lk-btn-secondary, .linker-contact-
    Stack its three choices like the existing About phone chapter tabs: the
    full German Kompatibilität label must fit at the action size. */
 @media (max-width: 760px) {
+	/* Give the long scale names the same full-width choice as the tool decks. */
+	#tv-solution-v1 #arenas .sol-scale-tabs {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
 	#tv-rs-page-v1 #engineering-tools .lk-tooldeck-nav,
 	#tv-cs-page-v1 #engineering-tools .lk-tooldeck-nav {
 		grid-template-columns: minmax(0, 1fr);
