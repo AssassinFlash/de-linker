@@ -483,10 +483,12 @@ def create_private_app(
         from .installation_inputs import InstallationInputs
         from .installation_takeoff import product_basis, route_takeoff
 
-        workspace.get(verified_actor(request.scope), body.project_id)
+        project = workspace.get(verified_actor(request.scope), body.project_id)
         if products is None:
             raise VersionUnavailable("current Woo installation evidence is unavailable")
         inputs: Object = {"geometry": body.geometry, "installation": body.installation}
+        if "pv_string_plan" in project.inputs:
+            inputs["pv_string_plan"] = project.inputs["pv_string_plan"]
         basis = product_basis(
             InstallationInputs.read(body.installation), products.equipment_basis()
         )

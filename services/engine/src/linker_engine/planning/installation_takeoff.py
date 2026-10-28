@@ -9,8 +9,87 @@ from .canonical import Json, Object, digest, encode
 from .errors import InvalidInput, ProductEvidenceChanged
 from .geometry_documents import GeometryDocument
 from .installation_inputs import InstallationInputs, RoutePoint
+from .pv_string_inputs import PvStringPlan
 
 METHOD = "installation_route_takeoff_v1"
+
+
+def _string_links(
+    inputs: Object, plan: InstallationInputs, cables: list[Json]
+) -> Object:
+    saved = inputs.get("pv_string_plan")
+    strings = PvStringPlan.read(saved) if saved is not None else None
+    known = {item.id: item for item in strings.strings} if strings else {}
+    bindings = {link.string_id: link for link in plan.pv_string_links}
+    circuits = {circuit.id: circuit for circuit in plan.circuits}
+    instances = {instance.id: instance for instance in plan.instances}
+    identities = [*known, *(key for key in bindings if key not in known)]
+    rows: list[Json] = []
+    for identifier in identities:
+        string, binding = known.get(identifier), bindings.get(identifier)
+        circuit = circuits.get(binding.circuit_id) if binding else None
+        endpoints: list[Json] = []
+        if circuit:
+            for side in ("start", "end"):
+                endpoint = getattr(circuit, side)
+                instance = instances[endpoint.instance_id]
+                endpoints.append(
+                    {
+                        "side": side,
+                        "instance_id": instance.id,
+                        "port_id": endpoint.port_id,
+                        "product_id": instance.product_id,
+                        "product_revision": instance.product_revision,
+                    }
+                )
+        status = (
+            "stale_string"
+            if string is None
+            else "unlinked"
+            if binding is None
+            else "stale_circuit"
+            if circuit is None
+            else "wrong_circuit_kind"
+            if circuit.kind != "pv_dc"
+            else "inverter_endpoint_unresolved"
+            if strings is None
+            or sum(
+                endpoint["product_id"] == strings.inverter_product_id
+                for endpoint in cast(list[Object], endpoints)
+            )
+            != 1
+            else "linked"
+        )
+        recorded = [
+            cable
+            for cable in cast(list[Object], cables)
+            if circuit is not None and cable["circuit_id"] == circuit.id
+        ]
+        rows.append(
+            {
+                "string_id": identifier,
+                "mppt": string.mppt if string else None,
+                "input": string.input if string else None,
+                "circuit_id": binding.circuit_id if binding else None,
+                "status": status,
+                "endpoints": endpoints,
+                # These are the supplied physical runs, not an inferred pair.
+                "cable_runs": cast(Json, recorded),
+                "reasons": ["cable_runs_missing"] if circuit and not recorded else [],
+            }
+        )
+    return {
+        "schema_version": 1,
+        "scope": "declared_project_identity_only",
+        "pv_string_plan_sha256": digest(encode(saved)) if saved is not None else None,
+        "plan_status": "missing"
+        if strings is None
+        else "available"
+        if known
+        else "empty",
+        "rows": rows,
+        "qualified": False,
+    }
 
 
 def product_basis(plan: InstallationInputs, basis: Object) -> Object:
@@ -148,12 +227,25 @@ def route_takeoff(
         for line in cast(list[Object], lines)
         for sid in cast(list[str], line["source_ids"])
     }
+    prepared = plan.project_document()
+    input_sha = digest(encode(prepared))
     return {
         "schema_version": 1,
         "method": METHOD,
         "geometry_sha256": geometry_sha,
-        "input_sha256": digest(encode(cast(Object, plan.model_dump(mode="json")))),
-        "prepared_inputs": cast(Json, plan.model_dump(mode="json")),
+        "input_sha256": input_sha,
+        "prepared_inputs": prepared,
+        **(
+            {
+                "pv_string_reconciliation": {
+                    **_string_links(inputs, plan, lines),
+                    "installation_input_sha256": input_sha,
+                    "geometry_sha256": geometry_sha,
+                }
+            }
+            if "pv_string_links" in plan.model_fields_set
+            else {}
+        ),
         "instances": [
             {
                 "id": d.id,

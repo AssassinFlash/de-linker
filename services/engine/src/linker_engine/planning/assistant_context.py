@@ -185,6 +185,10 @@ def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
                     {"label": f"{title}: {row['label']}", "value": row["value"]}
                 )
             table = section.get("table")
+            if section.get("id") == "installation-pv-string-links":
+                # Keep the fixed scope/missing-plan explanation above, while
+                # user-defined string/circuit/endpoint IDs stay owner-only.
+                continue
             if isinstance(table, dict):
                 columns = cast(list[str], table["columns"])
                 for cells in cast(list[list[str]], table["rows"]):
