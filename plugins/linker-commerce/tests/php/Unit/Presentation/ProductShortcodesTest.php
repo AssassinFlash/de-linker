@@ -1398,6 +1398,33 @@ final class ProductShortcodesTest extends TestCase {
 		return new ProductShortcodes( new ProductFilters(), $this->published_document_view() );
 	}
 
+	/** Distinct options keep their source text; a semicolon inside a note is not a separator. */
+	public function test_key_stat_options_preserve_the_complete_source_facts(): void {
+		$render = new \ReflectionMethod( ProductShortcodes::class, 'pdp_stat_value' );
+		$value  = '1035 kg (57.3 kWh); 1145 kg (71.6 kWh); 1255 kg (85.9 kWh); 1365 kg (100.3 kWh)';
+		$html   = $render->invoke( null, $value );
+		$dom    = new \DOMDocument();
+		$dom->loadHTML( '<div>' . $html . '</div>', LIBXML_NOERROR | LIBXML_NOWARNING );
+		$parts = array();
+		foreach ( $dom->getElementsByTagName( 'span' ) as $span ) {
+			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- DOM's native property name.
+			$parts[] = $span->textContent;
+		}
+		$this->assertSame(
+			array( '1035 kg (57.3 kWh);', ' 1145 kg (71.6 kWh);', ' 1255 kg (85.9 kWh);', ' 1365 kg (100.3 kWh)' ),
+			$parts
+		);
+		$this->assertSame( $value, strip_tags( $html ) );
+		$this->assertSame( '15 kg', $render->invoke( null, '15 kg' ) );
+		$this->assertSame( '15 kg (including base; without packaging)', $render->invoke( null, '15 kg (including base; without packaging)' ) );
+		$with_note = '15 kg (including base; without packaging); 20 kg (alternate)';
+		$marked    = $render->invoke( null, $with_note );
+		$this->assertSame( $with_note, strip_tags( $marked ) );
+		$this->assertSame( 2, substr_count( $marked, '<span class="pdp-spec-option">' ) );
+		$this->assertSame( '15 kg; ', $render->invoke( null, '15 kg; ' ) );
+		$this->assertSame( '15 kg (including base; 20 kg', $render->invoke( null, '15 kg (including base; 20 kg' ) );
+	}
+
 	/**
 	 * The availability dot follows the product's own stock state: the base
 	 * class for a product in stock, `is-wait` for one that is not (the live
