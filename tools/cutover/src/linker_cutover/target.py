@@ -273,6 +273,22 @@ class Target:
             raise CutoverError(f"{relative} is not a directory on {self.label}")
         if self.rsync_remote is not None:
             destination.mkdir(parents=True, exist_ok=True)
+            link_options = _link_dest(link_dest)
+            if link_options:
+                # An incremental backup can link unchanged files from the
+                # earlier tree, avoiding a connection for every chunk. A long
+                # transfer can still be dropped, so resume through the existing
+                # per-chunk retries if this single attempt fails.
+                try:
+                    self.rsync(
+                        f"{source.rstrip('/')}/", f"{destination}/", extra=link_options
+                    )
+                except CutoverError:
+                    print(
+                        f"backup: {relative} whole-tree pull failed; retrying in chunks"
+                    )
+                else:
+                    return
             base = self.path_of(relative).rstrip("/")
             listed = subprocess.run(
                 remote_entries_command(HOST, base),
