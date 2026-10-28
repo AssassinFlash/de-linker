@@ -390,7 +390,7 @@ def test_clearance_completion_does_not_assert_a_negated_value() -> None:
 
 
 def test_cycle_does_not_use_another_or_negated_figure_as_clearance() -> None:
-    cases = (
+    cases: tuple[tuple[Literal["en", "de"], str, str, str | None, str], ...] = (
         (
             "en",
             "Minimum clearance 500 mm; enclosure height 1500 mm.",
@@ -447,11 +447,15 @@ def test_cycle_does_not_use_another_or_negated_figure_as_clearance() -> None:
             ],
         )
 
-        result = run(
-            request,
-            lambda _request, _retry, out=output, gathered=facts: (out, gathered),
-            Route("documents"),
-        )
+        def generate_case(
+            _request: TurnRequest,
+            _retry: str | None,
+            out: TurnOutput = output,
+            gathered: TurnFacts = facts,
+        ) -> tuple[TurnOutput, TurnFacts]:
+            return out, gathered
+
+        result = run(request, generate_case, Route("documents"))
 
         assert result.grounded and not result.fallback
         answer = _text(result.output)
@@ -473,11 +477,16 @@ def test_cycle_does_not_use_another_or_negated_figure_as_clearance() -> None:
         "The minimum clearance is not {fact:a.n1}.",
     ):
         output = TurnOutput(language="en", blocks=[TextBlock(text=claim)])
-        result = run(
-            request,
-            lambda _request, _retry, out=output: (out, facts),
-            Route("documents"),
-        )
+
+        def generate_claim(
+            _request: TurnRequest,
+            _retry: str | None,
+            out: TurnOutput = output,
+            gathered: TurnFacts = facts,
+        ) -> tuple[TurnOutput, TurnFacts]:
+            return out, gathered
+
+        result = run(request, generate_claim, Route("documents"))
         assert result.grounded and not result.fallback
         assert "500 mm" in _text(result.output)
         assert "not 500 mm" not in _text(result.output)
@@ -560,7 +569,9 @@ def test_cycle_preserves_a_qualified_fact_when_removing_a_wrong_clearance() -> N
     assert "1500 mm" not in answer and "500 mm" in answer and "5 A" in answer
     assert '"The interface is required."' in answer
     assert any(
-        isinstance(block, DocumentBlock) and block.url.endswith("#page=3")
+        isinstance(block, DocumentBlock)
+        and block.url is not None
+        and block.url.endswith("#page=3")
         for block in result.output.blocks
     )
 
@@ -682,11 +693,12 @@ def test_cycle_does_not_restore_rejected_clearance_on_language_retry() -> None:
 
 
 def test_clearance_completion_uses_real_figures_and_keeps_conditions() -> None:
-    for language, source, question in (
+    examples: tuple[tuple[Literal["en", "de"], str, str], ...] = (
         ("en", "Minimum clearance 725 mm.", "What minimum clearance?"),
         ("de", "Mindestabstand 725 mm.", "Welcher Mindestabstand?"),
         ("en", "| Minimum clearance (mm) | 725 |", "What minimum clearance?"),
-    ):
+    )
+    for language, source, question in examples:
         output = TurnOutput(
             language=language, blocks=[TextBlock(text="Info.", refs=["a"])]
         )
@@ -927,7 +939,7 @@ def test_support_absence_is_written_once_and_stays_a_denial() -> None:
 
 
 def test_cited_support_answer_is_not_followed_by_a_false_absence() -> None:
-    for language, source, answer, question in (
+    examples: tuple[tuple[Literal["en", "de"], str, str, str], ...] = (
         (
             "en",
             "The device supports EnWG §14a.",
@@ -958,7 +970,8 @@ def test_cited_support_answer_is_not_followed_by_a_false_absence() -> None:
             "The device supports EnWG §14a.",
             "Does it support EnWG?",
         ),
-    ):
+    )
+    for language, source, answer, question in examples:
         facts = _scoped_hit("a", 1, source)
         output = TurnOutput(
             language=language, blocks=[TextBlock(text=answer, refs=["a"])]
