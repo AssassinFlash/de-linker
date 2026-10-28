@@ -29,10 +29,77 @@
 			}
 		});
 	}
+	function connectPreferences() {
+		const panel = document.querySelector('#ckyPreferenceCenter');
+		const modal = panel && panel.closest('.cky-modal');
+		if (!modal) {
+			return false;
+		}
+		let open = false;
+		let opener = null;
+		function focusPanel(event) {
+			if ((!event || event.target === modal) && open && !panel.contains(panel.ownerDocument.activeElement)) {
+				panel.querySelector('[data-cky-tag="detail-close"]')?.focus();
+			}
+		}
+		function sync() {
+			const next = modal.classList.contains('cky-modal-open');
+			if (next === open) {
+				return;
+			}
+			open = next;
+			if (open) {
+				const active = panel.ownerDocument.activeElement;
+				opener = panel.contains(active) ? null : active;
+				// CookieYes resets its English name whenever the panel opens.
+				labelPanels();
+				focusPanel();
+			} else {
+				if (opener && opener.isConnected) {
+					opener.focus();
+				}
+				opener = null;
+			}
+		}
+		new window.MutationObserver(sync).observe(modal, {
+			attributes: true,
+			attributeFilter: ['class'],
+		});
+		// The native opening transition also changes visibility. Focus can be
+		// unavailable at its initial hidden frame; no delay is needed afterward.
+		modal.addEventListener('transitionstart', focusPanel);
+		modal.addEventListener('transitionend', focusPanel);
+		labelPanels();
+		sync();
+		return true;
+	}
+
 	document.addEventListener('DOMContentLoaded', function () {
-		queueMicrotask(labelPanels);
+		queueMicrotask(function () {
+			labelPanels();
+			if (connectPreferences()) {
+				return;
+			}
+			// CookieYes can insert the panel after fetching its configuration.
+			const waiting = new window.MutationObserver(function () {
+				if (connectPreferences()) {
+					waiting.disconnect();
+				}
+			});
+			waiting.observe(document.body, { childList: true, subtree: true });
+		});
 	});
 	document.addEventListener('cookieyes_consent_update', labelPanels);
+	document.addEventListener('keydown', function (event) {
+		if (event.key !== 'Escape') {
+			return;
+		}
+		const close = document.querySelector('.cky-modal-open #ckyPreferenceCenter [data-cky-tag="detail-close"]');
+		if (close) {
+			event.preventDefault();
+			close.click();
+		}
+	});
 
 	function measurementId() {
 		if (window.linkerConsentMeasurementID) {

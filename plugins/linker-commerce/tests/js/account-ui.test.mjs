@@ -45,15 +45,23 @@ test('a submitted account form marks its button as loading, and never disables i
  assert.equal(button.disabled,false);
 });
 
-test('a second submit while the first is in flight does not post again',()=>{
+test('an in-flight submit stays blocked until the browser restores the document',()=>{
  const win=account();
  const form=win.document.getElementById('signin');
  form.querySelector('[name="username"]').value='maria@muster-solar.de';
  const first=submit(form);
  assert.equal(first.defaultPrevented,false);
+ win.dispatchEvent(new win.PageTransitionEvent('pageshow',{persisted:false}));
  const second=submit(form);
  assert.equal(second.defaultPrevented,true);
  assert.equal(form.dataset.accountState,'submitting');
+ const button=form.querySelector('button[type="submit"]');
+ win.dispatchEvent(new win.PageTransitionEvent('pageshow',{persisted:true}));
+ assert.equal(form.dataset.accountState,undefined,'the restored page has no in-flight request');
+ assert.equal(button.classList.contains('is-loading'),false);
+ assert.equal(button.hasAttribute('aria-busy'),false);
+ assert.equal(form.querySelector('[name="username"]').value,'maria@muster-solar.de');
+ assert.equal(submit(form).defaultPrevented,false,'the restored form can submit again');
 });
 
 test('protected inquiry/account marks busy only on the verified native resubmit',()=>{
@@ -135,14 +143,27 @@ test('the mismatch line follows the typing and clears when they agree',()=>{
  assert.equal(second.hasAttribute('aria-invalid'),false);
 });
 
-test('agreeing passwords post the form',()=>{
+test('agreeing passwords post and a cached return restores only the submitted reset button',()=>{
  const win=resetForm();
  const form=win.document.querySelector('form');
+ const button=form.querySelector('button[type="submit"]');
+ const unrelated=win.document.createElement('button');
+ unrelated.type='button';
+ unrelated.disabled=true;
+ form.append(unrelated);
+ form.addEventListener('submit',()=>{button.disabled=true;});
  form.querySelector('#password_1').value='Muster-Solar-2026';
  form.querySelector('#password_2').value='Muster-Solar-2026';
  const event=submit(form);
  assert.equal(event.defaultPrevented,false);
- assert.equal(form.querySelector('button[type="submit"]').classList.contains('is-loading'),true);
+ assert.equal(button.classList.contains('is-loading'),true);
+ assert.equal(button.disabled,true,'native Woo disables the reset button while posting');
+ win.dispatchEvent(new win.PageTransitionEvent('pageshow',{persisted:true}));
+ assert.equal(button.disabled,false,'only the previously enabled submitted button is restored');
+ assert.equal(button.classList.contains('is-loading'),false);
+ assert.equal(unrelated.disabled,true,'other disabled controls stay disabled');
+ assert.equal(form.querySelector('#password_1').value,'Muster-Solar-2026');
+ assert.equal(submit(form).defaultPrevented,false);
 });
 
 function inquiryDraft({saved=[],context='same-auth-session',nonce='first-nonce-tick',retained=false,storageUnavailable=false,closed=false,defaultName='',defaultEmail=''}={}){

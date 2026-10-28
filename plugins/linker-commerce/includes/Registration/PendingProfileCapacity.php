@@ -27,7 +27,7 @@ final class PendingProfileCapacity {
 	 */
 	private ?array $active = null;
 
-	/** This request's refused public account values only.
+	/** This request's submitted public account values only.
 	 *
 	 * @var array<string,string>
 	 */
@@ -116,12 +116,17 @@ final class PendingProfileCapacity {
 		self::$account_input = array();
 		self::$account_owner = 0;
 		$id                  = (int) ( $user->ID ?? 0 );
-		$input               = array(
-			'account_first_name'   => (string) ( $user->first_name ?? '' ),
-			'account_last_name'    => (string) ( $user->last_name ?? '' ),
-			'account_display_name' => (string) ( $user->display_name ?? '' ),
-			'account_email'        => (string) ( $user->user_email ?? '' ),
-		);
+		$input               = array();
+		// phpcs:disable WordPress.Security.NonceVerification -- remember_account verifies the native nonce and owner before exposing these non-secret fields.
+		foreach ( array( 'account_first_name', 'account_last_name', 'account_display_name', 'account_email' ) as $key ) {
+			if ( array_key_exists( $key, $_POST ) && is_string( $_POST[ $key ] ) ) {
+				$input[ $key ] = sanitize_text_field( wp_unslash( $_POST[ $key ] ) );
+			}
+		}
+		// phpcs:enable WordPress.Security.NonceVerification
+		// Native validation errors also need the original submitted values,
+		// including intentionally empty fields, without changing stored data.
+		self::remember_account( $id, $input );
 		try {
 			if ( null !== $this->active || $errors->has_errors() || 0 < wc_notice_count( 'error' ) || ! $this->eligible( $id ) ) {
 				return; }

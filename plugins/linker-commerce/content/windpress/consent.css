@@ -48,15 +48,26 @@ body .cky-notice-btn-wrapper {
 }
 body .cky-notice-btn-wrapper .cky-btn,
 body .cky-prefrence-btn-wrapper .cky-btn {
-  min-height: 44px;
+  min-height: var(--proto-control-height);
   min-width: 112px;
   margin: 0;
   padding: 11px 16px;
   border-radius: 12px;
   font-family: var(--proto-font-sans);
-  font-size: 12px;
+  font-size: var(--proto-size-sm);
   line-height: 1.5;
   font-weight: 600;
+}
+body .cky-prefrence-btn-wrapper {
+  gap: var(--proto-space-2);
+}
+body .cky-preference-center .cky-btn-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--proto-control-height);
+  height: var(--proto-control-height);
 }
 body .cky-btn:focus-visible,
 body .cky-btn-close:focus-visible {
@@ -121,12 +132,11 @@ body .cky-accordion-header-des {
     grid-column: 1 / -1;
     grid-row: 2;
     border-color: transparent;
-    min-height: 36px;
+    min-height: var(--proto-control-height);
     padding: 7px 12px;
   }
   body .cky-prefrence-btn-wrapper .cky-btn {
     min-width: 0;
-    font-size: 11px;
     padding: 10px 8px;
   }
 }

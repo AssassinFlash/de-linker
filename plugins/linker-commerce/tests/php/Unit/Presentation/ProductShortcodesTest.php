@@ -712,16 +712,25 @@ final class ProductShortcodesTest extends TestCase {
 	}
 
 	/**
-	 * The grid's family rows follow the request's sort. The rows are grouped
-	 * from filtered_product_ids() in its order and a family's first product
-	 * leads its card, so sort=name opens the grid with the alphabetically
-	 * first title — the live shop's own lead under
-	 * /products/?brand=goodwe&sort=name. The 2026-10-14 recheck found the
-	 * deployed grid keeping the Recommended lead (GW60K-STS-G10) because the
-	 * sort reached only the main query's post__in, which the grid does not
-	 * read.
+	 * Name order follows the visible series titles after grouping, while
+	 * Recommended retains the original family leads and product order.
 	 */
 	public function test_family_grid_rows_follow_the_requested_sort(): void {
+		foreach ( array( 3, 7, 4, 5 ) as $id ) {
+			$members = \in_array( $id, array( 3, 7 ), true ) ? array( 3, 7 ) : array( 4, 5 );
+			WP_Mock::userFunction(
+				'get_post_meta',
+				array(
+					'args'   => array( $id, '_tv_legacy_acf_json', true ),
+					'return' => (string) json_encode(
+						array(
+							'product_series'  => 3 === $members[0] ? 'Zeta Series' : 'Alpha Series',
+							'family_variants' => array_map( static fn( int $member ): array => array( 'id' => $member ), $members ),
+						)
+					),
+				)
+			);
+		}
 		$this->mock_selection_facts(
 			array(
 				4 => array(
@@ -785,7 +794,15 @@ final class ProductShortcodesTest extends TestCase {
 				),
 			)
 		);
-		WP_Mock::userFunction( 'wc_get_product', array( 'return' => false ) );
+		$products = array();
+		foreach ( array( 3, 7, 4, 5 ) as $id ) {
+			$product = Mockery::mock( WC_Product::class );
+			$product->shouldReceive( 'get_id' )->andReturn( $id );
+			$product->shouldReceive( 'get_name' )->andReturn( 'Product ' . $id );
+			$product->shouldReceive( 'is_purchasable' )->andReturn( false );
+			$products[ $id ] = $product;
+		}
+		WP_Mock::userFunction( 'wc_get_product', array( 'return' => static fn( int $id ) => $products[ $id ] ?? false ) );
 		WP_Mock::userFunction(
 			'get_the_title',
 			array(
@@ -825,9 +842,13 @@ final class ProductShortcodesTest extends TestCase {
 
 		( new ProductShortcodes( new ProductFilters(), new ProductView() ) )->products_families();
 
-		// No family data in the fixture: each product is its own family, so the
-		// row leads are the sorted list itself, the ESA card first.
-		$this->assertSame( array( 3, 5, 7, 4 ), $leads );
+		// Product-title order leads with 3, but the visible Alpha family (5)
+		// precedes Zeta (3). Sorting rows must not replace either family lead.
+		$this->assertSame( array( 5, 3 ), $leads );
+		$leads        = array();
+		$_GET['sort'] = 'recommended';
+		( new ProductShortcodes( new ProductFilters(), new ProductView() ) )->products_families();
+		$this->assertSame( array( 4, 7 ), $leads );
 	}
 
 	/**
@@ -1556,5 +1577,35 @@ final class ProductShortcodesTest extends TestCase {
 		$this->assertStringNotContainsString( 'pdp-doc"', $empty );
 		$this->assertStringNotContainsString( 'retained.pdf', $empty );
 		$this->assertSame( 2, $reads );
+	}
+
+	/**
+	 * The live ETR relationship has partial manual evidence, not list approval.
+	 * Preserve a genuinely listed card while rejecting unestablished statuses.
+	 */
+	public function test_pairing_status_preserves_the_recorded_evidence_boundary(): void {
+		$registry = \Linker\Commerce\Products\Materials::registry();
+		$rows     = $registry['materials']['mat_goodwe_gw125k_etr_g10']['technical']['relationships'];
+		$method   = new \ReflectionMethod( ProductShortcodes::class, 'pairing_status' );
+		foreach ( $rows as $row ) {
+			$expected = 'one_way' === $row['status'] ? 'Partially documented' : "On GoodWe's compatibility list";
+			$this->assertSame( $expected, $method->invoke( null, $row, 'en' ) );
+		}
+		$contract = \Linker\Commerce\Products\Materials::contract();
+		foreach ( $contract['cells'] as $cell ) {
+			if ( 'one_way' === $cell['status'] ) {
+				$this->assertSame( 'Partially documented', $method->invoke( null, $cell, 'en' ) );
+			}
+		}
+		foreach ( array(
+			array(),
+			array( 'status' => 'not_listed' ),
+			array(
+				'status'    => 'unknown',
+				'listed_by' => 'GoodWe',
+			),
+		) as $row ) {
+			$this->assertSame( 'Compatibility information unavailable', $method->invoke( null, $row, 'en' ) );
+		}
 	}
 }

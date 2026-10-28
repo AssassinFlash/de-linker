@@ -20,10 +20,12 @@
    hyphens; emergency wrapping still protects an unusually long token. */
 html[lang^="de"]
 	:is(
-		#service-redesign .service-hero-rest,
+		#service-redesign :is(.service-hero-rest, h2, h3),
 		#tv-cs-page-v1 .lk-hero-title,
 		#installer-journal .lk-hero-title,
 		#about-journal :is(.scene-title, h2, h3),
+		#tv-cp-page-v1 :is(h2, h3),
+		#tv-solution-v1 :is(h2, h3),
 		#home-a :is(.home-h2, .home-h3),
 		:is(
 			#tv-solution-v1,
@@ -44,8 +46,8 @@ html[lang^="de"]
 
 /* Keep the German planning preview in the existing video frame, with the
    complete image visible and the original tool action beside it. */
-#tv-rs-page-v1 #engineering-tools #tool-pane-0 .lk-tooldeck-media > img.rs-tool-preview,
-#tv-cs-page-v1 #engineering-tools #tool-pane-0 .lk-tooldeck-media > img.cs-tool-preview {
+#tv-rs-page-v1 #engineering-tools :is(#tool-pane-0, #tool-pane-1) .lk-tooldeck-media > img.rs-tool-preview,
+#tv-cs-page-v1 #engineering-tools :is(#tool-pane-0, #tool-pane-1) .lk-tooldeck-media > img.cs-tool-preview {
 	display: block;
 	width: 100%;
 	height: auto;
@@ -57,7 +59,7 @@ html[lang^="de"]
 
 /* The active tab already names this pane. Its duplicate overlay would cover
    the German preview's first question; other video badges keep their place. */
-#tv-cs-page-v1 #engineering-tools #tool-pane-0 .lk-tooldeck-media:has(> img.cs-tool-preview) > .lk-tooldeck-badge {
+#tv-cs-page-v1 #engineering-tools :is(#tool-pane-0, #tool-pane-1) .lk-tooldeck-media:has(> img.cs-tool-preview) > .lk-tooldeck-badge {
 	display: none;
 }
 
@@ -76,6 +78,82 @@ html[lang^="de"]
 	font-size: var(--proto-size-sm);
 	line-height: 1.4;
 	white-space: normal;
+}
+
+/* Keep the complete planning input illustration inside each native frame. */
+#service-redesign :is(.lk-pair-media, .lk-sstage-media) > img.service-planning-input-preview,
+#tv-solutions-developers-v1 #sp-slide-1 > img.epc-planning-input-preview {
+	object-fit: contain;
+}
+
+/* The stage tab and content already identify this illustrated pane. */
+#service-redesign #service-stage-1 .lk-sstage-media > img.service-planning-input-preview + .lk-sstage-media-tag,
+#tv-solutions-developers-v1 #sp-slide-1 > img.epc-planning-input-preview + .lk-sp-slide-badge {
+	display: none;
+}
+
+/* Services actions share the existing action type and native touch target.
+   Body and anchor types outrank the retained page action group. */
+body #service-redesign a:is(.lk-btn-primary, .lk-btn-secondary, .linker-contact-primary, .lk-twin-hero-btn-primary, .lk-twin-hero-btn-secondary),
+#service-redesign #services .ss-stage-tab {
+	min-width: 0;
+	min-height: var(--proto-control-height);
+	font-size: var(--proto-size-sm);
+	line-height: 1.4;
+	white-space: normal;
+}
+
+#service-redesign #services .lk-sstage-arrow-btn {
+	width: var(--proto-control-height);
+	height: var(--proto-control-height);
+	flex-shrink: 0;
+}
+
+/* Application actions use the existing readable action size and touch target.
+   The cover class and anchor type outrank its retained small-button rules. */
+#tv-solution-v1 .sol-cover a:is(.lk-btn-primary, .lk-btn-secondary),
+#tv-solution-v1 a.lk-arena-link {
+	min-height: var(--proto-control-height);
+	font-size: var(--proto-size-sm);
+	line-height: 1.4;
+	white-space: normal;
+}
+
+/* Size the actual nested tab text, including its original numbered label. */
+#tv-solution-v1 #arenas .sol-scale-tabs .lk-arena-tag {
+	font-size: var(--proto-size-sm);
+	line-height: 1.4;
+	-webkit-hyphens: manual;
+	hyphens: manual;
+	overflow-wrap: break-word;
+}
+
+/* The remaining project and product guidance still uses 10–13px labels.
+   Match the existing action size without reducing larger authored targets.
+   The homepage selectors reach its reference chapter, not the resting hero. */
+#tv-rs-page-v1 a.lk-topo-cta,
+#tv-cs-page-v1 a:is(.lk-btn, .cs-cta-primary),
+#installer-journal a:is(.lk-btn-primary, .lk-btn-secondary, .lk-btn-query, .lk-chip),
+#installer-journal #tools .lk-tool-slide-controls button,
+#about-journal a:is(.button, .scene-primary, .scene-card-action),
+#home-a .home-reference-scene a:is(.scene-primary, .scene-card-action),
+#tv-solutions-developers-v1 a:is(.lk-btn-primary, .lk-btn-secondary, .lk-sp-btn-main),
+#tv-solutions-developers-v1 .epc-cover a:is(.lk-btn-intake-primary, .lk-btn-intake-secondary),
+#tv-utility-page-v1 .lk-container a:is(.lk-btn-primary, .lk-btn-secondary, .lk-btn-teal, .lk-btn-hero-ghost, .linker-contact-primary) {
+	max-width: 100%;
+	font-size: var(--proto-size-sm);
+	white-space: normal;
+}
+
+/* These particular targets were 39px/43px; retain all larger native actions. */
+#installer-journal a.lk-chip,
+#installer-journal #tools .lk-tool-slide-controls button,
+#tv-utility-page-v1 .lk-runway-actions a {
+	min-height: var(--proto-control-height);
+}
+
+#installer-journal #tools .lk-tool-slide-controls .lk-tool-prev {
+	min-width: var(--proto-control-height);
 }
 
 /* Installer tool choices, EPC FAQ topics and residential planning choices
@@ -100,8 +178,30 @@ html[lang^="de"]
    Stack its three choices like the existing About phone chapter tabs: the
    full German Kompatibilität label must fit at the action size. */
 @media (max-width: 760px) {
-	#tv-rs-page-v1 #engineering-tools .lk-tooldeck-nav {
+	/* Give the long scale names the same full-width choice as the tool decks. */
+	#tv-solution-v1 #arenas .sol-scale-tabs {
 		grid-template-columns: minmax(0, 1fr);
+	}
+
+	#tv-rs-page-v1 #engineering-tools .lk-tooldeck-nav,
+	#tv-cs-page-v1 #engineering-tools .lk-tooldeck-nav {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	/* The numbered commercial label already contains the complete tab name. */
+	#tv-cs-page-v1 #engineering-tools .lk-tooldeck-btn .tool-name {
+		display: none;
+	}
+
+	#tv-cs-page-v1 #engineering-tools .lk-tooldeck-btn .tool-num {
+		font-size: var(--proto-size-sm);
+		line-height: 1.5;
+	}
+
+	#tv-cs-page-v1 #engineering-tools :is(.lk-tooldeck-btn, .lk-tooldeck-content a) {
+		-webkit-hyphens: manual;
+		hyphens: manual;
+		overflow-wrap: break-word;
 	}
 
 	/* A full-width label leaves room for both languages above the detail. */

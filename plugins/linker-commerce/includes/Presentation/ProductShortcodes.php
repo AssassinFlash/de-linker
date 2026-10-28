@@ -1446,13 +1446,18 @@ final class ProductShortcodes {
 	}
 
 	/**
-	 * What the contract says about one relationship
-	 * (tv_b2b_pdp_pairing_status).
+	 * The relationship's recorded evidence status; qualifications remain below the cards.
 	 *
 	 * @param array<string, mixed> $relationship The registry relationship.
 	 * @param string               $locale       'de' or 'en'.
 	 */
 	private static function pairing_status( array $relationship, string $locale ): string {
+		if ( 'one_way' === ( $relationship['status'] ?? '' ) ) {
+			return __( 'Partially documented', 'linker-commerce' );
+		}
+		if ( 'listed' !== ( $relationship['status'] ?? '' ) ) {
+			return __( 'Compatibility information unavailable', 'linker-commerce' );
+		}
 		$by = trim( Materials::localized_text( $relationship, 'listed_by', $locale ) );
 		if ( '' === $by ) {
 			return __( 'On the compatibility list on file', 'linker-commerce' );
@@ -1765,6 +1770,19 @@ final class ProductShortcodes {
 				'lead' => $id,
 				'ids'  => $members,
 			);
+		}
+		if ( 'name' === $this->filters->requested_sort() ) {
+			// Sort complete families before pagination by the title the card prints.
+			$titles = array();
+			foreach ( $rows as $row ) {
+				$product                = wc_get_product( $row['lead'] );
+				$card                   = $product instanceof \WC_Product ? $this->views->card_titles( $product ) : array();
+				$title                  = (string) ( $card['title'] ?? '' );
+				$titles[ $row['lead'] ] = \count( $row['ids'] ) > 1
+					? self::series_title( (string) ( $card['series'] ?? '' ), (string) ( $card['brand'] ?? '' ), $title )
+					: $title;
+			}
+			usort( $rows, static fn( array $a, array $b ): int => strcasecmp( $titles[ $a['lead'] ], $titles[ $b['lead'] ] ) );
 		}
 		return $rows;
 	}
