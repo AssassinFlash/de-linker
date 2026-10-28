@@ -44,8 +44,8 @@ html[lang^="de"]
 
 /* Keep the German planning preview in the existing video frame, with the
    complete image visible and the original tool action beside it. */
-#tv-rs-page-v1 #engineering-tools #tool-pane-0 .lk-tooldeck-media > img.rs-tool-preview,
-#tv-cs-page-v1 #engineering-tools #tool-pane-0 .lk-tooldeck-media > img.cs-tool-preview {
+#tv-rs-page-v1 #engineering-tools :is(#tool-pane-0, #tool-pane-1) .lk-tooldeck-media > img.rs-tool-preview,
+#tv-cs-page-v1 #engineering-tools :is(#tool-pane-0, #tool-pane-1) .lk-tooldeck-media > img.cs-tool-preview {
 	display: block;
 	width: 100%;
 	height: auto;
@@ -57,7 +57,7 @@ html[lang^="de"]
 
 /* The active tab already names this pane. Its duplicate overlay would cover
    the German preview's first question; other video badges keep their place. */
-#tv-cs-page-v1 #engineering-tools #tool-pane-0 .lk-tooldeck-media:has(> img.cs-tool-preview) > .lk-tooldeck-badge {
+#tv-cs-page-v1 #engineering-tools :is(#tool-pane-0, #tool-pane-1) .lk-tooldeck-media:has(> img.cs-tool-preview) > .lk-tooldeck-badge {
 	display: none;
 }
 
@@ -100,8 +100,25 @@ html[lang^="de"]
    Stack its three choices like the existing About phone chapter tabs: the
    full German Kompatibilität label must fit at the action size. */
 @media (max-width: 760px) {
-	#tv-rs-page-v1 #engineering-tools .lk-tooldeck-nav {
+	#tv-rs-page-v1 #engineering-tools .lk-tooldeck-nav,
+	#tv-cs-page-v1 #engineering-tools .lk-tooldeck-nav {
 		grid-template-columns: minmax(0, 1fr);
+	}
+
+	/* The numbered commercial label already contains the complete tab name. */
+	#tv-cs-page-v1 #engineering-tools .lk-tooldeck-btn .tool-name {
+		display: none;
+	}
+
+	#tv-cs-page-v1 #engineering-tools .lk-tooldeck-btn .tool-num {
+		font-size: var(--proto-size-sm);
+		line-height: 1.5;
+	}
+
+	#tv-cs-page-v1 #engineering-tools :is(.lk-tooldeck-btn, .lk-tooldeck-content a) {
+		-webkit-hyphens: manual;
+		hyphens: manual;
+		overflow-wrap: break-word;
 	}
 
 	/* A full-width label leaves room for both languages above the detail. */
