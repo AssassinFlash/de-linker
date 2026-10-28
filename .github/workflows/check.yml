@@ -25,6 +25,11 @@ jobs:
         with:
           fetch-depth: 3
           ref: ${{ github.sha }}
+          # Scope reads Git objects; retain all Git attributes for diff --check.
+          # checkout automatically requests blob:none when sparse-checkout is set.
+          sparse-checkout: |
+            **/.gitattributes
+          sparse-checkout-cone-mode: false
       - name: Select checks from the actual change
         id: scope
         env:
