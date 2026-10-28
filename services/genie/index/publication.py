@@ -12,12 +12,19 @@ import re
 import tempfile
 import urllib.request
 from collections.abc import Iterator
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from pathlib import Path
 from typing import Any, NotRequired, TypedDict
 
 from index.chunking import MAX_TOKENS, Chunk, Tokenizer
 from index.inventory import doc_type_of, document_kind_of, lang_of
+from linker_genie.certificate_scope import (
+    certificate_boundaries_allow,
+    certificate_document,
+    certificate_id,
+    certificate_text,
+    valid_certificate_scope,
+)
 from linker_genie.embedding import sha256_of
 from linker_genie.publication import PublicationClient, Snapshot
 from linker_genie.source_models import (
@@ -95,6 +102,7 @@ class ScopeProof(TypedDict):
     family_scope: NotRequired[dict[str, Any]]
     author_restrictions: NotRequired[list[dict[str, Any]]]
     warranty_scope: NotRequired[dict[str, Any]]
+    certificate_scope: NotRequired[dict[str, Any]]
 
 
 def _table_columns(
@@ -749,6 +757,131 @@ def scope_proofs(
                 result[chunk.id]["referenced_products"] = references
                 result[chunk.id]["manual_scope"] = declaration
     return result
+
+
+def compile_certificate_subjects(
+    chunks: list[Chunk],
+    source: Snapshot,
+    tokenizer: Tokenizer,
+    max_tokens: int,
+    contexts: dict[str, list[dict[str, Any]]],
+) -> tuple[list[Chunk], dict[str, ScopeProof]]:
+    """Bind a safe certificate excerpt to one current document/model relation."""
+    output: list[Chunk] = []
+    scopes: dict[str, ScopeProof] = {}
+    covered: set[tuple[str, int, str]] = set()
+    originals = {chunk.id: chunk for chunk in chunks}
+    certificates: dict[str, list[tuple[str, dict[str, Any]]]] = {}
+    for did, document in source.documents.items():
+        if certificate_document(document):
+            certificates.setdefault(document["blob_sha256"], []).append((did, document))
+    for chunk in chunks:
+        if (
+            chunk.kind != "text"
+            or chunk.source_picture
+            or chunk.doc_sha256 not in certificates
+        ):
+            continue
+        boundaries = []
+        for boundary in contexts.get(chunk.id, []):
+            prior = originals.get(boundary.get("source_chunk_id", ""))
+            if (
+                prior is None
+                or prior.doc_sha256 != chunk.doc_sha256
+                or prior.kind != "text"
+            ):
+                break
+            boundaries.append(
+                {
+                    "kind": boundary.get("kind"),
+                    "quote": boundary.get("quote"),
+                    "source_chunk_id": prior.id,
+                    "source_page": prior.page,
+                    "source_text": prior.text,
+                    "source_section": prior.section,
+                    "source_headings": list(prior.source_headings),
+                }
+            )
+        else:
+            for did, document in certificates[chunk.doc_sha256]:
+                for pid in document["product_ids"]:
+                    product = source.products.get(pid)
+                    if product is None or (did, pid, chunk.lang) in covered:
+                        continue
+                    model = str(product.get("model", ""))
+                    text = certificate_text(chunk.text, model)
+                    if text is None or not certificate_boundaries_allow(
+                        boundaries,
+                        sha=chunk.doc_sha256,
+                        page=chunk.page,
+                        original=chunk.id,
+                        source_text=chunk.text,
+                        model=model,
+                    ):
+                        continue
+                    cid = certificate_id(
+                        chunk.doc_sha256, chunk.page, model, chunk.id, did, text
+                    )
+                    header = f"{model} | {document['title']} | p. {chunk.page}"
+                    tokens = tokenizer.count(header + "\n" + text)
+                    if tokens > max_tokens:
+                        continue
+                    proof: ScopeProof = {
+                        "product_ids": [pid],
+                        "basis": "certificate_subject",
+                        "source_chunk_ids": list(
+                            dict.fromkeys(
+                                [chunk.id, *(b["source_chunk_id"] for b in boundaries)]
+                            )
+                        ),
+                        "document_ids": [did],
+                        "associations": [
+                            {
+                                "document_id": did,
+                                "document_revision": document["document_revision"],
+                                "blob_sha256": chunk.doc_sha256,
+                                "product_id": pid,
+                                "product_revision": product["product_revision"],
+                            }
+                        ],
+                        "certificate_scope": {
+                            "product_id": pid,
+                            "document_id": did,
+                            "model": model,
+                            "source_sha256": chunk.doc_sha256,
+                            "source_page": chunk.page,
+                            "source_chunk_id": chunk.id,
+                            "source_text": chunk.text,
+                            "author_boundaries": boundaries,
+                            "text_sha256": hashlib.sha256(text.encode()).hexdigest(),
+                        },
+                    }
+                    if not valid_certificate_scope(
+                        proof,
+                        [pid],
+                        source.products,
+                        source.documents,
+                        sha=chunk.doc_sha256,
+                        chunk_id=cid,
+                        text=text,
+                    ):
+                        continue
+                    output.append(
+                        replace(
+                            chunk,
+                            id=cid,
+                            header=header,
+                            text=text,
+                            tokens=tokens,
+                            source_headings=(),
+                            preceding_text=(),
+                            source_cells=(),
+                            source_rows=(),
+                        )
+                    )
+                    scopes[cid] = proof
+                    covered.add((did, pid, chunk.lang))
+    return output, scopes
 
 
 def compile_publication(

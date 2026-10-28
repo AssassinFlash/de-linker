@@ -10,6 +10,7 @@ import hashlib
 from collections.abc import Mapping, Sequence
 from typing import Any
 
+from linker_genie.certificate_scope import valid_certificate_scope
 from linker_genie.family_scope import valid_family_scope
 from linker_genie.source_models import model_pattern
 from linker_genie.source_roles import (
@@ -85,6 +86,23 @@ def authorize_chunk(
     wanted = set(product_ids)
     if not wanted:
         return []
+    if scope is not None and (
+        scope.get("basis") == "certificate_subject" or "certificate_scope" in scope
+    ):
+        if (
+            products is None
+            or documents is None
+            or not valid_certificate_scope(
+                scope,
+                product_ids,
+                products,
+                documents,
+                sha=sha,
+                chunk_id=chunk_id,
+                text=text,
+            )
+        ):
+            return []
     if scope is not None and (
         scope.get("basis") == "warranty_procedure" or "warranty_scope" in scope
     ):

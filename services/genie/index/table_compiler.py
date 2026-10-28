@@ -10,7 +10,12 @@ from typing import Any
 
 from index.chunking import Chunk, Tokenizer
 from index.inventory import document_kind_of
-from index.publication import ScopeProof, _recognized, scope_proofs
+from index.publication import (
+    ScopeProof,
+    _recognized,
+    compile_certificate_subjects,
+    scope_proofs,
+)
 from linker_genie.family_scope import family_id
 from linker_genie.publication import PublicationClient, Snapshot
 from linker_genie.publication_scope import author_scope_allows
@@ -652,4 +657,9 @@ def compile_scopes(
     )
     output.extend(procedures)
     result.update(procedure_scopes)
+    certificates, certificate_scopes = compile_certificate_subjects(
+        relevant, source, tokenizer, max_tokens, contexts
+    )
+    output.extend(certificates)
+    result.update(certificate_scopes)
     return output, result
