@@ -17,7 +17,7 @@ from linker_genie.source_roles import (
     meter_references,
     pack_model_row,
 )
-from linker_genie.table_projection import valid_projection
+from linker_genie.table_projection import external_axis_anchored, valid_projection
 from linker_genie.warranty_scope import valid_warranty_scope
 
 
@@ -71,6 +71,8 @@ def authorize_chunk(
     documents: Mapping[str, Mapping[str, Any]] | None = None,
     chunk_id: str = "",
     text: str = "",
+    external_axis_anchors: Mapping[str, Any] | None = None,
+    require_table_anchor: bool = False,
 ) -> list[dict[str, Any]]:
     """Authorize the complete model set with its explicit association group.
 
@@ -118,13 +120,19 @@ def authorize_chunk(
     if scope is not None and (
         scope.get("basis") == "table_projection" or "table_projection" in scope
     ):
-        if products is None or not valid_projection(
-            scope,
-            product_ids,
-            products,
-            sha=sha,
-            chunk_id=chunk_id,
-            text=text,
+        if (
+            products is None
+            or not valid_projection(
+                scope,
+                product_ids,
+                products,
+                sha=sha,
+                chunk_id=chunk_id,
+                text=text,
+            )
+            or not external_axis_anchored(
+                scope, external_axis_anchors, required=require_table_anchor
+            )
         ):
             return []
     if scope is not None and (

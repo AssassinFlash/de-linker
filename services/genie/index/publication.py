@@ -266,7 +266,11 @@ def _manual_scopes(
     """
     output: dict[str, dict[str, Any]] = {}
     for chunk in chunks:
-        listed = manual_scope_models(chunk.text) if chunk.kind == "text" else set()
+        listed = (
+            manual_scope_models(chunk.text)
+            if chunk.kind == "text" and not chunk.source_picture
+            else set()
+        )
         if not listed:
             continue
         associated = {
@@ -597,14 +601,18 @@ def scope_proofs(
             )
         )
         observed[chunk.id] = matched, blocked
-        positive = matched.intersection(associated)
+        # A model written inside a diagram can prove that diagram's own text;
+        # it does not establish the subject of unrelated body or document text.
+        positive = (
+            matched.intersection(associated) if not chunk.source_picture else set()
+        )
         doc_models.setdefault(chunk.doc_sha256, set()).update(positive)
         section_key = chunk.doc_sha256, chunk.section
         sections.setdefault(section_key, set()).update(positive)
         if positive:
             origins.setdefault(chunk.doc_sha256, []).append(chunk.id)
             section_origins.setdefault(section_key, []).append(chunk.id)
-        if COMMON_SCOPE.search(chunk.text):
+        if not chunk.source_picture and COMMON_SCOPE.search(chunk.text):
             common.setdefault(chunk.doc_sha256, []).append(chunk.id)
         if blocked:
             ambiguous.add(chunk.doc_sha256)

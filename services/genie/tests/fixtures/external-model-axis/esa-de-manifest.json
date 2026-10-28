@@ -1,0 +1,350 @@
+{
+  "schema_version": 1,
+  "compatibility_revision": "e90acaa602fd9b0e23eb24696e48667f81a2cab9ff2c5f409c9ab1706221aa2c",
+  "products": [
+    {
+      "product_id": 3556,
+      "title": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+      "model": "GW10K-ETA-G20",
+      "brand": "GoodWe",
+      "engineering_role": "",
+      "engineering_id": "",
+      "locale_product_ids": {
+        "en": 3556,
+        "de": 6690
+      },
+      "published_locale_ids": [
+        3556,
+        6690
+      ],
+      "documents": [
+        "doc-5b7d05a82b25def9aca482047e1477332783dea07e1424b4cb51e30ab5500ba8"
+      ],
+      "product_revision": "49ea810135c8695cb1a96d44e4fe3d79b8b60ebdf5d5b8dbac1110b1dc6f73a4",
+      "ready": {
+        "knowledge": true,
+        "engineering": true
+      }
+    },
+    {
+      "product_id": 3583,
+      "title": "GoodWe ESA GW8K-ETA-G20 (8 kW three-phase power module)",
+      "model": "GW8K-ETA-G20",
+      "brand": "GoodWe",
+      "engineering_role": "",
+      "engineering_id": "",
+      "locale_product_ids": {
+        "en": 3583,
+        "de": 6666
+      },
+      "published_locale_ids": [
+        3583,
+        6666
+      ],
+      "documents": [
+        "doc-5b7d05a82b25def9aca482047e1477332783dea07e1424b4cb51e30ab5500ba8"
+      ],
+      "product_revision": "b7e2783a827833338e38913a3f9ad503e1e358dab12ae7f1d5c5fe3447aed19e",
+      "ready": {
+        "knowledge": true,
+        "engineering": true
+      }
+    },
+    {
+      "product_id": 3584,
+      "title": "GoodWe ESA GW12K-ETA-G20 (12 kW three-phase power module)",
+      "model": "GW12K-ETA-G20",
+      "brand": "GoodWe",
+      "engineering_role": "",
+      "engineering_id": "",
+      "locale_product_ids": {
+        "en": 3584,
+        "de": 6665
+      },
+      "published_locale_ids": [
+        3584,
+        6665
+      ],
+      "documents": [
+        "doc-5b7d05a82b25def9aca482047e1477332783dea07e1424b4cb51e30ab5500ba8"
+      ],
+      "product_revision": "b7a805b989c1a8994d030aac70ea4d8220559e709fa60bb4bc18b1b95ee36c05",
+      "ready": {
+        "knowledge": true,
+        "engineering": true
+      }
+    },
+    {
+      "product_id": 3585,
+      "title": "GoodWe ESA GW15K-ETA-G20 (15 kW three-phase power module)",
+      "model": "GW15K-ETA-G20",
+      "brand": "GoodWe",
+      "engineering_role": "",
+      "engineering_id": "",
+      "locale_product_ids": {
+        "en": 3585,
+        "de": 6664
+      },
+      "published_locale_ids": [
+        3585,
+        6664
+      ],
+      "documents": [
+        "doc-5b7d05a82b25def9aca482047e1477332783dea07e1424b4cb51e30ab5500ba8"
+      ],
+      "product_revision": "912ead8b476cd96c2cc36ca5a1694facfa409f8b01c8b81fc79669984bd8895a",
+      "ready": {
+        "knowledge": true,
+        "engineering": true
+      }
+    },
+    {
+      "product_id": 3611,
+      "title": "GoodWe GW6.0-BAT-D-G20 (ESA battery module, 6.0 kWh)",
+      "model": "GW6.0-BAT-D-G20",
+      "brand": "GoodWe",
+      "engineering_role": "",
+      "engineering_id": "",
+      "locale_product_ids": {
+        "en": 3611,
+        "de": 6650
+      },
+      "published_locale_ids": [
+        3611,
+        6650
+      ],
+      "documents": [
+        "doc-5b7d05a82b25def9aca482047e1477332783dea07e1424b4cb51e30ab5500ba8"
+      ],
+      "product_revision": "b38c4321ad9fd40c203e36e2a954136338f1a9b21cbf2a9187aeb41e23300c7b",
+      "ready": {
+        "knowledge": true,
+        "engineering": true
+      }
+    },
+    {
+      "product_id": 3612,
+      "title": "GoodWe GW9.0-BAT-D-G20 (ESA battery module, 9.0 kWh)",
+      "model": "GW9.0-BAT-D-G20",
+      "brand": "GoodWe",
+      "engineering_role": "",
+      "engineering_id": "",
+      "locale_product_ids": {
+        "en": 3612,
+        "de": 6649
+      },
+      "published_locale_ids": [
+        3612,
+        6649
+      ],
+      "documents": [
+        "doc-5b7d05a82b25def9aca482047e1477332783dea07e1424b4cb51e30ab5500ba8"
+      ],
+      "product_revision": "3b3afb9dbc51cc638ec46affd3436456c185a2cc4e57acc96b65bcae32a75c38",
+      "ready": {
+        "knowledge": true,
+        "engineering": true
+      }
+    },
+    {
+      "product_id": 6512,
+      "title": "GoodWe ESA GW5K-ETA-G20 (5 kW three-phase power module)",
+      "model": "GW5K-ETA-G20",
+      "brand": "GoodWe",
+      "engineering_role": "",
+      "engineering_id": "",
+      "locale_product_ids": {
+        "en": 6512,
+        "de": 6583
+      },
+      "published_locale_ids": [
+        6512,
+        6583
+      ],
+      "documents": [
+        "doc-5b7d05a82b25def9aca482047e1477332783dea07e1424b4cb51e30ab5500ba8"
+      ],
+      "product_revision": "ddef23241e1f4bc8d5672117e5ad8323311c3968885b59e282548299c6e796b5",
+      "ready": {
+        "knowledge": true,
+        "engineering": true
+      }
+    },
+    {
+      "product_id": 6513,
+      "title": "GoodWe ESA GW6K-ETA-G20 (6 kW three-phase power module)",
+      "model": "GW6K-ETA-G20",
+      "brand": "GoodWe",
+      "engineering_role": "",
+      "engineering_id": "",
+      "locale_product_ids": {
+        "en": 6513,
+        "de": 6582
+      },
+      "published_locale_ids": [
+        6513,
+        6582
+      ],
+      "documents": [
+        "doc-5b7d05a82b25def9aca482047e1477332783dea07e1424b4cb51e30ab5500ba8"
+      ],
+      "product_revision": "df472bafb94ad328f7d12659cd644dffde7b6940a20f29ab24798b4a6ae727de",
+      "ready": {
+        "knowledge": true,
+        "engineering": true
+      }
+    },
+    {
+      "product_id": 6515,
+      "title": "GoodWe ESA GW20K-ETA-G20 (20 kW three-phase power module)",
+      "model": "GW20K-ETA-G20",
+      "brand": "GoodWe",
+      "engineering_role": "",
+      "engineering_id": "",
+      "locale_product_ids": {
+        "en": 6515,
+        "de": 6580
+      },
+      "published_locale_ids": [
+        6515,
+        6580
+      ],
+      "documents": [
+        "doc-5b7d05a82b25def9aca482047e1477332783dea07e1424b4cb51e30ab5500ba8"
+      ],
+      "product_revision": "84b0dc9ba48883796c04cc073d21d65326a57f0dc39dcb35fb974bada0850cc2",
+      "ready": {
+        "knowledge": true,
+        "engineering": true
+      }
+    },
+    {
+      "product_id": 6516,
+      "title": "GoodWe ESA GW25K-ETA-G20 (25 kW three-phase power module)",
+      "model": "GW25K-ETA-G20",
+      "brand": "GoodWe",
+      "engineering_role": "",
+      "engineering_id": "",
+      "locale_product_ids": {
+        "en": 6516,
+        "de": 6579
+      },
+      "published_locale_ids": [
+        6516,
+        6579
+      ],
+      "documents": [
+        "doc-5b7d05a82b25def9aca482047e1477332783dea07e1424b4cb51e30ab5500ba8"
+      ],
+      "product_revision": "0c3296c2b163f87bf46833590b12f45221761db846e52801e6b27f0208e8083a",
+      "ready": {
+        "knowledge": true,
+        "engineering": true
+      }
+    },
+    {
+      "product_id": 6517,
+      "title": "GoodWe ESA GW29.999K-ETA-G20 (29.999 kW three-phase power module)",
+      "model": "GW29.999K-ETA-G20",
+      "brand": "GoodWe",
+      "engineering_role": "",
+      "engineering_id": "",
+      "locale_product_ids": {
+        "en": 6517,
+        "de": 6578
+      },
+      "published_locale_ids": [
+        6517,
+        6578
+      ],
+      "documents": [
+        "doc-5b7d05a82b25def9aca482047e1477332783dea07e1424b4cb51e30ab5500ba8"
+      ],
+      "product_revision": "2c83b0cc6f29277ef635bb28df13ee822b8ea68bd69a24d68aa883f788ef05b6",
+      "ready": {
+        "knowledge": true,
+        "engineering": true
+      }
+    },
+    {
+      "product_id": 6519,
+      "title": "GoodWe GW5.1-BAT-D-G20 (ESA battery module, 5.12 kWh)",
+      "model": "GW5.1-BAT-D-G20",
+      "brand": "GoodWe",
+      "engineering_role": "",
+      "engineering_id": "",
+      "locale_product_ids": {
+        "en": 6519,
+        "de": 6576
+      },
+      "published_locale_ids": [
+        6519,
+        6576
+      ],
+      "documents": [
+        "doc-5b7d05a82b25def9aca482047e1477332783dea07e1424b4cb51e30ab5500ba8"
+      ],
+      "product_revision": "aca41b7d052e95eb3cd8b407c005189a584852f03c3cdadc37f6ed6f1a894ead",
+      "ready": {
+        "knowledge": true,
+        "engineering": true
+      }
+    },
+    {
+      "product_id": 6520,
+      "title": "GoodWe GW8.3-BAT-D-G20 (ESA battery module, 8.32 kWh)",
+      "model": "GW8.3-BAT-D-G20",
+      "brand": "GoodWe",
+      "engineering_role": "",
+      "engineering_id": "",
+      "locale_product_ids": {
+        "en": 6520,
+        "de": 6575
+      },
+      "published_locale_ids": [
+        6520,
+        6575
+      ],
+      "documents": [
+        "doc-5b7d05a82b25def9aca482047e1477332783dea07e1424b4cb51e30ab5500ba8"
+      ],
+      "product_revision": "76b2a707752d01cfc1f713aba00a7bfc80367cff84d5f2a80b526a1cb9b5b3aa",
+      "ready": {
+        "knowledge": false,
+        "engineering": true
+      }
+    }
+  ],
+  "documents": [
+    {
+      "document_id": "doc-5b7d05a82b25def9aca482047e1477332783dea07e1424b4cb51e30ab5500ba8",
+      "blob_sha256": "ce3e2552a6a21ff8b78988006f344619776c7cf01796cf172338040119569f9a",
+      "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_Datasheet_EMEA-DE_V1.1.pdf",
+      "aliases": [
+        "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_Datasheet_EMEA-DE_V1.1.pdf"
+      ],
+      "product_ids": [
+        3556,
+        3583,
+        3584,
+        3585,
+        3611,
+        3612,
+        6512,
+        6513,
+        6515,
+        6516,
+        6517,
+        6519,
+        6520
+      ],
+      "title": "GoodWe ESA Serie 5–30 kW datasheet (DE)",
+      "type": "datasheet",
+      "lang": "DE",
+      "role": "datasheet",
+      "citation_aliases": [],
+      "document_revision": "e2a622045c45ed3d927be99d576e47c4e7d953d383c6e44d34c2bc33cb187182"
+    }
+  ],
+  "source_revision": "70bee27911b6f152da6295cb68500b9f6701686a8144955c80066719d113449d"
+}

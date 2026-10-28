@@ -20,9 +20,11 @@ from pathlib import Path
 import sqlite_vec
 
 from index import corpus
+from index.table_compiler import external_axis_anchors
 from linker_genie.publication import Snapshot
 from linker_genie.publication_scope import authorize_chunk, table_header
 from linker_genie.retrieval import SCHEMA_VERSION, is_passage
+from linker_genie.table_projection import unqualified_table_columns
 
 SCHEMA = """
 CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
@@ -139,6 +141,34 @@ def export(directory: Path, path: Path) -> None:
         # release. Materialization success is independent of semantic coverage:
         # deterministic lack of a proven passage must not rebuild forever.
         chunks_by_id = {chunk.id: chunk for chunk, _ in corpus.read_chunks(directory)}
+        column_texts = unqualified_table_columns(
+            [
+                (c.doc_sha256, c.page, c.kind, c.id, c.text)
+                for c in chunks_by_id.values()
+            ],
+            proof.get("chunk_scopes", {}),
+        )
+        projected_tables = {
+            (projection.get("source_sha256"), projection.get("source_table"))
+            for scope in proof.get("chunk_scopes", {}).values()
+            if isinstance(scope, dict)
+            for projection in [scope.get("table_projection")]
+            if isinstance(projection, dict)
+            and isinstance(projection.get("source_sha256"), str)
+            and isinstance(projection.get("source_table"), str)
+        }
+        axis_anchors = {
+            cid: anchor
+            for cid, anchor in external_axis_anchors(
+                list(chunks_by_id.values())
+            ).items()
+            if (anchor["source_sha256"], anchor["source_table"]) in projected_tables
+        }
+        if axis_anchors:
+            db.execute(
+                "INSERT INTO meta (key, value) VALUES (?, ?)",
+                ("external_axis_anchors", json.dumps(axis_anchors, sort_keys=True)),
+            )
         covered: dict[int, set[str]] = {}
         by_id = {d["document_id"]: d for d in manifest.get("documents", [])}
         revisions = {
@@ -162,6 +192,12 @@ def export(directory: Path, path: Path) -> None:
             if chunk is not None and ids and is_passage(chunk.text):
                 scope = proof.get("chunk_scopes", {}).get(cid)
                 if (
+                    scope
+                    and scope.get("basis") == "table_columns"
+                    and not column_texts.get(cid)
+                ):
+                    continue
+                if (
                     table_header(scope, ids, products, chunk_id=cid, text=chunk.text)
                     is None
                 ):
@@ -175,6 +211,8 @@ def export(directory: Path, path: Path) -> None:
                     documents=by_id,
                     chunk_id=cid,
                     text=chunk.text,
+                    external_axis_anchors=axis_anchors,
+                    require_table_anchor=True,
                 )
                 for item in supported:
                     covered.setdefault(item["product_id"], set()).add(

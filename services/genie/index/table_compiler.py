@@ -30,6 +30,7 @@ from linker_genie.table_projection import (
     projection_id,
     read_cells,
     render_projection,
+    row_footnotes,
     safe_rows,
 )
 
@@ -53,7 +54,20 @@ def _author_contexts(
     labels = models.union(statuses)
     families = family_labels(labels)
     shapes = model_shapes(labels)
+    rating_range = (
+        r"\d+(?:[.,]\d+)?\s*[-–]\s*\d+(?:[.,]\d+)?\s*"
+        r"(?:kWh|MWh|Wh|kW|MW|W)"
+    )
+    ratings = re.compile(
+        r"(?<![\w./-])"
+        + rating_range
+        + r"(?:\s*/\s*"
+        + rating_range
+        + r")*(?![\w./-])",
+        re.IGNORECASE,
+    )
     active: dict[str, list[dict[str, Any]]] = {}
+    figure_active: dict[str, tuple[str, list[dict[str, Any]]]] = {}
     previous: dict[str, str] = {}
     paths: dict[str, tuple[int, ...]] = {}
     output = {}
@@ -64,14 +78,21 @@ def _author_contexts(
         if not headings and chunk.section != previous.get(sha):
             headings = (chunk.section,) if chunk.section else ()
         previous[sha] = chunk.section
+        outer: list[dict[str, Any]] | None = None
         for kind, text in [
             *(("heading", h) for h in headings),
             ("declaration", chunk.text),
         ]:
-            if kind == "declaration" and (
-                chunk.kind != "text" or SCOPE_DECLARATION.search(text) is None
-            ):
-                continue
+            if kind == "declaration":
+                if chunk.source_picture:
+                    # A figure's own labels can restrict its later fragments,
+                    # but must never restrict the surrounding document.
+                    outer = list(boundaries)
+                    previous_figure = figure_active.get(sha)
+                    if previous_figure and previous_figure[0] == chunk.source_picture:
+                        boundaries.extend(previous_figure[1])
+                elif chunk.kind != "text" or SCOPE_DECLARATION.search(text) is None:
+                    continue
             if kind == "heading":
                 numbered = re.match(r"^\s*(\d+(?:\.\d+)*)(?:[.)]\s*|\s+)", text)
                 if numbered is not None:
@@ -131,25 +152,44 @@ def _author_contexts(
             contained = {
                 label for label in labels if label and model_pattern(label).search(text)
             }
-            if contained or (
-                not broad_family
-                and unknown_models(
-                    text,
-                    contained,
-                    shapes,
-                    section=kind == "heading",
-                    families=families,
-                )
-            ):
-                boundaries.append(
-                    {
-                        "kind": kind,
-                        "quote": text,
-                        "source_chunk_id": chunk.id,
-                        "heading_path": list(paths.get(sha, ())),
-                    }
-                )
-        active[sha] = boundaries
+            unknown = unknown_models(
+                text, contained, shapes, section=kind == "heading", families=families
+            )
+            if contained or (not broad_family and unknown):
+                boundary: dict[str, Any] = {
+                    "kind": kind,
+                    "quote": text,
+                    "source_chunk_id": chunk.id,
+                    "heading_path": list(paths.get(sha, ())),
+                }
+                # A generic cover's unit-bearing engineering range is not a
+                # model identity. Keep it as a restriction on ordinary content;
+                # only a separately proven original model axis can supersede it.
+                if (
+                    kind == "heading"
+                    and chunk.page == 1
+                    and not contained
+                    and unknown
+                    and re.search(r"\bAll[- ]in[- ]One\b", text, re.IGNORECASE)
+                    and SCOPE_DECLARATION.search(text) is None
+                    and ratings.search(text) is not None
+                    and not unknown_models(
+                        ratings.sub(" ", text),
+                        contained,
+                        shapes,
+                        section=True,
+                        families=families,
+                    )
+                ):
+                    boundary["rating_cover"] = True
+                boundaries.append(boundary)
+        if chunk.source_picture:
+            assert outer is not None
+            figure_active[sha] = (chunk.source_picture, boundaries[len(outer) :])
+            active[sha] = outer
+        else:
+            figure_active.pop(sha, None)
+            active[sha] = boundaries
         if boundaries:
             output[chunk.id] = boundaries
     return output
@@ -306,7 +346,14 @@ def _pack_rows(
     """Keep source row boundaries; an oversized field is never silently cut."""
     groups: list[list[int]] = []
     current: list[int] = []
+    current_notes: tuple[str, ...] | None = None
     for row in rows:
+        footnotes = row_footnotes(cells, row, column)
+        assert footnotes is not None
+        notes = tuple(sorted(note["text"] for note in footnotes))
+        if current and notes != current_notes:
+            groups.append(current)
+            current = []
         text = render_projection(cells, column, [*current, row])
         assert text is not None
         if tokenizer.count(header + "\n" + text) > max_tokens:
@@ -318,9 +365,105 @@ def _pack_rows(
             if tokenizer.count(header + "\n" + text) > max_tokens:
                 continue
         current.append(row)
+        current_notes = notes
     if current:
         groups.append(current)
     return groups
+
+
+def _axis_source(
+    table: Chunk, cells: Sequence[SourceCell], by_id: dict[str, Chunk]
+) -> list[dict[str, str]] | None:
+    """Consecutive same-page text chunks must end with the native header."""
+    external = [cell["external_axis"] for cell in cells if "external_axis" in cell]
+    if len(external) != 1:
+        return None
+    wanted = external[0]["source_text"]
+    pieces: list[Chunk] = []
+    for cid in reversed(table.preceding_text):
+        origin = by_id.get(cid)
+        if (
+            origin is None
+            or origin.page != table.page
+            or origin.doc_sha256 != table.doc_sha256
+            or origin.kind != "text"
+        ):
+            break
+        pieces.insert(0, origin)
+        joined = "\n".join(part.text for part in pieces)
+        if len(joined) < len(wanted):
+            continue
+        if (
+            joined.endswith(wanted)
+            and joined.count(wanted) == 1
+            and (len(joined) == len(wanted) or joined[-len(wanted) - 1] == "\n")
+        ):
+            return [{"chunk_id": part.id, "text": part.text} for part in pieces]
+        break
+    return None
+
+
+def _footnote_sources(
+    table: Chunk, cells: Sequence[SourceCell], by_id: dict[str, Chunk]
+) -> list[dict[str, Any]]:
+    """Resolve each complete note to its own original, same-document chunk."""
+    external = next(
+        (cell["external_axis"] for cell in cells if "external_axis" in cell), None
+    )
+    if external is None:
+        return []
+    sources = []
+    for note in external["footnotes"]:
+        matches = [
+            chunk
+            for chunk in by_id.values()
+            if chunk.doc_sha256 == table.doc_sha256
+            and chunk.page == note["pdf_span"]["page"]
+            and chunk.kind == "text"
+            and not chunk.source_picture
+            and chunk.lang in {"en", "de"}
+            and chunk.text.splitlines().count(note["text"]) == 1
+        ]
+        if len(matches) == 1:
+            source = matches[0]
+            sources.append(
+                {
+                    "chunk_id": source.id,
+                    "page": source.page,
+                    "text": source.text,
+                    "source_id": note["source_id"],
+                    "quote": note["text"],
+                    "lang": source.lang,
+                }
+            )
+    return sources
+
+
+def external_axis_anchors(chunks: list[Chunk]) -> dict[str, dict[str, Any]]:
+    """Derive canonical table anchors from original chunks, not projections."""
+    by_id = {chunk.id: chunk for chunk in chunks}
+    anchors: dict[str, dict[str, Any]] = {}
+    for chunk in chunks:
+        if chunk.kind != "table" or not chunk.source_table:
+            continue
+        cells = read_cells(chunk.source_cells)
+        if cells is None:
+            continue
+        external = any("external_axis" in cell for cell in cells)
+        origin = _axis_source(chunk, cells, by_id) if external else []
+        if external and origin is None:
+            continue
+        anchors[chunk.id] = {
+            "source_sha256": chunk.doc_sha256,
+            "source_page": chunk.page,
+            "source_table": chunk.source_table,
+            "source_cells_sha256": cells_digest(cells),
+            "axis_source": origin,
+            "footnote_sources": _footnote_sources(chunk, cells, by_id)
+            if external
+            else [],
+        }
+    return anchors
 
 
 def compile_scopes(
@@ -348,6 +491,7 @@ def compile_scopes(
         else:
             del result[cid]
     output = list(chunks)
+    by_id = {chunk.id: chunk for chunk in relevant}
     groups: dict[tuple[str, str], list[Chunk]] = {}
     for chunk in relevant:
         if chunk.kind == "table" and chunk.source_table:
@@ -366,9 +510,34 @@ def compile_scopes(
             or any(part.page != first.page for part in parts)
         ):
             continue
+        if any(
+            span["source_sha256"] != sha or span["page"] != first.page
+            for cell in cells
+            for span in [
+                *cell.get("model_spans", []),
+                *cell.get("external_axis", {}).get("model_spans", []),
+            ]
+        ):
+            continue
+        if any(
+            note["pdf_span"]["source_sha256"] != sha
+            for cell in cells
+            for note in cell.get("external_axis", {}).get("footnotes", [])
+        ):
+            continue
         axis = model_axis(cells)
         if axis is None:
             continue
+        external = [cell["external_axis"] for cell in cells if "external_axis" in cell]
+        axis_source: list[dict[str, str]] | None = None
+        if external:
+            # The physical header is the original native text immediately before
+            # this table, not a matching model string elsewhere in the document.
+            axis_source = _axis_source(first, cells, by_id)
+            if axis_source is None:
+                continue
+        note_sources = _footnote_sources(first, cells, by_id) if external else []
+        source_quotes = {note["quote"] for note in note_sources}
         # Keep proven legacy whole passages in place. A projection does not
         # weaken their all-column current-association rule or reuse their IDs.
         known = [*current, *statuses, *axis]
@@ -377,7 +546,7 @@ def compile_scopes(
                 row
                 for cell in cells
                 for row in range(cell["row_start"], cell["row_end"])
-                if row > 0
+                if row > 0 or (external and external[0]["first_row_is_data"])
             }
         )
         for column, label in enumerate(axis, 1):
@@ -391,9 +560,18 @@ def compile_scopes(
             if not proof["associations"]:
                 continue
             if first.id in contexts:
-                proof = _constrain(proof, contexts[first.id])
-                if not author_scope_allows(proof, {pid}, source.products):
-                    continue
+                # The exact, physically proven table axis is narrower than an
+                # unqualified engineering-range cover heading. Other authored
+                # model restrictions remain authoritative.
+                boundaries = [
+                    boundary
+                    for boundary in contexts[first.id]
+                    if boundary.get("rating_cover") is not True
+                ]
+                if boundaries:
+                    proof = _constrain(proof, boundaries)
+                    if not author_scope_allows(proof, {pid}, source.products):
+                        continue
             model = str(source.products[pid]["model"])
             header = f"{model} | p. {first.page}"
             safe = [
@@ -401,10 +579,22 @@ def compile_scopes(
                 for row in native_rows
                 if render_projection(cells, column, [row]) is not None
                 and safe_rows(cells, column, [row], model, known)
+                and all(
+                    note["text"] in source_quotes
+                    for note in row_footnotes(cells, row, column) or []
+                )
             ]
             for rows in _pack_rows(cells, column, safe, header, tokenizer, max_tokens):
                 text = render_projection(cells, column, rows)
                 assert text is not None
+                used_quotes = {
+                    note["text"]
+                    for row in rows
+                    for note in row_footnotes(cells, row, column) or []
+                }
+                used_sources = [
+                    note for note in note_sources if note["quote"] in used_quotes
+                ]
                 cid = projection_id(sha, first.page, table, model, text)
                 output.append(
                     replace(
@@ -421,7 +611,12 @@ def compile_scopes(
                     **proof,
                     "source_chunk_ids": list(
                         dict.fromkeys(
-                            [*proof["source_chunk_ids"], *(part.id for part in parts)]
+                            [
+                                *proof["source_chunk_ids"],
+                                *(part["chunk_id"] for part in axis_source or []),
+                                *(note["chunk_id"] for note in used_sources),
+                                *(part.id for part in parts),
+                            ]
                         )
                     ),
                     "table_projection": {
@@ -435,6 +630,8 @@ def compile_scopes(
                         "product_id": pid,
                         "model": model,
                         "text_sha256": hashlib.sha256(text.encode()).hexdigest(),
+                        **({"axis_source": axis_source} if axis_source else {}),
+                        **({"footnote_sources": used_sources} if used_sources else {}),
                     },
                 }
     manual_units, manual_scopes = _family_units(

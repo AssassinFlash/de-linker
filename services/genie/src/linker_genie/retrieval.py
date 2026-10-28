@@ -38,13 +38,17 @@ import sqlite_vec
 from linker_genie.embedding import Embedder, query_encoder
 from linker_genie.preparation import RUNTIME_SERVING_REVISION
 from linker_genie.publication_scope import authorize_chunk, table_header
+from linker_genie.table_projection import (
+    native_chunk_id_matches,
+    unqualified_table_columns,
+)
 from linker_genie.warranty_scope import CONDITIONAL_CLAIMS_NOTE
 
 # The release layout of ops/publish_index.py: /opt/linker-genie/index/<version>/ and a
 # `current` link. GENIE_INDEX points elsewhere (a local build, a test fixture).
 DEFAULT_INDEX = Path("/opt/linker-genie/index/current/index.sqlite")
 # The index layout this module reads; index/store.py writes the same number.
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 # How deep each ranking reads: the vector ranking's KNN window, and BM25's when it
 # stands in for it. The spec's top-30 survived the bake-off's fusion experiments:
 # fusing the two at this depth still lost to the vector ranking alone
@@ -88,6 +92,15 @@ log = logging.getLogger(__name__)
 _TERM = re.compile(r"\w(?:[\w./-]*\w)?")
 
 
+class Qualification(TypedDict):
+    """A verified original condition and its own source page."""
+
+    quote: str
+    page: int
+    chunk_id: str
+    lang: str
+
+
 @dataclass(frozen=True)
 class DocumentHit:
     """One retrieved chunk and the document page it comes from."""
@@ -106,6 +119,8 @@ class DocumentHit:
     document_revision: str = ""
     product_ids: tuple[int, ...] = ()
     scope_note: str = ""
+    qualifications: tuple[Qualification, ...] = ()
+    qualification_required: bool = False
 
     @property
     def link(self) -> str:
@@ -143,7 +158,10 @@ class Permit(TypedDict):
     url: str
     product_ids: list[int]
     table_header: NotRequired[str]
+    table_text: NotRequired[str]
     scope_note: NotRequired[str]
+    qualifications: NotRequired[list[Qualification]]
+    qualification_required: NotRequired[bool]
 
 
 class _Auto:
@@ -169,10 +187,16 @@ class DocumentIndex:
         sqlite_vec.load(self._db)
         self._db.enable_load_extension(False)
         meta = dict(self._db.execute("SELECT key, value FROM meta").fetchall())
-        if int(meta.get("schema_version", "0")) not in (1, SCHEMA_VERSION):
+        self._schema_version = int(meta.get("schema_version", "0"))
+        if self._schema_version not in (1, 2, SCHEMA_VERSION):
             raise RuntimeError(
                 f"{path}: schema {meta.get('schema_version')}, this code reads {SCHEMA_VERSION}"
             )
+        # A pre-release schema-2 build may already have detached-axis anchors;
+        # their presence also makes the stricter table contract mandatory.
+        self._table_anchors_required = self._schema_version >= 3 or (
+            "external_axis_anchors" in meta
+        )
         self.version = str(meta.get("version", ""))
         self.source_revision = str(meta.get("source_revision", ""))
         self._recipe_revision = str(meta.get("recipe_revision", ""))
@@ -525,8 +549,12 @@ class DocumentIndex:
             if row is None or row[0] not in permits:
                 continue
             permit = permits[row[0]]
+            qualifications = permit.get("qualifications", [])
+            required = permit.get("qualification_required", False)
+            if required != bool(qualifications):
+                continue
             header = permit.get("table_header", "")
-            text = hit.text
+            text = permit.get("table_text", hit.text)
             if header and not text.startswith(header + "\n"):
                 text = header + "\n" + text
             output.append(
@@ -538,6 +566,8 @@ class DocumentIndex:
                     product_ids=tuple(permit["product_ids"]),
                     text=text,
                     scope_note=permit.get("scope_note", ""),
+                    qualifications=tuple(qualifications),
+                    qualification_required=required,
                 )
             )
         return output
@@ -666,6 +696,15 @@ class DocumentIndex:
             if "chunk_scopes" in tables
             else {}
         )
+        axis_anchors = self._external_axis_anchors()
+        column_texts = unqualified_table_columns(
+            list(
+                self._db.execute(
+                    "SELECT doc_sha256,page,kind,id,text FROM chunks ORDER BY rowid"
+                )
+            ),
+            scopes,
+        )
         for row, sha, raw_ids, cid, text in self._db.execute(
             "SELECT c.rowid, c.doc_sha256, cp.product_ids, c.id, c.text FROM chunks c JOIN chunk_products cp ON cp.chunk_id=c.id"
         ):
@@ -681,6 +720,8 @@ class DocumentIndex:
                 documents=snapshot.documents,
                 chunk_id=cid,
                 text=text,
+                external_axis_anchors=axis_anchors,
+                require_table_anchor=self._table_anchors_required,
             )
             if authorized:
                 header = table_header(
@@ -692,6 +733,9 @@ class DocumentIndex:
                 )
                 if header is None:
                     continue
+                scope = scopes.get(cid, {})
+                if scope.get("basis") == "table_columns" and not column_texts.get(cid):
+                    continue
                 association = authorized[0]
                 output[row] = {
                     "document_id": str(association["document_id"]),
@@ -700,9 +744,102 @@ class DocumentIndex:
                     "product_ids": sorted(ids),
                     "table_header": header,
                 }
+                if cid in column_texts:
+                    output[row]["table_text"] = column_texts[cid]
                 if scopes.get(cid, {}).get("basis") == "warranty_procedure":
                     output[row]["scope_note"] = CONDITIONAL_CLAIMS_NOTE
+                projection = scopes.get(cid, {}).get("table_projection", {})
+                if isinstance(projection, dict) and projection.get("footnote_sources"):
+                    output[row]["qualifications"] = [
+                        Qualification(
+                            quote=source["quote"],
+                            page=source["page"],
+                            chunk_id=source["chunk_id"],
+                            lang=source["lang"],
+                        )
+                        for source in projection["footnote_sources"]
+                    ]
+                    output[row]["qualification_required"] = True
         return output
+
+    def _external_axis_anchors(self) -> dict[str, Any]:
+        """Read independent table digests and confirm the original text chunks."""
+        row = self._db.execute(
+            "SELECT value FROM meta WHERE key = 'external_axis_anchors'"
+        ).fetchone()
+        if row is None:
+            return {}
+        try:
+            anchors = json.loads(row[0])
+        except (TypeError, ValueError):
+            return {}
+        if not isinstance(anchors, dict):
+            return {}
+        verified: dict[str, Any] = {}
+        for table_id, anchor in anchors.items():
+            if not isinstance(table_id, str) or not isinstance(anchor, dict):
+                continue
+            origins = anchor.get("axis_source")
+            sha, page = anchor.get("source_sha256"), anchor.get("source_page")
+            if (
+                not isinstance(sha, str)
+                or type(page) is not int
+                or not isinstance(origins, list)
+                or any(
+                    not isinstance(origin, dict)
+                    or not isinstance(origin.get("chunk_id"), str)
+                    or not isinstance(origin.get("text"), str)
+                    for origin in origins
+                )
+            ):
+                continue
+            table = self._db.execute(
+                "SELECT doc_sha256,page,kind,text FROM chunks WHERE id = ?", (table_id,)
+            ).fetchone()
+            if (
+                table is None
+                or table[:3] != (sha, page, "table")
+                or not native_chunk_id_matches(sha, page, "table", table[3], table_id)
+            ):
+                continue
+            if any(
+                self._db.execute(
+                    "SELECT doc_sha256,page,kind,text FROM chunks WHERE id = ?",
+                    (origin["chunk_id"],),
+                ).fetchone()
+                != (sha, page, "text", origin["text"])
+                or not native_chunk_id_matches(
+                    sha, page, "text", origin["text"], origin["chunk_id"]
+                )
+                for origin in origins
+            ):
+                continue
+            notes = anchor.get("footnote_sources", [])
+            if not isinstance(notes, list):
+                notes = []
+            verified_notes = []
+            for note in notes:
+                if (
+                    not isinstance(note, dict)
+                    or type(note.get("page")) is not int
+                    or not isinstance(note.get("chunk_id"), str)
+                    or not isinstance(note.get("text"), str)
+                    or not isinstance(note.get("quote"), str)
+                    or note.get("lang") not in ("en", "de")
+                    or note["text"].splitlines().count(note["quote"]) != 1
+                    or not native_chunk_id_matches(
+                        sha, note["page"], "text", note["text"], note["chunk_id"]
+                    )
+                    or self._db.execute(
+                        "SELECT doc_sha256,page,kind,text,lang FROM chunks WHERE id = ?",
+                        (note["chunk_id"],),
+                    ).fetchone()
+                    != (sha, note["page"], "text", note["text"], note["lang"])
+                ):
+                    continue
+                verified_notes.append(note)
+            verified[table_id] = {**anchor, "footnote_sources": verified_notes}
+        return verified
 
     def chunks(self, chunk_ids: Sequence[str], lang: str) -> list[DocumentHit]:
         """The chunks with these IDs, in the order given; unknown IDs are left out."""

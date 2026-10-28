@@ -71,8 +71,8 @@ from linker_genie.facts import (
     stock_rows,
 )
 from linker_genie.failure import FailureClass
-from linker_genie.figures import is_code
-from linker_genie.hydrate import hydrate
+from linker_genie.figures import chunk_of, is_code
+from linker_genie.hydrate import PLACEHOLDER, hydrate
 from linker_genie.route import (
     SEARCH_LIMIT,
     ModelLookup,
@@ -1444,6 +1444,8 @@ def seal(
     route: Route | None,
     question: str,
     page_type: str | None,
+    *,
+    original: TurnOutput | None = None,
 ) -> TurnOutput:
     """Drop unlicensed bare numbers and write the sentences a row requires.
 
@@ -1476,19 +1478,25 @@ def seal(
         return output
     from linker_genie import ground as grounding
 
+    scoped = _seal_sources(original or output, facts, route)
+    source_texts = {
+        fact_id: fact
+        for fact_id, fact in scoped.facts.items()
+        if fact_id.endswith(".text")
+    }
+    blob = "\n".join(fact.value for fact in source_texts.values())
     if _clearance_question(question):
         stripped = grounding.strip_unlicensed_numbers(
-            output, grounding.clearance_allowance(facts, question)
+            output,
+            grounding.clearance_allowance(TurnFacts(facts=source_texts), question),
         )
-        return _append_clearance(stripped, grounding.document_blob(facts))
+        return _append_clearance(stripped, blob)
     if _document_like(route, question):
         stripped = grounding.strip_detached_code_tails(
             output, grounding.code_tail_blob(facts)
         )
         rebound = grounding.rebind_figures_past_decimal(stripped)
-        return _append_document_sentences(
-            rebound, grounding.document_blob(facts), question
-        )
+        return _append_document_sentences(rebound, scoped, blob, question)
     if (
         route.name in _STRIP_ROUTES
         and not route.stock_beside
@@ -1496,6 +1504,76 @@ def seal(
     ):
         return _seal_attachment_figures(output, facts, question)
     return output
+
+
+def _seal_sources(output: TurnOutput, facts: TurnFacts, route: Route) -> TurnFacts:
+    """Only the first answer's cited, unqualified chunks for one current model.
+
+    Automatic sentences are appended to the first text block. They may use
+    that block's actual chunk refs and figure placeholders; when it names none,
+    explicit document blocks can establish the source. Multiple chunks are
+    accepted only when every chunk is bound to the same single product, and
+    all chunks refer to the same PDF. A multi-model table is not a single
+    product projection even when the question names one of its models.
+    A condition-bound projection is never a source for bare synthesized values.
+    """
+    first = next(
+        (block for block in output.blocks if isinstance(block, TextBlock)), None
+    )
+    if first is None:
+        return TurnFacts()
+    refs: list[str] = []
+    for ref in [*first.refs, *PLACEHOLDER.findall(first.text)]:
+        chunk = chunk_of(ref) or ref
+        if chunk in facts.knowledge_products:
+            refs.append(chunk)
+    if not refs:
+        refs = [
+            block.ref
+            for block in output.blocks
+            if isinstance(block, DocumentBlock)
+            and block.ref in facts.knowledge_products
+        ]
+        if not refs:
+            return TurnFacts()
+    refs = list(dict.fromkeys(refs))
+    products = [set(facts.knowledge_products[ref]) for ref in refs]
+    if not products or any(len(product) != 1 for product in products):
+        return TurnFacts()
+    common = set.intersection(*products)
+    named = {pid for model in route.named_models for pid in model.product_ids}
+    if named:
+        common.intersection_update(named)
+    named_refs = {
+        int(ref.removeprefix("p"))
+        for ref in first.refs
+        if ref.removeprefix("p").isdigit()
+    }
+    if named_refs:
+        common.intersection_update(named_refs)
+    if len(common) != 1:
+        return TurnFacts()
+    if len(refs) > 1:
+        urls = {facts.documents[ref].url for ref in refs if ref in facts.documents}
+        if len(urls) != 1 or any(ref not in facts.documents for ref in refs):
+            return TurnFacts()
+    selected = {
+        f"{ref}.text": facts.facts[f"{ref}.text"]
+        for ref in refs
+        if ref not in facts.qualifications
+        and f"{ref}.text" in facts.facts
+        and facts.facts[f"{ref}.text"].source == "search-knowledge"
+    }
+    selected.update(
+        {
+            fact_id: fact
+            for fact_id, fact in facts.facts.items()
+            if (chunk := chunk_of(fact_id)) is not None
+            and f"{chunk}.text" in selected
+            and fact.source == "search-knowledge"
+        }
+    )
+    return TurnFacts(facts=selected)
 
 
 def _seal_attachment_figures(
@@ -1598,25 +1676,32 @@ def _append_sentence(output: TurnOutput, sentence: str) -> TurnOutput:
 
 
 def _append_document_sentences(
-    output: TurnOutput, blob: str, question: str
+    output: TurnOutput, sources: TurnFacts, blob: str, question: str
 ) -> TurnOutput:
     sealed = output
-    if _usable_question(question):
-        sealed = _append_usable(sealed, blob)
+    if _usable_question(question) and blob:
+        sealed = _append_usable(sealed, sources, blob)
     if _support_question(question):
         sealed = _append_support(sealed)
     return sealed
 
 
-def _append_usable(output: TurnOutput, blob: str) -> TurnOutput:
-    from linker_genie import ground as grounding
-
+def _append_usable(output: TurnOutput, sources: TurnFacts, blob: str) -> TurnOutput:
     language = output.language
     text = _prose(output)
-    need_capacity = grounding.blob_has_figure(blob, 260) and (
+    need_capacity = _structured_source_figure(
+        sources,
+        r"(?:nominal\s+(?:capacity|energy)|nennkapazität|nennenergie)"
+        r"(?:\s*\(kWh\))?",
+        r"260\s*kWh",
+    ) and (
         _KWH_260.search(text) is None or _NOMINAL_LABEL[language].search(text) is None
     )
-    need_discharge = grounding.blob_has_figure(blob, 98) and (
+    need_discharge = _structured_source_figure(
+        sources,
+        r"(?:depth\s+of\s+discharge|dod|entladetiefe)(?:\s*\(%\))?",
+        r"98\s*%",
+    ) and (
         _PERCENT_98.search(text) is None or _DOD_LABEL[language].search(text) is None
     )
     sealed = _append_sentence(
@@ -1624,7 +1709,53 @@ def _append_usable(output: TurnOutput, blob: str) -> TurnOutput:
     )
     if _USABLE_PRESENT[language].search(_prose(sealed)):
         return sealed
-    return _append_sentence(sealed, _USABLE_ABSENCE[language])
+    absence = re.compile(
+        r"(?i)(?:usable(?:\s+(?:capacity|energy|figure|value))?|nutzbar\w*)"
+        r"[^\n.]{0,100}(?:not\s+(?:printed|stated|available|provided)|"
+        r"nicht\s+(?:angegeben|genannt|ausgewiesen))|"
+        r"(?:no|kein(?:e|en|er)?)\s+(?:usable|nutzbar)"
+    )
+    if absence.search(blob) or absence.search(_prose(sealed)):
+        return _append_sentence(sealed, _USABLE_ABSENCE[language])
+    return sealed
+
+
+def _source_segments(blob: str) -> list[str]:
+    return re.split(r"\n|(?<=[.!?])\s+", blob)
+
+
+def _structured_source_figure(sources: TurnFacts, label: str, value: str) -> bool:
+    """Bind a complete single-value table row to its actual figure fact.
+
+    A word and a number appearing in the same paragraph do not establish a
+    property. Other attributes, ranges, multi-value cells and extra conditions
+    are not used to synthesize a bare statement.
+    """
+    for fact_id, fact in sources.facts.items():
+        if not fact_id.endswith(".text") or fact.source != "search-knowledge":
+            continue
+        chunk_id = fact_id[:-5]
+        for line in fact.value.splitlines():
+            stripped = line.strip()
+            if not stripped.startswith("|") or not stripped.endswith("|"):
+                continue
+            cells = [cell.strip() for cell in stripped[1:-1].split("|")]
+            if len(cells) != 2 or re.fullmatch(label, cells[0], re.IGNORECASE) is None:
+                continue
+            tagged = re.fullmatch(r"\[n([1-9]\d*)=([^\]]+)\]", cells[1])
+            if (
+                tagged is None
+                or re.fullmatch(value, tagged.group(2), re.IGNORECASE) is None
+            ):
+                continue
+            figure = sources.facts.get(f"{chunk_id}.n{tagged.group(1)}")
+            if (
+                figure
+                and figure.source == "search-knowledge"
+                and figure.value == tagged.group(2)
+            ):
+                return True
+    return False
 
 
 def _figure_sentence(language: str, capacity: bool, discharge: bool) -> str:
@@ -1659,10 +1790,18 @@ def _append_support(output: TurnOutput) -> TurnOutput:
 
 
 def _append_clearance(output: TurnOutput, blob: str) -> TurnOutput:
+    clearances = " ".join(
+        segment
+        for segment in _source_segments(blob)
+        if re.search(
+            r"(?i)\b(?:clearances?|mindestabstand\w*|abstand\w*|abstände\w*)\b", segment
+        )
+        and re.search(r"(?i)\bmm\b", segment)
+    )
     missing = [
         value
         for value in _CLEARANCE_MM
-        if re.search(rf"(?<!\d){value}(?!\d)", blob)
+        if re.search(rf"(?<!\d){value}(?!\d)", clearances)
         and not re.search(rf"(?<!\d){value} ?mm", _prose(output), re.IGNORECASE)
     ]
     return _append_sentence(output, _clearance_sentence(output.language, missing))

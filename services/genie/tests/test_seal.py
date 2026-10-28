@@ -15,7 +15,8 @@ from typing import Literal
 from baseline.grade import Turn, answer_text, check, untraceable_numbers
 
 from linker_genie.cycle import run
-from linker_genie.facts import Fact, TurnFacts
+from linker_genie.facts import Fact, TurnFacts, collect, merge
+from linker_genie.figures import tag
 from linker_genie.ground import (
     blob_has_figure,
     cites_outside_turn,
@@ -28,7 +29,7 @@ from linker_genie.ground import (
     check as ground_check,
 )
 from linker_genie.language import language_failure
-from linker_genie.route import Route
+from linker_genie.route import NamedModel, Route
 from linker_genie.schema import (
     ActionBlock,
     AskBlock,
@@ -60,6 +61,7 @@ def _facts(value: str = "") -> TurnFacts:
     gathered.qualified_ids = {4107}
     if value:
         gathered.add(Fact(id="c1.text", value=value, source="search-knowledge"))
+        gathered.knowledge_products["c1"] = (4107,)
     return gathered
 
 
@@ -321,9 +323,12 @@ def test_a_german_usable_paraphrase_that_already_matches_is_not_repeated() -> No
 def test_a_model_code_does_not_invent_a_usable_figure() -> None:
     output = TurnOutput(
         language="en",
-        blocks=[TextBlock(text="The documents discuss this battery.")],
+        blocks=[
+            TextBlock(text="The documents discuss this battery."),
+            DocumentBlock(ref="c1"),
+        ],
     )
-    blob = "Model L260 Omni."
+    blob = "Model L260 Omni. Usable capacity is not stated."
     assert blob_has_figure(blob, 260) is False
     sealed = seal(
         output,
@@ -334,6 +339,188 @@ def test_a_model_code_does_not_invent_a_usable_figure() -> None:
     )
     assert "260 kWh" not in _text(sealed)
     assert "The documents do not state a usable capacity." in _text(sealed)
+
+
+def _scoped_hit(
+    chunk: str, product: int, text: str, *, url: str = "https://example.test/data.pdf"
+) -> TurnFacts:
+    tagged = tag(chunk, text)
+    return collect(
+        "linker/search-knowledge",
+        {
+            "hits": [
+                {
+                    "chunk_id": chunk,
+                    "doc_url": url,
+                    "title": "Sample data",
+                    "page": 2,
+                    "product_ids": [product],
+                    "text": tagged.text,
+                    "figures": tagged.figures,
+                }
+            ]
+        },
+    )
+
+
+def test_seal_uses_only_the_cited_model_for_automatic_document_values() -> None:
+    first = _scoped_hit("a", 1, "Model A. Nominal capacity is not stated.")
+    other = _scoped_hit(
+        "b",
+        2,
+        "| Nominal Capacity (kWh) | 260 |\n| Depth of Discharge | 98% |",
+        url="https://example.test/other.pdf",
+    )
+    output = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(text="The documents describe model A.", refs=["a"]),
+            DocumentBlock(ref="a"),
+            DocumentBlock(ref="b"),
+        ],
+    )
+
+    sealed = seal(
+        output,
+        merge([first, other]),
+        Route("documents"),
+        "What is the usable capacity?",
+        "other",
+    )
+
+    assert "260" not in _text(sealed) and "98%" not in _text(sealed)
+
+
+def test_seal_still_uses_the_cited_unqualified_source_when_another_hit_is_conditional() -> (
+    None
+):
+    first = _scoped_hit(
+        "a", 1, "| Nominal Capacity (kWh) | 260 |\n| Depth of Discharge | 98% |"
+    )
+    conditional = collect(
+        "linker/search-knowledge",
+        {
+            "hits": [
+                {
+                    "chunk_id": "b",
+                    "doc_url": "https://example.test/other.pdf",
+                    "title": "Other model",
+                    "page": 2,
+                    "product_ids": [2],
+                    "text": "| Reading | [n1=5 A] |\n*6: Synthetic condition. (p. 3)",
+                    "figures": {"b.n1": "5 A"},
+                    "qualification_required": True,
+                    "qualifications": [
+                        {
+                            "chunk_id": "b-p3",
+                            "page": 3,
+                            "quote": "*6: Synthetic condition.",
+                            "lang": "en",
+                        }
+                    ],
+                }
+            ]
+        },
+    )
+    output = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(text="The document describes model A.", refs=["a"]),
+            DocumentBlock(ref="a"),
+        ],
+    )
+    facts = merge([first, conditional])
+
+    capacity = seal(
+        output, facts, Route("documents"), "What is the usable capacity?", "other"
+    )
+    support = seal(output, facts, Route("documents"), "Does it support EnWG?", "other")
+
+    assert "260 kWh" in _text(capacity) and "98%" in _text(capacity)
+    assert "do not state whether it supports this" in _text(support)
+
+
+def test_seal_does_not_treat_an_unrelated_same_source_number_as_capacity() -> None:
+    facts = _scoped_hit(
+        "a",
+        1,
+        "Nominal voltage 260 V and maximum energy 260 kWh.\n"
+        "| Nominal Voltage (V) | 260 |\n"
+        "| Maximum Energy (kWh) | 260 |\n"
+        "| Usable Capacity (kWh) | 260 |\n"
+        "| Round Trip Efficiency | 98% |",
+    )
+    output = TurnOutput(
+        language="en", blocks=[TextBlock(text="See the data.", refs=["a"])]
+    )
+
+    sealed = seal(
+        output, facts, Route("documents"), "What is usable capacity?", "other"
+    )
+
+    assert "260 kWh" not in _text(sealed) and "98%" not in _text(sealed)
+
+
+def test_a_multi_model_chunk_cannot_be_relabelled_as_one_models_values() -> None:
+    facts = _scoped_hit("a", 1, "| Nominal Capacity (kWh) | 260 |")
+    facts.knowledge_products["a"] = (1, 2)
+    output = TurnOutput(
+        language="en", blocks=[TextBlock(text="See the data.", refs=["a"])]
+    )
+    route = Route(
+        "documents", named_models=(NamedModel(code="MODEL-1", product_ids=(1,)),)
+    )
+
+    unambiguous = seal(output, facts, route, "What is usable capacity?", "other")
+    ambiguous = seal(
+        output, facts, Route("documents"), "What is usable capacity?", "other"
+    )
+
+    assert "260 kWh" not in _text(unambiguous)
+    assert "260 kWh" not in _text(ambiguous)
+
+
+def test_seal_can_combine_explicitly_cited_chunks_of_the_same_model_and_pdf() -> None:
+    first = _scoped_hit("a", 1, "| Nominal Capacity (kWh) | 260 |")
+    second = _scoped_hit("b", 1, "| Depth of Discharge | 98% |")
+    output = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(text="See the data."),
+            DocumentBlock(ref="a"),
+            DocumentBlock(ref="b"),
+        ],
+    )
+
+    sealed = seal(
+        output,
+        merge([first, second]),
+        Route("documents"),
+        "What is the usable capacity?",
+        "other",
+    )
+
+    assert "260 kWh" in _text(sealed) and "98%" in _text(sealed)
+
+
+def test_conflicting_or_missing_model_scope_never_licenses_automatic_values() -> None:
+    first = _scoped_hit("a", 1, "| Nominal Capacity (kWh) | 260 |")
+    conflicting = _scoped_hit("a", 2, "| Nominal Capacity (kWh) | 260 |")
+    missing = collect(
+        "linker/search-knowledge",
+        {"hits": [{"chunk_id": "a", "text": "Nominal capacity 260 kWh."}]},
+    )
+    output = TurnOutput(
+        language="en", blocks=[TextBlock(text="See the data.", refs=["a"])]
+    )
+
+    for other in (conflicting, missing):
+        facts = merge([first, other])
+        sealed = seal(
+            output, facts, Route("documents"), "What is usable capacity?", "other"
+        )
+        assert facts.knowledge_products["a"] == ()
+        assert "260 kWh" not in _text(sealed)
 
 
 def test_support_absence_is_written_once_and_stays_a_denial() -> None:

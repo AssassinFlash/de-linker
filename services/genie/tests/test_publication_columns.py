@@ -122,8 +122,8 @@ def test_actual_table_uses_original_columns_and_native_structure_without_generic
             cid in {c.id for c in selected} for cid in columns["header_chunk_ids"]
         )
         assert {a["product_id"] for a in proof[chunk.id]["associations"]} == set(ORDER)
-    # A generic source heading never broadcasts the column scope backwards.
-    intro = next(c for c in selected if c.section.startswith("Smart and flexible"))
+    # The generic cover figure text never borrows the later column scope.
+    intro = next(c for c in selected if c.text.startswith("Smart and flexible"))
     assert intro.id not in proof
 
 
@@ -341,5 +341,36 @@ def test_wrong_column_order_labels_are_refused_by_loaded_runtime(
                 publication=Snapshot.read(manifest()),
             )
         )
+    finally:
+        loaded.close()
+
+
+@pytest.mark.parametrize("schema", [2, 3])
+def test_hca_conditioned_rows_do_not_reach_consumers_as_bare_values(
+    tmp_path: Path, schema: int
+) -> None:
+    loaded = index(tmp_path, chunks())
+    if schema == 2:
+        loaded.close()
+        with sqlite3.connect(tmp_path / "index.sqlite") as db:
+            db.execute("UPDATE meta SET value = '2' WHERE key = 'schema_version'")
+            db.execute("DELETE FROM meta WHERE key = 'external_axis_anchors'")
+        loaded = DocumentIndex(tmp_path / "index.sqlite", encoder=None)
+    try:
+        for query, ordinary in [
+            ("Operating Temperature Range", "Over Temperature Protection"),
+            ("Ingress Protection Rating", "Standby Power"),
+        ]:
+            hits = loaded.search(
+                query,
+                "en",
+                [3586],
+                neighbours=True,
+                publication=Snapshot.read(manifest()),
+            )
+            text = "\n".join(hit.text for hit in hits)
+            assert "-30 ~ +50 *1" not in text
+            assert "IP66 *2" not in text
+            assert ordinary in text
     finally:
         loaded.close()
