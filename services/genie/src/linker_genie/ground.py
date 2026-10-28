@@ -491,10 +491,14 @@ def _warranty_sources(
             if cid is None or (
                 expected and not set(facts.knowledge_products.get(cid, ())) & expected
             ):
-                return ["use an exact, product-scoped technical source excerpt"]
+                return [
+                    "Remove introductory or unsourced text blocks. A separate technical block must copy one exact line from a product-scoped manual or datasheet."
+                ]
             continue
         if len(cited) != 1 or policy_figures - cited:
-            return ["warranty statement must cite its own qualified policy passage"]
+            return [
+                "Remove introductory text blocks. Copy the complete matching warranty_answers value into one text block and cite that hit's chunk_id in its refs."
+            ]
         cid = next(iter(cited))
         if expected and not set(facts.knowledge_products.get(cid, ())) & expected:
             return ["warranty passage belongs to a different product"]

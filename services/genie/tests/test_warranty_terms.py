@@ -8,6 +8,7 @@ import sqlite3
 from copy import deepcopy
 from dataclasses import replace
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 from test_build import document
@@ -22,6 +23,7 @@ from index.extract import Block, Page, pdf_series_cover
 from index.inventory import doc_type_of
 from index.table_compiler import external_axis_anchors
 from index.warranty import _family_cover, compile_procedures, compile_terms
+from linker_genie import agent
 from linker_genie.cycle import run
 from linker_genie.facts import collect, merge
 from linker_genie.figures import localize
@@ -731,6 +733,62 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
             for item in index.loaded()["unprepared_documents"]
         )
         search = KnowledgeSearch(lambda: index, publication=authority(raw))
+        # Long route prefetches must retain complete policies, including both
+        # production-date rows, rather than slicing through a JSON hit.
+        for pid, lang, question in (
+            (
+                3556,
+                "en",
+                "When does the warranty for GW10K-ETA-G20 start if I cannot prove the installation date?",
+            ),
+            (
+                1946,
+                "en",
+                "How long is the warranty for GW80K-ET-G10 manufactured on or after 1 January 2026?",
+            ),
+            (
+                1946,
+                "de",
+                "Wie lange gilt die Garantie für GW80K-ET-G10, wenn es vor dem 1. Januar 2026 hergestellt wurde?",
+            ),
+        ):
+            args = {"query": question, "lang": lang, "product_ids": [pid]}
+            payload = search(args)
+            items = [
+                {
+                    "name": "linker/search-knowledge",
+                    "arguments": args,
+                    "result": payload,
+                }
+            ]
+            original_view = agent._result_view(items[0])
+            assert (
+                len(json.dumps([original_view], ensure_ascii=False))
+                > agent.MAX_RESULT_CHARS
+            )
+            serialized, compact = agent._route_results(items)
+            assert compact and len(serialized) <= agent.MAX_RESULT_CHARS
+            visible = json.loads(serialized)[0]["result"]["hits"]
+            assert len(visible) == len(payload["hits"])
+            by_id = {hit["chunk_id"]: hit for hit in payload["hits"]}
+            for hit in visible:
+                source_hit = by_id[hit["chunk_id"]]
+                if not hit.get("warranty_terms"):
+                    continue
+                assert "text" not in hit
+                assert hit["warranty_answers"] == source_hit["warranty_answers"]
+                assert hit["warranty_figures"] == {
+                    key.removeprefix(hit["chunk_id"] + "."): value
+                    for key, value in source_hit["figures"].items()
+                }
+            with patch.object(agent, "MAX_RESULT_CHARS", 8000):
+                limited, _ = agent._route_results(items)
+            limited_result = json.loads(limited)[0]["result"]
+            assert len(limited) <= 8000
+            assert 0 < len(limited_result["hits"]) < len(payload["hits"])
+            assert limited_result["omitted_from_model_view"] == (
+                len(payload["hits"]) - len(limited_result["hits"])
+            )
         for pid in (1948, 6514, 6528, 6530):
             for lang in ("en", "de"):
                 result = search(
@@ -1293,6 +1351,35 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
             assert (
                 report_value in shipped_report.output.blocks[0].text.split("\n\n", 1)[0]
             )
+            if lang == "de":
+                prefaced = TurnOutput(
+                    language=lang,
+                    blocks=[
+                        TextBlock(
+                            text="Zur Meldefrist nennen die Garantiebedingungen:",
+                            refs=[],
+                        ),
+                        report_answer.blocks[0],
+                    ],
+                )
+
+                def retry_generation(
+                    _request,
+                    retry,
+                    _prefaced=prefaced,
+                    _answer=report_answer,
+                    _facts=facts,
+                ):
+                    return (_prefaced if retry is None else _answer), _facts
+
+                recovered = run(report_request, retry_generation, route)
+                assert recovered.grounded and recovered.attempts == 2
+                assert any(
+                    "Remove introductory" in reason for reason in recovered.retried
+                )
+                assert (
+                    report_value in recovered.output.blocks[0].text.split("\n\n", 1)[0]
+                )
             wrong_deadline = next(
                 key
                 for key, value in reporting["figures"].items()

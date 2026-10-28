@@ -257,8 +257,15 @@ def validate(arguments: dict[str, Any]) -> tuple[str, str, list[int]]:
     return query.strip(), str(lang), list(dict.fromkeys(raw_ids))
 
 
-def model_view(payload: dict[str, Any]) -> dict[str, Any]:
-    """The result as the model reads it: tagged text, no URL, no figure table."""
+def model_view(
+    payload: dict[str, Any], *, compact_warranty: bool = False
+) -> dict[str, Any]:
+    """The result as the model reads it; URLs and raw proof stay server-side.
+
+    Under the route-prompt limit a warranty hit normally includes the full
+    tagged text. In a compact view the complete source-derived answers remain,
+    with their source figures listed once under the hit's short figure IDs.
+    """
     if "hits" not in payload:
         return payload
     return {
@@ -267,6 +274,11 @@ def model_view(payload: dict[str, Any]) -> dict[str, Any]:
                 key: hit[key]
                 for key in ("chunk_id", "title", "page", "section", "text", "doc_type")
                 if key in hit
+                and not (
+                    compact_warranty
+                    and hit.get("warranty_terms") is True
+                    and key == "text"
+                )
             }
             | (
                 {
@@ -276,6 +288,20 @@ def model_view(payload: dict[str, Any]) -> dict[str, Any]:
                     "warranty_answers": hit.get("warranty_answers", {}),
                 }
                 if hit.get("warranty_terms") is True
+                else {}
+            )
+            | (
+                {
+                    "warranty_figures": {
+                        key.removeprefix(str(hit.get("chunk_id")) + "."): value
+                        for key, value in hit.get("figures", {}).items()
+                        if isinstance(key, str)
+                        and key.startswith(str(hit.get("chunk_id")) + ".n")
+                    }
+                }
+                if compact_warranty
+                and hit.get("warranty_terms") is True
+                and isinstance(hit.get("figures"), dict)
                 else {}
             )
             | (
