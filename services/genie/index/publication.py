@@ -14,7 +14,7 @@ import urllib.request
 from collections.abc import Iterator
 from dataclasses import asdict, replace
 from pathlib import Path
-from typing import Any, NotRequired, TypedDict
+from typing import Any, cast, NotRequired, TypedDict
 
 from index.chunking import MAX_TOKENS, Chunk, Tokenizer
 from index.inventory import doc_type_of, document_kind_of, lang_of
@@ -838,7 +838,13 @@ def compile_certificate_subjects(
                         "basis": "certificate_subject",
                         "source_chunk_ids": list(
                             dict.fromkeys(
-                                [chunk.id, *(b["source_chunk_id"] for b in boundaries)]
+                                [
+                                    chunk.id,
+                                    *(
+                                        cast(str, b["source_chunk_id"])
+                                        for b in boundaries
+                                    ),
+                                ]
                             )
                         ),
                         "document_ids": [did],

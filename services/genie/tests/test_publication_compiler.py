@@ -1348,7 +1348,7 @@ def test_actual_eta_certificate_subjects_are_bounded_and_revocable(
     subjects = [
         chunk
         for chunk in selected
-        if proofs.get(chunk.id, {}).get("basis") == "certificate_subject"
+        if chunk.id in proofs and proofs[chunk.id]["basis"] == "certificate_subject"
     ]
     pairs = {
         (proofs[chunk.id]["document_ids"][0], proofs[chunk.id]["product_ids"][0])
@@ -1473,7 +1473,7 @@ def test_certificate_subject_rejects_unrelated_model_role_and_tampering() -> Non
     chunk = next(
         c
         for c in selected
-        if proofs.get(c.id, {}).get("basis") == "certificate_subject"
+        if c.id in proofs and proofs[c.id]["basis"] == "certificate_subject"
     )
     proof = proofs[chunk.id]
     source = Snapshot.read(raw)
@@ -1617,7 +1617,7 @@ def test_certificate_mixed_standard_line_cannot_return_technical_values(
     units = [
         c
         for c in selected
-        if proofs.get(c.id, {}).get("basis") == "certificate_subject"
+        if c.id in proofs and proofs[c.id]["basis"] == "certificate_subject"
     ]
     assert units and all(forbidden not in c.text for c in units)
 
@@ -1880,7 +1880,8 @@ def test_actual_legacy_certificates_keep_only_bound_safe_facts(tmp_path: Path) -
         c
         for c in selected
         if c.doc_sha256.startswith("2fa451ad7aae")
-        and proofs.get(c.id, {}).get("basis") == "certificate_fragment"
+        and c.id in proofs
+        and proofs[c.id]["basis"] == "certificate_fragment"
     )
     proof = proofs[fragment.id]
     pid = proof["product_ids"][0]
@@ -1912,7 +1913,8 @@ def test_actual_legacy_certificates_keep_only_bound_safe_facts(tmp_path: Path) -
         c
         for c in selected
         if c.doc_sha256.startswith("ced067135172")
-        and proofs.get(c.id, {}).get("basis") == "certificate_fragment"
+        and c.id in proofs
+        and proofs[c.id]["basis"] == "certificate_fragment"
     ]
     assert {c.lang for c in emanager} == {"en", "de"}
     assert all("eManager-C1 Pro" in c.text and "IP 65" not in c.text for c in emanager)
@@ -1920,7 +1922,8 @@ def test_actual_legacy_certificates_keep_only_bound_safe_facts(tmp_path: Path) -
         c
         for c in selected
         if c.doc_sha256.startswith("00c7f5ee7b9f")
-        and proofs.get(c.id, {}).get("basis") == "certificate_fragment"
+        and c.id in proofs
+        and proofs[c.id]["basis"] == "certificate_fragment"
     )
     assert "validity of the present certificate is limited" in lcie.text
     lcie_proof = proofs[lcie.id]
