@@ -88,3 +88,64 @@ actual component/thermal facts are in
 `research/2026-10-24-pv-managed-intake/FINDINGS.md`. The running p548 instance
 must retain its accepted version until the paired workflow is ready for a
 controlled install and native acceptance.
+
+## Retained-source direct-beam geometry witness
+
+The optional `prepare_direct_beam_visibility_v1` executor is a separate
+geometric calculation. Its saved `inputs.direct_beam_visibility` document
+contains schema version 1, an owned `weather_asset_id`, strictly increasing
+`row_indices`, and explicit coarse/fine equal-area midpoint grid sizes. The
+fine grid must have more cells per module edge. There is no hidden physical
+sampling default; the observed difference between grids is not an error bound.
+The generated `direct-beam.schema.json` is the browser input contract.
+
+`pv_string_links_direct_beam_visibility_v1` is the cumulative complete-input
+writer token for these inputs and the existing PV string links. A client that
+only understands the previous token cannot silently remove retained visibility
+settings during a complete-input save. Omitting the additive option preserves
+old command and report receipt hashes.
+
+Owned `weather/assets` and `weather/preview` provide bounded source navigation;
+preview reads retained originals without requesting new provider data or
+running solar geometry. Synthetic interval boundaries, original TMY source
+labels and actual irradiance instants remain separate axes. The selected asset
+must match the saved acquisition request and interpretation. The task is
+admitted through `runs/direct-beam` with the usual saved revision and command
+key; an exact receipt replay acknowledges its original run before fresh Woo
+source reads. It does not grant permission for a new calculation.
+
+The worker resolves the owned asset, pins the original bytes, metadata,
+canonical weather selection, geometry, current Woo module basis and executable
+identity, and uses the source's irradiance instants for solar position. An AABB
+BVH supplies candidates to the existing exact face intersections. Included
+module volumes, declared opaque extrusions and roof surfaces can occlude a
+receiver; only the receiving module itself is excluded. Non-opaque keepouts
+do not become blockers. Current source and Woo permissions are checked again
+after calculation, and the ordinary worker lease fences result publication.
+
+`RuntimeConfig.direct_beam_visibility` conditionally enables this executor and
+requires explicit weather limits. Its five operational limits are selected-row,
+sample, exact ray-face and BVH-bound checks, and index leaf size; these are CPU
+policies, not engineering tolerances. The private version and native browser
+bootstrap expose the same model and resource limits. Existing policies without
+this optional service remain usable.
+
+The result retains frozen geometry for the table/3D overlay and may be selected
+separately as `ReportOptions.direct_beam_run_id`. Reports, PDFs and bounded
+Genie facts consume the same saved witness and hash-bound dependencies without
+recalculating weather, visibility or PV generation. They keep owner, revision,
+time-axis and current source-permission checks. Night and back-facing/tangent
+modules have no reported geometric fraction. The result is not published as a
+power profile and cannot be adopted into the energy replay as a loss factor.
+
+This increment establishes selected-time geometric visibility only. It does
+not model diffuse/reflected irradiance, partial-shading electrical mismatch,
+bypass diodes, actual MPPT, annual shading loss or a complete equipment/country
+assessment. The existing unshaded PV reference and equipment replay retain
+their declared scopes. The next complete numerical chain must explicitly bind
+a separately versioned irradiance/electrical model to the same geometry and
+weather axes, preserve direct/sky/ground contributions separately, produce a
+reproducible power-profile witness, and pass that owned profile through the
+existing PV publication and energy/report consumers. A small set of selected
+visibility rows cannot stand in for the complete time series or establish a
+manufacturer performance curve.

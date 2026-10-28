@@ -43,6 +43,7 @@ class ReportOptions(Document):
     pv_run_id: RunId | None
     equipment_run_id: RunId | None
     logo: Annotated[str, Field(max_length=700_000)] | None
+    direct_beam_run_id: RunId | None = None
     comparison: ComparisonSelection | None = None
     include_installation: bool = False
     inspect_certificate_declarations: bool = False
@@ -51,6 +52,8 @@ class ReportOptions(Document):
         options = self.model_dump(mode="json")
         # The additive empty comparison does not change historical receipts,
         # including the normalized body used by the native replay adapter.
+        if self.direct_beam_run_id is None:
+            options.pop("direct_beam_run_id")
         if self.comparison is None:
             options.pop("comparison")
         if not self.include_installation:

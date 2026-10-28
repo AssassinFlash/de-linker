@@ -1,6 +1,7 @@
 {
   "schema_version": 1,
   "project_input_contracts": [
-    "installation_pv_string_links_v1"
+    "installation_pv_string_links_v1",
+    "pv_string_links_direct_beam_visibility_v1"
   ]
 }

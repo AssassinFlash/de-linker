@@ -41,6 +41,7 @@ _NON_NUMERICAL = {
     "http_index.py",
     "http_replay.py",
     "report_copy.py",
+    "direct_beam_report.py",
     "report_inputs.py",
     "report_kernel.py",
     "report_model.py",

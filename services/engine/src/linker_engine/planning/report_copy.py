@@ -3,6 +3,67 @@
 from __future__ import annotations
 
 TEXT = {
+    "direct_beam_title": (
+        "Geometric direct-beam visibility",
+        "Geometrische Sichtbarkeit direkter Sonnenstrahlung",
+    ),
+    "direct_beam_scope": (
+        "This witness covers only the selected weather rows and declared opaque roof surfaces, obstacle extrusions and included modules. Fractions describe geometric visibility of direct sunlight. They are not power or energy losses and do not establish annual yield, diffuse light, reflections, electrical behavior, complete shading assessment or equipment or country approval. The difference between the two sampling grids is an observed resolution difference, not an error bound.",
+        "Dieser Nachweis umfasst nur die ausgewählten Wetterzeilen und die angegebenen undurchsichtigen Dachflächen, extrudierten Hindernisse und einbezogenen Module. Die Anteile beschreiben die geometrische Sichtbarkeit direkter Sonnenstrahlung. Sie sind keine Leistungs- oder Energieverluste und belegen weder Jahresertrag, diffuses Licht, Reflexionen, elektrisches Verhalten, eine vollständige Verschattungsbewertung noch eine Geräte- oder Länderfreigabe. Die Differenz zwischen den beiden Abtastgittern ist ein beobachteter Auflösungsunterschied und keine Fehlerschranke.",
+    ),
+    "direct_beam_axes": (
+        "The interval belongs to the synthetic weather time axis. Source labels retain the original selected-month date; solar position uses the irradiance instant including the original reported offset. Module counts are total / sampled / night / back-facing or tangent. The fraction range covers sampled modules only. Resource limits are operational policies, not engineering standards.",
+        "Das Intervall gehört zur synthetischen Wetterzeitachse. Quellenzeitstempel behalten das ursprüngliche Datum des ausgewählten Monats bei; für den Sonnenstand gilt der Strahlungszeitpunkt einschließlich des ursprünglich angegebenen Versatzes. Die Modulanzahlen bedeuten gesamt / abgetastet / Nacht / abgewandt oder tangential. Der Anteilsbereich umfasst nur abgetastete Module. Die Ressourcengrenzen sind betriebliche Vorgaben und keine technischen Normen.",
+    ),
+    "direct_beam_source": (
+        "Saved witness / revision",
+        "Gespeicherter Nachweis / Revision",
+    ),
+    "direct_beam_method": (
+        "Geometric method / pvlib version",
+        "Geometrisches Verfahren / pvlib-Version",
+    ),
+    "direct_beam_sampling": (
+        "Cells per module edge: coarse / fine grid",
+        "Zellen je Modulkante: grobes / feines Raster",
+    ),
+    "direct_beam_counters": (
+        "Samples / face intersection checks / bounds checks",
+        "Abtastpunkte / Flächenschnittprüfungen / Hüllkörperprüfungen",
+    ),
+    "direct_beam_limits": (
+        "Limits: rows / samples / face checks / bounds checks / BVH leaf size",
+        "Grenzen: Zeilen / Abtastpunkte / Flächenprüfungen / Hüllkörperprüfungen / BVH-Blattgröße",
+    ),
+    "direct_beam_result_hash": (
+        "Witness result SHA-256",
+        "SHA-256 des Nachweisergebnisses",
+    ),
+    "direct_beam_manifest_hash": (
+        "Witness manifest SHA-256",
+        "SHA-256 des Nachweismanifests",
+    ),
+    "direct_beam_interval": (
+        "Synthetic interval (UTC)",
+        "Synthetisches Intervall (UTC)",
+    ),
+    "direct_beam_source_time": (
+        "Original source label (UTC)",
+        "Ursprünglicher Quellenzeitstempel (UTC)",
+    ),
+    "direct_beam_irradiance_time": (
+        "Irradiance instant (UTC)",
+        "Strahlungszeitpunkt (UTC)",
+    ),
+    "direct_beam_modules": ("Module counts", "Modulanzahlen"),
+    "direct_beam_range": (
+        "Visible fraction, fine grid: min – max",
+        "Sichtbarer Anteil im feinen Raster: Min. – Max.",
+    ),
+    "direct_beam_delta": (
+        "Maximum observed grid difference",
+        "Größter beobachteter Gitterunterschied",
+    ),
     "pvlib_selected_dc_group": (
         "Selected DC converter group",
         "Ausgewählte DC-Umwandlungsgruppe",
