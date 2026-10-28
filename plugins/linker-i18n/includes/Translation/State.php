@@ -120,10 +120,11 @@ final class State {
 	/**
 	 * Per field, the fingerprints of the English segments and of the German
 	 * segments last written, including historical conflict flags to recover.
+	 * The cover field also carries whole-value and non-translatable-part hashes.
 	 *
 	 * @param string $kind State::POST or State::TERM.
 	 * @param int    $twin German object ID.
-	 * @return array<string, array{src: list<string>, out: list<string>, conflict: bool}>
+	 * @return array<string, array{src: list<string>, out: list<string>, conflict: bool, src_raw?: string, out_raw?: string, src_literals?: string}>
 	 */
 	public function units( string $kind, int $twin ): array {
 		$units = array();
@@ -134,6 +135,11 @@ final class State {
 					'out'      => array_values( array_map( 'strval', (array) ( $unit['out'] ?? array() ) ) ),
 					'conflict' => true === ( $unit['conflict'] ?? false ),
 				);
+				foreach ( array( 'src_raw', 'out_raw', 'src_literals' ) as $key ) {
+					if ( isset( $unit[ $key ] ) && is_string( $unit[ $key ] ) ) {
+						$units[ $field ][ $key ] = $unit[ $key ];
+					}
+				}
 			}
 		}
 		return $units;
@@ -142,10 +148,10 @@ final class State {
 	/**
 	 * Stores the state of a German object.
 	 *
-	 * @param string                                                                     $kind        State::POST or State::TERM.
-	 * @param int                                                                        $twin        German object ID.
-	 * @param string                                                                     $source_hash Fingerprint of the English.
-	 * @param array<string, array{src: list<string>, out: list<string>, conflict: bool}> $units    Segment fingerprints per field.
+	 * @param string                                                                                                                                $kind        State::POST or State::TERM.
+	 * @param int                                                                                                                                   $twin        German object ID.
+	 * @param string                                                                                                                                $source_hash Fingerprint of the English.
+	 * @param array<string, array{src: list<string>, out: list<string>, conflict: bool, src_raw?: string, out_raw?: string, src_literals?: string}> $units Segment fingerprints per field.
 	 */
 	public function save( string $kind, int $twin, string $source_hash, array $units ): void {
 		update_metadata( $kind, $twin, self::SOURCE_HASH, $source_hash );
