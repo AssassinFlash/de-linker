@@ -124,9 +124,14 @@ export function InstallationEditor({
 		[conflicted, setConflicted] = useState(false),
 		[linksValid, setLinksValid] = useState(true),
 		[reviewStrings, setReviewStrings] = useState<unknown>(null),
-		[reviewRevision, setReviewRevision] = useState<number | null>(null);
+		[reviewContext, setReviewContext] = useState<{
+			projectId: string;
+			queryScope: string;
+			revision: number;
+		} | null>(null);
 	const latest = useRef({
 		projectId,
+		queryScope: session.query_scope,
 		savedRevision,
 		plan,
 		geometry,
@@ -135,6 +140,7 @@ export function InstallationEditor({
 	});
 	latest.current = {
 		projectId,
+		queryScope: session.query_scope,
 		savedRevision,
 		plan,
 		geometry,
@@ -152,9 +158,15 @@ export function InstallationEditor({
 		onValidity(form === null && !newSource && linksValid);
 		return () => onValidity(true);
 	}, [form, newSource, linksValid, onValidity]);
+	// Saving the prepared inputs advances the revision without changing the
+	// accepted review basis. Pending replies still require the exact revision.
 	const shown =
 		review &&
-		reviewRevision === savedRevision &&
+		reviewContext &&
+		reviewContext.projectId === projectId &&
+		reviewContext.queryScope === session.query_scope &&
+		client.isCurrentScope(reviewContext.queryScope) &&
+		reviewContext.revision <= savedRevision &&
 		sameJson(plan, review.prepared_inputs) &&
 		sameJson(geometry, reviewGeometry) &&
 		(plan.pv_string_links === undefined ||
@@ -200,6 +212,7 @@ export function InstallationEditor({
 		if (busy) return;
 		const before = {
 			projectId,
+			queryScope: session.query_scope,
 			savedRevision,
 			plan,
 			geometry,
@@ -239,7 +252,11 @@ export function InstallationEditor({
 			setReview(result);
 			setReviewGeometry(geometry);
 			setReviewStrings(savedInputs.pv_string_plan);
-			setReviewRevision(savedRevision);
+			setReviewContext({
+				projectId,
+				queryScope: session.query_scope,
+				revision: savedRevision,
+			});
 		} catch (error) {
 			if (
 				active.current &&
