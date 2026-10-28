@@ -52,12 +52,6 @@ final class ProductShortcodesTest extends TestCase {
 	 */
 	private string $pdp_model = 'GW60K-STS-G10';
 
-	/** The fallback product name for the current fixture.
-	 *
-	 * @var string
-	 */
-	private string $pdp_name = 'GoodWe GW60K-STS-G10';
-
 	/**
 	 * The legacy ACF JSON the current test's reads answer with.
 	 *
@@ -1315,7 +1309,7 @@ final class ProductShortcodesTest extends TestCase {
 		WP_Mock::userFunction( 'get_post_status' )->andReturn( 'publish' );
 		$product = Mockery::mock( WC_Product::class );
 		$product->allows( 'get_id' )->andReturn( self::PDP );
-		$product->allows( 'get_name' )->andReturnUsing( fn (): string => $this->pdp_name );
+		$product->allows( 'get_name' )->andReturn( 'GoodWe GW60K-STS-G10' );
 		$product->allows( 'get_sku' )->andReturn( 'DLK-GOODWE-GW60KSTSG10' );
 		$product->allows( 'get_image_id' )->andReturn( 6503 );
 		$product->allows( 'get_gallery_image_ids' )->andReturn( array( 6504, 6505 ) );
@@ -1448,8 +1442,10 @@ final class ProductShortcodesTest extends TestCase {
 		$this->assertSame( 'RS485 · GW60K-STS-G10', $line->invoke( $shortcodes, $this->pdp_product, $card ) );
 
 		$this->pdp_model = '';
-		$this->pdp_name  = '';
-		$this->assertStringNotContainsString( 'data-linker-exact-product', $shortcodes->products_card() );
+
+		$without_model = $shortcodes->products_card();
+		$this->assertStringContainsString( 'GoodWe GW60K-STS-G10</a>', $without_model );
+		$this->assertStringNotContainsString( 'data-linker-exact-product', $without_model );
 	}
 
 	/** Distinct options keep their source text; a semicolon inside a note is not a separator. */
