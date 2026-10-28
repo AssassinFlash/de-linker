@@ -21,6 +21,7 @@ from index.chunking import Chunk, DocumentMeta, chunk_document
 from index.corpus import DocumentRow
 from index.extract import Page, enrich_model_axes, pages_of
 from index.publication import ScopeProof, compile_publication
+from index.table_compiler import external_axis_anchors
 from linker_genie.figures import tag
 from linker_genie.publication import Snapshot
 from linker_genie.publication_scope import authorize_chunk
@@ -462,6 +463,17 @@ def test_reordered_native_values_and_changed_proof_are_denied() -> None:
         for c in compiled
         if (c.id in proofs and proofs[c.id]["basis"] == "table_projection")
     )
+    assert authorize_chunk(
+        SHA,
+        [1957],
+        proofs[chunk.id]["associations"],
+        proofs[chunk.id],
+        products=Snapshot.read(manifest).products,
+        documents=Snapshot.read(manifest).documents,
+        external_axis_anchors=external_axis_anchors(original),
+        chunk_id=chunk.id,
+        text=chunk.text,
+    )
     proof = deepcopy(proofs[chunk.id])
     projection = proof["table_projection"]
     cells = projection["source_cells"]
@@ -487,6 +499,8 @@ def test_reordered_native_values_and_changed_proof_are_denied() -> None:
         proof["associations"],
         proof,
         products=Snapshot.read(manifest).products,
+        documents=Snapshot.read(manifest).documents,
+        external_axis_anchors=external_axis_anchors(original),
         chunk_id=cid,
         text=wrong,
     )

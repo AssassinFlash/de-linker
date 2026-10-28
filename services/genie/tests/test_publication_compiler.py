@@ -714,6 +714,16 @@ def test_store_and_runtime_both_refuse_a_changed_projection_proof(change: str) -
         chunks(H2_DE[:12]), raw, authority(raw), Words()
     )
     chunk = next(c for c in selected if product_ids(scopes, c.id) == [1179])
+    assert authorize_chunk(
+        chunk.doc_sha256,
+        [1179],
+        scopes[chunk.id]["associations"],
+        scopes[chunk.id],
+        products=Snapshot.read(raw).products,
+        documents=Snapshot.read(raw).documents,
+        chunk_id=chunk.id,
+        text=chunk.text,
+    )
     scope = deepcopy(scopes[chunk.id])
     projection = scope["table_projection"]
     text = chunk.text
@@ -735,6 +745,7 @@ def test_store_and_runtime_both_refuse_a_changed_projection_proof(change: str) -
         scope["associations"],
         scope,
         products=Snapshot.read(raw).products,
+        documents=Snapshot.read(raw).documents,
         chunk_id=chunk.id,
         text=text,
     )
@@ -1098,6 +1109,16 @@ def test_runtime_independently_refuses_a_family_grant_outside_its_author_restric
         manual_chunks("2c1dd5c1e2f7"), raw, authority(raw), Words()
     )
     chunk = next(c for c in selected if product_ids(scopes, c.id) == [1186])
+    assert authorize_chunk(
+        chunk.doc_sha256,
+        [1186],
+        scopes[chunk.id]["associations"],
+        scopes[chunk.id],
+        products=Snapshot.read(raw).products,
+        documents=Snapshot.read(raw).documents,
+        chunk_id=chunk.id,
+        text=chunk.text,
+    )
     proof = deepcopy(scopes[chunk.id])
     proof["author_restrictions"] = [
         {
@@ -1112,6 +1133,7 @@ def test_runtime_independently_refuses_a_family_grant_outside_its_author_restric
         proof["associations"],
         proof,
         products=Snapshot.read(raw).products,
+        documents=Snapshot.read(raw).documents,
         chunk_id=chunk.id,
         text=chunk.text,
     )
@@ -1123,6 +1145,16 @@ def test_runtime_rejects_column_swap_even_with_self_consistent_hashes_and_id() -
         chunks("0f0e75ad3f31"), raw, authority(raw), Words()
     )
     chunk = next(c for c in selected if product_ids(scopes, c.id) == [4107])
+    assert authorize_chunk(
+        chunk.doc_sha256,
+        [4107],
+        scopes[chunk.id]["associations"],
+        scopes[chunk.id],
+        products=Snapshot.read(raw).products,
+        documents=Snapshot.read(raw).documents,
+        chunk_id=chunk.id,
+        text=chunk.text,
+    )
     proof = deepcopy(scopes[chunk.id])
     projection = proof["table_projection"]
     cells = projection["source_cells"]
@@ -1152,6 +1184,7 @@ def test_runtime_rejects_column_swap_even_with_self_consistent_hashes_and_id() -
         proof["associations"],
         proof,
         products=Snapshot.read(raw).products,
+        documents=Snapshot.read(raw).documents,
         chunk_id=cid,
         text=wrong,
     )
