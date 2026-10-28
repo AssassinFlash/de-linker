@@ -300,6 +300,7 @@ class Understander:
                 request.user.logged_in,
                 subject,
                 message,
+                planning_context=request.planning_context,
             )
         log.update(route.as_log())
         prepared = Prepared(

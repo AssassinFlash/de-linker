@@ -50,6 +50,33 @@ RULE = (
 MAX_TEXT_CHARS = 24_000
 
 
+def saved_result_question(raw: Any, page: PageContext, question: str) -> bool:
+    """Qualify an explicit saved-result reference, not a live weather request.
+
+    Page identifiers alone are not authority. The same native projection check
+    used by the planning tool must accept its exact project/revision/results.
+    """
+    reference = re.search(
+        r"\b(?:saved|recorded|selected|stored|gespeichert\w*|"
+        r"aufgezeichnet\w*|ausgew[aä]hlt\w*|this|that|current|"
+        r"dies\w*|jen\w*|aktuell\w*)\b",
+        question,
+        re.I,
+    )
+    result = re.search(
+        r"\b(?:report\w*|result\w*|calculation\w*|bericht\w*|"
+        r"ergebnis\w*|berechnung\w*)\b",
+        question,
+        re.I,
+    )
+    return bool(
+        page.planning_run_ids
+        and reference
+        and result
+        and view(raw, page).get("status") == "available"
+    )
+
+
 def view(raw: Any, page: PageContext) -> dict[str, Any]:
     if not isinstance(raw, dict) or raw.get("schema_version") != 1:
         return {"error": "unavailable"}
