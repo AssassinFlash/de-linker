@@ -6,6 +6,7 @@ import shutil
 from pathlib import Path
 
 import pytest
+from native_planner import planner_wp
 
 from linker_cutover import atomic
 from linker_cutover.target import CutoverError, Target
@@ -90,10 +91,6 @@ def test_rollback_restores_whole_batch_and_reports_actual_identities(
     tmp_path: Path,
 ) -> None:
     """Trees, owned files and first-time additions share one reversible batch."""
-    php = shutil.which("php")
-    if php is None:
-        pytest.skip("native PHP is required for the UI compatibility guard")
-    php_command: str = php
     state_file = tmp_path / "private-state.json"
     state = {
         "schema_version": 1,
@@ -104,25 +101,12 @@ def test_rollback_restores_whole_batch_and_reports_actual_identities(
         "supported_input_contracts": ["installation_pv_string_links_v1"],
     }
     state_file.write_text(json.dumps(state))
+
     # Real PHP guard/rename code; only the already-tested private transport is
     # replaced by an exact team-only status reply in this filesystem fixture.
-    prelude = r"""
-namespace Linker\Tools\Planner {
-class Principal { public function __construct(public string $kind, public string $subject) {} }
-class Transport { public function object($actor,$path,$body) { if ($actor->kind!=='team'||$path!=='inputs/contracts'||$body!==['schema_version'=>1]) throw new \RuntimeException('wrong private contract'); return json_decode(file_get_contents(getenv('PLANNER_FIXTURE_STATE')),true); } }
-}
-namespace { define('WP_CLI',true); function get_option($key,$default='') { return $key==='linker_planner_url'?'https://private.invalid/planning':$default; } function is_wp_error($value) { return false; } eval($argv[2]); }
-"""
-
     class NativeGuardTarget(Target):
         def wp_on_target(self) -> list[str]:
-            return [
-                "env",
-                "PLANNER_FIXTURE_STATE=" + str(state_file),
-                php_command,
-                "-r",
-                prelude,
-            ]
+            return planner_wp(state_file)
 
     target = NativeGuardTarget(
         "fixture", str(tmp_path / "site"), "http://127.0.0.1", (), None, None

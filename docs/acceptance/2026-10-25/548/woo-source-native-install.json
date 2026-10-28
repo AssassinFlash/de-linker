@@ -5251,7 +5251,17 @@
             "bytes": 59030
           }
         ],
-        "fixture_cleanup": "Original8390 restored via UI; B authorized delete ONLY8392, readback pending"
+        "fixture_cleanup": "PASS: native deletion ONLY8392;0post/0meta; original8379/8380/8390 rawpost+meta before/after SHA c65b229f3337542e060715d0a2b7f322b685746828067291036fca1879212d9f using same serialization. Original8390 restored through UI. Earlier2988 hash used a different serialization and is not equated.",
+        "CI_followup": {
+          "run": 40640557872,
+          "head": "ebc7daacd035c92a3c1bb48def95ee62559b9a77",
+          "result": "failure in cutover test fixtures; not production readback",
+          "passed": "Tools all69files; justcheck/Chromium/native smoke passed",
+          "failure": "17cutover cases and1secondaryerror: filesystem-only Targets had no wp_on_target prefix; shell invoked Bash eval on PHP",
+          "repair": "Five test-only files share native PHP shim; still executes real compatibility guard, preserving configured floor rejection",
+          "verification": "Existing four affected files93PASS32.34s; strictmypy/Ruff/format5PASS; RootSpec and independentCStandards PASS exact five frozen files; no production guard change or removed assertions",
+          "production_changes": false
+        }
       }
     }
   },

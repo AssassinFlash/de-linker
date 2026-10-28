@@ -17,6 +17,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from native_planner import planner_wp
 
 from linker_cutover import atomic, backup, plan, snapshot, steps
 from linker_cutover.target import CutoverError, Target
@@ -253,6 +254,9 @@ class FilesystemTarget(Target):
         self.failed_page = ""
         self.inactive = ""
         self.rsyncs: list[tuple[str, str]] = []
+
+    def wp_on_target(self) -> list[str]:
+        return planner_wp()
 
     def rsync(
         self, source: str, destination: str, *, extra: list[str] | None = None
