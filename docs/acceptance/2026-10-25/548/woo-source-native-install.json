@@ -3476,7 +3476,7 @@
       }
     },
     "input_contract_release_blocker": {
-      "state": "source_frozen_spec_and_standards_pass_unbuilt_not_deployed",
+      "state": "local_native_installed_actual_save_PASS_pending_CI_and_production",
       "risk": "Stale client rebases baseline but retains draft omitting new pv_string_links, then full-input save may erase links; code-permitted, no observed production loss",
       "core_owner": "certificate_conditions_backend",
       "release_owner": "device_conditions_standards_review",
@@ -3498,10 +3498,26 @@
         "legacy_candidate": "refused"
       },
       "remaining": [
-        "combined application build and guarded native local installation",
-        "affected UI acceptance",
-        "CI and ordered production publication/readback"
-      ]
+        "CI",
+        "ordered production backend/UI publication and readback"
+      ],
+      "source_commit": "831dcffa1d86775e06961afab8423f6af5044391",
+      "backend_runtime_sha256": "14403f10f6a1b927c7cc04750286d4acaea749ba03670d90a7b79a3c4182b1aa",
+      "actual_browser_save": {
+        "owner": 66,
+        "project_id": "c7795bc2c1e14e389622015c809ace45",
+        "before_revision": 32,
+        "saved_revision": 33,
+        "PV_string_link": "retained; MPPT1/input1/12modules",
+        "mutation": "one synthetic circuit name only",
+        "new_calculation_or_report": false
+      },
+      "sqlite_recovery_sha256": "6360da001b1b8f9c8b0062a798d37079e06ad0ec52f57d5618b49aa3e559b6de",
+      "retention": {
+        "logical_bytes_removed": 13585232,
+        "observed_bytes_freed": 15261696,
+        "carriers": "current14403 plus historical4824; historical is not a startable fallback"
+      }
     }
   },
   "paired_release_lifecycle": {
@@ -5118,18 +5134,82 @@
       "temporary_browser_state": "A single existing local QA login cookie was reused in the owned Chrome validation tab, never displayed or written to disk. Its temporary copy was removed, viewport reset and owned tab closed; original IAB login unchanged."
     },
     "saved_source_card_release": {
-      "state": "source_committed_reviewed_unbuilt_not_deployed",
+      "state": "local_actual_EN_DE_desktop_mobile_PASS_pending_CI_and_production",
       "source_commit": "4d71700f",
       "owner_refresh_commit": "28c17475c",
       "root_spec": "PASS: retained-source AC/DC and scope; exact periods and saved project timezone; native owner-bound historical restoration; one existing-owner proof refresh; model schema unchanged",
       "standards_and_copy": "Reuse existing independent C final-source PASS; no repeat review or model call",
       "remaining": [
-        "one combined build after input-contract protection",
-        "deterministic local rendered card acceptance",
-        "matched native release and real publication acknowledgement",
-        "one new production answer after runtime/source gates"
+        "CI and native production publication acknowledgement",
+        "one actual new production question after matched source/runtime/index gates"
       ],
-      "legacy_697": "Retained unchanged; cannot prove the new source card and must not be backfilled from current-page facts"
+      "legacy_697": "Retained unchanged; cannot prove the new source card and must not be backfilled from current-page facts",
+      "UI_source_commit": "f29d26a63956db9d458b43917efcc43bbb276477",
+      "genie_entry_sha256": "1c0cb1c7638ec51198c80403a60d48140a200be1b1156ff9a266f870ceaa438c",
+      "genie_css_sha256": "b60d86e2bff21add9e88c43cd0f0fc5aba7dad4776dd25ed947118a920df9042",
+      "outer_manifest_sha256": "2dc36409e24da239ea6176369e93346ddbae897793649e8dba98638f8850466d",
+      "actual_UI": {
+        "type": "one explicitly LOCAL deterministic history fixture; not a model answer",
+        "frozen_report_revision": 28,
+        "current_project_revision": 33,
+        "report_run": "9acfe9f15dc643369dd0433f7a7009df",
+        "retained_source_sha256": "4f0e60d1f26189732e0096f9f81379b82397bf896438aeebb8225d926fda3d9a",
+        "views": "EN/DE1440x1000 and390x844 PASS",
+        "mobile_page_width": 390,
+        "mobile_value_width": 309,
+        "timestamp_width_range": "201.1875–205.5390625px; complete strings fit",
+        "desktop_value_width": 319,
+        "facts": "SARAH3/wholeAC/savedprojectEuropeBerlin/2023PV year/June16 09–11UTC energy; no TMY-only rows",
+        "unavailable": "one representative native-replayed stream; fixed hint only, no dates/binding/results/destination",
+        "prior_history": "An existing prior conversation restored through native UI; original records never rewritten",
+        "fixture_cleanup": "PASS: native deletion8391;0post/0meta; original8379/8380/8390 post+meta hashes unchanged",
+        "console_errors": [],
+        "original_history_sha256": "2988c0302287cfc7a3c9087453b4a23119996a9a8c00d4dd473b957e1018ad3b"
+      },
+      "layout_correction": {
+        "cause": "generic two-column attachment facts squeezed UTC values in DE widget",
+        "change": "source-only modifier with stacked label/value rows; no data/copy/other-attachment change",
+        "Spec": "Root PASS",
+        "Standards": "C exact2files PASS",
+        "before_failure_retained": true
+      },
+      "artifacts": [
+        {
+          "path": "docs/acceptance/2026-10-25/548/input-contract-save-de.jpg",
+          "sha256": "c1dafcef88f72c9921ed53379da51c105690c473ad5d2264475966c098bbd5c0",
+          "bytes": 42808
+        },
+        {
+          "path": "docs/acceptance/2026-10-25/548/source-card-de-1440-before.jpg",
+          "sha256": "da3483cdaad3e7f2ef8c75dcb347f29a5a7f97600c5e3fd7adabd101811d35f2",
+          "bytes": 90056
+        },
+        {
+          "path": "docs/acceptance/2026-10-25/548/source-card-de-1440.jpg",
+          "sha256": "b8a5f0e729e29995b9e2587d9654485737e2db29b75c432bab33448ff2229725",
+          "bytes": 100045
+        },
+        {
+          "path": "docs/acceptance/2026-10-25/548/source-card-de-390.jpg",
+          "sha256": "0ee3d9340b22332a6ce4ba152847a63b8c7c2a8021307e3ec4a549f59395bc4b",
+          "bytes": 43918
+        },
+        {
+          "path": "docs/acceptance/2026-10-25/548/source-card-en-1440.jpg",
+          "sha256": "1f4da8e349809d265116203e8b7ea3f032c8e194ec1f63e4d19f3db4528878d4",
+          "bytes": 97414
+        },
+        {
+          "path": "docs/acceptance/2026-10-25/548/source-card-en-390.jpg",
+          "sha256": "199cd8798d61d91a0b9c12ecbd843d6e0a9fefe199b4796a6970945f3cf6ee9e",
+          "bytes": 39594
+        },
+        {
+          "path": "docs/acceptance/2026-10-25/548/source-card-unavailable-en.jpg",
+          "sha256": "61df912d199f06925d9afbb3af9fe1b30cb854e3a3392d44526329eb2868081c",
+          "bytes": 88184
+        }
+      ]
     }
   },
   "certificate_evidence": {
