@@ -1443,7 +1443,7 @@
       "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
     }
   },
-  "current_frontier": "Actual production FR weather/PV/2hourenergy and EN/DE42parameter reports accepted; PR716 acknowledgment10.914s accepted; legacy8207 recovered as projecta664 with EN/DEreload. PR718merged; matched Genie runtime/index/builder activation and changed-answer readback pending. Native downloads Maclocked; complete engineering and downstream full-goal coverage remain open.",
+  "current_frontier": "Installation string/circuit identity, savedrevision guard, own-save cache and mobile containment implemented/reviewed; actualEN/DE1440/390PASS atSaved32, finalCI/orderedproductionreleasepending. Genie697unit/source improvements actual, exactUTCperiod stilllegacyP2; newserver-ownedcard/source scopes+guesthistoryinreview. Currentselectedindex19 runtimepair restored; interruptedjob20/HTTPcause recovery remainsopen. Fullengineering/shading/country/BOM/downstream andMaclockeddownloads remainunclosed.",
   "shared_dc_core": {
     "status": "implemented_and_reviewed_core_not_connected_to_native_commands",
     "model": "constant_window_shared_dc_bus_v1",
@@ -3374,7 +3374,107 @@
       "Electrical cable specification, protection, earthing, mounting and connector allocation/reconciliation with Woo-maintained evidence.",
       "Commercial multi-device system qualification; physical instances alone do not qualify joint operation.",
       "Remaining country-specific scope, site/Genie/commerce consumers, persisted-data migration, review/production publication and readback."
-    ]
+    ],
+    "pv_string_identity_increment": {
+      "state": "implementation_spec_standards_copy_native_ui_pass; finalCI_and_orderedproductionrelease_pending",
+      "contract": "Optional installation.pv_string_links string_id/circuit_id pairs; omission preserves legacy bytes/hash; explicit empty list requests reconciliation",
+      "scope": "Declared saved project identities only; qualified=false; never inferred physical conductors, connectors, terminal allocation, cable sizing or electrical approval",
+      "result": "Saved string-plan, installation and geometry hashes; linked/unlinked/stale/wrong-kind/unresolved-endpoint status and existing measured cable quantities frozen into report/CSV; material quantities for identity obligations remain unknown",
+      "root_spec_review": "PASS final backend diff and extended existing fixture inspected; plan has no revision field, endpoint Woo revision validated before linking; unchanged strict contract retained",
+      "focused_checks": "Existing installation fixture PASS2.20s; strict9filemypy/ruff/format/diff/schema parity PASS per implementer; no root rerun",
+      "privacy": "Genie keeps scope and coverage counts, excludes raw string/circuit/endpoint table",
+      "open": "Frontend editing/reader and new copy review, affected UI/runtime acceptance and release; complete engineering BOM remains open",
+      "independent_standards_review": "F PASS frozen backend diff; no blocking finding; author checks reused",
+      "copy_review": "22 EN/DE pairs reviewed by F;21passed, one DE endpoint ambiguity corrected to Im Stromkreis ist nicht genau ein Anschlusspunkt des ausgewählten Wechselrichters angegeben.; no logic change or test rerun",
+      "frontend": {
+        "interaction": "Explicit opt-in; blank choices for saved string and saved PV-DC circuit; stale declarations retained/editable/removable; omission preserved until opt-in; no inferred wiring or sizing",
+        "root_spec": "PASS source reviewed incl saved baseline props, explicit edit/remove, omitted legacy shape, strict result identity and current request scope",
+        "independent_standards_copy": "F PASS exact frozen11file frontend/revision guard increment;28 EN/DE pairs reviewed, prior backend conclusions reused",
+        "revision_guard": "New UI sends saved expected_revision; owned backend compares before source work,409 preserves draft; matching reply echoes project_revision; legacy omitted field keeps prior response shape",
+        "checks": "Existing frontend3casesPASS0.878s/tscPASS; affected existing backendcasePASS2.60s; targetedmypy/ruff/formatPASS; native Tools i18n preserves2210existingMOentries",
+        "release_order": "Backend optional revision field support before new UI; existing UI remains compatible",
+        "open": "AffectedactualEN/DE1440/390 UIpassed; finalCI and orderedproductionrelease pending; completeBOM remainsopen"
+      },
+      "native_ui": {
+        "state": "EN_DE_1440_390_actual_browser_PASS",
+        "project_id": "c7795bc2c1e14e389622015c809ace45",
+        "owner_user_id": 66,
+        "source_commit": "ca81206f99ce6fd377388bb7db8a72e5369a27fc",
+        "runtime_sha256": "4824dc9e111cea61e41d5979f767c70ee4f21ee6bfd8508444c28f1ac4e82b9b",
+        "entry_sha256": "d7de75ebbb976e09ad322a022ff93ee0e70caa12b35d9716cf6fde729e3e7d0a",
+        "setup": "Existingtask-ownedBerlinrev28 already2strings; UIaddedcurrentWoo4107instance+genericPVsiteconnection+onePVDCcircuit fromexisting explicitsyntheticsource, saved29; explicitoptin/blankchoices/linkone/saved30",
+        "current_device_revision": "ceea89e8e7d194f7a2d60a9af80950417e3cb585879e073ef56057692ee9ec39",
+        "actual_preview": "Final actualSaved32: bothEN/DE showMPPT1/input1 linked,MPPT1/input2 unlinked, no cable runs; Saveackcache and containedmobilehorizontal scrolling passed",
+        "open": "FinalCI and orderedproduction backend→Tools→stylecompile/readback; completeengineeringBOM remainsopen",
+        "saved_revision": 32,
+        "save_cache_fix": {
+          "commit": "ca81206f99ce6fd377388bb7db8a72e5369a27fc",
+          "actual": "One post-fix Review31 followed by own Save32 retained both result rows without another request; unchanged geometry and string basis; strict async expected_revision/echo remain",
+          "independent_standards": "C PASS final2filedelta; affected existingcasePASS, unchanged checks reused"
+        },
+        "mobile_overflow_fix": {
+          "commit": "47f8ff8cbff94a5a5be34ac85294f2b02eb1c74c",
+          "source": "plugins/linker-commerce/content/windpress/planner.css",
+          "source_sha256": "271656e4fea131127fd04d7f1a2e3b6e0b6e64d6251da21bd61c603f7ffbb6f9",
+          "change": "Scoped direct fieldset min-inline-size0; nativeWindPress one style-only install/compile,30unrelatedvolume files preserved",
+          "before": "CSSviewport390/page566 dueUAfieldsetmin-content550",
+          "after": "EN/DEviewport390/page375, innerwrapper343/table550; nativehorizontal scroll207 whilepageScrollLeft0",
+          "independent_standards": "C PASS1property; no JS/backend/scientific rerun"
+        },
+        "visual": {
+          "desktop_css_viewport": [
+            1440,
+            1000
+          ],
+          "mobile_css_viewport": [
+            390,
+            844
+          ],
+          "languages": [
+            "en",
+            "de"
+          ],
+          "context": "SameQA66/projectc779/revision32, oneLinked/oneUnlinked/noCables. SavedlanguageURLsretainproject/section. Free user names retained, UIlabelsformalDE. Desktop unaffectedbylow-widthCSSproperty; EN desktop proof reused. Native viewport dimensions read, not inferred from screenshot scaling",
+          "console_errors": [],
+          "artifacts": [
+            {
+              "path": "docs/acceptance/2026-10-25/548/installation-string-links-en-1440.jpg",
+              "sha256": "de07936abf4bb20f92f1e1e376d8a9ad977def1e0cf2a4092d06e361f78292e4",
+              "bytes": 81999
+            },
+            {
+              "path": "docs/acceptance/2026-10-25/548/installation-string-links-en-390.jpg",
+              "sha256": "216a1cacf2c837ca762a45702ca3652d12c29d3fcaf97913cf9d0f42da849034",
+              "bytes": 29910
+            },
+            {
+              "path": "docs/acceptance/2026-10-25/548/installation-string-links-en-390-scrolled.jpg",
+              "sha256": "b16edf6f5206b46109ad0ac09bcf937bf7054f321775a20c7edce64deab924dc",
+              "bytes": 29586
+            },
+            {
+              "path": "docs/acceptance/2026-10-25/548/installation-string-links-de-1440.jpg",
+              "sha256": "0810b0f4399459ec66c8ed281f0b1b4dd1c17c8d3600a474f9eaaf23d364bf37",
+              "bytes": 91336
+            },
+            {
+              "path": "docs/acceptance/2026-10-25/548/installation-string-links-de-390.jpg",
+              "sha256": "1dba7531f14a9f9c4e2daea199c09edd775ad9029665c6dc5467c5a62036c110",
+              "bytes": 33917
+            },
+            {
+              "path": "docs/acceptance/2026-10-25/548/installation-string-links-en-390-before.jpg",
+              "sha256": "cb633d0eab5bf8a2485cb9ffa4b665c50a5c7a380c7a4289a34cafb42a2af217",
+              "bytes": 31476
+            }
+          ]
+        },
+        "preview_requests": "Four purposeful read-only previews: initialcase, changedcacheimplementation, CSSreload, DEfreshroot. No annual/report/worker job; no repeat solelyforSaveack",
+        "initial_entry_sha256": "ec5090f593948f0a163bc4b564d7add755375e8fe206a9823d63a747c14db9a0",
+        "initial_actual_preview": "ONEEnglishownedReview returned MPPT1/input1 linked todeclaredcircuit, MPPT1/input2 unlinked; bothnocableruns. No cable/route/ratings inferred; nojob/report/annualcalculation",
+        "resolved_save_regression": "Reviewboundgeometryandmadepreparedinputsunsaved; ownSave31retainedexactpreviewbasis but table vanished because strict reviewRevision===savedRevision. ActualAX Saved31 removedtable153–186. Keepstrictasyncversionguard, fixcachedrenderbyactualbasis/scopeinstead"
+      }
+    }
   },
   "paired_release_lifecycle": {
     "authority": {
@@ -9958,14 +10058,63 @@
       "fix_scope": "Known-unit JSONquote boundary preservesunit/punctuation/SKU; planningRULE answersaskedactualsources/periodsfromavailablefacts,no hardcoding/modelroutechange",
       "focused_checks": "Existingfigures+planning60PASS0.19s;4filemypy/ruff/format/diffPASS",
       "independent_review": "C Spec/Standards/internalrulecopy PASS exactfreeze; no modelrerun",
-      "production_after": "Pending deployment andonechanged-implementation actualquestion; beforeanswer retained",
+      "production_after": {
+        "state": "actual_turn_readback_partial; native_publication_ack_open",
+        "send_utc": "2026-10-28T00:37:06.817Z",
+        "turn_id": 697,
+        "conversation_id": 8415,
+        "created_utc": "2026-10-28T00:38:00Z",
+        "project_id": "1812286480344d6d8cec94e2f5f2c00e",
+        "revision": 12,
+        "selected_report": "0a55dd3d50764d40b90f2054fb99ad6d",
+        "report_change_from_before": "Same frozen source/model except generated_at; before turn696 selected b5a3 retained",
+        "actual_runtime_pid": 208797,
+        "actual_model": "deepseek-flash",
+        "actual_provider_host": "api.deepseek.com",
+        "grounded": true,
+        "fallback": false,
+        "failures": [],
+        "planning_tool": "read-planning-project available, exact owned revision/report, not truncated",
+        "actual_unit_values": {
+          "n10": "460 W",
+          "n50": "460.0 W"
+        },
+        "closed": "Unit hydration fixed; answer namesSARAH3/ERA5,2014–2023selection,synthetic2023",
+        "remaining": "All4 exact available UTC PV/energy bounds omitted from actual answer despite applicableRULE. Source/period completeness P2 remains PARTIAL; no repeat question/model call",
+        "followup_observation": "Backup choices appended; trace has no size-hint call, so no attribution to that tool. Existing intent/card policy still to inspect",
+        "artifacts": {
+          "production-genie-answer-after-de.txt": {
+            "path": "/Users/chesterjohn/de-linker-local/p548/planner/managed-reference-native/production-genie-answer-after-de.txt",
+            "bytes": 4095,
+            "sha256": "eca56714ef888ec2ad86df33b82814880acb34fd411f8ffa74e4b2e24f5e77a1"
+          },
+          "production-genie-answer-after-de.jpg": {
+            "path": "/Users/chesterjohn/de-linker-local/p548/planner/managed-reference-native/production-genie-answer-after-de.jpg",
+            "bytes": 101769,
+            "sha256": "b00f8a9ce4de9a1ef76e4799e7e4329ed8b0f9c9de6f67928bd8bcfe232d43f3"
+          }
+        },
+        "runtime_pair": "Coherent cd77 runtime/epoch19 sourcea661 restored; job20nativeack notclosed"
+      },
       "release_gate": {
         "source_commit": "cd77d4941253d293e21ae7b4b952fea8dd20754d",
         "pr": 718,
         "merge_commit": "591c7322ffab3485e349e5b7ae49e6a089b05be3",
         "final_ci": 40600786330,
         "conclusion": "success",
-        "activation": "pending matched runtime/index/native worker handoff; not yet actual answer acceptance"
+        "activation": "Actual runtime+index19 coherent; HTTP208797/judge209670 restored; native job19failedack and20preparinglease remain open, not fullpublicationclosure"
+      },
+      "interrupted_native_publication_recovery": {
+        "state": "source_committed_spec_standards_pass; CI_and_production_gates_pending",
+        "actual_orphan": "jobdc07e0c06cd517c764a930a9d3799758e9c6c15b9a07f19bb4a40a412c47c056 epoch20 remainspreparing,leaseuntil2026-10-28T02:19:26Z; ownerprocess43137terminal, noRAMtoken or20stage; current19preserved",
+        "cause": "HTTPStatusError during freshverify/failureack; exactstatus wasnot retained. Sourcea661 and all86manifestobjects unchanged; WAF attribution unproven; authorizedpeer inspecting original00:26:06–00:28:21UTC metadata",
+        "design": "Existing privileged WPCLI command only, preview by default; apply requires explicit dead-worker confirmation and exactcurrent-source/job/recipe/epoch/worker/status CAS under existing lock",
+        "mutation": "Only knowledge status=failed,lease_expires_at=0,removelease_token; preserveepoch/currentWoo/loadedreceipt/engineering; never ready/adopt/indexedit/tokenextraction",
+        "root_spec": "PASS two source files and exact state/late-verify/late-ack fixture delta inspected",
+        "checks": "Existing nativecase1test49assertionsPASS72.594s; scopedPHPStan/PHPCS/diffPASS, onlyCLIbooleanincrementstaticrecheck; no productionwrite/claim21",
+        "gate": "Source ready does not establish HTTP repair or native publication acknowledgement. No adminapply/deploy/claim21 yet.",
+        "source_commit": "10590d60",
+        "independent_standards": "F PASS3filedelta; comment-onlyprecisionapplied without logicretest"
       }
     },
     "report_admission_performance": {

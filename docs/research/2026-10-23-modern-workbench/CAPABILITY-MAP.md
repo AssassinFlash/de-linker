@@ -230,3 +230,14 @@ Aladdin 不只提供画布。固定源码中已经能追到：
 新增外部动作只有 Apify。`apify/google-search-scraper` run `O52xHxCB3qBjTpfb2` / dataset `qWbiqBnihRggMzZB9` 于 `2026-10-26T01:58:26Z` 成功，重新定位两个厂商原域链接：[GoodWe Solution Manual](https://fr.goodwe.com/Ftp/EN/Downloads/User%20Manual/GW_Commercial-Smart-Inverter-Solutions_User-Manual-ET100kW-EN.pdf)、[GoodWe User Manual](https://en.goodwe.com/Ftp/EN/Downloads/User%20Manual/GW_ET-100kW_User-Manual-EN.pdf)。此步只证明官方定位仍可被检索；不把搜索摘要当新的参数依据。
 
 随后 `apify/website-content-crawler` run `oDbT3dcJYxMhHZFdI` / dataset `wBwUyjrHt8ggiPBlq` 取这两份原域PDF，日志显示目标响应流连续超时、0份正文取回。已停止相同重试；没有改用普通搜索或绕过Apify下载。Apify检索本身成功，失败落在GoodWe大PDF响应流，不能将它声称为完成最新版/字节同一性核验。本节的技术结论全部依赖7.1中已有Woo关联、本地已持有并核过字节和页码的原件；官方原域最新字节仍为未核实。五张仅供读图的临时PNG共1,225,875字节已删除，没有另建报告、源文件副本、测试脚本或运行实例。
+
+
+## 8. 近场遮挡：已有竞品源码复核与下一实现边界
+
+2026-10-28 直接读取 EVIDENCE.json 已登记、现仍保留的 Aladdin 固定源码包，没有再次下载、解包副本或外部搜索。`src/analysis/solarPanelSimulation.tsx` 实际 SHA-256 为 `d734be994a8eb4b36484abf660eb5d015de7dcc5c678e9661e3261bb951407e9`，版本仍为 `7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa`。
+
+- **S：可复用的方法边界。** 该路径第 791–818 行在面板采样位置逐点判断直射光；第 1231–1239 行用 Three.js Raycaster 与场景对象求交，并排除当前面板。它提供几何遮挡采样的成熟参考，不能把视觉 shadow map 当作计算结果。
+- **S：不能直接当作真实组件电损合同。** 第 826–855 行根据 shadeTolerance 分支聚合采样，其中 PARTIAL 明写每两列电池片共用旁路二极管的假设；第 772–807 行的间接辐照先由独立函数给出，所检视的逐点遮挡判断只限制后续直射项。这些固定假设不能据此批准当前 Woo 组件的实际半片/旁路拓扑，也不证明近障碍物对散射辐照或整串 MPPT 的影响已被解决。结论仅限本次检视路径。
+- **I：下一实现须拆清计算证据。** 在当前 ENU 几何和太阳时序上生成有输入 hash、采样分辨率、时间语义及收敛依据的逐组件直射透过率；保留障碍物、相邻排与自相交排除的可追溯身份。其后分别处理散射遮蔽和电气响应。电损层必须读取 Woo 维护的组件/组串/旁路/转换器证据，缺少拓扑时保留具名缺项，不能用遮挡面积比例冒充功率损失。
+
+当前已验收的 uniform_unshaded_pvlib_reference_v1 保留为独立未遮挡基线；本节没有把它升级为遮挡模型。几何、散射、电气遮挡与完整年能量集成仍属于完整目标，均未因本节复核而完成。本次只复用现有源码证据，没有新增测试、计算任务或运行副本。
