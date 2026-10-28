@@ -24,7 +24,17 @@ html[lang^="de"]
 		#tv-cs-page-v1 .lk-hero-title,
 		#installer-journal .lk-hero-title,
 		#about-journal .scene-title,
-		#home-a :is(.home-h2, .home-h3)
+		#home-a :is(.home-h2, .home-h3),
+		:is(
+			#tv-solution-v1,
+			#tv-rs-page-v1,
+			#tv-cs-page-v1,
+			#installer-journal,
+			#tv-solutions-developers-v1,
+			#tv-cp-page-v1,
+			#service-redesign
+		) :is(.lk-h2, .lk-h3),
+		#tv-rs-page-v1 .lk-tooldeck-content h3
 	) {
 	-webkit-hyphens: manual;
 	hyphens: manual;
