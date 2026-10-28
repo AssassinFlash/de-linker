@@ -65,12 +65,26 @@ final class ProductFilters {
 		if ( ! $query->is_post_type_archive( 'product' ) && ! $query->is_tax( get_object_taxonomies( 'product', 'names' ) ) ) {
 			return;
 		}
+		if ( $query->is_tax( 'product_brand' ) ) {
+			// Keep the native queried term for the route, LC and canonical URL.
+			// Product membership follows Woo's pa_brand, as the shop facet does;
+			// the independent product_brand relation can omit current models.
+			$brand = $query->get_queried_object();
+			if ( $brand instanceof \WP_Term ) {
+				$query->set( 'product_brand', '' );
+				if ( 'product_brand' === $query->get( 'taxonomy' ) ) {
+					$query->set( 'taxonomy', '' );
+					$query->set( 'term', '' );
+				}
+				$query->set( 'pa_brand', $brand->slug );
+			}
+		}
 		$selected = $this->requested();
 		$sort     = $this->requested_sort();
 		if ( array() === $selected && 'recommended' === $sort ) {
 			return;
 		}
-		$matching = $this->matching( $this->archive_product_ids(), $selected );
+		$matching = $this->matching( $this->archive_product_ids( $query ), $selected );
 		// The empty set is a real answer ("no product matches"): an empty
 		// result, not the unfiltered archive, must show.
 		$query->set( 'post__in', array() === $matching ? array( 0 ) : $this->ordered( $matching, $sort ) );
@@ -629,18 +643,53 @@ final class ProductFilters {
 	 * #69's "only show in stock") are not in the list, so the rail's counts
 	 * and the facet filtering describe what the page can show.
 	 *
+	 * @param \WP_Query|null $query The main query during pre_get_posts, when its final tax query is not yet parsed.
 	 * @return int[] The product IDs.
 	 */
-	public function archive_product_ids(): array {
+	public function archive_product_ids( ?\WP_Query $query = null ): array {
 		$tax_query = array();
-		$object    = get_queried_object();
-		if ( $object instanceof \WP_Term ) {
-			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- the queried category's products, one query per archive render.
-			$tax_query[] = array(
-				'taxonomy' => $object->taxonomy,
-				'field'    => 'term_id',
-				'terms'    => $object->term_id,
-			);
+		if ( null !== $query ) {
+			// WordPress parses taxonomy query vars again after pre_get_posts.
+			// Parse a copy now so facet matching sees the same conditions without
+			// changing the main query or its cached queried object.
+			$pending = clone $query;
+			$vars    = $pending->query_vars;
+			$pending->parse_tax_query( $vars );
+			if ( null === $pending->tax_query ) {
+				return array();
+			}
+			$native = $pending->tax_query->queries;
+		} else {
+			global $wp_the_query;
+			// Once the main query has run, use its final, parsed conditions.
+			$native = isset( $wp_the_query->tax_query->queries ) ? $wp_the_query->tax_query->queries : null;
+		}
+		if ( \is_array( $native ) ) {
+			if ( array() !== $native ) {
+				// The visibility guards below must intersect, not join an OR
+				// group that WordPress or another plugin supplied.
+				$tax_query = array(
+					'relation' => 'AND',
+					$native,
+				);
+			}
+		} else {
+			// No main query is available, such as an isolated shortcode call.
+			$object = get_queried_object();
+			if ( $object instanceof \WP_Term ) {
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- the queried category's products, one query per archive render.
+				$tax_query[] = 'product_brand' === $object->taxonomy
+					? array(
+						'taxonomy' => 'pa_brand',
+						'field'    => 'slug',
+						'terms'    => $object->slug,
+					)
+					: array(
+						'taxonomy' => $object->taxonomy,
+						'field'    => 'term_id',
+						'terms'    => $object->term_id,
+					);
+			}
 		}
 		if ( 'yes' === get_option( 'woocommerce_hide_out_of_stock_items' ) ) {
 			$outofstock = wc_get_product_visibility_term_ids()['outofstock'] ?? 0;

@@ -626,33 +626,94 @@ final class GermanUrlMigration {
 	}
 
 	/**
-	 * Native product history must not select another language's post.
+	 * Native history must resolve to a published post in the requested language.
 	 *
-	 * @param int $id Candidate from WordPress's old-slug lookup.
+	 * @param int $id Candidate from WordPress's old-slug or old-date lookup.
 	 */
 	public function old_post( int $id ): int {
-		if ( 'de' !== $this->languages->current() || 0 === $id || 'de' === $this->languages->of_post( $id ) ) {
-			return $id;
+		if ( 0 === $id ) {
+			return 0;
 		}
-		// Core's first historical match can belong to English. Query the same
-		// native history metadata in German before accepting a destination.
 		$type = get_post_type( $id );
 		if ( false === $type ) {
 			return 0;
 		}
-		$posts = get_posts(
-			array(
-				'post_type'   => $type,
-				'post_status' => 'publish',
-				'lang'        => 'de',
-				'numberposts' => 1,
-				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- WordPress's native historical slug lookup, constrained to the requested language.
-				'meta_key'    => '_wp_old_slug',
-				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Same native lookup, never a new redirect store.
-				'meta_value'  => (string) get_query_var( 'name' ),
-			)
+		$language = $this->languages->current();
+		if ( 'publish' === get_post_status( $id ) && ( ! $this->languages->translates_post_type( $type ) || $language === $this->languages->of_post( $id ) ) ) {
+			return $id;
+		}
+
+		// Core tries old slug at the current date, then current or old slug at
+		// the old date. Repeat that order with public, same-language candidates.
+		$date = array();
+		foreach ( array( 'year', 'monthnum', 'day' ) as $part ) {
+			$value = (int) get_query_var( $part );
+			if ( 0 !== $value ) {
+				$date[ $part ] = $value;
+			}
+		}
+		$name = (string) get_query_var( 'name' );
+		$base = array(
+			'post_type'   => $type,
+			// An attachment's inherited status must be resolved against its parent.
+			'post_status' => 'attachment' === $type ? array( 'publish', 'inherit' ) : 'publish',
+			'lang'        => $language,
+			'numberposts' => 'attachment' === $type ? -1 : 1,
 		);
-		return isset( $posts[0] ) ? $posts[0]->ID : 0;
+		$slug = $base + array(
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Core's historical slug metadata.
+			'meta_key'   => '_wp_old_slug',
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- The requested historical slug.
+			'meta_value' => $name,
+		);
+		if ( array() !== $date ) {
+			$slug['date_query'] = array( $date );
+		}
+		$match = $this->history_destination( $slug, $type );
+		if ( 0 !== $match || array() === $date ) {
+			return $match;
+		}
+
+		global $wpdb;
+		$old_date = $base + array(
+			// The primary meta key uses the unaliased postmeta table in WP_Query.
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Core's historical date metadata.
+			'meta_key'   => '_wp_old_date',
+			'date_query' => array( array( 'column' => $wpdb->postmeta . '.meta_value' ) + $date ),
+		);
+		// `name` makes WP_Query singular and skips its language taxonomy. Use
+		// the exact post-name constraint without disabling the language query.
+		$match = $this->history_destination( $old_date + array( 'post_name__in' => array( $name ) ), $type );
+		if ( 0 !== $match ) {
+			return $match;
+		}
+		return $this->history_destination(
+			$old_date + array(
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Core's old slug at an old date.
+				'meta_query' => array(
+					array(
+						'key'   => '_wp_old_slug',
+						'value' => $name,
+					),
+				),
+			),
+			$type
+		);
+	}
+
+	/**
+	 * Returns the first public destination matched by a native history query.
+	 *
+	 * @param array<string,mixed> $query WP_Query arguments.
+	 * @param string              $type Requested post type.
+	 */
+	private function history_destination( array $query, string $type ): int {
+		foreach ( get_posts( $query ) as $post ) {
+			if ( $post instanceof \WP_Post && ( 'attachment' !== $type || 'publish' === get_post_status( $post->ID ) ) ) {
+				return $post->ID;
+			}
+		}
+		return 0;
 	}
 
 	/**

@@ -12,6 +12,8 @@ namespace Linker\Commerce\Tests\Unit\Storefront;
 use Linker\Commerce\Storefront\ProductFilters;
 use Linker\Commerce\Tests\TestCase;
 use WP_Mock;
+use WP_Term;
+use Mockery;
 
 /**
  * The facets the request states: the search box's `q` beside the rail's
@@ -20,6 +22,195 @@ use WP_Mock;
  * @covers \Linker\Commerce\Storefront\ProductFilters::requested
  */
 final class ProductFiltersTest extends TestCase {
+
+	/**
+	 * The grid keeps native taxonomy conditions and intersects visibility, even for an OR root.
+	 *
+	 * @dataProvider native_taxonomy_relations
+	 * @param string $relation The native query's top-level relation.
+	 */
+	public function test_archive_keeps_the_complete_native_taxonomy_query( string $relation ): void {
+		$native                  = array(
+			'relation' => $relation,
+			array(
+				'taxonomy' => 'pa_brand',
+				'field'    => 'slug',
+				'terms'    => array( 'goodwe' ),
+			),
+			array(
+				'relation' => 'OR',
+				array(
+					'taxonomy' => 'product_cat',
+					'field'    => 'slug',
+					'terms'    => array( 'nonexistent' ),
+				),
+				array(
+					'taxonomy' => 'pa_phase',
+					'field'    => 'slug',
+					'terms'    => array( 'three-phase' ),
+				),
+			),
+			array(
+				'taxonomy' => 'language',
+				'field'    => 'term_taxonomy_id',
+				'terms'    => array( 7 ),
+			),
+		);
+		$term                    = new WP_Term(
+			(object) array(
+				'term_id'  => 191,
+				'taxonomy' => 'product_brand',
+				'slug'     => 'goodwe',
+			)
+		);
+		$previous_query          = $GLOBALS['wp_the_query'] ?? null;
+		$main_query              = Mockery::mock( \WP_Query::class );
+		$tax_query               = Mockery::mock( \WP_Tax_Query::class );
+		$tax_query->queries      = $native;
+		$main_query->tax_query   = $tax_query;
+		$GLOBALS['wp_the_query'] = $main_query;
+		WP_Mock::userFunction( 'get_queried_object', array( 'return' => $term ) );
+		WP_Mock::userFunction( 'get_option', array( 'return' => 'yes' ) );
+		WP_Mock::userFunction(
+			'wc_get_product_visibility_term_ids',
+			array(
+				'return' => array(
+					'outofstock'           => 98,
+					'exclude-from-catalog' => 99,
+				),
+			)
+		);
+		WP_Mock::userFunction( 'get_posts' )->once()->andReturnUsing(
+			static function ( array $args ) use ( $native ): array {
+				self::assertSame( 'AND', $args['tax_query']['relation'] );
+				self::assertSame( $native, $args['tax_query'][0] );
+				self::assertSame( array( 98 ), $args['tax_query'][1]['terms'] );
+				self::assertSame( array( 99 ), $args['tax_query'][2]['terms'] );
+				return array();
+			}
+		);
+		try {
+			self::assertSame( array(), ( new ProductFilters() )->archive_product_ids() );
+		} finally {
+			$GLOBALS['wp_the_query'] = $previous_query;
+		}
+	}
+
+	/**
+	 * Native root relations to retain inside the visibility intersection.
+	 *
+	 * @return array<string, array{string}>
+	 */
+	public static function native_taxonomy_relations(): array {
+		return array(
+			'and' => array( 'AND' ),
+			'or'  => array( 'OR' ),
+		);
+	}
+
+	/** Brand routes use the same native attribute as cards and brand filters. */
+	public function test_brand_archive_reads_attribute_members_and_keeps_visibility_guards(): void {
+		$term = new WP_Term(
+			(object) array(
+				'term_id'  => 191,
+				'taxonomy' => 'product_brand',
+				'slug'     => 'goodwe',
+			)
+		);
+		WP_Mock::userFunction( 'get_queried_object', array( 'return' => $term ) );
+		WP_Mock::userFunction( 'get_option', array( 'return' => 'yes' ) );
+		WP_Mock::userFunction(
+			'wc_get_product_visibility_term_ids',
+			array(
+				'return' => array(
+					'outofstock'           => 98,
+					'exclude-from-catalog' => 99,
+				),
+			)
+		);
+		WP_Mock::userFunction( 'get_posts' )->once()->andReturnUsing(
+			static function ( array $args ): array {
+				self::assertSame( 'publish', $args['post_status'] );
+				self::assertSame(
+					array(
+						'taxonomy' => 'pa_brand',
+						'field'    => 'slug',
+						'terms'    => 'goodwe',
+					),
+					$args['tax_query'][0]
+				);
+				self::assertSame( array( 98 ), $args['tax_query'][1]['terms'] );
+				self::assertSame( 'NOT IN', $args['tax_query'][1]['operator'] );
+				self::assertSame( array( 99 ), $args['tax_query'][2]['terms'] );
+				self::assertSame( 'NOT IN', $args['tax_query'][2]['operator'] );
+				return array();
+			}
+		);
+		self::assertSame( array(), ( new ProductFilters() )->archive_product_ids() );
+		self::assertSame( 'product_brand', $term->taxonomy );
+	}
+
+	/**
+	 * The archive uses the attribute slug even when no matching attribute term exists.
+	 *
+	 * @dataProvider brand_archive_slugs
+	 * @param string $slug The requested brand slug.
+	 */
+	public function test_native_brand_query_uses_attribute_without_changing_route_identity( string $slug ): void {
+		$_GET = array();
+		WP_Mock::userFunction( 'is_admin', array( 'return' => false ) );
+		WP_Mock::userFunction( 'get_object_taxonomies', array( 'return' => array( 'product_brand', 'pa_brand', 'product_cat' ) ) );
+		$term  = new WP_Term(
+			(object) array(
+				'term_id'  => 191,
+				'taxonomy' => 'product_brand',
+				'slug'     => $slug,
+			)
+		);
+		$query = Mockery::mock( \WP_Query::class );
+		$query->allows( 'is_main_query' )->andReturn( true );
+		$query->allows( 'is_post_type_archive' )->with( 'product' )->andReturn( false );
+		$query->allows( 'is_tax' )->with( array( 'product_brand', 'pa_brand', 'product_cat' ) )->andReturn( true );
+		$query->allows( 'is_tax' )->with( 'product_brand' )->andReturn( true );
+		$query->shouldReceive( 'get_queried_object' )->once()->andReturn( $term );
+		$query->allows( 'get' )->with( 'taxonomy' )->andReturn( 'product_brand' );
+		$query->shouldReceive( 'set' )->once()->with( 'product_brand', '' );
+		$query->shouldReceive( 'set' )->once()->with( 'taxonomy', '' );
+		$query->shouldReceive( 'set' )->once()->with( 'term', '' );
+		$query->shouldReceive( 'set' )->once()->with( 'pa_brand', $slug );
+		( new ProductFilters() )->filter( $query );
+		self::assertSame( 'product_brand', $term->taxonomy );
+		self::assertSame( 191, $term->term_id );
+	}
+
+	/**
+	 * An existing slug and a slug without a corresponding attribute term.
+	 *
+	 * @return array<string, array{string}>
+	 */
+	public static function brand_archive_slugs(): array {
+		return array(
+			'existing' => array( 'goodwe' ),
+			'no_twin'  => array( 'linker-no-attribute-fixture' ),
+		);
+	}
+
+	/** Category and attribute archives retain their own native taxonomy query. */
+	public function test_non_brand_native_archive_is_not_rewritten(): void {
+		$_GET = array();
+		WP_Mock::userFunction( 'is_admin', array( 'return' => false ) );
+		WP_Mock::userFunction( 'get_object_taxonomies', array( 'return' => array( 'product_brand', 'pa_brand', 'product_cat' ) ) );
+		$query = Mockery::mock( \WP_Query::class );
+		$query->allows( 'is_main_query' )->andReturn( true );
+		$query->allows( 'is_post_type_archive' )->with( 'product' )->andReturn( false );
+		$query->allows( 'is_tax' )->with( array( 'product_brand', 'pa_brand', 'product_cat' ) )->andReturn( true );
+		$query->allows( 'is_tax' )->with( 'product_brand' )->andReturn( false );
+		$query->shouldNotReceive( 'set' );
+		$query->shouldNotReceive( 'get_queried_object' );
+		( new ProductFilters() )->filter( $query );
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Inspect only this synthetic GET fixture.
+		self::assertSame( array(), $_GET );
+	}
 
 	/** Nonscalar public query values cannot reach string casts or sort arithmetic. */
 	public function test_array_values_are_not_selection_values(): void {
