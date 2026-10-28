@@ -157,13 +157,25 @@ def export(directory: Path, path: Path) -> None:
             and isinstance(projection.get("source_sha256"), str)
             and isinstance(projection.get("source_table"), str)
         }
+        warranty_sources = {
+            cid
+            for scope in proof.get("chunk_scopes", {}).values()
+            if isinstance(scope, dict) and scope.get("basis") == "warranty_terms"
+            for cid in scope.get("source_chunk_ids", [])
+            if isinstance(cid, str)
+        }
         axis_anchors = {
             cid: anchor
             for cid, anchor in external_axis_anchors(
                 list(chunks_by_id.values())
             ).items()
             if anchor.get("kind") == "pdf_cover"
-            or (anchor["source_sha256"], anchor["source_table"]) in projected_tables
+            or (
+                anchor.get("kind") in {"policy_table", "policy_text"}
+                and cid in warranty_sources
+            )
+            or (anchor.get("source_sha256"), anchor.get("source_table"))
+            in projected_tables
         }
         if axis_anchors:
             db.execute(

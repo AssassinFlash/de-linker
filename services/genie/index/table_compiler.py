@@ -451,8 +451,11 @@ def _footnote_sources(
 
 def external_axis_anchors(chunks: list[Chunk]) -> dict[str, dict[str, Any]]:
     """Derive canonical table anchors from original chunks, not projections."""
+    from linker_genie.table_projection import native_chunk_id_matches
+
     by_id = {chunk.id: chunk for chunk in chunks}
     anchors: dict[str, dict[str, Any]] = {}
+    policy_shas: set[str] = set()
     for chunk in chunks:
         if chunk.source_pdf_cover:
             from linker_genie.warranty_scope import valid_pdf_cover
@@ -480,6 +483,47 @@ def external_axis_anchors(chunks: list[Chunk]) -> dict[str, dict[str, Any]]:
             if external
             else [],
         }
+        headers = {
+            c["col_start"]: re.sub(r"\s+", "", c["text"]).casefold()
+            for c in cells
+            if c["column_header"] and c["row_start"] == 0
+        }
+        if headers in (
+            {0: "warrantyperiod", 1: "dateofmanufacture", 2: "product", 3: "series"},
+            {
+                0: "garantiezeitraum",
+                1: "herstellungsdatum",
+                2: "produktgruppe",
+                3: "serien",
+            },
+        ):
+            policy_shas.add(chunk.doc_sha256)
+            anchors[chunk.id]["kind"] = "policy_table"
+            anchors[chunk.id]["fragments"] = [
+                {"chunk_id": c.id, "text": c.text, "rows": list(c.source_rows)}
+                for c in chunks
+                if c.doc_sha256 == chunk.doc_sha256
+                and c.page == chunk.page
+                and c.kind == "table"
+                and c.source_table == chunk.source_table
+                and native_chunk_id_matches(c.doc_sha256, c.page, "table", c.text, c.id)
+            ]
+    for chunk in chunks:
+        if (
+            chunk.doc_sha256 in policy_shas
+            and chunk.kind == "text"
+            and native_chunk_id_matches(
+                chunk.doc_sha256, chunk.page, "text", chunk.text, chunk.id
+            )
+        ):
+            anchors[chunk.id] = {
+                "kind": "policy_text",
+                "source_sha256": chunk.doc_sha256,
+                "source_page": chunk.page,
+                "text": chunk.text,
+                "lang": chunk.lang,
+                "section": chunk.section,
+            }
     return anchors
 
 

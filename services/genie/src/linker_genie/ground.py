@@ -90,6 +90,7 @@ from linker_genie.facts import (
 )
 from linker_genie.figures import (
     AMOUNT,
+    chunk_of,
     digits_are_regulation,
     is_code,
     regulation_number_spans,
@@ -113,8 +114,10 @@ from linker_genie.schema import (
     TextBlock,
     TurnOutput,
 )
+from linker_genie.source_models import model_pattern
 from linker_genie.stock import phrase as stock_phrase
 from linker_genie.template import NOT_IN_RANGE_DE, NOT_IN_RANGE_EN
+from linker_genie.warranty_scope import exclusion_category
 
 BARE_NUMBER = re.compile(r"\d+(?:[.,]\d+)?")
 PLACEHOLDER = re.compile(r"\{fact:[^}]+\}")
@@ -294,7 +297,12 @@ class CheckResult:
 
 
 def check(
-    output: TurnOutput, facts: TurnFacts, route: Route | None = None
+    output: TurnOutput,
+    facts: TurnFacts,
+    route: Route | None = None,
+    *,
+    question: str = "",
+    page_product_id: int | None = None,
 ) -> CheckResult:
     """Run the anchoring checks. Empty failures means the turn is grounded."""
     failures: list[str] = []
@@ -320,6 +328,7 @@ def check(
     failures.extend(_no_price_in_text(output))
     failures.extend(_no_amount_from_attachments(output, facts))
     failures.extend(_no_sent_claim(output))
+    failures.extend(_warranty_sources(output, facts, route, question, page_product_id))
     failures.extend(_extreme(output, facts))
     failures.extend(_handoff_only_when_out_of_scope(output, route))
     if route is not None:
@@ -332,6 +341,181 @@ def check(
         citations=tuple(citations),
         unbound_only=bool(number_failures) and len(failures) == len(number_failures),
     )
+
+
+def _warranty_sources(
+    output: TurnOutput,
+    facts: TurnFacts,
+    route: Route | None,
+    question: str,
+    page_product_id: int | None,
+) -> list[str]:
+    """A policy claim must cite its own eligible, condition-carrying unit."""
+    prose = " ".join(b.text for b in output.blocks if isinstance(b, TextBlock))
+    linked = any(
+        isinstance(b, DocumentBlock)
+        and b.ref in facts.warranty_chunks | facts.warranty_procedures
+        for b in output.blocks
+    )
+    warranty_words = r"\b(?:warrant\w*|guarantee\w*|garantie\w*|gewährleist\w*|covered|coverage|exclud\w*|abgedeckt|gedeckt|ausgeschlossen)\b"
+    if not linked and not re.search(warranty_words, question + " " + prose, re.I):
+        return []
+    expected = {
+        pid
+        for note in (route.named_models if route else ())
+        for pid in note.product_ids
+        if note.searched_known
+    }
+    if not expected and page_product_id:
+        expected.add(page_product_id)
+    named_codes = [
+        match.group()
+        for match in _MODEL_CODE.finditer(question.upper())
+        if re.search(r"\d", match.group())
+        and match.group().count("-") + match.group().count("/") >= 2
+    ]
+    if named_codes:
+        matched_models = {
+            pid
+            for cid, models in facts.warranty_models.items()
+            if any(model_pattern(model).search(question) for model in models)
+            for pid in facts.knowledge_products.get(cid, ())
+        }
+        if not matched_models:
+            return ["warranty evidence does not establish the requested model"]
+        expected = expected & matched_models if expected else matched_models
+        if not expected:
+            return ["warranty evidence conflicts with the requested model"]
+    if not expected:
+        requested = [
+            set(call.get("arguments", {}).get("product_ids", []))
+            for call in facts.tool_calls
+            if str(call.get("name", "")).endswith("search-knowledge")
+            and isinstance(call.get("arguments"), dict)
+            and isinstance(call["arguments"].get("product_ids"), list)
+            and all(type(pid) is int for pid in call["arguments"]["product_ids"])
+            and call["arguments"]["product_ids"]
+        ]
+        if requested:
+            expected = set.intersection(*requested)
+    if not (
+        facts.warranty_chunks or facts.warranty_procedures or expected or named_codes
+    ):
+        return []
+    used: set[str] = set()
+    figure_role = _warranty_question_figure_role(question)
+    for block in output.blocks:
+        if not isinstance(block, TextBlock) or not block.text.strip():
+            continue
+        if _droppable_tokens(PLACEHOLDER.sub(" ", block.text)):
+            return [
+                "warranty numbers must be cited with their source fact placeholders"
+            ]
+        cited = set(block.refs) & facts.warranty_chunks
+        cited.update(
+            chunk
+            for fact_id in leftover_placeholders(block.text)
+            if (chunk := chunk_of(fact_id)) in facts.warranty_chunks
+        )
+        if not cited:
+            procedure_refs = set(block.refs) & facts.warranty_procedures
+            normalized = " ".join(block.text.casefold().split())
+            if (
+                len(normalized) >= 30
+                and procedure_refs
+                and all(
+                    (
+                        not expected
+                        or set(facts.knowledge_products.get(cid, ())) & expected
+                    )
+                    and (source := facts.facts.get(f"{cid}.text")) is not None
+                    and normalized in " ".join(source.value.casefold().split())
+                    for cid in procedure_refs
+                )
+            ):
+                used.update(procedure_refs)
+                continue
+            return ["warranty statement must cite its own qualified policy passage"]
+        used.update(cited)
+        if expected and any(
+            not set(facts.knowledge_products.get(cid, ())).intersection(expected)
+            for cid in cited
+        ):
+            return ["warranty passage belongs to a different product"]
+        cited_figures = {
+            facts.warranty_figure_roles.get(fact_id, "")
+            for fact_id in leftover_placeholders(block.text)
+            if chunk_of(fact_id) in facts.warranty_chunks
+        }
+        if figure_role and cited_figures and cited_figures != {figure_role}:
+            return ["warranty figure does not answer the requested policy condition"]
+        battery_coverage = re.search(
+            r"\b(?:batter(?:y|ies)|batterie\w*|akku\w*)\b", block.text, re.I
+        ) and re.search(
+            r"\b(?:cover\w*|exclu\w*|warrant\w*|guarantee\w*|void\w*|denied|reject\w*|garantie\w*|ausgeschlossen|deck\w*|gedeckt|abdeck\w*|erlöschen|verfällt|abgelehnt)\b",
+            block.text,
+            re.I,
+        )
+        if battery_coverage and not any(
+            exclusion_category(note.quote) == "battery_compatibility"
+            for cid in cited
+            for note in facts.qualifications.get(cid, ())
+        ):
+            return [
+                "battery warranty statement needs the relevant manufacturer condition"
+            ]
+        if battery_coverage and not (
+            re.search(r"\b(?:may|might|can|could|kann|können)\b", block.text, re.I)
+            and re.search(r"(?:inverter|wechselrichter)", block.text, re.I)
+            and re.search(r"(?:damage|defect|schad|mangel)", block.text, re.I)
+            and re.search(
+                r"(?:incompatible|not compatible|inkompatibel|nicht\s+kompatibel)",
+                block.text,
+                re.I,
+            )
+            and re.search(
+                r"(?:not\s+(?:be\s+)?covered|excluded|nicht\s+abgedeckt|ausgeschlossen)",
+                block.text,
+                re.I,
+            )
+            and not re.search(
+                r"(?:not\s+excluded|nicht\s+ausgeschlossen)", block.text, re.I
+            )
+        ):
+            return [
+                "battery warranty statement must preserve the conditional inverter-damage scope"
+            ]
+    if used and any(
+        isinstance(block, DocumentBlock)
+        and block.ref in facts.warranty_chunks | facts.warranty_procedures
+        and block.ref not in used
+        for block in output.blocks
+    ):
+        return ["warranty document must match a cited policy statement"]
+    return []
+
+
+def _warranty_question_figure_role(question: str) -> str:
+    """Disambiguate the customer's policy date or duration from the same row."""
+    if re.search(r"\b(?:report\w*|melden|gemeldet|meldung\w*)\b", question, re.I):
+        return "reporting"
+    if re.search(r"\b(?:start\w*|begin\w*|beginn\w*|beginnt)\b", question, re.I):
+        return "start"
+    if re.search(
+        r"\b(?:production|manufactur\w*|produced|producing|made|herstell\w*|fertig\w*)\b",
+        question,
+        re.I,
+    ):
+        return "production"
+    if re.search(
+        r"\b(?:how long|duration|period|wie lange|dauer|garantiezeit\w*|garantiedauer\w*|zeitraum)\b",
+        question,
+        re.I,
+    ):
+        return "period"
+    if re.search(r"\b(?:install\w*|installation\w*)\b", question, re.I):
+        return "effective"
+    return ""
 
 
 # A chunk id is built by `index/chunking.py` `_emit`: the document's hex

@@ -134,6 +134,13 @@ class KnowledgeSearch:
                 "page": hit.page,
                 "section": hit.section,
                 "text": hit.text,
+                **({"warranty_terms": True} if hit.warranty_terms else {}),
+                **({"warranty_procedure": True} if hit.warranty_procedure else {}),
+                **(
+                    {"product_models": list(hit.product_models)}
+                    if hit.warranty_terms or hit.warranty_procedure
+                    else {}
+                ),
                 **({"scope_note": hit.scope_note} if hit.scope_note else {}),
                 **(
                     {
@@ -151,12 +158,21 @@ class KnowledgeSearch:
             for note in notes:
                 annotation = f"{note.quote} (p. {note.page})"
                 start = hit.text.index(annotation)
-                protected.append((start, start + len(annotation)))
+                # The condition itself can contain the customer's requested
+                # date or duration. Only its marker and page label are not facts.
+                protected.append((start + len(note.quote), start + len(annotation)))
                 marker = note.quote.split(":", 1)[0]
                 protected.extend(
                     match.span()
                     for match in re.finditer(re.escape(marker) + r"(?!\d)", hit.text)
                 )
+                # An original ordered-list marker is not a duration.
+                for match in re.finditer(
+                    r"(?<!\w)\d{1,2}\.(?=\s+\d+\s+(?:months?|Monate\w*)\b)",
+                    note.quote,
+                    re.I,
+                ):
+                    protected.append((start + match.start(), start + match.end()))
             tagged = tag(hit.chunk_id, hit.text, excluded_spans=tuple(protected))
             entry["text"] = tagged.text
             entry["figures"] = tagged.figures
@@ -244,6 +260,25 @@ def model_view(payload: dict[str, Any]) -> dict[str, Any]:
                 for key in ("chunk_id", "title", "page", "section", "text")
                 if key in hit
             }
+            | (
+                {
+                    "product_ids": hit.get("product_ids", []),
+                    "product_models": hit.get("product_models", []),
+                    "warranty_terms": True,
+                }
+                if hit.get("warranty_terms") is True
+                else {}
+            )
+            | (
+                {
+                    "product_ids": hit.get("product_ids", []),
+                    "product_models": hit.get("product_models", []),
+                    "warranty_procedure": True,
+                    "scope_note": hit.get("scope_note", ""),
+                }
+                if hit.get("warranty_procedure") is True
+                else {}
+            )
             for hit in payload["hits"]
             if isinstance(hit, dict)
         ]

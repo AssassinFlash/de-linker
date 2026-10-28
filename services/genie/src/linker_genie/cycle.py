@@ -248,7 +248,13 @@ def _ship_number_correction(
     """
     corrected = drop_bare_numbers(output)
     with timing.phase(clock, timing.GROUND):
-        result = check(corrected, facts, route)
+        result = check(
+            corrected,
+            facts,
+            route,
+            question=customer_message(request),
+            page_product_id=request.page_context.product_id,
+        )
     if not result.ok:
         return None
     priced, priced_facts, missed, protected, replacements = _hydrate_priced(
@@ -421,7 +427,13 @@ def run(
         _copy_call_failures(recorded, call_failures)
         last_facts = merge([seeded, facts])
         with timing.phase(clock, timing.GROUND):
-            result = check(output, last_facts, route)
+            result = check(
+                output,
+                last_facts,
+                route,
+                question=customer_message(request),
+                page_product_id=request.page_context.product_id,
+            )
         if not result.ok:
             last_failures = result.failures
             last_citations = result.citations

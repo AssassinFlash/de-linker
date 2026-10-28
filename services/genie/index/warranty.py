@@ -7,6 +7,7 @@ import re
 from collections.abc import Mapping
 from copy import deepcopy
 from dataclasses import replace
+from decimal import Decimal
 from typing import TYPE_CHECKING, Any
 
 from index.chunking import Chunk, Tokenizer
@@ -16,6 +17,8 @@ from linker_genie.publication_scope import authorize_chunk
 from linker_genie.source_models import model_pattern
 from linker_genie.table_projection import model_axis, read_cells
 from linker_genie.warranty_scope import (
+    FAMILY,
+    POWER_RANGE,
     claims_procedure,
     exclusion_category,
     family_signature,
@@ -70,7 +73,15 @@ def _family_cover(parts: list[Chunk]) -> tuple[Chunk, tuple[str, str, str]] | No
     for chunk in parts:
         if chunk.page != 1 or chunk.kind != "text" or chunk.source_picture:
             continue
-        family = family_signature(chunk.section + "\n" + chunk.text)
+        context = chunk.section + "\n" + chunk.text
+        names = {name.casefold() for name in FAMILY.findall(context)}
+        ranges = {
+            tuple(str(Decimal(value.replace(",", ".")).normalize()) for value in pair)
+            for pair in POWER_RANGE.findall(context)
+        }
+        if len(names) == 1 and len(ranges) > 1:
+            return None
+        family = family_signature(context)
         if family is not None:
             candidates.append((chunk, family))
     if not candidates:
@@ -79,6 +90,14 @@ def _family_cover(parts: list[Chunk]) -> tuple[Chunk, tuple[str, str, str]] | No
         # two distinct ranged phrases remain ambiguous.
         for chunk in parts:
             if chunk.page != 1 or chunk.kind != "text" or chunk.source_picture:
+                continue
+            ranges = {
+                tuple(
+                    str(Decimal(value.replace(",", ".")).normalize()) for value in pair
+                )
+                for pair in POWER_RANGE.findall(chunk.section + "\n" + chunk.text)
+            }
+            if len(ranges) > 1:
                 continue
             for match in re.finditer(
                 r"\b[a-z][a-z0-9]*[-\s]+(?:series|serie)\s+"
@@ -454,7 +473,7 @@ def compile_terms(
             for kind, c in selected.items()
             if c is not None
         }
-        native = {c.source_table: c.source_cells for c in parts if c.source_cells}
+        native = {c.source_table: c for c in parts if c.source_cells}
         for chunk in parts:
             if (
                 chunk.kind != "table"
@@ -462,7 +481,8 @@ def compile_terms(
                 or not chunk.source_table
             ):
                 continue
-            cells = read_cells(native.get(chunk.source_table, ()))
+            table_anchor = native.get(chunk.source_table)
+            cells = read_cells(table_anchor.source_cells if table_anchor else ())
             if cells is None:
                 continue
             for row_index in chunk.source_rows:
@@ -496,6 +516,8 @@ def compile_terms(
                 policy["term_row"] = {
                     "row": row_index,
                     "cells": list(cells),
+                    "source_table": chunk.source_table,
+                    "table_anchor_id": table_anchor.id if table_anchor else "",
                     "source": {
                         "chunk_id": chunk.id,
                         "page": chunk.page,
@@ -507,6 +529,7 @@ def compile_terms(
                         [
                             *scoped["source_chunk_ids"],
                             chunk.id,
+                            table_anchor.id if table_anchor else "",
                             *(str(c["chunk_id"]) for c in term_sources.values()),
                         ]
                     )

@@ -21,14 +21,27 @@ from index.extract import Block, Page, pdf_series_cover
 from index.inventory import doc_type_of
 from index.table_compiler import external_axis_anchors
 from index.warranty import _family_cover, compile_procedures, compile_terms
-from linker_genie.facts import collect
+from linker_genie.cycle import run
+from linker_genie.facts import collect, merge
 from linker_genie.hydrate import hydrate
 from linker_genie.knowledge import KnowledgeSearch
 from linker_genie.publication import Snapshot
 from linker_genie.publication_scope import authorize_chunk
 from linker_genie.retrieval import DocumentIndex
-from linker_genie.schema import DocumentBlock, TextBlock, TurnOutput
-from linker_genie.warranty_scope import exclusion_category
+from linker_genie.route import Route
+from linker_genie.schema import (
+    DocumentBlock,
+    PageContext,
+    TextBlock,
+    TurnMessage,
+    TurnOutput,
+    TurnRequest,
+)
+from linker_genie.warranty_scope import exclusion_category, terms_id, terms_text
+
+
+def _generation(output, facts):
+    return lambda _request, _retry: (output, facts)
 
 
 def _compile():
@@ -74,6 +87,14 @@ def test_cover_repeated_section_inherits_range_but_conflicting_range_fails() -> 
     assert _family_cover([cover, repetition, conflict]) is None
     other_title = replace(cover, id="other", section="ET Series", text="80-100kW")
     assert _family_cover([cover, other_title]) is None
+    ambiguous = replace(cover, section="", text="ESA Series 3-10kW and 5-30kW")
+    assert _family_cover([ambiguous]) is None
+    et_with_battery = replace(
+        cover,
+        section="",
+        text="Die ET-Serie 80-100kW kombiniert sich mit der BAT-Serie.",
+    )
+    assert _family_cover([et_with_battery])[1] == ("et", "8E+1", "1E+2")
     raw, original, model, model_scope = warranty_fixture()
     procedures, _ = compile_procedures(
         original,
@@ -83,6 +104,30 @@ def test_cover_repeated_section_inherits_range_but_conflicting_range_fails() -> 
         Words(),
         512,
         restricted_contexts={cover.id: [{"kind": "heading", "quote": "other model"}]},
+    )
+    assert not procedures
+
+
+@pytest.mark.parametrize(
+    "title",
+    ["ESA Series 3-10kW and 5-30kW", "ESA Series 5-30kW and 3-10kW"],
+)
+def test_conflicting_ranges_on_one_cover_do_not_compile_procedures(title: str) -> None:
+    raw, original, model, model_scope = warranty_fixture()
+    original = [
+        replace(chunk, section="", text=title)
+        if chunk.doc_sha256 == model.doc_sha256 and chunk.page == 1
+        else chunk
+        for chunk in original
+    ]
+    procedures, _ = compile_procedures(
+        original,
+        [model],
+        {model.id: model_scope},
+        Snapshot.read(raw),
+        Words(),
+        512,
+        restricted_contexts={},
     )
     assert not procedures
 
@@ -195,7 +240,9 @@ def test_normal_chunk_preparation_persists_physical_cover(
 def test_original_policy_row_conditions_reach_consumer_and_revoke(
     tmp_path: Path, lang: str
 ) -> None:
-    raw, _, model, model_scope, procedures, proc_scopes, terms, term_scopes = _compile()
+    raw, original, model, model_scope, procedures, proc_scopes, terms, term_scopes = (
+        _compile()
+    )
     assert {c.lang for c in terms} == {"en", "de"}
     target = next(c for c in terms if c.lang == lang)
     assert "ESA 5-30k" in target.text
@@ -217,6 +264,8 @@ def test_original_policy_row_conditions_reach_consumer_and_revoke(
             documents=current.documents,
             chunk_id=target.id,
             text=target.text,
+            external_axis_anchors=external_axis_anchors(original),
+            require_table_anchor=True,
         )
 
     assert allowed(proof)
@@ -271,7 +320,7 @@ def test_original_policy_row_conditions_reach_consumer_and_revoke(
             for d in raw["documents"]
         ],
         [(6512, "GW5K-ETA-G20")],
-        [model, *procedures, *terms],
+        [*original, model, *procedures, *terms],
     )
     db = tmp_path / "index.sqlite"
     store.export(root, db)
@@ -389,6 +438,73 @@ def test_procedure_alone_is_not_complete_policy_preparation(tmp_path: Path) -> N
                 "product_id": 6512,
                 "reason": "no_proven_passage",
             } in missing
+        for lang in ("en", "de"):
+            payload = KnowledgeSearch(lambda: index, publication=authority(raw))(
+                {
+                    "query": "contact distributor installer warranty claim"
+                    if lang == "en"
+                    else "Vertriebshändler Installateur Garantieantrag",
+                    "lang": lang,
+                    "product_ids": [6512],
+                }
+            )
+            procedure = next(
+                hit for hit in payload["hits"] if hit.get("warranty_procedure")
+            )
+            facts = collect("linker/search-knowledge", payload, lang)
+            request = TurnRequest(
+                conversation_id="procedure-only",
+                locale=lang,
+                messages=[
+                    TurnMessage(
+                        role="user",
+                        content="How do I make a warranty claim?"
+                        if lang == "en"
+                        else "Wie stelle ich einen Garantieantrag?",
+                    )
+                ],
+                page_context=PageContext(type="product", product_id=6512),
+            )
+            sentence = procedure["text"].split(".", 1)[0] + "."
+            answer = TurnOutput(
+                language=lang,
+                blocks=[TextBlock(text=sentence, refs=[procedure["chunk_id"]])],
+            )
+            result = run(request, _generation(answer, facts), Route("documents"))
+            assert result.grounded and not result.fallback
+            invented = TurnOutput(
+                language=lang,
+                blocks=[
+                    TextBlock(
+                        text="All damage is covered by the warranty."
+                        if lang == "en"
+                        else "Alle Schäden sind durch die Garantie abgedeckt.",
+                        refs=[procedure["chunk_id"]],
+                    ),
+                    DocumentBlock(ref=procedure["chunk_id"]),
+                ],
+            )
+            assert run(
+                request, _generation(invented, facts), Route("documents")
+            ).fallback
+            empty = collect("linker/search-knowledge", {"hits": []}, lang)
+            assert run(
+                request, _generation(invented, empty), Route("documents")
+            ).fallback
+            unreferenced = TurnOutput(
+                language=lang,
+                blocks=[
+                    TextBlock(
+                        text="All damage is covered by the warranty."
+                        if lang == "en"
+                        else "Alle Schäden sind durch die Garantie abgedeckt.",
+                        refs=[],
+                    )
+                ],
+            )
+            assert run(
+                request, _generation(unreferenced, empty), Route("documents")
+            ).fallback
     finally:
         index.close()
 
@@ -524,6 +640,44 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
     date_cell["text"] = "produced before 1 st January 2026"
     assert not allowed(changed, anchors)
 
+    # Recompute every self-asserted ID and hash around a fabricated native row.
+    # The independent original table and text chunks must still defeat it.
+    forged = deepcopy(proof)
+    evidence = forged["warranty_scope"]
+    row = evidence["policy"]["term_row"]
+    row["cells"][4]["text"] = "99 years *limited warranty"
+    old_id = row["source"]["chunk_id"]
+    row["source"]["text"] = row["source"]["text"].replace("10 years", "99 years", 1)
+    fake_id = f"{eha.doc_sha256[:12]}-p{row['source']['page']}-{hashlib.sha256(('table' + chr(0) + row['source']['text']).encode()).hexdigest()[:8]}"
+    row["source"]["chunk_id"] = fake_id
+    evidence["source_chunk_id"] = fake_id
+    evidence["policy"]["row_chunk_id"] = fake_id
+    evidence["policy"]["row_quote"] = evidence["policy"]["row_quote"].replace(
+        "10 years", "99 years", 1
+    )
+    forged["source_chunk_ids"] = list(
+        dict.fromkeys([*forged["source_chunk_ids"], old_id, fake_id])
+    )
+    forged_text = terms_text(evidence, forged["source_chunk_ids"])
+    assert forged_text is not None
+    fake_text = forged_text[0]
+    evidence["text_sha256"] = hashlib.sha256(fake_text.encode()).hexdigest()
+    fake_chunk = terms_id(
+        eha.doc_sha256, eha.page, evidence["model"], fake_id, fake_text
+    )
+    assert not authorize_chunk(
+        eha.doc_sha256,
+        [6528],
+        forged["associations"],
+        forged,
+        products=source.products,
+        documents=source.documents,
+        chunk_id=fake_chunk,
+        text=fake_text,
+        external_axis_anchors=anchors,
+        require_table_anchor=True,
+    )
+
     all_scopes = {**data["scopes"], **procedures_scope, **term_scopes}
     chunks = {c.id: c for c in [*original, *compiled, *procedures, *terms]}
     root = tmp_path / "current-corpus"
@@ -605,6 +759,7 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
                 for hit in result["hits"]
                 if any(
                     exclusion_category(note["quote"]) == "battery_compatibility"
+                    and note["lang"] == lang
                     for note in hit.get("qualifications", [])
                 )
             )
@@ -624,6 +779,397 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
             assert (
                 "first installed" if lang == "en" else "Herstellungsdatum"
             ) in answer.blocks[0].text
+            claim = (
+                "GoodWe may treat inverter damage caused by an incompatible battery as not covered."
+                if lang == "en"
+                else "GoodWe kann den Wechselrichterschaden bei einer inkompatiblen Batterie als nicht abgedeckt behandeln."
+            )
+            request = TurnRequest(
+                conversation_id="warranty-fixture",
+                locale=lang,
+                messages=[
+                    TurnMessage(
+                        role="user",
+                        content=(
+                            "Does the warranty cover inverter damage from an incompatible battery?"
+                            if lang == "en"
+                            else "Deckt die Garantie Wechselrichterschäden durch eine inkompatible Batterie?"
+                        ),
+                    )
+                ],
+                page_context=PageContext(type="product", product_id=6528),
+            )
+            route = Route("documents")
+            bad = TurnOutput(
+                language=lang,
+                blocks=[
+                    TextBlock(text=claim, refs=[]),
+                    DocumentBlock(ref=battery["chunk_id"]),
+                ],
+            )
+            denied = run(request, _generation(bad, facts), route)
+            assert denied.fallback and not denied.grounded
+            assert all(
+                not isinstance(block, TextBlock) or block.text != claim
+                for block in denied.output.blocks
+            )
+            good = TurnOutput(
+                language=lang,
+                blocks=[
+                    TextBlock(text=claim, refs=[battery["chunk_id"]]),
+                    DocumentBlock(ref=battery["chunk_id"]),
+                ],
+            )
+            shipped = run(request, _generation(good, facts), route)
+            assert shipped.grounded and not shipped.fallback
+            assert (
+                "not compatible"
+                if lang == "en"
+                else "nicht mit dem GOODWE-Wechselrichter kompatibel"
+            ) in shipped.output.blocks[0].text
+            # A valid but unrelated policy row, or another model's policy, is
+            # not a citation for this particular battery exclusion.
+            base = next(
+                hit
+                for hit in result["hits"]
+                if hit.get("warranty_terms")
+                and not any(
+                    exclusion_category(note["quote"]) == "battery_compatibility"
+                    for note in hit["qualifications"]
+                )
+            )
+            wrong = TurnOutput(
+                language=lang,
+                blocks=[
+                    TextBlock(text=claim, refs=[base["chunk_id"]]),
+                    DocumentBlock(ref=battery["chunk_id"]),
+                ],
+            )
+            assert run(request, _generation(wrong, facts), route).fallback
+            other_result = search(
+                {
+                    "query": "inverter damage battery pack not compatible warranty"
+                    if lang == "en"
+                    else "Wechselrichterschaden Batteriepack nicht kompatibel Garantie",
+                    "lang": lang,
+                    "product_ids": [6527],
+                }
+            )
+            other = next(
+                hit
+                for hit in other_result["hits"]
+                if any(
+                    exclusion_category(note["quote"]) == "battery_compatibility"
+                    and note["lang"] == lang
+                    for note in hit.get("qualifications", [])
+                )
+            )
+            mixed = merge(
+                [facts, collect("linker/search-knowledge", other_result, lang)]
+            )
+            wrong_model = TurnOutput(
+                language=lang,
+                blocks=[
+                    TextBlock(text=claim, refs=[other["chunk_id"]]),
+                    DocumentBlock(ref=battery["chunk_id"]),
+                ],
+            )
+            assert run(request, _generation(wrong_model, mixed), route).fallback
+            explicit_model = request.model_copy(
+                update={
+                    "messages": [
+                        TurnMessage(
+                            role="user",
+                            content=(
+                                "Does the warranty for GW10K-EHA-G20 cover inverter damage from an incompatible battery?"
+                                if lang == "en"
+                                else "Deckt die Garantie für GW10K-EHA-G20 Wechselrichterschäden durch eine inkompatible Batterie?"
+                            ),
+                        )
+                    ],
+                    "page_context": PageContext(type="other"),
+                }
+            )
+            assert run(explicit_model, _generation(wrong_model, mixed), route).fallback
+            only_wrong = collect("linker/search-knowledge", other_result, lang)
+            only_wrong_output = TurnOutput(
+                language=lang,
+                blocks=[
+                    TextBlock(text=claim, refs=[other["chunk_id"]]),
+                    DocumentBlock(ref=other["chunk_id"]),
+                ],
+            )
+            assert run(
+                explicit_model, _generation(only_wrong_output, only_wrong), route
+            ).fallback
+            lower_case_model = explicit_model.model_copy(
+                update={
+                    "messages": [
+                        TurnMessage(
+                            role="user",
+                            content="Does the warranty for gw10k-eha-g20 cover the battery?",
+                        )
+                    ]
+                }
+            )
+            assert run(
+                lower_case_model, _generation(only_wrong_output, only_wrong), route
+            ).fallback
+            mismatched_document = TurnOutput(
+                language=lang,
+                blocks=[
+                    TextBlock(text=claim, refs=[battery["chunk_id"]]),
+                    DocumentBlock(ref=other["chunk_id"]),
+                ],
+            )
+            assert run(request, _generation(mismatched_document, mixed), route).fallback
+            categorical = TurnOutput(
+                language=lang,
+                blocks=[
+                    TextBlock(
+                        text="An incompatible battery always voids the warranty."
+                        if lang == "en"
+                        else "Eine inkompatible Batterie lässt die Garantie immer erlöschen.",
+                        refs=[battery["chunk_id"]],
+                    )
+                ],
+            )
+            assert run(request, _generation(categorical, facts), route).fallback
+            reversed_condition = TurnOutput(
+                language=lang,
+                blocks=[
+                    TextBlock(
+                        text=(
+                            "GoodWe may cover inverter damage caused by an incompatible battery under warranty."
+                            if lang == "en"
+                            else "GoodWe kann Wechselrichterschäden durch eine inkompatible Batterie unter Garantie abdecken."
+                        ),
+                        refs=[battery["chunk_id"]],
+                    )
+                ],
+            )
+            assert run(request, _generation(reversed_condition, facts), route).fallback
+            raw_number = TurnOutput(
+                language=lang,
+                blocks=[
+                    TextBlock(
+                        text="The warranty lasts 99 years."
+                        if lang == "en"
+                        else "Die Garantie dauert 99 Jahre.",
+                        refs=[battery["chunk_id"]],
+                    )
+                ],
+            )
+            assert run(request, _generation(raw_number, facts), route).fallback
+
+            figures = battery["figures"]
+            falsified = deepcopy(battery)
+            month_value = "12 months" if lang == "en" else "12 Monate"
+            month_id = next(
+                key for key, value in figures.items() if value == month_value
+            )
+            falsified["figures"][month_id] = month_value.replace("12", "13")
+            falsified["text"] = falsified["text"].replace(
+                month_value, month_value.replace("12", "13")
+            )
+            assert not collect(
+                "linker/search-knowledge", {"hits": [falsified]}, lang
+            ).chunk_ids
+            unshown = deepcopy(battery)
+            unshown["figures"][f"{battery['chunk_id']}.n999"] = "99 years"
+            assert not collect(
+                "linker/search-knowledge", {"hits": [unshown]}, lang
+            ).chunk_ids
+            cases = (
+                [
+                    (
+                        "10 years",
+                        "How long is the product warranty?",
+                        "The limited warranty is {value}.",
+                    ),
+                    (
+                        "1 st January 2026",
+                        "Which production date does the warranty require?",
+                        "The warranty row applies to products made on or after {value}.",
+                    ),
+                    (
+                        "12 months",
+                        "When does the warranty start?",
+                        "It starts at the earlier of first installation or {value} after production.",
+                    ),
+                    (
+                        "March 05, 2026",
+                        "When does this warranty policy apply to installations?",
+                        "This policy applies to installations on or after {value}, unless a newer policy applies.",
+                    ),
+                ]
+                if lang == "en"
+                else [
+                    (
+                        "10 Jahre",
+                        "Wie lange gilt die Produktgarantie?",
+                        "Die eingeschränkte Garantie beträgt {value}.",
+                    ),
+                    (
+                        "1. Januar 2026",
+                        "Welches Herstellungsdatum verlangt die Garantie?",
+                        "Die Garantiezeile gilt für Produkte, die ab {value} hergestellt wurden.",
+                    ),
+                    (
+                        "12 Monate",
+                        "Wann beginnt die Garantie?",
+                        "Sie beginnt zum früheren Zeitpunkt der Erstinstallation oder {value} nach der Herstellung.",
+                    ),
+                    (
+                        "5. März 2026",
+                        "Ab wann gilt diese Garantie für Installationen?",
+                        "Diese Garantie gilt für Installationen ab {value}, sofern keine neuere Regelung gilt.",
+                    ),
+                ]
+            )
+            for value, question, response in cases:
+                fid = next(key for key, actual in figures.items() if actual == value)
+                numeric = TurnOutput(
+                    language=lang,
+                    blocks=[
+                        TextBlock(
+                            text=response.format(value=f"{{fact:{fid}}}"),
+                            refs=[battery["chunk_id"]],
+                        )
+                    ],
+                )
+                question_request = request.model_copy(
+                    update={"messages": [TurnMessage(role="user", content=question)]}
+                )
+                numeric_result = run(
+                    question_request, _generation(numeric, facts), route
+                )
+                assert numeric_result.grounded and not numeric_result.fallback, (
+                    lang,
+                    value,
+                    question,
+                    facts.warranty_figure_roles.get(fid),
+                    numeric_result.failures,
+                )
+                assert value in numeric_result.output.blocks[0].text
+            production_value, production_question, production_response = cases[1]
+            effective_value, effective_question, effective_response = cases[3]
+            production_id = next(
+                key for key, actual in figures.items() if actual == production_value
+            )
+            effective_id = next(
+                key for key, actual in figures.items() if actual == effective_value
+            )
+            for question, response, wrong_id in (
+                (production_question, production_response, effective_id),
+                (effective_question, effective_response, production_id),
+            ):
+                swapped = TurnOutput(
+                    language=lang,
+                    blocks=[
+                        TextBlock(
+                            text=response.format(value=f"{{fact:{wrong_id}}}"),
+                            refs=[battery["chunk_id"]],
+                        )
+                    ],
+                )
+                swapped_request = request.model_copy(
+                    update={"messages": [TurnMessage(role="user", content=question)]}
+                )
+                assert run(swapped_request, _generation(swapped, facts), route).fallback
+            mixed_dates = TurnOutput(
+                language=lang,
+                blocks=[
+                    TextBlock(
+                        text=(
+                            f"The production cutoff is {{fact:{effective_id}}}; the installation policy date is {{fact:{production_id}}}."
+                            if lang == "en"
+                            else f"Der Herstellungsstichtag ist {{fact:{effective_id}}}; das Installationsdatum ist {{fact:{production_id}}}."
+                        ),
+                        refs=[battery["chunk_id"]],
+                    )
+                ],
+            )
+            mixed_request = request.model_copy(
+                update={
+                    "messages": [TurnMessage(role="user", content=production_question)]
+                }
+            )
+            assert run(mixed_request, _generation(mixed_dates, facts), route).fallback
+            reporting = next(
+                hit
+                for hit in result["hits"]
+                if any(
+                    exclusion_category(note["quote"]) == "reporting"
+                    and note["lang"] == lang
+                    for note in hit.get("qualifications", [])
+                )
+            )
+            report_value = "1 month" if lang == "en" else "eines Monats"
+            assert report_value in reporting["figures"].values(), (
+                lang,
+                reporting["figures"],
+                reporting["qualifications"][-1],
+            )
+            report_id = next(
+                key
+                for key, value in reporting["figures"].items()
+                if value == report_value
+            )
+            report_request = request.model_copy(
+                update={
+                    "messages": [
+                        TurnMessage(
+                            role="user",
+                            content=(
+                                "How soon must I report a warranty defect?"
+                                if lang == "en"
+                                else "Wie schnell muss ich einen Garantiefall melden?"
+                            ),
+                        )
+                    ]
+                }
+            )
+            report_answer = TurnOutput(
+                language=lang,
+                blocks=[
+                    TextBlock(
+                        text=(
+                            f"Report the defect within {{fact:{report_id}}} after it first appears, during the warranty period."
+                            if lang == "en"
+                            else f"Melden Sie den Mangel innerhalb {{fact:{report_id}}} nach seinem ersten Auftreten und während der Garantiezeit."
+                        ),
+                        refs=[reporting["chunk_id"]],
+                    )
+                ],
+            )
+            shipped_report = run(
+                report_request, _generation(report_answer, facts), route
+            )
+            assert shipped_report.grounded and not shipped_report.fallback
+            assert report_value in shipped_report.output.blocks[0].text
+            wrong_deadline = next(
+                key
+                for key, value in reporting["figures"].items()
+                if value == ("12 months" if lang == "en" else "12 Monate")
+            )
+            deadline_swap = report_answer.model_copy(
+                update={
+                    "blocks": [
+                        TextBlock(
+                            text=(
+                                f"Report the defect within {{fact:{wrong_deadline}}}."
+                                if lang == "en"
+                                else f"Melden Sie den Mangel innerhalb {{fact:{wrong_deadline}}}."
+                            ),
+                            refs=[reporting["chunk_id"]],
+                        )
+                    ]
+                }
+            )
+            assert run(
+                report_request, _generation(deadline_swap, facts), route
+            ).fallback
         changed_source = deepcopy(raw)
         sheet = proof["warranty_scope"]["datasheet"]["document_id"]
         next(d for d in changed_source["documents"] if d["document_id"] == sheet)[
@@ -635,6 +1181,40 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
         assert not any("-warranty-" in hit["chunk_id"] for hit in revoked["hits"])
     finally:
         index.close()
+    for changed_id in (
+        proof["warranty_scope"]["policy"]["term_row"]["source"]["chunk_id"],
+        proof["warranty_scope"]["policy"]["term_sources"]["start"]["chunk_id"],
+    ):
+        with sqlite3.connect(db) as connection:
+            old_text = connection.execute(
+                "SELECT text FROM chunks WHERE id=?", (changed_id,)
+            ).fetchone()[0]
+            connection.execute(
+                "UPDATE chunks SET text=? WHERE id=?",
+                (old_text + " altered", changed_id),
+            )
+        index = DocumentIndex(db, encoder=None)
+        try:
+            result = KnowledgeSearch(
+                lambda index=index: index, publication=authority(raw)
+            )(
+                {
+                    "query": "warranty period conditions",
+                    "lang": "en",
+                    "product_ids": [6528],
+                }
+            )
+            assert not any(
+                "-warranty-terms-" in hit["chunk_id"]
+                and hit["document_id"] == proof["document_ids"][0]
+                for hit in result["hits"]
+            )
+        finally:
+            index.close()
+        with sqlite3.connect(db) as connection:
+            connection.execute(
+                "UPDATE chunks SET text=? WHERE id=?", (old_text, changed_id)
+            )
     with sqlite3.connect(db) as connection:
         row = connection.execute(
             "SELECT value FROM meta WHERE key='external_axis_anchors'"

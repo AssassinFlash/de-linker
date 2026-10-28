@@ -14,7 +14,7 @@ from decimal import Decimal
 from typing import Any
 
 from linker_genie.source_models import model_pattern
-from linker_genie.table_projection import model_axis, read_cells
+from linker_genie.table_projection import cells_digest, model_axis, read_cells
 
 # Literal manufacturer cover vocabulary in the hosted ESA/ET/STSs originals.
 # Power ranges must agree; an ESA family name alone cannot cross its ranges.
@@ -605,6 +605,61 @@ def valid_warranty_scope(
             ):
                 return False
     if basis == "warranty_terms":
+        row = policy.get("term_row")
+        if not isinstance(row, dict) or not isinstance(external_axis_anchors, Mapping):
+            return False
+        table_id, source = row.get("table_anchor_id"), row.get("source")
+        anchor = (
+            external_axis_anchors.get(table_id) if isinstance(table_id, str) else None
+        )
+        cells = read_cells(row.get("cells", []))
+        if (
+            not isinstance(anchor, dict)
+            or anchor.get("kind") != "policy_table"
+            or table_id not in source_ids
+            or not isinstance(source, dict)
+            or cells is None
+            or anchor.get("source_sha256") != sha
+            or anchor.get("source_page") != source.get("page")
+            or anchor.get("source_table") != row.get("source_table")
+            or anchor.get("source_cells_sha256") != cells_digest(cells)
+            or not isinstance(anchor.get("fragments"), list)
+            or not any(
+                isinstance(fragment, dict)
+                and fragment.get("chunk_id") == source.get("chunk_id")
+                and fragment.get("text") == source.get("text")
+                and isinstance(fragment.get("rows"), list)
+                and row.get("row") in fragment["rows"]
+                for fragment in anchor.get("fragments", [])
+            )
+        ):
+            return False
+        term_sources = policy.get("term_sources")
+        if not isinstance(term_sources, dict):
+            return False
+        originals = [*term_sources.values()]
+        if policy.get("additional_exclusion") is not None:
+            originals.append(policy["additional_exclusion"])
+        for source in originals:
+            if not isinstance(source, dict):
+                return False
+            source_id = source.get("chunk_id")
+            if not isinstance(source_id, str):
+                return False
+            source_anchor = external_axis_anchors.get(source_id)
+            if (
+                not isinstance(source_anchor, dict)
+                or source_anchor.get("kind") != "policy_text"
+                or source_anchor.get("source_sha256") != sha
+                or source_anchor.get("source_page") != source.get("page")
+                or source_anchor.get("text") != source.get("text")
+                or source_anchor.get("lang") != source.get("lang")
+                or (
+                    "section" in source
+                    and source_anchor.get("section") != source["section"]
+                )
+            ):
+                return False
         rendered = terms_text(value, source_ids)
         return (
             rendered is not None
