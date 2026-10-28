@@ -204,7 +204,8 @@ def _post_verify(
             raise NativeVerifyFailure("retry_exhausted", status, transport)
         delay = max(float(2**attempt), suggested)
         if time.time() + delay + 1 >= expiry:
-            raise NativeVerifyFailure("expired")
+            # The authority failed and no further retry fits within this lease.
+            raise NativeVerifyFailure("retry_exhausted", status, transport)
         time.sleep(delay)
     raise NativeVerifyFailure("retry_exhausted")
 

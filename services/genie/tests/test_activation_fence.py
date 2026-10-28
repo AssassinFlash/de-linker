@@ -501,6 +501,7 @@ def test_activation_retries_read_only_native_verification_under_its_lock(
         ("malformed", 1),
         ("expired", 0),
         ("expires_during_verify", 1),
+        ("retry_cannot_fit", 1),
         ("expires_during_loaded", 2),
         ("503", 3),
         ("loaded_503", 2),
@@ -515,7 +516,13 @@ def test_rejected_or_expired_verification_preserves_old_fence(
         index_release.activate(tmp_path, "20261024T100000Z", old_sha, old)
     sha, activation = candidate(tmp_path, 2, "20261024T100100Z")
     clock = [1000.0]
-    activation["lease_expires_at"] = 1001 if failure == "expired" else 1300
+    activation["lease_expires_at"] = (
+        1001
+        if failure == "expired"
+        else 1003
+        if failure == "retry_cannot_fit"
+        else 1300
+    )
     calls: list[str] = []
     monkeypatch.setattr(time, "time", lambda: clock[0])
     monkeypatch.setattr(time, "sleep", lambda _: None)
@@ -525,6 +532,10 @@ def test_rejected_or_expired_verification_preserves_old_fence(
             del timeout
             calls.append(request.full_url)
             if request.full_url == activation["verify_url"]:
+                if failure == "retry_cannot_fit":
+                    headers = Message()
+                    headers["Retry-After"] = "300"
+                    raise HTTPError(request.full_url, 503, "fixture", headers, None)
                 if failure in {"404", "409", "503"}:
                     raise HTTPError(
                         request.full_url, int(failure), "fixture", Message(), None
@@ -557,8 +568,12 @@ def test_rejected_or_expired_verification_preserves_old_fence(
             raise HTTPError(request.full_url, 503, "fixture", Message(), None)
 
     monkeypatch.setattr(index_release, "build_opener", lambda *_: Opener())
-    with pytest.raises(RuntimeError):
+    with pytest.raises(RuntimeError) as rejected:
         index_release.activate(tmp_path, "20261024T100100Z", sha, activation)
+    if failure == "retry_cannot_fit":
+        assert isinstance(rejected.value, index_release.NativeVerifyFailure)
+        assert rejected.value.reason == "retry_exhausted"
+        assert rejected.value.status == 503
     assert len(calls) == expected_calls
     assert index_release.current(tmp_path) == "20261024T100000Z"
     assert json.loads((tmp_path / index_release.FENCE).read_text())["epoch"] == 1
