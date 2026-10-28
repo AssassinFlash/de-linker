@@ -4,6 +4,7 @@ const energyViews = [
 	"weather",
 	"pv",
 	"pvgis-reference",
+	"direct-beam",
 	"scenario",
 	"equipment",
 	"runs",

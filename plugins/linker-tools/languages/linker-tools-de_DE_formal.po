@@ -12427,3 +12427,291 @@ msgstr "In diesem gespeicherten Ergebnis nicht eindeutig angegeben"
 #: ../../apps/planner/src/components/ProjectEditor.tsx ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js
 msgid "This workspace version cannot safely save projects with PV string connection data. Keep your local draft and reload the workspace before saving again."
 msgstr "Diese Version des Arbeitsbereichs kann Projekte mit PV-String-Zuordnungen nicht sicher speichern. Behalten Sie Ihren lokalen Entwurf und laden Sie den Arbeitsbereich neu, bevor Sie erneut speichern."
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "The saved result is hidden until this session is verified."
+msgstr "Das gespeicherte Ergebnis wird erst nach Prüfung dieser Sitzung angezeigt."
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx ../../apps/planner/src/components/energy/planningLabels.ts ../../apps/planner/src/components/energy/PlanningReportForm.tsx build/planner/assets/planner.js
+msgid "Geometric direct-beam visibility"
+msgstr "Geometrische Sichtbarkeit direkter Sonnenstrahlung"
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "Sample the direct path from each included module to the sun at selected weather timestamps. Declared roofs, obstacle volumes and other modules are treated as opaque. Diffuse light, electrical losses and annual generation are not calculated by this method."
+msgstr "Für die ausgewählten Wetterzeitpunkte wird der direkte Weg von jedem einbezogenen Modul zur Sonne abgetastet. Erfasste Dachflächen, Hindernisvolumen und weitere Module gelten dabei als lichtundurchlässig. Diffuslicht, elektrische Verluste und Jahreserträge werden mit dieser Methode nicht berechnet."
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "This geometric method is unavailable in the current service version. Saved selections and earlier results remain available."
+msgstr "Diese geometrische Methode ist in der aktuellen Version des Berechnungsdienstes nicht verfügbar. Gespeicherte Auswahlen und frühere Ergebnisse bleiben verfügbar."
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "A georeferenced roof with a defined north direction and current module data is required. Review the roof design and its module selection."
+msgstr "Erforderlich sind ein georeferenziertes Dach mit festgelegter Nordrichtung und aktuellen Moduldaten. Prüfen Sie den Dachentwurf und die Modulauswahl."
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "Open roof design"
+msgstr "Dachentwurf öffnen"
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "Weather sources for this project could not be loaded. Your saved selection has been retained."
+msgstr "Die Wetterquellen dieses Projekts konnten nicht geladen werden. Ihre gespeicherte Auswahl bleibt erhalten."
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "Loading project weather sources…"
+msgstr "Wetterquellen des Projekts werden geladen…"
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "This project has no retained weather source for this method. Prepare weather data first."
+msgstr "Für diese Methode ist im Projekt noch keine Wetterquelle gespeichert. Bereiten Sie zuerst Wetterdaten vor."
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "Open weather preparation"
+msgstr "Wetterdatenaufbereitung öffnen"
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "The retained weather source must match the project's saved weather request and interpretation. Review the weather settings or choose the matching retained source; historical data is not replaced automatically."
+msgstr "Die gespeicherte Wetterquelle muss zur Wetteranfrage und Dateninterpretation des gespeicherten Projekts passen. Prüfen Sie die Wettereinstellungen oder wählen Sie die passende gespeicherte Quelle. Historische Daten werden nicht automatisch ersetzt."
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "The saved geometric selection could not be read. It can be removed from the draft and entered again."
+msgstr "Die gespeicherte Auswahl für die Geometrieberechnung konnte nicht gelesen werden. Sie kann aus dem Entwurf entfernt und erneut erfasst werden."
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "Project weather source"
+msgstr "Wetterquelle des Projekts"
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "Choose a weather source"
+msgstr "Wetterquelle auswählen"
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "Saved source — load further sources to inspect it"
+msgstr "Gespeicherte Quelle – zum Anzeigen weitere Quellen laden"
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "More weather sources"
+msgstr "Weitere Wetterquellen"
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "Coarse grid cells per module edge"
+msgstr "Zellen je Modulkante im groben Raster"
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "Fine grid cells per module edge"
+msgstr "Zellen je Modulkante im feinen Raster"
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "Both equal-area midpoint grids must be specified. The fine grid must have more cells per edge. Their observed difference is not an error bound."
+msgstr "Beide Raster sind anzugeben; ausgewertet werden die Mittelpunkte gleich großer Zellen. Das feine Raster muss je Kante mehr Zellen enthalten. Die beobachtete Differenz ist keine Fehlerschranke."
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "Go to synthetic interval (UTC)"
+msgstr "Synthetisches Intervall aufrufen (UTC)"
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "Show interval page"
+msgstr "Intervallseite anzeigen"
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "The requested date could not be located exactly in this source. Check the displayed UTC intervals before selecting rows."
+msgstr "Das gewünschte Datum konnte in dieser Quelle nicht exakt zugeordnet werden. Prüfen Sie die angezeigten UTC-Intervalle, bevor Sie Zeilen auswählen."
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "First source interval on this page"
+msgstr "Erstes Quellintervall auf dieser Seite"
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "The weather interval page could not be verified. No rows have been replaced or selected automatically."
+msgstr "Die angezeigte Seite der Wetterintervalle konnte nicht geprüft werden. Es wurden keine Zeilen automatisch ersetzt oder ausgewählt."
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "Select this page"
+msgstr "Intervalle dieser Seite auswählen"
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "The source combines selected typical months. The synthetic interval calendar and the source irradiance timestamp have different meanings; both are shown in UTC."
+msgstr "Die Quelle setzt sich aus ausgewählten typischen Monaten zusammen. Der synthetische Intervallkalender und die Zeitpunkte der Strahlungsdaten haben unterschiedliche Bedeutungen; beide werden in UTC angezeigt."
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "Select"
+msgstr "Auswählen"
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "Synthetic interval (UTC)"
+msgstr "Synthetisches Intervall (UTC)"
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "Source irradiance timestamp (UTC)"
+msgstr "Zeitpunkt der Strahlungsdaten aus der Quelle (UTC)"
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "Select interval beginning %s"
+msgstr "Intervall ab %s auswählen"
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "Selected source intervals: %d"
+msgstr "Ausgewählte Quellintervalle: %d"
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "Clear selected intervals"
+msgstr "Intervallauswahl leeren"
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "Remove direct-beam settings from draft"
+msgstr "Einstellungen zur Direktstrahlung aus dem Entwurf entfernen"
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "Complete the source, interval selection and sampling fields, or remove this setup before saving the project."
+msgstr "Vervollständigen Sie die Quelle, die Intervallauswahl und die Rasterangaben oder entfernen Sie diese Einstellungen, bevor Sie das Projekt speichern."
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "Maximum requested midpoint samples: %s"
+msgstr "Maximal angeforderte Zellmittelpunkte: %s"
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "The requested sampling exceeds this service's sample budget. Reduce the selected intervals or grid sizes."
+msgstr "Die angeforderte Abtastung überschreitet die zulässige Punktzahl des Berechnungsdienstes. Verringern Sie die Anzahl ausgewählter Intervalle oder die Rastergrößen."
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "Save the project before requesting this geometric calculation."
+msgstr "Speichern Sie das Projekt, bevor Sie diese Geometrieberechnung anfordern."
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "Calculate direct-beam visibility"
+msgstr "Sichtbarkeit der Direktstrahlung berechnen"
+
+#: ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "%s · row %d, column %d"
+msgstr "%s · Reihe %d, Spalte %d"
+
+#: ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "Unidentified blocker"
+msgstr "Nicht eindeutig zugeordnetes blockierendes Objekt"
+
+#: ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "These fractions describe the sampled geometric path to direct sunlight. They are not electrical losses, annual yield or equipment and grid approval."
+msgstr "Diese Anteile beschreiben den abgetasteten geometrischen Weg zum direkten Sonnenlicht. Sie sind keine Angaben zu elektrischen Verlusten oder Jahreserträgen und keine Geräte- oder Netzfreigabe."
+
+#: ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "This result uses an earlier saved roof and source selection. The 3D view below shows that frozen geometry, not the current draft."
+msgstr "Dieses Ergebnis verwendet einen früher gespeicherten Dachentwurf und die damalige Quellenauswahl. Die 3D-Ansicht unten zeigt diese festgehaltene Geometrie und nicht den aktuellen Entwurf."
+
+#: ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "The visibility calculation ended without a usable result. No PV profile or loss result was created."
+msgstr "Die Sichtbarkeitsberechnung endete ohne verwendbares Ergebnis. Es wurde kein PV-Profil und kein Verlustergebnis erstellt."
+
+#: ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "The module source information has changed or is no longer available. Review the roof module selection before making a new request."
+msgstr "Die Quellenangaben zu den Modulen haben sich geändert oder sind nicht mehr verfügbar. Prüfen Sie die Modulauswahl des Dachentwurfs, bevor Sie eine neue Berechnung anfordern."
+
+#: ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "A saved source or calculation version could not be verified. The original request and saved project remain available."
+msgstr "Eine gespeicherte Quelle oder Berechnungsversion konnte nicht geprüft werden. Die ursprüngliche Anfrage und das gespeicherte Projekt bleiben verfügbar."
+
+#: ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "Review the selected source rows, roof geometry and sampling budget. Numerical ambiguity or an exhausted budget stops calculation; it does not imply full geometric visibility."
+msgstr "Prüfen Sie die ausgewählten Quellintervalle, die Dachgeometrie und das Abtastbudget. Numerische Mehrdeutigkeit oder ein ausgeschöpftes Budget führen zum Abbruch der Berechnung; vollständige geometrische Sichtbarkeit wird dann nicht angenommen."
+
+#: ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "This geometric task was cancelled. No visibility fraction is available from it."
+msgstr "Diese geometrische Aufgabe wurde abgebrochen. Daraus steht kein Sichtbarkeitsanteil zur Verfügung."
+
+#: ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "The geometric result could not be verified against its saved run and geometry. No overlay is shown."
+msgstr "Das geometrische Ergebnis konnte nicht anhand der gespeicherten Berechnung und Geometrie geprüft werden. Es wird keine Überlagerung angezeigt."
+
+#: ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "Selected source irradiance timestamp (UTC)"
+msgstr "Ausgewählter Zeitpunkt der Strahlungsdaten aus der Quelle (UTC)"
+
+#: ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "Original source label (UTC)"
+msgstr "Ursprüngliche Zeitangabe der Quelle (UTC)"
+
+#: ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "Midpoint samples evaluated"
+msgstr "Ausgewertete Zellmittelpunkte"
+
+#: ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "Hide geometric 3D overlay"
+msgstr "Geometrische 3D-Überlagerung ausblenden"
+
+#: ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "Show geometric 3D overlay"
+msgstr "Geometrische 3D-Überlagerung anzeigen"
+
+#: ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "Lighter teal means greater sampled direct-beam visibility; darker teal means less. Grey modules have no defined fraction at this timestamp. Colours do not represent power or energy."
+msgstr "Helleres Petrol bedeutet einen größeren abgetasteten Sichtbarkeitsanteil für direkte Sonnenstrahlung, dunkleres Petrol einen kleineren. Graue Module haben für diesen Zeitpunkt keinen definierten Anteil. Die Farben stellen weder Leistung noch Energie dar."
+
+#: ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "The coarse and fine grids are equal-area midpoint samples. Their absolute difference describes the observed change between these resolutions; it is not an error bound. Night and back-facing or tangent modules have no fraction."
+msgstr "Das grobe und das feine Raster verwenden die Mittelpunkte gleich großer Zellen. Die absolute Differenz beschreibt die beobachtete Änderung zwischen diesen Auflösungen; sie ist keine Fehlerschranke. Bei Nacht sowie bei rückseitigem oder tangentialem Lichteinfall wird kein Anteil angegeben."
+
+#: ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "Module"
+msgstr "Modul"
+
+#: ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "Geometric status"
+msgstr "Geometrischer Status"
+
+#: ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "Coarse visibility"
+msgstr "Sichtbarkeit im groben Raster"
+
+#: ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "Fine visibility"
+msgstr "Sichtbarkeit im feinen Raster"
+
+#: ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "Observed difference (percentage points)"
+msgstr "Beobachtete Differenz (Prozentpunkte)"
+
+#: ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "Sampled"
+msgstr "Abgetastet"
+
+#: ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "Sun at or below horizon"
+msgstr "Sonne am oder unter dem Horizont"
+
+#: ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "Back-facing or tangent"
+msgstr "Rückseitiger oder tangentialer Lichteinfall"
+
+#: ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "Sampling cost and blockers"
+msgstr "Abtastaufwand und blockierende Objekte"
+
+#: ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "Face intersection checks"
+msgstr "Flächenschnittprüfungen"
+
+#: ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "Bounding-box checks"
+msgstr "Prüfungen der Begrenzungsrahmen"
+
+#: ../../apps/planner/src/components/energy/DirectBeamResult.tsx build/planner/assets/planner.js
+msgid "Blocker sample counts can overlap and must not be added into a loss fraction."
+msgstr "Die Anzahl blockierter Abtastpunkte je Objekt kann sich überschneiden. Diese Werte dürfen nicht zu einem Verlustanteil addiert werden."
+
+#: ../../apps/planner/src/components/energy/EnergyWorkspace.tsx build/planner/assets/planner.js
+msgid "Direct-beam visibility"
+msgstr "Sichtbarkeit der Direktstrahlung"
+
+#: ../../apps/planner/src/components/energy/PlanningReportForm.tsx build/planner/assets/planner.js
+msgid "The report retains the selected geometric result separately from PV generation and energy results."
+msgstr "Der Bericht führt das ausgewählte geometrische Ergebnis getrennt von PV-Erzeugungs- und Energieergebnissen auf."
+
+#: ../../apps/planner/src/components/ProjectEditor.tsx ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js
+msgid "This workspace version cannot safely save all data in this project. Keep your local draft and reload the workspace before saving again."
+msgstr "Diese Version des Arbeitsbereichs kann nicht alle Daten dieses Projekts sicher speichern. Behalten Sie Ihren lokalen Entwurf und laden Sie den Arbeitsbereich neu, bevor Sie erneut speichern."
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "The retained weather coordinates do not match the saved roof location. Review the weather settings or the roof location before calculating."
+msgstr "Die Koordinaten der gespeicherten Wetterquelle stimmen nicht mit dem gespeicherten Dachstandort überein. Prüfen Sie vor der Berechnung die Wettereinstellungen oder den Dachstandort."
+
+#: ../../apps/planner/src/components/energy/DirectBeamSetup.tsx build/planner/assets/planner.js
+msgid "The selected weather source could not be verified. Review the source selection before calculating."
+msgstr "Die ausgewählte Wetterquelle konnte nicht geprüft werden. Prüfen Sie die Quellenauswahl, bevor Sie die Berechnung starten."

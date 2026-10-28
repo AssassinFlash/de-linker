@@ -31,6 +31,13 @@ export interface Session {
 			readonly max_csv_bytes: number;
 			readonly max_page_size: number;
 			readonly max_json_depth: number;
+			readonly direct_beam_visibility?: {
+				readonly max_selected_rows: number;
+				readonly max_samples: number;
+				readonly max_ray_face_checks: number;
+				readonly max_bounds_checks: number;
+				readonly index_leaf_size: number;
+			};
 		};
 	};
 }
@@ -52,6 +59,9 @@ export const RPC_PATHS = [
 	"runs/energy",
 	"runs/pv",
 	"runs/pvgis-reference",
+	"runs/direct-beam",
+	"weather/assets",
+	"weather/preview",
 	"runs/equipment",
 	"runs/equipment-search",
 	"runs/report",

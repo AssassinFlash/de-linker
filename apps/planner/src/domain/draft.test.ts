@@ -32,7 +32,7 @@ test("a late acknowledgement preserves newer edits and their undo/redo history",
 	const wire = intent.body;
 	assert.equal(
 		JSON.parse(wire).input_contract,
-		"installation_pv_string_links_v1",
+		"pv_string_links_direct_beam_visibility_v1",
 	);
 	draft = editDraft(draft, { ...project.inputs, value: 3 });
 	assert.equal(prepareSave(draft, crypto.randomUUID(), policy).pending, intent);

@@ -6,6 +6,7 @@ import { PV_TASK, WEATHER_TASK } from "../../data/readPreparationResult.ts";
 import { SEARCH_TASK } from "../../data/equipmentSearch.ts";
 import { EQUIPMENT_TASK } from "../../data/readEquipmentResult.ts";
 import { PVGIS_REFERENCE_TASK } from "../../domain/pvgisReference.ts";
+import { DIRECT_BEAM_TASK } from "../../domain/directBeam.ts";
 
 export function taskLabel(kind: string | null | undefined): string {
 	if (kind === REPORT_TASK) return __("Planning report", "linker-tools");
@@ -16,6 +17,8 @@ export function taskLabel(kind: string | null | undefined): string {
 	if (kind === PV_TASK) return __("PV generation profile", "linker-tools");
 	if (kind === PVGIS_REFERENCE_TASK)
 		return __("PVGIS annual AC reference", "linker-tools");
+	if (kind === DIRECT_BEAM_TASK)
+		return __("Geometric direct-beam visibility", "linker-tools");
 	if (isEnergyTask(kind)) return __("Energy calculation", "linker-tools");
 	return __("Saved task", "linker-tools");
 }

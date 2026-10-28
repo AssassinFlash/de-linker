@@ -6,6 +6,7 @@ import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
 import { PVGIS_REFERENCE_TASK } from "../../domain/pvgisReference.ts";
 import { taskLabel } from "./planningLabels.ts";
+import { DIRECT_BEAM_TASK } from "../../domain/directBeam.ts";
 
 export function PlanningReportForm({
 	runs,
@@ -24,6 +25,7 @@ export function PlanningReportForm({
 }) {
 	const [energy, setEnergy] = useState(""),
 		[pv, setPv] = useState(""),
+		[beam, setBeam] = useState(""),
 		[equipment, setEquipment] = useState(""),
 		[logo, setLogo] = useState<string | null>(null),
 		[error, setError] = useState(false),
@@ -33,7 +35,7 @@ export function PlanningReportForm({
 	const [certificates, setCertificates] = useState(false);
 	useEffect(() => () => reader.current?.abort(), []);
 	const [chosenRows, setChosenRows] = useState<Record<string, RunSummary>>({});
-	// Keep only the three explicit selections across history pages.
+	// Keep the explicit selections across history pages.
 	const completed = [
 		...new Map(
 			[...runs, ...Object.values(chosenRows)]
@@ -95,6 +97,7 @@ export function PlanningReportForm({
 		locale: locale.startsWith("de") ? "de" : "en",
 		energy_run_id: energy || null,
 		pv_run_id: pv || null,
+		...(beam ? { direct_beam_run_id: beam } : {}),
 		equipment_run_id: equipment || null,
 		logo,
 		...(installation && hasInstallation ? { include_installation: true } : {}),
@@ -139,6 +142,20 @@ export function PlanningReportForm({
 					pv,
 					setPv,
 					__("PV generation", "linker-tools"),
+				)}
+				{choose(
+					DIRECT_BEAM_TASK,
+					beam,
+					setBeam,
+					__("Geometric direct-beam visibility", "linker-tools"),
+				)}
+				{beam && (
+					<p>
+						{__(
+							"The report retains the selected geometric result separately from PV generation and energy results.",
+							"linker-tools",
+						)}
+					</p>
 				)}
 				{hasCandidate ? (
 					<p>
@@ -243,6 +260,7 @@ export function PlanningReportForm({
 					(!hasCandidate &&
 						!energy &&
 						!pv &&
+						!beam &&
 						!equipment &&
 						!(installation && hasInstallation))
 				}

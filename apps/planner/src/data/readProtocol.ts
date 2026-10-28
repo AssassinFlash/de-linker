@@ -64,12 +64,27 @@ const checkSession = ajv.compile<Session>(
 				type: "object",
 				additionalProperties: { type: "string", minLength: 1 },
 			},
-			limits: object({
-				max_body_bytes: integer,
-				max_csv_bytes: integer,
-				max_page_size: integer,
-				max_json_depth: integer,
-			}),
+			limits: {
+				...object({
+					max_body_bytes: integer,
+					max_csv_bytes: integer,
+					max_page_size: integer,
+					max_json_depth: integer,
+					direct_beam_visibility: object({
+						max_selected_rows: integer,
+						max_samples: integer,
+						max_ray_face_checks: integer,
+						max_bounds_checks: integer,
+						index_leaf_size: integer,
+					}),
+				}),
+				required: [
+					"max_body_bytes",
+					"max_csv_bytes",
+					"max_page_size",
+					"max_json_depth",
+				],
+			},
 		}),
 	}),
 );
@@ -83,6 +98,12 @@ export function readSession(value: unknown): Session {
 	inspectJson(value, 16);
 	if (!checkSession(value)) throw new ApiError(502, "invalid_session_reply");
 	if (value.runtime.limits.max_csv_bytes > value.runtime.limits.max_body_bytes)
+		throw new ApiError(502, "invalid_session_reply");
+	if (
+		(value.runtime.models.direct_beam_visibility ===
+			"prepare_direct_beam_visibility_v1") !==
+		(value.runtime.limits.direct_beam_visibility !== undefined)
+	)
 		throw new ApiError(502, "invalid_session_reply");
 	return value;
 }
