@@ -1010,8 +1010,18 @@ final class ProductShortcodes {
 				)
 			) . '</button>';
 		if ( isset( $ids[1] ) ) {
+			// This secondary image is hidden in the current gallery layout.
+			// Defer its full file; the thumbnail remains available and selects
+			// the full image when a visitor asks to see it.
 			$html .= '<button type="button" class="pdp-gallery-secondary" data-pdp-image data-src="' . esc_url( self::image_url( $ids[1] ) ) . '" data-caption="" aria-label="' . esc_attr__( 'Product image 2', 'linker-commerce' ) . '">'
-				. self::image_tag( $ids[1], 'full', array( 'alt' => '' ) ) . '</button>';
+				. self::image_tag(
+					$ids[1],
+					'full',
+					array(
+						'alt'     => '',
+						'loading' => 'lazy',
+					)
+				) . '</button>';
 		}
 		return $html . '</div>';
 	}
@@ -1050,6 +1060,8 @@ final class ProductShortcodes {
 				'alt'      => '',
 				'sizes'    => '72px',
 				'decoding' => 'async',
+				// On phones the controls are dots and the thumbnail images are hidden.
+				'loading'  => 'lazy',
 			);
 			if ( \is_array( $medium ) ) {
 				$attributes['srcset'] = $medium[0] . ' ' . (int) $medium[1] . 'w';

@@ -1653,6 +1653,25 @@ final class ProductShortcodesTest extends TestCase {
 		$this->assertStringNotContainsString( 'pdp-kicker', $without );
 	}
 
+	/** The hidden secondary full image must not load ahead of a visitor's choice. */
+	public function test_gallery_defers_the_hidden_secondary_image_and_keeps_the_choices(): void {
+		unset( $GLOBALS['product'] );
+		$pdp   = $this->pdp( true );
+		$pair  = $pdp->pdp_gallery_pair();
+		$thumb = $pdp->pdp_gallery_thumbs();
+
+		$this->assertMatchesRegularExpression( '/class="pdp-gallery-main"[^>]*alt="GoodWe GW60K-STS-G10"(?![^>]*loading="lazy")/', $pair );
+		$this->assertMatchesRegularExpression( '/class="pdp-gallery-secondary"[^>]*data-src="http:\/\/linker\.test\/uploads\/image-6504\.png"[^>]*>\s*<img[^>]*loading="lazy"/', $pair );
+		$this->assertSame( 3, substr_count( $thumb, 'data-pdp-thumb' ) );
+		$this->assertSame( 3, substr_count( $thumb, 'loading="lazy"' ) );
+		$this->assertStringContainsString( 'data-src="http://linker.test/uploads/image-6504.png"', $thumb );
+		$this->assertStringContainsString( 'data-src="http://linker.test/uploads/image-6505.png"', $thumb );
+
+		$this->pdp_gallery = '';
+		$this->assertStringNotContainsString( 'pdp-gallery-secondary', $pdp->pdp_gallery_pair() );
+		$this->assertSame( '', $pdp->pdp_gallery_thumbs() );
+	}
+
 	/**
 	 * The FAQ side panel repeats no picture from the gallery above it: it
 	 * takes the gallery's last id (the featured image and the first gallery
