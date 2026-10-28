@@ -8,6 +8,8 @@ whose answer is not the answer the caller asked for.
 
 from __future__ import annotations
 
+import shutil
+import subprocess
 import threading
 from collections.abc import Iterator
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -305,10 +307,89 @@ def test_copy_out_pulls_the_four_chunk_kinds(
     assert f"{HOST}:{base}/assets/" not in pulls, "its children carry it"
 
 
+def test_incremental_copy_out_pulls_the_whole_tree_in_one_leg(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """An earlier tree lets one rsync link unchanged files across the whole tree."""
+    root = tmp_path / "remote"
+    relative = f"{PLUGINS}/demo"
+    source = root / relative
+    for name in (
+        "root.php",
+        "assets/bootstrap.css",
+        "assets/fonts/deep/font.woff2",
+        "templates/card.html",
+    ):
+        file = source / name
+        file.parent.mkdir(parents=True, exist_ok=True)
+        file.write_text(name, encoding="utf-8")
+    earlier = tmp_path / "previous backup" / "demo"
+    shutil.copytree(source, earlier)
+    (source / "root.php").write_text("changed content", encoding="utf-8")
+    (source / "new.txt").write_text("new content", encoding="utf-8")
+    (earlier / "removed.txt").write_text("removed", encoding="utf-8")
+    destination = tmp_path / "new backup" / "demo"
+    destination.mkdir(parents=True)
+    (destination / "stale.txt").write_text("stale", encoding="utf-8")
+
+    target = Target(
+        label=HOST,
+        root=str(root),
+        base_url="",
+        prefix=(),
+        shell_prefix=None,
+        rsync_remote=f"{HOST}:{root}",
+    )
+    seen: list[list[str]] = []
+
+    def run_local(command: list[str], *, cwd: Path | None = None) -> str:
+        seen.append(command)
+        assert command[-2].startswith(f"{HOST}:")
+        local = [*command[:-2], command[-2].removeprefix(f"{HOST}:"), command[-1]]
+        return subprocess.run(
+            local, capture_output=True, text=True, check=True, cwd=cwd
+        ).stdout
+
+    def no_listing(host: str, source: str) -> list[str]:
+        pytest.fail("a successful incremental copy must not list individual chunks")
+
+    monkeypatch.setattr("linker_cutover.target._run", run_local)
+    monkeypatch.setattr("linker_cutover.target.remote_entries_command", no_listing)
+    target.copy_out(relative, destination, link_dest=earlier)
+
+    assert seen == [
+        [
+            "rsync",
+            "-az",
+            "--delete",
+            f"--link-dest={earlier.resolve()}",
+            "-e",
+            "ssh -o BatchMode=yes",
+            f"{HOST}:{source}/",
+            f"{destination}/",
+        ]
+    ]
+    assert {
+        str(p.relative_to(destination)) for p in destination.rglob("*") if p.is_file()
+    } == {str(p.relative_to(source)) for p in source.rglob("*") if p.is_file()}
+    for name in (
+        "assets/bootstrap.css",
+        "assets/fonts/deep/font.woff2",
+        "templates/card.html",
+    ):
+        assert (destination / name).read_bytes() == (source / name).read_bytes()
+        assert (destination / name).stat().st_ino == (earlier / name).stat().st_ino
+    assert (destination / "root.php").read_text(encoding="utf-8") == "changed content"
+    assert (destination / "root.php").stat().st_ino != (
+        earlier / "root.php"
+    ).stat().st_ino
+    assert (destination / "new.txt").read_text(encoding="utf-8") == "new content"
+
+
 def test_copy_out_links_each_remote_chunk_to_the_same_place_in_the_earlier_backup(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """#305's incremental full backup: every chunk names its own earlier copy.
+    """A failed whole-tree pull resumes each chunk at its earlier-copy path.
 
     A directory chunk links against the same directory in the earlier backup;
     a file chunk is pulled into its parent, so it links against the parent. A
@@ -316,37 +397,93 @@ def test_copy_out_links_each_remote_chunk_to_the_same_place_in_the_earlier_backu
     warn and copy anyway).
     """
     listing = "\n".join(
-        ["D ./assets/fonts", "F ./root.txt", "d ./templates", "d ./assets", "d ./new"]
+        [
+            "D ./assets/fonts",
+            "F ./assets/bootstrap.css",
+            "F ./new/fresh.txt",
+            "F ./root.txt",
+            "F ./templates/card.html",
+            "d ./templates",
+            "d ./assets",
+            "d ./new",
+        ]
     )
     seen: list[list[str]] = []
+    root = tmp_path / "remote"
+    target = Target(
+        label=HOST,
+        root=str(root),
+        base_url="",
+        prefix=(),
+        shell_prefix=None,
+        rsync_remote=f"{HOST}:{root}",
+    )
+    relative = f"{PLUGINS}/demo"
+    source = root / relative
+    for name in (
+        "root.txt",
+        "assets/bootstrap.css",
+        "assets/fonts/deep/font.woff2",
+        "templates/card.html",
+        "new/fresh.txt",
+    ):
+        file = source / name
+        file.parent.mkdir(parents=True, exist_ok=True)
+        file.write_text(name, encoding="utf-8")
+    earlier = tmp_path / "earlier" / "demo"
+    shutil.copytree(source, earlier)
+    shutil.rmtree(earlier / "new")
+    destination = tmp_path / "demo"
+    bulk_source = f"{HOST}:{target.path_of(relative)}/"
+    real_run = subprocess.run
 
     def capture(command: list[str], *args: object, **kwargs: object) -> object:
         del args, kwargs
         seen.append(command)
         if command[0] == "ssh":
             return SimpleNamespace(returncode=0, stdout=listing, stderr="")
-        return SimpleNamespace(returncode=0, stdout="", stderr="")
+        if command[-2] == bulk_source:
+            # Simulate a connection drop after one file arrived.
+            shutil.copy2(source / "root.txt", destination / "root.txt")
+            return SimpleNamespace(returncode=23, stdout="", stderr="connection lost")
+        assert command[0] == "rsync" and command[-2].startswith(f"{HOST}:")
+        local = [*command[:-2], command[-2].removeprefix(f"{HOST}:"), command[-1]]
+        return real_run(local, capture_output=True, text=True, check=False)
 
     monkeypatch.setattr("linker_cutover.target.subprocess.run", capture)
-    earlier = tmp_path / "earlier" / "demo"
-    for kept in ("assets/fonts", "templates"):
-        (earlier / kept).mkdir(parents=True)
-    target = remote_target()
-    target.copy_out(f"{PLUGINS}/demo", tmp_path / "demo", link_dest=earlier)
+    target.copy_out(relative, destination, link_dest=earlier)
+
+    assert seen[0][0] == "rsync" and seen[0][-2] == bulk_source
+    assert seen[1][0] == "ssh"
 
     links = {
         command[-2].rsplit("/demo/", 1)[1]: next(
             (part for part in command if part.startswith("--link-dest=")), None
         )
         for command in seen
-        if command[0] == "rsync"
+        if command[0] == "rsync" and command[-2] != bulk_source
     }
     assert links == {
+        "assets/bootstrap.css": f"--link-dest={(earlier / 'assets').resolve()}",
         "root.txt": f"--link-dest={earlier.resolve()}",
         "assets/fonts/": f"--link-dest={(earlier / 'assets' / 'fonts').resolve()}",
         "templates/": f"--link-dest={(earlier / 'templates').resolve()}",
         "new/": None,
     }
+    assert {
+        str(p.relative_to(destination)) for p in destination.rglob("*") if p.is_file()
+    } == {str(p.relative_to(source)) for p in source.rglob("*") if p.is_file()}
+    for file in source.rglob("*"):
+        if file.is_file():
+            assert (
+                destination / file.relative_to(source)
+            ).read_bytes() == file.read_bytes()
+    for name in (
+        "assets/bootstrap.css",
+        "assets/fonts/deep/font.woff2",
+        "templates/card.html",
+    ):
+        assert (destination / name).stat().st_ino == (earlier / name).stat().st_ino
 
 
 def test_copy_in_sends_each_chunk_to_one_host_prefix(
