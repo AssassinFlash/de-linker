@@ -225,7 +225,7 @@ test( 'saved source card shows exact UTC ranges without private bindings or sizi
 		source_scope: 'selected_dc_group',
 		meteorological_database: null,
 	} );
-	const { container, rerender } = await renderOwned(
+	const { container, rerender, unmount } = await renderOwned(
 		<PlanningSourcesCard
 			block={ block }
 			configuratorLinks={ {
@@ -293,6 +293,102 @@ test( 'saved source card shows exact UTC ranges without private bindings or sizi
 	).toBeInTheDocument();
 	expect( container.querySelector( 'time' ) ).toBeNull();
 	expect( container.querySelector( 'a' ) ).toBeNull();
+	unmount();
+	const unavailable: Awaited< ReturnType< typeof readThread > > = {
+		conversationId: 12,
+		messages: [
+			{ role: 'user', content: 'Explain the saved result.' },
+			{ role: 'assistant', content: 'Saved explanation' },
+		],
+		turn: {
+			meta: null,
+			blocks: [
+				{ type: 'text', text: 'Saved explanation', refs: [] },
+				{
+					type: 'planning_sources',
+					schema_version: 1,
+					status: 'unavailable',
+				},
+			],
+		},
+	};
+	const verified = {
+		...unavailable,
+		messages: unavailable.messages.map( ( message ) => ( { ...message } ) ),
+		turn: {
+			meta: null,
+			blocks: [
+				{ type: 'text' as const, text: 'Saved explanation', refs: [] },
+				block,
+			],
+		},
+	};
+	vi.mocked( readThread )
+		.mockResolvedValueOnce( unavailable )
+		.mockResolvedValueOnce( verified );
+	const opened = await renderOwned( <App config={ config() } /> );
+	await act( async () => {
+		fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	} );
+	await waitFor( () =>
+		expect(
+			screen.getAllByText( '2023-06-16T09:00:00+00:00' )
+		).toHaveLength( 1 )
+	);
+	expect( readThread ).toHaveBeenCalledTimes( 2 );
+	expect( vi.mocked( readThread ).mock.calls[ 1 ][ 4 ] ).toMatchObject( {
+		allowExistingOwnerBootstrap: true,
+	} );
+	expect( screen.getByText( 'Saved explanation' ) ).toBeInTheDocument();
+	fireEvent.click( screen.getByRole( 'button', { name: 'Close' } ) );
+	await act( async () => {
+		fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	} );
+	expect( readThread ).toHaveBeenCalledTimes( 2 ); // No repeat after successful verification.
+	opened.unmount();
+	resetTurnLane();
+	vi.mocked( readThread )
+		.mockReset()
+		.mockResolvedValue( { messages: [], turn: null } );
+	let finishProof!: (
+		value: Awaited< ReturnType< typeof readThread > >
+	) => void;
+	let finishSwitch!: (
+		value: Awaited< ReturnType< typeof selectConversation > >
+	) => void;
+	vi.mocked( readThread )
+		.mockResolvedValueOnce( unavailable )
+		.mockImplementationOnce(
+			() =>
+				new Promise( ( resolve ) => {
+					finishProof = resolve;
+				} )
+		);
+	vi.mocked( selectConversation ).mockImplementationOnce(
+		() =>
+			new Promise( ( resolve ) => {
+				finishSwitch = resolve;
+			} )
+	);
+	const interrupted = await renderOwned( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	await waitFor( () => expect( readThread ).toHaveBeenCalledTimes( 2 ) );
+	fireEvent.click(
+		screen.getByRole( 'button', { name: 'New conversation' } )
+	);
+	await act( async () => {
+		finishProof( verified );
+	} );
+	await waitFor( () =>
+		expect( selectConversation ).toHaveBeenCalledTimes( 1 )
+	);
+	// The next native history operation is still pending: a late proof must
+	// never insert the prior calculation's dates during this transition.
+	expect( screen.queryByText( '2023-06-16T09:00:00+00:00' ) ).toBeNull();
+	await act( async () => {
+		finishSwitch( { currentId: 0, conversations: [], ok: true } );
+	} );
+	interrupted.unmount();
 } );
 
 test( 'the disclosure is spoken once and a prompt sends the first turn', async () => {
@@ -321,15 +417,9 @@ test( 'the disclosure is spoken once and a prompt sends the first turn', async (
 		expect.objectContaining( { allowExistingOwnerBootstrap: false } )
 	);
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
-	await waitFor( () =>
-		expect( readThread ).toHaveBeenCalledWith(
-			expect.any( String ),
-			'n',
-			undefined,
-			expect.any( Object ),
-			expect.objectContaining( { allowExistingOwnerBootstrap: true } )
-		)
-	);
+	await act( async () => undefined );
+	// Opening a legacy conversation does not repeat history/journal restore.
+	expect( readThread ).toHaveBeenCalledTimes( 1 );
 
 	expect(
 		screen.getAllByText(

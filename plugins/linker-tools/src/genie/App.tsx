@@ -169,8 +169,11 @@ export function App( { config }: { config: GenieConfig } ) {
 	const pageRef = useRef( config.page );
 	const plannerNonce = useRef< string | undefined >( undefined );
 	const plannerProofEpoch = useRef( 0 );
+	const savedSourceRead = useRef< Awaited<
+		ReturnType< typeof readThread >
+	> | null >( null );
 	const loadThread = useCallback(
-		( allowExistingOwnerBootstrap = false ) => {
+		( allowExistingOwnerBootstrap = false, rememberSource = true ) => {
 			const before = plannerProofEpoch.current;
 			window.dispatchEvent(
 				new CustomEvent( 'linker-genie-planning-context-request' )
@@ -190,7 +193,20 @@ export function App( { config }: { config: GenieConfig } ) {
 						plannerNonce.current = value;
 					},
 				}
-			);
+			).then( ( stored ) => {
+				if ( rememberSource ) {
+					savedSourceRead.current =
+						stored.conversationId &&
+						stored.turn?.blocks.some(
+							( block ) =>
+								block.type === 'planning_sources' &&
+								block.status === 'unavailable'
+						)
+							? stored
+							: null;
+				}
+				return stored;
+			} );
 		},
 		[ config.threadUrl, config.restNonce, config.restUrl, config.locale ]
 	);
@@ -769,6 +785,68 @@ export function App( { config }: { config: GenieConfig } ) {
 		},
 		[ loadThread, applyRecord, draftContext ]
 	);
+
+	const refreshSavedSource = useCallback( async () => {
+		const saved = savedSourceRead.current;
+		const snapshot = currentThread.current;
+		const epoch = historyEpoch;
+		if (
+			! saved?.turn ||
+			! saved.conversationId ||
+			saved.messages !== snapshot ||
+			sending.current
+		) {
+			return;
+		}
+		const lease = draftContext.capture();
+		if ( ! lease ) {
+			return;
+		}
+		const refreshed = await loadThread( true, false );
+		if (
+			! ( await draftContext.settle( lease ) ) ||
+			epoch !== historyEpoch ||
+			snapshot !== currentThread.current ||
+			sending.current ||
+			refreshed.conversationId !== saved.conversationId ||
+			! refreshed.turn
+		) {
+			return;
+		}
+		const words = ( messages: TurnMessage[] ) =>
+			JSON.stringify(
+				messages.map( ( message ) => [
+					message.role,
+					message.content,
+					message.turnId ?? null,
+				] )
+			);
+		if ( words( refreshed.messages ) !== words( snapshot ) ) {
+			return;
+		}
+		const prior = saved.turn.blocks.filter(
+			( block ) => block.type === 'planning_sources'
+		);
+		const next = refreshed.turn.blocks.filter(
+			( block ) => block.type === 'planning_sources'
+		);
+		if ( prior.length !== 1 || next.length !== 1 ) {
+			return;
+		}
+		// Refresh this server-owned block only. Reapplying ordinary history or
+		// the failure journal here can duplicate files and reset mail/editor UI.
+		const updated = {
+			...saved.turn,
+			blocks: saved.turn.blocks.map( ( block ) =>
+				block.type === 'planning_sources' ? next[ 0 ] : block
+			),
+		};
+		setTurn( updated );
+		savedSourceRead.current =
+			next[ 0 ].status === 'unavailable'
+				? { ...saved, turn: updated }
+				: null;
+	}, [ loadThread, draftContext ] );
 
 	const previousNativeScope = useRef< string | undefined >( undefined );
 	useEffect( () => {
@@ -1742,9 +1820,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				! detail?.message &&
 				! detail?.refresh
 			) {
-				void enqueue( () => showStored( true ) ).catch(
-					() => undefined
-				);
+				void enqueue( refreshSavedSource ).catch( () => undefined );
 			}
 			if ( detail?.entry ) {
 				receiveEntry( detail.entry );
@@ -1796,6 +1872,7 @@ export function App( { config }: { config: GenieConfig } ) {
 	}, [
 		ask,
 		showStored,
+		refreshSavedSource,
 		handOverSolution,
 		receiveEntry,
 		rememberOpener,
@@ -2043,8 +2120,8 @@ export function App( { config }: { config: GenieConfig } ) {
 									aria-expanded={ open }
 									onClick={ () => {
 										setOpen( true );
-										void enqueue( () =>
-											showStored( true )
+										void enqueue(
+											refreshSavedSource
 										).catch( () => undefined );
 									} }
 								>
