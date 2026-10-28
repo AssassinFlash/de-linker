@@ -5,10 +5,45 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import subprocess
+import sys
 from pathlib import Path, PurePosixPath
 
 from .instance import Instance
 from .processes import ProcessError
+
+
+def require_input_compatibility(
+    checkout: Path, directory: Path, supported: object
+) -> None:
+    """Use the current read-only guard even when the selected binary is old."""
+    try:
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-c",
+                "import json,sys; from pathlib import Path; "
+                "sys.path.insert(0,sys.argv[1]); "
+                "from linker_engine.planning.project_input_floor import check_project_input_contracts; "
+                "check_project_input_contracts(Path(sys.argv[2]),json.loads(sys.argv[3]))",
+                str(checkout / "src"),
+                str(directory),
+                json.dumps(supported),
+            ],
+            env={"PYTHONDONTWRITEBYTECODE": "1"},
+            capture_output=True,
+            timeout=30,  # Existing operator-command budget, not an engineering limit.
+            check=False,
+        )
+    except (OSError, ValueError, subprocess.SubprocessError) as error:
+        raise ProcessError(
+            "retained project input compatibility could not be read"
+        ) from error
+    if result.returncode:
+        # Never echo raw project contents or subprocess diagnostics.
+        raise ProcessError(
+            "executable does not support or cannot verify retained project inputs"
+        )
 
 
 def engine_project(instance: Instance, checkout: Path) -> Path:

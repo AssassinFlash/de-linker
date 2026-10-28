@@ -2,6 +2,9 @@ import { change, newHistory, redo, undo } from "./history.ts";
 import type { History } from "./history.ts";
 import type { JsonObject, Project } from "../data/protocol.ts";
 import { wire } from "../data/readProtocol.ts";
+import inputContracts from "../contracts/project-input-contracts.json" with { type: "json" };
+
+export const projectInputContract = inputContracts.project_input_contracts[0]!;
 
 /** A save intent is immutable, even when further local edits are made. */
 export interface SaveIntent {
@@ -65,6 +68,7 @@ export function prepareSave(
 		body: wire(
 			{
 				schema_version: 1,
+				input_contract: projectInputContract,
 				project_id: draft.baseline.id,
 				expected_revision: draft.baseline.revision,
 				inputs,

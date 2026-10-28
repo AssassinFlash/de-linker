@@ -126,6 +126,7 @@ export function ProjectEditor({
 		busy,
 		failed,
 		sourceChanged,
+		inputContractRequired,
 		recoveryFailed,
 		recovered,
 		recoveries,
@@ -603,10 +604,15 @@ export function ProjectEditor({
 					)}
 					{failed && !draft.conflict && (
 						<Notice error>
-							{__(
-								"The save could not be confirmed. Your input is still here.",
-								"linker-tools",
-							)}
+							{inputContractRequired
+								? __(
+										"This workspace version cannot safely save projects with PV string connection data. Keep your local draft and reload the workspace before saving again.",
+										"linker-tools",
+									)
+								: __(
+										"The save could not be confirmed. Your input is still here.",
+										"linker-tools",
+									)}
 							{sourceChanged && (
 								<p>
 									{__(

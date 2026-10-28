@@ -3476,13 +3476,32 @@
       }
     },
     "input_contract_release_blocker": {
-      "state": "implementation_in_parallel_not_yet_verified",
+      "state": "source_frozen_spec_and_standards_pass_unbuilt_not_deployed",
       "risk": "Stale client rebases baseline but retains draft omitting new pv_string_links, then full-input save may erase links; code-permitted, no observed production loss",
       "core_owner": "certificate_conditions_backend",
       "release_owner": "device_conditions_standards_review",
       "contract": "installation_pv_string_links_v1",
       "publication_allowed": false,
-      "spec": "docs/specs/548-native-recovery-handover.md#input-contracts-across-old-tabs-and-code-rollback"
+      "spec": "docs/specs/548-native-recovery-handover.md#input-contracts-across-old-tabs-and-code-rollback",
+      "core_source_manifest_sha256": "2d0a867973835540a2485e2c8330aa3519577105e1d4f9e7613c8718855566ec",
+      "source_files": 41,
+      "root_spec": "PASS",
+      "independent_standards": "F PASS 29 core +12 native release files, plus exact final formatter-only increment; prior seals reused",
+      "focused_author_checks": "PASS; exact receipt replay, stale rebased overwrite refusal, IndexedDB restore, private team route, readonly CAS floor, post-stop check and real PHP atomic refusal/cleanup",
+      "real_local_history_floor": {
+        "required_input_contracts": [
+          "installation_pv_string_links_v1"
+        ],
+        "retained_revision_count": 286,
+        "retained_input_count": 97,
+        "input_inventory_sha256": "8dd183f7a410335852b7088014bf35d1b52df317479975abe86f22d43c9db6ff",
+        "legacy_candidate": "refused"
+      },
+      "remaining": [
+        "combined application build and guarded native local installation",
+        "affected UI acceptance",
+        "CI and ordered production publication/readback"
+      ]
     }
   },
   "paired_release_lifecycle": {

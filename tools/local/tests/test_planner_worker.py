@@ -297,7 +297,10 @@ def test_matching_schema_and_truly_empty_store_can_start(
         pass
     assert worker.compatible_release() == release
     with sqlite3.connect(database) as connection:
-        connection.execute("CREATE TABLE projects(id TEXT)")
+        connection.execute("CREATE TABLE projects(id TEXT,revision INTEGER)")
+        connection.execute(
+            "CREATE TABLE revisions(project_id TEXT,number INTEGER,input_sha256 TEXT)"
+        )
         connection.execute("PRAGMA user_version=4")
     assert worker.compatible_release() == release
 

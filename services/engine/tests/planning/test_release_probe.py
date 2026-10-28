@@ -12,6 +12,7 @@ from pathlib import Path
 import pytest
 
 from linker_engine.planning import runtime_snapshot
+from linker_engine.planning.project_input_contracts import SUPPORTED_INPUT_CONTRACTS
 from linker_engine.planning.runtime_snapshot import RuntimeSnapshot
 from linker_engine.planning.schema import SCHEMA_VERSION
 
@@ -47,6 +48,7 @@ def test_real_release_command_needs_no_policy_secrets_or_workspace(
             "schema_version": 1,
             "runtime_sha256": expected,
             "storage_schema_version": SCHEMA_VERSION,
+            "project_input_contracts": list(SUPPORTED_INPUT_CONTRACTS),
         }
         assert result.stderr == ""
         assert database.read_bytes() == before

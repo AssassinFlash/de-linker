@@ -9,6 +9,12 @@ test("only a known input-refusal code and status release an import", () => {
 		true,
 	);
 	assert.equal(
+		isPreMutationInputRefusal(
+			new ApiError(422, "project_input_contract_required"),
+		),
+		true,
+	);
+	assert.equal(
 		isPreMutationInputRefusal(new ApiError(413, "linker_planner_body")),
 		true,
 	);

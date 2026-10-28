@@ -12423,3 +12423,7 @@ msgstr "Ausgewählte DC-Gruppe"
 #: src/genie/components/PlanningSourcesCard.tsx build/genie.js
 msgid "Not identified in this saved result"
 msgstr "In diesem gespeicherten Ergebnis nicht eindeutig angegeben"
+
+#: ../../apps/planner/src/components/ProjectEditor.tsx ../../apps/planner/src/components/NewProject.tsx build/planner/assets/planner.js
+msgid "This workspace version cannot safely save projects with PV string connection data. Keep your local draft and reload the workspace before saving again."
+msgstr "Diese Version des Arbeitsbereichs kann Projekte mit PV-String-Zuordnungen nicht sicher speichern. Behalten Sie Ihren lokalen Entwurf und laden Sie den Arbeitsbereich neu, bevor Sie erneut speichern."

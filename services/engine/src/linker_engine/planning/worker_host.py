@@ -20,6 +20,7 @@ from .execution_control import ExecutionControl
 from .execution_identity import storage_binding
 from .execution_registry import service_registry
 from .jobs import Jobs
+from .project_input_contracts import SUPPORTED_INPUT_CONTRACTS
 from .runtime_config import RuntimeConfig
 from .runtime_snapshot import RuntimeSnapshot
 from .schema import SCHEMA_VERSION
@@ -165,6 +166,7 @@ def main(argv: list[str] | None = None) -> int:
                         "schema_version": 1,
                         "runtime_sha256": RuntimeSnapshot.capture().sha256,
                         "storage_schema_version": SCHEMA_VERSION,
+                        "project_input_contracts": list(SUPPORTED_INPUT_CONTRACTS),
                     }
                 ).decode()
             )

@@ -29,6 +29,7 @@ from linker_engine.planning.installation_inputs import InstallationInputs
 from linker_engine.planning.installation_takeoff import product_basis, route_takeoff
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.product_sources import ProductSources
+from linker_engine.planning.project_input_contracts import INPUT_CONTRACT
 from linker_engine.planning.project_materials import project_materials
 from linker_engine.planning.records import Actor
 from linker_engine.planning.report_copy import text
@@ -313,7 +314,14 @@ def test_physical_lengths_unknowns_and_owned_frozen_exports(
     checked = equipment.evaluate(owner, project.id, 1, key="one-inverter-assessment")
     assert worker.run_once() and workspace.run(owner, checked.id).state == "succeeded"
     legacy_project = project
-    project = workspace.revise(owner, project.id, 1, linked, key="save-declared-links")
+    project = workspace.revise(
+        owner,
+        project.id,
+        1,
+        linked,
+        key="save-declared-links",
+        input_contract=INPUT_CONTRACT,
+    )
     no_cables = copy.deepcopy(unlinked)
     no_cables["installation"]["cable_runs"] = []
     legacy_options: FixtureObject = {

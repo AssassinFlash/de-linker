@@ -30,6 +30,11 @@ from .execution_control import require_accepting
 from .execution_identity import execution_key
 from .geometry import validate_project_geometry
 from .installation_inputs import validate_installation_project
+from .project_input_contracts import (
+    create_command,
+    require_input_contract,
+    revise_command,
+)
 from .records import Actor, Context, JobState, Project, Run
 from .storage import Blobs, Database
 
@@ -68,12 +73,22 @@ class Workspace:
             owner=project["owner"],
         )
 
-    def create(self, actor: Actor, title: str, inputs: Object, *, key: str) -> Project:
+    def create(
+        self,
+        actor: Actor,
+        title: str,
+        inputs: Object,
+        *,
+        key: str,
+        input_contract: str | None = None,
+    ) -> Project:
         if actor.kind == "team":
             raise NotFound("project not found")
         if not title.strip():
             raise InvalidInput("project title required")
-        command = commands.command_hash({"title": title, "inputs": inputs}, key)
+        command = commands.command_hash(
+            create_command(title, inputs, input_contract=input_contract), key
+        )
         with self.database.transaction() as connection:
             active_actor(connection, actor)
             receipt = commands.replay(
@@ -83,6 +98,7 @@ class Workspace:
                 return self._project(
                     connection, actor, commands.receipt_string(receipt, "project_id"), 1
                 )
+            require_input_contract(None, inputs, input_contract)
             validate_new_brief(inputs)
             validate_project_geometry(inputs)
             validate_installation_project(inputs)
@@ -138,10 +154,12 @@ class Workspace:
         inputs: Object,
         *,
         key: str,
+        input_contract: str | None = None,
     ) -> Project:
         positive_integer(expected_revision, "expected revision")
         command = commands.command_hash(
-            {"expected_revision": expected_revision, "inputs": inputs}, key
+            revise_command(expected_revision, inputs, input_contract=input_contract),
+            key,
         )
         scope = f"revise:{project_id}"
         with self.database.transaction() as connection:
@@ -158,6 +176,8 @@ class Workspace:
                 )
             if project["revision"] != expected_revision:
                 raise Conflict("project inputs have changed")
+            previous = self._project(connection, actor, project_id)
+            require_input_contract(previous.inputs, inputs, input_contract)
             validate_new_brief(inputs)
             validate_project_geometry(inputs)
             validate_installation_project(inputs)

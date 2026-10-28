@@ -4,11 +4,12 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sqlite3
 from pathlib import Path
 
 import pytest
 
-from linker_local.engine_release import engine_project
+from linker_local.engine_release import engine_project, require_input_compatibility
 from linker_local.instance import Instance
 from linker_local.processes import ProcessError
 
@@ -50,6 +51,32 @@ def test_uninstalled_uses_checkout_and_installed_preserves_exact_selection(
     assert selection.read_bytes() == original
     selection.unlink()
     assert engine_project(instance, checkout) == checkout
+    # Use the current guard against a retained history even for an old binary
+    # with no capability declaration. The head alone no longer needs the key.
+    store = instance.dir / "planner/workspace"
+    store.mkdir()
+    values = [b'{"installation":{"pv_string_links":[]}}', b"{}"]
+    hashes = [hashlib.sha256(body).hexdigest() for body in values]
+    for sha, body in zip(hashes, values, strict=True):
+        blob = store / "blobs" / sha[:2] / sha
+        blob.parent.mkdir(parents=True, exist_ok=True)
+        blob.write_bytes(body)
+    with sqlite3.connect(store / "workspace.sqlite") as db:
+        db.execute("CREATE TABLE projects(id TEXT,revision INTEGER)")
+        db.execute(
+            "CREATE TABLE revisions(project_id TEXT,number INTEGER,input_sha256 TEXT)"
+        )
+        db.execute("INSERT INTO projects VALUES (?,2)", ("a" * 32,))
+        db.executemany(
+            "INSERT INTO revisions VALUES (?,?,?)",
+            [("a" * 32, i, sha) for i, sha in enumerate(hashes, 1)],
+        )
+    current_guard = Path(__file__).resolve().parents[3] / "services/engine"
+    with pytest.raises(ProcessError, match="retained project inputs"):
+        require_input_compatibility(current_guard, store, [])
+    require_input_compatibility(
+        current_guard, store, ["installation_pv_string_links_v1"]
+    )
 
 
 @pytest.mark.parametrize(

@@ -13,6 +13,7 @@ from .energy_inputs import BatteryParameters, Document, MappingDocument, SchemaV
 from .equipment_plant import Identity
 from .geometry_documents import GeometryDocument
 from .geometry_import_documents import GeometryImportOptions
+from .project_input_contracts import InputContract
 from .report_inputs import ReportOptions
 from .wire_numbers import check_wire_numbers
 
@@ -57,6 +58,16 @@ class ProjectAssistant(Command):
 
 class ProjectInputs(Command):
     inputs: Object
+    input_contract: InputContract | None = None
+
+    @field_validator("input_contract", mode="before")
+    @classmethod
+    def explicit_contract(cls, value: object) -> object:
+        if value is None:
+            raise ValueError(
+                "omit a legacy input contract; explicit null is unsupported"
+            )
+        return value
 
     @field_validator("inputs")
     @classmethod

@@ -9,6 +9,7 @@ export function isPreMutationInputRefusal(error: unknown): boolean {
 	if (!(error instanceof ApiError)) return false;
 	const statuses: Readonly<Record<string, readonly number[]>> = {
 		invalid_input: [400, 422],
+		project_input_contract_required: [422],
 		handoff_incomplete: [422],
 		handoff_revision_changed: [409],
 		planning_draft_changed: [409],
