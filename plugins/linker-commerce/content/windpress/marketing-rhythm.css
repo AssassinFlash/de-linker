@@ -44,7 +44,8 @@ html[lang^="de"]
 
 /* Keep the German planning preview in the existing video frame, with the
    complete image visible and the original tool action beside it. */
-#tv-rs-page-v1 #engineering-tools #tool-pane-0 .lk-tooldeck-media > img.rs-tool-preview {
+#tv-rs-page-v1 #engineering-tools #tool-pane-0 .lk-tooldeck-media > img.rs-tool-preview,
+#tv-cs-page-v1 #engineering-tools #tool-pane-0 .lk-tooldeck-media > img.cs-tool-preview {
 	display: block;
 	width: 100%;
 	height: auto;
@@ -52,6 +53,12 @@ html[lang^="de"]
 	object-fit: contain;
 	background: #e8eee7;
 	border-radius: var(--proto-radius-photo);
+}
+
+/* The active tab already names this pane. Its duplicate overlay would cover
+   the German preview's first question; other video badges keep their place. */
+#tv-cs-page-v1 #engineering-tools #tool-pane-0 .lk-tooldeck-media:has(> img.cs-tool-preview) > .lk-tooldeck-badge {
+	display: none;
 }
 
 /* Services audience tabs on EN2748/DE6700 use the existing14px action
