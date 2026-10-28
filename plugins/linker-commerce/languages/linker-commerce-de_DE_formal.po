@@ -6886,3 +6886,11 @@ msgstr "Projekte"
 #: includes/Presentation/AccountTemplates.php
 msgid "Saved projects could not be loaded."
 msgstr "Gespeicherte Projekte konnten nicht geladen werden."
+
+#: includes/Presentation/ProductShortcodes.php
+msgid "Partially documented"
+msgstr "Teilweise dokumentiert"
+
+#: includes/Presentation/ProductShortcodes.php
+msgid "Compatibility information unavailable"
+msgstr "Keine Kompatibilitätsangabe verfügbar"

@@ -1578,4 +1578,34 @@ final class ProductShortcodesTest extends TestCase {
 		$this->assertStringNotContainsString( 'retained.pdf', $empty );
 		$this->assertSame( 2, $reads );
 	}
+
+	/**
+	 * The live ETR relationship has partial manual evidence, not list approval.
+	 * Preserve a genuinely listed card while rejecting unestablished statuses.
+	 */
+	public function test_pairing_status_preserves_the_recorded_evidence_boundary(): void {
+		$registry = \Linker\Commerce\Products\Materials::registry();
+		$rows     = $registry['materials']['mat_goodwe_gw125k_etr_g10']['technical']['relationships'];
+		$method   = new \ReflectionMethod( ProductShortcodes::class, 'pairing_status' );
+		foreach ( $rows as $row ) {
+			$expected = 'one_way' === $row['status'] ? 'Partially documented' : "On GoodWe's compatibility list";
+			$this->assertSame( $expected, $method->invoke( null, $row, 'en' ) );
+		}
+		$contract = \Linker\Commerce\Products\Materials::contract();
+		foreach ( $contract['cells'] as $cell ) {
+			if ( 'one_way' === $cell['status'] ) {
+				$this->assertSame( 'Partially documented', $method->invoke( null, $cell, 'en' ) );
+			}
+		}
+		foreach ( array(
+			array(),
+			array( 'status' => 'not_listed' ),
+			array(
+				'status'    => 'unknown',
+				'listed_by' => 'GoodWe',
+			),
+		) as $row ) {
+			$this->assertSame( 'Compatibility information unavailable', $method->invoke( null, $row, 'en' ) );
+		}
+	}
 }

@@ -36,6 +36,26 @@ default:
 # Lint and static analysis of every chain, and the build/ manifest.
 check: php-check js-check e2e-check py-check pull::check cutover::check german-copy internal-home-urls i18n-coverage i18n-validity build::check
 
+# CI's strict commerce scope reuses a proven unchanged base. This recipe keeps
+# the entire commerce source/unit surface, rather than selecting assertions.
+commerce-check: german-copy internal-home-urls i18n-coverage i18n-validity
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd "{{ justfile_directory() }}/plugins/linker-commerce"
+    {{ php }} "$(command -v composer)" validate --no-check-publish
+    {{ php }} "$(command -v composer)" install --no-interaction --no-progress --quiet
+    {{ php }} vendor/bin/phpcs -q
+    {{ php }} vendor/bin/phpstan analyse --no-progress --memory-limit=-1
+    {{ php }} vendor/bin/phpunit
+    npm ci --no-audit --no-fund
+    npm run lint:js
+    npm run lint:types
+    npm run lint:format
+    npm run test:unit
+    # Existing plain-script tests resolve jsdom from linker-tools explicitly.
+    (cd ../linker-tools && npm ci --no-audit --no-fund)
+    node --test tests/js/*.test.mjs
+
 # Unit tests of every chain and the end-to-end tests.
 test: php-test js-test py-test pull::test cutover::test
 
