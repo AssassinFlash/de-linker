@@ -10665,18 +10665,21 @@
     "unique_acceptance_and_recovery_points": "preserved"
   },
   "final_candidate_2026_10_29": {
-    "state": "local_release_and_consumers_validated;commit_CI_review_and_production_pending",
+    "state": "merged_local_release_and_consumers_validated;PR_CI_review_and_production_pending",
     "candidate": {
       "base_commit": "1a123dab8879a84d2c40da7197d396e6590a563e",
-      "build": "PASS just build; Tools, Commerce and Planner generated manifests match their sources, including the complete new/old planner chunk set",
-      "check": "PASS final complete just check, including PHPStan, PHPCS, TypeScript, Ruff, mypy, formatting, i18n and build reproducibility",
-      "test": "PASS final complete just test; Engine 941, Genie 2421, Planner 193, Tools browser 18, local stack including both repaired cases, pull and cutover all completed successfully",
+      "implementation_commit": "e1b5e17a6",
+      "merged_main_commit": "f9311d84d",
+      "build": "PASS just build on the merged candidate; Tools, Commerce and Planner generated manifests match their sources, including the complete new/old planner chunk set",
+      "check": "PASS final complete just check on the merged candidate, including PHPStan, PHPCS, TypeScript, Ruff, mypy, formatting, i18n and build reproducibility",
+      "test": "PASS final complete just test on the merged candidate; Engine 941, Genie 2588, Planner 193, Tools browser 18, local stack 186 including both repaired cases, pull and cutover all completed successfully",
       "review": "Final complete and incremental Spec/Standards review has no open blocker; historical assistant-summary readback and both outdated local-stack tests were repaired and independently re-reviewed"
     },
     "local_runtime": {
       "engine_runtime_sha256": "c2da6a774ca4e873682d857ce234f2b0426a61718c9b9797ca939de463047a8d",
       "worker_runtime_sha256": "c2da6a774ca4e873682d857ce234f2b0426a61718c9b9797ca939de463047a8d",
       "rollback_runtime_sha256": "f141c99760dafca48d9bcd82500594503b43894960724f51904eae81fd7f8d84",
+      "retired_runtime_cleanup": "Superseded 6950e252c16f52532e88ce3fa5a49edc94dc10c1be50935b2b9b0ad8597d9596 had no process reference and was reclaimed; only current and rollback executable carriers remain",
       "loaded_source_revision": "e1773a35f189b2eec9267b9f757a55c60bd996e62df9e5d1812d90f0b8c337d4",
       "loaded_products": "85 ordinary Woo products plus one retained PV reference; native publication acknowledgement completed",
       "publication_cleanup": "Incomplete published test product 9974 (Current Genie receipt fixture) was retained as a draft, not deleted; native schema validation and generation loading then passed",
@@ -10731,8 +10734,8 @@
     "production": false,
     "full_goal548": "active",
     "remaining": [
-      "Form the reviewed large-batch commit, run final PR #738 CI and merge only after it is green",
-      "Complete review-site and coordinated production deployment, backups and actual consumer readback",
+      "Push the merged candidate, run final PR #738 CI and merge only after it is green",
+      "Complete review-site snapshot preparation and affected-chain acceptance, then coordinated production deployment, backups and actual consumer readback",
       "Country/DSO evidence packs, manufacturer operating envelopes and complete installation BOS remain open beyond this batch"
     ]
   }
