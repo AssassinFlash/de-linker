@@ -262,6 +262,28 @@ jobs:
         if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'presentation' || needs.plan.outputs.mode == 'commerce'
         with:
           ref: ${{ github.sha }}
+          # Omit only acceptance images; retain all other paths, including
+          # fixtures, research data and Git attributes.
+          sparse-checkout: |
+            /*
+            !/docs/acceptance/**/*.png
+            !/docs/acceptance/**/*.jpg
+            !/docs/acceptance/**/*.jpeg
+          sparse-checkout-cone-mode: false
+
+      - name: Verify excluded acceptance image checkout
+        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'presentation' || needs.plan.outputs.mode == 'commerce'
+        run: |
+          git ls-files -v -z -- docs/acceptance | python3 -c '
+          import os, sys
+          entries = sys.stdin.buffer.read().split(b"\0")
+          images = [entry for entry in entries if entry[2:].endswith((b".png", b".jpg", b".jpeg"))]
+          present = [entry for entry in images if os.path.lexists(os.fsdecode(entry[2:]))]
+          included = [entry for entry in images if entry[:1] != b"S"]
+          print(f"Acceptance images: {len(images)} tracked, {len(present)} materialized, {len(included)} included in index")
+          if present or included:
+              sys.exit("Acceptance image checkout exclusions did not apply")
+          '
 
       - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'presentation' || needs.plan.outputs.mode == 'commerce'
@@ -392,6 +414,27 @@ jobs:
         if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'
         with:
           ref: ${{ github.sha }}
+          # Match the check job: omit only acceptance screenshots.
+          sparse-checkout: |
+            /*
+            !/docs/acceptance/**/*.png
+            !/docs/acceptance/**/*.jpg
+            !/docs/acceptance/**/*.jpeg
+          sparse-checkout-cone-mode: false
+
+      - name: Verify excluded acceptance image checkout
+        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'
+        run: |
+          git ls-files -v -z -- docs/acceptance | python3 -c '
+          import os, sys
+          entries = sys.stdin.buffer.read().split(b"\0")
+          images = [entry for entry in entries if entry[2:].endswith((b".png", b".jpg", b".jpeg"))]
+          present = [entry for entry in images if os.path.lexists(os.fsdecode(entry[2:]))]
+          included = [entry for entry in images if entry[:1] != b"S"]
+          print(f"Acceptance images: {len(images)} tracked, {len(present)} materialized, {len(included)} included in index")
+          if present or included:
+              sys.exit("Acceptance image checkout exclusions did not apply")
+          '
 
       - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'
