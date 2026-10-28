@@ -1045,17 +1045,34 @@ def native_chunk_id_matches(
     )
 
 
-def _unresolved_table_marker(line: str, label: str) -> bool:
-    """Keep visibly multiplied dimensions while rejecting actual note markers."""
-    if re.search(r"\b(?:dimensions?|abmessungen|maße)\b", label, re.IGNORECASE):
+def _unresolved_table_marker(line: str, label: str, notes: set[str]) -> bool:
+    """Keep explicit three-axis dimensions only when no suffix looks like a note."""
+    axes = re.search(r"\b(?:[WwHhDdLl]\s*\*\s*){2}[WwHhDdLl]\b", label)
+    if axes and re.search(
+        r"\b(?:dimensions?|abmessungen|maße)\b", label, re.IGNORECASE
+    ):
         line = re.sub(
-            r"\b(?:[WwHhDdLl]\s*\*\s*){2,}[WwHhDdLl]\b",
+            r"\b(?:[WwHhDdLl]\s*\*\s*){2}[WwHhDdLl]\b",
             "",
             line,
         )
+
+        def dimensions(match: re.Match[str]) -> str:
+            values = re.findall(r"\d+(?:[.,]\d+)?", match.group())
+            # A shorter numeric suffix can be a footnote attached to a
+            # two-dimensional value. Source declarations take precedence
+            # over even a similarly formatted dimension.
+            if any(
+                value.split(".")[0].split(",")[0].lstrip("0") in notes
+                or len(value) < len(values[0])
+                for value in values[1:]
+            ):
+                return match.group()
+            return ""
+
         line = re.sub(
             r"(?<![\w.])\d+(?:[.,]\d+)?(?:\s*\*\s*\d+(?:[.,]\d+)?){2}(?![\w.*])",
-            "",
+            dimensions,
             line,
         )
     return re.search(r"[*†‡]", line) is not None
@@ -1074,19 +1091,26 @@ def unqualified_table_columns(
     """
     records: dict[str, tuple[str, int, str, int]] = {}
     result: dict[str, str] = {}
+    notes_by_sha: dict[str, set[str]] = {}
     for position, (sha, page, kind, cid, text) in enumerate(chunks):
+        if kind == "text":
+            notes_by_sha.setdefault(sha, set()).update(
+                match.group(1).lstrip("0")
+                for match in re.finditer(r"(?<!\w)\*\s*(\d+)(?!\d)", text)
+            )
         if kind != "table":
             continue
         scope = scopes.get(cid, {})
         if scope.get("basis") == "table_projection" or "table_projection" in scope:
             continue
         if not native_chunk_id_matches(sha, page, kind, text, cid):
-            result[cid] = ""
-            continue
+            # Keep the fragment's original position as an unknown barrier.
+            text = ""
         records[cid] = (sha, page, text, position)
 
     claims: dict[tuple[str, int, str], tuple[str, ...]] = {}
     bad_pages: set[tuple[str, int]] = set()
+    rejected: set[str] = set()
     owners: dict[str, tuple[str, int, str]] = {}
     for cid, (sha, page, _, _) in records.items():
         scope = scopes.get(cid, {})
@@ -1095,6 +1119,14 @@ def unqualified_table_columns(
             continue
         ids = native.get("source_chunk_ids") if isinstance(native, dict) else None
         table = native.get("source_table") if isinstance(native, dict) else None
+        if (
+            isinstance(ids, list)
+            and all(isinstance(item, str) for item in ids)
+            and any(item not in records for item in ids)
+        ):
+            rejected.update(item for item in ids if item in records)
+            rejected.add(cid)
+            continue
         if (
             not isinstance(table, str)
             or not table
@@ -1123,6 +1155,9 @@ def unqualified_table_columns(
 
     groups: dict[tuple[str, int, str], list[tuple[str, str]]] = {}
     for cid, (sha, page, text, _) in records.items():
+        if cid in rejected:
+            result[cid] = ""
+            continue
         owner = owners.get(cid)
         if owner is None or (sha, page) in bad_pages:
             # Older indexes have no table membership; include every native
@@ -1138,6 +1173,11 @@ def unqualified_table_columns(
             lines: list[str] = []
             text_by_id[cid] = lines
             data_by_id[cid] = 0
+            if not text and last_data is not None:
+                previous, index = last_data
+                del text_by_id[previous][index]
+                data_by_id[previous] -= 1
+                last_data = None
             for line in text.splitlines() if text else [""]:
                 if not line.startswith("|") or not line.endswith("|"):
                     conditional = True
@@ -1150,7 +1190,7 @@ def unqualified_table_columns(
                     # A bare value continuation cannot be a section heading.
                     # A note marker on it may qualify the preceding row, even
                     # if that row was emitted in the previous fragment.
-                    if _unresolved_table_marker(line, ""):
+                    if _unresolved_table_marker(line, "", set()):
                         if last_data is not None:
                             previous, index = last_data
                             del text_by_id[previous][index]
@@ -1158,7 +1198,9 @@ def unqualified_table_columns(
                             last_data = None
                         conditional = True
                     continue
-                marked = _unresolved_table_marker(line, cells[0])
+                marked = _unresolved_table_marker(
+                    line, cells[0], notes_by_sha.get(records[cid][0], set())
+                )
                 section = not any(cells[1:])
                 if section:
                     last_data = None

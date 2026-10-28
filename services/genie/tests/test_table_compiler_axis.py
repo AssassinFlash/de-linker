@@ -896,6 +896,58 @@ def test_note_in_value_only_continuation_revokes_prior_fragment_row() -> None:
     assert not safe[cid(second)]
 
 
+@pytest.mark.parametrize("issue", ["altered", "missing"])
+def test_invalid_middle_native_fragment_never_erases_its_condition(issue: str) -> None:
+    sha = "a" * 64
+    first = "| Safe (A) | 1 | 2 |\n| Previous (V) | 3 | 4 |"
+    middle = "| Battery Side *6 | | |"
+    last = "| Nominal Voltage (V) | 400 | 400 |"
+
+    def cid(text: str) -> str:
+        digest = hashlib.sha256(f"table\0{text}".encode()).hexdigest()[:8]
+        return f"{sha[:12]}-p2-{digest}"
+
+    ids = [cid(text) for text in (first, middle, last)]
+    scopes: dict[str, dict[str, Any]] = {
+        item: {
+            "basis": "passage",
+            "native_table": {"source_table": "table", "source_chunk_ids": ids},
+        }
+        for item in ids
+    }
+    chunks = [
+        (sha, 2, "table", ids[0], first),
+        (sha, 2, "table", ids[1], middle + " "),
+        (sha, 2, "table", ids[2], last),
+    ]
+    if issue == "missing":
+        del chunks[1]
+    safe = unqualified_table_columns(chunks, scopes)
+    assert not safe[ids[2]]
+    if issue == "altered":
+        assert "Safe (A)" in safe[ids[0]]
+        assert "Previous (V)" not in safe[ids[0]]
+
+
+def test_ambiguous_dimension_and_declared_numeric_note_stay_unqualified() -> None:
+    sha = "a" * 64
+    table = (
+        "| Dimension (W*D*H mm) | 950*1300*2480 |\n| Dimension (W*D*H mm) | 500*600*1 |"
+    )
+    digest = hashlib.sha256(f"table\0{table}".encode()).hexdigest()[:8]
+    cid = f"{sha[:12]}-p2-{digest}"
+    rows = [(sha, 2, "table", cid, table)]
+    safe = unqualified_table_columns(rows, {})[cid]
+    assert "950*1300*2480" in safe
+    assert "500*600*1" not in safe
+
+    note = "*2480: Applies only under stated conditions."
+    note_digest = hashlib.sha256(f"text\0{note}".encode()).hexdigest()[:8]
+    rows.append((sha, 3, "text", f"{sha[:12]}-p3-{note_digest}", note))
+    safe = unqualified_table_columns(rows, {})[cid]
+    assert "950*1300*2480" not in safe
+
+
 def test_old_schema_native_projection_remains_retrievable(tmp_path: Path) -> None:
     from test_publication_compiler import H2_DE, compiled_index, manifest
 
