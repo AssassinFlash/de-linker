@@ -1877,6 +1877,7 @@ final class ProductShortcodesTest extends TestCase {
 			)
 		);
 		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'http://linker.test/solution-configurator/' ) );
+		WP_Mock::userFunction( 'pll_get_post', array( 'return' => static fn( int $id, string $lang ): int => 'en' === $lang ? $id : 0 ) );
 		$shortcodes = $this->pdp( true );
 		$tools      = $shortcodes->pdp_tools();
 		$dom        = new \DOMDocument();
