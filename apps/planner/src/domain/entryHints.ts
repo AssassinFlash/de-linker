@@ -81,7 +81,8 @@ export function readEntryHints(params: URLSearchParams): EntryHints | null {
 		(backupValue !== null && backup === null) ||
 		(postal !== null && postalCode === null) ||
 		(step !== null && step !== "roof" && step !== "equipment") ||
-		(productRaw !== null && (productId === null || !equipment))
+		(step === "equipment" && productId === null) ||
+		(productRaw !== null && (productId === null || step !== "equipment"))
 	)
 		invalid = true;
 	return {
@@ -91,7 +92,7 @@ export function readEntryHints(params: URLSearchParams): EntryHints | null {
 		backup,
 		postalCode,
 		roof: step === "roof",
-		equipment,
+		equipment: step === "equipment" && productId !== null,
 		productId: equipment ? productId : null,
 		invalid,
 	};

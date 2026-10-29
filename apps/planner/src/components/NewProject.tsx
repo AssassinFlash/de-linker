@@ -287,20 +287,18 @@ export function NewProject({
 								)
 							: entryHints.productId !== null
 								? __(
-										"This product is a proposed input from current product data. Creating the project does not confirm that the products work together.",
+										"This product is a starting point for the project. Creating the project does not confirm that the products work together.",
 										"linker-tools",
 									)
-								: entryHints.equipment && !hasCarriedValues
-									? __("Create a project to open Equipment.", "linker-tools")
-									: entryHints.roof && !hasCarriedValues
-										? __(
-												"Create a project to start the roof design.",
-												"linker-tools",
-											)
-										: __(
-												"Review the values from this link. If you choose to use them, they will be saved as project inputs when you create the project. This does not run a calculation or select equipment.",
-												"linker-tools",
-											)}
+								: entryHints.roof && !hasCarriedValues
+									? __(
+											"Create a project to start the roof design.",
+											"linker-tools",
+										)
+									: __(
+											"Review the values from this link. If you choose to use them, they will be saved as project inputs when you create the project. This does not run a calculation or select equipment.",
+											"linker-tools",
+										)}
 					</p>
 					<dl className="lp-field-summary">
 						{entryHints.annualKwh !== null && (
@@ -468,7 +466,7 @@ export function NewProject({
 			{productBlocked === "place" && (
 				<Notice error>
 					{__(
-						"Current product data cannot place this product, so the project was not created.",
+						"This product is not available for planning, so no project was created from it.",
 						"linker-tools",
 					)}
 				</Notice>

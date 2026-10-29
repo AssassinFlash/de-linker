@@ -142,26 +142,32 @@ test("device class places a current product; unknown classes are not inverters",
 	);
 });
 
-test("equipment step stays valid without a product, and a stray product is refused", () => {
+test("equipment without a valid product is not a route, and a stray product is refused", () => {
 	const equipment = readEntryHints(new URLSearchParams("step=equipment"))!;
-	assert.equal(equipment.equipment, true);
+	assert.equal(equipment.equipment, false);
 	assert.equal(equipment.productId, null);
-	assert.equal(equipment.invalid, false);
+	assert.equal(equipment.invalid, true);
 	const stray = readEntryHints(new URLSearchParams("step=roof&product=1946"))!;
 	assert.equal(stray.roof, true);
+	assert.equal(stray.equipment, false);
 	assert.equal(stray.productId, null);
 	assert.equal(stray.invalid, true);
 	const broken = readEntryHints(
 		new URLSearchParams("step=equipment&product=1946&product=1947"),
 	)!;
+	assert.equal(broken.equipment, false);
 	assert.equal(broken.productId, null);
 	assert.equal(broken.invalid, true);
+	const malformed = readEntryHints(
+		new URLSearchParams("step=equipment&product=nope"),
+	)!;
+	assert.equal(malformed.equipment, false);
+	assert.equal(malformed.invalid, true);
 	assert.equal(
 		readEntryHints(new URLSearchParams("step=result"))!.invalid,
 		true,
 	);
-	assert.equal(
-		readEntryHints(new URLSearchParams("step=equipment&product=0"))!.invalid,
-		true,
-	);
+	const zero = readEntryHints(new URLSearchParams("step=equipment&product=0"))!;
+	assert.equal(zero.equipment, false);
+	assert.equal(zero.invalid, true);
 });

@@ -116,6 +116,7 @@ final class ProductShortcodes {
 		add_shortcode( 'linker_pdp_cta', array( $this, 'pdp_cta' ) );
 		add_shortcode( 'linker_pdp_ask', array( $this, 'pdp_ask' ) );
 		add_shortcode( 'linker_pdp_tools', array( $this, 'pdp_tools' ) );
+		add_shortcode( 'linker_pdp_configurator', array( $this, 'pdp_configurator' ) );
 		add_shortcode( 'linker_pdp_project_choices', array( $this, 'pdp_project_choices' ) );
 		add_shortcode( 'linker_pdp_gallery_pair', array( $this, 'pdp_gallery_pair' ) );
 		add_shortcode( 'linker_pdp_gallery_thumbs', array( $this, 'pdp_gallery_thumbs' ) );
@@ -902,8 +903,7 @@ final class ProductShortcodes {
 	}
 
 	/**
-	 * The three product tools and the comparison chip (`tv_b2b_pdp_tools`):
-	 * compare, ask, documents.
+	 * The three product tools: compare, ask, and documents.
 	 *
 	 * @param array<string, string>|string $atts Shortcode attributes.
 	 */
@@ -919,31 +919,47 @@ final class ProductShortcodes {
 			__( 'About %s: give me the key specs, which batteries or inverters it pairs with, and whether it fits my project.', 'linker-commerce' ),
 			trim( (string) $view['title'] . ' (' . (string) $view['sku'] . ')' )
 		);
-		$html    = '<button type="button" class="pdp-tool" data-compare-identities="' . esc_attr( (string) wp_json_encode( ComparePage::identities( array( $product_id ) ) ) ) . '" data-compare-product="' . Publication::canonical_id( $product_id ) . '" aria-pressed="false">' . self::icon( 'compare' )
+		$html  = '<button type="button" class="pdp-tool" data-compare-identities="' . esc_attr( (string) wp_json_encode( ComparePage::identities( array( $product_id ) ) ) ) . '" data-compare-product="' . Publication::canonical_id( $product_id ) . '" aria-pressed="false">' . self::icon( 'compare' )
 			. '<span data-compare-label>' . esc_html__( 'Compare', 'linker-commerce' ) . '</span><svg class="compare-selected-mark" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m5 12 4 4 10-10"/></svg></button>';
-		$html   .= '<button type="button" class="pdp-tool" data-pdp-ask data-ask-message="' . esc_attr( $ask_message ) . '">' . self::icon( 'ask' )
+		$html .= '<button type="button" class="pdp-tool" data-pdp-ask data-ask-message="' . esc_attr( $ask_message ) . '">' . self::icon( 'ask' )
 			. esc_html__( 'Ask Genie', 'linker-commerce' ) . '</button>';
-		$html   .= '<a class="pdp-tool" href="#downloads">' . self::icon( 'file' )
+		$html .= '<a class="pdp-tool" href="#downloads">' . self::icon( 'file' )
 			. esc_html__( 'Documents', 'linker-commerce' ) . '</a>';
-		$planner = self::configurator_page_url();
-		if ( '' !== $planner ) {
-			$canonical = Publication::canonical_id( $product_id );
-			if ( $canonical > 0 ) {
-				$html .= '<a class="pdp-tool" href="' . esc_url(
-					add_query_arg(
-						array(
-							'step'    => 'equipment',
-							'product' => (string) $canonical,
-						),
-						$planner
-					)
-				) . '">' . esc_html__( 'Open the Solution Configurator', 'linker-commerce' ) . '</a>';
-			}
-		}
 		// The floating comparison chip is not copied here: ComparePage prints
 		// it from the footer on every surface that carries a selection
 		// control (spec 19 §5, one implementation).
 		return $html;
+	}
+
+	/**
+	 * The project-check action into the same Solution Configurator.
+	 * The LiveCanvas region owns placement; this only carries the canonical product.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function pdp_configurator( $atts = array() ): string {
+		unset( $atts );
+		$view = $this->current_view();
+		if ( null === $view ) {
+			return '';
+		}
+		$planner = self::configurator_page_url();
+		if ( '' === $planner ) {
+			return '';
+		}
+		$canonical = Publication::canonical_id( (int) $view['id'] );
+		if ( $canonical < 1 ) {
+			return '';
+		}
+		return '<a class="pdp-project-choice" href="' . esc_url(
+			add_query_arg(
+				array(
+					'step'    => 'equipment',
+					'product' => (string) $canonical,
+				),
+				$planner
+			)
+		) . '">' . esc_html__( 'Open the Solution Configurator', 'linker-commerce' ) . '</a>';
 	}
 
 	/**

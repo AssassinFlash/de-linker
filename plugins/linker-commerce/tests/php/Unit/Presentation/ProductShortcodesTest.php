@@ -1862,10 +1862,11 @@ final class ProductShortcodesTest extends TestCase {
 		}
 	}
 
+
 	/**
-	 * The product tools open the same configurator with the canonical product as a proposal.
+	 * The tool row stays three cells. The configurator action lives in the project check.
 	 */
-	public function test_product_tools_link_the_canonical_product_into_equipment(): void {
+	public function test_product_tools_stay_three_and_the_project_check_carries_the_product(): void {
 		unset( $GLOBALS['product'] );
 		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn ( $value ): string => (string) json_encode( $value ) ) );
 		WP_Mock::userFunction( 'has_filter' )->andReturn( true );
@@ -1876,11 +1877,49 @@ final class ProductShortcodesTest extends TestCase {
 			)
 		);
 		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'http://linker.test/solution-configurator/' ) );
-		$html = $this->pdp( true )->pdp_tools();
+		$shortcodes = $this->pdp( true );
+		$tools      = $shortcodes->pdp_tools();
+		$dom        = new \DOMDocument();
+		$dom->loadHTML( '<?xml encoding="utf-8"><div id="tools">' . $tools . '</div>', LIBXML_NOERROR | LIBXML_NOWARNING );
+		$xpath      = new \DOMXPath( $dom );
+		$tool_nodes = $xpath->query( '//*[@id="tools"]//*[contains(concat(" ", normalize-space(@class), " "), " pdp-tool ")]' );
+		$planner    = $xpath->query( '//*[@id="tools"]//a[contains(@href, "solution-configurator")]' );
+		$this->assertSame( 3, $tool_nodes instanceof \DOMNodeList ? $tool_nodes->length : -1 );
+		$this->assertSame( 0, $planner instanceof \DOMNodeList ? $planner->length : -1 );
+		$this->assertStringContainsString( 'Compare', $tools );
+		$this->assertStringContainsString( 'Ask Genie', $tools );
+		$this->assertStringContainsString( 'Documents', $tools );
 
-		$this->assertStringContainsString( 'data-compare-product="6530"', $html );
-		$this->assertStringContainsString( 'href="http://linker.test/solution-configurator/?step=equipment&product=6530"', $html );
-		$this->assertStringContainsString( 'Open the Solution Configurator', $html );
-		$this->assertStringNotContainsString( 'step=roof', $html );
+		$action = $shortcodes->pdp_configurator();
+		$dom->loadHTML( '<?xml encoding="utf-8"><div id="action">' . $action . '</div>', LIBXML_NOERROR | LIBXML_NOWARNING );
+		$xpath = new \DOMXPath( $dom );
+		$links = $xpath->query( '//*[@id="action"]//a' );
+		$this->assertSame( 1, $links instanceof \DOMNodeList ? $links->length : -1 );
+		$link = $links instanceof \DOMNodeList ? $links->item( 0 ) : null;
+		$this->assertInstanceOf( \DOMElement::class, $link );
+		$this->assertSame( 'pdp-project-choice', $link->getAttribute( 'class' ) );
+		$this->assertSame( 'http://linker.test/solution-configurator/?step=equipment&product=6530', $link->getAttribute( 'href' ) );
+		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- DOM's native property name.
+		$this->assertSame( 'Open the Solution Configurator', $link->textContent );
+		$this->assertStringNotContainsString( 'pdp-tool', $action );
+
+		foreach ( array(
+			dirname( __DIR__, 4 ) . '/content/livecanvas/single_product.html',
+			dirname( __DIR__, 4 ) . '/content/livecanvas/de/single_product.html',
+		) as $template ) {
+			$html     = (string) file_get_contents( $template );
+			$region   = strpos( $html, 'class="pdp-project-check"' );
+			$choices  = strpos( $html, 'class="pdp-project-choices"' );
+			$entry    = strpos( $html, '[linker_pdp_configurator]' );
+			$tools_at = strpos( $html, 'class="pdp-product-tools"' );
+			$this->assertNotFalse( $region );
+			$this->assertNotFalse( $choices );
+			$this->assertNotFalse( $entry );
+			$this->assertGreaterThan( $region, $choices );
+			$this->assertGreaterThan( $choices, $entry );
+			$this->assertLessThan( $entry, $tools_at );
+			$this->assertStringNotContainsString( '[linker_pdp_configurator]', substr( $html, (int) $tools_at, (int) $choices - (int) $tools_at ) );
+			$this->assertSame( 0, substr_count( $html, 'class="pdp-tool"' ) );
+		}
 	}
 }

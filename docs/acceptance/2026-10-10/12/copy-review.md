@@ -209,3 +209,29 @@ spec_ 域英文串零残留（grep 证据见 PR）。
 Dokumente（线上同），Law 6 精确故两存：门店模板改用
 _x( 'Documents', 'product attachments', … ) 消歧，无上下文的
 'Documents' 留给账户区。
+
+## 产品入口说明（2026-10-29）
+
+独立 Spec/Standards 评审的原文批评：新的三句公开文案没有对抗评审记录，而且用了
+内部说法（“proposed input”、“cannot place this product”）。要求改成客户能直接
+读懂的话：这个产品是项目的起点；创建项目并不确认这些产品已经能一起工作；不能
+用于规划的产品，没有被用来创建一个空项目。
+
+“Create a project to open Equipment.” 在没有有效产品的 `step=equipment` 上已经
+不可达，已从界面和目录删除，不再另写德语。
+
+这两句是配置器里的事务说明，不是营销标题或卡片。按 linker-copywriting 的
+Hard Stops 1–9 核对后采用下面的句子：没有借用厂商信誉，没有把证明材料放进
+标题，没有公司身份否定，没有服务加强词，没有编造时效，没有让客户先去求助，
+没有维修店卖点，没有给客户布置作业，没有编造客户的下一步，也没有把一小段
+流程写成全部服务。“does not confirm that the products work together” 保留，
+因为它挡住一种真实误读——从产品页进来不等于兼容已经放行——不是在回答
+“你们是不是中间商”。德语按这个意思另写，不是逐词翻译。
+
+- EN：`This product is a starting point for the project. Creating the project does not confirm that the products work together.`
+- DE：`Dieses Produkt ist der Ausgangspunkt für das Projekt. Das Anlegen des Projekts bestätigt nicht, dass die Produkte zusammenpassen.`
+- EN 拒绝：`This product is not available for planning, so no project was created from it.`
+- DE 拒绝：`Dieses Produkt steht für die Planung nicht zur Verfügung. Deshalb wurde damit kein Projekt angelegt.`
+
+**未通过对抗评审。** 本轮没有可用的独立文案评审者。上面只记录批评和采用的
+句子，不是批准。

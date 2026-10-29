@@ -10648,18 +10648,13 @@ msgstr "Legen Sie ein Projekt an, um die Dachplanung zu starten."
 
 #: ../../apps/planner/src/components/NewProject.tsx
 #: build/planner/assets/planner.js
-msgid "Create a project to open Equipment."
-msgstr "Legen Sie ein Projekt an, um die Geräteauswahl zu öffnen."
+msgid "This product is a starting point for the project. Creating the project does not confirm that the products work together."
+msgstr "Dieses Produkt ist der Ausgangspunkt für das Projekt. Das Anlegen des Projekts bestätigt nicht, dass die Produkte zusammenpassen."
 
 #: ../../apps/planner/src/components/NewProject.tsx
 #: build/planner/assets/planner.js
-msgid "This product is a proposed input from current product data. Creating the project does not confirm that the products work together."
-msgstr "Dieses Produkt ist ein Vorschlag aus den aktuellen Produktdaten. Das Anlegen des Projekts bestätigt nicht, dass die Produkte zusammenpassen."
-
-#: ../../apps/planner/src/components/NewProject.tsx
-#: build/planner/assets/planner.js
-msgid "Current product data cannot place this product, so the project was not created."
-msgstr "Die aktuellen Produktdaten können dieses Produkt nicht zuordnen. Das Projekt wurde nicht angelegt."
+msgid "This product is not available for planning, so no project was created from it."
+msgstr "Dieses Produkt steht für die Planung nicht zur Verfügung. Deshalb wurde damit kein Projekt angelegt."
 
 #: ../../apps/planner/src/components/NewProject.tsx
 #: build/planner/assets/planner.js

@@ -44,7 +44,13 @@ export function projectLanguageUrl(
 	const saved = id === null ? savedSolutionId(page.searchParams) : null;
 	if (saved !== null) target.searchParams.set("saved_solution", String(saved));
 	const hints = id === null ? readEntryHints(page.searchParams) : null;
-	if (hints)
+	if (hints?.invalid) {
+		for (const key of ENTRY_QUERY_KEYS) {
+			if (key === "saved_solution") continue;
+			for (const value of page.searchParams.getAll(key))
+				target.searchParams.append(key, value);
+		}
+	} else if (hints)
 		for (const [key, value] of Object.entries({
 			pv_kwp: hints.pvKw,
 			annual_kwh: hints.annualKwh,
@@ -76,9 +82,13 @@ export function projectLanguageUrl(
 			!page.hash &&
 			!(run && /^[a-f0-9]{32}$/.test(run)) &&
 			page.searchParams.getAll("step").length === 1 &&
-			page.searchParams.get("step") === "roof"
+			(page.searchParams.get("step") === "roof" ||
+				page.searchParams.get("step") === "equipment")
 		)
-			target.hash = "#lp-design";
+			target.hash =
+				page.searchParams.get("step") === "equipment"
+					? "#lp-equipment"
+					: "#lp-design";
 	}
 	return target.href;
 }
