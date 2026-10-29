@@ -65,9 +65,10 @@ final class FormRecovery {
 	 * Read once from the current Woo session, never from URL query text.
 	 *
 	 * @param string $action Native form name.
+	 * @param bool   $allow_current_session The caller just saved into this request's Woo session.
 	 * @return array<string,string>
 	 */
-	public static function consume( string $action ): array {
+	public static function consume( string $action, bool $allow_current_session = false ): array {
 		// A fresh page needs no Woo session access. A failed POST explicitly
 		// sets Woo's signed session cookie before redirecting back to this form.
 		$has_session = false;
@@ -76,7 +77,7 @@ final class FormRecovery {
 				$has_session = true;
 				break; }
 		}
-		if ( ! $has_session ) {
+		if ( ! $has_session && ( ! $allow_current_session || null === WC()->session ) ) {
 			return array(); }
 		$value = WC()->session->get( 'linker_form_recovery_' . $action );
 		WC()->session->set( 'linker_form_recovery_' . $action, null );

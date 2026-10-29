@@ -64,6 +64,8 @@ final class FormRecoveryTest extends TestCase {
 			$this->assertGreaterThanOrEqual( time(), $saved['until'] );
 			$this->assertLessThanOrEqual( time() + 300, $saved['until'] );
 			$this->assertSame( array(), FormRecovery::consume( 'password_reset' ), 'Without the native session cookie, no input is recovered.' );
+			$this->assertSame( array( 'user_login' => 'installer@example.test' ), FormRecovery::consume( 'password_reset', true ), 'The current request can consume a session it just created, before its cookie returns.' );
+			FormRecovery::save( 'password_reset', array( 'user_login' => 'installer@example.test' ) );
 			$_COOKIE['wp_woocommerce_session_fixture'] = 'native-presence';
 			$this->assertSame( array( 'user_login' => 'installer@example.test' ), FormRecovery::consume( 'password_reset' ) );
 			$this->assertSame( array(), FormRecovery::consume( 'password_reset' ), 'Recovery is consumed only once.' );

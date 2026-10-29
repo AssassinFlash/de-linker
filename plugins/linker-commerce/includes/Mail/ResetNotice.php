@@ -160,7 +160,7 @@ final class ResetNotice {
 
 	/** Native Woo's existing form markup has no value argument for this one input. */
 	public static function render_begin(): void {
-		$fields = \Linker\Commerce\Protection\FormRecovery::consume( 'password_reset' );
+		$fields = \Linker\Commerce\Protection\FormRecovery::consume( 'password_reset', '' !== self::$retry_login );
 		$login  = '' !== self::$retry_login ? self::$retry_login : ( $fields['user_login'] ?? '' );
 		if ( '' === $login ) {
 			return;

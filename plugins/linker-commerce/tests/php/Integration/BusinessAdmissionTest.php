@@ -505,6 +505,8 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		\Linker\Commerce\Mail\ResetNotice::capture_submission( new WP_Error(), new \WP_User() );
 		$this->assertNull( WC()->session->get( $session_key ), 'A non-failing attempt neither saves the new login nor leaves the earlier retry.' );
 
+		// A first-time visitor's newly set cookie is not in this request yet.
+		unset( $_COOKIE['wp_woocommerce_session_recovery_fixture'] );
 		\Linker\Commerce\Mail\ResetNotice::capture_submission( new WP_Error( 'fixture', 'Synthetic failure' ), new \WP_User() );
 		$saved = WC()->session->get( $session_key );
 		$this->assertIsArray( $saved );
