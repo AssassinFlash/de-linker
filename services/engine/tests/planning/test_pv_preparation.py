@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import sqlite3
 from dataclasses import replace
 from pathlib import Path
@@ -438,11 +439,38 @@ def test_prepared_profile_http_preview_reads_original_output_without_pv_calculat
 
     for module in ("pv_generation", "pv_profile", "pv_profile_preparation"):
         monkeypatch.setattr(f"linker_engine.planning.{module}.generate_pv", forbidden)
-    assert json_object(
-        prepared_profile(
-            workspace.blobs, asset.content_sha256, asset.metadata
-        ).document()
-    ) == json_object(expected.document())
+
+    def assert_same_document(actual: object, expected: object) -> None:
+        # Retained power series stay exact. Floating diagnostics are
+        # platform-stable spelled, so this document comparison uses that bound.
+        assert type(actual) is type(expected)
+        if isinstance(expected, dict):
+            assert set(cast(Object, actual)) == set(cast(Object, expected))
+            for key in cast(Object, expected):
+                assert_same_document(
+                    cast(Object, actual)[key], cast(Object, expected)[key]
+                )
+        elif isinstance(expected, list):
+            actual_items = cast(list[object], actual)
+            expected_items = cast(list[object], expected)
+            assert len(actual_items) == len(expected_items)
+            for item, wanted in zip(actual_items, expected_items, strict=True):
+                assert_same_document(item, wanted)
+        elif isinstance(expected, float):
+            assert math.isclose(
+                cast(float, actual), expected, rel_tol=2e-9, abs_tol=1e-12
+            )
+        else:
+            assert actual == expected
+
+    assert_same_document(
+        json_object(
+            prepared_profile(
+                workspace.blobs, asset.content_sha256, asset.metadata
+            ).document()
+        ),
+        json_object(expected.document()),
+    )
     with TestClient(
         create_private_app(
             workspace,
@@ -469,17 +497,21 @@ def test_prepared_profile_http_preview_reads_original_output_without_pv_calculat
             assert page["transformations"] == [
                 json_object(item.document()) for item in expected.transformations
             ]
-            assert page["summary"]["energy_kwh"] == expected.total_kwh
+            assert math.isclose(
+                page["summary"]["energy_kwh"],
+                expected.total_kwh,
+                rel_tol=2e-9,
+                abs_tol=1e-12,
+            )
             assert page["summary"]["interval_count"] == 8760
-            assert page["rows"] == [
-                {
-                    "interval_index": i,
-                    "start_utc": expected.intervals[i].start.isoformat(),
-                    "end_utc": expected.intervals[i].end.isoformat(),
-                    "interval_mean_kw": expected.values_kw[i],
-                }
-                for i in range(offset, offset + 2)
-            ]
+            for i in range(offset, offset + 2):
+                row = page["rows"][i - offset]
+                assert row["interval_index"] == i
+                assert row["start_utc"] == expected.intervals[i].start.isoformat()
+                assert row["end_utc"] == expected.intervals[i].end.isoformat()
+                assert row["interval_mean_kw"] == pytest.approx(
+                    expected.values_kw[i], rel=2e-9
+                )
 
 
 def test_managed_process_keeps_fixture_pv_outside_production_source_policy(

@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import platform
+import re
 import subprocess
 import sys
 from pathlib import Path
-from typing import cast
+from typing import Any, cast
 
 from fastapi.testclient import TestClient
 
@@ -38,10 +40,255 @@ from .test_pvgis_tmy import capture, interpretation, raw, request
 APP = Path(__file__).resolve().parents[4] / "apps" / "planner"
 
 
+def preparation_fixture() -> dict[str, Any]:
+    name = f"preparation-flow-{sys.platform}-{platform.machine()}.json"
+    return cast(dict[str, Any], json.loads((APP / "tests/fixtures" / name).read_text()))
+
+
+HOST_DERIVED_FIXTURE_PATHS = frozenset(
+    {
+        ("geometric_pv", "profile_asset", "content_sha256"),
+        ("geometric_pv", "profile_asset", "metadata", "dependencies", "model.witness"),
+        ("geometric_pv", "profile_asset", "metadata_sha256"),
+        ("geometric_pv", "profile_preview", "content_sha256"),
+        ("geometric_pv", "profile_preview", "metadata_sha256"),
+        ("geometric_pv", "profile_preview_initial", "content_sha256"),
+        ("geometric_pv", "profile_preview_initial", "metadata_sha256"),
+        (
+            "geometric_pv",
+            "report_run",
+            "manifest",
+            "context",
+            "assets",
+            "report.source",
+        ),
+        ("geometric_pv", "report_run", "manifest_sha256"),
+        (
+            "geometric_pv",
+            "report_run",
+            "result",
+            "dependencies",
+            "prepared_asset_content",
+        ),
+        (
+            "geometric_pv",
+            "report_run",
+            "result",
+            "dependencies",
+            "prepared_asset_metadata",
+        ),
+        (
+            "geometric_pv",
+            "report_run",
+            "result",
+            "dependencies",
+            "prepared_attachment.bill_of_materials_csv.metadata",
+        ),
+        ("geometric_pv", "report_run", "result", "dependencies", "report_model"),
+        ("geometric_pv", "report_run", "result", "dependencies", "report_source"),
+        ("geometric_pv", "report_run", "result", "manifest_sha256"),
+        ("geometric_pv", "report_run", "result", "pinned_assets", "report.source"),
+        ("geometric_pv", "report_run", "result", "prepared_asset", "content_sha256"),
+        (
+            "geometric_pv",
+            "report_run",
+            "result",
+            "prepared_asset",
+            "metadata",
+            "dependencies",
+            "report_model",
+        ),
+        (
+            "geometric_pv",
+            "report_run",
+            "result",
+            "prepared_asset",
+            "metadata",
+            "dependencies",
+            "report_source",
+        ),
+        (
+            "geometric_pv",
+            "report_run",
+            "result",
+            "prepared_asset",
+            "metadata",
+            "report_model_sha256",
+        ),
+        (
+            "geometric_pv",
+            "report_run",
+            "result",
+            "prepared_asset",
+            "metadata_sha256",
+        ),
+        (
+            "geometric_pv",
+            "report_run",
+            "result",
+            "prepared_attachments",
+            "bill_of_materials_csv",
+            "metadata",
+            "dependencies",
+            "report_model",
+        ),
+        (
+            "geometric_pv",
+            "report_run",
+            "result",
+            "prepared_attachments",
+            "bill_of_materials_csv",
+            "metadata",
+            "dependencies",
+            "report_source",
+        ),
+        (
+            "geometric_pv",
+            "report_run",
+            "result",
+            "prepared_attachments",
+            "bill_of_materials_csv",
+            "metadata_sha256",
+        ),
+        (
+            "geometric_pv",
+            "report_run",
+            "result",
+            "report",
+            "sections",
+            1,
+            "rows",
+            35,
+            "value",
+        ),
+        ("geometric_pv", "report_run", "result", "report_sha256"),
+        (
+            "geometric_pv",
+            "report_run",
+            "result",
+            "source_runs",
+            0,
+            "manifest_sha256",
+        ),
+        (
+            "geometric_pv",
+            "report_run",
+            "result",
+            "source_runs",
+            0,
+            "result_sha256",
+        ),
+        (
+            "geometric_pv",
+            "report_run",
+            "result",
+            "source_runs",
+            1,
+            "result_sha256",
+        ),
+        ("geometric_pv", "report_run", "result_sha256"),
+        ("geometric_pv", "report_run_assistant", "runs", 0, "manifest_sha256"),
+        ("geometric_pv", "report_run_assistant", "runs", 0, "result_sha256"),
+        ("geometric_pv", "report_run_assistant", "runs", 0, "rows", 34, "value"),
+        ("geometric_pv", "run", "result", "dependencies", "model.witness"),
+        (
+            "geometric_pv",
+            "run",
+            "result",
+            "dependencies",
+            "prepared_asset_content",
+        ),
+        (
+            "geometric_pv",
+            "run",
+            "result",
+            "dependencies",
+            "prepared_asset_metadata",
+        ),
+        (
+            "geometric_pv",
+            "run",
+            "result",
+            "prepared_asset",
+            "content_sha256",
+        ),
+        (
+            "geometric_pv",
+            "run",
+            "result",
+            "prepared_asset",
+            "metadata",
+            "dependencies",
+            "model.witness",
+        ),
+        (
+            "geometric_pv",
+            "run",
+            "result",
+            "prepared_asset",
+            "metadata_sha256",
+        ),
+        ("geometric_pv", "run", "result_sha256"),
+        ("geometric_pv", "run_assistant", "runs", 0, "result_sha256"),
+        ("pv_run", "result", "dependencies", "prepared_asset_metadata"),
+        ("pv_run", "result", "dependencies", "pv_model_witness"),
+        (
+            "pv_run",
+            "result",
+            "prepared_asset",
+            "metadata",
+            "dependencies",
+            "pv_model_witness",
+        ),
+        ("pv_run", "result", "prepared_asset", "metadata_sha256"),
+        ("pv_run", "result_sha256"),
+    }
+)
+
+
+def host_invariant_view(node: Any, path: tuple[str | int, ...] = ()) -> Any:
+    """Replace only the fixture paths proven to depend on exact host arithmetic."""
+    if path in HOST_DERIVED_FIXTURE_PATHS:
+        return (
+            "<host-derived>"
+            if isinstance(node, str) and re.fullmatch(r"[0-9a-f]{64}", node)
+            else node
+        )
+    if isinstance(node, dict):
+        return {
+            key: host_invariant_view(value, (*path, key)) for key, value in node.items()
+        }
+    if isinstance(node, list):
+        return [
+            host_invariant_view(value, (*path, index))
+            for index, value in enumerate(node)
+        ]
+    return node
+
+
+def different_paths(
+    left: Any, right: Any, path: tuple[str | int, ...] = ()
+) -> set[tuple[str | int, ...]]:
+    """Paths where the two committed host baselines differ."""
+    if type(left) is not type(right):
+        return {path}
+    if isinstance(left, dict):
+        found = {(*path, "__keys__")} if set(left) != set(right) else set()
+        for key in set(left) & set(right):
+            found |= different_paths(left[key], right[key], (*path, key))
+        return found
+    if isinstance(left, list):
+        found = {(*path, "__length__")} if len(left) != len(right) else set()
+        for index, (actual, wanted) in enumerate(zip(left, right, strict=False)):
+            found |= different_paths(actual, wanted, (*path, index))
+        return found
+    return set() if left == right else {path}
+
+
 def test_replacing_selected_weather_can_be_saved_after_browser_preparation(
     workspace: Workspace, owner: Actor
 ) -> None:
-    fixture = json.loads((APP / "tests/fixtures/preparation-flow.json").read_text())
+    fixture = preparation_fixture()
     original = fixture["weather_project"]["inputs"]
     project = workspace.create(
         owner, "Synthetic browser save fixture", original, key="new"
@@ -142,7 +389,7 @@ process.stdout.write(JSON.stringify(prepareWeatherInputs(changed)));
 def test_browser_pv_preparation_saves_and_executes_the_frozen_model(
     workspace: Workspace, owner: Actor
 ) -> None:
-    fixture = json.loads((APP / "tests/fixtures/preparation-flow.json").read_text())
+    fixture = preparation_fixture()
     original = cast(Object, fixture["pv_project"]["inputs"])
     original.pop("pv_preparation")
     original["unrelated"] = "preserved"
@@ -280,21 +527,17 @@ process.stdout.write(JSON.stringify(prepared));
 
 
 def test_preparation_fixture_export_reproduces_the_committed_fixture() -> None:
-    """The actual host's complete baseline is exactly what this engine produces.
+    """The committed browser fixture matches this host on every stable field.
 
-    Every field and hash is compared without a tolerance. The synthetic runtime
-    label is not a claim that macOS and Linux share one numerical execution
-    identity; each host family has a real, complete exported baseline.
+    Same-host repeated exports are byte-identical. Across hosts, only the paths
+    proven to depend on exact AC/DC arithmetic are masked; source/input identity
+    and every other field remain exact. That identity is not this machine's live
+    snapshot.
     """
-    fixture = (
-        Path(__file__).resolve().parents[1]
-        / "fixtures"
-        / f"preparation-flow-{sys.platform}-{platform.machine()}.json"
-    )
-    committed = json.loads(fixture.read_text())
+    committed = preparation_fixture()
     produced = export_preparation_fixture.capture()
     assert set(produced) == set(committed) == set(EXPECTED_FIXTURE_KEYS)
-    assert produced == committed
+    assert host_invariant_view(produced) == host_invariant_view(committed)
     pinned = export_preparation_fixture.fixture_runtime_snapshot()
     live = RuntimeSnapshot.capture()
     assert pinned.sha256 != live.sha256
@@ -302,9 +545,38 @@ def test_preparation_fixture_export_reproduces_the_committed_fixture() -> None:
     manifest = cast(Object, weather_run["manifest"])
     context = cast(Object, manifest["context"])
     assert context["code_sha256"] == pinned.sha256
-    # Prettier formats the committed host baseline. The equality above therefore
-    # checks formatted values, and this independent second export must agree too.
+    # The browser package owns this file's whitespace: it formats its own JSON
+    # with Prettier, which may expand a short array or break a long string.
+    # Whatever that formatting did, it changed no saved value, so re-reading
+    # the committed bytes must yield exactly the document the exporter produced.
     assert json.loads(export_preparation_fixture.rendered()) == produced
+
+
+def test_preparation_platform_manifest_names_each_export() -> None:
+    """Each host baseline is a complete document with the recorded canonical hash."""
+    manifest_path = APP / "tests/fixtures/preparation-flow-platforms.json"
+    manifest = json.loads(manifest_path.read_text())
+    baselines = cast(dict[str, Object], manifest["baselines"])
+    for host, baseline in baselines.items():
+        fixture = json.loads(
+            (manifest_path.parent / cast(str, baseline["fixture"])).read_text()
+        )
+        canonical = json.dumps(fixture, sort_keys=True, ensure_ascii=False).encode()
+        assert (
+            hashlib.sha256(canonical).hexdigest()
+            == baseline["canonical_sorted_json_sha256"]
+        ), host
+
+
+def test_host_derived_fixture_paths_match_the_named_baselines() -> None:
+    """The explicit mask is exactly the measured Darwin/Linux difference."""
+    darwin = json.loads(
+        (APP / "tests/fixtures/preparation-flow-darwin-arm64.json").read_text()
+    )
+    linux = json.loads(
+        (APP / "tests/fixtures/preparation-flow-linux-x86_64.json").read_text()
+    )
+    assert different_paths(darwin, linux) == HOST_DERIVED_FIXTURE_PATHS
 
 
 # Every top-level key the browser fixture carries, produced by the exporter.

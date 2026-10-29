@@ -126,6 +126,22 @@ def _box(value: object) -> bool:
     )
 
 
+def subtitle_above_title(subtitle: Sequence[float], title: Sequence[float]) -> bool:
+    """Match a smaller subtitle immediately above a title.
+
+    PDFium geometry in the SHA-verified manufacturer originals
+    (`warranty-sts-production.json.gz`) supplies this relative check, not a
+    universal pixel tolerance.
+    """
+    height = title[3] - title[1]
+    return (
+        subtitle[3] < title[1]
+        and title[1] - subtitle[3] < height
+        and abs(subtitle[0] - title[0]) < height
+        and subtitle[3] - subtitle[1] < height
+    )
+
+
 def valid_word_wrap(value: object, cell: Mapping[str, Any]) -> bool:
     """Accept only an alphabetic final glyph wrapped inside its own cell.
 
@@ -195,6 +211,8 @@ def valid_word_wrap(value: object, cell: Mapping[str, Any]) -> bool:
         for part in (first, second)
     ):
         return False
+    # The SHA-verified original wrap in warranty-word-wrap-physical.json supplies
+    # these measured relative bounds: vertical gap, left offset and right margin.
     height = max(first[3] - first[1], second[3] - second[1])
     return bool(
         0 <= second[1] - first[3] <= height

@@ -138,6 +138,7 @@ final class DocumentLibraryTest extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 		$this->plain_text();
+		WP_Mock::userFunction( 'get_option' )->andReturn( array() )->byDefault();
 		WP_Mock::userFunction( 'wp_cache_supports' )->andReturn( true )->byDefault();
 		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->andReturn( true )->byDefault();
 		WP_Mock::userFunction( 'get_post_type' )->andReturn( 'product' )->byDefault();

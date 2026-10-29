@@ -36,6 +36,7 @@ from linker_genie.table_projection import (
     SourceSpan,
     SourceTextSpan,
     SourceWordWrap,
+    subtitle_above_title,
     valid_word_wrap,
 )
 from linker_genie.warranty_scope import STS_COVER_SUBTITLE
@@ -549,10 +550,7 @@ def pdf_series_cover(pdf_path: Path) -> dict[str, object] | None:
                     if not (
                         left <= subtitle[0] < subtitle[2] <= right
                         and bottom <= subtitle[1] < subtitle[3] <= top
-                        and subtitle[3] < family[1]
-                        and family[1] - subtitle[3] < height
-                        and abs(subtitle[0] - family[0]) < height
-                        and subtitle[3] - subtitle[1] < height
+                        and subtitle_above_title(subtitle, family)
                     ):
                         return None
                     # A later-extracted object can still be physically above
@@ -1464,6 +1462,7 @@ def _pdf_word_wraps(pdf: object, number: int, sha: str) -> list[SourceWordWrap]:
                         or raw.FPDFText_IsGenerated(textpage.raw, position) != 0
                         or not obj
                         or raw.FPDFPageObj_GetType(obj) != raw.FPDF_PAGEOBJ_TEXT
+                        # PDF 32000-1:2008 §9.3.6: 0=fill, 1=stroke, 2=fill then stroke.
                         or raw.FPDFTextObj_GetTextRenderMode(obj) not in (0, 1, 2)
                         or not raw.FPDFPageObj_GetIsActive(obj, ctypes.byref(active))
                         or not active.value

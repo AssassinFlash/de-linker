@@ -1,7 +1,7 @@
 import test from "node:test";
 import dcPlant from "../../tests/fixtures/dc-plant-energy-run.json" with { type: "json" };
 import assert from "node:assert/strict";
-import fixture from "../../tests/fixtures/preparation-flow.json" with { type: "json" };
+import fixture from "../../tests/fixtures/index.ts";
 import {
 	readRun,
 	runTask,
