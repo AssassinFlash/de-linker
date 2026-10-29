@@ -10,6 +10,7 @@ and is left out, as Docling classifies it.
 from __future__ import annotations
 
 import hashlib
+import logging
 import math
 import re
 from collections.abc import Iterable, Sequence
@@ -26,6 +27,7 @@ from docling_core.types.doc.items.table.table import TableItem
 from docling_core.types.doc.items.text import SectionHeaderItem, TextItem, TitleItem
 
 from linker_genie.table_projection import (
+    MIN_WRAPPED_STEM,
     TOKEN,
     ExternalAxis,
     SourceCell,
@@ -33,10 +35,13 @@ from linker_genie.table_projection import (
     SourceFragment,
     SourceSpan,
     SourceTextSpan,
+    SourceWordWrap,
+    valid_word_wrap,
 )
 from linker_genie.warranty_scope import STS_COVER_SUBTITLE
 
 BlockKind = Literal["heading", "text", "table"]
+log = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -1414,6 +1419,104 @@ def _preceding_axis_blocks(blocks: Sequence[Block]) -> list[Block]:
     return []
 
 
+def _pdf_word_wraps(pdf: object, number: int, sha: str) -> list[SourceWordWrap]:
+    """Find source-backed single-letter wraps; cell ownership is checked later.
+
+    Only text-layer characters with a complete spelling elsewhere on this page
+    are candidates. No OCR text, numbers, punctuation or guessed words are joined.
+    """
+    import ctypes
+    from typing import Any, cast
+
+    import pypdfium2.raw as raw
+
+    page = cast(Any, pdf)[number - 1]
+    try:
+        if page.get_rotation() != 0:
+            return []
+        left, bottom, right, top = page.get_bbox()
+        textpage = page.get_textpage()
+        try:
+            text = textpage.get_text_range()
+            count = textpage.count_chars()
+            indices: list[int] | None = None
+            if len(text) != count:
+                parts = []
+                indices = []
+                for index in range(count):
+                    part = textpage.get_text_range(index, 1)
+                    parts.append(part)
+                    indices.extend([index] * len(part))
+                text = "".join(parts)
+
+            def physical(
+                begin: int, end: int
+            ) -> tuple[float, float, float, float] | None:
+                positions = [
+                    indices[i] if indices is not None else i for i in range(begin, end)
+                ]
+                boxes = []
+                for position, char in zip(positions, text[begin:end], strict=True):
+                    obj = raw.FPDFText_GetTextObject(textpage.raw, position)
+                    active = ctypes.c_int()
+                    if (
+                        raw.FPDFText_GetUnicode(textpage.raw, position) != ord(char)
+                        or raw.FPDFText_IsGenerated(textpage.raw, position) != 0
+                        or not obj
+                        or raw.FPDFPageObj_GetType(obj) != raw.FPDF_PAGEOBJ_TEXT
+                        or raw.FPDFTextObj_GetTextRenderMode(obj) not in (0, 1, 2)
+                        or not raw.FPDFPageObj_GetIsActive(obj, ctypes.byref(active))
+                        or not active.value
+                    ):
+                        return None
+                    boxes.append(textpage.get_charbox(position))
+                if not boxes:
+                    return None
+                return (
+                    min(box[0] for box in boxes) - left,
+                    top - max(box[3] for box in boxes),
+                    max(box[2] for box in boxes) - left,
+                    top - min(box[1] for box in boxes),
+                )
+
+            output: list[SourceWordWrap] = []
+            pattern = rf"(?<!\w)([^\W\d_]{{{MIN_WRAPPED_STEM},}})\r?\n([^\W\d_])(?!\w)"
+            for match in re.finditer(pattern, text):
+                head, tail = match.group(1), match.group(2)
+                if not tail.islower() or not re.search(
+                    r"(?<!\w)" + re.escape(head + tail) + r"(?!\w)", text
+                ):
+                    continue
+                first = physical(*match.span(1))
+                second = physical(*match.span(2))
+                if first is None or second is None:
+                    continue
+
+                def offset(index: int) -> int:
+                    return indices[index] if indices is not None else index
+
+                output.append(
+                    SourceWordWrap(
+                        head=head,
+                        tail=tail,
+                        head_bbox=first,
+                        tail_bbox=second,
+                        head_start=offset(match.start(1)),
+                        head_end=offset(match.end(1) - 1) + 1,
+                        tail_start=offset(match.start(2)),
+                        tail_end=offset(match.end(2) - 1) + 1,
+                        source_sha256=sha,
+                        page=number,
+                        page_size=(right - left, top - bottom),
+                    )
+                )
+            return output
+        finally:
+            textpage.close()
+    finally:
+        page.close()
+
+
 def enrich_model_axes(pages: list[Page], pdf_path: Path) -> list[Page]:
     """Supplement cached native cells with original physical model-label order.
 
@@ -1447,6 +1550,20 @@ def enrich_model_axes(pages: list[Page], pdf_path: Path) -> list[Page]:
                 continue
             wrapped_spans: set[tuple[int, int]] = set()
             spans = _pdf_model_spans(pdf, page.number, sha, wrapped_spans=wrapped_spans)
+            try:
+                word_wraps = (
+                    _pdf_word_wraps(pdf, page.number, sha)
+                    if page.source == "docling"
+                    else []
+                )
+            except (OSError, ValueError, IndexError, RuntimeError) as error:
+                # Optional layout recovery must not discard the original cell.
+                log.warning(
+                    "word-wrap evidence unavailable on page %s: %s",
+                    page.number,
+                    type(error).__name__,
+                )
+                word_wraps = []
             blocks = []
             for index, block in enumerate(page.blocks):
                 cells: list[SourceCell] = []
@@ -1480,6 +1597,12 @@ def enrich_model_axes(pages: list[Page], pdf_path: Path) -> list[Page]:
                     external["footnotes"] = footnotes[key]
                 for cell in block.source_cells:
                     own: SourceCell = {**cell}
+                    if not block.source_picture:
+                        matched_wraps = [
+                            wrap for wrap in word_wraps if valid_word_wrap(wrap, cell)
+                        ]
+                        if matched_wraps:
+                            own["word_wraps"] = matched_wraps
                     if external and cell["row_start"] == 0 and cell["col_start"] == 0:
                         own["external_axis"] = external
                         recovered = True

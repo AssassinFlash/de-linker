@@ -753,7 +753,8 @@ def knowledge_qualifications(hit: dict[str, Any]) -> tuple[Qualification, ...] |
     expected = [f"{note.quote} (p. {note.page})" for note in notes]
     # Search may tag figures inside the original condition. Reconstruct the
     # exact original line before trusting it, and bind every tag to this hit's
-    # own validated figure table. The quote retained for hydration stays verbatim.
+    # own validated figure table. Source text remains in the proof; the quote
+    # may already have a separately proven physical line wrap restored.
     valid = True
     figure_map = figures if isinstance(figures, dict) else {}
 

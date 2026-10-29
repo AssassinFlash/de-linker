@@ -76,6 +76,22 @@ class ExternalAxis(TypedDict):
     first_row_is_data: bool
 
 
+class SourceWordWrap(TypedDict):
+    """Two physical text fragments inside one native PDF cell."""
+
+    head: str
+    tail: str
+    head_bbox: tuple[float, float, float, float]
+    tail_bbox: tuple[float, float, float, float]
+    head_start: int
+    head_end: int
+    tail_start: int
+    tail_end: int
+    source_sha256: str
+    page: int
+    page_size: tuple[float, float]
+
+
 class SourceCell(TypedDict):
     """Original Docling cell coordinates; end offsets are exclusive."""
 
@@ -91,9 +107,13 @@ class SourceCell(TypedDict):
     bbox_origin: str
     model_spans: NotRequired[list[SourceSpan]]
     external_axis: NotRequired[ExternalAxis]
+    word_wraps: NotRequired[list[SourceWordWrap]]
 
 
 TOKEN = re.compile(r"[A-Za-z0-9][A-Za-z0-9./-]*")
+# The physical warranty fixture has a 16-letter stem and one final glyph.
+# Half that observed stem length keeps short words and units out of scope.
+MIN_WRAPPED_STEM = 8
 
 
 def _box(value: object) -> bool:
@@ -104,6 +124,111 @@ def _box(value: object) -> bool:
         and value[0] < value[2]
         and value[1] < value[3]
     )
+
+
+def valid_word_wrap(value: object, cell: Mapping[str, Any]) -> bool:
+    """Accept only an alphabetic final glyph wrapped inside its own cell.
+
+    This is layout evidence, not a correction by itself. The caller must also
+    prove the joined word in another original text chunk on the same page.
+    """
+    if not isinstance(value, dict):
+        return False
+    head, tail = value.get("head"), value.get("tail")
+    first, second = value.get("head_bbox"), value.get("tail_bbox")
+    box, size = cell.get("bbox"), value.get("page_size")
+    sha, page = value.get("source_sha256"), value.get("page")
+    offsets = [
+        value.get(key) for key in ("head_start", "head_end", "tail_start", "tail_end")
+    ]
+    if (
+        not isinstance(head, str)
+        or len(head) < MIN_WRAPPED_STEM
+        or not head.isalpha()
+        or not isinstance(tail, str)
+        or len(tail) != 1
+        or not tail.isalpha()
+        or not tail.islower()
+        or not isinstance(cell.get("text"), str)
+        or len(
+            re.findall(
+                r"(?<!\w)" + re.escape(head + " " + tail) + r"(?!\w)",
+                cell["text"],
+            )
+        )
+        != 1
+        or cell.get("bbox_origin") != "TOPLEFT"
+        or not _box(box)
+        or not _box(first)
+        or not _box(second)
+        or not isinstance(size, (tuple, list))
+        or len(size) != 2
+        or any(
+            type(n) not in (int, float) or not math.isfinite(n) or n <= 0 for n in size
+        )
+        or not isinstance(sha, str)
+        or re.fullmatch(r"[a-f0-9]{64}", sha) is None
+        or type(page) is not int
+        or page < 1
+        or any(type(offset) is not int for offset in offsets)
+    ):
+        return False
+    head_start, head_end, tail_start, tail_end = (
+        int(value[key]) for key in ("head_start", "head_end", "tail_start", "tail_end")
+    )
+    if not (
+        0 <= head_start < head_end
+        and head_end - head_start == len(head)
+        and 1 <= tail_start - head_end <= 2  # PDF text line separator: LF or CRLF.
+        and tail_end - tail_start == 1
+    ):
+        return False
+    assert isinstance(box, (tuple, list))
+    assert isinstance(first, (tuple, list)) and isinstance(second, (tuple, list))
+    if not (0 <= box[0] < box[2] <= size[0] and 0 <= box[1] < box[3] <= size[1]):
+        return False
+    if any(
+        not (
+            box[0] <= part[0] < part[2] <= box[2]
+            and box[1] <= part[1] < part[3] <= box[3]
+        )
+        for part in (first, second)
+    ):
+        return False
+    height = max(first[3] - first[1], second[3] - second[1])
+    return bool(
+        0 <= second[1] - first[3] <= height
+        and abs(first[0] - second[0]) <= height
+        and 0 <= box[2] - first[2] <= height
+    )
+
+
+def display_cell_text(
+    cell: SourceCell, sha: str, page: int, witnesses: Sequence[str]
+) -> str:
+    """Restore only physically proven wraps also spelled out in source text."""
+    display = cell["text"]
+    for wrap in cell.get("word_wraps", []):
+        if (
+            not valid_word_wrap(wrap, cell)
+            or wrap["source_sha256"] != sha
+            or wrap["page"] != page
+        ):
+            continue
+        split = wrap["head"] + " " + wrap["tail"]
+        joined = wrap["head"] + wrap["tail"]
+        if not any(
+            re.search(r"(?<!\w)" + re.escape(joined) + r"(?!\w)", witness)
+            for witness in witnesses
+        ):
+            continue
+        display = re.sub(
+            r"(?<!\w)" + re.escape(split) + r"(?!\w)",
+            joined,
+            display,
+            count=1,
+        )
+    return display
 
 
 def _pdf_span(span: object) -> bool:
@@ -337,6 +462,11 @@ def read_cells(value: object) -> tuple[SourceCell, ...] | None:
             external = _external_axis(cell["external_axis"])
             if external is None:
                 return None
+        wraps = cell.get("word_wraps", [])
+        if not isinstance(wraps, list) or not all(
+            valid_word_wrap(wrap, cell) for wrap in wraps
+        ):
+            return None
         typed = SourceCell(
             row_start=cell["row_start"],
             row_end=cell["row_end"],
@@ -353,6 +483,8 @@ def read_cells(value: object) -> tuple[SourceCell, ...] | None:
             typed["model_spans"] = spans
         if external is not None:
             typed["external_axis"] = external
+        if wraps:
+            typed["word_wraps"] = wraps
         output.append(typed)
     return tuple(output)
 
