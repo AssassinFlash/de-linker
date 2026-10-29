@@ -31,7 +31,7 @@ The installation requires five circuit breakers, one for each of the following c
 
 **DE Q:** Welche Leitungsschutzschalter braucht die Installation?
 
-Die Installation erfordert fünf Leitungsschutzschalter, je einen für die folgenden Anschlüsse: Inverter Backup, Hybrid inverter Grid, On-grid inverter Grid, Smart Load und Backup Load. Wählen Sie geeignete Leitungsschutzschalter basierend auf dem Nennstrom der Zielanschlüsse. Die Leitungsschutzschalter können im ATS Box oder im externen Verteilerkasten der Nutzer installiert werden.
+Die Installation erfordert fünf Leitungsschutzschalter, je einen für die folgenden Anschlüsse: Inverter Backup, Hybrid inverter Grid, On-grid inverter Grid, Smart Load und Backup Load. Wählen Sie geeignete Leitungsschutzschalter basierend auf dem Nennstrom der Zielanschlüsse. Die Leitungsschutzschalter können in der ATS-Box oder im externen Verteilerkasten der Nutzer installiert werden.
 
 **Citation:** SAJ ATS1-T63-A user manual, version 3.0 (English) · p.21 · https://de-linker.com/wp-content/uploads/2026/10/SAJ_ATS1-T63-A_User-Manual_EN_V3.0.pdf
 
@@ -42,7 +42,7 @@ Die Installation erfordert fünf Leitungsschutzschalter, je einen für die folge
 
 **EN Q:** Where can the panel be installed?
 
-The device can be installed either indoor or outdoor. Do not install the device in resting areas, such as bedrooms, because the noise level may exceed 30 dB when the grid is unstable.
+The device can be installed either indoors or outdoors. Do not install the device in resting areas, such as bedrooms, because the noise level may exceed 30 dB when the grid is unstable.
 
 **DE Q:** Wo kann die Einheit montiert werden?
 

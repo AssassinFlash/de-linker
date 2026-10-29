@@ -16,7 +16,7 @@ The eManager-C1 Pro is a smart communication box that includes EMS controllers e
 
 **DE Q:** Was enthält der eManager-C1 Pro?
 
-Der eManager-C1 Pro ist eine smarte Kommunikationsbox, die EMS-Steuerungen eManager-C1, einen Ethernet-Switch (optional) und smarte Messuhren (optional) enthält.
+Der eManager-C1 Pro ist eine smarte Kommunikationsbox, die EMS-Steuerungen eManager-C1, einen Ethernet-Switch (optional) und intelligente Stromzähler (optional) enthält.
 
 **Citation:** SAJ eManager-C1 Pro datasheet, English · p.2 · https://de-linker.com/wp-content/uploads/2026/07/delinker-saj_emanager-datasheet.pdf
 
