@@ -147,7 +147,9 @@ test("equipment without a valid product is not a route, and a stray product is r
 	assert.equal(equipment.equipment, false);
 	assert.equal(equipment.productId, null);
 	assert.equal(equipment.invalid, true);
-	const stray = readEntryHints(new URLSearchParams("step=roof&product_id=1946"))!;
+	const stray = readEntryHints(
+		new URLSearchParams("step=roof&product_id=1946"),
+	)!;
 	assert.equal(stray.roof, true);
 	assert.equal(stray.equipment, false);
 	assert.equal(stray.productId, null);
@@ -167,7 +169,9 @@ test("equipment without a valid product is not a route, and a stray product is r
 		readEntryHints(new URLSearchParams("step=result"))!.invalid,
 		true,
 	);
-	const zero = readEntryHints(new URLSearchParams("step=equipment&product_id=0"))!;
+	const zero = readEntryHints(
+		new URLSearchParams("step=equipment&product_id=0"),
+	)!;
 	assert.equal(zero.equipment, false);
 	assert.equal(zero.invalid, true);
 });

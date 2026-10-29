@@ -187,7 +187,10 @@ test("language switches keep a product proposal and do not treat roof as a saved
 			null,
 		),
 	);
-	assert.deepEqual(duplicate.searchParams.getAll("product_id"), ["1946", "1947"]);
+	assert.deepEqual(duplicate.searchParams.getAll("product_id"), [
+		"1946",
+		"1947",
+	]);
 	assert.equal(duplicate.searchParams.get("step"), "equipment");
 	assert.equal(duplicate.searchParams.has("nonce"), false);
 	assert.equal(duplicate.searchParams.has("unrelated"), false);
