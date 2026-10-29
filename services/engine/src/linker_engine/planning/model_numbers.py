@@ -8,8 +8,8 @@ platform siblings of a derived PV float differ by at most ~3e-12 relative,
 with the bulk at 1e-16..1e-15. A witness that stores those floats at
 binary64 digits10 therefore hashes differently per platform.
 
-The witness spelling collapses that spread to identical bytes on every
-platform: every float in the derived part of a witness document is spelled
+The witness spelling collapses that spread to identical diagnostic spellings:
+every float in the derived part of a witness document is spelled
 with DERIVED_WITNESS_SIGNIFICANT_DIGITS = 10 significant decimal digits
 (ROUND_HALF_EVEN). The decimal quantum is 1e-9 relative, at least 300x
 coarser than the measured platform spread, so platform siblings round to
@@ -86,9 +86,10 @@ def canonical_witness_document(document: Mapping[str, Any]) -> dict[str, Any]:
 
     Walks the document and replaces each float outside the ``inputs`` subtree
     with ``derived_witness_number(value)`` so the canonical encoding is the
-    same bytes on every platform. Ints, bools, strings and nulls pass through,
-    and so does the whole ``inputs`` subtree: it carries retained inputs whose
-    exact bytes other code re-verifies.
+    same diagnostic bytes on every platform. Exact input/output series are
+    passed through and can retain host-specific low bits. Ints, bools, strings
+    and nulls pass through, and so does the whole ``inputs`` subtree: it carries
+    retained inputs whose exact bytes other code re-verifies.
     """
     return {
         key: value

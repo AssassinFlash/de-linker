@@ -290,8 +290,8 @@ def test_preparation_fixture_export_reproduces_the_committed_fixture() -> None:
 
     The whole document is compared field by field. Nothing is rewritten to hide
     a hash. The exporter pins a synthetic Python, platform and dependency
-    identity, so the hashes that chain from that snapshot are the same on macOS
-    and Linux. That identity is not this machine's live snapshot.
+    identity, while exact physical AC/DC series remain specific to the named
+    host. That identity is not this machine's live snapshot.
     """
     committed = preparation_fixture()
     produced = export_preparation_fixture.capture()

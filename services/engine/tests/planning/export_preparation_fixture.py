@@ -3,10 +3,11 @@
 Uses the retained real TMY and explicit synthetic model/roof with a simulated
 provider adapter. Never connects to a live service, account, or project store.
 
-The export is reproducible: identifiers and clock values come from a fixed
-sequence, and the runtime snapshot uses a synthetic Python, platform and
-dependency identity. Two runs on macOS and Linux therefore produce identical
-bytes. A fixture diff means the saved objects changed, not that the host did.
+The export is reproducible on each named runtime: identifiers and clock values
+come from a fixed sequence, and the runtime snapshot uses a synthetic Python,
+platform and dependency identity. Exact physical AC/DC series can retain each
+host's low bits, so macOS and Linux have independently generated, host-specific
+fixtures. On one host, a fixture diff means the saved objects changed.
 
 Every key of the browser fixture is produced here, one saved workflow at a
 time: weather acquisition, PV preparation, the managed roof AC reference, the
