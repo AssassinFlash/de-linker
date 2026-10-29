@@ -34,6 +34,7 @@ from linker_genie.table_projection import (
     SourceSpan,
     SourceTextSpan,
 )
+from linker_genie.warranty_scope import STS_COVER_SUBTITLE
 
 BlockKind = Literal["heading", "text", "table"]
 
@@ -449,12 +450,13 @@ def _visible_pdf_line(
 
 
 def pdf_series_cover(pdf_path: Path) -> dict[str, object] | None:
-    """Recover a single visible first-page series/range line from a PDF footer.
+    """Recover one independently visible first-page manufacturer series title.
 
     Docling can classify the product title as page furniture. The original ESA
     datasheet prints the series and its power range on one physical line there.
-    Keep only this explicit title form, with one same-line, on-page range; a
-    filename, competing title, hidden text or unrelated body mention is not proof.
+    The hosted STS originals instead put a standalone series title first,
+    above an aligned Static Transfer Switch subtitle. Accept only those
+    physically visible cover forms, not a compatibility mention in the body.
     """
     import pypdfium2
 
@@ -477,7 +479,7 @@ def pdf_series_cover(pdf_path: Path) -> dict[str, object] | None:
                 # Offsets must address the exact original physical characters.
                 if len(text) != textpage.count_chars():
                     return None
-                pattern = re.compile(
+                ranged = re.compile(
                     r"(?im)^[ \t]*(?P<family>[a-z][a-z0-9]*[ \t]+series)"
                     r"[ \t]+Residential Energy Storage System[ \t]+I[ \t]+"
                     r"(?P<power>\d+(?:[.,]\d+)?[ \t]*[-–][ \t]*"
@@ -485,15 +487,22 @@ def pdf_series_cover(pdf_path: Path) -> dict[str, object] | None:
                     r"[ \t]*/[ \t]*\d+(?:[.,]\d+)?[ \t]*[-–][ \t]*"
                     r"\d+(?:[.,]\d+)?[ \t]*kWh[ \t\r]*$"
                 )
-                matches = list(pattern.finditer(text))
+                sts = re.compile(r"(?im)^[ \t]*(?P<family>STS[ \t]+series)[ \t\r]*$")
+                matches = [
+                    match
+                    for pattern in (ranged, sts)
+                    for match in pattern.finditer(text)
+                ]
                 if len(matches) != 1:
                     return None
                 match = matches[0]
 
-                def bounds(group: str) -> tuple[float, float, float, float]:
+                def span_bounds(
+                    start: int, end: int
+                ) -> tuple[float, float, float, float]:
                     boxes = [
                         textpage.get_charbox(i)
-                        for i in range(match.start(group), match.end(group))
+                        for i in range(start, end)
                         if not text[i].isspace()
                     ]
                     return (
@@ -503,15 +512,71 @@ def pdf_series_cover(pdf_path: Path) -> dict[str, object] | None:
                         max(b[3] for b in boxes),
                     )
 
-                family, power = bounds("family"), bounds("power")
+                family = span_bounds(match.start("family"), match.end("family"))
+                power = (
+                    span_bounds(match.start("power"), match.end("power"))
+                    if "power" in match.re.groupindex
+                    else None
+                )
+                subtitle_match = None
+                subtitle = None
+                if power is None:
+                    # Both manufacturer originals place this as the first text
+                    # on the page, followed by their switch/model subtitle.
+                    # Other standalone series lines make the cover ambiguous.
+                    series_lines = re.findall(
+                        r"(?im)^[ \t]*[a-z][a-z0-9]*[ \t]+series[ \t\r]*$", text
+                    )
+                    subtitle_match = re.compile(r"\r?\n([^\r\n]+)").match(
+                        text, match.end("family")
+                    )
+                    if (
+                        match.start("family") != 0
+                        or len(series_lines) != 1
+                        or subtitle_match is None
+                        or STS_COVER_SUBTITLE.fullmatch(subtitle_match.group(1)) is None
+                    ):
+                        return None
+                    subtitle = span_bounds(
+                        subtitle_match.start(1), subtitle_match.end(1)
+                    )
+                    height = family[3] - family[1]
+                    if not (
+                        left <= subtitle[0] < subtitle[2] <= right
+                        and bottom <= subtitle[1] < subtitle[3] <= top
+                        and subtitle[3] < family[1]
+                        and family[1] - subtitle[3] < height
+                        and abs(subtitle[0] - family[0]) < height
+                        and subtitle[3] - subtitle[1] < height
+                    ):
+                        return None
+                    # A later-extracted object can still be physically above
+                    # the line or a larger heading. Neither is a cover title.
+                    for i in range(match.end("family"), len(text)):
+                        if text[i].isspace():
+                            continue
+                        box = textpage.get_charbox(i)
+                        if box[3] > family[3] or box[3] - box[1] >= height:
+                            return None
+                    if not _visible_pdf_line(
+                        pdf,
+                        page,
+                        textpage,
+                        text,
+                        subtitle_match.start(1),
+                        subtitle_match.end(1),
+                        (left, bottom, right, top),
+                    ):
+                        return None
                 if not all(
                     left <= box[0] < box[2] <= right
                     and bottom <= box[1] < box[3] <= top
-                    for box in (family, power)
+                    for box in (family, *([power] if power is not None else []))
                 ):
                     return None
-                if family[2] >= power[0] or max(family[1], power[1]) >= min(
-                    family[3], power[3]
+                if power is not None and (
+                    family[2] >= power[0]
+                    or max(family[1], power[1]) >= min(family[3], power[3])
                 ):
                     return None
                 if not _visible_pdf_line(
@@ -530,7 +595,7 @@ def pdf_series_cover(pdf_path: Path) -> dict[str, object] | None:
                     + len(match.group(0))
                     - len(match.group(0).lstrip(" \t"))
                 )
-                return {
+                result: dict[str, object] = {
                     "kind": "pdf_cover",
                     "source_sha256": sha,
                     "source_page": 1,
@@ -549,7 +614,9 @@ def pdf_series_cover(pdf_path: Path) -> dict[str, object] | None:
                             family[3] - bottom,
                         ],
                     },
-                    "power": {
+                }
+                if power is not None:
+                    result["power"] = {
                         "text": match.group("power"),
                         "char_start": match.start("power"),
                         "char_end": match.end("power"),
@@ -559,8 +626,20 @@ def pdf_series_cover(pdf_path: Path) -> dict[str, object] | None:
                             power[2] - left,
                             power[3] - bottom,
                         ],
-                    },
-                }
+                    }
+                if subtitle is not None and subtitle_match is not None:
+                    result["subtitle"] = {
+                        "text": subtitle_match.group(1),
+                        "char_start": subtitle_match.start(1),
+                        "char_end": subtitle_match.end(1),
+                        "bbox": [
+                            subtitle[0] - left,
+                            subtitle[1] - bottom,
+                            subtitle[2] - left,
+                            subtitle[3] - bottom,
+                        ],
+                    }
+                return result
             finally:
                 textpage.close()
         finally:

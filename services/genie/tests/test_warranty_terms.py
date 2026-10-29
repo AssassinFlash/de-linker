@@ -22,7 +22,7 @@ from index.chunking import Chunk
 from index.corpus import DocumentRow
 from index.extract import Block, Page, pdf_series_cover
 from index.inventory import doc_type_of
-from index.publication import ScopeProof
+from index.publication import ScopeProof, compile_publication
 from index.table_compiler import external_axis_anchors
 from index.warranty import _family_cover, compile_procedures, compile_terms
 from linker_genie import agent
@@ -163,9 +163,12 @@ def test_conflicting_ranges_on_one_cover_do_not_compile_procedures(title: str) -
     assert not procedures
 
 
-def _pdf_fixture(tmp_path: Path, lines: list[tuple[int, str]]) -> Path:
+def _pdf_fixture(
+    tmp_path: Path, lines: list[tuple[int, str]], *, title_size: int = 12
+) -> Path:
     commands = "\n".join(
-        f"BT /F1 12 Tf 40 {y} Td ({line}) Tj ET" for y, line in lines
+        f"BT /F1 {title_size if index == 0 else 12} Tf 40 {y} Td ({line}) Tj ET"
+        for index, (y, line) in enumerate(lines)
     ).encode()
     objects = [
         b"<< /Type /Catalog /Pages 2 0 R >>",
@@ -219,6 +222,166 @@ def test_pdf_cover_recovery_requires_unique_visible_line_and_hash(
     wrong.write_bytes(path.read_bytes())
     with pytest.raises(ValueError, match="content identity"):
         pdf_series_cover(wrong)
+
+
+def test_visible_sts_cover_flows_through_authorized_warranty_search(
+    tmp_path: Path,
+) -> None:
+    """The live parse marks its cover as a picture even though the PDF has text."""
+    fixture = json.loads(
+        gzip.decompress(
+            (
+                Path(__file__).parent
+                / "fixtures/publication-compiler/warranty-sts-production.json.gz"
+            ).read_bytes()
+        )
+    )
+    product_ids = {2403, 6529, 6530}
+    raw = fixture["manifest"]
+    sheets = [
+        d
+        for d in raw["documents"]
+        if d["type"] == "datasheet" and product_ids.intersection(d["product_ids"])
+    ]
+    assert len(sheets) == 2
+    pdfs = [
+        _pdf_fixture(
+            tmp_path,
+            [
+                (500, "STS Series"),
+                (
+                    480,
+                    "Static Transfer Switch I GW125K-STS-G10"
+                    if sheet["blob_sha256"].startswith("348497c21d2f")
+                    else "30kW/60kW I Static Transfer Switch",
+                ),
+            ],
+            title_size=30,
+        )
+        for sheet in sheets
+    ]
+    replacements = {
+        d["blob_sha256"]: pdf.stem for d, pdf in zip(sheets, pdfs, strict=True)
+    }
+
+    def rebind(value: Any) -> Any:
+        if isinstance(value, str):
+            for old_sha, new_sha in replacements.items():
+                value = value.replace(old_sha, new_sha).replace(
+                    old_sha[:12], new_sha[:12]
+                )
+            return value
+        if isinstance(value, list):
+            return [rebind(item) for item in value]
+        if isinstance(value, dict):
+            return {rebind(key): rebind(item) for key, item in value.items()}
+        return value
+
+    raw = rebind(raw)
+    original = [Chunk(**c) for c in rebind(fixture["original"])]
+    shas = {c.doc_sha256 for c in original}
+
+    def compile_chunks(
+        chunks: list[Chunk],
+    ) -> tuple[list[Chunk], dict[str, ScopeProof]]:
+        return compile_publication(chunks, raw, authority(raw), Words())
+
+    _, without_anchor = compile_chunks(original)
+    assert not any(
+        proof.get("basis") == "warranty_terms"
+        and product_ids.intersection(proof["product_ids"])
+        for proof in without_anchor.values()
+    )
+    for pdf in pdfs:
+        cover = pdf_series_cover(pdf)
+        assert cover is not None
+        title = str(cover["text"])
+        cid = f"{pdf.stem[:12]}-p1-pdf-cover-{hashlib.sha256(('text' + chr(0) + title).encode()).hexdigest()[:8]}"
+        picture = next(
+            c for c in original if c.doc_sha256 == pdf.stem and c.text == title
+        )
+        assert picture.source_picture
+        anchor = replace(picture, id=cid, source_picture="", source_pdf_cover=cover)
+        position = next(
+            i for i, c in enumerate(original) if c.doc_sha256 == pdf.stem and c.page > 1
+        )
+        original.insert(position, anchor)
+    chunks, scopes = compile_chunks(original)
+    root = tmp_path / "sts-corpus"
+    corpus.write(
+        root,
+        corpus.Meta(
+            "sts-policy-fixture",
+            None,
+            None,
+            "physical source",
+            512,
+            publication={
+                "manifest": raw,
+                "chunk_products": {cid: p["product_ids"] for cid, p in scopes.items()},
+                "chunk_scopes": scopes,
+            },
+        ),
+        [
+            DocumentRow(
+                d["blob_sha256"],
+                (d["url"],),
+                d["title"],
+                "",
+                (),
+                tuple(
+                    p["model"]
+                    for p in raw["products"]
+                    if p["product_id"] in d["product_ids"]
+                ),
+                doc_type_of(d["type"], d.get("role", "")),
+                d["lang"],
+                6,
+                "indexed",
+            )
+            for d in raw["documents"]
+            if d["blob_sha256"] in shas
+        ],
+        [(p["product_id"], p["model"]) for p in raw["products"]],
+        chunks,
+    )
+    db = tmp_path / "sts.sqlite"
+    store.export(root, db)
+    index = DocumentIndex(db, encoder=None)
+    try:
+        policy_ids = {
+            d["document_id"] for d in raw["documents"] if d["type"] == "warranty"
+        }
+        assert not any(
+            row["document_id"] in policy_ids and row["product_id"] in product_ids
+            for row in index.loaded()["unprepared_documents"]
+        )
+        search = KnowledgeSearch(lambda: index, publication=authority(raw))
+        for pid, model in (
+            (2403, "GW125K-STS-G10"),
+            (6529, "GW30K-STS-G10"),
+            (6530, "GW60K-STS-G10"),
+        ):
+            for lang in ("en", "de"):
+                question = (
+                    f"How long is the warranty for {model}?"
+                    if lang == "en"
+                    else f"Wie lange gilt die Garantie für {model}?"
+                )
+                result = search({"query": question, "lang": lang, "product_ids": [pid]})
+                assert any(
+                    hit.get("warranty_terms") and hit["product_models"] == [model]
+                    for hit in result["hits"]
+                ), (
+                    pid,
+                    lang,
+                    [
+                        (hit["chunk_id"], hit.get("warranty_terms"))
+                        for hit in result["hits"]
+                    ],
+                )
+    finally:
+        index.close()
 
 
 def test_normal_chunk_preparation_persists_physical_cover(
