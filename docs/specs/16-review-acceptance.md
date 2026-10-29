@@ -35,8 +35,8 @@
 
 ## CI 随差异收敛
 
-check.yml 先用实际 Git 差异选检查，并核实缩减范围内文件的类型、UTF-8 编码和非二进制内容。纯文档不安装运行环境；只修改既有 Commerce LC/CSS 文件及其模板合同测试时，执行原有 Presentation 合同；修改模板时保留德语、站内地址与 i18n-coverage 守卫，修改模板合同 PHP 测试时保留该文件的 PHPCS 和 PHPStan，并先核实基线已有成功检查。新增、删除、改类型、运行代码、依赖、构建或工作流改动，以及无法识别或无法证明基线的变化，仍执行原完整检查与原生集成。界面变更的 Computer Use 验收照旧，不把 CI 选中范围当作视觉验收。
+check.yml 先用实际 Git 差异选检查，并核实缩减范围内文件的类型、UTF-8 编码和非二进制内容。纯文档不安装运行环境；只修改既有 Commerce LC/CSS 文件及其模板合同测试时，执行原有 Presentation 合同；修改模板时保留德语、站内地址与 i18n-coverage 守卫，修改模板合同 PHP 测试时保留该文件的 PHPCS 和 PHPStan，并先核实基线已有成功检查。Planner、Engine、Genie 的独立包变化只运行对应包，Planner 的构建清单还必须证明非 Planner 产物未变；既有 Commerce 白名单变化保留 Commerce 与全部 native 组。共享、未知、重命名、改类型、其他运行代码、共享依赖或工作流改动，以及无法识别或无法证明基线的变化，仍执行完整检查与原生集成。界面变更的 Computer Use 验收照旧，不把 CI 选中范围当作视觉验收。
 
-main 合并结果的完整 Git 树等于第二父提交时，仍须核实成功运行实际测试的合成提交：run-name 记录 github.sha，各 checkout 显式使用同一 SHA；解析其 Git tree 并与候选完整树严格比较，同时核对工作流 blob 相同、对应 attempt 的检查范围确为 full/presentation（push 可为 reuse），不把 docs-only 结果当运行基线。只有这些证明齐全且该 PR head 最新运行已完成并成功时，才复用结果；失败、API 不可用、没有可核对结果或 Git 树不同均执行完整检查。工作流保留现有两个 required job 的名称；计划失败、取消或模式未知时，两者明确失败。计划写明选中或复用范围；不把未执行的用例写成新通过。手动 workflow_dispatch 始终执行完整检查。
+main 合并结果的完整 Git 树等于第二父提交时，仍须核实成功运行实际测试的合成提交：run-name 记录 github.sha，各 checkout 显式使用同一 SHA；解析其 Git tree 并与候选完整树严格比较，同时核对工作流 blob 相同、对应 attempt 的检查范围确为 full/scoped（push 可为 reuse），不把 docs-only 结果当运行基线。已通过独立门禁的 scoped PR 同时证明其完整基线与本次选中包，可作为后续局部 PR 的传递基线。只有这些证明齐全且该 PR head 最新运行已完成并成功时，才复用结果；失败、API 不可用、没有可核对结果或 Git 树不同均执行完整检查。唯一聚合门禁 `check` 重新计算差异与选择，要求选中任务成功、未选中任务确实跳过，并复验 scoped/reuse 证明；`mu-smoke` 是 native 分组任务。计划失败、取消或模式未知时最终门禁明确失败。计划写明选中或复用范围；不把未执行的用例写成新通过。手动 workflow_dispatch 始终执行完整检查。
 
 差异的空白检查遵循 `.gitattributes`：源码、当前可执行测试和手写规格保留通常检查；构建输出中的第三方 shader 字符串、官方页面原始抓取、终端／AX／JUnit／补丁存档，以及已登记的原始 CSV 和两份历史探针，保留记录的字节，不为格式门重写。生成物仍须通过既有构建清单核对，归档证据不替代当前测试。这一属性只影响空白诊断，不缩减 CI 选中的运行检查。

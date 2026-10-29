@@ -428,16 +428,38 @@ class ScopeTest(unittest.TestCase):
             self.assertTrue(ci_scope.checked_run(run, "a" * 40))
             self.assertFalse(ci_scope.checked_run(run, "a" * 40, full=True))
 
-    def test_reused_main_commit_traces_back_to_a_full_pr(self):
+    def test_reused_main_commit_traces_to_a_validated_scoped_pr(self):
         reused = {"status": "completed", "conclusion": "success"}
         with (
             patch.object(ci_scope, "latest_run", return_value=reused),
             patch.object(ci_scope, "checked_run", side_effect=[False, False]),
-            patch.object(ci_scope, "validated_scope", return_value="reuse"),
+            patch.object(ci_scope, "validated_scope", side_effect=["reuse", "scoped"]),
             patch.object(ci_scope, "checked_pr_tree", return_value=reused) as original,
         ):
             self.assertTrue(ci_scope.checked_base("a" * 40))
-        original.assert_called_once_with("a" * 40, full=True)
+        original.assert_called_once_with("a" * 40)
+
+    def test_whitespace_failure_stops_before_selecting_lanes(self):
+        with TemporaryDirectory() as folder:
+            output = Path(folder) / "output"
+            output.write_text("")
+            environment = {
+                "EVENT_NAME": "pull_request",
+                "HEAD_SHA": "b" * 40,
+                "BASE_SHA": "a" * 40,
+                "GITHUB_OUTPUT": str(output),
+                "GITHUB_STEP_SUMMARY": str(Path(folder) / "summary"),
+            }
+            with (
+                patch.dict(os.environ, environment),
+                patch.object(ci_scope, "git", return_value=b""),
+                patch(
+                    "subprocess.run", return_value=subprocess.CompletedProcess([], 1)
+                ),
+            ):
+                with self.assertRaises(SystemExit):
+                    ci_scope.plan()
+            self.assertEqual(output.read_text(), "")
 
     def test_squash_merge_and_merge_commit_find_the_pr_head(self):
         commit = "a" * 40

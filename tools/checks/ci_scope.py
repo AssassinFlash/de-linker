@@ -344,10 +344,12 @@ def checked_base(commit):
             and run["conclusion"] == "success"
             and validated_scope(run) == "reuse"
         ):
-            return bool(checked_pr_tree(commit, full=True))
+            original = checked_pr_tree(commit)
+            return validated_scope(original) in {"full", "scoped"}
         if run and (run["status"] != "completed" or run["conclusion"] != "cancelled"):
             return False
-        return bool(checked_pr_tree(commit, full=True))
+        original = checked_pr_tree(commit)
+        return validated_scope(original) in {"full", "scoped"}
     return False
 
 
@@ -371,7 +373,9 @@ def plan():
                 git("cat-file", "-e", base + "^{commit}")
             except subprocess.CalledProcessError:
                 git("fetch", "--depth=1", "origin", base)
-            subprocess.run(["git", "diff", "--check", base, head], check=True)
+            formatting = subprocess.run(["git", "diff", "--check", base, head])
+            if formatting.returncode:
+                raise SystemExit(formatting.returncode)
             changes = diff_changes(base, head)
             candidate = classify(changes, base, head)
             if event == "pull_request":
