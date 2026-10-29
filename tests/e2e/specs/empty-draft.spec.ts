@@ -19,6 +19,7 @@ const DRAFTS = {
 		signIn: 'Sign in',
 		create: 'Create account',
 		account: '/my-account/',
+		register: '/my-account/register/',
 	},
 	de: {
 		path: '/de/warenkorb/',
@@ -28,6 +29,7 @@ const DRAFTS = {
 		signIn: 'Anmelden',
 		create: 'Konto erstellen',
 		account: '/de/mein-konto/',
+		register: '/de/mein-konto/registrieren/',
 	},
 } as const;
 
@@ -38,6 +40,7 @@ const REQUESTS = {
 		signIn: 'Have an approved account? Log in for net prices and saved details.',
 		create: 'Create account',
 		account: '/my-account/',
+		register: '/my-account/register/',
 	},
 	de: {
 		path: '/de/proforma-anfrage/',
@@ -45,6 +48,7 @@ const REQUESTS = {
 		signIn: 'Sie haben bereits ein freigegebenes Partnerkonto? Melden Sie sich an, um Nettopreise zu sehen und Ihre gespeicherten Angaben zu verwenden.',
 		create: 'Konto erstellen',
 		account: '/de/mein-konto/',
+		register: '/de/mein-konto/registrieren/',
 	},
 } as const;
 
@@ -75,10 +79,7 @@ for (const [locale, pageCopy] of Object.entries(DRAFTS)) {
 		).toHaveAttribute('href', instance().url + pageCopy.account);
 		await expect(
 			entries.getByRole('link', { name: pageCopy.create, exact: true })
-		).toHaveAttribute(
-			'href',
-			instance().url + pageCopy.account + 'register/'
-		);
+		).toHaveAttribute('href', instance().url + pageCopy.register);
 		await expect(page.locator('.sf-cart-btn')).toHaveCount(2);
 		// The retired batch import is neither a button nor a promise (GAP-11).
 		await expect(body).not.toContainText('item-number');
@@ -104,9 +105,6 @@ for (const [locale, pageCopy] of Object.entries(REQUESTS)) {
 		).toHaveAttribute('href', instance().url + pageCopy.account);
 		await expect(
 			entries.getByRole('link', { name: pageCopy.create, exact: true })
-		).toHaveAttribute(
-			'href',
-			instance().url + pageCopy.account + 'register/'
-		);
+		).toHaveAttribute('href', instance().url + pageCopy.register);
 	});
 }
