@@ -284,7 +284,7 @@ def array_power(
             "effective_irradiance_w_m2": values(effective),
             "cell_temperature_c": values(cell),
             "dc_mpp_before_wiring_mismatch_w": values(dc),
-            "dc_available_w": values(delivered),
+            "dc_available_w": retained_watts(delivered),
             "dc_declared_factor_reduction_w": values(dc - delivered),
             **(
                 {

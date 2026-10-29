@@ -10,7 +10,7 @@ from typing import cast
 import numpy as np
 import pytest
 
-from linker_engine.planning import report_numbers
+import linker_engine.planning.report_numbers as report_numbers
 from linker_engine.planning.canonical import Object, encode
 from linker_engine.planning.model_numbers import (
     DERIVED_WITNESS_SIGNIFICANT_DIGITS,

@@ -241,10 +241,8 @@ def test_witness_spelling_does_not_change_the_loss_ledger() -> None:
     meteo = weather(ghi=1000, dhi=1000, temp=10)
     parsed = PvGenerationParameters.read(doc)
 
-    # array_power's witness already carries the platform-stable spelling,
-    # so the ledger relations hold to the documented spelling bound, and
-    # generate_pv stores exactly those spelled members unchanged (the
-    # document pass is a fixed point on them).
+    # The pre-loss diagnostic is spelled; the physical DC-after-loss series is
+    # retained exactly and the document pass leaves it untouched.
     arrays = generation_arrays(roof, meteo, parsed)
     solar = sun(meteo)
     power = array_power(arrays[0], parsed.arrays[0], parsed.modules[0], meteo, solar)
@@ -261,7 +259,7 @@ def test_witness_spelling_does_not_change_the_loss_ledger() -> None:
     assert result.witness_json == repeat.witness_json
     array = cast(list[Object], result.witness()["arrays"])[0]
     assert array["dc_mpp_before_wiring_mismatch_w"] == [spelled_before]
-    assert array["dc_available_w"] == [spelled_after]
+    assert array["dc_available_w"] == power.dc_w.tolist()
     # The reduction is spelled from the exact difference of the exact
     # vectors, not the difference of the spelled operands; it stays within
     # the documented bound of that difference.
@@ -327,7 +325,7 @@ def test_physics_vectors_stay_bit_identical_when_witness_spelling_is_destroyed(
     assert np.array_equal(seen["azimuth"], solar["azimuth_deg"])
     assert np.array_equal(damaged_power.dc_w, baseline_power.dc_w)
     assert damaged_power.dc_w.tolist() != [0.0]
-    assert damaged_power.witness["dc_available_w"] == [0.0]
+    assert damaged_power.witness["dc_available_w"] == baseline_power.dc_w.tolist()
     damaged_ac, damaged_report = conversion_power(group, {array.id: damaged_power}, 1)
     assert np.array_equal(damaged_ac, baseline_ac)
     assert damaged_report["available_ac_w"] == baseline_report["available_ac_w"]
@@ -349,6 +347,9 @@ def test_physics_vectors_stay_bit_identical_when_witness_spelling_is_destroyed(
     )
     converter = cast(list[Object], baseline.witness()["converters"])[0]
     assert converter["dc_available_w"] == baseline_report["dc_available_w"]
+    array_witness = cast(list[Object], baseline.witness()["arrays"])[0]
+    damaged_array = cast(list[Object], damaged.witness()["arrays"])[0]
+    assert array_witness["dc_available_w"] == damaged_array["dc_available_w"]
     solar_geometry = cast(Object, damaged.witness()["solar_geometry"])
     assert solar_geometry["apparent_zenith_deg"] == [0.0]
     assert baseline.witness()["available_ac_w"] != [0.0]

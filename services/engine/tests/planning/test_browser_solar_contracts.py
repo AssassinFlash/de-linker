@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import platform
 import subprocess
@@ -308,6 +309,22 @@ def test_preparation_fixture_export_reproduces_the_committed_fixture() -> None:
     # Whatever that formatting did, it changed no saved value, so re-reading
     # the committed bytes must yield exactly the document the exporter produced.
     assert json.loads(export_preparation_fixture.rendered()) == produced
+
+
+def test_preparation_platform_manifest_names_each_export() -> None:
+    """Each host baseline is a complete document with the recorded canonical hash."""
+    manifest_path = APP / "tests/fixtures/preparation-flow-platforms.json"
+    manifest = json.loads(manifest_path.read_text())
+    baselines = cast(dict[str, Object], manifest["baselines"])
+    for host, baseline in baselines.items():
+        fixture = json.loads(
+            (manifest_path.parent / cast(str, baseline["fixture"])).read_text()
+        )
+        canonical = json.dumps(fixture, sort_keys=True, ensure_ascii=False).encode()
+        assert (
+            hashlib.sha256(canonical).hexdigest()
+            == baseline["canonical_sorted_json_sha256"]
+        ), host
 
 
 # Every top-level key the browser fixture carries, produced by the exporter.

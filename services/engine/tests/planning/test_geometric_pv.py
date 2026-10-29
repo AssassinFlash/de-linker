@@ -124,6 +124,12 @@ def test_geometric_direction_and_profile_stay_unspelled(
         baseline.profile.total_kwh
     )
     assert damaged.witness()["available_ac_w"] == baseline.witness()["available_ac_w"]
+    baseline_array = cast(list[Object], baseline.witness()["arrays"])[0]
+    damaged_array = cast(list[Object], damaged.witness()["arrays"])[0]
+    assert damaged_array["dc_available_w"] == baseline_array["dc_available_w"]
+    baseline_module = cast(list[Object], baseline.witness()["modules"])[0]
+    damaged_module = cast(list[Object], damaged.witness()["modules"])[0]
+    assert damaged_module["dc_available_w"] == baseline_module["dc_available_w"]
     solar_geometry = cast(Object, damaged.witness()["solar_geometry"])
     assert solar_geometry["apparent_zenith_deg"] == [0.0]
     assert baseline.witness()["available_ac_w"] != [0.0]

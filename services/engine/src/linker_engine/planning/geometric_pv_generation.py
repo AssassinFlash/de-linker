@@ -170,7 +170,7 @@ def generate_geometric_pv(
                     nonnegative=True,
                 )
                 outputs[array.id] = ArrayPower(
-                    dc, {**array.document(), "dc_available_w": values(dc)}
+                    dc, {**array.document(), "dc_available_w": retained_watts(dc)}
                 )
             converters = [
                 conversion_power(group, outputs, size)

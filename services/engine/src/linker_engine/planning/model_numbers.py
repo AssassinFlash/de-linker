@@ -18,12 +18,13 @@ documented: a stored witness float sits within 5e-10 relative (half the
 quantum) of its unrounded value. The stored decimal is converted back to
 binary64; ``canonical.encode`` remains the only JSON encoder.
 
-Retained inputs and the complete AC watt series are not coarsened.
+Retained inputs and the complete AC and DC watt series are not coarsened.
 ``canonical_witness_document`` skips the ``inputs`` subtree, which carries
 pinned parameters, hashes and retained weather documents that other code
-re-verifies against exact bytes, and skips ``available_ac_w``, which profile
-preview and energy replay read back as their physical output series. The
-spelled floats must not be read back into any calculation.
+re-verifies against exact bytes, and skips ``available_ac_w`` and
+``dc_available_w``, which profile preview, projection and energy replay read
+back as their physical output series. The spelled floats must not be read back
+into any calculation.
 """
 
 from __future__ import annotations
