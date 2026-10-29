@@ -169,9 +169,9 @@ def prepared_profile(
             ),
             (transform,),
         )
-        # Retained watts and energy are stored at the platform-stable
-        # spelling, so the summed read-back matches the stored energy within
-        # its documented 1e-9 relative quantum (2x margin below).
+        # The profile total is summed from exact retained watts. The stored
+        # energy is separately spelled at platform-stable precision, so their
+        # comparison uses that spelling's documented bound.
         if not math.isclose(
             result.total_kwh,
             _number(witness.get("energy_kwh")),

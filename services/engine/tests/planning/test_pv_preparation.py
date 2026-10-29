@@ -441,8 +441,8 @@ def test_prepared_profile_http_preview_reads_original_output_without_pv_calculat
         monkeypatch.setattr(f"linker_engine.planning.{module}.generate_pv", forbidden)
 
     def assert_same_document(actual: object, expected: object) -> None:
-        # Retained PV values are stored at the platform-stable spelling;
-        # documents are compared with that documented 1e-9 relative bound.
+        # Retained power series stay exact. Floating diagnostics are
+        # platform-stable spelled, so this document comparison uses that bound.
         assert type(actual) is type(expected)
         if isinstance(expected, dict):
             assert set(cast(Object, actual)) == set(cast(Object, expected))

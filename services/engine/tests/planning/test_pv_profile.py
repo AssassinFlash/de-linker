@@ -190,9 +190,9 @@ def test_actual_roof_weather_to_owned_profile_and_frozen_year_ledger(
     assert asset.content_sha256 == digest(raw())
     assert profile.source.raw_sha256 == dependencies["pv_model_inputs"]
     witness = workspace.blobs.object(str(dependencies["pv_model_witness"]))
-    # energy_kwh is stored at the platform-stable spelling; the profile
-    # total is summed from the spelled watts, so both agree within the
-    # documented 1e-9 relative quantum.
+    # energy_kwh is stored at the platform-stable spelling; the profile total
+    # is summed from exact retained watts, so both agree within that spelling's
+    # documented bound.
     assert math.isclose(
         float(cast(float, witness["energy_kwh"])),
         profile.total_kwh,

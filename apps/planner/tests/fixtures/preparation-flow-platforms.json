@@ -4,7 +4,7 @@
 	"baselines": {
 		"darwin-arm64": {
 			"fixture": "preparation-flow-darwin-arm64.json",
-			"canonical_sorted_json_sha256": "61f826f15f8032fef18e1392427cad7c5321855fa3760302b0bb962954154870",
+			"canonical_sorted_json_sha256": "7fc36e30b1c16c749087aefb11cbaeb736a76e7878cf6ff705670dcc6c70bf9b",
 			"runtime": {
 				"python": "3.12.15",
 				"platform": "macOS-26.6.2-arm64-arm-64bit",
@@ -28,7 +28,7 @@
 		},
 		"linux-x86_64": {
 			"fixture": "preparation-flow-linux-x86_64.json",
-			"canonical_sorted_json_sha256": "135f2b4c52881467c8766e0773adac5ef3fa49b76ad614772ceb79d5c20ccb0c",
+			"canonical_sorted_json_sha256": "cb86d879d66268b24d5ee9362fbcfd0a8781f58ce07ad31320694d7a8954267e",
 			"runtime": {
 				"python": "3.12.3",
 				"platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
