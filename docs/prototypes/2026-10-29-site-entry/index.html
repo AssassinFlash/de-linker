@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>抛弃原型 · 统一屋顶工具的站点入口</title>
+<style>
+:root{font-family:ui-sans-serif,system-ui,sans-serif;color:#173c36;background:#f4f7f5}body{max-width:1080px;margin:0 auto;padding:32px 20px}h1{font-size:28px}h2{font-size:19px;margin-top:32px}p{line-height:1.65}.prototype{border:1px solid #aac3b9;padding:12px 16px;background:#fff}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.card,button{font:inherit}.card{padding:16px;background:#fff;border:1px solid #d4dfd9}dt{color:#577068;font-size:13px}dd{margin:4px 0 14px;overflow-wrap:anywhere}button{cursor:pointer;padding:10px 14px;border:1px solid #91aea1;background:#fff;color:#173c36;margin:4px}button.primary{background:#176d5b;color:#fff}button:focus-visible,a:focus-visible{outline:3px solid #a66c18;outline-offset:2px}.steps button{display:block;width:100%;text-align:left}.steps button:disabled{opacity:.45;cursor:default}.url{font-family:ui-monospace,monospace;font-size:13px}small{color:#577068}a{color:#176d5b}.tabs{display:flex;flex-wrap:wrap;gap:4px}.tabs button[aria-selected=true]{background:#dcebe4}.hidden{display:none}
+</style>
+</head>
+<body>
+<p class="prototype"><strong>抛弃原型，不是线上页面。</strong>它只回答一个问题：首页、导航、商品和 Genie 怎样进入同一个 Solution Configurator，并保留屋顶或商品上下文？不会创建项目、选择真实设备或宣称工程放行。</p>
+<h1>一个工具，按客户意图进入</h1>
+<p>首页不增加第二套视觉，沿用已存在的统一按钮并进入屋顶工作区。商品只携带 Woo 商品 ID，是否可用于项目仍由当前产品资料与兼容检查决定。</p>
+<h2>当前入口状态</h2>
+<div class="grid"><dl class="card"><dt>客户所在位置</dt><dd id="source"></dd><dt>界面语言</dt><dd id="language"></dd><dt>目标工作区</dt><dd id="workspace"></dd></dl><dl class="card"><dt>项目</dt><dd id="project"></dd><dt>保留的上下文</dt><dd id="context"></dd><dt>公开入口 URL</dt><dd class="url" id="url"></dd></dl></div>
+<h2>自由操作</h2>
+<div id="actions" aria-label="选择站点入口"></div>
+<button id="language" type="button">切换 EN / DE</button>
+<h2>引导路径</h2>
+<div class="tabs" role="tablist" aria-label="入口场景" id="tabs"></div>
+<p id="scenario-copy"></p>
+<div class="steps" id="steps"></div>
+<script>
+"use strict";
+const sourceNames={home:"首页统一按钮",navigation:"桌面或手机导航",product:"Woo 商品页",genie:"Genie 的光伏规划建议",account:"账户中的已有项目",blog:"屋顶主题内容"};
+function routeFor(source,language){
+ const german=language==="DE",root=german?"/de/loesungskonfigurator/":"/solution-configurator/";
+ if(source==="home")return {workspace:"Roof design",project:"由客户创建或选择已有项目",context:"屋顶意图；不携带虚构规格",url:root+"?step=roof"};
+ if(source==="product")return {workspace:"Equipment",project:"同一项目；商品只是待核实的输入",context:"product=1946（Woo 商品 ID；非兼容放行）",url:root+"?step=equipment&product=1946"};
+ if(source==="genie")return {workspace:"Roof design",project:"新项目；已有项目保持原工作区",context:"pv_kwp=9.2、annual_kwh=4800、step=roof",url:root+"?pv_kwp=9.2&annual_kwh=4800&step=roof"};
+ if(source==="account")return {workspace:"恢复项目上次工作区",project:"project=e9ec28b8…（同一项目）",context:"项目身份与语言；不重复创建",url:root+"?project=e9ec28b8ca7943b98739306782b1d169#lp-design"};
+ if(source==="blog")return {workspace:"Roof design",project:"由客户创建或选择已有项目",context:"具体屋顶主题使用屋顶深链",url:root+"?step=roof"};
+ return {workspace:"项目工作台",project:"由客户创建或选择已有项目",context:"无额外参数",url:root};
+}
+function transition(state,action){
+ if(action.type==="source")return {...state,source:action.source,...routeFor(action.source,state.language)};
+ if(action.type==="language"){const language=state.language==="EN"?"DE":"EN";return {...state,language,...routeFor(state.source,language)}}
+ return {...state,source:"home",language:"EN",...routeFor("home","EN")};
+}
+const initial=transition({}, {type:"reset"});
+const scenarios=[
+ {id:"home",title:"首页到屋顶",description:"沿用首屏统一按钮，不另建屋顶软件；切换语言仍保留屋顶意图。",steps:[{source:"home"},{type:"language"}]},
+ {id:"product",title:"商品到同一项目",description:"商品身份进入设备工作区。当前 Woo 数据决定预选位置，兼容检查仍需完成。",steps:[{source:"product"},{type:"language"}]},
+ {id:"genie",title:"Genie 保留输入",description:"光伏规划建议携带已声明的容量与负载并进入屋顶；已有项目不被强制跳走。",steps:[{source:"genie"},{source:"account"}]},
+ {id:"legacy",title:"旧链接与返回",description:"账户项目直接回到自己的项目和工作区；通用导航不夹带商品或屋顶假设。",steps:[{source:"account"},{source:"navigation"}]}
+];
+let state={...initial},activeScenario=null,step=0;
+const sources=[["home","首页屋顶入口"],["navigation","统一导航"],["product","Woo 商品"],["genie","Genie 光伏建议"],["account","账户项目"],["blog","屋顶主题内容"]];
+for(const [source,label] of sources){const button=document.createElement("button");button.type="button";button.textContent=label;button.onclick=()=>{activeScenario=null;dispatch({type:"source",source})};document.querySelector("#actions").append(button)}
+document.querySelector("#language").onclick=()=>dispatch({type:"language"});
+function dispatch(action){state=transition(state,action);render()}
+function render(){for(const key of ["workspace","project","context","url","language"])document.querySelector("#"+key).textContent=state[key];document.querySelector("#source").textContent=sourceNames[state.source];renderSteps()}
+function renderSteps(){const container=document.querySelector("#steps");container.replaceChildren();document.querySelector("#scenario-copy").textContent=activeScenario===null?"自由操作不会创建项目。选择一个场景可回到确定的初始状态。":scenarios[activeScenario].description;for(const button of document.querySelectorAll("#tabs button"))button.setAttribute("aria-selected",String(activeScenario!==null&&scenarios[activeScenario].id===button.dataset.scenario));if(activeScenario===null)return;const scenario=scenarios[activeScenario];scenario.steps.forEach((action,index)=>{const button=document.createElement("button");button.type="button";button.disabled=index!==step;button.textContent=(index+1)+". "+(action.type==="language"?"切换语言":sourceNames[action.source]);button.onclick=()=>{step++;dispatch(action)};container.append(button)})}
+for(const [index,scenario] of scenarios.entries()){const button=document.createElement("button");button.type="button";button.role="tab";button.dataset.scenario=scenario.id;button.textContent=scenario.title;button.setAttribute("aria-selected","false");button.onclick=()=>{activeScenario=index;step=0;state={...initial};render()};document.querySelector("#tabs").append(button)}
+render();
+</script>
+</body>
+</html>
