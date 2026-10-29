@@ -370,6 +370,12 @@ class ScopeTest(unittest.TestCase):
         docs = self.ledger("docs", [])
         docs["candidate"] = ["genie"]
         self.assertTrue(self.audit(docs, self.results([])))
+        failed = self.ledger("full", list(ci_scope.FULL_LANES))
+        failed["error"] = "diff --check failed"
+        self.assertIn(
+            "plan could not prove the complete diff: diff --check failed",
+            self.audit(failed, self.results(ci_scope.FULL_LANES)),
+        )
 
     def test_gate_rechecks_baseline_and_reuse_proofs(self):
         for mode in ("scoped", "reuse"):

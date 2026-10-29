@@ -487,6 +487,8 @@ def audit_gate(ledger, results, changes):
     errors = []
     if results.get("plan", {}).get("result") != "success":
         return ["plan did not succeed"]
+    if ledger.get("error"):
+        errors.append(f"plan could not prove the complete diff: {ledger['error']}")
     if ledger.get("base") != os.environ.get("BASE_SHA", "") or ledger.get(
         "head"
     ) != os.environ.get("HEAD_SHA"):
