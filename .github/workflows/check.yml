@@ -10,9 +10,14 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: check-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   plan:
     runs-on: ubuntu-24.04
+    timeout-minutes: 5
     permissions:
       contents: read
       actions: read
@@ -25,8 +30,6 @@ jobs:
         with:
           fetch-depth: 3
           ref: ${{ github.sha }}
-          # Scope reads Git objects; retain all Git attributes for diff --check.
-          # checkout automatically requests blob:none when sparse-checkout is set.
           sparse-checkout: |
             **/.gitattributes
           sparse-checkout-cone-mode: false
@@ -80,8 +83,6 @@ jobs:
               return bool(revisions) and all(non_runtime_file(rev, path) for rev in revisions)
 
           def commerce(path):
-              # Only established, unbuilt commerce surfaces. Shared hooks,
-              # entry points, dependencies, build inputs and new files stay full.
               return bool(re.fullmatch(
                   r"plugins/linker-commerce/(includes/(Presentation/(ProductShortcodes|LanguageLinks|LibraryPage)[.]php|Storefront/ProductView[.]php|Registration/PendingProfileCapacity[.]php)|assets/[a-z0-9-]+[.]js|content/(livecanvas/(de/)?[a-z0-9_-]+[.]html|windpress/[a-z0-9_-]+[.]css)|languages/linker-commerce-de_DE_formal[.](po|mo)|tests/php/(Unit/(Presentation/(ProductShortcodes|LanguageLinks|LibraryPage)Test[.]php|Storefront/ProductViewTest[.]php)|Integration/RegistrationCapacityTest[.]php)|tests/js/[a-z0-9-]+[.]test[.]mjs)", path
               ))
@@ -151,8 +152,6 @@ jobs:
           def checked_pr_tree(commit):
               source = git("rev-parse", commit + "^2").decode().strip()
               run = latest_run(source, "pull_request")
-              # A PR run checks its merge-ref tree, which can include a newer base.
-              # Reuse only when that actual tested tree matches the final commit.
               return run if checked_run(run, commit) else None
 
           def checked_base(commit):
@@ -160,13 +159,10 @@ jobs:
                   run = latest_run(commit)
                   if checked_run(run, commit):
                       return True
-                  # A successful docs run carries its parent's runtime proof;
-                  # it never becomes runtime proof for merge-tree reuse itself.
                   if checked_run(run, commit, docs_only=True):
                       try:
                           parent = git("rev-parse", commit + "^1").decode().strip()
                       except subprocess.CalledProcessError:
-                          # Deepen only this verified carrier at the shallow boundary.
                           git("fetch", "--deepen=1", "origin", commit)
                           parent = git("rev-parse", commit + "^1").decode().strip()
                       fields = git("diff", "--name-status", "-z", "--find-renames", parent, commit).decode(errors="surrogateescape").split("\0")
@@ -210,7 +206,7 @@ jobs:
                           if checked_base(base):
                               mode = candidate
                               reason = ("Existing LC/CSS surfaces and a checked base; run their contracts and content guards." if mode == "presentation"
-                                        else "Established commerce surfaces and a checked base; run all commerce source/unit checks and native commerce consumers; reuse unchanged services and tool builds.")
+                                        else "Established commerce surfaces and a checked base; run commerce source, unit and native checks.")
               except (OSError, subprocess.SubprocessError, UnicodeError, KeyError, ValueError, IndexError):
                   mode, reason = "full", "Change or baseline proof unavailable; complete checks required."
           if event == "push" and mode != "docs":
@@ -230,47 +226,393 @@ jobs:
           print(f"Validation scope: {mode}. {reason}")
           PYTHON
 
-  check:
+  php-lane:
     needs: plan
-    if: always()
-    # The VPS's release (docs/research/2026-10-09/old-repo-006-target-architecture.md);
-    # named, so the runner does not move when ubuntu-latest does.
+    if: always() && needs.plan.result == 'success' && needs.plan.outputs.mode == 'full'
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
     strategy:
+      fail-fast: true
       matrix:
-        # Production versions: PHP 8.3 on the host and Python 3.12 on the VPS
-        # (docs/research/2026-10-09/framework-choice.md §2, §7); Node 22 builds
-        # the apps on the Mac, within the engines of @wordpress/scripts 36.
-        php: ["8.3"]
-        node: ["22"]
-        python: ["3.12"]
-    # Each action is pinned to the commit of its latest release on 2026-10-09
-    # (`gh api repos/<owner>/<repo>/releases/latest`); the tag follows the SHA.
+        lane: [static, unit]
     steps:
-      - name: Require a successful recognized plan
-        env:
-          PLAN_RESULT: ${{ needs.plan.result }}
-          MODE: ${{ needs.plan.outputs.mode }}
-        run: |
-          test "$PLAN_RESULT" = success
-          case "$MODE" in full|presentation|commerce|docs|reuse) ;; *) exit 1 ;; esac
-      - name: Record validation scope (${{ needs.plan.outputs.mode }})
-        env:
-          MODE: ${{ needs.plan.outputs.mode }}
-        run: printf 'Validation scope %s; see plan for reused or selected checks.\n' "$MODE"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'presentation' || needs.plan.outputs.mode == 'commerce'
         with:
           ref: ${{ github.sha }}
-          # Omit only acceptance images; retain all other paths, including
-          # fixtures, research data and Git attributes.
           sparse-checkout: |
             /*
             !/docs/acceptance/**/*.png
             !/docs/acceptance/**/*.jpg
             !/docs/acceptance/**/*.jpeg
           sparse-checkout-cone-mode: false
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: "8.3"
+          tools: composer:v2
+          coverage: none
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        if: matrix.lane == 'unit'
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: |
+            plugins/linker-tools/package-lock.json
+            plugins/linker-commerce/package-lock.json
+            apps/planner/package-lock.json
+      - uses: taiki-e/install-action@f7e5d7c961414b23f5b25b2da9294395d08513ad # v2.87.26
+        with:
+          tool: just@1.58.0
+      - name: PHP static
+        if: matrix.lane == 'static'
+        run: just php-check
+      - name: PHP unit
+        if: matrix.lane == 'unit'
+        run: |
+          just js-install
+          just php-test
 
+  js-lane:
+    needs: plan
+    if: always() && needs.plan.result == 'success' && needs.plan.outputs.mode == 'full'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: true
+      matrix:
+        lane: [static, unit]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout: |
+            /*
+            !/docs/acceptance/**/*.png
+            !/docs/acceptance/**/*.jpg
+            !/docs/acceptance/**/*.jpeg
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: |
+            plugins/linker-tools/package-lock.json
+            plugins/linker-commerce/package-lock.json
+            apps/planner/package-lock.json
+            tests/e2e/package-lock.json
+      - uses: taiki-e/install-action@f7e5d7c961414b23f5b25b2da9294395d08513ad # v2.87.26
+        with:
+          tool: just@1.58.0
+      - name: JavaScript static
+        if: matrix.lane == 'static'
+        run: |
+          just js-check
+          just e2e-check
+      - name: JavaScript unit and browser suites
+        if: matrix.lane == 'unit'
+        run: |
+          cd plugins/linker-tools
+          npx playwright install --with-deps --only-shell chromium
+          cd ../..
+          just js-test
+
+  python-lane:
+    needs: plan
+    if: always() && needs.plan.result == 'success' && needs.plan.outputs.mode == 'full'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: true
+      matrix:
+        lane: [static, genie, engine, tools, harnesses, pull, cutover]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout: |
+            /*
+            !/docs/acceptance/**/*.png
+            !/docs/acceptance/**/*.jpg
+            !/docs/acceptance/**/*.jpeg
+          sparse-checkout-cone-mode: false
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          version: "0.10.11"
+          python-version: "3.12"
+          enable-cache: true
+          cache-dependency-glob: |
+            services/*/uv.lock
+            tools/*/uv.lock
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        if: matrix.lane == 'tools' || matrix.lane == 'pull' || matrix.lane == 'cutover'
+        with:
+          php-version: "8.3"
+          coverage: none
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        if: matrix.lane == 'engine'
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/planner/package-lock.json
+      - uses: taiki-e/install-action@f7e5d7c961414b23f5b25b2da9294395d08513ad # v2.87.26
+        with:
+          tool: just@1.58.0
+      - name: Python unit native helpers
+        if: matrix.lane == 'tools'
+        run: |
+          sudo apt-get update && sudo apt-get install -y gettext
+          curl -fsSL -o /usr/local/bin/wp https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar
+          sudo chmod +x /usr/local/bin/wp
+          wp --version
+      - name: Python static
+        if: matrix.lane == 'static'
+        run: just py-check
+      - name: Genie tests
+        if: matrix.lane == 'genie'
+        run: just py-test-group genie
+      - name: Engine tests
+        if: matrix.lane == 'engine'
+        run: |
+          cd apps/planner
+          npm ci --no-audit --no-fund
+          cd ../..
+          just py-test-group engine
+      - name: Python tool tests
+        if: matrix.lane == 'tools'
+        run: just py-test-group tools
+      - name: Campaign harness tests
+        if: matrix.lane == 'harnesses'
+        run: just py-test-group harnesses
+      - name: Pull snapshot tests
+        if: matrix.lane == 'pull'
+        run: just pull::test
+      - name: Cutover tests
+        if: matrix.lane == 'cutover'
+        run: just cutover::test
+
+  content:
+    needs: plan
+    if: always() && needs.plan.result == 'success' && needs.plan.outputs.mode == 'full'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout: |
+            /*
+            !/docs/acceptance/**/*.png
+            !/docs/acceptance/**/*.jpg
+            !/docs/acceptance/**/*.jpeg
+          sparse-checkout-cone-mode: false
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: "8.3"
+          tools: composer:v2
+          coverage: none
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          version: "0.10.11"
+          python-version: "3.12"
+          enable-cache: true
+          cache-dependency-glob: |
+            tools/pull/uv.lock
+            tools/cutover/uv.lock
+      - uses: taiki-e/install-action@f7e5d7c961414b23f5b25b2da9294395d08513ad # v2.87.26
+        with:
+          tool: just@1.58.0
+      - name: gettext
+        run: sudo apt-get update && sudo apt-get install -y gettext
+      - name: WP-CLI 2.12
+        run: |
+          curl -fsSL -o /usr/local/bin/wp https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar
+          sudo chmod +x /usr/local/bin/wp
+          wp --version
+      - name: Content, catalogue, pull and cutover contracts
+        run: just ci-content
+
+  build:
+    needs: plan
+    if: always() && needs.plan.result == 'success' && needs.plan.outputs.mode == 'full'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout: |
+            /*
+            !/docs/acceptance/**/*.png
+            !/docs/acceptance/**/*.jpg
+            !/docs/acceptance/**/*.jpeg
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: |
+            plugins/linker-tools/package-lock.json
+            plugins/linker-commerce/package-lock.json
+            apps/planner/package-lock.json
+      - uses: taiki-e/install-action@f7e5d7c961414b23f5b25b2da9294395d08513ad # v2.87.26
+        with:
+          tool: just@1.58.0
+      - name: Build contract and committed artifact reproduction
+        run: just ci-build
+
+  presentation:
+    needs: plan
+    if: always() && needs.plan.result == 'success' && needs.plan.outputs.mode == 'presentation'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout: |
+            /*
+            !/docs/acceptance/**/*.png
+            !/docs/acceptance/**/*.jpg
+            !/docs/acceptance/**/*.jpeg
+          sparse-checkout-cone-mode: false
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: "8.3"
+          tools: composer:v2
+          coverage: none
+      - uses: taiki-e/install-action@f7e5d7c961414b23f5b25b2da9294395d08513ad # v2.87.26
+        with:
+          tool: just@1.58.0
+      - name: gettext for changed catalogues
+        if: needs.plan.outputs.catalog_changed == 'true'
+        run: sudo apt-get update && sudo apt-get install -y gettext
+      - name: WP-CLI for changed catalogues
+        if: needs.plan.outputs.catalog_changed == 'true'
+        run: |
+          curl -fsSL -o /usr/local/bin/wp https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar
+          sudo chmod +x /usr/local/bin/wp
+      - name: Existing presentation contracts and affected source guards
+        env:
+          PHP_TEST_CHANGED: ${{ needs.plan.outputs.php_test_changed }}
+          CATALOG_CHANGED: ${{ needs.plan.outputs.catalog_changed }}
+        run: just ci-presentation
+
+  commerce:
+    needs: plan
+    if: always() && needs.plan.result == 'success' && needs.plan.outputs.mode == 'commerce'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout: |
+            /*
+            !/docs/acceptance/**/*.png
+            !/docs/acceptance/**/*.jpg
+            !/docs/acceptance/**/*.jpeg
+          sparse-checkout-cone-mode: false
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: "8.3"
+          tools: composer:v2
+          coverage: none
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: |
+            plugins/linker-commerce/package-lock.json
+            plugins/linker-tools/package-lock.json
+      - uses: taiki-e/install-action@f7e5d7c961414b23f5b25b2da9294395d08513ad # v2.87.26
+        with:
+          tool: just@1.58.0
+      - name: gettext and WP-CLI
+        run: |
+          sudo apt-get update && sudo apt-get install -y gettext
+          curl -fsSL -o /usr/local/bin/wp https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar
+          sudo chmod +x /usr/local/bin/wp
+      - name: Commerce source, unit and content checks
+        run: just commerce-check
+
+  native-lane:
+    needs: plan
+    if: |
+      always() && needs.plan.result == 'success' &&
+      (needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: true
+      matrix:
+        group: [core, mail, inquiry, inventory, runtime, admin]
+    env:
+      MYSQL_PWD: root
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout: |
+            /*
+            !/docs/acceptance/**/*.png
+            !/docs/acceptance/**/*.jpg
+            !/docs/acceptance/**/*.jpeg
+          sparse-checkout-cone-mode: false
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: "8.3"
+          tools: composer:v2
+          coverage: none
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          version: "0.10.11"
+          python-version: "3.12"
+      - uses: taiki-e/install-action@f7e5d7c961414b23f5b25b2da9294395d08513ad # v2.87.26
+        with:
+          tool: just@1.58.0
+      - name: WP-CLI 2.12
+        run: |
+          curl -fsSL -o /usr/local/bin/wp https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar
+          sudo chmod +x /usr/local/bin/wp
+      - name: Native test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gettext poppler-utils
+          if ! command -v redis-server >/dev/null; then
+            sudo apt-get install -y redis-server
+          fi
+          sudo systemctl start mysql
+          redis-server --daemonize yes
+          mysql --user=root --skip-column-names --execute 'SELECT VERSION();'
+          redis-cli ping
+      - name: a bare instance
+        run: just up smoke
+      - name: native integration group
+        run: just ci-native "${{ matrix.group }}" smoke
+      - name: stop the instance
+        if: always()
+        run: just down smoke || echo "no instance to stop"
+
+  check:
+    needs: [plan, php-lane, js-lane, python-lane, content, build, presentation, commerce]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    strategy:
+      matrix:
+        php: ["8.3"]
+        node: ["22"]
+        python: ["3.12"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'presentation' || needs.plan.outputs.mode == 'commerce'
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout: |
+            /*
+            !/docs/acceptance/**/*.png
+            !/docs/acceptance/**/*.jpg
+            !/docs/acceptance/**/*.jpeg
+          sparse-checkout-cone-mode: false
       - name: Verify excluded acceptance image checkout
         if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'presentation' || needs.plan.outputs.mode == 'commerce'
         run: |
@@ -284,120 +626,71 @@ jobs:
           if present or included:
               sys.exit("Acceptance image checkout exclusions did not apply")
           '
-
-      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
-        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'presentation' || needs.plan.outputs.mode == 'commerce'
-        with:
-          php-version: ${{ matrix.php }}
-          # The composer.lock files are Composer 2 locks (written with 2.9.7).
-          tools: composer:v2
-          coverage: none
-
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'
-        with:
-          node-version: ${{ matrix.node }}
-          cache: npm
-          cache-dependency-path: |
-            plugins/linker-tools/package-lock.json
-            plugins/linker-commerce/package-lock.json
-            apps/planner/package-lock.json
-
-      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
-        if: needs.plan.outputs.mode == 'full'
-        with:
-          # The uv that wrote the uv.lock files.
-          version: "0.10.11"
-          python-version: ${{ matrix.python }}
-          enable-cache: true
-          cache-dependency-glob: |
-            services/*/uv.lock
-            tools/*/uv.lock
-
-      - uses: taiki-e/install-action@f7e5d7c961414b23f5b25b2da9294395d08513ad # v2.87.26
-        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'
-        with:
-          # The just the justfile is written for.
-          tool: just@1.58.0
-
-      # The German-coverage gate reads the .po catalogs with gettext's own
-      # tools (msgattrib, msgfmt); the runner image does not carry them.
-      - name: gettext for the i18n coverage gate
-        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce' || (needs.plan.outputs.mode == 'presentation' && needs.plan.outputs.catalog_changed == 'true')
-        run: sudo apt-get update && sudo apt-get install -y gettext
-
-      # #302: reproduce linker-tools script catalogs using the local stack's
-      # WP-CLI version. i18n make-json does not need a WordPress instance.
-      - name: WP-CLI 2.12 for script translation reproducibility
-        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce' || (needs.plan.outputs.mode == 'presentation' && needs.plan.outputs.catalog_changed == 'true')
-        run: |
-          curl -fsSL -o /usr/local/bin/wp https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar
-          sudo chmod +x /usr/local/bin/wp
-          wp --version
-
-      - name: Existing presentation contracts and affected source guards
-        if: needs.plan.outputs.mode == 'presentation'
-        working-directory: plugins/linker-commerce
+      - name: Require a successful recognized plan
         env:
-          PHP_TEST_CHANGED: ${{ needs.plan.outputs.php_test_changed }}
-          CATALOG_CHANGED: ${{ needs.plan.outputs.catalog_changed }}
+          PLAN_RESULT: ${{ needs.plan.result }}
+          MODE: ${{ needs.plan.outputs.mode }}
         run: |
-          composer validate --no-check-publish
-          composer install --no-interaction --no-progress --quiet
-          if [ "$PHP_TEST_CHANGED" = true ]; then
-            php vendor/bin/phpcs -q tests/php/Unit/Presentation/TemplatesTest.php
-            php vendor/bin/phpstan analyse --no-progress --memory-limit=-1 tests/php/Unit/Presentation/TemplatesTest.php
-          fi
-          php vendor/bin/phpunit tests/php/Unit/Presentation
-          if [ "$CATALOG_CHANGED" = true ]; then
-            python3 ../../tools/checks/german-copy.py
-            python3 ../../tools/checks/internal-home-urls.py --root "$GITHUB_WORKSPACE"
-            (cd "$GITHUB_WORKSPACE" && python3 tools/checks/i18n-coverage.py)
-          fi
-
-      - name: Validation scope regression contracts
-        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'
-        run: python3 -m unittest discover -s tools/checks -p test_ci_scope.py
-
-      - name: Commerce source, unit and content checks
-        if: needs.plan.outputs.mode == 'commerce'
-        run: just commerce-check
-
-      - name: just check
-        if: needs.plan.outputs.mode == 'full'
-        run: just check
-
-      - name: Playwright's Chromium and its system libraries
-        if: needs.plan.outputs.mode == 'full'
-        working-directory: plugins/linker-tools
-        run: npx playwright install --with-deps --only-shell chromium
-
-      - name: just test
-        if: needs.plan.outputs.mode == 'full'
-        run: just test
-
-      # build/manifest.json says what the committed build/ was made from; a
-      # fresh build proves the files themselves are what the sources produce.
-      - name: just build reproduces the committed build/
-        if: needs.plan.outputs.mode == 'full'
+          test "$PLAN_RESULT" = success
+          case "$MODE" in full|presentation|commerce|docs|reuse) ;; *) exit 1 ;; esac
+      - name: Record validation scope (${{ needs.plan.outputs.mode }})
+        run: printf 'Validation scope %s; only applicable parallel lanes are required.\n' "${{ needs.plan.outputs.mode }}"
+      - name: Require every applicable lane
+        env:
+          MODE: ${{ needs.plan.outputs.mode }}
+          PHP_RESULT: ${{ needs.php-lane.result }}
+          JS_RESULT: ${{ needs.js-lane.result }}
+          PYTHON_RESULT: ${{ needs.python-lane.result }}
+          CONTENT_RESULT: ${{ needs.content.result }}
+          BUILD_RESULT: ${{ needs.build.result }}
+          PRESENTATION_RESULT: ${{ needs.presentation.result }}
+          COMMERCE_RESULT: ${{ needs.commerce.result }}
         run: |
-          just build
-          git status --porcelain -- plugins/linker-tools/build plugins/linker-commerce/build
-          test -z "$(git status --porcelain -- plugins/linker-tools/build plugins/linker-commerce/build)"
+          require() {
+            local name="$1" result="$2"
+            test "$result" = success || {
+              echo "$name lane: $result (expected success)" >&2
+              exit 1
+            }
+          }
+          allow_skipped() {
+            local result="$1"
+            case "$result" in success|skipped) ;; *) return 1 ;; esac
+          }
+          case "$MODE" in
+            full)
+              require php "$PHP_RESULT"
+              require javascript "$JS_RESULT"
+              require python "$PYTHON_RESULT"
+              require content "$CONTENT_RESULT"
+              require build "$BUILD_RESULT"
+              allow_skipped "$PRESENTATION_RESULT"
+              allow_skipped "$COMMERCE_RESULT"
+              ;;
+            presentation)
+              require presentation "$PRESENTATION_RESULT"
+              for result in "$PHP_RESULT" "$JS_RESULT" "$PYTHON_RESULT" "$CONTENT_RESULT" "$BUILD_RESULT" "$COMMERCE_RESULT"; do
+                allow_skipped "$result" || exit 1
+              done
+              ;;
+            commerce)
+              require commerce "$COMMERCE_RESULT"
+              for result in "$PHP_RESULT" "$JS_RESULT" "$PYTHON_RESULT" "$CONTENT_RESULT" "$BUILD_RESULT" "$PRESENTATION_RESULT"; do
+                allow_skipped "$result" || exit 1
+              done
+              ;;
+            docs|reuse)
+              for result in "$PHP_RESULT" "$JS_RESULT" "$PYTHON_RESULT" "$CONTENT_RESULT" "$BUILD_RESULT" "$PRESENTATION_RESULT" "$COMMERCE_RESULT"; do
+                allow_skipped "$result" || exit 1
+              done
+              ;;
+          esac
 
   mu-smoke:
-    needs: plan
+    needs: [plan, native-lane]
     if: always()
-    # The must-use plugins' smoke suite asserts properties of a real site (the
-    # response headers, the closed REST user list, the recorder's file, the
-    # pin's installation), so it needs WordPress: this job builds the smallest
-    # one — a bare instance, no snapshot, since none of those properties is
-    # content — and runs `just mu-smoke`. MySQL and Redis are the runner
-    # image's own; WP-CLI is pinned to the version the local stack requires.
     runs-on: ubuntu-24.04
-    env:
-      # The runner image's MySQL root credentials; see the MySQL step below.
-      MYSQL_PWD: root
+    timeout-minutes: 5
     steps:
       - name: Require a successful recognized plan
         env:
@@ -407,261 +700,13 @@ jobs:
           test "$PLAN_RESULT" = success
           case "$MODE" in full|presentation|commerce|docs|reuse) ;; *) exit 1 ;; esac
       - name: Record native integration scope
+        run: printf 'Validation scope %s; native groups run in parallel when required.\n' "${{ needs.plan.outputs.mode }}"
+      - name: Require every applicable native group
         env:
           MODE: ${{ needs.plan.outputs.mode }}
-        run: printf 'Validation scope %s; native integration runs for runtime or unproven changes.\n' "$MODE"
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'
-        with:
-          ref: ${{ github.sha }}
-          # Match the check job: omit only acceptance screenshots.
-          sparse-checkout: |
-            /*
-            !/docs/acceptance/**/*.png
-            !/docs/acceptance/**/*.jpg
-            !/docs/acceptance/**/*.jpeg
-          sparse-checkout-cone-mode: false
-
-      - name: Verify excluded acceptance image checkout
-        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'
+          NATIVE_RESULT: ${{ needs.native-lane.result }}
         run: |
-          git ls-files -v -z -- docs/acceptance | python3 -c '
-          import os, sys
-          entries = sys.stdin.buffer.read().split(b"\0")
-          images = [entry for entry in entries if entry[2:].endswith((b".png", b".jpg", b".jpeg"))]
-          present = [entry for entry in images if os.path.lexists(os.fsdecode(entry[2:]))]
-          included = [entry for entry in images if entry[:1] != b"S"]
-          print(f"Acceptance images: {len(images)} tracked, {len(present)} materialized, {len(included)} included in index")
-          if present or included:
-              sys.exit("Acceptance image checkout exclusions did not apply")
-          '
-
-      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
-        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'
-        with:
-          php-version: "8.3"
-          tools: composer:v2
-          coverage: none
-
-      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
-        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'
-        with:
-          version: "0.10.11"
-          python-version: "3.12"
-
-      - uses: taiki-e/install-action@f7e5d7c961414b23f5b25b2da9294395d08513ad # v2.87.26
-        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'
-        with:
-          tool: just@1.58.0
-
-      # tools/local's wpcli.require_version() wants WP-CLI 2.12 (production's).
-      - name: WP-CLI 2.12
-        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'
-        run: |
-          curl -fsSL -o /usr/local/bin/wp https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar
-          sudo chmod +x /usr/local/bin/wp
-          wp --version
-
-      # The stack administers MySQL as root (`mysql --user=root …`;
-      # tools/local/src/linker_local/mysql.py) and the image's root is not
-      # passwordless (root/root, the runner image's own credentials), so the
-      # password rides in MYSQL_PWD: the stack's mysql calls inherit the job's
-      # environment, which is what the local stack on a Mac gets from
-      # Homebrew's passwordless root. Redis is already installed.
-      - name: MySQL and Redis for the instance
-        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'
-        run: |
-          sudo systemctl start mysql
-          # The image documents Redis but carries no redis-server binary
-          # (measured: command not found), and the stack only needs something
-          # listening on 6379 (objectcache.require_redis()).
-          if ! command -v redis-server >/dev/null; then
-            sudo apt-get update
-            sudo apt-get install -y redis-server
-          fi
-          redis-server --daemonize yes
-          mysql --user=root --skip-column-names --execute 'SELECT VERSION();'
-          redis-cli ping
-
-      - name: a bare instance (no snapshot)
-        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'
-        run: just up smoke
-
-      - name: the must-use plugins' smoke suite
-        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'
-        run: just mu-smoke smoke
-
-      # #373: two PHP processes commit one conversation and the trace shows
-      # one of them blocked in GET_LOCK. The instance's linker-tools is this
-      # checkout (`just up` symlinks it).
-      - name: Genie conversation concurrency
-        if: needs.plan.outputs.mode == 'full'
-        run: just genie-concurrency smoke
-
-      # #297: native WordPress/Woo routing and an authenticated loopback SMTP
-      # sink. The test owns the server and uses fake values only; mail() is
-      # captured to files. The existing bare instance is sufficient for mail.
-      - name: internal SMTP, notification routing and mail-language integration
-        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'
-        working-directory: plugins/linker-commerce
-        run: |
-          LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
-            php vendor/bin/phpunit -c phpunit.integration.xml.dist \
-            --filter 'ReviewReminderTest|PublicationHooksTest|MailBudgetRollbackTest|MailBudgetTest|InternalSmtpTest|NotificationRoutingTest|MailRetryTest|DigestTest|HealthMonitorTest|LanguageLinksInMailTest|MessageIdWitnessTest'
-
-      # Current #568 composition keeps the mandatory pre-send gate while adding
-      # persistent reception/job occupancy. Both native stores run the same real
-      # connection, source ACK, critical/reset/VAT, held-job and classifier fixtures.
-      # Registration adds its real SQL/ACK/erasure guards to each existing store run.
-      - name: business and native notification capacity in both stores
-        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'
-        run: |
-          cd plugins/linker-commerce
-          LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
-            php vendor/bin/phpunit -c phpunit.integration.xml.dist \
-            --filter 'GlobalBusinessCapacityTest|SummaryEnvelopeTest|BusinessDispositionTest|MailCapacityTest|AtomicMailConnectionTest|ConnectionFenceTest|CriticalNotificationCapacityTest|VatNotificationCapacityTest|ConversationConfirmationCapacityTest|RegistrationCapacityTest|PreSendAuthorizationTest|ReviewReminderTest'
-          cd ../..
-          just wp smoke wc hpos sync --user=1
-          just wp smoke option update woocommerce_custom_orders_table_enabled yes
-          just wp smoke option update woocommerce_hpos_datastore_caching_enabled yes
-          just wp smoke option update woocommerce_feature_product_instance_caching_enabled yes
-          cd plugins/linker-commerce
-          LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
-            php vendor/bin/phpunit -c phpunit.integration.xml.dist \
-            --filter 'GlobalBusinessCapacityTest|SummaryEnvelopeTest|BusinessDispositionTest|MailCapacityTest|AtomicMailConnectionTest|ConnectionFenceTest|CriticalNotificationCapacityTest|VatNotificationCapacityTest|ConversationConfirmationCapacityTest|RegistrationCapacityTest|PreSendAuthorizationTest|ReviewReminderTest'
-
-      # #414: the abilities route, including the customer token. The test
-
-      # #519: real REST proof consumption, multi-dimensional admission,
-      # account privacy, advisory mode and actual disconnect/peer recovery.
-      # Uses synthetic inputs and intercepted HTTP; no external mail/provider.
-      - name: public verification and atomic admission
-        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'
-        working-directory: plugins/linker-commerce
-        run: |
-          LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
-            php vendor/bin/phpunit -c phpunit.integration.xml.dist \
-            --filter 'PublicControllerTest|PublicLedgerTest|PublicVerificationTest|PublicProofTest|PublicAdmissionOwnersTest|BusinessPolicyTest|BusinessAdmissionTest'
-
-      # #414: the abilities route, including the customer token. The test
-      # builds its own account and inquiry on this bare instance. It is not
-      # a #339 conversation case: Genie copies inquiry id and status only
-      # (facts._from_inquiry), so a dialogue fixture would not show a leaked
-      # total. The Proforma download is the next step.
-      - name: inquiry status price gate
-        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'
-        working-directory: plugins/linker-commerce
-        run: |
-          LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
-            php vendor/bin/phpunit -c phpunit.integration.xml.dist \
-            --filter InquiryStatusRestTest
-      # #496: the design report's "Ask Genie" reference. The route refuses a
-      # guest (401) and another customer's solution (403), and the owner's
-      # solution carries the engine's figures and no price. The engine is a
-      # pre_http_request double, so the bare instance needs no tuning.
-      - name: saved solution reader
-        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'
-        working-directory: plugins/linker-commerce
-        run: |
-          LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
-            php vendor/bin/phpunit -c phpunit.integration.xml.dist \
-            --filter ReadSolutionRestTest
-      # #405: an edit drops the cached page through wp_remote_post. After the
-      # mail tests, so Polylang setup does not change their instance.
-      - name: page cache follows a save
-        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'
-        run: just page-cache-chain smoke
-
-      - name: dynamic HTML stays out of the public page cache
-        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'
-        working-directory: plugins/linker-tools
-        run: |
-          LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
-            php vendor/bin/phpunit -c phpunit.integration.xml.dist \
-            --filter DynamicPageCacheTest
-
-      # Native authentication plus the existing reader on 201 synthetic rows per
-      # collection; no production binding, credential, model or external mail.
-      - name: inventory application credential scope
-        if: needs.plan.outputs.mode == 'full'
-        run: |
-          uv run --locked --project tools/local ruff check --config tools/local/pyproject.toml tools/checks/inventory-access.py
-          uv run --locked --project tools/local ruff format --check --config tools/local/pyproject.toml tools/checks/inventory-access.py
-          uv run --locked --project tools/local mypy --strict tools/checks/inventory-access.py
-          just inventory-access smoke
-
-      # #521: native pre-dispatch resource/replay/privacy fixtures. The preceding
-      # page-cache step installs the local-only service token. All HTTP is
-      # intercepted; running-version responses and sizing inputs are synthetic.
-      - name: public resource admission and private service handoff
-        if: needs.plan.outputs.mode == 'full'
-        run: |
-          just wp smoke option update linker_engine_url http://127.0.0.1:9
-          just wp smoke option update linker_genie_url http://127.0.0.1:9
-          cd plugins/linker-tools
-          LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
-            php vendor/bin/phpunit -c phpunit.integration.xml.dist \
-            --filter ResourceAdmissionTest
-
-      # #425: an issued Proforma priced at 1680. Pending and restricted
-      # accounts get no link and a 404 with no PDF bytes, in EN and DE,
-      # including a direct request that does not use the link. Not a #339
-      # conversation case, for the same reason as #414. pdftotext reads the
-      # PDF: dompdf draws glyph ids, so the amount is not in the raw bytes.
-      - name: proforma price gate
-        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'
-        working-directory: plugins/linker-commerce
-        run: |
-          if ! command -v pdftotext >/dev/null; then
-            sudo apt-get update
-            sudo apt-get install -y poppler-utils
-          fi
-          LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
-            php vendor/bin/phpunit -c phpunit.integration.xml.dist \
-            --filter ProformaPriceGateTest
-
-      # #453: the Genie inquiry card's whole chain — conversation, REST route,
-      # the inquiry writer, the Proforma gateway, the Outbox queue — as one
-      # class of tests. It builds its own product, customer and conversation;
-      # its German inquiry needs the de language the page-cache step above
-      # configured, which runs before this one in this job.
-      - name: genie inquiry chain
-        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'
-        working-directory: plugins/linker-commerce
-        run: |
-          LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
-            php vendor/bin/phpunit -c phpunit.integration.xml.dist \
-            --filter GenieInquiryTest
-
-      # The mandatory pre-send classifier uses fake service answers and local
-      # Outbox data. Includes private review history, native privacy, two real
-      # PHP connections, and rollback after a failed metadata write.
-      - name: inquiry assessment, customer evidence and staff review
-        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'
-        working-directory: plugins/linker-commerce
-        run: |
-          LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
-            php vendor/bin/phpunit -c phpunit.integration.xml.dist \
-            --filter 'PreSendAuthorizationTest|InquiryAssessmentTest|CustomerEvidenceTest|CustomerReviewTest|NotificationHoldTest|AssessmentAsyncTest|SafeIntakeTest'
-
-      # Official dependency only; test users/factors are synthetic and deleted.
-      # Native wp-login + Woo EN/DE, TOTP/recovery replay, customer and API lanes.
-      - name: administrator MFA without mandatory customer factors
-        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'
-        run: |
-          if ! command -v msgcat >/dev/null; then
-            sudo apt-get update
-            sudo apt-get install -y gettext
-          fi
-          uv run --locked --project tools/local ruff check --config tools/local/pyproject.toml tools/checks/admin-mfa.py
-          uv run --locked --project tools/local ruff format --check --config tools/local/pyproject.toml tools/checks/admin-mfa.py
-          uv run --locked --project tools/local mypy --strict tools/checks/admin-mfa.py
-          uv run --locked --project tools/local pytest -q tools/local/tests/test_admin_mfa.py
-          php plugins/linker-commerce/vendor/bin/phpcs --standard=plugins/linker-commerce/phpcs.xml.dist tests/e2e/fixtures/admin-mfa.php tests/e2e/fixtures/admin-mfa-public.php
-          just admin-mfa smoke --prepare
-
-      # The cleanup runs even when an earlier step failed and the instance was
-      # never built, so it reports rather than failing the job twice.
-      - name: stop the instance
-        if: always() && needs.plan.result == 'success' && (needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce')
-        run: just down smoke || echo "no instance to stop"
+          case "$MODE" in
+            full|commerce) test "$NATIVE_RESULT" = success ;;
+            presentation|docs|reuse) case "$NATIVE_RESULT" in success|skipped) ;; *) exit 1 ;; esac ;;
+          esac

@@ -1,6 +1,6 @@
 # 本地栈
 
-`just up <name>` 在这台 Mac 上建出一个独立的 WordPress 实例：Homebrew 的 PHP 8.3、MySQL 与 Redis（对象缓存），WP-CLI，WordPress 7.1.3 + WooCommerce 11.2.0（线上版本）+ Polylang 3.8.10（linker-i18n 在插件头声明的前置，装好即启用）+ LiveCanvas 4.9.5（#12 的修复版，从本机归档 `~/de-linker-data/livecanvas-4.9.5/` 安装，wordpress.org 上没有）+ `de_DE_formal` 的 WordPress 与 WooCommerce 语言包，我们的三个插件以符号链接挂入当前检出。不用 Docker，不连线上。代码在 `tools/local/`（uv 项目 `linker-local`），规格是 `docs/specs/5-local-stack.md`。
+`just up <name>` 在这台 Mac 上建出一个独立的 WordPress 实例：Homebrew 的 PHP 8.3、MySQL 与 Redis（对象缓存），WP-CLI，WordPress 7.1.4 + WooCommerce 11.2.0（线上版本）+ Polylang 3.8.10（linker-i18n 在插件头声明的前置，装好即启用）+ LiveCanvas 4.9.5（#12 的修复版，从本机归档 `~/de-linker-data/livecanvas-4.9.5/` 安装，wordpress.org 上没有）+ `de_DE_formal` 的 WordPress 与 WooCommerce 语言包，我们的三个插件以符号链接挂入当前检出。不用 Docker，不连线上。代码在 `tools/local/`（uv 项目 `linker-local`），规格是 `docs/specs/5-local-stack.md`。
 
 ## 前提（一次性）
 
@@ -60,7 +60,7 @@ brew services start redis
 
 | 项 | 本地 | 来源 |
 |---|---|---|
-| WordPress | 7.1.3，安装包 SHA-1 `13eb1d04…` 每次使用前核对 | 线上实测（`docs/research/2026-10-09/framework-choice.md` §2）；SHA-1 为 wordpress.org 发布的 `wordpress-7.1.3.zip.sha1` |
+| WordPress | 7.1.4，安装包 SHA-1 `b552c39c…` 每次使用前核对 | 线上 2026-10-29 的只读快照；SHA-1 为 wordpress.org 发布的 `wordpress-7.1.4.zip.sha1` |
 | WooCommerce | 11.2.0，`wp plugin verify-checksums` 逐文件核对 wordpress.org 的校验和 | 线上插件头（2026-10-09 SSH 只读）。线上会自动更新：WooCommerce 当天 07:54 UTC 从 11.1.0 升到 11.2.0，WordPress 设了 `WP_AUTO_UPDATE_CORE = 'minor'`；本地是钉死的，线上再变时改 `tools/local/src/linker_local/wordpress.py` 的版本与地址 |
 | PHP | 8.3；`memory_limit`、`post_max_size`、`upload_max_filesize` 2048M，`max_execution_time`、`max_input_time` 360，`max_input_vars` 5000 | 主机 `~/.cl.selector/alt_php83.cfg`（2026-10-09 SSH 只读）；网页请求实际生效的值由 WooCommerce 系统状态核对（同日 REST 只读：`php_max_execution_time` 360、上传与 POST 上限 2 GB、`max_input_vars` 5000）。命令行里 `max_execution_time` 是 0：PHP 的 CLI 把它固定为 0，线上与本地 WP-CLI 都一样 |
 | 对象缓存 | Redis 对象缓存（Redis Object Cache，PHP 客户端为插件自带的 Predis，php@8.3 没有 phpredis 扩展） | 线上切换时启用（规格 17"主机卫生"列了它与主机自带对象缓存两种，按实测选；选后者时本地跟着改）；本地同（规格 5） |

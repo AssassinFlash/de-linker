@@ -13,6 +13,7 @@ from unittest.mock import Mock, patch
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / ".github/workflows/check.yml"
 TEXT = WORKFLOW.read_text()
+JUSTFILE = (ROOT / "justfile").read_text()
 SCRIPT = TEXT.split("          python3 - <<'PYTHON'\n", 1)[1].split(
     "          PYTHON\n", 1
 )[0]
@@ -190,22 +191,22 @@ class ScopeTest(unittest.TestCase):
         self.assertIn(
             'mode, reason = "full", "Change or baseline proof unavailable;', SCRIPT
         )
-        for title in (
-            "business and native notification capacity in both stores",
-            "public verification and atomic admission",
-            "inquiry status price gate",
-            "proforma price gate",
-            "genie inquiry chain",
-            "inquiry assessment, customer evidence and staff review",
-            "administrator MFA without mandatory customer factors",
+        self.assertIn("group: [core, mail, inquiry, inventory, runtime, admin]", TEXT)
+        self.assertIn('just ci-native "${{ matrix.group }}" smoke', TEXT)
+        self.assertNotIn("/Justfile", JUSTFILE)
+        for marker in (
+            "run_mail()",
+            "GlobalBusinessCapacityTest",
+            "run_inquiry()",
+            "PublicAdmissionOwnersTest",
+            "ProformaPriceGateTest",
+            "GenieInquiryTest",
+            "InquiryAssessmentTest",
+            "run_admin()",
+            "admin-mfa",
         ):
-            step = TEXT.split("      - name: " + title + "\n", 1)[1].split(
-                "      - name:", 1
-            )[0]
-            self.assertIn(
-                "if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'",
-                step,
-            )
+            with self.subTest(marker=marker):
+                self.assertIn(marker, JUSTFILE)
 
 
 if __name__ == "__main__":
