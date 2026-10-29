@@ -10,14 +10,18 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Unit\Protection;
 
 use Linker\Commerce\Protection\FormRecovery;
+use Linker\Commerce\Mail\ResetNotice;
 use Linker\Commerce\Tests\TestCase;
 use Mockery;
 use WP_Mock;
+
+// phpcs:disable WordPress.Security.NonceVerification -- Synthetic native form values are restored after the test.
 
 /**
  * Password recovery carries only the editable login.
  *
  * @covers \Linker\Commerce\Protection\FormRecovery
+ * @covers \Linker\Commerce\Mail\ResetNotice
  */
 final class FormRecoveryTest extends TestCase {
 	/** Password recovery retains only a bounded, sanitized login, once. */
@@ -39,8 +43,10 @@ final class FormRecoveryTest extends TestCase {
 		WP_Mock::userFunction( 'wc_load_cart' );
 		WP_Mock::userFunction( 'sanitize_text_field', array( 'return' => static fn ( string $value ): string => strip_tags( $value ) ) );
 		WP_Mock::userFunction( 'sanitize_textarea_field', array( 'return' => static fn ( string $value ): string => strip_tags( $value ) ) );
+		WP_Mock::passthruFunction( 'wp_unslash' );
 		$this->options( array() );
 		$old_cookies = $_COOKIE;
+		$old_post    = $_POST;
 		$_COOKIE     = array();
 		try {
 			FormRecovery::save(
@@ -69,8 +75,31 @@ final class FormRecoveryTest extends TestCase {
 				'fields' => array( 'user_login' => 'expired@example.test' ),
 			);
 			$this->assertSame( array(), FormRecovery::consume( 'password_reset' ), 'An expired recovery is not returned.' );
+
+			FormRecovery::save( 'password_reset', array( 'user_login' => 'previous@example.test' ) );
+			$_POST = array(
+				'wc_reset_password' => 'true',
+				'user_login'        => 'installer@example.test',
+			);
+			ResetNotice::capture_submission( new \WP_Error(), new \WP_User() );
+			$this->assertNull( $store['linker_form_recovery_password_reset'], 'A valid attempt clears old input and does not persist the new login.' );
+			$errors = new \WP_Error();
+			$errors->add( 'fixture', 'Synthetic failure' );
+			ResetNotice::capture_submission( $errors, new \WP_User() );
+			$this->assertSame( array( 'user_login' => 'installer@example.test' ), FormRecovery::consume( 'password_reset' ) );
+			ResetNotice::capture_submission( new \WP_Error(), false );
+			$this->assertSame( array( 'user_login' => 'installer@example.test' ), FormRecovery::consume( 'password_reset' ), 'A native unknown-user refusal keeps the entered text.' );
+			$_POST = array( 'user_login' => 'other@example.test' );
+			ResetNotice::capture_submission( $errors, false );
+			$this->assertSame( array(), FormRecovery::consume( 'password_reset' ), 'Non-Woo submissions do not enter Woo retry storage.' );
+			$_POST = array(
+				'wc_reset_password' => 'true',
+				'user_login'        => '',
+			);
+			ResetNotice::capture_submission( new \WP_Error(), new \WP_User() );
 		} finally {
 			$_COOKIE = $old_cookies;
+			$_POST   = $old_post;
 		}
 	}
 }

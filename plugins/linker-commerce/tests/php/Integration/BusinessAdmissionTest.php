@@ -482,17 +482,30 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		$session_key = 'linker_form_recovery_password_reset';
 		$previous    = WC()->session->get( $session_key );
 		$this->later( static fn () => WC()->session->set( $session_key, $previous ) );
+		$post = $_POST;
+		$this->later(
+			static function () use ( $post ): void {
+				$_POST = $post;
+			}
+		);
 		$_COOKIE['wp_woocommerce_session_recovery_fixture'] = 'native-presence';
-
+		// An earlier failed attempt cannot follow a new non-failing submission.
 		\Linker\Commerce\Protection\FormRecovery::save(
 			'password_reset',
-			array(
-				'user_login'   => '<b>installer@example.test</b>',
-				'password_1'   => 'never-store-password',
-				'reset_key'    => 'never-store-key',
-				'linker_proof' => 'never-store-proof',
-			)
+			array( 'user_login' => 'previous@example.test' )
 		);
+		$_POST = array(
+			'wc_reset_password' => 'true',
+			'user_login'        => '<b>installer@example.test</b>',
+			'password_1'        => 'never-store-password',
+			'reset_key'         => 'never-store-key',
+			'linker_proof'      => 'never-store-proof',
+		);
+		$this->assertNotFalse( has_action( 'lostpassword_post', array( \Linker\Commerce\Mail\ResetNotice::class, 'capture_submission' ) ) );
+		\Linker\Commerce\Mail\ResetNotice::capture_submission( new WP_Error(), new \WP_User() );
+		$this->assertNull( WC()->session->get( $session_key ), 'A non-failing attempt neither saves the new login nor leaves the earlier retry.' );
+
+		\Linker\Commerce\Mail\ResetNotice::capture_submission( new WP_Error( 'fixture', 'Synthetic failure' ), new \WP_User() );
 		$saved = WC()->session->get( $session_key );
 		$this->assertIsArray( $saved );
 		$this->assertSame( array( 'user_login' => 'installer@example.test' ), $saved['fields'] );

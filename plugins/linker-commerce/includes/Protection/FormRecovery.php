@@ -47,7 +47,8 @@ final class FormRecovery {
 			$fields[ $key ] = mb_substr( $sanitized, 0, 5000 );
 		}
 		wc_load_cart();
-		// Five-minute retry lifetime follows the shared proof window (#519).
+		// The shared proof window bounds how long the retry may be read. An
+		// unconsumed session value remains until Woo cleans up its session.
 		WC()->session->set(
 			'linker_form_recovery_' . $action,
 			array(

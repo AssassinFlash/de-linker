@@ -400,7 +400,6 @@ final class Accounts {
 			return;
 		}
 		$post = self::post();
-		\Linker\Commerce\Mail\ResetNotice::remember( isset( $post['user_login'] ) && is_string( $post['user_login'] ) ? $post['user_login'] : '' );
 		if ( 'enforce' === Configuration::current()->mode && ! wp_verify_nonce( self::text( $post, 'linker_password_reset_nonce' ), 'linker_password_reset' ) ) {
 			$errors->add( 'linker_reset_verification', __( 'Please verify your request and try again.', 'linker-commerce' ) );
 			return;

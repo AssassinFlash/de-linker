@@ -38,6 +38,7 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'password_change_email', array( $producer, 'account_change' ), PHP_INT_MAX, 3 );
 		WP_Mock::expectFilterAdded( 'wp_password_change_notification_email', array( $producer, 'password_changed_admin' ), PHP_INT_MAX, 3 );
 		WP_Mock::expectActionAdded( 'deleted_post', array( \Linker\Commerce\Mail\Capacity::class, 'deleted' ), 10, 2 );
+		WP_Mock::expectActionAdded( 'lostpassword_post', array( \Linker\Commerce\Mail\ResetNotice::class, 'capture_submission' ), PHP_INT_MAX, 2 );
 		WP_Mock::expectActionAdded( 'retrieve_password_key', array( \Linker\Commerce\Mail\ResetNotice::class, 'begin' ), PHP_INT_MAX, 2 );
 		WP_Mock::expectActionAdded( 'woocommerce_email_sent', array( \Linker\Commerce\Mail\ResetNotice::class, 'woocommerce_result' ), PHP_INT_MAX, 3 );
 		WP_Mock::expectActionAdded( 'woocommerce_before_lost_password_form', array( \Linker\Commerce\Mail\ResetNotice::class, 'render_begin' ), PHP_INT_MAX );
