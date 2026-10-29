@@ -106,6 +106,19 @@ def sun(weather: WeatherSeries) -> dict[str, Vector]:
 
 
 @dataclass(frozen=True)
+class DiffuseFractions:
+    """Static front-face fractions for isotropic sky, the horizon ring and ground.
+
+    Circumsolar reuses the hourly direct-beam fraction. A factor of one means
+    every accepted sample was visible, or that domain had no front-facing sample.
+    """
+
+    isotropic: float
+    horizon: float
+    ground: float
+
+
+@dataclass(frozen=True)
 class ArrayPower:
     dc_w: Vector
     witness: Object
@@ -119,6 +132,7 @@ def array_power(
     solar: dict[str, Vector],
     *,
     direct_beam_fraction: Vector | None = None,
+    diffuse_fractions: DiffuseFractions | None = None,
 ) -> ArrayPower:
     size = len(weather.points)
     zenith, azimuth = solar["apparent_zenith_deg"], solar["azimuth_deg"]
@@ -150,6 +164,32 @@ def array_power(
             "poa_global",
         )
     }
+    perez_parts: dict[str, Vector] | None = None
+    if diffuse_fractions is not None:
+        perez_parts = {
+            key: np.zeros(size)
+            for key in ("poa_isotropic", "poa_circumsolar", "poa_horizon")
+        }
+        if parameter.transposition != "perez":
+            raise InvalidInput(
+                "Perez component visibility requires the declared Perez transposition"
+            )
+        if direct_beam_fraction is None:
+            raise InvalidInput(
+                "Perez circumsolar visibility requires the direct-beam fraction"
+            )
+        for _name, factor in (
+            ("isotropic", diffuse_fractions.isotropic),
+            ("horizon", diffuse_fractions.horizon),
+            ("ground", diffuse_fractions.ground),
+        ):
+            if (
+                type(factor) is not float
+                or not np.isfinite(factor)
+                or factor < 0
+                or factor > 1
+            ):
+                raise InvalidInput("diffuse visibility fraction is outside zero to one")
     if np.any(lit):
         poa = irradiance.get_total_irradiance(
             array.tilt_deg,
@@ -165,12 +205,23 @@ def array_power(
             surface_type=None,
             model=parameter.transposition,
             model_perez=CONVENTIONS.perez_coefficients,
+            diffuse_components=diffuse_fractions is not None,
         )
+        lit_count = int(np.count_nonzero(lit))
         for key in components:
-            components[key][lit] = checked(
-                poa[key], int(np.count_nonzero(lit)), key, nonnegative=True
-            )
+            components[key][lit] = checked(poa[key], lit_count, key, nonnegative=True)
+        if perez_parts is not None:
+            for key in perez_parts:
+                # Horizon brightening from the pinned Perez coefficients can be
+                # negative. The other two returned components stay nonnegative.
+                perez_parts[key][lit] = checked(
+                    poa[key],
+                    lit_count,
+                    key,
+                    nonnegative=key != "poa_horizon",
+                )
     unoccluded: Object | None = None
+    negative_recombination = np.zeros(size)
     if direct_beam_fraction is not None:
         fraction = checked(
             direct_beam_fraction,
@@ -181,15 +232,57 @@ def array_power(
         if np.any(fraction > 1):
             raise InvalidInput("geometric direct-beam fraction exceeds one")
         unoccluded = {key: values(value) for key, value in components.items()}
-        components["poa_direct"] = components["poa_direct"] * fraction
-        # Only the declared direct beam is occluded. Diffuse components retain
-        # their unobstructed reference assumption; module temperature uses the
-        # resulting mean POA, not a local cell/sub-string temperature model.
-        components["poa_global"] = (
-            components["poa_direct"]
-            + components["poa_sky_diffuse"]
-            + components["poa_ground_diffuse"]
+        original_direct = components["poa_direct"]
+        original_sky = components["poa_sky_diffuse"]
+        original_ground = components["poa_ground_diffuse"]
+        original_global = components["poa_global"]
+        components["poa_direct"] = np.where(
+            fraction == 1, original_direct, original_direct * fraction
         )
+        if diffuse_fractions is None:
+            # Only the declared direct beam is occluded. Diffuse components retain
+            # their unobstructed reference assumption; module temperature uses the
+            # resulting mean POA, not a local cell/sub-string temperature model.
+            components["poa_global"] = (
+                components["poa_direct"]
+                + components["poa_sky_diffuse"]
+                + components["poa_ground_diffuse"]
+            )
+        else:
+            assert perez_parts is not None
+            isotropic = perez_parts["poa_isotropic"]
+            circumsolar = perez_parts["poa_circumsolar"]
+            horizon = perez_parts["poa_horizon"]
+            sky_factor = diffuse_fractions.isotropic
+            horizon_factor = diffuse_fractions.horizon
+            ground_factor = diffuse_fractions.ground
+            scaled_sky = (
+                (isotropic if sky_factor == 1 else isotropic * sky_factor)
+                + np.where(fraction == 1, circumsolar, circumsolar * fraction)
+                + (horizon if horizon_factor == 1 else horizon * horizon_factor)
+            )
+            # Hours with no occlusion keep the pinned sum, including the library's
+            # own maximum, rather than a recomposed floating-point total.
+            sky_exact = (sky_factor == 1) & (horizon_factor == 1) & (fraction == 1)
+            raw_sky = np.where(sky_exact, original_sky, scaled_sky)
+            negative_recombination = np.where(sky_exact, 0, np.minimum(raw_sky, 0))
+            # Same non-negative sky rule as pvlib.irradiance.perez on the unshaded sum.
+            components["poa_sky_diffuse"] = np.where(
+                sky_exact, original_sky, np.maximum(raw_sky, 0)
+            )
+            components["poa_ground_diffuse"] = (
+                original_ground
+                if ground_factor == 1
+                else original_ground * ground_factor
+            )
+            fully = sky_exact & (ground_factor == 1)
+            components["poa_global"] = np.where(
+                fully,
+                original_global,
+                components["poa_direct"]
+                + components["poa_sky_diffuse"]
+                + components["poa_ground_diffuse"],
+            )
     incidence = checked(
         irradiance.aoi(
             array.tilt_deg,
@@ -272,6 +365,25 @@ def array_power(
                 {
                     "unobstructed_poa_components_w_m2": unoccluded,
                     "direct_beam_visible_fraction": values(direct_beam_fraction),
+                    **(
+                        {
+                            "unobstructed_perez_components_w_m2": {
+                                key: values(value)
+                                for key, value in (perez_parts or {}).items()
+                            },
+                            "diffuse_visible_fractions": {
+                                "isotropic_sky": diffuse_fractions.isotropic,
+                                "horizon_ring": diffuse_fractions.horizon,
+                                "ground": diffuse_fractions.ground,
+                                "circumsolar": "direct_beam_visible_fraction",
+                            },
+                            "perez_negative_recombination_w_m2": values(
+                                negative_recombination
+                            ),
+                        }
+                        if diffuse_fractions is not None
+                        else {}
+                    ),
                 }
                 if direct_beam_fraction is not None
                 else {}

@@ -1,4 +1,10 @@
-"""Full-axis direct-only geometry with an explicitly uniform module response."""
+"""Full-axis geometric PV with an explicitly uniform module response.
+
+The retained direct-only request attenuates beam irradiance and leaves sky and
+ground diffuse unobstructed. The Perez component request scales isotropic sky,
+circumsolar, the horizon ring and ground by sampled visible fractions. Neither
+request is a bypass-diode, string I–V or real MPPT model.
+"""
 
 from __future__ import annotations
 
@@ -15,12 +21,27 @@ from .direct_beam_geometry import build_scene
 from .direct_beam_index import DirectBeamIndex
 from .direct_beam_visibility import VisibilityBudget, visibility_row
 from .errors import InvalidInput, NumericalFailure, VersionUnavailable
-from .geometric_pv_inputs import MODEL, GeometricPvInputs, GeometricPvLimits
+from .geometric_pv_diffuse import diffuse_sample_upper_bound, module_diffuse_visibility
+from .geometric_pv_inputs import (
+    MODEL_ROLES,
+    MODEL_V2,
+    SHADING_STATUS,
+    GeometricPvInputs,
+    GeometricPvLimits,
+)
 from .geometry import sin_cos_degrees
 from .power_series import PowerSeries
 from .pv_arrays import generation_arrays
 from .pv_generation import PvGeneration
-from .pv_physics import ArrayPower, array_power, checked, conversion_power, sun, values
+from .pv_physics import (
+    ArrayPower,
+    DiffuseFractions,
+    array_power,
+    checked,
+    conversion_power,
+    sun,
+    values,
+)
 from .pv_reconstruction import PvReconstruction
 from .pv_weather import WeatherSeries
 from .series_source import SeriesSource
@@ -37,9 +58,11 @@ def generate_geometric_pv(
 ) -> PvGeneration:
     """Every retained weather row is used; no selected-row interpolation.
 
-    Fractions attenuate direct POA before the declared mean-module thermal and
-    uniform PVWatts response. Sky/ground POA remains unobstructed by choice.
-    This is not a bypass-diode, string I–V or real MPPT performance model.
+    Direct fractions attenuate beam POA before the declared mean-module thermal
+    and uniform PVWatts response. The retained policy leaves sky and ground
+    unobstructed. The Perez policy scales those components by static visible
+    fractions and the hourly circumsolar fraction. This is not a bypass-diode,
+    string I–V or real MPPT performance model.
     """
     geometry = decode_object(encode(geometry))
     request = GeometricPvInputs.read(request.model_dump(mode="json"))
@@ -68,6 +91,7 @@ def generate_geometric_pv(
     receiver_ids = [receiver.id for receiver in scene.receivers]
     if set(receiver_ids) != {module for array in arrays for module in array.module_ids}:
         raise InvalidInput("geometric PV receivers differ from included modules")
+    diffuse = request.model == MODEL_V2
     upper_samples = (
         len(receiver_ids)
         * size
@@ -76,11 +100,22 @@ def generate_geometric_pv(
             + request.sampling.fine_cells_per_edge**2
         )
     )
+    if diffuse:
+        upper_samples += diffuse_sample_upper_bound(
+            len(receiver_ids), request.sampling.fine_cells_per_edge
+        )
     if upper_samples > limits.max_samples:
         raise InvalidInput("geometric PV requested sampling exceeds work policy")
     budget = VisibilityBudget(limits.visibility_ray_limits())
     index = DirectBeamIndex.from_scene(scene, leaf_size=limits.index_leaf_size)
     checkpoint()
+    static_diffuse = {}
+    if diffuse:
+        for receiver in scene.receivers:
+            checkpoint()
+            static_diffuse[receiver.id] = module_diffuse_visibility(
+                scene, receiver, request.sampling, budget, index
+            )
     solar = sun(weather)
     fractions = {identifier: np.zeros(size) for identifier in receiver_ids}
     visible: dict[str, list[Json]] = {identifier: [] for identifier in receiver_ids}
@@ -113,7 +148,7 @@ def generate_geometric_pv(
     inputs_json = encode(
         {
             "schema_version": 1,
-            "kind": MODEL,
+            "kind": request.model,
             "geometry": geometry,
             "weather": weather.document(),
             "parameters": request.model_dump(mode="json"),
@@ -136,6 +171,7 @@ def generate_geometric_pv(
                         module_ids=(identifier,),
                         stc_power_w=array.stc_power_w / len(array.module_ids),
                     )
+                    visibility = static_diffuse.get(identifier)
                     output = array_power(
                         module,
                         array_parameters[array.id],
@@ -143,6 +179,15 @@ def generate_geometric_pv(
                         weather,
                         solar,
                         direct_beam_fraction=fractions[identifier],
+                        diffuse_fractions=(
+                            None
+                            if visibility is None
+                            else DiffuseFractions(
+                                visibility.isotropic,
+                                visibility.horizon,
+                                visibility.ground,
+                            )
+                        ),
                     )
                     module_outputs.append(output.dc_w)
                     module_witnesses.append(
@@ -194,8 +239,8 @@ def generate_geometric_pv(
         max(p.interval.hours * 3600 for p in weather.points),
     )
     details: Object = {
-        "model": MODEL,
-        "model_role": "direct_only_geometry_uniform_module_reference_scenario",
+        "model": request.model,
+        "model_role": MODEL_ROLES[request.model],
         "input_bundle_sha256": input_hash,
         "geometry_sha256": digest(encode(geometry)),
         "parameters_sha256": digest(encode(request.model_dump(mode="json"))),
@@ -222,7 +267,7 @@ def generate_geometric_pv(
         },
         "limits": limits.model_dump(mode="json"),
         "not_assessed": [
-            "occluded_sky_and_ground_diffuse_irradiance",
+            *([] if diffuse else ["occluded_sky_and_ground_diffuse_irradiance"]),
             "cell_substring_bypass_diode_and_string_iv_response",
             "actual_mppt_and_manufacturer_operating_performance",
             "equipment_and_country_release",
@@ -250,7 +295,7 @@ def generate_geometric_pv(
         encode(
             {
                 "schema_version": 1,
-                "kind": MODEL,
+                "kind": request.model,
                 "inputs": details,
                 "solar_geometry": {key: values(value) for key, value in solar.items()},
                 "arrays": [outputs[array.id].witness for array in arrays],
@@ -260,9 +305,7 @@ def generate_geometric_pv(
                 "energy_kwh": profile.total_kwh,
                 "equipment_release": {"status": "not_assessed"},
                 "country_assessment": {"status": "not_assessed"},
-                "near_shading_assessment": {
-                    "status": "direct_only_scenario_not_complete_assessment"
-                },
+                "near_shading_assessment": {"status": SHADING_STATUS[request.model]},
             }
         ),
     )

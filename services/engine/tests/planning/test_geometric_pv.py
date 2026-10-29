@@ -11,18 +11,39 @@ import numpy as np
 import pytest
 
 from linker_engine.planning.canonical import Object, decode_object
+from linker_engine.planning.direct_beam_geometry import (
+    Face,
+    Opaque,
+    Receiver,
+    Scene,
+    polygon,
+)
+from linker_engine.planning.direct_beam_index import DirectBeamIndex
+from linker_engine.planning.direct_beam_inputs import DirectBeamSampling
+from linker_engine.planning.direct_beam_visibility import VisibilityBudget
 from linker_engine.planning.errors import InvalidInput
+from linker_engine.planning.geometric_pv_diffuse import (
+    diffuse_sample_upper_bound,
+    front_component,
+    module_diffuse_visibility,
+)
 from linker_engine.planning.geometric_pv_generation import generate_geometric_pv
 from linker_engine.planning.geometric_pv_inputs import (
     MODEL,
+    MODEL_V2,
+    POLICY_V2,
     GeometricPvInputs,
     GeometricPvLimits,
 )
-from linker_engine.planning.geometric_pv_report import geometric_pv_reference
+from linker_engine.planning.geometric_pv_report import (
+    geometric_pv_reference,
+    geometric_pv_sections,
+)
 from linker_engine.planning.pv_arrays import generation_arrays
 from linker_engine.planning.pv_generation import generate_pv
 from linker_engine.planning.pv_parameters import PvGenerationParameters
 from linker_engine.planning.pv_physics import array_power
+from linker_engine.planning.report_copy import text
 
 from .test_pv_generation import geometry, parameter_document, weather
 
@@ -294,3 +315,270 @@ def test_ray_budget_carries_no_selected_row_policy() -> None:
         limits.max_bounds_checks,
     )
     assert not hasattr(rays, "max_selected_rows")
+
+
+def perez_parameters(source: dict[str, Any] | None = None) -> dict[str, Any]:
+    value = deepcopy(source or parameter_document())
+    value["arrays"][0]["transposition"] = "perez"
+    return value
+
+
+def perez_request(parameters: dict[str, Any]) -> GeometricPvInputs:
+    return GeometricPvInputs.read(
+        {
+            "schema_version": 1,
+            "model": MODEL_V2,
+            "weather_asset_id": "a" * 32,
+            "sampling": {"coarse_cells_per_edge": 1, "fine_cells_per_edge": 2},
+            "diffuse_policy": POLICY_V2,
+            "thermal_policy": "sapm_from_module_mean_poa_v1",
+            "electrical_policy": "uniform_module_pvwatts_independent_mpp_sum_v1",
+            "parameters": parameters,
+        }
+    )
+
+
+def wide_policy() -> GeometricPvLimits:
+    return policy().model_copy(
+        update={
+            "max_samples": 1000,
+            "max_ray_face_checks": 100000,
+            "max_bounds_checks": 100000,
+        }
+    )
+
+
+def one_module(geo: dict[str, Any]) -> dict[str, Any]:
+    geo["module_specs"][0].update(
+        length_m=1, width_m=1, thickness_m=0.04, stc_power_w=1000
+    )
+    geo["arrays"][0].update(rows=1, columns=1, excluded_slots=[], mount_tilt_deg=0)
+    return geo
+
+
+def test_unobstructed_perez_visibility_matches_the_pinned_reference() -> None:
+    geo, par = one_module(geometry()), perez_parameters()
+    meteo = weather(dni=600, dhi=100, ghi=800, temp=25)
+    request = perez_request(par)
+    result = generate_geometric_pv(
+        geo, meteo, request, wide_policy(), max_weather_rows=10
+    )
+    baseline = generate_pv(geo, meteo, request.parameters, max_array_steps=10)
+    assert result.profile.values_kw == baseline.profile.values_kw
+    module = cast(list[Object], result.witness()["modules"])[0]
+    reference = cast(list[Object], baseline.witness()["arrays"])[0]
+    assert module["poa_components_w_m2"] == reference["poa_components_w_m2"]
+    assert module["diffuse_visible_fractions"] == {
+        "isotropic_sky": 1.0,
+        "horizon_ring": 1.0,
+        "ground": 1.0,
+        "circumsolar": "direct_beam_visible_fraction",
+    }
+    details = cast(Object, result.witness()["inputs"])
+    assert details["model"] == MODEL_V2
+    assert "occluded_sky_and_ground_diffuse_irradiance" not in cast(
+        list[str], details["not_assessed"]
+    )
+    assert result.witness()["near_shading_assessment"] == {
+        "status": "perez_component_visibility_not_complete_assessment"
+    }
+
+
+def test_south_wall_halves_isotropic_sky_and_leaves_diffuse_under_direct_shade() -> (
+    None
+):
+    base = Face(
+        (-50.0, -1.0, -5.0),
+        (1.0, 0.0, 0.0),
+        (0.0, 0.0, 1.0),
+        polygon([[0, 0], [100, 0], [100, 60], [0, 60]], []),
+    )
+    wall = Opaque("wall", "wall", base, None, None, (base,))
+    receiver = Receiver(
+        "module",
+        "array",
+        "roof",
+        (0.0, 0.0, 1.0),
+        (1.0, 0.0, 0.0),
+        (0.0, 1.0, 0.0),
+        (0.0, 0.0, 1.0),
+        1.0,
+        1.0,
+    )
+    scene = Scene((receiver,), (wall,), (), 1e-9)
+    budget = VisibilityBudget(wide_policy().visibility_ray_limits())
+    seen = module_diffuse_visibility(
+        scene,
+        receiver,
+        DirectBeamSampling(coarse_cells_per_edge=1, fine_cells_per_edge=2),
+        budget,
+        DirectBeamIndex.from_scene(scene, leaf_size=2),
+    )
+    assert seen.isotropic == 0.5
+    assert seen.ground == 1.0
+    assert seen.horizon == 1.0
+    assert seen.blocked_samples > 0
+
+    geo, par = one_module(geometry()), perez_parameters()
+    geo["arrays"][0]["origin_uv"] = [10, 10]
+    geo["obstacles"] = [
+        {
+            "id": "wall",
+            "name": "South wall",
+            "source_id": "survey",
+            "roof_id": "roof",
+            "footprint_uv": [[0, 8], [20, 8], [20, 9], [0, 9]],
+            "extrusion_axis_enu": [0, 0, 1],
+            "height_m": 8,
+        }
+    ]
+    meteo = weather(dni=600, dhi=200, ghi=700, temp=25)
+    clear = generate_geometric_pv(
+        one_module(geometry()),
+        meteo,
+        perez_request(par),
+        wide_policy(),
+        max_weather_rows=10,
+    )
+    shaded = generate_geometric_pv(
+        geo, meteo, perez_request(par), wide_policy(), max_weather_rows=10
+    )
+    module = cast(list[Object], shaded.witness()["modules"])[0]
+    clear_module = cast(list[Object], clear.witness()["modules"])[0]
+    assert module["geometric_visible_fraction"] == [0]
+    shaded_sky = cast(Object, module["poa_components_w_m2"])["poa_sky_diffuse"]
+    clear_sky = cast(Object, clear_module["poa_components_w_m2"])["poa_sky_diffuse"]
+    assert cast(list[float], shaded_sky)[0] > 0
+    assert cast(list[float], shaded_sky)[0] < cast(list[float], clear_sky)[0]
+    assert cast(Object, module["poa_components_w_m2"])["poa_direct"] == [0]
+
+
+def test_downward_back_facing_rays_are_not_ground_light() -> None:
+    assert front_component((0.0, 0.0, -1.0), (0.0, 0.0, 1.0)) is None
+    assert front_component((0.0, -0.2, -0.8), (0.0, 0.0, 1.0)) is None
+    assert front_component((0.0, -0.6, -0.8), (0.0, -1.0, 0.0)) == "ground"
+    receiver = Receiver(
+        "module",
+        "array",
+        "roof",
+        (0.0, 0.0, 1.0),
+        (1.0, 0.0, 0.0),
+        (0.0, 1.0, 0.0),
+        (0.0, 0.0, 1.0),
+        1.0,
+        1.0,
+    )
+    scene = Scene((receiver,), (), (), 1e-9)
+    seen = module_diffuse_visibility(
+        scene,
+        receiver,
+        DirectBeamSampling(coarse_cells_per_edge=1, fine_cells_per_edge=2),
+        VisibilityBudget(wide_policy().visibility_ray_limits()),
+        DirectBeamIndex.from_scene(scene, leaf_size=2),
+    )
+    assert seen.accepted_directions["ground"] == 0
+    assert seen.ground == 1.0
+    assert seen.blocked_samples == 0
+
+
+def test_perez_visibility_rejects_work_beyond_the_declared_sample_budget() -> None:
+    geo, par = one_module(geometry()), perez_parameters()
+    meteo = weather(dni=600, dhi=100, ghi=800, temp=25)
+    request = perez_request(par)
+    bound = 1 * (1 + 4) + diffuse_sample_upper_bound(1, 2)
+    with pytest.raises(InvalidInput, match="sampling"):
+        generate_geometric_pv(
+            geo,
+            meteo,
+            request,
+            wide_policy().model_copy(update={"max_samples": bound - 1}),
+            max_weather_rows=10,
+        )
+
+
+def test_retained_direct_only_request_does_not_gain_perez_visibility_fields() -> None:
+    geo, par = one_module(geometry()), parameter_document()
+    result = generate_geometric_pv(
+        geo,
+        weather(dni=600, dhi=100, ghi=800, temp=25),
+        scenario(par),
+        policy(),
+        max_weather_rows=10,
+    )
+    module = cast(list[Object], result.witness()["modules"])[0]
+    assert "diffuse_visible_fractions" not in module
+    assert cast(Object, result.witness()["inputs"])["model"] == MODEL
+    with pytest.raises(InvalidInput, match="invalid scenario fields") as paired:
+        GeometricPvInputs.read(
+            {
+                **scenario(par).model_dump(mode="json"),
+                "model": MODEL_V2,
+            }
+        )
+    assert paired.value.__cause__ is not None
+    assert "declared pair" in str(paired.value.__cause__)
+    with pytest.raises(InvalidInput, match="invalid scenario fields") as transposed:
+        GeometricPvInputs.read(
+            {
+                **scenario(parameter_document()).model_dump(mode="json"),
+                "model": MODEL_V2,
+                "diffuse_policy": POLICY_V2,
+            }
+        )
+    assert transposed.value.__cause__ is not None
+    assert "Perez transposition" in str(transposed.value.__cause__)
+
+
+def test_report_wording_follows_the_recorded_diffuse_policy() -> None:
+    common = {
+        "parameters": {"parameters": {"pvlib_version": "0.16.1"}},
+        "profile_summary": {
+            "start_utc": "2020-01-01T00:00:00+00:00",
+            "end_utc": "2020-01-01T01:00:00+00:00",
+            "interval_count": 1,
+            "energy_kwh": 1,
+        },
+        "weather_metadata": {
+            "weather_request": {
+                "start_year": 2005,
+                "end_year": 2020,
+                "expected_radiation_database": "PVGIS-SARAH3",
+                "expected_meteo_database": "ERA5",
+            },
+            "weather_interpretation": {"synthetic_energy_year": 2023},
+        },
+        "dependencies": {},
+        "used_by": [],
+    }
+    retained = geometric_pv_sections(
+        [
+            {
+                **common,
+                "model": MODEL,
+                "model_facts": {
+                    "sampling": {"coarse_cells_per_edge": 1, "fine_cells_per_edge": 2},
+                    "diffuse_policy": "retain_unobstructed_sky_and_ground_components_v1",
+                },
+            }
+        ],
+        "en",
+    )[0]
+    current = geometric_pv_sections(
+        [
+            {
+                **common,
+                "model": MODEL_V2,
+                "model_facts": {
+                    "sampling": {"coarse_cells_per_edge": 1, "fine_cells_per_edge": 2},
+                    "diffuse_policy": POLICY_V2,
+                },
+            }
+        ],
+        "de",
+    )[0]
+    assert text("geometric_pv_scope", "en") in retained.paragraphs
+    assert text("geometric_pv_scope_perez", "en") not in retained.paragraphs
+    assert current.title == text("geometric_pv_title_perez", "de")
+    assert text("geometric_pv_scope_perez", "de") in current.paragraphs
+    assert "Direktstrahlung" in current.paragraphs[0]
+    assert "vollständige Verschattungsgenauigkeit" in current.paragraphs[0]

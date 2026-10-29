@@ -8,7 +8,9 @@ import {
 } from "../domain/pvgisReference.ts";
 import {
 	GEOMETRIC_PV_MODEL,
+	GEOMETRIC_PV_MODEL_V1,
 	GEOMETRIC_PV_PURPOSE,
+	GEOMETRIC_PV_RESULTS,
 	GEOMETRIC_PV_TASK,
 } from "../domain/geometricPv.ts";
 
@@ -162,9 +164,19 @@ export function readPreparationResult(
 		const summary = readObject(result.profile_summary),
 			scope = readObject(result.scope),
 			weather = readObject(metadata.weather);
+		const recorded = GEOMETRIC_PV_RESULTS.find(
+			(item) =>
+				result.model === item.model &&
+				summary.model_role === item.role &&
+				scope.diffuse_policy === item.diffuse &&
+				readObject(result.near_shading_assessment).status === item.shading &&
+				(models.generation === item.model ||
+					models.generation === GEOMETRIC_PV_MODEL_V1 ||
+					models.generation === GEOMETRIC_PV_MODEL),
+		);
 		require(
-			result.model === GEOMETRIC_PV_MODEL &&
-				models.generation === GEOMETRIC_PV_MODEL &&
+			recorded !== undefined &&
+				result.model === recorded.model &&
 				asset.purpose === GEOMETRIC_PV_PURPOSE &&
 				metadata.profile_type === asset.purpose &&
 				metadata.derived_from_revision === run.revision &&
@@ -179,8 +191,7 @@ export function readPreparationResult(
 				sameJson(summary, metadata.interpretation) &&
 				summary.measurement === "pv_available_ac" &&
 				summary.origin === "modelled" &&
-				summary.model_role ===
-					"direct_only_geometry_uniform_module_reference_scenario" &&
+				summary.model_role === recorded.role &&
 				summary.reconstructed_means === true &&
 				finite(summary.energy_kwh) &&
 				summary.energy_kwh >= 0 &&
@@ -194,13 +205,9 @@ export function readPreparationResult(
 				Number.isFinite(Date.parse(summary.start_utc)) &&
 				typeof summary.end_utc === "string" &&
 				Date.parse(summary.end_utc) > Date.parse(summary.start_utc) &&
-				scope.diffuse_policy ===
-					"retain_unobstructed_sky_and_ground_components_v1" &&
 				scope.thermal_policy === "sapm_from_module_mean_poa_v1" &&
 				scope.electrical_policy ===
-					"uniform_module_pvwatts_independent_mpp_sum_v1" &&
-				readObject(result.near_shading_assessment).status ===
-					"direct_only_scenario_not_complete_assessment",
+					"uniform_module_pvwatts_independent_mpp_sum_v1",
 		);
 		for (const role of ["equipment_release", "country_assessment"])
 			require(readObject(result[role]).status === "not_assessed");

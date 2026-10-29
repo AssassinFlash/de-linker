@@ -12,7 +12,9 @@ from .geometric_pv_generation import generate_geometric_pv
 from .geometric_pv_inputs import (
     KIND,
     MODEL,
+    MODEL_ROLES,
     PROFILE_PURPOSE,
+    SHADING_STATUS,
     GeometricPvInputs,
     GeometricPvLimits,
 )
@@ -59,6 +61,8 @@ class GeometricPvKernel:
     kind = KIND
     models = {
         "task": KIND,
+        # Retained identity. New requests name MODEL_V2 on the result; changing
+        # this map would rewrite frozen v1 manifests.
         "generation": MODEL,
         "geometry": "declared_opaque_ray_midpoint_uvn_v1",
         "weather": "pvgis_5_3_tmy_explicit_two_axes_v1",
@@ -208,7 +212,7 @@ class GeometricPvKernel:
             "origin": "modelled",
             "native_max_interval_seconds": weather.source.native_max_interval_seconds,
             "reconstructed_means": True,
-            "model_role": "direct_only_geometry_uniform_module_reference_scenario",
+            "model_role": MODEL_ROLES[request.model],
         }
         metadata: Object = {
             **source.metadata(),
@@ -231,7 +235,13 @@ class GeometricPvKernel:
         publication = AssetPublication.prepare(
             self.workspace.blobs,
             project,
-            encode({"schema_version": 1, "kind": MODEL, "dependencies": dependencies}),
+            encode(
+                {
+                    "schema_version": 1,
+                    "kind": request.model,
+                    "dependencies": dependencies,
+                }
+            ),
             "application/json",
             PROFILE_PURPOSE,
             metadata,
@@ -241,7 +251,7 @@ class GeometricPvKernel:
             {
                 "schema": 1,
                 "kind": KIND,
-                "model": MODEL,
+                "model": request.model,
                 "project_id": project,
                 "revision": revision,
                 "input_sha256": manifest["input_sha256"],
@@ -257,9 +267,7 @@ class GeometricPvKernel:
                 },
                 "equipment_release": {"status": "not_assessed"},
                 "country_assessment": {"status": "not_assessed"},
-                "near_shading_assessment": {
-                    "status": "direct_only_scenario_not_complete_assessment"
-                },
+                "near_shading_assessment": {"status": SHADING_STATUS[request.model]},
             },
             publication,
         )

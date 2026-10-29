@@ -1,4 +1,4 @@
-"""Readable frozen direct-only PV scenario, without numerical reproduction."""
+"""Readable frozen geometric PV scenario, without numerical reproduction."""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ from linker_engine.models import ReportRow, ReportSection
 
 from .canonical import Json, Object
 from .frozen_documents import FrozenDocuments
+from .geometric_pv_inputs import POLICY_V2
 from .geometric_pv_profile import prepared_profile, reference_bundle
 from .pv_profile_artifacts import _object
 from .report_copy import text
@@ -159,6 +160,15 @@ def _coefficient_rows(reference: Object, locale: str) -> list[ReportRow]:
     )
 
 
+def _recorded_copy(facts: Object, retained: str, current: str) -> str:
+    """Use the Perez wording only when that policy was actually recorded.
+
+    A witness or report source saved before the field existed keeps the
+    direct-only paragraph. The current policy is not filled in for it.
+    """
+    return current if facts.get("diffuse_policy") == POLICY_V2 else retained
+
+
 def geometric_pv_sections(references: list[Json], locale: str) -> list[ReportSection]:
     result = []
     for index, raw in enumerate(references):
@@ -221,12 +231,31 @@ def geometric_pv_sections(references: list[Json], locale: str) -> list[ReportSec
         result.append(
             ReportSection(
                 id=f"geometric-pv-reference-{index}",
-                title=text("geometric_pv_title", locale),
+                title=text(
+                    _recorded_copy(
+                        facts, "geometric_pv_title", "geometric_pv_title_perez"
+                    ),
+                    locale,
+                ),
                 paragraphs=[
-                    text("geometric_pv_scope", locale),
+                    text(
+                        _recorded_copy(
+                            facts, "geometric_pv_scope", "geometric_pv_scope_perez"
+                        ),
+                        locale,
+                    ),
                     text("geometric_pv_axes", locale),
                     *(
-                        [text("geometric_pv_notes_scope", locale)]
+                        [
+                            text(
+                                _recorded_copy(
+                                    facts,
+                                    "geometric_pv_notes_scope",
+                                    "geometric_pv_notes_scope_perez",
+                                ),
+                                locale,
+                            )
+                        ]
                         if "arrays" in reference
                         else []
                     ),

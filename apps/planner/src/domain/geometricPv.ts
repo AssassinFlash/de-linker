@@ -11,16 +11,49 @@ import { invalidateEnergyReplay } from "./energyScenario.ts";
 
 export const GEOMETRIC_PV_TASK = "prepare_geometric_pv_reference_v1";
 export const GEOMETRIC_PV_PURPOSE = "geometric_pv_reference_profile_v1";
-export const GEOMETRIC_PV_MODEL = "opaque_direct_uniform_pvlib_reference_v1";
+export const GEOMETRIC_PV_MODEL_V1 = "opaque_direct_uniform_pvlib_reference_v1";
+export const GEOMETRIC_PV_DIFFUSE_V1 =
+	"retain_unobstructed_sky_and_ground_components_v1";
+export const GEOMETRIC_PV_MODEL =
+	"opaque_perez_component_visibility_pvlib_reference_v1";
+export const GEOMETRIC_PV_DIFFUSE =
+	"cosine_weighted_perez_component_visibility_v1";
+export const GEOMETRIC_PV_ROLE_V1 =
+	"direct_only_geometry_uniform_module_reference_scenario";
+export const GEOMETRIC_PV_ROLE =
+	"perez_component_visibility_uniform_module_reference_scenario";
+export const GEOMETRIC_PV_SHADING_V1 =
+	"direct_only_scenario_not_complete_assessment";
+export const GEOMETRIC_PV_SHADING =
+	"perez_component_visibility_not_complete_assessment";
+export const GEOMETRIC_PV_RESULTS = [
+	{
+		model: GEOMETRIC_PV_MODEL_V1,
+		role: GEOMETRIC_PV_ROLE_V1,
+		diffuse: GEOMETRIC_PV_DIFFUSE_V1,
+		shading: GEOMETRIC_PV_SHADING_V1,
+	},
+	{
+		model: GEOMETRIC_PV_MODEL,
+		role: GEOMETRIC_PV_ROLE,
+		diffuse: GEOMETRIC_PV_DIFFUSE,
+		shading: GEOMETRIC_PV_SHADING,
+	},
+] as const;
+const GEOMETRIC_PV_PAIRS: Record<string, string> = {
+	[GEOMETRIC_PV_MODEL_V1]: GEOMETRIC_PV_DIFFUSE_V1,
+	[GEOMETRIC_PV_MODEL]: GEOMETRIC_PV_DIFFUSE,
+};
 export interface GeometricPvDraft extends JsonObject {
 	readonly schema_version: 1;
-	readonly model: typeof GEOMETRIC_PV_MODEL;
+	readonly model: typeof GEOMETRIC_PV_MODEL | typeof GEOMETRIC_PV_MODEL_V1;
 	readonly weather_asset_id: string | null;
 	readonly sampling: {
 		readonly coarse_cells_per_edge: number | null;
 		readonly fine_cells_per_edge: number | null;
 	};
-	readonly diffuse_policy: "retain_unobstructed_sky_and_ground_components_v1";
+	readonly diffuse_policy:
+		typeof GEOMETRIC_PV_DIFFUSE | typeof GEOMETRIC_PV_DIFFUSE_V1;
 	readonly thermal_policy: "sapm_from_module_mean_poa_v1";
 	readonly electrical_policy: "uniform_module_pvwatts_independent_mpp_sum_v1";
 	readonly parameters: PvDraft;
@@ -43,11 +76,18 @@ export function emptyGeometricPv(
 		model: GEOMETRIC_PV_MODEL,
 		weather_asset_id: null,
 		sampling: { coarse_cells_per_edge: null, fine_cells_per_edge: null },
-		diffuse_policy: "retain_unobstructed_sky_and_ground_components_v1",
+		diffuse_policy: GEOMETRIC_PV_DIFFUSE,
 		thermal_policy: "sapm_from_module_mean_poa_v1",
 		electrical_policy: "uniform_module_pvwatts_independent_mpp_sum_v1",
 		parameters,
 	};
+}
+/** Hemisphere plus horizon-ring directions, then the fine panel grid. */
+export function geometricDiffuseSampleUpperBound(
+	modules: number,
+	fine: number,
+): number {
+	return modules * fine * fine * (4 * fine * fine + 4 * fine);
 }
 export function geometricPvDraft(inputs: JsonObject): GeometricPvDraft {
 	if (inputs.geometric_pv_preparation === undefined)
@@ -57,15 +97,10 @@ export function geometricPvDraft(inputs: JsonObject): GeometricPvDraft {
 		constants = emptyGeometricPv();
 	if (
 		Object.keys(row).sort().join() !== Object.keys(constants).sort().join() ||
-		(
-			[
-				"schema_version",
-				"model",
-				"diffuse_policy",
-				"thermal_policy",
-				"electrical_policy",
-			] as const
-		).some((key) => row[key] !== constants[key]) ||
+		GEOMETRIC_PV_PAIRS[String(row.model)] !== row.diffuse_policy ||
+		row.schema_version !== constants.schema_version ||
+		row.thermal_policy !== constants.thermal_policy ||
+		row.electrical_policy !== constants.electrical_policy ||
 		(row.weather_asset_id !== null &&
 			(typeof row.weather_asset_id !== "string" ||
 				!/^[a-f0-9]{32}$/.test(row.weather_asset_id))) ||
@@ -88,7 +123,10 @@ export function compileGeometricPv(
 		!Number.isSafeInteger(value.sampling.coarse_cells_per_edge) ||
 		!Number.isSafeInteger(value.sampling.fine_cells_per_edge) ||
 		Number(value.sampling.fine_cells_per_edge) <=
-			Number(value.sampling.coarse_cells_per_edge)
+			Number(value.sampling.coarse_cells_per_edge) ||
+		GEOMETRIC_PV_PAIRS[value.model] !== value.diffuse_policy ||
+		(value.model === GEOMETRIC_PV_MODEL &&
+			value.parameters.arrays.some((array) => array.transposition !== "perez"))
 	)
 		throw new ApiError(422, "geometric_pv_inputs_invalid");
 	compilePv(value.parameters, geometry);

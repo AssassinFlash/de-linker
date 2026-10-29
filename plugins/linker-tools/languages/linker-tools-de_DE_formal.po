@@ -12735,8 +12735,8 @@ msgstr "PV-Referenz mit Dachverschattung"
 
 #: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx
 #: build/planner/assets/planner.js:1
-msgid "Estimate available AC generation across the complete retained weather year using the declared roof, obstacle volumes and included modules. Geometric shading reduces direct sunlight at each module; sky and ground diffuse light remain unobstructed reference components."
-msgstr "Berechnen Sie die verfügbare AC-Erzeugung für das vollständige gespeicherte Wetterjahr anhand des angegebenen Dachs, der Hindernisvolumen und der berücksichtigten Module. Die geometrische Verschattung verringert die Direktstrahlung auf jedem Modul. Die diffuse Himmels- und Bodenstrahlung bleibt als unverschatteter Referenzanteil erhalten."
+msgid "Estimate available AC generation across the complete retained weather year using the declared roof, obstacle volumes and included modules. With the Perez transposition, geometric shading reduces direct sunlight and the isotropic, circumsolar, horizon and ground components at each module. It does not establish complete shading accuracy."
+msgstr "Berechnen Sie die verfügbare AC-Erzeugung für das vollständige gespeicherte Wetterjahr anhand des angegebenen Dachs, der Hindernisvolumen und der berücksichtigten Module. Bei der Perez-Transposition verringert die geometrische Verschattung auf jedem Modul die Direktstrahlung sowie die isotropen, zirkumsolaren, horizontnahen und vom Boden reflektierten Anteile. Sie belegt keine vollständige Verschattungsgenauigkeit."
 
 #: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx
 #: build/planner/assets/planner.js:1
