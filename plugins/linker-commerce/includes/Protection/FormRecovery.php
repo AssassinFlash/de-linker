@@ -23,8 +23,11 @@ final class FormRecovery {
 		if ( 'enforce' === Configuration::active_mode() && Campaign::recovery_matches( $post ) ) {
 			return;
 		}
-		$fields = array();
-		foreach ( array( 'name', 'email', 'company', 'message', 'intent', 'consent', 'linker_request_id', 'linker_individual_review', \Linker\Commerce\Contact\SelectionContext::FIELD, \Linker\Commerce\Contact\SelectionContext::INCLUDE_FIELD ) as $key ) {
+		$fields  = array();
+		$allowed = 'password_reset' === $action
+			? array( 'user_login' )
+			: array( 'name', 'email', 'company', 'message', 'intent', 'consent', 'linker_request_id', 'linker_individual_review', \Linker\Commerce\Contact\SelectionContext::FIELD, \Linker\Commerce\Contact\SelectionContext::INCLUDE_FIELD );
+		foreach ( $allowed as $key ) {
 			$value = isset( $post[ $key ] ) && is_string( $post[ $key ] ) ? $post[ $key ] : '';
 			if ( \Linker\Commerce\Contact\SelectionContext::FIELD === $key && '' !== $value ) {
 				$context = \Linker\Commerce\Contact\SelectionContext::normalize( json_decode( $value, true ) );
@@ -40,7 +43,8 @@ final class FormRecovery {
 					continue;
 				}
 			}
-			$fields[ $key ] = mb_substr( sanitize_textarea_field( $value ), 0, 5000 );
+			$sanitized      = 'user_login' === $key ? sanitize_text_field( $value ) : sanitize_textarea_field( $value );
+			$fields[ $key ] = mb_substr( $sanitized, 0, 5000 );
 		}
 		wc_load_cart();
 		// Five-minute retry lifetime follows the shared proof window (#519).
