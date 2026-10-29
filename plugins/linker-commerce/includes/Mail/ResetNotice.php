@@ -47,6 +47,30 @@ final class ResetNotice {
 	private static array $core = array();
 
 	/**
+	 * Keep the submitted login in memory for this request. Persist it only when
+	 * Woo's native validation has already failed; a later mail failure persists
+	 * the same value in woocommerce_result().
+	 *
+	 * @param WP_Error      $errors Native validation errors.
+	 * @param WP_User|false $user Resolved native account, or false.
+	 */
+	public static function capture_submission( WP_Error $errors, WP_User|false $user ): void {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Woo checks its form nonce before retrieve_password() fires this hook; this only retains the editable login.
+		if ( ! isset( $_POST['wc_reset_password'], $_POST['user_login'] ) || ! is_string( $_POST['user_login'] ) ) {
+			return;
+		}
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.NonceVerification.Missing -- Unslashed and sanitized below; never used for authorization.
+		$login             = (string) wp_unslash( $_POST['user_login'] );
+		self::$retry_login = sanitize_text_field( $login );
+		if ( $errors->has_errors() || ! $user instanceof WP_User ) {
+			self::remember( self::$retry_login );
+			return;
+		}
+		// A fresh successful attempt must not leave an earlier retry behind.
+		\Linker\Commerce\Protection\FormRecovery::consume( 'password_reset' );
+	}
+
+	/**
 	 * Native key generation has finished; its database mutation has not started.
 	 *
 	 * @param string $login Actual native resolved login.
@@ -136,7 +160,7 @@ final class ResetNotice {
 
 	/** Native Woo's existing form markup has no value argument for this one input. */
 	public static function render_begin(): void {
-		$fields = \Linker\Commerce\Protection\FormRecovery::consume( 'password_reset' );
+		$fields = \Linker\Commerce\Protection\FormRecovery::consume( 'password_reset', '' !== self::$retry_login );
 		$login  = '' !== self::$retry_login ? self::$retry_login : ( $fields['user_login'] ?? '' );
 		if ( '' === $login ) {
 			return;

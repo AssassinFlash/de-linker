@@ -13,10 +13,6 @@
 
 defined( 'ABSPATH' ) || exit;
 
-ob_start();
-// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- Native hook documented in Woo's form-lost-password.php.
-do_action( 'woocommerce_before_lost_password_form' );
-$auth_notices = (string) ob_get_clean();
 ?>
 <div class="linker-auth linker-auth--solo">
 	<div class="linker-auth-inner linker-auth-inner--solo">
@@ -26,7 +22,12 @@ $auth_notices = (string) ob_get_clean();
 				<p><?php echo apply_filters( 'woocommerce_lost_password_message', esc_html__( 'Lost your password? Please enter your username or email address. You will receive a link to create a new password via email.', 'woocommerce' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped,WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment,WordPress.WP.I18n.TextDomainMismatch -- Woo's own filtered message, its text domain and its filter, escaped by its default. ?></p>
 			</header>
 
-			<?php echo $auth_notices; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Woo's own notice markup, kept intact and local to the reset form. ?>
+			<?php
+			// The before hook may open a buffer to restore a retry's input; the
+			// matching after hook closes it after the form has rendered.
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- Native hook documented in Woo's form-lost-password.php.
+			do_action( 'woocommerce_before_lost_password_form' );
+			?>
 			<form method="post" class="woocommerce-ResetPassword lost_reset_password">
 
 				<p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
@@ -50,7 +51,16 @@ $auth_notices = (string) ob_get_clean();
 
 			</form>
 
-			<p class="linker-auth-links"><a href="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>"><?php esc_html_e( 'Back to sign in', 'linker-commerce' ); ?></a><?php echo \Linker\Commerce\Presentation\AccountLinks::create(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped data in the LC registration fragment. ?></p>
+			<p class="linker-auth-links">
+				<a href="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>">
+					<?php if ( is_user_logged_in() ) : ?>
+						<?php esc_html_e( 'My account', 'linker-commerce' ); ?>
+					<?php else : ?>
+						<?php esc_html_e( 'Back to sign in', 'linker-commerce' ); ?>
+					<?php endif; ?>
+				</a>
+				<?php echo \Linker\Commerce\Presentation\AccountLinks::create(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped data in the LC registration fragment. ?>
+			</p>
 		</section>
 	</div>
 </div>

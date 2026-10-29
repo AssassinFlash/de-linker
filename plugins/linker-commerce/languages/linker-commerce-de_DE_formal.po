@@ -3031,15 +3031,23 @@ msgstr "Produkte anzeigen"
 msgid "Set"
 msgstr "Übernehmen"
 
-#: includes/Presentation/ProductShortcodes.php:438
+#: includes/Presentation/ProductShortcodes.php:447
 msgid "No products are listed here."
 msgstr "Hier sind keine Produkte aufgeführt."
 
-#: includes/Presentation/ProductShortcodes.php:440
-msgid "No product matches these filters. Clear one to see more."
+#: includes/Presentation/ProductShortcodes.php:441
+msgid "No products match your search and selected filters. Try another search term or change a filter."
 msgstr ""
-"Kein Produkt passt zu dieser Filterauswahl. Setzen Sie einen Filter zurück, "
-"um mehr zu sehen."
+"Für Ihre Suche und die ausgewählten Filter wurden keine Produkte gefunden. "
+"Versuchen Sie einen anderen Suchbegriff oder ändern Sie einen Filter."
+
+#: includes/Presentation/ProductShortcodes.php:443
+msgid "No products match your search. Try another search term."
+msgstr "Für Ihre Suche wurden keine Produkte gefunden. Versuchen Sie einen anderen Suchbegriff."
+
+#: includes/Presentation/ProductShortcodes.php:445
+msgid "No products match the selected filters. Try changing or clearing a filter."
+msgstr "Für die ausgewählten Filter wurden keine Produkte gefunden. Ändern oder entfernen Sie einen Filter."
 
 #: includes/Presentation/ProductShortcodes.php:459
 msgid "Product actions"

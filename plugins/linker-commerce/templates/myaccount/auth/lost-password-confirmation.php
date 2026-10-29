@@ -26,7 +26,16 @@ do_action( 'woocommerce_before_lost_password_confirmation_message' );
 			<?php /* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native message. */ ?>
 			<?php wc_print_notice( esc_html__( 'Password reset email has been sent.', 'woocommerce' ) ); ?>
 
-			<p class="linker-auth-links"><a href="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>"><?php esc_html_e( 'Back to sign in', 'linker-commerce' ); ?></a><?php echo \Linker\Commerce\Presentation\AccountLinks::create(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped data in the LC registration fragment. ?></p>
+			<p class="linker-auth-links">
+				<a href="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>">
+					<?php if ( is_user_logged_in() ) : ?>
+						<?php esc_html_e( 'My account', 'linker-commerce' ); ?>
+					<?php else : ?>
+						<?php esc_html_e( 'Back to sign in', 'linker-commerce' ); ?>
+					<?php endif; ?>
+				</a>
+				<?php echo \Linker\Commerce\Presentation\AccountLinks::create(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped data in the LC registration fragment. ?>
+			</p>
 		</section>
 	</div>
 </div>

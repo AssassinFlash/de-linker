@@ -29,10 +29,26 @@ final class EmptyProductsTest extends TestCase {
 	 */
 	public function provide_empty_states(): array {
 		return array(
-			'nonempty'        => array( true, array(), '' ),
-			'empty section'   => array( false, array(), 'No products are listed here.' ),
-			'no search match' => array( false, array( 'q' => 'linker-owned-no-match' ), 'No product matches these filters. Clear one to see more.' ),
-			'no filter match' => array( false, array( 'phase' => 'three-phase' ), 'No product matches these filters. Clear one to see more.' ),
+			'nonempty'             => array(
+				true,
+				array(
+					'q'     => 'ESA',
+					'brand' => 'goodwe',
+				),
+				'',
+			),
+			'empty section'        => array( false, array(), 'No products are listed here.' ),
+			'sort is not a filter' => array( false, array( 'sort' => 'name' ), 'No products are listed here.' ),
+			'no search match'      => array( false, array( 'q' => 'linker-owned-no-match' ), 'No products match your search. Try another search term.' ),
+			'no filter match'      => array( false, array( 'phase' => 'three-phase' ), 'No products match the selected filters. Try changing or clearing a filter.' ),
+			'no combined match'    => array(
+				false,
+				array(
+					'q'     => 'ESA',
+					'phase' => 'three-phase',
+				),
+				'No products match your search and selected filters. Try another search term or change a filter.',
+			),
 		);
 	}
 

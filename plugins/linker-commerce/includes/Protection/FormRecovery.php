@@ -23,8 +23,11 @@ final class FormRecovery {
 		if ( 'enforce' === Configuration::active_mode() && Campaign::recovery_matches( $post ) ) {
 			return;
 		}
-		$fields = array();
-		foreach ( array( 'name', 'email', 'company', 'message', 'intent', 'consent', 'linker_request_id', 'linker_individual_review', \Linker\Commerce\Contact\SelectionContext::FIELD, \Linker\Commerce\Contact\SelectionContext::INCLUDE_FIELD ) as $key ) {
+		$fields  = array();
+		$allowed = 'password_reset' === $action
+			? array( 'user_login' )
+			: array( 'name', 'email', 'company', 'message', 'intent', 'consent', 'linker_request_id', 'linker_individual_review', \Linker\Commerce\Contact\SelectionContext::FIELD, \Linker\Commerce\Contact\SelectionContext::INCLUDE_FIELD );
+		foreach ( $allowed as $key ) {
 			$value = isset( $post[ $key ] ) && is_string( $post[ $key ] ) ? $post[ $key ] : '';
 			if ( \Linker\Commerce\Contact\SelectionContext::FIELD === $key && '' !== $value ) {
 				$context = \Linker\Commerce\Contact\SelectionContext::normalize( json_decode( $value, true ) );
@@ -40,10 +43,12 @@ final class FormRecovery {
 					continue;
 				}
 			}
-			$fields[ $key ] = mb_substr( sanitize_textarea_field( $value ), 0, 5000 );
+			$sanitized      = 'user_login' === $key ? sanitize_text_field( $value ) : sanitize_textarea_field( $value );
+			$fields[ $key ] = mb_substr( $sanitized, 0, 5000 );
 		}
 		wc_load_cart();
-		// Five-minute retry lifetime follows the shared proof window (#519).
+		// The shared proof window bounds how long the retry may be read. An
+		// unconsumed session value remains until Woo cleans up its session.
 		WC()->session->set(
 			'linker_form_recovery_' . $action,
 			array(
@@ -60,9 +65,10 @@ final class FormRecovery {
 	 * Read once from the current Woo session, never from URL query text.
 	 *
 	 * @param string $action Native form name.
+	 * @param bool   $allow_current_session The caller just saved into this request's Woo session.
 	 * @return array<string,string>
 	 */
-	public static function consume( string $action ): array {
+	public static function consume( string $action, bool $allow_current_session = false ): array {
 		// A fresh page needs no Woo session access. A failed POST explicitly
 		// sets Woo's signed session cookie before redirecting back to this form.
 		$has_session = false;
@@ -71,7 +77,7 @@ final class FormRecovery {
 				$has_session = true;
 				break; }
 		}
-		if ( ! $has_session ) {
+		if ( ! $has_session && ( ! $allow_current_session || null === WC()->session ) ) {
 			return array(); }
 		$value = WC()->session->get( 'linker_form_recovery_' . $action );
 		WC()->session->set( 'linker_form_recovery_' . $action, null );

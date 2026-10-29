@@ -477,6 +477,70 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		$this->assertFalse( \WC_Shortcode_My_Account::retrieve_password(), 'Repeated UUID cannot generate another reset key/email.' );
 	}
 
+	/** Real Woo session and render hooks restore only the failed reset login. */
+	public function test_password_reset_recovery_renders_only_the_saved_login_inside_the_card(): void {
+		$session_key = 'linker_form_recovery_password_reset';
+		$previous    = WC()->session->get( $session_key );
+		$this->later( static fn () => WC()->session->set( $session_key, $previous ) );
+		$post = $_POST;
+		$this->later(
+			static function () use ( $post ): void {
+				$_POST = $post;
+			}
+		);
+		$_COOKIE['wp_woocommerce_session_recovery_fixture'] = 'native-presence';
+		// An earlier failed attempt cannot follow a new non-failing submission.
+		\Linker\Commerce\Protection\FormRecovery::save(
+			'password_reset',
+			array( 'user_login' => 'previous@example.test' )
+		);
+		$_POST = array(
+			'wc_reset_password' => 'true',
+			'user_login'        => '<b>installer@example.test</b>',
+			'password_1'        => 'never-store-password',
+			'reset_key'         => 'never-store-key',
+			'linker_proof'      => 'never-store-proof',
+		);
+		$this->assertNotFalse( has_action( 'lostpassword_post', array( \Linker\Commerce\Mail\ResetNotice::class, 'capture_submission' ) ) );
+		\Linker\Commerce\Mail\ResetNotice::capture_submission( new WP_Error(), new \WP_User() );
+		$this->assertNull( WC()->session->get( $session_key ), 'A non-failing attempt neither saves the new login nor leaves the earlier retry.' );
+
+		// A first-time visitor's newly set cookie is not in this request yet.
+		unset( $_COOKIE['wp_woocommerce_session_recovery_fixture'] );
+		\Linker\Commerce\Mail\ResetNotice::capture_submission( new WP_Error( 'fixture', 'Synthetic failure' ), new \WP_User() );
+		$saved = WC()->session->get( $session_key, array() );
+		$this->assertIsArray( $saved );
+		$this->assertSame( array( 'user_login' => 'installer@example.test' ), $saved['fields'] );
+
+		$notice = static function (): void {
+			echo '<div class="woocommerce-error">Synthetic retry notice</div>';
+		};
+		add_action( 'woocommerce_before_lost_password_form', $notice ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Fixture output at Woo's native hook.
+		$this->later(
+			static function () use ( $notice ): void {
+				remove_action( 'woocommerce_before_lost_password_form', $notice );
+			}
+		);
+		$this->assertNotFalse( has_action( 'woocommerce_before_lost_password_form', array( \Linker\Commerce\Mail\ResetNotice::class, 'render_begin' ) ) );
+		$this->assertNotFalse( has_action( 'woocommerce_after_lost_password_form', array( \Linker\Commerce\Mail\ResetNotice::class, 'render_end' ) ) );
+		ob_start();
+		require dirname( __DIR__, 3 ) . '/templates/myaccount/auth/form-lost-password.php';
+		$html = (string) ob_get_clean();
+
+		$this->assertMatchesRegularExpression( '/<section class="linker-auth-card"[^>]*>.*Synthetic retry notice.*name="user_login"/s', $html );
+		$processor = new \WP_HTML_Tag_Processor( $html );
+		$found     = false;
+		while ( $processor->next_tag( array( 'tag_name' => 'INPUT' ) ) ) {
+			if ( 'user_login' === $processor->get_attribute( 'name' ) ) {
+				$this->assertSame( 'installer@example.test', $processor->get_attribute( 'value' ) );
+				$found = true;
+				break;
+			}
+		}
+		$this->assertTrue( $found );
+		$this->assertNull( WC()->session->get( $session_key ), 'The session value is consumed once.' );
+	}
+
 	/**
 	 * Woo's real four-argument filter must use email, never its password argument.
 	 */
