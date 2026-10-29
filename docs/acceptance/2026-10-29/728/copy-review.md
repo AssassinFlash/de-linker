@@ -46,8 +46,6 @@ error is proven.
 - Real WordPress reviewed-pair write and exact readback.
 - Second plan reports both pages unchanged.
 - Before/after screenshots:
-  - `/Users/chesterjohn/de-linker-local/review/industry-standards-728/en-1440-before.png`
-  - `/Users/chesterjohn/de-linker-local/review/industry-standards-728/en-1440-after.png`
-  - `/Users/chesterjohn/de-linker-local/review/industry-standards-728/de-390-before.png`
-  - `/Users/chesterjohn/de-linker-local/review/industry-standards-728/de-390-after.png`
+  - `en-1440-before.png` and `en-1440-after.png`
+  - `de-390-before.png` and `de-390-after.png`
 - EN 1440 and DE 390 both render four readable cells with no horizontal overflow.
