@@ -11,17 +11,17 @@ from pathlib import Path
 LANES = (
     "presentation",
     "php",
-    "commerce",
-    "tools",
-    "planner",
-    "engine",
-    "genie",
+    "js",
     "python",
     "content",
     "build",
-    "mu",
+    "commerce",
+    "native",
+    "planner",
+    "engine",
+    "genie",
 )
-FULL_LANES = tuple(lane for lane in LANES if lane != "presentation")
+FULL_LANES = ("php", "js", "python", "content", "build", "native")
 WORKFLOW = ".github/workflows/check.yml"
 
 
@@ -188,7 +188,7 @@ def classify(changes, base="", head=""):
             lanes.add("genie")
         elif status == "M" and commerce(path):
             lanes.add("commerce")
-            lanes.add("mu")
+            lanes.add("native")
         else:
             return list(FULL_LANES)
     return [lane for lane in LANES if lane in lanes]
@@ -303,7 +303,16 @@ def checked_run(run, commit, *, full=False, docs_only=False):
 
 
 def checked_pr_tree(commit, *, full=False):
-    source = git("rev-parse", commit + "^2").decode().strip()
+    parents = git("rev-list", "--parents", "-n", "1", commit).decode().split()
+    if len(parents) >= 3:
+        source = parents[2]
+    else:
+        subject = git("show", "-s", "--format=%s", commit).decode().strip()
+        pull = re.search(r"\(#([0-9]+)\)$", subject)
+        if not pull:
+            return None
+        repo = os.environ["REPOSITORY"]
+        source = api(f"repos/{repo}/pulls/{pull.group(1)}")["head"]["sha"]
     run = latest_run(source, "pull_request")
     return run if checked_run(run, commit, full=full) else None
 

@@ -12,6 +12,7 @@ import ci_scope
 
 ROOT = Path(__file__).resolve().parents[2]
 TEXT = (ROOT / ".github/workflows/check.yml").read_text()
+JUSTFILE = (ROOT / "justfile").read_text()
 
 
 class ScopeTest(unittest.TestCase):
@@ -48,7 +49,7 @@ class ScopeTest(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertEqual(
                     self.classify(("M", "plugins/linker-commerce/" + path)),
-                    ["commerce", "mu"],
+                    ["commerce", "native"],
                 )
 
     def test_packages_compose_without_an_instance_for_service_changes(self):
@@ -251,13 +252,13 @@ class ScopeTest(unittest.TestCase):
             with self.subTest(event=event, proven=proven):
                 output, checked = self.run_plan(event, ["genie"], proven)
                 self.assertIn("mode=" + expected + "\n", output)
-                self.assertIn("genie=true\n", output)
+                self.assertIn(f"genie={str(expected == 'scoped').lower()}\n", output)
                 if expected == "full":
                     self.assertIn("php=true\n", output)
-                    self.assertIn("mu=true\n", output)
+                    self.assertIn("native=true\n", output)
                 else:
                     self.assertIn("php=false\n", output)
-                    self.assertIn("mu=false\n", output)
+                    self.assertIn("native=false\n", output)
                 self.assertEqual(checked.called, event == "pull_request")
 
     def test_full_candidate_never_becomes_scoped(self):
@@ -271,7 +272,7 @@ class ScopeTest(unittest.TestCase):
         output, checked = self.run_plan("push", [], proven=False)
         self.assertIn("mode=docs\n", output)
         self.assertIn("php=false\n", output)
-        self.assertIn("mu=false\n", output)
+        self.assertIn("native=false\n", output)
         checked.assert_not_called()
 
     def ledger(self, mode="scoped", lanes=None):
@@ -432,48 +433,71 @@ class ScopeTest(unittest.TestCase):
             self.assertTrue(ci_scope.checked_base("a" * 40))
         original.assert_called_once_with("a" * 40, full=True)
 
+    def test_squash_merge_and_merge_commit_find_the_pr_head(self):
+        commit = "a" * 40
+        source = "b" * 40
+        run = {"id": 1}
+        with (
+            patch.object(ci_scope, "latest_run", return_value=run),
+            patch.object(ci_scope, "checked_run", return_value=True),
+            patch.object(
+                ci_scope,
+                "git",
+                return_value=f"{commit} {'c' * 40} {source}\n".encode(),
+            ),
+        ):
+            self.assertIs(ci_scope.checked_pr_tree(commit), run)
+        with (
+            patch.object(
+                ci_scope,
+                "git",
+                side_effect=[
+                    f"{commit}\n".encode(),
+                    b"CI: fail fast with locally reproducible lanes (#779)\n",
+                ],
+            ),
+            patch.dict(os.environ, {"REPOSITORY": "owner/repo"}),
+            patch.object(ci_scope, "api", return_value={"head": {"sha": source}}),
+            patch.object(ci_scope, "latest_run", return_value=run),
+            patch.object(ci_scope, "checked_run", return_value=True),
+        ):
+            self.assertIs(ci_scope.checked_pr_tree(commit), run)
+
     def test_split_jobs_keep_the_shared_toolchain_inputs(self):
-        php = TEXT.split("\n  php:\n", 1)[1].split("\n  commerce:\n", 1)[0]
-        self.assertIn('cd "$GITHUB_WORKSPACE/plugins/linker-commerce"', php)
-        self.assertIn("uses: actions/setup-node@", php)
-        self.assertLess(php.index("composer install"), php.index("for project in"))
-        self.assertLess(php.index("npm ci"), php.index("for project in"))
-
-        tools = TEXT.split("\n  tools:\n", 1)[1].split("\n  planner:\n", 1)[0]
-        self.assertLess(
-            tools.index("npx playwright install"), tools.index("npm run test:unit")
-        )
-
+        php = TEXT.split("\n  php:\n", 1)[1].split("\n  js:\n", 1)[0]
+        self.assertLess(php.index("just js-install"), php.index("just php-test"))
+        js = TEXT.split("\n  js:\n", 1)[1].split("\n  python:\n", 1)[0]
+        self.assertLess(js.index("npx playwright install"), js.index("just js-test"))
         engine = TEXT.split("\n  engine:\n", 1)[1].split("\n  genie:\n", 1)[0]
         self.assertIn("uses: actions/setup-node@", engine)
         self.assertLess(engine.index("npm ci"), engine.index("uv run --locked pytest"))
-
         python = TEXT.split("\n  python:\n", 1)[1].split("\n  content:\n", 1)[0]
         self.assertLess(
-            python.index("apt-get install -y gettext"),
-            python.index("Other Python packages and migration contracts"),
+            python.index("Python unit native helpers"),
+            python.index("Python tool tests"),
         )
 
     def test_workflow_preserves_native_recovery_and_has_one_real_gate(self):
         self.assertIn("cancel-in-progress: true", TEXT)
         self.assertNotIn("on:\n  pull_request:\n    paths", TEXT)
-        self.assertNotIn("if: always()", TEXT)
-        for title in (
-            "business and native notification capacity in both stores",
-            "public verification and atomic admission",
-            "inquiry status price gate",
-            "proforma price gate",
-            "genie inquiry chain",
-            "inquiry assessment, customer evidence and staff review",
-            "administrator MFA without mandatory customer factors",
+        self.assertEqual(TEXT.count("if: always()"), 1)
+        self.assertIn("group: [core, mail, inquiry, inventory, runtime, admin]", TEXT)
+        self.assertIn('just ci-native "${{ matrix.group }}" smoke', TEXT)
+        self.assertNotIn("/Justfile", JUSTFILE)
+        for marker in (
+            "run_mail()",
+            "GlobalBusinessCapacityTest",
+            "run_inquiry()",
+            "PublicAdmissionOwnersTest",
+            "ProformaPriceGateTest",
+            "GenieInquiryTest",
+            "InquiryAssessmentTest",
+            "MessageIdWitnessTest",
+            "run_admin()",
+            "admin-mfa",
         ):
-            step = TEXT.split("      - name: " + title + "\n", 1)[1].split(
-                "      - name:", 1
-            )[0]
-            self.assertIn(
-                "if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'scoped'",
-                step,
-            )
+            with self.subTest(marker=marker):
+                self.assertIn(marker, JUSTFILE)
         for lane in ci_scope.LANES:
             with self.subTest(lane=lane):
                 self.assertIn(f"\n  {lane}:\n", TEXT)
@@ -481,13 +505,13 @@ class ScopeTest(unittest.TestCase):
                     f"if: ${{{{ !cancelled() && needs.plan.outputs.{lane} == 'true' }}}}",
                     TEXT,
                 )
-        mail = TEXT.split("      - name: internal SMTP", 1)[1].split(
-            "      - name:", 1
-        )[0]
-        self.assertIn("MessageIdWitnessTest", mail)
-        self.assertIn("Browser regression suite's own source checks", TEXT)
         self.assertIn("if: ${{ !cancelled() }}", TEXT)
         self.assertIn("JOB_RESULTS: ${{ toJson(needs) }}", TEXT)
+        self.assertTrue(
+            set(ci_scope.FULL_LANES).isdisjoint(
+                {"presentation", "commerce", "planner", "engine", "genie"}
+            )
+        )
 
 
 if __name__ == "__main__":
