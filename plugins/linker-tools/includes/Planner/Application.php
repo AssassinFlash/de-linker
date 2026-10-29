@@ -82,6 +82,7 @@ final class Application {
 		if ( is_admin() || $this->mounted ) {
 			return '';
 		}
+		\Linker\Tools\Cache\DynamicHtml::forbid( 'solution configurator' );
 		$this->mounted = true;
 		wp_enqueue_script( 'wp-i18n' );
 		wp_enqueue_script_module( self::HANDLE );

@@ -12,42 +12,7 @@ const evidence = join(
 const fixture = join(REPO_ROOT, 'tests/e2e/fixtures/public-inquiry.php');
 const run = (...args: string[]) => wp(['eval-file', fixture, ...args]);
 
-// Queue::WAIT_SECONDS is the claimed model attempt; queue delay is excluded
-// (Inquiry/Assessment/Queue.php). After the success page that delay is the
-// nonblocking wake-up plus the Outbox write, not the minute recovery cron.
-// AsyncRunner's 0.01s fire-and-forget is not a 10ms ceiling: Requests rounds
-// that dispatch to at least 1s (docs/specs/543-assessment-dispatch.md). Lock
-// allows at most 1s for the DB handoff (Inquiry/Assessment/Lock.php).
-// AssessmentAsyncTest budgets 12s after the customer response to observe an 8s
-// attempt of this same race, so the poll allows that 4s on top of the full 10s
-// attempt. expect.poll returns when the handoff is visible; this is a ceiling.
-// A live unknown verdict does not hand off inside that ceiling: the first retry
-// waits Outbox::RETRY_DELAYS[0] (60s). The fixture answers only this run's
-// classifier call so the first SendAuthorization attempt can reach Outbox.
-const MODEL_ATTEMPT_MS = 10_000;
-const SCHEDULE_MARGIN_MS = 4_000;
-const HANDOFF_TIMEOUT_MS = MODEL_ATTEMPT_MS + SCHEDULE_MARGIN_MS;
-
-test.setTimeout(60_000 + HANDOFF_TIMEOUT_MS);
-
-type InquiryReadback = {
-	orders?: Array<{ skipped?: string }>;
-	mail?: Array<{ to?: string[] }>;
-};
-
-function authorizationHandoff(readback: InquiryReadback, email: string) {
-	const orders = readback.orders ?? [];
-	const mail = readback.mail ?? [];
-	return {
-		orders: orders.length,
-		jobs: mail.length,
-		receipt: mail.filter(
-			(item) => Array.isArray(item.to) && item.to.includes(email)
-		).length,
-		dailyCap: orders[0]?.skipped === 'daily_cap',
-	};
-}
-
+test.setTimeout(120_000);
 for (const language of ['en', 'de']) {
 	for (const width of [1440, 390]) {
 		for (const door of ['contact', 'request']) {
@@ -117,61 +82,55 @@ for (const language of ['en', 'de']) {
 						await expect(
 							page.locator('.linker-form-success')
 						).toBeVisible();
-						let readback: ReturnType<typeof JSON.parse> | undefined;
-						await expect
-							.poll(
-								() => {
-									readback = JSON.parse(run('read'));
-									return authorizationHandoff(
-										readback,
-										email
-									);
-								},
-								{
-									message:
-										'SendAuthorization hands the inquiry to Outbox after the success page',
-									timeout: HANDOFF_TIMEOUT_MS,
-									intervals: [500, 1_000],
-								}
-							)
-							.toEqual({
-								orders: 1,
-								jobs: capped ? 1 : 2,
-								receipt: capped ? 0 : 1,
-								dailyCap: capped,
-							});
-						if (readback === undefined) {
-							throw new Error(
-								'SendAuthorization readback was not captured.'
-							);
-						}
-						expect(readback.orders).toHaveLength(1);
-						expect(readback.orders[0].customer).toBe(0);
-						expect(readback.orders[0].items).toBe(
+						const pending = JSON.parse(run('read')) as {
+							orders: Array<{
+								status: string;
+								customer: number;
+								source: string;
+								skipped: string;
+								items: number;
+								authorization: {
+									status?: string;
+									team_only?: boolean;
+									jobs?: string[];
+								};
+							}>;
+							mail: Array<{ to: string[]; subject: string }>;
+						};
+						expect(pending.orders).toHaveLength(1);
+						const pendingOrder = pending.orders[0];
+						if (!pendingOrder)
+							throw new Error('Missing pending order');
+						expect(pendingOrder.customer).toBe(0);
+						expect(pendingOrder.items).toBe(
 							door === 'request' ? 1 : 0
 						);
-						expect(readback.orders[0].status).toBe(
-							'inquiry-received'
-						);
-						expect(readback.orders[0].source).toBe(
+						expect(pendingOrder.status).toBe('inquiry-received');
+						expect(pendingOrder.source).toBe(
 							door === 'contact' ? 'contact' : 'proforma'
 						);
-						expect(readback.mail).toHaveLength(capped ? 1 : 2);
-						expect(
-							readback.mail.filter((mail: { to: string[] }) =>
-								mail.to.includes(email)
-							)
-						).toHaveLength(capped ? 0 : 1);
+						// The fixture blocks both the opportunistic wake and
+						// Action Scheduler. This read is one consistent pending
+						// snapshot, not a race against an empty post-delivery
+						// Outbox.
+						expect(pendingOrder.skipped).toBe('assessment_pending');
+						expect(pendingOrder.authorization.status).toBe(
+							'pending'
+						);
+						expect(pending.mail).toHaveLength(0);
 						if (capped) {
-							expect(readback.orders[0].skipped).toBe(
-								'daily_cap'
-							);
+							// The contact door cannot yet know whether a
+							// receipt will follow, so it shows the plain
+							// sent copy; the request page names the deferred
+							// no-receipt notice.
 							const notice =
 								language === 'de'
 									? door === 'contact'
-										? 'Eine Bestätigung per E-Mail wurde nicht versendet.'
+										? 'Ihre Nachricht ist beim Linker-Team eingegangen. Eine Bestätigung per E-Mail wurde nicht versendet.'
 										: 'Es wurde keine Bestätigungs-E-Mail versendet.'
-									: 'We have not sent a confirmation email.';
+									: door === 'contact'
+										? 'Thank you. Your message is with the Linker team.'
+										: 'We have not sent a confirmation email.';
 							await expect(
 								page.getByText(notice, { exact: false })
 							).toBeVisible();
@@ -184,7 +143,11 @@ for (const language of ['en', 'de']) {
 								`guest-${language}-${width}-${door}-${capped ? 'capped' : 'receipt'}.json`
 							),
 							JSON.stringify(
-								{ before, after, ...readback },
+								{
+									before,
+									after,
+									pending,
+								},
 								null,
 								2
 							)
@@ -219,8 +182,11 @@ for (const language of ['en', 'de']) {
 							animations: 'disabled',
 						});
 					} finally {
-						await context.close();
-						run('cleanup');
+						try {
+							await context.close();
+						} finally {
+							run('cleanup');
+						}
 					}
 				});
 			}

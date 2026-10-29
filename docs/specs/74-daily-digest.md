@@ -24,8 +24,8 @@
 ## 发送与调度
 - WP 原生 cron：`wp_schedule_single_event` 单次事件链——每次发送完成后把下一次排在"现在之后最近的 09:00 Europe/Berlin"；初始化时（init）无事件才补排。夏令时切换后的一次发送会按旧偏移落在 08:00 或 10:00，该次发送随即自校正；规则就是"每次发送重算下一次"。
 - 收件人 = 内部通知收件人（To，`Options::notify_to()`，WooCommerce → Settings → Inquiries 的 Internal notifications → Recipient，缺省 `sales@sunriverinverter.com`）+ 抄送列表（Bcc，`notify_bcc()`，同节 Blind copies），与全部内部通知同源（`docs/specs/11-commerce.md` “内部通知收件人”，#221）。空摘要也发。
-- 发送走 `wp_mail()`，由 Outbox 接管：当时可发就发，配额满或失败进队列，重试 1、5、30 分钟、2、6、12、24 小时，耗尽后消息留在队列标记失败——失败的摘要邮件自身会出现在下一封摘要的第④块里。
-- 手动触发：`wp cron event run linker_commerce_digest`（会真发一封，生产上只在验收需要时用）。
+- 发送走 `wp_mail()`，由 Outbox 接管：当时可发就发，配额满或失败进队列，重试 1、5、30 分钟、2、6、12、24 小时，耗尽后消息留在队列标记失败——失败的摘要邮件自身会出现在下一封摘要的第④块里。同一柏林日的重叠 cron 消费者只准入一封普通摘要任务；原任务继续重试，不另建任务，也不占用关键通知预留。
+- 手动触发：`wp cron event run linker_commerce_digest`。当天还没有摘要任务时会真发一封；已有任务只走原任务重试。生产上只在验收需要时用。
 - 线上由 hPanel 每分钟 `wp cron event run --due-now` 跑（`DISABLE_WP_CRON`，spec 17），即 CLI PHP；主机的 `~/.logs/mail.log` 只记 Web PHP 的 `mail()`，CLI 的 `mail.log` 未设。所以摘要发没发**看 WooCommerce → Status → Logs 的 `linker-mail`**（Outbox 每次投递一行 info：主题、收件人、Bcc），不看 mail.log。
 - 2026-10-17 查证（#221）：切换后摘要每天 07:00 UTC 都发了——Outbox 限速记录里有 2026-10-16 07:00:04 UTC 一次投递，cron 事件每天顺延；只是收件人是 `sales@de-linker.com`（老板的腾讯企业邮，Hostinger 发出的 `@de-linker.com` 邮件 SPF 不对齐，`docs/research/2026-10-09/mail-root-cause.md` §7），且 mail.log 不记。10-17 那次因临时止血（10-16 17:20 UTC 关掉）未发，符合预期。修法：改投内部通知收件人 + 投递日志。
 

@@ -106,6 +106,7 @@ final class Form {
 	 */
 	public function render( $atts = array() ): string {
 		unset( $atts );
+		\Linker\Commerce\Cache\DynamicHtml::forbid( 'contact form' );
 		LanguageDraft::enqueue();
 		$state = $this->state_message();
 		if ( str_contains( $state, 'linker-form-success' ) ) {

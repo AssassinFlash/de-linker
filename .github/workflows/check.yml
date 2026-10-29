@@ -572,6 +572,14 @@ jobs:
         if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'
         run: just page-cache-chain smoke
 
+      - name: dynamic HTML stays out of the public page cache
+        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'
+        working-directory: plugins/linker-tools
+        run: |
+          LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
+            php vendor/bin/phpunit -c phpunit.integration.xml.dist \
+            --filter DynamicPageCacheTest
+
       # Native authentication plus the existing reader on 201 synthetic rows per
       # collection; no production binding, credential, model or external mail.
       - name: inventory application credential scope

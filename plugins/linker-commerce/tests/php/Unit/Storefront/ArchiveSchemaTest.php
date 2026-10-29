@@ -12,6 +12,7 @@ namespace Linker\Commerce\Tests\Unit\Storefront;
 use Linker\Commerce\Storefront\ArchiveSchema;
 use Linker\Commerce\Tests\TestCase;
 use WP_Mock;
+use WP_Post;
 use WP_Term;
 
 /**
@@ -147,6 +148,85 @@ final class ArchiveSchemaTest extends TestCase {
 	}
 
 	/**
+	 * An indexable blog category carries the same two archive blocks, with the
+	 * language's home and blog index in the breadcrumb.
+	 */
+	public function test_an_indexable_blog_category_carries_its_own_archive_schema(): void {
+		$term = new WP_Term(
+			(object) array(
+				'name'     => 'Überwachung & Energiemanagement',
+				'taxonomy' => 'category',
+				'slug'     => 'ueberwachung-energiemanagement',
+				'term_id'  => 44,
+			)
+		);
+		$blog = new WP_Post(
+			(object) array(
+				'ID'         => 6915,
+				'post_type'  => 'page',
+				'post_title' => 'Blog',
+			)
+		);
+		$this->on_blog_category( $term, 'https://de-linker.com/de/kategorie/ueberwachung-energiemanagement/' );
+		WP_Mock::userFunction( 'seopress_titles_noindex_bypass', array( 'return' => '' ) );
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'de' ) );
+		WP_Mock::userFunction( 'pll_home_url', array( 'return' => 'https://de-linker.com/de/' ) );
+		WP_Mock::userFunction( 'get_posts', array( 'return' => array( $blog ) ) );
+		WP_Mock::userFunction(
+			'get_permalink',
+			array(
+				'args'   => array( 6915 ),
+				'return' => 'https://de-linker.com/de/blog/',
+			)
+		);
+
+		$schema = new ArchiveSchema();
+		$page   = $schema->blog_category_collection();
+		$crumbs = $schema->blog_category_breadcrumb()['itemListElement'];
+
+		$this->assertSame( 'CollectionPage', $page['@type'] );
+		$this->assertSame( 'Überwachung & Energiemanagement', $page['name'] );
+		$this->assertSame( 'https://de-linker.com/de/kategorie/ueberwachung-energiemanagement/', $page['url'] );
+		$this->assertSame( 'https://de-linker.com/de/', $page['isPartOf']['url'] );
+		$this->assertSame(
+			array(
+				'https://de-linker.com/de/',
+				'https://de-linker.com/de/blog/',
+				'https://de-linker.com/de/kategorie/ueberwachung-energiemanagement/',
+			),
+			array_column( $crumbs, 'item' )
+		);
+		$this->assertSame( array( 1, 2, 3 ), array_column( $crumbs, 'position' ) );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * The audit's raw "no JSON-LD" result is not a defect for a noindexed
+	 * archive: that pair is deliberately outside the sitemap.
+	 */
+	public function test_a_noindexed_blog_category_gets_no_archive_schema(): void {
+		$term = new WP_Term(
+			(object) array(
+				'name'     => 'System design',
+				'taxonomy' => 'category',
+				'slug'     => 'system-design',
+				'term_id'  => 301,
+			)
+		);
+		$this->on_blog_category( $term, 'https://de-linker.com/category/system-design/' );
+		WP_Mock::userFunction( 'seopress_titles_noindex_bypass', array( 'return' => 'yes' ) );
+
+		$schema = new ArchiveSchema();
+
+		$this->assertSame( array(), $schema->blog_category_collection() );
+		$this->assertSame( array(), $schema->blog_category_breadcrumb() );
+		ob_start();
+		$schema->print_blog_category_block();
+		$this->assertSame( '', (string) ob_get_clean() );
+		$this->assertConditionsMet();
+	}
+
+	/**
 	 * Anywhere else — a product page, a blog post — the blocks print nothing.
 	 */
 	public function test_other_pages_carry_no_blocks(): void {
@@ -203,6 +283,19 @@ final class ArchiveSchemaTest extends TestCase {
 	 */
 	private function on_category( WP_Term $term, string $link ): void {
 		WP_Mock::userFunction( 'is_product_category', array( 'return' => true ) );
+		WP_Mock::userFunction( 'get_queried_object', array( 'return' => $term ) );
+		WP_Mock::userFunction( 'get_term_link', array( 'return' => $link ) );
+	}
+
+	/**
+	 * The request is a WordPress blog-category archive.
+	 *
+	 * @param WP_Term $term The queried category.
+	 * @param string  $link Its permalink.
+	 */
+	private function on_blog_category( WP_Term $term, string $link ): void {
+		WP_Mock::userFunction( 'is_product_category', array( 'return' => false ) );
+		WP_Mock::userFunction( 'is_category', array( 'return' => true ) );
 		WP_Mock::userFunction( 'get_queried_object', array( 'return' => $term ) );
 		WP_Mock::userFunction( 'get_term_link', array( 'return' => $link ) );
 	}

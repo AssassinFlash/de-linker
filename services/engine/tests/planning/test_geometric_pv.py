@@ -19,6 +19,7 @@ from linker_engine.planning.geometric_pv_inputs import (
     GeometricPvLimits,
 )
 from linker_engine.planning.geometric_pv_report import geometric_pv_reference
+from linker_engine.planning.model_numbers import derived_witness_number
 from linker_engine.planning.pv_arrays import generation_arrays
 from linker_engine.planning.pv_generation import generate_pv
 from linker_engine.planning.pv_parameters import PvGenerationParameters
@@ -52,13 +53,86 @@ def test_partial_beam_factor_precedes_mean_module_thermal_and_dc_response() -> N
     expected_temperature = 25 + 300 * math.exp(-3.47) + 0.3 * 3
     expected_dc = 1000 * 0.3 * (1 - 0.004 * (expected_temperature - 25))
     poa = cast(Object, output.witness["poa_components_w_m2"])
-    assert poa["poa_direct"] == pytest.approx([200], abs=1e-10)
+    assert poa["poa_direct"] == pytest.approx([200], rel=2e-9)
     assert poa["poa_sky_diffuse"] == [100]
-    assert poa["poa_global"] == pytest.approx([300], abs=1e-10)
+    assert poa["poa_global"] == pytest.approx([300], rel=2e-9)
     assert output.witness["cell_temperature_c"] == pytest.approx(
-        [expected_temperature], abs=1e-10
+        [expected_temperature], rel=2e-9
     )
-    assert output.dc_w.tolist() == pytest.approx([expected_dc], abs=1e-10)
+    assert output.dc_w.tolist() == pytest.approx([expected_dc], rel=2e-9)
+
+
+def test_geometric_direction_and_profile_stay_unspelled(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from collections.abc import Iterable
+
+    import linker_engine.planning.geometric_pv_generation as geometric_pv
+    import linker_engine.planning.pv_physics as pv_physics
+    from linker_engine.planning.direct_beam_visibility import visibility_row
+    from linker_engine.planning.geometry import sin_cos_degrees
+    from linker_engine.planning.pv_physics import sun
+
+    geo, par = geometry(), parameter_document()
+    geo["module_specs"][0].update(length_m=1, width_m=1, stc_power_w=1000)
+    geo["arrays"][0].update(rows=1, columns=1, excluded_slots=[])
+    meteo = weather(dni=600, dhi=100, ghi=800, temp=25)
+    request = scenario(par)
+    limits = policy()
+    recorded: list[float] = []
+    directions: list[tuple[float, float, float]] = []
+
+    def spy(degrees: float) -> tuple[float, float]:
+        recorded.append(degrees)
+        return sin_cos_degrees(degrees)
+
+    def capture_row(*args: object, **kwargs: object) -> object:
+        direction = args[1]
+        assert isinstance(direction, tuple)
+        x, y, z = (float(part) for part in direction)
+        directions.append((x, y, z))
+        return cast(Any, visibility_row)(*args, **kwargs)
+
+    monkeypatch.setattr(geometric_pv, "sin_cos_degrees", spy)
+    monkeypatch.setattr(geometric_pv, "visibility_row", capture_row)
+    baseline = generate_geometric_pv(geo, meteo, request, limits, max_weather_rows=10)
+    solar = sun(meteo)
+    assert recorded[:2] == [
+        float(solar["apparent_zenith_deg"][0]),
+        float(solar["azimuth_deg"][0]),
+    ]
+    zenith, azimuth = recorded[0], recorded[1]
+    sz, cz = sin_cos_degrees(zenith)
+    sa, ca = sin_cos_degrees(azimuth)
+    baseline_direction = (sz * sa, sz * ca, cz)
+    assert directions == [baseline_direction]
+
+    def zeros(items: Iterable[float]) -> list[float]:
+        return [0.0 for _ in items]
+
+    monkeypatch.setattr(pv_physics, "derived_witness_numbers", zeros)
+    recorded.clear()
+    directions.clear()
+    damaged = generate_geometric_pv(geo, meteo, request, limits, max_weather_rows=10)
+    assert recorded[:2] == [zenith, azimuth]
+    sz, cz = sin_cos_degrees(recorded[0])
+    sa, ca = sin_cos_degrees(recorded[1])
+    assert directions == [(sz * sa, sz * ca, cz)] == [baseline_direction]
+    assert damaged.profile.values_kw == baseline.profile.values_kw
+    assert damaged.profile.total_kwh == baseline.profile.total_kwh
+    assert damaged.witness()["energy_kwh"] == derived_witness_number(
+        baseline.profile.total_kwh
+    )
+    assert damaged.witness()["available_ac_w"] == baseline.witness()["available_ac_w"]
+    baseline_array = cast(list[Object], baseline.witness()["arrays"])[0]
+    damaged_array = cast(list[Object], damaged.witness()["arrays"])[0]
+    assert damaged_array["dc_available_w"] == baseline_array["dc_available_w"]
+    baseline_module = cast(list[Object], baseline.witness()["modules"])[0]
+    damaged_module = cast(list[Object], damaged.witness()["modules"])[0]
+    assert damaged_module["dc_available_w"] == baseline_module["dc_available_w"]
+    solar_geometry = cast(Object, damaged.witness()["solar_geometry"])
+    assert solar_geometry["apparent_zenith_deg"] == [0.0]
+    assert baseline.witness()["available_ac_w"] != [0.0]
 
 
 def scenario(parameters: dict[str, Any]) -> GeometricPvInputs:

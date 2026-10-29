@@ -20,13 +20,13 @@ from linker_local.instance import Instance
 from linker_local.mysql import USER, MySQL
 from linker_local.wpcli import WpCli
 
-# WordPress as on the production host: wp-includes/version.php there, read over
-# SSH on 2026-10-09 (also docs/research/2026-10-09/framework-choice.md §2).
-WORDPRESS_VERSION = "7.1.3"
+# WordPress as on the production host: the fresh read-only snapshot of
+# 2026-10-29 records 7.1.4 in its manifest.
+WORDPRESS_VERSION = "7.1.4"
 WORDPRESS_ZIP = f"https://wordpress.org/wordpress-{WORDPRESS_VERSION}.zip"
-# Published next to the archive, https://wordpress.org/wordpress-7.1.3.zip.sha1
-# (read via Apify on 2026-10-09); a new version needs its own.
-WORDPRESS_SHA1 = "13eb1d042b1ca39224e44906cd84fe203112210c"
+# Published next to the archive,
+# https://wordpress.org/wordpress-7.1.4.zip.sha1 (read on 2026-10-29).
+WORDPRESS_SHA1 = "b552c39cd95d89895b4e7a55af53a03687aff4f6"
 # WooCommerce as on the production host: `wp plugin get woocommerce
 # --field=version` there on 2026-10-09 (the #7 session) and the plugin header,
 # read over SSH. The host updates plugins by itself: 11.1.0 (the version in
@@ -186,7 +186,11 @@ def provision(
     say(f"plugins {', '.join(linked)} -> {checkout.root}")
     wp.run("plugin", "activate", *linked)
 
-    wp.run("rewrite", "structure", PERMALINKS)
+    # WP-CLI 2.12's `rewrite structure` sets the option but exits 255 after the
+    # loaded snapshot plugins run. Keep the same native result with two commands
+    # that both return their real status on this stack.
+    wp.run("option", "update", "permalink_structure", PERMALINKS)
+    wp.run("rewrite", "flush")
     instance.provisioned_marker.write_text(datetime.now(UTC).isoformat() + "\n")
 
 

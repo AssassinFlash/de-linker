@@ -258,13 +258,20 @@ final class TemplatesTest extends TestCase {
 		// template carried the host it was authored on.
 		foreach ( array(
 			'is_blog_posts_index'     => 'blog/',
-			'is_blog_posts_index__de' => 'de/blog/',
+			// [linker_site_url] is the current language's root: / on the
+			// English face and /de/ on the German one. Prefixing another de/
+			// produced /de/de/blog/ on the live German face.
+			'is_blog_posts_index__de' => 'blog/',
 		) as $index => $path ) {
 			$html = (string) file_get_contents( $paths[ $index ] );
 			$this->assertStringContainsString( '"url": "[linker_site_url]' . $path . '"', $html );
 			$this->assertStringContainsString( '"url": "[linker_site_url]"', $html );
 			$this->assertStringNotContainsString( '<site url', $html );
 		}
+		$this->assertStringNotContainsString(
+			'[linker_site_url]de/',
+			(string) file_get_contents( $paths['is_blog_posts_index__de'] )
+		);
 
 		// The redesigned blog index's configurator CTA point at the tool's own
 		// addresses, and the German face names it the way the rest of the site

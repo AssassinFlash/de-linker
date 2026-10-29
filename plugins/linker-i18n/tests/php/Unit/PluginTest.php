@@ -19,6 +19,7 @@ use Linker\I18n\Jobs;
 use Linker\I18n\GermanTitles;
 use Linker\I18n\GermanRoutes;
 use Linker\I18n\GermanUrlMigration;
+use Linker\I18n\IndexingMeta;
 use Linker\I18n\Rest\RestLang;
 use Linker\I18n\SameSlug\Lookup;
 use Linker\I18n\SameSlug\PostSlugs;
@@ -86,6 +87,8 @@ final class PluginTest extends TestCase {
 		array( 'filter', 'pll_rel_hreflang_attributes', Seo::class, 'hreflangs', 10, 1 ),
 		array( 'filter', 'do_redirect_guess_404_permalink', Seo::class, 'guess_404', 10, 1 ),
 		array( 'filter', 'seopress_titles_title', Seo::class, 'not_found_title', 10, 1 ),
+		array( 'filter', 'seopress_titles_noindex_bypass', Seo::class, 'twin_noindex', 10, 1 ),
+		array( 'filter', 'seopress_titles_robots_attrs', Seo::class, 'twin_robots', 10, 1 ),
 		array( 'filter', 'lc_modify_template_id', DynamicTemplates::class, 'template', 10, 1 ),
 		array( 'filter', 'rest_request_before_callbacks', RestLang::class, 'enter', 10, 3 ),
 		array( 'filter', 'rest_request_after_callbacks', RestLang::class, 'leave', 10, 1 ),
@@ -97,6 +100,12 @@ final class PluginTest extends TestCase {
 		array( 'action', 'created_term', Jobs::class, 'term_saved', 10, 3 ),
 		array( 'action', 'edited_term', Jobs::class, 'term_saved', 10, 3 ),
 		array( 'action', 'linker_i18n_translate', Jobs::class, 'run', 10, 4 ),
+		array( 'action', 'added_post_meta', IndexingMeta::class, 'post_changed', 10, 4 ),
+		array( 'action', 'updated_post_meta', IndexingMeta::class, 'post_changed', 10, 4 ),
+		array( 'action', 'deleted_post_meta', IndexingMeta::class, 'post_deleted', 10, 4 ),
+		array( 'action', 'added_term_meta', IndexingMeta::class, 'term_changed', 99, 4 ),
+		array( 'action', 'updated_term_meta', IndexingMeta::class, 'term_changed', 99, 4 ),
+		array( 'action', 'deleted_term_meta', IndexingMeta::class, 'term_deleted', 99, 4 ),
 		array( 'filter', 'get_post_metadata', CoverAlt::class, 'display', 10, 3 ),
 		array( 'filter', 'add_post_metadata', CoverAlt::class, 'before_meta', 20, 3 ),
 		array( 'filter', 'update_post_metadata', CoverAlt::class, 'before_meta', 20, 3 ),

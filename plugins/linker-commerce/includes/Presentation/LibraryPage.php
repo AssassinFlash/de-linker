@@ -147,6 +147,7 @@ final class LibraryPage {
 		add_shortcode( 'linker_library_faq', array( $this, 'faq' ) );
 		add_shortcode( 'linker_library_documents', array( $this, 'documents' ) );
 		add_shortcode( 'linker_library_config', array( $this, 'config' ) );
+		add_action( 'wp_head', array( $this, 'print_schema' ) );
 	}
 
 	/**
@@ -175,12 +176,26 @@ final class LibraryPage {
 		if ( ! $page instanceof \WP_Post || 'page' !== $page->post_type ) {
 			return array();
 		}
-		if ( self::PAGE_SLUG === $page->post_name ) {
+		if ( self::is_library_page( $page ) ) {
 			return $kept;
+		}
+		return array();
+	}
+
+	/**
+	 * Whether a page belongs to this library: the English page itself or a
+	 * page whose English translation is it (the German twin keeps the slug of
+	 * whatever it was given, so the source is the certain answer).
+	 *
+	 * @param \WP_Post $page A page.
+	 */
+	private static function is_library_page( \WP_Post $page ): bool {
+		if ( self::PAGE_SLUG === $page->post_name ) {
+			return true;
 		}
 		$source_id = function_exists( 'pll_get_post' ) ? (int) pll_get_post( (int) $page->ID, 'en' ) : 0;
 		$source    = $source_id > 0 ? get_post( $source_id ) : null;
-		return $source instanceof \WP_Post && self::PAGE_SLUG === $source->post_name ? $kept : array();
+		return $source instanceof \WP_Post && self::PAGE_SLUG === $source->post_name;
 	}
 
 	/**
@@ -621,6 +636,91 @@ final class LibraryPage {
 		$source     = $id > 0 ? wp_get_attachment_image_src( $id, 'full' ) : false;
 
 		return is_array( $source ) ? (string) $source[0] : '';
+	}
+
+	/**
+	 * Prints the page's FAQPage block, or nothing when this request is not
+	 * the library page in either language.
+	 *
+	 * The block states exactly what the FAQ tab prints: every trade-rule
+	 * question and every brand answer of the page's own language, from the
+	 * same model() the rows come from, so a search engine and a reader can
+	 * never see different answers. Both language twins get the block from
+	 * this one code path (the English page's other head blocks come from
+	 * SEOPress templates the German twin does not match, measured
+	 * 2026-10-29; this one is ours and stays symmetric).
+	 */
+	public function print_schema(): void {
+		$page = get_queried_object();
+		if ( ! $page instanceof \WP_Post || 'page' !== $page->post_type || ! self::is_library_page( $page ) ) {
+			return;
+		}
+		$model  = $this->model();
+		$entity = array();
+		foreach ( $model['trade'] as $category ) {
+			foreach ( array_slice( $category['questions'], 0, self::PAGE_SIZE ) as $question ) {
+				$entity[] = $this->question( $question['question'], $question['answer'] );
+			}
+		}
+		foreach ( $model['brands'] as $brand ) {
+			foreach ( array_slice( $brand['answers'] ?? array(), 0, self::PAGE_SIZE ) as $answer ) {
+				$entity[] = $this->question( $answer['question'], $this->brand_answer_text( $answer ) );
+			}
+		}
+		if ( array() === $entity ) {
+			return;
+		}
+		$node = array(
+			'@context'   => 'https://schema.org',
+			'@type'      => 'FAQPage',
+			'mainEntity' => $entity,
+		);
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the payload is JSON; the `<` pass below is the one dangerous character.
+		echo '<script type="application/ld+json">' . str_replace( '<', '\u003C', (string) wp_json_encode( $node, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) ) . "</script>\n";
+	}
+
+	/**
+	 * The visible text of a brand answer: its answer, product link, and source
+	 * link when present. The schema consumes the same words without the links.
+	 *
+	 * @param array{question: string, answer: string, product: string, url: string, source: string, source_url: string} $answer Brand answer.
+	 */
+	private function brand_answer_text( array $answer ): string {
+		$text = $answer['answer'] . ' ' . $answer['product'];
+		if ( '' !== $answer['source'] ) {
+			$text .= ' — ' . $answer['source'];
+		}
+		return $text;
+	}
+
+	/**
+	 * One FAQPage question node, question and answer as the page prints them.
+	 *
+	 * @param string $question The question text.
+	 * @param string $answer   The visible answer text, with link markup when present.
+	 * @return array<string, mixed>
+	 */
+	private function question( string $question, string $answer ): array {
+		return array(
+			'@type'          => 'Question',
+			'name'           => $this->plain_text( $question ),
+			'acceptedAnswer' => array(
+				'@type' => 'Answer',
+				'text'  => $this->plain_text( $answer ),
+			),
+		);
+	}
+
+	/**
+	 * Text the browser shows for an answer that may contain a link. WordPress
+	 * strips elements and scripts while keeping the link's visible words; the
+	 * entity decode keeps punctuation and names readable in JSON text.
+	 *
+	 * @param string $html Stored visible text, possibly with links.
+	 */
+	private function plain_text( string $html ): string {
+		$text = html_entity_decode( wp_strip_all_tags( $html ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+		return trim( (string) preg_replace( '/\s+/u', ' ', $text ) );
 	}
 
 	/**

@@ -48,7 +48,7 @@ const STRINGS: Record<Locale, Strings> = {
 
 const PATH: Record<Locale, string> = {
 	en: '/faq-download/',
-	de: '/de/faq-download/',
+	de: '/de/faq-dokumente/',
 };
 
 /** The page, opened at a tab. */
@@ -282,6 +282,85 @@ test.describe('the FAQ + document library', () => {
 			await expect(pager.locator('[aria-current="page"]')).toHaveText(
 				'2'
 			);
+		});
+
+		test(`${locale}: FAQPage matches the visible first page of each card`, async ({
+			page,
+		}) => {
+			await open(page, locale);
+			await expect(page.locator('#linker-faq-page')).toHaveClass(
+				/\bis-enhanced\b/
+			);
+
+			const rows = page.locator(
+				'#linker-faq-page [data-library-panel="faq"] ' +
+					'[data-library-card] details[data-library-item]:not([hidden])'
+			);
+			const visible = await rows.evaluateAll((nodes) =>
+				nodes.map((row) => ({
+					question: (
+						row.querySelector('.linker-library-qa-q')
+							?.textContent ?? ''
+					)
+						.replace(/\s+/g, ' ')
+						.trim(),
+					answer: Array.from(
+						row.querySelector('.linker-library-qa-a')?.children ??
+							[]
+					)
+						.map((part) => part.textContent ?? '')
+						.join(' ')
+						.replace(/\s+/g, ' ')
+						.trim(),
+				}))
+			);
+			expect(visible.length).toBeGreaterThan(0);
+
+			const pageSizes = await page
+				.locator(
+					'#linker-faq-page [data-library-panel="faq"] [data-library-card]'
+				)
+				.evaluateAll((cards) =>
+					cards.map(
+						(card) =>
+							card.querySelectorAll(
+								'details[data-library-item]:not([hidden])'
+							).length
+					)
+				);
+			expect(Math.max(...pageSizes)).toBeLessThanOrEqual(20);
+
+			const schemas = await page
+				.locator('script[type="application/ld+json"]')
+				.evaluateAll((scripts) =>
+					scripts.map(
+						(script) =>
+							JSON.parse(script.textContent ?? '') as unknown
+					)
+				);
+			const faq = schemas.find(
+				(
+					schema
+				): schema is { mainEntity: Array<Record<string, unknown>> } =>
+					typeof schema === 'object' &&
+					schema !== null &&
+					(schema as Record<string, unknown>)['@type'] === 'FAQPage'
+			);
+			expect(faq).toBeDefined();
+
+			const projected = (faq?.mainEntity ?? []).map((entry) => {
+				const answer = entry.acceptedAnswer as
+					Record<string, unknown> | undefined;
+				return {
+					question: String(entry.name ?? '')
+						.replace(/\s+/g, ' ')
+						.trim(),
+					answer: String(answer?.text ?? '')
+						.replace(/\s+/g, ' ')
+						.trim(),
+				};
+			});
+			expect(projected).toEqual(visible);
 		});
 
 		test(`${locale}: a type chip filters the rows and the counts`, async ({
