@@ -123,7 +123,7 @@ story images with low priority, all async with native intrinsic dimensions.
 The three eager stories prevent empty incoming slides. Keep the original hero,
 images, alt text, gallery/stage scripts and the already authorized testimonials.
 LiveCanvas removes `wp_filter_content_tags`, so raw LC markup requires explicit
-attributes. Do not add another Home responsive-image algorithm or migration.
+attributes. That pass added no other responsive-image algorithm or migration.
 
 Also carry the already reviewed1b7fe3c1 scene heading and paragraph in each
 language from home-scene-inquiry-copy-final.json. They replace the online-order
@@ -153,6 +153,41 @@ bridge. New checks cover logo source selection, its reserved box and current
 Home rendering at1440/390 in EN/DE. No new performance samples, migration
 framework, literal attribute tests or broad matrix. The warm-cache public read
 only diagnoses sizing;81KB compressed CSS and91KB HTML do not prove speed.
+
+The later story-image pass is supported by a current browser request: all three
+already-eager photos still request their full 2048–2400px source at phone size.
+Keep eager loading and the original `src`, dimensions, text, order and
+carousel behavior. Add native `srcset` and `sizes` only to those three saved
+LiveCanvas images using the existing same-aspect WordPress derivatives. The
+saved phone layout uses 4:3 media up to767px; this first pass limits selection
+to600px and below. Its approximately3:2 source needs about1.13 times the card
+width for `object-fit: cover`, so `120vw` leaves a margin. The wider-layout
+hint is2400px, the largest source width, and retains originals at DPR>=1.
+This avoids
+the earlier rejected lazy-carousel blank without creating a JavaScript loader.
+The original remains the fallback for browsers without responsive-image
+support. The guarded pair planner rejects changed sources, missing cards,
+partial edits or altered eager/dimension attributes; apply it only through the
+existing reviewed paired writer with exact preimages and native readback.
+
+This is a declared performance change inside the photo pixels: WordPress's
+resampled variants do not have identical pixels to browser-resampled originals.
+At local390/DPR1 the three requested image bodies are77826B rather than the
+376272B original files; this is a resource-size comparison, not a whole-page
+speed claim. At1440/DPR1 the original sources remain selected, and the EN/DE
+baseline and candidate screenshots match exactly. Keep the image geometry and
+crop, inspect the phone render and actual carousel changes in both languages,
+and check the no-script images and higher-DPR source choices. Check every
+candidate file's public response and bytes before publication; a saved page,
+source diff or local result alone is not production acceptance.
+
+One same-condition local cold comparison used the staff browser at390/DPR1,
+100ms latency and524288B/s download. For the three individual resources,
+request-to-finish observations changed from1711/2340/7476ms to
+1035/1136/1164ms. The candidate's requests started later relative to its
+document request (about5.3s versus2.5s), so these single resource observations
+do not establish a general or whole-page speed improvement. An earlier
+truncated event capture and a truncated post-completion tail were excluded.
 
 The next bounded polish batch fixes the existing transparent-to-white header
 transition. Actual Utility phone anchor navigation observed background alpha
