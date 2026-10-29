@@ -1,35 +1,28 @@
 {
-  "method": "tests/visual/pixel-parity.mjs with the legal764 snapshot instance as the before side and s728 as the after side; no cropping, padding, tolerance, or retry",
-  "ruled_change": "The inserted trade-standard row and its deterministic downward reflow are the only accepted visual change. The row uses a fractional CSS height, so pixels below it cannot be compared by an integer crop; that ruled region begins at the row's margin box and extends to the end of the page.",
-  "cases": [
+  "status": "ruled_layout_change_without_downstream_pixel_equality_claim",
+  "method": "ImageMagick exact RGB comparison above the inserted row's margin box; no tolerance, resize, padding or retry",
+  "above_row_exact_comparison": [
     {
       "case": "services-en-1440",
-      "before": [1440, 7466],
-      "after": [1440, 7626],
-      "ruled_region": [0, 1814, 1440, 7626],
-      "outside_ruled_different_pixels": 0
+      "height_px": 1814,
+      "different_pixels": 0
     },
     {
       "case": "services-en-390",
-      "before": [390, 10353],
-      "after": [390, 10788],
-      "ruled_region": [0, 2194, 390, 10788],
-      "outside_ruled_different_pixels": 0
+      "height_px": 2218,
+      "different_pixels": 0
     },
     {
       "case": "services-de-1440",
-      "before": [1440, 7524],
-      "after": [1440, 7683],
-      "ruled_region": [0, 1814, 1440, 7683],
-      "outside_ruled_different_pixels": 0
+      "height_px": 1814,
+      "different_pixels": 0
     },
     {
       "case": "services-de-390",
-      "before": [390, 10862],
-      "after": [390, 11373],
-      "ruled_region": [0, 2334, 390, 11373],
-      "outside_ruled_different_pixels": 0
+      "height_px": 2334,
+      "different_pixels": 0
     }
   ],
-  "pass": true
+  "downstream_limit": "The inserted row has a fractional CSS height. Pixels below it are not equal after an integer crop, so no below-row pixel-parity result is claimed. layout-result.json records the separately measured DOM translation and unchanged heights.",
+  "inserted_row": "The four cells were inspected at 1440 and the four stacked facts at 390 in EN and DE."
 }

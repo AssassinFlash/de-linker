@@ -53,8 +53,8 @@ The English and German versions state the same four facts.
    requested no rewrite of the four body statements.
 2. Standards review: the German accessible name
    `Geschäftsbedingungen` wrongly means legal terms of business. It was changed
-   to `Leistungen für Fachpartner`. The equivalent English accessible name,
-   `Services for trade customers`, describes the row without changing its body.
+   to `Leistungen für Fachpartner`. The equivalent English accessible name
+   `Services for trade customers` describes the row without changing its body.
 3. Visual styling previously sat in the page's inline style block. It was moved
    to the existing WindPress source `service-intro.css`; the page migration now
    changes markup only.
@@ -98,12 +98,12 @@ contact the team instead of implying an online form.
 - EN and DE were captured at 1440 and 390 through the repository's lossless
   `tests/visual/pixel-parity.mjs`. The four rendered pages have no horizontal
   overflow (`scrollWidth` equals 1440 or 390).
-- The row is the ruled change. Exact comparison outside its deterministic
-  downward reflow reports **0 differing pixels** in all four cases; raw full-page
-  PNGs, geometry, and the ruled result are under `pixel/`. The row uses a
-  fractional CSS height, so pixels below it re-render on a subpixel shift and
-  are explicitly inside the ruled layout-change region rather than claimed as
-  integer-crop-equal.
+- The row is the ruled change. Exact comparison above the inserted row's margin
+  box reports **0 differing pixels** in all four cases. The row has a fractional
+  CSS height, so the evidence does not claim downstream integer-crop pixel
+  equality; it separately records equal downstream DOM translation and unchanged
+  heights in `pixel/layout-result.json`. Raw full-page PNGs, geometry and the
+  limited pixel result remain under `pixel/`.
 - The four rendered row crops were visually inspected: four readable cells at
   desktop and four stacked facts at 390, in both languages.
 - The real trade library readback through the same WordPress instance returns

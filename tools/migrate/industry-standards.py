@@ -35,7 +35,7 @@ writer = _module("content_writer", "repair-legal-script.py")
 SERVICE_LEDGER_INSERTION_POINT = '<div class="service-ledger">'
 ROOT = 'id="service-redesign"'
 
-EN_MARKUP = """<div class="lk-trade-standards" aria-label="Trade standards">
+EN_MARKUP = """<div class="lk-trade-standards" aria-label="Services for trade customers">
 <dl>
 <div><dt>Delivery</dt><dd>Orders ship from our warehouse. Where delivery is required, freight is quoted separately for the destination.</dd></div>
 <div><dt>Training</dt><dd>We provide product training for installers.</dd></div>
@@ -44,6 +44,10 @@ EN_MARKUP = """<div class="lk-trade-standards" aria-label="Trade standards">
 </dl>
 </div>"""
 
+PREVIOUS_EN_MARKUP = EN_MARKUP.replace(
+    'aria-label="Services for trade customers"',
+    'aria-label="Trade standards"',
+)
 DE_MARKUP = """<div class="lk-trade-standards" aria-label="Leistungen für Fachpartner">
 <dl>
 <div><dt>Lieferung</dt><dd>Bestellungen versenden wir ab Lager. Bei Lieferungen berechnen wir die Fracht gesondert nach Zielort.</dd></div>
@@ -82,6 +86,12 @@ def plan_page(content: str, language: str) -> str:
         raise ValueError("Forbidden trade promise entered the reviewed row")
     if markup in content:
         return content
+    if language == "en":
+        previous_count = content.count(PREVIOUS_EN_MARKUP)
+        if previous_count == 1:
+            return content.replace(PREVIOUS_EN_MARKUP, markup, 1)
+        if previous_count > 1:
+            raise ValueError("Services page holds more than one previous reviewed row")
     return _insert_block(content, markup, SERVICE_LEDGER_INSERTION_POINT)
 
 

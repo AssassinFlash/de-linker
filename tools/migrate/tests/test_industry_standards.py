@@ -44,6 +44,24 @@ def test_the_row_adds_the_exact_english_and_german_facts() -> None:
         "Wir arbeiten mit Distributoren und Wiederverkäufern zusammen.",
     ):
         assert value in german
+    assert 'aria-label="Services for trade customers"' in english
+    assert 'aria-label="Leistungen für Fachpartner"' in german
+
+
+def test_the_previous_english_accessible_name_is_upgraded_without_a_second_row() -> (
+    None
+):
+    current = page().replace(
+        standards.SERVICE_LEDGER_INSERTION_POINT,
+        standards.PREVIOUS_EN_MARKUP + "\n" + standards.SERVICE_LEDGER_INSERTION_POINT,
+        1,
+    )
+    upgraded = standards.plan_page(current, "en")
+    assert upgraded == current.replace(
+        standards.PREVIOUS_EN_MARKUP, standards.EN_MARKUP, 1
+    )
+    assert upgraded.count('class="lk-trade-standards"') == 1
+    assert standards.plan_page(upgraded, "en") == upgraded
 
 
 def test_planning_is_idempotent_and_preserves_unrelated_bytes() -> None:
