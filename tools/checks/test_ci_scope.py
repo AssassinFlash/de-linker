@@ -182,6 +182,26 @@ class ScopeTest(unittest.TestCase):
             self.ns["checked_run"]({**run, "status": "in_progress"}, commit)
         )
 
+    def test_squash_merge_and_merge_commit_find_the_pr_head(self):
+        commit = "a" * 40
+        source = "b" * 40
+        run = {"id": 1}
+        self.ns["latest_run"] = Mock(return_value=run)
+        self.ns["checked_run"] = Mock(return_value=True)
+
+        self.ns["git"] = Mock(return_value=f"{commit} {'c' * 40} {source}\n".encode())
+        self.assertIs(self.ns["checked_pr_tree"](commit), run)
+
+        self.ns["git"] = Mock(
+            side_effect=[
+                f"{commit}\n".encode(),
+                b"CI: fail fast with locally reproducible lanes (#779)\n",
+            ]
+        )
+        self.ns["os"] = type("Env", (), {"environ": {"REPOSITORY": "owner/repo"}})
+        self.ns["api"] = Mock(return_value={"head": {"sha": source}})
+        self.assertIs(self.ns["checked_pr_tree"](commit), run)
+
     def test_plan_retains_fail_closed_baseline_and_native_commerce_checks(self):
         # Check the actual dispatch wiring as well as the pure classifier.
         self.assertIn(

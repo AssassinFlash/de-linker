@@ -150,7 +150,16 @@ jobs:
                          for step in job.get("steps", []))
 
           def checked_pr_tree(commit):
-              source = git("rev-parse", commit + "^2").decode().strip()
+              parents = git("rev-list", "--parents", "-n", "1", commit).decode().split()
+              if len(parents) >= 3:
+                  source = parents[2]
+              else:
+                  subject = git("show", "-s", "--format=%s", commit).decode().strip()
+                  pull = re.search(r"\(#([0-9]+)\)$", subject)
+                  if not pull:
+                      return None
+                  repo = os.environ["REPOSITORY"]
+                  source = api(f"repos/{repo}/pulls/{pull.group(1)}")["head"]["sha"]
               run = latest_run(source, "pull_request")
               return run if checked_run(run, commit) else None
 
