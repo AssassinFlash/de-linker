@@ -27,7 +27,7 @@ const sourceNames={home:"首页统一按钮",navigation:"桌面或手机导航",
 function routeFor(source,language){
  const german=language==="DE",root=german?"/de/loesungskonfigurator/":"/solution-configurator/";
  if(source==="home")return {workspace:"Roof design",project:"由客户创建或选择已有项目",context:"屋顶意图；不携带虚构规格",url:root+"?step=roof"};
- if(source==="product")return {workspace:"Equipment",project:"同一项目；商品只是待核实的输入",context:"product=1946（Woo 商品 ID；非兼容放行）",url:root+"?step=equipment&product=1946"};
+ if(source==="product")return {workspace:"Equipment",project:"同一项目；商品只是待核实的输入",context:"product_id=1946（Woo 商品 ID；非兼容放行）",url:root+"?step=equipment&product_id=1946"};
  if(source==="genie")return {workspace:"Roof design",project:"新项目；已有项目保持原工作区",context:"pv_kwp=9.2、annual_kwh=4800、step=roof",url:root+"?pv_kwp=9.2&annual_kwh=4800&step=roof"};
  if(source==="account")return {workspace:"恢复项目上次工作区",project:"project=e9ec28b8…（同一项目）",context:"项目身份与语言；不重复创建",url:root+"?project=e9ec28b8ca7943b98739306782b1d169#lp-design"};
  if(source==="blog")return {workspace:"Roof design",project:"由客户创建或选择已有项目",context:"具体屋顶主题使用屋顶深链",url:root+"?step=roof"};
