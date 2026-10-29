@@ -1,0 +1,31 @@
+{
+  "source": "PDFium text-layer character offsets and bounds from the SHA-verified original German warranty, page 1; same-page complete word also occurs in the original start-date condition",
+  "wraps": [
+    {
+      "head": "Herstellungsdatu",
+      "tail": "m",
+      "head_bbox": [
+        170.36599731445312,
+        603.0699920654297,
+        230.76498413085938,
+        610.7829895019531
+      ],
+      "tail_bbox": [
+        170.28500366210938,
+        615.9939727783203,
+        176.1529998779297,
+        620.2779846191406
+      ],
+      "head_start": 2060,
+      "head_end": 2076,
+      "tail_start": 2078,
+      "tail_end": 2079,
+      "source_sha256": "525182a7f9690ff11fbeeab35dc021f9a44b7267f6c143e2125447fee87ef36a",
+      "page": 1,
+      "page_size": [
+        595.3200073242188,
+        841.9199829101562
+      ]
+    }
+  ]
+}

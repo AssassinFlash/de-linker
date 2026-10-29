@@ -20,7 +20,13 @@ from test_publication_compiler import warranty_fixture
 from index import build, corpus, extract, parse, store
 from index.chunking import Chunk
 from index.corpus import DocumentRow
-from index.extract import Block, Page, pdf_series_cover
+from index.extract import (
+    Block,
+    Page,
+    _pdf_word_wraps,
+    enrich_model_axes,
+    pdf_series_cover,
+)
 from index.inventory import doc_type_of
 from index.publication import ScopeProof, compile_publication
 from index.table_compiler import external_axis_anchors
@@ -45,6 +51,12 @@ from linker_genie.schema import (
     TurnMessage,
     TurnOutput,
     TurnRequest,
+)
+from linker_genie.table_projection import (
+    SourceCell,
+    SourceWordWrap,
+    display_cell_text,
+    valid_word_wrap,
 )
 from linker_genie.warranty_scope import exclusion_category, terms_id, terms_text
 
@@ -198,6 +210,102 @@ def _pdf_fixture(
     return path
 
 
+def test_word_wrap_extraction_requires_a_witness_and_respects_picture_source(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import pypdfium2
+
+    path = _pdf_fixture(
+        tmp_path,
+        [(500, "Herstellungsdatu"), (488, "m"), (450, "Herstellungsdatum")],
+    )
+    pdf = pypdfium2.PdfDocument(path)
+    try:
+        wraps = _pdf_word_wraps(pdf, 1, path.stem)
+    finally:
+        pdf.close()
+    assert len(wraps) == 1
+    first, last = wraps[0]["head_bbox"], wraps[0]["tail_bbox"]
+    cell = SourceCell(
+        row_start=1,
+        row_end=2,
+        col_start=1,
+        col_end=2,
+        text="Herstellungsdatu m",
+        column_header=False,
+        row_header=False,
+        row_section=False,
+        bbox=(first[0] - 1, first[1] - 1, first[2] + 1, last[3] + 1),
+        bbox_origin="TOPLEFT",
+    )
+    table = Block(kind="table", source_cells=(cell,))
+    picture = replace(table, source_picture="#/pictures/0")
+    enriched = enrich_model_axes([Page(1, "docling", [table, picture])], path)[0]
+    assert enriched.blocks[0].source_cells[0]["text"] == "Herstellungsdatu m"
+    assert enriched.blocks[0].source_cells[0]["word_wraps"] == wraps
+    assert enriched.blocks[1].source_picture == "#/pictures/0"
+    assert "word_wraps" not in enriched.blocks[1].source_cells[0]
+    ocr = enrich_model_axes([Page(1, "ocr", [table])], path)[0]
+    assert "word_wraps" not in ocr.blocks[0].source_cells[0]
+
+    def unavailable(*_args: Any) -> list[SourceWordWrap]:
+        raise ValueError("unreadable physical layout")
+
+    monkeypatch.setattr(extract, "_pdf_word_wraps", unavailable)
+    untouched = enrich_model_axes([Page(1, "docling", [table])], path)[0]
+    assert untouched.blocks[0].source_cells[0]["text"] == "Herstellungsdatu m"
+    assert "word_wraps" not in untouched.blocks[0].source_cells[0]
+
+    missing = _pdf_fixture(tmp_path, [(500, "Herstellungsdatu"), (488, "m")])
+    pdf = pypdfium2.PdfDocument(missing)
+    try:
+        assert _pdf_word_wraps(pdf, 1, missing.stem) == []
+    finally:
+        pdf.close()
+
+
+def test_word_wrap_needs_same_source_witness_and_preserves_real_spaces() -> None:
+    evidence = json.loads(
+        (
+            Path(__file__).parent
+            / "fixtures/publication-compiler/warranty-word-wrap-physical.json"
+        ).read_text()
+    )
+    wrap = evidence["wraps"][0]
+    fixture = json.loads(
+        gzip.decompress(
+            (
+                Path(__file__).parent
+                / "fixtures/publication-compiler/warranty-sts-production.json.gz"
+            ).read_bytes()
+        )
+    )
+    cell = next(
+        cell
+        for chunk in fixture["original"]
+        for cell in chunk.get("source_cells", [])
+        if valid_word_wrap(wrap, cell)
+    )
+    cell["word_wraps"] = [wrap]
+    raw = cell["text"]
+    sha = wrap["source_sha256"]
+    assert (
+        display_cell_text(cell, sha, 1, ["2. 12 Monate nach dem Herstellungsdatum;"])
+        == "unabhängig vom Herstellungsdatum"
+    )
+    assert display_cell_text(cell, sha, 1, []) == raw
+    assert display_cell_text(cell, "0" * 64, 1, ["Herstellungsdatum"]) == raw
+    assert display_cell_text(cell, sha, 2, ["Herstellungsdatum"]) == raw
+    assert not valid_word_wrap({**wrap, "head": "unabhängig", "tail": "v"}, cell)
+    assert not valid_word_wrap({**wrap, "tail": "2"}, cell)
+    unit_cell = {**cell, "text": "2. 12 Monate"}
+    assert not valid_word_wrap({**wrap, "head": "12", "tail": "M"}, unit_cell)
+    displaced = {**wrap, "tail_bbox": [400, 616, 406, 620]}
+    assert not valid_word_wrap(displaced, cell)
+    assert cell["text"] == raw
+
+
 def test_pdf_cover_recovery_requires_unique_visible_line_and_hash(
     tmp_path: Path,
 ) -> None:
@@ -224,10 +332,9 @@ def test_pdf_cover_recovery_requires_unique_visible_line_and_hash(
         pdf_series_cover(wrong)
 
 
-def test_visible_sts_cover_flows_through_authorized_warranty_search(
-    tmp_path: Path,
-) -> None:
-    """The live parse marks its cover as a picture even though the PDF has text."""
+def _sts_index(
+    tmp_path: Path, word_wraps: list[SourceWordWrap] | None = None
+) -> tuple[DocumentIndex, dict[str, Any], set[int]]:
     fixture = json.loads(
         gzip.decompress(
             (
@@ -279,6 +386,24 @@ def test_visible_sts_cover_flows_through_authorized_warranty_search(
 
     raw = rebind(raw)
     original = [Chunk(**c) for c in rebind(fixture["original"])]
+    if word_wraps:
+        enriched = []
+        for chunk in original:
+            cells: list[SourceCell] = []
+            for cell in chunk.source_cells:
+                matches = [
+                    wrap
+                    for wrap in word_wraps
+                    if wrap["source_sha256"] == chunk.doc_sha256
+                    and wrap["page"] == chunk.page
+                    and valid_word_wrap(wrap, cell)
+                ]
+                own: SourceCell = {**cell}
+                if matches:
+                    own["word_wraps"] = matches
+                cells.append(own)
+            enriched.append(replace(chunk, source_cells=tuple(cells)))
+        original = enriched
     shas = {c.doc_sha256 for c in original}
 
     def compile_chunks(
@@ -347,7 +472,14 @@ def test_visible_sts_cover_flows_through_authorized_warranty_search(
     )
     db = tmp_path / "sts.sqlite"
     store.export(root, db)
-    index = DocumentIndex(db, encoder=None)
+    return DocumentIndex(db, encoder=None), raw, product_ids
+
+
+def test_visible_sts_cover_flows_through_authorized_warranty_search(
+    tmp_path: Path,
+) -> None:
+    """The live parse marks its cover as a picture even though the PDF has text."""
+    index, raw, product_ids = _sts_index(tmp_path)
     try:
         policy_ids = {
             d["document_id"] for d in raw["documents"] if d["type"] == "warranty"
@@ -380,6 +512,59 @@ def test_visible_sts_cover_flows_through_authorized_warranty_search(
                         for hit in result["hits"]
                     ],
                 )
+    finally:
+        index.close()
+
+
+def test_real_warranty_cell_wrap_is_readable_without_changing_its_proof(
+    tmp_path: Path,
+) -> None:
+    evidence = json.loads(
+        (
+            Path(__file__).parent
+            / "fixtures/publication-compiler/warranty-word-wrap-physical.json"
+        ).read_text()
+    )
+    index, raw, _ = _sts_index(tmp_path, evidence["wraps"])
+    try:
+        search = KnowledgeSearch(lambda: index, publication=authority(raw))
+        result = search(
+            {
+                "query": "Wie lange gilt die Garantie für GW30K-STS-G10?",
+                "lang": "de",
+                "product_ids": [6529],
+            }
+        )
+        hit = next(hit for hit in result["hits"] if hit.get("warranty_terms"))
+        note = hit["qualifications"][0]
+        assert note["chunk_id"] == "525182a7f969-p1-d0d46d62"
+        assert note["quote"] == "*1: unabhängig vom Herstellungsdatum"
+        proof = json.loads(
+            index._db.execute(
+                "SELECT proof FROM chunk_scopes WHERE chunk_id = ?", (hit["chunk_id"],)
+            ).fetchone()[0]
+        )
+        row = proof["warranty_scope"]["policy"]["term_row"]
+        original = next(
+            cell
+            for cell in row["cells"]
+            if cell["col_start"] == 1
+            and cell["row_start"] <= row["row"] < cell["row_end"]
+        )
+        assert original["text"] == "unabhängig vom Herstellungsdatu m"
+        facts = collect("linker/search-knowledge", {"hits": [hit]}, "de")
+        output = TurnOutput(
+            language="de",
+            blocks=[
+                TextBlock(
+                    text=hit["warranty_answers"]["period"], refs=[hit["chunk_id"]]
+                )
+            ],
+        )
+        shown = _text(hydrate(output, facts))
+        assert shown.count("unabhängig vom Herstellungsdatum") == 2
+        assert "Herstellungsdatu m" not in shown
+        assert "2. 12 Monate" in shown
     finally:
         index.close()
 

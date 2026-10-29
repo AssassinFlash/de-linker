@@ -14,7 +14,12 @@ from decimal import Decimal
 from typing import Any
 
 from linker_genie.source_models import model_pattern
-from linker_genie.table_projection import cells_digest, model_axis, read_cells
+from linker_genie.table_projection import (
+    cells_digest,
+    display_cell_text,
+    model_axis,
+    read_cells,
+)
 
 # Literal manufacturer cover vocabulary in the hosted ESA/ET/STSs originals.
 # Power ranges must agree; an ESA family name alone cannot cross its ranges.
@@ -354,6 +359,7 @@ def terms_text(
     }:
         return None
     selected = []
+    selected_cells = []
     for col in range(4):
         matches = [
             c
@@ -365,6 +371,7 @@ def terms_text(
         ]
         if len(matches) != 1:
             return None
+        selected_cells.append(matches[0])
         selected.append(matches[0]["text"])
     period, production, _product, series = selected
     token = _series_token(series, family)
@@ -503,10 +510,23 @@ def terms_text(
                 "lang": item["lang"],
             }
         )
+    # The native cell and its source chunk remain unchanged in the proof.
+    # Only restore a one-letter physical wrap when another verified source
+    # passage on this same page contains the complete word.
+    witness_texts = [
+        item["text"]
+        for item in sources.values()
+        if isinstance(item, dict)
+        and item.get("page") == row_page
+        and isinstance(item.get("text"), str)
+    ]
+    production_display = display_cell_text(
+        selected_cells[1], sha, row_page, witness_texts
+    )
     notes.insert(
         0,
         {
-            "quote": production,
+            "quote": production_display,
             "page": row_page,
             "chunk_id": row_id,
             "lang": sources["overview"]["lang"],
