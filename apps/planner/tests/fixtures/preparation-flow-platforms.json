@@ -1,6 +1,6 @@
 {
 	"schema_version": 1,
-	"comparison": "complete_document_equality_on_each_named_host; canonical diagnostics are platform-stable while the physical AC/DC series retain each host's exact arithmetic",
+	"comparison": "same-host complete-document reproducibility plus cross-host equality of every host-invariant field; exact PV/model artifacts retain each host/CPU's arithmetic",
 	"baselines": {
 		"darwin-arm64": {
 			"fixture": "preparation-flow-darwin-arm64.json",
