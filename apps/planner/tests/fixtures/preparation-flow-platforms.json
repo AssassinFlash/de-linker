@@ -29,6 +29,7 @@
 		"linux-x86_64": {
 			"fixture": "preparation-flow-linux-x86_64.json",
 			"canonical_sorted_json_sha256": "cb86d879d66268b24d5ee9362fbcfd0a8781f58ce07ad31320694d7a8954267e",
+			"export_run": "https://github.com/AssassinFlash/de-linker/actions/runs/40859636089",
 			"runtime": {
 				"python": "3.12.3",
 				"platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
