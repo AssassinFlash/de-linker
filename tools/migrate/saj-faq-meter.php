@@ -17,8 +17,9 @@
 	if ( ! in_array( $action, array( 'plan', 'apply', 'rollback' ), true ) ) {
 		WP_CLI::error( 'Expected plan, apply or rollback.' );
 	}
-	$home = home_url();
-	if ( ! in_array( $home, array( 'https://de-linker.com', 'http://127.0.0.1:8888' ), true ) ) {
+	$home           = untrailingslashit( home_url() );
+	$reviewed_local = (bool) preg_match( '#^https?://(?:127\.0\.0\.1|localhost):\d+$#', $home );
+	if ( 'https://de-linker.com' !== $home && ! $reviewed_local ) {
 		WP_CLI::error( 'This correction is limited to the reviewed production and local sites.' );
 	}
 	$nom      = array(

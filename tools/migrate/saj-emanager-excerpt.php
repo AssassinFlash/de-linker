@@ -13,9 +13,10 @@
 	if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
 		throw new RuntimeException( 'Run through WP-CLI.' );
 	}
-	$action = $args[0] ?? 'plan';
-	$home   = home_url();
-	if ( ! in_array( $action, array( 'plan', 'apply', 'rollback' ), true ) || ! in_array( $home, array( 'https://de-linker.com', 'http://127.0.0.1:8888' ), true ) ) {
+	$action         = $args[0] ?? 'plan';
+	$home           = untrailingslashit( home_url() );
+	$reviewed_local = (bool) preg_match( '#^https?://(?:127\.0\.0\.1|localhost):\d+$#', $home );
+	if ( ! in_array( $action, array( 'plan', 'apply', 'rollback' ), true ) || ( 'https://de-linker.com' !== $home && ! $reviewed_local ) ) {
 		WP_CLI::error( 'Expected a reviewed site and plan, apply or rollback.' );
 	}
 	$old_excerpt = 'b9703de003f70c6843594e85e5d3950cb7130042a4cdffa36c44e832fa172c3a';

@@ -23,7 +23,7 @@
       "question": "Which circuit breakers does the installation need?",
       "answer": "The installation requires five circuit breakers, one for each of the following connections: Inverter Backup, Hybrid inverter Grid, On-grid inverter Grid, Smart Load, and Backup Load. Select applicable circuit breakers based on the rated current of the target connections. The circuit breakers can be installed inside the ATS Box or in the external distribution box of the users.",
       "question_de": "Welche Leitungsschutzschalter braucht die Installation?",
-      "answer_de": "Die Installation erfordert fünf Leitungsschutzschalter, je einen für die folgenden Anschlüsse: Inverter Backup, Hybrid inverter Grid, On-grid inverter Grid, Smart Load und Backup Load. Wählen Sie geeignete Leitungsschutzschalter basierend auf dem Nennstrom der Zielanschlüsse. Die Leitungsschutzschalter können im ATS Box oder im externen Verteilerkasten der Nutzer installiert werden.",
+      "answer_de": "Die Installation erfordert fünf Leitungsschutzschalter, je einen für die folgenden Anschlüsse: Inverter Backup, Hybrid inverter Grid, On-grid inverter Grid, Smart Load und Backup Load. Wählen Sie geeignete Leitungsschutzschalter basierend auf dem Nennstrom der Zielanschlüsse. Die Leitungsschutzschalter können in der ATS-Box oder im externen Verteilerkasten der Nutzer installiert werden.",
       "citation": {
         "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_ATS1-T63-A_User-Manual_EN_V3.0.pdf",
         "page": 21,
@@ -35,7 +35,7 @@
     },
     {
       "question": "Where can the panel be installed?",
-      "answer": "The device can be installed either indoor or outdoor. Do not install the device in resting areas, such as bedrooms, because the noise level may exceed 30 dB when the grid is unstable.",
+      "answer": "The device can be installed either indoors or outdoors. Do not install the device in resting areas, such as bedrooms, because the noise level may exceed 30 dB when the grid is unstable.",
       "question_de": "Wo kann die Einheit montiert werden?",
       "answer_de": "Das Gerät kann entweder im Innen- oder Außenbereich installiert werden. Installieren Sie das Gerät nicht in Ruhebereichen wie Schlafzimmern, da der Geräuschpegel bei instabilem Netz 30 dB überschreiten kann.",
       "citation": {
