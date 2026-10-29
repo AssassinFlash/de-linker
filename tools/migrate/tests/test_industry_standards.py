@@ -15,7 +15,7 @@ spec.loader.exec_module(standards)
 
 def page(root: str = 'id="service-redesign"') -> str:
     return (
-        "<style data-site-css=\"service-redesign.css\">.x{color:red}\n"
+        '<style data-site-css="service-redesign.css">.x{color:red}\n'
         "@media (max-width: 1100px) { .x{color:blue} }</style>\n"
         f'<div {root}><section id="deliverables"><div class="lk-container">'
         '<div class="service-intro">Keep this copy.</div>\n'
@@ -50,13 +50,16 @@ def test_planning_is_idempotent_and_preserves_unrelated_bytes() -> None:
     original = page()
     planned = standards.plan_page(original, "en")
     assert standards.plan_page(planned, "en") == planned
-    assert original.replace(
-        standards.CSS_ANCHOR, standards.CSS + "\n" + standards.CSS_ANCHOR, 1
-    ).replace(
-        standards.LEDGER_ANCHOR,
-        standards.EN_MARKUP + "\n" + standards.LEDGER_ANCHOR,
-        1,
-    ) == planned
+    assert (
+        original.replace(
+            standards.CSS_ANCHOR, standards.CSS + "\n" + standards.CSS_ANCHOR, 1
+        ).replace(
+            standards.LEDGER_ANCHOR,
+            standards.EN_MARKUP + "\n" + standards.LEDGER_ANCHOR,
+            1,
+        )
+        == planned
+    )
     assert planned.count(standards.CSS) == 1
     assert planned.count(standards.EN_MARKUP) == 1
 

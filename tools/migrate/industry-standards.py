@@ -213,9 +213,7 @@ def main() -> None:
     after = list(plan_pair(*before))
     changes = [
         {"id": page_id, "before": old, "after": new}
-        for page_id, old, new in zip(
-            (args.en, args.de), before, after, strict=True
-        )
+        for page_id, old, new in zip((args.en, args.de), before, after, strict=True)
     ]
     result = {
         "write": args.write,
@@ -235,7 +233,10 @@ def main() -> None:
     if args.backup_dir is None:
         parser.error("--write requires --backup-dir")
     if urlsplit(snapshot["home"]).hostname in {"de-linker.com", "www.de-linker.com"}:
-        if args.full_backup is None or not (args.full_backup / "manifest.json").is_file():
+        if (
+            args.full_backup is None
+            or not (args.full_backup / "manifest.json").is_file()
+        ):
             parser.error("Production requires a completed --full-backup")
         writer.verify_full_backup(args.full_backup)
 
