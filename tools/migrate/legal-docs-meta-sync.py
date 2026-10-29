@@ -35,7 +35,9 @@ from urllib.parse import urlsplit
 
 HERE = Path(__file__).resolve().parent
 
-_spec = importlib.util.spec_from_file_location("repair", HERE / "repair-legal-script.py")
+_spec = importlib.util.spec_from_file_location(
+    "repair", HERE / "repair-legal-script.py"
+)
 assert _spec and _spec.loader
 repair = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(repair)
