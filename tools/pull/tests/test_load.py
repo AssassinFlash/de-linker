@@ -1,4 +1,4 @@
-"""Loading a snapshot into a real local WordPress: MySQL, PHP, WP-CLI, WordPress 7.1.3.
+"""Loading a snapshot into a real local WordPress: MySQL, PHP, WP-CLI, WordPress 7.1.4.
 
 A "live" WordPress is installed under https://de-linker.com with the address in
 the forms the live tables hold it (plain, JSON-escaped, URL-encoded, inside a
@@ -26,7 +26,7 @@ from linker_local.instance import Instance, database_of
 from linker_pull import live, load, manifest, sqldump
 from linker_pull.anonymize import Anonymizer, accounts_from_dump
 
-WORDPRESS = "7.1.3"
+WORDPRESS = "7.1.4"
 PORT = 8199  # only part of the address written into the database; nothing listens
 # Every run names its own databases (process id and a random suffix), so two
 # sessions running these tests against the one local MySQL at the same time
@@ -143,7 +143,7 @@ def install(docroot: Path, database: str, url: str, core: Path) -> None:
 
 @pytest.fixture(scope="module")
 def core(tmp_path_factory: pytest.TempPathFactory) -> Path:
-    """WordPress 7.1.3 without its default themes and plugins (WP-CLI caches the download)."""
+    """WordPress 7.1.4 without its default themes and plugins (WP-CLI caches the download)."""
     missing = tools_missing()
     assert not missing, f"missing: {', '.join(missing)} (docs/specs/6-live-pull.md)"
     directory = tmp_path_factory.mktemp("core") / "wordpress"

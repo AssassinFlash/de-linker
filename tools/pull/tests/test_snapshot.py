@@ -96,7 +96,7 @@ def host(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[Path]:
 
     def wp(*args: str) -> str:
         assert args == ("core", "version")
-        return "7.1.3\n"
+        return "7.1.4\n"
 
     def wp_json(*args: str) -> object:
         return {"plugin": PLUGINS, "theme": THEMES}[args[0]]
@@ -187,7 +187,7 @@ def test_a_snapshot_holds_the_pseudonymized_database_and_the_files_it_needs(
     assert written["source"] == {
         "host": "hostinger-de-linker",
         "url": "https://de-linker.com",
-        "wordpress": "7.1.3",
+        "wordpress": "7.1.4",
     }
     assert written["database"]["posts"]["product/publish"] == 1
     assert written["database"]["check"]["clean"] is True

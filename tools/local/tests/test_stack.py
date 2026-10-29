@@ -207,7 +207,7 @@ def test_two_instances_run_side_by_side(stack: Stack) -> None:
 
 def test_both_run_the_production_versions(stack: Stack) -> None:
     for name in NAMES:
-        assert stack.wp(name, "core", "version") == "7.1.3"
+        assert stack.wp(name, "core", "version") == "7.1.4"
         assert (
             stack.wp(name, "plugin", "get", "woocommerce", "--field=version")
             == "11.2.0"
