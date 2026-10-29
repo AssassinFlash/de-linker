@@ -42,6 +42,7 @@ final class Form {
 	 * LC's own fragment with no PHP layout.
 	 */
 	public function render(): string {
+		\Linker\Commerce\Cache\DynamicHtml::forbid( 'inquiry form' );
 		foreach ( array( 'fields', 'error', 'error_locale' ) as $key ) {
 			$this->flash[ $key ] = WC()->session->get( 'linker_inquiry_' . $key );
 			WC()->session->set( 'linker_inquiry_' . $key, null );
