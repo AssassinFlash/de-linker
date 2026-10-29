@@ -261,6 +261,25 @@ def host_invariant_view(node: Any, path: tuple[str | int, ...] = ()) -> Any:
     return node
 
 
+def different_paths(
+    left: Any, right: Any, path: tuple[str | int, ...] = ()
+) -> set[tuple[str | int, ...]]:
+    """Paths where the two committed host baselines differ."""
+    if type(left) is not type(right):
+        return {path}
+    if isinstance(left, dict):
+        found = {(*path, "__keys__")} if set(left) != set(right) else set()
+        for key in set(left) & set(right):
+            found |= different_paths(left[key], right[key], (*path, key))
+        return found
+    if isinstance(left, list):
+        found = {(*path, "__length__")} if len(left) != len(right) else set()
+        for index, (actual, wanted) in enumerate(zip(left, right, strict=False)):
+            found |= different_paths(actual, wanted, (*path, index))
+        return found
+    return set() if left == right else {path}
+
+
 def test_replacing_selected_weather_can_be_saved_after_browser_preparation(
     workspace: Workspace, owner: Actor
 ) -> None:
@@ -542,6 +561,17 @@ def test_preparation_platform_manifest_names_each_export() -> None:
             hashlib.sha256(canonical).hexdigest()
             == baseline["canonical_sorted_json_sha256"]
         ), host
+
+
+def test_host_derived_fixture_paths_match_the_named_baselines() -> None:
+    """The explicit mask is exactly the measured Darwin/Linux difference."""
+    darwin = json.loads(
+        (APP / "tests/fixtures/preparation-flow-darwin-arm64.json").read_text()
+    )
+    linux = json.loads(
+        (APP / "tests/fixtures/preparation-flow-linux-x86_64.json").read_text()
+    )
+    assert different_paths(darwin, linux) == HOST_DERIVED_FIXTURE_PATHS
 
 
 # Every top-level key the browser fixture carries, produced by the exporter.
