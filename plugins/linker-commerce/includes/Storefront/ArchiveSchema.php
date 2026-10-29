@@ -1,6 +1,6 @@
 <?php
 /**
- * The catalogue's structured data.
+ * The catalogue and journal archive structured data.
  *
  * @package Linker\Commerce
  */
@@ -40,13 +40,106 @@ final class ArchiveSchema {
 	 * Prints the two blocks, or nothing when this request is not the catalogue.
 	 */
 	public function print_block(): void {
-		foreach ( array( $this->collection(), $this->breadcrumb() ) as $block ) {
+		$this->print_blocks( array( $this->collection(), $this->breadcrumb() ) );
+	}
+
+	/**
+	 * Prints the two blocks for an indexable blog category archive.
+	 *
+	 * The child theme owns the category template hook, but the schema facts
+	 * and encoding stay beside the catalogue's other archive schema. A
+	 * noindexed category is deliberately skipped: it is neither in the
+	 * sitemap nor a page search engines are asked to understand.
+	 */
+	public function print_blog_category_block(): void {
+		$this->print_blocks( array( $this->blog_category_collection(), $this->blog_category_breadcrumb() ) );
+	}
+
+	/**
+	 * Print the non-empty nodes in one sequence.
+	 *
+	 * @param list<array<string, mixed>> $blocks Schema.org nodes.
+	 */
+	private function print_blocks( array $blocks ): void {
+		foreach ( $blocks as $block ) {
 			if ( array() === $block ) {
 				continue;
 			}
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the payload is JSON, and encoded() is where its one dangerous character is handled.
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- encoded() keeps the JSON inside its script element.
 			echo '<script type="application/ld+json">' . $this->encoded( $block ) . "</script>\n";
 		}
+	}
+
+	/**
+	 * CollectionPage for an indexable blog category, or an empty array.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public function blog_category_collection(): array {
+		$target = $this->blog_category_target();
+		if ( null === $target ) {
+			return array();
+		}
+		return array(
+			'@context' => 'https://schema.org',
+			'@type'    => 'CollectionPage',
+			'name'     => $target['name'],
+			'url'      => $target['url'],
+			'isPartOf' => array(
+				'@type' => 'WebSite',
+				'name'  => (string) get_bloginfo( 'name' ),
+				'url'   => PageUrls::home(),
+			),
+		);
+	}
+
+	/**
+	 * The blog category's breadcrumb: home, the blog index and the term.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public function blog_category_breadcrumb(): array {
+		$target = $this->blog_category_target();
+		if ( null === $target ) {
+			return array();
+		}
+		$items = array(
+			array(
+				'@type'    => 'ListItem',
+				'position' => 1,
+				'name'     => _x( 'Home', 'breadcrumb', 'linker-commerce' ),
+				'item'     => PageUrls::home(),
+			),
+		);
+		$posts = get_posts(
+			array(
+				'post_type'      => 'page',
+				'name'           => 'blog',
+				'post_status'    => 'publish',
+				'posts_per_page' => 1,
+				'no_found_rows'  => true,
+			)
+		);
+		$blog  = $posts[0] ?? null;
+		if ( $blog instanceof \WP_Post ) {
+			$items[] = array(
+				'@type'    => 'ListItem',
+				'position' => 2,
+				'name'     => (string) $blog->post_title,
+				'item'     => (string) get_permalink( $blog->ID ),
+			);
+		}
+		$items[] = array(
+			'@type'    => 'ListItem',
+			'position' => count( $items ) + 1,
+			'name'     => $target['name'],
+			'item'     => $target['url'],
+		);
+		return array(
+			'@context'        => 'https://schema.org',
+			'@type'           => 'BreadcrumbList',
+			'itemListElement' => $items,
+		);
 	}
 
 	/**
@@ -126,6 +219,36 @@ final class ArchiveSchema {
 	 */
 	public function encoded( array $node ): string {
 		return str_replace( '<', '\u003C', (string) wp_json_encode( $node, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) );
+	}
+
+	/**
+	 * The queried blog category when it is published and indexable.
+	 *
+	 * @return array{name: string, url: string, term: \WP_Term}|null
+	 */
+	private function blog_category_target(): ?array {
+		if ( ! is_category() ) {
+			return null;
+		}
+		$term = get_queried_object();
+		if ( ! $term instanceof \WP_Term ) {
+			return null;
+		}
+		$noindex = function_exists( 'seopress_titles_noindex_bypass' )
+			? seopress_titles_noindex_bypass()
+			: get_term_meta( $term->term_id, '_seopress_robots_index', true );
+		if ( ! empty( $noindex ) ) {
+			return null;
+		}
+		$link = get_term_link( $term );
+		if ( ! is_string( $link ) || '' === $link ) {
+			return null;
+		}
+		return array(
+			'name' => (string) $term->name,
+			'url'  => $link,
+			'term' => $term,
+		);
 	}
 
 	/**
