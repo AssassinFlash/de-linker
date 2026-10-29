@@ -15,14 +15,7 @@ from .power_series import PowerSeries
 from .pv_arrays import generation_arrays
 from .pv_conventions import CONVENTIONS
 from .pv_parameters import PvGenerationParameters
-from .pv_physics import (
-    array_power,
-    checked,
-    conversion_power,
-    retained_watts,
-    sun,
-    values,
-)
+from .pv_physics import array_power, checked, conversion_power, sun, values
 from .pv_reconstruction import PvReconstruction
 from .pv_weather import WeatherSeries
 from .series_source import SeriesSource
@@ -169,7 +162,7 @@ def generate_pv(
                 "solar_geometry": {key: values(value) for key, value in solar.items()},
                 "arrays": array_witnesses,
                 "converters": converter_witnesses,
-                "available_ac_w": retained_watts(total),
+                "available_ac_w": values(total),
                 "energy_kwh": profile.total_kwh,
                 "equipment_release": {"status": "not_assessed"},
                 "country_assessment": {"status": "not_assessed"},

@@ -53,24 +53,6 @@ When GHI, DNI and DHI are all exactly zero, incident POA is physically zero;
 resolve this explicit branch before the Perez clearness division. It must not
 be implemented as a general NaN-to-zero replacement for nonzero weather.
 
-Original weather, declared parameters, intermediate model vectors, the final AC
-profile and the energy integral keep every binary64 digit. `canonical.encode`
-hashes the JSON value it is given; it is not a rounding step. Derived diagnostic
-lists written by `pv_physics.values()` use at most IEEE-754 binary64 digits10 =
-15 significant decimal digits, converted to the stored binary64; signed zero is
-stored as +0. Recovering every original binary64 would require max_digits10 = 17,
-which this diagnostic contract does not claim. Canonical JSON may use exponent
-notation for the stored value. This is a storage contract for a finished
-diagnostic, not an engineering accuracy, a tolerance, or a claim that two libm
-hosts computed the same number. It is not read back into solar position,
-geometric direction, Perez transposition, DC, AC or energy. Retained AC and DC
-watt series that preview and group projection read back as profiles stay exact;
-they are the stored output, not this diagnostic spelling. A worker with the
-same code and the same environment replays the retained original inputs at full
-precision and reproduces the witness from that replay. Display rounding in
-`report_numbers.py` is a separate reader-facing format: frozen sources there
-keep full precision and do not use this spelling.
-
 Output is the named model's estimated AC potential before site export/storage
 control. The existing continuous-energy kernel applies those later controls.
 Retain geometry/weather/parameter hashes, source/model versions, input/output
@@ -135,9 +117,7 @@ Changing load inputs alone does not invalidate the roof's available-AC model.
 Pin raw weather, metadata, model input and witness hashes into the durable run.
 The worker independently verifies those roles against the owned assets and
 frozen revision, rebuilds the profile from the retained original and reproduces
-the input/witness hashes before energy dispatch. Replay uses those retained
-originals at full precision; the 15-digit derived-witness spelling is not a
-substitute input. The worker must not consult the latest
+the input/witness hashes before energy dispatch. It must not consult the latest
 project, weather, product data or provider. A run queued before a roof edit
 continues against its original snapshot; it becomes historical, not current.
 Missing/tampered dependencies and unsupported model versions fail explicitly.

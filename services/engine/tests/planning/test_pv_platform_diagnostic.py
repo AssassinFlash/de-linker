@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import base64
+import gzip
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -16,7 +19,7 @@ from . import export_preparation_fixture
 BASELINE = Path(__file__).resolve().parents[1] / "fixtures" / "pv-platform-witness.json"
 
 
-def capture_witness() -> dict[str, Json]:
+def capture_witness() -> tuple[dict[str, Json], dict[str, Json]]:
     witnesses: list[bytes] = []
     original = PvGeneration
 
@@ -27,9 +30,9 @@ def capture_witness() -> dict[str, Json]:
         return original(profile, inputs_json, witness_json)  # type: ignore[arg-type]
 
     with patch("linker_engine.planning.pv_generation.PvGeneration", record):
-        export_preparation_fixture.capture()
+        document = export_preparation_fixture.capture()
     assert len(witnesses) == 1
-    return decode_object(witnesses[0])
+    return document, decode_object(witnesses[0])
 
 
 def differences(
@@ -58,7 +61,12 @@ def differences(
 
 
 def test_actual_witness_platform_differences() -> None:
-    actual = capture_witness()
+    document, actual = capture_witness()
+    if os.environ.get("CI") == "true":
+        raw = json.dumps(document, ensure_ascii=False, sort_keys=True).encode()
+        packed = gzip.compress(raw, mtime=0)
+        print("PV_PLATFORM_DOCUMENT_SHA256", hashlib.sha256(raw).hexdigest())
+        print("PV_PLATFORM_DOCUMENT", base64.b64encode(packed).decode())
     if os.environ.get("LINKER_PV_PLATFORM_WRITE") == "1":
         BASELINE.write_text(json.dumps(actual, ensure_ascii=False, indent=2) + "\n")
     expected = cast(dict[str, Json], json.loads(BASELINE.read_text()))

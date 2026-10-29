@@ -20,15 +20,7 @@ from .geometry import sin_cos_degrees
 from .power_series import PowerSeries
 from .pv_arrays import generation_arrays
 from .pv_generation import PvGeneration
-from .pv_physics import (
-    ArrayPower,
-    array_power,
-    checked,
-    conversion_power,
-    retained_watts,
-    sun,
-    values,
-)
+from .pv_physics import ArrayPower, array_power, checked, conversion_power, sun, values
 from .pv_reconstruction import PvReconstruction
 from .pv_weather import WeatherSeries
 from .series_source import SeriesSource
@@ -264,7 +256,7 @@ def generate_geometric_pv(
                 "arrays": [outputs[array.id].witness for array in arrays],
                 "modules": module_witnesses,
                 "converters": [item[1] for item in converters],
-                "available_ac_w": retained_watts(total),
+                "available_ac_w": values(total),
                 "energy_kwh": profile.total_kwh,
                 "equipment_release": {"status": "not_assessed"},
                 "country_assessment": {"status": "not_assessed"},
