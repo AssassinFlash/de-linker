@@ -44,6 +44,10 @@ final class Business {
 		$ledger = new Ledger();
 		if ( 'enforce' === $config->mode && wp_is_uuid( $id, 4 ) ) {
 			$old = $ledger->lookup( $id, $fp );
+			if ( is_wp_error( $old ) && 'linker_admission_unknown_receipt' !== $old->get_error_code() ) {
+				// A failed lookup cannot establish that the original write is absent.
+				return new WP_Error( $old->get_error_code(), __( 'The request status could not be confirmed. Please check before sending it again.', 'linker-commerce' ), $old->get_error_data() );
+			}
 			if ( ! is_wp_error( $old ) && $action === $old['purpose'] && $identity->binding() === $old['binding'] ) {
 				$order = BusinessRecord::recover( $id, $fp, $identity->binding(), $old );
 				if ( $order instanceof WC_Order ) {
@@ -55,6 +59,10 @@ final class Business {
 					$ledger->complete( $id, $fp, $order->get_id() );
 					return $order;
 				}
+				// Match Admission's existing-receipt fence before asking for a
+				// fresh proof. Reserved/dispatched/unresolved and a completed
+				// receipt without a verifiable native result are not a new write.
+				return new WP_Error( 'linker_inquiry_pending', __( 'The request status could not be confirmed. Please check before sending it again.', 'linker-commerce' ) );
 			}
 		}
 		if ( 'enforce' === $config->mode && ! $current ) {
@@ -75,14 +83,14 @@ final class Business {
 		if ( 'enforce' === $config->mode && in_array( $action, array( 'contact', 'inquiry' ), true ) ) {
 			$required = Configuration::verification_required( $action );
 			if ( $required && ! $config->ready() ) {
-				return new WP_Error( 'linker_admission_configuration', __( 'Your request could not be processed. Please try again.', 'linker-commerce' ), array( 'status' => 503 ) );
+				return new WP_Error( 'linker_admission_configuration', self::verification_message( 'unavailable' ), array( 'status' => 503 ) );
 			}
 			$verified = $config->ready() && Intake::verified( $proof, $action, $identity, $id );
 			if ( $required && ! $verified ) {
-				return new WP_Error( 'linker_admission_proof', __( 'Your request could not be processed. Please try again.', 'linker-commerce' ), array( 'status' => 400 ) );
+				return new WP_Error( 'linker_admission_proof', self::verification_message( 'failed' ), array( 'status' => 400 ) );
 			}
 			if ( Campaign::submitted( $payload ) ) {
-				return new WP_Error( 'linker_admission_input', __( 'Your request could not be processed. Please try again.', 'linker-commerce' ), array( 'status' => 400 ) );
+				return new WP_Error( 'linker_admission_input', self::verification_message( 'failed' ), array( 'status' => 400 ) );
 			}
 			if ( ! $verified ) {
 				return Intake::run( 'verification', $action, $id, $fp, $identity, $payload, BusinessPolicy::review_limits( $limits ), $carry, $owners, $work );
@@ -120,6 +128,19 @@ final class Business {
 		} finally {
 			remove_filter( 'linker_commerce_public_business_context', $context );
 		}
+	}
+
+	/**
+	 * The browser and the native refusal say the same thing about the same
+	 * attempt: verification stopped this request, so nothing was sent. The
+	 * contact door renders this same sentence for its own verification states.
+	 *
+	 * @param string $outcome `failed` when the check refused, `unavailable` when it could not run.
+	 */
+	public static function verification_message( string $outcome ): string {
+		return 'unavailable' === $outcome
+			? __( 'Verification is temporarily unavailable. No request has been sent in this attempt. Your entries are still here. Please try again or email sales@de-linker.com.', 'linker-commerce' )
+			: __( 'Verification could not be completed. No request has been sent in this attempt. Your entries are still here. Please try again.', 'linker-commerce' );
 	}
 
 	/** Whether native handlers must use proof admission instead of the old connection gate. */

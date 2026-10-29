@@ -73,6 +73,36 @@ export class GeometryValues {
 	): number {
 		return this.number(name, options)!;
 	}
+	/**
+	 * Two fields that only mean something together. A filled value without its
+	 * basis, or a basis without a value, is refused instead of guessed.
+	 */
+	paired(
+		name: string,
+		basisName: string,
+		options: Parameters<GeometryValues["number"]>[1] = {},
+	): { value: number; basis: string } | null {
+		const value = this.number(name, { optional: true, ...options }),
+			basis = this.text(basisName);
+		if (value === null && basis === "") return null;
+		if (value === null)
+			throw new InputError(
+				name,
+				__(
+					"Enter the declared cross-section and where the value comes from, or leave both empty.",
+					"linker-tools",
+				),
+			);
+		if (basis === "")
+			throw new InputError(
+				basisName,
+				__(
+					"Enter the declared cross-section and where the value comes from, or leave both empty.",
+					"linker-tools",
+				),
+			);
+		return { value, basis };
+	}
 	checked(name: string): boolean {
 		return this.data.get(name) === "on";
 	}

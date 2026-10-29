@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import json
+import platform
 import subprocess
+import sys
 from pathlib import Path
 from typing import cast
 
@@ -22,10 +24,12 @@ from linker_engine.planning.pv_preparation import (
 )
 from linker_engine.planning.pv_source import PvSource
 from linker_engine.planning.records import Actor
+from linker_engine.planning.runtime_snapshot import RuntimeSnapshot
 from linker_engine.planning.weather_import import WeatherImport
 from linker_engine.planning.worker import Worker
 from linker_engine.planning.workspace import Workspace
 
+from . import export_preparation_fixture
 from .test_energy_kernel import TOLERANCE
 from .test_private_http import TOKEN, headers
 from .test_pv_profile import LIMITS, PROVENANCE
@@ -273,3 +277,49 @@ process.stdout.write(JSON.stringify(prepared));
         assert workspace.get(owner, project.id, revision=project.revision) == project
         retry = client.post("/runs/pv", json=command, headers=headers(owner))
         assert retry.status_code == 200 and retry.json()["id"] == run_id
+
+
+def test_preparation_fixture_export_reproduces_the_committed_fixture() -> None:
+    """The actual host's complete baseline is exactly what this engine produces.
+
+    Every field and hash is compared without a tolerance. The synthetic runtime
+    label is not a claim that macOS and Linux share one numerical execution
+    identity; each host family has a real, complete exported baseline.
+    """
+    fixture = (
+        Path(__file__).resolve().parents[1]
+        / "fixtures"
+        / f"preparation-flow-{sys.platform}-{platform.machine()}.json"
+    )
+    committed = json.loads(fixture.read_text())
+    produced = export_preparation_fixture.capture()
+    assert set(produced) == set(committed) == set(EXPECTED_FIXTURE_KEYS)
+    assert produced == committed
+    pinned = export_preparation_fixture.fixture_runtime_snapshot()
+    live = RuntimeSnapshot.capture()
+    assert pinned.sha256 != live.sha256
+    weather_run = cast(Object, produced["weather_run"])
+    manifest = cast(Object, weather_run["manifest"])
+    context = cast(Object, manifest["context"])
+    assert context["code_sha256"] == pinned.sha256
+    # Prettier formats the committed host baseline. The equality above therefore
+    # checks formatted values, and this independent second export must agree too.
+    assert json.loads(export_preparation_fixture.rendered()) == produced
+
+
+# Every top-level key the browser fixture carries, produced by the exporter.
+EXPECTED_FIXTURE_KEYS = frozenset(
+    {
+        "schema_version",
+        "provider_responses",
+        "weather_run",
+        "pv_run",
+        "weather_project",
+        "pv_project",
+        "weather_status",
+        "pvgis_reference_run",
+        "pvgis_reference_project",
+        "direct_beam",
+        "geometric_pv",
+    }
+)

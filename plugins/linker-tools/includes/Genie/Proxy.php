@@ -460,17 +460,17 @@ class Proxy {
 	public function turn( WP_REST_Request $request ) {
 		$base = $this->base();
 		if ( '' === $base ) {
-			return new WP_Error( 'linker_genie_unconfigured', 'Genie is not configured.', array( 'status' => 503 ) );
+			return self::unrecorded( new WP_Error( 'linker_genie_unconfigured', 'Genie is not configured.', array( 'status' => 503 ) ) );
 		}
 		// The files are checked before anything else happens, so a refused
 		// upload opens no conversation and reaches no service.
 		$files = $this->attachments->check( $request->get_param( 'attachments' ) );
 		if ( is_wp_error( $files ) ) {
-			return $files;
+			return self::unrecorded( $files );
 		}
 		$conversation = $this->conversations->current_id();
 		if ( $conversation < 1 ) {
-			return new WP_Error( 'linker_genie_conversation', 'Could not open a conversation.', array( 'status' => 500 ) );
+			return self::unrecorded( new WP_Error( 'linker_genie_conversation', 'Could not open a conversation.', array( 'status' => 500 ) ) );
 		}
 		$locale = $this->locale( $request->get_param( 'locale' ) );
 		// The page the browser names, checked key by key; the service reads
@@ -531,16 +531,16 @@ class Proxy {
 		}
 		$publication = $this->publication->dependencies();
 		if ( is_wp_error( $publication ) ) {
-			return $publication;
+			return self::unrecorded( $publication );
 		}
 		$started = microtime( true );
 		$stream  = $this->post( $base . '/assistant/turn', $body );
 		if ( is_wp_error( $stream ) ) {
-			return $stream;
+			return self::unrecorded( $stream );
 		}
 		$permitted = $this->publication->validate( $publication );
 		if ( is_wp_error( $permitted ) ) {
-			return $permitted;
+			return self::unrecorded( $permitted );
 		}
 		// An answered turn is the conversation's record, kept so a reload
 		// restores it. A second turn that snapped the same history is
@@ -569,13 +569,17 @@ class Proxy {
 			// stays. The shell re-reads the thread, puts the question back
 			// in the field, and keeps the uploads so the customer can send
 			// it again (App.tsx / Hero.tsx, the 409 path).
-			return new WP_Error(
-				'linker_genie_turn_conflict',
-				'The conversation changed while Genie was answering. Send your question again.',
-				array( 'status' => 409 )
+			return self::unrecorded(
+				new WP_Error(
+					'linker_genie_turn_conflict',
+					'The conversation changed while Genie was answering. Send your question again.',
+					array( 'status' => 409 )
+				)
 			);
 		}
 		// Action tokens are issued only for this live checked answer; history stays unsigned.
+		// The answer is already stored: these refusals are not a turn that
+		// stored nothing, so they keep the reply's own status.
 		$action_stream = ( new DraftProof() )->stream( $split['stream'], $publication );
 		if ( $action_stream instanceof WP_Error ) {
 			return $action_stream;
@@ -592,6 +596,24 @@ class Proxy {
 		);
 		$this->publication->remember( $reply, $publication );
 		return $reply;
+	}
+
+	/**
+	 * A turn this proxy refused before it stored an answer.
+	 *
+	 * The conversation has no new turn, so the customer's Try again is a new
+	 * attempt at the same question, never a replay of this refusal. The
+	 * marker says so to the resource boundary, which otherwise treats any
+	 * returned response as a completed result to hand back again (Resources).
+	 * A reverse proxy's own 5xx never carries it: that refusal says nothing
+	 * about whether this callback ran.
+	 *
+	 * @param WP_Error $error The refusal the callback would have returned.
+	 */
+	private static function unrecorded( WP_Error $error ): WP_Error {
+		$data = $error->get_error_data();
+		$data = is_array( $data ) ? $data + array( 'unrecorded' => true ) : array( 'unrecorded' => true );
+		return new WP_Error( $error->get_error_code(), $error->get_error_message(), $data );
 	}
 
 	/**

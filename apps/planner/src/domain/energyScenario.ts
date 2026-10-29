@@ -9,6 +9,7 @@ import { ApiError } from "../data/protocol.ts";
 import { readObject } from "../data/readProtocol.ts";
 import { sameJson } from "./draft.ts";
 import type { ProfileSelections } from "./profiles.ts";
+import { dropGeometricRoofAc } from "./profiles.ts";
 
 export const BATTERY_FIELDS = [
 	"usable_window_kwh",
@@ -373,8 +374,9 @@ export function scenarioInputs(
 ): JsonObject {
 	// The effective replay input is invalidated on editing. Undo restores the prior
 	// replay together with its setup; a job/result itself remains immutable.
+	const next = invalidateEnergyReplay(inputs);
 	return {
-		...invalidateEnergyReplay(inputs),
+		...(scenario.coupling === "shared_dc" ? dropGeometricRoofAc(next) : next),
 		energy_scenario: readObject(readScenarioDraft(scenario)),
 	};
 }

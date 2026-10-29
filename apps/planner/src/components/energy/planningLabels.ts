@@ -7,6 +7,7 @@ import { SEARCH_TASK } from "../../data/equipmentSearch.ts";
 import { EQUIPMENT_TASK } from "../../data/readEquipmentResult.ts";
 import { PVGIS_REFERENCE_TASK } from "../../domain/pvgisReference.ts";
 import { DIRECT_BEAM_TASK } from "../../domain/directBeam.ts";
+import { GEOMETRIC_PV_TASK } from "../../domain/geometricPv.ts";
 
 export function taskLabel(kind: string | null | undefined): string {
 	if (kind === REPORT_TASK) return __("Planning report", "linker-tools");
@@ -15,6 +16,8 @@ export function taskLabel(kind: string | null | undefined): string {
 	if (kind === WEATHER_TASK)
 		return __("Weather data preparation", "linker-tools");
 	if (kind === PV_TASK) return __("PV generation profile", "linker-tools");
+	if (kind === GEOMETRIC_PV_TASK)
+		return __("PV reference with roof shading", "linker-tools");
 	if (kind === PVGIS_REFERENCE_TASK)
 		return __("PVGIS annual AC reference", "linker-tools");
 	if (kind === DIRECT_BEAM_TASK)
@@ -24,7 +27,10 @@ export function taskLabel(kind: string | null | undefined): string {
 }
 export function runStateLabel(state: RunState, kind?: string | null): string {
 	const preparing =
-		kind === WEATHER_TASK || kind === PV_TASK || kind === PVGIS_REFERENCE_TASK;
+		kind === WEATHER_TASK ||
+		kind === PV_TASK ||
+		kind === PVGIS_REFERENCE_TASK ||
+		kind === GEOMETRIC_PV_TASK;
 	switch (state) {
 		case "queued":
 			return __("Queued", "linker-tools");

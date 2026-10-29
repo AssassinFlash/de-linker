@@ -4,6 +4,7 @@ import { __ } from '@wordpress/i18n';
 interface PublicClient {
 	proof: ( action: string, container: HTMLElement ) => Promise< string >;
 	complete?: ( action: string, proof: string ) => boolean;
+	cancel?: ( action: string, container: HTMLElement ) => boolean;
 	reset: ( action: string ) => void;
 }
 
@@ -22,6 +23,7 @@ declare global {
 const operations = new Map< string, string >();
 const containers = new Map< string, HTMLElement >();
 const statuses = new WeakMap< HTMLElement, HTMLElement >();
+const displayOwners = new WeakMap< HTMLElement, symbol >();
 
 /**
  * Only writes that the native resource adapter owns; reads stay ordinary reads.
@@ -103,7 +105,14 @@ if ( typeof document !== 'undefined' ) {
 	} );
 }
 
-function containerFor( action: string ): HTMLElement {
+function containerFor(
+	action: string,
+	ownedSlot?: () => HTMLElement | null
+): HTMLElement {
+	const slot = action === 'genie' ? ownedSlot?.() : undefined;
+	if ( action === 'genie' && ownedSlot && ! slot?.isConnected ) {
+		throw new Error( 'verification_cancelled' );
+	}
 	const visible = ( element: Element ) => element.getClientRects().length > 0;
 	const forms = Array.from(
 		document.querySelectorAll< HTMLFormElement >(
@@ -121,8 +130,13 @@ function containerFor( action: string ): HTMLElement {
 	const old = containers.get( action );
 	if (
 		old?.isConnected &&
-		( ! form || old.parentElement === form.parentElement )
+		( slot
+			? old.parentElement === slot
+			: ! form || old.parentElement === form.parentElement )
 	) {
+		if ( slot ) {
+			slot.hidden = false;
+		}
 		return old;
 	}
 	if ( old ) {
@@ -138,17 +152,39 @@ function containerFor( action: string ): HTMLElement {
 		const state = ( event as CustomEvent< { state: string } > ).detail
 			.state;
 		if ( state === 'checking' ) {
-			status.textContent = __( 'Checking verification…', 'linker-tools' );
+			status.textContent = __(
+				'Checking verification. No request has been sent in this attempt.',
+				'linker-tools'
+			);
+		} else if ( state === 'interactive' ) {
+			status.textContent = __(
+				'No request has been sent in this attempt. Please complete the verification.',
+				'linker-tools'
+			);
+		} else if ( state === 'retrying' ) {
+			status.textContent = __(
+				'Verification is being retried. No request has been sent in this attempt.',
+				'linker-tools'
+			);
 		} else if ( state === 'ready' ) {
 			status.textContent = '';
+		} else if ( slot && action === 'genie' ) {
+			// The actual App/Hero failure owner restores its editor and shows
+			// the localized banner. Do not leave a second detached status.
+			status.remove();
+			container.remove();
+			slot.hidden = slot.children.length === 0;
 		} else {
 			status.textContent = __(
-				'Verification could not be completed. Your input is still here. Please try again.',
+				'Verification could not be completed. No request has been sent in this attempt. Please try again.',
 				'linker-tools'
 			);
 		}
 	} );
-	if ( form?.parentElement ) {
+	if ( slot ) {
+		slot.hidden = false;
+		slot.append( status, container );
+	} else if ( form?.parentElement ) {
 		form.before( status, container );
 	} else {
 		( document.querySelector( 'main' ) ?? document.body ).append(
@@ -169,16 +205,19 @@ function containerFor( action: string ): HTMLElement {
  * @param input
  * @param init
  * @param onOperation Receives the actual enforced operation just before sending.
+ * @param ownedSlot   Explicit Genie owner. Other resources keep their native form/main placement.
  */
 export async function resourceFetch(
 	fetcher: typeof fetch,
 	input: RequestInfo | URL,
 	init?: RequestInit,
-	onOperation?: ( id: string ) => void
+	onOperation?: ( id: string ) => void,
+	ownedSlot?: () => HTMLElement | null
 ): Promise< Response > {
 	if ( typeof window === 'undefined' ) {
 		return fetcher( input, init );
 	}
+	init?.signal?.throwIfAborted();
 	const config = window.linkerPublicProtectionConfig;
 	let url: string;
 	if ( typeof input === 'string' ) {
@@ -231,27 +270,70 @@ export async function resourceFetch(
 		headers.set( 'X-Linker-Operation', id );
 	}
 	let proof = '';
-	if ( ! observe ) {
-		proof = await client!.proof( action, containerFor( action ) );
-		headers.set( 'X-Linker-Proof', proof );
+	let verification: HTMLElement | undefined;
+	const displayOwner = Symbol();
+	let response: Response;
+	try {
+		init?.signal?.throwIfAborted();
+		if ( ! observe ) {
+			verification = containerFor( action, ownedSlot );
+			displayOwners.set( verification, displayOwner );
+			proof = await client!.proof( action, verification );
+			if ( typeof proof !== 'string' || ! proof ) {
+				throw new Error( 'verification_unavailable' );
+			}
+			headers.set( 'X-Linker-Proof', proof );
+		}
+		init?.signal?.throwIfAborted();
+		if ( id && ! observe ) {
+			onOperation?.( id );
+		}
+		init?.signal?.throwIfAborted();
+		response = await fetcher( input, {
+			...init,
+			headers,
+			credentials: 'same-origin',
+		} );
+	} finally {
+		if (
+			verification &&
+			displayOwners.get( verification ) === displayOwner
+		) {
+			const slot = verification.closest< HTMLElement >(
+				'[data-linker-resource-verification-slot]'
+			);
+			if ( slot ) {
+				const status = statuses.get( verification );
+				if ( status ) {
+					status.textContent = '';
+				}
+				slot.hidden = true;
+			}
+		}
 	}
-	init?.signal?.throwIfAborted();
-	if ( id && ! observe ) {
-		onOperation?.( id );
-	}
-	const response = await fetcher( input, {
-		...init,
-		headers,
-		credentials: 'same-origin',
-	} );
+
 	if ( response.ok ) {
 		operations.delete( key );
 		if ( ! observe && client?.complete ) {
 			if ( client.complete( action, proof ) ) {
-				const container = containers.get( action );
+				const container = verification;
+				if (
+					! container ||
+					displayOwners.get( container ) !== displayOwner
+				) {
+					return response;
+				}
 				const status = container && statuses.get( container );
 				if ( status ) {
 					status.textContent = '';
+				}
+				const slot = container?.closest< HTMLElement >(
+					'[data-linker-resource-verification-slot]'
+				);
+				if ( slot ) {
+					status?.remove();
+					container?.remove();
+					slot.hidden = slot.children.length === 0;
 				}
 			}
 		} else if (
@@ -264,9 +346,10 @@ export async function resourceFetch(
 				client?.reset( action );
 			}
 		}
-	} else if ( [ 429, 502, 503 ].includes( response.status ) ) {
+	} else if ( [ 429, 500, 502, 503 ].includes( response.status ) ) {
 		// A gateway status alone says nothing about a completed business write.
-		// Only the native adapter's known pure-work failure permits a fresh UUID.
+		// Only the native adapter's known pure-work failure, or a refusal the
+		// proxy marked as one that stored nothing, permits a fresh UUID.
 		const pure = [ 'design', 'roof', 'report_pdf' ].includes( action );
 		let code = '';
 		try {
@@ -278,7 +361,7 @@ export async function resourceFetch(
 			// An absent/untrusted body preserves the original operation identity.
 		}
 		if (
-			( pure &&
+			( ( pure || action === 'genie' ) &&
 				response.headers.get( 'X-Linker-Resource-Outcome' ) ===
 					'failed' ) ||
 			code === 'linker_admission_quota' ||

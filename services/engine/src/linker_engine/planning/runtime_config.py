@@ -26,6 +26,9 @@ from .equipment_search_kernel import EquipmentSearchKernel
 from .equipment_search_limits import EquipmentSearchLimits
 from .equipment_service import EquipmentService
 from .errors import InvalidInput
+from .geometric_pv_inputs import GeometricPvLimits
+from .geometric_pv_job import GeometricPvKernel
+from .geometric_pv_service import GeometricPvService
 from .http_app import HttpLimits
 from .numerical_tolerance import Tolerance
 from .plant_energy_kernel import PlantEnergyKernel
@@ -61,6 +64,7 @@ class RuntimeConfig(Document):
     weather_acquisition: WeatherFetchLimits | None = None
     equipment_search: EquipmentSearchLimits | None = None
     direct_beam_visibility: DirectBeamLimits | None = None
+    geometric_pv_generation: GeometricPvLimits | None = None
 
     @model_validator(mode="after")
     def absolute_directory(self) -> Self:
@@ -70,6 +74,8 @@ class RuntimeConfig(Document):
             raise ValueError("CSV limit exceeds the request limit")
         if self.direct_beam_visibility is not None and self.pv_preparation is None:
             raise ValueError("direct-beam visibility requires explicit weather limits")
+        if self.geometric_pv_generation is not None and self.pv_preparation is None:
+            raise ValueError("geometric PV requires explicit weather limits")
         return self
 
     @classmethod
@@ -164,6 +170,24 @@ class RuntimeConfig(Document):
                 workspace,
                 self.pv_preparation,
                 self.direct_beam_visibility,
+                products=products or ProductSources(worker_product_provider),
+            ),
+            max_attempts=self.max_attempts,
+        )
+
+    def geometric_pv_service(
+        self, workspace: Workspace, *, products: ProductSources | None = None
+    ) -> GeometricPvService | None:
+        if self.geometric_pv_generation is None:
+            return None
+        if self.pv_preparation is None:
+            raise InvalidInput("geometric PV weather limits are absent")
+        return GeometricPvService(
+            workspace,
+            GeometricPvKernel(
+                workspace,
+                self.pv_preparation,
+                self.geometric_pv_generation,
                 products=products or ProductSources(worker_product_provider),
             ),
             max_attempts=self.max_attempts,

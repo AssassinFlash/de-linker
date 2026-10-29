@@ -13,6 +13,10 @@
 	failOnRisky="true"
 	failOnWarning="true"
 >
+	<php>
+		<!-- Match phpunit.integration.xml.dist: Proforma rendering and the complete suite exceed PHP's 128M CLI default. -->
+		<ini name="memory_limit" value="2048M"/>
+	</php>
 	<testsuites>
 		<testsuite name="unit">
 			<directory>tests/php/Unit</directory>

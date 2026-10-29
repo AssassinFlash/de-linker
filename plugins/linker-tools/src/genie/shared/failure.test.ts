@@ -109,6 +109,21 @@ test( 'a 502, a timeout and a network failure are upstream; a stream without don
 	expect(
 		failureKind( new TurnError( 415, 'linker_genie_attachment_type' ) )
 	).toBeNull();
+	// A withdrawn attempt never reached the server: it is not a failure the
+	// shell has anything to say about.
+	expect( failureKind( new Error( 'verification_cancelled' ) ) ).toBeNull();
+} );
+
+test( 'a withdrawn attempt settles as neutral and keeps the question in the field', () => {
+	const draft = {
+		text: 'My withdrawn question',
+		question: 'My withdrawn question',
+		uploads: [],
+		omitted: [],
+	};
+	expect(
+		settleTurnFailure( new Error( 'verification_cancelled' ), [], draft )
+	).toEqual( { action: 'cancelled', field: 'My withdrawn question' } );
 } );
 
 test( 'a 502 on a question the server already kept stays truncated', () => {

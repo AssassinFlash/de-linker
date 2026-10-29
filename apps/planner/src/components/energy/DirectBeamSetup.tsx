@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import type { Draft } from "../../domain/draft.ts";
 import { isDirty } from "../../domain/draft.ts";
 import { sameJson } from "../../domain/draft.ts";
@@ -14,10 +14,8 @@ import {
 } from "../../domain/directBeam.ts";
 import type { DirectBeamDraft } from "../../domain/directBeam.ts";
 import { readDirectBeamLimits } from "../../data/directBeamResult.ts";
-import {
-	readBeamWeatherAssets,
-	readBeamWeatherPreview,
-} from "../../data/directBeamWeather.ts";
+import { readBeamWeatherPreview } from "../../data/directBeamWeather.ts";
+import { useRetainedWeather } from "../../data/useRetainedWeather.ts";
 import { referenceRoof } from "../../domain/pvgisReference.ts";
 import { useModuleTemplates } from "../../data/useModuleTemplates.ts";
 import { matchesModule } from "../../domain/productModules.ts";
@@ -80,86 +78,26 @@ export function DirectBeamSetup({
 		limits !== null;
 	const pageSize = Math.min(24, session.runtime.limits.max_page_size); // Visible source-page policy, never a calculation time step.
 	const owned = client.isCurrentScope(scope);
-	const sources = useInfiniteQuery({
-		queryKey: [scope, "beam-weather-assets", projectId],
-		initialPageParam: 0,
-		enabled: active && owned && supported,
-		retry: false,
-		queryFn: async ({ pageParam, signal }) =>
-			readBeamWeatherAssets(
-				await client.query(
-					"weather/assets",
-					{
-						schema_version: 1,
-						project_id: projectId,
-						offset: pageParam,
-						page_size: pageSize,
-					},
-					scope,
-					signal,
-				),
-				projectId,
-				pageParam,
-				pageSize,
-			),
-		getNextPageParam: (page) => page.next ?? undefined,
-	});
-	const assets = sources.data?.pages.flatMap((p) => p.assets) ?? [];
-	const selected = assets.find((a) => a.asset_id === parsed?.weather_asset_id);
-	const binding = useQuery({
-		queryKey: [
-			scope,
-			"beam-weather-binding",
-			projectId,
-			selected?.asset_id,
-			selected?.metadata_sha256,
-		],
-		enabled: active && owned && selected !== undefined && supported,
-		retry: false,
-		queryFn: async ({ signal }) => {
-			if (!selected) throw new Error("weather_selection_required");
-			const asset = readObject(
-				await client.query(
-					"assets/read",
-					{
-						schema_version: 1,
-						project_id: projectId,
-						asset_id: selected.asset_id,
-					},
-					scope,
-					signal,
-				),
-			);
-			if (
-				asset.id !== selected.asset_id ||
-				asset.project_id !== projectId ||
-				asset.content_sha256 !== selected.content_sha256 ||
-				asset.metadata_sha256 !== selected.metadata_sha256 ||
-				asset.purpose !== "pvgis_tmy_weather_v1"
-			)
-				throw new Error("weather_source_mismatch");
-			const metadata = readObject(asset.metadata),
-				weather = readObject(metadata.weather);
-			if (
-				typeof weather.latitude_deg !== "number" ||
-				!Number.isFinite(weather.latitude_deg) ||
-				typeof weather.longitude_deg !== "number" ||
-				!Number.isFinite(weather.longitude_deg)
-			)
-				throw new Error("weather_coordinates_unverified");
-			return metadata;
-		},
-	});
+	const weather = useRetainedWeather(
+		client,
+		session,
+		projectId,
+		parsed?.weather_asset_id ?? null,
+		active && supported,
+		{ pageSize },
+	);
+	const { sources, assets, selected, binding } = weather;
+	const bindingMetadata = binding.data?.metadata;
 	const compatibleRequest =
 		inputs.weather_acquisition === undefined ||
-		(!!binding.data &&
+		(!!bindingMetadata &&
 			sameJson(
 				readObject(inputs.weather_acquisition).request,
-				binding.data.weather_request,
+				bindingMetadata.weather_request,
 			) &&
 			sameJson(
 				readObject(inputs.weather_acquisition).interpretation,
-				binding.data.weather_interpretation,
+				bindingMetadata.weather_interpretation,
 			));
 	const preview = useQuery({
 		queryKey: [

@@ -54,6 +54,27 @@ class Conversations {
 	public const BROWSER_META = 'linker_genie_browser';
 
 	/**
+	 * Option-name prefix for a cold tab's browser-key claim.
+	 *
+	 * Not autoloaded and not the durable browser secret on a conversation.
+	 * Tests delete rows with this prefix.
+	 */
+	public const BROWSER_CLAIM_PREFIX = 'linker_genie_browser_claim_';
+
+	/**
+	 * Seconds a cookieless sibling may adopt the key minted for this tab.
+	 *
+	 * The client can send the second entry-context before it has stored
+	 * this response's Set-Cookie. Five seconds is that client's auxiliary
+	 * identity budget (nativeScope.ts CONTEXT_BUDGET_MS). The window also
+	 * ends when any request presents the browser cookie: that epoch is
+	 * established, and a later cookieless request on this tab is a new
+	 * guest. A request that already has a browser cookie never reads this
+	 * claim.
+	 */
+	private const BROWSER_CLAIM_SECONDS = 5;
+
+	/**
 	 * Title of a conversation that has not been named by its first message.
 	 */
 	public const UNTITLED = 'Genie';
@@ -679,14 +700,214 @@ class Conversations {
 	 * @param string $tab Random tab identity, not a credential.
 	 */
 	public function entry_scope( string $tab ): string {
-		$user    = get_current_user_id();
-		$browser = $this->browser_key();
-		// A read of an existing epoch sends no renewed Set-Cookie: a delayed
-		// auxiliary response must not replace a newer browser identity.
-		$principal = $user > 0
-			? 'user:' . $user . ':' . wp_get_session_token()
-			: 'guest:' . ( '' === $browser ? $this->ensure_browser_key() : $browser );
+		$user = get_current_user_id();
+		if ( $user > 0 ) {
+			$principal = 'user:' . $user . ':' . wp_get_session_token();
+		} else {
+			$browser = $this->browser_key();
+			// A read of an existing epoch sends no renewed Set-Cookie: a
+			// delayed auxiliary response must not replace a newer browser
+			// identity. Presenting the cookie closes the cold claim, so a
+			// later cookieless request on this tab is a new guest. Two
+			// first requests that both arrive without the cookie still
+			// share one claimed key.
+			if ( '' === $browser ) {
+				$browser = $this->write_browser_key( $this->claimed_browser_key( $tab ) );
+			} else {
+				$this->close_browser_claim( $tab );
+			}
+			$principal = 'guest:' . $browser;
+		}
 		return hash_hmac( 'sha256', $tab . '|' . $principal, wp_salt( 'auth' ) );
+	}
+
+	/**
+	 * Drops this tab's cold claim once a request presents a browser cookie.
+	 *
+	 * The claim only joins cookieless first requests that have not stored
+	 * Set-Cookie yet. A presented cookie means that epoch is established.
+	 * A later cookieless request on the same tab is a new guest, not a
+	 * sibling of the mint. Without an option store there is no row to close.
+	 *
+	 * @param string $tab Client tab identity.
+	 */
+	private function close_browser_claim( string $tab ): void {
+		if ( ! $this->claim_store_available() ) {
+			return;
+		}
+		$this->forget_browser_claim_cache( $tab );
+		if ( '' === $this->read_browser_claim( $tab ) ) {
+			return;
+		}
+		if ( ! $this->lock_browser_claim( $tab ) ) {
+			$this->delete_browser_claim( $tab );
+			return;
+		}
+		try {
+			$this->delete_browser_claim( $tab );
+		} finally {
+			$this->unlock_browser_claim( $tab );
+		}
+	}
+
+	/**
+	 * Whether this process can close a claim row.
+	 */
+	private function claim_store_available(): bool {
+		global $wpdb;
+		return function_exists( 'delete_option' ) && is_object( $wpdb );
+	}
+
+	/**
+	 * Removes this tab's claim so the next cookieless read mints again.
+	 *
+	 * @param string $tab Client tab identity.
+	 */
+	private function delete_browser_claim( string $tab ): void {
+		$this->forget_browser_claim_cache( $tab );
+		delete_option( $this->browser_claim_option( $tab ) );
+		$this->forget_browser_claim_cache( $tab );
+	}
+
+	/**
+	 * One browser key for every cookieless first request of this tab.
+	 *
+	 * The browser has not stored Set-Cookie yet, so the sibling request
+	 * cannot present the key. The claim is the shared read. An existing
+	 * cookie is never passed here.
+	 *
+	 * @param string $tab Client tab identity, the only correlator the two requests share.
+	 */
+	private function claimed_browser_key( string $tab ): string {
+		$existing = $this->read_browser_claim( $tab );
+		if ( '' !== $existing ) {
+			return $existing;
+		}
+		if ( ! $this->lock_browser_claim( $tab ) ) {
+			$this->forget_browser_claim_cache( $tab );
+			$existing = $this->read_browser_claim( $tab );
+			return '' !== $existing ? $existing : $this->publish_browser_claim( $tab, $this->new_browser_key() );
+		}
+		try {
+			$this->forget_browser_claim_cache( $tab );
+			$existing = $this->read_browser_claim( $tab );
+			if ( '' !== $existing ) {
+				return $existing;
+			}
+			return $this->publish_browser_claim( $tab, $this->new_browser_key() );
+		} finally {
+			$this->unlock_browser_claim( $tab );
+		}
+	}
+
+	/**
+	 * The unexpired key claimed for this tab, or '' when there is none.
+	 *
+	 * @param string $tab Client tab identity.
+	 */
+	private function read_browser_claim( string $tab ): string {
+		$stored = get_option( $this->browser_claim_option( $tab ), false );
+		if ( ! is_array( $stored ) ) {
+			return '';
+		}
+		$key   = $stored['key'] ?? '';
+		$until = $stored['until'] ?? 0;
+		if ( ! is_string( $key ) || 1 !== preg_match( '/^[0-9a-f]{32}$/', $key ) ) {
+			return '';
+		}
+		if ( ! is_numeric( $until ) || (int) $until < time() ) {
+			return '';
+		}
+		return $key;
+	}
+
+	/**
+	 * Publishes one key for this tab. A lost insert reads the key that won.
+	 *
+	 * @param string $tab Client tab identity.
+	 * @param string $key 32 hex characters.
+	 */
+	private function publish_browser_claim( string $tab, string $key ): string {
+		$name  = $this->browser_claim_option( $tab );
+		$value = array(
+			'key'   => $key,
+			'until' => time() + self::BROWSER_CLAIM_SECONDS,
+		);
+		$this->forget_browser_claim_cache( $tab );
+		if ( add_option( $name, $value, '', false ) ) {
+			return $key;
+		}
+		$this->forget_browser_claim_cache( $tab );
+		$existing = $this->read_browser_claim( $tab );
+		if ( '' !== $existing ) {
+			return $existing;
+		}
+		update_option( $name, $value, false );
+		return $key;
+	}
+
+	/**
+	 * Drops a miss recorded before the sibling's insert committed.
+	 *
+	 * @param string $tab Client tab identity.
+	 */
+	private function forget_browser_claim_cache( string $tab ): void {
+		$name = $this->browser_claim_option( $tab );
+		wp_cache_delete( $name, 'options' );
+		wp_cache_delete( 'notoptions', 'options' );
+	}
+
+	/**
+	 * Option name for this tab's claim. Not autoloaded.
+	 *
+	 * @param string $tab Client tab identity.
+	 */
+	private function browser_claim_option( string $tab ): string {
+		return self::BROWSER_CLAIM_PREFIX . substr( hash( 'sha256', $tab ), 0, 32 );
+	}
+
+	/**
+	 * Serialises the cold mint. GET_LOCK is server-wide, so the name includes
+	 * the database. Names are at most 64 characters (MySQL 8.0 reference
+	 * manual, GET_LOCK); the sha256 is 64 hex characters.
+	 *
+	 * @param string $tab Client tab identity.
+	 */
+	private function lock_browser_claim( string $tab ): bool {
+		global $wpdb;
+		$name = $this->browser_claim_lock_name( $tab );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- named lock, not table data.
+		$got = $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s, %d)', $name, self::BROWSER_CLAIM_SECONDS ) );
+		return '1' === (string) $got;
+	}
+
+	/**
+	 * Releases the cold-mint lock acquired by this connection.
+	 *
+	 * @param string $tab Client tab identity.
+	 */
+	private function unlock_browser_claim( string $tab ): void {
+		global $wpdb;
+		$name = $this->browser_claim_lock_name( $tab );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- releases the named lock lock_browser_claim() acquired.
+		$wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', $name ) );
+	}
+
+	/**
+	 * The MySQL name of this tab's cold-mint lock.
+	 *
+	 * @param string $tab Client tab identity.
+	 */
+	private function browser_claim_lock_name( string $tab ): string {
+		global $wpdb;
+		$database = '';
+		if ( isset( $wpdb->dbname ) && is_string( $wpdb->dbname ) && '' !== $wpdb->dbname ) {
+			$database = $wpdb->dbname;
+		} elseif ( defined( 'DB_NAME' ) ) {
+			$database = (string) constant( 'DB_NAME' );
+		}
+		$prefix = isset( $wpdb->prefix ) && is_string( $wpdb->prefix ) ? $wpdb->prefix : '';
+		return hash( 'sha256', $database . '/' . $prefix . self::BROWSER_CLAIM_PREFIX . $tab );
 	}
 
 	/**

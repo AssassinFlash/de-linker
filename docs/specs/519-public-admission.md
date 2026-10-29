@@ -111,6 +111,78 @@ attempt and permits a fresh retry, without storing or clearing customer fields.
 The client supports native pretty and query-string REST URLs, account REST nonces,
 user locale and EN/DE vendor language. No customer CSS is introduced.
 
+### Retryable challenge recovery, 2026-10-28
+
+A genuine browser interaction failed with Cloudflare `300030` before any Genie
+turn reached the service. A real Commerce client → resource adapter → Genie
+transport regression reproduced the cause: the first provider error rejected the
+send and removed the widget, cancelling its native retry. A second regression
+showed the turn's 90-second preparation deadline cancelled a still-valid
+110-second human interaction inside the shared 120-second challenge window.
+
+This supersedes the preceding remove-on-every-error rule. After an actual
+interaction, the official widget uses visible `always` appearance and flexible
+width. Its documented retryable `200500`, `300*` and `600*` failures keep the
+same widget and pending attempt for the official automatic retry. Timeout codes
+`110600` and `110620` use the documented widget reset at the same eight-second
+interval; interactive refresh is manual so the application owns that reset. In
+both cases, the original 120-second challenge deadline never restarts. Interactive and retrying states
+are visible to native forms, draft action links, tool resources and the staff
+check. Terminal, unsupported and configuration failures retain the input and
+permit a fresh explicit attempt. Only a fixed six-digit provider diagnostic may
+remain on the verification container, never tokens or provider response bodies.
+
+Genie preparation allows the existing three 15-second network steps plus the
+120-second interaction window, a total bound of 165 seconds. Once a validated
+proof dispatches the turn, its existing separate 90-second response/body deadline
+starts. No proof means no model request; a late proof cannot dispatch an aborted
+turn. Required policies, hostname/action binding, signed proof, native operation
+UUIDs, ledgers, quotas and actual provider/model budgets are unchanged.
+
+Native contact/inquiry recovery is server-owned. Only a restored original UUID
+with an unknown/pending result gets the recovery marker; that page neither warms
+nor waits for a new challenge. Business still validates the actual identity and
+payload fingerprint before recovering an existing result. Every existing matching
+receipt retains Admission's pending fence if no native result can be verified;
+ledger busy/storage failures remain unknown and show the existing localized
+status-confirmation notice. Known pre-dispatch refusals (including invalid proof,
+empty inquiry and changed draft) persist a false recovery flag, so the next page
+returns to fresh verification instead of repeating an empty-proof recovery loop.
+Neither the marker nor a client flag authorizes an unverified fresh write. Native
+required forms' no-script explanation now uses the existing JavaScript/email path.
+No password or proof storage and no additional payload copy are introduced. The native recovery session retains only its existing editable fields plus one server-owned outcome flag.
+
+Genie App and Hero provide their own stable empty widget slot through an explicit
+turn context. Other actions retain their native form/main placement. Closing or
+changing the owner cancels only a pre-dispatch attempt; a late proof cannot send
+its old question. After proof succeeds, the real transport waits for any pending
+native identity recheck and confirms the same ready lease before dispatch. The
+wait row therefore shows verification until the actual dispatch, including a
+cached proof. Terminal transport outcomes hide only their own presentation and
+preserve the original UUID/proof recovery rules. No DOM-order or last-focus guess
+chooses another Genie surface's slot.
+
+Read-only production account checks confirmed Managed mode, the sole allowed
+hostname de-linker.com, no pre-clearance, and a public-key fingerprint matching
+WordPress. The last-modified time was not established. A human performed the
+verification-only diagnostic in a fresh native Chrome tab that had not been
+attached to the browser automation session; it passed without submitting business
+data. That positive does not prove every Genie attempt succeeds or isolate the
+cause of an earlier instrumented tab's challenge failure.
+
+Official sources were read through Apify on 2026-10-28:
+[widget configuration](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/widget-configurations/)
+and [client error codes](https://developers.cloudflare.com/turnstile/troubleshooting/client-side-errors/error-codes/).
+The provider describes `300*` as a generic challenge failure and marks it
+retryable. That code does not establish the precise browser/fingerprint cause,
+prove the account's widget settings, or guarantee that another attempt succeeds.
+
+The permanent real-chain regressions are
+`plugins/linker-tools/src/genie/api/turnPublicVerification.test.ts`; native form
+and draft-link consumers also exercise the actual shared client. Local controlled
+provider callbacks verify application lifecycle and dispatch safety. They do not
+claim that a real production challenge or customer turn has succeeded.
+
 The staff diagnostic displays off/configuration separately, declares actual
 consumer modules, and has a verification-only button. Counts are journal receipts
 within the original 24-hour retry window, not a full traffic/cost history. It

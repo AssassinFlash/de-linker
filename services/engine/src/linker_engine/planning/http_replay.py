@@ -15,6 +15,7 @@ from .energy_service import EnergyService
 from .equipment_kernel import EquipmentKernel
 from .equipment_search_kernel import EquipmentSearchKernel
 from .errors import NotFound
+from .geometric_pv_inputs import KIND as GEOMETRIC_PV_KIND
 from .geometry_import import GeometryImport
 from .handoffs import Handoffs
 from .http_asset_intake import HttpAssetIntake
@@ -160,6 +161,7 @@ class HttpReplay:
             "runs/pv",
             "runs/pvgis-reference",
             "runs/direct-beam",
+            "runs/geometric-pv",
             "runs/weather",
             "runs/equipment",
             "runs/equipment-search",
@@ -183,6 +185,8 @@ class HttpReplay:
                         if path == "runs/pvgis-reference"
                         else DirectBeamKernel.kind
                         if path == "runs/direct-beam"
+                        else GEOMETRIC_PV_KIND
+                        if path == "runs/geometric-pv"
                         else EquipmentKernel.kind
                         if path == "runs/equipment"
                         else EquipmentSearchKernel.kind

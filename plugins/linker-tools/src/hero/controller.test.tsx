@@ -22,7 +22,7 @@ import { afterEach, beforeEach, expect, test, vi } from 'vitest';
  * Internal dependencies
  */
 import type { Turn, TurnMessage } from '../genie/api/turn';
-import type { Upload } from '../genie/attachments/prepare';
+import { prepare, type Upload } from '../genie/attachments/prepare';
 import type { GenieConfig } from '../genie/config';
 import { FAILURE_KEY } from '../genie/shared/failure';
 import { OPEN_CLASS, startHero } from './controller';
@@ -120,6 +120,48 @@ async function start( heroSession: HeroSession ) {
 		stop = startHero( hero, { config: CONFIG, session: heroSession } );
 	} );
 	return { hero, stop };
+}
+
+// A file input's list empties when its value is cleared. The static object
+// the other picker tests install does not, so it cannot catch that.
+function installLivePickerFile(
+	input: HTMLInputElement,
+	file: File
+): {
+	length: number;
+} {
+	const list: { 0?: File; length: number } = { 0: file, length: 1 };
+	Object.defineProperty( list, Symbol.iterator, {
+		value() {
+			const held = list[ 0 ];
+			return ( function* () {
+				if ( list.length > 0 && held ) {
+					yield held;
+				}
+			} )();
+		},
+	} );
+	Object.defineProperty( input, 'files', {
+		configurable: true,
+		get: () => list,
+	} );
+	const value = Object.getOwnPropertyDescriptor(
+		HTMLInputElement.prototype,
+		'value'
+	);
+	Object.defineProperty( input, 'value', {
+		configurable: true,
+		get() {
+			return value?.get?.call( this ) ?? '';
+		},
+		set( next: string ) {
+			value?.set?.call( this, next );
+			if ( '' === next ) {
+				list.length = 0;
+			}
+		},
+	} );
+	return list;
 }
 
 installNativeIdentityFixture();
@@ -508,6 +550,77 @@ test( 'the attach button opens the file picker and a PDF is sent with the turn',
 		content: 'Attached: datasheet.pdf',
 	} );
 	expect( uploads ).toHaveLength( 1 );
+} );
+
+test( 'a folded hero still sends a picked file after the picker is cleared', async () => {
+	const answers = session();
+	const { hero } = await start( answers.session );
+	expect( hero.classList.contains( OPEN_CLASS ) ).toBe( false );
+
+	const input =
+		document.querySelector< HTMLInputElement >( 'input[type="file"]' )!;
+	const file = new File( [ '%PDF-1.4\n%%EOF' ], 'datasheet.pdf', {
+		type: 'application/pdf',
+	} );
+	const live = installLivePickerFile( input, file );
+	expect( live.length ).toBe( 1 );
+
+	await act( async () => {
+		fireEvent.change( input );
+	} );
+
+	expect( live.length ).toBe( 0 );
+	await waitFor( () => expect( answers.send ).toHaveBeenCalledTimes( 1 ) );
+	const { messages, uploads } = answers.send.mock.calls[ 0 ][ 0 ];
+	expect( messages[ messages.length - 1 ] ).toEqual( {
+		role: 'user',
+		content: 'Attached: datasheet.pdf',
+	} );
+	expect( uploads ).toHaveLength( 1 );
+} );
+
+test( 'a folded hero sends the editor question with the copied file', async () => {
+	const question = 'Private project question from guest A';
+	const answers = session();
+	let retained = '';
+	answers.send.mockImplementation( async ( request ) => {
+		retained = Object.values( sessionStorage )
+			.map( ( value ) => String( value ) )
+			.join( '\n' );
+		return reply( `Answer ${ request.messages.length }` );
+	} );
+	const { hero } = await start( answers.session );
+	expect( hero.classList.contains( OPEN_CLASS ) ).toBe( false );
+	const prompt = hero.querySelector< HTMLTextAreaElement >( '.hero-prompt' )!;
+	prompt.value = question;
+
+	const input =
+		document.querySelector< HTMLInputElement >( 'input[type="file"]' )!;
+	const file = new File( [ '%PDF-1.4\n%%EOF' ], 'datasheet.pdf', {
+		type: 'application/pdf',
+	} );
+	const live = installLivePickerFile( input, file );
+
+	await act( async () => {
+		fireEvent.change( input );
+	} );
+
+	expect( live.length ).toBe( 0 );
+	await waitFor( () => expect( answers.send ).toHaveBeenCalledTimes( 1 ) );
+	const { messages, uploads } = answers.send.mock.calls[ 0 ][ 0 ];
+	expect( messages ).toEqual( [
+		{
+			role: 'user',
+			content: question + '\nAttached: datasheet.pdf',
+		},
+	] );
+	const prepared = await prepare( file );
+	if ( ! prepared.ok ) {
+		throw new Error( prepared.reason );
+	}
+	expect( uploads ).toEqual( [ prepared.upload ] );
+	expect( retained ).toContain( question );
+	expect( retained ).toContain( 'datasheet.pdf' );
 } );
 
 test( 'the voice button opens the conversation in place', async () => {

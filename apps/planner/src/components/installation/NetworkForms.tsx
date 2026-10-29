@@ -510,21 +510,35 @@ export function CableForm({
 	cable,
 	submit,
 }: { cable: CableRun | null; submit: (value: CableRun) => boolean } & Common) {
+	const declared = cable?.conductor ?? null;
 	return (
 		<GeometryForm
 			title={__("Physical cable or conductor", "linker-tools")}
 			locale={locale}
 			cancel={cancel}
 			onValidity={onValidity}
-			submit={(v) =>
-				submit({
+			submit={(v) => {
+				// A declared section and its basis are one declaration: neither
+				// half is stored without the other, and neither is invented.
+				const conductor = v.paired("cross_section", "conductor_note", {
+					positive: true,
+				});
+				return submit({
 					id: cable?.id ?? installationId("cable"),
 					name: v.text("name"),
 					circuit_id: v.text("circuit"),
 					route_id: v.text("route"),
 					construction: v.text("construction") as CableRun["construction"],
-				})
-			}
+					...(conductor
+						? {
+								conductor: {
+									cross_section_mm2: conductor.value,
+									source_note: conductor.basis,
+								},
+							}
+						: {}),
+				});
+			}}
 		>
 			<GeometryText
 				name="name"
@@ -578,6 +592,29 @@ export function CableForm({
 					"linker-tools",
 				)}
 			</p>
+			<GeometryNumber
+				name="cross_section"
+				label={__("Declared cross-section", "linker-tools")}
+				locale={locale}
+				unit="mm²"
+				value={declared?.cross_section_mm2 ?? null}
+				optional
+				help={__(
+					"Leave empty while the cross-section is still open. This is the project's own declaration, not a sizing result.",
+					"linker-tools",
+				)}
+			/>
+			<GeometryText
+				name="conductor_note"
+				label={__("Basis for the declared cross-section", "linker-tools")}
+				value={declared?.source_note ?? ""}
+				optional
+				multiline
+				help={__(
+					"Required together with the cross-section, for example the project cable list or the installer's instruction.",
+					"linker-tools",
+				)}
+			/>
 		</GeometryForm>
 	);
 }

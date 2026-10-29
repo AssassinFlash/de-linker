@@ -83,7 +83,7 @@ const pvgisTmyRequestKeys = new Set([
 	"outputformat",
 ]);
 function pvgisSourceReference(sectionId: string, url: URL): boolean {
-	const tmy = /^pvlib-reference-[0-9]+$/.test(sectionId),
+	const tmy = /^(?:pvlib|geometric-pv)-reference-[0-9]+$/.test(sectionId),
 		requestKeys = tmy ? pvgisTmyRequestKeys : pvgisRequestKeys,
 		keys = [...url.searchParams.keys()];
 	return (

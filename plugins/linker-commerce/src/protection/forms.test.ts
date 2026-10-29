@@ -1,14 +1,85 @@
 import { afterEach, expect, test, vi } from 'vitest';
 import { connectForms } from './forms';
+import { ProtectionClient } from './client';
+import type { TurnstileOptions } from './types';
 
 afterEach( () => {
 	delete window.linkerPublicProtection;
 	delete window.linkerPublicProtectionConfig;
+	delete window.turnstile;
+	vi.unstubAllGlobals();
 	document.body.replaceChildren();
 } );
 
+test.each( [ 'registration', 'contact', 'inquiry' ] )(
+	'native %s keeps its warmed retrying check visible and resumes its original submit once',
+	async ( action ) => {
+		const f = fixture( 'enforce', action );
+		window.linkerPublicProtection = new ProtectionClient(
+			window.linkerPublicProtectionConfig!
+		);
+		const validation = vi.fn( async ( url: string ) => ( {
+			ok: true,
+			json: async () =>
+				url.includes( 'prepare' )
+					? {
+							site_key: 'synthetic-public',
+							prepare: 'synthetic-stamp',
+						}
+					: { proof: 'signed-proof', ttl: 300 },
+		} ) );
+		vi.stubGlobal( 'fetch', validation );
+		let options: TurnstileOptions;
+		const render = vi.fn( ( _container, received: TurnstileOptions ) => {
+			options = received;
+			queueMicrotask( () => received[ 'error-callback' ]( '300030' ) );
+			return 'native-registration';
+		} );
+		window.turnstile = { render, reset: vi.fn(), remove: vi.fn() };
+		f.form.dispatchEvent( new Event( 'focusin' ) );
+		await vi.waitFor( () => expect( render ).toHaveBeenCalledOnce() );
+		const widget = f.form.querySelector< HTMLElement >(
+			'[data-linker-protection-widget]'
+		)!;
+		const status = f.form.querySelector< HTMLElement >(
+			'[data-linker-protection-status]'
+		)!;
+		expect( widget.hidden ).toBe( false );
+		expect( status.hidden ).toBe( false );
+		expect( status ).toHaveTextContent(
+			'Verification is being retried. No request has been sent in this attempt.'
+		);
+		expect( validation ).toHaveBeenCalledOnce();
+		expect( f.submit ).not.toHaveBeenCalled();
+		for ( let click = 0; click < 2; click++ ) {
+			const submitEvent = new SubmitEvent( 'submit', {
+				cancelable: true,
+				submitter: f.button,
+			} );
+			f.form.dispatchEvent( submitEvent );
+			expect( submitEvent.defaultPrevented ).toBe( true );
+		}
+		expect( status ).toHaveTextContent(
+			'Verification is being retried. No request has been sent in this attempt.'
+		);
+		options![ 'before-interactive-callback' ]();
+		expect( status ).toHaveTextContent(
+			'No request has been sent in this attempt. Please complete the verification.'
+		);
+		options!.callback( 'native-token' );
+		await vi.waitFor( () => expect( f.submit ).toHaveBeenCalledOnce() );
+		expect( validation ).toHaveBeenCalledTimes( 2 );
+		expect( f.form.querySelector( '[name="message"]' ) ).toHaveValue(
+			'Customer message'
+		);
+		expect(
+			f.form.querySelector( '[name="linker_request_id"]' )
+		).toHaveValue( 'stable-id' );
+	}
+);
+
 function fixture( mode = 'enforce', action = 'draft_write' ) {
-	document.body.innerHTML = `<form><input name="message" value="Customer message"><input name="linker_request_id" value="stable-id" data-linker-protected-action="${ action }"><input name="linker_proof"><div data-linker-protection-widget hidden></div><p data-linker-protection-status hidden></p><button type="submit" name="send" value="1">Send inquiry</button></form>`;
+	document.body.innerHTML = `<form><input name="message" value="Customer message"><input name="linker_request_id" value="stable-id" data-linker-protected-action="${ action }"><input name="linker_proof"><div data-linker-protection-widget hidden></div><p role="status" aria-live="polite" data-linker-protection-status hidden></p><button type="submit" name="send" value="1">Send inquiry</button></form>`;
 	const form = document.querySelector( 'form' )!;
 	const button = form.querySelector( 'button' )!;
 	const proof = vi.fn< () => Promise< string > >();
@@ -99,7 +170,7 @@ test( 'verification outage retains all input and permits an explicit retry', asy
 		expect(
 			f.form.querySelector( '[data-linker-protection-status]' )
 				?.textContent
-		).toContain( 'Your entries are still here' )
+		).toContain( 'No request has been sent in this attempt' )
 	);
 	expect( f.submit ).not.toHaveBeenCalled();
 	expect(
@@ -286,34 +357,123 @@ test( 'product quantity Enter keeps its native product form behavior', () => {
 } );
 
 test.each( [ 'contact', 'inquiry' ] )(
-	'%s submits immediately with a completed warmed proof or bounded review fallback',
-	( action ) => {
+	'required %s keeps all fields after a real verification failure, then submits one verified retry',
+	async ( action ) => {
 		const f = fixture( 'enforce', action );
-		const ready = vi.fn( () => '' );
-		window.linkerPublicProtection!.ready = ready;
-		const first = new SubmitEvent( 'submit', {
-			cancelable: true,
-			submitter: f.button,
-		} );
-		f.form.dispatchEvent( first );
-		expect( first.defaultPrevented ).toBe( false );
-		expect( f.proof ).not.toHaveBeenCalled();
+		window.linkerPublicProtection = new ProtectionClient(
+			window.linkerPublicProtectionConfig!
+		);
+		const validation = vi.fn( async ( url: string ) => ( {
+			ok: true,
+			json: async () =>
+				url.includes( 'prepare' )
+					? {
+							site_key: 'synthetic-public',
+							prepare: 'synthetic-stamp',
+						}
+					: { proof: 'signed-proof', ttl: 300 },
+		} ) );
+		validation.mockRejectedValueOnce(
+			new TypeError( 'synthetic network failure' )
+		);
+		vi.stubGlobal( 'fetch', validation );
+		window.turnstile = {
+			render: vi.fn( ( _container, options ) => {
+				queueMicrotask( () => options.callback( 'native-token' ) );
+				return 'recovered-widget';
+			} ),
+			reset: vi.fn(),
+			remove: vi.fn(),
+		};
+		const submit = () =>
+			f.form.dispatchEvent(
+				new SubmitEvent( 'submit', {
+					cancelable: true,
+					submitter: f.button,
+				} )
+			);
+		expect( submit() ).toBe( false );
+		await vi.waitFor( () =>
+			expect(
+				f.form.querySelector( '[role="status"]' )
+			).toHaveTextContent( 'No request has been sent in this attempt.' )
+		);
+		await vi.waitFor( () =>
+			expect(
+				f.form.querySelector( '[role="status"]' )
+			).toHaveTextContent( 'Verification could not be completed.' )
+		);
 		expect( f.submit ).not.toHaveBeenCalled();
-		expect( f.form.querySelector( '[name="linker_proof"]' ) ).toHaveValue(
-			''
-		);
-		ready.mockReturnValue( 'already-verified' );
-		const second = new SubmitEvent( 'submit', {
-			cancelable: true,
-			submitter: f.button,
-		} );
-		f.form.dispatchEvent( second );
-		expect( second.defaultPrevented ).toBe( false );
-		expect( f.form.querySelector( '[name="linker_proof"]' ) ).toHaveValue(
-			'already-verified'
-		);
 		expect( f.form.querySelector( '[name="message"]' ) ).toHaveValue(
 			'Customer message'
 		);
+		expect( f.form.querySelector( '[name="linker_proof"]' ) ).toHaveValue(
+			''
+		);
+		expect( submit() ).toBe( false );
+		await vi.waitFor( () => expect( f.submit ).toHaveBeenCalledOnce() );
+		expect( f.form.querySelector( '[name="linker_proof"]' ) ).toHaveValue(
+			'signed-proof'
+		);
+		expect(
+			f.form.querySelector( '[name="linker_request_id"]' )
+		).toHaveValue( 'stable-id' );
+	}
+);
+
+test.each( [ 'contact', 'inquiry' ] )(
+	'a native %s recovery page checks the old UUID, then a definite refusal returns to fresh verification',
+	async ( action ) => {
+		const fresh = fixture( 'enforce', action );
+		fresh.proof.mockResolvedValue( 'original-proof' );
+		fresh.form.dispatchEvent(
+			new SubmitEvent( 'submit', {
+				cancelable: true,
+				submitter: fresh.button,
+			} )
+		);
+		await vi.waitFor( () => expect( fresh.submit ).toHaveBeenCalledOnce() );
+		// The actual PHP FormFields contract marks only the server-restored
+		// original UUID after a possibly pending/unknown native POST result.
+		const restored = fixture( 'enforce', action );
+		restored.form.querySelector< HTMLElement >(
+			'[data-linker-protected-action]'
+		)!.dataset.linkerProtectionRecovery = 'true';
+		restored.proof.mockRejectedValue( new Error( 'verification_network' ) );
+		restored.form.dispatchEvent( new Event( 'focusin' ) );
+		restored.form.dispatchEvent( new Event( 'pointerdown' ) );
+		expect( window.linkerPublicProtection?.warm ).not.toHaveBeenCalled();
+		const check = new SubmitEvent( 'submit', {
+			cancelable: true,
+			submitter: restored.button,
+		} );
+		restored.form.dispatchEvent( check );
+		expect( check.defaultPrevented ).toBe( false );
+		expect( restored.proof ).not.toHaveBeenCalled();
+		expect(
+			restored.form.querySelector( '[name="linker_proof"]' )
+		).toHaveValue( '' );
+		expect(
+			restored.form.querySelector( '[name="linker_request_id"]' )
+		).toHaveValue( 'stable-id' );
+		expect(
+			restored.form.querySelector( '[role="status"]' )
+		).toHaveTextContent( 'Checking the status of your earlier request…' );
+		// If Business finds no completed result, required proof refusal is
+		// definite; its next native recovery page omits the marker.
+		const refused = fixture( 'enforce', action );
+		refused.proof.mockResolvedValue( 'fresh-proof' );
+		const retry = new SubmitEvent( 'submit', {
+			cancelable: true,
+			submitter: refused.button,
+		} );
+		refused.form.dispatchEvent( retry );
+		expect( retry.defaultPrevented ).toBe( true );
+		await vi.waitFor( () =>
+			expect( refused.submit ).toHaveBeenCalledOnce()
+		);
+		expect(
+			refused.form.querySelector( '[name="linker_proof"]' )
+		).toHaveValue( 'fresh-proof' );
 	}
 );

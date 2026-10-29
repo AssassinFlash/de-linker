@@ -71,6 +71,7 @@ import { newEntryId, updateEntryRecovery } from '../genie/shared/entryDraft';
 import { useDraftContext } from '../genie/shared/useDraftContext';
 import type { DraftContext, DraftLease } from '../genie/shared/draftContext';
 import { useFailure } from '../genie/shared/useFailure';
+import { useVerificationStage } from '../genie/shared/useVerificationStage';
 import { HeroSession } from './session';
 
 const emptyPrompt = () => ( { text: '', version: 0 } );
@@ -129,6 +130,11 @@ export function HeroConversation( {
 	const [ thread, setThread ] = useState< TurnMessage[] >( [] );
 	const [ turn, setTurn ] = useState< Turn | null >( null );
 	const [ phase, setPhase ] = useState< Phase >( 'ask' );
+	const {
+		slot: verificationSlot,
+		pending: verificationPending,
+		begin: beginVerification,
+	} = useVerificationStage( phase === 'waiting' );
 	const [ refused, setRefused ] = useState( '' );
 	const [ recoveryBlocked, setRecoveryBlocked ] = useState( false );
 	const [ hydrated, setHydrated ] = useState( false );
@@ -465,6 +471,22 @@ export function HeroConversation( {
 			const settled = settleTurnFailure( error, before, draft );
 			// A newly accepted next question is a different editor from this turn.
 			draftContext.checkpoint();
+			if ( 'cancelled' === settled.action ) {
+				// Withdrawn before anything was sent: the question goes back
+				// into the composer and the surface says nothing.
+				const returned = returnToEditing( {
+					text: settled.field,
+					uploads: draft.uploads,
+					missing: draft.omitted,
+				} );
+				setThread( before );
+				if ( returned ) {
+					placeChips( draft.uploads );
+					setPrompt( settled.field );
+				}
+				setPhase( 'ask' );
+				return;
+			}
 			if ( 'resource' === settled.action ) {
 				const returned = returnToEditing( {
 					text: settled.field,
@@ -613,6 +635,11 @@ export function HeroConversation( {
 			setRefused( '' );
 			setConflict( '' );
 			setLive( '' );
+			const turnVerification = beginVerification( {
+				owns: () => draftContext.owns( lease ),
+				settle: () => draftContext.settle( lease ),
+				valid: () => draftContext.valid( lease ),
+			} );
 			setPhase( 'waiting' );
 			setPrompt( '' );
 			setThread( [
@@ -627,6 +654,7 @@ export function HeroConversation( {
 					picked,
 					lease.scope,
 					{
+						verification: turnVerification,
 						authorize: () => draftContext.authorize( lease ),
 						settle: () => draftContext.settle( lease ),
 					}
@@ -677,6 +705,7 @@ export function HeroConversation( {
 			placeChips,
 			draftContext,
 			retainUnverifiedTurn,
+			beginVerification,
 		]
 	);
 	sendRef.current = send;
@@ -707,11 +736,17 @@ export function HeroConversation( {
 				setPrompt( 'upstream' === kind ? draft.text : '' );
 				return;
 			}
+			const turnVerification = beginVerification( {
+				owns: () => draftContext.owns( lease ),
+				settle: () => draftContext.settle( lease ),
+				valid: () => draftContext.valid( lease ),
+			} );
 			const result = await session.retry(
 				payload.question,
 				payload.uploads,
 				lease.scope,
 				{
+					verification: turnVerification,
 					authorize: () => draftContext.authorize( lease ),
 					settle: () => draftContext.settle( lease ),
 				}
@@ -770,6 +805,7 @@ export function HeroConversation( {
 		placeChips,
 		draftContext,
 		retainUnverifiedTurn,
+		beginVerification,
 	] );
 
 	const updateMissing = useCallback(
@@ -1016,10 +1052,15 @@ export function HeroConversation( {
 										className="linker-genie-wait__dot"
 										aria-hidden="true"
 									/>
-									{ __(
-										'Genie is thinking…',
-										'linker-tools'
-									) }
+									{ verificationPending
+										? __(
+												'Checking verification…',
+												'linker-tools'
+											)
+										: __(
+												'Genie is thinking…',
+												'linker-tools'
+											) }
 								</div>
 							</li>
 						) : null }
@@ -1111,6 +1152,12 @@ export function HeroConversation( {
 					void restoreOwnedFailure();
 				} }
 				busy={ phase === 'waiting' || files.busy }
+			/>
+			<div
+				ref={ verificationSlot }
+				data-linker-resource-verification-slot
+				className="linker-genie-app__status"
+				hidden
 			/>
 			<AttachmentChips
 				picked={ draftContext.phase === 'ready' ? files.picked : [] }

@@ -1,10 +1,37 @@
 import { __ } from '@wordpress/i18n';
 
 /**
+ * The visitor withdrew this attempt before it was sent: closing the surface,
+ * switching conversation, or losing the draft owner. Nothing reached the
+ * server, so this is a neutral end of the attempt, never a failure to explain.
+ *
+ * @param error The rejection from sendTurn, or a resource fetch.
+ */
+export function isVerificationCancellation( error: unknown ): boolean {
+	return error instanceof Error && error.message === 'verification_cancelled';
+}
+
+/**
  * Reviewed customer explanation; API diagnostics never become visible copy.
  * @param error
  */
 export function resourceRefusalReason( error: unknown ): string | null {
+	// Withdrawal is not a failure: the shell restores the draft silently.
+	if ( isVerificationCancellation( error ) ) {
+		return null;
+	}
+	if (
+		error instanceof Error &&
+		( error.message.startsWith( 'verification_' ) ||
+			( 'code' in error &&
+				typeof error.code === 'string' &&
+				error.code.startsWith( 'linker_verification_' ) ) )
+	) {
+		return __(
+			'Verification could not be completed. No request has been sent in this attempt. Please try again.',
+			'linker-tools'
+		);
+	}
 	if (
 		error instanceof Error &&
 		'code' in error &&
@@ -35,8 +62,7 @@ export function resourceRefusalReason( error: unknown ): string | null {
 				typeof error.code === 'string' &&
 				/^(linker_admission_|linker_resource_|linker_genie_quota)/.test(
 					error.code
-				) ) ||
-			error.message.startsWith( 'verification_' ) )
+				) ) )
 	) {
 		return __(
 			'Genie is temporarily unavailable. Your message is still here. You can send an inquiry to our team.',

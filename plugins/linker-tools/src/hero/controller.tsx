@@ -302,7 +302,7 @@ export function startHero(
 	/**
 	 * Opens the conversation and asks one question (or sends picked files).
 	 *
-	 * @param text    The question; empty when the files are the question.
+	 * @param text    The editor's question; empty when the files are the question.
 	 * @param files   Files from the page's picker.
 	 * @param trigger The page's control that started it; focus returns there.
 	 */
@@ -517,11 +517,14 @@ export function startHero(
 			return;
 		}
 		context.acceptEditor();
-		const files = picker.files;
-		if ( files && files.length > 0 ) {
-			runAsk( '', files );
-		}
+		// FileList is live: clearing the input empties the same object.
+		// Copy the files, and the editor text, before that clear.
+		const question = prompt!.value;
+		const files = picker.files ? Array.from( picker.files ) : [];
 		picker.value = '';
+		if ( files.length > 0 ) {
+			runAsk( question, files );
+		}
 	}
 
 	function isOutOfSight(): boolean {

@@ -44,12 +44,18 @@ export interface InstallationRoute {
 	extra_length_m: number | null;
 	extra_length_note: string | null;
 }
+export interface ConductorSpecification extends JsonObject {
+	readonly cross_section_mm2: number;
+	readonly source_note: string;
+}
 export interface CableRun {
 	id: string;
 	name: string;
 	circuit_id: string;
 	route_id: string;
 	construction: "single_conductor" | "multicore_cable" | "unspecified";
+	/** Absent keeps the specification explicitly open; it never inherits one. */
+	conductor?: ConductorSpecification | null;
 }
 export interface PvStringLink {
 	string_id: string;
@@ -87,6 +93,19 @@ const validate = new Ajv2020({
 	strict: true,
 	strictNumbers: true,
 }).compile<InstallationInputs>(schema);
+/** Absent and null must not both exist: only absence keeps historical bytes. */
+function canonicalConductor(value: InstallationInputs): InstallationInputs {
+	if (value.cable_runs.every((run) => run.conductor !== null)) return value;
+	return {
+		...value,
+		cable_runs: value.cable_runs.map((run) => {
+			if (run.conductor !== null) return run;
+			const next = { ...run };
+			delete next.conductor;
+			return next;
+		}),
+	};
+}
 export function readInstallation(value: unknown): InstallationInputs {
 	if (value === undefined) return emptyInstallation();
 	if (!validate(value)) throw new ApiError(422, "invalid_installation");
@@ -125,13 +144,17 @@ export function readInstallation(value: unknown): InstallationInputs {
 		!distinct(links.map((link) => link.circuit_id))
 	)
 		throw new ApiError(422, "invalid_installation");
-	return value;
+	return canonicalConductor(value);
 }
 export interface CableQuantity extends JsonObject {
 	id: string;
 	name: string;
 	circuit_name: string;
 	route_name: string;
+	construction: CableRun["construction"];
+	/** Null when the project declared no cross-section for this run. */
+	conductor: ConductorSpecification | null;
+	specification: "open" | "declared";
 	quantity: number | null;
 	unit: "m";
 	plan_length_m: number;
@@ -152,6 +175,17 @@ export type PvStringLinkStatus =
 	| "stale_circuit"
 	| "wrong_circuit_kind"
 	| "inverter_endpoint_unresolved";
+export type ConductorClosure =
+	"declared" | "unconfirmed" | "conflicting" | "not_recorded";
+export type QuantityClosure = "confirmed" | "pending" | "not_recorded";
+/** What one frozen revision actually records about a linked circuit. */
+export interface PvStringClosure {
+	conductor: ConductorClosure;
+	quantity: QuantityClosure;
+	recorded: boolean;
+	/** Sizing, protection and country admission are never implied here. */
+	approval: "not_assessed";
+}
 export interface PvStringLinkReview {
 	string_id: string;
 	mppt: number | null;
@@ -166,6 +200,7 @@ export interface PvStringLinkReview {
 		product_revision: string | null;
 	}[];
 	cable_runs: CableQuantity[];
+	closure: PvStringClosure;
 	reasons: "cable_runs_missing"[];
 }
 export interface PvStringReconciliation {
@@ -248,7 +283,30 @@ function readStringReconciliation(
 									? "inverter_endpoint_unresolved"
 									: "linked",
 				reasons: PvStringLinkReview["reasons"] =
-					circuit && !recorded.length ? ["cable_runs_missing"] : [];
+					circuit && !recorded.length ? ["cable_runs_missing"] : [],
+				// Recomputed from the recorded runs so a reply cannot claim a
+				// closure the frozen inputs do not support.
+				closure: PvStringClosure = {
+					conductor: !recorded.length
+						? "not_recorded"
+						: recorded.some((c) => c.conductor === null)
+							? "unconfirmed"
+							: new Set(recorded.map((c) => c.conductor!.cross_section_mm2))
+										.size > 1
+								? "conflicting"
+								: "declared",
+					quantity: !recorded.length
+						? "not_recorded"
+						: recorded.some((c) => c.quantity === null)
+							? "pending"
+							: "confirmed",
+					recorded: false,
+					approval: "not_assessed",
+				};
+			closure.recorded =
+				status === "linked" &&
+				closure.conductor === "declared" &&
+				closure.quantity === "confirmed";
 			if (
 				row.string_id !== id ||
 				row.mppt !== (string?.mppt ?? null) ||
@@ -257,6 +315,7 @@ function readStringReconciliation(
 				row.status !== status ||
 				!sameJson(row.endpoints, endpoints) ||
 				!sameJson(row.cable_runs, recorded) ||
+				!sameJson(row.closure, closure) ||
 				!sameJson(row.reasons, reasons)
 			)
 				fail();
@@ -268,6 +327,7 @@ function readStringReconciliation(
 				status,
 				endpoints,
 				cable_runs: recorded,
+				closure,
 				reasons,
 			};
 		},
@@ -341,6 +401,15 @@ export function readInstallationReview(
 		if (
 			(c.reasons.length === 0) !== (c.quantity !== null) ||
 			(typeof c.quantity === "number" && c.quantity <= 0)
+		)
+			throw new ApiError(502, "invalid_installation_review");
+		// The declared section and the reported status must describe the same
+		// frozen run; a reply may not upgrade an undeclared run on its own.
+		const declared = c.conductor,
+			expected = input.conductor ?? null;
+		if (
+			!sameJson(declared, expected) ||
+			c.specification !== (expected === null ? "open" : "declared")
 		)
 			throw new ApiError(502, "invalid_installation_review");
 		return c as CableQuantity;

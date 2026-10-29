@@ -94,7 +94,277 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		wc_load_cart();
 		WC()->cart->empty_cart();
 		$this->later( static fn () => WC()->cart->empty_cart() );
+		$this->isolate_ordinary_reception();
 	}
+
+	/**
+	 * These cases check admission and receipts, not shared-site fullness.
+	 *
+	 * Deleting the option is not a private ledger: the next enforce write
+	 * rebuilds ordinary occupancy from every open contact and proforma
+	 * inquiry, and disposition reconcile can add more. An already reconciled
+	 * empty ledger still runs the real count and byte gate. The snapshot
+	 * taken above is restored afterwards; no existing inquiry is deleted.
+	 */
+	private function isolate_ordinary_reception(): void {
+		$seeded = \Linker\Commerce\Protection\IntakeStore::edit(
+			static function ( array &$state ): array {
+				$state['business']              = array();
+				$state['business_dispositions'] = array();
+				\Linker\Commerce\Protection\IntakeStore::save( $state );
+				return array( 'business' => count( $state['business'] ) );
+			},
+			1
+		);
+		$this->assertIsArray( $seeded );
+		$this->assertSame( 0, $seeded['business'] );
+		$room = \Linker\Commerce\Protection\BusinessCapacity::preflight();
+		$this->assertNull( $room, $room instanceof WP_Error ? (string) $room->get_error_code() : '' );
+	}
+
+	/** Unknown dispatched writes stay recoverable; definite refusals return to a fresh check. */
+	public function test_native_recovery_pages_preserve_unknown_dispatch_without_looping_definite_refusals(): void {
+		$identity = Identity::current();
+		$this->assertInstanceOf( Identity::class, $identity );
+		foreach ( array( 'contact', 'inquiry' ) as $action ) {
+			foreach ( array( 'reserved', 'dispatched', 'unresolved', 'completed' ) as $status ) {
+				$id      = wp_generate_uuid4();
+				$payload = array(
+					'fixture' => self::tag(),
+					'email'   => 'native-recovery@example.test',
+				);
+				$fp      = \Linker\Commerce\Protection\Fingerprint::make( $identity, $action, $payload );
+				$this->assertIsString( $fp );
+				$at     = time() - ( 'unresolved' === $status ? 121 : 0 );
+				$ledger = new Ledger( static fn (): int => $at );
+				$this->assertIsArray( $ledger->reserve( $id, $fp, array( new Allowance( 'fixture_recovery', $identity->browser, 100, HOUR_IN_SECONDS ) ), 120, array(), $action, $identity->binding() ) );
+				if ( 'reserved' !== $status ) {
+					$this->assertIsArray( $ledger->dispatch( $id, $fp ) );
+				}
+				if ( 'completed' === $status ) {
+					$this->assertIsArray( $ledger->complete( $id, $fp, 0 ) );
+				}
+				$called  = false;
+				$work    = static function () use ( &$called ): WP_Error {
+					$called = true;
+					return new WP_Error( 'unexpected_fixture_write' );
+				};
+				$unknown = Business::run(
+					$action,
+					array(
+						'linker_request_id' => $id,
+						'linker_proof'      => '',
+					),
+					$payload,
+					$work
+				);
+				$this->assertInstanceOf( WP_Error::class, $unknown );
+				$this->assertSame( 'linker_inquiry_pending', $unknown->get_error_code(), $action . ':' . $status );
+				$this->assertFalse( $called );
+			}
+			$fresh = Business::run(
+				$action,
+				array(
+					'linker_request_id' => wp_generate_uuid4(),
+					'linker_proof'      => '',
+				),
+				$payload,
+				$work
+			);
+			$this->assertInstanceOf( WP_Error::class, $fresh );
+			$this->assertSame( 'linker_admission_proof', $fresh->get_error_code() );
+		}
+	}
+
+	/** Actual native redirects preserve pending recovery and clear definite refusals on the next page. */
+	public function test_both_native_handlers_restore_pending_and_return_definite_refusals_to_verification(): void {
+		$original_post       = $_POST;
+		$original_cookies    = $_COOKIE;
+		$original_shortcodes = $GLOBALS['shortcode_tags'];
+		$original_session    = array();
+		foreach ( array( 'linker_form_recovery_contact', 'linker_inquiry_fields', 'linker_inquiry_error', 'linker_inquiry_error_locale', 'linker_intake_grouped' ) as $key ) {
+			$original_session[ $key ] = WC()->session->get( $key );
+		}
+		$this->later(
+			static function () use ( $original_post, $original_cookies, $original_shortcodes, $original_session ): void {
+				$_POST                     = $original_post;
+				$_COOKIE                   = $original_cookies;
+				$GLOBALS['shortcode_tags'] = $original_shortcodes;
+				foreach ( $original_session as $key => $value ) {
+					WC()->session->set( $key, $value );
+				}
+			}
+		);
+		$stop_redirect = static function ( string $location ): string {
+			if ( str_starts_with( $location, home_url() ) ) {
+				throw new \RuntimeException( 'fixture_native_recovery_redirect' );
+			}
+			return $location;
+		};
+		foreach ( array( 'contact', 'inquiry' ) as $action ) {
+			foreach ( array( 'pending', 'refused' ) as $outcome ) {
+				$post = $this->post( $action );
+				if ( 'pending' === $outcome ) {
+					$identity = Identity::current();
+					$this->assertInstanceOf( Identity::class, $identity );
+					$details = Submission::from_post( $post, 'contact' === $action );
+					$this->assertInstanceOf( Submission::class, $details );
+					$payload = 'contact' === $action ? get_object_vars( $details ) : array(
+						'details' => get_object_vars( $details ),
+						'billing' => \Linker\Commerce\Inquiry\BillingFields::values( $post ),
+						'draft'   => $post['linker_draft_hash'],
+					);
+					$fp      = \Linker\Commerce\Protection\Fingerprint::make( $identity, $action, $payload );
+					$this->assertIsString( $fp );
+					$ledger = new Ledger();
+					$this->assertIsArray( $ledger->reserve( $post['linker_request_id'], $fp, array( new Allowance( 'fixture_redirect_recovery', $identity->browser, 100, HOUR_IN_SECONDS ) ), 120, array(), $action, $identity->binding() ) );
+					$this->assertIsArray( $ledger->dispatch( $post['linker_request_id'], $fp ) );
+					$post['linker_proof'] = '';
+				} elseif ( 'inquiry' === $action ) {
+					$post['message'] = '';
+				} else {
+					$post['linker_proof'] = '';
+				}
+				$_POST = $post;
+				add_filter( 'wp_redirect', $stop_redirect, PHP_INT_MAX );
+				try {
+					( 'contact' === $action ? new ContactHandler() : new Handler() )->handle();
+					$this->fail( 'The native redirect must be intercepted before exit.' );
+				} catch ( \RuntimeException $redirect ) {
+					$this->assertSame( 'fixture_native_recovery_redirect', $redirect->getMessage() );
+				} finally {
+					remove_filter( 'wp_redirect', $stop_redirect, PHP_INT_MAX );
+				}
+				$_COOKIE['wp_woocommerce_session_fixture'] = 'local-session-present';
+				if ( 'contact' === $action ) {
+					$stored = WC()->session->get( 'linker_form_recovery_contact' )['fields'];
+					$html   = ( new ContactForm() )->render();
+				} else {
+					$stored = WC()->session->get( 'linker_inquiry_fields' );
+					$form   = new \Linker\Commerce\Inquiry\Form();
+					$form->register();
+					$html = $form->render();
+				}
+				$this->assertSame( $post['linker_request_id'], $stored['linker_request_id'] );
+				$this->assertSame( 'pending' === $outcome ? '1' : '0', $stored['linker_recovery_available'], $action . ':' . $outcome );
+				$this->assertSame( 'pending' === $outcome, str_contains( $html, 'data-linker-protection-recovery="true"' ), $action . ':' . $outcome );
+				$this->assertSame( array(), wc_get_orders( array( 'billing_email' => $post['email'] ) ) );
+			}
+		}
+	}
+
+
+	/**
+	 * A customer who edits a message after an unconfirmed result must be able to
+	 * send it: the journal refuses the old UUID on every attempt, so the native
+	 * form is given a new one instead of resubmitting it forever.
+	 */
+	public function test_a_changed_message_after_an_unconfirmed_result_can_be_sent_again(): void {
+		$this->optional_business_verification();
+		$original_post       = $_POST;
+		$original_cookies    = $_COOKIE;
+		$original_shortcodes = $GLOBALS['shortcode_tags'];
+		$original_session    = array();
+		foreach ( array( 'linker_form_recovery_contact', 'linker_inquiry_fields', 'linker_inquiry_error', 'linker_inquiry_error_locale', 'linker_intake_grouped' ) as $key ) {
+			$original_session[ $key ] = WC()->session->get( $key );
+		}
+		$this->later(
+			static function () use ( $original_post, $original_cookies, $original_shortcodes, $original_session ): void {
+				$_POST                     = $original_post;
+				$_COOKIE                   = $original_cookies;
+				$GLOBALS['shortcode_tags'] = $original_shortcodes;
+				foreach ( $original_session as $key => $value ) {
+					WC()->session->set( $key, $value );
+				}
+			}
+		);
+		$stop_redirect = static function ( string $location ): string {
+			if ( str_starts_with( $location, home_url() ) ) {
+				throw new \RuntimeException( 'fixture_changed_input_redirect' );
+			}
+			return $location;
+		};
+		foreach ( array( 'contact', 'inquiry' ) as $action ) {
+			$post     = $this->post( $action );
+			$original = $post['linker_request_id'];
+			// The journal already answered this UUID for the sender's earlier text.
+			$identity = Identity::current();
+			$this->assertInstanceOf( Identity::class, $identity );
+			$ledger = new Ledger();
+			$this->assertIsArray( $ledger->reserve( $original, hash( 'sha256', 'earlier-input-' . self::tag() ), array( new Allowance( 'fixture_changed_input', $identity->browser, 100, HOUR_IN_SECONDS ) ), 120, array(), $action, $identity->binding() ) );
+			// The customer then edits the question and sends again from the native form.
+			$post['message']     .= ' Additional detail.';
+			$post['linker_proof'] = '';
+			$_POST                = $post;
+			add_filter( 'wp_redirect', $stop_redirect, PHP_INT_MAX );
+			try {
+				( 'contact' === $action ? new ContactHandler() : new Handler() )->handle();
+				$this->fail( 'The native redirect must be intercepted before exit.' );
+			} catch ( \RuntimeException $redirect ) {
+				$this->assertSame( 'fixture_changed_input_redirect', $redirect->getMessage() );
+			} finally {
+				remove_filter( 'wp_redirect', $stop_redirect, PHP_INT_MAX );
+			}
+			$_COOKIE['wp_woocommerce_session_fixture'] = 'local-session-present';
+			if ( 'contact' === $action ) {
+				$stored = WC()->session->get( 'linker_form_recovery_contact' )['fields'];
+				$html   = ( new ContactForm() )->render();
+			} else {
+				$stored = WC()->session->get( 'linker_inquiry_fields' );
+				$form   = new \Linker\Commerce\Inquiry\Form();
+				$form->register();
+				$html = $form->render();
+			}
+			$this->assertSame( '', $stored['linker_request_id'], $action . ': the refused UUID is not offered again' );
+			$this->assertSame( '0', $stored['linker_recovery_available'], $action . ': a changed-input refusal needs a fresh proof' );
+			$this->assertSame( 'Please provide product guidance. Additional detail.', $stored['message'], $action . ': the edited text stays' );
+			$this->assertStringNotContainsString( 'data-linker-protection-recovery="true"', $html, $action );
+			$this->assertSame( 1, preg_match( '/name="linker_request_id" value="([0-9a-f-]{36})"/', $html, $fresh ), $action . ': the native form still carries a request id' );
+			$replacement = $fresh[1] ?? '';
+			$this->assertNotSame( $original, $replacement, $action . ': the replaced UUID is new' );
+			$this->assertTrue( wp_is_uuid( $replacement, 4 ), $action . ': the replacement is a native UUID' );
+			$this->assertSame( array(), wc_get_orders( array( 'billing_email' => $post['email'] ) ), $action );
+		}
+	}
+
+	/** An unreadable journal is not evidence that an old native request was refused. */
+	public function test_native_recovery_lookup_storage_failure_preserves_unknown_result(): void {
+		$switched = switch_to_locale( 'de_DE_formal' );
+		$this->assertSame( 'de_DE_formal', get_locale() );
+		load_textdomain( 'linker-commerce', dirname( __DIR__, 3 ) . '/languages/linker-commerce-de_DE_formal.mo', 'de_DE_formal' );
+		$old = get_option( Ledger::OPTION );
+		update_option( Ledger::OPTION, 'invalid-fixture-journal', false );
+		$called = false;
+		try {
+			$result = Business::run(
+				'inquiry',
+				array(
+					'linker_request_id' => wp_generate_uuid4(),
+					'linker_proof'      => '',
+				),
+				array( 'fixture' => self::tag() ),
+				static function () use ( &$called ): WP_Error {
+					$called = true;
+					return new WP_Error( 'unexpected_fixture_write' );
+				}
+			);
+			$this->assertInstanceOf( WP_Error::class, $result );
+			$this->assertSame( 'linker_admission_storage', $result->get_error_code() );
+			$this->assertSame( 'Der Status Ihrer Anfrage lässt sich derzeit nicht bestätigen. Bitte prüfen Sie ihn, bevor Sie die Anfrage erneut senden.', $result->get_error_message() );
+			$this->assertTrue( \Linker\Commerce\Protection\FormRecovery::after_error( $result ) );
+			$this->assertFalse( $called );
+		} finally {
+			if ( $switched ) {
+				restore_previous_locale();
+			}
+			if ( false === $old ) {
+				delete_option( Ledger::OPTION );
+			} else {
+				update_option( Ledger::OPTION, $old, false );
+			}
+		}
+	}
+
 
 	/**
 	 * One native form attempt, immediately after autofill without a fake clock.
@@ -228,11 +498,13 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 	public function test_fast_validated_customers_share_a_nat_without_the_old_three_message_limit(): void {
 		for ( $i = 0; $i < 4; ++$i ) {
 			$post = $this->post( 'contact' );
-			$this->assertSame( 'sent', ( new ContactHandler() )->process( $post ) );
+			$this->assertSame( 'receipt_pending', ( new ContactHandler() )->process( $post ) );
 			$orders = wc_get_orders( array( 'billing_email' => $post['email'] ) );
 			$this->assertIsArray( $orders );
 			$this->assertCount( 1, $orders );
 			$order = $orders[0];
+			$order->read_meta_data( true );
+			$this->assertSame( 'assessment_pending', (string) $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
 			$this->later(
 				static function () use ( $order ): void {
 					$order->delete( true );
@@ -510,7 +782,15 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		\Linker\Commerce\Mail\ResetNotice::capture_submission( new WP_Error( 'fixture', 'Synthetic failure' ), new \WP_User() );
 		$saved = WC()->session->get( $session_key, array() );
 		$this->assertIsArray( $saved );
-		$this->assertSame( array( 'user_login' => 'installer@example.test' ), $saved['fields'] );
+		// Same contract as FormRecoveryTest: editable login plus the server-owned
+		// outcome flag. A posted password, key or proof must not join them.
+		$this->assertSame(
+			array(
+				'user_login'                => 'installer@example.test',
+				'linker_recovery_available' => '1',
+			),
+			$saved['fields']
+		);
 
 		$notice = static function (): void {
 			echo '<div class="woocommerce-error">Synthetic retry notice</div>';
@@ -528,6 +808,11 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		$html = (string) ob_get_clean();
 
 		$this->assertMatchesRegularExpression( '/<section class="linker-auth-card"[^>]*>.*Synthetic retry notice.*name="user_login"/s', $html );
+		$this->assertStringNotContainsString( 'linker_recovery_available', $html );
+		$this->assertStringNotContainsString( 'data-linker-protection-recovery', $html );
+		$this->assertStringNotContainsString( 'never-store-password', $html );
+		$this->assertStringNotContainsString( 'never-store-key', $html );
+		$this->assertStringNotContainsString( 'never-store-proof', $html );
 		$processor = new \WP_HTML_Tag_Processor( $html );
 		$found     = false;
 		while ( $processor->next_tag( array( 'tag_name' => 'INPUT' ) ) ) {
@@ -622,8 +907,28 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 				)
 			);
 			$marker = self::newest_mail_job();
-			$this->assertSame( 'sent', ( new ContactHandler() )->process( $post ), 'Receipt admission follows the background verdict.' );
+			$this->assertSame( 'receipt_pending', ( new ContactHandler() )->process( $post ), 'The receipt stays undecided until the background verdict.' );
+			$found = wc_get_orders(
+				array(
+					'billing_email' => $target,
+					'limit'         => -1,
+				)
+			);
+			$this->assertIsArray( $found );
+			$matched = array_values(
+				array_filter(
+					$found,
+					static fn ( WC_Order $candidate ): bool => $post['linker_request_id'] === $candidate->get_meta( BusinessRecord::REQUEST )
+				)
+			);
+			$this->assertCount( 1, $matched );
+			$current = $matched[0];
+			$current->read_meta_data( true );
+			$this->assertSame( 'assessment_pending', (string) $current->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
+			$this->assertSame( array(), self::mail_jobs_after( $marker ), 'Pending authorization has not queued team mail or a receipt.' );
 			$this->authorization->drain();
+			$current->read_meta_data( true );
+			$this->assertSame( 2 === $i ? 'sent_no_receipt' : 'sent', ContactHandler::receipt_state( $current ), 'Receipt admission follows the background verdict.' );
 			$jobs = array_map( static fn ( int $id ) => $store->load( $id ), self::mail_jobs_after( $marker ) );
 			$this->assertCount( 2 === $i ? 1 : 2, $jobs );
 			foreach ( $jobs as $job ) {

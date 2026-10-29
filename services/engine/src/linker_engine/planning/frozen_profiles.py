@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from .energy_inputs import MappingDocument
 from .errors import VersionUnavailable
+from .geometric_pv_inputs import PROFILE_PURPOSE as GEOMETRIC_PV_PURPOSE
+from .geometric_pv_profile import prepared_profile as geometric_pv_profile
 from .power_series import PowerSeries
 from .profiles import read_profile
 from .pv_profile import PURPOSE, frozen_reference_profile
@@ -27,6 +29,10 @@ def frozen_profile(
         or metadata.get("retention") != "permanent"
     ):
         raise VersionUnavailable("unsupported pinned profile metadata")
+    if metadata.get("profile_type") == GEOMETRIC_PV_PURPOSE:
+        if timezone_sha256 is not None:
+            raise VersionUnavailable("mixed profile formats are not supported")
+        return geometric_pv_profile(blobs, raw_sha256, metadata)
     if metadata.get("profile_type") == PURPOSE:
         if timezone_sha256 is not None or "csv_mapping" in metadata:
             raise VersionUnavailable("mixed profile formats are not supported")

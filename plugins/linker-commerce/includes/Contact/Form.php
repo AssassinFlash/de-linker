@@ -64,6 +64,11 @@ final class Form {
 	public const STATE_PARAM = 'contact';
 
 	/**
+	 * Order key of a saved contact inquiry, so the confirmation can follow its receipt.
+	 */
+	public const ORDER_PARAM = 'contact_order';
+
+	/**
 	 * The id of the region the redirect returns to.
 	 */
 	public const ANCHOR = 'contact-form';
@@ -135,9 +140,14 @@ final class Form {
 		$html .= '<input type="hidden" name="action" value="' . esc_attr( self::ACTION ) . '" />';
 		$html .= '<input type="hidden" name="lang" value="' . esc_attr( $this->locale() ) . '" />';
 		$html .= '<input type="hidden" name="' . esc_attr( self::BACK_FIELD ) . '" value="' . esc_url( $this->current_url() ) . '" />';
-		$html .= wp_nonce_field( self::NONCE_ACTION, self::NONCE_FIELD, true, false );
+		// Selection transport is submitted only by the inclusion checkbox.
+		$html .= wp_nonce_field( self::NONCE_ACTION, self::NONCE_FIELD, false, false );
+		$html .= '<input type="hidden" name="_wp_http_referer" value="' . esc_url( $this->posted_referer() ) . '" />';
 		$html .= ( new \Linker\Commerce\Inquiry\PublicGuard() )->fields();
-		$html .= \Linker\Commerce\Protection\FormFields::render( 'contact', $previous['linker_request_id'] ?? '', $individual );
+
+		$recover = ! isset( $previous['linker_recovery_available'] ) || '1' === $previous['linker_recovery_available'];
+
+		$html .= \Linker\Commerce\Protection\FormFields::render( 'contact', $previous['linker_request_id'] ?? '', $individual, $recover );
 
 		if ( '' !== $state ) {
 			$html .= $state;
@@ -282,6 +292,7 @@ final class Form {
 	private function state_message(): string {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a state the redirect added, not an action.
 		$state = isset( $_GET[ self::STATE_PARAM ] ) ? sanitize_key( (string) wp_unslash( $_GET[ self::STATE_PARAM ] ) ) : '';
+		$state = $this->displayed_state( $state );
 		return match ( $state ) {
 			'reception_full' => $this->notice( 'invalid', \Linker\Commerce\Protection\BusinessCapacity::message() ),
 			'saved_review' => $this->notice( 'sent', \Linker\Commerce\Protection\IntakeAdmin::saved_message() ),
@@ -289,14 +300,70 @@ final class Form {
 			'review_full' => $this->notice( 'invalid', __( 'Your request has not been saved because the review queue is full. Your entries are still here. Please try again later or email sales@de-linker.com.', 'linker-commerce' ) ),
 			'grouped' => $this->notice( 'invalid', __( 'This message matches a repeated spam submission. We have not saved a separate inquiry or sent an email. Your entries are still here. For an individual review, select the review option in this form or email sales@de-linker.com.', 'linker-commerce' ) ),
 			'sent_no_receipt' => $this->notice( 'sent', __( 'Thank you. Your message is with the Linker team. We have not sent a confirmation email. We reply within one business day.', 'linker-commerce' ) ),
+			'receipt_pending' => $this->receipt_pending_notice(),
 			'sent'      => $this->notice( 'sent', __( 'Thank you. Your message is with the Linker team.', 'linker-commerce' ) ),
 			'invalid'   => $this->notice( 'invalid', __( 'Please check your entries and send the form again.', 'linker-commerce' ) ),
 			'throttled' => $this->notice( 'invalid', __( 'The message limit has been reached. Your entries are still here. You can try again later or email sales@de-linker.com.', 'linker-commerce' ) ),
-			'verification_failed' => $this->notice( 'invalid', __( 'Verification expired or could not be confirmed. Your entries are still here. Please try again.', 'linker-commerce' ) ),
-			'verification_unavailable' => $this->notice( 'invalid', __( 'Verification is temporarily unavailable. Your entries are still here. Please try again or email sales@de-linker.com.', 'linker-commerce' ) ),
+			'verification_failed' => $this->notice( 'invalid', \Linker\Commerce\Protection\Business::verification_message( 'failed' ) ),
+			'verification_unavailable' => $this->notice( 'invalid', \Linker\Commerce\Protection\Business::verification_message( 'unavailable' ) ),
 			'pending' => $this->notice( 'invalid', __( 'The request status could not be confirmed. Please check before sending it again.', 'linker-commerce' ) ),
 			default     => '',
 		};
+	}
+
+	/**
+	 * Follow the saved inquiry when the redirect names one. A pending receipt
+	 * stays pending until the handoff records an omission or clears it.
+	 *
+	 * @param string $requested State from the redirect.
+	 */
+	private function displayed_state( string $requested ): string {
+		if ( ! in_array( $requested, array( 'sent', 'sent_no_receipt', 'receipt_pending' ), true ) ) {
+			return $requested;
+		}
+		$order = $this->receipt_order();
+		return $order instanceof \WC_Order ? Handler::receipt_state( $order ) : $requested;
+	}
+
+	/**
+	 * The contact inquiry named by the confirmation.
+	 */
+	private function receipt_order(): ?\WC_Order {
+		if ( ! isset( $_GET[ self::ORDER_PARAM ] ) || ! function_exists( 'wc_get_order_id_by_order_key' ) || ! function_exists( 'wc_get_order' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- the redirect's own order key, rechecked against the contact source.
+			return null;
+		}
+		$key = sanitize_text_field( (string) wp_unslash( $_GET[ self::ORDER_PARAM ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- the redirect's own order key, rechecked against the contact source.
+		if ( 1 !== preg_match( '/\Awc_order_[A-Za-z0-9]+\z/', $key ) ) {
+			return null;
+		}
+		$id    = wc_get_order_id_by_order_key( $key );
+		$order = $id > 0 ? wc_get_order( $id ) : false;
+		if ( ! $order instanceof \WC_Order || 'contact' !== (string) $order->get_meta( '_linker_inquiry_source' ) ) {
+			return null;
+		}
+		return $order;
+	}
+
+	/**
+	 * A saved message whose confirmation email has not been decided.
+	 */
+	private function receipt_pending_notice(): string {
+		$notice = $this->notice( 'sent', __( 'Thank you. Your message is with the Linker team.', 'linker-commerce' ) );
+		$order  = $this->receipt_order();
+		if ( ! $order instanceof \WC_Order ) {
+			return $notice;
+		}
+		$url = add_query_arg(
+			array(
+				self::STATE_PARAM => 'receipt_pending',
+				self::ORDER_PARAM => $order->get_order_key(),
+			),
+			$this->current_url()
+		);
+		// Two seconds is inside the browser suite's 15-second expect timeout and
+		// shorter than the ten-second assessment window (Inquiry\Assessment\Queue::WAIT_SECONDS),
+		// so the handoff result appears without another customer action.
+		return '<meta http-equiv="refresh" content="2;url=' . esc_url( $url ) . '#' . esc_attr( self::ANCHOR ) . '" />' . $notice;
 	}
 
 	/**
@@ -321,6 +388,34 @@ final class Form {
 	private function locale(): string {
 		$lang = function_exists( 'determine_locale' ) ? determine_locale() : 'en_US';
 		return str_starts_with( strtolower( $lang ), 'de' ) ? 'de' : 'en';
+	}
+
+	/**
+	 * The current contact path for WordPress' referer field.
+	 *
+	 * Selection transport stays in the inclusion checkbox. Repeating it here
+	 * would keep an excluded search in the native POST.
+	 */
+	private function posted_referer(): string {
+		// Current request path only. It is stripped before display and is not an action.
+		$uri = isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		if ( '' === $uri ) {
+			$path = wp_parse_url( $this->current_url(), PHP_URL_PATH );
+			return is_string( $path ) && '' !== $path ? $path : '/';
+		}
+		$path  = wp_parse_url( $uri, PHP_URL_PATH );
+		$path  = is_string( $path ) && '' !== $path ? $path : '/';
+		$query = wp_parse_url( $uri, PHP_URL_QUERY );
+		if ( ! is_string( $query ) || '' === $query ) {
+			return $path;
+		}
+		parse_str( $query, $args );
+		// These are the public selection transports read by SelectionContext::query.
+		foreach ( array( '_wp_http_referer', SelectionContext::FIELD, 'source', 'search', 'filters', 'sort', 'platform', 'document' ) as $key ) {
+			unset( $args[ $key ] );
+		}
+		$rebuilt = http_build_query( $args );
+		return '' === $rebuilt ? $path : $path . '?' . $rebuilt;
 	}
 
 	/**

@@ -3,6 +3,49 @@
 from __future__ import annotations
 
 TEXT = {
+    "geometric_pv_title": (
+        "PV reference with geometric direct-beam shading",
+        "PV-Referenz: geometrische Verschattung der Direktstrahlung",
+    ),
+    "geometric_pv_scope": (
+        "The declared opaque geometry reduces only direct irradiance. Sky and ground diffuse irradiance retain an unobstructed reference. Each module is treated as uniformly irradiated, and its temperature uses the mean plane-of-array irradiance. Partial-cell shading, bypass diodes, string I–V and real MPPT behavior are not modelled. This scenario does not establish actual device performance or equipment or country approval.",
+        "Die angegebene undurchsichtige Geometrie verringert ausschließlich die direkte Einstrahlung. Diffuse Himmels- und Bodenstrahlung bleiben als unverschattete Referenz erhalten. Für Leistung und Zelltemperatur wird die über das jeweilige Modul gemittelte Einstrahlung angesetzt. Teilzellverschattung, Bypassdioden, die I–V-Kennlinie der Strings und das reale MPPT-Verhalten werden nicht modelliert. Dieses Szenario belegt weder die tatsächliche Geräteleistung noch eine Geräte- oder Länderfreigabe.",
+    ),
+    "geometric_pv_axes": (
+        "All rows of the retained weather source are used. Interval boundaries belong to the synthetic energy year; solar position retains the original source-month irradiance instants. Calculated point outputs are assigned to those intervals under the stated reconstruction policy. The difference between coarse and fine sampling is not an error bound.",
+        "Alle Zeilen der gespeicherten Wetterquelle werden verwendet. Die Intervallgrenzen gehören zum synthetischen Energiejahr; für den Sonnenstand gelten die Strahlungszeitpunkte der ursprünglichen Quellenmonate. Die berechneten Punktwerte werden den Intervallen nach der angegebenen Rekonstruktionsregel zugeordnet. Die Differenz zwischen grobem und feinem Raster ist keine Fehlerschranke.",
+    ),
+    "geometric_pv_notes_scope": (
+        "Notes on coefficients and mounting are preserved verbatim from the reference inputs. Their descriptions of the original unshaded reference are source context. This calculation applies the geometric direct-beam model and the diffuse, thermal and electrical assumptions stated above. Displayed numbers are rounded; the frozen source retains full precision.",
+        "Hinweise zu Koeffizienten und Montage werden im ursprünglichen Wortlaut der Referenzeingaben wiedergegeben. Aussagen darin zur ursprünglichen unverschatteten Referenz dienen als Quellenkontext. Für diese Berechnung gelten das oben erläuterte geometrische Direktstrahlungsmodell und die angegebenen Annahmen zu diffuser Einstrahlung, Temperatur und elektrischem Verhalten. Zahlen sind für die Anzeige gerundet; die gespeicherte Quelle enthält die volle Genauigkeit.",
+    ),
+    "geometric_pv_original_note": (
+        "Original coefficient or mounting note (verbatim; current method above)",
+        "Ursprünglicher Hinweis zu Koeffizienten oder Montage (Wortlaut; aktuelle Methode oben)",
+    ),
+    "geometric_pv_model": ("Reference model", "Referenzmodell"),
+    "geometric_pv_period": (
+        "Complete PV calculation period (UTC)",
+        "Vollständiger PV-Berechnungszeitraum (UTC)",
+    ),
+    "geometric_pv_rows": (
+        "Retained source intervals",
+        "Gespeicherte Quellenintervalle",
+    ),
+    "geometric_pv_energy": ("Scenario AC energy", "AC-Energie des Szenarios"),
+    "geometric_pv_sampling": (
+        "Cells per module edge: coarse / fine",
+        "Zellen je Modulkante: grob / fein",
+    ),
+    "geometric_pv_weather": (
+        "TMY source years / radiation / weather database",
+        "TMY-Quellenjahre / Strahlungs- / Wetterdatenbank",
+    ),
+    "geometric_pv_year": ("Synthetic interval year", "Synthetisches Intervalljahr"),
+    "geometric_pv_used_by": (
+        "Used by saved run / revision",
+        "Verwendet von Berechnung / Revision",
+    ),
     "direct_beam_title": (
         "Geometric direct-beam visibility",
         "Geometrische Sichtbarkeit direkter Sonnenstrahlung",
@@ -997,10 +1040,14 @@ TEXT = {
         "Installation requirement · specification pending",
         "Installationsbedarf · Spezifikation offen",
     ),
+    "material_installation_declared": (
+        "Installation requirement · cross-section as declared",
+        "Installationsbedarf · Querschnitt gemäß Projektangabe",
+    ),
     "installation": ("Installation routing", "Leitungswege der Installation"),
     "installation_scope": (
-        "Each listed cable or conductor is one physical run. Lengths use the saved three-dimensional path and explicitly declared extra length. Cable sizing, connector matching, protection, earthing, mounting and country requirements have not been assessed by this route calculation.",
-        "Jede Zeile steht für eine einzelne Leitung oder einen separat geführten Leiter. Die Länge ergibt sich aus dem gespeicherten dreidimensionalen Leitungsweg zuzüglich der ausdrücklich angegebenen Zusatzlänge. Die Auslegung der Leitungen, die Kompatibilität der Steckverbinder, Schutzmaßnahmen, Erdung, Montage und länderspezifische Anforderungen werden durch diese Längenberechnung nicht geprüft.",
+        "Each listed cable or conductor is one physical run. Lengths use the saved three-dimensional path and explicitly declared extra length. A declared cross-section is the project's own statement about that run; it is not a sizing result. Cable sizing, connector matching, protection, earthing, mounting and country requirements have not been assessed by this route calculation.",
+        "Jede Zeile steht für eine einzelne Leitung oder einen separat geführten Leiter. Die Länge ergibt sich aus dem gespeicherten dreidimensionalen Leitungsweg zuzüglich der ausdrücklich angegebenen Zusatzlänge. Ein angegebener Querschnitt ist eine Projektangabe zu dieser Leitung und kein Ergebnis einer Auslegung. Die Auslegung der Leitungen, die Kompatibilität der Steckverbinder, Schutzmaßnahmen, Erdung, Montage und länderspezifische Anforderungen werden durch diese Längenberechnung nicht geprüft.",
     ),
     "installation_instances": (
         "Physical devices and site connections",
@@ -1018,6 +1065,53 @@ TEXT = {
     "installation_site_point": ("Site connection", "Anschluss am Standort"),
     "installation_circuit": ("Circuit / route", "Stromkreis / Leitungsweg"),
     "installation_pending": ("Quantity not confirmed", "Menge nicht bestätigt"),
+    "installation_conductor": ("Conductor", "Leiter"),
+    "installation_conductor_open": (
+        "Cross-section not declared",
+        "Querschnitt nicht angegeben",
+    ),
+    "installation_conductor_declared": (
+        "One cross-section declared",
+        "Ein Querschnitt angegeben",
+    ),
+    "installation_conductor_unconfirmed": (
+        "Cross-section missing for a recorded run",
+        "Querschnitt für eine erfasste Leitung fehlt",
+    ),
+    "installation_conductor_conflicting": (
+        "Recorded runs declare different cross-sections",
+        "Erfasste Leitungen haben unterschiedliche Querschnitte",
+    ),
+    "installation_conductor_not_recorded": (
+        "No run recorded",
+        "Keine Leitung erfasst",
+    ),
+    "installation_closure": (
+        "Conductor and quantities",
+        "Leiter und Mengen",
+    ),
+    "installation_closure_recorded": (
+        "Cross-section and all quantities recorded",
+        "Querschnitt und alle Mengen erfasst",
+    ),
+    "installation_closure_open": (
+        "Cross-section or quantity still open",
+        "Querschnitt oder Menge weiterhin offen",
+    ),
+    # A report saved before the closure existed keeps the fact it recorded
+    # nothing, instead of being read as an open or a recorded closure today.
+    "installation_closure_not_recorded": (
+        "Not recorded in this saved report",
+        "In diesem gespeicherten Bericht nicht erfasst",
+    ),
+    "installation_string_recorded_count": (
+        "Strings with cross-section and quantities recorded",
+        "Strings mit erfasstem Querschnitt und erfassten Mengen",
+    ),
+    "installation_string_open_count": (
+        "Strings with an open cross-section or quantity",
+        "Strings mit offenem Querschnitt oder offener Menge",
+    ),
     "installation_length": (
         "Route length + extra length",
         "Leitungsweglänge + Zusatzlänge",
@@ -1052,8 +1146,8 @@ TEXT = {
         "Zuordnung von PV-Strings und Stromkreisen",
     ),
     "installation_string_link_scope": (
-        "These links record the project's declared string and circuit identities. Listed cable runs retain their separately measured quantities. A link does not establish a complete circuit, conductor or connector counts, cable sizing, manufacturer terminal allocation or electrical approval.",
-        "Diese Zuordnungen halten die im Projekt angegebenen PV-Strings und Stromkreise fest. Aufgeführte Leitungen behalten ihre separat ermittelten Längen. Eine Zuordnung bestätigt weder einen vollständigen Stromkreis noch Leiter- oder Steckverbinderzahlen, Leitungsauslegung, herstellerseitige Anschlussbelegung oder elektrische Freigabe.",
+        "These links record the project's declared string and circuit identities together with the cross-section and measured length of each recorded run. Conductor sizing, voltage drop, connector counts, protection, manufacturer terminal allocation and electrical approval remain unassessed.",
+        "Diese Zuordnungen halten die im Projekt angegebenen PV-Strings und Stromkreise zusammen mit dem Querschnitt und der ermittelten Länge jeder erfassten Leitung fest. Leiterauslegung, Spannungsfall, Steckverbinderzahlen, Schutzmaßnahmen, herstellerseitige Anschlussbelegung und elektrische Freigabe bleiben ungeprüft.",
     ),
     "installation_string": ("PV string ID", "PV-String-Kennung"),
     "installation_link_circuit": ("Circuit ID", "Stromkreis-Kennung"),

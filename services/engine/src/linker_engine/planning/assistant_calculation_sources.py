@@ -15,6 +15,19 @@ def _object(value: Json) -> Object:
     return value if isinstance(value, dict) else {}
 
 
+def _saved_summary(value: Object) -> Object:
+    """The frozen period object, under either retained name.
+
+    Reports saved before this object was called `profile_summary` keep it as
+    `summary`. Either name is that saved object. A missing object stays
+    missing; this does not invent a period.
+    """
+    saved = value.get("profile_summary")
+    if not isinstance(saved, dict):
+        saved = value.get("summary")
+    return _object(saved)
+
+
 def _period(value: Object) -> Object | None:
     values = [value.get(key) for key in ("start_utc", "end_utc")]
     if all(item is None for item in values):
@@ -54,7 +67,11 @@ def calculation_sources(workspace: Workspace, run: Run) -> Object | None:
     groups: list[Json] = []
     timezone = _timezone(source)
     comparison = _object(source.get("comparison"))
-    for key, tmy in (("pvlib_references", True), ("pvgis_roof_ac_references", False)):
+    for key, tmy in (
+        ("pvlib_references", True),
+        ("geometric_pv_references", True),
+        ("pvgis_roof_ac_references", False),
+    ):
         references = source.get(key, [])
         if not isinstance(references, list):
             raise InvalidInput("saved calculation sources are invalid")
@@ -62,7 +79,11 @@ def calculation_sources(workspace: Workspace, run: Run) -> Object | None:
             if not isinstance(raw, dict):
                 raise InvalidInput("saved calculation sources are invalid")
             reference = _object(raw)
-            weather = _object(reference.get("weather"))
+            weather = (
+                _object(_object(reference.get("weather_source")).get("details"))
+                if key == "geometric_pv_references"
+                else _object(reference.get("weather"))
+            )
             request = _object(weather.get("request"))
             interpretation = _object(weather.get("interpretation"))
             typical_year = tmy and any(
@@ -140,9 +161,7 @@ def calculation_sources(workspace: Workspace, run: Run) -> Object | None:
                             if typical_year
                             else {}
                         ),
-                        "periods_utc": [
-                            _period(_object(reference.get("profile_summary")))
-                        ],
+                        "periods_utc": [_period(_saved_summary(reference))],
                     }
                 )
     if not groups and isinstance(source.get("pv"), dict):
@@ -153,9 +172,7 @@ def calculation_sources(workspace: Workspace, run: Run) -> Object | None:
                 "input_quantity": None,
                 "source_scope": None,
                 "timezone": timezone,
-                "periods_utc": [
-                    _period(_object(_object(source["pv"]).get("profile_summary")))
-                ],
+                "periods_utc": [_period(_saved_summary(_object(source["pv"])))],
             }
         )
     scenario = _object(source.get("energy_scenario"))

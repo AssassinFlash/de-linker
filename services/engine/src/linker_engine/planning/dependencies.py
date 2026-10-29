@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from .canonical import Object
 from .errors import VersionUnavailable
-from .storage import Blobs
+from .frozen_documents import FrozenReader
 
 
-def verify_dependencies(blobs: Blobs, document: Object) -> None:
+def verify_dependencies(blobs: FrozenReader, document: Object) -> None:
     children = document.get("dependencies")
     if children is None:
         return

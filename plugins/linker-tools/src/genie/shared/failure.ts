@@ -32,7 +32,10 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { resourceRefusalReason } from './resourceFailure';
+import {
+	isVerificationCancellation,
+	resourceRefusalReason,
+} from './resourceFailure';
 import { isTurnConflict, isUnfinishedStream } from '../api/turn';
 import { UPLOAD_TYPES, type Upload } from '../attachments/prepare';
 import { attachmentRefusalReason } from './conversation';
@@ -117,6 +120,11 @@ export interface PresentedFailure {
 export type TurnSettlement =
 	| { action: 'resource'; reason: string; field: string }
 	| { action: 'refusal'; reason: string; field: string }
+	/**
+	 * The attempt was withdrawn before it was sent. The draft goes back into
+	 * the editor and nothing is said: no failure to explain.
+	 */
+	| { action: 'cancelled'; field: string }
 	| { action: 'conflict'; field: string }
 	| { action: 'failed'; kind: FailureKind };
 
@@ -180,12 +188,14 @@ export function failureReducer(
 
 /**
  * The kind of failure `sendTurn` raised, or null when this machine does
- * not own it (a 409, or a file the proxy refused).
+ * not own it (a 409, a withdrawal before dispatch, or a file the proxy
+ * refused).
  *
  * @param error The rejection from sendTurn.
  */
 export function failureKind( error: unknown ): FailureKind | null {
 	if (
+		isVerificationCancellation( error ) ||
 		isTurnConflict( error ) ||
 		resourceRefusalReason( error ) ||
 		attachmentRefusalReason( error )
@@ -315,6 +325,9 @@ export function settleTurnFailure(
 	before: readonly FailureMessage[],
 	draft: FailureDraft
 ): TurnSettlement {
+	if ( isVerificationCancellation( error ) ) {
+		return { action: 'cancelled', field: draft.text };
+	}
 	const resourceReason = resourceRefusalReason( error );
 	if ( resourceReason ) {
 		return {

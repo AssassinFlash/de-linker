@@ -14,6 +14,46 @@ from .pv_string_inputs import PvStringPlan
 METHOD = "installation_route_takeoff_v1"
 
 
+def _conductor_status(recorded: list[Object]) -> str:
+    """One declared cross-section across every recorded run of the circuit."""
+    if not recorded:
+        return "not_recorded"
+    declared = [cast(Object | None, cable["conductor"]) for cable in recorded]
+    # A run without its own specification is a gap; it never inherits its
+    # neighbour's cross-section and it is not a contradiction either.
+    if any(conductor is None for conductor in declared):
+        return "unconfirmed"
+    sections = {
+        cast(float, conductor["cross_section_mm2"])
+        for conductor in cast(list[Object], declared)
+    }
+    return "conflicting" if len(sections) > 1 else "declared"
+
+
+def _quantity_status(recorded: list[Object]) -> str:
+    if not recorded:
+        return "not_recorded"
+    if any(cable["quantity"] is None for cable in recorded):
+        return "pending"
+    return "confirmed"
+
+
+def _closure(status: str, recorded: list[Object]) -> Object:
+    conductor, quantity = _conductor_status(recorded), _quantity_status(recorded)
+    return {
+        "conductor": conductor,
+        "quantity": quantity,
+        # String and circuit identities, a declared cross-section and every
+        # measured length are now in one frozen project revision.
+        "recorded": status == "linked"
+        and conductor == "declared"
+        and quantity == "confirmed",
+        # Ampacity, voltage drop, protection, earthing and country admission
+        # are never implied by a recorded specification.
+        "approval": "not_assessed",
+    }
+
+
 def _string_links(
     inputs: Object, plan: InstallationInputs, cables: list[Json]
 ) -> Object:
@@ -65,6 +105,7 @@ def _string_links(
             for cable in cast(list[Object], cables)
             if circuit is not None and cable["circuit_id"] == circuit.id
         ]
+        closure = _closure(status, recorded)
         rows.append(
             {
                 "string_id": identifier,
@@ -75,6 +116,9 @@ def _string_links(
                 "endpoints": endpoints,
                 # These are the supplied physical runs, not an inferred pair.
                 "cable_runs": cast(Json, recorded),
+                # Identity, declared conductor and every measured length in one
+                # place; separate from the reasons that guard the length itself.
+                "closure": closure,
                 "reasons": ["cable_runs_missing"] if circuit and not recorded else [],
             }
         )
@@ -198,6 +242,14 @@ def route_takeoff(
             if not reasons and length is not None and route.extra_length_m is not None
             else None
         )
+        # A conductor is a separate declared fact. Its absence leaves the
+        # specification open; it never shortens or voids a measured length, and
+        # it is never filled from a module count or packaged quantity.
+        conductor = (
+            cable.conductor.model_dump(mode="json")
+            if cable.conductor is not None
+            else None
+        )
         if any(
             value is not None and (not math.isfinite(value) or value > 2**53 - 1)
             for value in (plan_length, length, total)
@@ -212,6 +264,8 @@ def route_takeoff(
                 "route_id": route.id,
                 "route_name": route.name,
                 "construction": cable.construction,
+                "conductor": conductor,
+                "specification": "open" if conductor is None else "declared",
                 "quantity": total,
                 "unit": "m",
                 "plan_length_m": plan_length,

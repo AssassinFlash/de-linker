@@ -133,6 +133,10 @@ test("report output keeps serialized fields mandatory and old column layout opti
 	assert.doesNotThrow(() =>
 		readPlanningReport({ ...report, sections: [tmySection] }),
 	);
+	const geometricSection = { ...tmySection, id: "geometric-pv-reference-0" };
+	assert.doesNotThrow(() =>
+		readPlanningReport({ ...report, sections: [geometricSection] }),
+	);
 	for (const [id, href] of [
 		["checks", pvgisHref],
 		[pvgisSection.id, pvgisHref.replace("re.jrc.ec.europa.eu", "example.com")],
@@ -152,6 +156,12 @@ test("report output keeps serialized fields mandatory and old column layout opti
 		[tmySection.id, `${tmyHref}&lat=48.8566`],
 		[tmySection.id, tmyHref.replace("&usehorizon=0", "")],
 		[tmySection.id, tmyHref.replace("outputformat=json", "outputformat=csv")],
+		[
+			geometricSection.id,
+			tmyHref.replace("re.jrc.ec.europa.eu", "example.com"),
+		],
+		[geometricSection.id, `${tmyHref}&callback=other`],
+		[geometricSection.id, pvgisHref],
 	])
 		assert.throws(() =>
 			readPlanningReport({
@@ -354,6 +364,65 @@ test("the selected-equipment panel accepts only the bound scenario and validated
 			() => readRun(changed, runJson.project_id),
 			(error: unknown) => error instanceof ApiError && error.status === 502,
 		);
+	}
+});
+
+test("geometric AC energy source is bound to its frozen model and weather", () => {
+	const run = original(),
+		output = result(run);
+	const assets = readObject(output.pinned_assets);
+	const additions = {
+		"pv_available_ac.model.inputs": "a".repeat(64),
+		"pv_available_ac.model.witness": "b".repeat(64),
+		"pv_available_ac.weather.raw": "c".repeat(64),
+		"pv_available_ac.weather.metadata": "d".repeat(64),
+		"pv_available_ac.project.parameters": "e".repeat(64),
+		"pv_available_ac.woo.module_inputs": "f".repeat(64),
+	};
+	Object.assign(assets, additions);
+	Object.assign(
+		readObject(readObject(run.manifest).context).assets!,
+		additions,
+	);
+	const periods = readObject(output.profile_interpretation)
+		.operating_periods as readonly unknown[];
+	for (const period of periods) {
+		const profile = readObject(
+			readObject(readObject(period).profiles).pv_available_ac,
+		);
+		const source = readObject(profile.source);
+		source.origin = "modelled";
+		source.raw_sha256 = additions["pv_available_ac.model.inputs"];
+		source.details = {
+			model: "opaque_direct_uniform_pvlib_reference_v1",
+			model_role: "direct_only_geometry_uniform_module_reference_scenario",
+			output_boundary:
+				"scenario_ac_potential_before_site_export_and_storage_control",
+			geometry_sha256: "1".repeat(64),
+			parameters_sha256: "2".repeat(64),
+			input_bundle_sha256: additions["pv_available_ac.model.inputs"],
+			weather_original_sha256: additions["pv_available_ac.weather.raw"],
+		};
+	}
+	assert.doesNotThrow(() => readRun(run, runJson.project_id));
+	for (const field of [
+		"model",
+		"model_role",
+		"output_boundary",
+		"input_bundle_sha256",
+		"weather_original_sha256",
+		"geometry_sha256",
+	]) {
+		const changed = readObject(structuredClone(run));
+		const first = (
+			readObject(result(changed).profile_interpretation)
+				.operating_periods as readonly unknown[]
+		)[0];
+		const source = readObject(
+			readObject(readObject(readObject(first).profiles).pv_available_ac).source,
+		);
+		readObject(source.details)[field] = "invalid";
+		assert.throws(() => readRun(changed, runJson.project_id));
 	}
 });
 

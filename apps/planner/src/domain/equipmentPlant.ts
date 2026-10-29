@@ -3,6 +3,8 @@ import schema from "../contracts/equipment-plant.schema.json" with { type: "json
 import { ApiError } from "../data/protocol.ts";
 import type { Json, JsonObject } from "../data/protocol.ts";
 import { readObject } from "../data/readProtocol.ts";
+import { sameJson } from "./draft.ts";
+import { dropGeometricRoofAc } from "./profiles.ts";
 import type { EquipmentProduct } from "../data/equipmentProducts.ts";
 import {
 	compileEquipment,
@@ -108,8 +110,12 @@ export function applyEquipmentContext(
 		delete next.energy_replay;
 		delete next.energy_plant;
 	}
+	const changed = equipmentFields.some(
+		(key) => !sameJson(inputs[key], context[key]),
+	);
 	for (const key of equipmentFields) delete next[key];
-	return { ...next, ...context };
+	const merged = { ...next, ...context };
+	return changed ? dropGeometricRoofAc(merged) : merged;
 }
 export function readEquipmentPlant(value: unknown): EquipmentPlant {
 	if (!validate(value)) throw incomplete();

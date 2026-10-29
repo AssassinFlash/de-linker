@@ -24,6 +24,14 @@ use WP_REST_Response;
 /** The callback stack is trusted server state, never a browser field. */
 final class Resources {
 	/**
+	 * Successor entries one request may advance through, past attempts that
+	 * stored nothing. A retry chain grows by one entry per failed Try again;
+	 * this bound keeps a single request's work finite, as the journal's own
+	 * attempt chain does.
+	 */
+	private const MAX_UNRECORDED_CHAIN = 8;
+
+	/**
 	 * The currently dispatched native operation.
 	 *
 	 * @var array<string,mixed>|null
@@ -201,23 +209,37 @@ final class Resources {
 			return $permit;
 		}
 		$canonical_reply = 0;
-		if ( ! empty( $permit['reused'] ) ) {
-			$old = $this->replies->read( (int) $permit['receipt']['outcome'], $identity->binding() );
-			if ( ! in_array( $action, array( 'design', 'roof', 'report_pdf' ), true ) || is_wp_error( $old ) || $old->get_status() < 400 ) {
-				return $publication_action ? EnginePublication::reply( $old ) : $old;
-			}
-			// A definite failed pure calculation can be attempted explicitly again.
-			// Unknown/dispatched operations and business writes never enter here.
-			$canonical_reply = (int) $permit['receipt']['outcome'];
-			$retry           = hash( 'sha256', $operation . '|' . $request->get_header( 'X-Linker-Operation' ) );
-			$operation       = substr( $retry, 0, 8 ) . '-' . substr( $retry, 8, 4 ) . '-4' . substr( $retry, 13, 3 ) . '-a' . substr( $retry, 17, 3 ) . '-' . substr( $retry, 20, 12 );
-			$permit          = $admission->reserve( $action, (string) $request->get_header( 'X-Linker-Proof' ), $operation, $payload, $plan['limits'], 90, false, $plan['carry'] );
+		// A turn the proxy refused before it stored an answer keeps that fact on
+		// its saved reply (Proxy::unrecorded). Try again is a new attempt at the
+		// same question, never a replay of that refusal, so each such predecessor
+		// advances this operation to a successor journal entry. Bounded: every
+		// step is a distinct id, and a step that is not reused is dispatched.
+		for ( $step = 0, $unrecorded = self::unrecorded_reply( $permit, $this->replies, $action, $identity->binding() ); $step < self::MAX_UNRECORDED_CHAIN && false !== $unrecorded; ++$step ) {
+			$permit = $this->successor( $admission, $action, $permit, $payload, $plan, $request, $business );
 			if ( is_wp_error( $permit ) ) {
 				return $permit;
 			}
-			if ( ! empty( $permit['reused'] ) ) {
-				$retry_reply = $this->replies->read( (int) $permit['receipt']['outcome'], $identity->binding() );
-				return EnginePublication::reply( $retry_reply );
+			$unrecorded = self::unrecorded_reply( $permit, $this->replies, $action, $identity->binding() );
+		}
+		if ( ! empty( $permit['reused'] ) ) {
+			$old   = $this->replies->read( (int) $permit['receipt']['outcome'], $identity->binding() );
+			$again = ! in_array( $action, array( 'design', 'roof', 'report_pdf' ), true ) || is_wp_error( $old ) || $old->get_status() < 400;
+			if ( ! $again ) {
+				// A definite failed pure calculation can be attempted explicitly again.
+				// Unknown/dispatched operations and business writes never enter here.
+				$canonical_reply = (int) $permit['receipt']['outcome'];
+				$retry           = hash( 'sha256', $operation . '|' . $request->get_header( 'X-Linker-Operation' ) );
+				$operation       = substr( $retry, 0, 8 ) . '-' . substr( $retry, 8, 4 ) . '-4' . substr( $retry, 13, 3 ) . '-a' . substr( $retry, 17, 3 ) . '-' . substr( $retry, 20, 12 );
+				$permit          = $admission->reserve( $action, (string) $request->get_header( 'X-Linker-Proof' ), $operation, $payload, $plan['limits'], 90, false, $plan['carry'] );
+				if ( is_wp_error( $permit ) ) {
+					return $permit;
+				}
+				if ( ! empty( $permit['reused'] ) ) {
+					$retry_reply = $this->replies->read( (int) $permit['receipt']['outcome'], $identity->binding() );
+					return EnginePublication::reply( $retry_reply );
+				}
+			} else {
+				return $publication_action ? EnginePublication::reply( $old ) : $old;
 			}
 		}
 
@@ -272,6 +294,11 @@ final class Resources {
 				// reverse proxy's ambiguous 5xx never carries this trusted marker.
 				$response->header( 'X-Linker-Resource-Outcome', 'failed' );
 			}
+			if ( 'genie' === $action && $response->get_status() >= 400 && self::states_unrecorded( $reply, $response ) ) {
+				// The proxy itself refused before storing any answer, so this turn
+				// is not a result a later Try again may receive again.
+				$response->header( 'X-Linker-Resource-Outcome', 'failed' );
+			}
 			if ( $canonical_reply > 0 && $response->get_status() < 400 ) {
 				$this->replies->finish( $canonical_reply, $response );
 			}
@@ -284,6 +311,66 @@ final class Resources {
 		} finally {
 			self::$context = $previous;
 		}
+	}
+
+	/**
+	 * Whether this permit's saved reply says the turn stored no answer.
+	 *
+	 * @param array<string,mixed> $permit Server permit.
+	 * @param Replies             $replies Native reply store.
+	 * @param string              $action Server action.
+	 * @param string              $binding Current identity.
+	 * @return WP_REST_Response|false The refused reply, or false when this is not one.
+	 */
+	private static function unrecorded_reply( array $permit, Replies $replies, string $action, string $binding ): WP_REST_Response|false {
+		if ( 'genie' !== $action || empty( $permit['reused'] ) ) {
+			return false;
+		}
+		$old = $replies->read( (int) $permit['receipt']['outcome'], $binding );
+		return ! is_wp_error( $old ) && 'failed' === ( $old->get_headers()['X-Linker-Resource-Outcome'] ?? '' ) ? $old : false;
+	}
+
+	/**
+	 * Reserve this operation's successor, past an attempt that stored nothing.
+	 *
+	 * The successor is a function of the reused id, so a repeated Try again
+	 * advances the same chain instead of re-reserving one entry.
+	 *
+	 * @param Admission           $admission Shared admission.
+	 * @param string              $action Server action.
+	 * @param array<string,mixed> $permit Reused permit whose reply stored nothing.
+	 * @param array<string,mixed> $payload Validated semantic input.
+	 * @param array<string,mixed> $plan Dimensions and carry.
+	 * @param WP_REST_Request     $request Native request.
+	 * @param bool                $business Business single-use policy.
+	 * @return array<string,mixed>|WP_Error Successor permit, or explicit refusal.
+	 */
+	private function successor( Admission $admission, string $action, array $permit, array $payload, array $plan, WP_REST_Request $request, bool $business ): array|WP_Error {
+		$seed   = hash( 'sha256', 'linker-genie-unrecorded|' . (string) $permit['id'] );
+		$retry  = substr( $seed, 0, 8 ) . '-' . substr( $seed, 8, 4 ) . '-4' . substr( $seed, 13, 3 ) . '-a' . substr( $seed, 17, 3 ) . '-' . substr( $seed, 20, 12 );
+		$owners = $business && is_email( (string) $request->get_param( 'email' ) ) ? array( Allowance::owner_for( Identity::recipient( (string) $request->get_param( 'email' ) ) ) ) : array();
+		return $admission->reserve( $action, (string) $request->get_header( 'X-Linker-Proof' ), $retry, $payload, $plan['limits'], 90, $business, $plan['carry'], $owners );
+	}
+
+	/**
+	 * Whether this callback refused before storing anything (Proxy::unrecorded).
+	 *
+	 * Only the callback's own error can say so; a response body the browser
+	 * could have written never decides it.
+	 *
+	 * @param mixed            $reply Raw callback return.
+	 * @param WP_REST_Response $response The same answer as a response.
+	 */
+	private static function states_unrecorded( mixed $reply, WP_REST_Response $response ): bool {
+		if ( is_wp_error( $reply ) ) {
+			$data = $reply->get_error_data();
+			if ( is_array( $data ) && ! empty( $data['unrecorded'] ) ) {
+				return true;
+			}
+		}
+		// rest_convert_error_to_response() keeps the callback's data here.
+		$body = $response->get_data();
+		return is_array( $body ) && is_array( $body['data'] ?? null ) && ! empty( $body['data']['unrecorded'] );
 	}
 
 	/**

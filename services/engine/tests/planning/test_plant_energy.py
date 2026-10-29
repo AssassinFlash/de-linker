@@ -556,6 +556,7 @@ def test_native_dc_plant_projects_owned_pv_groups_and_keeps_report_stages(
         for purpose in (
             "pvlib_reference_profile_v1",
             "pvgis_roof_ac_reference_profile_v1",
+            "geometric_pv_reference_profile_v1",
         ):
             with pytest.raises(EvidenceMissing, match="plant_dc_duplicate_pv_source"):
                 check_plant_profile_boundary(
@@ -837,3 +838,62 @@ def test_joint_replay_keeps_named_power_inventory_grid_cap_and_cross_unit_origin
         initial=transfer_initial,
         terminal_min_kwh={"a": None, "b": None},
     ).passed
+
+
+def test_duplicate_roof_ac_rejects_geometric_and_abnormal_inputs() -> None:
+    from types import SimpleNamespace
+
+    from linker_engine.planning.errors import EvidenceMissing
+    from linker_engine.planning.plant_energy_kernel import check_plant_profile_boundary
+
+    reference = {"pv_reference_asset_id": "a" * 32}
+    geometric = "geometric_pv_reference_profile_v1"
+
+    def rejected(scenario: object, role: str, metadata: object) -> None:
+        with pytest.raises(EvidenceMissing, match="plant_dc_duplicate_pv_source"):
+            check_plant_profile_boundary(scenario, role, metadata)
+
+    rejected(reference, "pv_available_ac", {"profile_type": geometric})
+    rejected(reference, "pv_available_ac", {"purpose": geometric})
+    rejected(reference, "other", {"purpose": f"  {geometric}  "})
+    rejected(reference, "pv_available_ac", {"profile_type": [geometric]})
+    rejected(
+        reference,
+        "pv_available_ac",
+        {"metadata": {"purpose": geometric}},
+    )
+    rejected(reference, "pv_available_ac", None)
+    rejected(reference, "pv_available_ac", ["not", "a", "mapping"])
+    rejected(
+        SimpleNamespace(pv_reference_asset_id="b" * 32),
+        "pv_available_ac",
+        {"profile_type": geometric},
+    )
+    rejected(reference, "pv_available_ac", {})
+    rejected(reference, "pv_available_ac", {"profile_type": "unknown_profile"})
+    # The retained DC reference may itself be a pvlib roof profile.
+    check_plant_profile_boundary(
+        reference,
+        "pv_reference",
+        {"profile_type": "pvlib_reference_profile_v1"},
+    )
+    check_plant_profile_boundary(
+        reference,
+        "pv_available_ac",
+        {"profile_type": "pvgis_system_profile_v1"},
+    )
+    check_plant_profile_boundary(
+        reference,
+        "pv_available_ac",
+        {"csv_mapping": {"measurement": "pv_available_ac"}},
+    )
+    check_plant_profile_boundary(
+        {"pv_reference_asset_id": None},
+        "pv_available_ac",
+        {"profile_type": geometric},
+    )
+    check_plant_profile_boundary(
+        {},
+        "pv_available_ac",
+        {"profile_type": geometric},
+    )

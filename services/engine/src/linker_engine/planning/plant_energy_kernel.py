@@ -7,6 +7,7 @@ not grant manufacturer joint-operation or country acceptance.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from typing import cast
 
 from .access import positive_integer
@@ -40,22 +41,84 @@ from .workspace import Workspace
 type PlantScenario = PlantEnergyInputs | DcPlantEnergyInputs
 
 
-def check_plant_profile_boundary(
-    scenario: PlantScenario, role: str, metadata: Object
-) -> None:
-    if (
-        isinstance(scenario, DcPlantEnergyInputs)
-        and role == "pv_available_ac"
-        and scenario.pv_reference_asset_id is not None
-        and metadata.get("profile_type")
-        in {"pvlib_reference_profile_v1", "pvgis_roof_ac_reference_profile_v1"}
+_ROOF_AC_PURPOSES = frozenset(
+    {
+        "pvlib_reference_profile_v1",
+        "pvgis_roof_ac_reference_profile_v1",
+        "geometric_pv_reference_profile_v1",
+    }
+)
+_EXTERNAL_AC_PURPOSE = "pvgis_system_profile_v1"
+_DUPLICATE_ROOF = "plant_dc_duplicate_pv_source: the whole roof AC profile would duplicate its retained PV groups"
+
+
+def _reference_id(scenario: object) -> str | None:
+    raw: object
+    if isinstance(scenario, Mapping):
+        raw = scenario.get("pv_reference_asset_id")
+    else:
+        raw = getattr(scenario, "pv_reference_asset_id", None)
+    return raw if isinstance(raw, str) and raw.strip() else None
+
+
+def _tokens(value: object) -> set[str]:
+    if isinstance(value, str):
+        text = value.strip()
+        return {text} if text else set()
+    if isinstance(value, list | tuple | set | frozenset):
+        return {
+            item.strip() for item in value if isinstance(item, str) and item.strip()
+        }
+    return set()
+
+
+def _declared_purposes(metadata: Mapping[object, object]) -> set[str]:
+    found = _tokens(metadata.get("profile_type")) | _tokens(metadata.get("purpose"))
+    nested = metadata.get("metadata")
+    if isinstance(nested, Mapping):
+        found |= _declared_purposes(nested)
+    return found
+
+
+def _distinct_external_ac(
+    metadata: Mapping[object, object], purposes: set[str]
+) -> bool:
+    if _EXTERNAL_AC_PURPOSE in purposes and not purposes & _ROOF_AC_PURPOSES:
+        return True
+    # CSV profiles publish no profile_type; csv_mapping is their measurement contract.
+    return (
+        not purposes
+        and "csv_mapping" in metadata
+        and metadata.get("profile_type") is None
+        and metadata.get("purpose") is None
+    )
+
+
+def _duplicate_roof() -> None:
+    raise EvidenceMissing(_DUPLICATE_ROOF, constraint_id="plant_dc_duplicate_pv_source")
+
+
+def check_plant_profile_boundary(scenario: object, role: str, metadata: object) -> None:
+    """Reject a whole-roof AC curve beside a retained PV group.
+
+    Geometric, pvlib and PVGIS roof profiles all bind this project's geometry.
+    A missing or unexpected metadata shape is not treated as a distinct external
+    AC source: it is refused instead of being added to the same frame.
+    """
+    if _reference_id(scenario) is None:
+        return
+    if not isinstance(metadata, Mapping):
+        if role == "pv_available_ac" or not role:
+            _duplicate_roof()
+        return
+    purposes = _declared_purposes(metadata)
+    if purposes & _ROOF_AC_PURPOSES and (
+        role == "pv_available_ac" or "geometric_pv_reference_profile_v1" in purposes
     ):
-        # Both roof producers bind to this project's exact geometry. Imported
-        # distinct external AC sources do not have either of these purposes.
-        raise EvidenceMissing(
-            "plant_dc_duplicate_pv_source: the whole roof AC profile would duplicate its retained PV groups",
-            constraint_id="plant_dc_duplicate_pv_source",
-        )
+        _duplicate_roof()
+    if role != "pv_available_ac" or _distinct_external_ac(metadata, purposes):
+        return
+    _duplicate_roof()
 
 
 class PlantEnergyKernel:

@@ -11,6 +11,7 @@ from .canonical import Object
 from .certificate_report import certificate_sections
 from .comparison_report import comparison_sections
 from .direct_beam_report import direct_beam_sections
+from .geometric_pv_report import geometric_pv_sections
 from .installation_report import installation_sections
 from .project_materials import (
     material_name,
@@ -22,17 +23,9 @@ from .project_materials import (
 from .pv_operating_report import operating_sections
 from .report_capacity import capacity_section
 from .report_copy import TEXT, check_label, text
+from .report_numbers import number as number
+from .report_numbers import percent
 from .report_pvlib import pvlib_sections
-
-
-def number(value: Any, locale: str, unit: str = "") -> str:
-    if isinstance(value, bool) or not isinstance(value, (int, float)):
-        return "—"
-    # Report display resolution only; the immutable source retains full values.
-    shown = f"{value:,.3f}".rstrip("0").rstrip(".")
-    if locale == "de":
-        shown = shown.translate(str.maketrans(",.", ".,"))
-    return shown + (f" {unit}" if unit else "")
 
 
 def build_report(source: Object) -> Report:
@@ -77,6 +70,9 @@ def build_report(source: Object) -> Report:
     direct_beam = source.get("direct_beam")
     if isinstance(direct_beam, dict):
         sections.extend(direct_beam_sections(direct_beam, locale))
+    geometric_pv = source.get("geometric_pv_references")
+    if isinstance(geometric_pv, list):
+        sections.extend(geometric_pv_sections(geometric_pv, locale))
 
     assessment = source.get("equipment")
     if isinstance(assessment, dict):
@@ -598,7 +594,7 @@ def build_report(source: Object) -> Report:
                 ),
                 row(
                     "pvgis_system_loss",
-                    number(parameters["system_loss_percent"], locale, "%"),
+                    percent(parameters["system_loss_percent"], locale),
                 ),
                 row(
                     "pvgis_terrain_horizon",
@@ -749,7 +745,7 @@ def build_report(source: Object) -> Report:
             energy_rows.append(
                 row(
                     label,
-                    number(value * 100, locale, "%")
+                    percent(value * 100, locale)
                     if isinstance(value, (int, float))
                     else text("not_defined", locale),
                 )
@@ -942,16 +938,12 @@ def build_report(source: Object) -> Report:
                     rows.append(
                         row(
                             "plant_loss_" + key,
-                            number(
-                                float(cast(float, value)) * 100
-                                if efficiency and value is not None
-                                else value,
+                            percent(float(cast(float, value)) * 100, locale)
+                            if efficiency and value is not None
+                            else number(
+                                value,
                                 locale,
-                                "%"
-                                if efficiency
-                                else "kW"
-                                if key == "internal_aux_kw"
-                                else "1/h",
+                                "kW" if key == "internal_aux_kw" else "1/h",
                             ),
                         )
                     )

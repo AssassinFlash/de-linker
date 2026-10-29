@@ -3,7 +3,10 @@ import test from "node:test";
 import React, { act } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { setupDom, enter } from "./dom-fixture.mjs";
-import { RouteForm } from "../src/components/installation/NetworkForms.tsx";
+import {
+	CableForm,
+	RouteForm,
+} from "../src/components/installation/NetworkForms.tsx";
 import { PvStringLinks } from "../src/components/installation/PvStringLinks.tsx";
 import { InstallationEditor } from "../src/components/installation/InstallationEditor.tsx";
 import { emptyGeometry } from "../src/domain/geometryCommands.ts";
@@ -77,6 +80,154 @@ test("staged route coordinates survive insertion and removal of another vertex",
 	assert.equal(saved.points[0].east_m, 1.25);
 	assert.equal(saved.points[0].height_m, 2.5);
 	assert.equal(saved.points[1].east_m, 6);
+});
+
+test("a declared cross-section is entered as a pair, omitted when open, and read back from the frozen revision", async (t) => {
+	const dom = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const root = createRoot(dom.element);
+	t.after(() => dom.dispose(root));
+	const geometry = emptyGeometry();
+	geometry.sources = [{ id: "survey", note: "Synthetic drawing" }];
+	const plan = {
+		...emptyInstallation(),
+		instances: [
+			{
+				id: "a",
+				name: "Inverter",
+				product_id: null,
+				product_revision: null,
+				source_id: "survey",
+				ports: [
+					{
+						id: "p",
+						name: "PV +",
+						position: { east_m: 0, north_m: 0, height_m: 1 },
+					},
+					{
+						id: "q",
+						name: "PV −",
+						position: { east_m: 6, north_m: 0, height_m: 1 },
+					},
+				],
+			},
+		],
+		circuits: [
+			{
+				id: "pv1",
+				name: "Roof circuit",
+				kind: "pv_dc",
+				start: { instance_id: "a", port_id: "p" },
+				end: { instance_id: "a", port_id: "q" },
+			},
+		],
+		routes: [
+			{
+				id: "path",
+				name: "Roof route",
+				source_id: "survey",
+				points: [
+					{ east_m: 0, north_m: 0, height_m: 1 },
+					{ east_m: 6, north_m: 0, height_m: 1 },
+				],
+				extra_length_m: 0,
+				extra_length_note: "No allowance",
+			},
+		],
+	};
+	let saved,
+		valid = true;
+	const render = async (cable) =>
+		act(async () =>
+			root.render(
+				React.createElement(CableForm, {
+					locale: "de-DE",
+					geometry,
+					plan,
+					cable,
+					cancel() {},
+					onValidity(value) {
+						valid = value;
+					},
+					submit(value) {
+						saved = value;
+						return true;
+					},
+				}),
+			),
+		);
+	const form = () => document.querySelector("form");
+	const field = (name) => form().elements.namedItem(name);
+	const apply = async () =>
+		act(async () =>
+			form().dispatchEvent(
+				new window.Event("submit", { bubbles: true, cancelable: true }),
+			),
+		);
+	await render(null);
+	await enter(field("name"), "DC string 1");
+	field("circuit").value = "pv1";
+	field("route").value = "path";
+	field("construction").value = "single_conductor";
+	// Left empty, the specification stays open and the key is never written:
+	// an explicit null would move the frozen input hash of an old project.
+	await apply();
+	assert.equal(saved.name, "DC string 1");
+	assert.equal(Object.hasOwn(saved, "conductor"), false);
+	// The reader keeps the absence: a stored run stays byte-identical.
+	assert.equal(
+		Object.hasOwn(
+			readInstallation({ ...plan, cable_runs: [saved] }).cable_runs[0],
+			"conductor",
+		),
+		false,
+	);
+	// Half a declaration is refused rather than guessed from the other half.
+	await render(null);
+	await enter(field("name"), "DC string 1");
+	field("circuit").value = "pv1";
+	field("route").value = "path";
+	field("construction").value = "single_conductor";
+	await enter(field("cross_section"), "6");
+	const before = saved;
+	await apply();
+	assert.equal(saved, before);
+	assert.equal(valid, false);
+	assert.match(
+		document.body.textContent,
+		/declare the cross-section|leave both empty/i,
+	);
+	await enter(field("cross_section"), "");
+	await enter(field("conductor_note"), "Project cable list");
+	await apply();
+	assert.equal(saved, before);
+	assert.equal(valid, false);
+	// Both halves together are one frozen declaration the reader keeps verbatim.
+	await render(null);
+	await enter(field("name"), "DC string 1");
+	field("circuit").value = "pv1";
+	field("route").value = "path";
+	field("construction").value = "single_conductor";
+	await enter(field("cross_section"), "6");
+	await enter(field("conductor_note"), "Project cable list");
+	await apply();
+	assert.deepEqual(saved.conductor, {
+		cross_section_mm2: 6,
+		source_note: "Project cable list",
+	});
+	const stored = {
+		...plan,
+		cable_runs: [saved],
+	};
+	assert.deepEqual(readInstallation(stored).cable_runs[0].conductor, {
+		cross_section_mm2: 6,
+		source_note: "Project cable list",
+	});
+	// Re-opening the stored run shows the declaration instead of an empty form.
+	await render(readInstallation(stored).cable_runs[0]);
+	assert.equal(field("cross_section").value, "6");
+	assert.equal(field("conductor_note").value, "Project cable list");
+	assert.equal(valid, true);
 });
 
 test("saved string links opt in explicitly, retain stale declarations and bind reviewed identities", async (t) => {
@@ -252,6 +403,14 @@ test("saved string links opt in explicitly, retain stale declarations and bind r
 						status: "linked",
 						endpoints,
 						cable_runs: [],
+						// A circuit without a recorded run: no run, so nothing to
+						// declare a cross-section for.
+						closure: {
+							conductor: "not_recorded",
+							quantity: "not_recorded",
+							recorded: false,
+							approval: "not_assessed",
+						},
 						reasons: ["cable_runs_missing"],
 					},
 					{
@@ -262,6 +421,12 @@ test("saved string links opt in explicitly, retain stale declarations and bind r
 						status: "unlinked",
 						endpoints: [],
 						cable_runs: [],
+						closure: {
+							conductor: "not_recorded",
+							quantity: "not_recorded",
+							recorded: false,
+							approval: "not_assessed",
+						},
 						reasons: [],
 					},
 				],
@@ -291,6 +456,19 @@ test("saved string links opt in explicitly, retain stale declarations and bind r
 		},
 		(value) => {
 			value.pv_string_reconciliation.installation_input_sha256 = "e".repeat(64);
+		},
+		// A reply may not claim more than the frozen runs support.
+		(value) => {
+			value.pv_string_reconciliation.rows[0].closure.conductor = "declared";
+		},
+		(value) => {
+			value.pv_string_reconciliation.rows[0].closure.recorded = true;
+		},
+		(value) => {
+			value.pv_string_reconciliation.rows[0].closure.approval = "assessed";
+		},
+		(value) => {
+			delete value.pv_string_reconciliation.rows[1].closure;
 		},
 	]) {
 		const wrong = structuredClone(response);
@@ -495,6 +673,196 @@ test("saved string links opt in explicitly, retain stale declarations and bind r
 	assert.equal(requests.length, 1);
 });
 
+test("every conductor closure state is readable from the frozen runs, never from the reply", () => {
+	const revision = "a".repeat(64),
+		sha = "b".repeat(64),
+		instance = {
+			id: "inverter",
+			name: "Inverter",
+			product_id: 6506,
+			product_revision: revision,
+			source_id: "survey",
+			ports: [
+				{
+					id: "p",
+					name: "PV +",
+					position: { east_m: 0, north_m: 0, height_m: 1 },
+				},
+				{
+					id: "q",
+					name: "PV −",
+					position: { east_m: 1, north_m: 0, height_m: 1 },
+				},
+			],
+		},
+		endpoint = {
+			id: "roof",
+			name: "String end",
+			product_id: null,
+			product_revision: null,
+			source_id: "survey",
+			ports: [
+				{
+					id: "q",
+					name: "String end",
+					position: { east_m: 1, north_m: 0, height_m: 1 },
+				},
+			],
+		},
+		circuit = {
+			id: "pv1",
+			name: "Roof circuit",
+			kind: "pv_dc",
+			start: { instance_id: "inverter", port_id: "p" },
+			end: { instance_id: "roof", port_id: "q" },
+		},
+		route = {
+			id: "path",
+			name: "Roof route",
+			source_id: "survey",
+			points: [instance.ports[0].position, endpoint.ports[0].position],
+			extra_length_m: 0,
+			extra_length_note: "No allowance",
+		},
+		run = (id, conductor) => ({
+			id,
+			name: id,
+			circuit_id: "pv1",
+			route_id: "path",
+			construction: "single_conductor",
+			...(conductor ? { conductor } : {}),
+		}),
+		six = { cross_section_mm2: 6, source_note: "Project cable list" },
+		review = (cableRuns) => {
+			const input = readInstallation({
+					...emptyInstallation(),
+					geometry_sha256: null,
+					instances: [instance, endpoint],
+					circuits: [circuit],
+					routes: [route],
+					cable_runs: cableRuns,
+					pv_string_links: [{ string_id: "s1", circuit_id: "pv1" }],
+				}),
+				recorded = cableRuns.map((run) => ({
+					...run,
+					// The service reports the declaration explicitly, including
+					// its absence; only the saved inputs omit the key.
+					conductor: run.conductor ?? null,
+					circuit_name: "Roof circuit",
+					route_name: "Roof route",
+					unit: "m",
+					quantity: 16,
+					plan_length_m: 10,
+					route_length_m: 14,
+					extra_length_m: 2,
+					reasons: [],
+					specification: run.conductor ? "declared" : "open",
+				}));
+			return {
+				input,
+				response: {
+					schema_version: 1,
+					method: "installation_route_takeoff_v1",
+					project_id: "project",
+					project_revision: 2,
+					qualified: false,
+					geometry_sha256: sha,
+					input_sha256: "c".repeat(64),
+					prepared_inputs: { ...input, geometry_sha256: sha },
+					cables: recorded,
+				},
+			};
+		};
+	const states = [
+		// One declared section across every recorded run of the circuit.
+		{
+			runs: [run("a", six), run("b", six)],
+			conductor: "declared",
+			recorded: true,
+		},
+		// A run without its own specification is a gap, not a contradiction.
+		{
+			runs: [run("a", six), run("b")],
+			conductor: "unconfirmed",
+			recorded: false,
+		},
+		// Two different sections are a real conflict, never a silent choice.
+		{
+			runs: [run("a", six), run("b", { ...six, cross_section_mm2: 10 })],
+			conductor: "conflicting",
+			recorded: false,
+		},
+		{ runs: [], conductor: "not_recorded", recorded: false },
+	];
+	for (const state of states) {
+		const { input, response } = review(state.runs),
+			closure = {
+				conductor: state.conductor,
+				quantity: state.runs.length ? "confirmed" : "not_recorded",
+				recorded: state.recorded,
+				approval: "not_assessed",
+			};
+		const accepted = readInstallationReview(
+			{
+				...response,
+				pv_string_reconciliation: {
+					schema_version: 1,
+					scope: "declared_project_identity_only",
+					qualified: false,
+					pv_string_plan_sha256: "d".repeat(64),
+					installation_input_sha256: "c".repeat(64),
+					geometry_sha256: sha,
+					plan_status: "available",
+					rows: [
+						{
+							string_id: "s1",
+							mppt: 1,
+							input: 1,
+							circuit_id: "pv1",
+							status: "linked",
+							endpoints: [
+								{
+									side: "start",
+									instance_id: "inverter",
+									port_id: "p",
+									product_id: 6506,
+									product_revision: revision,
+								},
+								{
+									side: "end",
+									instance_id: "roof",
+									port_id: "q",
+									product_id: null,
+									product_revision: null,
+								},
+							],
+							cable_runs: response.cables,
+							closure,
+							reasons: state.runs.length ? [] : ["cable_runs_missing"],
+						},
+					],
+				},
+			},
+			input,
+			"project",
+			{
+				schema_version: 1,
+				inverter_product_id: 6506,
+				strings: [{ id: "s1", mppt: 1, input: 1, module_ids: ["m"] }],
+			},
+			2,
+		);
+		assert.equal(
+			accepted.pv_string_reconciliation.rows[0].closure.conductor,
+			state.conductor,
+		);
+		assert.equal(
+			accepted.pv_string_reconciliation.rows[0].closure.approval,
+			"not_assessed",
+		);
+	}
+});
+
 test("installation preview reader keeps unknown length and refuses invented reasons or invalid totals", () => {
 	const input = emptyInstallation();
 	input.instances = [
@@ -560,8 +928,11 @@ test("installation preview reader keeps unknown length and refuses invented reas
 					name: "Cable",
 					circuit_id: "ac",
 					route_id: "path",
-					circuit_name: "AC",
 					route_name: "Route",
+					circuit_name: "AC",
+					construction: "multicore_cable",
+					conductor: null,
+					specification: "open",
 					unit: "m",
 					quantity: null,
 					plan_length_m: 1,
@@ -579,6 +950,9 @@ test("installation preview reader keeps unknown length and refuses invented reas
 		{ reasons: ["guessed"] },
 		{ reasons: [], quantity: 0 },
 		{ reasons: [], quantity: Infinity },
+		// The reported status and the frozen declaration must agree.
+		{ specification: "declared" },
+		{ conductor: { cross_section_mm2: 6, source_note: "Invented" } },
 	]) {
 		assert.throws(() =>
 			readInstallationReview(

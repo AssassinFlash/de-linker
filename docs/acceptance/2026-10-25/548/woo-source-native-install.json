@@ -10555,7 +10555,7 @@
     }
   },
   "w12_direct_beam_visibility": {
-    "state": "integrated_candidate_native_UI_and_CI_pending",
+    "state": "production_published_native_geometry_complete_3D_Chrome_remaining",
     "backend_commit": "5856d747cbdcdd3598848d8d19584066c4783b4a",
     "frontend_commit": "818349b1f6b1b6c9aa4236e9704c6b7c96eb4a09",
     "features": [
@@ -10564,15 +10564,198 @@
       "Bilingual geometric table/3D, report/PDF/Genie consumers"
     ],
     "review": "Spec+Standards PASS; unchanged prior engine/protocol/PHP/frontend/static/build evidence reused. Current changed adapter fixture1PASS2.95s. Actual owner save/tasks/report UI acceptance remains in progress.",
-    "scope": "Selected-time geometric direct-beam visibility. Not a power profile, diffuse/reflected irradiance, bypass/MPPT electrical mismatch, annual loss or equipment/country approval. Full goal548 remains active."
+    "scope": "Selected-time geometric direct-beam visibility. Not a power profile, diffuse/reflected irradiance, bypass/MPPT electrical mismatch, annual loss or equipment/country approval. Full goal548 remains active.",
+    "production": {
+      "PR": 732,
+      "source": "55c47cce86f4070e6d707acf6b7da7e685992b82",
+      "merge": "cf030a7cffab2afb54bb22e636c1cfe04e5ee6bf",
+      "CI": "40657260768 allSUCCESS",
+      "planner": "Matched HTTP/worker active;13business tables unchanged before business acceptance",
+      "Tools": "Native atomic publication;6active planner resources200/exactSHA;one nativeWindPress Generate",
+      "native": "Existing owned synthetic project saved13;one retained-source geometry task succeeded;20daylight modules/coarse=fine100percent,680actualsamples;no new provider request",
+      "remaining": "Chrome3D context unavailable; observed failure-status contradiction fixed in next full candidate. Full geometric/diffuse/electrical model goal remains open."
+    }
   },
   "genie_saved_report_weather_route": {
-    "state": "reviewed_candidate_not_live",
+    "state": "paired_runtime_and_native_index_ACK23_live_human_entry_failed",
     "commit": "1418dc26e",
     "before": "Actual production selected saved report question was intercepted by generic weather scripted route; no planning tool or source card ran. Original failure retained.",
     "after": "Verified matching saved-result context with explicit EN/DE saved or this/that/current references reads existing planning tool; ordinary weather and foreign/missing/dirty/mismatched context retain previous routes.",
     "checks": "Existing Understander+planning suites22PASS0.50s; strictmypy3 sourcefiles and Ruff/format4files PASS; independent Spec+Standards PASS",
     "model_or_source_changes": false,
-    "production_fix_readback": false
+    "production_fix_readback": false,
+    "production": {
+      "runtime": "Approved source actually running;real nativeACK23+stable scheduler complete",
+      "index": "142documents/12780chunks cached;0new parse/embedding calls",
+      "original_failure": "Retained weather-scripted production turn698 unchanged",
+      "latest_attempt": "Blocked by Turnstile before service; native latest698 unchanged. User manually retried and also failed; no successful semantic acceptance claimed. Shared verification chain is now a confirmed user-path defect being diagnosed."
+    }
+  },
+  "geometric_pv_reference": {
+    "state": "local_native_complete_browser_download_receipt_unconfirmed",
+    "model": "opaque_direct_uniform_pvlib_reference_v1",
+    "method": "All retained source intervals;module direct geometric sampling;explicit unchanged sky/ground reference;module-mean SAPM thermal and uniformPVWatts;per-array sum and one shared AC conversion. Does not model substring/bypass/stringIV/actualMPPT.",
+    "native_local": "24included modules×8760retained weather intervals;frozenACprofile explicitly adopted/saved→two-hour energy→EN/DE reports;no provider request or repeated PV calculation for consumers",
+    "reference_output_kwh": 13153.331537980335,
+    "energy_scope": "Two hours;not annual storage performance",
+    "consumer_repairs": [
+      "Strict new model/weather/witness dependencies in energy reader",
+      "Constrained geometric TMY source-link whitelist",
+      "Complete source/parameter report projection;EN/DE display precision and original-note attribution",
+      "Genie privacy/source-period projection",
+      "Shared3D failure/loading/retry lifecycle"
+    ],
+    "review": "Full Spec+Standards/source/privacy/EN-DEcopy PASS;final report5file increment and3D independently reviewed",
+    "checks": "Existing meaningful numerical/owned-adapter/permission/recovery/consumer fixtures,strictstaticandbuild checks passed;unchanged coverage reused",
+    "PDF": "Final EN/DE original frozenPDFs generated/rendered/affected sections visually inspected;browserdownload Fetch200 then browser/automation cancellation,with no application abort orcleanupobserved;receipt not established",
+    "production": false,
+    "full_goal548": "active"
+  },
+  "shared_verification_repair": {
+    "state": "shared_proof_and_native_recovery_base_reviewed;real_CU_React_ownership_layout_delta_in_progress_not_production",
+    "at_utc": "2026-10-28T10:28:32.675455+00:00",
+    "owner_observation": "Owner manually pressed Enter repeatedly in the production Chrome Genie composer; all failed and no usable verification control was available. No further repetition requested.",
+    "reproduced": "Real Commerce ProtectionClient→Tools resourceFetch→sendTurn reproduces immediate removal of retryable widget and 90s response abort cutting the separate120s proof phase; no model dispatch.",
+    "scope": "Shared Commerce proof lifecycle and native register/contact/inquiry/draft consumers;Tools/Genie message transport and EN/DE unsent state;required server proof remains enforced.",
+    "review_findings": "Required business forms must wait for pending proof;classify prepare/verify network failures before dispatch;keep current interactive state;actual App/Hero input restoration and official retry families under repair.",
+    "production": false,
+    "full_goal548": "active",
+    "cloudflare_dashboard_readback": {
+      "at_utc": "2026-10-28T11:30:52.790814+00:00",
+      "source": "Existing authenticated Cloudflare dashboard;read-only productionwidget configuration,public identifier matched to productionWP by SHA256 only",
+      "widget_mode": "Managed",
+      "allowed_hostnames": [
+        "de-linker.com"
+      ],
+      "pre_clearance": false,
+      "identifier_matches_production": true,
+      "settings_changed": false,
+      "secret_shown_or_rotated": false,
+      "last_modified": "not established"
+    },
+    "native_local_ui_before_final_react_delta": {
+      "fixture": "Official dummy keys;intentional non-browser expected hostname guarantees proof rejection before any model/business dispatch",
+      "observed": "One120s bounded attempt;input restored;EN1440/390 no horizontaloverflow;visible localized failed state",
+      "network": "1prepare,0verify,0Genieturn;SDK200;3vendor frameDocument ERR_ABORTED after43.74/42.41/33.56s;no truncated buffer",
+      "limitations": "Real provider challenge did not finish even with dummykey;BrowserUse had paused document response. Cause not established;not proof of production/customer availability. Native unclaimed browser readback planned.",
+      "actual_defects_under_repair": "Dynamic external status moved above Reactchat on mobile;optimisticThinking beforedispatch. Owned slot/stage lifecycle increment under review."
+    },
+    "base_review": "Spec+StandardsPASS for sharedproof/native recovery/ENDEgenerated base;ReactCU delta not yet final",
+    "production_verification_only": {
+      "at_utc": "2026-10-28T11:48:05.234992+00:00",
+      "state": "actual_production_verification_only_pass",
+      "entry": "Native WordPress staff Public entry protection→Check verification",
+      "browser": "New Chrome tab opened only by native UI;not claimed through BrowserUse/getTab/CDP",
+      "performed_by": "owner;user confirmed exact result,then parent read same nativeAX result",
+      "result": "Verification passed. No business request was submitted.",
+      "scope": "Same configured productionwidget/host/server can complete a real proof. Not a sent Genie turn,inquiry,mail,or positive newbundle readback;no proof copied/reused across actions.",
+      "remaining_cause": "Original Genie failure still needs application owner/lifecycle/timeout correction;precise contribution of instrumented browser tovendorframe aborts is unproven."
+    }
+  },
+  "pr732_packaging_stage_cleanup": {
+    "at_utc": "2026-10-28T10:46:29.826803+00:00",
+    "scope": "PR732 successfully published and natively archived source55c47cce packaging stage;source in mergedGit,small original package metadata retained in private existing ledger",
+    "removed_files": 323,
+    "removed_logical_bytes": 10753334,
+    "free_bytes_before": 923028045824,
+    "free_bytes_after": 923039682560,
+    "observed_free_bytes_delta": 11636736,
+    "directory_absent": true,
+    "open_file_count_before": 0,
+    "unique_acceptance_and_recovery_points": "preserved"
+  },
+  "final_candidate_2026_10_29": {
+    "state": "local_and_review_validated;final_PR_CI_and_production_pending",
+    "candidate": {
+      "base_commit": "1a123dab8879a84d2c40da7197d396e6590a563e",
+      "implementation_commit": "e1b5e17a6",
+      "merged_main_commit": "f9311d84d",
+      "build": "PASS just build on the merged candidate; Tools, Commerce and Planner generated manifests match their sources, including the complete new/old planner chunk set",
+      "check": "PASS final complete just check on the merged candidate, including PHPStan, PHPCS, TypeScript, Ruff, mypy, formatting, i18n and build reproducibility",
+      "test": "PASS final complete just test on the merged candidate; Engine 941, Genie 2588, Planner 193, Tools browser 18, local stack 186 including both repaired cases, pull and cutover all completed successfully",
+      "review": "Final complete and incremental Spec/Standards review has no open blocker; historical assistant-summary readback and both outdated local-stack tests were repaired and independently re-reviewed"
+    },
+    "local_runtime": {
+      "engine_runtime_sha256": "52b95892e3bdac53d8b6a2fed25fd2b74bc7c1b0d2e2c5f500f0ffa43dad9e43",
+      "worker_runtime_sha256": "52b95892e3bdac53d8b6a2fed25fd2b74bc7c1b0d2e2c5f500f0ffa43dad9e43",
+      "rollback_runtime_sha256": "c2da6a774ca4e873682d857ce234f2b0426a61718c9b9797ca939de463047a8d",
+      "retired_runtime_cleanup": "Superseded f141c99760dafca48d9bcd82500594503b43894960724f51904eae81fd7f8d84 and the earlier full recovery were reclaimed only after the current pair and newest restore drill passed; only current, rollback and newest recovery remain",
+      "loaded_source_revision": "e1773a35f189b2eec9267b9f757a55c60bd996e62df9e5d1812d90f0b8c337d4",
+      "loaded_products": "85 ordinary Woo products plus one retained PV reference; native publication acknowledgement completed",
+      "publication_cleanup": "Incomplete published test product 9974 (Current Genie receipt fixture) was retained as a draft, not deleted; native schema validation and generation loading then passed",
+      "geometric_dc_guard": "Actual 52b95892 runtime rejects geometric_pv_reference_profile_v1 beside a retained DC group with plant_dc_duplicate_pv_source; pvgis_system_profile_v1 remains accepted",
+      "recovery": {
+        "archive": "/Users/chesterjohn/de-linker-local/p548/planner/recovery-before-conflict-20261029T010838Z",
+        "projects": 175,
+        "revisions": 293,
+        "runs": 90,
+        "project_assets": 144,
+        "blobs": 1704,
+        "quick_check": "ok",
+        "foreign_key_check": "empty",
+        "restore_drill": "passed; temporary restored copy reclaimed and archive verified again"
+      }
+    },
+    "browser_consumers": {
+      "evidence": "/Users/chesterjohn/de-linker-local/p548/final-consumer/browser/record.json",
+      "conductor": "Real Planner project 4c13e6313d0943ff8b1c2cf95f157d4b moved from revision 1 to 2; independent conductor A saved cross_section_mm2=6 with source_note, then projects/read and installation/review returned 200 and reload showed the same declaration. Other cables remained undeclared.",
+      "scene": "Real 3D initialization, hidden-section canvas release and tilted-orbit restoration passed in the current build; EN/DE desktop/mobile initialization evidence retained. The current run did not inject a new context-loss event; existing failure/retry regression evidence is reused rather than claimed as a new browser retry.",
+      "legacy_evidence": "/Users/chesterjohn/de-linker-local/p548/final-consumer/legacy/verdict.json",
+      "legacy_geometry": "Existing Berlin revision 37 sources with summary but no profile_summary rendered EN/DE reports and assistant responses with HTTP 200 and the retained UTC period. Existing witness without electrical_policy_scope produced status=not_recorded without inventing electrical stages.",
+      "legacy_limits": "No stored installation source lacking closure or pvlib source lacking pv_components existed in this workspace or its recovery copies. Those two compatibility branches retain real fixture regressions but are not claimed as exercised historical-storage cases."
+    },
+    "download_receipts": {
+      "historical_inputs": {
+        "path": "/Users/chesterjohn/Downloads/saved-solution-inputs.json",
+        "sha256": "9d079bda30fa74da4cf30a76dfb6b28109237fa513f88b9fe471b33f419adeab",
+        "embedded_source_sha256": "6dfee710c8f17869436d9cf79ba7625d241b16aee45d535b24062f00b91e7859"
+      },
+      "r37_en_pdf": {
+        "path": "/Users/chesterjohn/Downloads/linker-planning-c7795bc2c1e14e389622015c809ace45-r37-en.pdf",
+        "sha256": "d620d6f8c28691a730507dea6818e0422acf4f9ea39fbb872e96cbe1d71dfae6",
+        "matches": "Frozen result prepared_asset_content with locale=en and revision=37"
+      },
+      "r37_de_pdf": {
+        "path": "/Users/chesterjohn/Downloads/linker-planning-c7795bc2c1e14e389622015c809ace45-r37-de.pdf",
+        "sha256": "0dbaf399f135144f53755e1c9531e40c823b64a78e02a35bf82a5bd76f8770e2",
+        "matches": "Frozen result prepared_asset_content with locale=de and revision=37"
+      },
+      "csv_scope": "Actual earlier r22 EN/DE CSV files remain in ~/Downloads with recorded hashes; they are not represented as new r37 download receipts"
+    },
+    "genie_and_shared_verification": {
+      "evidence": "/Users/chesterjohn/de-linker-local/p548/try-again-evidence/report-final.json",
+      "controlled_chain": "First controlled SSE response 502; Try again caused a second real stub request and 200 success; a later successful replay returned the stored response without another stub dispatch",
+      "visual_scope": "EN/DE slot hiding, no pre-dispatch Thinking, neutral cancellation and localized unsent restoration were retained at 1440/390; earlier harness failures remain preserved in report-retry.json",
+      "real_model_called": false
+    },
+    "mail": {
+      "evidence": "/Users/chesterjohn/de-linker-local/p548/mail/20261028-164827-86b717d7-34ac-4949-8703-9503eda1ca71.eml",
+      "scope": "One tester-only local delivery; team, customer-receipt and Bcc routing verified as Outbox recipient data without multiple real sends"
+    },
+    "review_site": {
+      "snapshot": "/Users/chesterjohn/de-linker-data/20261029-0433",
+      "loaded": "172 published products, 2756 attachments, zero missing files and zero residual live addresses; licences applied",
+      "affected_e2e": "50 passed: contact selection continuity, Genie failure ownership, public inquiry, registration two-step and inquiry draft actions",
+      "visual": "/Users/chesterjohn/de-linker-local/review/acceptance-548/visual/record.json",
+      "visual_scope": "Solution Configurator, Proforma request and account entries passed EN/DE × 1440/390 with loaded Planner chunks, visible key controls and no horizontal overflow; no form or model submission",
+      "repairs": [
+        "Pinned a synthetic fixture-only runtime identity so the real exporter and all 11 fixture sections compare equally across platforms without masking hashes",
+        "Prevented whole-roof geometric AC and a shared DC reference from being adopted or counted together in either order, including coupling changes and legacy engine input",
+        "Copied live FileList values and preserved the editor question with the attachment in one turn",
+        "Made concurrent first guest-scope claims atomic and closed a claim after its cookie was presented, preserving later independent guests",
+        "Removed excluded selection data from the posted referer while retaining nonce and intent",
+        "Deferred the inquiry assessment wake until after the native transaction commit",
+        "Separated assessment_pending from daily_cap receipt states and used a deterministic local verdict plus native queue draining for the browser fixture",
+        "Updated outdated contact-exclusion and local-stack expectations without changing the approved product copy"
+      ],
+      "evidence_retention": "Original failures and final traces/screens remain under /Users/chesterjohn/de-linker-local/review/acceptance-548/ rather than the product diff"
+    },
+    "production": false,
+    "full_goal548": "active",
+    "remaining": [
+      "Push the merged candidate, run final PR #738 CI and merge only after it is green",
+      "Complete coordinated production deployment, backups and actual consumer readback",
+      "Country/DSO evidence packs, manufacturer operating envelopes and complete installation BOS remain open beyond this batch"
+    ]
   }
 }

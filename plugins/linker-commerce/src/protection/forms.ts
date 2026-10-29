@@ -1,4 +1,9 @@
 import { __ } from '@wordpress/i18n';
+import {
+	pendingState,
+	verificationFailedText,
+	verificationPendingText,
+} from './messages';
 
 /**
  * Native validation, submit buttons and redirects keep their existing owners.
@@ -47,13 +52,26 @@ export function connectForms( root: ParentNode = document ): void {
 			);
 		const failed = () => {
 			status.hidden = false;
-			status.textContent = __(
-				'Verification could not be completed. Your entries are still here. Please try again or email sales@de-linker.com.',
-				'linker-commerce'
-			);
+			status.textContent = verificationFailedText();
 		};
+		widget.addEventListener( 'linker:protection', ( event ) => {
+			const state = ( event as CustomEvent< { state: string } > ).detail
+				.state;
+			if ( state === 'interactive' || state === 'retrying' ) {
+				widget.hidden = false;
+				status.hidden = false;
+				status.textContent = verificationPendingText( state );
+			} else if ( state === 'failed' || state === 'expired' ) {
+				failed();
+			} else if ( state === 'ready' ) {
+				status.hidden = true;
+			}
+		} );
 		const warm = () => {
-			if ( requiresVerification() ) {
+			if (
+				requiresVerification() &&
+				marker.dataset.linkerProtectionRecovery !== 'true'
+			) {
 				widget.hidden = false;
 				window.linkerPublicProtection?.warm( action, widget ).then(
 					() => {
@@ -99,23 +117,31 @@ export function connectForms( root: ParentNode = document ): void {
 			'submit',
 			async ( event: SubmitEvent ) => {
 				if (
-					[ 'contact', 'inquiry' ].includes( action ) &&
-					requiresVerification()
+					event.defaultPrevented ||
+					verified ||
+					! requiresVerification()
 				) {
+					return;
+				}
+				if (
+					[ 'contact', 'inquiry' ].includes( action ) &&
+					marker.dataset.linkerProtectionRecovery === 'true'
+				) {
+					// Only the server's native recovery page carries this hint.
+					// Business validates UUID/input/identity and recovers completed
+					// results first. A missing result still requires a valid proof;
+					// a definite refusal removes this hint on the next native page.
 					proof.value =
 						window.linkerPublicProtection?.ready?.(
 							action,
 							widget
 						) || '';
 					widget.hidden = true;
-					return;
-				}
-
-				if (
-					event.defaultPrevented ||
-					verified ||
-					! requiresVerification()
-				) {
+					status.hidden = false;
+					status.textContent = __(
+						'Checking the status of your earlier request…',
+						'linker-commerce'
+					);
 					return;
 				}
 				event.preventDefault();
@@ -128,9 +154,8 @@ export function connectForms( root: ParentNode = document ): void {
 				submitting = true;
 				status.hidden = false;
 				widget.hidden = false;
-				status.textContent = __(
-					'Checking verification…',
-					'linker-commerce'
+				status.textContent = verificationPendingText(
+					pendingState( widget.dataset.linkerVerificationState )
 				);
 				const button = event.submitter;
 				try {

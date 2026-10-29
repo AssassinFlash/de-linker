@@ -10,6 +10,11 @@ import type { PvString, PvStringPlan } from "../../domain/pvStrings.ts";
 import { formatDecimal } from "../../domain/decimal.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
+import {
+	closureLabel,
+	conductorClosureLabel,
+	conductorLabel,
+} from "./installationLabels.ts";
 
 function stringLabel(string: PvString): string {
 	return sprintf(
@@ -326,6 +331,8 @@ export function PvStringLinks({
 											<th>{__("Connection points", "linker-tools")}</th>
 											<th>{__("Status", "linker-tools")}</th>
 											<th>{__("Recorded cable runs", "linker-tools")}</th>
+											<th>{__("Conductor", "linker-tools")}</th>
+											<th>{__("Conductor and quantities", "linker-tools")}</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -359,11 +366,13 @@ export function PvStringLinks({
 													{row.cable_runs
 														.map(
 															(c) =>
-																`${c.name}: ${c.quantity === null ? "—" : formatDecimal(c.quantity, locale) + " m"}`,
+																`${c.name}: ${c.quantity === null ? "—" : formatDecimal(c.quantity, locale) + " m"} · ${conductorLabel(c.conductor, locale)}`,
 														)
 														.join("; ") ||
 														__("No cable runs recorded", "linker-tools")}
 												</td>
+												<td>{conductorClosureLabel(row.closure.conductor)}</td>
+												<td>{closureLabel(row.closure)}</td>
 											</tr>
 										))}
 									</tbody>

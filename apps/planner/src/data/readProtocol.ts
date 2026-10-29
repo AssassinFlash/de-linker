@@ -77,6 +77,13 @@ const checkSession = ajv.compile<Session>(
 						max_bounds_checks: integer,
 						index_leaf_size: integer,
 					}),
+					geometric_pv_generation: object({
+						max_module_steps: integer,
+						max_samples: integer,
+						max_ray_face_checks: integer,
+						max_bounds_checks: integer,
+						index_leaf_size: integer,
+					}),
 				}),
 				required: [
 					"max_body_bytes",
@@ -103,6 +110,12 @@ export function readSession(value: unknown): Session {
 		(value.runtime.models.direct_beam_visibility ===
 			"prepare_direct_beam_visibility_v1") !==
 		(value.runtime.limits.direct_beam_visibility !== undefined)
+	)
+		throw new ApiError(502, "invalid_session_reply");
+	if (
+		(value.runtime.models.geometric_pv_generation ===
+			"prepare_geometric_pv_reference_v1") !==
+		(value.runtime.limits.geometric_pv_generation !== undefined)
 	)
 		throw new ApiError(502, "invalid_session_reply");
 	return value;

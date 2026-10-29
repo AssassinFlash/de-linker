@@ -1102,6 +1102,13 @@ body:has(.linker-genie-workspace)
 	margin: 0;
 }
 
+/* The verification slot is a live flex child of the panel, so this class would
+ * otherwise defeat the native hidden state the proof lifecycle toggles and leave
+ * its bottom padding above the composer. */
+.linker-genie-app__status[hidden] {
+	display: none;
+}
+
 /* What Genie read from a file (#236): a card in the answer, like a product
  * card's frame; its buttons are the opening prompts' pills. */
 .linker-genie-attachment {

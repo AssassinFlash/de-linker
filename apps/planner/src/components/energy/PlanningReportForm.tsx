@@ -7,6 +7,7 @@ import { Notice } from "../Notice.tsx";
 import { PVGIS_REFERENCE_TASK } from "../../domain/pvgisReference.ts";
 import { taskLabel } from "./planningLabels.ts";
 import { DIRECT_BEAM_TASK } from "../../domain/directBeam.ts";
+import { GEOMETRIC_PV_TASK } from "../../domain/geometricPv.ts";
 
 export function PlanningReportForm({
 	runs,
@@ -72,7 +73,9 @@ export function PlanningReportForm({
 						kind === "single_ac_energy_replay_v1"
 							? isEnergyTask(run.task_kind)
 							: kind === "prepare_roof_pv_reference_v1"
-								? [kind, PVGIS_REFERENCE_TASK].includes(run.task_kind ?? "")
+								? [kind, PVGIS_REFERENCE_TASK, GEOMETRIC_PV_TASK].includes(
+										run.task_kind ?? "",
+									)
 								: run.task_kind === kind,
 					)
 					.map((run) => (

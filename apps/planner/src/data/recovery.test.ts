@@ -98,13 +98,19 @@ test("recovery retains the baseline, local edits and exact uncertain intent", as
 			input_contract: "pv_string_links_direct_beam_visibility_v1",
 		});
 		await store.writeCreation(scope, cumulativeBody);
+		const geometricBody = JSON.stringify({
+			...create,
+			key: crypto.randomUUID(),
+			input_contract: "pv_string_links_direct_beam_geometric_pv_v1",
+		});
+		await store.writeCreation(scope, geometricBody);
 		assert.deepEqual(
 			new Set(
 				(await new DraftStore().readCreations(scope)).map(
 					(value) => value.body,
 				),
 			),
-			new Set([legacyBody, awareBody, cumulativeBody]),
+			new Set([legacyBody, awareBody, cumulativeBody, geometricBody]),
 		);
 		await assert.rejects(
 			store.writeCreation(

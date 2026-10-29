@@ -51,6 +51,8 @@ from .errors import (
 )
 from .execution_identity import storage_binding
 from .execution_registry import service_registry
+from .geometric_pv_job import check_geometric_pv
+from .geometric_pv_service import GeometricPvService
 from .geometry_import import GeometryImport
 from .geometry_import_selections import check_geometry_imports
 from .geometry_review import review_geometry
@@ -136,6 +138,7 @@ def create_private_app(
     reports: ReportService | None = None,
     pvgis_reference: PvgisRoofReferenceService | None = None,
     direct_beam: DirectBeamService | None = None,
+    geometric_pv: GeometricPvService | None = None,
 ) -> ASGIApp:
     if energy.workspace is not workspace or energy.kernel.workspace is not workspace:
         raise InvalidInput("HTTP and energy service must share the same authority")
@@ -183,6 +186,12 @@ def create_private_app(
         raise InvalidInput(
             "direct-beam visibility requires shared project and Woo authority"
         )
+    if geometric_pv is not None and (
+        geometric_pv.workspace is not workspace
+        or geometric_pv.kernel.workspace is not workspace
+        or product_provider is None
+    ):
+        raise InvalidInput("geometric PV requires shared project and Woo authority")
     registry = service_registry(
         energy,
         pv,
@@ -192,6 +201,7 @@ def create_private_app(
         reports,
         pvgis_reference,
         direct_beam,
+        geometric_pv,
     )
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
     assets = Assets(workspace)
@@ -326,6 +336,11 @@ def create_private_app(
                     else {}
                 ),
                 **(
+                    {"geometric_pv_generation": geometric_pv.kernel.kind}
+                    if geometric_pv is not None
+                    else {}
+                ),
+                **(
                     {"pvgis_roof_reference": pvgis_reference.kernel.kind}
                     if pvgis_reference is not None
                     else {}
@@ -353,6 +368,15 @@ def create_private_app(
                         )
                     }
                     if direct_beam is not None
+                    else {}
+                ),
+                **(
+                    {
+                        "geometric_pv_generation": geometric_pv.kernel.limits.model_dump(
+                            mode="json"
+                        )
+                    }
+                    if geometric_pv is not None
                     else {}
                 ),
             },
@@ -430,6 +454,7 @@ def create_private_app(
         check_geometry_imports(assets, actor, None, body.inputs)
         check_pv_preparation(assets, actor, None, body.inputs)
         check_direct_beam(assets, actor, None, body.inputs)
+        check_geometric_pv(assets, actor, None, body.inputs)
         check_equipment_candidate(
             workspace, actor, None, body.inputs, products=products
         )
@@ -485,6 +510,7 @@ def create_private_app(
         check_geometry_imports(assets, actor, body.project_id, body.inputs)
         check_pv_preparation(assets, actor, body.project_id, body.inputs)
         check_direct_beam(assets, actor, body.project_id, body.inputs)
+        check_geometric_pv(assets, actor, body.project_id, body.inputs)
         check_equipment_candidate(
             workspace,
             actor,
@@ -630,6 +656,20 @@ def create_private_app(
             )
         )
 
+    @app.post("/runs/geometric-pv")
+    def prepare_geometric_pv(body: EnergyEvaluate, request: Request) -> Object:
+        actor = verified_actor(request.scope, write=True)
+        previous = previous_result(actor, "runs/geometric-pv", body)
+        if previous is not None:
+            return previous
+        if geometric_pv is None:
+            raise VersionUnavailable("geometric PV generation is not configured")
+        return run_view(
+            geometric_pv.evaluate(
+                actor, body.project_id, body.expected_revision, key=body.key
+            )
+        )
+
     @app.post("/runs/pvgis-reference")
     def prepare_pvgis_reference(body: EnergyEvaluate, request: Request) -> Object:
         actor = verified_actor(request.scope, write=True)
@@ -748,8 +788,10 @@ def create_private_app(
 
     @app.post("/weather/assets")
     def owned_weather(body: WeatherAssetsRead, request: Request) -> Object:
-        if direct_beam is None:
-            raise VersionUnavailable("direct-beam visibility is not configured")
+        if direct_beam is None and geometric_pv is None:
+            raise VersionUnavailable(
+                "retained-weather geometry services are not configured"
+            )
         if body.page_size > limits.max_page_size:
             raise InvalidInput("weather page exceeds deployment limit")
         return weather_assets(
@@ -762,8 +804,11 @@ def create_private_app(
 
     @app.post("/weather/preview")
     def preview_weather(body: ProfilePreviewRead, request: Request) -> Object:
-        if direct_beam is None:
-            raise VersionUnavailable("direct-beam visibility is not configured")
+        selected = direct_beam or geometric_pv
+        if selected is None:
+            raise VersionUnavailable(
+                "retained-weather geometry services are not configured"
+            )
         if body.page_size > limits.max_page_size:
             raise InvalidInput("weather page exceeds deployment limit")
         return weather_preview(
@@ -771,7 +816,7 @@ def create_private_app(
             verified_actor(request.scope),
             body.project_id,
             body.asset_id,
-            direct_beam.kernel.weather_limits,
+            selected.kernel.weather_limits,
             offset=body.offset,
             page_size=body.page_size,
         )

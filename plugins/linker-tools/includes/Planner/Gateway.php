@@ -22,7 +22,7 @@ final class Gateway {
 	public const MAX_BODY_BYTES = 16 * 1024 * 1024;
 	public const MAX_JSON_DEPTH = 32;
 	/** The account-claim and identity-status commands are deliberately private. */
-	private const PATHS = 'projects/(?:create|list|read|revise|runs)|runs/(?:read|compare|cancel|energy|report|pv|direct-beam|pvgis-reference|equipment(?:-search)?|weather(?:/status)?|trace)|assets/(?:read|content)|profiles/(?:csv|inspect|preview)|weather/(?:assets|preview)|geometry/(?:review|import)|installation/review|battery/scenario|products/current|equipment/(?:candidates|certificates)/read|recovery/scopes|sources/saved-solution|draft/(?:apply|preview|read)';
+	private const PATHS = 'projects/(?:create|list|read|revise|runs)|runs/(?:read|compare|cancel|energy|report|pv|direct-beam|geometric-pv|pvgis-reference|equipment(?:-search)?|weather(?:/status)?|trace)|assets/(?:read|content)|profiles/(?:csv|inspect|preview)|weather/(?:assets|preview)|geometry/(?:review|import)|installation/review|battery/scenario|products/current|equipment/(?:candidates|certificates)/read|recovery/scopes|sources/saved-solution|draft/(?:apply|preview|read)';
 	/**
 	 * A rejected request stays rejected if an installed integration returns null.
 	 *
@@ -224,12 +224,30 @@ final class Gateway {
 				}
 			}
 		}
+		$has_geometric = array_key_exists( 'geometric_pv_generation', $version['models'] ) || array_key_exists( 'geometric_pv_generation', $version['limits'] );
+		if ( $has_geometric ) {
+			$geometric_limits = $version['limits']['geometric_pv_generation'] ?? null;
+			$names            = array( 'index_leaf_size', 'max_bounds_checks', 'max_module_steps', 'max_ray_face_checks', 'max_samples' );
+			if ( 'prepare_geometric_pv_reference_v1' !== ( $version['models']['geometric_pv_generation'] ?? null ) || ! is_array( $geometric_limits ) ) {
+				return Failure::make( 'invalid_reply', 502 );
+			}
+			$keys = array_keys( $geometric_limits );
+			sort( $keys );
+			if ( $names !== $keys ) {
+				return Failure::make( 'invalid_reply', 502 );
+			}
+			foreach ( $names as $name ) {
+				if ( ! is_int( $geometric_limits[ $name ] ) || $geometric_limits[ $name ] < 1 ) {
+					return Failure::make( 'invalid_reply', 502 );
+				}
+			}
+		}
 		$version['limits']['max_body_bytes'] = min( self::MAX_BODY_BYTES, $version['limits']['max_body_bytes'] );
 		$version['limits']['max_json_depth'] = min( self::MAX_JSON_DEPTH, $version['limits']['max_json_depth'] );
 		// Keep operator process/storage identities on the private protocol; the
 		// browser uses its stable, strict runtime view during normal bootstrap.
 		$version           = array_intersect_key( $version, array_flip( array( 'schema_version', 'runtime_sha256', 'models', 'limits' ) ) );
-		$version['limits'] = array_intersect_key( $version['limits'], array_flip( array( 'max_body_bytes', 'max_csv_bytes', 'max_page_size', 'max_json_depth', 'direct_beam_visibility' ) ) );
+		$version['limits'] = array_intersect_key( $version['limits'], array_flip( array( 'max_body_bytes', 'max_csv_bytes', 'max_page_size', 'max_json_depth', 'direct_beam_visibility', 'geometric_pv_generation' ) ) );
 		return new WP_REST_Response(
 			array(
 				'schema_version'   => 1,

@@ -73,6 +73,16 @@ export function energyErrorText(error: unknown): string {
 			? error.code
 			: "";
 	switch (code) {
+		case "geometric_pv_inputs_invalid":
+			return __(
+				"The PV reference needs a retained weather source, two ordered sampling grids and complete PV model parameters.",
+				"linker-tools",
+			);
+		case "invalid_geometric_pv_limits":
+			return __(
+				"The calculation service did not provide valid limits for this PV method. Saved inputs remain available.",
+				"linker-tools",
+			);
 		case "plant_dc_assignment_required":
 			return __(
 				"Select the PV group and AC charging option, and enter the DC auxiliary demand for each converter.",

@@ -1,9 +1,11 @@
 import { useLayoutEffect, useRef } from "react";
+import type { RefObject } from "react";
 import { useThree } from "@react-three/fiber";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { Vector3 } from "three/webgpu";
 import type { PerspectiveCamera } from "three";
 import type { Vec3 } from "../../domain/geometry.ts";
+import type { SceneViewState } from "../../domain/sceneCamera.ts";
 import { sceneFitDistance } from "../../domain/sceneCamera.ts";
 
 export interface SceneFraming {
@@ -17,9 +19,13 @@ export interface SceneFraming {
 export function SceneCamera({
 	extent,
 	request,
+	view,
 }: {
 	extent: SceneFraming;
 	request: number;
+	/** Survives a released-and-restored surface so leaving a workspace section
+	 * does not silently reset the viewer's own orbit. */
+	view?: RefObject<SceneViewState | null> | undefined;
 }) {
 	const { camera, gl, size, invalidate } = useThree();
 	const orbit = useRef<OrbitControls | null>(null);
@@ -32,7 +38,14 @@ export function SceneCamera({
 		const controls = new OrbitControls(camera, gl.domElement);
 		orbit.current = controls;
 		previous.current = null;
-		const changed = () => invalidate(),
+		const changed = () => {
+				if (view)
+					view.current = {
+						position: camera.position.toArray() as Vec3,
+						target: controls.target.toArray() as Vec3,
+					};
+				invalidate();
+			},
 			pause = () => {
 				controls.enabled = false;
 			},
@@ -50,7 +63,7 @@ export function SceneCamera({
 			orbit.current = null;
 			previous.current = null;
 		};
-	}, [camera, gl, invalidate]);
+	}, [camera, gl, invalidate, view]);
 	useLayoutEffect(() => {
 		const perspective = camera as PerspectiveCamera;
 		const controls = orbit.current;
@@ -61,6 +74,26 @@ export function SceneCamera({
 			size.height <= 0
 		)
 			return;
+		const radius = extent.size / 2;
+		// A restored surface reuses the orbit the viewer left behind; only an
+		// explicit Fit or a real viewport resize moves the camera again.
+		const restored = previous.current === null ? view?.current : null;
+		if (restored) {
+			perspective.aspect = size.width / size.height;
+			const distance = new Vector3(...restored.position).distanceTo(
+				new Vector3(...restored.target),
+			);
+			perspective.position.set(...restored.position);
+			perspective.near = radius / 10000;
+			perspective.far = distance + radius * 3;
+			controls.target.set(...restored.target);
+			perspective.lookAt(controls.target);
+			perspective.updateProjectionMatrix();
+			controls.update();
+			previous.current = { request, width: size.width, height: size.height };
+			invalidate();
+			return;
+		}
 		const resetDirection =
 			!previous.current || previous.current.request !== request;
 		const resized =
@@ -73,8 +106,7 @@ export function SceneCamera({
 		const direction = preserveDirection
 			? camera.getWorldDirection(new Vector3()).negate()
 			: new Vector3(...extent.direction);
-		const radius = extent.size / 2,
-			distance = sceneFitDistance(radius, size.width / size.height);
+		const distance = sceneFitDistance(radius, size.width / size.height);
 		perspective.aspect = size.width / size.height;
 		perspective.position
 			.copy(extent.centre)
@@ -89,6 +121,6 @@ export function SceneCamera({
 		controls.update();
 		previous.current = { request, width: size.width, height: size.height };
 		invalidate();
-	}, [camera, gl, extent, request, size.width, size.height, invalidate]);
+	}, [camera, gl, extent, request, size.width, size.height, invalidate, view]);
 	return null;
 }

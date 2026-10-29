@@ -468,7 +468,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 			}
 		);
 		$handler = new \Linker\Commerce\Contact\Handler();
-		$this->assertSame( 'sent', $handler->process( $post ) );
+		$this->assertSame( 'receipt_pending', $handler->process( $post ) );
 		$orders = wc_get_orders(
 			array(
 				'billing_email' => $email,
@@ -484,6 +484,8 @@ final class OpenInquiryTest extends IntegrationTestCase {
 			);
 		}
 		$this->assertCount( 1, $orders );
+		$orders[0]->read_meta_data( true );
+		$this->assertSame( 'assessment_pending', (string) $orders[0]->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
 		$this->assertSame( 'inquiry-received', $orders[0]->get_status() );
 		$this->assertSame( 0, $orders[0]->get_item_count() );
 		$this->assertSame( 'A contact question.', $orders[0]->get_customer_note() );

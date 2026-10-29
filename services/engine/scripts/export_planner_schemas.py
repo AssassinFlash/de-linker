@@ -20,6 +20,10 @@ from linker_engine.planning.direct_beam_inputs import DirectBeamTaskInputs
 from linker_engine.planning.energy_inputs import BatteryParameters, EnergyInputs
 from linker_engine.planning.equipment_condition_inputs import EquipmentConditionInputs
 from linker_engine.planning.equipment_plant import EquipmentPlant
+from linker_engine.planning.geometric_pv_inputs import (
+    GeometricPvInputs,
+    GeometricPvLimits,
+)
 from linker_engine.planning.installation_inputs import InstallationInputs
 from linker_engine.planning.plant_energy_inputs import PlantEnergyInputs
 from linker_engine.planning.plant_search_plan import PlantSearchPlan
@@ -81,6 +85,8 @@ def documents() -> dict[str, str]:
             ("pv-generation", PvGenerationParameters),
             ("weather-acquisition", WeatherAcquisitionInputs),
             ("direct-beam", DirectBeamTaskInputs),
+            ("geometric-pv", GeometricPvInputs),
+            ("geometric-pv-limits", GeometricPvLimits),
             ("pvgis-roof-reference", PvgisReferenceInputs),
             ("planning-report", Report),
             ("planning-report-options", ReportOptions),

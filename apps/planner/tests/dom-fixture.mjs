@@ -47,6 +47,7 @@ export function setupDom() {
 		"HTMLElement",
 		"Event",
 		"CustomEvent",
+		"MutationObserver",
 		"ResizeObserver",
 		"IS_REACT_ACT_ENVIRONMENT",
 	];
@@ -56,7 +57,7 @@ export function setupDom() {
 			Object.getOwnPropertyDescriptor(globalThis, name),
 		]),
 	);
-	for (const name of names.slice(0, 8))
+	for (const name of names.slice(0, 9))
 		Object.defineProperty(globalThis, name, {
 			value: dom.window[name],
 			writable: true,

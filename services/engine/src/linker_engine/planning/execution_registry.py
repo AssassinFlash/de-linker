@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from .direct_beam_service import DirectBeamService
     from .energy_service import EnergyService
     from .equipment_service import EquipmentService
+    from .geometric_pv_service import GeometricPvService
     from .pv_preparation import PvPreparationService
     from .pvgis_reference_service import PvgisRoofReferenceService
     from .report_kernel import ReportService
@@ -33,6 +34,7 @@ def service_registry(
     reports: ReportService | None = None,
     pvgis_reference: PvgisRoofReferenceService | None = None,
     direct_beam: DirectBeamService | None = None,
+    geometric_pv: GeometricPvService | None = None,
 ) -> ExecutionRegistry:
     """One executor-set authority for HTTP, worker startup and operator identity."""
     return ExecutionRegistry(
@@ -44,6 +46,7 @@ def service_registry(
         *(() if reports is None else (reports.kernel,)),
         *(() if pvgis_reference is None else (pvgis_reference.kernel,)),
         *(() if direct_beam is None else (direct_beam.kernel,)),
+        *(() if geometric_pv is None else (geometric_pv.kernel,)),
     )
 
 

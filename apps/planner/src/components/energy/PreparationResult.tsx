@@ -19,6 +19,8 @@ import { runStateLabel, taskLabel } from "./planningLabels.ts";
 import { WeatherProgress } from "./WeatherProgress.tsx";
 import { WeatherFailureNotice } from "./WeatherFailureNotice.tsx";
 import { PreparationBasis } from "./PreparationBasis.tsx";
+import { GEOMETRIC_PV_TASK } from "../../domain/geometricPv.ts";
+import { OwnedProfile } from "../OwnedProfile.tsx";
 
 export function PreparationResult({
 	run,
@@ -44,6 +46,7 @@ export function PreparationResult({
 	const [error, setError] = useState<unknown>(null);
 	const kind = runTask(run),
 		weather = kind === WEATHER_TASK,
+		geometric = kind === GEOMETRIC_PV_TASK,
 		asset = run.result ? readObject(run.result.prepared_asset) : null;
 	const assetId = asset && typeof asset.id === "string" ? asset.id : null;
 	const weatherFailure =
@@ -93,7 +96,9 @@ export function PreparationResult({
 				let weatherSource: unknown = asset;
 				if (!weather) {
 					const weatherId = readObject(
-						project.inputs.pv_preparation,
+						geometric
+							? project.inputs.geometric_pv_preparation
+							: project.inputs.pv_preparation,
 					).weather_asset_id;
 					if (
 						typeof weatherId !== "string" ||
@@ -142,7 +147,7 @@ export function PreparationResult({
 		(weather
 			? readObject(inputs.pv_preparation ?? {}).weather_asset_id === asset.id
 			: readObject(readObject(inputs.profile_selections ?? {}).selected ?? {})[
-					preparationPvRole(inputs)
+					geometric ? "pv_available_ac" : preparationPvRole(inputs)
 				] === asset.id);
 	const summary = run.result
 		? readObject(
@@ -220,10 +225,15 @@ export function PreparationResult({
 								<dd>{date(summary.end_utc)}</dd>
 							</dl>
 							<p>
-								{__(
-									"This is an unshaded reference profile. Site shading, equipment compatibility and country requirements remain unassessed.",
-									"linker-tools",
-								)}
+								{geometric
+									? __(
+											"This profile uses geometric shading of direct sunlight and a uniform module response across the complete retained weather source. Sky and ground diffuse light remain unobstructed reference components. Substrings, bypass diodes, string I–V curves and actual inverter tracking remain unmodelled.",
+											"linker-tools",
+										)
+									: __(
+											"This is an unshaded reference profile. Site shading, equipment compatibility and country requirements remain unassessed.",
+											"linker-tools",
+										)}
 							</p>
 						</>
 					)}
@@ -264,16 +274,23 @@ export function PreparationResult({
 								)
 							}
 						>
-							{selectionError instanceof ApiError &&
-							selectionError.code === "preparation_source_changed"
+							{geometric &&
+							selectionError instanceof ApiError &&
+							selectionError.code === "pvgis_reference_dc_conflict"
 								? __(
-										"The source request, roof or model has changed. A source matching the current inputs is required.",
+										"This profile supplies AC generation only. It cannot also supply a shared inverter's DC PV input. Review the topology before selecting it.",
 										"linker-tools",
 									)
-								: __(
-										"The saved source could not be checked. Existing project inputs remain unchanged.",
-										"linker-tools",
-									)}
+								: selectionError instanceof ApiError &&
+									  selectionError.code === "preparation_source_changed"
+									? __(
+											"The source request, roof or model has changed. A source matching the current inputs is required.",
+											"linker-tools",
+										)
+									: __(
+											"The saved source could not be checked. Existing project inputs remain unchanged.",
+											"linker-tools",
+										)}
 						</Notice>
 					)}
 					{Boolean(error) && (
@@ -338,6 +355,19 @@ export function PreparationResult({
 							weather={source.data.weather}
 							project={source.data.project}
 							pv={!weather}
+							geometric={geometric}
+						/>
+					)}
+					{geometric && assetId && source.data && (
+						<OwnedProfile
+							projectId={run.project_id}
+							assetId={assetId}
+							session={session}
+							client={client}
+							locale={locale}
+							expectedRole="pv_available_ac"
+							recheck={recheck}
+							showCurve
 						/>
 					)}
 					<details className="lp-comparison">

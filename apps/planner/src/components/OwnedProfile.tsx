@@ -13,6 +13,7 @@ import { __ } from "../i18n.ts";
 import { ProfileError } from "./ProfileError.tsx";
 import { ProfileReview } from "./ProfileReview.tsx";
 import { revealActionResult } from "./revealActionResult.ts";
+import { ProfileCurve } from "./ProfileCurve.tsx";
 
 export function OwnedProfile({
 	projectId,
@@ -23,6 +24,7 @@ export function OwnedProfile({
 	expectedRole,
 	onSelect,
 	recheck,
+	showCurve = false,
 }: {
 	projectId: string;
 	assetId: string;
@@ -32,6 +34,7 @@ export function OwnedProfile({
 	expectedRole?: ProfileRole;
 	onSelect?: (asset: ProfileAsset, preview: ProfilePreview) => void;
 	recheck: () => void;
+	showCurve?: boolean;
 }) {
 	const [offset, setOffset] = useState(0);
 	const recoveringSession = useRef(false);
@@ -154,6 +157,9 @@ export function OwnedProfile({
 		);
 	return (
 		<>
+			{showCurve && (
+				<ProfileCurve preview={page.data.preview} locale={locale} />
+			)}
 			<ProfileReview
 				asset={page.data.asset}
 				preview={page.data.preview}

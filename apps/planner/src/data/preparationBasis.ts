@@ -4,6 +4,7 @@ import { readObject } from "./readProtocol.ts";
 import type { PlanningRun } from "./planningProtocol.ts";
 import { runTask } from "./planningProtocol.ts";
 import { PV_TASK } from "./readPreparationResult.ts";
+import { GEOMETRIC_PV_TASK } from "../domain/geometricPv.ts";
 import { sameJson } from "../domain/draft.ts";
 
 /** The visible weather facts must describe the exact source used by this task. */
@@ -22,7 +23,7 @@ export function readPreparationWeather(
 		asset.media_type !== "application/json" ||
 		source.retention !== "permanent" ||
 		source.schema !== 1 ||
-		(runTask(run) === PV_TASK
+		([PV_TASK, GEOMETRIC_PV_TASK].includes(runTask(run) ?? "")
 			? asset.content_sha256 !== pins["weather.raw"] ||
 				asset.metadata_sha256 !== pins["weather.metadata"]
 			: !sameJson(asset, prepared)) ||

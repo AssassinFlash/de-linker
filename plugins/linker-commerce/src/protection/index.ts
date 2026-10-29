@@ -2,6 +2,7 @@ import { __ } from '@wordpress/i18n';
 import { ProtectionClient } from './client';
 import { connectForms } from './forms';
 import { connectDraftLinks } from './draft';
+import { verificationFailedText, verificationPendingText } from './messages';
 import type { ProtectionState } from './types';
 
 const config = window.linkerPublicProtectionConfig;
@@ -37,15 +38,14 @@ document
 			return;
 		}
 		const messages: Record< ProtectionState, string > = {
-			checking: __( 'Checking verification…', 'linker-commerce' ),
+			checking: verificationPendingText( 'checking' ),
+			interactive: verificationPendingText( 'interactive' ),
+			retrying: verificationPendingText( 'retrying' ),
 			ready: __(
 				'Verification passed. No business request was submitted.',
 				'linker-commerce'
 			),
-			failed: __(
-				'Verification could not be completed. Please try again.',
-				'linker-commerce'
-			),
+			failed: verificationFailedText(),
 			expired: __(
 				'Verification expired. Please try again.',
 				'linker-commerce'

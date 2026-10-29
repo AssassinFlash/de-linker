@@ -9,8 +9,30 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Protection;
 
+use WP_Error;
+
 /** No password, proof, nonce or full transport body is kept. */
 final class FormRecovery {
+	/**
+	 * Known native pre-dispatch refusals need a fresh check; every other outcome
+	 * keeps the original UUID recoverable.
+	 *
+	 * @param WP_Error $error Native result, never a client-supplied state.
+	 */
+	public static function after_error( WP_Error $error ): bool {
+		return Outcome::REFUSED !== Outcome::of( (string) $error->get_error_code() );
+	}
+
+	/**
+	 * The journal already holds this UUID for different input, so the form must
+	 * not offer it again: every resubmit would be refused as changed input.
+	 *
+	 * @param WP_Error|null $error Native result, never a client-supplied state.
+	 */
+	public static function superseded( ?WP_Error $error ): bool {
+		return null !== $error && 'linker_admission_payload_changed' === $error->get_error_code();
+	}
+
 	/**
 	 * Recover only this browser's editable contact fields, once.
 	 *
@@ -18,8 +40,10 @@ final class FormRecovery {
 	 *
 	 * @param string              $action Native form name.
 	 * @param array<string,mixed> $post Unslashed posted fields.
+	 * @param WP_Error|null       $error Native result of this attempt, if it failed.
 	 */
-	public static function save( string $action, array $post ): void {
+	public static function save( string $action, array $post, ?WP_Error $error = null ): void {
+		$recover = null === $error || self::after_error( $error );
 		if ( 'enforce' === Configuration::active_mode() && Campaign::recovery_matches( $post ) ) {
 			return;
 		}
@@ -45,6 +69,14 @@ final class FormRecovery {
 			}
 			$sanitized      = 'user_login' === $key ? sanitize_text_field( $value ) : sanitize_textarea_field( $value );
 			$fields[ $key ] = mb_substr( $sanitized, 0, 5000 );
+		}
+		// Server-owned outcome only. A client flag cannot create this context.
+		$fields['linker_recovery_available'] = $recover ? '1' : '0';
+		if ( self::superseded( $error ) ) {
+			// The journal holds this UUID under other input and refuses it on every
+			// retry. Clearing it lets the native form mint a new one, which is what
+			// the refusal asks the customer to do.
+			$fields['linker_request_id'] = '';
 		}
 		wc_load_cart();
 		// The shared proof window bounds how long the retry may be read. An

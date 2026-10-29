@@ -151,8 +151,15 @@ test("preparation replies cannot substitute frozen identity, asset binding, summ
 	assert.throws(() => readRun(weather, weather.project_id));
 });
 
-test("all three exact run commands accept a revision and reject browser provider controls", () => {
-	for (const path of ["runs/energy", "runs/weather", "runs/pv"] as const) {
+test("exact run commands accept a revision and reject browser provider controls", () => {
+	for (const path of [
+		"runs/energy",
+		"runs/weather",
+		"runs/pv",
+		"runs/pvgis-reference",
+		"runs/direct-beam",
+		"runs/geometric-pv",
+	] as const) {
 		const command = {
 			schema_version: 1,
 			project_id: fixture.weather_run.project_id,
@@ -172,6 +179,67 @@ test("all three exact run commands accept a revision and reject browser provider
 				}),
 			),
 		);
+	}
+});
+
+test("the native geometric PV profile retains the complete weather axis and is explicitly adopted only as AC", () => {
+	const native = fixture.geometric_pv;
+	const project = readProject(native.project);
+	const run = readRun(
+		native.run,
+		project.id,
+		native.run.id,
+		RUN_OPERATIONS["runs/geometric-pv"],
+	);
+	assert.equal(readObject(run.result?.profile_summary).interval_count, 8760);
+	assert.equal(
+		readAsset(native.profile_asset, project.id).purpose,
+		"geometric_pv_reference_profile_v1",
+	);
+	const inputs = selectPreparation(
+		project.inputs,
+		run,
+		project,
+		native.profile_asset,
+	);
+	assert.deepEqual(readObject(inputs.profile_selections).selected, {
+		pv_available_ac: native.profile_asset.id,
+	});
+	assert.equal(project.inputs.profile_selections, undefined);
+	assert.throws(
+		() =>
+			selectPreparation(
+				{ ...project.inputs, energy_scenario: { coupling: "shared_dc" } },
+				run,
+				project,
+				native.profile_asset,
+			),
+		/pvgis_reference_dc_conflict/,
+	);
+	assert.doesNotThrow(() => readRun(native.report_run, project.id));
+	const changed = structuredClone(native.project.inputs);
+	changed.geometric_pv_preparation.weather_asset_id = "0".repeat(32);
+	assert.throws(() =>
+		selectPreparation(changed, run, project, native.profile_asset),
+	);
+	for (const modify of [
+		(value: typeof native.run.result) => {
+			value.scope.diffuse_policy = "fully_shaded";
+		},
+		(value: typeof native.run.result) => {
+			value.profile_summary.interval_count = 2;
+		},
+		(value: typeof native.run.result) => {
+			value.prepared_asset.metadata.weather.start_utc =
+				"2023-06-01T00:00:00+00:00";
+		},
+		(value: typeof native.run.result) => {
+			value.near_shading_assessment.status = "approved";
+		},
+	]) {
+		const changedRun = structuredClone(native.run);
+		modify(changedRun.result);
+		assert.throws(() => readRun(changedRun, project.id));
 	}
 });
 

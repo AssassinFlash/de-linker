@@ -13,8 +13,10 @@ use Linker\Commerce\Inquiry\PublicGuard;
 use Linker\Commerce\Inquiry\Sender;
 use Linker\Commerce\Inquiry\ReceiptLimit;
 use Linker\Commerce\Presentation\PageUrls;
+use WC_Order;
 use WP_Error;
 use Linker\Commerce\Protection\Business;
+use Linker\Commerce\Protection\Outcome;
 
 /**
  * The admin-post handler of the contact form (ticket #68, GAP-8): the form
@@ -28,6 +30,19 @@ use Linker\Commerce\Protection\Business;
  * one connection from filling the shared host's mail quota. Filled honeypots and forged clocks are rejected before any inquiry is written.
  */
 final class Handler {
+	/**
+	 * The native result of the most recent submission, if it failed.
+	 *
+	 * @var WP_Error|null
+	 */
+	private ?WP_Error $last_error = null;
+
+	/**
+	 * The inquiry just saved, so the confirmation can follow its receipt decision.
+	 *
+	 * @var WC_Order|null
+	 */
+	private ?WC_Order $last_order = null;
 
 
 	/**
@@ -51,8 +66,8 @@ final class Handler {
 		$post  = wp_unslash( $_POST );
 		$back  = $this->back_url( $post );
 		$state = $this->process( $post );
-		if ( ! in_array( $state, array( 'sent', 'sent_no_receipt', 'saved_review' ), true ) ) {
-			\Linker\Commerce\Protection\FormRecovery::save( 'contact', $post );
+		if ( ! in_array( $state, array( 'sent', 'sent_no_receipt', 'receipt_pending', 'saved_review' ), true ) ) {
+			\Linker\Commerce\Protection\FormRecovery::save( 'contact', $post, $this->last_error );
 		}
 		$this->back( $back, $state );
 	}
@@ -64,20 +79,31 @@ final class Handler {
 	 * @phpstan-impure
 	 *
 	 * @param  array<string, mixed> $post The posted values, unslashed.
-	 * @return string `sent`, `sent_no_receipt`, `invalid` or `throttled`.
+	 * @return string One of `Contact\Form`'s state names: `sent`, `sent_no_receipt`,
+	 *                `receipt_pending`, `saved_review`, or a refusal state the form renders.
 	 */
 	public function process( array $post ): string {
-		$nonce = isset( $post[ Form::NONCE_FIELD ] ) && is_string( $post[ Form::NONCE_FIELD ] ) ? sanitize_text_field( $post[ Form::NONCE_FIELD ] ) : '';
+		$this->last_error = null;
+		$this->last_order = null;
+		$nonce            = isset( $post[ Form::NONCE_FIELD ] ) && is_string( $post[ Form::NONCE_FIELD ] ) ? sanitize_text_field( $post[ Form::NONCE_FIELD ] ) : '';
 		if ( ! wp_verify_nonce( $nonce, Form::NONCE_ACTION ) ) {
+			$this->last_error = new WP_Error( 'linker_contact_invalid', 'The form expired.' );
 			return 'invalid';
 		}
 
 		$submission = Submission::from_post( $post );
-		if ( $submission instanceof WP_Error || ! ( new PublicGuard() )->allows( $post, ! Business::enabled() ) ) {
+		if ( $submission instanceof WP_Error ) {
+			// Submission's own field codes are already definite refusals.
+			$this->last_error = $submission;
+			return 'invalid';
+		}
+		if ( ! ( new PublicGuard() )->allows( $post, ! Business::enabled() ) ) {
+			$this->last_error = new WP_Error( 'linker_contact_invalid', 'The form was refused.' );
 			return 'invalid';
 		}
 
 		if ( ! Business::enabled() && ! ( new PublicGuard() )->take() ) {
+			$this->last_error = new WP_Error( 'linker_contact_throttled', 'The connection limit is reached.' );
 			return 'throttled';
 		}
 
@@ -89,23 +115,51 @@ final class Handler {
 		// Woo handles string slashing consistently across classic and HPOS metadata stores.
 		$order = Business::run( 'contact', $post, $payload, static fn () => ( new Sender() )->message( $submission, array() !== $selection ? array( SelectionContext::META => (string) wp_json_encode( $selection ) ) : array() ) );
 		if ( $order instanceof WP_Error ) {
-			$code = $order->get_error_code();
-			return match ( $code ) {
-				'linker_business_capacity' => 'reception_full',
-				'linker_intake_size' => 'review_size',
-				'linker_intake_full' => 'review_full',
-				'linker_intake_grouped' => 'grouped',
-				'linker_admission_quota' => 'throttled',
-				'linker_intake_busy', 'linker_intake_pending', 'linker_admission_pending', 'linker_admission_already_completed' => 'pending',
-				'linker_admission_proof', 'linker_admission_proof_reused', 'linker_admission_payload_changed', 'linker_admission_input' => 'verification_failed',
-				default => 'verification_unavailable',
-			};
+			$this->last_error = $order;
+			// One shared table owns both the sentence and the recovery hint, so a
+			// native code cannot be reported as a verification verdict.
+			return Outcome::contact_state( (string) $order->get_error_code() );
 		}
+		$this->last_order = $order;
 		if ( $order->get_meta( \Linker\Commerce\Protection\Intake::META ) ) {
 			\Linker\Commerce\Protection\IntakeAdmin::remember( $order );
 			return 'saved_review';
 		}
-		return ! in_array( $order->get_meta( ReceiptLimit::SKIPPED_META ), array( '', 'assessment_pending' ), true ) ? 'sent_no_receipt' : 'sent';
+		return self::receipt_state( $order );
+	}
+
+	/**
+	 * What the confirmation may claim about the optional receipt.
+	 *
+	 * `assessment_pending` has not been decided, so it is neither a sent receipt
+	 * nor an omission. A later handoff that records `daily_cap` is an omission.
+	 *
+	 * @param WC_Order $order Saved contact inquiry.
+	 */
+	public static function receipt_state( WC_Order $order ): string {
+		$order->read_meta_data( true );
+		$skipped = (string) $order->get_meta( ReceiptLimit::SKIPPED_META );
+		if ( 'assessment_pending' === $skipped ) {
+			// The handoff still calls ReceiptLimit::take(). When that allowance is
+			// already spent, the confirmation can say so on the first page instead
+			// of waiting for a later reload to discover daily_cap.
+			return self::receipt_allowance_exhausted() ? 'sent_no_receipt' : 'receipt_pending';
+		}
+		return '' === $skipped ? 'sent' : 'sent_no_receipt';
+	}
+
+	/**
+	 * Whether the site-wide public receipt allowance is already spent.
+	 *
+	 * Enforce mode decides this through the separate receipt budget at handoff,
+	 * so this peek must not guess that outcome.
+	 */
+	private static function receipt_allowance_exhausted(): bool {
+		if ( 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode() ) {
+			return false;
+		}
+		$spent = ( new \Linker\Commerce\Inquiry\RateLimit( 'public_receipts', ReceiptLimit::DAILY_CAP, DAY_IN_SECONDS ) )->spent( '' );
+		return is_int( $spent ) && $spent >= ReceiptLimit::DAILY_CAP;
 	}
 
 	/**
@@ -130,10 +184,14 @@ final class Handler {
 	 * Returns to the page with the state and leaves the request.
 	 *
 	 * @param string $back  The page.
-	 * @param string $state `sent`, `sent_no_receipt`, `invalid` or `throttled`.
+	 * @param string $state One of the states `Contact\Form` renders.
 	 */
 	private function back( string $back, string $state ): void {
-		wp_safe_redirect( add_query_arg( Form::STATE_PARAM, $state, $back ) . '#' . Form::ANCHOR );
+		$args = array( Form::STATE_PARAM => $state );
+		if ( 'receipt_pending' === $state && $this->last_order instanceof WC_Order ) {
+			$args[ Form::ORDER_PARAM ] = $this->last_order->get_order_key();
+		}
+		wp_safe_redirect( add_query_arg( $args, $back ) . '#' . Form::ANCHOR );
 		exit;
 	}
 }

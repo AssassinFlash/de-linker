@@ -109,7 +109,7 @@ final class Form {
 		. '<input type="hidden" name="linker_inquiry_retained" value="' . ( array() !== (array) ( $this->flash['fields'] ?? array() ) ? '1' : '0' ) . '" />'
 		. wp_nonce_field( Handler::ACTION, Handler::NONCE, true, false ) . ( new PublicGuard() )->fields()
 		. '<input type="hidden" name="linker_draft_hash" value="' . esc_attr( WC()->cart->get_cart_hash() ) . '" />'
-		. \Linker\Commerce\Protection\FormFields::render( 'inquiry', (string) ( $this->flash['fields']['linker_request_id'] ?? '' ), '1' === ( $this->flash['fields']['linker_individual_review'] ?? '' ) );
+		. \Linker\Commerce\Protection\FormFields::render( 'inquiry', (string) ( $this->flash['fields']['linker_request_id'] ?? '' ), '1' === ( $this->flash['fields']['linker_individual_review'] ?? '' ), '0' !== ( $this->flash['fields']['linker_recovery_available'] ?? '1' ) );
 	}
 
 	/**

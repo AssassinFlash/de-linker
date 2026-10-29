@@ -169,3 +169,107 @@ EN 50549-1/-2 的公开 scope 均明确：DSO、TSO、成员国或监管机构�
 | SGS 完整限制展开 | run `M167kNSTV4qsK3jCm` · dataset `IONha0DlXIBL1zjWj` |
 | 4105 GW100K 代表详情；SGS 证书路由仅壳页 | run `14KdJ2uExsbzN9p26` · dataset `hkVVwX8Dd9vgWHZOx` |
 | 未取回文件的下载事件失败（已终止） | run `i9GkKXPYUipewJVxR` · KV `hzrta9KBHI0lZVOHK`；日志定位，不作为 PDF 原件 |
+
+## 10. 法国、德国、荷兰：下一组可进入版本化国家/DSO 合同的规则
+
+2026-10-28，#548 研究补充。只补国家规则层与 DSO 放行边界的证据，不改业务代码、不写产品数据、不作任何放行判断。选 FR / DE / NL 的理由是当前实例与验收夹具实际使用这三个国家（`country_code` 取值见 `artifacts/548/workbench/geometry-editor/native-saved-revision6.json`、`docs/acceptance/2026-10-22/548/import-native/1652209c/amsterdam-server-readback.json`、`docs/acceptance/2026-10-24/548/energy-workspace/*.json`）。沿本 dossier 的 **P = 一手资料、I = 本站设计推导** 区分。
+
+**本节不证明任何型号在任一国家获准并网，也不构成全欧洲、单国或某个 DSO 的批准。** 三类项目国家只补到“法定条文层”和“DSO 结构层”；具体 DSO 的 TAB 数值、并网许可与投运记录仍缺（见 §10.7）。
+
+### 10.1 三条必须分开的记录轴（P → I）
+
+| 轴 | 由谁决定 | 本节可引用的证据 | 不能由此推出 |
+| --- | --- | --- | --- |
+| **设备单元证据** | 制造商 / 认证机构 | 本 dossier §4 的四份 Woo 附件、§9 的 ZEREZ 登记 | 项目适用性、固件/配置匹配、DSO 接受 |
+| **国家规则包** | 国家法规 + 监管机构 | §10.2–§10.4 的法定条文 | 具体 DSO 的补充要求 |
+| **项目并网放行** | 配电网运营商（DSO）+ 安装/投运记录 | 只核到 DSO 的法定职责与文件结构 | 任何具体项目已获许可 |
+
+三国的一手条文都把**功率分档**作为义务入口，而不是把设备证书作为入口：FR 用 `Pinstallée`（同一接网点上可同时运行的发电机组最大有功功率之和），NL 用 `elektriciteitsopslageenheid` 的“最大可交付有功功率”，DE 用 `installierte Leistung` 与 TAB。**（I）因此国家规则包的第一键必须是“项目功率 + 口径 + 计量点”，证书只能在此之后作为单元证据被匹配。**
+
+### 10.2 法国（P）
+
+法定技术文本是 [Arrêté du 9 juin 2020 relatif aux prescriptions techniques de conception et de fonctionnement pour le raccordement aux réseaux d'électricité](https://www.legifrance.gouv.fr/loda/id/JORFTEXT000042032189/)。已实际读回的条款：
+
+- **Article 3 适用域与功率口径。** 该编适用于“持续或间歇地向公共输电或配电网络交付全部或部分发电量、或与该网络耦合”的发电设施。`Pinstallée` 定义为同一公共电网接网点上**可能同时运行**的发电机组单机最大有功功率之和；按约定，接在 **BT（低压参考域）** 的发电设施取**视在功率**，接在其他电压参考域的取**有功功率**。[Article 3](https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000042036844)
+- **Article 34 与欧盟条例的关系及“实质性变更”界限。** 本章规定**附加于**欧盟 2016/631（RfG）的通用要求；对 Type C/D，功率增加使同步机组最终功率超过原并网功率 **20%**（含至少三台机组的水力设施为 **30%**），或使非同步机组群超过 **10%**，或导致电压等级变化，即属实质性变更。[Article 34](https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000042036858)
+- **Article 35 的 Type 分档（法国值）。** Type A `0,8 kW ≤ Pmax < 1 MW`；Type B `1 MW ≤ Pmax < 18 MW`；Type C `18 MW ≤ Pmax < 75 MW`；Type D `75 MW ≤ Pmax`，均以 `Uracc < 110 kV` 为条件；`0,8 kW ≤ Pmax` 且 `Uracc ≥ 110 kV` 另列。[Article 35](https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000042036860)
+
+DSO 侧结构（[Enedis 生产接入流程页](https://www.enedis.fr/raccordement-installation-production-electrique)、[Enedis 全部自消费页](https://www.enedis.fr/autoconsommer-la-totalite-de-lenergie-produite-par-vos-panneaux)）：
+
+- **DSO 不唯一。** Enedis 覆盖本土约 **95%** 领土；其余由本地配电企业（ELD）负责，须先按 GRD 名录核实。任何“法国 = Enedis”的规则包都是错的。
+- **三种合同框架**：CAE（需 ARPE 平衡责任归属）+ 买方购电合同、CU-I（与购电方直签）、CACSI（全部自消费不售电时与 Enedis 签）。
+- **零注入也必须申报**：全部自消费的发电设施**无论功率**均须在 Enedis-Connect 申报，并接受 CACSI 的“不注入”承诺。
+- **投运前必须有 Consuel 符合性证明**：在改动既有回路或**加装电池**时强制；页面写明“已组装且符合 NF EN 50549-1-4 的 plug & play 设备”可能豁免——**该写法按原文记录，`-1-4` 的所指未核，不自行改写成 `-1/-2`。**
+- **投运前注入被禁止且不予报酬。**
+- 接入申请档案为工程与许可文件（地籍图、总平面图、城市规划许可、功率平衡表、委托书），**不是设备证书清单**。
+
+**（I）法国规则包的可用结论：** Type A 起点 `0,8 kW`、Type B 上限 `18 MW`、功率口径在 BT 为 **kVA**；项目级聚合按同一接网点的可同时运行机组求和。证书匹配不能改变这三项。
+
+### 10.3 德国（P）
+
+- **接入与拒绝的法定结构。** [EnWG §17(1)](https://www.gesetze-im-internet.de/enwg_2005/__17.html) 把“**Anlagen zur Speicherung elektrischer Energie**”明列为应接入对象，条件是“适当、无歧视、透明、且不低于关联企业同类情形”；§17(2) 允许 DSO 在证明“运营或其他经济/技术原因下不可能或不合理”时拒绝，拒绝须以文本说明理由，容量不足时**须给出为完成接入所需的具体措施与相关成本**。
+- **TAB 的法定地位与效力边界。** [EnWG §19(1)](https://www.gesetze-im-internet.de/enwg_2005/__19.html) 要求 DSO 就发电设施、**电储能设施**、配电网、直连客户设施、联络线及直供线制定并公布技术最低要求（TAB），并据此纳入并网合同；§19(1a) 明确：**与通用技术最低要求相抵触的 TAB 条款无效**；对通用要求的“补充”仅在为保障该电网因技术特殊性所需的安全或可靠性、或法律要求时才允许，且**必须连同其合法性理由一并公布**；BDEW 制定的 TAB **Musterwortlaut** 与高/超高压 TAB 的补充不适用该公布义务。§19(4) 规定通用技术最低要求由电网运营商共同制定、**VDE 为受托机构**，分别依 RfG Art. 7(1)、DCC Art. 6(1)、HVDC Art. 5(1) 通过。
+- **入网控制是另一条义务线。** [EnWG §14a](https://www.gesetze-im-internet.de/enwg_2005/__14a.html) 针对“**steuerbare Verbrauchseinrichtungen** / 可控并网口”以降低电网费为对价做网向控制，可经经济激励、并网功率约定或单设备控制实现；联邦网络局得以 Festlegung 规定定义与前提。
+- **上网功率控制的触发是分档且附条件的。** [EEG §9](https://www.gesetze-im-internet.de/eeg_2014/__9.html)：§9(1) 要求运行方保证技术状态使电网运营商**随时可调取实际上网量并可全部或分级远方降低上网功率**；同款末句豁免“总装机 ≤ **2 kW** 且逆变器 ≤ **800 VA**”的插电式光伏设备。§9(2) 在智能电表与控制装置装好前：**≥100 kW** 须具备随时调取与全部/部分远方降低能力；**25–<100 kW** 须具备远方降低能力，且**仅对按 EEG §19(1) 第 2/3 项归入上网电价（Einspeisevergütung）或 Mieterstrom 补贴的设施**须把最大有功上网限至装机 **60%**；**<25 kW** 归入上述电价/补贴的设施同样限 60%。（此处 `§ 19 Absatz 1 Nummer 2 oder Nummer 3` 指 **EEG** 自己的 §19，不是 EnWG §19。）
+- **项目证明与单元证书是不同对象。** 沿用 §3 已读的 [NELEV §2](https://www.gesetze-im-internet.de/nelev/__2.html)：证明置于 DSO 运行许可流程；§2(2a) 对 Type B/C 项目要求设施证书与符合性声明；§2(2b) 的设施证书签发路线止于 **2025-12-31**；§2(6) 要求软件更新不得覆盖 DSO 规定的电气特性。
+
+**（I）德国规则包的可用结论：** 国家层可版本化的是“TAB 不得抵触通用最低要求、补充须有理由并公布”这一效力规则，以及 EEG §9 的三档控制义务；**60% 上限不是通用义务**，只挂在归入上网电价/Mieterstrom 的设施上。具体 DSO 的补充值属另一层，本轮未取得（§10.7）。
+
+### 10.4 荷兰（P）
+
+**先纠正一条会被写错的前提：荷兰的 `Netcode elektriciteit` 已于 2026-02-21 废止。** [ACM 2026-02-05 决定 ACM/UIT/666113](https://zoek.officielebekendmakingen.nl/stcrt-2026-4089.html)（Stcrt. 2026, 4089）核准并确定 **Systeemcode elektriciteit 2026**，其 **Artikel 14.5** 明确撤销 Netcode elektriciteit 与 Samenwerkingscode elektriciteit，**14.6** 规定公布次日生效，**14.7** 为引用名。所抓取的 95 条 wetten.nl 条文信息页全部标注“Regeling vervallen per 21-02-2026”（该合并总览页本身不带此标记，故以条文页与 Stcrt 决定互证）。决定说明其与旧 Netcode 之间以**政策性中性**改写为主，附 transponeringstabel。以下条文均引自 Systeemcode elektriciteit 2026 正文（同上 Stcrt 链接）。
+
+- **分档阈值。** Artikel 3.1（对应 RfG Art. 5(2)）：Type B 阈值 **1 MW**、Type C **50 MW**、Type D **60 MW**。
+- **储能单列的适用阶梯。** Artikel 2.9(3)(a)：储能单元按**最大可交付有功功率**比照发电单元——`≥0,8 kW 且 <1 MW` → Type A；`≥1 MW 且 <50 MW` → Type B；`≥50 MW 且 <60 MW` → Type C；`≥60 MW` → Type D；同步耦合与非同步耦合分别适用 RfG 的不同条款组。
+- **储能的两项运行能力要求。** Artikel 2.9(3)(b)：须具备 NC ER Art. 15(3)(a)(b) 的**储存模式→发电模式自动切换**与**自动解列**能力。(g)：限频敏感模式在**低频、且储存与发电两种模式下**，`>0,8 kW 且 <1 MW` 的 statik 为 **2%**，`≥1 MW` 为 **1%**。
+- **申报义务先于分档。** Artikel 2.9(2)：接入方须**及时告知 DSO** 其安装或变更发电单元或储能单元的意向；2.9(1)：设施中不得含有可向 DSO 系统馈电的设备，除非满足第 3 章对发电单元的附加条件。
+- **<800 W 与 Type A 的关系。** §3.2 只规定“**<800 W 的发电单元**”（含自动并网 Art. 3.3、功率因数 0,9、保护与中性点等）；Art. 3.10(2)：接于低压的 **<11 kW** Type A 单元亦须满足 §3.2（Art. 3.3 除外）。
+- **可用于合同的具体整定值。** Art. 3.11：47,5–48,5 Hz 持续 30 min、48,5–49,0 Hz 30 min、49,0–51,0 Hz 不限时、51,0–51,5 Hz 30 min；频率梯度 1 Hz/s（同步）/ 2 Hz/s（power park module）；LFSM-O 阈值可设 50,2–50,5 Hz、默认 **50,2 Hz**，statik 可设 4–12%、默认 **5%**；重合闸条件为电压 0,90–1,10 pu、频率 49,9–50,1 Hz 持续 **60 s**，功率梯度 **20%/min**。Art. 3.12：低压 **>11 kW** 须有输出电流测量、并网状态信号，及三相欠压（80% 时 2 s、70% 时 0,2 s）、过压（110% 时 2 s）、过流/过载、频率（47,5 与 51,5 Hz，2 s，可单相）保护，并允许在电压恢复后数分钟再并网。
+- **保护配合与设备合规的评价对象是设施，不是证书。** Art. 2.6：设施保护须与 DSO 保护**选择性配合**，DSO 须就保护哲学、短路功率最小/最大值、中性点处理、绝缘配合、系统结构与运行方式告知并协商；Art. 2.7：设施中的设备须符合适用标准，且设施须能承受 DSO 现场预期的短路功率。
+
+**（I）荷兰规则包的可用结论：** 分档键是“储能单元最大可交付有功功率”，Type B/C/D 阈值为 **1 / 50 / 60 MW**；`<800 W` 与 `0,8 kW` 之间如何归类**未在已读条文中给出**（§3.2 的文字指向“发电单元”）。整定值是 DSO 可直接引用的具体数字，但不能反过来当作设备证书的替代。
+
+### 10.5 三条跨国硬约束（P → I）
+
+1. **Type 阈值不可跨国外推。** FR 的 Type B 是 `1–18 MW`、C 是 `18–75 MW`、D 是 `≥75 MW`；NL 的 B 是 `1–50 MW`、C 是 `50–60 MW`、D 是 `≥60 MW`。同一台 30 MW 项目在法国属 Type C、在荷兰属 Type B，义务组不同。**（I）`Type` 字段只有在带上国家与规则版次时才可存储。**
+2. **功率口径与计量点不可省略。** FR 在 BT 取**视在功率（kVA）**、其他电压域取有功；NL 取**最大可交付有功功率**；DE 用 `installierte Leistung` 并落到 TAB 与并网功率约定。**（I）任何功率值都必须同时记录口径（kVA/kW）、电压参考域与计量点，否则不能参与分档。**
+3. **聚合规则是国家规则，不是通用常量。** FR 把同一接网点上可同时运行的机组求和为一个 `Pinstallée`；NL 以单个 `elektriciteitsopslageenheid` 分档并要求意向申报。**（I）项目级“合计功率”必须按国家规则计算，不能默认相加。**
+
+另有一条与文案直接相关的边界：德国的 **60% 上网上限只挂在归入上网电价/Mieterstrom 的设施**上，荷兰用 statik/LFSM 整定值，法国用合同框架区分是否注入。**不得把“60% 限制”写成对三国或全欧洲的通用事实。**
+
+### 10.6 规则包最小字段（I，待实现）
+
+延续 §5 的模块职责，本节把它落到国家/DSO 层。每条规则至少携带：`country`、`rule_edition`（法定文本版次/生效日）、`instrument_id`（条文号）与官方 URL、`retrieved_at`、`voltage_reference_domain`、`power_basis`（kVA / kW）与`measurement_point`、`type_thresholds`、`aggregation_rule`、`notification_or_permit_duty`、`protection_settings`（区分固定值、可设范围与默认值）、`control_or_telemetry_duty` 及其触发条件、`contract_frameworks`、`dso_resolution`（该站点由哪家 DSO 覆盖、如何核实），以及逐项的 `有证据支持 / 有条件 / 信息不足 / 明确冲突`。缺任一项即显示待核，不以 EN 50549 单元证书或邻国默认值填补。
+
+### 10.7 仍缺的具体原件与权限（不猜、不补默认值）
+
+- **德国具体 DSO 的低压 TAB 正文未取得。** Westnetz 的 `tab-niederspannung-01092025.pdf` 连续 10 次会话错误后由 unblocker 重试，仍被判为不可解析；Netze BW 的安装商页只列**中压**与**高压** TAB，未列低压 TAB 链接；把 PDF 直接作为起始 URL 时采集器不解析（`saveContentTypes` 只作用于页面内链接文件）。因此德国包只能承载国家层与“TAB 不得抵触通用最低要求、补充须有理由并公布”的效力规则，**不能给出任何 DSO 的具体补充数值**。
+- **`§14a` 是否覆盖储能未核实。** BNetzA 的 Festlegung（BK6-22-300）本轮未取得；§14a 正文只写“steuerbare Verbrauchseinrichtungen”与由 Festlegung 定义前提。**不得默认把储能归入 §14a，也不得据 §14a 推断储能义务。**
+- **法国整份 arrêté 未全文取得。** Legifrance 的 JO PDF 两次失败（Cheerio 判为不可解析；Playwright 返回 0 条），仅取得条文级页面。因此**保护整定附录、符合性证明附录与被引用表格未读**，法国包目前只能覆盖 §10.2 所列条款。
+- **法国 `NF EN 50549-1-4` 的所指未核。** 按 Enedis 原文记录，不擅自改写为标准号；该豁免的适用条件（设备类型、功率、安装方式）亦未核。
+- **荷兰 `<800 W` 与 `0,8 kW` 之间的归类未核。** 已读的 §3.2 文字指向“发电单元”，储能在该区间的处理没有条文支撑。
+- **荷兰 RfG 条文本身未读。** Systeemcode 大量条款以“比照 RfG Art. x”方式引用欧盟 2016/631；本轮未取得这些条款正文，故只能记录引用关系，不能记录条款内容。
+- **荷兰概念定义未读。** `Begrippencode elektriciteit 2026` 中“一个 elektriciteitsopslageenheid”的边界（多机并联是否合一）未核，直接影响分档与聚合。
+- **三国共同缺口**：无任何项目的并网申请/许可/投运记录；本轮未把任何 Woo 证书与 FR / NL 规则匹配；未取得 4105:2026-03 的过渡原文（§8 仍开放）。
+
+### 10.8 本轮 Apify 取证索引
+
+只保留实际产生被引用内容的运行；搜索摘要、被反爬拦截的请求与解析失败条目均不作为结论依据，其失败形态记录在 §10.7。
+
+| 采用内容 | Actor / run | Dataset 或 KV |
+| --- | --- | --- |
+| FR arrêté Article 3（适用域、`Pinstallée` 口径） | `apify/website-content-crawler` · `xeZWlPv9eZ3ufy0To` | dataset `RxqupzpuMlqbTTjXh` |
+| FR arrêté Article 34 / 35（实质性变更、Type 分档表） | `apify/website-content-crawler` · `4Zj6PaK39Pk3sVPUN` | dataset `OCUWjiowZQCCDcdal` |
+| FR Enedis 接入流程（三框架、Consuel、投运前禁止注入） | `apify/website-content-crawler` · `k9ZczQwjZv4XRzpoB` | dataset `S9szEu9ZHD2EUAUMN` |
+| FR Enedis 全部自消费（零注入亦须申报、CACSI） | 同上 run | 同上 dataset |
+| FR Enedis DSO 覆盖与非 Enedis 区域、申报档案清单 | `apify/website-content-crawler` · `37ZrtBPpIy7HJOAXF` | dataset `gyC8QIOrtO5Fon8xh` |
+| FR 官方入口定位（Enedis / CRE / Legifrance） | `apify/google-search-scraper` · `dX78HUmrCRkPbg781` | dataset `2AmbcUGBtdIXI1t3z` |
+| DE EnWG §17 / §19（储能在接入与 TAB 义务内、§19(1a) 效力边界） | `apify/website-content-crawler` · `SxtAdQNuQ09ahL5aO` | dataset `3MkTEadSLcoiokdkP` |
+| DE EnWG §14a（可控负荷的网向控制） | `apify/website-content-crawler` · `CdJtc9MUhzmsNVbOs` | dataset `rXN9ealbb9Rro9hAc` |
+| DE EEG §9（2 kW/800 VA 豁免、100/25/60% 三档） | `apify/website-content-crawler` · `xeZWlPv9eZ3ufy0To` | dataset `RxqupzpuMlqbTTjXh` |
+| DE DSO 站点结构（Netze BW TAB 法定义务与已列 TAB 种类） | `apify/website-content-crawler` · `pEA4oEPq5VrXacwiL` | dataset `iVNkvXDNZdecZY8Le` |
+| NL ACM 决定：Netcode 废止、Systeemcode 2026 全文与生效 | `apify/website-content-crawler` · `LYEhwNSiBjG5WOmMr` | dataset `NiggWqEf971s52Jwm` |
+| NL Systeemcode Artikel 2.9 / 3.1 / 3.2 / 3.6 / 3.10–3.12 原文 | 同上 run（正文出自同一 Stcrt 页面） | 同上 dataset |
+| NL 官方入口定位（wetten.overheid.nl / ACM） | `apify/google-search-scraper` · `W88CDSCECYgiwPgjf` | dataset `YeYcwY6eIZ0gssMe0` |
+
+**本轮收口：** 新增了 FR / DE / NL 三国的国家层法定条文证据、荷兰 Netcode 已废止这一前提纠正、以及“Type 阈值与功率口径不可跨国外推”的硬约束。**未取得**德国具体 DSO 的低压 TAB 正文、法国 arrêté 全文与附录、荷兰 RfG 条文与概念定义、`§14a` 对储能的适用性结论。据此**没有任何一个国家的规则包可以标为完成**，也没有任何设备或项目因此获得并网放行。

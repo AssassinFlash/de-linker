@@ -7,6 +7,7 @@ from .assets import Assets
 from .canonical import Json, Object
 from .errors import InvalidInput, VersionUnavailable
 from .frozen_profiles import frozen_profile
+from .geometric_pv_inputs import PROFILE_PURPOSE as GEOMETRIC_PV_PURPOSE
 from .interval import microseconds
 from .pv_profile import PURPOSE
 from .pv_profile_artifacts import prepared_profile
@@ -37,6 +38,7 @@ class ProfilePreview:
             "csv_profile_v1": None,
             "pvgis_system_profile_v1": "pvgis_system_profile_v1",
             PURPOSE: PURPOSE,
+            GEOMETRIC_PV_PURPOSE: GEOMETRIC_PV_PURPOSE,
             "pvgis_roof_ac_reference_profile_v1": "pvgis_roof_ac_reference_profile_v1",
         }
         if (

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
+from dataclasses import dataclass
 from datetime import datetime
 from typing import cast
 
@@ -12,6 +14,8 @@ from .errors import VersionUnavailable
 from .pv_dc_profile import project_dc
 from .pv_profile_artifacts import model_dependencies, prepared_profile
 from .report_copy import text
+from .report_numbers import significant, span
+from .report_pv_arrays import array_identities, placements_of
 from .report_pv_components import pv_components
 from .storage import Blobs
 
@@ -120,41 +124,16 @@ def pvlib_reference(
             "measurement": dc.measurement,
             "energy_kwh": dc.total_kwh,
         }
-    arrays: list[Json] = []
-    for value in cast(list[Json], witness["arrays"]):
-        array = _object(value)
-        if selected is not None and array["id"] not in selected:
-            continue
-        placement = next(
-            _object(item)
-            for item in cast(list[Json], geometry["arrays"])
-            if _object(item)["id"] == array["id"]
-        )
-        arrays.append(
-            {
-                **{
-                    key: array[key]
-                    for key in (
-                        "id",
-                        "module_spec_id",
-                        "module_count",
-                        "stc_power_w",
-                        "normal_enu",
-                        "tilt_deg",
-                        "azimuth_north_clockwise_deg",
-                        "azimuth_basis",
-                    )
-                },
-                "mounting_note": placement.get("mounting_note"),
-                "lower_edge_clearance_m": placement.get("lower_edge_clearance_m"),
-            }
-        )
     return {
         "parameters": parameters,
         "profile_summary": summary,
         **({"converter_id": converter_id} if converter_id is not None else {}),
         "weather": details,
-        "arrays": arrays,
+        "arrays": array_identities(
+            cast(list[Json], witness["arrays"]),
+            placements_of(geometry),
+            selected=selected,
+        ),
         "converters": [
             {key: _object(item)[key] for key in ("id", "model_ac_cap_w")}
             for item in cast(list[Json], witness["converters"])
@@ -172,42 +151,105 @@ def pvlib_reference(
     }
 
 
-def pvlib_sections(source: Object, locale: str) -> list[ReportSection]:
-    references = source.get("pvlib_references")
-    if not isinstance(references, list):
-        return []  # Historical report bundles keep their original shape.
+@dataclass(frozen=True)
+class PvReferenceParts:
+    """The parts one PV coefficient/source section reads, named explicitly.
 
-    def row(key: str, value: Json, href: str | None = None) -> ReportRow:
-        return ReportRow(label=text(key, locale), value=str(value), href=href)
+    Both the unshaded and the geometric reference store these same facts under
+    slightly different nesting. Each caller states them once here, so the row
+    builder never has to be handed a fabricated reference document.
+    """
 
-    sections = []
-    for index, value in enumerate(references):
-        reference = _object(value)
-        parameters = _object(reference["parameters"])
-        weather = _object(reference["weather"])
-        tmy = isinstance(weather.get("capture"), dict)
-        summary = _object(reference["profile_summary"])
-        parts = _object(reference["pv_components"])
-        dc_group = isinstance(reference.get("converter_id"), str)
-        rows = [
-            row(
-                "pvlib_model",
-                f"{parameters['model']} / pvlib {parameters['pvlib_version']}",
-            ),
-        ]
-        if tmy:
-            request = _object(weather["request"])
-            capture = _object(weather["capture"])
-            interpretation = _object(weather["interpretation"])
-            rows.extend(
+    parameters: Object
+    weather: Object
+    profile_summary: Object
+    # Reports saved before component identities were retained keep their own
+    # rows. Absence is a historical shape, not a corrupt reference.
+    components: Object | None
+    arrays: list[Object]
+    converters: list[Object]
+    used_by: list[Object]
+    dependencies: Object
+    converter_id: str | None = None
+
+    @classmethod
+    def of(cls, reference: Object) -> PvReferenceParts:
+        """Read the canonical saved-reference shape."""
+        converter = reference.get("converter_id")
+        saved = reference.get("pv_components")
+        return cls(
+            parameters=_object(reference["parameters"]),
+            weather=_object(reference["weather"]),
+            profile_summary=_object(reference["profile_summary"]),
+            components=_object(saved) if isinstance(saved, dict) else None,
+            arrays=cast(list[Object], reference["arrays"]),
+            converters=cast(list[Object], reference["converters"]),
+            used_by=cast(list[Object], reference["used_by"]),
+            dependencies=_object(reference["dependencies"]),
+            converter_id=converter if isinstance(converter, str) else None,
+        )
+
+
+def pvlib_rows(
+    parts: PvReferenceParts,
+    locale: str,
+    *,
+    skip: frozenset[str] = frozenset(),
+    note_key: str = "pvlib_note",
+) -> list[ReportRow]:
+    """Rows for one saved reference, minus the copy keys its caller owns.
+
+    A section that already names the model, period, databases or usage passes
+    those keys in `skip`, instead of comparing its own translated labels after
+    the fact: an edited translation cannot silently re-add a row.
+    """
+    parameters = parts.parameters
+    weather = parts.weather
+    tmy = isinstance(weather.get("capture"), dict)
+    summary = parts.profile_summary
+    # Reports saved before component identities were retained keep their own
+    # rows: no capacity claim is invented for a reference that recorded none.
+    components = parts.components
+    dc_group = parts.converter_id is not None
+
+    # One display format for the whole report, from the caller's locale. A raw
+    # float repr such as 9315.200808684325 kWh beside the same report's
+    # 9,315.201 kWh is a formatting drift, not precision a reader can act on.
+    def number(value: Json) -> str:
+        return significant(value, locale)
+
+    def one(key: str, value: Json, href: str | None = None) -> ReportRow | None:
+        if key in skip:
+            return None
+        label = text(note_key, locale) if key == "pvlib_note" else text(key, locale)
+        return ReportRow(label=label, value=str(value), href=href)
+
+    def many(items: Iterable[tuple[str, Json]]) -> list[ReportRow | None]:
+        return [one(key, value) for key, value in items]
+
+    def add(target: list[ReportRow | None], row: ReportRow | None) -> None:
+        target.append(row)
+
+    rows: list[ReportRow | None] = [
+        one(
+            "pvlib_model",
+            f"{parameters['model']} / pvlib {parameters['pvlib_version']}",
+        )
+    ]
+    if tmy:
+        request = _object(weather["request"])
+        capture = _object(weather["capture"])
+        interpretation = _object(weather["interpretation"])
+        rows.extend(
+            many(
                 [
-                    row(
+                    (
                         "pvlib_weather_period",
                         f"{request['start_year']}–{request['end_year']}",
                     ),
-                    row("pvgis_radiation_database", weather["radiation_database"]),
-                    row("pvlib_meteo_database", weather["meteo_database"]),
-                    row(
+                    ("pvgis_radiation_database", weather["radiation_database"]),
+                    ("pvlib_meteo_database", weather["meteo_database"]),
+                    (
                         "pvgis_terrain_horizon",
                         text(
                             "pvgis_horizon_included"
@@ -216,29 +258,34 @@ def pvlib_sections(source: Object, locale: str) -> list[ReportSection]:
                             locale,
                         ),
                     ),
-                    row(
-                        "pvlib_synthetic_year", interpretation["synthetic_energy_year"]
+                    (
+                        "pvlib_synthetic_year",
+                        interpretation["synthetic_energy_year"],
                     ),
                 ]
             )
-        rows.extend(
+        )
+    rows.extend(
+        many(
             [
-                row("period", f"{summary['start_utc']} – {summary['end_utc']}"),
-                row("intervals", summary["interval_count"]),
-                row(
+                ("period", span(summary["start_utc"], summary["end_utc"], locale)),
+                ("intervals", summary["interval_count"]),
+                (
                     "pvlib_dc_energy" if dc_group else "pvgis_ac_energy",
-                    f"{summary['energy_kwh']} kWh",
+                    f"{number(summary['energy_kwh'])} kWh",
                 ),
             ]
         )
-        if tmy:
-            rows.extend(
+    )
+    if tmy:
+        rows.extend(
+            many(
                 [
-                    row(
+                    (
                         "pvlib_offset",
-                        f"{weather['irradiance_time_offset_hours']} h / {weather['irradiance_offset_microseconds']} µs",
+                        f"{number(weather['irradiance_time_offset_hours'])} h / {number(weather['irradiance_offset_microseconds'])} µs",
                     ),
-                    row(
+                    (
                         "pvlib_selected_months",
                         "; ".join(
                             f"{_object(m)['month']}: {_object(m)['year']}"
@@ -247,131 +294,171 @@ def pvlib_sections(source: Object, locale: str) -> list[ReportSection]:
                     ),
                 ]
             )
-        rows.append(row("pvlib_temporal", parameters["temporal_policy"]))
-        if tmy:
-            rows.extend(
+        )
+    add(rows, one("pvlib_temporal", parameters["temporal_policy"]))
+    if tmy:
+        rows.extend(
+            many(
                 [
-                    row("pvlib_solar_dates", weather["solar_date_basis"]),
-                    row(
+                    ("pvlib_solar_dates", weather["solar_date_basis"]),
+                    (
                         "pvlib_radiation_semantics",
                         weather["native_radiation_semantics"],
                     ),
-                    row(
-                        "pvlib_original_request",
-                        str(capture["requested_url"]),
-                        str(capture["requested_url"]),
-                    ),
-                    row("pvlib_capture_time", capture["received_at_utc"]),
                 ]
             )
-        else:
-            rows.extend(
-                [
-                    row("pvlib_original_request", text("not_defined", locale)),
-                    row("pvlib_capture_time", text("not_defined", locale)),
-                ]
-            )
-        rows.extend(
-            [
-                row("pv_components_capacity", f"{parts['nameplate_kwp']} kWp"),
-                row("pvlib_note", parameters["source_note"]),
-            ]
         )
-        if dc_group:
-            rows.append(row("pvlib_selected_dc_group", reference["converter_id"]))
-        for use in cast(list[Object], reference["used_by"]):
+        if "pvlib_original_request" not in skip:
+            # The provider URL is both the shown value and its own link.
+            url = str(capture["requested_url"])
             rows.append(
-                row(
-                    "comparison_" + str(use["comparison_role"])
-                    if "comparison_role" in use
-                    else "pvgis_source_run",
-                    f"{use['run_id']} / {use['revision']} / {use['binding']}",
+                ReportRow(
+                    label=text("pvlib_original_request", locale), value=url, href=url
                 )
             )
-        for component in cast(list[Object], parts.get("components", [])):
-            citation = _object(component["source"])
-            rows.append(
-                row(
-                    "pvlib_module",
-                    f"{component['quantity']} × {component['model']} / {component['stc_power_w']} W; {citation.get('document_sha256')} / p. {citation.get('page')}",
-                )
-            )
-        modules = {
-            str(_object(m)["module_spec_id"]): _object(m)
-            for m in cast(list[Json], parameters["modules"])
-        }
-        array_parameters = {
-            str(_object(a)["array_id"]): _object(a)
-            for a in cast(list[Json], parameters["arrays"])
-        }
-        for array in cast(list[Object], reference["arrays"]):
-            parameter = array_parameters[str(array["id"])]
-            thermal = _object(parameter["thermal"])
-            rows.extend(
+        add(rows, one("pvlib_capture_time", capture["received_at_utc"]))
+    else:
+        rows.extend(
+            many(
                 [
-                    row("pvlib_array", array["id"]),
-                    row(
-                        "pvlib_array_geometry",
-                        f"{array['module_count']} / {array['stc_power_w']} W / {array['tilt_deg']}° / {array['azimuth_north_clockwise_deg']}° / {array['normal_enu']}",
-                    ),
-                    row("pvlib_clearance", f"{array.get('lower_edge_clearance_m')} m"),
-                    row(
-                        "pvlib_gamma",
-                        f"{modules[str(array['module_spec_id'])]['gamma_pdc_per_c']} / °C",
-                    ),
-                    row(
-                        "pvlib_transposition",
-                        f"{parameter['transposition']} / {parameter['albedo']}",
-                    ),
-                    row(
-                        "pvlib_iam",
-                        f"{parameter['beam_iam_model']} / {parameter['beam_iam_b']} / {parameter['sky_diffuse_iam_factor']} / {parameter['ground_diffuse_iam_factor']}",
-                    ),
-                    row(
-                        "pvlib_retention",
-                        f"{parameter['spectral_factor']} / {parameter['soiling_factor']} / {parameter['dc_wiring_factor']} / {parameter['dc_mismatch_factor']}",
-                    ),
-                    row(
-                        "pvlib_thermal",
-                        f"{thermal['model']}; a={thermal['a']}; b={thermal['b']} s/m; delta T={thermal['delta_t_c']} °C",
-                    ),
-                    row("pvlib_note", parameter["source_note"]),
-                    row("pvlib_note", thermal["source_note"]),
-                    *(
-                        [row("pvlib_note", array["mounting_note"])]
-                        if array.get("mounting_note")
-                        else []
-                    ),
+                    ("pvlib_original_request", text("not_defined", locale)),
+                    ("pvlib_capture_time", text("not_defined", locale)),
                 ]
             )
-        converters = {
-            str(_object(c)["id"]): _object(c)
-            for c in cast(list[Json], reference["converters"])
-        }
-        for converter in cast(list[Object], parameters["converters"]):
-            rows.extend(
+        )
+    # A reference that recorded no component list predates component
+    # retention. Its other rows stay exactly as saved, and no capacity is
+    # invented from a current layout for it.
+    if components is not None:
+        rows.append(
+            one(
+                "pv_components_capacity",
+                f"{number(components['nameplate_kwp'])} kWp",
+            )
+        )
+    rows.append(one("pvlib_note", parameters["source_note"]))
+    if dc_group:
+        add(rows, one("pvlib_selected_dc_group", parts.converter_id))
+    for use in parts.used_by:
+        key = (
+            "comparison_" + str(use["comparison_role"])
+            if "comparison_role" in use
+            else "pvgis_source_run"
+        )
+        add(
+            rows,
+            one(key, f"{use['run_id']} / {use['revision']} / {use['binding']}"),
+        )
+    for component in cast(
+        list[Object], components.get("components", []) if components else []
+    ):
+        citation = _object(component["source"])
+        add(
+            rows,
+            one(
+                "pvlib_module",
+                f"{number(component['quantity'])} × {component['model']} / {number(component['stc_power_w'])} W; {citation.get('document_sha256')} / p. {citation.get('page')}",
+            ),
+        )
+    modules = {
+        str(_object(m)["module_spec_id"]): _object(m)
+        for m in cast(list[Json], parameters["modules"])
+    }
+    array_parameters = {
+        str(_object(a)["array_id"]): _object(a)
+        for a in cast(list[Json], parameters["arrays"])
+    }
+    for array in parts.arrays:
+        parameter = array_parameters[str(array["id"])]
+        thermal = _object(parameter["thermal"])
+        normal = (
+            "["
+            + "; ".join(
+                number(value) for value in cast(list[Json], array["normal_enu"])
+            )
+            + "]"
+        )
+        rows.extend(
+            many(
                 [
-                    row(
+                    ("pvlib_array", array["id"]),
+                    (
+                        "pvlib_array_geometry",
+                        f"{number(array['module_count'])} / {number(array['stc_power_w'])} W / {number(array['tilt_deg'])}° / {number(array['azimuth_north_clockwise_deg'])}° / {normal}",
+                    ),
+                    (
+                        "pvlib_clearance",
+                        f"{number(array.get('lower_edge_clearance_m'))} m",
+                    ),
+                    (
+                        "pvlib_gamma",
+                        f"{number(modules[str(array['module_spec_id'])]['gamma_pdc_per_c'])} / °C",
+                    ),
+                    (
+                        "pvlib_transposition",
+                        f"{parameter['transposition']} / {number(parameter['albedo'])}",
+                    ),
+                    (
+                        "pvlib_iam",
+                        f"{parameter['beam_iam_model']} / {number(parameter['beam_iam_b'])} / {number(parameter['sky_diffuse_iam_factor'])} / {number(parameter['ground_diffuse_iam_factor'])}",
+                    ),
+                    (
+                        "pvlib_retention",
+                        f"{number(parameter['spectral_factor'])} / {number(parameter['soiling_factor'])} / {number(parameter['dc_wiring_factor'])} / {number(parameter['dc_mismatch_factor'])}",
+                    ),
+                    (
+                        "pvlib_thermal",
+                        f"{thermal['model']}; a={number(thermal['a'])}; b={number(thermal['b'])} s/m; delta T={number(thermal['delta_t_c'])} °C",
+                    ),
+                    ("pvlib_note", parameter["source_note"]),
+                    ("pvlib_note", thermal["source_note"]),
+                ]
+            )
+        )
+        if array.get("mounting_note"):
+            add(rows, one("pvlib_note", array["mounting_note"]))
+    converters = {str(c["id"]): c for c in parts.converters}
+    for converter in cast(list[Object], parameters["converters"]):
+        rows.extend(
+            many(
+                [
+                    (
                         "pvlib_converter",
                         f"{converter['id']} / {converter['array_ids']}",
                     ),
-                    row(
+                    (
                         "pvlib_conversion",
                         f"{converter['model']} / {converter['input_assumption']}",
                     ),
-                    row(
+                    (
                         "pvlib_conversion_power",
-                        f"{converter['reference_dc_power_w']} W / {converters[str(converter['id'])]['model_ac_cap_w']} W",
+                        f"{number(converter['reference_dc_power_w'])} W / {number(converters[str(converter['id'])]['model_ac_cap_w'])} W",
                     ),
-                    row(
+                    (
                         "pvlib_conversion_eta",
-                        f"{converter['eta_nominal']} / {converter['eta_reference']}",
+                        f"{number(converter['eta_nominal'])} / {number(converter['eta_reference'])}",
                     ),
-                    row("pvlib_note", converter["source_note"]),
+                    ("pvlib_note", converter["source_note"]),
                 ]
             )
-        for name, sha in _object(reference["dependencies"]).items():
-            rows.append(row("pvlib_evidence", f"{name}: {sha}"))
+        )
+    for name, sha in parts.dependencies.items():
+        add(rows, one("pvlib_evidence", f"{name}: {sha}"))
+    # `skip` names copy keys only; evidence, module, array and converter rows
+    # always belong to the section that owns the reference.
+    return [row for row in rows if row is not None]
+
+
+def pvlib_sections(source: Object, locale: str) -> list[ReportSection]:
+    references = source.get("pvlib_references")
+    if not isinstance(references, list):
+        return []  # Historical report bundles keep their original shape.
+    sections = []
+    for index, value in enumerate(references):
+        reference = _object(value)
+        weather = _object(reference["weather"])
+        tmy = isinstance(weather.get("capture"), dict)
+        dc_group = isinstance(reference.get("converter_id"), str)
         sections.append(
             ReportSection(
                 id=f"pvlib-reference-{index}",
@@ -390,7 +477,7 @@ def pvlib_sections(source: Object, locale: str) -> list[ReportSection]:
                         else []
                     ),
                 ],
-                rows=rows,
+                rows=pvlib_rows(PvReferenceParts.of(reference), locale),
             )
         )
     return sections

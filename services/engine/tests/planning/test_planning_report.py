@@ -1401,7 +1401,11 @@ def test_absent_device_inputs_keep_legacy_report_source_shape(
         sections = pvlib_sections(comparison, locale)
         assert [s.id for s in sections] == ["pvlib-reference-0", "pvlib-reference-1"]
         shown = str([s.model_dump() for s in sections])
-        assert "2014–2023" in shown and "0.1805" in shown and "0.9637" in shown
+        # One display convention for the report: the German report writes its
+        # decimal comma here too, instead of one section keeping raw floats.
+        assert "2014–2023" in shown
+        assert ("0.1805" if locale == "en" else "0,1805") in shown
+        assert ("0.9637" if locale == "en" else "0,9637") in shown
         assert "PRIVATE frozen first assumption" in shown and originals in shown
 
     # The same immutable source has two DC groups. A report's selected group
@@ -1457,7 +1461,8 @@ def test_absent_device_inputs_keep_legacy_report_source_shape(
     for locale in ("en", "de"):
         section = pvlib_sections(selected_dc, locale)[0]
         assert any(
-            r.label == text("pvlib_dc_energy", locale) and r.value == "1.5 kWh"
+            r.label == text("pvlib_dc_energy", locale)
+            and r.value == ("1.5 kWh" if locale == "en" else "1,5 kWh")
             for r in section.rows
         )
         assert "other_converter" not in str(section.model_dump())

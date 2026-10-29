@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from typing import cast
+from typing import Protocol, cast
 
 from .canonical import Json, Object
 from .direct_beam_geometry import ANGULAR_GUARD, Receiver, Scene, scalar
@@ -14,9 +14,27 @@ from .errors import InvalidInput, NumericalFailure
 from .geometry import Vector
 
 
+class VisibilityLimits(Protocol):
+    """The three CPU budgets this ray work actually spends.
+
+    A caller that runs the same ray work over a different admission rule (the
+    full-axis geometric model uses every retained row) can supply exactly these
+    limits rather than an unrelated selected-row policy it does not enforce.
+    """
+
+    @property
+    def max_samples(self) -> int: ...
+
+    @property
+    def max_ray_face_checks(self) -> int: ...
+
+    @property
+    def max_bounds_checks(self) -> int: ...
+
+
 @dataclass
 class VisibilityBudget:
-    limits: DirectBeamLimits
+    limits: VisibilityLimits
     samples: int = 0
     ray_face_checks: int = 0
     bounds_checks: int = 0

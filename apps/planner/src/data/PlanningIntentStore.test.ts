@@ -28,27 +28,27 @@ function fresh(t: { after: (fn: () => void) => void }) {
 }
 
 test("exact request survives a new store instance; duplicate writers and acknowledgement keep one immutable receipt", async (t) => {
-	const store = fresh(t),
-		body = command();
-	await Promise.all([
-		store.write(scope, "runs/energy", body),
-		store.write(scope, "runs/energy", body),
-	]);
-	assert.equal(
-		(await new PlanningIntentStore().list([scope, scope], project)).length,
-		1,
-	);
-	await store.acknowledge(scope, "runs/energy", body, asset);
-	await store.acknowledge(scope, "runs/energy", body, asset);
-	await store.write(scope, "runs/energy", body);
-	assert.equal((await store.list([scope], project))[0]!.resultId, asset);
-	await assert.rejects(
-		store.acknowledge(scope, "runs/energy", body, "d".repeat(32)),
-	);
-	assert.equal((await store.list([scope], project))[0]!.resultId, asset);
-	await store.clear(scope, "runs/energy", body);
-	await store.clear(scope, "runs/energy", body);
-	assert.deepEqual(await store.list([scope], project), []);
+	const store = fresh(t);
+	for (const path of ["runs/energy", "runs/geometric-pv"] as const) {
+		const body = command();
+		await Promise.all([
+			store.write(scope, path, body),
+			store.write(scope, path, body),
+		]);
+		assert.equal(
+			(await new PlanningIntentStore().list([scope, scope], project)).length,
+			1,
+		);
+		await store.acknowledge(scope, path, body, asset);
+		await store.acknowledge(scope, path, body, asset);
+		await store.write(scope, path, body);
+		assert.equal((await store.list([scope], project))[0]!.resultId, asset);
+		await assert.rejects(store.acknowledge(scope, path, body, "d".repeat(32)));
+		assert.equal((await store.list([scope], project))[0]!.resultId, asset);
+		await store.clear(scope, path, body);
+		await store.clear(scope, path, body);
+		assert.deepEqual(await store.list([scope], project), []);
+	}
 });
 
 test("changed bytes cannot replace, acknowledge or delete an original intent; owners/projects remain scoped", async (t) => {

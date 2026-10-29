@@ -112,10 +112,11 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 		$workers = array();
 		$start   = (string) ( microtime( true ) + 8 );
 		for ( $i = 0; $i < 8; ++$i ) {
+			$door  = 0 === $i % 2 ? 'request' : 'contact';
 			$pipes = array();
 			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_open -- independent requests are necessary to exercise database serialization.
 			$process = proc_open(
-				array( PHP_BINARY, '-d', 'memory_limit=2048M', __DIR__ . '/fixtures/public-submit.php', $email, 0 === $i % 2 ? 'request' : 'contact', $start ),
+				array( PHP_BINARY, '-d', 'memory_limit=2048M', __DIR__ . '/fixtures/public-submit.php', $email, $door, $start ),
 				array(
 					1 => array( 'pipe', 'w' ),
 					2 => array( 'pipe', 'w' ),
@@ -123,20 +124,20 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 				$pipes
 			);
 			$this->assertIsResource( $process );
-			$workers[] = array( $process, $pipes );
+			$workers[] = array( $process, $pipes, $door );
 		}
 		$accepted = 0;
-		foreach ( $workers as list( $process, $pipes ) ) {
+		foreach ( $workers as list( $process, $pipes, $door ) ) {
 			$output = trim( (string) stream_get_contents( $pipes[1] ) );
 			$error  = (string) stream_get_contents( $pipes[2] );
 			fclose( $pipes[1] );
 			fclose( $pipes[2] );
 			$this->assertSame( 0, proc_close( $process ), $error . $output );
-			$accepted += 'sent' === $output ? 1 : 0;
+			$accepted += ( 'contact' === $door ? 'receipt_pending' : 'sent' ) === $output ? 1 : 0;
 		}
 		// Other PHP requests invalidated persistent caches; discard this process's stale runtime cache.
 		wp_cache_flush_runtime();
-		$this->assertSame( 3, $accepted, 'Parallel posts cannot share the last allowance.' );
+		$this->assertSame( 3, $accepted, 'Parallel posts cannot share the last allowance. Contact acceptance is receipt_pending until authorization; an inquiry acceptance is a created order.' );
 		$orders = wc_get_orders(
 			array(
 				'billing_email' => $email,
@@ -151,6 +152,7 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 			$this->assertSame( 0, $native['attempts'], 'The submitting child must not let an unrelated background request consume this fixture source before the parent installs its typed service.' );
 			$accepted_order->read_meta_data( true );
 			$this->assertSame( 'yes', $accepted_order->get_meta( \Linker\Commerce\Inquiry\Assessment\Queue::PENDING ) );
+			$this->assertSame( 'assessment_pending', $accepted_order->get_meta( '_linker_receipt_skipped' ) );
 			$this->assertSame( 'Parallel public inquiry.', $accepted_order->get_customer_note() );
 			\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $accepted_order->get_id() );
 			$this->authorization->process( $accepted_order );
@@ -223,6 +225,18 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 			); }
 		$this->assertCount( 1, $orders );
 		$this->assertSame( 'inquiry-received', $orders[0]->get_status() );
+		if ( 'contact' === $door ) {
+			$this->assertSame( 'sent_no_receipt', $result, 'An exhausted receipt allowance is not reported as a sent receipt.' );
+			$this->assertSame( 'sent_no_receipt', \Linker\Commerce\Contact\Handler::receipt_state( $orders[0] ) );
+			$before_handoff = $_GET; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- retain and restore the display state in this test.
+			$_GET           = array(
+				\Linker\Commerce\Contact\Form::STATE_PARAM => 'sent_no_receipt',
+			);
+			$pending_html   = ( new \Linker\Commerce\Contact\Form() )->render();
+			$_GET           = $before_handoff;
+			$this->assertStringContainsString( 'linker-form-success', $pending_html );
+			$this->assertStringContainsString( 'We have not sent a confirmation email.', $pending_html );
+		}
 		$this->authorization->drain();
 		$jobs = self::mail_jobs_after( $marker );
 		$this->assertCount( 1, $jobs, 'Only the team notification is queued after the receipt cap.' );
@@ -232,13 +246,23 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 		$orders[0]->read_meta_data( true );
 		$this->assertSame( 'daily_cap', $orders[0]->get_meta( '_linker_receipt_skipped' ) );
 		if ( 'contact' === $door ) {
-			$this->assertSame( 'sent', $result, 'Saving returns before the optional receipt is decided.' );
+			$this->assertSame( 'sent_no_receipt', $result, 'Saving must not report an exhausted receipt allowance as sent.' );
+			$this->assertSame( 'sent_no_receipt', \Linker\Commerce\Contact\Handler::receipt_state( $orders[0] ) );
 			$previous = $_GET; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- retain and restore the display state in this test.
 			try {
-				$_GET[ \Linker\Commerce\Contact\Form::STATE_PARAM ] = 'sent_no_receipt';
+				$_GET = array(
+					\Linker\Commerce\Contact\Form::STATE_PARAM => 'receipt_pending',
+					\Linker\Commerce\Contact\Form::ORDER_PARAM => $orders[0]->get_order_key(),
+				);
 				$html = ( new \Linker\Commerce\Contact\Form() )->render();
+				$this->assertStringNotContainsString( 'http-equiv="refresh"', $html, 'A decided omission does not keep reloading.' );
+				switch_to_locale( 'de_DE_formal' );
+				$german = ( new \Linker\Commerce\Contact\Form() )->render();
 			} finally {
-				$_GET = $previous; }
+				restore_previous_locale();
+				$_GET = $previous;
+			}
+			$this->assertStringContainsString( 'Eine Bestätigung per E-Mail wurde nicht versendet.', $german );
 		} else {
 			$this->assertInstanceOf( WC_Order::class, $result );
 			ob_start();
