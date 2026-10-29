@@ -1,0 +1,54 @@
+{
+	"schema_version": 1,
+	"comparison": "complete_document_equality_on_each_named_host; canonical witness spelling makes the exported bytes identical across hosts",
+	"baselines": {
+		"darwin-arm64": {
+			"fixture": "preparation-flow-darwin-arm64.json",
+			"canonical_sorted_json_sha256": "f4b51c57acf22eae5bfdedfb433bdb3c94fc2a049118bbc0c91f7d73fbe272e8",
+			"runtime": {
+				"python": "3.12.15",
+				"platform": "macOS-26.6.2-arm64-arm-64bit",
+				"machine": "arm64",
+				"libc": ["", ""],
+				"dependencies": {
+					"jsonschema": "4.26.0",
+					"numpy": "2.5.3",
+					"pandas": "3.0.6",
+					"pillow": "12.3.0",
+					"pvlib": "0.16.1",
+					"pydantic": "2.14.0",
+					"pypdf": "6.20.0",
+					"pyproj": "3.8.0",
+					"requests": "2.34.2",
+					"scipy": "1.18.1",
+					"shapely": "2.2.0",
+					"urllib3": "2.8.0"
+				}
+			}
+		},
+		"linux-x86_64": {
+			"fixture": "preparation-flow-linux-x86_64.json",
+			"canonical_sorted_json_sha256": "f4b51c57acf22eae5bfdedfb433bdb3c94fc2a049118bbc0c91f7d73fbe272e8",
+			"runtime": {
+				"python": "3.12.3",
+				"platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+				"machine": "x86_64",
+				"libc": ["glibc", "2.39"],
+				"dependencies": {
+					"jsonschema": "4.26.0",
+					"numpy": "2.5.3",
+					"pandas": "3.0.6",
+					"pillow": "12.3.0",
+					"pvlib": "0.16.1",
+					"pydantic": "2.14.0",
+					"pypdf": "6.20.0",
+					"pyproj": "3.8.0",
+					"requests": "2.34.2",
+					"scipy": "1.18.1",
+					"shapely": "2.2.0",
+					"urllib3": "2.8.0"
+				}
+			}
+		}
+	}
+}

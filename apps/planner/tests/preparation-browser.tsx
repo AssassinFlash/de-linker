@@ -16,7 +16,7 @@ import { ToolIdentity } from "../src/components/ToolIdentity.tsx";
 import { readRun } from "../src/data/planningProtocol.ts";
 import type { JsonObject, Session } from "../src/data/protocol.ts";
 import type { PlannerClient } from "../src/data/PlannerClient.ts";
-import fixture from "./fixtures/preparation-flow.json";
+import fixture from "./fixtures/index.ts";
 import german from "../../../plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json";
 import "../../../plugins/linker-commerce/content/windpress/tokens.css";
 import "../../../plugins/linker-commerce/content/windpress/planner.css";

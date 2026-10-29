@@ -20,7 +20,7 @@ import { ApiError } from "../src/data/protocol.ts";
 import { readRun } from "../src/data/planningProtocol.ts";
 import { selectPreparation } from "../src/domain/preparationSelection.ts";
 import { projectLanguageUrl } from "../src/data/useSiteIntegration.ts";
-import fixture from "./fixtures/preparation-flow.json" with { type: "json" };
+import fixture from "./fixtures/index.ts";
 import plantFixture from "./fixtures/plant-energy-run.json" with { type: "json" };
 
 const scope = "a".repeat(64);

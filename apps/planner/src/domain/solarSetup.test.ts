@@ -1,7 +1,7 @@
 import test from "node:test";
 import type { GeometryDocument } from "./geometry.ts";
 import assert from "node:assert/strict";
-import fixture from "../../tests/fixtures/preparation-flow.json" with { type: "json" };
+import fixture from "../../tests/fixtures/index.ts";
 import { ApiError } from "../data/protocol.ts";
 import {
 	emptyGeometricPv,

@@ -18,6 +18,8 @@ actually consumes without any test noticing.
 from __future__ import annotations
 
 import json
+import platform
+import sys
 import uuid
 from collections.abc import Iterator
 from contextlib import contextmanager
@@ -688,6 +690,10 @@ def rendered() -> str:
 
 
 if __name__ == "__main__":
-    target = APP / "tests" / "fixtures" / "preparation-flow.json"
+    target = (
+        APP
+        / "tests/fixtures"
+        / f"preparation-flow-{sys.platform}-{platform.machine()}.json"
+    )
     target.write_text(rendered())
     print(target)

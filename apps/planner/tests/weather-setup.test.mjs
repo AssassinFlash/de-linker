@@ -11,7 +11,7 @@ import {
 	prepareSave,
 	acknowledgeSave,
 } from "../src/domain/draft.ts";
-import fixture from "./fixtures/preparation-flow.json" with { type: "json" };
+import fixture from "./fixtures/index.ts";
 
 const button = (text) =>
 	[...document.querySelectorAll("button")].find(
