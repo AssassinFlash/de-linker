@@ -90,6 +90,7 @@ from linker_genie.facts import (
 )
 from linker_genie.figures import (
     AMOUNT,
+    chunk_of,
     digits_are_regulation,
     is_code,
     regulation_number_spans,
@@ -113,6 +114,7 @@ from linker_genie.schema import (
     TextBlock,
     TurnOutput,
 )
+from linker_genie.source_models import model_pattern
 from linker_genie.stock import phrase as stock_phrase
 from linker_genie.template import NOT_IN_RANGE_DE, NOT_IN_RANGE_EN
 
@@ -294,7 +296,12 @@ class CheckResult:
 
 
 def check(
-    output: TurnOutput, facts: TurnFacts, route: Route | None = None
+    output: TurnOutput,
+    facts: TurnFacts,
+    route: Route | None = None,
+    *,
+    question: str = "",
+    page_product_id: int | None = None,
 ) -> CheckResult:
     """Run the anchoring checks. Empty failures means the turn is grounded."""
     failures: list[str] = []
@@ -320,6 +327,7 @@ def check(
     failures.extend(_no_price_in_text(output))
     failures.extend(_no_amount_from_attachments(output, facts))
     failures.extend(_no_sent_claim(output))
+    failures.extend(_warranty_sources(output, facts, route, question, page_product_id))
     failures.extend(_extreme(output, facts))
     failures.extend(_handoff_only_when_out_of_scope(output, route))
     if route is not None:
@@ -332,6 +340,199 @@ def check(
         citations=tuple(citations),
         unbound_only=bool(number_failures) and len(failures) == len(number_failures),
     )
+
+
+_WARRANTY_CONTEXT = re.compile(
+    r"\b(?:warrant\w*|guarantee\w*|garantie\w*|gewährleist\w*)\b", re.I
+)
+
+
+def _warranty_turn(output: TurnOutput, facts: TurnFacts, question: str) -> bool:
+    policy = facts.warranty_chunks | facts.warranty_procedures
+    return bool(
+        _WARRANTY_CONTEXT.search(question)
+        or any(
+            isinstance(block, TextBlock)
+            and (set(block.refs) & policy or _WARRANTY_CONTEXT.search(block.text))
+            or isinstance(block, DocumentBlock)
+            and block.ref in policy
+            for block in output.blocks
+        )
+    )
+
+
+def _technical_source(block: TextBlock, facts: TurnFacts) -> str | None:
+    """Find the one authorized manual line reproduced in this text block."""
+    policy = facts.warranty_chunks | facts.warranty_procedures
+    chunk_refs = set(block.refs) & facts.chunk_ids
+    technical = chunk_refs & (facts.technical_chunks - policy)
+    if len(technical) != 1 or chunk_refs != technical:
+        return None
+    cid = next(iter(technical))
+    source = facts.facts.get(f"{cid}.text")
+    if source is None:
+        return None
+
+    def source_line(line: str) -> str | None:
+        valid = True
+
+        def tag(match: re.Match[str]) -> str:
+            nonlocal valid
+            fid = f"{cid}.n{match.group(1)}"
+            fact = facts.facts.get(fid)
+            if fact is None or fact.value != match.group(2):
+                valid = False
+            return f"{{fact:{fid}}}"
+
+        rendered = re.sub(r"\[n([1-9]\d*)=([^\[\]\n]+)\]", tag, line)
+        return " ".join(rendered.split()) if valid else None
+
+    candidate = " ".join(block.text.split())
+    if not candidate or not any(
+        source_line(line) == candidate for line in source.value.splitlines()
+    ):
+        return None
+    return cid
+
+
+def frame_warranty_technical(
+    output: TurnOutput, facts: TurnFacts, question: str, language: str
+) -> TurnOutput:
+    """Identify source-verified technical excerpts in a mixed policy answer."""
+    if not _warranty_turn(output, facts, question):
+        return output
+    blocks: list[Block] = []
+    for block in output.blocks:
+        if isinstance(block, TextBlock) and _technical_source(block, facts) is not None:
+            text = (
+                f"Technischer Quellenauszug: „{block.text}“"
+                if language.startswith("de")
+                else f"Technical source excerpt: “{block.text}”"
+            )
+            blocks.append(block.model_copy(update={"text": text}))
+        else:
+            blocks.append(block)
+    return output.model_copy(update={"blocks": blocks})
+
+
+def _warranty_sources(
+    output: TurnOutput,
+    facts: TurnFacts,
+    route: Route | None,
+    question: str,
+    page_product_id: int | None,
+) -> list[str]:
+    """Bind each policy block to one source-derived answer for this product."""
+    policy_chunks = facts.warranty_chunks | facts.warranty_procedures
+    question_policy = bool(_WARRANTY_CONTEXT.search(question))
+    if not _warranty_turn(output, facts, question):
+        return []
+    expected = {
+        pid
+        for note in (route.named_models if route else ())
+        for pid in note.product_ids
+        if note.searched_known
+    }
+    if not expected and page_product_id:
+        expected.add(page_product_id)
+    named_codes = [
+        match.group()
+        for match in _MODEL_CODE.finditer(question.upper())
+        if re.search(r"\d", match.group())
+        and match.group().count("-") + match.group().count("/") >= 2
+    ]
+    if named_codes:
+        matched_models = {
+            pid
+            for cid, models in facts.warranty_models.items()
+            if any(model_pattern(model).search(question) for model in models)
+            for pid in facts.knowledge_products.get(cid, ())
+        }
+        if not matched_models:
+            return ["warranty evidence does not establish the requested model"]
+        expected = expected & matched_models if expected else matched_models
+        if not expected:
+            return ["warranty evidence conflicts with the requested model"]
+    if not expected:
+        requested = [
+            set(call.get("arguments", {}).get("product_ids", []))
+            for call in facts.tool_calls
+            if str(call.get("name", "")).endswith("search-knowledge")
+            and isinstance(call.get("arguments"), dict)
+            and isinstance(call["arguments"].get("product_ids"), list)
+            and all(type(pid) is int for pid in call["arguments"]["product_ids"])
+            and call["arguments"]["product_ids"]
+        ]
+        if requested:
+            expected = set.intersection(*requested)
+    used: set[str] = set()
+    for block in output.blocks:
+        if isinstance(block, HandoffBlock) and block.summary.strip() not in {
+            "{fact:handoff.sentence}",
+            "{fact:handoff.sentence_en}",
+            "{fact:handoff.sentence_de}",
+        }:
+            return ["a mixed warranty handoff must use its verified sentence"]
+        if isinstance(block, AskBlock) and block.options:
+            return ["a mixed warranty turn cannot add unverified answer options"]
+        if not isinstance(block, TextBlock) or not block.text.strip():
+            continue
+        cited = set(block.refs) & policy_chunks
+        policy_figures = {
+            chunk
+            for fact_id in leftover_placeholders(block.text)
+            if (chunk := chunk_of(fact_id)) in policy_chunks
+        }
+        is_policy = bool(
+            cited or policy_figures or _WARRANTY_CONTEXT.search(block.text)
+        )
+        if not is_policy:
+            cid = _technical_source(block, facts)
+            if cid is None or (
+                expected and not set(facts.knowledge_products.get(cid, ())) & expected
+            ):
+                return [
+                    "Remove introductory or unsourced text blocks. A separate technical block must copy one exact line from a product-scoped manual or datasheet."
+                ]
+            continue
+        if len(cited) != 1 or policy_figures - cited:
+            return [
+                "Remove introductory text blocks. Copy the complete matching warranty_answers value into one text block and cite that hit's chunk_id in its refs."
+            ]
+        cid = next(iter(cited))
+        if expected and not set(facts.knowledge_products.get(cid, ())) & expected:
+            return ["warranty passage belongs to a different product"]
+        if cid in facts.warranty_chunks:
+            notes = facts.qualifications.get(cid, ())
+            allowed = facts.warranty_answers.get(cid, {})
+            if (
+                not notes
+                or any(note.lang != output.language for note in notes)
+                or block.text not in allowed.values()
+            ):
+                return [
+                    "use the source-derived warranty answer for the requested topic"
+                ]
+        else:
+            normalized = " ".join(block.text.casefold().split())
+            source = facts.facts.get(f"{cid}.text")
+            if (
+                len(normalized) < 30
+                or source is None
+                or normalized not in " ".join(source.value.casefold().split())
+            ):
+                return ["quote the source claims procedure without inferring coverage"]
+        used.add(cid)
+    if used and any(
+        isinstance(block, DocumentBlock)
+        and block.ref in policy_chunks
+        and block.ref not in used
+        for block in output.blocks
+    ):
+        return ["warranty document must match a cited policy statement"]
+    if question_policy and not used:
+        return ["warranty question needs a qualified policy answer"]
+    return []
 
 
 # A chunk id is built by `index/chunking.py` `_emit`: the document's hex

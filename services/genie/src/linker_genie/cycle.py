@@ -21,7 +21,13 @@ from dataclasses import dataclass
 from linker_genie import timing
 from linker_genie.facts import TurnFacts, merge
 from linker_genie.failure import FailureClass, RecordedFailure, from_log, note
-from linker_genie.ground import Citation, check, cites_outside_turn, drop_bare_numbers
+from linker_genie.ground import (
+    Citation,
+    check,
+    cites_outside_turn,
+    drop_bare_numbers,
+    frame_warranty_technical,
+)
 from linker_genie.hydrate import complete_pairing_cards, hydrate
 from linker_genie.language import (
     LANGUAGE_RETRY_PREFIX,
@@ -126,11 +132,13 @@ def _hydrate_priced(
     expected: str,
     commerce: Lookup | None,
     clock: timing.Timing | None,
+    question: str,
 ) -> tuple[TurnOutput, TurnFacts, tuple[str, ...], TurnOutput, dict[str, str]]:
     """Login alignment, pairing cards, hydration and prices. One hydrate phase."""
     aligned = align_login(output, facts, expected)
     with timing.phase(clock, timing.HYDRATE):
-        completed = complete_pairing_cards(aligned, facts, route)
+        framed = frame_warranty_technical(aligned, facts, question, expected)
+        completed = complete_pairing_cards(framed, facts, route)
         hydrated = hydrate(completed, facts, expected)
         priced, priced_facts, missed = fill(hydrated, facts, commerce)
         replacements: dict[str, str] = {}
@@ -248,11 +256,17 @@ def _ship_number_correction(
     """
     corrected = drop_bare_numbers(output)
     with timing.phase(clock, timing.GROUND):
-        result = check(corrected, facts, route)
+        result = check(
+            corrected,
+            facts,
+            route,
+            question=customer_message(request),
+            page_product_id=request.page_context.product_id,
+        )
     if not result.ok:
         return None
     priced, priced_facts, missed, protected, replacements = _hydrate_priced(
-        corrected, facts, route, expected, commerce, clock
+        corrected, facts, route, expected, commerce, clock, customer_message(request)
     )
     mismatch = language_failure(priced, expected, _cited_prose(priced_facts))
     if mismatch is not None:
@@ -421,7 +435,13 @@ def run(
         _copy_call_failures(recorded, call_failures)
         last_facts = merge([seeded, facts])
         with timing.phase(clock, timing.GROUND):
-            result = check(output, last_facts, route)
+            result = check(
+                output,
+                last_facts,
+                route,
+                question=customer_message(request),
+                page_product_id=request.page_context.product_id,
+            )
         if not result.ok:
             last_failures = result.failures
             last_citations = result.citations
@@ -450,7 +470,13 @@ def run(
             retry_reason = result.reason
             continue
         priced, priced_facts, missed, protected, replacements = _hydrate_priced(
-            output, last_facts, route, expected, commerce, clock
+            output,
+            last_facts,
+            route,
+            expected,
+            commerce,
+            clock,
+            customer_message(request),
         )
         mismatch = language_failure(priced, expected, _cited_prose(priced_facts))
         if mismatch is not None:

@@ -27,7 +27,14 @@ from pathlib import Path
 from typing import Any
 
 from index import corpus, extract, inventory, mariadb, parse, store
-from index.chunking import MAX_TOKENS, Chunk, DocumentMeta, Tokenizer, chunk_document
+from index.chunking import (
+    MAX_TOKENS,
+    Chunk,
+    DocumentMeta,
+    Tokenizer,
+    chunk_document,
+    context_header,
+)
 from index.corpus import DocumentRow
 from index.paths import INDEX_DIR, INVENTORY_PATH, PARSED_DIR, PDF_DIR
 from index.preparation import recipe_revision
@@ -280,6 +287,35 @@ def chunk_all(
             pdf_path=pdf_path if source_geometry else None,
         )
         chunks = chunk_document(_meta(document), pages, tokenizer, detect_lang)
+        if source_geometry and document.doc_type == "datasheet":
+            cover = extract.pdf_series_cover(pdf_path)
+            if cover:
+                title = str(cover["text"])
+                digest = hashlib.sha256(("text\0" + title).encode()).hexdigest()[:8]
+                cid = f"{document.sha256[:12]}-p1-pdf-cover-{digest}"
+                header = context_header(_meta(document), "", 1)
+                tokens = tokenizer.count(header + "\n" + title)
+                if tokens <= MAX_TOKENS and not any(c.id == cid for c in chunks):
+                    cover_chunk = Chunk(
+                        cid,
+                        document.sha256,
+                        1,
+                        "",
+                        "text",
+                        header,
+                        title,
+                        document.lang
+                        if document.lang in {"en", "de"}
+                        else detect_lang(title),
+                        tokens,
+                        source_pdf_cover=cover,
+                    )
+                    # Keep page order: the recovered page-one title must not
+                    # inherit a later page's narrower authored context.
+                    after_first_page = next(
+                        (i for i, c in enumerate(chunks) if c.page > 1), len(chunks)
+                    )
+                    chunks.insert(after_first_page, cover_chunk)
         result.chunks.extend(chunks)
         with_chunks = {chunk.page for chunk in chunks}
         empty = [

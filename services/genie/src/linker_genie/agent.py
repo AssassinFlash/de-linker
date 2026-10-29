@@ -659,13 +659,18 @@ def _page_lines(request: TurnRequest) -> list[str]:
     return lines
 
 
-def _result_view(item: dict[str, Any]) -> dict[str, Any]:
+def _result_view(
+    item: dict[str, Any], *, compact_warranty: bool = False
+) -> dict[str, Any]:
     """A route result as the model reads it, like the model's own call of that tool."""
     result = item.get("result")
     if not isinstance(result, dict):
         return item
     if item.get("name") == knowledge.NAME:
-        return {**item, "result": knowledge.model_view(result)}
+        return {
+            **item,
+            "result": knowledge.model_view(result, compact_warranty=compact_warranty),
+        }
     if item.get("name") == page.NAME:
         return {**item, "result": page.model_view(result)}
     if item.get("name") == solution.NAME:
@@ -673,6 +678,47 @@ def _result_view(item: dict[str, Any]) -> dict[str, Any]:
     if item.get("name") == planning.NAME:
         return {**item, "result": planning.model_view(result)}
     return item
+
+
+def _route_results(items: list[dict[str, Any]]) -> tuple[str, bool]:
+    """Keep overlong warranty results complete instead of cutting JSON mid-hit."""
+    view = [_result_view(item) for item in items]
+    encoded = json.dumps(view, ensure_ascii=False)
+    if len(encoded) <= MAX_RESULT_CHARS:
+        return encoded, False
+    has_warranty = any(
+        item.get("name") == knowledge.NAME
+        and isinstance(item.get("result"), dict)
+        and isinstance(item["result"].get("hits"), list)
+        and any(
+            isinstance(hit, dict) and hit.get("warranty_terms") is True
+            for hit in item["result"].get("hits", [])
+        )
+        for item in items
+    )
+    if not has_warranty:
+        return encoded[:MAX_RESULT_CHARS], False
+    view = [_result_view(item, compact_warranty=True) for item in items]
+    encoded = json.dumps(view, ensure_ascii=False)
+    while len(encoded) > MAX_RESULT_CHARS:
+        result = next(
+            (
+                item["result"]
+                for item in reversed(view)
+                if item.get("name") == knowledge.NAME
+                and isinstance(item.get("result"), dict)
+                and item["result"].get("hits")
+            ),
+            None,
+        )
+        if result is None:
+            return json.dumps(
+                [{"error": "Prepared results exceed the model context; search again."}]
+            ), True
+        result["hits"].pop()
+        result["omitted_from_model_view"] = result.get("omitted_from_model_view", 0) + 1
+        encoded = json.dumps(view, ensure_ascii=False)
+    return encoded, True
 
 
 def _user_prompt(
@@ -697,13 +743,17 @@ def _user_prompt(
     if prepared is not None and prepared.results:
         # A document search reads as the model's own call would: tagged text, no
         # URL, no figure table (knowledge.model_view).
-        results = json.dumps(
-            [_result_view(item) for item in prepared.results], ensure_ascii=False
-        )
+        results, compact_warranty = _route_results(prepared.results)
+        if compact_warranty:
+            lines.append(
+                "For compact warranty hits, warranty_figures maps each short figure "
+                "ID (such as n1) to its original value. Use it to select the matching "
+                "policy row; copy the chosen warranty_answers value unchanged, "
+                "including its fact placeholders. If passages were omitted, search again."
+            )
         lines.append(
             "Tool results the service already fetched for this turn (use them; "
-            "do not call the same tool again with the same input): "
-            + results[:MAX_RESULT_CHARS]
+            "do not call the same tool again with the same input): " + results
         )
     if prepared is not None and prepared.attachments:
         # The customer's files as the service read them (#236): the text of each, the

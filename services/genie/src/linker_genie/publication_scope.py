@@ -111,7 +111,8 @@ def _authorize_core(
         ):
             return []
     if scope is not None and (
-        scope.get("basis") == "warranty_procedure" or "warranty_scope" in scope
+        scope.get("basis") in {"warranty_procedure", "warranty_terms"}
+        or "warranty_scope" in scope
     ):
         if (
             products is None
@@ -124,6 +125,7 @@ def _authorize_core(
                 sha=sha,
                 chunk_id=chunk_id,
                 text=text,
+                external_axis_anchors=external_axis_anchors,
             )
         ):
             return []

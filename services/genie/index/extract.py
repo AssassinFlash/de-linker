@@ -179,6 +179,396 @@ def pages_of(document: DoclingDocument) -> dict[int, list[Block]]:
     return pages
 
 
+def _visible_pdf_line(
+    pdf: object,
+    page: object,
+    textpage: object,
+    text: str,
+    start: int,
+    end: int,
+    page_box: tuple[float, float, float, float],
+) -> bool:
+    """Require the original characters to make a visible mark on the page.
+
+    A PDF text layer can describe text that never appears in the rendering.
+    Compare the real page with each candidate text object disabled, and compare
+    each character's visible ink to that object's isolated rendering. Unknown
+    object, clipping, annotation, or raster state is not source evidence.
+    """
+    import ctypes
+    from typing import Any, cast
+
+    import pypdfium2
+    import pypdfium2.raw as raw
+
+    document = cast(Any, pdf)
+    pdf_page = cast(Any, page)
+    text_page = cast(Any, textpage)
+    box_type = tuple[float, float, float, float]
+    try:
+        # A genuine series title is short; bound work on malformed text layers.
+        if end <= start or end - start > 256:
+            return False
+        # Widgets and annotations can have viewer-dependent appearance streams.
+        # Reject them rather than omit a possible cover or transparency.
+        if raw.FPDFPage_GetAnnotCount(pdf_page.raw) != 0:
+            return False
+        left, bottom, right, top = page_box
+        if (
+            not all(math.isfinite(v) for v in page_box)
+            or left >= right
+            or bottom >= top
+        ):
+            return False
+        width, height = right - left, top - bottom
+        if not math.isclose(
+            pdf_page.get_width(), width, abs_tol=0.01
+        ) or not math.isclose(pdf_page.get_height(), height, abs_tol=0.01):
+            return False
+
+        # At 3 pixels per PDF point the original GoodWe EHA footer has enough
+        # raster detail to check individual glyphs, including the narrow ones.
+        scale = 3
+        full_width, full_height = math.ceil(width * scale), math.ceil(height * scale)
+        # Bound PDFium bitmap sizes and integer render dimensions for malformed PDFs.
+        if max(full_width, full_height) > 32767:
+            return False
+
+        objects: dict[int, tuple[Any, list[tuple[int, box_type]]]] = {}
+        boxes: list[box_type] = []
+        for i in range(start, end):
+            if text[i].isspace():
+                continue
+            if raw.FPDFText_GetUnicode(text_page.raw, i) != ord(text[i]):
+                return False
+            if raw.FPDFText_IsGenerated(text_page.raw, i) != 0:
+                return False
+            obj = raw.FPDFText_GetTextObject(text_page.raw, i)
+            if not obj or raw.FPDFPageObj_GetType(obj) != raw.FPDF_PAGEOBJ_TEXT:
+                return False
+            # Text clipping modes can affect later page objects when removed.
+            if raw.FPDFTextObj_GetTextRenderMode(obj) not in (0, 1, 2):
+                return False
+            active = ctypes.c_int()
+            if (
+                not raw.FPDFPageObj_GetIsActive(obj, ctypes.byref(active))
+                or not active.value
+            ):
+                return False
+            clip = raw.FPDFPageObj_GetClipPath(obj)
+            # PDFium reports -1 for the uninitialized clip path in both the
+            # original EHA and unclipped fixtures. Any explicit path is unknown.
+            if not clip or raw.FPDFClipPath_CountPaths(clip) != -1:
+                return False
+            box: box_type = text_page.get_charbox(i)
+            if not all(math.isfinite(v) for v in box) or not (
+                left <= box[0] < box[2] <= right and bottom <= box[1] < box[3] <= top
+            ):
+                return False
+            address = ctypes.cast(obj, ctypes.c_void_p).value
+            if address is None:
+                return False
+            objects.setdefault(address, (obj, []))[1].append((i, box))
+            boxes.append(box)
+        # Do not rasterize an unbounded number of independent page objects.
+        if not boxes or len(objects) > 64:
+            return False
+
+        # Render only the title strip, with a two-point margin for antialiasing.
+        crop = (
+            max(0, math.floor(min(b[0] for b in boxes) - left - 2)),
+            max(0, math.floor(min(b[1] for b in boxes) - bottom - 2)),
+            max(0, math.floor(right - max(b[2] for b in boxes) - 2)),
+            max(0, math.floor(top - max(b[3] for b in boxes) - 2)),
+        )
+        if (full_width - (crop[0] + crop[2]) * scale) * (
+            full_height - (crop[1] + crop[3]) * scale
+        ) > 10_000_000:
+            return False
+
+        def render_page() -> Any:
+            bitmap = pdf_page.render(scale=scale, crop=crop, draw_annots=True)
+            try:
+                return bitmap.to_pil().convert("RGB").copy()
+            finally:
+                bitmap.close()
+
+        def image_box(
+            box: box_type,
+            origin_left: float,
+            origin_top: float,
+            x_scale: float,
+            y_scale: float,
+            x_offset: int = 0,
+            y_offset: int = 0,
+        ) -> tuple[int, int, int, int]:
+            return (
+                math.floor((box[0] - origin_left) * x_scale) - x_offset,
+                math.floor((origin_top - box[3]) * y_scale) - y_offset,
+                math.ceil((box[2] - origin_left) * x_scale) - x_offset,
+                math.ceil((origin_top - box[1]) * y_scale) - y_offset,
+            )
+
+        # WCAG's 3:1 large-text contrast (w3.org/TR/WCAG22/#contrast-minimum)
+        # is a conservative pixel signal here, not an accessibility claim.
+        def linear(v: int) -> float:
+            c = v / 255
+            return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+
+        values = [linear(v) for v in range(256)]
+
+        def luminance(pixel: tuple[int, int, int]) -> float:
+            return (
+                0.2126 * values[pixel[0]]
+                + 0.7152 * values[pixel[1]]
+                + 0.0722 * values[pixel[2]]
+            )
+
+        original = render_page()
+        for obj, chars in objects.values():
+            obj_bounds = [ctypes.c_float() for _ in range(4)]
+            if not raw.FPDFPageObj_GetBounds(
+                obj, *(ctypes.byref(v) for v in obj_bounds)
+            ):
+                return False
+            obj_left, obj_bottom, obj_right, obj_top = (v.value for v in obj_bounds)
+            if not all(
+                math.isfinite(v) for v in (obj_left, obj_bottom, obj_right, obj_top)
+            ):
+                return False
+            if not (
+                left <= obj_left < obj_right <= right
+                and bottom <= obj_bottom < obj_top <= top
+            ):
+                return False
+            obj_width, obj_height = obj_right - obj_left, obj_top - obj_bottom
+            if (
+                math.ceil(obj_width * scale) * math.ceil(obj_height * scale)
+                > 10_000_000
+            ):
+                return False
+            isolated_raw = raw.FPDFTextObj_GetRenderedBitmap(
+                document.raw, pdf_page.raw, obj, scale
+            )
+            if not isolated_raw:
+                return False
+            isolated_bitmap = pypdfium2.PdfBitmap.from_raw(isolated_raw)
+            try:
+                isolated = isolated_bitmap.to_pil().convert("RGBA").copy()
+            finally:
+                # The image above is copied before destroying this owned bitmap.
+                isolated_bitmap.warn_on_close = False
+                isolated_bitmap.close()
+            if isolated.width < 1 or isolated.height < 1:
+                return False
+
+            if not raw.FPDFPageObj_SetIsActive(obj, False):
+                return False
+            restored = False
+            try:
+                without = render_page()
+            finally:
+                restored = bool(raw.FPDFPageObj_SetIsActive(obj, True))
+            if not restored or original.size != without.size:
+                return False
+
+            for _, box in chars:
+                # Exclude areas also occupied by other characters of this same
+                # object, so a neighbour cannot prove a hidden glyph visible.
+                regions = [box]
+                for _, other in chars:
+                    if other is box:
+                        continue
+                    remaining = []
+                    for region_left, region_bottom, region_right, region_top in regions:
+                        ol = max(region_left, other[0])
+                        ob = max(region_bottom, other[1])
+                        or_ = min(region_right, other[2])
+                        ot = min(region_top, other[3])
+                        if ol >= or_ or ob >= ot:
+                            remaining.append(
+                                (region_left, region_bottom, region_right, region_top)
+                            )
+                        else:
+                            remaining.extend(
+                                (x1, y1, x2, y2)
+                                for x1, y1, x2, y2 in (
+                                    (region_left, region_bottom, ol, region_top),
+                                    (or_, region_bottom, region_right, region_top),
+                                    (ol, region_bottom, or_, ob),
+                                    (ol, ot, or_, region_top),
+                                )
+                                if x1 < x2 and y1 < y2
+                            )
+                    regions = remaining
+                if not regions:
+                    return False
+                region = max(regions, key=lambda r: (r[2] - r[0]) * (r[3] - r[1]))
+                page_rect = image_box(
+                    region,
+                    left,
+                    top,
+                    full_width / width,
+                    full_height / height,
+                    crop[0] * scale,
+                    crop[3] * scale,
+                )
+                isolated_rect = image_box(
+                    region,
+                    obj_left,
+                    obj_top,
+                    isolated.width / obj_width,
+                    isolated.height / obj_height,
+                )
+                if not (
+                    0 <= page_rect[0] < page_rect[2] <= original.width
+                    and 0 <= page_rect[1] < page_rect[3] <= original.height
+                    and 0 <= isolated_rect[0] < isolated_rect[2] <= isolated.width
+                    and 0 <= isolated_rect[1] < isolated_rect[3] <= isolated.height
+                ):
+                    return False
+                alpha = isolated.getchannel("A").crop(isolated_rect)
+                expected = sum(v >= 128 for v in alpha.get_flattened_data())
+                before = original.crop(page_rect).get_flattened_data()
+                after = without.crop(page_rect).get_flattened_data()
+                visible = 0
+                for a, b in zip(before, after, strict=True):
+                    x, y = luminance(a), luminance(b)
+                    if (max(x, y) + 0.05) / (min(x, y) + 0.05) >= 3:
+                        visible += 1
+                # Raster phase changes the count slightly; the EHA original's
+                # lowest observed proportion is 75.7%. Require 70% of the
+                # isolated glyph so a tiny exposed sliver is not accepted.
+                if expected == 0 or visible < 0.7 * expected:
+                    return False
+        return True
+    except Exception:
+        # PDFium may report unsupported or malformed content through different
+        # exceptions. Inability to prove visibility must never become an anchor.
+        return False
+
+
+def pdf_series_cover(pdf_path: Path) -> dict[str, object] | None:
+    """Recover a single visible first-page series/range line from a PDF footer.
+
+    Docling can classify the product title as page furniture. The original ESA
+    datasheet prints the series and its power range on one physical line there.
+    Keep only this explicit title form, with one same-line, on-page range; a
+    filename, competing title, hidden text or unrelated body mention is not proof.
+    """
+    import pypdfium2
+
+    with pdf_path.open("rb") as handle:
+        sha = hashlib.file_digest(handle, "sha256").hexdigest()
+    if pdf_path.stem != sha:
+        raise ValueError("source PDF bytes do not match their content identity")
+    pdf = pypdfium2.PdfDocument(pdf_path)
+    try:
+        if not len(pdf):
+            return None
+        page = pdf[0]
+        try:
+            if page.get_rotation() != 0:
+                return None
+            left, bottom, right, top = page.get_bbox()
+            textpage = page.get_textpage()
+            try:
+                text = textpage.get_text_range()
+                # Offsets must address the exact original physical characters.
+                if len(text) != textpage.count_chars():
+                    return None
+                pattern = re.compile(
+                    r"(?im)^[ \t]*(?P<family>[a-z][a-z0-9]*[ \t]+series)"
+                    r"[ \t]+Residential Energy Storage System[ \t]+I[ \t]+"
+                    r"(?P<power>\d+(?:[.,]\d+)?[ \t]*[-–][ \t]*"
+                    r"\d+(?:[.,]\d+)?[ \t]*kW)"
+                    r"[ \t]*/[ \t]*\d+(?:[.,]\d+)?[ \t]*[-–][ \t]*"
+                    r"\d+(?:[.,]\d+)?[ \t]*kWh[ \t\r]*$"
+                )
+                matches = list(pattern.finditer(text))
+                if len(matches) != 1:
+                    return None
+                match = matches[0]
+
+                def bounds(group: str) -> tuple[float, float, float, float]:
+                    boxes = [
+                        textpage.get_charbox(i)
+                        for i in range(match.start(group), match.end(group))
+                        if not text[i].isspace()
+                    ]
+                    return (
+                        min(b[0] for b in boxes),
+                        min(b[1] for b in boxes),
+                        max(b[2] for b in boxes),
+                        max(b[3] for b in boxes),
+                    )
+
+                family, power = bounds("family"), bounds("power")
+                if not all(
+                    left <= box[0] < box[2] <= right
+                    and bottom <= box[1] < box[3] <= top
+                    for box in (family, power)
+                ):
+                    return None
+                if family[2] >= power[0] or max(family[1], power[1]) >= min(
+                    family[3], power[3]
+                ):
+                    return None
+                if not _visible_pdf_line(
+                    pdf,
+                    page,
+                    textpage,
+                    text,
+                    match.start(),
+                    match.end(),
+                    (left, bottom, right, top),
+                ):
+                    return None
+                line = match.group(0).strip(" \t\r")
+                line_start = (
+                    match.start()
+                    + len(match.group(0))
+                    - len(match.group(0).lstrip(" \t"))
+                )
+                return {
+                    "kind": "pdf_cover",
+                    "source_sha256": sha,
+                    "source_page": 1,
+                    "text": line,
+                    "line_start": line_start,
+                    "line_end": line_start + len(line),
+                    "page_size": [right - left, top - bottom],
+                    "family": {
+                        "text": match.group("family"),
+                        "char_start": match.start("family"),
+                        "char_end": match.end("family"),
+                        "bbox": [
+                            family[0] - left,
+                            family[1] - bottom,
+                            family[2] - left,
+                            family[3] - bottom,
+                        ],
+                    },
+                    "power": {
+                        "text": match.group("power"),
+                        "char_start": match.start("power"),
+                        "char_end": match.end("power"),
+                        "bbox": [
+                            power[0] - left,
+                            power[1] - bottom,
+                            power[2] - left,
+                            power[3] - bottom,
+                        ],
+                    },
+                }
+            finally:
+                textpage.close()
+        finally:
+            page.close()
+    finally:
+        pdf.close()
+
+
 def _pdf_model_spans(
     pdf: object,
     number: int,

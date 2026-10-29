@@ -15,6 +15,7 @@ from typing import Any
 from linker_genie.figures import chunk_of, swap_decimals
 from linker_genie.stock import phrase
 from linker_genie.tools import READ_ATTACHMENT, READ_PAGE, READ_PLANNING, READ_SOLUTION
+from linker_genie.warranty_answer import answers as warranty_answers
 
 
 @dataclass
@@ -60,6 +61,12 @@ class TurnFacts:
     documents: dict[str, Document] = field(default_factory=dict)
     # A table projection's figures all carry these original conditions.
     qualifications: dict[str, tuple[Qualification, ...]] = field(default_factory=dict)
+    warranty_chunks: set[str] = field(default_factory=set)
+    warranty_procedures: set[str] = field(default_factory=set)
+    technical_chunks: set[str] = field(default_factory=set)
+    warranty_models: dict[str, tuple[str, ...]] = field(default_factory=dict)
+    # Only these source-derived strings can be emitted as policy claims.
+    warranty_answers: dict[str, dict[str, str]] = field(default_factory=dict)
     # The current Woo product association for each returned knowledge chunk.
     knowledge_products: dict[str, tuple[int, ...]] = field(default_factory=dict)
     # Product ID → the commerce object a product ability returned for this
@@ -279,6 +286,21 @@ def merge(parts: list[TurnFacts]) -> TurnFacts:
         combined.tool_calls.extend(part.tool_calls)
         combined.documents.update(part.documents)
         combined.qualifications.update(part.qualifications)
+        combined.warranty_chunks.update(part.warranty_chunks)
+        combined.warranty_procedures.update(part.warranty_procedures)
+        combined.technical_chunks.update(part.technical_chunks)
+        for cid, answers in part.warranty_answers.items():
+            previous_answers = combined.warranty_answers.get(cid)
+            combined.warranty_answers[cid] = (
+                answers
+                if previous_answers is None or previous_answers == answers
+                else {}
+            )
+        for cid, models in part.warranty_models.items():
+            previous_models = combined.warranty_models.get(cid)
+            combined.warranty_models[cid] = (
+                models if previous_models is None or previous_models == models else ()
+            )
         for chunk_id in part.chunk_ids | set(part.knowledge_products):
             products = part.knowledge_products.get(chunk_id, ())
             previous = combined.knowledge_products.get(chunk_id)
@@ -700,6 +722,13 @@ def knowledge_qualifications(hit: dict[str, Any]) -> tuple[Qualification, ...] |
         )
     ):
         return None
+    if isinstance(figures, dict):
+        tagged = re.findall(r"\[n([1-9]\d*)=([^\[\]\n]+)\]", text)
+        shown = [
+            (f"{hit.get('chunk_id')}.n{number}", value) for number, value in tagged
+        ]
+        if len({key for key, _ in shown}) != len(shown) or dict(shown) != figures:
+            return None
     notes: list[Qualification] = []
     for item in raw:
         if not isinstance(item, dict):
@@ -722,7 +751,27 @@ def knowledge_qualifications(hit: dict[str, Any]) -> tuple[Qualification, ...] |
             return None
         notes.append(Qualification(quote, page, chunk_id, lang))
     expected = [f"{note.quote} (p. {note.page})" for note in notes]
-    if len(set(expected)) != len(expected) or sorted(annotations) != sorted(expected):
+    # Search may tag figures inside the original condition. Reconstruct the
+    # exact original line before trusting it, and bind every tag to this hit's
+    # own validated figure table. The quote retained for hydration stays verbatim.
+    valid = True
+    figure_map = figures if isinstance(figures, dict) else {}
+
+    def original(match: re.Match[str]) -> str:
+        nonlocal valid
+        key = f"{hit.get('chunk_id')}.n{match.group(1)}"
+        if figure_map.get(key) != match.group(2):
+            valid = False
+        return match.group(2)
+
+    annotations = [
+        re.sub(r"\[n([1-9]\d*)=([^\[\]\n]+)\]", original, line) for line in annotations
+    ]
+    if (
+        not valid
+        or len(set(expected)) != len(expected)
+        or sorted(annotations) != sorted(expected)
+    ):
         return None
     return tuple(notes)
 
@@ -744,6 +793,40 @@ def _from_knowledge(gathered: TurnFacts, payload: dict[str, Any]) -> None:
         notes = knowledge_qualifications(hit)
         if notes is None:
             continue
+        if (
+            hit.get("doc_type") in {"manual", "datasheet"}
+            and isinstance(hit.get("doc_url"), str)
+            and hit["doc_url"]
+            and hit.get("warranty_terms") is not True
+            and hit.get("warranty_procedure") is not True
+        ):
+            gathered.technical_chunks.add(chunk_id)
+        if hit.get("warranty_terms") is True or hit.get("warranty_procedure") is True:
+            models = hit.get("product_models")
+            products = hit.get("product_ids")
+            if (
+                (hit.get("warranty_terms") is True and not notes)
+                or (
+                    hit.get("warranty_terms") is True
+                    and hit.get("qualification_required") is not True
+                )
+                or not isinstance(models, list)
+                or not models
+                or not isinstance(products, list)
+                or len(models) != len(products)
+                or not all(isinstance(m, str) and m for m in models)
+                or not all(type(pid) is int and pid > 0 for pid in products)
+            ):
+                continue
+            if hit.get("warranty_terms") is True:
+                rendered = warranty_answers(hit, notes)
+                if not rendered or hit.get("warranty_answers") != rendered:
+                    continue
+                gathered.warranty_chunks.add(chunk_id)
+                gathered.warranty_answers[chunk_id] = rendered
+            else:
+                gathered.warranty_procedures.add(chunk_id)
+            gathered.warranty_models[chunk_id] = tuple(models)
         gathered.chunk_ids.add(chunk_id)
         products = hit.get("product_ids")
         scope = (
