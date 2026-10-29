@@ -276,7 +276,7 @@ function linker_commerce_cookieyes_disclosure_category( array $row ): array {
 		'visibility'         => (int) $row['visibility'],
 		'priority'           => (int) $row['priority'],
 		'sell_personal_data' => (int) $row['sell_personal_data'],
-		'meta'               => isset( $row['meta'] ) && null !== $row['meta'] ? (string) $row['meta'] : null,
+		'meta'               => isset( $row['meta'] ) ? (string) $row['meta'] : null,
 		'date_created'       => (string) $row['date_created'],
 		'date_modified'      => (string) $row['date_modified'],
 	);
