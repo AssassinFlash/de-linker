@@ -487,7 +487,9 @@ def test_new_manifest_freezes_the_requested_generation_model(
         ),
         products=ProductSources(lambda: None),  # type: ignore[arg-type]
     )
-    monkeypatch.setattr(kernel.products, "pv_basis", lambda _inputs: {"module": "frozen"})
+    monkeypatch.setattr(
+        kernel.products, "pv_basis", lambda _inputs: {"module": "frozen"}
+    )
     service = GeometricPvService(workspace, kernel, max_attempts=1)
     registry = ExecutionRegistry(kernel)
     routing = registry.routing(1)

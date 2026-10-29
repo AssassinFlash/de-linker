@@ -63,11 +63,7 @@ class RegisteredKernel(Protocol):
 def kernel_execution_keys(kernel: RegisteredKernel) -> tuple[str, ...]:
     """One kernel may execute every generation identity it freezes."""
     advertised = getattr(kernel, "execution_keys", None)
-    keys = (
-        tuple(advertised())
-        if advertised is not None
-        else (kernel.execution_key(),)
-    )
+    keys = tuple(advertised()) if advertised is not None else (kernel.execution_key(),)
     if (
         not keys
         or kernel.execution_key() not in keys
