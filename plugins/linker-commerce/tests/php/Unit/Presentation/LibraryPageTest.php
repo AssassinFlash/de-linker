@@ -538,7 +538,7 @@ final class LibraryPageTest extends TestCase {
 		$this->assertSame( 1, substr_count( $html, 'type="application/ld+json"' ) );
 		$this->assertStringContainsString( '"@type":"FAQPage"', $html );
 		$this->assertStringContainsString( '"name":"Is the module stackable?"', $html );
-		$this->assertStringContainsString( '"text":"Yes, up to four modules."', $html );
+		$this->assertStringContainsString( '"text":"Yes, up to four modules. GoodWe GW5.1-BAT-D-G21 — ESA battery manual, p. 12"', $html );
 		$this->assertStringContainsString( '"name":"What is the minimum order quantity, and where does Linker deliver?"', $html );
 		$this->assertConditionsMet();
 	}

@@ -664,7 +664,7 @@ final class LibraryPage {
 		}
 		foreach ( $model['brands'] as $brand ) {
 			foreach ( array_slice( $brand['answers'] ?? array(), 0, self::PAGE_SIZE ) as $answer ) {
-				$entity[] = $this->question( $answer['question'], $answer['answer'] );
+				$entity[] = $this->question( $answer['question'], $this->brand_answer_text( $answer ) );
 			}
 		}
 		if ( array() === $entity ) {
@@ -680,10 +680,24 @@ final class LibraryPage {
 	}
 
 	/**
+	 * The visible text of a brand answer: its answer, product link, and source
+	 * link when present. The schema consumes the same words without the links.
+	 *
+	 * @param array{question: string, answer: string, product: string, url: string, source: string, source_url: string} $answer Brand answer.
+	 */
+	private function brand_answer_text( array $answer ): string {
+		$text = $answer['answer'] . ' ' . $answer['product'];
+		if ( '' !== $answer['source'] ) {
+			$text .= ' — ' . $answer['source'];
+		}
+		return $text;
+	}
+
+	/**
 	 * One FAQPage question node, question and answer as the page prints them.
 	 *
 	 * @param string $question The question text.
-	 * @param string $answer   The answer text (the model's plain text, not the row's links).
+	 * @param string $answer   The visible answer text, with link markup when present.
 	 * @return array<string, mixed>
 	 */
 	private function question( string $question, string $answer ): array {

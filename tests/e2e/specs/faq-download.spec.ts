@@ -304,10 +304,12 @@ test.describe('the FAQ + document library', () => {
 					)
 						.replace(/\s+/g, ' ')
 						.trim(),
-					answer: (
-						row.querySelector('.linker-library-qa-a > p')
-							?.textContent ?? ''
+					answer: Array.from(
+						row.querySelector('.linker-library-qa-a')?.children ??
+							[]
 					)
+						.map((part) => part.textContent ?? '')
+						.join(' ')
 						.replace(/\s+/g, ' ')
 						.trim(),
 				}))
