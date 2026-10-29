@@ -6,28 +6,28 @@
       "case": "services-en-1440",
       "before": [1440, 7466],
       "after": [1440, 7626],
-      "ruled_region": [0, 1814, 1440, 7466],
+      "ruled_region": [0, 1814, 1440, 7626],
       "outside_ruled_different_pixels": 0
     },
     {
       "case": "services-en-390",
       "before": [390, 10353],
       "after": [390, 10788],
-      "ruled_region": [0, 2194, 390, 10353],
+      "ruled_region": [0, 2194, 390, 10788],
       "outside_ruled_different_pixels": 0
     },
     {
       "case": "services-de-1440",
       "before": [1440, 7524],
       "after": [1440, 7683],
-      "ruled_region": [0, 1814, 1440, 7524],
+      "ruled_region": [0, 1814, 1440, 7683],
       "outside_ruled_different_pixels": 0
     },
     {
       "case": "services-de-390",
       "before": [390, 10862],
       "after": [390, 11373],
-      "ruled_region": [0, 2334, 390, 10862],
+      "ruled_region": [0, 2334, 390, 11373],
       "outside_ruled_different_pixels": 0
     }
   ],
