@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import platform
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -248,7 +249,11 @@ HOST_DERIVED_FIXTURE_PATHS = frozenset(
 def host_invariant_view(node: Any, path: tuple[str | int, ...] = ()) -> Any:
     """Replace only the fixture paths proven to depend on exact host arithmetic."""
     if path in HOST_DERIVED_FIXTURE_PATHS:
-        return "<host-derived>"
+        return (
+            "<host-derived>"
+            if isinstance(node, str) and re.fullmatch(r"[0-9a-f]{64}", node)
+            else node
+        )
     if isinstance(node, dict):
         return {
             key: host_invariant_view(value, (*path, key)) for key, value in node.items()
