@@ -16,7 +16,7 @@ The package contains: H2 inverter x1, hexagon Philips bolt group M5x12 screw x5,
 
 **DE Q:** Was gehört zum Lieferumfang des H2-12K-T3?
 
-Zum Lieferumfang gehören: H2-Wechselrichter x1, Sechskant-Philips-Bolzengruppe M5x12 Schraube x5, PV-Steckverbindungen T3*6 x2 und T2*4 x2, steckbare Klemmleisten (2-polig x2, 3-polig x1, 6-polig x1), wasserdichte Abdeckung für Kommunikationsklemmen x1, Befestigungswinkel x1, Plus-Akku-Steckverbindung x2, Minus-Akku-Steckverbindung x2, AC-Klemme x10, M6x50 Schraubensatz x4, eSolar AIO3 x1, wasserdichte AC-Klemmenabdeckung x1, intelligente Messuhr x1, Stromwandler x3, Messuhr COMM-Kabel x1 (10 m), Dokumente, RJ45-Stecker x10 und korrekter Transformator CTF16-2K5-100. Zu den Dokumenten gehören das Handbuch, die Kurzanleitung zur Installation, die Garantiekarte und die Verpackungsliste.
+Zum Lieferumfang gehören: H2-Wechselrichter x1, Sechskant-Philips-Bolzengruppe M5x12 Schraube x5, PV-Steckverbindungen T3*6 x2 und T2*4 x2, steckbare Klemmleisten (2-polig x2, 3-polig x1, 6-polig x1), wasserdichte Abdeckung für Kommunikationsklemmen x1, Befestigungswinkel x1, Plus-Akku-Steckverbindung x2, Minus-Akku-Steckverbindung x2, AC-Klemme x10, M6x50 Schraubensatz x4, eSolar AIO3 x1, wasserdichte AC-Klemmenabdeckung x1, intelligenter Stromzähler x1, Stromwandler x3, Stromzähler-COMM-Kabel x1 (10 m), Dokumente, RJ45-Stecker x10 und korrekter Transformator CTF16-2K5-100. Zu den Dokumenten gehören das Handbuch, die Kurzanleitung zur Installation, die Garantiekarte und die Verpackungsliste.
 
 **Citation:** SAJ H2 10-30K user manual, German and English (covers the H2-10K-T3) · p.36 · https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf
 

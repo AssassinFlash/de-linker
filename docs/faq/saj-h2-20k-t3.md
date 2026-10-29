@@ -16,7 +16,7 @@ The packaging list covers the H2 inverter, a mounting bracket, PV connectors (T3
 
 **DE Q:** Was gehört zum Lieferumfang des H2-20K-T3?
 
-Die Verpackungsliste umfasst den H2-Wechselrichter, einen Befestigungswinkel, PV-Steckverbinder (T3*6 x2, T2*4 x2), steckbare Klemmleisten (2-polig x2, 3-polig x1, 6-polig x1), eine wasserdichte Abdeckung für Kommunikationsklemmen, eine wasserdichte AC-Klemmenabdeckung, eine AC-Klemme, einen M6 x 50 Schraubensatz x4, Plus-Akku-Steckverbindungen x2, Minus-Akku-Steckverbindungen x2, ein eSolar AIO3, eine intelligente Messuhr, Stromwandler x3, ein Messuhr-COMM-Kabel (10 m), RJ45-Stecker x10 und Dokumente (Handbuch, Kurzanleitung zur Installation, Garantiekarte, Verpackungsliste).
+Die Verpackungsliste umfasst den H2-Wechselrichter, einen Befestigungswinkel, PV-Steckverbinder (T3*6 x2, T2*4 x2), steckbare Klemmleisten (2-polig x2, 3-polig x1, 6-polig x1), eine wasserdichte Abdeckung für Kommunikationsklemmen, eine wasserdichte AC-Klemmenabdeckung, eine AC-Klemme, einen M6 x 50 Schraubensatz x4, Plus-Akku-Steckverbindungen x2, Minus-Akku-Steckverbindungen x2, ein eSolar AIO3, einen intelligenten Stromzähler, Stromwandler x3, ein Stromzähler-COMM-Kabel (10 m), RJ45-Stecker x10 und Dokumente (Handbuch, Kurzanleitung zur Installation, Garantiekarte, Verpackungsliste).
 
 **Citation:** SAJ H2 10-30K user manual, German and English (covers the H2-10K-T3) · p.36 · https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf
 

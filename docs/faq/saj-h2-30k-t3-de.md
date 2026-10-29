@@ -31,7 +31,7 @@ The unpacking list covers the H2 series, not the H2-30K-T3-DE alone. It lists: H
 
 **DE Q:** Was gehört zum Lieferumfang des H2-30K-T3-DE?
 
-Die Auspackliste gilt für die H2-Serie, nicht nur für den H2-30K-T3-DE. Sie nennt: H2-Wechselrichter x1, Sechskant-Philips-Bolzengruppe M5 x12 Schraube x5, PV-Steckverbindungen T3*6 x2 und T2*4 x2, steckbare Klemmleiste 2-polig x2, 3-polig x1 und 6-polig x1, wasserdichte Abdeckung für Kommunikationsklemmen x1, Befestigungswinkel x1, Plus-Akku-Steckverbindung x2, Minus-Akku-Steckverbindung x2, AC-Klemme x10, M6 x50 Schraubensatz x4, eSolar AIO3 x1, wasserdichte AC-Klemmenabdeckung x1, intelligente Messuhr x1, Stromwandler x3, Messuhr COMM-Kabel x1 (10 m), RJ45-Stecker x10 sowie Dokumente (Handbuch, Kurzanleitung zur Installation, Garantiekarte, Verpackungsliste).
+Die Auspackliste gilt für die H2-Serie, nicht nur für den H2-30K-T3-DE. Sie nennt: H2-Wechselrichter x1, Sechskant-Philips-Bolzengruppe M5 x12 Schraube x5, PV-Steckverbindungen T3*6 x2 und T2*4 x2, steckbare Klemmleiste 2-polig x2, 3-polig x1 und 6-polig x1, wasserdichte Abdeckung für Kommunikationsklemmen x1, Befestigungswinkel x1, Plus-Akku-Steckverbindung x2, Minus-Akku-Steckverbindung x2, AC-Klemme x10, M6 x50 Schraubensatz x4, eSolar AIO3 x1, wasserdichte AC-Klemmenabdeckung x1, intelligenter Stromzähler x1, Stromwandler x3, Stromzähler-COMM-Kabel x1 (10 m), RJ45-Stecker x10 sowie Dokumente (Handbuch, Kurzanleitung zur Installation, Garantiekarte, Verpackungsliste).
 
 **Citation:** SAJ H2 10-30K user manual, German and English (covers the H2-10K-T3) · p.36 · https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf
 
