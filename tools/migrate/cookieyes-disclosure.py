@@ -169,7 +169,7 @@ def command(wp: list[str], source: str) -> list[str]:
         if part == "wp" or part.endswith("/wp"):
             invocation = [*wp[index:], "eval", source]
             transport = wp[:index]
-            if transport and transport[0] == "ssh":
+            if transport and Path(transport[0]).name == "ssh":
                 return [*transport, shlex.join(invocation)]
             return invocation
     raise RuntimeError("no wp binary in the WP-CLI command")

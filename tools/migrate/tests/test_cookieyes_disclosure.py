@@ -121,6 +121,12 @@ def test_ssh_keeps_the_php_payload_as_one_remote_argument() -> None:
         )
     ]
     assert disclosure.command(["wp"], "echo 1;") == ["wp", "eval", "echo 1;"]
+    absolute = ["/usr/bin/ssh", "hostinger-de-linker", "/usr/local/bin/wp"]
+    assert disclosure.command(absolute, "echo 1;") == [
+        "/usr/bin/ssh",
+        "hostinger-de-linker",
+        disclosure.shlex.join(["/usr/local/bin/wp", "eval", "echo 1;"]),
+    ]
 
 
 def test_rollback_cannot_bypass_the_production_backup_gate(
