@@ -140,7 +140,15 @@ def prepared_profile(blobs: Blobs, raw_sha256: str, metadata: Object) -> PowerSe
             SeriesSource(input_hash, "modelled", "UTC", native, encode(details)),
             (transformation,),
         )
-        if result.total_kwh != _number(witness.get("energy_kwh")):
+        # The profile total is summed from exact retained watts. The stored
+        # energy is separately spelled at platform-stable precision, so their
+        # comparison uses that spelling's documented bound.
+        if not math.isclose(
+            result.total_kwh,
+            _number(witness.get("energy_kwh")),
+            rel_tol=2e-9,
+            abs_tol=1e-12,
+        ):
             raise VersionUnavailable("PV output energy differs from retained values")
         return result
     except InvalidInput as error:

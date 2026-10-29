@@ -12,7 +12,7 @@ import {
 	prepareSave,
 	acknowledgeSave,
 } from "../src/domain/draft.ts";
-import fixture from "./fixtures/preparation-flow.json" with { type: "json" };
+import fixture from "./fixtures/index.ts";
 
 // The existing synthetic model is served through the maintained-source
 // contract. This fixture is never a runtime product or manufacturer fact.

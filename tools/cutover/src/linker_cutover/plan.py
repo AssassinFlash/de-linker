@@ -63,6 +63,17 @@ THEMES_DIR = "wp-content/themes"
 # would be an unverifiable second source of the same plugin.
 INSTALLED_PLUGINS = ("polylang", "cookie-law-info", "wp-consent-api")
 
+# Production's existing full-page cache. It stays target-owned: the deploy reads
+# the installed plugin list and never installs or upgrades the plugin on a local
+# instance. Where the host already owns it, deploy purges after the switch and
+# requires the verified query exclusion. It does not write that option. An empty
+# cache-exc cached arbitrary query variants on 2026-10-29; the live value
+# litespeed.conf.cache-exc=["?"] stays as the host set it.
+PAGE_CACHE_PLUGIN = "litespeed-cache"
+PAGE_CACHE_PURGE = ("litespeed-purge", "all")
+PAGE_CACHE_EXCLUSION_OPTION = "litespeed.conf.cache-exc"
+PAGE_CACHE_QUERY_EXCLUSION = "?"
+
 # The German (Formal) language packs, installed by WP-CLI from the translation
 # API (like INSTALLED_PLUGINS, the native installer is the verified channel):
 # WordPress core's and WooCommerce's de_DE_formal. The site is English and
@@ -204,11 +215,10 @@ OBJECT_CACHE_PLUGIN = "redis-cache"
 OBJECT_CACHE_DROPIN = "wp-content/object-cache.php"
 
 # What only the host's control panel can do. The script prints these; it does
-# not claim them. (Spec 17 §6 names the first two; the third is LiteSpeed's
-# purge, which the plugin exposes as a WP-CLI command when it is installed.)
+# not claim them. (Spec 17 §6 names the first two; LiteSpeed's WP-CLI purge is
+# handled by deploy when PAGE_CACHE_PLUGIN is installed.)
 MANUAL = (
     "hPanel: cron every minute runs `wp cron event run --due-now`",
-    "LiteSpeed: purge the whole cache (or `wp litespeed-purge all`) after the switch",
     "VPS: run the engine with LINKER_ENGINE_CORS_ORIGINS=https://de-linker.com — the "
     "configurator calls the engine cross-origin, and without the allowance the browser "
     "blocks every call (the roof step first)",

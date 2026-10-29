@@ -37,10 +37,30 @@ final class Twins {
 	private const COPIED_META = array( '_wp_page_template', '_thumbnail_id', '_lc_livecanvas_enabled', 'lc_use_template_of_slug' );
 
 	/**
+	 * Meta mirrored as a whole key: copied when the English post carries it,
+	 * deleted from the German twin when it does not. The indexing override
+	 * `_seopress_robots_index = yes` is the owner's per-page ruling (the
+	 * English thank-you page carries it, 2026-10-29), and a twin that keeps
+	 * its own value after the English page drops it would split the pair's
+	 * indexing policy — the copied-only-when-present rule above cannot remove
+	 * a key, so these keys get both directions (SEOPress 10.3 reads the meta
+	 * per post, src/Services/Options/TitleOption.php::getTaxNoIndex and its
+	 * post twin; it is the only `_seopress_robots%` key in use on the site).
+	 */
+	private const MIRRORED_META = array( '_seopress_robots_index' );
+
+	/**
 	 * Term meta copied from the English term as it is: WooCommerce's
 	 * category order, display type and image (media is not translated).
 	 */
 	private const COPIED_TERM_META = array( 'order', 'display_type', 'thumbnail_id' );
+
+	/**
+	 * Term meta mirrored as a whole key in the translation path. The category
+	 * value also gates this PR's blog-category schema, so its presence and
+	 * absence must be symmetric.
+	 */
+	private const MIRRORED_TERM_META = array( '_seopress_robots_index' );
 
 	/**
 	 * Post types whose `is_*` meta says where LiveCanvas uses them
@@ -329,6 +349,14 @@ final class Twins {
 					update_term_meta( $twin, $key, $value );
 				}
 			}
+			foreach ( self::MIRRORED_TERM_META as $key ) {
+				$value = get_term_meta( $term_id, $key, true );
+				if ( is_string( $value ) && '' !== $value ) {
+					update_term_meta( $twin, $key, $value );
+				} else {
+					delete_term_meta( $twin, $key );
+				}
+			}
 			// On every write, not only the first: the German term may already
 			// exist when the English posts get their categories (the
 			// migration creates the term before the posts), and a later
@@ -473,6 +501,14 @@ final class Twins {
 			$copied = in_array( $key, self::COPIED_META, true ) || ( in_array( $source->post_type, self::LIVECANVAS_TYPES, true ) && str_starts_with( $key, 'is_' ) );
 			if ( $copied && isset( $meta[0] ) ) {
 				update_post_meta( $twin, $key, wp_slash( maybe_unserialize( $meta[0] ) ) );
+			}
+		}
+		foreach ( self::MIRRORED_META as $key ) {
+			$value = get_post_meta( $source->ID, $key, true );
+			if ( is_string( $value ) && '' !== $value ) {
+				update_post_meta( $twin, $key, wp_slash( $value ) );
+			} else {
+				delete_post_meta( $twin, $key );
 			}
 		}
 		$this->translated_post_meta( $twin, $values );
