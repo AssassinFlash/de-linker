@@ -154,12 +154,12 @@ jobs:
               if len(parents) >= 3:
                   source = parents[2]
               else:
-                  subject = git("show", "-s", "--format=%s", commit).decode().strip()
-                  pull = re.search(r"\(#([0-9]+)\)$", subject)
-                  if not pull:
-                      return None
                   repo = os.environ["REPOSITORY"]
-                  source = api(f"repos/{repo}/pulls/{pull.group(1)}")["head"]["sha"]
+                  pulls = api(f"repos/{repo}/commits/{commit}/pulls")
+                  merged = [pull for pull in pulls if pull.get("merge_commit_sha") == commit]
+                  if not merged:
+                      return None
+                  source = merged[0]["head"]["sha"]
               run = latest_run(source, "pull_request")
               return run if checked_run(run, commit) else None
 
