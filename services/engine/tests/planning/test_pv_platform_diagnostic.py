@@ -13,6 +13,7 @@ from unittest.mock import patch
 
 from linker_engine.planning.canonical import Json, decode_object
 from linker_engine.planning.pv_generation import PvGeneration
+from linker_engine.planning.runtime_snapshot import RuntimeSnapshot
 
 from . import export_preparation_fixture
 
@@ -63,6 +64,9 @@ def differences(
 def test_actual_witness_platform_differences() -> None:
     document, actual = capture_witness()
     if os.environ.get("CI") == "true":
+        host = json.loads(RuntimeSnapshot.capture().content)
+        keys = ("python", "platform", "machine", "libc", "dependencies")
+        print("PV_PLATFORM_HOST", json.dumps({key: host[key] for key in keys}))
         raw = json.dumps(document, ensure_ascii=False, sort_keys=True).encode()
         packed = gzip.compress(raw, mtime=0)
         print("PV_PLATFORM_DOCUMENT_SHA256", hashlib.sha256(raw).hexdigest())

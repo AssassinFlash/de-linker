@@ -3,10 +3,12 @@
 Uses the retained real TMY and explicit synthetic model/roof with a simulated
 provider adapter. Never connects to a live service, account, or project store.
 
-The export is reproducible: identifiers and clock values come from a fixed
-sequence, and the runtime snapshot uses a synthetic Python, platform and
-dependency identity. Two runs on macOS and Linux therefore produce identical
-bytes. A fixture diff means the saved objects changed, not that the host did.
+Identifiers and clock values come from a fixed sequence. The runtime snapshot
+uses a synthetic label rather than claiming to be the machine's live execution
+identity. Numerical results still come from the actual pinned host libraries.
+Each supported host family has its own complete exported baseline; no precision
+is removed and no hash is ignored to pretend that different libm implementations
+produced the same bytes.
 
 Every key of the browser fixture is produced here, one saved workflow at a
 time: weather acquisition, PV preparation, the managed roof AC reference, the
