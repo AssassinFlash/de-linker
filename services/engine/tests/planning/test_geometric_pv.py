@@ -675,7 +675,7 @@ def test_retained_direct_only_request_does_not_gain_perez_visibility_fields() ->
 
 
 def test_report_wording_follows_the_recorded_diffuse_policy() -> None:
-    common = {
+    common: Object = {
         "parameters": {"parameters": {"pvlib_version": "0.16.1"}},
         "profile_summary": {
             "start_utc": "2020-01-01T00:00:00+00:00",

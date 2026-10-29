@@ -485,7 +485,7 @@ def test_new_manifest_freezes_the_requested_generation_model(
             max_bounds_checks=1000,
             index_leaf_size=2,
         ),
-        products=ProductSources(lambda: None),  # type: ignore[arg-type]
+        products=ProductSources(lambda: cast(Any, object())),
     )
     monkeypatch.setattr(
         kernel.products, "pv_basis", lambda _inputs: {"module": "frozen"}
@@ -498,7 +498,8 @@ def test_new_manifest_freezes_the_requested_generation_model(
     assert registry._by_key[kernel.execution_key_for(MODEL_V2)] is kernel
 
     def enqueue(model_request: object, key: str) -> Object:
-        document = cast(Any, model_request).model_dump(mode="json")
+        document = cast(Object, cast(Any, model_request).model_dump(mode="json"))
+        model = cast(str, document["model"])
         project = workspace.create(
             owner,
             key,
@@ -507,19 +508,25 @@ def test_new_manifest_freezes_the_requested_generation_model(
             input_contract=GEOMETRIC_PV_INPUT_CONTRACT,
         )
         run = service.evaluate(owner, project.id, 1, key=key)
-        assert run.manifest["context"]["models"]["generation"] == document["model"]
+        models = cast(Object, cast(Object, run.manifest["context"])["models"])
+        assert models["generation"] == model
         with workspace.database.read() as connection:
-            route = connection.execute(
-                "SELECT evaluation_routes.execution_sha256 FROM evaluation_routes "
-                "JOIN jobs ON jobs.id=evaluation_routes.job_id WHERE jobs.run_id=?",
-                (run.id,),
-            ).fetchone()
+            route = cast(
+                Any,
+                connection.execute(
+                    "SELECT evaluation_routes.execution_sha256 FROM evaluation_routes "
+                    "JOIN jobs ON jobs.id=evaluation_routes.job_id WHERE jobs.run_id=?",
+                    (run.id,),
+                ).fetchone(),
+            )
         assert route is not None
-        assert route["execution_sha256"] == kernel.execution_key_for(document["model"])
-        return cast(Object, run.manifest)
+        assert route["execution_sha256"] == kernel.execution_key_for(model)
+        return run.manifest
 
     retained = enqueue(scenario(parameter_document()), "freeze-v1")
     current = enqueue(perez_request(perez_parameters()), "freeze-v2")
-    assert retained["context"]["models"]["generation"] == MODEL_V1
-    assert current["context"]["models"]["generation"] == MODEL_V2
+    retained_models = cast(Object, cast(Object, retained["context"])["models"])
+    current_models = cast(Object, cast(Object, current["context"])["models"])
+    assert retained_models["generation"] == MODEL_V1
+    assert current_models["generation"] == MODEL_V2
     assert kernel.execution_key_for(MODEL_V1) != kernel.execution_key_for(MODEL_V2)
