@@ -169,7 +169,11 @@ final class AuthTemplatesTest extends TestCase {
 		return $cases;
 	}
 
-	/** A retry hook can buffer the form without pulling notices out of the card. */
+	/**
+	 * A retry hook can buffer the form without pulling notices out of the card.
+	 *
+	 * @throws \LogicException If WP_Mock does not return an action responder.
+	 */
 	public function test_recovery_retry_keeps_notice_and_input_inside_the_card(): void {
 		$this->plain_text();
 		WP_Mock::userFunction( 'is_account_page', array( 'return' => true ) );
@@ -179,13 +183,18 @@ final class AuthTemplatesTest extends TestCase {
 		WP_Mock::userFunction( 'wp_nonce_field' );
 		$this->filter_returns( 'woocommerce_lost_password_message', 'Reset instructions' );
 		WP_Mock::expectAction( 'woocommerce_lostpassword_form' );
-		WP_Mock::onAction( 'woocommerce_before_lost_password_form' )->with( null )->perform(
+		$before = WP_Mock::onAction( 'woocommerce_before_lost_password_form' )->with( null );
+		$after  = WP_Mock::onAction( 'woocommerce_after_lost_password_form' )->with( null );
+		if ( ! $before instanceof \WP_Mock\Action_Responder || ! $after instanceof \WP_Mock\Action_Responder ) {
+			throw new \LogicException( 'The native form hooks must use action responders.' );
+		}
+		$before->perform(
 			static function (): void {
 				echo '<div class="woocommerce-error">Try again</div>';
 				ob_start(); // Mirrors the retained-input hook's own form buffer.
 			}
 		);
-		WP_Mock::onAction( 'woocommerce_after_lost_password_form' )->with( null )->perform(
+		$after->perform(
 			static function (): void {
 				$html = (string) ob_get_clean();
 				echo str_replace( 'id="user_login"', 'id="user_login" value="installer@example.test"', $html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Synthetic hook fixture.

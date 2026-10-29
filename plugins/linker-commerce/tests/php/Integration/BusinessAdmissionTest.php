@@ -508,7 +508,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		// A first-time visitor's newly set cookie is not in this request yet.
 		unset( $_COOKIE['wp_woocommerce_session_recovery_fixture'] );
 		\Linker\Commerce\Mail\ResetNotice::capture_submission( new WP_Error( 'fixture', 'Synthetic failure' ), new \WP_User() );
-		$saved = WC()->session->get( $session_key );
+		$saved = WC()->session->get( $session_key, array() );
 		$this->assertIsArray( $saved );
 		$this->assertSame( array( 'user_login' => 'installer@example.test' ), $saved['fields'] );
 
@@ -516,7 +516,11 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 			echo '<div class="woocommerce-error">Synthetic retry notice</div>';
 		};
 		add_action( 'woocommerce_before_lost_password_form', $notice ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Fixture output at Woo's native hook.
-		$this->later( static fn () => remove_action( 'woocommerce_before_lost_password_form', $notice ) );
+		$this->later(
+			static function () use ( $notice ): void {
+				remove_action( 'woocommerce_before_lost_password_form', $notice );
+			}
+		);
 		$this->assertNotFalse( has_action( 'woocommerce_before_lost_password_form', array( \Linker\Commerce\Mail\ResetNotice::class, 'render_begin' ) ) );
 		$this->assertNotFalse( has_action( 'woocommerce_after_lost_password_form', array( \Linker\Commerce\Mail\ResetNotice::class, 'render_end' ) ) );
 		ob_start();
