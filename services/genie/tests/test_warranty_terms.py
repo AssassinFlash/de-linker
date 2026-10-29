@@ -163,9 +163,12 @@ def test_conflicting_ranges_on_one_cover_do_not_compile_procedures(title: str) -
     assert not procedures
 
 
-def _pdf_fixture(tmp_path: Path, lines: list[tuple[int, str]]) -> Path:
+def _pdf_fixture(
+    tmp_path: Path, lines: list[tuple[int, str]], *, title_size: int = 12
+) -> Path:
     commands = "\n".join(
-        f"BT /F1 12 Tf 40 {y} Td ({line}) Tj ET" for y, line in lines
+        f"BT /F1 {title_size if index == 0 else 12} Tf 40 {y} Td ({line}) Tj ET"
+        for index, (y, line) in enumerate(lines)
     ).encode()
     objects = [
         b"<< /Type /Catalog /Pages 2 0 R >>",
@@ -242,8 +245,20 @@ def test_visible_sts_cover_flows_through_authorized_warranty_search(
     ]
     assert len(sheets) == 2
     pdfs = [
-        _pdf_fixture(tmp_path, [(40, "STS Series"), (80, f"Source {number}")])
-        for number in (1, 2)
+        _pdf_fixture(
+            tmp_path,
+            [
+                (500, "STS Series"),
+                (
+                    480,
+                    "Static Transfer Switch I GW125K-STS-G10"
+                    if sheet["blob_sha256"].startswith("348497c21d2f")
+                    else "30kW/60kW I Static Transfer Switch",
+                ),
+            ],
+            title_size=32,
+        )
+        for sheet in sheets
     ]
     replacements = {
         d["blob_sha256"]: pdf.stem for d, pdf in zip(sheets, pdfs, strict=True)

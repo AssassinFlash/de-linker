@@ -23,6 +23,16 @@ POWER_RANGE = re.compile(
     r"(?<!\w)(\d+(?:[.,]\d+)?)\s*[-–]\s*(\d+(?:[.,]\d+)?)\s*kW\b",
     re.IGNORECASE,
 )
+# The two hosted STS covers use these immediately adjacent subtitle forms.
+# Their manufacturer-original PDFs, not filenames or compatibility mentions,
+# are the evidence for accepting an otherwise unqualified series title.
+STS_COVER_SUBTITLE = re.compile(
+    r"(?:Static[ \t]+Transfer[ \t]+Switch[ \t]+I[ \t]+"
+    r"GW\d+(?:[.,]\d+)?K-STS-G\d+|"
+    r"\d+(?:[.,]\d+)?kW/\d+(?:[.,]\d+)?kW[ \t]+I[ \t]+"
+    r"Static[ \t]+Transfer[ \t]+Switch)",
+    re.IGNORECASE,
+)
 
 CONDITIONAL_CLAIMS_NOTE = (
     "This source establishes only the manufacturer's first-contact claims procedure "
@@ -207,11 +217,40 @@ def valid_pdf_cover(anchor: Any, sha: str, chunk_id: str, text: str) -> bool:
         spans.append(span)
     if standalone_sts:
         family = spans[0]
+        subtitle = anchor.get("subtitle")
+        if not isinstance(subtitle, dict):
+            return False
+        sub_text, sub_start, sub_end, box = (
+            subtitle.get("text"),
+            subtitle.get("char_start"),
+            subtitle.get("char_end"),
+            subtitle.get("bbox"),
+        )
+        if (
+            not isinstance(sub_text, str)
+            or STS_COVER_SUBTITLE.fullmatch(sub_text) is None
+            or type(sub_start) is not int
+            or type(sub_end) is not int
+            or not 1 <= sub_start - end <= 2
+            or sub_end - sub_start != len(sub_text)
+            or not isinstance(box, (list, tuple))
+            or len(box) != 4
+            or any(type(v) not in (int, float) or not math.isfinite(v) for v in box)
+            or not (0 <= box[0] < box[2] <= size[0] and 0 <= box[1] < box[3] <= size[1])
+        ):
+            return False
+        family_box = family["bbox"]
+        height = family_box[3] - family_box[1]
         return (
-            family["char_start"] == start
+            start == 0
+            and family["char_start"] == start
             and family["char_end"] == end
             and family["text"] == text
             and family_signature(text) == ("sts", "", "")
+            and box[3] < family_box[1]
+            and family_box[1] - box[3] < height
+            and abs(box[0] - family_box[0]) < height
+            and box[3] - box[1] < height
         )
     family, power = spans
     return (

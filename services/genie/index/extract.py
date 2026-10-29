@@ -34,6 +34,7 @@ from linker_genie.table_projection import (
     SourceSpan,
     SourceTextSpan,
 )
+from linker_genie.warranty_scope import STS_COVER_SUBTITLE
 
 BlockKind = Literal["heading", "text", "table"]
 
@@ -453,9 +454,9 @@ def pdf_series_cover(pdf_path: Path) -> dict[str, object] | None:
 
     Docling can classify the product title as page furniture. The original ESA
     datasheet prints the series and its power range on one physical line there.
-    The STS datasheets instead print the standalone series name on the cover.
-    Accept only those two explicit forms; a filename, competing title, hidden
-    text or unrelated body mention is not proof.
+    The hosted STS originals instead put a standalone series title first,
+    above an aligned Static Transfer Switch subtitle. Accept only those
+    physically visible cover forms, not a compatibility mention in the body.
     """
     import pypdfium2
 
@@ -496,10 +497,12 @@ def pdf_series_cover(pdf_path: Path) -> dict[str, object] | None:
                     return None
                 match = matches[0]
 
-                def bounds(group: str) -> tuple[float, float, float, float]:
+                def span_bounds(
+                    start: int, end: int
+                ) -> tuple[float, float, float, float]:
                     boxes = [
                         textpage.get_charbox(i)
-                        for i in range(match.start(group), match.end(group))
+                        for i in range(start, end)
                         if not text[i].isspace()
                     ]
                     return (
@@ -509,8 +512,62 @@ def pdf_series_cover(pdf_path: Path) -> dict[str, object] | None:
                         max(b[3] for b in boxes),
                     )
 
-                family = bounds("family")
-                power = bounds("power") if "power" in match.re.groupindex else None
+                family = span_bounds(match.start("family"), match.end("family"))
+                power = (
+                    span_bounds(match.start("power"), match.end("power"))
+                    if "power" in match.re.groupindex
+                    else None
+                )
+                subtitle_match = None
+                subtitle = None
+                if power is None:
+                    # Both manufacturer originals place this as the first text
+                    # on the page, followed by their switch/model subtitle.
+                    # Other standalone series lines make the cover ambiguous.
+                    series_lines = re.findall(
+                        r"(?im)^[ \t]*[a-z][a-z0-9]*[ \t]+series[ \t\r]*$", text
+                    )
+                    subtitle_match = re.compile(r"\r?\n([^\r\n]+)").match(
+                        text, match.end("family")
+                    )
+                    if (
+                        match.start("family") != 0
+                        or len(series_lines) != 1
+                        or subtitle_match is None
+                        or STS_COVER_SUBTITLE.fullmatch(subtitle_match.group(1)) is None
+                    ):
+                        return None
+                    subtitle = span_bounds(
+                        subtitle_match.start(1), subtitle_match.end(1)
+                    )
+                    height = family[3] - family[1]
+                    if not (
+                        left <= subtitle[0] < subtitle[2] <= right
+                        and bottom <= subtitle[1] < subtitle[3] <= top
+                        and subtitle[3] < family[1]
+                        and family[1] - subtitle[3] < height
+                        and abs(subtitle[0] - family[0]) < height
+                        and subtitle[3] - subtitle[1] < height
+                    ):
+                        return None
+                    # A later-extracted object can still be physically above
+                    # the line or a larger heading. Neither is a cover title.
+                    for i in range(match.end("family"), len(text)):
+                        if text[i].isspace():
+                            continue
+                        box = textpage.get_charbox(i)
+                        if box[3] > family[3] or box[3] - box[1] >= height:
+                            return None
+                    if not _visible_pdf_line(
+                        pdf,
+                        page,
+                        textpage,
+                        text,
+                        subtitle_match.start(1),
+                        subtitle_match.end(1),
+                        (left, bottom, right, top),
+                    ):
+                        return None
                 if not all(
                     left <= box[0] < box[2] <= right
                     and bottom <= box[1] < box[3] <= top
@@ -568,6 +625,18 @@ def pdf_series_cover(pdf_path: Path) -> dict[str, object] | None:
                             power[1] - bottom,
                             power[2] - left,
                             power[3] - bottom,
+                        ],
+                    }
+                if subtitle is not None and subtitle_match is not None:
+                    result["subtitle"] = {
+                        "text": subtitle_match.group(1),
+                        "char_start": subtitle_match.start(1),
+                        "char_end": subtitle_match.end(1),
+                        "bbox": [
+                            subtitle[0] - left,
+                            subtitle[1] - bottom,
+                            subtitle[2] - left,
+                            subtitle[3] - bottom,
                         ],
                     }
                 return result
