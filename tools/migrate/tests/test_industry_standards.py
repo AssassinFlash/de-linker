@@ -102,10 +102,49 @@ def test_a_drifted_or_wrong_page_is_refused() -> None:
         standards.plan_page(drifted, "en")
 
 
-def test_reviewed_row_has_no_invented_trade_numbers_or_incoterms() -> None:
-    english, german = standards.plan_pair(page(), page())
-    for source in (english, german):
-        assert not any(value in source for value in standards.FORBIDDEN)
+@pytest.mark.parametrize(
+    "claim",
+    (
+        "Prices are quoted EXW from our warehouse.",
+        "Shipping is free above EUR 4,000.",
+        "Delivery takes three business days.",
+        "The manufacturer provides a 10-year warranty.",
+        "Open Warranty & Replacements from your order. The signed-in account "
+        "confirms the order, and the form keeps the serial number, model, and "
+        "fault description with that order.",
+        "Open an online account before submitting a claim.",
+        "We have 12 units in stock.",
+        "Der Versand ist versandkostenfrei.",
+        "Die Lieferung dauert drei Werktage.",
+        "Die Garantie beträgt 10 Jahre.",
+        "Öffnen Sie Garantie & Ersatz aus Ihrer Bestellung. Das angemeldete "
+        "Konto bestätigt die Bestellung, und das Formular hält Seriennummer, "
+        "Modell und Fehlerbeschreibung bei dieser Bestellung.",
+        "Eröffnen Sie online ein Konto.",
+        "Wir haben 12 Stück am Lager.",
+    ),
+)
+def test_the_guard_scans_existing_page_copy_for_excluded_claims(claim: str) -> None:
+    with pytest.raises(ValueError, match="Forbidden customer claim"):
+        standards.plan_page(page().replace("Keep this copy.", claim), "en")
+
+
+def test_existing_visible_warranty_and_delivery_copy_is_not_a_false_positive() -> None:
+    content = page().replace(
+        "Keep this copy.",
+        "We coordinate warranty claims and equipment replacements. "
+        "Delivery is arranged for the destination.",
+    )
+    assert standards.plan_page(content, "en") != content
+
+
+def test_guard_ignores_markup_attributes_and_script_text() -> None:
+    content = page().replace(
+        "Keep this copy.",
+        '<span aria-label="Business days">Keep this copy.</span>'
+        '<script>const unsafe = "free shipping EXW signed-in account";</script>',
+    )
+    assert standards.plan_page(content, "en") != content
 
 
 def test_the_trade_library_has_no_online_warranty_or_incoterm_claim() -> None:

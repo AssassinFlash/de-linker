@@ -13,7 +13,9 @@ import argparse
 import hashlib
 import importlib.util
 import json
+import re
 from datetime import UTC, datetime
+from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
@@ -58,15 +60,116 @@ DE_MARKUP = """<div class="lk-trade-standards" aria-label="Leistungen für Fachp
 </div>"""
 
 MARKUP = (EN_MARKUP, DE_MARKUP)
-FORBIDDEN = (
-    "Incoterms",
-    "EXW",
-    "DAP",
-    "free shipping",
-    "kostenloser Versand",
-    "business days",
-    "Werktage",
+FORBIDDEN_PATTERNS = (
+    ("named trade term", re.compile(r"\b(?:incoterms?|exw|dap)\b", re.I)),
+    (
+        "free shipping",
+        re.compile(
+            r"\b(?:free shipping|shipping (?:is )?free|shipping included|"
+            r"versandkostenfrei|kostenloser versand|versand inklusive)\b",
+            re.I,
+        ),
+    ),
+    (
+        "fixed delivery time",
+        re.compile(
+            r"\b(?:business|working|calendar) days?\b|\b(?:werktage?|arbeitstage?)\b|"
+            r"\b(?:delivery|deliver|lieferung|lieferzeit)\b[^.!?]{0,40}"
+            r"\b\d+\s*(?:days?|weeks?|tage?|werktage?|wochen?)\b",
+            re.I,
+        ),
+    ),
+    (
+        "fixed warranty period",
+        re.compile(
+            r"\b(?:\d+\s*(?:months?|years?|monate?n?|jahre?n?)\s+"
+            r"(?:warranty|guarantee|garantie)|"
+            r"(?:warranty|guarantee|garantie)\s+(?:of\s+)?"
+            r"\d+\s*(?:months?|years?|monate?n?|jahre?n?)|"
+            r"\d+[- ](?:year|month)\s+(?:warranty|guarantee)|"
+            r"(?:warranty|guarantee|garantie)\b[^.!?]{0,30}"
+            r"\d+\s*(?:months?|years?|monate?n?|jahre?n?))\b",
+            re.I,
+        ),
+    ),
+    (
+        "online warranty workflow",
+        re.compile(
+            r"\bopen\s+warranty\s*(?:&|and)\s*replacements?\b|"
+            r"\b(?:online|web|support|warranty|claim|service|order)\s+"
+            r"(?:ticket|form)s?\b|\bticket systems?\b|"
+            r"\b(?:online|web|support|garantie|service|bestell|auftrags)"
+            r"(?:-|\s)?formular\b|\bticketsystem\b|"
+            r"\böffnen\s+sie\s+garantie\s*(?:&|und)\s*ersatz\b|"
+            r"\bgarantie\s*(?:&|und)\s*ersatz\s+öffnen\b",
+            re.I,
+        ),
+    ),
+    (
+        "online account workflow",
+        re.compile(
+            r"\b(?:signed[- ]?in|logged[- ]?in|registered|online)\s+account\b|"
+            r"\b(?:open|create|register(?:\s+for)?)\s+(?:an?\s+)?"
+            r"(?:online\s+)?account\b|\baccount[- ](?:opening|registration)\b|"
+            r"\b(?:angemeldete[sn]?|online)[- ]konto\b|"
+            r"\b(?:ein\s+)?konto\s+(?:online\s+)?eröffnen\b|"
+            r"\beröffnen\s+sie\b[^.!?]{0,20}\bkonto\b|"
+            r"\bonline[- ](?:konto|registrierung)\b",
+            re.I,
+        ),
+    ),
+    (
+        "stock quantity",
+        re.compile(
+            r"\b\d+\s+(?:units?|pieces?|stück)\s+"
+            r"(?:in stock|available|am lager)\b|"
+            r"\b(?:stock|bestand)\s*:?\s*\d+\b|"
+            r"\b(?:only|nur)\s+\d+\s+(?:units?|pieces?|stück)\b",
+            re.I,
+        ),
+    ),
 )
+
+
+class _VisibleText(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self._ignored_depth = 0
+        self.parts: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag in {"script", "style"}:
+            self._ignored_depth += 1
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag in {"script", "style"} and self._ignored_depth:
+            self._ignored_depth -= 1
+
+    def handle_data(self, data: str) -> None:
+        if not self._ignored_depth:
+            self.parts.append(data)
+
+
+def visible_text(content: str) -> str:
+    """Return customer-visible text while ignoring scripts, styles and attributes."""
+    parser = _VisibleText()
+    parser.feed(content)
+    parser.close()
+    return " ".join(" ".join(parser.parts).split())
+
+
+def forbidden_claims(content: str) -> list[str]:
+    text = visible_text(content)
+    return [label for label, pattern in FORBIDDEN_PATTERNS if pattern.search(text)]
+
+
+def assert_supported_content(content: str) -> None:
+    """Refuse a page carrying a claim excluded by the owner's copy ruling."""
+    found = forbidden_claims(content)
+    if found:
+        raise ValueError(
+            "Forbidden customer claim in existing page content: " + ", ".join(found)
+        )
 
 
 def _insert_block(content: str, block: str, anchor: str) -> str:
@@ -81,9 +184,9 @@ def plan_page(content: str, language: str) -> str:
     """Add exactly one reviewed standards row, preserving every other byte."""
     if language not in {"en", "de"} or content.count(ROOT) != 1:
         raise ValueError("Expected one EN or DE Services & Support page")
+    assert_supported_content(content)
     markup = EN_MARKUP if language == "en" else DE_MARKUP
-    if any(value in markup for value in FORBIDDEN):
-        raise ValueError("Forbidden trade promise entered the reviewed row")
+    assert_supported_content(markup)
     if markup in content:
         return content
     if language == "en":

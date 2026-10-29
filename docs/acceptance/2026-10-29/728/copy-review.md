@@ -15,11 +15,11 @@ the existing WindPress `service-intro.css` source.
 
 ## Source and consistency
 
-The source e-mail is `Re: Fw: Solar PV & Battery Storage – Engineering and
-Design Partnership.eml` (sha256
-`858c2fca18dacbcef2b3814e5f8e802c9468237db55c39d68f03071422d20631`),
-sent by Frank Fan on 29 September 2026 and forwarded to the owner on 30
-September 2026.
+The retained source message and its reviewable extraction are linked in
+[source-email-evidence.md](source-email-evidence.md). The original `.eml` has
+SHA-256
+`858c2fca18dacbcef2b3814e5f8e802c9468237db55c39d68f03071422d20631`;
+the excerpts used here are E1, E3, E8 and E12.
 
 | Item | Existing commitment | Authority |
 | --- | --- | --- |
@@ -48,25 +48,44 @@ The English and German versions state the same four facts.
 
 ## Review comments and resolutions
 
-1. Independent DeepSeek Flash adversarial review: PASS. It found no factual,
-   constraint, meaning-changing grammatical, or cross-language mismatch and
-   requested no rewrite of the four body statements.
-2. Standards review: the German accessible name
+This section is the review chain from initial drafts to the final wording.
+A previous binary "PASS" is not treated as evidence for findings raised later.
+
+1. Initial adversarial review: DeepSeek Flash returned PASS with no requested
+   rewrite of the four body statements.
+2. Retained evidence review: Helmholtz found that the file did not link the
+   source e-mail, did not preserve an auditable draft-to-review-to-final chain,
+   left the false online warranty workflow unexamined, and guarded only the new
+   row rather than existing page copy. Those findings superseded the binary
+   PASS and are resolved below.
+3. Source linkage: [source-email-evidence.md](source-email-evidence.md) now links
+   the retained `.eml`, records its SHA-256, links the extraction, and quotes the
+   four source statements used by this ticket.
+4. Standards review: the German accessible name
    `Geschäftsbedingungen` wrongly means legal terms of business. It was changed
    to `Leistungen für Fachpartner`. The equivalent English accessible name
    `Services for trade customers` describes the row without changing its body.
-3. Visual styling previously sat in the page's inline style block. It was moved
+5. Visual styling previously sat in the page's inline style block. It was moved
    to the existing WindPress source `service-intro.css`; the page migration now
    changes markup only.
-4. The owner's 2026-10-29 correction prohibits style, tone, rhythm, and
-   vocabulary changes. No body statement was rewritten during these fixes.
+6. Owner correction: the 2026-10-29 instruction prohibits style, tone, rhythm,
+   and vocabulary changes. No body statement in the four-cell row was rewritten
+   during these fixes.
+7. Guard review: the migration now scans customer-visible text across the whole
+   existing EN/DE page before inserting anything. It rejects named trade terms,
+   free shipping, fixed delivery or warranty periods, online warranty workflows,
+   online account workflows, and stock quantities. Tests cover English and
+   German examples, the exact obsolete warranty workflow, and false-positive
+   controls for legitimate warranty/delivery copy.
 
 ## Adjacent factual correction in the trade library
 
 The existing `/faq-download/` and `/de/faq-dokumente/` warranty answer claimed
 an online `Open Warranty & Replacements` workflow and a signed-in order form.
 That contradicts the owner's 2026-10-28 ruling that the company has no online
-ticket and handles the transaction and after-sales offline.
+ticket and handles the transaction and after-sales offline. This is a factual
+correction explicitly allowed by the owner's 2026-10-29 instruction; it is not a
+style rewrite.
 
 Only that false workflow claim was replaced. The diagnostic role performed by
 Linker remains. The new EN/DE answers ask the customer to contact the team with
