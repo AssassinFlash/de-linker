@@ -536,3 +536,63 @@ def test_failed_backup_preparation_can_be_retried_without_mixing_batches(
     monkeypatch.setenv("PATH", original_path)
     receipt = atomic.publish(target, artifacts, deploy_id="20261018T000001Z-retry")
     assert receipt.deploy_id.endswith("retry")
+
+
+def test_reconcile_repoints_a_pending_batch_whose_backup_was_rewritten(
+    tmp_path: Path,
+) -> None:
+    """A finished switch whose backup sibling changed inode must stay nameable."""
+    root = tmp_path / "site"
+    relative = "wp-content/plugins/first"
+    live = root / relative
+    live.mkdir(parents=True)
+    (live / "plugin.php").write_text("old")
+    source = tmp_path / "release"
+    source.mkdir()
+    (source / "plugin.php").write_text("new")
+    target = target_at(root)
+    atomic.publish(
+        target, [atomic.Artifact(source, relative)], deploy_id="20261029T000000Z-abc123"
+    )
+
+    # A host copy leaves the same bytes under a new identity: the batch stays
+    # pending but rollback can no longer name its backup.
+    previous = root / "wp-content/plugins/.first.prev"
+    rewritten = tmp_path / "rewritten"
+    shutil.copytree(previous, rewritten)
+    shutil.rmtree(previous)
+    rewritten.rename(previous)
+    with pytest.raises(CutoverError, match="backup inode mismatch"):
+        atomic._checked_backups(target, [relative])
+
+    assert atomic.reconcile_pending(target) == (relative,)
+    _, manifest, paths = atomic._checked_backups(target, [relative])
+    assert manifest.state == "pending"
+    assert len(paths) == 1
+    assert (root / relative / "plugin.php").read_text() == "new"
+    assert (previous / "plugin.php").read_text() == "old"
+
+
+def test_reconcile_refuses_when_live_is_not_the_uploaded_tree(tmp_path: Path) -> None:
+    """Bookkeeping may be corrected, content may not: a different live tree blocks it."""
+    root = tmp_path / "site"
+    relative = "wp-content/plugins/first"
+    live = root / relative
+    live.mkdir(parents=True)
+    (live / "plugin.php").write_text("old")
+    source = tmp_path / "release"
+    source.mkdir()
+    (source / "plugin.php").write_text("new")
+    target = target_at(root)
+    atomic.publish(
+        target, [atomic.Artifact(source, relative)], deploy_id="20261029T000000Z-abc123"
+    )
+    replaced = tmp_path / "replaced"
+    shutil.copytree(live, replaced)
+    (replaced / "plugin.php").write_text("tampered")
+    shutil.rmtree(live)
+    replaced.rename(live)
+
+    with pytest.raises(CutoverError, match="reconcile refused"):
+        atomic.reconcile_pending(target)
+    assert (live / "plugin.php").read_text() == "tampered"

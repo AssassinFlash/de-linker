@@ -523,6 +523,23 @@ def finish_deploy(
     )
 
 
+def reconcile(target: Target) -> Result:
+    """Re-point a pending deployment's backup identities, then say what moved.
+
+    Exists because a batch can stay pending while the host rewrites its backup
+    sibling (an interrupted earlier batch or a copying tool): the switch is
+    complete, but rollback preflight refuses to name the backup. The correction
+    only applies when every live artifact still carries its uploaded identity.
+    """
+    changed = atomic.reconcile_pending(target)
+    action = (
+        "re-pointed " + ", ".join(changed)
+        if changed
+        else "manifest already matched the backups on disk"
+    )
+    return Result("reconcile", [action], [])
+
+
 def resume_deploy(target: Target, *, repository: Path, cache_buster: str) -> Result:
     """Verify/archive a pending batch after an interrupted reply or failed verify."""
     receipt = atomic.pending_receipt(

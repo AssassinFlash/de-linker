@@ -110,6 +110,11 @@ def _parser() -> argparse.ArgumentParser:
         "resume-deploy", parents=[common], help="verify/archive a pending file deploy"
     )
     sub.add_parser(
+        "reconcile",
+        parents=[common],
+        help="re-point a pending deploy's backup identities before verify",
+    )
+    sub.add_parser(
         "rollback-deploy", parents=[common], help="restore the previous deployed files"
     )
     proof = sub.add_parser(
@@ -221,6 +226,13 @@ def main(argv: list[str] | None = None) -> int:
             )
             _print(checked)
             return 1 if checked.notes else 0
+        if args.command == "reconcile":
+            if not args.write:
+                print("reconcile: would re-read the pending manifest's backup identities")
+                return 0
+            corrected = steps.reconcile(target)
+            _print(corrected)
+            return 1 if corrected.notes else 0
         if args.command == "resume-deploy":
             if not args.write:
                 print(
