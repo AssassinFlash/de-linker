@@ -1,0 +1,138 @@
+<?php
+/**
+ * A real front-end request does not publicly cache dynamic HTML.
+ *
+ * @package Linker\Tools
+ */
+
+declare( strict_types = 1 );
+
+namespace Linker\Tools\Tests\Integration;
+
+use PHPUnit\Framework\TestCase;
+use WC_Product_Simple;
+
+/**
+ * Dynamic shortcodes and query strings send no-cache; home and a product do not.
+ *
+ * @coversNothing
+ */
+final class DynamicPageCacheTest extends TestCase {
+
+	/**
+	 * Pages created for this test.
+	 *
+	 * @var list<int>
+	 */
+	private array $pages = array();
+
+	/**
+	 * Product created for this test.
+	 *
+	 * @var int
+	 */
+	private int $product = 0;
+
+	/**
+	 * Removes the fixtures.
+	 */
+	public function tearDown(): void {
+		foreach ( $this->pages as $id ) {
+			wp_delete_post( $id, true );
+		}
+		if ( $this->product > 0 ) {
+			wp_delete_post( $this->product, true );
+		}
+		parent::tearDown();
+	}
+
+	/**
+	 * The six customer paths, a product, and a query string.
+	 */
+	public function test_dynamic_pages_and_query_strings_are_not_cached(): void {
+		$home = home_url( '/' );
+		$this->assert_cacheable( $home );
+
+		$product = new WC_Product_Simple();
+		$product->set_name( 'Cache probe product' );
+		$product->set_slug( 'cache-probe-product' );
+		$product->set_status( 'publish' );
+		$product->set_regular_price( '10' );
+		$product->set_catalog_visibility( 'visible' );
+		$this->product = $product->save();
+		$this->assertGreaterThan( 0, $this->product );
+		$this->assert_cacheable( (string) get_permalink( $this->product ) );
+
+		$contact = $this->page( 'cache-probe-contact', '[linker_contact_form]' );
+		$genie   = $this->page( 'cache-probe-genie', '[linker_genie_workspace]' );
+		$planner = $this->page( 'cache-probe-configurator', '[linker_planner]' );
+		flush_rewrite_rules( false );
+
+		$this->assert_uncacheable( (string) get_permalink( $contact ) );
+		$this->assert_uncacheable( (string) get_permalink( $genie ) );
+		$this->assert_uncacheable( (string) get_permalink( $planner ) );
+		$this->assert_uncacheable( add_query_arg( 'foo', 'cacheprobe', $home ) );
+		$this->assert_uncacheable( add_query_arg( 'q', 'saj', (string) get_permalink( $this->product ) ) );
+	}
+
+	/**
+	 * Publishes one probe page.
+	 *
+	 * @param string $slug    Page slug.
+	 * @param string $content Shortcode content.
+	 */
+	private function page( string $slug, string $content ): int {
+		$id = wp_insert_post(
+			array(
+				'post_type'    => 'page',
+				'post_status'  => 'publish',
+				'post_title'   => $slug,
+				'post_name'    => $slug,
+				'post_content' => $content,
+			),
+			true
+		);
+		$this->assertIsInt( $id );
+		$this->pages[] = $id;
+		return $id;
+	}
+
+	/**
+	 * The response must not carry the public no-cache mark.
+	 *
+	 * @param string $url Front-end URL.
+	 */
+	private function assert_cacheable( string $url ): void {
+		$header = $this->cache_control( $url );
+		$this->assertStringNotContainsString( 'no-cache', $header, $url );
+		$this->assertStringNotContainsString( 'no-store', $header, $url );
+	}
+
+	/**
+	 * The response must carry WordPress's no-cache header.
+	 *
+	 * @param string $url Front-end URL.
+	 */
+	private function assert_uncacheable( string $url ): void {
+		$this->assertStringContainsString( 'no-cache', $this->cache_control( $url ), $url );
+	}
+
+	/**
+	 * Cache-Control of one front-end GET, or an empty string.
+	 *
+	 * @param string $url Front-end URL.
+	 */
+	private function cache_control( string $url ): string {
+		$response = wp_remote_get(
+			$url,
+			array(
+				'timeout'     => 20,
+				'redirection' => 0,
+			)
+		);
+		$this->assertFalse( is_wp_error( $response ), is_wp_error( $response ) ? $response->get_error_message() : $url );
+		$this->assertSame( 200, (int) wp_remote_retrieve_response_code( $response ), $url );
+		$header = wp_remote_retrieve_header( $response, 'cache-control' );
+		return is_array( $header ) ? implode( ', ', $header ) : (string) $header;
+	}
+}

@@ -24,6 +24,10 @@ final class Mount {
 	 */
 	public function shortcode( $atts = array() ): string {
 		unset( $atts );
-		return is_admin() ? '' : do_shortcode( '[linker_planner]' );
+		if ( is_admin() ) {
+			return '';
+		}
+		\Linker\Tools\Cache\DynamicHtml::forbid( 'solution configurator' );
+		return do_shortcode( '[linker_planner]' );
 	}
 }
