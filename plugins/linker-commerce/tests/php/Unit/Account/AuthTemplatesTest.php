@@ -14,9 +14,9 @@ use Linker\Commerce\Tests\TestCase;
 use WP_Mock;
 
 /**
- * Only the guest account page routes sign-in and lost-password to the
- * plugin's cards, and the account page's register endpoint routes the sign-up
- * to its own card; every other request keeps Woo's path. The register field
+ * The account page routes recovery to the same cards for either visitor state,
+ * keeps sign-in for guests and account details for signed-in accounts, and
+ * routes the register endpoint to its own card. The register field
  * split never loses a field: an unknown layout falls back to one block.
  *
  * @covers \Linker\Commerce\Account\AuthTemplates
@@ -84,6 +84,180 @@ final class AuthTemplatesTest extends TestCase {
 		foreach ( $mapped as $name => $path ) {
 			$this->assertStringEndsWith( $path, $auth->template( '/woo/native.php', $name ) );
 		}
+		$this->assertSame( '/woo/native.php', $auth->template( '/woo/native.php', 'myaccount/form-edit-account.php' ) );
+	}
+
+	/** Signed-in recovery uses the same cards without changing the login guard. */
+	public function test_signed_in_account_page_uses_all_recovery_templates(): void {
+		WP_Mock::userFunction( 'is_account_page', array( 'return' => true ) );
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
+		$auth = new AuthTemplates();
+		foreach ( array( 'form-lost-password.php', 'lost-password-confirmation.php', 'form-reset-password.php' ) as $file ) {
+			$this->assertStringEndsWith( '/templates/myaccount/auth/' . $file, $auth->template( '/woo/native.php', 'myaccount/' . $file ) );
+		}
+		$this->assertSame( '/woo/native.php', $auth->template( '/woo/native.php', 'myaccount/form-login.php' ) );
+	}
+
+	/**
+	 * Both recovery pages point back to the native account URL. Guests retain
+	 * sign-in and registration links, while signed-in visitors get their account.
+	 *
+	 * @dataProvider recovery_link_cases
+	 * @param string $file        Woo template filename.
+	 * @param bool   $signed_in   Whether the visitor is signed in.
+	 * @param string $account_url The request language's account URL.
+	 */
+	public function test_recovery_links_follow_the_visitor( string $file, bool $signed_in, string $account_url ): void {
+		$this->plain_text();
+		WP_Mock::userFunction( 'is_account_page', array( 'return' => true ) );
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => $signed_in ) );
+		WP_Mock::userFunction(
+			'wc_get_page_permalink',
+			array(
+				'args'   => array( 'myaccount' ),
+				'return' => $account_url,
+			)
+		);
+		$this->options( array( 'woocommerce_enable_myaccount_registration' => 'yes' ) );
+		WP_Mock::userFunction( 'wc_get_account_endpoint_url', array( 'return' => $account_url . 'register/' ) );
+
+		if ( 'form-lost-password.php' === $file ) {
+			WP_Mock::expectAction( 'woocommerce_before_lost_password_form' );
+			WP_Mock::expectAction( 'woocommerce_lostpassword_form' );
+			WP_Mock::expectAction( 'woocommerce_after_lost_password_form' );
+			$this->filter_returns( 'woocommerce_lost_password_message', 'Reset instructions' );
+			WP_Mock::userFunction( 'wc_wp_theme_get_element_class_name', array( 'return' => '' ) );
+			WP_Mock::userFunction( 'wp_nonce_field' );
+		} else {
+			WP_Mock::expectAction( 'woocommerce_before_lost_password_confirmation_message' );
+			WP_Mock::expectAction( 'woocommerce_after_lost_password_confirmation_message' );
+			$this->filter_returns( 'woocommerce_lost_password_confirmation_message', 'Confirmation' );
+			WP_Mock::userFunction( 'wc_print_notice' );
+		}
+
+		$path = ( new AuthTemplates() )->template( '/woo/native.php', 'myaccount/' . $file );
+		ob_start();
+		require $path;
+		$html = (string) ob_get_clean();
+
+		$this->assertStringContainsString( 'class="linker-auth-card"', $html );
+		$this->assertStringContainsString( 'href="' . $account_url . '"', $html );
+		$this->assertStringContainsString( $signed_in ? 'My account' : 'Back to sign in', $html );
+		$this->assertStringNotContainsString( $signed_in ? 'Back to sign in' : 'My account', $html );
+		if ( $signed_in ) {
+			$this->assertStringNotContainsString( 'linker-create-account', $html );
+		} else {
+			$this->assertStringContainsString( 'href="' . $account_url . 'register/"', $html );
+		}
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * Recovery request and confirmation in both visitor states and languages.
+	 *
+	 * @return list<array{string, bool, string}>
+	 */
+	public static function recovery_link_cases(): array {
+		$cases = array();
+		foreach ( array( 'form-lost-password.php', 'lost-password-confirmation.php' ) as $file ) {
+			foreach ( array( false, true ) as $signed_in ) {
+				foreach ( array( 'https://example.test/my-account/', 'https://example.test/de/mein-konto/' ) as $account_url ) {
+					$cases[] = array( $file, $signed_in, $account_url );
+				}
+			}
+		}
+		return $cases;
+	}
+
+	/**
+	 * A retry hook can buffer the form without pulling notices out of the card.
+	 *
+	 * @throws \LogicException If WP_Mock does not return an action responder.
+	 */
+	public function test_recovery_retry_keeps_notice_and_input_inside_the_card(): void {
+		$this->plain_text();
+		WP_Mock::userFunction( 'is_account_page', array( 'return' => true ) );
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
+		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
+		WP_Mock::userFunction( 'wc_wp_theme_get_element_class_name', array( 'return' => '' ) );
+		WP_Mock::userFunction( 'wp_nonce_field' );
+		$this->filter_returns( 'woocommerce_lost_password_message', 'Reset instructions' );
+		WP_Mock::expectAction( 'woocommerce_lostpassword_form' );
+		$before = WP_Mock::onAction( 'woocommerce_before_lost_password_form' )->with( null );
+		$after  = WP_Mock::onAction( 'woocommerce_after_lost_password_form' )->with( null );
+		if ( ! $before instanceof \WP_Mock\Action_Responder || ! $after instanceof \WP_Mock\Action_Responder ) {
+			throw new \LogicException( 'The native form hooks must use action responders.' );
+		}
+		$before->perform(
+			static function (): void {
+				echo '<div class="woocommerce-error">Try again</div>';
+				ob_start(); // Mirrors the retained-input hook's own form buffer.
+			}
+		);
+		$after->perform(
+			static function (): void {
+				$html = (string) ob_get_clean();
+				echo str_replace( 'id="user_login"', 'id="user_login" value="installer@example.test"', $html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Synthetic hook fixture.
+			}
+		);
+
+		$path  = ( new AuthTemplates() )->template( '/woo/native.php', 'myaccount/form-lost-password.php' );
+		$level = ob_get_level();
+		ob_start();
+		require $path;
+		$html = (string) ob_get_clean();
+
+		$this->assertSame( $level, ob_get_level(), 'Every hook buffer closes at the matching after hook.' );
+		$this->assertMatchesRegularExpression( '/<section class="linker-auth-card"[^>]*>.*class="woocommerce-error".*id="user_login" value="installer@example\.test"/s', $html );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * The shared reset card receives Woo's arguments in either visitor state.
+	 *
+	 * @dataProvider visitor_states
+	 * @param bool $signed_in Whether the visitor is signed in.
+	 */
+	public function test_reset_card_keeps_the_native_form_arguments( bool $signed_in ): void {
+		$this->plain_text();
+		WP_Mock::userFunction( 'is_account_page', array( 'return' => true ) );
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => $signed_in ) );
+		WP_Mock::userFunction( 'wc_wp_theme_get_element_class_name', array( 'return' => '' ) );
+		WP_Mock::userFunction(
+			'wp_nonce_field',
+			array(
+				'args'  => array( 'reset_password', 'woocommerce-reset-password-nonce' ),
+				'times' => 1,
+			)
+		);
+		WP_Mock::expectAction( 'woocommerce_before_reset_password_form' );
+		WP_Mock::expectAction( 'woocommerce_resetpassword_form' );
+		WP_Mock::expectAction( 'woocommerce_after_reset_password_form' );
+		$this->filter_returns( 'woocommerce_reset_password_message', 'Reset instructions' );
+		$args = array(
+			'key'   => 'synthetic-key',
+			'login' => 'synthetic-login',
+		);
+		$path = ( new AuthTemplates() )->template( '/woo/native.php', 'myaccount/form-reset-password.php' );
+		ob_start();
+		require $path;
+		$html = (string) ob_get_clean();
+
+		$this->assertStringContainsString( 'class="linker-auth-card"', $html );
+		$this->assertStringContainsString( 'name="password_1"', $html );
+		$this->assertStringContainsString( 'name="password_2"', $html );
+		$this->assertStringContainsString( 'name="reset_key" value="synthetic-key"', $html );
+		$this->assertStringContainsString( 'name="reset_login" value="synthetic-login"', $html );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * Guest and signed-in requests.
+	 *
+	 * @return list<array{bool}>
+	 */
+	public static function visitor_states(): array {
+		return array( array( false ), array( true ) );
 	}
 
 	/**
@@ -198,7 +372,9 @@ final class AuthTemplatesTest extends TestCase {
 		WP_Mock::userFunction( 'is_account_page', array( 'return' => false ) );
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
 		$auth = new AuthTemplates();
-		$this->assertSame( '/woo/form-login.php', $auth->template( '/woo/form-login.php', 'myaccount/form-login.php' ) );
+		foreach ( array( 'form-login.php', 'form-lost-password.php', 'lost-password-confirmation.php', 'form-reset-password.php', 'form-edit-account.php' ) as $file ) {
+			$this->assertSame( '/woo/native.php', $auth->template( '/woo/native.php', 'myaccount/' . $file ) );
+		}
 	}
 
 	/**

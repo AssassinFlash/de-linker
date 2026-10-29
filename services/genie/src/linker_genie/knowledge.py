@@ -37,6 +37,7 @@ from linker_genie.publication import (
     current,
 )
 from linker_genie.retrieval import LANGS, DocumentIndex, ServingMismatch, default_index
+from linker_genie.warranty_answer import answers as warranty_answers
 
 NAME = "linker/search-knowledge"
 # The input the model is told about (agent.INPUT_DOCS); `validate` reads the same shape.
@@ -131,9 +132,17 @@ class KnowledgeSearch:
                 "product_ids": list(hit.product_ids),
                 "doc_url": hit.doc_url,
                 "title": hit.title,
+                "doc_type": hit.doc_type,
                 "page": hit.page,
                 "section": hit.section,
                 "text": hit.text,
+                **({"warranty_terms": True} if hit.warranty_terms else {}),
+                **({"warranty_procedure": True} if hit.warranty_procedure else {}),
+                **(
+                    {"product_models": list(hit.product_models)}
+                    if hit.warranty_terms or hit.warranty_procedure
+                    else {}
+                ),
                 **({"scope_note": hit.scope_note} if hit.scope_note else {}),
                 **(
                     {
@@ -151,15 +160,30 @@ class KnowledgeSearch:
             for note in notes:
                 annotation = f"{note.quote} (p. {note.page})"
                 start = hit.text.index(annotation)
-                protected.append((start, start + len(annotation)))
+                # The condition itself can contain the customer's requested
+                # date or duration. Only its marker and page label are not facts.
+                protected.append((start + len(note.quote), start + len(annotation)))
                 marker = note.quote.split(":", 1)[0]
                 protected.extend(
                     match.span()
                     for match in re.finditer(re.escape(marker) + r"(?!\d)", hit.text)
                 )
+                # An original ordered-list marker is not a duration.
+                for match in re.finditer(
+                    r"(?<!\w)\d{1,2}\.(?=\s+\d+\s+(?:months?|Monate\w*)\b)",
+                    note.quote,
+                    re.I,
+                ):
+                    protected.append((start + match.start(), start + match.end()))
             tagged = tag(hit.chunk_id, hit.text, excluded_spans=tuple(protected))
             entry["text"] = tagged.text
             entry["figures"] = tagged.figures
+            if hit.warranty_terms:
+                checked = knowledge_qualifications(entry)
+                rendered = warranty_answers(entry, checked) if checked else {}
+                if not rendered:
+                    continue
+                entry["warranty_answers"] = rendered
             payload_hits.append(entry)
         return {
             "ranking": index.ranking,
@@ -233,17 +257,63 @@ def validate(arguments: dict[str, Any]) -> tuple[str, str, list[int]]:
     return query.strip(), str(lang), list(dict.fromkeys(raw_ids))
 
 
-def model_view(payload: dict[str, Any]) -> dict[str, Any]:
-    """The result as the model reads it: tagged text, no URL, no figure table."""
+def model_view(
+    payload: dict[str, Any], *, compact_warranty: bool = False
+) -> dict[str, Any]:
+    """The result as the model reads it; URLs and raw proof stay server-side.
+
+    Under the route-prompt limit a warranty hit normally includes the full
+    tagged text. In a compact view the complete source-derived answers remain,
+    with their source figures listed once under the hit's short figure IDs.
+    """
     if "hits" not in payload:
         return payload
     return {
         "hits": [
             {
                 key: hit[key]
-                for key in ("chunk_id", "title", "page", "section", "text")
+                for key in ("chunk_id", "title", "page", "section", "text", "doc_type")
                 if key in hit
+                and not (
+                    compact_warranty
+                    and hit.get("warranty_terms") is True
+                    and key == "text"
+                )
             }
+            | (
+                {
+                    "product_ids": hit.get("product_ids", []),
+                    "product_models": hit.get("product_models", []),
+                    "warranty_terms": True,
+                    "warranty_answers": hit.get("warranty_answers", {}),
+                }
+                if hit.get("warranty_terms") is True
+                else {}
+            )
+            | (
+                {
+                    "warranty_figures": {
+                        key.removeprefix(str(hit.get("chunk_id")) + "."): value
+                        for key, value in hit.get("figures", {}).items()
+                        if isinstance(key, str)
+                        and key.startswith(str(hit.get("chunk_id")) + ".n")
+                    }
+                }
+                if compact_warranty
+                and hit.get("warranty_terms") is True
+                and isinstance(hit.get("figures"), dict)
+                else {}
+            )
+            | (
+                {
+                    "product_ids": hit.get("product_ids", []),
+                    "product_models": hit.get("product_models", []),
+                    "warranty_procedure": True,
+                    "scope_note": hit.get("scope_note", ""),
+                }
+                if hit.get("warranty_procedure") is True
+                else {}
+            )
             for hit in payload["hits"]
             if isinstance(hit, dict)
         ]

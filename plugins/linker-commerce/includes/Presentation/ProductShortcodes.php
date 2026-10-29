@@ -240,7 +240,7 @@ final class ProductShortcodes {
 		$facets     = $this->filters->facet_counts( $archive, $selected );
 		$ranges     = $this->filters->range_folds( $archive );
 		$applied    = $this->filters->applied_count( $is_term, $selected );
-		$base_url   = $is_term ? $this->term_link( $queried ) : (string) wc_get_page_permalink( 'shop' );
+		$base_url   = $this->filters_reset_url();
 		$has_facets = \count( \array_diff_key( $selected, array( 'q' => '' ) ) ) > 0;
 
 		$html  = '<button type="button" class="product-filter-close" id="product-filter-close" aria-label="' . esc_attr__( 'Close filters', 'linker-commerce' ) . '">&times;</button>';
@@ -348,7 +348,7 @@ final class ProductShortcodes {
 				. '</div>';
 		}
 		$html .= '<div class="product-filter-actions">';
-		$html .= '<a href="' . esc_url( $is_term ? $this->term_link( $queried ) : (string) wc_get_page_permalink( 'shop' ) ) . '">' . esc_html__( 'Clear', 'linker-commerce' ) . '</a>';
+		$html .= '<a href="' . esc_url( $base_url ) . '">' . esc_html__( 'Clear', 'linker-commerce' ) . '</a>';
 		$html .= '<button type="button" id="product-filter-apply">' . esc_html__( 'Show products', 'linker-commerce' ) . '</button>';
 		$html .= '</div>';
 		return $html;
@@ -424,9 +424,8 @@ final class ProductShortcodes {
 	}
 
 	/**
-	 * The empty answer: the replica's "no product matches" note, only when
-	 * the archive's query has no products. Reads the loop's state without
-	 * advancing it — the grid's [lc_loop] after it still walks every post.
+	 * The empty answer names the active search and filters, only when the
+	 * archive's query has no products. Reading the loop does not advance it.
 	 *
 	 * @param array<string, string>|string $atts Shortcode attributes.
 	 */
@@ -435,10 +434,19 @@ final class ProductShortcodes {
 		if ( have_posts() ) {
 			return '';
 		}
-		if ( array() === $this->filters->requested() ) {
-			return '<div class="wb-empty"><p class="tv-empty-state">' . esc_html__( 'No products are listed here.', 'linker-commerce' ) . '</p></div>';
+		$selected = $this->filters->requested();
+		$search   = isset( $selected['q'] );
+		$facets   = array() !== \array_diff_key( $selected, array( 'q' => '' ) );
+		if ( $search && $facets ) {
+			$message = esc_html__( 'No products match your search and selected filters. Try another search term or change a filter.', 'linker-commerce' );
+		} elseif ( $search ) {
+			$message = esc_html__( 'No products match your search. Try another search term.', 'linker-commerce' );
+		} elseif ( $facets ) {
+			$message = esc_html__( 'No products match the selected filters. Try changing or clearing a filter.', 'linker-commerce' );
+		} else {
+			$message = esc_html__( 'No products are listed here.', 'linker-commerce' );
 		}
-		return '<div class="wb-empty"><p class="tv-empty-state">' . esc_html__( 'No product matches these filters. Clear one to see more.', 'linker-commerce' ) . '</p></div>';
+		return '<div class="wb-empty"><p class="tv-empty-state">' . $message . '</p></div>';
 	}
 
 	/**
@@ -502,9 +510,7 @@ final class ProductShortcodes {
 			$label = $title . ' ' . $min . '&ndash;' . $max . ' ' . $unit;
 			$html .= '<a class="wbchip" href="' . esc_url( $this->facet_remove_url( $min_key, $max_key ) ) . '" rel="nofollow">' . wp_kses_post( $label ) . ' <span aria-hidden="true">&times;</span></a>';
 		}
-		$queried  = get_queried_object();
-		$base_url = $queried instanceof WP_Term ? $this->term_link( $queried ) : (string) wc_get_page_permalink( 'shop' );
-		$html    .= '<a class="wbclear" href="' . esc_url( $base_url ) . '" rel="nofollow">' . esc_html__( 'Clear all', 'linker-commerce' ) . '</a>';
+		$html .= '<a class="wbclear" href="' . esc_url( $this->filters_reset_url() ) . '" rel="nofollow">' . esc_html__( 'Clear all', 'linker-commerce' ) . '</a>';
 		return $html;
 	}
 
@@ -1762,7 +1768,28 @@ final class ProductShortcodes {
 
 	/** Native root with the request's validated selection and order. */
 	private function archive_base_url(): string {
-		$encoded = array_map( static fn( $value ): string => rawurlencode( (string) $value ), $this->selection_parameters() );
+		return $this->archive_url( $this->selection_parameters() );
+	}
+
+	/** Reset the facets while keeping the search, sort and current archive. */
+	private function filters_reset_url(): string {
+		$kept = \array_intersect_key(
+			$this->selection_parameters(),
+			array(
+				'q'    => '',
+				'sort' => '',
+			)
+		);
+		return $this->archive_url( $kept );
+	}
+
+	/**
+	 * The current native archive with validated selection parameters.
+	 *
+	 * @param array<string, string|float> $parameters Selection to carry.
+	 */
+	private function archive_url( array $parameters ): string {
+		$encoded = array_map( static fn( $value ): string => rawurlencode( (string) $value ), $parameters );
 		return (string) add_query_arg( $encoded, $this->archive_root_url() );
 	}
 

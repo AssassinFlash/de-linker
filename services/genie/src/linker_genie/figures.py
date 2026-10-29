@@ -60,6 +60,9 @@ _DATE_PHRASE = re.compile(
     rf"\b\d{{1,2}}(?:\s?(?:st|nd|rd|th)|\.)?\s(?:{_MONTHS})\s\d{{4}}\b"
     rf"|\b(?:{_MONTHS})\s\d{{1,2}}(?:st|nd|rd|th)?,?\s\d{{4}}\b"
 )
+# A manufacturer's deadline can be written as words rather than digits. Keep
+# that exact source phrase as a fact; never synthesize a numeral from it.
+_WRITTEN_MONTH = re.compile(r"\b(?:one\s+month|eines\s+Monats)\b", re.IGNORECASE)
 _TRIM = ".,:;!?"
 _MARKS = "≥≤<>~±+−≈*'\"„“”"
 
@@ -86,7 +89,10 @@ def tag(
     context, not additional table values. Their spans are supplied by the
     knowledge tool after it has checked the projection's source metadata.
     """
-    phrases = [match.span() for match in _DATE_PHRASE.finditer(text)]
+    phrases = [
+        *(match.span() for match in _DATE_PHRASE.finditer(text)),
+        *(match.span() for match in _WRITTEN_MONTH.finditer(text)),
+    ]
     spans: list[tuple[int, int]] = list(phrases)
     words = list(_WORD.finditer(text))
     skip_to = -1

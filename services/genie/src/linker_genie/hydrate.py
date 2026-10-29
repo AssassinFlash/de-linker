@@ -186,6 +186,13 @@ def hydrate(
         if (chunk := chunk_of(fact_id)) is not None
         if chunk in facts.qualifications
     }
+    parameter_refs.update(
+        ref
+        for block in output.blocks
+        if isinstance(block, TextBlock)
+        for ref in block.refs
+        if ref in facts.qualifications
+    )
     emitted: set[tuple[str, str]] = set()
     for block in [*output.blocks, *cited_documents(output, facts)]:
         if isinstance(block, TextBlock):
@@ -195,6 +202,7 @@ def hydrate(
                 language,
                 emitted=emitted,
                 qualified_mask=qualified_mask,
+                reference_chunks=block.refs,
             )
             blocks.append(block.model_copy(update={"text": text}))
         elif isinstance(block, HandoffBlock):
@@ -256,6 +264,10 @@ def cited_documents(output: TurnOutput, facts: TurnFacts) -> list[DocumentBlock]
     for block in output.blocks:
         if isinstance(block, TextBlock):
             cited.extend(ref for ref in block.refs if ref in facts.chunk_ids)
+            for ref in block.refs:
+                cited.extend(
+                    note.chunk_id for note in facts.qualifications.get(ref, ())
+                )
             text = block.text
         elif isinstance(block, HandoffBlock):
             text = block.summary
@@ -283,6 +295,10 @@ def _used_qualifications(
     for block in output.blocks:
         if isinstance(block, TextBlock):
             text = block.text
+            for ref in block.refs:
+                notes = facts.qualifications.get(ref, ())
+                if notes and all(_quote(note) is not None for note in notes):
+                    used.append(notes)
         elif isinstance(block, HandoffBlock):
             text = block.summary
         else:
@@ -353,6 +369,7 @@ def fill(
     *,
     emitted: set[tuple[str, str]] | None = None,
     qualified_mask: Callable[[str], str] | None = None,
+    reference_chunks: list[str] | None = None,
 ) -> str:
     """Replace each `{fact:ID}` with the stored value; unknown IDs stay as-is
     so a later check can still see them.
@@ -365,6 +382,15 @@ def fill(
 
     seen = emitted if emitted is not None else set()
     used: list[Qualification] = []
+
+    for chunk in reference_chunks or []:
+        notes = facts.qualifications.get(chunk, ())
+        if notes and all(_quote(note) is not None for note in notes):
+            for note in notes:
+                key = (note.lang, note.quote)
+                if key not in seen:
+                    seen.add(key)
+                    used.append(note)
 
     def replace(match: re.Match[str]) -> str:
         fact = _render_fact(facts, match.group(1), locale)

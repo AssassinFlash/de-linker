@@ -49,6 +49,7 @@ final class Module {
 		add_filter( 'email_change_email', array( $this->producer, 'account_change' ), PHP_INT_MAX, 3 );
 		add_filter( 'password_change_email', array( $this->producer, 'account_change' ), PHP_INT_MAX, 3 );
 		add_filter( 'wp_password_change_notification_email', array( $this->producer, 'password_changed_admin' ), PHP_INT_MAX, 3 );
+		add_action( 'lostpassword_post', array( ResetNotice::class, 'capture_submission' ), PHP_INT_MAX, 2 );
 		add_action( 'retrieve_password_key', array( ResetNotice::class, 'begin' ), PHP_INT_MAX, 2 );
 		add_action( 'woocommerce_email_sent', array( ResetNotice::class, 'woocommerce_result' ), PHP_INT_MAX, 3 );
 		add_action( 'woocommerce_before_lost_password_form', array( ResetNotice::class, 'render_begin' ), PHP_INT_MAX );

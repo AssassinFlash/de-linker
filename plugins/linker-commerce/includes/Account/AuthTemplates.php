@@ -1,6 +1,6 @@
 <?php
 /**
- * The guest pages of the account: sign-in, register and lost password.
+ * Account sign-in, registration, password recovery and account details.
  *
  * @package Linker\Commerce
  */
@@ -11,7 +11,7 @@ namespace Linker\Commerce\Account;
 
 /**
  * Woo owns these forms — every field, nonce, hook and validation stays exactly
- * where Woo and the registration module put it. This class points the guest
+ * where Woo and the registration module put it. This class points the account
  * templates at this plugin's copies, whose markup arranges the same form into
  * the account's card, and the register form's own fields (printed by
  * Registration\Fields on woocommerce_register_form_start) into the two steps
@@ -35,9 +35,9 @@ final class AuthTemplates {
 	public const REGISTER_ENDPOINT = 'register';
 
 	/**
-	 * Woo template to this plugin's copy. The guest forms are the account's
-	 * sign-in chain; the account-details form is WooCommerce's own signed-in
-	 * form, which the redesign lays out as two panels (ticket #184).
+	 * Woo template to this plugin's copy. Recovery can be opened while signed
+	 * in or out; sign-in and account details remain limited to their respective
+	 * visitor states.
 	 *
 	 * @var array<string, string>
 	 */
@@ -57,16 +57,22 @@ final class AuthTemplates {
 	private const REGISTER_FILE = 'auth/form-register.php';
 
 	/**
-	 * The templates only a guest may see; the others are the signed-in
-	 * account's own forms.
+	 * The sign-in template is only for guests. Recovery templates are available
+	 * to either visitor state; WooCommerce continues to own their validation.
 	 *
 	 * @var list<string>
 	 */
 	private const GUEST_ONLY = array(
 		'myaccount/form-login.php',
-		'myaccount/form-lost-password.php',
-		'myaccount/lost-password-confirmation.php',
-		'myaccount/form-reset-password.php',
+	);
+
+	/**
+	 * The account-details form is only for a signed-in account.
+	 *
+	 * @var list<string>
+	 */
+	private const SIGNED_IN_ONLY = array(
+		'myaccount/form-edit-account.php',
 	);
 
 	/**
@@ -154,9 +160,9 @@ final class AuthTemplates {
 	}
 
 	/**
-	 * The account page's own templates: the guest ones for a guest, the
-	 * account-details form for a signed-in account. Every other template
-	 * (checkout, emails, the endpoint content Woo routes elsewhere) keeps
+	 * The account page's own templates: sign-in for a guest, recovery for both
+	 * visitor states and account details for a signed-in account. Every other
+	 * template (checkout, emails, the endpoint content Woo routes elsewhere) keeps
 	 * Woo's path. The register endpoint splits the guest page: Woo asks for
 	 * form-login.php on either, and this plugin's copy of that name is the
 	 * sign-in page or — on the endpoint — the sign-up page.
@@ -168,8 +174,9 @@ final class AuthTemplates {
 		if ( ! isset( self::FILES[ $name ] ) || ! function_exists( 'is_account_page' ) || ! is_account_page() ) {
 			return $path;
 		}
-		$guest_only = in_array( $name, self::GUEST_ONLY, true );
-		if ( is_user_logged_in() === $guest_only ) {
+		$signed_in = is_user_logged_in();
+		if ( ( $signed_in && in_array( $name, self::GUEST_ONLY, true ) )
+			|| ( ! $signed_in && in_array( $name, self::SIGNED_IN_ONLY, true ) ) ) {
 			return $path;
 		}
 		$file = 'myaccount/form-login.php' === $name && self::is_register_request()

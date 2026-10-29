@@ -415,7 +415,13 @@ test("acknowledged battery settings remain recoverable until that asset is saved
 			source_note: scenario.source_note,
 		}),
 	);
-	await until(() => r.api.records.length === 1);
+	await until(
+		() =>
+			!r.api.checking &&
+			!r.api.busy &&
+			r.api.records.length === 1 &&
+			r.api.records[0].resultId === asset.id,
+	);
 	await act(async () => r.api.dismissAcknowledged(r.api.records[0]));
 	await until(() => r.api.records.length === 0);
 });

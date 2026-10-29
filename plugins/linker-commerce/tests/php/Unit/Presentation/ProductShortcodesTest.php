@@ -730,6 +730,16 @@ final class ProductShortcodesTest extends TestCase {
 		$rail = $shortcodes->products_filters();
 		// The Reset sits in the visible rail-head row, after its label.
 		$this->assertStringContainsString( '<div class="rail-head"><span class="rail-head-label">Filters</span><a class="rail-reset" href="http://linker.test/product-category/all-in-one-systems/">Reset</a></div>', $rail );
+
+		$_GET = array(
+			'brand'        => 'goodwe',
+			'q'            => 'ESA & 5',
+			'sort'         => 'name',
+			'product-page' => '3',
+		);
+		$rail = $shortcodes->products_filters();
+		$this->assertStringContainsString( 'class="rail-reset" href="http://linker.test/product-category/all-in-one-systems/?q=ESA%20%26%205&sort=name"', $rail );
+		$this->assertStringContainsString( '<div class="product-filter-actions"><a href="http://linker.test/product-category/all-in-one-systems/?q=ESA%20%26%205&sort=name">Clear</a>', $rail );
 	}
 
 	/**
@@ -1287,6 +1297,13 @@ final class ProductShortcodesTest extends TestCase {
 		$this->assertStringContainsString( 'href="http://linker.test/product-category/inverters/?brand=goodwe', $chips );
 		$this->assertStringContainsString( 'AC power 5&ndash;20 kW <span aria-hidden="true">&times;</span></a>', $chips );
 		$this->assertStringContainsString( 'class="wbclear" href="http://linker.test/product-category/inverters/" rel="nofollow">Clear all</a>', $chips );
+		$this->assertStringNotContainsString( 'product-page', $chips );
+
+		$_GET['q']            = 'ESA & 5';
+		$_GET['sort']         = 'name';
+		$_GET['product-page'] = '3';
+		$chips                = $shortcodes->products_chips();
+		$this->assertStringContainsString( 'class="wbclear" href="http://linker.test/product-category/inverters/?q=ESA%20%26%205&sort=name" rel="nofollow">Clear all</a>', $chips );
 		$this->assertStringNotContainsString( 'product-page', $chips );
 	}
 
