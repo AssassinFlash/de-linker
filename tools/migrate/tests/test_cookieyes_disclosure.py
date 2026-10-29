@@ -102,3 +102,22 @@ def test_rendered_config_and_titles_are_read_from_the_page() -> None:
 def test_write_without_a_backup_directory_is_refused_before_wordpress() -> None:
     with pytest.raises(SystemExit):
         disclosure.main(["--wp", "wp", "--write"])
+
+
+def test_rollback_cannot_bypass_the_production_backup_gate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    backup = tmp_path / "backup.json"
+    backup.write_text(json.dumps({"remove": [category("functional", 2)]}))
+    calls = []
+
+    def read(wp: list[str], payload: dict[str, object]) -> dict[str, object]:
+        calls.append((wp, payload))
+        return {"home": "https://de-linker.com", **LIVE}
+
+    monkeypatch.setattr(disclosure, "invoke", read)
+    with pytest.raises(RuntimeError, match="non-loopback site"):
+        disclosure.main(["--wp", "wp", "--rollback", str(backup)])
+    assert calls == [
+        (["wp"], {"operation": "read"}),
+    ]

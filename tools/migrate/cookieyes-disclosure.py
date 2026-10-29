@@ -38,7 +38,7 @@ from urllib.parse import urlsplit
 
 HERE = Path(__file__).resolve().parent
 PHP = HERE / "cookieyes-disclosure.php"
-PLACEHOLDER = "__LINKER_COOKIEYES_DISCLOSURE_PAYLOAD__"
+PLACEHOLDER = "__LINKER_COMMERCE_COOKIEYES_DISCLOSURE_PAYLOAD__"
 MARKER = "@@cookieyes-disclosure@@"
 DISCLOSED = ("necessary", "analytics", "advertisement")
 UNDISCLOSED = ("functional", "performance")
@@ -239,6 +239,30 @@ def backup_path(directory: Path) -> Path:
     return directory / f"cookieyes-disclosure-before-{stamp}.json"
 
 
+def require_production_backup(
+    home: str, production: bool, full_backup: Path | None
+) -> None:
+    """Every non-loopback mutation, including rollback, needs the same gate."""
+    if is_loopback(home):
+        return
+    if not production:
+        raise RuntimeError(
+            "refusing to mutate a non-loopback site without --production"
+        )
+    if full_backup is None:
+        raise RuntimeError("a non-loopback mutation needs --full-backup")
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "repair", HERE / "repair-legal-script.py"
+    )
+    if spec is None or spec.loader is None:
+        raise RuntimeError("repair-legal-script.py is missing")
+    repair = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(repair)
+    repair.verify_full_backup(full_backup)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--wp", required=True, help="WP-CLI prefix, without eval")
@@ -265,6 +289,10 @@ def main(argv: list[str] | None = None) -> int:
 
     wp = shlex.split(args.wp)
     if args.rollback:
+        current = invoke(wp, {"operation": "read"})
+        require_production_backup(
+            str(current.get("home") or ""), args.production, args.full_backup
+        )
         saved = json.loads(args.rollback.read_text())
         rows = saved.get("remove")
         if not isinstance(rows, list) or not rows:
@@ -277,22 +305,7 @@ def main(argv: list[str] | None = None) -> int:
     decision = classify(before)
     home = str(before.get("home") or "")
     if args.write and not is_loopback(home):
-        if not args.production:
-            raise RuntimeError(
-                "refusing to write a non-loopback site without --production"
-            )
-        if args.full_backup is None:
-            raise RuntimeError("a non-loopback write needs --full-backup")
-        import importlib.util
-
-        spec = importlib.util.spec_from_file_location(
-            "repair", HERE / "repair-legal-script.py"
-        )
-        if spec is None or spec.loader is None:
-            raise RuntimeError("repair-legal-script.py is missing")
-        repair = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(repair)
-        repair.verify_full_backup(args.full_backup)
+        require_production_backup(home, args.production, args.full_backup)
     if not args.write or decision["status"] != "apply":
         print(json.dumps({"home": home, **decision, "write": False}, indent=2))
         return 0 if decision["status"] != "drift" else 2

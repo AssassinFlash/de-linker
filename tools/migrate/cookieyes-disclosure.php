@@ -10,13 +10,11 @@
  * @package Linker\Migrate
  */
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals -- Standalone migration helpers run only through WP-CLI and are not plugin runtime APIs.
-
 if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
 	exit( 1 );
 }
 
-const LINKER_COOKIEYES_DISCLOSURE_MARKER = '@@cookieyes-disclosure@@';
+const LINKER_COMMERCE_COOKIEYES_DISCLOSURE_MARKER = '@@cookieyes-disclosure@@';
 
 try {
 	( static function ( string $encoded ): void {
@@ -31,21 +29,21 @@ try {
 		}
 		$operation = isset( $payload['operation'] ) ? (string) $payload['operation'] : 'read';
 		if ( 'read' === $operation ) {
-			linker_cookieyes_disclosure_emit( linker_cookieyes_disclosure_read() );
+			linker_commerce_cookieyes_disclosure_emit( linker_commerce_cookieyes_disclosure_read() );
 			return;
 		}
 		if ( 'apply' === $operation ) {
-			linker_cookieyes_disclosure_apply( $payload );
-			linker_cookieyes_disclosure_emit( linker_cookieyes_disclosure_read() );
+			linker_commerce_cookieyes_disclosure_apply( $payload );
+			linker_commerce_cookieyes_disclosure_emit( linker_commerce_cookieyes_disclosure_read() );
 			return;
 		}
 		if ( 'rollback' === $operation ) {
-			linker_cookieyes_disclosure_rollback( $payload );
-			linker_cookieyes_disclosure_emit( linker_cookieyes_disclosure_read() );
+			linker_commerce_cookieyes_disclosure_rollback( $payload );
+			linker_commerce_cookieyes_disclosure_emit( linker_commerce_cookieyes_disclosure_read() );
 			return;
 		}
 		throw new RuntimeException( 'Unknown operation.' );
-	} )( '__LINKER_COOKIEYES_DISCLOSURE_PAYLOAD__' );
+	} )( '__LINKER_COMMERCE_COOKIEYES_DISCLOSURE_PAYLOAD__' );
 } catch ( Throwable $error ) {
 	fwrite( STDERR, $error->getMessage() . PHP_EOL ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- CLI error stream, not a WordPress filesystem operation.
 	exit( 1 );
@@ -56,8 +54,8 @@ try {
  *
  * @param array<string, mixed> $data Snapshot.
  */
-function linker_cookieyes_disclosure_emit( array $data ): void {
-	echo LINKER_COOKIEYES_DISCLOSURE_MARKER . wp_json_encode( $data ) . PHP_EOL; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Fixed machine-readable marker plus JSON snapshot.
+function linker_commerce_cookieyes_disclosure_emit( array $data ): void {
+	echo LINKER_COMMERCE_COOKIEYES_DISCLOSURE_MARKER . wp_json_encode( $data ) . PHP_EOL; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Fixed machine-readable marker plus JSON snapshot.
 }
 
 /**
@@ -66,9 +64,9 @@ function linker_cookieyes_disclosure_emit( array $data ): void {
  * @return array<string, mixed>
  * @throws RuntimeException When a CookieYes table or privacy page cannot be read.
  */
-function linker_cookieyes_disclosure_read(): array {
+function linker_commerce_cookieyes_disclosure_read(): array {
 	global $wpdb;
-	linker_cookieyes_disclosure_require_tables();
+	linker_commerce_cookieyes_disclosure_require_tables();
 	$categories = $wpdb->get_results( "SELECT * FROM `{$wpdb->prefix}cky_cookie_categories` ORDER BY category_id ASC", ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 	$cookies    = $wpdb->get_results( "SELECT cookie_id, name, category FROM `{$wpdb->prefix}cky_cookies` ORDER BY cookie_id ASC", ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 	$contents   = $wpdb->get_var( "SELECT contents FROM `{$wpdb->prefix}cky_banners` WHERE banner_id = 1" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -77,9 +75,9 @@ function linker_cookieyes_disclosure_read(): array {
 	}
 	return array(
 		'home'            => (string) get_option( 'home' ),
-		'categories'      => array_map( 'linker_cookieyes_disclosure_category', $categories ),
-		'cookies'         => array_map( 'linker_cookieyes_disclosure_cookie', $cookies ),
-		'privacy'         => linker_cookieyes_disclosure_privacy(),
+		'categories'      => array_map( 'linker_commerce_cookieyes_disclosure_category', $categories ),
+		'cookies'         => array_map( 'linker_commerce_cookieyes_disclosure_cookie', $cookies ),
+		'privacy'         => linker_commerce_cookieyes_disclosure_privacy(),
 		'banner_contents' => hash( 'sha256', $contents ),
 	);
 }
@@ -90,12 +88,12 @@ function linker_cookieyes_disclosure_read(): array {
  * @param array<string, mixed> $payload Apply payload.
  * @throws RuntimeException When the payload is empty or its rows no longer match.
  */
-function linker_cookieyes_disclosure_apply( array $payload ): void {
+function linker_commerce_cookieyes_disclosure_apply( array $payload ): void {
 	$rows = $payload['rows'] ?? null;
 	if ( ! is_array( $rows ) || array() === $rows ) {
 		throw new RuntimeException( 'Apply needs the backed-up rows.' );
 	}
-	linker_cookieyes_disclosure_mutate( $rows, 'delete' );
+	linker_commerce_cookieyes_disclosure_mutate( $rows, 'delete' );
 }
 
 /**
@@ -104,12 +102,12 @@ function linker_cookieyes_disclosure_apply( array $payload ): void {
  * @param array<string, mixed> $payload Rollback payload.
  * @throws RuntimeException When the payload is empty or a row cannot be restored.
  */
-function linker_cookieyes_disclosure_rollback( array $payload ): void {
+function linker_commerce_cookieyes_disclosure_rollback( array $payload ): void {
 	$rows = $payload['rows'] ?? null;
 	if ( ! is_array( $rows ) || array() === $rows ) {
 		throw new RuntimeException( 'Rollback needs the backed-up rows.' );
 	}
-	linker_cookieyes_disclosure_mutate( $rows, 'restore' );
+	linker_commerce_cookieyes_disclosure_mutate( $rows, 'restore' );
 }
 
 /**
@@ -119,10 +117,10 @@ function linker_cookieyes_disclosure_rollback( array $payload ): void {
  * @param string            $mode delete or restore.
  * @throws RuntimeException When the rows or database connection change mid-transaction.
  */
-function linker_cookieyes_disclosure_mutate( array $rows, string $mode ): void {
+function linker_commerce_cookieyes_disclosure_mutate( array $rows, string $mode ): void {
 	global $wpdb;
-	linker_cookieyes_disclosure_require_tables();
-	$expected_privacy = linker_cookieyes_disclosure_privacy();
+	linker_commerce_cookieyes_disclosure_require_tables();
+	$expected_privacy = linker_commerce_cookieyes_disclosure_privacy();
 	$connection       = $wpdb->__get( 'dbh' );
 	$thread           = mysqli_thread_id( $connection ); // phpcs:ignore WordPress.DB.RestrictedFunctions.mysql_mysqli_thread_id
 	$guard            = static function ( string $query ) use ( $wpdb, $connection, $thread ): string {
@@ -144,12 +142,12 @@ function linker_cookieyes_disclosure_mutate( array $rows, string $mode ): void {
 				throw new RuntimeException( 'A category row is not an object.' );
 			}
 			if ( 'delete' === $mode ) {
-				linker_cookieyes_disclosure_delete_row( $row );
+				linker_commerce_cookieyes_disclosure_delete_row( $row );
 			} else {
-				linker_cookieyes_disclosure_restore_row( $row );
+				linker_commerce_cookieyes_disclosure_restore_row( $row );
 			}
 		}
-		if ( linker_cookieyes_disclosure_privacy() !== $expected_privacy ) {
+		if ( linker_commerce_cookieyes_disclosure_privacy() !== $expected_privacy ) {
 			throw new RuntimeException( 'Privacy pages changed during the category transaction.' );
 		}
 		if ( false === $wpdb->query( 'COMMIT' ) ) {
@@ -171,7 +169,7 @@ function linker_cookieyes_disclosure_mutate( array $rows, string $mode ): void {
 	 *
 	 * @since 1.0.0
 	 */
-	do_action( 'cky_after_update_cookie_category' );
+	do_action( 'cky_after_update_cookie_category' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Third-party CookieYes lifecycle hook.
 	if ( class_exists( '\CookieYes\Lite\Includes\Cache' ) ) {
 		\CookieYes\Lite\Includes\Cache::delete( 'categories' );
 	}
@@ -183,10 +181,10 @@ function linker_cookieyes_disclosure_mutate( array $rows, string $mode ): void {
  * @param array<string, mixed> $row Backed-up row.
  * @throws RuntimeException When the row changed, is visible, has cookies, or cannot be deleted.
  */
-function linker_cookieyes_disclosure_delete_row( array $row ): void {
+function linker_commerce_cookieyes_disclosure_delete_row( array $row ): void {
 	global $wpdb;
-	$current = linker_cookieyes_disclosure_lock( (int) $row['category_id'] );
-	if ( linker_cookieyes_disclosure_category( $current ) !== linker_cookieyes_disclosure_category( $row ) ) {
+	$current = linker_commerce_cookieyes_disclosure_lock( (int) $row['category_id'] );
+	if ( linker_commerce_cookieyes_disclosure_category( $current ) !== linker_commerce_cookieyes_disclosure_category( $row ) ) {
 		throw new RuntimeException( 'Category changed since backup; nothing written.' );
 	}
 	if ( 0 !== (int) $current['visibility'] ) {
@@ -212,12 +210,12 @@ function linker_cookieyes_disclosure_delete_row( array $row ): void {
  * @param array<string, mixed> $row Backed-up row.
  * @throws RuntimeException When the id is occupied by another row or insert fails.
  */
-function linker_cookieyes_disclosure_restore_row( array $row ): void {
+function linker_commerce_cookieyes_disclosure_restore_row( array $row ): void {
 	global $wpdb;
-	$wanted = linker_cookieyes_disclosure_category( $row );
+	$wanted = linker_commerce_cookieyes_disclosure_category( $row );
 	$found  = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `{$wpdb->prefix}cky_cookie_categories` WHERE category_id = %d FOR UPDATE", (int) $wanted['category_id'] ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 	if ( is_array( $found ) ) {
-		if ( linker_cookieyes_disclosure_category( $found ) !== $wanted ) {
+		if ( linker_commerce_cookieyes_disclosure_category( $found ) !== $wanted ) {
 			throw new RuntimeException( 'Category id is already used by a different row.' );
 		}
 		return;
@@ -251,7 +249,7 @@ function linker_cookieyes_disclosure_restore_row( array $row ): void {
  * @return array<string, mixed>
  * @throws RuntimeException When the category does not exist.
  */
-function linker_cookieyes_disclosure_lock( int $id ): array {
+function linker_commerce_cookieyes_disclosure_lock( int $id ): array {
 	global $wpdb;
 	$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `{$wpdb->prefix}cky_cookie_categories` WHERE category_id = %d FOR UPDATE", $id ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 	if ( ! is_array( $row ) ) {
@@ -266,7 +264,7 @@ function linker_cookieyes_disclosure_lock( int $id ): array {
  * @param array<string, mixed> $row Database row.
  * @return array<string, mixed>
  */
-function linker_cookieyes_disclosure_category( array $row ): array {
+function linker_commerce_cookieyes_disclosure_category( array $row ): array {
 	$labels = json_decode( (string) $row['name'], true );
 	return array(
 		'category_id'        => (int) $row['category_id'],
@@ -290,7 +288,7 @@ function linker_cookieyes_disclosure_category( array $row ): array {
  * @param array<string, mixed> $row Cookie row.
  * @return array<string, int|string>
  */
-function linker_cookieyes_disclosure_cookie( array $row ): array {
+function linker_commerce_cookieyes_disclosure_cookie( array $row ): array {
 	return array(
 		'cookie_id' => (int) $row['cookie_id'],
 		'name'      => (string) $row['name'],
@@ -304,7 +302,7 @@ function linker_cookieyes_disclosure_cookie( array $row ): array {
  * @return array<int, array<string, int|string>>
  * @throws RuntimeException When either privacy page is missing.
  */
-function linker_cookieyes_disclosure_privacy(): array {
+function linker_commerce_cookieyes_disclosure_privacy(): array {
 	$page = get_page_by_path( 'privacy-policy' );
 	if ( ! $page instanceof WP_Post ) {
 		throw new RuntimeException( 'privacy-policy is missing.' );
@@ -330,7 +328,7 @@ function linker_cookieyes_disclosure_privacy(): array {
  *
  * @throws RuntimeException When a required CookieYes table is absent.
  */
-function linker_cookieyes_disclosure_require_tables(): void {
+function linker_commerce_cookieyes_disclosure_require_tables(): void {
 	global $wpdb;
 	foreach ( array( 'cky_cookie_categories', 'cky_cookies', 'cky_banners' ) as $table ) {
 		$found = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->prefix . $table ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
