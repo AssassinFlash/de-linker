@@ -449,12 +449,13 @@ def _visible_pdf_line(
 
 
 def pdf_series_cover(pdf_path: Path) -> dict[str, object] | None:
-    """Recover a single visible first-page series/range line from a PDF footer.
+    """Recover one independently visible first-page manufacturer series title.
 
     Docling can classify the product title as page furniture. The original ESA
     datasheet prints the series and its power range on one physical line there.
-    Keep only this explicit title form, with one same-line, on-page range; a
-    filename, competing title, hidden text or unrelated body mention is not proof.
+    The STS datasheets instead print the standalone series name on the cover.
+    Accept only those two explicit forms; a filename, competing title, hidden
+    text or unrelated body mention is not proof.
     """
     import pypdfium2
 
@@ -477,7 +478,7 @@ def pdf_series_cover(pdf_path: Path) -> dict[str, object] | None:
                 # Offsets must address the exact original physical characters.
                 if len(text) != textpage.count_chars():
                     return None
-                pattern = re.compile(
+                ranged = re.compile(
                     r"(?im)^[ \t]*(?P<family>[a-z][a-z0-9]*[ \t]+series)"
                     r"[ \t]+Residential Energy Storage System[ \t]+I[ \t]+"
                     r"(?P<power>\d+(?:[.,]\d+)?[ \t]*[-–][ \t]*"
@@ -485,7 +486,12 @@ def pdf_series_cover(pdf_path: Path) -> dict[str, object] | None:
                     r"[ \t]*/[ \t]*\d+(?:[.,]\d+)?[ \t]*[-–][ \t]*"
                     r"\d+(?:[.,]\d+)?[ \t]*kWh[ \t\r]*$"
                 )
-                matches = list(pattern.finditer(text))
+                sts = re.compile(r"(?im)^[ \t]*(?P<family>STS[ \t]+series)[ \t\r]*$")
+                matches = [
+                    match
+                    for pattern in (ranged, sts)
+                    for match in pattern.finditer(text)
+                ]
                 if len(matches) != 1:
                     return None
                 match = matches[0]
@@ -503,15 +509,17 @@ def pdf_series_cover(pdf_path: Path) -> dict[str, object] | None:
                         max(b[3] for b in boxes),
                     )
 
-                family, power = bounds("family"), bounds("power")
+                family = bounds("family")
+                power = bounds("power") if "power" in match.re.groupindex else None
                 if not all(
                     left <= box[0] < box[2] <= right
                     and bottom <= box[1] < box[3] <= top
-                    for box in (family, power)
+                    for box in (family, *([power] if power is not None else []))
                 ):
                     return None
-                if family[2] >= power[0] or max(family[1], power[1]) >= min(
-                    family[3], power[3]
+                if power is not None and (
+                    family[2] >= power[0]
+                    or max(family[1], power[1]) >= min(family[3], power[3])
                 ):
                     return None
                 if not _visible_pdf_line(
@@ -530,7 +538,7 @@ def pdf_series_cover(pdf_path: Path) -> dict[str, object] | None:
                     + len(match.group(0))
                     - len(match.group(0).lstrip(" \t"))
                 )
-                return {
+                result: dict[str, object] = {
                     "kind": "pdf_cover",
                     "source_sha256": sha,
                     "source_page": 1,
@@ -549,7 +557,9 @@ def pdf_series_cover(pdf_path: Path) -> dict[str, object] | None:
                             family[3] - bottom,
                         ],
                     },
-                    "power": {
+                }
+                if power is not None:
+                    result["power"] = {
                         "text": match.group("power"),
                         "char_start": match.start("power"),
                         "char_end": match.end("power"),
@@ -559,8 +569,8 @@ def pdf_series_cover(pdf_path: Path) -> dict[str, object] | None:
                             power[2] - left,
                             power[3] - bottom,
                         ],
-                    },
-                }
+                    }
+                return result
             finally:
                 textpage.close()
         finally:

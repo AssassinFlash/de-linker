@@ -183,8 +183,12 @@ def valid_pdf_cover(anchor: Any, sha: str, chunk_id: str, text: str) -> bool:
         )
     ):
         return False
+    standalone_sts = (
+        re.fullmatch(r"STS[ \t]+Series", text, re.IGNORECASE) is not None
+        and "power" not in anchor
+    )
     spans = []
-    for name in ("family", "power"):
+    for name in ("family",) if standalone_sts else ("family", "power"):
         span = anchor.get(name)
         if not isinstance(span, dict):
             return False
@@ -201,6 +205,14 @@ def valid_pdf_cover(anchor: Any, sha: str, chunk_id: str, text: str) -> bool:
         ):
             return False
         spans.append(span)
+    if standalone_sts:
+        family = spans[0]
+        return (
+            family["char_start"] == start
+            and family["char_end"] == end
+            and family["text"] == text
+            and family_signature(text) == ("sts", "", "")
+        )
     family, power = spans
     return (
         family["char_end"] <= power["char_start"]

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+from copy import deepcopy
 from pathlib import Path
 
 import pypdfium2
@@ -10,8 +11,10 @@ import pypdfium2.raw as pdfium
 import pytest
 
 from index.extract import pdf_series_cover
+from linker_genie.warranty_scope import valid_pdf_cover
 
 LINE = "ESA Series Residential Energy Storage System I 3-10kW / 5-108kWh"
+STS_LINE = "STS Series"
 
 
 def _pdf(tmp_path: Path, commands: str, page_attributes: bytes = b"") -> Path:
@@ -68,6 +71,39 @@ def test_same_text_layer_is_accepted_only_when_rendered(tmp_path: Path) -> None:
     assert family["text"] == "ESA Series"
     assert power["text"] == "3-10kW"
     assert pdf_series_cover(_pdf(tmp_path, _text("3 Tr"))) is None
+
+
+def test_sts_title_requires_a_unique_visible_physical_line(tmp_path: Path) -> None:
+    visible = f"BT /F1 12 Tf 40 40 Td ({STS_LINE}) Tj ET"
+    path = _pdf(tmp_path, visible)
+    cover = pdf_series_cover(path)
+    assert cover is not None and cover["text"] == STS_LINE
+    cid = f"{path.stem[:12]}-p1-pdf-cover-{hashlib.sha256(('text' + chr(0) + STS_LINE).encode()).hexdigest()[:8]}"
+    assert valid_pdf_cover(cover, path.stem, cid, STS_LINE)
+    assert "power" not in cover
+    assert (
+        pdf_series_cover(_pdf(tmp_path, visible.replace("Td (", "Td 3 Tr ("))) is None
+    )
+    assert (
+        pdf_series_cover(
+            _pdf(tmp_path, visible + "\n" + visible.replace("40 40 Td", "40 80 Td"))
+        )
+        is None
+    )
+    assert (
+        pdf_series_cover(_pdf(tmp_path, visible.replace(STS_LINE, "OTHER Series")))
+        is None
+    )
+    assert pdf_series_cover(_pdf(tmp_path, visible + "\n" + _text())) is None
+    altered = deepcopy(cover)
+    assert isinstance(altered["family"], dict)
+    altered["family"]["bbox"] = [0, 0, 1000, 1000]
+    assert not valid_pdf_cover(altered, path.stem, cid, STS_LINE)
+    altered = deepcopy(cover)
+    altered["power"] = {"text": "forged"}
+    assert not valid_pdf_cover(altered, path.stem, cid, STS_LINE)
+    assert not valid_pdf_cover(cover, "0" * 64, cid, STS_LINE)
+    assert not valid_pdf_cover(cover, path.stem, cid + "x", STS_LINE)
 
 
 def test_white_letters_on_a_dark_background_are_visible(tmp_path: Path) -> None:
