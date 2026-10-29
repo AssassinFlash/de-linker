@@ -126,7 +126,7 @@ def _box(value: object) -> bool:
     )
 
 
-def subtitle_below_title(subtitle: Sequence[float], title: Sequence[float]) -> bool:
+def subtitle_above_title(subtitle: Sequence[float], title: Sequence[float]) -> bool:
     """Match a smaller subtitle immediately above a title.
 
     PDFium geometry in the SHA-verified manufacturer originals
@@ -211,6 +211,8 @@ def valid_word_wrap(value: object, cell: Mapping[str, Any]) -> bool:
         for part in (first, second)
     ):
         return False
+    # The SHA-verified original wrap in warranty-word-wrap-physical.json supplies
+    # these measured relative bounds: vertical gap, left offset and right margin.
     height = max(first[3] - first[1], second[3] - second[1])
     return bool(
         0 <= second[1] - first[3] <= height

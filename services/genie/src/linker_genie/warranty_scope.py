@@ -19,7 +19,7 @@ from linker_genie.table_projection import (
     display_cell_text,
     model_axis,
     read_cells,
-    subtitle_below_title,
+    subtitle_above_title,
 )
 
 # Literal manufacturer cover vocabulary in the hosted ESA/ET/STSs originals.
@@ -252,7 +252,7 @@ def valid_pdf_cover(anchor: Any, sha: str, chunk_id: str, text: str) -> bool:
             and family["char_end"] == end
             and family["text"] == text
             and family_signature(text) == ("sts", "", "")
-            and subtitle_below_title(box, family_box)
+            and subtitle_above_title(box, family_box)
         )
     family, power = spans
     return (

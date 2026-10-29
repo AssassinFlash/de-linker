@@ -36,7 +36,7 @@ from linker_genie.table_projection import (
     SourceSpan,
     SourceTextSpan,
     SourceWordWrap,
-    subtitle_below_title,
+    subtitle_above_title,
     valid_word_wrap,
 )
 from linker_genie.warranty_scope import STS_COVER_SUBTITLE
@@ -550,7 +550,7 @@ def pdf_series_cover(pdf_path: Path) -> dict[str, object] | None:
                     if not (
                         left <= subtitle[0] < subtitle[2] <= right
                         and bottom <= subtitle[1] < subtitle[3] <= top
-                        and subtitle_below_title(subtitle, family)
+                        and subtitle_above_title(subtitle, family)
                     ):
                         return None
                     # A later-extracted object can still be physically above
