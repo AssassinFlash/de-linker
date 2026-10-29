@@ -57,3 +57,24 @@
 2. **德语产品的文档与问答数据**：文档与 FAQ 字段在英文商品上，目录读数走 #7 的孪生交换取源语言；`_linker_faqs` 在本机为空，问答回落产品自己的 ACF 问答（英文）。#15 字段落库后德语页读 `question_de`/`answer_de`。
 3. **`just windpress-compile` 的 store 等待不稳定**：修复 LiveCanvas provider 的扫描响应损坏（spec §6）后有一次完整成功（31s，锚类全过）；此后同一配方出现 `no cache store within 300s`（浏览器 worker 仍报 `o.contents is not iterable`，即某次 provider 响应体不可解析——本机 PHP 内置服务器并发 8 路 provider 扫描、单响应最大 2 MB 量级）。缓存内容经插件自己的 `missing_anchor_classes()` 复核为 `[]`，且 mtime 晚于所有模板/`tokens.css`，`present` 的门通过；配方本身的偶发超时留档给 #5/#16 的工具线，不在本票范围。
 4. **页头/页脚的三处 `[linker_contact_link]`**：旧插件短代码在线上 partial 里按原文输出，归 #12/#16 的 chrome 线。
+
+
+## 2026-10-29 · 技术规格不丢失与列对齐
+
+线上只读实走发现：产品 6530 的产品页有 `Grid, back-up and smart port / Rated power = 60 kW` 与 `Inverter side / Rated power = 30 kW`（带原注记），比较页原只显示后者。复用仓库线上产品夹具的 EN 元数据和 DE overlay 经 `ProductView` 重现两个规格组；修前同一标签只留下 30 kW，缺少 60 kW。另一个页面用例证明只由第二列商品声明的规格此前被印在第一列且缺少第二个单元格。
+
+装配现在按来源组标题去首尾空白后与原标签的组合区分，避免仅因录入空白拆开同一组；只有标签冲突时显示该组名；同组重复标签逐条保留、不猜跨商品对应，每个产品的值按 ID 列顺序填入，未声明项留空。页面按列 ID 渲染，空值显示破折号。非冲突同组标签仍可并排比较；原值、单位、注记保留。能力继续只返回共同的 `products` / `rows`，不输出页面专有的 `specs`。发布、价格和库存边界沿用现有验证。
+
+回归：`plugins/linker-commerce/tests/php/Unit/Products/ComparisonTest.php` 使用真实 6530 EN/DE 技术组并覆盖同组匹配、跨组分离、组内重复和未命名组；`tests/php/Unit/Presentation/ComparePageTest.php` 检查真实 6530 的 EN/DE 表格行和第二列位置，以及独立稀疏值；既有 `ComparisonLiveProductsTest`、`CompareProductsTest` 继续检查共享能力子集，`ComparisonTest` 保留中途撤回和文档变化的发布检查。以下为候选的本地验证；本批尚待发布和线上读回，不代表线上已修复。
+
+本批开发复用单一临时工作树 `/Users/chesterjohn/.codex/worktrees/comparison-spec-integrity/de-linker`（负责：比较规格修复执行者；用途：隔离候选与测试；回收条件：父任务已接收提交、评审及浏览器核验结束后，保留提交并回收此工作树和可重建 vendor）。不新建数据库快照或实例。
+
+
+### 本批候选的本地读回
+
+- PHP 8.3 定向回归：比较装配、页面、共享能力及其真实产品夹具共 28 项 / 121 断言通过；本次 PHP 差异 PHPCS、PHPStan level 8 通过。标准评审覆盖完整运行时差异，独立规格评审覆盖完整差异及组名空白约定，均通过。 初次 CI 完整套件遇到 PHPUnit 跨进程序列化 `ReflectionMethod` 失败；本机完整套件复现后，两个隔离进程测试按仓库先例禁用全局状态复制，完整 Commerce 单元套件通过 1429 项 / 7641 断言（本机 PHP 内存限额提高至 1024M，实际峰值 140M），测试代码的 PHPCS 通过。运行时代码未变。
+- 复用本机 8888 的线上快照，产品 1832 和 6530 均为已发布商品，未写入产品数据。正确加载候选字节后，EN/DE × 1440/390 实际浏览器中，三行分别为电池组 `3072 W | —`、电网组 `— | 60 kW`、逆变器组 `— | 30 kW（来源注记）`，每行包括表头共三个单元格，文档无横向溢出。手机显示横移提示，实测横移 155 px 到末列；桌面不显示提示。
+- 英文浏览器实际移除 1832 后，仅留 6530，60 kW 与 30 kW 仍各占一行、每行两个单元格；清空比较后进入空态并清除选择。此检查没有重新尝试被保护验证拦下的加入方案操作。
+- 首次以单文件软链接挂载候选时，PHP 的实际路径使脚本 URL 错误、手机提示未运行；该轮不作为通过证据。将候选文件的真实字节放回原位置后，正确脚本 URL 返回 HTTP 200，真实浏览器显示手机提示并可横移，以上四视口证据均来自修正后的挂载。
+- 验收后恢复两份原文件，原文件与插件目录链接的 inode、mtime 和原文件 SHA-256 均与前像一致；定点失效 opcode 后，HTTP Reflection 读回原路径及原文件哈希，比较页 HTTP 200。临时 PHP 探针和还原清单已删除，未重启或新建实例。
+- 本机唯一浏览器记录：`/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/comparison-integrity-browser.json`；德语 390 候选截图同目录 `comparison-integrity-de390-candidate.png`。两者是本地验收证据，不是部署文件。

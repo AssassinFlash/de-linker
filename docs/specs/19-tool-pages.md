@@ -6,11 +6,11 @@
 
 **照旧逻辑**（线上实测 2026-10-11，`https://de-linker.com/compare-products/?ids=6521,6522,6523`）：目录卡上的勾选按钮 → 浮动芯片显示已选数量 → 独立页表格；上限 4 个型号；选择态存 sessionStorage（有序商品 ID，只有 ID）；对比页的地址（`?ids=1,2,3`）是这条选择的权威——打开页面即把服务端规范化后的列表写回标签页，所以刷新、收藏与分享都成立。
 
-**数据 = SelectionFacts 图值 + 产品的技术表，一个装配、两个入口。** `Linker\Commerce\Catalog\Comparison::of()` 是唯一的装配：
+**数据 = SelectionFacts 图值 + 产品的技术表，一个装配、两个入口。** `Linker\Commerce\Products\Comparison::of()` 是唯一的装配：
 
 - 列：按地址给定的顺序，已发布商品，取标题/链接（按页面语言，#9 的翻译对象）、SKU、图、价格（#11 的 `CommerceState` 规则，看不到价时说同一句话）、有货与否。
 - `rows`：**#7 的选择事实**，按设备类取行（逆变器侧 4 行、电池侧 3 行，互不混合；与 `linker/compare-products` ability 的行集、标签逐字一致）。unknown 是一等值，页面印破折号。
-- `specs`：各商品**自己的技术表**（`ProductView::spec_groups()`，即 `linker_specs` 一旦 #8 写入、之前读旧数据的那一个读取方）按标签取并集，某商品没写该行就空着。
+- `specs`：各商品**自己的技术表**（`ProductView::spec_groups()`，即 `linker_specs` 或当前语言的产品技术数据）。规格组标题去掉首尾空白后，与原标签组合判断跨商品是否同一行；同一组不因录入首尾空白分裂，不改变客户读到的物理端口含义。不同组的同名标签不合并，在行标题显示原组名区分，未冲突标签仍按原样显示。某商品在同一组重复相同标签时，来源不足以判断各次出现如何跨商品对应，逐条保留、不按位置猜配；无标题的组不补造名称。首个商品给出的行先显示，其他商品首次引入的行依来源顺序追加；数值、单位、注记均沿用来源。每行按当前商品 ID 顺序给出单元格，未声明的值留空并在页面显示破折号。
 
 `linker/compare-products` ability 的 `products` / `rows` 现在由同一个 `Comparison::of()` 投影出来（输入输出 schema 不变，测试锁定），所以 Genie 与页面不可能各算一套。
 
@@ -80,6 +80,7 @@
 
 - 2026-10-13：§7 第一条（本地缺 `_thumbnail_id`）在本机 t110 上复现并修：实例修前 6 行、快照 273 行（t103/t108/t109 均为 273），用 `tools/migrate/13-media-meta.py --snapshot ~/de-linker-data/20261011-1732 plan|apply --write` 从快照写回；`Materials::gallery_ids()` 另修了 `_product_image_gallery` 的读法（Woo 存逗号分隔字符串，`(array)` 只取到第一个 id，导致商品页少一张图且两个 id 以下不出缩略图条）。商品页的德语孪生模板（`content/livecanvas/de/single_product.html`）此前没有任何安装路径，`Templates` 现在把它写进英文模板的 Polylang 孪生（德语页型由孪生渲染，LiveCanvas 按请求语言查指派）。
 - 2026-10-13（同日追补，商品页三块与线上对齐）：线上商品页在情景带 checklist 时渲染 `<section class="pdp-block pdp-fit" id="fit">`（"Where this model fits." / "Wo dieses Modell passt."）并在段导航里给出 `Applications` / `Anwendungen` 链接——2026-10-13 逐页实测：GW60K-STS-G10、GW75K-ET-G10、EcoFlow OCEAN 带 checklist、无场景图，线上都渲染；ESA GW10K-EHA-G20 两者皆无，线上都不渲染。`linker_commerce_pdp_has_scenes()` 原先要求 `image > 0 && checklist`，把 checklist-only 的商品整体关死（GW60K 在内），现在只要求 checklist；两份模板（EN/DE）各加一条同条件的导航链接。只带场景图（无 checklist）的商品，线上渲染的是另一变体（"Product views and project settings." + `pdp-scene-reel` 场景卡），本树的 scenes 短代码尚未实现该变体，这类商品保持关闭——已知差异，记录在案。FAQ 块（`Product questions` / `Produktfragen`）由 `_linker_faqs` 数据开启：#16 装配时用 `tools/faq/import.py --from docs/faq --write` 写入（106 产品 221 项）；present 只装呈现层、不写产品数据，所以新起的实例要补跑该导入（本轮验证实例 sweep-8990 即如此）。画廊：`pdp.css` 里的桌面画廊规则（pair 单图、第二图 `display:none`、主图 640 高）此前被 WindPress 后编译进来的 storefront 卷副本压过（≥640px 把 pair 变成两栏并显示第二图，本机主图 400 宽、线上 813），线上是靠后加载的 `product-page.css` 分胜负；这些规则改用本文件自己的 `body:has(#tv-storefront-pdp)` 前缀后，1440 与 390 两处几何与线上逐项相同（813×640 / 72×72 三枚；190×245 / 60×60）。手机缩略图条同处对齐（单行 `overflow-x:auto`、tile `flex:0 0 60px`，线上 68 高对原先 136）。
+- 2026-10-29：线上 6530 实测产品页同名额定功率分别属于电网组 60 kW 与逆变器组 30 kW（附原始注记），比较页原只显示后者。比较装配改为按来源组和标签区分；页面按商品 ID 对齐空值。能力仍只输出既有 `products` / `rows` 子集，发布与价格门不变。详见同一验收记录的补充，线上部署与浏览器验收按实际状态记录。
 - 2026-10-11：本规格随 #66 首次写入。证据与命令：
   - 线上对照（只读 GET）：`/compare-products/`、`/compare-products/?ids=6521,6522,6523`、`/de/compare-products/?ids=6521,6523`、`/faq-download/`、`/de/faq-download/`、`/linker-advisor/`（200）、`/de/linker-berater/`（200）、`/de/linker-advisor/`（200）——实施日期 2026-10-11。
   - LC 每页机制的来源：快照里的 LiveCanvas 4.9.3 `modules/templating.php`（singular 的 `lc_use_template_of_slug` 分支）与其 `post-specific-dynamic-template-choice-ux.php`（后台的同一选择）。
