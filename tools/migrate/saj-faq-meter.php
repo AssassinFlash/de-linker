@@ -236,7 +236,10 @@
 		foreach ( $ids as $id ) {
 			clean_post_cache( $id );
 		}
-		$first        = array_key_first( $products );
+		$first = array_key_first( $products );
+		if ( ! isset( $before[ $first ] ) ) {
+			throw new RuntimeException( 'The first audited FAQ is missing.' );
+		}
 		$from         = $digest( $before[ $first ] ) === $products[ $first ][4] ? 'old' : 'new';
 		$next         = $targets( $before, $from );
 		$binding_next = $binding_targets( $before, $next, $from );
@@ -258,6 +261,9 @@
 		}
 		$other_before = $protected();
 		foreach ( $products as $en => $entry ) {
+			if ( ! isset( $before[ $en ] ) ) {
+				throw new RuntimeException( 'An audited FAQ preimage is missing.' );
+			}
 			$touched = true;
 			if ( ! update_post_meta( $en, \Linker\Commerce\Products\Faqs::META_KEY, wp_slash( $next[ $en ] ), $before[ $en ] ) ) {
 				throw new RuntimeException( 'A native FAQ update failed.' );
@@ -273,7 +279,7 @@
 		}
 		$after = $faqs();
 		foreach ( $products as $en => $entry ) {
-			if ( $after[ $en ] !== $next[ $en ] || $after[ $entry[0] ] !== $next[ $en ] ) {
+			if ( ( $after[ $en ] ?? null ) !== $next[ $en ] || ( $after[ $entry[0] ] ?? null ) !== $next[ $en ] ) {
 				throw new RuntimeException( 'Paired FAQ readback differs.' );
 			}
 			clean_post_cache( $en );

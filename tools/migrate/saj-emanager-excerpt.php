@@ -93,7 +93,7 @@
 		$unit       = $units['post_excerpt'] ?? null;
 		if ( sha1( implode( "\1", $parts ) ) !== $source_sha || 'synced' !== $state_api->status( 'post', 3618 ) || '' !== $state_api->note( 'post', 3618 )
 			|| json_decode( $raw_units[0], true, 512, JSON_THROW_ON_ERROR ) !== $units || ! is_array( $unit )
-			|| false !== ( $unit['conflict'] ?? null ) || $unit['src'] !== $segmenter->block_hashes( $en->post_excerpt, true )
+			|| false !== $unit['conflict'] || $unit['src'] !== $segmenter->block_hashes( $en->post_excerpt, true )
 			|| $unit['out'] !== $segmenter->block_hashes( $de->post_excerpt, true ) ) {
 			throw new RuntimeException( 'The current translation baseline is not the reviewed one.' );
 		}
