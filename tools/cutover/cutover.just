@@ -57,6 +57,12 @@ maintenance state *options:
 deploy *options:
     PHP={{ php }} {{ linker_cutover }} deploy "$@" --write
 
+# Re-point a pending batch's backup identities when the switch finished but the
+# host rewrote a backup sibling; refuses unless every live tree is the uploaded one.
+[positional-arguments]
+reconcile *options:
+    PHP={{ php }} {{ linker_cutover }} reconcile "$@" --write
+
 # Finish verify/archive for a pending batch without building or uploading again.
 [positional-arguments]
 resume-deploy *options:

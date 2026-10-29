@@ -8,7 +8,7 @@ import re
 import shlex
 import time
 from collections.abc import Callable
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from pathlib import Path
 
 from linker_cutover import planner_contracts, public_assets
@@ -455,6 +455,47 @@ def publish(
             if line.startswith(AFTER_SWITCH_MARKER)
         ),
     )
+
+
+def reconcile_pending(target: Target) -> tuple[str, ...]:
+    """Re-point a pending manifest at the backup siblings actually on disk.
+
+    The switch renames live -> .prev, so each recorded backup identity should
+    survive. It does not when something rewrote the host copy while the batch
+    stayed pending (an interrupted earlier batch, or a tool that copies the
+    directory instead of renaming it): the switch did finish -- live carries the
+    uploaded identity -- but rollback preflight then refuses to touch a batch it
+    cannot name. Only that proof of a completed switch admits the correction;
+    the backup identities are re-read and nothing else changes.
+    """
+    directory, manifest = latest_manifest(target)
+    if manifest.state != "pending":
+        raise CutoverError(f"deployment {manifest.deploy_id} is {manifest.state}")
+    live_paths = [target.path_of(entry.relative) for entry in manifest.backups]
+    live = identities(target, live_paths)
+    problems = [
+        f"{entry.relative}: live {live[path]} is not the uploaded {entry.new_inode}"
+        for entry, path in zip(manifest.backups, live_paths, strict=True)
+        if live[path] != entry.new_inode
+    ]
+    if problems:
+        raise CutoverError("reconcile refused: " + "; ".join(problems))
+    backup_paths = [
+        _backup_path(target, directory, manifest, entry) for entry in manifest.backups
+    ]
+    actual = identities(target, backup_paths)
+    entries = tuple(
+        replace(entry, inode=actual[path])
+        for entry, path in zip(manifest.backups, backup_paths, strict=True)
+    )
+    changed = tuple(
+        entry.relative
+        for entry, old in zip(entries, manifest.backups, strict=True)
+        if entry.inode != old.inode
+    )
+    if changed:
+        target.shell("set -eu\n" + _write_manifest(Manifest(manifest.deploy_id, "pending", entries), directory))
+    return changed
 
 
 def _checked_backups(
