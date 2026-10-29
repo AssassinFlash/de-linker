@@ -113,6 +113,10 @@ ci-native groups name:
     groups="$1"
     name="$2"
     wordpress="$HOME/de-linker-local/$name/wordpress"
+    export PHP="{{ php }}"
+    ensure_i18n() {
+        just --justfile "$root/justfile" wp "$name" linker-i18n setup --user=local-admin
+    }
     run_core() {
         just --justfile "$root/justfile" mu-smoke "$name"
         just --justfile "$root/justfile" genie-concurrency "$name"
@@ -143,7 +147,6 @@ ci-native groups name:
     }
     run_inventory() {
         cd "$root"
-        just --justfile "$root/justfile" wp "$name" linker-i18n setup --user=local-admin
         uv run --locked --project tools/local ruff check --config tools/local/pyproject.toml tools/checks/inventory-access.py
         uv run --locked --project tools/local ruff format --check --config tools/local/pyproject.toml tools/checks/inventory-access.py
         uv run --locked --project tools/local mypy --strict tools/checks/inventory-access.py
@@ -163,7 +166,6 @@ ci-native groups name:
             echo "gettext is required for the administrator MFA test" >&2
             exit 1
         fi
-        just --justfile "$root/justfile" wp "$name" linker-i18n setup --user=local-admin
         uv run --locked --project tools/local ruff check --config tools/local/pyproject.toml tools/checks/admin-mfa.py
         uv run --locked --project tools/local ruff format --check --config tools/local/pyproject.toml tools/checks/admin-mfa.py
         uv run --locked --project tools/local mypy --strict tools/checks/admin-mfa.py
@@ -171,6 +173,7 @@ ci-native groups name:
         {{ php }} plugins/linker-commerce/vendor/bin/phpcs --standard=plugins/linker-commerce/phpcs.xml.dist tests/e2e/fixtures/admin-mfa.php tests/e2e/fixtures/admin-mfa-public.php
         just --justfile "$root/justfile" admin-mfa "$name" --prepare
     }
+    ensure_i18n
     case "$groups" in
         all) run_core; run_mail; run_inquiry; run_inventory; run_runtime; run_admin ;;
         core) run_core ;;
