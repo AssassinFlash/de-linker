@@ -239,6 +239,7 @@ def load(
     say(f"active plugins: {', '.join(entry.split('/')[0] for entry in active)}")
     german = _refresh_german(target, say) if live_code else None
     wp.run("rewrite", "flush")
+    _bind_publication(wp, say, active)
     # The dump replaced every user_pass with an irreversible placeholder
     # (anonymize.local_password). The password provision() wrote into admin.txt
     # no longer opens anything, and the file is the only place a session looks
@@ -629,6 +630,22 @@ def _reads_german(html: str) -> bool:
     german = len(GERMAN_MARKERS.findall(text))
     english = len(ENGLISH_MARKERS.findall(text))
     return german >= 10 and german >= 3 * english
+
+
+def _bind_publication(wp: WpCli, say: Say, active: list[str]) -> None:
+    """Bind this copy's figure and cited-answer revisions after the address rewrite.
+
+    `Publication::revision()` hashes the record including its citation URL, so
+    the rewrite above changes the revision of every cited FAQ and figure while
+    the bindings still name the live revisions. Bindings are additive — the
+    previous entries stay, as on live — and without them a migration that
+    guards on "this citation was reviewed" refuses on an otherwise correct
+    copy (`A cited FAQ no longer has its reviewed document binding`).
+    """
+    if not any(entry.split("/")[0] == "linker-commerce" for entry in active):
+        return
+    say("publication: binding this copy's figure and FAQ revisions")
+    wp.run("linker-commerce", "publication", "bind-figures")
 
 
 def _active_plugins(wp: WpCli) -> list[str]:
