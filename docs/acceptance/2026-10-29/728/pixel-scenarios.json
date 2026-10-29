@@ -1,0 +1,40 @@
+[
+  {
+    "name": "services-en",
+    "path": "/services-support/",
+    "widths": [1440, 390],
+    "ruledRegions": [
+      {
+        "name": "inserted-trade-standard-row",
+        "selector": ".lk-trade-standards"
+      },
+      {
+        "name": "shifted-deliverables-siblings",
+        "selector": "#deliverables .lk-trade-standards ~ *"
+      },
+      {
+        "name": "shifted-following-sections",
+        "selector": "#deliverables ~ *"
+      }
+    ]
+  },
+  {
+    "name": "services-de",
+    "path": "/de/kundendienst/",
+    "widths": [1440, 390],
+    "ruledRegions": [
+      {
+        "name": "inserted-trade-standard-row",
+        "selector": ".lk-trade-standards"
+      },
+      {
+        "name": "shifted-deliverables-siblings",
+        "selector": "#deliverables .lk-trade-standards ~ *"
+      },
+      {
+        "name": "shifted-following-sections",
+        "selector": "#deliverables ~ *"
+      }
+    ]
+  }
+]

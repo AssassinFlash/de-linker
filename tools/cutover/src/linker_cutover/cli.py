@@ -228,9 +228,7 @@ def main(argv: list[str] | None = None) -> int:
             return 1 if checked.notes else 0
         if args.command == "reconcile":
             if not args.write:
-                print(
-                    "reconcile: would re-read the pending manifest's backup identities"
-                )
+                print("reconcile: would re-read the pending manifest's backup identities")
                 return 0
             corrected = steps.reconcile(target)
             _print(corrected)

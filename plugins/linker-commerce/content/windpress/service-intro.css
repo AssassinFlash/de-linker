@@ -118,6 +118,57 @@
 	color: var(--proto-ink-muted-deep);
 }
 #service-redesign #deliverables .service-intro :is(.capability-controls,.mt-visual,.mt-dock) { display: none; }
+/* Owner-requested trade-standard facts, 2026-10-28. One factual row below the
+ * existing introduction; this file is the sole customer-visible style source.
+ * .75/.9375 match this page's label/body scale; the 1100px and 800px
+ * breakpoints already govern the surrounding service layout. */
+#service-redesign .lk-trade-standards {
+	margin-top: var(--proto-space-5);
+	border-top: 1px solid var(--proto-line-journal);
+}
+#service-redesign .lk-trade-standards dl {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	margin: 0;
+	border-bottom: 1px solid var(--proto-line-journal);
+}
+#service-redesign .lk-trade-standards dl > div {
+	min-width: 0;
+	padding: var(--proto-space-4) var(--proto-space-5);
+	border-right: 1px solid var(--proto-line-journal);
+}
+#service-redesign .lk-trade-standards dl > div:first-child { padding-left: 0; }
+#service-redesign .lk-trade-standards dl > div:last-child {
+	padding-right: 0;
+	border-right: 0;
+}
+#service-redesign .lk-trade-standards dt {
+	margin: 0 0 var(--proto-space-2);
+	color: var(--proto-teal-700);
+	font: 700 .75rem/1.4 var(--proto-font-sans);
+	letter-spacing: .08em;
+	text-transform: uppercase;
+}
+#service-redesign .lk-trade-standards dd {
+	margin: 0;
+	color: var(--proto-ink-muted-deep);
+	font: 400 .9375rem/1.7 var(--proto-font-sans);
+}
+@media (max-width: 1100px) {
+	#service-redesign .lk-trade-standards dl {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+	#service-redesign .lk-trade-standards dl > div:nth-child(2n) {
+		padding-right: 0;
+		border-right: 0;
+	}
+	#service-redesign .lk-trade-standards dl > div:nth-child(-n+2) {
+		border-bottom: 1px solid var(--proto-line-journal);
+	}
+	#service-redesign .lk-trade-standards dl > div:nth-child(3) {
+		padding-left: 0;
+	}
+}
 @media (max-width: 800px) {
 	/* The retained photo chapter makes this container full width. The open
 	 * introduction has no photo overlay now: restore the shared24px gutter,
@@ -142,4 +193,15 @@
 	/* The inherited mobile script toggles these topics for its photo dock.
 	 * This open list presents every topic, including when that script is off. */
 	#service-redesign #deliverables .service-intro .mt-topic:not(.mt-active) { display: grid !important; }
+	#service-redesign .lk-trade-standards dl { grid-template-columns: 1fr; }
+	#service-redesign .lk-trade-standards dl > div,
+	#service-redesign .lk-trade-standards dl > div:nth-child(2n),
+	#service-redesign .lk-trade-standards dl > div:nth-child(3) {
+		padding: var(--proto-space-4) 0;
+		border-right: 0;
+		border-bottom: 1px solid var(--proto-line-journal);
+	}
+	#service-redesign .lk-trade-standards dl > div:last-child {
+		border-bottom: 0;
+	}
 }

@@ -52,32 +52,34 @@ def test_planning_is_idempotent_and_preserves_unrelated_bytes() -> None:
     assert standards.plan_page(planned, "en") == planned
     assert (
         original.replace(
-            standards.CSS_ANCHOR, standards.CSS + "\n" + standards.CSS_ANCHOR, 1
-        ).replace(
-            standards.LEDGER_ANCHOR,
-            standards.EN_MARKUP + "\n" + standards.LEDGER_ANCHOR,
+            standards.SERVICE_LEDGER_INSERTION_POINT,
+            standards.EN_MARKUP + "\n" + standards.SERVICE_LEDGER_INSERTION_POINT,
             1,
         )
         == planned
     )
-    assert planned.count(standards.CSS) == 1
     assert planned.count(standards.EN_MARKUP) == 1
-
-
-def test_a_partial_increment_is_refused() -> None:
-    partial = page().replace(
-        standards.LEDGER_ANCHOR,
-        standards.EN_MARKUP + "\n" + standards.LEDGER_ANCHOR,
-        1,
+    assert (
+        planned.split(standards.EN_MARKUP, 1)[0]
+        == original.split(standards.SERVICE_LEDGER_INSERTION_POINT, 1)[0]
     )
-    with pytest.raises(ValueError, match="partially"):
-        standards.plan_page(partial, "en")
+    assert "#service-redesign .lk-trade-standards" not in planned
+
+
+def test_the_row_style_lives_in_the_existing_windpress_source() -> None:
+    stylesheet = (
+        Path(__file__).parents[3]
+        / "plugins/linker-commerce/content/windpress/service-intro.css"
+    ).read_text()
+    assert "#service-redesign .lk-trade-standards" in stylesheet
 
 
 def test_a_drifted_or_wrong_page_is_refused() -> None:
     with pytest.raises(ValueError, match="EN or DE"):
         standards.plan_page(page('id="another-page"'), "en")
-    drifted = page().replace(standards.LEDGER_ANCHOR, "<div>changed</div>", 1)
+    drifted = page().replace(
+        standards.SERVICE_LEDGER_INSERTION_POINT, "<div>changed</div>", 1
+    )
     with pytest.raises(ValueError, match="not unique"):
         standards.plan_page(drifted, "en")
 
@@ -86,3 +88,34 @@ def test_reviewed_row_has_no_invented_trade_numbers_or_incoterms() -> None:
     english, german = standards.plan_pair(page(), page())
     for source in (english, german):
         assert not any(value in source for value in standards.FORBIDDEN)
+
+
+def test_the_trade_library_has_no_online_warranty_or_incoterm_claim() -> None:
+    trade_library = (
+        Path(__file__).parents[3] / "plugins/linker-commerce/data/faq-trade.json"
+    ).read_text()
+    for stale_claim in (
+        "Open Warranty & Replacements",
+        "signed-in account",
+        "angemeldete Konto",
+        "Incoterms",
+        "EXW",
+        "DAP",
+    ):
+        assert stale_claim not in trade_library
+
+
+def test_page_snapshot_retention_keeps_the_latest_three_verified_files(
+    tmp_path: Path,
+) -> None:
+    for stamp in ("01", "02", "03", "04"):
+        (tmp_path / f"industry-standards-before-{stamp}.json").write_text(
+            '{"readback_verified": true}'
+        )
+    removed = standards.prune_page_backups(tmp_path)
+    assert removed == [str(tmp_path / "industry-standards-before-01.json")]
+    assert sorted(path.name for path in tmp_path.iterdir()) == [
+        "industry-standards-before-02.json",
+        "industry-standards-before-03.json",
+        "industry-standards-before-04.json",
+    ]

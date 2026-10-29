@@ -53,7 +53,9 @@ def verify_full_backup(directory: Path) -> None:
     manifest = json.loads((directory / "manifest.json").read_text())
     files = manifest.get("files", {})
     required = ("wp-content/uploads/", "wp-content/plugins/", "wp-content/mu-plugins/")
-    if manifest.get("target") != "hostinger-de-linker" or any(
+    source = manifest.get("source", {})
+    site = manifest.get("target") or source.get("host")
+    if site != "hostinger-de-linker" or any(
         not any(name.startswith(prefix) for name in files) for prefix in required
     ):
         raise ValueError("Backup is not a complete production snapshot")

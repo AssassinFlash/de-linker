@@ -494,12 +494,7 @@ def reconcile_pending(target: Target) -> tuple[str, ...]:
         if entry.inode != old.inode
     )
     if changed:
-        target.shell(
-            "set -eu\n"
-            + _write_manifest(
-                Manifest(manifest.deploy_id, "pending", entries), directory
-            )
-        )
+        target.shell("set -eu\n" + _write_manifest(Manifest(manifest.deploy_id, "pending", entries), directory))
     return changed
 
 

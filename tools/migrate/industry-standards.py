@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Add the reviewed trade-standard facts to the EN/DE Services & Support pair.
+"""Add the reviewed trade-standard row to the EN/DE Services & Support pair.
 
 The content lives in WordPress, not this repository. Planning is pure and
 idempotent; ``--write`` uses the existing reviewed-pair transaction so a
-partially changed EN/DE pair cannot be saved.
+partially changed EN/DE pair cannot be saved. The row's styling is owned by
+WindPress in ``service-intro.css``; this migration changes only page markup.
 """
 
 from __future__ import annotations
@@ -31,74 +32,8 @@ def _module(name: str, filename: str) -> Any:
 pair = _module("reviewed_pair", "reviewed_page_pair.py")
 writer = _module("content_writer", "repair-legal-script.py")
 
-CSS_ANCHOR = "@media (max-width: 1100px) {"
-LEDGER_ANCHOR = '<div class="service-ledger">'
+SERVICE_LEDGER_INSERTION_POINT = '<div class="service-ledger">'
 ROOT = 'id="service-redesign"'
-
-CSS = """/* Reviewed trade standards: one factual row, not a second service section. */
-#service-redesign .lk-trade-standards {
-  margin-top: 18px;
-  border-top: 1px solid var(--sr-line);
-}
-#service-redesign .lk-trade-standards dl {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  margin: 0;
-  border-bottom: 1px solid var(--sr-line);
-}
-#service-redesign .lk-trade-standards dl > div {
-  min-width: 0;
-  padding: 14px 16px;
-  border-right: 1px solid var(--sr-line);
-}
-#service-redesign .lk-trade-standards dl > div:first-child { padding-left: 0; }
-#service-redesign .lk-trade-standards dl > div:last-child {
-  padding-right: 0;
-  border-right: 0;
-}
-#service-redesign .lk-trade-standards dt {
-  margin-bottom: 5px;
-  color: var(--sr-teal);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-}
-#service-redesign .lk-trade-standards dd {
-  margin: 0;
-  color: var(--sr-muted);
-  font-size: 11px;
-  line-height: 1.55;
-}
-@media (max-width: 1100px) {
-  #service-redesign .lk-trade-standards dl {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  #service-redesign .lk-trade-standards dl > div:nth-child(2n) {
-    padding-right: 0;
-    border-right: 0;
-  }
-  #service-redesign .lk-trade-standards dl > div:nth-child(-n+2) {
-    border-bottom: 1px solid var(--sr-line);
-  }
-  #service-redesign .lk-trade-standards dl > div:nth-child(3) {
-    padding-left: 0;
-  }
-}
-@media (max-width: 620px) {
-  #service-redesign .lk-trade-standards dl { grid-template-columns: 1fr; }
-  #service-redesign .lk-trade-standards dl > div,
-  #service-redesign .lk-trade-standards dl > div:nth-child(2n),
-  #service-redesign .lk-trade-standards dl > div:nth-child(3) {
-    padding: 13px 0;
-    border-right: 0;
-    border-bottom: 1px solid var(--sr-line);
-  }
-  #service-redesign .lk-trade-standards dl > div:last-child {
-    border-bottom: 0;
-  }
-}
-"""
 
 EN_MARKUP = """<div class="lk-trade-standards" aria-label="Trade standards">
 <dl>
@@ -109,7 +44,7 @@ EN_MARKUP = """<div class="lk-trade-standards" aria-label="Trade standards">
 </dl>
 </div>"""
 
-DE_MARKUP = """<div class="lk-trade-standards" aria-label="Geschäftsbedingungen">
+DE_MARKUP = """<div class="lk-trade-standards" aria-label="Leistungen für Fachpartner">
 <dl>
 <div><dt>Lieferung</dt><dd>Bestellungen versenden wir ab Lager. Bei Lieferungen berechnen wir die Fracht gesondert nach Zielort.</dd></div>
 <div><dt>Produktschulung</dt><dd>Für Installateure bieten wir Produktschulungen an.</dd></div>
@@ -143,15 +78,11 @@ def plan_page(content: str, language: str) -> str:
     if language not in {"en", "de"} or content.count(ROOT) != 1:
         raise ValueError("Expected one EN or DE Services & Support page")
     markup = EN_MARKUP if language == "en" else DE_MARKUP
-    has_css, has_markup = CSS in content, markup in content
-    if has_css != has_markup:
-        raise ValueError("The trade-standard row is only partially present")
     if any(value in markup for value in FORBIDDEN):
         raise ValueError("Forbidden trade promise entered the reviewed row")
-    if has_css and has_markup:
+    if markup in content:
         return content
-    planned = _insert_block(content, CSS, CSS_ANCHOR)
-    return _insert_block(planned, markup, LEDGER_ANCHOR)
+    return _insert_block(content, markup, SERVICE_LEDGER_INSERTION_POINT)
 
 
 def plan_pair(english: str, german: str) -> tuple[str, str]:
@@ -161,6 +92,18 @@ def plan_pair(english: str, german: str) -> tuple[str, str]:
 
 def digest(value: str) -> str:
     return hashlib.sha256(value.encode()).hexdigest()
+
+
+def prune_page_backups(backup_dir: Path, keep: int = 3) -> list[str]:
+    """Keep the bounded set of completed page snapshots after a verified write."""
+    backups = sorted(backup_dir.glob("industry-standards-before-*.json"), reverse=True)
+    removed = []
+    for path in backups[keep:]:
+        payload = json.loads(path.read_text())
+        if payload.get("readback_verified"):
+            path.unlink()
+            removed.append(str(path))
+    return removed
 
 
 def main() -> None:
@@ -257,7 +200,20 @@ def main() -> None:
     readback = pair.read(args.wp, args.en, args.de)
     if readback["pages"] != {str(args.en): after[0], str(args.de): after[1]}:
         raise RuntimeError(f"Paired readback differs; backup: {backup_path}")
-    print(json.dumps({**result, "backup": str(backup_path)}, indent=2))
+    saved = json.loads(backup_path.read_text())
+    saved["readback_verified"] = True
+    backup_path.write_text(json.dumps(saved, indent=2))
+    removed = prune_page_backups(args.backup_dir)
+    print(
+        json.dumps(
+            {
+                **result,
+                "backup": str(backup_path),
+                "backups_removed": removed,
+            },
+            indent=2,
+        )
+    )
 
 
 if __name__ == "__main__":

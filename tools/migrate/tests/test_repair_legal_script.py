@@ -1,6 +1,9 @@
-"""The real lost-backslash pattern must restore scripts without rolling back copy."""
+"""The real lost-backslash pattern restores scripts and validates full backups."""
 
+import gzip
+import hashlib
 import importlib.util
+import json
 from pathlib import Path
 from typing import Any
 
@@ -57,3 +60,49 @@ def test_no_shell_execution_in_remote_content(monkeypatch: pytest.MonkeyPatch) -
     assert seen[0][0][:4] == ["ssh", "-o", "BatchMode=yes", "hostinger-de-linker"]
     assert seen[0][0][-1] == "eval 'eval( stream_get_contents( STDIN ) );'"
     assert "$(bad)" not in seen[0][1]["input"]
+
+
+def test_current_pull_snapshot_manifest_is_a_valid_full_backup(
+    tmp_path: Path,
+) -> None:
+    files: dict[str, dict[str, int | str]] = {}
+    for relative in (
+        "wp-content/uploads/image.jpg",
+        "wp-content/plugins/plugin.php",
+        "wp-content/mu-plugins/module.php",
+    ):
+        path = tmp_path / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(relative.encode())
+        files[relative] = {"bytes": path.stat().st_size}
+
+    dump = tmp_path / "db.sql.gz"
+    with gzip.open(dump, "wb") as handle:
+        handle.write(b"CREATE TABLE fixture (id int);\n")
+    files[dump.name] = {
+        "bytes": dump.stat().st_size,
+        "sha256": hashlib.sha256(dump.read_bytes()).hexdigest(),
+    }
+    (tmp_path / "manifest.json").write_text(
+        json.dumps(
+            {
+                "source": {"host": "hostinger-de-linker"},
+                "files": files,
+            }
+        )
+    )
+
+    repair.verify_full_backup(tmp_path)
+
+
+def test_full_backup_from_another_host_is_refused(tmp_path: Path) -> None:
+    (tmp_path / "manifest.json").write_text(
+        json.dumps(
+            {
+                "source": {"host": "another-host"},
+                "files": {},
+            }
+        )
+    )
+    with pytest.raises(ValueError, match="complete production snapshot"):
+        repair.verify_full_backup(tmp_path)

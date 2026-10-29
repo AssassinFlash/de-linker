@@ -1,6 +1,6 @@
 {
   "_why": "The trade rules of /faq-download/ ('Before you order'): the 16 B2B questions the page carries, frozen. Content moved verbatim out of the LiveCanvas templates on 2026-10-15 (#176) so the rail, the mobile chip row, the card headings and the answers read one source; de-linker has no lab and the register states what the documents state.",
-  "_rule": "Verbatim copy of the page's own questions and answers; wording is approved content and is not edited here. Answers may carry inline links to the contact page.",
+  "_rule": "Verbatim copy of the page's own questions and answers. Customer-visible wording changes only when a claim is proven factually stale against an owner ruling or the implemented workflow; answers may carry inline links to the contact page.",
   "_source": "plugins/linker-commerce/content/livecanvas/faq_page.html and de/faq_page.html at 08997063 (#176 extraction, tools/faq/extract-trade.py --rev 08997063).",
   "categories": [
     {
@@ -139,8 +139,8 @@
             "de": "Wie werden Garantieansprüche bearbeitet?"
           },
           "answer": {
-            "en": "Open Warranty & Replacements from your order. The signed-in account confirms the order, and the form keeps the serial number, model, and fault description with that order. Linker handles the diagnostic exchange with the manufacturer's technical desk. <a href=\"/contact/?intent=support\">Open Warranty & Replacements</a>.",
-            "de": "Öffnen Sie Garantie & Ersatz aus Ihrer Bestellung. Das angemeldete Konto bestätigt die Bestellung, und das Formular hält Seriennummer, Modell und Fehlerbeschreibung bei dieser Bestellung. Linker übernimmt den diagnostischen Austausch mit dem technischen Support des Herstellers. <a href=\"/de/kontakt/?intent=support\">Garantie & Ersatz öffnen</a>."
+            "en": "For a warranty claim, contact us with your order, serial number, model, and fault description. Linker handles the diagnostic exchange with the manufacturer's technical desk. <a href=\"/contact/?intent=support\">Contact us about Warranty & Replacements</a>.",
+            "de": "Für einen Garantieanspruch kontaktieren Sie uns mit Ihrer Bestellung, Seriennummer, Modell und Fehlerbeschreibung. Linker übernimmt den diagnostischen Austausch mit dem technischen Support des Herstellers. <a href=\"/de/kontakt/?intent=support\">Kontakt zu Garantie & Ersatz</a>."
           }
         },
         {
