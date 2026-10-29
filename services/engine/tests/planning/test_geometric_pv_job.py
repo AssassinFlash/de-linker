@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
 from typing import Any, cast
 
@@ -195,8 +196,14 @@ def test_owned_complete_weather_to_profile_two_hour_energy_report_and_frozen_rea
         assert profile.intervals[0].start.isoformat() == "2023-01-01T00:00:00+00:00"
         assert profile.intervals[-1].end.isoformat() == "2024-01-01T00:00:00+00:00"
         assert cast(Object, asset.metadata["weather"])["interval_count"] == 8760
-        assert (
-            cast(Object, result["profile_summary"])["energy_kwh"] == profile.total_kwh
+        # profile_summary carries the exact-model total; the retained powers
+        # are stored at the platform-stable spelling, so the read-back total
+        # matches within its documented 1e-9 relative quantum.
+        assert math.isclose(
+            float(cast(float, cast(Object, result["profile_summary"])["energy_kwh"])),
+            profile.total_kwh,
+            rel_tol=2e-9,
+            abs_tol=1e-12,
         )
         assert (
             http.post(

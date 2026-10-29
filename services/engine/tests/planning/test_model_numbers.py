@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 import math
+from collections.abc import Mapping
+from typing import cast
 
 import numpy as np
 import pytest
@@ -11,7 +13,8 @@ import pytest
 from linker_engine.planning import report_numbers
 from linker_engine.planning.canonical import encode
 from linker_engine.planning.model_numbers import (
-    DERIVED_WITNESS_DIGITS10,
+    DERIVED_WITNESS_SIGNIFICANT_DIGITS,
+    canonical_witness_document,
     derived_witness_number,
     derived_witness_numbers,
 )
@@ -32,46 +35,116 @@ def test_signed_zero_is_one_stored_witness_value() -> None:
     assert derived_witness_numbers([-0.0, 0.0]) == [0.0, 0.0]
 
 
-def test_spelling_is_binary64_digits10_not_an_identity_or_a_tolerance() -> None:
-    # IEEE 754-2008 binary64 digits10. Seventeen digits would name one binary64;
-    # fifteen does not, and neither number is an engineering accuracy.
-    assert DERIVED_WITNESS_DIGITS10 == 15
+def test_spelling_is_ten_significant_digits_not_an_identity_or_a_tolerance() -> None:
+    # The decimal quantum (1e-9 relative) is >=300x coarser than the measured
+    # macOS-libm/glibc spread of a derived PV float (~3e-12 relative), so
+    # platform siblings share one spelling. Ten digits is a stability
+    # contract, not an engineering accuracy; the stored value stays within
+    # 5e-10 relative of the unrounded one.
+    assert DERIVED_WITNESS_SIGNIFICANT_DIGITS == 10
     raw = math.pi
     stored = derived_witness_number(raw)
     assert stored != raw
     rendered = json.dumps(stored)
-    assert _significant_digits(rendered) <= DERIVED_WITNESS_DIGITS10
+    assert _significant_digits(rendered) <= DERIVED_WITNESS_SIGNIFICANT_DIGITS
     assert float(rendered) == stored
-    # A coefficient already inside fifteen digits is unchanged. That does not
+    assert abs(stored - raw) <= abs(raw) * 5e-10
+    # A coefficient already inside ten digits is unchanged. That does not
     # send frozen report sources through this function.
     assert derived_witness_number(-0.0029) == -0.0029
     assert derived_witness_number(0.1805) == 0.1805
 
 
-def test_spelling_before_the_loss_product_is_a_different_number() -> None:
-    before = math.pi * 1000
-    real_after = before * 0.9506
-    real_reduction = before - real_after
-    fed_back_after = derived_witness_number(derived_witness_number(before) * 0.9506)
-    fed_back_reduction = derived_witness_number(
-        derived_witness_number(before) - derived_witness_number(real_after)
+def test_spelled_value_stays_within_the_documented_distance() -> None:
+    # Ten significant digits is a stability contract, not a rounding-free
+    # identity: every stored float sits within half the 1e-9 relative
+    # quantum of its unrounded value, and a spelled value is a fixed point
+    # of the spelling.
+    for raw in (math.pi, math.pi * 1e6, math.pi * 1e-6, 2943.945050162976):
+        stored = derived_witness_number(raw)
+        assert abs(stored - raw) <= abs(raw) * 5e-10
+        assert derived_witness_number(stored) == stored
+
+
+def test_adjacent_ulps_share_one_spelling() -> None:
+    # Platform libm/SIMD siblings differ by a few ulps. The spelling must
+    # collapse such neighbours to identical stored bytes, otherwise the
+    # witness hashes differ per platform. A neighbour within one ulp of a
+    # 1e-9 relative quantum can only cross a spelling boundary when the
+    # value sits at the quantum edge; values at the edge are checked too.
+    for value in (
+        0.5,
+        1.0,
+        -3.7,
+        math.pi,
+        math.pi * 1e6,
+        math.pi * 1e-6,
+        2943.945050162976,
+        8707.219664,
+        123456789.123,
+    ):
+        for _ in range(9):
+            neighbour = math.nextafter(value, math.inf)
+            assert derived_witness_number(value) == derived_witness_number(neighbour), (
+                value
+            )
+            value = neighbour
+    # Ten ulps of drift in the last bits, the observed order of the
+    # macOS/Linux spread, also collapses.
+    value = math.pi
+    drifted = value
+    for _ in range(10):
+        drifted = math.nextafter(drifted, math.inf)
+    assert derived_witness_number(value) == derived_witness_number(drifted)
+
+
+def test_witness_document_encoding_collapses_one_ulp() -> None:
+    # The exported-fixture contract: a witness document whose derived floats
+    # move by one ulp encodes to byte-identical canonical JSON.
+    document = {
+        "schema_version": 1,
+        "kind": "test",
+        "inputs": {"parameters_sha256": "x", "lat": 52.5200065},
+        "solar_geometry": {
+            "apparent_zenith_deg": [81.27299494312053, math.pi * 100],
+            "azimuth_deg": [math.pi],
+        },
+        "arrays": [
+            {
+                "id": "a",
+                "cell_temperature_c": [31.498294829 + math.pi * 1e-9],
+                "dc_available_w": [1234567.8901234567, math.pi * 1e8],
+            }
+        ],
+        "available_ac_w": [46405.811538460756, math.pi * 1e7],
+        "energy_kwh": 2943.945050162976,
+        "release": {"status": "not_assessed"},
+    }
+
+    def bump(node: object) -> object:
+        if isinstance(node, float):
+            return math.nextafter(node, math.inf)
+        if isinstance(node, dict):
+            return {
+                key: value if key == "inputs" else bump(value)
+                for key, value in node.items()
+            }
+        if isinstance(node, list):
+            return [bump(item) for item in node]
+        return node
+
+    bumped = bump(document)
+    assert encode(
+        canonical_witness_document(cast(Mapping[str, object], document))
+    ) == encode(canonical_witness_document(cast(Mapping[str, object], bumped)))
+    # The inputs subtree is pinned and never respelled, not even a ulp.
+    pinned = encode(canonical_witness_document(document))
+    inputs_bumped = encode(
+        canonical_witness_document({**document, "inputs": bump(document["inputs"])})
     )
-    assert derived_witness_number(real_after) != fed_back_after
-    assert derived_witness_number(real_reduction) != fed_back_reduction
-
-
-def test_adjacent_values_need_not_share_a_spelling() -> None:
-    # A nextafter pair that stays distinct. Collapsing every adjacent value
-    # would only show that the spelling is coarse enough to hide the host; it
-    # would not prove macOS libm and glibc agree, and this contract does not
-    # make that claim.
-    value = 1.0
-    for _ in range(64):
-        neighbour = math.nextafter(value, math.inf)
-        if derived_witness_number(value) != derived_witness_number(neighbour):
-            return
-        value = neighbour
-    raise AssertionError("expected an adjacent pair with two spellings")
+    assert pinned != inputs_bumped
+    spelled = json.loads(pinned)
+    assert spelled["inputs"] == document["inputs"]
 
 
 def test_original_sources_and_canonical_encode_do_not_spell() -> None:

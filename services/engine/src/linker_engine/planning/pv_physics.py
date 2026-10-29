@@ -65,8 +65,10 @@ def values(vector: Vector) -> list[Json]:
 def retained_watts(vector: Vector) -> list[Json]:
     """Exact watts of an output series that a later read reconstructs.
 
-    Profile preview and DC/AC projection divide this list by 1000. A digits10
-    spelling here would replace the stored profile, so these watts stay exact.
+    Profile preview and DC/AC projection divide this list by 1000. The values
+    leave the model exact; the witness document's platform-stable spelling
+    pass (``canonical_witness_document``) then names them at its documented
+    precision, within 5e-10 relative of these exact watts.
     """
     return cast(list[Json], vector.tolist())
 

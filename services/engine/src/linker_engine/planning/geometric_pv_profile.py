@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from typing import cast
 
 from .assets import Asset
@@ -168,7 +169,15 @@ def prepared_profile(
             ),
             (transform,),
         )
-        if result.total_kwh != _number(witness.get("energy_kwh")):
+        # Retained watts and energy are stored at the platform-stable
+        # spelling, so the summed read-back matches the stored energy within
+        # its documented 1e-9 relative quantum (2x margin below).
+        if not math.isclose(
+            result.total_kwh,
+            _number(witness.get("energy_kwh")),
+            rel_tol=2e-9,
+            abs_tol=1e-12,
+        ):
             raise VersionUnavailable("geometric PV energy differs from saved powers")
         expected_summary: Object = {
             "start_utc": intervals[0].start.isoformat(),
@@ -181,9 +190,21 @@ def prepared_profile(
             "reconstructed_means": True,
             "model_role": "direct_only_geometry_uniform_module_reference_scenario",
         }
-        if metadata.get("interpretation") != expected_summary or metadata.get(
-            "weather"
-        ) != {
+        interpretation = _object(metadata.get("interpretation"))
+        # energy_kwh is read back through the platform-stable spelling, so
+        # it matches the stored summary within its documented 1e-9 relative
+        # quantum; every other field is compared exactly.
+        summary_matches = all(
+            (
+                math.isclose(
+                    _number(interpretation.get(key)), value, rel_tol=2e-9, abs_tol=1e-12
+                )
+                if key == "energy_kwh" and isinstance(value, float)
+                else interpretation.get(key) == value
+            )
+            for key, value in expected_summary.items()
+        ) and set(interpretation) == set(expected_summary)
+        if not summary_matches or metadata.get("weather") != {
             "interval_count": len(intervals),
             "start_utc": intervals[0].start.isoformat(),
             "end_utc": intervals[-1].end.isoformat(),

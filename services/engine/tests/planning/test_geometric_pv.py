@@ -19,6 +19,7 @@ from linker_engine.planning.geometric_pv_inputs import (
     GeometricPvLimits,
 )
 from linker_engine.planning.geometric_pv_report import geometric_pv_reference
+from linker_engine.planning.model_numbers import derived_witness_number
 from linker_engine.planning.pv_arrays import generation_arrays
 from linker_engine.planning.pv_generation import generate_pv
 from linker_engine.planning.pv_parameters import PvGenerationParameters
@@ -52,13 +53,13 @@ def test_partial_beam_factor_precedes_mean_module_thermal_and_dc_response() -> N
     expected_temperature = 25 + 300 * math.exp(-3.47) + 0.3 * 3
     expected_dc = 1000 * 0.3 * (1 - 0.004 * (expected_temperature - 25))
     poa = cast(Object, output.witness["poa_components_w_m2"])
-    assert poa["poa_direct"] == pytest.approx([200], abs=1e-10)
+    assert poa["poa_direct"] == pytest.approx([200], rel=2e-9)
     assert poa["poa_sky_diffuse"] == [100]
-    assert poa["poa_global"] == pytest.approx([300], abs=1e-10)
+    assert poa["poa_global"] == pytest.approx([300], rel=2e-9)
     assert output.witness["cell_temperature_c"] == pytest.approx(
-        [expected_temperature], abs=1e-10
+        [expected_temperature], rel=2e-9
     )
-    assert output.dc_w.tolist() == pytest.approx([expected_dc], abs=1e-10)
+    assert output.dc_w.tolist() == pytest.approx([expected_dc], rel=2e-9)
 
 
 def test_geometric_direction_and_profile_stay_unspelled(
@@ -119,7 +120,9 @@ def test_geometric_direction_and_profile_stay_unspelled(
     assert directions == [(sz * sa, sz * ca, cz)] == [baseline_direction]
     assert damaged.profile.values_kw == baseline.profile.values_kw
     assert damaged.profile.total_kwh == baseline.profile.total_kwh
-    assert damaged.witness()["energy_kwh"] == baseline.profile.total_kwh
+    assert damaged.witness()["energy_kwh"] == derived_witness_number(
+        baseline.profile.total_kwh
+    )
     assert damaged.witness()["available_ac_w"] == baseline.witness()["available_ac_w"]
     solar_geometry = cast(Object, damaged.witness()["solar_geometry"])
     assert solar_geometry["apparent_zenith_deg"] == [0.0]
