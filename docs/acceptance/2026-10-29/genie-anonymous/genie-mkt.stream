@@ -1,0 +1,15 @@
+event: meta
+data: {"turn_id": 3, "grounded": true, "fallback": false, "attempts": 1, "failures": [], "language": "en", "route": "pairing", "intent": "pairing_compatibility", "jev_error": null, "timing": {"understand": 8.737, "understand.vocabulary": 0.0, "understand.attachments": 0.0, "understand.jev": 2.636, "understand.call.linker/search-products": 5.846, "understand.calls": 5.846, "model.tool.linker/get-product": 5.517, "model.tool.linker/search-products": 6.212, "model.tool.linker/search-knowledge": 6.85, "model.attempt_1": 33.349, "model": 33.35, "ground": 0.001, "hydrate": 0.001, "log": 0.016, "first_event": 48.849, "total": 48.85}}
+
+event: block
+data: {"type": "text", "text": "### Battery pairing\nOur product data lists no documented battery pairing for the H2-10K-T3, so I cannot recommend a specific battery for it. The SAJ configuration instructions for the H2, HS2 and HS3 systems are the document to check for the intended storage combination.\n\n### Sizing the storage\nWhich battery capacity fits your home is a sizing question, and that is the Solution Configurator's work: it takes the PV size, consumption and backup wish you give and proposes a matching selection.", "refs": ["4107"]}
+
+event: block
+data: {"type": "document", "ref": "p4107.document.1", "label": "SAJ H2-(10K-30K)-(T2, T3) Hybrid Solar Inverter User Manual (DE/EN)", "url": "http://127.0.0.1:8892/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf", "document_id": "doc-71f7f3e62a4027f2314d84c508116dcfc51e08b7aae750b747d055c94fc41551", "document_revision": "a145cf4db2ebbd14c0db5aff6b6f9072f93a82547cfb9f3c7d7dd77955bf2315"}
+
+event: block
+data: {"type": "action", "name": "open_configurator", "args": {}}
+
+event: done
+data: {"ok": true}
+

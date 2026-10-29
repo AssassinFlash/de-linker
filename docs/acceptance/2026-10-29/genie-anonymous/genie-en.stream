@@ -1,0 +1,12 @@
+event: meta
+data: {"turn_id": 1, "grounded": true, "fallback": false, "attempts": 1, "failures": [], "language": "en", "route": "pairing", "intent": "pairing_compatibility", "jev_error": null, "timing": {"understand": 13.862, "understand.vocabulary": 2.727, "understand.attachments": 0.0, "understand.jev": 4.827, "understand.call.linker/read-page": 3.463, "understand.call.linker/search-products": 5.594, "understand.calls": 5.594, "model.tool.linker/search-products": 5.942, "model.tool.linker/get-product": 10.827, "model.attempt_1": 23.415, "model": 23.415, "ground": 0.0, "hydrate": 0.0, "log": 0.001, "first_event": 39.853, "total": 39.853}}
+
+event: block
+data: {"type": "text", "text": "### Documented pairings for the H2-10K-T3\n\nOur pairing data records no released battery pairing for the H2-10K-T3, so I cannot name a battery that is documented as released for this inverter.\n\n### What the page lists\n\nThe product page does carry compatibility records, each marked as documented by SAJ: SAJ B2-10.0-HV1, SAJ B2-15.0-HV1, SAJ B2-20.0-HV1, SAJ B2-25.0-HV1, SAJ BC2-HV1 and SAJ BU2-5.0-HV1.\n\n- The page describes the H2 system as H2 + BC2 + BU2.\n- It notes that the one-module B2-5.0 is not covered, because its operating voltage lies below the battery voltage range of the H2 T3.\n- These page records are documentation, not a released pairing verdict, so please treat them as reference only.\n\nThe configuration instructions for the H2 systems are linked below.", "refs": ["page"]}
+
+event: block
+data: {"type": "document", "ref": "p4107.document.0", "label": "SAJ configuration instructions for H2, HS2 and HS3 systems, English, V1.0", "url": "http://127.0.0.1:8892/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf", "document_id": "doc-41aeedc383e05d42a18ddfc5aa392780833410786275d6c40ef3caa3b46d370e", "document_revision": "49e814b5e2fc50c3671c1099f44a27e2aedaea97cf2fe0a3f279d89659381929"}
+
+event: done
+data: {"ok": true}
+
