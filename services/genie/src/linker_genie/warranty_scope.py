@@ -14,13 +14,28 @@ from decimal import Decimal
 from typing import Any
 
 from linker_genie.source_models import model_pattern
-from linker_genie.table_projection import cells_digest, model_axis, read_cells
+from linker_genie.table_projection import (
+    cells_digest,
+    display_cell_text,
+    model_axis,
+    read_cells,
+)
 
 # Literal manufacturer cover vocabulary in the hosted ESA/ET/STSs originals.
 # Power ranges must agree; an ESA family name alone cannot cross its ranges.
 FAMILY = re.compile(r"\b([a-z][a-z0-9]*)[-\s]+(?:series|serie)\b", re.IGNORECASE)
 POWER_RANGE = re.compile(
     r"(?<!\w)(\d+(?:[.,]\d+)?)\s*[-–]\s*(\d+(?:[.,]\d+)?)\s*kW\b",
+    re.IGNORECASE,
+)
+# The two hosted STS covers use these immediately adjacent subtitle forms.
+# Their manufacturer-original PDFs, not filenames or compatibility mentions,
+# are the evidence for accepting an otherwise unqualified series title.
+STS_COVER_SUBTITLE = re.compile(
+    r"(?:Static[ \t]+Transfer[ \t]+Switch[ \t]+I[ \t]+"
+    r"GW\d+(?:[.,]\d+)?K-STS-G\d+|"
+    r"\d+(?:[.,]\d+)?kW/\d+(?:[.,]\d+)?kW[ \t]+I[ \t]+"
+    r"Static[ \t]+Transfer[ \t]+Switch)",
     re.IGNORECASE,
 )
 
@@ -183,8 +198,12 @@ def valid_pdf_cover(anchor: Any, sha: str, chunk_id: str, text: str) -> bool:
         )
     ):
         return False
+    standalone_sts = (
+        re.fullmatch(r"STS[ \t]+Series", text, re.IGNORECASE) is not None
+        and "power" not in anchor
+    )
     spans = []
-    for name in ("family", "power"):
+    for name in ("family",) if standalone_sts else ("family", "power"):
         span = anchor.get(name)
         if not isinstance(span, dict):
             return False
@@ -201,6 +220,43 @@ def valid_pdf_cover(anchor: Any, sha: str, chunk_id: str, text: str) -> bool:
         ):
             return False
         spans.append(span)
+    if standalone_sts:
+        family = spans[0]
+        subtitle = anchor.get("subtitle")
+        if not isinstance(subtitle, dict):
+            return False
+        sub_text, sub_start, sub_end, box = (
+            subtitle.get("text"),
+            subtitle.get("char_start"),
+            subtitle.get("char_end"),
+            subtitle.get("bbox"),
+        )
+        if (
+            not isinstance(sub_text, str)
+            or STS_COVER_SUBTITLE.fullmatch(sub_text) is None
+            or type(sub_start) is not int
+            or type(sub_end) is not int
+            or not 1 <= sub_start - end <= 2
+            or sub_end - sub_start != len(sub_text)
+            or not isinstance(box, (list, tuple))
+            or len(box) != 4
+            or any(type(v) not in (int, float) or not math.isfinite(v) for v in box)
+            or not (0 <= box[0] < box[2] <= size[0] and 0 <= box[1] < box[3] <= size[1])
+        ):
+            return False
+        family_box = family["bbox"]
+        height = family_box[3] - family_box[1]
+        return (
+            start == 0
+            and family["char_start"] == start
+            and family["char_end"] == end
+            and family["text"] == text
+            and family_signature(text) == ("sts", "", "")
+            and box[3] < family_box[1]
+            and family_box[1] - box[3] < height
+            and abs(box[0] - family_box[0]) < height
+            and box[3] - box[1] < height
+        )
     family, power = spans
     return (
         family["char_end"] <= power["char_start"]
@@ -303,6 +359,7 @@ def terms_text(
     }:
         return None
     selected = []
+    selected_cells = []
     for col in range(4):
         matches = [
             c
@@ -314,6 +371,7 @@ def terms_text(
         ]
         if len(matches) != 1:
             return None
+        selected_cells.append(matches[0])
         selected.append(matches[0]["text"])
     period, production, _product, series = selected
     token = _series_token(series, family)
@@ -452,10 +510,23 @@ def terms_text(
                 "lang": item["lang"],
             }
         )
+    # The native cell and its source chunk remain unchanged in the proof.
+    # Only restore a one-letter physical wrap when another verified source
+    # passage on this same page contains the complete word.
+    witness_texts = [
+        item["text"]
+        for item in sources.values()
+        if isinstance(item, dict)
+        and item.get("page") == row_page
+        and isinstance(item.get("text"), str)
+    ]
+    production_display = display_cell_text(
+        selected_cells[1], sha, row_page, witness_texts
+    )
     notes.insert(
         0,
         {
-            "quote": production,
+            "quote": production_display,
             "page": row_page,
             "chunk_id": row_id,
             "lang": sources["overview"]["lang"],
