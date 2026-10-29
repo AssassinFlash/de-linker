@@ -33,6 +33,11 @@ from .pv_weather import WeatherSeries
 
 type Vector = NDArray[np.float64]
 
+# allsitescomposite1990 can return a negative horizon term. The pinned
+# irradiance.perez clamps the summed sky, not that term. The term is a signed
+# coefficient correction, not a radiometric flux that occlusion can remove.
+HORIZON_VISIBILITY_POLICY = "retain_negative_perez_horizon_correction_v1"
+
 
 class PvModelDomainExceeded(InvalidInput):
     """The requested scenario makes this empirical model nonphysical."""
@@ -222,6 +227,7 @@ def array_power(
                 )
     unoccluded: Object | None = None
     negative_recombination = np.zeros(size)
+    negative_horizon = np.zeros(size)
     if direct_beam_fraction is not None:
         fraction = checked(
             direct_beam_fraction,
@@ -256,10 +262,18 @@ def array_power(
             sky_factor = diffuse_fractions.isotropic
             horizon_factor = diffuse_fractions.horizon
             ground_factor = diffuse_fractions.ground
+            # max(horizon, 0) * visibility + min(horizon, 0). Scaling a negative
+            # horizon toward zero and reclamping can exceed the unoccluded sky.
+            negative_horizon = np.minimum(horizon, 0)
+            scaled_horizon = (
+                horizon
+                if horizon_factor == 1
+                else np.maximum(horizon, 0) * horizon_factor + negative_horizon
+            )
             scaled_sky = (
                 (isotropic if sky_factor == 1 else isotropic * sky_factor)
                 + np.where(fraction == 1, circumsolar, circumsolar * fraction)
-                + (horizon if horizon_factor == 1 else horizon * horizon_factor)
+                + scaled_horizon
             )
             # Hours with no occlusion keep the pinned sum, including the library's
             # own maximum, rather than a recomposed floating-point total.
@@ -377,6 +391,10 @@ def array_power(
                                 "ground": diffuse_fractions.ground,
                                 "circumsolar": "direct_beam_visible_fraction",
                             },
+                            "horizon_visibility_policy": HORIZON_VISIBILITY_POLICY,
+                            "retained_negative_horizon_correction_w_m2": values(
+                                negative_horizon
+                            ),
                             "perez_negative_recombination_w_m2": values(
                                 negative_recombination
                             ),

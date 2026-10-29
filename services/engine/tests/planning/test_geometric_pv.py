@@ -42,7 +42,11 @@ from linker_engine.planning.geometric_pv_report import (
 from linker_engine.planning.pv_arrays import generation_arrays
 from linker_engine.planning.pv_generation import generate_pv
 from linker_engine.planning.pv_parameters import PvGenerationParameters
-from linker_engine.planning.pv_physics import array_power
+from linker_engine.planning.pv_physics import (
+    HORIZON_VISIBILITY_POLICY,
+    DiffuseFractions,
+    array_power,
+)
 from linker_engine.planning.report_copy import text
 
 from .test_pv_generation import geometry, parameter_document, weather
@@ -356,6 +360,67 @@ def one_module(geo: dict[str, Any]) -> dict[str, Any]:
     return geo
 
 
+def test_negative_perez_horizon_cannot_create_sky_energy(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Mock only the pinned component boundary, not the geometric sampler."""
+    geo, par = one_module(geometry()), perez_parameters()
+    parameters = PvGenerationParameters.read(par)
+    meteo = weather(dni=600, dhi=100, ghi=800, temp=25)
+    array = generation_arrays(geo, meteo, parameters)[0]
+    solar = {
+        "apparent_zenith_deg": np.array([40.0]),
+        "azimuth_deg": np.array([180.0]),
+        "dni_extra_w_m2": np.array([1366.1]),
+    }
+    isotropic, circumsolar, horizon = 100.0, 10.0, -80.0
+    library_sky = max(isotropic + circumsolar + horizon, 0.0)
+
+    def components(*_args: object, **kwargs: object) -> dict[str, np.ndarray]:
+        assert kwargs.get("diffuse_components") is True
+        assert kwargs.get("model") == "perez"
+        return {
+            "poa_direct": np.array([50.0]),
+            "poa_sky_diffuse": np.array([library_sky]),
+            "poa_ground_diffuse": np.array([20.0]),
+            "poa_global": np.array([50.0 + library_sky + 20.0]),
+            "poa_isotropic": np.array([isotropic]),
+            "poa_circumsolar": np.array([circumsolar]),
+            "poa_horizon": np.array([horizon]),
+        }
+
+    monkeypatch.setattr(
+        "linker_engine.planning.pv_physics.irradiance.get_total_irradiance",
+        components,
+    )
+
+    def sky(horizon_factor: float, beam: float = 1.0) -> float:
+        output = array_power(
+            array,
+            parameters.arrays[0],
+            parameters.modules[0],
+            meteo,
+            solar,
+            direct_beam_fraction=np.array([beam]),
+            diffuse_fractions=DiffuseFractions(1.0, horizon_factor, 1.0),
+        )
+        value = cast(Object, output.witness["poa_components_w_m2"])["poa_sky_diffuse"]
+        assert output.witness["horizon_visibility_policy"] == HORIZON_VISIBILITY_POLICY
+        assert output.witness["retained_negative_horizon_correction_w_m2"] == [horizon]
+        return cast(list[float], value)[0]
+
+    unchanged = sky(1.0)
+    assert unchanged == library_sky
+    # The rejected policy scales the negative term toward zero, then reclamps.
+    rejected = max(isotropic + circumsolar + horizon * 0.0, 0.0)
+    assert rejected > library_sky
+    shaded = sky(0.0)
+    assert shaded == library_sky
+    assert shaded <= unchanged
+    partial_beam = sky(1.0, beam=0.0)
+    assert partial_beam < unchanged
+
+
 def test_unobstructed_perez_visibility_matches_the_pinned_reference() -> None:
     geo, par = one_module(geometry()), perez_parameters()
     meteo = weather(dni=600, dhi=100, ghi=800, temp=25)
@@ -446,6 +511,8 @@ def test_south_wall_halves_isotropic_sky_and_leaves_diffuse_under_direct_shade()
     module = cast(list[Object], shaded.witness()["modules"])[0]
     clear_module = cast(list[Object], clear.witness()["modules"])[0]
     assert module["geometric_visible_fraction"] == [0]
+    assert isinstance(module["accepted_directions"], dict)
+    assert int(cast(int, module["blocked_samples"])) > 0
     shaded_sky = cast(Object, module["poa_components_w_m2"])["poa_sky_diffuse"]
     clear_sky = cast(Object, clear_module["poa_components_w_m2"])["poa_sky_diffuse"]
     assert cast(list[float], shaded_sky)[0] > 0
@@ -507,6 +574,10 @@ def test_retained_direct_only_request_does_not_gain_perez_visibility_fields() ->
     )
     module = cast(list[Object], result.witness()["modules"])[0]
     assert "diffuse_visible_fractions" not in module
+    assert "accepted_directions" not in module
+    assert "blocked_samples" not in module
+    assert "horizon_visibility_policy" not in module
+    assert "retained_negative_horizon_correction_w_m2" not in module
     assert cast(Object, result.witness()["inputs"])["model"] == MODEL
     with pytest.raises(InvalidInput, match="invalid scenario fields") as paired:
         GeometricPvInputs.read(
@@ -581,4 +652,5 @@ def test_report_wording_follows_the_recorded_diffuse_policy() -> None:
     assert current.title == text("geometric_pv_title_perez", "de")
     assert text("geometric_pv_scope_perez", "de") in current.paragraphs
     assert "Direktstrahlung" in current.paragraphs[0]
+    assert "vorzeichenbehaftete Korrektur" in current.paragraphs[0]
     assert "vollständige Verschattungsgenauigkeit" in current.paragraphs[0]

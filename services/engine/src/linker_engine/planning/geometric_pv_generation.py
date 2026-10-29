@@ -2,8 +2,9 @@
 
 The retained direct-only request attenuates beam irradiance and leaves sky and
 ground diffuse unobstructed. The Perez component request scales isotropic sky,
-circumsolar, the horizon ring and ground by sampled visible fractions. Neither
-request is a bypass-diode, string I–V or real MPPT model.
+circumsolar, a positive horizon term and ground by sampled visible fractions.
+A negative Perez horizon correction is retained unchanged. Neither request is
+a bypass-diode, string I–V or real MPPT model.
 """
 
 from __future__ import annotations
@@ -60,9 +61,10 @@ def generate_geometric_pv(
 
     Direct fractions attenuate beam POA before the declared mean-module thermal
     and uniform PVWatts response. The retained policy leaves sky and ground
-    unobstructed. The Perez policy scales those components by static visible
-    fractions and the hourly circumsolar fraction. This is not a bypass-diode,
-    string I–V or real MPPT performance model.
+    unobstructed. The Perez policy scales isotropic sky, circumsolar, a positive
+    horizon term and ground by visible fractions. A negative horizon correction
+    stays unchanged. This is not a bypass-diode, string I–V or real MPPT
+    performance model.
     """
     geometry = decode_object(encode(geometry))
     request = GeometricPvInputs.read(request.model_dump(mode="json"))
@@ -197,6 +199,16 @@ def generate_geometric_pv(
                             "geometric_visible_fraction": visible[identifier],
                             "geometric_status": statuses[identifier],
                             "observed_grid_delta": deltas[identifier],
+                            **(
+                                {}
+                                if visibility is None
+                                else {
+                                    "accepted_directions": cast(
+                                        Object, visibility.accepted_directions
+                                    ),
+                                    "blocked_samples": visibility.blocked_samples,
+                                }
+                            ),
                         }
                     )
                 dc = checked(

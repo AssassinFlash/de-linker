@@ -145,3 +145,31 @@ No backup, snapshot, runtime, dependency tree, extra worktree or intermediate co
 Root independently reviewed all 58 German entries against the actual source behavior. Provider completion, retained original validation, published source readiness, current editable selection and server save remain distinct; READY does not claim active processing, ABORTING does not claim a completed stop, and unknown start forbids automatic repetition. Formal address, placeholders, source labels and units agree with the approved vocabulary. The unsupported uniform-model addition was removed from EN and DE before integration.
 
 A real catalog collision was found for the proposed `Selected in this draft`: existing approved German `Für diese Eingaben ausgewählt` describes another selection surface. Preserve that approved message. This new context instead uses `Selected in the current draft` / `Im aktuellen Projektentwurf ausgewählt`, keeping the current draft boundary explicit. This supersedes the corresponding proposed ledger final. Source integration and the final JSON agree. Copy accepted for this consumer increment; this is not native or full-product acceptance.
+
+## Geometric diffuse model copy, 2026-10-29
+
+This continues the PreparationResult review above. It also covers the geometric setup sentence and the Perez method paragraph. No new report file was opened.
+
+Initial criticism:
+
+- Hard Stop 9 Actor: “Estimate available AC generation…” is a second-person imperative that assigns the reader a task. The same opening was carried into the Perez sentence.
+- Replacing that msgid made a saved direct-only draft describe Perez component shading.
+- The result paragraph called every geometric profile direct-only, including a recorded Perez result.
+- The method paragraph said every horizon component is reduced by visibility. A negative Perez horizon term is a signed coefficient correction. Reducing it and reclamping can create sky energy.
+
+Final decision:
+
+- The old setup msgid stays verbatim for an existing direct-only draft, including its German catalog entry.
+- A new request uses a separate descriptive sentence. It names the Perez components, states that a negative horizon correction stays in the calculation, and keeps the boundary: not complete shading accuracy, not actual inverter tracking, and not equipment or country approval.
+- The result paragraph is chosen from the recorded model. The old direct-only msgid remains. The Perez paragraph adds the retained negative horizon correction and the same approval boundary.
+- The report method now says a positive horizon term is reduced by the visible fraction, while a negative horizon correction is retained unchanged. A recomposed sky below zero is set to zero and the removed amount is recorded.
+- German was written for the calculation, not assembled word for word from the English. Existing terms stay: Modul, Perez, MPP-Nachführung, Geräte- oder Länderfreigabe.
+
+Pre-delivery for the new sentences:
+
+- [x] Tool-surface dimension only: what this named calculation does and does not establish.
+- [x] Hard Stops 1–9. The new sentences are descriptive, not commands.
+- [x] No invented customer future, inflated slice, or empty duration claim.
+- [x] No slogan formula, borrowed brand, or fabricated quote.
+- [x] No em or en dash in the new English or German.
+- [x] Scope qualifiers kept: shading accuracy, sampling error, real MPPT, equipment and country approval remain outside the result.

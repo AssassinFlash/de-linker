@@ -13,6 +13,7 @@ import {
 	GEOMETRIC_PV_TASK,
 	compileGeometricPv,
 	GEOMETRIC_PV_MODEL,
+	GEOMETRIC_PV_MODEL_V1,
 	geometricDiffuseSampleUpperBound,
 	geometricPvDraft,
 	geometricPvInputs,
@@ -205,10 +206,15 @@ export function GeometricPvSetup({
 		<section className="lp-scenario-block">
 			<h3>{__("PV reference with roof shading", "linker-tools")}</h3>
 			<p>
-				{__(
-					"Estimate available AC generation across the complete retained weather year using the declared roof, obstacle volumes and included modules. With the Perez transposition, geometric shading reduces direct sunlight and the isotropic, circumsolar, horizon and ground components at each module. It does not establish complete shading accuracy.",
-					"linker-tools",
-				)}
+				{parsed?.model === GEOMETRIC_PV_MODEL_V1
+					? __(
+							"Estimate available AC generation across the complete retained weather year using the declared roof, obstacle volumes and included modules. Geometric shading reduces direct sunlight at each module; sky and ground diffuse light remain unobstructed reference components.",
+							"linker-tools",
+						)
+					: __(
+							"Available AC generation for the complete retained weather year is calculated from the declared roof, obstacle volumes and included modules. With the Perez transposition, geometric shading reduces direct sunlight and the isotropic, circumsolar, horizon and ground components at each module. A negative Perez horizon correction stays in the calculation. This result does not establish complete shading accuracy, actual inverter tracking, or equipment or country approval.",
+							"linker-tools",
+						)}
 			</p>
 			<p>
 				{__(

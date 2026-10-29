@@ -7,8 +7,6 @@ import {
 	PVGIS_REFERENCE_PURPOSE,
 } from "../domain/pvgisReference.ts";
 import {
-	GEOMETRIC_PV_MODEL,
-	GEOMETRIC_PV_MODEL_V1,
 	GEOMETRIC_PV_PURPOSE,
 	GEOMETRIC_PV_RESULTS,
 	GEOMETRIC_PV_TASK,
@@ -170,9 +168,7 @@ export function readPreparationResult(
 				summary.model_role === item.role &&
 				scope.diffuse_policy === item.diffuse &&
 				readObject(result.near_shading_assessment).status === item.shading &&
-				(models.generation === item.model ||
-					models.generation === GEOMETRIC_PV_MODEL_V1 ||
-					models.generation === GEOMETRIC_PV_MODEL),
+				models.generation === item.model,
 		);
 		require(
 			recorded !== undefined &&

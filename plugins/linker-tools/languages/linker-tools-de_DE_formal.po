@@ -12735,8 +12735,13 @@ msgstr "PV-Referenz mit Dachverschattung"
 
 #: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx
 #: build/planner/assets/planner.js:1
-msgid "Estimate available AC generation across the complete retained weather year using the declared roof, obstacle volumes and included modules. With the Perez transposition, geometric shading reduces direct sunlight and the isotropic, circumsolar, horizon and ground components at each module. It does not establish complete shading accuracy."
-msgstr "Berechnen Sie die verfügbare AC-Erzeugung für das vollständige gespeicherte Wetterjahr anhand des angegebenen Dachs, der Hindernisvolumen und der berücksichtigten Module. Bei der Perez-Transposition verringert die geometrische Verschattung auf jedem Modul die Direktstrahlung sowie die isotropen, zirkumsolaren, horizontnahen und vom Boden reflektierten Anteile. Sie belegt keine vollständige Verschattungsgenauigkeit."
+msgid "Estimate available AC generation across the complete retained weather year using the declared roof, obstacle volumes and included modules. Geometric shading reduces direct sunlight at each module; sky and ground diffuse light remain unobstructed reference components."
+msgstr "Berechnen Sie die verfügbare AC-Erzeugung für das vollständige gespeicherte Wetterjahr anhand des angegebenen Dachs, der Hindernisvolumen und der berücksichtigten Module. Die geometrische Verschattung verringert die Direktstrahlung auf jedem Modul. Die diffuse Himmels- und Bodenstrahlung bleibt als unverschatteter Referenzanteil erhalten."
+
+#: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx
+#: build/planner/assets/planner.js:1
+msgid "Available AC generation for the complete retained weather year is calculated from the declared roof, obstacle volumes and included modules. With the Perez transposition, geometric shading reduces direct sunlight and the isotropic, circumsolar, horizon and ground components at each module. A negative Perez horizon correction stays in the calculation. This result does not establish complete shading accuracy, actual inverter tracking, or equipment or country approval."
+msgstr "Die verfügbare AC-Erzeugung für das vollständige gespeicherte Wetterjahr wird aus dem angegebenen Dach, den Hindernisvolumen und den berücksichtigten Modulen berechnet. Bei der Perez-Transposition verringert die geometrische Verschattung auf jedem Modul die Direktstrahlung sowie die isotropen, zirkumsolaren, horizontnahen und vom Boden reflektierten Anteile. Eine negative Perez-Horizontkorrektur bleibt in der Berechnung. Das Ergebnis ist keine vollständige Verschattungsbewertung, keine reale MPP-Nachführung und keine Geräte- oder Länderfreigabe."
 
 #: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx
 #: build/planner/assets/planner.js:1
@@ -12787,6 +12792,11 @@ msgstr "Gespeicherte PV-Referenz mit Dachverschattung berechnen"
 #: build/planner/assets/planner.js:1
 msgid "This profile uses geometric shading of direct sunlight and a uniform module response across the complete retained weather source. Sky and ground diffuse light remain unobstructed reference components. Substrings, bypass diodes, string I–V curves and actual inverter tracking remain unmodelled."
 msgstr "Diese Kurve berücksichtigt die geometrische Verschattung der Direktstrahlung und eine gleichmäßige elektrische Modulantwort für die vollständige gespeicherte Wetterquelle. Die diffuse Himmels- und Bodenstrahlung bleibt als unverschatteter Referenzanteil erhalten. Zellteilstränge, Bypassdioden, String-I–V-Kennlinien und die tatsächliche MPP-Regelung des Wechselrichters werden nicht modelliert."
+
+#: ../../apps/planner/src/components/energy/PreparationResult.tsx
+#: build/planner/assets/planner.js:1
+msgid "This profile uses geometric shading of direct sunlight and of the Perez isotropic, circumsolar, horizon and ground components, with a uniform module response across the complete retained weather source. A negative Perez horizon correction is retained. Substrings, bypass diodes, string I–V curves and actual inverter tracking remain unmodelled. The profile does not establish complete shading accuracy or equipment or country approval."
+msgstr "Diese Kurve berücksichtigt die geometrische Verschattung der Direktstrahlung und der isotropen, zirkumsolaren, horizontnahen und vom Boden reflektierten Perez-Anteile sowie eine gleichmäßige elektrische Modulantwort für die vollständige gespeicherte Wetterquelle. Eine negative Perez-Horizontkorrektur bleibt erhalten. Zellteilstränge, Bypassdioden, String-I–V-Kennlinien und die tatsächliche MPP-Regelung des Wechselrichters werden nicht modelliert. Die Kurve belegt weder eine vollständige Verschattungsgenauigkeit noch eine Geräte- oder Länderfreigabe."
 
 #: ../../apps/planner/src/components/energy/PreparationResult.tsx
 #: build/planner/assets/planner.js:1
