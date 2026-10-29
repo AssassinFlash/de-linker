@@ -112,10 +112,11 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 		$workers = array();
 		$start   = (string) ( microtime( true ) + 8 );
 		for ( $i = 0; $i < 8; ++$i ) {
+			$door  = 0 === $i % 2 ? 'request' : 'contact';
 			$pipes = array();
 			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_open -- independent requests are necessary to exercise database serialization.
 			$process = proc_open(
-				array( PHP_BINARY, '-d', 'memory_limit=2048M', __DIR__ . '/fixtures/public-submit.php', $email, 0 === $i % 2 ? 'request' : 'contact', $start ),
+				array( PHP_BINARY, '-d', 'memory_limit=2048M', __DIR__ . '/fixtures/public-submit.php', $email, $door, $start ),
 				array(
 					1 => array( 'pipe', 'w' ),
 					2 => array( 'pipe', 'w' ),
@@ -123,20 +124,20 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 				$pipes
 			);
 			$this->assertIsResource( $process );
-			$workers[] = array( $process, $pipes );
+			$workers[] = array( $process, $pipes, $door );
 		}
 		$accepted = 0;
-		foreach ( $workers as list( $process, $pipes ) ) {
+		foreach ( $workers as list( $process, $pipes, $door ) ) {
 			$output = trim( (string) stream_get_contents( $pipes[1] ) );
 			$error  = (string) stream_get_contents( $pipes[2] );
 			fclose( $pipes[1] );
 			fclose( $pipes[2] );
 			$this->assertSame( 0, proc_close( $process ), $error . $output );
-			$accepted += 'sent' === $output ? 1 : 0;
+			$accepted += ( 'contact' === $door ? 'receipt_pending' : 'sent' ) === $output ? 1 : 0;
 		}
 		// Other PHP requests invalidated persistent caches; discard this process's stale runtime cache.
 		wp_cache_flush_runtime();
-		$this->assertSame( 3, $accepted, 'Parallel posts cannot share the last allowance.' );
+		$this->assertSame( 3, $accepted, 'Parallel posts cannot share the last allowance. Contact acceptance is receipt_pending until authorization; an inquiry acceptance is a created order.' );
 		$orders = wc_get_orders(
 			array(
 				'billing_email' => $email,
@@ -151,6 +152,7 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 			$this->assertSame( 0, $native['attempts'], 'The submitting child must not let an unrelated background request consume this fixture source before the parent installs its typed service.' );
 			$accepted_order->read_meta_data( true );
 			$this->assertSame( 'yes', $accepted_order->get_meta( \Linker\Commerce\Inquiry\Assessment\Queue::PENDING ) );
+			$this->assertSame( 'assessment_pending', $accepted_order->get_meta( '_linker_receipt_skipped' ) );
 			$this->assertSame( 'Parallel public inquiry.', $accepted_order->get_customer_note() );
 			\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $accepted_order->get_id() );
 			$this->authorization->process( $accepted_order );

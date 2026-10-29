@@ -149,7 +149,7 @@ final class ContactSelectionTest extends IntegrationTestCase {
 		$submission = Submission::from_post( $post );
 		$this->assertInstanceOf( Submission::class, $submission );
 		$marker = self::newest_mail_job();
-		$this->assertSame( 'sent', ( new Handler() )->process( $post ) );
+		$this->assertSame( 'receipt_pending', ( new Handler() )->process( $post ) );
 		$orders = wc_get_orders(
 			array(
 				'billing_email' => $post['email'],
@@ -178,6 +178,9 @@ final class ContactSelectionTest extends IntegrationTestCase {
 		} else {
 			$this->assertSame( '', $order->get_meta( SelectionContext::META ) );
 		}
+		$order->read_meta_data( true );
+		$this->assertSame( 'assessment_pending', (string) $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
+		$this->assertCount( 0, self::mail_jobs_after( $marker ), 'Pending authorization has not queued team mail or a receipt.' );
 		$this->authorization->drain();
 		$jobs = self::mail_jobs_after( $marker );
 		$this->assertCount( 2, $jobs );
@@ -196,7 +199,18 @@ final class ContactSelectionTest extends IntegrationTestCase {
 			$this->assertStringNotContainsString( 'must-not-leave', $row['body'] );
 		}
 		$this->assertTrue( $team_found );
+		$order->read_meta_data( true );
+		$this->assertSame( 'sent', Handler::receipt_state( $order ), 'A normal verdict admits the receipt before a retry can report it.' );
 		$this->assertSame( 'sent', ( new Handler() )->process( $post ), 'Same logical retry recovers the same native record.' );
+		$again = wc_get_orders(
+			array(
+				'billing_email' => $post['email'],
+				'limit'         => -1,
+			)
+		);
+		$this->assertIsArray( $again );
+		$this->assertCount( 1, $again );
+		$this->assertSame( $order->get_id(), $again[0]->get_id() );
 		$this->authorization->drain();
 		$this->assertSame( $jobs, self::mail_jobs_after( $marker ), 'Retry does not queue duplicate mail.' );
 		$changed = $post;

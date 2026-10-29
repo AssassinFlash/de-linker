@@ -232,6 +232,128 @@ def test_documented_sapm_cell_example_and_loss_product() -> None:
     )
 
 
+def test_witness_spelling_does_not_change_the_loss_ledger(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from collections.abc import Iterable
+
+    import linker_engine.planning.pv_physics as pv_physics
+    from linker_engine.planning.model_numbers import derived_witness_number
+
+    doc = parameter_document()
+    doc["arrays"][0]["thermal"].update(a=-3.47, b=-0.0594, delta_t_c=3)
+    doc["arrays"][0].update(dc_wiring_factor=0.98, dc_mismatch_factor=0.97)
+    roof = geometry()
+    meteo = weather(ghi=1000, dhi=1000, temp=10)
+    parsed = PvGenerationParameters.read(doc)
+
+    def identity(items: Iterable[float]) -> list[float]:
+        return [float(item) for item in items]
+
+    monkeypatch.setattr(pv_physics, "derived_witness_numbers", identity)
+    raw = generate_pv(roof, meteo, parsed, max_array_steps=1)
+    raw_array = cast(list[Object], raw.witness()["arrays"])[0]
+    real_before, real_after, real_reduction = (
+        cast(list[float], raw_array[name])[0]
+        for name in (
+            "dc_mpp_before_wiring_mismatch_w",
+            "dc_available_w",
+            "dc_declared_factor_reduction_w",
+        )
+    )
+    assert real_reduction == real_before - real_after
+    assert real_after == pytest.approx(real_before * 0.9506, rel=0, abs=1e-9)
+
+    from linker_engine.planning.model_numbers import derived_witness_numbers
+
+    monkeypatch.setattr(pv_physics, "derived_witness_numbers", derived_witness_numbers)
+    spelled = generate_pv(roof, meteo, parsed, max_array_steps=1)
+    spelled_array = cast(list[Object], spelled.witness()["arrays"])[0]
+    assert spelled.profile.values_kw == raw.profile.values_kw
+    assert spelled.profile.total_kwh == raw.profile.total_kwh
+    assert spelled_array["dc_declared_factor_reduction_w"] == [
+        derived_witness_number(real_reduction)
+    ]
+    assert spelled_array["dc_available_w"] == [derived_witness_number(real_after)]
+    fed_back = derived_witness_number(
+        derived_witness_number(real_before) - derived_witness_number(real_after)
+    )
+    assert spelled_array["dc_declared_factor_reduction_w"] != [fed_back]
+
+
+def test_physics_vectors_stay_bit_identical_when_witness_spelling_is_destroyed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from collections.abc import Iterable
+
+    import linker_engine.planning.pv_physics as pv_physics
+    from linker_engine.planning.pv_physics import sun
+
+    meteo = weather(ghi=800, dni=600, dhi=200, temp=20)
+    par = parameters()
+    roof = geometry()
+    solar = sun(meteo)
+    built = generation_arrays(roof, meteo, par)
+    array = built[0]
+    group = par.converters[0]
+    assert array.id == group.array_ids[0]
+    baseline_power = array_power(array, par.arrays[0], par.modules[0], meteo, solar)
+    baseline_ac, baseline_report = conversion_power(
+        group, {array.id: baseline_power}, 1
+    )
+    baseline = generate_pv(roof, meteo, par, max_array_steps=1)
+
+    def zeros(items: Iterable[float]) -> list[float]:
+        return [0.0 for _ in items]
+
+    monkeypatch.setattr(pv_physics, "derived_witness_numbers", zeros)
+    damaged_solar = sun(meteo)
+    for key in (
+        "apparent_zenith_deg",
+        "azimuth_deg",
+        "delta_t_seconds",
+        "dni_extra_w_m2",
+    ):
+        assert np.array_equal(damaged_solar[key], solar[key])
+        assert not np.array_equal(damaged_solar[key], np.zeros_like(damaged_solar[key]))
+
+    from pvlib import irradiance as pvlib_irradiance
+
+    seen: dict[str, np.ndarray] = {}
+    real_poa = pvlib_irradiance.get_total_irradiance
+
+    def capture(*args: object, **kwargs: object) -> object:
+        zenith, azimuth = args[2], args[3]
+        assert isinstance(zenith, np.ndarray)
+        assert isinstance(azimuth, np.ndarray)
+        seen["zenith"] = zenith.astype(np.float64, copy=True)
+        seen["azimuth"] = azimuth.astype(np.float64, copy=True)
+        return real_poa(*args, **kwargs)
+
+    monkeypatch.setattr(pvlib_irradiance, "get_total_irradiance", capture)
+    damaged_power = array_power(
+        array, par.arrays[0], par.modules[0], meteo, damaged_solar
+    )
+    assert np.array_equal(seen["zenith"], solar["apparent_zenith_deg"])
+    assert np.array_equal(seen["azimuth"], solar["azimuth_deg"])
+    assert np.array_equal(damaged_power.dc_w, baseline_power.dc_w)
+    assert damaged_power.dc_w.tolist() != [0.0]
+    assert damaged_power.witness["dc_available_w"] == [0.0]
+    damaged_ac, damaged_report = conversion_power(group, {array.id: damaged_power}, 1)
+    assert np.array_equal(damaged_ac, baseline_ac)
+    assert damaged_report["available_ac_w"] == baseline_report["available_ac_w"]
+    assert damaged_report["dc_available_w"] == baseline_report["dc_available_w"]
+    assert damaged_report["unclipped_model_ac_w"] == [0.0]
+    damaged = generate_pv(roof, meteo, par, max_array_steps=1)
+    assert damaged.profile.values_kw == baseline.profile.values_kw
+    assert damaged.profile.total_kwh == baseline.profile.total_kwh
+    assert damaged.witness()["energy_kwh"] == baseline.profile.total_kwh
+    assert damaged.witness()["available_ac_w"] == baseline.witness()["available_ac_w"]
+    solar_geometry = cast(Object, damaged.witness()["solar_geometry"])
+    assert solar_geometry["apparent_zenith_deg"] == [0.0]
+    assert baseline.witness()["available_ac_w"] != [0.0]
+
+
 def test_shared_conversion_caps_combined_dc_and_keeps_a_loss_witness() -> None:
     group = (
         parameters()

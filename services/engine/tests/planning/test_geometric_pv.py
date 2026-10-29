@@ -61,6 +61,71 @@ def test_partial_beam_factor_precedes_mean_module_thermal_and_dc_response() -> N
     assert output.dc_w.tolist() == pytest.approx([expected_dc], abs=1e-10)
 
 
+def test_geometric_direction_and_profile_stay_unspelled(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from collections.abc import Iterable
+
+    import linker_engine.planning.geometric_pv_generation as geometric_pv
+    import linker_engine.planning.pv_physics as pv_physics
+    from linker_engine.planning.direct_beam_visibility import visibility_row
+    from linker_engine.planning.geometry import sin_cos_degrees
+    from linker_engine.planning.pv_physics import sun
+
+    geo, par = geometry(), parameter_document()
+    geo["module_specs"][0].update(length_m=1, width_m=1, stc_power_w=1000)
+    geo["arrays"][0].update(rows=1, columns=1, excluded_slots=[])
+    meteo = weather(dni=600, dhi=100, ghi=800, temp=25)
+    request = scenario(par)
+    limits = policy()
+    recorded: list[float] = []
+    directions: list[tuple[float, float, float]] = []
+
+    def spy(degrees: float) -> tuple[float, float]:
+        recorded.append(degrees)
+        return sin_cos_degrees(degrees)
+
+    def capture_row(*args: object, **kwargs: object) -> object:
+        direction = args[1]
+        assert isinstance(direction, tuple)
+        x, y, z = (float(part) for part in direction)
+        directions.append((x, y, z))
+        return cast(Any, visibility_row)(*args, **kwargs)
+
+    monkeypatch.setattr(geometric_pv, "sin_cos_degrees", spy)
+    monkeypatch.setattr(geometric_pv, "visibility_row", capture_row)
+    baseline = generate_geometric_pv(geo, meteo, request, limits, max_weather_rows=10)
+    solar = sun(meteo)
+    assert recorded[:2] == [
+        float(solar["apparent_zenith_deg"][0]),
+        float(solar["azimuth_deg"][0]),
+    ]
+    zenith, azimuth = recorded[0], recorded[1]
+    sz, cz = sin_cos_degrees(zenith)
+    sa, ca = sin_cos_degrees(azimuth)
+    baseline_direction = (sz * sa, sz * ca, cz)
+    assert directions == [baseline_direction]
+
+    def zeros(items: Iterable[float]) -> list[float]:
+        return [0.0 for _ in items]
+
+    monkeypatch.setattr(pv_physics, "derived_witness_numbers", zeros)
+    recorded.clear()
+    directions.clear()
+    damaged = generate_geometric_pv(geo, meteo, request, limits, max_weather_rows=10)
+    assert recorded[:2] == [zenith, azimuth]
+    sz, cz = sin_cos_degrees(recorded[0])
+    sa, ca = sin_cos_degrees(recorded[1])
+    assert directions == [(sz * sa, sz * ca, cz)] == [baseline_direction]
+    assert damaged.profile.values_kw == baseline.profile.values_kw
+    assert damaged.profile.total_kwh == baseline.profile.total_kwh
+    assert damaged.witness()["energy_kwh"] == baseline.profile.total_kwh
+    assert damaged.witness()["available_ac_w"] == baseline.witness()["available_ac_w"]
+    solar_geometry = cast(Object, damaged.witness()["solar_geometry"])
+    assert solar_geometry["apparent_zenith_deg"] == [0.0]
+    assert baseline.witness()["available_ac_w"] != [0.0]
+
+
 def scenario(parameters: dict[str, Any]) -> GeometricPvInputs:
     return GeometricPvInputs.read(
         {

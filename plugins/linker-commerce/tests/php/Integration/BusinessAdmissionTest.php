@@ -94,6 +94,32 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		wc_load_cart();
 		WC()->cart->empty_cart();
 		$this->later( static fn () => WC()->cart->empty_cart() );
+		$this->isolate_ordinary_reception();
+	}
+
+	/**
+	 * These cases check admission and receipts, not shared-site fullness.
+	 *
+	 * Deleting the option is not a private ledger: the next enforce write
+	 * rebuilds ordinary occupancy from every open contact and proforma
+	 * inquiry, and disposition reconcile can add more. An already reconciled
+	 * empty ledger still runs the real count and byte gate. The snapshot
+	 * taken above is restored afterwards; no existing inquiry is deleted.
+	 */
+	private function isolate_ordinary_reception(): void {
+		$seeded = \Linker\Commerce\Protection\IntakeStore::edit(
+			static function ( array &$state ): array {
+				$state['business']              = array();
+				$state['business_dispositions'] = array();
+				\Linker\Commerce\Protection\IntakeStore::save( $state );
+				return array( 'business' => count( $state['business'] ) );
+			},
+			1
+		);
+		$this->assertIsArray( $seeded );
+		$this->assertSame( 0, $seeded['business'] );
+		$room = \Linker\Commerce\Protection\BusinessCapacity::preflight();
+		$this->assertNull( $room, $room instanceof WP_Error ? (string) $room->get_error_code() : '' );
 	}
 
 	/** Unknown dispatched writes stay recoverable; definite refusals return to a fresh check. */
@@ -472,11 +498,13 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 	public function test_fast_validated_customers_share_a_nat_without_the_old_three_message_limit(): void {
 		for ( $i = 0; $i < 4; ++$i ) {
 			$post = $this->post( 'contact' );
-			$this->assertSame( 'sent', ( new ContactHandler() )->process( $post ) );
+			$this->assertSame( 'receipt_pending', ( new ContactHandler() )->process( $post ) );
 			$orders = wc_get_orders( array( 'billing_email' => $post['email'] ) );
 			$this->assertIsArray( $orders );
 			$this->assertCount( 1, $orders );
 			$order = $orders[0];
+			$order->read_meta_data( true );
+			$this->assertSame( 'assessment_pending', (string) $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
 			$this->later(
 				static function () use ( $order ): void {
 					$order->delete( true );
@@ -754,7 +782,15 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		\Linker\Commerce\Mail\ResetNotice::capture_submission( new WP_Error( 'fixture', 'Synthetic failure' ), new \WP_User() );
 		$saved = WC()->session->get( $session_key, array() );
 		$this->assertIsArray( $saved );
-		$this->assertSame( array( 'user_login' => 'installer@example.test' ), $saved['fields'] );
+		// Same contract as FormRecoveryTest: editable login plus the server-owned
+		// outcome flag. A posted password, key or proof must not join them.
+		$this->assertSame(
+			array(
+				'user_login'                => 'installer@example.test',
+				'linker_recovery_available' => '1',
+			),
+			$saved['fields']
+		);
 
 		$notice = static function (): void {
 			echo '<div class="woocommerce-error">Synthetic retry notice</div>';
@@ -772,6 +808,11 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		$html = (string) ob_get_clean();
 
 		$this->assertMatchesRegularExpression( '/<section class="linker-auth-card"[^>]*>.*Synthetic retry notice.*name="user_login"/s', $html );
+		$this->assertStringNotContainsString( 'linker_recovery_available', $html );
+		$this->assertStringNotContainsString( 'data-linker-protection-recovery', $html );
+		$this->assertStringNotContainsString( 'never-store-password', $html );
+		$this->assertStringNotContainsString( 'never-store-key', $html );
+		$this->assertStringNotContainsString( 'never-store-proof', $html );
 		$processor = new \WP_HTML_Tag_Processor( $html );
 		$found     = false;
 		while ( $processor->next_tag( array( 'tag_name' => 'INPUT' ) ) ) {
@@ -866,8 +907,28 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 				)
 			);
 			$marker = self::newest_mail_job();
-			$this->assertSame( 'sent', ( new ContactHandler() )->process( $post ), 'Receipt admission follows the background verdict.' );
+			$this->assertSame( 'receipt_pending', ( new ContactHandler() )->process( $post ), 'The receipt stays undecided until the background verdict.' );
+			$found = wc_get_orders(
+				array(
+					'billing_email' => $target,
+					'limit'         => -1,
+				)
+			);
+			$this->assertIsArray( $found );
+			$matched = array_values(
+				array_filter(
+					$found,
+					static fn ( WC_Order $candidate ): bool => $post['linker_request_id'] === $candidate->get_meta( BusinessRecord::REQUEST )
+				)
+			);
+			$this->assertCount( 1, $matched );
+			$current = $matched[0];
+			$current->read_meta_data( true );
+			$this->assertSame( 'assessment_pending', (string) $current->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
+			$this->assertSame( array(), self::mail_jobs_after( $marker ), 'Pending authorization has not queued team mail or a receipt.' );
 			$this->authorization->drain();
+			$current->read_meta_data( true );
+			$this->assertSame( 2 === $i ? 'sent_no_receipt' : 'sent', ContactHandler::receipt_state( $current ), 'Receipt admission follows the background verdict.' );
 			$jobs = array_map( static fn ( int $id ) => $store->load( $id ), self::mail_jobs_after( $marker ) );
 			$this->assertCount( 2 === $i ? 1 : 2, $jobs );
 			foreach ( $jobs as $job ) {
