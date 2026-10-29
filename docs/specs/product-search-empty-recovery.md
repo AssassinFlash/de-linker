@@ -26,3 +26,13 @@ EN and DE use the native commerce translation catalog. The existing empty
 component test and the filter/chip tests cover the distinct selection cases
 and the encoded search with sorting. A real browser still has to exercise
 the affected controls and localized empty states in both viewport sizes.
+
+## Copy review
+
+The initial EN and DE drafts are the three search, filter and combined
+messages in `ProductShortcodes.php` and `linker-commerce-de_DE_formal.po`.
+An independent review checked them against the Linker copy rules and the
+available recovery actions. It found the guidance truthful and the German
+natural, and recommended retaining all three pairs as drafted. The existing
+Clear all label sits beside the filter chips; check its context in the real
+page because the action now retains the search term.
