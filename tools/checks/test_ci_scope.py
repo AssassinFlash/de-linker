@@ -433,9 +433,11 @@ class ScopeTest(unittest.TestCase):
         original.assert_called_once_with("a" * 40, full=True)
 
     def test_split_jobs_keep_the_shared_toolchain_inputs(self):
-        php = TEXT.split("      - name: PHP source, static analysis", 1)[1]
+        php = TEXT.split("\n  php:\n", 1)[1].split("\n  commerce:\n", 1)[0]
         self.assertIn('cd "$GITHUB_WORKSPACE/plugins/linker-commerce"', php)
+        self.assertIn("uses: actions/setup-node@", php)
         self.assertLess(php.index("composer install"), php.index("for project in"))
+        self.assertLess(php.index("npm ci"), php.index("for project in"))
 
         tools = TEXT.split("\n  tools:\n", 1)[1].split("\n  planner:\n", 1)[0]
         self.assertLess(
