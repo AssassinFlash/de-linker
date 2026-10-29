@@ -64,11 +64,15 @@ THEMES_DIR = "wp-content/themes"
 INSTALLED_PLUGINS = ("polylang", "cookie-law-info", "wp-consent-api")
 
 # Production's existing full-page cache. It stays target-owned: the deploy reads
-# the installed plugin list, purges this cache only where LiteSpeed owns it, and
-# never installs or upgrades the plugin on a local instance. Its version and
-# cache policy are host state, not repository artifacts.
+# the installed plugin list and never installs or upgrades the plugin on a local
+# instance. Where the host already owns it, deploy purges after the switch and
+# requires the verified query exclusion. It does not write that option. An empty
+# cache-exc cached arbitrary query variants on 2026-10-29; the live value
+# litespeed.conf.cache-exc=["?"] stays as the host set it.
 PAGE_CACHE_PLUGIN = "litespeed-cache"
 PAGE_CACHE_PURGE = ("litespeed-purge", "all")
+PAGE_CACHE_EXCLUSION_OPTION = "litespeed.conf.cache-exc"
+PAGE_CACHE_QUERY_EXCLUSION = "?"
 
 # The German (Formal) language packs, installed by WP-CLI from the translation
 # API (like INSTALLED_PLUGINS, the native installer is the verified channel):

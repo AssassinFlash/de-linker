@@ -130,3 +130,5 @@ def test_manual_items_are_printed_and_never_claimed() -> None:
     assert plan.PAGE_CACHE_PLUGIN == "litespeed-cache"
     assert plan.PAGE_CACHE_PLUGIN not in plan.INSTALLED_PLUGINS
     assert plan.PAGE_CACHE_PURGE == ("litespeed-purge", "all")
+    assert plan.PAGE_CACHE_EXCLUSION_OPTION == "litespeed.conf.cache-exc"
+    assert plan.PAGE_CACHE_QUERY_EXCLUSION == "?"

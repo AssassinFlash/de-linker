@@ -375,11 +375,37 @@ def purge_page_cache(target: Target, installed: set[str]) -> list[str]:
     theme, a plugin or the WindPress volume keeps serving the previous markup
     until something purges it. Only the owner of that cache may be asked: a host
     without the plugin (every local instance) is told nothing and does nothing.
+    A host that owns it must already exclude query strings. The live option is
+    read and never written, so a deploy cannot clear the exclusion the host set.
     """
     if plan.PAGE_CACHE_PLUGIN not in installed:
         return []
+    require_query_exclusion(target)
     target.wp(*plan.PAGE_CACHE_PURGE)
-    return ["wp " + " ".join(plan.PAGE_CACHE_PURGE)]
+    return [
+        "page cache excludes query strings",
+        "wp " + " ".join(plan.PAGE_CACHE_PURGE),
+    ]
+
+
+def require_query_exclusion(target: Target) -> None:
+    """Fail when the production-owned cache would store arbitrary query variants.
+
+    `wp option get litespeed.conf.cache-exc` prints a JSON list. The verified
+    entry is "?" (read back 2026-10-29 as ["?"]). Absence, another entry, or a
+    non-list does not change the option; the deploy stops instead.
+    """
+    raw = target.wp("option", "get", plan.PAGE_CACHE_EXCLUSION_OPTION, check=False)
+    try:
+        entries = json.loads(raw)
+    except json.JSONDecodeError:
+        entries = None
+    if not isinstance(entries, list) or plan.PAGE_CACHE_QUERY_EXCLUSION not in entries:
+        raise CutoverError(
+            f"{plan.PAGE_CACHE_EXCLUSION_OPTION} must contain "
+            f"{plan.PAGE_CACHE_QUERY_EXCLUSION!r} so query variants stay uncached; "
+            "the live option is not changed"
+        )
 
 
 def deploy_language_packs(target: Target) -> list[str]:
