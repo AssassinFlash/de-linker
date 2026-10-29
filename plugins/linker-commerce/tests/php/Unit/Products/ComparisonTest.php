@@ -242,6 +242,7 @@ final class ComparisonTest extends TestCase {
 	 * A live product has two different rated powers in different source groups.
 	 *
 	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
 	 */
 	public function test_live_rated_powers_keep_their_source_context_in_both_languages(): void {
 		$german = false;

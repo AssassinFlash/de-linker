@@ -312,6 +312,7 @@ final class ComparePageTest extends TestCase {
 	 * Both rated powers from the live fixture render in their own cells in EN/DE.
 	 *
 	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
 	 */
 	public function test_live_rated_power_rows_render_with_context_in_the_right_column(): void {
 		WP_Mock::userFunction( 'linker_i18n_is_de', array( 'return' => fn(): bool => 'de' === $this->language ) );
