@@ -41,11 +41,12 @@ as reproducible evidence tools; run with
 ### Guest, EN (evidence/en-guest.json)
 
 - Form on `/proforma-request/` carries one draft line after add-to-cart.
-- Invalid email: blocked client-side (native `type=email` plus
-  `account-ui.js` `reportValidity()`), no POST leaves the browser.
+- Invalid email: blocked on the form (native `type=email` plus
+  `account-ui.js` `reportValidity()`); the walk recorded the unchanged URL
+  and an empty visible error state. It did not retain a request counter.
 - Submit inside the 3-second PublicGuard minimum: server refuses with
-  "Please check your entries and send the form again." and **all entered
-  values survive** the round trip (flash fields).
+  "Please check your entries and send the form again." The walk retained and
+  checked name, email and message; it did not record company or consent.
 - Recovery submit → redirect `/proforma-request/inquiry-received/8500/`,
   success panel "Inquiry received / We reply within one business day." with
   the #533 deferred-receipt notice ("We have not sent a confirmation
@@ -99,30 +100,25 @@ as reproducible evidence tools; run with
 
 ## Findings
 
-- **F1 (reported, not changed — owner-approved constant):** the pre-send
-  verdict's 10-second per-attempt window (#533, `Queue::WAIT_SECONDS = 10`,
-  genie `WAIT_SECONDS = 10.0` "never renewed internally") is tight for
-  German snapshots: primary Jev + deepseek-flash escalation measured 8.5–10.5
-  s end to end (direct probe), so several first attempts return
-  `unknown/deadline` and mail waits in the retry ladder (60 s → 300 s →
-  1800 s → … → manual hold). EN snapshots passed first-attempt in all runs.
-  The chain behaves exactly per spec #533 (fail closed, bounded native
-  recovery, no substitute mail); whether to widen the window is an owner
-  ruling, not a code fix, so nothing was changed here.
+- **F1 (reported, not changed — owner-approved constant):** the walk observed
+  German attempts defer into the retry ladder while English attempts completed.
+  The per-attempt window remains the owner-approved 10 s (#533,
+  `Queue::WAIT_SECONDS = 10`, genie `WAIT_SECONDS = 10.0`, not renewed
+  internally). No retained timing summary supports a narrower latency claim,
+  so none is made. The chain fails closed, retains bounded native recovery and
+  sends no substitute mail; widening the window is an owner ruling.
 - **F2 (fixed in this branch):** `tests/e2e/specs/public-inquiry.spec.ts`
   still asserted mail in the queue immediately after submit — stale against
   #533's verdict-before-mail flow; the suite had not been run against an
-  instance since. It now asserts the #533 deferral deterministically:
-  immediately after submit the queue is empty, the receipt skip reason is
-  `assessment_pending`, and the pages show the deferred copy (request door:
-  "We have not sent a confirmation email." / "Es wurde keine
-  Bestätigungs-E-Mail versendet."; contact door — which cannot yet know
-  whether a receipt will follow — the plain "Thank you. Your message is
-  with the Linker team." / "Vielen Dank. Ihre Nachricht liegt beim
-  Linker-Team."). The verdict→queue→outbox delivery is timing-dependent on
-  external models and is covered by the walk harness
-  (`tests/e2e/specs-walk/`), not by the suite. Suite result: **16/16
-  passed** (previously 16 failed / stale on main).
+  instance since. The fixture now blocks its wake and scheduled consumers:
+  one pending snapshot proves an empty Outbox plus
+  `assessment_pending`/authorization `pending`, and preserves the deferred
+  door copy. This is deterministic and does not claim a post-verdict queue or
+  delivery. The normal two-message route and capped team-only `daily_cap`
+  route stay at their native integration layer
+  (`PublicSubmissionTest`/`PreSendAuthorizationTest`); actual local routing and
+  delivery remain in the walk evidence above. Suite result: **16/16 passed**
+  (previously 16 failed / stale on main).
 - **F3 (fixed in this branch):** `tests/e2e/specs/empty-draft.spec.ts`
   expected the DE create-account link to end in `/register/`; WooCommerce's
   German endpoint is `registrieren` (`/de/mein-konto/registrieren/`), so

@@ -82,37 +82,43 @@ for (const language of ['en', 'de']) {
 						await expect(
 							page.locator('.linker-form-success')
 						).toBeVisible();
-						const readback = JSON.parse(run('read'));
-						expect(readback.orders).toHaveLength(1);
-						expect(readback.orders[0].customer).toBe(0);
-						expect(readback.orders[0].items).toBe(
+						const pending = JSON.parse(run('read')) as {
+							orders: Array<{
+								status: string;
+								customer: number;
+								source: string;
+								skipped: string;
+								items: number;
+								authorization: {
+									status?: string;
+									team_only?: boolean;
+									jobs?: string[];
+								};
+							}>;
+							mail: Array<{ to: string[]; subject: string }>;
+						};
+						expect(pending.orders).toHaveLength(1);
+						const pendingOrder = pending.orders[0];
+						if (!pendingOrder)
+							throw new Error('Missing pending order');
+						expect(pendingOrder.customer).toBe(0);
+						expect(pendingOrder.items).toBe(
 							door === 'request' ? 1 : 0
 						);
-						expect(readback.orders[0].status).toBe(
-							'inquiry-received'
-						);
-						expect(readback.orders[0].source).toBe(
+						expect(pendingOrder.status).toBe('inquiry-received');
+						expect(pendingOrder.source).toBe(
 							door === 'contact' ? 'contact' : 'proforma'
 						);
-						// #533: mail leaves only after the pre-send verdict, so
-						// immediately after submit the queue is empty and the
-						// receipt skip reason is still 'assessment_pending'.
-						// The verdict→queue→delivery walk (routing data,
-						// daily_cap resolution) is nondeterministic in time
-						// and lives in the walk harness instead:
-						// tests/e2e/specs-walk/walk2*.ts.
-						const deferred = JSON.parse(run('read')) as {
-							mail: { to: string[] }[];
-						};
-						expect(deferred.mail).toHaveLength(0);
-						const queuedMail = deferred.mail;
+						// The fixture blocks both the opportunistic wake and
+						// Action Scheduler. This read is one consistent pending
+						// snapshot, not a race against an empty post-delivery
+						// Outbox.
+						expect(pendingOrder.skipped).toBe('assessment_pending');
+						expect(pendingOrder.authorization.status).toBe(
+							'pending'
+						);
+						expect(pending.mail).toHaveLength(0);
 						if (capped) {
-							// #533: the cap is resolved when the deferred
-							// receipt would be built, after the verdict;
-							// here every order is still 'assessment_pending'.
-							expect(readback.orders[0].skipped).toBe(
-								'assessment_pending'
-							);
 							// The contact door cannot yet know whether a
 							// receipt will follow, so it shows the plain
 							// sent copy; the request page names the deferred
@@ -120,7 +126,7 @@ for (const language of ['en', 'de']) {
 							const notice =
 								language === 'de'
 									? door === 'contact'
-										? 'Vielen Dank. Ihre Nachricht liegt beim Linker-Team.'
+										? 'Ihre Nachricht ist beim Linker-Team eingegangen. Eine Bestätigung per E-Mail wurde nicht versendet.'
 										: 'Es wurde keine Bestätigungs-E-Mail versendet.'
 									: door === 'contact'
 										? 'Thank you. Your message is with the Linker team.'
@@ -140,8 +146,7 @@ for (const language of ['en', 'de']) {
 								{
 									before,
 									after,
-									orders: readback.orders,
-									mail: queuedMail,
+									pending,
 								},
 								null,
 								2
@@ -177,8 +182,11 @@ for (const language of ['en', 'de']) {
 							animations: 'disabled',
 						});
 					} finally {
-						await context.close();
-						run('cleanup');
+						try {
+							await context.close();
+						} finally {
+							run('cleanup');
+						}
 					}
 				});
 			}

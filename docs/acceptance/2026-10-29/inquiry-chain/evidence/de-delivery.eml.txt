@@ -209,7 +209,7 @@ Guten Tag DE Liefer Walk ,</p>
 <p style="margin: 0 0 16px;">
 vielen Dank für Ihre Anfrage #8625.</p>
 <p style="margin: 0 0 16px;">Wir antworten innerhalb eines Arbeitstags. Das Linker-Team antwortet Ihnen an die angegebene E-Mail-Adresse.</p>
-<p style="margin: 0 0 16px;"><a href="http://127.0.0.1:8895/de/mein-konto/registrieren/?linker_inquiry=8625&amp;linker_key=wc_order_qReRhBUlUH0QR" style="color: #8526ff; font-weight: normal; text-decoration: underline;">Erstellen Sie mit dieser E-Mail-Adresse ein Konto. Nach der Freigabe sehen Sie Nettopreise und können Ihre Anfrage verfolgen.</a></p>
+<p style="margin: 0 0 16px;"><a href="http://127.0.0.1:8895/de/mein-konto/registrieren/?linker_inquiry=8625&amp;linker_key=[redacted-order-key]" style="color: #8526ff; font-weight: normal; text-decoration: underline;">Erstellen Sie mit dieser E-Mail-Adresse ein Konto. Nach der Freigabe sehen Sie Nettopreise und können Ihre Anfrage verfolgen.</a></p>
 	<h2 class="email-order-detail-heading" style='color: #1e1e1e; display: block; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; font-size: 20px; font-weight: bold; line-height: 160%; margin: 0 0 18px; text-align: left;'>
 		Zusammenfassung der Anfrage<br><span style="color: #787c82; display: block; font-size: 14px; font-weight: normal;">Anfrage #8625 (<time datetime="2026-10-29T07:44:42+00:00">29. Oktober 2026</time>)</span>	</h2>
 

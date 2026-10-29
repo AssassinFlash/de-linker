@@ -11,7 +11,7 @@
     "company": "Login GmbH"
   },
   "consentChecked": true,
-  "confirmedUrl": "http://127.0.0.1:8895/proforma-request/inquiry-received/8512/?key=wc_order_OGSJ6FjIKK3VR",
+  "confirmedUrl": "http://127.0.0.1:8895/proforma-request/inquiry-received/8512/?key=[redacted-order-key]",
   "successText": "✓Inquiry receivedWe reply within one business day.We have not sent a confirmation email.View inquiries",
   "orderId": 8512,
   "queueMail": [

@@ -61,44 +61,32 @@ require_once __DIR__ . '/public-inquiry-assessment.php';
 	$orders = $fixture->orders();
 	$jobs   = $fixture->jobs();
 	if ( 'read' === $mode ) {
-		// The subject is the guest handoff, not the opportunistic wake. While
-		// linker_246_assessment_fixture is on, this poll runs that inquiry's
-		// real SendAuthorization under the shared worker lock. A busy lock is
-		// left for the next poll; the wait and the wake are unchanged.
-		if ( '1' === (string) get_option( PublicInquiryAssessment::OPTION, '' ) ) {
-			foreach ( $orders as $order ) {
-				$id = $order->get_id();
-				\Linker\Commerce\Inquiry\Assessment\Lock::run(
-					'async-worker',
-					static function () use ( $id ): void {
-						( new \Linker\Commerce\Inquiry\Assessment\Queue() )->process( $id );
-					}
-				);
+		$store = new \Linker\Commerce\Mail\JobStore();
+		$seen  = array_fill_keys( $jobs, true );
+		foreach ( $owned_jobs( $orders ) as $job_id ) {
+			if ( isset( $seen[ $job_id ] ) || null === $store->load( $job_id ) ) {
+				continue;
 			}
-			$orders = $fixture->orders();
-			foreach ( $orders as $order ) {
-				$order->read_meta_data( true );
-			}
-			$jobs  = $fixture->jobs();
-			$store = new \Linker\Commerce\Mail\JobStore();
-			$seen  = array_fill_keys( $jobs, true );
-			foreach ( $owned_jobs( $orders ) as $job_id ) {
-				if ( isset( $seen[ $job_id ] ) || null === $store->load( $job_id ) ) {
-					continue;
-				}
-				$jobs[]          = $job_id;
-				$seen[ $job_id ] = true;
-			}
+			$jobs[]          = $job_id;
+			$seen[ $job_id ] = true;
 		}
 		echo wp_json_encode(
 			array(
 				'orders' => array_map(
 					static fn ( $order ) => array(
-						'status'   => $order->get_status(),
-						'customer' => $order->get_customer_id(),
-						'source'   => $order->get_meta( '_linker_inquiry_source' ),
-						'skipped'  => $order->get_meta( '_linker_receipt_skipped' ),
-						'items'    => count( $order->get_items() ),
+						'status'        => $order->get_status(),
+						'customer'      => $order->get_customer_id(),
+						'source'        => $order->get_meta( '_linker_inquiry_source' ),
+						'skipped'       => $order->get_meta( '_linker_receipt_skipped' ),
+						'items'         => count( $order->get_items() ),
+						'authorization' => ( static function ( int $id ): array {
+							$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $id );
+							return is_array( $state ) ? array(
+								'status'    => $state['status'] ?? null,
+								'team_only' => $state['team_only'] ?? false,
+								'jobs'      => array_keys( $state['jobs'] ?? array() ),
+							) : array();
+						} )( $order->get_id() ),
 					),
 					$orders
 				),
