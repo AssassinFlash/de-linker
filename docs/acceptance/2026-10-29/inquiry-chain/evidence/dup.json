@@ -1,0 +1,14 @@
+{
+  "email": "b2walk-dup-1793259736148@example.test",
+  "confirmedUrl": "http://127.0.0.1:8895/proforma-request/inquiry-received/8621/?key=wc_order_iSMOZbNXPIsNF",
+  "posts": 0,
+  "ordersAfterDoubleSubmit": 1,
+  "emptyDraftError": "Please add a product or write a message.",
+  "emptyDraftUrl": "http://127.0.0.1:8895/proforma-request/",
+  "ordersAfterEmptyDraft": 1,
+  "assertions": {
+    "oneOrderAfterDoubleSubmit": true,
+    "emptyDraftRefused": true,
+    "stillOneOrder": true
+  }
+}
