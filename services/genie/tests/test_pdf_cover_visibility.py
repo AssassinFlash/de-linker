@@ -74,7 +74,10 @@ def test_same_text_layer_is_accepted_only_when_rendered(tmp_path: Path) -> None:
 
 
 def test_sts_title_requires_a_unique_visible_physical_line(tmp_path: Path) -> None:
-    title = f"BT /F1 32 Tf 40 500 Td ({STS_LINE}) Tj ET"
+    # The unembedded Helvetica fixture uses PDFium's platform substitute.
+    # At 32pt Linux's isolated glyph bitmap can fall outside its own bounds;
+    # 30pt is visibly rendered on both platforms and remains the larger title.
+    title = f"BT /F1 30 Tf 40 500 Td ({STS_LINE}) Tj ET"
     subtitle = "BT /F1 12 Tf 40 480 Td (Static Transfer Switch I GW125K-STS-G10) Tj ET"
     visible = title + "\n" + subtitle
     path = _pdf(tmp_path, visible)

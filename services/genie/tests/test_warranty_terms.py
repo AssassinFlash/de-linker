@@ -256,7 +256,7 @@ def test_visible_sts_cover_flows_through_authorized_warranty_search(
                     else "30kW/60kW I Static Transfer Switch",
                 ),
             ],
-            title_size=32,
+            title_size=30,
         )
         for sheet in sheets
     ]
