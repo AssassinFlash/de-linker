@@ -7,7 +7,7 @@ import platform
 import subprocess
 import sys
 from pathlib import Path
-from typing import cast
+from typing import Any, cast
 
 from fastapi.testclient import TestClient
 
@@ -38,10 +38,15 @@ from .test_pvgis_tmy import capture, interpretation, raw, request
 APP = Path(__file__).resolve().parents[4] / "apps" / "planner"
 
 
+def preparation_fixture() -> dict[str, Any]:
+    name = f"preparation-flow-{sys.platform}-{platform.machine()}.json"
+    return cast(dict[str, Any], json.loads((APP / "tests/fixtures" / name).read_text()))
+
+
 def test_replacing_selected_weather_can_be_saved_after_browser_preparation(
     workspace: Workspace, owner: Actor
 ) -> None:
-    fixture = json.loads((APP / "tests/fixtures/preparation-flow.json").read_text())
+    fixture = preparation_fixture()
     original = fixture["weather_project"]["inputs"]
     project = workspace.create(
         owner, "Synthetic browser save fixture", original, key="new"
@@ -142,7 +147,7 @@ process.stdout.write(JSON.stringify(prepareWeatherInputs(changed)));
 def test_browser_pv_preparation_saves_and_executes_the_frozen_model(
     workspace: Workspace, owner: Actor
 ) -> None:
-    fixture = json.loads((APP / "tests/fixtures/preparation-flow.json").read_text())
+    fixture = preparation_fixture()
     original = cast(Object, fixture["pv_project"]["inputs"])
     original.pop("pv_preparation")
     original["unrelated"] = "preserved"
@@ -286,12 +291,7 @@ def test_preparation_fixture_export_reproduces_the_committed_fixture() -> None:
     label is not a claim that macOS and Linux share one numerical execution
     identity; each host family has a real, complete exported baseline.
     """
-    fixture = (
-        Path(__file__).resolve().parents[1]
-        / "fixtures"
-        / f"preparation-flow-{sys.platform}-{platform.machine()}.json"
-    )
-    committed = json.loads(fixture.read_text())
+    committed = preparation_fixture()
     produced = export_preparation_fixture.capture()
     assert set(produced) == set(committed) == set(EXPECTED_FIXTURE_KEYS)
     assert produced == committed

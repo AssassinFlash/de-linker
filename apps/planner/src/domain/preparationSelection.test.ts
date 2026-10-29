@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import dcPlant from "../../tests/fixtures/dc-plant-energy-run.json" with { type: "json" };
-import fixture from "../../tests/fixtures/preparation-flow.json" with { type: "json" };
+import fixture from "../../tests/fixtures/index.ts";
 import { readRun, RUN_OPERATIONS } from "../data/planningProtocol.ts";
 import { ApiError, type JsonObject } from "../data/protocol.ts";
 import { readObject, readProject } from "../data/readProtocol.ts";

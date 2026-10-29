@@ -8,7 +8,7 @@ import { PlannerClient } from "../src/data/PlannerClient.ts";
 import { usePlanningOperations } from "../src/data/usePlanningOperations.ts";
 import result from "./fixtures/energy-run.json" with { type: "json" };
 import scenario from "./fixtures/energy-scenario.json" with { type: "json" };
-import preparation from "./fixtures/preparation-flow.json" with { type: "json" };
+import preparation from "./fixtures/index.ts";
 
 const scope = "a".repeat(64),
 	projectId = result.project_id;
