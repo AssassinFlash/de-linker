@@ -194,7 +194,10 @@ final class DynamicPageCacheTest extends TestCase {
 	 * @param string $name Attribute name.
 	 */
 	private function attr( string $html, string $name ): string {
-		$this->assertSame( 1, preg_match( '/\s' . preg_quote( $name, '/' ) . '="([^"]*)"/', $html, $matches ), $name );
+		$found = preg_match( '/\s' . preg_quote( $name, '/' ) . '="([^"]*)"/', $html, $matches );
+		if ( 1 !== $found ) {
+			$this->fail( $name );
+		}
 		return $matches[1];
 	}
 }
