@@ -3,9 +3,7 @@
 from __future__ import annotations
 
 import json
-import platform
 import subprocess
-import sys
 from pathlib import Path
 from typing import cast
 
@@ -280,18 +278,15 @@ process.stdout.write(JSON.stringify(prepared));
 
 
 def test_preparation_fixture_export_reproduces_the_committed_fixture() -> None:
-    """The actual host's complete baseline is exactly what this engine produces.
+    """The committed browser fixture is exactly what this engine produces.
 
-    Every field and hash is compared without a tolerance. The synthetic runtime
-    label is not a claim that macOS and Linux share one numerical execution
-    identity; each host family has a real, complete exported baseline.
+    The whole document is compared field by field. Nothing is rewritten to hide
+    a hash. The exporter pins a synthetic Python, platform and dependency
+    identity, so the hashes that chain from that snapshot are the same on macOS
+    and Linux. That identity is not this machine's live snapshot.
     """
-    fixture = (
-        Path(__file__).resolve().parents[1]
-        / "fixtures"
-        / f"preparation-flow-{sys.platform}-{platform.machine()}.json"
-    )
-    committed = json.loads(fixture.read_text())
+    committed_text = (APP / "tests/fixtures/preparation-flow.json").read_text()
+    committed = json.loads(committed_text)
     produced = export_preparation_fixture.capture()
     assert set(produced) == set(committed) == set(EXPECTED_FIXTURE_KEYS)
     assert produced == committed
@@ -302,8 +297,10 @@ def test_preparation_fixture_export_reproduces_the_committed_fixture() -> None:
     manifest = cast(Object, weather_run["manifest"])
     context = cast(Object, manifest["context"])
     assert context["code_sha256"] == pinned.sha256
-    # Prettier formats the committed host baseline. The equality above therefore
-    # checks formatted values, and this independent second export must agree too.
+    # The browser package owns this file's whitespace: it formats its own JSON
+    # with Prettier, which may expand a short array or break a long string.
+    # Whatever that formatting did, it changed no saved value, so re-reading
+    # the committed bytes must yield exactly the document the exporter produced.
     assert json.loads(export_preparation_fixture.rendered()) == produced
 
 

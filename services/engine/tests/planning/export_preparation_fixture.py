@@ -3,12 +3,10 @@
 Uses the retained real TMY and explicit synthetic model/roof with a simulated
 provider adapter. Never connects to a live service, account, or project store.
 
-Identifiers and clock values come from a fixed sequence. The runtime snapshot
-uses a synthetic label rather than claiming to be the machine's live execution
-identity. Numerical results still come from the actual pinned host libraries.
-Each supported host family has its own complete exported baseline; no precision
-is removed and no hash is ignored to pretend that different libm implementations
-produced the same bytes.
+The export is reproducible: identifiers and clock values come from a fixed
+sequence, and the runtime snapshot uses a synthetic Python, platform and
+dependency identity. Two runs on macOS and Linux therefore produce identical
+bytes. A fixture diff means the saved objects changed, not that the host did.
 
 Every key of the browser fixture is produced here, one saved workflow at a
 time: weather acquisition, PV preparation, the managed roof AC reference, the
@@ -20,8 +18,6 @@ actually consumes without any test noticing.
 from __future__ import annotations
 
 import json
-import platform
-import sys
 import uuid
 from collections.abc import Iterator
 from contextlib import contextmanager
@@ -681,15 +677,17 @@ def _adopt_geometric_energy(
 
 
 def rendered() -> str:
-    """Serialize a fresh export; format the host baseline with Prettier afterwards.
+    """The exporter's own serialization of the fixture document.
 
-    The reproduction test compares parsed values, then runs this export again to
-    require the same complete document on the same host.
+    The planner package owns this file's whitespace and formats it with
+    Prettier, so a regeneration is followed by that formatter. This function
+    exists so the two agree on the data and the regenerating command is one
+    line.
     """
     return json.dumps(capture(), ensure_ascii=False, indent="\t") + "\n"
 
 
 if __name__ == "__main__":
-    target = FIXTURES / f"preparation-flow-{sys.platform}-{platform.machine()}.json"
+    target = APP / "tests" / "fixtures" / "preparation-flow.json"
     target.write_text(rendered())
     print(target)

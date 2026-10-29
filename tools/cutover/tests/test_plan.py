@@ -127,4 +127,6 @@ def test_manual_items_are_printed_and_never_claimed() -> None:
     """The control panel is not reachable from here; the list must say what it is."""
     assert plan.MANUAL, "spec 17 §6 has steps only the panel can do"
     assert any("cron" in item for item in plan.MANUAL)
-    assert any("LiteSpeed" in item for item in plan.MANUAL)
+    assert plan.PAGE_CACHE_PLUGIN == "litespeed-cache"
+    assert plan.PAGE_CACHE_PLUGIN not in plan.INSTALLED_PLUGINS
+    assert plan.PAGE_CACHE_PURGE == ("litespeed-purge", "all")

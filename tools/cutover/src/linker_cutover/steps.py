@@ -361,10 +361,25 @@ def deploy(
     refresh = target.shell(opcache_reset_script(target))
     line = refresh.replace(atomic.AFTER_SWITCH_MARKER, "").strip().splitlines()[-1:]
     actions.append("after present: " + (" ".join(line) or "opcache-reset=unknown"))
+    actions += purge_page_cache(target, installed)
     if reminder:
         # Last, so it is the line the log ends on and never shifts the others.
         actions.append(reminder)
     return Result("deploy", actions, [], receipt)
+
+
+def purge_page_cache(target: Target, installed: set[str]) -> list[str]:
+    """Drop cached HTML after a deploy changed the tree it was rendered from.
+
+    LiteSpeed answers a cached page before PHP runs, so a deploy that swaps the
+    theme, a plugin or the WindPress volume keeps serving the previous markup
+    until something purges it. Only the owner of that cache may be asked: a host
+    without the plugin (every local instance) is told nothing and does nothing.
+    """
+    if plan.PAGE_CACHE_PLUGIN not in installed:
+        return []
+    target.wp(*plan.PAGE_CACHE_PURGE)
+    return ["wp " + " ".join(plan.PAGE_CACHE_PURGE)]
 
 
 def deploy_language_packs(target: Target) -> list[str]:

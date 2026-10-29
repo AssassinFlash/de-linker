@@ -1362,3 +1362,22 @@ def test_a_second_staging_of_the_same_tree_skips_the_rebuild(
     (source / "linker-commerce.php").write_text("<?php // changed", encoding="utf-8")
     steps.stage_plugin(repository, "linker-commerce", staging)
     assert calls and calls[0][0] == "rsync", "a change rebuilds the tree"
+
+
+def test_purge_page_cache_asks_only_a_host_that_owns_the_cache(
+    tmp_path: Path,
+) -> None:
+    """A deploy swaps the tree a cached page was rendered from, so HTML must go.
+
+    LiteSpeed answers before PHP runs; a host without the plugin (every local
+    instance) is told nothing rather than failing the deploy on an unknown
+    command.
+    """
+    target = _fake(tmp_path)
+    assert steps.purge_page_cache(target, {"linker-i18n", "livecanvas"}) == []
+    assert not any(plan.PAGE_CACHE_PLUGIN in " ".join(call) for call in target.calls)
+
+    target = _fake(tmp_path)
+    actions = steps.purge_page_cache(target, {"linker-i18n", plan.PAGE_CACHE_PLUGIN})
+    assert actions == ["wp " + " ".join(plan.PAGE_CACHE_PURGE)]
+    assert ("wp", plan.PAGE_CACHE_PURGE) in target.calls

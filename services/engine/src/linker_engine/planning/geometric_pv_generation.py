@@ -17,10 +17,19 @@ from .direct_beam_visibility import VisibilityBudget, visibility_row
 from .errors import InvalidInput, NumericalFailure, VersionUnavailable
 from .geometric_pv_inputs import MODEL, GeometricPvInputs, GeometricPvLimits
 from .geometry import sin_cos_degrees
+from .model_numbers import canonical_witness_document
 from .power_series import PowerSeries
 from .pv_arrays import generation_arrays
 from .pv_generation import PvGeneration
-from .pv_physics import ArrayPower, array_power, checked, conversion_power, sun, values
+from .pv_physics import (
+    ArrayPower,
+    array_power,
+    checked,
+    conversion_power,
+    retained_watts,
+    sun,
+    values,
+)
 from .pv_reconstruction import PvReconstruction
 from .pv_weather import WeatherSeries
 from .series_source import SeriesSource
@@ -244,25 +253,27 @@ def generate_geometric_pv(
     )
     if not math.isfinite(profile.total_kwh):
         raise NumericalFailure("geometric PV scenario integrated energy is nonfinite")
+    # One document-level pass spells every derived float (solar geometry,
+    # array/module/converter witnesses, retained watts, energy) at the
+    # platform-stable precision; ``inputs`` stays byte-exact.
+    witness: Object = {
+        "schema_version": 1,
+        "kind": MODEL,
+        "inputs": details,
+        "solar_geometry": {key: values(value) for key, value in solar.items()},
+        "arrays": [outputs[array.id].witness for array in arrays],
+        "modules": module_witnesses,
+        "converters": [item[1] for item in converters],
+        "available_ac_w": retained_watts(total),
+        "energy_kwh": profile.total_kwh,
+        "equipment_release": {"status": "not_assessed"},
+        "country_assessment": {"status": "not_assessed"},
+        "near_shading_assessment": {
+            "status": "direct_only_scenario_not_complete_assessment"
+        },
+    }
     return PvGeneration(
         profile,
         inputs_json,
-        encode(
-            {
-                "schema_version": 1,
-                "kind": MODEL,
-                "inputs": details,
-                "solar_geometry": {key: values(value) for key, value in solar.items()},
-                "arrays": [outputs[array.id].witness for array in arrays],
-                "modules": module_witnesses,
-                "converters": [item[1] for item in converters],
-                "available_ac_w": values(total),
-                "energy_kwh": profile.total_kwh,
-                "equipment_release": {"status": "not_assessed"},
-                "country_assessment": {"status": "not_assessed"},
-                "near_shading_assessment": {
-                    "status": "direct_only_scenario_not_complete_assessment"
-                },
-            }
-        ),
+        encode(canonical_witness_document(witness)),
     )
