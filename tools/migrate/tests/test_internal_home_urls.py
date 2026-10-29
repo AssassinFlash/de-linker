@@ -59,6 +59,21 @@ def test_german_dynamic_and_offsite_hrefs_pass(tmp_path: Path) -> None:
     assert gate.scan_root(tmp_path) == []
 
 
+def test_german_site_url_cannot_repeat_its_language_prefix(tmp_path: Path) -> None:
+    german_export(
+        tmp_path,
+        '<script type="application/ld+json">'
+        '{"url": "[linker_site_url]de/blog/"}'
+        "</script>",
+    )
+
+    found = gate.scan_root(tmp_path)
+
+    assert len(found) == 1
+    assert found[0][0].endswith("de/category_archive.html")
+    assert found[0][2] == "[linker_site_url]de/"
+
+
 def test_the_english_export_is_out_of_scope(tmp_path: Path) -> None:
     english = (
         tmp_path / "plugins/linker-commerce/content/livecanvas/category_archive.html"

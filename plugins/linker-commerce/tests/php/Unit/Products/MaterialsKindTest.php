@@ -243,6 +243,27 @@ final class MaterialsKindTest extends TestCase {
 	}
 
 	/**
+	 * A reviewed German title replaces only the exact English string on a
+	 * German page. English pages and official titles stay as stored.
+	 */
+	public function test_reviewed_german_document_titles_do_not_rewrite_english(): void {
+		$this->options(
+			array(
+				Materials::DE_DOCUMENT_TITLES => array(
+					'chint dtsu666 catalog en' => 'Chint DTSU666 Katalog (EN)',
+					'EU declaration of conformity (names the H2-12K-T3)' => 'EU-Konformitätserklärung (nennt den H2-12K-T3)',
+				),
+			)
+		);
+
+		$this->assertSame( 'Chint DTSU666 Produktübersicht (EN)', Materials::localized_document_title( 'chint dtsu666 catalog en', true ) );
+		$this->assertSame( 'chint dtsu666 catalog en', Materials::localized_document_title( 'chint dtsu666 catalog en', false ) );
+		$this->assertSame( 'EU-Konformitätserklärung (nennt den H2-12K-T3)', Materials::localized_document_title( 'EU declaration of conformity (names the H2-12K-T3)', true ) );
+		$this->assertSame( 'Official Datasheet (EN)', Materials::localized_document_title( 'Official Datasheet (EN)', true ) );
+		$this->assertSame( 'Chint DTSU666 Produktübersicht (EN)', Materials::localized_document_title( 'Chint DTSU666 Katalog (EN)', true ) );
+	}
+
+	/**
 	 * A product with neither a material nor a type keeps the fallback order.
 	 */
 	public function test_an_untyped_product_keeps_the_other_order(): void {

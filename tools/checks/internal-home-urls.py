@@ -21,6 +21,10 @@ off-site URLs are not site paths. The audit's M2 found the defect this keeps
 out: `/de/category/system-design/` hard-coded `/product/`, a 404, in
 `content/livecanvas/de/category_archive.html`.
 
+`[linker_site_url]` is already the request language's root (`/de/` on the
+German face). A following literal `de/` therefore doubles the prefix; the
+German blog index made `/de/de/blog/` this way until 2026-10-29.
+
 Usage:
     python3 tools/checks/internal-home-urls.py [--root .] [--rev origin/main]
 
@@ -43,6 +47,7 @@ EXCLUDED_PARTS = {"vendor", "node_modules", "tests", "languages", ".git"}
 HREF = re.compile(r"""href\s*=\s*["']([^"'{}]*)["']""")
 OFF_SITE = re.compile(r"^(?:/de/|https?://|//|#|mailto:|tel:)", re.IGNORECASE)
 DYNAMIC = re.compile(r"^[\[{]")
+DOUBLED_SITE_URL = re.compile(r"\[linker_site_url\]de(?:/|\b)")
 
 
 def is_runtime_php(path: Path) -> bool:
@@ -76,13 +81,16 @@ def scan_text(name: str, text: str) -> list[tuple[str, int, str]]:
 
 
 def scan_german_export(name: str, text: str) -> list[tuple[str, int, str]]:
-    """Literal internal hrefs that leave the German tree, as (path, line, href)."""
+    """German-export URL defects, as (path, line, offending text)."""
     found = []
     for match in HREF.finditer(text):
         target = match.group(1).strip()
         if target and not OFF_SITE.match(target) and not DYNAMIC.match(target):
             number = text.count("\n", 0, match.start()) + 1
             found.append((name, number, f'href="{target}"'))
+    for match in DOUBLED_SITE_URL.finditer(text):
+        number = text.count("\n", 0, match.start()) + 1
+        found.append((name, number, match.group(0)))
     return found
 
 
@@ -94,14 +102,10 @@ def scan_root(root: Path) -> list[tuple[str, int, str]]:
         if not path.is_file():
             continue
         if is_runtime_php(relative):
-            found.extend(
-                scan_text(str(relative), path.read_text(encoding="utf-8"))
-            )
+            found.extend(scan_text(str(relative), path.read_text(encoding="utf-8")))
         elif is_german_export(relative):
             found.extend(
-                scan_german_export(
-                    str(relative), path.read_text(encoding="utf-8")
-                )
+                scan_german_export(str(relative), path.read_text(encoding="utf-8"))
             )
     return found
 
@@ -109,7 +113,17 @@ def scan_root(root: Path) -> list[tuple[str, int, str]]:
 def scan_revision(root: Path, revision: str) -> list[tuple[str, int, str]]:
     """Every literal in a git revision's plugins/, without checking it out."""
     listed = subprocess.run(
-        ["git", "-C", str(root), "ls-tree", "-r", "--name-only", revision, "--", "plugins"],
+        [
+            "git",
+            "-C",
+            str(root),
+            "ls-tree",
+            "-r",
+            "--name-only",
+            revision,
+            "--",
+            "plugins",
+        ],
         check=True,
         capture_output=True,
         text=True,

@@ -3,12 +3,11 @@
 Uses the retained real TMY and explicit synthetic model/roof with a simulated
 provider adapter. Never connects to a live service, account, or project store.
 
-Identifiers and clock values come from a fixed sequence. The runtime snapshot
-uses a synthetic label rather than claiming to be the machine's live execution
-identity. Numerical results still come from the actual pinned host libraries.
-Each supported host family has its own complete exported baseline; no precision
-is removed and no hash is ignored to pretend that different libm implementations
-produced the same bytes.
+The export is reproducible on each named runtime: identifiers and clock values
+come from a fixed sequence, and the runtime snapshot uses a synthetic Python,
+platform and dependency identity. Exact physical AC/DC series can retain each
+host's low bits, so macOS and Linux have independently generated, host-specific
+fixtures. On one host, a fixture diff means the saved objects changed.
 
 Every key of the browser fixture is produced here, one saved workflow at a
 time: weather acquisition, PV preparation, the managed roof AC reference, the
@@ -681,10 +680,12 @@ def _adopt_geometric_energy(
 
 
 def rendered() -> str:
-    """Serialize a fresh export; format the host baseline with Prettier afterwards.
+    """The exporter's own serialization of the fixture document.
 
-    The reproduction test compares parsed values, then runs this export again to
-    require the same complete document on the same host.
+    The planner package owns this file's whitespace and formats it with
+    Prettier, so a regeneration is followed by that formatter. This function
+    exists so the two agree on the data and the regenerating command is one
+    line.
     """
     return json.dumps(capture(), ensure_ascii=False, indent="\t") + "\n"
 

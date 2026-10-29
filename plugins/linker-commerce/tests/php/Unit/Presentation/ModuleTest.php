@@ -88,6 +88,7 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'f!windpress/core/cache:compile.providers', array( $windpress, 'providers' ) );
 		WP_Mock::expectFilterAdded( 'f!windpress/integration/livecanvas/compile:get_contents.render', array( $windpress, 'render_raw' ), 10, 2 );
 		WP_Mock::expectActionAdded( 'template_redirect', array( $compare, 'canonical_address' ), 5 );
+		WP_Mock::expectActionAdded( 'wp_head', array( $library, 'print_schema' ) );
 		$families     = new AnyInstance( FamilyNavigation::class );
 		$family_hooks = array(
 			array( 'action', 'template_redirect', 'redirect', 1 ),
