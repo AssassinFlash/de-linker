@@ -12750,6 +12750,11 @@ msgstr "Berechnen Sie die verfügbare AC-Erzeugung für das vollständige gespei
 
 #: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx
 #: build/planner/assets/planner.js:1
+msgid "Available AC generation for the complete retained weather year is calculated from the declared roof, obstacle volumes and included modules. With the Perez transposition, geometric shading reduces direct sunlight and the isotropic, circumsolar, horizon and ground components at each module. A negative Perez horizon correction stays in the calculation. This result does not establish complete shading accuracy, actual inverter tracking, or equipment or country approval."
+msgstr "Die verfügbare AC-Erzeugung für das vollständige gespeicherte Wetterjahr wird aus dem angegebenen Dach, den Hindernisvolumen und den berücksichtigten Modulen berechnet. Bei der Perez-Transposition verringert die geometrische Verschattung auf jedem Modul die Direktstrahlung sowie die isotropen, zirkumsolaren, horizontnahen und vom Boden reflektierten Anteile. Eine negative Perez-Horizontkorrektur bleibt in der Berechnung. Das Ergebnis ist keine vollständige Verschattungsbewertung, keine reale MPP-Nachführung und keine Geräte- oder Länderfreigabe."
+
+#: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx
+#: build/planner/assets/planner.js:1
 msgid "Module temperature follows the declared SAPM model using mean irradiance across each module. Electrical response is uniform per module, with independent maximum-power outputs summed before the declared conversion groups. Cell substrings, bypass diodes, string I–V curves and actual inverter tracking are not modelled."
 msgstr "Die Modultemperatur wird mit dem angegebenen SAPM-Modell aus der mittleren Einstrahlung je Modul berechnet. Jedes Modul wird elektrisch als gleichmäßig bestrahlt behandelt. Seine unabhängig bestimmte maximale Leistung wird vor den angegebenen Umwandlungsgruppen mit den übrigen Modulleistungen summiert. Zellteilstränge, Bypassdioden, String-I–V-Kennlinien und die tatsächliche MPP-Regelung des Wechselrichters werden nicht modelliert."
 
@@ -12797,6 +12802,11 @@ msgstr "Gespeicherte PV-Referenz mit Dachverschattung berechnen"
 #: build/planner/assets/planner.js:1
 msgid "This profile uses geometric shading of direct sunlight and a uniform module response across the complete retained weather source. Sky and ground diffuse light remain unobstructed reference components. Substrings, bypass diodes, string I–V curves and actual inverter tracking remain unmodelled."
 msgstr "Diese Kurve berücksichtigt die geometrische Verschattung der Direktstrahlung und eine gleichmäßige elektrische Modulantwort für die vollständige gespeicherte Wetterquelle. Die diffuse Himmels- und Bodenstrahlung bleibt als unverschatteter Referenzanteil erhalten. Zellteilstränge, Bypassdioden, String-I–V-Kennlinien und die tatsächliche MPP-Regelung des Wechselrichters werden nicht modelliert."
+
+#: ../../apps/planner/src/components/energy/PreparationResult.tsx
+#: build/planner/assets/planner.js:1
+msgid "This profile uses geometric shading of direct sunlight and of the Perez isotropic, circumsolar, horizon and ground components, with a uniform module response across the complete retained weather source. A negative Perez horizon correction is retained. Substrings, bypass diodes, string I–V curves and actual inverter tracking remain unmodelled. The profile does not establish complete shading accuracy or equipment or country approval."
+msgstr "Diese Kurve berücksichtigt die geometrische Verschattung der Direktstrahlung und der isotropen, zirkumsolaren, horizontnahen und vom Boden reflektierten Perez-Anteile sowie eine gleichmäßige elektrische Modulantwort für die vollständige gespeicherte Wetterquelle. Eine negative Perez-Horizontkorrektur bleibt erhalten. Zellteilstränge, Bypassdioden, String-I–V-Kennlinien und die tatsächliche MPP-Regelung des Wechselrichters werden nicht modelliert. Die Kurve belegt weder eine vollständige Verschattungsgenauigkeit noch eine Geräte- oder Länderfreigabe."
 
 #: ../../apps/planner/src/components/energy/PreparationResult.tsx
 #: build/planner/assets/planner.js:1

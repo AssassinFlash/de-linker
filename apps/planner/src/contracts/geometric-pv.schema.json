@@ -408,7 +408,10 @@
       "$ref": "#/$defs/SchemaVersion"
     },
     "model": {
-      "const": "opaque_direct_uniform_pvlib_reference_v1",
+      "enum": [
+        "opaque_direct_uniform_pvlib_reference_v1",
+        "opaque_perez_component_visibility_pvlib_reference_v1"
+      ],
       "title": "Model",
       "type": "string"
     },
@@ -421,7 +424,10 @@
       "$ref": "#/$defs/DirectBeamSampling"
     },
     "diffuse_policy": {
-      "const": "retain_unobstructed_sky_and_ground_components_v1",
+      "enum": [
+        "retain_unobstructed_sky_and_ground_components_v1",
+        "cosine_weighted_perez_component_visibility_v1"
+      ],
       "title": "Diffuse Policy",
       "type": "string"
     },

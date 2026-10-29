@@ -20,6 +20,14 @@ import {
 	readBeamWeatherPreview,
 } from "./directBeamWeather.ts";
 import { compileDirectBeam, readDirectBeam } from "../domain/directBeam.ts";
+import { readPreparationResult } from "./readPreparationResult.ts";
+import {
+	GEOMETRIC_PV_MODEL,
+	GEOMETRIC_PV_MODEL_V1,
+	GEOMETRIC_PV_PURPOSE,
+	GEOMETRIC_PV_RESULTS,
+	GEOMETRIC_PV_TASK,
+} from "../domain/geometricPv.ts";
 
 test("actual geometric witness retains night/daylight, exact source proofs and a separate report role", () => {
 	const native = fixture.direct_beam;
@@ -470,4 +478,124 @@ test("source presentation joins actual PVGIS databases to the weather asset used
 		const foreign = { ...originalWeather, project_id: "0".repeat(32) };
 		assert.throws(() => readPreparationWeather(foreign, run));
 	}
+});
+
+test("geometric preparation requires the frozen executor generation to match the result model", () => {
+	const sha = "a".repeat(64);
+	const assetId = "b".repeat(32);
+	const packet = (model: string, generation: string) => {
+		const item = GEOMETRIC_PV_RESULTS.find((row) => row.model === model);
+		assert.ok(item);
+		const summary = {
+			start_utc: "2023-01-01T00:00:00+00:00",
+			end_utc: "2023-01-01T01:00:00+00:00",
+			interval_count: 1,
+			energy_kwh: 1,
+			measurement: "pv_available_ac",
+			origin: "modelled",
+			model_role: item.role,
+			reconstructed_means: true,
+		};
+		const children = {
+			"model.inputs": sha,
+			"model.witness": sha,
+			"project.parameters": sha,
+			"weather.metadata": sha,
+			"weather.raw": sha,
+			"woo.module_inputs": sha,
+		};
+		const assets = {
+			runtime_bundle: sha,
+			"weather.raw": sha,
+			"weather.metadata": sha,
+			"woo.module_inputs": sha,
+		};
+		return {
+			run: {
+				state: "succeeded",
+				result_sha256: sha,
+				project_id: "project",
+				revision: 1,
+				manifest_sha256: sha,
+			},
+			manifest: {
+				input_sha256: sha,
+				context: {
+					code_sha256: sha,
+					models: { task: GEOMETRIC_PV_TASK, generation },
+					assets,
+				},
+			},
+			result: {
+				schema: 1,
+				kind: GEOMETRIC_PV_TASK,
+				model,
+				project_id: "project",
+				revision: 1,
+				input_sha256: sha,
+				manifest_sha256: sha,
+				runtime_sha256: sha,
+				pinned_assets: assets,
+				dependencies: {
+					...children,
+					prepared_asset_content: sha,
+					prepared_asset_metadata: sha,
+				},
+				prepared_asset: {
+					id: assetId,
+					project_id: "project",
+					media_type: "application/json",
+					content_sha256: sha,
+					metadata_sha256: sha,
+					purpose: GEOMETRIC_PV_PURPOSE,
+					metadata: {
+						retention: "permanent",
+						schema: 1,
+						profile_type: GEOMETRIC_PV_PURPOSE,
+						derived_from_revision: 1,
+						geometry_sha256: sha,
+						parameters_sha256: sha,
+						dependencies: children,
+						interpretation: summary,
+						weather: {
+							interval_count: 1,
+							start_utc: summary.start_utc,
+							end_utc: summary.end_utc,
+							weather_document_sha256: sha,
+						},
+					},
+				},
+				profile_summary: summary,
+				scope: {
+					diffuse_policy: item.diffuse,
+					thermal_policy: "sapm_from_module_mean_poa_v1",
+					electrical_policy: "uniform_module_pvwatts_independent_mpp_sum_v1",
+				},
+				equipment_release: { status: "not_assessed" },
+				country_assessment: { status: "not_assessed" },
+				near_shading_assessment: { status: item.shading },
+			},
+		};
+	};
+	for (const model of [GEOMETRIC_PV_MODEL_V1, GEOMETRIC_PV_MODEL]) {
+		const matched = packet(model, model);
+		assert.equal(
+			readPreparationResult(
+				matched.result,
+				matched.run,
+				matched.manifest,
+				GEOMETRIC_PV_TASK,
+			).model,
+			model,
+		);
+	}
+	const mismatched = packet(GEOMETRIC_PV_MODEL, GEOMETRIC_PV_MODEL_V1);
+	assert.throws(() =>
+		readPreparationResult(
+			mismatched.result,
+			mismatched.run,
+			mismatched.manifest,
+			GEOMETRIC_PV_TASK,
+		),
+	);
 });

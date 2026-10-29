@@ -55,6 +55,31 @@ class VisibilityBudget:
         self.bounds_checks += 1
 
 
+def blocked_ids(
+    scene: Scene,
+    receiver: Receiver,
+    point: Vector,
+    direction: Vector,
+    budget: VisibilityBudget,
+    index: DirectBeamIndex,
+) -> set[str]:
+    """Opaque ids hit by one ray. The receiver module itself is exempt."""
+    blockers: set[str] = set()
+    candidates = index.query(point, direction, on_bounds_check=budget.bounds)
+    for item in candidates.opaque:
+        # Only this receiver module, never its supporting roof or an
+        # entire array/group, is exempt from ray intersections.
+        if item.kind == "module_volume" and item.id == receiver.id:
+            continue
+        if item.contains_receiver(point, scene.epsilon_m):
+            raise NumericalFailure("receiver intersects a declared opaque volume")
+        for face in item.faces:
+            budget.face()
+            if face.ray_hit(point, direction, scene.epsilon_m):
+                blockers.add(item.id)
+    return blockers
+
+
 def _grid(
     scene: Scene,
     receiver: Receiver,
@@ -69,21 +94,7 @@ def _grid(
         for x in range(count):
             budget.sample()
             point = receiver.midpoint(x, y, count)
-            blockers = set()
-            candidates = index.query(point, direction, on_bounds_check=budget.bounds)
-            for item in candidates.opaque:
-                # Only this receiver module, never its supporting roof or an
-                # entire array/group, is exempt from ray intersections.
-                if item.kind == "module_volume" and item.id == receiver.id:
-                    continue
-                if item.contains_receiver(point, scene.epsilon_m):
-                    raise NumericalFailure(
-                        "receiver intersects a declared opaque volume"
-                    )
-                for face in item.faces:
-                    budget.face()
-                    if face.ray_hit(point, direction, scene.epsilon_m):
-                        blockers.add(item.id)
+            blockers = blocked_ids(scene, receiver, point, direction, budget, index)
             if not blockers:
                 visible += 1
             for blocker in blockers:

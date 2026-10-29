@@ -19,7 +19,10 @@ import { runStateLabel, taskLabel } from "./planningLabels.ts";
 import { WeatherProgress } from "./WeatherProgress.tsx";
 import { WeatherFailureNotice } from "./WeatherFailureNotice.tsx";
 import { PreparationBasis } from "./PreparationBasis.tsx";
-import { GEOMETRIC_PV_TASK } from "../../domain/geometricPv.ts";
+import {
+	GEOMETRIC_PV_MODEL,
+	GEOMETRIC_PV_TASK,
+} from "../../domain/geometricPv.ts";
 import { OwnedProfile } from "../OwnedProfile.tsx";
 
 export function PreparationResult({
@@ -226,10 +229,15 @@ export function PreparationResult({
 							</dl>
 							<p>
 								{geometric
-									? __(
-											"This profile uses geometric shading of direct sunlight and a uniform module response across the complete retained weather source. Sky and ground diffuse light remain unobstructed reference components. Substrings, bypass diodes, string I–V curves and actual inverter tracking remain unmodelled.",
-											"linker-tools",
-										)
+									? run.result?.model === GEOMETRIC_PV_MODEL
+										? __(
+												"This profile uses geometric shading of direct sunlight and of the Perez isotropic, circumsolar, horizon and ground components, with a uniform module response across the complete retained weather source. A negative Perez horizon correction is retained. Substrings, bypass diodes, string I–V curves and actual inverter tracking remain unmodelled. The profile does not establish complete shading accuracy or equipment or country approval.",
+												"linker-tools",
+											)
+										: __(
+												"This profile uses geometric shading of direct sunlight and a uniform module response across the complete retained weather source. Sky and ground diffuse light remain unobstructed reference components. Substrings, bypass diodes, string I–V curves and actual inverter tracking remain unmodelled.",
+												"linker-tools",
+											)
 									: __(
 											"This is an unshaded reference profile. Site shading, equipment compatibility and country requirements remain unassessed.",
 											"linker-tools",

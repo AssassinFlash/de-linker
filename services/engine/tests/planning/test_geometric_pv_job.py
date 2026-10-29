@@ -27,9 +27,16 @@ from linker_engine.planning.errors import (
     ProjectInputContractRequired,
     VersionUnavailable,
 )
-from linker_engine.planning.execution_registry import service_registry
+from linker_engine.planning.execution_registry import (
+    ExecutionRegistry,
+    service_registry,
+)
 from linker_engine.planning.frozen_documents import FrozenDocuments
-from linker_engine.planning.geometric_pv_inputs import GeometricPvLimits
+from linker_engine.planning.geometric_pv_inputs import (
+    MODEL_V1,
+    MODEL_V2,
+    GeometricPvLimits,
+)
 from linker_engine.planning.geometric_pv_job import GeometricPvKernel
 from linker_engine.planning.geometric_pv_profile import (
     prepared_profile,
@@ -62,7 +69,7 @@ from linker_engine.publication import Publication
 
 from .test_energy_kernel import BATTERY, TOLERANCE
 from .test_energy_kernel import PROVENANCE as SYNTHETIC
-from .test_geometric_pv import scenario
+from .test_geometric_pv import perez_parameters, perez_request, scenario
 from .test_private_http import TOKEN, headers
 from .test_pv_generation import geometry, parameter_document
 from .test_pv_profile import LIMITS, PROVENANCE
@@ -451,3 +458,66 @@ def test_owned_complete_weather_to_profile_two_hour_energy_report_and_frozen_rea
     out = tmp_path / "geometric-pv-native-seam.json"
     out.write_text(json.dumps(seam, ensure_ascii=False, indent=2) + "\n")
     print(f"GEOMETRIC_NATIVE_SEAM={out}")
+
+
+def test_new_manifest_freezes_the_requested_generation_model(
+    workspace: Workspace,
+    owner: Actor,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    sha = workspace.blobs.put(b"{}")
+
+    class Source:
+        content_sha256 = sha
+        metadata_sha256 = sha
+
+    monkeypatch.setattr(
+        "linker_engine.planning.geometric_pv_job.selected_source",
+        lambda *_args: Source(),
+    )
+    kernel = GeometricPvKernel(
+        workspace,
+        LIMITS,
+        GeometricPvLimits(
+            max_module_steps=10,
+            max_samples=100,
+            max_ray_face_checks=1000,
+            max_bounds_checks=1000,
+            index_leaf_size=2,
+        ),
+        products=ProductSources(lambda: None),  # type: ignore[arg-type]
+    )
+    monkeypatch.setattr(kernel.products, "pv_basis", lambda _inputs: {"module": "frozen"})
+    service = GeometricPvService(workspace, kernel, max_attempts=1)
+    registry = ExecutionRegistry(kernel)
+    routing = registry.routing(1)
+    assert kernel.execution_key_for(MODEL_V1) in routing.execution_keys
+    assert kernel.execution_key_for(MODEL_V2) in routing.execution_keys
+    assert registry._by_key[kernel.execution_key_for(MODEL_V2)] is kernel
+
+    def enqueue(model_request: object, key: str) -> Object:
+        document = cast(Any, model_request).model_dump(mode="json")
+        project = workspace.create(
+            owner,
+            key,
+            {"geometric_pv_preparation": document, "geometry": geometry()},
+            key=key,
+            input_contract=GEOMETRIC_PV_INPUT_CONTRACT,
+        )
+        run = service.evaluate(owner, project.id, 1, key=key)
+        assert run.manifest["context"]["models"]["generation"] == document["model"]
+        with workspace.database.read() as connection:
+            route = connection.execute(
+                "SELECT evaluation_routes.execution_sha256 FROM evaluation_routes "
+                "JOIN jobs ON jobs.id=evaluation_routes.job_id WHERE jobs.run_id=?",
+                (run.id,),
+            ).fetchone()
+        assert route is not None
+        assert route["execution_sha256"] == kernel.execution_key_for(document["model"])
+        return cast(Object, run.manifest)
+
+    retained = enqueue(scenario(parameter_document()), "freeze-v1")
+    current = enqueue(perez_request(perez_parameters()), "freeze-v2")
+    assert retained["context"]["models"]["generation"] == MODEL_V1
+    assert current["context"]["models"]["generation"] == MODEL_V2
+    assert kernel.execution_key_for(MODEL_V1) != kernel.execution_key_for(MODEL_V2)

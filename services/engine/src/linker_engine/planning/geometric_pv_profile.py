@@ -9,7 +9,11 @@ from .assets import Asset
 from .canonical import Object, digest, encode
 from .errors import InvalidInput, VersionUnavailable
 from .frozen_documents import FrozenDocuments
-from .geometric_pv_inputs import MODEL, PROFILE_PURPOSE, GeometricPvInputs
+from .geometric_pv_inputs import (
+    MODEL_ROLES,
+    PROFILE_PURPOSE,
+    GeometricPvInputs,
+)
 from .interval import Interval
 from .power_series import PowerSeries
 from .product_sources import ProductSources
@@ -54,7 +58,7 @@ def reference_bundle(
     dependencies = _object(metadata.get("dependencies"))
     if (
         manifest.get("schema_version") != 1
-        or manifest.get("kind") != MODEL
+        or manifest.get("kind") not in MODEL_ROLES
         or manifest.get("dependencies") != dependencies
         or set(dependencies) != DEPENDENCIES
         or any(not isinstance(sha, str) for sha in dependencies.values())
@@ -73,14 +77,15 @@ def reference_bundle(
     weather_metadata = documents.object(str(dependencies["weather.metadata"]))
     if (
         any(
-            document.get("schema_version") != 1 or document.get("kind") != MODEL
+            document.get("schema_version") != 1
+            or document.get("kind") != manifest.get("kind")
             for document in (inputs, witness)
         )
         or inputs.get("parameters") != parameters.model_dump(mode="json")
         or metadata.get("parameters_sha256") != dependencies["project.parameters"]
         or metadata.get("geometry_sha256") != digest(encode(inputs.get("geometry")))
         or metadata.get("woo_module_inputs") != basis
-        or details.get("model") != MODEL
+        or details.get("model") != manifest.get("kind")
         or details.get("input_bundle_sha256") != dependencies["model.inputs"]
         or details.get("geometry_sha256") != metadata["geometry_sha256"]
         or details.get("parameters_sha256") != digest(encode(inputs.get("parameters")))
@@ -179,6 +184,9 @@ def prepared_profile(
             abs_tol=1e-12,
         ):
             raise VersionUnavailable("geometric PV energy differs from saved powers")
+        role = MODEL_ROLES.get(str(details.get("model")))
+        if role is None:
+            raise VersionUnavailable("unsupported geometric PV model")
         expected_summary: Object = {
             "start_utc": intervals[0].start.isoformat(),
             "end_utc": intervals[-1].end.isoformat(),
@@ -188,7 +196,7 @@ def prepared_profile(
             "origin": "modelled",
             "native_max_interval_seconds": native,
             "reconstructed_means": True,
-            "model_role": "direct_only_geometry_uniform_module_reference_scenario",
+            "model_role": role,
         }
         interpretation = _object(metadata.get("interpretation"))
         # energy_kwh is read back through the platform-stable spelling, so
