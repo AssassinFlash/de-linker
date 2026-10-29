@@ -348,6 +348,7 @@ export function EnergyWorkspace({
 						jointContext.value.setup,
 						selections,
 						jointContext.value.plant,
+						draft.history.current,
 					),
 					draft.history.current.energy_plant,
 				)
@@ -412,7 +413,12 @@ export function EnergyWorkspace({
 			)
 				throw new ApiError(422, "plant_dc_assignment_required");
 		}
-		const parts = plantEnergyParts(original, selections, plant),
+		const parts = plantEnergyParts(
+				original,
+				selections,
+				plant,
+				draft.history.current,
+			),
 			instance = lifetime.current;
 		let bound = original,
 			expectedDocument = setupDocument;
@@ -476,7 +482,12 @@ export function EnergyWorkspace({
 			bound = next;
 			expectedDocument = next;
 		}
-		const replay = compilePlantEnergy(bound, selections, plant),
+		const replay = compilePlantEnergy(
+				bound,
+				selections,
+				plant,
+				draft.history.current,
+			),
 			expected = expectedDocument;
 		if (
 			!edit((inputs) => {
@@ -633,9 +644,12 @@ export function EnergyWorkspace({
 					!unit ||
 					!hardware ||
 					!sameJson(
-						plantEnergyParts(current, selections, plant).parameters.get(
-							unit.unit_id,
-						),
+						plantEnergyParts(
+							current,
+							selections,
+							plant,
+							draft.history.current,
+						).parameters.get(unit.unit_id),
 						parameters,
 					)
 				)

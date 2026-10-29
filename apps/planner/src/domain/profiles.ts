@@ -2,7 +2,7 @@ import Ajv2020 from "ajv/dist/2020.js";
 import importSchema from "../contracts/profile-import.schema.json" with { type: "json" };
 import selectionSchema from "../contracts/profile-selections.schema.json" with { type: "json" };
 import { ApiError } from "../data/protocol.ts";
-import type { JsonObject } from "../data/protocol.ts";
+import type { Json, JsonObject } from "../data/protocol.ts";
 import { readObject } from "../data/readProtocol.ts";
 
 export const MEASUREMENTS = [
@@ -123,6 +123,48 @@ export function readSelections(value: unknown): ProfileSelections {
 	if (!checkSelections(value))
 		throw new ApiError(422, "invalid_profile_selections");
 	return value;
+}
+/** Whole-roof geometric AC is a different asset from a shared DC group. */
+export const GEOMETRIC_ROOF_SELECTION = "geometric_roof_ac_selection";
+export function geometricRoofAssetId(inputs: JsonObject): string | undefined {
+	const value = inputs[GEOMETRIC_ROOF_SELECTION];
+	if (value === undefined || value === null || typeof value !== "object")
+		return undefined;
+	if (!("asset_id" in value)) return undefined;
+	const id = value.asset_id;
+	return typeof id === "string" && /^[a-f0-9]{32}$/.test(id) ? id : undefined;
+}
+export function rememberGeometricRoof(
+	inputs: JsonObject,
+	assetId: string,
+): JsonObject {
+	return {
+		...inputs,
+		[GEOMETRIC_ROOF_SELECTION]: { schema_version: 1, asset_id: assetId },
+	};
+}
+export function forgetGeometricRoofMarker(inputs: JsonObject): JsonObject {
+	if (inputs[GEOMETRIC_ROOF_SELECTION] === undefined) return inputs;
+	const next: Record<string, Json> = { ...inputs };
+	delete next[GEOMETRIC_ROOF_SELECTION];
+	return next;
+}
+/** Remove only the recorded whole-roof geometric AC, never a distinct external profile. */
+export function dropGeometricRoofAc(inputs: JsonObject): JsonObject {
+	const geometric = geometricRoofAssetId(inputs);
+	if (!geometric) return forgetGeometricRoofMarker(inputs);
+	const selected = { ...readSelections(inputs.profile_selections).selected };
+	if (selected.pv_available_ac !== geometric)
+		return forgetGeometricRoofMarker(inputs);
+	delete selected.pv_available_ac;
+	const next: Record<string, Json> = {
+		...inputs,
+		profile_selections: { schema_version: 1, selected },
+	};
+	delete next[GEOMETRIC_ROOF_SELECTION];
+	delete next.energy_plant;
+	delete next.energy_replay;
+	return next;
 }
 const id = (value: unknown) =>
 	typeof value === "string" && /^[a-f0-9]{32}$/.test(value);

@@ -16,6 +16,7 @@ import {
 import type { PeriodDraft, ScenarioDraft } from "./energyScenario.ts";
 import type { EquipmentPlant } from "./equipmentPlant.ts";
 import type { ProfileSelections } from "./profiles.ts";
+import { dropGeometricRoofAc, geometricRoofAssetId } from "./profiles.ts";
 
 export const PLANT_ENERGY_TASK = "plant_ac_energy_replay_v1";
 export const PLANT_ENERGY_MODEL = "distinct_woo_battery_only_ac_equivalents_v1";
@@ -192,10 +193,19 @@ export function plantEnergyParts(
 	draft: PlantEnergyDraft,
 	profiles: ProfileSelections,
 	plant: EquipmentPlant,
+	inputs: JsonObject = {},
 ): { parameters: ReadonlyMap<string, DcLossScenario>; inputs: JsonObject } {
 	const { gross_load, critical_load, pv_available_ac, pv_reference, aux_ac } =
 		profiles.selected;
 	const dcPlant = draft.coupling === "plant_shared_dc";
+	if (
+		dcPlant &&
+		pv_reference &&
+		pv_available_ac &&
+		(pv_reference === pv_available_ac ||
+			pv_available_ac === geometricRoofAssetId(inputs))
+	)
+		throw new ApiError(422, "plant_dc_duplicate_pv_source");
 	if (!gross_load || (!dcPlant && !pv_available_ac) || !aux_ac)
 		throw new ApiError(422, "scenario_profiles_required");
 	if (
@@ -210,8 +220,6 @@ export function plantEnergyParts(
 	)
 		throw new ApiError(422, "invalid_plant_energy_inputs");
 	const parameters = new Map<string, DcLossScenario>();
-	if (dcPlant && pv_reference && pv_reference === pv_available_ac)
-		throw new ApiError(422, "plant_dc_duplicate_pv_source");
 	const units: JsonObject[] = draft.units.map((unit) => {
 		if (!dcPlant && unit.pv_dc_input_unused !== true)
 			throw new ApiError(422, "plant_energy_dc_pv_used");
@@ -278,8 +286,9 @@ export function compilePlantEnergy(
 	draft: PlantEnergyDraft,
 	profiles: ProfileSelections,
 	plant: EquipmentPlant,
+	inputs: JsonObject = {},
 ): PlantEnergyInputs {
-	const parts = plantEnergyParts(draft, profiles, plant);
+	const parts = plantEnergyParts(draft, profiles, plant, inputs);
 	const units = (parts.inputs.units as readonly JsonObject[]).map((unit) => {
 		const settings = draft.units.find(
 			(u) => u.unit_id === unit.unit_id,
@@ -304,5 +313,7 @@ export function plantEnergyInputs(
 	setup: PlantEnergyDraft,
 ): JsonObject {
 	const { energy_plant: _old, energy_replay: _single, ...rest } = inputs;
-	return { ...rest, energy_plant_setup: setup };
+	const base =
+		setup.coupling === "plant_shared_dc" ? dropGeometricRoofAc(rest) : rest;
+	return { ...base, energy_plant_setup: setup };
 }

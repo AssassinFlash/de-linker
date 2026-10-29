@@ -10676,20 +10676,21 @@
       "review": "Final complete and incremental Spec/Standards review has no open blocker; historical assistant-summary readback and both outdated local-stack tests were repaired and independently re-reviewed"
     },
     "local_runtime": {
-      "engine_runtime_sha256": "c2da6a774ca4e873682d857ce234f2b0426a61718c9b9797ca939de463047a8d",
-      "worker_runtime_sha256": "c2da6a774ca4e873682d857ce234f2b0426a61718c9b9797ca939de463047a8d",
-      "rollback_runtime_sha256": "f141c99760dafca48d9bcd82500594503b43894960724f51904eae81fd7f8d84",
-      "retired_runtime_cleanup": "Superseded 6950e252c16f52532e88ce3fa5a49edc94dc10c1be50935b2b9b0ad8597d9596 had no process reference and was reclaimed; only current and rollback executable carriers remain",
+      "engine_runtime_sha256": "52b95892e3bdac53d8b6a2fed25fd2b74bc7c1b0d2e2c5f500f0ffa43dad9e43",
+      "worker_runtime_sha256": "52b95892e3bdac53d8b6a2fed25fd2b74bc7c1b0d2e2c5f500f0ffa43dad9e43",
+      "rollback_runtime_sha256": "c2da6a774ca4e873682d857ce234f2b0426a61718c9b9797ca939de463047a8d",
+      "retired_runtime_cleanup": "Superseded f141c99760dafca48d9bcd82500594503b43894960724f51904eae81fd7f8d84 and the earlier full recovery were reclaimed only after the current pair and newest restore drill passed; only current, rollback and newest recovery remain",
       "loaded_source_revision": "e1773a35f189b2eec9267b9f757a55c60bd996e62df9e5d1812d90f0b8c337d4",
       "loaded_products": "85 ordinary Woo products plus one retained PV reference; native publication acknowledgement completed",
       "publication_cleanup": "Incomplete published test product 9974 (Current Genie receipt fixture) was retained as a draft, not deleted; native schema validation and generation loading then passed",
+      "geometric_dc_guard": "Actual 52b95892 runtime rejects geometric_pv_reference_profile_v1 beside a retained DC group with plant_dc_duplicate_pv_source; pvgis_system_profile_v1 remains accepted",
       "recovery": {
-        "archive": "/Users/chesterjohn/de-linker-local/p548/planner/recovery-before-final-20261028T190016Z",
+        "archive": "/Users/chesterjohn/de-linker-local/p548/planner/recovery-before-conflict-20261029T010838Z",
         "projects": 175,
-        "revisions": 292,
+        "revisions": 293,
         "runs": 90,
         "project_assets": 144,
-        "blobs": 1701,
+        "blobs": 1704,
         "quick_check": "ok",
         "foreign_key_check": "empty",
         "restore_drill": "passed; temporary restored copy reclaimed and archive verified again"
@@ -10739,6 +10740,7 @@
       "visual_scope": "Solution Configurator, Proforma request and account entries passed EN/DE × 1440/390 with loaded Planner chunks, visible key controls and no horizontal overflow; no form or model submission",
       "repairs": [
         "Pinned a synthetic fixture-only runtime identity so the real exporter and all 11 fixture sections compare equally across platforms without masking hashes",
+        "Prevented whole-roof geometric AC and a shared DC reference from being adopted or counted together in either order, including coupling changes and legacy engine input",
         "Copied live FileList values and preserved the editor question with the attachment in one turn",
         "Made concurrent first guest-scope claims atomic and closed a claim after its cookie was presented, preserving later independent guests",
         "Removed excluded selection data from the posted referer while retaining nonce and intent",

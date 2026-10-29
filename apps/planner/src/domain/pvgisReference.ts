@@ -2,6 +2,7 @@ import type { Json, JsonObject } from "../data/protocol.ts";
 import { ApiError } from "../data/protocol.ts";
 import { readObject } from "../data/readProtocol.ts";
 import { invalidateEnergyReplay } from "./energyScenario.ts";
+import { readSelections } from "./profiles.ts";
 import { activePvGeometry } from "./solarSetup.ts";
 import Ajv2020 from "ajv/dist/2020.js";
 import schema from "../contracts/pvgis-roof-reference.schema.json" with { type: "json" };
@@ -93,16 +94,13 @@ export function assertReferenceAcTopology(inputs: JsonObject): void {
 	const plant = readObject(
 		inputs.energy_plant_setup ?? inputs.energy_plant ?? {},
 	);
-	const units = Array.isArray(plant.units) ? plant.units : [];
+	// A shared DC plant, or a retained PV group, already accounts for this roof.
+	// Unit assignment is not required: the coupling or pv_reference is enough.
 	if (
 		single.coupling === "shared_dc" ||
-		(plant.coupling === "plant_shared_dc" &&
-			units.some((value) => {
-				const unit = readObject(value);
-				return inputs.energy_plant_setup !== undefined
-					? unit.pv_dc_input_unused !== true
-					: typeof unit.pv_converter_id === "string";
-			}))
+		plant.coupling === "plant_shared_dc" ||
+		readSelections(inputs.profile_selections).selected.pv_reference !==
+			undefined
 	)
 		throw new ApiError(422, "pvgis_reference_dc_conflict");
 }

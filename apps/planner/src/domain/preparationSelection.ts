@@ -6,7 +6,12 @@ import { PV_TASK, WEATHER_TASK } from "../data/readPreparationResult.ts";
 import { readObject } from "../data/readProtocol.ts";
 import { sameJson } from "./draft.ts";
 import { invalidateEnergyReplay } from "./energyScenario.ts";
-import { readSelections } from "./profiles.ts";
+import {
+	forgetGeometricRoofMarker,
+	geometricRoofAssetId,
+	readSelections,
+	rememberGeometricRoof,
+} from "./profiles.ts";
 import { readEquipmentPlant } from "./equipmentPlant.ts";
 import { plantEnergyDraft } from "./plantEnergy.ts";
 import {
@@ -92,7 +97,7 @@ export function selectPreparation(
 				throw new ApiError(409, "preparation_source_changed");
 		}
 		assertReferenceAcTopology(inputs);
-		return {
+		const adopted = {
 			...invalidateEnergyReplay(inputs),
 			profile_selections: {
 				schema_version: 1,
@@ -102,6 +107,11 @@ export function selectPreparation(
 				},
 			},
 		};
+		// Only the geometric whole-roof profile is remembered, so a later
+		// shared DC choice can drop it without comparing asset ids.
+		return task === GEOMETRIC_PV_TASK
+			? rememberGeometricRoof(adopted, assetId)
+			: forgetGeometricRoofMarker(adopted);
 	}
 	if (
 		task !== PV_TASK ||
@@ -112,15 +122,23 @@ export function selectPreparation(
 		throw new ApiError(409, "preparation_source_changed");
 	const chosen = { ...readSelections(inputs.profile_selections).selected };
 	const jointDc = preparationPvRole(inputs) === "pv_reference";
+	const geometric = geometricRoofAssetId(inputs);
 	if (jointDc) {
 		chosen.pv_reference = assetId;
-		if (chosen.pv_available_ac === assetId) delete chosen.pv_available_ac;
+		if (
+			chosen.pv_available_ac === assetId ||
+			chosen.pv_available_ac === geometric
+		)
+			delete chosen.pv_available_ac;
 	} else chosen.pv_available_ac = assetId;
-	return {
+	const selected = {
 		...invalidateEnergyReplay(inputs),
 		profile_selections: {
 			schema_version: 1,
 			selected: chosen,
 		},
 	};
+	return jointDc || chosen.pv_available_ac !== geometric
+		? forgetGeometricRoofMarker(selected)
+		: selected;
 }
