@@ -1,6 +1,9 @@
 name: Capture preparation fixture
 
 on:
+  push:
+    branches:
+      - fix/planner-fixture-witness
   workflow_dispatch:
 
 permissions:
