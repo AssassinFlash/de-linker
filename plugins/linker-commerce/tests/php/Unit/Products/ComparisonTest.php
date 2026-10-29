@@ -30,6 +30,12 @@ final class ComparisonTest extends TestCase {
 	 * @var array<int, array<string, mixed>>
 	 */
 	private const PRODUCTS = array(
+		6530 => array(
+			'name'     => 'GoodWe GW60K-STS-G10',
+			'category' => 'accessories',
+			'figures'  => array(),
+			'specs'    => array(),
+		),
 		4107 => array(
 			'name'     => 'Inverter 4107',
 			'category' => 'inverters',
@@ -79,6 +85,13 @@ final class ComparisonTest extends TestCase {
 	);
 
 	/**
+	 * Tables to read instead of the small defaults.
+	 *
+	 * @var array<int, array<mixed>>
+	 */
+	private array $spec_tables = array();
+
+	/**
 	 * Translation and escaping return their argument.
 	 */
 	public function setUp(): void {
@@ -90,6 +103,7 @@ final class ComparisonTest extends TestCase {
 			array(
 				4107 => 4107,
 				1832 => 1832,
+				6530 => 6530,
 			)
 		);
 		$this->plain_text();
@@ -139,11 +153,12 @@ final class ComparisonTest extends TestCase {
 		WP_Mock::userFunction(
 			'get_post_meta',
 			array(
-				'return' => static function ( int $id, string $key ) {
+				'return' => function ( int $id, string $key ) {
 					$product = self::PRODUCTS[ $id ];
 					return match ( $key ) {
 						'_tv_b2b_figures'    => (string) json_encode( $product['figures'] ),
-						'_tv_legacy_acf_json' => (string) json_encode( array( 'spec_groups' => $product['specs'] ) ),
+						'_tv_legacy_acf_json' => (string) json_encode( array( 'spec_groups' => $this->spec_tables[ $id ] ?? $product['specs'] ) ),
+						'_linker_de_acf_json' => isset( $this->spec_tables[ $id ] ) ? (string) json_encode( array( 'spec_groups' => $this->spec_tables[ $id ] ) ) : '',
 						default              => '',
 					};
 				},
@@ -211,7 +226,7 @@ final class ComparisonTest extends TestCase {
 
 	/**
 	 * The technical rows are the union of the selected products' own tables:
-	 * one row per label, the value under the product that states it.
+	 * a non-conflicting label stays readable, with values under their products.
 	 */
 	public function test_the_technical_rows_are_the_union_of_the_tables(): void {
 		$comparison = ( $this->comparison() )->of( array( 4107, 1832 ) );
@@ -219,8 +234,145 @@ final class ComparisonTest extends TestCase {
 
 		$this->assertSame( array( 'Rated AC power', 'Ingress protection' ), array_keys( $specs ) );
 		$this->assertSame( '10.0 kW', $specs['Rated AC power']['values'][4107] );
-		$this->assertArrayNotHasKey( 1832, $specs['Rated AC power']['values'] );
+		$this->assertSame( '', $specs['Rated AC power']['values'][1832] );
 		$this->assertSame( 'IP66', $specs['Ingress protection']['values'][1832] );
+	}
+
+	/**
+	 * A live product has two different rated powers in different source groups.
+	 *
+	 * @runInSeparateProcess
+	 */
+	public function test_live_rated_powers_keep_their_source_context_in_both_languages(): void {
+		$german = false;
+		WP_Mock::userFunction(
+			'linker_i18n_is_de',
+			array(
+				'return' => static function () use ( &$german ): bool {
+					return $german;
+				},
+			)
+		);
+		$products = json_decode( (string) file_get_contents( dirname( __DIR__, 5 ) . '/linker-i18n/tests/fixtures/live/products.json' ), true, 512, JSON_THROW_ON_ERROR );
+		$product  = array_values( array_filter( $products, static fn( array $item ): bool => 6530 === $item['id'] ) )[0];
+		$cases    = array(
+			'en' => array(
+				'meta' => '_tv_legacy_acf_json',
+				'rows' => array(
+					array(
+						'label'  => 'Rated power (Grid, back-up and smart port)',
+						'values' => array( 6530 => '60 kW' ),
+					),
+					array(
+						'label'  => 'Rated power (Inverter side)',
+						'values' => array( 6530 => '30 kW (Printed for this Model on both the EMEA datasheet and the ESA 5–30 kW manual.)' ),
+					),
+				),
+			),
+			'de' => array(
+				'meta' => '_linker_de_acf_json',
+				'rows' => array(
+					array(
+						'label'  => 'Nennleistung (Netz, Notstrom und Smart Port)',
+						'values' => array( 6530 => '60 kW' ),
+					),
+					array(
+						'label'  => 'Nennleistung (Wechselrichterseite)',
+						'values' => array( 6530 => '30 kW (Im EMEA-Datenblatt und im ESA-Handbuch 5–30 kW gleichlautend für dieses Modell.)' ),
+					),
+				),
+			),
+		);
+		foreach ( $cases as $language => $case ) {
+			$german                  = 'de' === $language;
+			$source                  = json_decode( $product['meta'][ $case['meta'] ], true, 512, JSON_THROW_ON_ERROR );
+			$this->spec_tables[6530] = $source['spec_groups'];
+			$comparison              = $this->comparison()->of( array( 6530 ), $language );
+			$labels                  = 'de' === $language ? 'Nennleistung' : 'Rated power';
+			$power_rows              = array_values( array_filter( $comparison['specs'], static fn( array $row ): bool => str_starts_with( $row['label'], $labels ) ) );
+			$this->assertSame( $case['rows'], $power_rows, $language );
+		}
+	}
+
+	/** Context and product identity decide alignment, including repeated rows. */
+	public function test_technical_rows_align_only_unambiguous_matching_groups(): void {
+		$this->spec_tables[4107] = array(
+			array(
+				'spec_group_title' => 'Grid',
+				'spec_rows'        => array(
+					self::spec_row( 'Rated power', '60', 'kW' ),
+					self::spec_row( 'Frequency', '50', 'Hz' ),
+					self::spec_row( 'Voltage', '100', 'V', 'first' ),
+					self::spec_row( 'Voltage', '200', 'V', 'second' ),
+				),
+			),
+			array(
+				'spec_group_title' => 'Inverter side',
+				'spec_rows'        => array( self::spec_row( 'Rated power', '30', 'kW', 'source' ) ),
+			),
+		);
+		$this->spec_tables[1832] = array(
+			array(
+				'spec_group_title' => 'Grid',
+				'spec_rows'        => array(
+					self::spec_row( 'Rated power', '50', 'kW' ),
+					self::spec_row( 'Frequency', '60', 'Hz' ),
+					self::spec_row( 'Voltage', '12', 'V' ),
+				),
+			),
+			array(
+				'spec_group_title' => 'Battery',
+				'spec_rows'        => array( self::spec_row( 'Rated power', '7', 'kW' ) ),
+			),
+			array(
+				'spec_group_title' => 'Inverter side',
+				'spec_rows'        => array( self::spec_row( 'Rated power', '25', 'kW' ) ),
+			),
+			array(
+				'spec_group_title' => '',
+				'spec_rows'        => array( self::spec_row( 'Rated power', '42', 'kW' ) ),
+			),
+		);
+
+		$specs = $this->comparison()->of( array( 4107, 1832 ) )['specs'];
+		$this->assertSame(
+			array( 'Rated power (Grid)', 'Frequency', 'Voltage (Grid)', 'Voltage (Grid)', 'Rated power (Inverter side)', 'Voltage (Grid)', 'Rated power (Battery)', 'Rated power' ),
+			array_column( $specs, 'label' )
+		);
+		$this->assertSame(
+			array(
+				array( '60 kW', '50 kW' ),
+				array( '50 Hz', '60 Hz' ),
+				array( '100 V (first)', '' ),
+				array( '200 V (second)', '' ),
+				array( '30 kW (source)', '25 kW' ),
+				array( '', '12 V' ),
+				array( '', '7 kW' ),
+				array( '', '42 kW' ),
+			),
+			array_map( static fn( array $spec ): array => array_values( $spec['values'] ), $specs )
+		);
+		foreach ( $specs as $spec ) {
+			$this->assertSame( array( 4107, 1832 ), array_keys( $spec['values'] ) );
+		}
+	}
+
+	/**
+	 * One source-format technical row.
+	 *
+	 * @param string $label Specification label.
+	 * @param string $value Specification value.
+	 * @param string $unit  Unit.
+	 * @param string $note  Source note.
+	 * @return array<string, string>
+	 */
+	private static function spec_row( string $label, string $value, string $unit, string $note = '' ): array {
+		return array(
+			'spec_label' => $label,
+			'spec_value' => $value,
+			'spec_unit'  => $unit,
+			'spec_note'  => $note,
+		);
 	}
 
 	/**

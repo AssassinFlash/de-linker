@@ -32,6 +32,12 @@ final class ComparePageTest extends TestCase {
 	 * @var array<int, array<string, mixed>>
 	 */
 	private const PRODUCTS = array(
+		6530 => array(
+			'name'     => 'GoodWe GW60K-STS-G10',
+			'category' => 'accessories',
+			'figures'  => array(),
+			'specs'    => array(),
+		),
 		4107 => array(
 			'name'     => 'Inverter 4107',
 			'category' => 'inverters',
@@ -66,6 +72,13 @@ final class ComparePageTest extends TestCase {
 			'specs'    => array(),
 		),
 	);
+
+	/**
+	 * Technical tables to read instead of the small defaults.
+	 *
+	 * @var array<int, array<mixed>>
+	 */
+	private array $spec_tables = array();
 
 	/**
 	 * The page's address as the tests serve it.
@@ -114,6 +127,7 @@ final class ComparePageTest extends TestCase {
 			array(
 				4107 => 4107,
 				1832 => 1832,
+				6530 => 6530,
 			)
 		);
 		$this->plain_text();
@@ -232,11 +246,12 @@ final class ComparePageTest extends TestCase {
 		WP_Mock::userFunction(
 			'get_post_meta',
 			array(
-				'return' => static function ( int $id, string $key ) {
+				'return' => function ( int $id, string $key ) {
 					$product = self::PRODUCTS[ $id ];
 					return match ( $key ) {
 						'_tv_b2b_figures'     => (string) json_encode( $product['figures'] ),
-						'_tv_legacy_acf_json' => (string) json_encode( array( 'spec_groups' => $product['specs'] ) ),
+						'_tv_legacy_acf_json' => (string) json_encode( array( 'spec_groups' => $this->spec_tables[ $id ] ?? $product['specs'] ) ),
+						'_linker_de_acf_json' => isset( $this->spec_tables[ $id ] ) ? (string) json_encode( array( 'spec_groups' => $this->spec_tables[ $id ] ) ) : '',
 						default               => '',
 					};
 				},
@@ -279,6 +294,57 @@ final class ComparePageTest extends TestCase {
 		$this->assertStringContainsString( 'Rated AC power (kW)', $html );
 		$this->assertStringContainsString( '10.0 kW', $html );
 		$this->assertStringContainsString( 'Remove', $html );
+		unset( $_GET['ids'] );
+	}
+
+	/** A specification stated only by the second product stays in its column. */
+	public function test_technical_values_stay_under_the_product_that_states_them(): void {
+		$_GET['ids'] = '1832,4107';
+		$html        = ( new ComparePage( $this->comparison() ) )->table();
+		unset( $_GET['ids'] );
+
+		$this->assertSame( 1, preg_match( '/<tr[^>]*><th[^>]*>Rated AC power<\/th>(.*?)<\/tr>/s', $html, $row ) );
+		preg_match_all( '/<td[^>]*>(.*?)<\/td>/s', $row[1] ?? '', $cells );
+		$this->assertSame( array( '—', '10.0 kW' ), $cells[1] );
+	}
+
+	/**
+	 * Both rated powers from the live fixture render in their own cells in EN/DE.
+	 *
+	 * @runInSeparateProcess
+	 */
+	public function test_live_rated_power_rows_render_with_context_in_the_right_column(): void {
+		WP_Mock::userFunction( 'linker_i18n_is_de', array( 'return' => fn(): bool => 'de' === $this->language ) );
+		$products    = json_decode( (string) file_get_contents( dirname( __DIR__, 5 ) . '/linker-i18n/tests/fixtures/live/products.json' ), true, 512, JSON_THROW_ON_ERROR );
+		$product     = array_values( array_filter( $products, static fn( array $item ): bool => 6530 === $item['id'] ) )[0];
+		$cases       = array(
+			'en' => array(
+				'meta' => '_tv_legacy_acf_json',
+				'rows' => array(
+					'Rated power (Grid, back-up and smart port)' => '60 kW',
+					'Rated power (Inverter side)' => '30 kW (Printed for this Model on both the EMEA datasheet and the ESA 5–30 kW manual.)',
+				),
+			),
+			'de' => array(
+				'meta' => '_linker_de_acf_json',
+				'rows' => array(
+					'Nennleistung (Netz, Notstrom und Smart Port)' => '60 kW',
+					'Nennleistung (Wechselrichterseite)' => '30 kW (Im EMEA-Datenblatt und im ESA-Handbuch 5–30 kW gleichlautend für dieses Modell.)',
+				),
+			),
+		);
+		$_GET['ids'] = '1832,6530';
+		foreach ( $cases as $language => $case ) {
+			$this->language          = $language;
+			$source                  = json_decode( $product['meta'][ $case['meta'] ], true, 512, JSON_THROW_ON_ERROR );
+			$this->spec_tables[6530] = $source['spec_groups'];
+			$html                    = ( new ComparePage( $this->comparison() ) )->table();
+			foreach ( $case['rows'] as $label => $value ) {
+				$this->assertSame( 1, preg_match( '/<tr[^>]*><th[^>]*>' . preg_quote( $label, '/' ) . '<\/th>(.*?)<\/tr>/s', $html, $row ), $language );
+				preg_match_all( '/<td[^>]*>(.*?)<\/td>/s', $row[1] ?? '', $cells );
+				$this->assertSame( array( '—', $value ), $cells[1], $language );
+			}
+		}
 		unset( $_GET['ids'] );
 	}
 

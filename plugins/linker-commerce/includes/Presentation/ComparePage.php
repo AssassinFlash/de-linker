@@ -343,7 +343,11 @@ final class ComparePage {
 			$html  .= $this->row( $dimension['label'], $values );
 		}
 		foreach ( $comparison['specs'] as $spec ) {
-			$html .= $this->row( $spec['label'], array_map( array( self::class, 'cell_value' ), array_values( $spec['values'] ) ) );
+			$values = array_map(
+				static fn( array $column ): string => self::cell_value( $spec['values'][ (int) $column['product_id'] ] ?? null ),
+				$columns
+			);
+			$html  .= $this->row( $spec['label'], $values );
 		}
 
 		return $html . '</tbody></table></div></div>';

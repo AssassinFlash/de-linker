@@ -298,35 +298,72 @@ final class Comparison {
 	}
 
 	/**
-	 * The technical rows of the selected products' own tables, in the order
-	 * the first product that states them gives: one row per label, an em dash
-	 * where a product's table does not state it. The tables come from the one
-	 * reading of the product page (ProductView), linker_specs once #8 writes
-	 * it and the legacy data until then.
+	 * Combine the products' technical tables without conflating equal labels
+	 * from different groups. A group and label shared by products are aligned;
+	 * when one product repeats that pair, its meanings are ambiguous and every
+	 * occurrence remains a separate row. Show the source group only when a
+	 * label needs disambiguation. First appearance determines row order.
 	 *
 	 * @param list<array<string, mixed>> $products Columns.
 	 * @return list<array{label: string, values: array<int, string>}>
 	 */
 	private function specs( array $products ): array {
-		$out = array();
+		$source_rows  = array();
+		$label_groups = array();
+		$counts       = array();
+		$empty_values = array();
 		foreach ( $products as $product ) {
-			foreach ( $this->view->spec_groups( (int) $product['product_id'] ) as $group ) {
+			$id                  = (int) $product['product_id'];
+			$empty_values[ $id ] = '';
+			foreach ( $this->view->spec_groups( $id ) as $group ) {
+				$title = trim( $group['title'] );
 				foreach ( $group['rows'] as $row ) {
-					if ( '' === trim( $row['label'] ) ) {
+					$label = $row['label'];
+					if ( '' === trim( $label ) ) {
 						continue;
 					}
-					if ( ! isset( $out[ $row['label'] ] ) ) {
-						$out[ $row['label'] ] = array(
-							'label'  => $row['label'],
-							'values' => array(),
-						);
-					}
-					$out[ $row['label'] ]['values'][ (int) $product['product_id'] ] = self::cell( $row );
+					$label_key                          = 'label:' . $label;
+					$key                                = strlen( $label ) . ':' . $label . $title;
+					$label_groups[ $label_key ][ $key ] = true;
+					$counts[ $key ][ $id ]              = ( $counts[ $key ][ $id ] ?? 0 ) + 1;
+					$source_rows[]                      = array(
+						'id'        => $id,
+						'label'     => $label,
+						'group'     => $title,
+						'label_key' => $label_key,
+						'key'       => $key,
+						'cell'      => self::cell( $row ),
+					);
 				}
 			}
 		}
 
-		return array_values( $out );
+		$out     = array();
+		$indices = array();
+		foreach ( $source_rows as $source ) {
+			$key       = $source['key'];
+			$ambiguous = max( $counts[ $key ] ) > 1;
+			if ( $ambiguous || ! isset( $indices[ $key ] ) ) {
+				$label = $source['label'];
+				if ( '' !== $source['group'] && ( $ambiguous || count( $label_groups[ $source['label_key'] ] ) > 1 ) ) {
+					$label .= ' (' . $source['group'] . ')';
+				}
+				$out[]           = array(
+					'label'  => $label,
+					'values' => $empty_values,
+				);
+				$indices[ $key ] = count( $out ) - 1;
+			}
+			$index                   = $indices[ $key ];
+			$values                  = $out[ $index ]['values'];
+			$values[ $source['id'] ] = $source['cell'];
+			$out[ $index ]           = array(
+				'label'  => $out[ $index ]['label'],
+				'values' => $values,
+			);
+		}
+
+		return $out;
 	}
 
 	/**
