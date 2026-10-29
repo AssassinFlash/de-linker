@@ -63,8 +63,8 @@
 
 线上只读实走发现：产品 6530 的产品页有 `Grid, back-up and smart port / Rated power = 60 kW` 与 `Inverter side / Rated power = 30 kW`（带原注记），比较页原只显示后者。复用仓库线上产品夹具的 EN 元数据和 DE overlay 经 `ProductView` 重现两个规格组；修前同一标签只留下 30 kW，缺少 60 kW。另一个页面用例证明只由第二列商品声明的规格此前被印在第一列且缺少第二个单元格。
 
-装配现在按来源组与标签精确区分，只有标签冲突时显示原组名；同组重复标签逐条保留、不猜跨商品对应，每个产品的值按 ID 列顺序填入，未声明项留空。页面按列 ID 渲染，空值显示破折号。非冲突同组标签仍可并排比较；原值、单位、注记保留。能力继续只返回共同的 `products` / `rows`，不输出页面专有的 `specs`。发布、价格和库存边界沿用现有验证。
+装配现在按来源组标题去首尾空白后与原标签的组合区分，避免仅因录入空白拆开同一组；只有标签冲突时显示该组名；同组重复标签逐条保留、不猜跨商品对应，每个产品的值按 ID 列顺序填入，未声明项留空。页面按列 ID 渲染，空值显示破折号。非冲突同组标签仍可并排比较；原值、单位、注记保留。能力继续只返回共同的 `products` / `rows`，不输出页面专有的 `specs`。发布、价格和库存边界沿用现有验证。
 
-回归：`plugins/linker-commerce/tests/php/Unit/Products/ComparisonTest.php` 使用真实 6530 EN/DE 技术组并覆盖同组匹配、跨组分离、组内重复和未命名组；`tests/php/Unit/Presentation/ComparePageTest.php` 检查真实 6530 的 EN/DE 表格行和第二列位置，以及独立稀疏值；既有 `ComparisonLiveProductsTest`、`CompareProductsTest` 继续检查共享能力子集和发布过滤。结果及真实浏览器、部署读回以本批最终验收记录为准，当前仅为候选实现，不代表线上已修复。
+回归：`plugins/linker-commerce/tests/php/Unit/Products/ComparisonTest.php` 使用真实 6530 EN/DE 技术组并覆盖同组匹配、跨组分离、组内重复和未命名组；`tests/php/Unit/Presentation/ComparePageTest.php` 检查真实 6530 的 EN/DE 表格行和第二列位置，以及独立稀疏值；既有 `ComparisonLiveProductsTest`、`CompareProductsTest` 继续检查共享能力子集，`ComparisonTest` 保留中途撤回和文档变化的发布检查。结果及真实浏览器、部署读回以本批最终验收记录为准，当前仅为候选实现，不代表线上已修复。
 
 本批开发复用单一临时工作树 `/Users/chesterjohn/.codex/worktrees/comparison-spec-integrity/de-linker`（负责：比较规格修复执行者；用途：隔离候选与测试；回收条件：父任务已接收提交、评审及浏览器核验结束后，保留提交并回收此工作树和可重建 vendor）。不新建数据库快照或实例。
