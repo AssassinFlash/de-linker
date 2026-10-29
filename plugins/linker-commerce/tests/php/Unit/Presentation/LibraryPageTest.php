@@ -119,7 +119,7 @@ final class LibraryPageTest extends TestCase {
 		WP_Mock::userFunction( 'wp_enqueue_script', array( 'times' => '0+' ) );
 		WP_Mock::userFunction( 'esc_html__', array( 'return' => static fn ( string $text ): string => $text ) );
 		WP_Mock::userFunction( 'esc_attr__', array( 'return' => static fn ( string $text ): string => $text ) );
-		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn ( array $value ): string => (string) json_encode( $value ) ) );
+		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn ( array $value, int $flags = 0 ): string => (string) json_encode( $value, $flags ) ) );
 		WP_Mock::userFunction(
 			'get_posts',
 			array(
@@ -508,6 +508,106 @@ final class LibraryPageTest extends TestCase {
 				)
 			)
 		);
+	}
+
+	/**
+	 * The English library emits a FAQPage whose questions and answers come
+	 * from the same model that renders the visible FAQ rows.
+	 */
+	public function test_the_library_schema_matches_the_visible_faq(): void {
+		WP_Mock::userFunction(
+			'get_queried_object',
+			array(
+				'return' => new \WP_Post(
+					(object) array(
+						'ID'        => 932,
+						'post_type' => 'page',
+						'post_name' => 'faq-download',
+					)
+				),
+			)
+		);
+
+		ob_start();
+		( new LibraryPage( $this->library() ) )->print_schema();
+		$html = (string) ob_get_clean();
+
+		$this->assertSame( 1, substr_count( $html, 'type="application/ld+json"' ) );
+		$this->assertStringContainsString( '"@type":"FAQPage"', $html );
+		$this->assertStringContainsString( '"name":"Is the module stackable?"', $html );
+		$this->assertStringContainsString( '"text":"Yes, up to four modules."', $html );
+		$this->assertStringContainsString( '"name":"What is the minimum order quantity, and where does Linker deliver?"', $html );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * The German twin follows the English page's Polylang pair and emits the
+	 * German FAQPage from the same code path.
+	 */
+	public function test_the_german_library_twin_also_gets_the_faq_schema(): void {
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'de' ) );
+		WP_Mock::userFunction(
+			'get_queried_object',
+			array(
+				'return' => new \WP_Post(
+					(object) array(
+						'ID'        => 6863,
+						'post_type' => 'page',
+						'post_name' => 'faq-dokumente',
+					)
+				),
+			)
+		);
+		WP_Mock::userFunction(
+			'pll_get_post',
+			array(
+				'args'   => array( 6863, 'en' ),
+				'return' => 932,
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post',
+			array(
+				'args'   => array( 932 ),
+				'return' => new \WP_Post(
+					(object) array(
+						'ID'        => 932,
+						'post_type' => 'page',
+						'post_name' => 'faq-download',
+					)
+				),
+			)
+		);
+
+		ob_start();
+		( new LibraryPage( $this->library() ) )->print_schema();
+		$html = (string) ob_get_clean();
+
+		$this->assertStringContainsString( '"@type":"FAQPage"', $html );
+		$this->assertStringContainsString( '"name":"Is the module stackable?"', $html );
+		$this->assertConditionsMet();
+	}
+
+	/** An ordinary page cannot inherit the library's FAQPage block. */
+	public function test_a_non_library_page_gets_no_faq_schema(): void {
+		WP_Mock::userFunction(
+			'get_queried_object',
+			array(
+				'return' => new \WP_Post(
+					(object) array(
+						'ID'        => 28,
+						'post_type' => 'page',
+						'post_name' => 'contact',
+					)
+				),
+			)
+		);
+
+		ob_start();
+		( new LibraryPage( $this->library() ) )->print_schema();
+		$this->assertSame( '', (string) ob_get_clean() );
+		$this->assertSame( 0, $this->authority_reads );
+		$this->assertConditionsMet();
 	}
 
 	/**

@@ -26,6 +26,43 @@ use WP_Mock\Tools\TestCase;
 final class TwinsTest extends TestCase {
 
 	/**
+	 * Meta returned by the source's all-meta read in the current test.
+	 *
+	 * @var array<string, array<int, mixed>>
+	 */
+	private array $source_meta = array();
+
+	/**
+	 * The source's SEOPress noindex value in the current test.
+	 *
+	 * @var string
+	 */
+	private string $source_index = '';
+
+	/**
+	 * Post meta keys removed during the current test.
+	 *
+	 * @var list<array{int, string}>
+	 */
+	private array $deleted_meta = array();
+
+	/**
+	 * The mirrored meta is removed when its source value is absent.
+	 */
+	public function setUp(): void {
+		parent::setUp();
+		WP_Mock::userFunction(
+			'delete_post_meta',
+			array(
+				'return' => function ( int $post_id, string $key ): bool {
+					$this->deleted_meta[] = array( $post_id, $key );
+					return true;
+				},
+			)
+		);
+	}
+
+	/**
 	 * The English page and its German version, with the structural fields
 	 * Twins::post() reads off the source.
 	 *
@@ -55,7 +92,18 @@ final class TwinsTest extends TestCase {
 		WP_Mock::passthruFunction( 'wp_slash' );
 		WP_Mock::userFunction( 'has_filter', array( 'return' => false ) );
 		WP_Mock::userFunction( 'remove_action', array( 'return' => false ) );
-		WP_Mock::userFunction( 'get_post_meta', array( 'return' => array() ) );
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'return' => function ( int $id, string $key = '', bool $single = false ): mixed {
+					unset( $id, $single );
+					if ( '' === $key ) {
+						return $this->source_meta;
+					}
+					return '_seopress_robots_index' === $key ? $this->source_index : '';
+				},
+			)
+		);
 		WP_Mock::userFunction( 'get_object_taxonomies', array( 'return' => array() ) );
 		WP_Mock::userFunction( 'is_post_type_hierarchical', array( 'return' => true ) );
 		WP_Mock::userFunction( 'get_post_type', array( 'return' => 'page' ) );
@@ -114,6 +162,86 @@ final class TwinsTest extends TestCase {
 		);
 
 		$this->assertSame( 9, $twin );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * The English page's noindex ruling is copied to its German twin.
+	 */
+	public function test_the_source_noindex_ruling_is_copied_to_the_german_twin(): void {
+		$this->source_index = 'yes';
+		PolylangDouble::mock(
+			array(
+				5 => 'en',
+				9 => 'de',
+			),
+			array( 5 => 9 ),
+			array(),
+			array(),
+			'en',
+			array(),
+			$this->posts()
+		);
+		$this->wordpress();
+		WP_Mock::userFunction( 'wp_update_post', array( 'times' => 1 ) );
+		WP_Mock::userFunction(
+			'update_post_meta',
+			array(
+				'times'  => 1,
+				'args'   => array( 9, '_seopress_robots_index', 'yes' ),
+				'return' => true,
+			)
+		);
+
+		$languages = new Languages();
+		$twins     = new Twins( $languages, new LinkLocalizer( $languages, new HtmlTokenizer() ), new Projection( $languages ) );
+		$twins->post(
+			5,
+			array(
+				'post_title'   => 'Anwendung',
+				'post_excerpt' => '',
+				'post_content' => '<p>Quelle.</p>',
+			)
+		);
+
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * When the English page drops its ruling, the German twin cannot keep a
+	 * stale noindex value.
+	 */
+	public function test_the_german_twin_drops_meta_the_source_no_longer_has(): void {
+		PolylangDouble::mock(
+			array(
+				5 => 'en',
+				9 => 'de',
+			),
+			array( 5 => 9 ),
+			array(),
+			array(),
+			'en',
+			array(),
+			$this->posts()
+		);
+		$this->wordpress();
+		WP_Mock::userFunction( 'wp_update_post', array( 'times' => 1 ) );
+
+		$languages = new Languages();
+		$twins     = new Twins( $languages, new LinkLocalizer( $languages, new HtmlTokenizer() ), new Projection( $languages ) );
+		$twins->post(
+			5,
+			array(
+				'post_title'   => 'Anwendung',
+				'post_excerpt' => '',
+				'post_content' => '<p>Quelle.</p>',
+			)
+		);
+
+		$this->assertSame(
+			array( array( 9, '_seopress_robots_index' ) ),
+			$this->deleted_meta
+		);
 		$this->assertConditionsMet();
 	}
 

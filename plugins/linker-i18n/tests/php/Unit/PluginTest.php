@@ -86,6 +86,8 @@ final class PluginTest extends TestCase {
 		array( 'filter', 'pll_rel_hreflang_attributes', Seo::class, 'hreflangs', 10, 1 ),
 		array( 'filter', 'do_redirect_guess_404_permalink', Seo::class, 'guess_404', 10, 1 ),
 		array( 'filter', 'seopress_titles_title', Seo::class, 'not_found_title', 10, 1 ),
+		array( 'filter', 'seopress_titles_noindex_bypass', Seo::class, 'twin_noindex', 10, 1 ),
+		array( 'filter', 'seopress_titles_robots_attrs', Seo::class, 'twin_robots', 10, 1 ),
 		array( 'filter', 'lc_modify_template_id', DynamicTemplates::class, 'template', 10, 1 ),
 		array( 'filter', 'rest_request_before_callbacks', RestLang::class, 'enter', 10, 3 ),
 		array( 'filter', 'rest_request_after_callbacks', RestLang::class, 'leave', 10, 1 ),

@@ -37,6 +37,19 @@ final class Twins {
 	private const COPIED_META = array( '_wp_page_template', '_thumbnail_id', '_lc_livecanvas_enabled', 'lc_use_template_of_slug' );
 
 	/**
+	 * Meta mirrored as a whole key: copied when the English post carries it,
+	 * deleted from the German twin when it does not. The indexing override
+	 * `_seopress_robots_index = yes` is the owner's per-page ruling (the
+	 * English thank-you page carries it, 2026-10-29), and a twin that keeps
+	 * its own value after the English page drops it would split the pair's
+	 * indexing policy — the copied-only-when-present rule above cannot remove
+	 * a key, so these keys get both directions (SEOPress 10.3 reads the meta
+	 * per post, src/Services/Options/TitleOption.php::getTaxNoIndex and its
+	 * post twin; it is the only `_seopress_robots%` key in use on the site).
+	 */
+	private const MIRRORED_META = array( '_seopress_robots_index' );
+
+	/**
 	 * Term meta copied from the English term as it is: WooCommerce's
 	 * category order, display type and image (media is not translated).
 	 */
@@ -473,6 +486,14 @@ final class Twins {
 			$copied = in_array( $key, self::COPIED_META, true ) || ( in_array( $source->post_type, self::LIVECANVAS_TYPES, true ) && str_starts_with( $key, 'is_' ) );
 			if ( $copied && isset( $meta[0] ) ) {
 				update_post_meta( $twin, $key, wp_slash( maybe_unserialize( $meta[0] ) ) );
+			}
+		}
+		foreach ( self::MIRRORED_META as $key ) {
+			$value = get_post_meta( $source->ID, $key, true );
+			if ( is_string( $value ) && '' !== $value ) {
+				update_post_meta( $twin, $key, wp_slash( $value ) );
+			} else {
+				delete_post_meta( $twin, $key );
 			}
 		}
 		$this->translated_post_meta( $twin, $values );
