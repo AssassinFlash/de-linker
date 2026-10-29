@@ -136,6 +136,9 @@ jobs:
           coverage: none
       - name: PHP source, static analysis and unit tests
         run: |
+          cd "$GITHUB_WORKSPACE/plugins/linker-commerce"
+          composer validate --no-check-publish
+          composer install --no-interaction --no-progress --quiet
           for project in plugins/linker-i18n plugins/linker-tools mu-plugins tools/local; do
             echo "== $project: Composer, PHPCS, PHPStan"
             cd "$GITHUB_WORKSPACE/$project"
@@ -206,17 +209,18 @@ jobs:
           node-version: "22"
           cache: npm
           cache-dependency-path: plugins/linker-tools/package-lock.json
-      - name: Tools source and JavaScript tests
+      - name: Playwright's Chromium and its system libraries
         working-directory: plugins/linker-tools
         run: |
           npm ci --no-audit --no-fund
+          npx playwright install --with-deps --only-shell chromium
+      - name: Tools source and JavaScript tests
+        working-directory: plugins/linker-tools
+        run: |
           npm run lint:js
           npm run lint:types
           npm run lint:format
           npm run test:unit
-      - name: Playwright's Chromium and its system libraries
-        working-directory: plugins/linker-tools
-        run: npx playwright install --with-deps --only-shell chromium
       - name: Tools browser contracts with synthetic services
         working-directory: plugins/linker-tools
         run: npm run test:e2e
@@ -291,6 +295,14 @@ jobs:
             !/docs/acceptance/**/*.jpg
             !/docs/acceptance/**/*.jpeg
           sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/planner/package-lock.json
+      - name: Planner runtime for cross-boundary Engine contracts
+        working-directory: apps/planner
+        run: npm ci --no-audit --no-fund
       - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
         with:
           version: "0.10.11"
@@ -368,6 +380,8 @@ jobs:
       - uses: taiki-e/install-action@f7e5d7c961414b23f5b25b2da9294395d08513ad # v2.87.26
         with:
           tool: just@1.58.0
+      - name: gettext for translation contract fixtures
+        run: sudo apt-get update && sudo apt-get install -y gettext
       - name: WP-CLI 2.12
         run: |
           curl -fsSL -o /usr/local/bin/wp https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar

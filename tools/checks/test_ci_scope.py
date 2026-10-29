@@ -432,6 +432,26 @@ class ScopeTest(unittest.TestCase):
             self.assertTrue(ci_scope.checked_base("a" * 40))
         original.assert_called_once_with("a" * 40, full=True)
 
+    def test_split_jobs_keep_the_shared_toolchain_inputs(self):
+        php = TEXT.split("      - name: PHP source, static analysis", 1)[1]
+        self.assertIn('cd "$GITHUB_WORKSPACE/plugins/linker-commerce"', php)
+        self.assertLess(php.index("composer install"), php.index("for project in"))
+
+        tools = TEXT.split("\n  tools:\n", 1)[1].split("\n  planner:\n", 1)[0]
+        self.assertLess(
+            tools.index("npx playwright install"), tools.index("npm run test:unit")
+        )
+
+        engine = TEXT.split("\n  engine:\n", 1)[1].split("\n  genie:\n", 1)[0]
+        self.assertIn("uses: actions/setup-node@", engine)
+        self.assertLess(engine.index("npm ci"), engine.index("uv run --locked pytest"))
+
+        python = TEXT.split("\n  python:\n", 1)[1].split("\n  content:\n", 1)[0]
+        self.assertLess(
+            python.index("apt-get install -y gettext"),
+            python.index("Other Python packages and migration contracts"),
+        )
+
     def test_workflow_preserves_native_recovery_and_has_one_real_gate(self):
         self.assertIn("cancel-in-progress: true", TEXT)
         self.assertNotIn("on:\n  pull_request:\n    paths", TEXT)
