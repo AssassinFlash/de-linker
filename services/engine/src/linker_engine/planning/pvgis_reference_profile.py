@@ -1,5 +1,6 @@
 """Read a frozen AC reference without HTTP or rerunning a provider/PV model."""
 
+import math
 from datetime import UTC, datetime, timedelta
 from typing import cast
 
@@ -215,10 +216,35 @@ def prepared_reference_profile(
         "reconstructed_means": profile.reconstructed_means,
         "model_role": "official_calendar_year_roof_ac_reference",
     }
-    if (
-        output.get("energy_kwh") != profile.total_kwh
-        or metadata.get("interpretation") != summary
-    ):
+    interpretation = obj(metadata.get("interpretation"))
+    summary_matches = all(
+        (
+            math.isclose(
+                float(cast(float, interpretation.get(key))),
+                value,
+                rel_tol=2e-9,
+                abs_tol=1e-12,
+            )
+            if key == "energy_kwh"
+            and isinstance(value, float)
+            and isinstance(interpretation.get(key), (int, float))
+            and not isinstance(interpretation.get(key), bool)
+            else interpretation.get(key) == value
+        )
+        for key, value in summary.items()
+    ) and set(interpretation) == set(summary)
+    output_energy = output.get("energy_kwh")
+    energy_matches = (
+        isinstance(output_energy, (int, float))
+        and not isinstance(output_energy, bool)
+        and math.isclose(
+            float(output_energy),
+            profile.total_kwh,
+            rel_tol=2e-9,
+            abs_tol=1e-12,
+        )
+    )
+    if not energy_matches or not summary_matches:
         raise VersionUnavailable("roof reference output summary changed")
     return profile
 

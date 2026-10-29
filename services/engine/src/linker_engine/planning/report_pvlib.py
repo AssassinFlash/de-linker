@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import datetime
@@ -79,16 +80,31 @@ def pvlib_reference(
                 raise VersionUnavailable(
                     "the frozen PV summary axis differs"
                 ) from error
-    for field, value in {
+    expected_fields: dict[str, Json] = {
         "interval_count": len(ac.intervals),
-        "energy_kwh": witness["energy_kwh"],
+        "energy_kwh": ac.total_kwh,
         "measurement": "pv_available_ac",
-    }.items():
-        if field in summary and (
-            isinstance(summary[field], bool) or summary[field] != value
-        ):
-            raise VersionUnavailable("the frozen PV summary differs from its output")
-        summary.setdefault(field, value)
+    }
+    for summary_field, expected in expected_fields.items():
+        if summary_field in summary:
+            stored = summary[summary_field]
+            matches = (
+                not isinstance(stored, bool)
+                and isinstance(stored, (int, float))
+                and math.isclose(
+                    float(stored),
+                    float(cast(float, expected)),
+                    rel_tol=2e-9,
+                    abs_tol=1e-12,
+                )
+                if summary_field == "energy_kwh"
+                else stored == expected
+            )
+            if not matches:
+                raise VersionUnavailable(
+                    "the frozen PV summary differs from its output"
+                )
+        summary.setdefault(summary_field, expected)
     selected: set[str] | None = None
     if converter_id is not None:
         dc = project_dc(

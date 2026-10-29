@@ -26,6 +26,7 @@ from pvlib import (
 
 from .canonical import Json, Object
 from .errors import InvalidInput, NumericalFailure
+from .model_numbers import derived_witness_numbers
 from .pv_arrays import GenerationArray
 from .pv_conventions import CONVENTIONS
 from .pv_parameters import PvArrayParameters, PvConversionParameters, PvModuleParameters
@@ -52,6 +53,22 @@ def checked(
 
 
 def values(vector: Vector) -> list[Json]:
+    """Spell a finished diagnostic for witness JSON.
+
+    The list is not a model input. Solar position, geometric direction, Perez,
+    DC, AC and energy keep the vector passed in. Retained output series that
+    preview reads back use retained_watts(), not this spelling.
+    """
+    return cast(list[Json], derived_witness_numbers(vector))
+
+
+def retained_watts(vector: Vector) -> list[Json]:
+    """Exact watts of an output series that a later read reconstructs.
+
+    Profile preview and DC/AC projection divide this list by 1000. The values
+    leave the model exact, and the witness document preserves these exact
+    series rather than applying the diagnostic spelling pass.
+    """
     return cast(list[Json], vector.tolist())
 
 
@@ -266,7 +283,7 @@ def array_power(
             "effective_irradiance_w_m2": values(effective),
             "cell_temperature_c": values(cell),
             "dc_mpp_before_wiring_mismatch_w": values(dc),
-            "dc_available_w": values(delivered),
+            "dc_available_w": retained_watts(delivered),
             "dc_declared_factor_reduction_w": values(dc - delivered),
             **(
                 {
@@ -325,9 +342,9 @@ def conversion_power(
         "input_assumption": parameter.input_assumption,
         "reference_dc_power_w": reference,
         "model_ac_cap_w": cap,
-        "dc_available_w": values(dc),
+        "dc_available_w": retained_watts(dc),
         "unclipped_model_ac_w": values(unclipped),
         "conversion_model_reduction_w": values(dc - unclipped),
         "clipped_ac_potential_w": values(np.maximum(unclipped - cap, 0)),
-        "available_ac_w": values(ac),
+        "available_ac_w": retained_watts(ac),
     }
