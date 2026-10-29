@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Tools\Tests\Integration;
 
+use Linker\Tools\Genie\FormGuard;
 use PHPUnit\Framework\TestCase;
 use WC_Product_Simple;
 
@@ -73,6 +74,41 @@ final class DynamicPageCacheTest extends TestCase {
 		$this->assert_uncacheable( (string) get_permalink( $planner ) );
 		$this->assert_uncacheable( add_query_arg( 'foo', 'cacheprobe', $home ) );
 		$this->assert_uncacheable( add_query_arg( 'q', 'saj', (string) get_permalink( $this->product ) ) );
+		$this->assert_anonymous_dock_secret_can_be_shared( $home, (string) get_permalink( $this->product ) );
+	}
+
+	/**
+	 * Two anonymous reads share a wp_rest nonce that is not a per-visitor secret.
+	 *
+	 * The mail stamp is a site HMAC. It still verifies after the public TTL.
+	 *
+	 * @param string $home    Clean homepage URL.
+	 * @param string $product Clean product URL.
+	 */
+	private function assert_anonymous_dock_secret_can_be_shared( string $home, string $product ): void {
+		$first        = $this->document( $home, 'pll_language=en' );
+		$second       = $this->document( $home, 'pll_language=de' );
+		$product_page = $this->document( $product, 'wp_woocommerce_session_probe=1' );
+		$this->assertStringNotContainsString( 'no-cache', $first['header'], $home );
+		$this->assertStringNotContainsString( 'no-store', $first['header'], $home );
+		$this->assertStringNotContainsString( 'no-cache', $product_page['header'], $product );
+		$home_nonce = $this->attr( $first['body'], 'data-rest-nonce' );
+		$this->assertNotSame( '', $home_nonce );
+		$this->assertSame( $home_nonce, $this->attr( $second['body'], 'data-rest-nonce' ) );
+		$this->assertSame( $home_nonce, $this->attr( $product_page['body'], 'data-rest-nonce' ) );
+
+		$started = $this->attr( $first['body'], 'data-mail-started' );
+		$stamp   = $this->attr( $first['body'], 'data-mail-started-nonce' );
+		$this->assertMatchesRegularExpression( '/\A[0-9]+\z/', $started );
+		$this->assertMatchesRegularExpression( '/\A[a-f0-9]{64}\z/', $stamp );
+		$guard  = new FormGuard( 'genie_mail', 5, 10 );
+		$fields = array(
+			'website'       => '',
+			'started'       => $started,
+			'started_nonce' => $stamp,
+		);
+		$this->assertTrue( $guard->passes( $fields, (int) $started + 21600 ) );
+		$this->assertFalse( $guard->passes( $fields, (int) $started + DAY_IN_SECONDS + 1 ) );
 	}
 
 	/**
@@ -123,16 +159,42 @@ final class DynamicPageCacheTest extends TestCase {
 	 * @param string $url Front-end URL.
 	 */
 	private function cache_control( string $url ): string {
-		$response = wp_remote_get(
-			$url,
-			array(
-				'timeout'     => 20,
-				'redirection' => 0,
-			)
+		return $this->document( $url )['header'];
+	}
+
+	/**
+	 * One anonymous front-end document.
+	 *
+	 * @param string $url    Front-end URL.
+	 * @param string $cookie Cookie header for an independent anonymous jar.
+	 * @return array{header: string, body: string}
+	 */
+	private function document( string $url, string $cookie = '' ): array {
+		$args = array(
+			'timeout'     => 20,
+			'redirection' => 0,
 		);
+		if ( '' !== $cookie ) {
+			$args['headers'] = array( 'Cookie' => $cookie );
+		}
+		$response = wp_remote_get( $url, $args );
 		$this->assertFalse( is_wp_error( $response ), is_wp_error( $response ) ? $response->get_error_message() : $url );
 		$this->assertSame( 200, (int) wp_remote_retrieve_response_code( $response ), $url );
 		$header = wp_remote_retrieve_header( $response, 'cache-control' );
-		return is_array( $header ) ? implode( ', ', $header ) : (string) $header;
+		return array(
+			'header' => is_array( $header ) ? implode( ', ', $header ) : (string) $header,
+			'body'   => (string) wp_remote_retrieve_body( $response ),
+		);
+	}
+
+	/**
+	 * One dock attribute.
+	 *
+	 * @param string $html Front-end HTML.
+	 * @param string $name Attribute name.
+	 */
+	private function attr( string $html, string $name ): string {
+		$this->assertSame( 1, preg_match( '/\s' . preg_quote( $name, '/' ) . '="([^"]*)"/', $html, $matches ), $name );
+		return $matches[1];
 	}
 }

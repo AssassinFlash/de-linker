@@ -73,6 +73,30 @@ final class FormGuardTest extends TestCase {
 	}
 
 	/**
+	 * A cached anonymous page may reuse one stamp for the public TTL.
+	 *
+	 * 21600 seconds is litespeed.conf.cache-ttl_pub. The stamp has no user id.
+	 */
+	public function test_public_page_ttl_does_not_invalidate_a_shared_stamp(): void {
+		$guard = self::guard();
+		$stamp = $guard->stamp( 1700000000 );
+		$this->assertTrue( $guard->passes( self::fields( $stamp ), 1700000000 + 21600 ) );
+		$this->assertTrue( ( new FormGuard( 'genie_contact', 3, 20 ) )->passes( self::fields( $stamp ), 1700000000 + 21600 ) );
+		$tampered    = $stamp['nonce'];
+		$tampered[0] = 'a' === $tampered[0] ? 'b' : 'a';
+		$this->assertFalse(
+			$guard->passes(
+				array(
+					'website'       => '',
+					'started'       => $stamp['started'],
+					'started_nonce' => $tampered,
+				),
+				1700000000 + 21600
+			)
+		);
+	}
+
+	/**
 	 * A time moved back by the sender, a bare time or nothing fails.
 	 *
 	 * @testWith ["900", "keep"]

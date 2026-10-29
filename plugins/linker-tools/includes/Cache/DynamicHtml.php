@@ -19,6 +19,10 @@ namespace Linker\Tools\Cache;
  * does not write litespeed.conf.cache-exc; the host exclusion "?" remains
  * the server-side query rule, and the front-end request check below repeats
  * it so a query URL is not stored if that option is absent.
+ *
+ * The Genie dock on an ordinary page prints an anonymous wp_rest nonce and a
+ * site HMAC mail stamp. That is not a public-cache exclusion: logged-out
+ * wp_rest is user 0, and the stamp remains valid for its one-day life.
  */
 final class DynamicHtml {
 
