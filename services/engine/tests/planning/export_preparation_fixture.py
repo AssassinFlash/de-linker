@@ -20,6 +20,8 @@ actually consumes without any test noticing.
 from __future__ import annotations
 
 import json
+import platform
+import sys
 import uuid
 from collections.abc import Iterator
 from contextlib import contextmanager
@@ -679,17 +681,15 @@ def _adopt_geometric_energy(
 
 
 def rendered() -> str:
-    """The exporter's own serialization of the fixture document.
+    """Serialize a fresh export; format the host baseline with Prettier afterwards.
 
-    The planner package owns this file's whitespace and formats it with
-    Prettier, so a regeneration is followed by that formatter. This function
-    exists so the two agree on the data and the regenerating command is one
-    line.
+    The reproduction test compares parsed values, then runs this export again to
+    require the same complete document on the same host.
     """
     return json.dumps(capture(), ensure_ascii=False, indent="\t") + "\n"
 
 
 if __name__ == "__main__":
-    target = APP / "tests" / "fixtures" / "preparation-flow.json"
+    target = FIXTURES / f"preparation-flow-{sys.platform}-{platform.machine()}.json"
     target.write_text(rendered())
     print(target)

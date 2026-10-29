@@ -251,7 +251,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		$this->assertCount( 1, $contacts );
 		$contacts[0]->read_meta_data( true );
 		$this->assertSame( 'assessment_pending', (string) $contacts[0]->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
-		$this->assertSame( array(), array_filter( $this->jobs_after( $marker ), static fn ( array $row ): bool => array( $contact_email ) === $row['to'] ) );
+		$this->assertCount( 0, self::mail_jobs_after( $marker ), 'Pending authorization has not queued team mail or a receipt.' );
 		$emails = WC()->mailer()->get_emails();
 		$this->assertArrayNotHasKey( 'Linker\\Commerce\\Contact\\Emails\\ReceiptEmail', $emails );
 		$this->assertArrayNotHasKey( 'Linker\\Commerce\\Contact\\Emails\\TeamMessageEmail', $emails );

@@ -302,10 +302,8 @@ def test_preparation_fixture_export_reproduces_the_committed_fixture() -> None:
     manifest = cast(Object, weather_run["manifest"])
     context = cast(Object, manifest["context"])
     assert context["code_sha256"] == pinned.sha256
-    # The browser package owns this file's whitespace: it formats its own JSON
-    # with Prettier, which may expand a short array or break a long string.
-    # Whatever that formatting did, it changed no saved value, so re-reading
-    # the committed bytes must yield exactly the document the exporter produced.
+    # Prettier formats the committed host baseline. The equality above therefore
+    # checks formatted values, and this independent second export must agree too.
     assert json.loads(export_preparation_fixture.rendered()) == produced
 
 
