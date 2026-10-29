@@ -231,7 +231,7 @@ def _check_prefill(row: dict[str, Any]) -> None:
     arguments, url = prefill._model_url(row["message"], row["lang"], expect["proposed"])
     assert arguments == expect["prefill"]
     query = prefill._query(url)
-    assert query == {"pv_kwp": ["12"]}
+    assert query == {"pv_kwp": ["12"], "step": ["roof"]}
     assert "phase" not in query
     assert "annual_kwh" not in query
 
