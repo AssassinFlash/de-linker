@@ -2814,12 +2814,20 @@ msgstr ""
 msgid "Set"
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:438
+#: includes/Presentation/ProductShortcodes.php:447
 msgid "No products are listed here."
 msgstr ""
 
-#: includes/Presentation/ProductShortcodes.php:440
-msgid "No product matches these filters. Clear one to see more."
+#: includes/Presentation/ProductShortcodes.php:441
+msgid "No products match your search and selected filters. Try another search term or change a filter."
+msgstr ""
+
+#: includes/Presentation/ProductShortcodes.php:443
+msgid "No products match your search. Try another search term."
+msgstr ""
+
+#: includes/Presentation/ProductShortcodes.php:445
+msgid "No products match the selected filters. Try changing or clearing a filter."
 msgstr ""
 
 #: includes/Presentation/ProductShortcodes.php:459
