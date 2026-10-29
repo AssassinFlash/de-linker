@@ -10,6 +10,8 @@
  * @package Linker\Migrate
  */
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals -- Standalone migration helpers run only through WP-CLI and are not plugin runtime APIs.
+
 if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
 	exit( 1 );
 }
@@ -45,7 +47,7 @@ try {
 		throw new RuntimeException( 'Unknown operation.' );
 	} )( '__LINKER_COOKIEYES_DISCLOSURE_PAYLOAD__' );
 } catch ( Throwable $error ) {
-	fwrite( STDERR, $error->getMessage() . PHP_EOL );
+	fwrite( STDERR, $error->getMessage() . PHP_EOL ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- CLI error stream, not a WordPress filesystem operation.
 	exit( 1 );
 }
 
@@ -55,13 +57,14 @@ try {
  * @param array<string, mixed> $data Snapshot.
  */
 function linker_cookieyes_disclosure_emit( array $data ): void {
-	echo LINKER_COOKIEYES_DISCLOSURE_MARKER . wp_json_encode( $data ) . PHP_EOL;
+	echo LINKER_COOKIEYES_DISCLOSURE_MARKER . wp_json_encode( $data ) . PHP_EOL; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Fixed machine-readable marker plus JSON snapshot.
 }
 
 /**
  * Current categories, cookies, and the privacy pages this migration must not edit.
  *
  * @return array<string, mixed>
+ * @throws RuntimeException When a CookieYes table or privacy page cannot be read.
  */
 function linker_cookieyes_disclosure_read(): array {
 	global $wpdb;
@@ -85,6 +88,7 @@ function linker_cookieyes_disclosure_read(): array {
  * Deletes the planned rows only while they still match the backup.
  *
  * @param array<string, mixed> $payload Apply payload.
+ * @throws RuntimeException When the payload is empty or its rows no longer match.
  */
 function linker_cookieyes_disclosure_apply( array $payload ): void {
 	$rows = $payload['rows'] ?? null;
@@ -98,6 +102,7 @@ function linker_cookieyes_disclosure_apply( array $payload ): void {
  * Restores the backed-up rows with their original ids.
  *
  * @param array<string, mixed> $payload Rollback payload.
+ * @throws RuntimeException When the payload is empty or a row cannot be restored.
  */
 function linker_cookieyes_disclosure_rollback( array $payload ): void {
 	$rows = $payload['rows'] ?? null;
@@ -112,6 +117,7 @@ function linker_cookieyes_disclosure_rollback( array $payload ): void {
  *
  * @param array<int, mixed> $rows Backed-up category rows.
  * @param string            $mode delete or restore.
+ * @throws RuntimeException When the rows or database connection change mid-transaction.
  */
 function linker_cookieyes_disclosure_mutate( array $rows, string $mode ): void {
 	global $wpdb;
@@ -160,6 +166,11 @@ function linker_cookieyes_disclosure_mutate( array $rows, string $mode ): void {
 		remove_filter( 'query', $guard, PHP_INT_MAX );
 		mysqli_report( MYSQLI_REPORT_OFF ); // phpcs:ignore WordPress.DB.RestrictedFunctions.mysql_mysqli_report
 	}
+	/**
+	 * This action is documented by CookieYes; it refreshes its category cache.
+	 *
+	 * @since 1.0.0
+	 */
 	do_action( 'cky_after_update_cookie_category' );
 	if ( class_exists( '\CookieYes\Lite\Includes\Cache' ) ) {
 		\CookieYes\Lite\Includes\Cache::delete( 'categories' );
@@ -170,6 +181,7 @@ function linker_cookieyes_disclosure_mutate( array $rows, string $mode ): void {
  * Deletes one backed-up row after locking and comparing it.
  *
  * @param array<string, mixed> $row Backed-up row.
+ * @throws RuntimeException When the row changed, is visible, has cookies, or cannot be deleted.
  */
 function linker_cookieyes_disclosure_delete_row( array $row ): void {
 	global $wpdb;
@@ -198,6 +210,7 @@ function linker_cookieyes_disclosure_delete_row( array $row ): void {
  * Inserts one backed-up row when it is absent. An identical row is already restored.
  *
  * @param array<string, mixed> $row Backed-up row.
+ * @throws RuntimeException When the id is occupied by another row or insert fails.
  */
 function linker_cookieyes_disclosure_restore_row( array $row ): void {
 	global $wpdb;
@@ -236,6 +249,7 @@ function linker_cookieyes_disclosure_restore_row( array $row ): void {
  *
  * @param int $id Category id.
  * @return array<string, mixed>
+ * @throws RuntimeException When the category does not exist.
  */
 function linker_cookieyes_disclosure_lock( int $id ): array {
 	global $wpdb;
@@ -288,6 +302,7 @@ function linker_cookieyes_disclosure_cookie( array $row ): array {
  * English and German privacy pages, hashed so a write can prove it did not edit them.
  *
  * @return array<int, array<string, int|string>>
+ * @throws RuntimeException When either privacy page is missing.
  */
 function linker_cookieyes_disclosure_privacy(): array {
 	$page = get_page_by_path( 'privacy-policy' );
@@ -312,13 +327,15 @@ function linker_cookieyes_disclosure_privacy(): array {
 
 /**
  * Refuses to run unless the CookieYes tables this migration edits are present.
+ *
+ * @throws RuntimeException When a required CookieYes table is absent.
  */
 function linker_cookieyes_disclosure_require_tables(): void {
 	global $wpdb;
 	foreach ( array( 'cky_cookie_categories', 'cky_cookies', 'cky_banners' ) as $table ) {
 		$found = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->prefix . $table ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		if ( $found !== $wpdb->prefix . $table ) {
-			throw new RuntimeException( 'Missing CookieYes table: ' . $table );
+			throw new RuntimeException( 'Missing CookieYes table: ' . esc_html( $table ) );
 		}
 	}
 }
