@@ -30,6 +30,16 @@ final class Capacity {
 	 * @var string
 	 */
 	private static string $scope = '';
+	/** Server-owned ordinary delivery receipt for this producer only.
+	 *
+	 * @var string
+	 */
+	private static string $delivery_receipt = '';
+	/** True only when this request found that receipt already admitted.
+	 *
+	 * @var bool
+	 */
+	private static bool $delivery_duplicate = false;
 	// Completed operation receipts retain the native admission retry horizon.
 	// Pending slots never expire. The registry cannot grow beyond this envelope.
 	private const MAX_RESERVATIONS = 256;
@@ -107,6 +117,36 @@ final class Capacity {
 	}
 
 	/**
+	 * Admit one ordinary native delivery for a server-owned operation.
+	 *
+	 * This does not enter the critical reservation scope, so producer priority
+	 * and critical capacity stay unchanged. The receipt is consumed only when
+	 * the ordinary job is durably created.
+	 *
+	 * @param string   $operation Stable server-owned operation key.
+	 * @param callable $send Native producer, not a public callback.
+	 * @return mixed Native outcome. False when the operation cannot be admitted.
+	 */
+	public static function with_ordinary_delivery( string $operation, callable $send ): mixed {
+		if ( '' === $operation ) {
+			return false;
+		}
+		$previous                 = self::$delivery_receipt;
+		self::$delivery_receipt   = hash_hmac( 'sha256', 'ordinary-delivery|' . $operation, wp_salt( 'nonce' ) );
+		self::$delivery_duplicate = false;
+		try {
+			return $send();
+		} finally {
+			self::$delivery_receipt = $previous;
+		}
+	}
+
+	/** The latest ordinary admission in this request was already owned. */
+	public static function ordinary_delivery_duplicate(): bool {
+		return self::$delivery_duplicate;
+	}
+
+	/**
 	 * Only a native caller that proved no business side effect may cancel.
 	 * A partially consumed, completed or unknown operation is never refunded.
 	 *
@@ -138,14 +178,24 @@ final class Capacity {
 	public static function create( Message $message, callable $write ): int {
 		$json = wp_json_encode( $message->to_array() );
 		if ( ! is_string( $json ) ) {
+			self::$delivery_duplicate = false;
 			return 0;
 		}
-		$bytes  = strlen( $json );
-		$pool   = $message->critical ? 'critical' : 'ordinary';
-		$scope  = self::$scope;
-		$result = IntakeStore::edit(
-			static function ( array &$state ) use ( $write, $pool, $bytes, $scope ): array|WP_Error {
+		$bytes                    = strlen( $json );
+		$pool                     = $message->critical ? 'critical' : 'ordinary';
+		$scope                    = self::$scope;
+		$receipt                  = self::$delivery_receipt;
+		self::$delivery_duplicate = false;
+		$result                   = IntakeStore::edit(
+			static function ( array &$state ) use ( $write, $pool, $bytes, $scope, $receipt ): array|WP_Error {
 				self::initialize( $state );
+				if ( '' !== $receipt && self::ordinary_delivery_owned( $state, $receipt ) ) {
+					self::$delivery_duplicate = true;
+					return self::problem();
+				}
+				if ( '' !== $receipt && ( 'ordinary' !== $pool || '' !== $scope ) ) {
+					return self::problem();
+				}
 				$reserved = '' !== $scope ? ( $state['mail_capacity']['reservations'][ $scope ] ?? null ) : null;
 				if ( '' !== $scope && ( ! is_array( $reserved ) || 'critical' !== $pool || (int) $reserved['remaining'] < 1 || $bytes > (int) $reserved['max_bytes'] ) ) {
 					return self::problem();
@@ -154,7 +204,7 @@ final class Capacity {
 					return self::problem();
 				}
 				return self::transaction(
-					static function () use ( &$state, $write, $pool, $bytes, $reserved, $scope ): array {
+					static function () use ( &$state, $write, $pool, $bytes, $reserved, $scope, $receipt ): array {
 						$id = $write();
 						if ( $id < 1 ) {
 							throw new \RuntimeException( 'mail_capacity_native_write_failed' );
@@ -169,6 +219,12 @@ final class Capacity {
 								$state['mail_capacity']['reservations'][ $scope ]['closed'] = time();
 							}
 						}
+						if ( '' !== $receipt ) {
+							$state['mail_capacity']['deliveries'][ $receipt ] = array(
+								'job'    => $id,
+								'closed' => time(),
+							);
+						}
 						IntakeStore::save( $state );
 						return array( 'job' => $id );
 					}
@@ -177,6 +233,49 @@ final class Capacity {
 			1
 		);
 		return is_array( $result ) ? (int) ( $result['job'] ?? 0 ) : 0;
+	}
+
+	/**
+	 * A prior ordinary receipt still owns this operation.
+	 *
+	 * Invalid receipt rows are dropped. They must not make the whole mail ledger unreadable.
+	 *
+	 * @param array<string,mixed> $state Locked native registry.
+	 * @param string              $receipt Server-owned receipt key.
+	 */
+	private static function ordinary_delivery_owned( array &$state, string $receipt ): bool {
+		$deliveries = $state['mail_capacity']['deliveries'] ?? array();
+		if ( ! is_array( $deliveries ) ) {
+			$state['mail_capacity']['deliveries'] = array();
+			return false;
+		}
+		$keep = array();
+		foreach ( $deliveries as $key => $entry ) {
+			if ( ! is_string( $key ) || 1 !== preg_match( '/^[a-f0-9]{64}$/D', $key ) || ! is_array( $entry ) ) {
+				continue;
+			}
+			$job    = $entry['job'] ?? 0;
+			$closed = $entry['closed'] ?? 0;
+			if ( ! is_int( $job ) || $job < 1 || ! is_int( $closed ) || $closed < 0 ) {
+				continue;
+			}
+			// A live original job owns its retry. A completed day remains owned for two days.
+			if ( null !== get_post( $job ) || $closed >= time() - 2 * DAY_IN_SECONDS ) {
+				$keep[ $key ] = array(
+					'job'    => $job,
+					'closed' => $closed,
+				);
+			}
+		}
+		if ( count( $keep ) > 8 ) {
+			uasort(
+				$keep,
+				static fn ( array $left, array $right ): int => $right['closed'] <=> $left['closed']
+			);
+			$keep = array_slice( $keep, 0, 8, true );
+		}
+		$state['mail_capacity']['deliveries'] = $keep;
+		return isset( $keep[ $receipt ] );
 	}
 
 	/**

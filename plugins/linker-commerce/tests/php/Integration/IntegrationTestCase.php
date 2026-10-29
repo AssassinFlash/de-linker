@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Integration;
 
 use Linker\Commerce\Mail\JobStore;
+use Linker\Commerce\Protection\IntakeStore;
 use Linker\Commerce\Mail\CapacityHealth;
 use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Mail\Throttle;
@@ -131,7 +132,9 @@ abstract class IntegrationTestCase extends TestCase {
 	 * attempts — is removed, failed or not. Without it a run leaves its
 	 * queued and failed messages behind, and the next run's digest counts
 	 * them and its sends meet a full daily quota (review of #221, round 1).
-	 * setUp() calls it first, so its removal runs after the test's own.
+	 * The Berlin-day ordinary receipt is the same kind of leftover: it stays
+	 * after the job post is gone, so deleting the row does not admit the next
+	 * test. setUp() calls it first, so its removal runs after the test's own.
 	 */
 	private function isolate_mail(): void {
 		$capacity_health = get_option( CapacityHealth::OPTION );
@@ -141,9 +144,11 @@ abstract class IntegrationTestCase extends TestCase {
 		delete_option( OptionBudgetLedger::OPTION );
 		$sends  = get_option( Throttle::OPTION );
 		$marker = self::newest_mail_job();
+		$intake = get_option( IntakeStore::OPTION );
 		delete_option( Throttle::OPTION );
+		$this->without_ordinary_delivery_receipts( $intake );
 		$this->later(
-			static function () use ( $sends, $marker, $test_to, $ledger, $capacity_health ): void {
+			static function () use ( $sends, $marker, $test_to, $ledger, $capacity_health, $intake ): void {
 				if ( false === $capacity_health ) {
 					delete_option( CapacityHealth::OPTION );
 				} else {
@@ -163,6 +168,14 @@ abstract class IntegrationTestCase extends TestCase {
 					as_unschedule_all_actions( Outbox::HOOK, array( $id ), Outbox::GROUP );
 					wp_delete_post( $id, true );
 				}
+				if ( false === $intake ) {
+					delete_option( IntakeStore::OPTION );
+				} else {
+					update_option( IntakeStore::OPTION, $intake, false );
+				}
+				wp_cache_delete( IntakeStore::OPTION, 'options' );
+				wp_cache_delete( 'notoptions', 'options' );
+				wp_cache_delete( 'alloptions', 'options' );
 				if ( false === $sends ) {
 					delete_option( Throttle::OPTION );
 				} else {
@@ -170,6 +183,29 @@ abstract class IntegrationTestCase extends TestCase {
 				}
 			}
 		);
+	}
+
+	/**
+	 * Drops another test's Berlin-day receipt without changing the saved option.
+	 *
+	 * A live job still owns its retry inside one test. Production keeps the
+	 * receipt after a real send deletes the post; only the fixture boundary
+	 * puts it aside.
+	 *
+	 * @param mixed $intake Intake option captured before this test.
+	 */
+	private function without_ordinary_delivery_receipts( mixed $intake ): void {
+		if ( ! is_array( $intake ) || ! isset( $intake['mail_capacity'] ) || ! is_array( $intake['mail_capacity'] ) ) {
+			return;
+		}
+		$deliveries = $intake['mail_capacity']['deliveries'] ?? null;
+		if ( ! is_array( $deliveries ) || array() === $deliveries ) {
+			return;
+		}
+		$intake['mail_capacity']['deliveries'] = array();
+		update_option( IntakeStore::OPTION, $intake, false );
+		wp_cache_delete( IntakeStore::OPTION, 'options' );
+		wp_cache_delete( 'alloptions', 'options' );
 	}
 
 	/**

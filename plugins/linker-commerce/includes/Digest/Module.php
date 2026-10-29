@@ -19,15 +19,26 @@ use Linker\Commerce\Settings\Options;
 final class Module {
 
 	/**
+	 * Native daily admission boundary.
+	 *
+	 * @var Delivery
+	 */
+	private readonly Delivery $delivery;
+
+	/**
 	 * Sets up the module.
 	 *
 	 * @param string   $plugin_file Absolute path of the main plugin file.
 	 * @param JobStore $jobs        The mail queue, for the failed-emails block.
+	 * @param Delivery $delivery    Native daily admission boundary.
 	 */
 	public function __construct(
 		private readonly string $plugin_file,
-		private readonly JobStore $jobs
-	) {}
+		private readonly JobStore $jobs,
+		Delivery $delivery = new NativeDailyDelivery()
+	) {
+		$this->delivery = $delivery;
+	}
 
 	/**
 	 * Adds the module's hooks.
@@ -65,7 +76,7 @@ final class Module {
 	 * Berlin (docs/specs/74-daily-digest.md).
 	 */
 	public function run(): void {
-		( new DigestEmail( $this->plugin_file, new Options() ) )->send_report( ( new Blocks( $this->jobs ) )->all() );
+		$this->delivery->send( new DigestEmail( $this->plugin_file, new Options() ), ( new Blocks( $this->jobs ) )->all() );
 		( new Scheduler() )->reschedule();
 	}
 }
