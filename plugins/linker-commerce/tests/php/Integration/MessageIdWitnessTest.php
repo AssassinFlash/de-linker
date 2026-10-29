@@ -142,6 +142,37 @@ final class MessageIdWitnessTest extends IntegrationTestCase {
 	}
 
 	/**
+	 * Erasure wins over a transport result that arrives afterwards.
+	 */
+	public function test_late_delivery_does_not_restore_an_erased_authorization(): void {
+		$order  = $this->inquiry();
+		$state  = $this->authorization->process( $order );
+		$team   = (int) $state['jobs']['team']['id'];
+		$stored = ( new JobStore() )->load( $team );
+		$this->assertNotNull( $stored );
+		$this->assertSame( 'normal', $state['status'] );
+		$this->assertSame( SendAuthorization::message_hash( $stored['message'] ), $state['jobs']['team']['hash'] );
+		$this->assertSame( $order->get_id(), \Linker\Commerce\Mail\NotificationHold::inquiry( $team ) );
+		$this->assertArrayNotHasKey( 'delivered_at', $state['jobs']['team'] );
+		$message = $stored['message'];
+		$id      = '<late-transport@example.test>';
+
+		SendAuthorization::erase( $order );
+		$erased = AuthorizationStore::read( $order->get_id() );
+		$this->assertIsArray( $erased );
+		$this->assertSame( 'erased', $erased['status'] );
+
+		SendAuthorization::delivered( $message, $team, $id );
+
+		$after = AuthorizationStore::read( $order->get_id() );
+		$this->assertIsArray( $after );
+		$this->assertSame( 'erased', $after['status'] );
+		$this->assertArrayNotHasKey( 'delivered_at', $after['jobs']['team'] );
+		$this->assertArrayNotHasKey( 'witness', $after['jobs']['team'] );
+		$this->assertStringNotContainsString( $id, (string) wp_json_encode( $after ) );
+	}
+
+	/**
 	 * A failed SMTP attempt writes nothing; the PHP fallback stores only its own sent ID.
 	 */
 	public function test_php_fallback_stores_only_the_successful_message_id(): void {

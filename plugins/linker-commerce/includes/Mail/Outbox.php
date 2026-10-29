@@ -228,13 +228,13 @@ final class Outbox {
 	}
 
 	/**
-	 * Keeps the native Message-ID of this attempt; runs on wp_mail_succeeded.
+	 * Keeps the native Message-ID seen on wp_mail_succeeded.
 	 *
-	 * The action fires only after PHPMailer::send() returns true. The stored
-	 * value is getLastMessageID(), the header that transport wrote. A failed
-	 * attempt does not fire this hook, so it cannot become a witness.
+	 * WordPress fires that action after PHPMailer::send() returns, including
+	 * a false return that did not throw. The hook itself is not delivery.
+	 * Only deliver()'s true result is passed on as a witness.
 	 *
-	 * @param mixed $mail_data Native success payload. It has no Message-ID.
+	 * @param mixed $mail_data Native payload. It has no Message-ID.
 	 */
 	public function remember_message_id( $mail_data ): void {
 		unset( $mail_data );

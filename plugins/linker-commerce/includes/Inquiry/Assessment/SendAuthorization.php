@@ -597,6 +597,9 @@ final class SendAuthorization {
 	 * @param string              $message_id Native transport ID, possibly empty.
 	 */
 	private static function record_transport( array &$state, Message $message, string $purpose, int $job, int $inquiry, string $message_id ): void {
+		if ( 'erased' === ( $state['status'] ?? '' ) ) {
+			return;
+		}
 		if ( ! in_array( $purpose, array( 'team', 'receipt' ), true ) || $inquiry < 1 || $job < 1 ) {
 			return;
 		}
