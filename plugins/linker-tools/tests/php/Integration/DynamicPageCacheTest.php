@@ -47,7 +47,7 @@ final class DynamicPageCacheTest extends TestCase {
 	}
 
 	/**
-	 * The six customer paths, a product, and a query string.
+	 * Representative dynamic shortcode pages, a product, and query strings.
 	 */
 	public function test_dynamic_pages_and_query_strings_are_not_cached(): void {
 		$home = home_url( '/' );
