@@ -342,7 +342,7 @@ def test_physics_vectors_stay_bit_identical_when_witness_spelling_is_destroyed(
     assert damaged.witness()["available_ac_w"] == baseline.witness()["available_ac_w"]
     assert (
         tuple(
-            float(cast(float, value) / 1000)
+            value / 1000
             for value in cast(list[float], baseline.witness()["available_ac_w"])
         )
         == baseline.profile.values_kw

@@ -138,7 +138,10 @@ def test_witness_document_encoding_spells_diagnostics_but_not_output_series() ->
     canonical = canonical_witness_document(cast(Mapping[str, object], document))
     canonical_bumped = canonical_witness_document(cast(Mapping[str, object], bumped))
     assert canonical["available_ac_w"] == document["available_ac_w"]
-    assert canonical_bumped["available_ac_w"] == bumped["available_ac_w"]
+    assert (
+        canonical_bumped["available_ac_w"]
+        == cast(Mapping[str, object], bumped)["available_ac_w"]
+    )
     assert canonical["available_ac_w"] != canonical_bumped["available_ac_w"]
     assert encode(canonical) != encode(canonical_bumped)
     assert canonical["solar_geometry"] == canonical_bumped["solar_geometry"]
