@@ -1378,7 +1378,9 @@ def test_purge_page_cache_asks_only_a_host_that_owns_the_cache(
     """
     target = _fake(tmp_path)
     assert steps.purge_page_cache(target, {"linker-i18n", "livecanvas"}) == []
-    assert not any(plan.PAGE_CACHE_PLUGIN in " ".join(call) for call in target.calls)
+    assert not any(
+        plan.PAGE_CACHE_PLUGIN in " ".join((tool, *args)) for tool, args in target.calls
+    )
 
     target = _fake(tmp_path)
     actions = steps.purge_page_cache(target, {"linker-i18n", plan.PAGE_CACHE_PLUGIN})
