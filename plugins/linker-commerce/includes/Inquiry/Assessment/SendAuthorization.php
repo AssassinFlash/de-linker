@@ -549,8 +549,9 @@ final class SendAuthorization {
 	 *
 	 * @param Message $message Actual sent frozen arguments.
 	 * @param int     $job Original durable job.
+	 * @param string  $message_id Native Message-ID of this successful transport, or empty.
 	 */
-	public static function delivered( Message $message, int $job ): void {
+	public static function delivered( Message $message, int $job, string $message_id = '' ): void {
 		if ( 'conversation' === ( $message->origin['kind'] ?? '' ) ) {
 			AuthorizationStore::edit(
 				'conversation-' . $job,
@@ -569,10 +570,60 @@ final class SendAuthorization {
 		$purpose = $message->origin['purpose'] ?? '';
 		AuthorizationStore::edit(
 			$id,
-			static function ( array &$state ) use ( $message, $purpose, $job ): void {
-				if ( ( $state['jobs'][ $purpose ]['id'] ?? 0 ) === $job && ( $state['jobs'][ $purpose ]['hash'] ?? '' ) === self::message_hash( $message ) ) {
-					$state['jobs'][ $purpose ]['delivered_at'] = time();
-				} }
+			static function ( array &$state ) use ( $message, $purpose, $job, $id, $message_id ): void {
+				self::record_transport( $state, $message, $purpose, $job, $id, $message_id );
+			}
+		);
+	}
+
+	/**
+	 * The Message-ID header PHPMailer actually wrote, or empty when it is not one.
+	 *
+	 * @param string $id Candidate from PHPMailer::getLastMessageID().
+	 */
+	public static function native_message_id( string $id ): string {
+		$id = trim( $id );
+		return 1 === preg_match( '/^<[^<>\s]{1,200}@[^<>\s]{1,200}>$/', $id ) ? $id : '';
+	}
+
+	/**
+	 * Record one successful transport without replacing an earlier witness.
+	 *
+	 * @param array<string,mixed> $state Authorization row.
+	 * @param Message             $message Frozen authorized arguments.
+	 * @param string              $purpose Team or receipt purpose.
+	 * @param int                 $job Original job.
+	 * @param int                 $inquiry Inquiry that owns the job.
+	 * @param string              $message_id Native transport ID, possibly empty.
+	 */
+	private static function record_transport( array &$state, Message $message, string $purpose, int $job, int $inquiry, string $message_id ): void {
+		if ( ! in_array( $purpose, array( 'team', 'receipt' ), true ) || $inquiry < 1 || $job < 1 ) {
+			return;
+		}
+		$hash = self::message_hash( $message );
+		if ( ( $state['jobs'][ $purpose ]['id'] ?? 0 ) !== $job || '' === $hash || ( $state['jobs'][ $purpose ]['hash'] ?? '' ) !== $hash ) {
+			return;
+		}
+		if ( \Linker\Commerce\Mail\NotificationHold::inquiry( $job ) !== $inquiry ) {
+			return;
+		}
+		// Delivery is already physical. A reused Message-ID must not hide that.
+		$state['jobs'][ $purpose ]['delivered_at'] = time();
+		$message_id                                = self::native_message_id( $message_id );
+		if ( '' === $message_id || is_array( $state['jobs'][ $purpose ]['witness'] ?? null ) ) {
+			return;
+		}
+		foreach ( $state['jobs'] as $other => $entry ) {
+			if ( $other !== $purpose && is_array( $entry ) && ( $entry['witness']['message_id'] ?? '' ) === $message_id ) {
+				return;
+			}
+		}
+		$state['jobs'][ $purpose ]['witness'] = array(
+			'inquiry_id'     => $inquiry,
+			'purpose'        => $purpose,
+			'at'             => time(),
+			'message_sha256' => $hash,
+			'message_id'     => $message_id,
 		);
 	}
 
@@ -648,7 +699,15 @@ final class SendAuthorization {
 		$revoked = AuthorizationStore::edit(
 			$id,
 			static function ( array &$state ) use ( &$jobs ): void {
-				$jobs             = $state['jobs'] ?? array();
+				$jobs = $state['jobs'] ?? array();
+				if ( is_array( $state['jobs'] ?? null ) ) {
+					foreach ( $state['jobs'] as $purpose => $entry ) {
+						if ( is_array( $entry ) ) {
+							unset( $entry['witness'] );
+							$state['jobs'][ $purpose ] = $entry;
+						}
+					}
+				}
 				$state['status']  = 'erased';
 				$state['verdict'] = SendVerdict::unknown( 'erased' );
 			}

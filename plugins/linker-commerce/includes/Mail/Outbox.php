@@ -88,6 +88,13 @@ final class Outbox {
 	private bool $smtp_attempt = false;
 
 	/**
+	 * Message-ID of the transport that just returned success, empty otherwise.
+	 *
+	 * @var string
+	 */
+	private string $transport_message_id = '';
+
+	/**
 	 * Sets up the outbox.
 	 *
 	 * @param JobStore     $jobs      The queue.
@@ -221,6 +228,27 @@ final class Outbox {
 	}
 
 	/**
+	 * Keeps the native Message-ID of this attempt; runs on wp_mail_succeeded.
+	 *
+	 * The action fires only after PHPMailer::send() returns true. The stored
+	 * value is getLastMessageID(), the header that transport wrote. A failed
+	 * attempt does not fire this hook, so it cannot become a witness.
+	 *
+	 * @param mixed $mail_data Native success payload. It has no Message-ID.
+	 */
+	public function remember_message_id( $mail_data ): void {
+		unset( $mail_data );
+		if ( ! $this->delivering ) {
+			return;
+		}
+		$mailer = $GLOBALS['phpmailer'] ?? null;
+		if ( ! $mailer instanceof PHPMailer ) {
+			return;
+		}
+		$this->transport_message_id = $mailer->getLastMessageID();
+	}
+
+	/**
 	 * Native phpmailer_init hook, scoped to an active Outbox attempt.
 	 *
 	 * @param PHPMailer $mailer WordPress's reusable mailer.
@@ -284,8 +312,12 @@ final class Outbox {
 		// (Mail\TestMode); only this attempt's copy is redirected.
 		$delivery       = $this->test_mode->redirect( $message );
 		$this->fallback = Throttle::PHP === $transport;
+		$transport_id   = '';
 		try {
 			$sent = $this->deliver( $delivery );
+			if ( $sent ) {
+				$transport_id = $this->transport_message_id;
+			}
 			if ( $this->smtp_attempt ) {
 				$reason = $this->smtp->failure_reason();
 				$this->outcome->record( $sent, $reason );
@@ -299,6 +331,7 @@ final class Outbox {
 					if ( $wait_until === $fallback_now ) {
 						$this->fallback = true;
 						$sent           = $this->deliver( $delivery );
+						$transport_id   = $sent ? $this->transport_message_id : '';
 					}
 				}
 			}
@@ -310,7 +343,7 @@ final class Outbox {
 		}
 
 		if ( $sent ) {
-			\Linker\Commerce\Inquiry\Assessment\SendAuthorization::delivered( $message, $job_id );
+			\Linker\Commerce\Inquiry\Assessment\SendAuthorization::delivered( $message, $job_id, $transport_id );
 			if ( $job_id > 0 ) {
 				$this->jobs->delete( $job_id );
 			}
@@ -424,7 +457,8 @@ final class Outbox {
 	 * @param Message $message Send-side copy, already redirected for tests.
 	 */
 	private function deliver( Message $message ): bool {
-		$this->smtp_attempt = false;
+		$this->smtp_attempt         = false;
+		$this->transport_message_id = '';
 		try {
 			return wp_mail( $message->to, $message->subject, $message->body, $message->headers, $message->attachments );
 		} catch ( Exception $error ) {
