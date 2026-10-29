@@ -58,7 +58,7 @@ export function projectLanguageUrl(
 			backup: hints.backup,
 			plz: hints.postalCode,
 			step: hints.roof ? "roof" : hints.equipment ? "equipment" : null,
-			product: hints.productId,
+			product_id: hints.productId,
 		}))
 			if (value !== null) target.searchParams.set(key, String(value));
 	target.hash = "";

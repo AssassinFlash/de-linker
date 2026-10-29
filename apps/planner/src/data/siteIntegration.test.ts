@@ -82,7 +82,7 @@ test("language switches keep only validated result/workspace references for the 
 		new URL(
 			projectLanguageUrl(
 				target,
-				`https://site.example/?project=${project}&step=equipment&product=1946&nonce=private`,
+				`https://site.example/?project=${project}&step=equipment&product_id=1946&nonce=private`,
 				project,
 			),
 		).href,
@@ -161,40 +161,40 @@ test("language switches keep a product proposal and do not treat roof as a saved
 	const carried = new URL(
 		projectLanguageUrl(
 			"/de/",
-			"https://site.example/?step=equipment&product=1946&nonce=private",
+			"https://site.example/?step=equipment&product_id=1946&nonce=private",
 			null,
 		),
 	);
 	assert.equal(carried.searchParams.get("step"), "equipment");
-	assert.equal(carried.searchParams.get("product"), "1946");
+	assert.equal(carried.searchParams.get("product_id"), "1946");
 	assert.equal(carried.searchParams.has("nonce"), false);
 	const project = "a".repeat(32);
 	const owned = new URL(
 		projectLanguageUrl(
 			"/de/",
-			`https://site.example/?project=${project}&step=equipment&product=1946&nonce=private`,
+			`https://site.example/?project=${project}&step=equipment&product_id=1946&nonce=private`,
 			project,
 		),
 	);
 	assert.equal(owned.hash, "#lp-equipment");
 	assert.equal(owned.searchParams.has("step"), false);
-	assert.equal(owned.searchParams.has("product"), false);
+	assert.equal(owned.searchParams.has("product_id"), false);
 	assert.equal(owned.searchParams.has("nonce"), false);
 	const duplicate = new URL(
 		projectLanguageUrl(
 			"/de/",
-			"https://site.example/?step=equipment&product=1946&product=1947&nonce=private&unrelated=keep-out",
+			"https://site.example/?step=equipment&product_id=1946&product_id=1947&nonce=private&unrelated=keep-out",
 			null,
 		),
 	);
-	assert.deepEqual(duplicate.searchParams.getAll("product"), ["1946", "1947"]);
+	assert.deepEqual(duplicate.searchParams.getAll("product_id"), ["1946", "1947"]);
 	assert.equal(duplicate.searchParams.get("step"), "equipment");
 	assert.equal(duplicate.searchParams.has("nonce"), false);
 	assert.equal(duplicate.searchParams.has("unrelated"), false);
 	const malformed = new URL(
 		projectLanguageUrl(
 			"/de/?pv_kwp=99",
-			"https://site.example/?pv_kwp=10&pv_kwp=-1&phase=9&plz=abc&backup=later&step=equipment&product=nope&nonce=private",
+			"https://site.example/?pv_kwp=10&pv_kwp=-1&phase=9&plz=abc&backup=later&step=equipment&product_id=nope&nonce=private",
 			null,
 		),
 	);
@@ -203,17 +203,17 @@ test("language switches keep a product proposal and do not treat roof as a saved
 	assert.equal(malformed.searchParams.get("plz"), "abc");
 	assert.equal(malformed.searchParams.get("backup"), "later");
 	assert.equal(malformed.searchParams.get("step"), "equipment");
-	assert.equal(malformed.searchParams.get("product"), "nope");
+	assert.equal(malformed.searchParams.get("product_id"), "nope");
 	assert.equal(malformed.searchParams.has("nonce"), false);
 	const saved = new URL(
 		projectLanguageUrl(
 			"/de/",
-			"https://site.example/?saved_solution=42&step=equipment&product=nope&nonce=private",
+			"https://site.example/?saved_solution=42&step=equipment&product_id=nope&nonce=private",
 			null,
 		),
 	);
 	assert.equal(saved.searchParams.get("saved_solution"), "42");
 	assert.equal(saved.searchParams.has("step"), false);
-	assert.equal(saved.searchParams.has("product"), false);
+	assert.equal(saved.searchParams.has("product_id"), false);
 	assert.equal(saved.searchParams.has("nonce"), false);
 });

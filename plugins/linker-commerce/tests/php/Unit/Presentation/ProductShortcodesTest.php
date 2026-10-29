@@ -482,26 +482,26 @@ final class ProductShortcodesTest extends TestCase {
 			'pll_the_languages',
 			array(
 				'return' => array(
-					'de' => array( 'url' => 'http://linker.test/de/loesungskonfigurator/?step=equipment&product=1946' ),
+					'de' => array( 'url' => 'http://linker.test/de/loesungskonfigurator/?step=equipment&product_id=1946' ),
 				),
 			)
 		);
 		WP_Mock::userFunction(
 			'pll_get_requested_url',
 			array(
-				'return' => 'http://linker.test/solution-configurator/?step=equipment&product=1946&cbq=1',
+				'return' => 'http://linker.test/solution-configurator/?step=equipment&product_id=1946&cbq=1',
 			)
 		);
-		$_SERVER['REQUEST_URI'] = '/solution-configurator/?step=equipment&product=1946&cbq=1';
+		$_SERVER['REQUEST_URI'] = '/solution-configurator/?step=equipment&product_id=1946&cbq=1';
 		$_GET                   = array(
-			'step'    => 'equipment',
-			'product' => '1946',
-			'cbq'     => '1',
+			'step'       => 'equipment',
+			'product_id' => '1946',
+			'cbq'        => '1',
 		);
 
-		$this->filter_returns( 'pll_translation_url', 'http://linker.test/de/loesungskonfigurator/?step=equipment&product=1946', array( 'http://linker.test/de/loesungskonfigurator/?step=equipment&product=1946', 'de' ) );
-		$this->assertSame( 'http://linker.test/de/loesungskonfigurator/?step=equipment&product=1946', $this->url( 'de' ) );
-		$this->assertSame( 'http://linker.test/solution-configurator/?step=equipment&product=1946', $this->url( 'en' ) );
+		$this->filter_returns( 'pll_translation_url', 'http://linker.test/de/loesungskonfigurator/?step=equipment&product_id=1946', array( 'http://linker.test/de/loesungskonfigurator/?step=equipment&product_id=1946', 'de' ) );
+		$this->assertSame( 'http://linker.test/de/loesungskonfigurator/?step=equipment&product_id=1946', $this->url( 'de' ) );
+		$this->assertSame( 'http://linker.test/solution-configurator/?step=equipment&product_id=1946', $this->url( 'en' ) );
 	}
 
 	/**
@@ -1898,7 +1898,7 @@ final class ProductShortcodesTest extends TestCase {
 		$link = $links instanceof \DOMNodeList ? $links->item( 0 ) : null;
 		$this->assertInstanceOf( \DOMElement::class, $link );
 		$this->assertSame( 'pdp-project-choice', $link->getAttribute( 'class' ) );
-		$this->assertSame( 'http://linker.test/solution-configurator/?step=equipment&product=6530', $link->getAttribute( 'href' ) );
+		$this->assertSame( 'http://linker.test/solution-configurator/?step=equipment&product_id=6530', $link->getAttribute( 'href' ) );
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- DOM's native property name.
 		$this->assertSame( 'Open the Solution Configurator', $link->textContent );
 		$this->assertStringNotContainsString( 'pdp-tool', $action );

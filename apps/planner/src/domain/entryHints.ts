@@ -9,7 +9,7 @@ export const ENTRY_QUERY_KEYS = [
 	"backup",
 	"plz",
 	"step",
-	"product",
+	"product_id",
 	"saved_solution",
 ] as const;
 export type ProductEntryField = "inverter" | "battery" | "accessory";
@@ -60,7 +60,7 @@ export function readEntryHints(params: URLSearchParams): EntryHints | null {
 		backupValue = one("backup"),
 		postal = one("plz"),
 		step = one("step"),
-		productRaw = one("product");
+		productRaw = one("product_id");
 	const phase = phaseValue === "1" ? 1 : phaseValue === "3" ? 3 : null;
 	const backup =
 		backupValue === "none" ||

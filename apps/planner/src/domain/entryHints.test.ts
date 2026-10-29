@@ -51,7 +51,7 @@ test("ambiguous and invalid link values are rejected individually and cannot ove
 
 test("a product link is a proposed equipment input, not a roof result or an approval", () => {
 	const hints = readEntryHints(
-		new URLSearchParams("step=equipment&product=1946"),
+		new URLSearchParams("step=equipment&product_id=1946"),
 	)!;
 	assert.equal(hints.equipment, true);
 	assert.equal(hints.productId, 1946);
@@ -147,19 +147,19 @@ test("equipment without a valid product is not a route, and a stray product is r
 	assert.equal(equipment.equipment, false);
 	assert.equal(equipment.productId, null);
 	assert.equal(equipment.invalid, true);
-	const stray = readEntryHints(new URLSearchParams("step=roof&product=1946"))!;
+	const stray = readEntryHints(new URLSearchParams("step=roof&product_id=1946"))!;
 	assert.equal(stray.roof, true);
 	assert.equal(stray.equipment, false);
 	assert.equal(stray.productId, null);
 	assert.equal(stray.invalid, true);
 	const broken = readEntryHints(
-		new URLSearchParams("step=equipment&product=1946&product=1947"),
+		new URLSearchParams("step=equipment&product_id=1946&product_id=1947"),
 	)!;
 	assert.equal(broken.equipment, false);
 	assert.equal(broken.productId, null);
 	assert.equal(broken.invalid, true);
 	const malformed = readEntryHints(
-		new URLSearchParams("step=equipment&product=nope"),
+		new URLSearchParams("step=equipment&product_id=nope"),
 	)!;
 	assert.equal(malformed.equipment, false);
 	assert.equal(malformed.invalid, true);
@@ -167,7 +167,7 @@ test("equipment without a valid product is not a route, and a stray product is r
 		readEntryHints(new URLSearchParams("step=result"))!.invalid,
 		true,
 	);
-	const zero = readEntryHints(new URLSearchParams("step=equipment&product=0"))!;
+	const zero = readEntryHints(new URLSearchParams("step=equipment&product_id=0"))!;
 	assert.equal(zero.equipment, false);
 	assert.equal(zero.invalid, true);
 });

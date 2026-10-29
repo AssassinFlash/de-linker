@@ -233,5 +233,10 @@ Hard Stops 1–9 核对后采用下面的句子：没有借用厂商信誉，没
 - EN 拒绝：`This product is not available for planning, so no project was created from it.`
 - DE 拒绝：`Dieses Produkt steht für die Planung nicht zur Verfügung. Deshalb wurde damit kein Projekt angelegt.`
 
-**未通过对抗评审。** 本轮没有可用的独立文案评审者。上面只记录批评和采用的
-句子，不是批准。
+**初稿状态。** 实现者最初没有可用的独立文案评审者，上面只记录批评和采用的
+句子，不能据此批准。
+
+**独立对抗复核通过（2026-10-29）。** 另一位 Spec/文案评审者按 Hard Stops 1–9
+逐条检查上述最终英德句子，确认事务说明保留必要的兼容边界，不含内部术语、公司
+否定、虚构承诺或额外客户作业；德语为正式的独立表达，不是逐词翻译。此前布局、
+非法参数保留及文案记录问题也已分别修复并复核。

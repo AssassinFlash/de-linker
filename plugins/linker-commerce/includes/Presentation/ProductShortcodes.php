@@ -954,8 +954,8 @@ final class ProductShortcodes {
 		return '<a class="pdp-project-choice" href="' . esc_url(
 			add_query_arg(
 				array(
-					'step'    => 'equipment',
-					'product' => (string) $canonical,
+					'step'       => 'equipment',
+					'product_id' => (string) $canonical,
 				),
 				$planner
 			)
