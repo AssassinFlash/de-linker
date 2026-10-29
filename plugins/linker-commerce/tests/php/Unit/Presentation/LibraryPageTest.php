@@ -672,6 +672,7 @@ final class LibraryPageTest extends TestCase {
 					),
 				)
 			);
+			WP_Mock::userFunction( 'get_option', array( 'return' => array() ) );
 
 			ob_start();
 			( new LibraryPage( $this->library(), new TradeRules( $path ) ) )->print_schema();
