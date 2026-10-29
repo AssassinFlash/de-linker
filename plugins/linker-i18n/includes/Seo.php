@@ -74,4 +74,58 @@ final class Seo {
 
 		return __( 'Page not found', 'default' ) . substr( $title, strlen( 'Page not found' ) );
 	}
+
+	/**
+	 * Mirrors the English page's noindex ruling onto its German twin at
+	 * render time (filter `seopress_titles_noindex_bypass`).
+	 *
+	 * Measured on production, 2026-10-29: the English thank-you page (post
+	 * 623) carries `_seopress_robots_index = yes` while its German twin does
+	 * not, so the German page answered indexable and sat in the sitemap —
+	 * an asymmetric pair under matching hreflang links. Twins now mirrors
+	 * the meta on save; this filter is the render-time half, so a twin whose
+	 * stored meta has not been rewritten yet still answers noindex. Only the
+	 * English source's own meta is read: the twin's own value (which the
+	 * migration or Twins wrote) keeps SEOPress's native decision unchanged.
+	 *
+	 * @param mixed $decision Existing noindex decision.
+	 * @return mixed
+	 */
+	public function twin_noindex( mixed $decision ): mixed {
+		return $this->source_says_noindex() ? '1' : $decision;
+	}
+
+	/**
+	 * The same mirror in SEOPress's robots tag (filter
+	 * `seopress_titles_robots_attrs`): `follow` stays whatever the page's own
+	 * meta says, as the English noindex page itself does.
+	 *
+	 * @param string[] $robots Existing directives.
+	 * @return string[]
+	 */
+	public function twin_robots( array $robots ): array {
+		if ( ! $this->source_says_noindex() ) {
+			return $robots;
+		}
+		return array_values( array_unique( array_merge( array_diff( $robots, array( 'index' ) ), array( 'noindex' ) ) ) );
+	}
+
+	/**
+	 * Whether the English twin of the queried page rules it noindex: a German
+	 * singular page whose English source carries `_seopress_robots_index`.
+	 */
+	private function source_says_noindex(): bool {
+		if ( is_admin() || ! is_singular() ) {
+			return false;
+		}
+		$post = get_queried_object();
+		if ( ! $post instanceof \WP_Post ) {
+			return false;
+		}
+		if ( ! function_exists( 'pll_get_post' ) ) {
+			return false;
+		}
+		$source = (int) pll_get_post( (int) $post->ID, Languages::SOURCE );
+		return $source > 0 && $source !== (int) $post->ID && 'yes' === get_post_meta( $source, '_seopress_robots_index', true );
+	}
 }

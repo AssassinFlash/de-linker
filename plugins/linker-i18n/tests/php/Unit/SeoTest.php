@@ -160,6 +160,77 @@ final class SeoTest extends TestCase {
 	}
 
 	/**
+	 * SEOPress's own noindex decision is retained on the English source, but
+	 * the German twin inherits the source's per-page ruling at render time.
+	 */
+	public function test_the_german_twin_inherits_the_english_noindex_ruling(): void {
+		WP_Mock::userFunction( 'is_admin', array( 'return' => false ) );
+		WP_Mock::userFunction( 'is_singular', array( 'return' => true ) );
+		WP_Mock::userFunction(
+			'get_queried_object',
+			array(
+				'return' => PolylangDouble::post(
+					6873,
+					array( 'post_type' => 'page' )
+				),
+			)
+		);
+		WP_Mock::userFunction(
+			'pll_get_post',
+			array(
+				'args'   => array( 6873, 'en' ),
+				'return' => 623,
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'args'   => array( 623, '_seopress_robots_index', true ),
+				'return' => 'yes',
+			)
+		);
+
+		$this->assertSame( '1', ( new Seo() )->twin_noindex( '' ) );
+		$this->assertSame(
+			array( 'follow', 'noindex' ),
+			( new Seo() )->twin_robots( array( 'index', 'follow' ) )
+		);
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * The English source is not touched, and an ordinary German twin keeps
+	 * SEOPress's own decision.
+	 */
+	public function test_the_noindex_mirror_is_scoped_to_a_different_twin(): void {
+		WP_Mock::userFunction( 'is_admin', array( 'return' => false ) );
+		WP_Mock::userFunction( 'is_singular', array( 'return' => true ) );
+		WP_Mock::userFunction(
+			'get_queried_object',
+			array(
+				'return' => PolylangDouble::post(
+					623,
+					array( 'post_type' => 'page' )
+				),
+			)
+		);
+		WP_Mock::userFunction(
+			'pll_get_post',
+			array(
+				'args'   => array( 623, 'en' ),
+				'return' => 623,
+			)
+		);
+
+		$this->assertSame( '', ( new Seo() )->twin_noindex( '' ) );
+		$this->assertSame(
+			array( 'index', 'follow' ),
+			( new Seo() )->twin_robots( array( 'index', 'follow' ) )
+		);
+		$this->assertConditionsMet();
+	}
+
+	/**
 	 * Pages, posts, products and LiveCanvas partials and templates are translated;
 	 * so are product categories and the attributes whose values are words.
 	 */

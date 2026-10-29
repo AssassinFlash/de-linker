@@ -151,6 +151,7 @@ class Entries {
 		if ( is_admin() ) {
 			return '';
 		}
+		\Linker\Tools\Cache\DynamicHtml::forbid( 'genie workspace' );
 		self::$workspace_rendered = true;
 		return sprintf(
 			'<div id="linker-genie-mount" class="linker-genie-panel linker-genie-panel--workspace" data-linker-genie-mount>%s</div>',

@@ -191,6 +191,7 @@ final class TitleChangeTest extends TestCase {
 		);
 		WP_Mock::userFunction( 'has_filter', array( 'return' => false ) );
 		WP_Mock::userFunction( 'remove_action', array( 'return' => false ) );
+		WP_Mock::userFunction( 'delete_post_meta', array( 'return' => true ) );
 		WP_Mock::userFunction( 'get_the_terms', array( 'return' => array( 1 ) ) );
 		WP_Mock::userFunction( 'get_object_taxonomies', array( 'return' => array() ) );
 		WP_Mock::userFunction( 'is_post_type_hierarchical', array( 'return' => false ) );

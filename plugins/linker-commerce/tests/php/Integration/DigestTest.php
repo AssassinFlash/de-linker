@@ -18,11 +18,14 @@ use Linker\Commerce\Digest\InquiriesAwaitingProforma;
 use Linker\Commerce\Digest\Module;
 use Linker\Commerce\Digest\ProformasAwaitingReply;
 use Linker\Commerce\Digest\Scheduler;
+use Linker\Commerce\Mail\Capacity;
+use Linker\Commerce\Mail\CapacityHealth;
 use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Proforma\Issuer;
 use Linker\Commerce\Registration\PendingApprovals;
 use Linker\Commerce\Settings\Options;
+use Linker\Commerce\Protection\IntakeStore;
 use WC_DateTime;
 use WC_Order;
 
@@ -46,6 +49,19 @@ final class DigestTest extends IntegrationTestCase {
 		$this->later(
 			static function () use ( $locale ): void {
 				false === $locale ? delete_option( 'linker_commerce_team_locale' ) : update_option( 'linker_commerce_team_locale', $locale, false );
+			}
+		);
+		$intake = get_option( IntakeStore::OPTION );
+		delete_option( IntakeStore::OPTION );
+		wp_cache_delete( IntakeStore::OPTION, 'options' );
+		$this->later(
+			static function () use ( $intake ): void {
+				wp_cache_delete( IntakeStore::OPTION, 'options' );
+				if ( false === $intake ) {
+					delete_option( IntakeStore::OPTION );
+				} else {
+					update_option( IntakeStore::OPTION, $intake, false );
+				}
 			}
 		);
 	}
@@ -148,6 +164,38 @@ final class DigestTest extends IntegrationTestCase {
 	}
 
 	/**
+	 * Two scheduler consumers may overlap, but the native day receipt admits
+	 * only one complete digest job; the second consumer creates no transport.
+	 */
+	public function test_overlapping_scheduler_consumers_deliver_one_daily_digest(): void {
+		$digests = array();
+		$this->capture_digests( $digests );
+		$before          = $this->captured_files();
+		$health          = get_option( CapacityHealth::OPTION );
+		$reserved_before = get_option( IntakeStore::OPTION );
+		$critical_before = is_array( $reserved_before ) ? ( $reserved_before['mail_capacity']['reservations'] ?? array() ) : array();
+
+		$this->run_digest();
+		$this->run_digest();
+
+		$this->assertCount( 1, $digests, 'The second overlapping cron consumer is not a second digest.' );
+		$this->assertCount( 1, array_diff( $this->captured_files(), $before ) );
+		$state = get_option( IntakeStore::OPTION );
+		$this->assertIsArray( $state );
+		$this->assertSame( $critical_before, $state['mail_capacity']['reservations'] ?? array(), 'The digest does not take a critical reservation.' );
+		$deliveries = $state['mail_capacity']['deliveries'] ?? array();
+		$this->assertCount( 1, $deliveries, 'The Berlin day has one ordinary receipt.' );
+		$this->assertSame( $health, get_option( CapacityHealth::OPTION ), 'The overlapping consumer is not a capacity failure.' );
+		$this->assertTrue( wp_mail( self::TESTER, 'Synthetic ordinary after digest', 'Still admitted.' ), 'Ordinary mail still uses the normal queue.' );
+		$critical = Capacity::reserve_critical( 'digest-does-not-consume-critical-' . wp_generate_password( 8, false ), 1, 1 );
+		$this->assertIsArray( $critical );
+		$this->assertSame( 1, (int) $critical['remaining'], 'Critical capacity remains available.' );
+		$this->assertTrue( Capacity::cancel_before_side_effect( $critical ) );
+	}
+
+	/**
+	 * A transport failure keeps the original digest job and retry; a second
+	 * scheduler consumer cannot replace either with a fresh message.
 	 * The digest rides the Outbox: a send that fails once is retried by Action
 	 * Scheduler and delivered exactly once.
 	 */
@@ -173,6 +221,17 @@ final class DigestTest extends IntegrationTestCase {
 		$this->assertCount( 0, $digests, 'The first attempt failed.' );
 		$job_id = $this->pending_job_id();
 		$this->assertGreaterThan( 0, $job_id, 'The digest waits in the queue.' );
+
+		$stored = ( new JobStore() )->load( $job_id );
+		$this->assertIsArray( $stored );
+		$this->assertFalse( $stored['message']->critical, 'A failed digest remains an ordinary job.' );
+		$this->assertFalse( ( new JobStore() )->critical( $job_id ) );
+		$health = get_option( CapacityHealth::OPTION );
+
+		$this->run_digest();
+		$this->assertSame( $job_id, $this->pending_job_id(), 'The first job remains the digest owner.' );
+		$this->assertCount( 0, $digests, 'The overlapping consumer does not send around the failed transport.' );
+		$this->assertSame( $health, get_option( CapacityHealth::OPTION ), 'Owning the existing job is not a capacity failure.' );
 
 		$this->run_pending_action( $job_id );
 

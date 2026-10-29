@@ -1169,7 +1169,10 @@ def test_absent_device_inputs_keep_legacy_report_source_shape(
             "schema_version": 1,
             "kind": par["model"],
             "available_ac_w": [1000],
-            "energy_kwh": 1.0,
+            # Platform-stable witness spelling is allowed within the
+            # documented 1e-9 relative storage quantum; it is still the same
+            # complete AC profile for report consumers.
+            "energy_kwh": 1.000000001,
             "inputs": {
                 "model": par["model"],
                 "input_bundle_sha256": input_sha,

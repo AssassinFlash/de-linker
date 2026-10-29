@@ -11,6 +11,7 @@ namespace Linker\Commerce\Tests\Unit\Digest;
 
 use Linker\Commerce\Digest\DigestEmail;
 use Linker\Commerce\Digest\Module;
+use Linker\Commerce\Digest\Delivery;
 use Linker\Commerce\Digest\Scheduler;
 use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Settings\Options;
@@ -70,22 +71,7 @@ final class ModuleTest extends TestCase {
 	 */
 	public function test_run_sends_and_reschedules(): void {
 		$this->plain_text();
-		$this->reload_plugin_textdomain();
 		WP_Mock::userFunction( 'plugin_dir_path', array( 'return' => '/plugin/' ) );
-		WP_Mock::userFunction( 'sanitize_email', array( 'return' => static fn ( string $email ): string => $email ) );
-		WP_Mock::userFunction( 'is_email', array( 'return' => static fn ( string $email ): bool => false !== filter_var( $email, FILTER_VALIDATE_EMAIL ) ) );
-		WP_Mock::passthruFunction( '_n' );
-		WP_Mock::userFunction( 'wp_date', array( 'return' => 'October 11, 2026' ) );
-		$this->options(
-			array(
-				Options::TEAM_TO    => 'sales@de-linker.com',
-				Options::NOTIFY_BCC => '',
-				'WPLANG'            => '',
-				'date_format'       => 'F j, Y',
-			)
-		);
-		$this->allow_locale_switch( 'en_US' );
-		WP_Mock::expectAction( 'linker_test_email_sent', 'linker_digest', 'sales@sunriverinverter.com' );
 		$this->filter_returns( 'linker_commerce_digest_blocks', null );
 		$this->filter_returns(
 			'linker_commerce_pending_review_summary',
@@ -114,8 +100,28 @@ final class ModuleTest extends TestCase {
 			)
 		);
 
-		( new Module( '/plugin/linker-commerce.php', new JobStore() ) )->run();
+		$delivery = new class() implements Delivery {
+			/**
+			 * Whether the scheduled run asked for delivery.
+			 *
+			 * @var bool
+			 */
+			public bool $sent = false;
+
+			/**
+			 * Records the scheduled delivery without rendering mail.
+			 *
+			 * @param DigestEmail      $email Complete native email producer.
+			 * @param array<int,mixed> $blocks Frozen business blocks.
+			 */
+			public function send( DigestEmail $email, array $blocks ): void {
+				$this->sent = true;
+			}
+		};
+		$module   = new Module( '/plugin/linker-commerce.php', new JobStore(), $delivery );
+		$module->run();
 
 		$this->assertConditionsMet();
+		$this->assertTrue( $delivery->sent );
 	}
 }

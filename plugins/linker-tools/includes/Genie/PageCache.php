@@ -37,12 +37,9 @@ use WP_Term;
  * WordPress's object cache is not that copy. A normal save already drops
  * the post's own object-cache keys, and the next anonymous GET renders
  * again. A full-page cache in front of the site is a different copy.
- * Production has none active: the LiteSpeed Cache plugin is not in use, and
- * anonymous HTML is not served with an `x-litespeed-cache` hit
- * (docs/research/2026-10-09/i18n-audit.md,
- * docs/acceptance/2026-10-14/17). If one is turned on later, Genie's GET can
- * still receive the proxy's HTML after this call, until that cache is
- * purged. This hook does not send `X-LiteSpeed-Purge`.
+ * Production LiteSpeed serves anonymous HTML from that copy. This hook does
+ * not send `X-LiteSpeed-Purge`; a deploy still has to purge that cache.
+ * The workspace, configurator and public forms are kept out by Cache\DynamicHtml.
  *
  * The service runs as one process (`linker-genie.service`, no worker
  * fan-out), so this POST reaches the process that holds the cache. A later

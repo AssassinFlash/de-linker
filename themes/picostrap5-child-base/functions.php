@@ -38,3 +38,18 @@ function linker_child_theme_light_marker( string $output ): string {
 	return trim( $output ) . ' data-theme="light"';
 }
 add_filter( 'language_attributes', 'linker_child_theme_light_marker' );
+
+/**
+ * Add the archive schema to blog category templates.
+ *
+ * The theme owns the hook because these are WordPress category requests.
+ * Linker Commerce's Storefront schema owns the facts, encoding and the
+ * indexable-only rule, beside the catalogue's other structured data.
+ */
+function linker_child_theme_category_schema(): void {
+	if ( ! class_exists( '\Linker\Commerce\Storefront\ArchiveSchema' ) ) {
+		return;
+	}
+	( new \Linker\Commerce\Storefront\ArchiveSchema() )->print_blog_category_block();
+}
+add_action( 'wp_head', 'linker_child_theme_category_schema' );

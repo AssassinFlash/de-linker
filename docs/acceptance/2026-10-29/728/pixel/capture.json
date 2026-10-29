@@ -1,0 +1,378 @@
+{
+  "cases": [
+    {
+      "path": "/services-support/",
+      "stem": "services-en",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "shifted-following-sections:0",
+          "selector": "#deliverables ~ *",
+          "bounds": [
+            40,
+            3073,
+            1400,
+            4028
+          ]
+        },
+        {
+          "name": "shifted-following-sections:1",
+          "selector": "#deliverables ~ *",
+          "bounds": [
+            0,
+            3867,
+            1440,
+            4917
+          ]
+        },
+        {
+          "name": "shifted-following-sections:2",
+          "selector": "#deliverables ~ *",
+          "bounds": [
+            0,
+            4757,
+            1440,
+            5801
+          ]
+        },
+        {
+          "name": "shifted-following-sections:3",
+          "selector": "#deliverables ~ *",
+          "bounds": [
+            0,
+            5641,
+            1440,
+            6523
+          ]
+        },
+        {
+          "name": "shifted-following-sections:4",
+          "selector": "#deliverables ~ *",
+          "bounds": [
+            0,
+            6363,
+            1440,
+            7031
+          ]
+        },
+        {
+          "name": "inserted-trade-standard-row:0",
+          "selector": ".lk-trade-standards",
+          "bounds": [
+            100,
+            1838,
+            1340,
+            1974
+          ]
+        },
+        {
+          "name": "shifted-deliverables-siblings:0",
+          "selector": "#deliverables .lk-trade-standards ~ *",
+          "bounds": [
+            100,
+            2117,
+            1340,
+            2837
+          ]
+        },
+        {
+          "name": "shifted-deliverables-siblings:1",
+          "selector": "#deliverables .lk-trade-standards ~ *",
+          "bounds": [
+            100,
+            2884,
+            1340,
+            3117
+          ]
+        }
+      ],
+      "imageSources": {
+        "live": [],
+        "local": []
+      }
+    },
+    {
+      "path": "/de/kundendienst/",
+      "stem": "services-de",
+      "width": 1440,
+      "language": "de",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "shifted-following-sections:0",
+          "selector": "#deliverables ~ *",
+          "bounds": [
+            40,
+            3073,
+            1400,
+            4028
+          ]
+        },
+        {
+          "name": "shifted-following-sections:1",
+          "selector": "#deliverables ~ *",
+          "bounds": [
+            0,
+            3867,
+            1440,
+            4941
+          ]
+        },
+        {
+          "name": "shifted-following-sections:2",
+          "selector": "#deliverables ~ *",
+          "bounds": [
+            0,
+            4780,
+            1440,
+            5858
+          ]
+        },
+        {
+          "name": "shifted-following-sections:3",
+          "selector": "#deliverables ~ *",
+          "bounds": [
+            0,
+            5698,
+            1440,
+            6580
+          ]
+        },
+        {
+          "name": "shifted-following-sections:4",
+          "selector": "#deliverables ~ *",
+          "bounds": [
+            0,
+            6420,
+            1440,
+            7088
+          ]
+        },
+        {
+          "name": "inserted-trade-standard-row:0",
+          "selector": ".lk-trade-standards",
+          "bounds": [
+            100,
+            1838,
+            1340,
+            1974
+          ]
+        },
+        {
+          "name": "shifted-deliverables-siblings:0",
+          "selector": "#deliverables .lk-trade-standards ~ *",
+          "bounds": [
+            100,
+            2117,
+            1340,
+            2837
+          ]
+        },
+        {
+          "name": "shifted-deliverables-siblings:1",
+          "selector": "#deliverables .lk-trade-standards ~ *",
+          "bounds": [
+            100,
+            2884,
+            1340,
+            3117
+          ]
+        }
+      ],
+      "imageSources": {
+        "live": [],
+        "local": []
+      }
+    },
+    {
+      "path": "/services-support/",
+      "stem": "services-en",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "shifted-following-sections:0",
+          "selector": "#deliverables ~ *",
+          "bounds": [
+            10,
+            4493,
+            380,
+            5930
+          ]
+        },
+        {
+          "name": "shifted-following-sections:1",
+          "selector": "#deliverables ~ *",
+          "bounds": [
+            0,
+            5494,
+            390,
+            7091
+          ]
+        },
+        {
+          "name": "shifted-following-sections:2",
+          "selector": "#deliverables ~ *",
+          "bounds": [
+            0,
+            6655,
+            390,
+            8150
+          ]
+        },
+        {
+          "name": "shifted-following-sections:3",
+          "selector": "#deliverables ~ *",
+          "bounds": [
+            0,
+            7714,
+            390,
+            9269
+          ]
+        },
+        {
+          "name": "shifted-following-sections:4",
+          "selector": "#deliverables ~ *",
+          "bounds": [
+            0,
+            8833,
+            390,
+            9942
+          ]
+        },
+        {
+          "name": "inserted-trade-standard-row:0",
+          "selector": ".lk-trade-standards",
+          "bounds": [
+            24,
+            2218,
+            366,
+            2629
+          ]
+        },
+        {
+          "name": "shifted-deliverables-siblings:0",
+          "selector": "#deliverables .lk-trade-standards ~ *",
+          "bounds": [
+            24,
+            2629,
+            366,
+            4414
+          ]
+        },
+        {
+          "name": "shifted-deliverables-siblings:1",
+          "selector": "#deliverables .lk-trade-standards ~ *",
+          "bounds": [
+            48,
+            4448,
+            342,
+            4845
+          ]
+        }
+      ],
+      "imageSources": {
+        "live": [],
+        "local": []
+      }
+    },
+    {
+      "path": "/de/kundendienst/",
+      "stem": "services-de",
+      "width": 390,
+      "language": "de",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "shifted-following-sections:0",
+          "selector": "#deliverables ~ *",
+          "bounds": [
+            10,
+            4656,
+            380,
+            6275
+          ]
+        },
+        {
+          "name": "shifted-following-sections:1",
+          "selector": "#deliverables ~ *",
+          "bounds": [
+            0,
+            5763,
+            390,
+            7478
+          ]
+        },
+        {
+          "name": "shifted-following-sections:2",
+          "selector": "#deliverables ~ *",
+          "bounds": [
+            0,
+            6966,
+            390,
+            8648
+          ]
+        },
+        {
+          "name": "shifted-following-sections:3",
+          "selector": "#deliverables ~ *",
+          "bounds": [
+            0,
+            8136,
+            390,
+            9809
+          ]
+        },
+        {
+          "name": "shifted-following-sections:4",
+          "selector": "#deliverables ~ *",
+          "bounds": [
+            0,
+            9297,
+            390,
+            10482
+          ]
+        },
+        {
+          "name": "inserted-trade-standard-row:0",
+          "selector": ".lk-trade-standards",
+          "bounds": [
+            24,
+            2358,
+            366,
+            2846
+          ]
+        },
+        {
+          "name": "shifted-deliverables-siblings:0",
+          "selector": "#deliverables .lk-trade-standards ~ *",
+          "bounds": [
+            24,
+            2845,
+            366,
+            4651
+          ]
+        },
+        {
+          "name": "shifted-deliverables-siblings:1",
+          "selector": "#deliverables .lk-trade-standards ~ *",
+          "bounds": [
+            48,
+            4685,
+            342,
+            5085
+          ]
+        }
+      ],
+      "imageSources": {
+        "live": [],
+        "local": []
+      }
+    }
+  ],
+  "allowedHeaderChanges": [],
+  "networkRoute": "direct browser connection"
+}

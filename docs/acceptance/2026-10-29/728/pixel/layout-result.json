@@ -1,0 +1,81 @@
+{
+  "method": "Playwright DOM geometry read from legal764 before and s728 after, after network idle and document.fonts.ready; values are CSS pixels",
+  "cases": [
+    {
+      "language": "en",
+      "viewport_width": 1440,
+      "row_outer_height": 159.296875,
+      "deliverables_height_delta": 159.296875,
+      "downstream_translation": 159.296875,
+      "downstream_height_delta": 0,
+      "compared_downstream_ids": [
+        "services",
+        "solutions",
+        "testimonials",
+        "faq",
+        "start"
+      ],
+      "compared_deliverables_children": [
+        "service-ledger",
+        "linker-contact-invitation linker-contact-services"
+      ]
+    },
+    {
+      "language": "en",
+      "viewport_width": 390,
+      "row_outer_height": 434.6875,
+      "deliverables_height_delta": 434.6875,
+      "downstream_translation": 434.6875,
+      "downstream_height_delta": 0,
+      "compared_downstream_ids": [
+        "services",
+        "solutions",
+        "testimonials",
+        "faq",
+        "start"
+      ],
+      "compared_deliverables_children": [
+        "service-ledger",
+        "linker-contact-invitation linker-contact-services"
+      ]
+    },
+    {
+      "language": "de",
+      "viewport_width": 1440,
+      "row_outer_height": 159.296875,
+      "deliverables_height_delta": 159.296875,
+      "downstream_translation": 159.296875,
+      "downstream_height_delta": 0,
+      "compared_downstream_ids": [
+        "services",
+        "solutions",
+        "testimonials",
+        "faq",
+        "start"
+      ],
+      "compared_deliverables_children": [
+        "service-ledger",
+        "linker-contact-invitation linker-contact-services"
+      ]
+    },
+    {
+      "language": "de",
+      "viewport_width": 390,
+      "row_outer_height": 511.1875,
+      "deliverables_height_delta": 511.1875,
+      "downstream_translation": 511.1875,
+      "downstream_height_delta": 0,
+      "compared_downstream_ids": [
+        "services",
+        "solutions",
+        "testimonials",
+        "faq",
+        "start"
+      ],
+      "compared_deliverables_children": [
+        "service-ledger",
+        "linker-contact-invitation linker-contact-services"
+      ]
+    }
+  ]
+}

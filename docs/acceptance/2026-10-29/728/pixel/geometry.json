@@ -1,0 +1,102 @@
+{
+  "en-1440-before": {
+    "ledger": {
+      "bottom": 2677.5625,
+      "height": 719,
+      "top": 1958.5625
+    },
+    "pageHeight": 7466,
+    "row": null,
+    "scrollWidth": 1440
+  },
+  "en-1440-after": {
+    "ledger": {
+      "bottom": 2836.859375,
+      "height": 719,
+      "top": 2117.859375
+    },
+    "pageHeight": 7625,
+    "row": {
+      "bottom": 1973.859375,
+      "height": 135.296875,
+      "marginTop": 24,
+      "top": 1838.5625
+    },
+    "scrollWidth": 1440
+  },
+  "en-390-before": {
+    "ledger": {
+      "bottom": 3978.8984375,
+      "height": 1784.515625,
+      "top": 2194.3828125
+    },
+    "pageHeight": 10354,
+    "row": null,
+    "scrollWidth": 390
+  },
+  "en-390-after": {
+    "ledger": {
+      "bottom": 4413.5859375,
+      "height": 1784.515625,
+      "top": 2629.0703125
+    },
+    "pageHeight": 10788,
+    "row": {
+      "bottom": 2629.0703125,
+      "height": 410.6875,
+      "marginTop": 24,
+      "top": 2218.3828125
+    },
+    "scrollWidth": 390
+  },
+  "de-1440-before": {
+    "ledger": {
+      "bottom": 2677.5625,
+      "height": 719,
+      "top": 1958.5625
+    },
+    "pageHeight": 7523,
+    "row": null,
+    "scrollWidth": 1440
+  },
+  "de-1440-after": {
+    "ledger": {
+      "bottom": 2836.859375,
+      "height": 719,
+      "top": 2117.859375
+    },
+    "pageHeight": 7683,
+    "row": {
+      "bottom": 1973.859375,
+      "height": 135.296875,
+      "marginTop": 24,
+      "top": 1838.5625
+    },
+    "scrollWidth": 1440
+  },
+  "de-390-before": {
+    "ledger": {
+      "bottom": 4139.3984375,
+      "height": 1805.3203125,
+      "top": 2334.078125
+    },
+    "pageHeight": 10862,
+    "row": null,
+    "scrollWidth": 390
+  },
+  "de-390-after": {
+    "ledger": {
+      "bottom": 4650.5859375,
+      "height": 1805.3203125,
+      "top": 2845.265625
+    },
+    "pageHeight": 11373,
+    "row": {
+      "bottom": 2845.265625,
+      "height": 487.1875,
+      "marginTop": 24,
+      "top": 2358.078125
+    },
+    "scrollWidth": 390
+  }
+}

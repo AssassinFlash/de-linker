@@ -54,6 +54,7 @@ $planner_claims->register();
 $planner_gateway->lifecycle();
 add_action( 'rest_api_init', array( $planner_gateway, 'register' ) );
 ( new \Linker\Tools\Planner\Application( __FILE__ ) )->register();
+\Linker\Tools\Cache\DynamicHtml::register();
 ( new \Linker\Tools\Planner\ReportAccess() )->register();
 ( new \Linker\Tools\Planner\AccountProjects() )->register();
 

@@ -1,0 +1,293 @@
+DE delivery 2026-10-29 07:44-07:45 UTC — order 8625 (lang=de, submitted to /de/proforma-anfrage/)
+
+===== 20261029-074457-47d955d3-827f-45d7-a146-165e1c8f4992.eml
+Date: Thu, 29 Oct 2026 07:44:57 +0000
+From: Linker <sales@sunriverinverter.com>
+Reply-To: DE Liefer Walk <de-liefert2@example.test>
+Message-ID: <8gBkyGB5AHcMqke9JGl5N2u7xuFR6dM05ou7E3ZonU@chesterjohn-2.local>
+X-Mailer: PHPMailer 7.1.1 (https://github.com/PHPMailer/PHPMailer)
+MIME-Version: 1.0
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: tester246@example.test
+Subject: New inquiry #8625 from Liefer Zwei GmbH
+
+<!DOCTYPE html>
+<html lang="en-US" data-theme="light">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta content="width=device-width, initial-scale=1.0" name="viewport">
+		<title>Linker</title>
+	<style type="text/css">@media screen and (max-width: 600px){#template_header_image,#header_wrapper{padding: 16px 10px 0 !important;}#header_wrapper h1{font-size: 24px !important;}#body_content_inner_cell{padding: 10px !important;}#body_content_inner{font-size: 12px !important;}.email-order-detail-heading{font-size: 16px !important; line-height: 130% !important;}}</style></head>
+	<body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0" style="background-color: #fff; padding: 0; text-align: center;" bgcolor="#fff">
+		<table width="100%" id="outer_wrapper" role="presentation" style="background-color: #fff;" bgcolor="#fff">
+			<tr>
+				<td><!-- Deliberately empty to support consistent sizing and layout across multiple email clients. --></td>
+				<td width="600">
+					<div id="wrapper" dir="ltr" style="margin: 0 auto; padding: 24px 0; width: 100%; max-width: 600px; -webkit-text-size-adjust: none;" width="100%">
+						<table border="0" cellpadding="0" cellspacing="0" height="100%" width="100%" id="inner_wrapper" role="presentation" style="background-color: #fff; border-radius: 8px;" bgcolor="#fff">
+							<tr>
+								<td align="center" valign="top">
+																			<table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
+											<tr>
+												<td id="template_header_image" style="padding: 32px 32px 0;">
+													<p class="email-logo-text" style='color: #8526ff; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; font-size: 18px; margin-bottom: 0; text-align: left;' align="left"><a href="http://127.0.0.1:8895" target="_blank" style="font-weight: normal; color: inherit; text-decoration: none;">Linker</a></p>												</td>
+											</tr>
+										</table>
+																		<table border="0" cellpadding="0" cellspacing="0" width="100%" id="template_container" role="presentation" style="box-shadow: none; background-color: #fff; border: 0; border-radius: 3px;" bgcolor="#fff">
+										<tr>
+											<td align="center" valign="top">
+												<!-- Header -->
+												<table border="0" cellpadding="0" cellspacing="0" width="100%" id="template_header" role="presentation" style='background-color: #fff; color: #1e1e1e; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; border-radius: 3px 3px 0 0;' bgcolor="#fff">
+													<tr>
+														<td id="header_wrapper" style="padding: 20px 32px 0; display: block;">
+															<h1 style='font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; font-size: 32px; font-weight: 700; letter-spacing: -1px; line-height: 120%; margin: 0; color: #1e1e1e; background-color: inherit; text-align: left;' bgcolor="inherit">New inquiry #8625</h1>
+														</td>
+													</tr>
+												</table>
+												<!-- End Header -->
+											</td>
+										</tr>
+										<tr>
+											<td align="center" valign="top">
+												<!-- Body -->
+												<table border="0" cellpadding="0" cellspacing="0" width="100%" id="template_body" role="presentation">
+													<tr>
+														<td valign="top" id="body_content" style="background-color: #fff;" bgcolor="#fff">
+															<!-- Content -->
+															<table border="0" cellpadding="20" cellspacing="0" width="100%" role="presentation">
+																<tr>
+																	<td valign="top" id="body_content_inner_cell" style="padding: 20px 32px 32px;">
+																		<div id="body_content_inner" style='color: #4b4b4b; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; font-size: 16px; line-height: 150%; text-align: left;' align="left">
+<p style="margin: 0 0 16px;">
+New inquiry #8625 from Liefer Zwei GmbH (DE Liefer Walk ).</p>
+<p style="margin: 0 0 16px;"><strong>Jev initial assessment: Likely genuine</strong><br>Plausible business or contact request.</p><p style="margin: 0 0 16px;"><a href="http://127.0.0.1:8895/wp-admin/admin.php?page=wc-orders&amp;action=edit&amp;id=8625" style="color: #8526ff; font-weight: normal; text-decoration: underline;">Open the inquiry</a></p>
+
+	<h2 class="email-order-detail-heading" style='color: #1e1e1e; display: block; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; font-size: 20px; font-weight: bold; line-height: 160%; margin: 0 0 18px; text-align: left;'>
+		Inquiry summary<br><span style="color: #787c82; display: block; font-size: 14px; font-weight: normal;"><a class="link" href="http://127.0.0.1:8895/wp-admin/admin.php?page=wc-orders&amp;action=edit&amp;id=8625" style="font-weight: normal; color: #8526ff; text-decoration: none;">Inquiry #8625</a> (<time datetime="2026-10-29T07:44:42+00:00">29 October 2026</time>)</span>	</h2>
+
+<div style="margin-bottom: 24px;">
+	<table class="td font-family email-order-details" cellspacing="0" cellpadding="6" border="0" style='color: #4b4b4b; border: 0; vertical-align: middle; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; width: 100%;' width="100%">
+				<thead>
+			<tr>
+				<th class="td text-align-left" scope="col" style="color: #4b4b4b; border: 0; vertical-align: middle; text-align: left; padding: 8px 12px; padding-left: 0;" align="left">Product</th>
+				<th class="td text-align-right" scope="col" style="color: #4b4b4b; border: 0; vertical-align: middle; text-align: right; padding: 8px 12px;" align="right">Quantity</th>
+				<th class="td text-align-right" scope="col" style="color: #4b4b4b; border: 0; vertical-align: middle; text-align: right; padding: 8px 12px; padding-right: 0;" align="right">Price</th>
+			</tr>
+		</thead>
+				<tbody>
+					</tbody>
+	</table>
+			<hr style="border: 0; border-top: 1px solid #1E1E1E; border-top-color: rgba(30, 30, 30, 0.2); margin: 20px 0;">
+		<table class="td font-family email-order-details" cellspacing="0" cellpadding="6" border="0" style='color: #4b4b4b; border: 0; vertical-align: middle; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; width: 100%;' width="100%">
+			</table>
+						<hr style="border: 0; border-top: 1px solid #1E1E1E; border-top-color: rgba(30, 30, 30, 0.2); margin: 20px 0;">
+				<table class="td font-family email-order-details" cellspacing="0" cellpadding="6" border="0" role="presentation" style='color: #4b4b4b; border: 0; vertical-align: middle; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; width: 100%;' width="100%">
+			<tr class="order-customer-note">
+				<td class="td text-align-left" style="color: #4b4b4b; border: 0; vertical-align: middle; text-align: left; padding: 8px 12px; border-bottom: 1px solid rgba(0,0,0,.2); padding-bottom: 24px; padding-top: 24px; padding-left: 0; padding-right: 0;" align="left">
+					<b>Notes</b><br>
+					Bitte senden Sie uns ein Angebot für den Speicher.				</td>
+			</tr>
+		</table>
+	</div>
+
+	<hr style="border: 0; border-top: 1px solid #1E1E1E; border-top-color: rgba(30, 30, 30, 0.2); margin: 20px 0;">
+<table id="addresses" cellspacing="0" cellpadding="0" border="0" role="presentation" style="width: 100%; vertical-align: top; margin-bottom: 0; padding: 0;" width="100%">
+	<tr>
+		<td class="font-family text-align-left" valign="top" width="50%" style='font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; text-align: left; border: 0; padding: 0;' align="left">
+							<b class="address-title" style='color: #1e1e1e; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif;'>Company details</b>
+
+			<address class="address" style="color: #1e1e1e; font-style: normal; line-height: 120%; padding: 8px 0; word-break: break-all;">
+				DE Liefer Walk<br>Liefer Zwei GmbH													<br>de-liefert2@example.test											</address>
+		</td>
+			</tr>
+</table>
+<br>																		</div>
+																	</td>
+																</tr>
+															</table>
+															<!-- End Content -->
+														</td>
+													</tr>
+												</table>
+												<!-- End Body -->
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td align="center" valign="top">
+									<!-- Footer -->
+									<table border="0" cellpadding="10" cellspacing="0" width="100%" id="template_footer" role="presentation">
+										<tr>
+											<td valign="top" style="padding: 0; border-radius: 0;">
+												<table border="0" cellpadding="10" cellspacing="0" width="100%" role="presentation">
+													<tr>
+														<td colspan="2" valign="middle" id="credit" style='border-radius: 0; border: 0; border-top: 1px solid rgba(0,0,0,.2); font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; font-size: 12px; line-height: 140%; text-align: center; padding: 32px; color: #787c82;' align="center">
+															<p style="margin: 0;">Linker<br>Steinfeldstraße 3, 39179 Barleben, Germany</p>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+									<!-- End Footer -->
+								</td>
+							</tr>
+						</table>
+					</div>
+				</td>
+				<td><!-- Deliberately empty to support consistent sizing and layout across multiple email clients. --></td>
+			</tr>
+		</table>
+	</body>
+</html>
+--- body ---
+
+===== 20261029-074550-79dd6dc4-dd69-4168-8ea1-64b43493b694.eml
+Date: Thu, 29 Oct 2026 07:45:50 +0000
+From: Linker <sales@de-linker.com>
+Reply-To: Linker <sales@de-linker.com>
+Message-ID: <NAspCvJaEcuO2y225BKIsto16kYDR4DtD3G7803tL4@chesterjohn-2.local>
+X-Mailer: PHPMailer 7.1.1 (https://github.com/PHPMailer/PHPMailer)
+MIME-Version: 1.0
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: tester246@example.test
+Subject: Ihre Anfrage #8625 ist eingegangen
+
+<!DOCTYPE html>
+<html lang="de-DE" data-theme="light">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta content="width=device-width, initial-scale=1.0" name="viewport">
+		<title>Linker</title>
+	<style type="text/css">@media screen and (max-width: 600px){#template_header_image,#header_wrapper{padding: 16px 10px 0 !important;}#header_wrapper h1{font-size: 24px !important;}#body_content_inner_cell{padding: 10px !important;}#body_content_inner{font-size: 12px !important;}.email-order-detail-heading{font-size: 16px !important; line-height: 130% !important;}}</style></head>
+	<body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0" style="background-color: #fff; padding: 0; text-align: center;" bgcolor="#fff">
+		<table width="100%" id="outer_wrapper" role="presentation" style="background-color: #fff;" bgcolor="#fff">
+			<tr>
+				<td><!-- Deliberately empty to support consistent sizing and layout across multiple email clients. --></td>
+				<td width="600">
+					<div id="wrapper" dir="ltr" style="margin: 0 auto; padding: 24px 0; width: 100%; max-width: 600px; -webkit-text-size-adjust: none;" width="100%">
+						<table border="0" cellpadding="0" cellspacing="0" height="100%" width="100%" id="inner_wrapper" role="presentation" style="background-color: #fff; border-radius: 8px;" bgcolor="#fff">
+							<tr>
+								<td align="center" valign="top">
+																			<table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
+											<tr>
+												<td id="template_header_image" style="padding: 32px 32px 0;">
+													<p class="email-logo-text" style='color: #8526ff; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; font-size: 18px; margin-bottom: 0; text-align: left;' align="left"><a href="http://127.0.0.1:8895" target="_blank" style="font-weight: normal; color: inherit; text-decoration: none;">Linker</a></p>												</td>
+											</tr>
+										</table>
+																		<table border="0" cellpadding="0" cellspacing="0" width="100%" id="template_container" role="presentation" style="box-shadow: none; background-color: #fff; border: 0; border-radius: 3px;" bgcolor="#fff">
+										<tr>
+											<td align="center" valign="top">
+												<!-- Header -->
+												<table border="0" cellpadding="0" cellspacing="0" width="100%" id="template_header" role="presentation" style='background-color: #fff; color: #1e1e1e; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; border-radius: 3px 3px 0 0;' bgcolor="#fff">
+													<tr>
+														<td id="header_wrapper" style="padding: 20px 32px 0; display: block;">
+															<h1 style='font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; font-size: 32px; font-weight: 700; letter-spacing: -1px; line-height: 120%; margin: 0; color: #1e1e1e; background-color: inherit; text-align: left;' bgcolor="inherit">Anfrage eingegangen</h1>
+														</td>
+													</tr>
+												</table>
+												<!-- End Header -->
+											</td>
+										</tr>
+										<tr>
+											<td align="center" valign="top">
+												<!-- Body -->
+												<table border="0" cellpadding="0" cellspacing="0" width="100%" id="template_body" role="presentation">
+													<tr>
+														<td valign="top" id="body_content" style="background-color: #fff;" bgcolor="#fff">
+															<!-- Content -->
+															<table border="0" cellpadding="20" cellspacing="0" width="100%" role="presentation">
+																<tr>
+																	<td valign="top" id="body_content_inner_cell" style="padding: 20px 32px 32px;">
+																		<div id="body_content_inner" style='color: #4b4b4b; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; font-size: 16px; line-height: 150%; text-align: left;' align="left">
+<p style="margin: 0 0 16px;">
+Guten Tag DE Liefer Walk ,</p>
+<p style="margin: 0 0 16px;">
+vielen Dank für Ihre Anfrage #8625.</p>
+<p style="margin: 0 0 16px;">Wir antworten innerhalb eines Arbeitstags. Das Linker-Team antwortet Ihnen an die angegebene E-Mail-Adresse.</p>
+<p style="margin: 0 0 16px;"><a href="http://127.0.0.1:8895/de/mein-konto/registrieren/?linker_inquiry=8625&amp;linker_key=[redacted-order-key]" style="color: #8526ff; font-weight: normal; text-decoration: underline;">Erstellen Sie mit dieser E-Mail-Adresse ein Konto. Nach der Freigabe sehen Sie Nettopreise und können Ihre Anfrage verfolgen.</a></p>
+	<h2 class="email-order-detail-heading" style='color: #1e1e1e; display: block; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; font-size: 20px; font-weight: bold; line-height: 160%; margin: 0 0 18px; text-align: left;'>
+		Zusammenfassung der Anfrage<br><span style="color: #787c82; display: block; font-size: 14px; font-weight: normal;">Anfrage #8625 (<time datetime="2026-10-29T07:44:42+00:00">29. Oktober 2026</time>)</span>	</h2>
+
+<div style="margin-bottom: 24px;">
+	<table class="td font-family email-order-details" cellspacing="0" cellpadding="6" border="0" style='color: #4b4b4b; border: 0; vertical-align: middle; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; width: 100%;' width="100%">
+				<thead>
+			<tr>
+				<th class="td text-align-left" scope="col" style="color: #4b4b4b; border: 0; vertical-align: middle; text-align: left; padding: 8px 12px; padding-left: 0;" align="left">Produkt</th>
+				<th class="td text-align-right" scope="col" style="color: #4b4b4b; border: 0; vertical-align: middle; text-align: right; padding: 8px 12px;" align="right">Menge</th>
+				<th class="td text-align-right" scope="col" style="color: #4b4b4b; border: 0; vertical-align: middle; text-align: right; padding: 8px 12px; padding-right: 0;" align="right">Preis</th>
+			</tr>
+		</thead>
+				<tbody>
+					</tbody>
+	</table>
+			<hr style="border: 0; border-top: 1px solid #1E1E1E; border-top-color: rgba(30, 30, 30, 0.2); margin: 20px 0;">
+		<table class="td font-family email-order-details" cellspacing="0" cellpadding="6" border="0" style='color: #4b4b4b; border: 0; vertical-align: middle; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; width: 100%;' width="100%">
+			</table>
+						<hr style="border: 0; border-top: 1px solid #1E1E1E; border-top-color: rgba(30, 30, 30, 0.2); margin: 20px 0;">
+				<table class="td font-family email-order-details" cellspacing="0" cellpadding="6" border="0" role="presentation" style='color: #4b4b4b; border: 0; vertical-align: middle; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; width: 100%;' width="100%">
+			<tr class="order-customer-note">
+				<td class="td text-align-left" style="color: #4b4b4b; border: 0; vertical-align: middle; text-align: left; padding: 8px 12px; border-bottom: 1px solid rgba(0,0,0,.2); padding-bottom: 24px; padding-top: 24px; padding-left: 0; padding-right: 0;" align="left">
+					<b>Anmerkungen</b><br>
+					Bitte senden Sie uns ein Angebot für den Speicher.				</td>
+			</tr>
+		</table>
+	</div>
+
+	<hr style="border: 0; border-top: 1px solid #1E1E1E; border-top-color: rgba(30, 30, 30, 0.2); margin: 20px 0;">
+<table id="addresses" cellspacing="0" cellpadding="0" border="0" role="presentation" style="width: 100%; vertical-align: top; margin-bottom: 0; padding: 0;" width="100%">
+	<tr>
+		<td class="font-family text-align-left" valign="top" width="50%" style='font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; text-align: left; border: 0; padding: 0;' align="left">
+							<b class="address-title" style='color: #1e1e1e; font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif;'>Unternehmensdaten</b>
+
+			<address class="address" style="color: #1e1e1e; font-style: normal; line-height: 120%; padding: 8px 0; word-break: break-all;">
+				DE Liefer Walk<br>Liefer Zwei GmbH													<br>de-liefert2@example.test											</address>
+		</td>
+			</tr>
+</table>
+<br>																		</div>
+																	</td>
+																</tr>
+															</table>
+															<!-- End Content -->
+														</td>
+													</tr>
+												</table>
+												<!-- End Body -->
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td align="center" valign="top">
+									<!-- Footer -->
+									<table border="0" cellpadding="10" cellspacing="0" width="100%" id="template_footer" role="presentation">
+										<tr>
+											<td valign="top" style="padding: 0; border-radius: 0;">
+												<table border="0" cellpadding="10" cellspacing="0" width="100%" role="presentation">
+													<tr>
+														<td colspan="2" valign="middle" id="credit" style='border-radius: 0; border: 0; border-top: 1px solid rgba(0,0,0,.2); font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif; font-size: 12px; line-height: 140%; text-align: center; padding: 32px; color: #787c82;' align="center">
+															<p style="margin: 0;">Linker<br>Steinfeldstraße 3, 39179 Barleben, Deutschland</p>
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+									<!-- End Footer -->
+								</td>
+							</tr>
+						</table>
+					</div>
+				</td>
+				<td><!-- Deliberately empty to support consistent sizing and layout across multiple email clients. --></td>
+			</tr>
+		</table>
+	</body>
+</html>
+--- body ---

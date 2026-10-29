@@ -12,8 +12,10 @@ namespace Linker\Commerce\Tests\Unit\Presentation;
 use Linker\Commerce\Presentation\LibraryPage;
 use Linker\Commerce\Products\DocumentLibrary;
 use Linker\Commerce\Products\DocumentThumbnails;
+use Linker\Commerce\Products\TradeRules;
 use Linker\Commerce\Tests\TestCase;
 use WP_Mock;
+use WP_Mock\Functions\Handler;
 
 /**
  * Tests for LibraryPage: the register's rail and chips, the FAQ tab's cards,
@@ -119,7 +121,8 @@ final class LibraryPageTest extends TestCase {
 		WP_Mock::userFunction( 'wp_enqueue_script', array( 'times' => '0+' ) );
 		WP_Mock::userFunction( 'esc_html__', array( 'return' => static fn ( string $text ): string => $text ) );
 		WP_Mock::userFunction( 'esc_attr__', array( 'return' => static fn ( string $text ): string => $text ) );
-		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn ( array $value ): string => (string) json_encode( $value ) ) );
+		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn ( array $value, int $flags = 0 ): string => (string) json_encode( $value, $flags ) ) );
+		WP_Mock::userFunction( 'wp_strip_all_tags', array( 'return' => static fn ( string $value ): string => strip_tags( $value ) ) );
 		WP_Mock::userFunction(
 			'get_posts',
 			array(
@@ -507,6 +510,208 @@ final class LibraryPageTest extends TestCase {
 					'type' => 'manual',
 				)
 			)
+		);
+	}
+
+	/**
+	 * The English library emits a FAQPage whose questions and answers come
+	 * from the same model that renders the visible FAQ rows.
+	 */
+	public function test_the_library_schema_matches_the_visible_faq(): void {
+		WP_Mock::userFunction(
+			'get_queried_object',
+			array(
+				'return' => new \WP_Post(
+					(object) array(
+						'ID'        => 932,
+						'post_type' => 'page',
+						'post_name' => 'faq-download',
+					)
+				),
+			)
+		);
+
+		ob_start();
+		( new LibraryPage( $this->library() ) )->print_schema();
+		$html = (string) ob_get_clean();
+
+		$this->assertSame( 1, substr_count( $html, 'type="application/ld+json"' ) );
+		$this->assertStringContainsString( '"@type":"FAQPage"', $html );
+		$this->assertStringContainsString( '"name":"Is the module stackable?"', $html );
+		$this->assertStringContainsString( '"text":"Yes, up to four modules. GoodWe GW5.1-BAT-D-G21 — ESA battery manual, p. 12"', $html );
+		$this->assertStringContainsString( '"name":"What is the minimum order quantity, and where does Linker deliver?"', $html );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * The German twin follows the English page's Polylang pair and emits the
+	 * German FAQPage from the same code path.
+	 */
+	public function test_the_german_library_twin_also_gets_the_faq_schema(): void {
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'de' ) );
+		WP_Mock::userFunction(
+			'get_queried_object',
+			array(
+				'return' => new \WP_Post(
+					(object) array(
+						'ID'        => 6863,
+						'post_type' => 'page',
+						'post_name' => 'faq-dokumente',
+					)
+				),
+			)
+		);
+		WP_Mock::userFunction(
+			'pll_get_post',
+			array(
+				'args'   => array( 6863, 'en' ),
+				'return' => 932,
+			)
+		);
+		WP_Mock::userFunction(
+			'get_post',
+			array(
+				'args'   => array( 932 ),
+				'return' => new \WP_Post(
+					(object) array(
+						'ID'        => 932,
+						'post_type' => 'page',
+						'post_name' => 'faq-download',
+					)
+				),
+			)
+		);
+
+		ob_start();
+		( new LibraryPage( $this->library() ) )->print_schema();
+		$html = (string) ob_get_clean();
+
+		$this->assertStringContainsString( '"@type":"FAQPage"', $html );
+		$this->assertStringContainsString( '"name":"Is the module stackable?"', $html );
+		$this->assertConditionsMet();
+	}
+
+	/** An ordinary page cannot inherit the library's FAQPage block. */
+	public function test_a_non_library_page_gets_no_faq_schema(): void {
+		WP_Mock::userFunction(
+			'get_queried_object',
+			array(
+				'return' => new \WP_Post(
+					(object) array(
+						'ID'        => 28,
+						'post_type' => 'page',
+						'post_name' => 'contact',
+					)
+				),
+			)
+		);
+
+		ob_start();
+		( new LibraryPage( $this->library() ) )->print_schema();
+		$this->assertSame( '', (string) ob_get_clean() );
+		$this->assertSame( 0, $this->authority_reads );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * FAQPage follows what the interaction layer leaves visible: the first
+	 * 20 rows of each card, in the request's language, and plain answer text.
+	 *
+	 * @dataProvider visibleLanguages
+	 * @param string $language Requested language.
+	 * @param string $prefix   Visible question prefix.
+	 * @param string $answer   Expected first answer.
+	 */
+	public function test_faq_schema_uses_each_visible_card_page_and_plain_answer_text( string $language, string $prefix, string $answer ): void {
+		$path = (string) tempnam( sys_get_temp_dir(), 'linker-trade-' );
+		$qas  = array();
+		for ( $number = 1; $number <= 21; ++$number ) {
+			$qas[] = array(
+				'question' => array(
+					'en' => 'Question ' . $number,
+					'de' => 'Frage ' . $number,
+				),
+				'answer'   => array(
+					'en' => 'Read <a href="/manual/">the manual</a> for item ' . $number . '.',
+					'de' => 'Lesen Sie <a href="/de/handbuch/">das Handbuch</a> für Position ' . $number . '.',
+				),
+			);
+		}
+		file_put_contents(
+			$path,
+			(string) json_encode(
+				array(
+					'categories' => array(
+						array(
+							'name' => array(
+								'en' => 'Visible card',
+								'de' => 'Sichtbare Karte',
+							),
+							'qas'  => $qas,
+						),
+					),
+				)
+			)
+		);
+
+		try {
+			// The test fixture registers English by default; this function
+			// handler is the override point WP_Mock uses for each generated
+			// WordPress function.
+			Handler::registerHandler( 'pll_current_language', static fn (): string => $language );
+			$this->assertSame( $language, pll_current_language() );
+			WP_Mock::userFunction(
+				'get_queried_object',
+				array(
+					'return' => new \WP_Post(
+						(object) array(
+							'ID'        => 932,
+							'post_type' => 'page',
+							'post_name' => 'faq-download',
+						)
+					),
+				)
+			);
+			WP_Mock::userFunction( 'get_option', array( 'return' => array() ) );
+
+			ob_start();
+			( new LibraryPage( $this->library(), new TradeRules( $path ) ) )->print_schema();
+			$html = (string) ob_get_clean();
+			$this->assertSame( 1, preg_match( '#<script type="application/ld\+json">(.*?)</script>#s', $html, $match ) );
+			$encoded = $match[1] ?? '';
+			$this->assertNotSame( '', $encoded );
+			$schema = json_decode( $encoded, true, 512, JSON_THROW_ON_ERROR );
+			$this->assertIsArray( $schema );
+			$questions = array_column( $schema['mainEntity'], 'name' );
+			$this->assertContains( $prefix . '1', $questions );
+			$this->assertContains( $prefix . '20', $questions );
+			$this->assertNotContains( $prefix . '21', $questions );
+			$this->assertSame( $answer, $schema['mainEntity'][0]['acceptedAnswer']['text'] );
+			$this->assertStringNotContainsString( '<a ', $schema['mainEntity'][0]['acceptedAnswer']['text'] );
+			$this->assertSame(
+				20,
+				count(
+					array_filter(
+						$questions,
+						static fn ( string $question ): bool => str_starts_with( $question, 'Question ' ) || str_starts_with( $question, 'Frage ' )
+					)
+				)
+			);
+		} finally {
+			unlink( $path );
+		}
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * Both language faces use the same visible-card projection.
+	 *
+	 * @return array<string, array{string, string, string}>
+	 */
+	public function visibleLanguages(): array {
+		return array(
+			'English' => array( 'en', 'Question ', 'Read the manual for item 1.' ),
+			'German'  => array( 'de', 'Frage ', 'Lesen Sie das Handbuch für Position 1.' ),
 		);
 	}
 

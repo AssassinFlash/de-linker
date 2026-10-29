@@ -110,7 +110,7 @@ def test_wp_config_names_the_instance_and_its_directory(instance: Instance) -> N
 def test_reads_the_installed_versions(instance: Instance) -> None:
     write(
         instance.docroot / "wp-includes" / "version.php",
-        "<?php\n$wp_version = '7.1.3';\n",
+        "<?php\n$wp_version = '7.1.4';\n",
     )
     write(
         instance.wp_content / "plugins" / "woocommerce" / "woocommerce.php",
