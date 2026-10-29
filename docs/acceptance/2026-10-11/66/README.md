@@ -65,6 +65,16 @@
 
 装配现在按来源组标题去首尾空白后与原标签的组合区分，避免仅因录入空白拆开同一组；只有标签冲突时显示该组名；同组重复标签逐条保留、不猜跨商品对应，每个产品的值按 ID 列顺序填入，未声明项留空。页面按列 ID 渲染，空值显示破折号。非冲突同组标签仍可并排比较；原值、单位、注记保留。能力继续只返回共同的 `products` / `rows`，不输出页面专有的 `specs`。发布、价格和库存边界沿用现有验证。
 
-回归：`plugins/linker-commerce/tests/php/Unit/Products/ComparisonTest.php` 使用真实 6530 EN/DE 技术组并覆盖同组匹配、跨组分离、组内重复和未命名组；`tests/php/Unit/Presentation/ComparePageTest.php` 检查真实 6530 的 EN/DE 表格行和第二列位置，以及独立稀疏值；既有 `ComparisonLiveProductsTest`、`CompareProductsTest` 继续检查共享能力子集，`ComparisonTest` 保留中途撤回和文档变化的发布检查。结果及真实浏览器、部署读回以本批最终验收记录为准，当前仅为候选实现，不代表线上已修复。
+回归：`plugins/linker-commerce/tests/php/Unit/Products/ComparisonTest.php` 使用真实 6530 EN/DE 技术组并覆盖同组匹配、跨组分离、组内重复和未命名组；`tests/php/Unit/Presentation/ComparePageTest.php` 检查真实 6530 的 EN/DE 表格行和第二列位置，以及独立稀疏值；既有 `ComparisonLiveProductsTest`、`CompareProductsTest` 继续检查共享能力子集，`ComparisonTest` 保留中途撤回和文档变化的发布检查。以下为候选的本地验证；本批尚待发布和线上读回，不代表线上已修复。
 
 本批开发复用单一临时工作树 `/Users/chesterjohn/.codex/worktrees/comparison-spec-integrity/de-linker`（负责：比较规格修复执行者；用途：隔离候选与测试；回收条件：父任务已接收提交、评审及浏览器核验结束后，保留提交并回收此工作树和可重建 vendor）。不新建数据库快照或实例。
+
+
+### 本批候选的本地读回
+
+- PHP 8.3 定向回归：比较装配、页面、共享能力及其真实产品夹具共 28 项 / 121 断言通过；本次 PHP 差异 PHPCS、PHPStan level 8 通过。标准评审覆盖完整运行时差异，独立规格评审覆盖完整差异及组名空白约定，均通过。
+- 复用本机 8888 的线上快照，产品 1832 和 6530 均为已发布商品，未写入产品数据。正确加载候选字节后，EN/DE × 1440/390 实际浏览器中，三行分别为电池组 `3072 W | —`、电网组 `— | 60 kW`、逆变器组 `— | 30 kW（来源注记）`，每行包括表头共三个单元格，文档无横向溢出。手机显示横移提示，实测横移 155 px 到末列；桌面不显示提示。
+- 英文浏览器实际移除 1832 后，仅留 6530，60 kW 与 30 kW 仍各占一行、每行两个单元格；清空比较后进入空态并清除选择。此检查没有重新尝试被保护验证拦下的加入方案操作。
+- 首次以单文件软链接挂载候选时，PHP 的实际路径使脚本 URL 错误、手机提示未运行；该轮不作为通过证据。将候选文件的真实字节放回原位置后，正确脚本 URL 返回 HTTP 200，真实浏览器显示手机提示并可横移，以上四视口证据均来自修正后的挂载。
+- 验收后恢复两份原文件，原文件与插件目录链接的 inode、mtime 和原文件 SHA-256 均与前像一致；定点失效 opcode 后，HTTP Reflection 读回原路径及原文件哈希，比较页 HTTP 200。临时 PHP 探针和还原清单已删除，未重启或新建实例。
+- 本机唯一浏览器记录：`/Users/chesterjohn/de-linker-data/privacy-visual-20261021/home-image-loading-20261023T0130Z/initial-render-media-current-main-20261024/comparison-integrity-browser.json`；德语 390 候选截图同目录 `comparison-integrity-de390-candidate.png`。两者是本地验收证据，不是部署文件。
