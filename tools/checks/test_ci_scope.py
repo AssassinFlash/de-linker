@@ -448,16 +448,16 @@ class ScopeTest(unittest.TestCase):
         ):
             self.assertIs(ci_scope.checked_pr_tree(commit), run)
         with (
+            patch.object(ci_scope, "git", return_value=f"{commit}\n".encode()),
+            patch.dict(os.environ, {"REPOSITORY": "owner/repo"}),
             patch.object(
                 ci_scope,
-                "git",
-                side_effect=[
-                    f"{commit}\n".encode(),
-                    b"CI: fail fast with locally reproducible lanes (#779)\n",
+                "api",
+                return_value=[
+                    {"merge_commit_sha": "d" * 40, "head": {"sha": "e" * 40}},
+                    {"merge_commit_sha": commit, "head": {"sha": source}},
                 ],
             ),
-            patch.dict(os.environ, {"REPOSITORY": "owner/repo"}),
-            patch.object(ci_scope, "api", return_value={"head": {"sha": source}}),
             patch.object(ci_scope, "latest_run", return_value=run),
             patch.object(ci_scope, "checked_run", return_value=True),
         ):
