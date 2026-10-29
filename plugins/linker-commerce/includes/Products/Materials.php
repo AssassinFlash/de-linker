@@ -1355,6 +1355,12 @@ final class Materials {
 	}
 
 	/**
+	 * Option written by tools/migrate/de-document-descriptions.py. Values are
+	 * existing reviewed German titles, keyed by the exact English string.
+	 */
+	public const DE_DOCUMENT_TITLES = 'linker_de_document_titles';
+
+	/**
 	 * A document title in the page's language (AGENTS.md §3: the site never
 	 * says catalogue; ticket #264 M3). The stored titles are manufacturer
 	 * document names and may carry the English word; on a German page the
@@ -1369,6 +1375,26 @@ final class Materials {
 			return $title;
 		}
 		return self::apply_terms( $title, true );
+	}
+
+	/**
+	 * German pages use an existing reviewed title when the guarded migration
+	 * has stored one for this exact English string. English pages and unmapped
+	 * titles keep the stored wording; German catalogue words still follow
+	 * document_title_display().
+	 *
+	 * @param string    $title  Stored title shown to the customer.
+	 * @param bool|null $german Whether the page is German; null reads the request.
+	 */
+	public static function localized_document_title( string $title, ?bool $german = null ): string {
+		$german = $german ?? self::is_de();
+		if ( ! $german ) {
+			return $title;
+		}
+		$stored   = function_exists( 'get_option' ) ? get_option( self::DE_DOCUMENT_TITLES, array() ) : array();
+		$reviewed = is_array( $stored ) && is_string( $stored[ $title ] ?? null ) ? $stored[ $title ] : '';
+
+		return self::document_title_display( '' !== $reviewed ? $reviewed : $title, true );
 	}
 
 	/**
