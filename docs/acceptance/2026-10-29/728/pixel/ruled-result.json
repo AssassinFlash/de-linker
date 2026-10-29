@@ -1,0 +1,28 @@
+{
+  "status": "ruled_layout_change_without_downstream_pixel_equality_claim",
+  "method": "ImageMagick exact RGB comparison above the inserted row's margin box; no tolerance, resize, padding or retry",
+  "above_row_exact_comparison": [
+    {
+      "case": "services-en-1440",
+      "height_px": 1814,
+      "different_pixels": 0
+    },
+    {
+      "case": "services-en-390",
+      "height_px": 2218,
+      "different_pixels": 0
+    },
+    {
+      "case": "services-de-1440",
+      "height_px": 1814,
+      "different_pixels": 0
+    },
+    {
+      "case": "services-de-390",
+      "height_px": 2334,
+      "different_pixels": 0
+    }
+  ],
+  "downstream_limit": "The inserted row has a fractional CSS height. Pixels below it are not equal after an integer crop, so no below-row pixel-parity result is claimed. layout-result.json records the separately measured DOM translation and unchanged heights.",
+  "inserted_row": "The four cells were inspected at 1440 and the four stacked facts at 390 in EN and DE."
+}

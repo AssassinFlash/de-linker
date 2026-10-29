@@ -75,7 +75,6 @@ final class LibraryPageTest extends TestCase {
 		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->andReturn( true )->byDefault();
 		WP_Mock::userFunction( 'get_post_type' )->andReturn( 'product' )->byDefault();
 		WP_Mock::userFunction( 'get_post_status' )->andReturn( 'publish' )->byDefault();
-		WP_Mock::userFunction( 'get_option' )->andReturn( array() )->byDefault();
 		WP_Mock::userFunction( 'wp_specialchars_decode', array( 'return' => static fn ( string $value ): string => $value ) );
 		WP_Mock::userFunction(
 			'has_filter',
@@ -673,6 +672,7 @@ final class LibraryPageTest extends TestCase {
 					),
 				)
 			);
+			WP_Mock::userFunction( 'get_option', array( 'return' => array() ) );
 
 			ob_start();
 			( new LibraryPage( $this->library(), new TradeRules( $path ) ) )->print_schema();
