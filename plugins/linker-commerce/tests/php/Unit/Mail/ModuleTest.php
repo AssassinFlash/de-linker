@@ -53,6 +53,7 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectActionAdded( 'init', array( $jobs, 'register_post_type' ) );
 		WP_Mock::expectFilterAdded( 'pre_wp_mail', array( $outbox, 'intercept' ), 10, 2 );
 		WP_Mock::expectActionAdded( 'wp_mail_failed', array( $outbox, 'remember_error' ) );
+		WP_Mock::expectActionAdded( 'wp_mail_succeeded', array( $outbox, 'remember_message_id' ) );
 		WP_Mock::expectActionAdded( 'phpmailer_init', array( $outbox, 'configure_mailer' ) );
 		WP_Mock::expectActionAdded( Outbox::HOOK, array( $outbox, 'retry' ) );
 		$this->expect_action_on_any( 'action_scheduler_failed_execution', \Linker\Commerce\Mail\PreTransportRecovery::class, 'failed', 10, 2 );
