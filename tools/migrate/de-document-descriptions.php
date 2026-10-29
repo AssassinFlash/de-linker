@@ -16,9 +16,9 @@ try {
 		if ( ! is_array( $request ) || ! is_string( $request['action'] ?? null ) ) {
 			throw new RuntimeException( 'Unreadable migration request.' );
 		}
-		$key = \Linker\Commerce\Products\Materials::DE_DOCUMENT_TITLES;
-		$site = home_url();
-		$read = static function () use ( $key ) {
+		$key     = \Linker\Commerce\Products\Materials::DE_DOCUMENT_TITLES;
+		$site    = home_url();
+		$read    = static function () use ( $key ) {
 			global $wpdb;
 			$found = $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s", $key ) );
 			if ( ! is_string( $found ) ) {
@@ -27,7 +27,7 @@ try {
 			$value = maybe_unserialize( $found );
 			return is_array( $value ) ? $value : null;
 		};
-		$plan = static function () use ( $site ): array {
+		$plan    = static function () use ( $site ): array {
 			$editorial = static function ( string $title ): bool {
 				return 1 === preg_match( '/names the|covers the|including English|German and English/i', $title );
 			};
@@ -57,7 +57,7 @@ try {
 				}
 				return $out;
 			};
-			$ids = get_posts(
+			$ids       = get_posts(
 				array(
 					'post_type'      => 'product',
 					'post_status'    => 'publish',
@@ -87,9 +87,9 @@ try {
 						);
 						continue;
 					}
-					$pairs[ $english ]['de'][ $german ]      = true;
-					$pairs[ $english ]['files'][ $file ]     = true;
-					$pairs[ $english ]['products'][ $id ]    = true;
+					$pairs[ $english ]['de'][ $german ]   = true;
+					$pairs[ $english ]['files'][ $file ]  = true;
+					$pairs[ $english ]['products'][ $id ] = true;
 				}
 				$docs = get_post_meta( $id, '_linker_documents', true );
 				$docs = is_string( $docs ) ? json_decode( $docs, true ) : $docs;
@@ -131,7 +131,7 @@ try {
 			foreach ( $pairs as $english => $pair ) {
 				$germans = array_keys( $pair['de'] );
 				if ( 1 !== count( $germans ) ) {
-					throw new RuntimeException( 'Refusing ambiguous reviewed German title for: ' . $english );
+					throw new RuntimeException( 'Refusing ambiguous reviewed German title for: ' . esc_html( $english ) );
 				}
 				$map[ $english ] = $germans[0];
 				unset( $blockers[ 'acf:' . $english ] );
@@ -203,21 +203,40 @@ try {
 		}
 		if ( 'apply' === $request['action'] ) {
 			if ( $current === $receipt['map'] ) {
-				echo '@@de-document-descriptions@@' . wp_json_encode( array( 'site' => $site, 'changes' => 0, 'action' => 'apply' ) );
+				echo '@@de-document-descriptions@@' . wp_json_encode(
+					array(
+						'site'    => $site,
+						'changes' => 0,
+						'action'  => 'apply',
+					)
+				);
 				return;
 			}
-			if ( $current !== ( $receipt['before'] ?? null ) ) {
+			if ( ( $receipt['before'] ?? null ) !== $current ) {
 				throw new RuntimeException( 'The option changed after planning; refusing to overwrite it.' );
 			}
 			if ( ! update_option( $key, $receipt['map'], false ) && get_option( $key, null ) !== $receipt['map'] ) {
 				throw new RuntimeException( 'The German document-title option was not stored.' );
 			}
-			echo '@@de-document-descriptions@@' . wp_json_encode( array( 'site' => $site, 'changes' => 1, 'action' => 'apply', 'titles' => count( $receipt['map'] ) ) );
+			echo '@@de-document-descriptions@@' . wp_json_encode(
+				array(
+					'site'    => $site,
+					'changes' => 1,
+					'action'  => 'apply',
+					'titles'  => count( $receipt['map'] ),
+				)
+			);
 			return;
 		}
 		if ( 'rollback' === $request['action'] ) {
-			if ( $current === ( $receipt['before'] ?? null ) ) {
-				echo '@@de-document-descriptions@@' . wp_json_encode( array( 'site' => $site, 'changes' => 0, 'action' => 'rollback' ) );
+			if ( ( $receipt['before'] ?? null ) === $current ) {
+				echo '@@de-document-descriptions@@' . wp_json_encode(
+					array(
+						'site'    => $site,
+						'changes' => 0,
+						'action'  => 'rollback',
+					)
+				);
 				return;
 			}
 			if ( $current !== $receipt['map'] ) {
@@ -228,12 +247,18 @@ try {
 			if ( ! $done && $read() !== $before ) {
 				throw new RuntimeException( 'Rollback did not restore the previous option.' );
 			}
-			echo '@@de-document-descriptions@@' . wp_json_encode( array( 'site' => $site, 'changes' => 1, 'action' => 'rollback' ) );
+			echo '@@de-document-descriptions@@' . wp_json_encode(
+				array(
+					'site'    => $site,
+					'changes' => 1,
+					'action'  => 'rollback',
+				)
+			);
 			return;
 		}
 		throw new RuntimeException( 'Unknown migration action.' );
 	} )( 'de-document-descriptions-payload' );
 } catch ( Throwable $error ) {
-	fwrite( STDERR, $error->getMessage() . PHP_EOL );
+	fwrite( STDERR, $error->getMessage() . PHP_EOL ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- CLI error stream, not a WordPress filesystem operation.
 	exit( 1 );
 }

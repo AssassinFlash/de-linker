@@ -23,7 +23,10 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT / "tools/cutover/src"), str(ROOT / "tools/local/src")]
 
-from linker_cutover.target import local_target, remote_target  # type: ignore[import-not-found]  # noqa: E402
+from linker_cutover.target import (  # type: ignore[import-not-found]  # noqa: E402
+    local_target,
+    remote_target,
+)
 
 HERE = Path(__file__).resolve().parent
 MARKER = "@@de-document-descriptions@@"
@@ -37,13 +40,18 @@ def main() -> int:
     parser.add_argument("action", choices=("plan", "apply", "verify", "rollback"))
     parser.add_argument("--receipt", type=Path, required=True)
     args = parser.parse_args()
-    if args.production and os.environ.get("LINKER_ALLOW_PRODUCTION_CONTENT_WRITE") != "1":
+    if (
+        args.production
+        and os.environ.get("LINKER_ALLOW_PRODUCTION_CONTENT_WRITE") != "1"
+    ):
         parser.error(
             "Production content writes stay refused until LINKER_ALLOW_PRODUCTION_CONTENT_WRITE=1 is set for a backed-up run."
         )
     site = remote_target() if args.production else local_target(args.instance)
     if args.action == "plan" and args.receipt.exists():
-        parser.error("Use a fresh receipt path; an existing recovery receipt is preserved.")
+        parser.error(
+            "Use a fresh receipt path; an existing recovery receipt is preserved."
+        )
     request: dict[str, Any] = {"action": args.action}
     if args.action != "plan":
         request["receipt"] = json.loads(args.receipt.read_text())
@@ -58,7 +66,11 @@ def main() -> int:
         print(run.stderr.strip() or run.stdout.strip(), file=sys.stderr)
         return run.returncode
     result = json.loads(
-        next(line[len(MARKER) :] for line in run.stdout.splitlines() if line.startswith(MARKER))
+        next(
+            line[len(MARKER) :]
+            for line in run.stdout.splitlines()
+            if line.startswith(MARKER)
+        )
     )
     if args.action == "plan":
         fd = os.open(args.receipt, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
@@ -68,7 +80,11 @@ def main() -> int:
     titles = result.get("titles")
     if titles is None:
         titles = len(result.get("map") or {})
-    if args.action in {"apply", "verify"} and "receipt" in request and not result.get("map"):
+    if (
+        args.action in {"apply", "verify"}
+        and "receipt" in request
+        and not result.get("map")
+    ):
         titles = len(request["receipt"]["map"])
     print(
         json.dumps(
@@ -77,7 +93,11 @@ def main() -> int:
                 "site": result.get("site"),
                 "changes": result.get("changes"),
                 "titles": titles,
-                "blockers": len(result.get("blockers", request.get("receipt", {}).get("blockers", []))),
+                "blockers": len(
+                    result.get(
+                        "blockers", request.get("receipt", {}).get("blockers", [])
+                    )
+                ),
                 "ok": result.get("ok"),
             },
             ensure_ascii=False,
