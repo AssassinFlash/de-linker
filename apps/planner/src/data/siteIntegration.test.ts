@@ -136,3 +136,36 @@ test("language switches keep only validated result/workspace references for the 
 		`https://site.example/de/?project=${project}#lp-calculations`,
 	);
 });
+
+test("language switches keep a product proposal and do not treat roof as a saved result", () => {
+	const carried = new URL(
+		projectLanguageUrl(
+			"/de/",
+			"https://site.example/?step=equipment&product=1946&nonce=private",
+			null,
+		),
+	);
+	assert.equal(carried.searchParams.get("step"), "equipment");
+	assert.equal(carried.searchParams.get("product"), "1946");
+	assert.equal(carried.searchParams.has("nonce"), false);
+	const project = "a".repeat(32);
+	const owned = new URL(
+		projectLanguageUrl(
+			"/de/",
+			`https://site.example/?project=${project}&step=equipment&product=1946`,
+			project,
+		),
+	);
+	assert.equal(owned.hash, "");
+	assert.equal(owned.searchParams.has("step"), false);
+	assert.equal(owned.searchParams.has("product"), false);
+	const duplicate = new URL(
+		projectLanguageUrl(
+			"/de/",
+			"https://site.example/?step=equipment&product=1946&product=1947",
+			null,
+		),
+	);
+	assert.equal(duplicate.searchParams.has("product"), false);
+	assert.equal(duplicate.searchParams.get("step"), "equipment");
+});

@@ -183,13 +183,16 @@ export function EquipmentSetup({
 			p.device_class === "inverters" ||
 			Object.hasOwn(p.figures, "ac_output_kw_nominal"),
 	);
-	const storage = products.filter((p) =>
-		[
-			"system_usable_energy_kwh",
-			"system_nominal_energy_kwh",
-			"module_energy_kwh_nominal",
-			"module_energy_kwh_usable",
-		].some((key) => Object.hasOwn(p.figures, key)),
+	const storage = products.filter(
+		(p) =>
+			p.device_class === "home-storage" ||
+			p.device_class === "battery-systems" ||
+			[
+				"system_usable_energy_kwh",
+				"system_nominal_energy_kwh",
+				"module_energy_kwh_nominal",
+				"module_energy_kwh_usable",
+			].some((key) => Object.hasOwn(p.figures, key)),
 	);
 	const number = (
 		key: NumericField,

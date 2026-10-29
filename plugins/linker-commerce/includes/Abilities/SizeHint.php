@@ -138,6 +138,10 @@ final class SizeHint {
 			$query['plz'] = $input['plz'];
 			$parts[]      = 'PLZ ' . $input['plz'];
 		}
+		// A positive PV size is the existing signal for a new layout. Other sizing stays on the tool root.
+		if ( isset( $query['pv_kwp'] ) ) {
+			$query['step'] = 'roof';
+		}
 		$path = self::PATH;
 		$url  = function_exists( 'home_url' ) ? home_url( $path ) : $path;
 		if ( array() !== $query ) {

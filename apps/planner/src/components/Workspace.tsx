@@ -148,13 +148,20 @@ export function Workspace({
 			},
 		);
 	}, [index.data]);
-	function created(project: Project, destination?: "design") {
+	function created(project: Project, destination?: "design" | "equipment") {
 		if (!client.isCurrentScope(session.query_scope)) return false;
 		cache.setQueryData([session.query_scope, "project", project.id], project);
 		void cache.invalidateQueries({
 			queryKey: [session.query_scope, "projects"],
 		});
-		select(project.id, destination === "design" ? "lp-design" : "lp-site");
+		select(
+			project.id,
+			destination === "equipment"
+				? "lp-equipment"
+				: destination === "design"
+					? "lp-design"
+					: "lp-site",
+		);
 		return true;
 	}
 	if (selected)

@@ -25,7 +25,7 @@ final class LanguageLinks {
 	/**
 	 * Visitor query state retained when switching this page's language.
 	 */
-	private const LANGUAGE_QUERY_KEYS = array( 's', 'orderby', 'step', 'key', 'admin-access', 'q', 'sort', 'application', 'brand', 'phase', 'power', 'kw_min', 'kw_max', 'kwh_min', 'kwh_max', 'product-page', 'saved_solution' );
+	private const LANGUAGE_QUERY_KEYS = array( 's', 'orderby', 'step', 'product', 'key', 'admin-access', 'q', 'sort', 'application', 'brand', 'phase', 'power', 'kw_min', 'kw_max', 'kwh_min', 'kwh_max', 'product-page', 'saved_solution' );
 
 	/**
 	 * The header's toggle: a globe (hidden by the header's own stylesheet)

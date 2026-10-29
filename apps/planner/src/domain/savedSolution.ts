@@ -62,6 +62,8 @@ export function savedSolutionHints(source: SavedSolutionSource): EntryHints {
 		backup: null,
 		postalCode: null,
 		roof: false,
+		equipment: false,
+		productId: null,
 		invalid: true,
 	};
 	if (!["residential", "commercial"].includes(source.kind)) return empty;

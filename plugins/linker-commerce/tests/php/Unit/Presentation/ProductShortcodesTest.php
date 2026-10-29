@@ -471,6 +471,39 @@ final class ProductShortcodesTest extends TestCase {
 		$this->assertSame( 'http://linker.test/solution-configurator/?step=roof', $this->url( 'en' ) );
 	}
 
+
+	/**
+	 * A product proposal survives the native language switch. A cache-bust key does not.
+	 */
+	public function test_language_switch_keeps_the_product_proposal(): void {
+		WP_Mock::userFunction( 'get_queried_object', array( 'return' => null ) );
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'en' ) );
+		WP_Mock::userFunction(
+			'pll_the_languages',
+			array(
+				'return' => array(
+					'de' => array( 'url' => 'http://linker.test/de/loesungskonfigurator/?step=equipment&product=1946' ),
+				),
+			)
+		);
+		WP_Mock::userFunction(
+			'pll_get_requested_url',
+			array(
+				'return' => 'http://linker.test/solution-configurator/?step=equipment&product=1946&cbq=1',
+			)
+		);
+		$_SERVER['REQUEST_URI'] = '/solution-configurator/?step=equipment&product=1946&cbq=1';
+		$_GET                   = array(
+			'step'    => 'equipment',
+			'product' => '1946',
+			'cbq'     => '1',
+		);
+
+		$this->filter_returns( 'pll_translation_url', 'http://linker.test/de/loesungskonfigurator/?step=equipment&product=1946', array( 'http://linker.test/de/loesungskonfigurator/?step=equipment&product=1946', 'de' ) );
+		$this->assertSame( 'http://linker.test/de/loesungskonfigurator/?step=equipment&product=1946', $this->url( 'de' ) );
+		$this->assertSame( 'http://linker.test/solution-configurator/?step=equipment&product=1946', $this->url( 'en' ) );
+	}
+
 	/**
 	 * The fixture's request path, without its query.
 	 */
@@ -1827,5 +1860,27 @@ final class ProductShortcodesTest extends TestCase {
 		) as $row ) {
 			$this->assertSame( 'Compatibility information unavailable', $method->invoke( null, $row, 'en' ) );
 		}
+	}
+
+	/**
+	 * The product tools open the same configurator with the canonical product as a proposal.
+	 */
+	public function test_product_tools_link_the_canonical_product_into_equipment(): void {
+		unset( $GLOBALS['product'] );
+		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn ( $value ): string => (string) json_encode( $value ) ) );
+		WP_Mock::userFunction( 'has_filter' )->andReturn( true );
+		WP_Mock::userFunction(
+			'get_page_by_path',
+			array(
+				'return' => new \WP_Post( (object) array( 'ID' => 3302 ) ),
+			)
+		);
+		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'http://linker.test/solution-configurator/' ) );
+		$html = $this->pdp( true )->pdp_tools();
+
+		$this->assertStringContainsString( 'data-compare-product="6530"', $html );
+		$this->assertStringContainsString( 'href="http://linker.test/solution-configurator/?step=equipment&product=6530"', $html );
+		$this->assertStringContainsString( 'Open the Solution Configurator', $html );
+		$this->assertStringNotContainsString( 'step=roof', $html );
 	}
 }

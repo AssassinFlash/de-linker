@@ -919,12 +919,27 @@ final class ProductShortcodes {
 			__( 'About %s: give me the key specs, which batteries or inverters it pairs with, and whether it fits my project.', 'linker-commerce' ),
 			trim( (string) $view['title'] . ' (' . (string) $view['sku'] . ')' )
 		);
-		$html  = '<button type="button" class="pdp-tool" data-compare-identities="' . esc_attr( (string) wp_json_encode( ComparePage::identities( array( $product_id ) ) ) ) . '" data-compare-product="' . Publication::canonical_id( $product_id ) . '" aria-pressed="false">' . self::icon( 'compare' )
+		$html    = '<button type="button" class="pdp-tool" data-compare-identities="' . esc_attr( (string) wp_json_encode( ComparePage::identities( array( $product_id ) ) ) ) . '" data-compare-product="' . Publication::canonical_id( $product_id ) . '" aria-pressed="false">' . self::icon( 'compare' )
 			. '<span data-compare-label>' . esc_html__( 'Compare', 'linker-commerce' ) . '</span><svg class="compare-selected-mark" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m5 12 4 4 10-10"/></svg></button>';
-		$html .= '<button type="button" class="pdp-tool" data-pdp-ask data-ask-message="' . esc_attr( $ask_message ) . '">' . self::icon( 'ask' )
+		$html   .= '<button type="button" class="pdp-tool" data-pdp-ask data-ask-message="' . esc_attr( $ask_message ) . '">' . self::icon( 'ask' )
 			. esc_html__( 'Ask Genie', 'linker-commerce' ) . '</button>';
-		$html .= '<a class="pdp-tool" href="#downloads">' . self::icon( 'file' )
+		$html   .= '<a class="pdp-tool" href="#downloads">' . self::icon( 'file' )
 			. esc_html__( 'Documents', 'linker-commerce' ) . '</a>';
+		$planner = self::configurator_page_url();
+		if ( '' !== $planner ) {
+			$canonical = Publication::canonical_id( $product_id );
+			if ( $canonical > 0 ) {
+				$html .= '<a class="pdp-tool" href="' . esc_url(
+					add_query_arg(
+						array(
+							'step'    => 'equipment',
+							'product' => (string) $canonical,
+						),
+						$planner
+					)
+				) . '">' . esc_html__( 'Open the Solution Configurator', 'linker-commerce' ) . '</a>';
+			}
+		}
 		// The floating comparison chip is not copied here: ComparePage prints
 		// it from the footer on every surface that carries a selection
 		// control (spec 19 §5, one implementation).
