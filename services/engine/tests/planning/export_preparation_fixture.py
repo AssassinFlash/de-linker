@@ -690,6 +690,10 @@ def rendered() -> str:
 
 
 if __name__ == "__main__":
-    target = FIXTURES / f"preparation-flow-{sys.platform}-{platform.machine()}.json"
+    target = (
+        APP
+        / "tests/fixtures"
+        / f"preparation-flow-{sys.platform}-{platform.machine()}.json"
+    )
     target.write_text(rendered())
     print(target)
