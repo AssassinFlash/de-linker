@@ -78,7 +78,7 @@ try {
 						continue;
 					}
 					$german = $de[ $file ] ?? '';
-					if ( false === $german || ! is_string( $german ) || '' === $german || $german === $english ) {
+					if ( ! is_string( $german ) || '' === $german || $german === $english ) {
 						$blockers[ 'acf:' . $english ] = array(
 							'kind'    => 'missing-reviewed-german-title',
 							'english' => $english,
@@ -101,7 +101,7 @@ try {
 					$file  = $file_of( (string) ( $row['url'] ?? '' ) );
 					if ( 'chint dtsu666 catalog en' === $title ) {
 						$german = $de[ $file ] ?? '';
-						if ( ! is_string( $german ) || '' === $german || false === $german ) {
+						if ( ! is_string( $german ) || '' === $german ) {
 							$blockers[ 'catalog:' . $file ] = array(
 								'kind'    => 'catalog-title-without-reviewed-german',
 								'english' => $title,
@@ -154,8 +154,8 @@ try {
 						return array(
 							'english'  => $english,
 							'german'   => $map[ $english ],
-							'files'    => array_keys( $pairs[ $english ]['files'] ),
-							'products' => count( $pairs[ $english ]['products'] ),
+							'files'    => array_keys( $pairs[ $english ]['files'] ?? array() ),
+							'products' => count( $pairs[ $english ]['products'] ?? array() ),
 						);
 					},
 					array_keys( $map )
