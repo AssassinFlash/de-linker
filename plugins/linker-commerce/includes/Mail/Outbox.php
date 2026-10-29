@@ -128,7 +128,11 @@ final class Outbox {
 		$job         = '' !== $reset ? Capacity::within( $reset, fn (): int => $this->jobs->create( $message ) ) : $this->jobs->create( $message );
 		if ( $job < 1 ) {
 			ResetNotice::finish( $reset_scope, false );
-			CapacityHealth::failed();
+			// A second ordinary digest consumer is not a full queue. Critical
+			// reservations and genuine capacity refusals still record a failure.
+			if ( ! Capacity::ordinary_delivery_duplicate() ) {
+				CapacityHealth::failed();
+			}
 			return false;
 		}
 		if ( $joined ) {
