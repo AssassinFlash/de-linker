@@ -253,9 +253,9 @@ def generate_geometric_pv(
     )
     if not math.isfinite(profile.total_kwh):
         raise NumericalFailure("geometric PV scenario integrated energy is nonfinite")
-    # One document-level pass spells every derived float (solar geometry,
-    # array/module/converter witnesses, retained watts, energy) at the
-    # platform-stable precision; ``inputs`` stays byte-exact.
+    # One document-level pass spells derived diagnostics at the
+    # platform-stable precision. ``inputs`` and the read-back AC watt series
+    # stay byte-exact.
     witness: Object = {
         "schema_version": 1,
         "kind": MODEL,

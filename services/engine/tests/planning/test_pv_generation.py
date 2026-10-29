@@ -340,6 +340,15 @@ def test_physics_vectors_stay_bit_identical_when_witness_spelling_is_destroyed(
         baseline.profile.total_kwh
     )
     assert damaged.witness()["available_ac_w"] == baseline.witness()["available_ac_w"]
+    assert (
+        tuple(
+            float(cast(float, value) / 1000)
+            for value in cast(list[float], baseline.witness()["available_ac_w"])
+        )
+        == baseline.profile.values_kw
+    )
+    converter = cast(list[Object], baseline.witness()["converters"])[0]
+    assert converter["dc_available_w"] == baseline_report["dc_available_w"]
     solar_geometry = cast(Object, damaged.witness()["solar_geometry"])
     assert solar_geometry["apparent_zenith_deg"] == [0.0]
     assert baseline.witness()["available_ac_w"] != [0.0]

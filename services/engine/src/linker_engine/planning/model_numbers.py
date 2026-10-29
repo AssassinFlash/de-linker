@@ -18,10 +18,12 @@ documented: a stored witness float sits within 5e-10 relative (half the
 quantum) of its unrounded value. The stored decimal is converted back to
 binary64; ``canonical.encode`` remains the only JSON encoder.
 
-Retained inputs are not coarsened. ``canonical_witness_document`` skips the
-``inputs`` subtree, which carries pinned parameters, hashes and retained
-weather documents that other code re-verifies against exact bytes. The
-spelled float must not be read back into any calculation.
+Retained inputs and the complete AC watt series are not coarsened.
+``canonical_witness_document`` skips the ``inputs`` subtree, which carries
+pinned parameters, hashes and retained weather documents that other code
+re-verifies against exact bytes, and skips ``available_ac_w``, which profile
+preview and energy replay read back as their physical output series. The
+spelled floats must not be read back into any calculation.
 """
 
 from __future__ import annotations
@@ -38,6 +40,7 @@ DERIVED_WITNESS_SIGNIFICANT_DIGITS = 10
 # Witness-document subtree whose contents are pinned inputs, not derived
 # physics. It stays byte-exact; other code re-verifies its hashes.
 WITNESS_INPUTS_KEY = "inputs"
+WITNESS_EXACT_SERIES_KEYS = frozenset({"available_ac_w", "dc_available_w"})
 
 
 def _shortest_significant(value: float) -> str:
@@ -87,7 +90,9 @@ def canonical_witness_document(document: Mapping[str, Any]) -> dict[str, Any]:
     exact bytes other code re-verifies.
     """
     return {
-        key: _canonical_node(value) if key != WITNESS_INPUTS_KEY else value
+        key: value
+        if key == WITNESS_INPUTS_KEY or key in WITNESS_EXACT_SERIES_KEYS
+        else _canonical_node(value)
         for key, value in document.items()
     }
 
@@ -96,7 +101,10 @@ def _canonical_node(node: Any) -> Any:
     if isinstance(node, float):
         return derived_witness_number(node)
     if isinstance(node, dict):
-        return {key: _canonical_node(value) for key, value in node.items()}
+        return {
+            key: value if key in WITNESS_EXACT_SERIES_KEYS else _canonical_node(value)
+            for key, value in node.items()
+        }
     if isinstance(node, (list, tuple)):
         return [_canonical_node(item) for item in node]
     return node

@@ -11,7 +11,7 @@ import numpy as np
 import pytest
 
 from linker_engine.planning import report_numbers
-from linker_engine.planning.canonical import encode
+from linker_engine.planning.canonical import Object, encode
 from linker_engine.planning.model_numbers import (
     DERIVED_WITNESS_SIGNIFICANT_DIGITS,
     canonical_witness_document,
@@ -98,9 +98,10 @@ def test_adjacent_ulps_share_one_spelling() -> None:
     assert derived_witness_number(value) == derived_witness_number(drifted)
 
 
-def test_witness_document_encoding_collapses_one_ulp() -> None:
-    # The exported-fixture contract: a witness document whose derived floats
-    # move by one ulp encodes to byte-identical canonical JSON.
+def test_witness_document_encoding_spells_diagnostics_but_not_output_series() -> None:
+    # Derived diagnostics move by one ulp and still encode identically. The
+    # retained AC series is read back as physics, so it must stay exact and
+    # make the document differ when a watt moves.
     document = {
         "schema_version": 1,
         "kind": "test",
@@ -134,11 +135,19 @@ def test_witness_document_encoding_collapses_one_ulp() -> None:
         return node
 
     bumped = bump(document)
-    assert encode(
-        canonical_witness_document(cast(Mapping[str, object], document))
-    ) == encode(canonical_witness_document(cast(Mapping[str, object], bumped)))
+    canonical = canonical_witness_document(cast(Mapping[str, object], document))
+    canonical_bumped = canonical_witness_document(cast(Mapping[str, object], bumped))
+    assert canonical["available_ac_w"] == document["available_ac_w"]
+    assert canonical_bumped["available_ac_w"] == bumped["available_ac_w"]
+    assert canonical["available_ac_w"] != canonical_bumped["available_ac_w"]
+    assert encode(canonical) != encode(canonical_bumped)
+    assert canonical["solar_geometry"] == canonical_bumped["solar_geometry"]
+    arrays = cast(list[Object], canonical["arrays"])
+    bumped_arrays = cast(list[Object], canonical_bumped["arrays"])
+    assert arrays[0]["cell_temperature_c"] == bumped_arrays[0]["cell_temperature_c"]
+    assert arrays[0]["dc_available_w"] != bumped_arrays[0]["dc_available_w"]
     # The inputs subtree is pinned and never respelled, not even a ulp.
-    pinned = encode(canonical_witness_document(document))
+    pinned = encode(canonical)
     inputs_bumped = encode(
         canonical_witness_document({**document, "inputs": bump(document["inputs"])})
     )

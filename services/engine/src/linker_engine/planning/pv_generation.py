@@ -159,9 +159,9 @@ def generate_pv(
     )
     array_witnesses: list[Json] = [outputs[array.id].witness for array in arrays]
     converter_witnesses: list[Json] = [item[1] for item in converters]
-    # One document-level pass spells every derived float (solar geometry,
-    # array/module/converter witnesses, retained watts, energy) at the
-    # platform-stable precision; ``inputs`` stays byte-exact.
+    # One document-level pass spells derived diagnostics at the
+    # platform-stable precision. ``inputs`` and the read-back AC watt series
+    # stay byte-exact.
     witness: Object = {
         "schema_version": 1,
         "kind": parameters.model,
