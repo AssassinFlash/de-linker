@@ -10,8 +10,7 @@
  * Text Domain:       linker-i18n
  * Domain Path:       /languages
  *
- * The production host runs WordPress 7.1.3 on PHP 8.3.33
- * (docs/research/2026-10-09/framework-choice.md §2).
+ * The production host runs WordPress 7.1.4 on PHP 8.3.
  *
  * @package Linker\I18n
  */

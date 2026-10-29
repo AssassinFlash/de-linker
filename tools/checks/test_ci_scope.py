@@ -13,6 +13,7 @@ from unittest.mock import Mock, patch
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / ".github/workflows/check.yml"
 TEXT = WORKFLOW.read_text()
+JUSTFILE = (ROOT / "justfile").read_text()
 SCRIPT = TEXT.split("          python3 - <<'PYTHON'\n", 1)[1].split(
     "          PYTHON\n", 1
 )[0]
@@ -181,6 +182,26 @@ class ScopeTest(unittest.TestCase):
             self.ns["checked_run"]({**run, "status": "in_progress"}, commit)
         )
 
+    def test_squash_merge_and_merge_commit_find_the_pr_head(self):
+        commit = "a" * 40
+        source = "b" * 40
+        run = {"id": 1}
+        self.ns["latest_run"] = Mock(return_value=run)
+        self.ns["checked_run"] = Mock(return_value=True)
+
+        self.ns["git"] = Mock(return_value=f"{commit} {'c' * 40} {source}\n".encode())
+        self.assertIs(self.ns["checked_pr_tree"](commit), run)
+
+        self.ns["git"] = Mock(return_value=f"{commit}\n".encode())
+        self.ns["os"] = type("Env", (), {"environ": {"REPOSITORY": "owner/repo"}})
+        self.ns["api"] = Mock(
+            return_value=[
+                {"merge_commit_sha": "d" * 40, "head": {"sha": "e" * 40}},
+                {"merge_commit_sha": commit, "head": {"sha": source}},
+            ]
+        )
+        self.assertIs(self.ns["checked_pr_tree"](commit), run)
+
     def test_plan_retains_fail_closed_baseline_and_native_commerce_checks(self):
         # Check the actual dispatch wiring as well as the pure classifier.
         self.assertIn(
@@ -190,22 +211,22 @@ class ScopeTest(unittest.TestCase):
         self.assertIn(
             'mode, reason = "full", "Change or baseline proof unavailable;', SCRIPT
         )
-        for title in (
-            "business and native notification capacity in both stores",
-            "public verification and atomic admission",
-            "inquiry status price gate",
-            "proforma price gate",
-            "genie inquiry chain",
-            "inquiry assessment, customer evidence and staff review",
-            "administrator MFA without mandatory customer factors",
+        self.assertIn("group: [core, mail, inquiry, inventory, runtime, admin]", TEXT)
+        self.assertIn('just ci-native "${{ matrix.group }}" smoke', TEXT)
+        self.assertNotIn("/Justfile", JUSTFILE)
+        for marker in (
+            "run_mail()",
+            "GlobalBusinessCapacityTest",
+            "run_inquiry()",
+            "PublicAdmissionOwnersTest",
+            "ProformaPriceGateTest",
+            "GenieInquiryTest",
+            "InquiryAssessmentTest",
+            "run_admin()",
+            "admin-mfa",
         ):
-            step = TEXT.split("      - name: " + title + "\n", 1)[1].split(
-                "      - name:", 1
-            )[0]
-            self.assertIn(
-                "if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce'",
-                step,
-            )
+            with self.subTest(marker=marker):
+                self.assertIn(marker, JUSTFILE)
 
 
 if __name__ == "__main__":

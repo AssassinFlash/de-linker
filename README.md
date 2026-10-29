@@ -30,13 +30,13 @@ PHP 类按 PSR-4 一类一文件，测试在各插件的 `tests/php/`。各插�
 | 项 | 版本 | 来源 |
 |---|---|---|
 | PHP | 8.3 | 生产主机实测 8.3.33（`docs/research/2026-10-09/framework-choice.md` §2）。写在各插件 `composer.json` 的 `config.platform.php`（PHPStan 从这里读）与 `tools/php/phpcs.xml` 的 `testVersion` |
-| WordPress / WooCommerce | 7.1 / 11.2 | 主机实测 7.1.3（§2）；WooCommerce 由主机自动更新，2026-10-09 07:54 UTC 起是 11.2.0（当天 SSH 只读读插件头，§2 写的 11.1.0 是更新前测的）：插件头 `Requires at least`、`minimum_wp_version`、`php-stubs/wordpress-stubs ~7.1.0`、`php-stubs/woocommerce-stubs ~11.2.0` |
+| WordPress / WooCommerce | 7.1.4 / 11.2 | 主机 2026-10-29 只读快照为 7.1.4；WooCommerce 由主机自动更新，2026-10-09 07:54 UTC 起是 11.2.0（当天 SSH 只读读插件头，§2 写的 11.1.0 是更新前测的）：插件头 `Requires at least`、`minimum_wp_version`、`php-stubs/wordpress-stubs ~7.1.0`、`php-stubs/woocommerce-stubs ~11.2.0` |
 | PHPUnit | 9.6 | WP_Mock 1.1 要求 `phpunit/phpunit ^9.6`；WordPress 与 WooCommerce 也用 9.6（§6） |
 | PHPStan | level 8 | AGENTS.md §4；WooCommerce core 用 level 8（§6）。写在 `tools/php/phpstan.neon` |
 | PHPCS | WPCS 3 + woocommerce-sniffs + PHPCompatibilityWP | AGENTS.md §4；规则集 `WooCommerce-Core` 包含三者。锁定的 PHPCompatibility 是 9.3.5（2019-12 发布，早于 PHP 8.0；woocommerce-sniffs 2.0 要求 phpcompatibility-wp ^2.1.7，后者要求 php-compatibility ^9.0），它没有 PHP 8.x 的 sniff，`testVersion 8.3-` 几乎不起作用：真正挡住新于 8.3 的语法与函数的是 PHPStan（按 `config.platform.php` 的 8.3 解析）和 CI 上的 PHP 8.3 |
 | Node | 22 | `@wordpress/scripts` 36 的 engines 为 `^22.22.2 \|\| ^24.15.0 \|\| >=26.0.0` |
-| React | 18.3.1 | WordPress 7.1.3 自带的版本（§2；wordpress-develop 7.1.3 的 `package.json`）。构建时 React、JSX 运行时与 `@wordpress/*` 都外部化，页面用 WordPress 那份；`node_modules` 里的只供测试与类型检查 |
-| `@wordpress/element` / `i18n` / `dom-ready` | 8.3.0 / 6.24.0 / 4.51.0 | WordPress 7.1.3 自带的版本：wordpress-develop 7.1.3 的 `package.json` 把 Gutenberg 钉在提交 `dd294ab8`，这是该提交里各包 `package.json` 的版本（2026-10-09 经 Apify 读取）；钉死，不用 `^`，测试才与页面上的行为一致 |
+| React | 18.3.1 | WordPress 7.1.3 baseline 自带的版本（§2；wordpress-develop 7.1.3 的 `package.json`）。构建时 React、JSX 运行时与 `@wordpress/*` 都外部化，页面用 WordPress 那份；`node_modules` 里的只供测试与类型检查 |
+| `@wordpress/element` / `i18n` / `dom-ready` | 8.3.0 / 6.24.0 / 4.51.0 | WordPress 7.1.3 baseline 自带的版本：wordpress-develop 7.1.3 的 `package.json` 把 Gutenberg 钉在提交 `dd294ab8`，这是该提交里各包 `package.json` 的版本（2026-10-09 经 Apify 读取）；钉死，不用 `^`，测试才与页面上的行为一致 |
 | TypeScript | 6.0 | `@wordpress/eslint-plugin` 27 依赖的 typescript-eslint 8.71.1 只接受 `typescript >=4.8.4 <6.1.0`，所以是 `~6.0.3`，不是 7 |
 | Vitest / Playwright / Storybook | 5 / 1.64 / 10.6 | `@wordpress/scripts` 36 的 `test-unit-js` 只支持 Vitest 5（`node_modules/@wordpress/scripts/docs/vitest-migration.md`）；Playwright 与 Storybook 与 Gutenberg（Playwright ^1.63）、WooCommerce Blocks（Storybook 10.5）同代（§3.1、§3.3），取安装时的最新版 |
 | Python | 3.12 | VPS（§7）；各服务的 `.python-version` |
@@ -79,12 +79,13 @@ brew install php@8.3
 | `just build::check` | 源码或产物与 `build/manifest.json` 不一致就失败，并列出是哪些文件 |
 | `just i18n-commerce <name>` | 用该本地实例的 WP-CLI 从 PHP/JS/build 提取，再从 LC 片段提取仍使用的既有目录词条，组合两个全新 POT 后更新 PO/MO；不读取旧 POT。例如 `just i18n-commerce c288`。LC 的英德模板正文继续由各语言模板承载，不新增或改写译文 |
 | `just i18n-coverage` | 检查德语未译词条与豁免清单；同时检查 PHP、JS/build、LC 片段中仍使用的目录词条没有被标为 obsolete。此门禁包含在 `just check` 中 |
-| `just up <name>` / `down` / `reset` / `login` / `status` / `serve` / `wp` | 本地 WordPress 实例（WordPress 7.1.3 + WooCommerce 11.2.0 + Redis 对象缓存，插件链接到当前检出）：建立与启动、停止、重建、一次性登录链接、列表、启动 engine 与 Genie、WP-CLI。见 `docs/local-stack.md` |
+| `just ci-preflight [--base origin/main] [--only <lane>] [--print-plan]` | 在推送前按本次 diff 选择并本地执行 CI 的并行 lane；固定 Node 22、PHP 8.3、Python 3.12，运行时改动还执行完整 native 组。必须在前置检查通过后才推送 |
+| `just up <name>` / `down` / `reset` / `login` / `status` / `serve` / `wp` | 本地 WordPress 实例（WordPress 7.1.4 + WooCommerce 11.2.0 + Redis 对象缓存，插件链接到当前检出）：建立与启动、停止、重建、一次性登录链接、列表、启动 engine 与 Genie、WP-CLI。见 `docs/local-stack.md` |
 | `just pull` | 线上只读快照到 `~/de-linker-data/<YYYYMMDD-HHMM>/`；`just pull load …` 等子命令见下文“线上快照” |
 | `just index` | Genie 的文档索引，只在 Mac 上跑（`docs/specs/10-knowledge-index.md`）：只读拉取媒体库 PDF 与商品、Docling 解析（按 sha256 缓存）、分块、向量、写 SQLite；数据与产物在仓库外的 `~/de-linker-data/`（`LINKER_DATA` 可改）。装 `index` 依赖组（Docling、ONNX Runtime 等），CI 不装 |
 | `just eval` | 用黄金集（`services/genie/index/eval/golden.jsonl`）给最新一次索引打分：召回@5、引用页码正确率；低于票面阈值即失败 |
 
-每条命令先按锁文件安装所需依赖（`composer.lock`、`package-lock.json`、`uv.lock`），锁文件与清单不一致就失败（`composer validate`、`npm ci`、`uv --locked`），干净克隆上可以直接运行。CI（`.github/workflows/check.yml`）运行 `just check` 与 `just test`，再运行 `just build`，重建出的 `build/` 必须与提交的逐字节相同。
+每条命令先按锁文件安装所需依赖（`composer.lock`、`package-lock.json`、`uv.lock`），锁文件与清单不一致就失败（`composer validate`、`npm ci`、`uv --locked`），干净克隆上可以直接运行。CI（`.github/workflows/check.yml`）把 PHP、JavaScript、Python、内容门、构建复现和 native 现场拆成并行 lane，最后仍由原来的 `check` 与 `mu-smoke` 聚合门槛判定；重建出的 `build/` 必须与提交的逐字节相同。推送前用 `just ci-preflight` 本地复现受影响 lane。
 
 票面写的是 `just build:check`。just 的配方名不能含 `:`（`build:check:` 会解析报错），`::` 是 just 的模块路径分隔符，所以 `build` 是模块 `tools/build.just`：`just build` 运行它的默认配方，`just build::check` 运行检查。npm 脚本仍叫 `build` 与 `build:check`。
 

@@ -41,6 +41,7 @@ check: php-check js-check e2e-check py-check pull::check cutover::check german-c
 commerce-check: german-copy internal-home-urls i18n-coverage i18n-validity
     #!/usr/bin/env bash
     set -euo pipefail
+    python3 -m unittest discover -s "{{ justfile_directory() }}/tools/checks" -p "test_ci_*.py"
     cd "{{ justfile_directory() }}/plugins/linker-commerce"
     {{ php }} "$(command -v composer)" validate --no-check-publish
     {{ php }} "$(command -v composer)" install --no-interaction --no-progress --quiet
@@ -55,6 +56,131 @@ commerce-check: german-copy internal-home-urls i18n-coverage i18n-validity
     # Existing plain-script tests resolve jsdom from linker-tools explicitly.
     (cd ../linker-tools && npm ci --no-audit --no-fund)
     node --test tests/js/*.test.mjs
+
+# CI's presentation scope: existing presentation surfaces only. The workflow
+# and the local preflight call this same recipe, so both apply the same guards.
+ci-presentation:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd "{{ justfile_directory() }}/plugins/linker-commerce"
+    {{ php }} "$(command -v composer)" validate --no-check-publish
+    {{ php }} "$(command -v composer)" install --no-interaction --no-progress --quiet
+    if [ "${PHP_TEST_CHANGED:-false}" = true ]; then
+        {{ php }} vendor/bin/phpcs -q tests/php/Unit/Presentation/TemplatesTest.php
+        {{ php }} vendor/bin/phpstan analyse --no-progress --memory-limit=-1 tests/php/Unit/Presentation/TemplatesTest.php
+    fi
+    {{ php }} vendor/bin/phpunit tests/php/Unit/Presentation
+    if [ "${CATALOG_CHANGED:-false}" = true ]; then
+        python3 "{{ justfile_directory() }}/tools/checks/german-copy.py"
+        python3 "{{ justfile_directory() }}/tools/checks/internal-home-urls.py" --root "{{ justfile_directory() }}"
+        (cd "{{ justfile_directory() }}" && python3 tools/checks/i18n-coverage.py)
+    fi
+
+# Fast, source-only gates shared by CI and the local preflight.
+ci-content:
+    python3 -m unittest discover -s "{{ justfile_directory() }}/tools/checks" -p "test_ci_*.py"
+    just --justfile "{{ justfile() }}" pull::check
+    just --justfile "{{ justfile() }}" cutover::check
+    just --justfile "{{ justfile() }}" german-copy
+    just --justfile "{{ justfile() }}" internal-home-urls
+    just --justfile "{{ justfile() }}" i18n-coverage
+    just --justfile "{{ justfile() }}" i18n-validity
+
+# Install every dependency used by the full preflight before lanes start.
+ci-deps: php-install js-install e2e-install
+
+# Reproduce the affected CI lanes locally before a push. Runtime changes also
+# run the complete native set against the reusable `ci_preflight` instance.
+[group('check')]
+ci-preflight *args:
+    python3 "{{ justfile_directory() }}/tools/checks/ci_preflight.py" {{ args }}
+
+# A fresh build must reproduce the committed artifacts byte for byte.
+ci-build:
+    just --justfile "{{ justfile() }}" js-install
+    just --justfile "{{ justfile() }}" build::check
+    just --justfile "{{ justfile() }}" build
+    git status --porcelain -- plugins/linker-tools/build plugins/linker-commerce/build
+    test -z "$(git status --porcelain -- plugins/linker-tools/build plugins/linker-commerce/build)"
+
+# Native integration groups. CI runs one group per matrix job; the local
+# preflight runs them in sequence against its one reusable instance.
+[positional-arguments]
+ci-native groups name:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    root="{{ justfile_directory() }}"
+    groups="$1"
+    name="$2"
+    wordpress="$HOME/de-linker-local/$name/wordpress"
+    run_core() {
+        just --justfile "$root/justfile" mu-smoke "$name"
+        just --justfile "$root/justfile" genie-concurrency "$name"
+        (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter 'ReviewReminderTest|PublicationHooksTest|MailBudgetRollbackTest|MailBudgetTest|InternalSmtpTest|NotificationRoutingTest|MailRetryTest|DigestTest|HealthMonitorTest|LanguageLinksInMailTest|MessageIdWitnessTest')
+    }
+    run_mail() {
+        local filter='GlobalBusinessCapacityTest|SummaryEnvelopeTest|BusinessDispositionTest|MailCapacityTest|AtomicMailConnectionTest|ConnectionFenceTest|CriticalNotificationCapacityTest|VatNotificationCapacityTest|ConversationConfirmationCapacityTest|RegistrationCapacityTest|PreSendAuthorizationTest|ReviewReminderTest'
+        (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter "$filter")
+        just --justfile "$root/justfile" wp "$name" wc hpos sync --user=1
+        just --justfile "$root/justfile" wp "$name" option update woocommerce_custom_orders_table_enabled yes
+        just --justfile "$root/justfile" wp "$name" option update woocommerce_hpos_datastore_caching_enabled yes
+        just --justfile "$root/justfile" wp "$name" option update woocommerce_feature_product_instance_caching_enabled yes
+        (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter "$filter")
+    }
+    run_inquiry() {
+        (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter 'PublicControllerTest|PublicLedgerTest|PublicVerificationTest|PublicProofTest|PublicAdmissionOwnersTest|BusinessPolicyTest|BusinessAdmissionTest')
+        (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter InquiryStatusRestTest)
+        (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter ReadSolutionRestTest)
+        just --justfile "$root/justfile" page-cache-chain "$name"
+        (cd "$root/plugins/linker-tools" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter DynamicPageCacheTest)
+        if ! command -v pdftotext >/dev/null; then
+            echo "pdftotext is required for the Proforma price-gate test" >&2
+            exit 1
+        fi
+        (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter ProformaPriceGateTest)
+        (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter GenieInquiryTest)
+        (cd "$root/plugins/linker-commerce" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter 'PreSendAuthorizationTest|InquiryAssessmentTest|CustomerEvidenceTest|CustomerReviewTest|NotificationHoldTest|AssessmentAsyncTest|SafeIntakeTest')
+    }
+    run_inventory() {
+        cd "$root"
+        just --justfile "$root/justfile" wp "$name" linker-i18n setup --user=local-admin
+        uv run --locked --project tools/local ruff check --config tools/local/pyproject.toml tools/checks/inventory-access.py
+        uv run --locked --project tools/local ruff format --check --config tools/local/pyproject.toml tools/checks/inventory-access.py
+        uv run --locked --project tools/local mypy --strict tools/checks/inventory-access.py
+        just --justfile "$root/justfile" inventory-access "$name"
+    }
+    run_runtime() {
+        if ! just --justfile "$root/justfile" wp "$name" config get LINKER_GENIE_SERVICE_TOKEN --type=constant >/dev/null; then
+            just --justfile "$root/justfile" wp "$name" config set LINKER_GENIE_SERVICE_TOKEN "$({{ php }} -r 'echo bin2hex(random_bytes(32));')" --type=constant --quiet
+        fi
+        just --justfile "$root/justfile" wp "$name" option update linker_engine_url http://127.0.0.1:9
+        just --justfile "$root/justfile" wp "$name" option update linker_genie_url http://127.0.0.1:9
+        (cd "$root/plugins/linker-tools" && LINKER_WP_ROOT="$wordpress" {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist --filter ResourceAdmissionTest)
+    }
+    run_admin() {
+        cd "$root"
+        if ! command -v msgcat >/dev/null; then
+            echo "gettext is required for the administrator MFA test" >&2
+            exit 1
+        fi
+        just --justfile "$root/justfile" wp "$name" linker-i18n setup --user=local-admin
+        uv run --locked --project tools/local ruff check --config tools/local/pyproject.toml tools/checks/admin-mfa.py
+        uv run --locked --project tools/local ruff format --check --config tools/local/pyproject.toml tools/checks/admin-mfa.py
+        uv run --locked --project tools/local mypy --strict tools/checks/admin-mfa.py
+        uv run --locked --project tools/local pytest -q tools/local/tests/test_admin_mfa.py
+        {{ php }} plugins/linker-commerce/vendor/bin/phpcs --standard=plugins/linker-commerce/phpcs.xml.dist tests/e2e/fixtures/admin-mfa.php tests/e2e/fixtures/admin-mfa-public.php
+        just --justfile "$root/justfile" admin-mfa "$name" --prepare
+    }
+    case "$groups" in
+        all) run_core; run_mail; run_inquiry; run_inventory; run_runtime; run_admin ;;
+        core) run_core ;;
+        mail) run_mail ;;
+        inquiry) run_inquiry ;;
+        inventory) run_inventory ;;
+        runtime) run_runtime ;;
+        admin) run_admin ;;
+        *) echo "unknown native group: $groups (expected all|core|mail|inquiry|inventory|runtime|admin)" >&2; exit 2 ;;
+    esac
 
 # Unit tests of every chain and the end-to-end tests.
 test: php-test js-test py-test pull::test cutover::test
@@ -409,15 +535,30 @@ py-check:
     uv run --locked mypy --strict ../../plugins/linker-commerce/tests/fixtures/smtp_sink.py
 
 [private]
-py-test:
+[positional-arguments]
+py-test-group group:
     #!/usr/bin/env bash
     set -euo pipefail
-    for project in {{ py_projects }}; do
+    case "$1" in
+        genie) projects=(services/genie) ;;
+        engine) projects=(services/engine) ;;
+        tools) projects=(tools/local tools/migrate) ;;
+        harnesses) projects=(tools/faq docs/research/2026-10-20-campaign-330/harness docs/research/2026-10-20-campaign-332/harness docs/research/2026-10-20-campaign-333/harness docs/research/2026-10-20-campaign-334/harness docs/research/2026-10-20-campaign-335/harness) ;;
+        *) echo "unknown Python test group: $1" >&2; exit 2 ;;
+    esac
+    for project in "${projects[@]}"; do
         echo "== $project: pytest"
         cd "{{ justfile_directory() }}/$project"
         # tools/local's stack tests build real instances with this PHP.
         PHP={{ php }} uv run --locked pytest
     done
+
+[private]
+py-test:
+    just --justfile "{{ justfile() }}" py-test-group genie
+    just --justfile "{{ justfile() }}" py-test-group engine
+    just --justfile "{{ justfile() }}" py-test-group tools
+    just --justfile "{{ justfile() }}" py-test-group harnesses
 
 # German copy gate (#265, owner rulings): the banned-word vocabulary (one
 # list, plugins/linker-i18n/data/banned-de.json — the same list the
