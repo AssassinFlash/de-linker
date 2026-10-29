@@ -104,6 +104,25 @@ def test_write_without_a_backup_directory_is_refused_before_wordpress() -> None:
         disclosure.main(["--wp", "wp", "--write"])
 
 
+def test_ssh_keeps_the_php_payload_as_one_remote_argument() -> None:
+    wp = [
+        "ssh",
+        "-o",
+        "BatchMode=yes",
+        "hostinger-de-linker",
+        "/usr/local/bin/wp",
+        "--path=/site",
+    ]
+    sent = disclosure.command(wp, "echo 'two words';")
+    assert sent[:4] == wp[:4]
+    assert sent[4:] == [
+        disclosure.shlex.join(
+            ["/usr/local/bin/wp", "--path=/site", "eval", "echo 'two words';"]
+        )
+    ]
+    assert disclosure.command(["wp"], "echo 1;") == ["wp", "eval", "echo 1;"]
+
+
 def test_rollback_cannot_bypass_the_production_backup_gate(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

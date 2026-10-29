@@ -163,17 +163,28 @@ def marked_json(stdout: str) -> dict[str, Any]:
     raise RuntimeError("CookieYes read did not print a snapshot")
 
 
+def command(wp: list[str], source: str) -> list[str]:
+    """A local argv, or one quoted remote command for SSH + WP-CLI."""
+    for index, part in enumerate(wp):
+        if part == "wp" or part.endswith("/wp"):
+            invocation = [*wp[index:], "eval", source]
+            transport = wp[:index]
+            if transport and transport[0] == "ssh":
+                return [*transport, shlex.join(invocation)]
+            return invocation
+    raise RuntimeError("no wp binary in the WP-CLI command")
+
+
 def invoke(wp: list[str], payload: dict[str, Any]) -> dict[str, Any]:
     source = PHP.read_text()
     if source.count(PLACEHOLDER) != 1:
         raise RuntimeError("cookieyes-disclosure.php must contain its placeholder once")
     encoded = base64.b64encode(json.dumps(payload).encode()).decode()
     completed = subprocess.run(
-        [
-            *wp,
-            "eval",
+        command(
+            wp,
             source.removeprefix("<?php").replace(PLACEHOLDER, encoded),
-        ],
+        ),
         text=True,
         capture_output=True,
         check=False,
