@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import json
 import sys
@@ -58,6 +59,7 @@ def state(
             "language": "de",
             "doubled": doubled,
             "correct": correct,
+            "scripts": 1,
             "content": (
                 '<script type="application/ld+json">'
                 '{"url":"[linker_site_url]de/blog/"}</script>'
@@ -82,6 +84,9 @@ def test_plan_names_the_two_measured_posts_separately() -> None:
             "post": 6881,
             "from": "[linker_site_url]de/blog/",
             "to": "[linker_site_url]blog/",
+            "sha256": hashlib.sha256(
+                state()["template"]["content"].encode()
+            ).hexdigest(),
         },
     ]
 
@@ -123,6 +128,18 @@ def test_apply_targets_each_post_and_records_both_old_values(
     assert "get_post_field( 'post_content', 6881 )" in written[0]
     assert "wp_update_post( array( 'ID' => 6881" in written[0]
     assert "6873, 'post_content'" not in written[0]
+    assert "has_filter( 'content_save_pre', 'wp_filter_post_kses' )" in written[0]
+    assert "kses_remove_filters()" in written[0]
+    assert "kses_init_filters()" in written[0]
+    assert (
+        'substr_count( $actual, "<script type=\\"application/ld+json\\">" )'
+        in written[0]
+    )
+    assert 'substr_count( $actual, "[linker_site_url]de/blog/" )' in written[0]
+    assert (
+        "wp_update_post( array( 'ID' => 6881, 'post_content' => $previous ), true )"
+        in written[0]
+    )
 
 
 def test_apply_refuses_actions_planned_against_an_older_state(

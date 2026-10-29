@@ -77,6 +77,7 @@ final class Plugin {
 		$rules      = Rules::load( dirname( $this->file ) . '/data' );
 		$translator = new Translator( $languages, new Planner( new Segmenter( $tokenizer ), new Aligner() ), new Fields(), $state, DeepSeekClient::from_environment( $rules ), new Validator( $rules ), $twins, $links );
 		$jobs       = new Jobs( $languages, $translator, $twins, $state );
+		( new IndexingMeta( $languages ) )->register();
 
 		// What Polylang translates.
 		$types = new TranslatedTypes();

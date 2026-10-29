@@ -658,12 +658,12 @@ final class LibraryPage {
 		$model  = $this->model();
 		$entity = array();
 		foreach ( $model['trade'] as $category ) {
-			foreach ( $category['questions'] as $question ) {
+			foreach ( array_slice( $category['questions'], 0, self::PAGE_SIZE ) as $question ) {
 				$entity[] = $this->question( $question['question'], $question['answer'] );
 			}
 		}
 		foreach ( $model['brands'] as $brand ) {
-			foreach ( $brand['answers'] ?? array() as $answer ) {
+			foreach ( array_slice( $brand['answers'] ?? array(), 0, self::PAGE_SIZE ) as $answer ) {
 				$entity[] = $this->question( $answer['question'], $answer['answer'] );
 			}
 		}
@@ -689,12 +689,24 @@ final class LibraryPage {
 	private function question( string $question, string $answer ): array {
 		return array(
 			'@type'          => 'Question',
-			'name'           => $question,
+			'name'           => $this->plain_text( $question ),
 			'acceptedAnswer' => array(
 				'@type' => 'Answer',
-				'text'  => $answer,
+				'text'  => $this->plain_text( $answer ),
 			),
 		);
+	}
+
+	/**
+	 * Text the browser shows for an answer that may contain a link. WordPress
+	 * strips elements and scripts while keeping the link's visible words; the
+	 * entity decode keeps punctuation and names readable in JSON text.
+	 *
+	 * @param string $html Stored visible text, possibly with links.
+	 */
+	private function plain_text( string $html ): string {
+		$text = html_entity_decode( wp_strip_all_tags( $html ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+		return trim( (string) preg_replace( '/\s+/u', ' ', $text ) );
 	}
 
 	/**

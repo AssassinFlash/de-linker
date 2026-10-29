@@ -52,6 +52,13 @@ final class TwinsTest extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 		WP_Mock::userFunction(
+			'delete_term_meta',
+			array(
+				'times'  => '0+',
+				'return' => true,
+			)
+		);
+		WP_Mock::userFunction(
 			'delete_post_meta',
 			array(
 				'return' => function ( int $post_id, string $key ): bool {

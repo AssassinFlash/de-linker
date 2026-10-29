@@ -77,6 +77,10 @@ final class TermTranslationTest extends SiteTestCase {
 		$this->assertIsInt( $english );
 		$this->assertSame( 'en', $created['language'] );
 		$this->assertSame( 'pending', $created['status'] );
+		self::php(
+			'update_term_meta( $input["id"], "_seopress_robots_index", "yes" ); return true;',
+			array( 'id' => $english )
+		);
 		$this->assertSame( 1, self::run_jobs( 'term', $english, true ) );
 
 		$german = self::php(
@@ -90,6 +94,7 @@ final class TermTranslationTest extends SiteTestCase {
 				"description" => $term->description,
 				"link"        => get_term_link( $term ),
 				"status"      => get_term_meta( $input["id"], "_linker_i18n_status", true ),
+				"index"       => get_term_meta( $id, "_seopress_robots_index", true ),
 			);
 			',
 			array( 'id' => $english )
@@ -100,6 +105,7 @@ final class TermTranslationTest extends SiteTestCase {
 		$this->assertSame( 'de-linker-i18n-test-category', $german['slug'] );
 		$this->assertSame( '[de] Hybrid Wechselrichter for home storage.', $german['description'] );
 		$this->assertSame( 'synced', $german['status'] );
+		$this->assertSame( 'yes', $german['index'] );
 		$this->assertSame( self::$site . '/de/produkt-kategorie/de-linker-i18n-test-category/', $german['link'] );
 		$this->assertSame( 200, self::get( '/de/produkt-kategorie/de-linker-i18n-test-category/' )['status'] );
 

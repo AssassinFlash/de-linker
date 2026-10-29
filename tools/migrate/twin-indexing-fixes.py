@@ -32,6 +32,7 @@ second run plans nothing. `apply` records both previous values in the
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import shlex
@@ -50,6 +51,7 @@ BLOG_TEMPLATE_ID = 6881  # The German blog-index LiveCanvas dynamic template.
 BLOG_TEMPLATE_SLUG = "vorlage-fur-blog-beitragsindex"
 DOUBLED_FRAGMENT = "[linker_site_url]de/blog/"
 CORRECT_FRAGMENT = "[linker_site_url]blog/"
+JSONLD_SCRIPT = '<script type="application/ld+json">'
 
 STATE_PHP = f"""
 $source = get_post( {SOURCE_ID} );
@@ -82,6 +84,7 @@ if ( $template instanceof WP_Post ) {{
         'language' => function_exists( 'pll_get_post_language' ) ? (string) pll_get_post_language( $template->ID ) : '',
         'doubled' => substr_count( $template->post_content, {json.dumps(DOUBLED_FRAGMENT)} ),
         'correct' => substr_count( $template->post_content, {json.dumps(CORRECT_FRAGMENT)} ),
+        'scripts' => substr_count( $template->post_content, {json.dumps(JSONLD_SCRIPT)} ),
         'content' => (string) $template->post_content,
     );
 }}
@@ -202,6 +205,11 @@ def check_preconditions(state: dict[str, Any]) -> None:
             f"{template['id']}; this script only rewrites the single measured "
             "occurrence"
         )
+    if template.get("scripts", 0) != 1:
+        raise SystemExit(
+            f"post {template['id']} carries {template.get('scripts')} JSON-LD "
+            "scripts, expected 1"
+        )
 
 
 def plan(state: dict[str, Any]) -> list[dict[str, Any]]:
@@ -227,9 +235,66 @@ def plan(state: dict[str, Any]) -> list[dict[str, Any]]:
                 "post": template["id"],
                 "from": DOUBLED_FRAGMENT,
                 "to": CORRECT_FRAGMENT,
+                "sha256": hashlib.sha256(
+                    template.get("content", "").encode()
+                ).hexdigest(),
             }
         )
     return actions
+
+
+def template_write_code(action: dict[str, Any]) -> str:
+    """PHP that protects, verifies and, on error, rolls back the template."""
+    post_id = str(action["post"])
+    return (
+        "$previous = (string) get_post_field( 'post_content', "
+        + post_id
+        + " );\n"
+        + "if ( ! hash_equals( "
+        + json.dumps(action["sha256"])
+        + ", hash( 'sha256', $previous ) ) ) { "
+        + "throw new RuntimeException( 'The template changed after planning.' ); }\n"
+        + f"if ( 1 !== substr_count( $previous, {json.dumps(JSONLD_SCRIPT)} ) ) {{ "
+        + "throw new RuntimeException( 'The previous template has no unique JSON-LD script.' ); }\n"
+        + "$content = str_replace( "
+        + json.dumps(action["from"])
+        + ", "
+        + json.dumps(action["to"])
+        + ", $previous );\n"
+        + "$kses_was_on = false !== has_filter( 'content_save_pre', 'wp_filter_post_kses' );\n"
+        + "try {\n"
+        + "    if ( $kses_was_on ) { kses_remove_filters(); }\n"
+        + "    $updated = wp_update_post( array( 'ID' => "
+        + post_id
+        + ", 'post_content' => $content ), true );\n"
+        + "    if ( is_wp_error( $updated ) ) { "
+        + "throw new RuntimeException( $updated->get_error_message() ); }\n"
+        + "    $actual = (string) get_post_field( 'post_content', "
+        + post_id
+        + " );\n"
+        + f"    if ( 1 !== substr_count( $actual, {json.dumps(JSONLD_SCRIPT)} ) ) {{ "
+        + "throw new RuntimeException( 'The saved template lost its JSON-LD script.' ); }\n"
+        + f"    if ( 0 !== substr_count( $actual, {json.dumps(DOUBLED_FRAGMENT)} ) ) {{ "
+        + "throw new RuntimeException( 'The saved template still has the doubled URL.' ); }\n"
+        + f"    if ( 1 !== substr_count( $actual, {json.dumps(CORRECT_FRAGMENT)} ) ) {{ "
+        + "throw new RuntimeException( 'The saved template lacks the corrected URL.' ); }\n"
+        + "} catch ( Throwable $failure ) {\n"
+        + "    if ( $kses_was_on ) { kses_remove_filters(); }\n"
+        + "    $rolled_back = wp_update_post( array( 'ID' => "
+        + post_id
+        + ", 'post_content' => $previous ), true );\n"
+        + "    $restored = (string) get_post_field( 'post_content', "
+        + post_id
+        + " );\n"
+        + "    if ( is_wp_error( $rolled_back ) || "
+        + "! hash_equals( hash( 'sha256', $previous ), hash( 'sha256', $restored ) ) ) {\n"
+        + "        throw new RuntimeException( 'Template update failed and rollback did not restore the backup: ' . $failure->getMessage() );\n"
+        + "    }\n"
+        + "    throw new RuntimeException( 'Template update failed; the previous template was restored: ' . $failure->getMessage() );\n"
+        + "} finally {\n"
+        + "    if ( $kses_was_on ) { kses_init_filters(); }\n"
+        + "}\n"
+    )
 
 
 def apply(prefix: list[str], actions: list[dict[str, Any]], backup: Path) -> None:
@@ -257,26 +322,13 @@ def apply(prefix: list[str], actions: list[dict[str, Any]], backup: Path) -> Non
 
     code = ""
     for action in actions:
+        if action["kind"] == "template":
+            code += template_write_code(action)
+    for action in actions:
         if action["kind"] == "meta":
             code += (
                 f"update_post_meta( {action['post']}, '{ROBOTS_INDEX_META}', 'yes' );\n"
             )
-            continue
-        code += (
-            "$content = (string) get_post_field( 'post_content', "
-            + str(action["post"])
-            + " );\n"
-            + "$content = str_replace( "
-            + json.dumps(action["from"])
-            + ", "
-            + json.dumps(action["to"])
-            + ", $content );\n"
-            + "$updated = wp_update_post( array( 'ID' => "
-            + str(action["post"])
-            + ", 'post_content' => $content ), true );\n"
-            + "if ( is_wp_error( $updated ) ) { "
-            + "throw new RuntimeException( $updated->get_error_message() ); }\n"
-        )
     php(prefix, code)
 
 
@@ -302,6 +354,11 @@ def verify(state: dict[str, Any]) -> list[str]:
         failures.append(
             f"post {template.get('id')} carries {template.get('correct')} "
             "correct URL prefixes, expected 1"
+        )
+    if template.get("scripts", 0) != 1:
+        failures.append(
+            f"post {template.get('id')} carries {template.get('scripts')} "
+            "JSON-LD scripts, expected 1"
         )
     return failures
 

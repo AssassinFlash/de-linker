@@ -56,6 +56,13 @@ final class Twins {
 	private const COPIED_TERM_META = array( 'order', 'display_type', 'thumbnail_id' );
 
 	/**
+	 * Term meta mirrored as a whole key in the translation path. The category
+	 * value also gates this PR's blog-category schema, so its presence and
+	 * absence must be symmetric.
+	 */
+	private const MIRRORED_TERM_META = array( '_seopress_robots_index' );
+
+	/**
 	 * Post types whose `is_*` meta says where LiveCanvas uses them
 	 * (is_header, is_single_product, …). The German copy needs it too: on a
 	 * German page Polylang shows LiveCanvas only German partials and
@@ -340,6 +347,14 @@ final class Twins {
 				$value = get_term_meta( $term_id, $key, true );
 				if ( '' !== $value ) {
 					update_term_meta( $twin, $key, $value );
+				}
+			}
+			foreach ( self::MIRRORED_TERM_META as $key ) {
+				$value = get_term_meta( $term_id, $key, true );
+				if ( is_string( $value ) && '' !== $value ) {
+					update_term_meta( $twin, $key, $value );
+				} else {
+					delete_term_meta( $twin, $key );
 				}
 			}
 			// On every write, not only the first: the German term may already
