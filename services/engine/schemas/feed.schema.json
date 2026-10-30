@@ -4,7 +4,7 @@
 	"title": "Engineering feed",
 	"description": "What the engine reads from linker-commerce: GET /wp-json/linker/v1/engineering-feed (docs/specs/8-engineering-data.md, target shape 5). One entry per published product. The top-level facts are the #7 SelectionFactSet (docs/specs/7-selection-facts.md), produced by its single implementation in linker-commerce, so the engine never re-derives them; `figures` are the cited datasheet values the engine needs beyond those facts, units as stored (the engine converts by `unit`). A figure without a citation to a document we host does not enter the feed.",
 	"type": "object",
-	"required": ["schema_version", "generated_at", "compatibility_version", "products", "overlay"],
+	"required": ["schema_version", "generated_at", "compatibility_version", "compatibility", "products", "overlay"],
 	"additionalProperties": false,
 	"properties": {
 		"schema_version": { "const": 1 },
@@ -14,12 +14,12 @@
 		"compatibility_revision": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
 		"generated_at": { "type": "string", "format": "date-time" },
 		"compatibility_version": {
-			"description": "Content version of the current Woo-maintained compatibility projection, or missing when its declaration envelope is invalid.",
+			"description": "Content version of the required current Woo-maintained compatibility projection; it must match the projection's version.",
 			"type": "string",
 			"minLength": 1
 		},
 		"compatibility": {
-			"description": "Current Woo-maintained compatibility declarations and product/document bindings. Consumers validate the projection against compatibility.schema.json. Absent when the Woo declaration envelope is invalid; a shipped JSON file is not a maintenance authority.",
+			"description": "Required current Woo-maintained compatibility declarations and product/document bindings. Consumers validate the projection against compatibility.schema.json and reject a missing projection or a different generation; a shipped JSON file is not a maintenance authority.",
 			"type": "object"
 		},
 		"products": { "type": "array", "items": { "$ref": "#/$defs/product" } },

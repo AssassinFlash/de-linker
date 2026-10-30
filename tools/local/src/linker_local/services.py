@@ -194,8 +194,16 @@ def _serve(
             release = hashlib.sha256()
             for path in sorted(source.rglob("*.py")):
                 release.update(path.read_bytes())
-            release.update(Path(env["LINKER_ENGINE_FEED"]).read_bytes())
-            release.update(Path(env["LINKER_ENGINE_COMPATIBILITY"]).read_bytes())
+            feed = Path(env["LINKER_ENGINE_FEED"]).read_bytes()
+            release.update(feed)
+            release.update(
+                json.dumps(
+                    json.loads(feed)["compatibility"],
+                    sort_keys=True,
+                    separators=(",", ":"),
+                    ensure_ascii=False,
+                ).encode()
+            )
             wp.run(
                 "config",
                 "set",
