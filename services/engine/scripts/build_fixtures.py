@@ -62,6 +62,7 @@ def publication_envelope(
             ).encode()
         ).hexdigest(),
     }
+    enriched.pop("source_revision", None)
     enriched["source_revision"] = hashlib.sha256(
         json.dumps(
             enriched, sort_keys=True, separators=(",", ":"), ensure_ascii=False

@@ -2,11 +2,17 @@
 
 import copy
 import json
+import sys
 from pathlib import Path
 
 import pytest
 
 from linker_engine.products import FeedError, Products
+
+ENGINE = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ENGINE / "scripts"))
+
+from build_fixtures import publication_envelope  # noqa: E402
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -75,6 +81,14 @@ def test_a_feed_that_carries_the_compatibility_contract_is_accepted() -> None:
     feed["compatibility"] = json.loads((FIXTURES / "compatibility.json").read_text())
     products = Products.from_feed(feed)
     assert len(products.products) == 106
+
+
+def test_publication_envelope_is_idempotent() -> None:
+    feed = json.loads((FIXTURES / "feed.json").read_text())
+    contract = json.loads((FIXTURES / "compatibility.json").read_text())
+    once = publication_envelope(feed, contract)
+    assert publication_envelope(once, contract) == once
+    Products.from_feed(once)
 
 
 def test_qualified_figure_evidence_survives_strict_feed_loading() -> None:

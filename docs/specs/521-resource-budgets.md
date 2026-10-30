@@ -165,9 +165,9 @@ refuses unavailable/malformed readback even when an old response exists; observe
 retains native work without depending on this new handshake.
 
 The engine captures immutable source bytes once at module import. Under a loading
-lock it reads feed/compat bytes once and constructs validated Products/Compatibility
-from those exact bytes, then hashes source + loaded feed + loaded compatibility in
-the same order as the local release algorithm. It never hashes newer disk data
+lock it reads the feed and retained generation bytes once, constructs validated
+Products/Compatibility from the feed's current Woo projection, then hashes source +
+loaded feed + canonical loaded projection in the same order as the local release algorithm. It never hashes newer disk data
 while still serving old in-memory products. A nightly sync-file write does not
 relabel an existing worker; the existing restart loads and advertises the new
 snapshot without an SSH push to WordPress or a new credential. The local

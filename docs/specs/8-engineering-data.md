@@ -100,7 +100,7 @@ meter/backup/parallel_controller 角色的随附件替代同角色的泛化未�
 
 - 2026-10-10（#8 实施）：逐件决定与来源见 `docs/specs/8-decisions.md`；feed 与旧 materials 的字段映射表见 `docs/specs/8-field-mapping.md`。规格的 19 键中 `mppt_max_current_a`/`mppt_max_isc_a` 是注册表 `max_input_current_per_mppt_a`/`max_isc_per_mppt_a` 的改名。overlay 实际为 1 条（Trina 460 参考组件；其余无绑定材料是已发布模块的组合或无规格占位，见 8-decisions §8）。数据文件落在 `plugins/linker-commerce/data/`（compatibility.json 248 对、engineering-overlay.json），feed 路由 `linker/v1/engineering-feed` 由 linker-commerce 提供。
 - 2026-10-11（#68）：`_linker_documents` 的后台维护入口（Documents meta box）落地：编辑标题/URL/类型/语言、删行、空行新增；只收本站 URL。入口只做维护，文档内容仍逐项确认。
-- 2026-10-21（#493）：feed 在版本号之外携带 `compatibility` 全量（`data/compatibility.json` 原对象）；引擎的 `sync-feed.py` 用同一次抓取把 `state/compatibility.json` 一并校验、原子换、失败保旧，合同变更不再人工 scp。合同文件不可读时该键缺席（feed 其余部分照常），引擎保留旧合同。`feed.schema.json` 把该键列为可选对象，合法性由引擎的 `Compatibility` 加载器判定；新引擎对键的有无都接受，部署顺序照旧先 services、后 site。
+- 2026-10-21（#493）：feed 在版本号之外携带 `compatibility` 全量（`data/compatibility.json` 原对象）；引擎的 `sync-feed.py` 用同一次抓取把 `state/compatibility.json` 一并校验、原子换、失败保旧，合同变更不再人工 scp。合同文件不可读时该键缺席（feed 其余部分照常），引擎保留旧合同。`feed.schema.json` 当时把该键列为可选对象，合法性由引擎的 `Compatibility` 加载器判定；该可选行为已被 2026-10-30 的必填投影规则取代，部署顺序仍先 services、后 site。
 
 - 2026-10-25：兼容合同维护权迁入 Woo；上述当前维护与迁移规则取代此前运行时静态文件/pattern 匹配及保留旧合同放行的描述。保留文件与既有冻结产物只作历史/迁移证据，不能授权当前新动作。
 - 2026-10-30：`compatibility` 是 feed 的必填投影，其 `version` 必须与 `compatibility_version` 一致。引擎消费当前 Woo 投影并以其规范字节计算版本；缺键或代际不一致时拒绝加载，不再接受无投影 feed 或回退旧合同。部署仍按 services、site 顺序，但服务重启前必须证实当前 feed 已含有效投影。
