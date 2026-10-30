@@ -282,3 +282,45 @@ view and numeric properties.」——**降级路径也有文案出口**，不会
 
 验证的是**文案与布局**，未做 1440/390 全矩阵截图比对，
 也未在两语种下逐一操作每个控件。
+
+## 同意与统计：生产实测，统计在同意前不加载
+
+目标完成标准里点名「同意、统计」。此前没有验收证据，现有生产实测。
+
+### 实测（生产首页 HTML）
+
+**GA 脚本被真正扣住**，不是「先加载后 gating」：
+
+```html
+<script type="text/plain" data-cookieyes="cookieyes-analytics"
+        id="google_gtagjs-js"
+        src="https://www.googletagmanager.com/gtag/js?id=GT-PLVVHJ2K" async>
+```
+
+`type="text/plain"` 的脚本浏览器**不执行**。在 CookieYes 授予分析类同意之前，
+GA 连脚本都不会运行。
+
+**默认全部拒绝**：
+
+```js
+gtag('consent','default',{"ad_personalization":"denied","ad_storage":"denied",
+"ad_user_data":"denied","analytics_storage":"denied",
+"functionality_storage":"denied","security_storage": ...})
+```
+
+### 实现
+
+`plugins/linker-commerce/includes/Consent/BasicMode.php`：
+
+- `script_loader_tag`（优先级 30）扣住 Google tag，改为 `text/plain`；
+- `googlesitekit_consent_defaults` 全部 `denied`；
+- `googlesitekit_consent_category_map` 去掉 ads 类目；
+- `wp_get_consent_type` 在 CLI 下返回 `optin`；
+- 另入队 `assets/consent.js` 处理撤回。
+
+CMP 是 **CookieYes**（`cky-*`），统计是 **GA4 `G-N2TGDM3193`**（容器 `GT-PLVVHJ2K`）。
+
+### 边界
+
+验证的是**页面输出与默认状态**。没有在浏览器里实际点击「接受」后确认 GA 开始采集，
+也没有验证撤回后是否停止——那需要人工交互，与界面读回同属一类缺口。
