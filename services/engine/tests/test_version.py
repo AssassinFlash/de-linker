@@ -41,7 +41,13 @@ def test_private_version_is_loaded_data_not_later_disk_bytes(
     settings = Settings(feed, contract, tmp_path / "cache")
     feed_a, contract_a = feed.read_bytes(), contract.read_bytes()
     loaded = Services(settings, SOURCE)
-    assert loaded.version == digest(SOURCE, feed_a, contract_a)
+    canonical_contract = json.dumps(
+        json.loads(contract_a),
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+    ).encode()
+    assert loaded.version == digest(SOURCE, feed_a, canonical_contract)
     with TestClient(create_app(settings)) as before:
         assert before.get("/resource/version").status_code == 401
         version_a = before.get("/resource/version", headers=TOKEN).json()["version"]
@@ -66,7 +72,10 @@ def test_private_version_is_loaded_data_not_later_disk_bytes(
             version_b = reply.json()["version"]
             assert reply.headers["cache-control"] == "private, no-store"
             assert version_b != version_a
-            assert version_b == digest(SOURCE, feed.read_bytes(), contract.read_bytes())
+            canonical_contract = json.dumps(
+                document, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+            ).encode()
+            assert version_b == digest(SOURCE, feed.read_bytes(), canonical_contract)
             headers = {
                 **TOKEN,
                 "X-Linker-Resource-Subject": "a" * 64,
@@ -85,6 +94,43 @@ def test_private_version_is_loaded_data_not_later_disk_bytes(
             )
             assert computed.status_code == 200
             assert computed.headers["x-linker-engine-version"] == version_b
+
+
+def test_services_use_current_woo_projection(tmp_path: Path) -> None:
+    document = publication_feed(
+        json.loads((FIXTURES / "feed.json").read_text()),
+        json.loads((FIXTURES / "compatibility.json").read_text()),
+    )
+    feed, contract = tmp_path / "feed.json", tmp_path / "compatibility.json"
+    feed.write_text(json.dumps(document))
+    contract.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "version": "retired-static-input",
+                "pairs": [],
+                "requirements": [],
+            }
+        )
+    )
+    settings = Settings(feed, contract, tmp_path / "cache")
+    loaded = Services(settings, SOURCE)
+    assert loaded.engine.compatibility.version == document["compatibility_version"]
+    canonical_contract = json.dumps(
+        document["compatibility"],
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+    ).encode()
+    assert loaded.version == digest(SOURCE, feed.read_bytes(), canonical_contract)
+    document["compatibility_version"] = "different-generation"
+    feed.write_text(json.dumps(document))
+    with pytest.raises(ValueError, match="not one generation"):
+        Services(settings, SOURCE)
+    document.pop("compatibility")
+    feed.write_text(json.dumps(document))
+    with pytest.raises(ValueError, match="current Woo compatibility projection"):
+        Services(settings, SOURCE)
 
 
 def test_private_version_failure_and_source_capture(

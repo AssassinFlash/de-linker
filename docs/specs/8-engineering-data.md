@@ -15,7 +15,7 @@
 2. **系列属性**：全局属性 `pa_series`，值来自注册表 family（如 goodwe-etr、saj-h2），每个商品一个值；配置器与 Genie 用它表达"系列"，不再有五套系列概念。
 3. **兼容声明**：canonical 英文 Woo 商品的 `_linker_compatibility_claims` 原生 meta 保存 `{schema_version:1,pairs:[],requirements:[]}`。pair 用 `battery_product_id`，requirement 归属所在逆变器；配件用 `product_id`，均为 canonical Woo ID。每行有稳定 `id`、原有裁决、可选模块数量范围、EN/DE 条件、配件数量与 system/stack/unit 基准、托管文档的 `document_id/document_revision/blob_sha256/product_id` 证据。当前投影保持 schema 1 的 `pairs/requirements/version` 及原型号字段，另显式携带 pair 的 `inverter_product_id/battery_product_id`、requirement 的 `inverter_product_id` 和 accessory 的 `product_id`；型号正则仅由当前名称派生，运行配对以 ID 为准。型号重名不能借用其他 SKU 的声明，改名不会丢失 ID 绑定。多个声明仍取最严格裁决并合并条件、资料和配件。
 4. **参考组件**：`mat_trina_solar_tsm_460neg9r_28` 保留为工程 ID；事实与资料迁入隐藏销售展示的 Woo 原生参考记录，不建光伏产品分类、不成为销售候选。feed 的 overlay 由当前记录及已绑定资料生成，携带 canonical source、产品/参考修订及文档身份/修订/SHA/关联。未准备时 overlay 为空，不阻断无关产品。原 `data/engineering-overlay.json` 只供一次迁移，运行时不读取。
-5. **feed**：`GET /wp-json/linker/v1/engineering-feed`（匿名、只读、可缓存、按 `?since=` 增量）→ 每个已发布商品 `{ id, sku, model, brand, series, device_class, application, phase, figures{key:{value,unit,citation}}, documents[{url,title,type,lang}] }` + overlay + Woo `compatibility` 投影全量与版本号（`version` 与 `compatibility_version` 同值），有效投影附 `compatibility_origin: "woocommerce"`。无声明时是有效的空投影；不支持的保存结构不出投影与 origin。`services/engine` 只读它。
+5. **feed**：`GET /wp-json/linker/v1/engineering-feed`（匿名、只读、可缓存、按 `?since=` 增量）→ 每个已发布商品 `{ id, sku, model, brand, series, device_class, application, phase, figures{key:{value,unit,citation}}, documents[{url,title,type,lang}] }` + overlay + Woo `compatibility` 投影全量与版本号（`version` 与 `compatibility_version` 同值），有效投影附 `compatibility_origin: "woocommerce"`。无声明时是有效的空投影；不支持的保存结构不出投影与 origin，消费者必须拒绝这份不完整 feed，不能把它解释为空合同或回退旧合同。`services/engine` 只读它。
 
 ## 迁移脚本 `tools/migrate/8-engineering.py`
 - `plan`：对比每件商品现有图值与注册表/组件库，列出"补充/冲突/漂移"（已知 17 件漂移，以数据手册页为准逐件决定，决定写入 `docs/specs/8-decisions.md`）。
@@ -100,9 +100,10 @@ meter/backup/parallel_controller 角色的随附件替代同角色的泛化未�
 
 - 2026-10-10（#8 实施）：逐件决定与来源见 `docs/specs/8-decisions.md`；feed 与旧 materials 的字段映射表见 `docs/specs/8-field-mapping.md`。规格的 19 键中 `mppt_max_current_a`/`mppt_max_isc_a` 是注册表 `max_input_current_per_mppt_a`/`max_isc_per_mppt_a` 的改名。overlay 实际为 1 条（Trina 460 参考组件；其余无绑定材料是已发布模块的组合或无规格占位，见 8-decisions §8）。数据文件落在 `plugins/linker-commerce/data/`（compatibility.json 248 对、engineering-overlay.json），feed 路由 `linker/v1/engineering-feed` 由 linker-commerce 提供。
 - 2026-10-11（#68）：`_linker_documents` 的后台维护入口（Documents meta box）落地：编辑标题/URL/类型/语言、删行、空行新增；只收本站 URL。入口只做维护，文档内容仍逐项确认。
-- 2026-10-21（#493）：feed 在版本号之外携带 `compatibility` 全量（`data/compatibility.json` 原对象）；引擎的 `sync-feed.py` 用同一次抓取把 `state/compatibility.json` 一并校验、原子换、失败保旧，合同变更不再人工 scp。合同文件不可读时该键缺席（feed 其余部分照常），引擎保留旧合同。`feed.schema.json` 把该键列为可选对象，合法性由引擎的 `Compatibility` 加载器判定；新引擎对键的有无都接受，部署顺序照旧先 services、后 site。
+- 2026-10-21（#493）：feed 在版本号之外携带 `compatibility` 全量（`data/compatibility.json` 原对象）；引擎的 `sync-feed.py` 用同一次抓取把 `state/compatibility.json` 一并校验、原子换、失败保旧，合同变更不再人工 scp。合同文件不可读时该键缺席（feed 其余部分照常），引擎保留旧合同。`feed.schema.json` 当时把该键列为可选对象，合法性由引擎的 `Compatibility` 加载器判定；该可选行为已被 2026-10-30 的必填投影规则取代，部署顺序仍先 services、后 site。
 
 - 2026-10-25：兼容合同维护权迁入 Woo；上述当前维护与迁移规则取代此前运行时静态文件/pattern 匹配及保留旧合同放行的描述。保留文件与既有冻结产物只作历史/迁移证据，不能授权当前新动作。
+- 2026-10-30：`compatibility` 是 feed 的必填投影，其 `version` 必须与 `compatibility_version` 一致。引擎消费当前 Woo 投影并以其规范字节计算版本；缺键或代际不一致时拒绝加载，不再接受无投影 feed 或回退旧合同。部署仍按 services、site 顺序，但服务重启前必须证实当前 feed 已含有效投影。
 
 When the native document editor saves a recognized specific document type, an empty/generic hidden role (`document`/`Dokument`) must not shadow that explicit type. The save removes only that generic override, preserving dedicated or unknown roles and all other extended metadata. Consumers keep their established role-first precedence; no title-based purpose guess or broader technical scope authorization is added. Shared-file entries must be maintained consistently across the Woo products that publish the same original; warranty applicability remains conditional on the original policy, device and installation facts.
 

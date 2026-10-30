@@ -13,7 +13,7 @@ def source_bytes(directory: Path) -> tuple[bytes, ...]:
 
 
 def digest(source: Iterable[bytes], feed: bytes, compatibility: bytes) -> str:
-    """Same source/feed/contract byte order as the local release stamp (#521)."""
+    """Same source/feed/canonical Woo projection order as the local release stamp (#521)."""
     result = hashlib.sha256()
     for part in source:
         result.update(part)

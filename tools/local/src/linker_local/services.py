@@ -86,6 +86,25 @@ def service_token(wp: WpCli) -> str:
 START_TIMEOUT = 10
 
 
+def engine_resource_version(source: Path, feed: bytes) -> str:
+    document = json.loads(feed)
+    projection = document.get("compatibility")
+    if not isinstance(projection, dict) or projection.get("version") != document.get(
+        "compatibility_version"
+    ):
+        raise ProcessError("managed feed needs shared publication preparation")
+    release = hashlib.sha256()
+    for path in sorted(source.rglob("*.py")):
+        release.update(path.read_bytes())
+    release.update(feed)
+    release.update(
+        json.dumps(
+            projection, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+        ).encode()
+    )
+    return release.hexdigest()
+
+
 @dataclass(frozen=True)
 class Service:
     name: str
@@ -191,16 +210,12 @@ def _serve(
         if service.name == "engine":
             env.update(_engine_environment(instance, checkout))
             source = project / "src/linker_engine"
-            release = hashlib.sha256()
-            for path in sorted(source.rglob("*.py")):
-                release.update(path.read_bytes())
-            release.update(Path(env["LINKER_ENGINE_FEED"]).read_bytes())
-            release.update(Path(env["LINKER_ENGINE_COMPATIBILITY"]).read_bytes())
+            feed = Path(env["LINKER_ENGINE_FEED"]).read_bytes()
             wp.run(
                 "config",
                 "set",
                 "LINKER_ENGINE_RESOURCE_VERSION",
-                release.hexdigest(),
+                engine_resource_version(source, feed),
                 "--type=constant",
             )
             env.update(

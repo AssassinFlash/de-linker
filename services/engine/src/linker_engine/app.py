@@ -2,12 +2,13 @@
 
 Configuration comes from the environment:
 - LINKER_ENGINE_FEED: the engineering feed (JSON file of #8's feed endpoint);
-- LINKER_ENGINE_COMPATIBILITY: data/compatibility.json of linker-commerce;
+- LINKER_ENGINE_COMPATIBILITY: compatibility bytes retained for the immutable
+  generation manifest; runtime selection uses the current Woo feed projection;
 - LINKER_ENGINE_CACHE: directory for the PVGIS and LoD2 caches
   (default ~/.cache/linker-engine);
 - LINKER_ENGINE_CORS_ORIGINS: comma-separated origins allowed to call the API.
-The feed and the compatibility file are validated against their schemas when
-they are first needed; an invalid one is refused, never patched.
+The feed and its compatibility projection are validated when first needed;
+an invalid or mixed generation is refused, never patched.
 """
 
 from __future__ import annotations
@@ -107,8 +108,19 @@ class Services:
             ):
                 raise ValueError("engineering generation bytes do not match manifest")
         loaded_feed = json.loads(feed)
-        if loaded_feed.get("compatibility") != json.loads(compatibility):
+        if "compatibility" not in loaded_feed:
+            raise ValueError("current Woo compatibility projection is required")
+        projection = loaded_feed["compatibility"]
+        if not isinstance(projection, dict) or projection.get(
+            "version"
+        ) != loaded_feed.get("compatibility_version"):
             raise ValueError("feed and compatibility are not one generation")
+        compatibility = json.dumps(
+            projection,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+        ).encode()
         self.publication = Publication(loaded_feed)
         self.engine = Engine(
             products=Products.from_feed(json.loads(feed)),
