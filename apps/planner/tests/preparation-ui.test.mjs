@@ -16,6 +16,7 @@ import {
 	acknowledgeSave,
 } from "../src/domain/draft.ts";
 import { DeviceConditionInputs } from "../src/components/equipment/DeviceConditionInputs.tsx";
+import { PlanningReportResult } from "../src/components/energy/PlanningReportResult.tsx";
 import { ApiError } from "../src/data/protocol.ts";
 import { readRun } from "../src/data/planningProtocol.ts";
 import { selectPreparation } from "../src/domain/preparationSelection.ts";
@@ -37,6 +38,45 @@ const session = {
 };
 const selectButton = () =>
 	document.querySelector(".lp-run-result > .lp-button");
+
+test("a frozen English report marks its own language inside a German planner page", async (t) => {
+	const run = structuredClone(fixture.geometric_pv.report_run);
+	run.result.report.locale = "en";
+	run.result.report.title = "Project planning report";
+	run.result.report.subtitle =
+		"Saved project inputs and selected calculation results";
+	const client = {
+		origin: "https://fixture.invalid",
+		isCurrentScope: (value) => value === scope,
+	};
+	await mount(
+		t,
+		React.createElement(PlanningReportResult, {
+			run,
+			client,
+			scope,
+			recheck() {},
+			operations: {},
+			current: true,
+			blocked: false,
+			locale: "de-DE",
+		}),
+	);
+	const result = document.querySelector(".lp-run-result");
+	assert.equal(result.querySelector("h3").lang, "en");
+	assert.equal(
+		result.querySelector(".lp-run-heading > div > p:nth-of-type(1)").lang,
+		"en",
+	);
+	const notice = result.querySelector("[role=status]");
+	assert.equal(notice.textContent, "Report language: English");
+	assert.equal(notice.lang, "de-DE");
+	const reportSections = [
+		...result.querySelectorAll(".lp-scenario-block, details.lp-comparison"),
+	];
+	assert.ok(reportSections.length > 0);
+	assert.ok(reportSections.every((section) => section.lang === "en"));
+});
 
 test("the geometric PV workspace uses all retained intervals, adopts frozen AC explicitly and selects its report run", async (t) => {
 	const native = fixture.geometric_pv;

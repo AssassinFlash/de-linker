@@ -12823,6 +12823,16 @@ msgstr "Die folgenden Koeffizienten und Umwandlungsgruppen gehören zur Referenz
 msgid "Each active array belongs to one conversion group. The model sums independent uniform module maximum-power outputs into each array and applies the declared shared PVWatts conversion curve and AC limit. It does not reconstruct physical strings or manufacturer inverter tracking."
 msgstr "Jede aktive Modulfläche gehört zu einer Umwandlungsgruppe. Das Modell summiert die unabhängig bestimmten maximalen Leistungen der gleichmäßig behandelten Module je Modulfläche und wendet die angegebene gemeinsame PVWatts-Umwandlungskennlinie sowie die AC-Leistungsgrenze an. Physische Strings und die MPP-Regelung des Herstellerwechselrichters werden nicht nachgebildet."
 
+#: ../../apps/planner/src/components/energy/PlanningReportResult.tsx
+#: build/planner/assets/planner.js:1
+msgid "Report language: English"
+msgstr "Berichtssprache: Englisch"
+
+#: ../../apps/planner/src/components/energy/PlanningReportResult.tsx
+#: build/planner/assets/planner.js:1
+msgid "Report language: German"
+msgstr "Berichtssprache: Deutsch"
+
 #: ../../apps/planner/src/components/energy/GeometricPvSetup.tsx
 #: build/planner/assets/planner.js:1
 msgid "Saved weather source"
