@@ -55,7 +55,8 @@ final class BusinessCapacity {
 				self::initialize( $state );
 				return self::room( $state, TrustedCustomer::current() ? 'approved' : 'ordinary', 1 );
 			},
-			1
+			1,
+			true
 		);
 		return $result instanceof WP_Error ? $result : null;
 	}
@@ -103,7 +104,8 @@ final class BusinessCapacity {
 				IntakeStore::save( $state );
 				return array();
 			},
-			1
+			1,
+			true
 		);
 		if ( $result instanceof WP_Error ) {
 			throw new CapacityFull( $result ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Structured WP_Error is escaped at the native form consumer.
@@ -141,7 +143,8 @@ final class BusinessCapacity {
 				IntakeStore::save( $state );
 				return array();
 			},
-			1
+			1,
+			true
 		);
 		if ( $result instanceof WP_Error ) {
 			throw new CapacityFull( $result ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Structured WP_Error is escaped at the native form consumer.
@@ -178,7 +181,8 @@ final class BusinessCapacity {
 				static function ( array &$state ) use ( $key, $fresh ): array|WP_Error {
 					return ( $state['business'][ $key ]['order'] ?? 0 ) === $fresh->get_id() ? array() : self::problem();
 				},
-				1
+				1,
+				true
 			);
 			if ( $bound instanceof WP_Error ) {
 				return $bound;
@@ -218,7 +222,8 @@ final class BusinessCapacity {
 				IntakeStore::save( $state );
 				return array();
 			},
-			1
+			1,
+			true
 		);
 		if ( $result instanceof WP_Error ) {
 			throw new CapacityFull( $result ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Native first-save owner rolls back; never acknowledges an unbound record.
@@ -414,7 +419,8 @@ final class BusinessCapacity {
 				IntakeStore::save( $state );
 				return array();
 			},
-			1
+			1,
+			true
 		);
 	}
 

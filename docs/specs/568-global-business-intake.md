@@ -96,6 +96,14 @@ spans optional summary HTTP, model dispatch or SMTP. Native two-connection
 fixtures prove final count/byte winners and query actual lock ownership during
 the provider seam and PHPMailer transport.
 
+Business first-save alone may use that one-second budget to recover MySQL error
+3572: it releases the named IntakeStore mutex, briefly backs off and retries so
+the transaction that already owns the option row can reach its final bind and
+commit. This avoids inverting the named mutex and row lock while preserving the
+actual capacity answer. Mail capacity and other IntakeStore consumers keep the
+immediate `NOWAIT` failure path; an unrelated open outer transaction must not
+make their public worker wait.
+
 The trusted REQUEST/INPUT/SUBJECT association is stamped before explicit byte
 reservation. The final pre-save hook rechecks the complete actual metadata with
 the identical serializer; exactly one missing byte refuses the complete record.

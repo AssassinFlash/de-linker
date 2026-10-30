@@ -101,8 +101,10 @@ final class EntriesTest extends TestCase {
 		$payload = json_decode( (string) $inline['data-linker-genie-boot-payload'], true );
 		$this->assertSame( 'Genie could not load.', $payload['error'] );
 		$this->assertSame( 'Try again', $payload['retry'] );
-		$this->assertNotContains( '/wp-includes/js/dist/i18n.min.js', $payload['deps'] );
+		$this->assertContains( '/wp-includes/js/dist/i18n.min.js', $payload['deps'] );
 		$this->assertContains( '/wp-includes/js/dist/vendor/react.min.js', $payload['deps'] );
+		$this->assertSame( array( 'wp', 'i18n' ), $payload['nativeDependencies']['/wp-includes/js/dist/i18n.min.js'] );
+		$this->assertSame( array( 'React' ), $payload['nativeDependencies']['/wp-includes/js/dist/vendor/react.min.js'] );
 		$this->assertConditionsMet();
 	}
 
@@ -787,6 +789,36 @@ JS
 		unlink( $fixture );
 		$this->assertSame( 0, $code, (string) $err );
 		$this->assertCount( 4, (array) json_decode( (string) $out, true ) );
+		$this->assertConditionsMet();
+	}
+
+	/** Native tags may fail; their absent runtime still uses the retryable loader. */
+	public function test_printed_native_dependency_is_reused_only_when_its_runtime_exists(): void {
+		$GLOBALS['linker_tools_test_inline_scripts'] = array();
+		$this->frontend( 'en', array( 'type' => 'category' ) );
+		WP_Mock::userFunction( 'wp_scripts', array( 'return' => static fn() => new FakeScripts() ) );
+		$this->capture( array( new Entries( '/plugin/linker-tools.php' ), 'dock' ) );
+		$fixture = tempnam( sys_get_temp_dir(), 'genie-native-dependency-' );
+		$this->assertIsString( $fixture );
+		file_put_contents( $fixture, (string) ( $GLOBALS['linker_tools_test_inline_scripts'][0][0] ?? '' ) );
+		$script = dirname( __DIR__, 2 ) . '/js/genie-loader-native-dependencies.mjs';
+		$run    = proc_open(
+			array( 'node', $script, $fixture ),
+			array(
+				1 => array( 'pipe', 'w' ),
+				2 => array( 'pipe', 'w' ),
+			),
+			$pipes
+		);
+		$this->assertIsResource( $run );
+		$out = stream_get_contents( $pipes[1] );
+		$err = stream_get_contents( $pipes[2] );
+		fclose( $pipes[1] );
+		fclose( $pipes[2] );
+		$code = proc_close( $run );
+		unlink( $fixture );
+		$this->assertSame( 0, $code, (string) $err );
+		$this->assertCount( 3, (array) json_decode( (string) $out, true ) );
 		$this->assertConditionsMet();
 	}
     // phpcs:enable
