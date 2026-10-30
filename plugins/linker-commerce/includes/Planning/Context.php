@@ -281,7 +281,7 @@ final class Context {
 	 * @param string $id Native line reference.
 	 */
 	private static function valid( mixed $value, string $id ): bool {
-		return is_array( $value ) && ( $value['id'] ?? null ) === $id && is_array( $value['snapshot'] ?? null ) && is_string( $value['snapshot_sha256'] ?? null ) && hash_equals( $value['snapshot_sha256'], Publication::revision( $value['snapshot'] ) );
+		return DraftTransfer::native_context_valid( $value, $id );
 	}
 
 	/**

@@ -32,7 +32,7 @@ final class DraftTransfer {
 	public function apply( mixed $previous, array $command, array $handoff ): array|WP_Error {
 		unset( $previous );
 		$snapshot = $handoff['snapshot'] ?? null;
-		if ( ! is_array( $snapshot ) || 1 !== ( $handoff['schema_version'] ?? null ) || 1 !== ( $snapshot['schema_version'] ?? null ) || 'planning_products_v1' !== ( $snapshot['kind'] ?? null ) || ( $snapshot['project_id'] ?? null ) !== $command['project_id'] || ( $snapshot['revision'] ?? null ) !== $command['expected_revision'] || ( $snapshot['report_run_id'] ?? null ) !== $command['report_run_id'] || ! is_string( $handoff['id'] ?? null ) || 1 !== preg_match( '/\A[a-f0-9]{32}\z/', $handoff['id'] ) || ! is_string( $handoff['snapshot_sha256'] ?? null ) || ! hash_equals( Publication::revision( $snapshot ), $handoff['snapshot_sha256'] ) ) {
+		if ( ! self::envelope_valid( $handoff, $command['project_id'], $command['report_run_id'], $command['expected_revision'] ) ) {
 			return self::failure( 'planning_transfer_invalid', 502 );
 		}
 		wc_load_cart();
@@ -54,6 +54,88 @@ final class DraftTransfer {
 			$this->stop_autosave();
 			return self::failure( 'planning_transfer_unconfirmed', 503 );
 		}
+	}
+
+	/**
+	 * Validate the engine-owned handoff envelope and its requested binding.
+	 *
+	 * The engine computes snapshot_sha256 with its Python canonical encoder.
+	 * Recomputing it with wp_json_encode would treat a different serialization
+	 * as altered content. The authenticated transport is the ownership proof;
+	 * these checks bind that trusted reply to this project and report.
+	 * Schema 1 and the 32/64-character identifier/SHA-256 forms come from
+	 * `services/engine/src/linker_engine/planning/handoffs.py`; the positive
+	 * revision floor mirrors the workspace project schema.
+	 *
+	 * @param mixed       $handoff Engine handoff.
+	 * @param string|null $project_id Expected project.
+	 * @param string|null $report_run_id Expected report run.
+	 * @param int|null    $revision Expected project revision.
+	 */
+	public static function envelope_valid( mixed $handoff, ?string $project_id = null, ?string $report_run_id = null, ?int $revision = null ): bool {
+		if ( ! is_array( $handoff ) ) {
+			return false;
+		}
+		$snapshot = $handoff['snapshot'] ?? null;
+		if ( ! is_array( $snapshot ) ) {
+			return false;
+		}
+		if ( 1 !== ( $handoff['schema_version'] ?? null ) || 1 !== ( $snapshot['schema_version'] ?? null ) || 'planning_products_v1' !== ( $snapshot['kind'] ?? null ) ) {
+			return false;
+		}
+		if ( ! is_string( $handoff['id'] ?? null ) || 1 !== preg_match( '/\A[a-f0-9]{32}\z/', $handoff['id'] ) ) {
+			return false;
+		}
+		if ( ! is_string( $handoff['snapshot_sha256'] ?? null ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $handoff['snapshot_sha256'] ) ) {
+			return false;
+		}
+		foreach ( array( 'project_id', 'report_run_id' ) as $field ) {
+			if ( ! is_string( $snapshot[ $field ] ?? null ) || 1 !== preg_match( '/\A[a-f0-9]{32}\z/', $snapshot[ $field ] ) ) {
+				return false;
+			}
+		}
+		if ( ! is_int( $snapshot['revision'] ?? null ) || $snapshot['revision'] < 1 ) {
+			return false;
+		}
+		return ( null === $project_id || $snapshot['project_id'] === $project_id )
+			&& ( null === $report_run_id || $snapshot['report_run_id'] === $report_run_id )
+			&& ( null === $revision || $snapshot['revision'] === $revision );
+	}
+
+	/**
+	 * Add a PHP-owned fingerprint before retaining the trusted engine envelope.
+	 *
+	 * @param array<string,mixed> $handoff Engine handoff.
+	 * @return array<string,mixed>
+	 */
+	public static function native_context( array $handoff ): array {
+		$handoff['native_sha256'] = Publication::revision( $handoff );
+		return $handoff;
+	}
+
+	/**
+	 * Validate a retained native context without reimplementing the engine hash.
+	 *
+	 * Contexts written before native_sha256 existed can only be accepted when
+	 * the engine hash is the exact value PHP's historical encoder produced.
+	 *
+	 * @param mixed  $value Retained context.
+	 * @param string $id Native line reference.
+	 */
+	public static function native_context_valid( mixed $value, string $id ): bool {
+		if ( ! self::envelope_valid( $value ) || ( $value['id'] ?? null ) !== $id ) {
+			return false;
+		}
+		$native = $value['native_sha256'] ?? null;
+		if ( null === $native ) {
+			return hash_equals( $value['snapshot_sha256'], Publication::revision( $value['snapshot'] ) );
+		}
+		if ( ! is_string( $native ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $native ) ) {
+			return false;
+		}
+		$content = $value;
+		unset( $content['native_sha256'] );
+		return hash_equals( $native, Publication::revision( $content ) );
 	}
 
 	/**
@@ -115,7 +197,7 @@ final class DraftTransfer {
 					unset( $contexts[ $old_id ] );
 				}
 			}
-			$contexts[ $handoff['id'] ] = $handoff;
+			$contexts[ $handoff['id'] ] = self::native_context( $handoff );
 			$result                     = array(
 				'schema_version'  => 1,
 				'handoff_id'      => $handoff['id'],
