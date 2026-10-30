@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+# Throwaway CI selector acceptance; this file is not a production input.
 from pathlib import Path
 
 from linker_engine.planning.equipment_inputs import EquipmentSelection
