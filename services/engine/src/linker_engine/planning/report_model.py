@@ -344,15 +344,22 @@ def build_report(source: Object) -> Report:
         materials = project_materials(source)
     lines = cast(list[Object], materials["lines"])
     if lines:
-        material_documents: dict[tuple[str, int], ReportRow] = {}
+        material_documents: dict[tuple[str, int, str], ReportRow] = {}
         for line in lines:
             origin = line.get("source")
             citation = origin.get("document") if isinstance(origin, dict) else None
             if isinstance(citation, dict):
                 url, page = cast(str, citation["url"]), cast(int, citation["page"])
-                material_documents[(url, page)] = ReportRow(
+                source_label = (
+                    "material_installation_source"
+                    if isinstance(origin, dict)
+                    and origin.get("origin") == "_linker_installation_facts"
+                    and line["handling"] != "manufacturer_included"
+                    else "material_package_source"
+                )
+                material_documents[(url, page, source_label)] = ReportRow(
                     label=f"{text('source', locale)} · {text('page', locale)} {page}",
-                    value=text("material_package_source", locale),
+                    value=text(source_label, locale),
                     href=url,
                 )
         sections.append(

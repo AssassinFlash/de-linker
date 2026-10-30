@@ -110,6 +110,26 @@ def project_materials(source: Object) -> Object:
                         covered_inclusions.update(
                             (scope, cast(str, item["role"])) for scope in scopes
                         )
+            installation = product.get("installation_facts")
+            if (
+                isinstance(installation, dict)
+                and installation.get("status") == "documented"
+            ):
+                for item_index, item in enumerate(
+                    cast(list[Object], installation["items"])
+                ):
+                    product_id = cast(int, line["product_id"])
+                    lines.append(
+                        _installation_fact_line(
+                            product_id,
+                            item_index,
+                            item,
+                            identity,
+                            line.get("quantity"),
+                            product.get("product_revision"),
+                            cast(Object, source.get("woo_bases", {})).get("equipment"),
+                        )
+                    )
         for index, requirement in enumerate(
             cast(list[Object], equipment.get("installation_requirements", []))
         ):
@@ -227,7 +247,12 @@ def project_materials(source: Object) -> Object:
 
 
 def material_name(line: Object, locale: str) -> str:
-    if line["handling"] in {"manufacturer_included", "installation_requirement"}:
+    if line["handling"] in {
+        "manufacturer_included",
+        "customer_supplied_required",
+        "site_engineering_required",
+        "installation_requirement",
+    }:
         if isinstance(line.get("label"), dict):
             name = cast(str, cast(Object, line["label"])[locale])
         else:
@@ -238,6 +263,19 @@ def material_name(line: Object, locale: str) -> str:
 
 
 def material_reference(line: Object) -> str:
+    origin = line.get("source")
+    if line["handling"] in {
+        "manufacturer_included",
+        "customer_supplied_required",
+        "site_engineering_required",
+    }:
+        if (
+            isinstance(origin, dict)
+            and origin.get("origin") == "_linker_installation_facts"
+        ):
+            document = cast(Object, origin["document"])
+            if isinstance(document, dict):
+                return f"p. {document['page']} · {document['quote']}"
     if line["handling"] == "pv_reference":
         # The reference-input key is provenance, not a manufacturer SKU.
         return ""
@@ -270,8 +308,26 @@ def material_scope(line: Object, locale: str) -> str:
     if line["handling"] == "manufacturer_included" and line.get("quantity") is not None:
         scope = text("material_included_documented", locale)
         parent = line.get("parent_label")
-        return f"{scope} · {parent}" if parent else scope
-    return text(f"material_{line['handling']}", locale)
+        scope = f"{scope} · {parent}" if parent else scope
+    else:
+        scope = text(f"material_{line['handling']}", locale)
+    origin = line.get("source")
+    if (
+        isinstance(origin, dict)
+        and origin.get("origin") == "_linker_installation_facts"
+    ):
+        conditions = line.get("conditions")
+        if isinstance(conditions, list):
+            localized: list[str] = []
+            for condition in conditions:
+                if not isinstance(condition, dict):
+                    continue
+                value = condition.get(locale)
+                if isinstance(value, str) and value:
+                    localized.append(value)
+            if localized:
+                return f"{scope} · {'; '.join(localized)}"
+    return scope
 
 
 def material_unit(line: Object, locale: str) -> str:
@@ -316,6 +372,75 @@ def _cell(value: Any) -> str:
     ):
         return "'" + shown
     return shown
+
+
+def _installation_fact_line(
+    product_id: int,
+    item_index: int,
+    item: Object,
+    identity: Object,
+    parent_quantity: Any,
+    product_revision: Any,
+    woo_basis: Any,
+) -> Json:
+    quantity = None
+    conditions = item.get("conditions")
+    is_conditional = isinstance(conditions, list) and bool(conditions)
+    handling = (
+        "site_engineering_required"
+        if item["handling"] == "manufacturer_included" and is_conditional
+        else item["handling"]
+    )
+    known = type(parent_quantity) is int and parent_quantity > 0
+    declared = item.get("quantity")
+    declared_quantity = (
+        declared
+        if (isinstance(declared, int) and not isinstance(declared, bool))
+        or (isinstance(declared, float) and math.isfinite(declared))
+        else None
+    )
+    if (
+        item["handling"] == "manufacturer_included"
+        and not is_conditional
+        and known
+        and isinstance(declared, (int, float))
+        and not isinstance(declared, bool)
+        and (isinstance(declared, int) or math.isfinite(declared))
+    ):
+        total = Decimal(str(declared)) * cast(int, parent_quantity)
+        if total <= Decimal(2**53 - 1):
+            candidate = float(total) if item["unit"] == "m" else int(total)
+            if math.isfinite(float(candidate)) and candidate <= 2**53 - 1:
+                quantity = candidate
+    source = cast(Object, item["source"])
+    return {
+        "id": f"installation:{product_id}:{item_index}:{item['id']}",
+        "handling": handling,
+        "parent_product_id": product_id,
+        "parent_label": " ".join(
+            str(identity[key]) for key in ("brand", "model") if identity[key]
+        ),
+        "label": item["label"],
+        "quantity": quantity,
+        "declared_quantity": declared_quantity,
+        "unit": item["unit"],
+        "basis": f"installation_fact:{item['basis']}",
+        "specification": item.get("specification"),
+        "conditions": item.get("conditions", []),
+        "source": {
+            "woo_basis": woo_basis,
+            "product_revision": product_revision,
+            "authority": "woocommerce_product_meta",
+            "origin": "_linker_installation_facts",
+            "document_id": source["document_id"],
+            "document_revision": source["document_revision"],
+            "blob_sha256": source["blob_sha256"],
+            "page": source["page"],
+            "quote": source["quote"],
+            "source": "linked_woo_document",
+            "document": source,
+        },
+    }
 
 
 def materials_csv(materials: Object, sha256: str, locale: str) -> bytes:

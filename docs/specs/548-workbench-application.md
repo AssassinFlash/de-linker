@@ -838,6 +838,17 @@ the publisher's current-source checks remain unchanged. Existing usable-energy
 conditions are retained, including the rated test rate, temperature and age.
 Their presence in the feed does not establish the project's usable capacity.
 
+Reviewed installation facts use `_linker_installation_facts` on the Woo product
+as the sole runtime authority. `tools/migrate/548-installation-facts.py` drives a
+`preview`/`apply`/`rollback`/`verify` PHP companion against the current
+publication manifest. A 0600 local receipt freezes exact metadata preimages,
+source/document identities, protected Woo state and the expected after hash;
+apply refuses later edits and rollback refuses post-apply edits. No migration
+marker is added to the product and no backup is left on the host. The contract is
+limited to the three installation handling classes and does not turn
+recommended ranges, optional protection or conditional inclusions into selected
+BOM quantities.
+
 The DC producer recognizes a documented grid-charging physical function while
 retaining its local-grid-permission obligation. Its AC-input active-power
 ceiling is the minimum of an explicitly documented active limit, when present,

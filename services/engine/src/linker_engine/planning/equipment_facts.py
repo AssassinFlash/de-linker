@@ -199,17 +199,16 @@ def compile_facts(product: dict[str, Any]) -> Object:
 def compile_product(product: dict[str, Any]) -> Object:
     """Keep sales identity distinct from reference-component fact compilation."""
     facts = compile_facts(product)
-    return decode_object(
-        encode(
-            {
-                "product_id": product["canonical_product_id"],
-                "product_revision": product["product_revision"],
-                "sku": product["sku"],
-                "model": product["model"],
-                "brand": product["brand"],
-                "device_class": product["device_class"],
-                "facts": facts,
-                "package_contents": product.get("package_contents"),
-            }
-        )
-    )
+    compiled: Object = {
+        "product_id": product["canonical_product_id"],
+        "product_revision": product["product_revision"],
+        "sku": product["sku"],
+        "model": product["model"],
+        "brand": product["brand"],
+        "device_class": product["device_class"],
+        "facts": facts,
+        "package_contents": product.get("package_contents"),
+    }
+    if "installation_facts" in product:
+        compiled["installation_facts"] = product["installation_facts"]
+    return decode_object(encode(compiled))

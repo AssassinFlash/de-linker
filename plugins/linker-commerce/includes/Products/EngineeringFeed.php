@@ -138,6 +138,11 @@ final class EngineeringFeed {
 			$item['package_contents'] = $contents;
 		}
 
+		$installation = Publication\InstallationFacts::projection( $product_id, $publication );
+		if ( null !== $installation ) {
+			$item['installation_facts'] = $installation;
+		}
+
 		return $item;
 	}
 
