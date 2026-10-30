@@ -85,7 +85,7 @@ brew install php@8.3
 | `just index` | Genie 的文档索引，只在 Mac 上跑（`docs/specs/10-knowledge-index.md`）：只读拉取媒体库 PDF 与商品、Docling 解析（按 sha256 缓存）、分块、向量、写 SQLite；数据与产物在仓库外的 `~/de-linker-data/`（`LINKER_DATA` 可改）。装 `index` 依赖组（Docling、ONNX Runtime 等），CI 不装 |
 | `just eval` | 用黄金集（`services/genie/index/eval/golden.jsonl`）给最新一次索引打分：召回@5、引用页码正确率；低于票面阈值即失败 |
 
-每条命令先按锁文件安装所需依赖（`composer.lock`、`package-lock.json`、`uv.lock`），锁文件与清单不一致就失败（`composer validate`、`npm ci`、`uv --locked`），干净克隆上可以直接运行。CI（`.github/workflows/check.yml`）把 PHP、JavaScript、Python、内容门、构建复现和 native 现场拆成并行 lane，最后仍由原来的 `check` 与 `mu-smoke` 聚合门槛判定；重建出的 `build/` 必须与提交的逐字节相同。推送前用 `just ci-preflight` 本地复现受影响 lane。
+每条命令先按锁文件安装所需依赖（`composer.lock`、`package-lock.json`、`uv.lock`），锁文件与清单不一致就失败（`composer validate`、`npm ci`、`uv --locked`），干净克隆上可以直接运行。CI（`.github/workflows/check.yml`）按实际差异选择并行 lane，完整改动保留 PHP、JavaScript、Python、内容门、构建复现和 native 现场，局部 Planner、Engine、Genie 改动只运行对应包；最终由 `check` 重新核算差异、基线证明和每个任务的实际结果，`mu-smoke` 是 native 分组任务而不是第二个聚合门禁。重建出的 `build/` 必须与提交的逐字节相同。推送前用 `just ci-preflight` 本地复现受影响 lane。
 
 票面写的是 `just build:check`。just 的配方名不能含 `:`（`build:check:` 会解析报错），`::` 是 just 的模块路径分隔符，所以 `build` 是模块 `tools/build.just`：`just build` 运行它的默认配方，`just build::check` 运行检查。npm 脚本仍叫 `build` 与 `build:check`。
 

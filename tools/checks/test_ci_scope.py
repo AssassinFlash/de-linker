@@ -1,45 +1,41 @@
-"""Contracts for the workflow's actual scope selector, without an API call."""
+"""Local contracts for CI selection and the final result gate."""
 
-import ast
 import json
 import os
-import re
 import subprocess
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from unittest.mock import Mock, patch
+from unittest.mock import patch
+
+import ci_scope
 
 ROOT = Path(__file__).resolve().parents[2]
-WORKFLOW = ROOT / ".github/workflows/check.yml"
-TEXT = WORKFLOW.read_text()
+TEXT = (ROOT / ".github/workflows/check.yml").read_text()
 JUSTFILE = (ROOT / "justfile").read_text()
-SCRIPT = TEXT.split("          python3 - <<'PYTHON'\n", 1)[1].split(
-    "          PYTHON\n", 1
-)[0]
-SCRIPT = "\n".join(line[10:] for line in SCRIPT.splitlines())
-TREE = ast.parse(SCRIPT)
-FUNCTIONS = ast.Module(
-    body=[node for node in TREE.body if isinstance(node, ast.FunctionDef)],
-    type_ignores=[],
-)
 
 
 class ScopeTest(unittest.TestCase):
     def setUp(self):
-        self.ns = {"re": re, "json": json, "subprocess": subprocess}
-        exec(compile(FUNCTIONS, str(WORKFLOW), "exec"), self.ns)
+        self.regular = patch.object(ci_scope, "regular_change", return_value=True)
+        self.non_runtime = patch.object(
+            ci_scope, "non_runtime_change", return_value=True
+        )
+        self.regular.start()
+        self.non_runtime.start()
+        self.addCleanup(self.regular.stop)
+        self.addCleanup(self.non_runtime.stop)
 
     def classify(self, *changes):
-        return self.ns["classify"](list(changes))
+        return ci_scope.classify(list(changes), "base", "head")
 
-    def test_existing_surfaces_and_both_next_batch_consumers(self):
-        self.assertEqual(self.classify(("M", "AGENTS.md")), "docs")
+    def test_document_presentation_and_existing_commerce_surfaces(self):
+        self.assertEqual(self.classify(("M", "AGENTS.md")), [])
         self.assertEqual(
             self.classify(
                 ("M", "plugins/linker-commerce/content/windpress/tokens.css")
             ),
-            "presentation",
+            ["presentation"],
         )
         for path in (
             "includes/Presentation/ProductShortcodes.php",
@@ -52,165 +48,467 @@ class ScopeTest(unittest.TestCase):
         ):
             with self.subTest(path=path):
                 self.assertEqual(
-                    self.classify(("M", "plugins/linker-commerce/" + path)), "commerce"
+                    self.classify(("M", "plugins/linker-commerce/" + path)),
+                    ["commerce", "native"],
                 )
 
-    def test_shared_or_unknown_change_requires_full_even_with_commerce(self):
+    def test_packages_compose_without_an_instance_for_service_changes(self):
+        self.assertEqual(
+            self.classify(("A", "apps/planner/src/domain/new.ts")), ["planner"]
+        )
+        self.assertEqual(
+            self.classify(
+                ("M", "services/engine/app.py"),
+                ("D", "services/genie/tests/test_old.py"),
+            ),
+            ["engine", "genie"],
+        )
+        self.assertEqual(
+            self.classify(
+                ("M", "docs/specs/13-genie.md"),
+                ("M", "services/genie/app.py"),
+            ),
+            ["genie"],
+        )
+
+    def test_shared_unknown_empty_and_structural_changes_are_full(self):
         for path in (
             ".github/workflows/check.yml",
             "justfile",
-            "plugins/linker-commerce/composer.lock",
-            "plugins/linker-commerce/package-lock.json",
-            "plugins/linker-commerce/src/index.tsx",
-            "plugins/linker-commerce/build/index.js",
-            "plugins/linker-commerce/includes/Registration/Approval.php",
-            "plugins/linker-commerce/includes/Module.php",
-            "plugins/linker-commerce/includes/Presentation/PageUrls.php",
-            "plugins/linker-commerce/includes/Presentation/WindPressVolume.php",
-            "plugins/linker-commerce/includes/Presentation/Module.php",
-            "plugins/linker-commerce/includes/Presentation/UnknownSurface.php",
-            "plugins/linker-commerce/tests/php/Unit/Presentation/PageUrlsTest.php",
-            "plugins/linker-tools/includes/Module.php",
+            "tools/build.just",
+            "tools/checks/ci_scope.py",
             "tools/checks/test_ci_scope.py",
-            "services/engine/app.py",
+            "plugins/linker-commerce/composer.lock",
+            "plugins/linker-commerce/src/index.tsx",
+            "plugins/linker-commerce/includes/Module.php",
+            "plugins/linker-tools/includes/Planner/Gateway.php",
+            "plugins/linker-tools/project-input-contracts.json",
+            "plugins/linker-tools/build/index.js",
+            "mu-plugins/linker-engine-pin.php",
         ):
             with self.subTest(path=path):
                 self.assertEqual(
-                    self.classify(
-                        ("M", "plugins/linker-commerce/assets/account-ui.js"),
-                        ("M", path),
-                    ),
-                    "full",
+                    self.classify(("M", "apps/planner/src/App.tsx"), ("M", path)),
+                    list(ci_scope.FULL_LANES),
                 )
-        for status in ("A", "D", "R100", "T"):
-            self.assertEqual(
-                self.classify((status, "plugins/linker-commerce/assets/account-ui.js")),
-                "full",
-            )
-        self.assertEqual(self.classify(), "full")
-
-    def test_dispatch_requires_checked_base_and_missing_base_stays_full(self):
-        top = ast.Module(
-            body=[node for node in TREE.body if not isinstance(node, ast.FunctionDef)],
-            type_ignores=[],
+        for status in ("R100", "C100", "T", "U"):
+            with self.subTest(status=status):
+                self.assertEqual(
+                    self.classify((status, "apps/planner/src/App.tsx")),
+                    list(ci_scope.FULL_LANES),
+                )
+        self.assertEqual(self.classify(), list(ci_scope.FULL_LANES))
+        self.assertEqual(
+            self.classify(("A", "plugins/linker-commerce/assets/account-ui.js")),
+            list(ci_scope.FULL_LANES),
         )
-        with TemporaryDirectory() as folder:
-            for base, proven, expected in (
-                ("", True, "full"),
-                ("0" * 40, True, "full"),
-                ("a" * 40, False, "full"),
-                ("a" * 40, True, "commerce"),
+
+    def test_planner_manifest_requires_unchanged_non_planner_entries(self):
+        before = {
+            "sources": {"package.json": "a" * 64},
+            "build": {
+                "build/index.js": "b" * 64,
+                "build/planner/index.js": "c" * 64,
+            },
+        }
+        after = {
+            "sources": before["sources"],
+            "build": {**before["build"], "build/planner/index.js": "d" * 64},
+        }
+        changes = [
+            ("M", "apps/planner/src/App.tsx"),
+            ("M", "plugins/linker-tools/build/planner/index.js"),
+            ("M", "plugins/linker-tools/build/manifest.json"),
+        ]
+        with patch.object(
+            ci_scope,
+            "git",
+            side_effect=[json.dumps(before).encode(), json.dumps(after).encode()],
+        ):
+            self.assertEqual(ci_scope.classify(changes, "base", "head"), ["planner"])
+        for mutation in (
+            {"sources": {"package.json": "e" * 64}},
+            {"build": {"build/index.js": "e" * 64}},
+        ):
+            changed = {
+                key: {**after.get(key, {}), **mutation.get(key, {})}
+                if key in mutation
+                else value
+                for key, value in after.items()
+            }
+            with (
+                self.subTest(mutation=mutation),
+                patch.object(
+                    ci_scope,
+                    "git",
+                    side_effect=[
+                        json.dumps(before).encode(),
+                        json.dumps(changed).encode(),
+                    ],
+                ),
             ):
-                with self.subTest(base=base, proven=proven):
-                    output = Path(folder) / "output"
-                    output.write_text("")
-                    self.ns["git"] = Mock(
-                        side_effect=[
-                            b"",
-                            b"M\0plugins/linker-commerce/assets/account-ui.js\0",
-                        ]
-                    )
-                    self.ns["regular_change"] = Mock(return_value=True)
-                    self.ns["checked_base"] = Mock(return_value=proven)
-                    with (
-                        patch.dict(
-                            os.environ,
-                            {
-                                "EVENT_NAME": "pull_request",
-                                "HEAD_SHA": "b" * 40,
-                                "BASE_SHA": base,
-                                "GITHUB_OUTPUT": str(output),
-                                "GITHUB_STEP_SUMMARY": str(Path(folder) / "summary"),
-                            },
-                        ),
-                        patch(
-                            "subprocess.run",
-                            return_value=subprocess.CompletedProcess([], 0),
-                        ),
-                    ):
-                        exec(compile(top, str(WORKFLOW), "exec"), self.ns)
-                    self.assertIn("mode=" + expected + "\n", output.read_text())
+                self.assertEqual(
+                    ci_scope.classify(changes, "base", "head"),
+                    list(ci_scope.FULL_LANES),
+                )
+        with patch.object(ci_scope, "planner_manifest_isolated", return_value=False):
+            self.assertEqual(
+                self.classify(("M", "plugins/linker-tools/build/manifest.json")),
+                list(ci_scope.FULL_LANES),
+            )
 
-    def test_symlink_or_missing_blob_cannot_enter_commerce(self):
-        self.ns["git"] = Mock(
-            side_effect=[b"100644 blob hash\tpath", b"120000 blob hash\tpath"]
+    def test_file_type_and_non_runtime_blob_checks_fail_closed(self):
+        self.regular.stop()
+        self.non_runtime.stop()
+        with patch.object(
+            ci_scope,
+            "git",
+            side_effect=[b"100644 blob hash\tpath", b"120000 blob hash\tpath"],
+        ):
+            self.assertFalse(ci_scope.regular_change("M", "path", "base", "head"))
+        with patch.object(ci_scope, "non_runtime_change", return_value=False):
+            self.assertEqual(
+                ci_scope.classify(
+                    [("M", "docs/specs/13-genie.md"), ("M", "services/genie/app.py")],
+                    "base",
+                    "head",
+                ),
+                list(ci_scope.FULL_LANES),
+            )
+
+    def test_real_git_diff_detects_rename_and_symlink(self):
+        self.regular.stop()
+        self.non_runtime.stop()
+        with TemporaryDirectory() as folder:
+            repo = Path(folder)
+            previous = Path.cwd()
+            self.addCleanup(os.chdir, previous)
+            os.chdir(repo)
+
+            def run(*args):
+                return subprocess.check_output(args, text=True).strip()
+
+            run("git", "init", "-q")
+            run("git", "config", "user.email", "ci@example.invalid")
+            run("git", "config", "user.name", "CI fixture")
+            source = repo / "apps/planner/src"
+            source.mkdir(parents=True)
+            (source / "old.ts").write_text("export const value = 1;\n")
+            run("git", "add", ".")
+            run("git", "commit", "-qm", "base")
+            base = run("git", "rev-parse", "HEAD")
+            run("git", "mv", "apps/planner/src/old.ts", "apps/planner/src/new.ts")
+            run("git", "commit", "-qm", "rename")
+            head = run("git", "rev-parse", "HEAD")
+            changes = ci_scope.diff_changes(base, head)
+            self.assertTrue(any(status.startswith("R") for status, _ in changes))
+            self.assertEqual(
+                ci_scope.classify(changes, base, head), list(ci_scope.FULL_LANES)
+            )
+            (source / "new.ts").unlink()
+            (source / "new.ts").symlink_to("target.ts")
+            run("git", "add", ".")
+            run("git", "commit", "-qm", "symlink")
+            symlink = run("git", "rev-parse", "HEAD")
+            self.assertEqual(
+                ci_scope.classify(ci_scope.diff_changes(head, symlink), head, symlink),
+                list(ci_scope.FULL_LANES),
+            )
+
+    def run_plan(self, event, candidate, proven=True):
+        with TemporaryDirectory() as folder:
+            output = Path(folder) / "output"
+            output.write_text("")
+            environment = {
+                "EVENT_NAME": event,
+                "HEAD_SHA": "b" * 40,
+                "BASE_SHA": "a" * 40,
+                "GITHUB_OUTPUT": str(output),
+                "GITHUB_STEP_SUMMARY": str(Path(folder) / "summary"),
+            }
+            with (
+                patch.dict(os.environ, environment),
+                patch.object(ci_scope, "git", return_value=b""),
+                patch.object(
+                    ci_scope,
+                    "diff_changes",
+                    return_value=[("M", "services/genie/app.py")],
+                ),
+                patch.object(ci_scope, "classify", return_value=candidate),
+                patch.object(ci_scope, "checked_base", return_value=proven) as checked,
+                patch(
+                    "subprocess.run", return_value=subprocess.CompletedProcess([], 0)
+                ),
+            ):
+                ci_scope.plan()
+            return output.read_text(), checked
+
+    def test_only_a_fully_checked_pull_request_base_enables_a_narrow_lane(self):
+        for event, proven, expected in (
+            ("pull_request", True, "scoped"),
+            ("pull_request", False, "full"),
+            ("workflow_dispatch", True, "full"),
+        ):
+            with self.subTest(event=event, proven=proven):
+                output, checked = self.run_plan(event, ["genie"], proven)
+                self.assertIn("mode=" + expected + "\n", output)
+                self.assertIn(f"genie={str(expected == 'scoped').lower()}\n", output)
+                if expected == "full":
+                    self.assertIn("php=true\n", output)
+                    self.assertIn("native=true\n", output)
+                else:
+                    self.assertIn("php=false\n", output)
+                    self.assertIn("native=false\n", output)
+                self.assertEqual(checked.called, event == "pull_request")
+
+    def test_full_candidate_never_becomes_scoped(self):
+        output, checked = self.run_plan(
+            "pull_request", list(ci_scope.FULL_LANES), proven=True
         )
-        self.assertFalse(self.ns["regular_change"]("M", "path", "base", "head"))
-        self.assertFalse(self.ns["regular_change"]("T", "path", "base", "head"))
+        self.assertIn("mode=full\n", output)
+        checked.assert_not_called()
 
-    def test_successful_baseline_requires_same_workflow_tree_and_scope(self):
-        commit = "a" * 40
+    def test_document_push_keeps_its_non_runtime_scope(self):
+        output, checked = self.run_plan("push", [], proven=False)
+        self.assertIn("mode=docs\n", output)
+        self.assertIn("php=false\n", output)
+        self.assertIn("native=false\n", output)
+        checked.assert_not_called()
+
+    def ledger(self, mode="scoped", lanes=None):
+        lanes = ["genie"] if lanes is None else lanes
+        return {
+            "base": "a" * 40,
+            "head": "b" * 40,
+            "mode": mode,
+            "candidate": lanes if mode == "scoped" else list(ci_scope.FULL_LANES),
+            "lanes": lanes,
+            "changes": [{"status": "M", "path": "services/genie/app.py"}],
+        }
+
+    def results(self, selected):
+        return {
+            lane: {
+                "result": "success" if lane == "plan" or lane in selected else "skipped"
+            }
+            for lane in ("plan", *ci_scope.LANES)
+        }
+
+    def audit(self, ledger, results, recomputed=None):
+        candidate = ledger["candidate"] if recomputed is None else recomputed
+        event = "push" if ledger["mode"] == "reuse" else "pull_request"
+        with (
+            patch.dict(
+                os.environ,
+                {
+                    "BASE_SHA": "a" * 40,
+                    "HEAD_SHA": "b" * 40,
+                    "EVENT_NAME": event,
+                },
+            ),
+            patch.object(ci_scope, "classify", return_value=candidate),
+        ):
+            return ci_scope.audit_gate(
+                ledger, results, [("M", "services/genie/app.py")]
+            )
+
+    def test_gate_rejects_missing_unselected_or_duplicate_execution(self):
+        self.assertEqual(self.audit(self.ledger(), self.results(["genie"])), [])
+        self.assertEqual(
+            self.audit(
+                self.ledger("full", list(ci_scope.FULL_LANES)),
+                self.results(ci_scope.FULL_LANES),
+            ),
+            [],
+        )
+        for name, ledger, results in (
+            ("selected job skipped", self.ledger(), self.results([])),
+            (
+                "unselected job succeeded",
+                self.ledger(),
+                self.results(["genie", "planner"]),
+            ),
+            (
+                "full run missing a package",
+                self.ledger("full", list(ci_scope.FULL_LANES)),
+                self.results(["genie"]),
+            ),
+            (
+                "full and narrow results mixed",
+                self.ledger("full", list(ci_scope.FULL_LANES)),
+                self.results(["genie"]),
+            ),
+            (
+                "missing job result",
+                self.ledger(),
+                {
+                    key: value
+                    for key, value in self.results(["genie"]).items()
+                    if key != "genie"
+                },
+            ),
+            (
+                "failed plan",
+                self.ledger(),
+                {**self.results(["genie"]), "plan": {"result": "failure"}},
+            ),
+        ):
+            with self.subTest(name=name):
+                self.assertTrue(self.audit(ledger, results))
+
+    def test_gate_recomputes_the_whole_ledger(self):
+        ledger = self.ledger()
+        ledger["changes"] = []
+        self.assertIn(
+            "the changed-path ledger is incomplete or different",
+            self.audit(ledger, self.results(["genie"])),
+        )
+        ledger = self.ledger(lanes=["planner"])
+        self.assertTrue(
+            self.audit(ledger, self.results(["planner"]), recomputed=["genie"])
+        )
+        docs = self.ledger("docs", [])
+        docs["candidate"] = ["genie"]
+        self.assertTrue(self.audit(docs, self.results([])))
+        failed = self.ledger("full", list(ci_scope.FULL_LANES))
+        failed["error"] = "diff --check failed"
+        self.assertIn(
+            "plan could not prove the complete diff: diff --check failed",
+            self.audit(failed, self.results(ci_scope.FULL_LANES)),
+        )
+
+    def test_gate_rechecks_baseline_and_reuse_proofs(self):
+        for mode in ("scoped", "reuse"):
+            with self.subTest(mode=mode):
+                ledger = self.ledger(mode, [] if mode == "reuse" else ["genie"])
+                environment = {
+                    "BASE_SHA": "a" * 40,
+                    "HEAD_SHA": "b" * 40,
+                    "EXPECTED_LEDGER": json.dumps(ledger),
+                    "JOB_RESULTS": json.dumps(self.results(ledger["lanes"])),
+                }
+                with (
+                    patch.dict(os.environ, environment),
+                    patch.object(
+                        ci_scope, "git", return_value=("b" * 40 + "\n").encode()
+                    ),
+                    patch.object(
+                        ci_scope,
+                        "diff_changes",
+                        return_value=[("M", "services/genie/app.py")],
+                    ),
+                    patch.object(ci_scope, "audit_gate", return_value=[]),
+                    patch.object(ci_scope, "checked_base", return_value=False) as base,
+                    patch.object(
+                        ci_scope, "checked_pr_tree", return_value=None
+                    ) as reuse,
+                ):
+                    with self.assertRaises(SystemExit):
+                        ci_scope.gate()
+                self.assertEqual(base.called, mode == "scoped")
+                self.assertEqual(reuse.called, mode == "reuse")
+
+    def test_baseline_proof_does_not_inherit_a_scoped_or_reused_run(self):
         run = {
             "status": "completed",
             "conclusion": "success",
-            "event": "pull_request",
-            "display_title": "check #1 | tree-ref=" + commit,
-            "id": 1,
-            "run_attempt": 1,
+            "display_title": "check #1 | tree-ref=" + "a" * 40,
         }
-        self.ns["os"] = type("Env", (), {"environ": {"REPOSITORY": "owner/repo"}})
-        for scope in ("full", "presentation", "commerce"):
-            self.ns["git"] = Mock(
-                side_effect=[b"workflow", b"workflow", b"tree", b"tree"]
-            )
-            self.ns["api"] = Mock(
-                return_value={
-                    "jobs": [
-                        {
-                            "name": "check (8.3, 22, 3.12)",
-                            "steps": [
-                                {
-                                    "name": f"Record validation scope ({scope})",
-                                    "conclusion": "success",
-                                }
-                            ],
-                        }
-                    ]
-                }
-            )
-            self.assertTrue(self.ns["checked_run"](run, commit))
-        self.ns["git"] = Mock(side_effect=[b"old-workflow", b"new-workflow"])
-        self.assertFalse(self.ns["checked_run"](run, commit))
-        self.ns["git"] = Mock(
-            side_effect=[b"workflow", b"workflow", b"old-tree", b"new-tree"]
-        )
-        self.assertFalse(self.ns["checked_run"](run, commit))
-        self.assertFalse(
-            self.ns["checked_run"]({**run, "conclusion": "failure"}, commit)
-        )
-        self.assertFalse(
-            self.ns["checked_run"]({**run, "status": "in_progress"}, commit)
-        )
+        with (
+            patch.object(
+                ci_scope,
+                "git",
+                side_effect=[b"workflow", b"workflow", b"tree", b"tree"] * 3,
+            ),
+            patch.object(
+                ci_scope, "validated_scope", side_effect=["scoped", "scoped", "reuse"]
+            ),
+        ):
+            self.assertFalse(ci_scope.checked_run(run, "a" * 40, full=True))
+            self.assertTrue(ci_scope.checked_run(run, "a" * 40))
+            self.assertFalse(ci_scope.checked_run(run, "a" * 40, full=True))
+
+    def test_reused_main_commit_traces_to_a_validated_scoped_pr(self):
+        reused = {"status": "completed", "conclusion": "success"}
+        with (
+            patch.object(ci_scope, "latest_run", return_value=reused),
+            patch.object(ci_scope, "checked_run", side_effect=[False, False]),
+            patch.object(ci_scope, "validated_scope", side_effect=["reuse", "scoped"]),
+            patch.object(ci_scope, "checked_pr_tree", return_value=reused) as original,
+        ):
+            self.assertTrue(ci_scope.checked_base("a" * 40))
+        original.assert_called_once_with("a" * 40)
+
+    def test_whitespace_failure_stops_before_selecting_lanes(self):
+        with TemporaryDirectory() as folder:
+            output = Path(folder) / "output"
+            output.write_text("")
+            environment = {
+                "EVENT_NAME": "pull_request",
+                "HEAD_SHA": "b" * 40,
+                "BASE_SHA": "a" * 40,
+                "GITHUB_OUTPUT": str(output),
+                "GITHUB_STEP_SUMMARY": str(Path(folder) / "summary"),
+            }
+            with (
+                patch.dict(os.environ, environment),
+                patch.object(ci_scope, "git", return_value=b""),
+                patch(
+                    "subprocess.run", return_value=subprocess.CompletedProcess([], 1)
+                ),
+            ):
+                with self.assertRaises(SystemExit):
+                    ci_scope.plan()
+            self.assertEqual(output.read_text(), "")
 
     def test_squash_merge_and_merge_commit_find_the_pr_head(self):
         commit = "a" * 40
         source = "b" * 40
         run = {"id": 1}
-        self.ns["latest_run"] = Mock(return_value=run)
-        self.ns["checked_run"] = Mock(return_value=True)
+        with (
+            patch.object(ci_scope, "latest_run", return_value=run),
+            patch.object(ci_scope, "checked_run", return_value=True),
+            patch.object(
+                ci_scope,
+                "git",
+                return_value=f"{commit} {'c' * 40} {source}\n".encode(),
+            ),
+        ):
+            self.assertIs(ci_scope.checked_pr_tree(commit), run)
+        with (
+            patch.object(ci_scope, "git", return_value=f"{commit}\n".encode()),
+            patch.dict(os.environ, {"REPOSITORY": "owner/repo"}),
+            patch.object(
+                ci_scope,
+                "api",
+                return_value=[
+                    {"merge_commit_sha": "d" * 40, "head": {"sha": "e" * 40}},
+                    {"merge_commit_sha": commit, "head": {"sha": source}},
+                ],
+            ),
+            patch.object(ci_scope, "latest_run", return_value=run),
+            patch.object(ci_scope, "checked_run", return_value=True),
+        ):
+            self.assertIs(ci_scope.checked_pr_tree(commit), run)
 
-        self.ns["git"] = Mock(return_value=f"{commit} {'c' * 40} {source}\n".encode())
-        self.assertIs(self.ns["checked_pr_tree"](commit), run)
+    def test_split_jobs_keep_the_shared_toolchain_inputs(self):
+        php = TEXT.split("\n  php:\n", 1)[1].split("\n  js:\n", 1)[0]
+        self.assertLess(php.index("just js-install"), php.index("just php-test"))
+        js = TEXT.split("\n  js:\n", 1)[1].split("\n  python:\n", 1)[0]
+        self.assertLess(js.index("npx playwright install"), js.index("just js-test"))
+        engine = TEXT.split("\n  engine:\n", 1)[1].split("\n  genie:\n", 1)[0]
+        self.assertIn("uses: actions/setup-node@", engine)
+        self.assertLess(engine.index("npm ci"), engine.index("uv run --locked pytest"))
+        python = TEXT.split("\n  python:\n", 1)[1].split("\n  content:\n", 1)[0]
+        self.assertLess(
+            python.index("Python unit native helpers"),
+            python.index("Python tool tests"),
+        )
 
-        self.ns["git"] = Mock(return_value=f"{commit}\n".encode())
-        self.ns["os"] = type("Env", (), {"environ": {"REPOSITORY": "owner/repo"}})
-        self.ns["api"] = Mock(
-            return_value=[
-                {"merge_commit_sha": "d" * 40, "head": {"sha": "e" * 40}},
-                {"merge_commit_sha": commit, "head": {"sha": source}},
-            ]
-        )
-        self.assertIs(self.ns["checked_pr_tree"](commit), run)
-
-    def test_plan_retains_fail_closed_baseline_and_native_commerce_checks(self):
-        # Check the actual dispatch wiring as well as the pure classifier.
-        self.assertIn(
-            'elif candidate in {"presentation", "commerce"} and event == "pull_request":\n                if checked_base(base):',
-            SCRIPT,
-        )
-        self.assertIn(
-            'mode, reason = "full", "Change or baseline proof unavailable;', SCRIPT
-        )
+    def test_workflow_preserves_native_recovery_and_has_one_real_gate(self):
+        self.assertIn("cancel-in-progress: true", TEXT)
+        self.assertNotIn("on:\n  pull_request:\n    paths", TEXT)
+        self.assertEqual(TEXT.count("if: always()"), 1)
         self.assertIn("group: [core, mail, inquiry, inventory, runtime, admin]", TEXT)
         self.assertIn('just ci-native "${{ matrix.group }}" smoke', TEXT)
         self.assertNotIn("/Justfile", JUSTFILE)
@@ -235,11 +533,26 @@ class ScopeTest(unittest.TestCase):
             "ProformaPriceGateTest",
             "GenieInquiryTest",
             "InquiryAssessmentTest",
+            "MessageIdWitnessTest",
             "run_admin()",
             "admin-mfa",
         ):
             with self.subTest(marker=marker):
                 self.assertIn(marker, JUSTFILE)
+        for lane in ci_scope.LANES:
+            with self.subTest(lane=lane):
+                self.assertIn(f"\n  {lane}:\n", TEXT)
+                self.assertIn(
+                    f"if: ${{{{ !cancelled() && needs.plan.outputs.{lane} == 'true' }}}}",
+                    TEXT,
+                )
+        self.assertIn("if: ${{ !cancelled() }}", TEXT)
+        self.assertIn("JOB_RESULTS: ${{ toJson(needs) }}", TEXT)
+        self.assertTrue(
+            set(ci_scope.FULL_LANES).isdisjoint(
+                {"presentation", "commerce", "planner", "engine", "genie"}
+            )
+        )
 
 
 if __name__ == "__main__":

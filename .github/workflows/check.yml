@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: check-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: true
 
 jobs:
@@ -23,8 +23,21 @@ jobs:
       actions: read
     outputs:
       mode: ${{ steps.scope.outputs.mode }}
+      ledger: ${{ steps.scope.outputs.ledger }}
+      presentation: ${{ steps.scope.outputs.presentation }}
+      php: ${{ steps.scope.outputs.php }}
+      js: ${{ steps.scope.outputs.js }}
+      python: ${{ steps.scope.outputs.python }}
+      content: ${{ steps.scope.outputs.content }}
+      build: ${{ steps.scope.outputs.build }}
+      commerce: ${{ steps.scope.outputs.commerce }}
+      native: ${{ steps.scope.outputs.native }}
+      planner: ${{ steps.scope.outputs.planner }}
+      engine: ${{ steps.scope.outputs.engine }}
+      genie: ${{ steps.scope.outputs.genie }}
       catalog_changed: ${{ steps.scope.outputs.catalog_changed }}
       php_test_changed: ${{ steps.scope.outputs.php_test_changed }}
+      planner_build_changed: ${{ steps.scope.outputs.planner_build_changed }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -32,6 +45,7 @@ jobs:
           ref: ${{ github.sha }}
           sparse-checkout: |
             **/.gitattributes
+            tools/checks/ci_scope.py
           sparse-checkout-cone-mode: false
       - name: Select checks from the actual change
         id: scope
@@ -41,203 +55,12 @@ jobs:
           HEAD_SHA: ${{ github.sha }}
           REPOSITORY: ${{ github.repository }}
           GH_TOKEN: ${{ github.token }}
-        run: |
-          python3 - <<'PYTHON'
-          import json
-          import os
-          from pathlib import Path
-          import re
-          import subprocess
+        run: python3 tools/checks/ci_scope.py plan
 
-          def git(*args):
-              return subprocess.check_output(["git", *args], stderr=subprocess.DEVNULL)
-
-          def document(path):
-              return path in {"AGENTS.md", "CLAUDE.md", "CONTEXT.md", "README.md"} or (
-                  path.startswith("docs/") and path.endswith((".md", ".rst", ".txt"))
-              )
-
-          def acceptance_record(path):
-              return path.startswith("docs/acceptance/") and path.endswith((".json", ".png", ".pdf", ".jpg", ".jpeg"))
-
-          def non_runtime_file(commit, path):
-              if git("ls-tree", commit, "--", path).split()[0] != b"100644":
-                  return False
-              content = git("show", f"{commit}:{path}")
-              if acceptance_record(path):
-                  if path.endswith(".png"):
-                      return content.startswith(b"\x89PNG\r\n\x1a\n")
-                  if path.endswith((".jpg", ".jpeg")):
-                      return content.startswith(b"\xff\xd8\xff")
-                  if path.endswith(".pdf"):
-                      return content.startswith(b"%PDF-")
-                  json.loads(content)
-                  return True
-              if b"\0" in content:
-                  return False
-              content.decode("utf-8")
-              return True
-
-          def non_runtime_change(status, path, base, head):
-              revisions = {"M": (base, head), "A": (head,), "D": (base,)}.get(status, ())
-              return bool(revisions) and all(non_runtime_file(rev, path) for rev in revisions)
-
-          def commerce(path):
-              return bool(re.fullmatch(
-                  r"plugins/linker-commerce/(includes/(Presentation/(ProductShortcodes|LanguageLinks|LibraryPage)[.]php|Storefront/ProductView[.]php|Registration/PendingProfileCapacity[.]php)|assets/[a-z0-9-]+[.]js|content/(livecanvas/(de/)?[a-z0-9_-]+[.]html|windpress/[a-z0-9_-]+[.]css)|languages/linker-commerce-de_DE_formal[.](po|mo)|tests/php/(Unit/(Presentation/(ProductShortcodes|LanguageLinks|LibraryPage)Test[.]php|Storefront/ProductViewTest[.]php)|Integration/RegistrationCapacityTest[.]php)|tests/js/[a-z0-9-]+[.]test[.]mjs)", path
-              ))
-
-          def regular_change(status, path, base, head):
-              revisions = {"M": (base, head), "A": (head,), "D": (base,)}.get(status, ())
-              return bool(revisions) and all(git("ls-tree", rev, "--", path).split()[0] == b"100644" for rev in revisions)
-
-          def classify(changes):
-              def presentation(path):
-                  return bool(re.fullmatch(
-                      r"plugins/linker-commerce/content/(livecanvas/(de/)?[a-z0-9_-]+[.]html|windpress/[a-z0-9_-]+[.]css)", path
-                  )) or path == "plugins/linker-commerce/tests/php/Unit/Presentation/TemplatesTest.php"
-              if changes and all(document(path) or acceptance_record(path) for _, path in changes):
-                  return "docs"
-              if changes and all(document(path) or acceptance_record(path) or (status == "M" and presentation(path)) for status, path in changes):
-                  return "presentation"
-              if changes and all(document(path) or acceptance_record(path) or (status == "M" and commerce(path)) for status, path in changes):
-                  return "commerce"
-              return "full"
-
-          def api(endpoint):
-              result = subprocess.run(["gh", "api", endpoint], capture_output=True, text=True, timeout=30, check=True)
-              return json.loads(result.stdout)
-
-          def latest_run(sha, event=""):
-              repo = os.environ["REPOSITORY"]
-              endpoint = f"repos/{repo}/actions/workflows/check.yml/runs?head_sha={sha}&per_page=100"
-              if event:
-                  endpoint += "&event=" + event
-              runs = api(endpoint)["workflow_runs"]
-              runs = [r for r in runs if r["head_sha"] == sha and r["path"] == ".github/workflows/check.yml"
-                      and r["event"] in {"pull_request", "push", "workflow_dispatch"}
-                      and (not event or r["event"] == event)]
-              return max(runs, key=lambda r: (r["run_number"], r["run_attempt"]), default=None)
-
-          def successful(run):
-              return run and run["status"] == "completed" and run["conclusion"] == "success"
-
-          def checked_run(run, commit, *, docs_only=False):
-              if not successful(run):
-                  return False
-              workflow = ".github/workflows/check.yml"
-              if git("rev-parse", f"{commit}:{workflow}") != git("rev-parse", f"HEAD:{workflow}"):
-                  return False
-              marker = re.fullmatch(r"check #[^\n]+ [|] tree-ref=([0-9a-f]{40})", run.get("display_title", ""))
-              if not marker:
-                  return False
-              tested = marker.group(1)
-              try:
-                  tree = git("rev-parse", tested + "^{tree}").decode().strip()
-              except subprocess.CalledProcessError:
-                  repo = os.environ["REPOSITORY"]
-                  tree = api(f"repos/{repo}/git/commits/{tested}")["tree"]["sha"]
-              if tree != git("rev-parse", commit + "^{tree}").decode().strip():
-                  return False
-              repo = os.environ["REPOSITORY"]
-              jobs = api(f"repos/{repo}/actions/runs/{run['id']}/attempts/{run['run_attempt']}/jobs?per_page=100")["jobs"]
-              allowed = {"full", "presentation", "commerce"} if run["event"] == "pull_request" else {"full", "reuse"}
-              if docs_only:
-                  allowed = {"docs"}
-              labels = {f"Record validation scope ({mode})" for mode in allowed}
-              return any(step["name"] in labels and step.get("conclusion") == "success"
-                         for job in jobs if job["name"].startswith("check (")
-                         for step in job.get("steps", []))
-
-          def checked_pr_tree(commit):
-              parents = git("rev-list", "--parents", "-n", "1", commit).decode().split()
-              if len(parents) >= 3:
-                  source = parents[2]
-              else:
-                  repo = os.environ["REPOSITORY"]
-                  pulls = api(f"repos/{repo}/commits/{commit}/pulls")
-                  merged = [pull for pull in pulls if pull.get("merge_commit_sha") == commit]
-                  if not merged:
-                      return None
-                  source = merged[0]["head"]["sha"]
-              run = latest_run(source, "pull_request")
-              return run if checked_run(run, commit) else None
-
-          def checked_base(commit):
-              while True:
-                  run = latest_run(commit)
-                  if checked_run(run, commit):
-                      return True
-                  if checked_run(run, commit, docs_only=True):
-                      try:
-                          parent = git("rev-parse", commit + "^1").decode().strip()
-                      except subprocess.CalledProcessError:
-                          git("fetch", "--deepen=1", "origin", commit)
-                          parent = git("rev-parse", commit + "^1").decode().strip()
-                      fields = git("diff", "--name-status", "-z", "--find-renames", parent, commit).decode(errors="surrogateescape").split("\0")
-                      changes = list(zip(fields[0:-1:2], fields[1:-1:2]))
-                      if classify(changes) != "docs" or not all(non_runtime_change(status, path, parent, commit) for status, path in changes):
-                          return False
-                      commit = parent
-                      continue
-                  if run and (run["status"] != "completed" or run["conclusion"] != "cancelled"):
-                      return False
-                  return bool(checked_pr_tree(commit))
-
-          event = os.environ["EVENT_NAME"]
-          head = os.environ["HEAD_SHA"]
-          base = os.environ.get("BASE_SHA", "")
-          changes = []
-          mode, reason = "full", "Runtime, control-plane or unproven changes retain the complete checks."
-          if base and set(base) != {"0"}:
-              try:
-                  try:
-                      git("cat-file", "-e", base + "^{commit}")
-                  except subprocess.CalledProcessError:
-                      git("fetch", "--depth=1", "origin", base)
-                  formatting = subprocess.run(["git", "diff", "--check", base, head])
-                  if formatting.returncode:
-                      raise SystemExit(formatting.returncode)
-                  fields = git("diff", "--name-status", "-z", "--no-renames", base, head).decode(errors="surrogateescape").split("\0")
-                  changes = list(zip(fields[0:-1:2], fields[1:-1:2]))
-                  if event in {"pull_request", "push"}:
-                      candidate = classify(changes)
-                      valid = all(
-                          regular_change(status, path, base, head) if candidate == "commerce" and commerce(path)
-                          else non_runtime_change(status, path, base, head)
-                          for status, path in changes
-                      ) if candidate != "full" else False
-                      if candidate != "full" and not valid:
-                          candidate = "full"
-                      if candidate == "docs":
-                          mode, reason = "docs", "Documentation and acceptance records only; no runtime or instance checks."
-                      elif candidate in {"presentation", "commerce"} and event == "pull_request":
-                          if checked_base(base):
-                              mode = candidate
-                              reason = ("Existing LC/CSS surfaces and a checked base; run their contracts and content guards." if mode == "presentation"
-                                        else "Established commerce surfaces and a checked base; run commerce source, unit and native checks.")
-              except (OSError, subprocess.SubprocessError, UnicodeError, KeyError, ValueError, IndexError):
-                  mode, reason = "full", "Change or baseline proof unavailable; complete checks required."
-          if event == "push" and mode != "docs":
-              try:
-                  run = checked_pr_tree(head)
-                  if run:
-                      mode = "reuse"
-                      reason = f"Identical complete Git tree; successful PR check run {run['id']} reused."
-              except (OSError, subprocess.SubprocessError, KeyError, ValueError):
-                  mode, reason = "full", "No proven successful check for this tree; complete checks required."
-          with Path(os.environ["GITHUB_OUTPUT"]).open("a") as f:
-              f.write(f"mode={mode}\n")
-              f.write(f"catalog_changed={str(any(path.startswith('plugins/linker-commerce/content/livecanvas/') for _, path in changes)).lower()}\n")
-              f.write(f"php_test_changed={str(any(path == 'plugins/linker-commerce/tests/php/Unit/Presentation/TemplatesTest.php' for _, path in changes)).lower()}\n")
-          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as f:
-              f.write(f"### Validation scope: {mode}\n\n{reason}\n")
-          print(f"Validation scope: {mode}. {reason}")
-          PYTHON
-
-  php-lane:
+  php:
+    name: php-lane
     needs: plan
-    if: always() && needs.plan.result == 'success' && needs.plan.outputs.mode == 'full'
+    if: ${{ !cancelled() && needs.plan.outputs.php == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     strategy:
@@ -280,9 +103,10 @@ jobs:
           just js-install
           just php-test
 
-  js-lane:
+  js:
+    name: js-lane
     needs: plan
-    if: always() && needs.plan.result == 'success' && needs.plan.outputs.mode == 'full'
+    if: ${{ !cancelled() && needs.plan.outputs.js == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     strategy:
@@ -324,9 +148,10 @@ jobs:
           cd ../..
           just js-test
 
-  python-lane:
+  python:
+    name: python-lane
     needs: plan
-    if: always() && needs.plan.result == 'success' && needs.plan.outputs.mode == 'full'
+    if: ${{ !cancelled() && needs.plan.outputs.python == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     strategy:
@@ -400,7 +225,7 @@ jobs:
 
   content:
     needs: plan
-    if: always() && needs.plan.result == 'success' && needs.plan.outputs.mode == 'full'
+    if: ${{ !cancelled() && needs.plan.outputs.content == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -413,6 +238,18 @@ jobs:
             !/docs/acceptance/**/*.jpg
             !/docs/acceptance/**/*.jpeg
           sparse-checkout-cone-mode: false
+      - name: Verify excluded acceptance image checkout
+        run: |
+          git ls-files -v -z -- docs/acceptance | python3 -c '
+          import os, sys
+          entries = sys.stdin.buffer.read().split(b"\0")
+          images = [entry for entry in entries if entry[2:].endswith((b".png", b".jpg", b".jpeg"))]
+          present = [entry for entry in images if os.path.lexists(os.fsdecode(entry[2:]))]
+          included = [entry for entry in images if entry[:1] != b"S"]
+          print(f"Acceptance images: {len(images)} tracked, {len(present)} materialized, {len(included)} included in index")
+          if present or included:
+              sys.exit("Acceptance image checkout exclusions did not apply")
+          '
       - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: "8.3"
@@ -441,7 +278,7 @@ jobs:
 
   build:
     needs: plan
-    if: always() && needs.plan.result == 'success' && needs.plan.outputs.mode == 'full'
+    if: ${{ !cancelled() && needs.plan.outputs.build == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -470,7 +307,7 @@ jobs:
 
   presentation:
     needs: plan
-    if: always() && needs.plan.result == 'success' && needs.plan.outputs.mode == 'presentation'
+    if: ${{ !cancelled() && needs.plan.outputs.presentation == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -483,6 +320,18 @@ jobs:
             !/docs/acceptance/**/*.jpg
             !/docs/acceptance/**/*.jpeg
           sparse-checkout-cone-mode: false
+      - name: Verify excluded acceptance image checkout
+        run: |
+          git ls-files -v -z -- docs/acceptance | python3 -c '
+          import os, sys
+          entries = sys.stdin.buffer.read().split(b"\0")
+          images = [entry for entry in entries if entry[2:].endswith((b".png", b".jpg", b".jpeg"))]
+          present = [entry for entry in images if os.path.lexists(os.fsdecode(entry[2:]))]
+          included = [entry for entry in images if entry[:1] != b"S"]
+          print(f"Acceptance images: {len(images)} tracked, {len(present)} materialized, {len(included)} included in index")
+          if present or included:
+              sys.exit("Acceptance image checkout exclusions did not apply")
+          '
       - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: "8.3"
@@ -507,7 +356,7 @@ jobs:
 
   commerce:
     needs: plan
-    if: always() && needs.plan.result == 'success' && needs.plan.outputs.mode == 'commerce'
+    if: ${{ !cancelled() && needs.plan.outputs.commerce == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 12
     steps:
@@ -520,6 +369,18 @@ jobs:
             !/docs/acceptance/**/*.jpg
             !/docs/acceptance/**/*.jpeg
           sparse-checkout-cone-mode: false
+      - name: Verify excluded acceptance image checkout
+        run: |
+          git ls-files -v -z -- docs/acceptance | python3 -c '
+          import os, sys
+          entries = sys.stdin.buffer.read().split(b"\0")
+          images = [entry for entry in entries if entry[2:].endswith((b".png", b".jpg", b".jpeg"))]
+          present = [entry for entry in images if os.path.lexists(os.fsdecode(entry[2:]))]
+          included = [entry for entry in images if entry[:1] != b"S"]
+          print(f"Acceptance images: {len(images)} tracked, {len(present)} materialized, {len(included)} included in index")
+          if present or included:
+              sys.exit("Acceptance image checkout exclusions did not apply")
+          '
       - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: "8.3"
@@ -543,11 +404,10 @@ jobs:
       - name: Commerce source, unit and content checks
         run: just commerce-check
 
-  native-lane:
+  native:
+    name: mu-smoke
     needs: plan
-    if: |
-      always() && needs.plan.result == 'success' &&
-      (needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'commerce')
+    if: ${{ !cancelled() && needs.plan.outputs.native == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     strategy:
@@ -601,19 +461,13 @@ jobs:
         if: always()
         run: just down smoke || echo "no instance to stop"
 
-  check:
-    needs: [plan, php-lane, js-lane, python-lane, content, build, presentation, commerce]
-    if: always()
+  planner:
+    needs: plan
+    if: ${{ !cancelled() && needs.plan.outputs.planner == 'true' }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
-    strategy:
-      matrix:
-        php: ["8.3"]
-        node: ["22"]
-        python: ["3.12"]
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'presentation' || needs.plan.outputs.mode == 'commerce'
         with:
           ref: ${{ github.sha }}
           sparse-checkout: |
@@ -622,100 +476,134 @@ jobs:
             !/docs/acceptance/**/*.jpg
             !/docs/acceptance/**/*.jpeg
           sparse-checkout-cone-mode: false
-      - name: Verify excluded acceptance image checkout
-        if: needs.plan.outputs.mode == 'full' || needs.plan.outputs.mode == 'presentation' || needs.plan.outputs.mode == 'commerce'
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/planner/package-lock.json
+      - name: Planner source, tests and isolated build reproduction
+        working-directory: apps/planner
         run: |
-          git ls-files -v -z -- docs/acceptance | python3 -c '
-          import os, sys
-          entries = sys.stdin.buffer.read().split(b"\0")
-          images = [entry for entry in entries if entry[2:].endswith((b".png", b".jpg", b".jpeg"))]
-          present = [entry for entry in images if os.path.lexists(os.fsdecode(entry[2:]))]
-          included = [entry for entry in images if entry[:1] != b"S"]
-          print(f"Acceptance images: {len(images)} tracked, {len(present)} materialized, {len(included)} included in index")
-          if present or included:
-              sys.exit("Acceptance image checkout exclusions did not apply")
-          '
-      - name: Require a successful recognized plan
-        env:
-          PLAN_RESULT: ${{ needs.plan.result }}
-          MODE: ${{ needs.plan.outputs.mode }}
+          npm ci --no-audit --no-fund
+          npm run lint:js
+          npm run lint:types
+          npm run lint:format
+          npm test
+          npm run build
+          node ../../plugins/linker-tools/bin/build-manifest.mjs write
+          git diff --exit-code -- ../../plugins/linker-tools/build/planner ../../plugins/linker-tools/build/manifest.json
+          npm run build:check
+          node ../../plugins/linker-tools/bin/build-manifest.mjs check
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        if: needs.plan.outputs.planner_build_changed == 'true'
+        with:
+          php-version: "8.3"
+          tools: composer:v2
+          coverage: none
+      - name: Committed Planner manifest's WordPress consumer
+        if: needs.plan.outputs.planner_build_changed == 'true'
+        working-directory: plugins/linker-tools
         run: |
-          test "$PLAN_RESULT" = success
-          case "$MODE" in full|presentation|commerce|docs|reuse) ;; *) exit 1 ;; esac
-      - name: Record validation scope (${{ needs.plan.outputs.mode }})
-        run: printf 'Validation scope %s; only applicable parallel lanes are required.\n' "${{ needs.plan.outputs.mode }}"
-      - name: Require every applicable lane
-        env:
-          MODE: ${{ needs.plan.outputs.mode }}
-          PHP_RESULT: ${{ needs.php-lane.result }}
-          JS_RESULT: ${{ needs.js-lane.result }}
-          PYTHON_RESULT: ${{ needs.python-lane.result }}
-          CONTENT_RESULT: ${{ needs.content.result }}
-          BUILD_RESULT: ${{ needs.build.result }}
-          PRESENTATION_RESULT: ${{ needs.presentation.result }}
-          COMMERCE_RESULT: ${{ needs.commerce.result }}
-        run: |
-          require() {
-            local name="$1" result="$2"
-            test "$result" = success || {
-              echo "$name lane: $result (expected success)" >&2
-              exit 1
-            }
-          }
-          allow_skipped() {
-            local result="$1"
-            case "$result" in success|skipped) ;; *) return 1 ;; esac
-          }
-          case "$MODE" in
-            full)
-              require php "$PHP_RESULT"
-              require javascript "$JS_RESULT"
-              require python "$PYTHON_RESULT"
-              require content "$CONTENT_RESULT"
-              require build "$BUILD_RESULT"
-              allow_skipped "$PRESENTATION_RESULT"
-              allow_skipped "$COMMERCE_RESULT"
-              ;;
-            presentation)
-              require presentation "$PRESENTATION_RESULT"
-              for result in "$PHP_RESULT" "$JS_RESULT" "$PYTHON_RESULT" "$CONTENT_RESULT" "$BUILD_RESULT" "$COMMERCE_RESULT"; do
-                allow_skipped "$result" || exit 1
-              done
-              ;;
-            commerce)
-              require commerce "$COMMERCE_RESULT"
-              for result in "$PHP_RESULT" "$JS_RESULT" "$PYTHON_RESULT" "$CONTENT_RESULT" "$BUILD_RESULT" "$PRESENTATION_RESULT"; do
-                allow_skipped "$result" || exit 1
-              done
-              ;;
-            docs|reuse)
-              for result in "$PHP_RESULT" "$JS_RESULT" "$PYTHON_RESULT" "$CONTENT_RESULT" "$BUILD_RESULT" "$PRESENTATION_RESULT" "$COMMERCE_RESULT"; do
-                allow_skipped "$result" || exit 1
-              done
-              ;;
-          esac
+          composer validate --no-check-publish
+          composer install --no-interaction --no-progress --quiet
+          php vendor/bin/phpunit tests/php/Unit/PlannerApplicationTest.php
 
-  mu-smoke:
-    needs: [plan, native-lane]
-    if: always()
+  engine:
+    needs: plan
+    if: ${{ !cancelled() && needs.plan.outputs.engine == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout: |
+            /*
+            !/docs/acceptance/**/*.png
+            !/docs/acceptance/**/*.jpg
+            !/docs/acceptance/**/*.jpeg
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/planner/package-lock.json
+      - name: Planner runtime for cross-boundary Engine contracts
+        working-directory: apps/planner
+        run: npm ci --no-audit --no-fund
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          version: "0.10.11"
+          python-version: "3.12"
+          enable-cache: true
+          cache-dependency-glob: |
+            services/engine/uv.lock
+            services/engine/pyproject.toml
+      - name: Engine lint, types and unit contracts
+        working-directory: services/engine
+        run: |
+          uv run --locked ruff check .
+          uv run --locked ruff format --check .
+          uv run --locked mypy .
+          uv run --locked pytest
+
+  genie:
+    needs: plan
+    if: ${{ !cancelled() && needs.plan.outputs.genie == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout: |
+            /*
+            !/docs/acceptance/**/*.png
+            !/docs/acceptance/**/*.jpg
+            !/docs/acceptance/**/*.jpeg
+          sparse-checkout-cone-mode: false
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          version: "0.10.11"
+          python-version: "3.12"
+          enable-cache: true
+          cache-dependency-glob: |
+            services/genie/uv.lock
+            services/genie/pyproject.toml
+            services/genie/eval/judges/pyproject.toml
+      - name: Genie lint, types and unit contracts
+        working-directory: services/genie
+        run: |
+          uv run --locked ruff check .
+          uv run --locked ruff format --check .
+          uv run --locked mypy .
+          uv run --locked pytest
+
+  check:
+    name: check
+    needs: [plan, presentation, php, js, python, content, build, commerce, native, planner, engine, genie]
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-24.04
     timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
     steps:
-      - name: Require a successful recognized plan
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 3
+          ref: ${{ github.sha }}
+          sparse-checkout: |
+            **/.gitattributes
+            tools/checks/ci_scope.py
+          sparse-checkout-cone-mode: false
+      - name: Record validated scope (${{ needs.plan.outputs.mode }})
         env:
-          PLAN_RESULT: ${{ needs.plan.result }}
-          MODE: ${{ needs.plan.outputs.mode }}
-        run: |
-          test "$PLAN_RESULT" = success
-          case "$MODE" in full|presentation|commerce|docs|reuse) ;; *) exit 1 ;; esac
-      - name: Record native integration scope
-        run: printf 'Validation scope %s; native groups run in parallel when required.\n' "${{ needs.plan.outputs.mode }}"
-      - name: Require every applicable native group
-        env:
-          MODE: ${{ needs.plan.outputs.mode }}
-          NATIVE_RESULT: ${{ needs.native-lane.result }}
-        run: |
-          case "$MODE" in
-            full|commerce) test "$NATIVE_RESULT" = success ;;
-            presentation|docs|reuse) case "$NATIVE_RESULT" in success|skipped) ;; *) exit 1 ;; esac ;;
-          esac
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.sha }}
+          REPOSITORY: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_LEDGER: ${{ needs.plan.outputs.ledger }}
+          JOB_RESULTS: ${{ toJson(needs) }}
+        run: python3 tools/checks/ci_scope.py gate
