@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import json
 import stat
@@ -76,6 +77,71 @@ def test_temporary_minimal_plan_contract(tmp_path: Path) -> None:
         "action": "preview",
         "plan": plan(),
     }
+
+
+def test_reviewed_production_plan_is_frozen() -> None:
+    loaded = migration.load_plan()
+    products = loaded["products"]
+    expected_products = {
+        "1946": "8c58ef59d9a26c71ceef4b50a7a292db2eb05be5c026f19c02c25d6c67691cff",
+        "1947": "9847a57dd2e25496ae7b7ddf3eb5f0f0a202c62ccf47f1e7cbd2fe8432e42ce5",
+        "1948": "0c392521153a0a71eed2410649899a49b9b21e58359b66afd02c755a69a36ec3",
+        "1954": "090af3986f95c2efc1d8d56b385950856e66875c3e1414b026fe37e417f9ba3c",
+        "1955": "25f07a8dc18233724e00a7c76358eb41f20e2693b4a3281797e8663e2828d160",
+        "1956": "fb06653f64b58ffdc8ab3fd4a3ae378dc197994de9351786c3a17e9b5687a1ed",
+        "1957": "31ea4f4167bd968f27a7b9a5bf1388453947dff28c44586d5f5eaf82c9d8fba5",
+        "1958": "27d0043f7c585933fecd6791cf5c84e1eb50f19f6be42cb9787687ae1e621a4b",
+        "6506": "6649e8812b5d8512a5e3378ff0c3747f59bd04a4849d71a6e72611af6271bd8f",
+    }
+    expected_documents = {
+        "doc-3e98151c21d284ce5e01603742e3ef027ca73cff3f42b9cf9b3fe164aa91882b": (
+            "aaf54a301d81f354cff2a06dd8bf2c599705fcd5549e0dd271efa49402f28ca1",
+            "ef85dd1a58fc06e52f2dff79dda228884b412d17db7035aa45d41c57840f3f10",
+        ),
+        "doc-cbd6d3d2db163cf7bce09abf348fd8531756f4e1f3e1ae9a2d82418b322a2568": (
+            "049d06e27cb8f711c57de5c72058f5c1bc2ddface3b698cd1690ebcac5c0870b",
+            "0ef4b1ccdcc418e3ca8de31194b3d9e2969be39aa739ffa0ca1f038fcfac6615",
+        ),
+        "doc-d78c367ed40dc7e371bbdb1c6d26d927ba4b8d947fa6b73c777ab11ff0ee345f": (
+            "4c1e6ff6e6aba309ab1abfc7cd074c0828df3553b7817a9262e4e49a74a4ccf7",
+            "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
+        ),
+    }
+
+    assert {
+        key: value["product_revision"] for key, value in products.items()
+    } == expected_products
+    items = [item for product in products.values() for item in product["items"]]
+    assert len(items) == 79
+    sources = {
+        item["source"]["document_id"]: (
+            item["source"]["document_revision"],
+            item["source"]["blob_sha256"],
+        )
+        for item in items
+    }
+    assert sources == expected_documents
+
+    def without_revisions(value: object) -> object:
+        if isinstance(value, dict):
+            return {
+                key: without_revisions(item)
+                for key, item in value.items()
+                if key not in {"product_revision", "document_revision"}
+            }
+        if isinstance(value, list):
+            return [without_revisions(item) for item in value]
+        return value
+
+    canonical = json.dumps(
+        without_revisions(loaded),
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode()
+    assert hashlib.sha256(canonical).hexdigest() == (
+        "e431b80f7bcc7decf02ac43e5fd8751f8ab6826848af62138c138e63fa1b1648"
+    )
 
 
 def test_plan_rejects_extra_fields_and_empty_products(tmp_path: Path) -> None:
