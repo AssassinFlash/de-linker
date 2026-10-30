@@ -44,6 +44,9 @@ retain `NOWAIT`.
 - PHPStan with a 1 GiB memory limit: clean.
 - `just ci-content`: pass.
 - Both original lock-contention tests passed five consecutive rounds.
+- A real two-connection deadline case held the capacity row open past the
+  budget and proved business retry returns `linker_intake_pending` in under 1.2
+  seconds, so it cannot gain a second one-second acquisition window.
 - Native mail group passed 252/252 in classic storage and 252/252 in HPOS.
 - Native inquiry 155/155, inventory 65/65 checks, runtime 19/19, and admin checks
   all passed.
