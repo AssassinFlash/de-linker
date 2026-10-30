@@ -123,3 +123,32 @@ linkerPublicProtectionConfig = {
 
 因此：**自动化客户端不触发交互、拿不到 token，提交被正确拒绝。**
 这不是缺陷，也不需要「修复」。人工在浏览器中打开询盘页、聚焦表单，widget 会正常出现。
+
+### 受保护动作清单与两种挂载方式
+
+服务端 `Configuration::verification_required()` 对以下动作全部返回 `true`：
+
+```
+inquiry      required=yes
+contact      required=yes
+draft_write  required=yes
+genie        required=yes
+```
+
+`Protection/Actions.php` 另列 `genie_contact`、`genie_inquiry`；
+`Protection/BusinessPolicy.php` 把 `contact`、`inquiry`、`genie_contact`、
+`genie_inquiry`、`conversation_mail` 归为业务验证类。
+
+**两种挂载方式，同一套 proof 机制：**
+
+| 入口 | 取 proof 的方式 |
+| --- | --- |
+| 询盘、联系、草稿写 | `FormFields.php:33` 渲染 `linker_proof` 隐藏字段，`protection.js` 提交前填充 |
+| Genie | React 组件调 `window.linkerPublicProtection.proof('genie', widget)`，不走表单字段 |
+
+实测：`/genie/` 与 `/de/genie/` 均注入 `linkerPublicProtectionConfig`（`mode: enforce`），
+但页面中**没有** `data-linker-protected-action` 属性——这是 React 挂载方式的正常表现，
+不是保护缺失。
+
+因此「Genie 与询盘的失败提示不同」不表示两套机制，只是同一个 proof 在两种界面上
+的呈现差异；根因一致：都需要真人交互产生 token。
