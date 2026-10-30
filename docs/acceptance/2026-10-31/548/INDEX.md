@@ -251,3 +251,34 @@ view and numeric properties.」——**降级路径也有文案出口**，不会
 
 「3D 不可用」这条旧记录**可以关闭**。地图上应改为：3D 渲染在生产可用，
 失败时的降级提示存在；交互与跨环境兼容性未做全矩阵。
+
+## 德语界面：生产实测完整
+
+英文界面此前已多处读回；德文界面这次在浏览器里实际走了一遍。
+
+打开 `/de/loesungskonfigurator/?project=88e747eb…`：
+
+- 页面标题 **`Lösungskonfigurator | Linker`**
+- 导航：`Aktuelles Projekt` · `Projektübersicht` · `Standort und Projekt` ·
+  `Dachplanung` · `Energiedaten` · `Energieberechnung` · `Geräte` ·
+  `Leitungswege der Installation`
+- 屋顶工作区：`Dachplanung` · `Draufsicht` / `Karte` / `3D` ·
+  `Dachfläche hinzufügen` · `Modulspezifikation hinzufügen` ·
+  `Dachgeometrie importieren` · `Aktive Dachfläche` · `Nordbezug erfasst` ·
+  `Planungsobjekte`
+- 顶部动作：`Genie fragen` · `Gespeichert · Version 12` · `Projekt speichern`
+
+界面文案完整德语，无残留英文标签。
+
+### 一处看似漏译，实际不是
+
+设计对象面板显示 `Owned synthetic roof for release acceptance`（英文）。
+核对 `DesignEditor.tsx:528`：该名称直接渲染 `{face.name}`，**不经过 `__()`**。
+
+这是正确设计——`face.name` 是用户在项目里给屋顶起的名字，属用户数据。
+德语用户自己起的名字，界面不应替他翻译。
+
+### 边界
+
+验证的是**文案与布局**，未做 1440/390 全矩阵截图比对，
+也未在两语种下逐一操作每个控件。
