@@ -76,7 +76,30 @@ def load_plan(path: Path = PLAN) -> dict[str, Any]:
         if not isinstance(items, list) or not items:
             raise MigrationError(f"Plan product {key} needs installation facts.")
         for index, item in enumerate(items):
-            _json_object(item, f"Plan product {key} item {index}")
+            installation = _json_object(item, f"Plan product {key} item {index}")
+            source = _json_object(
+                installation.get("source"),
+                f"Plan product {key} item {index} source",
+            )
+            if (
+                not isinstance(source.get("document_id"), str)
+                or not source["document_id"].strip()
+            ):
+                raise MigrationError(
+                    f"Plan product {key} item {index} needs a document ID."
+                )
+            for field in ("document_revision", "blob_sha256"):
+                digest = source.get(field)
+                if not isinstance(digest, str) or HEX.fullmatch(digest) is None:
+                    raise MigrationError(
+                        f"Plan product {key} item {index} needs a valid {field}."
+                    )
+            if type(source.get("product_id")) is not int or source["product_id"] != int(
+                key
+            ):
+                raise MigrationError(
+                    f"Plan product {key} item {index} belongs to another product."
+                )
     return plan
 
 
@@ -226,7 +249,19 @@ def _fail(parser: argparse.ArgumentParser, message: str) -> NoReturn:
     raise AssertionError("argparse.error always exits")
 
 
-def _refresh(site: Any, write: bool) -> int:
+def _validate_args(parser: argparse.ArgumentParser, args: argparse.Namespace) -> None:
+    """Reject options that do not apply to the selected action."""
+    if args.action == "refresh":
+        if args.receipt is not None:
+            _fail(parser, "refresh does not use --receipt.")
+        return
+    if args.write:
+        _fail(parser, "--write is only valid for refresh.")
+    if not isinstance(args.receipt, Path):
+        _fail(parser, "This action needs --receipt.")
+
+
+def _refresh(site: Target, write: bool) -> int:
     """Re-pin the reviewed plan to the current publication, changing only revisions.
 
     The preview already refuses a stale plan, so a plan cannot silently rot into
@@ -253,6 +288,14 @@ def _refresh(site: Any, write: bool) -> int:
         )
     changes: list[str] = []
     substitutions: dict[str, str] = {}
+
+    def substitute(old: str, new: str) -> None:
+        if old in substitutions and substitutions[old] != new:
+            raise MigrationError(
+                f"Refresh would assign one revision to multiple values: {old}."
+            )
+        substitutions[old] = new
+
     for key, entry in plan["products"].items():
         current = _json_object(pinned.get(key), f"Refresh product {key}")
         revision = current.get("product_revision")
@@ -262,7 +305,7 @@ def _refresh(site: Any, write: bool) -> int:
             changes.append(
                 f"{key} product {entry['product_revision'][:12]} -> {revision[:12]}"
             )
-            substitutions[entry["product_revision"]] = revision
+            substitute(entry["product_revision"], revision)
             entry["product_revision"] = revision
         documents = _json_object(current.get("documents"), f"Refresh documents {key}")
         for item in entry["items"]:
@@ -285,7 +328,7 @@ def _refresh(site: Any, write: bool) -> int:
                 changes.append(
                     f"{key} document {source['document_revision'][:12]} -> {changed[:12]}"
                 )
-                substitutions[source["document_revision"]] = changed
+                substitute(source["document_revision"], changed)
                 source["document_revision"] = changed
     for change in changes:
         print(change, file=sys.stderr)
@@ -305,6 +348,8 @@ def _refresh(site: Any, write: bool) -> int:
     text = PLAN.read_text()
     for old, new in substitutions.items():
         text = text.replace(old, new)
+    if json.loads(text) != plan:
+        raise MigrationError("Refresh text no longer matches its validated plan.")
     PLAN.write_text(text)
     print(json.dumps({"action": "refresh", "changes": len(changes), "written": True}))
     return 0
@@ -313,12 +358,11 @@ def _refresh(site: Any, write: bool) -> int:
 def main() -> int:
     parser = _parser()
     args = parser.parse_args()
-    site = remote_target() if args.production else local_target(args.instance)
+    _validate_args(parser, args)
     try:
+        site = remote_target() if args.production else local_target(args.instance)
         if args.action == "refresh":
             return _refresh(site, args.write)
-        if not isinstance(args.receipt, Path):
-            _fail(parser, "This action needs --receipt.")
         if args.action == "preview":
             if args.receipt.exists() or args.receipt.is_symlink():
                 _fail(
