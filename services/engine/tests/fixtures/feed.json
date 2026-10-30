@@ -21634,8 +21634,6 @@
 			]
 		}
 	],
-	"figure_projection_version": 2,
-	"compatibility_origin": "woocommerce",
 	"compatibility": {
 		"schema_version": 1,
 		"version": "contract-2026-10-03",
@@ -26991,5 +26989,5 @@
 		]
 	},
 	"compatibility_revision": "002c64c1e575da2b9c871f1637fed6df12b591358cadd4048dc403739dbadde9",
-	"source_revision": "13930de44f8f628d0990f262c6051e56d22ac2eb092c010c976b09977fd86ab5"
+	"source_revision": "097ef6d2fbcd532dd5df468da64ac6ee50ae0c9e14693b3e6ab113c641b26ba4"
 }

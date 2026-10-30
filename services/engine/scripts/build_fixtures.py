@@ -55,8 +55,6 @@ def publication_envelope(
 ) -> dict[str, Any]:
     enriched = {
         **feed,
-        "figure_projection_version": 2,
-        "compatibility_origin": "woocommerce",
         "compatibility": compatibility,
         "compatibility_revision": hashlib.sha256(
             json.dumps(

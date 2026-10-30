@@ -1,3 +1,4 @@
+import hashlib
 import json
 import os
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -13,10 +14,32 @@ from linker_local.processes import ProcessError
 from linker_local.services import (
     SERVICES,
     _engine_environment,
+    engine_resource_version,
     genie_environment,
     genie_index,
     planner_environment,
 )
+
+
+def test_resource_version_uses_the_current_woo_projection(tmp_path: Path) -> None:
+    (tmp_path / "app.py").write_bytes(b"engine-source")
+    feed = b'{ "compatibility_version": "v1", "compatibility": { "version": "v1" } }'
+    document = json.loads(feed)
+    expected = hashlib.sha256()
+    expected.update(b"engine-source")
+    expected.update(feed)
+    expected.update(
+        json.dumps(
+            document["compatibility"],
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+        ).encode()
+    )
+    assert engine_resource_version(tmp_path, feed) == expected.hexdigest()
+    for broken in ({}, {"compatibility_version": "other", "compatibility": {}}):
+        with pytest.raises(ProcessError, match="shared publication preparation"):
+            engine_resource_version(tmp_path, json.dumps(broken).encode())
 
 
 def test_each_service_has_its_own_port_log_and_option() -> None:
