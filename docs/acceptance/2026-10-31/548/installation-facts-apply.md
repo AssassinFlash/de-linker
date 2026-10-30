@@ -520,3 +520,30 @@ certificate-device-open-checks Offene Prüfungen zu Unterlagen und Projekt
 
 结论：安装事实的生产链路在**英德两种语种**下都有逐行读回的报告内容为证，
 标签分别取自 `label.en` / `label.de`，非翻译层产出。
+
+### 上一节的 422 已定位：缺 `geometry`，非代码缺陷
+
+上一节记的「plant + 线缆返回 422，尚未定位」，根因已找到并已跑通。
+
+**原因**：那两个 plant 项目**没有 `geometry` 段**。
+`include_installation` 会调 `GeometryDocument.read(project.inputs.get("geometry"))`，
+缺该段即抛 `InvalidInput`。是我构造输入不完整，不是 plant 与线缆不兼容。
+
+**修正后实测**（项目 `260a61d2…`，含 `geometry` + `installation` + plant）：
+
+- 设备检查 `39eee74d…`：`succeeded`
+- 报告 `3694efb8…`：`succeeded`，**25 个章节**
+
+```
+sections: project, site, equipment, check-0…check-18,
+          installation-instances, installation-routing, bom, basis, product-certificates
+bom rows=16
+  2 pc | GoodWe GW75K-ET-G10      | DLK-GOODWE-GW75KETG10 | Selected equipment
+  —    | AC conductor              | p. 155 · … | Customer supplies after proj
+  —    | Protective earth conductor| p. 153 · … | Customer supplies after proj
+installation-routing rows=3
+```
+
+**多台逆变器（2 台）、线缆路由（3 条）、安装事实（12 条）在同一份报告里共存。**
+
+这条链路到此完整：plant 输入 → 设备检查累加数量 → 含路由与事实的报告。
