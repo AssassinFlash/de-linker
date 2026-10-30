@@ -224,3 +224,143 @@ def test_invoke_keeps_verify_result_from_nonzero_php(
     assert observed["check"] is False
     assert "eval-file" in str(observed["command"])
     assert str(observed["input"]).startswith("<?php")
+
+
+def refresh_plan(tmp_path: Path) -> Path:
+    """A two-product plan with one cited document, written where refresh can find it."""
+    path = tmp_path / "plan.json"
+    path.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "products": {
+                    "6506": {
+                        "model": "GW75K-ET-G10",
+                        "product_revision": "a" * 64,
+                        "items": [
+                            {
+                                "id": "ac-conductor",
+                                "source": {
+                                    "document_id": "doc-one",
+                                    "document_revision": "b" * 64,
+                                    "blob_sha256": "c" * 64,
+                                },
+                            }
+                        ],
+                    }
+                },
+            },
+            indent=2,
+        )
+        + "\n"
+    )
+    return path
+
+
+def _site() -> object:
+    return migration.Target(
+        label="local:fixture",
+        root="/tmp/fixture",
+        base_url="http://fixture.invalid",
+        prefix=("wp",),
+        shell_prefix=None,
+        rsync_remote=None,
+    )
+
+
+def test_refresh_reports_without_writing_and_keeps_evidence(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A revision moves; the plan is only rewritten when asked."""
+    path = refresh_plan(tmp_path)
+    before = path.read_text()
+    reply = {
+        "schema_version": 1,
+        "site": "https://fixture.invalid",
+        "source_revision": "d" * 64,
+        "products": {
+            "6506": {
+                "product_revision": "e" * 64,
+                "documents": {
+                    "doc-one": {"document_revision": "f" * 64, "blob_sha256": "c" * 64}
+                },
+            }
+        },
+    }
+    monkeypatch.setattr(migration, "PLAN", path)
+    monkeypatch.setattr(migration, "invoke", lambda *_args, **_kw: (0, "", reply))
+
+    assert migration._refresh(_site(), write=False) == 0
+    assert path.read_text() == before
+    printed = json.loads(capsys.readouterr().out.strip().splitlines()[-1])
+    assert printed == {"action": "refresh", "changes": 2, "written": False}
+
+
+def test_refresh_refuses_moved_source_bytes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Different bytes mean the page and quote need a human, not a re-pin."""
+    path = refresh_plan(tmp_path)
+    before = path.read_text()
+    reply = {
+        "schema_version": 1,
+        "site": "https://fixture.invalid",
+        "source_revision": "d" * 64,
+        "products": {
+            "6506": {
+                "product_revision": "e" * 64,
+                "documents": {
+                    "doc-one": {"document_revision": "f" * 64, "blob_sha256": "9" * 64}
+                },
+            }
+        },
+    }
+    monkeypatch.setattr(migration, "PLAN", path)
+    monkeypatch.setattr(migration, "invoke", lambda *_args, **_kw: (0, "", reply))
+
+    with pytest.raises(migration.MigrationError, match="Source bytes changed"):
+        migration._refresh(_site(), write=True)
+    assert path.read_text() == before
+
+
+def test_refresh_writes_only_revisions_in_place(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The written file keeps its formatting and changes two values."""
+    path = refresh_plan(tmp_path)
+    before = path.read_text()
+    reply = {
+        "schema_version": 1,
+        "site": "https://fixture.invalid",
+        "source_revision": "d" * 64,
+        "products": {
+            "6506": {
+                "product_revision": "e" * 64,
+                "documents": {
+                    "doc-one": {"document_revision": "f" * 64, "blob_sha256": "c" * 64}
+                },
+            }
+        },
+    }
+    monkeypatch.setattr(migration, "PLAN", path)
+    monkeypatch.setattr(migration, "invoke", lambda *_args, **_kw: (0, "", reply))
+
+    assert migration._refresh(_site(), write=True) == 0
+    written = path.read_text()
+    loaded = json.loads(written)
+    assert loaded["products"]["6506"]["product_revision"] == "e" * 64
+    assert (
+        loaded["products"]["6506"]["items"][0]["source"]["document_revision"]
+        == "f" * 64
+    )
+    # Only the two revisions moved: every other line is byte-identical.
+    before_lines = before.splitlines()
+    after_lines = written.splitlines()
+    assert len(before_lines) == len(after_lines)
+    differing = [
+        (old, new)
+        for old, new in zip(before_lines, after_lines, strict=True)
+        if old != new
+    ]
+    assert len(differing) == 2
+    assert all("aaaa" in old or "bbbb" in old for old, _new in differing)

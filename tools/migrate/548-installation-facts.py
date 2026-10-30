@@ -236,7 +236,7 @@ def _refresh(site: Any, write: bool) -> int:
     stale in the first place. Evidence never moves here: a source whose bytes
     differ is refused, not rewritten.
     """
-    plan = load_plan()
+    plan = load_plan(PLAN)
     code, error, result = invoke(site, build_request("refresh", plan=plan))
     if result is None:
         print(error, file=sys.stderr)
