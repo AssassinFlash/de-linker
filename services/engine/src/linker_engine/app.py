@@ -107,8 +107,14 @@ class Services:
             ):
                 raise ValueError("engineering generation bytes do not match manifest")
         loaded_feed = json.loads(feed)
-        if loaded_feed.get("compatibility") != json.loads(compatibility):
-            raise ValueError("feed and compatibility are not one generation")
+        if "compatibility" not in loaded_feed:
+            raise ValueError("current Woo compatibility projection is required")
+        compatibility = json.dumps(
+            loaded_feed["compatibility"],
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+        ).encode()
         self.publication = Publication(loaded_feed)
         self.engine = Engine(
             products=Products.from_feed(json.loads(feed)),
