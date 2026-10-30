@@ -324,3 +324,37 @@ CMP 是 **CookieYes**（`cky-*`），统计是 **GA4 `G-N2TGDM3193`**（容器 `
 
 验证的是**页面输出与默认状态**。没有在浏览器里实际点击「接受」后确认 GA 开始采集，
 也没有验证撤回后是否停止——那需要人工交互，与界面读回同属一类缺口。
+## 旧链接迁移：生产实测全部 301 到新地址
+
+目标完成标准点名「旧数据/链接迁移」。此前无独立证据，现补上。
+
+### 旧路径重定向（生产实测）
+
+| 旧路径 | 301 目标 | 最终状态 |
+| --- | --- | --- |
+| `/design-canvas/` | `/solution-configurator/?step=roof` | 200 |
+| `/quote-configurator/` | `/solution-configurator/` | 200 |
+| `/de/design-canvas/` | `/de/loesungskonfigurator/?step=roof` | 200 |
+| `/de/entwurfsflache/` | `/de/loesungskonfigurator/?step=roof` | 200 |
+| `/de/angebots-konfigurator/` | `/de/loesungskonfigurator/` | 200 |
+| `/de/solution-configurator/` | `/de/loesungskonfigurator/` | 200 |
+
+每条都是一次 301、落到 200，无重定向链、无断链。`?step=roof` 保留：旧画布入口
+本就指向屋顶步骤，迁移后仍直接进入同一步。
+
+### 历史方案恢复入口
+
+```
+/solution-configurator/?saved_solution=8207       → 200
+/de/loesungskonfigurator/?saved_solution=8207     → 200
+```
+
+语种各自落在对应地址，不跨语言跳转。
+
+### 边界
+
+验证的是**状态码与落点**。未验证：301 是否被搜索引擎正确收录（需要 Search Console 数据）、
+旧链接带查询参数时的行为、以及外部站点指向旧地址的入站链接。
+
+`/solution-draft/` 返回 404——但该路径从未存在过；Solution draft 的真实地址是
+`/cart/`（标题 `Solution draft | Linker`），前面已记录。
