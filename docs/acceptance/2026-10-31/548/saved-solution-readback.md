@@ -50,3 +50,41 @@ Guest projects are available in this browser session. Signing in links them to t
 ## 实现契約（供后续读回对照）
 
 `SavedSolutionStart.tsx` → `NewProject` 携带 `saved_solution_reference`；`SavedSolutionReference.tsx` 只在 `authority === "historical_user_input"` 时渲染，且只提供原始输入 JSON 下载，不含旧价格与产品事实。
+
+## 登录态读回（2026-10-31 补充，已完成后半段）
+
+此前本节记为未验证。现已在生产上以记录作者身份直接调用
+`SavedSolutionSource::read()` 完成读回。
+
+调用方式说明：`sources/saved-solution` 是**网关层路径**，由
+`Gateway.php:302` 转给 `SavedSolutionSource`；`Transport` 直连引擎时该路径不存在，
+直接打引擎会得到 `not_found`。因此本次直接调用 PHP 类，并先 `wp_set_current_user( 1 )`。
+
+作者（user 1）读回：
+
+```
+title=SAJ BU2-5.0-HV1
+kind=residential
+recorded_items=1
+input keys: locale, plz, annual_kwh, pv_kwp, phase, backup, heat_pump, electric_vehicle
+source_sha256: 6dfee710c8f17869…
+```
+
+`input` 只含客户原始输入字段，**不含**旧快照价格、公式或产品事实，符合
+`SavedSolutionSource` 的设计（"Only original customer inputs and recorded IDs/counts
+cross this seam"）。
+
+### 权限边界
+
+另建一个临时 `customer` 用户后以该身份读取同一记录：
+
+```
+other-user code=linker_planner_saved_solution_unavailable status=404
+```
+
+拒绝而非泄露。临时用户已在同一请求内删除，复核生产上 `ss-probe` 前缀用户数为 **0**。
+
+### 仍未验证
+
+浏览器内以该账号登录后打开 `?saved_solution=8207` 的**界面**读回（恢复后进入新工作台、
+`Original inputs` 折叠区可下载 JSON）。本次验证的是数据与权限层，不是界面。
