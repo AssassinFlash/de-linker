@@ -15,8 +15,9 @@ use WP_Error;
 
 /** Native options store only bounded HMAC references; Woo owns all content. */
 final class IntakeStore {
-	public const OPTION = 'linker_public_review_capacity';
-	private const MUTEX = 'intake-capacity';
+	public const OPTION         = 'linker_public_review_capacity';
+	private const MUTEX         = 'intake-capacity';
+	private const ROW_LOCK_BUSY = 3572;
 	/**
 	 * Exact native serialized snapshot for compare-and-write within this edit.
 	 *
@@ -47,11 +48,12 @@ final class IntakeStore {
 	 *
 	 * @param callable(array<string,mixed>&):(WC_Order|WP_Error|array<string,mixed>) $work Native work.
 	 * @param int                                                                    $wait_seconds Optional bounded native business/mail wait; review stays zero.
+	 * @param bool                                                                   $retry_row_lock Retry row contention inside a business first-save budget.
 	 * @return WC_Order|WP_Error|array<string,mixed>
 	 */
-	public static function edit( callable $work, int $wait_seconds = 0 ): WC_Order|WP_Error|array {
+	public static function edit( callable $work, int $wait_seconds = 0, bool $retry_row_lock = false ): WC_Order|WP_Error|array {
 		try {
-			return \Linker\Commerce\Mail\ConnectionFence::run( static fn (): WC_Order|WP_Error|array => self::edit_native( $work, $wait_seconds ) );
+			return \Linker\Commerce\Mail\ConnectionFence::run( static fn (): WC_Order|WP_Error|array => self::edit_native( $work, $wait_seconds, $retry_row_lock ) );
 		} catch ( \Throwable $error ) {
 			return new WP_Error( 'linker_intake_pending', __( 'The request status could not be confirmed. Your entries are still here. Please check before sending a new request.', 'linker-commerce' ) );
 		}
@@ -62,45 +64,69 @@ final class IntakeStore {
 	 *
 	 * @param callable(array<string,mixed>&):(WC_Order|WP_Error|array<string,mixed>) $work Native work.
 	 * @param int                                                                    $wait_seconds Bounded native mutex wait.
+	 * @param bool                                                                   $retry_row_lock Retry row contention inside a business first-save budget.
 	 * @return WC_Order|WP_Error|array<string,mixed>
 	 */
-	private static function edit_native( callable $work, int $wait_seconds ): WC_Order|WP_Error|array {
+	private static function edit_native( callable $work, int $wait_seconds, bool $retry_row_lock ): WC_Order|WP_Error|array {
 		if ( self::$editing && null !== self::$active ) {
 			return $work( self::$active );
 		}
-		$result = new WP_Error( 'linker_intake_busy', __( 'The request status could not be confirmed. Your entries are still here. Please check before sending a new request.', 'linker-commerce' ) );
-		Lock::run(
-			self::MUTEX,
-			static function () use ( $work, &$result ): void {
-				$previous = self::$snapshot;
-				$editing  = self::$editing;
-				try {
-					$raw   = self::read();
-					$state = null === $raw ? array(
-						'entries'        => array(),
-						'campaign_count' => 0,
-					) : maybe_unserialize( $raw );
-					if ( ! is_array( $state ) || ! is_array( $state['entries'] ?? null ) || count( $state['entries'] ) > array_sum( self::CAPACITY ) ) {
-						return;
+		$deadline = microtime( true ) + $wait_seconds;
+		$attempt  = 0;
+		do {
+			$result = new WP_Error( 'linker_intake_busy', __( 'The request status could not be confirmed. Your entries are still here. Please check before sending a new request.', 'linker-commerce' ) );
+			$retry  = false;
+			$wait   = 0 === $attempt ? $wait_seconds : (int) floor( $deadline - microtime( true ) );
+			Lock::run(
+				self::MUTEX,
+				static function () use ( $work, &$result, &$retry ): void {
+					$previous = self::$snapshot;
+					$editing  = self::$editing;
+					try {
+						try {
+							$raw = self::read();
+						} catch ( \RuntimeException $error ) {
+							if ( self::ROW_LOCK_BUSY === $error->getCode() ) {
+								$retry = true;
+								return;
+							}
+							throw $error;
+						}
+						$state = null === $raw ? array(
+							'entries'        => array(),
+							'campaign_count' => 0,
+						) : maybe_unserialize( $raw );
+						if ( ! is_array( $state ) || ! is_array( $state['entries'] ?? null ) || count( $state['entries'] ) > array_sum( self::CAPACITY ) ) {
+							return;
+						}
+						self::$snapshot = $raw;
+						self::$editing  = true;
+						self::$active   =& $state;
+						$result         = $work( $state );
+					} catch ( \Throwable $error ) {
+						// This mutex wrapper owns no transaction. Native consumers roll
+						// back only their own transaction/savepoint before propagating.
+						$result = self::pending();
+					} finally {
+						self::$snapshot = $previous;
+						self::$editing  = $editing;
+						self::$active   = null;
+						self::clear_cache();
 					}
-					self::$snapshot = $raw;
-					self::$editing  = true;
-					self::$active   =& $state;
-					$result         = $work( $state );
-				} catch ( \Throwable $error ) {
-					// This mutex wrapper owns no transaction. Native consumers roll
-					// back only their own transaction/savepoint before propagating.
-					$result = new WP_Error( 'linker_intake_pending', __( 'The request status could not be confirmed. Your entries are still here. Please check before sending a new request.', 'linker-commerce' ) );
-				} finally {
-					self::$snapshot = $previous;
-					self::$editing  = $editing;
-					self::$active   = null;
-					self::clear_cache();
-				}
-			},
-			$wait_seconds
-		);
-		return $result;
+				},
+				max( 0, min( 1, $wait ) )
+			);
+			if ( ! $retry || ! $retry_row_lock ) {
+				return $result;
+			}
+			if ( microtime( true ) >= $deadline ) {
+				return self::pending();
+			}
+			// Release the named mutex while the transaction owner reaches its
+			// final bind. Holding it here would invert the two lock owners.
+			usleep( 10000 );
+			++$attempt;
+		} while ( true );
 	}
 
 	/**
@@ -143,9 +169,20 @@ final class IntakeStore {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Native option snapshot and mutex ownership must come from the same DB connection, without an object cache.
 		$row = $wpdb->get_row( $wpdb->prepare( "SELECT (SELECT option_value FROM {$wpdb->options} WHERE option_name = %s FOR UPDATE NOWAIT) AS value, IS_USED_LOCK(%s) = CONNECTION_ID() AS owned", self::OPTION, self::lock_name() ), ARRAY_A );
 		if ( ! is_array( $row ) || '1' !== (string) ( $row['owned'] ?? '' ) || '' !== $wpdb->last_error || ( null !== $row['value'] && ! is_string( $row['value'] ) ) ) {
+			$handle = $wpdb->__get( 'dbh' );
+			$errno  = $handle instanceof \mysqli ? (int) $handle->errno : 0;
+			$error  = strtolower( $wpdb->last_error );
+			if ( self::ROW_LOCK_BUSY === $errno || str_contains( $error, 'lock wait timeout' ) || str_contains( $error, 'could not be acquired immediately' ) ) {
+				throw new \RuntimeException( 'intake_capacity_row_busy', self::ROW_LOCK_BUSY ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Internal control-flow code, never printed.
+			}
 			throw new \RuntimeException( 'intake_capacity_read_failed' );
 		}
 		return $row['value'];
+	}
+
+	/** One customer-visible generic failure; diagnostics stay in native logs. */
+	private static function pending(): WP_Error {
+		return new WP_Error( 'linker_intake_pending', __( 'The request status could not be confirmed. Your entries are still here. Please check before sending a new request.', 'linker-commerce' ) );
 	}
 
 	/** The existing Lock namespace is database/prefix/key scoped. */

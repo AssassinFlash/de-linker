@@ -95,6 +95,11 @@ markup 归 archive 的 LC 模板（#16 重建），行为与数据归本票，�
   在 mount 里显示可见错误面（"Genie could not load." / "Genie konnte nicht geladen werden."
   与 "Try again" / "Erneut versuchen"，来自 dock payload）；排队首问保留，重试点击按原问句
   交付一次；成功仍只加载一次应用，失败的应用脚本永不执行（无依赖完成→不追加应用脚本）。
+  **2026-10-30，原生依赖成功与“已打印”分开判断**：WordPress footer 先打印的依赖不能按
+  `enqueued/done` 直接假设浏览器已成功执行。boot payload 带已知脚本 URL 到 WordPress
+  导出全局的精确映射；DOM ready 后，全局存在则复用同一 runtime，不重复执行；缺失则按原
+  URL走同一错误/重试批次。这样 planner 与 Genie 共用同一 `wp.i18n`，同时保留原生标签
+  下载失败后的恢复能力。
   提交路径：问句→与芯片同路（preventDefault）；其余查询→`linker/v1/catalog-search?q=&limit=2&lang=`
   恰好一个命中则直达产品页，否则原生 GET 交回 archive（`q` 过滤，CatalogFilters）。
   端点超时/失败一律回落到原生提交。

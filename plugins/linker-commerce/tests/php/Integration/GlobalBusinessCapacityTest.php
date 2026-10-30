@@ -734,6 +734,69 @@ final class GlobalBusinessCapacityTest extends IntegrationTestCase {
 		}
 	}
 
+	/** Business row-lock recovery cannot extend its initial one-second budget. */
+	public function test_uncommitted_outer_owner_keeps_business_retry_within_one_second(): void {
+		$this->enforce();
+		$this->seed_business( 0 );
+		$directory = sys_get_temp_dir() . '/linker-business-budget-' . self::tag();
+		mkdir( $directory, 0700 );
+		$this->later(
+			static function () use ( $directory ): void {
+				$files = glob( $directory . '/*' );
+				foreach ( false === $files ? array() : $files as $file ) {
+					unlink( $file );
+				}
+				rmdir( $directory );
+			}
+		);
+		$pipes = array();
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_open -- Test-owned independent native writer; native email consumers are disabled inside the fixture.
+		$process = proc_open(
+			array( PHP_BINARY, '-d', 'memory_limit=2048M', dirname( __DIR__, 2 ) . '/fixtures/business_capacity_writer.php', untrailingslashit( ABSPATH ), $directory . '/worker', $directory . '/go', 'capacity-budget@example.test' ),
+			array(
+				0 => array( 'pipe', 'r' ),
+				1 => array( 'file', $directory . '/log', 'a' ),
+				2 => array( 'file', $directory . '/log', 'a' ),
+			),
+			$pipes
+		);
+		self::assertIsResource( $process );
+		fclose( $pipes[0] );
+		$ready_deadline = microtime( true ) + 15;
+		while ( ! is_file( $directory . '/worker.ready' ) && microtime( true ) < $ready_deadline ) {
+			usleep( 1000 );
+		}
+		self::assertFileExists( $directory . '/worker.ready' );
+		$finished = false;
+		try {
+			wc_transaction_query( 'start' );
+			$held = IntakeStore::edit(
+				static function ( array &$state ): array {
+					$state['campaign_count'] = (int) ( $state['campaign_count'] ?? 0 ) + 1;
+					IntakeStore::save( $state );
+					return array();
+				},
+				1
+			);
+			self::assertIsArray( $held );
+			file_put_contents( $directory . '/go', 'go' );
+			$deadline = microtime( true ) + 2;
+			while ( ! is_file( $directory . '/worker' ) && microtime( true ) < $deadline ) {
+				usleep( 1000 );
+			}
+			$finished = is_file( $directory . '/worker' );
+		} finally {
+			wc_transaction_query( 'rollback' );
+		}
+		self::assertSame( 0, proc_close( $process ) );
+		self::assertTrue( $finished, 'The competing request returns while the outer transaction remains open.' );
+		$result = json_decode( (string) file_get_contents( $directory . '/worker' ), true );
+		self::assertIsArray( $result );
+		self::assertSame( 'linker_intake_pending', $result['error'] );
+		self::assertLessThan( 1.2, $result['seconds'], 'Row-lock recovery does not extend the first one-second budget.' );
+		wp_cache_delete( IntakeStore::OPTION, 'options' );
+	}
+
 	/** Both legacy label-display settings retain mandatory classification and recovery.
 	 *
 	 * @return array<string,array{bool}>
