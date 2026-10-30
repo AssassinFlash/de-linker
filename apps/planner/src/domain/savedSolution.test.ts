@@ -52,7 +52,33 @@ test("old inputs remain traceable without inferring gross load, location or curr
 		source.input,
 	);
 	const complete = { ...source, input: { ...source.input, heat_pump: false } };
-	assert.equal(savedSolutionHints(complete).annualKwh, 4500);
+	const completeHints = savedSolutionHints(complete);
+	const completeInputs = savedSolutionInputs(
+		complete,
+		completeHints,
+		"Original annual figure",
+		"Accessory request",
+	);
+	assert.equal(completeHints.annualKwh, 4500);
+	assert.equal(completeHints.annualBasis, null);
+	assert.equal(readBrief(completeInputs.brief).annual_load.basis, null);
+	const industrial = {
+		...complete,
+		kind: "industrial",
+		input: { annual_kwh: 4500, pv_kwp: 10.5, phase: 3, backup: "none" },
+	};
+	assert.equal(savedSolutionHints(industrial).invalid, false);
+	assert.equal(
+		readBrief(
+			savedSolutionInputs(
+				industrial,
+				savedSolutionHints(industrial),
+				"Original annual figure",
+				"Accessory request",
+			).brief,
+		).project_use,
+		"industrial",
+	);
 	const unknown = savedSolutionHints({ ...complete, kind: "unknown" });
 	assert.equal(unknown.annualKwh, null);
 	assert.equal(unknown.pvKw, null);

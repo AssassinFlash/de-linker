@@ -16,6 +16,7 @@ export type ProductEntryField = "inverter" | "battery" | "accessory";
 export interface EntryHints {
 	pvKw: number | null;
 	annualKwh: number | null;
+	annualBasis: "bill_total" | "user_estimate" | null;
 	phase: 1 | 3 | null;
 	backup: "none" | "needed" | "needed_accessory_ok" | null;
 	postalCode: string | null;
@@ -58,7 +59,7 @@ export function readEntryHints(params: URLSearchParams): EntryHints | null {
 		annualKwh = positive("annual_kwh");
 	const phaseValue = one("phase"),
 		backupValue = one("backup"),
-		postal = one("plz"),
+		postal = one("plz")?.trim() ?? null,
 		step = one("step"),
 		productRaw = one("product_id");
 	const phase = phaseValue === "1" ? 1 : phaseValue === "3" ? 3 : null;
@@ -68,7 +69,10 @@ export function readEntryHints(params: URLSearchParams): EntryHints | null {
 		backupValue === "needed_accessory_ok"
 			? backupValue
 			: null;
-	const postalCode = postal !== null && /^\d{5}$/.test(postal) ? postal : null;
+	const postalCode =
+		postal !== null && postal !== "" && Array.from(postal).length <= 4096
+			? postal
+			: null;
 	const productId =
 		productRaw !== null &&
 		/^[1-9]\d*$/.test(productRaw) &&
@@ -88,6 +92,7 @@ export function readEntryHints(params: URLSearchParams): EntryHints | null {
 	return {
 		pvKw,
 		annualKwh,
+		annualBasis: annualKwh === null ? null : "user_estimate",
 		phase,
 		backup,
 		postalCode,
@@ -104,7 +109,6 @@ export function readEntryHints(params: URLSearchParams): EntryHints | null {
  */
 export function productEntryField(product: {
 	device_class: string;
-	figures: JsonObject;
 }): ProductEntryField | null {
 	if (
 		product.device_class === "home-storage" ||
@@ -112,11 +116,7 @@ export function productEntryField(product: {
 	)
 		return "battery";
 	if (product.device_class === "inverters") return "inverter";
-	if (
-		product.device_class === "all-in-one-systems" &&
-		Object.hasOwn(product.figures, "ac_output_kw_nominal")
-	)
-		return "inverter";
+	if (product.device_class === "all-in-one-systems") return "inverter";
 	if (
 		product.device_class === "accessories" ||
 		product.device_class === "ems-monitoring" ||
@@ -126,9 +126,7 @@ export function productEntryField(product: {
 	return null;
 }
 
-export function placedProduct<
-	T extends { id: number; device_class: string; figures: JsonObject },
->(
+export function placedProduct<T extends { id: number; device_class: string }>(
 	products: readonly T[],
 	productId: number,
 ): { id: number; field: ProductEntryField } | null {
@@ -150,7 +148,7 @@ export function entryInputs(
 			site: { ...brief.site, location_label: hints.postalCode ?? "" },
 			annual_load: {
 				kwh: hints.annualKwh,
-				basis: hints.annualKwh === null ? null : "user_estimate",
+				basis: hints.annualBasis,
 				source_note: hints.annualKwh === null ? "" : sourceNote,
 			},
 			project_note: hints.backup === "needed_accessory_ok" ? accessoryNote : "",

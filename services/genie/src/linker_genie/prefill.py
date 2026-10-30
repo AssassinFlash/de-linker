@@ -94,11 +94,20 @@ _BACKUP = re.compile(
     r"\b(?:back-up|backup|notstrom|ersatzstrom)\w*\b",
     re.IGNORECASE,
 )
-# A German postcode is five digits (SizeHint.php `/^[0-9]{5}$/`, spec 13).
-# The pattern keeps a leading zero ("01067"); the value stays a string.
+# European postal formats vary: four or five digits, letter/digit forms, and
+# an optional space or country prefix. The label supplies the field boundary;
+# a five-digit value before the label remains the conservative unlabelled form.
+# Values stay strings so a leading zero ("01067") is preserved.
 _PLZ_WORD = r"\b(?:plz|postleitzahl|postcode|zip(?:\s+code)?)\b"
+_POSTAL_AFTER = (
+    r"(?=[A-Za-z0-9 -]{2,24}\b)"
+    r"(?=[A-Za-z0-9 -]*\d)"
+    r"[A-Za-z0-9]{1,10}"
+    r"(?:[ -](?:(?=[A-Za-z0-9]*\d)[A-Za-z0-9]{1,6}|[A-Za-z]{1,3}))?"
+    r"(?!\w)"
+)
 _PLZ = re.compile(
-    rf"{_PLZ_WORD}\s*[:\-]?\s*(?P<after>\d{{5}})(?!\d)"
+    rf"{_PLZ_WORD}\s*[:\-]?\s*(?P<after>{_POSTAL_AFTER})"
     rf"|(?<!\d)(?P<before>\d{{5}})(?!\d)\s*[:\-]?\s*{_PLZ_WORD}",
     re.IGNORECASE,
 )

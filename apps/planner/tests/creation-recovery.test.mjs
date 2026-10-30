@@ -42,12 +42,15 @@ async function exercise(t, historical) {
 				inputs: { brief: emptyBrief() },
 				key,
 			}),
+			destination: index === 1 ? "equipment" : null,
 			createdAt: index,
 		};
 	});
 	const sent = [],
 		cleared = [];
-	let created = null;
+	let created = null,
+		createdDestination = null,
+		writtenDestination = null;
 	const response = (value) =>
 		new Response(JSON.stringify(value), {
 			headers: { "Content-Type": "application/json" },
@@ -76,9 +79,10 @@ async function exercise(t, historical) {
 		async readCreations(scope) {
 			return scope === originScope ? pending : [];
 		},
-		async writeCreation(scope, body) {
+		async writeCreation(scope, body, destination) {
 			assert.equal(scope, originScope);
 			assert.equal(body, pending[1].body);
+			writtenDestination = destination;
 		},
 		async clearCreation(scope, body) {
 			cleared.push([scope, body]);
@@ -103,8 +107,9 @@ async function exercise(t, historical) {
 						store,
 						recoveryScopes: [session.query_scope, originScope],
 						recheck: () => assert.fail("unexpected identity failure"),
-						created: (project) => {
+						created: (project, destination) => {
 							created = project;
+							createdDestination = destination;
 							return true;
 						},
 					}),
@@ -134,6 +139,8 @@ async function exercise(t, historical) {
 	assert.deepEqual(sent, [pending[1].body]);
 	assert.deepEqual(cleared, [[originScope, pending[1].body]]);
 	assert.equal(created.title, pending[1].title);
+	assert.equal(writtenDestination, "equipment");
+	assert.equal(createdDestination, "equipment");
 }
 
 test("several pending creations require selection and an explicit retry of the exact bytes", (t) =>

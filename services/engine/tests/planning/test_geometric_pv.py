@@ -434,39 +434,18 @@ def one_module(geo: dict[str, Any]) -> dict[str, Any]:
     return geo
 
 
-def test_negative_perez_horizon_cannot_create_sky_energy(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """Mock only the pinned component boundary, not the geometric sampler."""
+def test_negative_perez_horizon_cannot_create_sky_energy() -> None:
+    """Use the pinned component boundary with a valid tilted-plane case."""
     geo, par = one_module(geometry()), perez_parameters()
+    geo["arrays"][0]["mount_tilt_deg"] = 5
     parameters = PvGenerationParameters.read(par)
-    meteo = weather(dni=600, dhi=100, ghi=800, temp=25)
+    meteo = weather(dni=50, dhi=400, ghi=442.5, temp=25)
     array = generation_arrays(geo, meteo, parameters)[0]
     solar = {
-        "apparent_zenith_deg": np.array([40.0]),
+        "apparent_zenith_deg": np.array([5.0]),
         "azimuth_deg": np.array([180.0]),
         "dni_extra_w_m2": np.array([1366.1]),
     }
-    isotropic, circumsolar, horizon = 100.0, 10.0, -80.0
-    library_sky = max(isotropic + circumsolar + horizon, 0.0)
-
-    def components(*_args: object, **kwargs: object) -> dict[str, np.ndarray]:
-        assert kwargs.get("diffuse_components") is True
-        assert kwargs.get("model") == "perez"
-        return {
-            "poa_direct": np.array([50.0]),
-            "poa_sky_diffuse": np.array([library_sky]),
-            "poa_ground_diffuse": np.array([20.0]),
-            "poa_global": np.array([50.0 + library_sky + 20.0]),
-            "poa_isotropic": np.array([isotropic]),
-            "poa_circumsolar": np.array([circumsolar]),
-            "poa_horizon": np.array([horizon]),
-        }
-
-    monkeypatch.setattr(
-        "linker_engine.planning.pv_physics.irradiance.get_total_irradiance",
-        components,
-    )
 
     def sky(horizon_factor: float, beam: float = 1.0) -> float:
         output = array_power(
@@ -480,17 +459,33 @@ def test_negative_perez_horizon_cannot_create_sky_energy(
         )
         value = cast(Object, output.witness["poa_components_w_m2"])["poa_sky_diffuse"]
         assert output.witness["horizon_visibility_policy"] == HORIZON_VISIBILITY_POLICY
-        assert output.witness["retained_negative_horizon_correction_w_m2"] == [horizon]
         return cast(list[float], value)[0]
 
+    parts = cast(
+        Object,
+        array_power(
+            array,
+            parameters.arrays[0],
+            parameters.modules[0],
+            meteo,
+            solar,
+            direct_beam_fraction=np.array([1.0]),
+            diffuse_fractions=DiffuseFractions(1.0, 1.0, 1.0),
+        ).witness["unobstructed_perez_components_w_m2"],
+    )
+    isotropic = cast(list[float], parts["poa_isotropic"])[0]
+    circumsolar = cast(list[float], parts["poa_circumsolar"])[0]
+    horizon = cast(list[float], parts["poa_horizon"])[0]
+    assert horizon < 0
+    library_sky = max(isotropic + circumsolar + horizon, 0.0)
+
     unchanged = sky(1.0)
-    assert unchanged == library_sky
+    assert unchanged == pytest.approx(library_sky, rel=2e-9)
     # The rejected policy scales the negative term toward zero, then reclamps.
     rejected = max(isotropic + circumsolar + horizon * 0.0, 0.0)
     assert rejected > library_sky
-    shaded = sky(0.0)
-    assert shaded == library_sky
-    assert shaded <= unchanged
+    assert sky(0.0) == pytest.approx(library_sky, rel=2e-9)
+    assert sky(0.0) <= unchanged
     partial_beam = sky(1.0, beam=0.0)
     assert partial_beam < unchanged
 

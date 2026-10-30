@@ -61,11 +61,20 @@ final class SizeHintTest extends TestCase {
 		$this->assertStringContainsString( 'annual_kwh=4000', $result['configurator_url'] );
 		$this->assertStringContainsString( 'phase=3', $result['configurator_url'] );
 		$this->assertStringContainsString( 'plz=80538', $result['configurator_url'] );
+		$this->assertStringContainsString( 'Postal code 80538', $result['summary'] );
 		$this->assertStringContainsString( '10 kWp PV', $result['summary'] );
 		$this->assertStringNotContainsString( 'lang', $result['configurator_url'] );
 		$this->assertTrue( ( new SizeHint() )->can_execute() );
 		$schema = ( new SizeHint() )->args()['output_schema'];
 		$this->assertSame( array( 'summary', 'configurator_url' ), $schema['required'] );
+		$input_schema = ( new SizeHint() )->args()['input_schema'];
+		$this->assertSame( 'string', $input_schema['properties']['plz']['type'] );
+		$this->assertSame( 1, $input_schema['properties']['plz']['minLength'] );
+		$this->assertSame( 4096, $input_schema['properties']['plz']['maxLength'] );
+		$this->assertArrayNotHasKey( 'pattern', $input_schema['properties']['plz'] );
+		$international = ( new SizeHint() )->execute( array( 'plz' => ' SW1A 1AA ' ) );
+		$this->assertStringContainsString( 'plz=SW1A+1AA', $international['configurator_url'] );
+		$this->assertSame( 'Open the Solution Configurator with Postal code SW1A 1AA.', $international['summary'] );
 	}
 
 	/**
