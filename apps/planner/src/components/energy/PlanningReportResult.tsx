@@ -8,7 +8,10 @@ import type { usePlanningOperations } from "../../data/usePlanningOperations.ts"
 import type { PlanningRun } from "../../data/planningProtocol.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import type { ReportSection } from "../../data/planningReport.ts";
-import { reportFromRun } from "../../data/planningReport.ts";
+import {
+	reportFromRun,
+	reportLanguageDiffers,
+} from "../../data/planningReport.ts";
 import { readObject } from "../../data/readProtocol.ts";
 import { __ } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
@@ -164,13 +167,22 @@ export function PlanningReportResult({
 				)}
 			</div>
 		);
+	const languageNotice =
+		report.locale === "en"
+			? __("Report language: English", "linker-tools")
+			: __("Report language: German", "linker-tools");
 	return (
 		<article className="lp-run-result">
 			<div className="lp-run-heading">
 				<div>
-					<h3>{report.title}</h3>
-					<p>{report.subtitle}</p>
-					<p>
+					<h3 lang={report.locale}>{report.title}</h3>
+					<p lang={report.locale}>{report.subtitle}</p>
+					{reportLanguageDiffers(report.locale, locale) && (
+						<p role="status" lang={locale}>
+							{languageNotice}
+						</p>
+					)}
+					<p lang={report.locale}>
 						<time dateTime={report.generated_at}>
 							{new Intl.DateTimeFormat(report.locale, {
 								dateStyle: "medium",
@@ -224,12 +236,20 @@ export function PlanningReportResult({
 			{report.sections.map((section) =>
 				section.id.startsWith("check-") ||
 				["basis", "conditions"].includes(section.id) ? (
-					<details key={section.id} className="lp-comparison">
+					<details
+						key={section.id}
+						className="lp-comparison"
+						lang={report.locale}
+					>
 						<summary>{section.title}</summary>
 						<SectionContent section={section} />
 					</details>
 				) : (
-					<section key={section.id} className="lp-scenario-block">
+					<section
+						key={section.id}
+						className="lp-scenario-block"
+						lang={report.locale}
+					>
 						<h4>{section.title}</h4>
 						<SectionContent section={section} />
 					</section>

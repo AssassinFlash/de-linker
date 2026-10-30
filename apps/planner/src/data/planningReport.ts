@@ -42,6 +42,15 @@ export interface PlanningReport {
 	locale: "en" | "de";
 	sections: ReportSection[];
 }
+/** A frozen report keeps its own language; only the surrounding UI follows the site. */
+export function reportLanguageDiffers(
+	reportLocale: PlanningReport["locale"],
+	siteLocale: string,
+): boolean {
+	return (
+		reportLocale !== (siteLocale.toLowerCase().startsWith("de") ? "de" : "en")
+	);
+}
 const ajv = new Ajv2020({ strict: true, strictNumbers: true });
 const validateReport = ajv.compile<PlanningReport>(reportSchema);
 const validateOptions = ajv.compile<ReportOptions>(optionsSchema);

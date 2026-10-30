@@ -8,7 +8,11 @@ import assert from "node:assert/strict";
 import runJson from "../../tests/fixtures/energy-run.json" with { type: "json" };
 import roofRunJson from "../../tests/fixtures/roof-energy-run.json" with { type: "json" };
 import { readRun, readRunPage } from "./planningProtocol.ts";
-import { readPlanningReport, readReportResult } from "./planningReport.ts";
+import {
+	readPlanningReport,
+	readReportResult,
+	reportLanguageDiffers,
+} from "./planningReport.ts";
 import { readObject as objectDocument } from "./readProtocol.ts";
 import { ApiError } from "./protocol.ts";
 import type { JsonObject } from "./protocol.ts";
@@ -18,6 +22,13 @@ const readObject = (value: unknown): MutableObject =>
 	objectDocument(value) as MutableObject;
 const original = () => readObject(structuredClone(runJson));
 const result = (run: JsonObject) => readObject(run.result);
+
+test("a frozen report names its language when it differs from the site", () => {
+	assert.equal(reportLanguageDiffers("en", "de-DE"), true);
+	assert.equal(reportLanguageDiffers("de", "en-US"), true);
+	assert.equal(reportLanguageDiffers("en", "en-US"), false);
+	assert.equal(reportLanguageDiffers("de", "de-DE-formal"), false);
+});
 
 for (const plantRunJson of [plantAcRunJson, dcPlantRunJson]) {
 	test(`native joint result retains named parameter proofs, unit trace and the shared report consumer: ${plantRunJson.run.result.kind}`, () => {
