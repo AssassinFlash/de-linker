@@ -151,10 +151,10 @@ try {
 				);
 			}
 			$result = array(
-				'schema_version'   => 1,
-				'site'             => $site,
-				'source_revision'  => $manifest['source_revision'],
-				'products'         => $pinned,
+				'schema_version'  => 1,
+				'site'            => $site,
+				'source_revision' => $manifest['source_revision'],
+				'products'        => $pinned,
 			);
 			echo '@@548-installation-facts@@' . wp_json_encode( $result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) . "\n";
 			return;
