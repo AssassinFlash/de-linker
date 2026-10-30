@@ -1030,8 +1030,8 @@ TEXT = {
     ),
     "bom": ("Provisional bill of materials", "Vorläufige Stückliste"),
     "bom_scope": (
-        "This list combines the selected equipment, saved roof modules and documented included components. Quantities are shown where established. Mounting, cabling, protection and other installation materials still require project-specific design.",
-        "Diese Liste führt die ausgewählten Geräte, die Module der gespeicherten Dachbelegung und dokumentierte mitgelieferte Komponenten zusammen. Mengen erscheinen, soweit sie feststehen. Montagesystem, Leitungen, Schutzkomponenten und weitere Installationsmaterialien müssen noch projektspezifisch ausgelegt werden.",
+        "This table lists selected equipment, saved roof modules, manufacturer-included components, customer-supplied requirements and site-engineering obligations. Quantities are shown only where established. It is not a complete balance-of-system take-off; mounting, cabling, protection and other installation materials still require project-specific design.",
+        "Diese Tabelle führt ausgewählte Geräte, Module der gespeicherten Dachbelegung, herstellerseitig mitgelieferte Komponenten, kundenseitig bereitzustellende Anforderungen und projektseitig zu prüfende Pflichten auf. Mengen werden nur angezeigt, wenn sie feststehen. Die Tabelle ist keine vollständige Materialaufnahme des restlichen Systems; Montagesystem, Leitungen, Schutzmaßnahmen und weitere Installationsmaterialien müssen weiterhin projektspezifisch ausgelegt werden.",
     ),
     "material_handling": ("Supply scope", "Lieferumfang"),
     "material_source": ("Quantity basis and sources", "Mengengrundlage und Quellen"),
@@ -1047,6 +1047,10 @@ TEXT = {
     "material_package_source": (
         "Manufacturer package contents",
         "Herstellerseitiger Lieferumfang",
+    ),
+    "material_installation_source": (
+        "Installation requirement source",
+        "Quelle der Installationsanforderung",
     ),
     "material_installation_requirement": (
         "Installation requirement · specification pending",
@@ -1248,6 +1252,14 @@ TEXT = {
     "material_manufacturer_included": (
         "Included according to manufacturer · quantity unconfirmed",
         "Laut Hersteller mitgeliefert · Menge unbestätigt",
+    ),
+    "material_customer_supplied_required": (
+        "Customer supplies after project-specific selection",
+        "Kundenseitige Bereitstellung nach projektspezifischer Auswahl",
+    ),
+    "material_site_engineering_required": (
+        "Site engineering assessment required",
+        "Projektspezifische Planungsprüfung erforderlich",
     ),
     "material_meter": ("Energy meter", "Energiezähler"),
     "material_backup": ("Backup components", "Notstromkomponenten"),
