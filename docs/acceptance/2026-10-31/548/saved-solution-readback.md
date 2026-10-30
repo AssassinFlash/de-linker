@@ -4,6 +4,10 @@
 
 ## 结论
 
+> **本节写于 2026-10-31 早间，已被后续读回取代。** 当时只有访客路径证据；
+> 之后以记录作者身份完成了登录态数据与权限层读回（见下文「登录态读回」一节）。
+> 界面读回仍未完成，缺登录凭据（见「界面读回」一节）。原文保留以记录当时的判断。
+
 契约成立，**未完成登录态读回**。本次只证明了访客路径与数据契约；以记录作者身份打开恢复入口的真实读回仍未执行，因为浏览器会话不是 `857558227@qq.com` 的登录态。
 
 ## 生产数据事实
@@ -42,7 +46,10 @@ Guest projects are available in this browser session. Signing in links them to t
 - `SavedSolutionStart` 收到 404 后渲染 "The saved inputs could not be loaded in this session."；只有 401/403 才触发 `recheck()`。
 - 确认未登录：同一会话打开 `/my-account/` 显示 Sign in 表单；页面自身也声明 "Guest projects are available in this browser session"。
 
-## 未验证项（如实保留）
+## 未验证项（写于当时；现状态见下方「登录态读回」）
+
+> 本节写于早间。第一条的**数据与权限层**已在后续完成（作者读取成功、他人 404）；
+> 仍未完成的是**界面**渲染与交互。第二条（访客转账户 claim）仍未触发。
 
 - **登录态下的真实恢复**：需要用 `857558227@qq.com` 登录后重开 `?saved_solution=8207`，确认进入新工作台、`Original inputs` 折叠区可下载 JSON、且不导入旧快照价格/公式/产品事实。
 - **访客转账户 claim**：`SavedSolutions` 的 48 小时会话 claim 路径未在本轮生产读回中触发。
