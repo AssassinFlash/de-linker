@@ -246,6 +246,11 @@ def _refresh(site: Any, write: bool) -> int:
         print(error, file=sys.stderr)
         return code
     pinned = _json_object(result.get("products"), "Refresh products")
+    if set(pinned) != set(plan["products"]):
+        raise MigrationError(
+            "Refresh returned a different product set than the plan: "
+            f"{sorted(set(pinned) ^ set(plan['products']))}."
+        )
     changes: list[str] = []
     substitutions: dict[str, str] = {}
     for key, entry in plan["products"].items():

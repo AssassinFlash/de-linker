@@ -364,3 +364,32 @@ def test_refresh_writes_only_revisions_in_place(
     ]
     assert len(differing) == 2
     assert all("aaaa" in old or "bbbb" in old for old, _new in differing)
+
+
+def test_refresh_refuses_a_product_set_that_differs_from_the_plan(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """An extra or missing product means the two sides disagree; say so."""
+    path = refresh_plan(tmp_path)
+    reply = {
+        "schema_version": 1,
+        "site": "https://fixture.invalid",
+        "source_revision": "d" * 64,
+        "products": {
+            "6506": {
+                "product_revision": "e" * 64,
+                "documents": {
+                    "doc-one": {"document_revision": "f" * 64, "blob_sha256": "c" * 64}
+                },
+            },
+            # The plan never named this one; ignoring it would hide the mismatch.
+            "9999": {"product_revision": "1" * 64, "documents": {}},
+        },
+    }
+    monkeypatch.setattr(migration, "PLAN", path)
+    monkeypatch.setattr(migration, "invoke", lambda *_args, **_kw: (0, "", reply))
+    before = path.read_text()
+
+    with pytest.raises(migration.MigrationError, match="different product set"):
+        migration._refresh(_site(), write=True)
+    assert path.read_text() == before
