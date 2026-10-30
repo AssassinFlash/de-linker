@@ -420,3 +420,43 @@ if any(
 - `installation-routing` 带明确免责声明：未做线缆选型、连接器匹配、保护、接地、
   安装与国家要求评估；
 - BOM 的线缆行标为 `Installation requirement · specification pending`，不冒称规格已定。
+
+---
+
+## 德文报告读回：安装事实进入真实报告（生产）
+
+此前只验证到引擎函数层与德文 CSV。现有生产德文报告的实际内容为证。
+
+项目 `9f978b15…`（6506 选择 + 已完成设备检查 `85500163…`），
+`runs/report` 以 `locale=de` 生成，`run 517feb83…`，`state=succeeded`。
+
+报告章节标题全部为德语：
+
+```
+basis                          Referenzen der gespeicherten Berechnungen
+product-certificates           Zertifikate und zugehörige Produktunterlagen
+certificate-device-conditions  Geräteangaben im Projekt
+certificate-device-0           Einzelauswahl · Wechselrichter · GW75K-ET-G10
+certificate-device-open-checks Offene Prüfungen zu Unterlagen und Projekt
+```
+
+`Vorläufige Stückliste`（暂定物料清单）共 **13 行**，含 12 条安装事实：
+
+```
+1 St. | GoodWe GW75K-ET-G10              | DLK-GOODWE-GW75KETG10        | Ausgewählte Geräte
+—     | AC-Leiter                       | p. 155 · Inverter AC Cable … | Kundenseitige Bereitstellung nac…
+—     | Schutzleiter                    | p. 153 · Inverter and STS …  | Kundenseitige Bereitstellung nac…
+—     | Batterie-DC-Leiter              | p. 154 · Battery DC Cable …  | Projektspezifische Planungsprüf…
+—     | Batterie-DC-Schalter            | p. 152 · Battery Switch …    | Projektspezifische Planungsprüf…
+```
+
+三点值得记录：
+
+1. **德文标签来自数据，不是翻译层**：`InstallationFacts` 同时携带 `label.en` 与
+   `label.de`（如 `AC-Leiter`、`Schutzleiter`），报告按 locale 取值。
+2. **页码引文指向真实且未变的 PDF**：`p.152/153/154/155` 与
+   `docs/…installation-facts-apply.md` 中记录的 `blob_sha256` 一致。
+3. **数量列是 `—` 而非编造值**：这些事实未量化（`quantity: null`），
+   报告如实留空，没有把「厂商建议」写成「已定数量」。
+
+至此安装事实的生产链路在**英德两种语种**都有真实报告内容为证。
