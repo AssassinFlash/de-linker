@@ -512,6 +512,19 @@ class ScopeTest(unittest.TestCase):
         self.assertIn("group: [core, mail, inquiry, inventory, runtime, admin]", TEXT)
         self.assertIn('just ci-native "${{ matrix.group }}" smoke', TEXT)
         self.assertNotIn("/Justfile", JUSTFILE)
+        self.assertIn('export PHP="{{ php }}"', JUSTFILE)
+        self.assertEqual(
+            JUSTFILE.count(
+                'just --justfile "$root/justfile" wp "$name" '
+                "linker-i18n setup --user=local-admin"
+            ),
+            1,
+        )
+        self.assertRegex(
+            JUSTFILE,
+            r"(?s)ensure_i18n\(\) \{.*?linker-i18n setup --user=local-admin"
+            r".*?\n    ensure_i18n\n    case \"\$groups\"",
+        )
         for marker in (
             "run_mail()",
             "GlobalBusinessCapacityTest",

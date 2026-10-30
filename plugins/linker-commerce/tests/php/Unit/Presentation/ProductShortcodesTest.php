@@ -471,6 +471,39 @@ final class ProductShortcodesTest extends TestCase {
 		$this->assertSame( 'http://linker.test/solution-configurator/?step=roof', $this->url( 'en' ) );
 	}
 
+
+	/**
+	 * A product proposal survives the native language switch. A cache-bust key does not.
+	 */
+	public function test_language_switch_keeps_the_product_proposal(): void {
+		WP_Mock::userFunction( 'get_queried_object', array( 'return' => null ) );
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'en' ) );
+		WP_Mock::userFunction(
+			'pll_the_languages',
+			array(
+				'return' => array(
+					'de' => array( 'url' => 'http://linker.test/de/loesungskonfigurator/?step=equipment&product_id=1946' ),
+				),
+			)
+		);
+		WP_Mock::userFunction(
+			'pll_get_requested_url',
+			array(
+				'return' => 'http://linker.test/solution-configurator/?step=equipment&product_id=1946&cbq=1',
+			)
+		);
+		$_SERVER['REQUEST_URI'] = '/solution-configurator/?step=equipment&product_id=1946&cbq=1';
+		$_GET                   = array(
+			'step'       => 'equipment',
+			'product_id' => '1946',
+			'cbq'        => '1',
+		);
+
+		$this->filter_returns( 'pll_translation_url', 'http://linker.test/de/loesungskonfigurator/?step=equipment&product_id=1946', array( 'http://linker.test/de/loesungskonfigurator/?step=equipment&product_id=1946', 'de' ) );
+		$this->assertSame( 'http://linker.test/de/loesungskonfigurator/?step=equipment&product_id=1946', $this->url( 'de' ) );
+		$this->assertSame( 'http://linker.test/solution-configurator/?step=equipment&product_id=1946', $this->url( 'en' ) );
+	}
+
 	/**
 	 * The fixture's request path, without its query.
 	 */
@@ -1826,6 +1859,68 @@ final class ProductShortcodesTest extends TestCase {
 			),
 		) as $row ) {
 			$this->assertSame( 'Compatibility information unavailable', $method->invoke( null, $row, 'en' ) );
+		}
+	}
+
+
+	/**
+	 * The tool row stays three cells. The configurator action lives in the project check.
+	 */
+	public function test_product_tools_stay_three_and_the_project_check_carries_the_product(): void {
+		unset( $GLOBALS['product'] );
+		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn ( $value ): string => (string) json_encode( $value ) ) );
+		WP_Mock::userFunction( 'has_filter' )->andReturn( true );
+		WP_Mock::userFunction(
+			'get_page_by_path',
+			array(
+				'return' => new \WP_Post( (object) array( 'ID' => 3302 ) ),
+			)
+		);
+		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'http://linker.test/solution-configurator/' ) );
+		WP_Mock::userFunction( 'pll_get_post', array( 'return' => static fn( int $id, string $lang ): int => 'en' === $lang ? $id : 0 ) );
+		$shortcodes = $this->pdp( true );
+		$tools      = $shortcodes->pdp_tools();
+		$dom        = new \DOMDocument();
+		$dom->loadHTML( '<?xml encoding="utf-8"><div id="tools">' . $tools . '</div>', LIBXML_NOERROR | LIBXML_NOWARNING );
+		$xpath      = new \DOMXPath( $dom );
+		$tool_nodes = $xpath->query( '//*[@id="tools"]//*[contains(concat(" ", normalize-space(@class), " "), " pdp-tool ")]' );
+		$planner    = $xpath->query( '//*[@id="tools"]//a[contains(@href, "solution-configurator")]' );
+		$this->assertSame( 3, $tool_nodes instanceof \DOMNodeList ? $tool_nodes->length : -1 );
+		$this->assertSame( 0, $planner instanceof \DOMNodeList ? $planner->length : -1 );
+		$this->assertStringContainsString( 'Compare', $tools );
+		$this->assertStringContainsString( 'Ask Genie', $tools );
+		$this->assertStringContainsString( 'Documents', $tools );
+
+		$action = $shortcodes->pdp_configurator();
+		$dom->loadHTML( '<?xml encoding="utf-8"><div id="action">' . $action . '</div>', LIBXML_NOERROR | LIBXML_NOWARNING );
+		$xpath = new \DOMXPath( $dom );
+		$links = $xpath->query( '//*[@id="action"]//a' );
+		$this->assertSame( 1, $links instanceof \DOMNodeList ? $links->length : -1 );
+		$link = $links instanceof \DOMNodeList ? $links->item( 0 ) : null;
+		$this->assertInstanceOf( \DOMElement::class, $link );
+		$this->assertSame( 'pdp-project-choice', $link->getAttribute( 'class' ) );
+		$this->assertSame( 'http://linker.test/solution-configurator/?step=equipment&product_id=6530', $link->getAttribute( 'href' ) );
+		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- DOM's native property name.
+		$this->assertSame( 'Open the Solution Configurator', $link->textContent );
+		$this->assertStringNotContainsString( 'pdp-tool', $action );
+
+		foreach ( array(
+			dirname( __DIR__, 4 ) . '/content/livecanvas/single_product.html',
+			dirname( __DIR__, 4 ) . '/content/livecanvas/de/single_product.html',
+		) as $template ) {
+			$html     = (string) file_get_contents( $template );
+			$region   = strpos( $html, 'class="pdp-project-check"' );
+			$choices  = strpos( $html, 'class="pdp-project-choices"' );
+			$entry    = strpos( $html, '[linker_pdp_configurator]' );
+			$tools_at = strpos( $html, 'class="pdp-product-tools"' );
+			$this->assertNotFalse( $region );
+			$this->assertNotFalse( $choices );
+			$this->assertNotFalse( $entry );
+			$this->assertGreaterThan( $region, $choices );
+			$this->assertGreaterThan( $choices, $entry );
+			$this->assertLessThan( $entry, $tools_at );
+			$this->assertStringNotContainsString( '[linker_pdp_configurator]', substr( $html, (int) $tools_at, (int) $choices - (int) $tools_at ) );
+			$this->assertSame( 0, substr_count( $html, 'class="pdp-tool"' ) );
 		}
 	}
 }

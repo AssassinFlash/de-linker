@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import cast
+
 from .asset_publication import AssetPublication, AssetResult
 from .assets import Asset, Assets
 from .canonical import Object, digest, encode
@@ -11,8 +13,11 @@ from .frozen_run import frozen_manifest
 from .geometric_pv_generation import generate_geometric_pv
 from .geometric_pv_inputs import (
     KIND,
-    MODEL,
+    MODEL_ROLES,
+    MODEL_V1,
+    MODEL_V2,
     PROFILE_PURPOSE,
+    SHADING_STATUS,
     GeometricPvInputs,
     GeometricPvLimits,
 )
@@ -57,9 +62,8 @@ def check_geometric_pv(
 
 class GeometricPvKernel:
     kind = KIND
-    models = {
+    _base_models = {
         "task": KIND,
-        "generation": MODEL,
         "geometry": "declared_opaque_ray_midpoint_uvn_v1",
         "weather": "pvgis_5_3_tmy_explicit_two_axes_v1",
         "pvlib": "0.16.1",
@@ -89,14 +93,25 @@ class GeometricPvKernel:
             "product_policy": "current_woo_reference_v1",
         }
 
-    def execution_key(self) -> str:
+    def models_for(self, generation: str) -> dict[str, str]:
+        if generation not in (MODEL_V1, MODEL_V2):
+            raise VersionUnavailable("geometric PV generation model is not executable")
+        return {**self._base_models, "generation": generation}
+
+    def execution_key_for(self, generation: str) -> str:
         return execution_key(
             {
                 "code_sha256": self.runtime.sha256,
-                "models": dict(self.models),
+                "models": cast(Object, self.models_for(generation)),
                 "parameters": self.parameters(),
             }
         )
+
+    def execution_keys(self) -> tuple[str, ...]:
+        return tuple(self.execution_key_for(model) for model in (MODEL_V1, MODEL_V2))
+
+    def execution_key(self) -> str:
+        return self.execution_keys()[0]
 
     def context(self, actor: Actor, project_id: str, inputs: Object) -> Context:
         request = GeometricPvInputs.read(inputs.get("geometric_pv_preparation"))
@@ -105,7 +120,7 @@ class GeometricPvKernel:
         basis = self.products.pv_basis(request.product_inputs(inputs))
         return Context(
             self.runtime.sha256,
-            dict(self.models),
+            self.models_for(request.model),
             {
                 "runtime_bundle": self.runtime.sha256,
                 "weather.raw": source.content_sha256,
@@ -138,11 +153,6 @@ class GeometricPvKernel:
         if not isinstance(manifest_sha, str):
             raise VersionUnavailable("geometric PV requires a frozen manifest")
         manifest = frozen_manifest(self.workspace, lease, manifest_sha)
-        if (
-            request_execution_key(lease.request, manifest, manifest_sha)
-            != self.execution_key()
-        ):
-            raise VersionUnavailable("worker differs from pinned geometric PV executor")
         context = manifest.get("context")
         assert isinstance(context, dict)
         pinned = context.get("assets")
@@ -163,6 +173,16 @@ class GeometricPvKernel:
             self.workspace.blobs.read(str(sha))
         inputs = self.workspace.pinned_inputs(manifest)
         request = GeometricPvInputs.read(inputs.get("geometric_pv_preparation"))
+        recorded = context.get("models")
+        if (
+            not isinstance(recorded, dict)
+            or recorded.get("generation") != request.model
+            or request_execution_key(lease.request, manifest, manifest_sha)
+            != self.execution_key_for(request.model)
+        ):
+            raise VersionUnavailable(
+                "pinned geometric PV generation differs from the request"
+            )
         project, revision = manifest.get("project_id"), manifest.get("revision")
         if not isinstance(project, str) or type(revision) is not int:
             raise VersionUnavailable("geometric PV saved project revision required")
@@ -208,7 +228,7 @@ class GeometricPvKernel:
             "origin": "modelled",
             "native_max_interval_seconds": weather.source.native_max_interval_seconds,
             "reconstructed_means": True,
-            "model_role": "direct_only_geometry_uniform_module_reference_scenario",
+            "model_role": MODEL_ROLES[request.model],
         }
         metadata: Object = {
             **source.metadata(),
@@ -231,7 +251,13 @@ class GeometricPvKernel:
         publication = AssetPublication.prepare(
             self.workspace.blobs,
             project,
-            encode({"schema_version": 1, "kind": MODEL, "dependencies": dependencies}),
+            encode(
+                {
+                    "schema_version": 1,
+                    "kind": request.model,
+                    "dependencies": dependencies,
+                }
+            ),
             "application/json",
             PROFILE_PURPOSE,
             metadata,
@@ -241,7 +267,7 @@ class GeometricPvKernel:
             {
                 "schema": 1,
                 "kind": KIND,
-                "model": MODEL,
+                "model": request.model,
                 "project_id": project,
                 "revision": revision,
                 "input_sha256": manifest["input_sha256"],
@@ -257,9 +283,7 @@ class GeometricPvKernel:
                 },
                 "equipment_release": {"status": "not_assessed"},
                 "country_assessment": {"status": "not_assessed"},
-                "near_shading_assessment": {
-                    "status": "direct_only_scenario_not_complete_assessment"
-                },
+                "near_shading_assessment": {"status": SHADING_STATUS[request.model]},
             },
             publication,
         )

@@ -12,20 +12,20 @@
             "input": {
                 "pv_kwp": 12
             },
-            "configurator_url": "https://de-linker.com/solution-configurator/?pv_kwp=12"
+            "configurator_url": "https://de-linker.com/solution-configurator/?pv_kwp=12&step=roof"
         },
         {
             "input": {
                 "pv_kwp": 12.5
             },
-            "configurator_url": "https://de-linker.com/solution-configurator/?pv_kwp=12.5"
+            "configurator_url": "https://de-linker.com/solution-configurator/?pv_kwp=12.5&step=roof"
         },
         {
             "input": {
                 "pv_kwp": 8,
                 "annual_load_kwh": 6000
             },
-            "configurator_url": "https://de-linker.com/solution-configurator/?pv_kwp=8&annual_kwh=6000"
+            "configurator_url": "https://de-linker.com/solution-configurator/?pv_kwp=8&annual_kwh=6000&step=roof"
         },
         {
             "input": {
@@ -34,14 +34,14 @@
                 "phase": 3,
                 "backup": "needed"
             },
-            "configurator_url": "https://de-linker.com/solution-configurator/?pv_kwp=12.5&annual_kwh=4500&phase=3&backup=needed"
+            "configurator_url": "https://de-linker.com/solution-configurator/?pv_kwp=12.5&annual_kwh=4500&phase=3&backup=needed&step=roof"
         },
         {
             "input": {
                 "pv_kwp": 5,
                 "phase": 1
             },
-            "configurator_url": "https://de-linker.com/solution-configurator/?pv_kwp=5&phase=1"
+            "configurator_url": "https://de-linker.com/solution-configurator/?pv_kwp=5&phase=1&step=roof"
         },
         {
             "input": {
@@ -51,21 +51,21 @@
                 "backup": "needed",
                 "plz": "80538"
             },
-            "configurator_url": "https://de-linker.com/solution-configurator/?pv_kwp=10&annual_kwh=4000&phase=3&backup=needed&plz=80538"
+            "configurator_url": "https://de-linker.com/solution-configurator/?pv_kwp=10&annual_kwh=4000&phase=3&backup=needed&plz=80538&step=roof"
         },
         {
             "input": {
                 "pv_kwp": 12,
                 "phase": 1
             },
-            "configurator_url": "https://de-linker.com/solution-configurator/?pv_kwp=12&phase=1"
+            "configurator_url": "https://de-linker.com/solution-configurator/?pv_kwp=12&phase=1&step=roof"
         },
         {
             "input": {
                 "pv_kwp": 12,
                 "phase": 3
             },
-            "configurator_url": "https://de-linker.com/solution-configurator/?pv_kwp=12&phase=3"
+            "configurator_url": "https://de-linker.com/solution-configurator/?pv_kwp=12&phase=3&step=roof"
         },
         {
             "input": {
@@ -73,7 +73,7 @@
                 "phase": 3,
                 "plz": "80538"
             },
-            "configurator_url": "https://de-linker.com/solution-configurator/?pv_kwp=12&phase=3&plz=80538"
+            "configurator_url": "https://de-linker.com/solution-configurator/?pv_kwp=12&phase=3&plz=80538&step=roof"
         },
         {
             "input": {

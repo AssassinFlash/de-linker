@@ -226,7 +226,7 @@ def test_the_unsafe_sentence_prefills_pv_only_on_both_paths(
     model_arguments, model_url = _model_url(message, locale, UNSAFE)
 
     assert code_arguments == model_arguments == {"pv_kwp": 12.0}
-    assert _query(code_url) == _query(model_url) == {"pv_kwp": ["12"]}
+    assert _query(code_url) == _query(model_url) == {"pv_kwp": ["12"], "step": ["roof"]}
     for url in (code_url, model_url):
         assert "phase" not in _query(url)
         assert "annual_kwh" not in _query(url)
@@ -249,7 +249,7 @@ def test_low_confidence_stays_on_the_model_and_the_url_still_omits_phase(
     assert prepared.route.calls == ()
     assert box.requests == []
     _arguments, url = _model_url(DE, "de", UNSAFE)
-    assert _query(url) == {"pv_kwp": ["12"]}
+    assert _query(url) == {"pv_kwp": ["12"], "step": ["roof"]}
 
 
 def test_the_route_log_and_the_wire_are_one_size_hint(
@@ -281,7 +281,7 @@ def test_the_route_log_and_the_wire_are_one_size_hint(
     assert logged is sent
     assert logged == {"pv_kwp": 12.0, "phase": 3}
     url = prepared.facts.facts["size.configurator_url"].value
-    assert _query(str(url)) == {"pv_kwp": ["12"], "phase": ["3"]}
+    assert _query(str(url)) == {"pv_kwp": ["12"], "step": ["roof"], "phase": ["3"]}
 
 
 @pytest.mark.parametrize(
@@ -295,18 +295,18 @@ def test_a_stated_phase_stays_in_the_url(message: str, phase: str) -> None:
     route = plan(message, [], _reading("sizing", 1.0), Subject((), {}, {}), "en")
     assert route.calls[0].arguments["phase"] == int(phase)
     _arguments, url = _model_url(message, "en", {"pv_kwp": 12, "phase": 1})
-    assert _query(url) == {"pv_kwp": ["12"], "phase": [phase]}
+    assert _query(url) == {"pv_kwp": ["12"], "step": ["roof"], "phase": [phase]}
 
 
 def test_the_model_cannot_replace_a_stated_phase() -> None:
     message = "three-phase home, 12 kWp, 15 kWh of battery storage"
     _arguments, url = _model_url(message, "en", {"pv_kwp": 99, "phase": 1})
-    assert _query(url) == {"pv_kwp": ["12"], "phase": ["3"]}
+    assert _query(url) == {"pv_kwp": ["12"], "step": ["roof"], "phase": ["3"]}
 
 
 def test_an_empty_model_call_still_carries_the_stated_pv_size() -> None:
     _arguments, url = _model_url(DE, "de", {})
-    assert _query(url) == {"pv_kwp": ["12"]}
+    assert _query(url) == {"pv_kwp": ["12"], "step": ["roof"]}
 
 
 # b19 (baseline): no figure, phase, backup or postcode. b43 is a scripted
@@ -352,7 +352,7 @@ def test_a_single_phase_catalogue_product_does_not_prefill_phase(
         assert "phasig" not in message.lower()
         arguments, url = _model_url(message, locale, {"pv_kwp": 12, "phase": 1})
         assert arguments == {"pv_kwp": 12.0}
-        assert _query(url) == {"pv_kwp": ["12"]}
+        assert _query(url) == {"pv_kwp": ["12"], "step": ["roof"]}
 
 
 def test_both_prompts_state_the_five_field_conversation_contract() -> None:
@@ -523,11 +523,11 @@ def test_an_earlier_statement_survives_the_next_sizing_question(
     assert prepared.route.calls[0].arguments == {"pv_kwp": 12.0, "phase": 3}
     assert prepared.results[0]["arguments"] == {"pv_kwp": 12.0, "phase": 3}
     url = prepared.facts.facts["size.configurator_url"].value
-    assert _query(str(url)) == {"pv_kwp": ["12"], "phase": ["3"]}
+    assert _query(str(url)) == {"pv_kwp": ["12"], "step": ["roof"], "phase": ["3"]}
 
     arguments, model_url = _model_url(later, "de", {"phase": 1}, earlier=(earlier,))
     assert arguments == {"pv_kwp": 12.0, "phase": 3}
-    assert _query(model_url) == {"pv_kwp": ["12"], "phase": ["3"]}
+    assert _query(model_url) == {"pv_kwp": ["12"], "step": ["roof"], "phase": ["3"]}
 
 
 def test_a_later_user_message_overrides_only_the_field_it_states() -> None:
@@ -553,7 +553,12 @@ def test_a_stated_postcode_reaches_the_url() -> None:
     message = "PLZ 80538, 12 kWp, dreiphasig"
     assert sizing_input(message) == {"plz": "80538", "pv_kwp": 12.0, "phase": 3}
     _arguments, url = _model_url(message, "de", {})
-    assert _query(url) == {"plz": ["80538"], "pv_kwp": ["12"], "phase": ["3"]}
+    assert _query(url) == {
+        "plz": ["80538"],
+        "pv_kwp": ["12"],
+        "step": ["roof"],
+        "phase": ["3"],
+    }
 
 
 def test_a_later_denial_clears_the_earlier_value() -> None:

@@ -104,7 +104,7 @@ final class SizeHintTest extends TestCase {
 			)
 		);
 		$this->assertSame(
-			'https://de-linker.com/solution-configurator/?pv_kwp=12',
+			'https://de-linker.com/solution-configurator/?pv_kwp=12&step=roof',
 			$stated['configurator_url']
 		);
 		$this->assertStringNotContainsString( 'lang=', $stated['configurator_url'] );
@@ -139,7 +139,7 @@ final class SizeHintTest extends TestCase {
 				'plz'             => '80538',
 			)
 		);
-		$path    = 'https://de-linker.com/solution-configurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538';
+		$path    = 'https://de-linker.com/solution-configurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538&step=roof';
 
 		$this->assertSame( $english, $german );
 		$this->assertSame( $path, $german['configurator_url'] );

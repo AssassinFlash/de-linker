@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import React, { act } from "react";
 import { setupDom, until } from "./dom-fixture.mjs";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 async function exercise(t, historical) {
 	const fixture = setupDom();
@@ -85,22 +86,29 @@ async function exercise(t, historical) {
 	};
 	const root = createRoot(fixture.element);
 	t.after(() => fixture.dispose(root));
+	const queryClient = new QueryClient({
+		defaultOptions: { queries: { retry: false } },
+	});
 	await act(async () =>
 		root.render(
 			React.createElement(
-				React.StrictMode,
-				null,
-				React.createElement(NewProject, {
-					session,
-					client,
-					store,
-					recoveryScopes: [session.query_scope, originScope],
-					recheck: () => assert.fail("unexpected identity failure"),
-					created: (project) => {
-						created = project;
-						return true;
-					},
-				}),
+				QueryClientProvider,
+				{ client: queryClient },
+				React.createElement(
+					React.StrictMode,
+					null,
+					React.createElement(NewProject, {
+						session,
+						client,
+						store,
+						recoveryScopes: [session.query_scope, originScope],
+						recheck: () => assert.fail("unexpected identity failure"),
+						created: (project) => {
+							created = project;
+							return true;
+						},
+					}),
+				),
 			),
 		),
 	);

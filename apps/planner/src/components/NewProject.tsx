@@ -11,7 +11,8 @@ import { projectInputContract } from "../domain/draft.ts";
 import { __ } from "../i18n.ts";
 import { Icon } from "./Icon.tsx";
 import { Notice } from "./Notice.tsx";
-import { entryInputs } from "../domain/entryHints.ts";
+import { useEquipmentProducts } from "../data/equipmentProducts.ts";
+import { entryInputs, placedProduct } from "../domain/entryHints.ts";
 import type { EntryHints } from "../domain/entryHints.ts";
 import { formatDecimal } from "../domain/decimal.ts";
 
@@ -32,7 +33,7 @@ export function NewProject({
 	session: Session;
 	client: PlannerClient;
 	store: DraftStore;
-	created: (project: Project, destination?: "design") => boolean;
+	created: (project: Project, destination?: "design" | "equipment") => boolean;
 	recheck: () => void;
 	recoveryScopes?: readonly string[] | undefined;
 	recoveryChecking?: boolean;
@@ -49,6 +50,14 @@ export function NewProject({
 	const [failed, setFailed] = useState(false);
 	const [inputContractRequired, setInputContractRequired] = useState(false);
 	const [recoveryFailed, setRecoveryFailed] = useState(false);
+	const [productBlocked, setProductBlocked] = useState<
+		"load" | "preparing" | "place" | null
+	>(null);
+	const catalog = useEquipmentProducts(
+		client,
+		session.query_scope,
+		Boolean(entryHints?.productId),
+	);
 	const [checking, setChecking] = useState(true);
 	const [requests, setRequests] = useState<readonly ScopedCreation[]>([]);
 	const intent = useRef<string | null>(null);
@@ -119,6 +128,35 @@ export function NewProject({
 		setFailed(false);
 		setInputContractRequired(false);
 		try {
+			const requestedProduct = entryHints?.productId ?? null;
+			const wantsProduct =
+				!selectedRequest &&
+				!initialProject &&
+				useHints &&
+				requestedProduct !== null;
+			let placed: ReturnType<typeof placedProduct> = null;
+			if (wantsProduct) {
+				const fresh = await catalog.refetch();
+				if (lifetime.current !== instance) return;
+				if (!client.isCurrentScope(session.query_scope)) {
+					setFailed(true);
+					return;
+				}
+				if (fresh.error || !fresh.data) {
+					setProductBlocked("load");
+					return;
+				}
+				if (!fresh.data.prepared) {
+					setProductBlocked("preparing");
+					return;
+				}
+				placed = placedProduct(fresh.data.products, requestedProduct);
+				if (!placed) {
+					setProductBlocked("place");
+					return;
+				}
+				setProductBlocked(null);
+			}
 			intent.current ??= wire(
 				{
 					schema_version: 1,
@@ -138,6 +176,7 @@ export function NewProject({
 											"Backup supply requested; accessories may be considered.",
 											"linker-tools",
 										),
+										placed,
 									)
 								: { brief: emptyBrief() },
 					key: crypto.randomUUID(),
@@ -167,7 +206,11 @@ export function NewProject({
 			if (
 				!created(
 					project,
-					!selectedRequest && entryHints?.roof ? "design" : undefined,
+					!selectedRequest && entryHints?.equipment
+						? "equipment"
+						: !selectedRequest && entryHints?.roof
+							? "design"
+							: undefined,
 				)
 			) {
 				setFailed(true);
@@ -207,7 +250,14 @@ export function NewProject({
 			entryHints.phase,
 			entryHints.backup,
 			entryHints.postalCode,
+			entryHints.productId,
 		].some((v) => v !== null);
+	const proposed =
+		catalog.data?.products.find((item) => item.id === entryHints?.productId) ??
+		null;
+	const proposedField = proposed
+		? (placedProduct([proposed], proposed.id)?.field ?? null)
+		: null;
 	if (!open)
 		return (
 			<button
@@ -235,15 +285,20 @@ export function NewProject({
 									"Review these saved inputs before creating a new project. The original solution stays available. After creating the project, select equipment using current product data and run a new calculation.",
 									"linker-tools",
 								)
-							: entryHints.roof && !hasCarriedValues
+							: entryHints.productId !== null
 								? __(
-										"Create a project to start the roof design.",
+										"This product is a starting point for the project. Creating the project does not confirm that the products work together.",
 										"linker-tools",
 									)
-								: __(
-										"Review the values from this link. If you choose to use them, they will be saved as project inputs when you create the project. This does not run a calculation or select equipment.",
-										"linker-tools",
-									)}
+								: entryHints.roof && !hasCarriedValues
+									? __(
+											"Create a project to start the roof design.",
+											"linker-tools",
+										)
+									: __(
+											"Review the values from this link. If you choose to use them, they will be saved as project inputs when you create the project. This does not run a calculation or select equipment.",
+											"linker-tools",
+										)}
 					</p>
 					<dl className="lp-field-summary">
 						{entryHints.annualKwh !== null && (
@@ -282,6 +337,27 @@ export function NewProject({
 							<div>
 								<dt>{__("Postal code", "linker-tools")}</dt>
 								<dd>{entryHints.postalCode}</dd>
+							</div>
+						)}
+						{entryHints.productId !== null && (
+							<div>
+								<dt>
+									{proposedField === "inverter"
+										? __(
+												"Inverter or integrated storage system",
+												"linker-tools",
+											)
+										: proposedField === "battery"
+											? __("Battery or storage system", "linker-tools")
+											: proposedField === "accessory"
+												? __("Additional products", "linker-tools")
+												: __("Use current product data", "linker-tools")}
+								</dt>
+								<dd>
+									{proposed
+										? `${proposed.brand} ${proposed.model}`.trim()
+										: String(entryHints.productId)}
+								</dd>
 							</div>
 						)}
 					</dl>
@@ -377,6 +453,24 @@ export function NewProject({
 					</button>
 				)}
 			</div>
+			{productBlocked === "load" && (
+				<Notice error>
+					{__("Product data could not be loaded.", "linker-tools")}
+				</Notice>
+			)}
+			{productBlocked === "preparing" && (
+				<Notice>
+					{__("Current product data is being prepared.", "linker-tools")}
+				</Notice>
+			)}
+			{productBlocked === "place" && (
+				<Notice error>
+					{__(
+						"This product is not available for planning, so no project was created from it.",
+						"linker-tools",
+					)}
+				</Notice>
+			)}
 			{failed && (
 				<Notice error>
 					{inputContractRequired

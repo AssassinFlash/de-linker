@@ -515,6 +515,7 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 				'de' => $twin,
 			)
 		);
+		$this->forget_cached_permalinks();
 		$this->later(
 			static function () use ( $twin, $english_id ): void {
 				wp_delete_post( $twin, true );
@@ -522,5 +523,18 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 			}
 		);
 		return $twin;
+	}
+
+	/**
+	 * Polylang's request-local link cache may hold the page URL from before the
+	 * new twin received its language.
+	 */
+	private function forget_cached_permalinks(): void {
+		$polylang = PLL();
+		$links    = $polylang->filters_links;
+		if ( ! isset( $links->cache ) || ! is_object( $links->cache ) || ! method_exists( $links->cache, 'clean' ) ) {
+			return;
+		}
+		$links->cache->clean();
 	}
 }

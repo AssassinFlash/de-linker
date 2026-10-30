@@ -116,6 +116,7 @@ final class ProductShortcodes {
 		add_shortcode( 'linker_pdp_cta', array( $this, 'pdp_cta' ) );
 		add_shortcode( 'linker_pdp_ask', array( $this, 'pdp_ask' ) );
 		add_shortcode( 'linker_pdp_tools', array( $this, 'pdp_tools' ) );
+		add_shortcode( 'linker_pdp_configurator', array( $this, 'pdp_configurator' ) );
 		add_shortcode( 'linker_pdp_project_choices', array( $this, 'pdp_project_choices' ) );
 		add_shortcode( 'linker_pdp_gallery_pair', array( $this, 'pdp_gallery_pair' ) );
 		add_shortcode( 'linker_pdp_gallery_thumbs', array( $this, 'pdp_gallery_thumbs' ) );
@@ -902,8 +903,7 @@ final class ProductShortcodes {
 	}
 
 	/**
-	 * The three product tools and the comparison chip (`tv_b2b_pdp_tools`):
-	 * compare, ask, documents.
+	 * The three product tools: compare, ask, and documents.
 	 *
 	 * @param array<string, string>|string $atts Shortcode attributes.
 	 */
@@ -929,6 +929,37 @@ final class ProductShortcodes {
 		// it from the footer on every surface that carries a selection
 		// control (spec 19 §5, one implementation).
 		return $html;
+	}
+
+	/**
+	 * The project-check action into the same Solution Configurator.
+	 * The LiveCanvas region owns placement; this only carries the canonical product.
+	 *
+	 * @param array<string, string>|string $atts Shortcode attributes.
+	 */
+	public function pdp_configurator( $atts = array() ): string {
+		unset( $atts );
+		$view = $this->current_view();
+		if ( null === $view ) {
+			return '';
+		}
+		$planner = self::configurator_page_url();
+		if ( '' === $planner ) {
+			return '';
+		}
+		$canonical = Publication::canonical_id( (int) $view['id'] );
+		if ( $canonical < 1 ) {
+			return '';
+		}
+		return '<a class="pdp-project-choice" href="' . esc_url(
+			add_query_arg(
+				array(
+					'step'       => 'equipment',
+					'product_id' => (string) $canonical,
+				),
+				$planner
+			)
+		) . '">' . esc_html__( 'Open the Solution Configurator', 'linker-commerce' ) . '</a>';
 	}
 
 	/**

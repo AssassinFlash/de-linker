@@ -14,6 +14,7 @@ const utc = (v: unknown): v is string =>
 	typeof v === "string" &&
 	/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|\+00:00)$/.test(v);
 import { DC_PV_STAGE } from "../domain/dcEnergy.ts";
+import { GEOMETRIC_PV_RESULTS } from "../domain/geometricPv.ts";
 export function verifyEnergyDetails(
 	result: JsonObject,
 	pinned: JsonObject,
@@ -184,9 +185,10 @@ export function verifyEnergyDetails(
 					!dc &&
 					role === "pv_available_ac" &&
 					source.origin === "modelled" &&
-					details.model === "opaque_direct_uniform_pvlib_reference_v1" &&
-					details.model_role ===
-						"direct_only_geometry_uniform_module_reference_scenario" &&
+					GEOMETRIC_PV_RESULTS.some(
+						(item) =>
+							details.model === item.model && details.model_role === item.role,
+					) &&
 					details.output_boundary ===
 						"scenario_ac_potential_before_site_export_and_storage_control" &&
 					energyHash(geometricInput) &&
