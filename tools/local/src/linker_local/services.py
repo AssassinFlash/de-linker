@@ -195,10 +195,16 @@ def _serve(
             for path in sorted(source.rglob("*.py")):
                 release.update(path.read_bytes())
             feed = Path(env["LINKER_ENGINE_FEED"]).read_bytes()
+            document = json.loads(feed)
+            projection = document.get("compatibility")
+            if not isinstance(projection, dict) or projection.get(
+                "version"
+            ) != document.get("compatibility_version"):
+                raise ProcessError("managed feed needs shared publication preparation")
             release.update(feed)
             release.update(
                 json.dumps(
-                    json.loads(feed)["compatibility"],
+                    projection,
                     sort_keys=True,
                     separators=(",", ":"),
                     ensure_ascii=False,

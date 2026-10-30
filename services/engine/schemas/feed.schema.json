@@ -4,7 +4,7 @@
 	"title": "Engineering feed",
 	"description": "What the engine reads from linker-commerce: GET /wp-json/linker/v1/engineering-feed (docs/specs/8-engineering-data.md, target shape 5). One entry per published product. The top-level facts are the #7 SelectionFactSet (docs/specs/7-selection-facts.md), produced by its single implementation in linker-commerce, so the engine never re-derives them; `figures` are the cited datasheet values the engine needs beyond those facts, units as stored (the engine converts by `unit`). A figure without a citation to a document we host does not enter the feed.",
 	"type": "object",
-	"required": ["schema_version", "generated_at", "compatibility_version", "compatibility", "products", "overlay"],
+	"required": ["schema_version", "generated_at", "source_revision", "compatibility_revision", "compatibility_version", "compatibility", "products", "overlay"],
 	"additionalProperties": false,
 	"properties": {
 		"schema_version": { "const": 1 },

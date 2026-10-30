@@ -37,6 +37,7 @@ Run from services/engine:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -47,6 +48,29 @@ from typing import Any
 
 OLD_REF = "refs/landed/chain-tip"
 HOST = "https://de-linker.com/"
+
+
+def publication_envelope(
+    feed: dict[str, Any], compatibility: dict[str, Any]
+) -> dict[str, Any]:
+    enriched = {
+        **feed,
+        "figure_projection_version": 2,
+        "compatibility_origin": "woocommerce",
+        "compatibility": compatibility,
+        "compatibility_revision": hashlib.sha256(
+            json.dumps(
+                compatibility, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+            ).encode()
+        ).hexdigest(),
+    }
+    enriched["source_revision"] = hashlib.sha256(
+        json.dumps(
+            enriched, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+        ).encode()
+    ).hexdigest()
+    return enriched
+
 
 # #482: the old contract's H2 delivery text cites section 4.1.2 and PDF p. 12,
 # which the hosted manual does not have. Its section 2.2 Unpacking (PDF p. 36
@@ -740,13 +764,16 @@ def main() -> None:
             }
         )
     compatibility = build_compatibility(contract)
-    feed = {
-        "schema_version": 1,
-        "generated_at": args.generated_at,
-        "compatibility_version": compatibility["version"],
-        "products": products,
-        "overlay": overlay(decisions, docs),
-    }
+    feed = publication_envelope(
+        {
+            "schema_version": 1,
+            "generated_at": args.generated_at,
+            "compatibility_version": compatibility["version"],
+            "products": products,
+            "overlay": overlay(decisions, docs),
+        },
+        compatibility,
+    )
     args.out.mkdir(parents=True, exist_ok=True)
     for name, data in (("feed.json", feed), ("compatibility.json", compatibility)):
         (args.out / name).write_text(
