@@ -50,6 +50,10 @@ retain `NOWAIT`.
 - Native mail group passed 252/252 in classic storage and 252/252 in HPOS.
 - Native inquiry 155/155, inventory 65/65 checks, runtime 19/19, and admin checks
   all passed.
+- The first remote CI pass exposed a test-only race: the provider-budget retry
+  case used the same 0.1-second wall budget meant for the separate deadline
+  case. Budget exhaustion now has ample wall headroom; the deadline case remains
+  at 0.02 seconds.
 
 The retained screenshots and machine-readable readback are in
 `/Users/chesterjohn/de-linker-data/acceptance-548-533-20261030/580-*`.

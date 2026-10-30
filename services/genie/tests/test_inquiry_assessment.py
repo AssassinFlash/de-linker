@@ -81,7 +81,7 @@ def test_actual_assessment_retries_each_debit_and_retains_absolute_deadline(
     result = asyncio.run(
         assessment.assess(
             assessment.AssessmentInput(
-                binding=binding(), state={}, remaining_seconds=0.1
+                binding=binding(), state={}, remaining_seconds=5.0
             ),
             key="synthetic-key",
             transport=httpx.MockTransport(upstream),
