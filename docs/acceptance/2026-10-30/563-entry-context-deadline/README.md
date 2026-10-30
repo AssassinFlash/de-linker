@@ -34,6 +34,7 @@ same scope.
 ## Local verification
 
 - `EntryScopeConcurrencyTest`: 4 tests / 56 assertions.
+- `just genie-concurrency ci_preflight`: 7 tests / 98 assertions.
 - Linker Tools PHPUnit: 313 tests / 2,522 assertions.
 - Linker Tools PHPCS: pass.
 - Linker Tools PHPStan: pass.
