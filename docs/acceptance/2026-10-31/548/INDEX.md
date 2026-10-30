@@ -95,3 +95,31 @@ LiteSpeed 缓存 → 兼容合同 → 平台夹具）。正确顺序是**先复�
 
 排查过程中我 grep 到两个 `pow`，一度认为存在 proof-of-work 机制。实际是
 `/product-category/accessories/backup-power/` 里的子串，属误匹配，已推翻。
+
+### 完整机制（从 `protection.js` 与生产页面读出）
+
+我早先 grep「`/proforma-request/` 页面里没有 Turnstile 脚本」，这句本身没错，
+但据此得出的「被拦截」结论是错的。真实设计是**交互触发、异步加载**：
+
+1. 页面加载时**不**注入 `challenges.cloudflare.com/turnstile/v0/api.js`；
+2. 用户第一次 `focusin` 或 `pointerdown` 表单时，`warm()` 才异步加载脚本并渲染 widget；
+3. 提交时走两步：服务端 `POST /wp-json/linker/v1/protection/prepare` 换取 sitekey，
+   客户端取得 token，再 `POST …/verify` 换取有时效的 proof；
+4. `linker_proof` 隐藏字段由此填充，服务端再调 Cloudflare siteverify。
+
+生产实测确认这套链路已注入：
+
+```
+linkerPublicProtectionConfig = {
+  "api": "https://de-linker.com/wp-json/linker/v1/protection",
+  "nonce": "754057849d",
+  "mode": "enforce",
+  "businessVerification": "required",
+  "language": "en"
+}
+```
+
+`protection.js` 在页面中出现 3 次（不同区块各挂一次）。
+
+因此：**自动化客户端不触发交互、拿不到 token，提交被正确拒绝。**
+这不是缺陷，也不需要「修复」。人工在浏览器中打开询盘页、聚焦表单，widget 会正常出现。
