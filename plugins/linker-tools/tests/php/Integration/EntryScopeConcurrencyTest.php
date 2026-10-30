@@ -41,6 +41,11 @@ final class EntryScopeConcurrencyTest extends TestCase {
 	private const OTHER_TAB = '8c2d3e4f-5061-4723-b456-789abcdef012';
 
 	/**
+	 * Tab whose cold mint is deliberately held by another process.
+	 */
+	private const LOCKED_TAB = '9d3e4f50-6172-4834-c567-89abcdef0123';
+
+	/**
 	 * Browser cookie this process had before the test, if any.
 	 *
 	 * @var string
@@ -82,6 +87,7 @@ final class EntryScopeConcurrencyTest extends TestCase {
 		$this->delete_claim( self::TAB );
 		$this->delete_claim( self::PARALLEL_TAB );
 		$this->delete_claim( self::OTHER_TAB );
+		$this->delete_claim( self::LOCKED_TAB );
 		if ( $this->had_browser ) {
 			$_COOKIE[ Conversations::BROWSER_COOKIE ] = $this->previous_browser;
 		} else {
@@ -234,6 +240,128 @@ final class EntryScopeConcurrencyTest extends TestCase {
 		$this->silence_browser_cookie();
 		$_COOKIE[ Conversations::BROWSER_COOKIE ] = (string) $results[0]['key'];
 		$this->assertSame( (string) $results[0]['scope'], ( new Conversations() )->entry_scope( self::PARALLEL_TAB ) );
+	}
+
+	/**
+	 * A real REST request must return before the browser's five-second budget
+	 * when another process holds the cold mint. Its fallback publishes a claim,
+	 * and a second cookieless request must reuse that scope.
+	 */
+	public function test_lock_contention_leaves_client_budget_headroom(): void {
+		$root  = (string) getenv( 'LINKER_WP_ROOT' );
+		$ready = tempnam( sys_get_temp_dir(), 'genie-entry-lock-' );
+		$this->assertIsString( $ready );
+		$release = $ready . '.release';
+
+		$pipes   = array();
+		$process = null;
+		$exit    = null;
+		$err     = '';
+		$out     = '';
+		try {
+			file_put_contents( $ready, '' );
+			$this->delete_claim( self::LOCKED_TAB );
+			$process = proc_open(
+				array( PHP_BINARY, '-d', 'memory_limit=2048M', __DIR__ . '/fixtures/entry-lock-holder.php', $root, self::LOCKED_TAB, $ready, $release ),
+				array(
+					1 => array( 'pipe', 'w' ),
+					2 => array( 'pipe', 'w' ),
+				),
+				$pipes
+			);
+			$this->assertIsResource( $process );
+
+			$deadline = microtime( true ) + 10;
+			while ( '' === trim( (string) file_get_contents( $ready ) ) ) {
+				if ( microtime( true ) > $deadline ) {
+					$this->fail( 'lock holder did not become ready' );
+				}
+				usleep( 10000 );
+			}
+
+			$body = wp_json_encode( array( 'tab' => self::LOCKED_TAB ) );
+			$this->assertIsString( $body );
+			$started  = microtime( true );
+			$response = wp_remote_post(
+				rest_url( 'linker-ai/v1/genie/entry-context' ),
+				array(
+					'timeout' => 12,
+					'headers' => array(
+						'Content-Type' => 'application/json',
+						'X-WP-Nonce'   => wp_create_nonce( 'wp_rest' ),
+					),
+					'body'    => $body,
+				)
+			);
+			$elapsed  = microtime( true ) - $started;
+			$this->assertFalse( is_wp_error( $response ), is_wp_error( $response ) ? $response->get_error_message() : '' );
+			$this->assertSame( 200, wp_remote_retrieve_response_code( $response ) );
+			$this->assertGreaterThanOrEqual( 0.75, $elapsed, 'entry_scope bypassed the held named lock' );
+			$this->assertLessThan( 2.0, $elapsed, 'entry_scope waited at the five-second client boundary' );
+			$data = json_decode( (string) wp_remote_retrieve_body( $response ), true );
+			$this->assertIsArray( $data, (string) wp_remote_retrieve_body( $response ) );
+			$claim = get_option( $this->claim_name( self::LOCKED_TAB ), false );
+			$this->assertIsArray( $claim );
+			$key = $claim['key'] ?? '';
+			$this->assertMatchesRegularExpression( '/^[0-9a-f]{32}$/', is_string( $key ) ? $key : '' );
+			$expected = hash_hmac( 'sha256', self::LOCKED_TAB . '|guest:' . $key, wp_salt( 'auth' ) );
+			$this->assertSame( $expected, $data['scope'] ?? null );
+
+			$second_body = wp_json_encode( array( 'tab' => self::LOCKED_TAB ) );
+			$this->assertIsString( $second_body );
+			$second = wp_remote_post(
+				rest_url( 'linker-ai/v1/genie/entry-context' ),
+				array(
+					'timeout' => 12,
+					'headers' => array(
+						'Content-Type' => 'application/json',
+						'X-WP-Nonce'   => wp_create_nonce( 'wp_rest' ),
+					),
+					'body'    => $second_body,
+				)
+			);
+			$this->assertFalse( is_wp_error( $second ), is_wp_error( $second ) ? $second->get_error_message() : '' );
+			$this->assertSame( 200, wp_remote_retrieve_response_code( $second ) );
+			$second_data = json_decode( (string) wp_remote_retrieve_body( $second ), true );
+			$this->assertIsArray( $second_data, (string) wp_remote_retrieve_body( $second ) );
+			$this->assertSame( $expected, $second_data['scope'] ?? null );
+		} finally {
+			file_put_contents( $release, '' );
+			if ( is_resource( $process ) ) {
+				$stopped  = false;
+				$deadline = microtime( true ) + 5;
+				while ( microtime( true ) < $deadline ) {
+					$status = proc_get_status( $process );
+					if ( ! $status['running'] ) {
+						$exit    = $status['exitcode'];
+						$stopped = true;
+						break;
+					}
+					usleep( 10000 );
+				}
+				if ( ! $stopped ) {
+					proc_terminate( $process, 9 );
+					usleep( 100000 );
+				}
+				stream_set_blocking( $pipes[1], false );
+				stream_set_blocking( $pipes[2], false );
+				$out = (string) stream_get_contents( $pipes[1] );
+				$err = (string) stream_get_contents( $pipes[2] );
+				fclose( $pipes[1] );
+				fclose( $pipes[2] );
+				$closed = proc_close( $process );
+				if ( null === $exit || -1 === $exit ) {
+					$exit = $closed;
+				}
+			}
+			if ( file_exists( $release ) ) {
+				unlink( $release );
+			}
+			if ( file_exists( $ready ) ) {
+				unlink( $ready );
+			}
+		}
+		$this->assertSame( 0, $exit, $err . $out );
 	}
 
 	/**
