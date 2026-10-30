@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { JSDOM } from "jsdom";
 
+// Throwaway CI selector acceptance; this file is not a production input.
 // Exercise the real emitted ESM graph, including WP's versioned entry identity.
 // No application DOM, API, Canvas or GPU substitute is presented as native proof.
 test("a lazy built chunk never executes the versioned WordPress entry again", async (t) => {
