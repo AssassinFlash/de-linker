@@ -29,6 +29,7 @@
 | 报告 BOM（德文，生产读回） | 13 行，德语标签与 `p.152–155` | `installation-facts-apply.md` 德文报告读回 |
 | 报告 BOM（英文，生产读回） | 13 行，英文标签与 `p.153–155` | `installation-facts-apply.md` 英文报告读回 |
 | 设备检查 | `succeeded`，5 项检查 3 satisfied | 同上 |
+| **多台逆变器 + 线缆 + 安装事实** | ✅ 生产读回：项目 `260a61d2…` 报告 25 章节，BOM 16 行含 2 台逆变器与 12 条事实，路由 3 行 | `installation-facts-apply.md` 末节 |
 | 路由报告 | `succeeded`，含 `installation-routing` 与免责声明 | 同上 |
 | 已保存方案读取（作者） | 返回原始输入，不含旧价格 | `saved-solution-readback.md` |
 | 已保存方案权限边界 | 他人读取得 404，不泄露 | 同上 |
@@ -45,7 +46,6 @@
 | 项 | 缺什么 | 解除条件 |
 | --- | --- | --- |
 | 界面读回 `?saved_solution=8207` | 一个能登录 user 1 的浏览器会话 | 提供凭据，或授权临时启用一次性登录后移除 |
-| 多台逆变器的安装方案出报告 | **不是模型缺口**：`equipment_selection` 只支持一台，但 UI 的 `Multiple systems` 走 `equipment_plant`，其 `units` 是列表且有并机分组，数量会累加 | 在 `equipment_plant` 项目上跑通「2 台 + 线缆 + 安装事实」的报告。2026-10-31 更正：早前记为「模型不支持」是错的 |
 | 真实询盘与 Genie 提交 | 保护**正常工作**；自动化客户端不触发交互，拿不到 token | 人工在浏览器中打开询盘页或 Genie，聚焦表单产生 token 后提交。见下方「Turnstile 的准确状态」 |
 
 ## 已合并的修复
