@@ -62,6 +62,7 @@ export function NewProject({
 	const [requests, setRequests] = useState<readonly ScopedCreation[]>([]);
 	const intent = useRef<string | null>(null);
 	const intentScope = useRef(session.query_scope);
+	const destination = useRef<"design" | "equipment" | null>(null);
 	const lifetime = useRef(0);
 	const openWork = useRef(false);
 	openWork.current = Boolean(
@@ -90,6 +91,7 @@ export function NewProject({
 				if (openWork.current) return;
 				intent.current = records[0]!.body;
 				intentScope.current = records[0]!.scope;
+				destination.current = records[0]!.destination;
 				setTitle(records[0]!.title);
 				setOpen(true);
 				setFailed(true);
@@ -184,9 +186,17 @@ export function NewProject({
 				session.runtime.limits.max_json_depth,
 				session.runtime.limits.max_body_bytes,
 			);
-			await store.writeCreation(originScope, intent.current).catch(() => {
-				if (lifetime.current === instance) setRecoveryFailed(true);
-			});
+			if (selectedRequest === undefined)
+				destination.current = entryHints?.equipment
+					? "equipment"
+					: entryHints?.roof
+						? "design"
+						: null;
+			await store
+				.writeCreation(originScope, intent.current, destination.current)
+				.catch(() => {
+					if (lifetime.current === instance) setRecoveryFailed(true);
+				});
 			if (lifetime.current !== instance) return;
 			if (!client.isCurrentScope(session.query_scope)) {
 				setFailed(true);
@@ -203,20 +213,12 @@ export function NewProject({
 				if (lifetime.current === instance) setRecoveryFailed(true);
 			});
 			if (lifetime.current !== instance) return;
-			if (
-				!created(
-					project,
-					!selectedRequest && entryHints?.equipment
-						? "equipment"
-						: !selectedRequest && entryHints?.roof
-							? "design"
-							: undefined,
-				)
-			) {
+			if (!created(project, destination.current ?? undefined)) {
 				setFailed(true);
 				return;
 			}
 			intent.current = null;
+			destination.current = null;
 			setOpen(false);
 			setTitle("");
 		} catch (error) {
@@ -400,6 +402,7 @@ export function NewProject({
 							if (!request) return;
 							intent.current = request.body;
 							intentScope.current = request.scope;
+							destination.current = request.destination;
 							setTitle(request.title);
 							setFailed(true);
 						}}

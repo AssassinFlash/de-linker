@@ -197,13 +197,13 @@ test("language switches keep a product proposal and do not treat roof as a saved
 	const malformed = new URL(
 		projectLanguageUrl(
 			"/de/?pv_kwp=99",
-			"https://site.example/?pv_kwp=10&pv_kwp=-1&phase=9&plz=abc&backup=later&step=equipment&product_id=nope&nonce=private",
+			"https://site.example/?pv_kwp=10&pv_kwp=-1&phase=9&plz=&backup=later&step=equipment&product_id=nope&nonce=private",
 			null,
 		),
 	);
 	assert.deepEqual(malformed.searchParams.getAll("pv_kwp"), ["10", "-1"]);
 	assert.equal(malformed.searchParams.get("phase"), "9");
-	assert.equal(malformed.searchParams.get("plz"), "abc");
+	assert.equal(malformed.searchParams.get("plz"), "");
 	assert.equal(malformed.searchParams.get("backup"), "later");
 	assert.equal(malformed.searchParams.get("step"), "equipment");
 	assert.equal(malformed.searchParams.get("product_id"), "nope");

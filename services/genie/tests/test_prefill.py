@@ -370,6 +370,7 @@ def test_both_prompts_state_the_five_field_conversation_contract() -> None:
     doc = INPUT_DOCS["linker/size-hint"]
     assert "empty object" in doc
     assert "conversation" in doc
+    assert "five digits" not in doc
     for field in ("pv_kwp", "annual_load_kwh", "phase", "backup", "plz"):
         assert field in doc
     assert "drops every other field" not in doc
@@ -452,6 +453,10 @@ def test_a_question_does_not_prefill_phase_or_backup(message: str) -> None:
         ("80538 PLZ", {"plz": "80538"}),
         ("PLZ 01067", {"plz": "01067"}),
         ("01067 PLZ", {"plz": "01067"}),
+        ("postcode SW1A 1AA", {"plz": "SW1A 1AA"}),
+        ("postcode 1012 AB", {"plz": "1012 AB"}),
+        ("postcode D-10115", {"plz": "D-10115"}),
+        ("postcode 80538 please", {"plz": "80538"}),
         ("Jahresstromverbrauch 6000 kWh", {"annual_load_kwh": 6000.0}),
         ("Stromverbrauch 6000 kWh", {"annual_load_kwh": 6000.0}),
         ("annual consumption of about 6000 kWh", {"annual_load_kwh": 6000.0}),

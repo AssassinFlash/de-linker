@@ -57,6 +57,7 @@ export function readSavedSolutionSource(
 export function savedSolutionHints(source: SavedSolutionSource): EntryHints {
 	const empty: EntryHints = {
 		annualKwh: null,
+		annualBasis: null,
 		pvKw: null,
 		phase: null,
 		backup: null,
@@ -66,7 +67,13 @@ export function savedSolutionHints(source: SavedSolutionSource): EntryHints {
 		productId: null,
 		invalid: true,
 	};
-	if (!["residential", "commercial"].includes(source.kind)) return empty;
+	const projectUse =
+		source.kind === "residential" ||
+		source.kind === "commercial" ||
+		source.kind === "industrial"
+			? source.kind
+			: null;
+	if (projectUse === null) return empty;
 	const params = new URLSearchParams();
 	let unsupported = false;
 	for (const key of ["annual_kwh", "pv_kwp", "phase", "backup", "plz"]) {
@@ -76,6 +83,9 @@ export function savedSolutionHints(source: SavedSolutionSource): EntryHints {
 		else if (value !== null && value !== undefined) unsupported = true;
 	}
 	const hints = readEntryHints(params) ?? { ...empty, invalid: false };
+	// The historical record does not state whether its annual figure came from
+	// bills or a project estimate. Carry the number without inventing its basis.
+	hints.annualBasis = null;
 	hints.invalid ||= unsupported;
 	// The residential form's figure excluded additional heat-pump/EV demand.
 	// Their absence must be explicit before carrying it as the gross annual total.
@@ -116,7 +126,9 @@ export function savedSolutionInputs(
 		brief: {
 			...brief,
 			project_use:
-				source.kind === "residential" || source.kind === "commercial"
+				source.kind === "residential" ||
+				source.kind === "commercial" ||
+				source.kind === "industrial"
 					? source.kind
 					: null,
 		},

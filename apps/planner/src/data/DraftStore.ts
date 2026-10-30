@@ -21,6 +21,7 @@ export interface CreationIntent {
 	readonly key: string;
 	readonly title: string;
 	readonly body: string;
+	readonly destination: "design" | "equipment" | null;
 	readonly createdAt: number;
 }
 export interface ProfileImportIntent {
@@ -160,9 +161,19 @@ export class DraftStore {
 		);
 	}
 
-	async writeCreation(scope: string, body: string): Promise<void> {
+	async writeCreation(
+		scope: string,
+		body: string,
+		destination: "design" | "equipment" | null = null,
+	): Promise<void> {
 		storageKey(scope, "0".repeat(32));
 		const command = validateCreation(body);
+		if (
+			destination !== null &&
+			destination !== "design" &&
+			destination !== "equipment"
+		)
+			throw new Error("invalid_creation_recovery");
 		const db = await this.open();
 		const transaction = db.transaction(CREATION_INTENTS, "readwrite");
 		const committed = complete(transaction);
@@ -178,7 +189,7 @@ export class DraftStore {
 			(records) => {
 				const existing = records.find((record) => record.key === command.key);
 				if (existing) {
-					if (existing.body !== body)
+					if (existing.body !== body || existing.destination !== destination)
 						refuse(new Error("creation_intent_conflict"));
 					return;
 				}
@@ -197,6 +208,7 @@ export class DraftStore {
 					id: scope + ":" + command.key,
 					scope,
 					body,
+					destination,
 					created_at: Date.now(),
 				});
 			},
@@ -343,6 +355,7 @@ export class DraftStore {
 									id: String(cursor.primaryKey) + ":" + record.key,
 									scope: cursor.primaryKey,
 									body: record.body,
+									destination: null,
 									created_at: 0,
 								});
 							} catch {
@@ -476,7 +489,12 @@ function legacyCreation(value: unknown, scope: string): CreationIntent {
 	const record = readObject(value);
 	if (record.scope !== scope || typeof record.body !== "string")
 		throw new Error("invalid_creation_recovery");
-	return { ...validateCreation(record.body), body: record.body, createdAt: 0 };
+	return {
+		...validateCreation(record.body),
+		body: record.body,
+		destination: null,
+		createdAt: 0,
+	};
 }
 
 function scanCreations(
@@ -508,12 +526,23 @@ function scanCreations(
 			const command = validateCreation(value.body);
 			if (value.id !== scope + ":" + command.key)
 				throw new Error("invalid_creation_recovery");
+			const destination =
+				value.destination === undefined || value.destination === null
+					? null
+					: value.destination;
+			if (
+				destination !== null &&
+				destination !== "design" &&
+				destination !== "equipment"
+			)
+				throw new Error("invalid_creation_recovery");
 			bytes += new TextEncoder().encode(value.body).length;
 			if (records.length >= MAX_CREATION_INTENTS || bytes > MAX_RECOVERY_BYTES)
 				throw new Error("recovery_storage_limit");
 			records.push({
 				...command,
 				body: value.body,
+				destination,
 				createdAt: value.created_at,
 			});
 			row.continue();

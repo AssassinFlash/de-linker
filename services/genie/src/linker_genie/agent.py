@@ -89,7 +89,8 @@ INPUT_DOCS: dict[str, str] = {
     "linker/size-hint": (
         "{} — pass an empty object. The service fills pv_kwp, "
         "annual_load_kwh, phase (1|3), backup "
-        "('none'|'needed'|'needed_accessory_ok') and plz (five digits) "
+        "('none'|'needed'|'needed_accessory_ok') and plz (the customer's "
+        "postal code) "
         "from values the customer stated in the conversation, and leaves "
         "out every field they did not state. Do not send those fields "
         "yourself; a guess is dropped."

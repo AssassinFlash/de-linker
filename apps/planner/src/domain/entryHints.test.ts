@@ -12,7 +12,7 @@ import { equipmentDraft } from "./equipment.ts";
 test("historical sizing link becomes reviewed project inputs without assuming a country or approved system", () => {
 	const hints = readEntryHints(
 		new URLSearchParams(
-			"annual_kwh=4500&pv_kwp=10.5&phase=3&backup=needed_accessory_ok&plz=50667&step=roof",
+			"annual_kwh=4500&pv_kwp=10.5&phase=3&backup=needed_accessory_ok&plz=SW1A%201AA&step=roof",
 		),
 	)!;
 	const inputs = entryInputs(
@@ -24,7 +24,7 @@ test("historical sizing link becomes reviewed project inputs without assuming a 
 		equipment = equipmentDraft(inputs);
 	assert.equal(brief.annual_load.kwh, 4500);
 	assert.equal(brief.annual_load.basis, "user_estimate");
-	assert.equal(brief.site.location_label, "50667");
+	assert.equal(brief.site.location_label, "SW1A 1AA");
 	assert.equal(brief.site.country_code, null);
 	assert.equal(equipment.pv_dc_kw, 10.5);
 	assert.equal(equipment.grid_phase, 3);
@@ -36,7 +36,7 @@ test("historical sizing link becomes reviewed project inputs without assuming a 
 
 test("ambiguous and invalid link values are rejected individually and cannot overwrite an existing project", () => {
 	const params = new URLSearchParams(
-		"pv_kwp=10&pv_kwp=20&annual_kwh=-1&phase=3&plz=broken",
+		"pv_kwp=10&pv_kwp=20&annual_kwh=-1&phase=3&plz=",
 	);
 	const hints = readEntryHints(params)!;
 	assert.equal(hints.pvKw, null);
@@ -94,40 +94,28 @@ test("a product link is a proposed equipment input, not a roof result or an appr
 
 test("device class places a current product; unknown classes are not inverters", () => {
 	const figures = { ac_output_kw_nominal: { value: 5 } };
+	assert.equal(productEntryField({ device_class: "inverters" }), "inverter");
+	assert.equal(productEntryField({ device_class: "home-storage" }), "battery");
 	assert.equal(
-		productEntryField({ device_class: "inverters", figures: {} }),
-		"inverter",
-	);
-	assert.equal(
-		productEntryField({ device_class: "home-storage", figures: {} }),
+		productEntryField({ device_class: "battery-systems" }),
 		"battery",
 	);
 	assert.equal(
-		productEntryField({ device_class: "battery-systems", figures: {} }),
-		"battery",
-	);
-	assert.equal(
-		productEntryField({ device_class: "all-in-one-systems", figures }),
+		productEntryField({ device_class: "all-in-one-systems" }),
 		"inverter",
 	);
 	assert.equal(
-		productEntryField({ device_class: "all-in-one-systems", figures: {} }),
-		null,
+		productEntryField({ device_class: "all-in-one-systems" }),
+		"inverter",
 	);
+	assert.equal(productEntryField({ device_class: "accessories" }), "accessory");
 	assert.equal(
-		productEntryField({ device_class: "accessories", figures: {} }),
+		productEntryField({ device_class: "ems-monitoring" }),
 		"accessory",
 	);
-	assert.equal(
-		productEntryField({ device_class: "ems-monitoring", figures: {} }),
-		"accessory",
-	);
-	assert.equal(
-		productEntryField({ device_class: "ev-chargers", figures }),
-		"accessory",
-	);
-	assert.equal(productEntryField({ device_class: "unknown", figures }), null);
-	assert.equal(productEntryField({ device_class: "meters", figures }), null);
+	assert.equal(productEntryField({ device_class: "ev-chargers" }), "accessory");
+	assert.equal(productEntryField({ device_class: "unknown" }), null);
+	assert.equal(productEntryField({ device_class: "meters" }), null);
 	assert.equal(
 		placedProduct([{ id: 1946, device_class: "unknown", figures }], 1946),
 		null,

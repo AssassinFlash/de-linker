@@ -63,8 +63,9 @@ final class SizeHint {
 						'enum' => self::BACKUP,
 					),
 					'plz'             => array(
-						'type'    => 'string',
-						'pattern' => '^[0-9]{5}$',
+						'type'      => 'string',
+						'minLength' => 1,
+						'maxLength' => 4096,
 					),
 					'lang'            => array(
 						'type' => 'string',
@@ -134,9 +135,10 @@ final class SizeHint {
 			$query['backup'] = $input['backup'];
 			$parts[]         = 'backup=' . $input['backup'];
 		}
-		if ( is_string( $input['plz'] ?? null ) && 1 === preg_match( '/^[0-9]{5}$/', $input['plz'] ) ) {
-			$query['plz'] = $input['plz'];
-			$parts[]      = 'PLZ ' . $input['plz'];
+		$location = is_string( $input['plz'] ?? null ) ? trim( $input['plz'] ) : '';
+		if ( '' !== $location ) {
+			$query['plz'] = $location;
+			$parts[]      = 'Postal code ' . $location;
 		}
 		// A positive PV size is the existing signal for a new layout. Other sizing stays on the tool root.
 		if ( isset( $query['pv_kwp'] ) ) {

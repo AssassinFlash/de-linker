@@ -91,7 +91,7 @@ test("recovery retains the baseline, local edits and exact uncertain intent", as
 			key: crypto.randomUUID(),
 			input_contract: "installation_pv_string_links_v1",
 		});
-		await store.writeCreation(scope, awareBody);
+		await store.writeCreation(scope, awareBody, "equipment");
 		const cumulativeBody = JSON.stringify({
 			...create,
 			key: crypto.randomUUID(),
@@ -104,13 +104,18 @@ test("recovery retains the baseline, local edits and exact uncertain intent", as
 			input_contract: "pv_string_links_direct_beam_geometric_pv_v1",
 		});
 		await store.writeCreation(scope, geometricBody);
+		const restoredCreations = await new DraftStore().readCreations(scope);
 		assert.deepEqual(
-			new Set(
-				(await new DraftStore().readCreations(scope)).map(
-					(value) => value.body,
-				),
-			),
+			new Set(restoredCreations.map((value) => value.body)),
 			new Set([legacyBody, awareBody, cumulativeBody, geometricBody]),
+		);
+		assert.equal(
+			restoredCreations.find((value) => value.body === awareBody)?.destination,
+			"equipment",
+		);
+		assert.equal(
+			restoredCreations.find((value) => value.body === legacyBody)?.destination,
+			null,
 		);
 		await assert.rejects(
 			store.writeCreation(

@@ -157,19 +157,25 @@
             "input": {
                 "plz": "8053"
             },
-            "configurator_url": "https://de-linker.com/solution-configurator/"
+            "configurator_url": "https://de-linker.com/solution-configurator/?plz=8053"
         },
         {
             "input": {
                 "plz": "805381"
             },
-            "configurator_url": "https://de-linker.com/solution-configurator/"
+            "configurator_url": "https://de-linker.com/solution-configurator/?plz=805381"
         },
         {
             "input": {
                 "plz": "ABCDE"
             },
-            "configurator_url": "https://de-linker.com/solution-configurator/"
+            "configurator_url": "https://de-linker.com/solution-configurator/?plz=ABCDE"
+        },
+        {
+            "input": {
+                "plz": "SW1A 1AA"
+            },
+            "configurator_url": "https://de-linker.com/solution-configurator/?plz=SW1A+1AA"
         }
     ]
 }
