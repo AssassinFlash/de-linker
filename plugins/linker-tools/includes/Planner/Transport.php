@@ -102,8 +102,35 @@ final class Transport {
 		}
 		$value = json_decode( $reply['body'], true, 64 );
 		if ( $reply['status'] >= 400 ) {
-			return Failure::make( 409 === $reply['status'] ? 'claim_conflict' : 'upstream', $reply['status'] );
+			return Failure::make( self::refusal_code( $reply['status'], $value ), $reply['status'] );
 		}
 		return is_array( $value ) && str_starts_with( $reply['type'], 'application/json' ) ? $value : Failure::make( 'invalid_reply', 502 );
+	}
+
+	/**
+	 * Name the engine's own refusal instead of flattening a whole status class.
+	 *
+	 * Several distinct 409s reach this seam: a lease that moved on, a project
+	 * revision that changed, and published Woo evidence that changed. Only the
+	 * first is a claim conflict; retrying the others cannot succeed. The
+	 * engine's code is a stable machine name, so it carries the distinction
+	 * while the message stays the reviewed generic copy.
+	 *
+	 * @param int   $status HTTP status from the engine.
+	 * @param mixed $value  Decoded engine reply, if it parsed.
+	 * @return string Stable gateway code.
+	 */
+	private static function refusal_code( int $status, mixed $value ): string {
+		$code = is_array( $value ) && is_array( $value['error'] ?? null ) ? ( $value['error']['code'] ?? null ) : null;
+		if ( is_string( $code ) && 1 === preg_match( '/\A[a-z][a-z0-9_]{0,63}\z/', $code ) ) {
+			return $code;
+		}
+		return match ( $status ) {
+			409 => 'claim_conflict',
+			404 => 'not_found',
+			422 => 'input',
+			503 => 'unavailable',
+			default => 'upstream',
+		};
 	}
 }

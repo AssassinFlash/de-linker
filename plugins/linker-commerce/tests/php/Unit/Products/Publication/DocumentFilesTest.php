@@ -69,6 +69,36 @@ final class DocumentFilesTest extends TestCase {
 		self::assertNotSame( $before['blob_sha256'], $after['blob_sha256'] );
 	}
 
+	/**
+	 * A second assembly in one request reuses unchanged bytes, and a rewritten
+	 * file still hashes afresh: the reused key covers mtime, size and inode.
+	 */
+	public function test_unchanged_bytes_are_not_read_twice_in_one_request(): void {
+		$url = rtrim( home_url(), '/' ) . '/wp-content/uploads/2026/manual.pdf';
+
+		DocumentFiles::begin_read();
+		$first = DocumentFiles::resolve( $url );
+		DocumentFiles::end_read();
+		self::assertNotNull( $first );
+
+		DocumentFiles::begin_read();
+		$reused = DocumentFiles::resolve( $url );
+		DocumentFiles::end_read();
+		self::assertNotNull( $reused );
+		self::assertSame( $first['blob_sha256'], $reused['blob_sha256'] );
+
+		// Newest byte content must replace the reused version.
+		file_put_contents( $first['path'], "%PDF-1.4\ntampered\n%%EOF" );
+		clearstatcache( true, $first['path'] );
+		touch( $first['path'], time() + 5 );
+
+		DocumentFiles::begin_read();
+		$fresh = DocumentFiles::resolve( $url );
+		DocumentFiles::end_read();
+		self::assertNotNull( $fresh );
+		self::assertNotSame( $first['blob_sha256'], $fresh['blob_sha256'] );
+	}
+
 	/** The native gate precedes WordPress's existing-file bypass. */
 	public function test_original_url_gate_precedes_static_shortcut(): void {
 		$rules = "RewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteRule . /index.php [L]\n";
