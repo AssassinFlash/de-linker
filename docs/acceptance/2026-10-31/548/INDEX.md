@@ -152,3 +152,46 @@ genie        required=yes
 
 因此「Genie 与询盘的失败提示不同」不表示两套机制，只是同一个 proof 在两种界面上
 的呈现差异；根因一致：都需要真人交互产生 token。
+
+## 客户侧报告 PDF 下载：生产上无样本，未验证
+
+报告的 **API 内容**已逐行读回（英德各 13 行，见前文）。但**客户拿到的 PDF 文件**
+走的是另一条路径，本轮未能验证。
+
+### 机制
+
+`Planning/ReportDownload.php` 注册：
+
+```
+GET /wp-json/linker/v1/inquiries/{id}/planning-report/{handoff}?key=...
+```
+
+- `{handoff}` 是 32 位十六进制 id，存在订单元数据 `_linker_planning_projects` 里
+  （`Context::META`），由 `Context::stored()` 按 `valid_reference()` 过滤后返回。
+- 权限三重之一：`manage_woocommerce`、订单客户本人、或持订单 `order_key`。
+- 内容由 `linker_tools_planning_report_content` 过滤器供给，默认返回 503。
+
+### 生产实测
+
+扫描全部订单的 `Context::stored()`：
+
+```
+orders with report contexts: 0
+```
+
+**没有任何订单持有可下载的报告 handoff。** 因此该下载路径在生产上从未被真实使用过，
+本轮无法读回一个真实的客户 PDF。
+
+### 一处差点误判（记录下来避免重犯）
+
+我先查了 `_linker_planning_handoff`，发现 10 个询盘全无，一度准备据此写
+「客户报告从未交付」。但那实际是 `DraftTransfer::LINE_META`——**购物车行**上的
+方案草稿转移标记，与报告 handoff 是完全不同的东西。元数据键相似不等于语义相同。
+
+正确的键是 `_linker_planning_projects`；用它查出的结论才是上面那个。
+
+### 解除条件
+
+需要一个持有报告 handoff 的询盘。产生方式：客户在配置器里生成报告后
+把方案发成询盘，`Context` 才会写入 contexts。本轮已有的询盘都早于该能力，
+或未走这条路径。
