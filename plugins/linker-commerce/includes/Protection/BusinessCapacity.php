@@ -419,8 +419,7 @@ final class BusinessCapacity {
 				IntakeStore::save( $state );
 				return array();
 			},
-			1,
-			true
+			1
 		);
 	}
 

@@ -7,17 +7,15 @@ proof that its browser runtime exists.
 
 The existing `g563i` instance was reused and stopped after the checks.
 
-- Blocking the native `i18n.min.js?ver=...` request made the loader request
-  `/wp-includes/js/dist/i18n.min.js`; that fallback returned HTTP 200 and the
-  German Genie workspace rendered at 1440 and 390 with no horizontal overflow.
-- Blocking both the native and bare i18n URLs showed
-  `Genie konnte nicht geladen werden.` with `Erneut versuchen`.
-- After unblocking the bare URL and clicking Retry, the browser requested it,
-  received HTTP 200, removed the error, and rendered
-  `Womit möchten Sie beginnen?`.
-- Opening Genie beside the German planner left exactly one `i18n.min.js` script
-  in the document and added the Genie bundle. The stopped planner worker was
-  not used to claim a successful planning request.
+- EN and DE were each checked at 1440 and 390. With both native and bare i18n
+  blocked, each language showed its own error and Retry labels with no
+  horizontal overflow. After unblocking only the bare fallback and clicking
+  Retry, each rendered its own Genie welcome.
+- The live boot payload mapped every dependency URL. Opening Genie beside the
+  German planner retained the native `hooks.min.js?ver` and `i18n.min.js?ver`
+  requests and made no bare request for either. The Genie bundle loaded once.
+  The stopped planner worker was not used to claim a successful planning
+  request.
 
 ## CI concurrency failures found and fixed
 

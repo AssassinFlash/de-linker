@@ -72,9 +72,11 @@ final class IntakeStore {
 			return $work( self::$active );
 		}
 		$deadline = microtime( true ) + $wait_seconds;
+		$attempt  = 0;
 		do {
 			$result = new WP_Error( 'linker_intake_busy', __( 'The request status could not be confirmed. Your entries are still here. Please check before sending a new request.', 'linker-commerce' ) );
 			$retry  = false;
+			$wait   = 0 === $attempt ? $wait_seconds : (int) floor( $deadline - microtime( true ) );
 			Lock::run(
 				self::MUTEX,
 				static function () use ( $work, &$result, &$retry ): void {
@@ -112,7 +114,7 @@ final class IntakeStore {
 						self::clear_cache();
 					}
 				},
-				max( 0, min( 1, (int) ceil( $deadline - microtime( true ) ) ) )
+				max( 0, min( 1, $wait ) )
 			);
 			if ( ! $retry || ! $retry_row_lock ) {
 				return $result;
@@ -123,6 +125,7 @@ final class IntakeStore {
 			// Release the named mutex while the transaction owner reaches its
 			// final bind. Holding it here would invert the two lock owners.
 			usleep( 10000 );
+			++$attempt;
 		} while ( true );
 	}
 

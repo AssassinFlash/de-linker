@@ -1057,6 +1057,8 @@ JS,
 			'react-jsx-runtime' => array( 'ReactJSXRuntime' ),
 			'wp-dom-ready'      => array( 'wp', 'domReady' ),
 			'wp-element'        => array( 'wp', 'element' ),
+			'wp-escape-html'    => array( 'wp', 'escapeHtml' ),
+			'wp-hooks'          => array( 'wp', 'hooks' ),
 			'wp-i18n'           => array( 'wp', 'i18n' ),
 		);
 		$native  = array();

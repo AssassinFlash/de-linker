@@ -105,6 +105,8 @@ final class EntriesTest extends TestCase {
 		$this->assertContains( '/wp-includes/js/dist/vendor/react.min.js', $payload['deps'] );
 		$this->assertSame( array( 'wp', 'i18n' ), $payload['nativeDependencies']['/wp-includes/js/dist/i18n.min.js'] );
 		$this->assertSame( array( 'React' ), $payload['nativeDependencies']['/wp-includes/js/dist/vendor/react.min.js'] );
+		$this->assertSame( array( 'wp', 'escapeHtml' ), $payload['nativeDependencies']['/wp-includes/js/dist/escape-html.min.js'] );
+		$this->assertSame( array( 'wp', 'hooks' ), $payload['nativeDependencies']['/wp-includes/js/dist/hooks.min.js'] );
 		$this->assertConditionsMet();
 	}
 

@@ -66,11 +66,19 @@ final class FakeScripts {
 			),
 			'wp-element'         => array(
 				'src'  => '/wp-includes/js/dist/element.min.js',
+				'deps' => array( 'wp-escape-html' ),
+			),
+			'wp-escape-html'     => array(
+				'src'  => '/wp-includes/js/dist/escape-html.min.js',
+				'deps' => array(),
+			),
+			'wp-hooks'           => array(
+				'src'  => '/wp-includes/js/dist/hooks.min.js',
 				'deps' => array(),
 			),
 			'wp-i18n'            => array(
 				'src'  => '/wp-includes/js/dist/i18n.min.js',
-				'deps' => array(),
+				'deps' => array( 'wp-hooks' ),
 			),
 		);
 		if ( ! $this->registered || ! isset( $deps[ $handle ] ) ) {
