@@ -88,3 +88,32 @@ other-user code=linker_planner_saved_solution_unavailable status=404
 
 浏览器内以该账号登录后打开 `?saved_solution=8207` 的**界面**读回（恢复后进入新工作台、
 `Original inputs` 折叠区可下载 JSON）。本次验证的是数据与权限层，不是界面。
+
+### 界面读回：当前无法验证，缺一个登录凭据
+
+要验证「登录后打开 `?saved_solution=8207` 进入新工作台并看到 `Original inputs` 折叠区」，
+需要一个能登录 user 1 的浏览器会话。
+
+现状与判断：
+
+- 浏览器会话是访客，因此页面正确显示 "The saved inputs could not be loaded in this session."
+  （`SavedSolutionStart` 对 404 渲染该提示，只有 401/403 才触发 `recheck()`）。
+- 生产 `wp-content/mu-plugins/` **没有**一次性登录插件。`linker_local_login_url`
+  只存在于 `tools/local/mu/001-linker-local-login.php`，属本地实例工具。
+  生产没有它是**正确的**，我不会为了完成验收而给它装一个后门。
+
+界面层的静态证据（不能替代真实读回）：
+
+- `Workspace.tsx:249`：`savedSource !== null` 时挂载 `SavedSolutionStart`；
+- `SavedSolutionStart` 用 `sources/saved-solution` 取数，并据状态码决定提示与否；
+- `SavedSolutionReference` 只在 `authority === "historical_user_input"` 时渲染，
+  且只提供原始输入 JSON 下载，不含旧价格与产品事实。
+
+数据与权限层已验证（见上一节）；**渲染与交互未在真实浏览器中读回**。
+
+解除方式（二者其一，由业主决定）：
+
+1. 提供 user 1（`857558227@qq.com`）的登录凭据；
+2. 授权在生产临时启用一次性登录插件、完成读回后立即移除。
+
+在满足其一之前，此项保持未验证。
