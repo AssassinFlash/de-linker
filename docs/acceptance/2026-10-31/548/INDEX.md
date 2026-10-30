@@ -358,3 +358,48 @@ CMP 是 **CookieYes**（`cky-*`），统计是 **GA4 `G-N2TGDM3193`**（容器 `
 
 `/solution-draft/` 返回 404——但该路径从未存在过；Solution draft 的真实地址是
 `/cart/`（标题 `Solution draft | Linker`），前面已记录。
+
+## 历史：项目修订与计算记录可读
+
+目标完成标准点名「历史」。此前只有零散提及，现补上实测。
+
+### 项目修订历史
+
+项目 `181228648034…` 当前 revision 16，指定读取历史版本时：
+
+```
+current revision=16
+rev1 readable, sha=58023034feb9
+```
+
+`projects/read` 接受 `revision` 参数，早期版本的输入哈希与当前不同，
+说明每个 revision 保留独立的输入快照。
+
+### 计算历史（浏览器实测）
+
+Energy calculation → `Saved calculations`（URL 变为 `&energy_view=runs`），
+`Calculation history` 列出跨 revision 的记录：
+
+```
+Revision 12  Planning report        Report ready            10/30/26, 9:34 PM
+Revision 12  Planning report        Report ready            10/30/26, 9:27 PM
+Revision 12  Energy calculation     Calculation complete    10/30/26, 9:22 PM
+Revision 12  Equipment checks       Equipment check complete 10/30/26, 9:09 PM
+Revision 11  Energy calculation     …
+```
+
+选中的那条展开为报告预览，含 `Download PDF`、`Download bill of materials (CSV)`
+与 `Add selected products to solution draft`。
+
+### 一处看起来不一致，实际是设计
+
+界面语言是英文，历史列表也是英文（`Report ready`），但预览正文是德语
+（`Projektplanungsbericht`），且标注 `Report language: German`。
+
+核对 `PlanningReportResult.tsx:170-176`：正文语言由 `report.locale` 决定，
+并在与界面语言不同时显示该提示（`reportLanguageDiffers`）。选中的报告本身
+生成于德语环境，因此正文是德语——**这是正确行为**，不是语言串台。
+
+### 边界
+
+未验证：删除或重命名历史记录、超过一页时的分页、以及跨项目的记录隔离。
