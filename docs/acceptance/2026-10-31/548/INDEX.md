@@ -27,7 +27,7 @@
 | 引擎物料投影 | `status: documented`，字段与计划一致 | 同上 |
 | `project_materials` 消费 | 真实 feed 产 17 条带页码行 | 同上 |
 | 报告 BOM（德文，生产读回） | 13 行，德语标签与 `p.152–155` | `installation-facts-apply.md` 德文报告读回 |
-| 报告 BOM（英文，仅引擎层） | 同一模型产出，未逐行读回英文报告 | 同上 |
+| 报告 BOM（英文，生产读回） | 13 行，英文标签与 `p.153–155` | `installation-facts-apply.md` 英文报告读回 |
 | 设备检查 | `succeeded`，5 项检查 3 satisfied | 同上 |
 | 路由报告 | `succeeded`，含 `installation-routing` 与免责声明 | 同上 |
 | 已保存方案读取（作者） | 返回原始输入，不含旧价格 | `saved-solution-readback.md` |
