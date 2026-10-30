@@ -81,7 +81,15 @@ final class IntakeStore {
 					$previous = self::$snapshot;
 					$editing  = self::$editing;
 					try {
-						$raw   = self::read();
+						try {
+							$raw = self::read();
+						} catch ( \RuntimeException $error ) {
+							if ( self::ROW_LOCK_BUSY === $error->getCode() ) {
+								$retry = true;
+								return;
+							}
+							throw $error;
+						}
 						$state = null === $raw ? array(
 							'entries'        => array(),
 							'campaign_count' => 0,
@@ -93,12 +101,6 @@ final class IntakeStore {
 						self::$editing  = true;
 						self::$active   =& $state;
 						$result         = $work( $state );
-					} catch ( \RuntimeException $error ) {
-						if ( self::ROW_LOCK_BUSY === $error->getCode() ) {
-							$retry = true;
-							return;
-						}
-						$result = self::pending();
 					} catch ( \Throwable $error ) {
 						// This mutex wrapper owns no transaction. Native consumers roll
 						// back only their own transaction/savepoint before propagating.
