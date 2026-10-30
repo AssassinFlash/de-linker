@@ -145,13 +145,20 @@ VPS 上当时生效的引擎构建 `20261027T080240856652Z` 的 `feed.schema.jso
 
 `knowledge` 消费者随后仍处于 `preparing`（索引重建较慢），不影响 Equipment 的 `ready.engineering` 判定。
 
-## 未完成项（如实保留）
+## 未完成项（后续已澄清，见文末「最终状态」）
+
+> 本节写于当时。其中「Installation routing 是 0」后来查明是正确行为，
+> 「设备检查被拒绝」也已在后续定位并解除。原文保留作为过程记录，
+> 结论以文末「最终状态」为准。
 
 - **生产页面的 `Installation routing` 仍显示 0 设备 / 0 电缆**：因为项目 1946 从未选中过设备。上面的读回是引擎层，
   尚未在**生产 Web 上选中设备的项目**里做一次端到端点击验收。
 - SPD/STS 选型与数量、电缆长度、国家/DSO 规则、完整安装 BOS 仍缺，属 #548 未完成范围。
 
-## BOM 端到端：设备检查被 `product_evidence_changed` 拒绝（未解决）
+## BOM 端到端：设备检查被 `product_evidence_changed` 拒绝（后续已解除，见下文）
+
+> 本节记录的是当时的受阻状态。真实原因与解除过程见后面
+> 「`product_evidence_changed` 根因」一节。
 
 目标是让安装事实进入**真实项目的 BOM 与报告**，而不只是引擎函数层。
 
@@ -301,3 +308,60 @@ planner refused: version_unavailable (current Woo product data is unavailable)
 
 结论：该修复需在能同时生成两平台夹具的环境执行，或先把日志改为不进入
 `runtime_bundle` 的位置。**本轮不提交。**
+
+---
+
+## 最终状态（2026-10-31 收盘）
+
+### 生产
+
+| 项 | 值 |
+| --- | --- |
+| `knowledge` 消费者 | **ready** |
+| `engineering` 消费者 | **ready** |
+| 商品总数 | 534 |
+| 带 `_linker_installation_facts` | **9**（79 条） |
+| `source_revision` | `dc2b9fa7d994…` |
+| `preview --production` | `{"changes": 0}` |
+
+两个消费者均已 ready，此前 `engineering: failed` / `knowledge: preparing` 的窗口已结束。
+
+### 已交付
+
+1. **79 条安装事实进入生产**（9 个 GoodWe 商品），随修订化计划 `apply`，并由 `verify` 确认无待办变更。
+2. **`商品 → 工程 feed → compile_product → project_materials → 报告/CSV` 全链验证**，
+   用生产真实 feed 产出 17 条带页码引文的材料行（`p.152/153/154/155`），
+   三种 handling 齐全，未量化项 `qty=None`；德文 CSV 使用德语标签。
+3. **`runs/equipment` 端到端跑通**：`state=succeeded`，5 项检查 3 satisfied / 2 unresolved。
+
+### 已合并的修复
+
+| PR | 内容 |
+| --- | --- |
+| #794 | 引擎拒因码在网关原样透传；文档哈希请求内复用；计划重冻 |
+| #795 | 主线计划重冻（原计划 `preview` 直接拒绝） |
+
+`#794` 的拒因码修复是关键的一条：`Transport::object()` 原先把所有 409 压成
+`claim_conflict`，而引擎的 409 有四种含义；把 `product_evidence_changed`
+叫作 claim 冲突会告诉调用方「重试即可」，而它重试永远不会成功。
+
+### 未解决
+
+- **`Installation routing` 需要线缆方案，不是缺陷。**
+  `installation_requirements` 只来自兼容合同（`meter`/`backup`）；
+  `include_installation=true` 的报告另需 `installation.cable_runs`
+  （`report_sources.py:658`）。本项目没有该输入，因此该分支被正确拒绝。
+  **尚未**在带线缆方案的项目上读回路由报告。
+- **SPD/STS 选型与数量、电缆长度、国家/DSO 规则、完整安装 BOS** 仍缺，属 #548 范围。
+- **引擎侧拒因日志**：`domain_error` 不写日志，12 个 raise 共用一码。修它要改
+  `http_app.py`，会改变 `runtime_bundle` 哈希，必须同时重生成 darwin 与 linux 夹具，
+  而 linux 只能在 Linux 上生成。本机无法完成。
+
+### 本轮的方法教训
+
+`ProductEvidenceChanged` 的 12 个 raise 点共用一码且引擎丢弃 message，
+我据此连续做出 6 个错误推断（主机负载 → manifest 重建 → 旧 manifest →
+LiteSpeed 缓存 → 兼容合同 → 平台夹具）。真实原因是 `engineering` 消费者
+未 ready 期间 `prepared_view` 不包含 6506。
+
+正确顺序是**先复现、再读代码**，而不是从错误码反推。
