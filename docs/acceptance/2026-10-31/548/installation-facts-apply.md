@@ -365,3 +365,58 @@ LiteSpeed 缓存 → 兼容合同 → 平台夹具）。真实原因是 `enginee
 未 ready 期间 `prepared_view` 不包含 6506。
 
 正确顺序是**先复现、再读代码**，而不是从错误码反推。
+
+---
+
+## 安装事实进入报告 BOM 的三个前提（生产实测）
+
+在同一个项目里同时验证「安装事实」与「线缆路由」，逐层隔离出三个必需条件：
+
+1. **项目须有 `equipment_selection`。** `project_materials` 的安装事实行来自
+   `source["equipment"]["selected_products"]`；只有 `geometry` + `installation` 的项目，
+   BOM 只会有线缆行。实测：项目 `f45fdd24…` 的 BOM 为 3 行，全部是线缆。
+2. **报告须传 `equipment_run_id`。** `report_sources` 把它写成 `"equipment": assessment`；
+   不传则 `assessment` 为 `None`，BOM 同样只有线缆。实测：同项目同设备检查，
+   不带 `include_installation` 时 `status=200`，带时才进入下面的第 3 条判断。
+3. **`installation.instances` 中每个商品的数量不得超过该商品在设备检查 BOM 中的数量。**
+   `report_sources.py:678-690`：
+
+```python
+counts[instance.product_id] = counts.get(instance.product_id, 0) + 1
+checked = {p["product_id"]: p.get("quantity") for p in assessment["provisional_bill_of_materials"]}
+if any(
+    type(checked.get(pid)) is not int or quantity > cast(int, checked[pid])
+    for pid, quantity in counts.items()
+):
+    raise ReportInputsChanged("installation instances exceed the selected equipment assessment scope")
+```
+
+这是正确的守卫：线缆方案声明 2 台逆变器而设备检查只核了 1 台时，
+声称报告涵盖 2 台就是冒称。
+
+### 由此暴露的能力缺口
+
+**多台逆变器的安装方案目前无法生成含安装事实的报告**，且不是配置问题：
+
+- `EquipmentSelection`（`equipment_inputs.py:16`）只有单个 `inverter_product_id`，
+  `parallel_stacks` 仅对电池生效；
+- `assess_equipment` 的 BOM 把逆变器数量写死为 1
+  （`equipment_assessment.py:240-243` 的 `"quantity": 1`）。
+
+因此 `installation.instances` 里出现第二台逆变器时，第 3 条必然拒绝，
+且没有可用的输入方式让设备检查认可 2 台。
+
+实测：项目 `0d7d990b…` / `9f978b15…`（2 个实例 + 3 条线缆 + 6506 选择 + 已完成的设备检查）
+在 `include_installation=true` 时稳定返回
+`422 report_inputs_changed`；同一项目去掉该选项则 `200` 并成功出报告。
+
+这是 **#548 未完成的范围**，需要设备检查模型支持多台并机后才能验证，
+不能通过削减实例数绕过——删除实例会破坏回路与路由对它的引用。
+
+### 已验证可用
+
+- 路由报告链路本身：项目 `f45fdd24…`（2 实例 + 3 线缆）报告 `succeeded`，
+  含 `installation-routing` 与 `bom` 两个章节；
+- `installation-routing` 带明确免责声明：未做线缆选型、连接器匹配、保护、接地、
+  安装与国家要求评估；
+- BOM 的线缆行标为 `Installation requirement · specification pending`，不冒称规格已定。
