@@ -123,6 +123,10 @@ def test_services_use_current_woo_projection(tmp_path: Path) -> None:
         ensure_ascii=False,
     ).encode()
     assert loaded.version == digest(SOURCE, feed.read_bytes(), canonical_contract)
+    document["compatibility_version"] = "different-generation"
+    feed.write_text(json.dumps(document))
+    with pytest.raises(ValueError, match="not one generation"):
+        Services(settings, SOURCE)
     document.pop("compatibility")
     feed.write_text(json.dumps(document))
     with pytest.raises(ValueError, match="current Woo compatibility projection"):

@@ -4,7 +4,7 @@
 	"baselines": {
 		"darwin-arm64": {
 			"fixture": "preparation-flow-darwin-arm64.json",
-			"canonical_sorted_json_sha256": "6f427871ab010e4d64ea16f8b9f2e68f2bc6b54a5c335045a6b45ad1ca9d7634",
+			"canonical_sorted_json_sha256": "68cfeab5f0688f9bcec6952eaaf97e32e6f3042b22d35ae0ff6b2c3e92b095c7",
 			"runtime": {
 				"python": "3.12.15",
 				"platform": "macOS-26.6.2-arm64-arm-64bit",
