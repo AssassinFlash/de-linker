@@ -75,6 +75,17 @@ class Conversations {
 	private const BROWSER_CLAIM_SECONDS = 5;
 
 	/**
+	 * How long to wait for a concurrent cold mint to publish its claim.
+	 *
+	 * The client aborts entry-context at five seconds. Waiting the same five
+	 * seconds for the lock makes lock contention finish exactly at that client
+	 * deadline, so a delayed winner is reported as a Genie load failure. After
+	 * this shorter wait, the existing read/add-option fallback still converges
+	 * both requests on one key.
+	 */
+	private const BROWSER_CLAIM_LOCK_SECONDS = 1;
+
+	/**
 	 * Title of a conversation that has not been named by its first message.
 	 */
 	public const UNTITLED = 'Genie';
@@ -877,7 +888,7 @@ class Conversations {
 		global $wpdb;
 		$name = $this->browser_claim_lock_name( $tab );
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- named lock, not table data.
-		$got = $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s, %d)', $name, self::BROWSER_CLAIM_SECONDS ) );
+		$got = $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s, %d)', $name, self::BROWSER_CLAIM_LOCK_SECONDS ) );
 		return '1' === (string) $got;
 	}
 
