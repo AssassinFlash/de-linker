@@ -1,6 +1,7 @@
 # Front-end build of plugins/linker-tools. build/ is committed together with
 # build/manifest.json, the SHA-256 of each source it was built from and of each
 # file it produced.
+# Throwaway selector acceptance: shared build control must select full validation.
 
 set shell := ["bash", "-euo", "pipefail", "-c"]
 set ignore-comments := true
