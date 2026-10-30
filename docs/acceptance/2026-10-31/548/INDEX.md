@@ -219,3 +219,35 @@ orders with report contexts: 0
 
 解除条件：客户在配置器里生成报告后把方案发成询盘，`Context::capture()` 才会写入
 contexts；届时可用该询盘读回一次真实 PDF。
+
+## 3D 视图：生产实测渲染成功
+
+地图 #548 的一条旧记录写作「Chrome 3D context availability remains unproven」。
+现已在生产环境实际验证。
+
+### 实测
+
+项目 `88e747eb…`（`Production Roof Acceptance 1946`，revision 12，24 块组件）：
+
+1. 打开 Roof design 工作区（`#lp-design`）；
+2. 视图切换 `Plan / Map / 3D` 中点击 **3D**；
+3. 视口渲染出**带透视的屋顶平面**（梯形几何），3D 按钮进入激活态；
+4. 页面无报错，未出现降级提示。
+
+代码侧对应实现：`apps/planner/src/components/design/SceneViewport.tsx`
+（Three.js / React Three Fiber），并在 `webglcontextlost` 时监听恢复，
+失败时渲染「3D rendering is unavailable. The design remains available in the plan
+view and numeric properties.」——**降级路径也有文案出口**，不会白屏。
+
+### 边界（不要过度解读）
+
+这次验证的是**渲染可用**，不是：
+
+- 3D 视图的交互完整性（旋转、缩放、选中已在 Plan 与 Map 下验证，3D 下未逐一操作）；
+- 像素级视觉验收（工具页不受像素门约束，但也没有做 1440/390 × EN/DE 全矩阵）；
+- 在不同 GPU / 浏览器下的兼容性——只在当前环境验证。
+
+### 结论
+
+「3D 不可用」这条旧记录**可以关闭**。地图上应改为：3D 渲染在生产可用，
+失败时的降级提示存在；交互与跨环境兼容性未做全矩阵。
