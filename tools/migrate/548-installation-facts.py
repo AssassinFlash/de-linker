@@ -259,7 +259,9 @@ def _refresh(site: Any, write: bool) -> int:
         if not isinstance(revision, str) or HEX.fullmatch(revision) is None:
             raise MigrationError(f"Refresh returned no revision for {key}.")
         if entry["product_revision"] != revision:
-            changes.append(f"{key} product {entry['product_revision'][:12]} -> {revision[:12]}")
+            changes.append(
+                f"{key} product {entry['product_revision'][:12]} -> {revision[:12]}"
+            )
             substitutions[entry["product_revision"]] = revision
             entry["product_revision"] = revision
         documents = _json_object(current.get("documents"), f"Refresh documents {key}")
@@ -276,9 +278,13 @@ def _refresh(site: Any, write: bool) -> int:
                 )
             changed = document.get("document_revision")
             if not isinstance(changed, str) or HEX.fullmatch(changed) is None:
-                raise MigrationError(f"Refresh returned no document revision for {key}.")
+                raise MigrationError(
+                    f"Refresh returned no document revision for {key}."
+                )
             if source["document_revision"] != changed:
-                changes.append(f"{key} document {source['document_revision'][:12]} -> {changed[:12]}")
+                changes.append(
+                    f"{key} document {source['document_revision'][:12]} -> {changed[:12]}"
+                )
                 substitutions[source["document_revision"]] = changed
                 source["document_revision"] = changed
     for change in changes:
