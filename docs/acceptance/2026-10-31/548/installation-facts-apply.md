@@ -379,7 +379,7 @@ LiteSpeed 缓存 → 兼容合同 → 平台夹具）。真实原因是 `enginee
    不传则 `assessment` 为 `None`，BOM 同样只有线缆。实测：同项目同设备检查，
    不带 `include_installation` 时 `status=200`，带时才进入下面的第 3 条判断。
 3. **`installation.instances` 中每个商品的数量不得超过该商品在设备检查 BOM 中的数量。**
-   `report_sources.py:678-690`：
+   `report_sources.py:684-695`：
 
 ```python
 counts[instance.product_id] = counts.get(instance.product_id, 0) + 1

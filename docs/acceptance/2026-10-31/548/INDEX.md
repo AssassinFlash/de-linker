@@ -46,7 +46,7 @@
 | --- | --- | --- |
 | 界面读回 `?saved_solution=8207` | 一个能登录 user 1 的浏览器会话 | 提供凭据，或授权临时启用一次性登录后移除 |
 | 多台逆变器的安装方案出报告 | 模型不支持：`EquipmentSelection` 只有单个 `inverter_product_id`，BOM 写死 `quantity: 1` | 设备检查支持多台并机（属 #548 未完成范围，非本轮可修） |
-| Turnstile 后的真实询盘与 Genie | 生产验证拦截 | 外部条件；未尝试绕过 |
+| 真实询盘与 Genie 提交 | 保护**正常工作**；自动化客户端不触发交互，拿不到 token | 人工在浏览器中打开询盘页或 Genie，聚焦表单产生 token 后提交。见下方「Turnstile 的准确状态」 |
 
 ## 已合并的修复
 
@@ -68,3 +68,87 @@ LiteSpeed 缓存 → 兼容合同 → 平台夹具）。正确顺序是**先复�
 
 另需注意：`sources/saved-solution` 是**网关层路径**（`Gateway.php:302`），
 经 `Transport` 直连引擎会得到 `not_found`，看起来像功能坏了，实际不是。
+
+## Turnstile 的准确状态（更正早前的描述）
+
+早前记录写作「Turnstile 拦截询盘」，这个说法**不准确**。实测后的事实：
+
+| 项 | 实测值 |
+| --- | --- |
+| `Configuration::active_mode()` | `enforce` |
+| `ready()` / `configured()` | `true` / `true` |
+| `test_keys` | `false`（真实密钥，非测试密钥） |
+| `/proforma-request/` 页面 | `200`，**页面内没有 Turnstile 脚本** |
+| 验证发生的位置 | 提交时，服务端调 `Protection/Turnstile.php` 的 siteverify |
+
+也就是说：
+
+- **页面不被拦截**。询盘页正常渲染。
+- **保护在提交时生效**，且配置正确、使用真实密钥。
+- 我的自动化验收拿不到有效客户端 token，因此**提交被正确拒绝**。
+
+这属于「保护按设计工作，自动化客户端不被允许」，不是功能缺陷，也不是「外部条件导致功能未完成」。
+
+真实询盘与 Genie 提交需要**人工在浏览器中完成**——这正是该保护的用途。用自动化绕过它去换取验收通过，是错误的做法，本线没有这样做。
+
+### 一处自我更正
+
+排查过程中我 grep 到两个 `pow`，一度认为存在 proof-of-work 机制。实际是
+`/product-category/accessories/backup-power/` 里的子串，属误匹配，已推翻。
+
+### 完整机制（从 `protection.js` 与生产页面读出）
+
+我早先 grep「`/proforma-request/` 页面里没有 Turnstile 脚本」，这句本身没错，
+但据此得出的「被拦截」结论是错的。真实设计是**交互触发、异步加载**：
+
+1. 页面加载时**不**注入 `challenges.cloudflare.com/turnstile/v0/api.js`；
+2. 用户第一次 `focusin` 或 `pointerdown` 表单时，`warm()` 才异步加载脚本并渲染 widget；
+3. 提交时走两步：服务端 `POST /wp-json/linker/v1/protection/prepare` 换取 sitekey，
+   客户端取得 token，再 `POST …/verify` 换取有时效的 proof；
+4. `linker_proof` 隐藏字段由此填充，服务端再调 Cloudflare siteverify。
+
+生产实测确认这套链路已注入：
+
+```
+linkerPublicProtectionConfig = {
+  "api": "https://de-linker.com/wp-json/linker/v1/protection",
+  "nonce": "754057849d",
+  "mode": "enforce",
+  "businessVerification": "required",
+  "language": "en"
+}
+```
+
+`protection.js` 在页面中出现 3 次（不同区块各挂一次）。
+
+因此：**自动化客户端不触发交互、拿不到 token，提交被正确拒绝。**
+这不是缺陷，也不需要「修复」。人工在浏览器中打开询盘页、聚焦表单，widget 会正常出现。
+
+### 受保护动作清单与两种挂载方式
+
+服务端 `Configuration::verification_required()` 对以下动作全部返回 `true`：
+
+```
+inquiry      required=yes
+contact      required=yes
+draft_write  required=yes
+genie        required=yes
+```
+
+`Protection/Actions.php` 另列 `genie_contact`、`genie_inquiry`；
+`Protection/BusinessPolicy.php` 把 `contact`、`inquiry`、`genie_contact`、
+`genie_inquiry`、`conversation_mail` 归为业务验证类。
+
+**两种挂载方式，同一套 proof 机制：**
+
+| 入口 | 取 proof 的方式 |
+| --- | --- |
+| 询盘、联系、草稿写 | `FormFields.php:33` 渲染 `linker_proof` 隐藏字段，`protection.js` 提交前填充 |
+| Genie | React 组件调 `window.linkerPublicProtection.proof('genie', widget)`，不走表单字段 |
+
+实测：`/genie/` 与 `/de/genie/` 均注入 `linkerPublicProtectionConfig`（`mode: enforce`），
+但页面中**没有** `data-linker-protected-action` 属性——这是 React 挂载方式的正常表现，
+不是保护缺失。
+
+因此「Genie 与询盘的失败提示不同」不表示两套机制，只是同一个 proof 在两种界面上
+的呈现差异；根因一致：都需要真人交互产生 token。
