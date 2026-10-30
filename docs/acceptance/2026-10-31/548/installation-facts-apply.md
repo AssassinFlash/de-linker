@@ -460,3 +460,29 @@ certificate-device-open-checks Offene Prüfungen zu Unterlagen und Projekt
    报告如实留空，没有把「厂商建议」写成「已定数量」。
 
 至此安装事实的生产链路在**英德两种语种**都有真实报告内容为证。
+## 英文报告读回（补齐英德对照）
+
+上一节读回了德文报告。同一项目、同一设备检查（`85500163…`）以 `locale=en`
+生成的 `run 60c3aa6d…`，`state=succeeded`，`Provisional bill of materials`
+同为 **13 行**：
+
+```
+1 pc | GoodWe GW75K-ET-G10        | DLK-GOODWE-GW75KETG10        | Selected equipment
+—    | AC conductor               | p. 155 · Inverter AC Cable … | Customer supplies after project-sp…
+—    | Protective earth conductor | p. 153 · Inverter and STS …  | Customer supplies after project-sp…
+—    | Battery DC conductor       | p. 154 · Battery DC Cable …  | Site engineering assessment requir…
+```
+
+英德对照所见：
+
+| 行 | 英文 | 德文 |
+| --- | --- | --- |
+| 同一条事实 | `AC conductor` | `AC-Leiter` |
+| 同一条事实 | `Protective earth conductor` | `Schutzleiter` |
+| 同一条事实 | `Battery DC conductor` | `Batterie-DC-Leiter` |
+| 供应范围 | `Customer supplies after project-sp…` | `Kundenseitige Bereitstellung nac…` |
+
+页码在两份报告中完全一致（`p.153–155`），数量列同为 `—`。
+
+结论：安装事实的生产链路在**英德两种语种**下都有逐行读回的报告内容为证，
+标签分别取自 `label.en` / `label.de`，非翻译层产出。
