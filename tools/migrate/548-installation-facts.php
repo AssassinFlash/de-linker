@@ -11,7 +11,7 @@ try {
 	( static function ( string $payload ): void {
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- JSON transport from the companion CLI, never a runtime source.
 		$request = json_decode( base64_decode( $payload ), true, 512, JSON_THROW_ON_ERROR );
-		if ( ! is_array( $request ) || ! in_array( $request['action'] ?? null, array( 'preview', 'apply', 'rollback', 'verify' ), true ) ) {
+		if ( ! is_array( $request ) || ! in_array( $request['action'] ?? null, array( 'preview', 'apply', 'rollback', 'verify', 'refresh' ), true ) ) {
 			throw new RuntimeException( 'Unknown installation-facts action.' );
 		}
 
@@ -111,7 +111,54 @@ try {
 		};
 
 		$action = $request['action'];
-		if ( 'preview' === $action ) {
+		if ( 'refresh' === $action ) {
+			// Read-only: report what the current publication would pin, so the
+			// plan can be re-frozen with the same guard the preview applies.
+			$plan = $request['plan'] ?? null;
+			if ( ! is_array( $plan ) || 1 !== ( $plan['schema_version'] ?? null ) || ! is_array( $plan['products'] ?? null ) ) {
+				throw new RuntimeException( 'Unsupported installation-facts plan.' );
+			}
+			$pinned = array();
+			foreach ( $plan['products'] as $id => $entry ) {
+				$id = (int) $id;
+				if ( $id < 1 || ! is_array( $entry ) || ! is_string( $entry['model'] ?? null ) ) {
+					throw new RuntimeException( 'Each planned product needs its model.' );
+				}
+				if ( \Linker\Commerce\Products\Publication::canonical_id( $id ) !== $id || ! \Linker\Commerce\Products\Publication::is_published( $id ) ) {
+					throw new RuntimeException( 'Only current canonical published Woo products may be refreshed.' );
+				}
+				$product = wc_get_product( $id );
+				if ( ! $product instanceof WC_Product || $product->get_attribute( 'pa_model' ) !== $entry['model'] ) {
+					throw new RuntimeException( esc_html( "Model identity changed for {$id}." ) );
+				}
+				$rows = array_column( $manifest['products'], null, 'product_id' );
+				$row  = $rows[ $id ] ?? null;
+				if ( ! is_array( $row ) ) {
+					throw new RuntimeException( esc_html( "Current publication is missing {$id}." ) );
+				}
+				$documents = array();
+				foreach ( $manifest['documents'] as $document ) {
+					if ( in_array( $id, $document['product_ids'], true ) ) {
+						$documents[ $document['document_id'] ] = array(
+							'document_revision' => $document['document_revision'],
+							'blob_sha256'       => $document['blob_sha256'],
+						);
+					}
+				}
+				$pinned[ $id ] = array(
+					'product_revision' => $row['product_revision'],
+					'documents'        => $documents,
+				);
+			}
+			$result = array(
+				'schema_version'   => 1,
+				'site'             => $site,
+				'source_revision'  => $manifest['source_revision'],
+				'products'         => $pinned,
+			);
+			echo '@@548-installation-facts@@' . wp_json_encode( $result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) . "\n";
+			return;
+		} elseif ( 'preview' === $action ) {
 			$plan = $request['plan'] ?? null;
 			if ( ! is_array( $plan ) || 1 !== ( $plan['schema_version'] ?? null ) || ! is_array( $plan['products'] ?? null ) ) {
 				throw new RuntimeException( 'Unsupported installation-facts plan.' );
