@@ -143,7 +143,7 @@ def build_request(
     receipt: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build exactly one of the two transport shapes sent to the PHP side."""
-    if action == "preview" and plan is not None and receipt is None:
+    if action in {"preview", "refresh"} and plan is not None and receipt is None:
         return {"action": action, "plan": plan}
     if (
         action in {"apply", "rollback", "verify"}
@@ -209,8 +209,15 @@ def _parser() -> argparse.ArgumentParser:
     target = parser.add_mutually_exclusive_group(required=True)
     target.add_argument("--instance")
     target.add_argument("--production", action="store_true")
-    parser.add_argument("action", choices=("preview", "apply", "rollback", "verify"))
-    parser.add_argument("--receipt", type=Path, required=True)
+    parser.add_argument(
+        "action", choices=("preview", "apply", "rollback", "verify", "refresh")
+    )
+    parser.add_argument("--receipt", type=Path)
+    parser.add_argument(
+        "--write",
+        action="store_true",
+        help="Refresh rewrites the reviewed plan; without it the diff is printed.",
+    )
     return parser
 
 
@@ -219,11 +226,99 @@ def _fail(parser: argparse.ArgumentParser, message: str) -> NoReturn:
     raise AssertionError("argparse.error always exits")
 
 
+def _refresh(site: Any, write: bool) -> int:
+    """Re-pin the reviewed plan to the current publication, changing only revisions.
+
+    The preview already refuses a stale plan, so a plan cannot silently rot into
+    a wrong one. What was missing is the sanctioned way to make it current
+    again: without it every publication edit means hand-editing revisions and
+    hand-editing the frozen-plan test, which is how the plan was put on main
+    stale in the first place. Evidence never moves here: a source whose bytes
+    differ is refused, not rewritten.
+    """
+    plan = load_plan(PLAN)
+    code, error, result = invoke(site, build_request("refresh", plan=plan))
+    if result is None:
+        print(error, file=sys.stderr)
+        return code or 1
+    if code != 0:
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        print(error, file=sys.stderr)
+        return code
+    pinned = _json_object(result.get("products"), "Refresh products")
+    if set(pinned) != set(plan["products"]):
+        raise MigrationError(
+            "Refresh returned a different product set than the plan: "
+            f"{sorted(set(pinned) ^ set(plan['products']))}."
+        )
+    changes: list[str] = []
+    substitutions: dict[str, str] = {}
+    for key, entry in plan["products"].items():
+        current = _json_object(pinned.get(key), f"Refresh product {key}")
+        revision = current.get("product_revision")
+        if not isinstance(revision, str) or HEX.fullmatch(revision) is None:
+            raise MigrationError(f"Refresh returned no revision for {key}.")
+        if entry["product_revision"] != revision:
+            changes.append(
+                f"{key} product {entry['product_revision'][:12]} -> {revision[:12]}"
+            )
+            substitutions[entry["product_revision"]] = revision
+            entry["product_revision"] = revision
+        documents = _json_object(current.get("documents"), f"Refresh documents {key}")
+        for item in entry["items"]:
+            source = _json_object(item.get("source"), f"Plan product {key} source")
+            document = _json_object(
+                documents.get(str(source.get("document_id"))),
+                f"Refresh source {source.get('document_id')}",
+            )
+            if document.get("blob_sha256") != source.get("blob_sha256"):
+                raise MigrationError(
+                    f"Source bytes changed for {key}/{source.get('document_id')}; "
+                    "review the page and quote before refreshing."
+                )
+            changed = document.get("document_revision")
+            if not isinstance(changed, str) or HEX.fullmatch(changed) is None:
+                raise MigrationError(
+                    f"Refresh returned no document revision for {key}."
+                )
+            if source["document_revision"] != changed:
+                changes.append(
+                    f"{key} document {source['document_revision'][:12]} -> {changed[:12]}"
+                )
+                substitutions[source["document_revision"]] = changed
+                source["document_revision"] = changed
+    for change in changes:
+        print(change, file=sys.stderr)
+    if not changes:
+        print(json.dumps({"action": "refresh", "changes": 0, "written": False}))
+        return 0
+    if not write:
+        print(
+            json.dumps(
+                {"action": "refresh", "changes": len(changes), "written": False},
+                ensure_ascii=False,
+            )
+        )
+        return 0
+    # Substitute in place: a full re-serialization would reformat every line and
+    # bury the nine values this actually changed.
+    text = PLAN.read_text()
+    for old, new in substitutions.items():
+        text = text.replace(old, new)
+    PLAN.write_text(text)
+    print(json.dumps({"action": "refresh", "changes": len(changes), "written": True}))
+    return 0
+
+
 def main() -> int:
     parser = _parser()
     args = parser.parse_args()
     site = remote_target() if args.production else local_target(args.instance)
     try:
+        if args.action == "refresh":
+            return _refresh(site, args.write)
+        if not isinstance(args.receipt, Path):
+            _fail(parser, "This action needs --receipt.")
         if args.action == "preview":
             if args.receipt.exists() or args.receipt.is_symlink():
                 _fail(
