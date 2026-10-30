@@ -424,8 +424,28 @@ if any(
 所以多台是**支持**的，只是必须通过 `equipment_plant` 输入，而不是 `equipment_selection`。
 上面那两次 422 是**用错了输入路径**的结果，不是模型能力缺口。
 
-**仍未验证**：在 `equipment_plant` 项目上跑通「2 台逆变器 + 线缆 + 安装事实」的报告。
-这需要构造 plant 输入，本轮未做。
+**已实测（2026-10-31 晚）**：在 `equipment_plant` 项目上跑通了「2 台逆变器 + 安装事实」的报告。
+
+构造：项目 `3ba88f79…`，`units` 为两台 6506，`parallel_groups` 为空，`equipment_plant_setup`
+用 `units[].inputs.equipment_selection` 形状（与 `equipment_plant.units[].selection` 不同，
+必须分开构造，否则 `equipment_plant_requires_preparation`）。
+
+设备检查 `466e5d8e…`：`state=succeeded`，BOM `GW75K-ET-G10 qty=2 basis=selected_converter`
+——数量确实累加，不是写死 1。
+
+报告 `3f7b6cc8…`（不带线缆方案）：`succeeded`，BOM **13 行**：
+
+```
+2 pc | GoodWe GW75K-ET-G10 | DLK-GOODWE-GW75KETG10 | Selected equipment
+—    | AC conductor        | p. 155 · … | Customer supplies after project-specific check
+—    | Protective earth    | p. 153 · … | Customer supplies after project-specific check
+```
+
+即**多台逆变器与安装事实可以在同一份报告里共存**。
+
+**仍未验证**：把线缆路由也并入同一份 plant 报告。项目 `03be31e7…`（2 台 plant + 3 条线缆）
+带 `include_installation=true` 时返回 `422 invalid_input`，而不带该选项时 `200` 成功。
+这个组合尚未定位，怀疑与线缆实例和 plant 单元的对应关系有关。
 
 ### 已验证可用
 
