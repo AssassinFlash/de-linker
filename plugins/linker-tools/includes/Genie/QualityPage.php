@@ -124,6 +124,34 @@ class QualityPage {
 			);
 		}
 		if ( $status['received'] > 0 ) {
+			if ( $status['delivery_reported'] ) {
+				echo '<p>' . esc_html( QualityStore::delivery_line( $status ) ) . '</p>';
+			}
+			if ( '' !== $status['delivery_error'] ) {
+				printf(
+					'<p>%s</p>',
+					esc_html(
+						sprintf(
+						/* translators: 1: last delivery error time, 2: delivery error. */
+							__( 'Last delivery error (%1$s): %2$s', 'linker-tools' ),
+							$this->time( (int) strtotime( $status['delivery_error_at'] ) ),
+							$status['delivery_error']
+						)
+					)
+				);
+			}
+			if ( '' !== $status['delivery_retry_at'] ) {
+				printf(
+					'<p>%s</p>',
+					esc_html(
+						sprintf(
+						/* translators: %s: scheduled delivery retry time. */
+							__( 'Next delivery attempt: %s.', 'linker-tools' ),
+							$this->time( (int) strtotime( $status['delivery_retry_at'] ) )
+						)
+					)
+				);
+			}
 			printf(
 				'<p>%s</p>',
 				esc_html(

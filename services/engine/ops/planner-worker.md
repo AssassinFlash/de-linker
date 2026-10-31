@@ -57,6 +57,92 @@ for retained releases sharing a store. Rollback likewise uses the previous
 executable and matching configuration after a successful drain; never rewrite
 frozen request or result bytes to make a version appear compatible.
 
+## Bounded routine maintenance
+
+`planner_maintenance.py` is a Mac one-shot caller of these same contracts.
+`install_planner_maintenance.py` renders its launchd plist by default; installation
+is a separate reviewed deployment using `--install`. No additional VPS service or
+collector exists. The existing knowledge-publication schedule remains independent.
+
+The default operational window is **02:00–03:00 UTC**, chosen as a bounded
+European overnight maintenance period, rather than a measured capacity claim.
+The native launchd job wakes hourly, but outside the window it performs only a
+local time check. There is at most one real attempt per UTC day, including busy
+or failed attempts; it does not retry within that day or use `KeepAlive`.
+The hour/window and 600-second work budget are explicit installer options.
+The caller reserves additional bounded time from the selected release's existing
+start/stop/drain budgets for paired recovery and cleanup. A second work alarm
+must not interrupt the native operator's `finally` recovery.
+
+Before any backup or service action the caller reads the selected namespace,
+actual paired readiness, queue state and complete native CAS plan. Busy,
+closed-admission and zero-garbage results do not create a recovery point or stop
+services. An unavailable source/registry/recovery or network failure remains a
+diagnosable outcome. The existing registry's `source.host`/`source.root` must
+match; a directory name alone cannot declare a backup's origin.
+
+When work is necessary, reuse the latest independently verified archive's
+immutable CAS bytes. A fresh SQLite backup-to-memory and missing CAS bytes travel
+under the source's shared CAS lock until the Mac completes native verification,
+atomic publish and acknowledgement. An identical complete archive is reused.
+There is at most one incoming candidate; a lost publish reply is reconciled
+against that verified candidate and the registry before another copy is made.
+The owner is persisted for this namespace before any snapshot/staging work;
+reuse it across utility-source upgrades rather than generating a daily owner.
+Managed archives keep N=3, with explicit database baselines and current recovery
+bindings protected. Unknown files and peer evidence are not retirement targets.
+Original archives are never edited, and no extra full audit copy is created.
+
+One owner-bound temporary remote root contains independent single-link DB and
+manifest files plus immutable source CAS hardlinks. The selected native
+`retention SPEC --apply --when-idle --recovery PATH` owns `operator.lock`, rechecks
+idle/zero/independent coverage before closing admission, stops and verifies both
+writers, recomputes the strict full closure offline, and restores the pair in
+`finally`. Removing the temporary root after reliable recovery releases the
+remaining hardlinks; only then can physical space be reported. An ambiguous
+network outcome is not permission to replay deletion. The next invocation first
+resolves the same single owned root against a verified local archive.
+
+Safe events use the existing system syslog with prefix
+`linker-planner-maintenance`; stdout is only a foreground convenience. Operators
+can read the Mac unified log using that exact prefix. One private
+`maintenance-<owner>.json` in the archive root holds the last local check,
+last real maintenance result and most recent failure; hourly outside-window and
+zero-work checks do not erase the failure. It has no customer data, credentials,
+candidate lists, event-history array or user notification. The singleton lock
+inode stays with the registry; temporary files and SSH process groups do not.
+
+### Stable Mac deployment inputs
+
+Do not install a plist pointing into a disposable development worktree or keep
+its large development environment for this utility. Prepare a small immutable
+source at
+`~/de-linker-ops/planner-maintenance/releases/<merged-commit>/`, retaining only
+current and previous utility sources. It needs engine `src/`, `schemas/`,
+`pyproject.toml`, `uv.lock` and the three maintenance/release Python files in
+`ops/`; exclude tests, node_modules, vendor, caches and a copied venv. The original
+engine `RuntimeSnapshot` does not include these operator files, so this ops-only
+change does not require relabelling numerical preparation fixtures.
+
+Reuse the already retained shared interpreter
+`~/de-linker-ops/knowledge-worker/releases/1418dc26e14c/.venv/bin/python`
+only for dependencies. Its current Pydantic 2.14.0, jsonschema 4.26.0 and Pillow
+12.3.0 successfully import this archive/verifier with an explicit engine `src`
+path; no environment was created for that check. Deployment must repeat the
+actual import from the newly prepared stable utility source before rendering or
+installing its plist. The renderer accepts explicit interpreter/runner paths and
+sets `PYTHONPATH` to the stable utility `src`, so a shared editable package cannot
+select a development checkout. Retain this shared interpreter while either
+deployed consumer depends on it; it is not a third utility-source release.
+
+Rendering the plist changes no scheduler. Inspect the exact source, interpreter,
+owner, archive root and UTC options before explicit installation. A failed or
+interrupted bootstrap is read back: only the exact newly installed argument list
+can be unloaded, and its label/process exit must be confirmed before restoring
+the prior disk plist. An unknown/foreign loaded definition is left untouched and
+reported as unconfirmed. Real scheduler installation, backup, GC and deployed
+log/readiness readback are separate rollout acceptance, not local-test claims.
+
 ## Preparation fixture exports
 
 Run the existing exporter from `services/engine` with that host's existing

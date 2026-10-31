@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import time
 from collections.abc import Callable
+from dataclasses import dataclass
 from typing import Any
 
 import httpx
@@ -19,6 +20,10 @@ from linker_genie.abilities import ABILITY_ATTEMPTS, ABILITY_BACKOFF
 
 ROUTE = "/wp-json/linker-ai/v1/genie/quality"
 HEADER = "X-Linker-Judge-Token"
+RECEIPT_PROTOCOL = "quality-delivery-v1"
+TERMINAL_REJECTIONS = frozenset(
+    {"invalid_record", "conversation_missing", "not_conversation"}
+)
 
 # Seconds per request: the ability client's default against the same host
 # (abilities.AbilityClient); a push is a few dozen small rows.
@@ -27,6 +32,42 @@ TIMEOUT = 20.0
 
 class PushError(RuntimeError):
     """The site did not take the verdicts; the message never carries the token."""
+
+
+@dataclass(frozen=True)
+class Receipt:
+    stored: list[int]
+    rejected: dict[int, str]
+
+
+def receipt(value: Any, submitted: set[int]) -> Receipt:
+    """Only correlated explicit receipts can change a verdict's delivery state."""
+    if not isinstance(value, dict) or not isinstance(value.get("stored"), list):
+        raise PushError("invalid_quality_receipt")
+    stored = value["stored"]
+    if any(type(turn_id) is not int or turn_id not in submitted for turn_id in stored):
+        raise PushError("uncorrelated_quality_receipt")
+    rejected: dict[int, str] = {}
+    if value.get("receipt_protocol") == RECEIPT_PROTOCOL:
+        rows = value.get("rejected")
+        if not isinstance(rows, list):
+            raise PushError("invalid_quality_receipt")
+        for row in rows:
+            if not isinstance(row, dict):
+                raise PushError("invalid_quality_receipt")
+            turn_id, reason = row.get("turn_id"), row.get("reason")
+            if (
+                type(turn_id) is not int
+                or turn_id not in submitted
+                or turn_id in stored
+                or turn_id in rejected
+            ):
+                raise PushError("uncorrelated_quality_receipt")
+            if not isinstance(reason, str):
+                raise PushError("invalid_quality_receipt")
+            if reason in TERMINAL_REJECTIONS or reason == "storage_unavailable":
+                rejected[turn_id] = reason
+    return Receipt(list(dict.fromkeys(stored)), rejected)
 
 
 class WordPress:
@@ -42,11 +83,13 @@ class WordPress:
         self._client = httpx.Client(timeout=TIMEOUT, transport=transport)
         self._sleep = sleep
 
-    def push(
-        self, judgments: list[dict[str, Any]], status: dict[str, Any]
-    ) -> list[int]:
+    def push(self, judgments: list[dict[str, Any]], status: dict[str, Any]) -> Receipt:
         """Send verdicts and the worker's status; return the turn ids the site stored."""
-        body = {"judgments": judgments, "status": status}
+        body = {
+            "judgments": judgments,
+            "status": status,
+            "receipt_protocol": RECEIPT_PROTOCOL,
+        }
         headers = {HEADER: self._token}
         failure = ""
         # The ability client's retry rule (same host, same tolerance): a 5xx
@@ -58,8 +101,12 @@ class WordPress:
                 failure = f"{type(error).__name__}: {error}"
             else:
                 if response.status_code == 200:
-                    stored = response.json().get("stored", [])
-                    return [int(turn_id) for turn_id in stored]
+                    try:
+                        return receipt(
+                            response.json(), {int(row["turn_id"]) for row in judgments}
+                        )
+                    except ValueError:
+                        raise PushError("invalid_quality_receipt") from None
                 failure = f"HTTP {response.status_code}: {response.text[:300]}"
                 if response.status_code < 500:
                     break

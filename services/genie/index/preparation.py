@@ -21,7 +21,13 @@ def recipe_revision(root: Path | None = None) -> str:
     root = root or Path(__file__).resolve().parents[1]
     paths = {
         *root.joinpath("index").rglob("*.py"),
-        *root.joinpath("src/linker_genie").rglob("*.py"),
+        # Quality judgments run in a separate worker and never participate in
+        # preparing or serving knowledge. Its delivery fixes must not rebuild it.
+        *(
+            path
+            for path in root.joinpath("src/linker_genie").rglob("*.py")
+            if not path.is_relative_to(root / "src/linker_genie/quality")
+        ),
         *root.joinpath("ops").rglob("*.py"),
         root / "pyproject.toml",
         root / "uv.lock",

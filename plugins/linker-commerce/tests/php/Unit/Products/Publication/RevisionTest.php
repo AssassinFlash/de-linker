@@ -42,6 +42,46 @@ final class RevisionTest extends TestCase {
 		parent::tearDown();
 	}
 
+	/** Reuse this fresh assembly's terms, keeping miss/error and revision semantics. */
+	public function test_primed_terms_preserve_manifest_without_repeating_object_queries(): void {
+		$names   = array(
+			'pa_model'    => array( 'Z model', 'A model' ),
+			'pa_brand'    => array(),
+			'product_cat' => new \WP_Error( 'invalid_taxonomy', 'Fixture unavailable taxonomy.' ),
+		);
+		$queries = 0;
+		WP_Mock::userFunction( 'get_object_taxonomies' )->andReturn( array_keys( $names ) );
+		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->times( 3 )->andReturn( true );
+		WP_Mock::userFunction( '_prime_post_caches' )->with( array( 12 ), true, true )->times( 3 );
+		WP_Mock::userFunction( 'get_object_term_cache' )->with( 12, 'pa_model' )->andReturn(
+			false,
+			array( (object) array( 'name' => 'Z model' ), (object) array( 'name' => 'A model' ) ),
+			array( (object) array( 'name' => 'Changed current model' ) )
+		);
+		WP_Mock::userFunction( 'get_object_term_cache' )->with( 12, 'pa_brand' )->andReturn( false, array(), array() );
+		WP_Mock::userFunction( 'get_object_term_cache' )->with( 12, 'product_cat' )->andReturn( false, $names['product_cat'], $names['product_cat'] );
+		foreach ( array_keys( $names ) as $taxonomy ) {
+			WP_Mock::userFunction( 'wp_get_object_terms' )->with( 12, $taxonomy, array( 'fields' => 'names' ) )->andReturnUsing(
+				static function () use ( &$names, &$queries, $taxonomy ): mixed {
+					++$queries;
+					return $names[ $taxonomy ];
+				}
+			);
+		}
+		$fallback = Publication::manifest();
+		$this->assertSame( 3, $queries );
+		$queries = 0;
+		$reused  = Publication::manifest();
+		$this->assertSame( 0, $queries );
+		$this->assertSame( $fallback, $reused );
+		$this->assertSame( 'A model, Z model', $reused['products'][0]['model'] );
+		$changed = Publication::manifest();
+		$this->assertSame( 0, $queries );
+		$this->assertNotSame( $reused['source_revision'], $changed['source_revision'] );
+		$this->assertNotSame( $reused['products'][0]['product_revision'], $changed['products'][0]['product_revision'] );
+		$this->assertSame( $reused['documents'], $changed['documents'] );
+	}
+
 	/** Only actual declarations enter product identity; recovery/empty fields do not. */
 	public function test_compatibility_claim_lifecycle_preserves_uninvolved_identity(): void {
 		$before = Publication::manifest();

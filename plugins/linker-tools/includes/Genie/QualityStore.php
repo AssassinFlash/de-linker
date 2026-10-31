@@ -109,28 +109,63 @@ class QualityStore {
 	 * @param array<string, mixed> $raw The record as the worker sent it.
 	 */
 	public function store( array $raw ): bool {
+		return 'stored' === $this->receipt( $raw );
+	}
+
+	/**
+	 * Confirm a write, or explain why this exact record cannot be delivered.
+	 *
+	 * @param array<string, mixed> $raw Original worker record.
+	 * @return string stored, invalid_record, conversation_missing, not_conversation or storage_unavailable.
+	 */
+	public function receipt( array $raw ): string {
+		global $wpdb;
 		$record       = self::sanitize( $raw );
 		$conversation = $record['conversation_id'];
-		if ( $record['turn_id'] < 1 || Conversations::POST_TYPE !== get_post_type( $conversation ) ) {
-			return false;
+		if ( $record['turn_id'] < 1 || $conversation < 1 ) {
+			return 'invalid_record';
 		}
+		$type = get_post_type( $conversation );
+		if ( false === $type ) {
+			// WP_Post also returns false after a failed native SELECT. Unknown
+			// reads must never become a permanent non-delivery receipt.
+			if ( '' !== ( $wpdb->last_error ?? null ) ) {
+				return 'storage_unavailable';
+			}
+			return 'conversation_missing';
+		}
+		if ( Conversations::POST_TYPE !== $type ) {
+			return 'not_conversation';
+		}
+		$replacing = false;
 		foreach ( $this->judgments( $conversation ) as $old ) {
 			if ( $old['turn_id'] === $record['turn_id'] ) {
-				delete_post_meta( $conversation, self::META, $old );
+				$replacing = true;
+				if ( $old !== $record ) {
+					// A failed update leaves the original verdict intact.
+					update_post_meta( $conversation, self::META, wp_slash( $record ), $old );
+				}
+				break;
 			}
 		}
-		add_post_meta( $conversation, self::META, $record );
+		if ( ! $replacing ) {
+			add_post_meta( $conversation, self::META, wp_slash( $record ) );
+		}
+		$rows = $this->judgments( $conversation );
+		if ( ! in_array( $record, $rows, true ) ) {
+			return 'storage_unavailable';
+		}
 
 		$flagged = 0;
 		$failed  = 0;
-		foreach ( $this->judgments( $conversation ) as $row ) {
+		foreach ( $rows as $row ) {
 			$flagged += $row['flagged'] ? 1 : 0;
 			$failed  += 'failed' === $row['status'] ? 1 : 0;
 		}
 		update_post_meta( $conversation, self::AT_META, time() );
 		update_post_meta( $conversation, self::FLAGGED_META, $flagged );
 		update_post_meta( $conversation, self::FAILED_META, $failed );
-		return true;
+		return 'stored';
 	}
 
 	/**
@@ -158,13 +193,14 @@ class QualityStore {
 	 */
 	public function store_status( array $status ): void {
 		$keep = array();
-		foreach ( array( 'at', 'judge', 'escalation', 'last_error', 'last_error_at' ) as $key ) {
+		foreach ( array( 'at', 'judge', 'escalation', 'last_error', 'last_error_at', 'delivery_error', 'delivery_error_at', 'delivery_retry_at' ) as $key ) {
 			$keep[ $key ] = isset( $status[ $key ] ) && is_scalar( $status[ $key ] ) ? self::text( (string) $status[ $key ], 500 ) : '';
 		}
-		foreach ( array( 'retrying', 'gave_up' ) as $key ) {
+		foreach ( array( 'retrying', 'gave_up', 'delivery_pending', 'delivery_deferred', 'delivery_rejected' ) as $key ) {
 			$keep[ $key ] = isset( $status[ $key ] ) && is_numeric( $status[ $key ] ) ? (int) $status[ $key ] : 0;
 		}
-		$keep['received'] = time();
+		$keep['delivery_reported'] = isset( $status['delivery_pending'], $status['delivery_deferred'], $status['delivery_rejected'] );
+		$keep['received']          = time();
 		update_option( self::STATUS_OPTION, $keep, false );
 	}
 
@@ -172,21 +208,43 @@ class QualityStore {
 	 * The worker's last report, with `stale` when it is older than STALE_AFTER
 	 * or there is none.
 	 *
-	 * @return array{received: int, stale: bool, judge: string, escalation: string, retrying: int, gave_up: int, last_error: string, last_error_at: string}
+	 * @return array{received: int, stale: bool, judge: string, escalation: string, retrying: int, gave_up: int, last_error: string, last_error_at: string, delivery_reported:bool, delivery_pending:int, delivery_deferred:int, delivery_rejected:int, delivery_error:string, delivery_error_at:string, delivery_retry_at:string}
 	 */
 	public function status(): array {
 		$stored   = get_option( self::STATUS_OPTION, array() );
 		$stored   = is_array( $stored ) ? $stored : array();
 		$received = isset( $stored['received'] ) ? (int) $stored['received'] : 0;
 		return array(
-			'received'      => $received,
-			'stale'         => $received < 1 || time() - $received > self::STALE_AFTER,
-			'judge'         => (string) ( $stored['judge'] ?? '' ),
-			'escalation'    => (string) ( $stored['escalation'] ?? '' ),
-			'retrying'      => (int) ( $stored['retrying'] ?? 0 ),
-			'gave_up'       => (int) ( $stored['gave_up'] ?? 0 ),
-			'last_error'    => (string) ( $stored['last_error'] ?? '' ),
-			'last_error_at' => (string) ( $stored['last_error_at'] ?? '' ),
+			'received'          => $received,
+			'stale'             => $received < 1 || time() - $received > self::STALE_AFTER,
+			'judge'             => (string) ( $stored['judge'] ?? '' ),
+			'escalation'        => (string) ( $stored['escalation'] ?? '' ),
+			'retrying'          => (int) ( $stored['retrying'] ?? 0 ),
+			'gave_up'           => (int) ( $stored['gave_up'] ?? 0 ),
+			'last_error'        => (string) ( $stored['last_error'] ?? '' ),
+			'last_error_at'     => (string) ( $stored['last_error_at'] ?? '' ),
+			'delivery_pending'  => (int) ( $stored['delivery_pending'] ?? 0 ),
+			'delivery_reported' => true === ( $stored['delivery_reported'] ?? false ),
+			'delivery_deferred' => (int) ( $stored['delivery_deferred'] ?? 0 ),
+			'delivery_rejected' => (int) ( $stored['delivery_rejected'] ?? 0 ),
+			'delivery_error'    => (string) ( $stored['delivery_error'] ?? '' ),
+			'delivery_error_at' => (string) ( $stored['delivery_error_at'] ?? '' ),
+			'delivery_retry_at' => (string) ( $stored['delivery_retry_at'] ?? '' ),
+		);
+	}
+
+	/**
+	 * One operational delivery summary shared by the admin and digest.
+	 *
+	 * @param array<string,mixed> $status Reported worker state.
+	 */
+	public static function delivery_line( array $status ): string {
+		return sprintf(
+			/* translators: 1: pending verdicts, 2: deferred verdicts, 3: verdicts the site definitively cannot accept. */
+			__( 'Verdict delivery: %1$d pending, %2$d deferred, %3$d undeliverable.', 'linker-tools' ),
+			(int) ( $status['delivery_pending'] ?? 0 ),
+			(int) ( $status['delivery_deferred'] ?? 0 ),
+			(int) ( $status['delivery_rejected'] ?? 0 )
 		);
 	}
 
@@ -248,6 +306,9 @@ class QualityStore {
 		);
 		if ( $status['stale'] ) {
 			$line .= ' ' . __( 'The quality check has stopped reporting.', 'linker-tools' );
+		}
+		if ( $status['delivery_reported'] && ( $status['delivery_pending'] > 0 || $status['delivery_rejected'] > 0 ) ) {
+			$line .= ' ' . self::delivery_line( $status );
 		}
 		return array_merge(
 			$counts,

@@ -817,6 +817,12 @@ def same_module_inputs(before, head, module):
         git("cat-file", "-e", before + "^{commit}")
     except subprocess.CalledProcessError:
         git("fetch", "--depth=1", "origin", before)
+    changes = diff_changes(before, head)
+    # A module fingerprint covers declared inputs, not an unknown new root or
+    # structural change. Classify the proof-to-head increment independently of
+    # the cumulative PR diff, which can remain full after an earlier workflow.
+    if changes and selected_modules(changes, before, head) is None:
+        return False
     return module_fingerprint(before, module) == module_fingerprint(head, module)
 
 
@@ -995,7 +1001,7 @@ def plan():
     )
     required_modules = modules_for_lanes(selected, changes, base, head)
     reused = {}
-    if mode == "scoped":
+    if mode in {"scoped", "full"}:
         try:
             reused = reusable_modules(required_modules, head)
         except (OSError, subprocess.SubprocessError, KeyError, ValueError):
@@ -1104,7 +1110,7 @@ def audit_gate(ledger, results, changes):
     if (
         not isinstance(reused, dict)
         or set(reused) - set(required)
-        or (reused and mode != "scoped")
+        or (reused and mode not in {"scoped", "full"})
     ):
         errors.append("invalid module reuse ledger")
         reused = {}

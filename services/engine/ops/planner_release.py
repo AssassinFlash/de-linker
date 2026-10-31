@@ -73,7 +73,11 @@ def env_text(values: dict[str, str]) -> str:
 
 
 def command(
-    arguments: list[str], *, env: dict[str, str] | None = None, timeout: float = 30
+    arguments: list[str],
+    *,
+    env: dict[str, str] | None = None,
+    timeout: float = 30,
+    body: str | None = None,
 ) -> str:
     # runuser forks the actual control/GC process. Killing only the launcher
     # on timeout or cancellation can leave deletion running as writers restart.
@@ -84,10 +88,11 @@ def command(
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
+        stdin=subprocess.PIPE if body is not None else None,
         start_new_session=True,
     ) as process:
         try:
-            stdout, _ = process.communicate(timeout=timeout)
+            stdout, _ = process.communicate(input=body, timeout=timeout)
             if process.returncode:
                 # A crashed launcher may have surviving descendants too.
                 raise RuntimeError(
@@ -690,6 +695,37 @@ class Release:
                 raise RuntimeError("running process imports a different release")
         return record
 
+    def recovery_covers(self, recovery: Path, candidates: list[str]) -> None:
+        """Reject unavailable recovery before closing admission; apply checks again."""
+        command(
+            [
+                "runuser",
+                "--preserve-environment",
+                "-u",
+                self.spec["user"],
+                "--",
+                str(self.path / ".venv/bin/python"),
+                "-c",
+                "import json,sys; from pathlib import Path; "
+                "from linker_engine.planning.retention import independent_snapshot; "
+                "p=json.load(sys.stdin); "
+                "m=independent_snapshot(Path(p['recovery']),Path(p['source'])); "
+                "assert set(p['candidates']).issubset(m['blobs']), 'recovery omits candidates'",
+            ],
+            env={
+                "PATH": "/usr/sbin:/usr/bin:/sbin:/bin",
+                "PYTHONDONTWRITEBYTECODE": "1",
+            },
+            body=json.dumps(
+                {
+                    "recovery": str(recovery.absolute()),
+                    "source": self.runtime["directory"],
+                    "candidates": candidates,
+                }
+            ),
+            timeout=self.spec["start_seconds"],
+        )
+
 
 @contextmanager
 def locked(root: Path) -> Iterator[None]:
@@ -798,6 +834,7 @@ def maintain(
     apply: bool = False,
     recovery: Path | None = None,
     snapshots: tuple[Path, ...] = (),
+    when_idle: bool = False,
 ) -> dict[str, Any]:
     """Read-only default; apply owns a stopped pair and always restores it."""
     arguments = ["retention"]
@@ -807,17 +844,29 @@ def maintain(
         arguments.extend(("--snapshot", str(snapshot.absolute())))
     if not apply:
         return release.operator(*arguments)
-    if recovery is None:
-        raise ValueError("apply requires an existing verified recovery archive")
     with locked(release.root):
         selected = json.loads((release.root / "selection.json").read_text())
         if selected["current"] != str(release.spec_file):
             raise RuntimeError("maintenance must use the selected release")
+        control = release.operator("control", "status")
+        if when_idle and (control["draining"] or control.get("pending", 0)):
+            return {"schema_version": 1, "mode": "skipped", "reason": "busy"}
+        # An apply request with nothing to remove must not restart a healthy pair.
+        # This plan is advisory; the stopped collector still recomputes everything.
+        plan = release.operator("retention", *arguments[1:])
+        if plan["candidate_count"] == 0 and plan["temporary_count"] == 0:
+            return {**plan, "mode": "noop"}
+        if recovery is None:
+            raise ValueError("apply requires an existing verified recovery archive")
+        release.recovery_covers(recovery, plan["candidate_sha256"])
         release.preflight()
         identity = release.probe()
         if not release.ready(identity):
             raise RuntimeError("paired service is not ready before maintenance")
-        draining = release.operator("control", "status")["draining"]
+        control = release.operator("control", "status")
+        if when_idle and (control["draining"] or control.get("pending", 0)):
+            return {"schema_version": 1, "mode": "skipped", "reason": "busy"}
+        draining = control["draining"]
         failure: BaseException | None = None
         try:
             release.stop()
@@ -868,6 +917,11 @@ def maintain(
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
+        "--when-idle",
+        action="store_true",
+        help="skip automatic maintenance if admission is closed or jobs are pending",
+    )
+    parser.add_argument(
         "operation",
         choices=("prepare", "activate", "status", "rollback", "stop", "retention"),
     )
@@ -911,6 +965,7 @@ def main() -> None:
             apply=args.apply,
             recovery=args.recovery,
             snapshots=tuple(args.snapshot),
+            when_idle=args.when_idle,
         )
     elif args.operation == "stop":
         with locked(release.root):

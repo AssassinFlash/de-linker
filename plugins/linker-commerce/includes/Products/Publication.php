@@ -593,7 +593,16 @@ final class Publication {
 		}
 		$terms = array();
 		foreach ( get_object_taxonomies( 'product' ) as $taxonomy ) {
-			$names = wp_get_object_terms( $id, $taxonomy, array( 'fields' => 'names' ) );
+			// This authority assembly already primed native relationships after its
+			// fresh runtime read. Reuse those terms without another term query.
+			$cached = get_object_term_cache( $id, $taxonomy );
+			if ( is_array( $cached ) ) {
+				$names = array_column( $cached, 'name' );
+			} elseif ( is_wp_error( $cached ) ) {
+				$names = $cached;
+			} else {
+				$names = wp_get_object_terms( $id, $taxonomy, array( 'fields' => 'names' ) );
+			}
 			if ( ! is_wp_error( $names ) ) {
 				sort( $names );
 				$terms[ $taxonomy ] = $names;

@@ -312,7 +312,7 @@ class ScopeTest(unittest.TestCase):
                 list(ci_scope.FULL_LANES),
             )
 
-    def run_plan(self, event, candidate, proven=True):
+    def run_plan(self, event, candidate, proven=True, reused=None):
         with TemporaryDirectory() as folder:
             output = Path(folder) / "output"
             output.write_text("")
@@ -336,7 +336,11 @@ class ScopeTest(unittest.TestCase):
                 patch.object(
                     ci_scope,
                     "reusable_modules",
-                    side_effect=ValueError("unavailable proof"),
+                    **(
+                        {"side_effect": ValueError("unavailable proof")}
+                        if reused is None
+                        else {"return_value": reused}
+                    ),
                 ),
                 patch(
                     "subprocess.run", return_value=subprocess.CompletedProcess([], 0)
@@ -371,6 +375,34 @@ class ScopeTest(unittest.TestCase):
         )
         self.assertIn("mode=full\n", output)
         checked.assert_not_called()
+
+    def test_full_candidate_keeps_all_required_modules_while_reusing_proven_success(
+        self,
+    ):
+        proof = {
+            "engine": {
+                "run": 10,
+                "attempt": 1,
+                "job": 20,
+                "commit": "c" * 40,
+                "inputs": "f" * 64,
+            }
+        }
+        output, _ = self.run_plan(
+            "pull_request", list(ci_scope.FULL_LANES), reused=proof
+        )
+        ledger = json.loads(
+            next(
+                line.removeprefix("ledger=")
+                for line in output.splitlines()
+                if line.startswith("ledger=")
+            )
+        )
+        self.assertEqual(ledger["mode"], "full")
+        self.assertEqual(ledger["modules"], list(ci_scope.FULL_MODULES))
+        self.assertEqual(ledger["reused"], proof)
+        self.assertNotIn("engine", ledger["lanes"])
+        self.assertEqual(self.audit(ledger, self.results(ledger["lanes"])), [])
 
     def test_document_push_keeps_its_non_runtime_scope(self):
         output, checked = self.run_plan("push", [], proven=False)
@@ -881,6 +913,79 @@ class ModuleReuseTest(unittest.TestCase):
             self.assertFalse(
                 ci_scope.validate_module_reuse(proof, ["engine", "genie"], "b" * 40)
             )
+
+    def test_full_candidate_increment_requires_known_complete_git_delta(self):
+        with TemporaryDirectory() as folder:
+            previous = Path.cwd()
+            os.chdir(folder)
+            self.addCleanup(os.chdir, previous)
+
+            def run(*args):
+                return subprocess.check_output(args, text=True).strip()
+
+            def commit(message):
+                run("git", "add", ".")
+                run("git", "commit", "-qm", message)
+                return run("git", "rev-parse", "HEAD")
+
+            run("git", "init", "-q")
+            run("git", "config", "user.email", "ci@example.invalid")
+            run("git", "config", "user.name", "CI fixture")
+            for name in ("services/engine/runtime.py", "services/genie/app.py"):
+                path = Path(name)
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("original")
+            base = commit("base")
+            workflow = Path(".github/workflows/cache-retirement.yml")
+            workflow.parent.mkdir(parents=True)
+            workflow.write_text("new workflow")
+            proof_commit = commit("full candidate with new workflow")
+            Path("services/genie/app.py").write_text("fixed")
+            head = commit("only known service fix")
+            self.assertIsNone(
+                ci_scope.selected_modules(ci_scope.diff_changes(base, head), base, head)
+            )
+            self.assertTrue(ci_scope.same_module_inputs(proof_commit, head, "engine"))
+            self.assertFalse(ci_scope.same_module_inputs(proof_commit, head, "genie"))
+            self.assertTrue(ci_scope.same_module_inputs(head, head, "engine"))
+            self.prior_run["display_title"] = "check #820 | tree-ref=" + proof_commit
+            with patch.object(ci_scope, "api", side_effect=self.api):
+                proof = ci_scope.reusable_modules(["engine"], head)
+                self.assertEqual(set(proof), {"engine"})
+                self.assertTrue(ci_scope.validate_module_reuse(proof, ["engine"], head))
+                for mutation in ("unknown", "rename", "symlink", "control"):
+                    with self.subTest(mutation=mutation):
+                        run("git", "reset", "--hard", head)
+                        if mutation == "unknown":
+                            Path("new-shared-input.conf").write_text("unknown")
+                        elif mutation == "rename":
+                            Path("services/genie/app.py").write_text("original")
+                            run(
+                                "git",
+                                "mv",
+                                "services/genie/app.py",
+                                "services/genie/renamed.py",
+                            )
+                        elif mutation == "symlink":
+                            Path("services/genie/app.py").unlink()
+                            Path("services/genie/app.py").symlink_to("other.py")
+                        else:
+                            Path("justfile").write_text("new control")
+                        changed = commit(mutation)
+                        if mutation != "control":
+                            self.assertEqual(
+                                ci_scope.module_fingerprint(head, "engine"),
+                                ci_scope.module_fingerprint(changed, "engine"),
+                            )
+                        self.assertFalse(
+                            ci_scope.same_module_inputs(proof_commit, changed, "engine")
+                        )
+                        self.assertFalse(
+                            ci_scope.validate_module_reuse(proof, ["engine"], changed)
+                        )
+                        self.assertEqual(
+                            ci_scope.reusable_modules(["engine"], changed), {}
+                        )
 
     def test_diff_guarded_recipe_cannot_reuse_only_a_source_tree_proof(self):
         self.job["name"] = "planner"

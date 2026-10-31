@@ -14,7 +14,13 @@ def serving_revision(root: Path | None = None) -> str:
     """
     root = root or Path(__file__).resolve().parents[2]
     paths = {
-        *root.joinpath("src/linker_genie").rglob("*.py"),
+        # The independent quality worker consumes completed turns, not this
+        # process's knowledge. Keep its delivery lifecycle out of serving proof.
+        *(
+            path
+            for path in root.joinpath("src/linker_genie").rglob("*.py")
+            if not path.is_relative_to(root / "src/linker_genie/quality")
+        ),
         root / "pyproject.toml",
         root / "uv.lock",
     }

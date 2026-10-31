@@ -1,0 +1,113 @@
+name: Retire closed PR caches
+
+on:
+  pull_request_target:
+    types: [closed]
+  workflow_run:
+    workflows: [check]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      pull_number:
+        description: Closed PR number, or all for a bounded historical cache pass
+        required: true
+        type: string
+
+permissions: {}
+
+jobs:
+  retire:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      actions: write
+      pull-requests: read
+    concurrency:
+      group: retire-pr-caches-${{ github.event.pull_request.head.repo.full_name || github.event.workflow_run.head_repository.full_name || github.repository }}-${{ github.event.pull_request.head.ref || github.event.workflow_run.head_branch || inputs.pull_number }}
+      cancel-in-progress: false
+    steps:
+      # No checkout: pull_request_target/workflow_run must never execute PR code.
+      - name: Retire only an idle closed PR's dependency caches
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PULL_NUMBER: ${{ github.event.pull_request.number || inputs.pull_number }}
+          SOURCE_OWNER: ${{ github.event.workflow_run.head_repository.owner.login }}
+          SOURCE_REPO: ${{ github.event.workflow_run.head_repository.full_name }}
+          SOURCE_BRANCH: ${{ github.event.workflow_run.head_branch }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          historical=false
+          if [[ "$PULL_NUMBER" == all ]]; then
+            historical=true
+            inventory=$(gh cache list --repo "$GH_REPO" --limit 100 --json id,ref,sizeInBytes)
+            numbers=$(jq -r '[.[] | .ref | select(test("^refs/pull/[1-9][0-9]*/merge$")) | split("/")[2]] | unique | .[]' <<< "$inventory")
+          elif [[ -n "$PULL_NUMBER" ]]; then
+            numbers="$PULL_NUMBER"
+          else
+            # Completed runs can have an empty pull_requests array after merge.
+            # Resolve by native head repository/branch, including an older check
+            # finishing after the PR head advanced. Each PR is rechecked below.
+            pulls=$(gh api --method GET "repos/$GH_REPO/pulls" -f state=all \
+              -f head="$SOURCE_OWNER:$SOURCE_BRANCH" -f per_page=100 --paginate --slurp)
+            numbers=$(jq -r --arg repo "$SOURCE_REPO" --arg branch "$SOURCE_BRANCH" \
+              '[.[][] | select(.head.repo.full_name == $repo and .head.ref == $branch) | .number] | unique | .[]' <<< "$pulls")
+          fi
+          retire() {
+            [[ "$PULL_NUMBER" =~ ^[1-9][0-9]*$ ]] || return 2
+            pr=$(gh api "repos/$GH_REPO/pulls/$PULL_NUMBER")
+            if [[ $(jq -r '.state' <<< "$pr") != closed ]]; then
+              echo "PR $PULL_NUMBER is open; keep its caches."
+              return 0
+            fi
+            branch=$(jq -r '.head.ref' <<< "$pr")
+            # A close can precede the last cache-save step. Defer to that check's
+            # completed event instead of deleting while it is still a writer.
+            active=$(gh api --method GET "repos/$GH_REPO/actions/workflows/check.yml/runs" \
+              -f event=pull_request -f branch="$branch" -f per_page=100 --paginate \
+              --jq '.workflow_runs[] | select(.status != "completed") | .id')
+            if [[ -n "$active" ]]; then
+              echo "PR $PULL_NUMBER still has active checks; defer cache retirement."
+              return 0
+            fi
+            ref="refs/pull/$PULL_NUMBER/merge"
+            # GitHub's native closed-PR cleanup example bounds each pass to100.
+            # Main and branch caches, logs and artifacts are outside this ref.
+            if [[ "$historical" == true ]]; then
+              caches=$(jq --arg ref "$ref" '[.[] | select(.ref == $ref)]' <<< "$inventory")
+            else
+              caches=$(gh cache list --repo "$GH_REPO" --ref "$ref" --limit 100 --json id,ref,sizeInBytes)
+            fi
+            jq -e --arg ref "$ref" 'all(.[]; .ref == $ref and (.id | type == "number") and (.sizeInBytes | type == "number"))' <<< "$caches" >/dev/null
+            state=$(gh api "repos/$GH_REPO/pulls/$PULL_NUMBER" --jq '.state')
+            [[ "$state" == closed ]] || return 0
+            count=$(jq 'length' <<< "$caches")
+            bytes=$(jq '[.[].sizeInBytes] | add // 0' <<< "$caches")
+            while read -r id; do
+              [[ -n "$id" ]] || continue
+              if ! gh cache delete "$id" --repo "$GH_REPO"; then
+                # Resolve a lost response or a concurrent native cleanup before
+                # treating an already absent cache as a deletion failure.
+                observed=$(gh cache list --repo "$GH_REPO" --ref "$ref" --limit 100 --json id)
+                if jq -e --argjson id "$id" 'any(.[]; .id == $id)' <<< "$observed" >/dev/null; then
+                  return 1
+                fi
+              fi
+            done < <(jq -r '.[].id' <<< "$caches")
+            observed=$(gh cache list --repo "$GH_REPO" --ref "$ref" --limit 100 --json id)
+            jq -e --argjson selected "$caches" '([.[].id] - [$selected[].id]) == [.[].id]' <<< "$observed" >/dev/null
+            remaining=$(jq 'length' <<< "$observed")
+            echo "PR $PULL_NUMBER: retired $count caches ($bytes bytes); remaining=$remaining."
+            echo "PR $PULL_NUMBER: retired $count dependency caches ($bytes bytes); remaining=$remaining." >> "$GITHUB_STEP_SUMMARY"
+            if [[ "$historical" == true && "$remaining" != 0 ]]; then
+              echo "Bounded historical pass: unselected caches remain for a later pass."
+            else
+              [[ "$remaining" == 0 ]]
+            fi
+          }
+          while read -r PULL_NUMBER; do
+            [[ -n "$PULL_NUMBER" ]] || continue
+            retire
+          done <<< "$numbers"

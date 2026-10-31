@@ -412,6 +412,16 @@ def test_custom_worker_respects_daily_sweep_and_lock_retry_intervals(
             custom_judgments=path,
         )
         worker.cycle(NOW)
+        if initially_locked:
+            # The same busy database stays locked through the next poll. No
+            # judging, receipt persistence or heartbeat may bypass its retry.
+            assert worker.prune_deferred
+            assert worker.last_report == 0
+            worker.cycle(NOW + quality_worker.POLL_SECONDS)
+            assert worker.last_report == 0
+            assert store._db.execute("SELECT COUNT(*) FROM judgments").fetchone() == (
+                1,
+            )
         blocker.rollback()
         if not initially_locked:
             assert store._db.execute("SELECT COUNT(*) FROM judgments").fetchone() == (
@@ -429,6 +439,8 @@ def test_custom_worker_respects_daily_sweep_and_lock_retry_intervals(
             else retention.PRUNE_EVERY_SECONDS
         )
         worker.cycle(NOW + interval)
+        assert not worker.prune_deferred
+        assert worker.last_report >= NOW + interval
         assert store._db.execute("SELECT COUNT(*) FROM judgments").fetchone() == (0,)
     finally:
         blocker.close()

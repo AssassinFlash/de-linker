@@ -48,7 +48,8 @@ class QualityRoute {
 	 * Verdicts accepted per request: the worker sends at most fifty
 	 * (quality/worker.py, PUSH_BATCH); twice that bounds a misbehaving client.
 	 */
-	public const MAX_JUDGMENTS = 100;
+	public const MAX_JUDGMENTS    = 100;
+	public const RECEIPT_PROTOCOL = 'quality-delivery-v1';
 
 	/**
 	 * Sets up the route.
@@ -114,17 +115,33 @@ class QualityRoute {
 		if ( ! is_array( $judgments ) || count( $judgments ) > self::MAX_JUDGMENTS ) {
 			return new WP_Error( 'linker_genie_quality_batch', 'Too many verdicts in one request.', array( 'status' => 400 ) );
 		}
-		$stored = array();
+		$stored   = array();
+		$receipts = self::RECEIPT_PROTOCOL === $request->get_param( 'receipt_protocol' );
+		$rejected = array();
 		foreach ( $judgments as $record ) {
-			if ( is_array( $record ) && $this->store->store( $record ) ) {
+			if ( ! is_array( $record ) ) {
+				continue;
+			}
+			$result = $receipts ? $this->store->receipt( $record ) : ( $this->store->store( $record ) ? 'stored' : 'unconfirmed' );
+			if ( 'stored' === $result ) {
 				$stored[] = (int) $record['turn_id'];
+			} elseif ( $receipts && is_numeric( $record['turn_id'] ?? null ) && (int) $record['turn_id'] > 0 ) {
+				$rejected[] = array(
+					'turn_id' => (int) $record['turn_id'],
+					'reason'  => $result,
+				);
 			}
 		}
 		$status = $request->get_param( 'status' );
 		if ( is_array( $status ) ) {
 			$this->store->store_status( $status );
 		}
-		return new WP_REST_Response( array( 'stored' => $stored ) );
+		$response = array( 'stored' => $stored );
+		if ( $receipts ) {
+			$response['receipt_protocol'] = self::RECEIPT_PROTOCOL;
+			$response['rejected']         = $rejected;
+		}
+		return new WP_REST_Response( $response );
 	}
 
 	/**
