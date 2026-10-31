@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import time
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
@@ -36,6 +37,7 @@ def manifest() -> dict[str, Any]:
     return {
         "schema_version": 1,
         "source_revision": "source-1",
+        "model_identity_revision": "fixture-identity-1",
         "compatibility_revision": "compat-1",
         "products": [
             {
@@ -104,18 +106,136 @@ def authority(
             return httpx.Response(
                 200,
                 json={
+                    "model_identity_revision": raw.get("model_identity_revision", ""),
                     "models": [
                         {
                             "model": m,
                             "status": known.get(m, "unknown"),
                         }
                         for m in models
-                    ]
+                    ],
                 },
             )
         return httpx.Response(200, json={"valid": valid})
 
     return PublicationClient("https://site.test", httpx.MockTransport(handle))
+
+
+def identification_lease(verify_url: str) -> dict[str, Any]:
+    return {
+        "verify_url": verify_url,
+        "username": "fixture-worker",
+        "password": "fixture-secret",
+        "verify_body": {
+            "consumer": "knowledge",
+            "job_id": "fixture-job",
+            "source_revision": "source",
+            "recipe_revision": "recipe",
+            "lease_token": "fixture-lease",
+            "activation_epoch": 1,
+            "model_identity_revision": "identity",
+        },
+    }
+
+
+@pytest.mark.parametrize(
+    "base_url,verify_url",
+    [
+        (
+            "https://other.test",
+            "https://site.test/wp-json/linker/v1/publication/jobs/claim",
+        ),
+        (
+            "http://site.test",
+            "https://site.test/wp-json/linker/v1/publication/jobs/claim",
+        ),
+        (
+            "https://site.test:444",
+            "https://site.test/wp-json/linker/v1/publication/jobs/claim",
+        ),
+        (
+            "https://site.test",
+            "https://site.test/wp-json/linker/v1/publication/identify",
+        ),
+    ],
+)
+def test_leased_batch_rejects_wrong_origin_or_claim_path_before_transport(
+    base_url: str, verify_url: str
+) -> None:
+    calls: list[httpx.Request] = []
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        calls.append(request)
+        return httpx.Response(
+            200, json={"models": [], "model_identity_revision": "identity"}
+        )
+
+    client = PublicationClient(
+        base_url,
+        httpx.MockTransport(handle),
+        identify_deadline=int(time.time()) + 300,
+        identify_lease=identification_lease(verify_url),
+    )
+    try:
+        with pytest.raises(PublicationUnavailable, match="native lease origin"):
+            client.identify_texts(["MODEL-1"], "identity")
+        assert calls == []
+    finally:
+        client.close()
+
+
+@pytest.mark.parametrize(
+    "base_url,verify_origin",
+    [
+        ("https://SITE.test", "https://site.test:443"),
+        ("http://127.0.0.1:8181", "http://127.0.0.1:8181"),
+    ],
+)
+def test_leased_batch_keeps_same_origin_and_effective_default_port(
+    base_url: str, verify_origin: str
+) -> None:
+    bodies: list[dict[str, Any]] = []
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        assert request.url.path == "/wp-json/linker/v1/publication/identify"
+        assert request.headers["authorization"].startswith("Basic ")
+        bodies.append(json.loads(request.content))
+        return httpx.Response(
+            200, json={"models": [], "model_identity_revision": "identity"}
+        )
+
+    client = PublicationClient(
+        base_url,
+        httpx.MockTransport(handle),
+        identify_deadline=int(time.time()) + 300,
+        identify_lease=identification_lease(
+            verify_origin + "/wp-json/linker/v1/publication/jobs/claim"
+        ),
+    )
+    try:
+        windows = [f"original-{n}" for n in range(21)]
+        assert client.identify_texts(windows, "identity") == {}
+        assert [body["texts"] for body in bodies] == [windows[:20], windows[20:]]
+    finally:
+        client.close()
+
+
+def test_anonymous_identification_does_not_require_a_lease_origin() -> None:
+    calls: list[httpx.Request] = []
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        calls.append(request)
+        assert "authorization" not in request.headers
+        return httpx.Response(
+            200, json={"models": [], "model_identity_revision": "identity"}
+        )
+
+    client = PublicationClient("http://site.test", httpx.MockTransport(handle))
+    try:
+        assert client.identify_text("MODEL-1", expected_revision="identity") == {}
+        assert len(calls) == 1
+    finally:
+        client.close()
 
 
 @pytest.mark.parametrize(
@@ -229,6 +349,7 @@ def path(tmp_path: Path) -> Path:
             publication={
                 "manifest": raw,
                 "chunk_products": {"A": [1], "B": [2], "AB": [1, 2]},
+                "chunk_scopes": scope_proofs(chunks, raw, authority(raw)),
             },
         ),
         [document],
@@ -388,6 +509,7 @@ def test_single_authored_current_scope_propagates_without_using_generated_header
     assert {k: v for k, v in proof["rating"].items() if k != "associations"} == {
         "product_ids": [1],
         "basis": "document_model",
+        "model_identity_revision": "fixture-identity-1",
         "source_chunk_ids": ["scope"],
         "document_ids": ["doc"],
     }
@@ -555,6 +677,7 @@ def test_genuinely_model_free_general_document_uses_explicit_woo_purpose(
     assert {k: v for k, v in proof["terms"].items() if k != "associations"} == {
         "product_ids": [1, 2],
         "basis": "woo_document",
+        "model_identity_revision": "fixture-identity-1",
         "source_chunk_ids": [],
         "document_ids": ["doc"],
     }
@@ -921,6 +1044,7 @@ def test_actual_resolved_current_is_reopened_after_switch(
     assert search.loaded() == {
         "index_version": "build1",
         "source_revision": "source-1",
+        "model_identity_revision": "fixture-identity-1",
         "recipe_revision": "",
         "expected_serving_revision": "",
         "serving_revision": RUNTIME_SERVING_REVISION,
@@ -949,6 +1073,7 @@ def test_worker_publishes_then_acknowledges_only_actual_loaded_generation() -> N
         "job_id": "j1",
         "lease_token": "lease",
         "source_revision": "source-1",
+        "model_identity_revision": "fixture-identity-1",
         "manifest": manifest(),
     }
 
@@ -972,7 +1097,11 @@ def test_worker_publishes_then_acknowledges_only_actual_loaded_generation() -> N
     )
     assert worker.one(
         lambda m: "build1",
-        lambda: {"source_revision": "source-1", "index_version": "build1"},
+        lambda: {
+            "source_revision": "source-1",
+            "model_identity_revision": "fixture-identity-1",
+            "index_version": "build1",
+        },
     )
     assert requests[-1]["status"] == "ready"
     assert requests[-1]["loaded_revision"] == "source-1"
@@ -1007,6 +1136,7 @@ def test_all_products_available_cannot_hide_unprepared_document_associations(
                     "job_id": "j",
                     "lease_token": "l",
                     "source_revision": "source-1",
+                    "model_identity_revision": "fixture-identity-1",
                     "manifest": raw,
                 }
             }
@@ -1031,6 +1161,7 @@ def test_all_products_available_cannot_hide_unprepared_document_associations(
         lambda _: "build1",
         lambda: {
             "source_revision": "source-1",
+            "model_identity_revision": "fixture-identity-1",
             "index_version": "build1",
             "products": products,
             "preparation_complete": complete,
@@ -1060,6 +1191,7 @@ def test_worker_does_not_ack_ready_when_disk_changed_but_running_process_is_old(
                     "job_id": "j",
                     "lease_token": "l",
                     "source_revision": "source-1",
+                    "model_identity_revision": "fixture-identity-1",
                     "manifest": manifest(),
                 }
             }
@@ -1079,7 +1211,11 @@ def test_worker_does_not_ack_ready_when_disk_changed_but_running_process_is_old(
     with pytest.raises(RuntimeError, match="has not loaded"):
         worker.one(
             lambda m: "new",
-            lambda: {"source_revision": "source-1", "index_version": "old"},
+            lambda: {
+                "source_revision": "source-1",
+                "model_identity_revision": "fixture-identity-1",
+                "index_version": "old",
+            },
         )
     assert requests[-1]["status"] == "failed"
 
@@ -1227,6 +1363,7 @@ def test_loaded_process_readback_uses_same_ssh_alias_and_secret_only_on_stdin(
             json.dumps(
                 {
                     "source_revision": "source-1",
+                    "model_identity_revision": "fixture-identity-1",
                     "index_version": "build1",
                     "products": [],
                 }
@@ -1325,6 +1462,7 @@ def test_failed_worker_generation_is_removed_without_deleting_shared_builds(
                         "job_id": "j",
                         "lease_token": "l",
                         "source_revision": "source-1",
+                        "model_identity_revision": "fixture-identity-1",
                         "manifest": manifest(),
                     }
                 },
@@ -1443,3 +1581,31 @@ def test_installer_actual_program_arguments_start_child_without_pythonpath(
     )
     assert child.returncode == 0, child.stderr
     assert "--loaded-url" in child.stdout
+
+
+def test_draft_only_identity_change_revokes_loaded_scope_without_source_change(
+    path: Path,
+) -> None:
+    current = manifest()
+    with_index = DocumentIndex(path)
+    try:
+        assert with_index.search(
+            "energy", "en", [1], publication=Snapshot.read(current)
+        )
+        assert with_index.loaded()["model_identity_revision"] == "fixture-identity-1"
+        current["model_identity_revision"] = "draft-model-added"
+        assert current["source_revision"] == "source-1"
+        assert (
+            with_index.search("energy", "en", [1], publication=Snapshot.read(current))
+            == []
+        )
+        import sqlite3
+
+        with_index.close()
+        with sqlite3.connect(path) as connection:
+            connection.execute("DELETE FROM meta WHERE key='model_identity_revision'")
+        with_index = DocumentIndex(path)
+        assert with_index.loaded()["preparation_complete"] is False
+        assert with_index.permissions(Snapshot.read(manifest()), [1]) == {}
+    finally:
+        with_index.close()

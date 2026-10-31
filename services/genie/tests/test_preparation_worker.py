@@ -21,15 +21,11 @@ from publish_index import ActivationOutcomeUnconfirmed, NativeVerificationReject
 RECIPE = "a" * 64
 
 
-@pytest.fixture(autouse=True)
-def no_real_system_log(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(syslog, "syslog", lambda *_args: None)
-
-
 def source(revision: str = "source-1") -> dict[str, Any]:
     return {
         "schema_version": 1,
         "source_revision": revision,
+        "model_identity_revision": "fixture-identity-1",
         "products": [
             {"product_id": 1, "product_revision": "p1", "documents": ["doc"]},
             {"product_id": 2, "product_revision": "p2", "documents": ["doc"]},
@@ -60,15 +56,34 @@ class Queue:
             self.claims.append(data)
             if self.recipe != data["recipe_revision"]:
                 self.recipe, self.ready = data["recipe_revision"], False
-            actual = data.get("loaded_receipt") or {}
-            if self.ready and (
-                data.get("loaded_unavailable")
-                or actual.get("index_version") != self.receipts[-1]["index_version"]
-                or actual.get("activation_epoch")
-                != self.receipts[-1]["activation_epoch"]
-                or actual.get("products") != self.receipts[-1]["prepared_products"]
-            ):
-                self.ready = False
+            actual = data.get("loaded_receipt")
+            if self.ready and actual is not None:
+                receipt = self.receipts[-1]
+                identities = {
+                    "source_revision": "loaded_revision",
+                    "model_identity_revision": "loaded_model_identity_revision",
+                    "recipe_revision": "loaded_recipe_revision",
+                    "expected_serving_revision": "expected_serving_revision",
+                    "serving_revision": "serving_revision",
+                    "index_version": "index_version",
+                    "activation_epoch": "activation_epoch",
+                }
+                observed_products = {
+                    row["product_id"]: row["product_revision"]
+                    for row in actual["products"]
+                }
+                trusted_products = {
+                    row["product_id"]: row["product_revision"]
+                    for row in receipt["prepared_products"]
+                }
+                if (
+                    any(
+                        actual.get(key) != receipt[stored]
+                        for key, stored in identities.items()
+                    )
+                    or observed_products != trusted_products
+                ):
+                    self.ready = False
             if not self.ready:
                 self.epoch += 1
             return httpx.Response(
@@ -79,6 +94,7 @@ class Queue:
                     else {
                         "job_id": "job-" + self.recipe,
                         "source_revision": self.source["source_revision"],
+                        "model_identity_revision": "fixture-identity-1",
                         "recipe_revision": self.recipe,
                         "activation_epoch": self.epoch,
                         "lease_expires_at": int(time.time()) + 600,
@@ -108,6 +124,7 @@ class Queue:
 def loaded(**changes: Any) -> dict[str, Any]:
     return {
         "source_revision": "source-1",
+        "model_identity_revision": "fixture-identity-1",
         "recipe_revision": RECIPE,
         "expected_serving_revision": RUNTIME_SERVING_REVISION,
         "serving_revision": RUNTIME_SERVING_REVISION,
@@ -148,6 +165,87 @@ def test_materialized_semantic_warning_does_not_repeat_same_recipe_build() -> No
     )
     assert receipt["error"]
     worker.close()
+
+
+def test_unknown_loaded_observation_reports_failure_without_rebuilding_ready(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    queue = Queue()
+    worker = queue.worker()
+    assert worker.one(lambda _: "build1", loaded)
+    reports: list[tuple[str, str]] = []
+    monkeypatch.setattr(
+        "publication_worker.report_failure",
+        lambda phase, error: reports.append((phase, type(error).__name__)),
+    )
+
+    def unavailable() -> dict[str, Any]:
+        raise OSError("one loopback SSH observation failed")
+
+    def no_rebuild(_: dict[str, Any]) -> str:
+        pytest.fail(
+            "an unknown observation must not rebuild the acknowledged generation"
+        )
+
+    try:
+        assert not worker.one(no_rebuild, unavailable)
+        assert queue.ready and queue.epoch == 1
+        assert len(queue.receipts) == 1
+        assert queue.claims[-1]["loaded_receipt"] is None
+        assert queue.claims[-1]["loaded_unavailable"] is True
+        assert reports == [("loaded_observation", "OSError")]
+    finally:
+        worker.close()
+
+
+def test_malformed_loaded_observation_is_reported_and_does_not_rebuild_ready(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    queue = Queue()
+    worker = queue.worker()
+    assert worker.one(lambda _: "build1", loaded)
+    failures: list[str] = []
+    monkeypatch.setattr(
+        "publication_worker.report_failure",
+        lambda phase, _error: failures.append(phase),
+    )
+    try:
+        assert not worker.one(
+            lambda _: pytest.fail("partial observation cannot revoke ready"),
+            lambda: {"index_version": "partial-response"},
+        )
+        assert queue.ready and queue.epoch == 1
+        assert failures == ["loaded_observation"]
+    finally:
+        worker.close()
+
+
+def test_unknown_bootstrap_still_claims_and_prepares_a_real_generation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    queue = Queue()
+    worker = queue.worker()
+    failures: list[str] = []
+    monkeypatch.setattr(
+        "publication_worker.report_failure",
+        lambda phase, _error: failures.append(phase),
+    )
+    observations = 0
+
+    def current() -> dict[str, Any]:
+        nonlocal observations
+        observations += 1
+        if observations == 1:
+            raise OSError("no serving process at bootstrap")
+        return loaded()
+
+    try:
+        assert worker.one(lambda _: "build1", current)
+        assert queue.ready and queue.epoch == 1
+        assert len(queue.receipts) == 1
+        assert failures == ["loaded_observation"]
+    finally:
+        worker.close()
 
 
 def test_document_parse_failure_retries_even_with_false_materialization_claim() -> None:
@@ -359,6 +457,7 @@ def test_retry_exhaustion_retains_only_one_validated_review_build(
         meta = {
             "version": version,
             "source_revision": activation["source_revision"],
+            "model_identity_revision": "fixture-identity-1",
             "recipe_revision": activation["recipe_revision"],
             "serving_revision": activation["serving_revision"],
             "activation_epoch": str(activation["epoch"]),
@@ -414,6 +513,7 @@ def test_unsupported_manifest_with_valid_claim_is_acknowledged_as_failed() -> No
                 "job_id": "job-" + queue.recipe,
                 "lease_token": "lease",
                 "source_revision": queue.source["source_revision"],
+                "model_identity_revision": "fixture-identity-1",
                 "recipe_revision": queue.recipe,
                 "activation_epoch": queue.epoch,
             }
@@ -577,5 +677,204 @@ def test_leased_identification_stops_at_expiry(
         with pytest.raises(PublicationUnavailable, match="lease expired"):
             client.identify(["A"])
         assert len(calls) == (0 if when == "before" else 1)
+    finally:
+        client.close()
+
+
+def test_leased_identification_batches_independent_windows_and_records_cost(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """No cross-window model phrase can be synthesized by batching."""
+    payloads: list[dict[str, Any]] = []
+    sleeps: list[float] = []
+    monkeypatch.setattr(time, "sleep", sleeps.append)
+    system_events: list[str] = []
+    monkeypatch.setattr(
+        syslog, "syslog", lambda _priority, message: system_events.append(message)
+    )
+    lease = {
+        "verify_url": "https://site.test/wp-json/linker/v1/publication/jobs/claim",
+        "username": "fixture-worker",
+        "password": "fixture-secret",
+        "verify_body": {
+            "operation": "verify",
+            "consumer": "knowledge",
+            "job_id": "job",
+            "lease_token": "lease",
+            "activation_epoch": 7,
+            "source_revision": "same-published-source",
+            "recipe_revision": RECIPE,
+            "model_identity_revision": "opaque-draft-map-v2",
+        },
+    }
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        assert request.headers["authorization"].startswith("Basic ")
+        body = json.loads(request.content)
+        payloads.append(body)
+        assert "text" not in body and "operation" not in body
+        assert body["lease_token"] == "lease" and body["activation_epoch"] == 7
+        if len(payloads) == 1:
+            return httpx.Response(503, headers={"Retry-After": "2"})
+        # A whole model must occur inside one original window.
+        models = (
+            [{"model": "MODEL A", "status": "unavailable"}]
+            if any("MODEL A" in text for text in body["texts"])
+            else []
+        )
+        return httpx.Response(
+            200,
+            json={
+                "models": models,
+                "model_identity_revision": "opaque-draft-map-v2",
+                "metrics": {"identity_reads": 1},
+            },
+        )
+
+    client = PublicationClient(
+        "https://site.test",
+        httpx.MockTransport(handle),
+        identify_deadline=int(time.time()) + 300,
+        identify_lease=lease,
+    )
+    windows = ["MODEL", "A", *(f"original-{n}" for n in range(19))]
+    try:
+        assert client.identify_texts(windows, "opaque-draft-map-v2") == {}
+        assert [len(p["texts"]) for p in payloads] == [20, 20, 1]
+        assert payloads[0] == payloads[1]
+        assert payloads[1]["texts"] + payloads[2]["texts"] == windows
+        assert client.identification["windows"] == 21
+        assert client.identification["batches"] == 2
+        assert client.identification["attempts"] == 3
+        assert client.identification["backoff_seconds"] == 2
+        assert client.identification["identity_reads"] == 2
+        assert sleeps == [2.0]
+        output = capsys.readouterr().out
+        events = [json.loads(line) for line in output.splitlines()]
+        assert [event["event"] for event in events] == [
+            "attempt",
+            "backoff",
+            "attempt",
+            "batch_done",
+            "attempt",
+            "batch_done",
+        ]
+        assert events[-1]["batches"] == 2 and events[-1]["attempts"] == 3
+        assert "fixture-secret" not in output and "MODEL" not in output
+        assert [
+            json.loads(line.removeprefix("linker-knowledge-publication "))
+            for line in system_events
+        ] == events
+    finally:
+        client.close()
+
+
+@pytest.mark.parametrize("reply", ["wrong-identity", "revoked"])
+def test_leased_batch_never_uses_stale_identity_or_revoked_lease(reply: str) -> None:
+    calls: list[httpx.Request] = []
+    lease = {
+        "verify_url": "https://site.test/wp-json/linker/v1/publication/jobs/claim",
+        "username": "fixture",
+        "password": "fixture",
+        "verify_body": {
+            "consumer": "knowledge",
+            "job_id": "job",
+            "source_revision": "source",
+            "recipe_revision": RECIPE,
+            "lease_token": "lease",
+            "activation_epoch": 1,
+            "model_identity_revision": "identity-before-draft-edit",
+        },
+    }
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        calls.append(request)
+        return (
+            httpx.Response(409, json={"code": "identity_changed"})
+            if reply == "revoked"
+            else httpx.Response(
+                200,
+                json={
+                    "models": [],
+                    "model_identity_revision": "identity-after-draft-edit",
+                },
+            )
+        )
+
+    client = PublicationClient(
+        "https://site.test",
+        httpx.MockTransport(handle),
+        identify_deadline=int(time.time()) + 300,
+        identify_lease=lease,
+    )
+    try:
+        with pytest.raises(PublicationUnavailable):
+            client.identify_texts(["MODEL-1"], "identity-before-draft-edit")
+        assert len(calls) == 1
+    finally:
+        client.close()
+
+
+@pytest.mark.parametrize("identity", ["", "draft-only-map-change"])
+def test_worker_never_acks_ready_for_missing_or_changed_loaded_identity(
+    identity: str,
+) -> None:
+    queue = Queue()
+    worker = queue.worker()
+    try:
+        with pytest.raises(RuntimeError, match="not loaded"):
+            worker.one(
+                lambda _: "build1", lambda: loaded(model_identity_revision=identity)
+            )
+        assert queue.receipts[-1]["status"] == "failed"
+        assert queue.receipts[-1]["model_identity_revision"] == "fixture-identity-1"
+    finally:
+        worker.client.close()
+
+
+def test_compiler_batches_original_packed_windows_not_each_authored_part() -> None:
+    from index.chunking import Chunk
+    from index.publication import _recognized
+
+    # Forty source parts historically fit inside one 16k request. They must
+    # still be one original window, rather than two HTTP batches of 20 parts.
+    chunks = [
+        Chunk(str(i), "a" * 64, 1, "", "text", "", f"original part {i}", "en", 4)
+        for i in range(40)
+    ]
+    payloads: list[dict[str, Any]] = []
+    lease = {
+        "verify_url": "https://site.test/wp-json/linker/v1/publication/jobs/claim",
+        "username": "fixture",
+        "password": "fixture",
+        "verify_body": {
+            "consumer": "knowledge",
+            "job_id": "job",
+            "source_revision": "source",
+            "recipe_revision": RECIPE,
+            "lease_token": "lease",
+            "activation_epoch": 1,
+            "model_identity_revision": "identity",
+        },
+    }
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        payloads.append(json.loads(request.content))
+        return httpx.Response(
+            200, json={"models": [], "model_identity_revision": "identity"}
+        )
+
+    client = PublicationClient(
+        "https://site.test",
+        httpx.MockTransport(handle),
+        identify_deadline=int(time.time()) + 300,
+        identify_lease=lease,
+    )
+    try:
+        assert _recognized(chunks, client, "identity") == {}
+        assert len(payloads) == 1 and len(payloads[0]["texts"]) == 1
+        assert all(f"original part {i}" in payloads[0]["texts"][0] for i in range(40))
+        assert client.identification["windows"] == 1
     finally:
         client.close()

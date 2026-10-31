@@ -16,7 +16,7 @@ import json
 import shlex
 import subprocess
 import sys
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Any
 
@@ -75,6 +75,7 @@ def _native_rejection(
         "transport",
         "job_id",
         "source_revision",
+        "model_identity_revision",
         "recipe_revision",
         "epoch",
     }
@@ -90,7 +91,12 @@ def _native_rejection(
             not isinstance(activation.get(name), str)
             or not activation[name]
             or value.get(name) != activation[name]
-            for name in ("job_id", "source_revision", "recipe_revision")
+            for name in (
+                "job_id",
+                "source_revision",
+                "recipe_revision",
+                "model_identity_revision",
+            )
         )
         or type(value.get("transport")) is not bool
     ):
@@ -124,6 +130,7 @@ def _native_rejection(
     identity = {
         "job_id": value["job_id"],
         "source_revision": value["source_revision"],
+        "model_identity_revision": value["model_identity_revision"],
         "recipe_revision": value["recipe_revision"],
         "serving_revision": activation.get("serving_revision"),
         "activation_epoch": value["epoch"],
@@ -141,21 +148,23 @@ def release(
     timeout: float | None = None,
 ) -> dict[str, object]:
     """Run index_release.py with `args` on the host (or here) and return its report."""
-    if owner_token is not None and (
-        activation is not None
-        or len(args) != 3
-        or args[0] != "discard"
-        or not owner_token
-    ):
-        raise ValueError("invalid discard owner request")
+    if owner_token is not None:
+        discard = len(args) == 3 and args[0] == "discard" and activation is None
+        validate = len(args) == 4 and args[0] == "validate"
+        if not owner_token or not (discard or validate):
+            raise ValueError("invalid upload owner request")
     if activation is not None or owner_token is not None:
         arguments = [
             *args,
-            "--activation-stdin" if activation is not None else "--owner-stdin",
+            "--owner-stdin" if owner_token is not None else "--activation-stdin",
         ]
-        private_input = (
-            activation if activation is not None else {"owner_token": owner_token}
-        )
+        private_input: dict[str, Any] | None
+        if owner_token is not None:
+            private_input = {"owner_token": owner_token}
+            if args[0] == "validate":
+                private_input["activation"] = activation
+        else:
+            private_input = activation
         command = (
             [sys.executable, str(RELEASE_SCRIPT), *arguments]
             if host is None
@@ -220,6 +229,7 @@ def _confirmed_activation(
         "epoch": activation.get("epoch"),
         "job_id": activation.get("job_id"),
         "source_revision": activation.get("source_revision"),
+        "model_identity_revision": activation.get("model_identity_revision"),
         "recipe_revision": activation.get("recipe_revision"),
         "serving_revision": activation.get("serving_revision"),
         "index_version": version,
@@ -260,29 +270,67 @@ def publish(
     host: str | None,
     *,
     activation: dict[str, Any] | None = None,
+    before_activate: Callable[[], None] | None = None,
 ) -> dict[str, object]:
-    """Upload one build as a release, verify it, and make it current."""
+    """Upload and activate; an optional runtime switch follows verified upload.
+
+    The hook runs once, after the host validates this upload's owner, actual
+    SQLite/manifest bytes and identities, while current still serves the prior
+    index. The caller owns its runtime change and recovery. Activation repeats
+    validation and native verification; an ambiguous activation is inspected,
+    never replayed. Without a hook the ordinary publication entry is unchanged.
+    """
     manifest = json.loads((build_dir / "manifest.json").read_text(encoding="utf-8"))
     version = str(manifest["version"])
     expected = str(manifest["file"]["sha256"])
     if _sha256(build_dir / str(manifest["file"]["name"])) != expected:
         raise SystemExit(f"{build_dir}: index.sqlite does not match its manifest")
-    prepared = release(host, "prepare", root, version, activation=activation)
+    prepared = release(
+        host, "prepare", root, version, "--reuse-basis", activation=activation
+    )
     incoming = str(prepared["incoming"])
     owner_token = str(prepared["owner_token"])
+    basis = prepared.get("basis")
+    basis = basis if isinstance(basis, str) else None
     target = incoming if host is None else f"{host}:{incoming}"
     discard_upload = True
     try:
+        upload = ["rsync", "-a"]
+        if basis is not None:
+            # Native prepare seeded an independent owned target. checksum
+            # rejects equal-size/mtime changes; no-whole-file enables actual
+            # delta matching for both local rehearsals and remote uploads.
+            upload += [
+                "--checksum",
+                "--no-whole-file",
+                "--stats",
+            ]
         subprocess.run(
-            [
-                "rsync",
-                "-a",
+            upload
+            + [
                 str(build_dir / "index.sqlite"),
                 str(build_dir / "manifest.json"),
                 f"{target}/",
             ],
             check=True,
         )
+        if before_activate is not None:
+            validated = release(
+                host,
+                "validate",
+                root,
+                version,
+                expected,
+                activation=activation,
+                owner_token=owner_token,
+            )
+            if (
+                validated.get("validated") is not True
+                or validated.get("index_version") != version
+                or validated.get("sha256") != expected
+            ):
+                raise RuntimeError("host has not verified the owned index upload")
+            before_activate()
         try:
             report = release(
                 host,
@@ -330,6 +378,10 @@ def publish(
         )
     ):
         raise SystemExit(f"published {version}, but the host reports {report}")
+    report["transfer_basis"] = {
+        "path": basis,
+        "reason": prepared.get("basis_reason", "not_provided"),
+    }
     return report
 
 

@@ -110,6 +110,7 @@ class ScopeProof(TypedDict):
     warranty_scope: NotRequired[dict[str, Any]]
     certificate_scope: NotRequired[dict[str, Any]]
     certificate_fragment: NotRequired[dict[str, Any]]
+    model_identity_revision: NotRequired[str]
 
 
 def _table_columns(
@@ -420,14 +421,19 @@ def _authored_text_parts(chunk: Chunk) -> Iterator[str]:
                 start -= 1
 
 
-def _recognized(chunks: list[Chunk], authority: PublicationClient) -> dict[str, str]:
+def _recognized(
+    chunks: list[Chunk], authority: PublicationClient, revision: str = ""
+) -> dict[str, str]:
     """Woo recognizes original bounded text, including multi-word draft labels.
 
     A build must not infer an unknown code's permission from an old index. The
     16,000-byte limit is the existing Woo exact-text endpoint's request contract.
     Original empty ancestor headings retain scope; generated headers are excluded.
     """
-    result: dict[str, str] = {}
+    # Preserve the existing 16k request windows. A batch transports up to
+    # twenty of those windows, rather than making every short heading its own
+    # window or creating a new boundary-spanning match between requests.
+    windows: list[str] = []
     batch = ""
     seen = set()
     for chunk in chunks:
@@ -437,13 +443,13 @@ def _recognized(chunks: list[Chunk], authority: PublicationClient) -> dict[str, 
             seen.add(text)
             joined = batch + "\n" + text if batch else text
             if len(joined.encode()) > 16000:
-                result.update(authority.identify_text(batch))
+                windows.append(batch)
                 batch = text
             else:
                 batch = joined
     if batch:
-        result.update(authority.identify_text(batch))
-    return result
+        windows.append(batch)
+    return authority.identify_texts(windows, revision)
 
 
 def inventory(
@@ -590,7 +596,11 @@ def scope_proofs(
             native_tables.setdefault((chunk.doc_sha256, chunk.source_table), []).append(
                 chunk.id
             )
-    statuses = _recognized(relevant, authority) if _statuses is None else _statuses
+    statuses = (
+        _recognized(relevant, authority, source.model_identity_revision)
+        if _statuses is None
+        else _statuses
+    )
     labels = set(statuses).union(current_labels)
     families = _family_labels(labels)
     patterns = {label: _model_pattern(label) for label in labels}
@@ -763,6 +773,8 @@ def scope_proofs(
                 assert declaration is not None
                 result[chunk.id]["referenced_products"] = references
                 result[chunk.id]["manual_scope"] = declaration
+    for scope in result.values():
+        scope["model_identity_revision"] = source.model_identity_revision
     return result
 
 
@@ -1119,4 +1131,8 @@ def compile_publication(
     """
     from index.table_compiler import compile_scopes
 
-    return compile_scopes(chunks, manifest, authority, tokenizer, max_tokens)
+    revision = Snapshot.read(manifest).model_identity_revision
+    output, scopes = compile_scopes(chunks, manifest, authority, tokenizer, max_tokens)
+    for scope in scopes.values():
+        scope["model_identity_revision"] = revision
+    return output, scopes

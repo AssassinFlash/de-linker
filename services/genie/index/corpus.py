@@ -55,6 +55,7 @@ class Meta:
     recipe_revision: str = ""
     serving_revision: str = ""
     activation_epoch: int = 0
+    model_identity_revision: str = ""
 
 
 def meta_values(meta: Meta, schema_version: int) -> dict[str, str]:
@@ -69,6 +70,8 @@ def meta_values(meta: Meta, schema_version: int) -> dict[str, str]:
         "recipe_revision": meta.recipe_revision,
         "serving_revision": meta.serving_revision,
         "activation_epoch": str(meta.activation_epoch),
+        "model_identity_revision": meta.model_identity_revision
+        or str(meta.publication.get("manifest", {}).get("model_identity_revision", "")),
         "source_revision": str(
             meta.publication.get("manifest", {}).get("source_revision", "")
         ),

@@ -23,13 +23,17 @@ final class PreparationJobs {
 	 *
 	 * @param int    $id Canonical product ID.
 	 * @param string $revision Current product revision.
+	 * @param string $model_identity_revision Current native knowledge identity; unknown cannot grant readiness.
 	 * @return array{knowledge:bool,engineering:bool}
 	 */
-	public static function readiness( int $id, string $revision ): array {
+	public static function readiness( int $id, string $revision, string $model_identity_revision = '' ): array {
 		$state  = get_option( self::OPTION, array() );
 		$result = array();
 		foreach ( self::CONSUMERS as $consumer ) {
 			$result[ $consumer ] = is_array( $state ) && ( $state[ $consumer ]['loaded_products'][ $id ] ?? '' ) === $revision;
+			if ( 'knowledge' === $consumer ) {
+				$result[ $consumer ] = $result[ $consumer ] && '' !== $model_identity_revision && ( $state[ $consumer ]['loaded_model_identity_revision'] ?? '' ) === $model_identity_revision;
+			}
 		}
 		return $result;
 	}
@@ -62,8 +66,8 @@ final class PreparationJobs {
 		$state = get_option( self::OPTION, array() );
 		$state = is_array( $state ) ? $state : array();
 		foreach ( self::CONSUMERS as $consumer ) {
-			if ( ( $state[ $consumer ]['source_revision'] ?? '' ) !== $manifest['source_revision'] ) {
-				$state[ $consumer ] = self::pending( $consumer, $manifest['source_revision'], $state[ $consumer ] ?? array(), (string) ( $state[ $consumer ]['recipe_revision'] ?? '' ) );
+			if ( ( $state[ $consumer ]['source_revision'] ?? '' ) !== $manifest['source_revision'] || ( 'knowledge' === $consumer && ( $state[ $consumer ]['model_identity_revision'] ?? '' ) !== $manifest['model_identity_revision'] ) ) {
+				$state[ $consumer ] = self::pending( $consumer, $manifest['source_revision'], $state[ $consumer ] ?? array(), (string) ( $state[ $consumer ]['recipe_revision'] ?? '' ), $manifest['model_identity_revision'] );
 			}
 		}
 		update_option( self::OPTION, $state, false );
@@ -79,17 +83,21 @@ final class PreparationJobs {
 	 * @param int                      $lease_seconds Requested lease, bounded to WordPress one day.
 	 * @param string                   $recipe_revision Actual knowledge compiler identity; empty is the legacy protocol.
 	 * @param array<string,mixed>|null $loaded_receipt Actual process readback; never grants product readiness.
-	 * @param bool                     $loaded_unavailable Actual process readback failed and requires repair when ready.
+	 * @param bool                     $loaded_unavailable Caller observed a readback failure; unknown never invalidates ready.
+	 * @param string                   $identity_protocol Supported native recognition protocol.
 	 * @return array<string,mixed>|WP_Error
 	 */
-	public function claim( string $consumer, string $worker_id, int $lease_seconds, string $recipe_revision = '', ?array $loaded_receipt = null, bool $loaded_unavailable = false ): array|WP_Error {
+	public function claim( string $consumer, string $worker_id, int $lease_seconds, string $recipe_revision = '', ?array $loaded_receipt = null, bool $loaded_unavailable = false, string $identity_protocol = Publication::IDENTITY_PROTOCOL ): array|WP_Error {
 		if ( ! in_array( $consumer, self::CONSUMERS, true ) || '' === $worker_id || $lease_seconds < 1 || $lease_seconds > DAY_IN_SECONDS || ( '' !== $recipe_revision && ( 'knowledge' !== $consumer || 1 !== preg_match( '/^[a-f0-9]{64}$/D', $recipe_revision ) ) ) ) {
 			return new WP_Error( 'invalid_job_request', 'Invalid consumer, worker or lease.', array( 'status' => 400 ) );
+		}
+		if ( 'knowledge' === $consumer && Publication::IDENTITY_PROTOCOL !== $identity_protocol ) {
+			return new WP_Error( 'identity_required', 'Knowledge preparation requires the native model identity protocol.', array( 'status' => 409 ) );
 		}
 		$result = array( 'job' => null );
 		$taken  = Lock::run(
 			'publication-jobs',
-			static function () use ( $consumer, $worker_id, $lease_seconds, $recipe_revision, $loaded_receipt, $loaded_unavailable, &$result ): void {
+			static function () use ( $consumer, $worker_id, $lease_seconds, $recipe_revision, $loaded_receipt, &$result ): void {
 				$manifest = Publication::manifest();
 				$state    = self::reconciled_state( $manifest );
 				$job      = $state[ $consumer ] ?? array();
@@ -100,11 +108,25 @@ final class PreparationJobs {
 					}
 					// Compiler corrections reprocess an unchanged Woo source and invalidate
 					// older leases. Loaded products remain a versioned serving receipt.
-					$job = self::pending( $consumer, $manifest['source_revision'], $job, $recipe_revision );
+					$job = self::pending( $consumer, $manifest['source_revision'], $job, $recipe_revision, $manifest['model_identity_revision'] );
 				}
-				if ( 'knowledge' === $consumer && '' !== $recipe_revision && 'ready' === ( $job['status'] ?? '' ) && ( $loaded_unavailable || ( null !== $loaded_receipt && ! self::matches_loaded( $job, $loaded_receipt ) ) ) ) {
-					$job          = self::pending( $consumer, $manifest['source_revision'], $job, $recipe_revision );
+				$observed = self::valid_loaded_observation( $loaded_receipt );
+				if ( 'knowledge' === $consumer && '' !== $recipe_revision && 'ready' === ( $job['status'] ?? '' ) && $observed && null !== $loaded_receipt && ! self::matches_loaded( $job, $loaded_receipt ) ) {
+					$job          = self::pending( $consumer, $manifest['source_revision'], $job, $recipe_revision, $manifest['model_identity_revision'] );
 					$job['error'] = 'The serving process differs from the acknowledged knowledge generation.';
+				}
+				if ( 'knowledge' === $consumer && $observed && null !== $loaded_receipt && self::can_restore_materialization( $job, $loaded_receipt, $manifest ) ) {
+					// Restore only the last native ACK's facts and coverage. Observation
+					// never replaces loaded versions/products or rewinds the fence counter.
+					$job['status']                   = 'ready';
+					$job['materialization_complete'] = true;
+					$job['preparation_complete']     = $job['loaded_preparation_complete'];
+					$job['unprepared_documents']     = $job['loaded_unprepared_documents'];
+					$job['error']                    = $job['preparation_complete'] ? '' : 'Some current document associations still lack proven passages.';
+					$job['lease_expires_at']         = 0;
+					unset( $job['lease_token'] );
+					$state[ $consumer ] = $job;
+					update_option( self::OPTION, $state, false );
 				}
 				if ( 'ready' === ( $job['status'] ?? '' ) || (int) ( $job['lease_expires_at'] ?? 0 ) > time() || ( $job['source_revision'] ?? '' ) !== $manifest['source_revision'] ) {
 					return;
@@ -144,19 +166,60 @@ final class PreparationJobs {
 				$manifest = Publication::manifest();
 				$state    = get_option( self::OPTION, array() );
 				$job      = $state['knowledge'] ?? array();
-				if ( 'knowledge' !== ( $request['consumer'] ?? '' ) || 'preparing' !== ( $job['status'] ?? '' ) || ( $job['job_id'] ?? '' ) !== ( $request['job_id'] ?? null ) || ! is_string( $request['lease_token'] ?? null ) || ! hash_equals( $job['lease_token'] ?? '', $request['lease_token'] ) || (int) ( $job['lease_expires_at'] ?? 0 ) <= time() || ( $request['source_revision'] ?? '' ) !== $manifest['source_revision'] || ( $job['source_revision'] ?? '' ) !== $manifest['source_revision'] || '' === ( $job['recipe_revision'] ?? '' ) || ( $request['recipe_revision'] ?? '' ) !== ( $job['recipe_revision'] ?? '' ) || ! self::same_epoch( $job, $request ) ) {
+				if ( 'knowledge' !== ( $request['consumer'] ?? '' ) || 'preparing' !== ( $job['status'] ?? '' ) || ( $job['job_id'] ?? '' ) !== ( $request['job_id'] ?? null ) || ! is_string( $request['lease_token'] ?? null ) || ! hash_equals( $job['lease_token'] ?? '', $request['lease_token'] ) || (int) ( $job['lease_expires_at'] ?? 0 ) <= time() || ( $request['source_revision'] ?? '' ) !== $manifest['source_revision'] || ( $job['source_revision'] ?? '' ) !== $manifest['source_revision'] || '' === ( $job['recipe_revision'] ?? '' ) || ( $request['recipe_revision'] ?? '' ) !== ( $job['recipe_revision'] ?? '' ) || ! self::same_epoch( $job, $request ) || ! self::same_identity( $job, $request, $manifest['model_identity_revision'] ) ) {
 					return;
 				}
 				$result = array(
-					'verified'         => true,
-					'activation_epoch' => $job['activation_epoch'],
-					'job_id'           => $job['job_id'],
-					'source_revision'  => $job['source_revision'],
-					'recipe_revision'  => $job['recipe_revision'],
+					'verified'                => true,
+					'activation_epoch'        => $job['activation_epoch'],
+					'job_id'                  => $job['job_id'],
+					'source_revision'         => $job['source_revision'],
+					'recipe_revision'         => $job['recipe_revision'],
+					'model_identity_revision' => $job['model_identity_revision'],
 				);
 			}
 		);
 		return $taken ? $result : new WP_Error( 'publication_busy', 'Preparation queue is busy.', array( 'status' => 503 ) );
+	}
+
+	/**
+	 * Cheap identity-only batch lease fence; never scans technical documents.
+	 *
+	 * Full source verification remains mandatory at activation and ACK.
+	 *
+	 * @param array<string,mixed> $request Exact knowledge lease context.
+	 * @param string              $identity Fresh identity from the same model map used to match.
+	 * @return true|WP_Error
+	 */
+	public function verify_identity_lease( array $request, string $identity ): true|WP_Error {
+		$result = new WP_Error( 'stale_job', 'The knowledge identity lease has changed.', array( 'status' => 409 ) );
+		$taken  = Lock::run(
+			'publication-jobs',
+			static function () use ( $request, $identity, &$result ): void {
+				$state = get_option( self::OPTION, array() );
+				$job   = is_array( $state ) ? ( $state['knowledge'] ?? array() ) : array();
+				if ( 'knowledge' !== ( $request['consumer'] ?? '' ) || 'preparing' !== ( $job['status'] ?? '' ) || ( $job['job_id'] ?? null ) !== ( $request['job_id'] ?? null ) || ! is_string( $request['lease_token'] ?? null ) || ! hash_equals( $job['lease_token'] ?? '', $request['lease_token'] ) || (int) ( $job['lease_expires_at'] ?? 0 ) <= time() || ( $job['source_revision'] ?? '' ) !== ( $request['source_revision'] ?? null ) || '' === ( $job['recipe_revision'] ?? '' ) || ( $job['recipe_revision'] ?? '' ) !== ( $request['recipe_revision'] ?? null ) || ! self::same_epoch( $job, $request ) ) {
+					return;
+				}
+				if ( ! self::same_identity( $job, $request, $identity ) ) {
+					$result = new WP_Error( 'identity_changed', 'The native model identity has changed.', array( 'status' => 409 ) );
+					return;
+				}
+				$result = true;
+			}
+		);
+		return $taken ? $result : new WP_Error( 'publication_busy', 'Preparation queue is busy.', array( 'status' => 503 ) );
+	}
+
+	/**
+	 * Unknown or changed identities cannot establish a knowledge permission.
+	 *
+	 * @param array<string,mixed> $job Current native job.
+	 * @param array<string,mixed> $request Claimed identity.
+	 * @param string              $current Fresh native identity.
+	 */
+	private static function same_identity( array $job, array $request, string $current ): bool {
+		return 1 === preg_match( '/^[a-f0-9]{64}$/D', $current ) && ( $job['model_identity_revision'] ?? null ) === $current && ( $request['model_identity_revision'] ?? null ) === $current;
 	}
 
 	/**
@@ -247,7 +310,7 @@ final class PreparationJobs {
 				if ( ( $job['recipe_revision'] ?? '' ) !== $expected_current_recipe || ! in_array( $target_recipe, $job['superseded_recipes'] ?? array(), true ) ) {
 					return;
 				}
-				$job                       = self::pending( 'knowledge', $manifest['source_revision'], $job, $target_recipe );
+				$job                       = self::pending( 'knowledge', $manifest['source_revision'], $job, $target_recipe, $manifest['model_identity_revision'] );
 				$job['superseded_recipes'] = array_values( array_diff( $job['superseded_recipes'], array( $target_recipe ) ) );
 				$state['knowledge']        = $job;
 				update_option( self::OPTION, $state, false );
@@ -278,11 +341,15 @@ final class PreparationJobs {
 				foreach ( self::CONSUMERS as $consumer ) {
 					$job    = $state[ $consumer ] ?? array();
 					$recipe = (string) ( $job['recipe_revision'] ?? '' );
-					if ( ( $job['job_id'] ?? '' ) !== ( $request['job_id'] ?? null ) || ! is_string( $request['lease_token'] ?? null ) || ! hash_equals( $job['lease_token'] ?? '', $request['lease_token'] ) || (int) ( $job['lease_expires_at'] ?? 0 ) <= time() || ( $request['source_revision'] ?? '' ) !== $manifest['source_revision'] || ( $job['source_revision'] ?? '' ) !== $manifest['source_revision'] || ( 'knowledge' === $consumer && ( $request['recipe_revision'] ?? '' ) !== $recipe ) || ( '' !== $recipe && ( ! self::same_epoch( $job, $request ) ) ) ) {
+					if ( ( $job['job_id'] ?? '' ) !== ( $request['job_id'] ?? null ) || ! is_string( $request['lease_token'] ?? null ) || ! hash_equals( $job['lease_token'] ?? '', $request['lease_token'] ) || (int) ( $job['lease_expires_at'] ?? 0 ) <= time() || ( $request['source_revision'] ?? '' ) !== $manifest['source_revision'] || ( $job['source_revision'] ?? '' ) !== $manifest['source_revision'] || ( 'knowledge' === $consumer && ( ( $request['recipe_revision'] ?? '' ) !== $recipe || ! self::same_identity( $job, $request, $manifest['model_identity_revision'] ) ) ) || ( '' !== $recipe && ( ! self::same_epoch( $job, $request ) ) ) ) {
 						continue;
 					}
 					if ( ! in_array( $request['status'] ?? '', array( 'ready', 'failed' ), true ) || ( 'ready' === $request['status'] && ( ! is_string( $request['loaded_revision'] ?? null ) || '' === $request['loaded_revision'] ) ) ) {
 						$result = new WP_Error( 'invalid_job_ack', 'A ready job requires the actual loaded revision.', array( 'status' => 400 ) );
+						return;
+					}
+					if ( 'ready' === $request['status'] && 'knowledge' === $consumer && ( $request['loaded_model_identity_revision'] ?? null ) !== $manifest['model_identity_revision'] ) {
+						$result = new WP_Error( 'invalid_job_ack', 'Knowledge readiness requires the actual loaded model identity.', array( 'status' => 400 ) );
 						return;
 					}
 					if ( 'ready' === $request['status'] && '' !== $recipe && ( ( $request['loaded_revision'] ?? '' ) !== $manifest['source_revision'] || ( $request['loaded_recipe_revision'] ?? '' ) !== $recipe || ! is_string( $request['index_version'] ?? null ) || 1 !== preg_match( '/^[A-Za-z0-9][A-Za-z0-9._-]{0,199}$/D', $request['index_version'] ) || ! is_string( $request['expected_serving_revision'] ?? null ) || 1 !== preg_match( '/^[a-f0-9]{64}$/D', $request['expected_serving_revision'] ) || ( $request['serving_revision'] ?? '' ) !== $request['expected_serving_revision'] ) ) {
@@ -315,7 +382,8 @@ final class PreparationJobs {
 							$job['status'] = 'pending';
 						}
 						if ( 'knowledge' === $consumer ) {
-							$diagnostics = self::unprepared_documents( $request['unprepared_documents'] ?? array(), $manifest );
+							$job['loaded_model_identity_revision'] = $request['loaded_model_identity_revision'];
+							$diagnostics                           = self::unprepared_documents( $request['unprepared_documents'] ?? array(), $manifest );
 							if ( $diagnostics instanceof WP_Error ) {
 								$result = $diagnostics;
 								return;
@@ -337,6 +405,9 @@ final class PreparationJobs {
 								}
 								$job['error'] = 'Some current document associations still lack proven passages.';
 							}
+							$job['loaded_materialization_complete'] = true === ( $job['materialization_complete'] ?? false );
+							$job['loaded_preparation_complete']     = $job['preparation_complete'];
+							$job['loaded_unprepared_documents']     = $job['unprepared_documents'];
 						}
 					}
 					$state[ $consumer ] = $job;
@@ -359,15 +430,16 @@ final class PreparationJobs {
 	 * @param string              $source Current Woo source.
 	 * @param array<string,mixed> $previous Previous serving receipt.
 	 * @param string              $recipe Knowledge compiler identity, empty for legacy/engineering.
+	 * @param string              $identity Current knowledge model permissions.
 	 * @return array<string,mixed>
 	 */
-	private static function pending( string $consumer, string $source, array $previous, string $recipe ): array {
+	private static function pending( string $consumer, string $source, array $previous, string $recipe, string $identity ): array {
 		$superseded = $previous['superseded_recipes'] ?? array();
 		if ( '' !== ( $previous['recipe_revision'] ?? '' ) && ( $previous['recipe_revision'] ?? '' ) !== $recipe ) {
 			$superseded[] = $previous['recipe_revision'];
 		}
 		$job = array(
-			'job_id'           => hash( 'sha256', $consumer . '/' . $source . ( '' === $recipe ? '' : '/' . $recipe ) ),
+			'job_id'           => hash( 'sha256', $consumer . '/' . $source . ( '' === $recipe ? '' : '/' . $recipe ) . ( 'knowledge' === $consumer ? '/' . $identity : '' ) ),
 			'consumer'         => $consumer,
 			'source_revision'  => $source,
 			'recipe_revision'  => $recipe,
@@ -377,13 +449,14 @@ final class PreparationJobs {
 			'error'            => '',
 		);
 		if ( 'knowledge' === $consumer ) {
+			$job['model_identity_revision'] = $identity;
 			// Only compiler hashes are retained: forgetting one could let an old
 			// still-running worker silently replace the newer compiler requirement.
 			$job['superseded_recipes']       = array_values( array_unique( $superseded ) );
 			$job['preparation_complete']     = false;
 			$job['materialization_complete'] = false;
 			$job['activation_epoch']         = (int) ( $previous['activation_epoch'] ?? 0 );
-			foreach ( array( 'loaded_revision', 'index_version', 'loaded_recipe_revision', 'expected_serving_revision', 'serving_revision', 'loaded_activation_epoch' ) as $key ) {
+			foreach ( array( 'loaded_revision', 'index_version', 'loaded_recipe_revision', 'expected_serving_revision', 'serving_revision', 'loaded_activation_epoch', 'loaded_model_identity_revision', 'loaded_materialization_complete', 'loaded_preparation_complete', 'loaded_unprepared_documents' ) as $key ) {
 				if ( isset( $previous[ $key ] ) ) {
 					$job[ $key ] = $previous[ $key ];
 				}
@@ -406,6 +479,7 @@ final class PreparationJobs {
 			'serving_revision'          => 'serving_revision',
 			'index_version'             => 'index_version',
 			'activation_epoch'          => 'loaded_activation_epoch',
+			'model_identity_revision'   => 'loaded_model_identity_revision',
 		) as $actual => $stored ) {
 			if ( ! array_key_exists( $stored, $job ) || ( $loaded[ $actual ] ?? null ) !== $job[ $stored ] ) {
 				return false;
@@ -426,6 +500,60 @@ final class PreparationJobs {
 		ksort( $actual );
 		ksort( $expected );
 		return $actual === $expected;
+	}
+
+	/**
+	 * A complete diagnostic response can describe a legacy generation; an unknown body cannot revoke ready.
+	 *
+	 * @param array<string,mixed>|null $loaded Actual process observation.
+	 */
+	private static function valid_loaded_observation( ?array $loaded ): bool {
+		if ( null === $loaded ) {
+			return false;
+		}
+		foreach ( array( 'source_revision', 'model_identity_revision', 'recipe_revision', 'expected_serving_revision', 'serving_revision', 'index_version' ) as $key ) {
+			if ( ! is_string( $loaded[ $key ] ?? null ) ) {
+				return false;
+			}
+		}
+		if ( '' === $loaded['serving_revision'] || 1 !== preg_match( '/^[A-Za-z0-9][A-Za-z0-9._-]{0,199}$/D', $loaded['index_version'] ) || ! is_int( $loaded['activation_epoch'] ?? null ) || $loaded['activation_epoch'] < 0 || ! is_array( $loaded['products'] ?? null ) || ! array_is_list( $loaded['products'] ) ) {
+			return false;
+		}
+		$seen = array();
+		foreach ( $loaded['products'] as $product ) {
+			if ( ! is_array( $product ) || ! is_int( $product['product_id'] ?? null ) || $product['product_id'] < 1 || ! is_string( $product['product_revision'] ?? null ) || '' === $product['product_revision'] || isset( $seen[ $product['product_id'] ] ) ) {
+				return false;
+			}
+			$seen[ $product['product_id'] ] = true;
+		}
+		return true;
+	}
+
+	/**
+	 * A same-input immutable generation can repair queue status, never create new readiness.
+	 *
+	 * @param array<string,mixed> $job Current native queue state and last ACK.
+	 * @param array<string,mixed> $loaded Fresh complete process observation.
+	 * @param array<string,mixed> $manifest Current Woo inputs.
+	 */
+	private static function can_restore_materialization( array $job, array $loaded, array $manifest ): bool {
+		if ( ! in_array( $job['status'] ?? '', array( 'pending', 'failed', 'preparing' ), true ) || (int) ( $job['lease_expires_at'] ?? 0 ) > time() || true !== ( $job['loaded_materialization_complete'] ?? false ) || true !== ( $loaded['materialization_complete'] ?? false ) || ! is_bool( $job['loaded_preparation_complete'] ?? null ) || ( $loaded['preparation_complete'] ?? null ) !== $job['loaded_preparation_complete'] || ! is_array( $job['loaded_unprepared_documents'] ?? null ) ) {
+			return false;
+		}
+		foreach ( array(
+			'source_revision'         => 'loaded_revision',
+			'recipe_revision'         => 'loaded_recipe_revision',
+			'model_identity_revision' => 'loaded_model_identity_revision',
+		) as $current => $acknowledged ) {
+			if ( ! isset( $job[ $current ], $job[ $acknowledged ] ) || $job[ $current ] !== $job[ $acknowledged ] ) {
+				return false;
+			}
+		}
+		if ( ! self::matches_loaded( $job, $loaded ) ) {
+			return false;
+		}
+		$diagnostics = self::unprepared_documents( $loaded['unprepared_documents'] ?? null, $manifest );
+		return is_array( $diagnostics ) && $diagnostics === $job['loaded_unprepared_documents'];
 	}
 
 	/**

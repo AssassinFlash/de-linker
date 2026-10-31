@@ -415,6 +415,8 @@ def compile_procedures(
                     ],
                     "warranty_scope": evidence,
                 }
+    for proof in added.values():
+        proof["model_identity_revision"] = source.model_identity_revision
     return output, added
 
 

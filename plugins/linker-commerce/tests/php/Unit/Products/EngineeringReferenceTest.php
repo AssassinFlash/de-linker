@@ -176,6 +176,7 @@ final class EngineeringReferenceTest extends TestCase {
 		WP_Mock::userFunction( 'nocache_headers' );
 		foreach ( array( array( 'models' => array( 'TSM-460NEG9R.28' ) ), array( 'text' => 'Module TSM-460NEG9R.28' ) ) as $body ) {
 			$request = Mockery::mock( \WP_REST_Request::class );
+			$request->shouldReceive( 'get_body' )->andReturn( (string) json_encode( $body ) );
 			$request->shouldReceive( 'get_json_params' )->andReturn( $body );
 			$response = ( new Controller() )->dispatch( 'identify', $request );
 			$this->assertInstanceOf( \WP_REST_Response::class, $response );

@@ -78,7 +78,9 @@ def actual_input(
 
 
 def test_current_model_projections_are_embedded_before_store_and_answer_the_right_column(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
     deadlines: list[int] = []
     inventory = actual_input(tmp_path, monkeypatch, deadlines)
@@ -95,6 +97,10 @@ def test_current_model_projections_are_embedded_before_store_and_answer_the_righ
         publication_deadline=2_000_000_000,
     )
     assert deadlines == [2_000_000_000]
+    output = capsys.readouterr().out
+    for phase in ("chunk", "compile", "embed", "store"):
+        for event in ("start", "done"):
+            assert f'"phase": "{phase}", "event": "{event}"' in output
     meta = corpus.read_meta(directory / "corpus")
     rows = list(corpus.read_chunks(directory / "corpus"))
     assert meta.recipe_revision == recipe_revision()

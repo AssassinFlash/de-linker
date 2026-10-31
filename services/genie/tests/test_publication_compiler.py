@@ -231,6 +231,8 @@ def warranty_fixture() -> tuple[dict[str, Any], list[Chunk], Chunk, ScopeProof]:
     value = json.loads(
         gzip.decompress((FIXTURES / "warranty-procedure.json.gz").read_bytes())
     )
+    value["manifest"]["model_identity_revision"] = "fixture-identity-1"
+    value["model_scope"]["model_identity_revision"] = "fixture-identity-1"
     return (
         value["manifest"],
         [Chunk(**c) for c in value["original"]],
@@ -401,6 +403,7 @@ def test_claims_chain_cannot_use_generated_cover_or_numeric_warranty_benefits() 
 def manifest() -> dict[str, Any]:
     value = json.loads(gzip.decompress((FIXTURES / "manifest.json.gz").read_bytes()))
     assert isinstance(value, dict)
+    value["model_identity_revision"] = "fixture-identity-1"
     return value
 
 
@@ -1319,10 +1322,10 @@ def test_long_native_heading_is_identified_in_bounded_utf8_requests(
     identify = client.identify_text
     supplied: list[str] = []
 
-    def capture(text: str) -> dict[str, str]:
+    def capture(text: str, *, expected_revision: str = "") -> dict[str, str]:
         assert 0 < len(text.encode()) <= 16000
         supplied.append(text)
-        return identify(text)
+        return identify(text, expected_revision=expected_revision)
 
     monkeypatch.setattr(client, "identify_text", capture)
     compiled, scopes = compile_publication(original, raw, client, Words())
@@ -1342,6 +1345,7 @@ def test_actual_eta_certificate_subjects_are_bounded_and_revocable(
         gzip.decompress((FIXTURES / "eta-certificates.json.gz").read_bytes())
     )
     raw = fixture["manifest"]
+    raw["model_identity_revision"] = "fixture-identity-1"
     original = [Chunk(**row) for row in fixture["chunks"]]
     selected, proofs = compile_publication(original, raw, authority(raw), Words())
     source = Snapshot.read(raw)
@@ -1468,6 +1472,7 @@ def test_certificate_subject_rejects_unrelated_model_role_and_tampering() -> Non
         gzip.decompress((FIXTURES / "eta-certificates.json.gz").read_bytes())
     )
     raw = fixture["manifest"]
+    raw["model_identity_revision"] = "fixture-identity-1"
     original = [Chunk(**row) for row in fixture["chunks"]]
     selected, proofs = compile_publication(original, raw, authority(raw), Words())
     chunk = next(
@@ -1595,6 +1600,7 @@ def test_certificate_mixed_standard_line_cannot_return_technical_values(
         gzip.decompress((FIXTURES / "eta-certificates.json.gz").read_bytes())
     )
     raw = deepcopy(fixture["manifest"])
+    raw["model_identity_revision"] = "fixture-identity-1"
     document = next(d for d in raw["documents"] if d["title"].startswith("EN 50549-2"))
     product = next(p for p in raw["products"] if p["model"] == "GW10K-ETA-G20")
     pid, did = product["product_id"], document["document_id"]
@@ -1693,6 +1699,7 @@ def test_prior_certificate_exclusion_cannot_become_subject_proof(
         gzip.decompress((FIXTURES / "eta-certificates.json.gz").read_bytes())
     )
     raw = deepcopy(fixture["manifest"])
+    raw["model_identity_revision"] = "fixture-identity-1"
     document = next(
         d
         for d in raw["documents"]
@@ -1778,6 +1785,7 @@ def test_certificate_ordinary_proof_cannot_expose_technical_rating(
         gzip.decompress((FIXTURES / "eta-certificates.json.gz").read_bytes())
     )
     raw = deepcopy(fixture["manifest"])
+    raw["model_identity_revision"] = "fixture-identity-1"
     document = next(d for d in raw["documents"] if d["title"].startswith("EN 50549-2"))
     product = next(p for p in raw["products"] if p["model"] == "GW5K-ETA-G20")
     pid, did = product["product_id"], document["document_id"]
@@ -1859,6 +1867,7 @@ def test_actual_legacy_certificates_keep_only_bound_safe_facts(tmp_path: Path) -
         gzip.decompress((FIXTURES / "legacy-certificates.json.gz").read_bytes())
     )
     raw = fixture["manifest"]
+    raw["model_identity_revision"] = "fixture-identity-1"
     originals = [Chunk(**row) for row in fixture["chunks"]]
     selected, proofs = compile_publication(originals, raw, authority(raw), Words())
     snapshot = Snapshot.read(raw)

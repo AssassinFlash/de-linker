@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Linker publication worker credential scope
- * Description: Limits the native publication-purpose application password to the two worker job operations.
+ * Description: Limits the native publication-purpose application password to leased worker operations.
  *
  * @package Linker\Mu
  */
@@ -74,14 +74,14 @@ final class PublicationWorkerAccess {
 			// and turn a late failure into anonymous access. Keep the restriction
 			// from this verified pair; it confers no native capability or success.
 			$this->restricted = true;
-			if ( ! self::is_jobs_transport() ) {
+			if ( ! self::is_worker_transport() ) {
 				$error->add( 'rest_forbidden', __( 'Sorry, you are not allowed to do that.' ), array( 'status' => 403 ) );
 			}
 		}
 	}
 
 	/** The workers use native REST POST, without a method alias. */
-	private static function is_jobs_transport(): bool {
+	private static function is_worker_transport(): bool {
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput, WordPress.Security.NonceVerification -- Native Basic authentication, not a form: compare method and alias presence; none of these values selects an identity.
 		return defined( 'REST_REQUEST' ) && true === REST_REQUEST && ( ! defined( 'XMLRPC_REQUEST' ) || ! XMLRPC_REQUEST ) && 'POST' === ( $_SERVER['REQUEST_METHOD'] ?? '' ) && ! array_key_exists( '_method', $_GET ) && ! array_key_exists( '_method', $_POST ) && ! array_key_exists( 'HTTP_X_HTTP_METHOD_OVERRIDE', $_SERVER );
 	}
@@ -140,6 +140,24 @@ final class PublicationWorkerAccess {
 	}
 
 	/**
+	 * Admit only the compiler's JSON batch; its callback still checks capability,
+	 * bounded windows and the complete live lease. Public single reads stay outside
+	 * this purpose credential's scope.
+	 *
+	 * @param WP_REST_Request $request Effective native request.
+	 */
+	private static function is_worker_operation( WP_REST_Request $request ): bool {
+		if ( in_array( $request->get_route(), array( '/linker/v1/publication/jobs/claim', '/linker/v1/publication/jobs/ack' ), true ) ) {
+			return true;
+		}
+		if ( '/linker/v1/publication/identify' !== $request->get_route() ) {
+			return false;
+		}
+		$body = $request->get_json_params();
+		return is_array( $body['texts'] ?? null ) && ! $request->has_param( 'text' ) && ! $request->has_param( 'models' );
+	}
+
+	/**
 	 * Limits the selected credential without granting any native capability.
 	 *
 	 * @param mixed           $result  Earlier dispatch result.
@@ -157,7 +175,7 @@ final class PublicationWorkerAccess {
 			$this->http_dispatch_available = false;
 			$this->dispatched              = true;
 		}
-		if ( ! $http_dispatch || ! self::is_jobs_transport() || 'POST' !== $request->get_method() || ! in_array( $request->get_route(), array( '/linker/v1/publication/jobs/claim', '/linker/v1/publication/jobs/ack' ), true ) || $request->has_param( '_method' ) || $request->has_param( '_embed' ) || null !== $request->get_header( 'x-http-method-override' ) ) {
+		if ( ! $http_dispatch || ! self::is_worker_transport() || 'POST' !== $request->get_method() || ! self::is_worker_operation( $request ) || $request->has_param( '_method' ) || $request->has_param( '_embed' ) || null !== $request->get_header( 'x-http-method-override' ) ) {
 			return new WP_Error( 'rest_forbidden', __( 'Sorry, you are not allowed to do that.' ), array( 'status' => 403 ) );
 		}
 		return $result;

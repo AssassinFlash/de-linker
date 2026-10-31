@@ -38,7 +38,7 @@ from index.paths import INDEX_DIR, INVENTORY_PATH, PARSED_DIR, PDF_DIR  # noqa: 
 from index.preparation import recipe_revision  # noqa: E402
 from index.publication import inventory as fetch_inventory  # noqa: E402
 from linker_genie.preparation import RUNTIME_SERVING_REVISION  # noqa: E402
-from linker_genie.publication import Snapshot  # noqa: E402
+from linker_genie.publication import Snapshot, knowledge_progress  # noqa: E402
 from publish_index import (  # noqa: E402
     ActivationOutcomeUnconfirmed,
     NativeVerificationRejected,
@@ -121,11 +121,12 @@ try:
     loaded['preparation_complete'] = loaded.get('preparation_complete') is True
     loaded['materialization_complete'] = loaded.get('materialization_complete') is True
     loaded['recipe_revision'] = loaded.get('recipe_revision', '')
+    loaded['model_identity_revision'] = loaded.get('model_identity_revision', '')
     loaded['expected_serving_revision'] = loaded.get('expected_serving_revision', '')
     loaded['serving_revision'] = loaded.get('serving_revision', '')
     loaded['activation_epoch'] = loaded.get('activation_epoch', 0)
     loaded['unprepared_documents'] = loaded.get('unprepared_documents', [])
-    print(json.dumps({key: loaded[key] for key in ('index_version', 'source_revision', 'recipe_revision', 'expected_serving_revision', 'serving_revision', 'activation_epoch', 'products', 'materialization_complete', 'preparation_complete', 'unprepared_documents')}))
+    print(json.dumps({key: loaded[key] for key in ('index_version', 'source_revision', 'model_identity_revision', 'recipe_revision', 'expected_serving_revision', 'serving_revision', 'activation_epoch', 'products', 'materialization_complete', 'preparation_complete', 'unprepared_documents')}))
 except Exception:
     sys.exit(1)
 """
@@ -282,6 +283,7 @@ def retain_review_build(index_dir: Path, error: NativeVerificationRejected) -> P
         for name in (
             "version",
             "source_revision",
+            "model_identity_revision",
             "recipe_revision",
             "serving_revision",
             "activation_epoch",
@@ -325,6 +327,39 @@ def retain_review_build(index_dir: Path, error: NativeVerificationRejected) -> P
     return destination
 
 
+def _valid_loaded_observation(value: Any) -> bool:
+    """Known diagnostic shape, distinct from a transport error or partial body."""
+    if not isinstance(value, dict) or any(
+        not isinstance(value.get(key), str)
+        for key in (
+            "source_revision",
+            "model_identity_revision",
+            "recipe_revision",
+            "expected_serving_revision",
+            "serving_revision",
+            "index_version",
+        )
+    ):
+        return False
+    if (
+        not value["serving_revision"]
+        or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,199}", value["index_version"])
+        or type(value.get("activation_epoch")) is not int
+        or value["activation_epoch"] < 0
+        or not isinstance(value.get("products"), list)
+    ):
+        return False
+    products = value["products"]
+    return not any(
+        not isinstance(product, dict)
+        or type(product.get("product_id")) is not int
+        or product["product_id"] < 1
+        or not isinstance(product.get("product_revision"), str)
+        or not product["product_revision"]
+        for product in products
+    ) and len({product["product_id"] for product in products}) == len(products)
+
+
 class Worker:
     def __init__(
         self,
@@ -360,6 +395,7 @@ class Worker:
             self.jobs + "/claim",
             json={
                 "consumer": "knowledge",
+                "identity_protocol": "native-model-identification-v1",
                 "worker_id": self.worker_id,
                 "lease_seconds": self.lease,
                 "recipe_revision": self.recipe,
@@ -385,6 +421,7 @@ class Worker:
             "lease_expires_at": job.get("lease_expires_at"),
             "job_id": job["job_id"],
             "source_revision": job["source_revision"],
+            "model_identity_revision": job["model_identity_revision"],
             "recipe_revision": self.recipe,
             "serving_revision": self.serving,
             "verify_url": self.jobs + "/claim",
@@ -393,6 +430,7 @@ class Worker:
                 "consumer": "knowledge",
                 "job_id": job["job_id"],
                 "source_revision": job["source_revision"],
+                "model_identity_revision": job["model_identity_revision"],
                 "recipe_revision": self.recipe,
                 "lease_token": job["lease_token"],
                 "activation_epoch": job["activation_epoch"],
@@ -420,6 +458,7 @@ class Worker:
         index_version: str = "",
         loaded_recipe_revision: str = "",
         serving_revision: str = "",
+        loaded_model_identity_revision: str = "",
     ) -> None:
         response = self.client.post(
             self.jobs + "/ack",
@@ -428,6 +467,8 @@ class Worker:
                 "lease_token": job["lease_token"],
                 "source_revision": job["source_revision"],
                 "loaded_revision": loaded,
+                "model_identity_revision": job.get("model_identity_revision", ""),
+                "loaded_model_identity_revision": loaded_model_identity_revision,
                 "status": "ready" if loaded else "failed",
                 "error": error,
                 "prepared_products": products or [],
@@ -452,19 +493,29 @@ class Worker:
         if self.recipe:
             try:
                 before = loaded()
-                unavailable = not isinstance(before, dict)
-                if unavailable:
-                    before = None
-            except (Exception, SystemExit):
+                if not _valid_loaded_observation(before):
+                    raise RuntimeError("loaded observation is incomplete or malformed")
+            except (Exception, SystemExit) as error:
+                report_failure("loaded_observation", error)
+                before = None
                 unavailable = True
         job = self.claim(before, unavailable)
         if job is None:
             return False
         phase = "job_validation"
+        knowledge_progress(phase, "start")
         try:
             self._active_job = job
             snapshot = Snapshot.read(job["manifest"])
             revision = snapshot.source_revision
+            if (
+                not snapshot.model_identity_revision
+                or snapshot.model_identity_revision
+                != job.get("model_identity_revision")
+            ):
+                raise RuntimeError(
+                    "job model identity differs from its claimed manifest"
+                )
             if revision != job["source_revision"]:
                 raise RuntimeError(
                     "job manifest revision differs from its claimed source"
@@ -477,12 +528,17 @@ class Worker:
             ):
                 raise RuntimeError("native knowledge job has no activation lease epoch")
             phase = "prepare"
+            knowledge_progress(phase, "start")
             version = prepare(job["manifest"])
             phase = "loaded_readback"
+            knowledge_progress(phase, "start")
             actual = loaded()
             phase = "loaded_validation"
+            knowledge_progress(phase, "start")
             if (
                 actual.get("source_revision") != revision
+                or actual.get("model_identity_revision")
+                != snapshot.model_identity_revision
                 or actual.get("index_version") != version
                 or not isinstance(version, str)
                 or not version
@@ -525,6 +581,7 @@ class Worker:
                 and not actual.get("unprepared_documents")
             )
             phase = "ready_ack"
+            knowledge_progress(phase, "start")
             self.ack(
                 job,
                 str(actual["source_revision"]),
@@ -544,6 +601,9 @@ class Worker:
                 index_version=version,
                 loaded_recipe_revision=actual.get("recipe_revision", ""),
                 serving_revision=actual.get("serving_revision", ""),
+                loaded_model_identity_revision=actual.get(
+                    "model_identity_revision", ""
+                ),
             )
         except (
             Exception,
@@ -643,6 +703,17 @@ def main() -> int:
 
         def prepare(manifest: dict[str, Any]) -> str:
             phase = "inventory_source"
+            phase_started = time.monotonic()
+            knowledge_progress(phase, "start")
+
+            def stage(next_phase: str) -> None:
+                nonlocal phase, phase_started
+                knowledge_progress(
+                    phase, "done", seconds=time.monotonic() - phase_started
+                )
+                knowledge_progress(next_phase, "start")
+                phase, phase_started = next_phase, time.monotonic()
+
             try:
                 source = inventory.RestClient(args.rest_config)
                 # Prevent an operator accidentally building one site and acking another.
@@ -650,20 +721,20 @@ def main() -> int:
                     raise RuntimeError(
                         "inventory and publication queue belong to different sites"
                     )
-                phase = "inventory"
+                stage("inventory")
                 fetch_inventory(source, INVENTORY_PATH, PDF_DIR, manifest)
-                phase = "parse"
+                stage("parse")
                 parse.run(INVENTORY_PATH, PDF_DIR, PARSED_DIR, parse.WORKERS)
-                phase = "language_setup"
+                stage("language_setup")
                 import py3langid
 
                 from index.tokenizer import HFTokenizer
 
-                phase = "embedding_setup"
+                stage("embedding_setup")
                 embedder = build.document_embedder(build.DEFAULT_MODEL)
-                phase = "tokenizer_setup"
+                stage("tokenizer_setup")
                 tokenizer = HFTokenizer.from_pretrained(build.CHUNK_TOKENIZER)
-                phase = "build"
+                stage("build")
                 directory = build.build(
                     INVENTORY_PATH,
                     PDF_DIR,
@@ -674,15 +745,20 @@ def main() -> int:
                     lambda text: str(py3langid.classify(text)[0]),
                     activation_epoch=worker.activation()["epoch"],
                     publication_deadline=worker.lease_expiry(),
+                    publication_lease=worker.activation(),
                     on_created=lambda directory: record_build(INDEX_DIR, directory),
                 )
-                phase = "activation"
+                stage("activation")
                 activation = worker.activation()
                 activation.update(loaded_url=args.loaded_url, service_token=token)
-                phase = "publish"
+                stage("publish")
                 report = publish(directory, args.root, args.host, activation=activation)
+                stage("complete")
                 return str(report["index_version"])
             except (Exception, SystemExit) as error:
+                knowledge_progress(
+                    phase, "failed", seconds=time.monotonic() - phase_started
+                )
                 report_failure(f"prepare.{phase}", error)
                 raise
 

@@ -20,6 +20,67 @@ use PHPUnit\Framework\TestCase;
  */
 final class PublicationWorkerAccessTest extends TestCase {
 
+	/** The compiler's leased JSON batch reaches its own permission and lease checks once. */
+	public function test_a_json_identify_batch_can_use_the_native_purpose_credential_once(): void {
+		self::assertSame(
+			array(
+				'authentication_denied' => false,
+				'denied'                => array( false, true ),
+				'writes'                => 1,
+			),
+			self::run_scope(
+				array(
+					'requests' => array(
+						array(
+							'route' => '/linker/v1/publication/identify',
+							'json'  => array( 'texts' => array( 'MODEL-12' ) ),
+						),
+						array(
+							'route'          => '/linker/v1/publication/jobs/ack',
+							'reauthenticate' => true,
+						),
+					),
+				)
+			)
+		);
+	}
+
+	/** An allowed batch operation cannot widen the key to the public single-window oracle. */
+	public function test_identify_scope_requires_a_json_batch_without_single_mode_aliases(): void {
+		foreach ( array(
+			array( 'params' => array( 'texts' => array( 'MODEL-12' ) ) ),
+			array( 'json' => array( 'text' => 'MODEL-12' ) ),
+			array(
+				'json' => array(
+					'texts' => array( 'MODEL-12' ),
+					'text'  => null,
+				),
+			),
+			array(
+				'json' => array(
+					'texts'  => array( 'MODEL-12' ),
+					'models' => array(),
+				),
+			),
+			array( 'json' => array( 'texts' => null ) ),
+			array(
+				'json' => array(
+					'texts'  => array( 'MODEL-12' ),
+					'_embed' => false,
+				),
+			),
+		) as $request ) {
+			self::assertSame(
+				array(
+					'authentication_denied' => false,
+					'denied'                => array( true ),
+					'writes'                => 0,
+				),
+				self::run_scope( array( 'requests' => array( $request + array( 'route' => '/linker/v1/publication/identify' ) ) ) )
+			);
+		}
+	}
+
 	/** A native purpose credential cannot inherit the administrator's unrelated writes. */
 	public function test_a_verified_purpose_key_cannot_write_a_non_job_route(): void {
 		self::assertSame(

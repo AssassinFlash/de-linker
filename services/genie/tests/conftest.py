@@ -57,6 +57,14 @@ SHELL = {HEADER: SHELL_TOKEN}
 
 
 @pytest.fixture(autouse=True)
+def isolate_system_log(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Progress/failure metadata uses a real operator sink only outside tests."""
+    import syslog
+
+    monkeypatch.setattr(syslog, "syslog", lambda *_args: None)
+
+
+@pytest.fixture(autouse=True)
 def _service_token(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv(TOKEN_VARIABLE, SHELL_TOKEN)
 

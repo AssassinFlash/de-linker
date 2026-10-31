@@ -49,6 +49,14 @@ trait CurrentFaqProduct {
 		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->andReturn( true )->byDefault();
 		WP_Mock::userFunction( 'has_filter' )->andReturn( false )->byDefault();
 		WP_Mock::userFunction( 'get_posts' )->andReturn( array( $id ) )->byDefault();
+		WP_Mock::userFunction( 'wp_get_object_terms' )->andReturn(
+			array(
+				(object) array(
+					'object_id' => $id,
+					'name'      => 'MODEL-' . $id,
+				),
+			)
+		)->byDefault();
 		WP_Mock::userFunction( 'get_post_type' )->with( $id )->andReturn( 'product' )->byDefault();
 		WP_Mock::userFunction( 'get_post_status' )->with( $id )->andReturn( 'publish' )->byDefault();
 		WP_Mock::userFunction( 'get_post' )->with( $id )->andReturn(

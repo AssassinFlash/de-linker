@@ -12,6 +12,7 @@ namespace Linker\Commerce\Tests\Unit\Products\Publication;
 use Linker\Commerce\Products\EngineeringReference;
 use Linker\Commerce\Products\Publication;
 use Linker\Commerce\Products\Publication\PreparationJobs;
+use Linker\Commerce\Products\Publication\Controller;
 use Mockery;
 use WP_Mock;
 use WP_Mock\Tools\TestCase;
@@ -70,7 +71,7 @@ final class PreparationJobsTest extends TestCase {
 	/** One fresh source read reconciles both consumers and leases its exact manifest. */
 	public function test_claim_reconciles_both_consumers_with_one_fresh_source_read(): void {
 		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->once()->andReturn( true );
-		WP_Mock::userFunction( 'get_posts' )->once()->andReturn( array( 12 ) );
+		WP_Mock::userFunction( 'get_posts' )->twice()->andReturn( array( 12 ) );
 		WP_Mock::userFunction( 'delete_option' )->with( 'linker_publication_pending' )->once()->andReturn( true );
 		WP_Mock::userFunction( 'wp_generate_password' )->andReturn( 'fixture-token' );
 		$result = ( new PreparationJobs() )->claim( 'knowledge', 'mac', 600, str_repeat( 'a', 64 ) );
@@ -101,7 +102,7 @@ final class PreparationJobsTest extends TestCase {
 			$this->assertSame( 'pending', $this->state['knowledge']['status'] );
 			$this->assertFalse( $this->state['knowledge']['preparation_complete'] );
 			$this->assertSame( 'Some current document associations still lack proven passages.', $this->state['knowledge']['error'] );
-			$this->assertTrue( PreparationJobs::readiness( 12, $request['prepared_products'][0]['product_revision'] )['knowledge'] );
+			$this->assertTrue( PreparationJobs::readiness( 12, $request['prepared_products'][0]['product_revision'], $request['model_identity_revision'] )['knowledge'] );
 			$this->assertSame( 0, $this->state['knowledge']['lease_expires_at'] );
 			$this->assertArrayNotHasKey( 'lease_token', $this->state['knowledge'] );
 		}
@@ -240,7 +241,7 @@ final class PreparationJobsTest extends TestCase {
 
 	/** Receipt metadata must describe the actual source, recipe and index generation. */
 	public function test_recipe_loaded_identity_mismatches_are_rejected(): void {
-		foreach ( array( 'recipe_revision', 'loaded_recipe_revision', 'loaded_revision', 'index_version', 'expected_serving_revision', 'serving_revision', 'activation_epoch' ) as $field ) {
+		foreach ( array( 'recipe_revision', 'loaded_recipe_revision', 'loaded_revision', 'index_version', 'expected_serving_revision', 'serving_revision', 'activation_epoch', 'model_identity_revision', 'loaded_model_identity_revision' ) as $field ) {
 			$request           = $this->recipe_receipt();
 			$request[ $field ] = '';
 			$result            = ( new PreparationJobs() )->acknowledge( $request );
@@ -272,10 +273,11 @@ final class PreparationJobsTest extends TestCase {
 
 	/** Explicit code rollback uses a current-recipe compare-and-swap, without data rollback. */
 	public function test_known_recipe_rollback_preserves_woo_source_and_other_consumer(): void {
-		$request                                        = $this->recipe_receipt();
-		$this->state['knowledge']['loaded_products']    = array( 12 => $request['prepared_products'][0]['product_revision'] );
-		$this->state['knowledge']['superseded_recipes'] = array( str_repeat( 'b', 64 ) );
-		$this->state['engineering']                     = array(
+		$request                                     = $this->recipe_receipt();
+		$this->state['knowledge']['loaded_products'] = array( 12 => $request['prepared_products'][0]['product_revision'] );
+		$this->state['knowledge']['loaded_model_identity_revision'] = $request['model_identity_revision'];
+		$this->state['knowledge']['superseded_recipes']             = array( str_repeat( 'b', 64 ) );
+		$this->state['engineering']                                 = array(
 			'status'          => 'ready',
 			'source_revision' => 'untouched-engine',
 		);
@@ -288,7 +290,7 @@ final class PreparationJobsTest extends TestCase {
 		$this->assertSame( 0, $this->state['knowledge']['lease_expires_at'] );
 		$this->assertArrayNotHasKey( 'lease_token', $this->state['knowledge'] );
 		$this->assertSame( array( str_repeat( 'a', 64 ) ), $this->state['knowledge']['superseded_recipes'] );
-		$this->assertTrue( PreparationJobs::readiness( 12, $request['prepared_products'][0]['product_revision'] )['knowledge'] );
+		$this->assertTrue( PreparationJobs::readiness( 12, $request['prepared_products'][0]['product_revision'], $request['model_identity_revision'] )['knowledge'] );
 		$this->assertSame(
 			array(
 				'status'          => 'ready',
@@ -344,7 +346,7 @@ final class PreparationJobsTest extends TestCase {
 		$this->assertIsArray( $result );
 		$this->assertTrue( $result['verified'] );
 		$this->assertSame( $before, $this->state );
-		foreach ( array( 'source_revision', 'recipe_revision', 'lease_token', 'activation_epoch' ) as $field ) {
+		foreach ( array( 'source_revision', 'recipe_revision', 'lease_token', 'activation_epoch', 'model_identity_revision' ) as $field ) {
 			$old           = $verify;
 			$old[ $field ] = 'activation_epoch' === $field ? 2 : 'old';
 			$this->assertInstanceOf( \WP_Error::class, ( new PreparationJobs() )->verify_lease( $old ) );
@@ -366,6 +368,7 @@ final class PreparationJobsTest extends TestCase {
 			'activation_epoch'          => $request['activation_epoch'],
 			'index_version'             => $request['index_version'],
 			'products'                  => $request['prepared_products'],
+			'model_identity_revision'   => $request['model_identity_revision'],
 		);
 		WP_Mock::userFunction( 'delete_option' )->with( 'linker_publication_pending' )->andReturn( true );
 		WP_Mock::userFunction( 'wp_generate_password' )->andReturn( 'repair-token' );
@@ -377,6 +380,304 @@ final class PreparationJobsTest extends TestCase {
 		$this->assertSame( 4, $result['job']['activation_epoch'] );
 		$this->assertSame( $before_products, $this->state['knowledge']['loaded_products'] );
 		$this->assertSame( 'preparing', $this->state['knowledge']['status'] );
+	}
+
+	/** A failed process observation cannot revoke an acknowledged materialized generation. */
+	public function test_unknown_loaded_observation_preserves_ready_without_new_lease(): void {
+		$request                         = $this->recipe_receipt();
+		$request['preparation_complete'] = false;
+		$request['unprepared_documents'] = $this->diagnostic( 'no_proven_passage' );
+		( new PreparationJobs() )->acknowledge( $request );
+		$before = $this->state['knowledge'];
+		WP_Mock::userFunction( 'delete_option' )->with( 'linker_publication_pending' )->andReturn( true );
+		WP_Mock::userFunction( 'wp_generate_password' )->andReturn( 'must-not-be-leased' );
+		$result = ( new PreparationJobs() )->claim( 'knowledge', 'mac', 600, str_repeat( 'a', 64 ), null, true );
+		$this->assertSame( array( 'job' => null ), $result );
+		$this->assertSame( $before, $this->state['knowledge'] );
+		$this->assertSame( 'ready', $this->state['knowledge']['status'] );
+		$this->assertSame( 3, $this->state['knowledge']['activation_epoch'] );
+	}
+
+	/** Invalid JSON shapes are unknown observations, not proof of a changed generation. */
+	public function test_malformed_loaded_observation_does_not_revoke_ready(): void {
+		$request = $this->recipe_receipt();
+		( new PreparationJobs() )->acknowledge( $request );
+		$before = $this->state['knowledge'];
+		WP_Mock::userFunction( 'delete_option' )->with( 'linker_publication_pending' )->andReturn( true );
+		WP_Mock::userFunction( 'wp_generate_password' )->andReturn( 'must-not-be-leased' );
+		$this->assertSame( array( 'job' => null ), ( new PreparationJobs() )->claim( 'knowledge', 'mac', 600, str_repeat( 'a', 64 ), array( 'index_version' => 'partial-response' ) ) );
+		$this->assertSame( $before, $this->state['knowledge'] );
+	}
+
+	/** Unknown bootstrap still prepares because no native generation has been acknowledged. */
+	public function test_unknown_bootstrap_still_claims_a_real_preparation(): void {
+		WP_Mock::userFunction( 'delete_option' )->with( 'linker_publication_pending' )->andReturn( true );
+		WP_Mock::userFunction( 'wp_generate_password' )->andReturn( 'bootstrap-token' );
+		$result = ( new PreparationJobs() )->claim( 'knowledge', 'mac', 600, str_repeat( 'a', 64 ), null, true );
+		$this->assertIsArray( $result );
+		$this->assertIsArray( $result['job'] );
+		$this->assertSame( 1, $result['job']['activation_epoch'] );
+		$this->assertSame( 'preparing', $this->state['knowledge']['status'] );
+	}
+
+	/** Restore only a native-ACKed same-input materialization, without relabeling its epoch. */
+	public function test_failed_same_input_restores_trusted_receipt_without_rebuilding(): void {
+		$request                         = $this->recipe_receipt();
+		$request['preparation_complete'] = false;
+		$request['unprepared_documents'] = $this->diagnostic( 'no_proven_passage' );
+		( new PreparationJobs() )->acknowledge( $request );
+		$this->state['knowledge']['status']                   = 'failed';
+		$this->state['knowledge']['activation_epoch']         = 4;
+		$this->state['knowledge']['materialization_complete'] = false;
+		$this->state['knowledge']['unprepared_documents']     = array();
+		WP_Mock::userFunction( 'delete_option' )->with( 'linker_publication_pending' )->andReturn( true );
+		WP_Mock::userFunction( 'wp_generate_password' )->andReturn( 'must-not-be-leased' );
+		$result = ( new PreparationJobs() )->claim( 'knowledge', 'mac', 600, str_repeat( 'a', 64 ), $this->loaded_receipt( $request ) );
+		$this->assertSame( array( 'job' => null ), $result );
+		$this->assertSame( 'ready', $this->state['knowledge']['status'] );
+		$this->assertTrue( $this->state['knowledge']['materialization_complete'] );
+		$this->assertFalse( $this->state['knowledge']['preparation_complete'] );
+		$this->assertSame( $request['unprepared_documents'], $this->state['knowledge']['unprepared_documents'] );
+		$this->assertSame( 4, $this->state['knowledge']['activation_epoch'] );
+		$this->assertSame( 3, $this->state['knowledge']['loaded_activation_epoch'] );
+	}
+
+	/** A fresh readback cannot cancel a current worker's native lease. */
+	public function test_trusted_receipt_recovery_does_not_supersede_active_lease(): void {
+		$request = $this->recipe_receipt();
+		( new PreparationJobs() )->acknowledge( $request );
+		$this->state['knowledge']['status']           = 'preparing';
+		$this->state['knowledge']['activation_epoch'] = 4;
+		$this->state['knowledge']['lease_token']      = 'another-live-worker';
+		$this->state['knowledge']['lease_expires_at'] = time() + 300;
+		$before                                       = $this->state['knowledge'];
+		WP_Mock::userFunction( 'delete_option' )->with( 'linker_publication_pending' )->andReturn( true );
+		$this->assertSame( array( 'job' => null ), ( new PreparationJobs() )->claim( 'knowledge', 'mac', 600, str_repeat( 'a', 64 ), $this->loaded_receipt( $request ) ) );
+		$this->assertSame( $before, $this->state['knowledge'] );
+	}
+
+	/** Body fields cannot invent prior materialization or bypass changed inputs. */
+	public function test_receipt_recovery_requires_native_snapshot_and_same_inputs(): void {
+		foreach ( array( 'no_snapshot', 'recipe_changed', 'different_loaded_identity' ) as $case ) {
+			$request = $this->recipe_receipt();
+			( new PreparationJobs() )->acknowledge( $request );
+			$this->state['knowledge']['status']           = 'failed';
+			$this->state['knowledge']['activation_epoch'] = 4;
+			$loaded                                       = $this->loaded_receipt( $request );
+			$recipe                                       = str_repeat( 'a', 64 );
+			if ( 'no_snapshot' === $case ) {
+				unset( $this->state['knowledge']['loaded_materialization_complete'] );
+			} elseif ( 'recipe_changed' === $case ) {
+				$recipe = str_repeat( 'b', 64 );
+			} else {
+				$loaded['model_identity_revision'] = 'another-model-map';
+			}
+			WP_Mock::userFunction( 'delete_option' )->with( 'linker_publication_pending' )->andReturn( true );
+			WP_Mock::userFunction( 'wp_generate_password' )->andReturn( 'actual-new-lease' );
+			$result = ( new PreparationJobs() )->claim( 'knowledge', 'mac', 600, $recipe, $loaded );
+			$this->assertIsArray( $result );
+			$this->assertIsArray( $result['job'], $case );
+			$this->assertSame( 5, $result['job']['activation_epoch'], $case );
+			$this->assertSame( 3, $this->state['knowledge']['loaded_activation_epoch'], $case );
+			$this->assertSame( 'preparing', $this->state['knowledge']['status'], $case );
+		}
+	}
+
+	/** One fresh native map serves independent windows without any PDF read. */
+	public function test_authenticated_batch_reuses_one_map_without_cross_window_hits(): void {
+		WP_Mock::userFunction( 'wp_get_object_terms' )->andReturn(
+			array(
+				(object) array(
+					'object_id' => 12,
+					'name'      => 'Energy Cabinet Pro',
+				),
+			)
+		);
+		$request             = $this->recipe_receipt();
+		$request['consumer'] = 'knowledge';
+		$request['texts']    = array_merge( array( 'Energy Cabinet', 'Pro' ), array_fill( 0, 18, 'Other source text.' ) );
+		WP_Mock::userFunction( 'current_user_can' )->with( 'manage_woocommerce' )->andReturn( true );
+		WP_Mock::userFunction( 'wp_upload_dir' )->andReturnUsing(
+			static function (): never {
+				throw new \LogicException( 'Batch identity cannot read documents.' );
+			}
+		);
+		$refreshes = 0;
+		$reads     = 0;
+		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->andReturnUsing(
+			static function () use ( &$refreshes ): bool {
+				++$refreshes;
+				return true;
+			}
+		);
+		WP_Mock::userFunction( 'get_posts' )->andReturnUsing(
+			static function () use ( &$reads ): array {
+				++$reads;
+				return array( 12 );
+			}
+		);
+		foreach ( array( false, true ) as $whole ) {
+			if ( $whole ) {
+				$request['texts'][0] = 'Use Energy Cabinet Pro here.';
+			}
+			$response = $this->dispatch( 'identify', $request );
+			$this->assertInstanceOf( \WP_REST_Response::class, $response );
+			$data = $response->get_data();
+			$this->assertCount( $whole ? 1 : 0, $data['models'] );
+			$this->assertSame( $request['model_identity_revision'], $data['model_identity_revision'] );
+			$this->assertSame( 20, $data['metrics']['input_windows'] );
+			$this->assertSame( 1, $data['metrics']['identity_reads'] );
+			$this->assertSame( array_sum( array_map( 'strlen', $request['texts'] ) ), $data['metrics']['input_bytes'] );
+			$this->assertSame( 1, $refreshes );
+			$this->assertSame( 1, $reads );
+			$refreshes = 0;
+			$reads     = 0;
+		}
+	}
+
+	/** Authentication, bounded independent inputs and the entire lease remain mandatory. */
+	public function test_batch_rejects_invalid_auth_budget_and_lease_context(): void {
+		$request             = $this->recipe_receipt();
+		$request['consumer'] = 'knowledge';
+		$request['texts']    = array( 'MODEL-12' );
+		$allowed             = false;
+		$logged_in           = false;
+		// References are necessary because the same route is exercised across authentication states.
+		WP_Mock::userFunction( 'current_user_can' )->andReturnUsing(
+			static function () use ( &$allowed ): bool {
+				return $allowed;
+			}
+		);
+		WP_Mock::userFunction( 'is_user_logged_in' )->andReturnUsing(
+			static function () use ( &$logged_in ): bool {
+				return $logged_in;
+			}
+		);
+		foreach ( array( 401, 403 ) as $status ) {
+			$error = $this->dispatch( 'identify', $request );
+			$this->assertInstanceOf( \WP_Error::class, $error );
+			$this->assertSame( array( 'status' => $status ), $error->get_error_data() );
+			$logged_in = true;
+		}
+		$allowed = true;
+		foreach ( array( array(), array_fill( 0, 21, 'MODEL-12' ), array( str_repeat( 'x', 16001 ) ), array( "\xff" ), array( ' ' ) ) as $texts ) {
+			$invalid          = $request;
+			$invalid['texts'] = $texts;
+			$error            = $this->dispatch( 'identify', $invalid );
+			$this->assertInstanceOf( \WP_Error::class, $error );
+			$this->assertSame( 'invalid_models', $error->get_error_code() );
+		}
+		foreach ( array( 'text', 'models' ) as $mixed ) {
+			$invalid           = $request;
+			$invalid[ $mixed ] = null;
+			$this->assertInstanceOf( \WP_Error::class, $this->dispatch( 'identify', $invalid ) );
+		}
+		foreach ( array( 'job_id', 'source_revision', 'recipe_revision', 'lease_token', 'activation_epoch', 'model_identity_revision', 'consumer' ) as $field ) {
+			$invalid           = $request;
+			$invalid[ $field ] = 'activation_epoch' === $field ? 2 : 'old';
+			$error             = $this->dispatch( 'identify', $invalid );
+			$this->assertInstanceOf( \WP_Error::class, $error, $field );
+			$this->assertSame( array( 'status' => 409 ), $error->get_error_data() );
+		}
+		$this->state['knowledge']['lease_expires_at'] = time() - 1;
+		$this->assertInstanceOf( \WP_Error::class, $this->dispatch( 'identify', $request ) );
+	}
+
+	/** An old client or unversioned loaded receipt never proves current knowledge. */
+	public function test_unknown_identity_is_not_a_claim_or_loaded_permission(): void {
+		$error = $this->dispatch(
+			'jobs/claim',
+			array(
+				'consumer'      => 'knowledge',
+				'worker_id'     => 'old-worker',
+				'lease_seconds' => 600,
+			)
+		);
+		$this->assertInstanceOf( \WP_Error::class, $error );
+		$this->assertSame( 'identity_required', $error->get_error_code() );
+		$request = $this->recipe_receipt();
+		$legacy  = $request;
+		unset( $legacy['model_identity_revision'] );
+		$this->assertInstanceOf( \WP_Error::class, ( new PreparationJobs() )->verify_lease( $legacy + array( 'consumer' => 'knowledge' ) ) );
+		$this->assertInstanceOf( \WP_Error::class, ( new PreparationJobs() )->acknowledge( $legacy ) );
+		( new PreparationJobs() )->acknowledge( $request );
+		unset( $this->state['knowledge']['loaded_model_identity_revision'] );
+		$this->assertFalse( PreparationJobs::readiness( 12, $request['prepared_products'][0]['product_revision'], $request['model_identity_revision'] )['knowledge'] );
+	}
+
+	/** Draft labels fence knowledge while the published source and engineering projection stay stable. */
+	public function test_draft_identity_change_invalidates_only_knowledge_and_scopes(): void {
+		$draft_model = 'DRAFT-13';
+		WP_Mock::userFunction( 'get_posts' )->andReturnUsing( static fn ( array $args ): array => is_array( $args['post_status'] ) ? array( 12, 13 ) : ( isset( $args['date_query'] ) ? array() : array( 12 ) ) );
+		WP_Mock::userFunction( 'get_post_type' )->with( 13 )->andReturn( 'product' );
+		WP_Mock::userFunction( 'get_post_status' )->with( 13 )->andReturn( 'draft' );
+		WP_Mock::userFunction( 'wp_get_object_terms' )->andReturnUsing(
+			static function () use ( &$draft_model ): array {
+				return array(
+					(object) array(
+						'object_id' => 12,
+						'name'      => 'MODEL-12',
+					),
+					(object) array(
+						'object_id' => 13,
+						'name'      => $draft_model,
+					),
+				);
+			}
+		);
+		WP_Mock::userFunction( 'update_postmeta_cache' );
+		WP_Mock::userFunction( 'update_object_term_cache' );
+		$old = $this->recipe_receipt();
+		( new PreparationJobs() )->acknowledge( $old );
+		$this->state['engineering'] = array(
+			'source_revision' => $old['source_revision'],
+			'status'          => 'ready',
+			'job_id'          => 'stable-engine',
+		);
+		$engine_before              = $this->state['engineering'];
+		$feed_before                = \Linker\Commerce\Products\EngineeringFeed::feed( '2027-01-01' );
+		$draft_model                = 'DRAFT-13-RENAMED';
+		$manifest                   = Publication::manifest();
+		$this->assertSame( $old['source_revision'], $manifest['source_revision'] );
+		$this->assertNotSame( $old['model_identity_revision'], $manifest['model_identity_revision'] );
+		$this->assertFalse( $manifest['products'][0]['ready']['knowledge'] );
+		$this->assertFalse( Publication::validate( array( 'model_identity_revision' => $old['model_identity_revision'] ) )['valid'] );
+		$this->assertTrue(
+			Publication::validate(
+				array(
+					'products'  => array(),
+					'documents' => array(),
+				)
+			)['valid']
+		);
+		$feed_after = \Linker\Commerce\Products\EngineeringFeed::feed( '2027-01-01' );
+		unset( $feed_before['generated_at'], $feed_after['generated_at'] );
+		$this->assertSame( $feed_before, $feed_after );
+		$this->assertArrayNotHasKey( 'model_identity_revision', $feed_after );
+		$rejected = ( new PreparationJobs() )->verify_identity_lease( $old + array( 'consumer' => 'knowledge' ), $manifest['model_identity_revision'] );
+		$this->assertInstanceOf( \WP_Error::class, $rejected );
+		$this->assertSame( 'stale_job', $rejected->get_error_code() );
+		WP_Mock::userFunction( 'delete_option' )->with( 'linker_publication_pending' )->andReturn( true );
+		( new PreparationJobs() )->reconcile();
+		$this->assertSame( 'pending', $this->state['knowledge']['status'] );
+		$this->assertNotSame( $old['job_id'], $this->state['knowledge']['job_id'] );
+		$this->assertSame( $engine_before, $this->state['engineering'] );
+		$this->assertInstanceOf( \WP_Error::class, ( new PreparationJobs() )->acknowledge( $old ) );
+	}
+
+	/**
+	 * Run the real REST dispatcher without creating a WordPress instance.
+	 *
+	 * @param string              $path Registered action.
+	 * @param array<string,mixed> $body Decoded request.
+	 */
+	private function dispatch( string $path, array $body ): \WP_REST_Response|\WP_Error {
+		WP_Mock::userFunction( 'nocache_headers' );
+		WP_Mock::userFunction( 'is_wp_error' )->andReturnUsing( static fn ( mixed $value ): bool => $value instanceof \WP_Error );
+		$request = Mockery::mock( \WP_REST_Request::class );
+		$request->shouldReceive( 'get_body' )->andReturn( (string) json_encode( $body ) );
+		$request->shouldReceive( 'get_json_params' )->andReturn( $body );
+		return ( new Controller() )->dispatch( $path, $request );
 	}
 
 	/**
@@ -401,6 +702,28 @@ final class PreparationJobsTest extends TestCase {
 				'materialization_complete'  => true,
 				'preparation_complete'      => true,
 			)
+		);
+	}
+
+	/**
+	 * Actual process diagnostic corresponding to one native ACK fixture.
+	 *
+	 * @param array<string,mixed> $request Accepted generation receipt.
+	 * @return array<string,mixed>
+	 */
+	private function loaded_receipt( array $request ): array {
+		return array(
+			'source_revision'           => $request['loaded_revision'],
+			'model_identity_revision'   => $request['loaded_model_identity_revision'],
+			'recipe_revision'           => $request['loaded_recipe_revision'],
+			'expected_serving_revision' => $request['expected_serving_revision'],
+			'serving_revision'          => $request['serving_revision'],
+			'index_version'             => $request['index_version'],
+			'activation_epoch'          => $request['activation_epoch'],
+			'products'                  => $request['prepared_products'],
+			'materialization_complete'  => $request['materialization_complete'],
+			'preparation_complete'      => $request['preparation_complete'],
+			'unprepared_documents'      => $request['unprepared_documents'] ?? array(),
 		);
 	}
 
@@ -437,13 +760,18 @@ final class PreparationJobsTest extends TestCase {
 				'status'           => 'preparing',
 			),
 		);
+		if ( 'knowledge' === $consumer ) {
+			$this->state[ $consumer ]['model_identity_revision'] = $manifest['model_identity_revision'];
+		}
 		return array(
-			'job_id'            => 'fixture-' . $consumer,
-			'source_revision'   => $manifest['source_revision'],
-			'lease_token'       => 'fixture-token',
-			'status'            => 'ready',
-			'loaded_revision'   => 'actual-loaded-index-fixture',
-			'prepared_products' => array(
+			'model_identity_revision'        => $manifest['model_identity_revision'],
+			'loaded_model_identity_revision' => $manifest['model_identity_revision'],
+			'job_id'                         => 'fixture-' . $consumer,
+			'source_revision'                => $manifest['source_revision'],
+			'lease_token'                    => 'fixture-token',
+			'status'                         => 'ready',
+			'loaded_revision'                => 'actual-loaded-index-fixture',
+			'prepared_products'              => array(
 				array(
 					'product_id'       => 12,
 					'product_revision' => $manifest['products'][0]['product_revision'],

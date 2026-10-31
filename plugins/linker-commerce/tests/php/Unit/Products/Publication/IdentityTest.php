@@ -148,7 +148,8 @@ final class IdentityTest extends TestCase {
 		$term_reads = array();
 		$response   = $this->identify( array( 'text' => 'MODEL-12 DRAFT-13' ) );
 		$this->assertInstanceOf( \WP_REST_Response::class, $response );
-		$this->assertSame( array( 'models' => array() ), $response->get_data() );
+		$this->assertSame( array(), $response->get_data()['models'] );
+		$this->assertMatchesRegularExpression( '/^[a-f0-9]{64}$/D', $response->get_data()['model_identity_revision'] );
 		$this->assertSame( array(), $primes );
 		$this->assertSame( array(), $term_reads );
 	}
@@ -303,6 +304,7 @@ final class IdentityTest extends TestCase {
 	 */
 	private function identify( array $body ): \WP_REST_Response|\WP_Error {
 		$request = Mockery::mock( \WP_REST_Request::class );
+		$request->shouldReceive( 'get_body' )->andReturn( (string) json_encode( $body ) );
 		$request->shouldReceive( 'get_json_params' )->andReturn( $body );
 		return ( new Controller() )->dispatch( 'identify', $request );
 	}

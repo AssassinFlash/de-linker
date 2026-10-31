@@ -184,7 +184,12 @@ def _post_verify(
                 or result.get("verified") is not True
                 or any(
                     result.get(name) != activation.get(name)
-                    for name in ("job_id", "source_revision", "recipe_revision")
+                    for name in (
+                        "job_id",
+                        "source_revision",
+                        "recipe_revision",
+                        "model_identity_revision",
+                    )
                 )
                 or type(result.get("activation_epoch")) is not int
                 or result.get("activation_epoch") != activation.get("epoch")
@@ -245,7 +250,12 @@ def _verify_activation(activation: dict[str, Any]) -> None:
         or body.get("consumer") != "knowledge"
     ):
         raise ValueError("activation requires a native knowledge lease")
-    for name in ("job_id", "source_revision", "recipe_revision"):
+    for name in (
+        "job_id",
+        "source_revision",
+        "recipe_revision",
+        "model_identity_revision",
+    ):
         if (
             not isinstance(activation.get(name), str)
             or not activation[name]
@@ -335,10 +345,56 @@ def _prune_expired_uploads(root: Path) -> None:
             shutil.rmtree(stage)
 
 
+def _delta_basis(root: Path) -> tuple[str | None, str]:
+    """A verified immutable current file is bytes only, including legacy indexes."""
+    live = current(root)
+    if live is None:
+        return None, "no_current"
+    if Path(live).name != live or live.startswith("."):
+        return None, "uncontrolled_current_path"
+    directory = root / live
+    paths = (directory / INDEX_FILE, directory / "manifest.json")
+    if (
+        directory.is_symlink()
+        or not directory.is_dir()
+        or any(path.is_symlink() or not path.is_file() for path in paths)
+    ):
+        return None, "unavailable_current_files"
+    try:
+        manifest = json.loads(paths[1].read_text(encoding="utf-8"))
+        if (
+            not isinstance(manifest, dict)
+            or manifest.get("version") != live
+            or not isinstance(manifest.get("file"), dict)
+            or manifest["file"].get("name") != INDEX_FILE
+        ):
+            return None, "invalid_current_manifest"
+        if _sha256(paths[0]) != manifest["file"].get("sha256"):
+            return None, "current_checksum_mismatch"
+        db = sqlite3.connect(f"file:{paths[0]}?mode=ro", uri=True)
+        try:
+            version = db.execute(
+                "SELECT value FROM meta WHERE key='version'"
+            ).fetchone()
+        finally:
+            db.close()
+        if version != (live,):
+            return None, "current_version_mismatch"
+    except (OSError, ValueError, sqlite3.Error):
+        return None, "unreadable_current"
+    # No source/model/permission identity is inherited. The new candidate is
+    # independently checked in full by validate()/activate(), after rsync.
+    return str(directory.resolve()), "verified_current_bytes"
+
+
 def prepare(
-    root: Path, version: str, activation: dict[str, Any] | None = None
+    root: Path,
+    version: str,
+    activation: dict[str, Any] | None = None,
+    *,
+    reuse_basis: bool = False,
 ) -> dict[str, object]:
-    """An empty upload directory for one release."""
+    """Own one upload; optionally seed its independent file from current bytes."""
     if not version or Path(version).name != version or version.startswith("."):
         raise ValueError("invalid index version")
     incoming = root / f".incoming-{version}"
@@ -358,7 +414,24 @@ def prepare(
             else None,
         }
         (incoming / UPLOAD_OWNER).write_text(json.dumps(owner))
-    return {"incoming": str(incoming), "owner_token": owner_token}
+        basis, basis_reason = (
+            _delta_basis(root) if reuse_basis else (None, "not_requested")
+        )
+        if basis is not None:
+            try:
+                # openrsync's copy-dest does not delta-match a changed absent
+                # target. A private independent copy enables its normal delta
+                # algorithm, without linking or editing the loaded generation.
+                shutil.copyfile(Path(basis) / INDEX_FILE, incoming / INDEX_FILE)
+            except OSError:
+                (incoming / INDEX_FILE).unlink(missing_ok=True)
+                basis, basis_reason = None, "independent_basis_copy_unavailable"
+    return {
+        "incoming": str(incoming),
+        "owner_token": owner_token,
+        "basis": basis,
+        "basis_reason": basis_reason,
+    }
 
 
 def discard(root: Path, version: str, owner_token: str) -> dict[str, object]:
@@ -382,6 +455,131 @@ def discard(root: Path, version: str, owner_token: str) -> dict[str, object]:
         return {"discarded": True}
 
 
+def _validate_candidate(
+    root: Path,
+    candidate: Path,
+    version: str,
+    sha256: str,
+    activation: dict[str, Any] | None,
+) -> dict[str, Any] | None:
+    """Static candidate/fence proof, shared before and after a runtime switch."""
+    actual = _sha256(candidate / INDEX_FILE)
+    if actual != sha256:
+        raise SystemExit(f"uploaded {INDEX_FILE} differs from the manifest sha256")
+    manifest = json.loads((candidate / "manifest.json").read_text(encoding="utf-8"))
+    if (
+        not isinstance(manifest, dict)
+        or manifest.get("version") != version
+        or not isinstance(manifest.get("file"), dict)
+        or manifest["file"].get("name") != INDEX_FILE
+        or manifest["file"].get("sha256") != actual
+    ):
+        raise RuntimeError("uploaded index manifest differs from candidate")
+    previous = (
+        json.loads((root / FENCE).read_text()) if (root / FENCE).is_file() else None
+    )
+    if activation is None:
+        if previous is not None:
+            raise RuntimeError(
+                "managed knowledge activation requires a current fenced lease"
+            )
+        return None
+    epoch = activation.get("epoch")
+    if type(epoch) is not int or epoch < 1:
+        raise ValueError("activation requires a positive native lease epoch")
+    identity = {
+        "site": str(activation.get("verify_url", "")),
+        "consumer": "knowledge",
+        "epoch": epoch,
+        "job_id": activation.get("job_id"),
+        "source_revision": activation.get("source_revision"),
+        "model_identity_revision": activation.get("model_identity_revision"),
+        "recipe_revision": activation.get("recipe_revision"),
+        "serving_revision": activation.get("serving_revision"),
+        "index_version": version,
+        "sha256": sha256,
+    }
+    if (
+        type(manifest.get("activation_epoch")) is not int
+        or manifest.get("activation_epoch") != epoch
+        or any(
+            manifest.get(name) != identity[name]
+            for name in (
+                "source_revision",
+                "model_identity_revision",
+                "recipe_revision",
+                "serving_revision",
+            )
+        )
+    ):
+        raise RuntimeError("candidate manifest does not match its native lease")
+    if previous is not None and (
+        previous["site"] != identity["site"]
+        or epoch < previous["epoch"]
+        or (epoch == previous["epoch"] and previous != identity)
+    ):
+        raise RuntimeError("stale knowledge activation epoch or conflicting generation")
+    db = sqlite3.connect(f"file:{candidate / INDEX_FILE}?mode=ro", uri=True)
+    try:
+        meta = dict(db.execute("SELECT key,value FROM meta"))
+    finally:
+        db.close()
+    if any(
+        meta.get(name) != str(value)
+        for name, value in (
+            ("version", version),
+            ("source_revision", identity["source_revision"]),
+            ("model_identity_revision", identity["model_identity_revision"]),
+            ("recipe_revision", identity["recipe_revision"]),
+            ("serving_revision", identity["serving_revision"]),
+            ("activation_epoch", epoch),
+        )
+    ):
+        raise RuntimeError("candidate index does not match its native activation lease")
+    return identity
+
+
+def validate(
+    root: Path,
+    version: str,
+    sha256: str,
+    owner_token: str,
+    activation: dict[str, Any] | None = None,
+) -> dict[str, object]:
+    """Read the actual owned upload before its caller changes the serving runtime."""
+    if not version or Path(version).name != version or version.startswith("."):
+        raise ValueError("invalid index version")
+    with (root / ".activation.lock").open("a+") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        stage = root / f".incoming-{version}"
+        if stage.is_symlink() or not stage.is_dir():
+            raise RuntimeError("owned index upload is missing")
+        owner = json.loads((stage / UPLOAD_OWNER).read_text())
+        if not owner_token or owner.get("owner_token") != owner_token:
+            raise RuntimeError("upload ownership differs")
+        if any(
+            path.is_symlink() or not path.is_file()
+            for path in (stage / INDEX_FILE, stage / "manifest.json")
+        ):
+            raise RuntimeError("uploaded index files are incomplete or not regular")
+        _validate_candidate(root, stage, version, sha256, activation)
+        if activation is not None:
+            _lease_expiry(activation)
+        else:
+            # Even a first unmanaged local publication must be a readable SQLite
+            # generation before an optional runtime hook may run.
+            db = sqlite3.connect(f"file:{stage / INDEX_FILE}?mode=ro", uri=True)
+            try:
+                actual_version = db.execute(
+                    "SELECT value FROM meta WHERE key='version'"
+                ).fetchone()
+            finally:
+                db.close()
+            if actual_version != (version,):
+                raise RuntimeError("uploaded SQLite version differs from candidate")
+    return {"validated": True, "index_version": version, "sha256": sha256}
+
+
 def activate(
     root: Path, version: str, sha256: str, activation: dict[str, Any] | None = None
 ) -> dict[str, object]:
@@ -390,81 +588,10 @@ def activate(
         fcntl.flock(lock, fcntl.LOCK_EX)
         incoming = root / f".incoming-{version}"
         candidate = incoming if incoming.is_dir() else root / version
-        actual = _sha256(candidate / INDEX_FILE)
-        if actual != sha256:
-            raise SystemExit(f"uploaded {INDEX_FILE} differs from the manifest sha256")
-        manifest = json.loads((candidate / "manifest.json").read_text(encoding="utf-8"))
-        if (
-            not isinstance(manifest, dict)
-            or manifest.get("version") != version
-            or not isinstance(manifest.get("file"), dict)
-            or manifest["file"].get("name") != INDEX_FILE
-            or manifest["file"].get("sha256") != actual
-        ):
-            raise RuntimeError("uploaded index manifest differs from candidate")
-        previous = (
-            json.loads((root / FENCE).read_text()) if (root / FENCE).is_file() else None
-        )
-        if activation is None:
-            if previous is not None:
-                raise RuntimeError(
-                    "managed knowledge activation requires a current fenced lease"
-                )
-        else:
-            epoch = activation.get("epoch")
-            if type(epoch) is not int or epoch < 1:
-                raise ValueError("activation requires a positive native lease epoch")
-            identity = {
-                "site": str(activation.get("verify_url", "")),
-                "consumer": "knowledge",
-                "epoch": epoch,
-                "job_id": activation.get("job_id"),
-                "source_revision": activation.get("source_revision"),
-                "recipe_revision": activation.get("recipe_revision"),
-                "serving_revision": activation.get("serving_revision"),
-                "index_version": version,
-                "sha256": sha256,
-            }
-            if (
-                type(manifest.get("activation_epoch")) is not int
-                or manifest.get("activation_epoch") != epoch
-                or any(
-                    manifest.get(name) != identity[name]
-                    for name in (
-                        "source_revision",
-                        "recipe_revision",
-                        "serving_revision",
-                    )
-                )
-            ):
-                raise RuntimeError("candidate manifest does not match its native lease")
-            if previous is not None and (
-                previous["site"] != identity["site"]
-                or epoch < previous["epoch"]
-                or (epoch == previous["epoch"] and previous != identity)
-            ):
-                raise RuntimeError(
-                    "stale knowledge activation epoch or conflicting generation"
-                )
-            db = sqlite3.connect(f"file:{candidate / INDEX_FILE}?mode=ro", uri=True)
-            try:
-                meta = dict(db.execute("SELECT key,value FROM meta"))
-            finally:
-                db.close()
-            if any(
-                meta.get(name) != str(value)
-                for name, value in (
-                    ("version", version),
-                    ("source_revision", identity["source_revision"]),
-                    ("recipe_revision", identity["recipe_revision"]),
-                    ("serving_revision", identity["serving_revision"]),
-                    ("activation_epoch", epoch),
-                )
-            ):
-                raise RuntimeError(
-                    "candidate index does not match its native activation lease"
-                )
+        identity = _validate_candidate(root, candidate, version, sha256, activation)
+        if activation is not None:
             _verify_activation(activation)
+            assert identity is not None
             _journal(root, identity)
         if incoming.is_dir():
             incoming.rename(root / version)
@@ -497,7 +624,7 @@ def main(argv: list[str]) -> int:
     command, root = argv[0], Path(argv[1])
     if command == "prepare":
         activation = json.load(sys.stdin) if "--activation-stdin" in argv else None
-        result = prepare(root, argv[2], activation)
+        result = prepare(root, argv[2], activation, reuse_basis="--reuse-basis" in argv)
     elif command == "discard":
         if len(argv) != 4 or argv[3] != "--owner-stdin":
             raise ValueError("discard requires an owner token on stdin")
@@ -505,6 +632,16 @@ def main(argv: list[str]) -> int:
         if not isinstance(owner, dict) or not isinstance(owner.get("owner_token"), str):
             raise ValueError("invalid discard owner")
         result = discard(root, argv[2], owner["owner_token"])
+    elif command == "validate":
+        if len(argv) != 5 or argv[4] != "--owner-stdin":
+            raise ValueError("upload validation requires an owner token on stdin")
+        owner = json.load(sys.stdin)
+        if not isinstance(owner, dict) or not isinstance(owner.get("owner_token"), str):
+            raise ValueError("invalid upload validation owner")
+        activation = owner.get("activation")
+        if activation is not None and not isinstance(activation, dict):
+            raise ValueError("invalid upload validation activation")
+        result = validate(root, argv[2], argv[3], owner["owner_token"], activation)
     elif command == "activate":
         activation = json.load(sys.stdin) if "--activation-stdin" in argv else None
         try:
@@ -521,6 +658,9 @@ def main(argv: list[str]) -> int:
                         "transport": error.transport,
                         "job_id": activation.get("job_id"),
                         "source_revision": activation.get("source_revision"),
+                        "model_identity_revision": activation.get(
+                            "model_identity_revision"
+                        ),
                         "recipe_revision": activation.get("recipe_revision"),
                         "epoch": activation.get("epoch"),
                     }

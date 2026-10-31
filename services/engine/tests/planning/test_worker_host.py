@@ -32,6 +32,61 @@ from .conftest import json_object
 from .test_energy_kernel import PROVENANCE, create_scenario, mapping
 
 
+def test_retention_keeps_owned_runtime_and_children_through_restart(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    import linker_engine
+    from linker_engine.planning import archive, worker_host
+
+    settings = configuration(tmp_path)
+    runtime_file = tmp_path / "runtime.json"
+    runtime_file.write_text(settings.model_dump_json())
+    monkeypatch.setenv("LINKER_PLANNER_CONFIG", str(runtime_file))
+    workspace = Workspace(Path(settings.directory))
+
+    # Capturing ownership must not publish a new runtime during a read-only plan.
+    before = set(workspace.database.path.parent.rglob("*"))
+    assert worker_host.main(["retention"]) == 0
+    assert json.loads(capsys.readouterr().out)["candidate_count"] == 0
+    assert set(workspace.database.path.parent.rglob("*")) == before
+
+    _, energy = settings.open()
+    runtime = energy.kernel.runtime
+    # A real source-file hash is a nested child of the actual runtime snapshot.
+    source_bytes = Path(linker_engine.__file__).read_bytes()
+    source_sha = workspace.blobs.put(source_bytes)
+    assert source_sha.encode() in runtime.content
+    orphan = workspace.blobs.put(b"unreferenced cancelled completion")
+    assert worker_host.main(["retention"]) == 0
+    plan = json.loads(capsys.readouterr().out)
+    assert plan["candidate_sha256"] == [orphan]
+
+    recovery = tmp_path / "recovery"
+    archive.backup(workspace, recovery)
+    assert (
+        worker_host.main(
+            ["retention", "--apply", "--offline", "--recovery", str(recovery)]
+        )
+        == 0
+    )
+    applied = json.loads(capsys.readouterr().out)
+    assert applied["deleted_count"] == 1
+    assert workspace.blobs.read(runtime.sha256) == runtime.content
+    assert workspace.blobs.read(source_sha) == source_bytes
+    assert not (workspace.blobs.directory / orphan[:2] / orphan).exists()
+
+    # The native maintenance finally starts these same kernel constructors.
+    _, restarted = settings.open()
+    assert restarted.kernel.runtime.sha256 == runtime.sha256
+    assert worker_host.main(["retention"]) == 0
+    assert json.loads(capsys.readouterr().out)["candidate_count"] == 0
+    retained_hashes = archive.verify(recovery)["blobs"]
+    assert isinstance(retained_hashes, list)
+    assert orphan in retained_hashes
+
+
 def wait_for[T](
     value: Callable[[], T], predicate: Callable[[T], bool], *, timeout: float = 15
 ) -> T:

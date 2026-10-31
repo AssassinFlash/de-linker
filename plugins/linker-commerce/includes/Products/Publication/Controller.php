@@ -64,6 +64,11 @@ final class Controller {
 	 */
 	public function dispatch( string $path, WP_REST_Request $request ): WP_REST_Response|WP_Error {
 		nocache_headers();
+		// Twenty 16,000-byte windows need at most six JSON escape bytes per byte.
+		// The 2 MiB envelope also bounds unrelated fields before JSON decoding.
+		if ( 'identify' === $path && strlen( $request->get_body() ) > 2 * 1024 * 1024 ) {
+			return new WP_Error( 'invalid_models', 'Identification request exceeds its JSON budget.', array( 'status' => 400 ) );
+		}
 		$body = self::json_object( $request->get_json_params() );
 		try {
 			if ( 'manifest' === $path ) {
@@ -85,7 +90,7 @@ final class Controller {
 					if ( null !== $loaded && ! is_array( $loaded ) ) {
 						return new WP_Error( 'invalid_job_request', 'Loaded receipt must be an object.', array( 'status' => 400 ) );
 					}
-					$data = ( new PreparationJobs() )->claim( (string) ( $body['consumer'] ?? '' ), (string) ( $body['worker_id'] ?? '' ), (int) ( $body['lease_seconds'] ?? 0 ), is_string( $recipe ) ? $recipe : 'invalid', $loaded, $unavailable );
+					$data = ( new PreparationJobs() )->claim( (string) ( $body['consumer'] ?? '' ), (string) ( $body['worker_id'] ?? '' ), (int) ( $body['lease_seconds'] ?? 0 ), is_string( $recipe ) ? $recipe : 'invalid', $loaded, $unavailable, is_string( $body['identity_protocol'] ?? null ) ? $body['identity_protocol'] : '' );
 				}
 			} else {
 				$data = ( new PreparationJobs() )->acknowledge( $body );
@@ -109,6 +114,9 @@ final class Controller {
 	 * @return array<string,mixed>|WP_Error
 	 */
 	private function identify( array $body ): array|WP_Error {
+		if ( array_key_exists( 'texts', $body ) ) {
+			return $this->identify_batch( $body );
+		}
 		$labels = $body['models'] ?? array();
 		$text   = $body['text'] ?? null;
 		if ( null !== $text && ( ! is_string( $text ) || strlen( $text ) > 16000 || isset( $body['models'] ) ) ) {
@@ -143,6 +151,75 @@ final class Controller {
 			}
 			$result[] = $item;
 		}
-		return array( 'models' => $result );
+		return array(
+			'models'                  => $result,
+			'model_identity_revision' => Publication::model_identity_revision( $known ),
+		);
+	}
+
+	/**
+	 * Leased build-only batching; public single-window limits remain unchanged.
+	 *
+	 * @param array<string,mixed> $body Exact lease and independent original windows.
+	 * @return array<string,mixed>|WP_Error
+	 */
+	private function identify_batch( array $body ): array|WP_Error {
+		if ( ! $this->worker_permission() ) {
+			return new WP_Error( 'identity_authentication_required', 'Knowledge batch identification requires a native worker.', array( 'status' => is_user_logged_in() ? 403 : 401 ) );
+		}
+		$texts = $body['texts'];
+		// Existing bounds: twenty exact inputs and 16,000 UTF-8 bytes per text.
+		// This authenticated operation combines those limits, not their permissions.
+		if ( ! is_array( $texts ) || ! array_is_list( $texts ) || count( $texts ) < 1 || count( $texts ) > 20 || array_key_exists( 'text', $body ) || array_key_exists( 'models', $body ) ) {
+			return new WP_Error( 'invalid_models', 'Supply at most 20 independent bounded text windows.', array( 'status' => 400 ) );
+		}
+		$bytes = 0;
+		foreach ( $texts as $text ) {
+			if ( ! is_string( $text ) || '' === trim( $text ) || strlen( $text ) > 16000 || 1 !== preg_match( '//u', $text ) ) {
+				return new WP_Error( 'invalid_models', 'Each text window must contain at most 16000 UTF-8 bytes.', array( 'status' => 400 ) );
+			}
+			$bytes += strlen( $text );
+		}
+		if ( $bytes > 320000 ) {
+			return new WP_Error( 'invalid_models', 'The text batch exceeds its input budget.', array( 'status' => 400 ) );
+		}
+		$started          = microtime( true );
+		$known            = Publication::model_statuses();
+		$identity         = Publication::model_identity_revision( $known );
+		$identity_seconds = microtime( true ) - $started;
+		$verified         = ( new PreparationJobs() )->verify_identity_lease( $body, $identity );
+		if ( $verified instanceof WP_Error ) {
+			return $verified;
+		}
+		$started    = microtime( true );
+		$normalized = array_map( static fn ( string $text ): ?string => preg_replace( '/\s+/u', ' ', $text ), $texts );
+		$result     = array();
+		foreach ( $known as $label => $permission ) {
+			$pattern = '/(?<![\pL\pN])' . preg_quote( $label, '/' ) . '(?![\pL\pN])/iu';
+			foreach ( $normalized as $text ) {
+				if ( is_string( $text ) && 1 === preg_match( $pattern, $text ) ) {
+					$item = array(
+						'model'  => $label,
+						'status' => $permission['status'],
+					);
+					if ( 'published' === $permission['status'] ) {
+						$item['product_id'] = $permission['product_id'];
+					}
+					$result[] = $item;
+					break;
+				}
+			}
+		}
+		return array(
+			'models'                  => $result,
+			'model_identity_revision' => $identity,
+			'metrics'                 => array(
+				'input_windows'    => count( $texts ),
+				'input_bytes'      => $bytes,
+				'identity_reads'   => 1,
+				'identity_seconds' => $identity_seconds,
+				'match_seconds'    => microtime( true ) - $started,
+			),
+		);
 	}
 }

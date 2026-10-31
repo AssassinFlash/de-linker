@@ -56,3 +56,29 @@ its execution key. Schema compatibility and routing tests are prerequisites
 for retained releases sharing a store. Rollback likewise uses the previous
 executable and matching configuration after a successful drain; never rewrite
 frozen request or result bytes to make a version appear compatible.
+
+## Preparation fixture exports
+
+Run the existing exporter from `services/engine` with that host's existing
+environment and `PYTHONPATH=src:tests`:
+
+```sh
+python -c 'from tests.planning.export_preparation_fixture import rendered; print(rendered(), end="")'
+```
+
+An isolated Linux export needs `src/`, `tests/` (including its fixtures),
+`schemas/`, `pyproject.toml` and `uv.lock` at their original engine paths.
+Its helpers also read exactly these four repository-relative originals:
+
+- `fixtures/planning/geometry-flat.json`
+- `docs/research/2026-10-24-pv-generation/raw/berlin-2005-2023-nohorizon.tmy.json`
+- `docs/research/2026-10-24-pv-generation/raw/weather-provenance.json`
+- `docs/research/2026-10-23-pv-inputs/raw/era5-berlin-2020.seriescalc.json`
+
+Reuse the existing Linux interpreter only for dependencies; ensure imports
+resolve to the isolated `src`, rather than installed production code. Keep one
+task-owned temporary repository, set its `TMPDIR` inside it, run at nice 19
+with numerical library threads set to one and a 60-second exporter deadline.
+Terminate and reap the owned process group on timeout/cancellation. Remove the
+source package and synthetic SQLite/CAS in `finally`, with caller-side cleanup
+and a final absence check. Do not copy a venv or touch live workspaces/services.

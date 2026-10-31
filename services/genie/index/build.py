@@ -49,6 +49,7 @@ from linker_genie.embedding import (
     sha256_of,
 )
 from linker_genie.preparation import serving_revision
+from linker_genie.publication import knowledge_progress
 
 INDEX_FILE = "index.sqlite"
 # Chunk sizes are counted in XLM-RoBERTa tokens, the tokenizer of BGE-M3 and of
@@ -374,6 +375,8 @@ def embed_corpus(
         publication=meta.publication,
         recipe_revision=meta.recipe_revision,
         serving_revision=meta.serving_revision,
+        model_identity_revision=meta.model_identity_revision,
+        activation_epoch=meta.activation_epoch,
     )
     products = corpus.read_products(source)
     corpus.write(corpus_dir, new_meta, documents, products, chunks, vectors)
@@ -415,16 +418,29 @@ def build(
     on_created: Callable[[Path], None] | None = None,
     activation_epoch: int = 0,
     publication_deadline: int | None = None,
+    publication_lease: dict[str, Any] | None = None,
 ) -> Path:
     """Chunk, embed and store; report the newly created generation before writing it."""
     started = time.monotonic()
     recipe = recipe_revision()
     serving = serving_revision()
     source = json.loads(inventory_path.read_text(encoding="utf-8"))
+    if "publication_manifest" in source and not source["publication_manifest"].get(
+        "model_identity_revision"
+    ):
+        raise RuntimeError(
+            "knowledge compilation requires current model identity; refresh inventory"
+        )
+    knowledge_progress("chunk", "start")
     chunked = chunk_all(inventory_path, pdf_dir, parsed_dir, tokenizer, detect_lang)
     after_chunking = time.monotonic()
+    knowledge_progress(
+        "chunk", "done", seconds=after_chunking - started, chunks=len(chunked.chunks)
+    )
+    knowledge_progress("compile", "start")
     chunks = chunked.chunks
     proof: dict[str, Any] = {}
+    identification: dict[str, int | float] = {}
     if "publication_manifest" in source:
         from index.publication import compile_publication
         from linker_genie.publication import PublicationClient
@@ -433,13 +449,16 @@ def build(
             PublicationClient(str(source["source"]))
             if publication_deadline is None
             else PublicationClient(
-                str(source["source"]), identify_deadline=publication_deadline
+                str(source["source"]),
+                identify_deadline=publication_deadline,
+                identify_lease=publication_lease,
             )
         )
         try:
             chunks, scopes = compile_publication(
                 chunks, source["publication_manifest"], authority, tokenizer
             )
+            identification = dict(authority.identification)
             proof = {
                 "manifest": source["publication_manifest"],
                 "chunk_products": {
@@ -450,12 +469,19 @@ def build(
         finally:
             authority.close()
     after_compilation = time.monotonic()
+    knowledge_progress(
+        "compile",
+        "done",
+        seconds=after_compilation - after_chunking,
+        chunks=len(chunks),
+    )
     print(
         f"{len(chunks)} chunks from {len(chunked.documents)} documents "
         f"({len(chunks) - len(chunked.chunks)} model projections)",
         flush=True,
     )
     vectors: list[bytes] | None = None
+    knowledge_progress("embed", "start")
     if embedder is not None:
         titles = {document.sha256: document.title_en for document in chunked.documents}
         out_root.mkdir(parents=True, exist_ok=True)
@@ -468,6 +494,8 @@ def build(
         finally:
             cache.close()
     after_embedding = time.monotonic()
+    knowledge_progress("embed", "done", seconds=after_embedding - after_compilation)
+    knowledge_progress("store", "start")
 
     version = (
         time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
@@ -488,6 +516,9 @@ def build(
         recipe_revision=recipe,
         serving_revision=serving,
         activation_epoch=activation_epoch,
+        model_identity_revision=str(
+            source.get("publication_manifest", {}).get("model_identity_revision", "")
+        ),
     )
     corpus_dir = build_dir / "corpus"
     corpus.write(corpus_dir, meta, chunked.documents, chunked.products, chunks, vectors)
@@ -498,6 +529,7 @@ def build(
     if recipe_revision() != recipe:
         raise RuntimeError("knowledge preparation code changed during this build")
     finished = time.monotonic()
+    knowledge_progress("store", "done", seconds=finished - after_embedding)
 
     coverage = chunked.coverage
     failed = [asdict(item) for item in coverage if item.status == "failed"]
@@ -506,6 +538,8 @@ def build(
         "source_revision": str(
             source.get("publication_manifest", {}).get("source_revision", "")
         ),
+        "model_identity_revision": meta.model_identity_revision,
+        "identification": identification,
         "recipe_revision": recipe,
         "serving_revision": serving,
         "activation_epoch": activation_epoch,
