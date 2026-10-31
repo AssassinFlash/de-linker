@@ -582,12 +582,25 @@ def create_private_app(
         if products is None:
             raise VersionUnavailable("current Woo installation evidence is unavailable")
         inputs: Object = {"geometry": body.geometry, "installation": body.installation}
-        if "pv_string_plan" in project.inputs:
-            inputs["pv_string_plan"] = project.inputs["pv_string_plan"]
+        for field in (
+            "pv_string_plan",
+            "pv_plant_string_plan",
+            "equipment_plant",
+            "equipment_plant_setup",
+        ):
+            if field in project.inputs:
+                inputs[field] = project.inputs[field]
         basis = product_basis(
-            InstallationInputs.read(body.installation), products.equipment_basis()
+            InstallationInputs.read(body.installation),
+            products.equipment_basis(),
+            allow_stale=inputs.get("pv_plant_string_plan") is not None,
         )
-        reply = route_takeoff(inputs, basis, bind_geometry=body.bind_geometry)
+        reply = route_takeoff(
+            inputs,
+            basis,
+            bind_geometry=body.bind_geometry,
+            allow_stale_products=inputs.get("pv_plant_string_plan") is not None,
+        )
         products.confirm_basis(basis, require_reference=False)
         reply["project_id"] = body.project_id
         if body.expected_revision is not None:

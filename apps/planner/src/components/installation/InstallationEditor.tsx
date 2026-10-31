@@ -35,6 +35,9 @@ import {
 import { manualSource } from "../../domain/geometryEditing.ts";
 import { installationId } from "../../domain/installation.ts";
 import { readPvStringPlan } from "../../domain/pvStrings.ts";
+import { readPvPlantStringPlan } from "../../domain/pvPlantStrings.ts";
+import type { PvPlantStringPlan } from "../../domain/pvPlantStrings.ts";
+import { readEquipmentPlant } from "../../domain/equipmentPlant.ts";
 import type { PvStringPlan } from "../../domain/pvStrings.ts";
 import { PvStringLinks } from "./PvStringLinks.tsx";
 import { conductorLabel } from "./installationLabels.ts";
@@ -99,17 +102,27 @@ export function InstallationEditor({
 }) {
 	const plan = readInstallation(inputs.installation);
 	const savedInstallation = readInstallation(savedInputs.installation);
-	let savedStrings: PvStringPlan | null = null;
+	const savedStringInput =
+		savedInputs.pv_plant_string_plan === undefined
+			? savedInputs.pv_string_plan
+			: {
+					plan: savedInputs.pv_plant_string_plan,
+					plant: savedInputs.equipment_plant,
+				};
+	const currentStringInput =
+		inputs.pv_plant_string_plan === undefined
+			? inputs.pv_string_plan
+			: { plan: inputs.pv_plant_string_plan, plant: inputs.equipment_plant };
+	let savedStrings: PvStringPlan | PvPlantStringPlan | null = null;
 	try {
-		if (savedInputs.pv_string_plan !== undefined)
+		if (savedInputs.pv_plant_string_plan !== undefined)
+			savedStrings = readPvPlantStringPlan(savedInputs.pv_plant_string_plan);
+		else if (savedInputs.pv_string_plan !== undefined)
 			savedStrings = readPvStringPlan(savedInputs.pv_string_plan);
 	} catch {
 		// Preserve the declaration; it must be corrected in the string editor.
 	}
-	const stringPlanChanged = !sameJson(
-		inputs.pv_string_plan,
-		savedInputs.pv_string_plan,
-	);
+	const stringPlanChanged = !sameJson(currentStringInput, savedStringInput);
 	const products = useEquipmentProducts(client, session.query_scope, true);
 	const [form, setForm] = useState<{ kind: Kind; id: string | null } | null>(
 			null,
@@ -136,8 +149,8 @@ export function InstallationEditor({
 		savedRevision,
 		plan,
 		geometry,
-		strings: savedInputs.pv_string_plan,
-		draftStrings: inputs.pv_string_plan,
+		strings: savedStringInput,
+		draftStrings: currentStringInput,
 	});
 	latest.current = {
 		projectId,
@@ -145,8 +158,8 @@ export function InstallationEditor({
 		savedRevision,
 		plan,
 		geometry,
-		strings: savedInputs.pv_string_plan,
-		draftStrings: inputs.pv_string_plan,
+		strings: savedStringInput,
+		draftStrings: currentStringInput,
 	};
 	const active = useRef(true);
 	useEffect(() => {
@@ -170,9 +183,9 @@ export function InstallationEditor({
 		reviewContext.revision <= savedRevision &&
 		sameJson(plan, review.prepared_inputs) &&
 		sameJson(geometry, reviewGeometry) &&
-		(plan.pv_string_links === undefined ||
-			(!stringPlanChanged &&
-				sameJson(reviewStrings, savedInputs.pv_string_plan)))
+		((plan.pv_string_links === undefined &&
+			savedInputs.pv_plant_string_plan === undefined) ||
+			(!stringPlanChanged && sameJson(reviewStrings, savedStringInput)))
 			? review
 			: null;
 	function edit(kind: Kind, row: unknown): boolean {
@@ -217,8 +230,8 @@ export function InstallationEditor({
 			savedRevision,
 			plan,
 			geometry,
-			strings: savedInputs.pv_string_plan,
-			draftStrings: inputs.pv_string_plan,
+			strings: savedStringInput,
+			draftStrings: currentStringInput,
 		};
 		setBusy(true);
 		setFailed(false);
@@ -248,11 +261,14 @@ export function InstallationEditor({
 				projectId,
 				savedStrings,
 				savedRevision,
+				savedInputs.equipment_plant === undefined
+					? null
+					: readEquipmentPlant(savedInputs.equipment_plant),
 			);
 			if (!change(result.prepared_inputs)) throw new Error("not_applied");
 			setReview(result);
 			setReviewGeometry(geometry);
-			setReviewStrings(savedInputs.pv_string_plan);
+			setReviewStrings(savedStringInput);
 			setReviewContext({
 				projectId,
 				queryScope: session.query_scope,
@@ -613,8 +629,12 @@ export function InstallationEditor({
 						disabled={
 							busy ||
 							!linksValid ||
-							(!plan.cable_runs.length && plan.pv_string_links === undefined) ||
-							(plan.pv_string_links !== undefined && stringPlanChanged)
+							(!plan.cable_runs.length &&
+								plan.pv_string_links === undefined &&
+								savedInputs.pv_plant_string_plan === undefined) ||
+							((plan.pv_string_links !== undefined ||
+								savedInputs.pv_plant_string_plan !== undefined) &&
+								stringPlanChanged)
 						}
 						onClick={() => void check()}
 					>

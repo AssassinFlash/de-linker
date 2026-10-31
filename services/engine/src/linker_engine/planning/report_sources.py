@@ -300,21 +300,6 @@ def report_sources(
         recorded_certificates = run.result.get("certificates")
         if isinstance(recorded_certificates, dict):
             frozen_certificates = recorded_certificates
-        if isinstance(assessment.get("pv_electrical"), dict) and any(
-            previous.get(field) != project.inputs.get(field)
-            for field in ("geometry", "pv_string_plan")
-        ):
-            raise ReportInputsChanged(
-                "report PV strings differ from the saved roof or wiring plan"
-            )
-        if isinstance(assessment.get("pv_electrical"), dict):
-            if any(
-                s.permissions.export != "permitted"
-                for s in read_geometry(project.inputs.get("geometry")).sources
-            ):
-                raise InvalidInput(
-                    "PV wiring reports require export permission for the roof sources"
-                )
         pinned = cast(Object, run.result["pinned_assets"])
         bases["equipment"] = pinned["woo.equipment_inputs"]
 
@@ -654,10 +639,71 @@ def report_sources(
                 run.revision,
             )
 
+    # Both adopted-candidate and direct-run paths must have evaluated the saved
+    # wiring. An equipment-only candidate cannot silently omit new PV work.
+    if assessment is not None and equipment_source_inputs is not None:
+        has_wiring = any(
+            project.inputs.get(key) is not None
+            for key in ("pv_string_plan", "pv_plant_string_plan")
+        )
+        has_result = isinstance(assessment.get("pv_electrical"), dict)
+        if has_wiring and not has_result:
+            raise ReportInputsChanged(
+                "report equipment has not assessed the saved PV wiring plan"
+            )
+        if has_result:
+            fields: tuple[str, ...] = (
+                "geometry",
+                "pv_string_plan",
+                "pv_plant_string_plan",
+            )
+
+            if any(
+                equipment_source_inputs.get(field) != project.inputs.get(field)
+                for field in fields
+            ):
+                raise ReportInputsChanged(
+                    "report PV strings differ from the saved roof, wiring or physical instances"
+                )
+            if any(
+                source.permissions.export != "permitted"
+                for source in read_geometry(project.inputs.get("geometry")).sources
+            ):
+                raise InvalidInput(
+                    "PV wiring reports require export permission for the roof sources"
+                )
+            if project.inputs.get("pv_plant_string_plan") is not None:
+                from .pv_string_inputs import (
+                    PvPlantStringPlan,
+                    plant_instance_projection,
+                    plant_instance_statuses,
+                )
+
+                if plant_instance_projection(
+                    equipment_source_inputs
+                ) != plant_instance_projection(project.inputs):
+                    raise ReportInputsChanged(
+                        "report PV inverter instance identities changed"
+                    )
+                statuses = plant_instance_statuses(
+                    project.inputs, PvPlantStringPlan.from_inputs(project.inputs)
+                )
+                if any(
+                    status not in {"declared", "not_recorded"}
+                    for status in statuses.values()
+                ):
+                    raise ReportInputsChanged(
+                        "report PV inverter instance identity requires correction"
+                    )
+
     installation: Object | None = None
     if options.include_installation:
         plan = InstallationInputs.read(project.inputs.get("installation"))
-        if not plan.cable_runs and "pv_string_links" not in plan.model_fields_set:
+        if (
+            not plan.cable_runs
+            and "pv_string_links" not in plan.model_fields_set
+            and project.inputs.get("pv_plant_string_plan") is None
+        ):
             raise InvalidInput(
                 "select at least one physical cable for the routing report"
             )

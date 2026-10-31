@@ -548,10 +548,50 @@ def test_native_dc_plant_projects_owned_pv_groups_and_keeps_report_stages(
         }
         from linker_engine.planning.dc_plant_inputs import DcPlantEnergyInputs
         from linker_engine.planning.errors import EvidenceMissing
+        from linker_engine.planning.geometry import panel_poses, read_geometry
         from linker_engine.planning.plant_energy_kernel import (
             check_plant_profile_boundary,
         )
+        from linker_engine.planning.project_input_contracts import (
+            PLANT_PV_INPUT_CONTRACT,
+        )
 
+        poses = panel_poses(read_geometry(layout))
+        inputs["pv_plant_string_plan"] = {
+            "schema_version": 1,
+            "units": [
+                {
+                    "unit_id": uid,
+                    "inverter_instance_id": None,
+                    "plan": {
+                        "schema_version": 1,
+                        "inverter_product_id": unit["selection"]["inverter_product_id"],
+                        "minimum_ambient_c": None,
+                        "temperature_source": None,
+                        "strings": [
+                            {
+                                "id": "dc_string_" + uid,
+                                "mppt": 1,
+                                "input": 1,
+                                "module_ids": [
+                                    pose.id
+                                    for pose in poses
+                                    if pose.included
+                                    and pose.array_id
+                                    == (
+                                        layout["arrays"][0]["id"]
+                                        if uid == "a"
+                                        else "dc-b"
+                                    )
+                                ],
+                            }
+                        ],
+                    },
+                }
+                for unit in plant["units"]
+                for uid in [unit["id"]]
+            ],
+        }
         frozen_scenario = DcPlantEnergyInputs.read(json_object(scenario))
         for purpose in (
             "pvlib_reference_profile_v1",
@@ -570,7 +610,12 @@ def test_native_dc_plant_projects_owned_pv_groups_and_keeps_report_stages(
         )
         check_profile_selections(assets, owner, project.id, inputs)
         project = workspace.revise(
-            owner, project.id, project.revision, inputs, key="dc-plant-inputs"
+            owner,
+            project.id,
+            project.revision,
+            inputs,
+            key="dc-plant-inputs",
+            input_contract=PLANT_PV_INPUT_CONTRACT,
         )
         response = client.post(
             "/runs/energy",
@@ -586,6 +631,12 @@ def test_native_dc_plant_projects_owned_pv_groups_and_keeps_report_stages(
         assert executor.run_once()
         run = workspace.run(owner, response.json()["id"])
         assert run.state == "succeeded", run.error
+        assert (
+            json_object(run.result)["equipment_binding"]["assessment"]["pv_electrical"][
+                "method"
+            ]
+            == "woo_plant_layout_electrical_v1"
+        )
         assert json_object(run.result)["metrics"]["solar_load_kwh"] > 0
         assert json_object(run.result)["metrics"]["pv_generated_dc_kwh"] > 0
         assert json_object(run.result)["metrics"]["pv_input_self_use"] == {
@@ -631,8 +682,31 @@ def test_native_dc_plant_projects_owned_pv_groups_and_keeps_report_stages(
         assert executor.run_once()
         report = workspace.run(owner, response.json()["id"])
         assert report.state == "succeeded", report.error
-        from linker_engine.planning.energy_comparison import comparison_side
+        from copy import deepcopy
 
+        from linker_engine.planning.energy_comparison import comparison_side
+        from linker_engine.planning.report_inputs import ReportOptions
+        from linker_engine.planning.report_sources import (
+            ReportInputsChanged,
+            report_sources,
+        )
+
+        changed = deepcopy(project.inputs)
+        changed["pv_plant_string_plan"]["units"][0]["plan"]["minimum_ambient_c"] = -20
+        with pytest.raises(ReportInputsChanged):
+            report_sources(
+                workspace,
+                source,
+                owner,
+                replace(project, inputs=changed),
+                ReportOptions(
+                    locale="en",
+                    energy_run_id=run.id,
+                    pv_run_id=None,
+                    equipment_run_id=None,
+                    logo=None,
+                ),
+            )
         side = comparison_side(workspace, owner, project.id, run.id)
         assert side.joint and set(json_object(side.inventory_key())) == {"a", "b"}
         capture = os.environ.get("PLANNER_DC_CLIENT_FIXTURE")

@@ -12924,3 +12924,27 @@ msgstr "Letzter Zustellfehler (%1$s): %2$s"
 #, php-format
 msgid "Next delivery attempt: %s."
 msgstr "Nächster Zustellversuch: %s."
+
+#: build/planner/assets/planner.js
+msgid "Inverter in the saved installation"
+msgstr "Wechselrichter in der gespeicherten Installation"
+
+#: build/planner/assets/planner.js
+msgid "No inverter linked to the installation"
+msgstr "Kein Wechselrichter mit der Installation verknüpft"
+
+#: build/planner/assets/planner.js
+msgid "Electrical checks use this system's strings. Select its inverter from the saved installation to link the strings to recorded circuits."
+msgstr "Die elektrische Prüfung verwendet die Strings dieses Systems. Wählen Sie den zugehörigen Wechselrichter aus der gespeicherten Installation, um die Strings mit den erfassten Stromkreisen zu verknüpfen."
+
+#: build/planner/assets/planner.js
+msgid "This wiring plan belongs to a removed system. Its strings remain saved until you remove the plan or restore the system."
+msgstr "Dieser Stringplan gehört zu einem entfernten System. Die Strings bleiben gespeichert, bis Sie den Plan entfernen oder das System wiederherstellen."
+
+#: build/planner/assets/planner.js
+msgid "PV strings across all systems"
+msgstr "PV-Strings aller Systeme"
+
+#: build/planner/assets/planner.js
+msgid "The multi-system PV wiring plan needs review. Check system identities, inverter selections and duplicate module assignments."
+msgstr "Der PV-Stringplan für mehrere Systeme muss geprüft werden. Prüfen Sie die Systemzuordnung, die ausgewählten Wechselrichter und mehrfach zugewiesene Module."

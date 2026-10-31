@@ -833,6 +833,9 @@ TEXT = {
         "The input number identifies the proposed connection. A cited manufacturer connector map is still required.",
         "Die Eingangsnummer bezeichnet den geplanten Anschluss. Ein belegter Anschlussplan des Herstellers ist noch erforderlich.",
     ),
+    "pv_inverter_instance": ("Inverter instance", "Wechselrichterinstanz"),
+    "pv_instance_not_recorded": ("Not recorded", "Nicht erfasst"),
+    "plant_unit": ("System", "System"),
     "pv_strings_title": ("PV wiring plan", "PV-Verschaltungsplan"),
     "pv_strings_scope": (
         "The wiring plan records the assigned roof modules. Cold open-circuit voltage uses the stated ambient temperature and the module's voltage coefficient. STC operating points do not establish hot or cold MPP performance, design currents or wiring protection.",

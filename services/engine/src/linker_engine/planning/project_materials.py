@@ -217,12 +217,24 @@ def project_materials(source: Object) -> Object:
                         },
                         "quantity": None,
                         "unit": "piece",
-                        "basis": "pv_string_circuit_identity_v1",
+                        "basis": "pv_plant_string_circuit_identity_v2"
+                        if reconciliation["schema_version"] == 2
+                        else "pv_string_circuit_identity_v1",
                         "source": {
                             "scope": reconciliation["scope"],
-                            "pv_string_plan_sha256": reconciliation[
-                                "pv_string_plan_sha256"
-                            ],
+                            **(
+                                {
+                                    "pv_plant_string_plan_sha256": reconciliation[
+                                        "pv_plant_string_plan_sha256"
+                                    ]
+                                }
+                                if reconciliation["schema_version"] == 2
+                                else {
+                                    "pv_string_plan_sha256": reconciliation[
+                                        "pv_string_plan_sha256"
+                                    ]
+                                }
+                            ),
                             "installation_input_sha256": reconciliation[
                                 "installation_input_sha256"
                             ],
@@ -283,7 +295,10 @@ def material_reference(line: Object) -> str:
 
 
 def material_scope(line: Object, locale: str) -> str:
-    if line.get("basis") == "pv_string_circuit_identity_v1":
+    if line.get("basis") in {
+        "pv_string_circuit_identity_v1",
+        "pv_plant_string_circuit_identity_v2",
+    }:
         source = cast(Object, line["source"])
         link = source["link"]
         status = (
@@ -291,7 +306,15 @@ def material_scope(line: Object, locale: str) -> str:
             if isinstance(link, dict)
             else text(f"installation_string_plan_{source['plan_status']}", locale)
         )
-        return f"{text('installation_string_link_material_scope', locale)} · {status}"
+        return (
+            f"{text('installation_string_link_material_scope', locale)} · "
+            + (
+                f"{link['unit_id']} · {link['inverter_instance_id'] or text('pv_instance_not_recorded', locale)} · "
+                if isinstance(link, dict) and "unit_id" in link
+                else ""
+            )
+            + status
+        )
     if line["handling"] == "installation_requirement":
         # A recorded cross-section is still not a sizing result, so the scope
         # names what is declared instead of claiming the specification is done.

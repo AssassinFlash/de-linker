@@ -1,3 +1,4 @@
+import { readEquipmentAssessment } from "./readEquipmentResult.ts";
 import { readDcParameters } from "../domain/dcEnergy.ts";
 import dcRunJson from "../../tests/fixtures/dc-energy-run.json" with { type: "json" };
 import plantAcRunJson from "../../tests/fixtures/plant-energy-run.json" with { type: "json" };
@@ -631,4 +632,107 @@ test("saved DC worker result and trace preserve their equipment and measurement-
 	const wrong = readObject(structuredClone(dcRunJson.run));
 	readObject(result(wrong).model).parameters_source_sha256 = "0".repeat(64);
 	assert.throws(() => readRun(wrong, dcRunJson.run.project_id));
+});
+
+test("plant electrical reply retains unit identity, independent same-label ports and global module coverage", () => {
+	// Consumer-shape fixture only. Manufacturer physics is verified by the engine.
+	const base = {
+		equipment_status: "unresolved",
+		overall_status: "unresolved",
+		country_assessment: { status: "unresolved" },
+		selected_products: [],
+		provisional_bill_of_materials: [],
+		checks: [
+			{
+				id: "pending",
+				status: "unresolved",
+				reason: "synthetic_transport_contract",
+				facts: [],
+			},
+		],
+	};
+	const systems = ["a", "b"].map((id) => ({
+		id,
+		name: id.toUpperCase(),
+		selection: {
+			...plantAcRunJson.project.inputs.equipment_plant.units[0]!.selection,
+		},
+		assessment: {
+			...base,
+			pv_electrical: {
+				schema_version: 1,
+				method: "woo_layout_linear_voc_stc_v1",
+				strings: [
+					{
+						id: "s_" + id,
+						mppt: 1,
+						input: 1,
+						module_ids: ["m_" + id],
+						module_count: 1,
+						stc_vmpp_v: 40,
+						cold_voc_v: 50,
+					},
+				],
+			},
+		},
+	}));
+	const coverage = {
+		id: "plant:pv_layout_coverage",
+		status: "satisfied",
+		reason: "synthetic_transport_contract",
+		facts: [],
+	};
+	const assessment = {
+		...base,
+		model: "woo_multi_converter_plant_v1",
+		checks: [...base.checks, coverage],
+		systems,
+		pv_electrical: {
+			schema_version: 1,
+			method: "woo_plant_layout_electrical_v1",
+			pv_plant_string_plan_sha256: "c".repeat(64),
+			assigned_modules: 2,
+			included_modules: 2,
+			nameplate_kwp: 0.8,
+			checks: [coverage],
+			units: systems.map((unit) => ({
+				unit_id: unit.id,
+				unit_name: unit.name,
+				inverter_product_id: unit.selection.inverter_product_id,
+				inverter_instance_id: "inv_" + unit.id,
+				instance_status: "declared",
+				plan_sha256: "d".repeat(64),
+				assessment: unit.assessment.pv_electrical,
+			})),
+		},
+	};
+	assert.doesNotThrow(() => readEquipmentAssessment(assessment));
+	for (const mutate of [
+		(value: typeof assessment) => {
+			value.pv_electrical.units[0]!.unit_id = "removed";
+		},
+		(value: typeof assessment) => {
+			value.pv_electrical.units[0]!.unit_name = "B";
+		},
+		(value: typeof assessment) => {
+			value.pv_electrical.units[1]!.inverter_instance_id = "inv_a";
+		},
+		(value: typeof assessment) => {
+			value.pv_electrical.assigned_modules = 1;
+		},
+		(value: typeof assessment) => {
+			value.pv_electrical.units.pop();
+			value.pv_electrical.assigned_modules = 1;
+		},
+		(value: typeof assessment) => {
+			value.systems[1]!.assessment.pv_electrical.strings[0]!.module_ids = [
+				"m_a",
+			];
+			value.pv_electrical.units[1]!.assessment.strings[0]!.module_ids = ["m_a"];
+		},
+	]) {
+		const changed = structuredClone(assessment);
+		mutate(changed);
+		assert.throws(() => readEquipmentAssessment(changed), /invalid_run_result/);
+	}
 });

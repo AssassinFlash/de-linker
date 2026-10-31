@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
+	projectInputContract,
 	acknowledgeSave,
 	beginDraft,
 	editDraft,
@@ -30,10 +31,8 @@ test("a late acknowledgement preserves newer edits and their undo/redo history",
 	const intent = draft.pending;
 	assert.ok(intent);
 	const wire = intent.body;
-	assert.equal(
-		JSON.parse(wire).input_contract,
-		"pv_string_links_direct_beam_geometric_pv_v1",
-	);
+	assert.equal(projectInputContract, "pv_plant_string_plan_v1");
+	assert.equal(JSON.parse(wire).input_contract, projectInputContract);
 	draft = editDraft(draft, { ...project.inputs, value: 3 });
 	assert.equal(prepareSave(draft, crypto.randomUUID(), policy).pending, intent);
 	assert.equal(intent.body, wire);

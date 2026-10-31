@@ -154,6 +154,8 @@ export function adoptPlantCandidate(
 	return {
 		...plantInputs(inputs, updated),
 		equipment_plant: plant,
-		equipment_candidate: choice,
+		...(inputs.pv_plant_string_plan === undefined
+			? { equipment_candidate: choice }
+			: {}),
 	};
 }

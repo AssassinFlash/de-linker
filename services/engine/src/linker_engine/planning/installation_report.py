@@ -159,7 +159,12 @@ def installation_sections(source: Object, locale: str) -> list[ReportSection]:
                         value=cast(str, reconciliation[key]) or "—",
                     )
                     for key, label in (
-                        ("pv_string_plan_sha256", "installation_string_plan_hash"),
+                        (
+                            "pv_plant_string_plan_sha256"
+                            if reconciliation["schema_version"] == 2
+                            else "pv_string_plan_sha256",
+                            "installation_string_plan_hash",
+                        ),
                         ("installation_input_sha256", "installation_input_hash"),
                         ("geometry_sha256", "installation_geometry_hash"),
                     )
@@ -177,7 +182,12 @@ def installation_sections(source: Object, locale: str) -> list[ReportSection]:
                     column_weights=[0.8, 0.8, 1.2, 1.1, 1.2, 0.9, 1.3],
                     rows=[
                         [
-                            cast(str, row["string_id"]),
+                            (
+                                f"{row['unit_id']} · {row['inverter_instance_id'] or text('pv_instance_not_recorded', locale)} · "
+                                if "unit_id" in row
+                                else ""
+                            )
+                            + cast(str, row["string_id"]),
                             cast(str, row["circuit_id"]) or "—",
                             " → ".join(
                                 f"{endpoint['instance_id']}/{endpoint['port_id']}"
