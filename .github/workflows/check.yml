@@ -467,8 +467,17 @@ jobs:
           php-version: "8.3"
           tools: composer:v2
           coverage: none
-      - name: Validate module
-        run: just ci-planner
+      - name: Planner dependencies
+        run: just ci-planner-deps
+      - name: Check
+        run: just ci-planner-check
+      - name: Test
+        run: just ci-planner-test
+      - name: Build
+        run: just ci-planner-build
+      - name: Planner PHP
+        if: env.PLANNER_BUILD_CHANGED == 'true'
+        run: just ci-planner-php
 
   engine:
     needs: plan
@@ -501,8 +510,12 @@ jobs:
           cache-dependency-glob: |
             services/engine/uv.lock
             services/engine/pyproject.toml
-      - name: Validate module
-        run: just ci-engine
+      - name: Planner dependencies
+        run: just ci-planner-deps
+      - name: Check
+        run: just ci-service-check engine
+      - name: Test
+        run: just ci-service-test engine
 
   genie:
     needs: plan
@@ -531,12 +544,28 @@ jobs:
       - uses: taiki-e/install-action@f7e5d7c961414b23f5b25b2da9294395d08513ad # v2.87.26
         with:
           tool: just@1.58.0
-      - name: Validate module
-        run: just ci-genie
+      - name: Check
+        run: just ci-service-check genie
+      - name: Test
+        run: just ci-service-test genie
 
   check:
     name: check
-    needs: [plan, presentation, php, js, python, content, build, commerce, native, planner, engine, genie]
+    needs:
+      [
+        plan,
+        presentation,
+        php,
+        js,
+        python,
+        content,
+        build,
+        commerce,
+        native,
+        planner,
+        engine,
+        genie,
+      ]
     if: ${{ !cancelled() }}
     runs-on: ubuntu-24.04
     timeout-minutes: 5

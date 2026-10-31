@@ -833,7 +833,7 @@ TEXT = {
         "The input number identifies the proposed connection. A cited manufacturer connector map is still required.",
         "Die Eingangsnummer bezeichnet den geplanten Anschluss. Ein belegter Anschlussplan des Herstellers ist noch erforderlich.",
     ),
-    "pv_inverter_instance": ("Inverter instance", "Wechselrichterinstanz"),
+    "pv_inverter_instance": ("Inverter", "Wechselrichter"),
     "pv_instance_not_recorded": ("Not recorded", "Nicht erfasst"),
     "plant_unit": ("System", "System"),
     "pv_strings_title": ("PV wiring plan", "PV-Verschaltungsplan"),

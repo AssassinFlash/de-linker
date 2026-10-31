@@ -135,6 +135,11 @@ def build_report(source: Object) -> Report:
                         ]
                     ),
                     table=ReportTable(
+                        # At the native A4 width, the German inverter heading
+                        # is 69.6 pt; equal columns leave only 54.2 pt of text.
+                        column_weights=[1, 1.4, 0.8, 0.8, 1, 1, 1, 1]
+                        if plant_wiring
+                        else None,
                         columns=[
                             *(
                                 [

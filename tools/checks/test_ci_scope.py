@@ -668,7 +668,8 @@ class ScopeTest(unittest.TestCase):
         )
         engine = TEXT.split("\n  engine:\n", 1)[1].split("\n  genie:\n", 1)[0]
         self.assertIn("uses: actions/setup-node@", engine)
-        self.assertIn("run: just ci-engine", engine)
+        self.assertIn("run: just ci-service-check engine", engine)
+        self.assertIn("run: just ci-service-test engine", engine)
         self.assertIn("ci-engine: ci-planner-deps", JUSTFILE)
         self.assertIn("uv run --locked pytest", JUSTFILE)
         python = TEXT.split("\n  python:\n", 1)[1].split("\n  content:\n", 1)[0]
@@ -676,6 +677,113 @@ class ScopeTest(unittest.TestCase):
             python.index("Python unit native helpers"),
             python.index("Validate module"),
         )
+
+    def test_visible_phases_match_workflow_and_planner_typechecks_once(self):
+        for module, checks in (
+            ("engine", ("ci-service-check engine", "ci-service-test engine")),
+            ("genie", ("ci-service-check genie", "ci-service-test genie")),
+            ("planner", ("ci-planner-check", "ci-planner-test", "ci-planner-build")),
+        ):
+            section = TEXT.split(f"\n  {module}:\n", 1)[1].split("\n\n  ", 1)[0]
+            for phase, recipe in zip(("Check", "Test", "Build"), checks, strict=False):
+                self.assertIn(f"- name: {phase}\n        run: just {recipe}", section)
+            self.assertNotIn("Validate module", section)
+        self.assertIn("tools/checks/ci_phase.sh", ci_scope.CONTROL_INPUTS)
+        # Real recipes, synthetic commands: no dependency install/build/test replay.
+        # TemporaryDirectory owns and removes all shims, command log and children.
+        with TemporaryDirectory() as folder:
+            fixture = Path(folder)
+            runner = fixture / "runner"
+            runner.write_text(
+                f"#!{sys.executable}\n"
+                "import json,os,subprocess,sys\nfrom pathlib import Path\n"
+                "name=Path(sys.argv[0]).name\n"
+                "args=sys.argv[1:]\n"
+                "with Path(os.environ['COMMAND_LOG']).open('a') as log:\n"
+                "    log.write(json.dumps([name,*args])+'\\n')\n"
+                "if os.environ.get('FAIL_CHECK') == 'true' and (name == 'tsc' or (name == 'uv' and 'mypy' in args)):\n"
+                "    sys.exit(17)\n"
+                "if name == 'npm' and args[:1] == ['run']:\n"
+                "    script=json.loads(Path('package.json').read_text())['scripts'][args[1]]\n"
+                "    sys.exit(subprocess.call(['bash','-euo','pipefail','-c',script]))\n"
+            )
+            runner.chmod(0o755)
+            for name in ("npm", "node", "tsc", "vite", "prettier", "git", "uv"):
+                (fixture / name).symlink_to(runner)
+            log = fixture / "commands.jsonl"
+            environment = {
+                **os.environ,
+                "PATH": str(fixture) + os.pathsep + os.environ["PATH"],
+                "COMMAND_LOG": str(log),
+                "PLANNER_BUILD_CHANGED": "false",
+            }
+            just = shutil.which("just")
+            assert just is not None
+            for module in ("planner", "engine", "genie"):
+                for fail in (False, True):
+                    with self.subTest(module=module, fail=fail):
+                        log.write_text("")
+                        result = subprocess.run(
+                            [
+                                just,
+                                "--justfile",
+                                str(ROOT / "justfile"),
+                                "ci-" + module,
+                            ],
+                            env={**environment, "FAIL_CHECK": str(fail).lower()},
+                            capture_output=True,
+                            text=True,
+                            timeout=30,
+                            check=False,
+                        )
+                        commands = [
+                            json.loads(line) for line in log.read_text().splitlines()
+                        ]
+                        self.assertEqual(
+                            result.returncode == 0,
+                            not fail,
+                            result.stdout + result.stderr,
+                        )
+                        output = result.stdout + result.stderr
+                        self.assertIn("Check: started", output)
+                        self.assertRegex(output, r"Check: (passed|failed) \(\d+s")
+                        if fail:
+                            self.assertNotIn(["npm", "test"], commands)
+                            self.assertNotIn(["npm", "run", "build:assets"], commands)
+                            self.assertFalse(
+                                any(
+                                    command[0] == "uv" and "pytest" in command
+                                    for command in commands
+                                )
+                            )
+                            self.assertIn(
+                                "npm run lint:types"
+                                if module == "planner"
+                                else "uv run --locked mypy .",
+                                output,
+                            )
+                        elif module == "planner":
+                            self.assertEqual(commands.count(["tsc", "--noEmit"]), 1)
+                            self.assertIn(["npm", "run", "build:assets"], commands)
+                        else:
+                            self.assertIn(
+                                ["uv", "run", "--locked", "pytest", "--durations=10"],
+                                commands,
+                            )
+            log.write_text("")
+            result = subprocess.run(
+                [str(fixture / "npm"), "run", "build"],
+                cwd=ROOT / "apps/planner",
+                env=environment,
+                capture_output=True,
+                text=True,
+                timeout=30,
+                check=False,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            commands = [json.loads(line) for line in log.read_text().splitlines()]
+            self.assertEqual(commands.count(["tsc", "--noEmit"]), 1)
+            self.assertIn(["vite", "build"], commands)
 
     def test_javascript_installs_browser_before_browser_backed_unit_tests(self):
         # Empty browser state plus command shims exercises the actual just recipe.
@@ -884,7 +992,7 @@ class ScopeTest(unittest.TestCase):
         self.assertIn("fetch-depth: 2", steps)
         self.assertIn("python3 tools/checks/ci_scope.py verify-planner", steps)
         self.assertLess(
-            steps.index("Verify Planner invocation"), steps.index("Validate module")
+            steps.index("Verify Planner invocation"), steps.index("name: Check")
         )
         self.assertTrue(
             set(ci_scope.FULL_LANES).isdisjoint({"presentation", "commerce"})
@@ -919,7 +1027,10 @@ class ModuleReuseTest(unittest.TestCase):
             "id": 20,
             "name": "engine",
             "conclusion": "success",
-            "steps": [{"name": "Validate module", "conclusion": "success"}],
+            "steps": [
+                {"name": name, "conclusion": "success"}
+                for name in ci_scope.MODULE_PHASE_STEPS["engine"]
+            ],
         }
 
     def api(self, endpoint):
@@ -929,6 +1040,81 @@ class ModuleReuseTest(unittest.TestCase):
         if "/attempts/" in endpoint:
             return {"total_count": 1, "jobs": [self.job]}
         return self.prior_run
+
+    def test_module_proof_requires_every_successful_phase_and_native_php_condition(
+        self,
+    ):
+        for module, required in ci_scope.MODULE_PHASE_STEPS.items():
+            job = {
+                "name": module,
+                "conclusion": "success",
+                "steps": [{"name": name, "conclusion": "success"} for name in required],
+            }
+            if module == "planner":
+                job["steps"].append({"name": "Planner PHP", "conclusion": "success"})
+            self.assertTrue(
+                ci_scope.successful_module_job(job, module, planner_build_changed=True)
+            )
+            for name in required:
+                for state in (None, "skipped", "failure", "cancelled"):
+                    with self.subTest(module=module, phase=name, state=state):
+                        altered = {
+                            **job,
+                            "steps": [
+                                {**step, "conclusion": state}
+                                if step["name"] == name
+                                else step
+                                for step in job["steps"]
+                                if state is not None or step["name"] != name
+                            ],
+                        }
+                        self.assertFalse(
+                            ci_scope.successful_module_job(
+                                altered, module, planner_build_changed=True
+                            )
+                        )
+            legacy = {
+                **job,
+                "steps": [{"name": "Validate module", "conclusion": "success"}],
+            }
+            self.assertFalse(
+                ci_scope.successful_module_job(
+                    legacy, module, planner_build_changed=True
+                )
+            )
+            if module == "planner":
+                self.assertFalse(ci_scope.successful_module_job(job, module))
+                for flag in (False, True):
+                    for state in (None, "success", "skipped", "failure", "cancelled"):
+                        with self.subTest(flag=flag, php=state):
+                            altered = {
+                                **job,
+                                "steps": [
+                                    step
+                                    for step in job["steps"]
+                                    if step["name"] != "Planner PHP"
+                                ],
+                            }
+                            if state is not None:
+                                altered["steps"].append(
+                                    {"name": "Planner PHP", "conclusion": state}
+                                )
+                            self.assertEqual(
+                                ci_scope.successful_module_job(
+                                    altered, module, planner_build_changed=flag
+                                ),
+                                state == ("success" if flag else "skipped"),
+                            )
+        self.assertTrue(
+            ci_scope.successful_module_job(
+                {
+                    "name": "content",
+                    "conclusion": "success",
+                    "steps": [{"name": "Validate module", "conclusion": "success"}],
+                },
+                "content",
+            )
+        )
 
     def test_successful_independent_module_is_reused_and_gate_rechecks_it(self):
         with (
@@ -1068,7 +1254,13 @@ class ModuleReuseTest(unittest.TestCase):
                 "name": "Verify Planner invocation",
                 "conclusion": "success",
             }
-            self.job["steps"].append(verification)
+            self.job["steps"] = [
+                {"name": name, "conclusion": "success"}
+                for name in ci_scope.MODULE_PHASE_STEPS["planner"]
+                if name != "Verify Planner invocation"
+            ] + [verification]
+            php_phase = {"name": "Planner PHP", "conclusion": "skipped"}
+            self.job["steps"].append(php_phase)
             self.prior_run["head_sha"] = source
             bases = {False: unchanged_base, True: original_base}
             with patch.object(ci_scope, "api", side_effect=self.api):
@@ -1079,6 +1271,7 @@ class ModuleReuseTest(unittest.TestCase):
                     (True, False),
                 ):
                     with self.subTest(old=old_flag, new=new_flag):
+                        php_phase["conclusion"] = "success" if old_flag else "skipped"
                         before = merge(bases[old_flag], source)
                         head = merge(bases[new_flag], next_source)
                         self.prior_run["display_title"] = (
@@ -1357,6 +1550,8 @@ class ModuleReuseTest(unittest.TestCase):
                     {"php:commerce", "engine"},
                 ),
                 (ci_scope.WORKFLOW, set(originals)),
+                ("justfile", set(originals)),
+                ("tools/checks/ci_phase.sh", set(originals)),
                 (".editorconfig", set(originals)),
                 ("services/engine/uv.lock", {"engine"}),
                 (

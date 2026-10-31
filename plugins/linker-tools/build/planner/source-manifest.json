@@ -4,7 +4,7 @@
     "bin/build-manifest.mjs": "3d72b5bdfb1b27802bc13a06a32c0b0624e7627afe597cb41347ffd282fa4060",
     "bin/echarts-types.mjs": "40bb2943de4c984b5fb86ee6c9a70ad28204b04b258e04fe3e1e52936b91deba",
     "package-lock.json": "b7dfba3a390af38c615b5fac091075ebfb849ae9e55caaa87ac9fca041e6fcdf",
-    "package.json": "000d25bc7d33e0f1a5f5529fe7d7cde7bbbe9d878fb59507839028a3b5836b7e",
+    "package.json": "59b8d46279052f711cf9a6616a1a7c3111b746fbe475ff5922d68fad3b236844",
     "src/components/BriefForm.tsx": "6a4f4cd7531c01e08bf0b0504d6bec6ba26edd7fec6064d43a96d474c2eb7f07",
     "src/components/CreditText.tsx": "a2e029484473c16a10bc0ed04a88907d04e382d738f920666eee94c5210f1acb",
     "src/components/Icon.tsx": "5fb1a5cf6f923cf912566766de791230d74d2525a77bbf8f6e88b25844159620",
