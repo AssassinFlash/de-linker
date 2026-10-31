@@ -14,15 +14,18 @@ from __future__ import annotations
 
 import base64
 import copy
+import hashlib
 import html
 import json
 import os
 import re
+import shutil
+import subprocess
 import urllib.error
 import urllib.parse
 import urllib.request
 import uuid
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from http.cookiejar import Cookie, CookieJar
@@ -31,8 +34,13 @@ from typing import Any
 
 import pytest
 
+from linker_local import retirement, server, services
+from linker_local.checkout import Checkout
 from linker_local.cli import require_php
+from linker_local.engine_release import engine_project
 from linker_local.instance import Instance, home
+from linker_local.planner_worker import PlannerWorker
+from linker_local.processes import port_is_free
 from linker_local.registry import Registry
 from linker_local.wpcli import WpCli
 
@@ -56,10 +64,13 @@ class Account:
     user: int
     login: str
     password: str = field(repr=False)
+    claim_events: set[int] = field(default_factory=set, repr=False)
+    guest_sessions: set[str] = field(default_factory=set, repr=False)
 
 
 class Browser:
-    def __init__(self, site: str) -> None:
+    def __init__(self, site: str, fixture_token: str = "") -> None:
+        self.fixture_token = fixture_token
         self.site = site
         self.cookies = CookieJar()
         self.client = urllib.request.build_opener(
@@ -77,7 +88,17 @@ class Browser:
         method: str | None = None,
     ) -> Reply:
         request = urllib.request.Request(
-            self.site + path, data=body, headers=headers or {}, method=method
+            self.site + path,
+            data=body,
+            headers={
+                **(headers or {}),
+                **(
+                    {"X-Linker-Native-Claim": self.fixture_token}
+                    if self.fixture_token
+                    else {}
+                ),
+            },
+            method=method,
         )
         try:
             response = self.client.open(request, timeout=20)
@@ -196,6 +217,300 @@ def local() -> tuple[Instance, WpCli]:
     return instance, WpCli(require_php(), instance)
 
 
+def claim_recovery_file(workspace: Path) -> Path:
+    return workspace.with_name(workspace.name + ".recovery.json")
+
+
+def write_claim_recovery(workspace: Path, owner: str, values: dict[str, Any]) -> None:
+    """One private, owner-bound recovery record, only on incomplete cleanup."""
+    path = claim_recovery_file(workspace)
+    prior = json.loads(path.read_bytes()) if path.exists() else {}
+    if prior:
+        assert prior.get("owner") == owner and prior.get("workspace") == str(workspace)
+    payload = {**prior, **values, "owner": owner, "workspace": str(workspace)}
+    descriptor = os.open(
+        path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC | os.O_NOFOLLOW, 0o600
+    )
+    with os.fdopen(descriptor, "w") as stream:
+        os.fchmod(stream.fileno(), 0o600)
+        json.dump(payload, stream)
+        stream.flush()
+        os.fsync(stream.fileno())
+
+
+def cleanup_claim_runtime(
+    instance: Instance,
+    wp: WpCli,
+    owner: str,
+    workspace: Path,
+    probe: Path,
+    originals: dict[Path, tuple[bytes, int] | None],
+    options: str,
+    evidence: Callable[[], dict[str, tuple[int, str]]],
+    original_evidence: dict[str, tuple[int, str]],
+) -> None:
+    """Stop independently, restore only after stop proof, and retain failed recovery."""
+    failures: list[BaseException] = []
+    phases: list[str] = []
+
+    def attempt(phase: str, operation: Callable[[], object]) -> None:
+        try:
+            operation()
+        except BaseException as error:
+            phases.append(phase)
+            failures.append(error)
+
+    attempt("services_stop", lambda: services.stop(instance))
+    attempt("server_stop", lambda: server.stop(instance))
+    stopped = False
+    try:
+        assert (
+            services.running(instance) == [] and server.process(instance).pid() is None
+        )
+        assert port_is_free(instance.port) and port_is_free(instance.engine_port)
+        runtime = instance.dir / "planner/runtime.json"
+        original = originals[runtime]
+        assert original is not None
+        assert (
+            json.loads(runtime.read_bytes())["directory"] == str(workspace)
+            or runtime.read_bytes() == original[0]
+        )
+        stopped = True
+    except BaseException as error:
+        phases.append("stopped_owner_proof")
+        failures.append(error)
+    if stopped:
+        for key, entry in json.loads(options).items():
+
+            def restore_option(key: str = key, entry: Any = entry) -> None:
+                wp.run(
+                    "eval",
+                    'global $wpdb;foreach(json_decode(getenv("LINKER_FIXTURE_OPTIONS"),true) as $key=>$entry){if($entry["exists"]){$wpdb->update($wpdb->options,array("option_value"=>base64_decode($entry["raw"]),"autoload"=>$entry["autoload"]),array("option_name"=>$key));$row=$wpdb->get_row($wpdb->prepare("SELECT option_value,autoload FROM %i WHERE option_name=%s",$wpdb->options,$key),ARRAY_A);if(null===$row||base64_encode($row["option_value"])!==$entry["raw"]||$row["autoload"]!==$entry["autoload"]){throw new Exception("fixture option restore failed");}wp_cache_delete($key,"options");}else{delete_option($key);if(null!==$wpdb->get_var($wpdb->prepare("SELECT option_id FROM %i WHERE option_name=%s",$wpdb->options,$key))){throw new Exception("fixture option deletion failed");}}}wp_cache_delete("alloptions","options");wp_cache_delete("notoptions","options");',
+                    env={"LINKER_FIXTURE_OPTIONS": json.dumps({key: entry})},
+                )
+
+            attempt("option:" + key, restore_option)
+        for path, original in originals.items():
+
+            def restore(
+                path: Path = path, original: tuple[bytes, int] | None = original
+            ) -> None:
+                if original is None:
+                    path.unlink(missing_ok=True)
+                else:
+                    path.write_bytes(original[0])
+                    path.chmod(original[1])
+                    assert path.read_bytes() == original[0]
+
+            attempt("file:" + path.name, restore)
+        attempt("probe_remove", lambda: probe.unlink(missing_ok=True))
+
+        def unchanged() -> None:
+            assert evidence() == original_evidence
+
+        attempt("original_workspace", unchanged)
+
+        def no_readers() -> None:
+            checked = subprocess.run(
+                ["/usr/sbin/lsof", "+D", str(workspace)],
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+            assert (
+                checked.returncode == 1
+                and not checked.stdout.strip()
+                and not checked.stderr.strip()
+            )
+
+        attempt("workspace_readers", no_readers)
+    recovery = claim_recovery_file(workspace)
+
+    def account_cleanup_complete() -> None:
+        if recovery.exists():
+            prior = json.loads(recovery.read_bytes())
+            assert prior.get("owner") == owner and prior.get("workspace") == str(
+                workspace
+            )
+            if prior.get("account_cleanup"):
+                raise RuntimeError("owned account cleanup remains incomplete")
+
+    attempt("account_cleanup", account_cleanup_complete)
+    if not failures:
+        attempt("workspace_remove", lambda: shutil.rmtree(workspace))
+    if failures:
+        write_claim_recovery(
+            workspace,
+            owner,
+            {
+                "files": {
+                    str(path): None
+                    if original is None
+                    else {
+                        "base64": base64.b64encode(original[0]).decode(),
+                        "mode": original[1],
+                    }
+                    for path, original in originals.items()
+                },
+                "options": json.loads(options),
+                "probe": str(probe),
+                "stopped": stopped,
+                "failed_phases": phases,
+            },
+        )
+        raise BaseExceptionGroup(
+            "native claim cleanup incomplete; recovery at " + str(recovery), failures
+        )
+    recovery.unlink(missing_ok=True)
+    print(
+        "native_claim_cleanup",
+        json.dumps(
+            {
+                "workspace_absent": not workspace.exists(),
+                "probe_absent": not probe.exists(),
+                "original_files_unchanged": len(original_evidence),
+                "services": services.running(instance),
+                "ports_free": port_is_free(instance.port)
+                and port_is_free(instance.engine_port),
+            }
+        ),
+    )
+
+
+@pytest.fixture
+def claim_runtime(local: tuple[Instance, WpCli]) -> Iterator[None]:
+    """One contained workspace; native processes stop before original restoration."""
+    instance, wp = local
+    owner = os.environ.get("LINKER_NATIVE_CLAIM_OWNER", uuid.uuid4().hex)
+    assert re.fullmatch(r"[a-f0-9]+", owner)
+    workspace = instance.dir / "planner" / ("native-claim-" + owner)
+    probe = (
+        instance.wp_content / "mu-plugins" / ("linker-native-claim-" + owner + ".php")
+    )
+    with retirement.available(home(), instance.name):
+        assert (
+            server.process(instance).pid() is None and services.running(instance) == []
+        )
+        assert port_is_free(instance.port) and port_is_free(instance.engine_port)
+        assert (
+            not workspace.exists()
+            and not probe.exists()
+            and not claim_recovery_file(workspace).exists()
+        )
+        assert not list(
+            (instance.dir / "planner").glob("native-claim-*.recovery.json")
+        ), "finish the existing owned fixture recovery before another run"
+        runtime = instance.dir / "planner/runtime.json"
+        original_runtime = runtime.read_bytes()
+        original_workspace = Path(json.loads(original_runtime)["directory"])
+
+        def evidence() -> dict[str, tuple[int, str]]:
+            return {
+                str(p.relative_to(original_workspace)): (
+                    p.stat().st_mtime_ns,
+                    hashlib.sha256(p.read_bytes()).hexdigest(),
+                )
+                for p in original_workspace.rglob("*")
+                if p.is_file()
+            }
+
+        original_evidence = evidence()
+        paths = [
+            runtime,
+            instance.docroot / "wp-config.php",
+            instance.dir / "planner/worker.json",
+            instance.run_dir / "planner-worker.ready.json",
+        ]
+        feed = instance.dir / "engine/feed.json"
+        if not feed.is_symlink():
+            paths.append(feed)
+        originals = {
+            p: (p.read_bytes(), p.stat().st_mode) if p.is_file() else None
+            for p in paths
+        }
+        keys = [
+            "linker_planner_url",
+            "linker_engine_url",
+            "linker_public_admission_ledger",
+            "linker_planner_claim_cursor",
+        ]
+        options = wp.run(
+            "eval",
+            'global $wpdb;$out=array(); foreach(json_decode(getenv("LINKER_FIXTURE_OPTIONS"),true) as $key){$row=$wpdb->get_row($wpdb->prepare("SELECT option_value,autoload FROM %i WHERE option_name=%s",$wpdb->options,$key),ARRAY_A);if($wpdb->last_error!==""){throw new Exception("fixture option snapshot failed");}$out[$key]=array("exists"=>null!==$row,"raw"=>null===$row?null:base64_encode($row["option_value"]),"autoload"=>$row["autoload"]??null);} echo wp_json_encode($out);',
+            env={"LINKER_FIXTURE_OPTIONS": json.dumps(keys)},
+        )
+        old_env = {
+            key: os.environ.get(key)
+            for key in ("LINKER_NATIVE_CLAIM_TOKEN", "LINKER_NATIVE_CLAIM_TRACE")
+        }
+        token = uuid.uuid4().hex
+        trace = workspace / "claim-attempts"
+        workspace.mkdir(mode=0o700)
+        try:
+            policy = json.loads(original_runtime)
+            policy["directory"] = str(workspace)
+            runtime.write_text(json.dumps(policy))
+            source = """<?php
+add_filter('action_scheduler_allow_async_request_runner', '__return_false');
+$proof = $_SERVER['HTTP_X_LINKER_NATIVE_CLAIM'] ?? getenv('LINKER_NATIVE_CLAIM_TOKEN');
+if (!is_string($proof) || !hash_equals('__FIXTURE_SECRET__', $proof)) { return; }
+add_filter('pre_http_request', static function($pre, $args, $url) {
+ if (str_ends_with($url, '/identity/claim-session')) { file_put_contents('TRACE', "claim\\n", FILE_APPEND | LOCK_EX); }
+ return $pre;
+}, 1, 3);
+"""
+            probe.write_text(
+                source.replace("__FIXTURE_SECRET__", token).replace("TRACE", str(trace))
+            )
+            probe.chmod(0o600)
+            os.environ["LINKER_NATIVE_CLAIM_TOKEN"] = token
+            os.environ["LINKER_NATIVE_CLAIM_TRACE"] = str(trace)
+            checkout = Checkout.here()
+            uv = shutil.which("uv")
+            assert uv is not None
+            # Initialise only the new contained store through the selected
+            # native executable, so the retained-input guard has a real DB.
+            worker = PlannerWorker(
+                instance,
+                engine_project(instance, checkout.service("engine")),
+                Path(uv),
+                checkout=checkout,
+            )
+            worker.control("status")
+            server.start(instance, wp.php)
+            services.serve(instance, checkout, wp, only="engine")
+            print(
+                "native_claim_started",
+                json.dumps(
+                    {
+                        "server_pid": server.process(instance).pid(),
+                        "services": services.running(instance),
+                        "workspace": str(workspace),
+                    }
+                ),
+            )
+            yield
+        finally:
+            try:
+                cleanup_claim_runtime(
+                    instance,
+                    wp,
+                    owner,
+                    workspace,
+                    probe,
+                    originals,
+                    options,
+                    evidence,
+                    original_evidence,
+                )
+            finally:
+                for key, value in old_env.items():
+                    if value is None:
+                        os.environ.pop(key, None)
+                    else:
+                        os.environ[key] = value
+
+
 @pytest.fixture
 def account(local: tuple[Instance, WpCli]) -> Iterator[Account]:
     yield from native_account(local)
@@ -210,6 +525,7 @@ def native_account(local: tuple[Instance, WpCli]) -> Iterator[Account]:
     _, wp = local
     login = "planner_fixture_" + uuid.uuid4().hex
     password = uuid.uuid4().hex + uuid.uuid4().hex
+    mail_before = set(local[0].mail_dir.glob("*.eml"))
     result = wp.run(
         "eval",
         '$login = getenv("LINKER_PLANNER_FIXTURE_LOGIN"); '
@@ -223,10 +539,84 @@ def native_account(local: tuple[Instance, WpCli]) -> Iterator[Account]:
         },
     )
     user = int(result)
+    created = Account(user, login, password)
     try:
-        yield Account(user, login, password)
+        yield created
     finally:
-        wp.run("user", "delete", str(user), "--yes")
+        try:
+            wp.run(
+                "eval",
+                '$user=(int)getenv("LINKER_PLANNER_FIXTURE_USER"); '
+                '$events=array_unique(array_merge(json_decode(getenv("LINKER_PLANNER_FIXTURE_EVENTS"),true), '
+                'get_posts(array("post_type"=>"linker_planner_claim","post_status"=>"private","author"=>$user,"numberposts"=>-1,"fields"=>"ids")))); '
+                'foreach($events as $id){ foreach(as_get_scheduled_actions(array("hook"=>"linker_tools_planner_claim","group"=>"linker-planner","search"=>"[".$id.",","per_page"=>-1),"ids") as $action){ '
+                'if(ActionScheduler::store()->get_status($action)==="in-progress"){throw new Exception("fixture action still active");} '
+                "ActionScheduler::store()->delete_action($action); } "
+                "if(get_post($id)){wp_delete_post($id,true);} } "
+                'foreach(json_decode(getenv("LINKER_PLANNER_FIXTURE_SESSIONS"),true) as $guest){(new WC_Session_Handler())->delete_session($guest);} '
+                "(new WC_Session_Handler())->delete_session((string)$user);",
+                env={
+                    "LINKER_PLANNER_FIXTURE_USER": str(user),
+                    "LINKER_PLANNER_FIXTURE_EVENTS": json.dumps(
+                        sorted(created.claim_events)
+                    ),
+                    "LINKER_PLANNER_FIXTURE_SESSIONS": json.dumps(
+                        sorted(created.guest_sessions)
+                    ),
+                },
+            )
+            wp.run("user", "delete", str(user), "--yes")
+            remaining = json.loads(
+                wp.run(
+                    "eval",
+                    '$events=json_decode(getenv("LINKER_PLANNER_FIXTURE_EVENTS"),true);$posts=0;$actions=0;foreach($events as $id){$posts+=null!==get_post($id)?1:0;$actions+=count(as_get_scheduled_actions(array("hook"=>"linker_tools_planner_claim","group"=>"linker-planner","search"=>"[".$id.",","per_page"=>-1),"ids"));} '
+                    'global $wpdb;$sessions=array_merge(json_decode(getenv("LINKER_PLANNER_FIXTURE_SESSIONS"),true),array(getenv("LINKER_PLANNER_FIXTURE_USER"))); '
+                    '$count=(int)$wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM %i WHERE session_key IN (".implode(",",array_fill(0,count($sessions),"%s")).")",$wpdb->prefix."woocommerce_sessions",...$sessions)); '
+                    'echo wp_json_encode(array("user_deleted"=>false===get_userdata((int)getenv("LINKER_PLANNER_FIXTURE_USER")),"posts"=>$posts,"actions"=>$actions,"sessions"=>$count));',
+                    env={
+                        "LINKER_PLANNER_FIXTURE_USER": str(user),
+                        "LINKER_PLANNER_FIXTURE_EVENTS": json.dumps(
+                            sorted(created.claim_events)
+                        ),
+                        "LINKER_PLANNER_FIXTURE_SESSIONS": json.dumps(
+                            sorted(created.guest_sessions)
+                        ),
+                    },
+                )
+            )
+            assert remaining == {
+                "user_deleted": True,
+                "posts": 0,
+                "actions": 0,
+                "sessions": 0,
+            }
+            for mail in set(local[0].mail_dir.glob("*.eml")) - mail_before:
+                if login.encode() in mail.read_bytes():
+                    mail.unlink()
+            assert set(local[0].mail_dir.glob("*.eml")) == mail_before
+            print("native_claim_account_cleanup", json.dumps(remaining))
+        except BaseException as error:
+            trace = os.environ.get("LINKER_NATIVE_CLAIM_TRACE")
+            if trace:
+                workspace = Path(trace).parent
+                owner = workspace.name.removeprefix("native-claim-")
+                assert workspace.parent == local[0].dir / "planner"
+                write_claim_recovery(
+                    workspace,
+                    owner,
+                    {
+                        "account_cleanup": {
+                            "user": user,
+                            "login": login,
+                            "events": sorted(created.claim_events),
+                            "sessions": sorted(created.guest_sessions),
+                        }
+                    },
+                )
+            error.add_note(
+                "Synthetic native account cleanup incomplete for user " + str(user)
+            )
+            raise
 
 
 def test_native_bootstrap_exposes_only_the_browser_runtime_contract(
@@ -741,38 +1131,93 @@ def test_cart_token_clone_never_inherits_project_ownership(
 
 
 def test_native_login_claim_survives_upstream_outage_and_logout(
-    local: tuple[Instance, WpCli], account: Account
+    local: tuple[Instance, WpCli], claim_runtime: None, account: Account
 ) -> None:
     instance, wp = local
     user, login, password = account.user, account.login, account.password
-    owner = Browser(instance.url)
+    token = os.environ["LINKER_NATIVE_CLAIM_TOKEN"]
+    owner = Browser(instance.url, token)
     owner.bootstrap()
+    account.guest_sessions.add(
+        urllib.parse.unquote(str(owner.native_cookie().value)).split("|")[0]
+    )
     project = owner.create("Native login recovery evidence")
-    previous = Browser(instance.url)
+    previous = Browser(instance.url, token)
     for cookie in owner.cookies:
         previous.cookies.set_cookie(copy.copy(cookie))
     previous.context = dict(owner.context)
+    env = {"LINKER_PLANNER_FIXTURE_USER": str(user), "LINKER_NATIVE_CLAIM_TOKEN": token}
     url = wp.run("option", "get", "linker_planner_url")
     try:
-        # Only this owned instance's new planner is unavailable. Existing site
-        # services, ports and other sessions are neither stopped nor changed.
         wp.run("option", "update", "linker_planner_url", "http://127.0.0.1:1/planning")
         owner.login(login, password)
-        pending = wp.run(
-            "eval",
-            'echo (new \\Linker\\Tools\\Planner\\ClaimOutbox())->pending((int) getenv("LINKER_PLANNER_FIXTURE_USER")) ? "yes" : "no";',
-            env={"LINKER_PLANNER_FIXTURE_USER": str(user)},
+        event = json.loads(
+            wp.run(
+                "eval",
+                '$posts=get_posts(array("post_type"=>"linker_planner_claim","post_status"=>"private","author"=>(int)getenv("LINKER_PLANNER_FIXTURE_USER"),"numberposts"=>-1)); '
+                'if(count($posts)!==1){throw new Exception("expected one fixture event");} '
+                '$post=$posts[0]; echo wp_json_encode(array("id"=>$post->ID,"payload"=>$post->post_content));',
+                env=env,
+            )
         )
-        assert pending == "yes"
+        account.claim_events.add(event["id"])
+        env["LINKER_PLANNER_FIXTURE_EVENT"] = str(event["id"])
+        # First foreground recovery uses the unavailable route and establishes
+        # the real native backoff; subsequent bootstrap must respect it.
         assert owner.rpc("bootstrap", {"schema_version": 1}).status == 503
+        action = json.loads(
+            wp.run(
+                "eval",
+                '$id=(int)getenv("LINKER_PLANNER_FIXTURE_EVENT"); '
+                '$due=as_get_scheduled_actions(array("hook"=>"linker_tools_planner_claim","group"=>"linker-planner","search"=>"[".$id.",","status"=>"pending","date"=>time(),"date_compare"=>"<=","per_page"=>-1),"ids"); '
+                'if(count($due)>1){fwrite(STDERR,"duplicate initial fixture action");exit(1);} '
+                'if($due){ActionScheduler::runner()->process_action($due[0],"native-claim-fixture");} '
+                '$retry=as_get_scheduled_actions(array("hook"=>"linker_tools_planner_claim","group"=>"linker-planner","search"=>"[".$id.",","status"=>"pending","date"=>time(),"date_compare"=>">","per_page"=>-1),"ids"); '
+                'if(count($retry)!==1){fwrite(STDERR,"expected future fixture retry");exit(1);} '
+                'echo wp_json_encode(array("id"=>$retry[0],"args"=>ActionScheduler::store()->fetch_action($retry[0])->get_args(),"initial_action_processed"=>(bool)$due));',
+                env=env,
+            )
+        )
+        trace = Path(os.environ["LINKER_NATIVE_CLAIM_TRACE"])
+        attempts = trace.read_text().splitlines()
+        assert len(attempts) == 1 + int(action["initial_action_processed"])
+        assert owner.rpc("bootstrap", {"schema_version": 1}).status == 503
+        assert trace.read_text().splitlines() == attempts
     finally:
         wp.run("option", "update", "linker_planner_url", url)
     assert owner.bootstrap()["kind"] == "user"
-    assert owner.context["claim_pending"] is False
+    assert owner.context["claim_pending"] is True
+    assert trace.read_text().splitlines() == attempts
+    assert owner.read(project).status == 404
+    env["LINKER_PLANNER_FIXTURE_ACTION"] = str(action["id"])
+    actual = json.loads(
+        wp.run(
+            "eval",
+            '$event=(int)getenv("LINKER_PLANNER_FIXTURE_EVENT"); $old=(int)getenv("LINKER_PLANNER_FIXTURE_ACTION"); '
+            "$payload=get_post($event)->post_content; $args=ActionScheduler::store()->fetch_action($old)->get_args(); "
+            "ActionScheduler::store()->cancel_action($old); "
+            '$due=as_schedule_single_action(time()-1,"linker_tools_planner_claim",$args,"linker-planner",true); '
+            'ActionScheduler::runner()->process_action($due,"native-claim-fixture"); '
+            'echo wp_json_encode(array("payload"=>$payload,"args"=>$args,"status"=>ActionScheduler::store()->get_status($due),"event_deleted"=>null===get_post($event)));',
+            env=env,
+        )
+    )
+    # Deterministic due scheduling, not a claim of naturally waiting 60 seconds.
+    assert actual == {
+        "payload": event["payload"],
+        "args": action["args"],
+        "status": "complete",
+        "event_deleted": True,
+    }
+    assert len(trace.read_text().splitlines()) == len(attempts) + 1
+    assert owner.bootstrap()["claim_pending"] is False
     assert owner.read(project).object() == project
     assert previous.read(project).status in (401, 404)
     old_scope = previous.context["query_scope"]
     assert previous.bootstrap()["query_scope"] != old_scope
+    account.guest_sessions.add(
+        urllib.parse.unquote(str(previous.native_cookie().value)).split("|")[0]
+    )
     assert previous.read(project).status == 404
     nonce = owner.rest_nonce
     owner.rest_nonce = ""
@@ -780,6 +1225,9 @@ def test_native_login_claim_survives_upstream_outage_and_logout(
     owner.rest_nonce = nonce
     owner.logout()
     assert owner.bootstrap()["kind"] == "guest"
+    account.guest_sessions.add(
+        urllib.parse.unquote(str(owner.native_cookie().value)).split("|")[0]
+    )
     assert owner.read(project).status == 404
 
 
