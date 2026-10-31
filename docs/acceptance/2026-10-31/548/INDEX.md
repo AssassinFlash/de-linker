@@ -612,3 +612,14 @@ Revision 11  Energy calculation     …
 ### 边界
 
 未验证：删除或重命名历史记录、超过一页时的分页、以及跨项目的记录隔离。
+
+
+### PR815 同批修复资源合同（manifest 与 BOM 来源绑定）
+
+复用 `/Users/chesterjohn/.codex/worktrees/installation-facts-548-2697/de-linker` 和本树已有 engine 依赖，负责人总 goal / `sol_local_retire_implementation`，不新增实例、工作树或依赖环境。原 PR head `2238ac0f8921a0f3b5d4716f3f421a80043f45a0` 由现有 `origin/codex/548-genie-bom-context` 原样保护；fetch main 后如需 rebase，只使用最多一份 Git 自动 stash 暂存本记录，完成即自动应用/回收。只修改 engine assistant_context 与相关回归，修复 selected run manifest 固定的 report.source 未参与材料来源验证问题；legacy 无 materials model 的兼容与 provisional_not_complete_bos 边界保留。合成 SQLite/CAS 测试只使用 `/tmp/pr815-materials-binding-tests` 一份临时根，由本代理在命令 finally 精确删除；源码与有效回归随能力保留。不改生产 Genie、不 push/merge/deploy；跨平台 exporter 等最终源码复审后统一真实重导，不手改身份 hash。
+
+PR815 绑定修复红绿：同 revision、相同 project/input 的自洽 sourceB/materialsB 曾可冒认 run manifest 固定的 sourceA，新增夹具在旧实现明确失败 `DID NOT RAISE InvalidInput`；修复后 selected materials 必须来自 `manifest.context.assets["report.source"]`。8 项 assistant_context 回归通过（1.09 秒），两修改文件 mypy/Ruff/format 和 diff-check 通过；旧报告无 materials_sha256 的早返回及 `provisional_not_complete_bos` 边界保留。原内部 schema/handling 负例同步固定各自 source，避免由新增外层检查遮盖原验证。rebase 到 main `b743878e5` 已完成；原 PR 实现字节保留，旧 fixture-only 提交被当前 main 的已验证基线替代，后续统一真实 exporter 重导，不手改 hash；原 remote PR head 未变，Git 自动 stash 已应用回收。Linux exporter 等生产 Genie817 切换和 ACK 完成后由总 goal 通知窗口。
+
+PR815 增量独立 Spec/Standards 复审已通过，engine 来源绑定修复冻结。Darwin 真实 exporter 已完成并格式化，canonical sorted JSON SHA-256 `be07bf1bf49e78058b2067c1cef46025408cfa4033976d8939b0b64ab6bf3449`；相对已审原 PR815 fixture 的非身份差异为 0，相对当前 main 基线仅 100 个派生 hash 与原 PR 已有的 geometric report assistant materials 字段。Linux 仍待总 goal 确认生产 Genie817 切换和 ACK 窗口，不提前导出，不重复 Darwin；跨平台 mask/manifest 最终合同在两平台均就绪后统一检查。
+
+PR815 Linux exporter 短窗口资源合同：总 goal 已确认无 pr817_migrate 进程，发布代理在本短窗口不执行 stop/publish。仅复用 `/opt/linker-engine/current/.venv/bin/python` 既有依赖，实际源码来自已复审冻结的本 PR 工作树；负责人总 goal / `sol_local_retire_implementation`。VPS 最多一个 `/tmp/linker-planner-fixture-815-source-binding` 专属临时目录，传入源码/tests/schemas/锁文件与必需 fixture 原件，不复制 venv，不访问真实 workspace 或生产服务。使用 nice19、BLAS/OpenMP 单线程、60 秒导出上限，trap 与 finally 精确删除目录并读回；远端完成先释放窗口，再本地验证两平台 manifest/mask 和 Darwin 复现。结果原位更新现有 Linux fixture/manifest，不新增持久副本、不提交/push。

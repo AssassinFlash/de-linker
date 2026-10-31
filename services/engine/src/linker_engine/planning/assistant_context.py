@@ -147,6 +147,15 @@ def _report_materials(workspace: Workspace, run: Run, result: Object) -> Json | 
     model = models.get("materials") if isinstance(models, dict) else None
     if not isinstance(model, str) or not model:
         raise InvalidInput("saved report materials model is missing")
+    pinned = (
+        manifest_context.get("assets") if isinstance(manifest_context, dict) else None
+    )
+    if (
+        not isinstance(pinned, dict)
+        or not isinstance(pinned.get("report.source"), str)
+        or dependencies.get("report_source") != pinned["report.source"]
+    ):
+        raise InvalidInput("saved materials differ from the frozen report source")
     source = report_source_with_information(workspace.blobs, dependencies)
     source_dependencies = source.get("dependencies")
     if (
