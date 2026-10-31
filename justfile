@@ -175,6 +175,10 @@ ci-php-deps project:
         {{ php }} "$(command -v composer)" validate --no-check-publish
         {{ php }} "$(command -v composer)" install --no-interaction --no-progress --quiet
     done
+    # Entries' PHP contracts execute the real Node/jsdom loader fixtures.
+    if [ "$1" = plugins/linker-tools ]; then
+        just --justfile "{{ justfile() }}" ci-node-deps "$1"
+    fi
 
 [private]
 [positional-arguments]

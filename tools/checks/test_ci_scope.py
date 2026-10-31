@@ -656,6 +656,118 @@ class ScopeTest(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertTrue((fixture / "installed").exists())
 
+    def test_tools_php_prepares_its_node_reader_dependencies(self):
+        # Run the actual package/dependency recipes with command shims. They
+        # own only this marker; no existing vendor/node_modules is changed.
+        with TemporaryDirectory() as folder:
+            fixture = Path(folder)
+            marker = fixture / "tools-node-ready"
+            real_just = shutil.which("just")
+            assert real_just is not None
+            php = fixture / "php"
+            php.write_text(
+                f"#!{sys.executable}\n"
+                "import os,sys\nfrom pathlib import Path\n"
+                "if sys.argv[1:] == ['vendor/bin/phpunit'] and Path.cwd().name == 'linker-tools':\n"
+                "    if not Path(os.environ['TOOLS_NODE_READY']).exists():\n"
+                "        sys.exit('PHP loader contract ran before Tools Node dependencies')\n"
+            )
+            php.chmod(0o755)
+            just = fixture / "just"
+            just.write_text(
+                f"#!{sys.executable}\n"
+                "import os,sys\nfrom pathlib import Path\n"
+                "if 'ci-node-deps' in sys.argv:\n"
+                "    assert sys.argv[-1] == 'plugins/linker-tools'\n"
+                "    Path(os.environ['TOOLS_NODE_READY']).touch()\n"
+                "else:\n"
+                "    os.execv(os.environ['REAL_JUST'], [os.environ['REAL_JUST'], *sys.argv[1:]])\n"
+            )
+            just.chmod(0o755)
+            result = subprocess.run(
+                [
+                    real_just,
+                    "--justfile",
+                    str(ROOT / "justfile"),
+                    "ci-php-package",
+                    "plugins/linker-tools",
+                ],
+                env={
+                    **os.environ,
+                    "PHP": str(php),
+                    "PATH": str(fixture) + os.pathsep + os.environ["PATH"],
+                    "REAL_JUST": real_just,
+                    "TOOLS_NODE_READY": str(marker),
+                    "LINKER_CI_PHP_READY": "false",
+                },
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=30,
+            )
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertTrue(marker.exists())
+
+    def test_repeated_node_prepare_preserves_active_reader_dependencies(self):
+        # PHP and JS use this same installer in one local checkout. Redirect
+        # only its rendered root into an owned empty fixture; never move deps.
+        real_just = shutil.which("just")
+        assert real_just is not None
+        rendered = subprocess.run(
+            [
+                real_just,
+                "--justfile",
+                str(ROOT / "justfile"),
+                "--dry-run",
+                "ci-node-deps",
+                "plugins/linker-tools",
+            ],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        with TemporaryDirectory() as folder:
+            fixture = Path(folder)
+            project = fixture / "plugins/linker-tools"
+            project.mkdir(parents=True)
+            (project / "package.json").write_text("{}")
+            (project / "package-lock.json").write_text("{}")
+            npm = fixture / "npm"
+            npm.write_text(
+                f"#!{sys.executable}\n"
+                "import os,sys\nfrom pathlib import Path\n"
+                "root=Path(os.environ['NODE_FIXTURE'])\n"
+                "if (root/'reader-active').exists(): sys.exit('npm ci would replace active PHP dependencies')\n"
+                "(root/'installed-once').touch()\n"
+                "Path('node_modules').mkdir()\n"
+                "Path('node_modules/.package-lock.json').write_text('{}')\n"
+                "Path('node_modules/reader-input').write_text('preserved')\n"
+            )
+            npm.chmod(0o755)
+            environment = {
+                **os.environ,
+                "PATH": str(fixture) + os.pathsep + os.environ["PATH"],
+                "NODE_FIXTURE": str(fixture),
+            }
+            script = (rendered.stderr + rendered.stdout).replace(
+                str(ROOT), str(fixture)
+            )
+            subprocess.run(
+                ["bash", "-c", script, "ci-node-deps", "plugins/linker-tools"],
+                env=environment,
+                check=True,
+            )
+            self.assertTrue((fixture / "installed-once").exists())
+            (fixture / "reader-active").touch()
+            subprocess.run(
+                ["bash", "-c", script, "ci-node-deps", "plugins/linker-tools"],
+                env=environment,
+                check=True,
+            )
+            self.assertEqual(
+                (project / "node_modules/reader-input").read_text(), "preserved"
+            )
+
     def test_workflow_preserves_native_recovery_and_has_one_real_gate(self):
         self.assertIn("cancel-in-progress: true", TEXT)
         self.assertNotIn("on:\n  pull_request:\n    paths", TEXT)
