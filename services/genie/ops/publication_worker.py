@@ -840,7 +840,8 @@ def main() -> int:
         except (Exception, SystemExit) as error:  # noqa: BLE001 - safe status, no private URLs or credentials
             report_failure("run_job", error)
             print(
-                "Knowledge preparation failed; Woo retains the pending job.",
+                "Knowledge publication needs verification; inspect the native job "
+                "and loaded generation.",
                 file=sys.stderr,
             )
             return 1

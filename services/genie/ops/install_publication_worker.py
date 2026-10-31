@@ -12,6 +12,8 @@ import plistlib
 import subprocess
 import sys
 from pathlib import Path
+from urllib.parse import urlsplit
+from urllib.request import getproxies
 
 LABEL = "com.linker.knowledge-publication"
 
@@ -93,6 +95,24 @@ def run_private(path: Path, arguments: list[str]) -> int:
             continue
         key, value = line.removeprefix("export ").split("=", 1)
         os.environ[key.strip()] = value.strip().strip("'\"")
+    direct = os.environ.get("LINKER_PUBLICATION_DIRECT_HOST", "")
+    if direct:
+        if urlsplit(os.environ["LINKER_PUBLICATION_JOBS_URL"]).hostname != direct:
+            raise ValueError("direct publication host differs from configured site")
+        # On macOS, NO_PROXY alone suppresses the system proxy map for every
+        # domain. Preserve the currently effective defaults before bypassing
+        # just our configured site; provider/model traffic keeps its route.
+        proxies = getproxies()
+        for scheme in ("http", "https", "all"):
+            if scheme in proxies:
+                os.environ[scheme.upper() + "_PROXY"] = proxies[scheme]
+                os.environ[scheme + "_proxy"] = proxies[scheme]
+        bypass = [
+            item.strip() for item in proxies.get("no", "").split(",") if item.strip()
+        ]
+        if direct not in bypass:
+            bypass.append(direct)
+        os.environ["NO_PROXY"] = os.environ["no_proxy"] = ",".join(bypass)
     return subprocess.call(
         [
             sys.executable,

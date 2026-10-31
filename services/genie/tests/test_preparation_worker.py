@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import sqlite3
+import subprocess
 import syslog
 import time
 from pathlib import Path
@@ -19,6 +21,85 @@ from publication_worker import Worker, record_build, report_failure, run_job
 from publish_index import ActivationOutcomeUnconfirmed, NativeVerificationRejected
 
 RECIPE = "a" * 64
+
+
+@pytest.mark.parametrize("mode", ["enabled", "disabled", "wrong_host"])
+def test_worker_site_bypass_keeps_other_effective_proxy_routes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, mode: str
+) -> None:
+    import install_publication_worker as installer
+
+    keys = [
+        name + suffix
+        for name, suffix in (
+            ("HTTP", "_PROXY"),
+            ("HTTPS", "_PROXY"),
+            ("ALL", "_PROXY"),
+            ("NO", "_PROXY"),
+            ("http", "_proxy"),
+            ("https", "_proxy"),
+            ("all", "_proxy"),
+            ("no", "_proxy"),
+        )
+    ]
+    for key in keys:
+        monkeypatch.setenv(key, "original-" + key)
+    before = {key: os.environ[key] for key in keys}
+    direct = (
+        ""
+        if mode == "disabled"
+        else "other.test"
+        if mode == "wrong_host"
+        else "site.test"
+    )
+    for key in ("LINKER_PUBLICATION_JOBS_URL", "LINKER_PUBLICATION_DIRECT_HOST"):
+        monkeypatch.setenv(key, "")
+    environment = tmp_path / "private.env"
+    environment.write_text(
+        "LINKER_PUBLICATION_JOBS_URL=https://site.test/jobs\n"
+        + "LINKER_PUBLICATION_DIRECT_HOST="
+        + direct
+        + "\n"
+    )
+    environment.chmod(0o600)
+    proxies = {
+        "http": "http://proxy.test:8080",
+        "https": "http://proxy.test:8080",
+        "all": "socks5://proxy.test:1080",
+        "no": "localhost,already.test",
+    }
+    reads: list[bool] = []
+    children: list[dict[str, str]] = []
+
+    def system_routes() -> dict[str, str]:
+        reads.append(True)
+        return proxies
+
+    def child(_command: list[str], **_kwargs: Any) -> int:
+        children.append({key: os.environ[key] for key in keys})
+        return 23
+
+    monkeypatch.setattr(installer, "getproxies", system_routes)
+    monkeypatch.setattr(subprocess, "call", child)
+    if mode == "wrong_host":
+        with pytest.raises(ValueError, match="differs from configured site"):
+            installer.run_private(environment, ["--worker-id", "fixture"])
+        assert not children and not reads
+    else:
+        assert installer.run_private(environment, ["--worker-id", "fixture"]) == 23
+        assert len(children) == 1
+        if mode == "disabled":
+            assert children[0] == before and not reads
+        else:
+            assert len(reads) == 1
+            for scheme in ("http", "https", "all"):
+                assert children[0][scheme.upper() + "_PROXY"] == proxies[scheme]
+                assert children[0][scheme + "_proxy"] == proxies[scheme]
+            assert (
+                children[0]["NO_PROXY"]
+                == children[0]["no_proxy"]
+                == "localhost,already.test,site.test"
+            )
 
 
 def source(revision: str = "source-1") -> dict[str, Any]:
