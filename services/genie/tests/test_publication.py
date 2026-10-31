@@ -1072,6 +1072,7 @@ def test_worker_publishes_then_acknowledges_only_actual_loaded_generation() -> N
     job = {
         "job_id": "j1",
         "lease_token": "lease",
+        "lease_expires_at": int(time.time()) + 600,
         "source_revision": "source-1",
         "model_identity_revision": "fixture-identity-1",
         "manifest": manifest(),
@@ -1135,6 +1136,7 @@ def test_all_products_available_cannot_hide_unprepared_document_associations(
                 "job": {
                     "job_id": "j",
                     "lease_token": "l",
+                    "lease_expires_at": int(time.time()) + 600,
                     "source_revision": "source-1",
                     "model_identity_revision": "fixture-identity-1",
                     "manifest": raw,
@@ -1190,6 +1192,7 @@ def test_worker_does_not_ack_ready_when_disk_changed_but_running_process_is_old(
                 "job": {
                     "job_id": "j",
                     "lease_token": "l",
+                    "lease_expires_at": int(time.time()) + 600,
                     "source_revision": "source-1",
                     "model_identity_revision": "fixture-identity-1",
                     "manifest": manifest(),
@@ -1217,7 +1220,10 @@ def test_worker_does_not_ack_ready_when_disk_changed_but_running_process_is_old(
                 "index_version": "old",
             },
         )
-    assert requests[-1]["status"] == "failed"
+    # A publication already returned: neither a ready nor a failed ACK may
+    # discard its authority while the running generation is still unconfirmed.
+    assert len(requests) == 1
+    assert "status" not in requests[0]
 
 
 def test_locale_mirror_is_not_independent_permission() -> None:
