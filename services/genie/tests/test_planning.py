@@ -11,7 +11,8 @@ from pydantic import ValidationError
 from linker_genie import planning
 from linker_genie.facts import Fact
 from linker_genie.hydrate import fill, hydrate
-from linker_genie.route import Route, Subject, with_page
+from linker_genie.jev import Reading
+from linker_genie.route import Route, Subject, plan, with_page
 from linker_genie.schema import (
     ActionBlock,
     PageContext,
@@ -312,6 +313,29 @@ def test_boss_does_not_trigger_the_bom_route() -> None:
     )
 
     assert routed.calls == ()
+
+
+def test_bom_planning_call_survives_a_full_documents_route() -> None:
+    _, page = source()
+    subject = Subject(
+        (1, 2, 3, 4),
+        {1: "home-storage", 2: "home-storage", 3: "home-storage", 4: "home-storage"},
+        {1: "A", 2: "B", 3: "C", 4: "D"},
+    )
+    message = "What is in the BOM for this project?"
+    route = plan(
+        message,
+        [],
+        Reading("documents_specs", 0.95, 0.1, 0.05, 0.2, 2.6, 0.0),
+        subject,
+        "en",
+    )
+    assert route.name == "documents"
+
+    routed = with_page(route, page, False, True, subject, message)
+
+    assert planning.NAME in [call.ability for call in routed.calls]
+    assert planning.NAME not in [call.ability for call in routed.dropped]
 
 
 def test_active_project_sizing_reads_selected_history_instead_of_blank_tool() -> None:
