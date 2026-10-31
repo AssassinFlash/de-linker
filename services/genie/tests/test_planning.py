@@ -217,6 +217,78 @@ def test_unavailable_dirty_or_mismatched_context_never_reuses_figures() -> None:
         assert gathered.facts == {} and gathered.product_ids == set()
 
 
+def test_provisional_bom_keeps_verified_provenance_and_scope() -> None:
+    raw, page = source()
+    raw["runs"][0].update(
+        kind="planning_report_v1",
+        materials={
+            "status": "verified",
+            "sha256": "c" * 64,
+            "model": "project_materials_v3",
+            "line_count": 4,
+            "unresolved_quantity_count": 2,
+            "handling_counts": {
+                "customer_supplied_required": 1,
+                "site_engineering_required": 1,
+                "woo_product": 1,
+                "manufacturer_included": 1,
+            },
+            "scope": "provisional_not_complete_bos",
+        },
+        rows=[
+            {
+                "label": "Provisional bill of materials",
+                "value": {"Product": "GoodWe GW61.4-BAT-AC-G10", "Quantity": "—"},
+            }
+        ],
+    )
+
+    payload, gathered = planning.record(raw, page)
+
+    assert payload["status"] == "available" and payload["truncated"] is False
+    assert "GoodWe GW61.4-BAT-AC-G10" in payload["text"]
+    assert "Verified provisional bill of materials:" in payload["text"]
+    assert (
+        "quantities unresolved; not a complete balance-of-system take-off."
+        in payload["text"]
+    )
+    assert {"4", "2"} <= set(payload["figures"].values())
+    assert "provenance SHA-" in payload["text"]
+    assert "c" * 64 in payload["text"]
+    assert "site_engineering_required" in payload["text"]
+    assert gathered.tool_calls[0]["name"] == planning.NAME
+
+    malformed = json.loads(json.dumps(raw))
+    malformed["runs"][0]["materials"]["sha256"] = "not-a-hash"
+    assert planning.record(malformed, page)[0] == {"error": "unavailable"}
+
+
+@pytest.mark.parametrize(
+    ("locale", "question"),
+    [
+        ("en", "What is in the bill of materials for this plan?"),
+        ("en", "Is the BOM a complete balance of system?"),
+        ("de", "Was steht in der vorläufigen Stückliste?"),
+        ("de", "Ist die Materialliste ein vollständiges BOS?"),
+    ],
+)
+def test_bom_questions_read_the_exact_planning_project(
+    locale: str, question: str
+) -> None:
+    _, page = source()
+    routed = with_page(
+        Route("model"),
+        page,
+        False,
+        True,
+        Subject((), {}, {}),
+        question,
+    )
+
+    assert page.planning_project_id is not None
+    assert [call.ability for call in routed.calls] == [planning.NAME]
+
+
 def test_active_project_sizing_reads_selected_history_instead_of_blank_tool() -> None:
     _, page = source()
     routed = with_page(

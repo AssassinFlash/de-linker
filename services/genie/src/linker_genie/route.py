@@ -113,7 +113,9 @@ _SOLUTION_WORDS = re.compile(
     r"\b(?:solution|solutions|lösung|lösungen|loesung|loesungen|"
     r"design[ -]report|auslegungsbericht|autarkie|autarky|"
     r"self[ -]?sufficien\w*|eigenverbrauch\w*|self[ -]?consumption|"
-    r"jahresertrag|ertrag|erträge|yield)\b",
+    r"jahresertrag|ertrag|erträge|yield|bill[ -]of[ -]materials|"
+    r"material[ -]list|stückliste|stueckliste|materialliste|materialaufnahme|"
+    r"balance[ -]of[ -]system|bom|bos)\b",
     re.IGNORECASE,
 )
 SERVICE_HINT = (

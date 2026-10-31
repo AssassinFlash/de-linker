@@ -615,6 +615,108 @@ def test_report_omits_comparison_location_and_private_note(
         ]
 
 
+def test_report_exposes_verified_materials_provenance(
+    workspace: Workspace, owner: Actor, context: Context
+) -> None:
+    project = workspace.create(owner, "Materials provenance", {}, key="materials")
+    report_context = Context(
+        context.code_sha256,
+        {**context.models, "materials": "project_materials_v3"},
+        context.assets,
+        context.parameters,
+    )
+    run = workspace.evaluate(
+        owner, project.id, 1, report_context, key="materials-report", max_attempts=1
+    )
+    materials: Object = {
+        "schema_version": 3,
+        "kind": "project_materials_v3",
+        "project_id": project.id,
+        "revision": 1,
+        "input_sha256": project.input_sha256,
+        "lines": [
+            {
+                "id": "product:0:1946",
+                "handling": "woo_product",
+                "quantity": 1,
+            },
+            {
+                "id": "installation:0:ac-conductor",
+                "handling": "customer_supplied_required",
+                "quantity": None,
+            },
+            {
+                "id": "installation:1:meter",
+                "handling": "manufacturer_included",
+                "quantity": 2,
+            },
+        ],
+        "installation_status": "not_assessed",
+        "equipment_status": "unresolved",
+    }
+    materials_sha = workspace.blobs.put_object(materials)
+    source: Object = {
+        "project_id": project.id,
+        "revision": 1,
+        "input_sha256": project.input_sha256,
+        "materials": materials,
+        "dependencies": {"materials_model": materials_sha},
+    }
+    source_sha = workspace.blobs.put_object(source)
+    jobs = Jobs(workspace)
+    lease = jobs.claim("fixture", kinds=("evaluate",), lease_seconds=30)
+    assert lease is not None
+    jobs.complete(
+        lease,
+        {
+            "kind": "planning_report_v1",
+            "report": {"locale": "en", "sections": []},
+            "materials_sha256": materials_sha,
+            "dependencies": {
+                "report_source": source_sha,
+                "materials_model": materials_sha,
+            },
+        },
+    )
+
+    projection = assistant_context(workspace, owner, project.id, 1, [run.id], "en")
+    selected = cast(list[Object], projection["runs"])[0]
+    assert selected["materials"] == {
+        "status": "verified",
+        "sha256": materials_sha,
+        "model": "project_materials_v3",
+        "line_count": 3,
+        "unresolved_quantity_count": 1,
+        "handling_counts": {
+            "customer_supplied_required": 1,
+            "manufacturer_included": 1,
+            "woo_product": 1,
+        },
+        "scope": "provisional_not_complete_bos",
+    }
+
+    mismatch = workspace.evaluate(
+        owner, project.id, 1, report_context, key="materials-mismatch", max_attempts=1
+    )
+    other_materials_sha = workspace.blobs.put_object({"different": "materials"})
+    lease = jobs.claim("fixture", kinds=("evaluate",), lease_seconds=30)
+    assert lease is not None
+    jobs.complete(
+        lease,
+        {
+            "kind": "planning_report_v1",
+            "report": {"locale": "en", "sections": []},
+            "materials_sha256": materials_sha,
+            "dependencies": {
+                "report_source": source_sha,
+                "materials_model": other_materials_sha,
+            },
+        },
+    )
+    with pytest.raises(InvalidInput, match="materials dependency differs"):
+        assistant_context(workspace, owner, project.id, 1, [mismatch.id], "en")
+
+
 def _historical_period(start: str, end: str) -> Object:
     return {"summary": {"start_utc": start, "end_utc": end}}
 
