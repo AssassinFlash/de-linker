@@ -82,17 +82,25 @@ class Worker:
     # known only to this worker, so it retains the same cleanup responsibility.
     custom_judgments: Path | None = None
     next_prune: float = 0.0
+    prune_deferred: bool = False
 
     def cycle(self, now: float) -> int:
         """One pass over the queue; returns how many turns it judged or skipped."""
         started = time.monotonic()
+        if self.prune_deferred and now < self.next_prune:
+            return 0
         if self.custom_judgments is not None and now >= self.next_prune:
             success = retention.sweep(None, self.custom_judgments, now)
+            self.prune_deferred = not success
             self.next_prune = now + (
                 retention.PRUNE_EVERY_SECONDS
                 if success
                 else retention.RETRY_AFTER_SECONDS
             )
+            if not success:
+                # A busy custom store cannot accept delivery metadata either.
+                # Pause its writes until the existing cleanup retry is due.
+                return 0
         start = self.store.cursor()
         if start is None:
             start = self.source.latest_id()

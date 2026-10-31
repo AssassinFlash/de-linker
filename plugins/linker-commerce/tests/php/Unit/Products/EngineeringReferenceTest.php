@@ -64,6 +64,7 @@ final class EngineeringReferenceTest extends TestCase {
 		}
 		EvidenceBindings::capture( self::ID, true );
 		WP_Mock::userFunction( 'get_object_taxonomies' )->andReturn( array( 'pa_model', 'pa_brand' ) );
+		WP_Mock::userFunction( 'get_object_term_cache' )->andReturn( false );
 		WP_Mock::userFunction( 'wp_get_object_terms' )->andReturnUsing(
 			static function ( int|array $id, string $taxonomy, array $args = array() ): array {
 				$name = 'pa_model' === $taxonomy ? 'TSM-460NEG9R.28' : 'Trina Solar';
