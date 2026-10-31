@@ -77,6 +77,17 @@ CREATE TABLE IF NOT EXISTS turn_starts (
 );
 """
 
+# Only a numeric high-water mark: deleting all expired turns must not let SQLite
+# reuse IDs below the quality worker's durable cursor. Unlike rebuilding an
+# existing log for AUTOINCREMENT, this upgrade copies no customer payloads.
+TURN_SEQUENCE_SCHEMA = """
+CREATE TABLE IF NOT EXISTS turn_sequence (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    last_id INTEGER NOT NULL
+);
+INSERT OR IGNORE INTO turn_sequence (id, last_id) VALUES (1, 0);
+"""
+
 
 def _calls(raw: str | None) -> list[dict[str, Any]]:
     """The turn's logged calls; a malformed entry is left out, never raised."""
@@ -97,6 +108,7 @@ class TurnLog:
         self._db = sqlite3.connect(path, check_same_thread=False)
         self._db.execute(SCHEMA)
         self._db.execute(STARTS_SCHEMA)
+        self._db.executescript(TURN_SEQUENCE_SCHEMA)
         present = {row[1] for row in self._db.execute("PRAGMA table_info(turns)")}
         for name, kind in ADDED_COLUMNS:
             if name not in present:
@@ -127,10 +139,13 @@ class TurnLog:
         cursor = self._db.execute(
             """
             INSERT INTO turns (
-                conversation_id, locale, grounded, failures, fallback,
+                id, conversation_id, locale, grounded, failures, fallback,
                 provider, model, tool_calls, output, question, page,
                 understanding, approved, contact, timing
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (
+                (SELECT MAX(COALESCE((SELECT MAX(id) FROM turns), 0),
+                    (SELECT last_id FROM turn_sequence WHERE id = 1)) + 1),
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 conversation_id,

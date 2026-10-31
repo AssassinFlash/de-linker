@@ -67,6 +67,22 @@ final class PreparationJobsTest extends TestCase {
 		parent::tearDown();
 	}
 
+	/** One fresh source read reconciles both consumers and leases its exact manifest. */
+	public function test_claim_reconciles_both_consumers_with_one_fresh_source_read(): void {
+		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->once()->andReturn( true );
+		WP_Mock::userFunction( 'get_posts' )->once()->andReturn( array( 12 ) );
+		WP_Mock::userFunction( 'delete_option' )->with( 'linker_publication_pending' )->once()->andReturn( true );
+		WP_Mock::userFunction( 'wp_generate_password' )->andReturn( 'fixture-token' );
+		$result = ( new PreparationJobs() )->claim( 'knowledge', 'mac', 600, str_repeat( 'a', 64 ) );
+		$this->assertIsArray( $result );
+		$this->assertIsArray( $result['job'] );
+		$this->assertSame( $result['job']['source_revision'], $result['job']['manifest']['source_revision'] );
+		$this->assertSame( $result['job']['source_revision'], $this->state['engineering']['source_revision'] );
+		$this->assertSame( 'pending', $this->state['engineering']['status'] );
+		$this->assertSame( 'preparing', $this->state['knowledge']['status'] );
+		$this->assertSame( 1, $result['job']['activation_epoch'] );
+	}
+
 	/** Missing/false/non-boolean coverage cannot acknowledge a complete index. */
 	public function test_incomplete_coverage_remains_retryable_with_safe_products_available(): void {
 		foreach ( array( null, false, 'true' ) as $complete ) {

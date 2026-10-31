@@ -1,5 +1,182 @@
 # #548 安装事实线 · 验收索引（2026-10-31）
 
+## 2026-10-31 接管：当前结论与首批资源修复
+
+本索引合并了同目录 `INDEX.md` 与 `index.md`；两个仅大小写不同的路径会在 macOS 上相互覆盖。下方较新的具名验收取代旧节相同项目的未验证状态，未扩展到未经验证的范围。生产验收提交不等同自然客户询盘，局部材料清单不等同完整安装 BOS。
+
+本次统一工作树为 `/Users/chesterjohn/.codex/worktrees/installation-facts-548/de-linker`，分支 `codex/runtime-lifecycle-ci`；负责人当前总 goal 会话。复用既有干净工作树，不新增实例或整站副本。新增/修改的源码随能力保留；测试临时 SQLite、发布目录与子进程仅保留测试期，由执行者在退出路径回收。分支在合并及本批验收完成后删除，未提交实现和唯一证据保留。
+
+### 当前只读生产采样（2026-10-31 02:58–03:06 UTC）
+
+- VPS：1 CPU，load 0.07/0.02/0.00，短采样 CPU idle 97–99%，内存可用约 2717 MiB；磁盘 48 GiB 中用 5.1 GiB，可用 43 GiB。四项 Engine/Genie/Planner HTTP/worker 服务 active，NRestarts=0。本次采样未复现即时过载，不证明峰值负载或长期无泄漏。
+- Hostinger：64 CPU，共享主机 load 47.34/60.25/53.68；账户可见主要为少量 lsphp，未运行压力测试。挂载卷61%使用不等同本账户配额；不可凭共享load数值归因为本项目过载。观察到CPU/IO压力，具体归属仍需分层测量。
+- Planner：18项目、56修订、55任务（53成功、2失败，采样时无queued/running/retry_wait）；数据库294,912 bytes，629个blob合计201,315,654 bytes，无 `.incoming`。只读引用遍历得到6个候选未引用文件、5,203,227 bytes，但1个较大JSON未展开且外部快照引用未排除，**不得按该结果删除**。
+- Genie：API和judge均active/enabled，使用默认同目录日志库；706条turn，最早2026-10-13，680条judgment，turn_starts=0。当前无超90天数据积压证据；独立夹具确认清理依赖可选judge以及失败start记录无清理的机制缺口。
+- 知识索引三代，各约290.5MB；另有旧incoming目录。存在目录不证明可删除，须按运行/恢复引用和所有权判断。
+- WordPress Cron确有 `linker_tools_planner_claim_sweep`，下一时间戳1793417530；AS无同名动作不表示WP Cron未注册。跨attempt重复排队则已有独立失败夹具。
+
+### 本批实现状态
+
+代码候选 `de463f4e` 及自定义日志路径修复 `d6d4f32f` 已完成独立 Spec/Standards 双评审；Spec发现的自定义 `--db` 清理回归已由原CLI失败夹具复现、修复并通过增量复审。尚未部署。
+
+| 有界行为 | 当前验证 |
+| --- | --- |
+| 本地/CI按模块分流、presentation flags、超时/取消孙代回收、部分up/down失败 | Python3.12定向合同26项通过；recipes dry-run、YAML和Ruff通过；未运行真实站点 |
+| Genie 90天清理、失败start、空闲API生命周期、并发写入、ID高水位 | 相关回归79项通过；最终13项retention夹具通过，含旧CLI自定义路径和实际锁库；使用本树PYTHONPATH |
+| WordPress资料准备同锁内只组装一次manifest | 17项/118断言通过；PHPStan/PHPCS通过；保留fresh来源读取 |
+| 认领扫描/foreground不绕开既有退避任务 | 2项/40断言通过；旧源码失败夹具已复现；PHPStan/PHPCS通过 |
+| 服务复制失败保留current且清理半成品 | 4项实际shell发布用例通过；原源码失败留下额外版本目录；bash-n/Ruff通过 |
+
+本批不代表Planner CAS完整引用回收、异常终止残留、服务激活失败全链恢复、Hostinger高峰负载归因、账号认领界面故障或全站完整goal已经完成。主线新增CI检查仍需对最终候选运行；正式生产结论待发布和实际消费者读回。
+
+当前文档中的认证哈希已移除，但旧Git提交仍包含该材料，历史暴露与后续处置未关闭。未执行历史改写或修改生产账号。
+
+### CI 首轮失败与已验证修复（PR #817）
+
+首轮 `41164122644` 的 Python static 在约40秒报新增测试的三处mypy错误；此前本地仅检查受影响src，未执行覆盖测试目录的`mypy .`。已在本地整包精确复现并修复，225文件mypy、整包Ruff/format通过。JS unit的两个既有浏览器用例缺headless shell，根因是去重后下载排在unit之后；本机缓存掩盖此顺序问题。真实`just js-test`空浏览器状态夹具旧红新绿，唯一下载已提前，27项CI合同通过。失败保留，不把局部验证描述为CI全绿。
+
+提交`7926adbc`另补生产现存带source后缀版本的回滚兼容；原脚本夹具失败`no older release`，修后5个实际发布shell用例通过。两轴增量评审均PASS。新版CI与生产结果待实际读回。Planner CAS下一批独立复用`unified-planner-548`工作树（旧已合入补丁分支保留），无新实例或整站副本。
+
+
+## 最新客户链路验收记录
+
+
+本轮在生产 `de-linker.com` 上完成的读回。每条都附执行方式与实际返回，不写推测。
+
+### 1. 已保存方案 8207 的界面读回
+
+**结论：通过。**
+
+以 user 1（`857558227@qq.com`）会话打开 `https://de-linker.com/solution-configurator/?saved_solution=8207`，页面进入「Start a new project from a saved solution」：
+
+- 标题 `SAJ BU2-5.0-HV1`，`Original inputs` 折叠区存在。
+- 已带出 `Grid connection Three-phase`、`Backup supply Not needed`。
+- 提示 `Some saved inputs cannot be carried over automatically. They are kept for reference and need review in the new project.` —— 这是设计意图（不能自动搬的保留参考），不是缺陷。
+
+**下载读回**：展开 `Original inputs` 后点 `Download original inputs (JSON)`，得 498 字节文件：
+
+```json
+{
+  "schema_version": 1,
+  "authority": "historical_user_input",
+  "solution_id": 8207,
+  "title": "SAJ BU2-5.0-HV1",
+  "kind": "residential",
+  "input": { "locale": "en", "plz": "", "annual_kwh": 0, "pv_kwp": 0, "phase": 3, "backup": "none", "heat_pump": false, "electric_vehicle": false },
+  "recorded_items": [ { "product_id": 2090, "quantity": 1 } ],
+  "source_sha256": "6dfee710c8f17869436d9cf79ba7625d241b16aee45d535b24062f00b91e7859"
+}
+```
+
+该链接是客户端 `data:` URL，由 `apps/planner/src/components/SavedSolutionReference.tsx` 从已加载的 `historical_user_input` 生成，不经过服务端。
+
+**归属验证**：同一 URL 在临时管理员会话下报 `Your workspace could not be opened.`，在访客会话下报 `The saved inputs could not be loaded in this session.` —— 8207 属于 user 1，两者无权读取，行为正确。
+
+### 2. 真实询盘提交（含人机验证）
+
+**结论：通过。**
+
+生产 `mode=enforce`、`configured=1`、`ready=1`、`test_keys=false`。Turnstile 为非交互 managed 模式（不显示勾选框，直接进入 `checking → ready`）。
+
+在 `https://de-linker.com/proforma-request/` 填写并提交，生产读回：
+
+| 字段 | 值 |
+| --- | --- |
+| 订单 ID | `8457` |
+| 状态 | `wc-inquiry-received` |
+| 邮箱 | `chester@de-linker.com` |
+| 创建时间（GMT） | `2026-10-31 02:10:57` |
+| 订单总数 | `252 → 253` |
+
+订单行项：
+
+```
+GoodWe GW80K-ET-G10      line_item
+GoodWe GW61.4-BAT-AC-G10 line_item
+DE-MWST. 19%-1           tax
+```
+
+草稿里的两个产品都随询盘进入订单，验证了「Solution draft 一并带上」。
+
+关键 meta：
+
+- `_linker_inquiry_source = proforma`
+- `_linker_i18n_language = en`
+- `_linker_inquiry_topic = general`
+- `_linker_inquiry_send_policy = inquiry-mail-v1`
+- `_linker_planning_projects` = 一条 `planning_inquiry_reference_v1`，见下节
+
+**邮件**：业主已在原会话确认收到邮件。队列中没有 8457 的记录不能单独证明 transport ACK、Message-ID 或首次发送成功；安全地图要求的自然客户询盘证据仍分别核实。
+
+### 3. 客户下载报告 PDF
+
+**结论：通过，且下载的是冻结报告。**
+
+读取订单 `8457` 的 `_linker_planning_projects` 得到：
+
+| 字段 | 值 |
+| --- | --- |
+| `handoff_id` | `c7ae5024b3014942bf1c6b7a4ca8fa57` |
+| `project_id` | `0bbbb0cce41744aea47d57fc1fabbcb2` |
+| `revision` | `4` |
+| `title` | `Installation facts acceptance 2026-10-31` |
+| `input_sha256` | `ab6534e3a76de858b0ddc8f015715f…` |
+| `pdf.sha256` | `b70d599dcfd74eb95e6d66b5cb58d16753106c6830bbf3ab09cde4cc858246e8` |
+
+路由 `GET /wp-json/linker/v1/inquiries/{id}/planning-report/{handoff}?key={order_key}`：
+
+| 场景 | 结果 |
+| --- | --- |
+| 无 `key`、无会话 | `404` `planning_report_not_found` —— 不泄露报告是否存在 |
+| 持有效 `order_key` | `200` `application/pdf`，60322 字节 |
+
+文件本身：
+
+```
+PDF document, version 1.4, 6 pages
+Title: Project planning report
+Producer: ReportLab PDF Library
+sha256: b70d599dcfd74eb95e6d66b5cb58d16753106c6830bbf3ab09cde4cc858246e8
+```
+
+**该 sha256 与订单里冻结的 `pdf.sha256` 逐字节一致**，证明客户拿到的是询盘时冻结的那份报告，不是重新生成的。
+
+### 4. 生产改动与回滚
+
+本轮为取得 user 1 读回，曾短暂改动生产账号，全部已按原字节回滚：
+
+| 动作 | 状态 |
+| --- | --- |
+| 建临时管理员 `ss-verify-548`（ID 46） | 已删除 |
+| user 1 认证字段临时改写 | 原会话记录称已恢复；凭证材料不应写入验收文档，当前正文已移除，历史暴露仍需处理 |
+| 测试邮件重写开关 | 询盘前开、提交后立即关；当前 `off` |
+| 前缀残留查询（`ss-verify%`/`ss-probe%`/`example.invalid`） | 空 |
+| 生产用户数 | `17 → 16` |
+
+### 5. 本轮发现、尚未修复
+
+**历史邮件记录待分类**：原会话发现 38 条 `private` 邮件记录。安全工作线曾明确保留 38 条 held 攻击相关记录；仅凭数量、日期或 private 状态不能判定投递故障。必须核对实际隔离与派发状态，禁止据此批量重发或删除。
+
+**`Send password reset` 误触**：操作管理列表时误点该链接。WordPress 的该动作在 GET 时发信，但返回 `reset_count=0`（自报未发出任何一封）；当时 `test-mail` 为 `off`，本次会话未更改其状态。业主未报告收到该邮件。
+
+### 6. 环境与资源
+
+| 项 | 值 |
+| --- | --- |
+| 磁盘可用 | 834 GiB |
+| 本轮临时文件 `/tmp/548-*` | 已全部删除 |
+| 生产备份 | 未新增（本轮仅账号与开关改动，均即时回滚） |
+| 本地实例 | 未启动 |
+| 浏览器 | 仅复用既有一个 tab，未新建 |
+
+证据文件保存在仓库忽略目录 `.scratch/`：`548-withkey.pdf`、`548-nokey.json`。
+
+
+## 先前有限范围验收与排障记录（历史）
+
+以下记录保留过程与边界；与上方较新具名验收冲突时以上方为准。
+
+
 这份索引只做一件事：让人一眼看出每项**验证到什么程度**、证据在哪、还有什么没验证。
 详细记录在两份文档里，这里不重复内容，只给判断。
 

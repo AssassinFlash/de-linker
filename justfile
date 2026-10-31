@@ -86,9 +86,6 @@ ci-content:
     just --justfile "{{ justfile() }}" i18n-coverage
     just --justfile "{{ justfile() }}" i18n-validity
 
-# Install every dependency used by the full preflight before lanes start.
-ci-deps: php-install js-install e2e-install
-
 # Reproduce the affected CI lanes locally before a push. Runtime changes also
 # run the complete native set against the reusable `ci_preflight` instance.
 [group('check')]
@@ -102,6 +99,49 @@ ci-build:
     just --justfile "{{ justfile() }}" build
     git status --porcelain -- plugins/linker-tools/build plugins/linker-commerce/build
     test -z "$(git status --porcelain -- plugins/linker-tools/build plugins/linker-commerce/build)"
+
+# Shared package lanes keep local preflight and hosted CI on the same commands.
+ci-planner: ci-planner-deps
+    #!/usr/bin/env bash
+    set -euo pipefail
+    root="{{ justfile_directory() }}"
+    cd "$root/apps/planner"
+    npm run lint:js
+    npm run lint:types
+    npm run lint:format
+    npm test
+    npm run build
+    node ../../plugins/linker-tools/bin/build-manifest.mjs write
+    git diff --exit-code -- ../../plugins/linker-tools/build/planner ../../plugins/linker-tools/build/manifest.json
+    npm run build:check
+    node ../../plugins/linker-tools/bin/build-manifest.mjs check
+    if [ "${PLANNER_BUILD_CHANGED:-false}" = true ]; then
+        cd "$root/plugins/linker-tools"
+        {{ php }} "$(command -v composer)" validate --no-check-publish
+        {{ php }} "$(command -v composer)" install --no-interaction --no-progress --quiet
+        {{ php }} vendor/bin/phpunit tests/php/Unit/PlannerApplicationTest.php
+    fi
+
+ci-engine: ci-planner-deps
+    just --justfile "{{ justfile() }}" ci-service engine
+
+[private]
+[working-directory("apps/planner")]
+ci-planner-deps:
+    if [ ! -f node_modules/.package-lock.json ] || [ package-lock.json -nt node_modules/.package-lock.json ] || [ package.json -nt node_modules/.package-lock.json ]; then npm ci --no-audit --no-fund; fi
+
+ci-genie:
+    just --justfile "{{ justfile() }}" ci-service genie
+
+[private]
+ci-service service:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd "{{ justfile_directory() }}/services/{{ service }}"
+    uv run --locked ruff check .
+    uv run --locked ruff format --check .
+    uv run --locked mypy .
+    uv run --locked pytest
 
 # Native integration groups. CI runs one group per matrix job; the local
 # preflight runs them in sequence against its one reusable instance.
@@ -169,7 +209,7 @@ ci-native groups name:
         uv run --locked --project tools/local ruff check --config tools/local/pyproject.toml tools/checks/admin-mfa.py
         uv run --locked --project tools/local ruff format --check --config tools/local/pyproject.toml tools/checks/admin-mfa.py
         uv run --locked --project tools/local mypy --strict tools/checks/admin-mfa.py
-        uv run --locked --project tools/local pytest -q tools/local/tests/test_admin_mfa.py
+        # Offline MFA regressions already run in the Python tools lane.
         {{ php }} plugins/linker-commerce/vendor/bin/phpcs --standard=plugins/linker-commerce/phpcs.xml.dist tests/e2e/fixtures/admin-mfa.php tests/e2e/fixtures/admin-mfa-public.php
         just --justfile "$root/justfile" admin-mfa "$name" --prepare
     }
@@ -395,6 +435,7 @@ php-install:
         echo "PHP 8.3 is required; {{ php }} is $({{ php }} -r 'echo PHP_VERSION;'). See README.md." >&2
         exit 1
     fi
+    if [ "${LINKER_CI_PHP_READY:-false}" = true ]; then exit 0; fi
     composer="$(command -v composer)"
     for project in {{ php_projects }}; do
         cd "{{ justfile_directory() }}/$project"
@@ -510,6 +551,8 @@ js-check: js-install
 [private]
 [working-directory("plugins/linker-tools")]
 js-test: js-install
+    # Unit tests also launch Chromium; install before the first consumer.
+    npx playwright install --only-shell chromium
     npm run test:unit
     cd "{{ justfile_directory() }}/plugins/linker-commerce" && npm run test:unit
     cd "{{ justfile_directory() }}/apps/planner" && npm test
@@ -517,7 +560,6 @@ js-test: js-install
     # resolves through this project's node_modules); this gate is what runs
     # them in CI.
     node --test "../../plugins/linker-commerce/tests/js/*.test.mjs"
-    npx playwright install --only-shell chromium
     npm run test:e2e
 
 [private]

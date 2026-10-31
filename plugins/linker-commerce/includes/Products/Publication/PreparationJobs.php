@@ -47,18 +47,28 @@ final class PreparationJobs {
 		Lock::run(
 			'publication-jobs',
 			static function (): void {
-				$manifest = Publication::manifest();
-				$state    = get_option( self::OPTION, array() );
-				$state    = is_array( $state ) ? $state : array();
-				foreach ( self::CONSUMERS as $consumer ) {
-					if ( ( $state[ $consumer ]['source_revision'] ?? '' ) !== $manifest['source_revision'] ) {
-						$state[ $consumer ] = self::pending( $consumer, $manifest['source_revision'], $state[ $consumer ] ?? array(), (string) ( $state[ $consumer ]['recipe_revision'] ?? '' ) );
-					}
-				}
-				update_option( self::OPTION, $state, false );
-				delete_option( 'linker_publication_pending' );
+				self::reconciled_state( Publication::manifest() );
 			}
 		);
+	}
+
+	/**
+	 * Reconcile every consumer against the caller's fresh, locked authority read.
+	 *
+	 * @param array<string,mixed> $manifest Current Woo source, never a cached receipt.
+	 * @return array<string,mixed>
+	 */
+	private static function reconciled_state( array $manifest ): array {
+		$state = get_option( self::OPTION, array() );
+		$state = is_array( $state ) ? $state : array();
+		foreach ( self::CONSUMERS as $consumer ) {
+			if ( ( $state[ $consumer ]['source_revision'] ?? '' ) !== $manifest['source_revision'] ) {
+				$state[ $consumer ] = self::pending( $consumer, $manifest['source_revision'], $state[ $consumer ] ?? array(), (string) ( $state[ $consumer ]['recipe_revision'] ?? '' ) );
+			}
+		}
+		update_option( self::OPTION, $state, false );
+		delete_option( 'linker_publication_pending' );
+		return $state;
 	}
 
 	/**
@@ -76,13 +86,12 @@ final class PreparationJobs {
 		if ( ! in_array( $consumer, self::CONSUMERS, true ) || '' === $worker_id || $lease_seconds < 1 || $lease_seconds > DAY_IN_SECONDS || ( '' !== $recipe_revision && ( 'knowledge' !== $consumer || 1 !== preg_match( '/^[a-f0-9]{64}$/D', $recipe_revision ) ) ) ) {
 			return new WP_Error( 'invalid_job_request', 'Invalid consumer, worker or lease.', array( 'status' => 400 ) );
 		}
-		$this->reconcile();
 		$result = array( 'job' => null );
 		$taken  = Lock::run(
 			'publication-jobs',
 			static function () use ( $consumer, $worker_id, $lease_seconds, $recipe_revision, $loaded_receipt, $loaded_unavailable, &$result ): void {
 				$manifest = Publication::manifest();
-				$state    = get_option( self::OPTION, array() );
+				$state    = self::reconciled_state( $manifest );
 				$job      = $state[ $consumer ] ?? array();
 				if ( 'knowledge' === $consumer && ( $job['recipe_revision'] ?? '' ) !== $recipe_revision ) {
 					if ( '' === $recipe_revision || in_array( $recipe_revision, $job['superseded_recipes'] ?? array(), true ) ) {
