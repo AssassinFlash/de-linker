@@ -60,19 +60,48 @@ def test_forget_deletes_the_instances_keys_and_nothing_else(
     calls = tmp_path / "calls"
     cli = tmp_path / "bin" / "redis-cli"
     cli.parent.mkdir()
-    # A stand-in for redis-cli: SCAN answers two keys of the prefix, every call is logged.
+    # Redis --json SCAN response: cursor then keys, never an unbounded --scan.
     cli.write_text(
         "#!/bin/sh\n"
         f'echo "$@" >> "{calls}"\n'
-        'case "$*" in *--scan*) printf "linker_a:wp:options:alloptions\\nlinker_a:wp:posts:1\\n";; esac\n'
+        """case "$*" in *SCAN*) echo '["0",["linker_a:wp:options:alloptions","linker_a:wp:posts:1"]]';; *UNLINK*) echo 2;; esac\n"""
     )
     cli.chmod(0o755)
     monkeypatch.setenv("PATH", f"{cli.parent}:/usr/bin:/bin")
 
-    objectcache.forget(Instance("a", 8888, 8889, 8890, tmp_path))
-
+    assert objectcache.forget(Instance("a", 8888, 8889, 8890, tmp_path)) == 2
     port = objectcache.REDIS_PORT
     assert calls.read_text().splitlines() == [
-        f"-h 127.0.0.1 -p {port} --scan --pattern linker_a:*",
-        f"-h 127.0.0.1 -p {port} DEL linker_a:wp:options:alloptions linker_a:wp:posts:1",
+        f"-h 127.0.0.1 -p {port} --json SCAN 0 MATCH linker_a:* COUNT 128",
+        f"-h 127.0.0.1 -p {port} UNLINK linker_a:wp:options:alloptions linker_a:wp:posts:1",
     ]
+
+
+def test_scan_is_bounded_and_reuse_stops_before_next_unlink(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import json
+    from unittest.mock import Mock
+
+    keys = [f"linker_a:{n}" for n in range(300)]
+    redis = Mock(side_effect=[json.dumps(["3", keys]), "128"])
+    monkeypatch.setattr(objectcache, "_redis_cli", redis)
+    # Before SCAN, before first batch, then a newly registered owner appears.
+    permitted = Mock(side_effect=[True, True, False])
+    with pytest.raises(RedisError, match="reused"):
+        objectcache.forget(Instance("a", 1, 2, 3, tmp_path), permitted=permitted)
+    assert len(redis.call_args_list) == 2
+    assert len(redis.call_args_list[1].args) == 129
+
+
+def test_foreign_scan_key_is_never_unlinked(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from unittest.mock import Mock
+
+    redis = Mock(return_value='["0",["linker_b:secret"]]')
+    monkeypatch.setattr(objectcache, "_redis_cli", redis)
+    with pytest.raises(RedisError, match="foreign key"):
+        objectcache.forget(Instance("a", 1, 2, 3, tmp_path))
+    assert redis.call_count == 1

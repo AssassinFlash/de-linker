@@ -409,3 +409,22 @@ def test_sigterm_finishes_inflight_energy_and_leaves_the_next_job_queued(
         assert not ready.exists()
     finally:
         stop(process)
+
+
+def test_readiness_write_failure_removes_owned_temporary_file(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from linker_engine.planning import worker_host
+
+    ready = tmp_path / "worker.ready.json"
+    ready.write_bytes(b"previous-ready")
+
+    def fail_sync(_: int) -> None:
+        raise OSError("fixture fsync failure")
+
+    monkeypatch.setattr(os, "fsync", fail_sync)
+    with pytest.raises(OSError, match="fsync failure"):
+        worker_host.publish_ready(ready, {"pid": 42})
+    assert ready.read_bytes() == b"previous-ready"
+    assert sorted(p.name for p in tmp_path.iterdir()) == [ready.name]

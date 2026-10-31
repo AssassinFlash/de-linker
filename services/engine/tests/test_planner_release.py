@@ -344,3 +344,143 @@ def test_one_activation_lifecycle_refuses_pending_restores_failure_and_retires_o
         b.spec_file
     )
     assert not a.path.exists() and b.path.exists() and c.path.exists()
+
+
+def test_operator_atomic_write_failure_cleans_own_temp_and_preserves_foreign_temp(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    path = tmp_path / "worker.env"
+    path.write_text("previous")
+
+    def fail_sync(_: int) -> None:
+        raise OSError("fixture sync failure")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(ops.os, "fsync", fail_sync)
+        with pytest.raises(OSError, match="sync failure"):
+            ops.write(path, "next")
+    assert path.read_text() == "previous"
+    assert not path.with_suffix(".env.tmp").exists()
+    ops.write(path, "next")
+    assert path.read_text() == "next"
+    foreign = path.with_suffix(".env.tmp")
+    foreign.write_text("unowned")
+    with pytest.raises(FileExistsError):
+        ops.write(path, "later")
+    assert foreign.read_text() == "unowned"
+
+
+@pytest.mark.parametrize("stage", ["success", "stop", "collect", "cleanup", "recover"])
+def test_retention_operator_restores_pair_after_each_failure(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    stage: str,
+) -> None:
+    events: list[str | tuple[str, ...]] = []
+    root = tmp_path / "operator"
+    root.mkdir()
+    spec = root / "spec.json"
+    (root / "selection.json").write_text(json.dumps({"current": str(spec)}))
+    ready = root / "worker.ready.json"
+    stale = root / ("." + ready.name + ".incoming-abcdefgh")
+    stale.write_text("interrupted")
+    running = True
+    target = SimpleNamespace(
+        root=root, spec_file=spec, deploy=root, policy={"ready_file": str(ready)}
+    )
+
+    def probe() -> dict[str, Any]:
+        if not running:
+            raise RuntimeError("stopped")
+        return {"runtime_sha256": "a" * 64}
+
+    def stop() -> None:
+        nonlocal running
+        events.append("stop")
+        if stage == "stop":
+            raise RuntimeError("stop failed")
+        running = False
+
+    def start() -> dict[str, Any]:
+        nonlocal running
+        events.append("start")
+        if stage == "recover":
+            raise RuntimeError("recovery failed")
+        running = True
+        return probe()
+
+    def operator(*args: str) -> dict[str, Any]:
+        events.append(args)
+        if args == ("control", "status"):
+            return {"draining": False}
+        if args[0] == "retention":
+            if "--apply" in args and stage in ("collect", "recover"):
+                raise RuntimeError("collection failed")
+            return {"mode": "apply" if "--apply" in args else "plan"}
+        return {}
+
+    target.preflight = lambda: {}
+    target.probe = probe
+    target.ready = lambda _: {"pid": 123} if running else {}
+    target.stop = stop
+    target.check_stopped = lambda: events.append("confirmed-stopped")
+    target.start = start
+    target.operator = operator
+    original_unlink = Path.unlink
+
+    def unlink(path: Path, *args: Any, **kwargs: Any) -> None:
+        if path == stale and stage == "cleanup":
+            raise OSError("cleanup failed")
+        original_unlink(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "unlink", unlink)
+    # Default plan cannot create an operator lock or alter process/control state.
+    assert ops.maintain(target) == {"mode": "plan"}
+    assert events == [("retention",)] and not (root / "operator.lock").exists()
+    events.clear()
+    if stage == "success":
+        assert (
+            ops.maintain(target, apply=True, recovery=root / "recovery")["mode"]
+            == "apply"
+        )
+        assert not stale.exists()
+    else:
+        expected = "collection" if stage in ("collect", "recover") else stage
+        with pytest.raises((RuntimeError, OSError), match=expected) as caught:
+            ops.maintain(target, apply=True, recovery=root / "recovery")
+        if stage == "recover":
+            assert "recovery failed" in caught.value.__notes__[0]
+    if stage != "recover":
+        assert running and events[-1] == ("control", "resume")
+    if stage != "stop":
+        assert "confirmed-stopped" in events and "start" in events
+
+
+@pytest.mark.parametrize(
+    "failure",
+    [TimeoutError("deadline"), KeyboardInterrupt(), RuntimeError("launcher failed")],
+)
+def test_operator_command_terminates_and_reaps_whole_group_before_unwinding(
+    monkeypatch: pytest.MonkeyPatch,
+    failure: BaseException,
+) -> None:
+    import signal
+    from unittest.mock import Mock
+
+    process = Mock(pid=123, returncode=1)
+    process.communicate.side_effect = [
+        ("", "") if isinstance(failure, RuntimeError) else failure,
+        ("", ""),
+    ]
+    process.__enter__ = Mock(return_value=process)
+    process.__exit__ = Mock(return_value=False)
+    launcher = Mock(return_value=process)
+    kill = Mock()
+    monkeypatch.setattr(ops.subprocess, "Popen", launcher)
+    monkeypatch.setattr(ops.os, "killpg", kill)
+    with pytest.raises(type(failure)):
+        ops.command(["runuser", "--", "gc"], timeout=1)
+    assert launcher.call_args.kwargs["start_new_session"] is True
+    kill.assert_called_once_with(123, signal.SIGKILL)
+    assert process.communicate.call_count == 2

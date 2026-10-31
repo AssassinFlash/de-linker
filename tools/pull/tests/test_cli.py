@@ -176,3 +176,51 @@ def test_check_urls_requests_every_page_of_the_sitemap_from_the_instance(
     assert json.loads(capsys.readouterr().out)["statuses"] == {"200": 1}
     shutil.rmtree(sitemaps)
     assert main(["check-urls", "latest", "--base", site]) == 1
+
+
+def test_local_load_holds_retirement_lock_from_lookup_through_all_writes(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from argparse import Namespace
+
+    from linker_local import retirement
+    from linker_local.instance import Instance
+
+    from linker_pull import cli, load
+
+    monkeypatch.setenv("LINKER_LOCAL_HOME", str(tmp_path))
+    instance = Instance("owned", 19001, 19002, 19003, tmp_path)
+    seen: list[str] = []
+
+    def lookup(name: str, port: int | None) -> Instance:
+        with pytest.raises(RuntimeError, match="already being managed"):
+            retirement.retire(
+                tmp_path, name, write=True, preserve=[], discard=[], preserve_to=None
+            )
+        seen.append("lookup")
+        return instance
+
+    def write(*args: object) -> dict[str, object]:
+        with pytest.raises(RuntimeError, match="already being managed"):
+            retirement.retire(
+                tmp_path,
+                instance.name,
+                write=True,
+                preserve=[],
+                discard=[],
+                preserve_to=None,
+            )
+        seen.append("write")
+        return {"ok": True}
+
+    monkeypatch.setattr(load, "instance", lookup)
+    monkeypatch.setattr(load, "load", write)
+    monkeypatch.setattr(cli, "_snapshot", lambda _: tmp_path)
+    args = Namespace(name=instance.name, port=None, snapshot="fixture", live_code=False)
+    assert cli.load_snapshot(args) == 0
+    assert seen == ["lookup", "write"]
+    retirement.marker_path(tmp_path, instance.name).write_text("{}")
+    with pytest.raises(RuntimeError, match="retirement is incomplete"):
+        cli.load_snapshot(args)
+    assert seen == ["lookup", "write"]

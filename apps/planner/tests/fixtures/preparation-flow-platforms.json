@@ -4,7 +4,7 @@
 	"baselines": {
 		"darwin-arm64": {
 			"fixture": "preparation-flow-darwin-arm64.json",
-			"canonical_sorted_json_sha256": "c992f6f590264aa7e7a5a0e507436a0bdb9f09a86e43decc0231c6ec21e07902",
+			"canonical_sorted_json_sha256": "6c2086a3cd75906c49b60851261ef00c6ff9e85bb82840947060365151fb1985",
 			"runtime": {
 				"python": "3.12.15",
 				"platform": "macOS-26.6.2-arm64-arm-64bit",
@@ -28,8 +28,8 @@
 		},
 		"linux-x86_64": {
 			"fixture": "preparation-flow-linux-x86_64.json",
-			"canonical_sorted_json_sha256": "2fa44253845a08c337f260ea356523eb77e4244cab3bbcf0cdd3de110b70cc37",
-			"export_run": "local:linker-services:2026-10-30T15:25Z",
+			"canonical_sorted_json_sha256": "050f264a951b9f69c3ec572781c02c6c2c4ae4bed021449dfebcda1372d36529",
+			"export_run": "isolated:linker-services:2026-10-31T04:02:00Z",
 			"runtime": {
 				"python": "3.12.3",
 				"platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",

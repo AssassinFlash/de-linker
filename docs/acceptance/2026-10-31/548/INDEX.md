@@ -37,6 +37,31 @@
 
 提交`7926adbc`另补生产现存带source后缀版本的回滚兼容；原脚本夹具失败`no older release`，修后5个实际发布shell用例通过。两轴增量评审均PASS。新版CI与生产结果待实际读回。Planner CAS下一批独立复用`unified-planner-548`工作树（旧已合入补丁分支保留），无新实例或整站副本。
 
+### PR817 发布与第二批资源合同
+
+PR817最终CI `41165087787` 21项成功；已合并为 `f93d026a52a5705a08ce44f7c75a95990395853e`。生产WordPress相对现部署c1fbac217只有PreparationJobs与ClaimOutbox运行源码变化，无模板/样式变化。发布工作树临时选择该合并提交，复用 `/Users/chesterjohn/de-linker-data/cutover-workspace/staging`；本批唯一用途为原子部署的运行依赖暂存，负责人父代理，最多一套，生产读回成功后删除可重建暂存。部署自动流式生成一份 `/Users/chesterjohn/de-linker-data/snapshots/db-<UTC>.sql.gz`，负责人父代理，合并同类计数最多3份，验证保留gzip后删除超限旧文件；主机只保留原子回滚上一版。
+
+首次WP部署在数据库快照和暂存完成后、第一条远端路径查询处SSH断连，尚未上传或切换。独立连接随后恢复；本次重试创建一个任务私有SSH复用socket与临时配置/包装器（系统临时目录linker817-ssh-*，负责人父，最多1套，部署退出finally关闭连接并删除；不修改用户全局SSH设置）。统一复用同一连接减少每个artifact多次握手。
+
+资源回收读回：验证保留3份数据库gzip完整可读后，在`.retention.lock`下删除超限3份（20261030T162636Z、162921Z、164801Z），普通文件合计22,490,016 bytes，分配块合计22,499,328 bytes。保留20261031T035705Z、035505Z和20261030T184016Z，前两份分别为成功重试和首次连接失败前的恢复点；待本批验收后再判断失败尝试重复点是否仍需保留。
+
+第二批复用 `/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548`，分支codex/planner-storage-lifecycle；源码/必要回归随功能保留，无新增实例或整站副本。Planner GC与本地退役仍在交叉评审；不按旧的不完整候选列表删除生产CAS，不删除56个未知用途实例。cutover快照代码由20改3并修正protect重复/不存在/超过上限的计数边界，18项定向验证通过。临时测试目录仅生命周期内保留，执行者负责退出回收。
+
+### 第二批跨平台 fixture 重导资源合同
+
+最终 engine 源码完成增量复审并冻结后，Darwin 复用本树 `services/engine/.venv`，Linux 仅复用 VPS 已有 `/opt/linker-engine/current/.venv/bin/python` 的依赖，实际导出代码来自本批源码。负责人父代理与 `sol_local_retire_implementation`。VPS 仅允许 1 个 `/tmp/linker-planner-fixture-548-storage-lifecycle` 临时目录，装入 engine 源码、tests、schemas、锁文件和必要 fixture 原件，不复制 venv，不读取真实工作区，不监听端口、不启停生产服务。导出通常约 10 秒，执行 `nice -n 19` 并将 BLAS/OpenMP 线程限制为 1，最长 60 秒；成功、失败、超时均由远端 trap 与调用方 finally 精确回收该目录，结束读回目录不存在。本地 exporter 的单份合成 SQLite/CAS 由既有 TemporaryDirectory 退出回收。结果仅覆盖现有两平台 fixture 和 manifest，不新增副本；这些小型合同证据随对应源码保留，后续源码变更时原位重导替换。磁盘本轮读回可用 841 GiB。
+
+跨平台重导结果：engine 增量独立复审无阻塞后，Darwin 与真实 Linux exporter 完成；相对各自上一版均仅 100 个 64hex 身份/派生哈希叶变化，非身份字段变化 0。canonical sorted JSON SHA-256：Darwin `6c2086a3cd75906c49b60851261ef00c6ff9e85bb82840947060365151fb1985`；Linux `050f264a951b9f69c3ec572781c02c6c2c4ae4bed021449dfebcda1372d36529`。只执行完整 Darwin exporter 复现、两平台 manifest、跨平台显式差异 mask 三项合同，3 项通过（10.99 秒）；未重跑未变化单元。Linux 传输包为 442 个源码/必要夹具文件、压缩 1,666,056 bytes，未复制 venv；远端目录与 exporter 临时合成 workspace 均已回收，读回确认远端目录不存在。初次直接调用因缺 tests 导入路径失败；初次 Linux 合成任务因缺间接使用的 PVGIS 原件失败，均在补齐原有导入路径/只读夹具后解决，未修改产品源码或依赖。
+
+CAS 校验的明确边界：计划和恢复点校验拒绝非空 WAL，要求先安全停写并 checkpoint；不会使用 immutable 忽略已提交 WAL 事务。无 WAL 的静态数据库通过 immutable 连接真正只读，回归核验未新增辅助文件、已有文件内容和 mtime 不变。GC apply 由配对服务维护窗口停写后重算。
+
+### 第二批候选与交叉评审结论
+
+Planner CAS回收和本地实例退役已完成Sol/high互补实现及交叉Spec/Standards评审。增量评审发现并修复：恢复点DB/manifest符号链接及硬链接不独立；SQLite只读连接仍写WAL/SHM；显式递归CAS子引用缺失；超时后GC子进程存活；先停PHP阻塞依赖Woo的drain；失败marker使退役无法追加新证据决策；preserve父子路径重叠；WordPress实际代码未列证据；cutover与pull load官方入口绕过实例生命周期锁。有效证据和共享symlink目标保持保护。无真实实例或生产CAS删除。
+
+验证复用：Planner相关archive/operator回归及最后3条进程组回归通过，原实现整包mypy356文件及最终增量mypy/Ruff通过；local最终整包mypy42、cutover24、pull22（均含tests）及Ruff通过；local/cutover/pull新增有效回归24项，snapshot18项。两平台真实exporter仅100个身份hash字段变化、非身份字段0，完整复现/manifest/mask三合同通过。最终交叉评审无未处理阻塞；这些是候选验证，不冒称已部署。
+
+WP批817已切换为20261031T035727515212Z-f93d026a5，原子切换0.021秒。后续verify曾被SSH断开、本机127.0.0.1:1082系统代理Tunnel503和直连失败打断；保持pending恢复点，未重复上传。续读使用VPS内一个stdin驱动的临时HTTPS读取进程（不落文件/不访问生产DB，负责人父，最多1个，resume-deploy退出关闭stdin并wait/必要kill），同一套URL/语言/脚本转义/JSON-LD/同意门验收，归档成功才算该批WP发布收口。
 
 ## 最新客户链路验收记录
 

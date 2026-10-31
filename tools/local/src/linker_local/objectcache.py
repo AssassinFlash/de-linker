@@ -14,8 +14,10 @@ database for every instance, so the drop-in is copied here instead.
 
 from __future__ import annotations
 
+import json
 import shutil
 import subprocess
+from collections.abc import Callable
 
 from linker_local import downloads
 from linker_local.instance import HOST, Instance
@@ -73,11 +75,52 @@ def wp_config_constants(instance: Instance) -> list[str]:
     ]
 
 
-def forget(instance: Instance) -> None:
-    """Delete the instance's keys, and only those."""
-    keys = _redis_cli("--scan", "--pattern", f"{prefix(instance)}*").splitlines()
-    if keys:
-        _redis_cli("DEL", *keys)
+# Operational batch bound: at most 128 keys per UNLINK, regardless of SCAN's
+# advisory COUNT. Keep argv and memory bounded even for large retired caches.
+BATCH_SIZE = 128
+
+
+def forget(instance: Instance, *, permitted: Callable[[], bool] = lambda: True) -> int:
+    """Bounded, prefix-only reclamation; retirement rechecks ownership per batch.
+
+    Reset/install deliberately use the default: their instance remains registered.
+    SCAN may return duplicates; UNLINK's integer reply counts actual removals.
+    """
+    cursor = "0"
+    removed = 0
+    while True:
+        if not permitted():
+            raise RedisError("instance was reused; cache reclamation stopped")
+        reply = json.loads(
+            _redis_cli(
+                "--json",
+                "SCAN",
+                cursor,
+                "MATCH",
+                f"{prefix(instance)}*",
+                "COUNT",
+                str(BATCH_SIZE),
+            )
+        )
+        if (
+            not isinstance(reply, list)
+            or len(reply) != 2
+            or not isinstance(reply[1], list)
+        ):
+            raise RedisError("invalid Redis SCAN response")
+        cursor = str(reply[0])
+        keys = reply[1]
+        if any(
+            not isinstance(key, str) or not key.startswith(prefix(instance))
+            for key in keys
+        ):
+            raise RedisError("Redis SCAN returned a foreign key")
+        for offset in range(0, len(keys), BATCH_SIZE):
+            if not permitted():
+                raise RedisError("instance was reused; cache reclamation stopped")
+            removed += int(_redis_cli("UNLINK", *keys[offset : offset + BATCH_SIZE]))
+        if cursor == "0":
+            return removed
 
 
 def install(instance: Instance, wp: WpCli) -> None:

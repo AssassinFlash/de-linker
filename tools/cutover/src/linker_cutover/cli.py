@@ -26,7 +26,8 @@ from __future__ import annotations
 
 import argparse
 import sys
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager
 from dataclasses import asdict
 from datetime import UTC, datetime
 from pathlib import Path
@@ -153,6 +154,29 @@ def _parser() -> argparse.ArgumentParser:
     return parser
 
 
+@contextmanager
+def _local_operation(args: argparse.Namespace) -> Iterator[None]:
+    # probe delegates all site writes to its deploy child, which owns this
+    # lock itself; holding it in both parent and child would deadlock.
+    name = (
+        args.instance
+        if args.command == "drill"
+        else (
+            args.target[len("local:") :]
+            if args.target and args.target.startswith("local:")
+            else None
+        )
+    )
+    if name is None or args.command == "probe":
+        yield
+        return
+    from linker_local import retirement
+    from linker_local.instance import home
+
+    with retirement.available(home(), name):
+        yield
+
+
 def main(argv: list[str] | None = None) -> int:
     # A window runs these steps with the output going to a file, where Python
     # buffers by default: nothing would appear until the step ended, and a step
@@ -162,6 +186,15 @@ def main(argv: list[str] | None = None) -> int:
         sys.stdout.reconfigure(line_buffering=True)
     parser = _parser()
     args = parser.parse_args(argv)
+    try:
+        with _local_operation(args):
+            return _run(args, parser)
+    except (CutoverError, RuntimeError, OSError, ValueError) as error:
+        print(f"cutover: {error}", file=sys.stderr)
+        return 1
+
+
+def _run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     target = _target(args.target)
     repository = repository_root()
     acceptance = args.acceptance or repository / "docs" / "acceptance" / _today() / "17"

@@ -1,7 +1,7 @@
 """Whole-workspace online snapshots, independently verifiable before restore.
 
 SQLite's backup API captures the database, including committed WAL content.
-Only then are immutable blobs copied. Blob deletion/GC is deliberately absent:
+Only then are immutable blobs copied. A shared CAS lock excludes offline GC:
 writers may add bytes during a backup, but cannot remove its frozen references.
 Unreferenced published bytes can be included safely. No live .sqlite file copy.
 """
@@ -16,16 +16,77 @@ from pathlib import Path
 from uuid import uuid4
 
 from .canonical import Object, decode_object, digest, encode
-from .dependencies import verify_dependencies
+from .dependencies import cas_lock, reachable_blobs, verify_dependencies
 from .errors import Conflict, InvalidInput, VersionUnavailable
 from .schema import READABLE_SCHEMA_VERSIONS
 from .storage import Blobs
 from .workspace import Workspace
 
 
-def _check_database(path: Path, blobs: Blobs) -> None:
-    connection = sqlite3.connect(f"{path.resolve().as_uri()}?mode=ro", uri=True)
+def database_blob_roots(connection: sqlite3.Connection) -> set[str]:
+    """Exact persisted CAS references; command/execution hashes are not blobs."""
+    version = connection.execute("PRAGMA user_version").fetchone()[0]
+    if version not in READABLE_SCHEMA_VERSIONS:
+        raise VersionUnavailable("unsupported archive schema")
+    references = connection.execute(
+        "SELECT input_sha256 FROM revisions "
+        "UNION SELECT manifest_sha256 FROM runs "
+        "UNION SELECT result_sha256 FROM runs WHERE result_sha256 IS NOT NULL "
+        "UNION SELECT request_sha256 FROM jobs "
+        "UNION SELECT error_sha256 FROM jobs WHERE error_sha256 IS NOT NULL "
+        "UNION SELECT output_sha256 FROM jobs WHERE output_sha256 IS NOT NULL "
+        "UNION SELECT receipt_sha256 FROM idempotency "
+        "UNION SELECT content_sha256 FROM project_assets "
+        "UNION SELECT metadata_sha256 FROM project_assets "
+        "UNION SELECT content_sha256 FROM artifacts "
+        "UNION SELECT branding_sha256 FROM artifacts WHERE branding_sha256 IS NOT NULL "
+        "UNION SELECT snapshot_sha256 FROM handoffs"
+        + (
+            " UNION SELECT receipt_sha256 FROM principal_closures"
+            if version >= 2
+            else ""
+        )
+    ).fetchall()
+    result = {row[0] for row in references}
+    for table, columns in (
+        (
+            "weather_acquisitions",
+            (
+                "manifest_sha256",
+                "plan_sha256",
+                "acknowledgement_sha256",
+                "observation_sha256",
+                "capture_sha256",
+                "abort_sha256",
+            ),
+        ),
+        ("weather_downloads", ("manifest_sha256", "plan_sha256", "capture_sha256")),
+    ):
+        if connection.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", (table,)
+        ).fetchone():
+            for row in connection.execute(
+                "SELECT " + ",".join(columns) + " FROM " + table
+            ):
+                result.update(value for value in row if value is not None)
+    return result
+
+
+def _check_database(path: Path, blobs: Blobs) -> set[str]:
+    path = path.absolute()
+    if path.resolve() != path:
+        raise VersionUnavailable("database path must not follow symbolic links")
+    # mode=ro can create WAL/SHM files and update shared-memory state. An
+    # immutable connection truly writes nothing, but ignores WAL transactions:
+    # refuse outstanding WAL instead of publishing an incomplete reference set.
+    wal = path.with_name(path.name + "-wal")
+    if wal.is_symlink() or (wal.exists() and wal.stat().st_size):
+        raise VersionUnavailable(
+            "database has WAL state; stop writers and checkpoint before verification"
+        )
+    connection = sqlite3.connect(f"{path.as_uri()}?mode=ro&immutable=1", uri=True)
     try:
+        connection.execute("BEGIN")
         version = connection.execute("PRAGMA user_version").fetchone()[0]
         if version not in READABLE_SCHEMA_VERSIONS:
             raise VersionUnavailable("unsupported archive schema")
@@ -33,27 +94,8 @@ def _check_database(path: Path, blobs: Blobs) -> None:
             raise VersionUnavailable("archive database integrity check failed")
         if connection.execute("PRAGMA foreign_key_check").fetchall():
             raise VersionUnavailable("archive references are inconsistent")
-        # All database-level byte references, including receipts/error records.
-        references = connection.execute(
-            "SELECT input_sha256 FROM revisions "
-            "UNION SELECT manifest_sha256 FROM runs "
-            "UNION SELECT result_sha256 FROM runs WHERE result_sha256 IS NOT NULL "
-            "UNION SELECT request_sha256 FROM jobs "
-            "UNION SELECT error_sha256 FROM jobs WHERE error_sha256 IS NOT NULL "
-            "UNION SELECT output_sha256 FROM jobs WHERE output_sha256 IS NOT NULL "
-            "UNION SELECT receipt_sha256 FROM idempotency "
-            "UNION SELECT content_sha256 FROM project_assets "
-            "UNION SELECT metadata_sha256 FROM project_assets "
-            "UNION SELECT content_sha256 FROM artifacts "
-            "UNION SELECT branding_sha256 FROM artifacts WHERE branding_sha256 IS NOT NULL "
-            "UNION SELECT snapshot_sha256 FROM handoffs"
-            + (
-                " UNION SELECT receipt_sha256 FROM principal_closures"
-                if version >= 2
-                else ""
-            )
-        ).fetchall()
-        for (sha256,) in references:
+        roots = database_blob_roots(connection)
+        for sha256 in roots:
             blobs.read(sha256)
         documents = connection.execute(
             "SELECT metadata_sha256 FROM project_assets "
@@ -109,6 +151,7 @@ def _check_database(path: Path, blobs: Blobs) -> None:
                 if not isinstance(value, str):
                     raise VersionUnavailable("archive asset hash is invalid")
                 blobs.read(value)
+        return reachable_blobs(blobs, roots, blobs.directory)
     except sqlite3.DatabaseError as error:
         raise VersionUnavailable("archive database is unreadable") from error
     finally:
@@ -118,6 +161,10 @@ def _check_database(path: Path, blobs: Blobs) -> None:
 def verify(directory: Path) -> Object:
     """Verify bytes and every persisted reference; do not silently repair."""
     try:
+        for name in ("backup.json", "workspace.sqlite"):
+            entry = directory / name
+            if entry.is_symlink():
+                raise VersionUnavailable("archive files must not follow symbolic links")
         manifest = decode_object((directory / "backup.json").read_bytes())
         database = directory / "workspace.sqlite"
         if manifest.get("schema") != 1 or manifest.get("database_sha256") != digest(
@@ -136,7 +183,9 @@ def verify(directory: Path) -> Object:
             if not isinstance(item, str):
                 raise VersionUnavailable("archive blob hash is invalid")
             blobs.read(item)
-        _check_database(database, blobs)
+        retained = _check_database(database, blobs)
+        if not retained.issubset(hashes):
+            raise VersionUnavailable("archive blob manifest omits retained references")
         return manifest
     except (OSError, InvalidInput) as error:
         raise VersionUnavailable("archive files are unavailable") from error
@@ -161,6 +210,11 @@ def _publish(temporary: Path, destination: Path) -> None:
 
 
 def backup(workspace: Workspace, destination: Path) -> Object:
+    with cas_lock(workspace.blobs.directory, exclusive=False):
+        return _backup(workspace, destination)
+
+
+def _backup(workspace: Workspace, destination: Path) -> Object:
     if destination.exists():
         raise Conflict("archive destination already exists")
     temporary = destination.parent / (".incoming-" + uuid4().hex)

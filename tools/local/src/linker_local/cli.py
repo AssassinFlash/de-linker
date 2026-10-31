@@ -11,7 +11,15 @@ import sys
 from collections.abc import Callable
 from pathlib import Path
 
-from linker_local import objectcache, server, services, snapshot, wordpress, wpcli
+from linker_local import (
+    objectcache,
+    retirement,
+    server,
+    services,
+    snapshot,
+    wordpress,
+    wpcli,
+)
 from linker_local.checkout import Checkout
 from linker_local.instance import Instance, check_name, database_of, directory_of, home
 from linker_local.mysql import CREDENTIALS, MySQL
@@ -24,7 +32,7 @@ PHP_VERSION = "8.3"
 # Failures the user can act on, printed as one line. Every error class of this
 # package (DownloadError, MySQLError, ProcessError, RedisError, SnapshotError,
 # WpCliError) is a RuntimeError; ValueError is a bad instance name.
-ERRORS = (RuntimeError, ValueError, subprocess.CalledProcessError)
+ERRORS = (RuntimeError, ValueError, OSError, subprocess.CalledProcessError)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -41,6 +49,11 @@ def up(args: argparse.Namespace) -> int:
     # Everything that can refuse is checked before a new name takes ports.
     check_name(args.name)
     php, checkout = _preconditions(args.snapshot)
+    with retirement.available(home(), args.name):
+        return _up(args, php, checkout)
+
+
+def _up(args: argparse.Namespace, php: Path, checkout: Checkout) -> int:
     registry = Registry(home())
     instance = registry.get(args.name)
     if instance is None:
@@ -65,6 +78,12 @@ def up(args: argparse.Namespace) -> int:
 
 
 def down(args: argparse.Namespace) -> int:
+    _registered(args.name)
+    with retirement.available(home(), args.name):
+        return _down(args)
+
+
+def _down(args: argparse.Namespace) -> int:
     instance = _registered(args.name)
     stopped = (["server"] if server.stop(instance) else []) + services.stop(instance)
     print(
@@ -76,8 +95,15 @@ def down(args: argparse.Namespace) -> int:
 
 
 def reset(args: argparse.Namespace) -> int:
-    instance = _registered(args.name)
+    _registered(args.name)
     php, checkout = _preconditions(args.snapshot)  # before anything is deleted
+    with retirement.available(home(), args.name):
+        return _reset(args, _registered(args.name), php, checkout)
+
+
+def _reset(
+    args: argparse.Namespace, instance: Instance, php: Path, checkout: Checkout
+) -> int:
     say = _sayer(instance)
     server.stop(instance)
     services.stop(instance)
@@ -93,6 +119,12 @@ def reset(args: argparse.Namespace) -> int:
 
 
 def login(args: argparse.Namespace) -> int:
+    _built(args.name)
+    with retirement.available(home(), args.name):
+        return _login(args)
+
+
+def _login(args: argparse.Namespace) -> int:
     instance = _built(args.name)
     # The token is a transient, which lives in Redis once the object cache is on.
     objectcache.require_redis()
@@ -169,16 +201,36 @@ def status(args: argparse.Namespace) -> int:
 
 def serve(args: argparse.Namespace) -> int:
     instance = _built(args.name)
-    for line in services.serve(
-        instance, Checkout.here(), WpCli(require_php(), instance), only=args.service
-    ):
-        print(f"{instance.name}: {line}")
+    with retirement.available(home(), args.name):
+        instance = _built(args.name)
+        for line in services.serve(
+            instance, Checkout.here(), WpCli(require_php(), instance), only=args.service
+        ):
+            print(f"{instance.name}: {line}")
+    return 0
+
+
+def retire(args: argparse.Namespace) -> int:
+    print(
+        json.dumps(
+            retirement.retire(
+                home(),
+                args.name,
+                write=args.write,
+                preserve=args.preserve,
+                discard=args.discard,
+                preserve_to=args.preserve_to,
+            ),
+            indent=2,
+        )
+    )
     return 0
 
 
 def wp(args: argparse.Namespace) -> int:
-    instance = _built(args.name)
-    return WpCli(require_php(), instance).passthrough(args.args)
+    _built(args.name)
+    with retirement.available(home(), args.name):
+        return WpCli(require_php(), _built(args.name)).passthrough(args.args)
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -209,6 +261,16 @@ def _parser() -> argparse.ArgumentParser:
     )
     sub.add_argument("name")
     sub.add_argument("--snapshot", type=Path, help=snapshot_help)
+    sub = command(
+        "retire",
+        retire,
+        "plan permanent retirement; --write requires explicit evidence decisions",
+    )
+    sub.add_argument("name")
+    sub.add_argument("--write", action="store_true")
+    sub.add_argument("--preserve", action="append", default=[])
+    sub.add_argument("--discard", action="append", default=[])
+    sub.add_argument("--preserve-to", type=Path)
     sub = command("login", login, "print a one-time login link (ten minutes, one use)")
     sub.add_argument("name")
     sub.add_argument("--user", default=wordpress.ADMIN_USER)

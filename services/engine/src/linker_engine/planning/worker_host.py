@@ -46,12 +46,15 @@ def readiness_owner(path: Path) -> Iterator[None]:
 
 
 def publish_ready(path: Path, value: Object) -> None:
-    with tempfile.NamedTemporaryFile(dir=path.parent, delete=False) as stream:
-        temporary = Path(stream.name)
-        stream.write(encode(value))
-        stream.flush()
-        os.fsync(stream.fileno())
+    temporary: Path | None = None
     try:
+        with tempfile.NamedTemporaryFile(
+            dir=path.parent, prefix="." + path.name + ".incoming-", delete=False
+        ) as stream:
+            temporary = Path(stream.name)
+            stream.write(encode(value))
+            stream.flush()
+            os.fsync(stream.fileno())
         os.replace(temporary, path)
         descriptor = os.open(path.parent, os.O_RDONLY)
         try:
@@ -59,7 +62,8 @@ def publish_ready(path: Path, value: Object) -> None:
         finally:
             os.close(descriptor)
     finally:
-        temporary.unlink(missing_ok=True)
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
 
 
 def serve(
@@ -153,6 +157,11 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument("--generation", required=True)
     control = commands.add_parser("control")
     control.add_argument("operation", choices=("status", "drain", "resume"))
+    retention = commands.add_parser("retention")
+    retention.add_argument("--apply", action="store_true")
+    retention.add_argument("--offline", action="store_true")
+    retention.add_argument("--recovery", type=Path)
+    retention.add_argument("--snapshot", type=Path, action="append", default=[])
     commands.add_parser("identity")
     commands.add_parser("release")
     arguments = parser.parse_args(argv)
@@ -195,6 +204,21 @@ def main(argv: list[str] | None = None) -> int:
                 arguments.generation,
             )
         settings = RuntimeConfig.from_environment()
+        if arguments.command == "retention":
+            from .retention import collect
+
+            print(
+                encode(
+                    collect(
+                        Path(settings.directory),
+                        apply=arguments.apply,
+                        offline=arguments.offline,
+                        recovery=arguments.recovery,
+                        snapshots=tuple(arguments.snapshot),
+                    )
+                ).decode()
+            )
+            return 0
         if arguments.command == "identity":
             workspace, energy = settings.open()
             pv = settings.pv_service(workspace)
