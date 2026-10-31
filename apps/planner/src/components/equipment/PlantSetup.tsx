@@ -1,5 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import type { ComponentProps } from "react";
+import { PlantPvStringSetup } from "./PlantPvStringSetup.tsx";
+import {
+	readPvPlantStringPlan,
+	changePvPlantStringUnit,
+} from "../../domain/pvPlantStrings.ts";
 import { EquipmentSetup } from "./EquipmentSetup.tsx";
 import { useEquipmentProducts } from "../../data/equipmentProducts.ts";
 import { isDirty, sameJson } from "../../domain/draft.ts";
@@ -46,6 +51,9 @@ export function PlantSetup(props: Props) {
 	]);
 	const [selectedId, select] = useState<string | null>(null);
 	const [validity, setValidity] = useState<Record<string, boolean>>({});
+	const [stringValidity, setStringValidity] = useState<Record<string, boolean>>(
+		{},
+	);
 	const ids = setup?.units.map((u) => u.id).join(",") ?? "";
 	const unitCallbacks = useMemo(
 		() =>
@@ -65,6 +73,30 @@ export function PlantSetup(props: Props) {
 			),
 		[ids],
 	);
+	const stringCallbacks = useMemo(
+		() =>
+			Object.fromEntries(
+				ids
+					.split(",")
+					.filter(Boolean)
+					.map((id) => [
+						id,
+						(valid: boolean) =>
+							setStringValidity((state) =>
+								state[id] === valid ? state : { ...state, [id]: valid },
+							),
+					]),
+			),
+		[ids],
+	);
+	const wiring =
+		draft.history.current.pv_plant_string_plan === undefined
+			? null
+			: readPvPlantStringPlan(draft.history.current.pv_plant_string_plan);
+	const stale =
+		wiring?.units.filter(
+			(u) => !setup?.units.some((s) => s.id === u.unit_id),
+		) ?? [];
 	const fieldCallbacks = useMemo(
 		() =>
 			Object.fromEntries(
@@ -82,10 +114,15 @@ export function PlantSetup(props: Props) {
 			),
 		[],
 	);
-	const valid = Object.entries(validity).every(
-		([key, ok]) =>
-			ok || (key.startsWith("unit:") && !ids.split(",").includes(key.slice(5))),
-	);
+	const valid =
+		Object.entries(stringValidity).every(
+			([id, ok]) => ok || !ids.split(",").includes(id),
+		) &&
+		Object.entries(validity).every(
+			([key, ok]) =>
+				ok ||
+				(key.startsWith("unit:") && !ids.split(",").includes(key.slice(5))),
+		);
 	useEffect(() => {
 		onValidity(valid);
 		return () => onValidity(true);
@@ -312,6 +349,27 @@ export function PlantSetup(props: Props) {
 					{__("Add system", "linker-tools")}
 				</button>
 			</div>
+			{stale.map((unit) => (
+				<Notice error key={unit.unit_id}>
+					{__(
+						"This wiring plan belongs to a removed system. Its strings remain saved until you remove the plan or restore the system.",
+						"linker-tools",
+					)}{" "}
+					{unit.unit_id}
+					<button
+						type="button"
+						className="lp-text-button"
+						disabled={disabled}
+						onClick={() =>
+							edit((inputs) =>
+								changePvPlantStringUnit(inputs, unit.unit_id, null),
+							)
+						}
+					>
+						{__("Remove wiring plan", "linker-tools")}
+					</button>
+				</Notice>
+			))}
 			<nav
 				className="lp-plant-switcher"
 				aria-label={__("Systems in this project", "linker-tools")}
@@ -386,6 +444,14 @@ export function PlantSetup(props: Props) {
 								{__("Remove system", "linker-tools")}
 							</button>
 						</div>
+						<PlantPvStringSetup
+							draft={draft}
+							unit={unit}
+							edit={edit}
+							locale={locale}
+							disabled={disabled}
+							onValidity={stringCallbacks[unit.id]!}
+						/>
 						<EquipmentSetup
 							{...props}
 							draft={unitDraft}

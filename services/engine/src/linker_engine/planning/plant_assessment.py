@@ -12,6 +12,7 @@ from .equipment_assessment import assess_equipment, selection_products
 from .equipment_evidence import EquipmentEvidence
 from .equipment_plant import EquipmentPlant
 from .errors import InvalidInput, ProductEvidenceChanged
+from .pv_string_inputs import PvPlantStringPlan, plant_instance_statuses
 
 
 def plant_products(plant: EquipmentPlant, basis: Object) -> dict[int, dict[str, Any]]:
@@ -38,6 +39,24 @@ def assess_plant(
     products = plant_products(plant, basis)
     evidence = evidence if evidence is not None else EquipmentEvidence(basis)
     evidence.require_basis(basis)
+    wiring = (
+        PvPlantStringPlan.from_inputs(inputs)
+        if inputs.get("pv_plant_string_plan") is not None
+        else None
+    )
+    wiring_units = {unit.unit_id: unit for unit in wiring.units} if wiring else {}
+    raw_wiring = cast(Object, inputs.get("pv_plant_string_plan", {}))
+    saved_plans = {
+        row["unit_id"]: row["plan"]
+        for row in cast(list[Object], raw_wiring.get("units", []))
+    }
+    binding_statuses = plant_instance_statuses(inputs, wiring) if wiring else {}
+    if any(
+        status not in {"declared", "not_recorded"}
+        for status in binding_statuses.values()
+    ):
+        raise InvalidInput("plant PV inverter instance identity requires correction")
+    electrical_units: list[dict[str, Any]] = []
     units = {u.id: u for u in plant.units}
     checks: list[dict[str, Any]] = []
     systems: list[dict[str, Any]] = []
@@ -64,18 +83,63 @@ def assess_plant(
         cached = (unit_assessments or {}).get(
             digest(encode(cast(Object, unit.selection.model_dump(mode="json"))))
         )
+        unit_wiring = wiring_units.get(unit.id)
         assessment = (
             cached
-            if cached is not None
+            if cached is not None and unit_wiring is None
             else assess_equipment(
                 {
                     "brief": inputs.get("brief"),
                     "equipment_selection": unit.selection.model_dump(mode="json"),
+                    **(
+                        {
+                            "geometry": inputs.get("geometry"),
+                            "pv_string_plan": unit_wiring.plan.model_dump(mode="json"),
+                        }
+                        if unit_wiring
+                        else {}
+                    ),
                 },
                 basis,
                 evidence=evidence,
+                pv_module_scope={
+                    mid
+                    for string in unit_wiring.plan.strings
+                    for mid in string.module_ids
+                }
+                if unit_wiring
+                else None,
             )
         )
+        if (
+            wiring is not None
+            and unit_wiring is None
+            and unit.selection.pv_dc_kw != 0
+            and not any(
+                check["id"] == "pv_electrical_topology"
+                for check in cast(list[Object], assessment["checks"])
+            )
+        ):
+            add(
+                f"unit:{unit.id}:pv_electrical_topology",
+                "unresolved",
+                "string_ports_voltage_current_and_temperature_require_assessment",
+                unit_id=unit.id,
+                unit_name=unit.name,
+                semantic_id="pv_electrical_topology",
+            )
+        if unit_wiring is not None:
+            electrical_units.append(
+                {
+                    "unit_id": unit.id,
+                    "unit_name": unit.name,
+                    "inverter_product_id": unit.selection.inverter_product_id,
+                    "inverter_instance_id": unit_wiring.inverter_instance_id,
+                    "instance_status": binding_statuses[unit.id],
+                    "plan_sha256": digest(encode(saved_plans[unit.id])),
+                    "assessment": assessment["pv_electrical"],
+                }
+            )
         systems.append(
             {
                 "id": unit.id,
@@ -111,6 +175,7 @@ def assess_plant(
                 required=expected,
                 semantic_id="plant_" + key,
                 unit_name=unit.name,
+                unit_id=unit.id,
             )
         for row in cast(list[dict[str, Any]], assessment["selected_products"]):
             selected[row["product_id"]] = row
@@ -354,6 +419,45 @@ def assess_plant(
             type(quantity) is not int or not 0 < quantity <= 2**53 - 1
         ):
             raise InvalidInput("plant material quantity exceeds interoperable integers")
+    pv_electrical: dict[str, Any] | None = None
+    if wiring is not None:
+        from .geometry import panel_poses, read_geometry
+
+        included = {
+            p.id
+            for p in panel_poses(read_geometry(inputs.get("geometry")))
+            if p.included
+        }
+        assigned = {
+            mid
+            for unit in wiring.units
+            for string in unit.plan.strings
+            for mid in string.module_ids
+        }
+        coverage: dict[str, Any] = {
+            "id": "plant:pv_layout_coverage",
+            "semantic_id": "pv_layout_coverage",
+            "status": "satisfied" if assigned == included and included else "violated",
+            "reason": "all_included_modules_must_be_assigned",
+            "facts": [],
+            "actual": len(assigned),
+            "required": len(included),
+        }
+        checks.append(coverage)
+        pv_electrical = {
+            "schema_version": 1,
+            "method": "woo_plant_layout_electrical_v1",
+            "pv_plant_string_plan_sha256": digest(
+                encode(inputs["pv_plant_string_plan"])
+            ),
+            "units": electrical_units,
+            "checks": [coverage],
+            "assigned_modules": len(assigned),
+            "included_modules": len(included),
+            "nameplate_kwp": sum(
+                float(row["assessment"]["nameplate_kwp"]) for row in electrical_units
+            ),
+        }
     statuses = {c["status"] for c in checks}
     status = (
         "violated"
@@ -370,6 +474,11 @@ def assess_plant(
                 Object,
                 {
                     "model": "woo_multi_converter_plant_v1",
+                    **(
+                        {"pv_electrical": pv_electrical}
+                        if pv_electrical is not None
+                        else {}
+                    ),
                     "equipment_status": status,
                     "checks": checks,
                     "systems": systems,

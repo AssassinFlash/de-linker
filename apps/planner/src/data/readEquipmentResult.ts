@@ -127,34 +127,94 @@ export function readEquipmentAssessment(value: unknown): JsonObject {
 	const ids = new Set<string>();
 	if (assessment.pv_electrical !== undefined) {
 		const pv = readObject(assessment.pv_electrical);
-		if (
-			pv.schema_version !== 1 ||
-			!["woo_layout_linear_voc_stc_v1", "woo_layout_electrical_v2"].includes(
-				String(pv.method),
-			) ||
-			!Array.isArray(pv.strings)
-		)
-			throw new ApiError(502, "invalid_run_result");
-		for (const item of pv.strings) {
-			const row = readObject(item);
+		if (pv.method !== "woo_plant_layout_electrical_v1")
+			readSinglePvElectrical(pv);
+		else {
+			const fail = (): never => {
+				throw new ApiError(502, "invalid_run_result");
+			};
+			const hash = (v: unknown) =>
+				typeof v === "string" && /^[a-f0-9]{64}$/.test(v);
 			if (
-				typeof row.id !== "string" ||
-				!Array.isArray(row.module_ids) ||
-				row.module_ids.length !== row.module_count ||
-				!row.module_ids.every((id) => typeof id === "string") ||
-				![row.mppt, row.input, row.module_count].every(
-					(v) => typeof v === "number" && Number.isSafeInteger(v) && v > 0,
+				assessment.model !== "woo_multi_converter_plant_v1" ||
+				pv.schema_version !== 1 ||
+				!hash(pv.pv_plant_string_plan_sha256) ||
+				!Array.isArray(pv.units) ||
+				!Array.isArray(pv.checks) ||
+				![pv.assigned_modules, pv.included_modules].every(
+					(n) => typeof n === "number" && Number.isSafeInteger(n) && n >= 0,
 				) ||
-				![row.stc_vmpp_v, row.cold_voc_v].every(
-					(v) =>
-						v === null ||
-						(typeof v === "number" && Number.isFinite(v) && v > 0),
+				typeof pv.nameplate_kwp !== "number" ||
+				!Number.isFinite(pv.nameplate_kwp) ||
+				pv.nameplate_kwp < 0
+			)
+				fail();
+			const seenUnits = new Set(),
+				seenStrings = new Set(),
+				seenModules = new Set(),
+				seenInstances = new Set();
+			const systems = assessment.systems as JsonObject[];
+			for (const raw of pv.units as JsonObject[]) {
+				const unit = readObject(raw),
+					system = systems.find((s) => s.id === unit.unit_id);
+				if (
+					!system ||
+					seenUnits.has(unit.unit_id) ||
+					unit.unit_name !== system.name ||
+					unit.inverter_product_id !==
+						readObject(system.selection).inverter_product_id ||
+					!hash(unit.plan_sha256) ||
+					![
+						"not_recorded",
+						"stale_instance",
+						"product_mismatch",
+						"revision_mismatch",
+						"declared",
+					].includes(String(unit.instance_status)) ||
+					!(
+						unit.inverter_instance_id === null ||
+						typeof unit.inverter_instance_id === "string"
+					) ||
+					(unit.inverter_instance_id === null &&
+						unit.instance_status !== "not_recorded") ||
+					(unit.inverter_instance_id !== null &&
+						(unit.instance_status === "not_recorded" ||
+							seenInstances.has(unit.inverter_instance_id))) ||
+					!sameJson(
+						readObject(system.assessment).pv_electrical,
+						unit.assessment,
+					)
+				)
+					fail();
+				seenUnits.add(unit.unit_id);
+				if (unit.inverter_instance_id !== null)
+					seenInstances.add(unit.inverter_instance_id);
+				const nested = readSinglePvElectrical(unit.assessment);
+				for (const row of nested.strings as JsonObject[]) {
+					if (seenStrings.has(row.id)) fail();
+					seenStrings.add(row.id);
+					for (const module of row.module_ids as string[]) {
+						if (seenModules.has(module)) fail();
+						seenModules.add(module);
+					}
+				}
+			}
+			if (
+				systems.some(
+					(system) =>
+						readObject(system.assessment).pv_electrical !== undefined &&
+						!seenUnits.has(system.id),
+				) ||
+				pv.assigned_modules !== seenModules.size ||
+				(pv.checks as JsonObject[]).some(
+					(c) =>
+						!(assessment.checks as JsonObject[]).some((saved) =>
+							sameJson(saved, c),
+						),
 				)
 			)
-				throw new ApiError(502, "invalid_run_result");
+				fail();
 		}
-		if (pv.operating !== undefined)
-			readPvOperatingResult(pv.operating, pv.strings as JsonObject[]);
 	}
 	for (const value of assessment.checks) {
 		const check = readObject(value);
@@ -234,4 +294,36 @@ export function readEquipmentAssessment(value: unknown): JsonObject {
 			throw new ApiError(502, "invalid_run_result");
 	}
 	return assessment;
+}
+
+function readSinglePvElectrical(value: unknown): JsonObject {
+	const pv = readObject(value);
+	if (
+		pv.schema_version !== 1 ||
+		!["woo_layout_linear_voc_stc_v1", "woo_layout_electrical_v2"].includes(
+			String(pv.method),
+		) ||
+		!Array.isArray(pv.strings)
+	)
+		throw new ApiError(502, "invalid_run_result");
+	for (const item of pv.strings) {
+		const row = readObject(item);
+		if (
+			typeof row.id !== "string" ||
+			!Array.isArray(row.module_ids) ||
+			row.module_ids.length !== row.module_count ||
+			!row.module_ids.every((id) => typeof id === "string") ||
+			![row.mppt, row.input, row.module_count].every(
+				(v) => typeof v === "number" && Number.isSafeInteger(v) && v > 0,
+			) ||
+			![row.stc_vmpp_v, row.cold_voc_v].every(
+				(v) =>
+					v === null || (typeof v === "number" && Number.isFinite(v) && v > 0),
+			)
+		)
+			throw new ApiError(502, "invalid_run_result");
+	}
+	if (pv.operating !== undefined)
+		readPvOperatingResult(pv.operating, pv.strings as JsonObject[]);
+	return pv;
 }

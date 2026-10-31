@@ -32,7 +32,11 @@ def selection_products(
 
 
 def assess_equipment(
-    inputs: Object, basis: Object, *, evidence: EquipmentEvidence | None = None
+    inputs: Object,
+    basis: Object,
+    *,
+    evidence: EquipmentEvidence | None = None,
+    pv_module_scope: set[str] | None = None,
 ) -> Object:
     evidence = evidence or EquipmentEvidence(basis)
     evidence.require_basis(basis)
@@ -214,7 +218,7 @@ def assess_equipment(
     if inputs.get("pv_string_plan") is not None and "pv_module_inputs" in basis:
         from .pv_string_assessment import assess_pv_strings
 
-        pv_electrical = assess_pv_strings(inputs, basis)
+        pv_electrical = assess_pv_strings(inputs, basis, module_scope=pv_module_scope)
         checks.extend(cast(list[Json], pv_electrical["checks"]))
     elif selection.pv_dc_kw is not None:
         add(

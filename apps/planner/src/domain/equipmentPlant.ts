@@ -3,6 +3,8 @@ import schema from "../contracts/equipment-plant.schema.json" with { type: "json
 import { ApiError } from "../data/protocol.ts";
 import type { Json, JsonObject } from "../data/protocol.ts";
 import { readObject } from "../data/readProtocol.ts";
+import { readPvPlantStringPlan } from "./pvPlantStrings.ts";
+import { readPvStringPlan } from "./pvStrings.ts";
 import { sameJson } from "./draft.ts";
 import { dropGeometricRoofAc } from "./profiles.ts";
 import type { EquipmentProduct } from "../data/equipmentProducts.ts";
@@ -93,6 +95,7 @@ const equipmentFields = [
 	"equipment_requirements",
 	"equipment_condition_inputs",
 	"pv_string_plan",
+	"pv_plant_string_plan",
 ] as const;
 export function equipmentContext(inputs: JsonObject): JsonObject {
 	return Object.fromEntries(
@@ -258,7 +261,19 @@ export function beginPlant(
 		],
 		parallel_groups: [],
 	};
-	return plantInputs(inputs, draft);
+	const next: Record<string, Json> = { ...plantInputs(inputs, draft) };
+	if (inputs.pv_string_plan !== undefined)
+		next.pv_plant_string_plan = {
+			schema_version: 1,
+			units: [
+				{
+					unit_id: first.id,
+					inverter_instance_id: null,
+					plan: readPvStringPlan(inputs.pv_string_plan),
+				},
+			],
+		};
+	return next;
 }
 export function plantInputs(inputs: JsonObject, draft: PlantDraft): JsonObject {
 	const next: Record<string, Json> = {
@@ -281,6 +296,17 @@ export function singleSystem(inputs: JsonObject): JsonObject {
 	const draft = readPlantDraft(inputs);
 	if (draft.units.length !== 1 || draft.parallel_groups.length)
 		throw incomplete();
+	const wiring =
+		inputs.pv_plant_string_plan === undefined
+			? null
+			: readPvPlantStringPlan(inputs.pv_plant_string_plan);
+	if (
+		wiring?.units.some(
+			(u) =>
+				u.unit_id !== draft.units[0]!.id || u.inverter_instance_id !== null,
+		)
+	)
+		throw incomplete();
 	const next: Record<string, Json> = {
 		...inputs,
 		equipment_setup: {
@@ -288,6 +314,8 @@ export function singleSystem(inputs: JsonObject): JsonObject {
 			...draft.requirements,
 		},
 	};
+	delete next.pv_plant_string_plan;
+	if (wiring?.units[0]) next.pv_string_plan = wiring.units[0].plan;
 	delete next.equipment_plant;
 	delete next.equipment_plant_setup;
 	delete next.equipment_plant_requirements;

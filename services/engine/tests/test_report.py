@@ -1,13 +1,23 @@
 """The design report: one model for the screen and the PDF, in English and German."""
 
 import io
+from typing import cast
 
 import pytest
 from pypdf import PdfReader
+from pypdf.generic import DictionaryObject
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 
 from linker_engine import pdf, report, residential, rules
 from linker_engine.engine import Engine
-from linker_engine.models import Report, ResidentialInput
+from linker_engine.models import (
+    Report,
+    ReportRow,
+    ReportSection,
+    ReportTable,
+    ResidentialInput,
+)
 from linker_engine.roof.service import ROOF_ASSUMPTIONS
 
 # A 2 x 1 px PNG, written by hand so the test needs no image tool.
@@ -188,3 +198,61 @@ def test_roof_source_needs_planes() -> None:
                 "roof_source": "lod2",
             }
         )
+
+
+@pytest.mark.parametrize("locale", ["en", "de"])
+def test_pdf_renders_the_cold_voc_beta_with_its_native_symbol_glyph(
+    locale: str,
+) -> None:
+    from linker_engine.planning.report_copy import text
+
+    formula = text("linear_cold_voc_at_declared_ambient", locale)
+    source_url = "https://de-linker.com/βVoc.pdf"
+    report = Report.model_validate(
+        {
+            "title": "βVoc",
+            "subtitle": "Cold voltage formula",
+            "generated_at": "2026-10-31T00:00:00Z",
+            "locale": locale,
+            "sections": [
+                ReportSection(
+                    id="formula",
+                    title="Cold Voc",
+                    paragraphs=[formula, source_url],
+                    rows=[
+                        ReportRow(
+                            label="βVoc",
+                            value="βVoc",
+                            href=source_url,
+                        )
+                    ],
+                    table=ReportTable(columns=["βVoc"], rows=[["βVoc"]]),
+                )
+            ],
+        }
+    )
+    original = report.model_dump()
+    document = pdf.render(report)
+    # The shipped Latin faces have no U+03B2; the native Symbol encoding names
+    # the actual beta glyph. An ASCII b substitute is not the same character.
+    for name in ("Vera", "Vera-Bold"):
+        assert ord("β") not in cast(TTFont, pdfmetrics.getFont(name)).face.charToGlyph
+    assert pdfmetrics.getEncoding("SymbolEncoding").vector[98] == "beta"
+    extracted = text_of(document)
+    assert " ".join(formula.split()) in " ".join(extracted.split())
+    assert extracted.count("β") == 9
+    assert "\x00" not in extracted and "■" not in extracted
+    reader = PdfReader(io.BytesIO(document))
+    fonts: set[str] = set()
+    for page in reader.pages:
+        resources = cast(DictionaryObject, page["/Resources"].get_object())
+        for font in cast(DictionaryObject, resources["/Font"].get_object()).values():
+            fonts.add(str(cast(DictionaryObject, font.get_object())["/BaseFont"]))
+    assert "/Symbol" in fonts and "/ZapfDingbats" not in fonts
+    assert {
+        annotation.get_object()["/A"]["/URI"]
+        for page in reader.pages
+        for annotation in page.get("/Annots", [])
+    } == {source_url}
+    assert report.model_dump() == original
+    assert pdf.render(report) == document

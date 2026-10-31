@@ -87,6 +87,7 @@ CONTROL_INPUTS = (
     "tools/build.just",
     "tools/checks/ci_scope.py",
     "tools/checks/ci_preflight.py",
+    "tools/checks/ci_phase.sh",
     "tools/checks/test_ci_scope.py",
     "tools/checks/test_ci_preflight.py",
     ".gitattributes",
@@ -806,24 +807,44 @@ def run_module_jobs(run):
     return jobs
 
 
-def successful_module_job(job, module):
-    return (
-        job.get("name") == module_job_name(module)
-        and job.get("conclusion") == "success"
-        and any(
-            step.get("name") == "Validate module"
-            and step.get("conclusion") == "success"
-            for step in job.get("steps", [])
+MODULE_PHASE_STEPS = {
+    "engine": ("Planner dependencies", "Check", "Test"),
+    "genie": ("Check", "Test"),
+    "planner": (
+        "Verify Planner invocation",
+        "Planner dependencies",
+        "Check",
+        "Test",
+        "Build",
+    ),
+}
+
+
+def successful_module_job(job, module, *, planner_build_changed=None):
+    if job.get("name") != module_job_name(module) or job.get("conclusion") != "success":
+        return False
+    steps = job.get("steps", [])
+    required = MODULE_PHASE_STEPS.get(module, ("Validate module",))
+    if not all(
+        any(step.get("name") == name for step in steps)
+        and all(
+            step.get("conclusion") == "success"
+            for step in steps
+            if step.get("name") == name
         )
-        and (
-            module != "planner"
-            or any(
-                step.get("name") == "Verify Planner invocation"
-                and step.get("conclusion") == "success"
-                for step in job.get("steps", [])
-            )
+        for name in required
+    ):
+        return False
+    if module == "planner":
+        if planner_build_changed is None:
+            return False
+        # Native merge evidence determines whether this conditional phase ran.
+        expected = "success" if planner_build_changed else "skipped"
+        php_steps = [step for step in steps if step.get("name") == "Planner PHP"]
+        return bool(php_steps) and all(
+            step.get("conclusion") == expected for step in php_steps
         )
-    )
+    return True
 
 
 def same_module_inputs(before, head, module):
@@ -938,8 +959,20 @@ def reusable_modules(modules, head):
         for module in modules:
             if module in proofs or module in DIFF_GUARDED_MODULES:
                 continue
+            planner_flag = (
+                planner_build_flag(commit, source=run.get("head_sha"))
+                if module == "planner"
+                else None
+            )
             job = next(
-                (job for job in jobs if successful_module_job(job, module)), None
+                (
+                    job
+                    for job in jobs
+                    if successful_module_job(
+                        job, module, planner_build_changed=planner_flag
+                    )
+                ),
+                None,
             )
             if (
                 job is not None
@@ -997,8 +1030,14 @@ def validate_module_reuse(proofs, required, head):
             run
         ):
             return False
+        planner_flag = (
+            planner_build_flag(proof["commit"], source=run.get("head_sha"))
+            if module == "planner"
+            else None
+        )
         if not any(
-            job.get("id") == proof["job"] and successful_module_job(job, module)
+            job.get("id") == proof["job"]
+            and successful_module_job(job, module, planner_build_changed=planner_flag)
             for job in jobs
         ):
             return False

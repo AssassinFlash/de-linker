@@ -617,3 +617,47 @@ installation-routing rows=3
 **对上一批结论的必要纠正：** `KFTVBgkCaUb6BuQoX`日志`querySubmitted=true`只证明填号后点击了某个Search按钮；当时定位器允许回退到页面唯一Search，未保全按钮与证书模块的绑定。因此本记录先前“已实际提交证书查询”的表述证据不足，应降级为“填号后点击Search，是否正确提交证书查询未确认”。本次严格绑定守住该区别，未误点全局Search。此为执行工具控制缺口，不推成原厂资料不可取得。按最后一次有界补验的范围，不再新增run/接口试探。原件与详情仍未取得，结果未知如实保留。
 
 最后补验资源收尾：小型证据已先解析保存到本节；随后run `uF2Bfl7JVP3cIPDBS`及dataset/KVS/queue均DELETE204。Controller handle80659退出，未保留远端未读原件；无本机临时文件、下载、浏览器、实例或常驻进程。原PDF保持原位无变；仅本记录追加，diff-check通过。磁盘2.8Ti used/828Gi available；本机实际回收0B，远端4资源已删但API无物理字节量。最后补验结束，不能据此宣称证书查询成功或原件不存在。
+
+
+### SGS提交控件精确定位 · sol_sgs_annex_locator（2026-11-01）
+
+资源合同：owner=`sol_sgs_annex_locator`；仅延续上节`certificateNo`已找到而所属Search未确认的定位缺口。阶段一仅Apify读取同一已观察SGS官方页的渲染后字段祖先HTML与真实交互控件，不提交；阶段二只在能证实控件绑定时最多一次编号查询。每阶段最多1个run及其dataset/KVS/queue、并发1、单官方页、无递归、无新权限、≤100秒/2GiB；每阶段证据在RAM解析并压缩写入本节后立即DELETE全部自有远端资源，再开始下一阶段。不使用本机浏览器/临时HTML/截图/新报告，不联系、注册、付费或绕验证码。临时controller进程仅调用Apify并在本次操作结束退出。若取得匹配原PDF，先核编号/型号/版本/页数再按SHA去重保留一份于既有来源目录，否则不新增本机原件。本节保留为#548原件缺口唯一任务记录。开始磁盘2.8Ti used / 822Gi available。
+
+阶段一`gwu9B5CA9eaEh7QzU`：`2026-10-31T16:46:44.605Z`→`16:47:13.623Z`，SUCCEEDED，单页、无查询，费用`$0.002288516595908338`，最大内存1,174,999,040B。dataset正文43,348B，SHA `1a7d2a5db6b830b02b3d6e76426de9085815c8636fd9fa6274bc3982d67ef4d5`；完整JSON在RAM成功解析，以下仅保决定定位的结构证据：
+
+```json
+{"querySubmitted":false,"field":"<input class=\"CertifiedComponentsAndProductsFilters_m-filters__input__sTsgG\" placeholder=\"Certificate No.\" type=\"text\" name=\"certificateNo\">","ancestors":[{"level":0,"tag":"LABEL","class":"CertifiedComponentsAndProductsFilters_m-filters__item__c8eFL","fieldNames":["certificateNo"],"buttons":[],"hasTurnstileResponseField":false},{"level":1,"tag":"DIV","class":"CertifiedComponentsAndProductsFilters_m-filters__wrapper__uFxV9","fieldNames":["companyName","tradeName","modelNo","certificateNo","contractNo"],"buttons":[],"hasTurnstileResponseField":false},{"level":2,"tag":"DIV","class":"CertifiedComponentsAndProductsFilters_m-filters__miHGF","fieldNames":["companyName","tradeName","modelNo","certificateNo","contractNo"],"buttons":[],"hasTurnstileResponseField":false},{"level":3,"tag":"DIV","class":"container","fieldNames":["companyName","tradeName","modelNo","certificateNo","contractNo"],"buttons":["<button class=\"button --theme-light --level-1 py-3 px-5 block  md:mx-auto \">Search</button>"],"hasTurnstileResponseField":true}],"nearestForm":null,"iframes":[],"textBytes":43348,"sha256":"1a7d2a5db6b830b02b3d6e76426de9085815c8636fd9fa6274bc3982d67ef4d5"}
+```
+
+根因已定位：无HTML form；字段在`CertifiedComponentsAndProductsFilters_m-filters__miHGF`中，该层含五字段但不含按钮；实际Search是它们共同祖先`div.container`的另一个子节点。旧定位在“五字段”层提前停止，因此匹配不到按钮，不是按钮缺失。正确绑定应从字段逐级上行，取同时包含这五个命名字段和唯一可见Search按钮的最小祖先（本次为字段parent的level3），不可回退全局Search。该容器有`cf-turnstile-response`隐藏字段，主frame无iframe；这本身不证明挑战成功或拒绝。阶段二如出现验证码/访问错误即保存并停止，不处理挑战。
+
+Stage1 cleanup: dataset/KVS/queue/run each DELETE204 after compact evidence saved; first DELETE transport TLS EOF corrected by a cleanup-only retry, no origin-page replay. Controller40765/50640/75564/30729/72137 exited. Stage2 now uses verified minimal common ancestor, one click maximum.
+
+阶段二结果（未提交查询）：
+
+```json
+{"run":{"id":"uoFfIB195LOXMBcsJ","status":"SUCCEEDED","startedAt":"2026-10-31T16:49:23.372Z","finishedAt":"2026-10-31T16:50:03.100Z","usageTotalUsd":0.004721045248074664,"memMaxBytes":1239986176,"datasetBytes":629,"datasetSha256":"328ba2c0d59d462d440031c8045b3a547dec677b7c422eb6af5ed150e010e9bf"},"audit":{"stage":"single_bound_query","number":"250008RECO14-CER","buttonClicked":false,"certificateRequestObserved":false,"resultState":"interaction_error","network":[],"binding":{"state":"bound","ancestorLevel":3,"tag":"DIV","class":"container","buttonHtml":"<button class=\"button --theme-light --level-1 py-3 px-5 block  md:mx-auto \" data-owned-sgs-search=\"\">Search</button>","fieldNames":["companyName","tradeName","modelNo","certificateNo","contractNo"]},"error":"TimeoutError: locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-owned-sgs-search]')\u001b[22m\n"}}
+```
+
+本轮已核实按钮与五个证书字段绑定，`ancestorLevel=3`；但fill后点击临时标记定位器超时，`buttonClicked=false`、`certificateRequestObserved=false`、network为空。fill后临时标记不再可定位，属于控制脚本缺陷；React重绘使属性丢失是与现象一致的解释，未另采样确认；尚未发出编号查询，无SGS查询结果、详情或Annex链接。后续正确定位应在fill后重新从稳定`input[name="certificateNo"]`定位同时包含五字段与唯一Search的最小祖先，再按该范围内真实Search定位，不依赖fill前附加的DOM属性。按本次1 DOM读取+1查询阶段的预算停止，不自动增开纠正run。证书/Annex可取得性仍UNKNOWN；既有1页证书不等于164页Annex已补齐。
+
+本轮收尾：阶段一、阶段二各1run，每run的dataset/KVS/queue/run均DELETE204，共8个自有远端资源已删；两run已SUCCEEDED退出，controller45160、90413、4649、25460及前述阶段一controller均已退出。原站请求边界仍2个单页加载、0个确认提交的证书编号查询，无新增原件、浏览器、实例、本机临时文件或常驻进程。仅现有附录新增约6KB，未改INDEX、产品事实、代码、Woo或生产。费用合计`$0.007009561843983002`。本机实际回收0B；远端物理释放量API未报告。收尾磁盘2.8Ti used / 823Gi available（与开始相比的空间变动不归因于本次清理）；diff-check通过。保留项仅本附录小型证据和既有原PDF。
+
+
+#### 已授权的单次稳定定位纠正（2026-11-01）
+
+主代理复核并批准下列稳定Locator，因前阶段未点击/未查询，实际查询额度仍为一次。资源上限明确修正为：增加且仅增加1个Apify run（100秒/2GiB、并发1），最多2个页面请求（既有搜索页及实际结果导航；不猜链接、不递归），owner仍为`sol_sgs_annex_locator`；其dataset/KVS/queue/run在本轮小型证据先解析追加后立即全删。原8资源已删除。无本机临时文件/浏览器/新报告/原件副本；controller仅调用Apify，操作完退出。稳定路径：fill后重新创建`page.locator('input[name="certificateNo"]')`，live XPath取最近`div.container`，该范围`getByRole('button', {name:'Search',exact:true})`；field/scope/Search各count=1且立即点击前`inputValue()===250008RECO14-CER`才允许一次click。不加DOM marker、不持ElementHandle，不处理验证码；若实际证书请求/结果未确认，保存真实状态并停止，不重提。本纠正代码已由主代理审阅。
+
+稳定定位纠正run `ycZGKXOOKQaqMR2xm`，`2026-10-31T16:54:29.377Z`→`16:55:24.811Z`，SUCCEEDED（55.434秒墙钟），费用`$0.004019274099810256`，最大内存1,323,708,416B。创建前一POST在TLS握手中EOF，未获run回执；先查Actor倒序最近运行确认没有新run（最新仍13:51Z），才重试创建本唯一纠正run，没有重放原站查询。
+
+已完整解析dataset audit，保留决定结论的小型证据：
+
+```json
+{"stage":"stable_locator_single_query","number":"250008RECO14-CER","buttonClicked":true,"numberRequestObserved":false,"counts":{"field":1,"scope":1,"search":1},"valueConfirmed":true,"requests":[{"path":"/metrics/g/collect","method":"GET","type":"fetch","containsNumber":false}],"responses":[{"path":"/metrics/g/collect","status":200,"containsNumber":false}],"alerts":[],"matchingRows":[],"links":[],"url":"https://www.sgs.com/en/certified-clients-and-products/sgs-certified-components-and-products","iframes":[],"machineResultState":"no_results","reviewedResultState":"after_click_unknown","datasetBytes":1667,"datasetSha256":"4b95c57aca0ff522bd92219af40dcb59e769cd15635f80f1957b047ed977d6a1"}
+```
+
+**正确Search已点击一次；证书编号查询是否实际发送、结果与Annex可取得性仍未知。** 点击前field/scope/Search各唯一、输入值逐字相等；未使用临时DOM属性或ElementHandle。25秒等待后页面仍通用搜索说明，无结果行、无匹配下载链接、无可见错误或人机挑战。网络记录仅限同源`www.sgs.com`的fetch/xhr/document；只有`/metrics/g/collect`返回200，未观察到含证书编号的同源请求，不能据此证明其他主机不存在请求。
+
+必要纠正：原audit机器字段`resultState=no_results`是检测器假阳性——宽松正则`0 results`命中了通用说明里的`100 results`；页面没有“查无结果”的明确响应。人工按同份完整audit纠正为`after_click_unknown`，保留原机器值与哈希，不把该值当SGS搜索结果。正确按钮定位缺口已解决；本轮不再点击、不增run、不猜接口、不处理验证码，不声称证书/Annex不存在或不公开。未获得新原件，既有1页证书和164页Annex缺口仍保留。
+
+纠正后资源收尾：`Esc5MfcyuRIJSXNlA` dataset、`TejJPaocUVZRuSdbE` KVS、`H8ie2X44548b3Mk9M` queue、`ycZGKXOOKQaqMR2xm` run均DELETE204；run已退出，controller86352/31969/25904/30436/26190/6232均退出。本专责任务累计3个成功run、12个自有远端资源已删、正确Search点击1次；费用合计`$0.011028835943793258`。只有既有附录小型记录新增（收尾前本专责段落9327B），无新本机原件/临时文件/浏览器/实例/常驻进程，无生产写入。磁盘2.8Ti used / 822Gi available，本机释放0B，远端释放字节未报告。保留原PDF及本记录；本轮结束，不再原站查询。

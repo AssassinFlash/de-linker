@@ -9,7 +9,8 @@
 	},
 	"scripts": {
 		"dev": "vite --host 127.0.0.1",
-		"build": "tsc --noEmit && vite build && node bin/build-manifest.mjs write",
+		"build": "npm run lint:types && npm run build:assets",
+		"build:assets": "vite build && node bin/build-manifest.mjs write",
 		"build:check": "node bin/build-manifest.mjs check && node --test tests/built-modules.mjs",
 		"lint:types": "tsc --noEmit",
 		"lint:js": "node --check bin/build-manifest.mjs",

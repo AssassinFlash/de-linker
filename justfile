@@ -98,47 +98,76 @@ ci-build:
     git status --porcelain -- plugins/linker-tools/build plugins/linker-commerce/build
     test -z "$(git status --porcelain -- plugins/linker-tools/build plugins/linker-commerce/build)"
 
-# Shared package lanes keep local preflight and hosted CI on the same commands.
+# Shared phases keep local preflight and hosted CI on the same commands.
 ci-planner: ci-planner-deps
+    just --justfile "{{ justfile() }}" ci-planner-check
+    just --justfile "{{ justfile() }}" ci-planner-test
+    just --justfile "{{ justfile() }}" ci-planner-build
+    just --justfile "{{ justfile() }}" ci-planner-php
+
+ci-planner-check:
     #!/usr/bin/env bash
-    set -euo pipefail
-    root="{{ justfile_directory() }}"
-    cd "$root/apps/planner"
+    source "{{ justfile_directory() }}/tools/checks/ci_phase.sh" "Planner Check"
+    cd "{{ justfile_directory() }}/apps/planner"
     npm run lint:js
     npm run lint:types
     npm run lint:format
+
+ci-planner-test:
+    #!/usr/bin/env bash
+    source "{{ justfile_directory() }}/tools/checks/ci_phase.sh" "Planner Test"
+    cd "{{ justfile_directory() }}/apps/planner"
     npm test
-    npm run build
+
+# Only invoke after ci-planner-check succeeds; standalone npm build still checks types.
+ci-planner-build:
+    #!/usr/bin/env bash
+    source "{{ justfile_directory() }}/tools/checks/ci_phase.sh" "Planner Build"
+    cd "{{ justfile_directory() }}/apps/planner"
+    npm run build:assets
     node ../../plugins/linker-tools/bin/build-manifest.mjs write
     git diff --exit-code -- ../../plugins/linker-tools/build/planner ../../plugins/linker-tools/build/manifest.json
     npm run build:check
     node ../../plugins/linker-tools/bin/build-manifest.mjs check
+
+ci-planner-php:
+    #!/usr/bin/env bash
+    source "{{ justfile_directory() }}/tools/checks/ci_phase.sh" "Planner PHP"
     if [ "${PLANNER_BUILD_CHANGED:-false}" = true ]; then
-        cd "$root/plugins/linker-tools"
+        cd "{{ justfile_directory() }}/plugins/linker-tools"
         {{ php }} "$(command -v composer)" validate --no-check-publish
         {{ php }} "$(command -v composer)" install --no-interaction --no-progress --quiet
         {{ php }} vendor/bin/phpunit tests/php/Unit/PlannerApplicationTest.php
+    else
+        echo "Planner PHP skipped: no changed Planner build."
     fi
 
 ci-engine: ci-planner-deps
-    just --justfile "{{ justfile() }}" ci-service engine
+    just --justfile "{{ justfile() }}" ci-service-check engine
+    just --justfile "{{ justfile() }}" ci-service-test engine
 
-[private]
 [working-directory("apps/planner")]
 ci-planner-deps:
+    #!/usr/bin/env bash
+    source "{{ justfile_directory() }}/tools/checks/ci_phase.sh" "Planner dependencies"
     if [ ! -f node_modules/.package-lock.json ] || [ package-lock.json -nt node_modules/.package-lock.json ] || [ package.json -nt node_modules/.package-lock.json ]; then npm ci --no-audit --no-fund; fi
 
 ci-genie:
-    just --justfile "{{ justfile() }}" ci-service genie
+    just --justfile "{{ justfile() }}" ci-service-check genie
+    just --justfile "{{ justfile() }}" ci-service-test genie
 
-[private]
-ci-service service:
+ci-service-check service:
     #!/usr/bin/env bash
-    set -euo pipefail
+    source "{{ justfile_directory() }}/tools/checks/ci_phase.sh" "{{ service }} Check"
     cd "{{ justfile_directory() }}/services/{{ service }}"
     uv run --locked ruff check .
     uv run --locked ruff format --check .
     uv run --locked mypy .
+
+ci-service-test service:
+    #!/usr/bin/env bash
+    source "{{ justfile_directory() }}/tools/checks/ci_phase.sh" "{{ service }} Test"
+    cd "{{ justfile_directory() }}/services/{{ service }}"
     uv run --locked pytest --durations=10
 
 # One module's complete static/unit contract, shared by hosted and local CI.

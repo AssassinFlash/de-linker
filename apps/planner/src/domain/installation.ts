@@ -4,6 +4,8 @@ import type { JsonObject } from "../data/protocol.ts";
 import { ApiError } from "../data/protocol.ts";
 import { readObject } from "../data/readProtocol.ts";
 import { sameJson } from "./draft.ts";
+import type { PvPlantStringPlan } from "./pvPlantStrings.ts";
+import type { EquipmentPlant } from "./equipmentPlant.ts";
 import type { PvStringPlan } from "./pvStrings.ts";
 
 export interface RoutePoint {
@@ -187,6 +189,9 @@ export interface PvStringClosure {
 	approval: "not_assessed";
 }
 export interface PvStringLinkReview {
+	unit_id?: string | null;
+	inverter_instance_id?: string | null;
+	instance_status?: string;
 	string_id: string;
 	mppt: number | null;
 	input: number | null;
@@ -204,7 +209,8 @@ export interface PvStringLinkReview {
 	reasons: "cable_runs_missing"[];
 }
 export interface PvStringReconciliation {
-	pv_string_plan_sha256: string | null;
+	pv_string_plan_sha256?: string | null;
+	pv_plant_string_plan_sha256?: string;
 	installation_input_sha256: string;
 	geometry_sha256: string;
 	plan_status: "missing" | "empty" | "available";
@@ -213,18 +219,30 @@ export interface PvStringReconciliation {
 function readStringReconciliation(
 	value: unknown,
 	requested: InstallationInputs,
-	strings: PvStringPlan | null,
+	strings: PvStringPlan | PvPlantStringPlan | null,
 	cables: CableQuantity[],
 	geometrySha: string,
 	inputSha: unknown,
+	plant?: EquipmentPlant | null,
 ): PvStringReconciliation {
+	const multi = strings !== null && "units" in strings;
+	const plantStrings = multi ? (strings as PvPlantStringPlan) : null;
+	const singleStrings = !multi ? (strings as PvStringPlan | null) : null;
+	const owners = new Map(
+		plantStrings?.units.flatMap((u) =>
+			u.plan.strings.map((s) => [s.id, u] as const),
+		) ?? [],
+	);
+	const allStrings = plantStrings
+		? plantStrings.units.flatMap((u) => u.plan.strings)
+		: (singleStrings?.strings ?? []);
 	const result = readObject(value),
 		hash = (v: unknown): v is string =>
 			typeof v === "string" && /^[a-f0-9]{64}$/.test(v),
 		fail = (): never => {
 			throw new ApiError(502, "invalid_installation_review");
 		},
-		known = new Map(strings?.strings.map((s) => [s.id, s]) ?? []),
+		known = new Map(allStrings.map((s) => [s.id, s])),
 		links = new Map(requested.pv_string_links?.map((l) => [l.string_id, l])),
 		ids = [
 			...known.keys(),
@@ -232,22 +250,52 @@ function readStringReconciliation(
 		],
 		planStatus = !strings ? "missing" : known.size ? "available" : "empty";
 	if (
-		result.schema_version !== 1 ||
+		result.schema_version !== (multi ? 2 : 1) ||
 		result.scope !== "declared_project_identity_only" ||
 		result.qualified !== false ||
 		result.plan_status !== planStatus ||
 		!hash(inputSha) ||
 		result.installation_input_sha256 !== inputSha ||
 		result.geometry_sha256 !== geometrySha ||
-		(strings
-			? !hash(result.pv_string_plan_sha256)
-			: result.pv_string_plan_sha256 !== null) ||
+		(multi
+			? !hash(result.pv_plant_string_plan_sha256) ||
+				result.pv_string_plan_sha256 !== undefined
+			: strings
+				? !hash(result.pv_string_plan_sha256)
+				: result.pv_string_plan_sha256 !== null) ||
 		!Array.isArray(result.rows) ||
 		result.rows.length !== ids.length
 	)
 		fail();
 	const rows = (result.rows as unknown[]).map(
 		(raw, index): PvStringLinkReview => {
+			const owner = owners.get(ids[index]!);
+			const plantUnit = plant?.units.find((u) => u.id === owner?.unit_id);
+			const instance = requested.instances.find(
+				(i) => i.id === owner?.inverter_instance_id,
+			);
+			const instanceStatus = !owner
+				? "not_recorded"
+				: !plant
+					? "unprepared_plant"
+					: !plantUnit
+						? "unknown_unit"
+						: owner.plan.inverter_product_id !==
+							  plantUnit.selection.inverter_product_id
+							? "plan_product_mismatch"
+							: owner.inverter_instance_id === null
+								? "not_recorded"
+								: !instance
+									? "stale_instance"
+									: instance.product_id !==
+										  plantUnit.selection.inverter_product_id
+										? "product_mismatch"
+										: instance.product_revision !==
+											  plantUnit.selection.product_revisions[
+													String(plantUnit.selection.inverter_product_id)
+											  ]
+											? "revision_mismatch"
+											: "declared";
 			const row = readObject(raw),
 				id = ids[index]!,
 				string = known.get(id),
@@ -277,9 +325,19 @@ function readStringReconciliation(
 							? "stale_circuit"
 							: circuit.kind !== "pv_dc"
 								? "wrong_circuit_kind"
-								: endpoints.filter(
-											(e) => e.product_id === strings?.inverter_product_id,
-									  ).length !== 1
+								: (
+											multi
+												? instanceStatus !== "declared" ||
+													endpoints.filter(
+														(e) =>
+															e.instance_id === owner?.inverter_instance_id,
+													).length !== 1
+												: endpoints.filter(
+														(e) =>
+															e.product_id ===
+															singleStrings?.inverter_product_id,
+													).length !== 1
+									  )
 									? "inverter_endpoint_unresolved"
 									: "linked",
 				reasons: PvStringLinkReview["reasons"] =
@@ -308,6 +366,11 @@ function readStringReconciliation(
 				closure.conductor === "declared" &&
 				closure.quantity === "confirmed";
 			if (
+				(multi &&
+					(row.unit_id !== (owner?.unit_id ?? null) ||
+						row.inverter_instance_id !==
+							(owner?.inverter_instance_id ?? null) ||
+						row.instance_status !== instanceStatus)) ||
 				row.string_id !== id ||
 				row.mppt !== (string?.mppt ?? null) ||
 				row.input !== (string?.input ?? null) ||
@@ -320,6 +383,13 @@ function readStringReconciliation(
 			)
 				fail();
 			return {
+				...(multi
+					? {
+							unit_id: owner?.unit_id ?? null,
+							inverter_instance_id: owner?.inverter_instance_id ?? null,
+							instance_status: instanceStatus,
+						}
+					: {}),
 				string_id: id,
 				mppt: string?.mppt ?? null,
 				input: string?.input ?? null,
@@ -333,7 +403,14 @@ function readStringReconciliation(
 		},
 	);
 	return {
-		pv_string_plan_sha256: result.pv_string_plan_sha256 as string | null,
+		...(multi
+			? {
+					pv_plant_string_plan_sha256:
+						result.pv_plant_string_plan_sha256 as string,
+				}
+			: {
+					pv_string_plan_sha256: result.pv_string_plan_sha256 as string | null,
+				}),
 		installation_input_sha256: inputSha as string,
 		geometry_sha256: geometrySha,
 		plan_status: planStatus,
@@ -344,8 +421,9 @@ export function readInstallationReview(
 	value: unknown,
 	requested: InstallationInputs,
 	projectId: string,
-	savedStrings?: PvStringPlan | null,
+	savedStrings?: PvStringPlan | PvPlantStringPlan | null,
 	expectedRevision?: number,
+	savedPlant?: EquipmentPlant | null,
 ): InstallationReview {
 	const row = readObject(value);
 	const prepared = readInstallation(row.prepared_inputs);
@@ -414,7 +492,11 @@ export function readInstallationReview(
 			throw new ApiError(502, "invalid_installation_review");
 		return c as CableQuantity;
 	});
-	const optedIn = requested.pv_string_links !== undefined;
+	const optedIn =
+		requested.pv_string_links !== undefined ||
+		(savedStrings !== null &&
+			savedStrings !== undefined &&
+			"units" in savedStrings);
 	if (
 		(optedIn &&
 			(savedStrings === undefined || expectedRevision === undefined)) ||
@@ -434,6 +516,7 @@ export function readInstallationReview(
 						cables,
 						row.geometry_sha256,
 						row.input_sha256,
+						savedPlant,
 					),
 				}
 			: {}),

@@ -279,6 +279,9 @@ class PlantEnergyKernel:
         )
         basis = self.products.equipment_basis()
         plant_products(plant, basis)
+        if inputs.get("pv_plant_string_plan") is not None:
+            basis["pv_module_inputs"] = self.products.electrical_module_basis()
+            assess_plant(inputs, basis)
         assets = Assets(self.workspace)
         pinned = {
             "runtime_bundle": self.runtime.sha256,

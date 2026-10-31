@@ -18,6 +18,7 @@ export function PvStringSetup({
 	locale,
 	disabled,
 	onValidity,
+	controlled,
 }: {
 	draft: Draft;
 	edit: (change: (inputs: JsonObject) => JsonObject) => boolean;
@@ -25,6 +26,11 @@ export function PvStringSetup({
 	locale: string;
 	disabled: boolean;
 	onValidity: (valid: boolean) => void;
+	controlled?: {
+		plan: PvStringPlan | null;
+		change: (plan: PvStringPlan | null) => void;
+		unavailableModuleIds: string[];
+	};
 }) {
 	const geometry = useMemo(() => {
 		try {
@@ -35,13 +41,14 @@ export function PvStringSetup({
 			return null;
 		}
 	}, [draft.history.current.geometry]);
-	const plan = useMemo(
+	const savedPlan = useMemo(
 		() =>
-			draft.history.current.pv_string_plan === undefined
+			controlled || draft.history.current.pv_string_plan === undefined
 				? null
 				: readPvStringPlan(draft.history.current.pv_string_plan),
-		[draft.history.current.pv_string_plan],
+		[draft.history.current.pv_string_plan, controlled],
 	);
+	const plan = controlled ? controlled.plan : savedPlan;
 	const poses = useMemo(
 		() => (geometry ? panelPoses(geometry).filter((p) => p.included) : []),
 		[geometry],
@@ -65,11 +72,18 @@ export function PvStringSetup({
 		!plan ||
 		(plan.inverter_product_id === inverterId &&
 			Object.values(fields).every(Boolean));
-	const assigned = new Set(plan?.strings.flatMap((s) => s.module_ids) ?? []),
+	const assigned = new Set([
+			...(plan?.strings.flatMap((s) => s.module_ids) ?? []),
+			...(controlled?.unavailableModuleIds ?? []),
+		]),
 		available = new Set(poses.map((p) => p.id));
 	const change = useCallback(
 		(value: PvStringPlan | null) => {
 			if (disabled) return;
+			if (controlled) {
+				controlled.change(value);
+				return;
+			}
 			edit((inputs) => {
 				const next = { ...inputs };
 				delete next.equipment_candidate;
@@ -78,13 +92,13 @@ export function PvStringSetup({
 				return next;
 			});
 		},
-		[edit, disabled],
+		[edit, disabled, controlled],
 	);
 	// Invalid local number syntax cannot permit saving/calculating older values.
 	useEffect(() => {
-		onValidity(valid);
+		onValidity(controlled ? Object.values(fields).every(Boolean) : valid);
 		return () => onValidity(true);
-	}, [valid, onValidity]);
+	}, [valid, onValidity, !!controlled, fields]);
 	if (!geometry || !poses.length)
 		return plan ? (
 			<section>
@@ -178,7 +192,9 @@ export function PvStringSetup({
 					<p role="status">
 						{sprintf(
 							__("%1$d of %2$d roof modules assigned", "linker-tools"),
-							[...assigned].filter((id) => available.has(id)).length,
+							(plan?.strings.flatMap((s) => s.module_ids) ?? []).filter((id) =>
+								available.has(id),
+							).length,
 							poses.length,
 						)}
 					</p>

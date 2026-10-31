@@ -2,8 +2,8 @@
 
 Rendered from the same report model as the screen (`report.py`), so the PDF
 never words anything the screen does not. Bitstream Vera (bundled with
-ReportLab, Bitstream Vera licence) carries every character the texts use,
-German letters, the minus sign and the dashes included.
+ReportLab, Bitstream Vera licence) provides the Latin text, German letters,
+minus sign and dashes. The native PDF Symbol face supplies the formula beta.
 """
 
 from __future__ import annotations
@@ -108,12 +108,20 @@ def _escape(text: str) -> str:
     return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
+def _text(text: str) -> str:
+    # Vera's cmap has no U+03B2. Keep the Unicode character in the document;
+    # ReportLab maps it to the native Symbol beta glyph (encoding slot 98).
+    return _escape(text).replace("β", '<font name="Symbol">β</font>')
+
+
 def _linked(text: str) -> str:
-    escaped = _escape(text)
-    return re.sub(
-        r"(https://de-linker\.com/\S+)",
-        rf'<link href="\1" color="{ACCENT_HEX}">\1</link>',
-        escaped,
+    # Font spans belong only to visible text, never to a link's URI attribute.
+    parts = re.split(r"(https://de-linker\.com/\S+)", text)
+    return "".join(
+        f'<link href="{_escape(part)}" color="{ACCENT_HEX}">{_text(part)}</link>'
+        if index % 2
+        else _text(part)
+        for index, part in enumerate(parts)
     )
 
 
@@ -123,8 +131,8 @@ def _value(row: ReportRow) -> str:
         return _linked(row.value)
     href = _escape(row.href)
     return (
-        f'<link href="{href}" color="{ACCENT_HEX}">{_escape(row.value)}</link>'
-        f'<br/><font size="6.8" color="{MUTED_HEX}">{href}</font>'
+        f'<link href="{href}" color="{ACCENT_HEX}">{_text(row.value)}</link>'
+        f'<br/><font size="6.8" color="{MUTED_HEX}">{_text(row.href)}</font>'
     )
 
 
@@ -145,7 +153,7 @@ def logo_image(data_url: str) -> Image:
 def _section(
     section: ReportSection, styles: dict[str, ParagraphStyle], width: float
 ) -> list[Flowable]:
-    parts: list[Flowable] = [Paragraph(_escape(section.title), styles["h2"])]
+    parts: list[Flowable] = [Paragraph(_text(section.title), styles["h2"])]
     # The shared report document and application present scope before data.
     # Keep assumptions beside the heading instead of pushing them after a
     # potentially multi-page table.
@@ -154,7 +162,7 @@ def _section(
     if section.rows:
         rows = [
             [
-                Paragraph(_escape(row.label), styles["label"]),
+                Paragraph(_text(row.label), styles["label"]),
                 Paragraph(_value(row), styles["cell"]),
             ]
             for row in section.rows
@@ -175,9 +183,9 @@ def _section(
         )
         parts.append(table)
     if section.table:
-        header = [Paragraph(_escape(c), styles["head"]) for c in section.table.columns]
+        header = [Paragraph(_text(c), styles["head"]) for c in section.table.columns]
         body = [
-            [Paragraph(_escape(cell), styles["cell"]) for cell in row]
+            [Paragraph(_text(cell), styles["cell"]) for cell in row]
             for row in section.table.rows
         ]
         weights = section.table.column_weights
@@ -244,10 +252,10 @@ def render(
     padding = 6
     width = document.width - 2 * padding
     heading: list[Flowable] = [
-        Paragraph(_escape(report.title), styles["title"]),
-        Paragraph(_escape(report.subtitle), styles["subtitle"]),
+        Paragraph(_text(report.title), styles["title"]),
+        Paragraph(_text(report.subtitle), styles["subtitle"]),
         Paragraph(
-            _escape(report.generated_at.replace("T", " ").replace("Z", " UTC")),
+            _text(report.generated_at.replace("T", " ").replace("Z", " UTC")),
             styles["small"],
         ),
     ]

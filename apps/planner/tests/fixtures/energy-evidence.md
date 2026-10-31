@@ -38,3 +38,5 @@ from the existing explicitly synthetic Woo maintenance fixture; no unknown
 reverse capability is invented. Browser contract and preparation checks share
 this output without another PV or dispatch replay. The fixture is never runtime
 product data or manufacturer/country qualification.
+
+The shared-DC plant fixture now also retains its native per-system PV string assessment and energy-only report. Each converter uses its own wiring and the whole-roof coverage is assessed separately. It was refreshed through the same two-hour exporter for the multi-system string feature; the synthetic product and operating assumptions remain test-only.
