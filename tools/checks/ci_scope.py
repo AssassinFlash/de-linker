@@ -279,7 +279,13 @@ def selected_modules(changes, base="", head=""):
                     "includes/Products/Publication"
                 ):
                     selected.update(("engine", "genie"))
-                if name == "tools" and relative.startswith("includes/Planner/"):
+                # Outbox scheduling is a native PHP/AS contract; neither the
+                # engine nor the frontend recipe reads this implementation.
+                if (
+                    name == "tools"
+                    and relative.startswith("includes/Planner/")
+                    and relative != "includes/Planner/ClaimOutbox.php"
+                ):
                     selected.update(("engine", "planner"))
                 if name == "tools" and relative.startswith(
                     ("includes/Genie/", "includes/Protection/")
