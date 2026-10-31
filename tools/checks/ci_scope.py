@@ -78,9 +78,9 @@ MODULE_COMMANDS = {
     },
 }
 FULL_MODULES = tuple(module for module in MODULE_COMMANDS if module != "presentation")
-# These recipes have diff-derived optional checks; equal source bytes alone do
-# not prove the prior invocation used the same flags. Always execute them.
-DIFF_GUARDED_MODULES = {"planner", "presentation"}
+# Presentation still lacks a reconstructed diff-condition proof. Planner
+# additionally verifies its native merge parents and conditional PHP check.
+DIFF_GUARDED_MODULES = {"presentation"}
 CONTROL_INPUTS = (
     WORKFLOW,
     "justfile",
@@ -815,6 +815,14 @@ def successful_module_job(job, module):
             and step.get("conclusion") == "success"
             for step in job.get("steps", [])
         )
+        and (
+            module != "planner"
+            or any(
+                step.get("name") == "Verify Planner invocation"
+                and step.get("conclusion") == "success"
+                for step in job.get("steps", [])
+            )
+        )
     )
 
 
@@ -830,6 +838,71 @@ def same_module_inputs(before, head, module):
     if changes and selected_modules(changes, before, head) is None:
         return False
     return module_fingerprint(before, module) == module_fingerprint(head, module)
+
+
+def planner_build_flag(commit, *, source=None, base=None):
+    """Reconstruct a CI merge's flag only from available native Git evidence."""
+    try:
+        try:
+            git("cat-file", "-e", commit + "^{commit}")
+        except subprocess.CalledProcessError:
+            git("fetch", "--depth=1", "origin", commit)
+        headers = git("cat-file", "commit", commit).split(b"\n\n", 1)[0]
+        parents = [
+            line.removeprefix(b"parent ").decode("ascii")
+            for line in headers.splitlines()
+            if line.startswith(b"parent ")
+        ]
+        if (
+            len(parents) != 2
+            or parents[0] == parents[1]
+            or any(re.fullmatch(r"[0-9a-f]{40}", parent) is None for parent in parents)
+            or (source is not None and parents[1] != source)
+            or (base is not None and parents[0] != base)
+        ):
+            return None
+        # cat-file reads actual parent headers even at a shallow boundary;
+        # rev-list can silently present that same merge as a root commit.
+        for parent in parents:
+            git("cat-file", "-e", parent + "^{commit}")
+        return change_flags(diff_changes(parents[0], commit))["planner_build_changed"]
+    except (OSError, subprocess.SubprocessError, UnicodeError, ValueError):
+        return None
+
+
+def verify_planner_invocation():
+    """Reject a PR job whose actual recipe flag differs from its Git diff."""
+    if os.environ.get("EVENT_NAME") != "pull_request":
+        print("Planner invocation verification is only required for PR reuse.")
+        return
+    base = os.environ.get("BASE_SHA", "")
+    head = os.environ.get("HEAD_SHA", "")
+    declared = os.environ.get("PLANNER_BUILD_CHANGED", "")
+    if any(
+        re.fullmatch(r"[0-9a-f]{40}", value) is None for value in (base, head)
+    ) or declared not in {"true", "false"}:
+        raise SystemExit("Planner invocation condition evidence is incomplete.")
+    actual = planner_build_flag(head, base=base)
+    if actual is None or declared != str(actual).lower():
+        raise SystemExit(
+            "Planner invocation flag does not match the verified PR merge."
+        )
+    print(f"Verified Planner invocation: planner_build_changed={declared}.")
+
+
+def same_module_conditions(run, commit, head, module):
+    if module != "planner":
+        return True
+    source = run.get("head_sha", "")
+    base = os.environ.get("BASE_SHA", "")
+    if any(
+        not isinstance(value, str) or re.fullmatch(r"[0-9a-f]{40}", value) is None
+        for value in (source, base)
+    ):
+        return False
+    before = planner_build_flag(commit, source=source)
+    current = planner_build_flag(head, base=base)
+    return before is not None and current is not None and before == current
 
 
 def reusable_modules(modules, head):
@@ -868,7 +941,11 @@ def reusable_modules(modules, head):
             job = next(
                 (job for job in jobs if successful_module_job(job, module)), None
             )
-            if job is not None and same_module_inputs(commit, head, module):
+            if (
+                job is not None
+                and same_module_conditions(run, commit, head, module)
+                and same_module_inputs(commit, head, module)
+            ):
                 proofs[module] = {
                     "run": run["id"],
                     "attempt": run["run_attempt"],
@@ -925,9 +1002,11 @@ def validate_module_reuse(proofs, required, head):
             for job in jobs
         ):
             return False
-        if proof["inputs"] != module_fingerprint(
-            head, module
-        ) or not same_module_inputs(proof["commit"], head, module):
+        if (
+            not same_module_conditions(run, proof["commit"], head, module)
+            or proof["inputs"] != module_fingerprint(head, module)
+            or not same_module_inputs(proof["commit"], head, module)
+        ):
             return False
     return True
 
@@ -1190,7 +1269,9 @@ def gate():
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("plan", "classify", "gate"))
+    parser.add_argument(
+        "command", choices=("plan", "classify", "gate", "verify-planner")
+    )
     parser.add_argument("--base", default="")
     parser.add_argument("--head", default="HEAD")
     args = parser.parse_args()
@@ -1198,6 +1279,8 @@ def main():
         plan()
     elif args.command == "gate":
         gate()
+    elif args.command == "verify-planner":
+        verify_planner_invocation()
     else:
         changes = diff_changes(args.base, args.head)
         print(

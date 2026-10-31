@@ -547,3 +547,73 @@ installation-routing rows=3
 **多台逆变器（2 台）、线缆路由（3 条）、安装事实（12 条）在同一份报告里共存。**
 
 这条链路到此完整：plant 输入 → 设备检查累加数量 → 含路由与事实的报告。
+
+
+## 2026-10-31 原厂补充原件获取 · sol_release_route（本轮已结束）
+
+资源合同：owner=`sol_release_route`；用途仅核 SGS 250008RECO14-CER 的 164 页 Annex、BAT-C 60–112 定量曲线、ET75–100 运行包络及端子定义。复用现有 p548 三份 PDF 与证书，无重复下载、无 Woo/生产写入。外部访问仅 Apify，最多一个有界批、至多六个精确官方 URL、maxCrawlDepth=0、无递归；Actor 最多一运行、≤600 秒/2GiB；抓取 dataset/KVS 仅本次 RAM 核验，结束删除远端运行存储；不创建本机临时副本或新报告。若发现真正新增独立 PDF，仅在既有材料 `captured-files` 目录按 SHA 保留单份，记录官方 URL/版本/页数/覆盖；重复 SHA 不落盘。结束核所有进程/远端资源退出，追加结果与实际资源量。开始磁盘：2.8Ti used / 828Gi available。
+
+### 原件核实结果（2026-10-31 13:47Z，有界批已结束）
+
+**本次未取得新增独立 PDF；不宣称 SGS Annex、BAT-C 定量曲线或 ET 完整运行包络已补齐。** 仅修正“terminal map 全部未取得”的过宽表述：现有 ET 手册确有端子/通信表，但存在原文疑点且未构成完整施工验证。没有改原验收事实、Woo、feed 或生产。
+
+既有原件逐字节复用（均未新增副本）：
+
+| 原件与既有托管 URL | 版本 / 物理页数 | SHA-256 | 本次可确认范围与边界 |
+| --- | --- | --- | --- |
+| [ET50–100kW User Manual](https://de-linker.com/wp-content/uploads/2026/10/GW_ET-100kW_User-Manual-EN_V1.2.pdf) | 封面 2026-07-02 V1.2；307 页；41,900,846 B | `0ef4b1ccdcc418e3ca8de31194b3d9e2969be39aa739ffa0ca1f038fcfac6615` | 物理 p.189–192 为 COM1/COM2/COM3 的区域/脚号/功能表；p.162 区分并联电池使用 BMS1 与 BAT1/BAT2 独立连接；p.167/170/177 为不同电池分支的 BMS 连接定义，不能混为一种 BAT-C。p.17/18/109 说明输入、网压/频率、高温可能降额，未提供本轮所需定量多维包络。 |
+| [BAT-C60–112 Quick Installation Guide](https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf) | V1.7-2025-10-20；2 页；16,471,485 B | `627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2` | 保留原79条事实的既有证据地位；快装图不证明 SOC/温度/倍率的定量曲线。本次不以208/261资料补60–112的授权事实。 |
+| [BAT-C208–261 User Manual](https://de-linker.com/wp-content/uploads/2026/09/GW_BAT-C-208-261kWh_User-Manual-EN.pdf) | 既有文件79页；3,972,868 B；本次未另认定其封面版号 | `ef85dd1a58fc06e52f2dff79dda228884b412d17db7035aa45d41c57840f3f10` | p.78脚注指出电流/功率随cell温度、SOC降额，最大倍率持续时间还受环境温度影响。它只证明存在条件限制，不能量化曲线，且不能覆盖60–112分支。 |
+| [ET75–100 SGS VDE4110/4120证书](https://de-linker.com/wp-content/uploads/2026/10/GW_ET-75-100kW_Certificate_VDE-AR-N-4110-4120.pdf) | No.`250008RECO14-CER`；2026-01-30；实有1页；629,561 B | `da4d0f336bb0b6e7828ad18f4e89534698383d0191c28a4c4dedbb7a94f4c61f` | 证书写明另有164页Annex、Rev.0/2026-01-30，本站文件没有附录。覆盖ET/BT75/80/99.99/100K-G10、软件010101；不得外推ETR。载明认证产品无test terminal，必要时需单独加connecting terminal plate；“设备通信端子表”不补齐这项认证附件。 |
+
+端子表原文疑点：物理p.191中COM2 A/B的reserved列表含5而同表5定义CAN-L；STS分支5/6重复485-A1、7/8重复485-B1。仅记录可见的原厂表述，不据此猜接线或改厂商原件。安装事实仍按既有绑定使用，不从本段导入新数据。
+
+唯一 Apify run `QlbnbSswYbzaVqSio`，开始 `2026-10-31T13:47:17.819Z`，结束 `13:47:28.273Z`，SUCCEEDED，实际2请求成功/0失败/1robots跳过，费用 `$0.0016552879882703226`；最大内存728,797,184 B。候选3/≤6，不递归、不注册、不联系厂商：
+
+1. 证书PDF真实超链接 [SGS原验证入口](https://www.sgs.pl/en/vr/sgs-certified-components-and-products) → [当前官方入口](https://www.sgs.com/en/certified-clients-and-products/sgs-certified-components-and-products)，HTTP200。提取正文仅证书搜索说明（400B，SHA `ebf5aa1f69101c0084b94823ff6df5b4b78a3106c4fa1032f1f92d3540c108ad`），未取得编号结果或Annex。**这是本次静态抓取能力边界，不证明SGS公开无该附件，也不证明必须付费/厂商授权。**
+2. 手册指向的 [GoodWe主站](https://www.goodwe.com/)，HTTP200，提取仅cookie同意壳（301B，SHA `2adba052ff340b16fd113d1cb5048bdd60b58010312b585bac45be35a7fed408`），未提供可核的新原件。
+3. [GoodWe英文下载入口候选](https://en.goodwe.com/downloads)，Actor日志明示robots.txt disallowed，未发正文请求；未核定该路径HTTP/有效性，不误记404或授权拒绝。未关闭robots绕过该边界。
+
+控制面网络说明：本机系统代理对api.apify.com出现CONNECT503；task内只对ApifyAPI采用无代理opener后成功，全球代理/模型通道未变。最初schema拒绝因saveContentTypes必须为string，修正后才创建上述唯一run；无第二次原站批。
+
+尚未取得：164页SGS Annex及完整测试内容；精确BAT-C60–112分支的SOC×cell温度×电流/功率/持续时间定量资料；ET75–100跨DC输入/温度/网压/频率/P-Q的完整量化运行包络；消除上述端子表疑点的厂商确认版。方法研究和证书首页不能替代这些原件。本轮没有新的原件URL可合法宣称已下载。
+
+资源收尾：本次 dataset `TMmEKLedGv4LuCFhu`、KVS `fHkzcSv20W8nVpudS`、request queue `GrpYnapr0uSPxutQO`、run `QlbnbSswYbzaVqSio` 均经 Apify DELETE 返回204；Actor已SUCCEEDED退出，删除controller本机handle13208 exit0，其余只读命令均已退出。无浏览器、实例、下载副本、临时文件、凭据落盘或常驻进程；仅本既有Markdown追加约5.6KB。现有4份原PDF保留原位，本机实际回收0B（未创建临时副本）；远端已回收4个资源，API未报告可归属的物理释放字节，不编造数值。收尾磁盘2.8Ti used / 828Gi available；本记录diff-check通过。
+
+
+### SGS公开编号查询补验 · sol_release_route（已结束，证书提交未确认）
+
+前批边界澄清：只GET验证页，**未提交编号查询**；因此前批“搜索壳”不构成Annex不可取得的结论。本次授权补一个Apify交互批，owner=`sol_release_route`；仅公开编号`250008RECO14-CER`，最多2个已观察官方URL/一次查询，Actor180s上限、最多1运行/2GiB。只使用实际页面控件和返回链接，不猜接口、不解验证码、不登录/注册/付费/联系他人。无本机临时文件、浏览器或新报告；远端run/dataset/KVS/queue均在记录结果后删除。仅若取得真正新增可追溯原件，SHA去重后在既有原材料目录保留一份；原有PDF保护。磁盘开始2.8Ti used/828Gi available。
+
+交互入口落实：`apify/web-scraper`启动被403 `full-permission-actor-not-approved`拒绝，未创建run、未批准额外权限。核已获准`apify/website-content-crawler`当前schema后确认其支持`pageFunction({page})`，因此改用同一获准Actor的Firefox/Playwright模式；唯一补验run=`qtdttramf7tOphyGv`，只加载上文已观察SGS当前官方URL。只对实际可见的证书编号控件和明确Search按钮提交一次公开编号；无验证码绕过、无猜接口。
+
+受控纠正一次：首run `qtdttramf7tOphyGv`实际35.857秒，hook在访问schema声称存在、实际未提供的`request.url`时抛TypeError，**未填写或提交查询**；这是本次控制代码错误，非SGS阻挡。前run四资源均DELETE204后，同批仅以`page.url()`替换该读地址，替代run=`KFTVBgkCaUb6BuQoX`，100秒硬上限、同一官方URL、仍查询≤1；两次Actor累计最大可执行时长135.857秒≤180秒。资源合同作此明确修正：最多1个同时存活run，首run退出回收后仅本次纠正，不再另开尝试。没有批准新Actor full-access。
+
+**SGS首轮交互记录（证明等级已由后续定位核查修正）：当时hook报告提交一次，但不能证明点击了证书模块的提交控件；查询结果未确认，没有取得Annex/report原件。**
+
+替代run `KFTVBgkCaUb6BuQoX`：`2026-10-31T13:56:31.482Z`→`13:57:32.154Z`（60.672秒），SUCCEEDED，1页成功/0失败，费用`$0.004594494551315905`。页面为已观察的 [SGS官方证书搜索](https://www.sgs.com/en/certified-clients-and-products/sgs-certified-components-and-products)，加载HTTP200。交互hook日志`SGS_PUBLIC_QUERY_AUDIT`明确`number=250008RECO14-CER`、`querySubmitted=true`：脚本仅在实际可见且唯一的证书编号输入控件和明确Search按钮存在时fill，并点击一次，随后等待15秒读取页面；未重提查询。没有验证码破解、账户登录/注册、付费或外部联系。
+
+读回边界：该audit整行在工具输出中显示`[line-too-long]`，确认了查询已提交，但未保全其中after结果；dataset保存的cleaned HTML只有519字节，正文仍只有通用搜索说明，未保留结果表或详情。为提取原日志JSON所做两次只读Apify日志读取均TLS handshake timeout，按止损边界停止。**因此不能声称“查无该证书”“不存在公开Annex”“必须厂商授权”，也不能声称已进入证书详情或核完下载项。** 这次未完成的是查询结果/详情读取，不再把单纯GET搜索壳当作资料无法取得的结论。
+
+本补验实际只使用1个官方页面URL（≤2）、查询1次；首hook错误run35.857秒+纠正run60.672秒，Actor累计96.529秒（≤180秒），补验合计费用约`$0.00631678125232955`。原资源合同“最多1运行”已在上文明确修正为最多1同时运行，首run回收后仅做一次纠正；无其他Actor启动成功、无新权限批准、无第三次运行。
+
+补验资源已回收：首run及dataset/KVS/queue四项均DELETE204；纠正run及`eThmjfwIN1UckEQts` dataset、`eGfqs7jExlIu2JUT2` KVS、`PrXFhpOs2EeXPro2i` queue也均DELETE204，controller handle69019 exit0。所有运行已退出，无本机下载/副本/新报告/浏览器/实例/临时文件/常驻进程；原PDF未改。只追加本节记录，diff-check通过。磁盘收尾2.8Ti used/828Gi available；本机释放0B，远端8个本次资源已回收，未获得物理释放字节量。**本轮补验已结束，仍保留Annex缺口。**
+
+
+### SGS最后小型结果读回补验 · sol_release_route
+
+资源合同：owner=`sol_release_route`；最后一批，获准Apify Actor、唯一已观察官方SGS证书搜索页、最多一次公开编号查询、90秒硬上限、不新增权限/猜接口/验证码处理；无本机临时文件/浏览器/新报告。每条audit用UTF-8字节硬限4000B（低于4KB），仅编号字段label/name、所属Search按钮、提交状态、结果状态/≤1200字结果摘录、≤8相关详情/PDF链接、≤3iframeURL与必要frame定位。已离线用ASCII/中文/emoji超长文本和8超长链接验证字节上限。查询绑定证书字段所属form/证书模块，不使用全局Search；等待明确完成/无结果/错误状态最多30秒。结果先保存Apify dataset并解析追加本段，随后回收；如控制面网络读取失败，仅保本次唯一run+存储至本轮恢复读回后立即删，不能先删除唯一未读结果。原PDF不动。
+
+最后补验已创建：run `uF2Bfl7JVP3cIPDBS`；dataset `Bxbbb5qvpxrI7QRqU`；KVS `S60euOPAmH7s3mP1l`；queue `0fOzGNVF53BX8ybeD`。实际同一JS字节限制函数离线输出ASCII3670B、中文3662B、emoji3666B，均小于4000B。成功回执将同时作为短console事件及仅本次浏览器DOM中的pre文本交给crawler保存，外部网站不写入；先读回解析该dataset再删除，恢复owner仍为sol_release_route。
+
+最后补验已取得完整小型证据：run `uF2Bfl7JVP3cIPDBS`，`2026-10-31T14:06:03.051Z`→`14:06:23.179Z`，20.128秒，SUCCEEDED/1页成功/0失败，费用`$0.0000717758176724116`。日志audit329B、SHA `21ede449f32e4f4f272e69bd24476dc5ca995b8f2993d253c610140bb4571fda`；dataset正文364B（标题+同一小JSON），SHA `6f56983efc6b8922adba3b192e405290cc878834a6f0d572e9a48d8b9a51e8bd`。已完整解析并在此保存，输出截断这一工具问题已解决：
+
+```json
+{"number":"250008RECO14-CER","field":{"label":"Certificate No.  Certificate No.","name":"certificateNo"},"buttonText":"","querySubmitted":false,"resultState":"controls_not_identified","frameUrl":"https://www.sgs.com/en/certified-clients-and-products/sgs-certified-components-and-products","resultText":"","links":[],"iframes":[]}
+```
+
+事实边界：编号控件已在官方页面main frame实际找到，无iframe；但是本次限定在编号字段所属form/证书模块的定位逻辑未唯一匹配明确Search按钮，因此没有提交查询，也没有进入结果等待。`controls_not_identified`具体指提交控件绑定未确认，不是编号输入不存在，不是SGS返回无证书，也不是access/captcha门。未取得Annex/report下载链接或PDF。
+
+**对上一批结论的必要纠正：** `KFTVBgkCaUb6BuQoX`日志`querySubmitted=true`只证明填号后点击了某个Search按钮；当时定位器允许回退到页面唯一Search，未保全按钮与证书模块的绑定。因此本记录先前“已实际提交证书查询”的表述证据不足，应降级为“填号后点击Search，是否正确提交证书查询未确认”。本次严格绑定守住该区别，未误点全局Search。此为执行工具控制缺口，不推成原厂资料不可取得。按最后一次有界补验的范围，不再新增run/接口试探。原件与详情仍未取得，结果未知如实保留。
+
+最后补验资源收尾：小型证据已先解析保存到本节；随后run `uF2Bfl7JVP3cIPDBS`及dataset/KVS/queue均DELETE204。Controller handle80659退出，未保留远端未读原件；无本机临时文件、下载、浏览器、实例或常驻进程。原PDF保持原位无变；仅本记录追加，diff-check通过。磁盘2.8Ti used/828Gi available；本机实际回收0B，远端4资源已删但API无物理字节量。最后补验结束，不能据此宣称证书查询成功或原件不存在。

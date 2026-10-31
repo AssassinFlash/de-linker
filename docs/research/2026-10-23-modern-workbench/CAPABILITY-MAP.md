@@ -241,3 +241,81 @@ Aladdin 不只提供画布。固定源码中已经能追到：
 - **I：下一实现须拆清计算证据。** 在当前 ENU 几何和太阳时序上生成有输入 hash、采样分辨率、时间语义及收敛依据的逐组件直射透过率；保留障碍物、相邻排与自相交排除的可追溯身份。其后分别处理散射遮蔽和电气响应。电损层必须读取 Woo 维护的组件/组串/旁路/转换器证据，缺少拓扑时保留具名缺项，不能用遮挡面积比例冒充功率损失。
 
 当前已验收的 uniform_unshaded_pvlib_reference_v1 保留为独立未遮挡基线；本节没有把它升级为遮挡模型。几何、散射、电气遮挡与完整年能量集成仍属于完整目标，均未因本节复核而完成。本次只复用现有源码证据，没有新增测试、计算任务或运行副本。
+
+
+## 9. 回路电缆、压降、保护配合与 PE 的具名方法依据（2026-10-31）
+
+本节由 `sol_installation_gap_map` 负责，只追加既有研究文件。先复用 §6 和欧洲工程研究的物理/国家分域与未获标准全文边界；新增取证限一个 Apify `website-content-crawler` 批次、最多六个明确官方页面、无递归链接。该批用途是读取厂商公开方法正文，不作产品放行。远端 run/dataset/key-value-store/request-queue 最多各一份，运行上限 180 秒，重试最多一次；正文只在内存暂存，在本节保存可复用的方法提取、来源定位和 hash 后，核对本批归属再删除可重建的远端存储。不创建本地源副本、脚本、实例、测试或浏览器；本节是唯一持久增量，随现有研究保留。
+
+本批已创建：Apify actor `apify/website-content-crawler`（ID `aYG0l9s7dbB7j3gbS`），run `vYJBdfTCMOdtNDdPc`，开始 `2026-10-31T13:39:35.798Z`；独立 dataset `L6MqdvEDI9krik2mt`、KV `M0WkiYfEPJOfVnSSN`、queue `efttiCx8kbS5rslbj`。仅本批存储可回收，不操作已有取证资产。
+
+### 9.1 本次实际取得的官方正文和没有取得的部分
+
+**M：来源是 Schneider Electric 维护的公开 Electrical Installation Guide。** 页面明确其为厂商持续维护的协作指南；下面取得的是指南正文和表格摘要，不是 IEC 付费标准全文、某国家采纳证明或本项目设备认证。五个有效页均在 `2026-10-31T13:39:40.355Z` 至 `13:39:43.917Z` 经同一 Apify 批返回 HTTP200；run 于 `13:39:45.542Z` 成功结束，耗时9.59秒。以下 hash 为 crawler 返回 `text` 的 UTF-8 SHA-256，可定位采样内容；不保存整站或全量副本。
+
+| 具名来源与精确定位 | 采样UTC / 页面oldid | text SHA-256 / 实际取得范围 |
+| --- | --- | --- |
+| [E1：General method for cable sizing](https://www.electrical-installation.org/enwiki/General_method_for_cable_sizing#Correction_factors)，`Correction factors`、`Ambient temperature`、`Soil thermal resistivity`、`Grouping of conductors or cables`、`Harmonic current`、Fig.G11–G20 | `13:39:40.538Z` / `29541` | `56baaaef8ef427b01a109f5ae1e4cc5632633553952bef37f680cbcf337a3099`；实际取得基准敷设方式、绝缘温度、修正因子、条件和示例载流表 |
+| [E2：Calculation of voltage drop in steady load conditions](https://www.electrical-installation.org/enwiki/Calculation_of_voltage_drop_in_steady_load_conditions#Use_of_formulae)，`Use of formulae`、Fig.G29、`Examples` | `13:39:40.355Z` / `29653` | `162cc82544f049eda08ef8bcc6a96bbf1f539f1dcefbeaa96ca541003b2a10b7`；实际取得公式、变量、单位及算例。原HTML MathML的`msqrt`确认三相项是`√3`；文本/Markdown会丢根号，不能直接抄抽取文本生成公式 |
+| [E3：Sizing of protective earthing conductor](https://www.electrical-installation.org/enwiki/Sizing_of_protective_earthing_conductor#Values_of_factor_k_to_be_used_in_the_formulae)，Fig.G59及脚注、`Adiabatic`/`Simplified`、Fig.G60 | `13:39:42.661Z` / `29639` | `b8f7d002ada712bfba0296d48eb4d9142e75c480e92171659f032a87ad462d08`；取得PE/PEN方法、材料/机械保护条件、k表及接地系统适用提醒。HTML MathML确认`S=√(I²t)/k` |
+| [E4：Coordination between circuit-breakers](https://www.electrical-installation.org/enwiki/Coordination_between_circuit-breakers#Principles_of_Selectivity)，`Conditions of implementation`、`Principles of Selectivity`、`Time based selectivity`、Fig.H47–H54 | `13:39:43.797Z` / `29621` | `bcb5314157d91a89bac59d2cc86858c46641856bc363377b0f12e9fdef54dde5`；取得选择性和级联的不同机制、不同电源工况须分别检查、厂家组合试验表需求。当前产品组合的试验表没有取得；页面示例表不能套给本站未知器件 |
+| [E5：Practical method for determining the smallest allowable cross-sectional area of circuit conductors](https://www.electrical-installation.org/enwiki/Practical_method_for_determining_the_smallest_allowable_cross-sectional_area_of_circuit_conductors)，正文引言 | `13:39:43.917Z` / `29778` | `2139323b872751fde6e62ca7552ed40345186754262f256d6773e9b3050bf822`；只取得方法分组和IEC60364-5-52摘要定位，不能将其算成取得该标准正文 |
+| [E6：本批失败的短路保护页面](https://www.electrical-installation.org/enwiki/Protection_against_short-circuit_currents) | `13:39:41.457Z` / 无oldid | HTTP404，正文明确该页无内容；`1b97f7508799fda9ff75f8741b73886c8f25cd589c7c1da899e7228ce0f80fd6`仅为失败壳hash。首批没有取得相线短路保护或过载动作完整方法正文，按当批六页上限停止扩抓；随后获准沿已读官方链接续查，已取得的相线短路/切除方法见§9.5，原404证据保留 |
+
+一次 Apify dataset 回读遇到代理CONNECT503，沿同一Apify路径有限重试后取回；没有直连来源、普通搜索、购买或注册。E1–E5各页元数据均显示最后编辑日期为2026-08-05；本次只证明所列采样版本。E4指向当期厂家配合资料`LVPED318033EN`，本批没有继续下载，保留为待取原件。
+
+### 9.2 可实施的物理方法，以及不得自动填入的条件
+
+**M：载流是敷设条件下的热能力，不由截面单独决定。** E1 `Correction factors`给出`I′z = Iz × k1 × k2 × …`及`IB ≤ I′z`。其中`Iz`必须来自与材料、绝缘、受载导体数、截面和基准敷设法一致的表/厂家资料，各`k`必须对应实际温度、土壤、布置成组和谐波条件。表中空气/地下基准不同；埋管深度、土壤均匀性、可能干燥和特定表的适用条件都有限制。不能把“空气30°C”“土壤20°C”、统一成组系数或未找到的表行当现场默认值。E1 Fig.G20明确是三根受载导体、PVC和指定参考条件的示例，不是当前户外电池单导体或所有XLPE线的通用额定表。[依据E1](https://www.electrical-installation.org/enwiki/General_method_for_cable_sizing#Admissible_current_as_a_function_of_nominal_cross-sectional_area_of_conductors)
+
+**M：稳态AC压降能按已取得的公式实施。** E2 Fig.G29对相间两线/相零回路给出`ΔU = 2 IB (R cosφ + X sinφ) L`，对平衡三相给出`ΔU = √3 IB (R cosφ + X sinφ) L`；`IB`为A、`R/X`为Ω/km、`L`为单程km，百分数分母分别使用该回路相间或相零参考电压。不同上游段的压降会累计，页面算例也区分稳态与电动机启动。公式适用的是声明的平衡/稳态条件，不能直接覆盖不平衡、谐波、启动、逆变器动态或所有并网电压升高问题。页面给出的电阻估值、缺信息时电抗近似和功率因数例子不作为本站默认值；优先用所选实际电缆及温度/频率/排列对应的厂家`R/X`，电流与功率因数来自项目设计工况。未有项目适用限值时只输出数值，不能显示压降合格。[依据E2](https://www.electrical-installation.org/enwiki/Calculation_of_voltage_drop_in_steady_load_conditions#Use_of_formulae)
+
+**D：DC只可先采用明确的稳态电阻回路推导，不能谎称已取得PV DC整套规范。** 由每根实际导体电阻和同一回路电流得到`ΔUdc = I × Σ(Rdc,j × Lj)`；回路中正/负两根导体各计一次，单位转换一致。该式是电阻回路的设计推导，并非E2明列的PV DC公式；对相同往返导体才可合并为`2 I R L`，不能对已经求和的两根长度再乘2。必须取得所选电缆DC电阻及相应导体温度依据；没有接触电阻数据时，结果范围明确为导体段而不假称整套端接损失为零。PV设计电流、双面/逆流与保护倍数、电池故障电流及双向工况需厂商和适用规范；年度能流最大值、组件出厂4mm²或一个通用Isc倍率不能填补这些输入。新方法上线前还需要独立DC算例和适用依据，不能借AC指南完成DC保护资格。
+
+**M：PE的绝热热承受公式可建立独立内核，但它不是完整接地放行。** E3 Fig.G59给出`S = √(I²t)/k`；同页Fig.G60将k与材料、绝缘、初始/最终温度及是否并入多芯线区分。电流和切除时间必须来自所分析故障及实际保护，不能把厂商持续放电电流代入故障电流。简化截面法还有相线材料相同等条件；独立PE机械保护、PEN及其他作用有额外要求。页面特别提醒TN/IT故障回路阻抗/瞬时脱扣可能使仅热承受所得的小截面不足。故绝热结果须再与机械/厂家要求及适用的自动切断/接地系统校核组合；本批未取得这些国家适用规则，不能仅返回`PE qualified`。[依据E3](https://www.electrical-installation.org/enwiki/Sizing_of_protective_earthing_conductor)
+
+**M：保护配合需要真实器件组合数据。** E4明确选择性要覆盖过载、短路及接地故障，存在多供电源时逐电源核查；时间选择性依赖延时/阈值和上级短时耐受。能量选择性与级联并非把额定电流按比例排好，级联要用厂家针对具体上下级组合的试验数据，并受电压/型号/版本等范围约束。时间电流曲线即使交叠也不能单凭图判所有限流器件不具选择性；反过来，粗略画两条不交叠曲线也不能代替高短路区厂家能量/选择性表。本批未取得本站具体型号/脱扣单元/设置的曲线、分断及让通能量数据，不能输出本站保护配合通过。[依据E4](https://www.electrical-installation.org/enwiki/Coordination_between_circuit-breakers#Conditions_of_implementation)
+
+### 9.3 完整回路计算链的输入合同与真实交付范围（D）
+
+此处是由上述已读方法推导的实施合同，不冒称新标准条文。应按完整回路实现，输出中间量、余量、来源及缺项；不先发布一项更容易的建议区间比较来替代原目标。
+
+| 链段 | 必须具来源的输入 | 应产生的结果与不能越过的门 |
+| --- | --- | --- |
+| 拓扑/设计工况 | 实例和厂家端口映射、回路导体归属/极性、连接/接地系统、供电方向与并网/备电/充放电工况；每工况设计电流/电压/功率因数/平衡性 | 明确分析回路和电源，哪些线段受同一电流；没有厂家端口映射就保留端口适用未核实，不按自由名称猜 |
+| 实际导体/电缆事实 | 当前Woo维护身份/修订、型号/构造/芯数/材料/绝缘/截面；带温度/频率/排列条件的Rdc/Rac/X、载流表及其基准、厂家端子要求 | 电缆事实和适用域；当前推荐截面/OD只是一部分输入，不能自动生成一个不存在的电缆商品或额定表 |
+| 分段环境与取量 | 已存各根导体三维长度/余长；各段空气/地下/管/桥架条件、温度、成组数量/排列/间隔、受载芯及中性线谐波、地下深度/土壤依据 | 复用现有route takeoff；按实际段匹配载流数据。D：同一回路串联段用受限段能力控制，不以全程平均温度抹去最差段；表外条件给不支持，插值需另有方法依据 |
+| 压降/电压变化 | 上述电流、长度、相制、R/X和参考电压，电流方向/功率因数；上游电压变化与项目适用限值/来源 | DC导体回路和有明确范围的AC稳态数值、累计来源及公式版本；无适用限值则计算完成但限值校核未完成 |
+| 载流及过载保护 | 明确敷设对应的Iz与各修正项、设计IB；真实保护器件/脱扣单元、设置、过载动作资料及适用标准/厂家配合依据 | 计算修正载流及其与IB的关系；本批E6失败且未取得完整过载动作正文，不能仅按IB比较就宣布保护合格；后续须取得实际保护动作条件 |
+| 短路/分断/热承受/选择性 | 每电源/工况最大与最小预期故障电流、故障位置/类型、系统阻抗或厂家受限电流包络；器件分断/切除/限流让通能量、上下级配合表、导体热参数及相线短路方法 | 分别核断开能力、切除/热承受、选择性及级联适用。相线短路热承受与最小故障切除的公开方法已由§9.5补齐；实际曲线/组合表和电池/逆变器故障包络仍缺，不能由PE公式或一般方法替代 |
+| PE/接地 | PE/相线材料/绝缘/位置/机械保护及真实路径；故障电流/时间和k适用来源；接地系统、故障回路/电极/防雷及厂家要求和当地方法 | 绝热热承受、机械/厂家条件、故障回路/自动切断分别呈现；热承受通过不等于接地系统合格，现场测试仍独立 |
+| 材料/冻结消费者 | 已核回路结果、实际线缆/端接身份、随附件库存和唯一分配、原件修订、项目/几何/规则版本 | `required / included_available / allocated / additional_required`按§6冻结；屏幕/PDF/CSV共用结果和明确未知，安装行不伪造Woo销售SKU。路由变化仅使相关电气结果失效，规则变化仅使相关资格失效 |
+
+可复用接口仍为`InstallationInputs`/`route_takeoff`、当前Woo`installation_facts`编译、`installation/review`、`report_sources`和`ReportKernel`的冻结来源、`project_materials`及现有EN/DE报告/CSV/PDF消费者。当前输入只已有实例、端口、回路、路径、每run声明截面和来源说明；上表新增项目条件属于完整回路实现的必要输入，厂家额定事实继续只在Woo维护。新结果应区分`计算完成 / 数据不足 / 方法不适用 / 厂家证据缺失 / 国家规则待核`；目前六个常量`not_assessed`不能假装已经执行这些判断。
+
+**仍须取得，不能变成默认值：**（1）选定实际电缆的官方技术数据及可用维护身份；（2）目标保护器件的完整动作/分断/让通能量和上下级组合数据；（3）PV DC设计/保护的适用正文、电池及逆变器各工况故障包络；（4）国家采纳/DSO/接地系统的适用限值与切除要求；（5）厂家terminal map和实际设计工况。既有SGS Annex、BAT-C曲线、ET包络未取得的状态不因本次方法研究改变。取到公开公式可以建设数值内核；没有上述实际数据和独立厂家/人工算例时，不能称当前GoodWe项目已形成完整电缆、保护、接地设计或完整BOS。
+
+### 9.4 取证与资源收口
+
+已在提取完成后复核run为`SUCCEEDED`，三份存储均与该run默认ID、同一owner、`2026-10-31T13:39:35`创建时刻吻合且无共享名称。dataset `L6MqdvEDI9krik2mt`（6条）、KV `M0WkiYfEPJOfVnSSN`、queue `efttiCx8kbS5rslbj`均已精确删除HTTP204，并分别读回HTTP404；run元数据保留，不重建存储。queue的urllib回收遇到系统代理CONNECT503，连续两次后停止同客户端重试，改用curl访问同一Apify API，GET200核归属、DELETE204、GET404完成；没有访问源站或修改全局代理。正文/HTML只经命令内存读取，未落本地副本；唯一持久增量为本节，未产生测试/站点/浏览器或保留运行进程。`2026-10-31T13:46:36Z`收尾读回Data卷约3.6TiB、已用2.8TiB、可用828GiB、78%（开始825GiB的变化不归因于本任务）；本次本地释放0，远端回收3份临时存储（未取得计费字节数，不虚报释放容量）。文档差异及空白检查完成，不启动业务测试。
+
+### 9.5 原404后的官方链接续查（同日授权补充）
+
+原E6的404仅说明该URL没有正文，不能据此判断短路方法不可取得。负责人 `sol_installation_gap_map` 获准额外一个Apify批、最多两个URL；两者均已出现在本轮E2的官方侧栏链接：`Verification_of_the_withstand_capabilities_of_cables_under_short-circuit_conditions`与`Calculation_of_minimum_levels_of_short-circuit_current`，不猜slug、不重抓E1–E5、不递归。用途限补齐电缆短路热承受和保护切除方法；run上限180秒、并发2、重试1，新增dataset/KV/queue各最多一份；只在内存提取，方法/URL/hash记入本节，终态后核本批归属并回收三份临时存储，不建本地副本、代码或环境。
+
+补充批 actor仍为`apify/website-content-crawler`，run `YLcMK9tiiHL4bhVk2`，`2026-10-31T13:51:43.343Z`开始、`13:51:49.129Z`结束，状态`SUCCEEDED`；独立dataset `nK1LII4Sj5LQVR45F`、KV `iLQoT4wjeB1w4g9eC`、queue `jkBZSGiuVYyeVp7Hy`。两页均实际取得HTTP200正文，不是只有索引/摘要。
+
+| 官方目标及定位 | 采样UTC / oldid | text UTF-8 SHA-256 |
+| --- | --- | --- |
+| [E7：Verification of the withstand capabilities of cables under short-circuit conditions](https://www.electrical-installation.org/enwiki/Verification_of_the_withstand_capabilities_of_cables_under_short-circuit_conditions#Thermal_constraints)，`Thermal constraints`、Fig.G52/G53及例子、`Electrodynamic constraints`、Notes | `2026-10-31T13:51:47.432Z` / `29562` | `23676042306e78cbfa7460c00833f22b51ea752cc44335870af46b652676283e` |
+| [E8：Calculation of minimum levels of short-circuit current](https://www.electrical-installation.org/enwiki/Calculation_of_minimum_levels_of_short-circuit_current#Conditions_to_be_fulfilled)，`Conditions to be fulfilled`、`Practical method of calculating Lmax`、三线/四线分支及Notes | `2026-10-31T13:51:47.540Z` / `29752` | `287eb7142606cc72583ba5ca8771978dd8698781571c00067111b95d3618782e` |
+
+**M：相线电缆绝热短路热承受已有独立正文，不再是“只有PE公式”。** E7 `Thermal constraints`说明短时热量留在导体内的绝热假设，对五秒或以下给出`I²t = k²S²`，k按材料、绝缘及初始/最终温度选取。校核使用**实际保护器件厂家给出的让通I²t**，与该电缆可承受热量比较；不能把限流故障中的保护额定电流或持续放电电流平方乘一个臆造时间当让通量。其Fig.G53为具体条件的示例表，50mm²另有计算截面脚注，不能照抄成所有电缆的通用事实。电动力约束仍独立，连接固定与母线槽/保护器件组合耐受不由热量公式自动证明。[E7正文](https://www.electrical-installation.org/enwiki/Verification_of_the_withstand_capabilities_of_cables_under_short-circuit_conditions#Thermal_constraints)
+
+**M：最小故障电流与切除条件也有正文。** E8要求器件不仅有足够分断能力，还须在回路可能出现的最小故障电流下可靠动作；列出断路器瞬时设置`Im < Iscmin`、熔断器相应动作电流`Ia < Iscmin`，并将切除时间约束写成`tc ≤ k²S² / Iscmin²`，该式明确限定`tc < 5秒`，HTML MathML已核分母平方和分式。E7的“≤5秒”与E8该式的“<5秒”分别保留，不能无说明合并边界；所有公式都不自动给出国家要求的最大切除时间。分断能力核查使用安装点短路电流；最小电流校核使用最不利故障点/类型和实际脱扣曲线/容差，二者不能相互替代。[E8条件](https://www.electrical-installation.org/enwiki/Calculation_of_minimum_levels_of_short-circuit_current#Conditions_to_be_fulfilled)
+
+**M：最大允许线长是有条件的常规方法，不是新增全场默认常量。** E8三相三线分支以远端两相故障为最小故障情形；四线分支还分析远端相零故障及中性线截面。常规方法`Lmax = 0.8 U Sph / (2ρ Im)`中的0.8来自该方法假设的故障期间保护点电压，不是所有电源的真实电压保证；电阻率有对应温度/材料条件，小截面忽略电抗的范围、较大截面集肤/邻近修正与工业断路器脱扣容差另有说明。三线/四线、相间/相零、电流设置上限和导体温度须按适用分支保存，不能把例子中的400V、铜电阻率或±20%一律塞给PV/电池/孤岛系统。TN/IT人员间接接触保护另指向接地故障方法，本批未继续读取那两份正文。[E8方法](https://www.electrical-installation.org/enwiki/Calculation_of_minimum_levels_of_short-circuit_current#Practical_method_of_calculating_Lmax)
+
+**D：完整链的缺口已收窄。** 现可把“电缆热承受预算—实际器件让通能量—远端最小故障可靠切除—安装点最大故障分断”作为同回路的四项独立计算/核查；方法来源由E7/E8支撑，复用§9.3的拓扑/工况和冻结消费者。仍缺实际电缆热参数/原件、保护型号/设置/曲线与配合表、并网和孤岛各自的最大/最小故障包络、当地切除/接地条件；PV DC和电池系统适用性仍待相应资料。这些是项目数据与适用证据缺口，不能继续笼统称“相线短路方法没有公开原文”，也不能因方法取得就给GoodWe工程放行。
+
+补充批资源收口：Apify API读取曾遇到curl TLS握手错误及urllib系统代理CONNECT503，未另起抓取批或直连源站；同一Apify dataset经IPv4/HTTP1.1取回两份正文。回收改用同一TLS连接依次请求，核run终态和三份无共享名称存储的同owner/默认ID/`13:51:43`创建时刻；dataset `nK1LII4Sj5LQVR45F`（2条）、KV `iLQoT4wjeB1w4g9eC`、queue `jkBZSGiuVYyeVp7Hy`均DELETE204、各GET404，连接和命令进程随即关闭。仅保留本节和run元数据，没有本地临时文件/测试/环境，实际本地释放0；补充批远端回收3份存储，不虚报字节数。起始Data卷可用828GiB；收尾空间读回随本轮最终资源报告提供。文档差异空白检查通过。

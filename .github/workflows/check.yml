@@ -435,9 +435,15 @@ jobs:
     if: ${{ !cancelled() && needs.plan.outputs.planner == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    env:
+      PLANNER_BUILD_CHANGED: ${{ needs.plan.outputs.planner_build_changed }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+      HEAD_SHA: ${{ github.sha }}
+      EVENT_NAME: ${{ github.event_name }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          fetch-depth: 2
           ref: ${{ github.sha }}
           sparse-checkout: |
             /*
@@ -445,6 +451,8 @@ jobs:
             !/docs/acceptance/**/*.jpg
             !/docs/acceptance/**/*.jpeg
           sparse-checkout-cone-mode: false
+      - name: Verify Planner invocation
+        run: python3 tools/checks/ci_scope.py verify-planner
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "22"
@@ -454,14 +462,12 @@ jobs:
         with:
           tool: just@1.58.0
       - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
-        if: needs.plan.outputs.planner_build_changed == 'true'
+        if: env.PLANNER_BUILD_CHANGED == 'true'
         with:
           php-version: "8.3"
           tools: composer:v2
           coverage: none
       - name: Validate module
-        env:
-          PLANNER_BUILD_CHANGED: ${{ needs.plan.outputs.planner_build_changed }}
         run: just ci-planner
 
   engine:

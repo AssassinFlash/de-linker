@@ -871,6 +871,21 @@ class ScopeTest(unittest.TestCase):
                 )
         self.assertIn("if: ${{ !cancelled() }}", TEXT)
         self.assertIn("JOB_RESULTS: ${{ toJson(needs) }}", TEXT)
+        planner = TEXT.split("\n  planner:\n", 1)[1].split("\n  engine:\n", 1)[0]
+        environment, steps = planner.split("    steps:\n", 1)
+        for entry in (
+            "PLANNER_BUILD_CHANGED: ${{ needs.plan.outputs.planner_build_changed }}",
+            "BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}",
+            "HEAD_SHA: ${{ github.sha }}",
+            "EVENT_NAME: ${{ github.event_name }}",
+        ):
+            self.assertIn(entry, environment)
+        self.assertNotIn("PLANNER_BUILD_CHANGED:", steps)
+        self.assertIn("fetch-depth: 2", steps)
+        self.assertIn("python3 tools/checks/ci_scope.py verify-planner", steps)
+        self.assertLess(
+            steps.index("Verify Planner invocation"), steps.index("Validate module")
+        )
         self.assertTrue(
             set(ci_scope.FULL_LANES).isdisjoint({"presentation", "commerce"})
         )
@@ -1012,17 +1027,213 @@ class ModuleReuseTest(unittest.TestCase):
                             ci_scope.reusable_modules(["engine"], changed), {}
                         )
 
-    def test_diff_guarded_recipe_cannot_reuse_only_a_source_tree_proof(self):
-        self.job["name"] = "planner"
-        with (
-            patch.object(ci_scope, "api", side_effect=self.api),
-            patch.object(ci_scope, "same_module_inputs", return_value=True),
-            patch.object(ci_scope, "module_fingerprint", return_value="f" * 64),
-        ):
-            self.assertEqual(ci_scope.reusable_modules(["planner"], "b" * 40), {})
-            self.assertFalse(
-                ci_scope.validate_module_reuse({"planner": {}}, ["planner"], "b" * 40)
-            )
+    def test_planner_reuse_requires_matching_verified_merge_invocations(self):
+        with TemporaryDirectory() as folder:
+            previous = Path.cwd()
+            os.chdir(folder)
+            self.addCleanup(os.chdir, previous)
+
+            def run(*args):
+                return subprocess.check_output(args, text=True).strip()
+
+            def commit(message):
+                run("git", "add", ".")
+                run("git", "commit", "-qm", message)
+                return run("git", "rev-parse", "HEAD")
+
+            def merge(base, source):
+                run("git", "checkout", "-qB", "merge", base)
+                run("git", "merge", "--no-ff", "-qm", "CI merge", source)
+                return run("git", "rev-parse", "HEAD")
+
+            run("git", "init", "-q")
+            run("git", "config", "user.email", "ci@example.invalid")
+            run("git", "config", "user.name", "CI fixture")
+            build = Path("plugins/linker-tools/build/planner/app.js")
+            build.parent.mkdir(parents=True)
+            build.write_text("old build")
+            original_base = commit("original base")
+            build.write_text("current build")
+            unchanged_base = commit("build already on base")
+            run("git", "checkout", "-qB", "source", original_base)
+            build.write_text("current build")
+            app = Path("apps/planner/src/app.ts")
+            app.parent.mkdir(parents=True)
+            app.write_text("current source")
+            source = commit("planner change")
+            Path("AGENTS.md").write_text("acceptance guidance")
+            next_source = commit("documentation only")
+            self.job["name"] = "planner"
+            verification = {
+                "name": "Verify Planner invocation",
+                "conclusion": "success",
+            }
+            self.job["steps"].append(verification)
+            self.prior_run["head_sha"] = source
+            bases = {False: unchanged_base, True: original_base}
+            with patch.object(ci_scope, "api", side_effect=self.api):
+                for old_flag, new_flag in (
+                    (False, False),
+                    (True, True),
+                    (False, True),
+                    (True, False),
+                ):
+                    with self.subTest(old=old_flag, new=new_flag):
+                        before = merge(bases[old_flag], source)
+                        head = merge(bases[new_flag], next_source)
+                        self.prior_run["display_title"] = (
+                            "check #820 | tree-ref=" + before
+                        )
+                        self.assertTrue(
+                            ci_scope.same_module_inputs(before, head, "planner")
+                        )
+                        # The old job must have used the reconstructed condition,
+                        # even when its plan fell back to an empty change list.
+                        with patch.dict(
+                            os.environ,
+                            {
+                                "BASE_SHA": bases[old_flag],
+                                "HEAD_SHA": before,
+                                "PLANNER_BUILD_CHANGED": str(old_flag).lower(),
+                            },
+                        ):
+                            ci_scope.verify_planner_invocation()
+                            with patch.dict(
+                                os.environ,
+                                {"PLANNER_BUILD_CHANGED": str(not old_flag).lower()},
+                            ):
+                                with self.assertRaises(SystemExit):
+                                    ci_scope.verify_planner_invocation()
+                        with patch.dict(
+                            os.environ, {"BASE_SHA": bases[new_flag], "HEAD_SHA": head}
+                        ):
+                            proof = ci_scope.reusable_modules(["planner"], head)
+                            if old_flag != new_flag:
+                                self.assertEqual(proof, {})
+                                # Even an otherwise valid success/input proof is insufficient.
+                                proof = {
+                                    "planner": {
+                                        "run": 10,
+                                        "attempt": 1,
+                                        "job": 20,
+                                        "commit": before,
+                                        "inputs": ci_scope.module_fingerprint(
+                                            head, "planner"
+                                        ),
+                                    }
+                                }
+                                self.assertFalse(
+                                    ci_scope.validate_module_reuse(
+                                        proof, ["planner"], head
+                                    )
+                                )
+                                continue
+                            self.assertEqual(set(proof), {"planner"})
+                            self.assertTrue(
+                                ci_scope.validate_module_reuse(proof, ["planner"], head)
+                            )
+                            # A success job from an older workflow or a failed
+                            # condition check cannot prove the actual invocation.
+                            for state in (None, "failure", "skipped"):
+                                if state is None:
+                                    self.job["steps"].remove(verification)
+                                else:
+                                    verification["conclusion"] = state
+                                    if verification not in self.job["steps"]:
+                                        self.job["steps"].append(verification)
+                                self.assertEqual(
+                                    ci_scope.reusable_modules(["planner"], head), {}
+                                )
+                                self.assertFalse(
+                                    ci_scope.validate_module_reuse(
+                                        proof, ["planner"], head
+                                    )
+                                )
+                            verification["conclusion"] = "success"
+                            # Gate reads native merge/run evidence again, not a supplied flag.
+                            with patch.dict(
+                                os.environ, {"BASE_SHA": bases[not new_flag]}
+                            ):
+                                self.assertFalse(
+                                    ci_scope.validate_module_reuse(
+                                        proof, ["planner"], head
+                                    )
+                                )
+                            for invalid_source in (None, next_source):
+                                self.prior_run["head_sha"] = invalid_source
+                                self.assertEqual(
+                                    ci_scope.reusable_modules(["planner"], head), {}
+                                )
+                                self.assertFalse(
+                                    ci_scope.validate_module_reuse(
+                                        proof, ["planner"], head
+                                    )
+                                )
+                            self.prior_run["head_sha"] = source
+                            for invalid in (source, "f" * 40):
+                                self.prior_run["display_title"] = (
+                                    "check #820 | tree-ref=" + invalid
+                                )
+                                self.assertEqual(
+                                    ci_scope.reusable_modules(["planner"], head), {}
+                                )
+                            self.prior_run["display_title"] = (
+                                "check #820 | tree-ref=" + before
+                            )
+                            self.assertEqual(
+                                ci_scope.reusable_modules(["planner"], next_source), {}
+                            )
+                            with patch.dict(
+                                os.environ,
+                                {
+                                    "HEAD_SHA": next_source,
+                                    "PLANNER_BUILD_CHANGED": "false",
+                                },
+                            ):
+                                with self.assertRaises(SystemExit):
+                                    ci_scope.verify_planner_invocation()
+                            with patch.dict(
+                                os.environ,
+                                {"EVENT_NAME": "push", "HEAD_SHA": next_source},
+                            ):
+                                # Main/dispatch do not claim PR module reuse.
+                                ci_scope.verify_planner_invocation()
+                            # A merge whose first parent object is unavailable is not evidence.
+                            missing = (
+                                subprocess.check_output(
+                                    [
+                                        "git",
+                                        "hash-object",
+                                        "-t",
+                                        "commit",
+                                        "-w",
+                                        "--stdin",
+                                    ],
+                                    input=(
+                                        f"tree {run('git', 'rev-parse', before + '^{tree}')}\n"
+                                        f"parent {'f' * 40}\nparent {source}\n"
+                                        "author CI <ci@example.invalid> 1 +0000\n"
+                                        "committer CI <ci@example.invalid> 1 +0000\n\n"
+                                        "missing base\n"
+                                    ).encode(),
+                                )
+                                .decode()
+                                .strip()
+                            )
+                            self.prior_run["display_title"] = (
+                                "check #820 | tree-ref=" + missing
+                            )
+                            self.assertEqual(
+                                ci_scope.reusable_modules(["planner"], head), {}
+                            )
+                            self.prior_run["display_title"] = (
+                                "check #820 | tree-ref=" + before
+                            )
+                            self.job["name"] = "presentation"
+                            self.assertEqual(
+                                ci_scope.reusable_modules(["presentation"], head), {}
+                            )
+                            self.job["name"] = "planner"
 
     def test_gate_rejects_forged_attempt_input_job_and_module_proofs(self):
         proof = {
