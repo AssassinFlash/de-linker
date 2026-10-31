@@ -1154,6 +1154,15 @@ def test_legacy_basis_reuses_real_blocks_without_inheriting_its_identity(
 ) -> None:
     from test_publish import build
 
+    actual_run = subprocess.run
+    transfers: list[list[str]] = []
+
+    def transfer(argv: list[str], **kwargs: Any) -> subprocess.CompletedProcess[Any]:
+        if argv[0] == "rsync":
+            transfers.append(argv)
+        return actual_run(argv, **kwargs)
+
+    monkeypatch.setattr(subprocess, "run", transfer)
     root = tmp_path / "host"
     legacy = build(tmp_path / "legacy", "20261024T100000Z")
     _, activation = candidate(tmp_path / "source", 2, "20261024T100100Z")
@@ -1192,6 +1201,8 @@ def test_legacy_basis_reuses_real_blocks_without_inheriting_its_identity(
     record_property("rsync_literal_bytes", literal)
     record_property("rsync_matched_bytes", matched)
     assert literal > 0 and matched > literal
+    assert len(transfers) == 2
+    assert all("--compress" in command for command in transfers)
     assert basis.read_bytes() == before
     assert (root / "current/index.sqlite").read_bytes() == (
         source / "index.sqlite"

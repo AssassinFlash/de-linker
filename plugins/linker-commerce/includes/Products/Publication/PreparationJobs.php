@@ -15,8 +15,9 @@ use WP_Error;
 
 /** A bounded current job and last loaded receipt per consumer. */
 final class PreparationJobs {
-	public const OPTION    = 'linker_publication_jobs';
-	public const CONSUMERS = array( 'knowledge', 'engineering' );
+	public const OPTION                = 'linker_publication_jobs';
+	public const CONSUMERS             = array( 'knowledge', 'engineering' );
+	public const ACK_RECOVERY_PROTOCOL = 'native-knowledge-ack-recovery-v1';
 
 	/**
 	 * Report only matching loaded product versions.
@@ -85,9 +86,10 @@ final class PreparationJobs {
 	 * @param array<string,mixed>|null $loaded_receipt Actual process readback; never grants product readiness.
 	 * @param bool                     $loaded_unavailable Caller observed a readback failure; unknown never invalidates ready.
 	 * @param string                   $identity_protocol Supported native recognition protocol.
+	 * @param string                   $ack_recovery_protocol Explicit support for same-lease ACK-only recovery.
 	 * @return array<string,mixed>|WP_Error
 	 */
-	public function claim( string $consumer, string $worker_id, int $lease_seconds, string $recipe_revision = '', ?array $loaded_receipt = null, bool $loaded_unavailable = false, string $identity_protocol = Publication::IDENTITY_PROTOCOL ): array|WP_Error {
+	public function claim( string $consumer, string $worker_id, int $lease_seconds, string $recipe_revision = '', ?array $loaded_receipt = null, bool $loaded_unavailable = false, string $identity_protocol = Publication::IDENTITY_PROTOCOL, string $ack_recovery_protocol = '' ): array|WP_Error {
 		if ( ! in_array( $consumer, self::CONSUMERS, true ) || '' === $worker_id || $lease_seconds < 1 || $lease_seconds > DAY_IN_SECONDS || ( '' !== $recipe_revision && ( 'knowledge' !== $consumer || 1 !== preg_match( '/^[a-f0-9]{64}$/D', $recipe_revision ) ) ) ) {
 			return new WP_Error( 'invalid_job_request', 'Invalid consumer, worker or lease.', array( 'status' => 400 ) );
 		}
@@ -97,7 +99,7 @@ final class PreparationJobs {
 		$result = array( 'job' => null );
 		$taken  = Lock::run(
 			'publication-jobs',
-			static function () use ( $consumer, $worker_id, $lease_seconds, $recipe_revision, $loaded_receipt, &$result ): void {
+			static function () use ( $consumer, $worker_id, $lease_seconds, $recipe_revision, $loaded_receipt, $ack_recovery_protocol, &$result ): void {
 				$manifest = Publication::manifest();
 				$state    = self::reconciled_state( $manifest );
 				$job      = $state[ $consumer ] ?? array();
@@ -111,6 +113,15 @@ final class PreparationJobs {
 					$job = self::pending( $consumer, $manifest['source_revision'], $job, $recipe_revision, $manifest['model_identity_revision'] );
 				}
 				$observed = self::valid_loaded_observation( $loaded_receipt );
+				if ( 'knowledge' === $consumer && self::ACK_RECOVERY_PROTOCOL === $ack_recovery_protocol && null !== $loaded_receipt && self::can_resume_ack( $job, $loaded_receipt, $manifest, $worker_id, $recipe_revision ) ) {
+					// Return the original authority unchanged, never mint a new lease
+					// or convert an observation into readiness. Native ACK still decides.
+					unset( $job['loaded_products'], $job['error'], $job['worker_id'], $job['status'] );
+					$job['manifest'] = $manifest;
+					$job['ack_only'] = true;
+					$result          = array( 'job' => $job );
+					return;
+				}
 				if ( 'knowledge' === $consumer && '' !== $recipe_revision && 'ready' === ( $job['status'] ?? '' ) && $observed && null !== $loaded_receipt && ! self::matches_loaded( $job, $loaded_receipt ) ) {
 					$job          = self::pending( $consumer, $manifest['source_revision'], $job, $recipe_revision, $manifest['model_identity_revision'] );
 					$job['error'] = 'The serving process differs from the acknowledged knowledge generation.';
@@ -527,6 +538,37 @@ final class PreparationJobs {
 			$seen[ $product['product_id'] ] = true;
 		}
 		return true;
+	}
+
+	/**
+	 * A still-owned live lease can acknowledge its actual activated generation.
+	 *
+	 * @param array<string,mixed> $job       Original current native lease.
+	 * @param array<string,mixed> $loaded    Fresh process readback.
+	 * @param array<string,mixed> $manifest  Current native source.
+	 * @param string              $worker_id Original worker identity.
+	 * @param string              $recipe    Current worker recipe.
+	 */
+	private static function can_resume_ack( array $job, array $loaded, array $manifest, string $worker_id, string $recipe ): bool {
+		if ( 'preparing' !== ( $job['status'] ?? '' ) || ( $job['worker_id'] ?? null ) !== $worker_id || ! is_string( $job['lease_token'] ?? null ) || '' === $job['lease_token'] || ! is_int( $job['lease_expires_at'] ?? null ) || $job['lease_expires_at'] <= time() || '' === $recipe || ( $job['recipe_revision'] ?? null ) !== $recipe || ! self::valid_loaded_observation( $loaded ) || ! self::same_epoch( $job, $loaded ) || true !== ( $loaded['materialization_complete'] ?? false ) || ! is_bool( $loaded['preparation_complete'] ?? null ) || 1 !== preg_match( '/^[a-f0-9]{64}$/D', $loaded['serving_revision'] ) || $loaded['expected_serving_revision'] !== $loaded['serving_revision'] ) {
+			return false;
+		}
+		foreach ( array( 'source_revision', 'model_identity_revision' ) as $key ) {
+			if ( ( $job[ $key ] ?? null ) !== $manifest[ $key ] || $loaded[ $key ] !== $manifest[ $key ] ) {
+				return false;
+			}
+		}
+		if ( $loaded['recipe_revision'] !== $recipe ) {
+			return false;
+		}
+		$expected = array_column( array_filter( $manifest['products'], static fn ( array $product ): bool => \Linker\Commerce\Products\EngineeringReference::PV_MODULE !== ( $product['engineering_role'] ?? '' ) ), 'product_revision', 'product_id' );
+		foreach ( $loaded['products'] as $product ) {
+			if ( ! isset( $expected[ $product['product_id'] ] ) || $product['product_revision'] !== $expected[ $product['product_id'] ] ) {
+				return false;
+			}
+		}
+		$diagnostics = self::unprepared_documents( $loaded['unprepared_documents'] ?? null, $manifest );
+		return is_array( $diagnostics ) && ! in_array( 'document_unparsed', array_column( $diagnostics, 'reason' ), true ) && ( ! $loaded['preparation_complete'] || ( count( $loaded['products'] ) === count( $expected ) && array() === $diagnostics ) );
 	}
 
 	/**
