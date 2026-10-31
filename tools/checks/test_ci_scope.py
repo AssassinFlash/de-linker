@@ -73,6 +73,8 @@ class ScopeTest(unittest.TestCase):
         )
 
     def test_declared_package_dependencies_and_module_matrices(self):
+        native = {"native:" + name for name in ci_scope.NATIVE_GROUPS}
+        planner_gateway = {"php:tools", "content", "engine", "planner", *native}
         cases = (
             (
                 "tools/local/src/linker_local/registry.py",
@@ -109,15 +111,15 @@ class ScopeTest(unittest.TestCase):
                 "services/engine/tests/fixtures/feed.json",
                 {"engine", "genie", "php:commerce", "php:tools"},
             ),
+            ("plugins/linker-tools/includes/Planner/Gateway.php", planner_gateway),
+            ("plugins/linker-tools/includes/Planner/Transport.php", planner_gateway),
             (
-                "plugins/linker-tools/includes/Planner/Gateway.php",
-                {
-                    "php:tools",
-                    "content",
-                    "engine",
-                    "planner",
-                    *["native:" + name for name in ci_scope.NATIVE_GROUPS],
-                },
+                "plugins/linker-tools/includes/Planner/ClaimOutbox.php",
+                {"php:tools", "content", *native},
+            ),
+            (
+                "plugins/linker-tools/tests/php/Unit/PlannerClaimOutboxTest.php",
+                {"php:tools", *native},
             ),
         )
         for path, expected in cases:
@@ -160,6 +162,22 @@ class ScopeTest(unittest.TestCase):
             ["genie"],
         )
 
+        outbox = [
+            ("M", "plugins/linker-tools/includes/Planner/ClaimOutbox.php"),
+            ("M", "plugins/linker-tools/tests/php/Unit/PlannerClaimOutboxTest.php"),
+            ("M", "docs/acceptance/2026-10-31/548/INDEX.md"),
+        ]
+        engine = ("M", "services/engine/src/linker_engine/planning/guest_claims.py")
+        planner = ("M", "apps/planner/src/data/client.ts")
+        for additional, expected in (
+            ([], ["php", "content", "native"]),
+            ([engine], ["php", "content", "native", "engine"]),
+            ([planner], ["php", "content", "native", "planner"]),
+            ([engine, planner], ["php", "content", "native", "planner", "engine"]),
+        ):
+            with self.subTest(additional=additional):
+                self.assertEqual(self.classify(*outbox, *additional), expected)
+
     def test_shared_unknown_empty_and_structural_changes_are_full(self):
         for path in (
             ".github/workflows/check.yml",
@@ -170,17 +188,24 @@ class ScopeTest(unittest.TestCase):
             "tools/checks/test_ci_scope.py",
             "plugins/linker-tools/project-input-contracts.json",
         ):
-            with self.subTest(path=path):
-                self.assertEqual(
-                    self.classify(("M", "apps/planner/src/App.tsx"), ("M", path)),
-                    list(ci_scope.FULL_LANES),
-                )
+            for known in (
+                "apps/planner/src/App.tsx",
+                "plugins/linker-tools/includes/Planner/ClaimOutbox.php",
+            ):
+                with self.subTest(path=path, known=known):
+                    self.assertEqual(
+                        self.classify(("M", known), ("M", path)),
+                        list(ci_scope.FULL_LANES),
+                    )
         for status in ("R100", "C100", "T", "U"):
-            with self.subTest(status=status):
-                self.assertEqual(
-                    self.classify((status, "apps/planner/src/App.tsx")),
-                    list(ci_scope.FULL_LANES),
-                )
+            for path in (
+                "apps/planner/src/App.tsx",
+                "plugins/linker-tools/includes/Planner/ClaimOutbox.php",
+            ):
+                with self.subTest(status=status, path=path):
+                    self.assertEqual(
+                        self.classify((status, path)), list(ci_scope.FULL_LANES)
+                    )
         self.assertEqual(self.classify(), list(ci_scope.FULL_LANES))
         self.assertEqual(
             self.classify(("A", "plugins/linker-commerce/assets/account-ui.js")),
