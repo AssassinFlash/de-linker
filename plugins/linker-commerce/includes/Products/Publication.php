@@ -175,7 +175,11 @@ final class Publication {
 			)
 		);
 		if ( is_wp_error( $terms ) ) {
-			throw new \RuntimeException( 'Current model identity terms could not be read.' );
+			if ( 'invalid_taxonomy' !== $terms->get_error_code() || taxonomy_exists( 'pa_model' ) ) {
+				throw new \RuntimeException( 'Current model identity terms could not be read.' );
+			}
+			// Woo products may exist before the optional model attribute is registered.
+			$terms = array();
 		}
 		$models_by_id = array();
 		foreach ( $terms as $term ) {

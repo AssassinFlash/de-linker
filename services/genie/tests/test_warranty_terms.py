@@ -345,6 +345,7 @@ def _sts_index(
     )
     product_ids = {2403, 6529, 6530}
     raw = fixture["manifest"]
+    raw["model_identity_revision"] = "fixture-identity-1"
     sheets = [
         d
         for d in raw["documents"]
@@ -905,6 +906,10 @@ def test_current_goodwe_policy_cohort_and_physical_anchor_reach_sqlite(
     )
     data = json.loads(gzip.decompress(path.read_bytes()))
     raw = data["manifest"]
+    # Upgrade only this local captured fixture to the current identity protocol.
+    raw["model_identity_revision"] = "fixture-identity-1"
+    for scope in data["scopes"].values():
+        scope["model_identity_revision"] = raw["model_identity_revision"]
     original = [Chunk(**item) for item in data["original"]]
     compiled = [Chunk(**item) for item in data["compiled"]]
     source = Snapshot.read(raw)

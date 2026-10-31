@@ -43,6 +43,7 @@ ESA_DE_SHA = "ce3e2552a6a21ff8b78988006f344619776c7cf01796cf172338040119569f9a"
 def source() -> tuple[dict[str, Any], list[Chunk]]:
     """Replay the complete original Docling parse and SHA-named hosted PDF."""
     manifest = json.loads((FIXTURES / "manifest.json").read_text())
+    manifest["model_identity_revision"] = "fixture-identity-1"
     document = DoclingDocument.model_validate_json(
         gzip.decompress((FIXTURES / f"{SHA}.json.gz").read_bytes())
     )
@@ -64,6 +65,7 @@ def etr_source(lang: Literal["en", "de"] = "en") -> tuple[dict[str, Any], list[C
     sha = ETR_DE_SHA if lang == "de" else ETR_SHA
     manifest_file = "etr-de-manifest.json" if lang == "de" else "etr-manifest.json"
     manifest = json.loads((FIXTURES / manifest_file).read_text())
+    manifest["model_identity_revision"] = "fixture-identity-1"
     document = DoclingDocument.model_validate_json(
         gzip.decompress((FIXTURES / f"{sha}.json.gz").read_bytes())
     )
@@ -83,6 +85,7 @@ def etr_source(lang: Literal["en", "de"] = "en") -> tuple[dict[str, Any], list[C
 
 def esa_de_source() -> tuple[dict[str, Any], list[Chunk]]:
     manifest = json.loads((FIXTURES / "esa-de-manifest.json").read_text())
+    manifest["model_identity_revision"] = "fixture-identity-1"
     document = DoclingDocument.model_validate_json(
         gzip.decompress((FIXTURES / f"{ESA_DE_SHA}.json.gz").read_bytes())
     )

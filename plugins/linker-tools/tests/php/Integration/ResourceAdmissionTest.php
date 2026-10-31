@@ -819,7 +819,16 @@ final class ResourceAdmissionTest extends TestCase {
 		wc_load_cart();
 		$before_cart  = WC()->cart->get_cart_contents();
 		$before_saved = WC()->session->get( \Linker\Commerce\Account\SavedSolutions::SESSION_KEY );
-		$product      = new \WC_Product_Simple();
+		$pending      = get_option( 'linker_publication_pending' );
+		$actions      = array();
+		$record       = static function ( int $id ) use ( &$actions ): void {
+			$action = \ActionScheduler::store()->fetch_action( $id );
+			if ( in_array( $action->get_hook(), array( 'linker_publication_reconcile', 'linker_i18n_translate', 'woocommerce_run_product_attribute_lookup_update_callback' ), true ) ) {
+				$actions[] = $id;
+			}
+		};
+		add_action( 'action_scheduler_stored_action', $record );
+		$product = new \WC_Product_Simple();
 		$product->set_name( 'Current Genie receipt fixture' );
 		$product->set_status( 'publish' );
 		$id = $product->save();
@@ -866,6 +875,15 @@ final class ResourceAdmissionTest extends TestCase {
 			WC()->cart->set_cart_contents( $before_cart );
 			WC()->session->set( \Linker\Commerce\Account\SavedSolutions::SESSION_KEY, $before_saved );
 			wp_delete_post( $id, true );
+			remove_action( 'action_scheduler_stored_action', $record );
+			foreach ( $actions as $action ) {
+				\ActionScheduler::store()->delete_action( $action );
+			}
+			if ( false === $pending ) {
+				delete_option( 'linker_publication_pending' );
+			} else {
+				update_option( 'linker_publication_pending', $pending, false );
+			}
 		}
 	}
 }
