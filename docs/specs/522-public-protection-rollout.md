@@ -56,23 +56,68 @@ is a separate state; no local or CI result is described as activation.
 
 ## Independent scheduler on this host
 
-Readback found no shared-host crontab binary. The preferred Google Hostinger
-account has no Linker website and the fallback Google identity is not linked to
-Hostinger. No access request, new credential or unrelated account change is made.
-The existing VPS and site SSH remain authorized and available.
+Use one independent driver for WordPress's native due events, including
+`linker_inquiry_assessment_recover` at its owner-approved 60-second interval.
+Page visits are not the driver. Hostinger's control-panel cron is the authority:
+actual panel readback on 2026-10-31 confirmed this once-per-minute command:
 
-Use WordPress's native cron event `linker_inquiry_assessment_recover`, registered
-at its owner-approved60-second interval, and the reviewed VPS
-`linker-wordpress-cron.timer` to request the existing public native wp-cron.php
-once a minute. Native cron locking handles overlap and runs existing due events
-as well as the recovery heartbeat; no customer request or page visit is needed.
-The service has a55-second HTTP timeout and60-second systemd bound so a failed
-host request cannot build up timer processes. No new REST permission or credential
-is introduced. Install this named event explicitly, preserve any existing host
-jobs, verify the next real timer execution advances the site's heartbeat, and
-retain recovery while draining pending handoffs during rollback. This replaces
-the unavailable control-panel CLI scheduling route with equivalent independent
-native execution; it does not claim hPanel was configured.
+```sh
+/usr/local/bin/wp --path=/home/u388076051/domains/de-linker.com/public_html cron event run --due-now --quiet
+```
+
+The earlier absence of a shared-host `crontab` binary and unavailable account
+access did not establish that Hostinger could not configure cron. The same
+readback found the VPS `linker-wordpress-cron.timer` enabled and active, with a
+successful HTTP tick at 12:28 UTC; that duplicate driver must be retired after
+confirming natural Hostinger progress. Actual driver retirement and readbacks
+belong in the existing acceptance INDEX, separately from this source guidance.
+
+Before switching, record the site's recovery heartbeat using the read-only
+command below, then verify it advances at the next natural scheduled minute
+without a manual cron invocation. `Queue::recover()` writes that heartbeat
+before scanning pending handoffs: it proves callback entry, not scan completion
+or completion of all due cron work. Also verify the next scheduled recovery
+event advances, the host cron invocation exits successfully, and relevant Action
+Scheduler pending/failed work progresses without accumulating new failures.
+Inspect those results together; a successful HTTP request alone does not prove
+the callback ran, and a fresh heartbeat alone does not prove recovery completed.
+
+```sh
+/usr/local/bin/wp --path=/home/u388076051/domains/de-linker.com/public_html option get linker_inquiry_assessment_recovery
+```
+
+Once the Hostinger driver is verified, retire only the duplicate VPS timer:
+
+```sh
+sudo systemctl disable --now linker-wordpress-cron.timer
+systemctl is-enabled linker-wordpress-cron.timer
+systemctl is-active linker-wordpress-cron.timer
+systemctl show linker-wordpress-cron.service -p ActiveState -p MainPID -p Result
+```
+
+The expected timer states are disabled/inactive; those `is-*` queries return
+nonzero for the expected state. Let any already-running bounded service finish
+and read back that it has no remaining process. Keep the native WordPress event
+and the Hostinger panel command in place, then verify another natural heartbeat
+advance with only that driver enabled.
+
+The reviewed VPS HTTP timer is an explicit fallback only when host-native CLI
+scheduling is unavailable. It requests the existing public `wp-cron.php`; its
+55-second curl timeout and 60-second systemd bound prevent timer-process buildup.
+It adds no credential or API permission. To restore this fallback, explicitly
+run `sudo systemctl enable --now linker-wordpress-cron.timer`, inspect
+`journalctl -u linker-wordpress-cron.service --since "5 minutes ago"`, and verify
+natural heartbeat progress. Disable the unavailable Hostinger panel job as part
+of that handoff so it cannot later resume as a duplicate driver. Native cron
+locking is overlap protection, not permission to leave both drivers scheduled.
+
+To return from fallback, restore the exact once-per-minute Hostinger panel
+command above, verify its natural progress, disable the VPS timer with the
+commands above, and confirm progress again. A bounded transition/readback is
+operator-controlled; there is no automatic parallel fallback. During rollback,
+retain the selected independent driver and native recovery event until pending
+handoffs drain. Missing heartbeat keeps normal immediate notification with an
+uncertain assessment rather than waiting for a model.
 
 ## Rollback
 
