@@ -176,6 +176,33 @@ if ( 'cleanup' === ( $args[0] ?? '' ) ) {
 			linker_publication_fixture_expect( array( 403, 403, 403 ) === ( $receipt['data']['children'] ?? null ), 'An internal read, write or job inherited purpose authority.' );
 			$linker_publication_checks += 2;
 		}
+		$receipt = linker_publication_fixture_request(
+			'/linker/v1/publication/identify',
+			$linker_publication_purpose,
+			'POST',
+			array(
+				'texts'          => array( 'Fixture model' ),
+				'probe_children' => true,
+			)
+		);
+		linker_publication_fixture_expect( 200 === $receipt['status'] && ( $receipt['data']['credential_uuid'] ?? null ) === $linker_publication_keys['admin']['purpose']['uuid'], 'The native purpose key cannot reach its leased batch callback.' );
+		linker_publication_fixture_expect( array( 403, 403, 403 ) === ( $receipt['data']['children'] ?? null ), 'The batch callback leaked its HTTP authority to an internal request.' );
+		$linker_publication_checks += 2;
+		foreach ( array(
+			array( 'text' => 'Fixture model' ),
+			array( 'models' => array( 'Fixture model' ) ),
+			array(
+				'texts' => array( 'Fixture model' ),
+				'text'  => null,
+			),
+		) as $body ) {
+			$response = linker_publication_fixture_request( '/linker/v1/publication/identify', $linker_publication_purpose, 'POST', $body );
+			linker_publication_fixture_expect( 403 === $response['status'], 'A single-mode identify request widened the native purpose scope.' );
+			++$linker_publication_checks;
+		}
+		$response = linker_publication_fixture_request( '/linker/v1/publication/identify', $linker_publication_keys['reader']['purpose']['authorization'], 'POST', array( 'texts' => array( 'Fixture model' ) ) );
+		linker_publication_fixture_expect( 403 === $response['status'], 'Batch scope granted a native capability to a reader.' );
+		++$linker_publication_checks;
 		foreach ( array( 'dispatch', 'authentication' ) as $phase ) {
 			$receipt = linker_publication_fixture_request( '/linker/v1/publication/jobs/claim', $linker_publication_purpose, 'POST', array(), array( 'X-Publication-Fixture-Early' => $phase ) );
 			linker_publication_fixture_expect( 200 === $receipt['status'], 'An early internal request consumed the native HTTP job permission: ' . $phase . '.' );

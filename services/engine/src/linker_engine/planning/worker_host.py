@@ -215,6 +215,7 @@ def main(argv: list[str] | None = None) -> int:
                         offline=arguments.offline,
                         recovery=arguments.recovery,
                         snapshots=tuple(arguments.snapshot),
+                        owned_runtime_sha256=RuntimeSnapshot.capture().sha256,
                     )
                 ).decode()
             )

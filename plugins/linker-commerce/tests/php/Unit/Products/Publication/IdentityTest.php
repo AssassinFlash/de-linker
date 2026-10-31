@@ -148,7 +148,8 @@ final class IdentityTest extends TestCase {
 		$term_reads = array();
 		$response   = $this->identify( array( 'text' => 'MODEL-12 DRAFT-13' ) );
 		$this->assertInstanceOf( \WP_REST_Response::class, $response );
-		$this->assertSame( array( 'models' => array() ), $response->get_data() );
+		$this->assertSame( array(), $response->get_data()['models'] );
+		$this->assertMatchesRegularExpression( '/^[a-f0-9]{64}$/D', $response->get_data()['model_identity_revision'] );
 		$this->assertSame( array(), $primes );
 		$this->assertSame( array(), $term_reads );
 	}
@@ -286,6 +287,33 @@ final class IdentityTest extends TestCase {
 		}
 	}
 
+	/** Native Woo products without a model attribute still have an empty identity map. */
+	public function test_absent_model_taxonomy_is_an_empty_native_identity(): void {
+		WP_Mock::userFunction( 'wp_get_object_terms' )->andReturn( new \WP_Error( 'invalid_taxonomy', 'Invalid taxonomy.' ) );
+		WP_Mock::userFunction( 'taxonomy_exists' )->with( 'pa_model' )->andReturn( false );
+		$response = $this->identify( array( 'models' => array( 'UNKNOWN' ) ) );
+		$this->assertInstanceOf( \WP_REST_Response::class, $response );
+		$this->assertSame(
+			array(
+				array(
+					'model'  => 'UNKNOWN',
+					'status' => 'unknown',
+				),
+			),
+			$response->get_data()['models']
+		);
+		$this->assertNotEmpty( $response->get_data()['model_identity_revision'] );
+	}
+
+	/** A registered attribute cannot hide a failed native relationship query. */
+	public function test_registered_model_taxonomy_read_failure_is_unavailable(): void {
+		WP_Mock::userFunction( 'wp_get_object_terms' )->andReturn( new \WP_Error( 'invalid_taxonomy', 'Unexpected relationship failure.' ) );
+		WP_Mock::userFunction( 'taxonomy_exists' )->with( 'pa_model' )->andReturn( true );
+		$response = $this->identify( array( 'models' => array( 'UNKNOWN' ) ) );
+		$this->assertInstanceOf( \WP_Error::class, $response );
+		$this->assertSame( array( 'status' => 503 ), $response->get_error_data() );
+	}
+
 	/** A native taxonomy failure cannot be misreported as an unknown label. */
 	public function test_unreadable_native_identity_is_explicitly_unavailable(): void {
 		WP_Mock::userFunction( 'wp_get_object_terms' )->andReturn( new \WP_Error( 'native_unavailable', 'Internal source error.' ) );
@@ -303,6 +331,7 @@ final class IdentityTest extends TestCase {
 	 */
 	private function identify( array $body ): \WP_REST_Response|\WP_Error {
 		$request = Mockery::mock( \WP_REST_Request::class );
+		$request->shouldReceive( 'get_body' )->andReturn( (string) json_encode( $body ) );
 		$request->shouldReceive( 'get_json_params' )->andReturn( $body );
 		return ( new Controller() )->dispatch( 'identify', $request );
 	}

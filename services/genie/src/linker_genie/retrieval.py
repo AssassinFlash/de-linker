@@ -209,6 +209,7 @@ class DocumentIndex:
         )
         self.version = str(meta.get("version", ""))
         self.source_revision = str(meta.get("source_revision", ""))
+        self.model_identity_revision = str(meta.get("model_identity_revision", ""))
         self._recipe_revision = str(meta.get("recipe_revision", ""))
         self._expected_serving_revision = str(meta.get("serving_revision", ""))
         self.embedding_model = str(meta.get("embedding_model", ""))
@@ -253,6 +254,7 @@ class DocumentIndex:
         return {
             "index_version": self.version,
             "source_revision": self.source_revision,
+            "model_identity_revision": self.model_identity_revision,
             "recipe_revision": (
                 self._db.execute(
                     "SELECT value FROM meta WHERE key='recipe_revision'"
@@ -279,7 +281,8 @@ class DocumentIndex:
                 "SELECT value FROM meta WHERE key='materialization_complete'"
             ).fetchone()
             == ("true",),
-            "preparation_complete": self._db.execute(
+            "preparation_complete": bool(self.model_identity_revision)
+            and self._db.execute(
                 "SELECT value FROM meta WHERE key='preparation_complete'"
             ).fetchone()
             == ("true",),
@@ -651,6 +654,12 @@ class DocumentIndex:
         Old indexes have no proof tables and therefore authorize no chunks.
         """
         self._require_serving()
+        # Missing identity is an observable legacy generation, never a grant.
+        if (
+            not self.model_identity_revision
+            or self.model_identity_revision != snapshot.model_identity_revision
+        ):
+            return {}
         tables = {
             r[0]
             for r in self._db.execute(
@@ -721,6 +730,11 @@ class DocumentIndex:
         for row, sha, raw_ids, cid, text in self._db.execute(
             "SELECT c.rowid, c.doc_sha256, cp.product_ids, c.id, c.text FROM chunks c JOIN chunk_products cp ON cp.chunk_id=c.id"
         ):
+            if (
+                scopes.get(cid, {}).get("model_identity_revision")
+                != self.model_identity_revision
+            ):
+                continue
             ids = set(json.loads(raw_ids))
             if not ids or not ids.issubset(allowed) or not ids.intersection(wanted):
                 continue

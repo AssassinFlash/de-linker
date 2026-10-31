@@ -145,6 +145,16 @@ add_action(
 			);
 		}
 		register_rest_route(
+			'linker/v1',
+			'/publication/identify',
+			array(
+				'methods'             => 'POST',
+				'permission_callback' => static fn(): bool => linker_publication_fixture_user() && current_user_can( 'manage_options' ),
+				'callback'            => 'linker_publication_fixture_job',
+			),
+			true
+		);
+		register_rest_route(
 			'linker-publication-fixture/v1',
 			'/canary',
 			array(

@@ -15,6 +15,23 @@ use Linker\Commerce\Products\Publication\EvidenceBindings;
 
 /** A current read; no TTL, index or preparation acknowledgement grants access. */
 final class Publication {
+	/** Exact whitespace-normalized Unicode-boundary matching contract. */
+	public const IDENTITY_PROTOCOL = 'native-model-identification-v1';
+
+	/**
+	 * Opaque identity of all native model permissions, including unavailable labels.
+	 *
+	 * @param array<string,array{status:'published',product_id:int}|array{status:'unavailable'}> $known Fresh native model map.
+	 */
+	public static function model_identity_revision( array $known ): string {
+		return self::revision(
+			array(
+				'protocol' => self::IDENTITY_PROTOCOL,
+				'models'   => $known,
+			)
+		);
+	}
+
 	/**
 	 * Stable canonical JSON hash; generated times and readiness stay outside it.
 	 *
@@ -121,6 +138,16 @@ final class Publication {
 	 */
 	public static function model_statuses(): array {
 		self::refresh_runtime();
+		return self::model_statuses_in_current_read();
+	}
+
+	/**
+	 * The enclosing manifest/identity operation already owns one fresh read.
+	 *
+	 * @throws \RuntimeException When native model terms cannot be read.
+	 * @return array<string,array{status:'published',product_id:int}|array{status:'unavailable'}>
+	 */
+	private static function model_statuses_in_current_read(): array {
 		$ids = get_posts(
 			array(
 				'post_type'                   => 'product',
@@ -148,7 +175,11 @@ final class Publication {
 			)
 		);
 		if ( is_wp_error( $terms ) ) {
-			throw new \RuntimeException( 'Current model identity terms could not be read.' );
+			if ( 'invalid_taxonomy' !== $terms->get_error_code() || taxonomy_exists( 'pa_model' ) ) {
+				throw new \RuntimeException( 'Current model identity terms could not be read.' );
+			}
+			// Woo products may exist before the optional model attribute is registered.
+			$terms = array();
 		}
 		$models_by_id = array();
 		foreach ( $terms as $term ) {
@@ -459,8 +490,11 @@ final class Publication {
 			'documents'              => array_values( $documents ),
 		);
 		$manifest['source_revision'] = self::revision( $manifest );
+		// Knowledge has an additional identity dependency. Draft-only identity
+		// changes must not alter the published source or engineering generation.
+		$manifest['model_identity_revision'] = self::model_identity_revision( self::model_statuses_in_current_read() );
 		foreach ( $manifest['products'] as &$product ) {
-			$product['ready'] = PreparationJobs::readiness( $product['product_id'], $product['product_revision'] );
+			$product['ready'] = PreparationJobs::readiness( $product['product_id'], $product['product_revision'], $manifest['model_identity_revision'] );
 		}
 		unset( $product );
 		return $manifest;
@@ -842,6 +876,13 @@ final class Publication {
 		if ( isset( $dependencies['compatibility_revision'] ) && $dependencies['compatibility_revision'] !== $manifest['compatibility_revision'] ) {
 			$invalid[] = array(
 				'kind'   => 'compatibility',
+				'id'     => '',
+				'reason' => 'revision_mismatch',
+			);
+		}
+		if ( array_key_exists( 'model_identity_revision', $dependencies ) && ( ! is_string( $dependencies['model_identity_revision'] ) || 1 !== preg_match( '/^[a-f0-9]{64}$/D', $dependencies['model_identity_revision'] ) || ( $manifest['model_identity_revision'] ?? null ) !== $dependencies['model_identity_revision'] ) ) {
+			$invalid[] = array(
+				'kind'   => 'model_identity',
 				'id'     => '',
 				'reason' => 'revision_mismatch',
 			);

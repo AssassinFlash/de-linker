@@ -7,13 +7,16 @@ exact supplied-model identification and dependency validation expose permission 
 
 from __future__ import annotations
 
+import json
 import os
+import syslog
 import time
 from collections.abc import Iterator, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import UTC
 from email.utils import parsedate_to_datetime
 from typing import Any
+from urllib.parse import urlsplit
 
 import httpx
 
@@ -39,6 +42,17 @@ def _retry_after(response: httpx.Response) -> float:
     return min(_RETRY_AFTER_CAP, delay)
 
 
+def knowledge_progress(phase: str, event: str, **counts: int | float) -> None:
+    """Use the worker's existing syslog sink, plus flushed foreground output.
+
+    Callers provide fixed phase/event names and numeric counters only. Supplied
+    text, native lease credentials and document/customer content never enter it.
+    """
+    message = json.dumps({"phase": phase, "event": event, **counts})
+    syslog.syslog(syslog.LOG_INFO, "linker-knowledge-publication " + message)
+    print(message, flush=True)
+
+
 class PublicationUnavailable(RuntimeError):
     """Current permission cannot be established; never serve a stale permit."""
 
@@ -55,6 +69,7 @@ class Snapshot:
     products: dict[int, dict[str, Any]]
     documents: dict[str, dict[str, Any]]
     compatibility_revision: str
+    model_identity_revision: str = ""
 
     @classmethod
     def read(cls, value: Any) -> Snapshot:
@@ -62,6 +77,11 @@ class Snapshot:
             raise PublicationUnavailable("unsupported Woo publication manifest")
         if not isinstance(value.get("source_revision"), str):
             raise PublicationUnavailable("missing Woo publication revision")
+        if "model_identity_revision" in value and (
+            not isinstance(value["model_identity_revision"], str)
+            or not value["model_identity_revision"]
+        ):
+            raise PublicationUnavailable("invalid Woo model identity revision")
         try:
             if (
                 not isinstance(value["products"], list)
@@ -95,6 +115,7 @@ class Snapshot:
             products,
             documents,
             str(value.get("compatibility_revision", "")),
+            str(value.get("model_identity_revision", "")),
         )
 
     def canonical(self, product_id: int) -> int | None:
@@ -122,6 +143,7 @@ class Snapshot:
                 for pid in d["product_ids"]
             ],
             "compatibility_revision": self.compatibility_revision,
+            "model_identity_revision": self.model_identity_revision,
         }
 
     def require_products(self, product_ids: Sequence[int]) -> None:
@@ -178,10 +200,25 @@ class PublicationClient:
         transport: httpx.BaseTransport | None = None,
         *,
         identify_deadline: int | None = None,
+        identify_lease: Mapping[str, Any] | None = None,
     ) -> None:
         if identify_deadline is not None and type(identify_deadline) is not int:
             raise ValueError("identify deadline must be a native lease expiry")
         self._identify_deadline = identify_deadline
+        self._identify_lease = (
+            dict(identify_lease) if identify_lease is not None else None
+        )
+        self.identification: dict[str, int | float] = {
+            "windows": 0,
+            "input_bytes": 0,
+            "batches": 0,
+            "attempts": 0,
+            "backoff_seconds": 0.0,
+            "seconds": 0.0,
+            "identity_reads": 0,
+            "identity_seconds": 0.0,
+            "match_seconds": 0.0,
+        }
         # Same loopback budget as AbilityClient; no cached success on outage.
         self._client = httpx.Client(
             base_url=base_url.rstrip("/"),
@@ -202,17 +239,72 @@ class PublicationClient:
             else None
         )
         attempts = _IDENTIFY_ATTEMPTS if deadline is not None else 1
+        auth = None
+        if path == "/identify" and body is not None and "texts" in body:
+            if self._identify_lease is None or deadline is None:
+                raise PublicationUnavailable(
+                    "batched identification requires a native lease"
+                )
+            try:
+                verify = urlsplit(str(self._identify_lease.get("verify_url", "")))
+                target = urlsplit(str(self._client.base_url))
+                same_origin = (
+                    verify.scheme,
+                    verify.hostname,
+                    verify.port
+                    if verify.port is not None
+                    else {"http": 80, "https": 443}.get(verify.scheme),
+                ) == (
+                    target.scheme,
+                    target.hostname,
+                    target.port
+                    if target.port is not None
+                    else {"http": 80, "https": 443}.get(target.scheme),
+                )
+            except ValueError:
+                raise PublicationUnavailable("invalid native lease origin") from None
+            if (
+                not same_origin
+                or verify.scheme not in {"http", "https"}
+                or not verify.hostname
+                or verify.username is not None
+                or verify.password is not None
+                or target.username is not None
+                or target.password is not None
+                or verify.path != PREFIX + "/jobs/claim"
+                or verify.query
+                or verify.fragment
+            ):
+                raise PublicationUnavailable("invalid native lease origin")
+            auth = (
+                str(self._identify_lease["username"]),
+                str(self._identify_lease["password"]),
+            )
         for attempt in range(attempts):
             if deadline is not None:
                 remaining = deadline - time.time() - 1
                 if remaining <= 0:
                     raise PublicationUnavailable("native knowledge lease expired")
             try:
+                if path == "/identify":
+                    self.identification["attempts"] += 1
+                    if auth is not None:
+                        knowledge_progress(
+                            "identify",
+                            "attempt",
+                            attempt=attempt + 1,
+                            batch=self.identification["batches"],
+                            windows=self.identification["windows"],
+                        )
                 if deadline is None:
                     response = self._client.request(method, PREFIX + path, json=body)
                 else:
                     response = self._client.request(
-                        method, PREFIX + path, json=body, timeout=min(20.0, remaining)
+                        method,
+                        PREFIX + path,
+                        json=body,
+                        timeout=min(20.0, remaining),
+                        auth=auth,
                     )
                 response.raise_for_status()
                 result = response.json()
@@ -238,6 +330,15 @@ class PublicationClient:
                     raise PublicationUnavailable(
                         "native knowledge lease expired before retry"
                     ) from error
+                self.identification["backoff_seconds"] += delay
+                if auth is not None:
+                    knowledge_progress(
+                        "identify",
+                        "backoff",
+                        attempt=attempt + 1,
+                        seconds=delay,
+                        batch=self.identification["batches"],
+                    )
                 time.sleep(delay)
         raise PublicationUnavailable("Woo publication permission unavailable")
 
@@ -270,9 +371,16 @@ class PublicationClient:
                     )
         return result
 
-    def identify_text(self, text: str) -> dict[str, str]:
+    def identify_text(
+        self, text: str, *, expected_revision: str = ""
+    ) -> dict[str, str]:
         """Let Woo match known model labels in supplied text, without listing drafts."""
         response = self._request("POST", "/identify", {"text": text})
+        if expected_revision and (
+            not isinstance(response, dict)
+            or response.get("model_identity_revision") != expected_revision
+        ):
+            raise PublicationChanged("model identity changed during compilation")
         if not isinstance(response, dict) or not isinstance(
             response.get("models"), list
         ):
@@ -282,6 +390,95 @@ class PublicationClient:
             for row in response["models"]
             if isinstance(row, dict)
         }
+
+    def identify_texts(self, texts: Sequence[str], revision: str) -> dict[str, str]:
+        """Keep original windows distinct; only the leased compiler batches them."""
+        windows = list(texts)
+        if any(
+            not isinstance(text, str) or not text or len(text.encode()) > 16000
+            for text in windows
+        ):
+            raise ValueError(
+                "identification windows must be nonempty and at most 16000 UTF-8 bytes"
+            )
+        if self._identify_lease is None:
+            result: dict[str, str] = {}
+            for text in windows:
+                result.update(self.identify_text(text, expected_revision=revision))
+            return result
+        lease = self._identify_lease
+        body = lease.get("verify_body")
+        if (
+            not revision
+            or not isinstance(body, dict)
+            or body.get("model_identity_revision") != revision
+        ):
+            raise PublicationUnavailable(
+                "identification model identity differs from native lease"
+            )
+        result = {}
+        for offset in range(0, len(windows), 20):
+            batch = windows[offset : offset + 20]
+            started = time.monotonic()
+            self.identification["windows"] += len(batch)
+            self.identification["input_bytes"] += sum(
+                len(text.encode()) for text in batch
+            )
+            self.identification["batches"] += 1
+            succeeded = False
+            try:
+                payload = {
+                    name: body[name]
+                    for name in (
+                        "consumer",
+                        "job_id",
+                        "source_revision",
+                        "recipe_revision",
+                        "lease_token",
+                        "activation_epoch",
+                        "model_identity_revision",
+                    )
+                }
+                response = self._request(
+                    "POST", "/identify", {**payload, "texts": batch}
+                )
+                if (
+                    not isinstance(response, dict)
+                    or response.get("model_identity_revision") != revision
+                    or not isinstance(response.get("models"), list)
+                ):
+                    raise PublicationUnavailable("invalid leased model identification")
+                metrics = response.get("metrics", {})
+                if isinstance(metrics, dict):
+                    for name in ("identity_reads", "identity_seconds", "match_seconds"):
+                        value = metrics.get(name, 0)
+                        if type(value) in (int, float) and value >= 0:
+                            self.identification[name] += value
+                for row in response["models"]:
+                    if (
+                        not isinstance(row, dict)
+                        or not isinstance(row.get("model"), str)
+                        or row.get("status")
+                        not in {"published", "unavailable", "unknown"}
+                    ):
+                        raise PublicationUnavailable(
+                            "invalid leased model identification row"
+                        )
+                    label, status = row["model"].casefold(), row["status"]
+                    if label in result and result[label] != status:
+                        raise PublicationChanged(
+                            "model identification changed between windows"
+                        )
+                    result[label] = status
+                succeeded = True
+            finally:
+                self.identification["seconds"] += time.monotonic() - started
+                knowledge_progress(
+                    "identify",
+                    "batch_done" if succeeded else "batch_failed",
+                    **self.identification,
+                )
+        return result
 
     def close(self) -> None:
         self._client.close()

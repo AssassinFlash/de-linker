@@ -196,6 +196,13 @@ class_alias(
 			private array $params = array();
 
 			/**
+			 * Native JSON body.
+			 *
+			 * @var array<array-key, mixed>
+			 */
+			private array $json = array();
+
+			/**
 			 * Effective headers.
 			 *
 			 * @var array<string, string>
@@ -223,6 +230,25 @@ class_alias(
 			}
 
 			/**
+			 * Set the native body independently of query parameters.
+			 *
+			 * @param string $body Native JSON bytes.
+			 */
+			public function set_body( string $body ): void {
+				$value      = json_decode( $body, true, 512, JSON_THROW_ON_ERROR );
+				$this->json = is_array( $value ) ? $value : array();
+			}
+
+			/**
+			 * Native JSON body.
+			 *
+			 * @return array<array-key, mixed>
+			 */
+			public function get_json_params(): array {
+				return $this->json;
+			}
+
+			/**
 			 * Native headers.
 			 *
 			 * @param array<string, string> $headers Headers.
@@ -247,7 +273,7 @@ class_alias(
 			 * @param string $name Parameter name.
 			 */
 			public function has_param( string $name ): bool {
-				return array_key_exists( $name, $this->params );
+				return array_key_exists( $name, $this->params ) || array_key_exists( $name, $this->json );
 			}
 
 			/**
@@ -362,6 +388,7 @@ foreach ( $linker_worker_config['requests'] ?? array( array( 'route' => '/linker
 	}
 	$linker_worker_effective = new WP_REST_Request( $linker_worker_request['method'] ?? 'POST', $linker_worker_request['route'] );
 	$linker_worker_effective->set_query_params( $linker_worker_request['params'] ?? array() );
+	$linker_worker_effective->set_body( json_encode( $linker_worker_request['json'] ?? array(), JSON_THROW_ON_ERROR ) );
 	$linker_worker_effective->set_headers( $linker_worker_request['headers'] ?? array() );
 	$linker_worker_result   = ( $linker_worker_config['http_authentication'] ?? true ) ? $linker_worker_server->serve_request( $linker_worker_request['route'] ) : $linker_worker_server->dispatch( $linker_worker_effective );
 	$linker_worker_denied[] = $linker_worker_result instanceof WP_Error;

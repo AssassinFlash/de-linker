@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Integration;
 
+use Linker\Commerce\Products\EngineeringData;
 use Linker\Commerce\Products\Publication;
 use Linker\Commerce\Products\Publication\Controller;
 use Linker\Commerce\Products\Publication\PreparationJobs;
@@ -46,7 +47,7 @@ final class PublicationPreparationRecipeTest extends IntegrationTestCase {
 		$actions = array();
 		$record  = static function ( int $id ) use ( &$actions ): void {
 			$action = \ActionScheduler::store()->fetch_action( $id );
-			if ( 'linker_publication_reconcile' === $action->get_hook() && 'linker-publication' === $action->get_group() ) {
+			if ( in_array( $action->get_hook(), array( 'linker_publication_reconcile', 'linker_i18n_translate', 'woocommerce_run_product_attribute_lookup_update_callback' ), true ) ) {
 				$actions[] = $id;
 			}
 		};
@@ -60,6 +61,29 @@ final class PublicationPreparationRecipeTest extends IntegrationTestCase {
 			}
 		);
 		update_option( PreparationJobs::OPTION, array(), false );
+		// Own one tiny hosted original, so native preparation also runs on bare CI.
+		$product   = $this->product( '100' );
+		$uploads   = wp_upload_dir();
+		$directory = $uploads['basedir'] . '/publication-recipe-' . self::tag();
+		$this->assertTrue( wp_mkdir_p( $directory ) );
+		$path = $directory . '/manual.pdf';
+		$this->later(
+			static function () use ( $path, $directory ): void {
+				wp_delete_file( $path );
+				rmdir( $directory );
+			}
+		);
+		file_put_contents( $path, "%PDF-1.4\nOwned preparation fixture\n%%EOF\n" );
+		update_post_meta(
+			$product->get_id(),
+			EngineeringData::DOCUMENTS_META_KEY,
+			array(
+				array(
+					'url'  => $uploads['baseurl'] . '/' . basename( $directory ) . '/manual.pdf',
+					'type' => 'manual',
+				),
+			)
+		);
 	}
 
 	/** Successful processing settles once while missing semantic coverage remains visible. */
@@ -214,7 +238,7 @@ final class PublicationPreparationRecipeTest extends IntegrationTestCase {
 		$this->assertSame( $third['activation_epoch'] + 1, $rollback['activation_epoch'] );
 	}
 
-	/** A successful queue receipt cannot hide a later switched or unavailable process. */
+	/** A successful queue receipt ignores unknown observations but repairs a changed process. */
 	public function test_native_ready_receipt_reconciles_actual_process_and_runtime(): void {
 		$job                          = $this->claim( str_repeat( 'a', 64 ) );
 		$receipt                      = $this->receipt( $job, 'no_proven_passage' );
@@ -230,6 +254,7 @@ final class PublicationPreparationRecipeTest extends IntegrationTestCase {
 		);
 		$loaded = array(
 			'source_revision'           => $job['source_revision'],
+			'model_identity_revision'   => $job['model_identity_revision'],
 			'recipe_revision'           => $job['recipe_revision'],
 			'expected_serving_revision' => $receipt['expected_serving_revision'],
 			'serving_revision'          => $receipt['serving_revision'],
@@ -238,7 +263,9 @@ final class PublicationPreparationRecipeTest extends IntegrationTestCase {
 			'products'                  => array(),
 		);
 		$this->assertSame( array( 'job' => null ), ( new PreparationJobs() )->claim( 'knowledge', 'native-fixture', 600, $job['recipe_revision'], $loaded ) );
-		$before                  = get_option( PreparationJobs::OPTION );
+		$before = get_option( PreparationJobs::OPTION );
+		$this->assertSame( array( 'job' => null ), ( new PreparationJobs() )->claim( 'knowledge', 'native-fixture', 600, $job['recipe_revision'], null, true ) );
+		$this->assertSame( $before, get_option( PreparationJobs::OPTION ) );
 		$loaded['index_version'] = 'unexpected-generation';
 		$result                  = ( new PreparationJobs() )->claim( 'knowledge', 'native-fixture', 600, $job['recipe_revision'], $loaded );
 		$this->assertIsArray( $result );
@@ -260,10 +287,11 @@ final class PublicationPreparationRecipeTest extends IntegrationTestCase {
 		$request->set_body(
 			(string) wp_json_encode(
 				array(
-					'consumer'        => 'knowledge',
-					'worker_id'       => 'native-fixture',
-					'lease_seconds'   => 600,
-					'recipe_revision' => $recipe,
+					'consumer'          => 'knowledge',
+					'worker_id'         => 'native-fixture',
+					'lease_seconds'     => 600,
+					'recipe_revision'   => $recipe,
+					'identity_protocol' => Publication::IDENTITY_PROTOCOL,
 				)
 			)
 		);
@@ -283,24 +311,26 @@ final class PublicationPreparationRecipeTest extends IntegrationTestCase {
 	 * @return array<string,mixed>
 	 */
 	private function receipt( array $job, string $reason ): array {
-		$this->assertNotEmpty( $job['manifest']['documents'], 'Run against the required real snapshot with authorized documents.' );
+		$this->assertNotEmpty( $job['manifest']['documents'], 'The owned native hosted document must be published.' );
 		$document = $job['manifest']['documents'][0];
 		return array(
-			'job_id'                    => $job['job_id'],
-			'lease_token'               => $job['lease_token'],
-			'source_revision'           => $job['source_revision'],
-			'loaded_revision'           => $job['source_revision'],
-			'recipe_revision'           => $job['recipe_revision'],
-			'loaded_recipe_revision'    => $job['recipe_revision'],
-			'expected_serving_revision' => str_repeat( 'c', 64 ),
-			'serving_revision'          => str_repeat( 'c', 64 ),
-			'activation_epoch'          => $job['activation_epoch'],
-			'index_version'             => 'native-generation-1',
-			'status'                    => 'ready',
-			'prepared_products'         => array(),
-			'materialization_complete'  => true,
-			'preparation_complete'      => false,
-			'unprepared_documents'      => array(
+			'job_id'                         => $job['job_id'],
+			'lease_token'                    => $job['lease_token'],
+			'source_revision'                => $job['source_revision'],
+			'loaded_revision'                => $job['source_revision'],
+			'model_identity_revision'        => $job['model_identity_revision'],
+			'loaded_model_identity_revision' => $job['model_identity_revision'],
+			'recipe_revision'                => $job['recipe_revision'],
+			'loaded_recipe_revision'         => $job['recipe_revision'],
+			'expected_serving_revision'      => str_repeat( 'c', 64 ),
+			'serving_revision'               => str_repeat( 'c', 64 ),
+			'activation_epoch'               => $job['activation_epoch'],
+			'index_version'                  => 'native-generation-1',
+			'status'                         => 'ready',
+			'prepared_products'              => array(),
+			'materialization_complete'       => true,
+			'preparation_complete'           => false,
+			'unprepared_documents'           => array(
 				array(
 					'document_id' => $document['document_id'],
 					'product_id'  => $document['product_ids'][0],

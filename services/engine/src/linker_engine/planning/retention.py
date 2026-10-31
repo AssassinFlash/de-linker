@@ -13,7 +13,7 @@ from pathlib import Path
 
 from . import archive
 from .canonical import Object
-from .dependencies import cas_lock
+from .dependencies import cas_lock, reachable_blobs
 from .errors import VersionUnavailable
 from .storage import Blobs, _sync_directory
 
@@ -77,6 +77,7 @@ def _collect(
     apply: bool,
     recovery: Path | None,
     snapshots: tuple[Path, ...],
+    owned_runtime_sha256: str | None,
 ) -> Object:
     if (
         directory.resolve() != directory
@@ -90,6 +91,14 @@ def _collect(
         raise VersionUnavailable("workspace storage is absent")
     blobs = Blobs(directory / "blobs")
     retained = archive._check_database(directory / "workspace.sqlite", blobs)
+    if (
+        owned_runtime_sha256 is not None
+        and owned_runtime_sha256 not in retained
+        and (blobs.directory / owned_runtime_sha256[:2] / owned_runtime_sha256).exists()
+    ):
+        # Kernel startup owns this bundle before any job persists its hash.
+        # Retain its complete verified graph without publishing missing bytes.
+        retained.update(reachable_blobs(blobs, {owned_runtime_sha256}, blobs.directory))
     inventory, temporary = _inventory(blobs.directory)
     for snapshot in snapshots:
         independent_snapshot(snapshot, directory)
@@ -140,12 +149,31 @@ def collect(
     offline: bool = False,
     recovery: Path | None = None,
     snapshots: tuple[Path, ...] = (),
+    owned_runtime_sha256: str | None = None,
 ) -> Object:
-    """Only the stopped paired-service operator may assert offline ownership."""
+    """The operator owns downtime; its executable supplies the owned runtime.
+
+    The optional digest comes from that caller's actual RuntimeSnapshot, never
+    workspace metadata. A plan may retain existing bytes but never publish them.
+    """
     directory = directory.absolute()
+    if owned_runtime_sha256 is not None and not HASH.fullmatch(owned_runtime_sha256):
+        raise VersionUnavailable("owned runtime identity is invalid")
     if not apply:
-        return _collect(directory, apply=False, recovery=recovery, snapshots=snapshots)
+        return _collect(
+            directory,
+            apply=False,
+            recovery=recovery,
+            snapshots=snapshots,
+            owned_runtime_sha256=owned_runtime_sha256,
+        )
     if not offline:
         raise VersionUnavailable("CAS deletion requires a stopped maintenance window")
     with cas_lock(directory / "blobs", exclusive=True):
-        return _collect(directory, apply=True, recovery=recovery, snapshots=snapshots)
+        return _collect(
+            directory,
+            apply=True,
+            recovery=recovery,
+            snapshots=snapshots,
+            owned_runtime_sha256=owned_runtime_sha256,
+        )

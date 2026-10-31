@@ -32,6 +32,7 @@ LABELS = ["GW7K-HCA-20", "GW11K-HCA-20", "GW22K-HCA-20"]
 def manifest() -> dict[str, Any]:
     raw = json.loads(gzip.decompress((FIXTURES / "manifest.json.gz").read_bytes()))
     assert isinstance(raw, dict)
+    raw["model_identity_revision"] = "fixture-identity-1"
     return raw
 
 

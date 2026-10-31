@@ -6,11 +6,15 @@ import fcntl
 import hashlib
 import io
 import json
+import os
+import re
+import shutil
 import sqlite3
 import subprocess
 import sys
 import threading
 import time
+from collections.abc import Callable
 from email.message import Message
 from pathlib import Path
 from typing import Any
@@ -22,6 +26,33 @@ import index_release
 import publish_index
 
 
+def native_publisher(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Real local files/SQLite/rsync; only the SSH process boundary is in-process."""
+
+    def release(_host: str | None, *args: str, **kwargs: Any) -> dict[str, object]:
+        operation, root, *arguments = args
+        target = Path(root)
+        activation = kwargs.get("activation")
+        if operation == "status":
+            return index_release.status(target)
+        version, *rest = arguments
+        if operation == "prepare":
+            return index_release.prepare(
+                target, version, activation, reuse_basis="--reuse-basis" in rest
+            )
+        if operation == "validate":
+            return index_release.validate(
+                target, version, rest[0], kwargs["owner_token"], activation
+            )
+        if operation == "activate":
+            return index_release.activate(target, version, rest[0], activation)
+        if operation == "discard":
+            return index_release.discard(target, version, kwargs["owner_token"])
+        raise AssertionError(f"unexpected publication operation: {operation}")
+
+    monkeypatch.setattr(publish_index, "release", release)
+
+
 def candidate(
     root: Path, epoch: int, version: str, recipe: str = "b" * 64
 ) -> tuple[str, dict[str, Any]]:
@@ -31,6 +62,7 @@ def candidate(
     meta = {
         "version": version,
         "source_revision": "a" * 64,
+        "model_identity_revision": "fixture-identity-1",
         "recipe_revision": recipe,
         "serving_revision": "c" * 64,
         "activation_epoch": str(epoch),
@@ -53,6 +85,7 @@ def candidate(
         "lease_expires_at": int(time.time()) + 300,
         "job_id": f"job-{epoch}",
         "source_revision": meta["source_revision"],
+        "model_identity_revision": "fixture-identity-1",
         "recipe_revision": recipe,
         "serving_revision": meta["serving_revision"],
         "verify_url": "https://site.test/wp-json/linker/v1/publication/jobs/claim",
@@ -65,6 +98,7 @@ def candidate(
             "consumer": "knowledge",
             "job_id": f"job-{epoch}",
             "source_revision": meta["source_revision"],
+            "model_identity_revision": "fixture-identity-1",
             "recipe_revision": recipe,
             "activation_epoch": epoch,
             "lease_token": f"lease-{epoch}",
@@ -350,6 +384,38 @@ def test_ssh_discard_sends_owner_token_only_through_stdin(
     ) == {"discarded": True}
 
 
+def test_ssh_upload_validation_keeps_owner_and_activation_only_on_stdin(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    activation = {
+        "password": "private-fixture-password",
+        "service_token": "private-fixture-service-token",
+        "model_identity_revision": "fixture-identity-1",
+    }
+
+    def run(command: list[str], **kwargs: Any) -> subprocess.CompletedProcess[str]:
+        assert "private-" not in " ".join(command)
+        assert "--owner-stdin" in command[-1]
+        assert json.loads(kwargs["input"]) == {
+            "owner_token": "private-owner-token",
+            "activation": activation,
+        }
+        return subprocess.CompletedProcess(
+            command, 0, stdout='{"validated":true}', stderr=""
+        )
+
+    monkeypatch.setattr(subprocess, "run", run)
+    assert publish_index.release(
+        "service-host",
+        "validate",
+        "/index",
+        "target",
+        "sha",
+        activation=activation,
+        owner_token="private-owner-token",
+    ) == {"validated": True}
+
+
 def test_discard_stdin_keeps_owner_check(tmp_path: Path) -> None:
     prepared = index_release.prepare(tmp_path, "owned")
     with pytest.raises(subprocess.CalledProcessError):
@@ -379,6 +445,7 @@ def test_managed_publish_returns_actual_hash_and_full_fence(
             {
                 "version": version,
                 "source_revision": activation["source_revision"],
+                "model_identity_revision": "fixture-identity-1",
                 "recipe_revision": activation["recipe_revision"],
                 "serving_revision": activation["serving_revision"],
                 "activation_epoch": activation["epoch"],
@@ -473,6 +540,7 @@ def test_activation_retries_read_only_native_verification_under_its_lock(
                     "verified": True,
                     "job_id": activation["job_id"],
                     "source_revision": activation["source_revision"],
+                    "model_identity_revision": "fixture-identity-1",
                     "recipe_revision": activation["recipe_revision"],
                     "activation_epoch": activation["epoch"],
                 }
@@ -496,6 +564,7 @@ def test_activation_retries_read_only_native_verification_under_its_lock(
         ("job", 1),
         ("source", 1),
         ("recipe", 1),
+        ("identity", 1),
         ("epoch", 1),
         ("unverified", 1),
         ("malformed", 1),
@@ -546,6 +615,9 @@ def test_rejected_or_expired_verification_preserves_old_fence(
                     clock[0] = 1300
                 value = {
                     "verified": failure != "unverified",
+                    "model_identity_revision": "changed"
+                    if failure == "identity"
+                    else activation["model_identity_revision"],
                     "job_id": "wrong" if failure == "job" else activation["job_id"],
                     "source_revision": "wrong"
                     if failure == "source"
@@ -623,6 +695,7 @@ def test_lost_ssh_activation_checks_exact_locked_status_without_replay(
                 "epoch": activation["epoch"],
                 "job_id": activation["job_id"],
                 "source_revision": activation["source_revision"],
+                "model_identity_revision": "fixture-identity-1",
                 "recipe_revision": "wrong"
                 if outcome == "different_fence"
                 else activation["recipe_revision"],
@@ -720,6 +793,7 @@ def test_native_verify_rejection_is_a_bounded_private_cli_receipt(
         "transport": False,
         "job_id": activation["job_id"],
         "source_revision": activation["source_revision"],
+        "model_identity_revision": "fixture-identity-1",
         "recipe_revision": activation["recipe_revision"],
         "epoch": activation["epoch"],
     }
@@ -743,6 +817,7 @@ def test_only_exact_native_rejection_receipt_is_trusted(
         "transport": False,
         "job_id": activation["job_id"],
         "source_revision": activation["source_revision"],
+        "model_identity_revision": "fixture-identity-1",
         "recipe_revision": activation["recipe_revision"],
         "epoch": activation["epoch"],
     }
@@ -787,6 +862,7 @@ def test_lost_ssh_with_late_remote_verify_keeps_woo_lease(
             {
                 "version": version,
                 "source_revision": activation["source_revision"],
+                "model_identity_revision": "fixture-identity-1",
                 "recipe_revision": activation["recipe_revision"],
                 "serving_revision": activation["serving_revision"],
                 "activation_epoch": activation["epoch"],
@@ -853,3 +929,299 @@ def test_lost_ssh_with_late_remote_verify_keeps_woo_lease(
         worker.close()
     assert not thread.is_alive() and not remote_errors
     assert index_release.current(root) == version
+
+
+def test_runtime_hook_follows_verified_upload_and_keeps_identity_fence(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = tmp_path / "host"
+    monkeypatch.setattr(index_release, "_verify_activation", lambda _: None)
+    first_sha, first = candidate(root, 1, "20261024T100000Z")
+    index_release.activate(root, "20261024T100000Z", first_sha, first)
+    digest, activation = candidate(tmp_path / "source", 2, "20261024T100100Z")
+    source = tmp_path / "source/.incoming-20261024T100100Z"
+    native_publisher(monkeypatch)
+    order: list[str] = []
+
+    def runtime() -> None:
+        uploaded = root / ".incoming-20261024T100100Z"
+        assert index_release._sha256(uploaded / "index.sqlite") == digest
+        with sqlite3.connect(
+            f"file:{uploaded / 'index.sqlite'}?mode=ro", uri=True
+        ) as db:
+            assert (
+                dict(db.execute("SELECT key,value FROM meta"))[
+                    "model_identity_revision"
+                ]
+                == activation["model_identity_revision"]
+            )
+        assert index_release.current(root) == "20261024T100000Z"
+        order.append("runtime")
+
+    def verify(value: dict[str, Any]) -> None:
+        assert order == ["runtime"]
+        assert value["model_identity_revision"] == "fixture-identity-1"
+        order.append("native_verify")
+
+    monkeypatch.setattr(index_release, "_verify_activation", verify)
+    report = publish_index.publish(
+        source, str(root), None, activation=activation, before_activate=runtime
+    )
+    assert order == ["runtime", "native_verify"]
+    fence = report["activation"]
+    assert isinstance(fence, dict)
+    assert fence["model_identity_revision"] == "fixture-identity-1"
+    assert fence["epoch"] == 2
+    assert report["current"] == "20261024T100100Z"
+    assert not list(root.glob(".incoming-*"))
+
+
+@pytest.mark.parametrize(
+    "failure",
+    ["checksum", "incomplete", "transfer", "model_identity", "model_index", "owner"],
+)
+def test_invalid_upload_never_runs_runtime_hook_and_cleans_only_its_upload(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, failure: str
+) -> None:
+    root = tmp_path / "host"
+    monkeypatch.setattr(index_release, "_verify_activation", lambda _: None)
+    first_sha, first = candidate(root, 1, "20261024T100000Z")
+    index_release.activate(root, "20261024T100000Z", first_sha, first)
+    _, activation = candidate(tmp_path / "source", 2, "20261024T100100Z")
+    source = tmp_path / "source/.incoming-20261024T100100Z"
+    if failure == "model_index":
+        with sqlite3.connect(source / "index.sqlite") as db:
+            db.execute(
+                "UPDATE meta SET value='different-model-index' WHERE key='model_identity_revision'"
+            )
+        manifest = json.loads((source / "manifest.json").read_text())
+        manifest["file"]["sha256"] = index_release._sha256(source / "index.sqlite")
+        (source / "manifest.json").write_text(json.dumps(manifest))
+    native_publisher(monkeypatch)
+    native_validate = index_release.validate
+
+    def validate(*args: Any, **kwargs: Any) -> dict[str, object]:
+        if failure == "owner":
+            args = (*args[:3], "another-upload-owner", *args[4:])
+        return native_validate(*args, **kwargs)
+
+    monkeypatch.setattr(index_release, "validate", validate)
+
+    def upload(argv: list[str], **_kwargs: Any) -> subprocess.CompletedProcess[str]:
+        assert argv[0] == "rsync"
+        destination = root / ".incoming-20261024T100100Z"
+        shutil.copy2(source / "index.sqlite", destination / "index.sqlite")
+        if failure == "transfer":
+            raise subprocess.CalledProcessError(23, argv)
+        if failure != "incomplete":
+            shutil.copy2(source / "manifest.json", destination / "manifest.json")
+        if failure == "checksum":
+            with (destination / "index.sqlite").open("ab") as output:
+                output.write(b"truncated-or-corrupt-transfer")
+        if failure == "model_identity":
+            manifest = json.loads((destination / "manifest.json").read_text())
+            manifest["model_identity_revision"] = "a-different-model-authority"
+            (destination / "manifest.json").write_text(json.dumps(manifest))
+        return subprocess.CompletedProcess(argv, 0)
+
+    monkeypatch.setattr(subprocess, "run", upload)
+    hooks: list[str] = []
+    with pytest.raises((RuntimeError, SystemExit, subprocess.CalledProcessError)):
+        publish_index.publish(
+            source,
+            str(root),
+            None,
+            activation=activation,
+            before_activate=lambda: hooks.append("switched"),
+        )
+    assert hooks == []
+    assert index_release.current(root) == "20261024T100000Z"
+    assert json.loads((root / index_release.FENCE).read_text())["epoch"] == 1
+    assert not (root / ".incoming-20261024T100100Z").exists()
+    assert index_release._sha256(root / "current/index.sqlite") == first_sha
+
+
+def test_cancelled_runtime_hook_discards_verified_upload_without_activating(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _, activation = candidate(tmp_path / "source", 1, "20261024T100000Z")
+    source = tmp_path / "source/.incoming-20261024T100000Z"
+    root = tmp_path / "host"
+    native_publisher(monkeypatch)
+    calls: list[str] = []
+
+    def cancel() -> None:
+        calls.append("hook")
+        raise KeyboardInterrupt
+
+    with pytest.raises(KeyboardInterrupt):
+        publish_index.publish(
+            source, str(root), None, activation=activation, before_activate=cancel
+        )
+    assert calls == ["hook"]
+    assert index_release.current(root) is None
+    assert not (root / index_release.FENCE).exists()
+    assert not list(root.glob(".incoming-*"))
+
+
+def test_activation_after_hook_still_rechecks_actual_candidate_bytes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _, activation = candidate(tmp_path / "source", 1, "20261024T100000Z")
+    root = tmp_path / "host"
+    native_publisher(monkeypatch)
+    verified: list[str] = []
+    monkeypatch.setattr(
+        index_release, "_verify_activation", lambda _: verified.append("native")
+    )
+
+    def change_after_validation() -> None:
+        (root / ".incoming-20261024T100000Z/index.sqlite").write_bytes(b"changed")
+
+    with pytest.raises(SystemExit, match="sha256"):
+        publish_index.publish(
+            tmp_path / "source/.incoming-20261024T100000Z",
+            str(root),
+            None,
+            activation=activation,
+            before_activate=change_after_validation,
+        )
+    assert verified == []
+    assert index_release.current(root) is None
+    assert not list(root.glob(".incoming-*"))
+
+
+def test_runtime_hook_is_not_replayed_after_confirmed_lost_activation_response(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _, activation = candidate(tmp_path / "source", 1, "20261024T100000Z")
+    root = tmp_path / "host"
+    native_publisher(monkeypatch)
+    monkeypatch.setattr(index_release, "_verify_activation", lambda _: None)
+    switch = index_release._switch
+    hooks: list[str] = []
+
+    def switched_without_response(*args: Any) -> None:
+        switch(*args)
+        raise OSError("SSH response lost after the switch")
+
+    monkeypatch.setattr(index_release, "_switch", switched_without_response)
+    report = publish_index.publish(
+        tmp_path / "source/.incoming-20261024T100000Z",
+        str(root),
+        None,
+        activation=activation,
+        before_activate=lambda: hooks.append("runtime"),
+    )
+    assert hooks == ["runtime"]
+    fence = report["activation"]
+    assert isinstance(fence, dict)
+    assert fence["epoch"] == 1
+    assert fence["model_identity_revision"] == "fixture-identity-1"
+    assert not list(root.glob(".incoming-*"))
+
+
+def test_upload_validation_keeps_owner_and_native_context_on_stdin(
+    tmp_path: Path,
+) -> None:
+    digest, activation = candidate(tmp_path, 1, "20261024T100000Z")
+    owner = json.loads(
+        (
+            tmp_path / ".incoming-20261024T100000Z" / index_release.UPLOAD_OWNER
+        ).read_text()
+    )["owner_token"]
+    report = publish_index.release(
+        None,
+        "validate",
+        str(tmp_path),
+        "20261024T100000Z",
+        digest,
+        activation=activation,
+        owner_token=owner,
+    )
+    assert report == {
+        "validated": True,
+        "index_version": "20261024T100000Z",
+        "sha256": digest,
+    }
+
+
+def test_legacy_basis_reuses_real_blocks_without_inheriting_its_identity(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capfd: pytest.CaptureFixture[str],
+    record_property: Callable[[str, object], None],
+) -> None:
+    from test_publish import build
+
+    root = tmp_path / "host"
+    legacy = build(tmp_path / "legacy", "20261024T100000Z")
+    _, activation = candidate(tmp_path / "source", 2, "20261024T100100Z")
+    source = tmp_path / "source/.incoming-20261024T100100Z"
+    # Two MiB of identical persisted payload and one small changed meta page.
+    # Equal size/mtime deliberately cannot distinguish these candidate bytes.
+    payload = bytes(range(256)) * 8192
+    for directory in (legacy, source):
+        with sqlite3.connect(directory / "index.sqlite") as db:
+            db.execute("CREATE TABLE payload (value BLOB)")
+            db.execute("INSERT INTO payload VALUES (?)", (payload,))
+        manifest = json.loads((directory / "manifest.json").read_text())
+        manifest["file"]["sha256"] = index_release._sha256(directory / "index.sqlite")
+        (directory / "manifest.json").write_text(json.dumps(manifest))
+    os.utime(source / "index.sqlite", ns=(1_700_000_000_000_000_000,) * 2)
+    os.utime(legacy / "index.sqlite", ns=(1_700_000_000_000_000_000,) * 2)
+    native_publisher(monkeypatch)
+    publish_index.publish(legacy, str(root), None)
+    basis = root / "20261024T100000Z/index.sqlite"
+    before = basis.read_bytes()
+    assert basis.stat().st_size == (source / "index.sqlite").stat().st_size
+    monkeypatch.setattr(index_release, "_verify_activation", lambda _: None)
+    monkeypatch.setenv("LC_ALL", "C")
+    report = publish_index.publish(
+        source, str(root), None, activation=activation, before_activate=lambda: None
+    )
+    captured = capfd.readouterr()
+    output = captured.out + captured.err
+    literal_stat = re.search(
+        r"^(?:literal|unmatched) data:\s*([\d,]+)", output, re.I | re.M
+    )
+    matched_stat = re.search(r"^matched data:\s*([\d,]+)", output, re.I | re.M)
+    assert literal_stat is not None and matched_stat is not None, output
+    literal = int(literal_stat[1].replace(",", ""))
+    matched = int(matched_stat[1].replace(",", ""))
+    record_property("rsync_literal_bytes", literal)
+    record_property("rsync_matched_bytes", matched)
+    assert literal > 0 and matched > literal
+    assert basis.read_bytes() == before
+    assert (root / "current/index.sqlite").read_bytes() == (
+        source / "index.sqlite"
+    ).read_bytes()
+    assert basis.stat().st_ino != (root / "current/index.sqlite").stat().st_ino
+    assert report["transfer_basis"] == {
+        "path": str(basis.parent),
+        "reason": "verified_current_bytes",
+    }
+    fence = report["activation"]
+    assert isinstance(fence, dict)
+    assert fence["model_identity_revision"] == "fixture-identity-1"
+
+
+def test_corrupt_current_basis_explicitly_falls_back_to_full_transfer(
+    tmp_path: Path,
+) -> None:
+    from test_publish import build
+
+    root = tmp_path / "host"
+    publish_index.publish(build(tmp_path, "20261024T100000Z"), str(root), None)
+    (root / "current/index.sqlite").write_bytes(b"bad-old-basis")
+    source = build(tmp_path, "20261024T100100Z")
+    report = publish_index.publish(
+        source, str(root), None, before_activate=lambda: None
+    )
+    assert report["transfer_basis"] == {
+        "path": None,
+        "reason": "current_checksum_mismatch",
+    }
+    assert (root / "current/index.sqlite").read_bytes() == (
+        source / "index.sqlite"
+    ).read_bytes()

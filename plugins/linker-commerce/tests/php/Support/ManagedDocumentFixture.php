@@ -28,6 +28,9 @@ trait ManagedDocumentFixture {
 	 */
 	private function managed_documents( array $paths ): void {
 		WP_Mock::userFunction( '_prime_post_caches' )->byDefault();
+		// Fixtures without authored identity relationships have an empty native model map.
+		WP_Mock::userFunction( 'wp_get_object_terms' )->andReturn( array() )->byDefault();
+		WP_Mock::userFunction( 'is_wp_error' )->andReturnUsing( static fn ( mixed $value ): bool => $value instanceof \WP_Error )->byDefault();
 		$this->publication_uploads = sys_get_temp_dir() . '/linker-publication-' . bin2hex( random_bytes( 8 ) );
 		foreach ( $paths as $path ) {
 			$target = $this->publication_uploads . '/' . $path;

@@ -538,7 +538,7 @@ def compile_scopes(
     source = Snapshot.read(manifest)
     shas = {document["blob_sha256"] for document in source.documents.values()}
     relevant = [chunk for chunk in chunks if chunk.doc_sha256 in shas]
-    statuses = _recognized(relevant, authority)
+    statuses = _recognized(relevant, authority, source.model_identity_revision)
     result = scope_proofs(chunks, manifest, authority, _statuses=statuses)
     contexts = _author_contexts(relevant, source, statuses)
     for cid in list(result):
@@ -733,4 +733,6 @@ def compile_scopes(
     )
     output.extend(fragments)
     result.update(fragment_scopes)
+    for scope in result.values():
+        scope["model_identity_revision"] = source.model_identity_revision
     return output, result

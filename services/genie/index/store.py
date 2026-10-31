@@ -205,6 +205,13 @@ def export(directory: Path, path: Path) -> None:
             chunk = chunks_by_id.get(cid)
             if chunk is not None and ids and is_passage(chunk.text):
                 scope = proof.get("chunk_scopes", {}).get(cid)
+                identity = values.get("model_identity_revision", "")
+                if (
+                    not identity
+                    or not scope
+                    or scope.get("model_identity_revision") != identity
+                ):
+                    continue
                 if cid in column_texts and not column_texts[cid]:
                     continue
                 if (
