@@ -1,6 +1,7 @@
 """Select and audit CI package lanes from the actual Git diff."""
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -21,8 +22,462 @@ LANES = (
     "engine",
     "genie",
 )
-FULL_LANES = ("php", "js", "python", "content", "build", "native")
+FULL_LANES = (
+    "php",
+    "js",
+    "python",
+    "content",
+    "build",
+    "native",
+    "planner",
+    "engine",
+    "genie",
+)
 WORKFLOW = ".github/workflows/check.yml"
+
+# Modules name complete package checks, not individual assertions. PHP clients
+# retain native authority checks; compiled JS is reproduced only for JS inputs.
+PHP_PROJECTS = {
+    "commerce": "plugins/linker-commerce",
+    "tools": "plugins/linker-tools",
+    "i18n": "plugins/linker-i18n",
+    "mu": "mu-plugins",
+    "local": "tools/local",
+}
+PYTHON_PROJECTS = {
+    "local": "tools/local",
+    "migrate": "tools/migrate",
+    "pull": "tools/pull",
+    "cutover": "tools/cutover",
+}
+NATIVE_GROUPS = ("core", "mail", "inquiry", "inventory", "runtime", "admin")
+MODULE_COMMANDS = {
+    **{
+        f"php:{name}": ("just", "ci-php-package", path)
+        for name, path in PHP_PROJECTS.items()
+    },
+    **{
+        f"js:{name}": ("just", "ci-js-package", name)
+        for name in ("commerce", "tools", "e2e")
+    },
+    **{
+        f"python:{name}": ("just", "ci-python-package", path)
+        for name, path in PYTHON_PROJECTS.items()
+    },
+    "python:harnesses": ("just", "ci-python-harnesses"),
+    **{
+        f"build:{name}": ("just", "ci-build-package", name)
+        for name in ("commerce", "tools")
+    },
+    **{
+        f"native:{name}": ("just", "ci-native", name, "smoke") for name in NATIVE_GROUPS
+    },
+    **{
+        name: ("just", "ci-" + name)
+        for name in ("content", "presentation", "planner", "engine", "genie")
+    },
+}
+FULL_MODULES = tuple(module for module in MODULE_COMMANDS if module != "presentation")
+# These recipes have diff-derived optional checks; equal source bytes alone do
+# not prove the prior invocation used the same flags. Always execute them.
+DIFF_GUARDED_MODULES = {"planner", "presentation"}
+CONTROL_INPUTS = (
+    WORKFLOW,
+    "justfile",
+    "tools/build.just",
+    "tools/checks/ci_scope.py",
+    "tools/checks/ci_preflight.py",
+    "tools/checks/test_ci_scope.py",
+    "tools/checks/test_ci_preflight.py",
+    ".gitattributes",
+    ".gitmodules",
+    ".editorconfig",
+)
+
+# Docs are inputs only where a current check actually opens them. Reports and
+# guidance must not invalidate an otherwise identical successful package run.
+ENGINE_DOC_INPUTS = (
+    "docs/research/2026-10-23-pv-inputs/raw/",
+    "docs/research/2026-10-24-pv-generation/raw/",
+)
+GENIE_DOC_INPUTS = (
+    "docs/research/2026-10-17-deepseek-flash-vision/raw/datasheet-probe.pdf",
+    "docs/research/2026-10-20-campaign-330/harness/regrade.py",
+    "docs/research/2026-10-20-campaign-330/harness/summary.py",
+    "docs/research/2026-10-20-campaign-330/harness/fixtures/339/manifest.json",
+    "docs/research/2026-10-20-campaign-330/harness/fixtures/certificate/esa-5-30kw-rated-output.txt",
+    "docs/research/2026-10-20-campaign-330/round3-runs.jsonl",
+    "docs/research/2026-10-20-campaign-330/verdicts.jsonl",
+    "docs/research/2026-10-20-campaign-334/harness/grade.py",
+    "docs/research/2026-10-20-campaign-334/harness/poison.py",
+    "docs/acceptance/2026-10-20/339/case-map.md",
+    "docs/acceptance/2026-10-20/405/cases.md",
+)
+HARNESS_EXTERNAL_INPUTS = (
+    "docs/research/2026-10-20-campaign-330/verdicts.jsonl",
+    "docs/research/2026-10-20-campaign-330/round3-runs.jsonl",
+    "docs/research/2026-10-20-campaign-332/verdicts.jsonl",
+    "docs/research/2026-10-17-deepseek-flash-vision/raw/nameplate-probe.png",
+    "services/genie/eval/attachments/photos/goodwe-gw10k-et.jpg",
+)
+MIGRATE_DOC_INPUTS = (
+    "docs/faq/goodwe-gw60k-sts-g10.json",
+    "docs/debt/DE-PARITY-2026-10-13.md",
+)
+# local's real release test imports this current, stdlib-only engine guard.
+LOCAL_ENGINE_INPUTS = (
+    "services/engine/src/linker_engine/__init__.py",
+    "services/engine/src/linker_engine/planning/__init__.py",
+    "services/engine/src/linker_engine/planning/project_input_floor.py",
+    "services/engine/src/linker_engine/planning/project_input_contracts.py",
+)
+
+
+def under(path, roots):
+    return any(
+        path == root or path.startswith(root.rstrip("/") + "/") for root in roots
+    )
+
+
+def fixture_consumers(path):
+    modules: set[str] = set()
+    if under(path, ENGINE_DOC_INPUTS):
+        modules.update(("engine", "planner"))
+    if under(path, GENIE_DOC_INPUTS):
+        modules.add("genie")
+    if under(path, MIGRATE_DOC_INPUTS):
+        modules.add("python:migrate")
+    if under(path, HARNESS_EXTERNAL_INPUTS):
+        modules.add("python:harnesses")
+    # These existing Python packages also exercise their own harness sources.
+    if re.match(
+        r"docs/research/2026-10-20-campaign-\d+/harness/", path
+    ) and not path.endswith((".md", ".rst", ".txt")):
+        modules.add("python:harnesses")
+    return modules
+
+
+def non_runtime_path(path):
+    return (document(path) or acceptance_record(path)) and not fixture_consumers(path)
+
+
+def module_lane(module):
+    return module.split(":", 1)[0]
+
+
+def selected_modules(changes, base="", head=""):
+    """Known package/dependency union; None means shared/structural fallback."""
+    if not changes or any(status not in {"A", "M", "D"} for status, _ in changes):
+        return None
+    if any(
+        not (
+            non_runtime_change(status, path, base, head)
+            if document(path) or acceptance_record(path)
+            else regular_change(status, path, base, head)
+        )
+        for status, path in changes
+    ):
+        return None
+    runtime = [(status, path) for status, path in changes if not non_runtime_path(path)]
+    if not runtime:
+        return []
+    if all(status == "M" and presentation(path) for status, path in runtime):
+        return ["presentation"]
+    selected = set()
+    native = {"native:" + name for name in NATIVE_GROUPS}
+    planner_changed = any(
+        path.startswith(("apps/planner/", "plugins/linker-tools/build/planner/"))
+        for _, path in runtime
+    )
+    for _status, path in runtime:
+        consumers = fixture_consumers(path)
+        selected.update(consumers)
+        if consumers and path.startswith("docs/"):
+            continue
+        if path in CONTROL_INPUTS or path.startswith(".github/"):
+            return None
+        if path.startswith(("apps/planner/", "plugins/linker-tools/build/planner/")):
+            selected.add("planner")
+            if path.startswith("apps/planner/tests/fixtures/preparation-flow"):
+                selected.add("engine")
+        elif path == "plugins/linker-tools/build/manifest.json":
+            if not planner_changed or not planner_manifest_isolated(base, head):
+                return None
+        elif path.startswith("services/engine/"):
+            selected.add("engine")
+            if under(path, LOCAL_ENGINE_INPUTS):
+                selected.add("python:local")
+            if path.startswith("services/engine/tests/fixtures/"):
+                selected.update(("genie", "php:commerce", "php:tools"))
+            if path.startswith("services/engine/schemas/"):
+                selected.add("planner")
+            if path.endswith("/assistant_context.py"):
+                selected.add("genie")
+        elif path.startswith("services/genie/"):
+            selected.add("genie")
+            if path.startswith("services/genie/tests/fixtures/"):
+                selected.update(("php:commerce", "php:tools"))
+            if path == "services/genie/tests/page_cache_probe.py":
+                selected.add("native:inquiry")
+        elif path.startswith("fixtures/planning/") or path.startswith(
+            (
+                "docs/research/2026-10-23-pv-inputs/raw/",
+                "docs/research/2026-10-24-pv-generation/raw/",
+            )
+        ):
+            selected.update(("engine", "planner"))
+        elif path.startswith("tools/local/"):
+            selected.update(("python:local", "python:pull", "python:cutover"))
+            if path.endswith(".php") or path.split("/")[-1].startswith(
+                ("composer", "phpstan", "phpcs")
+            ):
+                selected.add("php:local")
+                selected.update(native)
+        elif path.startswith(("tools/migrate/", "tools/pull/", "tools/cutover/")):
+            selected.add("python:" + path.split("/")[1])
+        elif path.startswith("tools/faq/") or re.match(
+            r"docs/research/2026-10-20-campaign-\d+/harness/", path
+        ):
+            selected.add("python:harnesses")
+        elif path.startswith("tests/e2e/"):
+            selected.add("js:e2e")
+        elif path.startswith("mu-plugins/"):
+            selected.add("php:mu")
+            selected.update(native)
+        elif path.startswith("plugins/"):
+            parts = path.split("/")
+            package = parts[1]
+            if package not in {"linker-commerce", "linker-tools", "linker-i18n"}:
+                return None
+            name = package.removeprefix("linker-")
+            relative = "/".join(parts[2:])
+            if (
+                relative.startswith(
+                    ("src/", "assets/", "build/", "tests/js/", "tests/e2e/")
+                )
+                or path.endswith((".ts", ".tsx", ".mjs", ".cjs", ".mts"))
+                or parts[-1] in {"package.json", "package-lock.json", "tsconfig.json"}
+            ):
+                if name == "i18n":
+                    return None
+                selected.update(("js:" + name, "build:" + name, "php:" + name))
+                selected.update(native)
+            elif (
+                path.endswith(".php")
+                or relative.startswith(("content/", "languages/", "tests/php/"))
+                or parts[-1].startswith(("composer.", "phpunit", "phpstan", "phpcs"))
+            ):
+                selected.add("php:" + name)
+                selected.update(native)
+                if name in {"commerce", "i18n"}:
+                    selected.add("php:tools")
+                if name == "i18n":
+                    selected.add("php:commerce")
+                if not relative.startswith("tests/"):
+                    selected.add("content")
+                if name == "commerce" and relative.startswith(
+                    "includes/Products/Publication"
+                ):
+                    selected.update(("engine", "genie"))
+                if name == "tools" and relative.startswith("includes/Planner/"):
+                    selected.update(("engine", "planner"))
+                if name == "tools" and relative.startswith(
+                    ("includes/Genie/", "includes/Protection/")
+                ):
+                    selected.add("genie")
+            else:
+                return None
+        else:
+            return None
+    return [module for module in MODULE_COMMANDS if module in selected]
+
+
+def modules_for_lanes(lanes, changes, base="", head=""):
+    if not lanes:
+        return []
+    if lanes == list(FULL_LANES):
+        return list(FULL_MODULES)
+    modules = selected_modules(changes, base, head)
+    return list(FULL_MODULES) if modules is None else modules
+
+
+def module_project(module):
+    kind, _, name = module.partition(":")
+    if kind == "php":
+        return PHP_PROJECTS[name]
+    if kind == "python":
+        return PYTHON_PROJECTS.get(name, "harnesses")
+    return name
+
+
+def module_matrix(modules, lane):
+    # A skipped job still gets a nonempty valid matrix expression.
+    return [
+        module_project(module) for module in modules if module_lane(module) == lane
+    ] or ["none"]
+
+
+def module_job_name(module):
+    lane = module_lane(module)
+    prefix = {
+        "php": "php-lane",
+        "js": "js-lane",
+        "python": "python-lane",
+        "native": "mu-smoke",
+    }.get(lane, lane)
+    return prefix + " (" + module_project(module) + ")" if ":" in module else prefix
+
+
+def module_inputs(module):
+    """Complete packages plus explicit inputs read across package boundaries.
+
+    PHP contracts intentionally retain their coupled companion includes/fixture
+    roots; native loads the installed plugins and Genie's real page-cache probe.
+    Neither uses all services/tools/docs as a substitute for those dependencies.
+    """
+    lane = module_lane(module)
+    shared = CONTROL_INPUTS
+    commerce = "plugins/linker-commerce/"
+    tools = "plugins/linker-tools/"
+    i18n = "plugins/linker-i18n/"
+    php_shared = "tools/php/"
+    engine_feed = "services/engine/tests/fixtures/feed.json"
+    size_hint = "services/genie/tests/fixtures/size-hint-urls.json"
+    if lane == "php":
+        name = module.split(":", 1)[1]
+        dependencies = {
+            "commerce": (
+                tools + "includes/Genie/",
+                i18n + "includes/",
+                i18n + "tests/fixtures/live/",
+                "tools/migrate/",
+                "tools/faq/wordpress.php",
+                engine_feed,
+                size_hint,
+            ),
+            "tools": (commerce, i18n + "includes/"),
+            "i18n": (commerce + "includes/Digest/Block.php",),
+            "mu": (),
+            "local": (),
+        }
+        return (*shared, PHP_PROJECTS[name], php_shared, *dependencies[name])
+    if lane == "native":
+        return (
+            *shared,
+            commerce,
+            tools,
+            i18n,
+            "mu-plugins/",
+            "tools/local/",
+            "tools/checks/",
+            "tests/e2e/fixtures/",
+            *(("services/genie/",) if module == "native:inquiry" else ()),
+        )
+    if lane in {"presentation", "content"}:
+        # Catalog/source scanners inspect all plugin surfaces. CI runner tests
+        # also import linker-local; no acceptance report is scanner input.
+        return (
+            *shared,
+            commerce,
+            tools,
+            i18n,
+            "tools/checks/",
+            "tools/local/",
+            "apps/planner/src/",
+        )
+    if lane in {"js", "build"}:
+        name = module.split(":", 1)[1]
+        if name == "e2e":
+            return (*shared, "tests/e2e/")
+        if name == "commerce":
+            return (
+                *shared,
+                commerce,
+                tools + "bin/build-manifest.mjs",
+                tools + "package.json",
+                tools + "package-lock.json",
+            )
+        return (*shared, tools, "apps/planner/", "fixtures/planning/")
+    if lane == "planner":
+        return (
+            *shared,
+            "apps/planner/",
+            "fixtures/planning/",
+            tools + "bin/",
+            tools + "build/",
+            tools + "tests/php/Unit/PlannerApplicationTest.php",
+            tools + "composer.json",
+            tools + "composer.lock",
+            php_shared,
+        )
+    if lane == "engine":
+        return (
+            *shared,
+            "services/engine/",
+            "apps/planner/",
+            "fixtures/planning/",
+            commerce + "data/compatibility.json",
+            *ENGINE_DOC_INPUTS,
+        )
+    if lane == "genie":
+        return (
+            *shared,
+            "services/genie/",
+            engine_feed,
+            commerce + "includes/",
+            tools + "includes/Genie/",
+            tools + "src/genie/",
+            tools + "tests/php/Integration/PageCacheChainTest.php",
+            *GENIE_DOC_INPUTS,
+        )
+    name = module.split(":", 1)[1]
+    if name == "harnesses":
+        return (
+            *shared,
+            "tools/faq/",
+            *HARNESS_EXTERNAL_INPUTS,
+            *(
+                f"docs/research/2026-10-20-campaign-{number}/harness/"
+                for number in (330, 332, 333, 334, 335)
+            ),
+        )
+    if name == "migrate":
+        return (
+            *shared,
+            "tools/migrate/",
+            "tools/checks/",
+            commerce,
+            tools + "includes/",
+            i18n,
+            *MIGRATE_DOC_INPUTS,
+        )
+    # Pull/cutover depend on linker-local and test installing a checkout's real
+    # plugins. Keep that explicit companion scope, not unrelated migration/docs.
+    return (
+        *shared,
+        PYTHON_PROJECTS[name],
+        "tools/local/",
+        "tools/checks/",
+        commerce,
+        tools,
+        i18n,
+        "mu-plugins/",
+        *LOCAL_ENGINE_INPUTS,
+        *(("services/genie/ops/",) if name == "cutover" else ()),
+    )
+
+
+def module_fingerprint(commit, module):
+    paths = module_inputs(module)
+    entries = git("ls-tree", "-r", "-z", commit).split(b"\0")
+    selected = []
+    for entry in entries:
+        if not entry:
+            continue
+        path = entry.split(b"\t", 1)[1].decode()
+        if under(path, paths) and not non_runtime_path(path):
+            selected.append(entry)
+    return hashlib.sha256(module.encode() + b"\0" + b"\0".join(selected)).hexdigest()
 
 
 def git(*args):
@@ -84,15 +539,6 @@ def non_runtime_change(status, path, base, head):
     return bool(revisions) and all(non_runtime_file(rev, path) for rev in revisions)
 
 
-def commerce(path):
-    return bool(
-        re.fullmatch(
-            r"plugins/linker-commerce/(includes/(Presentation/(ProductShortcodes|LanguageLinks|LibraryPage)[.]php|Storefront/ProductView[.]php|Registration/PendingProfileCapacity[.]php)|assets/[a-z0-9-]+[.]js|content/(livecanvas/(de/)?[a-z0-9_-]+[.]html|windpress/[a-z0-9_-]+[.]css)|languages/linker-commerce-de_DE_formal[.](po|mo)|tests/php/(Unit/(Presentation/(ProductShortcodes|LanguageLinks|LibraryPage)Test[.]php|Storefront/ProductViewTest[.]php)|Integration/RegistrationCapacityTest[.]php)|tests/js/[a-z0-9-]+[.]test[.]mjs)",
-            path,
-        )
-    )
-
-
 def presentation(path):
     return (
         bool(
@@ -145,59 +591,10 @@ def planner_manifest_isolated(base, head):
 
 
 def classify(changes, base="", head=""):
-    if not changes or any(status not in {"A", "M", "D"} for status, _ in changes):
+    modules = selected_modules(changes, base, head)
+    if modules is None:
         return list(FULL_LANES)
-    if all(
-        (document(path) or acceptance_record(path))
-        and non_runtime_change(status, path, base, head)
-        for status, path in changes
-    ):
-        return []
-    if all(
-        (document(path) or acceptance_record(path))
-        or (status == "M" and presentation(path))
-        for status, path in changes
-    ) and all(
-        non_runtime_change(status, path, base, head)
-        if document(path) or acceptance_record(path)
-        else regular_change(status, path, base, head)
-        for status, path in changes
-    ):
-        return ["presentation"]
-    if any(
-        not (
-            non_runtime_change(status, path, base, head)
-            if document(path) or acceptance_record(path)
-            else regular_change(status, path, base, head)
-        )
-        for status, path in changes
-    ):
-        return list(FULL_LANES)
-    lanes = set()
-    planner_changed = any(
-        path.startswith("apps/planner/")
-        or path.startswith("plugins/linker-tools/build/planner/")
-        for _, path in changes
-    )
-    for status, path in changes:
-        if document(path) or acceptance_record(path):
-            continue
-        if path.startswith("apps/planner/") or path.startswith(
-            "plugins/linker-tools/build/planner/"
-        ):
-            lanes.add("planner")
-        elif path == "plugins/linker-tools/build/manifest.json":
-            if not planner_changed or not planner_manifest_isolated(base, head):
-                return list(FULL_LANES)
-        elif path.startswith("services/engine/"):
-            lanes.add("engine")
-        elif path.startswith("services/genie/"):
-            lanes.add("genie")
-        elif status == "M" and commerce(path):
-            lanes.add("commerce")
-            lanes.add("native")
-        else:
-            return list(FULL_LANES)
+    lanes = {module_lane(module) for module in modules}
     return [lane for lane in LANES if lane in lanes]
 
 
@@ -386,6 +783,143 @@ def checked_base(commit):
     return False
 
 
+def tested_commit(run):
+    marker = re.fullmatch(
+        r"check #[^\n]+ [|] tree-ref=([0-9a-f]{40})", run.get("display_title", "")
+    )
+    return marker.group(1) if marker else None
+
+
+def run_module_jobs(run):
+    value = api(
+        f"repos/{os.environ['REPOSITORY']}/actions/runs/{run['id']}/attempts/{run['run_attempt']}/jobs?per_page=100"
+    )
+    jobs = value.get("jobs", [])
+    if value.get("total_count", len(jobs)) > len(jobs):
+        raise ValueError("module job proof is incomplete")
+    return jobs
+
+
+def successful_module_job(job, module):
+    return (
+        job.get("name") == module_job_name(module)
+        and job.get("conclusion") == "success"
+        and any(
+            step.get("name") == "Validate module"
+            and step.get("conclusion") == "success"
+            for step in job.get("steps", [])
+        )
+    )
+
+
+def same_module_inputs(before, head, module):
+    try:
+        git("cat-file", "-e", before + "^{commit}")
+    except subprocess.CalledProcessError:
+        git("fetch", "--depth=1", "origin", before)
+    return module_fingerprint(before, module) == module_fingerprint(head, module)
+
+
+def reusable_modules(modules, head):
+    """Only completed successful module jobs on identical declared inputs.
+
+    A failed overall run can contain a green independent module. Search only
+    this PR's recent runs; cancellation/failure/skipped work is never a proof.
+    The final gate independently reads the same immutable attempt and inputs.
+    """
+    number = os.environ.get("PR_NUMBER", "")
+    if os.environ.get("EVENT_NAME") != "pull_request" or not number.isdecimal():
+        return {}
+    runs = api(
+        f"repos/{os.environ['REPOSITORY']}/actions/workflows/check.yml/runs?event=pull_request&per_page=10"
+    )["workflow_runs"]
+    proofs = {}
+    for run in runs:
+        if (
+            run.get("status") != "completed"
+            or run.get("event") != "pull_request"
+            or run.get("path") != WORKFLOW
+            or run.get("head_sha") == os.environ.get("HEAD_SHA")
+            or not any(
+                str(pull.get("number")) == number
+                for pull in run.get("pull_requests", [])
+            )
+        ):
+            continue
+        commit = tested_commit(run)
+        if commit is None:
+            continue
+        jobs = run_module_jobs(run)
+        for module in modules:
+            if module in proofs or module in DIFF_GUARDED_MODULES:
+                continue
+            job = next(
+                (job for job in jobs if successful_module_job(job, module)), None
+            )
+            if job is not None and same_module_inputs(commit, head, module):
+                proofs[module] = {
+                    "run": run["id"],
+                    "attempt": run["run_attempt"],
+                    "job": job["id"],
+                    "commit": commit,
+                    "inputs": module_fingerprint(head, module),
+                }
+        if len(proofs) == len(modules):
+            break
+    return proofs
+
+
+def validate_module_reuse(proofs, required, head):
+    if (
+        not isinstance(proofs, dict)
+        or set(proofs) - set(required)
+        or set(proofs) & DIFF_GUARDED_MODULES
+    ):
+        return False
+    runs = {}
+    for module, proof in proofs.items():
+        if not isinstance(proof, dict) or set(proof) != {
+            "run",
+            "attempt",
+            "job",
+            "commit",
+            "inputs",
+        }:
+            return False
+        key = proof["run"]
+        if key not in runs:
+            run = api(f"repos/{os.environ['REPOSITORY']}/actions/runs/{key}")
+            if (
+                run.get("status") != "completed"
+                or run.get("path") != WORKFLOW
+                or run.get("event") != "pull_request"
+                or run.get("run_attempt") != proof["attempt"]
+                or tested_commit(run) != proof["commit"]
+            ):
+                return False
+            if not any(
+                str(pull.get("number")) == os.environ.get("PR_NUMBER")
+                for pull in run.get("pull_requests", [])
+            ):
+                return False
+            runs[key] = run, run_module_jobs(run)
+        run, jobs = runs[key]
+        if proof["attempt"] != run["run_attempt"] or proof["commit"] != tested_commit(
+            run
+        ):
+            return False
+        if not any(
+            job.get("id") == proof["job"] and successful_module_job(job, module)
+            for job in jobs
+        ):
+            return False
+        if proof["inputs"] != module_fingerprint(
+            head, module
+        ) or not same_module_inputs(proof["commit"], head, module):
+            return False
+    return True
+
+
 def write_output(name, value):
     with Path(os.environ["GITHUB_OUTPUT"]).open("a") as output:
         output.write(f"{name}={value}\n")
@@ -459,12 +993,28 @@ def plan():
         if mode == "full"
         else candidate
     )
+    required_modules = modules_for_lanes(selected, changes, base, head)
+    reused = {}
+    if mode == "scoped":
+        try:
+            reused = reusable_modules(required_modules, head)
+        except (OSError, subprocess.SubprocessError, KeyError, ValueError):
+            # No proof means execute, never silently skip the affected module.
+            reused = {}
+    executed_modules = [module for module in required_modules if module not in reused]
+    selected = [
+        lane
+        for lane in LANES
+        if any(module_lane(module) == lane for module in executed_modules)
+    ]
     ledger = {
         "base": base,
         "head": head,
         "mode": mode,
         "candidate": candidate,
         "lanes": selected,
+        "modules": required_modules,
+        "reused": reused,
         "changes": [{"status": status, "path": path} for status, path in changes],
     }
     if error:
@@ -473,6 +1023,11 @@ def plan():
     write_output("ledger", json.dumps(ledger, separators=(",", ":")))
     for lane in LANES:
         write_output(lane, str(lane in selected).lower())
+    for lane in ("php", "js", "python", "build", "native"):
+        write_output(
+            lane + "_matrix",
+            json.dumps(module_matrix(executed_modules, lane), separators=(",", ":")),
+        )
     for name, changed in change_flags(changes).items():
         write_output(name, str(changed).lower())
     lines = [
@@ -487,6 +1042,15 @@ def plan():
         isolated = classify([(status, path)], base, head) if base else FULL_LANES
         lanes = ", ".join(isolated) if isolated != FULL_LANES else "full"
         lines.append(f"| {status} | `{path.replace('|', chr(92) + '|')}` | {lanes} |")
+    lines.extend(
+        ["", "| Module | Actual command / proven prior job |", "| --- | --- |"]
+    )
+    for module in required_modules:
+        proof = reused.get(module)
+        detail = " ".join(MODULE_COMMANDS[module])
+        if proof:
+            detail = f"reuse run {proof['run']} attempt {proof['attempt']} job {proof['job']}; same inputs {proof['inputs']}"
+        lines.append(f"| {module} | `{detail}` |")
     if error:
         lines.extend(["", f"Ledger error: `{error}`"])
     with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as summary:
@@ -528,15 +1092,35 @@ def audit_gate(ledger, results, changes):
         errors.append("documentation scope requires only non-runtime changes")
     if mode == "reuse" and event != "push":
         errors.append("identical-tree reuse is only valid for a main push")
-    if mode == "scoped" and (
-        not selected
-        or selected != candidate
-        or candidate == list(FULL_LANES)
-        or event != "pull_request"
+    required_lanes = (
+        candidate if mode == "scoped" else list(FULL_LANES) if mode == "full" else []
+    )
+    required = modules_for_lanes(
+        required_lanes, changes, ledger.get("base", ""), ledger.get("head", "")
+    )
+    if ledger.get("modules") != required:
+        errors.append("the independently recomputed module selection differs")
+    reused = ledger.get("reused", {})
+    if (
+        not isinstance(reused, dict)
+        or set(reused) - set(required)
+        or (reused and mode != "scoped")
     ):
-        errors.append("the scoped jobs do not match the changed packages")
-    if mode == "full" and selected != list(FULL_LANES):
-        errors.append("full validation does not select every required package")
+        errors.append("invalid module reuse ledger")
+        reused = {}
+    expected_lanes = [
+        lane
+        for lane in LANES
+        if any(
+            module_lane(module) == lane for module in required if module not in reused
+        )
+    ]
+    if selected != expected_lanes:
+        errors.append("executed lanes differ from required modules and explicit reuse")
+    if mode == "scoped" and (
+        not candidate or candidate == list(FULL_LANES) or event != "pull_request"
+    ):
+        errors.append("invalid scoped validation mode")
     for lane in LANES:
         actual = results.get(lane, {}).get("result")
         expected = "success" if lane in selected else "skipped"
@@ -571,6 +1155,16 @@ def gate():
             proven = False
         if not proven:
             errors.append(f"the {ledger['mode']} proof could not be reproduced")
+    if not errors and ledger.get("reused"):
+        try:
+            if not validate_module_reuse(
+                ledger["reused"], ledger["modules"], os.environ["HEAD_SHA"]
+            ):
+                errors.append(
+                    "module success/input reuse proof could not be reproduced"
+                )
+        except (OSError, subprocess.SubprocessError, KeyError, ValueError):
+            errors.append("module success/input reuse proof unavailable")
     for lane in LANES:
         print(f"{lane}: {results.get(lane, {}).get('result')}")
     if errors:

@@ -40,6 +40,12 @@ def _target(root: Path) -> Target:
     )
 
 
+def test_stream_preserves_exit_status_without_stderr(tmp_path: Path) -> None:
+    """A real failed dump transport remains diagnosable even with no stderr."""
+    with pytest.raises(CutoverError, match="exit 17.*no stderr"):
+        backup.stream(_target(tmp_path), "set -euo pipefail\nexit 17")
+
+
 class _Site(Target):
     """A target on a real directory tree whose WP-CLI answers are canned.
 
