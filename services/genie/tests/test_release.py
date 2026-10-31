@@ -113,3 +113,19 @@ def test_retention_and_rollback_ignore_persistent_directories(tmp_path: Path) ->
     _run(root, "rollback")
     assert (root / "current").resolve() == published[-2]
     assert (root / "current" / "version").read_text() == "2"
+
+
+def test_publish_can_roll_back_to_existing_paired_release(tmp_path: Path) -> None:
+    """The existing production release uses a timestamp plus source revision."""
+    root = tmp_path / "releases"
+    previous = root / "20261029T024800000000Z-02cedf18"
+    previous.mkdir(parents=True)
+    (previous / "app").write_text("previous runtime")
+    (root / "current").symlink_to(previous.name)
+    source = tmp_path / "source"
+    source.mkdir()
+    (source / "app").write_text("new runtime")
+    _run(root, "publish", str(source))
+    _run(root, "rollback")
+    assert (root / "current").resolve() == previous.resolve()
+    assert (root / "current" / "app").read_text() == "previous runtime"

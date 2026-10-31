@@ -23,9 +23,9 @@ if not os.path.isdir(root):
     raise SystemExit(0)
 for name in sorted(os.listdir(root)):
     path = os.path.join(root, name)
-    # Only directories named by publish() are releases. Persistent ops, state
-    # and index directories must never consume retention or become a rollback.
-    if (re.fullmatch(r"[0-9]{8}T[0-9]{12}Z", name)
+    # Native paired releases also append their reviewed source revision.
+    # Persistent ops/state/index and .incoming copies are never releases.
+    if (re.fullmatch(r"[0-9]{8}T[0-9]{12}Z(?:-[0-9a-f]{8,40})?", name)
             and os.path.isdir(path) and not os.path.islink(path)):
         print(name)
 PY

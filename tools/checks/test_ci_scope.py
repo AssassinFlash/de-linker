@@ -2,7 +2,9 @@
 
 import json
 import os
+import shutil
 import subprocess
+import sys
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -519,6 +521,40 @@ class ScopeTest(unittest.TestCase):
             python.index("Python unit native helpers"),
             python.index("Python tool tests"),
         )
+
+    def test_javascript_installs_browser_before_browser_backed_unit_tests(self):
+        # Empty browser state plus command shims exercises the actual just recipe.
+        # The fixture owns all files/processes until TemporaryDirectory exits.
+        with TemporaryDirectory() as folder:
+            fixture = Path(folder)
+            runner = fixture / "runner"
+            runner.write_text(
+                f"#!{sys.executable}\n"
+                "import os,sys\nfrom pathlib import Path\n"
+                "name=Path(sys.argv[0]).name\n"
+                "marker=Path(os.environ['BROWSER_MARKER'])\n"
+                "if name == 'npx' and sys.argv[1:] == ['playwright','install','--only-shell','chromium']:\n"
+                "    marker.touch()\n"
+                "if name == 'npm' and sys.argv[1:] == ['run','test:unit'] and not marker.exists():\n"
+                "    sys.exit('browser-backed unit test ran before Chromium installation')\n"
+            )
+            runner.chmod(0o755)
+            for name in ("npm", "npx", "node"):
+                (fixture / name).symlink_to(runner)
+            result = subprocess.run(
+                [shutil.which("just"), "--justfile", str(ROOT / "justfile"), "js-test"],
+                env={
+                    **os.environ,
+                    "PATH": str(fixture) + os.pathsep + os.environ["PATH"],
+                    "BROWSER_MARKER": str(fixture / "installed"),
+                },
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=30,
+            )
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertTrue((fixture / "installed").exists())
 
     def test_workflow_preserves_native_recovery_and_has_one_real_gate(self):
         self.assertIn("cancel-in-progress: true", TEXT)

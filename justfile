@@ -551,6 +551,8 @@ js-check: js-install
 [private]
 [working-directory("plugins/linker-tools")]
 js-test: js-install
+    # Unit tests also launch Chromium; install before the first consumer.
+    npx playwright install --only-shell chromium
     npm run test:unit
     cd "{{ justfile_directory() }}/plugins/linker-commerce" && npm run test:unit
     cd "{{ justfile_directory() }}/apps/planner" && npm test
@@ -558,7 +560,6 @@ js-test: js-install
     # resolves through this project's node_modules); this gate is what runs
     # them in CI.
     node --test "../../plugins/linker-commerce/tests/js/*.test.mjs"
-    npx playwright install --only-shell chromium
     npm run test:e2e
 
 [private]

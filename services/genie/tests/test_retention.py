@@ -8,6 +8,7 @@ import re
 import sqlite3
 import tempfile
 import threading
+import time
 from collections.abc import Iterator
 from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime
@@ -20,7 +21,7 @@ import pytest
 from linker_genie import retention
 from linker_genie.log import TurnLog
 from linker_genie.quality import worker as quality_worker
-from linker_genie.quality.store import Store
+from linker_genie.quality.store import Status, Store
 from linker_genie.quality.turns import TurnSource
 from linker_genie.quality.wordpress import WordPress
 
@@ -77,7 +78,8 @@ def test_retention_covers_success_failure_cancel_and_crash_but_keeps_recent_evid
             "UPDATE turns SET created_at = ? WHERE id = ?", (BEFORE, boundary)
         )
         log._db.commit()
-        for turn_id, status in ((1, "judged"), (2, "failed"), (3, "skipped")):
+        statuses: tuple[Status, ...] = ("judged", "failed", "skipped")
+        for turn_id, status in enumerate(statuses, start=1):
             store.save(turn_id, "old", status, 1, {"error": "old evidence"}, CUTOFF - 1)
         store.save(bad, "recent failure", "failed", 1, {"error": "keep failure"}, NOW)
         store.save(boundary, "boundary", "judged", 1, {}, CUTOFF)
@@ -261,7 +263,7 @@ def test_idle_timer_uses_daily_success_and_bounded_error_retry(
             return bool(await waiter)
 
         monkeypatch.setattr(retention, "sweep", sweep)
-        monkeypatch.setattr(retention.asyncio, "wait_for", wait_for)
+        monkeypatch.setattr(asyncio, "wait_for", wait_for)
         await retention.run(Path("unused"), Path("unused"), stop, clock=lambda: NOW)
 
     asyncio.run(scenario())
@@ -338,7 +340,7 @@ def test_judge_cli_cleans_legacy_custom_db_without_duplicating_api_cleanup(
     monkeypatch.setenv("GENIE_JUDGE_TOKEN", "fixture-token")
     monkeypatch.setattr(quality_worker, "openrouter_credentials", lambda: None)
     monkeypatch.setattr(quality_worker, "deepseek_credentials", lambda: None)
-    monkeypatch.setattr(quality_worker.time, "time", lambda: NOW)
+    monkeypatch.setattr(time, "time", lambda: NOW)
     site = WordPress(
         "https://site.test",
         "fixture-token",
