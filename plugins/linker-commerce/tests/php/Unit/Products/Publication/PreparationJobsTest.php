@@ -382,6 +382,90 @@ final class PreparationJobsTest extends TestCase {
 		$this->assertSame( 'preparing', $this->state['knowledge']['status'] );
 	}
 
+	/**
+	 * Same-owner recovery preserves semantic warnings and the original authority.
+	 */
+	public function test_same_owner_can_recover_only_ack_under_the_unchanged_live_lease(): void {
+		$request                               = $this->recipe_receipt();
+		$request['preparation_complete']       = false;
+		$request['unprepared_documents']       = $this->diagnostic( 'no_proven_passage' );
+		$this->state['knowledge']['worker_id'] = 'mac';
+		$before                                = $this->state['knowledge'];
+		WP_Mock::userFunction( 'delete_option' )->andReturn( true );
+		WP_Mock::userFunction( 'nocache_headers' );
+		$claim = Mockery::mock( \WP_REST_Request::class );
+		$claim->shouldReceive( 'get_json_params' )->andReturn(
+			array(
+				'consumer'              => 'knowledge',
+				'worker_id'             => 'mac',
+				'lease_seconds'         => 600,
+				'recipe_revision'       => str_repeat( 'a', 64 ),
+				'identity_protocol'     => Publication::IDENTITY_PROTOCOL,
+				'ack_recovery_protocol' => PreparationJobs::ACK_RECOVERY_PROTOCOL,
+				'loaded_receipt'        => $this->loaded_receipt( $request ),
+			)
+		);
+		$response = ( new Controller() )->dispatch( 'jobs/claim', $claim );
+		$this->assertInstanceOf( \WP_REST_Response::class, $response );
+		$result = $response->get_data();
+		$this->assertIsArray( $result );
+		$this->assertTrue( $result['job']['ack_only'] );
+		$this->assertSame( $before, $this->state['knowledge'] );
+		$this->assertSame( $before['lease_token'], $result['job']['lease_token'] );
+		$this->assertSame( $before['lease_expires_at'], $result['job']['lease_expires_at'] );
+		$this->assertSame( $before['activation_epoch'], $result['job']['activation_epoch'] );
+		$ack = ( new PreparationJobs() )->acknowledge( $request );
+		$this->assertIsArray( $ack );
+		$this->assertTrue( $ack['accepted'] );
+		$this->assertSame( 'ready', $this->state['knowledge']['status'] );
+		$this->assertFalse( $this->state['knowledge']['preparation_complete'] );
+	}
+
+	/**
+	 * No old client, unknown read or changed owner/input can borrow activation authority.
+	 */
+	public function test_ack_only_recovery_requires_current_owned_live_lease_and_loaded_proof(): void {
+		WP_Mock::userFunction( 'delete_option' )->andReturn( true );
+		WP_Mock::userFunction( 'wp_generate_password' )->andReturn( 'new-lease-token' );
+		foreach ( array( 'old_client', 'unknown_protocol', 'other_owner', 'unknown_loaded', 'source_revision', 'model_identity_revision', 'recipe_revision', 'activation_epoch', 'products', 'expired', 'failed_without_token', 'unparsed' ) as $case ) {
+			$request                               = $this->recipe_receipt();
+			$this->state['knowledge']['worker_id'] = 'mac';
+			$loaded                                = $this->loaded_receipt( $request );
+			$worker                                = 'mac';
+			$protocol                              = PreparationJobs::ACK_RECOVERY_PROTOCOL;
+			if ( 'old_client' === $case ) {
+				$protocol = '';
+			} elseif ( 'unknown_protocol' === $case ) {
+				$protocol = 'unknown-protocol';
+			} elseif ( 'other_owner' === $case ) {
+				$worker = 'another-worker';
+			} elseif ( 'unknown_loaded' === $case ) {
+				unset( $loaded['serving_revision'] );
+			} elseif ( in_array( $case, array( 'source_revision', 'model_identity_revision', 'recipe_revision' ), true ) ) {
+				$loaded[ $case ] = 'changed';
+			} elseif ( 'activation_epoch' === $case ) {
+				++$loaded['activation_epoch'];
+			} elseif ( 'products' === $case ) {
+				$loaded['products'][0]['product_revision'] = 'changed';
+			} elseif ( 'expired' === $case ) {
+				$this->state['knowledge']['lease_expires_at'] = time() - 1;
+			} elseif ( 'failed_without_token' === $case ) {
+				$this->state['knowledge']['status']           = 'failed';
+				$this->state['knowledge']['lease_expires_at'] = 0;
+				unset( $this->state['knowledge']['lease_token'] );
+			} else {
+				$loaded['unprepared_documents'] = $this->diagnostic( 'document_unparsed' );
+			}
+			$result = ( new PreparationJobs() )->claim( 'knowledge', $worker, 600, str_repeat( 'a', 64 ), $loaded, false, Publication::IDENTITY_PROTOCOL, $protocol );
+			$this->assertIsArray( $result );
+			$this->assertFalse( $result['job']['ack_only'] ?? false, $case );
+			if ( null !== $result['job'] ) {
+				$this->assertSame( 'new-lease-token', $result['job']['lease_token'], $case );
+				$this->assertSame( 4, $result['job']['activation_epoch'], $case );
+			}
+		}
+	}
+
 	/** A failed process observation cannot revoke an acknowledged materialized generation. */
 	public function test_unknown_loaded_observation_preserves_ready_without_new_lease(): void {
 		$request                         = $this->recipe_receipt();

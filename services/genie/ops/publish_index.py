@@ -295,7 +295,9 @@ def publish(
     target = incoming if host is None else f"{host}:{incoming}"
     discard_upload = True
     try:
-        upload = ["rsync", "-a"]
+        # SQLite still contains compressible text around cached vector pages;
+        # stream it through rsync without creating another compressed artifact.
+        upload = ["rsync", "-a", "--compress"]
         if basis is not None:
             # Native prepare seeded an independent owned target. checksum
             # rejects equal-size/mtime changes; no-whole-file enables actual

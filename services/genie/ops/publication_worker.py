@@ -45,6 +45,12 @@ from publish_index import (  # noqa: E402
     publish,
 )
 
+ACK_RECOVERY_PROTOCOL = "native-knowledge-ack-recovery-v1"
+# Match the native activation verifier: three attempts, one/two-second backoff,
+# and the publication client's 20-second request bound, within the original lease.
+ACK_ATTEMPTS = 3
+ACK_TIMEOUT = 20.0
+
 
 def report_failure(phase: str, error: BaseException) -> None:
     """Report only code location and safe error metadata to the system log."""
@@ -379,6 +385,7 @@ class Worker:
         self.serving = RUNTIME_SERVING_REVISION if serving is None else serving
         self._credentials = (user, password)
         self._active_job: dict[str, Any] | None = None
+        self._published = False
         self.client = httpx.Client(
             auth=(user, password),
             timeout=120,
@@ -396,6 +403,7 @@ class Worker:
             json={
                 "consumer": "knowledge",
                 "identity_protocol": "native-model-identification-v1",
+                "ack_recovery_protocol": ACK_RECOVERY_PROTOCOL,
                 "worker_id": self.worker_id,
                 "lease_seconds": self.lease,
                 "recipe_revision": self.recipe,
@@ -446,6 +454,10 @@ class Worker:
             raise RuntimeError("native knowledge lease expired or missing")
         return expiry
 
+    def publication_confirmed(self) -> None:
+        """Native publish returned; later progress/readback errors cannot cancel it."""
+        self._published = True
+
     def ack(
         self,
         job: dict[str, Any],
@@ -460,32 +472,67 @@ class Worker:
         serving_revision: str = "",
         loaded_model_identity_revision: str = "",
     ) -> None:
-        response = self.client.post(
-            self.jobs + "/ack",
-            json={
-                "job_id": job["job_id"],
-                "lease_token": job["lease_token"],
-                "source_revision": job["source_revision"],
-                "loaded_revision": loaded,
-                "model_identity_revision": job.get("model_identity_revision", ""),
-                "loaded_model_identity_revision": loaded_model_identity_revision,
-                "status": "ready" if loaded else "failed",
-                "error": error,
-                "prepared_products": products or [],
-                "preparation_complete": preparation_complete,
-                "unprepared_documents": unprepared_documents or [],
-                "recipe_revision": self.recipe,
-                "loaded_recipe_revision": loaded_recipe_revision,
-                "index_version": index_version,
-                "materialization_complete": materialization_complete,
-                "expected_serving_revision": self.serving,
-                "serving_revision": serving_revision,
-                "activation_epoch": job.get("activation_epoch", 0),
-            },
-        )
-        response.raise_for_status()
-        if response.json().get("accepted") is not True:
-            raise RuntimeError("Woo did not acknowledge the prepared generation")
+        body = {
+            "job_id": job["job_id"],
+            "lease_token": job["lease_token"],
+            "source_revision": job["source_revision"],
+            "loaded_revision": loaded,
+            "model_identity_revision": job.get("model_identity_revision", ""),
+            "loaded_model_identity_revision": loaded_model_identity_revision,
+            "status": "ready" if loaded else "failed",
+            "error": error,
+            "prepared_products": products or [],
+            "preparation_complete": preparation_complete,
+            "unprepared_documents": unprepared_documents or [],
+            "recipe_revision": self.recipe,
+            "loaded_recipe_revision": loaded_recipe_revision,
+            "index_version": index_version,
+            "materialization_complete": materialization_complete,
+            "expected_serving_revision": self.serving,
+            "serving_revision": serving_revision,
+            "activation_epoch": job.get("activation_epoch", 0),
+        }
+        for attempt in range(ACK_ATTEMPTS if loaded else 1):
+            remaining = 0.0
+            if loaded:
+                expiry = job.get("lease_expires_at")
+                if type(expiry) is not int or expiry - time.time() <= 1:
+                    raise RuntimeError("native knowledge ACK lease expired or missing")
+                remaining = expiry - time.time() - 1
+            try:
+                if loaded:
+                    response = self.client.post(
+                        self.jobs + "/ack",
+                        json=body,
+                        timeout=min(ACK_TIMEOUT, remaining),
+                    )
+                else:
+                    response = self.client.post(self.jobs + "/ack", json=body)
+                response.raise_for_status()
+                if response.json().get("accepted") is not True:
+                    raise RuntimeError(
+                        "Woo did not acknowledge the prepared generation"
+                    )
+                return
+            except (httpx.TransportError, httpx.HTTPStatusError) as error:
+                if (
+                    not loaded
+                    or attempt + 1 == ACK_ATTEMPTS
+                    or (
+                        isinstance(error, httpx.HTTPStatusError)
+                        and error.response.status_code < 500
+                    )
+                ):
+                    raise
+                delay = float(2**attempt)
+                if job["lease_expires_at"] - time.time() <= delay + 1:
+                    raise RuntimeError(
+                        "native knowledge lease expires before ACK retry"
+                    ) from error
+                knowledge_progress(
+                    "ready_ack", "backoff", attempt=attempt + 1, seconds=delay
+                )
+                time.sleep(delay)
 
     def one(self, prepare: Any, loaded: Any) -> bool:
         before = None
@@ -493,7 +540,9 @@ class Worker:
         if self.recipe:
             try:
                 before = loaded()
-                if not _valid_loaded_observation(before):
+                if not isinstance(before, dict) or not _valid_loaded_observation(
+                    before
+                ):
                     raise RuntimeError("loaded observation is incomplete or malformed")
             except (Exception, SystemExit) as error:
                 report_failure("loaded_observation", error)
@@ -503,6 +552,8 @@ class Worker:
         if job is None:
             return False
         phase = "job_validation"
+        self._published = False
+        recovering = job.get("ack_only") is True
         knowledge_progress(phase, "start")
         try:
             self._active_job = job
@@ -527,9 +578,21 @@ class Worker:
                 or job["activation_epoch"] < 1
             ):
                 raise RuntimeError("native knowledge job has no activation lease epoch")
-            phase = "prepare"
-            knowledge_progress(phase, "start")
-            version = prepare(job["manifest"])
+            if recovering:
+                phase = "ack_recovery"
+                knowledge_progress(phase, "start")
+                if not isinstance(before, dict) or not _valid_loaded_observation(
+                    before
+                ):
+                    raise RuntimeError(
+                        "ACK recovery requires a complete loaded observation"
+                    )
+                version = before["index_version"]
+            else:
+                phase = "prepare"
+                knowledge_progress(phase, "start")
+                version = prepare(job["manifest"])
+                self.publication_confirmed()
             phase = "loaded_readback"
             knowledge_progress(phase, "start")
             actual = loaded()
@@ -611,10 +674,14 @@ class Worker:
         ) as error:  # safe failure, including the native publish CLI
             # No request URL, auth header or exception repr enters Woo/logs.
             report_failure(phase, error)
-            if isinstance(error, ActivationOutcomeUnconfirmed):
+            if (
+                self._published
+                or recovering
+                or isinstance(error, ActivationOutcomeUnconfirmed)
+            ):
                 # The lost remote process might still pass its in-lock native
-                # verification. Do not release its lease with a failed ACK;
-                # Woo will let a later worker claim after the lease expires.
+                # verification, or an ACK response may be lost after activation.
+                # Preserve the original lease for fresh same-owner ACK recovery.
                 raise
             try:
                 self.ack(job, "", "knowledge preparation or loaded verification failed")
@@ -753,6 +820,7 @@ def main() -> int:
                 activation.update(loaded_url=args.loaded_url, service_token=token)
                 stage("publish")
                 report = publish(directory, args.root, args.host, activation=activation)
+                worker.publication_confirmed()
                 stage("complete")
                 return str(report["index_version"])
             except (Exception, SystemExit) as error:
@@ -772,7 +840,8 @@ def main() -> int:
         except (Exception, SystemExit) as error:  # noqa: BLE001 - safe status, no private URLs or credentials
             report_failure("run_job", error)
             print(
-                "Knowledge preparation failed; Woo retains the pending job.",
+                "Knowledge publication needs verification; inspect the native job "
+                "and loaded generation.",
                 file=sys.stderr,
             )
             return 1

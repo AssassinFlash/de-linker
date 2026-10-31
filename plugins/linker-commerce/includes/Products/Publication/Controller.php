@@ -90,7 +90,7 @@ final class Controller {
 					if ( null !== $loaded && ! is_array( $loaded ) ) {
 						return new WP_Error( 'invalid_job_request', 'Loaded receipt must be an object.', array( 'status' => 400 ) );
 					}
-					$data = ( new PreparationJobs() )->claim( (string) ( $body['consumer'] ?? '' ), (string) ( $body['worker_id'] ?? '' ), (int) ( $body['lease_seconds'] ?? 0 ), is_string( $recipe ) ? $recipe : 'invalid', $loaded, $unavailable, is_string( $body['identity_protocol'] ?? null ) ? $body['identity_protocol'] : '' );
+					$data = ( new PreparationJobs() )->claim( (string) ( $body['consumer'] ?? '' ), (string) ( $body['worker_id'] ?? '' ), (int) ( $body['lease_seconds'] ?? 0 ), is_string( $recipe ) ? $recipe : 'invalid', $loaded, $unavailable, is_string( $body['identity_protocol'] ?? null ) ? $body['identity_protocol'] : '', is_string( $body['ack_recovery_protocol'] ?? null ) ? $body['ack_recovery_protocol'] : '' );
 				}
 			} else {
 				$data = ( new PreparationJobs() )->acknowledge( $body );

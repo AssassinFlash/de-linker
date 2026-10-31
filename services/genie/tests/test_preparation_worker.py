@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import sqlite3
+import subprocess
 import syslog
 import time
 from pathlib import Path
@@ -19,6 +21,85 @@ from publication_worker import Worker, record_build, report_failure, run_job
 from publish_index import ActivationOutcomeUnconfirmed, NativeVerificationRejected
 
 RECIPE = "a" * 64
+
+
+@pytest.mark.parametrize("mode", ["enabled", "disabled", "wrong_host"])
+def test_worker_site_bypass_keeps_other_effective_proxy_routes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, mode: str
+) -> None:
+    import install_publication_worker as installer
+
+    keys = [
+        name + suffix
+        for name, suffix in (
+            ("HTTP", "_PROXY"),
+            ("HTTPS", "_PROXY"),
+            ("ALL", "_PROXY"),
+            ("NO", "_PROXY"),
+            ("http", "_proxy"),
+            ("https", "_proxy"),
+            ("all", "_proxy"),
+            ("no", "_proxy"),
+        )
+    ]
+    for key in keys:
+        monkeypatch.setenv(key, "original-" + key)
+    before = {key: os.environ[key] for key in keys}
+    direct = (
+        ""
+        if mode == "disabled"
+        else "other.test"
+        if mode == "wrong_host"
+        else "site.test"
+    )
+    for key in ("LINKER_PUBLICATION_JOBS_URL", "LINKER_PUBLICATION_DIRECT_HOST"):
+        monkeypatch.setenv(key, "")
+    environment = tmp_path / "private.env"
+    environment.write_text(
+        "LINKER_PUBLICATION_JOBS_URL=https://site.test/jobs\n"
+        + "LINKER_PUBLICATION_DIRECT_HOST="
+        + direct
+        + "\n"
+    )
+    environment.chmod(0o600)
+    proxies = {
+        "http": "http://proxy.test:8080",
+        "https": "http://proxy.test:8080",
+        "all": "socks5://proxy.test:1080",
+        "no": "localhost,already.test",
+    }
+    reads: list[bool] = []
+    children: list[dict[str, str]] = []
+
+    def system_routes() -> dict[str, str]:
+        reads.append(True)
+        return proxies
+
+    def child(_command: list[str], **_kwargs: Any) -> int:
+        children.append({key: os.environ[key] for key in keys})
+        return 23
+
+    monkeypatch.setattr(installer, "getproxies", system_routes)
+    monkeypatch.setattr(subprocess, "call", child)
+    if mode == "wrong_host":
+        with pytest.raises(ValueError, match="differs from configured site"):
+            installer.run_private(environment, ["--worker-id", "fixture"])
+        assert not children and not reads
+    else:
+        assert installer.run_private(environment, ["--worker-id", "fixture"]) == 23
+        assert len(children) == 1
+        if mode == "disabled":
+            assert children[0] == before and not reads
+        else:
+            assert len(reads) == 1
+            for scheme in ("http", "https", "all"):
+                assert children[0][scheme.upper() + "_PROXY"] == proxies[scheme]
+                assert children[0][scheme + "_proxy"] == proxies[scheme]
+            assert (
+                children[0]["NO_PROXY"]
+                == children[0]["no_proxy"]
+                == "localhost,already.test,site.test"
+            )
 
 
 def source(revision: str = "source-1") -> dict[str, Any]:
@@ -305,9 +386,7 @@ def test_serving_identity_mismatch_never_acknowledges_ready(
     worker = queue.worker()
     with pytest.raises(RuntimeError, match="has not loaded"):
         worker.one(lambda _: "build1", lambda: loaded(**changes))
-    assert queue.receipts[-1]["status"] == "failed"
-    assert queue.receipts[-1]["materialization_complete"] is False
-    assert queue.receipts[-1]["prepared_products"] == []
+    assert queue.receipts == [] and not queue.ready
     worker.close()
 
 
@@ -327,7 +406,7 @@ def test_prepared_products_must_be_an_exact_current_subset(
     worker = queue.worker()
     with pytest.raises(RuntimeError, match="invalid prepared"):
         worker.one(lambda _: "build1", lambda: loaded(products=products))
-    assert queue.receipts[-1]["status"] == "failed"
+    assert queue.receipts == [] and not queue.ready
     worker.close()
 
 
@@ -432,6 +511,212 @@ def test_unconfirmed_activation_does_not_release_the_native_lease() -> None:
             worker.one(prepare, loaded)
         assert len(queue.claims) == 1
         assert queue.receipts == []
+    finally:
+        worker.close()
+
+
+def test_ready_ack_transport_failure_keeps_same_lease_for_ack_only_recovery(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    queue = Queue()
+    attempts: list[dict[str, Any]] = []
+    sleeps: list[float] = []
+    job: dict[str, Any] | None = None
+    recover = False
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        nonlocal job
+        if request.url.path.endswith("/ack"):
+            body = json.loads(request.content)
+            attempts.append(body)
+            if not recover:
+                raise httpx.ProxyError("fixture transport failure")
+            return queue.handle(request)
+        if recover:
+            assert job is not None
+            data = json.loads(request.content)
+            assert data["ack_recovery_protocol"] == "native-knowledge-ack-recovery-v1"
+            return httpx.Response(200, json={"job": {**job, "ack_only": True}})
+        response = queue.handle(request)
+        job = response.json()["job"]
+        return response
+
+    monkeypatch.setattr("publication_worker.time.sleep", sleeps.append)
+    worker = Worker(
+        "https://site.test/jobs",
+        "fixture",
+        "fixture",
+        "mac",
+        600,
+        recipe=RECIPE,
+        transport=httpx.MockTransport(handle),
+    )
+    try:
+        with pytest.raises(httpx.ProxyError):
+            worker.one(lambda _: "build1", loaded)
+        assert len(attempts) == 3
+        assert all(row == attempts[0] and row["status"] == "ready" for row in attempts)
+        assert sleeps == [1, 2]
+        assert queue.receipts == [] and queue.epoch == 1
+        recover = True
+        worker.close()
+        worker = Worker(
+            "https://site.test/jobs",
+            "fixture",
+            "fixture",
+            "mac",
+            600,
+            recipe=RECIPE,
+            transport=httpx.MockTransport(handle),
+        )
+        assert worker.one(
+            lambda _: pytest.fail("ACK recovery must not rebuild"), loaded
+        )
+        assert queue.ready and queue.epoch == 1
+        assert queue.receipts[-1]["preparation_complete"] is False
+    finally:
+        worker.close()
+
+
+def test_loaded_transport_failure_after_publish_never_sends_failed_ack() -> None:
+    queue = Queue()
+    worker = queue.worker()
+    reads = 0
+
+    def read() -> dict[str, Any]:
+        nonlocal reads
+        reads += 1
+        if reads > 1:
+            raise httpx.ProxyError("post-activation readback unavailable")
+        return loaded()
+
+    try:
+        with pytest.raises(httpx.ProxyError):
+            worker.one(lambda _: "build1", read)
+        assert queue.receipts == [] and queue.epoch == 1
+    finally:
+        worker.close()
+
+
+def test_confirmed_publish_survives_completion_progress_failure() -> None:
+    queue = Queue()
+    worker = queue.worker()
+
+    def prepare(_manifest: dict[str, Any]) -> str:
+        # Mirrors the real publish return seam before completion progress output.
+        worker.publication_confirmed()
+        raise BrokenPipeError("completion progress sink unavailable")
+
+    try:
+        with pytest.raises(BrokenPipeError):
+            worker.one(prepare, loaded)
+        assert queue.receipts == [] and queue.epoch == 1
+    finally:
+        worker.close()
+
+
+def test_committed_ack_with_lost_response_is_never_replaced_by_failed_ack() -> None:
+    queue = Queue()
+    calls = 0
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        if request.url.path.endswith("/ack"):
+            calls += 1
+            if calls == 1:
+                queue.handle(request)
+                raise httpx.ProxyError("ACK committed before lost response")
+            return httpx.Response(409, json={"code": "stale_job"})
+        return queue.handle(request)
+
+    worker = Worker(
+        "https://site.test/jobs",
+        "fixture",
+        "fixture",
+        "mac",
+        600,
+        recipe=RECIPE,
+        transport=httpx.MockTransport(handle),
+    )
+    try:
+        with pytest.raises(httpx.HTTPStatusError):
+            worker.one(lambda _: "build1", loaded)
+        assert calls == 2 and len(queue.receipts) == 1
+        assert queue.receipts[0]["status"] == "ready" and queue.ready
+        assert not worker.one(
+            lambda _: pytest.fail("already ACKed must not rebuild"), loaded
+        )
+        assert queue.epoch == 1
+    finally:
+        worker.close()
+
+
+@pytest.mark.parametrize("status", [400, 409])
+def test_ready_ack_explicit_rejection_does_not_retry_or_cancel_lease(
+    status: int,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    queue = Queue()
+    attempts: list[dict[str, Any]] = []
+    sleeps: list[float] = []
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        if request.url.path.endswith("/ack"):
+            attempts.append(json.loads(request.content))
+            return httpx.Response(status)
+        return queue.handle(request)
+
+    monkeypatch.setattr("publication_worker.time.sleep", sleeps.append)
+    worker = Worker(
+        "https://site.test/jobs",
+        "fixture",
+        "fixture",
+        "mac",
+        600,
+        recipe=RECIPE,
+        transport=httpx.MockTransport(handle),
+    )
+    try:
+        with pytest.raises(httpx.HTTPStatusError):
+            worker.one(lambda _: "build1", loaded)
+        assert len(attempts) == 1 and attempts[0]["status"] == "ready"
+        assert sleeps == [] and queue.receipts == []
+    finally:
+        worker.close()
+
+
+def test_ack_retry_never_runs_past_original_lease(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    queue = Queue()
+    clock = [1000.0]
+    attempts: list[str] = []
+    sleeps: list[float] = []
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        if request.url.path.endswith("/ack"):
+            attempts.append("ready")
+            clock[0] += 2
+            raise httpx.ProxyError("reply unavailable at lease expiry")
+        job = queue.handle(request).json()["job"]
+        job["lease_expires_at"] = 1002
+        return httpx.Response(200, json={"job": job})
+
+    monkeypatch.setattr("publication_worker.time.time", lambda: clock[0])
+    monkeypatch.setattr("publication_worker.time.sleep", sleeps.append)
+    worker = Worker(
+        "https://site.test/jobs",
+        "fixture",
+        "fixture",
+        "mac",
+        600,
+        recipe=RECIPE,
+        transport=httpx.MockTransport(handle),
+    )
+    try:
+        with pytest.raises(RuntimeError, match="expires before ACK retry"):
+            worker.one(lambda _: "build1", loaded)
+        assert attempts == ["ready"] and sleeps == [] and queue.receipts == []
     finally:
         worker.close()
 
@@ -827,8 +1112,7 @@ def test_worker_never_acks_ready_for_missing_or_changed_loaded_identity(
             worker.one(
                 lambda _: "build1", lambda: loaded(model_identity_revision=identity)
             )
-        assert queue.receipts[-1]["status"] == "failed"
-        assert queue.receipts[-1]["model_identity_revision"] == "fixture-identity-1"
+        assert queue.receipts == [] and not queue.ready
     finally:
         worker.client.close()
 
