@@ -6,6 +6,7 @@ import type {
 	PvStringReconciliation,
 } from "../../domain/installation.ts";
 import { readInstallation } from "../../domain/installation.ts";
+import type { PvPlantStringPlan } from "../../domain/pvPlantStrings.ts";
 import type { PvString, PvStringPlan } from "../../domain/pvStrings.ts";
 import { formatDecimal } from "../../domain/decimal.ts";
 import { __, sprintf } from "../../i18n.ts";
@@ -51,7 +52,7 @@ export function PvStringLinks({
 }: {
 	plan: InstallationInputs;
 	savedInstallation: InstallationInputs;
-	savedStrings: PvStringPlan | null;
+	savedStrings: PvStringPlan | PvPlantStringPlan | null;
 	stringPlanChanged: boolean;
 	review: PvStringReconciliation | null;
 	locale: string;
@@ -60,13 +61,34 @@ export function PvStringLinks({
 	onValidity: (valid: boolean) => void;
 }) {
 	const links = plan.pv_string_links ?? [],
-		enabled = plan.pv_string_links !== undefined,
-		strings = savedStrings?.strings ?? [],
+		multi = !!savedStrings && "units" in savedStrings,
+		enabled = plan.pv_string_links !== undefined || multi,
+		strings =
+			savedStrings && "units" in savedStrings
+				? (savedStrings as PvPlantStringPlan).units.flatMap(
+						(u) => u.plan.strings,
+					)
+				: ((savedStrings as PvStringPlan | null)?.strings ?? []),
 		circuits = plan.circuits.filter(
 			(c) =>
 				c.kind === "pv_dc" &&
 				savedInstallation.circuits.some((saved) => saved.id === c.id),
 		);
+	const owners = new Map(
+		savedStrings && "units" in savedStrings
+			? (savedStrings as PvPlantStringPlan).units.flatMap((u) =>
+					u.plan.strings.map(
+						(s) =>
+							[
+								s.id,
+								`${u.unit_id} · ${u.inverter_instance_id ?? __("No inverter linked to the installation", "linker-tools")}`,
+							] as const,
+					),
+				)
+			: [],
+	);
+	const label = (s: PvString) =>
+		`${owners.has(s.id) ? owners.get(s.id) + " · " : ""}${stringLabel(s)}`;
 	const [editing, setEditing] = useState<PvStringLink | null | undefined>(),
 		[stringId, setStringId] = useState(""),
 		[circuitId, setCircuitId] = useState(""),
@@ -118,7 +140,9 @@ export function PvStringLinks({
 				<input
 					type="checkbox"
 					checked={enabled}
-					disabled={disabled || editing !== undefined || links.length > 0}
+					disabled={
+						disabled || editing !== undefined || links.length > 0 || multi
+					}
 					onChange={(event) => {
 						if (event.target.checked) apply({ ...plan, pv_string_links: [] });
 						else {
@@ -156,7 +180,7 @@ export function PvStringLinks({
 								<div>
 									<strong>
 										{string
-											? stringLabel(string)
+											? label(string)
 											: sprintf(
 													__("Missing PV string: %s", "linker-tools"),
 													link.string_id,
@@ -246,7 +270,7 @@ export function PvStringLinks({
 											)}
 										{availableStrings.map((s) => (
 											<option value={s.id} key={s.id}>
-												{stringLabel(s)}
+												{label(s)}
 											</option>
 										))}
 									</select>
@@ -340,7 +364,7 @@ export function PvStringLinks({
 											<tr key={row.string_id}>
 												<td>
 													{strings.find((s) => s.id === row.string_id)
-														? stringLabel(
+														? label(
 																strings.find((s) => s.id === row.string_id)!,
 															)
 														: row.string_id}

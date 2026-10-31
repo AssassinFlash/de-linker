@@ -115,6 +115,19 @@ class ProjectInputs(Command):
             from .equipment_plant import EquipmentPlant
 
             EquipmentPlant.from_inputs(value)
+        if "pv_plant_string_plan" in value:
+            from .pv_string_inputs import PvPlantStringPlan
+
+            PvPlantStringPlan.model_validate(value["pv_plant_string_plan"])
+            if (
+                value.get("equipment_plant") is None
+                and value.get("equipment_plant_setup") is None
+            ):
+                raise ValueError("plant PV strings require an equipment plant draft")
+            if value.get("pv_string_plan") is not None:
+                raise ValueError(
+                    "single and plant PV string plans are mutually exclusive"
+                )
         if "pv_string_plan" in value:
             from .pv_string_inputs import PvStringPlan
 

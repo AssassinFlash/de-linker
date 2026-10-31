@@ -20,7 +20,9 @@ from .product_sources import ProductSources
 from .pv_string_inputs import PvStringPlan
 
 
-def assess_pv_strings(inputs: Object, basis: Object) -> Object:
+def assess_pv_strings(
+    inputs: Object, basis: Object, *, module_scope: set[str] | None = None
+) -> Object:
     plan = PvStringPlan.read(inputs.get("pv_string_plan"))
     selection = EquipmentSelection.read(inputs.get("equipment_selection"))
     if plan.inverter_product_id != selection.inverter_product_id:
@@ -32,6 +34,8 @@ def assess_pv_strings(inputs: Object, basis: Object) -> Object:
         raise InvalidInput("PV strings require the frozen Woo module electrical source")
     geometry = read_geometry(inputs.get("geometry"))
     poses = {p.id: p for p in panel_poses(geometry) if p.included}
+    if module_scope is not None:
+        poses = {key: value for key, value in poses.items() if key in module_scope}
     arrays = {a.id: a for a in geometry.arrays}
     specs = {s.id: s for s in geometry.module_specs}
     products = cast(list[dict[str, Any]], basis["products"])

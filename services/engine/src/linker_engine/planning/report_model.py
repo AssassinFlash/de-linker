@@ -83,22 +83,72 @@ def build_report(source: Object) -> Report:
         pv_wiring = assessment.get("pv_electrical")
         string_numbers: dict[str, int] = {}
         if isinstance(pv_wiring, dict):
-            wiring_rows = cast(list[dict[str, Any]], pv_wiring["strings"])
+            plant_wiring = pv_wiring.get("method") == "woo_plant_layout_electrical_v1"
+            wiring_units = cast(list[dict[str, Any]], pv_wiring.get("units", []))
+            wiring_rows = (
+                [
+                    {
+                        **string,
+                        "unit_name": unit["unit_name"],
+                        "inverter_instance_id": unit["inverter_instance_id"],
+                    }
+                    for unit in wiring_units
+                    for string in unit["assessment"]["strings"]
+                ]
+                if plant_wiring
+                else cast(list[dict[str, Any]], pv_wiring["strings"])
+            )
             string_numbers = {s["id"]: i + 1 for i, s in enumerate(wiring_rows)}
             sections.append(
                 ReportSection(
                     id="pv-strings",
                     title=text("pv_strings_title", locale),
                     paragraphs=[text("pv_strings_scope", locale)],
-                    rows=[
-                        row(
-                            "pv_min_ambient",
-                            number(pv_wiring["minimum_ambient_c"], locale, "°C"),
-                        ),
-                        row("pv_temperature_source", pv_wiring["temperature_source"]),
-                    ],
+                    rows=(
+                        [
+                            ReportRow(
+                                label=unit["unit_name"]
+                                + " · "
+                                + text("pv_min_ambient", locale),
+                                value=number(
+                                    unit["assessment"]["minimum_ambient_c"],
+                                    locale,
+                                    "°C",
+                                )
+                                + " · "
+                                + str(unit["assessment"]["temperature_source"] or "—"),
+                            )
+                            for unit in wiring_units
+                        ]
+                        if plant_wiring
+                        else [
+                            row(
+                                "pv_min_ambient",
+                                number(
+                                    pv_wiring.get("minimum_ambient_c"), locale, "°C"
+                                ),
+                            ),
+                            row(
+                                "pv_temperature_source",
+                                pv_wiring.get("temperature_source"),
+                            ),
+                        ]
+                    ),
                     table=ReportTable(
+                        # At the native A4 width, the German inverter heading
+                        # is 69.6 pt; equal columns leave only 54.2 pt of text.
+                        column_weights=[1, 1.4, 0.8, 0.8, 1, 1, 1, 1]
+                        if plant_wiring
+                        else None,
                         columns=[
+                            *(
+                                [
+                                    text("plant_unit", locale),
+                                    text("pv_inverter_instance", locale),
+                                ]
+                                if plant_wiring
+                                else []
+                            ),
                             text("pv_string", locale),
                             "MPPT",
                             text("pv_input", locale),
@@ -108,6 +158,15 @@ def build_report(source: Object) -> Report:
                         ],
                         rows=[
                             [
+                                *(
+                                    [
+                                        s["unit_name"],
+                                        s["inverter_instance_id"]
+                                        or text("pv_instance_not_recorded", locale),
+                                    ]
+                                    if plant_wiring
+                                    else []
+                                ),
                                 str(i + 1),
                                 str(s["mppt"]),
                                 str(s["input"]),
@@ -126,6 +185,24 @@ def build_report(source: Object) -> Report:
                     cast(Object, pv_wiring["operating"]), wiring_rows, locale
                 )
             )
+        if (
+            isinstance(pv_wiring, dict)
+            and pv_wiring.get("method") == "woo_plant_layout_electrical_v1"
+        ):
+            for unit in cast(list[dict[str, Any]], pv_wiring["units"]):
+                unit_result = unit["assessment"]
+                if isinstance(unit_result.get("operating"), dict):
+                    for section in operating_sections(
+                        unit_result["operating"], unit_result["strings"], locale
+                    ):
+                        sections.append(
+                            section.model_copy(
+                                update={
+                                    "id": f"unit-{unit['unit_id']}-{section.id}",
+                                    "title": f"{unit['unit_name']} · {section.title}",
+                                }
+                            )
+                        )
         sections.append(
             ReportSection(
                 id="equipment",

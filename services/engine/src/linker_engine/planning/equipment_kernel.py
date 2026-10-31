@@ -56,13 +56,21 @@ class EquipmentKernel:
             selection = EquipmentSelection.read(inputs.get("equipment_selection"))
             selection_products(selection, basis)
         validate_condition_inputs(inputs, require_prepared=True)
-        if inputs.get("pv_string_plan") is not None:
+        if (
+            inputs.get("pv_string_plan") is not None
+            or inputs.get("pv_plant_string_plan") is not None
+        ):
             basis["pv_module_inputs"] = self.products.electrical_module_basis()
             # Validate object identities before queueing, then evaluate again
             # against this exact proof inside the durable worker.
             from .pv_string_assessment import assess_pv_strings
 
-            assess_pv_strings(inputs, basis)
+            if inputs.get("pv_plant_string_plan") is not None:
+                from .plant_assessment import assess_plant
+
+                assess_plant(inputs, basis)
+            else:
+                assess_pv_strings(inputs, basis)
         # Compilation is frozen here; constraint evaluation stays in worker.
         return Context(
             self.runtime.sha256,

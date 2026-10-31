@@ -17,6 +17,10 @@ import {
 import type { EquipmentProduct } from "../data/equipmentProducts.ts";
 import type { JsonObject, Project } from "../data/protocol.ts";
 import {
+	changePvPlantStringUnit,
+	readPvPlantStringPlan,
+} from "./pvPlantStrings.ts";
+import {
 	changeDeviceCondition,
 	conditionBindingMatches,
 	equipmentConditionTargets,
@@ -46,6 +50,108 @@ const original = {
 };
 const start = () =>
 	beginPlant(original, { id: "a", name: "A" }, { id: "b", name: "B" });
+
+test("plant strings keep independent ports and other units across edits, preparation, recovery and mode changes", () => {
+	const plan = (id: string, module: string) => ({
+		schema_version: 1 as const,
+		inverter_product_id: 1,
+		minimum_ambient_c: null,
+		temperature_source: null,
+		strings: [{ id, mppt: 1, input: 1, module_ids: [module] }],
+	});
+	const a = {
+			unit_id: "a",
+			inverter_instance_id: null,
+			plan: plan("sa", "ma"),
+		},
+		b = { unit_id: "b", inverter_instance_id: null, plan: plan("sb", "mb") };
+	const wiring = readPvPlantStringPlan({ schema_version: 1, units: [a, b] });
+	const inputs = {
+		...start(),
+		pv_plant_string_plan: wiring,
+		equipment_candidate: { id: "stale" },
+	};
+	const updated = changePvPlantStringUnit(inputs, "a", {
+		...a,
+		plan: { ...a.plan, minimum_ambient_c: -15 },
+	});
+	assert.equal(updated.equipment_candidate, undefined);
+	assert.deepEqual(
+		readPvPlantStringPlan(updated.pv_plant_string_plan).units.find(
+			(u) => u.unit_id === "b",
+		),
+		b,
+	);
+	assert.deepEqual(
+		equipmentContext(updated).pv_plant_string_plan,
+		updated.pv_plant_string_plan,
+	);
+	assert.deepEqual(
+		plantInputs(updated, factoryPlant(configured(), {})).pv_plant_string_plan,
+		updated.pv_plant_string_plan,
+	);
+	const removed = {
+		...configured(),
+		units: configured().units.slice(0, 1),
+		parallel_groups: [],
+	};
+	assert.deepEqual(
+		plantInputs(updated, removed).pv_plant_string_plan,
+		updated.pv_plant_string_plan,
+	);
+	assert.throws(() => singleSystem(plantInputs(updated, removed)));
+	const recovered = changePvPlantStringUnit(
+		plantInputs(updated, removed),
+		"b",
+		null,
+	);
+	assert.deepEqual(
+		singleSystem(recovered).pv_string_plan,
+		readPvPlantStringPlan(recovered.pv_plant_string_plan).units[0]!.plan,
+	);
+	assert.equal(singleSystem(recovered).pv_plant_string_plan, undefined);
+	assert.deepEqual(
+		readPvPlantStringPlan(
+			beginPlant(
+				{ ...original, pv_string_plan: a.plan },
+				{ id: "a", name: "A" },
+				{ id: "b", name: "B" },
+			).pv_plant_string_plan,
+		).units[0],
+		a,
+	);
+	for (const competing of [
+		{ ...b, unit_id: "a" },
+		{ ...b, plan: plan("sa", "mb") },
+		{ ...b, plan: plan("sb", "ma") },
+	])
+		assert.throws(() =>
+			readPvPlantStringPlan({ schema_version: 1, units: [a, competing] }),
+		);
+	assert.throws(() =>
+		readPvPlantStringPlan({
+			schema_version: 1,
+			units: [
+				{ ...a, inverter_instance_id: "inv" },
+				{ ...b, inverter_instance_id: "inv" },
+			],
+		}),
+	);
+	// A removed unit/model is a recoverable cross-document state, not malformed bytes.
+	assert.equal(
+		readPvPlantStringPlan({
+			schema_version: 1,
+			units: [
+				{
+					...a,
+					unit_id: "removed",
+					plan: { ...a.plan, inverter_product_id: 2 },
+				},
+			],
+		}).units.length,
+		1,
+	);
+});
 function configured() {
 	const draft = readPlantDraft(start());
 	return {

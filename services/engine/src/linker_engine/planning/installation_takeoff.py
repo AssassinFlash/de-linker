@@ -9,7 +9,7 @@ from .canonical import Json, Object, digest, encode
 from .errors import InvalidInput, ProductEvidenceChanged
 from .geometry_documents import GeometryDocument
 from .installation_inputs import InstallationInputs, RoutePoint
-from .pv_string_inputs import PvStringPlan
+from .pv_string_inputs import PvPlantStringPlan, PvStringPlan, plant_instance_statuses
 
 METHOD = "installation_route_takeoff_v1"
 
@@ -57,6 +57,8 @@ def _closure(status: str, recorded: list[Object]) -> Object:
 def _string_links(
     inputs: Object, plan: InstallationInputs, cables: list[Json]
 ) -> Object:
+    if inputs.get("pv_plant_string_plan") is not None:
+        return _plant_string_links(inputs, plan, cables)
     saved = inputs.get("pv_string_plan")
     strings = PvStringPlan.read(saved) if saved is not None else None
     known = {item.id: item for item in strings.strings} if strings else {}
@@ -136,12 +138,99 @@ def _string_links(
     }
 
 
-def product_basis(plan: InstallationInputs, basis: Object) -> Object:
+def _plant_string_links(
+    inputs: Object, plan: InstallationInputs, cables: list[Json]
+) -> Object:
+    wiring = PvPlantStringPlan.read(inputs.get("pv_plant_string_plan"))
+    statuses = plant_instance_statuses(inputs, wiring)
+    known = {
+        string.id: (unit, string)
+        for unit in wiring.units
+        for string in unit.plan.strings
+    }
+    bindings = {link.string_id: link for link in plan.pv_string_links}
+    circuits = {circuit.id: circuit for circuit in plan.circuits}
+    instances = {instance.id: instance for instance in plan.instances}
+    rows: list[Json] = []
+    for identifier in [*known, *(key for key in bindings if key not in known)]:
+        pair = known.get(identifier)
+        unit, string = pair if pair else (None, None)
+        binding = bindings.get(identifier)
+        circuit = circuits.get(binding.circuit_id) if binding else None
+        endpoints: list[Json] = []
+        if circuit:
+            for side in ("start", "end"):
+                endpoint = getattr(circuit, side)
+                instance = instances[endpoint.instance_id]
+                endpoints.append(
+                    {
+                        "side": side,
+                        "instance_id": instance.id,
+                        "port_id": endpoint.port_id,
+                        "product_id": instance.product_id,
+                        "product_revision": instance.product_revision,
+                    }
+                )
+        instance_status = statuses[unit.unit_id] if unit else "not_recorded"
+        status = (
+            "stale_string"
+            if string is None
+            else "unlinked"
+            if binding is None
+            else "stale_circuit"
+            if circuit is None
+            else "wrong_circuit_kind"
+            if circuit.kind != "pv_dc"
+            else "inverter_endpoint_unresolved"
+            if instance_status != "declared"
+            or unit is None
+            or sum(
+                endpoint["instance_id"] == unit.inverter_instance_id
+                for endpoint in cast(list[Object], endpoints)
+            )
+            != 1
+            else "linked"
+        )
+        recorded = [
+            cable
+            for cable in cast(list[Object], cables)
+            if circuit is not None and cable["circuit_id"] == circuit.id
+        ]
+        rows.append(
+            {
+                "string_id": identifier,
+                "unit_id": unit.unit_id if unit else None,
+                "inverter_instance_id": unit.inverter_instance_id if unit else None,
+                "instance_status": instance_status,
+                "mppt": string.mppt if string else None,
+                "input": string.input if string else None,
+                "circuit_id": binding.circuit_id if binding else None,
+                "status": status,
+                "endpoints": endpoints,
+                "cable_runs": cast(Json, recorded),
+                "closure": _closure(status, recorded),
+                "reasons": ["cable_runs_missing"] if circuit and not recorded else [],
+            }
+        )
+    return {
+        "schema_version": 2,
+        "scope": "declared_project_identity_only",
+        "pv_plant_string_plan_sha256": digest(encode(inputs["pv_plant_string_plan"])),
+        "plan_status": "available" if known else "empty",
+        "rows": rows,
+        "qualified": False,
+    }
+
+
+def product_basis(
+    plan: InstallationInputs, basis: Object, *, allow_stale: bool = False
+) -> Object:
     ids = {d.product_id for d in plan.instances if d.product_id is not None}
     rows = {p["canonical_product_id"]: p for p in cast(list[Object], basis["products"])}
     for item in plan.instances:
         if (
-            item.product_id is not None
+            not allow_stale
+            and item.product_id is not None
             and rows.get(item.product_id, {}).get("product_revision")
             != item.product_revision
         ):
@@ -156,7 +245,7 @@ def product_basis(plan: InstallationInputs, basis: Object) -> Object:
     scope["reference_inputs"] = []
     return {
         **basis,
-        "products": [rows[pid] for pid in sorted(ids)],
+        "products": [rows[pid] for pid in sorted(ids) if pid in rows],
         "publication": scope,
     }
 
@@ -167,7 +256,11 @@ def _coordinates(point: RoutePoint) -> tuple[float, float, float]:
 
 
 def route_takeoff(
-    inputs: Object, basis: Object, *, bind_geometry: bool = False
+    inputs: Object,
+    basis: Object,
+    *,
+    bind_geometry: bool = False,
+    allow_stale_products: bool = False,
 ) -> Object:
     plan = InstallationInputs.read(inputs.get("installation"))
     geometry = GeometryDocument.read(inputs.get("geometry"))
@@ -175,7 +268,7 @@ def route_takeoff(
     geometry_sha = digest(encode(cast(Object, inputs["geometry"])))
     if bind_geometry:
         plan = plan.model_copy(update={"geometry_sha256": geometry_sha})
-    selected = product_basis(plan, basis)
+    selected = product_basis(plan, basis, allow_stale=allow_stale_products)
     products = {
         p["canonical_product_id"]: p for p in cast(list[Object], selected["products"])
     }
@@ -298,6 +391,7 @@ def route_takeoff(
                 }
             }
             if "pv_string_links" in plan.model_fields_set
+            or inputs.get("pv_plant_string_plan") is not None
             else {}
         ),
         "instances": [
@@ -307,10 +401,12 @@ def route_takeoff(
                 "product_id": d.product_id,
                 "product_revision": d.product_revision,
                 "model": products[d.product_id]["model"]
-                if d.product_id is not None
+                if d.product_id in products
+                and products[d.product_id]["product_revision"] == d.product_revision
                 else None,
                 "brand": products[d.product_id]["brand"]
-                if d.product_id is not None
+                if d.product_id in products
+                and products[d.product_id]["product_revision"] == d.product_revision
                 else None,
                 "ports": cast(Json, [p.model_dump(mode="json") for p in d.ports]),
             }

@@ -437,6 +437,119 @@ test("saved string links opt in explicitly, retain stale declarations and bind r
 			.pv_string_reconciliation.rows[1].status,
 		"unlinked",
 	);
+	// Same-model instances are distinct: v2 requires the declared physical ID.
+	const plantStrings = {
+		schema_version: 1,
+		units: [
+			{
+				unit_id: "system_a",
+				inverter_instance_id: "inverter_other",
+				plan: strings,
+			},
+		],
+	};
+	const other = {
+		...plan.instances[0],
+		id: "inverter_other",
+		name: "Second inverter",
+	};
+	const multiRequested = { ...linked, instances: [...linked.instances, other] };
+	const multiResponse = structuredClone(response);
+	multiResponse.prepared_inputs = {
+		...multiRequested,
+		geometry_sha256: revision,
+	};
+	multiResponse.pv_string_reconciliation.schema_version = 2;
+	delete multiResponse.pv_string_reconciliation.pv_string_plan_sha256;
+	multiResponse.pv_string_reconciliation.pv_plant_string_plan_sha256 =
+		"d".repeat(64);
+	for (const row of multiResponse.pv_string_reconciliation.rows) {
+		Object.assign(row, {
+			unit_id: "system_a",
+			inverter_instance_id: "inverter_other",
+			instance_status: "declared",
+		});
+		if (row.string_id === "s1") row.status = "inverter_endpoint_unresolved";
+	}
+	const plant = {
+		units: [
+			{
+				id: "system_a",
+				selection: {
+					inverter_product_id: 6506,
+					product_revisions: { 6506: revision },
+				},
+			},
+		],
+	};
+	assert.equal(
+		readInstallationReview(
+			multiResponse,
+			multiRequested,
+			"project",
+			plantStrings,
+			2,
+			plant,
+		).pv_string_reconciliation.rows[0].status,
+		"inverter_endpoint_unresolved",
+	);
+	const falselyLinked = structuredClone(multiResponse);
+	falselyLinked.pv_string_reconciliation.rows[0].status = "linked";
+	assert.throws(
+		() =>
+			readInstallationReview(
+				falselyLinked,
+				multiRequested,
+				"project",
+				plantStrings,
+				2,
+				plant,
+			),
+		/invalid_installation_review/,
+	);
+	const nullBinding = structuredClone(plantStrings);
+	nullBinding.units[0].inverter_instance_id = null;
+	const nullResponse = structuredClone(multiResponse);
+	for (const row of nullResponse.pv_string_reconciliation.rows)
+		Object.assign(row, {
+			inverter_instance_id: null,
+			instance_status: "not_recorded",
+		});
+	assert.equal(
+		readInstallationReview(
+			nullResponse,
+			multiRequested,
+			"project",
+			nullBinding,
+			2,
+			plant,
+		).pv_string_reconciliation.rows[0].closure.recorded,
+		false,
+	);
+	const staleResponse = structuredClone(multiResponse);
+	for (const row of staleResponse.pv_string_reconciliation.rows)
+		row.instance_status = "revision_mismatch";
+	assert.equal(
+		readInstallationReview(
+			staleResponse,
+			multiRequested,
+			"project",
+			plantStrings,
+			2,
+			{
+				units: [
+					{
+						...plant.units[0],
+						selection: {
+							...plant.units[0].selection,
+							product_revisions: { 6506: "e".repeat(64) },
+						},
+					},
+				],
+			},
+		).pv_string_reconciliation.rows[0].instance_status,
+		"revision_mismatch",
+	);
 	for (const corrupt of [
 		(value) => {
 			delete value.project_revision;

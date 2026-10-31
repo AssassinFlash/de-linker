@@ -303,6 +303,11 @@ export function energyErrorText(error: unknown): string {
 				"The device entries are saved, but the equipment selection needs preparation before a new check or report. Prepare the selection and save the project.",
 				"linker-tools",
 			);
+		case "pv_plant_string_plan_incomplete":
+			return __(
+				"The multi-system PV wiring plan needs review. Check system identities, inverter selections and duplicate module assignments.",
+				"linker-tools",
+			);
 		case "pv_string_plan_incomplete":
 		case "equipment_selection_incomplete":
 			return __(

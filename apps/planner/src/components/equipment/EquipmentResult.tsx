@@ -62,7 +62,15 @@ export function EquipmentResult({
 		? readObject(assessment.pv_electrical)
 		: null;
 	const stringNumbers = new Map(
-		((pvWiring?.strings ?? []) as JsonObject[]).map((s, i) => [s.id, i + 1]),
+		pvWiring?.method === "woo_plant_layout_electrical_v1"
+			? (pvWiring.units as JsonObject[]).flatMap((u) =>
+					(readObject(u.assessment).strings as JsonObject[]).map(
+						(s, i) => [s.id, i + 1] as const,
+					),
+				)
+			: ((pvWiring?.strings ?? []) as JsonObject[]).map(
+					(s, i) => [s.id, i + 1] as const,
+				),
 	);
 	const lines = assessment?.provisional_bill_of_materials as
 		JsonObject[] | undefined;
@@ -288,7 +296,42 @@ export function EquipmentResult({
 						</p>
 					</Notice>
 					{certificateSources}
-					{pvWiring && <PvStringResult value={pvWiring} locale={locale} />}
+					{pvWiring &&
+						(pvWiring.method === "woo_plant_layout_electrical_v1" ? (
+							<section>
+								<h4>{__("PV strings across all systems", "linker-tools")}</h4>
+								<p>
+									{sprintf(
+										__("%1$d of %2$d roof modules assigned", "linker-tools"),
+										Number(pvWiring.assigned_modules),
+										Number(pvWiring.included_modules),
+									)}
+								</p>
+								{(pvWiring.units as JsonObject[]).map((unit) => (
+									<section key={String(unit.unit_id)}>
+										<h4>
+											{String(unit.unit_name)} · {String(unit.unit_id)}
+										</h4>
+										<p>
+											{__("Inverter in the saved installation", "linker-tools")}
+											:{" "}
+											{typeof unit.inverter_instance_id === "string"
+												? unit.inverter_instance_id
+												: __(
+														"No inverter linked to the installation",
+														"linker-tools",
+													)}
+										</p>
+										<PvStringResult
+											value={readObject(unit.assessment)}
+											locale={locale}
+										/>
+									</section>
+								))}
+							</section>
+						) : (
+							<PvStringResult value={pvWiring} locale={locale} />
+						))}
 					{assessment.model === "woo_multi_converter_plant_v1" ? (
 						<PlantCheckGroups
 							assessment={assessment}

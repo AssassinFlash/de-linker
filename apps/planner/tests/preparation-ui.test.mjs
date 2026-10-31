@@ -9,12 +9,16 @@ import { WeatherProgress } from "../src/components/energy/WeatherProgress.tsx";
 import { readWeatherStatus } from "../src/data/weatherStatus.ts";
 import { EnergyWorkspace } from "../src/components/energy/EnergyWorkspace.tsx";
 import {
+	projectInputContract,
 	beginDraft,
 	editDraft,
 	undoDraft,
 	prepareSave,
 	acknowledgeSave,
 } from "../src/domain/draft.ts";
+import { PlantPvStringSetup } from "../src/components/equipment/PlantPvStringSetup.tsx";
+import { panelPoses } from "../src/domain/panelPoses.ts";
+import { equipmentDraft } from "../src/domain/equipment.ts";
 import { DeviceConditionInputs } from "../src/components/equipment/DeviceConditionInputs.tsx";
 import { PlanningReportResult } from "../src/components/energy/PlanningReportResult.tsx";
 import { ApiError } from "../src/data/protocol.ts";
@@ -22,6 +26,7 @@ import { readRun } from "../src/data/planningProtocol.ts";
 import { selectPreparation } from "../src/domain/preparationSelection.ts";
 import { projectLanguageUrl } from "../src/data/useSiteIntegration.ts";
 import fixture from "./fixtures/index.ts";
+import plannerGerman from "../../../plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json" with { type: "json" };
 import plantFixture from "./fixtures/plant-energy-run.json" with { type: "json" };
 
 const scope = "a".repeat(64);
@@ -527,7 +532,7 @@ test("owned geometric setup saves with the cumulative contract and shows frozen 
 	});
 	assert.equal(
 		JSON.parse(pending.pending.body).input_contract,
-		"pv_string_links_direct_beam_geometric_pv_v1",
+		projectInputContract,
 	);
 	assert.equal(
 		JSON.parse(pending.pending.body).inputs.direct_beam_visibility.sampling
@@ -1360,3 +1365,164 @@ test("real saved plant device entries stay optional, preserve per-unit version t
 	assert.equal(valid, true);
 	assert.equal(document.querySelector('[role="alert"]'), null);
 });
+
+for (const locale of ["en-US", "de-DE"])
+	test(`plant string editor excludes other systems' roof modules and retains their independent input and binding: ${locale}`, async (t) => {
+		const project = structuredClone(fixture.geometric_pv.project);
+		project.inputs.geometry.arrays[0].columns = 3;
+		const modules = panelPoses(project.inputs.geometry).filter(
+			(p) => p.included,
+		);
+		assert.ok(modules.length >= 2);
+		const selection = {
+			...equipmentDraft({}),
+			grid_phase: 3,
+			operating_mode: "grid_connected",
+			inverter_product_id: 1,
+			product_revisions: { 1: "a".repeat(64) },
+		};
+		const units = ["a", "b"].map((id) => ({
+			id,
+			name: id.toUpperCase(),
+			inputs: { equipment_selection: selection },
+		}));
+		const plan = (id, module) => ({
+			schema_version: 1,
+			inverter_product_id: 1,
+			minimum_ambient_c: null,
+			temperature_source: null,
+			strings: [{ id, mppt: 1, input: 1, module_ids: [module] }],
+		});
+		const wiring = {
+			schema_version: 1,
+			units: units.map((u, i) => ({
+				unit_id: u.id,
+				inverter_instance_id: "inv_" + u.id,
+				plan: plan("s_" + u.id, modules[i].id),
+			})),
+		};
+		project.inputs.pv_plant_string_plan = wiring;
+		project.inputs.equipment_candidate = { id: "old" };
+		project.inputs.installation = {
+			schema_version: 1,
+			geometry_sha256: null,
+			instances: units.map((u) => ({
+				id: "inv_" + u.id,
+				name: u.name,
+				product_id: 1,
+				product_revision: "a".repeat(64),
+				source_id: "survey",
+				ports: [
+					{
+						id: "pv",
+						name: "PV",
+						position: { east_m: 0, north_m: 0, height_m: 1 },
+					},
+				],
+			})),
+			circuits: [],
+			routes: [],
+			cable_runs: [],
+		};
+		let current = beginDraft(project),
+			replace,
+			valid;
+		const validity = (value) => {
+			valid = value;
+		};
+		function Harness() {
+			const [draft, setDraft] = useState(current);
+			replace = (next) => {
+				current = next;
+				setDraft(next);
+			};
+			window.wp.i18n.__ = (message) =>
+				locale.startsWith("de")
+					? (plannerGerman.locale_data.messages[message]?.[0] ?? message)
+					: message;
+			return React.createElement(PlantPvStringSetup, {
+				draft,
+				unit: units[0],
+				locale,
+				disabled: false,
+				onValidity: validity,
+				edit(operation) {
+					replace(editDraft(current, operation(current.history.current)));
+					return true;
+				},
+			});
+		}
+		await mount(t, React.createElement(Harness));
+		const checkboxes = [...document.querySelectorAll('input[type="checkbox"]')];
+		assert.ok(checkboxes[0].disabled);
+		assert.ok(
+			checkboxes[1].disabled,
+			"unit B's assigned module cannot be reused by A",
+		);
+		const binding = [...document.querySelectorAll("select")].find((s) =>
+			[...s.options].some((o) => o.value === "inv_a"),
+		);
+		assert.ok(binding);
+		assert.ok(
+			document.body.textContent.includes(
+				locale.startsWith("de")
+					? "Wechselrichter in der gespeicherten Installation"
+					: "Inverter in the saved installation",
+			),
+		);
+		assert.equal(
+			[...binding.options].some((o) => o.value === "inv_b"),
+			false,
+			"same-model unit B instance remains unavailable",
+		);
+		await enter(document.querySelector("textarea"), "Documented local minimum");
+		assert.deepEqual(
+			current.history.current.pv_plant_string_plan.units.find(
+				(u) => u.unit_id === "b",
+			),
+			wiring.units[1],
+		);
+		assert.equal(current.history.current.equipment_candidate, undefined);
+		await act(async () => {
+			binding.value = "";
+			binding.dispatchEvent(new window.Event("change", { bubbles: true }));
+		});
+		assert.equal(
+			current.history.current.pv_plant_string_plan.units.find(
+				(u) => u.unit_id === "a",
+			).inverter_instance_id,
+			null,
+		);
+		assert.equal(
+			current.history.current.pv_plant_string_plan.units.find(
+				(u) => u.unit_id === "b",
+			).inverter_instance_id,
+			"inv_b",
+		);
+		await act(async () => {
+			units[0] = {
+				...units[0],
+				inputs: { equipment_setup: { ...selection, inverter_product_id: 2 } },
+			};
+			replace(editDraft(current, { ...current.history.current, stale: true }));
+		});
+		assert.ok(
+			document.body.textContent.includes(
+				window.wp.i18n.__(
+					"These strings belong to another inverter. Select that inverter or start a new wiring plan.",
+				),
+			),
+		);
+		assert.equal(
+			valid,
+			true,
+			"a stale model is saveable for explicit recovery",
+		);
+		const remove = [...document.querySelectorAll("button")].find(
+			(b) => b.textContent === window.wp.i18n.__("Remove wiring plan"),
+		);
+		await act(async () => remove.click());
+		assert.deepEqual(current.history.current.pv_plant_string_plan.units, [
+			wiring.units[1],
+		]);
+	});

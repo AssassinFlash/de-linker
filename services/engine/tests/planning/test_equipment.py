@@ -22,6 +22,7 @@ from conftest import (
 from fastapi.testclient import TestClient
 
 from linker_engine.engine import Engine
+from linker_engine.planning.canonical import digest, encode
 from linker_engine.planning.dc_energy_parameters import DcLossScenario
 from linker_engine.planning.energy_equipment import assess_energy_equipment
 from linker_engine.planning.energy_inputs import BatteryParameters
@@ -675,6 +676,33 @@ def test_multi_converter_native_job_freezes_plant_materials_and_report_lineage(
             options.model_copy(update={"equipment_run_id": None}),
         )
     )
+    bypass = copy.deepcopy(workspace.get(actor, project["id"]).inputs)
+    bypass["pv_plant_string_plan"] = {
+        "schema_version": 1,
+        "units": [
+            {
+                "unit_id": chosen["units"][0]["id"],
+                "inverter_instance_id": None,
+                "plan": {
+                    "schema_version": 1,
+                    "inverter_product_id": chosen["units"][0]["selection"][
+                        "inverter_product_id"
+                    ],
+                    "minimum_ambient_c": None,
+                    "temperature_source": None,
+                    "strings": [],
+                },
+            }
+        ],
+    }
+    with pytest.raises(ReportInputsChanged, match="has not assessed"):
+        report_sources(
+            workspace,
+            sources,
+            actor,
+            replace(workspace.get(actor, project["id"]), inputs=bypass),
+            options.model_copy(update={"equipment_run_id": None}),
+        )
     assert selected_source["equipment"] == assessment
     assert selected_source["equipment_plant"] == chosen
     assert selected_source["source_runs"][0]["candidate_id"] == candidate["id"]
@@ -2107,6 +2135,28 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
         check_equipment_candidate(
             workspace, owner, pid, selected_inputs, products=source
         )
+        single_bypass = copy.deepcopy(selected_inputs)
+        single_bypass["pv_string_plan"] = {
+            "schema_version": 1,
+            "inverter_product_id": candidate["selection"]["inverter_product_id"],
+            "minimum_ambient_c": None,
+            "temperature_source": None,
+            "strings": [],
+        }
+        with pytest.raises(ReportInputsChanged, match="has not assessed"):
+            report_sources(
+                workspace,
+                source,
+                owner,
+                replace(workspace.get(owner, pid), inputs=single_bypass),
+                ReportOptions(
+                    locale="en",
+                    energy_run_id=None,
+                    pv_run_id=None,
+                    equipment_run_id=None,
+                    logo=None,
+                ),
+            )
         selected_inputs["equipment_candidate"]["assessment_sha256"] = "0" * 64
         with pytest.raises(InvalidInput):
             check_equipment_candidate(
@@ -2489,3 +2539,351 @@ def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
     saved["geometry"]["arrays"][0]["excluded_slots"] = ["0:0"]
     with pytest.raises(InvalidInput, match="removed or excluded"):
         json_object(assess_pv_strings(saved, basis))
+
+
+def test_multi_system_pv_strings_scope_currents_bindings_and_saved_reports(
+    feed: FixtureObject,
+    engine: Engine,
+    workspace: Workspace,
+    owner: Actor,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from linker_engine.planning.errors import ProjectInputContractRequired
+    from linker_engine.planning.geometry import panel_poses, read_geometry
+    from linker_engine.planning.http_documents import ProjectInputs
+    from linker_engine.planning.plant_assessment import assess_plant
+    from linker_engine.planning.project_input_contracts import (
+        GEOMETRIC_PV_INPUT_CONTRACT,
+        PLANT_PV_INPUT_CONTRACT,
+        require_input_contract,
+    )
+    from linker_engine.planning.pv_string_inputs import PvPlantStringPlan
+    from linker_engine.planning.woo_module import module_template
+
+    from .test_pv_generation import geometry
+
+    reference = feed["overlay"][0]
+    layout = geometry()
+    module = json_object(module_template(reference))
+    layout["module_specs"] = [{**module["specification"], "id": "module"}]
+    layout["arrays"][0].update(rows=2, columns=6, excluded_slots=[])
+    mids = [p.id for p in panel_poses(read_geometry(layout)) if p.included]
+    plant = plant_inputs(feed)
+    plant["requirements"]["pv_dc_kw"] = 5.52
+    for unit in plant["units"]:
+        unit["selection"]["pv_dc_kw"] = 2.76
+    wiring: FixtureObject = {
+        "schema_version": 1,
+        "units": [
+            {
+                "unit_id": uid,
+                "inverter_instance_id": None,
+                "plan": {
+                    "schema_version": 1,
+                    "inverter_product_id": 4107,
+                    "minimum_ambient_c": -10,
+                    "temperature_source": "Synthetic design condition",
+                    "strings": [
+                        {
+                            "id": "string_" + uid,
+                            "mppt": 1,
+                            "input": 1,
+                            "module_ids": ids,
+                        }
+                    ],
+                },
+            }
+            for uid, ids in (("a", mids[:6]), ("b", mids[6:]))
+        ],
+    }
+    value: FixtureObject = {
+        "equipment_plant": plant,
+        "geometry": layout,
+        "pv_plant_string_plan": wiring,
+    }
+    basis: FixtureObject = {
+        "products": feed["products"],
+        "compatibility": engine.compatibility.snapshot(),
+        "pv_module_inputs": {"module": module, "electrical_product": reference},
+        "publication": {"products": [], "documents": [], "reference_inputs": []},
+    }
+    with pytest.raises(ProjectInputContractRequired):
+        require_input_contract(None, value, GEOMETRIC_PV_INPUT_CONTRACT)
+    with pytest.raises(ProjectInputContractRequired):
+        require_input_contract(
+            value, {"equipment_plant": plant}, GEOMETRIC_PV_INPUT_CONTRACT
+        )
+    require_input_contract(value, value, PLANT_PV_INPUT_CONTRACT)
+    cached = {
+        digest(encode(unit["selection"])): json_object(
+            assess_equipment({"equipment_selection": unit["selection"]}, basis)
+        )
+        for unit in plant["units"]
+    }
+    result = json_object(assess_plant(value, basis, unit_assessments=cached))
+    for unit in result["systems"]:
+        checks = {c["id"]: c for c in unit["assessment"]["checks"]}
+        assert checks["pv_stc_current:1"]["actual"] == pytest.approx(10.14)
+        assert checks["pv_layout_coverage"]["status"] == "satisfied"
+    assert result["pv_electrical"]["assigned_modules"] == 12
+    assert result["pv_electrical"]["checks"][0]["status"] == "satisfied"
+    assert all(
+        u["instance_status"] == "not_recorded" for u in result["pv_electrical"]["units"]
+    )
+    assert all(
+        c["unit_id"] in {"a", "b"}
+        for c in result["checks"]
+        if c["id"].startswith("unit:")
+    )
+    # A different inverter keeps its own maintained tracker limits.
+    different = copy.deepcopy(value)
+    other = next(product for product in feed["products"] if product["id"] == 1184)
+    selection = different["equipment_plant"]["units"][1]["selection"]
+    selection["inverter_product_id"] = 1184
+    selection["product_revisions"].pop("4107")
+    selection["product_revisions"]["1184"] = other["product_revision"]
+    different["pv_plant_string_plan"]["units"][1]["plan"]["inverter_product_id"] = 1184
+    other_result = json_object(assess_plant(different, basis))
+    other_checks = {
+        c["id"]: c for c in other_result["systems"][1]["assessment"]["checks"]
+    }
+    assert (
+        other_checks["pv_stc_current:1"]["facts"][-1]
+        == json_object(compile_product(other))["facts"]["mppt_max_current_a"]
+    )
+    assert (
+        other_result["systems"][0]["assessment"]["pv_electrical"]
+        == result["systems"][0]["assessment"]["pv_electrical"]
+    )
+    duplicate = copy.deepcopy(wiring)
+    duplicate["units"][1]["plan"]["strings"][0]["module_ids"][0] = mids[0]
+    with pytest.raises(InvalidInput):
+        PvPlantStringPlan.read(duplicate)
+    for key, change in (
+        ("unit_id", "removed_unit"),
+        ("product", 999999),
+        ("instance", "removed_instance"),
+    ):
+        stale = copy.deepcopy(value)
+        item = stale["pv_plant_string_plan"]["units"][0]
+        if key == "product":
+            item["plan"]["inverter_product_id"] = change
+        else:
+            item["inverter_instance_id" if key == "instance" else key] = change
+        # Cross-document stale identities remain editable, while preflight rejects them.
+        ProjectInputs.model_validate({"schema_version": 1, "inputs": stale})
+        with pytest.raises(InvalidInput):
+            assess_plant(stale, basis)
+    missing = copy.deepcopy(value)
+    missing["pv_plant_string_plan"]["units"].pop()
+    for demand in (2.76, None, 0):
+        missing["equipment_plant"]["units"][1]["selection"]["pv_dc_kw"] = demand
+        partial = json_object(assess_plant(missing, basis))
+        absent = [
+            c for c in partial["checks"] if c["id"] == "unit:b:pv_electrical_topology"
+        ]
+        if demand != 0:
+            assert any(c["status"] == "unresolved" for c in absent)
+        assert partial["pv_electrical"]["checks"][0]["status"] == "violated"
+    stale = copy.deepcopy(value)
+    for unit in stale["equipment_plant"]["units"]:
+        unit["selection"]["product_revisions"]["4107"] = "0" * 64
+    with pytest.raises(ProductEvidenceChanged):
+        assess_plant(stale, basis)
+
+    from linker_engine.planning.installation_takeoff import route_takeoff
+    from linker_engine.planning.project_materials import (
+        materials_csv,
+        project_materials,
+    )
+
+    linked = copy.deepcopy(value)
+    revision = plant["units"][0]["selection"]["product_revisions"]["4107"]
+    position = {"east_m": 0, "north_m": 0, "height_m": 0}
+    linked["installation"] = {
+        "schema_version": 1,
+        "geometry_sha256": digest(encode(layout)),
+        "instances": [
+            {
+                "id": key,
+                "name": key,
+                "product_id": 4107 if key != "site" else None,
+                "product_revision": revision if key != "site" else None,
+                "source_id": "survey",
+                "ports": [{"id": "port", "name": "Port", "position": position}],
+            }
+            for key in ("inv_a", "inv_b", "site")
+        ],
+        "circuits": [
+            {
+                "id": "c_" + uid,
+                "name": "Circuit " + uid,
+                "kind": "pv_dc",
+                "start": {"instance_id": "inv_" + uid, "port_id": "port"},
+                "end": {"instance_id": "site", "port_id": "port"},
+            }
+            for uid in ("a", "b")
+        ],
+        "routes": [],
+        "cable_runs": [],
+        "pv_string_links": [
+            {"string_id": "string_" + uid, "circuit_id": "c_" + uid}
+            for uid in ("a", "b")
+        ],
+    }
+    for item in linked["pv_plant_string_plan"]["units"]:
+        item["inverter_instance_id"] = "inv_" + item["unit_id"]
+    reconciled = json_object(route_takeoff(linked, basis))["pv_string_reconciliation"]
+    assert (
+        reconciled["schema_version"] == 2 and "pv_string_plan_sha256" not in reconciled
+    )
+    assert [row["status"] for row in reconciled["rows"]] == ["linked", "linked"]
+    assert all(row["closure"]["recorded"] is False for row in reconciled["rows"])
+    assert [row["unit_id"] for row in reconciled["rows"]] == ["a", "b"]
+    for field, changed_value, expected in (
+        ("product_id", 2090, "product_mismatch"),
+        ("product_revision", "0" * 64, "revision_mismatch"),
+    ):
+        invalid = copy.deepcopy(linked)
+        invalid["installation"]["instances"][0][field] = changed_value
+        with pytest.raises(InvalidInput):
+            assess_plant(invalid, basis)
+        # Review is recovery-oriented even when current Woo evidence prevents
+        # route_takeoff's separate device-facts check from running.
+        from linker_engine.planning.installation_inputs import InstallationInputs
+        from linker_engine.planning.installation_takeoff import _string_links
+
+        review = json_object(
+            _string_links(invalid, InstallationInputs.read(invalid["installation"]), [])
+        )
+        assert review["rows"][0]["instance_status"] == expected
+        assert review["rows"][0]["status"] == "inverter_endpoint_unresolved"
+        if field == "product_revision":
+            recovery = json_object(
+                route_takeoff(invalid, basis, allow_stale_products=True)
+            )
+            instance = recovery["instances"][0]
+            assert instance["product_revision"] == changed_value
+            assert instance["brand"] is None and instance["model"] is None
+            assert recovery["instances"][1]["model"] is not None
+    draft = copy.deepcopy(linked)
+    prepared = draft.pop("equipment_plant")
+    draft["equipment_plant_setup"] = {
+        "schema_version": 1,
+        "requirements": prepared["requirements"],
+        "units": [
+            {
+                "id": unit["id"],
+                "name": unit["name"],
+                "inputs": {"equipment_selection": unit["selection"]},
+            }
+            for unit in prepared["units"]
+        ],
+        "parallel_groups": [],
+    }
+    ProjectInputs.model_validate({"schema_version": 1, "inputs": draft})
+    draft_review = json_object(route_takeoff(draft, basis))["pv_string_reconciliation"]
+    assert all(
+        row["instance_status"] == "unprepared_plant" and not row["closure"]["recorded"]
+        for row in draft_review["rows"]
+    )
+    material_source: FixtureObject = {
+        "project_id": "a" * 32,
+        "revision": 1,
+        "input_sha256": "b" * 64,
+        "installation": json_object(route_takeoff(linked, basis)),
+        "equipment": result,
+    }
+    material = json_object(project_materials(material_source))
+    for locale in ("en", "de"):
+        csv = materials_csv(material, digest(encode(material)), locale).decode(
+            "utf-8-sig"
+        )
+        assert "inv_a" in csv and "inv_b" in csv
+
+    feed.update(figure_projection_version=2, compatibility_origin="woocommerce")
+    shared = SimpleNamespace(
+        engine=replace(engine, products=Products.from_feed(feed)),
+        publication=Publication(feed),
+        version="plant-wiring-fixture",
+    )
+
+    def current(self: Publication) -> FixtureObject:
+        manifest = publication_manifest(self.feed)
+        for row in manifest["products"]:
+            row["ready"]["engineering"] = True
+        return manifest
+
+    monkeypatch.setattr(Publication, "read", current)
+    sources = ProductSources(lambda: shared)
+    equipment = EquipmentService(
+        workspace, EquipmentKernel(workspace, sources), max_attempts=1
+    )
+    energy = EnergyService(
+        workspace, EnergyKernel(workspace, TOLERANCE, max_intervals=10), max_attempts=1
+    )
+    registry = service_registry(energy, None, None, equipment)
+    executor = Worker(
+        Jobs(workspace),
+        "plant-wiring-fixture",
+        {"evaluate": registry},
+        lease_seconds=30,
+        heartbeat_seconds=1,
+        retry_seconds=1,
+        routing=registry.routing(8),
+    )
+    project = workspace.create(
+        owner,
+        "Two separately wired systems",
+        linked,
+        key="plant-wiring-create",
+        input_contract=PLANT_PV_INPUT_CONTRACT,
+    )
+    run = equipment.evaluate(owner, project.id, 1, key="plant-wiring-evaluate")
+    assert executor.run_once()
+    run = workspace.run(owner, run.id)
+    assert run.state == "succeeded", run.error
+    options = ReportOptions(
+        locale="en",
+        energy_run_id=None,
+        pv_run_id=None,
+        equipment_run_id=run.id,
+        logo=None,
+    )
+    source = json_object(report_sources(workspace, sources, owner, project, options))
+    assert (
+        source["equipment"]["pv_electrical"]
+        == json_object(run.result)["assessment"]["pv_electrical"]
+    )
+    for locale in ("en", "de"):
+        report = build_report({**source, "locale": locale})
+        section = next(s for s in report.sections if s.id == "pv-strings")
+        assert section.table is not None
+        assert [row[0] for row in section.table.rows] == ["A", "B"]
+        assert [row[1] for row in section.table.rows] == ["inv_a", "inv_b"]
+        from linker_engine.pdf import render
+
+        assert render(report).startswith(b"%PDF")
+    unrelated = copy.deepcopy(linked)
+    unrelated["installation"]["instances"][0]["name"] = "A different display name"
+    unrelated["installation"]["circuits"][0]["name"] = "An unrelated route description"
+    assert (
+        json_object(
+            report_sources(
+                workspace, sources, owner, replace(project, inputs=unrelated), options
+            )
+        )["equipment"]
+        == source["equipment"]
+    )
+    identity_change = copy.deepcopy(linked)
+    identity_change["installation"]["instances"][0]["product_revision"] = "0" * 64
+    with pytest.raises(ReportInputsChanged):
+        report_sources(
+            workspace, sources, owner, replace(project, inputs=identity_change), options
+        )
+    changed = copy.deepcopy(linked)
+    changed["pv_plant_string_plan"]["units"][0]["plan"]["minimum_ambient_c"] = -20
+    with pytest.raises(ReportInputsChanged):
+        report_sources(
+            workspace, sources, owner, replace(project, inputs=changed), options
+        )
