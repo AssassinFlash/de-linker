@@ -218,6 +218,35 @@ final class ClaimOutbox {
 	public function settle( int $user ): void {
 		$id = $this->next_event( $user );
 		if ( $id > 0 ) {
+			if ( did_action( 'action_scheduler_init' ) ) {
+				// Session checks respect an observed active delivery and preserve
+				// its backoff. A due event still permits immediate foreground
+				// recovery; the original scheduler callback keeps its attempt.
+				foreach ( array(
+					array( 'status' => 'in-progress' ),
+					array(
+						'status'       => 'pending',
+						'date'         => time(),
+						'date_compare' => '>',
+					),
+				) as $state ) {
+					$scheduled = as_get_scheduled_actions(
+						array_merge(
+							array(
+								'hook'     => self::HOOK,
+								'group'    => self::GROUP,
+								'search'   => '[' . $id . ',',
+								'per_page' => 1,
+							),
+							$state
+						),
+						'ids'
+					);
+					if ( array() !== $scheduled ) {
+						return;
+					}
+				}
+			}
 			$this->run( $id );
 		}
 	}
