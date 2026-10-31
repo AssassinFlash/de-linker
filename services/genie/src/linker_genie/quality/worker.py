@@ -18,7 +18,6 @@ from __future__ import annotations
 import argparse
 import logging
 import os
-import sqlite3
 import sys
 import time
 from collections.abc import Mapping
@@ -38,6 +37,7 @@ from linker_genie.quality.item import Skip, build
 from linker_genie.quality.store import Status, Store
 from linker_genie.quality.turns import LoggedTurn, TurnSource
 from linker_genie.quality.wordpress import PushError, WordPress
+from linker_genie.retention import judgments_path
 
 log = logging.getLogger("linker_genie.quality")
 
@@ -66,15 +66,6 @@ PUSH_BATCH = 50
 QUESTION_CHARS = 1000
 ANSWER_CHARS = 4000
 
-# Days a turn and its verdict stay on the VPS: the site's own retention of
-# Genie conversations (plugins/linker-tools/includes/Genie/Retention.php,
-# RETENTION_DAYS = 90). The log holds the customer's own words, the page and
-# what the tools returned; the copy here must not outlive the site's.
-RETENTION_DAYS = 90
-# Seconds between retention sweeps: daily, as the site's own sweep
-# (Retention::HOOK, a daily WP-Cron event).
-PRUNE_EVERY_SECONDS = 86400.0
-
 FIRST = JUDGES["jev"]
 ESCALATION = JUDGES["deepseek"]
 
@@ -87,7 +78,6 @@ class Worker:
     first: Judge = FIRST
     escalation: Judge = ESCALATION
     last_report: float = 0.0
-    last_prune: float = 0.0
 
     def cycle(self, now: float) -> int:
         """One pass over the queue; returns how many turns it judged or skipped."""
@@ -106,31 +96,7 @@ class Worker:
             # Advanced per turn, so a restart mid-batch takes up where it was.
             self.store.set_cursor(turn.id)
         self._push(now, force=bool(due or fresh))
-        if now - self.last_prune >= PRUNE_EVERY_SECONDS:
-            self.prune(now)
         return len(due) + len(fresh)
-
-    def prune(self, now: float) -> None:
-        """Delete the turns and verdicts past RETENTION_DAYS from both stores.
-
-        A failure (a locked log, a full disk) is logged at ERROR and the sweep
-        runs again on the next cycle."""
-        cutoff = now - RETENTION_DAYS * 86400
-        try:
-            turns = self.source.prune(
-                datetime.fromtimestamp(cutoff, UTC).strftime("%Y-%m-%d %H:%M:%S")
-            )
-            verdicts = self.store.prune(cutoff)
-        except sqlite3.Error as error:
-            log.error("retention sweep failed: %s", error)
-            return
-        self.last_prune = now
-        log.info(
-            "retention: deleted %d turn(s) and %d verdict(s) older than %d days",
-            turns,
-            verdicts,
-            RETENTION_DAYS,
-        )
 
     def _judge(self, turn: LoggedTurn, now: float) -> None:
         attempts = self.store.attempts(turn.id) + 1
@@ -313,7 +279,7 @@ def main(argv: list[str] | None = None) -> int:
         "--db",
         type=Path,
         default=None,
-        help="the worker's own store (default: judgments.sqlite beside the log)",
+        help="the worker's store (GENIE_JUDGMENTS or judgments.sqlite beside the log)",
     )
     parser.add_argument("--wp", default=os.environ.get("GENIE_WP_URL", ""))
     parser.add_argument("--once", action="store_true", help="one cycle, then exit")
@@ -344,7 +310,7 @@ def main(argv: list[str] | None = None) -> int:
         log.error("judge credentials missing; not starting: %s", error)
         return 2
 
-    store = Store(args.db or args.log.with_name("judgments.sqlite"))
+    store = Store(args.db or judgments_path(args.log))
     source = TurnSource(args.log)
     if store.cursor() is None:
         store.set_cursor(max(source.latest_id() - max(args.backfill, 0), 0))

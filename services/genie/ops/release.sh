@@ -50,20 +50,24 @@ import os
 import sys
 
 tmp, dest = sys.argv[1], sys.argv[2]
-if os.path.lexists(dest):
-    os.unlink(dest)
-os.rename(tmp, dest)
+os.replace(tmp, dest)
 PY
 }
 
-publish() {
+publish() (
     local source="$1"
-    local version dest live extra
+    local version dest live extra stage
     version="$(python3 -c 'from datetime import datetime, timezone; print(datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ"))')"
     dest="$ROOT/$version"
     mkdir -p "$ROOT"
-    mkdir "$dest"
-    cp -a "$source"/. "$dest/"
+    # Only a completed copy receives a release name. Failed/interrupted copies
+    # cannot consume retention or become the next rollback target.
+    stage="$(mktemp -d "$ROOT/.incoming-XXXXXXXX")"
+    trap 'rm -rf "$stage"' EXIT
+    trap 'exit 130' INT
+    trap 'exit 143' TERM
+    cp -a "$source"/. "$stage/"
+    mv "$stage" "$dest"
     switch "$version"
     live="$(current)"
     extra=0
@@ -83,7 +87,7 @@ publish() {
         done < <(list_versions)
     fi
     echo "current=$(current)"
-}
+)
 
 rollback() {
     local live previous="" v

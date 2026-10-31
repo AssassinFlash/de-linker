@@ -197,6 +197,19 @@ class ScopeTest(unittest.TestCase):
             run("git", "add", ".")
             run("git", "commit", "-qm", "base")
             base = run("git", "rev-parse", "HEAD")
+            # Local classification reads uncommitted files, including their mode.
+            (source / "old.ts").write_text("export const value = 2;\n")
+            self.assertEqual(
+                ci_scope.classify(ci_scope.diff_changes(base, ""), base, ""),
+                ["planner"],
+            )
+            (source / "old.ts").chmod(0o755)
+            self.assertEqual(
+                ci_scope.classify(ci_scope.diff_changes(base, ""), base, ""),
+                list(ci_scope.FULL_LANES),
+            )
+            (source / "old.ts").chmod(0o644)
+            (source / "old.ts").write_text("export const value = 1;\n")
             run("git", "mv", "apps/planner/src/old.ts", "apps/planner/src/new.ts")
             run("git", "commit", "-qm", "rename")
             head = run("git", "rev-parse", "HEAD")
@@ -498,7 +511,9 @@ class ScopeTest(unittest.TestCase):
         self.assertLess(js.index("npx playwright install"), js.index("just js-test"))
         engine = TEXT.split("\n  engine:\n", 1)[1].split("\n  genie:\n", 1)[0]
         self.assertIn("uses: actions/setup-node@", engine)
-        self.assertLess(engine.index("npm ci"), engine.index("uv run --locked pytest"))
+        self.assertIn("run: just ci-engine", engine)
+        self.assertIn("ci-engine: ci-planner-deps", JUSTFILE)
+        self.assertIn("uv run --locked pytest", JUSTFILE)
         python = TEXT.split("\n  python:\n", 1)[1].split("\n  content:\n", 1)[0]
         self.assertLess(
             python.index("Python unit native helpers"),

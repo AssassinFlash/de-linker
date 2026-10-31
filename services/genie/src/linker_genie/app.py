@@ -18,11 +18,13 @@ that the process is up.
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import os
 import time
-from collections.abc import Iterator
+from collections.abc import AsyncIterator, Iterator
+from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Literal
 from uuid import UUID
@@ -40,6 +42,7 @@ from linker_genie import (
     page,
     parts,
     planning,
+    retention,
     summary,
     timing,
 )
@@ -91,11 +94,28 @@ from linker_genie.understand import Prepared, Understander
 from linker_genie.vision import Vision
 from linker_genie.work import WorkError, hold
 
+
+@asynccontextmanager
+async def lifespan(application: FastAPI) -> AsyncIterator[None]:
+    path = _log_path()
+    stop = asyncio.Event()
+    task = asyncio.create_task(
+        retention.run(path, retention.judgments_path(path), stop),
+        name="genie-log-retention",
+    )
+    try:
+        yield
+    finally:
+        stop.set()
+        await task
+
+
 app = FastAPI(
     title="Genie - Linker's AI assistant",
     docs_url=None,
     redoc_url=None,
     openapi_url=None,
+    lifespan=lifespan,
 )
 logger = logging.getLogger(__name__)
 # The shell's shared token and the body cap, before anything is parsed (gate.py).

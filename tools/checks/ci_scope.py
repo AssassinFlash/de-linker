@@ -41,10 +41,24 @@ def acceptance_record(path):
     )
 
 
+def regular_file(commit, path):
+    if not commit:
+        file = Path(path)
+        return (
+            file.is_file() and not file.is_symlink() and not file.stat().st_mode & 0o111
+        )
+    entries = git("ls-tree", commit, "--", path).split()
+    return bool(entries) and entries[0] == b"100644"
+
+
+def file_content(commit, path):
+    return git("show", f"{commit}:{path}") if commit else Path(path).read_bytes()
+
+
 def non_runtime_file(commit, path):
-    if git("ls-tree", commit, "--", path).split()[0] != b"100644":
+    if not regular_file(commit, path):
         return False
-    content = git("show", f"{commit}:{path}")
+    content = file_content(commit, path)
     if acceptance_record(path):
         if path.endswith(".png"):
             return content.startswith(b"\x89PNG\r\n\x1a\n")
@@ -62,9 +76,7 @@ def non_runtime_file(commit, path):
 
 def regular_change(status, path, base, head):
     revisions = {"M": (base, head), "A": (head,), "D": (base,)}.get(status, ())
-    return bool(revisions) and all(
-        git("ls-tree", rev, "--", path).split()[0] == b"100644" for rev in revisions
-    )
+    return bool(revisions) and all(regular_file(rev, path) for rev in revisions)
 
 
 def non_runtime_change(status, path, base, head):
@@ -95,12 +107,7 @@ def presentation(path):
 
 
 def manifest_entries(commit):
-    value = json.loads(
-        git(
-            "show",
-            f"{commit}:plugins/linker-tools/build/manifest.json",
-        )
-    )
+    value = json.loads(file_content(commit, "plugins/linker-tools/build/manifest.json"))
     if set(value) != {"sources", "build"}:
         raise ValueError("Unexpected Tools manifest")
     for section in value.values():
@@ -115,7 +122,7 @@ def manifest_entries(commit):
 
 
 def planner_manifest_isolated(base, head):
-    if not base or not head:
+    if not base:
         return False
     before = manifest_entries(base)
     after = manifest_entries(head)
@@ -196,7 +203,15 @@ def classify(changes, base="", head=""):
 
 def diff_changes(base, head):
     def records(*options):
-        raw = git("diff", "--name-status", "-z", *options, base, head)
+        raw = git(
+            "diff",
+            "--name-status",
+            "-z",
+            *options,
+            base,
+            *([head] if head else []),
+            "--",
+        )
         if not raw:
             return []
         fields = raw.decode(errors="surrogateescape").split("\0")
@@ -223,6 +238,24 @@ def diff_changes(base, head):
         if status not in {"A", "M", "D"}
     ]
     return structural + changes
+
+
+def change_flags(changes):
+    """Guards consumed by the same local and hosted recipes."""
+    paths = [path for _, path in changes]
+    return {
+        "catalog_changed": any(
+            path.startswith("plugins/linker-commerce/content/livecanvas/")
+            for path in paths
+        ),
+        "php_test_changed": (
+            "plugins/linker-commerce/tests/php/Unit/Presentation/TemplatesTest.php"
+            in paths
+        ),
+        "planner_build_changed": any(
+            path.startswith("plugins/linker-tools/build/planner/") for path in paths
+        ),
+    }
 
 
 def api(endpoint):
@@ -440,34 +473,8 @@ def plan():
     write_output("ledger", json.dumps(ledger, separators=(",", ":")))
     for lane in LANES:
         write_output(lane, str(lane in selected).lower())
-    write_output(
-        "catalog_changed",
-        str(
-            any(
-                path.startswith("plugins/linker-commerce/content/livecanvas/")
-                for _, path in changes
-            )
-        ).lower(),
-    )
-    write_output(
-        "php_test_changed",
-        str(
-            any(
-                path
-                == "plugins/linker-commerce/tests/php/Unit/Presentation/TemplatesTest.php"
-                for _, path in changes
-            )
-        ).lower(),
-    )
-    write_output(
-        "planner_build_changed",
-        str(
-            any(
-                path.startswith("plugins/linker-tools/build/planner/")
-                for _, path in changes
-            )
-        ).lower(),
-    )
+    for name, changed in change_flags(changes).items():
+        write_output(name, str(changed).lower())
     lines = [
         f"### Validation scope: {mode}",
         "",

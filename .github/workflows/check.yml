@@ -143,8 +143,9 @@ jobs:
       - name: JavaScript unit and browser suites
         if: matrix.lane == 'unit'
         run: |
+          just js-install
           cd plugins/linker-tools
-          npx playwright install --with-deps --only-shell chromium
+          npx playwright install-deps chromium
           cd ../..
           just js-test
 
@@ -459,7 +460,7 @@ jobs:
         run: just ci-native "${{ matrix.group }}" smoke
       - name: stop the instance
         if: always()
-        run: just down smoke || echo "no instance to stop"
+        run: just down smoke
 
   planner:
     needs: plan
@@ -481,32 +482,19 @@ jobs:
           node-version: "22"
           cache: npm
           cache-dependency-path: apps/planner/package-lock.json
-      - name: Planner source, tests and isolated build reproduction
-        working-directory: apps/planner
-        run: |
-          npm ci --no-audit --no-fund
-          npm run lint:js
-          npm run lint:types
-          npm run lint:format
-          npm test
-          npm run build
-          node ../../plugins/linker-tools/bin/build-manifest.mjs write
-          git diff --exit-code -- ../../plugins/linker-tools/build/planner ../../plugins/linker-tools/build/manifest.json
-          npm run build:check
-          node ../../plugins/linker-tools/bin/build-manifest.mjs check
+      - uses: taiki-e/install-action@f7e5d7c961414b23f5b25b2da9294395d08513ad # v2.87.26
+        with:
+          tool: just@1.58.0
       - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         if: needs.plan.outputs.planner_build_changed == 'true'
         with:
           php-version: "8.3"
           tools: composer:v2
           coverage: none
-      - name: Committed Planner manifest's WordPress consumer
-        if: needs.plan.outputs.planner_build_changed == 'true'
-        working-directory: plugins/linker-tools
-        run: |
-          composer validate --no-check-publish
-          composer install --no-interaction --no-progress --quiet
-          php vendor/bin/phpunit tests/php/Unit/PlannerApplicationTest.php
+      - name: Planner source, tests and isolated build reproduction
+        env:
+          PLANNER_BUILD_CHANGED: ${{ needs.plan.outputs.planner_build_changed }}
+        run: just ci-planner
 
   engine:
     needs: plan
@@ -528,9 +516,9 @@ jobs:
           node-version: "22"
           cache: npm
           cache-dependency-path: apps/planner/package-lock.json
-      - name: Planner runtime for cross-boundary Engine contracts
-        working-directory: apps/planner
-        run: npm ci --no-audit --no-fund
+      - uses: taiki-e/install-action@f7e5d7c961414b23f5b25b2da9294395d08513ad # v2.87.26
+        with:
+          tool: just@1.58.0
       - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
         with:
           version: "0.10.11"
@@ -540,12 +528,7 @@ jobs:
             services/engine/uv.lock
             services/engine/pyproject.toml
       - name: Engine lint, types and unit contracts
-        working-directory: services/engine
-        run: |
-          uv run --locked ruff check .
-          uv run --locked ruff format --check .
-          uv run --locked mypy .
-          uv run --locked pytest
+        run: just ci-engine
 
   genie:
     needs: plan
@@ -571,13 +554,11 @@ jobs:
             services/genie/uv.lock
             services/genie/pyproject.toml
             services/genie/eval/judges/pyproject.toml
+      - uses: taiki-e/install-action@f7e5d7c961414b23f5b25b2da9294395d08513ad # v2.87.26
+        with:
+          tool: just@1.58.0
       - name: Genie lint, types and unit contracts
-        working-directory: services/genie
-        run: |
-          uv run --locked ruff check .
-          uv run --locked ruff format --check .
-          uv run --locked mypy .
-          uv run --locked pytest
+        run: just ci-genie
 
   check:
     name: check

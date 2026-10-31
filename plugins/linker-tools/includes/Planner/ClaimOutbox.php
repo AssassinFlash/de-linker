@@ -288,7 +288,21 @@ final class ClaimOutbox {
 			return;
 		}
 		$args = array( $id, $attempt );
-		if ( as_has_scheduled_action( self::HOOK, $args, self::GROUP ) ) {
+		// The event, rather than its retry counter, owns the pending delivery.
+		// Native AS stores these positional arguments as [id,attempt]; the comma
+		// closes the ID boundary, so event 42 cannot match event 420. Discovery
+		// also respects a running delivery. Its own failure may schedule a retry.
+		$scheduled = as_get_scheduled_actions(
+			array(
+				'hook'     => self::HOOK,
+				'group'    => self::GROUP,
+				'search'   => '[' . $id . ',',
+				'status'   => 0 === $attempt ? array( 'pending', 'in-progress' ) : array( 'pending' ),
+				'per_page' => 1,
+			),
+			'ids'
+		);
+		if ( array() !== $scheduled ) {
 			return;
 		}
 		// Operational retry policy: 1, 2, 4, 8 then 15 minutes. No event expiry.
