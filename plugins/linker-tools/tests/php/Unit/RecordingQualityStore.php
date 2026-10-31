@@ -41,6 +41,15 @@ final class RecordingQualityStore extends QualityStore {
 	}
 
 	/**
+	 * Explicit receipt fixture without a database.
+	 *
+	 * @param array<string, mixed> $raw Record.
+	 */
+	public function receipt( array $raw ): string {
+		return $this->store( $raw ) ? 'stored' : 'conversation_missing';
+	}
+
+	/**
 	 * Records the report.
 	 *
 	 * @param array<string, mixed> $status Report.

@@ -29,6 +29,48 @@ final class QualityStoreTest extends TestCase {
 	private array $meta = array();
 
 	/**
+	 * Whether this fixture refuses metadata writes.
+	 *
+	 * @var bool
+	 */
+	private bool $fail_meta_write = false;
+
+	/**
+	 * Original test-global database object.
+	 *
+	 * @var mixed
+	 */
+	private mixed $previous_wpdb = null;
+
+	/**
+	 * Whether the original global existed.
+	 *
+	 * @var bool
+	 */
+	private bool $had_wpdb = false;
+
+	/** Own the native read diagnostic while keeping other test globals intact. */
+	public function setUp(): void {
+		parent::setUp();
+		$this->had_wpdb      = array_key_exists( 'wpdb', $GLOBALS );
+		$this->previous_wpdb = $GLOBALS['wpdb'] ?? null;
+		$GLOBALS['wpdb']     = (object) array( 'last_error' => '' ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Own this fixture's native database diagnostic.
+	}
+
+	/** Restore the previous native diagnostic even after a failed assertion. */
+	public function tearDown(): void {
+		try {
+			parent::tearDown();
+		} finally {
+			if ( $this->had_wpdb ) {
+				$GLOBALS['wpdb'] = $this->previous_wpdb; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Restore the original test global.
+			} else {
+				unset( $GLOBALS['wpdb'] );
+			}
+		}
+	}
+
+	/**
 	 * A verdict as the worker sends it.
 	 *
 	 * @param array<string, mixed> $changes Overrides.
@@ -73,9 +115,10 @@ final class QualityStoreTest extends TestCase {
 	 */
 	private function fake_meta(): void {
 		WP_Mock::userFunction( 'wp_check_invalid_utf8', array( 'return' => static fn ( $text ) => $text ) );
+		WP_Mock::userFunction( 'wp_slash', array( 'return' => static fn ( $value ) => $value ) );
 		WP_Mock::userFunction(
 			'get_post_type',
-			array( 'return' => static fn ( $id ) => 812 === $id ? Conversations::POST_TYPE : false )
+			array( 'return' => static fn ( $id ) => 812 === $id ? Conversations::POST_TYPE : ( 813 === $id ? 'product' : false ) )
 		);
 		WP_Mock::userFunction(
 			'get_post_meta',
@@ -85,6 +128,9 @@ final class QualityStoreTest extends TestCase {
 			'add_post_meta',
 			array(
 				'return' => function ( $id, $key, $value ) {
+					if ( $this->fail_meta_write ) {
+						return false;
+					}
 					$this->meta[ $key ][] = $value;
 					return 1;
 				},
@@ -102,8 +148,15 @@ final class QualityStoreTest extends TestCase {
 		WP_Mock::userFunction(
 			'update_post_meta',
 			array(
-				'return' => function ( $id, $key, $value ) {
-					$this->meta[ $key ] = array( $value );
+				'return' => function ( $id, $key, $value, $previous = null ) {
+					if ( $this->fail_meta_write ) {
+						return false;
+					}
+					if ( null !== $previous ) {
+						$this->meta[ $key ] = array_map( static fn ( $row ) => $row === $previous ? $value : $row, $this->meta[ $key ] );
+					} else {
+						$this->meta[ $key ] = array( $value );
+					}
 					return true;
 				},
 			)
@@ -156,6 +209,29 @@ final class QualityStoreTest extends TestCase {
 	public function test_a_verdict_for_an_unknown_conversation_is_not_stored(): void {
 		$this->fake_meta();
 		$this->assertFalse( ( new QualityStore() )->store( $this->record( array( 'conversation_id' => 9999 ) ) ) );
+		$this->assertSame( 'conversation_missing', ( new QualityStore() )->receipt( $this->record( array( 'conversation_id' => 9999 ) ) ) );
+		$this->assertSame( 'not_conversation', ( new QualityStore() )->receipt( $this->record( array( 'conversation_id' => 813 ) ) ) );
+		$this->assertSame( 'invalid_record', ( new QualityStore() )->receipt( $this->record( array( 'conversation_id' => 0 ) ) ) );
+		$this->assertSame( array(), $this->meta );
+	}
+
+	/** Failed writes never acknowledge or erase the previously accepted verdict. */
+	public function test_failed_replacement_keeps_original_and_is_retryable(): void {
+		$this->fake_meta();
+		$store = new QualityStore();
+		$this->assertTrue( $store->store( $this->record() ) );
+		$original              = $store->judgments( 812 );
+		$this->fail_meta_write = true;
+		$this->assertSame( 'storage_unavailable', $store->receipt( $this->record( array( 'answer' => 'Changed' ) ) ) );
+		$this->assertSame( $original, $store->judgments( 812 ) );
+		$this->assertSame( 'stored', $store->receipt( $this->record() ) );
+	}
+
+	/** An unavailable post SELECT is not evidence that a conversation was deleted. */
+	public function test_native_post_read_error_is_retryable_not_terminal(): void {
+		$this->fake_meta();
+		$GLOBALS['wpdb']->last_error = 'synthetic native SELECT failure';
+		$this->assertSame( 'storage_unavailable', ( new QualityStore() )->receipt( $this->record( array( 'conversation_id' => 9999 ) ) ) );
 		$this->assertSame( array(), $this->meta );
 	}
 
@@ -261,6 +337,7 @@ final class QualityStoreTest extends TestCase {
 					$this->assertSame( QualityStore::STATUS_OPTION, $name );
 					$this->assertFalse( $autoload );
 					$this->assertSame( 2, $value['retrying'] );
+					$this->assertFalse( $value['delivery_reported'] );
 					$this->assertSame( 'deepseek-flash (api.deepseek.com)', $value['escalation'] );
 					$this->assertGreaterThan( time() - 5, $value['received'] );
 					$this->assertArrayNotHasKey( 'token', $value );
@@ -276,5 +353,46 @@ final class QualityStoreTest extends TestCase {
 			)
 		);
 		$this->assertConditionsMet();
+	}
+
+	/** Delivery state remains separate from the judge's outcome. */
+	public function test_delivery_state_round_trips_without_changing_judge_status(): void {
+		$stored = array();
+		WP_Mock::userFunction( 'wp_check_invalid_utf8', array( 'return' => static fn ( $text ) => $text ) );
+		WP_Mock::userFunction(
+			'update_option',
+			array(
+				'return' => static function ( $name, $value ) use ( &$stored ) {
+					$stored = $value;
+					return true;
+				},
+			)
+		);
+		WP_Mock::userFunction(
+			'get_option',
+			array(
+				'return' => static function () use ( &$stored ) {
+					return $stored;
+				},
+			)
+		);
+		WP_Mock::passthruFunction( '__' );
+		$store = new QualityStore();
+		$store->store_status(
+			array(
+				'retrying'          => 2,
+				'delivery_pending'  => 4,
+				'delivery_deferred' => 3,
+				'delivery_rejected' => 1,
+				'delivery_error'    => 'conversation_missing',
+				'delivery_retry_at' => '2026-10-31T00:01:00Z',
+			)
+		);
+		$status = $store->status();
+		$this->assertTrue( $status['delivery_reported'] );
+		$this->assertSame( 2, $status['retrying'] );
+		$this->assertSame( 'conversation_missing', $status['delivery_error'] );
+		$this->assertSame( '2026-10-31T00:01:00Z', $status['delivery_retry_at'] );
+		$this->assertSame( 'Verdict delivery: 4 pending, 3 deferred, 1 undeliverable.', QualityStore::delivery_line( $status ) );
 	}
 }

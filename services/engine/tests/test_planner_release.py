@@ -417,7 +417,12 @@ def test_retention_operator_restores_pair_after_each_failure(
         if args[0] == "retention":
             if "--apply" in args and stage in ("collect", "recover"):
                 raise RuntimeError("collection failed")
-            return {"mode": "apply" if "--apply" in args else "plan"}
+            return {
+                "mode": "apply" if "--apply" in args else "plan",
+                "candidate_count": 1,
+                "temporary_count": 0,
+                "candidate_sha256": ["a" * 64],
+            }
         return {}
 
     target.preflight = lambda: {}
@@ -427,6 +432,7 @@ def test_retention_operator_restores_pair_after_each_failure(
     target.check_stopped = lambda: events.append("confirmed-stopped")
     target.start = start
     target.operator = operator
+    target.recovery_covers = lambda *_: events.append("recovery-verified")
     original_unlink = Path.unlink
 
     def unlink(path: Path, *args: Any, **kwargs: Any) -> None:
@@ -436,7 +442,7 @@ def test_retention_operator_restores_pair_after_each_failure(
 
     monkeypatch.setattr(Path, "unlink", unlink)
     # Default plan cannot create an operator lock or alter process/control state.
-    assert ops.maintain(target) == {"mode": "plan"}
+    assert ops.maintain(target)["mode"] == "plan"
     assert events == [("retention",)] and not (root / "operator.lock").exists()
     events.clear()
     if stage == "success":

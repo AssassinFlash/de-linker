@@ -12909,3 +12909,18 @@ msgstr "Lassen Sie das Feld leer, solange der Querschnitt offen ist. Dies ist ei
 #: build/planner/assets/planner.js:1
 msgid "Required together with the cross-section, for example the project cable list or the installer's instruction."
 msgstr "Zusammen mit dem Querschnitt erforderlich, zum Beispiel die Leitungsliste des Projekts oder die Vorgabe des Installateurs."
+
+#: includes/Genie/QualityStore.php includes/Genie/QualityPage.php
+#, php-format
+msgid "Verdict delivery: %1$d pending, %2$d deferred, %3$d undeliverable."
+msgstr "Zustellung der Bewertungen: %1$d ausstehend, %2$d zurückgestellt, %3$d nicht zustellbar."
+
+#: includes/Genie/QualityStore.php includes/Genie/QualityPage.php
+#, php-format
+msgid "Last delivery error (%1$s): %2$s"
+msgstr "Letzter Zustellfehler (%1$s): %2$s"
+
+#: includes/Genie/QualityStore.php includes/Genie/QualityPage.php
+#, php-format
+msgid "Next delivery attempt: %s."
+msgstr "Nächster Zustellversuch: %s."

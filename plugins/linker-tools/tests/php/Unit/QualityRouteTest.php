@@ -95,6 +95,40 @@ final class QualityRouteTest extends TestCase {
 		$this->assertSame( array( array( 'retrying' => 1 ) ), $store->statuses );
 	}
 
+	/** New workers get explicit per-item receipts; legacy response stays unchanged. */
+	public function test_opted_in_receipt_names_only_the_unavailable_conversation(): void {
+		$request = $this->request( 'tok-258' );
+		$request->set_param( 'receipt_protocol', QualityRoute::RECEIPT_PROTOCOL );
+		$request->set_param(
+			'judgments',
+			array(
+				array(
+					'turn_id'         => 41,
+					'conversation_id' => 812,
+				),
+				array(
+					'turn_id'         => 42,
+					'conversation_id' => 9999,
+				),
+			)
+		);
+		$response = ( new QualityRoute( $this->store(), 'tok-258' ) )->receive( $request );
+		$this->assertInstanceOf( WP_REST_Response::class, $response );
+		$this->assertSame(
+			array(
+				'stored'           => array( 41 ),
+				'receipt_protocol' => QualityRoute::RECEIPT_PROTOCOL,
+				'rejected'         => array(
+					array(
+						'turn_id' => 42,
+						'reason'  => 'conversation_missing',
+					),
+				),
+			),
+			$response->get_data()
+		);
+	}
+
 	/**
 	 * A batch larger than the worker ever sends is refused whole.
 	 */

@@ -37,7 +37,7 @@ from linker_genie.quality import citations
 from linker_genie.quality.item import Skip, build
 from linker_genie.quality.store import Status, Store
 from linker_genie.quality.turns import LoggedTurn, TurnSource
-from linker_genie.quality.wordpress import PushError, WordPress
+from linker_genie.quality.wordpress import TERMINAL_REJECTIONS, PushError, WordPress
 
 log = logging.getLogger("linker_genie.quality")
 
@@ -85,6 +85,7 @@ class Worker:
 
     def cycle(self, now: float) -> int:
         """One pass over the queue; returns how many turns it judged or skipped."""
+        started = time.monotonic()
         if self.custom_judgments is not None and now >= self.next_prune:
             success = retention.sweep(None, self.custom_judgments, now)
             self.next_prune = now + (
@@ -106,7 +107,7 @@ class Worker:
             self._judge(turn, now)
             # Advanced per turn, so a restart mid-batch takes up where it was.
             self.store.set_cursor(turn.id)
-        self._push(now, force=bool(due or fresh))
+        self._push(now + time.monotonic() - started, force=bool(due or fresh))
         return len(due) + len(fresh)
 
     def _judge(self, turn: LoggedTurn, now: float) -> None:
@@ -141,26 +142,55 @@ class Worker:
         self.store.save(turn.id, turn.conversation_id, status, attempts, record, now)
 
     def _push(self, now: float, force: bool) -> None:
-        pending = self.store.unpushed(PUSH_BATCH)
-        if not pending and not force and now - self.last_report < HEARTBEAT_SECONDS:
+        transport = self.store.transport()
+        # Fresh verdicts cannot bypass an unavailable site's durable backoff.
+        if now < transport["next_attempt"]:
             return
+        pending = self.store.unpushed(PUSH_BATCH, now)
+        reported = max(self.last_report, float(transport["last_success"]))
+        if not pending and not force and now - reported < HEARTBEAT_SECONDS:
+            return
+        started = time.monotonic()
         try:
-            stored = self.site.push(pending, self.status(now))
+            received = self.site.push(pending, self.status(now))
         except PushError as error:
-            # The verdicts stay unpushed and go again next cycle.
+            self.store.transport_failed(now + time.monotonic() - started, str(error))
             log.error(
                 "could not hand %d verdict(s) to the site: %s", len(pending), error
             )
             return
-        self.store.mark_pushed(stored)
-        self.last_report = now
-        missing = {int(row["turn_id"]) for row in pending} - set(stored)
+        completed = now + time.monotonic() - started
+        self.store.mark_pushed(received.stored)
+        terminal = {
+            key: reason
+            for key, reason in received.rejected.items()
+            if reason in TERMINAL_REJECTIONS
+        }
+        self.store.defer_delivery(terminal, completed, terminal=True)
+        missing = (
+            {int(row["turn_id"]) for row in pending}
+            - set(received.stored)
+            - terminal.keys()
+        )
+        self.store.defer_delivery(
+            {key: received.rejected.get(key, "not_acknowledged") for key in missing},
+            completed,
+        )
+        self.store.transport_succeeded(completed)
+        self.last_report = completed
         if missing:
             log.error("the site refused verdict(s) for turn(s) %s", sorted(missing))
+        if terminal:
+            log.error(
+                "site delivery permanently refused %d verdict(s): %s",
+                len(terminal),
+                sorted(set(terminal.values())),
+            )
 
     def status(self, now: float) -> dict[str, Any]:
         counts = self.store.counts(MAX_ATTEMPTS)
         failure = self.store.last_failure()
+        delivery = self.store.delivery_status(now)
         return {
             "at": _iso(now),
             "judge": f"{self.first.model} (OpenRouter)",
@@ -169,6 +199,13 @@ class Worker:
             "gave_up": counts["gave_up"],
             "last_error": failure[0] if failure else None,
             "last_error_at": _iso(failure[1]) if failure else None,
+            **delivery,
+            "delivery_retry_at": _iso(delivery["delivery_retry_at"])
+            if delivery["delivery_retry_at"] > now
+            else None,
+            "delivery_error_at": _iso(delivery["delivery_error_at"])
+            if delivery["delivery_error_at"]
+            else None,
         }
 
 

@@ -40,7 +40,7 @@ from linker_genie.quality.turns import (
     TurnSource,
     select_list,
 )
-from linker_genie.quality.wordpress import ROUTE, PushError, WordPress
+from linker_genie.quality.wordpress import ROUTE, PushError, WordPress, receipt
 from linker_genie.quality.worker import (
     MAX_ATTEMPTS,
     RETRY_AFTER_SECONDS,
@@ -701,6 +701,8 @@ class Site:
         self.bodies: list[dict[str, Any]] = []
         self.headers: list[httpx.Headers] = []
         self.fail_with: int | None = None
+        self.stored_turns: list[int] | None = None
+        self.rejected: dict[int, str] | None = None
 
     def handler(self, request: httpx.Request) -> httpx.Response:
         assert request.url.path == ROUTE
@@ -709,9 +711,20 @@ class Site:
         self.bodies.append(body)
         if self.fail_with is not None:
             return httpx.Response(self.fail_with, text="down")
-        return httpx.Response(
-            200, json={"stored": [row["turn_id"] for row in body["judgments"]]}
-        )
+        result: dict[str, Any] = {
+            "stored": self.stored_turns
+            if self.stored_turns is not None
+            else [row["turn_id"] for row in body["judgments"]]
+        }
+        if self.rejected is not None:
+            result.update(
+                receipt_protocol="quality-delivery-v1",
+                rejected=[
+                    {"turn_id": key, "reason": value}
+                    for key, value in self.rejected.items()
+                ],
+            )
+        return httpx.Response(200, json=result)
 
 
 @pytest.fixture()
@@ -855,9 +868,126 @@ def test_a_site_that_refuses_keeps_the_verdicts_for_the_next_cycle(
     # 5xx is retried: three attempts in the one push.
     assert len(site.bodies) - before == 3
 
-    site.fail_with = None
+    sent = len(site.bodies)
+    _ask("another valid question")
     worker.cycle(1060.0)
-    assert [row["turn_id"] for row in site.bodies[-1]["judgments"]] == [1]
+    assert len(site.bodies) == sent
+    worker.store.close()
+    worker = _worker(turns, tmp_path, site)
+    worker.cycle(1061.0)
+    assert len(site.bodies) == sent
+    site.fail_with = None
+    worker.cycle(1091.0)
+    assert [row["turn_id"] for row in site.bodies[-1]["judgments"]] == [1, 2]
+
+
+def test_legacy_refusal_waits_across_restart_while_new_records_deliver(
+    turns: Path,
+    tmp_path: Path,
+    site: Site,
+) -> None:
+    worker = _worker(turns, tmp_path, site)
+    original = {
+        "turn_id": 1,
+        "conversation_id": "9999",
+        "status": "judged",
+        "answer": "original evidence",
+    }
+    worker.store.save(1, "9999", "judged", 1, original, 1000.0)
+    site.stored_turns = []
+    worker._push(1000.0, force=False)
+    sent = len(site.bodies)
+    worker.store.close()
+    restarted = _worker(turns, tmp_path, site)
+    restarted._push(1030.0, force=False)
+    assert len(site.bodies) == sent
+    fresh = {"turn_id": 2, "conversation_id": "812", "status": "judged"}
+    restarted.store.save(2, "812", "judged", 1, fresh, 1031.0)
+    site.stored_turns = [2]
+    restarted._push(1031.0, force=True)
+    assert [row["turn_id"] for row in site.bodies[-1]["judgments"]] == [2]
+    assert restarted.store._db.execute(
+        "SELECT record,updated_at,pushed FROM judgments WHERE turn_id=1"
+    ).fetchone() == (json.dumps(original, ensure_ascii=False), 1000.0, 0)
+
+
+def test_explicit_terminal_receipt_preserves_record_without_claiming_it_pushed(
+    turns: Path,
+    tmp_path: Path,
+    site: Site,
+) -> None:
+    worker = _worker(turns, tmp_path, site)
+    record = {
+        "turn_id": 1,
+        "conversation_id": "9999",
+        "status": "judged",
+        "answer": "retained",
+    }
+    worker.store.save(1, "9999", "judged", 1, record, 1000.0)
+    site.stored_turns = []
+    site.rejected = {1: "conversation_missing"}
+    worker._push(1000.0, force=False)
+    assert worker.status(1001.0)["delivery_rejected"] == 1
+    assert worker.store._db.execute(
+        "SELECT pushed,record,updated_at FROM judgments"
+    ).fetchone() == (0, json.dumps(record, ensure_ascii=False), 1000.0)
+    sent = len(site.bodies)
+    worker._push(1030.0, force=False)
+    assert len(site.bodies) == sent
+
+
+def test_old_delivery_database_migrates_without_rewriting_verdicts(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "legacy.sqlite"
+    with sqlite3.connect(path) as db:
+        db.execute(
+            "CREATE TABLE judgments(turn_id INTEGER PRIMARY KEY,conversation_id TEXT NOT NULL,status TEXT NOT NULL,attempts INTEGER NOT NULL,record TEXT NOT NULL,updated_at REAL NOT NULL,pushed INTEGER NOT NULL DEFAULT 0)"
+        )
+        db.execute(
+            "INSERT INTO judgments VALUES(1,'812','judged',1,?,1000,0)",
+            ('{"turn_id":1,"answer":"unique evidence"}',),
+        )
+    store = Store(path)
+    original = store._db.execute(
+        "SELECT record,status,attempts,updated_at,pushed FROM judgments"
+    ).fetchone()
+    store.defer_delivery({1: "conversation_missing"}, 100000.0, terminal=True)
+    assert (
+        store._db.execute(
+            "SELECT record,status,attempts,updated_at,pushed FROM judgments"
+        ).fetchone()
+        == original
+    )
+    store.close()
+    reopened = Store(path)
+    assert reopened.unpushed(50, 200000.0) == []
+    assert reopened.delivery_status(200000.0)["delivery_rejected"] == 1
+    reopened.close()
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        {"stored": [999]},
+        {"stored": [True]},
+        {
+            "stored": [],
+            "receipt_protocol": "quality-delivery-v1",
+            "rejected": [{"turn_id": 999, "reason": "conversation_missing"}],
+        },
+        {
+            "stored": [],
+            "receipt_protocol": "quality-delivery-v1",
+            "rejected": [{"turn_id": 1, "reason": []}],
+        },
+    ],
+)
+def test_delivery_receipts_cannot_acknowledge_other_turns_or_malformed_reasons(
+    body: dict[str, Any],
+) -> None:
+    with pytest.raises(PushError):
+        receipt(body, {1})
 
 
 def test_an_idle_worker_still_reports_that_it_is_alive(

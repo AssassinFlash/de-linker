@@ -57,6 +57,24 @@ def test_recipe_tracks_serving_applicability_code(tmp_path: Path) -> None:
     assert recipe_revision(tmp_path) != upgraded
 
 
+def test_quality_delivery_changes_do_not_rebuild_or_relabel_knowledge(
+    tmp_path: Path,
+) -> None:
+    fixture(tmp_path)
+    before = recipe_revision(tmp_path), serving_revision(tmp_path)
+    quality = tmp_path / "src/linker_genie/quality"
+    quality.mkdir()
+    for filename in ("worker.py", "store.py", "wordpress.py"):
+        (quality / filename).write_text("delivery = 1\n")
+    assert (recipe_revision(tmp_path), serving_revision(tmp_path)) == before
+    (quality / "store.py").write_text("delivery = 2\n")
+    assert (recipe_revision(tmp_path), serving_revision(tmp_path)) == before
+    # A new runtime helper with quality in its name is still a real serving input.
+    (tmp_path / "src/linker_genie/quality_gate.py").write_text("proof = 1\n")
+    assert recipe_revision(tmp_path) != before[0]
+    assert serving_revision(tmp_path) != before[1]
+
+
 def test_serving_revision_is_actual_code_and_locked_inputs_independent_of_path(
     tmp_path: Path,
 ) -> None:
