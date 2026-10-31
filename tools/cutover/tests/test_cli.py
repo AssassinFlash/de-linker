@@ -10,6 +10,7 @@ from __future__ import annotations
 import gzip
 import json
 from argparse import Namespace
+from contextlib import nullcontext
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -180,6 +181,7 @@ def test_rollback_deploy_command_is_dry_unless_write_is_given(
             live.write_text("old")
     atomic.publish(target, artifacts, deploy_id="20261018T000000Z-cli")
     monkeypatch.setattr(cli, "_target", lambda _: target)
+    monkeypatch.setattr(cli, "_local_operation", lambda _: nullcontext())
     monkeypatch.setattr(cli, "repository_root", lambda: repository)
     assert cli.main(["rollback-deploy", "--target", "local:c298"]) == 0
     assert (live / f"{plan.NEW_PLUGINS[-1]}.php").read_text() == "new"
@@ -292,3 +294,37 @@ def test_a_restore_preview_refuses_a_name_that_is_not_a_snapshot(
 ) -> None:
     assert cli.main(["restore-snapshot", "../db.sql.gz"]) == 1
     assert "not a snapshot name" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize("operation", ["deploy", "drill"])
+def test_local_operation_blocks_retirement_for_entire_step(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    operation: str,
+) -> None:
+    from linker_local import retirement
+
+    monkeypatch.setenv("LINKER_LOCAL_HOME", str(tmp_path))
+    args = Namespace(command=operation, target="local:owned", instance="owned")
+    with cli._local_operation(args):
+        with pytest.raises(RuntimeError, match="already being managed"):
+            retirement.retire(
+                tmp_path, "owned", write=True, preserve=[], discard=[], preserve_to=None
+            )
+    marker = retirement.marker_path(tmp_path, "owned")
+    marker.write_text("{}")
+    with pytest.raises(RuntimeError, match="retirement is incomplete"):
+        with cli._local_operation(args):
+            raise AssertionError("pending retirement must not enter a cutover step")
+
+
+def test_local_probe_leaves_site_write_lock_to_deploy_child(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from linker_local import retirement
+
+    monkeypatch.setenv("LINKER_LOCAL_HOME", str(tmp_path))
+    with cli._local_operation(Namespace(command="probe", target="local:owned")):
+        with retirement.available(tmp_path, "owned"):
+            pass

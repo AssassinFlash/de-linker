@@ -22,6 +22,7 @@ brew services start redis
 | `just up <name>` | 实例不存在就建；存在就把 php.ini、路由、mu-plugin 与插件链接更新到当前检出，再（重）启服务器。2026-10-09 在本机实测：新建一个 11–43 秒（机器空闲时 11 秒；其他窗口把 load average 压到 36–40 时 43 秒；首次下载另计），已有实例约 6 秒 |
 | `just up <name> --snapshot <dir>` | 同上，并装入快照目录里的插件、主题与 uploads（见"快照"） |
 | `just down <name>` | 停服务器与服务，数据保留 |
+| `just retire <name>` | 只读列出永久退役计划和需核实的证据文件；`--write` 执行已确认的退役（见下文） |
 | `just reset <name>` | 删库、删目录、清掉本实例的 Redis 键、重建（端口不变），可反复执行；2026-10-09 实测 11–43 秒（同上，随机器负载） |
 | `just login <name> [--user <login>]` | 打印一次性登录链接：10 分钟内有效，用一次即作废；默认用户 `local-admin` |
 | `just status` | 列出实例：地址、库、服务器与服务是否在跑、WordPress/WooCommerce 版本、链接到哪个检出 |
@@ -163,3 +164,40 @@ This is separate from production enrolment. Installation does not enable a real
 administrator's MFA. Follow the [#565 deployment/device handoff](acceptance/2026-10-22/565/deployment.md)
 after coordinator review/CI, without forcing customer factors or revoking the
 existing API credential.
+
+### 永久退役一个已结束的测试实例
+
+`just down name` 保留数据，`just reset name` 重建同名实例；它们的语义不变。
+`just retire name` 不写文件、不停止服务，输出精确目录、数据库、Redis 前缀和候选证据文件。
+负责人先核对任务用途、保留清单及唯一证据，再执行 `--write`。不能仅凭日期或进程缺失判断可删。
+
+对于计划中每个候选，使用可重复的 `--discard 相对路径` 确认它已可重建或已另行移交；
+仅需保留的唯一文件用 `--preserve 相对路径 --preserve-to /绝对/证据目录`。
+目录参数覆盖其子项，但不允许 `.`、绝对路径、`..` 或保留/丢弃范围重叠。
+例如已确认该任务日志可丢弃、唯一失败记录要保留时：
+
+```sh
+just retire example
+just retire example --write --discard logs --discard mail --discard snapshot.json \
+  --discard planner --discard genie --discard engine --discard wordpress/wp-content/uploads \
+  --preserve failure.json --preserve-to /absolute/task-evidence/example
+```
+
+示例只说明语法，实际参数必须来自该实例的计划及负责人判断，未确认项会阻止删除。
+证据目录须在实例根之外，并在任务原有记录写明负责人、保留上限及回收条件。
+移交采用同一文件系统内的原子移动，不复制整站；跨文件系统请先按既有证据移交流程处理。
+数据库默认精确删除；如含唯一数据库证据，先用现有快照流程保留并核验后再执行。
+
+执行持有共享根的实例锁。先由原有 planner worker 关闭新计算任务接纳并排空，
+保留 PHP/Woo 与 engine HTTP 供在途任务读取当前权限；排空或准备失败恢复原接纳状态，
+不留下新增退役标记。排空成功才记录可续退役决策、停止进程并读回端口及数据库连接，
+重新核对冻结后的证据，随后移交选定文件、删除实例数据库和目录、移除登记。
+WordPress 非链接代码文件也列入候选，不能仅按目录名推断本地修改可重建。
+本地 cutover 步骤、drill 及 pull load 的整次实例操作复用同一把锁；probe 的实际写入
+由 deploy 子进程持锁，父进程只观察。手工 SQL、直接文件写入及绕开这些入口的进程不受锁约束。
+缓存仅对精确前缀执行有界 `SCAN`/`UNLINK`；每批重新检查登记，发现实例复用立即停止。
+共享快照、下载缓存、其他实例及其数据库/缓存均不在删除范围。
+失败保留一份小型 `.lifecycle/name.retiring.json`，同名 `up/reset/serve/wp/login` 暂停，
+重复 `just retire name --write` 沿原决策继续；排空期间新增的证据可在重试时显式追加
+`--discard` 或 `--preserve`，已有决策保留、已设置的证据目的地不变；不要手工删除中断标记绕过保护。
+成功清掉该标记。小型锁文件保留在实例目录外，避免并发等待者因目录删除而换锁。

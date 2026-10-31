@@ -271,6 +271,11 @@ down name:
 reset name *options: php-install
     PHP={{ php }} {{ linker_local }} reset "$@"
 
+# Permanent retirement is read-only by default; pass --write after evidence decisions.
+[positional-arguments]
+retire name *options:
+    PHP={{ php }} {{ linker_local }} retire "$@"
+
 # Print a one-time login link: ten minutes, one use (--user <login>, default local-admin).
 [positional-arguments]
 login name *options:

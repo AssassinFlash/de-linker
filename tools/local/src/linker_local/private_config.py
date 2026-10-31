@@ -31,12 +31,15 @@ def lifecycle_lock(path: Path) -> Iterator[None]:
 
 def publish_once(path: Path, payload: dict[str, object]) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-    with tempfile.NamedTemporaryFile(dir=path.parent, delete=False) as stream:
-        temporary = Path(stream.name)
-        stream.write(json.dumps(payload, indent=2).encode())
-        stream.flush()
-        os.fsync(stream.fileno())
+    temporary: Path | None = None
     try:
+        with tempfile.NamedTemporaryFile(
+            dir=path.parent, prefix="." + path.name + ".incoming-", delete=False
+        ) as stream:
+            temporary = Path(stream.name)
+            stream.write(json.dumps(payload, indent=2).encode())
+            stream.flush()
+            os.fsync(stream.fileno())
         try:
             os.link(temporary, path)
         except FileExistsError:
@@ -47,5 +50,6 @@ def publish_once(path: Path, payload: dict[str, object]) -> Path:
         finally:
             os.close(descriptor)
     finally:
-        temporary.unlink(missing_ok=True)
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
     return path

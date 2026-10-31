@@ -124,6 +124,31 @@ def test_only_the_newest_keep_snapshots_stay(
     assert (folder / "notes.txt").is_file()
 
 
+@pytest.mark.parametrize("protected_count", [0, 1, 3, 4])
+def test_retention_counts_only_existing_distinct_protected_snapshots(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, protected_count: int
+) -> None:
+    folder = snapshot.directory(tmp_path)
+    folder.mkdir()
+    old_names = [f"db-202609{day:02d}T000000Z.sql.gz" for day in range(1, 7)]
+    for name in old_names:
+        (folder / name).write_bytes(gzip.compress(b"select 1;\n"))
+    protected = set(old_names[:protected_count])
+    # A missing name and the newly created snapshot consume no extra slot.
+    protect = frozenset(protected | {snapshot.name_at(AT), "missing"})
+    _dump(monkeypatch, gzip.compress(b"select 1;\n"))
+
+    taken = snapshot.take(_site(tmp_path / "site"), tmp_path, now=AT, protect=protect)
+
+    kept = set(snapshot.available(tmp_path))
+    assert protected | {taken.name} <= kept
+    assert len(kept) == max(3, protected_count + 1)
+    unprotected = sorted(set(old_names) - protected, reverse=True)
+    assert kept - protected - {taken.name} == set(
+        unprotected[: max(0, 3 - protected_count - 1)]
+    )
+
+
 @pytest.mark.parametrize(
     "name",
     [

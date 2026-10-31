@@ -16,6 +16,9 @@ from pathlib import Path
 from typing import IO
 from urllib.parse import urlsplit
 
+from linker_local import retirement
+from linker_local.instance import home as local_home
+
 from linker_pull import live, load, manifest, scan, snapshot
 from linker_pull.anonymize import Anonymizer, accounts_from_dump
 from linker_pull.sqldump import DumpError
@@ -28,6 +31,7 @@ ERRORS = (
     OSError,
     ValueError,
     subprocess.CalledProcessError,
+    RuntimeError,
 )
 
 
@@ -81,8 +85,10 @@ def anonymize(args: argparse.Namespace) -> int:
 
 
 def load_snapshot(args: argparse.Namespace) -> int:
-    target = load.instance(args.name, args.port)
-    result = load.load(target, _snapshot(args.snapshot), args.live_code, say)
+    # Lookup and every DB/file/cache write belong to the same instance lock.
+    with retirement.available(local_home(), args.name):
+        target = load.instance(args.name, args.port)
+        result = load.load(target, _snapshot(args.snapshot), args.live_code, say)
     say(json.dumps(result, indent=1))
     return 0 if result["ok"] else 1
 

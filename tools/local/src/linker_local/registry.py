@@ -49,6 +49,8 @@ class Registry:
         """Return the instance called `name`, allocating its ports if it is new."""
         check_name(name)
         with _machine_lock():
+            if (self.root / ".lifecycle" / f"{name}.retiring.json").exists():
+                raise RuntimeError(f"{name} retirement must finish before reuse")
             instances = self._read()
             if name in instances:
                 return instances[name]
@@ -60,6 +62,15 @@ class Registry:
             instances[name] = Instance(name, port, engine_port, genie_port, self.root)
             self._write(instances)
             return instances[name]
+
+    def unregister(self, instance: Instance) -> None:
+        """Remove only the registration the caller actually retired."""
+        with _machine_lock():
+            instances = self._read()
+            if instances.get(instance.name) not in (None, instance):
+                raise RuntimeError("instance registration changed during retirement")
+            instances.pop(instance.name, None)
+            self._write(instances)
 
     def _read(self) -> dict[str, Instance]:
         if not self.file.exists():

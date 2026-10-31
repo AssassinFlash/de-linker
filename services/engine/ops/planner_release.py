@@ -17,6 +17,7 @@ import pwd
 import re
 import shlex
 import shutil
+import signal
 import subprocess
 import time
 from collections.abc import Callable, Iterator
@@ -36,12 +37,18 @@ HASH = re.compile(r"[a-f0-9]{64}")
 
 def write(path: Path, value: str, mode: int = 0o600) -> None:
     temporary = path.with_suffix(path.suffix + ".tmp")
-    with temporary.open("x") as stream:
-        os.chmod(temporary, mode)
-        stream.write(value)
-        stream.flush()
-        os.fsync(stream.fileno())
-    os.replace(temporary, path)
+    owned = False
+    try:
+        with temporary.open("x") as stream:
+            owned = True
+            os.chmod(temporary, mode)
+            stream.write(value)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, path)
+    finally:
+        if owned:
+            temporary.unlink(missing_ok=True)
 
 
 def environment(path: Path) -> dict[str, str]:
@@ -68,13 +75,32 @@ def env_text(values: dict[str, str]) -> str:
 def command(
     arguments: list[str], *, env: dict[str, str] | None = None, timeout: float = 30
 ) -> str:
-    completed = subprocess.run(
-        arguments, env=env, text=True, capture_output=True, timeout=timeout
-    )
-    if completed.returncode:
-        # Do not echo a credential, source response or full command in output.
-        raise RuntimeError("operator command failed: " + Path(arguments[0]).name)
-    return completed.stdout
+    # runuser forks the actual control/GC process. Killing only the launcher
+    # on timeout or cancellation can leave deletion running as writers restart.
+    # Own the entire subprocess group and finish terminating it before return.
+    with subprocess.Popen(
+        arguments,
+        env=env,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        start_new_session=True,
+    ) as process:
+        try:
+            stdout, _ = process.communicate(timeout=timeout)
+            if process.returncode:
+                # A crashed launcher may have surviving descendants too.
+                raise RuntimeError(
+                    "operator command failed: " + Path(arguments[0]).name
+                )
+        except BaseException:
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            process.communicate()
+            raise
+        return stdout
 
 
 def unit_state(name: str) -> dict[str, str]:
@@ -83,7 +109,7 @@ def unit_state(name: str) -> dict[str, str]:
             "systemctl",
             "show",
             name,
-            "--property=MainPID,InvocationID,ActiveState,FragmentPath,DropInPaths",
+            "--property=MainPID,InvocationID,ActiveState,FragmentPath,DropInPaths,ControlGroup",
             "--no-pager",
         ]
     )
@@ -544,6 +570,23 @@ class Release:
             timeout=self.spec["stop_seconds"] + 10,
         )
 
+    def check_stopped(self) -> None:
+        """Read back both process groups and the private listener before GC."""
+        for name in (self.worker_unit, self.http_unit):
+            state = unit_state(name)
+            if (
+                state.get("ActiveState") not in ("inactive", "failed")
+                or state.get("MainPID") != "0"
+            ):
+                raise RuntimeError("planning writer did not stop")
+            group = state.get("ControlGroup", "")
+            if group:
+                members = Path("/sys/fs/cgroup") / group.lstrip("/") / "cgroup.procs"
+                if members.exists() and members.read_text().strip():
+                    raise RuntimeError("planning process group still has writers")
+        if command(["ss", "-ltnpH", f"sport = :{self.spec['port']}"]).strip():
+            raise RuntimeError("planning listener is still active")
+
     def check_http_process(self) -> None:
         state = unit_state(self.http_unit)
         pid = int(state.get("MainPID", "0"))
@@ -749,14 +792,105 @@ def activate(target: Release) -> dict[str, Any]:
         return state
 
 
+def maintain(
+    release: Release,
+    *,
+    apply: bool = False,
+    recovery: Path | None = None,
+    snapshots: tuple[Path, ...] = (),
+) -> dict[str, Any]:
+    """Read-only default; apply owns a stopped pair and always restores it."""
+    arguments = ["retention"]
+    if recovery is not None:
+        arguments.extend(("--recovery", str(recovery.absolute())))
+    for snapshot in snapshots:
+        arguments.extend(("--snapshot", str(snapshot.absolute())))
+    if not apply:
+        return release.operator(*arguments)
+    if recovery is None:
+        raise ValueError("apply requires an existing verified recovery archive")
+    with locked(release.root):
+        selected = json.loads((release.root / "selection.json").read_text())
+        if selected["current"] != str(release.spec_file):
+            raise RuntimeError("maintenance must use the selected release")
+        release.preflight()
+        identity = release.probe()
+        if not release.ready(identity):
+            raise RuntimeError("paired service is not ready before maintenance")
+        draining = release.operator("control", "status")["draining"]
+        failure: BaseException | None = None
+        try:
+            release.stop()
+            release.check_stopped()
+            for directory, names in (
+                (release.deploy, ("worker.env", "http.env", "prepared.json")),
+                (release.root, ("selection.json",)),
+            ):
+                for name in names:
+                    path = directory / (name + ".tmp")
+                    if path.is_file() and not path.is_symlink():
+                        path.unlink()
+            # Stale readiness writes belong only to this worker. Never scan
+            # /tmp or remove unrelated run/deployment files.
+            ready = Path(release.policy["ready_file"])
+            for path in ready.parent.glob("." + ready.name + ".incoming-*"):
+                if (
+                    re.fullmatch(
+                        re.escape("." + ready.name + ".incoming-") + r"[a-z0-9_]{8}",
+                        path.name,
+                    )
+                    and path.is_file()
+                    and not path.is_symlink()
+                ):
+                    path.unlink()
+            result = release.operator(*arguments, "--apply", "--offline")
+            return result
+        except BaseException as error:
+            failure = error
+            raise
+        finally:
+            try:
+                try:
+                    identity = release.probe()
+                    ready_pair = bool(release.ready(identity))
+                except (OSError, ValueError, RuntimeError, HTTPException):
+                    ready_pair = False
+                if not ready_pair:
+                    release.start()
+                if not draining:
+                    release.operator("control", "resume")
+            except BaseException as error:
+                if failure is None:
+                    raise
+                failure.add_note("paired service recovery failed: " + repr(error))
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "operation", choices=("prepare", "activate", "status", "rollback", "stop")
+        "operation",
+        choices=("prepare", "activate", "status", "rollback", "stop", "retention"),
     )
     parser.add_argument("spec", type=Path)
     parser.add_argument("--source-environment", type=Path)
     parser.add_argument("--publication-url")
+    parser.add_argument(
+        "--apply",
+        action="store_true",
+        help="apply offline retention; default is read-only plan",
+    )
+    parser.add_argument(
+        "--recovery",
+        type=Path,
+        help="existing independently verified archive covering deleted bytes",
+    )
+    parser.add_argument(
+        "--snapshot",
+        type=Path,
+        action="append",
+        default=[],
+        help="external snapshot to verify; DB-only/shared/unknown layouts refuse apply",
+    )
     args = parser.parse_args()
     release = Release(args.spec)
     if args.operation == "prepare":
@@ -771,6 +905,13 @@ def main() -> None:
         if not state["previous"]:
             raise RuntimeError("no retained rollback release")
         result = activate(Release(Path(state["previous"])))
+    elif args.operation == "retention":
+        result = maintain(
+            release,
+            apply=args.apply,
+            recovery=args.recovery,
+            snapshots=tuple(args.snapshot),
+        )
     elif args.operation == "stop":
         with locked(release.root):
             release.stop()

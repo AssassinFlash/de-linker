@@ -36,10 +36,9 @@ DIRECTORY = "snapshots"
 # docstring for the measurement); the WordPress table prefix is read on the host.
 SKIPPED_TABLES = ("genie_chunks",)
 
-# The newest 20 stay; older ones are deleted after a new one is verified. The
-# first live snapshot was 6,200,721 bytes (2026-10-18), so 20 hold about
-# 125 MB of this Mac: every deploy of the last weeks stays one command away.
-KEEP = 20
+# The stricter owner retention limit in docs/agents/local-storage.md applies
+# across deployments. A restore's explicitly protected source always stays.
+KEEP = 3
 
 NAME = re.compile(r"db-\d{8}T\d{6}Z\.sql\.gz")
 
@@ -104,8 +103,10 @@ def take(
         partial.rename(final)
     finally:
         partial.unlink(missing_ok=True)
-    others = [old for old in available(home) if old != name and old not in protect]
-    for old in others[KEEP - 1 - len(protect) :]:
+    names = available(home)
+    retained = {name} | (set(names) & protect)
+    others = [old for old in names if old not in retained]
+    for old in others[max(0, KEEP - len(retained)) :]:
         (folder / old).unlink(missing_ok=True)
     return Snapshot(
         name=name, path=final, size=final.stat().st_size, sha256=backup.sha256(final)
