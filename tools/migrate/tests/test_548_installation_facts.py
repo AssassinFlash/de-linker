@@ -28,6 +28,8 @@ def load_script() -> ModuleType:
 
 migration = load_script()
 
+from linker_cutover.target import Target  # type: ignore[import-not-found]  # noqa: E402
+
 
 def plan() -> dict[str, object]:
     return {
@@ -36,7 +38,17 @@ def plan() -> dict[str, object]:
             "6506": {
                 "model": "GW75K-ET-G10",
                 "product_revision": "a" * 64,
-                "items": [{"id": "synthetic-installation-fact"}],
+                "items": [
+                    {
+                        "id": "synthetic-installation-fact",
+                        "source": {
+                            "document_id": "doc-one",
+                            "document_revision": "b" * 64,
+                            "blob_sha256": "c" * 64,
+                            "product_id": 6506,
+                        },
+                    }
+                ],
             }
         },
     }
@@ -157,6 +169,34 @@ def test_plan_rejects_extra_fields_and_empty_products(tmp_path: Path) -> None:
         migration.load_plan(path)
 
 
+@pytest.mark.parametrize(
+    ("field", "value", "message"),
+    [
+        ("document_id", "", "needs a document ID"),
+        ("document_revision", "", "valid document_revision"),
+        ("document_revision", None, "valid document_revision"),
+        ("blob_sha256", "not-a-hash", "valid blob_sha256"),
+        ("product_id", 6507, "belongs to another product"),
+    ],
+)
+def test_plan_rejects_an_invalid_source_identity(
+    tmp_path: Path, field: str, value: object, message: str
+) -> None:
+    changed = plan()
+    products = migration._json_object(changed["products"], "products")
+    product = migration._json_object(products["6506"], "product")
+    items = product["items"]
+    assert isinstance(items, list)
+    item = migration._json_object(items[0], "item")
+    source = migration._json_object(item["source"], "source")
+    source[field] = value
+    path = tmp_path / "invalid-source.json"
+    path.write_text(json.dumps(changed))
+
+    with pytest.raises(migration.MigrationError, match=message):
+        migration.load_plan(path)
+
+
 def test_receipt_is_exclusive_and_private(tmp_path: Path) -> None:
     path = tmp_path / "receipt.json"
     migration.write_receipt(path, receipt())
@@ -244,6 +284,7 @@ def refresh_plan(tmp_path: Path) -> Path:
                                     "document_id": "doc-one",
                                     "document_revision": "b" * 64,
                                     "blob_sha256": "c" * 64,
+                                    "product_id": 6506,
                                 },
                             }
                         ],
@@ -257,8 +298,8 @@ def refresh_plan(tmp_path: Path) -> Path:
     return path
 
 
-def _site() -> object:
-    return migration.Target(
+def _site() -> Target:
+    return Target(
         label="local:fixture",
         root="/tmp/fixture",
         base_url="http://fixture.invalid",
@@ -393,3 +434,60 @@ def test_refresh_refuses_a_product_set_that_differs_from_the_plan(
     with pytest.raises(migration.MigrationError, match="different product set"):
         migration._refresh(_site(), write=True)
     assert path.read_text() == before
+
+
+def test_refresh_refuses_conflicting_revision_substitutions(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """One old hash cannot be rewritten into two different current hashes."""
+    path = refresh_plan(tmp_path)
+    loaded = json.loads(path.read_text())
+    loaded["products"]["6507"] = {
+        **json.loads(json.dumps(loaded["products"]["6506"])),
+        "model": "GW70K-ET-G10",
+    }
+    source = loaded["products"]["6507"]["items"][0]["source"]
+    source["product_id"] = 6507
+    path.write_text(json.dumps(loaded, indent=2) + "\n")
+    before = path.read_text()
+    reply = {
+        "schema_version": 1,
+        "site": "https://fixture.invalid",
+        "source_revision": "d" * 64,
+        "products": {
+            "6506": {
+                "product_revision": "e" * 64,
+                "documents": {
+                    "doc-one": {"document_revision": "b" * 64, "blob_sha256": "c" * 64}
+                },
+            },
+            "6507": {
+                "product_revision": "f" * 64,
+                "documents": {
+                    "doc-one": {"document_revision": "b" * 64, "blob_sha256": "c" * 64}
+                },
+            },
+        },
+    }
+    monkeypatch.setattr(migration, "PLAN", path)
+    monkeypatch.setattr(migration, "invoke", lambda *_args, **_kw: (0, "", reply))
+
+    with pytest.raises(migration.MigrationError, match="multiple values"):
+        migration._refresh(_site(), write=True)
+    assert path.read_text() == before
+
+
+@pytest.mark.parametrize(
+    "arguments",
+    [
+        ["--production", "refresh", "--receipt", "/tmp/not-used.json"],
+        ["--production", "preview", "--write"],
+        ["--production", "preview"],
+    ],
+)
+def test_action_specific_options_are_rejected(arguments: list[str]) -> None:
+    parser = migration._parser()
+    args = parser.parse_args(arguments)
+
+    with pytest.raises(SystemExit):
+        migration._validate_args(parser, args)
