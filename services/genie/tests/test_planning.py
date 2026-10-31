@@ -11,7 +11,8 @@ from pydantic import ValidationError
 from linker_genie import planning
 from linker_genie.facts import Fact
 from linker_genie.hydrate import fill, hydrate
-from linker_genie.route import Route, Subject, with_page
+from linker_genie.jev import Reading
+from linker_genie.route import Route, Subject, plan, with_page
 from linker_genie.schema import (
     ActionBlock,
     PageContext,
@@ -215,6 +216,126 @@ def test_unavailable_dirty_or_mismatched_context_never_reuses_figures() -> None:
         payload, gathered = planning.record(context, page)
         assert payload == {"error": expected}
         assert gathered.facts == {} and gathered.product_ids == set()
+
+
+def test_provisional_bom_keeps_verified_provenance_and_scope() -> None:
+    raw, page = source()
+    raw["runs"][0].update(
+        kind="planning_report_v1",
+        materials={
+            "status": "verified",
+            "sha256": "c" * 64,
+            "model": "project_materials_v3",
+            "line_count": 4,
+            "unresolved_quantity_count": 2,
+            "handling_counts": {
+                "customer_supplied_required": 1,
+                "site_engineering_required": 1,
+                "woo_product": 1,
+                "manufacturer_included": 1,
+            },
+            "scope": "provisional_not_complete_bos",
+        },
+        rows=[
+            {
+                "label": "Provisional bill of materials",
+                "value": {"Product": "GoodWe GW61.4-BAT-AC-G10", "Quantity": "—"},
+            }
+        ],
+    )
+
+    payload, gathered = planning.record(raw, page)
+
+    assert payload["status"] == "available" and payload["truncated"] is False
+    assert "GoodWe GW61.4-BAT-AC-G10" in payload["text"]
+    assert "Verified provisional bill of materials:" in payload["text"]
+    assert (
+        "quantities unresolved; not a complete balance-of-system take-off."
+        in payload["text"]
+    )
+    assert {"4", "2"} <= set(payload["figures"].values())
+    assert "provenance SHA-" in payload["text"]
+    assert "c" * 64 in payload["text"]
+    assert "site_engineering_required" in payload["text"]
+    assert gathered.tool_calls[0]["name"] == planning.NAME
+    assert len(payload["text"]) <= planning.MAX_TEXT_CHARS
+
+    malformed = json.loads(json.dumps(raw))
+    malformed["runs"][0]["materials"]["sha256"] = "not-a-hash"
+    assert planning.record(malformed, page)[0] == {"error": "unavailable"}
+    malformed = json.loads(json.dumps(raw))
+    malformed["runs"][0]["materials"]["model"] = "x" * 30_000
+    assert planning.record(malformed, page)[0] == {"error": "unavailable"}
+    malformed = json.loads(json.dumps(raw))
+    malformed["runs"][0]["materials"]["handling_counts"] = {"approval_granted": 4}
+    assert planning.record(malformed, page)[0] == {"error": "unavailable"}
+
+
+@pytest.mark.parametrize(
+    ("locale", "question"),
+    [
+        ("en", "What is in the bill of materials for this plan?"),
+        ("en", "Is the BOM a complete balance of system?"),
+        ("en", "Are the BOMs complete?"),
+        ("en", "Review the material lists"),
+        ("de", "Was steht in der vorläufigen Stückliste?"),
+        ("de", "Ist die Materialliste ein vollständiges BOS?"),
+        ("de", "Was steht in den Stücklisten?"),
+        ("de", "Sind die Materiallisten vollständig?"),
+    ],
+)
+def test_bom_questions_read_the_exact_planning_project(
+    locale: str, question: str
+) -> None:
+    _, page = source()
+    routed = with_page(
+        Route("model"),
+        page,
+        False,
+        True,
+        Subject((), {}, {}),
+        question,
+    )
+
+    assert page.planning_project_id is not None
+    assert [call.ability for call in routed.calls] == [planning.NAME]
+
+
+def test_boss_does_not_trigger_the_bom_route() -> None:
+    _, page = source()
+    routed = with_page(
+        Route("model"),
+        page,
+        False,
+        True,
+        Subject((), {}, {}),
+        "Who is the boss?",
+    )
+
+    assert routed.calls == ()
+
+
+def test_bom_planning_call_survives_a_full_documents_route() -> None:
+    _, page = source()
+    subject = Subject(
+        (1, 2, 3, 4),
+        {1: "home-storage", 2: "home-storage", 3: "home-storage", 4: "home-storage"},
+        {1: "A", 2: "B", 3: "C", 4: "D"},
+    )
+    message = "What is in the BOM for this project?"
+    route = plan(
+        message,
+        [],
+        Reading("documents_specs", 0.95, 0.1, 0.05, 0.2, 2.6, 0.0),
+        subject,
+        "en",
+    )
+    assert route.name == "documents"
+
+    routed = with_page(route, page, False, True, subject, message)
+
+    assert planning.NAME in [call.ability for call in routed.calls]
+    assert planning.NAME not in [call.ability for call in routed.dropped]
 
 
 def test_active_project_sizing_reads_selected_history_instead_of_blank_tool() -> None:

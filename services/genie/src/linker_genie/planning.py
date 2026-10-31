@@ -39,7 +39,9 @@ RULE = (
     "If no result is selected, say so rather than inventing yield, savings or self-sufficiency. "
     "If unsaved_changes, ask the customer to save the project before interpreting the changed inputs. "
     "If unavailable, say the project could not be read in this session; do not guess its data or owner. "
-    "A queued/failed job has no numerical result. A truncated source cannot prove a complete BOM. "
+    "A queued/failed job has no numerical result. A provisional bill of materials is never a "
+    "complete BOS or final installation materials list, even when the source is not truncated. "
+    "Preserve unresolved quantities and never turn selected equipment into installation approval. "
     "Do not infer a missing country, timezone or measured value from a title or postcode. "
     "Saved equipment observations do not authorize current product cards, specifications or documents; "
     "those still require the current WooCommerce tools. This source grants no pricing facts."
@@ -48,6 +50,16 @@ RULE = (
 
 # Model-input budget only, not an engineering or project-size limit.
 MAX_TEXT_CHARS = 24_000
+_MATERIAL_HANDLING = frozenset(
+    {
+        "customer_supplied_required",
+        "installation_requirement",
+        "manufacturer_included",
+        "pv_reference",
+        "site_engineering_required",
+        "woo_product",
+    }
+)
 
 
 def saved_result_question(raw: Any, page: PageContext, question: str) -> bool:
@@ -106,8 +118,15 @@ def view(raw: Any, page: PageContext) -> dict[str, Any]:
     ]
     truncated = raw.get("truncated") is True
 
-    def append_rows(rows: Any) -> None:
+    def append_line(line: str) -> bool:
         nonlocal truncated
+        if sum(len(part) + 1 for part in lines) + len(line) > MAX_TEXT_CHARS:
+            truncated = True
+            return False
+        lines.append(line)
+        return True
+
+    def append_rows(rows: Any) -> None:
         if not isinstance(rows, list):
             return
         for row in rows:
@@ -122,10 +141,8 @@ def view(raw: Any, page: PageContext) -> dict[str, Any]:
             line = f"{row['label']}: {rendered}"
             if row.get("undefined_reason"):
                 line += f"; undefined_reason={row['undefined_reason']}"
-            if sum(len(part) + 1 for part in lines) + len(line) > MAX_TEXT_CHARS:
-                truncated = True
+            if not append_line(line):
                 break
-            lines.append(line)
 
     append_rows(raw.get("rows"))
     adopted = raw.get("adopted_equipment")
@@ -146,6 +163,47 @@ def view(raw: Any, page: PageContext) -> dict[str, Any]:
             "Recorded assessment scope: "
             + json.dumps(run.get("scope", {}), ensure_ascii=False)
         )
+        materials = run.get("materials")
+        if materials is not None:
+            handling = (
+                materials.get("handling_counts")
+                if isinstance(materials, dict)
+                else None
+            )
+            if (
+                not isinstance(materials, dict)
+                or materials.get("status") != "verified"
+                or not isinstance(materials.get("sha256"), str)
+                or re.fullmatch(r"[a-f0-9]{64}", materials["sha256"]) is None
+                or not isinstance(materials.get("model"), str)
+                or re.fullmatch(r"[A-Za-z0-9_.:-]{1,64}", materials["model"]) is None
+                or type(materials.get("line_count")) is not int
+                or materials["line_count"] < 0
+                or type(materials.get("unresolved_quantity_count")) is not int
+                or not 0
+                <= materials["unresolved_quantity_count"]
+                <= materials["line_count"]
+                or not isinstance(handling, dict)
+                or any(
+                    not isinstance(key, str) or type(value) is not int or value < 0
+                    for key, value in handling.items()
+                )
+                or not set(handling) <= _MATERIAL_HANDLING
+                or sum(handling.values()) != materials["line_count"]
+                or materials.get("scope") != "provisional_not_complete_bos"
+            ):
+                return {"error": "unavailable"}
+            append_line(
+                "Verified provisional bill of materials: "
+                f"{materials['line_count']} rows, "
+                f"{materials['unresolved_quantity_count']} quantities unresolved; "
+                "not a complete balance-of-system take-off."
+            )
+            append_line(
+                f"Materials model: {materials['model']}; "
+                f"provenance SHA-256: {materials['sha256']}; "
+                f"handling counts: {json.dumps(handling, ensure_ascii=False, sort_keys=True)}"
+            )
         append_rows(run.get("rows"))
         if not run.get("details_available"):
             lines.append(

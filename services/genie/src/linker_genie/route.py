@@ -109,13 +109,19 @@ SOLUTION_HINT = (
 # the read deterministic; besides them Jev's about_this_page decides (#234).
 # `erdgas`-like false friends are not here; the words are the product's own
 # (solution, design report) and the report's metric names.
+_BOM_PATTERN = (
+    r"bills?[ -]of[ -]materials?|material[ -]lists?|stücklisten?|"
+    r"stuecklisten?|materiallisten?|materialaufnahme|"
+    r"balance[ -]of[ -]systems?|boms?|bos"
+)
 _SOLUTION_WORDS = re.compile(
     r"\b(?:solution|solutions|lösung|lösungen|loesung|loesungen|"
     r"design[ -]report|auslegungsbericht|autarkie|autarky|"
     r"self[ -]?sufficien\w*|eigenverbrauch\w*|self[ -]?consumption|"
-    r"jahresertrag|ertrag|erträge|yield)\b",
+    rf"jahresertrag|ertrag|erträge|yield|{_BOM_PATTERN})\b",
     re.IGNORECASE,
 )
+_BOM_WORDS = re.compile(rf"\b(?:{_BOM_PATTERN})\b", re.IGNORECASE)
 SERVICE_HINT = (
     "This is a company, delivery or service question: answer with only the "
     "handoff block, and set its summary to exactly {fact:handoff.sentence}. "
@@ -2609,7 +2615,19 @@ def with_page(
         return route
     room = MAX_TOOL_CALLS - (DOCUMENTS_SPARE if route.name == "documents" else 0)
     ordered = [*route.calls, *(call for call in added if call not in route.calls)]
-    calls, dropped = tuple(ordered[:room]), (*ordered[room:], *beyond)
+    planning_call = next(
+        (call for call in ordered if call.ability == planning_tool.NAME), None
+    )
+    if (
+        planning_call is not None
+        and page.planning_project_id is not None
+        and _BOM_WORDS.search(message) is not None
+    ):
+        others = [call for call in ordered if call != planning_call]
+        calls = tuple([*others[: room - 1], planning_call])
+        dropped = (*others[room - 1 :], *beyond)
+    else:
+        calls, dropped = tuple(ordered[:room]), (*ordered[room:], *beyond)
     unchecked = [
         f"{c.arguments['inverter_id']}+{c.arguments['battery_id']}"
         for c in dropped

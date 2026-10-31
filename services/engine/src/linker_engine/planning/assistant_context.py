@@ -51,6 +51,16 @@ _ENERGY = frozenset(
         "plant_shared_dc_energy_replay_v1",
     }
 )
+_MATERIAL_HANDLING = frozenset(
+    {
+        "customer_supplied_required",
+        "installation_requirement",
+        "manufacturer_included",
+        "pv_reference",
+        "site_engineering_required",
+        "woo_product",
+    }
+)
 
 
 def _summary(value: Json) -> Json:
@@ -111,6 +121,101 @@ def _rows(value: Json, locale: str, prefix: str = "") -> list[Json]:
             ):
                 result.append({"label": label, "value": item})
     return result
+
+
+def _report_materials(workspace: Workspace, run: Run, result: Object) -> Json | None:
+    """Expose one verified materials projection without duplicating its rows."""
+    materials_sha = result.get("materials_sha256")
+    if materials_sha is None:
+        return None  # Reports frozen before the materials model retain their rows.
+    if (
+        not isinstance(materials_sha, str)
+        or len(materials_sha) != 64
+        or any(character not in "0123456789abcdef" for character in materials_sha)
+    ):
+        raise InvalidInput("saved report materials identity is invalid")
+    dependencies = result.get("dependencies")
+    if (
+        not isinstance(dependencies, dict)
+        or dependencies.get("materials_model") != materials_sha
+    ):
+        raise InvalidInput("saved report materials dependency differs")
+    manifest_context = run.manifest.get("context")
+    models = (
+        manifest_context.get("models") if isinstance(manifest_context, dict) else None
+    )
+    model = models.get("materials") if isinstance(models, dict) else None
+    if not isinstance(model, str) or not model:
+        raise InvalidInput("saved report materials model is missing")
+    pinned = (
+        manifest_context.get("assets") if isinstance(manifest_context, dict) else None
+    )
+    if (
+        not isinstance(pinned, dict)
+        or not isinstance(pinned.get("report.source"), str)
+        or dependencies.get("report_source") != pinned["report.source"]
+    ):
+        raise InvalidInput("saved materials differ from the frozen report source")
+    source = report_source_with_information(workspace.blobs, dependencies)
+    source_dependencies = source.get("dependencies")
+    if (
+        source.get("project_id") != run.project_id
+        or source.get("revision") != run.revision
+        or source.get("input_sha256") != run.manifest.get("input_sha256")
+        or not isinstance(source_dependencies, dict)
+        or source_dependencies.get("materials_model") != materials_sha
+    ):
+        raise InvalidInput("saved report materials source differs from selected result")
+    stored = source.get("materials")
+    frozen = workspace.blobs.object(materials_sha)
+    if (
+        not isinstance(stored, dict)
+        or stored != frozen
+        or type(frozen.get("schema_version")) is not int
+        or frozen.get("schema_version") != 3
+        or frozen.get("kind") != model
+        or frozen.get("installation_status") != "not_assessed"
+        or frozen.get("project_id") != run.project_id
+        or frozen.get("revision") != run.revision
+        or frozen.get("input_sha256") != run.manifest.get("input_sha256")
+    ):
+        raise InvalidInput("saved report materials projection is inconsistent")
+    raw_lines = frozen.get("lines")
+    if not isinstance(raw_lines, list):
+        raise InvalidInput("saved report materials lines are missing")
+    handling_counts: dict[str, int] = {}
+    unresolved = 0
+    for line in raw_lines:
+        if not isinstance(line, dict):
+            raise InvalidInput("saved report materials line is invalid")
+        raw_handling = line.get("handling")
+        if (
+            not isinstance(line.get("id"), str)
+            or not isinstance(raw_handling, str)
+            or raw_handling not in _MATERIAL_HANDLING
+        ):
+            raise InvalidInput("saved report materials line is invalid")
+        quantity = line.get("quantity")
+        if quantity is not None:
+            if (
+                isinstance(quantity, bool)
+                or not isinstance(quantity, (int, float))
+                or quantity < 0
+            ):
+                raise InvalidInput("saved report materials quantity is invalid")
+        handling = raw_handling
+        handling_counts[handling] = handling_counts.get(handling, 0) + 1
+        if quantity is None:
+            unresolved += 1
+    return {
+        "status": "verified",
+        "sha256": materials_sha,
+        "model": model,
+        "line_count": len(raw_lines),
+        "unresolved_quantity_count": unresolved,
+        "handling_counts": dict(sorted(handling_counts.items())),
+        "scope": "provisional_not_complete_bos",
+    }
 
 
 def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
@@ -473,39 +578,42 @@ def assistant_context(
             raise InvalidInput("selected result belongs to a different project")
         rows = _result_rows(workspace, run, locale) if run.state == "succeeded" else []
         omitted = len(rows) > remaining
-        runs.append(
-            {
-                "id": run.id,
-                "revision": run.revision,
-                "state": run.state,
-                "matches_view_revision": run.revision == project.revision,
-                "is_current": run.is_current,
-                "manifest_sha256": run.manifest_sha256,
-                "result_sha256": run.result_sha256,
-                "kind": run.result.get("kind") if run.result else None,
-                "scope": {
-                    key: run.result.get(key)
-                    for key in (
-                        "country_assessment",
-                        "equipment_release",
-                        "scenario_constraint_status",
-                        "near_shading_assessment",
-                    )
-                }
-                if run.result
-                else {},
-                "rows": rows[: max(0, remaining)],
-                "truncated": omitted,
-                "details_available": bool(rows),
-                **(
-                    {"calculation_sources": calculation_sources(workspace, run)}
-                    if run.state == "succeeded"
-                    and run.result
-                    and run.result.get("kind") == "planning_report_v1"
-                    else {}
-                ),
+        selected_run_view: dict[str, Json] = {
+            "id": run.id,
+            "revision": run.revision,
+            "state": run.state,
+            "matches_view_revision": run.revision == project.revision,
+            "is_current": run.is_current,
+            "manifest_sha256": run.manifest_sha256,
+            "result_sha256": run.result_sha256,
+            "kind": run.result.get("kind") if run.result else None,
+            "scope": {
+                key: run.result.get(key)
+                for key in (
+                    "country_assessment",
+                    "equipment_release",
+                    "scenario_constraint_status",
+                    "near_shading_assessment",
+                )
             }
-        )
+            if run.result
+            else {},
+            "rows": rows[: max(0, remaining)],
+            "truncated": omitted,
+            "details_available": bool(rows),
+        }
+        if (
+            run.state == "succeeded"
+            and run.result
+            and run.result.get("kind") == "planning_report_v1"
+        ):
+            selected_run_view["calculation_sources"] = calculation_sources(
+                workspace, run
+            )
+            materials = _report_materials(workspace, run, run.result)
+            if materials is not None:
+                selected_run_view["materials"] = materials
+        runs.append(selected_run_view)
         remaining -= min(max(0, remaining), len(rows))
         if omitted:
             result["truncated"] = True

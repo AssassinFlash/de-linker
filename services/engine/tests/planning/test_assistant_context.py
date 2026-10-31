@@ -3,11 +3,15 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from dataclasses import replace
 from typing import cast
 
 import pytest
 
-from linker_engine.planning.assistant_context import assistant_context
+from linker_engine.planning.assistant_context import (
+    _report_materials,
+    assistant_context,
+)
 from linker_engine.planning.canonical import Json, Object
 from linker_engine.planning.errors import InvalidInput, NotFound
 from linker_engine.planning.jobs import Jobs
@@ -615,6 +619,166 @@ def test_report_omits_comparison_location_and_private_note(
         ]
 
 
+def test_report_exposes_verified_materials_provenance(
+    workspace: Workspace, owner: Actor, context: Context
+) -> None:
+    project = workspace.create(owner, "Materials provenance", {}, key="materials")
+    materials: Object = {
+        "schema_version": 3,
+        "kind": "project_materials_v3",
+        "project_id": project.id,
+        "revision": 1,
+        "input_sha256": project.input_sha256,
+        "lines": [
+            {
+                "id": "product:0:1946",
+                "handling": "woo_product",
+                "quantity": 1,
+            },
+            {
+                "id": "installation:0:ac-conductor",
+                "handling": "customer_supplied_required",
+                "quantity": None,
+            },
+            {
+                "id": "installation:1:meter",
+                "handling": "manufacturer_included",
+                "quantity": 2,
+            },
+        ],
+        "installation_status": "not_assessed",
+        "equipment_status": "unresolved",
+    }
+    materials_sha = workspace.blobs.put_object(materials)
+    source: Object = {
+        "project_id": project.id,
+        "revision": 1,
+        "input_sha256": project.input_sha256,
+        "materials": materials,
+        "dependencies": {"materials_model": materials_sha},
+    }
+    source_sha = workspace.blobs.put_object(source)
+    report_context = Context(
+        context.code_sha256,
+        {**context.models, "materials": "project_materials_v3"},
+        {**context.assets, "report.source": source_sha},
+        context.parameters,
+    )
+    run = workspace.evaluate(
+        owner, project.id, 1, report_context, key="materials-report", max_attempts=1
+    )
+    jobs = Jobs(workspace)
+    lease = jobs.claim("fixture", kinds=("evaluate",), lease_seconds=30)
+    assert lease is not None
+    jobs.complete(
+        lease,
+        {
+            "kind": "planning_report_v1",
+            "report": {"locale": "en", "sections": []},
+            "materials_sha256": materials_sha,
+            "dependencies": {
+                "report_source": source_sha,
+                "materials_model": materials_sha,
+            },
+        },
+    )
+
+    projection = assistant_context(workspace, owner, project.id, 1, [run.id], "en")
+    selected = cast(list[Object], projection["runs"])[0]
+    assert selected["materials"] == {
+        "status": "verified",
+        "sha256": materials_sha,
+        "model": "project_materials_v3",
+        "line_count": 3,
+        "unresolved_quantity_count": 1,
+        "handling_counts": {
+            "customer_supplied_required": 1,
+            "manufacturer_included": 1,
+            "woo_product": 1,
+        },
+        "scope": "provisional_not_complete_bos",
+    }
+
+    mismatch = workspace.evaluate(
+        owner, project.id, 1, report_context, key="materials-mismatch", max_attempts=1
+    )
+    other_materials_sha = workspace.blobs.put_object({"different": "materials"})
+    lease = jobs.claim("fixture", kinds=("evaluate",), lease_seconds=30)
+    assert lease is not None
+    jobs.complete(
+        lease,
+        {
+            "kind": "planning_report_v1",
+            "report": {"locale": "en", "sections": []},
+            "materials_sha256": materials_sha,
+            "dependencies": {
+                "report_source": source_sha,
+                "materials_model": other_materials_sha,
+            },
+        },
+    )
+    with pytest.raises(InvalidInput, match="materials dependency differs"):
+        assistant_context(workspace, owner, project.id, 1, [mismatch.id], "en")
+
+    recorded = workspace.run(owner, run.id)
+    assert recorded.result is not None
+
+    def invalid_materials(
+        changed: Object, *, dependency_sha: str | None = None
+    ) -> None:
+        changed_sha = workspace.blobs.put_object(changed)
+        changed_source: Object = {
+            **source,
+            "materials": changed,
+            "dependencies": {"materials_model": dependency_sha or changed_sha},
+        }
+        changed_source_sha = workspace.blobs.put_object(changed_source)
+        changed_result: Object = {
+            **cast(Object, recorded.result),
+            "materials_sha256": changed_sha,
+            "dependencies": {
+                "report_source": changed_source_sha,
+                "materials_model": changed_sha,
+            },
+        }
+        with pytest.raises(InvalidInput):
+            _report_materials(
+                workspace,
+                replace(
+                    recorded,
+                    result=changed_result,
+                    manifest={
+                        **recorded.manifest,
+                        "context": {
+                            **cast(Object, recorded.manifest["context"]),
+                            "assets": {
+                                **context.assets,
+                                "report.source": changed_source_sha,
+                            },
+                        },
+                    },
+                ),
+                changed_result,
+            )
+
+    invalid_materials(materials, dependency_sha=other_materials_sha)
+    invalid_materials(
+        {
+            **materials,
+            "schema_version": 999,
+        }
+    )
+    invalid_materials(
+        {
+            **materials,
+            "lines": [
+                *cast(list[Object], materials["lines"]),
+                {"id": "invalid", "handling": "approval_granted", "quantity": 1},
+            ],
+        }
+    )
+
+
 def _historical_period(start: str, end: str) -> Object:
     return {"summary": {"start_utc": start, "end_utc": end}}
 
@@ -728,3 +892,61 @@ def test_historical_summary_period_survives_assistant_readback(
             "end_utc": "2022-06-01T02:00:00+00:00",
         }
     ]
+
+
+def test_materials_source_must_match_the_selected_runs_frozen_source(
+    workspace: Workspace, owner: Actor, context: Context
+) -> None:
+    """Same-revision, self-consistent source B cannot impersonate pinned A."""
+    project = workspace.create(owner, "Pinned materials", {}, key="pinned-materials")
+
+    def source(quantity: int) -> tuple[str, str]:
+        materials: Object = {
+            "schema_version": 3,
+            "kind": "project_materials_v3",
+            "installation_status": "not_assessed",
+            "project_id": project.id,
+            "revision": 1,
+            "input_sha256": project.input_sha256,
+            "lines": [
+                {
+                    "id": "product:fixture",
+                    "handling": "woo_product",
+                    "quantity": quantity,
+                }
+            ],
+        }
+        materials_sha = workspace.blobs.put_object(materials)
+        source_sha = workspace.blobs.put_object(
+            {
+                "project_id": project.id,
+                "revision": 1,
+                "input_sha256": project.input_sha256,
+                "materials": materials,
+                "dependencies": {"materials_model": materials_sha},
+            }
+        )
+        return source_sha, materials_sha
+
+    source_a, _ = source(1)
+    source_b, materials_b = source(7)
+    run = workspace.evaluate(
+        owner,
+        project.id,
+        1,
+        Context(
+            context.code_sha256,
+            {**context.models, "materials": "project_materials_v3"},
+            {**context.assets, "report.source": source_a},
+            context.parameters,
+        ),
+        key="pinned-source-a",
+        max_attempts=1,
+    )
+    forged: Object = {
+        "kind": "planning_report_v1",
+        "materials_sha256": materials_b,
+        "dependencies": {"report_source": source_b, "materials_model": materials_b},
+    }
+    with pytest.raises(InvalidInput, match="frozen report source"):
+        _report_materials(workspace, run, forged)
