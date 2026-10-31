@@ -38,6 +38,11 @@ jobs:
       catalog_changed: ${{ steps.scope.outputs.catalog_changed }}
       php_test_changed: ${{ steps.scope.outputs.php_test_changed }}
       planner_build_changed: ${{ steps.scope.outputs.planner_build_changed }}
+      php_matrix: ${{ steps.scope.outputs.php_matrix }}
+      js_matrix: ${{ steps.scope.outputs.js_matrix }}
+      python_matrix: ${{ steps.scope.outputs.python_matrix }}
+      build_matrix: ${{ steps.scope.outputs.build_matrix }}
+      native_matrix: ${{ steps.scope.outputs.native_matrix }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -50,6 +55,7 @@ jobs:
       - name: Select checks from the actual change
         id: scope
         env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
           EVENT_NAME: ${{ github.event_name }}
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
           HEAD_SHA: ${{ github.sha }}
@@ -58,15 +64,15 @@ jobs:
         run: python3 tools/checks/ci_scope.py plan
 
   php:
-    name: php-lane
+    name: "php-lane (${{ matrix.project }})"
     needs: plan
     if: ${{ !cancelled() && needs.plan.outputs.php == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
-        lane: [static, unit]
+        project: ${{ fromJson(needs.plan.outputs.php_matrix) }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -83,7 +89,7 @@ jobs:
           tools: composer:v2
           coverage: none
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        if: matrix.lane == 'unit'
+        if: matrix.project == 'plugins/linker-tools'
         with:
           node-version: "22"
           cache: npm
@@ -94,25 +100,19 @@ jobs:
       - uses: taiki-e/install-action@f7e5d7c961414b23f5b25b2da9294395d08513ad # v2.87.26
         with:
           tool: just@1.58.0
-      - name: PHP static
-        if: matrix.lane == 'static'
-        run: just php-check
-      - name: PHP unit
-        if: matrix.lane == 'unit'
-        run: |
-          just js-install
-          just php-test
+      - name: Validate module
+        run: just ci-php-package "${{ matrix.project }}"
 
   js:
-    name: js-lane
+    name: "js-lane (${{ matrix.project }})"
     needs: plan
     if: ${{ !cancelled() && needs.plan.outputs.js == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
-        lane: [static, unit]
+        project: ${{ fromJson(needs.plan.outputs.js_matrix) }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -135,30 +135,25 @@ jobs:
       - uses: taiki-e/install-action@f7e5d7c961414b23f5b25b2da9294395d08513ad # v2.87.26
         with:
           tool: just@1.58.0
-      - name: JavaScript static
-        if: matrix.lane == 'static'
+      - name: Browser dependencies for the browser-backed package
+        if: matrix.project == 'tools'
         run: |
-          just js-check
-          just e2e-check
-      - name: JavaScript unit and browser suites
-        if: matrix.lane == 'unit'
-        run: |
-          just js-install
+          just ci-node-deps plugins/linker-tools
           cd plugins/linker-tools
           npx playwright install-deps chromium
-          cd ../..
-          just js-test
+      - name: Validate module
+        run: just ci-js-package "${{ matrix.project }}"
 
   python:
-    name: python-lane
+    name: "python-lane (${{ matrix.project }})"
     needs: plan
     if: ${{ !cancelled() && needs.plan.outputs.python == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
-        lane: [static, genie, engine, tools, harnesses, pull, cutover]
+        project: ${{ fromJson(needs.plan.outputs.python_matrix) }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -178,51 +173,27 @@ jobs:
             services/*/uv.lock
             tools/*/uv.lock
       - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
-        if: matrix.lane == 'tools' || matrix.lane == 'pull' || matrix.lane == 'cutover'
+        if: matrix.project != 'harnesses'
         with:
           php-version: "8.3"
           coverage: none
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        if: matrix.lane == 'engine'
-        with:
-          node-version: "22"
-          cache: npm
-          cache-dependency-path: apps/planner/package-lock.json
       - uses: taiki-e/install-action@f7e5d7c961414b23f5b25b2da9294395d08513ad # v2.87.26
         with:
           tool: just@1.58.0
       - name: Python unit native helpers
-        if: matrix.lane == 'tools'
+        if: matrix.project == 'tools/local' || matrix.project == 'tools/migrate'
         run: |
           sudo apt-get update && sudo apt-get install -y gettext
           curl -fsSL -o /usr/local/bin/wp https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar
           sudo chmod +x /usr/local/bin/wp
           wp --version
-      - name: Python static
-        if: matrix.lane == 'static'
-        run: just py-check
-      - name: Genie tests
-        if: matrix.lane == 'genie'
-        run: just py-test-group genie
-      - name: Engine tests
-        if: matrix.lane == 'engine'
+      - name: Validate module
         run: |
-          cd apps/planner
-          npm ci --no-audit --no-fund
-          cd ../..
-          just py-test-group engine
-      - name: Python tool tests
-        if: matrix.lane == 'tools'
-        run: just py-test-group tools
-      - name: Campaign harness tests
-        if: matrix.lane == 'harnesses'
-        run: just py-test-group harnesses
-      - name: Pull snapshot tests
-        if: matrix.lane == 'pull'
-        run: just pull::test
-      - name: Cutover tests
-        if: matrix.lane == 'cutover'
-        run: just cutover::test
+          if [ "${{ matrix.project }}" = harnesses ]; then
+            just ci-python-harnesses
+          else
+            just ci-python-package "${{ matrix.project }}"
+          fi
 
   content:
     needs: plan
@@ -256,14 +227,6 @@ jobs:
           php-version: "8.3"
           tools: composer:v2
           coverage: none
-      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
-        with:
-          version: "0.10.11"
-          python-version: "3.12"
-          enable-cache: true
-          cache-dependency-glob: |
-            tools/pull/uv.lock
-            tools/cutover/uv.lock
       - uses: taiki-e/install-action@f7e5d7c961414b23f5b25b2da9294395d08513ad # v2.87.26
         with:
           tool: just@1.58.0
@@ -274,14 +237,19 @@ jobs:
           curl -fsSL -o /usr/local/bin/wp https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar
           sudo chmod +x /usr/local/bin/wp
           wp --version
-      - name: Content, catalogue, pull and cutover contracts
+      - name: Validate module
         run: just ci-content
 
   build:
+    name: "build (${{ matrix.project }})"
     needs: plan
     if: ${{ !cancelled() && needs.plan.outputs.build == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ${{ fromJson(needs.plan.outputs.build_matrix) }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -303,8 +271,8 @@ jobs:
       - uses: taiki-e/install-action@f7e5d7c961414b23f5b25b2da9294395d08513ad # v2.87.26
         with:
           tool: just@1.58.0
-      - name: Build contract and committed artifact reproduction
-        run: just ci-build
+      - name: Validate module
+        run: just ci-build-package "${{ matrix.project }}"
 
   presentation:
     needs: plan
@@ -349,7 +317,7 @@ jobs:
         run: |
           curl -fsSL -o /usr/local/bin/wp https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar
           sudo chmod +x /usr/local/bin/wp
-      - name: Existing presentation contracts and affected source guards
+      - name: Validate module
         env:
           PHP_TEST_CHANGED: ${{ needs.plan.outputs.php_test_changed }}
           CATALOG_CHANGED: ${{ needs.plan.outputs.catalog_changed }}
@@ -406,15 +374,15 @@ jobs:
         run: just commerce-check
 
   native:
-    name: mu-smoke
+    name: "mu-smoke (${{ matrix.group }})"
     needs: plan
     if: ${{ !cancelled() && needs.plan.outputs.native == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
-        group: [core, mail, inquiry, inventory, runtime, admin]
+        group: ${{ fromJson(needs.plan.outputs.native_matrix) }}
     env:
       MYSQL_PWD: root
     steps:
@@ -456,7 +424,7 @@ jobs:
           redis-cli ping
       - name: a bare instance
         run: just up smoke
-      - name: native integration group
+      - name: Validate module
         run: just ci-native "${{ matrix.group }}" smoke
       - name: stop the instance
         if: always()
@@ -491,7 +459,7 @@ jobs:
           php-version: "8.3"
           tools: composer:v2
           coverage: none
-      - name: Planner source, tests and isolated build reproduction
+      - name: Validate module
         env:
           PLANNER_BUILD_CHANGED: ${{ needs.plan.outputs.planner_build_changed }}
         run: just ci-planner
@@ -527,7 +495,7 @@ jobs:
           cache-dependency-glob: |
             services/engine/uv.lock
             services/engine/pyproject.toml
-      - name: Engine lint, types and unit contracts
+      - name: Validate module
         run: just ci-engine
 
   genie:
@@ -557,7 +525,7 @@ jobs:
       - uses: taiki-e/install-action@f7e5d7c961414b23f5b25b2da9294395d08513ad # v2.87.26
         with:
           tool: just@1.58.0
-      - name: Genie lint, types and unit contracts
+      - name: Validate module
         run: just ci-genie
 
   check:
@@ -580,6 +548,7 @@ jobs:
           sparse-checkout-cone-mode: false
       - name: Record validated scope (${{ needs.plan.outputs.mode }})
         env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
           EVENT_NAME: ${{ github.event_name }}
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
           HEAD_SHA: ${{ github.sha }}

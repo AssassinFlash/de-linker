@@ -60,41 +60,79 @@ class PreflightScopeTest(unittest.TestCase):
         self.assertEqual(lane.environment["PHP_TEST_CHANGED"], "true")
         self.assertEqual(lane.environment["CATALOG_CHANGED"], "true")
 
-    def test_full_plan_preserves_all_python_groups_and_language_checks(self):
+    def test_full_plan_preserves_every_module_without_duplicate_services(self):
         lanes = preflight.initial_lanes(ci_scope.FULL_LANES)
+        expected = [
+            module
+            for module in ci_scope.FULL_MODULES
+            if ci_scope.module_lane(module) not in {"native", "build"}
+        ]
         self.assertEqual(
-            {lane.name for lane in lanes},
-            {
-                "php",
-                "javascript",
-                "python-genie",
-                "python-engine",
-                "python-tools",
-                "python-harnesses",
-                "python-static",
-                "pull-test",
-                "cutover-test",
-                "content",
-            },
+            [lane.command for lane in lanes],
+            [ci_scope.MODULE_COMMANDS[module] for module in expected],
+        )
+        self.assertEqual(sum(lane.name == "engine" for lane in lanes), 1)
+        self.assertEqual(sum(lane.name == "genie" for lane in lanes), 1)
+
+    def test_shared_dependencies_and_planner_writes_are_ordered(self):
+        with (
+            patch.object(preflight, "_git", return_value=b"sha"),
+            patch.object(
+                preflight,
+                "changes_from",
+                return_value=[
+                    Change("M", "plugins/linker-tools/build/planner/index.js")
+                ],
+            ),
+            patch.object(
+                preflight, "classify", return_value=["php", "planner", "genie"]
+            ),
+            patch.object(
+                ci_scope,
+                "modules_for_lanes",
+                return_value=["php:tools", "planner", "genie"],
+            ),
+            patch.object(preflight, "configure_toolchains", return_value=None),
+            patch.object(preflight, "run_one", return_value=True) as prepare,
+            patch.object(preflight, "run_parallel", return_value=True) as run,
+            patch.object(
+                subprocess, "run", return_value=subprocess.CompletedProcess([], 0)
+            ),
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
+            self.assertEqual(preflight.main([]), 0)
+        self.assertEqual(
+            [call.args[0] for call in prepare.call_args_list],
+            ["planner-dependencies", "php-dependencies"],
         )
         self.assertEqual(
-            next(lane.command for lane in lanes if lane.name == "php"),
-            ("just", "php-check", "php-test"),
+            [[lane.name for lane in call.args[0]] for call in run.call_args_list],
+            [["php-tools", "genie"], ["planner"]],
         )
+        self.assertEqual(
+            run.call_args_list[1].args[0][0].environment["PLANNER_BUILD_CHANGED"],
+            "true",
+        )
+        php, genie = run.call_args_list[0].args[0]
+        self.assertEqual(php.environment["LINKER_CI_PHP_READY"], "true")
+        self.assertNotIn("LINKER_CI_PHP_READY", genie.environment)
+        self.assertNotIn("LINKER_CI_PHP_READY", os.environ)
 
 
 class PreflightLifecycleTest(unittest.TestCase):
-    def test_cancelled_queue_does_not_spawn_and_failure_stops_next_lane(self):
+    def test_cancelled_queue_does_not_spawn_but_independent_failure_does_not_cancel(
+        self,
+    ):
         stop = threading.Event()
         stop.set()
         with patch.object(subprocess, "Popen") as popen:
             self.assertIn(
                 "before start",
-                preflight.run_lane(Lane("queued", ("missing",), 10), stop)[2],
+                preflight.run_lane(Lane("queued", ("missing",), 10), stop)[2] or "",
             )
         popen.assert_not_called()
         with TemporaryDirectory() as directory:
-            marker = Path(directory) / "must-not-start"
+            marker = Path(directory) / "independent-completed"
             lanes = [
                 Lane("fail", (sys.executable, "-c", "raise SystemExit(7)"), 10),
                 Lane(
@@ -113,7 +151,7 @@ class PreflightLifecycleTest(unittest.TestCase):
                 side_effect=lambda **_: ThreadPoolExecutor(max_workers=1),
             ):
                 self.assertFalse(preflight.run_parallel(lanes))
-            self.assertFalse(marker.exists())
+            self.assertTrue(marker.exists())
 
     def test_timeout_and_cancellation_reap_term_ignoring_grandchild(self):
         # Temporary directory, leader and descendant belong to this test only.
@@ -137,7 +175,8 @@ class PreflightLifecycleTest(unittest.TestCase):
                         Lane(cause, (sys.executable, "-c", script), 1), stop
                     )
                     self.assertIn(
-                        "timed out" if cause == "timeout" else "cancelled", result[2]
+                        "timed out" if cause == "timeout" else "cancelled",
+                        result[2] or "",
                     )
                     pid = int(marker.read_text())
                     deadline = time.monotonic() + 2
@@ -221,6 +260,7 @@ class PreflightLifecycleTest(unittest.TestCase):
             patch.object(preflight, "_git", return_value=b"sha"),
             patch.object(preflight, "changes_from", return_value=[]),
             patch.object(preflight, "classify", return_value=["genie"]),
+            patch.object(ci_scope, "modules_for_lanes", return_value=["genie"]),
             patch.object(preflight, "configure_toolchains") as configure,
             patch.object(preflight, "run_parallel") as run,
             patch.object(

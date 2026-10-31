@@ -79,8 +79,6 @@ ci-presentation:
 # Fast, source-only gates shared by CI and the local preflight.
 ci-content:
     python3 -m unittest discover -s "{{ justfile_directory() }}/tools/checks" -p "test_ci_*.py"
-    just --justfile "{{ justfile() }}" pull::check
-    just --justfile "{{ justfile() }}" cutover::check
     just --justfile "{{ justfile() }}" german-copy
     just --justfile "{{ justfile() }}" internal-home-urls
     just --justfile "{{ justfile() }}" i18n-coverage
@@ -141,7 +139,120 @@ ci-service service:
     uv run --locked ruff check .
     uv run --locked ruff format --check .
     uv run --locked mypy .
-    uv run --locked pytest
+    uv run --locked pytest --durations=10
+
+# One module's complete static/unit contract, shared by hosted and local CI.
+[positional-arguments]
+ci-php-package project:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    case "$1" in plugins/linker-commerce|plugins/linker-tools|plugins/linker-i18n|mu-plugins|tools/local) ;; *) exit 2 ;; esac
+    if [ "${LINKER_CI_PHP_READY:-false}" != true ]; then
+        just --justfile "{{ justfile() }}" ci-php-deps "$1"
+    fi
+    cd "{{ justfile_directory() }}/$1"
+    echo "== $1: lint / types"
+    {{ php }} vendor/bin/phpcs -q
+    {{ php }} vendor/bin/phpstan analyse --no-progress --memory-limit=-1
+    if [ "$1" != tools/local ]; then
+        echo "== $1: unit"
+        {{ php }} vendor/bin/phpunit
+    fi
+
+# Local preflight installs these shared autoloaders before parallel package checks.
+[private]
+[positional-arguments]
+ci-php-deps project:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    case "$1" in plugins/linker-commerce|plugins/linker-tools|plugins/linker-i18n|mu-plugins|tools/local) ;; *) exit 2 ;; esac
+    # Tools' real publication/proof units require Commerce's autoloader.
+    projects=("$1")
+    if [ "$1" = plugins/linker-tools ]; then projects=(plugins/linker-commerce "$1"); fi
+    for project in "${projects[@]}"; do
+        cd "{{ justfile_directory() }}/$project"
+        echo "== $project: dependency lock"
+        {{ php }} "$(command -v composer)" validate --no-check-publish
+        {{ php }} "$(command -v composer)" install --no-interaction --no-progress --quiet
+    done
+
+[private]
+[positional-arguments]
+ci-node-deps project:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    case "$1" in plugins/linker-commerce|plugins/linker-tools|apps/planner|tests/e2e) ;; *) exit 2 ;; esac
+    cd "{{ justfile_directory() }}/$1"
+    if [ ! -f node_modules/.package-lock.json ] || [ package-lock.json -nt node_modules/.package-lock.json ] || [ package.json -nt node_modules/.package-lock.json ]; then npm ci --no-audit --no-fund; fi
+
+[positional-arguments]
+ci-js-package package:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    case "$1" in commerce|tools) project="plugins/linker-$1" ;; e2e) project=tests/e2e ;; *) exit 2 ;; esac
+    just --justfile "{{ justfile() }}" ci-node-deps "$project"
+    cd "{{ justfile_directory() }}/$project"
+    echo "== $project: lint / types / format"
+    if [ "$1" != e2e ]; then npm run lint:js; fi
+    npm run lint:types
+    npm run lint:format
+    if [ "$1" = tools ]; then
+        # Browser-backed unit tests must see Chromium on their first consumer.
+        npx playwright install --only-shell chromium
+        echo "== $project: unit / browser contracts"
+        npm run test:unit
+        npm run test:e2e
+    elif [ "$1" = commerce ]; then
+        echo "== $project: unit / plain-script contracts"
+        npm run test:unit
+        just --justfile "{{ justfile() }}" ci-node-deps plugins/linker-tools
+        node --test tests/js/*.test.mjs
+    fi
+
+[positional-arguments]
+ci-build-package package:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    case "$1" in commerce|tools) project="plugins/linker-$1" ;; *) exit 2 ;; esac
+    just --justfile "{{ justfile() }}" ci-node-deps "$project"
+    cd "{{ justfile_directory() }}/$project"
+    echo "== $project: committed build contract / reproduce"
+    npm run build:check
+    npm run build
+    if [ "$1" = tools ]; then
+        # wp-scripts clears build/, so restore the existing isolated Planner.
+        just --justfile "{{ justfile() }}" ci-planner-deps
+        (cd "{{ justfile_directory() }}/apps/planner" && npm run build)
+        node bin/build-manifest.mjs write
+    fi
+    npm run build:check
+    git diff --exit-code -- build
+    test -z "$(git status --porcelain -- build)"
+
+[positional-arguments]
+ci-python-package project:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    case "$1" in tools/local|tools/migrate|tools/pull|tools/cutover|tools/faq|docs/research/2026-10-20-campaign-*/harness) ;; *) exit 2 ;; esac
+    cd "{{ justfile_directory() }}/$1"
+    echo "== $1: lint / types"
+    uv run --locked ruff check .
+    uv run --locked ruff format --check .
+    uv run --locked mypy .
+    if [ "$1" = tools/local ]; then
+        uv run --locked ruff check ../../plugins/linker-commerce/tests/fixtures/smtp_sink.py
+        uv run --locked ruff format --check ../../plugins/linker-commerce/tests/fixtures/smtp_sink.py
+        uv run --locked mypy --strict ../../plugins/linker-commerce/tests/fixtures/smtp_sink.py
+    fi
+    echo "== $1: unit (slowest ten durations retained in this run)"
+    PHP={{ php }} uv run --locked pytest --durations=10
+
+ci-python-harnesses:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    for project in tools/faq docs/research/2026-10-20-campaign-{330,332,333,334,335}/harness; do
+        just --justfile "{{ justfile() }}" ci-python-package "$project"
+    done
 
 # Native integration groups. CI runs one group per matrix job; the local
 # preflight runs them in sequence against its one reusable instance.

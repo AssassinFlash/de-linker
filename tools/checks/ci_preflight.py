@@ -19,7 +19,7 @@ import time
 import tomllib
 from collections.abc import Iterable, Sequence
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 
 import ci_scope
@@ -87,11 +87,26 @@ def python_lanes() -> list[Lane]:
 
 
 def initial_lanes(
-    selected: Sequence[str], flags: dict[str, bool] | None = None
+    selected: Sequence[str],
+    flags: dict[str, bool] | None = None,
+    modules: Sequence[str] | None = None,
 ) -> list[Lane]:
     flags = flags or {}
     environment = {name.upper(): str(value).lower() for name, value in flags.items()}
     lanes: list[Lane] = []
+    if modules is None and list(selected) == list(ci_scope.FULL_LANES):
+        modules = ci_scope.FULL_MODULES
+    if modules is not None:
+        return [
+            Lane(
+                module.replace(":", "-"),
+                tuple(ci_scope.MODULE_COMMANDS[module]),
+                900,
+                environment,
+            )
+            for module in modules
+            if ci_scope.module_lane(module) not in {"native", "build"}
+        ]
     for name in selected:
         if name == "python":
             lanes.extend(python_lanes())
@@ -155,7 +170,6 @@ def run_lane(lane: Lane, stop: threading.Event) -> tuple[str, int | None, str | 
             env={**os.environ, **lane.environment},
         )
     except OSError as error:
-        stop.set()
         return lane.name, None, str(error)
 
     def copy_output() -> None:
@@ -169,24 +183,21 @@ def run_lane(lane: Lane, stop: threading.Event) -> tuple[str, int | None, str | 
     try:
         while process.poll() is None:
             if stop.is_set():
-                return lane.name, None, "cancelled after another lane failed"
+                return lane.name, None, "cancelled by operator"
             elapsed = time.monotonic() - started
             if elapsed > lane.timeout_seconds:
-                stop.set()
                 return lane.name, None, f"timed out after {lane.timeout_seconds}s"
             if time.monotonic() >= next_progress:
                 print(f"... {lane.name}: running {elapsed:.0f}s", flush=True)
                 next_progress += 30
             time.sleep(0.1)
-        if process.returncode:
-            stop.set()  # Set before this worker can pick up another queued lane.
         return lane.name, process.returncode, None
     finally:
         _terminate(process)
         reader.join(timeout=2)
         if process.stdout is not None and not reader.is_alive():
             process.stdout.close()
-        state = "cancelled/failed" if stop.is_set() else "ok"
+        state = "cancelled" if stop.is_set() else f"exit {process.returncode}"
         print(
             f"<== {lane.name}: {state} ({time.monotonic() - started:.1f}s)", flush=True
         )
@@ -206,14 +217,13 @@ def run_parallel(lanes: Iterable[Lane]) -> bool:
             name, code, error = future.result()
             if code not in (0, None) or error:
                 failures.append(f"{name}: {error or f'exit {code}'}")
-                stop.set()
     except BaseException:
         stop.set()
         raise
     finally:
         pool.shutdown(wait=True, cancel_futures=True)
     if failures:
-        print("CI preflight stopped: " + "; ".join(failures), file=sys.stderr)
+        print("CI preflight failed: " + "; ".join(failures), file=sys.stderr)
         return False
     return True
 
@@ -390,10 +400,14 @@ def main(argv: Sequence[str] | None = None) -> int:
     changes = changes_from(args.base)
     selected = classify(changes, args.base)
     flags = ci_scope.change_flags([(change.status, change.path) for change in changes])
-    lanes = initial_lanes(selected, flags)
+    modules = ci_scope.modules_for_lanes(
+        selected, [(change.status, change.path) for change in changes], args.base, ""
+    )
+    lanes = initial_lanes(selected, flags, modules)
     if args.only:
         available = {
-            lane.name: lane for lane in initial_lanes(ci_scope.FULL_LANES, flags)
+            lane.name: lane
+            for lane in [*initial_lanes(ci_scope.FULL_LANES, flags), *python_lanes()]
         }
         available.update(
             {
@@ -407,6 +421,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             parser.error("unknown lane: " + ", ".join(sorted(missing)))
         lanes = [available[name] for name in dict.fromkeys(args.only)]
         selected = []  # Explicit lanes do not implicitly start build/native.
+        modules = []
     mode = (
         ", ".join(args.only)
         if args.only
@@ -420,13 +435,26 @@ def main(argv: Sequence[str] | None = None) -> int:
     if len(changes) > 20:
         print(f"  ... {len(changes) - 20} more")
     if args.print_plan:
-        for lane in lanes:
+        for lane in sorted(
+            lanes, key=lambda item: item.command == ("just", "ci-planner")
+        ):
             guards = " ".join(
                 f"{name}={value}" for name, value in lane.environment.items()
             )
-            print(f"{lane.name}: {guards} {' '.join(lane.command)}".strip())
+            phase = (
+                " (after artifact readers)"
+                if lane.command == ("just", "ci-planner")
+                else ""
+            )
+            print(f"{lane.name}: {guards} {' '.join(lane.command)}{phase}".strip())
         if "build" in selected:
-            print("build: just ci-build (after package checks)")
+            for module in modules:
+                if ci_scope.module_lane(module) == "build":
+                    print(
+                        "build: "
+                        + " ".join(ci_scope.MODULE_COMMANDS[module])
+                        + " (after package checks)"
+                    )
         if "native" in selected:
             print(
                 f"native: just ci-native all {args.instance} (owned stopped instance; always stopped afterwards)"
@@ -455,12 +483,47 @@ def main(argv: Sequence[str] | None = None) -> int:
         "planner-dependencies", ("just", "ci-planner-deps"), 600
     ):
         return 1
-    if not run_parallel(lanes):
+    # Shared checkout: install each JS dependency once before parallel commands.
+    # Commerce's plain-script tests resolve jsdom from linker-tools.
+    node_projects = {
+        "plugins/linker-" + ci_scope.module_project(module)
+        if ci_scope.module_project(module) != "e2e"
+        else "tests/e2e"
+        for module in modules
+        if ci_scope.module_lane(module) == "js"
+    }
+    if "plugins/linker-commerce" in node_projects:
+        node_projects.add("plugins/linker-tools")
+    for project in sorted(node_projects):
+        if not run_one("node-dependencies", ("just", "ci-node-deps", project), 600):
+            return 1
+    # Tools shares Commerce's Composer autoloader. Install serially first;
+    # readiness is scoped to these PHP lane children, never native up/global env.
+    for lane in lanes:
+        if lane.command[:2] == ("just", "ci-php-package") and not run_one(
+            "php-dependencies", ("just", "ci-php-deps", lane.command[-1]), 600
+        ):
+            return 1
+    lanes = [
+        replace(lane, environment={**lane.environment, "LINKER_CI_PHP_READY": "true"})
+        if lane.command[:2] == ("just", "ci-php-package")
+        else lane
+        for lane in lanes
+    ]
+    # Planner reproduces committed build files read by PHP/JS package checks.
+    # Hosted jobs have separate checkouts; this one local checkout does not.
+    readers = [lane for lane in lanes if lane.command != ("just", "ci-planner")]
+    writers = [lane for lane in lanes if lane.command == ("just", "ci-planner")]
+    if not run_parallel(readers):
         return 1
-    if "build" in selected and not run_one("build", ("just", "ci-build"), 900):
-        return 1
-    if "php" in selected:
-        os.environ["LINKER_CI_PHP_READY"] = "true"
+    for lane in writers:
+        if not run_parallel([lane]):
+            return 1
+    for module in modules:
+        if ci_scope.module_lane(module) == "build" and not run_one(
+            module, ci_scope.MODULE_COMMANDS[module], 900
+        ):
+            return 1
     if "native" in selected:
         try:
             if not run_native(args.instance):
