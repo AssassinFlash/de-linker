@@ -50,6 +50,16 @@ RULE = (
 
 # Model-input budget only, not an engineering or project-size limit.
 MAX_TEXT_CHARS = 24_000
+_MATERIAL_HANDLING = frozenset(
+    {
+        "customer_supplied_required",
+        "installation_requirement",
+        "manufacturer_included",
+        "pv_reference",
+        "site_engineering_required",
+        "woo_product",
+    }
+)
 
 
 def saved_result_question(raw: Any, page: PageContext, question: str) -> bool:
@@ -108,8 +118,15 @@ def view(raw: Any, page: PageContext) -> dict[str, Any]:
     ]
     truncated = raw.get("truncated") is True
 
-    def append_rows(rows: Any) -> None:
+    def append_line(line: str) -> bool:
         nonlocal truncated
+        if sum(len(part) + 1 for part in lines) + len(line) > MAX_TEXT_CHARS:
+            truncated = True
+            return False
+        lines.append(line)
+        return True
+
+    def append_rows(rows: Any) -> None:
         if not isinstance(rows, list):
             return
         for row in rows:
@@ -124,10 +141,8 @@ def view(raw: Any, page: PageContext) -> dict[str, Any]:
             line = f"{row['label']}: {rendered}"
             if row.get("undefined_reason"):
                 line += f"; undefined_reason={row['undefined_reason']}"
-            if sum(len(part) + 1 for part in lines) + len(line) > MAX_TEXT_CHARS:
-                truncated = True
+            if not append_line(line):
                 break
-            lines.append(line)
 
     append_rows(raw.get("rows"))
     adopted = raw.get("adopted_equipment")
@@ -161,7 +176,7 @@ def view(raw: Any, page: PageContext) -> dict[str, Any]:
                 or not isinstance(materials.get("sha256"), str)
                 or re.fullmatch(r"[a-f0-9]{64}", materials["sha256"]) is None
                 or not isinstance(materials.get("model"), str)
-                or not materials["model"]
+                or re.fullmatch(r"[A-Za-z0-9_.:-]{1,64}", materials["model"]) is None
                 or type(materials.get("line_count")) is not int
                 or materials["line_count"] < 0
                 or type(materials.get("unresolved_quantity_count")) is not int
@@ -173,17 +188,18 @@ def view(raw: Any, page: PageContext) -> dict[str, Any]:
                     not isinstance(key, str) or type(value) is not int or value < 0
                     for key, value in handling.items()
                 )
+                or not set(handling) <= _MATERIAL_HANDLING
                 or sum(handling.values()) != materials["line_count"]
                 or materials.get("scope") != "provisional_not_complete_bos"
             ):
                 return {"error": "unavailable"}
-            lines.append(
+            append_line(
                 "Verified provisional bill of materials: "
                 f"{materials['line_count']} rows, "
                 f"{materials['unresolved_quantity_count']} quantities unresolved; "
                 "not a complete balance-of-system take-off."
             )
-            lines.append(
+            append_line(
                 f"Materials model: {materials['model']}; "
                 f"provenance SHA-256: {materials['sha256']}; "
                 f"handling counts: {json.dumps(handling, ensure_ascii=False, sort_keys=True)}"

@@ -257,9 +257,16 @@ def test_provisional_bom_keeps_verified_provenance_and_scope() -> None:
     assert "c" * 64 in payload["text"]
     assert "site_engineering_required" in payload["text"]
     assert gathered.tool_calls[0]["name"] == planning.NAME
+    assert len(payload["text"]) <= planning.MAX_TEXT_CHARS
 
     malformed = json.loads(json.dumps(raw))
     malformed["runs"][0]["materials"]["sha256"] = "not-a-hash"
+    assert planning.record(malformed, page)[0] == {"error": "unavailable"}
+    malformed = json.loads(json.dumps(raw))
+    malformed["runs"][0]["materials"]["model"] = "x" * 30_000
+    assert planning.record(malformed, page)[0] == {"error": "unavailable"}
+    malformed = json.loads(json.dumps(raw))
+    malformed["runs"][0]["materials"]["handling_counts"] = {"approval_granted": 4}
     assert planning.record(malformed, page)[0] == {"error": "unavailable"}
 
 
@@ -268,8 +275,12 @@ def test_provisional_bom_keeps_verified_provenance_and_scope() -> None:
     [
         ("en", "What is in the bill of materials for this plan?"),
         ("en", "Is the BOM a complete balance of system?"),
+        ("en", "Are the BOMs complete?"),
+        ("en", "Review the material lists"),
         ("de", "Was steht in der vorläufigen Stückliste?"),
         ("de", "Ist die Materialliste ein vollständiges BOS?"),
+        ("de", "Was steht in den Stücklisten?"),
+        ("de", "Sind die Materiallisten vollständig?"),
     ],
 )
 def test_bom_questions_read_the_exact_planning_project(
@@ -287,6 +298,20 @@ def test_bom_questions_read_the_exact_planning_project(
 
     assert page.planning_project_id is not None
     assert [call.ability for call in routed.calls] == [planning.NAME]
+
+
+def test_boss_does_not_trigger_the_bom_route() -> None:
+    _, page = source()
+    routed = with_page(
+        Route("model"),
+        page,
+        False,
+        True,
+        Subject((), {}, {}),
+        "Who is the boss?",
+    )
+
+    assert routed.calls == ()
 
 
 def test_active_project_sizing_reads_selected_history_instead_of_blank_tool() -> None:

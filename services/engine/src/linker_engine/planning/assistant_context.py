@@ -51,6 +51,16 @@ _ENERGY = frozenset(
         "plant_shared_dc_energy_replay_v1",
     }
 )
+_MATERIAL_HANDLING = frozenset(
+    {
+        "customer_supplied_required",
+        "installation_requirement",
+        "manufacturer_included",
+        "pv_reference",
+        "site_engineering_required",
+        "woo_product",
+    }
+)
 
 
 def _summary(value: Json) -> Json:
@@ -138,10 +148,13 @@ def _report_materials(workspace: Workspace, run: Run, result: Object) -> Json | 
     if not isinstance(model, str) or not model:
         raise InvalidInput("saved report materials model is missing")
     source = report_source_with_information(workspace.blobs, dependencies)
+    source_dependencies = source.get("dependencies")
     if (
         source.get("project_id") != run.project_id
         or source.get("revision") != run.revision
         or source.get("input_sha256") != run.manifest.get("input_sha256")
+        or not isinstance(source_dependencies, dict)
+        or source_dependencies.get("materials_model") != materials_sha
     ):
         raise InvalidInput("saved report materials source differs from selected result")
     stored = source.get("materials")
@@ -149,7 +162,10 @@ def _report_materials(workspace: Workspace, run: Run, result: Object) -> Json | 
     if (
         not isinstance(stored, dict)
         or stored != frozen
+        or type(frozen.get("schema_version")) is not int
+        or frozen.get("schema_version") != 3
         or frozen.get("kind") != model
+        or frozen.get("installation_status") != "not_assessed"
         or frozen.get("project_id") != run.project_id
         or frozen.get("revision") != run.revision
         or frozen.get("input_sha256") != run.manifest.get("input_sha256")
@@ -164,11 +180,23 @@ def _report_materials(workspace: Workspace, run: Run, result: Object) -> Json | 
         if not isinstance(line, dict):
             raise InvalidInput("saved report materials line is invalid")
         raw_handling = line.get("handling")
-        if not isinstance(raw_handling, str):
+        if (
+            not isinstance(line.get("id"), str)
+            or not isinstance(raw_handling, str)
+            or raw_handling not in _MATERIAL_HANDLING
+        ):
             raise InvalidInput("saved report materials line is invalid")
+        quantity = line.get("quantity")
+        if quantity is not None:
+            if (
+                isinstance(quantity, bool)
+                or not isinstance(quantity, (int, float))
+                or quantity < 0
+            ):
+                raise InvalidInput("saved report materials quantity is invalid")
         handling = raw_handling
         handling_counts[handling] = handling_counts.get(handling, 0) + 1
-        if line.get("quantity") is None:
+        if quantity is None:
             unresolved += 1
     return {
         "status": "verified",

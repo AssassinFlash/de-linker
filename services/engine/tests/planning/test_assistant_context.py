@@ -3,11 +3,15 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from dataclasses import replace
 from typing import cast
 
 import pytest
 
-from linker_engine.planning.assistant_context import assistant_context
+from linker_engine.planning.assistant_context import (
+    _report_materials,
+    assistant_context,
+)
 from linker_engine.planning.canonical import Json, Object
 from linker_engine.planning.errors import InvalidInput, NotFound
 from linker_engine.planning.jobs import Jobs
@@ -715,6 +719,51 @@ def test_report_exposes_verified_materials_provenance(
     )
     with pytest.raises(InvalidInput, match="materials dependency differs"):
         assistant_context(workspace, owner, project.id, 1, [mismatch.id], "en")
+
+    recorded = workspace.run(owner, run.id)
+    assert recorded.result is not None
+
+    def invalid_materials(
+        changed: Object, *, dependency_sha: str | None = None
+    ) -> None:
+        changed_sha = workspace.blobs.put_object(changed)
+        changed_source: Object = {
+            **source,
+            "materials": changed,
+            "dependencies": {"materials_model": dependency_sha or changed_sha},
+        }
+        changed_source_sha = workspace.blobs.put_object(changed_source)
+        changed_result: Object = {
+            **cast(Object, recorded.result),
+            "materials_sha256": changed_sha,
+            "dependencies": {
+                "report_source": changed_source_sha,
+                "materials_model": changed_sha,
+            },
+        }
+        with pytest.raises(InvalidInput):
+            _report_materials(
+                workspace,
+                replace(recorded, result=changed_result),
+                changed_result,
+            )
+
+    invalid_materials(materials, dependency_sha=other_materials_sha)
+    invalid_materials(
+        {
+            **materials,
+            "schema_version": 999,
+        }
+    )
+    invalid_materials(
+        {
+            **materials,
+            "lines": [
+                *cast(list[Object], materials["lines"]),
+                {"id": "invalid", "handling": "approval_granted", "quantity": 1},
+            ],
+        }
+    )
 
 
 def _historical_period(start: str, end: str) -> Object:
