@@ -445,4 +445,7 @@ def stream(
         error.seek(0)
         message = error.read().decode(errors="replace").strip()
     if completed.returncode != 0:
-        raise CutoverError(f"{script.splitlines()[0]}: {message}")
+        raise CutoverError(
+            f"{script.splitlines()[0]} (exit {completed.returncode}): "
+            f"{message or 'no stderr'}"
+        )
