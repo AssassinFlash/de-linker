@@ -691,7 +691,7 @@ def test_native_dc_plant_projects_owned_pv_groups_and_keeps_report_stages(
             report_sources,
         )
 
-        changed = deepcopy(project.inputs)
+        changed = json_object(deepcopy(project.inputs))
         changed["pv_plant_string_plan"]["units"][0]["plan"]["minimum_ambient_c"] = -20
         with pytest.raises(ReportInputsChanged):
             report_sources(

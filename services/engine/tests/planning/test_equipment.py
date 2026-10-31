@@ -2572,7 +2572,7 @@ def test_multi_system_pv_strings_scope_currents_bindings_and_saved_reports(
     plant["requirements"]["pv_dc_kw"] = 5.52
     for unit in plant["units"]:
         unit["selection"]["pv_dc_kw"] = 2.76
-    wiring = {
+    wiring: FixtureObject = {
         "schema_version": 1,
         "units": [
             {
@@ -2596,12 +2596,12 @@ def test_multi_system_pv_strings_scope_currents_bindings_and_saved_reports(
             for uid, ids in (("a", mids[:6]), ("b", mids[6:]))
         ],
     }
-    value = {
+    value: FixtureObject = {
         "equipment_plant": plant,
         "geometry": layout,
         "pv_plant_string_plan": wiring,
     }
-    basis = {
+    basis: FixtureObject = {
         "products": feed["products"],
         "compatibility": engine.compatibility.snapshot(),
         "pv_module_inputs": {"module": module, "electrical_product": reference},
@@ -2787,7 +2787,7 @@ def test_multi_system_pv_strings_scope_currents_bindings_and_saved_reports(
         row["instance_status"] == "unprepared_plant" and not row["closure"]["recorded"]
         for row in draft_review["rows"]
     )
-    material_source = {
+    material_source: FixtureObject = {
         "project_id": "a" * 32,
         "revision": 1,
         "input_sha256": "b" * 64,
