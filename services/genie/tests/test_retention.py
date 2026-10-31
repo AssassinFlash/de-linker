@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import re
+import sqlite3
 import tempfile
 import threading
 from collections.abc import Iterator
@@ -13,12 +14,15 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+import httpx
 import pytest
 
 from linker_genie import retention
 from linker_genie.log import TurnLog
+from linker_genie.quality import worker as quality_worker
 from linker_genie.quality.store import Store
 from linker_genie.quality.turns import TurnSource
+from linker_genie.quality.wordpress import WordPress
 
 NOW = datetime(2026, 10, 31, tzinfo=UTC).timestamp()
 CUTOFF = NOW - retention.RETENTION_DAYS * 86400
@@ -316,3 +320,114 @@ def test_the_vps_matches_the_sites_existing_privacy_term() -> None:
     match = re.search(r"const RETENTION_DAYS = (\d+);", source)
     assert match is not None
     assert int(match.group(1)) == retention.RETENTION_DAYS
+
+
+@pytest.mark.parametrize("custom", [True, False])
+def test_judge_cli_cleans_legacy_custom_db_without_duplicating_api_cleanup(
+    root: Path, monkeypatch: pytest.MonkeyPatch, custom: bool
+) -> None:
+    path = root / ("custom.sqlite" if custom else "judgments.sqlite")
+    store = Store(path)
+    try:
+        store.save(1, "old", "failed", 3, {"error": "expired"}, 0)
+        store.save(2, "recent", "failed", 3, {"error": "recent"}, NOW)
+        store.mark_pushed([1, 2])
+    finally:
+        store.close()
+    monkeypatch.delenv("GENIE_JUDGMENTS", raising=False)
+    monkeypatch.setenv("GENIE_JUDGE_TOKEN", "fixture-token")
+    monkeypatch.setattr(quality_worker, "openrouter_credentials", lambda: None)
+    monkeypatch.setattr(quality_worker, "deepseek_credentials", lambda: None)
+    monkeypatch.setattr(quality_worker.time, "time", lambda: NOW)
+    site = WordPress(
+        "https://site.test",
+        "fixture-token",
+        transport=httpx.MockTransport(
+            lambda _: httpx.Response(200, json={"stored": []})
+        ),
+    )
+    monkeypatch.setattr(quality_worker, "WordPress", lambda *_: site)
+    opened: list[Store] = []
+
+    def open_store(path: Path) -> Store:
+        result = Store(path)
+        opened.append(result)
+        return result
+
+    monkeypatch.setattr(quality_worker, "Store", open_store)
+    try:
+        assert (
+            quality_worker.main(
+                [
+                    "--log",
+                    str(root / "turns.sqlite"),
+                    "--db",
+                    str(path),
+                    "--wp",
+                    "https://site.test",
+                    "--once",
+                ]
+            )
+            == 0
+        )
+        assert [
+            row[0]
+            for row in opened[0]._db.execute(
+                "SELECT turn_id FROM judgments ORDER BY turn_id"
+            )
+        ] == ([2] if custom else [1, 2])
+        assert not (root / "turns.sqlite").exists()
+    finally:
+        for database in opened:
+            database.close()
+
+
+@pytest.mark.parametrize("initially_locked", [False, True])
+def test_custom_worker_respects_daily_sweep_and_lock_retry_intervals(
+    root: Path, monkeypatch: pytest.MonkeyPatch, initially_locked: bool
+) -> None:
+    path = root / "custom.sqlite"
+    store = Store(path)
+    blocker = sqlite3.connect(path)
+    site = WordPress(
+        "https://site.test",
+        "fixture-token",
+        transport=httpx.MockTransport(
+            lambda _: httpx.Response(200, json={"stored": []})
+        ),
+    )
+    monkeypatch.setattr(retention, "BUSY_TIMEOUT", 0.01)
+    try:
+        store.set_cursor(0)
+        store.save(1, "old", "failed", 3, {"error": "expired"}, 0)
+        store.mark_pushed([1])
+        if initially_locked:
+            blocker.execute("BEGIN IMMEDIATE")
+        worker = quality_worker.Worker(
+            TurnSource(root / "absent.sqlite"),
+            store,
+            site,
+            custom_judgments=path,
+        )
+        worker.cycle(NOW)
+        blocker.rollback()
+        if not initially_locked:
+            assert store._db.execute("SELECT COUNT(*) FROM judgments").fetchone() == (
+                0,
+            )
+            # New expired data after a successful sweep must wait for the next
+            # daily pass, rather than rescanning this custom store every poll.
+            store.save(2, "also old", "failed", 3, {"error": "expired"}, 0)
+            store.mark_pushed([2])
+        worker.cycle(NOW + quality_worker.POLL_SECONDS)
+        assert store._db.execute("SELECT COUNT(*) FROM judgments").fetchone() == (1,)
+        interval = (
+            retention.RETRY_AFTER_SECONDS
+            if initially_locked
+            else retention.PRUNE_EVERY_SECONDS
+        )
+        worker.cycle(NOW + interval)
+        assert store._db.execute("SELECT COUNT(*) FROM judgments").fetchone() == (0,)
+    finally:
+        blocker.close()
+        store.close()

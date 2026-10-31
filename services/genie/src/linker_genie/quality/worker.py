@@ -32,12 +32,12 @@ from linker_judges.judges import Judge
 from linker_judges.registry import JUDGES
 from linker_judges.turns import TURN_THRESHOLDS, turns_questions
 
+from linker_genie import retention
 from linker_genie.quality import citations
 from linker_genie.quality.item import Skip, build
 from linker_genie.quality.store import Status, Store
 from linker_genie.quality.turns import LoggedTurn, TurnSource
 from linker_genie.quality.wordpress import PushError, WordPress
-from linker_genie.retention import judgments_path
 
 log = logging.getLogger("linker_genie.quality")
 
@@ -78,9 +78,20 @@ class Worker:
     first: Judge = FIRST
     escalation: Judge = ESCALATION
     last_report: float = 0.0
+    # The API owns its configured store. A legacy --db pointing elsewhere is
+    # known only to this worker, so it retains the same cleanup responsibility.
+    custom_judgments: Path | None = None
+    next_prune: float = 0.0
 
     def cycle(self, now: float) -> int:
         """One pass over the queue; returns how many turns it judged or skipped."""
+        if self.custom_judgments is not None and now >= self.next_prune:
+            success = retention.sweep(None, self.custom_judgments, now)
+            self.next_prune = now + (
+                retention.PRUNE_EVERY_SECONDS
+                if success
+                else retention.RETRY_AFTER_SECONDS
+            )
         start = self.store.cursor()
         if start is None:
             start = self.source.latest_id()
@@ -310,11 +321,20 @@ def main(argv: list[str] | None = None) -> int:
         log.error("judge credentials missing; not starting: %s", error)
         return 2
 
-    store = Store(args.db or judgments_path(args.log))
+    api_db = retention.judgments_path(args.log)
+    selected_db = args.db or api_db
+    store = Store(selected_db)
     source = TurnSource(args.log)
     if store.cursor() is None:
         store.set_cursor(max(source.latest_id() - max(args.backfill, 0), 0))
-    worker = Worker(source, store, WordPress(args.wp, token))
+    worker = Worker(
+        source,
+        store,
+        WordPress(args.wp, token),
+        custom_judgments=selected_db
+        if selected_db.resolve() != api_db.resolve()
+        else None,
+    )
     log.info(
         "judging %s from turn %d: %s first, %s on escalation",
         args.log,

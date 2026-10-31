@@ -3,6 +3,8 @@
 No provider or WordPress credentials are needed. Existing files only are opened;
 the service does not create a judge store just to clean it. SQLite frees deleted
 pages for reuse; an automatic VACUUM would rewrite the file and block requests.
+Legacy --db stores outside the API's configured path use the same sweep from
+their owning judge worker, passing no turn log to avoid duplicate cleanup.
 """
 
 from __future__ import annotations
@@ -109,7 +111,7 @@ def _prune(
 
 
 def sweep(
-    turns_path: Path,
+    turns_path: Path | None,
     judgments_path: Path,
     now: float,
     stopped: Callable[[], bool] = lambda: False,
@@ -127,6 +129,8 @@ def sweep(
         (turns_path, before, True),
         (judgments_path, cutoff, False),
     ):
+        if path is None:
+            continue
         if stopped():
             return False
         try:
