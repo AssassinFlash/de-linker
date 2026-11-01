@@ -21,16 +21,23 @@ from index.inventory import doc_type_of
 from index.publication import compile_publication
 from index.table_compiler import _author_contexts, external_axis_anchors
 from index.warranty_named import compile_named_terms
+from linker_genie.cycle import _hydrate_priced, _restore_qualified
 from linker_genie.facts import collect
 from linker_genie.ground import check
 from linker_genie.hydrate import hydrate
 from linker_genie.knowledge import KnowledgeSearch
+from linker_genie.language import language_failure
 from linker_genie.publication import Snapshot
 from linker_genie.publication_scope import authorize_chunk
 from linker_genie.retrieval import DocumentIndex
 from linker_genie.schema import DocumentBlock, TextBlock, TurnOutput
+from linker_genie.template import seal
 from linker_genie.warranty_named import render_named_terms
-from linker_genie.warranty_named_de import EXCLUSIONS, german_named_answers
+from linker_genie.warranty_named_de import (
+    EXCLUSIONS,
+    german_named_answers,
+    qualified_named_additions,
+)
 
 FIXTURE = (
     Path(__file__).parent
@@ -346,7 +353,111 @@ def test_simulated_woo_link_through_sqlite_knowledge_hydration_and_withdrawal(
                     if isinstance(b, DocumentBlock) and b.url
                 } >= {"1", "2", "3"}
                 if lang == "de":
-                    assert "Herstellerbedingung (englisches Original)" in block.text
+                    assert "Herstellerbedingung (englisches Original)" not in block.text
+                    assert "channels authorized by GOODWE" not in block.text
+                    for topic in (
+                        "period",
+                        "production",
+                        "overview",
+                        "start",
+                        "effective",
+                        "geography",
+                        "coverage",
+                        "general",
+                    ):
+                        specific = TurnOutput(
+                            language="de",
+                            blocks=[
+                                TextBlock(
+                                    text=hit["warranty_answers"][topic],
+                                    refs=[hit["chunk_id"]],
+                                )
+                            ],
+                        )
+                        specific_check = check(specific, facts, question="Garantie")
+                        assert specific_check.ok, specific_check.failures
+                        filled = hydrate(specific, facts)
+                        content = next(
+                            b.text for b in filled.blocks if isinstance(b, TextBlock)
+                        )
+                        assert "2 Jahre" in content and "ersten Installation" in content
+                        assert "6 Monate" in content and "Herstellungsdatum" in content
+                        assert "autorisierten Vertriebspartner" in content
+                        assert "Norwegen oder der Schweiz" in content
+                        assert "Vereinigten Königreichs" in content
+                        assert "schriftliche Bestätigung" in content
+                        assert "nach November 2022" in content
+                        assert "gesetzlichen Rechte" in content
+                        assert "mindestens gleichwertige" in content
+                        assert "Materialkosten" in content and "Ausschluss" in content
+                        assert "neuere Fassung" in content
+                        assert "englisches Original):" not in content
+                        assert content.count("autorisierten Vertriebspartner") == 1
+                        assert content.count("ersten Installation") == 1
+                        if topic in {"period", "coverage"}:
+                            priced, priced_facts, _missed, protected, replacements = (
+                                _hydrate_priced(
+                                    specific,
+                                    facts,
+                                    None,
+                                    "de",
+                                    None,
+                                    None,
+                                    "Wie lange gilt die Garantie?",
+                                )
+                            )
+                            sealed = _restore_qualified(
+                                seal(
+                                    protected,
+                                    priced_facts,
+                                    None,
+                                    "Wie lange gilt die Garantie?",
+                                    "product",
+                                    original=specific,
+                                ),
+                                replacements,
+                            )
+                            assert sealed == priced
+                            assert language_failure(sealed, "de") is None
+                    masked = hydrate(draft, facts, qualified_mask=lambda _: "[MASKED]")
+                    masked_text = next(
+                        b.text for b in masked.blocks if isinstance(b, TextBlock)
+                    )
+                    assert "[MASKED]" in masked_text and "2022" not in masked_text
+                else:
+                    assert "Manufacturer's condition:" in block.text
+                    assert "For Europe, excluding UK" in block.text
+        de_hit = search(
+            {"query": "warranty period", "lang": "de", "product_ids": [3557]}
+        )["hits"][0]
+        de_facts = collect("linker/search-knowledge", {"hits": [de_hit]}, "de")
+        cid = de_hit["chunk_id"]
+        original_notes = de_facts.qualifications[cid]
+        forged_notes = list(original_notes)
+        forged_notes[4] = replace(forged_notes[4], chunk_id="aaaaaaaaaaaa-p3-12345678")
+        assert (
+            qualified_named_additions(
+                cid,
+                de_facts.facts[f"{cid}.text"].value,
+                forged_notes,
+                de_facts.warranty_answers[cid],
+                de_hit["warranty_answers"]["period"],
+            )
+            is None
+        )
+        forged_notes[4] = replace(
+            original_notes[4], quote=original_notes[4].quote + " changed"
+        )
+        assert (
+            qualified_named_additions(
+                cid,
+                de_facts.facts[f"{cid}.text"].value,
+                forged_notes,
+                de_facts.warranty_answers[cid],
+                de_hit["warranty_answers"]["period"],
+            )
+            is None
+        )
         reporting = search(
             {
                 "query": "Product failure is not reported to GOODWE within one month",
@@ -377,10 +488,33 @@ def test_simulated_woo_link_through_sqlite_knowledge_hydration_and_withdrawal(
         verdict = check(reporting_draft, reporting_facts, question="Garantie")
         assert verdict.ok, verdict.failures
         reporting_answer = hydrate(reporting_draft, reporting_facts)
-        assert any(
-            isinstance(b, TextBlock) and "innerhalb von 1 Monat" in b.text
-            for b in reporting_answer.blocks
+        reporting_text = next(
+            b.text for b in reporting_answer.blocks if isinstance(b, TextBlock)
         )
+        assert "innerhalb von 1 Monat" in reporting_text
+        assert "2 Jahre" in reporting_text and "gesetzlichen Rechte" in reporting_text
+        assert "Herstellerbedingung (englisches Original)" not in reporting_text
+        priced, priced_facts, _missed, protected, replacements = _hydrate_priced(
+            reporting_draft,
+            reporting_facts,
+            None,
+            "de",
+            None,
+            None,
+            "Wann muss ein Fehler gemeldet werden?",
+        )
+        sealed = _restore_qualified(
+            seal(
+                protected,
+                priced_facts,
+                None,
+                "Wann muss ein Fehler gemeldet werden?",
+                "product",
+                original=reporting_draft,
+            ),
+            replacements,
+        )
+        assert sealed == priced and language_failure(sealed, "de") is None
         revoked = deepcopy(raw)
         new = next(d for d in revoked["documents"] if d["blob_sha256"] == NEW)
         new["product_ids"].remove(3586)

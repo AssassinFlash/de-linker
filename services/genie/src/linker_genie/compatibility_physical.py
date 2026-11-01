@@ -94,6 +94,59 @@ def inverter_condition(base: str) -> str:
     return "*3: " + match.group(1) if match else ""
 
 
+# These reviewed translations belong only to the exact source passages and
+# complete conditions below. Other English material keeps its original wording.
+_GERMAN_CONDITIONS = {
+    (
+        "6f33b8361fe2-p7-e1584b6a",
+        7,
+        "*1: Supports single-unit anti-reflux: overseas ESA261 connects to "
+        "SEC3000C, SEC3000C connects to GM330; requires paired SEC3000C version ≥03.",
+    ): (
+        "*1: Unterstützt den Rückspeiseschutz im Einzelbetrieb: Das ESA261 für "
+        "Überseemärkte wird mit SEC3000C verbunden, SEC3000C wiederum mit GM330; "
+        "das verbundene SEC3000C benötigt Version ≥03."
+    ),
+    (
+        "6f33b8361fe2-p9-7a4f8c43",
+        9,
+        "*3: ARM：LC：410-02134-01(66) DSP：master:410-04077-02(29) "
+        "DSP：slave：410-04078-01(06) Control board:410-02193-01(14)Dual "
+        "network ports、410-02174-01(14) Single network port "
+        "*For global, Can't parellel with ET50 and ESA261",
+    ): (
+        "*3: ARM: LC: 410-02134-01(66); DSP: master: 410-04077-02(29); "
+        "DSP: slave: 410-04078-01(06); Steuerplatine: 410-02193-01(14) mit "
+        "zwei Netzwerkanschlüssen, 410-02174-01(14) mit einem Netzwerkanschluss. "
+        "Weltweit: Kein Parallelbetrieb mit ET50 und ESA261."
+    ),
+    (
+        "8951dd1d8a64-p6-b3076f55",
+        6,
+        "*3: The BAT series GW61.4-BAT-AC-G10 model paired with ET (80-100kW) "
+        "cannot achieve full power output from the inverter. Formula: Battery "
+        "Charging/Discharging Power = Battery Working Voltage × MIN (Battery "
+        "Charge/Discharge Current, 100A*). *The Max. Continuous "
+        "Charging/Discharging Current of ET50 is 100A.",
+    ): (
+        "*3: Das Modell GW61.4-BAT-AC-G10 der BAT-Serie erreicht zusammen mit "
+        "ET (80-100kW) nicht die volle Ausgangsleistung des Wechselrichters. "
+        "Formel: Lade-/Entladeleistung der Batterie = Betriebsspannung der "
+        "Batterie × MIN (Lade-/Entladestrom der Batterie, 100A*). *Der maximale "
+        "kontinuierliche Lade-/Entladestrom von ET50 beträgt 100A."
+    ),
+}
+
+
+def translate_compatibility_condition(
+    quote: str, source_chunk_id: str, page: int, lang: str
+) -> str | None:
+    """Translate an exact, already-authorized manufacturer condition into German."""
+    if lang != "en":
+        return None
+    return _GERMAN_CONDITIONS.get((source_chunk_id, page, quote))
+
+
 def iot_condition(row: str, page: int) -> str:
     number = {7: 1, 9: 3}.get(page)
     if number is None:

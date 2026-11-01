@@ -8,7 +8,7 @@ translated by this module until its wording has been reviewed again.
 from __future__ import annotations
 
 import re
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from typing import Any
 
 EXCLUSIONS = {
@@ -107,7 +107,9 @@ def german_named_answers(
         f"{months} nach dem Herstellungsdatum, je nachdem, welcher Zeitpunkt früher liegt."
     )
     geography = (
-        "Diese Regelung gilt für Europa mit Ausnahme des Vereinigten Königreichs. " + buyer + " "
+        "Diese Regelung gilt für Europa mit Ausnahme des Vereinigten Königreichs. "
+        + buyer
+        + " "
         "Wird ein Gerät in einem anderen Land oder Gebiet installiert als dem, für das "
         "es verkauft wurde, ist vor der Installation eine schriftliche Bestätigung oder "
         "Genehmigung von GoodWe erforderlich. Andernfalls erlischt die Garantie. "
@@ -142,3 +144,51 @@ def german_named_answers(
         result[key] for key in ("period", "effective", "geography", "coverage")
     )
     return result
+
+
+def qualified_named_additions(
+    chunk_id: str,
+    text: str,
+    notes: Sequence[Any],
+    allowed: Mapping[str, str],
+    answer: str,
+) -> tuple[str, ...] | None:
+    """Return only missing German conditions for this verified original policy.
+
+    The source chunks and the complete original policy conditions must still
+    match the reviewed renderer. This changes presentation only; authorization
+    and the linked original document remain those of the indexed passage.
+    """
+    if (
+        not chunk_id.startswith("88a8a5bd9e70-p1-warranty-terms-")
+        or len(notes) != 11
+        or any(
+            getattr(note, "lang", None) != "en"
+            or getattr(note, "page", None) != page
+            or not re.fullmatch(
+                rf"88a8a5bd9e70-p{page}-[a-f0-9]{{8}}(?:-\d+)?",
+                str(getattr(note, "chunk_id", "")),
+            )
+            for note, page in zip(notes, (1, 3, 1, 3, 3, 1, 2, 1, 3, 3, 3), strict=True)
+        )
+    ):
+        return None
+    from linker_genie.warranty_answer import answers
+
+    expected = answers(
+        {"chunk_id": chunk_id, "text": text, "answer_language": "de"}, notes
+    )
+    if not expected or expected != allowed or answer not in expected.values():
+        return None
+    result = []
+    for section in ("period", "effective", "geography", "coverage"):
+        condition = expected[section]
+        if condition in answer:
+            continue
+        # The shorter "start" and "overview" answers are contained in a
+        # complete section; retain the rest without repeating that sentence.
+        if answer in condition:
+            condition = " ".join(condition.replace(answer, "", 1).split())
+        if condition:
+            result.append(condition)
+    return tuple(result)

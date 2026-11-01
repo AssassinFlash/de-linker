@@ -387,8 +387,37 @@ def fill(
 
     seen = emitted if emitted is not None else set()
     used: list[Qualification] = []
+    translated_policy_chunks: set[str] = set()
+
+    if locale.startswith("de"):
+        from linker_genie.warranty_named_de import qualified_named_additions
+
+        candidates = list(reference_chunks or []) + [
+            chunk
+            for fact_id in PLACEHOLDER.findall(text)
+            if (chunk := chunk_of(fact_id)) is not None
+        ]
+        for chunk in dict.fromkeys(candidates):
+            if chunk not in facts.warranty_translated_de:
+                continue
+            original = facts.facts.get(f"{chunk}.text")
+            notes = facts.qualifications.get(chunk, ())
+            allowed = facts.warranty_answers.get(chunk, {})
+            if original is None:
+                continue
+            additions = qualified_named_additions(
+                chunk, original.value, notes, allowed, text
+            )
+            if additions is None:
+                continue
+            translated_policy_chunks.add(chunk)
+            if additions:
+                text += "\n\nWeitere Garantiebedingungen (aus dem englischen Original übersetzt):\n"
+                text += "\n\n".join(additions)
 
     for chunk in reference_chunks or []:
+        if chunk in translated_policy_chunks:
+            continue
         notes = facts.qualifications.get(chunk, ())
         if notes and all(_quote(note) is not None for note in notes):
             for note in notes:
@@ -409,7 +438,7 @@ def fill(
         notes = facts.qualifications.get(chunk, ()) if chunk is not None else ()
         if notes and any(_quote(note) is None for note in notes):
             return "nicht verfügbar" if locale.startswith("de") else "unavailable"
-        for note in notes:
+        for note in () if chunk in translated_policy_chunks else notes:
             key = (note.lang, note.quote)
             if key not in seen:
                 seen.add(key)
@@ -445,9 +474,22 @@ def fill(
 
     filled = _PLACEHOLDER_AND_WORD.sub(replace, text)
     for note in used:
-        rendered = _quote(note)
+        translated = None
+        if locale.startswith("de"):
+            from linker_genie.compatibility_physical import (
+                translate_compatibility_condition,
+            )
+
+            translated = translate_compatibility_condition(
+                note.quote, note.chunk_id, note.page, note.lang
+            )
+        rendered = translated if translated is not None else _quote(note)
         if rendered is not None:
-            label = _qualification_label(locale, note.lang)
+            label = (
+                "Herstellerbedingung (Übersetzung):"
+                if translated is not None
+                else _qualification_label(locale, note.lang)
+            )
             if qualified_mask is not None:
                 rendered = qualified_mask(rendered)
             filled += f"\n\n{label} {rendered}"

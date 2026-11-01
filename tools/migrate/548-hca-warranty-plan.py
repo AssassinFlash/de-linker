@@ -20,7 +20,13 @@ import sys
 from pathlib import Path
 from typing import Any
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "local/src"))
+from linker_local.processes import (  # type: ignore[import-not-found]  # noqa: E402
+    without_research_credentials,
+)
+
 SOURCE_SHA256 = "88a8a5bd9e70bc398fe990069272526c660c1731103ff113e53f93f7fd789307"
+SNAPSHOT_SHA256 = "30b40404d4f488679820db519a5c92d309d88d3f064e16336b4df1d10a37bcd2"
 SOURCE_URL = "https://en.goodwe.com/Public/Uploads/uploadfile/files/20261014/GOODWELimitedWarrantyforEVChargerforEURev_1_220260917.pdf"
 OLD_URL = "https://de-linker.com/wp-content/uploads/2026/10/GW_Limited-Warranty_EV-Charger_Europe.pdf"
 OLD_MEDIA_ID = 6426
@@ -176,15 +182,23 @@ def main() -> None:
     parser.add_argument("--source", type=Path, required=True)
     parser.add_argument("--out", type=Path)
     parser.add_argument("--target", choices=("local", "production"))
-    parser.add_argument("--action", choices=("preview", "stage", "apply", "verify", "rollback"))
+    parser.add_argument(
+        "--action",
+        choices=("preview", "stage", "apply", "inspect", "verify", "rollback"),
+    )
     parser.add_argument("--receipt", type=Path)
+    parser.add_argument("--receipt-sha256")
     parser.add_argument("--write", action="store_true")
     args = parser.parse_args()
+    if hashlib.sha256(args.snapshot.read_bytes()).hexdigest() != SNAPSHOT_SHA256:
+        parser.error("the reviewed Woo snapshot bytes differ")
     plan = prepare(json.loads(args.snapshot.read_text(encoding="utf-8")), args.source)
     if args.out is not None:
         if args.action or args.target or args.receipt or args.write:
             parser.error("--out is only for the read-only plan")
-        args.out.write_text(json.dumps(plan, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        args.out.write_text(
+            json.dumps(plan, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+        )
         print(f"{plan['status']}: {len(plan['changes'])} reviewed fields")
         return
     if not args.action or not args.target or not args.receipt:
@@ -207,34 +221,89 @@ def main() -> None:
         if args.receipt.exists() or args.receipt.is_symlink():
             raise ValueError("receipt already exists; preserve the original")
     else:
-        if not args.receipt.is_file() or stat.S_IMODE(args.receipt.stat().st_mode) & 0o077:
+        if (
+            args.receipt.is_symlink()
+            or not args.receipt.is_file()
+            or stat.S_IMODE(args.receipt.stat().st_mode) & 0o077
+        ):
             raise ValueError("receipt must be an existing private file")
-        receipt = json.loads(args.receipt.read_text(encoding="utf-8"))
-        if receipt.get("reviewed") != reviewed or receipt.get("scope") != "hca-warranty-rev12-v1":
+        receipt_bytes = args.receipt.read_bytes()
+        if args.target == "production" and (
+            not args.receipt_sha256
+            or len(args.receipt_sha256) != 64
+            or any(c not in "0123456789abcdef" for c in args.receipt_sha256)
+            or hashlib.sha256(receipt_bytes).hexdigest() != args.receipt_sha256
+        ):
+            raise ValueError(
+                "production receipt SHA-256 must match the reviewed receipt"
+            )
+        receipt = json.loads(receipt_bytes)
+        if (
+            receipt.get("reviewed") != reviewed
+            or receipt.get("scope") != "hca-warranty-rev12-v1"
+        ):
             raise ValueError("receipt and reviewed snapshot differ")
-    request = {"action": args.action, "target": args.target, "reviewed": reviewed, "receipt": receipt}
+    request = {
+        "action": args.action,
+        "target": args.target,
+        "reviewed": reviewed,
+        "receipt": receipt,
+    }
     if args.action == "stage":
         request["pdf"] = base64.b64encode(args.source.read_bytes()).decode()
-    payload = base64.b64encode(json.dumps(request, ensure_ascii=False, separators=(",", ":")).encode()).decode()
-    source = Path(__file__).with_suffix(".php").read_text()
+    payload = base64.b64encode(
+        json.dumps(request, ensure_ascii=False, separators=(",", ":")).encode()
+    ).decode()
+    source = Path(__file__).with_name("548-hca-warranty.php").read_text()
     marker = "'548-hca-warranty-payload'"
     if source.count(marker) != 1:
         raise ValueError("PHP payload marker differs")
     program = source.replace(marker, repr(payload))
     if args.target == "local":
-        cmd = ["/opt/homebrew/opt/php@8.3/bin/php", "-c", str(Path.home() / "de-linker-local/p548/php.ini"), "/opt/homebrew/bin/wp", "--path=" + str(Path.home() / "de-linker-local/p548/wordpress"), "eval-file", "-"]
+        cmd = [
+            "/opt/homebrew/opt/php@8.3/bin/php",
+            "-c",
+            str(Path.home() / "de-linker-local/p548/php.ini"),
+            "/opt/homebrew/bin/wp",
+            "--path=" + str(Path.home() / "de-linker-local/p548/wordpress"),
+            "eval-file",
+            "-",
+        ]
     else:
-        cmd = ["ssh", "-o", "BatchMode=yes", "hostinger-de-linker", "/usr/local/bin/wp --path=/home/u388076051/domains/de-linker.com/public_html eval-file -"]
+        cmd = [
+            "ssh",
+            "-o",
+            "BatchMode=yes",
+            "hostinger-de-linker",
+            "/usr/local/bin/wp --path=/home/u388076051/domains/de-linker.com/public_html eval-file -",
+        ]
     try:
-        run = subprocess.run(cmd, input=program, capture_output=True, text=True, timeout=180, check=False)
+        run = subprocess.run(
+            cmd,
+            input=program,
+            capture_output=True,
+            text=True,
+            timeout=180,
+            check=False,
+            env=without_research_credentials(),
+        )
     except subprocess.TimeoutExpired as error:
-        raise ValueError("transport outcome unknown; keep the receipt and inspect before retry") from error
-    lines = [line.removeprefix("@@548-hca-warranty@@") for line in run.stdout.splitlines() if line.startswith("@@548-hca-warranty@@")]
+        raise ValueError(
+            "transport outcome unknown; keep the receipt and inspect before retry"
+        ) from error
+    lines = [
+        line.removeprefix("@@548-hca-warranty@@")
+        for line in run.stdout.splitlines()
+        if line.startswith("@@548-hca-warranty@@")
+    ]
     if run.returncode or len(lines) != 1:
         raise ValueError((run.stderr.strip() or "no unique migration response")[:1000])
     result = json.loads(lines[0])
     if args.action == "preview":
-        if result.get("reviewed") != reviewed or result.get("scope") != "hca-warranty-rev12-v1":
+        if (
+            result.get("reviewed") != reviewed
+            or result.get("scope") != "hca-warranty-rev12-v1"
+        ):
             raise ValueError("invalid preview receipt")
         fd = os.open(args.receipt, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
         with os.fdopen(fd, "w", encoding="utf-8") as out:
@@ -242,7 +311,23 @@ def main() -> None:
             out.write("\n")
             out.flush()
             os.fsync(out.fileno())
-    print(json.dumps({k: result.get(k) for k in ("action", "state", "attachment_id", "url", "states") if k in result}, ensure_ascii=False))
+    print(
+        json.dumps(
+            {
+                k: result.get(k)
+                for k in (
+                    "action",
+                    "state",
+                    "attachment_id",
+                    "url",
+                    "states",
+                    "title_change",
+                )
+                if k in result
+            },
+            ensure_ascii=False,
+        )
+    )
 
 
 if __name__ == "__main__":

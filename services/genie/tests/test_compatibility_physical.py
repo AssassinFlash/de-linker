@@ -22,7 +22,13 @@ from index.corpus import DocumentRow
 from index.physical_evidence import attach_physical_evidence
 from index.publication import compile_publication
 from index.table_compiler import external_axis_anchors
-from linker_genie.compatibility_physical import physical_key, valid_physical_evidence
+from linker_genie.compatibility_physical import (
+    inverter_condition,
+    iot_condition,
+    physical_key,
+    translate_compatibility_condition,
+    valid_physical_evidence,
+)
 from linker_genie.facts import knowledge_qualifications
 from linker_genie.hydrate import cited_documents, hydrate
 from linker_genie.knowledge import KnowledgeSearch, model_view, record
@@ -222,6 +228,85 @@ def test_iot_requires_both_untampered_original_pages() -> None:
     )
 
 
+def test_german_conditions_require_the_complete_original_and_its_source() -> None:
+    raw, original, evidence = fixture()
+    chunks = attach_physical_evidence(original, evidence)
+    compiled, scopes = compile_fixture(raw, chunks)
+    translations: dict[int, str] = {}
+    for source in evidence:
+        if source.get("kind") != "iot_matrix":
+            continue
+        page = source["source_page"]
+        assert type(page) is int
+        cid = str(source["target_chunk_id"])
+        text = str(source["source_text"])
+        assert valid_physical_evidence(source, str(source["source_sha256"]), cid, text)
+        quote = iot_condition(str(source["row_text"]), page)
+        translated = translate_compatibility_condition(quote, cid, page, "en")
+        assert translated is not None
+        translations[page] = translated
+        assert translate_compatibility_condition(quote + " ", cid, page, "en") is None
+        assert translate_compatibility_condition(quote, cid + "x", page, "en") is None
+        assert translate_compatibility_condition(quote, cid, page + 1, "en") is None
+        assert translate_compatibility_condition(quote, cid, page, "de") is None
+
+    assert "Rückspeiseschutz im Einzelbetrieb" in translations[7]
+    assert all(
+        model in translations[7] for model in ("ESA261", "SEC3000C", "GM330", "≥03")
+    )
+    assert all(
+        version in translations[9]
+        for version in (
+            "410-02134-01(66)",
+            "410-04077-02(29)",
+            "410-04078-01(06)",
+            "410-02193-01(14)",
+            "410-02174-01(14)",
+        )
+    )
+    assert "zwei Netzwerkanschlüssen" in translations[9]
+    assert "einem Netzwerkanschluss" in translations[9]
+    assert "Weltweit: Kein Parallelbetrieb mit ET50 und ESA261" in translations[9]
+
+    matrix = next(
+        c
+        for c in compiled
+        if c.doc_sha256.startswith("8951dd1d")
+        and scopes.get(c.id, {}).get("basis") == "compatibility_inverter"
+        and inverter_condition(scopes[c.id]["compatibility_inverter"]["base_text"])
+    )
+    relation = scopes[matrix.id]["compatibility_inverter"]
+    quote = inverter_condition(relation["base_text"])
+    matrix_source = next(c for c in chunks if c.id == "8951dd1d8a64-p6-b3076f55")
+    assert " ".join(matrix_source.text.splitlines()).replace("*3. ", "*3: ", 1) == quote
+    translated = translate_compatibility_condition(
+        quote, matrix_source.id, matrix_source.page, "en"
+    )
+    assert translated is not None
+    assert all(
+        value in translated
+        for value in (
+            "GW61.4-BAT-AC-G10",
+            "ET (80-100kW)",
+            "× MIN",
+            "100A*",
+            "ET50",
+            "100A",
+        )
+    )
+    assert "nicht die volle Ausgangsleistung" in translated
+    assert (
+        translate_compatibility_condition(
+            quote.replace("100A", "80A"), matrix_source.id, 6, "en"
+        )
+        is None
+    )
+    assert (
+        translate_compatibility_condition(quote, matrix_source.id + "x", 6, "en")
+        is None
+    )
+
+
 def test_out_of_range_model_is_not_proven_even_if_woo_links_it() -> None:
     raw, original, evidence = fixture()
     for doc in raw["documents"]:
@@ -376,6 +461,45 @@ def test_sqlite_consumer_cites_both_sources_and_fences_withdrawals(
         assert isinstance(german_answer.blocks[0], TextBlock)
         assert "nicht die volle Ausgangsleistung" in german_answer.blocks[0].text
 
+        english_matrix, english_matrix_facts = search(
+            snap,
+            1946,
+            "GW80K-ET-G10 GW61.4-BAT-AC-G10 cannot achieve full power output",
+            "de",
+        )
+        english_matrix_hit = next(
+            h
+            for h in english_matrix["hits"]
+            if h["chunk_id"].startswith("8951dd1d")
+            and "inverter-series" in h["chunk_id"]
+            and "GW61.4-BAT-AC-G10" in h["text"]
+        )
+        translated_answer = hydrate(
+            TurnOutput(
+                language="de",
+                blocks=[
+                    TextBlock(text="Kompatibel", refs=[english_matrix_hit["chunk_id"]])
+                ],
+            ),
+            english_matrix_facts,
+        )
+        assert isinstance(translated_answer.blocks[0], TextBlock)
+        assert "Herstellerbedingung (Übersetzung):" in translated_answer.blocks[0].text
+        assert "nicht die volle Ausgangsleistung" in translated_answer.blocks[0].text
+        assert "GW61.4-BAT-AC-G10" in translated_answer.blocks[0].text
+        assert "ET (80-100kW)" in translated_answer.blocks[0].text
+        assert "× MIN" in translated_answer.blocks[0].text
+        assert "100A*" in translated_answer.blocks[0].text
+        assert "ET50" in translated_answer.blocks[0].text
+        assert "cannot achieve" not in translated_answer.blocks[0].text
+        matrix_links = [
+            b.url for b in translated_answer.blocks if isinstance(b, DocumentBlock)
+        ]
+        assert english_matrix_hit["doc_url"] + "#page=6" in matrix_links
+        assert english_matrix_hit["supporting_documents"][0]["doc_url"] in " ".join(
+            str(url) for url in matrix_links
+        )
+
         for prefix, pid in (("4f717804", 1946), ("8951dd1d", 1954)):
             changed = deepcopy(raw)
             next(
@@ -460,7 +584,10 @@ def test_sqlite_consumer_cites_both_sources_and_fences_withdrawals(
                 target["doc_url"] + "#page=7",
                 target["doc_url"] + "#page=9",
             }
-            assert {str(b.label).rsplit("\u00a0", 1)[-1] for b in citations} == {"7", "9"}
+            assert {str(b.label).rsplit("\u00a0", 1)[-1] for b in citations} == {
+                "7",
+                "9",
+            }
 
             revoked = deepcopy(raw)
             next(
@@ -489,11 +616,18 @@ def test_sqlite_consumer_cites_both_sources_and_fences_withdrawals(
             german_facts,
         )
         assert isinstance(german_answer.blocks[0], TextBlock)
+        assert "Herstellerbedingung (Übersetzung):" in german_answer.blocks[0].text
+        assert "Rückspeiseschutz im Einzelbetrieb" in german_answer.blocks[0].text
+        assert "SEC3000C benötigt Version ≥03" in german_answer.blocks[0].text
         assert (
-            "Herstellerbedingung (englisches Original):" in german_answer.blocks[0].text
+            "Weltweit: Kein Parallelbetrieb mit ET50 und ESA261"
+            in german_answer.blocks[0].text
         )
-        assert "single-unit anti-reflux" in german_answer.blocks[0].text
-        assert "Can't parellel with ET50 and ESA261" in german_answer.blocks[0].text
+        assert "410-02134-01(66)" in german_answer.blocks[0].text
+        assert "410-04077-02(29)" in german_answer.blocks[0].text
+        assert "410-04078-01(06)" in german_answer.blocks[0].text
+        assert "410-02193-01(14)" in german_answer.blocks[0].text
+        assert "410-02174-01(14)" in german_answer.blocks[0].text
         assert {
             b.url for b in german_answer.blocks if isinstance(b, DocumentBlock)
         } == {german_iot["doc_url"] + "#page=7", german_iot["doc_url"] + "#page=9"}
