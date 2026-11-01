@@ -2872,7 +2872,9 @@ def test_multi_system_pv_strings_scope_currents_bindings_and_saved_reports(
         from linker_engine.planning.installation_takeoff import _string_links
 
         review = json_object(
-            _string_links(invalid, InstallationInputs.read(invalid["installation"]), [])
+            _string_links(
+                invalid, InstallationInputs.read(invalid["installation"]), [], set()
+            )
         )
         assert review["rows"][0]["instance_status"] == expected
         assert review["rows"][0]["status"] == "inverter_endpoint_unresolved"

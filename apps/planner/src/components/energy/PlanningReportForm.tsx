@@ -127,10 +127,9 @@ export function PlanningReportForm({
 								disabled={disabled}
 								onChange={(e) => setInstallation(e.currentTarget.checked)}
 							/>
-							{__(
-								"Include installation routes from the saved project",
-								"linker-tools",
-							)}
+							{locale.startsWith("de")
+								? "Installationsangaben aus dem gespeicherten Projekt aufnehmen"
+								: "Include installation details from the saved project"}
 						</span>
 					</label>
 				)}

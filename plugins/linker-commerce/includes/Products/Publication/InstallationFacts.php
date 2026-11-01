@@ -77,7 +77,7 @@ final class InstallationFacts {
 		if ( is_object( $specification ) ) {
 			$specification = get_object_vars( $specification );
 		}
-		if ( ! is_array( $specification ) || ! self::specification( $specification ) ) {
+		if ( ! is_array( $specification ) || ! self::specification( $specification, $basis ) ) {
 			throw new \RuntimeException( __( 'Installation specifications must retain their typed terminal and requirement semantics.', 'linker-commerce' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Native notices escape plain errors.
 		}
 
@@ -156,10 +156,12 @@ final class InstallationFacts {
 	 * Validate a bounded, typed specification envelope.
 	 *
 	 * @param  array<string,mixed> $value Raw specification.
+	 * @param  string              $basis Source of the installation fact.
 	 */
-	private static function specification( array $value ): bool {
+	private static function specification( array $value, string $basis ): bool {
 		$allowed = array(
 			'terminal_domain',
+			'terminal_use',
 			'terminals',
 			'recommended_conductor_mm2',
 			'cable_od_mm',
@@ -186,6 +188,12 @@ final class InstallationFacts {
 			if ( count( $normalized ) !== count( array_unique( $normalized ) ) ) {
 				return false;
 			}
+		}
+		if ( array_key_exists( 'terminal_use', $value ) && (
+			'manufacturer_terminal_map' !== $basis || 'communication' !== $domain || empty( $value['terminals'] ) ||
+			! in_array( $value['terminal_use'], array( 'external_communication', 'internal_communication' ), true )
+		) ) {
+			return false;
 		}
 		foreach ( array( 'recommended_conductor_mm2', 'cable_od_mm' ) as $interval ) {
 			if ( array_key_exists( $interval, $value ) && ! self::interval( $value[ $interval ] ) ) {

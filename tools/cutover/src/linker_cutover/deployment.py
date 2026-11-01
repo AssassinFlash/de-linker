@@ -5,6 +5,7 @@ from __future__ import annotations
 import fcntl
 import hashlib
 import json
+import os
 import shutil
 from collections.abc import Iterator
 from contextlib import contextmanager
@@ -23,6 +24,7 @@ class Checkpoint:
     source: str
     target: list[str | None]
     live: dict[str, str]
+    snapshot_pending: dict[str, str] = field(default_factory=dict)
     snapshot: dict[str, str | int] = field(default_factory=dict)
     prepared: dict[str, str] = field(default_factory=dict)
     uploaded: dict[str, str] = field(default_factory=dict)
@@ -83,9 +85,17 @@ def save(staging: Path, checkpoint: Checkpoint) -> None:
     staging.mkdir(parents=True, exist_ok=True)
     temporary = path(staging).with_suffix(".json.next")
     try:
-        temporary.write_text(json.dumps(asdict(checkpoint), sort_keys=True))
-        temporary.chmod(0o600)
+        with temporary.open("w") as stream:
+            os.fchmod(stream.fileno(), 0o600)
+            json.dump(asdict(checkpoint), stream, sort_keys=True)
+            stream.flush()
+            os.fsync(stream.fileno())
         temporary.replace(path(staging))
+        directory = os.open(staging, os.O_RDONLY)
+        try:
+            os.fsync(directory)
+        finally:
+            os.close(directory)
     finally:
         temporary.unlink(missing_ok=True)
 
@@ -99,8 +109,25 @@ def load(staging: Path, target: Target, source: str) -> Checkpoint:
             raise CutoverError("deployment target mismatch; checkpoint retained")
         if checkpoint.source != source:
             raise CutoverError("deployment source mismatch; checkpoint retained")
+        if checkpoint.snapshot_pending:
+            pending = checkpoint.snapshot_pending
+            if (
+                set(pending) != {"name", "home"}
+                or not isinstance(pending["name"], str)
+                or snapshot.NAME.fullmatch(pending["name"]) is None
+                or not isinstance(pending["home"], str)
+                or not Path(pending["home"]).is_absolute()
+            ):
+                raise CutoverError("invalid pending snapshot; checkpoint retained")
         if checkpoint.snapshot:
             saved = Path(str(checkpoint.snapshot["path"]))
+            if checkpoint.snapshot_pending and (
+                checkpoint.snapshot.get("name") != checkpoint.snapshot_pending["name"]
+                or saved
+                != snapshot.directory(Path(checkpoint.snapshot_pending["home"]))
+                / checkpoint.snapshot_pending["name"]
+            ):
+                raise CutoverError("deployment snapshot reservation differs")
             if (
                 not saved.is_file()
                 or saved.stat().st_size != checkpoint.snapshot["size"]
@@ -117,6 +144,12 @@ def record_snapshot(
     staging: Path, checkpoint: Checkpoint, taken: snapshot.Snapshot
 ) -> None:
     """Keep the exact verified recovery point, rather than taking another on retry."""
+    pending = checkpoint.snapshot_pending
+    if pending and (
+        taken.name != pending["name"]
+        or taken.path != snapshot.directory(Path(pending["home"])) / pending["name"]
+    ):
+        raise CutoverError("deployment snapshot does not match its reservation")
     checkpoint.snapshot = {**asdict(taken), "path": str(taken.path)}
     save(staging, checkpoint)
 
@@ -133,4 +166,11 @@ def cleanup(staging: Path) -> None:
     stamp = staging / ".stage"
     if stamp.is_dir() and not any(stamp.iterdir()):
         stamp.rmdir()
-    path(staging).unlink()
+    if checkpoint.snapshot_pending:
+        snapshot.finish_checkpoint(
+            Path(checkpoint.snapshot_pending["home"]),
+            path(staging),
+            checkpoint.deploy_id,
+        )
+    else:
+        path(staging).unlink()

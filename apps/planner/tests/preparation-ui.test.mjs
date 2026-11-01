@@ -782,6 +782,99 @@ async function mount(t, component, initialUrl) {
 	return { dom, root, queryClient };
 }
 
+test("a saved terminal-only circuit reaches the report entry without a cable run", async (t) => {
+	const native = fixture.geometric_pv;
+	const point = (id) => ({
+		id,
+		name: id,
+		position: { east_m: 0, north_m: 0, height_m: null },
+	});
+	const installation = {
+		schema_version: 1,
+		geometry_sha256: null,
+		instances: [
+			{
+				id: "device",
+				name: "Device",
+				product_id: null,
+				product_revision: null,
+				source_id: "survey",
+				ports: [point("p"), point("q")],
+			},
+		],
+		circuits: [
+			{
+				id: "network",
+				name: "Network",
+				kind: "control",
+				communication_use: "external_communication",
+				start: { instance_id: "device", port_id: "p" },
+				end: { instance_id: "device", port_id: "q" },
+			},
+		],
+		routes: [],
+		cable_runs: [],
+	};
+	const project = { ...native.project, inputs: { installation } };
+	const reportSession = {
+		...session,
+		runtime: { ...session.runtime, models: { report: "planning_report_v1" } },
+	};
+	let submitted;
+	const client = {
+		isCurrentScope: (value) => value === scope,
+		async query(path) {
+			if (path === "projects/runs") return { items: [], next: null };
+			if (path === "products/current")
+				return { schema_version: 1, provider: "woocommerce", products: [] };
+			if (path === "runs/read") return native.report_run;
+			throw new Error("unexpected report entry query " + path);
+		},
+		async send(path, body) {
+			assert.equal(path, "runs/report");
+			submitted = JSON.parse(body);
+			return native.report_run;
+		},
+	};
+	await mount(
+		t,
+		React.createElement(EnergyWorkspace, {
+			draft: beginDraft(project),
+			session: reportSession,
+			client,
+			locale: "en-GB",
+			active: true,
+			blocked: false,
+			recoveryScopes: [scope],
+			onValidity() {},
+			recheck() {},
+			flush: async () => true,
+			openProfiles() {},
+			openDesign() {},
+			edit() {
+				return false;
+			},
+		}),
+		`?project=${project.id}&energy_view=reports`,
+	);
+	const label = [...document.querySelectorAll("label")].find((element) =>
+		element.textContent.includes(
+			"Include installation details from the saved project",
+		),
+	);
+	assert.ok(label, "terminal-only circuit exposes the installation option");
+	const include = label.querySelector('input[type="checkbox"]');
+	await until(() => !include.disabled);
+	await act(async () => include.click());
+	const generate = [...document.querySelectorAll("button")].find(
+		(button) => button.textContent === "Generate planning report",
+	);
+	await until(() => !generate.disabled);
+	await act(async () => generate.click());
+	await until(() => submitted !== undefined);
+	assert.equal(submitted.options.include_installation, true);
+});
+
 async function sourceRig(t, kind, options = {}) {
 	const run = structuredClone(fixture[`${kind}_run`]);
 	const project = structuredClone(fixture[`${kind}_project`]);

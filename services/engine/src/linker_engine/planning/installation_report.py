@@ -8,6 +8,7 @@ from linker_engine.models import ReportRow, ReportSection, ReportTable
 
 from .canonical import Object
 from .installation_electrical_report import electrical_sections
+from .installation_terminal_report import terminal_section
 from .project_materials import conductor_specification, material_quantity
 from .report_copy import text
 
@@ -38,6 +39,18 @@ def _closure_label(closure: Object, locale: str) -> str:
     )
 
 
+def _device_product(device: Object, locale: str) -> str:
+    if device["product_id"] is None:
+        return text("installation_site_point", locale)
+    brand, model = device.get("brand"), device.get("model")
+    if isinstance(brand, str) and isinstance(model, str):
+        return f"{brand} {model}"
+    status = device.get("product_status")
+    if status in ("product_unavailable", "product_revision_changed"):
+        return text(f"installation_{status}", locale)
+    return text("installation_product_details_unavailable", locale)
+
+
 def installation_sections(source: Object, locale: str) -> list[ReportSection]:
     plan = source.get("installation")
     if not isinstance(plan, dict):
@@ -59,9 +72,7 @@ def installation_sections(source: Object, locale: str) -> list[ReportSection]:
                 rows=[
                     [
                         cast(str, device["name"]),
-                        f"{device['brand']} {device['model']}"
-                        if device["product_id"] is not None
-                        else text("installation_site_point", locale),
+                        _device_product(device, locale),
                         "; ".join(
                             cast(str, port["name"])
                             for port in cast(list[Object], device["ports"])
@@ -71,43 +82,49 @@ def installation_sections(source: Object, locale: str) -> list[ReportSection]:
                 ],
             ),
         ),
-        ReportSection(
-            id="installation-routing",
-            title=text("installation", locale),
-            paragraphs=[text("installation_scope", locale)],
-            rows=[
-                ReportRow(
-                    label=f"{text('source', locale)} · {s['id']}",
-                    value=cast(str, s["note"]),
-                )
-                for s in cast(list[Object], plan["sources"])
-            ],
-            table=ReportTable(
-                columns=[
-                    text("product", locale),
-                    text("installation_circuit", locale),
-                    text("quantity", locale),
-                    text("installation_length", locale),
-                    text("installation_conductor", locale),
-                ],
-                column_weights=[1.2, 1.2, 0.7, 1.7, 1.2],
-                rows=[
-                    [
-                        cast(str, cable["name"]),
-                        f"{cable['circuit_name']} / {cable['route_name']}",
-                        material_quantity(cable, locale),
-                        "; ".join(
-                            text(f"installation_{reason}", locale)
-                            for reason in cast(list[str], cable["reasons"])
-                        )
-                        or f"{material_quantity({'quantity': cable['route_length_m'], 'unit': 'm'}, locale)} + {material_quantity({'quantity': cable['extra_length_m'], 'unit': 'm'}, locale)} · {cable['extra_length_note']}",
-                        conductor_specification(cable, locale),
-                    ]
-                    for cable in cables
-                ],
-            ),
-        ),
     ]
+    source_rows = [
+        ReportRow(
+            label=f"{text('source', locale)} · {s['id']}",
+            value=cast(str, s["note"]),
+        )
+        for s in cast(list[Object], plan["sources"])
+    ]
+    if cables or "terminal_assessment" not in plan:
+        sections.append(
+            ReportSection(
+                id="installation-routing",
+                title=text("installation", locale),
+                paragraphs=[text("installation_scope", locale)],
+                rows=source_rows,
+                table=ReportTable(
+                    columns=[
+                        text("product", locale),
+                        text("installation_circuit", locale),
+                        text("quantity", locale),
+                        text("installation_length", locale),
+                        text("installation_conductor", locale),
+                    ],
+                    column_weights=[1.2, 1.2, 0.7, 1.7, 1.2],
+                    rows=[
+                        [
+                            cast(str, cable["name"]),
+                            f"{cable['circuit_name']} / {cable['route_name']}",
+                            material_quantity(cable, locale),
+                            "; ".join(
+                                text(f"installation_{reason}", locale)
+                                for reason in cast(list[str], cable["reasons"])
+                            )
+                            or f"{material_quantity({'quantity': cable['route_length_m'], 'unit': 'm'}, locale)} + {material_quantity({'quantity': cable['extra_length_m'], 'unit': 'm'}, locale)} · {cable['extra_length_note']}",
+                            conductor_specification(cable, locale),
+                        ]
+                        for cable in cables
+                    ],
+                ),
+            )
+        )
+    else:
+        sections[0].rows.extend(source_rows)
     reconciliation = plan.get("pv_string_reconciliation")
     if isinstance(reconciliation, dict):
         reviewed = cast(list[Object], reconciliation["rows"])
@@ -215,4 +232,7 @@ def installation_sections(source: Object, locale: str) -> list[ReportSection]:
     electrical = plan.get("electrical")
     if isinstance(electrical, dict):
         sections.extend(electrical_sections(electrical, locale))
+    terminals = plan.get("terminal_assessment")
+    if isinstance(terminals, dict):
+        sections.append(terminal_section(terminals, devices, locale))
     return sections

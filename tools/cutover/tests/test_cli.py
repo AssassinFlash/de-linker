@@ -17,7 +17,7 @@ from types import SimpleNamespace
 import pytest
 from native_planner import planner_wp
 
-from linker_cutover import atomic, backup, cli, plan, steps
+from linker_cutover import atomic, backup, backup_retention, cli, plan, snapshot, steps
 from linker_cutover.target import CutoverError, Target
 
 
@@ -294,6 +294,27 @@ def test_a_restore_preview_refuses_a_name_that_is_not_a_snapshot(
 ) -> None:
     assert cli.main(["restore-snapshot", "../db.sql.gz"]) == 1
     assert "not a snapshot name" in capsys.readouterr().err
+
+
+def test_snapshot_baseline_preview_then_explicit_write(
+    data_home: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    site = _target(data_home)
+    monkeypatch.setattr(cli, "_target", lambda _: site)
+    folder = snapshot.directory(data_home)
+    folder.mkdir()
+    name = "db-20261018T020000Z.sql.gz"
+    (folder / name).write_bytes(gzip.compress(b"select 1;"))
+
+    assert cli.main(["snapshot-baseline", name]) == 0
+    assert "would protect" in capsys.readouterr().out
+    assert not (folder / snapshot.STATE).exists()
+    assert cli.main(["snapshot-baseline", name, "--write"]) == 0
+    assert "protected" in capsys.readouterr().out
+    state = json.loads((folder / snapshot.STATE).read_text())
+    assert (
+        state["baselines"][json.dumps(backup_retention.identity(site))]["name"] == name
+    )
 
 
 @pytest.mark.parametrize("operation", ["deploy", "drill"])

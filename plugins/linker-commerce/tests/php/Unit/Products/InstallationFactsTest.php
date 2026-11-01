@@ -57,6 +57,23 @@ final class InstallationFactsTest extends TestCase {
 		$this->assertSame( array( 'PV1', 'PV2' ), $encoded['terminals'] );
 	}
 
+	/** Only an identified communication terminal can carry a documented use. */
+	public function test_communication_use_requires_a_manufacturer_terminal(): void {
+		$row                  = $this->row();
+		$row['basis']         = 'manufacturer_terminal_map';
+		$row['specification'] = array(
+			'terminal_domain' => 'communication',
+			'terminals'       => array( 'COM1' ),
+			'terminal_use'    => 'external_communication',
+		);
+		$fact                 = InstallationFacts::bind( 41, $row, $this->manifest() );
+		$this->assertSame( 'external_communication', $fact['specification']->terminal_use );
+
+		$row['basis'] = 'manufacturer_recommended_conductor';
+		$this->expectException( \RuntimeException::class );
+		InstallationFacts::bind( 41, $row, $this->manifest() );
+	}
+
 	/** An empty specification remains an object in the projected JSON. */
 	public function test_empty_specification_encodes_as_object(): void {
 		$row                  = $this->row();

@@ -113,6 +113,12 @@ def _parser() -> argparse.ArgumentParser:
         help="database snapshot to this Mac (deploy takes one itself)",
     )
     sub.add_parser("snapshots", parents=[common], help="list the snapshots on this Mac")
+    snapshot_baseline = sub.add_parser(
+        "snapshot-baseline",
+        parents=[common],
+        help="protect one verified snapshot as this source's recovery baseline",
+    )
+    snapshot_baseline.add_argument("name", help="db-YYYYMMDDTHHMMSSZ.sql.gz")
     restoring = sub.add_parser(
         "restore-snapshot", parents=[common], help="put a database snapshot back"
     )
@@ -248,6 +254,14 @@ def _run_steps(
         if args.command == "snapshots":
             for name in snapshot_module.available(DATA_HOME):
                 print(name)
+            return 0
+        if args.command == "snapshot-baseline":
+            path = snapshot_module.existing(DATA_HOME, args.name)
+            if not args.write:
+                print(f"snapshot-baseline: would protect {path} for {target.label}")
+                return 0
+            snapshot_module.set_baseline(target, DATA_HOME, args.name)
+            print(f"snapshot-baseline: protected {path} for {target.label}")
             return 0
         if args.command == "restore-snapshot":
             path = snapshot_module.existing(DATA_HOME, args.name)

@@ -10,6 +10,7 @@ import {
 import type { PlantEnergyDraft } from "../../domain/plantEnergy.ts";
 import { PlantEnergyForm } from "./PlantEnergyForm.tsx";
 import { readInstallation } from "../../domain/installation.ts";
+import { hasReportableInstallation } from "../../domain/installationTerminals.ts";
 import { readObject } from "../../data/readProtocol.ts";
 import {
 	DC_MODEL,
@@ -1796,10 +1797,9 @@ export function EnergyWorkspace({
 					runs={runs.page.data?.items ?? []}
 					locale={locale}
 					hasCandidate={Boolean(draft.baseline.inputs.equipment_candidate)}
-					hasInstallation={
-						readInstallation(draft.baseline.inputs.installation).cable_runs
-							.length > 0
-					}
+					hasInstallation={hasReportableInstallation(
+						readInstallation(draft.baseline.inputs.installation),
+					)}
 					disabled={
 						dirty ||
 						!!draft.pending ||

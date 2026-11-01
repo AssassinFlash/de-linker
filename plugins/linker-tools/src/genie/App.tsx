@@ -74,6 +74,7 @@ import { GenieCard } from './components/GenieCard';
 import { HelperFooter } from './components/HelperFooter';
 import { Reply } from './components/Reply';
 import { Transcript } from './components/Transcript';
+import { ActionView } from './components/ActionView';
 import { PlanningSourcesCard } from './components/PlanningSourcesCard';
 import { TurnProgress } from './components/TurnProgress';
 import {
@@ -2390,33 +2391,58 @@ export function App( { config }: { config: GenieConfig } ) {
 											) : null }
 											{ index === turnAt.current &&
 											message.role === 'assistant'
-												? turn?.blocks
-														.filter(
-															( block ) =>
+												? turn?.blocks.map(
+														(
+															block,
+															sourceIndex
+														) => {
+															if (
 																block.type ===
 																'planning_sources'
-														)
-														.map(
-															(
-																block,
-																sourceIndex
-															) => (
-																<PlanningSourcesCard
-																	key={
-																		sourceIndex
-																	}
-																	block={
-																		block
-																	}
-																	configuratorLinks={
-																		config.configuratorLinks
-																	}
-																	currentPage={
-																		page
-																	}
-																/>
-															)
-														)
+															) {
+																return (
+																	<PlanningSourcesCard
+																		key={
+																			sourceIndex
+																		}
+																		block={
+																			block
+																		}
+																		configuratorLinks={
+																			config.configuratorLinks
+																		}
+																		currentPage={
+																			page
+																		}
+																	/>
+																);
+															}
+															if (
+																block.type ===
+																	'action' &&
+																block.name ===
+																	'open_configurator'
+															) {
+																return (
+																	<ActionView
+																		key={
+																			sourceIndex
+																		}
+																		block={
+																			block
+																		}
+																		accountUrl={
+																			config.accountUrl
+																		}
+																		configuratorLinks={
+																			config.configuratorLinks
+																		}
+																	/>
+																);
+															}
+															return null;
+														}
+													)
 												: null }
 											{ contacts
 												.filter(
@@ -2493,6 +2519,11 @@ export function App( { config }: { config: GenieConfig } ) {
 										( block ) =>
 											'text' !== block.type &&
 											'planning_sources' !== block.type &&
+											! (
+												block.type === 'action' &&
+												block.name ===
+													'open_configurator'
+											) &&
 											'contact' !== block.type
 									)
 									.map( ( block, index ) => (

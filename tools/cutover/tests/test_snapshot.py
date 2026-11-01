@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import gzip
+import json
 import os
 import subprocess
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import IO
 
@@ -77,7 +78,41 @@ def test_a_snapshot_is_written_here_and_verified(
     # The retired index is left out; nothing is written on the host.
     assert '--ignore-table="$name.$prefix"genie_chunks' in scripts[0]
     assert "> " not in scripts[0].split("mysqldump", 1)[1].split("| gzip", 1)[0]
-    assert list((tmp_path / "snapshots").iterdir()) == [taken.path]
+    assert snapshot.available(tmp_path) == [taken.name]
+    assert not list((tmp_path / "snapshots").glob("*.partial"))
+
+
+def test_reservation_refuses_a_preexisting_unowned_file(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    scripts = _dump(monkeypatch, gzip.compress(b"new dump"))
+    site = _site(tmp_path / "site")
+    checkpoint = tmp_path / "custom-stage" / ".deploy.json"
+    checkpoint.parent.mkdir()
+    name = snapshot.name_at(AT)
+    checkpoint.write_text(
+        json.dumps(
+            {
+                "deploy_id": "fixture",
+                "target": [site.label, site.root, site.base_url, site.rsync_remote],
+                "snapshot_pending": {"name": name, "home": str(tmp_path.resolve())},
+            }
+        )
+    )
+    folder = snapshot.directory(tmp_path)
+    folder.mkdir()
+    original = gzip.compress(b"someone else's file")
+    (folder / name).write_bytes(original)
+
+    with pytest.raises(CutoverError, match="already in use"):
+        snapshot.take(
+            site,
+            tmp_path,
+            reservation=snapshot.Reservation(name, checkpoint, "fixture"),
+        )
+
+    assert (folder / name).read_bytes() == original
+    assert not scripts
 
 
 def test_a_dump_that_does_not_read_to_the_end_is_not_a_snapshot(
@@ -89,7 +124,25 @@ def test_a_dump_that_does_not_read_to_the_end_is_not_a_snapshot(
     with pytest.raises(CutoverError, match="not a readable gzip"):
         snapshot.take(_site(tmp_path / "site"), tmp_path, now=AT)
 
-    assert list((tmp_path / "snapshots").iterdir()) == []
+    assert snapshot.available(tmp_path) == []
+    assert not list((tmp_path / "snapshots").glob("*.partial"))
+
+
+def test_new_snapshot_changed_during_hash_is_not_accepted(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _dump(monkeypatch, gzip.compress(b"select 1;\n"))
+    original = backup.sha256
+
+    def changed(path: Path) -> str:
+        digest = original(path)
+        path.write_bytes(gzip.compress(b"different contents"))
+        return digest
+
+    monkeypatch.setattr(backup, "sha256", changed)
+    with pytest.raises(CutoverError, match="changed during verification"):
+        snapshot.take(_site(tmp_path / "site"), tmp_path, now=AT)
+    assert not (snapshot.directory(tmp_path) / snapshot.STATE).exists()
 
 
 def test_a_failed_transport_leaves_no_partial_file(
@@ -103,50 +156,84 @@ def test_a_failed_transport_leaves_no_partial_file(
     with pytest.raises(CutoverError, match="access denied"):
         snapshot.take(_site(tmp_path / "site"), tmp_path, now=AT)
 
-    assert list((tmp_path / "snapshots").iterdir()) == []
+    assert snapshot.available(tmp_path) == []
+    assert not list((tmp_path / "snapshots").glob("*.partial"))
+
+
+@pytest.mark.parametrize("pending", ["partial", "state"])
+def test_an_existing_interrupted_artifact_is_never_overwritten(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, pending: str
+) -> None:
+    scripts = _dump(monkeypatch, gzip.compress(b"select 1;\n"))
+    folder = snapshot.directory(tmp_path)
+    folder.mkdir()
+    name = (
+        f".{snapshot.name_at(AT)}.partial"
+        if pending == "partial"
+        else snapshot.STATE + ".next"
+    )
+    existing = folder / name
+    existing.write_bytes(b"unfinished recovery evidence")
+
+    with pytest.raises(CutoverError, match="unfinished snapshot"):
+        snapshot.take(_site(tmp_path / "site"), tmp_path, now=AT)
+
+    assert existing.read_bytes() == b"unfinished recovery evidence"
+    assert scripts == []
+
+
+def test_snapshot_refuses_a_linked_snapshot_directory(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    scripts = _dump(monkeypatch, gzip.compress(b"select 1;\n"))
+    other = tmp_path / "other-source"
+    other.mkdir()
+    (tmp_path / "snapshots").symlink_to(other, target_is_directory=True)
+
+    with pytest.raises(CutoverError, match="not a real directory"):
+        snapshot.take(_site(tmp_path / "site"), tmp_path, now=AT)
+
+    assert scripts == [] and list(other.iterdir()) == []
 
 
 def test_only_the_newest_keep_snapshots_stay(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    folder = tmp_path / "snapshots"
-    folder.mkdir()
-    for day in range(1, snapshot.KEEP + 3):
-        (folder / f"db-202609{day:02d}T000000Z.sql.gz").write_bytes(b"old")
-    (folder / "notes.txt").write_text("not a snapshot", encoding="utf-8")
     _dump(monkeypatch, gzip.compress(b"select 1;\n"))
-
-    taken = snapshot.take(_site(tmp_path / "site"), tmp_path, now=AT)
+    monkeypatch.setattr(snapshot, "_unused", lambda _path: True)
+    site = _site(tmp_path / "site")
+    old = [
+        snapshot.take(site, tmp_path, now=datetime(2026, 9, day, tzinfo=UTC))
+        for day in range(1, snapshot.KEEP + 3)
+    ]
+    folder = tmp_path / "snapshots"
+    (folder / "notes.txt").write_text("not a snapshot", encoding="utf-8")
+    taken = snapshot.take(site, tmp_path, now=AT)
 
     kept = snapshot.available(tmp_path)
-    assert len(kept) == snapshot.KEEP
-    assert kept[0] == taken.name
+    assert set(kept) == {taken.name, old[-1].name, old[-2].name}
     assert (folder / "notes.txt").is_file()
 
 
 @pytest.mark.parametrize("protected_count", [0, 1, 3, 4])
-def test_retention_counts_only_existing_distinct_protected_snapshots(
+def test_retention_unions_latest_three_with_explicit_protections(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, protected_count: int
 ) -> None:
-    folder = snapshot.directory(tmp_path)
-    folder.mkdir()
-    old_names = [f"db-202609{day:02d}T000000Z.sql.gz" for day in range(1, 7)]
-    for name in old_names:
-        (folder / name).write_bytes(gzip.compress(b"select 1;\n"))
+    _dump(monkeypatch, gzip.compress(b"select 1;\n"))
+    monkeypatch.setattr(snapshot, "_unused", lambda _path: True)
+    site = _site(tmp_path / "site")
+    old_names = [
+        snapshot.take(site, tmp_path, now=datetime(2026, 9, day, tzinfo=UTC)).name
+        for day in range(1, 7)
+    ]
     protected = set(old_names[:protected_count])
     # A missing name and the newly created snapshot consume no extra slot.
     protect = frozenset(protected | {snapshot.name_at(AT), "missing"})
-    _dump(monkeypatch, gzip.compress(b"select 1;\n"))
-
-    taken = snapshot.take(_site(tmp_path / "site"), tmp_path, now=AT, protect=protect)
+    taken = snapshot.take(site, tmp_path, now=AT, protect=protect)
 
     kept = set(snapshot.available(tmp_path))
     assert protected | {taken.name} <= kept
-    assert len(kept) == max(3, protected_count + 1)
-    unprotected = sorted(set(old_names) - protected, reverse=True)
-    assert kept - protected - {taken.name} == set(
-        unprotected[: max(0, 3 - protected_count - 1)]
-    )
+    assert kept == protected | {taken.name, old_names[-1], old_names[-2]}
 
 
 @pytest.mark.parametrize(
@@ -234,16 +321,20 @@ def test_pruning_never_removes_the_snapshot_just_taken(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """A clock skew can give older files newer names; the new snapshot still stays."""
-    folder = tmp_path / "snapshots"
-    folder.mkdir()
-    for day in range(1, snapshot.KEEP + 2):
-        (folder / f"db-209910{day:02d}T000000Z.sql.gz").write_bytes(b"from the future")
     _dump(monkeypatch, gzip.compress(b"select 1;\n"))
-
-    taken = snapshot.take(_site(tmp_path / "site"), tmp_path, now=AT)
+    monkeypatch.setattr(snapshot, "_unused", lambda _path: True)
+    site = _site(tmp_path / "site")
+    future = [
+        snapshot.take(site, tmp_path, now=datetime(2099, 10, day, tzinfo=UTC))
+        for day in range(1, snapshot.KEEP + 2)
+    ]
+    taken = snapshot.take(site, tmp_path, now=AT)
 
     assert taken.path.is_file()
-    assert len(snapshot.available(tmp_path)) == snapshot.KEEP
+    assert set(snapshot.available(tmp_path)) == {
+        taken.name,
+        *(item.name for item in future[-3:]),
+    }
 
 
 def test_a_restore_keeps_its_source_when_the_folder_is_full(
@@ -261,4 +352,334 @@ def test_a_restore_keeps_its_source_when_the_folder_is_full(
 
     assert lines[1] == f"restored {oldest.path}"
     assert oldest.path.is_file()
-    assert len(snapshot.available(tmp_path)) == snapshot.KEEP
+    assert len(snapshot.available(tmp_path)) == snapshot.KEEP + 1
+
+
+def test_pr833_retention_keeps_latest_three_and_oct31_daily(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The October 31 daily point cannot consume a latest-three slot."""
+    _dump(monkeypatch, gzip.compress(b"select 1;\n"))
+    monkeypatch.setattr(snapshot, "_unused", lambda _path: True)
+    site = _site(tmp_path / "site")
+    previous: list[str] = []
+    times = [
+        datetime(2026, 10, 31, 1, tzinfo=UTC),
+        datetime(2026, 10, 31, 17, 46, 4, tzinfo=UTC),
+        datetime(2026, 11, 1, 1, tzinfo=UTC),
+        datetime(2026, 11, 1, 5, 7, 58, tzinfo=UTC),
+        datetime(2026, 11, 1, 7, 21, 14, tzinfo=UTC),
+    ]
+    for at in times:
+        previous.append(
+            snapshot.take(site, tmp_path, now=at, protect=frozenset(previous)).name
+        )
+    # Legacy filenames have no source proof; even a very old one is preserved.
+    unknown = snapshot.directory(tmp_path) / "db-20261001T000000Z.sql.gz"
+    unknown.write_bytes(gzip.compress(b"unregistered source"))
+    taken = snapshot.take(
+        site, tmp_path, now=datetime(2026, 11, 1, 9, 17, 35, tzinfo=UTC)
+    )
+
+    assert set(snapshot.available(tmp_path)) == {
+        unknown.name,
+        previous[1],
+        previous[3],
+        previous[4],
+        taken.name,
+    }
+    assert not (snapshot.directory(tmp_path) / previous[0]).exists()
+    assert not (snapshot.directory(tmp_path) / previous[2]).exists()
+
+
+def test_daily_retention_covers_today_and_six_previous_utc_days(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _dump(monkeypatch, gzip.compress(b"select 1;\n"))
+    monkeypatch.setattr(snapshot, "_unused", lambda _path: True)
+    site = _site(tmp_path / "site")
+    previous: list[str] = []
+    for days_ago in range(8, 0, -1):
+        previous.append(
+            snapshot.take(
+                site,
+                tmp_path,
+                now=AT - timedelta(days=days_ago),
+                protect=frozenset(previous),
+            ).name
+        )
+    taken = snapshot.take(site, tmp_path, now=AT)
+
+    assert set(snapshot.available(tmp_path)) == {taken.name, *previous[-6:]}
+    assert not (snapshot.directory(tmp_path) / previous[0]).exists()
+    assert not (snapshot.directory(tmp_path) / previous[1]).exists()
+
+
+def test_other_source_and_active_checkpoint_are_never_retired(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _dump(monkeypatch, gzip.compress(b"select 1;\n"))
+    monkeypatch.setattr(snapshot, "_unused", lambda _path: True)
+    site = _site(tmp_path / "site-a")
+    other = _site(tmp_path / "site-b")
+    foreign = snapshot.take(other, tmp_path, now=AT - timedelta(days=20))
+    previous: list[str] = []
+    for day in range(5):
+        previous.append(
+            snapshot.take(
+                site,
+                tmp_path,
+                now=AT - timedelta(days=15 - day),
+                protect=frozenset(previous),
+            ).name
+        )
+    checkpoint = tmp_path / "cutover-workspace/staging/.deploy.json"
+    checkpoint.parent.mkdir(parents=True)
+    checkpoint.write_text(
+        json.dumps(
+            {"snapshot": {"path": str(snapshot.directory(tmp_path) / previous[0])}}
+        )
+    )
+
+    taken = snapshot.take(site, tmp_path, now=AT)
+
+    assert set(snapshot.available(tmp_path)) == {
+        foreign.name,
+        previous[0],
+        previous[-1],
+        previous[-2],
+        taken.name,
+    }
+    assert not (snapshot.directory(tmp_path) / previous[1]).exists()
+
+
+def test_baseline_and_protect_are_a_union_with_latest_three(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _dump(monkeypatch, gzip.compress(b"select 1;\n"))
+    monkeypatch.setattr(snapshot, "_unused", lambda _path: True)
+    site = _site(tmp_path / "site")
+    old: list[str] = []
+    for day in range(5):
+        old.append(
+            snapshot.take(
+                site,
+                tmp_path,
+                now=AT - timedelta(days=20 - day),
+                protect=frozenset(old),
+            ).name
+        )
+    snapshot.set_baseline(site, tmp_path, old[0])
+
+    taken = snapshot.take(site, tmp_path, now=AT, protect=frozenset({old[1], old[2]}))
+
+    assert set(snapshot.available(tmp_path)) == {
+        old[0],
+        old[1],
+        old[2],
+        old[3],
+        old[4],
+        taken.name,
+    }
+
+
+def test_unknown_baseline_is_pinned_and_damage_blocks_deletion(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _dump(monkeypatch, gzip.compress(b"select 1;\n"))
+    monkeypatch.setattr(snapshot, "_unused", lambda _path: True)
+    site = _site(tmp_path / "site")
+    folder = snapshot.directory(tmp_path)
+    folder.mkdir()
+    legacy = folder / "db-20260901T000000Z.sql.gz"
+    legacy.write_bytes(gzip.compress(b"legacy recovery point"))
+    snapshot.set_baseline(site, tmp_path, legacy.name)
+    old: list[str] = []
+    for day in range(4):
+        old.append(
+            snapshot.take(
+                site,
+                tmp_path,
+                now=AT - timedelta(days=20 - day),
+                protect=frozenset(old),
+            ).name
+        )
+    legacy.write_bytes(gzip.compress(b"changed recovery point"))
+    before = set(snapshot.available(tmp_path))
+
+    taken = snapshot.take(site, tmp_path, now=AT)
+
+    assert set(snapshot.available(tmp_path)) == before | {taken.name}
+
+
+@pytest.mark.parametrize("damage", ["changed", "removed", "unreadable-reference"])
+def test_damaged_proof_prevents_any_deletion(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, damage: str
+) -> None:
+    _dump(monkeypatch, gzip.compress(b"select 1;\n"))
+    monkeypatch.setattr(snapshot, "_unused", lambda _path: True)
+    site = _site(tmp_path / "site")
+    old: list[str] = []
+    for day in range(4):
+        old.append(
+            snapshot.take(
+                site,
+                tmp_path,
+                now=AT - timedelta(days=20 - day),
+                protect=frozenset(old),
+            ).name
+        )
+    if damage == "changed":
+        (snapshot.directory(tmp_path) / old[0]).write_bytes(b"changed")
+    elif damage == "removed":
+        (snapshot.directory(tmp_path) / old[0]).unlink()
+    else:
+        checkpoint = tmp_path / "cutover-workspace/staging/.deploy.json"
+        checkpoint.parent.mkdir(parents=True)
+        checkpoint.write_text("invalid json")
+
+    before = set(snapshot.available(tmp_path))
+    taken = snapshot.take(site, tmp_path, now=AT)
+
+    assert set(snapshot.available(tmp_path)) == before | {taken.name}
+
+
+def test_noncooperating_reader_keeps_its_candidate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _dump(monkeypatch, gzip.compress(b"select 1;\n"))
+    site = _site(tmp_path / "site")
+    old: list[str] = []
+    for day in range(4):
+        old.append(
+            snapshot.take(
+                site,
+                tmp_path,
+                now=AT - timedelta(days=20 - day),
+                protect=frozenset(old),
+            ).name
+        )
+    monkeypatch.setattr(snapshot, "_unused", lambda path: path.name != old[0])
+
+    taken = snapshot.take(site, tmp_path, now=AT)
+
+    assert set(snapshot.available(tmp_path)) == {old[0], old[-1], old[-2], taken.name}
+
+
+def test_interrupted_unlink_is_reconciled_without_another_dump(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    scripts = _dump(monkeypatch, gzip.compress(b"select 1;\n"))
+    monkeypatch.setattr(snapshot, "_unused", lambda _path: True)
+    site = _site(tmp_path / "site")
+    old: list[str] = []
+    for day in range(4):
+        old.append(
+            snapshot.take(
+                site,
+                tmp_path,
+                now=AT - timedelta(days=20 - day),
+                protect=frozenset(old),
+            ).name
+        )
+    victim = snapshot.directory(tmp_path) / old[0]
+    original_save = snapshot._save
+
+    def interrupted(folder: Path, state: dict[str, object]) -> None:
+        if not victim.exists():
+            raise SystemExit("after unlink before registry update")
+        original_save(folder, state)
+
+    saved: list[snapshot.Snapshot] = []
+    monkeypatch.setattr(snapshot, "_save", interrupted)
+    with pytest.raises(SystemExit, match="after unlink"):
+        snapshot.take(site, tmp_path, now=AT, on_verified=saved.append)
+
+    assert len(saved) == 1 and saved[0].path.is_file()
+    assert len(scripts) == 5 and not victim.exists()
+    state = json.loads((snapshot.directory(tmp_path) / snapshot.STATE).read_text())
+    assert state["snapshots"][old[0]]["retiring"] is True
+
+    monkeypatch.setattr(snapshot, "_save", original_save)
+    owned = snapshot.directory(tmp_path) / (snapshot.TRANSACTION + "interrupted")
+    owned.write_bytes(snapshot.TRANSACTION_MARKER + b'"state":')
+    owned.chmod(0o600)
+    unknown = snapshot.directory(tmp_path) / (snapshot.TRANSACTION + "unknown")
+    unknown.write_bytes(b"unidentified evidence")
+    unknown.chmod(0o600)
+    snapshot.reconcile(site, tmp_path, saved[0].name)
+    state = json.loads((snapshot.directory(tmp_path) / snapshot.STATE).read_text())
+    assert old[0] not in state["snapshots"]
+    assert not owned.exists() and unknown.read_bytes() == b"unidentified evidence"
+    assert set(snapshot.available(tmp_path)) == {old[-2], old[-1], saved[0].name}
+    assert len(scripts) == 5
+
+
+def test_unchanged_registered_snapshots_reuse_verified_stamps(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _dump(monkeypatch, gzip.compress(b"select 1;\n"))
+    monkeypatch.setattr(snapshot, "_unused", lambda _path: True)
+    site = _site(tmp_path / "site")
+    old = [
+        snapshot.take(site, tmp_path, now=AT - timedelta(days=day)) for day in (3, 2, 1)
+    ]
+    hashed: list[Path] = []
+    uncompressed: list[Path] = []
+    original_hash = backup.sha256
+    original_gzip = backup.readable_gzip
+
+    def hashed_once(path: Path) -> str:
+        hashed.append(path)
+        return original_hash(path)
+
+    def gzip_once(path: Path) -> bool:
+        uncompressed.append(path)
+        return original_gzip(path)
+
+    monkeypatch.setattr(backup, "sha256", hashed_once)
+    monkeypatch.setattr(backup, "readable_gzip", gzip_once)
+    snapshot.take(site, tmp_path, now=AT)
+
+    assert not {item.path for item in old} & set(hashed)
+    assert not {item.path for item in old} & set(uncompressed)
+
+
+def test_interrupted_retirement_rechecks_new_baseline_before_unlink(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _dump(monkeypatch, gzip.compress(b"select 1;\n"))
+    monkeypatch.setattr(snapshot, "_unused", lambda _path: True)
+    site = _site(tmp_path / "site")
+    old: list[str] = []
+    for day in range(4):
+        old.append(
+            snapshot.take(
+                site,
+                tmp_path,
+                now=AT - timedelta(days=20 - day),
+                protect=frozenset(old),
+            ).name
+        )
+    victim = snapshot.directory(tmp_path) / old[0]
+    unlink = Path.unlink
+
+    def interrupt(path: Path, missing_ok: bool = False) -> None:
+        if path == victim:
+            raise SystemExit("before unlink")
+        unlink(path, missing_ok=missing_ok)
+
+    saved: list[snapshot.Snapshot] = []
+    monkeypatch.setattr(Path, "unlink", interrupt)
+    with pytest.raises(SystemExit, match="before unlink"):
+        snapshot.take(site, tmp_path, now=AT, on_verified=saved.append)
+    assert victim.exists()
+    state = json.loads((snapshot.directory(tmp_path) / snapshot.STATE).read_text())
+    assert state["snapshots"][victim.name]["retiring"] is True
+
+    monkeypatch.setattr(Path, "unlink", unlink)
+    snapshot.set_baseline(site, tmp_path, victim.name)
+    snapshot.reconcile(site, tmp_path, saved[0].name)
+    state = json.loads((snapshot.directory(tmp_path) / snapshot.STATE).read_text())
+    assert victim.exists()
+    assert "retiring" not in state["snapshots"][victim.name]

@@ -163,11 +163,31 @@ try {
 			if ( ! is_array( $plan ) || 1 !== ( $plan['schema_version'] ?? null ) || ! is_array( $plan['products'] ?? null ) ) {
 				throw new RuntimeException( 'Unsupported installation-facts plan.' );
 			}
+			$terminal_patch = $request['terminal_use_patch'] ?? false;
+			if ( ! is_bool( $terminal_patch ) ) {
+				throw new RuntimeException( 'Invalid terminal-use patch mode.' );
+			}
+			$terminal_uses = array(
+				'external-communication-terminal'  => 'external_communication',
+				'internal-communication-terminals' => 'internal_communication',
+			);
+			if ( $terminal_patch ) {
+				$ids = array_map( 'intval', array_keys( $plan['products'] ) );
+				sort( $ids );
+				$host  = wp_parse_url( $site, PHP_URL_HOST );
+				$local = in_array( $host, array( 'localhost', '127.0.0.1', '::1' ), true );
+				if ( array() === $ids || count( array_unique( $ids ) ) !== count( $ids ) || array_diff( $ids, array( 1956, 1957, 1958 ) ) !== array() || ( ! $local && array( 1956, 1957, 1958 ) !== $ids ) ) {
+					throw new RuntimeException( 'Terminal-use patch product scope is invalid.' );
+				}
+			}
 			$receipt = array(
 				'schema_version' => 1,
 				'site'           => $site,
 				'products'       => array(),
 			);
+			if ( $terminal_patch ) {
+				$receipt['terminal_use_changes'] = array();
+			}
 			foreach ( $plan['products'] as $id => $entry ) {
 				$id = (int) $id;
 				if ( $id < 1 || ! is_array( $entry ) || ! is_string( $entry['model'] ?? null ) || ! is_string( $entry['product_revision'] ?? null ) || ! is_array( $entry['items'] ?? null ) || array() === $entry['items'] ) {
@@ -181,15 +201,64 @@ try {
 					}
 					$items[] = \Linker\Commerce\Products\Publication\InstallationFacts::bind( $id, $installation, $manifest );
 				}
-				$stored_items = $json_value( $items );
-				if ( ! is_array( $stored_items ) ) {
-					throw new RuntimeException( 'Installation facts did not project as an item list.' );
+				$before = $current_meta( $id );
+				if ( $terminal_patch ) {
+					$planned = array();
+					foreach ( $items as $item ) {
+						$item_id = $item['id'];
+						$spec    = (array) $item['specification'];
+						if ( ! isset( $terminal_uses[ $item_id ] ) || isset( $planned[ $item_id ] ) || ( $spec['terminal_use'] ?? null ) !== $terminal_uses[ $item_id ] ) {
+							throw new RuntimeException( esc_html( "Unreviewed terminal-use patch for {$id}." ) );
+						}
+						$planned[ $item_id ] = $item;
+					}
+					if ( count( $planned ) !== count( $terminal_uses ) || ! $before['exists'] || ! is_array( $before['value'] ) || 1 !== ( $before['value']['schema_version'] ?? null ) || ! is_array( $before['value']['items'] ?? null ) || array_values( $before['value']['items'] ) !== $before['value']['items'] ) {
+						throw new RuntimeException( esc_html( "Terminal-use patch needs existing reviewed facts for {$id}." ) );
+					}
+					$after = $before['value'];
+					$seen  = array();
+					$items = array();
+					foreach ( $after['items'] as $index => $current ) {
+						if ( ! is_array( $current ) || ! is_string( $current['id'] ?? null ) || isset( $seen[ $current['id'] ] ) ) {
+							throw new RuntimeException( esc_html( "Installation fact identities are invalid for {$id}." ) );
+						}
+						$item_id          = $current['id'];
+						$seen[ $item_id ] = true;
+						if ( isset( $planned[ $item_id ] ) ) {
+							$bound = \Linker\Commerce\Products\Publication\InstallationFacts::bind( $id, $current, $manifest );
+							$spec  = $current['specification'] ?? null;
+							$want  = (array) $planned[ $item_id ]['specification'];
+							if ( ! is_array( $spec ) || $bound['source'] !== $planned[ $item_id ]['source'] || $bound['basis'] !== $planned[ $item_id ]['basis'] || $bound['handling'] !== $planned[ $item_id ]['handling'] || $bound['unit'] !== $planned[ $item_id ]['unit'] || ( $spec['terminal_domain'] ?? null ) !== ( $want['terminal_domain'] ?? null ) || ( $spec['terminals'] ?? null ) !== ( $want['terminals'] ?? null ) ) {
+								throw new RuntimeException( esc_html( "Current terminal identity differs from the reviewed source for {$id}/{$item_id}." ) );
+							}
+							if ( array_key_exists( 'terminal_use', $spec ) && $spec['terminal_use'] !== $terminal_uses[ $item_id ] ) {
+								throw new RuntimeException( esc_html( "Conflicting terminal use for {$id}/{$item_id}." ) );
+							}
+							if ( ! array_key_exists( 'terminal_use', $spec ) ) {
+								$after['items'][ $index ]['specification']['terminal_use'] = $terminal_uses[ $item_id ];
+								$receipt['terminal_use_changes'][]                         = array(
+									'product_id' => $id,
+									'item_id'    => $item_id,
+									'before'     => null,
+									'after'      => $terminal_uses[ $item_id ],
+								);
+							}
+						}
+						$items[] = \Linker\Commerce\Products\Publication\InstallationFacts::bind( $id, $after['items'][ $index ], $manifest );
+					}
+					if ( array_diff_key( $planned, $seen ) !== array() ) {
+						throw new RuntimeException( esc_html( "Reviewed terminal fact is missing for {$id}." ) );
+					}
+				} else {
+					$stored_items = $json_value( $items );
+					if ( ! is_array( $stored_items ) ) {
+						throw new RuntimeException( 'Installation facts did not project as an item list.' );
+					}
+					$after = array(
+						'schema_version' => 1,
+						'items'          => $stored_items,
+					);
 				}
-				$after           = array(
-					'schema_version' => 1,
-					'items'          => $stored_items,
-				);
-				$before          = $current_meta( $id );
 				$product_docs    = $documents( $id, $manifest );
 					$source_docs = array();
 				foreach ( $items as $item ) {
@@ -242,11 +311,18 @@ try {
 							if ( \Linker\Commerce\Products\Publication::revision( $entry['after'] ) !== $entry['after_hash'] ) {
 								throw new RuntimeException( 'After metadata differs from its receipt hash.' );
 							}
-							$projection = \Linker\Commerce\Products\Publication\InstallationFacts::projection( $id, $manifest );
+							$projection     = \Linker\Commerce\Products\Publication\InstallationFacts::projection( $id, $manifest );
+							$expected_items = $entry['after']['items'];
+							if ( isset( $receipt['terminal_use_changes'] ) ) {
+								$expected_items = array();
+								foreach ( $entry['after']['items'] as $item ) {
+									$expected_items[] = \Linker\Commerce\Products\Publication\InstallationFacts::bind( $id, $item, $manifest );
+								}
+							}
 							if (
 								! is_array( $projection )
 								|| 'documented' !== $projection['status']
-								|| \Linker\Commerce\Products\Publication::revision( $json_value( $projection['items'] ) ) !== \Linker\Commerce\Products\Publication::revision( $entry['after']['items'] )
+								|| \Linker\Commerce\Products\Publication::revision( $json_value( $projection['items'] ) ) !== \Linker\Commerce\Products\Publication::revision( $json_value( $expected_items ) )
 							) {
 								throw new RuntimeException( 'Canonical installation projection is unresolved or differs.' );
 							}

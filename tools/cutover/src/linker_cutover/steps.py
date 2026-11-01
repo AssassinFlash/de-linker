@@ -284,6 +284,13 @@ def deploy(
         checkpoint = deployment.load(staging, target, source)
         if deploy_id is not None and deploy_id != checkpoint.deploy_id:
             raise CutoverError("deployment id mismatch; checkpoint retained")
+        if checkpoint.snapshot_pending:
+            reserved_home = Path(checkpoint.snapshot_pending["home"])
+            if snapshot_home is not None and home.resolve() != reserved_home:
+                raise CutoverError(
+                    "deployment snapshot home mismatch; checkpoint retained"
+                )
+            home = reserved_home
     else:
         root = atomic.backup_root(target)
         pointer = shlex.quote(str(Path(root) / "latest"))
@@ -361,11 +368,32 @@ def deploy(
                 f"deploy: reusing verified snapshot {checkpoint.snapshot['path']}",
                 flush=True,
             )
+            saved = Path(str(checkpoint.snapshot["path"]))
+            if saved.parent.name == snapshot_module.DIRECTORY:
+                snapshot_module.reconcile(target, saved.parent.parent, saved.name)
         else:
             print("deploy: database snapshot", flush=True)
             started = time.monotonic()
-            taken = snapshot_module.take(target, home)
-            deployment.record_snapshot(staging, checkpoint, taken)
+            if not checkpoint.snapshot_pending:
+                checkpoint.snapshot_pending = {
+                    "name": snapshot_module.name_at(),
+                    "home": str(home.resolve()),
+                }
+                deployment.save(staging, checkpoint)
+            pending = checkpoint.snapshot_pending
+            home = Path(pending["home"])
+            snapshot_module.take(
+                target,
+                home,
+                reservation=snapshot_module.Reservation(
+                    pending["name"],
+                    deployment.path(staging).resolve(),
+                    checkpoint.deploy_id,
+                ),
+                on_verified=lambda taken: deployment.record_snapshot(
+                    staging, checkpoint, taken
+                ),
+            )
             print(
                 f"deploy: snapshot done in {time.monotonic() - started:.1f}s",
                 flush=True,

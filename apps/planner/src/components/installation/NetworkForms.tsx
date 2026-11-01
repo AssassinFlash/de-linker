@@ -7,6 +7,8 @@ import {
 import {
 	CableReferenceFacts,
 	cableReferenceLabel,
+	CableSource,
+	RevisionCode,
 } from "./CableReferenceFacts.tsx";
 import type { CableReference } from "../../data/cableReferences.ts";
 import type { CoreRole } from "../../domain/installationElectrical.ts";
@@ -23,6 +25,13 @@ import type {
 	Endpoint,
 } from "../../domain/installation.ts";
 import { installationId } from "../../domain/installation.ts";
+import { sameJson } from "../../domain/draft.ts";
+import { terminalCandidates } from "../../domain/installationTerminals.ts";
+import type { TerminalBinding } from "../../domain/installationTerminals.ts";
+import {
+	communicationUseLabel,
+	terminalDomainLabel,
+} from "./installationLabels.ts";
 import type { EquipmentProduct } from "../../data/equipmentProducts.ts";
 import {
 	GeometryForm,
@@ -115,6 +124,19 @@ export function InstanceForm({
 	products: readonly EquipmentProduct[];
 	submit: (value: DeviceInstance) => boolean;
 } & Common) {
+	const [instanceId] = useState(
+		() => instance?.id ?? installationId("instance"),
+	);
+	const [productId, setProductId] = useState(
+		instance
+			? instance.product_id === null
+				? "site"
+				: String(instance.product_id)
+			: "",
+	);
+	const [bindingEdits, setBindingEdits] = useState<
+		Record<string, TerminalBinding | null>
+	>({});
 	const [ports, setPorts] = useState<
 		{ id: string; before: ConnectionPoint | null }[]
 	>(
@@ -128,6 +150,17 @@ export function InstanceForm({
 			.filter((p) => p.instance_id === instance?.id)
 			.map((p) => p.port_id),
 	);
+	const selectedProduct = products.find((p) => String(p.id) === productId);
+	const sameProduct =
+		instance?.product_id != null && String(instance.product_id) === productId;
+	const revision = sameProduct
+		? instance!.product_revision
+		: selectedProduct?.product_revision;
+	const candidates =
+		selectedProduct?.product_revision === revision
+			? terminalCandidates(selectedProduct, instanceId)
+			: [];
+	const t = (en: string, de: string) => electricalText(locale, en, de);
 	return (
 		<GeometryForm
 			title={__("Device instance or site connection", "linker-tools")}
@@ -142,7 +175,8 @@ export function InstanceForm({
 					instance?.product_id !== null && String(instance?.product_id) === raw;
 				if (raw !== "site" && !selected && !same) return false;
 				return submit({
-					id: instance?.id ?? installationId("instance"),
+					...(instance ?? {}),
+					id: instanceId,
 					name: v.text("name"),
 					product_id:
 						raw === "site" ? null : same ? instance!.product_id : selected!.id,
@@ -153,11 +187,20 @@ export function InstanceForm({
 								? instance!.product_revision
 								: selected!.product_revision,
 					source_id: v.text("source"),
-					ports: ports.map((p) => ({
-						id: p.id,
-						name: v.text(p.id + "name"),
-						position: position(v, p.id),
-					})),
+					ports: ports.map((p) => {
+						const port: ConnectionPoint = {
+							...(p.before ?? {}),
+							id: p.id,
+							name: v.text(p.id + "name"),
+							position: position(v, p.id),
+						};
+						if (Object.hasOwn(bindingEdits, p.id)) {
+							const binding = bindingEdits[p.id];
+							if (binding) port.terminal_binding = binding;
+							else delete port.terminal_binding;
+						}
+						return port;
+					}),
 				});
 			}}
 		>
@@ -171,13 +214,8 @@ export function InstanceForm({
 				<select
 					name="product"
 					required
-					defaultValue={
-						instance
-							? instance.product_id === null
-								? "site"
-								: String(instance.product_id)
-							: ""
-					}
+					value={productId}
+					onChange={(event) => setProductId(event.currentTarget.value)}
 				>
 					<option value="">
 						{__("Choose a product or site connection", "linker-tools")}
@@ -206,30 +244,141 @@ export function InstanceForm({
 					"linker-tools",
 				)}
 			</p>
-			{ports.map((p) => (
-				<fieldset key={p.id}>
-					<GeometryText
-						name={p.id + "name"}
-						label={__("Connection point name", "linker-tools")}
-						value={p.before?.name ?? ""}
-					/>
-					<Position
-						prefix={p.id}
-						value={p.before?.position ?? null}
-						locale={locale}
-					/>
-					<button
-						type="button"
-						className="lp-text-button"
-						disabled={ports.length === 1 || locked.has(p.id)}
-						onClick={() =>
-							setPorts((old) => old.filter((row) => row.id !== p.id))
-						}
-					>
-						{__("Remove connection point", "linker-tools")}
-					</button>
-				</fieldset>
-			))}
+			{ports.map((p) => {
+				const binding = Object.hasOwn(bindingEdits, p.id)
+					? (bindingEdits[p.id] ?? null)
+					: (p.before?.terminal_binding ?? null);
+				const candidate = candidates.find((c) => sameJson(c.binding, binding));
+				const candidateIndex = candidates.findIndex((c) =>
+					sameJson(c.binding, binding),
+				);
+				const choice =
+					binding === null
+						? "none"
+						: sameJson(binding, p.before?.terminal_binding)
+							? "saved"
+							: candidateIndex >= 0
+								? `candidate:${candidateIndex}`
+								: "retained";
+				return (
+					<fieldset key={p.id}>
+						<GeometryText
+							name={p.id + "name"}
+							label={__("Connection point name", "linker-tools")}
+							value={p.before?.name ?? ""}
+						/>
+						<Position
+							prefix={p.id}
+							value={p.before?.position ?? null}
+							locale={locale}
+						/>
+						<label className="lp-field">
+							<span>
+								{t(
+									"Manufacturer terminal (optional)",
+									"Herstelleranschluss (optional)",
+								)}
+							</span>
+							<select
+								name={p.id + "terminal"}
+								value={choice}
+								onChange={(event) => {
+									const value = event.currentTarget.value;
+									const next =
+										value === "saved"
+											? (p.before?.terminal_binding ?? null)
+											: value.startsWith("candidate:")
+												? (candidates[Number(value.slice(10))]?.binding ?? null)
+												: null;
+									setBindingEdits((old) => ({ ...old, [p.id]: next }));
+								}}
+							>
+								<option value="none">
+									{t(
+										"No manufacturer terminal selected",
+										"Kein Herstelleranschluss ausgewählt",
+									)}
+								</option>
+								{p.before?.terminal_binding && (
+									<option value="saved">
+										{t("Saved selection", "Gespeicherte Auswahl")} ·{" "}
+										{p.before.terminal_binding.terminal} ·{" "}
+										{p.before.terminal_binding.fact_id}
+									</option>
+								)}
+								{choice === "retained" && binding && (
+									<option value="retained">
+										{t(
+											"Selection kept from another product",
+											"Auswahl eines anderen Produkts beibehalten",
+										)}{" "}
+										· {binding.terminal} · {binding.fact_id}
+									</option>
+								)}
+								{candidates.map((c, index) => (
+									<option
+										key={JSON.stringify(c.binding)}
+										value={`candidate:${index}`}
+									>
+										{c.binding.terminal} ·{" "}
+										{locale.startsWith("de")
+											? c.fact.label.de
+											: c.fact.label.en}
+									</option>
+								))}
+							</select>
+						</label>
+						{!candidates.length && (
+							<p className="lp-profile-help">
+								{t(
+									"No documented terminal choices are available for the selected product revision. A saved selection remains until you change or clear it.",
+									"Für die ausgewählte Produktrevision sind keine dokumentierten Anschlussoptionen verfügbar. Eine gespeicherte Auswahl bleibt erhalten, bis Sie sie ändern oder entfernen.",
+								)}
+							</p>
+						)}
+						{binding && !candidate && (
+							<p className="lp-profile-help">
+								{t("Saved source", "Gespeicherte Quelle")}:{" "}
+								<RevisionCode value={binding.document_id} /> ·{" "}
+								<RevisionCode value={binding.document_revision} />
+							</p>
+						)}
+						{candidate && (
+							<>
+								<p>
+									{t(
+										"Documented terminal domain",
+										"Dokumentierter Anschlussbereich",
+									)}
+									:{" "}
+									{terminalDomainLabel(
+										candidate.fact.specification.terminal_domain,
+										locale,
+									)}{" "}
+									· {t("Documented use", "Dokumentierter Verwendungszweck")}:{" "}
+									{candidate.fact.specification.terminal_use
+										? communicationUseLabel(
+												candidate.fact.specification.terminal_use,
+												locale,
+											)
+										: t("Not documented", "Nicht dokumentiert")}
+								</p>
+								<CableSource source={candidate.fact.source} locale={locale} />
+							</>
+						)}
+						<button
+							type="button"
+							className="lp-text-button"
+							disabled={ports.length === 1 || locked.has(p.id)}
+							onClick={() =>
+								setPorts((old) => old.filter((row) => row.id !== p.id))
+							}
+						>
+							{__("Remove connection point", "linker-tools")}
+						</button>
+					</fieldset>
+				);
+			})}
 			<button
 				type="button"
 				className="lp-button lp-button-secondary"
@@ -292,6 +441,13 @@ export function CircuitForm({
 	circuit: InstallationCircuit | null;
 	submit: (value: InstallationCircuit) => boolean;
 } & Common) {
+	const [kind, setKind] = useState<InstallationCircuit["kind"] | "">(
+		circuit?.kind ?? "",
+	);
+	const [communicationUse, setCommunicationUse] = useState<
+		NonNullable<InstallationCircuit["communication_use"]> | ""
+	>(circuit?.communication_use ?? "");
+	const [communicationTouched, setCommunicationTouched] = useState(false);
 	const [conditions, setConditions] = useState<
 		{
 			id: string;
@@ -318,7 +474,7 @@ export function CircuitForm({
 				const a = v.text("start").split(":"),
 					b = v.text("end").split(":");
 				if (a.length !== 2 || b.length !== 2) return false;
-				return submit({
+				const next: InstallationCircuit = {
 					...(circuit ?? {}),
 					...(conditionsTouched || circuit?.operating_conditions !== undefined
 						? {
@@ -329,10 +485,17 @@ export function CircuitForm({
 						: {}),
 					id: circuit?.id ?? installationId("circuit"),
 					name: v.text("name"),
-					kind: v.text("kind") as InstallationCircuit["kind"],
+					kind: kind as InstallationCircuit["kind"],
 					start: { instance_id: a[0]!, port_id: a[1]! },
 					end: { instance_id: b[0]!, port_id: b[1]! },
-				});
+				};
+				if (kind !== "control" && next.communication_use != null)
+					delete next.communication_use;
+				else if (kind === "control" && communicationTouched) {
+					if (communicationUse) next.communication_use = communicationUse;
+					else delete next.communication_use;
+				}
+				return submit(next);
 			}}
 		>
 			<GeometryText
@@ -342,7 +505,16 @@ export function CircuitForm({
 			/>
 			<label className="lp-field">
 				<span>{__("Connection type", "linker-tools")}</span>
-				<select name="kind" defaultValue={circuit?.kind ?? ""} required>
+				<select
+					name="kind"
+					value={kind}
+					onChange={(event) =>
+						setKind(
+							event.currentTarget.value as InstallationCircuit["kind"] | "",
+						)
+					}
+					required
+				>
 					<option value="">
 						{__("Choose connection type", "linker-tools")}
 					</option>
@@ -360,6 +532,34 @@ export function CircuitForm({
 					))}
 				</select>
 			</label>
+			{kind === "control" && (
+				<label className="lp-field">
+					<span>
+						{t(
+							"Communication use (optional)",
+							"Kommunikationszweck (optional)",
+						)}
+					</span>
+					<select
+						name="communication_use"
+						value={communicationUse}
+						onChange={(event) => {
+							setCommunicationTouched(true);
+							setCommunicationUse(
+								event.currentTarget.value as typeof communicationUse,
+							);
+						}}
+					>
+						<option value="">{t("Not declared", "Nicht angegeben")}</option>
+						<option value="external_communication">
+							{t("External communication", "Externe Kommunikation")}
+						</option>
+						<option value="internal_communication">
+							{t("Internal communication", "Interne Kommunikation")}
+						</option>
+					</select>
+				</label>
+			)}
 			<EndpointChoice
 				plan={plan}
 				name="start"

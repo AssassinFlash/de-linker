@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
+import io
 from copy import deepcopy
 from dataclasses import replace
 from typing import cast
 
 import pytest
+from pypdf import PdfReader
 
+from linker_engine.planning.assets import Assets
 from linker_engine.planning.assistant_context import (
     _installation_report_projection,
     _report_materials,
@@ -15,20 +18,159 @@ from linker_engine.planning.assistant_context import (
     assistant_context,
 )
 from linker_engine.planning.canonical import Json, Object
+from linker_engine.planning.energy_kernel import EnergyKernel
+from linker_engine.planning.energy_service import EnergyService
 from linker_engine.planning.errors import InvalidInput, NotFound
+from linker_engine.planning.execution_registry import service_registry
 from linker_engine.planning.grid_connection import country_assessment
 from linker_engine.planning.installation_takeoff import route_takeoff
 from linker_engine.planning.jobs import Jobs
+from linker_engine.planning.product_sources import ProductSources
+from linker_engine.planning.project_input_contracts import TERMINAL_INPUT_CONTRACT
 from linker_engine.planning.project_materials import project_materials
 from linker_engine.planning.records import Actor, Context
 from linker_engine.planning.report_copy import text
+from linker_engine.planning.report_inputs import ReportOptions
+from linker_engine.planning.report_kernel import ReportKernel, ReportService
 from linker_engine.planning.report_model import build_report
 from linker_engine.planning.report_pvlib import pvlib_sections
+from linker_engine.planning.worker import Worker
 from linker_engine.planning.workspace import Workspace
 
+from .conftest import json_object
+from .test_energy_kernel import TOLERANCE
 from .test_grid_connection import declared
 from .test_installation_electrical import circuit_fixture
+from .test_installation_terminals import bind, sample
 from .test_pv_generation import parameter_document
+
+
+@pytest.mark.parametrize("locale", ["en", "de"])
+def test_terminal_report_to_assistant_redacts_owned_text_but_preserves_originals(
+    workspace: Workspace,
+    owner: Actor,
+    monkeypatch: pytest.MonkeyPatch,
+    locale: str,
+) -> None:
+    inputs, basis = sample(1958)
+    plan = inputs["installation"]
+    for index, instance in enumerate(plan["instances"]):
+        instance_id, port_id = f"PRIVATE_INSTANCE_{index}", f"PRIVATE_PORT_{index}"
+        instance.update(id=instance_id, name=f"PRIVATE DEVICE NAME {index}")
+        instance["ports"][0].update(id=port_id, name=f"PRIVATE PORT NAME {index}")
+        plan["circuits"][0]["start" if index == 0 else "end"] = {
+            "instance_id": instance_id,
+            "port_id": port_id,
+        }
+    plan["circuits"][0].update(id="PRIVATE_CIRCUIT_ID", name="PRIVATE CIRCUIT NAME")
+    plan["cable_runs"][0]["circuit_id"] = "PRIVATE_CIRCUIT_ID"
+    bind(inputs, basis, 0, "external-communication-terminal", "COM1")
+    bind(inputs, basis, 1, "internal-communication-terminals", "COM2")
+    # An unchanged saved selection can outlive a manufacturer's fact. Its
+    # recorded terminal string must never be trusted as public source text.
+    plan["instances"][1]["ports"][0]["terminal_binding"]["terminal"] = (
+        "PRIVATEENDPOINTTEXT"
+    )
+    product_source = ProductSources(lambda: None)  # type: ignore[arg-type,return-value]
+    monkeypatch.setattr(product_source, "equipment_basis", lambda **_: deepcopy(basis))
+    monkeypatch.setattr(product_source, "confirm_basis", lambda *_a, **_kw: None)
+    project = workspace.create(
+        owner,
+        "Synthetic terminal report",
+        cast(Object, inputs),
+        key="terminal-privacy",
+        input_contract=TERMINAL_INPUT_CONTRACT,
+    )
+    energy = EnergyService(
+        workspace, EnergyKernel(workspace, TOLERANCE, max_intervals=10), max_attempts=1
+    )
+    reports = ReportService(
+        workspace, ReportKernel(workspace, product_source), max_attempts=1
+    )
+    registry = service_registry(energy, None, None, None, None, reports)
+    worker = Worker(
+        Jobs(workspace),
+        "terminal-privacy",
+        {"evaluate": registry},
+        lease_seconds=30,
+        heartbeat_seconds=1,
+        retry_seconds=1,
+        routing=registry.routing(8),
+    )
+    options = ReportOptions.read(
+        {
+            "locale": locale,
+            "energy_run_id": None,
+            "pv_run_id": None,
+            "equipment_run_id": None,
+            "logo": None,
+            "include_installation": True,
+        }
+    )
+    requested = reports.evaluate(owner, project.id, 1, options, key="report")
+    assert worker.run_once()
+    run = workspace.run(owner, requested.id)
+    assert run.state == "succeeded", run.error
+    result = json_object(run.result)
+    report_source = workspace.blobs.object(result["dependencies"]["report_source"])
+    safe_source = _report_source_projection(report_source, locale)
+    safe_plan = json_object(safe_source["installation"])
+    safe_terminals = json_object(safe_plan["terminal_assessment"])
+    safe_materials = json_object(safe_source["materials"])
+    assert "PRIVATE" not in str(safe_terminals)
+    terminal_line = next(
+        row
+        for row in safe_materials["lines"]
+        if row["basis"] == "manufacturer_one_end_mapping"
+    )
+    assert "PRIVATE" not in str(terminal_line)
+    assert (
+        terminal_line["source"]["circuit"]["endpoints"][0]["fact"]["source"]["page"]
+        == 23
+    )
+    assert terminal_line["source"]["circuit"]["endpoints"][1]["binding"] is None
+    for requested_locale in (locale, "de" if locale == "en" else "en"):
+        shown = str(
+            assistant_context(
+                workspace, owner, project.id, 1, [run.id], requested_locale
+            )
+        )
+        assert "PRIVATE" not in shown
+        assert "COM1" in shown
+        assert (
+            "For communication connection between the battery system and the inverter"
+            in shown
+        )
+    # The owned artifacts retain project identifiers and the unresolved choice.
+    assets = Assets(workspace)
+    pdf = assets.content(owner, project.id, result["prepared_asset"]["id"])
+    pdf_text = " ".join(p.extract_text() for p in PdfReader(io.BytesIO(pdf)).pages)
+    assert "PRIVATE CIRCUIT NAME" in pdf_text and "PRIVATEENDPOINTTEXT" in pdf_text
+    attachment = result["prepared_attachments"]["bill_of_materials_csv"]
+    csv = assets.content(owner, project.id, attachment["id"]).decode("utf-8-sig")
+    assert "PRIVATE_CIRCUIT_ID" in csv and "PRIVATEENDPOINTTEXT" in csv
+    assert "PRIVATE_INSTANCE_0" in csv
+    # Historical or malformed endpoint references exercise the presenter's
+    # fallback, which must receive only synthetic identities too.
+    historical = json_object(deepcopy(report_source))
+    orphan = historical["installation"]["terminal_assessment"]["circuits"][0][
+        "endpoints"
+    ][1]
+    orphan["instance_id"], orphan["port_id"] = (
+        "PRIVATE_MISSING_DEVICE",
+        "PRIVATE_MISSING_PORT",
+    )
+    safe_historical = _report_source_projection(historical, locale)
+    projected = json_object(
+        _installation_report_projection(result["report"], historical, locale)
+    )
+    terminal_section = next(
+        s for s in projected["sections"] if s["id"] == "installation-terminals"
+    )
+    assert "PRIVATE" not in str(terminal_section)
+    assert "PRIVATE" not in str(
+        json_object(safe_historical["installation"])["terminal_assessment"]
+    )
 
 
 @pytest.mark.parametrize("locale", ["en", "de"])

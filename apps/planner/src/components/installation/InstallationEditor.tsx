@@ -43,6 +43,8 @@ import { readEquipmentPlant } from "../../domain/equipmentPlant.ts";
 import type { PvStringPlan } from "../../domain/pvStrings.ts";
 import { PvStringLinks } from "./PvStringLinks.tsx";
 import { conductorLabel } from "./installationLabels.ts";
+import { TerminalResults } from "./TerminalResults.tsx";
+import { hasTerminalFeature } from "../../domain/installationTerminals.ts";
 
 type Kind = "instances" | "circuits" | "routes" | "cable_runs";
 const reason = (code: string) =>
@@ -192,13 +194,14 @@ export function InstallationEditor({
 			: null;
 	function edit(kind: Kind, row: unknown): boolean {
 		try {
+			const id = readObject(row).id;
+			const existing = plan[kind].some((old) => old.id === id);
 			const next = readInstallation({
 				...plan,
 
-				[kind]: [
-					...plan[kind].filter((old) => old.id !== readObject(row).id),
-					row,
-				],
+				[kind]: existing
+					? plan[kind].map((old) => (old.id === id ? row : old))
+					: [...plan[kind], row],
 			});
 			const ok = change(next);
 			if (ok) {
@@ -478,7 +481,11 @@ export function InstallationEditor({
 					<InstanceForm
 						{...common}
 						instance={plan.instances.find((d) => d.id === form.id) ?? null}
-						products={products.data?.products ?? []}
+						products={
+							products.isError || products.isFetching
+								? []
+								: (products.data?.products ?? [])
+						}
 						submit={(v) => edit("instances", v)}
 					/>
 				) : form.kind === "circuits" ? (
@@ -652,6 +659,7 @@ export function InstallationEditor({
 							!linksValid ||
 							(!plan.cable_runs.length &&
 								!plan.circuits.some((c) => c.operating_conditions?.length) &&
+								!hasTerminalFeature(plan) &&
 								plan.pv_string_links === undefined &&
 								savedInputs.pv_plant_string_plan === undefined) ||
 							((plan.pv_string_links !== undefined ||
@@ -662,14 +670,27 @@ export function InstallationEditor({
 					>
 						{busy
 							? __("Checking…", "linker-tools")
-							: plan.pv_string_links !== undefined
-								? __("Review routes and string links", "linker-tools")
-								: electricalText(
+							: hasTerminalFeature(plan)
+								? electricalText(
 										locale,
-										"Review routes and circuit conditions",
-										"Strecken und Betriebsbedingungen prüfen",
-									)}
+										"Review installation",
+										"Installation prüfen",
+									)
+								: plan.pv_string_links !== undefined
+									? __("Review routes and string links", "linker-tools")
+									: electricalText(
+											locale,
+											"Review routes and circuit conditions",
+											"Strecken und Betriebsbedingungen prüfen",
+										)}
 					</button>
+					{shown?.terminal_assessment && (
+						<TerminalResults
+							review={shown.terminal_assessment}
+							plan={plan}
+							locale={locale}
+						/>
+					)}
 					{shown?.electrical && (
 						<ElectricalResults review={shown.electrical} locale={locale} />
 					)}

@@ -3695,6 +3695,11 @@ test( 'a confirmed older source card stays with its earlier answer while a newer
 			blocks: [
 				{ type: 'text', text: 'Earlier confirmed response', refs: [] },
 				source,
+				{
+					type: 'action',
+					name: 'open_configurator',
+					args: { url: source.url },
+				},
 			],
 		},
 	} );
@@ -3726,6 +3731,11 @@ test( 'a confirmed older source card stays with its earlier answer while a newer
 		const card = screen.getByRole( 'region', {
 			name: 'Calculation sources and periods',
 		} );
+		expect(
+			screen
+				.getByRole( 'link', { name: 'Open the configurator' } )
+				.closest( 'li' )
+		).toBe( card.closest( 'li' ) );
 		expect( card.closest( 'li' ) ).toHaveTextContent(
 			'Earlier confirmed response'
 		);
