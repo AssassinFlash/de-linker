@@ -41,26 +41,42 @@ function SectionContent({ section }: { section: ReportSection }) {
 				</dl>
 			)}
 			{section.table && (
-				<div className="lp-table-scroll">
-					<table className="lp-data-table">
-						<thead>
-							<tr>
-								{section.table.columns.map((label, i) => (
-									<th key={i}>{label}</th>
-								))}
-							</tr>
-						</thead>
-						<tbody>
-							{section.table.rows.map((row, i) => (
-								<tr key={i}>
-									{row.map((cell, j) => (
-										<td key={j}>{cell}</td>
+				<>
+					<div className="lp-table-scroll lp-report-table">
+						<table className="lp-data-table">
+							<thead>
+								<tr>
+									{section.table.columns.map((label, i) => (
+										<th key={i}>{label}</th>
 									))}
 								</tr>
-							))}
-						</tbody>
-					</table>
-				</div>
+							</thead>
+							<tbody>
+								{section.table.rows.map((row, i) => (
+									<tr key={i}>
+										{row.map((cell, j) => (
+											<td key={j}>{cell}</td>
+										))}
+									</tr>
+								))}
+							</tbody>
+						</table>
+					</div>
+					<ol className="lp-report-cards">
+						{section.table.rows.map((row, i) => (
+							<li key={i}>
+								<dl>
+									{row.map((cell, j) => (
+										<div key={j}>
+											<dt>{section.table?.columns[j]}</dt>
+											<dd>{cell}</dd>
+										</div>
+									))}
+								</dl>
+							</li>
+						))}
+					</ol>
+				</>
 			)}
 		</>
 	);

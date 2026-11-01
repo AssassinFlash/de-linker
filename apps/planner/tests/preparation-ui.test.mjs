@@ -307,6 +307,29 @@ for (const locale of ["en-GB", "de-DE"]) {
 			});
 		}
 		await mount(t, React.createElement(Harness));
+		const reportTables = [...document.querySelectorAll(".lp-report-table")];
+		assert.ok(reportTables.length > 0);
+		for (const tableContainer of reportTables) {
+			const table = tableContainer.querySelector("table"),
+				columns = [...table.querySelectorAll("thead th")].map(
+					(th) => th.textContent,
+				),
+				rows = [...table.querySelectorAll("tbody tr")],
+				cards = [
+					...tableContainer.nextElementSibling.querySelectorAll(":scope > li"),
+				];
+			assert.equal(rows.length, cards.length);
+			for (const [index, row] of rows.entries()) {
+				assert.deepEqual(
+					[...cards[index].querySelectorAll("dt")].map((dt) => dt.textContent),
+					columns,
+				);
+				assert.deepEqual(
+					[...cards[index].querySelectorAll("dd")].map((dd) => dd.textContent),
+					[...row.querySelectorAll("td")].map((td) => td.textContent),
+				);
+			}
+		}
 		window.HTMLAnchorElement.prototype.click = function () {
 			downloads.push(this.download);
 		};
