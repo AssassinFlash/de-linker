@@ -1,3 +1,4 @@
+import os
 import sys
 from pathlib import Path
 
@@ -40,9 +41,7 @@ def test_runs_wp_cli_under_the_given_php_with_the_instance_ini(
 def test_wp_cli_keeps_project_configuration_without_research_credentials(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr(
-        wpcli.os, "environ", {"APIFY_TOKEN_PRIMARY": "synthetic-research"}
-    )
+    monkeypatch.setattr(os, "environ", {"APIFY_TOKEN_PRIMARY": "synthetic-research"})
     environment = wpcli.environment(
         {"LINKER_LOCAL_LOGIN": "local-admin", "APIFY_TOKEN_ALT": "synthetic-extra"}
     )

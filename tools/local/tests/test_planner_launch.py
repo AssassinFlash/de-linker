@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import sqlite3
 import subprocess
 import sys
@@ -124,9 +125,7 @@ def test_genie_launch_omits_weather_credential_and_keeps_its_own_model_environme
             commands.append(argv)
             launches.append(env)
 
-    monkeypatch.setattr(
-        services.os, "environ", {"APIFY_TOKEN": "synthetic-private-weather"}
-    )
+    monkeypatch.setattr(os, "environ", {"APIFY_TOKEN": "synthetic-private-weather"})
     monkeypatch.setenv("APIFY_TOKEN_PRIMARY", "synthetic-research-alias")
     monkeypatch.setenv("DEEPSEEK_API_KEY", "synthetic-private-genie-model")
     monkeypatch.setattr(services, "_uv", lambda: Path(sys.executable))
