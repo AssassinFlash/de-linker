@@ -60,6 +60,7 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( 'wp_abilities_api_init', array( $abilities, 'register_abilities' ) );
 		WP_Mock::expectActionAdded( 'rest_api_init', array( $selection_facts, 'register_routes' ) );
 		WP_Mock::expectActionAdded( 'plugins_loaded', array( $plugin, 'register_commerce' ) );
+		WP_Mock::expectFilterAdded( 'rest_post_dispatch', array( new AnyInstance( \Linker\Commerce\Products\Publication\FreshRest::class ), 'response' ), 20, 3 ); // @phpstan-ignore argument.type (WP_Mock matcher)
 		WP_Mock::expectActionAdded( 'rest_api_init', array( $engineering, 'register_routes' ) );
 		WP_Mock::expectActionAdded( 'rest_api_init', array( $product_search, 'register_routes' ) );
 		WP_Mock::expectActionAdded( 'add_meta_boxes', array( $figures, 'register' ) );
