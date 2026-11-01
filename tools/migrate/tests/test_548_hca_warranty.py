@@ -5,11 +5,49 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import shutil
+import subprocess
 from pathlib import Path
 from types import ModuleType
 from typing import Any
 
 import pytest
+
+
+@pytest.mark.parametrize("partial", [b"", b"reviewed", b"reviewed PDF bytes"])
+def test_native_file_stage_without_hard_links(tmp_path: Path, partial: bytes) -> None:
+    php = shutil.which("php")
+    if php is None:
+        pytest.skip("PHP is required for the native migration stage")
+    source = (Path(__file__).resolve().parents[1] / "548-hca-warranty.php").read_text()
+    stage = source.split("$partial = $path . '.partial';", 1)[1].split(
+        "if ( ! $attachment_id ) {", 1
+    )[0]
+    body = b"reviewed PDF bytes"
+    final = tmp_path / "reviewed.pdf"
+    temporary = tmp_path / "reviewed.pdf.partial"
+    temporary.write_bytes(partial)
+    program = (
+        "$path = $argv[1]; $partial = $path . '.partial'; "
+        "$bytes = 'reviewed PDF bytes'; $new_sha = hash('sha256', $bytes); "
+        + stage
+    )
+
+    def run() -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            [php, "-d", "disable_functions=link", "-r", program, "--", str(final)],
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+    result = run()
+    assert result.returncode == 0, result.stderr
+    assert final.read_bytes() == body and not temporary.exists()
+    assert run().returncode == 0
+    final.write_bytes(b"another owner's file")
+    assert run().returncode != 0
+    assert final.read_bytes() == b"another owner's file"
 
 
 def load_migration() -> ModuleType:
