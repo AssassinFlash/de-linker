@@ -162,6 +162,7 @@ GENIE_COMMERCE_INPUTS = (
     *ENGINE_PUBLICATION_INPUTS,
 )
 CABLE_ADOPTION = "plugins/linker-commerce/data/cable-references.json"
+COMMERCE_PROTECTION_CLIENT = "plugins/linker-commerce/src/protection/client.ts"
 COMMERCE_COMPATIBILITY = "plugins/linker-commerce/data/compatibility.json"
 PLANNER_CHUNK = re.compile(
     r"plugins/linker-tools/build/planner/assets/([A-Za-z0-9_-]+)-[A-Za-z0-9_-]{8}\.js"
@@ -342,6 +343,8 @@ def selected_modules(changes, base="", head=""):
                 if name == "i18n":
                     return None
                 selected.update(("js:" + name, "build:" + name, "php:" + name))
+                if path == COMMERCE_PROTECTION_CLIENT:
+                    selected.add("js:tools")
                 selected.update(native)
                 if under(path, (ENGINE_TOOLS_SCHEMAS,)):
                     selected.add("engine")
@@ -493,7 +496,9 @@ def module_inputs(module):
                 tools + "package.json",
                 tools + "package-lock.json",
             )
-        return (*shared, tools, "apps/planner/", "fixtures/planning/")
+        inputs = (*shared, tools, "apps/planner/", "fixtures/planning/")
+        # The real client drives the Tools conversation recovery tests.
+        return (*inputs, COMMERCE_PROTECTION_CLIENT) if lane == "js" else inputs
     if lane == "planner":
         return (
             *shared,
@@ -779,6 +784,7 @@ def tools_manifest_matches_changes(changes, base, head):
                         or (
                             section == "sources"
                             and path not in required
+                            and path != "bin/build.cjs"
                             and (
                                 not path.startswith("src/")
                                 or re.search(r"\.(?:test|stories)\.[jt]sx?$", path)

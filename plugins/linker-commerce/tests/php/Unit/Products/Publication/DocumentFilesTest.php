@@ -97,6 +97,112 @@ final class DocumentFilesTest extends TestCase {
 		self::assertNotSame( $first['blob_sha256'], $fresh['blob_sha256'] );
 	}
 
+	/** Full manifest requests reuse stable bytes but immediately see same-size edits. */
+	public function test_manifest_hashes_are_reused_across_requests_until_the_file_changes(): void {
+		$file = $this->publication_uploads . '/2026/manual.pdf';
+		// The stable identity must predate the whole-second stat interval.
+		sleep( 1 );
+		$first = $this->manifest_hash_request( array() );
+		self::assertSame( 1, $first['hash_calls'] );
+		self::assertSame( 1, $first['writes'] );
+		self::assertSame( hash_file( 'sha256', $file ), $first['sha'] );
+
+		$unchanged = $this->manifest_hash_request( $first['cache'] );
+		self::assertSame( 0, $unchanged['hash_calls'] );
+		self::assertSame( 0, $unchanged['writes'] );
+		self::assertSame( $first['sha'], $unchanged['sha'] );
+		$download = $this->manifest_hash_request( $first['cache'], false );
+		self::assertSame( 1, $download['hash_calls'] );
+		self::assertSame( $first['sha'], $download['sha'] );
+		self::assertSame( 0, $download['writes'] );
+
+		$mtime = filemtime( $file );
+		$old   = file_get_contents( $file );
+		self::assertIsInt( $mtime );
+		self::assertIsString( $old );
+		file_put_contents( $file, str_replace( 'fixture', 'FIXTURE', $old ) );
+		touch( $file, $mtime );
+		$changed = $this->manifest_hash_request( $unchanged['cache'] );
+		self::assertSame( 1, $changed['hash_calls'] );
+		self::assertSame( hash_file( 'sha256', $file ), $changed['sha'] );
+		self::assertNotSame( $first['sha'], $changed['sha'] );
+
+		file_put_contents( $file, str_replace( 'FIXTURE', 'fIxTuRe', (string) file_get_contents( $file ) ) );
+		touch( $file, $mtime );
+		$again = $this->manifest_hash_request( $changed['cache'] );
+		self::assertSame( 1, $again['hash_calls'] );
+		self::assertSame( hash_file( 'sha256', $file ), $again['sha'] );
+		self::assertNotSame( $changed['sha'], $again['sha'] );
+	}
+
+	/** A file changed while it is hashed cannot be returned or cached. */
+	public function test_changed_during_hash_is_unavailable_until_read_again(): void {
+		$file = $this->publication_uploads . '/2026/manual.pdf';
+		$old  = file_get_contents( $file );
+		self::assertIsString( $old );
+		sleep( 1 );
+		$racing = $this->manifest_hash_request( array(), true, str_replace( 'fixture', 'FIXTURE', $old ) );
+		self::assertSame( 1, $racing['hash_calls'] );
+		self::assertNull( $racing['sha'] );
+		self::assertSame( array(), $racing['cache'] );
+		$next = $this->manifest_hash_request( $racing['cache'] );
+		self::assertSame( 1, $next['hash_calls'] );
+		self::assertSame( hash_file( 'sha256', $file ), $next['sha'] );
+		self::assertNotSame( hash( 'sha256', $old ), $next['sha'] );
+
+		// A recent file still needs the same before/after check, even when it is
+		// too recent to populate the cross-request cache.
+		file_put_contents( $file, $old . "\nrecent" );
+		$recent = $this->manifest_hash_request( $next['cache'], true, $old . "\nchanged" );
+		self::assertSame( 1, $recent['hash_calls'] );
+		self::assertNull( $recent['sha'] );
+		self::assertSame( array(), $recent['cache'] );
+
+		// Direct downloads must also reject a changed file and read bytes afresh.
+		$download = $this->manifest_hash_request( $next['cache'], false, $old . "\ndownload" );
+		self::assertSame( 1, $download['hash_calls'] );
+		self::assertNull( $download['sha'] );
+		self::assertSame( 0, $download['writes'] );
+		$fresh = $this->manifest_hash_request( $next['cache'], false );
+		self::assertSame( 1, $fresh['hash_calls'] );
+		self::assertSame( hash_file( 'sha256', $file ), $fresh['sha'] );
+	}
+
+	/**
+	 * Run one resolver invocation in a fresh PHP process with the previous option.
+	 *
+	 * @param mixed       $cache Previous test option.
+	 * @param bool        $manifest Whether this is a full manifest.
+	 * @param string|null $after_hash Optional file replacement after hashing.
+	 * @return array<string,mixed>
+	 */
+	private function manifest_hash_request( mixed $cache, bool $manifest = true, ?string $after_hash = null ): array {
+		$fixture = dirname( __DIR__, 4 ) . '/fixtures/publication-hash-cache.php';
+		$process = proc_open( array( PHP_BINARY, $fixture ), array( array( 'pipe', 'r' ), array( 'pipe', 'w' ), array( 'pipe', 'w' ) ), $pipes ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_open -- Isolate the resolver's request-local state in this test.
+		self::assertIsResource( $process );
+		fwrite(
+			$pipes[0],
+			(string) json_encode(
+				array(
+					'uploads'    => $this->publication_uploads,
+					'cache'      => $cache,
+					'manifest'   => $manifest,
+					'after_hash' => $after_hash,
+				),
+				JSON_THROW_ON_ERROR
+			)
+		);
+		fclose( $pipes[0] );
+		$output = stream_get_contents( $pipes[1] );
+		$error  = stream_get_contents( $pipes[2] );
+		fclose( $pipes[1] );
+		fclose( $pipes[2] );
+		self::assertSame( 0, proc_close( $process ), (string) $error );
+		$result = json_decode( (string) $output, true, 512, JSON_THROW_ON_ERROR );
+		self::assertIsArray( $result );
+		return $result;
+	}
+
 	/** The native gate precedes WordPress's existing-file bypass. */
 	public function test_original_url_gate_precedes_static_shortcut(): void {
 		$rules = "RewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteRule . /index.php [L]\n";

@@ -58,6 +58,7 @@ function addPlannerFixture() {
 		'{"project_input_contracts":["fixture"]}\n'
 	);
 	for ( const [ path, content ] of Object.entries( {
+		'bin/build.cjs': '// fixture build entry\n',
 		'build/planner/source-manifest.json':
 			'{"project_input_contracts":["fixture"]}\n',
 		'build/planner/vite-manifest.json':

@@ -167,6 +167,57 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 		},
 		[ persist ]
 	);
+	// A history operation may finish after a new send has acquired the editor.
+	// Keep its original cursor, so it can only consume the attempt it left.
+	const captureFailure = useCallback( () => cursor.current, [] );
+	const abandonCaptured = useCallback(
+		( captured: FailureCursor | null ) => {
+			const identity = context.identity;
+			if ( ! captured || identity?.scope !== captured.owner.scope ) {
+				return;
+			}
+			const journal = new FailureJournal( pageFailureStore(), identity );
+			const current = journal.rebase( captured );
+			if (
+				! current ||
+				! journal.sameCheckpoint( captured, current.cursor )
+			) {
+				return;
+			}
+			const shown = cursor.current;
+			const ownsShown =
+				shown &&
+				shown.owner.attempt === captured.owner.attempt &&
+				journal.sameCheckpoint( shown, captured );
+			if ( ! journal.consume( current.cursor, true ) ) {
+				return;
+			}
+			if ( ownsShown ) {
+				cursor.current = null;
+				failureState.current = {
+					phase: 'clear',
+					draft: null,
+					kind: null,
+				};
+				setOmitted( [] );
+				try {
+					setUnsaved( !! journal.candidate()?.cursor.memory );
+				} catch {
+					setUnsaved( true );
+				}
+			} else if ( shown ) {
+				// Removing a different attempt changed the bucket, not this one.
+				const rebased = journal.rebase( shown );
+				if (
+					rebased &&
+					journal.sameCheckpoint( shown, rebased.cursor )
+				) {
+					cursor.current = rebased.cursor;
+				}
+			}
+		},
+		[ context ]
+	);
 	/** A verified selector hands over its exact CAS cursor before any restoration. */
 	const adoptFailure = useCallback(
 		( candidate: FailureCandidate | null, next: FailureState ) => {
@@ -673,6 +724,8 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 		omitted,
 		setOmitted,
 		commitFailure,
+		captureFailure,
+		abandonCaptured,
 		placeChips,
 		openRetry,
 		previewRetry,

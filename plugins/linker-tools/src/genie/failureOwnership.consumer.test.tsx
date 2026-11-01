@@ -783,6 +783,26 @@ for ( const surface of [ 'workspace', 'home' ] as const ) {
 		expect( sendTurn ).not.toHaveBeenCalled();
 	} );
 }
+test( 'discarding an unsaved failed attempt clears its warning after New conversation', async () => {
+	vi.spyOn( Storage.prototype, 'setItem' ).mockImplementation( () => {
+		throw new Error( 'quota' );
+	} );
+	const ui = workspace();
+	stop = ui.stop;
+	await askWorkspace( 'Unsaved old question' );
+	await screen.findByText( 'Genie did not answer. Please try again.' );
+	const warning =
+		'This question could not be saved. It may be lost if you refresh or leave this page.';
+	await screen.findByText( warning );
+	await act( async () =>
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'New conversation' } )
+		)
+	);
+	await waitFor( () => expect( ui.field() ).toHaveValue( '' ) );
+	expect( screen.queryByText( warning ) ).toBeNull();
+} );
+
 test( 'ordinary unsent text survives New conversation as explicit editing recovery without an automatic model turn', async () => {
 	const ui = workspace();
 	stop = ui.stop;

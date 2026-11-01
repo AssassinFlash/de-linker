@@ -154,8 +154,118 @@ def _capability(content: str) -> tuple[str, str]:
     return content, "old"
 
 
+def plan_thank_you_blog(english: str, german: str) -> tuple[str, str]:
+    """Localize the existing Blog card without changing any other page bytes."""
+    old = '<a href="/blog/" class="lk-path-row">'
+    new = '<a href="/de/blog/" class="lk-path-row">'
+    if english.count(old) != 1 or english.count(new) != 0:
+        raise ValueError("English Blog card changed; inspect the page pair")
+    if german.count(old) == 1 and german.count(new) == 0:
+        return english, german.replace(old, new, 1)
+    if german.count(old) == 0 and german.count(new) == 1:
+        return english, german
+    raise ValueError("German Blog card changed or is ambiguous; nothing planned")
+
+
+def plan_thank_you_inquiry(english: str, german: str) -> tuple[str, str]:
+    """Align the project inquiry links and their claims with the existing form."""
+    changes = (
+        (
+            "/solution-configurator/",
+            "/proforma-request/",
+            (
+                (
+                    "the contact page and the full project request both reach the same colleague.",
+                    "the contact page and the project inquiry both reach the Linker team.",
+                ),
+                (
+                    "The full intake. Loads, phase supply, existing PV and timeline sharpen the reply.",
+                    "Share your project details. Loads, phase supply, existing PV and timeline sharpen the reply.",
+                ),
+                (
+                    "Should I send a full project request as well?",
+                    "Should I send a project request as well?",
+                ),
+                (
+                    'If you already know the site type, system goal and rough size, yes. Send the <a href="/solution-configurator/">full project request</a> and the reply comes back scoped to design, availability and price.',
+                    'If you already know the site type, system goal and rough size, yes. Send the <a href="/solution-configurator/">project request</a> and the reply comes back scoped to design, availability and price.',
+                ),
+                (
+                    "The full project request carries loads, phase supply, existing PV and timeline, so the reply starts from the whole picture. A single addition fits better through the contact page.",
+                    "Include the loads, phase supply, existing PV and timeline in your inquiry so our team can see the whole project. A single addition fits better through the contact page.",
+                ),
+            ),
+        ),
+        (
+            "/de/loesungskonfigurator/",
+            "/de/proforma-anfrage/",
+            (
+                (
+                    "erreichen sowohl die Kontaktseite als auch die vollständige Projektanfrage denselben Kollegen.",
+                    "erreichen Sie das Team von Linker über die Kontaktseite oder die Projektanfrage.",
+                ),
+                (
+                    "Die vollständige Erfassung. Lasten, Phasenversorgung, bestehende PV und Zeitplan präzisieren die Antwort.",
+                    "Beschreiben Sie Ihr Projekt. Angaben zu den Lasten, zum Netzanschluss, zur vorhandenen PV-Anlage und zum Zeitplan helfen uns bei der Auswahl.",
+                ),
+                (
+                    "Soll ich auch eine vollständige Projektanfrage senden?",
+                    "Soll ich auch eine Projektanfrage senden?",
+                ),
+                (
+                    'Wenn Sie die Projektart, das Systemziel und die ungefähre Größe bereits kennen, ja. Senden Sie die <a href="/de/loesungskonfigurator/">vollständige Projektanfrage</a> und die Antwort kommt auf Auslegung, Verfügbarkeit und Preis zugeschnitten zurück.',
+                    'Wenn Sie die Projektart, das Systemziel und die ungefähre Größe bereits kennen, ja. Senden Sie die <a href="/de/loesungskonfigurator/">Projektanfrage</a> und die Antwort kommt auf Auslegung, Verfügbarkeit und Preis zugeschnitten zurück.',
+                ),
+                (
+                    "Die vollständige Projektanfrage enthält Lasten, Phasenversorgung, bestehende PV und Zeitplan, sodass die Antwort vom Gesamtbild ausgeht. Eine einzelne Ergänzung passt besser über die Kontaktseite.",
+                    "Nennen Sie uns in Ihrer Anfrage die Lasten, den Netzanschluss, die vorhandene PV-Anlage und Ihren Zeitplan. So haben wir das gesamte Projekt im Blick. Eine einzelne Ergänzung passt besser über die Kontaktseite.",
+                ),
+            ),
+        ),
+    )
+    planned: list[str] = []
+    states: list[str] = []
+    for content, (old_path, new_path, edits) in zip(
+        (english, german), changes, strict=True
+    ):
+        # The FAQ text contains the path, so compare its final form after the
+        # same path substitution used by the other three links.
+        final_edits = tuple(
+            (old, new.replace(old_path, new_path)) for old, new in edits
+        )
+        old = (
+            content.count(old_path) == 4
+            and content.count(new_path) == 0
+            and all(
+                content.count(a) == 1 and content.count(b) == 0 for a, b in final_edits
+            )
+        )
+        final = (
+            content.count(old_path) == 0
+            and content.count(new_path) == 4
+            and all(
+                content.count(a) == 0 and content.count(b) == 1 for a, b in final_edits
+            )
+        )
+        if not (old or final):
+            raise ValueError("Thank You inquiry content changed or is partial")
+        if old:
+            for before, after in edits:
+                content = content.replace(before, after, 1)
+            content = content.replace(old_path, new_path)
+        planned.append(content)
+        states.append("old" if old else "final")
+    if states[0] != states[1]:
+        raise ValueError("Partially changed Thank You language pair")
+    return planned[0], planned[1]
+
+
 def plan_pair(family: str, english: str, german: str) -> tuple[str, str]:
     """Accept a complete old or final pair; preserve all other source bytes."""
+    if family == "thank_you_blog":
+        return plan_thank_you_blog(english, german)
+    if family == "thank_you_inquiry":
+        return plan_thank_you_inquiry(english, german)
     families = {
         "utility": ("tv-utility-page-v1", _utility),
         "services": ("service-redesign", _services),
