@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import base64
 import hashlib
 import importlib.util
 import json
 import os
+import re
 import stat
 import subprocess
 from pathlib import Path
@@ -16,8 +18,24 @@ import pytest
 HERE = Path(__file__).resolve().parent
 
 
-def test_controller_cli_drops_research_credentials_before_transport(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+@pytest.mark.parametrize(
+    ("site_url", "expected_revision"),
+    [
+        (
+            "https://de-linker.com",
+            "3af07553f4a39a73dc37954507f9505b1fc2020e5bb8d3e6d3366aea474cc5f2",
+        ),
+        (
+            "http://127.0.0.1:9347",
+            "f2ad0af83a3ded16e161a7024a6f997c3e31f70c1c22ff0ad9231c75f2ad5846",
+        ),
+    ],
+)
+def test_controller_cli_selects_reviewed_site_binding_and_filters_credentials(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    site_url: str,
+    expected_revision: str,
 ) -> None:
     spec = importlib.util.spec_from_file_location(
         "controller_facts_migration", HERE.parent / "548-controller-facts.py"
@@ -40,10 +58,21 @@ def test_controller_cli_drops_research_credentials_before_transport(
         command: list[str], **kwargs: object
     ) -> subprocess.CompletedProcess[str]:
         observed["env"] = kwargs.get("env")
+        source = kwargs["input"]
+        assert isinstance(source, str)
+        encoded = re.search(r"'([A-Za-z0-9+/=]{100,})'", source)
+        assert encoded is not None
+        request = json.loads(base64.b64decode(encoded[1]))
+        binding = request["plan"]["controller"]["installation_item"]["source"]
+        observed["revision"] = binding["document_revision"]
+        assert binding["product_id"] == 2409 and binding["page"] == 52
+        assert binding["blob_sha256"] == (
+            "98bbe6f74e4d4d0e2437c3917e1fb2365c352ad01b5c46d26ad82876cb18850d"
+        )
         payload = {
             "schema_version": 1,
             "products": {},
-            "site": "https://fixture.invalid",
+            "site": site_url,
             "state": "restored",
             "observed_source_revision": "a" * 64,
             "changes": [],
@@ -57,15 +86,16 @@ def test_controller_cli_drops_research_credentials_before_transport(
         controller,
         "remote_target",
         lambda: Target(
-            "fixture", "/fixture", "https://fixture.invalid", ("wp",), None, None
+            "fixture", "/fixture", site_url, ("wp",), None, None
         ),
     )
+    monkeypatch.setattr(controller, "local_target", lambda _: controller.remote_target())
     monkeypatch.setattr(
         controller.sys,
         "argv",
         [
             "controller",
-            "--production",
+            *(["--production"] if site_url.startswith("https") else ["--instance", "p548"]),
             "preview",
             "--receipt",
             str(tmp_path / "receipt"),
@@ -74,7 +104,30 @@ def test_controller_cli_drops_research_credentials_before_transport(
 
     assert controller.main() == 0
     assert observed["env"] == {"LINKER_DEPLOYMENT_SENTINEL": "preserved"}
+    assert observed["revision"] == expected_revision
     assert os.environ["APIFY_TOKEN_ALT"] == "fake-research-token"
+
+
+def test_controller_binding_refuses_unreviewed_target_without_mutating_plan() -> None:
+    spec = importlib.util.spec_from_file_location(
+        "controller_facts_target", HERE.parent / "548-controller-facts.py"
+    )
+    assert spec is not None and spec.loader is not None
+    controller = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(controller)
+    original = json.loads((HERE.parent / "548-controller-facts.json").read_bytes())
+    before = json.dumps(original, sort_keys=True)
+    with pytest.raises(ValueError, match="No reviewed installation document version"):
+        controller.plan_for_target(original, "https://unreviewed.invalid")
+    selected = controller.plan_for_target(original, "https://de-linker.com")
+    assert json.dumps(original, sort_keys=True) == before
+    old_source = original["controller"]["installation_item"]["source"]
+    new_source = selected["controller"]["installation_item"]["source"]
+    assert {
+        key: value for key, value in old_source.items() if key != "document_revision"
+    } == {
+        key: value for key, value in new_source.items() if key != "document_revision"
+    }
 
 
 def load_script() -> ModuleType:
