@@ -11,6 +11,7 @@ import pytest
 from test_sync_feed import Restarter, feed_document, load_sync
 from test_sync_feed import feed_url as feed_url
 
+from linker_engine import version
 from linker_engine.selections import Selections
 
 
@@ -112,21 +113,33 @@ def test_readonly_gc_fails_visibly_but_still_publishes_and_acknowledges_current_
                 }
             }
             if action == "claim"
-            else {}
+            else {"accepted": True, "complete": True}
         )
 
     monkeypatch.setattr(sync, "job_request", job)
     restarts = Restarter()
 
     def loaded() -> dict[str, Any]:
-        actual = json.loads((state / "feed.json").read_text())
+        raw = (state / "feed.json").read_bytes()
+        actual = json.loads(raw)
+        compatibility = json.dumps(
+            actual["compatibility"],
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+        ).encode()
         return {
+            "version": version.digest(
+                version.source_bytes(Path(version.__file__).parent), raw, compatibility
+            ),
             "source_revision": actual["source_revision"],
             "compatibility_revision": actual["compatibility_revision"],
         }
 
+    preparation_results: list[int] = []
+
     def prepare(**kwargs: Any) -> int:
-        return int(
+        result = int(
             real_sync(
                 feed_url=feed_url,
                 feed_target=state / "feed.json",
@@ -138,14 +151,19 @@ def test_readonly_gc_fails_visibly_but_still_publishes_and_acknowledges_current_
                 **kwargs,
             )
         )
+        preparation_results.append(result)
+        return result
 
     monkeypatch.setattr(sync, "sync", prepare)
     assert sync.main([]) == 1, (
         "the unit must report failed retention despite preparation"
     )
+    assert preparation_results == [0], lines
     assert restarts.calls == 1
     assert (state / "feed.json").is_symlink()
-    assert calls[-1][0] == "ack" and calls[-1][1]["status"] == "ready"
+    assert [action for action, _ in calls] == ["claim", "ack"]
+    assert calls[-1][1]["status"] == "ready"
+    assert calls[-1][1]["loaded_revision"] == document["source_revision"]
     assert any("receipt retention failed" in line for line in lines)
     assert any("OperationalError" in line for line in lines)
     with connect(path) as database:
