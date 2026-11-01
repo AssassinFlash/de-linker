@@ -534,8 +534,8 @@ final class Publication {
 		$manifest['source_revision'] = self::revision( $manifest );
 		// Display titles are current WordPress metadata, not PDF evidence. A
 		// wording change must not revoke the underlying document's bound facts.
-		$stored_titles  = get_option( Materials::DE_DOCUMENT_TITLES, array() );
-		$stored_titles  = is_array( $stored_titles ) ? $stored_titles : array();
+		$stored_titles = get_option( Materials::DE_DOCUMENT_TITLES, array() );
+		$stored_titles = is_array( $stored_titles ) ? $stored_titles : array();
 		foreach ( $manifest['documents'] as &$document ) {
 			$reviewed             = $stored_titles[ $document['title'] ] ?? '';
 			$document['title_de'] = is_string( $reviewed ) ? trim( $reviewed ) : '';

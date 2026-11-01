@@ -958,7 +958,6 @@ class DocumentIndex:
                 if scopes.get(cid, {}).get("basis") == "hs3_conditional_certificate":
                     relation = scopes[cid]["hs3_conditional_certificate"]
                     source_docs = relation["source_documents"]
-                    output[row]["title"] = "EU Declaration of Conformity"
                     output[row]["conditional_certificate"] = True
                     output[row]["product_models"] = [relation["model"]]
                     output[row]["supporting_documents"] = []

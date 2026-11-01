@@ -6,7 +6,7 @@ import json
 import sqlite3
 from copy import deepcopy
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from test_chunking import Words
 from test_hs3_evidence import inputs
@@ -151,7 +151,10 @@ def test_hs3_conditional_sources_reach_the_consumer_and_revoke(tmp_path: Path) -
         hit = next(
             h for h in payload["hits"] if h.get("conditional_certificate") is True
         )
-        assert hit["title"] == "EU Declaration of Conformity"
+        main_doc = next(
+            d for d in raw["documents"] if d["document_id"] == hit["document_id"]
+        )
+        assert hit["title"] == main_doc["title"]
         assert hit["product_models"] == ["HS3-12K-T2-W/G-PX"]
         assert hit["figures"] == {
             f"{hit['chunk_id']}.n{i}": str(i) for i in range(1, 9)
@@ -167,6 +170,10 @@ def test_hs3_conditional_sources_reach_the_consumer_and_revoke(tmp_path: Path) -
         # Each supporting source gets its own current reviewed title; an
         # unmapped source retains its own English title. No index rebuild.
         localized = deepcopy(raw)
+        localized_main = next(
+            d for d in localized["documents"] if d["document_id"] == hit["document_id"]
+        )
+        localized_main["title_de"] = "EU-Konformitätserklärung für HS3"
         first_support, second_support = hit["supporting_documents"]
         first_doc = next(
             d
@@ -180,12 +187,23 @@ def test_hs3_conditional_sources_reach_the_consumer_and_revoke(tmp_path: Path) -
         )
         first_doc["title_de"] = "Geprüfter deutscher Titel"
         second_doc["title_de"] = ""
-        for language in ("en", "de"):
+        languages: tuple[Literal["en", "de"], ...] = ("en", "de")
+        for language in languages:
             localized_hit, localized_facts = search(
                 Snapshot.read(localized), pid, language
             )
             localized_hit = next(
                 h for h in localized_hit["hits"] if h.get("conditional_certificate")
+            )
+            expected_main = (
+                localized_main["title_de"]
+                if language == "de"
+                else localized_main["title"]
+            )
+            assert localized_hit["title"] == expected_main
+            assert (
+                localized_hit["chunk_id"]
+                in localized_facts.conditional_certificate_answers
             )
             sources = {
                 s["document_id"]: s for s in localized_hit["supporting_documents"]
@@ -203,8 +221,11 @@ def test_hs3_conditional_sources_reach_the_consumer_and_revoke(tmp_path: Path) -
                 localized_facts,
             )
             labels = {
-                b.ref: b.label for b in rendered.blocks if isinstance(b, DocumentBlock)
+                b.ref: b.label
+                for b in rendered.blocks
+                if isinstance(b, DocumentBlock) and b.label is not None
             }
+            assert labels[localized_hit["chunk_id"]].startswith(expected_main)
             assert labels[first_support["chunk_id"]].startswith(expected_first)
             assert labels[second_support["chunk_id"]].startswith(second_doc["title"])
         model_hit = next(
@@ -222,7 +243,7 @@ def test_hs3_conditional_sources_reach_the_consumer_and_revoke(tmp_path: Path) -
             facts.conditional_certificate_answers[hit["chunk_id"]]
             == hit["conditional_certificate_answers"]
         )
-        for language in ("en", "de"):
+        for language in languages:
             answer = TurnOutput(
                 language=language,
                 blocks=[

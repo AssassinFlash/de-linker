@@ -833,7 +833,8 @@ def _from_knowledge(gathered: TurnFacts, payload: dict[str, Any], locale: str) -
             support = hit.get("supporting_documents")
             if (
                 hit.get("doc_type") != "certificate"
-                or hit.get("title") != "EU Declaration of Conformity"
+                or not isinstance(hit.get("title"), str)
+                or not hit["title"].strip()
                 or hit.get("page") != 1
                 or not isinstance(hit.get("doc_url"), str)
                 or not hit["doc_url"]

@@ -317,7 +317,14 @@ def test_only_used_unit_requires_complete_condition_and_three_source_links(
 
 @pytest.mark.parametrize(
     "mutation",
-    ["missing_flag", "missing_support", "edited_number", "edited_text", "bad_answer"],
+    [
+        "missing_flag",
+        "missing_support",
+        "edited_number",
+        "edited_text",
+        "wrong_source",
+        "bad_answer",
+    ],
 )
 def test_consumer_rejects_incomplete_or_changed_conditional_evidence(
     mutation: str,
@@ -333,6 +340,8 @@ def test_consumer_rejects_incomplete_or_changed_conditional_evidence(
         hit["figures"][cid + ".n8"] = "9"
     elif mutation == "edited_text":
         hit["text"] = hit["text"].replace("G-PX", "B-PX")
+    elif mutation == "wrong_source":
+        hit["document_id"] = hit["supporting_documents"][0]["document_id"]
     else:
         hit["conditional_certificate_answers"]["en"] = "Unconditional certification."
     facts = collect("linker/search-knowledge", {"hits": [hit]})

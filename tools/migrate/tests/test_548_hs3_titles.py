@@ -9,6 +9,7 @@ import shutil
 import subprocess
 from pathlib import Path
 from types import ModuleType
+from typing import Any
 
 import pytest
 
@@ -25,7 +26,7 @@ def migration() -> ModuleType:
     return module
 
 
-def fixture(module: ModuleType) -> dict:
+def fixture(module: ModuleType) -> dict[str, Any]:
     products = {}
     old_titles = []
     for pid, (de, kw, sku) in module.PRODUCTS.items():
@@ -105,15 +106,15 @@ namespace {
  $GLOBALS['fx']=json_decode(base64_decode('FIXTURE'),true,512,JSON_THROW_ON_ERROR);
  $source=base64_decode('SOURCE');
  $GLOBALS['option_raw']=serialize(array_fill_keys($GLOBALS['fx']['old_titles'],'alt')+['keep'=>'other']);
- $GLOBALS['bad_file']=false; $GLOBALS['fail_on_id']=0; $GLOBALS['lock_fail']=false; $GLOBALS['extra_association']=false; $GLOBALS['site']='https://de-linker.com';
+ $GLOBALS['bad_file']=false; $GLOBALS['fail_on_id']=0; $GLOBALS['lock_fail']=false; $GLOBALS['extra_association']=false; $GLOBALS['binding_query_fail']=false; $GLOBALS['bindings']=[]; $GLOBALS['site']='https://de-linker.com';
  class WP_CLI { public static function error($message) { throw new \RuntimeException($message); } }
  class FakeDB {
-  public string $options='wp_options'; public string $postmeta='wp_postmeta';
+  public string $options='wp_options'; public string $postmeta='wp_postmeta'; public string $last_error='';
   public function prepare($query,...$args) { return [$query,$args]; }
   public function get_var($q) { return $GLOBALS['lock_fail'] && str_contains($q[0],'GET_LOCK') ? '0' : '1'; }
   public function get_row($q,$mode) { return ['option_id'=>'42','option_value'=>$GLOBALS['option_raw']]; }
   public function esc_like($s) { return $s; }
-  public function get_results($q,$mode) { $out=[]; foreach($GLOBALS['fx']['products'] as $id=>$p) $out[]=['post_id'=>(string)$id,'meta_id'=>(string)(100+(int)$id)]; if($GLOBALS['extra_association']) $out[]=['post_id'=>'3000','meta_id'=>'9999']; return $out; }
+  public function get_results($q,$mode) { $this->last_error=''; if(str_contains($q[0],'meta_key IN')) { if($GLOBALS['binding_query_fail']) { $this->last_error='fixture query failure'; return []; } foreach($GLOBALS['bindings'] as $binding) if(in_array($binding['key'],array_slice($q[1],0,3),true)) foreach(array_slice($q[1],3) as $needle) if(str_contains($binding['value'],trim($needle,'%'))) return [['meta_id'=>'1']]; return []; } $out=[]; foreach($GLOBALS['fx']['products'] as $id=>$p) $out[]=['post_id'=>(string)$id,'meta_id'=>(string)(100+(int)$id)]; if($GLOBALS['extra_association']) $out[]=['post_id'=>'3000','meta_id'=>'9999']; return $out; }
   public function query($q) { [$sql,$args]=$q; [$to,$id,$name,$from]=$args; if($id!==42 || $name!=='linker_de_document_titles' || $GLOBALS['option_raw']!==$from) return 0; $GLOBALS['option_raw']=$to; return 1; }
  }
  $GLOBALS['wpdb']=new FakeDB();
@@ -140,6 +141,9 @@ namespace {
  $initial=$GLOBALS['fx']['products']; $initial_option=$GLOBALS['option_raw'];
  $receipt=call_migration('preview'); must(($receipt['scope']??'')==='hs3-document-titles-v1','preview');
  must($GLOBALS['fx']['products']===$initial && $GLOBALS['option_raw']===$initial_option,'preview changed data');
+ $GLOBALS['binding_query_fail']=true; must(str_contains(call_migration('preview')['error']??'','binding check failed'),'query error accepted by preview'); must(str_contains(call_migration('apply',$receipt)['error']??'','binding check failed'),'query error accepted by apply'); must($GLOBALS['fx']['products']===$initial && $GLOBALS['option_raw']===$initial_option,'query error changed data'); $GLOBALS['binding_query_fail']=false;
+ foreach(['_linker_installation_facts','_linker_package_contents','_linker_compatibility_claims'] as $key) foreach($GLOBALS['fx']['docs'] as $d) { $GLOBALS['bindings']=[['key'=>$key,'value'=>serialize(['document_id'=>$d['id'],'document_revision'=>'bound'])]]; must(str_contains(call_migration('preview')['error']??'','bound to engineering metadata'),'bound preview accepted'); must(str_contains(call_migration('apply',$receipt)['error']??'','bound to engineering metadata'),'new binding after preview accepted'); must($GLOBALS['fx']['products']===$initial && $GLOBALS['option_raw']===$initial_option,'binding refusal changed data'); }
+ $GLOBALS['bindings']=[['key'=>'_linker_package_contents','value'=>serialize(['document_id'=>'unrelated'])]]; must(!isset(call_migration('preview')['error']),'unrelated binding rejected'); $GLOBALS['bindings']=[];
  $tampered=$receipt; $tampered['products']['1185']['after'][0]['title']='unexpected change'; must(isset(call_migration('apply',$tampered)['error']),'unrelated receipt change accepted');
  must(isset(call_migration('preview',null,'local')['error']),'wrong target accepted');
  $GLOBALS['site']='http://127.0.0.1:9347'; must((call_migration('preview',null,'local')['site']??'')===$GLOBALS['site'],'local preview rejected'); $GLOBALS['site']='https://de-linker.com';
@@ -152,6 +156,9 @@ namespace {
  $GLOBALS['fx']['products']['2199']['rows'][0]['title']='Keep me'; $GLOBALS['fail_on_id']=0;
  $applied=call_migration('apply',$receipt); must(!isset($applied['error']) && count(array_unique($applied['states']))===1 && reset($applied['states'])==='after','resume apply');
  $verified=call_migration('verify',$receipt); must(!isset($verified['error']),'verify after apply');
+ $applied_rows=$GLOBALS['fx']['products']; $applied_option=$GLOBALS['option_raw'];
+ $GLOBALS['binding_query_fail']=true; must(str_contains(call_migration('rollback',$receipt)['error']??'','binding check failed'),'query error accepted by rollback'); must($GLOBALS['fx']['products']===$applied_rows && $GLOBALS['option_raw']===$applied_option,'query error changed rollback state'); $GLOBALS['binding_query_fail']=false;
+ foreach(['_linker_installation_facts','_linker_package_contents','_linker_compatibility_claims'] as $key) foreach($GLOBALS['fx']['docs'] as $d) { $GLOBALS['bindings']=[['key'=>$key,'value'=>serialize(['document_id'=>$d['id'],'document_revision'=>'bound'])]]; must(str_contains(call_migration('rollback',$receipt)['error']??'','bound to engineering metadata'),'bound rollback accepted'); must($GLOBALS['fx']['products']===$applied_rows && $GLOBALS['option_raw']===$applied_option,'binding refusal changed rollback state'); } $GLOBALS['bindings']=[];
  foreach($GLOBALS['fx']['products'] as $id=>$p) { must($p['rows'][0]===$initial[$id]['rows'][0],'unrelated row changed'); foreach([1,2] as $i) { $a=$p['rows'][$i]; $b=$initial[$id]['rows'][$i]; unset($a['title'],$b['title']); must($a===$b,'unrelated row fields changed'); } }
  $map=unserialize($GLOBALS['option_raw']); foreach(unserialize($initial_option) as $key=>$value) must(($map[$key]??null)===$value,'old title mapping changed'); foreach($GLOBALS['fx']['docs'] as $d) must(($map[$d['title']]??null)===$d['de'],'new German title missing');
  $applied_option=$GLOBALS['option_raw']; $map=unserialize($applied_option); $map['keep']='concurrent'; $GLOBALS['option_raw']=serialize($map);
