@@ -38,7 +38,9 @@ GEOMETRIC_PV_INPUT_CONTRACT: InputContract = (
 )
 PLANT_PV_INPUT_CONTRACT: InputContract = "pv_plant_string_plan_v1"
 ELECTRICAL_INPUT_CONTRACT: InputContract = "installation_circuit_electrical_v1"
-_TERMINAL_COVERED_CONTRACTS: tuple[str, ...] = (
+# Public complete-input writers, in release order. Each understands exactly
+# the fields introduced by itself and every earlier released writer.
+SUPPORTED_INPUT_CONTRACTS: tuple[str, ...] = (
     INPUT_CONTRACT,
     DIRECT_BEAM_INPUT_CONTRACT,
     GEOMETRIC_PV_INPUT_CONTRACT,
@@ -46,20 +48,10 @@ _TERMINAL_COVERED_CONTRACTS: tuple[str, ...] = (
     ELECTRICAL_INPUT_CONTRACT,
     GRID_CONNECTION_INPUT_CONTRACT,
     TERMINAL_INPUT_CONTRACT,
-)
-_REFERENCE_CURRENT_COVERED_CONTRACTS: tuple[str, ...] = (
-    *_TERMINAL_COVERED_CONTRACTS,
     REFERENCE_CURRENT_INPUT_CONTRACT,
-)
-_MATERIALS_COVERED_CONTRACTS: tuple[str, ...] = (
-    *_REFERENCE_CURRENT_COVERED_CONTRACTS,
     MATERIALS_INPUT_CONTRACT,
-)
-_COUNTRY_RULES_COVERED_CONTRACTS: tuple[str, ...] = (
-    *_MATERIALS_COVERED_CONTRACTS,
     COUNTRY_RULES_INPUT_CONTRACT,
 )
-SUPPORTED_INPUT_CONTRACTS = _COUNTRY_RULES_COVERED_CONTRACTS
 
 
 def required_contracts(inputs: Mapping[str, object]) -> tuple[str, ...]:
@@ -127,49 +119,12 @@ def require_input_contract(
     required = set(required_contracts(incoming))
     if existing is not None:
         required.update(required_contracts(existing))
-    # Each complete writer understands only its declared feature generation.
-    # Concrete coverage sets keep older tokens from covering future additions.
-    covered = (
-        _COUNTRY_RULES_COVERED_CONTRACTS
-        if input_contract == COUNTRY_RULES_INPUT_CONTRACT
-        else _MATERIALS_COVERED_CONTRACTS
-        if input_contract == MATERIALS_INPUT_CONTRACT
-        else _REFERENCE_CURRENT_COVERED_CONTRACTS
-        if input_contract == REFERENCE_CURRENT_INPUT_CONTRACT
-        else _TERMINAL_COVERED_CONTRACTS
-        if input_contract == TERMINAL_INPUT_CONTRACT
-        else (
-            INPUT_CONTRACT,
-            DIRECT_BEAM_INPUT_CONTRACT,
-            GEOMETRIC_PV_INPUT_CONTRACT,
-            PLANT_PV_INPUT_CONTRACT,
-            ELECTRICAL_INPUT_CONTRACT,
-            GRID_CONNECTION_INPUT_CONTRACT,
-        )
-        if input_contract == GRID_CONNECTION_INPUT_CONTRACT
-        else (
-            INPUT_CONTRACT,
-            DIRECT_BEAM_INPUT_CONTRACT,
-            GEOMETRIC_PV_INPUT_CONTRACT,
-            PLANT_PV_INPUT_CONTRACT,
-            ELECTRICAL_INPUT_CONTRACT,
-        )
-        if input_contract == ELECTRICAL_INPUT_CONTRACT
-        else (
-            INPUT_CONTRACT,
-            DIRECT_BEAM_INPUT_CONTRACT,
-            GEOMETRIC_PV_INPUT_CONTRACT,
-            PLANT_PV_INPUT_CONTRACT,
-        )
-        if input_contract == PLANT_PV_INPUT_CONTRACT
-        else (INPUT_CONTRACT, DIRECT_BEAM_INPUT_CONTRACT, GEOMETRIC_PV_INPUT_CONTRACT)
-        if input_contract == GEOMETRIC_PV_INPUT_CONTRACT
-        else (INPUT_CONTRACT, DIRECT_BEAM_INPUT_CONTRACT)
-        if input_contract == DIRECT_BEAM_INPUT_CONTRACT
-        else (INPUT_CONTRACT,)
-        if input_contract == INPUT_CONTRACT
-        else ()
+    generation = (
+        SUPPORTED_INPUT_CONTRACTS.index(input_contract) + 1
+        if input_contract is not None
+        else 0
     )
+    covered = SUPPORTED_INPUT_CONTRACTS[:generation]
     if not required.issubset(covered):
         raise ProjectInputContractRequired(
             "this complete-input write requires an updated editor"
