@@ -81,6 +81,14 @@ class ProjectInputs(Command):
             from .grid_connection import GridConnection
 
             GridConnection.model_validate(value["grid_connection"])
+        if "country_rule_inputs" in value:
+            from .country_rules import CountryRuleInputs
+
+            if "grid_connection" not in value:
+                raise ValueError(
+                    "country rule inputs require grid connection information"
+                )
+            CountryRuleInputs.model_validate(value["country_rule_inputs"])
         if "profile_selections" in value:
             from .profile_selections import ProfileSelections
 

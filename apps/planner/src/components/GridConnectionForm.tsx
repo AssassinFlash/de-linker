@@ -10,10 +10,12 @@ import {
 
 export function GridConnectionForm({
 	value,
+	hasRules = false,
 	onChange,
 	onValidity,
 }: {
 	value: GridConnection | undefined;
+	hasRules?: boolean;
 	onChange: (value: GridConnection | undefined) => void;
 	onValidity: (valid: boolean) => void;
 }) {
@@ -180,7 +182,12 @@ export function GridConnectionForm({
 						className="lp-button"
 						onClick={() => change(undefined)}
 					>
-						{__("Remove grid connection information", "linker-tools")}
+						{hasRules
+							? __(
+									"Remove grid connection information and national rule inputs",
+									"linker-tools",
+								)
+							: __("Remove grid connection information", "linker-tools")}
 					</button>
 				</>
 			)}

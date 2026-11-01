@@ -368,6 +368,7 @@ export function EquipmentResult({
 					)}
 
 					<GridConnectionResult
+						locale={locale}
 						assessment={
 							assessment.country_assessment
 								? readObject(assessment.country_assessment)

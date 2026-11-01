@@ -144,6 +144,10 @@ class DiffuseFractions:
 class ArrayPower:
     dc_w: Vector
     witness: Object
+    # Full-precision model intermediates for same-execution electrical work.
+    # Witness spelling remains diagnostic and is never fed back into physics.
+    effective_irradiance_w_m2: Vector | None = None
+    cell_temperature_c: Vector | None = None
 
 
 def array_power(
@@ -424,6 +428,8 @@ def array_power(
                 else {}
             ),
         },
+        effective,
+        cell,
     )
 
 

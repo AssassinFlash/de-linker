@@ -1,0 +1,123 @@
+{
+  "$defs": {
+    "Basis": {
+      "enum": [
+        "fr_generation_pmax",
+        "nl_storage_max_active",
+        "de_pv_installed"
+      ],
+      "type": "string"
+    },
+    "Positive": {
+      "exclusiveMinimum": 0,
+      "type": "number"
+    },
+    "SchemaVersion": {
+      "maximum": 1,
+      "minimum": 1,
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "$ref": "#/$defs/SchemaVersion"
+    },
+    "basis": {
+      "$ref": "#/$defs/Basis"
+    },
+    "rule_date": {
+      "anyOf": [
+        {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Rule Date"
+    },
+    "power_kw": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Positive"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "connection_voltage_kv": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Positive"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "de_before_control_test": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "De Before Control Test"
+    },
+    "de_remuneration": {
+      "anyOf": [
+        {
+          "enum": [
+            "feed_in_or_tenant",
+            "other"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "De Remuneration"
+    },
+    "de_plug_in_exception": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "De Plug In Exception"
+    },
+    "fr_enedis_full_self_consumption": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Fr Enedis Full Self Consumption"
+    }
+  },
+  "required": [
+    "schema_version",
+    "basis",
+    "rule_date",
+    "power_kw",
+    "connection_voltage_kv",
+    "de_before_control_test",
+    "de_remuneration",
+    "de_plug_in_exception",
+    "fr_enedis_full_self_consumption"
+  ],
+  "title": "CountryRuleInputs",
+  "type": "object"
+}

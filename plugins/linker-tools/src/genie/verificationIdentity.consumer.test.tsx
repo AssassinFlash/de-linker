@@ -1,7 +1,6 @@
 // @vitest-environment jsdom
 /** Actual App, native DraftContext and protected turn transport share one owner. */
 import { webcrypto } from 'node:crypto';
-import { setImmediate as realImmediate } from 'node:timers';
 import {
 	act,
 	cleanup,
@@ -80,6 +79,8 @@ test.each( [
 		const selection = deferred< Response >();
 		let opened = false;
 		const history = [ { id: 547, title: 'Earlier conversation' } ];
+		const widgets = [ deferred< void >(), deferred< void >() ];
+		let rendered = 0;
 		const renderWidget = vi.fn(
 			(
 				_node: HTMLElement,
@@ -90,6 +91,7 @@ test.each( [
 			) => {
 				interactive = options[ 'before-interactive-callback' ];
 				complete = options.callback;
+				widgets[ rendered++ ]?.resolve();
 				return 'synthetic-widget';
 			}
 		);
@@ -259,11 +261,7 @@ test.each( [
 				persistent: true,
 			} ).candidate()?.record
 		).toMatchObject( { text: question } );
-		await act( async () => {
-			for ( let i = 0; i < 20 && ! renderWidget.mock.calls.length; i++ ) {
-				await new Promise( ( resolve ) => realImmediate( resolve ) );
-			}
-		} );
+		await act( () => widgets[ 0 ].promise );
 		expect( renderWidget ).toHaveBeenCalledOnce();
 		await act( async () => interactive() );
 		expect( screen.getByText( question ) ).toBeVisible();
@@ -311,6 +309,7 @@ test.each( [
 		await act( async () => {
 			fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) );
 		} );
+		await act( () => widgets[ 1 ].promise );
 		expect( renderWidget ).toHaveBeenCalledTimes( 2 );
 		await act( async () => complete( 'synthetic-token' ) );
 		expect( screen.getByText( answer ) ).toBeVisible();

@@ -3,6 +3,26 @@
 from __future__ import annotations
 
 TEXT = {
+    "geometric_pv_series_tracker": (
+        "Tracker / input / modules",
+        "Tracker / Eingang / Module",
+    ),
+    "geometric_pv_series_window": (
+        "Cited tracker window / maximum current",
+        "Belegter Tracker-Spannungsbereich / maximaler Strom",
+    ),
+    "geometric_pv_series_peak": (
+        "Scenario peak string current / DC power",
+        "Höchster Strangstrom / DC-Leistung im Szenario",
+    ),
+    "geometric_pv_title_series": (
+        "PV reference with geometric shading and series I–V",
+        "PV-Referenz mit geometrischer Verschattung und String-I–V",
+    ),
+    "geometric_pv_scope_series": (
+        "The declared geometry and weather determine each module's irradiance and temperature. A fitted whole-module single-diode curve combines the assigned modules at a common string current; one string per tracker is evaluated within the cited voltage and current limits, followed by the declared PVWatts converter scenario. This is not a validated manufacturer performance curve. Partial-cell shading, bypass diodes, reverse breakdown, parallel strings on one tracker, real MPPT dynamics and equipment or country approval remain unassessed.",
+        "Die angegebene Geometrie und Wetterquelle bestimmen Einstrahlung und Temperatur jedes Moduls. Eine angepasste Eindiodenkennlinie für das gesamte Modul verbindet die zugeordneten Module über einen gemeinsamen Stringstrom. Je Tracker wird ein String innerhalb der belegten Spannungs- und Stromgrenzen berechnet; anschließend folgt das angegebene PVWatts-Wechselrichterszenario. Dies ist keine validierte Herstellerkennlinie. Teilzellverschattung, Bypassdioden, Rückwärtsdurchbruch, parallele Strings an einem Tracker, das tatsächliche MPPT-Verhalten sowie Geräte- und Länderfreigaben bleiben ungeprüft.",
+    ),
     "geometric_pv_title": (
         "PV reference with geometric direct-beam shading",
         "PV-Referenz: geometrische Verschattung der Direktstrahlung",
@@ -1117,6 +1137,169 @@ TEXT = {
         "In dieser Prüfung ist keine Zustimmung nachgewiesen",
     ),
     "grid_source_read": ("Source reviewed", "Quelle geprüft am"),
+    "country_rule_title": (
+        "Dated national rule reading",
+        "Landesregel zum gewählten Datum",
+    ),
+    "country_rule_scope": (
+        "This is a conditional reference for the selected rule date and declared project scope and values. Verify whether the cited rules apply today and on the project's grid connection date. The grid operator, connection voltage, local requirements, equipment compliance and grid permission need separate verification.",
+        "Diese bedingte Orientierung bezieht sich auf das gewählte Regelungsdatum und die angegebenen Projektbedingungen und Werte. Prüfen Sie, ob die zitierten Regeln aktuell und zum Netzanschlussdatum des Projekts gelten. Netzbetreiber, Anschlussspannung, örtliche Anforderungen, Gerätekonformität und Anschlussgenehmigung müssen gesondert geprüft werden.",
+    ),
+    "country_rule_date": ("Rule date", "Regelungsdatum"),
+    "country_rule_basis": ("Power basis", "Leistungsbezug"),
+    "country_rule_fr_generation_pmax": (
+        "French generation-unit Pmax",
+        "Pmax der französischen Erzeugungseinheit",
+    ),
+    "country_rule_nl_storage_max_active": (
+        "Dutch storage-unit maximum deliverable active power",
+        "Maximal abgebbare Wirkleistung der niederländischen Speichereinheit",
+    ),
+    "country_rule_de_pv_installed": (
+        "Installed solar power under EEG § 9",
+        "Installierte PV-Leistung nach EEG § 9",
+    ),
+    "country_rule_power": ("Declared power", "Angegebene Leistung"),
+    "country_rule_voltage": (
+        "Connection-point voltage",
+        "Spannung am Netzanschlusspunkt",
+    ),
+    "country_rule_before_test": (
+        "Meter or control equipment missing, or first successful control test pending",
+        "Messsystem oder Steuerungseinrichtung fehlt oder erste erfolgreiche Ansteuerungsprüfung steht aus",
+    ),
+    "country_rule_remuneration": ("EEG remuneration", "EEG-Vergütungsform"),
+    "country_rule_feed_in_or_tenant": (
+        "Feed-in tariff or tenant-electricity supplement",
+        "Einspeisevergütung oder Mieterstromzuschlag",
+    ),
+    "country_rule_other": ("Other or none", "Andere oder keine"),
+    "country_rule_plug_in": (
+        "Complete plug-in solar exception",
+        "Vollständige Steckersolar-Ausnahme",
+    ),
+    "country_rule_full_self_consumption": (
+        "Full self-consumption without public-grid injection",
+        "Vollständiger Eigenverbrauch ohne Einspeisung ins öffentliche Netz",
+    ),
+    "country_rule_yes": ("Yes", "Ja"),
+    "country_rule_no": ("No", "Nein"),
+    "country_rule_unknown": ("Not stated", "Nicht angegeben"),
+    "country_rule_conditional": ("Conditional", "Bedingt"),
+    "country_rule_unresolved": ("Unresolved", "Offen"),
+    "country_rule_result": ("Result", "Ergebnis"),
+    "country_rule_missing": ("Information still missing", "Noch fehlende Angaben"),
+    "country_rule_source": ("Source", "Quelle"),
+    "country_rule_snapshot": ("Evidence snapshot date", "Stand der Quellenprüfung"),
+    "country_rule_hash": ("Source text SHA-256", "SHA-256 des Quellentextes"),
+    "country_rule_fr_generation_type": (
+        "French generation-unit category",
+        "Kategorie der französischen Erzeugungseinheit",
+    ),
+    "country_rule_nl_storage_type": (
+        "Dutch storage-unit corresponding requirements",
+        "Entsprechende Anforderungen für die niederländische Speichereinheit",
+    ),
+    "country_rule_nl_storage_lfsm": (
+        "Dutch storage-unit LFSM-U droop",
+        "LFSM-U / Statik bei Unterfrequenz der niederländischen Speichereinheit",
+    ),
+    "country_rule_de_eeg_control": (
+        "EEG pre-test remote control",
+        "EEG-Fernsteuerung vor erfolgreicher Prüfung",
+    ),
+    "country_rule_de_eeg_export": (
+        "EEG pre-test export limitation",
+        "EEG-Einspeisebegrenzung vor erfolgreicher Prüfung",
+    ),
+    "country_rule_fr_enedis_declaration": (
+        "Enedis declaration and agreement",
+        "Enedis-Anmeldung und Vereinbarung",
+    ),
+    "country_rule_fr_enedis_certification": (
+        "Enedis supporting documentation",
+        "Enedis-Unterlagen",
+    ),
+    "country_rule_type_a": ("Type A", "Typ A"),
+    "country_rule_type_b": ("Type B", "Typ B"),
+    "country_rule_type_c": ("Type C", "Typ C"),
+    "country_rule_type_d": ("Type D", "Typ D"),
+    "country_rule_below_range": (
+        "Below the range covered by this rule reading",
+        "Unterhalb des Bereichs dieser Regelbetrachtung",
+    ),
+    "country_rule_missing_inputs": (
+        "More project information is needed",
+        "Weitere Projektangaben sind erforderlich",
+    ),
+    "country_rule_outside_version": (
+        "The chosen date is outside the documented version",
+        "Das gewählte Datum liegt außerhalb der dokumentierten Fassung",
+    ),
+    "country_rule_statism_2_percent": (
+        "2% in storage and generation modes",
+        "2 % im Speicher- und Erzeugungsbetrieb",
+    ),
+    "country_rule_statism_1_percent": (
+        "1% in storage and generation modes",
+        "1 % im Speicher- und Erzeugungsbetrieb",
+    ),
+    "country_rule_boundary_not_established": (
+        "The 0.8 kW boundary is not established by this clause",
+        "Die Grenze von 0,8 kW ist durch diese Vorschrift nicht geklärt",
+    ),
+    "country_rule_fetch_and_reduce": (
+        "Actual export retrieval and remote reduction",
+        "Abruf der Ist-Einspeisung und ferngesteuerte Reduzierung",
+    ),
+    "country_rule_reduce": ("Remote reduction", "Ferngesteuerte Reduzierung"),
+    "country_rule_no_requirement_in_9_2_1_2": (
+        "No requirement under § 9(2) sentence 1 nos. 1–2 for this power",
+        "Für diese Leistung ergibt sich keine Anforderung aus § 9 Absatz 2 Satz 1 Nummer 1 bis 2",
+    ),
+    "country_rule_not_this_phase": (
+        "The declared project is beyond the pre-test phase; other requirements remain open",
+        "Das angegebene Projekt befindet sich nach der Phase vor der Prüfung; weitere Anforderungen bleiben offen",
+    ),
+    "country_rule_sixty_percent_conditionally": (
+        "60% of installed power at the grid connection point, under the stated conditions",
+        "60 % der installierten Leistung am Netzverknüpfungspunkt unter den angegebenen Bedingungen",
+    ),
+    "country_rule_not_in_tariff": (
+        "The declared remuneration is outside this 60% provision",
+        "Die angegebene Vergütungsform fällt nicht unter diese 60-%-Vorschrift",
+    ),
+    "country_rule_no_60_percent_in_9_2_2b_3": (
+        "No 60% limit from § 9(2) sentence 1 nos. 2(b)–3 for this power",
+        "Für diese Leistung ergibt sich keine 60-%-Grenze aus § 9 Absatz 2 Satz 1 Nummer 2 Buchstabe b bis Nummer 3",
+    ),
+    "country_rule_exempt_plug_in": (
+        "The declared plug-in solar exception applies to this provision",
+        "Die angegebene Steckersolar-Ausnahme gilt für diese Vorschrift",
+    ),
+    "country_rule_enedis_declare_cacsi": (
+        "Declare the installation through Enedis-Connect and accept the CACSI no-injection agreement",
+        "Melden Sie die Anlage über Enedis-Connect an und akzeptieren Sie die CACSI-Vereinbarung ohne Netzeinspeisung",
+    ),
+    "country_rule_enedis_consuel_or_attestation": (
+        "Provide a Consuel certificate or declaration on honour. The source requires Consuel when modifying existing electrical circuits or adding a battery, with a possible plug-and-play exception subject to its stated conditions.",
+        "Legen Sie eine Consuel-Bescheinigung oder eine Erklärung auf Ehrenwort vor. Laut Quelle ist bei Änderungen bestehender Stromkreise oder beim Hinzufügen einer Batterie eine Consuel-Bescheinigung erforderlich; für Plug-and-play-Geräte kann unter den dort genannten Bedingungen eine Ausnahme gelten.",
+    ),
+    "country_rule_input_rule_date": ("rule date", "Regelungsdatum"),
+    "country_rule_input_power_kw": ("declared power", "angegebene Leistung"),
+    "country_rule_input_connection_voltage_kv": (
+        "connection-point voltage",
+        "Spannung am Netzanschlusspunkt",
+    ),
+    "country_rule_input_de_before_control_test": (
+        "meter and control-test stage",
+        "Stand von Messsystem und Ansteuerungsprüfung",
+    ),
+    "country_rule_input_de_remuneration": ("EEG remuneration", "EEG-Vergütungsform"),
+    "country_rule_input_de_plug_in_exception": (
+        "complete plug-in solar exception",
+        "vollständige Steckersolar-Ausnahme",
+    ),
     "country_open": (
         "Country requirements are not assessed by the selected calculations.",
         "Landesspezifische Anforderungen werden in den ausgewählten Berechnungen nicht bewertet.",

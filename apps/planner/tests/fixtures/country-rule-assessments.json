@@ -1,0 +1,598 @@
+{
+	"fr": {
+		"inputs": {
+			"brief": {
+				"site": {
+					"country_code": "FR"
+				}
+			},
+			"grid_connection": {
+				"schema_version": 1,
+				"dso_name": null,
+				"dso_source_url": null,
+				"voltage_level": "low",
+				"tab": {
+					"title": null,
+					"source_url": null,
+					"edition": null,
+					"date": null
+				}
+			},
+			"country_rule_inputs": {
+				"schema_version": 1,
+				"rule_date": "2026-11-01",
+				"power_kw": 10.5,
+				"connection_voltage_kv": 0.4,
+				"de_before_control_test": null,
+				"de_remuneration": null,
+				"de_plug_in_exception": null,
+				"fr_enedis_full_self_consumption": null,
+				"basis": "fr_generation_pmax"
+			}
+		},
+		"assessment": {
+			"status": "unresolved",
+			"country_code": "FR",
+			"reason": "country_rules_require_project_verification",
+			"model": "declared_grid_connection_evidence_v1",
+			"project_facts": {
+				"schema_version": 1,
+				"dso_name": null,
+				"dso_source_url": null,
+				"voltage_level": "low",
+				"tab": {
+					"title": null,
+					"source_url": null,
+					"edition": null,
+					"date": null
+				}
+			},
+			"declaration_status": "project_provided_not_independently_verified",
+			"checks": [
+				{
+					"id": "responsible_dso",
+					"status": "unresolved",
+					"reason": "project_declaration_requires_operator_territory_verification"
+				},
+				{
+					"id": "connection_voltage",
+					"status": "provided",
+					"reason": "voltage_is_at_the_grid_connection_point_not_device_terminals"
+				},
+				{
+					"id": "applicable_tab",
+					"status": "unresolved",
+					"reason": "project_source_and_edition_or_date_are_not_verified_applicability"
+				},
+				{
+					"id": "independent_dso_tab_verification",
+					"status": "unresolved",
+					"reason": "dso_territory_voltage_edition_and_project_applicability_not_verified"
+				},
+				{
+					"id": "connection_permission",
+					"status": "unresolved",
+					"reason": "project_grid_assessment_and_operator_permission_require_separate_evidence"
+				}
+			],
+			"missing_inputs": [
+				"dso_name",
+				"dso_source_url",
+				"tab.source_url",
+				"tab.edition_or_date"
+			],
+			"rule_sources": [],
+			"independent_verification": "not_assessed",
+			"connection_permission": "not_established",
+			"numeric_rules": "partially_assessed",
+			"standard_transition": "not_assessed",
+			"rule_review": {
+				"schema_version": 1,
+				"country_code": "FR",
+				"rule_date": "2026-11-01",
+				"inputs": {
+					"schema_version": 1,
+					"basis": "fr_generation_pmax",
+					"rule_date": "2026-11-01",
+					"power_kw": 10.5,
+					"connection_voltage_kv": 0.4,
+					"de_before_control_test": null,
+					"de_remuneration": null,
+					"de_plug_in_exception": null,
+					"fr_enedis_full_self_consumption": null
+				},
+				"sources": [
+					{
+						"id": "fr_arrete_article_35",
+						"title": "Arrêté du 9 juin 2020",
+						"source_url": "https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000042036860",
+						"edition": "2020-06-26",
+						"clause": "Article 35",
+						"effective_from": "2020-06-26",
+						"evidence_snapshot_date": "2026-11-01",
+						"text_sha256": "4d35445b56b2d705e6afb81e93a4beec10f896ffcd3f14b1e69feda61794dfb3"
+					}
+				],
+				"checks": [
+					{
+						"id": "fr_generation_type",
+						"status": "conditional",
+						"outcome": "type_a",
+						"source_id": "fr_arrete_article_35",
+						"actual": {
+							"power_kw": 10.5,
+							"connection_voltage_kv": 0.4
+						},
+						"missing_inputs": []
+					}
+				]
+			}
+		}
+	},
+	"nl": {
+		"inputs": {
+			"brief": {
+				"site": {
+					"country_code": "NL"
+				}
+			},
+			"grid_connection": {
+				"schema_version": 1,
+				"dso_name": null,
+				"dso_source_url": null,
+				"voltage_level": "low",
+				"tab": {
+					"title": null,
+					"source_url": null,
+					"edition": null,
+					"date": null
+				}
+			},
+			"country_rule_inputs": {
+				"schema_version": 1,
+				"rule_date": "2026-11-01",
+				"power_kw": 0.8,
+				"connection_voltage_kv": null,
+				"de_before_control_test": null,
+				"de_remuneration": null,
+				"de_plug_in_exception": null,
+				"fr_enedis_full_self_consumption": null,
+				"basis": "nl_storage_max_active"
+			}
+		},
+		"assessment": {
+			"status": "unresolved",
+			"country_code": "NL",
+			"reason": "country_rules_require_project_verification",
+			"model": "declared_grid_connection_evidence_v1",
+			"project_facts": {
+				"schema_version": 1,
+				"dso_name": null,
+				"dso_source_url": null,
+				"voltage_level": "low",
+				"tab": {
+					"title": null,
+					"source_url": null,
+					"edition": null,
+					"date": null
+				}
+			},
+			"declaration_status": "project_provided_not_independently_verified",
+			"checks": [
+				{
+					"id": "responsible_dso",
+					"status": "unresolved",
+					"reason": "project_declaration_requires_operator_territory_verification"
+				},
+				{
+					"id": "connection_voltage",
+					"status": "provided",
+					"reason": "voltage_is_at_the_grid_connection_point_not_device_terminals"
+				},
+				{
+					"id": "applicable_tab",
+					"status": "unresolved",
+					"reason": "project_source_and_edition_or_date_are_not_verified_applicability"
+				},
+				{
+					"id": "independent_dso_tab_verification",
+					"status": "unresolved",
+					"reason": "dso_territory_voltage_edition_and_project_applicability_not_verified"
+				},
+				{
+					"id": "connection_permission",
+					"status": "unresolved",
+					"reason": "project_grid_assessment_and_operator_permission_require_separate_evidence"
+				}
+			],
+			"missing_inputs": [
+				"dso_name",
+				"dso_source_url",
+				"tab.source_url",
+				"tab.edition_or_date"
+			],
+			"rule_sources": [],
+			"independent_verification": "not_assessed",
+			"connection_permission": "not_established",
+			"numeric_rules": "partially_assessed",
+			"standard_transition": "not_assessed",
+			"rule_review": {
+				"schema_version": 1,
+				"country_code": "NL",
+				"rule_date": "2026-11-01",
+				"inputs": {
+					"schema_version": 1,
+					"basis": "nl_storage_max_active",
+					"rule_date": "2026-11-01",
+					"power_kw": 0.8,
+					"connection_voltage_kv": null,
+					"de_before_control_test": null,
+					"de_remuneration": null,
+					"de_plug_in_exception": null,
+					"fr_enedis_full_self_consumption": null
+				},
+				"sources": [
+					{
+						"id": "nl_systeemcode_article_2_9",
+						"title": "Systeemcode elektriciteit 2026",
+						"source_url": "https://wetten.overheid.nl/BWBR0052336/2026-10-01",
+						"edition": "2026-10-01",
+						"clause": "Article 2.9(3)(a), (g)",
+						"effective_from": "2026-10-01",
+						"evidence_snapshot_date": "2026-11-01",
+						"text_sha256": "d20979cca5d06af7da83962f2a6afaef8112fe2cf2411ec540e84b08436831e0"
+					}
+				],
+				"checks": [
+					{
+						"id": "nl_storage_type",
+						"status": "conditional",
+						"outcome": "type_a",
+						"source_id": "nl_systeemcode_article_2_9",
+						"actual": {
+							"power_kw": 0.8,
+							"connection_voltage_kv": null
+						},
+						"missing_inputs": []
+					},
+					{
+						"id": "nl_storage_lfsm",
+						"status": "unresolved",
+						"outcome": "boundary_not_established",
+						"source_id": "nl_systeemcode_article_2_9",
+						"actual": {
+							"power_kw": 0.8,
+							"connection_voltage_kv": null
+						},
+						"missing_inputs": []
+					}
+				]
+			}
+		}
+	},
+	"de": {
+		"inputs": {
+			"brief": {
+				"site": {
+					"country_code": "DE"
+				}
+			},
+			"grid_connection": {
+				"schema_version": 1,
+				"dso_name": null,
+				"dso_source_url": null,
+				"voltage_level": "low",
+				"tab": {
+					"title": null,
+					"source_url": null,
+					"edition": null,
+					"date": null
+				}
+			},
+			"country_rule_inputs": {
+				"schema_version": 1,
+				"rule_date": "2026-11-01",
+				"power_kw": 30,
+				"connection_voltage_kv": null,
+				"de_before_control_test": true,
+				"de_remuneration": "feed_in_or_tenant",
+				"de_plug_in_exception": null,
+				"fr_enedis_full_self_consumption": null,
+				"basis": "de_pv_installed"
+			}
+		},
+		"assessment": {
+			"status": "unresolved",
+			"country_code": "DE",
+			"reason": "country_rules_require_project_verification",
+			"model": "declared_grid_connection_evidence_v1",
+			"project_facts": {
+				"schema_version": 1,
+				"dso_name": null,
+				"dso_source_url": null,
+				"voltage_level": "low",
+				"tab": {
+					"title": null,
+					"source_url": null,
+					"edition": null,
+					"date": null
+				}
+			},
+			"declaration_status": "project_provided_not_independently_verified",
+			"checks": [
+				{
+					"id": "responsible_dso",
+					"status": "unresolved",
+					"reason": "project_declaration_requires_operator_territory_verification"
+				},
+				{
+					"id": "connection_voltage",
+					"status": "provided",
+					"reason": "voltage_is_at_the_grid_connection_point_not_device_terminals"
+				},
+				{
+					"id": "applicable_tab",
+					"status": "unresolved",
+					"reason": "project_source_and_edition_or_date_are_not_verified_applicability"
+				},
+				{
+					"id": "independent_dso_tab_verification",
+					"status": "unresolved",
+					"reason": "dso_territory_voltage_edition_and_project_applicability_not_verified"
+				},
+				{
+					"id": "connection_permission",
+					"status": "unresolved",
+					"reason": "project_grid_assessment_and_operator_permission_require_separate_evidence"
+				}
+			],
+			"missing_inputs": [
+				"dso_name",
+				"dso_source_url",
+				"tab.source_url",
+				"tab.edition_or_date"
+			],
+			"rule_sources": [
+				{
+					"id": "de_enwg_19_dso_tab",
+					"source_url": "https://www.gesetze-im-internet.de/enwg_2005/__19.html",
+					"title": "EnWG §19 Technische Vorschriften",
+					"edition": null,
+					"clause": "19(1), 19(1a)",
+					"evidence_snapshot_date": "2026-10-28",
+					"raw_sha256": null,
+					"evidence_basis": "existing_country_dossier_primary_reading",
+					"scope": "storage_in_dso_technical_requirements_and_tab_effectiveness"
+				},
+				{
+					"id": "de_fnn_connection_scope",
+					"source_url": "https://www.vde.com/de/fnn/themen/tar/tar-mittelspannung-vde-ar-n-4110",
+					"title": "VDE FNN TAR Mittelspannung FAQ",
+					"edition": "VDE-AR-N 4110:2023-09",
+					"clause": "1 Anwendungsbereich",
+					"evidence_snapshot_date": "2026-10-27",
+					"raw_sha256": null,
+					"evidence_basis": "existing_country_dossier_primary_reading",
+					"scope": "connection_voltage_scope_differs_from_unit_electrical_evidence"
+				}
+			],
+			"independent_verification": "not_assessed",
+			"connection_permission": "not_established",
+			"numeric_rules": "partially_assessed",
+			"standard_transition": "not_assessed",
+			"rule_review": {
+				"schema_version": 1,
+				"country_code": "DE",
+				"rule_date": "2026-11-01",
+				"inputs": {
+					"schema_version": 1,
+					"basis": "de_pv_installed",
+					"rule_date": "2026-11-01",
+					"power_kw": 30.0,
+					"connection_voltage_kv": null,
+					"de_before_control_test": true,
+					"de_remuneration": "feed_in_or_tenant",
+					"de_plug_in_exception": null,
+					"fr_enedis_full_self_consumption": null
+				},
+				"sources": [
+					{
+						"id": "de_eeg_section_9",
+						"title": "EEG 2023",
+						"source_url": "https://www.gesetze-im-internet.de/eeg_2014/__9.html",
+						"edition": null,
+						"clause": "§ 9(2), (3)",
+						"effective_from": null,
+						"evidence_snapshot_date": "2026-11-01",
+						"text_sha256": "dfbff2f705291e19c119bcbefec5ed046917044e20a8c20d43e993000df3958f"
+					}
+				],
+				"checks": [
+					{
+						"id": "de_eeg_control",
+						"status": "conditional",
+						"outcome": "reduce",
+						"source_id": "de_eeg_section_9",
+						"actual": {
+							"power_kw": 30.0,
+							"connection_voltage_kv": null
+						},
+						"missing_inputs": []
+					},
+					{
+						"id": "de_eeg_export",
+						"status": "conditional",
+						"outcome": "sixty_percent_conditionally",
+						"source_id": "de_eeg_section_9",
+						"actual": {
+							"power_kw": 30.0,
+							"connection_voltage_kv": null
+						},
+						"missing_inputs": []
+					}
+				]
+			}
+		}
+	},
+	"enedis": {
+		"inputs": {
+			"brief": {
+				"site": {
+					"country_code": "FR"
+				}
+			},
+			"grid_connection": {
+				"schema_version": 1,
+				"dso_name": "Enedis",
+				"dso_source_url": null,
+				"voltage_level": "low",
+				"tab": {
+					"title": null,
+					"source_url": null,
+					"edition": null,
+					"date": null
+				}
+			},
+			"country_rule_inputs": {
+				"schema_version": 1,
+				"rule_date": "2026-11-01",
+				"power_kw": 10.5,
+				"connection_voltage_kv": 0.4,
+				"de_before_control_test": null,
+				"de_remuneration": null,
+				"de_plug_in_exception": null,
+				"fr_enedis_full_self_consumption": true,
+				"basis": "fr_generation_pmax"
+			}
+		},
+		"assessment": {
+			"status": "unresolved",
+			"country_code": "FR",
+			"reason": "country_rules_require_project_verification",
+			"model": "declared_grid_connection_evidence_v1",
+			"project_facts": {
+				"schema_version": 1,
+				"dso_name": "Enedis",
+				"dso_source_url": null,
+				"voltage_level": "low",
+				"tab": {
+					"title": null,
+					"source_url": null,
+					"edition": null,
+					"date": null
+				}
+			},
+			"declaration_status": "project_provided_not_independently_verified",
+			"checks": [
+				{
+					"id": "responsible_dso",
+					"status": "unresolved",
+					"reason": "project_declaration_requires_operator_territory_verification"
+				},
+				{
+					"id": "connection_voltage",
+					"status": "provided",
+					"reason": "voltage_is_at_the_grid_connection_point_not_device_terminals"
+				},
+				{
+					"id": "applicable_tab",
+					"status": "unresolved",
+					"reason": "project_source_and_edition_or_date_are_not_verified_applicability"
+				},
+				{
+					"id": "independent_dso_tab_verification",
+					"status": "unresolved",
+					"reason": "dso_territory_voltage_edition_and_project_applicability_not_verified"
+				},
+				{
+					"id": "connection_permission",
+					"status": "unresolved",
+					"reason": "project_grid_assessment_and_operator_permission_require_separate_evidence"
+				}
+			],
+			"missing_inputs": [
+				"dso_source_url",
+				"tab.source_url",
+				"tab.edition_or_date"
+			],
+			"rule_sources": [],
+			"independent_verification": "not_assessed",
+			"connection_permission": "not_established",
+			"numeric_rules": "partially_assessed",
+			"standard_transition": "not_assessed",
+			"rule_review": {
+				"schema_version": 1,
+				"country_code": "FR",
+				"rule_date": "2026-11-01",
+				"inputs": {
+					"schema_version": 1,
+					"basis": "fr_generation_pmax",
+					"rule_date": "2026-11-01",
+					"power_kw": 10.5,
+					"connection_voltage_kv": 0.4,
+					"de_before_control_test": null,
+					"de_remuneration": null,
+					"de_plug_in_exception": null,
+					"fr_enedis_full_self_consumption": true
+				},
+				"sources": [
+					{
+						"id": "fr_arrete_article_35",
+						"title": "Arrêté du 9 juin 2020",
+						"source_url": "https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000042036860",
+						"edition": "2020-06-26",
+						"clause": "Article 35",
+						"effective_from": "2020-06-26",
+						"evidence_snapshot_date": "2026-11-01",
+						"text_sha256": "4d35445b56b2d705e6afb81e93a4beec10f896ffcd3f14b1e69feda61794dfb3"
+					},
+					{
+						"id": "fr_enedis_total_self_consumption",
+						"title": "Enedis: autoconsommation totale",
+						"source_url": "https://www.enedis.fr/autoconsommer-la-totalite-de-lenergie-produite-par-vos-panneaux",
+						"edition": null,
+						"clause": "Déclarer mon installation, CACSI",
+						"effective_from": null,
+						"evidence_snapshot_date": "2026-11-01",
+						"text_sha256": "3741f1e39b855240554fc7348cd130d08f8b186e2e3a38dd831b2c708b4ff673"
+					}
+				],
+				"checks": [
+					{
+						"id": "fr_generation_type",
+						"status": "conditional",
+						"outcome": "type_a",
+						"source_id": "fr_arrete_article_35",
+						"actual": {
+							"power_kw": 10.5,
+							"connection_voltage_kv": 0.4
+						},
+						"missing_inputs": []
+					},
+					{
+						"id": "fr_enedis_declaration",
+						"status": "conditional",
+						"outcome": "enedis_declare_cacsi",
+						"source_id": "fr_enedis_total_self_consumption",
+						"actual": {
+							"power_kw": 10.5,
+							"connection_voltage_kv": 0.4
+						},
+						"missing_inputs": []
+					},
+					{
+						"id": "fr_enedis_certification",
+						"status": "conditional",
+						"outcome": "enedis_consuel_or_attestation",
+						"source_id": "fr_enedis_total_self_consumption",
+						"actual": {
+							"power_kw": 10.5,
+							"connection_voltage_kv": 0.4
+						},
+						"missing_inputs": []
+					}
+				]
+			}
+		}
+	}
+}

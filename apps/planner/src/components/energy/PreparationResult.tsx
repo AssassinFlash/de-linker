@@ -21,6 +21,7 @@ import { WeatherFailureNotice } from "./WeatherFailureNotice.tsx";
 import { PreparationBasis } from "./PreparationBasis.tsx";
 import {
 	GEOMETRIC_PV_MODEL,
+	GEOMETRIC_PV_MODEL_SERIES,
 	GEOMETRIC_PV_TASK,
 } from "../../domain/geometricPv.ts";
 import { OwnedProfile } from "../OwnedProfile.tsx";
@@ -229,15 +230,20 @@ export function PreparationResult({
 							</dl>
 							<p>
 								{geometric
-									? run.result?.model === GEOMETRIC_PV_MODEL
+									? run.result?.model === GEOMETRIC_PV_MODEL_SERIES
 										? __(
-												"This profile uses geometric shading of direct sunlight and of the Perez isotropic, circumsolar, horizon and ground components, with a uniform module response across the complete retained weather source. A negative Perez horizon correction is retained. Substrings, bypass diodes, string I–V curves and actual inverter tracking remain unmodelled. The profile does not establish complete shading accuracy or equipment or country approval.",
+												"This profile combines geometric shading of direct and Perez diffuse components with a common-current series-string reference. The model assumes uniform irradiance within each module. Bypass diodes, parallel strings, actual inverter tracking, full shading accuracy and equipment or country approval remain unassessed.",
 												"linker-tools",
 											)
-										: __(
-												"This profile uses geometric shading of direct sunlight and a uniform module response across the complete retained weather source. Sky and ground diffuse light remain unobstructed reference components. Substrings, bypass diodes, string I–V curves and actual inverter tracking remain unmodelled.",
-												"linker-tools",
-											)
+										: run.result?.model === GEOMETRIC_PV_MODEL
+											? __(
+													"This profile uses geometric shading of direct sunlight and of the Perez isotropic, circumsolar, horizon and ground components, with a uniform module response across the complete retained weather source. A negative Perez horizon correction is retained. Substrings, bypass diodes, string I–V curves and actual inverter tracking remain unmodelled. The profile does not establish complete shading accuracy or equipment or country approval.",
+													"linker-tools",
+												)
+											: __(
+													"This profile uses geometric shading of direct sunlight and a uniform module response across the complete retained weather source. Sky and ground diffuse light remain unobstructed reference components. Substrings, bypass diodes, string I–V curves and actual inverter tracking remain unmodelled.",
+													"linker-tools",
+												)
 									: __(
 											"This is an unshaded reference profile. Site shading, equipment compatibility and country requirements remain unassessed.",
 											"linker-tools",

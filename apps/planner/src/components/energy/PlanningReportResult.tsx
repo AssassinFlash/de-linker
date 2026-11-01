@@ -41,26 +41,42 @@ function SectionContent({ section }: { section: ReportSection }) {
 				</dl>
 			)}
 			{section.table && (
-				<div className="lp-table-scroll">
-					<table className="lp-data-table">
-						<thead>
-							<tr>
-								{section.table.columns.map((label, i) => (
-									<th key={i}>{label}</th>
-								))}
-							</tr>
-						</thead>
-						<tbody>
-							{section.table.rows.map((row, i) => (
-								<tr key={i}>
-									{row.map((cell, j) => (
-										<td key={j}>{cell}</td>
+				<>
+					<div className="lp-table-scroll lp-report-table">
+						<table className="lp-data-table">
+							<thead>
+								<tr>
+									{section.table.columns.map((label, i) => (
+										<th key={i}>{label}</th>
 									))}
 								</tr>
-							))}
-						</tbody>
-					</table>
-				</div>
+							</thead>
+							<tbody>
+								{section.table.rows.map((row, i) => (
+									<tr key={i}>
+										{row.map((cell, j) => (
+											<td key={j}>{cell}</td>
+										))}
+									</tr>
+								))}
+							</tbody>
+						</table>
+					</div>
+					<ol className="lp-report-cards">
+						{section.table.rows.map((row, i) => (
+							<li key={i}>
+								<dl>
+									{row.map((cell, j) => (
+										<div key={j}>
+											<dt>{section.table?.columns[j]}</dt>
+											<dd>{cell}</dd>
+										</div>
+									))}
+								</dl>
+							</li>
+						))}
+					</ol>
+				</>
 			)}
 		</>
 	);
@@ -90,7 +106,19 @@ export function PlanningReportResult({
 			? readObject(
 					readObject(run.result.prepared_attachments).bill_of_materials_csv,
 				)
-			: null;
+			: null,
+		ruleCsv =
+			run.result?.prepared_attachments &&
+			readObject(run.result.prepared_attachments).country_rule_review_csv
+				? readObject(
+						readObject(run.result.prepared_attachments).country_rule_review_csv,
+					)
+				: null,
+		seriesCsv =
+			run.result?.prepared_attachments &&
+			readObject(run.result.prepared_attachments).pv_series_csv
+				? readObject(readObject(run.result.prepared_attachments).pv_series_csv)
+				: null;
 	const [busy, setBusy] = useState(false),
 		[error, setError] = useState(false);
 	const lifetime = useRef(0),
@@ -105,8 +133,15 @@ export function PlanningReportResult({
 			objectUrl.current = null;
 		};
 	}, [run.id, scope]);
-	async function download(format: "pdf" | "csv") {
-		const file = format === "pdf" ? asset : csv;
+	async function download(format: "pdf" | "materials" | "rules" | "series") {
+		const file =
+			format === "pdf"
+				? asset
+				: format === "materials"
+					? csv
+					: format === "rules"
+						? ruleCsv
+						: seriesCsv;
 		if (busy || !report || !file || !client.isCurrentScope(scope)) return;
 		const instance = lifetime.current,
 			controller = new AbortController();
@@ -115,7 +150,7 @@ export function PlanningReportResult({
 		setError(false);
 		try {
 			const blob =
-				format === "csv"
+				format !== "pdf"
 					? await client.reportCsv(
 							run.project_id,
 							String(file.id),
@@ -136,7 +171,13 @@ export function PlanningReportResult({
 			objectUrl.current = URL.createObjectURL(blob);
 			const link = document.createElement("a");
 			link.href = objectUrl.current;
-			link.download = `linker-planning-${run.project_id}-r${run.revision}-${report.locale}.${format}`;
+			const suffix =
+				format === "rules"
+					? "-country-rules"
+					: format === "series"
+						? "-pv-strings"
+						: "";
+			link.download = `linker-planning-${run.project_id}-r${run.revision}-${report.locale}${suffix}.${format === "pdf" ? "pdf" : "csv"}`;
 			link.click();
 		} catch (cause) {
 			if (instance === lifetime.current) {
@@ -206,12 +247,40 @@ export function PlanningReportResult({
 						type="button"
 						className="lp-button lp-button-secondary"
 						disabled={busy || !client.isCurrentScope(scope)}
-						onClick={() => void download("csv")}
+						onClick={() => void download("materials")}
 					>
 						{__("Download bill of materials (CSV)", "linker-tools")}
 					</button>
 				)}
+				{ruleCsv && (
+					<button
+						type="button"
+						className="lp-button lp-button-secondary"
+						disabled={busy || !client.isCurrentScope(scope)}
+						onClick={() => void download("rules")}
+					>
+						{__("Download country rule review (CSV)", "linker-tools")}
+					</button>
+				)}
+				{seriesCsv && (
+					<button
+						type="button"
+						className="lp-button lp-button-secondary"
+						disabled={busy || !client.isCurrentScope(scope)}
+						onClick={() => void download("series")}
+					>
+						{__("Download PV string intervals (CSV)", "linker-tools")}
+					</button>
+				)}
 			</div>
+			{seriesCsv && (
+				<p>
+					{__(
+						"The PV string CSV has one row per string and time interval. The module condition lists follow the order of module IDs in that row.",
+						"linker-tools",
+					)}
+				</p>
+			)}
 			{error && (
 				<Notice error>
 					{__("The file could not be downloaded. Try again.", "linker-tools")}

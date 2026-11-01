@@ -20,6 +20,7 @@ from .geometric_pv_inputs import KIND as GEOMETRIC_PV_KIND
 from .geometric_pv_inputs import PROFILE_PURPOSE as GEOMETRIC_PV_PURPOSE
 from .geometric_pv_profile import prepared_profile as geometric_pv_profile
 from .geometric_pv_profile import reference_bundle as geometric_pv_bundle
+from .grid_connection_report import grid_connection_sections
 from .installation_report import installation_sections
 from .project_materials import (
     material_name,
@@ -680,7 +681,7 @@ def _equipment_context(value: Json, *, system: bool = False) -> Json:
         return {
             key: _equipment_context(item, system=key in {"units", "systems"})
             for key, item in value.items()
-            if key not in {"unit_name", "group_name"}
+            if key not in {"unit_name", "group_name", "rule_review"}
             and not (
                 key == "project_facts"
                 and value.get("model") == "declared_grid_connection_evidence_v1"
@@ -688,6 +689,22 @@ def _equipment_context(value: Json, *, system: bool = False) -> Json:
             and not (system and key == "name")
         }
     return value
+
+
+def _country_rule_rows(assessment: Object, locale: str) -> list[Json]:
+    """Present the saved rule result without forwarding project declarations."""
+    rows: list[Json] = []
+    for section in grid_connection_sections(
+        assessment.get("country_assessment"), locale
+    ):
+        if not section.id.startswith("country-rule-"):
+            continue
+        rows.extend({"label": section.title, "value": p} for p in section.paragraphs)
+        rows.extend(
+            {"label": f"{section.title}: {row.label}", "value": row.value}
+            for row in section.rows
+        )
+    return rows
 
 
 def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
@@ -775,7 +792,19 @@ def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
             locale,
         )
         rows: list[Json] = []
-        for section in cast(list[Object], report.get("sections", [])):
+        saved_sections = cast(list[Object], report.get("sections", []))
+        # A large report can exceed the bounded assistant view. The selected
+        # national review must reach Genie before unrelated detailed tables.
+        ordered_sections = [
+            section
+            for section in saved_sections
+            if str(section.get("id", "")).startswith("country-rule-")
+        ] + [
+            section
+            for section in saved_sections
+            if not str(section.get("id", "")).startswith("country-rule-")
+        ]
+        for section in ordered_sections:
             if section.get("id") in {"site", "grid-connection-declarations"}:
                 continue  # Owner-entered addresses, references and notes stay in the report.
             title = str(section.get("title", ""))
@@ -912,6 +941,13 @@ def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
         geometric_pv_profile(workspace.blobs, raw_sha, metadata)
         bundle = geometric_pv_bundle(workspace.blobs, raw_sha, metadata)
         model_inputs = cast(Object, bundle["inputs"])
+        if result.get("model") == "opaque_perez_series_iv_forward_reference_v1":
+            from .geometric_pv_job import electrical_project_inputs
+
+            if model_inputs.get("electrical_inputs") != electrical_project_inputs(
+                inputs
+            ):
+                raise InvalidInput("saved geometric PV wiring differs from its source")
         witness = cast(Object, bundle["witness"])
         weather = cast(Object, model_inputs["weather"])
         weather_source = cast(Object, weather["source"])
@@ -1049,7 +1085,9 @@ def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
     assessment = result.get("assessment")
     if isinstance(assessment, dict):
         # The assessment is a saved observation, not current recommendation permission.
-        return _rows(_equipment_context(assessment), locale)
+        return _country_rule_rows(assessment, locale) + _rows(
+            _equipment_context(assessment), locale
+        )
     return []
 
 
@@ -1119,7 +1157,10 @@ def assistant_context(
             )
             if selected["assessment_sha256"] != choice.get("assessment_sha256"):
                 raise InvalidInput("adopted assessment binding differs")
-            rows = _rows(_equipment_context(selected["assessment"]), locale)
+            assessment = cast(Object, selected["assessment"])
+            rows = _country_rule_rows(assessment, locale) + _rows(
+                _equipment_context(assessment), locale
+            )
             result["adopted_equipment"] = {
                 "run_id": run_id,
                 "candidate_id": candidate_id,

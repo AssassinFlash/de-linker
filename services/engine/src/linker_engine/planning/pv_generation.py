@@ -57,6 +57,11 @@ def generate_pv(
     # Take private canonical snapshots before using mutable caller JSON/lists.
     geometry_bytes = encode(geometry)
     parameters = PvGenerationParameters.read(parameters.model_dump(mode="json"))
+    if any(
+        group.input_assumption != "independent_mppt_array_mpp_sum"
+        for group in parameters.converters
+    ):
+        raise InvalidInput("unshaded PV reference requires independent array MPPs")
     if pvlib.__version__ != parameters.pvlib_version:
         raise VersionUnavailable("the pinned PV model library is unavailable")
     geometry = decode_object(geometry_bytes)

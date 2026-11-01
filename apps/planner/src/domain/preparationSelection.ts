@@ -24,6 +24,7 @@ import {
 	GEOMETRIC_PV_TASK,
 	compileGeometricPv,
 	geometricPvDraft,
+	GEOMETRIC_PV_MODEL_SERIES,
 } from "./geometricPv.ts";
 
 export function preparationPvRole(
@@ -89,6 +90,23 @@ export function selectPreparation(
 			compileGeometricPv(geometricPvDraft(inputs), inputs.geometry);
 			if (
 				!sameJson(inputs.geometry, historical.inputs.geometry) ||
+				(geometricPvDraft(inputs).model === GEOMETRIC_PV_MODEL_SERIES &&
+					(!sameJson(
+						inputs.equipment_selection,
+						historical.inputs.equipment_selection,
+					) ||
+						!sameJson(
+							inputs.pv_string_plan,
+							historical.inputs.pv_string_plan,
+						) ||
+						!sameJson(
+							inputs.equipment_plant,
+							historical.inputs.equipment_plant,
+						) ||
+						!sameJson(
+							inputs.pv_plant_string_plan,
+							historical.inputs.pv_plant_string_plan,
+						))) ||
 				!sameJson(
 					inputs.geometric_pv_preparation,
 					historical.inputs.geometric_pv_preparation,

@@ -61,11 +61,14 @@ def test_complete_writer_protects_declarations_and_legacy_bytes() -> None:
         not in InstallationInputs.read(legacy["installation"]).project_document()
     )
     inputs["installation"]["materials"] = declared()
-    for writer in (None, *SUPPORTED_INPUT_CONTRACTS[:-1]):
+    floor = SUPPORTED_INPUT_CONTRACTS.index(MATERIALS_INPUT_CONTRACT)
+    for writer in (None, *SUPPORTED_INPUT_CONTRACTS[:floor]):
         for before, after in ((legacy, inputs), (inputs, inputs), (inputs, legacy)):
             with pytest.raises(ProjectInputContractRequired):
                 require_input_contract(before, after, writer)
-    require_input_contract(legacy, inputs, MATERIALS_INPUT_CONTRACT)
+    for writer in SUPPORTED_INPUT_CONTRACTS[floor:]:
+        for before, after in ((legacy, inputs), (inputs, inputs), (inputs, legacy)):
+            require_input_contract(before, after, writer)
     invalid = copy.deepcopy(inputs["installation"])
     invalid["materials"][0]["quantity"] = 1.5
     with pytest.raises(InvalidInput):

@@ -9,6 +9,7 @@ import {
 import {
 	GEOMETRIC_PV_PURPOSE,
 	GEOMETRIC_PV_RESULTS,
+	GEOMETRIC_PV_MODEL_SERIES,
 	GEOMETRIC_PV_TASK,
 } from "../domain/geometricPv.ts";
 
@@ -179,7 +180,12 @@ export function readPreparationResult(
 				hash(metadata.geometry_sha256) &&
 				metadata.parameters_sha256 === children["project.parameters"] &&
 				Object.keys(children).sort().join() ===
-					"model.inputs,model.witness,project.parameters,weather.metadata,weather.raw,woo.module_inputs" &&
+					(recorded.model === GEOMETRIC_PV_MODEL_SERIES
+						? "model.inputs,model.witness,project.parameters,weather.metadata,weather.raw,woo.equipment_inputs,woo.module_inputs"
+						: "model.inputs,model.witness,project.parameters,weather.metadata,weather.raw,woo.module_inputs") &&
+				(recorded.model !== GEOMETRIC_PV_MODEL_SERIES ||
+					children["woo.equipment_inputs"] ===
+						pinned["woo.equipment_inputs"]) &&
 				Object.values(children).every(hash) &&
 				children["weather.raw"] === pinned["weather.raw"] &&
 				children["weather.metadata"] === pinned["weather.metadata"] &&
@@ -203,7 +209,9 @@ export function readPreparationResult(
 				Date.parse(summary.end_utc) > Date.parse(summary.start_utc) &&
 				scope.thermal_policy === "sapm_from_module_mean_poa_v1" &&
 				scope.electrical_policy ===
-					"uniform_module_pvwatts_independent_mpp_sum_v1",
+					(recorded.model === GEOMETRIC_PV_MODEL_SERIES
+						? "whole_module_forward_series_iv_single_string_per_tracker_v1"
+						: "uniform_module_pvwatts_independent_mpp_sum_v1"),
 		);
 		for (const role of ["equipment_release", "country_assessment"])
 			require(readObject(result[role]).status === "not_assessed");

@@ -16,6 +16,9 @@ from .canonical import Json, Object, digest, encode
 from .dc_plant_inputs import DcPlantEnergyInputs
 from .energy_inputs import EnergyInputs
 from .errors import InvalidInput, NotFound, VersionUnavailable
+from .frozen_documents import FrozenDocuments
+from .geometric_pv_inputs import PROFILE_PURPOSE as GEOMETRIC_PV_PURPOSE
+from .geometric_pv_profile import reference_bundle
 from .plant_energy_inputs import PlantEnergyInputs
 from .records import Actor, Run
 from .workspace import Workspace
@@ -318,22 +321,42 @@ def _profile_key(side: EnergyComparisonSide, role: str) -> Json:
     }
 
 
-def _weather_key(workspace: Workspace, side: EnergyComparisonSide) -> Json:
+def _retained_weather_key(
+    workspace: Workspace,
+    side: EnergyComparisonSide,
+    role: str,
+    documents: FrozenDocuments,
+) -> str | None:
+    metadata = documents.object(str(side.pinned[f"{role}.metadata"]))
+    dependencies = metadata.get("dependencies")
+    if metadata.get("profile_type") == GEOMETRIC_PV_PURPOSE:
+        # Reuse the native reader: it checks manifest, model/witness, original
+        # weather and Woo bindings before admitting a shared weather identity.
+        bundle = reference_bundle(
+            workspace.blobs, str(side.pinned[f"{role}.raw"]), metadata, documents
+        )
+        weather = _object(_object(bundle["inputs"]).get("weather"))
+        return digest(encode(weather))
+    if metadata.get("profile_type") == "pvlib_reference_profile_v1" and isinstance(
+        dependencies, dict
+    ):
+        model = documents.object(str(dependencies["pv_model_inputs"]))
+        return digest(encode(model["weather"]))
+    return None
+
+
+def _weather_key(
+    workspace: Workspace, side: EnergyComparisonSide, documents: FrozenDocuments
+) -> Json:
     if isinstance(side.scenario, DcPlantEnergyInputs):
         weather: Object = {}
         opaque = False
         for role in ("pv_reference", "pv_available_ac"):
             if role + ".metadata" not in side.pinned:
                 continue
-            metadata = workspace.blobs.object(str(side.pinned[role + ".metadata"]))
-            dependencies = metadata.get("dependencies")
-            if metadata.get(
-                "profile_type"
-            ) == "pvlib_reference_profile_v1" and isinstance(dependencies, dict):
-                model = workspace.blobs.object(str(dependencies["pv_model_inputs"]))
-                weather[role] = {
-                    "retained_weather_sha256": digest(encode(model["weather"]))
-                }
+            retained = _retained_weather_key(workspace, side, role, documents)
+            if retained is not None:
+                weather[role] = {"retained_weather_sha256": retained}
             else:
                 weather[role] = _profile_key(side, role)
                 opaque = True
@@ -342,13 +365,9 @@ def _weather_key(workspace: Workspace, side: EnergyComparisonSide) -> Json:
             **({"opaque": True} if opaque else {}),
         }
     role = "pv_available_dc" if side.dc else "pv_available_ac"
-    metadata = workspace.blobs.object(str(side.pinned[f"{role}.metadata"]))
-    dependencies = metadata.get("dependencies")
-    if metadata.get("profile_type") == "pvlib_reference_profile_v1" and isinstance(
-        dependencies, dict
-    ):
-        model = workspace.blobs.object(str(dependencies["pv_model_inputs"]))
-        return {"retained_weather_sha256": digest(encode(model["weather"]))}
+    retained = _retained_weather_key(workspace, side, role, documents)
+    if retained is not None:
+        return {"retained_weather_sha256": retained}
     # Identical original profile bytes/interpretation provide a common input
     # even for measured CSVs. Different opaque profiles prove no common climate.
     return {"profile": _profile_key(side, role), "opaque": True}
@@ -471,7 +490,8 @@ def compare_energy_runs(
             for side in (a, b)
         ],
     )
-    weather_a, weather_b = _weather_key(workspace, a), _weather_key(workspace, b)
+    documents = FrozenDocuments(workspace.blobs)
+    weather_a, weather_b = (_weather_key(workspace, side, documents) for side in (a, b))
     weather_known = weather_a == weather_b or (
         "opaque" not in _object(weather_a) and "opaque" not in _object(weather_b)
     )

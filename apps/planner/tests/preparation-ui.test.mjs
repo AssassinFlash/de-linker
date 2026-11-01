@@ -266,6 +266,121 @@ test("a frozen English report marks its own language inside a German planner pag
 	assert.ok(reportSections.every((section) => section.lang === "en"));
 });
 
+for (const locale of ["en-GB", "de-DE"]) {
+	test(`${locale}: report downloads the selected materials or country-rule asset`, async (t) => {
+		const run = structuredClone(fixture.geometric_pv.report_run),
+			calls = [],
+			downloads = [];
+		run.result.has_draft_items = false;
+		run.result.prepared_attachments = {
+			bill_of_materials_csv: {
+				id: "materials",
+				content_sha256: "a".repeat(64),
+			},
+			country_rule_review_csv: { id: "rules", content_sha256: "b".repeat(64) },
+			pv_series_csv: { id: "series", content_sha256: "c".repeat(64) },
+		};
+		const client = {
+			isCurrentScope: (value) => value === scope,
+			async reportCsv(...args) {
+				calls.push(args);
+				return new Blob(["saved CSV"], { type: "text/csv" });
+			},
+		};
+		let replace;
+		function Harness() {
+			const [currentRun, setRun] = useState(run);
+			replace = setRun;
+			window.wp.i18n.__ = (message) =>
+				locale.startsWith("de")
+					? (plannerGerman.locale_data.messages[message]?.[0] ?? message)
+					: message;
+			return React.createElement(PlanningReportResult, {
+				run: currentRun,
+				client,
+				scope,
+				recheck() {},
+				operations: {},
+				current: true,
+				blocked: false,
+				locale,
+			});
+		}
+		await mount(t, React.createElement(Harness));
+		const reportTables = [...document.querySelectorAll(".lp-report-table")];
+		assert.ok(reportTables.length > 0);
+		for (const tableContainer of reportTables) {
+			const table = tableContainer.querySelector("table"),
+				columns = [...table.querySelectorAll("thead th")].map(
+					(th) => th.textContent,
+				),
+				rows = [...table.querySelectorAll("tbody tr")],
+				cards = [
+					...tableContainer.nextElementSibling.querySelectorAll(":scope > li"),
+				];
+			assert.equal(rows.length, cards.length);
+			for (const [index, row] of rows.entries()) {
+				assert.deepEqual(
+					[...cards[index].querySelectorAll("dt")].map((dt) => dt.textContent),
+					columns,
+				);
+				assert.deepEqual(
+					[...cards[index].querySelectorAll("dd")].map((dd) => dd.textContent),
+					[...row.querySelectorAll("td")].map((td) => td.textContent),
+				);
+			}
+		}
+		window.HTMLAnchorElement.prototype.click = function () {
+			downloads.push(this.download);
+		};
+		const buttons = () => [
+			...document.querySelectorAll(".lp-run-heading button"),
+		];
+		const ruleLabel = locale.startsWith("de")
+			? "Landesregelprüfung herunterladen (CSV)"
+			: "Download country rule review (CSV)";
+		const ruleButton = buttons().find(
+			(button) => button.textContent === ruleLabel,
+		);
+		assert.ok(ruleButton);
+		await act(async () => ruleButton.click());
+		const seriesLabel = locale.startsWith("de")
+			? "PV-Strangzeitreihe herunterladen (CSV)"
+			: "Download PV string intervals (CSV)";
+		const seriesButton = buttons().find(
+			(button) => button.textContent === seriesLabel,
+		);
+		assert.ok(seriesButton);
+		await act(async () => seriesButton.click());
+		await act(async () =>
+			buttons()
+				.find((button) =>
+					button.textContent.includes(
+						locale.startsWith("de") ? "Stückliste" : "bill of materials",
+					),
+				)
+				.click(),
+		);
+		assert.deepEqual(
+			calls.map((args) => [args[1], args[3]]),
+			[
+				["rules", "b".repeat(64)],
+				["series", "c".repeat(64)],
+				["materials", "a".repeat(64)],
+			],
+		);
+		assert.match(downloads[0], /-country-rules\.csv$/);
+		assert.match(downloads[1], /-pv-strings\.csv$/);
+		assert.ok(downloads[2].endsWith(`-${run.result.report.locale}.csv`));
+		const legacy = structuredClone(run);
+		delete legacy.result.prepared_attachments.country_rule_review_csv;
+		delete legacy.result.prepared_attachments.pv_series_csv;
+		await act(async () => replace(legacy));
+		assert.ok(!buttons().some((button) => button.textContent === ruleLabel));
+		assert.ok(!buttons().some((button) => button.textContent === seriesLabel));
+	});
+}
+
 test("the geometric PV workspace uses all retained intervals, adopts frozen AC explicitly and selects its report run", async (t) => {
 	const native = fixture.geometric_pv;
 	// The retained source is listed exactly as the service derives it from the

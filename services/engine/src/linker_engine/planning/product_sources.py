@@ -460,6 +460,11 @@ class ProductSources:
                 "prepare a PV profile from the current Woo-maintained module"
             )
         self.confirm_basis(basis)
+        equipment = metadata.get("woo_equipment_inputs")
+        if equipment is not None:
+            if not isinstance(equipment, dict):
+                raise InvalidInput("the geometric PV equipment evidence is invalid")
+            self.confirm_basis(equipment, require_reference=False)
 
     def current(self) -> Object:
         try:

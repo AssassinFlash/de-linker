@@ -445,6 +445,12 @@ def report_sources(
             selected_run.result is not None
             and selected_run.result.get("kind") == GEOMETRIC_PV_KIND
         )
+        series_iv = (
+            geometric
+            and selected_run.result is not None
+            and selected_run.result.get("model")
+            == "opaque_perez_series_iv_forward_reference_v1"
+        )
         run = owned(
             options.pv_run_id,
             GEOMETRIC_PV_KIND
@@ -452,7 +458,21 @@ def report_sources(
             else PvgisRoofReferenceKernel.kind
             if roof_ac
             else PvReferenceKernel.kind,
-            ("geometry", "geometric_pv_preparation", "weather_acquisition")
+            (
+                "geometry",
+                "geometric_pv_preparation",
+                "weather_acquisition",
+                *(
+                    (
+                        "equipment_selection",
+                        "pv_string_plan",
+                        "equipment_plant",
+                        "pv_plant_string_plan",
+                    )
+                    if series_iv
+                    else ()
+                ),
+            )
             if geometric
             else ("geometry", "pvgis_reference")
             if roof_ac
@@ -848,14 +868,18 @@ def report_sources(
         if (
             "grid_connection" in equipment_source_inputs
             or "grid_connection" in project.inputs
+            or "country_rule_inputs" in equipment_source_inputs
+            or "country_rule_inputs" in project.inputs
         ):
 
-            def grid_context(values: Object) -> tuple[bool, Json, Json]:
+            def grid_context(values: Object) -> tuple[bool, Json, bool, Json, Json]:
                 brief = values.get("brief")
                 site = brief.get("site") if isinstance(brief, dict) else None
                 return (
                     "grid_connection" in values,
                     values.get("grid_connection"),
+                    "country_rule_inputs" in values,
+                    values.get("country_rule_inputs"),
                     site.get("country_code") if isinstance(site, dict) else None,
                 )
 

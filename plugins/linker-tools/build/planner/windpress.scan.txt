@@ -121,6 +121,8 @@ lp-pv-parameters
 lp-rail-caption
 lp-rail-current
 lp-rail-session
+lp-report-cards
+lp-report-table
 lp-result-section
 lp-review-status
 lp-roof-picker
