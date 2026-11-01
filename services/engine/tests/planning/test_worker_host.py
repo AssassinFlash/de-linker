@@ -17,6 +17,7 @@ from uuid import uuid4
 
 import pytest
 
+import linker_engine
 from linker_engine.planning.assets import Assets
 from linker_engine.planning.canonical import Object
 from linker_engine.planning.execution_identity import storage_binding
@@ -165,6 +166,10 @@ def launch(
     generation = uuid4().hex
     environment = {
         "PATH": os.environ.get("PATH", os.defpath),
+        # A reused editable venv may belong to a different worktree. Launch
+        # the same package source whose runtime/execution this parent froze.
+        "PYTHONPATH": str(Path(linker_engine.__file__).resolve().parent.parent),
+        "PYTHONDONTWRITEBYTECODE": "1",
         "LINKER_PLANNER_CONFIG": str(runtime_file),
         "LINKER_PLANNER_WORKER_CONFIG": str(policy_file),
     }

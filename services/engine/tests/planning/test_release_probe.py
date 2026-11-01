@@ -36,6 +36,7 @@ def test_real_release_command_needs_no_policy_secrets_or_workspace(
             [sys.executable, "-m", "linker_engine.planning.worker_host", "release"],
             env={
                 "PATH": os.environ.get("PATH", os.defpath),
+                "PYTHONPATH": str(Path(runtime_snapshot.__file__).resolve().parents[2]),
                 "PYTHONDONTWRITEBYTECODE": "1",
                 "LINKER_PLANNER_CONFIG": str(selected),
             },
