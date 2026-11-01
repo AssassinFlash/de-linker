@@ -10,7 +10,7 @@ import os
 import re
 import shlex
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
 from dataclasses import asdict, dataclass, replace
 from pathlib import Path
 
@@ -318,23 +318,34 @@ def source_digest(source: Path, ignored: tuple[str, ...] = ()) -> str:
     """Identity of artifact bytes, paths, modes and symbolic links on either machine."""
     if not source.exists() and not source.is_symlink():
         return "-"
+    omitted = {*ignored, "__pycache__"}
+
+    def entries(parent: Path) -> Iterator[Path]:
+        for item in sorted(parent.iterdir()):
+            if item.name in omitted:
+                continue
+            if item.suffix != ".pyc":
+                yield item
+            if not item.is_symlink() and item.is_dir():
+                yield from entries(item)
+
+    tree = source.is_dir()
+    paths = entries(source) if tree else iter([source])
     result = hashlib.sha256()
-    paths = sorted(source.rglob("*")) if source.is_dir() else [source]
     for item in paths:
-        parts = item.relative_to(source).parts if source.is_dir() else (item.name,)
-        if (
-            "__pycache__" in parts
-            or item.suffix == ".pyc"
-            or any(name in parts for name in ignored)
-        ):
+        if not tree and (item.name in omitted or item.suffix == ".pyc"):
             continue
-        relative = str(item.relative_to(source)) if source.is_dir() else "."
+        relative = str(item.relative_to(source)) if tree else "."
         result.update(relative.encode() + b"\0")
         result.update(str(item.lstat().st_mode & 0o777).encode() + b"\0")
         if item.is_symlink():
             result.update(b"L" + os.readlink(item).encode())
         elif item.is_file():
-            result.update(b"F" + hashlib.sha256(item.read_bytes()).digest())
+            content = hashlib.sha256()
+            with item.open("rb") as handle:
+                for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                    content.update(chunk)
+            result.update(b"F" + content.digest())
         else:
             result.update(b"D")
     return result.hexdigest()

@@ -4,6 +4,8 @@ import json
 import os
 import shlex
 import shutil
+from collections.abc import Iterator
+from contextlib import AbstractContextManager
 from pathlib import Path
 
 import pytest
@@ -16,6 +18,28 @@ from linker_cutover.target import CutoverError, Target
 def target_at(root: Path) -> Target:
     """The production shell/rsync path, without SSH or WordPress."""
     return Target("fixture", str(root), "http://127.0.0.1", (), None, None)
+
+
+def test_source_digest_never_descends_into_excluded_dependencies(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    tree = tmp_path / "plugin"
+    tree.mkdir()
+    (tree / "entry.php").write_text("shipped")
+    expected = atomic.source_digest(tree, ("node_modules",))
+    dependencies = tree / "node_modules"
+    dependencies.mkdir()
+    (dependencies / "unshipped").write_text("development")
+    scandir = os.scandir
+
+    def guarded(path: str | Path) -> AbstractContextManager[Iterator[os.DirEntry[str]]]:
+        assert Path(path) != dependencies
+        return scandir(path)
+
+    monkeypatch.setattr(os, "scandir", guarded)
+    assert atomic.source_digest(tree, ("node_modules",)) == expected
+    (tree / "entry.php").write_text("new shipped version")
+    assert atomic.source_digest(tree, ("node_modules",)) != expected
 
 
 def test_all_artifacts_are_uploaded_before_one_switch(tmp_path: Path) -> None:
