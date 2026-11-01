@@ -178,6 +178,30 @@ class ScopeTest(unittest.TestCase):
             with self.subTest(additional=additional):
                 self.assertEqual(self.classify(*outbox, *additional), expected)
 
+    def test_shared_browser_contracts_select_the_actual_engine_consumer(self):
+        # Engine's native schema parity and energy/equipment contracts open
+        # these browser inputs directly, including pre-existing non-solar files.
+        for path in (
+            "apps/planner/src/contracts/profile-import.schema.json",
+            "apps/planner/src/contracts/geometry-policy.json",
+            "apps/planner/tests/fixtures/energy-invalid.json",
+            "apps/planner/tests/fixtures/dc-energy-run.json",
+            "apps/planner/tests/fixtures/preparation-flow-linux-x86_64.json",
+        ):
+            for status in ("A", "M", "D"):
+                with self.subTest(path=path, status=status):
+                    changes = [(status, path)]
+                    self.assertEqual(self.classify(*changes), ["planner", "engine"])
+                    self.assertEqual(
+                        ci_scope.selected_modules(changes, "base", "head"),
+                        ["planner", "engine"],
+                    )
+        # Interface-only work still keeps its independent, smaller lane.
+        self.assertEqual(
+            self.classify(("M", "apps/planner/src/components/ReportView.tsx")),
+            ["planner"],
+        )
+
     def test_shared_unknown_empty_and_structural_changes_are_full(self):
         for path in (
             ".github/workflows/check.yml",
