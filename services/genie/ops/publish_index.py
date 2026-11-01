@@ -34,6 +34,14 @@ class ActivationOutcomeUnconfirmed(RuntimeError):
     """The remote switch may still complete; its Woo lease must not be released."""
 
 
+class PreActivationDeferred(RuntimeError):
+    """The old pair was verified after a pre-activation refusal; retain its lease."""
+
+    def __init__(self, lease_expires_at: int) -> None:
+        super().__init__("pre-activation review required")
+        self.lease_expires_at = lease_expires_at
+
+
 class NativeVerificationRejected(RuntimeError):
     """The remote command reported a definite in-lock rejection before journaling."""
 

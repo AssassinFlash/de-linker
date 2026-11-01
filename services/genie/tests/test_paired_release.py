@@ -154,6 +154,113 @@ def test_hook_lost_response_restores_pair_before_any_index_activation(
     assert calls == ["activate", "restore"]
 
 
+def test_guard_refusal_retains_only_confirmed_old_pair_and_live_lease(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls = []
+
+    class Runtime:
+        def call(self, action: str) -> dict[str, Any]:
+            calls.append(action)
+            if action == "activate":
+                raise RuntimeError("guard refused")
+            return {}
+
+    (tmp_path / "manifest.json").write_text(
+        json.dumps({"version": "new-index", "file": {"sha256": "f" * 64}})
+    )
+    state: dict[str, Any] = {
+        "before_loaded": {"version": "old"},
+        "job": {"lease_expires_at": 9999999999},
+    }
+
+    def publish(*args: Any, **kwargs: Any) -> Any:
+        kwargs["before_activate"]()
+        pytest.fail("index activation must not run")
+
+    monkeypatch.setattr(publish_index, "publish", publish)
+    with pytest.raises(publish_index.PreActivationDeferred):
+        paired.PairedPublisher(
+            Runtime(), tmp_path / "journal", state, lambda: {"version": "old"}
+        )(tmp_path, "/index", "host")
+    assert calls == ["activate", "restore"]
+    assert state["phase"] == "restored_before_activation"
+
+
+def test_reused_candidate_runs_the_guard_again_before_activation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls = []
+
+    class Runtime:
+        def call(self, action: str) -> dict[str, Any]:
+            calls.append(action)
+            return {}
+
+    (tmp_path / "manifest.json").write_text(
+        json.dumps({"version": "same-index", "file": {"sha256": "f" * 64}})
+    )
+    state: dict[str, Any] = {
+        "before_loaded": {},
+        "job": {"lease_expires_at": 9999999999, "activation_epoch": 51},
+    }
+
+    def publish(*args: Any, **kwargs: Any) -> dict[str, Any]:
+        kwargs["before_activate"]()
+        calls.append("index activation")
+        return {"index_version": "same-index"}
+
+    def guard(path: Path, loaded: dict[str, Any], epoch: int) -> None:
+        assert path == tmp_path and loaded == {} and epoch == 51
+        calls.append("guard")
+        if calls.count("guard") == 1:
+            raise RuntimeError("guard refused")
+
+    monkeypatch.setattr(publish_index, "publish", publish)
+    publisher = paired.PairedPublisher(
+        Runtime(), tmp_path / "journal", state, lambda: {}, resume_guard=guard
+    )
+    with pytest.raises(publish_index.PreActivationDeferred):
+        publisher(tmp_path, "/index", "host")
+    assert publisher(tmp_path, "/index", "host")["index_version"] == "same-index"
+    assert calls == ["guard", "restore", "guard", "activate", "index activation"]
+
+
+def test_resume_never_activates_when_old_pair_changes_before_guard(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls: list[str] = []
+    reads = iter([{"version": "changed"}, {"version": "old"}])
+
+    class Runtime:
+        def call(self, action: str) -> dict[str, Any]:
+            calls.append(action)
+            return {}
+
+    (tmp_path / "manifest.json").write_text(
+        json.dumps({"version": "idx", "file": {"sha256": "f" * 64}})
+    )
+    state: dict[str, Any] = {
+        "before_loaded": {"version": "old"},
+        "job": {"lease_expires_at": 9999999999, "activation_epoch": 51},
+    }
+
+    def publish(*args: Any, **kwargs: Any) -> Any:
+        kwargs["before_activate"]()
+        pytest.fail("activation must not be reached")
+
+    monkeypatch.setattr(publish_index, "publish", publish)
+    with pytest.raises(publish_index.PreActivationDeferred):
+        paired.PairedPublisher(
+            Runtime(),
+            tmp_path / "journal",
+            state,
+            lambda: next(reads),
+            resume_guard=lambda *_: pytest.fail("guard must not run"),
+        )(tmp_path, "/index", "host")
+    assert calls == ["restore"]
+
+
 def test_no_job_exit_zero_is_not_paired_success(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -249,8 +356,9 @@ def test_hook_journal_failure_restores_before_activation(
     assert calls == ["activate", "restore"]
 
 
+@pytest.mark.parametrize("command", ["resume-ack", "resume-candidate"])
 def test_resume_uses_exact_verify_and_never_claims_replacement(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, command: str
 ) -> None:
     import httpx
 
@@ -277,14 +385,20 @@ def test_resume_uses_exact_verify_and_never_claims_replacement(
             "request": request,
             "host": "synthetic",
             "worker_id": "fixture",
-            "phase": "activation_possible",
+            "phase": "restored_before_activation"
+            if command == "resume-candidate"
+            else "activation_possible",
             "job": job,
+            "before_loaded": {},
             "index": {"version": "idx", "sha256": "f" * 64},
         },
     )
     bodies = []
 
     def invoke(*args: Any, **kwargs: Any) -> int:
+        if command == "resume-candidate":
+            assert kwargs["resume_index"] == {"version": "idx", "sha256": "f" * 64}
+
         def transport(req: httpx.Request) -> httpx.Response:
             bodies.append(json.loads(req.content))
             return httpx.Response(409, json={"code": "stale_job"})
@@ -304,12 +418,16 @@ def test_resume_uses_exact_verify_and_never_claims_replacement(
             worker.close()
         return 1
 
-    monkeypatch.setattr(paired.Runtime, "call", lambda self, action: {"current": NEW})
+    monkeypatch.setattr(
+        paired.Runtime,
+        "call",
+        lambda self, action: {"current": OLD if command == "resume-candidate" else NEW},
+    )
     monkeypatch.setattr(publication_worker, "main", invoke)
     assert (
         paired.main(
             [
-                "resume-ack",
+                command,
                 "--host",
                 "synthetic",
                 "--candidate",
@@ -322,7 +440,8 @@ def test_resume_uses_exact_verify_and_never_claims_replacement(
                 "http://127.0.0.1:8902/knowledge/loaded",
                 "--worker-id",
                 "fixture",
-            ]
+            ],
+            resume_guard=lambda *_: None,
         )
         == 1
     )
@@ -330,6 +449,114 @@ def test_resume_uses_exact_verify_and_never_claims_replacement(
     assert bodies[0]["operation"] == "verify"
     assert bodies[0]["lease_token"] == "synthetic-lease"
     assert journal.exists()
+
+
+def test_resume_candidate_rejects_missing_guard() -> None:
+    with pytest.raises(
+        ValueError, match="requires the operator's pre-activation guard"
+    ):
+        paired.main(
+            [
+                "resume-candidate",
+                "--host",
+                "synthetic",
+                "--candidate",
+                NEW,
+                "--previous",
+                OLD,
+                "--journal",
+                "/tmp/unused",
+                "--loaded-url",
+                "http://localhost",
+                "--worker-id",
+                "fixture",
+            ]
+        )
+
+
+@pytest.mark.parametrize("same_pair", [True, False])
+def test_resume_candidate_requires_same_live_lease_and_original_pair(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, same_pair: bool
+) -> None:
+    import httpx
+
+    tmp_path.chmod(0o700)
+    request = {
+        "runtime_root": "/opt/linker-genie",
+        "candidate": NEW,
+        "previous": OLD,
+        "identity": paired.identity(Path(paired.__file__).resolve().parents[1]),
+    }
+    job = {
+        "activation_epoch": 51,
+        "lease_expires_at": 9999999999,
+        "job_id": "job",
+        "source_revision": "s",
+        "model_identity_revision": "m",
+        "lease_token": "synthetic-lease",
+    }
+    journal = tmp_path / "journal"
+    paired.save(
+        journal,
+        {
+            "request": request,
+            "host": "synthetic",
+            "worker_id": "fixture",
+            "phase": "restored_before_activation",
+            "job": job,
+            "before_loaded": {"index": "old"},
+            "index": {"version": "idx", "sha256": "f" * 64},
+        },
+    )
+    operations: list[str] = []
+
+    def invoke(*args: Any, **kwargs: Any) -> int:
+        def transport(req: httpx.Request) -> httpx.Response:
+            operations.append(json.loads(req.content)["operation"])
+            return httpx.Response(200, json={"verified": True})
+
+        worker = kwargs["worker_factory"](
+            "https://example.test/jobs",
+            "u",
+            "p",
+            "fixture",
+            7200,
+            transport=httpx.MockTransport(transport),
+        )
+        try:
+            if same_pair:
+                assert worker.claim({"index": "old"}) == job
+            else:
+                with pytest.raises(RuntimeError, match="original loaded pair changed"):
+                    worker.claim({"index": "different"})
+        finally:
+            worker.close()
+        return 1
+
+    monkeypatch.setattr(paired.Runtime, "call", lambda self, action: {"current": OLD})
+    monkeypatch.setattr(publication_worker, "main", invoke)
+    assert (
+        paired.main(
+            [
+                "resume-candidate",
+                "--host",
+                "synthetic",
+                "--candidate",
+                NEW,
+                "--previous",
+                OLD,
+                "--journal",
+                str(journal),
+                "--loaded-url",
+                "http://localhost",
+                "--worker-id",
+                "fixture",
+            ],
+            resume_guard=lambda *_: None,
+        )
+        == 1
+    )
+    assert operations == ["verify"] and journal.exists()
 
 
 def test_cached_only_release_never_delegates_missing_vectors(
