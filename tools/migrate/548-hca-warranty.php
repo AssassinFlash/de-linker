@@ -257,8 +257,10 @@ try {
 					}
 					// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Close the owned stream before its digest is verified.
 					fclose( $h );
-					// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Require a true removal result for this SHA-verified owned partial.
-					if ( hash_file( 'sha256', $partial ) !== $new_sha || ! link( $partial, $path ) || ! unlink( $partial ) ) {
+					// The site-scoped database lock serializes this owned destination; both files share a directory.
+					clearstatcache( true, $path );
+					// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- Atomically publish verified local bytes; the host disables hard links.
+					if ( hash_file( 'sha256', $partial ) !== $new_sha || file_exists( $path ) || is_link( $path ) || ! rename( $partial, $path ) ) {
 						throw new RuntimeException( 'PDF staging verification failed.' );
 					}
 				}
