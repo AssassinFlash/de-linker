@@ -33,7 +33,7 @@ class ProcessError(RuntimeError):
 
 def without_research_credentials(env: dict[str, str]) -> dict[str, str]:
     """Research credentials belong to the assistant, never project children."""
-    return {key: value for key, value in env.items() if not key.startswith("APIFY_")}
+    return {key: value for key, value in env.items() if not key.upper().startswith("APIFY_")}
 
 
 class Background:

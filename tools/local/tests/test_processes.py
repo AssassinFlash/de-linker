@@ -47,6 +47,7 @@ def test_child_cannot_receive_research_credentials(tmp_path: Path) -> None:
         **process_environment(),
         "APIFY_TOKEN_ALT": "fake-research-token",
         "APIFY_OTHER": "fake-research-setting",
+        "apify_Token_alias": "fake-case-alias",
         "LINKER_TEST_SENTINEL": "ordinary-setting-preserved",
     }
     before = env.copy()
@@ -55,7 +56,7 @@ def test_child_cannot_receive_research_credentials(tmp_path: Path) -> None:
             sys.executable,
             "-c",
             "import os,time; "
-            "assert not any(key.startswith('APIFY_') for key in os.environ); "
+            "assert not any(key.upper().startswith('APIFY_') for key in os.environ); "
             "print(os.environ['LINKER_TEST_SENTINEL'],flush=True); time.sleep(60)",
         ],
         env,
