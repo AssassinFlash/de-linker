@@ -194,13 +194,14 @@ export function InstallationEditor({
 			: null;
 	function edit(kind: Kind, row: unknown): boolean {
 		try {
+			const id = readObject(row).id;
+			const existing = plan[kind].some((old) => old.id === id);
 			const next = readInstallation({
 				...plan,
 
-				[kind]: [
-					...plan[kind].filter((old) => old.id !== readObject(row).id),
-					row,
-				],
+				[kind]: existing
+					? plan[kind].map((old) => (old.id === id ? row : old))
+					: [...plan[kind], row],
 			});
 			const ok = change(next);
 			if (ok) {

@@ -547,3 +547,95 @@ test("editor selects current Woo terminals, submits their bindings and reads bot
 	assert.match(ends[1].textContent, /COM2.*Does not match declared use/);
 	assert.match(output.textContent, /does not establish compatibility/i);
 });
+
+test("no-op edits of historical devices and circuits preserve ordering and bytes", async (t) => {
+	const dom = setupDom(),
+		{ createRoot } = await import("react-dom/client"),
+		root = createRoot(dom.element);
+	const cache = new QueryClient();
+	t.after(async () => {
+		cache.clear();
+		await dom.dispose(root);
+	});
+	const geo = emptyGeometry();
+	geo.sources = [
+		manualSource("survey", "Fixture survey", "Fixture permission"),
+	];
+	const first = { ...instance, ports: [point("p"), point("q")] },
+		second = {
+			...instance,
+			id: "other",
+			name: "Other device",
+			ports: [point("x")],
+		};
+	let current = {
+		...emptyInstallation(),
+		instances: [first, second],
+		circuits: [
+			circuit,
+			{ ...circuit, id: "other_circuit", name: "Other circuit" },
+		],
+	};
+	const original = JSON.stringify(current),
+		baseline = { installation: current };
+	const client = {
+		isCurrentScope: () => true,
+		async query(path) {
+			assert.equal(path, "products/current");
+			return {
+				schema_version: 1,
+				provider: "woocommerce",
+				compatibility_origin: "woocommerce",
+				figure_projection_version: 2,
+				products: [product],
+			};
+		},
+	};
+	function Harness() {
+		const [plan, setPlan] = React.useState(current);
+		return React.createElement(InstallationEditor, {
+			inputs: { installation: plan },
+			savedInputs: baseline,
+			savedRevision: 2,
+			geometry: geo,
+			client,
+			session: { query_scope: revision },
+			projectId: "project",
+			locale: "en-GB",
+			sceneModuleUrl: null,
+			onValidity() {},
+			editGeometry() {
+				return false;
+			},
+			change(value) {
+				current = value;
+				setPlan(value);
+				return true;
+			},
+		});
+	}
+	await act(async () =>
+		root.render(
+			React.createElement(
+				QueryClientProvider,
+				{ client: cache },
+				React.createElement(Harness),
+			),
+		),
+	);
+	await until(
+		() => !document.body.textContent.includes("Loading current product"),
+	);
+	const section = (heading) =>
+		[...document.querySelectorAll("section")].find(
+			(s) => s.querySelector("h3")?.textContent === heading,
+		);
+	for (const heading of ["Physical devices and site connections", "Circuits"]) {
+		const edit = [...section(heading).querySelectorAll("button")].find(
+			(b) => b.textContent === "Edit",
+		);
+		await act(async () => edit.click());
+		await apply();
+		assert.equal(JSON.stringify(current), original);
+	}
+});
