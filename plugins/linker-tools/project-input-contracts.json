@@ -4,6 +4,7 @@
     "installation_pv_string_links_v1",
     "pv_string_links_direct_beam_visibility_v1",
     "pv_string_links_direct_beam_geometric_pv_v1",
-    "pv_plant_string_plan_v1"
+    "pv_plant_string_plan_v1",
+    "installation_circuit_electrical_v1"
   ]
 }

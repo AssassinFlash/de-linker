@@ -1,5 +1,11 @@
 import Ajv2020 from "ajv/dist/2020.js";
 import schema from "../contracts/installation.schema.json" with { type: "json" };
+import { readElectricalReview } from "./installationElectrical.ts";
+import type {
+	CircuitOperatingCondition,
+	CoreRole,
+	ElectricalReview,
+} from "./installationElectrical.ts";
 import type { JsonObject } from "../data/protocol.ts";
 import { ApiError } from "../data/protocol.ts";
 import { readObject } from "../data/readProtocol.ts";
@@ -31,6 +37,7 @@ export interface Endpoint {
 	port_id: string;
 }
 export interface InstallationCircuit {
+	operating_conditions?: CircuitOperatingCondition[];
 	id: string;
 	name: string;
 	kind:
@@ -49,8 +56,13 @@ export interface InstallationRoute {
 export interface ConductorSpecification extends JsonObject {
 	readonly cross_section_mm2: number;
 	readonly source_note: string;
+	readonly cable_reference?: {
+		product_id: number;
+		product_revision: string;
+	} | null;
 }
 export interface CableRun {
+	core_roles?: CoreRole[];
 	id: string;
 	name: string;
 	circuit_id: string;
@@ -97,10 +109,21 @@ const validate = new Ajv2020({
 }).compile<InstallationInputs>(schema);
 /** Absent and null must not both exist: only absence keeps historical bytes. */
 function canonicalConductor(value: InstallationInputs): InstallationInputs {
-	if (value.cable_runs.every((run) => run.conductor !== null)) return value;
+	if (
+		value.cable_runs.every(
+			(run) =>
+				run.conductor !== null && run.conductor?.cable_reference !== null,
+		)
+	)
+		return value;
 	return {
 		...value,
 		cable_runs: value.cable_runs.map((run) => {
+			if (run.conductor?.cable_reference === null) {
+				const conductor = { ...run.conductor };
+				delete conductor.cable_reference;
+				return { ...run, conductor };
+			}
 			if (run.conductor !== null) return run;
 			const next = { ...run };
 			delete next.conductor;
@@ -129,12 +152,14 @@ export function readInstallation(value: unknown): InstallationInputs {
 		) ||
 		value.circuits.some(
 			(c) =>
+				!distinct((c.operating_conditions ?? []).map((row) => row.id)) ||
 				!ports.has(c.start.instance_id + ":" + c.start.port_id) ||
 				!ports.has(c.end.instance_id + ":" + c.end.port_id) ||
 				sameJson(c.start, c.end),
 		) ||
 		value.cable_runs.some(
 			(c) =>
+				!distinct((c.core_roles ?? []).filter((role) => role !== "unused")) ||
 				!value.circuits.some((x) => x.id === c.circuit_id) ||
 				!value.routes.some((x) => x.id === c.route_id),
 		)
@@ -165,6 +190,7 @@ export interface CableQuantity extends JsonObject {
 	reasons: string[];
 }
 export interface InstallationReview {
+	electrical?: ElectricalReview;
 	prepared_inputs: InstallationInputs;
 	geometry_sha256: string;
 	cables: CableQuantity[];
@@ -503,7 +529,9 @@ export function readInstallationReview(
 		(!optedIn && row.pv_string_reconciliation !== undefined)
 	)
 		throw new ApiError(502, "invalid_installation_review");
+	const electrical = readElectricalReview(row.electrical, requested, cables);
 	return {
+		...(electrical ? { electrical } : {}),
 		prepared_inputs: prepared,
 		geometry_sha256: row.geometry_sha256,
 		cables,

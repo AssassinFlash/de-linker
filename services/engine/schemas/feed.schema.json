@@ -30,6 +30,208 @@
 		}
 	},
 	"$defs": {
+		"CableEvidence": {
+			"additionalProperties": false,
+			"properties": {
+				"document_id": {
+					"$ref": "#/$defs/Text"
+				},
+				"document_revision": {
+					"$ref": "#/$defs/Hash"
+				},
+				"blob_sha256": {
+					"$ref": "#/$defs/Hash"
+				},
+				"product_id": {
+					"$ref": "#/$defs/Count"
+				},
+				"url": {
+					"pattern": "^https://de-linker\\.com/wp-content/uploads/",
+					"title": "Url",
+					"type": "string"
+				},
+				"page": {
+					"$ref": "#/$defs/Count"
+				},
+				"quote": {
+					"maxLength": 2000,
+					"minLength": 1,
+					"title": "Quote",
+					"type": "string"
+				}
+			},
+			"required": [
+				"document_id",
+				"document_revision",
+				"blob_sha256",
+				"product_id",
+				"url",
+				"page",
+				"quote"
+			],
+			"title": "CableEvidence",
+			"type": "object"
+		},
+		"CableParameterSet": {
+			"additionalProperties": false,
+			"properties": {
+				"id": {
+					"$ref": "#/$defs/Identifier"
+				},
+				"current_kind": {
+					"enum": [
+						"dc",
+						"ac"
+					],
+					"title": "Current Kind",
+					"type": "string"
+				},
+				"temperature_c": {
+					"$ref": "#/$defs/Number"
+				},
+				"frequency_hz": {
+					"anyOf": [
+						{
+							"$ref": "#/$defs/Positive"
+						},
+						{
+							"type": "null"
+						}
+					]
+				},
+				"arrangement": {
+					"anyOf": [
+						{
+							"$ref": "#/$defs/Text"
+						},
+						{
+							"type": "null"
+						}
+					]
+				},
+				"resistance_ohm_per_km": {
+					"$ref": "#/$defs/Positive"
+				},
+				"reactance_ohm_per_km": {
+					"anyOf": [
+						{
+							"$ref": "#/$defs/Nonnegative"
+						},
+						{
+							"type": "null"
+						}
+					]
+				},
+				"resistance_basis": {
+					"enum": [
+						"maximum",
+						"nominal"
+					],
+					"title": "Resistance Basis",
+					"type": "string"
+				},
+				"source": {
+					"$ref": "#/$defs/CableEvidence"
+				}
+			},
+			"required": [
+				"id",
+				"current_kind",
+				"temperature_c",
+				"frequency_hz",
+				"arrangement",
+				"resistance_ohm_per_km",
+				"reactance_ohm_per_km",
+				"resistance_basis",
+				"source"
+			],
+			"title": "CableParameterSet",
+			"type": "object"
+		},
+		"Count": {
+			"exclusiveMinimum": 0,
+			"maximum": 9007199254740991,
+			"type": "integer"
+		},
+		"Hash": {
+			"pattern": "^[a-f0-9]{64}$",
+			"type": "string"
+		},
+		"Identifier": {
+			"pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+			"type": "string"
+		},
+		"Nonnegative": {
+			"minimum": 0,
+			"type": "number"
+		},
+		"Number": {
+			"type": "number"
+		},
+		"Positive": {
+			"exclusiveMinimum": 0,
+			"type": "number"
+		},
+		"SchemaVersion": {
+			"maximum": 1,
+			"minimum": 1,
+			"type": "integer"
+		},
+		"Text": {
+			"maxLength": 4096,
+			"minLength": 1,
+			"type": "string"
+		},
+		"cableFacts": {
+			"additionalProperties": false,
+			"properties": {
+				"schema_version": {
+					"$ref": "#/$defs/SchemaVersion"
+				},
+				"construction": {
+					"enum": [
+						"single_conductor",
+						"multicore_cable"
+					],
+					"title": "Construction",
+					"type": "string"
+				},
+				"core_count": {
+					"$ref": "#/$defs/Count"
+				},
+				"cross_section_mm2": {
+					"$ref": "#/$defs/Positive"
+				},
+				"conductor_material": {
+					"$ref": "#/$defs/Text"
+				},
+				"insulation": {
+					"$ref": "#/$defs/Text"
+				},
+				"source": {
+					"$ref": "#/$defs/CableEvidence"
+				},
+				"parameter_sets": {
+					"items": {
+						"$ref": "#/$defs/CableParameterSet"
+					},
+					"title": "Parameter Sets",
+					"type": "array"
+				}
+			},
+			"required": [
+				"schema_version",
+				"construction",
+				"core_count",
+				"cross_section_mm2",
+				"conductor_material",
+				"insulation",
+				"source",
+				"parameter_sets"
+			],
+			"title": "CableFacts",
+			"type": "object"
+		},
 		"unknown": { "const": "unknown" },
 		"number": { "type": "number", "minimum": 0 },
 		"product": {
@@ -98,11 +300,13 @@
 		},
 		"overlayItem": {
 			"type": "object",
+			"allOf": [{ "if": { "properties": { "kind": { "const": "cable" } } }, "then": { "required": ["canonical_product_id", "product_revision", "reference_revision", "cable_facts"] }, "else": { "not": { "required": ["cable_facts"] } } }],
 			"required": ["id", "kind", "brand", "model", "figures", "documents"],
 			"additionalProperties": false,
 			"properties": {
 				"id": { "type": "string", "minLength": 1 },
-				"kind": { "enum": ["pv_module"] },
+				"kind": { "enum": ["pv_module", "cable"] },
+				"cable_facts": { "$ref": "#/$defs/cableFacts" },
 				"canonical_product_id": { "type": "integer", "minimum": 1 },
 				"product_revision": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
 				"reference_revision": { "type": "string", "pattern": "^[a-f0-9]{64}$" },

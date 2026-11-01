@@ -7,6 +7,7 @@ import {
 	CableForm,
 	RouteForm,
 } from "../src/components/installation/NetworkForms.tsx";
+import { NetworkViewport } from "../src/components/installation/NetworkViewport.tsx";
 import { PvStringLinks } from "../src/components/installation/PvStringLinks.tsx";
 import { InstallationEditor } from "../src/components/installation/InstallationEditor.tsx";
 import { emptyGeometry } from "../src/domain/geometryCommands.ts";
@@ -223,6 +224,13 @@ test("a declared cross-section is entered as a pair, omitted when open, and read
 		cross_section_mm2: 6,
 		source_note: "Project cable list",
 	});
+	const explicitNull = structuredClone(stored);
+	explicitNull.cable_runs[0].conductor.cable_reference = null;
+	assert.deepEqual(readInstallation(explicitNull), readInstallation(stored));
+	assert.equal(explicitNull.cable_runs[0].conductor.cable_reference, null);
+	await render(explicitNull.cable_runs[0]);
+	await apply();
+	assert.equal(Object.hasOwn(saved.conductor, "cable_reference"), false);
 	// Re-opening the stored run shows the declaration instead of an empty form.
 	await render(readInstallation(stored).cable_runs[0]);
 	assert.equal(field("cross_section").value, "6");
@@ -1075,4 +1083,72 @@ test("installation preview reader keeps unknown length and refuses invented reas
 			),
 		);
 	}
+});
+
+test("endpoint labels face inward without changing installation points or complete names", async (t) => {
+	const dom = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const root = createRoot(dom.element);
+	t.after(() => dom.dispose(root));
+	const plan = {
+		...emptyInstallation(),
+		instances: [
+			{
+				id: "source",
+				name: "Synthetic DC source",
+				ports: [
+					{
+						id: "positive",
+						name: "Positive terminal",
+						position: { east_m: 0, north_m: 0, height_m: 1 },
+					},
+				],
+			},
+			{
+				id: "load",
+				name: "Synthetic DC load",
+				ports: [
+					{
+						id: "negative",
+						name: "Negative terminal",
+						position: { east_m: 30, north_m: 0, height_m: 1 },
+					},
+				],
+			},
+		],
+	};
+	await act(async () =>
+		root.render(
+			React.createElement(NetworkViewport, { geometry: emptyGeometry(), plan }),
+		),
+	);
+	const texts = [...document.querySelectorAll("svg text")],
+		circles = [...document.querySelectorAll("svg circle")];
+	assert.deepEqual(
+		texts.map((text) => text.textContent),
+		[
+			"Synthetic DC source · Positive terminal",
+			"Synthetic DC load · Negative terminal",
+		],
+	);
+	assert.equal(texts[0].getAttribute("text-anchor"), "start");
+	assert.ok(Number(texts[0].getAttribute("x")) > 0);
+	assert.equal(texts[1].getAttribute("text-anchor"), "end");
+	assert.ok(Number(texts[1].getAttribute("x")) < 30);
+	assert.equal(texts[0].getAttribute("dy"), null);
+	assert.ok(parseFloat(texts[1].getAttribute("dy")) > 1);
+	assert.deepEqual(
+		circles.map((circle) => [
+			circle.getAttribute("cx"),
+			circle.getAttribute("cy"),
+		]),
+		[
+			["0", "0"],
+			["30", "0"],
+		],
+	);
+	assert.equal(
+		document.querySelector("svg").getAttribute("viewBox"),
+		"-3 -3 36 6",
+	);
 });

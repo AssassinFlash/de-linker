@@ -94,7 +94,7 @@ class ProductSources:
                 "current Woo module data is unavailable"
             ) from error
 
-    def equipment_basis(self) -> Object:
+    def equipment_basis(self, *, include_cables: bool = False) -> Object:
         """Freeze the whole current candidate pool and its scoped pair claims."""
         try:
             loaded = self.load()
@@ -106,7 +106,9 @@ class ProductSources:
                 raise VersionUnavailable(
                     "Woo-maintained compatibility claims must be prepared"
                 )
-            view = loaded.publication.prepared_view(loaded.engine)
+            view = loaded.publication.prepared_view(
+                loaded.engine, include_cables=include_cables
+            )
             ids = {p.id for p in view.engine.products.products}
             result = decode_object(
                 encode(
@@ -120,6 +122,26 @@ class ProductSources:
                             for row in loaded.publication.feed["products"]
                             if row["id"] in ids
                         ],
+                        **(
+                            {
+                                "cable_references": [
+                                    row
+                                    for row in loaded.publication.feed["overlay"]
+                                    if row["kind"] == "cable"
+                                    and {
+                                        "product_id": row["canonical_product_id"],
+                                        "product_revision": row["product_revision"],
+                                    }
+                                    in view.dependencies["products"]
+                                ]
+                            }
+                            if include_cables
+                            and any(
+                                row["kind"] == "cable"
+                                for row in loaded.publication.feed["overlay"]
+                            )
+                            else {}
+                        ),
                         "compatibility": view.engine.compatibility.snapshot(),
                     }
                 )
@@ -293,7 +315,53 @@ class ProductSources:
             and (d.id, d.product_id, d.product_revision) not in bindings
             for d in plan.instances
         ):
-            basis = product_basis(plan, self.equipment_basis())
+            basis = product_basis(plan, self.equipment_basis(include_cables=True))
+            self.confirm_basis(basis, require_reference=False)
+        # An unchanged stale selection is recoverable. A newly selected or
+        # edited manufacturer identity/specification must match current Woo.
+        old_runs = {run.id: run for run in old.cable_runs} if old else {}
+        edited = []
+        for run in plan.cable_runs:
+            if run.conductor is None or run.conductor.cable_reference is None:
+                continue
+            old_run = old_runs.get(run.id)
+            previous_conductor = old_run.conductor if old_run else None
+            if (
+                previous_conductor is None
+                or old_run is None
+                or run.construction != old_run.construction
+                or run.conductor.cross_section_mm2
+                != previous_conductor.cross_section_mm2
+                or run.conductor.cable_reference != previous_conductor.cable_reference
+            ):
+                edited.append(run)
+        if edited:
+            from .cable_facts import CableFacts
+
+            basis = product_basis(
+                plan, self.equipment_basis(include_cables=True), allow_stale=True
+            )
+            references = {
+                row["canonical_product_id"]: row
+                for row in cast(list[Object], basis.get("cable_references", []))
+            }
+            for run in edited:
+                assert (
+                    run.conductor is not None
+                    and run.conductor.cable_reference is not None
+                )
+                selection = run.conductor.cable_reference
+                raw = references.get(selection.product_id)
+                if raw is None or raw["product_revision"] != selection.product_revision:
+                    raise ProductEvidenceChanged("current Woo cable reference changed")
+                facts = CableFacts.read(raw["cable_facts"])
+                if (
+                    facts.cross_section_mm2 != run.conductor.cross_section_mm2
+                    or facts.construction != run.construction
+                ):
+                    raise InvalidInput(
+                        "cable specification must match the selected Woo reference"
+                    )
             self.confirm_basis(basis, require_reference=False)
 
     def roof_basis(self, inputs: Object) -> Object:
@@ -359,7 +427,7 @@ class ProductSources:
         try:
             loaded = self.load()
             view = loaded.publication.prepared_view(
-                loaded.engine, include_reference=True
+                loaded.engine, include_reference=True, include_cables=True
             )
             ids = {product.id for product in view.engine.products.products}
             reference_ids = {
@@ -423,6 +491,16 @@ class ProductSources:
                             if (assembly := battery_assembly(row)) is not None
                         },
                         "references": references,
+                        "cable_references": [
+                            row
+                            for row in feed["overlay"]
+                            if row["kind"] == "cable"
+                            and {
+                                "product_id": row["canonical_product_id"],
+                                "product_revision": row["product_revision"],
+                            }
+                            in view.dependencies["products"]
+                        ],
                         "pv_modules": templates,
                         "module_diagnostics": diagnostics,
                     }

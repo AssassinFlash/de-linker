@@ -1,3 +1,4 @@
+import { readCableReferences } from "./cableReferences.ts";
 import { useQuery } from "@tanstack/react-query";
 import type { PlannerClient } from "./PlannerClient.ts";
 import { ApiError } from "./protocol.ts";
@@ -89,6 +90,7 @@ export function readEquipmentProducts(value: unknown) {
 		)
 			throw new ApiError(502, "invalid_product_reply");
 	return {
+		cableReferences: readCableReferences(row.cable_references),
 		products,
 		assemblies: assemblies as BatteryAssemblies,
 		controllers: products.filter((p) => controllerIds.includes(p.id)),

@@ -155,17 +155,19 @@ final class EngineeringFeed {
 	private static function references( array $publication ): array {
 		$references = array();
 		foreach ( $publication['products'] as $product ) {
-			if ( EngineeringReference::PV_MODULE !== ( $product['engineering_role'] ?? '' ) || ! is_string( $product['engineering_id'] ?? null ) || '' === $product['engineering_id'] ) {
+			$role = $product['engineering_role'] ?? '';
+			if ( ! in_array( $role, array( EngineeringReference::PV_MODULE, EngineeringReference::CABLE ), true ) || ! is_string( $product['engineering_id'] ?? null ) || '' === $product['engineering_id'] ) {
 				continue;
 			}
 			$id      = $product['product_id'];
 			$figures = self::figures( $id, $publication );
-			if ( ! EngineeringReference::ready( $figures ) ) {
+			$cable   = EngineeringReference::CABLE === $role ? Publication\CableFacts::projection( $id, $publication ) : null;
+			if ( EngineeringReference::CABLE === $role ? null === $cable : ! EngineeringReference::ready( $figures ) ) {
 				continue;
 			}
 			$references[] = array(
 				'id'                   => $product['engineering_id'],
-				'kind'                 => 'pv_module',
+				'kind'                 => EngineeringReference::CABLE === $role ? 'cable' : 'pv_module',
 				'brand'                => $product['brand'],
 				'model'                => $product['model'],
 				'canonical_product_id' => $id,
@@ -173,6 +175,7 @@ final class EngineeringFeed {
 				'reference_revision'   => $product['product_revision'],
 				'figures'              => (object) $figures,
 				'documents'            => self::documents( $id, $publication ),
+				...( null === $cable ? array() : array( 'cable_facts' => $cable ) ),
 			);
 		}
 		return $references;

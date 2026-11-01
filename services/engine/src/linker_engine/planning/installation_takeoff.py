@@ -8,6 +8,7 @@ from typing import cast
 from .canonical import Json, Object, digest, encode
 from .errors import InvalidInput, ProductEvidenceChanged
 from .geometry_documents import GeometryDocument
+from .installation_electrical import electrical_review
 from .installation_inputs import InstallationInputs, RoutePoint
 from .pv_string_inputs import PvPlantStringPlan, PvStringPlan, plant_instance_statuses
 
@@ -27,7 +28,14 @@ def _conductor_status(recorded: list[Object]) -> str:
         cast(float, conductor["cross_section_mm2"])
         for conductor in cast(list[Object], declared)
     }
-    return "conflicting" if len(sections) > 1 else "declared"
+    # Distinct actual cable identities may legitimately use different areas.
+    # Their per-core suitability is evaluated separately, never by asserting
+    # that all physical runs in one circuit are the same cable.
+    referenced = all(
+        isinstance(conductor.get("cable_reference"), dict)
+        for conductor in cast(list[Object], declared)
+    )
+    return "conflicting" if len(sections) > 1 and not referenced else "declared"
 
 
 def _quantity_status(recorded: list[Object]) -> str:
@@ -226,6 +234,11 @@ def product_basis(
     plan: InstallationInputs, basis: Object, *, allow_stale: bool = False
 ) -> Object:
     ids = {d.product_id for d in plan.instances if d.product_id is not None}
+    cable_ids = {
+        run.conductor.cable_reference.product_id
+        for run in plan.cable_runs
+        if run.conductor is not None and run.conductor.cable_reference is not None
+    }
     rows = {p["canonical_product_id"]: p for p in cast(list[Object], basis["products"])}
     for item in plan.instances:
         if (
@@ -237,15 +250,30 @@ def product_basis(
             raise ProductEvidenceChanged("installation device facts changed")
     scope = dict(cast(Object, basis["publication"]))
     scope["products"] = [
-        p for p in cast(list[Object], scope["products"]) if p["product_id"] in ids
+        p
+        for p in cast(list[Object], scope["products"])
+        if p["product_id"] in ids | cable_ids
     ]
     scope["documents"] = [
-        d for d in cast(list[Object], scope["documents"]) if d["product_id"] in ids
+        d
+        for d in cast(list[Object], scope["documents"])
+        if d["product_id"] in ids | cable_ids
     ]
     scope["reference_inputs"] = []
     return {
         **basis,
         "products": [rows[pid] for pid in sorted(ids) if pid in rows],
+        **(
+            {
+                "cable_references": [
+                    row
+                    for row in cast(list[Object], basis["cable_references"])
+                    if row["canonical_product_id"] in cable_ids
+                ]
+            }
+            if "cable_references" in basis
+            else {}
+        ),
         "publication": scope,
     }
 
@@ -298,6 +326,10 @@ def route_takeoff(
             raise InvalidInput("route length exceeds the interoperable number range")
         lengths[route.id] = projected, spatial
     lines: list[Json] = []
+    prepared_runs = {
+        row["id"]: row
+        for row in cast(list[Object], plan.project_document()["cable_runs"])
+    }
     for cable in plan.cable_runs:
         route, circuit = routes[cable.route_id], circuits[cable.circuit_id]
         start = ports[(circuit.start.instance_id, circuit.start.port_id)].position
@@ -338,11 +370,7 @@ def route_takeoff(
         # A conductor is a separate declared fact. Its absence leaves the
         # specification open; it never shortens or voids a measured length, and
         # it is never filled from a module count or packaged quantity.
-        conductor = (
-            cable.conductor.model_dump(mode="json")
-            if cable.conductor is not None
-            else None
-        )
+        conductor = prepared_runs[cable.id].get("conductor")
         if any(
             value is not None and (not math.isfinite(value) or value > 2**53 - 1)
             for value in (plan_length, length, total)
@@ -358,6 +386,11 @@ def route_takeoff(
                 "route_name": route.name,
                 "construction": cable.construction,
                 "conductor": conductor,
+                **(
+                    {"core_roles": cast(Json, cable.core_roles)}
+                    if "core_roles" in cable.model_fields_set
+                    else {}
+                ),
                 "specification": "open" if conductor is None else "declared",
                 "quantity": total,
                 "unit": "m",
@@ -382,6 +415,20 @@ def route_takeoff(
         "geometry_sha256": geometry_sha,
         "input_sha256": input_sha,
         "prepared_inputs": prepared,
+        **(
+            {"electrical": electrical_review(plan, selected, cast(list[Object], lines))}
+            if any(
+                "operating_conditions" in circuit.model_fields_set
+                for circuit in plan.circuits
+            )
+            or any(
+                "core_roles" in cable.model_fields_set
+                or cable.conductor is not None
+                and cable.conductor.cable_reference is not None
+                for cable in plan.cable_runs
+            )
+            else {}
+        ),
         **(
             {
                 "pv_string_reconciliation": {

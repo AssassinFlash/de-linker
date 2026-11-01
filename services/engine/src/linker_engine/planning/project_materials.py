@@ -184,6 +184,7 @@ def project_materials(source: Object) -> Object:
             )
     installation = source.get("installation")
     if isinstance(installation, dict):
+        electrical = installation.get("electrical")
         for cable in cast(list[Object], installation["cables"]):
             lines.append(
                 {
@@ -197,6 +198,25 @@ def project_materials(source: Object) -> Object:
                         "installation_input_sha256": installation["input_sha256"],
                         "geometry_sha256": installation["geometry_sha256"],
                         **cable,
+                        **(
+                            {
+                                "electrical": {
+                                    "method": electrical["method"],
+                                    "circuit": next(
+                                        (
+                                            row
+                                            for row in cast(
+                                                list[Object], electrical["circuits"]
+                                            )
+                                            if row["circuit_id"] == cable["circuit_id"]
+                                        ),
+                                        None,
+                                    ),
+                                }
+                            }
+                            if isinstance(electrical, dict)
+                            else {}
+                        ),
                     },
                 }
             )

@@ -48,12 +48,46 @@ class Endpoint(Document):
     port_id: Identifier
 
 
+class VoltageLimit(Document):
+    maximum_percent: Nonnegative
+    source_note: Text
+
+
+class CircuitOperatingCondition(Document):
+    """Declared steady load; cable manufacturer parameters cannot be entered here."""
+
+    id: Identifier
+    name: Text
+    method: Literal["dc_resistive", "ac_two_wire", "ac_balanced_three_phase"]
+    current_a: Nonnegative
+    reference_voltage_v: Positive
+    direction: Literal["start_to_end", "end_to_start"]
+    conductor_temperature_c: Number
+    frequency_hz: Positive | None
+    power_factor: Annotated[Number, Field(ge=0, le=1)] | None
+    reactive_direction: Literal["lagging", "leading"] | None
+    balanced: bool | None
+    sinusoidal: bool
+    arrangement: Text | None
+    source_note: Text
+    voltage_limit: VoltageLimit | None
+
+
 class InstallationCircuit(Document):
     id: Identifier
     name: Text
     kind: Literal["pv_dc", "battery_dc", "ac", "control", "protective_earth", "other"]
     start: Endpoint
     end: Endpoint
+    operating_conditions: list[CircuitOperatingCondition] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def conditions(self) -> Self:
+        if len({row.id for row in self.operating_conditions}) != len(
+            self.operating_conditions
+        ):
+            raise ValueError("operating condition IDs must be distinct per circuit")
+        return self
 
 
 class InstallationRoute(Document):
@@ -65,12 +99,18 @@ class InstallationRoute(Document):
     extra_length_note: Text | None
 
 
+class CableReference(Document):
+    product_id: Count
+    product_revision: Hash
+
+
 class ConductorSpecification(Document):
     # The declared cross-section of this physical run. Ampacity, voltage drop,
     # protection and the manufacturer terminal rating are separate assessments.
     cross_section_mm2: Positive
     # Where the project's choice comes from; a declaration, not an approval.
     source_note: Text
+    cable_reference: CableReference | None = None
 
 
 class CableRun(Document):
@@ -83,6 +123,27 @@ class CableRun(Document):
     # Absent leaves the specification explicitly open; it never inherits a
     # neighbouring run, a module count or a manufacturer package quantity.
     conductor: ConductorSpecification | None = None
+    # Each role names one physical core, never a purchase-length multiplier.
+    core_roles: list[
+        Literal[
+            "dc_positive",
+            "dc_negative",
+            "line",
+            "neutral",
+            "l1",
+            "l2",
+            "l3",
+            "pe",
+            "unused",
+        ]
+    ] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def roles(self) -> Self:
+        active = [role for role in self.core_roles if role != "unused"]
+        if len(active) != len(set(active)):
+            raise ValueError("core roles must be distinct in a physical cable")
+        return self
 
 
 class PvStringLink(Document):
@@ -112,6 +173,13 @@ class InstallationInputs(Document):
         for run, dumped in zip(self.cable_runs, value["cable_runs"], strict=True):
             if run.conductor is None:
                 dumped.pop("conductor")
+            elif run.conductor.cable_reference is None:
+                dumped["conductor"].pop("cable_reference")
+            if "core_roles" not in run.model_fields_set:
+                dumped.pop("core_roles")
+        for circuit, dumped in zip(self.circuits, value["circuits"], strict=True):
+            if "operating_conditions" not in circuit.model_fields_set:
+                dumped.pop("operating_conditions")
         return value
 
     @model_validator(mode="after")

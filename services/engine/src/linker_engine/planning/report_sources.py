@@ -707,7 +707,7 @@ def report_sources(
             raise InvalidInput(
                 "select at least one physical cable for the routing report"
             )
-        basis = product_basis(plan, products.equipment_basis())
+        basis = product_basis(plan, products.equipment_basis(include_cables=True))
         installation = route_takeoff(project.inputs, basis)
         geometry = GeometryDocument.read(project.inputs.get("geometry"))
         instance_sources = {instance.source_id for instance in plan.instances}
