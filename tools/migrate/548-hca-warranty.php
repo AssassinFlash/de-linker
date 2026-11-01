@@ -9,7 +9,11 @@ defined( 'ABSPATH' ) || exit;
 try {
 	( static function ( string $payload ): void {
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- Decode the CLI JSON envelope or reviewed PDF bytes, never executable code.
-		$request = json_decode( base64_decode( $payload, true ), true, 512, JSON_THROW_ON_ERROR );
+		$decoded = base64_decode( $payload, true );
+		if ( false === $decoded ) {
+			throw new RuntimeException( 'Invalid CLI payload encoding.' );
+		}
+		$request = json_decode( $decoded, true, 512, JSON_THROW_ON_ERROR );
 		$action  = $request['action'] ?? '';
 		$target  = $request['target'] ?? '';
 		$site    = untrailingslashit( home_url() );
@@ -177,7 +181,7 @@ try {
 				}
 				$found = 0;
 				foreach ( $obj->downloads as $row ) {
-					if ( is_object( $row ) && 6426 === ( $row->download_file ?? null ) ) {
+					if ( $row instanceof stdClass && 6426 === ( $row->download_file ?? null ) ) {
 						if ( 'EN' !== ( $row->download_language ?? null ) ) {
 							throw new RuntimeException( 'Original document language changed.' );
 						}
