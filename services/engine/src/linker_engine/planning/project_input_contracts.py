@@ -19,7 +19,9 @@ type InputContract = Literal[
     "pv_string_links_direct_beam_visibility_v1",
     "pv_string_links_direct_beam_geometric_pv_v1",
     "grid_connection_evidence_v1",
+    "installation_terminal_bindings_v1",
 ]
+TERMINAL_INPUT_CONTRACT: InputContract = "installation_terminal_bindings_v1"
 GRID_CONNECTION_INPUT_CONTRACT: InputContract = "grid_connection_evidence_v1"
 INPUT_CONTRACT: InputContract = "installation_pv_string_links_v1"
 DIRECT_BEAM_INPUT_CONTRACT: InputContract = "pv_string_links_direct_beam_visibility_v1"
@@ -35,6 +37,7 @@ SUPPORTED_INPUT_CONTRACTS: tuple[str, ...] = (
     PLANT_PV_INPUT_CONTRACT,
     ELECTRICAL_INPUT_CONTRACT,
     GRID_CONNECTION_INPUT_CONTRACT,
+    TERMINAL_INPUT_CONTRACT,
 )
 
 
@@ -49,6 +52,18 @@ def required_contracts(inputs: Mapping[str, object]) -> tuple[str, ...]:
         required.append(INPUT_CONTRACT)
     if isinstance(installation, Mapping):
         circuits, runs = installation.get("circuits"), installation.get("cable_runs")
+        instances = installation.get("instances")
+        terminal = any(
+            isinstance(row, Mapping) and "communication_use" in row
+            for row in (circuits if isinstance(circuits, list) else [])
+        ) or any(
+            isinstance(port, Mapping) and "terminal_binding" in port
+            for instance in (instances if isinstance(instances, list) else [])
+            if isinstance(instance, Mapping) and isinstance(instance.get("ports"), list)
+            for port in instance["ports"]
+        )
+        if terminal:
+            required.append(TERMINAL_INPUT_CONTRACT)
         electrical = any(
             isinstance(row, Mapping) and "operating_conditions" in row
             for row in (circuits if isinstance(circuits, list) else [])
@@ -85,7 +100,9 @@ def require_input_contract(
     # Each complete writer understands only its declared feature generation.
     # Concrete coverage sets keep older tokens from covering future additions.
     covered = (
-        (
+        SUPPORTED_INPUT_CONTRACTS
+        if input_contract == TERMINAL_INPUT_CONTRACT
+        else (
             INPUT_CONTRACT,
             DIRECT_BEAM_INPUT_CONTRACT,
             GEOMETRIC_PV_INPUT_CONTRACT,

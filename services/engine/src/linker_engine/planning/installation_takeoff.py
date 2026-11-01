@@ -10,6 +10,7 @@ from .errors import InvalidInput, ProductEvidenceChanged
 from .geometry_documents import GeometryDocument
 from .installation_electrical import electrical_review
 from .installation_inputs import InstallationInputs, RoutePoint
+from .installation_terminals import has_terminal_feature, terminal_assessment
 from .pv_string_inputs import PvPlantStringPlan, PvStringPlan, plant_instance_statuses
 
 METHOD = "installation_route_takeoff_v1"
@@ -63,10 +64,13 @@ def _closure(status: str, recorded: list[Object]) -> Object:
 
 
 def _string_links(
-    inputs: Object, plan: InstallationInputs, cables: list[Json]
+    inputs: Object,
+    plan: InstallationInputs,
+    cables: list[Json],
+    stale_instances: set[str],
 ) -> Object:
     if inputs.get("pv_plant_string_plan") is not None:
-        return _plant_string_links(inputs, plan, cables)
+        return _plant_string_links(inputs, plan, cables, stale_instances)
     saved = inputs.get("pv_string_plan")
     strings = PvStringPlan.read(saved) if saved is not None else None
     known = {item.id: item for item in strings.strings} if strings else {}
@@ -108,6 +112,11 @@ def _string_links(
                 for endpoint in cast(list[Object], endpoints)
             )
             != 1
+            or any(
+                endpoint["product_id"] == strings.inverter_product_id
+                and endpoint["instance_id"] in stale_instances
+                for endpoint in cast(list[Object], endpoints)
+            )
             else "linked"
         )
         recorded = [
@@ -147,7 +156,10 @@ def _string_links(
 
 
 def _plant_string_links(
-    inputs: Object, plan: InstallationInputs, cables: list[Json]
+    inputs: Object,
+    plan: InstallationInputs,
+    cables: list[Json],
+    stale_instances: set[str],
 ) -> Object:
     wiring = PvPlantStringPlan.read(inputs.get("pv_plant_string_plan"))
     statuses = plant_instance_statuses(inputs, wiring)
@@ -192,6 +204,7 @@ def _plant_string_links(
             else "inverter_endpoint_unresolved"
             if instance_status != "declared"
             or unit is None
+            or unit.inverter_instance_id in stale_instances
             or sum(
                 endpoint["instance_id"] == unit.inverter_instance_id
                 for endpoint in cast(list[Object], endpoints)
@@ -259,6 +272,36 @@ def product_basis(
         for d in cast(list[Object], scope["documents"])
         if d["product_id"] in ids | cable_ids
     ]
+    bound_documents = {
+        (b.product_id, b.document_id, b.document_revision)
+        for device in plan.instances
+        for port in device.ports
+        if (b := port.terminal_binding) is not None
+    }
+    scoped_documents: list[Json] = []
+    for document in cast(list[Object], scope["documents"]):
+        key = (
+            document["product_id"],
+            document["document_id"],
+            document["document_revision"],
+        )
+        product = rows.get(document["product_id"], {})
+        source = next(
+            (
+                doc
+                for doc in cast(list[Object], product.get("documents", []))
+                if doc.get("document_id") == key[1]
+                and doc.get("document_revision") == key[2]
+                and isinstance(doc.get("blob_sha256"), str)
+            ),
+            None,
+        )
+        scoped_documents.append(
+            {**document, "blob_sha256": source["blob_sha256"]}
+            if key in bound_documents and source is not None
+            else document
+        )
+    scope["documents"] = scoped_documents
     scope["reference_inputs"] = []
     return {
         **basis,
@@ -296,9 +339,18 @@ def route_takeoff(
     geometry_sha = digest(encode(cast(Object, inputs["geometry"])))
     if bind_geometry:
         plan = plan.model_copy(update={"geometry_sha256": geometry_sha})
-    selected = product_basis(plan, basis, allow_stale=allow_stale_products)
+    selected = product_basis(
+        plan, basis, allow_stale=allow_stale_products or has_terminal_feature(plan)
+    )
     products = {
         p["canonical_product_id"]: p for p in cast(list[Object], selected["products"])
+    }
+    stale_instances = {
+        item.id
+        for item in plan.instances
+        if item.product_id is not None
+        and products.get(item.product_id, {}).get("product_revision")
+        != item.product_revision
     }
     sources = {s.id: s for s in geometry.sources}
     circuits, routes = {c.id: c for c in plan.circuits}, {r.id: r for r in plan.routes}
@@ -409,12 +461,20 @@ def route_takeoff(
     }
     prepared = plan.project_document()
     input_sha = digest(encode(prepared))
+    prepared_instances = {
+        row["id"]: row for row in cast(list[Object], prepared["instances"])
+    }
     return {
         "schema_version": 1,
         "method": METHOD,
         "geometry_sha256": geometry_sha,
         "input_sha256": input_sha,
         "prepared_inputs": prepared,
+        **(
+            {"terminal_assessment": terminal_assessment(plan, selected)}
+            if has_terminal_feature(plan)
+            else {}
+        ),
         **(
             {"electrical": electrical_review(plan, selected, cast(list[Object], lines))}
             if any(
@@ -432,7 +492,7 @@ def route_takeoff(
         **(
             {
                 "pv_string_reconciliation": {
-                    **_string_links(inputs, plan, lines),
+                    **_string_links(inputs, plan, lines, stale_instances),
                     "installation_input_sha256": input_sha,
                     "geometry_sha256": geometry_sha,
                 }
@@ -455,7 +515,7 @@ def route_takeoff(
                 if d.product_id in products
                 and products[d.product_id]["product_revision"] == d.product_revision
                 else None,
-                "ports": cast(Json, [p.model_dump(mode="json") for p in d.ports]),
+                "ports": prepared_instances[d.id]["ports"],
             }
             for d in plan.instances
         ],

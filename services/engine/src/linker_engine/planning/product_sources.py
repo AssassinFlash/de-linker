@@ -317,6 +317,44 @@ class ProductSources:
         ):
             basis = product_basis(plan, self.equipment_basis(include_cables=True))
             self.confirm_basis(basis, require_reference=False)
+        from .installation_terminals import resolve_binding
+
+        old_ports = (
+            {
+                (device.id, port.id): (
+                    device.product_id,
+                    device.product_revision,
+                    port.terminal_binding,
+                )
+                for device in old.instances
+                for port in device.ports
+            }
+            if old
+            else {}
+        )
+        edited_ports = [
+            (device, port)
+            for device in plan.instances
+            for port in device.ports
+            if port.terminal_binding is not None
+            and old_ports.get((device.id, port.id))
+            != (device.product_id, device.product_revision, port.terminal_binding)
+        ]
+        if edited_ports:
+            basis = product_basis(
+                plan, self.equipment_basis(include_cables=True), allow_stale=True
+            )
+            for device, port in edited_ports:
+                status, _fact = resolve_binding(device, port, basis)
+                if status == "instance_mismatch":
+                    raise InvalidInput(
+                        "terminal binding must match its selected instance"
+                    )
+                if status != "documented":
+                    raise ProductEvidenceChanged(
+                        "current Woo terminal evidence changed"
+                    )
+            self.confirm_basis(basis, require_reference=False)
         # An unchanged stale selection is recoverable. A newly selected or
         # edited manufacturer identity/specification must match current Woo.
         old_runs = {run.id: run for run in old.cable_runs} if old else {}

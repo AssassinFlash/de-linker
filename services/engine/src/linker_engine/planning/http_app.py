@@ -572,6 +572,7 @@ def create_private_app(
     def installation_review(body: InstallationReview, request: Request) -> Object:
         from .installation_inputs import InstallationInputs
         from .installation_takeoff import product_basis, route_takeoff
+        from .installation_terminals import has_terminal_feature
 
         project = workspace.get(verified_actor(request.scope), body.project_id)
         if (
@@ -590,10 +591,12 @@ def create_private_app(
         ):
             if field in project.inputs:
                 inputs[field] = project.inputs[field]
+        plan = InstallationInputs.read(body.installation)
         basis = product_basis(
-            InstallationInputs.read(body.installation),
+            plan,
             products.equipment_basis(include_cables=True),
-            allow_stale=inputs.get("pv_plant_string_plan") is not None,
+            allow_stale=inputs.get("pv_plant_string_plan") is not None
+            or has_terminal_feature(plan),
         )
         reply = route_takeoff(
             inputs,

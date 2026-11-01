@@ -250,6 +250,17 @@
         },
         "position": {
           "$ref": "#/$defs/RoutePoint"
+        },
+        "terminal_binding": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TerminalBinding"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
@@ -368,6 +379,22 @@
         },
         "end": {
           "$ref": "#/$defs/Endpoint"
+        },
+        "communication_use": {
+          "anyOf": [
+            {
+              "enum": [
+                "external_communication",
+                "internal_communication"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Communication Use"
         },
         "operating_conditions": {
           "items": {
@@ -496,6 +523,44 @@
       "maximum": 1,
       "minimum": 1,
       "type": "integer"
+    },
+    "TerminalBinding": {
+      "additionalProperties": false,
+      "description": "An exact selected Woo fact for one particular project instance.",
+      "properties": {
+        "instance_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "product_id": {
+          "$ref": "#/$defs/Count"
+        },
+        "product_revision": {
+          "$ref": "#/$defs/Hash"
+        },
+        "fact_id": {
+          "$ref": "#/$defs/Text"
+        },
+        "terminal": {
+          "$ref": "#/$defs/Text"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Text"
+        },
+        "document_revision": {
+          "$ref": "#/$defs/Hash"
+        }
+      },
+      "required": [
+        "instance_id",
+        "product_id",
+        "product_revision",
+        "fact_id",
+        "terminal",
+        "document_id",
+        "document_revision"
+      ],
+      "title": "TerminalBinding",
+      "type": "object"
     },
     "Text": {
       "maxLength": 4096,

@@ -20,6 +20,7 @@ from linker_engine.planning.plant_assessment import assess_plant
 from linker_engine.planning.project_input_contracts import (
     GRID_CONNECTION_INPUT_CONTRACT,
     SUPPORTED_INPUT_CONTRACTS,
+    TERMINAL_INPUT_CONTRACT,
     require_input_contract,
 )
 from linker_engine.planning.project_input_floor import (
@@ -167,7 +168,7 @@ def test_invalid_or_approval_bearing_inputs_are_rejected_at_write_boundary(
 def test_old_writers_cannot_add_preserve_or_remove_grid_evidence() -> None:
     values = declared()
     for token in (None, *SUPPORTED_INPUT_CONTRACTS):
-        if token == GRID_CONNECTION_INPUT_CONTRACT:
+        if token in (GRID_CONNECTION_INPUT_CONTRACT, TERMINAL_INPUT_CONTRACT):
             continue
         for before, after in ((None, values), (values, values), (values, {})):
             with pytest.raises(ProjectInputContractRequired):

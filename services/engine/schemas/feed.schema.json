@@ -386,8 +386,22 @@
 					"conditions": { "type": "array", "items": { "$ref": "#/$defs/localizedText" } },
 					"source": { "$ref": "#/$defs/installationSource" }
 				},
-				"if": { "properties": { "unit": { "enum": ["piece", "pair"] } } },
-				"then": { "properties": { "quantity": { "type": ["null", "integer"] } } }
+				"allOf": [
+					{
+						"if": { "properties": { "unit": { "enum": ["piece", "pair"] } } },
+						"then": { "properties": { "quantity": { "type": ["null", "integer"] } } }
+					},
+					{
+						"if": { "properties": { "specification": { "required": ["terminal_use"] } } },
+						"then": { "properties": {
+							"basis": { "const": "manufacturer_terminal_map" },
+							"specification": { "required": ["terminal_domain", "terminals"], "properties": {
+								"terminal_domain": { "const": "communication" },
+								"terminals": { "minItems": 1 }
+							} }
+						} }
+					}
+				]
 			},
 			"installationSpecification": {
 				"type": "object",
@@ -395,6 +409,7 @@
 				"properties": {
 					"terminal_domain": { "enum": ["ac", "pe", "battery_dc", "pv_dc", "communication"] },
 					"terminals": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+					"terminal_use": { "enum": ["external_communication", "internal_communication"] },
 					"recommended_conductor_mm2": { "$ref": "#/$defs/recommendedInterval" },
 					"cable_od_mm": { "$ref": "#/$defs/recommendedInterval" },
 					"minimum_voltage_v": { "type": "number", "exclusiveMinimum": 0 },

@@ -19,10 +19,23 @@ class RoutePoint(Document):
     height_m: Annotated[Number, Field(ge=-(2**53 - 1), le=2**53 - 1)] | None
 
 
+class TerminalBinding(Document):
+    """An exact selected Woo fact for one particular project instance."""
+
+    instance_id: Identifier
+    product_id: Count
+    product_revision: Hash
+    fact_id: Text
+    terminal: Text
+    document_id: Text
+    document_revision: Hash
+
+
 class ConnectionPoint(Document):
     id: Identifier
     name: Text
     position: RoutePoint
+    terminal_binding: TerminalBinding | None = None
 
 
 class DeviceInstance(Document):
@@ -79,10 +92,15 @@ class InstallationCircuit(Document):
     kind: Literal["pv_dc", "battery_dc", "ac", "control", "protective_earth", "other"]
     start: Endpoint
     end: Endpoint
+    communication_use: (
+        Literal["external_communication", "internal_communication"] | None
+    ) = None
     operating_conditions: list[CircuitOperatingCondition] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def conditions(self) -> Self:
+        if self.communication_use is not None and self.kind != "control":
+            raise ValueError("communication use belongs to a control circuit")
         if len({row.id for row in self.operating_conditions}) != len(
             self.operating_conditions
         ):
@@ -180,6 +198,12 @@ class InstallationInputs(Document):
         for circuit, dumped in zip(self.circuits, value["circuits"], strict=True):
             if "operating_conditions" not in circuit.model_fields_set:
                 dumped.pop("operating_conditions")
+            if "communication_use" not in circuit.model_fields_set:
+                dumped.pop("communication_use")
+        for instance, dumped in zip(self.instances, value["instances"], strict=True):
+            for port, dumped_port in zip(instance.ports, dumped["ports"], strict=True):
+                if "terminal_binding" not in port.model_fields_set:
+                    dumped_port.pop("terminal_binding")
         return value
 
     @model_validator(mode="after")
