@@ -1,242 +1,253 @@
 # Genie knowledge preparation for the 217 affected Woo associations
 
-Baseline: Woo source `c849a2b51dbea4bdc3e2dcc4269be23834175f3395e4af08198a40c90af9d74e`, index `20261101T105022Z-660599000`, epoch 54. The published index contains 142 indexed PDF originals. Its 217 incomplete product/document associations refer to 55 distinct originals and 73 products. Each affected original has one Woo document identity in this cohort.
+## Production publication on November 1
 
-The whole-corpus comparison used the native Woo identity endpoint, one WordPress bootstrap and 374 source windows. Current source and model identity matched before and after the read. Of the original 217 incomplete associations, 159 gained a usable passage and 58 remain incomplete. All 85 previously ready products and every previously usable product/document pair remain available. Two older projections for products 6513 and 6517 contained a truncated MPPT current value. The candidate omits those rows while preserving other proven data from the same sheet.
+The baseline was Woo source `c849a2b51dbea4bdc3e2dcc4269be23834175f3395e4af08198a40c90af9d74e`, index `20261101T105022Z-660599000`, epoch 54. Its 217 incomplete product/document associations referred to 55 distinct originals and 73 products within a corpus of 142 PDF originals.
 
-The build reconstructed 14,583 original chunks from the Docling cache. With projections the candidate contained 18,804 chunks, of which 5,100 had scope evidence. Of 18,759 unique embedding inputs, 239 were missing from the cache. The approved OpenRouter provider supplied those vectors. Readback confirmed all 18,759 keys at 3,072 dimensions, with 3,092,480 bytes of cache growth. Representative English and German candidate queries reached the service citation consumer, including a withdrawal and a near-model negative. Production publication and real model/customer readback are still pending.
+The final native build and preactivation consumer comparison recovered usable passages for 188 of those same associations. Three old HCA warranty associations were replaced by three prepared associations to a verified newer manufacturer original. The remaining 26 associations still lack sufficient evidence. All 85 previously ready products and all 391 previously usable product/document pairs remained available. The new index has 592 usable product/document pairs across the whole corpus. Two older passage projections for products 6513 and 6517 contained a truncated MPPT current value. Those rows were omitted while other proven data from the same sheet remained available.
 
-| Document purpose | Candidate | Still incomplete | Total |
-|---|---:|---:|---:|
-| certificate | 71 | 7 | 78 |
-| compatibility | 13 | 25 | 38 |
-| datasheet | 10 | 5 | 15 |
-| manual | 65 | 12 | 77 |
-| other | 0 | 9 | 9 |
+The actual API and judge now run `20261101T163031000000Z-c56e38fa`. The serving index is `20261101T164225Z-190141000`, SHA-256 `2cc40c72e1a67d0e106f38befa5bce00384be4ca84316998df7d6c8afc2adba0`. Native ready ACK and authenticated loaded readback agree on epoch 56, source `4c0ba90ebc0e03fcacc6209c11072c2257005f3227f05a9fc1136e5bb2ee4400`, recipe `5dc1c22cc0798fc7fbf474f66eb2e33bc37a6005d4678b03016cd79fc741385a` and serving identity `504c9e40dab4129ec65db3dee4ac9a6032a08c6cc44f6422a26e8686dc5e954b`. No lease or paired-release journal remains. The restored 900-second worker completed its first scheduled startup poll with exit 0 and left epoch 56 unchanged.
+
+The final build reused 142 cached originals and all 18,893 passage vectors, with zero provider calls during generation. Earlier preparation had supplied the genuinely missing vectors through the approved OpenRouter route. The final preactivation checks used the old and new native runtime authorization paths, exact product/document associations, and HS3 searches. Five HS3 data sheets and five conditional certificate searches passed together after the anchor namespace repair.
+
+| Document purpose | Same association recovered | Still incomplete | Replaced by new original | Baseline total |
+|---|---:|---:|---:|---:|
+| certificate | 71 | 7 | 0 | 78 |
+| compatibility | 34 | 4 | 0 | 38 |
+| datasheet | 10 | 5 | 0 | 15 |
+| manual | 73 | 4 | 0 | 77 |
+| other | 0 | 6 | 3 | 9 |
+| Total | 188 | 26 | 3 | 217 |
 
 ## Physical original documents and the HCA replacement
 
-The next candidate adds source-backed passages for 29 of the 58 incomplete associations in epoch 54's comparison. Eight are installation guides. Twenty-one are compatibility associations. This figure comes from the actual affected originals and local retrieval checks. The final leased build and serving index must establish whole-corpus availability. The 159 earlier associations and these 29 account for 188 distinct baseline associations.
+The physical-original additions recovered eight installation-guide associations and twenty-one compatibility associations beyond the first candidate's 159. Each condition and model-axis inference retains its source references. For five HS3 models, the DoC lists the individual W and G designations. The verified model-axis table on data sheet page 2 and manufacturer manual page 18 explain how to distinguish them. A conditional answer links all three documents and asks the customer to read the nameplate. The combined W/G model remains incomplete as a certificate association.
 
-For five HS3 models, the DoC lists the individual W and G designations. The verified model-axis table on data sheet page 2 and manufacturer manual page 18 explain how to distinguish them. A conditional answer links all three documents and asks the customer to read the nameplate. The combined W/G model is still incomplete as a certificate association.
+GoodWe's EU EV charger warranty Rev. 1.2 names all three currently listed HCA-20 models. For Europe excluding the UK it specifies two years from the earlier of first installation and six months after production. The full policy contains regional, reporting and exclusion conditions. Source PDF SHA-256 is `88a8a5bd9e70bc398fe990069272526c660c1731103ff113e53f93f7fd789307`. Woo attachment 8474 is now linked to products 3557, 3586 and 3587. All six ordinary EN/DE product pages displayed the correct localized title and hosted link after native post-cache purge. The hosted PDF returned 200 with 491,728 bytes and the verified hash. The retired public URL returned 410 while its original attachment was retained. A native German download click opened the actual three-page original. [Manufacturer original](https://en.goodwe.com/Public/Uploads/uploadfile/files/20261014/GOODWELimitedWarrantyforEVChargerforEURev_1_220260917.pdf)
 
-GoodWe's EU EV charger warranty Rev. 1.2 names all three currently listed HCA-20 models. For Europe excluding the UK it specifies two years from the earlier of first installation and six months after production. The full policy contains regional, reporting and exclusion conditions. Source PDF SHA-256 is `88a8a5bd9e70bc398fe990069272526c660c1731103ff113e53f93f7fd789307`. It was parsed on the normal cached Docling path. Local EN/DE question, withdrawal and source-change tests used a simulated association. The three old policy links need to be superseded by the actual Woo associations and hosted customer downloads. [Manufacturer original](https://en.goodwe.com/Public/Uploads/uploadfile/files/20261014/GOODWELimitedWarrantyforEVChargerforEURev_1_220260917.pdf)
+## Customer question readback
+
+The initial controlled DE Genie tab failed conversation creation and ordinary HCA Send with Cloudflare code 300030, preserving the question and reporting no dispatch. Through 16:51:43 UTC, server-side inspection found zero completed turns and zero outstanding starts since 16:35 UTC. A foreground reload restored history but the controlled retry again failed. The read-only browser diagnostic API also reported a paused document response.
+
+Closing that controlled test tab and opening a fresh tab through native Chrome UI changed the result without changing site settings, keys or protection. Native New conversation succeeded. Native Send visibly passed the real Cloudflare challenge and produced a model response. This is an observed difference in control mode, not proof of a specific provider-internal cause.
+
+The actual German question asked the warranty duration and starting date for GW11K-HCA-20 in Germany. The answer cited the correct new hosted warranty on pages 1, 3 and 2 but gave a generic introduction and thirteen English condition quotations. It omitted the two-year duration and failed the German direct-answer requirement. Inspection confined to this test turn found thirteen correct source hits, including the complete German protected warranty answer. Both model attempts failed grounding; the documents fallback omitted the protected warranty answer and hydration appended the source conditions. This is an open consumer defect under active repair. The screen evidence is `genie-hca-de-fallback.png` in this acceptance directory. English ETR readback also failed the action-specific answer requirement. A fresh native Chrome conversation asked for the torque fixing GW80K-ETR-G10 to its mounting plate. The answer cited the original quick guide page 1 but returned M10 14–24 N·m from wall-mounting figure ETR12510INT0002. Physical review of that same original confirms inverter-to-plate figure ETR12510INT0004 step 3 specifies M6 3–5 N·m. The correct figure was absent from the production retrieved passages and grounding accepted a sourced number for the wrong fastening action. Both the missing figure evidence and action matching are under repair. `genie-etr-en-mounting.jpg` retains the actual answer. Both task-owned production question tabs are closed, and the existing customer revision-5 tabs remain open.
 
 ## Product and original document
 
 | Purpose | Original SHA-256 prefix | Woo ID | Published model | Candidate finding |
 |---|---|---:|---|---|
-| certificate | `000592098663` | 1955 | GW112.6-BAT-AC-G10 | Usable passage in candidate. |
-| certificate | `07f4ab631389` | 2394 | GM330 | Usable passage in candidate. |
-| certificate | `07f4ab631389` | 2397 | GMK330 | Usable passage in candidate. |
-| certificate | `0d33ea23ff2d` | 1956 | GW208.9-BAT-LC-G10 | Usable passage in candidate. |
-| certificate | `0d33ea23ff2d` | 1957 | GW208.9-BAT-LCD-G10 | Usable passage in candidate. |
-| certificate | `0d33ea23ff2d` | 1958 | GW261.2-BAT-LCD-G10 | Usable passage in candidate. |
+| certificate | `000592098663` | 1955 | GW112.6-BAT-AC-G10 | Usable passage in the loaded epoch 56 index. |
+| certificate | `07f4ab631389` | 2394 | GM330 | Usable passage in the loaded epoch 56 index. |
+| certificate | `07f4ab631389` | 2397 | GMK330 | Usable passage in the loaded epoch 56 index. |
+| certificate | `0d33ea23ff2d` | 1956 | GW208.9-BAT-LC-G10 | Usable passage in the loaded epoch 56 index. |
+| certificate | `0d33ea23ff2d` | 1957 | GW208.9-BAT-LCD-G10 | Usable passage in the loaded epoch 56 index. |
+| certificate | `0d33ea23ff2d` | 1958 | GW261.2-BAT-LCD-G10 | Usable passage in the loaded epoch 56 index. |
 | certificate | `43d6efd869b4` | 1185 | HS3-12K-T2-W/G-PX | Conditional evidence for the separate W and G variants, using declaration p1, data sheet p2 and manual p18. Combined-model certificate remains incomplete. |
 | certificate | `43d6efd869b4` | 1186 | HS3-6K-T2-W/G-PX | Conditional evidence for the separate W and G variants, using declaration p1, data sheet p2 and manual p18. Combined-model certificate remains incomplete. |
 | certificate | `43d6efd869b4` | 1187 | HS3-8K-T2-W/G-PX | Conditional evidence for the separate W and G variants, using declaration p1, data sheet p2 and manual p18. Combined-model certificate remains incomplete. |
 | certificate | `43d6efd869b4` | 2198 | HS3-5K-T2-W/G-PX | Conditional evidence for the separate W and G variants, using declaration p1, data sheet p2 and manual p18. Combined-model certificate remains incomplete. |
 | certificate | `43d6efd869b4` | 2199 | HS3-10K-T2-W/G-PX | Conditional evidence for the separate W and G variants, using declaration p1, data sheet p2 and manual p18. Combined-model certificate remains incomplete. |
-| certificate | `576232ede954` | 3557 | GW11K-HCA-20 | Usable passage in candidate. |
-| certificate | `576232ede954` | 3586 | GW7K-HCA-20 | Usable passage in candidate. |
-| certificate | `576232ede954` | 3587 | GW22K-HCA-20 | Usable passage in candidate. |
-| certificate | `5e9f4b467d5d` | 3595 | GW125K-ETR-G10 | Usable passage in candidate. |
-| certificate | `5e9f4b467d5d` | 6507 | GW80K-ETR-G10 | Usable passage in candidate. |
-| certificate | `5e9f4b467d5d` | 6508 | GW99.99K-ETR-G10 | Usable passage in candidate. |
-| certificate | `5e9f4b467d5d` | 6509 | GW100K-ETR-G10 | Usable passage in candidate. |
-| certificate | `5e9f4b467d5d` | 6510 | GW110K-ETR-G10 | Usable passage in candidate. |
-| certificate | `5e9f4b467d5d` | 6511 | GW124.99K-ETR-G10 | Usable passage in candidate. |
-| certificate | `6820813acbec` | 3595 | GW125K-ETR-G10 | Usable passage in candidate. |
-| certificate | `6820813acbec` | 6507 | GW80K-ETR-G10 | Usable passage in candidate. |
-| certificate | `6820813acbec` | 6508 | GW99.99K-ETR-G10 | Usable passage in candidate. |
-| certificate | `6820813acbec` | 6509 | GW100K-ETR-G10 | Usable passage in candidate. |
-| certificate | `6820813acbec` | 6510 | GW110K-ETR-G10 | Usable passage in candidate. |
-| certificate | `6820813acbec` | 6511 | GW124.99K-ETR-G10 | Usable passage in candidate. |
-| certificate | `6a45702bfe4a` | 1832 | B2-5.0-HV1 | Usable passage in candidate. |
-| certificate | `6a45702bfe4a` | 2067 | B2-10.0-HV1 | Usable passage in candidate. |
-| certificate | `6a45702bfe4a` | 2068 | B2-15.0-HV1 | Usable passage in candidate. |
-| certificate | `6a45702bfe4a` | 2069 | B2-20.0-HV1 | Usable passage in candidate. |
-| certificate | `6a45702bfe4a` | 2070 | B2-25.0-HV1 | Usable passage in candidate. |
-| certificate | `6a45702bfe4a` | 2090 | BU2-5.0-HV1 | Usable passage in candidate. |
-| certificate | `6cd7792a5287` | 1954 | GW61.4-BAT-AC-G10 | Usable passage in candidate. |
-| certificate | `6cd7792a5287` | 1955 | GW112.6-BAT-AC-G10 | Usable passage in candidate. |
-| certificate | `75a3a83432a9` | 1182 | HS2-10K-T2-X | Usable passage in candidate. |
-| certificate | `75a3a83432a9` | 1183 | HS2-6K-T2-X | Usable passage in candidate. |
-| certificate | `75a3a83432a9` | 1184 | HS2-8K-T2-X | Usable passage in candidate. |
-| certificate | `75a3a83432a9` | 4109 | HS2-5K-T2-X | Usable passage in candidate. |
+| certificate | `576232ede954` | 3557 | GW11K-HCA-20 | Usable passage in the loaded epoch 56 index. |
+| certificate | `576232ede954` | 3586 | GW7K-HCA-20 | Usable passage in the loaded epoch 56 index. |
+| certificate | `576232ede954` | 3587 | GW22K-HCA-20 | Usable passage in the loaded epoch 56 index. |
+| certificate | `5e9f4b467d5d` | 3595 | GW125K-ETR-G10 | Usable passage in the loaded epoch 56 index. |
+| certificate | `5e9f4b467d5d` | 6507 | GW80K-ETR-G10 | Usable passage in the loaded epoch 56 index. |
+| certificate | `5e9f4b467d5d` | 6508 | GW99.99K-ETR-G10 | Usable passage in the loaded epoch 56 index. |
+| certificate | `5e9f4b467d5d` | 6509 | GW100K-ETR-G10 | Usable passage in the loaded epoch 56 index. |
+| certificate | `5e9f4b467d5d` | 6510 | GW110K-ETR-G10 | Usable passage in the loaded epoch 56 index. |
+| certificate | `5e9f4b467d5d` | 6511 | GW124.99K-ETR-G10 | Usable passage in the loaded epoch 56 index. |
+| certificate | `6820813acbec` | 3595 | GW125K-ETR-G10 | Usable passage in the loaded epoch 56 index. |
+| certificate | `6820813acbec` | 6507 | GW80K-ETR-G10 | Usable passage in the loaded epoch 56 index. |
+| certificate | `6820813acbec` | 6508 | GW99.99K-ETR-G10 | Usable passage in the loaded epoch 56 index. |
+| certificate | `6820813acbec` | 6509 | GW100K-ETR-G10 | Usable passage in the loaded epoch 56 index. |
+| certificate | `6820813acbec` | 6510 | GW110K-ETR-G10 | Usable passage in the loaded epoch 56 index. |
+| certificate | `6820813acbec` | 6511 | GW124.99K-ETR-G10 | Usable passage in the loaded epoch 56 index. |
+| certificate | `6a45702bfe4a` | 1832 | B2-5.0-HV1 | Usable passage in the loaded epoch 56 index. |
+| certificate | `6a45702bfe4a` | 2067 | B2-10.0-HV1 | Usable passage in the loaded epoch 56 index. |
+| certificate | `6a45702bfe4a` | 2068 | B2-15.0-HV1 | Usable passage in the loaded epoch 56 index. |
+| certificate | `6a45702bfe4a` | 2069 | B2-20.0-HV1 | Usable passage in the loaded epoch 56 index. |
+| certificate | `6a45702bfe4a` | 2070 | B2-25.0-HV1 | Usable passage in the loaded epoch 56 index. |
+| certificate | `6a45702bfe4a` | 2090 | BU2-5.0-HV1 | Usable passage in the loaded epoch 56 index. |
+| certificate | `6cd7792a5287` | 1954 | GW61.4-BAT-AC-G10 | Usable passage in the loaded epoch 56 index. |
+| certificate | `6cd7792a5287` | 1955 | GW112.6-BAT-AC-G10 | Usable passage in the loaded epoch 56 index. |
+| certificate | `75a3a83432a9` | 1182 | HS2-10K-T2-X | Usable passage in the loaded epoch 56 index. |
+| certificate | `75a3a83432a9` | 1183 | HS2-6K-T2-X | Usable passage in the loaded epoch 56 index. |
+| certificate | `75a3a83432a9` | 1184 | HS2-8K-T2-X | Usable passage in the loaded epoch 56 index. |
+| certificate | `75a3a83432a9` | 4109 | HS2-5K-T2-X | Usable passage in the loaded epoch 56 index. |
 | certificate | `8158c2cc2ff1` | 3557 | GW11K-HCA-20 | Certificate lists GW11KHCA- 20. Woo lists a different hyphenated model. |
-| certificate | `8158c2cc2ff1` | 3586 | GW7K-HCA-20 | Usable passage in candidate. |
-| certificate | `8158c2cc2ff1` | 3587 | GW22K-HCA-20 | Usable passage in candidate. |
-| certificate | `9881d06dabba` | 1179 | H2-25K-T3 | Usable passage in candidate. |
-| certificate | `9881d06dabba` | 1181 | H2-30K-T3-DE | Usable passage in candidate. |
-| certificate | `9881d06dabba` | 2063 | H2-15K-T3 | Usable passage in candidate. |
-| certificate | `9881d06dabba` | 2064 | H2-20K-T3 | Usable passage in candidate. |
-| certificate | `9881d06dabba` | 4107 | H2-10K-T3 | Usable passage in candidate. |
-| certificate | `9881d06dabba` | 4108 | H2-12K-T3 | Usable passage in candidate. |
+| certificate | `8158c2cc2ff1` | 3586 | GW7K-HCA-20 | Usable passage in the loaded epoch 56 index. |
+| certificate | `8158c2cc2ff1` | 3587 | GW22K-HCA-20 | Usable passage in the loaded epoch 56 index. |
+| certificate | `9881d06dabba` | 1179 | H2-25K-T3 | Usable passage in the loaded epoch 56 index. |
+| certificate | `9881d06dabba` | 1181 | H2-30K-T3-DE | Usable passage in the loaded epoch 56 index. |
+| certificate | `9881d06dabba` | 2063 | H2-15K-T3 | Usable passage in the loaded epoch 56 index. |
+| certificate | `9881d06dabba` | 2064 | H2-20K-T3 | Usable passage in the loaded epoch 56 index. |
+| certificate | `9881d06dabba` | 4107 | H2-10K-T3 | Usable passage in the loaded epoch 56 index. |
+| certificate | `9881d06dabba` | 4108 | H2-12K-T3 | Usable passage in the loaded epoch 56 index. |
 | certificate | `9bc6ae93800c` | 3573 | eSolar AIO3 | Certificate lists AlO3. The published product is AIO3. |
-| certificate | `9cb10f8699f6` | 1832 | B2-5.0-HV1 | Usable passage in candidate. |
-| certificate | `9cb10f8699f6` | 2067 | B2-10.0-HV1 | Usable passage in candidate. |
-| certificate | `9cb10f8699f6` | 2068 | B2-15.0-HV1 | Usable passage in candidate. |
-| certificate | `9cb10f8699f6` | 2069 | B2-20.0-HV1 | Usable passage in candidate. |
-| certificate | `9cb10f8699f6` | 2070 | B2-25.0-HV1 | Usable passage in candidate. |
-| certificate | `9cb10f8699f6` | 2092 | BC2-HV1 | Usable passage in candidate. |
-| certificate | `9ec440d37e80` | 3595 | GW125K-ETR-G10 | Usable passage in candidate. |
-| certificate | `9ec440d37e80` | 6507 | GW80K-ETR-G10 | Usable passage in candidate. |
-| certificate | `9ec440d37e80` | 6508 | GW99.99K-ETR-G10 | Usable passage in candidate. |
-| certificate | `9ec440d37e80` | 6509 | GW100K-ETR-G10 | Usable passage in candidate. |
-| certificate | `9ec440d37e80` | 6510 | GW110K-ETR-G10 | Usable passage in candidate. |
-| certificate | `9ec440d37e80` | 6511 | GW124.99K-ETR-G10 | Usable passage in candidate. |
-| certificate | `c0aa75c957e2` | 2409 | SEC3000C | Usable passage in candidate. |
-| certificate | `ca7f328ac99c` | 1178 | ATS1-T63-A | Usable passage in candidate. |
-| certificate | `d110c7ee8cfd` | 2409 | SEC3000C | Usable passage in candidate. |
-| certificate | `d5b4a361d712` | 4103 | CB2-57.3-HV5 | Usable passage in candidate. |
-| certificate | `d5b4a361d712` | 4104 | CB2-71.6-HV5 | Usable passage in candidate. |
-| certificate | `d5b4a361d712` | 4105 | CB2-85.9-HV5 | Usable passage in candidate. |
-| certificate | `d5b4a361d712` | 4106 | CB2-100.3-HV5 | Usable passage in candidate. |
-| certificate | `d80f9722131d` | 6321 | GW125/261-ESA-LCN-G10 | Usable passage in candidate. |
-| certificate | `da4d0f336bb0` | 1946 | GW80K-ET-G10 | Usable passage in candidate. |
-| certificate | `da4d0f336bb0` | 1947 | GW99.99K-ET-G10 | Usable passage in candidate. |
-| certificate | `da4d0f336bb0` | 1948 | GW100K-ET-G10 | Usable passage in candidate. |
-| certificate | `da4d0f336bb0` | 6506 | GW75K-ET-G10 | Usable passage in candidate. |
-| certificate | `ecd12d114411` | 2093 | BU3-5.0-TV2-PRO | Usable passage in candidate. |
-| certificate | `f43c5fe00fda` | 3557 | GW11K-HCA-20 | Usable passage in candidate. |
-| certificate | `f43c5fe00fda` | 3586 | GW7K-HCA-20 | Usable passage in candidate. |
-| certificate | `f43c5fe00fda` | 3587 | GW22K-HCA-20 | Usable passage in candidate. |
-| certificate | `f4de612e4a7c` | 6521 | GW5.1-BAT-D-G21 | Usable passage in candidate. |
-| certificate | `f4de612e4a7c` | 6522 | GW8.3-BAT-D-G21 | Usable passage in candidate. |
-| compatibility | `5e40da8282b1` | 1946 | GW80K-ET-G10 | Usable passage in candidate. |
-| compatibility | `5e40da8282b1` | 1947 | GW99.99K-ET-G10 | Usable passage in candidate. |
-| compatibility | `5e40da8282b1` | 1948 | GW100K-ET-G10 | Usable passage in candidate. |
-| compatibility | `5e40da8282b1` | 1954 | GW61.4-BAT-AC-G10 | Usable passage in candidate. |
-| compatibility | `5e40da8282b1` | 1955 | GW112.6-BAT-AC-G10 | Usable passage in candidate. |
-| compatibility | `6f33b8361fe2` | 2394 | GM330 | Candidate binds G10 to GM330 and SEC3000C, with the full p7 single-unit condition and the p9 controller, firmware and parallel-operation restrictions. |
+| certificate | `9cb10f8699f6` | 1832 | B2-5.0-HV1 | Usable passage in the loaded epoch 56 index. |
+| certificate | `9cb10f8699f6` | 2067 | B2-10.0-HV1 | Usable passage in the loaded epoch 56 index. |
+| certificate | `9cb10f8699f6` | 2068 | B2-15.0-HV1 | Usable passage in the loaded epoch 56 index. |
+| certificate | `9cb10f8699f6` | 2069 | B2-20.0-HV1 | Usable passage in the loaded epoch 56 index. |
+| certificate | `9cb10f8699f6` | 2070 | B2-25.0-HV1 | Usable passage in the loaded epoch 56 index. |
+| certificate | `9cb10f8699f6` | 2092 | BC2-HV1 | Usable passage in the loaded epoch 56 index. |
+| certificate | `9ec440d37e80` | 3595 | GW125K-ETR-G10 | Usable passage in the loaded epoch 56 index. |
+| certificate | `9ec440d37e80` | 6507 | GW80K-ETR-G10 | Usable passage in the loaded epoch 56 index. |
+| certificate | `9ec440d37e80` | 6508 | GW99.99K-ETR-G10 | Usable passage in the loaded epoch 56 index. |
+| certificate | `9ec440d37e80` | 6509 | GW100K-ETR-G10 | Usable passage in the loaded epoch 56 index. |
+| certificate | `9ec440d37e80` | 6510 | GW110K-ETR-G10 | Usable passage in the loaded epoch 56 index. |
+| certificate | `9ec440d37e80` | 6511 | GW124.99K-ETR-G10 | Usable passage in the loaded epoch 56 index. |
+| certificate | `c0aa75c957e2` | 2409 | SEC3000C | Usable passage in the loaded epoch 56 index. |
+| certificate | `ca7f328ac99c` | 1178 | ATS1-T63-A | Usable passage in the loaded epoch 56 index. |
+| certificate | `d110c7ee8cfd` | 2409 | SEC3000C | Usable passage in the loaded epoch 56 index. |
+| certificate | `d5b4a361d712` | 4103 | CB2-57.3-HV5 | Usable passage in the loaded epoch 56 index. |
+| certificate | `d5b4a361d712` | 4104 | CB2-71.6-HV5 | Usable passage in the loaded epoch 56 index. |
+| certificate | `d5b4a361d712` | 4105 | CB2-85.9-HV5 | Usable passage in the loaded epoch 56 index. |
+| certificate | `d5b4a361d712` | 4106 | CB2-100.3-HV5 | Usable passage in the loaded epoch 56 index. |
+| certificate | `d80f9722131d` | 6321 | GW125/261-ESA-LCN-G10 | Usable passage in the loaded epoch 56 index. |
+| certificate | `da4d0f336bb0` | 1946 | GW80K-ET-G10 | Usable passage in the loaded epoch 56 index. |
+| certificate | `da4d0f336bb0` | 1947 | GW99.99K-ET-G10 | Usable passage in the loaded epoch 56 index. |
+| certificate | `da4d0f336bb0` | 1948 | GW100K-ET-G10 | Usable passage in the loaded epoch 56 index. |
+| certificate | `da4d0f336bb0` | 6506 | GW75K-ET-G10 | Usable passage in the loaded epoch 56 index. |
+| certificate | `ecd12d114411` | 2093 | BU3-5.0-TV2-PRO | Usable passage in the loaded epoch 56 index. |
+| certificate | `f43c5fe00fda` | 3557 | GW11K-HCA-20 | Usable passage in the loaded epoch 56 index. |
+| certificate | `f43c5fe00fda` | 3586 | GW7K-HCA-20 | Usable passage in the loaded epoch 56 index. |
+| certificate | `f43c5fe00fda` | 3587 | GW22K-HCA-20 | Usable passage in the loaded epoch 56 index. |
+| certificate | `f4de612e4a7c` | 6521 | GW5.1-BAT-D-G21 | Usable passage in the loaded epoch 56 index. |
+| certificate | `f4de612e4a7c` | 6522 | GW8.3-BAT-D-G21 | Usable passage in the loaded epoch 56 index. |
+| compatibility | `5e40da8282b1` | 1946 | GW80K-ET-G10 | Usable passage in the loaded epoch 56 index. |
+| compatibility | `5e40da8282b1` | 1947 | GW99.99K-ET-G10 | Usable passage in the loaded epoch 56 index. |
+| compatibility | `5e40da8282b1` | 1948 | GW100K-ET-G10 | Usable passage in the loaded epoch 56 index. |
+| compatibility | `5e40da8282b1` | 1954 | GW61.4-BAT-AC-G10 | Usable passage in the loaded epoch 56 index. |
+| compatibility | `5e40da8282b1` | 1955 | GW112.6-BAT-AC-G10 | Usable passage in the loaded epoch 56 index. |
+| compatibility | `6f33b8361fe2` | 2394 | GM330 | Loaded index binds G10 to GM330 and SEC3000C, with the full p7 single-unit condition and the p9 controller, firmware and parallel-operation restrictions. |
 | compatibility | `6f33b8361fe2` | 2397 | GMK330 | Parsed rows mix G10/G11 or lose the required version footnote, or the exact device pairing cannot be established. |
-| compatibility | `6f33b8361fe2` | 2409 | SEC3000C | Candidate binds G10 to GM330 and SEC3000C, with the full p7 single-unit condition and the p9 controller, firmware and parallel-operation restrictions. |
+| compatibility | `6f33b8361fe2` | 2409 | SEC3000C | Loaded index binds G10 to GM330 and SEC3000C, with the full p7 single-unit condition and the p9 controller, firmware and parallel-operation restrictions. |
 | compatibility | `6f33b8361fe2` | 2415 | EzManager3000 | Parsed rows mix G10/G11 or lose the required version footnote, or the exact device pairing cannot be established. |
-| compatibility | `6f33b8361fe2` | 6321 | GW125/261-ESA-LCN-G10 | Candidate binds G10 to GM330 and SEC3000C, with the full p7 single-unit condition and the p9 controller, firmware and parallel-operation restrictions. |
-| compatibility | `8951dd1d8a64` | 1946 | GW80K-ET-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
-| compatibility | `8951dd1d8a64` | 1947 | GW99.99K-ET-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
-| compatibility | `8951dd1d8a64` | 1948 | GW100K-ET-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
-| compatibility | `8951dd1d8a64` | 1954 | GW61.4-BAT-AC-G10 | Usable passage in candidate. |
-| compatibility | `8951dd1d8a64` | 1955 | GW112.6-BAT-AC-G10 | Usable passage in candidate. |
-| compatibility | `8951dd1d8a64` | 1956 | GW208.9-BAT-LC-G10 | Usable passage in candidate. |
+| compatibility | `6f33b8361fe2` | 6321 | GW125/261-ESA-LCN-G10 | Loaded index binds G10 to GM330 and SEC3000C, with the full p7 single-unit condition and the p9 controller, firmware and parallel-operation restrictions. |
+| compatibility | `8951dd1d8a64` | 1946 | GW80K-ET-G10 | Loaded index binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `8951dd1d8a64` | 1947 | GW99.99K-ET-G10 | Loaded index binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `8951dd1d8a64` | 1948 | GW100K-ET-G10 | Loaded index binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `8951dd1d8a64` | 1954 | GW61.4-BAT-AC-G10 | Usable passage in the loaded epoch 56 index. |
+| compatibility | `8951dd1d8a64` | 1955 | GW112.6-BAT-AC-G10 | Usable passage in the loaded epoch 56 index. |
+| compatibility | `8951dd1d8a64` | 1956 | GW208.9-BAT-LC-G10 | Usable passage in the loaded epoch 56 index. |
 | compatibility | `8951dd1d8a64` | 1957 | GW208.9-BAT-LCD-G10 | LCD variant absent from matrix. |
-| compatibility | `8951dd1d8a64` | 1958 | GW261.2-BAT-LCD-G10 | Usable passage in candidate. |
-| compatibility | `8951dd1d8a64` | 3595 | GW125K-ETR-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
-| compatibility | `8951dd1d8a64` | 6507 | GW80K-ETR-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
-| compatibility | `8951dd1d8a64` | 6508 | GW99.99K-ETR-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
-| compatibility | `8951dd1d8a64` | 6509 | GW100K-ETR-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
-| compatibility | `8951dd1d8a64` | 6510 | GW110K-ETR-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
-| compatibility | `8951dd1d8a64` | 6511 | GW124.99K-ETR-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
-| compatibility | `ea081f6f6fb2` | 1946 | GW80K-ET-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
-| compatibility | `ea081f6f6fb2` | 1947 | GW99.99K-ET-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
-| compatibility | `ea081f6f6fb2` | 1948 | GW100K-ET-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
-| compatibility | `ea081f6f6fb2` | 1954 | GW61.4-BAT-AC-G10 | Usable passage in candidate. |
-| compatibility | `ea081f6f6fb2` | 1955 | GW112.6-BAT-AC-G10 | Usable passage in candidate. |
-| compatibility | `ea081f6f6fb2` | 1956 | GW208.9-BAT-LC-G10 | Usable passage in candidate. |
+| compatibility | `8951dd1d8a64` | 1958 | GW261.2-BAT-LCD-G10 | Usable passage in the loaded epoch 56 index. |
+| compatibility | `8951dd1d8a64` | 3595 | GW125K-ETR-G10 | Loaded index binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `8951dd1d8a64` | 6507 | GW80K-ETR-G10 | Loaded index binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `8951dd1d8a64` | 6508 | GW99.99K-ETR-G10 | Loaded index binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `8951dd1d8a64` | 6509 | GW100K-ETR-G10 | Loaded index binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `8951dd1d8a64` | 6510 | GW110K-ETR-G10 | Loaded index binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `8951dd1d8a64` | 6511 | GW124.99K-ETR-G10 | Loaded index binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `ea081f6f6fb2` | 1946 | GW80K-ET-G10 | Loaded index binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `ea081f6f6fb2` | 1947 | GW99.99K-ET-G10 | Loaded index binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `ea081f6f6fb2` | 1948 | GW100K-ET-G10 | Loaded index binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `ea081f6f6fb2` | 1954 | GW61.4-BAT-AC-G10 | Usable passage in the loaded epoch 56 index. |
+| compatibility | `ea081f6f6fb2` | 1955 | GW112.6-BAT-AC-G10 | Usable passage in the loaded epoch 56 index. |
+| compatibility | `ea081f6f6fb2` | 1956 | GW208.9-BAT-LC-G10 | Usable passage in the loaded epoch 56 index. |
 | compatibility | `ea081f6f6fb2` | 1957 | GW208.9-BAT-LCD-G10 | LCD variant absent from matrix. |
-| compatibility | `ea081f6f6fb2` | 1958 | GW261.2-BAT-LCD-G10 | Usable passage in candidate. |
-| compatibility | `ea081f6f6fb2` | 3595 | GW125K-ETR-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
-| compatibility | `ea081f6f6fb2` | 6507 | GW80K-ETR-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
-| compatibility | `ea081f6f6fb2` | 6508 | GW99.99K-ETR-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
-| compatibility | `ea081f6f6fb2` | 6509 | GW100K-ETR-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
-| compatibility | `ea081f6f6fb2` | 6510 | GW110K-ETR-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
-| compatibility | `ea081f6f6fb2` | 6511 | GW124.99K-ETR-G10 | Candidate binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
-| datasheet | `31e691602178` | 3611 | GW6.0-BAT-D-G20 | Usable passage in candidate. |
-| datasheet | `31e691602178` | 3612 | GW9.0-BAT-D-G20 | Usable passage in candidate. |
-| datasheet | `31e691602178` | 6519 | GW5.1-BAT-D-G20 | Usable passage in candidate. |
-| datasheet | `31e691602178` | 6520 | GW8.3-BAT-D-G20 | Usable passage in candidate. |
-| datasheet | `b681fbb51b16` | 3611 | GW6.0-BAT-D-G20 | Usable passage in candidate. |
-| datasheet | `b681fbb51b16` | 3612 | GW9.0-BAT-D-G20 | Usable passage in candidate. |
-| datasheet | `b681fbb51b16` | 6519 | GW5.1-BAT-D-G20 | Usable passage in candidate. |
-| datasheet | `b681fbb51b16` | 6520 | GW8.3-BAT-D-G20 | Usable passage in candidate. |
-| datasheet | `b681fbb51b16` | 6521 | GW5.1-BAT-D-G21 | Usable passage in candidate. |
-| datasheet | `b681fbb51b16` | 6522 | GW8.3-BAT-D-G21 | Usable passage in candidate. |
+| compatibility | `ea081f6f6fb2` | 1958 | GW261.2-BAT-LCD-G10 | Usable passage in the loaded epoch 56 index. |
+| compatibility | `ea081f6f6fb2` | 3595 | GW125K-ETR-G10 | Loaded index binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `ea081f6f6fb2` | 6507 | GW80K-ETR-G10 | Loaded index binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `ea081f6f6fb2` | 6508 | GW99.99K-ETR-G10 | Loaded index binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `ea081f6f6fb2` | 6509 | GW100K-ETR-G10 | Loaded index binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `ea081f6f6fb2` | 6510 | GW110K-ETR-G10 | Loaded index binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| compatibility | `ea081f6f6fb2` | 6511 | GW124.99K-ETR-G10 | Loaded index binds the p6 compatibility matrix and the separate manufacturer model-axis data sheet. The power limit stays with the answer. |
+| datasheet | `31e691602178` | 3611 | GW6.0-BAT-D-G20 | Usable passage in the loaded epoch 56 index. |
+| datasheet | `31e691602178` | 3612 | GW9.0-BAT-D-G20 | Usable passage in the loaded epoch 56 index. |
+| datasheet | `31e691602178` | 6519 | GW5.1-BAT-D-G20 | Usable passage in the loaded epoch 56 index. |
+| datasheet | `31e691602178` | 6520 | GW8.3-BAT-D-G20 | Usable passage in the loaded epoch 56 index. |
+| datasheet | `b681fbb51b16` | 3611 | GW6.0-BAT-D-G20 | Usable passage in the loaded epoch 56 index. |
+| datasheet | `b681fbb51b16` | 3612 | GW9.0-BAT-D-G20 | Usable passage in the loaded epoch 56 index. |
+| datasheet | `b681fbb51b16` | 6519 | GW5.1-BAT-D-G20 | Usable passage in the loaded epoch 56 index. |
+| datasheet | `b681fbb51b16` | 6520 | GW8.3-BAT-D-G20 | Usable passage in the loaded epoch 56 index. |
+| datasheet | `b681fbb51b16` | 6521 | GW5.1-BAT-D-G21 | Usable passage in the loaded epoch 56 index. |
+| datasheet | `b681fbb51b16` | 6522 | GW8.3-BAT-D-G21 | Usable passage in the loaded epoch 56 index. |
 | datasheet | `e00f9645d187` | 1185 | HS3-12K-T2-W/G-PX | The sheet lists -P and the product is -PX. The extracted table also has displaced rows. |
 | datasheet | `e00f9645d187` | 1186 | HS3-6K-T2-W/G-PX | The sheet lists -P and the product is -PX. The extracted table also has displaced rows. |
 | datasheet | `e00f9645d187` | 1187 | HS3-8K-T2-W/G-PX | The sheet lists -P and the product is -PX. The extracted table also has displaced rows. |
 | datasheet | `e00f9645d187` | 2198 | HS3-5K-T2-W/G-PX | The sheet lists -P and the product is -PX. The extracted table also has displaced rows. |
 | datasheet | `e00f9645d187` | 2199 | HS3-10K-T2-W/G-PX | The sheet lists -P and the product is -PX. The extracted table also has displaced rows. |
-| manual | `0adfb3d5e6df` | 6321 | GW125/261-ESA-LCN-G10 | Usable passage in candidate. |
-| manual | `0ef4b1ccdcc4` | 6506 | GW75K-ET-G10 | Usable passage in candidate. |
-| manual | `26a5052fc859` | 1946 | GW80K-ET-G10 | Usable passage in candidate. |
-| manual | `26a5052fc859` | 1947 | GW99.99K-ET-G10 | Usable passage in candidate. |
-| manual | `26a5052fc859` | 1948 | GW100K-ET-G10 | Usable passage in candidate. |
-| manual | `29bb252c549a` | 3556 | GW10K-ETA-G20 | Usable passage in candidate. |
-| manual | `29bb252c549a` | 3584 | GW12K-ETA-G20 | Usable passage in candidate. |
-| manual | `29bb252c549a` | 3585 | GW15K-ETA-G20 | Usable passage in candidate. |
-| manual | `29bb252c549a` | 6514 | GW9.999K-ETA-G20 | Usable passage in candidate. |
-| manual | `29bb252c549a` | 6515 | GW20K-ETA-G20 | Usable passage in candidate. |
-| manual | `29bb252c549a` | 6516 | GW25K-ETA-G20 | Usable passage in candidate. |
-| manual | `29bb252c549a` | 6517 | GW29.999K-ETA-G20 | Usable passage in candidate. |
-| manual | `29bb252c549a` | 6518 | GW30K-ETA-G20 | Usable passage in candidate. |
+| manual | `0adfb3d5e6df` | 6321 | GW125/261-ESA-LCN-G10 | Usable passage in the loaded epoch 56 index. |
+| manual | `0ef4b1ccdcc4` | 6506 | GW75K-ET-G10 | Usable passage in the loaded epoch 56 index. |
+| manual | `26a5052fc859` | 1946 | GW80K-ET-G10 | Usable passage in the loaded epoch 56 index. |
+| manual | `26a5052fc859` | 1947 | GW99.99K-ET-G10 | Usable passage in the loaded epoch 56 index. |
+| manual | `26a5052fc859` | 1948 | GW100K-ET-G10 | Usable passage in the loaded epoch 56 index. |
+| manual | `29bb252c549a` | 3556 | GW10K-ETA-G20 | Usable passage in the loaded epoch 56 index. |
+| manual | `29bb252c549a` | 3584 | GW12K-ETA-G20 | Usable passage in the loaded epoch 56 index. |
+| manual | `29bb252c549a` | 3585 | GW15K-ETA-G20 | Usable passage in the loaded epoch 56 index. |
+| manual | `29bb252c549a` | 6514 | GW9.999K-ETA-G20 | Usable passage in the loaded epoch 56 index. |
+| manual | `29bb252c549a` | 6515 | GW20K-ETA-G20 | Usable passage in the loaded epoch 56 index. |
+| manual | `29bb252c549a` | 6516 | GW25K-ETA-G20 | Usable passage in the loaded epoch 56 index. |
+| manual | `29bb252c549a` | 6517 | GW29.999K-ETA-G20 | Usable passage in the loaded epoch 56 index. |
+| manual | `29bb252c549a` | 6518 | GW30K-ETA-G20 | Usable passage in the loaded epoch 56 index. |
 | manual | `307b704c87f2` | 3595 | GW125K-ETR-G10 | Candidate adds p1 clearance and wall mounting figures. Both the figure region and the exact cover model list match the original PDF. |
 | manual | `307b704c87f2` | 6507 | GW80K-ETR-G10 | Candidate adds p1 clearance and wall mounting figures. Both the figure region and the exact cover model list match the original PDF. |
 | manual | `307b704c87f2` | 6508 | GW99.99K-ETR-G10 | Candidate adds p1 clearance and wall mounting figures. Both the figure region and the exact cover model list match the original PDF. |
 | manual | `307b704c87f2` | 6509 | GW100K-ETR-G10 | Candidate adds p1 clearance and wall mounting figures. Both the figure region and the exact cover model list match the original PDF. |
 | manual | `307b704c87f2` | 6510 | GW110K-ETR-G10 | Candidate adds p1 clearance and wall mounting figures. Both the figure region and the exact cover model list match the original PDF. |
 | manual | `307b704c87f2` | 6511 | GW124.99K-ETR-G10 | Candidate adds p1 clearance and wall mounting figures. Both the figure region and the exact cover model list match the original PDF. |
-| manual | `363be3f64d74` | 6508 | GW99.99K-ETR-G10 | Usable passage in candidate. |
-| manual | `363be3f64d74` | 6511 | GW124.99K-ETR-G10 | Usable passage in candidate. |
-| manual | `4b1a5d6dc379` | 6321 | GW125/261-ESA-LCN-G10 | Usable passage in candidate. |
-| manual | `4cc6c9d37afa` | 2281 | DTSU666 | Usable passage in candidate. |
-| manual | `50bdd49b7be0` | 3595 | GW125K-ETR-G10 | Usable passage in candidate. |
-| manual | `50bdd49b7be0` | 6507 | GW80K-ETR-G10 | Usable passage in candidate. |
-| manual | `50bdd49b7be0` | 6508 | GW99.99K-ETR-G10 | Usable passage in candidate. |
-| manual | `50bdd49b7be0` | 6509 | GW100K-ETR-G10 | Usable passage in candidate. |
-| manual | `50bdd49b7be0` | 6510 | GW110K-ETR-G10 | Usable passage in candidate. |
-| manual | `50bdd49b7be0` | 6511 | GW124.99K-ETR-G10 | Usable passage in candidate. |
-| manual | `5876178f27d0` | 6321 | GW125/261-ESA-LCN-G10 | Usable passage in candidate. |
-| manual | `5cd104b9e006` | 6523 | GW3K-EHA-G20 | Usable passage in candidate. |
-| manual | `5cd104b9e006` | 6524 | GW3.6K-EHA-G20 | Usable passage in candidate. |
-| manual | `5cd104b9e006` | 6525 | GW5K-EHA-G20 | Usable passage in candidate. |
-| manual | `5cd104b9e006` | 6526 | GW6K-EHA-G20 | Usable passage in candidate. |
-| manual | `5cd104b9e006` | 6527 | GW8K-EHA-G20 | Usable passage in candidate. |
-| manual | `5cd104b9e006` | 6528 | GW10K-EHA-G20 | Usable passage in candidate. |
+| manual | `363be3f64d74` | 6508 | GW99.99K-ETR-G10 | Usable passage in the loaded epoch 56 index. |
+| manual | `363be3f64d74` | 6511 | GW124.99K-ETR-G10 | Usable passage in the loaded epoch 56 index. |
+| manual | `4b1a5d6dc379` | 6321 | GW125/261-ESA-LCN-G10 | Usable passage in the loaded epoch 56 index. |
+| manual | `4cc6c9d37afa` | 2281 | DTSU666 | Usable passage in the loaded epoch 56 index. |
+| manual | `50bdd49b7be0` | 3595 | GW125K-ETR-G10 | Usable passage in the loaded epoch 56 index. |
+| manual | `50bdd49b7be0` | 6507 | GW80K-ETR-G10 | Usable passage in the loaded epoch 56 index. |
+| manual | `50bdd49b7be0` | 6508 | GW99.99K-ETR-G10 | Usable passage in the loaded epoch 56 index. |
+| manual | `50bdd49b7be0` | 6509 | GW100K-ETR-G10 | Usable passage in the loaded epoch 56 index. |
+| manual | `50bdd49b7be0` | 6510 | GW110K-ETR-G10 | Usable passage in the loaded epoch 56 index. |
+| manual | `50bdd49b7be0` | 6511 | GW124.99K-ETR-G10 | Usable passage in the loaded epoch 56 index. |
+| manual | `5876178f27d0` | 6321 | GW125/261-ESA-LCN-G10 | Usable passage in the loaded epoch 56 index. |
+| manual | `5cd104b9e006` | 6523 | GW3K-EHA-G20 | Usable passage in the loaded epoch 56 index. |
+| manual | `5cd104b9e006` | 6524 | GW3.6K-EHA-G20 | Usable passage in the loaded epoch 56 index. |
+| manual | `5cd104b9e006` | 6525 | GW5K-EHA-G20 | Usable passage in the loaded epoch 56 index. |
+| manual | `5cd104b9e006` | 6526 | GW6K-EHA-G20 | Usable passage in the loaded epoch 56 index. |
+| manual | `5cd104b9e006` | 6527 | GW8K-EHA-G20 | Usable passage in the loaded epoch 56 index. |
+| manual | `5cd104b9e006` | 6528 | GW10K-EHA-G20 | Usable passage in the loaded epoch 56 index. |
 | manual | `627e5444f47b` | 1954 | GW61.4-BAT-AC-G10 | Candidate adds the p2 floor mounting figure and the exact model listed on the p1 cover. |
 | manual | `627e5444f47b` | 1955 | GW112.6-BAT-AC-G10 | Candidate adds the p2 floor mounting figure and the exact model listed on the p1 cover. |
-| manual | `67a7f715ca9d` | 3556 | GW10K-ETA-G20 | Usable passage in candidate. |
-| manual | `67a7f715ca9d` | 3584 | GW12K-ETA-G20 | Usable passage in candidate. |
-| manual | `67a7f715ca9d` | 3585 | GW15K-ETA-G20 | Usable passage in candidate. |
-| manual | `67a7f715ca9d` | 6514 | GW9.999K-ETA-G20 | Usable passage in candidate. |
-| manual | `67a7f715ca9d` | 6515 | GW20K-ETA-G20 | Usable passage in candidate. |
-| manual | `67a7f715ca9d` | 6516 | GW25K-ETA-G20 | Usable passage in candidate. |
-| manual | `67a7f715ca9d` | 6517 | GW29.999K-ETA-G20 | Usable passage in candidate. |
-| manual | `67a7f715ca9d` | 6518 | GW30K-ETA-G20 | Usable passage in candidate. |
-| manual | `6bdd27e577fc` | 6321 | GW125/261-ESA-LCN-G10 | Usable passage in candidate. |
-| manual | `6fbecc058303` | 2394 | GM330 | Usable passage in candidate. |
-| manual | `894ef3bd6dac` | 3611 | GW6.0-BAT-D-G20 | Usable passage in candidate. |
-| manual | `894ef3bd6dac` | 3612 | GW9.0-BAT-D-G20 | Usable passage in candidate. |
-| manual | `a470d6e1be68` | 1179 | H2-25K-T3 | Usable passage in candidate. |
-| manual | `a470d6e1be68` | 1181 | H2-30K-T3-DE | Usable passage in candidate. |
-| manual | `a470d6e1be68` | 1182 | HS2-10K-T2-X | Usable passage in candidate. |
-| manual | `a470d6e1be68` | 1183 | HS2-6K-T2-X | Usable passage in candidate. |
-| manual | `a470d6e1be68` | 1184 | HS2-8K-T2-X | Usable passage in candidate. |
-| manual | `a470d6e1be68` | 1185 | HS3-12K-T2-W/G-PX | Usable passage in candidate. |
-| manual | `a470d6e1be68` | 1186 | HS3-6K-T2-W/G-PX | Usable passage in candidate. |
-| manual | `a470d6e1be68` | 1187 | HS3-8K-T2-W/G-PX | Usable passage in candidate. |
-| manual | `a470d6e1be68` | 2063 | H2-15K-T3 | Usable passage in candidate. |
-| manual | `a470d6e1be68` | 2064 | H2-20K-T3 | Usable passage in candidate. |
-| manual | `a470d6e1be68` | 2198 | HS3-5K-T2-W/G-PX | Usable passage in candidate. |
-| manual | `a470d6e1be68` | 2199 | HS3-10K-T2-W/G-PX | Usable passage in candidate. |
-| manual | `a470d6e1be68` | 4107 | H2-10K-T3 | Usable passage in candidate. |
-| manual | `a470d6e1be68` | 4108 | H2-12K-T3 | Usable passage in candidate. |
-| manual | `a470d6e1be68` | 4109 | HS2-5K-T2-X | Usable passage in candidate. |
+| manual | `67a7f715ca9d` | 3556 | GW10K-ETA-G20 | Usable passage in the loaded epoch 56 index. |
+| manual | `67a7f715ca9d` | 3584 | GW12K-ETA-G20 | Usable passage in the loaded epoch 56 index. |
+| manual | `67a7f715ca9d` | 3585 | GW15K-ETA-G20 | Usable passage in the loaded epoch 56 index. |
+| manual | `67a7f715ca9d` | 6514 | GW9.999K-ETA-G20 | Usable passage in the loaded epoch 56 index. |
+| manual | `67a7f715ca9d` | 6515 | GW20K-ETA-G20 | Usable passage in the loaded epoch 56 index. |
+| manual | `67a7f715ca9d` | 6516 | GW25K-ETA-G20 | Usable passage in the loaded epoch 56 index. |
+| manual | `67a7f715ca9d` | 6517 | GW29.999K-ETA-G20 | Usable passage in the loaded epoch 56 index. |
+| manual | `67a7f715ca9d` | 6518 | GW30K-ETA-G20 | Usable passage in the loaded epoch 56 index. |
+| manual | `6bdd27e577fc` | 6321 | GW125/261-ESA-LCN-G10 | Usable passage in the loaded epoch 56 index. |
+| manual | `6fbecc058303` | 2394 | GM330 | Usable passage in the loaded epoch 56 index. |
+| manual | `894ef3bd6dac` | 3611 | GW6.0-BAT-D-G20 | Usable passage in the loaded epoch 56 index. |
+| manual | `894ef3bd6dac` | 3612 | GW9.0-BAT-D-G20 | Usable passage in the loaded epoch 56 index. |
+| manual | `a470d6e1be68` | 1179 | H2-25K-T3 | Usable passage in the loaded epoch 56 index. |
+| manual | `a470d6e1be68` | 1181 | H2-30K-T3-DE | Usable passage in the loaded epoch 56 index. |
+| manual | `a470d6e1be68` | 1182 | HS2-10K-T2-X | Usable passage in the loaded epoch 56 index. |
+| manual | `a470d6e1be68` | 1183 | HS2-6K-T2-X | Usable passage in the loaded epoch 56 index. |
+| manual | `a470d6e1be68` | 1184 | HS2-8K-T2-X | Usable passage in the loaded epoch 56 index. |
+| manual | `a470d6e1be68` | 1185 | HS3-12K-T2-W/G-PX | Usable passage in the loaded epoch 56 index. |
+| manual | `a470d6e1be68` | 1186 | HS3-6K-T2-W/G-PX | Usable passage in the loaded epoch 56 index. |
+| manual | `a470d6e1be68` | 1187 | HS3-8K-T2-W/G-PX | Usable passage in the loaded epoch 56 index. |
+| manual | `a470d6e1be68` | 2063 | H2-15K-T3 | Usable passage in the loaded epoch 56 index. |
+| manual | `a470d6e1be68` | 2064 | H2-20K-T3 | Usable passage in the loaded epoch 56 index. |
+| manual | `a470d6e1be68` | 2198 | HS3-5K-T2-W/G-PX | Usable passage in the loaded epoch 56 index. |
+| manual | `a470d6e1be68` | 2199 | HS3-10K-T2-W/G-PX | Usable passage in the loaded epoch 56 index. |
+| manual | `a470d6e1be68` | 4107 | H2-10K-T3 | Usable passage in the loaded epoch 56 index. |
+| manual | `a470d6e1be68` | 4108 | H2-12K-T3 | Usable passage in the loaded epoch 56 index. |
+| manual | `a470d6e1be68` | 4109 | HS2-5K-T2-X | Usable passage in the loaded epoch 56 index. |
 | manual | `a70cb4c39824` | 4103 | CB2-57.3-HV5 | The quick guide includes K in the capacity range. The other manufacturer manual lists the models without K. |
 | manual | `a70cb4c39824` | 4104 | CB2-71.6-HV5 | The quick guide includes K in the capacity range. The other manufacturer manual lists the models without K. |
 | manual | `a70cb4c39824` | 4105 | CB2-85.9-HV5 | The quick guide includes K in the capacity range. The other manufacturer manual lists the models without K. |
 | manual | `a70cb4c39824` | 4106 | CB2-100.3-HV5 | The quick guide includes K in the capacity range. The other manufacturer manual lists the models without K. |
-| manual | `af395be79aee` | 3573 | eSolar AIO3 | Usable passage in candidate. |
-| manual | `d5167d27d5e4` | 6321 | GW125/261-ESA-LCN-G10 | Usable passage in candidate. |
-| manual | `f4d53810d74c` | 6321 | GW125/261-ESA-LCN-G10 | Usable passage in candidate. |
-| manual | `f66efb70d0d8` | 1946 | GW80K-ET-G10 | Usable passage in candidate. |
-| manual | `f66efb70d0d8` | 1947 | GW99.99K-ET-G10 | Usable passage in candidate. |
-| manual | `f66efb70d0d8` | 1948 | GW100K-ET-G10 | Usable passage in candidate. |
-| manual | `f66efb70d0d8` | 1956 | GW208.9-BAT-LC-G10 | Usable passage in candidate. |
-| manual | `f66efb70d0d8` | 6506 | GW75K-ET-G10 | Usable passage in candidate. |
-| other | `9f5b0d2b2430` | 3557 | GW11K-HCA-20 | Legacy policy does not list the -20 model. Rev. 1.2 now provides the exact model and conditions; new hosted Woo association and publication pending. |
-| other | `9f5b0d2b2430` | 3586 | GW7K-HCA-20 | Legacy policy does not list the -20 model. Rev. 1.2 now provides the exact model and conditions; new hosted Woo association and publication pending. |
-| other | `9f5b0d2b2430` | 3587 | GW22K-HCA-20 | Legacy policy does not list the -20 model. Rev. 1.2 now provides the exact model and conditions; new hosted Woo association and publication pending. |
+| manual | `af395be79aee` | 3573 | eSolar AIO3 | Usable passage in the loaded epoch 56 index. |
+| manual | `d5167d27d5e4` | 6321 | GW125/261-ESA-LCN-G10 | Usable passage in the loaded epoch 56 index. |
+| manual | `f4d53810d74c` | 6321 | GW125/261-ESA-LCN-G10 | Usable passage in the loaded epoch 56 index. |
+| manual | `f66efb70d0d8` | 1946 | GW80K-ET-G10 | Usable passage in the loaded epoch 56 index. |
+| manual | `f66efb70d0d8` | 1947 | GW99.99K-ET-G10 | Usable passage in the loaded epoch 56 index. |
+| manual | `f66efb70d0d8` | 1948 | GW100K-ET-G10 | Usable passage in the loaded epoch 56 index. |
+| manual | `f66efb70d0d8` | 1956 | GW208.9-BAT-LC-G10 | Usable passage in the loaded epoch 56 index. |
+| manual | `f66efb70d0d8` | 6506 | GW75K-ET-G10 | Usable passage in the loaded epoch 56 index. |
+| other | `9f5b0d2b2430` | 3557 | GW11K-HCA-20 | Retired association. Replacement original `88a8a5bd9e70` is hosted, linked to this product and prepared in loaded epoch 56. |
+| other | `9f5b0d2b2430` | 3586 | GW7K-HCA-20 | Retired association. Replacement original `88a8a5bd9e70` is hosted, linked to this product and prepared in loaded epoch 56. |
+| other | `9f5b0d2b2430` | 3587 | GW22K-HCA-20 | Retired association. Replacement original `88a8a5bd9e70` is hosted, linked to this product and prepared in loaded epoch 56. |
 | other | `be0569b4602a` | 1185 | HS3-12K-T2-W/G-PX | Page 4 conditional claims procedure searchable locally. Full policy terms remain unproven. |
 | other | `be0569b4602a` | 1186 | HS3-6K-T2-W/G-PX | Page 4 conditional claims procedure searchable locally. Full policy terms remain unproven. |
 | other | `be0569b4602a` | 1187 | HS3-8K-T2-W/G-PX | Page 4 conditional claims procedure searchable locally. Full policy terms remain unproven. |

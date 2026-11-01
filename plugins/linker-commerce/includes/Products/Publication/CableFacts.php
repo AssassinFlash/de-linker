@@ -23,7 +23,23 @@ final class CableFacts {
 	 */
 	public static function projection( int $owner, array $manifest ): ?array {
 		$raw = get_post_meta( $owner, self::META_KEY, true );
-		if ( ! is_array( $raw ) || ! self::keys( $raw, array( 'schema_version', 'construction', 'core_count', 'cross_section_mm2', 'conductor_material', 'insulation', 'source', 'parameter_sets' ) ) || 1 !== $raw['schema_version'] || ! in_array( $raw['construction'], array( 'single_conductor', 'multicore_cable' ), true ) || ! is_int( $raw['core_count'] ) || $raw['core_count'] < 1 || $raw['core_count'] > 9007199254740991 || ( 'single_conductor' === $raw['construction'] && 1 !== $raw['core_count'] ) || ! self::number( $raw['cross_section_mm2'], true ) || ! self::text( $raw['conductor_material'] ) || ! self::text( $raw['insulation'] ) || ! is_array( $raw['parameter_sets'] ) || ! array_is_list( $raw['parameter_sets'] ) ) {
+		return self::project( $owner, $raw, $manifest );
+	}
+
+	/**
+	 * Validate a candidate without changing Woo metadata.
+	 *
+	 * @param int                 $owner Canonical Woo record.
+	 * @param mixed               $raw Stored or previewed facts.
+	 * @param array<string,mixed> $manifest Current publication assembly.
+	 * @return array<string,mixed>|null
+	 */
+	public static function project( int $owner, mixed $raw, array $manifest ): ?array {
+		$keys = array( 'schema_version', 'construction', 'core_count', 'cross_section_mm2', 'conductor_material', 'insulation', 'source', 'parameter_sets' );
+		if ( is_array( $raw ) && array_key_exists( 'reference_current_ratings', $raw ) ) {
+			$keys[] = 'reference_current_ratings';
+		}
+		if ( ! is_array( $raw ) || ! self::keys( $raw, $keys ) || 1 !== $raw['schema_version'] || ! in_array( $raw['construction'], array( 'single_conductor', 'multicore_cable' ), true ) || ! is_int( $raw['core_count'] ) || $raw['core_count'] < 1 || $raw['core_count'] > 9007199254740991 || ( 'single_conductor' === $raw['construction'] && 1 !== $raw['core_count'] ) || ! self::number( $raw['cross_section_mm2'], true ) || ! self::text( $raw['conductor_material'] ) || ! self::text( $raw['insulation'] ) || ! is_array( $raw['parameter_sets'] ) || ! array_is_list( $raw['parameter_sets'] ) ) {
 			return null;
 		}
 		$source = self::source( $owner, $raw['source'], $manifest );
@@ -51,6 +67,23 @@ final class CableFacts {
 			}
 			$seen[ $set['id'] ]                        = true;
 			$raw['parameter_sets'][ $index ]['source'] = $evidence;
+		}
+		if ( array_key_exists( 'reference_current_ratings', $raw ) ) {
+			if ( ! is_array( $raw['reference_current_ratings'] ) || ! array_is_list( $raw['reference_current_ratings'] ) || ( array() !== $raw['reference_current_ratings'] && 'single_conductor' !== $raw['construction'] ) ) {
+				return null;
+			}
+			$seen = array();
+			foreach ( $raw['reference_current_ratings'] as $index => $rating ) {
+				if ( ! is_array( $rating ) || ! self::keys( $rating, array( 'id', 'laying', 'ambient_temperature_c', 'rated_conductor_temperature_c', 'current_a', 'source' ) ) || ! is_string( $rating['id'] ) || 1 !== preg_match( '/^[A-Za-z][A-Za-z0-9_-]{0,63}$/D', $rating['id'] ) || isset( $seen[ $rating['id'] ] ) || ! in_array( $rating['laying'], array( 'single_in_air', 'single_on_surface', 'two_touching_on_surface' ), true ) || ! self::number( $rating['ambient_temperature_c'] ) || ! self::number( $rating['rated_conductor_temperature_c'] ) || ! self::number( $rating['current_a'], true ) ) {
+					return null;
+				}
+				$evidence = self::source( $owner, $rating['source'], $manifest );
+				if ( null === $evidence ) {
+					return null;
+				}
+				$seen[ $rating['id'] ]                                = true;
+				$raw['reference_current_ratings'][ $index ]['source'] = $evidence;
+			}
 		}
 		return $raw;
 	}

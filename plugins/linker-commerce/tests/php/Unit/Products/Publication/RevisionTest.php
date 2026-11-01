@@ -10,8 +10,12 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Unit\Products\Publication;
 
 use Linker\Commerce\Products\EngineeringData;
+use Linker\Commerce\Products\EngineeringFeed;
+use Linker\Commerce\Products\EngineeringFeedController;
 use Linker\Commerce\Products\Faqs;
+use Linker\Commerce\Products\Materials;
 use Linker\Commerce\Products\Publication;
+use Linker\Commerce\Products\SelectionFacts;
 use Linker\Commerce\Products\Publication\CompatibilityClaims;
 use Linker\Commerce\Products\Publication\CompatibilityMigration;
 use Linker\Commerce\Products\Publication\DocumentAccess;
@@ -40,6 +44,30 @@ final class RevisionTest extends TestCase {
 	public function tearDown(): void {
 		$this->remove_managed_documents();
 		parent::tearDown();
+	}
+
+	/** Reviewed wording never changes evidence identities. */
+	public function test_reviewed_document_titles_are_current_display_metadata(): void {
+		$english = 'GoodWe EV Charger Limited Warranty (Europe, Rev. 1.2, English)';
+		$german  = 'GoodWe Garantie für EV-Ladestationen (Europa, Rev. 1.2, englisches Original)';
+		$this->current_faq_meta[ EngineeringData::DOCUMENTS_META_KEY ][0]['title'] = $english;
+		$titles = array();
+		WP_Mock::userFunction( 'get_option' )->with( Materials::DE_DOCUMENT_TITLES, array() )->andReturnUsing(
+			static function () use ( &$titles ): array {
+				return $titles;
+			}
+		);
+		$before = Publication::manifest();
+		$titles = array( $english => $german );
+		$after  = Publication::manifest();
+		$this->assertSame( '', $before['documents'][0]['title_de'] );
+		$this->assertSame( $english, $after['documents'][0]['title'] );
+		$this->assertSame( $german, $after['documents'][0]['title_de'] );
+		$this->assertSame( $before['source_revision'], $after['source_revision'] );
+		$this->assertSame( $before['documents'][0]['document_revision'], $after['documents'][0]['document_revision'] );
+		$this->assertSame( $before['products'][0]['product_revision'], $after['products'][0]['product_revision'] );
+		$titles = array( strtolower( $english ) => $german );
+		$this->assertSame( '', Publication::manifest()['documents'][0]['title_de'] );
 	}
 
 	/** Reuse this fresh assembly's terms, keeping miss/error and revision semantics. */
@@ -191,6 +219,114 @@ final class RevisionTest extends TestCase {
 		$this->assertNotSame( $before['products'][0]['product_revision'], $after['products'][0]['product_revision'] );
 		$this->assertFalse( $this->initial_dependencies_are_valid( $before ) );
 		$this->assertSame( 410, ( new DocumentAccess() )->response( $file, 'HEAD' )['status'] );
+	}
+
+	/** An old manifest cannot reinstate a withdrawn item or its removed association. */
+	public function test_stale_manifest_does_not_override_current_item_and_product_permission(): void {
+		$this->current_faq_meta[ SelectionFacts::FIGURES_META_KEY ] = array(
+			'rated_ac_power_kw' => array(
+				'value'    => 10,
+				'unit'     => 'kW',
+				'citation' => array(
+					'url'  => 'https://de-linker.com/wp-content/uploads/2026/manual.pdf',
+					'page' => 1,
+				),
+			),
+		);
+		EvidenceBindings::capture( 12, true );
+		$stale = Publication::manifest();
+		$this->assertCount( 1, Publication::figures_for( 12, $stale ) );
+		$this->current_faq_meta[ EngineeringData::DOCUMENTS_META_KEY ] = array();
+		WP_Mock::userFunction( 'wc_get_product' )->with( 12 )->andReturn( null );
+		WP_Mock::userFunction( 'get_the_terms' )->andReturn( array() );
+		$item = EngineeringFeed::item( 12, $stale );
+		$this->assertNotNull( $item );
+		$this->assertSame( array(), $item['documents'] );
+		$this->assertSame( array(), (array) $item['figures'] );
+		$this->assertSame( 'unknown', $item['ac_power_kw'] );
+		WP_Mock::userFunction( 'get_post_status' )->with( 12 )->andReturn( 'draft' );
+		$this->assertSame( array(), Publication::figures_for( 12, $stale ) );
+		$this->assertFalse( Publication::is_published( 12 ) );
+		$this->assertNull( EngineeringFeed::item( 12, $stale ) );
+	}
+
+	/**
+	 * A product withdrawal or removed Woo association while building the feed
+	 * must reject the whole response; a retry reads the new authority.
+	 *
+	 * @dataProvider engineering_withdrawals
+	 * @param string $withdrawal Source change to apply after the first read.
+	 */
+	public function test_feed_rejects_an_inflight_withdrawal_and_retry_reads_current_source( string $withdrawal ): void {
+		$source_status  = 'publish';
+		$runtime_status = 'publish';
+		$changed        = false;
+		WP_Mock::userFunction( 'get_post_status' )->with( 12 )->andReturnUsing(
+			static function () use ( &$runtime_status ): string {
+				return $runtime_status;
+			}
+		);
+		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->andReturnUsing(
+			static function () use ( &$runtime_status, &$source_status ): bool {
+				$runtime_status = $source_status;
+				return true;
+			}
+		);
+		WP_Mock::userFunction( 'update_postmeta_cache' )->andReturnUsing(
+			function () use ( $withdrawal, &$changed, &$source_status ): array {
+				if ( ! $changed ) {
+						$changed = true;
+					if ( 'product' === $withdrawal ) {
+						$source_status = 'draft';
+					} else {
+						$this->current_faq_meta[ EngineeringData::DOCUMENTS_META_KEY ] = array();
+					}
+				}
+				return array();
+			}
+		);
+		WP_Mock::userFunction( 'update_object_term_cache' )->andReturn( array() );
+		WP_Mock::userFunction( 'wc_get_product' )->with( 12 )->andReturn( null );
+		WP_Mock::userFunction( 'get_the_terms' )->andReturn( array() );
+		$request = \Mockery::mock( \WP_REST_Request::class );
+		$request->shouldReceive( 'get_param' )->with( 'since' )->andReturn( null );
+		$controller = new EngineeringFeedController();
+		$error      = $controller->get_items( $request );
+		$this->assertInstanceOf( \WP_Error::class, $error );
+		$this->assertSame( 503, $error->get_error_data()['status'] );
+		$retry = $controller->get_items( $request );
+		$this->assertNotInstanceOf( \WP_Error::class, $retry );
+		$retry = (array) $retry;
+		if ( 'product' === $withdrawal ) {
+			$this->assertSame( array(), $retry['products'] );
+		} else {
+			$this->assertSame( array(), $retry['products'][0]['documents'] );
+		}
+	}
+
+	/**
+	 * The two source changes exercised by the feed release check.
+	 *
+	 * @return array<string,array{string}>
+	 */
+	public static function engineering_withdrawals(): array {
+		return array(
+			'product'     => array( 'product' ),
+			'association' => array( 'association' ),
+		);
+	}
+
+	/** The internal projection capability cannot be reused after its read closes. */
+	public function test_engineering_figure_reader_expires_after_projection(): void {
+		$reader = null;
+		Publication::engineering_read(
+			static function ( array $manifest, callable $figures ) use ( &$reader ): void {
+				$reader = $figures;
+			}
+		);
+		$this->assertIsCallable( $reader );
+		$this->expectException( \RuntimeException::class );
+		$reader( 12 );
 	}
 
 	/** Shared URLs are checked once per assembly, including denied aliases, then read afresh. */

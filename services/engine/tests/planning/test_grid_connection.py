@@ -19,6 +19,7 @@ from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.plant_assessment import assess_plant
 from linker_engine.planning.project_input_contracts import (
     GRID_CONNECTION_INPUT_CONTRACT,
+    REFERENCE_CURRENT_INPUT_CONTRACT,
     SUPPORTED_INPUT_CONTRACTS,
     TERMINAL_INPUT_CONTRACT,
     require_input_contract,
@@ -168,13 +169,19 @@ def test_invalid_or_approval_bearing_inputs_are_rejected_at_write_boundary(
 def test_old_writers_cannot_add_preserve_or_remove_grid_evidence() -> None:
     values = declared()
     for token in (None, *SUPPORTED_INPUT_CONTRACTS):
-        if token in (GRID_CONNECTION_INPUT_CONTRACT, TERMINAL_INPUT_CONTRACT):
+        if token in (
+            GRID_CONNECTION_INPUT_CONTRACT,
+            TERMINAL_INPUT_CONTRACT,
+            REFERENCE_CURRENT_INPUT_CONTRACT,
+        ):
             continue
         for before, after in ((None, values), (values, values), (values, {})):
             with pytest.raises(ProjectInputContractRequired):
                 require_input_contract(before, after, token)
     require_input_contract(values, {}, GRID_CONNECTION_INPUT_CONTRACT)
     require_input_contract(None, values, GRID_CONNECTION_INPUT_CONTRACT)
+    for before, after in ((None, values), (values, values), (values, {})):
+        require_input_contract(before, after, REFERENCE_CURRENT_INPUT_CONTRACT)
 
 
 def test_saved_revisions_run_and_input_floor_keep_the_new_contract(

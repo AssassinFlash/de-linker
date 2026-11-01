@@ -567,6 +567,171 @@ def german_is_clean(text: str) -> bool:
     return not any(fragment in padded for fragment in _ENGLISH_FRAGMENT)
 
 
+def _warranty_period_fallback(
+    facts: TurnFacts,
+    language: Locale,
+    route: Route,
+    question: str,
+    page_product_id: int | None,
+) -> TurnOutput | None:
+    """Use an already verified policy answer for one clearly named model."""
+    if (
+        route.name != "documents"
+        or facts.technical_chunks
+        or not re.search(
+            r"\b(?:warrant\w*|guarantee\w*|\w*garantie\w*|\w*gewährleist\w*)\b",
+            question,
+            re.I,
+        )
+        or not re.search(
+            r"\b(?:how long|how many (?:years?|months?)|when (?:does|will|did|is)|"
+            r"warranty (?:period|duration|start)|guarantee period|start of (?:the )?warranty|"
+            r"wie lange|wie\s*viele (?:jahre|monate)|wann (?:beginnt|startet|gilt|fängt)|"
+            r"ab wann|ab welchem zeitpunkt|garantiebeginn|garantiedauer|"
+            r"garantiezeit(?:raum)?)\b",
+            question,
+            re.I,
+        )
+    ):
+        return None
+    candidates = [
+        cid
+        for cid in facts.documents
+        if cid in facts.warranty_chunks
+        and len(facts.warranty_models.get(cid, ())) == 1
+        and len(facts.knowledge_products.get(cid, ())) == 1
+        and facts.warranty_answers.get(cid, {}).get("period")
+        and facts.warranty_answers.get(cid, {}).get("start")
+    ]
+    identities = {
+        (facts.knowledge_products[cid][0], facts.warranty_models[cid][0])
+        for cid in candidates
+    }
+    if len(identities) != 1:
+        return None
+    pid, model = next(iter(identities))
+    if route.named_models and any(
+        note.unknown or set(note.product_ids) != {pid} for note in route.named_models
+    ):
+        return None
+    from linker_genie.source_models import model_pattern
+
+    if page_product_id != pid and not model_pattern(model).search(question):
+        return None
+    cid = candidates[0]
+    answers = facts.warranty_answers[cid]
+    period, start = answers["period"], answers["start"]
+    answer = period if start in period else answers.get("general", "")
+    if not answer:
+        return None
+    draft = TurnOutput(language=language, blocks=[TextBlock(text=answer, refs=[cid])])
+    # Run the same model, source and condition checks used for model answers.
+    # The import is local because ground also uses this module's constants.
+    from linker_genie.ground import check
+
+    if not check(
+        draft, facts, route, question=question, page_product_id=page_product_id
+    ).ok:
+        return None
+    return hydrate(draft, facts, language)
+
+
+def _manual_torque_fallback(
+    facts: TurnFacts,
+    language: Locale,
+    route: Route,
+    question: str,
+    page_product_id: int | None,
+) -> TurnOutput | None:
+    """Keep the two reviewed ETR fastening actions distinct on fallback."""
+    from linker_genie.ground import (
+        check,
+        manual_torque_actions,
+        manual_torque_source_actions,
+    )
+    from linker_genie.manual_diagram_records import DIAGRAMS
+    from linker_genie.manual_evidence import evidence_id
+    from linker_genie.source_models import codes, model_pattern
+
+    actions = manual_torque_actions(question)
+    sources = manual_torque_source_actions(facts)
+    if (
+        route.name != "documents"
+        or len(actions) != 1
+        or not sources
+        or re.search(
+            r"\b(?:and|also|und|sowie)\s+(?:what|how|when|which|was|wie|wann|welche)\b",
+            question,
+            re.I,
+        )
+    ):
+        return None
+    action = next(iter(actions))
+    # An explicitly named GoodWe model overrides the product-page context.
+    named = {
+        code.casefold() for code in codes(question) if re.match(r"^GW\d", code, re.I)
+    }
+    matches: list[str] = []
+    for cid, source_action in sources.items():
+        if source_action != action:
+            continue
+        ids = facts.knowledge_products.get(cid, ())
+        if len(ids) != 1:
+            continue
+        for record in DIAGRAMS:
+            if record.get("torque_action") != action:
+                continue
+            models = [part.strip(" ()") for part in record["anchor_quote"].split("|")]
+            for model in models:
+                if (
+                    not model
+                    or (named and named != {model.casefold()})
+                    or (
+                        not named
+                        and page_product_id != ids[0]
+                        and not model_pattern(model).search(question)
+                    )
+                ):
+                    continue
+                if cid == evidence_id(
+                    record["sha256"],
+                    record["source_page"],
+                    model,
+                    record["source_id"],
+                    record["excerpt"],
+                ):
+                    matches.append(cid)
+    if len(set(matches)) != 1:
+        return _degraded_keeping_findings(facts, language, route)
+    cid = matches[0]
+    source = facts.facts[f"{cid}.text"].value
+    if language == "de":
+        if action == "inverter_to_bracket":
+            answer = (
+                "Für die Befestigung des Wechselrichters an der Montagehalterung "
+                "zeigt Abbildung ETR12510INT0004 M6-Schrauben mit einem "
+                f"Drehmoment von {{fact:{cid}.n1}} bis {{fact:{cid}.n2}}."
+            )
+        else:
+            answer = (
+                "Für die Befestigung der Halterung an der Wand zeigt Abbildung "
+                "ETR12510INT0002 M10-Befestigungselemente mit einem "
+                f"Drehmoment von {{fact:{cid}.n3}} bis {{fact:{cid}.n4}}."
+            )
+    else:
+        answer = re.sub(
+            r"\[n([1-9]\d*)=[^\[\]\n]+\]",
+            lambda match: f"{{fact:{cid}.n{match.group(1)}}}",
+            source,
+        )
+    draft = TurnOutput(language=language, blocks=[TextBlock(text=answer, refs=[cid])])
+    if not check(
+        draft, facts, route, question=question, page_product_id=page_product_id
+    ).ok:
+        return _degraded_keeping_findings(facts, language, route)
+    return hydrate(draft, facts, language)
+
+
 def fallback(
     facts: TurnFacts,
     locale: str,
@@ -576,6 +741,8 @@ def fallback(
     failure_class: FailureClass | None = None,
     raised: bool = False,
     invented_citation: bool = False,
+    question: str = "",
+    page_product_id: int | None = None,
 ) -> TurnOutput:
     """A protocol-set answer for a turn grounding refused twice, in `locale`.
 
@@ -655,6 +822,16 @@ def fallback(
             ],
         )
     if route is not None and route.name == "documents" and facts.documents:
+        manual = _manual_torque_fallback(
+            facts, language, route, question, page_product_id
+        )
+        if manual is not None:
+            return manual
+        warranty = _warranty_period_fallback(
+            facts, language, route, question, page_product_id
+        )
+        if warranty is not None:
+            return warranty
         refs = _document_refs(facts)
         # A separately requested product keeps only this turn's qualified
         # cards. A document owner / page product alone is not qualification.

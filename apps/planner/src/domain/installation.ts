@@ -69,6 +69,52 @@ export interface ConductorSpecification extends JsonObject {
 		product_revision: string;
 	} | null;
 }
+export type ReferenceCurrentEndpoint = {
+	instance_id: string;
+	port_id: string;
+	product_id: number | null;
+	product_revision: string | null;
+	position: { east_m: number; north_m: number; height_m: number | null };
+};
+export type ReferenceCurrentPhysical = {
+	id: string;
+	construction: CableRun["construction"];
+	core_roles: CoreRole[];
+	cross_section_mm2: number | null;
+	cable_reference: { product_id: number; product_revision: string } | null;
+	route: {
+		id: string;
+		points: { east_m: number; north_m: number; height_m: number | null }[];
+		extra_length_m: number | null;
+	};
+	circuit: {
+		id: string;
+		kind: InstallationCircuit["kind"];
+		start: ReferenceCurrentEndpoint;
+		end: ReferenceCurrentEndpoint;
+	};
+};
+export type ReferenceCurrentContext = {
+	declaration: {
+		rating_id: string;
+		laying: ReferenceCurrentInstallation["laying"];
+		ambient_temperature_c: number;
+		touching_run_id: string | null;
+		current_path: ReferenceCurrentInstallation["current_path"];
+	};
+	run: ReferenceCurrentPhysical;
+	touching_run: ReferenceCurrentPhysical | null;
+};
+export interface ReferenceCurrentInstallation extends JsonObject {
+	rating_id: string;
+	laying: "single_in_air" | "single_on_surface" | "two_touching_on_surface";
+	ambient_temperature_c: number;
+	touching_run_id: string | null;
+	current_path: "single_unbranched" | "unknown";
+	conditions_confirmed: boolean;
+	source_note: string;
+	confirmation_context?: ReferenceCurrentContext | null;
+}
 export interface CableRun {
 	core_roles?: CoreRole[];
 	id: string;
@@ -78,6 +124,7 @@ export interface CableRun {
 	construction: "single_conductor" | "multicore_cable" | "unspecified";
 	/** Absent keeps the specification explicitly open; it never inherits one. */
 	conductor?: ConductorSpecification | null;
+	reference_current_installation?: ReferenceCurrentInstallation | null;
 }
 export interface PvStringLink {
 	string_id: string;
@@ -120,21 +167,32 @@ function canonicalConductor(value: InstallationInputs): InstallationInputs {
 	if (
 		value.cable_runs.every(
 			(run) =>
-				run.conductor !== null && run.conductor?.cable_reference !== null,
+				run.conductor !== null &&
+				run.conductor?.cable_reference !== null &&
+				run.reference_current_installation !== null &&
+				run.reference_current_installation?.confirmation_context !== null,
 		)
 	)
 		return value;
 	return {
 		...value,
 		cable_runs: value.cable_runs.map((run) => {
-			if (run.conductor?.cable_reference === null) {
-				const conductor = { ...run.conductor };
-				delete conductor.cable_reference;
-				return { ...run, conductor };
-			}
-			if (run.conductor !== null) return run;
 			const next = { ...run };
-			delete next.conductor;
+			if (next.reference_current_installation === null)
+				delete next.reference_current_installation;
+			else if (
+				next.reference_current_installation?.confirmation_context === null
+			) {
+				const declaration = { ...next.reference_current_installation };
+				delete declaration.confirmation_context;
+				next.reference_current_installation = declaration;
+			}
+			if (next.conductor?.cable_reference === null) {
+				const conductor = { ...next.conductor };
+				delete conductor.cable_reference;
+				next.conductor = conductor;
+			}
+			if (next.conductor === null) delete next.conductor;
 			return next;
 		}),
 	};

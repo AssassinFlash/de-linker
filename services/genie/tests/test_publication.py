@@ -371,6 +371,29 @@ def test_empty_product_scope_is_empty_not_whole_library(path: Path) -> None:
     )
 
 
+def test_current_reviewed_title_follows_authorized_document_and_locale(
+    path: Path,
+) -> None:
+    raw = manifest()
+    english = "GoodWe EV Charger Limited Warranty (Europe, Rev. 1.2, English)"
+    german = (
+        "GoodWe Garantie für EV-Ladestationen (Europa, Rev. 1.2, englisches Original)"
+    )
+    raw["documents"][0].update(title=english, title_de=german)
+    index = DocumentIndex(path, encoder=None)
+    try:
+        for locale, expected in (("en", english), ("de", german)):
+            hits = index.search("energy", locale, [1], publication=Snapshot.read(raw))
+            assert hits and all(hit.title == expected for hit in hits)
+        raw["documents"][0]["title_de"] = ""
+        hits = index.search("energy", "de", [1], publication=Snapshot.read(raw))
+        assert hits and all(hit.title == english for hit in hits)
+        raw["documents"][0]["document_revision"] = "other-revision"
+        assert not index.search("energy", "de", [1], publication=Snapshot.read(raw))
+    finally:
+        index.close()
+
+
 @pytest.mark.parametrize("lang", ["en", "de"])
 @pytest.mark.parametrize("neighbours", [False, True])
 def test_shared_manual_revocation_filters_fallback_and_same_page_neighbours(

@@ -9,17 +9,24 @@ export function ElectricalChoice({
 	value,
 	options,
 	optional = false,
+	onChange,
 }: {
 	name: string;
 	label: string;
 	value?: string | undefined;
 	options: readonly (readonly [string, string])[];
 	optional?: boolean;
+	onChange?: () => void;
 }) {
 	return (
 		<label className="lp-field">
 			<span>{label}</span>
-			<select name={name} defaultValue={value ?? ""} required={!optional}>
+			<select
+				name={name}
+				defaultValue={value ?? ""}
+				required={!optional}
+				onChange={onChange}
+			>
 				<option value="">—</option>
 				{options.map(([v, text]) => (
 					<option key={v} value={v}>

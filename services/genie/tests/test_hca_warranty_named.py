@@ -21,8 +21,8 @@ from index.inventory import doc_type_of
 from index.publication import compile_publication
 from index.table_compiler import _author_contexts, external_axis_anchors
 from index.warranty_named import compile_named_terms
-from linker_genie.cycle import _hydrate_priced, _restore_qualified
-from linker_genie.facts import collect
+from linker_genie.cycle import _hydrate_priced, _restore_qualified, run
+from linker_genie.facts import TurnFacts, collect
 from linker_genie.ground import check
 from linker_genie.hydrate import hydrate
 from linker_genie.knowledge import KnowledgeSearch
@@ -30,8 +30,15 @@ from linker_genie.language import language_failure
 from linker_genie.publication import Snapshot
 from linker_genie.publication_scope import authorize_chunk
 from linker_genie.retrieval import DocumentIndex
-from linker_genie.schema import DocumentBlock, TextBlock, TurnOutput
-from linker_genie.template import seal
+from linker_genie.route import Route
+from linker_genie.schema import (
+    DocumentBlock,
+    TextBlock,
+    TurnMessage,
+    TurnOutput,
+    TurnRequest,
+)
+from linker_genie.template import _warranty_period_fallback, seal
 from linker_genie.warranty_named import render_named_terms
 from linker_genie.warranty_named_de import (
     EXCLUSIONS,
@@ -313,6 +320,111 @@ def test_simulated_woo_link_through_sqlite_knowledge_hydration_and_withdrawal(
                     assert "gesetzlichen Rechte" in hit["warranty_answers"]["geography"]
                     assert "Ausschluss" in hit["warranty_answers"]["coverage"]
                 facts = collect("linker/search-knowledge", {"hits": [hit]}, lang)
+                if pid == 3557 and lang == "de":
+                    # The real customer turn found this policy but the model
+                    # twice failed its source-derived-answer grounding gate.
+                    # Its fallback must still answer the period and start.
+                    question = (
+                        "Wie lange gilt die Herstellergarantie für den GoodWe "
+                        "GW11K-HCA-20 in Deutschland, und wann beginnt sie? "
+                        "Bitte nennen Sie die zugrunde liegende Garantieunterlage."
+                    )
+                    request = TurnRequest(
+                        conversation_id="hca-period-fallback",
+                        messages=[TurnMessage(role="user", content=question)],
+                        locale="de",
+                    )
+                    rejected = TurnOutput(
+                        language="de",
+                        blocks=[
+                            TextBlock(
+                                text="Die Garantie gilt lebenslang.",
+                                refs=[hit["chunk_id"]],
+                            )
+                        ],
+                    )
+
+                    def generate(
+                        _request: TurnRequest,
+                        _retry: str | None,
+                        *,
+                        output: TurnOutput = rejected,
+                    ) -> tuple[TurnOutput, TurnFacts]:
+                        return output, TurnFacts()
+
+                    turn = run(
+                        request,
+                        generate,
+                        Route("documents"),
+                        facts,
+                    )
+                    assert turn.fallback and turn.attempts == 2
+                    text = "\n".join(
+                        b.text for b in turn.output.blocks if isinstance(b, TextBlock)
+                    )
+                    assert "2 Jahre" in text
+                    assert "ersten Installation" in text and "Herstellungsdatum" in text
+                    assert "Herstellerbedingung (englisches Original)" not in text
+                    assert any(
+                        isinstance(b, DocumentBlock) and b.url and "#page=1" in b.url
+                        for b in turn.output.blocks
+                    )
+                    # A nearby model, an unrelated question, a second model or
+                    # an independently requested technical fact must never be
+                    # replaced wholesale by this single warranty answer.
+                    route = Route("documents")
+                    for wording in (
+                        "Wie viele Jahre Garantie hat der GW11K-HCA-20?",
+                        "Wieviele Jahre gilt die Garantie für GW11K-HCA-20?",
+                        "Wann beginnt die Garantie für den GW11K-HCA-20?",
+                    ):
+                        assert (
+                            _warranty_period_fallback(facts, "de", route, wording, None)
+                            is not None
+                        )
+                    assert (
+                        _warranty_period_fallback(
+                            facts,
+                            "de",
+                            route,
+                            question.replace("HCA-20", "HCA-20A"),
+                            None,
+                        )
+                        is None
+                    )
+                    assert (
+                        _warranty_period_fallback(
+                            facts,
+                            "de",
+                            route,
+                            "Zeigen Sie die Unterlage für GW11K-HCA-20.",
+                            None,
+                        )
+                        is None
+                    )
+                    mixed = deepcopy(facts)
+                    mixed.technical_chunks.add("manual-technical-fact")
+                    assert (
+                        _warranty_period_fallback(mixed, "de", route, question, None)
+                        is None
+                    )
+                    missing = deepcopy(facts)
+                    missing.warranty_answers.clear()
+                    assert (
+                        _warranty_period_fallback(missing, "de", route, question, None)
+                        is None
+                    )
+                if pid == 3557 and lang == "en":
+                    for wording in (
+                        "How many years is the GW11K-HCA-20 warranty?",
+                        "When does the warranty for GW11K-HCA-20 start?",
+                    ):
+                        assert (
+                            _warranty_period_fallback(
+                                facts, "en", Route("documents"), wording, None
+                            )
+                            is not None
+                        )
                 draft = TurnOutput(
                     language=lang,
                     blocks=[

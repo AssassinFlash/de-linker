@@ -1,4 +1,5 @@
 import { ElectricalResults } from "./ElectricalResults.tsx";
+import { ReferenceCurrentResults } from "./ReferenceCurrentResults.tsx";
 import { electricalText } from "./ElectricalConditionFields.tsx";
 import { useEffect, useRef, useState } from "react";
 import type { GeometryDocument, Vec3 } from "../../domain/geometry.ts";
@@ -692,11 +693,18 @@ export function InstallationEditor({
 						/>
 					)}
 					{shown?.electrical && (
-						<ElectricalResults review={shown.electrical} locale={locale} />
+						<>
+							<ElectricalResults review={shown.electrical} locale={locale} />
+							<ReferenceCurrentResults
+								review={shown.electrical}
+								cables={shown.cables}
+								locale={locale}
+							/>
+						</>
 					)}
 					{shown && shown.cables.length > 0 && (
-						<div className="lp-table-scroll">
-							<table>
+						<div className="lp-table-scroll" tabIndex={0}>
+							<table className="lp-data-table">
 								<thead>
 									<tr>
 										<th>{__("Name", "linker-tools")}</th>

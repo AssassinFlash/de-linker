@@ -20,7 +20,11 @@ type InputContract = Literal[
     "pv_string_links_direct_beam_geometric_pv_v1",
     "grid_connection_evidence_v1",
     "installation_terminal_bindings_v1",
+    "installation_conductor_reference_current_v1",
 ]
+REFERENCE_CURRENT_INPUT_CONTRACT: InputContract = (
+    "installation_conductor_reference_current_v1"
+)
 TERMINAL_INPUT_CONTRACT: InputContract = "installation_terminal_bindings_v1"
 GRID_CONNECTION_INPUT_CONTRACT: InputContract = "grid_connection_evidence_v1"
 INPUT_CONTRACT: InputContract = "installation_pv_string_links_v1"
@@ -30,7 +34,7 @@ GEOMETRIC_PV_INPUT_CONTRACT: InputContract = (
 )
 PLANT_PV_INPUT_CONTRACT: InputContract = "pv_plant_string_plan_v1"
 ELECTRICAL_INPUT_CONTRACT: InputContract = "installation_circuit_electrical_v1"
-SUPPORTED_INPUT_CONTRACTS: tuple[str, ...] = (
+_TERMINAL_COVERED_CONTRACTS: tuple[str, ...] = (
     INPUT_CONTRACT,
     DIRECT_BEAM_INPUT_CONTRACT,
     GEOMETRIC_PV_INPUT_CONTRACT,
@@ -39,6 +43,11 @@ SUPPORTED_INPUT_CONTRACTS: tuple[str, ...] = (
     GRID_CONNECTION_INPUT_CONTRACT,
     TERMINAL_INPUT_CONTRACT,
 )
+_REFERENCE_CURRENT_COVERED_CONTRACTS: tuple[str, ...] = (
+    *_TERMINAL_COVERED_CONTRACTS,
+    REFERENCE_CURRENT_INPUT_CONTRACT,
+)
+SUPPORTED_INPUT_CONTRACTS = _REFERENCE_CURRENT_COVERED_CONTRACTS
 
 
 def required_contracts(inputs: Mapping[str, object]) -> tuple[str, ...]:
@@ -53,6 +62,11 @@ def required_contracts(inputs: Mapping[str, object]) -> tuple[str, ...]:
     if isinstance(installation, Mapping):
         circuits, runs = installation.get("circuits"), installation.get("cable_runs")
         instances = installation.get("instances")
+        if any(
+            isinstance(row, Mapping) and "reference_current_installation" in row
+            for row in (runs if isinstance(runs, list) else [])
+        ):
+            required.append(REFERENCE_CURRENT_INPUT_CONTRACT)
         terminal = any(
             isinstance(row, Mapping) and "communication_use" in row
             for row in (circuits if isinstance(circuits, list) else [])
@@ -100,7 +114,9 @@ def require_input_contract(
     # Each complete writer understands only its declared feature generation.
     # Concrete coverage sets keep older tokens from covering future additions.
     covered = (
-        SUPPORTED_INPUT_CONTRACTS
+        _REFERENCE_CURRENT_COVERED_CONTRACTS
+        if input_contract == REFERENCE_CURRENT_INPUT_CONTRACT
+        else _TERMINAL_COVERED_CONTRACTS
         if input_contract == TERMINAL_INPUT_CONTRACT
         else (
             INPUT_CONTRACT,

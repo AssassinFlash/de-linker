@@ -131,6 +131,85 @@ class ConductorSpecification(Document):
     cable_reference: CableReference | None = None
 
 
+class ReferenceCurrentEndpoint(Document):
+    instance_id: Identifier
+    port_id: Identifier
+    product_id: Count | None
+    product_revision: Hash | None
+    position: RoutePoint
+
+
+class ReferenceCurrentCircuit(Document):
+    id: Identifier
+    kind: Literal["pv_dc", "battery_dc", "ac", "control", "protective_earth", "other"]
+    start: ReferenceCurrentEndpoint
+    end: ReferenceCurrentEndpoint
+
+
+class ReferenceCurrentRoute(Document):
+    id: Identifier
+    points: Annotated[list[RoutePoint], Field(min_length=2)]
+    extra_length_m: Nonnegative | None
+
+
+class ReferenceCurrentRun(Document):
+    id: Identifier
+    construction: Literal["single_conductor", "multicore_cable", "unspecified"]
+    core_roles: list[
+        Literal[
+            "dc_positive",
+            "dc_negative",
+            "line",
+            "neutral",
+            "l1",
+            "l2",
+            "l3",
+            "pe",
+            "unused",
+        ]
+    ]
+    cross_section_mm2: Positive | None
+    cable_reference: CableReference | None
+    route: ReferenceCurrentRoute
+    circuit: ReferenceCurrentCircuit
+
+
+class ReferenceCurrentDeclaration(Document):
+    rating_id: Identifier
+    laying: Literal["single_in_air", "single_on_surface", "two_touching_on_surface"]
+    ambient_temperature_c: Number
+    touching_run_id: Identifier | None
+    current_path: Literal["single_unbranched", "unknown"]
+
+
+class ReferenceCurrentConfirmation(Document):
+    """Owner-reviewed context, compared by value instead of number hashing."""
+
+    declaration: ReferenceCurrentDeclaration
+    run: ReferenceCurrentRun
+    touching_run: ReferenceCurrentRun | None
+
+
+class ReferenceCurrentInstallation(Document):
+    """Owner's explicit match to a manufacturer table row, not a site rating."""
+
+    rating_id: Identifier
+    laying: Literal["single_in_air", "single_on_surface", "two_touching_on_surface"]
+    ambient_temperature_c: Number
+    touching_run_id: Identifier | None
+    current_path: Literal["single_unbranched", "unknown"]
+    conditions_confirmed: bool
+    source_note: Text
+    # Absent in historical projects; a new comparison needs confirmation.
+    confirmation_context: ReferenceCurrentConfirmation | None = None
+
+    def project_document(self) -> Object:
+        value = self.model_dump(mode="json")
+        if self.confirmation_context is None:
+            value.pop("confirmation_context")
+        return value
+
+
 class CableRun(Document):
     id: Identifier
     name: Text
@@ -155,6 +234,7 @@ class CableRun(Document):
             "unused",
         ]
     ] = Field(default_factory=list)
+    reference_current_installation: ReferenceCurrentInstallation | None = None
 
     @model_validator(mode="after")
     def roles(self) -> Self:
@@ -195,6 +275,12 @@ class InstallationInputs(Document):
                 dumped["conductor"].pop("cable_reference")
             if "core_roles" not in run.model_fields_set:
                 dumped.pop("core_roles")
+            if run.reference_current_installation is None:
+                dumped.pop("reference_current_installation")
+            else:
+                dumped["reference_current_installation"] = (
+                    run.reference_current_installation.project_document()
+                )
         for circuit, dumped in zip(self.circuits, value["circuits"], strict=True):
             if "operating_conditions" not in circuit.model_fields_set:
                 dumped.pop("operating_conditions")

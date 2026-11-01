@@ -8,8 +8,9 @@ from typing import Literal, cast
 import pytest
 from pypdf import PdfReader
 
-from linker_engine.models import Report
+from linker_engine.models import Report, ReportSection
 from linker_engine.pdf import render
+from linker_engine.planning.assistant_context import _report_source_projection
 from linker_engine.planning.canonical import Object
 from linker_engine.planning.grid_connection import country_assessment
 from linker_engine.planning.grid_connection_report import grid_connection_sections
@@ -21,6 +22,7 @@ from linker_engine.planning.report_copy import text
 from .conftest import json_object
 from .test_grid_connection import declared
 from .test_installation_electrical import circuit_fixture
+from .test_installation_reference_current import prepared as current_fixture
 from .test_installation_terminals import bind, sample
 
 
@@ -207,3 +209,66 @@ def test_current_legacy_installation_product_shape_and_label_are_unchanged() -> 
     section = installation_sections({"installation": takeoff}, "en")[0]
     assert section.table is not None
     assert section.table.rows[0][1] == f"{device['brand']} {device['model']}"
+
+
+@pytest.mark.parametrize("locale", ["en", "de"])
+def test_current_table_reaches_owner_report_and_csv_with_owner_notes_kept_private(
+    locale: Literal["en", "de"],
+) -> None:
+    inputs, basis = current_fixture()
+    plan = inputs["installation"]
+    plan["circuits"][0]["name"] = "Private circuit label"
+    plan["cable_runs"][0]["name"] = "Private conductor label"
+    source: Object = {
+        "project_id": "fixture",
+        "revision": 1,
+        "input_sha256": "a" * 64,
+        "locale": locale,
+        "installation": json_object(route_takeoff(inputs, basis)),
+    }
+    source["materials"] = project_materials(source)
+
+    def current_section(src: Object) -> ReportSection:
+        return next(
+            s
+            for s in installation_sections(src, locale)
+            if s.id == "installation-manufacturer-current"
+        )
+
+    section = current_section(source)
+    owner = section.model_dump_json()
+    assert (
+        "Private conductor label" in owner
+        and "Private circuit label" in owner
+        and "Private project conditions" in owner
+    )
+    assert (
+        "55 A" in owner and "70 A" in owner and "60 °C" in owner and "120 °C" in owner
+    )
+    pdf = render(
+        Report(
+            title="Test",
+            subtitle="",
+            generated_at="2026-11-01",
+            locale=locale,
+            sections=[section],
+        )
+    )
+    assert "55 A" in " ".join(
+        page.extract_text() for page in PdfReader(io.BytesIO(pdf)).pages
+    )
+    materials = cast(Object, source["materials"])
+    lines = list(
+        csv.reader(
+            io.StringIO(materials_csv(materials, "a" * 64, locale).decode("utf-8-sig"))
+        )
+    )
+    cable = next(row for row in lines if row[3] == "Private conductor label")
+    segment = json.loads(cable[6])["source"]["reference_current_segments"][0]
+    assert segment["reference_current_a"] == 55 and segment["qualified"] is False
+    safe = _report_source_projection(source, locale)
+    assistant = current_section(safe).model_dump_json()
+    assert "Private" not in assistant and "55 A" in assistant and "120 °C" in assistant
+    assert (
+        current_section(source) == section
+    )  # Original frozen branches were not mutated.

@@ -833,7 +833,8 @@ def _from_knowledge(gathered: TurnFacts, payload: dict[str, Any], locale: str) -
             support = hit.get("supporting_documents")
             if (
                 hit.get("doc_type") != "certificate"
-                or hit.get("title") != "EU Declaration of Conformity"
+                or not isinstance(hit.get("title"), str)
+                or not hit["title"].strip()
                 or hit.get("page") != 1
                 or not isinstance(hit.get("doc_url"), str)
                 or not hit["doc_url"]
@@ -923,6 +924,16 @@ def _from_knowledge(gathered: TurnFacts, payload: dict[str, Any], locale: str) -
                     # The named renderer accepts only reviewed full original
                     # source conditions and verifies every translated exclusion.
                     gathered.warranty_translated_de.add(chunk_id)
+                if (
+                    locale == "de"
+                    and hit.get("answer_language") == "de"
+                    and chunk_id.startswith("be0569b4602a-p1-hs3-warranty-terms-")
+                    and len(notes) == 7
+                    and all(note.lang == "en" for note in notes)
+                ):
+                    # The HS3 renderer above verifies every original condition
+                    # and its localized answer before this flag is granted.
+                    gathered.warranty_translated_de.add(chunk_id)
             else:
                 gathered.warranty_procedures.add(chunk_id)
             gathered.warranty_models[chunk_id] = tuple(models)
@@ -997,6 +1008,10 @@ def _from_knowledge(gathered: TurnFacts, payload: dict[str, Any], locale: str) -
                 for note in notes:
                     # This registers only the verified note's page as a link;
                     # it does not add that chunk's text or figures to the turn.
+                    # A supporting document can be a different PDF and has
+                    # already supplied its own authorized URL and page.
+                    if note.chunk_id in support_ids:
+                        continue
                     gathered.documents[note.chunk_id] = Document(
                         url=url,
                         title=str(title) or _file_name(url),

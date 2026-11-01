@@ -238,5 +238,11 @@ def extract_compatibility_evidence(
     if sha not in SOURCES:
         return []
     if sha == IOT:
-        return _iot_axis(pdf, sha, chunks, 7) + _iot_axis(pdf, sha, chunks, 9)
+        from index.compatibility_esa import extract_esa_evidence
+
+        return (
+            _iot_axis(pdf, sha, chunks, 7)
+            + _iot_axis(pdf, sha, chunks, 9)
+            + extract_esa_evidence(pdf, sha, chunks)
+        )
     return _series_axis(pdf, sha, chunks)

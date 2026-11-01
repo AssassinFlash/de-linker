@@ -93,6 +93,10 @@ def tag(
         *(match.span() for match in _DATE_PHRASE.finditer(text)),
         *(match.span() for match in _WRITTEN_MONTH.finditer(text)),
     ]
+    if chunk_id.startswith("be0569b4602a-p1-hs3-warranty-terms-"):
+        phrases.extend(
+            match.span() for match in re.finditer(r"\b(?:Ten years|Six months)\b", text)
+        )
     spans: list[tuple[int, int]] = list(phrases)
     words = list(_WORD.finditer(text))
     skip_to = -1
@@ -341,9 +345,15 @@ _MONTH_NUMBER = {
 } | {"jänner": 1}
 
 
-def localize(value: str, locale: str) -> str:
+def localize(value: str, locale: str, *, source_id: str = "") -> str:
     """A figure's value in the turn's language: word units and written dates."""
     language = "de" if locale.startswith("de") else "en"
+    if (
+        language == "de"
+        and source_id.startswith("be0569b4602a-p1-hs3-warranty-terms-")
+        and value in {"Ten years", "Six months"}
+    ):
+        return {"Ten years": "zehn Jahre", "Six months": "sechs Monate"}[value]
     if language == "de" and value.casefold() == "one month":
         return "1 Monat"
     if _DATE_PHRASE.fullmatch(value):

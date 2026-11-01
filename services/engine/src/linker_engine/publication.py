@@ -301,6 +301,10 @@ class Publication:
                     for evidence in [
                         facts["source"],
                         *(row["source"] for row in facts["parameter_sets"]),
+                        *(
+                            row["source"]
+                            for row in facts.get("reference_current_ratings", [])
+                        ),
                     ]
                 ):
                     continue

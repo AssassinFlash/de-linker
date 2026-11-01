@@ -59,15 +59,29 @@ final class EngineeringFeed {
 	 * @phpstan-impure
 	 */
 	public static function feed( ?string $since = null ): array {
-		$publication = Publication::manifest();
-		$feed        = array(
+		return Publication::engineering_read(
+			static fn ( array $publication, callable $figures ): array => self::feed_in_current_read( $since, $publication, $figures )
+		);
+	}
+
+	/**
+	 * Assemble a feed from the enclosing current publication read.
+	 *
+	 * @param string|null         $since Modified-after moment, or null.
+	 * @param array<string,mixed> $publication Current authority read.
+	 * @param callable            $figures Scoped current figure reader.
+	 * @phpstan-param callable(int):array<string,array<string,mixed>> $figures
+	 * @return array<string,mixed>
+	 */
+	private static function feed_in_current_read( ?string $since, array $publication, callable $figures ): array {
+		$feed = array(
 			'source_revision'           => $publication['source_revision'],
 			'compatibility_revision'    => $publication['compatibility_revision'],
 			'schema_version'            => self::SCHEMA_VERSION,
 			'figure_projection_version' => 2,
 			'generated_at'              => gmdate( 'c' ),
 			'compatibility_version'     => 'missing',
-			'overlay'                   => self::references( $publication ),
+			'overlay'                   => self::references( $publication, $figures ),
 			'products'                  => array(),
 		);
 		// Use the same current Woo authority read as product/document projection.
@@ -83,8 +97,9 @@ final class EngineeringFeed {
 		// taxonomy terms, not one database round-trip per item.
 		update_postmeta_cache( $ids );
 		update_object_term_cache( $ids, 'product' );
+		$permissions = array_column( $publication['products'], null, 'product_id' );
 		foreach ( $ids as $id ) {
-			$item = self::item( $id, $publication );
+			$item = self::item_in_current_read( $id, $publication, $permissions, $figures );
 			if ( null !== $item ) {
 				$feed['products'][] = $item;
 			}
@@ -97,19 +112,38 @@ final class EngineeringFeed {
 	 * One feed item, null when the post is not a published product anymore.
 	 *
 	 * @param int                      $product_id Product ID.
-	 * @param array<string,mixed>|null $publication Current authority snapshot.
+	 * @param array<string,mixed>|null $publication Former caller snapshot; never grants current permission.
 	 * @return array<string, mixed>|null
 	 */
 	public static function item( int $product_id, ?array $publication = null ): ?array {
+		unset( $publication ); // A caller's earlier snapshot cannot grant current access.
 		if ( ! Publication::is_published( $product_id ) || Publication::canonical_id( $product_id ) !== $product_id || EngineeringReference::is_reference( $product_id ) ) {
 			return null;
 		}
-		$publication ??= Publication::manifest();
-		$permission    = array_column( $publication['products'], null, 'product_id' )[ $product_id ] ?? null;
+		return Publication::engineering_read(
+			static fn ( array $current, callable $figures ): ?array => self::item_in_current_read( $product_id, $current, array_column( $current['products'], null, 'product_id' ), $figures )
+		);
+	}
+
+	/**
+	 * Project a single item only within its enclosing current read.
+	 *
+	 * @param int                            $product_id Product ID.
+	 * @param array<string,mixed>            $publication Current authority read.
+	 * @param array<int,array<string,mixed>> $permissions Current product permissions indexed by ID.
+	 * @param callable                       $figures Scoped current figure reader.
+	 * @phpstan-param callable(int):array<string,array<string,mixed>> $figures
+	 * @return array<string,mixed>|null
+	 */
+	private static function item_in_current_read( int $product_id, array $publication, array $permissions, callable $figures ): ?array {
+		if ( Publication::canonical_id( $product_id ) !== $product_id || EngineeringReference::is_reference( $product_id ) ) {
+			return null;
+		}
+		$permission = $permissions[ $product_id ] ?? null;
 		if ( null === $permission ) {
 			return null;
 		}
-		$authorized_figures = self::figures( $product_id, $publication );
+		$authorized_figures = self::figures( $product_id, $figures );
 		$facts              = SelectionFacts::from_figures( $product_id, $authorized_figures )->to_array();
 		$product            = wc_get_product( $product_id );
 		$item               = array(
@@ -150,9 +184,11 @@ final class EngineeringFeed {
 	 * Reference inputs are ordinary current Woo records with bound evidence.
 	 *
 	 * @param array<string,mixed> $publication Current authority read.
+	 * @param callable            $figures Scoped current figure reader.
+	 * @phpstan-param callable(int):array<string,array<string,mixed>> $figures
 	 * @return list<array<string,mixed>>
 	 */
-	private static function references( array $publication ): array {
+	private static function references( array $publication, callable $figures ): array {
 		$references = array();
 		foreach ( $publication['products'] as $product ) {
 			$role = $product['engineering_role'] ?? '';
@@ -160,9 +196,9 @@ final class EngineeringFeed {
 				continue;
 			}
 			$id      = $product['product_id'];
-			$figures = self::figures( $id, $publication );
+			$entries = self::figures( $id, $figures );
 			$cable   = EngineeringReference::CABLE === $role ? Publication\CableFacts::projection( $id, $publication ) : null;
-			if ( EngineeringReference::CABLE === $role ? null === $cable : ! EngineeringReference::ready( $figures ) ) {
+			if ( EngineeringReference::CABLE === $role ? null === $cable : ! EngineeringReference::ready( $entries ) ) {
 				continue;
 			}
 			$references[] = array(
@@ -173,7 +209,7 @@ final class EngineeringFeed {
 				'canonical_product_id' => $id,
 				'product_revision'     => $product['product_revision'],
 				'reference_revision'   => $product['product_revision'],
-				'figures'              => (object) $figures,
+				'figures'              => (object) $entries,
 				'documents'            => self::documents( $id, $publication ),
 				...( null === $cable ? array() : array( 'cable_facts' => $cable ) ),
 			);
@@ -186,13 +222,14 @@ final class EngineeringFeed {
 	 * (docs/specs/8-engineering-data.md: a value without one does not enter
 	 * the feed). Everything else about the entry travels as it is stored.
 	 *
-	 * @param int                 $product_id Product ID.
-	 * @param array<string,mixed> $publication Current authority snapshot.
+	 * @param int      $product_id Product ID.
+	 * @param callable $figures Scoped current figure reader.
+	 * @phpstan-param callable(int):array<string,array<string,mixed>> $figures
 	 * @return array<string, array<string, mixed>> Keyed by figure key; the item casts it so an empty set serializes as {} (feed.schema.json), never [].
 	 */
-	private static function figures( int $product_id, array $publication ): array {
+	private static function figures( int $product_id, callable $figures ): array {
 		$cited = array();
-		foreach ( Publication::figures_for( $product_id, $publication ) as $key => $entry ) {
+		foreach ( $figures( $product_id ) as $key => $entry ) {
 			$cited[ $key ] = array(
 				'value'    => $entry['value'] ?? null,
 				'unit'     => $entry['unit'] ?? null,
@@ -362,6 +399,9 @@ final class EngineeringFeed {
 		$listed = array();
 		foreach ( $publication['documents'] as $document ) {
 			if ( in_array( $product_id, $document['product_ids'], true ) ) {
+				// The planner feed has a strict document schema; this is live
+				// display metadata for Genie, not an engineering fact.
+				unset( $document['title_de'] );
 				$document['url']     = self::feed_url( $document['url'] );
 				$document['aliases'] = array_map( array( self::class, 'feed_url' ), $document['aliases'] );
 				$document['lang']    = self::document_language( $document['lang'] );

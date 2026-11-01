@@ -155,6 +155,42 @@ final class EngineeringReferenceTest extends TestCase {
 		$this->assertSame( 3.39, $feed['overlay'][0]['cable_facts']['parameter_sets'][0]['resistance_ohm_per_km'] );
 		$this->assertSame( 'maximum', $feed['overlay'][0]['cable_facts']['parameter_sets'][0]['resistance_basis'] );
 		$this->assertArrayHasKey( 'url', $feed['overlay'][0]['cable_facts']['source'] );
+		$this->assertArrayNotHasKey( 'reference_current_ratings', $feed['overlay'][0]['cable_facts'] );
+		$with_rating                              = $facts;
+		$with_rating['reference_current_ratings'] = array(
+			array(
+				'id'                            => 'air-single',
+				'laying'                        => 'single_in_air',
+				'ambient_temperature_c'         => 60,
+				'rated_conductor_temperature_c' => 120,
+				'current_a'                     => 70,
+				'source'                        => $source,
+			),
+		);
+		$this->current_faq_meta[ \Linker\Commerce\Products\Publication\CableFacts::META_KEY ] = $with_rating;
+		$rating = EngineeringFeed::feed()['overlay'][0]['cable_facts']['reference_current_ratings'][0];
+		$this->assertSame( 70, $rating['current_a'] );
+		$this->assertSame( 'single_in_air', $rating['laying'] );
+		$this->assertSame( $doc['document_revision'], $rating['source']['document_revision'] );
+		$this->assertArrayHasKey( 'url', $rating['source'] );
+		foreach ( array( 'source', 'current', 'duplicate', 'unknown_condition', 'multicore' ) as $damage ) {
+			$invalid = $with_rating;
+			if ( 'source' === $damage ) {
+				$invalid['reference_current_ratings'][0]['source']['blob_sha256'] = str_repeat( '0', 64 );
+			} elseif ( 'current' === $damage ) {
+				$invalid['reference_current_ratings'][0]['current_a'] = 0;
+			} elseif ( 'duplicate' === $damage ) {
+				$invalid['reference_current_ratings'][] = $invalid['reference_current_ratings'][0];
+			} elseif ( 'unknown_condition' === $damage ) {
+				$invalid['reference_current_ratings'][0]['laying'] = 'unknown';
+			} else {
+				$invalid['construction'] = 'multicore_cable';
+				$invalid['core_count']   = 2;
+			}
+			$this->current_faq_meta[ \Linker\Commerce\Products\Publication\CableFacts::META_KEY ] = $invalid;
+			$this->assertSame( array(), EngineeringFeed::feed()['overlay'], $damage );
+		}
+		$this->current_faq_meta[ \Linker\Commerce\Products\Publication\CableFacts::META_KEY ]                                      = $facts;
 		$this->current_faq_meta[ \Linker\Commerce\Products\Publication\CableFacts::META_KEY ]['parameter_sets'][0]['frequency_hz'] = 50;
 		$this->assertSame( array(), EngineeringFeed::feed()['overlay'] );
 		$this->current_faq_meta[ \Linker\Commerce\Products\Publication\CableFacts::META_KEY ] = $facts;

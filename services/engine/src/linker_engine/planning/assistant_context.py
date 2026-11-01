@@ -316,6 +316,15 @@ def _materials_projection(source: Object, private: str) -> Object:
                 for lang in ("en", "de")
             }
         origin = line.get("source")
+        if isinstance(origin, dict) and "reference_current_segments" in origin:
+            # The report renders these from its redacted installation branch.
+            # BOM source JSON can contain site notes and paired run identities.
+            safe["source"] = {
+                key: value
+                for key, value in origin.items()
+                if key
+                not in {"reference_current_segments", "reference_current_installation"}
+            }
         if line.get("basis") == "manufacturer_one_end_mapping":
             safe["id"] = f"installation-terminals:{index}"
             safe["label"] = {
@@ -467,8 +476,41 @@ def _report_source_projection(source: Object, locale: str) -> Object:
                         ],
                     }
                 )
+        if "reference_current_segments" in electrical:
+            _project_reference_currents(plan)
     projected["materials"] = _materials_projection(projected, private)
     return projected
+
+
+def _project_reference_currents(plan: Object) -> None:
+    """Retain numeric results and manufacturer citations, with anonymous segment keys."""
+    electrical = cast(Object, plan["electrical"])
+    run_keys = {}
+    for i, cable in enumerate(cast(list[Object], plan["cables"]), 1):
+        run_keys[str(cable["id"])] = cable["id"] = f"run-{i}"
+        cable.pop("reference_current_installation", None)
+    circuit_keys = {}
+    condition_keys = {}
+    for i, circuit in enumerate(cast(list[Object], electrical["circuits"]), 1):
+        cid = str(circuit["circuit_id"])
+        circuit_keys[cid] = circuit["circuit_id"] = f"circuit-{i}"
+        for j, condition in enumerate(cast(list[Object], circuit["conditions"]), 1):
+            key = (cid, str(condition["condition_id"]))
+            condition_keys[key] = condition["condition_id"] = f"condition-{j}"
+    safe: list[Json] = []
+    for segment in cast(list[Object], electrical["reference_current_segments"]):
+        cid = str(segment["circuit_id"])
+        safe.append(
+            {
+                **segment,
+                "circuit_id": circuit_keys.get(cid),
+                "run_id": run_keys.get(str(segment["run_id"])),
+                "condition_id": condition_keys.get((cid, str(segment["condition_id"]))),
+                # Unconfirmed site testimony and paired run IDs stay with the owner.
+                "installation": None,
+            }
+        )
+    electrical["reference_current_segments"] = safe
 
 
 def _installation_report_projection(

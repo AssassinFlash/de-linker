@@ -69,6 +69,17 @@
           },
           "title": "Core Roles",
           "type": "array"
+        },
+        "reference_current_installation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ReferenceCurrentInstallation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
@@ -489,6 +500,332 @@
         "circuit_id"
       ],
       "title": "PvStringLink",
+      "type": "object"
+    },
+    "ReferenceCurrentCircuit": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "kind": {
+          "enum": [
+            "pv_dc",
+            "battery_dc",
+            "ac",
+            "control",
+            "protective_earth",
+            "other"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "start": {
+          "$ref": "#/$defs/ReferenceCurrentEndpoint"
+        },
+        "end": {
+          "$ref": "#/$defs/ReferenceCurrentEndpoint"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "start",
+        "end"
+      ],
+      "title": "ReferenceCurrentCircuit",
+      "type": "object"
+    },
+    "ReferenceCurrentConfirmation": {
+      "additionalProperties": false,
+      "description": "Owner-reviewed context, compared by value instead of number hashing.",
+      "properties": {
+        "declaration": {
+          "$ref": "#/$defs/ReferenceCurrentDeclaration"
+        },
+        "run": {
+          "$ref": "#/$defs/ReferenceCurrentRun"
+        },
+        "touching_run": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ReferenceCurrentRun"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "declaration",
+        "run",
+        "touching_run"
+      ],
+      "title": "ReferenceCurrentConfirmation",
+      "type": "object"
+    },
+    "ReferenceCurrentDeclaration": {
+      "additionalProperties": false,
+      "properties": {
+        "rating_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "laying": {
+          "enum": [
+            "single_in_air",
+            "single_on_surface",
+            "two_touching_on_surface"
+          ],
+          "title": "Laying",
+          "type": "string"
+        },
+        "ambient_temperature_c": {
+          "$ref": "#/$defs/linker_engine__planning__geometry_documents__Number__2"
+        },
+        "touching_run_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identifier"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "current_path": {
+          "enum": [
+            "single_unbranched",
+            "unknown"
+          ],
+          "title": "Current Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "rating_id",
+        "laying",
+        "ambient_temperature_c",
+        "touching_run_id",
+        "current_path"
+      ],
+      "title": "ReferenceCurrentDeclaration",
+      "type": "object"
+    },
+    "ReferenceCurrentEndpoint": {
+      "additionalProperties": false,
+      "properties": {
+        "instance_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "port_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "product_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Count"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "product_revision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Hash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "position": {
+          "$ref": "#/$defs/RoutePoint"
+        }
+      },
+      "required": [
+        "instance_id",
+        "port_id",
+        "product_id",
+        "product_revision",
+        "position"
+      ],
+      "title": "ReferenceCurrentEndpoint",
+      "type": "object"
+    },
+    "ReferenceCurrentInstallation": {
+      "additionalProperties": false,
+      "description": "Owner's explicit match to a manufacturer table row, not a site rating.",
+      "properties": {
+        "rating_id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "laying": {
+          "enum": [
+            "single_in_air",
+            "single_on_surface",
+            "two_touching_on_surface"
+          ],
+          "title": "Laying",
+          "type": "string"
+        },
+        "ambient_temperature_c": {
+          "$ref": "#/$defs/linker_engine__planning__geometry_documents__Number__2"
+        },
+        "touching_run_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identifier"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "current_path": {
+          "enum": [
+            "single_unbranched",
+            "unknown"
+          ],
+          "title": "Current Path",
+          "type": "string"
+        },
+        "conditions_confirmed": {
+          "title": "Conditions Confirmed",
+          "type": "boolean"
+        },
+        "source_note": {
+          "$ref": "#/$defs/Text"
+        },
+        "confirmation_context": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ReferenceCurrentConfirmation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "rating_id",
+        "laying",
+        "ambient_temperature_c",
+        "touching_run_id",
+        "current_path",
+        "conditions_confirmed",
+        "source_note"
+      ],
+      "title": "ReferenceCurrentInstallation",
+      "type": "object"
+    },
+    "ReferenceCurrentRoute": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "points": {
+          "items": {
+            "$ref": "#/$defs/RoutePoint"
+          },
+          "minItems": 2,
+          "title": "Points",
+          "type": "array"
+        },
+        "extra_length_m": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Nonnegative"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "points",
+        "extra_length_m"
+      ],
+      "title": "ReferenceCurrentRoute",
+      "type": "object"
+    },
+    "ReferenceCurrentRun": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "construction": {
+          "enum": [
+            "single_conductor",
+            "multicore_cable",
+            "unspecified"
+          ],
+          "title": "Construction",
+          "type": "string"
+        },
+        "core_roles": {
+          "items": {
+            "enum": [
+              "dc_positive",
+              "dc_negative",
+              "line",
+              "neutral",
+              "l1",
+              "l2",
+              "l3",
+              "pe",
+              "unused"
+            ],
+            "type": "string"
+          },
+          "title": "Core Roles",
+          "type": "array"
+        },
+        "cross_section_mm2": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Positive"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cable_reference": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CableReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "route": {
+          "$ref": "#/$defs/ReferenceCurrentRoute"
+        },
+        "circuit": {
+          "$ref": "#/$defs/ReferenceCurrentCircuit"
+        }
+      },
+      "required": [
+        "id",
+        "construction",
+        "core_roles",
+        "cross_section_mm2",
+        "cable_reference",
+        "route",
+        "circuit"
+      ],
+      "title": "ReferenceCurrentRun",
       "type": "object"
     },
     "RoutePoint": {

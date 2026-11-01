@@ -47,6 +47,47 @@
        "quote": "Max. DC resistance of the conductor at 20°C: 5.09 Ohm/km."
       }
      }
+    ],
+    "reference_current_ratings": [
+     {
+      "id": "single-in-air-60c-120c",
+      "laying": "single_in_air",
+      "ambient_temperature_c": 60,
+      "rated_conductor_temperature_c": 120,
+      "current_a": 55,
+      "source": {
+       "document_url": "https://de-linker.com/wp-content/uploads/2026/11/nexans-038021106.pdf",
+       "blob_sha256": "0fed83cc110b0689361193d2241cccd6a22b4a15fbba4756a1c1cc78aa805ce3",
+       "page": 2,
+       "quote": "Permissible current rating in air, 120°C conductor temperature, 60°C ambient – 1 cable 55 A"
+      }
+     },
+     {
+      "id": "single-on-surface-60c-120c",
+      "laying": "single_on_surface",
+      "ambient_temperature_c": 60,
+      "rated_conductor_temperature_c": 120,
+      "current_a": 52,
+      "source": {
+       "document_url": "https://de-linker.com/wp-content/uploads/2026/11/nexans-038021106.pdf",
+       "blob_sha256": "0fed83cc110b0689361193d2241cccd6a22b4a15fbba4756a1c1cc78aa805ce3",
+       "page": 2,
+       "quote": "Permissible current rating on surface, 120°C conductor temperature, 60°C ambient – 1 cable 52 A"
+      }
+     },
+     {
+      "id": "two-touching-on-surface-60c-120c",
+      "laying": "two_touching_on_surface",
+      "ambient_temperature_c": 60,
+      "rated_conductor_temperature_c": 120,
+      "current_a": 44,
+      "source": {
+       "document_url": "https://de-linker.com/wp-content/uploads/2026/11/nexans-038021106.pdf",
+       "blob_sha256": "0fed83cc110b0689361193d2241cccd6a22b4a15fbba4756a1c1cc78aa805ce3",
+       "page": 2,
+       "quote": "Permissible current rating on surface, 120°C conductor temperature, 60°C ambient – 2 cables touching 44 A"
+      }
+     }
     ]
    }
   },
@@ -93,6 +134,47 @@
        "blob_sha256": "217bfaf2296673fc499a1886fc0a5967bd2d4d1de7071336c04806018abf3d69",
        "page": 2,
        "quote": "Max. DC resistance of the conductor at 20°C: 3.39 Ohm/km."
+      }
+     }
+    ],
+    "reference_current_ratings": [
+     {
+      "id": "single-in-air-60c-120c",
+      "laying": "single_in_air",
+      "ambient_temperature_c": 60,
+      "rated_conductor_temperature_c": 120,
+      "current_a": 70,
+      "source": {
+       "document_url": "https://de-linker.com/wp-content/uploads/2026/11/nexans-038023102.pdf",
+       "blob_sha256": "217bfaf2296673fc499a1886fc0a5967bd2d4d1de7071336c04806018abf3d69",
+       "page": 2,
+       "quote": "Permissible current rating in air, 120°C conductor temperature, 60°C ambient – 1 cable 70 A"
+      }
+     },
+     {
+      "id": "single-on-surface-60c-120c",
+      "laying": "single_on_surface",
+      "ambient_temperature_c": 60,
+      "rated_conductor_temperature_c": 120,
+      "current_a": 67,
+      "source": {
+       "document_url": "https://de-linker.com/wp-content/uploads/2026/11/nexans-038023102.pdf",
+       "blob_sha256": "217bfaf2296673fc499a1886fc0a5967bd2d4d1de7071336c04806018abf3d69",
+       "page": 2,
+       "quote": "Permissible current rating on surface, 120°C conductor temperature, 60°C ambient – 1 cable 67 A"
+      }
+     },
+     {
+      "id": "two-touching-on-surface-60c-120c",
+      "laying": "two_touching_on_surface",
+      "ambient_temperature_c": 60,
+      "rated_conductor_temperature_c": 120,
+      "current_a": 57,
+      "source": {
+       "document_url": "https://de-linker.com/wp-content/uploads/2026/11/nexans-038023102.pdf",
+       "blob_sha256": "217bfaf2296673fc499a1886fc0a5967bd2d4d1de7071336c04806018abf3d69",
+       "page": 2,
+       "quote": "Permissible current rating on surface, 120°C conductor temperature, 60°C ambient – 2 cables touching 57 A"
       }
      }
     ]

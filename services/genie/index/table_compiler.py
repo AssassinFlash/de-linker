@@ -501,11 +501,15 @@ def _footnote_sources(
 
 def external_axis_anchors(chunks: list[Chunk]) -> dict[str, dict[str, Any]]:
     """Derive canonical table anchors from original chunks, not projections."""
+    from linker_genie.compatibility_esa import row_key, source_anchors, valid_row
     from linker_genie.table_projection import native_chunk_id_matches
     from linker_genie.warranty_named import is_named_policy_overview
 
     by_id = {chunk.id: chunk for chunk in chunks}
     anchors: dict[str, dict[str, Any]] = {}
+    anchors.update(
+        source_anchors((c.id, c.doc_sha256, c.page, c.kind, c.text) for c in chunks)
+    )
     policy_shas: set[str] = {
         chunk.doc_sha256
         for chunk in chunks
@@ -520,6 +524,8 @@ def external_axis_anchors(chunks: list[Chunk]) -> dict[str, dict[str, Any]]:
     }
     for chunk in chunks:
         for evidence in chunk.source_physical_evidence:
+            if valid_row(evidence, chunk.doc_sha256, chunk.id, chunk.text):
+                anchors[row_key(chunk.id)] = evidence
             if valid_physical_evidence(
                 evidence, chunk.doc_sha256, chunk.id, chunk.text
             ):
@@ -1102,6 +1108,13 @@ def compile_scopes(
     )
     output.extend(physical)
     result.update(physical_scopes)
+    from index.compatibility_esa import compile_esa
+
+    esa, esa_scopes = compile_esa(
+        relevant, source, statuses, tokenizer, max_tokens, source_anchors
+    )
+    output.extend(esa)
+    result.update(esa_scopes)
     from index.hs3_evidence import compile_hs3_evidence
 
     hs3_units, hs3_scopes = compile_hs3_evidence(
@@ -1109,6 +1122,13 @@ def compile_scopes(
     )
     output.extend(hs3_units)
     result.update(hs3_scopes)
+    from index.hs3_warranty_terms import compile_hs3_warranty_terms
+
+    hs3_terms, hs3_term_scopes = compile_hs3_warranty_terms(
+        relevant, source, statuses, tokenizer, max_tokens
+    )
+    output.extend(hs3_terms)
+    result.update(hs3_term_scopes)
     manual_units, manual_scopes = _family_units(
         relevant, source, statuses, tokenizer, max_tokens, result, contexts
     )

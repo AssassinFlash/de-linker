@@ -10,6 +10,8 @@ import {
 import type { CableEvidence } from "../data/cableReferences.ts";
 import { sameJson } from "./draft.ts";
 import type { InstallationInputs, CableQuantity } from "./installation.ts";
+import { readReferenceCurrentSegments } from "./installationReferenceCurrent.ts";
+import type { ReferenceCurrentSegment } from "./installationReferenceCurrent.ts";
 
 export type CoreRole =
 	| "dc_positive"
@@ -102,6 +104,7 @@ export interface ElectricalReview {
 	schema_version: 1;
 	method: "installation_circuit_steady_conductors_v1";
 	qualified: false;
+	reference_current_segments?: ReferenceCurrentSegment[];
 	circuits: {
 		circuit_id: string;
 		name: string;
@@ -120,7 +123,10 @@ export function readElectricalReview(
 	const opted =
 		plan.circuits.some((c) => c.operating_conditions !== undefined) ||
 		plan.cable_runs.some(
-			(r) => r.core_roles !== undefined || r.conductor?.cable_reference != null,
+			(r) =>
+				r.core_roles !== undefined ||
+				r.conductor?.cable_reference != null ||
+				r.reference_current_installation != null,
 		);
 	if (!opted) {
 		if (value !== undefined) fail();
@@ -324,5 +330,6 @@ export function readElectricalReview(
 				fail();
 		}
 	}
+	readReferenceCurrentSegments(reply.reference_current_segments, plan);
 	return reply as unknown as ElectricalReview;
 }

@@ -254,6 +254,29 @@ def _authorize_core(
             )
         ):
             return []
+    if scope is not None and scope.get("basis") == "compatibility_esa":
+        from linker_genie.compatibility_esa import valid_scope as valid_esa_scope
+
+        if (
+            products is None
+            or documents is None
+            or any(
+                did not in documents
+                or not _compatibility_evidence_document(documents[did])
+                for did in scope.get("document_ids", [])
+            )
+            or not valid_esa_scope(
+                scope,
+                product_ids,
+                products,
+                documents,
+                sha=sha,
+                cid=chunk_id,
+                text=text,
+                anchors=external_axis_anchors,
+            )
+        ):
+            return []
     if scope is not None and (
         scope.get("basis") == "compatibility_pair" or "compatibility_pair" in scope
     ):

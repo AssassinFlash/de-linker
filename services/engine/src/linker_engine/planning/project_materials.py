@@ -192,6 +192,12 @@ def project_materials(source: Object) -> Object:
     installation = source.get("installation")
     if isinstance(installation, dict):
         electrical = installation.get("electrical")
+        current_checks: dict[str, list[Json]] = {}
+        if isinstance(electrical, dict):
+            for segment in cast(
+                list[Object], electrical.get("reference_current_segments", [])
+            ):
+                current_checks.setdefault(str(segment["run_id"]), []).append(segment)
         for cable in cast(list[Object], installation["cables"]):
             lines.append(
                 {
@@ -205,6 +211,15 @@ def project_materials(source: Object) -> Object:
                         "installation_input_sha256": installation["input_sha256"],
                         "geometry_sha256": installation["geometry_sha256"],
                         **cable,
+                        **(
+                            {
+                                "reference_current_segments": current_checks[
+                                    str(cable["id"])
+                                ]
+                            }
+                            if str(cable["id"]) in current_checks
+                            else {}
+                        ),
                         **(
                             {
                                 "electrical": {

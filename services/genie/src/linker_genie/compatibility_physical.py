@@ -144,7 +144,57 @@ def translate_compatibility_condition(
     """Translate an exact, already-authorized manufacturer condition into German."""
     if lang != "en":
         return None
-    return _GERMAN_CONDITIONS.get((source_chunk_id, page, quote))
+    translated = _GERMAN_CONDITIONS.get((source_chunk_id, page, quote))
+    if translated is not None:
+        return translated
+    from linker_genie.hs3_warranty_terms import NOTES as HS3_WARRANTY_NOTES
+
+    hs3_translations = (
+        "Die eingeschränkte Garantie gilt für die genannten SAJ-Produkte, die in Europa gekauft und installiert wurden.",
+        "Sie gilt für von SAJ hergestellte und direkt oder über autorisierte Partner gelieferte Wechselrichter, Batterien, Ladestationen und Zubehör. Externe und zusätzliche Geräte oder Teile, die Dritte installiert haben, sind ausgeschlossen.",
+        "Zehn Jahre Standardgarantie ab dem früheren Zeitpunkt: erste Installation oder sechs Monate nach der Herstellung.",
+        "Das Produkt muss die SAJ-Spezifikationen und die Betriebsbedingungen im Benutzerhandbuch erfüllen.",
+        "Für Überwachung und Fernaktualisierungen benötigen die Speichersysteme eine Internetverbindung. Ist das System nicht mit dem Internet verbunden oder nicht bei SAJ registriert, kann SAJ die vollen zehn Jahre möglicherweise nicht gewähren; mindestens N Jahre ab Versand durch SAJ gelten gemäß der nachstehenden Tabelle.",
+        "Für HS3 nennt die Tabelle N = 5,5 Jahre.",
+        "Produktprobleme durch die nachfolgend aufgeführten Umstände sind von der Garantie ausgeschlossen.",
+    )
+    for i, ((cid, source_page, original), translated_hs3) in enumerate(
+        zip(HS3_WARRANTY_NOTES, hs3_translations, strict=True), 1
+    ):
+        if (source_chunk_id, page, quote) == (cid, source_page, f"*{i}: {original}"):
+            return translated_hs3
+    from linker_genie.compatibility_esa import (
+        IOT_9,
+        IOT_13,
+        MANUAL_METER,
+        METER_CT,
+        METER_PARALLEL,
+        P9,
+        P13,
+    )
+
+    return {
+        (P9, 9, IOT_9): (
+            "*1 ARM≥03, DSP≥01; BMS≥06, DCDC≥08. DCDC-08 muss mit BMS-06 "
+            "oder höher kombiniert werden; ein alleiniges Upgrade auf BMS-06 oder "
+            "DCDC-08 ist nicht zulässig. BMS: 410-02167-06; DCDC: 410-04081-08."
+        ),
+        (P13, 13, IOT_13): (
+            "*2: HEMS im dreiphasigen Parallelbetrieb: 4+4; insgesamt höchstens 4. "
+            "ESA 5-30K: DSP 2; ARM 4; EzManager 04; "
+            "WLAN/LAN-2.0-Modul (Cybersicherheitsversion) ≥05."
+        ),
+        (MANUAL_METER, 35, METER_CT): (
+            "*1: GMK330: Der Stromwandler ist nicht austauschbar; Wandlerverhältnis "
+            "120A:40mA."
+        ),
+        (MANUAL_METER, 35, METER_PARALLEL): (
+            "*2: Bei mehr als zwei parallel geschalteten Wechselrichtern "
+            "oder wenn Leiterquerschnitt oder Messbereich des Standardstromwandlers "
+            "für den Gesamtstrom der Parallelanlage nicht ausreichen, verwenden Sie "
+            "den intelligenten Zähler GM330."
+        ),
+    }.get((source_chunk_id, page, quote))
 
 
 def iot_condition(row: str, page: int) -> str:

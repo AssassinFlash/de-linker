@@ -335,6 +335,13 @@ def terms_text(
     policy = value.get("policy")
     if (
         isinstance(policy, dict)
+        and policy.get("format") == "hs3_series_standard_warranty"
+    ):
+        from linker_genie.hs3_warranty_terms import render_terms as render_hs3_terms
+
+        return render_hs3_terms(value, source_ids)
+    if (
+        isinstance(policy, dict)
         and policy.get("format") == "explicit_model_europe_policy"
     ):
         from linker_genie.warranty_named import render_named_terms
@@ -629,6 +636,24 @@ def valid_warranty_scope(
     """Recheck both document grants and the exact model/series/procedure chain."""
     value = scope.get("warranty_scope")
     policy = value.get("policy") if isinstance(value, dict) else None
+    if (
+        isinstance(policy, dict)
+        and policy.get("format") == "hs3_series_standard_warranty"
+    ):
+        from linker_genie.hs3_warranty_terms import (
+            valid_scope as valid_hs3_warranty_scope,
+        )
+
+        return valid_hs3_warranty_scope(
+            scope,
+            product_ids,
+            products,
+            documents,
+            sha=sha,
+            chunk_id=chunk_id,
+            text=text,
+            external_axis_anchors=external_axis_anchors,
+        )
     if (
         isinstance(policy, dict)
         and policy.get("format") == "explicit_model_europe_policy"

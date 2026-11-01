@@ -11,8 +11,14 @@ import {
 	RevisionCode,
 } from "./CableReferenceFacts.tsx";
 import type { CableReference } from "../../data/cableReferences.ts";
+import {
+	ReferenceCurrentFields,
+	selectedReferenceCurrent,
+} from "./ReferenceCurrentFields.tsx";
+import type { ReferenceCurrentChoice } from "./ReferenceCurrentFields.tsx";
 import type { CoreRole } from "../../domain/installationElectrical.ts";
-import { useState } from "react";
+import { referenceCurrentContext } from "../../domain/installationReferenceCurrent.ts";
+import { useRef, useState } from "react";
 import type { GeometryDocument } from "../../domain/geometry.ts";
 import type {
 	DeviceInstance,
@@ -26,6 +32,7 @@ import type {
 } from "../../domain/installation.ts";
 import { installationId } from "../../domain/installation.ts";
 import { sameJson } from "../../domain/draft.ts";
+import { parseDecimal } from "../../domain/decimal.ts";
 import { terminalCandidates } from "../../domain/installationTerminals.ts";
 import type { TerminalBinding } from "../../domain/installationTerminals.ts";
 import {
@@ -792,13 +799,29 @@ export function CableForm({
 	const declared = cable?.conductor ?? null;
 	const t = (en: string, de: string) => electricalText(locale, en, de);
 	const savedReference = declared?.cable_reference;
-	const [referenceKey, setReferenceKey] = useState(
-		savedReference
-			? String(savedReference.product_id) +
-					":" +
-					savedReference.product_revision
-			: "",
+	const savedReferenceKey = savedReference
+		? String(savedReference.product_id) + ":" + savedReference.product_revision
+		: "";
+	const [referenceKey, setReferenceKey] = useState(savedReferenceKey);
+	const [referenceCurrent, setReferenceCurrent] =
+		useState<ReferenceCurrentChoice>(() =>
+			cable?.reference_current_installation
+				? { kind: "saved", declaration: cable.reference_current_installation }
+				: { kind: "none" },
+		);
+	const [currentConfirmed, setCurrentConfirmed] = useState(
+		cable?.reference_current_installation?.conditions_confirmed ?? false,
 	);
+	const [confirmationNeedsReview, setConfirmationNeedsReview] = useState(false);
+	const [confirmedThisEdit, setConfirmedThisEdit] = useState(false);
+	const lastCrossSection = useRef<number | null | undefined>(
+		declared?.cross_section_mm2 ?? null,
+	);
+	const invalidateCurrentConfirmation = () => {
+		setCurrentConfirmed(false);
+		setConfirmedThisEdit(false);
+		setConfirmationNeedsReview(true);
+	};
 	const [roles, setRoles] = useState(() =>
 		(cable?.core_roles ?? []).map((role) => ({
 			id: installationId("core"),
@@ -840,6 +863,14 @@ export function CableForm({
 						: null;
 				if (referenceKey && !reference)
 					throw new Error("cable_reference_unavailable");
+				const current = selectedReferenceCurrent(
+					referenceCurrent,
+					selectedReference,
+					referenceKey,
+					savedReferenceKey,
+					v,
+					currentConfirmed,
+				);
 				const next = {
 					...(cable ?? {}),
 					...(rolesTouched || cable?.core_roles !== undefined
@@ -861,6 +892,19 @@ export function CableForm({
 						: {}),
 				};
 				if (!conductor) delete next.conductor;
+				if (current) {
+					next.reference_current_installation = current;
+					if (currentConfirmed && confirmedThisEdit) {
+						const cableRuns = cable
+							? plan.cable_runs.map((row) => (row.id === cable.id ? next : row))
+							: [...plan.cable_runs, next];
+						current.confirmation_context = referenceCurrentContext(
+							{ ...plan, cable_runs: cableRuns },
+							next,
+							current,
+						);
+					}
+				} else delete next.reference_current_installation;
 				return submit(next);
 			}}
 		>
@@ -871,7 +915,12 @@ export function CableForm({
 			/>
 			<label className="lp-field">
 				<span>{__("Circuit", "linker-tools")}</span>
-				<select name="circuit" required defaultValue={cable?.circuit_id ?? ""}>
+				<select
+					name="circuit"
+					required
+					defaultValue={cable?.circuit_id ?? ""}
+					onChange={invalidateCurrentConfirmation}
+				>
 					<option value="">{__("Choose a circuit", "linker-tools")}</option>
 					{plan.circuits.map((c) => (
 						<option key={c.id} value={c.id}>
@@ -882,7 +931,12 @@ export function CableForm({
 			</label>
 			<label className="lp-field">
 				<span>{__("Recorded route", "linker-tools")}</span>
-				<select name="route" required defaultValue={cable?.route_id ?? ""}>
+				<select
+					name="route"
+					required
+					defaultValue={cable?.route_id ?? ""}
+					onChange={invalidateCurrentConfirmation}
+				>
 					<option value="">{__("Choose a route", "linker-tools")}</option>
 					{plan.routes.map((r) => (
 						<option key={r.id} value={r.id}>
@@ -897,6 +951,7 @@ export function CableForm({
 					name="construction"
 					required
 					defaultValue={cable?.construction ?? ""}
+					onChange={invalidateCurrentConfirmation}
 				>
 					<option value="">{__("Choose construction", "linker-tools")}</option>
 					<option value="single_conductor">
@@ -916,18 +971,34 @@ export function CableForm({
 					"linker-tools",
 				)}
 			</p>
-			<GeometryNumber
-				name="cross_section"
-				label={__("Declared cross-section", "linker-tools")}
-				locale={locale}
-				unit="mm²"
-				value={declared?.cross_section_mm2 ?? null}
-				optional
-				help={__(
-					"Leave empty while the cross-section is still open. This is the project's own declaration, not a sizing result.",
-					"linker-tools",
-				)}
-			/>
+			<div
+				onInput={(event) => {
+					const input = event.target;
+					if (!(input instanceof window.HTMLInputElement)) return;
+					try {
+						const value = parseDecimal(input.value, locale);
+						if (value !== lastCrossSection.current)
+							invalidateCurrentConfirmation();
+						lastCrossSection.current = value;
+					} catch {
+						lastCrossSection.current = undefined;
+						invalidateCurrentConfirmation();
+					}
+				}}
+			>
+				<GeometryNumber
+					name="cross_section"
+					label={__("Declared cross-section", "linker-tools")}
+					locale={locale}
+					unit="mm²"
+					value={declared?.cross_section_mm2 ?? null}
+					optional
+					help={__(
+						"Leave empty while the cross-section is still open. This is the project's own declaration, not a sizing result.",
+						"linker-tools",
+					)}
+				/>
+			</div>
 			<GeometryText
 				name="conductor_note"
 				label={__("Basis for the declared cross-section", "linker-tools")}
@@ -949,7 +1020,10 @@ export function CableForm({
 				<select
 					name="cable_reference"
 					value={referenceKey}
-					onChange={(e) => setReferenceKey(e.currentTarget.value)}
+					onChange={(e) => {
+						setReferenceKey(e.currentTarget.value);
+						invalidateCurrentConfirmation();
+					}}
 				>
 					<option value="">
 						{t(
@@ -995,6 +1069,25 @@ export function CableForm({
 			{selectedReference && (
 				<CableReferenceFacts reference={selectedReference} locale={locale} />
 			)}
+			<ReferenceCurrentFields
+				locale={locale}
+				plan={plan}
+				cable={cable}
+				reference={selectedReference}
+				referenceKey={referenceKey}
+				savedReferenceKey={savedReferenceKey}
+				choice={referenceCurrent}
+				setChoice={setReferenceCurrent}
+				confirmed={currentConfirmed}
+				confirmationNeedsReview={confirmationNeedsReview}
+				invalidateConfirmation={invalidateCurrentConfirmation}
+				confirmedThisEdit={confirmedThisEdit}
+				setConfirmed={(value) => {
+					setCurrentConfirmed(value);
+					setConfirmedThisEdit(value);
+					if (value) setConfirmationNeedsReview(false);
+				}}
+			/>
 			<fieldset>
 				<legend>
 					{t("Physical core roles", "Funktionen der physischen Adern")}
@@ -1011,6 +1104,7 @@ export function CableForm({
 							name={r.id}
 							label={t("Core role", "Aderfunktion")}
 							value={r.role}
+							onChange={invalidateCurrentConfirmation}
 							options={[
 								["dc_positive", "DC +"],
 								["dc_negative", "DC −"],
@@ -1027,6 +1121,7 @@ export function CableForm({
 							type="button"
 							className="lp-text-button"
 							onClick={() => {
+								invalidateCurrentConfirmation();
 								setRolesTouched(true);
 								setRoles((old) => old.filter((row) => row.id !== r.id));
 							}}
@@ -1039,6 +1134,7 @@ export function CableForm({
 					type="button"
 					className="lp-text-button"
 					onClick={() => {
+						invalidateCurrentConfirmation();
 						setRolesTouched(true);
 						setRoles((old) => [
 							...old,
