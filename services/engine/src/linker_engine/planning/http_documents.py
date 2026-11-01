@@ -77,6 +77,10 @@ class ProjectInputs(Command):
         assert_plant_exclusivity(value)
         if "brief" in value:
             PlanningBrief.model_validate(value["brief"])
+        if "grid_connection" in value:
+            from .grid_connection import GridConnection
+
+            GridConnection.model_validate(value["grid_connection"])
         if "profile_selections" in value:
             from .profile_selections import ProfileSelections
 

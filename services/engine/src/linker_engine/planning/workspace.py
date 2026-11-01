@@ -29,6 +29,7 @@ from .errors import (
 from .execution_control import require_accepting
 from .execution_identity import execution_key
 from .geometry import validate_project_geometry
+from .grid_connection import validate_grid_connection
 from .installation_inputs import validate_installation_project
 from .project_input_contracts import (
     create_command,
@@ -117,6 +118,7 @@ class Workspace:
                 )
             require_input_contract(None, inputs, input_contract)
             validate_new_brief(inputs)
+            validate_grid_connection(inputs)
             validate_project_geometry(inputs)
             validate_installation_project(inputs)
             validate_condition_inputs(inputs)
@@ -196,6 +198,7 @@ class Workspace:
             previous = self._project(connection, actor, project_id)
             require_input_contract(previous.inputs, inputs, input_contract)
             validate_new_brief(inputs)
+            validate_grid_connection(inputs)
             validate_project_geometry(inputs)
             validate_installation_project(inputs)
             validate_condition_inputs(inputs)

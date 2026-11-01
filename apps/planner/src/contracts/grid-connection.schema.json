@@ -1,0 +1,124 @@
+{
+  "$defs": {
+    "SchemaVersion": {
+      "maximum": 1,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "TabSource": {
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Text"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Text"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "edition": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Text"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "date": {
+          "anyOf": [
+            {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Date"
+        }
+      },
+      "required": [
+        "title",
+        "source_url",
+        "edition",
+        "date"
+      ],
+      "title": "TabSource",
+      "type": "object"
+    },
+    "Text": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "pattern": "\\S",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "$ref": "#/$defs/SchemaVersion"
+    },
+    "dso_name": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Text"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "dso_source_url": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Text"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "voltage_level": {
+      "anyOf": [
+        {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Voltage Level"
+    },
+    "tab": {
+      "$ref": "#/$defs/TabSource"
+    }
+  },
+  "required": [
+    "schema_version",
+    "dso_name",
+    "dso_source_url",
+    "voltage_level",
+    "tab"
+  ],
+  "title": "GridConnection",
+  "type": "object"
+}

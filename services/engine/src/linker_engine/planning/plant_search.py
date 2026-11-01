@@ -175,7 +175,15 @@ def search_plant(
                 )
                 value = cast(Object, plant.model_dump(mode="json"))
                 assessment = assess_plant(
-                    {"brief": inputs.get("brief"), "equipment_plant": value},
+                    {
+                        "brief": inputs.get("brief"),
+                        "equipment_plant": value,
+                        **(
+                            {"grid_connection": inputs["grid_connection"]}
+                            if "grid_connection" in inputs
+                            else {}
+                        ),
+                    },
                     basis,
                     checkpoint,
                     unit_assessments=assessments,

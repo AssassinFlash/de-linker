@@ -15,6 +15,7 @@ from .equipment_evidence import EquipmentEvidence
 from .equipment_fact_resolution import FactContext, FactUse, resolve_fact
 from .equipment_inputs import EquipmentSelection
 from .errors import InvalidInput, ProductEvidenceChanged
+from .grid_connection import country_assessment
 
 
 def selection_products(
@@ -560,9 +561,6 @@ def assess_equipment(
         if "unresolved" in statuses
         else "satisfied"
     )
-    brief = inputs.get("brief")
-    site = brief.get("site") if isinstance(brief, dict) else None
-    country = site.get("country_code") if isinstance(site, dict) else None
     return decode_object(
         encode(
             {
@@ -606,11 +604,7 @@ def assess_equipment(
                 "bill_of_materials_status": "unresolved"
                 if any(cast(dict[str, Any], c)["status"] != "satisfied" for c in checks)
                 else "equipment_checks_satisfied",
-                "country_assessment": {
-                    "status": "unresolved",
-                    "country_code": country,
-                    "reason": "versioned_country_rules_required",
-                },
+                "country_assessment": country_assessment(inputs),
                 "overall_status": "violated"
                 if equipment_status == "violated"
                 else "unresolved",
