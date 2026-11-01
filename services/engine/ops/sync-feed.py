@@ -16,6 +16,7 @@ import fcntl
 import hashlib
 import json
 import os
+import re
 import shutil
 import socket
 import sqlite3
@@ -33,8 +34,19 @@ TARGET = Path("/opt/linker-engine/state/feed.json")
 COMPATIBILITY_TARGET = Path("/opt/linker-engine/state/compatibility.json")
 PROBE_PYTHON = "/opt/linker-engine/current/.venv/bin/python"
 MANAGED_STATE = Path("/opt/linker-engine/state")
-PROBE = "import pathlib,sys; from linker_engine.products import Products; Products.load(pathlib.Path(sys.argv[1])); print('validated')"
-COMPATIBILITY_PROBE = "import pathlib,sys; from linker_engine.compatibility import Compatibility; Compatibility.load(pathlib.Path(sys.argv[1])); print('validated')"
+GENERATION_PROBE = """
+import json, sys
+from pathlib import Path
+from linker_engine import version
+from linker_engine.compatibility import Compatibility
+from linker_engine.products import Products
+feed, contract = map(Path, sys.argv[1:])
+Products.load(feed)
+Compatibility.load(contract)
+raw = feed.read_bytes()
+compatibility = json.dumps(json.loads(raw)["compatibility"], sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()
+print(version.digest(version.source_bytes(Path(version.__file__).parent), raw, compatibility))
+"""
 
 
 def log(message: str) -> None:
@@ -77,14 +89,21 @@ def staged(directory: Path, prefix: str, raw: bytes) -> Iterator[Path]:
         temporary.unlink(missing_ok=True)
 
 
-def probe(python: str, code: str, path: Path) -> tuple[bool, str]:
-    completed = subprocess.run(
-        [python, "-c", code, str(path)], capture_output=True, text=True, check=False
+def generation_version(python: str, feed: Path, contract: Path) -> str:
+    """Both native loaders and the actual release digest in a single process."""
+    result = subprocess.run(
+        [python, "-c", GENERATION_PROBE, str(feed), str(contract)],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=False,
     )
-    return (
-        completed.returncode == 0 and "validated" in completed.stdout,
-        completed.stderr.strip()[-300:],
-    )
+    digest = result.stdout.strip()
+    if result.returncode or not re.fullmatch(r"[0-9a-f]{64}", digest):
+        raise ValueError(
+            f"loader rejected complete generation: {result.stderr.strip()[-300:]}"
+        )
+    return digest
 
 
 def atomic_link(target: Path, link: Path) -> None:
@@ -135,6 +154,89 @@ def job_request(action: str, body: dict[str, Any]) -> dict[str, Any]:
         return dict(json.load(response))
 
 
+def reusable_generation(
+    feed: Path,
+    contract: Path,
+    document: dict[str, Any],
+    python: str,
+    loaded: Callable[[], dict[str, Any]],
+) -> dict[str, Any] | None:
+    """Reuse only the selected, byte-checked pair matching the running release."""
+    current = feed.parent / "current"
+    if not current.is_symlink() or not feed.is_symlink() or not contract.is_symlink():
+        return None
+    selected = current.resolve()
+    if (
+        selected.parent != feed.parent.resolve()
+        or feed.resolve() != selected / "feed.json"
+        or contract.resolve() != selected / "compatibility.json"
+    ):
+        return None
+    try:
+        raw = feed.read_bytes()
+        old = json.loads(raw)
+        manifest = json.loads((selected / "manifest.json").read_bytes())
+        if (
+            manifest["feed_sha256"] != hashlib.sha256(raw).hexdigest()
+            or manifest["compatibility_sha256"]
+            != hashlib.sha256(contract.read_bytes()).hexdigest()
+        ):
+            return None
+        # Woo emits a fresh RFC3339 UTC timestamp on every GET. Only that
+        # metadata may vary. JSON serialization keeps booleans distinct from ints.
+        # Match the producer's gmdate('c') format; other representations go
+        # through the original schema validator and normal publication path.
+        stamp = dt.datetime.fromisoformat(document["generated_at"])
+        if (
+            stamp.tzinfo is None
+            or stamp.isoformat(timespec="seconds") != document["generated_at"]
+        ):
+            return None
+        old["generated_at"] = document["generated_at"]
+        if json.dumps(old, sort_keys=True) != json.dumps(
+            document, sort_keys=True
+        ) or json.dumps(
+            json.loads(contract.read_bytes()), sort_keys=True
+        ) != json.dumps(document["compatibility"], sort_keys=True):
+            return None
+        actual = loaded()
+        if (
+            actual.get("source_revision") != document["source_revision"]
+            or actual.get("compatibility_revision")
+            != document["compatibility_revision"]
+        ):
+            return None
+        # The native resource digest covers release source plus the *original*
+        # selected feed bytes and canonical Woo compatibility projection.
+        expected = generation_version(python, feed.resolve(), contract.resolve())
+        return actual if actual.get("version") == expected else None
+    except (OSError, ValueError, KeyError, TypeError, subprocess.TimeoutExpired):
+        return None
+
+
+def acknowledge(
+    jobs: Callable[[str, dict[str, Any]], dict[str, Any]],
+    job: dict[str, Any],
+    actual: dict[str, Any],
+    log: Callable[[str], None],
+) -> bool:
+    receipt = jobs(
+        "ack",
+        {
+            "job_id": job["job_id"],
+            "lease_token": job["lease_token"],
+            "source_revision": job["source_revision"],
+            "loaded_revision": actual["source_revision"],
+            "prepared_products": actual.get("prepared_products", []),
+            "status": "ready",
+        },
+    )
+    if receipt.get("accepted") is True and receipt.get("complete") is True:
+        return True
+    log("Woo did not confirm complete engineering preparation")
+    return False
+
+
 def sync(
     *,
     feed_url: str = FEED_URL,
@@ -157,6 +259,7 @@ def sync(
         fcntl.flock(lock, fcntl.LOCK_EX)
         generation: Path | None = None
         job = None
+        ack_started = False
         previous: Path | None = None
         try:
             if jobs is not None:
@@ -187,6 +290,18 @@ def sync(
                 or not document.get("compatibility_revision")
             ):
                 raise ValueError("incomplete publication generation")
+            if jobs is not None and job is not None:
+                reusable = reusable_generation(
+                    feed_target, compatibility_target, document, probe_python, loaded
+                )
+                if reusable is not None:
+                    ack_started = True
+                    if not acknowledge(jobs, job, reusable, log):
+                        return 1
+                    log(
+                        f"confirmed already loaded source {document['source_revision']}"
+                    )
+                    return 0
             contract_raw = (
                 json.dumps(contract, ensure_ascii=False, indent=2) + "\n"
             ).encode()
@@ -197,13 +312,9 @@ def sync(
             contract_path = generation / "compatibility.json"
             feed_path.write_bytes(raw)
             contract_path.write_bytes(contract_raw)
-            for code, path in (
-                (PROBE, feed_path),
-                (COMPATIBILITY_PROBE, contract_path),
-            ):
-                valid, detail = probe(probe_python, code, path)
-                if not valid:
-                    raise ValueError(f"loader rejected complete generation: {detail}")
+            expected_version = generation_version(
+                probe_python, feed_path, contract_path
+            )
             manifest = {
                 "source_revision": document["source_revision"],
                 "compatibility_revision": document["compatibility_revision"],
@@ -250,7 +361,8 @@ def sync(
                             raise
                         time.sleep(0.5)
                 if (
-                    actual.get("source_revision") != manifest["source_revision"]
+                    actual.get("version") != expected_version
+                    or actual.get("source_revision") != manifest["source_revision"]
                     or actual.get("compatibility_revision")
                     != manifest["compatibility_revision"]
                 ):
@@ -262,18 +374,10 @@ def sync(
                     atomic_link(previous, current)
                     restart()
                 raise
+            complete = True
             if jobs is not None and job is not None:
-                jobs(
-                    "ack",
-                    {
-                        "job_id": job["job_id"],
-                        "lease_token": job["lease_token"],
-                        "source_revision": job["source_revision"],
-                        "loaded_revision": actual["source_revision"],
-                        "prepared_products": actual.get("prepared_products", []),
-                        "status": "ready",
-                    },
-                )
+                ack_started = True
+                complete = acknowledge(jobs, job, actual, log)
             keep = {generation, previous}
             for obsolete in directory.glob("publication-generation-*"):
                 if (
@@ -282,6 +386,8 @@ def sync(
                     and not obsolete.is_symlink()
                 ):
                     shutil.rmtree(obsolete)
+            if not complete:
+                return 1
             log(
                 f"published and loaded source {manifest['source_revision']} ({len(document['products'])} products)"
             )
@@ -308,7 +414,7 @@ def sync(
                         and not obsolete.is_symlink()
                     ):
                         shutil.rmtree(obsolete)
-            if jobs is not None and job is not None:
+            if jobs is not None and job is not None and not ack_started:
                 try:
                     jobs(
                         "ack",

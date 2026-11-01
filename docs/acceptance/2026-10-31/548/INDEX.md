@@ -1,11 +1,11 @@
 # #548 安装事实线 · 验收索引（2026-10-31）
 
-## 当前交付状态（2026-11-01 04:52 UTC）
+## 当前交付状态（2026-11-01 05:53 UTC）
 
 以下为当前状态摘要；后文初始候选、失败和恢复过程保留为历史证据，不代表尚未发布。
 
 - 全部 goal 仍在执行。主工作树是 `/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548`；`/Users/chesterjohn/.codex/worktrees/installation-facts-548/de-linker` 仅作为已核清洁的冻结发布工作树复用。没有新建本地站点。
-- PR829 已合并为 90e9a5691。生产 Engine 已运行 20261101T043648659112Z-90e9a5691，加载版本 f3ebc547…、86 个已准备产品。Planner current 为 0ef1ee6e…，previous 为 40af78dd…；原项目、修订及旧报告 PDF 已逐项读回。WordPress 仍为 ce64c8fc1。Genie 第 51 次准备任务在写索引前失败，未切换线上原有 runtime/index 50。修复在 PR830，WordPress 新写入端等待读取服务就绪。
+- PR829 已合并为 90e9a5691。生产 Engine 已运行 20261101T043648659112Z-90e9a5691，加载版本 f3ebc547…、86 个已准备产品。Planner current 为 0ef1ee6e…，previous 为 40af78dd…；原项目、修订及旧报告 PDF 已逐项读回。Genie 的第 51 次准备在写索引前失败。PR830 修复后，第 52 次准备已完成，实际 API、Woo 收据和自然轮询均读回同一版。WordPress 发布已在批次 20261101T050752091017Z-8cf389616 验证并归档，后台六个账户页的标题与内容已逐页核对。PR832 的 ET/LAN 和 Nexans 写入仍在候选阶段。
 - VPS 重复 WordPress cron 已 disabled/inactive；Hostinger 原生每分钟调度继续推进。12 条永久拒收 quality 记录停止重试，WordPress 自然状态已读回 pending0/deferred0/rejected12，原记录与拒收原因保留。
 - 本机/VPS 旧运行副本、部署 staging 与临时发布工具已按引用和保留边界回收；运行版本 current+previous、知识索引 KEEP3、数据库快照 N3，实际共享的1418解释器保留。Planner 自动维护已部署，已完成一次受控 noop。11 月 1 日 02:19 UTC 的自然调度在读取远端计划时因 SSH 退出 255 停止，03:19 在窗口外跳过。该日未完成自动维护。
 - 清单生成 CPU3390ms 中3053ms用于144次文件哈希，86次队列读取仅7.686ms；同请求哈希已复用，未引入会破坏原件替换检测的跨请求缓存。发布后短期账户分钟 CPU 非零样本均值8.5%/最高15%；四站历史100%峰值仍未完整归因，不能据此宣称负载问题全部关闭。
@@ -13,7 +13,7 @@
 - PR827 已合并原生认领夹具的有界生命周期。PR828 已合并为 `ce64c8fc1` 并部署：多系统 PV 字符串独立评估、安装身份绑定、报告来源校验、PDF β 字形与德语列宽修复均已通过相应原生合同及 Spec/Standards；真实浏览器已验证保存 revision 3 时完整保留另一系统，并完成 EN/DE×1440/390 的受影响编辑区域检查。实际 UI 设备计算与同 revision 报告完成，浏览器下载的14页PDF（91,830B）与报告prepared asset哈希一致；未满足项保留，没有伪造工程通过。该结论限于本批受影响区域和链路，不代表整个goal的全页/全客户链验收。 生产另以唯一合成访客项目完成保存/修改A保留B/实际设备任务/同revision报告/PDF字节读回，7/7组件覆盖，A/B电流10.14A/20.28A分别计算；13页生产PDF与其记录哈希一致，NUL0，工程未满足项仍保留。
 - PR828 的 CI 现在分开显示 Check/Test/Build/条件 PHP，保留命令、耗时和失败位置，Planner CI 不再重复类型检查。新完整基线 `41218026418` 成功；随后文档候选 `41221333503` 仅运行 plan/check，实际复用了新阶段证明。Engine Check14秒、Test334秒；耗时诊断与覆盖删减分别判断，不因测试慢就移除真实客户链断言。
 - 品牌/系列页面族共有34个canonical根、英德68个URL；5个身份别名不重复当成HTML页面。本批已闭环68双语URL+8独有状态，以及EN/DE×1440/390共享布局/分页/筛选/排序/语言切换。实际LC archive结构执行已证，未冒称新鲜数字template-ID trace。
-- 官方 WindPress Generate 已在生产后台成功完成，耗时 2 分 55.3 秒。LiteSpeed 的 Login Cookie 设置覆盖了 WordPress 登录 Cookie；清除冲突设置后，官方 cache/store 成功写入 903,746 字节，首页实际加载新生成的 CSS。见 [官方 Generate 成功截图](windpress-generate-success.png)。
+- 官方 WindPress Generate 已在生产后台成功完成，耗时 2 分 55.3 秒。LiteSpeed 的 Login Cookie 设置覆盖了 WordPress 登录 Cookie；清除冲突设置后，官方 cache/store 成功写入 903,746 字节，首页实际加载新生成的 CSS。见 [修复后首次生成](windpress-generate-success.png)。PR830 上线后再次通过官方 Generate，后台显示 13:20:49，前台已加载 ver=1793510449。见 [PR830 生成读回](windpress-pr830.jpg)。
 - 当前主账号认证字段与旧Git材料仍相同；业主已明确选择不修改密码。按业主决定保持账号现状，风险记录保留，未冒称修复，也不重复请求。
 - 完整BOS/厂商原件、217项文档证明缺口、全客户链/视觉余项及自然客户收件证据仍分别未完成。已验证的历史8207和验收询盘8457不替代这些范围。
 
@@ -1565,3 +1565,7 @@ The existing replacement test had changed both size and explicit mtime. Replacin
 Feed-sync log ownership, root. One bounded read-only linker-services SSH to inspect installed service output target, plain log size/line count, rotation declarations, journal retention, and raw file vs journal duplicate count without exporting line content or environment. No remote files, service or timer changes in the investigation. Transport exits after the metadata read. If confirmed, preserve unique historical diagnostics, use the existing bounded journal as the live sink.
 
 Actual service has stdout/stderr journal and writes the plain log. Worker SHA matches source a80a4990. At 05:48 UTC the plain file held 19,742 records, 2,086,581 bytes, and had no named logrotate declaration. The latest 20 plain messages covering 05:38 through 05:49 UTC each exactly matched the same unit journal record. The candidate removes this duplicate append and the unit's /var/log write grant. Native log() forwarded one timestamped diagnostic with zero Path.open calls. Ruff passed. The prior file stays at its historical path, and its oldest evidence remains accessible. Acceptance after installation requires a natural timer run adding journal diagnostics with no growth of the old file. No production log file was changed.
+
+Engineering receipt retry, owner root. Native Woo returns accepted=true/complete=false for partial product coverage and leaves its job pending. Test the existing stable sync entry against this response then a new claim for the same feed. Scope services/engine/ops/sync-feed.py and its existing test_sync_feed.py. Use the assigned Engine interpreter and at most one /tmp/p548-sync-* test root per run, fixture-owned single feed server/requests and temporary generation directories; remove on exit. Do not claim Woo jobs or restart production while developing. Preserve the previous generation and verify the real loaded process when reusing selected bytes.
+
+Native sync worker returned success in both red cases when Woo confirmed only a partial receipt or omitted its completion flag. Fixed production-shaped fixture cases now return nonzero for incomplete work and issue only the original ACK. A fresh claim for the same source with only a later valid Woo generated_at reused the selected pair and original rollback directory, made no restart and obtained the actual loaded version and current prepared coverage before ACK. A changed product list with identical revision labels was rejected for reuse and caused normal validation and switching. The native Products/Compatibility loaders now run in a single interpreter per pair. The worker compares the actual running version to the exact selected source/feed/canonical compatibility digest. The full 14-case loopback worker file passed in 9.75s, scoped Ruff and strict mypy passed, and the temporary servers/files were released. This is fixture evidence, not a claim of a live incomplete Woo job.

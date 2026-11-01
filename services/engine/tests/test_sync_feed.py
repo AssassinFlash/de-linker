@@ -104,8 +104,20 @@ def run(
     lines: list[str] = []
 
     def actual() -> dict[str, Any]:
-        document = json.loads(feed.read_text())
+        from linker_engine import version
+
+        raw = feed.read_bytes()
+        document = json.loads(raw)
+        compatibility = json.dumps(
+            document["compatibility"],
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+        ).encode()
         return {
+            "version": version.digest(
+                version.source_bytes(Path(version.__file__).parent), raw, compatibility
+            ),
             "source_revision": document["source_revision"],
             "compatibility_revision": document["compatibility_revision"],
         }
@@ -212,7 +224,10 @@ def test_retains_only_current_and_previous_generation(
     assert len(list(feed.parent.glob("publication-generation-*"))) == 2
 
 
-def test_jobs_ack_only_the_running_source(tmp_path: Path, feed_url: str) -> None:
+@pytest.mark.parametrize("complete", [True, False, None])
+def test_jobs_ack_only_the_running_source(
+    tmp_path: Path, feed_url: str, complete: bool | None
+) -> None:
     document = feed_document()
     (tmp_path / "feed.json").write_text(json.dumps(document))
     calls: list[tuple[str, dict[str, Any]]] = []
@@ -228,14 +243,58 @@ def test_jobs_ack_only_the_running_source(tmp_path: Path, feed_url: str) -> None
                 }
             }
             if action == "claim"
-            else {}
+            else {"accepted": True, "complete": complete}
         )
 
     code, _, logs, _, _ = run(load_sync(), tmp_path, feed_url, jobs=jobs)
-    assert code == 0, logs
+    assert code == (0 if complete else 1), logs
+    assert [name for name, _ in calls] == ["claim", "ack"]
     assert calls[-1][0] == "ack"
     assert calls[-1][1]["status"] == "ready"
     assert calls[-1][1]["loaded_revision"] == document["source_revision"]
+
+
+def test_incomplete_receipt_retry_reuses_only_the_same_loaded_inputs(
+    tmp_path: Path, feed_url: str
+) -> None:
+    document = feed_document()
+    source = tmp_path / "feed.json"
+    source.write_text(json.dumps(document))
+    receipts = []
+    complete = False
+
+    def jobs(action: str, body: dict[str, Any]) -> dict[str, Any]:
+        if action == "claim":
+            return {
+                "job": {
+                    "job_id": "fixture",
+                    "lease_token": "synthetic",
+                    "source_revision": document["source_revision"],
+                }
+            }
+        receipts.append(body["status"])
+        return {"accepted": True, "complete": complete}
+
+    sync = load_sync()
+    code, restart, _, feed, _ = run(sync, tmp_path, feed_url, jobs=jobs)
+    assert code == 1 and restart.calls == 1
+    selected = feed.resolve()
+    retained = set(feed.parent.glob("publication-generation-*"))
+    document["generated_at"] = "2026-11-01T05:00:00+00:00"
+    source.write_text(json.dumps(document))
+    complete = True
+    code, restart, logs, feed, _ = run(sync, tmp_path, feed_url, jobs=jobs)
+    assert code == 0 and restart.calls == 0, logs
+    assert (
+        feed.resolve() == selected
+        and set(feed.parent.glob("publication-generation-*")) == retained
+    )
+    # A revision label alone cannot authorize reuse when actual input differs.
+    document["products"] = []
+    source.write_text(json.dumps(document))
+    code, restart, _, feed, _ = run(sync, tmp_path, feed_url, jobs=jobs)
+    assert code == 0 and restart.calls == 1 and feed.resolve() != selected
+    assert receipts == ["ready", "ready", "ready"]
 
 
 def test_no_job_has_no_fetch_or_restart(tmp_path: Path, feed_url: str) -> None:
