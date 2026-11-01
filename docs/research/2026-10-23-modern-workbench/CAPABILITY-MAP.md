@@ -409,3 +409,27 @@ Aladdin 不只提供画布。固定源码中已经能追到：
 ```
 
 这是平台在run创建前的权限门，不是源PDF的HTTP状态。没有批准完整账号权限、打开浏览器或改用其他actor绕过；根代理已收到同次原始错误。此请求没有产生可回收run/dataset/KV/queue，没有请求到原厂PDF；两个目标文件仍不存在。前两次实际抓取失败所生8份临时存储已全部204删除、404读回，本次续取未保留任何运行进程、文件副本或本地新目录。仅本文件记录新增，纯文档空白检查通过；Data卷仍可用821GiB、已用2.8TiB/78%，本地释放0字节。
+
+
+### 10.7 同一已授权 actor 的 raw HTTP 模式续取（2026-11-01）
+
+本轮负责人 `oem_cable_originals`，只负责两个 Nexans 原件及本节证据，不修改源码、生产或其他人的改动。先读既有失败证据；本机资料库 `/Users/chesterjohn/de-linker-data/pdf` 与 `index`/`parsed` 未找到 Nexans 或两个 ref 的已有记录。正常授权环境的 `APIFY_TOKEN` 可用，未从研究文档或其他来源提取密钥。`2026-11-01` 经 Apify API 读同一已授权 `apify/website-content-crawler` build `5i2wakgyINEu6WRZt` / `0.3.102`，schema 明确提供 `crawlerType="cheerio"`（Raw HTTP client），与前两次 browser navigation 不同；不再请求此前未批准的独立 Cheerio Scraper actor。
+
+资源合同：只创建一个同 actor、pin `0.3.102` 的 raw 模式 run，上限180秒、并发2、重试0、depth0、maxCrawlPages/maxResults均2、saveContentTypes仅 `application/pdf`，只请求§10.1两端点，不搜索、递归或批量站点。每份下载上限5MiB，先查KV大小，再核真实 `%PDF-`、页数与SHA。唯一原件保存至既有非仓库资料库 `/Users/chesterjohn/de-linker-data/pdf/<真实SHA256>.pdf`，每份仅一份、同SHA复用；用途为后续 Woo 非销售工程参考的托管原件，长期保留至可信新版取代且无冻结报告引用。§10.5原拟仓库`sources/`路径由本轮非仓库要求取代，不创建该目录。本run的dataset/KV/queue（含自动错误dataset）在提取必要的小型证据后核归属删除并404读回。文本、pdfinfo与最多一张同时在用的临时页面PNG用于核验，均由本负责人在本次结束前回收；PNG仅存在临时目录，不留副报告、重复PDF、依赖、实例或浏览器。开始Data卷已用2.8TiB、可用831GiB（78%）。若raw模式失败，保留同次具体状态和响应，停止相同重试。
+
+
+补充原响应边界：本run队列两项`userData.lastHttpStatus=200`、`lastContentType="application/pdf;charset=UTF-8"`，handledAt分别`2026-11-01T03:50:38.660Z`与`03:50:39.299Z`；这证明200/MIME，不证明正文已保存。根代理据此授权仅核已有 Apify Proxy 原生HTTP能力：`2026-11-01T03:51Z`使用正常环境token GET `/v2/users/me` HTTP200，账户现有proxy配置有密码和可用非零代理组（密码不打印、不落盘），无需更改账号、额度或批准其他actor。工具清单没有已安装的Apify二进制专用工具。
+
+本次追加传输合同：仅经该账号已授权 Apify Proxy 的HTTP入口 `http://proxy.apify.com:8000` 建立CONNECT隧道，再对HTTPS目标 `latrivenetacavi.nexans.com` 协商TLS并读两条同源具名URL；代理自身没有使用HTTPS入口，显式ProxyHandler、不设直连回退、不搜索、不抓其他源URL、不新增actor。每条仅1次、45秒、最多5MiB、验证TLS，不调整权限/额度。凭据仅内存；成功原件与临时页资源继续按本节既有归属、SHA路径、保留和回收边界执行。仅源status200、PDF签名和真实页数全部通过才写资料库唯一文件；失败保留脱敏状态后停止。
+
+
+**实际结果：未取得PDF，停止抓取。** raw模式 run `oMmHuBfx9GpMRXbUp`，`2026-11-01T03:50:32.586Z`开始、`03:50:40.649Z`终态`SUCCEEDED`，同build `5i2wakgyINEu6WRZt`。log确认`CheerioCrawler`，仍在`genericHandler (file:///home/myuser/dist/request-handler.js:428:15)`分别于`03:50:38.691Z`（`038021106`）与`03:50:39.323Z`（`038023102`）报`Error: navigation: Download is starting.`，0成功/2失败。默认dataset API `03:50:50.371Z` HTTP200正文`[]`；KV清单`03:50:51.941Z` HTTP200仅5状态key（`CRAWLEE_STATE`、`ERROR_REPORT_DATASET`、`INPUT`、`SDK_CRAWLER_STATISTICS_website-content-crawler`、`SDK_SESSION_POOL_STATE`），无PDF。与此前不同，本次队列请求保留了两条源status200/PDF MIME（见上）；不能把actor终态成功当PDF取得，也不能把该失败归为原厂404、无文件或浏览器引擎专属故障。
+
+已授权Apify Proxy原生读取分别于`2026-11-01T03:52:15.016Z`、`03:52:17.028Z`发起，只用前述两个URL；两次均返回客户端异常`URLError: <urlopen error Remote end closed connection without response>`，未取得HTTP响应/status/正文。显式HTTP代理CONNECT无直连回退；代理请求与目标HTTPS的协议已区分，该异常发生于可用响应前，不能进一步判断关闭发生于CONNECT应答还是目标TLS阶段，只证明本次原生代理传输未取得源响应，不能推断原厂拒绝、原厂PDF为空、账号未授权或源HTTP错误。未更改代理、权限、额度或系统设置，未再试相同crawler、未换普通搜索/直连。正常授权密码始终只在内存，不记录密码或token。
+
+因此真实PDF字节、文件SHA、页数、页号、PDF表格行及技术修订/打印日期边界仍未核实；没有创建PDF文件、PNG、临时目录或新依赖，既有非仓库资料库没有新增原件。§10.1–10.3已核HTML事实及20°C算例继续保留，但**不能声称已有可托管PDF或可填写PDF页码**，后续Woo非销售工程参考接入仍缺这两份真实原件。没有HTML hash冒充PDF hash。
+
+
+**资源收口：** 本run默认dataset `z3LxwllIv0airH0JF`、空错误dataset `fjbhyY2FFtRzSWZbb`、KV `hCPcB3zgDu2rpGqeB`、queue `2B8vQKKByF7Dk5KAe`均已核同run/owner、无共享name及`03:50:32`创建时刻，逐项DELETE204、GET404；最后queue读回`2026-11-01T03:53:59.947Z`。两个dataset均0条；删除前API账面storageBytes分别0、0、3128、889（合4017字节），仅是远端账面清理量，不当本地物理释放量。初次清理API读取发生`URLError: <urlopen error _ssl.c:1126: The handshake operation timed out>`，该次无HTTP响应；随后同Apify API的curl IPv4/HTTP1.1完成归属核验、删除与404读回，没有重跑抓取。run元数据保留，不重建临时存储。
+
+本次持久新增仅本节Markdown证据；PDF、页面图、临时文件/目录、依赖、备份、实例、浏览器均新增0，所有执行进程已退出，没有遗留运行资源。磁盘Data卷3.6TiB、已用2.8TiB、最后读回可用834GiB（78%；共享活动产生的变化不归因于本任务），本地删除/实际释放0字节；远端4份临时存储已全部回收。仅执行文档diff/空白检查，未启动业务测试；工作树其他会话的源码与验收文件改动均未触碰。
