@@ -720,8 +720,11 @@ def test_task_session_shares_transport_and_closes_master_on_every_exit(
             session.rsync("source", session.address("destination"))
             transport = shlex.split(commands[-1][commands[-1].index("-e") + 1])
             assert f"ControlPath={sockets[0]}" in transport
+            assert "ProxyCommand=false" in transport
             assert all(
-                f"ControlPath={sockets[0]}" in command for command in commands[:-1]
+                f"ControlPath={sockets[0]}" in command
+                and "ProxyCommand=false" in command
+                for command in commands[:-1]
             )
             assert session.ssh_options
             if failure:

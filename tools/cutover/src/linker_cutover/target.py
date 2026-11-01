@@ -211,7 +211,16 @@ class Target:
             tempfile.TemporaryDirectory(prefix="lc-ssh-", dir="/tmp") as folder,
         ):
             socket = str(Path(folder) / "socket")
-            options = ("-o", f"ControlPath={socket}", "-o", "ControlMaster=no")
+            # OpenSSH normally opens a new transport if the multiplex socket
+            # disappears. Only the master may connect directly to this host.
+            options = (
+                "-o",
+                f"ControlPath={socket}",
+                "-o",
+                "ControlMaster=no",
+                "-o",
+                "ProxyCommand=false",
+            )
             started = time.monotonic()
             print(f"deploy: opening task SSH session {host}", flush=True)
             master = subprocess.Popen(
