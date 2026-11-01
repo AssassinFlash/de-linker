@@ -13,6 +13,7 @@ from typing import cast
 from .cable_facts import CableFacts, CableParameterSet
 from .canonical import Json, Object
 from .installation_inputs import CircuitOperatingCondition, InstallationInputs
+from .installation_reference_current import reference_current_segments
 
 METHOD = "installation_circuit_steady_conductors_v1"
 
@@ -303,5 +304,17 @@ def electrical_review(
             }
             for circuit in plan.circuits
         ],
+        **(
+            {
+                "reference_current_segments": cast(
+                    Json, reference_current_segments(plan, basis)
+                )
+            }
+            if any(
+                run.reference_current_installation is not None
+                for run in plan.cable_runs
+            )
+            else {}
+        ),
         "qualified": False,
     }

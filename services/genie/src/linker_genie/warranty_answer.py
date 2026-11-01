@@ -18,6 +18,12 @@ def answers(hit: dict[str, Any], notes: Sequence[Any]) -> dict[str, str]:
     """Render only from the validated, tagged policy row and its source notes."""
     chunk = hit.get("chunk_id")
     text = hit.get("text")
+    if isinstance(chunk, str) and chunk.startswith(
+        "be0569b4602a-p1-hs3-warranty-terms-"
+    ):
+        from linker_genie.hs3_warranty_terms import answers as hs3_answers
+
+        return hs3_answers(hit, notes)
     if not isinstance(chunk, str) or not isinstance(text, str) or len(notes) < 6:
         return {}
     lang = notes[0].lang

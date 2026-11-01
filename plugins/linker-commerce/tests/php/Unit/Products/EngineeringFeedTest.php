@@ -383,6 +383,8 @@ final class EngineeringFeedTest extends TestCase {
 		$this->assertSame( $expected_type, $document['type'] );
 		$manifest = \Linker\Commerce\Products\Publication::manifest();
 		$this->assertSame( $manifest['documents'][0]['document_revision'], $document['document_revision'] );
+		$this->assertArrayHasKey( 'title_de', $manifest['documents'][0] );
+		$this->assertArrayNotHasKey( 'title_de', $document );
 		$this->assertSame( $manifest['documents'][0]['blob_sha256'], $document['blob_sha256'] );
 		$this->assertSame( $language, $manifest['documents'][0]['lang'] );
 		$this->assertSame( $type, $manifest['documents'][0]['type'] );
@@ -419,7 +421,9 @@ final class EngineeringFeedTest extends TestCase {
 		$seen = null;
 		$this->mock_query(
 			static function ( array $args ) use ( &$seen ): array {
-				$seen = $args;
+				if ( empty( $args['linker_publication_internal'] ) ) {
+					$seen = $args;
+				}
 
 				return array( 4107 );
 			}
@@ -443,7 +447,9 @@ final class EngineeringFeedTest extends TestCase {
 		$seen = null;
 		$this->mock_query(
 			static function ( array $args ) use ( &$seen ): array {
-				$seen = $args;
+				if ( empty( $args['linker_publication_internal'] ) ) {
+					$seen = $args;
+				}
 
 				return array( 4107 );
 			}
@@ -462,6 +468,8 @@ final class EngineeringFeedTest extends TestCase {
 	public function test_the_feed_warms_the_meta_and_term_caches_for_its_products(): void {
 		$this->mock_meta( 4107, array() );
 		$this->mock_query();
+		// One authority read and one fresh release check; never one flush per item.
+		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->twice()->andReturn( true );
 		$warmed_meta  = null;
 		$warmed_terms = null;
 		WP_Mock::userFunction(

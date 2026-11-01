@@ -218,6 +218,60 @@ test.each( [
 	}
 );
 
+test.each( [ 'en' as const, 'de' as const ] )(
+	'current reviewed citation titles follow %s and keep other sources unchanged',
+	async ( locale ) => {
+		const english =
+			'GoodWe EV Charger Limited Warranty (Europe, Rev. 1.2, English)';
+		const german =
+			'GoodWe Garantie für EV-Ladestationen (Europa, Rev. 1.2, englisches Original)';
+		const docs = [
+			{
+				document_id: 'warranty',
+				document_revision: 'v1',
+				url: 'https://de-linker.test/warranty.pdf',
+				title: english,
+				title_de: german,
+			},
+			{
+				document_id: 'manual',
+				document_revision: 'v1',
+				url: 'https://de-linker.test/manual.pdf',
+				title: 'Other original manual',
+				title_de: '',
+			},
+		];
+		const fetcher = vi.fn( async () => ( {
+			ok: true,
+			json: async () => ( { ...permission, documents: docs } ),
+		} ) ) as unknown as typeof fetch;
+		const turn = {
+			meta: null,
+			blocks: docs.map( ( doc, i ) => ( {
+				type: 'document' as const,
+				ref: `c${ i }`,
+				document_id: doc.document_id,
+				document_revision: 'v1',
+				url: `${ doc.url }#page=2`,
+				label: 'Old title · p. 2',
+			} ) ),
+		};
+		const restored = await restoreArtifacts(
+			turn,
+			{ ...context, locale },
+			'n',
+			fetcher
+		);
+		const word = locale === 'de' ? 'S.' : 'p.';
+		expect( restored.blocks[ 0 ] ).toMatchObject( {
+			label: `${ locale === 'de' ? german : english } · ${ word }\u00a02`,
+		} );
+		expect( restored.blocks[ 1 ] ).toMatchObject( {
+			label: `Other original manual · ${ word }\u00a02`,
+		} );
+	}
+);
+
 test( 'current approved authority supplies the current amount', async () => {
 	const locale = 'de' as const;
 	const fetcher = fetchWith(

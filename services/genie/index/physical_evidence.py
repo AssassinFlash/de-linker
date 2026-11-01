@@ -94,6 +94,7 @@ def attach_physical_evidence(
                     and not chunk.source_picture
                 )
                 or (item.get("kind") == "iot_matrix" and chunk.kind == "table")
+                or (item.get("kind") == "esa_iot_row" and chunk.kind == "table")
                 or (item.get("kind") == "series_axis" and chunk.kind == "text")
             )
         ]

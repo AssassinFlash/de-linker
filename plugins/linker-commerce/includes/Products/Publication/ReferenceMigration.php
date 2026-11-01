@@ -175,6 +175,11 @@ final class ReferenceMigration {
 		foreach ( $facts['parameter_sets'] as $index => $set ) {
 			$facts['parameter_sets'][ $index ]['source'] = $bind( $set['source'] );
 		}
+		if ( isset( $facts['reference_current_ratings'] ) && is_array( $facts['reference_current_ratings'] ) ) {
+			foreach ( $facts['reference_current_ratings'] as $index => $rating ) {
+				$facts['reference_current_ratings'][ $index ]['source'] = $bind( $rating['source'] );
+			}
+		}
 		return $facts;
 	}
 

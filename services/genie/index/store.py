@@ -192,6 +192,17 @@ def export(directory: Path, path: Path) -> None:
             for cid in scope.get("source_chunk_ids", [])
             if isinstance(cid, str)
         }
+        from linker_genie.compatibility_esa import row_key as esa_row_key
+        from linker_genie.compatibility_esa import source_key as esa_source_key
+
+        esa_sources = {
+            key(cid)
+            for scope in proof.get("chunk_scopes", {}).values()
+            if isinstance(scope, dict) and scope.get("basis") == "compatibility_esa"
+            for cid in scope.get("source_chunk_ids", [])
+            if isinstance(cid, str)
+            for key in (esa_row_key, esa_source_key)
+        }
         axis_anchors = {
             cid: anchor
             for cid, anchor in external_axis_anchors(
@@ -199,6 +210,7 @@ def export(directory: Path, path: Path) -> None:
             ).items()
             if anchor.get("kind") == "pdf_cover"
             or cid in physical_sources
+            or cid in esa_sources
             or (
                 anchor.get("kind") in {"policy_table", "policy_text"}
                 and cid in warranty_sources
@@ -211,6 +223,14 @@ def export(directory: Path, path: Path) -> None:
         # Derive them from the original chunks written to this generation.
         axis_anchors.update(
             hs3_anchors(
+                (c.id, c.doc_sha256, c.page, c.kind, c.text)
+                for c in chunks_by_id.values()
+            )
+        )
+        from linker_genie.hs3_warranty_terms import anchors as hs3_warranty_anchors
+
+        axis_anchors.update(
+            hs3_warranty_anchors(
                 (c.id, c.doc_sha256, c.page, c.kind, c.text)
                 for c in chunks_by_id.values()
             )

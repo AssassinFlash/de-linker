@@ -60,6 +60,7 @@ from linker_genie.table_projection import (
     valid_projection,
     valid_word_wrap,
 )
+from linker_genie.template import _warranty_period_fallback
 from linker_genie.warranty_scope import exclusion_category, terms_id, terms_text
 
 
@@ -515,6 +516,16 @@ def test_visible_sts_cover_flows_through_authorized_warranty_search(
                         for hit in result["hits"]
                     ],
                 )
+                if pid in (2403, 6529):
+                    hit = next(h for h in result["hits"] if h.get("warranty_terms"))
+                    facts = collect("linker/search-knowledge", {"hits": [hit]}, lang)
+                    shown = _warranty_period_fallback(
+                        facts, lang, Route("documents"), question, None
+                    )
+                    assert shown is not None
+                    assert any(
+                        isinstance(b, DocumentBlock) and b.url for b in shown.blocks
+                    )
     finally:
         index.close()
 

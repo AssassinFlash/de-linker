@@ -47,6 +47,17 @@ class CableParameterSet(Document):
         return self
 
 
+class CableReferenceCurrentRating(Document):
+    """One cited manufacturer table row, not a site ampacity clearance."""
+
+    id: Identifier
+    laying: Literal["single_in_air", "single_on_surface", "two_touching_on_surface"]
+    ambient_temperature_c: Number
+    rated_conductor_temperature_c: Number
+    current_a: Positive
+    source: CableEvidence
+
+
 class CableFacts(Document):
     schema_version: SchemaVersion
     construction: Literal["single_conductor", "multicore_cable"]
@@ -56,11 +67,21 @@ class CableFacts(Document):
     insulation: Text
     source: CableEvidence
     parameter_sets: list[CableParameterSet]
+    # Older publications lack this optional, source-bound table entirely.
+    reference_current_ratings: list[CableReferenceCurrentRating] = Field(
+        default_factory=list
+    )
 
     @model_validator(mode="after")
     def identities(self) -> Self:
         if len({p.id for p in self.parameter_sets}) != len(self.parameter_sets):
             raise ValueError("cable parameter set IDs must be distinct")
+        if len({p.id for p in self.reference_current_ratings}) != len(
+            self.reference_current_ratings
+        ):
+            raise ValueError("cable reference-current IDs must be distinct")
+        if self.reference_current_ratings and self.construction != "single_conductor":
+            raise ValueError("reference-current table requires a single conductor")
         if self.construction == "single_conductor" and self.core_count != 1:
             raise ValueError("a single conductor has one core")
         return self

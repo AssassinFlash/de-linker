@@ -537,6 +537,8 @@ def run(
             failure_class=kind,
             raised=raised,
             invented_citation=cites_outside_turn(last_citations),
+            question=customer_message(request),
+            page_product_id=request.page_context.product_id,
         )
     with timing.phase(clock, timing.HYDRATE):
         # Login stays the login sentence. A degraded sentence stays without

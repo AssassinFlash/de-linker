@@ -221,6 +221,48 @@ final class Publication {
 	}
 
 	/**
+	 * Project engineering data within one current read and verify it before release.
+	 *
+	 * The figure reader is valid only during the callback and uses this read's
+	 * product and document permissions. A second fresh source read catches a
+	 * withdrawal or edit while the projection was being assembled.
+	 *
+	 * @param callable $project Engineering projection.
+	 * @phpstan-param callable(array<string,mixed>,callable(int):array<string,array<string,mixed>>):mixed $project
+	 * @return mixed The projection, only when its source is still current.
+	 * @throws \RuntimeException When the source changes or cannot be read.
+	 */
+	public static function engineering_read( callable $project ): mixed {
+		$manifest = self::manifest();
+		$products = array_column( $manifest['products'], null, 'product_id' );
+		$scope    = new \stdClass();
+		$active   = \WeakReference::create( $scope );
+		$figures  = static function ( int $id ) use ( $active, $manifest, $products ): array {
+			if ( null === $active->get() ) {
+				throw new \RuntimeException( 'Engineering source read is closed.' );
+			}
+			if ( ! self::published_in_current_read( $id ) ) {
+				return array();
+			}
+			$id = self::canonical_id( $id );
+			if ( ! isset( $products[ $id ] ) ) {
+				return array();
+			}
+			return self::figures_in_current_read( $id, $manifest );
+		};
+		try {
+			$result = $project( $manifest, $figures );
+		} finally {
+			unset( $scope );
+		}
+		$current = self::manifest();
+		if ( ! hash_equals( $manifest['source_revision'], $current['source_revision'] ) ) {
+			throw new \RuntimeException( 'Engineering source changed during projection.' );
+		}
+		return $result;
+	}
+
+	/**
 	 * Fresh library rows, with byte identity only for potential FAQ sources.
 	 *
 	 * This projection has no manifest/product/document revisions or readiness.
@@ -490,6 +532,15 @@ final class Publication {
 			'documents'              => array_values( $documents ),
 		);
 		$manifest['source_revision'] = self::revision( $manifest );
+		// Display titles are current WordPress metadata, not PDF evidence. A
+		// wording change must not revoke the underlying document's bound facts.
+		$stored_titles  = get_option( Materials::DE_DOCUMENT_TITLES, array() );
+		$stored_titles  = is_array( $stored_titles ) ? $stored_titles : array();
+		foreach ( $manifest['documents'] as &$document ) {
+			$reviewed             = $stored_titles[ $document['title'] ] ?? '';
+			$document['title_de'] = is_string( $reviewed ) ? trim( $reviewed ) : '';
+		}
+		unset( $document );
 		// Knowledge has an additional identity dependency. Draft-only identity
 		// changes must not alter the published source or engineering generation.
 		$manifest['model_identity_revision'] = self::model_identity_revision( self::model_statuses_in_current_read() );
@@ -771,8 +822,19 @@ final class Publication {
 		}
 		$id         = self::canonical_id( $id );
 		$manifest ??= self::manifest();
-		$allowed    = array();
-		$names      = array();
+		return self::figures_in_current_read( $id, $manifest );
+	}
+
+	/**
+	 * Project figures against this assembly's document and binding permissions.
+	 *
+	 * @param int                 $id Canonical product ID.
+	 * @param array<string,mixed> $manifest Source for the enclosing read.
+	 * @return array<string,array<string,mixed>>
+	 */
+	private static function figures_in_current_read( int $id, array $manifest ): array {
+		$allowed = array();
+		$names   = array();
 		foreach ( $manifest['documents'] as $document ) {
 			if ( ! in_array( $id, $document['product_ids'], true ) ) {
 				continue;

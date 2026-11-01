@@ -72,6 +72,20 @@
 			"title": "CableEvidence",
 			"type": "object"
 		},
+		"CableReferenceCurrentRating": {
+			"additionalProperties": false,
+			"description": "One cited manufacturer table row, not a site ampacity clearance.",
+			"properties": {
+				"id": { "$ref": "#/$defs/Identifier" },
+				"laying": { "enum": ["single_in_air", "single_on_surface", "two_touching_on_surface"], "type": "string" },
+				"ambient_temperature_c": { "$ref": "#/$defs/Number" },
+				"rated_conductor_temperature_c": { "$ref": "#/$defs/Number" },
+				"current_a": { "$ref": "#/$defs/Positive" },
+				"source": { "$ref": "#/$defs/CableEvidence" }
+			},
+			"required": ["id", "laying", "ambient_temperature_c", "rated_conductor_temperature_c", "current_a", "source"],
+			"type": "object"
+		},
 		"CableParameterSet": {
 			"additionalProperties": false,
 			"properties": {
@@ -216,6 +230,10 @@
 						"$ref": "#/$defs/CableParameterSet"
 					},
 					"title": "Parameter Sets",
+					"type": "array"
+				},
+				"reference_current_ratings": {
+					"items": { "$ref": "#/$defs/CableReferenceCurrentRating" },
 					"type": "array"
 				}
 			},

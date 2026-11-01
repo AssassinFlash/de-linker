@@ -13,6 +13,7 @@ from typing import Any
 import pytest
 from PIL import Image
 from test_chunking import Words
+from test_publication import authority
 
 from index import corpus, store
 from index.chunking import Chunk
@@ -20,13 +21,19 @@ from index.corpus import DocumentRow
 from index.extract import enrich_model_axes
 from index.manual_evidence import compile_manual_evidence
 from index.physical_evidence import attach_physical_evidence, extract_diagram_evidence
+from linker_genie.facts import collect
 from linker_genie.figures import tag
+from linker_genie.ground import check
+from linker_genie.knowledge import KnowledgeSearch
 from linker_genie.manual_diagram import model_list_descriptor, physical_descriptor
 from linker_genie.manual_diagram_records import DIAGRAMS
 from linker_genie.manual_evidence import valid_reviewed_manual
 from linker_genie.publication import Snapshot
 from linker_genie.publication_scope import authorize_chunk
 from linker_genie.retrieval import DocumentIndex
+from linker_genie.route import Route
+from linker_genie.schema import TextBlock, TurnOutput
+from linker_genie.template import fallback
 
 FIXTURE = (
     Path(__file__).parent
@@ -113,13 +120,18 @@ def compiled() -> tuple[dict[str, Any], list[Chunk], dict[str, Any]]:
 
 def test_original_figure_pixels_anchor_eight_exact_current_models() -> None:
     raw, units, proofs = compiled()
-    assert len(units) == 14
+    assert len(units) == 20
     for pid in [3595, 6507, 6508, 6509, 6510, 6511]:
         selected = [c for c in units if proofs[c.id]["product_ids"] == [pid]]
         assert {c.page for c in selected} == {1}
         assert any("600 mm on each side" in c.text for c in selected)
         assert any(
             "80 mm deep" in c.text and "14 Nm to 24 Nm" in c.text for c in selected
+        )
+        assert any(
+            "inverter secured to its mounting bracket" in c.text
+            and "3 Nm to 5 Nm" in c.text
+            for c in selected
         )
     for pid in [1954, 1955]:
         selected = [c for c in units if proofs[c.id]["product_ids"] == [pid]]
@@ -148,7 +160,22 @@ def test_altered_pixels_identity_figures_and_wrong_model_are_denied(
     images["ETR12510INT0002"] = changed.getvalue()
     etr_sha = DIAGRAMS[0]["sha256"]
     items = extract_diagram_evidence(RenderedPDF(etr_sha, images), etr_sha, chunks)
-    assert {item["figure"] for item in items} == {"ETR12510DSC0001", "ETR model list"}
+    assert {item["figure"] for item in items} == {
+        "ETR12510DSC0001",
+        "ETR12510INT0004",
+        "ETR model list",
+    }
+    new_image = Image.open(io.BytesIO(images["ETR12510INT0004"])).convert("RGB")
+    new_image.putpixel((50, 50), (1, 2, 3))
+    changed_new = io.BytesIO()
+    new_image.save(changed_new, format="PNG")
+    images["ETR12510INT0004"] = changed_new.getvalue()
+    assert "ETR12510INT0004" not in {
+        item["figure"]
+        for item in extract_diagram_evidence(
+            RenderedPDF(etr_sha, images), etr_sha, chunks
+        )
+    }
     diagram = next(item for item in items if item["figure"] == "ETR12510DSC0001")
     target = next(c for c in chunks if c.id == diagram["target_chunk_id"])
     assert not attach_physical_evidence([target, target], items)[
@@ -271,6 +298,126 @@ def test_figure_passages_reach_sqlite_and_withdrawals_are_enforced(
                 "wall mounting 10 mm holes", "en", [pid], publication=Snapshot.read(raw)
             )
             assert any("14 Nm to 24 Nm" in hit.text and hit.page == 1 for hit in hits)
+        query = (
+            "For the GoodWe GW80K-ETR-G10, what tightening torque does the "
+            "installation guide specify for fixing the inverter to its mounting plate?"
+        )
+        search = KnowledgeSearch(lambda: loaded, publication=authority(raw))
+        result = search({"query": query, "lang": "en", "product_ids": [6507]})
+        wall = next(h for h in result["hits"] if "ETR12510INT0002" in h["text"])
+        inverter = next(h for h in result["hits"] if "ETR12510INT0004" in h["text"])
+        facts = collect("linker/search-knowledge", result, "en")
+        route = Route("documents")
+
+        def torque(
+            hit: dict[str, Any], first: int, last: int, *, describe: bool = True
+        ) -> TurnOutput:
+            cid = hit["chunk_id"]
+            action = (
+                "For fixing the bracket to the wall, "
+                if first == 3
+                else "For fixing the inverter to its mounting bracket, "
+            )
+            return TurnOutput(
+                language="en",
+                blocks=[
+                    TextBlock(
+                        text=(
+                            (action if describe else "")
+                            + f"tighten to {{fact:{cid}.n{first}}} to "
+                            + f"{{fact:{cid}.n{last}}}."
+                        ),
+                        refs=[cid],
+                    )
+                ],
+            )
+
+        assert not check(torque(wall, 3, 4), facts, route, question=query).ok
+        assert check(torque(inverter, 1, 2), facts, route, question=query).ok
+        # A figure's number must retain the physical fastening action in the
+        # answer, even where the question does not name the action explicitly.
+        ambiguous = "What tightening torque is shown for GW80K-ETR-G10?"
+        assert not check(
+            torque(wall, 3, 4, describe=False), facts, route, question=ambiguous
+        ).ok
+        assert check(torque(wall, 3, 4), facts, route, question=ambiguous).ok
+        wrong_description = torque(wall, 3, 4)
+        wrong_block = wrong_description.blocks[0]
+        assert isinstance(wrong_block, TextBlock)
+        wrong_block.text = wrong_block.text.replace(
+            "bracket to the wall", "inverter to its mounting bracket"
+        )
+        assert not check(wrong_description, facts, route, question=ambiguous).ok
+        natural_queries = [
+            "Tightening torque for mounting the GW80K-ETR-G10 on its bracket?",
+            "Drehmoment der M6-Schrauben an der Montagehalterung des GW80K-ETR-G10?",
+        ]
+        for natural in natural_queries:
+            assert not check(torque(wall, 3, 4), facts, route, question=natural).ok
+            assert check(torque(inverter, 1, 2), facts, route, question=natural).ok
+            locale = "de" if natural.startswith("Drehmoment") else "en"
+            natural_answer = fallback(facts, locale, route, question=natural)
+            assert "3 Nm" in str(natural_answer) and "5 Nm" in str(natural_answer)
+            assert "14 Nm" not in str(natural_answer)
+        answer = fallback(facts, "en", route, question=query)
+        answer_text = "\n".join(
+            b.text for b in answer.blocks if isinstance(b, TextBlock)
+        )
+        assert "3 Nm to 5 Nm" in answer_text and "14 Nm" not in answer_text
+        wall_query = (
+            "What torque fixes the mounting bracket to the wall for GW80K-ETR-G10?"
+        )
+        assert check(torque(wall, 3, 4), facts, route, question=wall_query).ok
+        assert not check(torque(inverter, 1, 2), facts, route, question=wall_query).ok
+        wall_answer = fallback(facts, "en", route, question=wall_query)
+        assert "14 Nm to 24 Nm" in str(wall_answer)
+        german = (
+            "Welches Drehmoment gilt für die Befestigung des Wechselrichters "
+            "an der Montagehalterung des GW80K-ETR-G10?"
+        )
+        german_answer = fallback(facts, "de", route, question=german)
+        assert "3 Nm bis 5 Nm" in str(german_answer)
+        assert "14 Nm" not in str(german_answer)
+        german_wall = (
+            "Welches Drehmoment gilt für die Befestigung der Halterung "
+            "an der Wand beim GW80K-ETR-G10?"
+        )
+        assert "14 Nm bis 24 Nm" in str(
+            fallback(facts, "de", route, question=german_wall)
+        )
+        wrong = fallback(
+            facts, "en", route, question=query.replace("ETR-G10", "ETR-G11")
+        )
+        assert "could not" in str(wrong).casefold()
+        # A different explicit model must override the current product page.
+        conflict = fallback(
+            facts,
+            "en",
+            route,
+            question=query.replace("ETR-G10", "ETR-G11"),
+            page_product_id=6507,
+        )
+        assert "could not" in str(conflict).casefold()
+        page_only = fallback(
+            facts,
+            "en",
+            route,
+            question=query.replace("the GoodWe GW80K-ETR-G10", "this product"),
+            page_product_id=6507,
+        )
+        assert "3 Nm to 5 Nm" in str(page_only)
+
+        # Without the correct diagram, the other action is not a substitute.
+        incomplete = collect("linker/search-knowledge", {"hits": [wall]}, "en")
+        assert not check(torque(wall, 3, 4), incomplete, route, question=query).ok
+        unavailable = fallback(incomplete, "en", route, question=query)
+        assert "could not" in str(unavailable).casefold()
+        for natural in natural_queries:
+            locale = "de" if natural.startswith("Drehmoment") else "en"
+            assert not check(torque(wall, 3, 4), incomplete, route, question=natural).ok
+            assert "14 Nm" not in str(
+                fallback(incomplete, locale, route, question=natural)
+            )
         for pid in [1954, 1955]:
             hits = loaded.search(
                 "floor mounting 985 330 holes",
@@ -289,10 +436,25 @@ def test_figure_passages_reach_sqlite_and_withdrawals_are_enforced(
             [6507],
             publication=Snapshot.read(revoked),
         )
+        assert not any(
+            hit.doc_sha256.startswith("307b704c87f2")
+            for hit in loaded.search(
+                "inverter mounting bracket M6 torque",
+                "en",
+                [1954],
+                publication=Snapshot.read(raw),
+            )
+        )
         assert loaded.search(
             "wall mounting 10 mm holes",
             "en",
             [6508],
+            publication=Snapshot.read(revoked),
+        )
+        assert not loaded.search(
+            "inverter mounting bracket M6 torque",
+            "en",
+            [6507],
             publication=Snapshot.read(revoked),
         )
     finally:

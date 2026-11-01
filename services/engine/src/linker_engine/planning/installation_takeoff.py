@@ -483,6 +483,7 @@ def route_takeoff(
             )
             or any(
                 "core_roles" in cable.model_fields_set
+                or cable.reference_current_installation is not None
                 or cable.conductor is not None
                 and cable.conductor.cable_reference is not None
                 for cable in plan.cable_runs

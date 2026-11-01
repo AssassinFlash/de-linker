@@ -143,6 +143,7 @@ async function publicationManifest(
 		document_id: string;
 		document_revision: string;
 		title?: string;
+		title_de?: string;
 		url: string;
 		aliases?: string[];
 	} >;
@@ -314,7 +315,9 @@ export async function restoreArtifacts(
 							block,
 							products,
 							context.locale,
-							current.title
+							context.locale === 'de' && current.title_de?.trim()
+								? current.title_de
+								: current.title
 						)
 					: { ...block, url: null };
 			}

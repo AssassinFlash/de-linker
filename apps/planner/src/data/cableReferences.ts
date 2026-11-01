@@ -23,6 +23,14 @@ export interface CableParameterSet extends JsonObject {
 	resistance_basis: "maximum" | "nominal";
 	source: CableEvidence;
 }
+export interface CableReferenceCurrentRating extends JsonObject {
+	id: string;
+	laying: "single_in_air" | "single_on_surface" | "two_touching_on_surface";
+	ambient_temperature_c: number;
+	rated_conductor_temperature_c: number;
+	current_a: number;
+	source: CableEvidence;
+}
 export interface CableReference extends JsonObject {
 	id: string;
 	canonical_product_id: number;
@@ -39,6 +47,7 @@ export interface CableReference extends JsonObject {
 		insulation: string;
 		source: CableEvidence;
 		parameter_sets: CableParameterSet[];
+		reference_current_ratings?: CableReferenceCurrentRating[];
 	};
 }
 export const isHash = (v: unknown): v is string =>
@@ -143,6 +152,36 @@ export function readCableReferences(value: unknown): CableReference[] {
 			checkSource(
 				readCableEvidence(p.source, r.canonical_product_id as number),
 			);
+		}
+		if (f.reference_current_ratings !== undefined) {
+			if (
+				!Array.isArray(f.reference_current_ratings) ||
+				(f.reference_current_ratings.length > 0 &&
+					f.construction !== "single_conductor")
+			)
+				fail();
+			const ratingIds = new Set<string>();
+			for (const raw of f.reference_current_ratings as unknown[]) {
+				const rating = readObject(raw);
+				if (
+					typeof rating.id !== "string" ||
+					!/^[A-Za-z][A-Za-z0-9_-]{0,63}$/.test(rating.id) ||
+					ratingIds.has(rating.id) ||
+					![
+						"single_in_air",
+						"single_on_surface",
+						"two_touching_on_surface",
+					].includes(String(rating.laying)) ||
+					!finite(rating.ambient_temperature_c) ||
+					!finite(rating.rated_conductor_temperature_c) ||
+					!positive(rating.current_a)
+				)
+					fail();
+				ratingIds.add(rating.id as string);
+				checkSource(
+					readCableEvidence(rating.source, r.canonical_product_id as number),
+				);
+			}
 		}
 		return r as CableReference;
 	});

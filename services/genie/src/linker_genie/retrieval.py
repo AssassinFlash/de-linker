@@ -121,6 +121,15 @@ class SupportingDocument(TypedDict):
     page: int
 
 
+def _document_title(document: dict[str, Any], lang: str) -> str:
+    """Use only the current association's reviewed display title, when present."""
+    german = document.get("title_de")
+    if lang == "de" and isinstance(german, str) and german.strip():
+        return german
+    title = document.get("title")
+    return title if isinstance(title, str) else ""
+
+
 @dataclass(frozen=True)
 class DocumentHit:
     """One retrieved chunk and the document page it comes from."""
@@ -511,7 +520,7 @@ class DocumentIndex:
         if lang not in LANGS:
             raise ValueError(f"lang must be one of {LANGS}, not {lang!r}")
         permits = (
-            self.permissions(publication, product_ids)
+            self.permissions(publication, product_ids, lang)
             if publication is not None
             else None
         )
@@ -673,7 +682,7 @@ class DocumentIndex:
         return out
 
     def permissions(
-        self, snapshot: Snapshot, requested: Sequence[int] | None
+        self, snapshot: Snapshot, requested: Sequence[int] | None, lang: str = "en"
     ) -> dict[int, Permit]:
         """Intersect loaded per-chunk applicability with current Woo associations.
 
@@ -799,6 +808,10 @@ class DocumentIndex:
                     "product_ids": sorted(ids),
                     "table_header": header,
                 }
+                current_document = snapshot.documents[str(association["document_id"])]
+                title = _document_title(current_document, lang)
+                if title:
+                    output[row]["title"] = title
                 if scopes.get(cid, {}).get("basis") == "compatibility_inverter":
                     relation = scopes[cid]["compatibility_inverter"]
                     support = relation["support_document"]
@@ -809,7 +822,7 @@ class DocumentIndex:
                             "document_id": support["document_id"],
                             "document_revision": support["document_revision"],
                             "doc_url": support_doc["url"],
-                            "title": support_doc.get("title", ""),
+                            "title": _document_title(support_doc, lang),
                             "page": 2,
                         }
                     ]
@@ -864,10 +877,84 @@ class DocumentIndex:
                             "document_id": str(association["document_id"]),
                             "document_revision": str(association["document_revision"]),
                             "doc_url": str(association["url"]),
-                            "title": str(document.get("title", "")),
+                            "title": _document_title(document, lang),
                             "page": 9,
                         }
                     ]
+                if scopes.get(cid, {}).get("basis") == "compatibility_esa":
+                    from linker_genie.compatibility_esa import (
+                        AXIS,
+                        IOT_9,
+                        IOT_13,
+                        MANUAL_METER,
+                        METER_CT,
+                        METER_PARALLEL,
+                        P9,
+                        P13,
+                    )
+
+                    relation = scopes[cid]["compatibility_esa"]
+                    support = relation["support_document"]
+                    manual = snapshot.documents[support["document_id"]]
+                    output[row]["supporting_documents"] = [
+                        {
+                            "chunk_id": AXIS,
+                            "document_id": support["document_id"],
+                            "document_revision": support["document_revision"],
+                            "doc_url": manual["url"],
+                            "title": _document_title(manual, lang),
+                            "page": 4,
+                        }
+                    ]
+                    if snapshot.products[relation["device_id"]]["model"] == "GMK330":
+                        output[row]["qualifications"] = [
+                            {
+                                "quote": METER_CT,
+                                "page": 35,
+                                "chunk_id": MANUAL_METER,
+                                "lang": "en",
+                            },
+                            {
+                                "quote": METER_PARALLEL,
+                                "page": 35,
+                                "chunk_id": MANUAL_METER,
+                                "lang": "en",
+                            },
+                        ]
+                        output[row]["supporting_documents"].append(
+                            {
+                                "chunk_id": MANUAL_METER,
+                                "document_id": support["document_id"],
+                                "document_revision": support["document_revision"],
+                                "doc_url": manual["url"],
+                                "title": _document_title(manual, lang),
+                                "page": 35,
+                            }
+                        )
+                    else:
+                        output[row]["qualifications"] = [
+                            {"quote": IOT_9, "page": 9, "chunk_id": P9, "lang": "en"},
+                            {
+                                "quote": IOT_13,
+                                "page": 13,
+                                "chunk_id": P13,
+                                "lang": "en",
+                            },
+                        ]
+                        document = snapshot.documents[str(association["document_id"])]
+                        output[row]["supporting_documents"].append(
+                            {
+                                "chunk_id": P13,
+                                "document_id": str(association["document_id"]),
+                                "document_revision": str(
+                                    association["document_revision"]
+                                ),
+                                "doc_url": str(association["url"]),
+                                "title": _document_title(document, lang),
+                                "page": 13,
+                            }
+                        )
+                    output[row]["qualification_required"] = True
                 if scopes.get(cid, {}).get("basis") == "hs3_conditional_certificate":
                     relation = scopes[cid]["hs3_conditional_certificate"]
                     source_docs = relation["source_documents"]
@@ -887,7 +974,7 @@ class DocumentIndex:
                                 "document_id": reference["document_id"],
                                 "document_revision": reference["document_revision"],
                                 "doc_url": document["url"],
-                                "title": document.get("title", ""),
+                                "title": _document_title(document, lang),
                                 "page": page_number,
                             }
                         )
@@ -923,6 +1010,29 @@ class DocumentIndex:
                         str(snapshot.products[pid].get("model", ""))
                         for pid in sorted(ids)
                     ]
+                    value = proof["warranty_scope"]
+                    if (
+                        value.get("policy", {}).get("format")
+                        == "hs3_series_standard_warranty"
+                    ):
+                        refs = value["source_documents"]
+                        output[row]["supporting_documents"] = []
+                        for role, source_id, page_number in (
+                            ("datasheet", DATA_MODELS, 2),
+                            ("manual", MANUAL_MODEL, 18),
+                        ):
+                            ref = refs[role]
+                            document = snapshot.documents[ref["document_id"]]
+                            output[row]["supporting_documents"].append(
+                                {
+                                    "chunk_id": source_id,
+                                    "document_id": ref["document_id"],
+                                    "document_revision": ref["document_revision"],
+                                    "doc_url": document["url"],
+                                    "title": _document_title(document, lang),
+                                    "page": page_number,
+                                }
+                            )
                 projection = scopes.get(cid, {}).get("table_projection", {})
                 if isinstance(projection, dict) and projection.get("footnote_sources"):
                     output[row]["qualifications"] = [
@@ -948,6 +1058,24 @@ class DocumentIndex:
             (json.dumps(list(SOURCES)),),
         ).fetchall()
         source_anchors = hs3_anchors(source_rows)
+        from linker_genie.hs3_warranty_terms import SOURCES as HS3_WARRANTY_SOURCES
+        from linker_genie.hs3_warranty_terms import anchors as hs3_warranty_anchors
+
+        warranty_rows = self._db.execute(
+            "SELECT id,doc_sha256,page,kind,text FROM chunks WHERE id IN "
+            "(SELECT value FROM json_each(?))",
+            (json.dumps(list(HS3_WARRANTY_SOURCES)),),
+        ).fetchall()
+        source_anchors.update(hs3_warranty_anchors(warranty_rows))
+        from linker_genie.compatibility_esa import SOURCES as ESA_SOURCES
+        from linker_genie.compatibility_esa import source_anchors as esa_source_anchors
+
+        esa_rows = self._db.execute(
+            "SELECT id,doc_sha256,page,kind,text FROM chunks WHERE id IN "
+            "(SELECT value FROM json_each(?))",
+            (json.dumps(list(ESA_SOURCES)),),
+        ).fetchall()
+        source_anchors.update(esa_source_anchors(esa_rows))
         if row is None:
             return source_anchors
         try:
@@ -959,6 +1087,32 @@ class DocumentIndex:
         verified: dict[str, Any] = {}
         for table_id, anchor in anchors.items():
             if not isinstance(table_id, str) or not isinstance(anchor, dict):
+                continue
+            if anchor.get("kind") == "esa_iot_row":
+                from linker_genie.compatibility_esa import row_key as esa_row_key
+                from linker_genie.compatibility_esa import valid_row as valid_esa_row
+
+                sha, page, cid, text = (
+                    anchor.get("source_sha256"),
+                    anchor.get("source_page"),
+                    anchor.get("target_chunk_id"),
+                    anchor.get("source_text"),
+                )
+                if (
+                    isinstance(sha, str)
+                    and type(page) is int
+                    and isinstance(cid, str)
+                    and isinstance(text, str)
+                    and table_id == esa_row_key(cid)
+                    and self._db.execute(
+                        "SELECT doc_sha256,page,kind,text FROM chunks WHERE id = ?",
+                        (cid,),
+                    ).fetchone()
+                    == (sha, page, "table", text)
+                    and native_chunk_id_matches(sha, page, "table", text, cid)
+                    and valid_esa_row(anchor, sha, cid, text)
+                ):
+                    verified[table_id] = anchor
                 continue
             if anchor.get("kind") in {"series_axis", "iot_matrix"}:
                 sha = anchor.get("source_sha256")

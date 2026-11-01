@@ -96,12 +96,14 @@ def test_hs3_conditional_sources_reach_the_consumer_and_revoke(tmp_path: Path) -
         def validate(self, current: Snapshot) -> None:
             assert current is self.current
 
-    def search(current: Snapshot, pid: int) -> tuple[dict[str, Any], Any]:
+    def search(
+        current: Snapshot, pid: int, lang: str = "en"
+    ) -> tuple[dict[str, Any], Any]:
         return record(
             KnowledgeSearch(lambda: index, Authority(current)),  # type: ignore[arg-type]
             {
                 "query": "HS3-12K-T2-W/G-PX EU declaration battery modules",
-                "lang": "en",
+                "lang": lang,
                 "product_ids": [pid],
             },
         )
@@ -162,6 +164,49 @@ def test_hs3_conditional_sources_reach_the_consumer_and_revoke(tmp_path: Path) -
             DATA_MODELS,
             MANUAL_MODEL,
         }
+        # Each supporting source gets its own current reviewed title; an
+        # unmapped source retains its own English title. No index rebuild.
+        localized = deepcopy(raw)
+        first_support, second_support = hit["supporting_documents"]
+        first_doc = next(
+            d
+            for d in localized["documents"]
+            if d["document_id"] == first_support["document_id"]
+        )
+        second_doc = next(
+            d
+            for d in localized["documents"]
+            if d["document_id"] == second_support["document_id"]
+        )
+        first_doc["title_de"] = "Geprüfter deutscher Titel"
+        second_doc["title_de"] = ""
+        for language in ("en", "de"):
+            localized_hit, localized_facts = search(
+                Snapshot.read(localized), pid, language
+            )
+            localized_hit = next(
+                h for h in localized_hit["hits"] if h.get("conditional_certificate")
+            )
+            sources = {
+                s["document_id"]: s for s in localized_hit["supporting_documents"]
+            }
+            expected_first = (
+                first_doc["title_de"] if language == "de" else first_doc["title"]
+            )
+            assert sources[first_doc["document_id"]]["title"] == expected_first
+            assert sources[second_doc["document_id"]]["title"] == second_doc["title"]
+            rendered = hydrate(
+                TurnOutput(
+                    language=language,
+                    blocks=[TextBlock(text="", refs=[localized_hit["chunk_id"]])],
+                ),
+                localized_facts,
+            )
+            labels = {
+                b.ref: b.label for b in rendered.blocks if isinstance(b, DocumentBlock)
+            }
+            assert labels[first_support["chunk_id"]].startswith(expected_first)
+            assert labels[second_support["chunk_id"]].startswith(second_doc["title"])
         model_hit = next(
             h for h in model_view(payload)["hits"] if h["chunk_id"] == hit["chunk_id"]
         )

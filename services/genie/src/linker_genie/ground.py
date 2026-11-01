@@ -94,6 +94,7 @@ from linker_genie.figures import (
     digits_are_regulation,
     is_code,
     regulation_number_spans,
+    tag,
 )
 from linker_genie.hydrate import leftover_placeholders
 from linker_genie.route import (
@@ -328,6 +329,7 @@ def check(
     failures.extend(_no_amount_from_attachments(output, facts))
     failures.extend(_no_sent_claim(output))
     failures.extend(_warranty_sources(output, facts, route, question, page_product_id))
+    failures.extend(_manual_torque_sources(output, facts, question))
     failures.extend(_conditional_certificate_sources(output, facts))
     failures.extend(_extreme(output, facts))
     failures.extend(_handoff_only_when_out_of_scope(output, route))
@@ -390,6 +392,106 @@ def _conditional_certificate_sources(output: TurnOutput, facts: TurnFacts) -> li
         for block in output.blocks
     ):
         return ["a conditional certificate link requires its complete source answer"]
+    return []
+
+
+def manual_torque_actions(question: str) -> set[str]:
+    """Distinguish the two fastening actions in the reviewed ETR figures."""
+    if not re.search(
+        r"\b(?:torque|tighten\w*|drehmoment|anzugsmoment|anzieh\w*)\b", question, re.I
+    ):
+        return set()
+    actions: set[str] = set()
+    if re.search(
+        r"\b(?:inverter|wechselrichters?)\b.{0,65}\b(?:to|onto|on|an|auf)\s+"
+        r"(?:(?:its|the|a|die|der|dem|den)\s+)?(?:mounting\s+)?"
+        r"(?:plate|bracket|halterung|montagehalterung|wandhalterung|montageplatte)\b",
+        question,
+        re.I,
+    ):
+        actions.add("inverter_to_bracket")
+    # These two forms identify the device being fastened without saying the
+    # word "inverter": a named model, or the M6 screws at its bracket.  This
+    # check only applies to the reviewed ETR figure passages below.
+    if re.search(
+        r"\bmount(?:ing)?\s+(?:(?:the|a)\s+)?(?:goodwe\s+)?gw[\w-]+\s+"
+        r"(?:to|onto|on)\s+(?:(?:its|the|a)\s+)?(?:mounting\s+)?"
+        r"(?:plate|bracket)\b",
+        question,
+        re.I,
+    ) or re.search(
+        r"\bm6[-\s]+(?:screws?|schrauben)\b.{0,45}\b(?:an|auf|on|to)\s+"
+        r"(?:(?:the|its|die|der|dem|den)\s+)?(?:mounting\s+)?"
+        r"(?:bracket|plate|halterung|montagehalterung|wandhalterung|montageplatte)\b"
+        r".{0,30}\b(?:des|of|von)\s+(?:goodwe\s+)?gw[\w-]+\b",
+        question,
+        re.I,
+    ):
+        actions.add("inverter_to_bracket")
+    if re.search(
+        r"\b(?:bracket|plate|halterung|montagehalterung|wandhalterung|montageplatte)\b.{0,65}"
+        r"\b(?:to|onto|on|an|auf)\s+(?:(?:the|a|die|der|dem)\s+)?(?:wall|wand)\b",
+        question,
+        re.I,
+    ):
+        actions.add("bracket_to_wall")
+    if re.search(
+        r"\b(?:wall[-\s]+mounting|wandmontage|wandbefestigung)\b", question, re.I
+    ):
+        actions.add("bracket_to_wall")
+    return actions
+
+
+def manual_torque_source_actions(facts: TurnFacts) -> dict[str, str]:
+    """Recognize only currently returned, exact reviewed diagram passages."""
+    from linker_genie.manual_diagram_records import DIAGRAMS
+
+    result: dict[str, str] = {}
+    for cid in facts.technical_chunks:
+        source = facts.facts.get(f"{cid}.text")
+        if source is None or cid not in facts.chunk_ids:
+            continue
+        for record in DIAGRAMS:
+            action = record.get("torque_action")
+            if (
+                isinstance(action, str)
+                and cid.startswith(record["sha256"][:12] + "-p1-manual-evidence-")
+                and tag(cid, record["excerpt"]).text == source.value
+            ):
+                result[cid] = action
+    return result
+
+
+def _manual_torque_sources(
+    output: TurnOutput, facts: TurnFacts, question: str
+) -> list[str]:
+    actions = manual_torque_actions(question)
+    sources = manual_torque_source_actions(facts)
+    if not sources:
+        return []
+    for block in output.blocks:
+        if not isinstance(block, TextBlock):
+            continue
+        used = {
+            cid
+            for fact_id in leftover_placeholders(block.text)
+            if (cid := chunk_of(fact_id)) in sources
+            and (fact := facts.facts.get(fact_id)) is not None
+            and re.search(r"\bN\s*[·.]?\s*m\b", fact.value, re.I)
+        }
+        if not used:
+            continue
+        # Source facts for these diagrams are meaningful only with their
+        # physical action. Require the answer to retain it even if the user
+        # asked about a torque without naming the fastening action.
+        described = manual_torque_actions("torque " + block.text)
+        if len(described) != 1 or any(sources[cid] not in described for cid in used):
+            return ["the cited torque's mounting action is missing or incorrect"]
+        expected = actions
+        if len(actions) > 1:
+            expected = described
+        if expected and any(sources[cid] not in expected for cid in used):
+            return ["the cited torque belongs to a different mounting action"]
     return []
 
 

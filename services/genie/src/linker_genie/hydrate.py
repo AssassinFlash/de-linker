@@ -459,7 +459,7 @@ def fill(
             )
             and chunk_of(fact.id) is not None
         ):
-            value = localize(fact.value, locale)
+            value = localize(fact.value, locale, source_id=fact.id)
             unit = _UNIT_TAIL.search(value)
             if notes and qualified_mask is not None:
                 value = qualified_mask(value)
