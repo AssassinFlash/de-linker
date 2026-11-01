@@ -50,6 +50,7 @@ _COUNTS = frozenset(
         "battery_port_count",
         "number_of_battery_ports",
         "n_battery_ports",
+        "max_lan_inverters",
     }
 )
 

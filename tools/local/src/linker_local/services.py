@@ -25,7 +25,11 @@ from linker_local.engine_release import engine_project
 from linker_local.instance import HOST, Instance
 from linker_local.planner_worker import PlannerWorker
 from linker_local.private_config import lifecycle_lock, publish_once
-from linker_local.processes import Background, ProcessError
+from linker_local.processes import (
+    Background,
+    ProcessError,
+    without_research_credentials,
+)
 from linker_local.wpcli import WpCli, WpCliError
 
 # The engine reads the site's data as two files, not over HTTP
@@ -147,6 +151,7 @@ def _serve(
     would answer every document question with its fallback.
     """
     uv = _uv()
+    service_environment = without_research_credentials()
     if only is not None and only not in ("engine", "genie"):
         raise ProcessError("unknown local service selection")
     selected = tuple(
@@ -172,7 +177,9 @@ def _serve(
             if worker.process.pid() is not None:
                 raise ProcessError("live worker has no retained engine environment")
             subprocess.run(
-                [str(uv), "sync", "--locked", "--project", str(project)], check=True
+                [str(uv), "sync", "--locked", "--project", str(project)],
+                env=service_environment,
+                check=True,
             )
             engine_synced = True
         worker.ensure_policy()
@@ -201,12 +208,11 @@ def _serve(
         port = service.port(instance)
         if service.name != "engine" or (not engine_synced and not engine_pinned):
             subprocess.run(
-                [str(uv), "sync", "--locked", "--project", str(project)], check=True
+                [str(uv), "sync", "--locked", "--project", str(project)],
+                env=service_environment,
+                check=True,
             )
-        env = dict(os.environ)
-        # Apify is an R&D tool, never a customer application dependency.
-        env.pop("APIFY_TOKEN", None)
-        env.pop("APIFY_API_TOKEN", None)
+        env = service_environment.copy()
         if service.name == "engine":
             env.update(_engine_environment(instance, checkout))
             source = project / "src/linker_engine"

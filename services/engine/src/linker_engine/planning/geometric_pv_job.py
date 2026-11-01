@@ -26,7 +26,6 @@ from .pv_parameters import PvGenerationLimits
 from .pv_preparation import require_weather_source, selected_weather
 from .pv_source import PvSource
 from .records import Actor, Context, Lease
-from .runtime_snapshot import RuntimeSnapshot
 from .worker import Control
 from .workspace import Workspace
 
@@ -82,8 +81,7 @@ class GeometricPvKernel:
             weather_limits.model_dump(mode="json")
         )
         self.limits = GeometricPvLimits.read(limits.model_dump(mode="json"))
-        self.runtime = RuntimeSnapshot.capture()
-        workspace.blobs.put(self.runtime.content)
+        self.runtime = workspace.kernel_runtime()
 
     def parameters(self) -> Object:
         return {

@@ -15,6 +15,7 @@ import signal
 import socket
 import subprocess
 import time
+from collections.abc import Mapping
 from pathlib import Path
 
 from linker_local.instance import HOST
@@ -29,6 +30,18 @@ POLL = 0.05
 
 class ProcessError(RuntimeError):
     """A background process did not start or stop."""
+
+
+def without_research_credentials(
+    env: Mapping[str, str] | None = None,
+) -> dict[str, str]:
+    """Research credentials belong to the assistant, never project children."""
+    source = os.environ if env is None else env
+    return {
+        key: value
+        for key, value in source.items()
+        if not key.upper().startswith("APIFY_")
+    }
 
 
 class Background:
@@ -60,8 +73,21 @@ class Background:
             raise ProcessError(
                 f"port {port} is in use by another program (lsof -nP -iTCP:{port} -sTCP:LISTEN)"
             )
-        self.start(argv, env)
-        self.wait_for_port(port, timeout)
+        pid = self.start(argv, env)
+        started = self.pid_file.read_text().splitlines()[1]
+        try:
+            self.wait_for_port(port, timeout)
+        except BaseException as error:
+            # wait_for_port may already have reaped the leader and removed its
+            # record. The session returned by this start still owns its children.
+            try:
+                _stop_group(pid, started)
+            except ProcessError as cleanup:
+                raise ProcessError(
+                    f"{error}\nStartup cleanup failed: {cleanup}"
+                ) from error
+            self.pid_file.unlink(missing_ok=True)
+            raise
 
     def start(self, argv: list[str], env: dict[str, str]) -> int:
         """Start `argv` (argv[0] an absolute path) detached; output goes to the log."""
@@ -71,7 +97,7 @@ class Background:
         pid = os.posix_spawn(
             argv[0],
             argv,
-            env,
+            without_research_credentials(env),
             file_actions=[
                 (os.POSIX_SPAWN_OPEN, 0, os.devnull, os.O_RDONLY, 0),
                 (
@@ -85,8 +111,22 @@ class Background:
             ],
             setsid=True,
         )
-        # Line 3, the command, is for people reading the file.
-        self.pid_file.write_text(f"{pid}\n{_start_time(pid)}\n{' '.join(argv)}\n")
+        started = None
+        try:
+            started = _start_time(pid)
+            # Line 3, the command, is for people reading the file.
+            self.pid_file.write_text(f"{pid}\n{started}\n{' '.join(argv)}\n")
+        except BaseException as error:
+            # Spawn succeeded: a failed/cancelled record write still owns a
+            # detached session that must be stopped before propagating failure.
+            try:
+                _stop_group(pid, started)
+            except ProcessError as cleanup:
+                raise ProcessError(
+                    f"{error}\nSpawn cleanup failed: {cleanup}"
+                ) from error
+            self.pid_file.unlink(missing_ok=True)
+            raise
         return pid
 
     def wait_for_port(self, port: int, timeout: float) -> None:
@@ -103,7 +143,7 @@ class Background:
             except OSError:
                 time.sleep(POLL)
         raise ProcessError(
-            f"no answer on port {port} after {timeout} s; see {self.log_file}"
+            f"no answer on port {port} after {timeout} s; {self.log_file}:\n{self.output()}"
         )
 
     def stop(self) -> bool:
@@ -111,15 +151,7 @@ class Background:
         pid = self.pid()
         if pid is None:
             return False
-        _signal_group(pid, signal.SIGTERM)
-        deadline = time.monotonic() + STOP_GRACE
-        while _alive(pid) and time.monotonic() < deadline:
-            time.sleep(POLL)
-        if _alive(pid):
-            # SIGKILL cannot be caught: the group ends as soon as the kernel delivers it.
-            _signal_group(pid, signal.SIGKILL)
-            while _alive(pid):
-                time.sleep(POLL)
+        _stop_group(pid, self.pid_file.read_text().splitlines()[1])
         self.pid_file.unlink(missing_ok=True)
         return True
 
@@ -175,6 +207,52 @@ def _signal_group(pid: int, sig: signal.Signals) -> None:
         os.killpg(pid, sig)
     except ProcessLookupError:
         pass
+    except PermissionError:
+        # Darwin can report EPERM for an already empty process group.
+        if _group_running(pid):
+            raise
+
+
+def _group_running(pid: int) -> bool:
+    """Find live members after reaping our leader; zombies hold no resources."""
+    if _alive(pid):
+        return True
+    try:
+        os.killpg(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        pass  # Darwin also reports EPERM for empty groups; inspect members.
+    result = subprocess.run(
+        ["ps", "-axo", "pgid=,stat="],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise ProcessError(f"cannot inspect process group {pid}")
+    return any(
+        len(fields := line.split()) == 2
+        and fields[0] == str(pid)
+        and not fields[1].startswith("Z")
+        for line in result.stdout.splitlines()
+    )
+
+
+def _stop_group(pid: int, started: str | None) -> None:
+    """Stop a verified record or this call's newly spawned, detached session."""
+    for sig in (signal.SIGTERM, signal.SIGKILL):
+        if not _group_running(pid):
+            return
+        current = _start_time(pid)
+        if started is not None and current is not None and current != started:
+            raise ProcessError(f"process group {pid} identity changed; left untouched")
+        _signal_group(pid, sig)
+        deadline = time.monotonic() + STOP_GRACE
+        while _group_running(pid) and time.monotonic() < deadline:
+            time.sleep(POLL)
+    if _group_running(pid):
+        raise ProcessError(f"process group {pid} did not stop; retain its record")
 
 
 def _alive(pid: int) -> bool:

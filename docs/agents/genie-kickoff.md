@@ -58,7 +58,7 @@
 - CI 绿后停下，不要自己合并：在票上留言"PR #<号> 待评审"，等 Claude 评审。评审意见在同一分支上改。
 
 上线（评审通过、合并之后，且业主同意上线时）：
-- 同一时间只有一个会话在部署。顺序：just cutover backup → just cutover deploy（插件）和/或 just cutover services --run（VPS 服务）→ just cutover verify。参照 docs/acceptance/2026-10-15/deploy/ 的部署记录。
+- 同一目标主机由一个会话执行发布写入。插件走 just cutover deploy 和 verify，数据写入前先验证完整备份。Genie 按 services/genie/ops/PUBLICATION.md 做配对发布与收据读回。涉及 Engine 的读取器升级时使用 services/engine/ops/PUBLICATION.md 的独立流程。
 - 线上实测证据（截图、对话日志）补到票上。生产写入只经 SSH，先备份后读回。
 ```
 

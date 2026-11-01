@@ -68,10 +68,10 @@ final class ModuleTest extends TestCase {
 		$blog       = new BlogShortcodes();
 		$module     = new Module( $shortcodes, $gate, $windpress, null, $compare, $library, $account, $blog );
 
-		// 67 data-only registrations across the product, checkout, comparison,
+		// 68 data-only registrations across the product, checkout, comparison,
 		// library, account and blog families, including the product's configurator
-		// entry. The price gate remains separate from the shortcode surface.
-		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 67 ) );
+		// entry and the FAQ section's scoped rows.
+		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 68 ) );
 		WP_Mock::expectFilterAdded( 'wc_get_template', array( $account, 'template' ), 20, 2 );
 		WP_Mock::expectFilterAdded( 'pre_get_document_title', array( $blog, 'empty_search_title' ), 60 );
 		WP_Mock::expectFilterAdded( 'woocommerce_my_account_my_orders_query', array( $account, 'orders_query' ) );

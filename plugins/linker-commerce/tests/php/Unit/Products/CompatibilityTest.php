@@ -441,16 +441,18 @@ final class CompatibilityTest extends TestCase {
 		$owner                = $this->product_id( 'GW100K-ETR-G10' );
 		$row                  = $this->claims[ $owner ]['requirements'][0];
 		$row['applicability'] = array(
-			'operating_mode'  => 'backup',
-			'topology'        => 'parallel_group',
-			'control_network' => 'lan',
+			'operating_mode'        => 'backup',
+			'topology'              => 'parallel_group',
+			'control_network'       => 'lan',
+			'controller_product_id' => $this->product_id( 'SEC3000C' ),
 		);
 		$raw                  = $row;
-		$raw['included']      = $row['included'] ? '1' : '0';
-		$raw['confirm']       = '1';
-		$raw['documents']     = array_map( static fn( array $doc ): array => array_intersect_key( $doc, array_flip( array( 'document_id', 'page' ) ) ), $row['documents'] );
-		$before               = $this->claims[ $owner ];
-		$draft                = array(
+		$raw['applicability']['controller_product_id'] = (string) $row['applicability']['controller_product_id'];
+		$raw['included']                               = $row['included'] ? '1' : '0';
+		$raw['confirm']                                = '1';
+		$raw['documents']                              = array_map( static fn( array $doc ): array => array_intersect_key( $doc, array_flip( array( 'document_id', 'page' ) ) ), $row['documents'] );
+		$before                                        = $this->claims[ $owner ];
+		$draft = array(
 			'complete'     => '1',
 			'pairs'        => array(),
 			'requirements' => array( $raw ),
@@ -467,7 +469,24 @@ final class CompatibilityTest extends TestCase {
 		$this->assertSame( $row['applicability'], $this->claims[ $owner ]['requirements'][0]['applicability'] );
 		$this->assertSame( array(), Compatibility::requirements( 'GW100K-ETR-G10', 'parallel_controller', $owner, $this->manifest ) );
 		$this->assertCount( 1, Compatibility::requirements( 'GW100K-ETR-G10', 'parallel_controller', $owner, $this->manifest, $row['applicability'] ) );
+		$without_controller = $row['applicability'];
+		unset( $without_controller['controller_product_id'] );
+		$this->assertSame( array(), Compatibility::requirements( 'GW100K-ETR-G10', 'parallel_controller', $owner, $this->manifest, $without_controller ) );
 		$row['applicability']['control_network'] = 'wifi';
+		$this->expectException( \RuntimeException::class );
+		CompatibilityClaims::bind_row( $owner, $row, 'requirements', $this->manifest, true );
+	}
+
+	/** Optional control schemes must name a current canonical Woo controller. */
+	public function test_control_scheme_cannot_reference_an_unpublished_controller(): void {
+		$owner                = $this->product_id( 'GW100K-ETR-G10' );
+		$row                  = $this->claims[ $owner ]['requirements'][0];
+		$row['applicability'] = array(
+			'operating_mode'        => 'grid_connected',
+			'topology'              => 'parallel_group',
+			'control_network'       => 'lan',
+			'controller_product_id' => 90000001,
+		);
 		$this->expectException( \RuntimeException::class );
 		CompatibilityClaims::bind_row( $owner, $row, 'requirements', $this->manifest, true );
 	}

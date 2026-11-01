@@ -206,6 +206,7 @@ def assess_plant(
                     operating_mode=plant.requirements.operating_mode,
                     topology="parallel_group",
                     control_network=group.control_network,
+                    controller_product_id=group.controller_product_id,
                 )
                 if r.phase in (None, plant.requirements.grid_phase)
             ]
@@ -326,6 +327,31 @@ def assess_plant(
         )
         if controller is not None:
             selected[controller] = evidence.compiled(controller)
+            # SEC datasheet's LAN inverter count is a communication limit,
+            # distinct from the inverter system/mode parallel-operation limit.
+            # Never parse labelled prose, switch-port counts or RS485 totals
+            # into a LAN value, and never infer ET approval from this check.
+            fact = cast(Object, selected[controller]["facts"]).get("max_lan_inverters")
+            limit = evidence.scalar(controller, "max_lan_inverters", "count")
+            if group.control_network != "lan" or limit is None or limit <= 0:
+                limit = None
+            add(
+                f"group:{group.id}:controller_network_count",
+                "unresolved"
+                if limit is None
+                else "satisfied"
+                if len(group.unit_ids) <= limit
+                else "violated",
+                "current_cited_controller_network_limit_required"
+                if limit is None
+                else "controller_network_limit_comparison",
+                semantic_id="plant_controller_network_count",
+                group_name=group_name,
+                control_network=group.control_network,
+                actual=len(group.unit_ids),
+                required=limit,
+                facts=[fact] if isinstance(fact, dict) else [],
+            )
             product = products[controller]
             lines.append(
                 {

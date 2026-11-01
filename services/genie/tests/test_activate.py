@@ -107,3 +107,15 @@ def test_without_the_service_token_the_run_refuses_to_start(tmp_path: Path) -> N
     assert result.returncode == 3
     assert "GENIE_SERVICE_TOKEN" in result.stderr
     assert "systemctl restart" not in _calls(tmp_path)
+
+
+def test_combined_activate_refuses_managed_engine_before_uv_or_any_service(
+    tmp_path: Path,
+) -> None:
+    env = _tree(tmp_path, token=True)
+    (Path(env["ENGINE_RELEASE_ROOT"]) / "current/src/linker_engine").mkdir(parents=True)
+    result = _run(env)
+    assert result.returncode == 1
+    assert "combined activation is retired" in result.stderr
+    assert not (tmp_path / "calls.txt").exists()
+    assert not (tmp_path / "units" / UNIT.name).exists()

@@ -87,10 +87,8 @@ final class DocumentFilesTest extends TestCase {
 		self::assertNotNull( $reused );
 		self::assertSame( $first['blob_sha256'], $reused['blob_sha256'] );
 
-		// Newest byte content must replace the reused version.
-		file_put_contents( $first['path'], "%PDF-1.4\ntampered\n%%EOF" );
-		clearstatcache( true, $first['path'] );
-		touch( $first['path'], time() + 5 );
+		// An in-place edit can keep the inode, size and second-resolution timestamps.
+		file_put_contents( $first['path'], "%PDF-1.4\nchanged\n%%EOF" );
 
 		DocumentFiles::begin_read();
 		$fresh = DocumentFiles::resolve( $url );

@@ -17,7 +17,6 @@ from .pvgis_reference_journal import PvgisReferenceJournal
 from .pvgis_reference_plan import PvgisReferencePlan
 from .pvgis_reference_transport import PvgisReferenceTransport
 from .records import Context, Lease
-from .runtime_snapshot import RuntimeSnapshot
 from .weather_fetch_errors import WeatherResponseTooLarge
 from .weather_fetch_plan import WeatherFetchLimits
 from .weather_journal import WeatherDeadlineExceeded
@@ -50,8 +49,7 @@ class PvgisRoofReferenceKernel:
             raise ValueError("positive deployment array/hour resource budget required")
         self.max_array_steps = max_array_steps
         self.transport_factory = transport_factory
-        self.runtime = RuntimeSnapshot.capture()
-        workspace.blobs.put(self.runtime.content)
+        self.runtime = workspace.kernel_runtime()
 
     def parameters(self) -> Object:
         return {

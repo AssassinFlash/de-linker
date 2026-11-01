@@ -100,10 +100,17 @@ def project_materials(source: Object) -> Object:
                             },
                         }
                     )
-                    if line.get("basis") == "selected_converter":
-                        owners = line.get("unit_ids")
+                    if line.get("basis") in {
+                        "selected_converter",
+                        "selected_parallel_controller",
+                    }:
+                        central = line.get("basis") == "selected_parallel_controller"
+                        owners = line.get("group_ids" if central else "unit_ids")
                         scopes = (
-                            ["unit:" + str(uid) for uid in owners]
+                            [
+                                ("group:" if central else "unit:") + str(uid)
+                                for uid in owners
+                            ]
                             if isinstance(owners, list)
                             else ["legacy"]
                         )

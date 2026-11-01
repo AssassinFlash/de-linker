@@ -128,6 +128,21 @@ def _quoted(target: Target, relative: str) -> str:
     return shlex.quote(target.path_of(relative))
 
 
+def _blocking_siblings(target: Target, relatives: list[str]) -> str:
+    """Check the complete batch cheaply, and repeat in each destructive shell."""
+    checks = []
+    for relative in relatives:
+        names = _siblings(relative)
+        message = shlex.quote(f"unresolved previous deployment: {relative}")
+        for path in (names.previous, names.absent, names.failed):
+            quoted = _quoted(target, path)
+            checks.append(
+                f"if [ -e {quoted} ] || [ -L {quoted} ]; then "
+                f"printf '%s\\n' {message} >&2; exit 1; fi"
+            )
+    return "\n".join(checks)
+
+
 def backup_root(target: Target) -> str:
     """Host account's private ~/deploy-prev; a temp/local target's sibling."""
     if target.rsync_remote is None:
@@ -398,12 +413,12 @@ def publish(
             )
     uploaded = completed_uploads or {}
     verified = staged_digests(target, list(uploaded)) if uploaded else {}
+    # Includes reused candidates, which skip the destructive preparation shell.
+    target.shell(
+        "set -eu\n" + _blocking_siblings(target, [item.relative for item in artifacts])
+    )
     for artifact in artifacts:
         names = _siblings(artifact.relative)
-        if any(
-            target.exists(path) for path in (names.previous, names.absent, names.failed)
-        ):
-            raise CutoverError(f"unresolved previous deployment: {artifact.relative}")
         expected = source_digest(artifact.source) if on_uploaded is not None else ""
         if (
             expected
@@ -414,7 +429,9 @@ def publish(
             continue
         parent = _quoted(target, str(Path(artifact.relative).parent))
         target.shell(
-            f"set -eu\nmkdir -p {parent}\nrm -rf {_quoted(target, names.next)}"
+            "set -eu\n"
+            + _blocking_siblings(target, [artifact.relative])
+            + f"\nmkdir -p {parent}\nrm -rf {_quoted(target, names.next)}"
         )
         # The deploy used to say nothing until the very end: the upload is the
         # long part, so each artifact names itself as it starts and ends.

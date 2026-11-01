@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "controller": {
+    "product_id": 2409,
+    "model": "SEC3000C",
+    "document_id": "doc-d7581e1645da0358460c018575ad00cedfde44f3b053fd280e54592aefee4c1a",
+    "blob_sha256": "143fb6026284ffdb499ceb2efc5f46023a3bc84de4c215460fbe0d466b19ba54",
+    "page": 1,
+    "figure_key": "max_lan_inverters",
+    "figure": {
+      "value": 10,
+      "unit": "units",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_SEC3000C_Datasheet_EMEA-EN.pdf",
+        "page": 1
+      }
+    },
+    "package_item": {
+      "id": "sec3000c-gm330",
+      "label": {
+        "en": "GM330 smart meter",
+        "de": "GM330 Smart Meter"
+      },
+      "quantity": 1,
+      "unit": "piece",
+      "role": "meter",
+      "source": {
+        "document_id": "doc-d7581e1645da0358460c018575ad00cedfde44f3b053fd280e54592aefee4c1a",
+        "page": 1
+      }
+    },
+    "installation_item": {
+      "id": "sec3000c-ct",
+      "handling": "customer_supplied_required",
+      "quantity": null,
+      "unit": "piece",
+      "basis": "manufacturer_required_ct_for_selected_gm330",
+      "specification": {
+        "terminal_domain": "ac",
+        "terminals": [],
+        "rating_note": "nA/5A (200–5000 A / 5 A)"
+      },
+      "label": {
+        "en": "Current transformers for the GM330",
+        "de": "Stromwandler für den GM330"
+      },
+      "conditions": [
+        {
+          "en": "Required when using the built-in GM330. Select a primary rating from 200 to 5000 A with a 5 A secondary. Check the phase sequence and direction. The conductor must fit through the opening. GoodWe recommends a CT cable no longer than 30 m.",
+          "de": "Bei Verwendung des eingebauten GM330 erforderlich. Wählen Sie den primären Bemessungsstrom zwischen 200 und 5000 A bei 5 A Sekundärstrom. Prüfen Sie Phasenfolge und Einbaurichtung. Der Leiter muss durch die Wandleröffnung passen. GoodWe empfiehlt eine Wandlerleitung von höchstens 30 m."
+        }
+      ],
+      "source": {
+        "document_id": "doc-0e908d6b529885e36791e995b0aa5a655532c5f4a37c48c3251cf2187d929d50",
+        "document_revision": "f2ad0af83a3ded16e161a7024a6f997c3e31f70c1c22ff0ad9231c75f2ad5846",
+        "blob_sha256": "98bbe6f74e4d4d0e2437c3917e1fb2365c352ad01b5c46d26ad82876cb18850d",
+        "product_id": 2409,
+        "page": 52,
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_SEC3000C_User-Manual-EN.pdf",
+        "quote": "Only applicable to GM330 electricity meters. For third-party electricity meters, please refer to the corresponding meter manual requirements."
+      }
+    }
+  },
+  "requirement": {
+    "owners": [
+      1946,
+      1947,
+      1948
+    ],
+    "selector": "^GW(80K|99\\.99K|100K)-ET-G10$",
+    "kind": "parallel_controller",
+    "source_documents": {
+      "doc-cbd6d3d2db163cf7bce09abf348fd8531756f4e1f3e1ae9a2d82418b322a2568": "0ef4b1ccdcc418e3ca8de31194b3d9e2969be39aa739ffa0ca1f038fcfac6615",
+      "doc-0e908d6b529885e36791e995b0aa5a655532c5f4a37c48c3251cf2187d929d50": "98bbe6f74e4d4d0e2437c3917e1fb2365c352ad01b5c46d26ad82876cb18850d",
+      "doc-d7581e1645da0358460c018575ad00cedfde44f3b053fd280e54592aefee4c1a": "143fb6026284ffdb499ceb2efc5f46023a3bc84de4c215460fbe0d466b19ba54"
+    }
+  }
+}

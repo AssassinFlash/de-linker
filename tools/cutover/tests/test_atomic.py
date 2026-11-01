@@ -737,3 +737,107 @@ def test_reconcile_refuses_when_live_is_not_the_uploaded_tree(tmp_path: Path) ->
     with pytest.raises(CutoverError, match="reconcile refused"):
         atomic.reconcile_pending(target)
     assert (live / "plugin.php").read_text() == "tampered"
+
+
+def test_eleven_artifact_sibling_checks_use_one_batch_not_33_shells(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    target, artifacts = batch_fixture(tmp_path)
+    artifacts.extend(
+        atomic.Artifact(artifacts[0].source, f"wp-content/plugins/extra-{i}")
+        for i in range(8)
+    )
+    calls: list[str] = []
+    exists_calls: list[str] = []
+    shell, exists = Target.shell, Target.exists
+
+    def observe(site: Target, script: str) -> str:
+        calls.append(script)
+        return shell(site, script)
+
+    def observe_exists(site: Target, relative: str) -> bool:
+        exists_calls.append(relative)
+        return exists(site, relative)
+
+    monkeypatch.setattr(Target, "shell", observe)
+    monkeypatch.setattr(Target, "exists", observe_exists)
+    atomic.publish(target, artifacts, deploy_id="sibling-batch")
+    assert exists_calls == []
+    batch = [
+        s for s in calls if "unresolved previous deployment:" in s and "rm -rf" not in s
+    ]
+    assert len(batch) == 1
+    assert batch[0].count("unresolved previous deployment:") == 33
+    destructive = [
+        s
+        for s in calls
+        if "\nmkdir -p " in s and "\nrm -rf " in s and "preparing=1" not in s
+    ]
+    assert len(destructive) == 11
+    assert all(s.count("unresolved previous deployment:") == 3 for s in destructive)
+    print(
+        f"native fixture shell_calls={len(calls)}, blocking_exists_calls={len(exists_calls)}"
+    )
+
+
+@pytest.mark.parametrize("suffix", ["previous", "absent", "failed"])
+@pytest.mark.parametrize("reuse", [False, True])
+def test_blocking_dangling_sibling_preserves_verified_or_unverified_candidate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, suffix: str, reuse: bool
+) -> None:
+    target, artifacts = batch_fixture(tmp_path)
+    artifact = artifacts[0]
+    names = atomic._siblings(artifact.relative)
+    staged = Path(target.path_of(names.next))
+    shutil.copytree(artifact.source, staged)
+    before = atomic.source_digest(staged)
+    blocker = Path(target.path_of(getattr(names, suffix)))
+    blocker.symlink_to(tmp_path / "missing")
+    uploaded = {artifact.relative: before} if reuse else {}
+
+    def unexpected_copy(*args: object, **kwargs: object) -> None:
+        raise AssertionError(
+            "blocked publication must not upload or replace the candidate"
+        )
+
+    monkeypatch.setattr(Target, "copy_in", unexpected_copy)
+    with pytest.raises(CutoverError, match="unresolved previous deployment"):
+        atomic.publish(
+            target,
+            artifacts,
+            deploy_id="blocked",
+            completed_uploads=uploaded,
+            on_uploaded=lambda relative, digest: None,
+        )
+    assert blocker.is_symlink()
+    assert atomic.source_digest(staged) == before
+    assert Path(target.path_of(artifact.relative), "plugin.php").read_text() == "old"
+
+
+def test_sibling_created_after_batch_check_is_refused_before_destructive_rm(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    target, artifacts = batch_fixture(tmp_path)
+    names = atomic._siblings(artifacts[0].relative)
+    staged = Path(target.path_of(names.next))
+    staged.mkdir()
+    (staged / "unique-candidate").write_text("retain")
+    blocker = Path(target.path_of(names.previous))
+    shell = Target.shell
+
+    def race(site: Target, script: str) -> str:
+        if (
+            f"rm -rf {shlex.quote(str(staged))}" in script
+            and "preparing=1" not in script
+        ):
+            blocker.write_text("another batch recovery point")
+        return shell(site, script)
+
+    monkeypatch.setattr(Target, "shell", race)
+    with pytest.raises(CutoverError, match="unresolved previous deployment"):
+        atomic.publish(target, artifacts, deploy_id="raced")
+    assert (staged / "unique-candidate").read_text() == "retain"
+    assert blocker.read_text() == "another batch recovery point"
+    assert (
+        Path(target.path_of(artifacts[0].relative), "plugin.php").read_text() == "old"
+    )

@@ -147,6 +147,97 @@ def test_parallel_limits_come_from_the_controller_documents(
         )
         == []
     )
+    # An optional controller scheme is visible only after that exact Woo
+    # controller is chosen; it cannot become a mandatory search accessory.
+    for row in raw["requirements"]:
+        row["applicability"]["controller_product_id"] = 2409
+    optional = Compatibility(raw)
+    assert (
+        optional.requirements(
+            "GW100K-ETR-G10",
+            "parallel_controller",
+            operating_mode="backup",
+            topology="parallel_group",
+            control_network="lan",
+        )
+        == []
+    )
+    assert (
+        optional.requirements(
+            "GW100K-ETR-G10",
+            "parallel_controller",
+            controller_product_id=2403,
+            operating_mode="backup",
+            topology="parallel_group",
+            control_network="lan",
+        )
+        == []
+    )
+    assert [
+        row.max_units
+        for row in optional.requirements(
+            "GW100K-ETR-G10",
+            "parallel_controller",
+            controller_product_id=2409,
+            operating_mode="backup",
+            topology="parallel_group",
+            control_network="lan",
+        )
+    ] == [6]
+
+
+def test_shipped_et_lan_scheme_requires_the_selected_optional_controller(
+    shipped_compatibility: Compatibility,
+) -> None:
+    for model in ("GW80K-ET-G10", "GW99.99K-ET-G10", "GW100K-ET-G10"):
+        assert shipped_compatibility.requirements(model, "parallel_controller") == []
+        assert (
+            shipped_compatibility.requirements(
+                model,
+                "parallel_controller",
+                operating_mode="grid_connected",
+                topology="parallel_group",
+                control_network="lan",
+            )
+            == []
+        )
+        rows = shipped_compatibility.requirements(
+            model,
+            "parallel_controller",
+            operating_mode="grid_connected",
+            topology="parallel_group",
+            control_network="lan",
+            controller_product_id=2409,
+        )
+        assert len(rows) == 1 and rows[0].max_units is None
+        assert rows[0].accessories[0].product_id == 2409
+        assert rows[0].accessories[0].quantity == 1
+        assert any(
+            "V7.5.32" in condition.en and "V2.5.49" in condition.de
+            for condition in rows[0].conditions
+        )
+        assert (
+            shipped_compatibility.requirements(
+                model,
+                "parallel_controller",
+                operating_mode="backup",
+                topology="parallel_group",
+                control_network="lan",
+                controller_product_id=2409,
+            )
+            == []
+        )
+        assert (
+            shipped_compatibility.requirements(
+                model,
+                "parallel_controller",
+                operating_mode="grid_connected",
+                topology="parallel_group",
+                control_network="rs485",
+                controller_product_id=2409,
+            )
+            == []
+        )
 
 
 def test_the_shipped_contract_keeps_the_one_module_b2_off_the_h2(

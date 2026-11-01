@@ -36,6 +36,7 @@ from .project_input_contracts import (
     revise_command,
 )
 from .records import Actor, Context, JobState, Project, Run
+from .runtime_snapshot import RuntimeSnapshot
 from .storage import Blobs, Database
 
 
@@ -43,11 +44,27 @@ class Workspace:
     """Same-host project authority shared by a gateway and durable workers."""
 
     def __init__(
-        self, directory: Path, *, clock: Callable[[], float] = time.time
+        self,
+        directory: Path,
+        *,
+        clock: Callable[[], float] = time.time,
+        runtime: RuntimeSnapshot | None = None,
     ) -> None:
         self.database = Database(directory / "workspace.sqlite")
         self.blobs = Blobs(directory / "blobs")
         self.clock = clock
+        self._runtime = runtime
+        if runtime is not None:
+            self.blobs.put(runtime.content)
+
+    def kernel_runtime(self) -> RuntimeSnapshot:
+        """Configured kernels share their host's immutable, already stored release."""
+        if self._runtime is not None:
+            return self._runtime
+        # Standalone kernels can be constructed across code changes on the same store.
+        snapshot = RuntimeSnapshot.capture()
+        self.blobs.put(snapshot.content)
+        return snapshot
 
     def _project(
         self,

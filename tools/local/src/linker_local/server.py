@@ -71,6 +71,9 @@ def start(instance: Instance, php: Path) -> None:
     process(instance).restart(
         [
             str(php),
+            # PHP keeps startup diagnostics and its configured error log; omit
+            # the connection/access lines that grew across every local request.
+            "-q",
             "-c",
             str(instance.php_ini),
             "-S",

@@ -154,8 +154,14 @@ final class CompatibilityClaims {
 			$result['included'] = $row['included'];
 			if ( array_key_exists( 'applicability', $row ) ) {
 				$scope = $row['applicability'];
-				if ( ! is_array( $scope ) || array_diff( array_keys( $scope ), array( 'operating_mode', 'topology', 'control_network' ) ) || ! in_array( $scope['operating_mode'] ?? null, array( 'grid_connected', 'backup' ), true ) || ! in_array( $scope['topology'] ?? null, array( 'single_converter', 'parallel_group' ), true ) || ( array_key_exists( 'control_network', $scope ) && ! in_array( $scope['control_network'], array( 'lan', 'rs485' ), true ) ) ) {
+				if ( ! is_array( $scope ) || array_diff( array_keys( $scope ), array( 'operating_mode', 'topology', 'control_network', 'controller_product_id' ) ) || ! in_array( $scope['operating_mode'] ?? null, array( 'grid_connected', 'backup' ), true ) || ! in_array( $scope['topology'] ?? null, array( 'single_converter', 'parallel_group' ), true ) || ( array_key_exists( 'control_network', $scope ) && ! in_array( $scope['control_network'], array( 'lan', 'rs485' ), true ) ) ) {
 					throw new \RuntimeException( 'A requirement scope needs a supported operating mode, topology and optional control network.' );
+				}
+				if ( array_key_exists( 'controller_product_id', $scope ) ) {
+					if ( ! self::positive( $scope['controller_product_id'] ) || ! isset( $products[ $scope['controller_product_id'] ] ) ) {
+						throw new \RuntimeException( 'A control-scheme condition needs a current canonical Woo controller.' );
+					}
+					$related[] = $scope['controller_product_id'];
 				}
 				$result['applicability'] = $scope;
 			}

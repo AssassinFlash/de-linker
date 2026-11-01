@@ -34,7 +34,6 @@ from .plant_energy_output import flow_document, metrics
 from .product_sources import ProductSources
 from .profile_assets import profile_dependencies
 from .records import Actor, Context, Lease
-from .runtime_snapshot import RuntimeSnapshot
 from .worker import Control
 from .workspace import Workspace
 
@@ -143,8 +142,7 @@ class PlantEnergyKernel:
         positive_integer(max_intervals, "maximum joint unit intervals")
         self.workspace, self.tolerance = workspace, tolerance
         self.max_intervals, self.products = max_intervals, products
-        self.runtime = RuntimeSnapshot.capture()
-        self.workspace.blobs.put(self.runtime.content)
+        self.runtime = self.workspace.kernel_runtime()
 
     def parameters(self) -> Object:
         return {

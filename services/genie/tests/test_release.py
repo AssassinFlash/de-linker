@@ -129,3 +129,34 @@ def test_publish_can_roll_back_to_existing_paired_release(tmp_path: Path) -> Non
     _run(root, "rollback")
     assert (root / "current").resolve() == previous.resolve()
     assert (root / "current" / "app").read_text() == "previous runtime"
+
+
+def test_shared_release_refuses_a_managed_pair_before_copy_or_selection(
+    tmp_path: Path,
+) -> None:
+    for kind in ("engine", "genie"):
+        root = tmp_path / kind
+        old = root / "20261101T000000000000Z"
+        old.mkdir(parents=True)
+        (old / "original").write_text("preserve")
+        (root / "current").symlink_to(old.name)
+        if kind == "engine":
+            (old / "src/linker_engine").mkdir(parents=True)
+        else:
+            (root / "index").mkdir()
+            (root / "index/.activation.json").write_text("{}")
+        source = tmp_path / ("source-" + kind)
+        source.mkdir()
+        (source / "new").write_text("candidate")
+        for arguments in [("publish", str(source)), ("rollback",)]:
+            result = subprocess.run(
+                ["bash", str(SCRIPT), *arguments],
+                env={"PATH": "/usr/bin:/bin", "GENIE_RELEASE_ROOT": str(root)},
+                capture_output=True,
+                text=True,
+            )
+            assert result.returncode == 1
+            assert "managed runtime" in result.stderr
+            assert (root / "current").resolve() == old
+            assert (old / "original").read_text() == "preserve"
+        assert len([p for p in root.iterdir() if p.name.startswith("2026")]) == 1

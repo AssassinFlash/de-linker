@@ -16,7 +16,6 @@ from .execution_identity import execution_key, request_execution_key
 from .frozen_run import frozen_manifest
 from .product_sources import ProductSources
 from .records import Actor, Context, Lease
-from .runtime_snapshot import RuntimeSnapshot
 from .worker import Control
 from .workspace import Workspace
 
@@ -27,8 +26,7 @@ class EquipmentKernel:
 
     def __init__(self, workspace: Workspace, products: ProductSources) -> None:
         self.workspace, self.products = workspace, products
-        self.runtime = RuntimeSnapshot.capture()
-        workspace.blobs.put(self.runtime.content)
+        self.runtime = workspace.kernel_runtime()
 
     def parameters(self) -> Object:
         return {

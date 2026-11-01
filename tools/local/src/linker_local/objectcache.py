@@ -21,7 +21,7 @@ from collections.abc import Callable
 
 from linker_local import downloads
 from linker_local.instance import HOST, Instance
-from linker_local.processes import port_is_free
+from linker_local.processes import port_is_free, without_research_credentials
 from linker_local.wpcli import WpCli
 
 # Redis's port: `port 6379` in redis.conf (read via Apify on 2026-10-09), the
@@ -152,6 +152,7 @@ def _redis_cli(*args: str) -> str:
         raise RedisError("redis-cli is not installed: brew install redis")
     result = subprocess.run(
         [cli, "-h", HOST, "-p", str(REDIS_PORT), *args],
+        env=without_research_credentials(),
         capture_output=True,
         text=True,
         check=False,

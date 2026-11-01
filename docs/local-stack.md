@@ -55,6 +55,8 @@ brew services start redis
     run/                  pid 文件
 ```
 
+PHP 内置服务器的启动和绑定错误见 `server.log`，PHP warning 与致命错误见 `php-error.log`。普通连接与逐请求状态行从下次启动起停止追加。需要跟踪单次请求时，从浏览器 Network 或 HTTP 客户端读取状态、字节与耗时。
+
 `instances.toml` 在数据根而不在仓库：每张票一个工作树，它们共用一台 MySQL 与同一组端口，只有按机器的登记表才能保证两个实例不抢端口。
 
 ## 与线上一致的部分（来源）

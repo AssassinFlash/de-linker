@@ -12,6 +12,7 @@ from fastapi.testclient import TestClient
 from pydantic import ValidationError
 
 from linker_engine.app import create_app as legacy_app
+from linker_engine.planning.errors import VersionUnavailable
 from linker_engine.planning.guest_claims import GuestClaims
 from linker_engine.planning.http_host import EngineApplications, configured_private_app
 from linker_engine.planning.records import Actor
@@ -37,6 +38,25 @@ def settings(directory: Path) -> RuntimeConfig:
         absolute_kw=1e-7,
         relative=1e-9,
     )
+
+
+def test_configured_kernels_share_one_durably_pinned_runtime(tmp_path: Path) -> None:
+    config = settings(tmp_path)
+    workspace, energy = config.open()
+    runtime = energy.kernel.runtime
+    kernels = [
+        *energy.kernels,
+        config.equipment_service(workspace).kernel,
+        config.report_service(workspace).kernel,
+    ]
+    assert all(kernel.runtime is runtime for kernel in kernels)
+    assert workspace.blobs.read(runtime.sha256) == runtime.content
+
+    # A new host must still verify the actual bytes in its own workspace.
+    blob = workspace.blobs.directory / runtime.sha256[:2] / runtime.sha256
+    blob.write_bytes(b"corrupt")
+    with pytest.raises(VersionUnavailable, match="hash mismatch"):
+        config.open()
 
 
 def authority() -> dict[str, str]:

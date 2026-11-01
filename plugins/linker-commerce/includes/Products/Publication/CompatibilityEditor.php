@@ -120,7 +120,7 @@ final class CompatibilityEditor {
 				echo '</label> ';
 			}
 			echo '</p><p>';
-			$this->scope_fields( $name, $row['applicability'] ?? array() );
+			$this->scope_fields( $name, $row['applicability'] ?? array(), $manifest['products'] );
 		}
 		echo '</p>';
 		if ( ! empty( $row['unresolved'] ) ) {
@@ -296,6 +296,9 @@ final class CompatibilityEditor {
 				}
 			}
 			$scope = array_filter( (array) ( $raw['applicability'] ?? array() ), static fn( mixed $value ): bool => '' !== $value );
+			if ( isset( $scope['controller_product_id'] ) ) {
+				$scope['controller_product_id'] = self::integer( $scope['controller_product_id'] );
+			}
 			if ( array() !== $scope ) {
 				$row['applicability'] = $scope;
 			}
@@ -368,10 +371,11 @@ final class CompatibilityEditor {
 	/**
 	 * Source applicability uses native controls, with empty fields kept unknown.
 	 *
-	 * @param string              $name Row field prefix.
-	 * @param array<string,mixed> $scope Current maintained scope.
+	 * @param string                    $name Row field prefix.
+	 * @param array<string,mixed>       $scope Current maintained scope.
+	 * @param list<array<string,mixed>> $products Current canonical Woo products.
 	 */
-	private function scope_fields( string $name, array $scope ): void {
+	private function scope_fields( string $name, array $scope, array $products ): void {
 		$options = array(
 			'operating_mode'  => array(
 				''               => __( 'Operating mode not specified', 'linker-commerce' ),
@@ -392,6 +396,7 @@ final class CompatibilityEditor {
 		foreach ( $options as $key => $choices ) {
 			$this->select( $name . '[applicability][' . $key . ']', (string) ( $scope[ $key ] ?? '' ), $choices );
 		}
+		$this->product( $name . '[applicability][controller_product_id]', (int) ( $scope['controller_product_id'] ?? 0 ), $products, __( 'Parallel controller', 'linker-commerce' ) );
 	}
 
 	/** Show a native, user-scoped save refusal. */

@@ -1,17 +1,8 @@
 #!/usr/bin/env bash
-# Bring the releases `release.sh publish` laid down into service on the VPS
-# (docs/specs/17-cutover.md §5; #258). Run by `just cutover services --run`
-# after both publishes, so a services deploy is one command:
-#   - each service's virtualenv is built in its new release (`uv sync --locked`:
-#     the publish ships no .venv, and the units run current/.venv);
-#   - the quality worker's unit is installed or updated from the release;
-#   - systemd reloads, and the engine, Genie and the quality worker restart;
-#   - each unit must be active afterwards, or the run fails.
-# The one thing it does not do is set the token: GENIE_JUDGE_TOKEN in
-# /etc/linker-genie.env (and LINKER_GENIE_JUDGE_TOKEN in the site's
-# wp-config.php) are placed by hand. Without it the worker is installed but
-# not started, and the run exits 3 saying so.
-# Every path is a parameter so tests run it against a temporary tree.
+# Historical/test-only combined activation. This is not a production entrypoint.
+# Managed Engine uses services/engine/ops/legacy_release.py; managed Genie uses
+# ops/paired_release.py. The guard below refuses these runtimes before uv,
+# retention or service actions. Bare synthetic fixtures retain this old contract.
 set -euo pipefail
 
 UV="${UV:-/root/.local/bin/uv}"
@@ -24,6 +15,15 @@ JUDGE_UNIT="linker-genie-judge.service"
 # worker checks its settings and credentials at start and exits 2 within a
 # second when one is missing (linker_genie.quality.worker.main).
 SETTLE="${ACTIVATE_SETTLE_SECONDS:-3}"
+
+if [[ -d "$ENGINE_ROOT/current/src/linker_engine" ||
+      -f "$ENGINE_ROOT/.legacy-engine-owners.json" ||
+      -f "$ENGINE_ROOT/.legacy-engine-preparing.json" ||
+      -f "$GENIE_ROOT/index/.activation.json" ||
+      -f "$GENIE_ROOT/current/.git-source-manifest.json" ]]; then
+    echo "combined activation is retired for managed runtimes; use the independent release operators" >&2
+    exit 1
+fi
 
 for root in "$ENGINE_ROOT" "$GENIE_ROOT"; do
     (cd "$root/current" && "$UV" sync --locked --quiet)

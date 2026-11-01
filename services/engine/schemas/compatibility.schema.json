@@ -72,7 +72,8 @@
 			"properties": {
 				"operating_mode": { "enum": ["grid_connected", "backup"] },
 				"topology": { "enum": ["single_converter", "parallel_group"] },
-				"control_network": { "enum": ["lan", "rs485"] }
+				"control_network": { "enum": ["lan", "rs485"] },
+				"controller_product_id": { "type": "integer", "minimum": 1 }
 			}
 		},
 		"accessory": {

@@ -224,6 +224,123 @@ final class EngineeringReferenceTest extends TestCase {
 	}
 
 	/** A reference label is known but cannot be offered as a current sales model. */
+	public function test_cable_preview_binds_the_exact_original_without_writing(): void {
+		WP_Mock::userFunction( 'get_posts' )->andReturn( array() );
+		WP_Mock::userFunction( 'taxonomy_exists' )->andReturn( true );
+		$before = $this->current_faq_meta;
+		$input  = $this->cable_input();
+		$result = ReferenceMigration::run( $input, true );
+		$this->assertSame( 'would_create', $result['action'] );
+		$this->assertSame( 0, $result['figures'] );
+		$this->assertSame( $before, $this->current_faq_meta );
+		$input['overlay'][0]['documents'][0]['expected_blob_sha256'] = str_repeat( '0', 64 );
+		$this->expectException( \RuntimeException::class );
+		$this->expectExceptionMessage( 'hosted original differs' );
+		ReferenceMigration::run( $input, true );
+	}
+
+	/** Repeating adoption cannot publish a withdrawn reference or adopt new bytes. */
+	public function test_cable_rerun_preserves_the_existing_woo_authority(): void {
+		$this->current_faq_meta[ EngineeringReference::ROLE_META_KEY ] = EngineeringReference::CABLE;
+		$this->current_faq_meta[ EngineeringReference::ID_META_KEY ]   = 'fixture_cable_6';
+		$input = $this->cable_input();
+		file_put_contents( $this->publication_uploads . '/2026/manual.pdf', "%PDF-1.4\nreplacement\n%%EOF" );
+		WP_Mock::userFunction( 'get_post_status' )->with( self::ID )->andReturn( 'draft' );
+		$before = $this->current_faq_meta;
+		$result = ReferenceMigration::run( $input, false );
+		$this->assertSame( 'unchanged', $result['action'] );
+		$this->assertSame( self::ID, $result['product_id'] );
+		$this->assertSame( $before, $this->current_faq_meta );
+	}
+
+	/** The same engineering ID cannot silently change its native reference role. */
+	public function test_cable_adoption_cannot_relabel_a_reference_module(): void {
+		$input                     = $this->cable_input();
+		$input['overlay'][0]['id'] = 'mat_fixture_module';
+		$this->expectException( \RuntimeException::class );
+		ReferenceMigration::run( $input, false );
+	}
+
+	/** One explicitly synthetic source fixture for the existing native resolver.
+	 *
+	 * @return array<string,mixed>
+	 */
+	private function cable_input(): array {
+		$documents                            = $this->current_faq_meta[ EngineeringData::DOCUMENTS_META_KEY ];
+		$documents[0]['expected_blob_sha256'] = hash_file( 'sha256', $this->publication_uploads . '/2026/manual.pdf' );
+		return array(
+			'overlay' => array(
+				array(
+					'id'          => 'fixture_cable_6',
+					'kind'        => 'cable',
+					'brand'       => 'Synthetic fixture',
+					'model'       => 'Fixture cable',
+					'figures'     => array(),
+					'documents'   => $documents,
+					'cable_facts' => array( 'fixture' => 'Preview does not promote synthetic engineering facts.' ),
+				),
+			),
+		);
+	}
+
+	/** Draft retries use the CLI's exact byte hash and fail with both recovery IDs. */
+	public function test_cable_cli_draft_retry_is_not_reported_as_a_success(): void {
+		global $wpdb;
+		$previous_db = $wpdb;
+		$this->current_faq_meta[ EngineeringReference::ROLE_META_KEY ] = EngineeringReference::CABLE;
+		$input        = $this->cable_input();
+		$first        = $input['overlay'][0];
+		$second       = $first;
+		$second['id'] = 'fixture_cable_other';
+		$bytes        = (string) wp_json_encode(
+			array(
+				'schema_version' => 1,
+				'references'     => array( $first, $second ),
+			)
+		);
+		$path         = $this->publication_uploads . '/cable-plan.json';
+		file_put_contents( $path, $bytes );
+		WP_Mock::userFunction( 'get_posts' )->andReturnUsing( static fn( array $query ): array => isset( $query['meta_value'] ) ? array( 'fixture_cable_other' === $query['meta_value'] ? self::ID + 1 : self::ID ) : array() );
+			WP_Mock::userFunction( 'get_post_meta' )->andReturnUsing(
+				function ( int $id, string $key = '' ): mixed {
+					if ( '' === $key ) {
+						return $this->current_faq_meta;
+					}
+					return $this->current_faq_meta[ $key ] ?? '';
+				}
+			);
+		WP_Mock::userFunction( 'get_post_status' )->andReturn( 'draft' );
+		WP_Mock::userFunction( 'get_post_type' )->with( self::ID + 1 )->andReturn( 'product' );
+		$before       = $this->current_faq_meta;
+		$wpdb         = Mockery::mock( \wpdb::class );
+		$wpdb->prefix = 'wp_fixture_';
+		$wpdb->shouldReceive( 'prepare' )->andReturn( 'fixture-native-lock' );
+		$wpdb->shouldReceive( 'get_var' )->andReturn( '1' );
+		try {
+			$command = new \Linker\Commerce\Cli\PublicationCommand();
+			ob_start();
+			$command->migrate_cable_references( array(), array( 'input' => $path ) );
+			$preview = json_decode( substr( (string) ob_get_clean(), strlen( 'wp-cli log: ' ) ), true );
+			$this->assertSame( hash( 'sha256', $bytes ), $preview['source_sha256'] );
+			$this->assertFalse( $preview['references'][0]['ready'] );
+				$this->expectException( \WP_CLI\ExitException::class );
+				$this->expectExceptionMessageMatches( '/adoption is incomplete.*\\[9001,9002\\]/' );
+				$command->migrate_cable_references(
+					array(),
+					array(
+						'input'                => $path,
+						'apply'                => true,
+						'source-sha256'        => $preview['source_sha256'],
+						'publication-revision' => $preview['publication_revision'],
+					)
+				);
+		} finally {
+			$wpdb = $previous_db;
+				$this->assertSame( $before, $this->current_faq_meta );
+		}
+	}
+
+	/** A reference label is known but cannot be offered as a current sales model. */
 	public function test_public_identity_and_direct_store_reads_refuse_reference(): void {
 		WP_Mock::userFunction( 'nocache_headers' );
 		foreach ( array( array( 'models' => array( 'TSM-460NEG9R.28' ) ), array( 'text' => 'Module TSM-460NEG9R.28' ) ) as $body ) {
@@ -308,8 +425,11 @@ final class EngineeringReferenceTest extends TestCase {
 		$product->shouldReceive( 'get_id' )->andReturn( self::ID );
 		$product->shouldReceive( 'get_parent_id' )->andReturn( 0 );
 		$visibility = new Visibility();
-		$this->assertFalse( $visibility->purchasable( true, $product ) );
-		$this->assertFalse( $visibility->visible( true, self::ID ) );
+		foreach ( EngineeringReference::ROLES as $role ) {
+			$this->current_faq_meta[ EngineeringReference::ROLE_META_KEY ] = $role;
+			$this->assertFalse( $visibility->purchasable( true, $product ) );
+			$this->assertFalse( $visibility->visible( true, self::ID ) );
+		}
 		$this->current_faq_meta[ EngineeringReference::ROLE_META_KEY ] = '';
 		$this->assertTrue( $visibility->purchasable( true, $product ) );
 		$this->assertTrue( $visibility->visible( true, self::ID ) );

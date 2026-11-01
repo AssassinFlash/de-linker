@@ -441,3 +441,46 @@ Aladdin 不只提供画布。固定源码中已经能追到：
 独立 SSH 直通在未认证时已证实返回 Apify 407。前次认证尝试只收到 RemoteDisconnected，未区分 SSH 握手与代理拒绝。root 只用一个有界私有 master 复核这两阶段，最多两个具名源，socket 和临时根 /tmp/p548-oem-route-* 在 finally 删除；认证后失败则记录实际层级，不继续探测。
 
 同一 SSH master 下，未认证请求取得 Apify 407，正确认证请求取得 Apify 403；独立获取该拒绝响应的脱敏正文，x-apify-proxy-error=true，说明当前账户没有启用 Proxy external access。请求被 Apify 在建立原厂 CONNECT 前拒绝。这给出了此前传输断开的权限边界，但不能证明以前每一次断开都由同一原因造成。没有向原厂发送这次 GET，也没有取得 PDF、改变账号权限或升级套餐。两个原件仍缺。master、stdio 转发和临时 socket 目录均已回收，原始响应与凭据均未存盘。
+
+本机具名资料补核：既有 GoodWe-owner/GW_ET-100_Datasheet-EN.pdf 与已托管库原件 SHA256 4f7178042e8faf03bd926dc33a5ff0b85ffcd4f46e12f1dcf86d6db10befee4d 相同。另有两页 GW_BAT-C 208.9-261.2kWh_Datasheet-EN.pdf（305,878 B，SHA256 8634b8a56bcda45feb80c5244a5b295de1d9d5c259086ada0ecc54734e7c0546）。其字体文本映射不可靠，已在内存渲染并逐页核对。第一页是 208/261 kWh 系列概览，第二页为 208.9/261.2 kWh 两款规格，脚注说明电芯温度与 SOC 影响充放电限流/限功率，表内没有定量曲线。不能把这些数据用于当前 61.4/112.6 kWh 柜组，也不能用来补缺失的 BAT-C 定量包络。没有复制原件或修改 Woo。
+
+### 10.9 业主授权的两份官网 PDF 原件核验
+
+2026-11-01 业主确认保留 Apify 默认渠道，仅本次允许先从 Nexans 官网上述两个已知料号端点读取 PDF。负责人 root，每个响应上限 5 MiB，校验 HTTPS 原域、HTTP 200、PDF 签名、实际页数与料号后，按 SHA-256 各保存一份到既有 /Users/chesterjohn/de-linker-data/pdf。原件在对应来源或冻结报告仍引用时保留，可信新版接替且无引用时复核回收。逐页文本与渲染在内存中检查，无工作副本。此前 Apify 查得的页面与各次失败证据继续有效。
+
+两份原件均已取得。首次本机连接在 TLS 握手时中断。独立网络出口发送 `Accept: application/pdf` 时，官网两次均返回 HTTP 406。用普通浏览器接受的 `Accept: */*` 请求相同 HTTPS URL 后，两者均返回 HTTP 200 和 `application/pdf;charset=UTF-8`。传输仅将原厂响应送回本机，在网络出口没有落盘。
+
+| Nexans 料号 | 本机保存文件的 SHA-256 | 文件大小 | 原件页码与核实值 |
+| --- | --- | ---: | --- |
+| [038021106](https://latrivenetacavi.nexans.com/.rest/catalog/v1/product/pdf/038021106) | `0fed83cc110b0689361193d2241cccd6a22b4a15fbba4756a1c1cc78aa805ce3` | 343,244 B | 共 3 页。第 1 页标识料号。第 2 页为 1 × 4 mm²，20°C 单导体最大直流电阻 5.09 Ω/km。 |
+| [038023102](https://latrivenetacavi.nexans.com/.rest/catalog/v1/product/pdf/038023102) | `217bfaf2296673fc499a1886fc0a5967bd2d4d1de7071336c04806018abf3d69` | 343,238 B | 共 3 页。第 1 页标识料号。第 2 页为 1 × 6 mm²，20°C 单导体最大直流电阻 3.39 Ω/km。 |
+
+两份第 2 页均已实际渲染并逐行检查。均为单芯、5 类软镀锡铜导体，绝缘和护套为交联无卤橡胶。4 mm² 为红色，6 mm² 为蓝色。导体 120°C、环境 60°C 时，空气中单根、表面单根、表面两根接触的原厂电流分别为 55/52/44 A 和 70/67/57 A。这些值与此前 Apify 抽取的官网表格一致。页脚的 `Generated 11/1/26` 是出表日期，原件没有标明技术修订号。资料没有给出 AC 电阻、电抗或温度换算系数。
+
+已从本机保存文件重新计算 SHA-256，两个文件合计 686,482 B，均在 `/Users/chesterjohn/de-linker-data/pdf/<SHA-256>.pdf`。PDF 文本与第 2 页渲染均经内存管道检查，没有额外图片或工作副本。此项解决了官方 PDF 字节、页码和出处的缺口。Woo 非商售参考、发布后 feed 及项目报告读回仍须各自完成。
+
+05:37 UTC 再查 Apify。官方 crawler 当前 build API 返回 HTTP 200，版本 0.3.102。用现有账号认证读取取得 Nexans 产品页的既有 run 也返回 HTTP 200，状态为 SUCCEEDED。本次确认的是账号 API 和已完成任务的可读性，没有新建采集任务。今后的外部研究仍按项目规则使用 Apify。
+
+### 10.10 过载动作方法的原厂指南
+
+既有 E6 地址返回 404，短路方法后已取得，过载保护器动作条件仍缺。负责人 root，本批默认走 Apify，最多一个已授权 Google 搜索 actor run 定位 Schneider Electric 官方指南，随后一个已授权 website-content-crawler run 读取实际命中的一至两页。两者均限时 180 秒，不递归。仅在内存保留可识别的公式、条件、来源 URL、页面版本与正文哈希。不创建本地正文副本或实例。每个 run 的自有默认 dataset、KV、queue 与自动生成的错误 dataset 在核对 owner、创建时间及无共享名称后删除，并读回不存在；保留小型 run 元数据。该资料只用于过载方法核查，不为具体断路器或现场接入给出放行。
+
+本轮精确搜索任务 `s4DWenE93rGvf9iRj` 运行成功，未从其输出筛得可确认的原厂链接。复用先前取得的 Schneider 官方指南链接，用已授权的 `apify/website-content-crawler` 单页取得 [Practical values for a protective scheme，General rules、Fig. G6 和 Applications](https://www.electrical-installation.org/enwiki/Practical_values_for_a_protective_scheme)。run `cwJdyAigIEvtJR2v7` 于 2026-11-01 05:40:49 UTC 启动并成功结束，正文 3,327 字符，UTF-8 SHA-256 `3d8920a1c99263e5898ffbe4532d4a53df7cb003f6c58580d07bdf98812aa4a8`。采集器返回了正文与 HTML，未取得可核实的页面历史版本号。
+
+指南区分设计电流 IB、保护器件额定或整定电流 In、回路允许载流量 Iz，以及保护器的约定动作电流 I2。其图 G6 及断路器应用段分别核查 IB ≤ In ≤ Iz 和 I2 ≤ 1.45 Iz。熔断器须使用型号对应的约定动作电流与规定时间。安装点的预期短路电流及器件分断能力另行核查。此处取得了原厂指南的过载方法，项目仍需提供具体器件、整定、安装条件，以及适用的国家规则。Nexans 在特定条件下的电缆载流数值不能自动满足全部条件。这批仍使用 Apify，官网直取仅限先前已经核验的两个 PDF。
+
+搜索任务自有 default dataset、KV、queue 已删除并分别读回 404。正文任务的两个 dataset 和 KV 也已删除并读回 404。队列回收最初遇到本地 API 网络超时；05:46 UTC 通过 Apify API 对该 run 已确认的默认队列 mEV8UsToFmQkJ9fqD 再读，返回 404。两次采集均无遗留的默认存储。
+
+### 10.11 PV 支路反向电流保护来源检索
+
+负责人 root。为核实并联光伏组串故障回流和熔断保护依据，使用一个已批准的 Apify Google Search run 和至多一个 website-content-crawler run（最多两个原厂页面，每次180秒，不递归）。仅保留来源、适用条件与简短结果，正文在内存中处理。每个已结束 run 的自有 dataset、KV、queue 和附属错误 dataset 在核对所有权后删除并读回 404。若找不到原厂正文，保留缺项，不用搜索摘要产生工程参数。
+
+Apify run `nhPfDmNMgtWfE3VZY` 完成，结果包含 6 条搜索项。逐项检查后未定位可确认的原厂指南正文链接，本次没有依据这些结果采用组串熔断倍率。run 自有 dataset、KV、队列均已通过 Apify 读回 404。本机读取 dataset 删除状态时曾网络超时，后经独立网络出口确认删除已生效，其余两项随后按各自所有权删除并核对。
+
+现有工程参考 8349 的本地 Woo feed（source `e1773a35f189…`）已维护 `max_series_fuse_a=25 A`，出处为 Trina 原件第 2 页。本轮实际重新核对两页原件字节 SHA-256 `f4d280f9a0d89475cf575fbb99906e2b091da27f08b848fc51877cc1d24e8e22` 和第 2 页的 Max Series Fuse Rating。该值是模块允许的串联熔断器额定电流上限。判断某个并联方案是否需要保护、选择实际熔断器、核算反向故障电流和电缆保护仍需要相应器件与项目依据。[Trina Vertex S+ NEG9R.28 原厂数据手册，第 2 页](https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf#page=2)
+
+沿用已核实的 Trina Vertex O 手册取证，负责人 root。既有 Apify run MvqRIQ2KHBaQlPPUr 的 KV 原件仍可读（9,843,677 字节），无需新建 actor 或再次访问官网。因本手册同时支持冷态 Voc 与本次新核查的组串保护章节，将哈希核实过的原件私有保存一份至 /Users/chesterjohn/de-linker-data/pdf/b1f566099b1e5e6e001a62d6ae417239e8b0d3e67477f3ce6bf9f160a50ff535.pdf，避免不同章节重复下载。仅内部取证使用，不上传到公开网站。同 SHA 保留一份；工程证据不再引用且有可信替代版本时复核回收。文本/渲染只经内存，旧 run 的取证存储原样保留。
+
+已从既有 Apify KV 读回 48 页、9,843,677 字节的原件，与此前记录的 SHA-256 完全一致。PDF 第 41 页（印刷页 36）§6.4.3 已实际渲染核对，避免把缺失的公式下标误读为普通系数。厂家给出的 IEC 形式为 `(1.5 / Kf) × Isc ≤ In ≤ Max Series Fuse Rating`，同页另列 NEC 系数 1.56。In 是熔断器额定电流，Isc 是组件短路电流，Kf 是熔断器工作温度修正系数。第 42 页要求按工作温度确定系数，并由合格设计方和熔断器厂家确认最终选型。这是 Trina 对该手册所列组件的说明，未取得 IEC 标准全文或当地采用条件。[Trina Vertex 安装手册，§6.4.3，PDF 第 41–42 页](https://www-cdn.trinasolar.com/wwwstorage/sites/7/UM-M-0002-_O_User-Manual-1.pdf#page=41)
+
+对已绑定的 NEG9R.28 460 W 原件，仅能得到该厂商 IEC 分支的符号区间 `16.215 A / Kf ≤ In ≤ 25 A`，其中 Isc 为 10.81 A。当前项目还没有选定熔断器的 Kf 来源，且本段没有给出何种反向故障工况必须安装熔断器，因此不生成一个 20 A 或 25 A 的选型，也不授予电缆、分断或上下级配合放行。新增本机私有原件一份，精确字节与哈希已复读；没有新建 Apify run、公开 Woo 附件或输出图片文件。

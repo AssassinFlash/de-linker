@@ -18,7 +18,6 @@ from .pv_parameters import PvGenerationLimits, PvGenerationParameters
 from .pv_profile_preparation import PROFILE_PURPOSE, prepare_profile
 from .pv_source import PvSource
 from .records import Actor, Context, Lease, Run
-from .runtime_snapshot import RuntimeSnapshot
 from .weather_import import WEATHER_PURPOSE
 from .weather_inputs import WeatherAcquisitionInputs
 from .worker import Control
@@ -88,8 +87,7 @@ class PvReferenceKernel:
         self.products = products
         # Freeze deployment settings against later caller mutations.
         self.limits = PvGenerationLimits.read(limits.model_dump(mode="json"))
-        self.runtime = RuntimeSnapshot.capture()
-        self.workspace.blobs.put(self.runtime.content)
+        self.runtime = self.workspace.kernel_runtime()
 
     def parameters(self) -> Object:
         return {

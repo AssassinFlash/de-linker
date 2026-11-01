@@ -248,7 +248,14 @@ def build_report(source: Object) -> Report:
                     if name:
                         rows.append(row("actual", name))
                 else:
-                    rows.append(row("actual", number(check["actual"], locale, unit)))
+                    rows.append(
+                        row(
+                            "controller_group_size"
+                            if semantic_id == "plant_controller_network_count"
+                            else "actual",
+                            number(check["actual"], locale, unit),
+                        )
+                    )
             if isinstance(check["required"], (int, float)) and not isinstance(
                 check["required"], bool
             ):
@@ -257,7 +264,12 @@ def build_report(source: Object) -> Report:
                         rows.append(row("required", check["required_label"]))
                 else:
                     rows.append(
-                        row("required", number(check["required"], locale, unit))
+                        row(
+                            "controller_network_max"
+                            if semantic_id == "plant_controller_network_count"
+                            else "required",
+                            number(check["required"], locale, unit),
+                        )
                     )
             elif isinstance(check["required"], list) and all(
                 isinstance(n, (int, float)) and not isinstance(n, bool)
@@ -274,6 +286,16 @@ def build_report(source: Object) -> Report:
                 for field in ("actual", "required"):
                     if check.get(field) in ("grid_connected", "backup"):
                         rows.append(row(field, text(check[field], locale)))
+            if semantic_id == "plant_controller_network_count":
+                network = check.get("control_network")
+                rows.append(
+                    row(
+                        "control_network",
+                        str(network).upper()
+                        if network
+                        else text("not_specified", locale),
+                    )
+                )
             if semantic_id == "plant_operating_scope":
                 network = check.get("control_network")
                 rows.append(
@@ -320,11 +342,14 @@ def build_report(source: Object) -> Report:
                         source_display_value = text(
                             "sales_" + source_display_value, locale
                         )
+                    if cited.get("figure_key") == "max_lan_inverters":
+                        source_display_value = "LAN · " + source_display_value
+                    if fact.get("raw_unit") and fact.get("unit") != "count":
+                        source_display_value += f" {fact['raw_unit']}"
                     rows.append(
                         ReportRow(
                             label=label,
-                            value=source_display_value
-                            + (f" {fact['raw_unit']}" if fact.get("raw_unit") else ""),
+                            value=source_display_value,
                             href=url,
                         )
                     )
@@ -367,7 +392,9 @@ def build_report(source: Object) -> Report:
                 check_title = f"{text('plant_group', locale)} {check['group_name']} · {check_title}"
             sections.append(
                 ReportSection(
-                    id=f"check-{index}",
+                    id=f"check-controller-network-{index}"
+                    if semantic_id == "plant_controller_network_count"
+                    else f"check-{index}",
                     title=check_title,
                     rows=rows,
                     paragraphs=paragraphs,

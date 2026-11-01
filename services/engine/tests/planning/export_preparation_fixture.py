@@ -18,12 +18,15 @@ actually consumes without any test noticing.
 
 from __future__ import annotations
 
+import argparse
+import hashlib
 import json
 import platform
 import sys
 import uuid
 from collections.abc import Iterator
 from contextlib import contextmanager
+from datetime import UTC, datetime
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Any, cast
@@ -690,11 +693,59 @@ def rendered() -> str:
     return json.dumps(capture(), ensure_ascii=False, indent="\t") + "\n"
 
 
+def native_export() -> dict[str, Any]:
+    """Produce the host fixture and its matching manifest entry in one run."""
+    host = f"{sys.platform}-{platform.machine()}"
+    source = fixture_runtime_snapshot().sha256
+    fixture = capture()
+    if fixture_runtime_snapshot().sha256 != source:
+        raise RuntimeError("source changed during the native fixture export")
+    runtime = decode_object(RuntimeSnapshot.capture().content)
+    canonical = json.dumps(fixture, sort_keys=True, ensure_ascii=False).encode()
+    return {
+        "host": host,
+        "source_sha256": source,
+        "fixture": fixture,
+        "baseline": {
+            "fixture": f"preparation-flow-{host}.json",
+            "canonical_sorted_json_sha256": hashlib.sha256(canonical).hexdigest(),
+            "runtime": {
+                key: runtime[key]
+                for key in ("dependencies", "libc", "machine", "platform", "python")
+            },
+            "export_run": "native:"
+            + host
+            + ":"
+            + datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        },
+    }
+
+
 if __name__ == "__main__":
-    target = (
-        APP
-        / "tests/fixtures"
-        / f"preparation-flow-{sys.platform}-{platform.machine()}.json"
+    parser = argparse.ArgumentParser(
+        description="Export the native browser preparation fixture and its manifest entry."
     )
-    target.write_text(rendered())
-    print(target)
+    parser.add_argument(
+        "--stdout",
+        action="store_true",
+        help="Return one JSON export for a controller without writing local fixture files.",
+    )
+    options = parser.parse_args()
+    result = native_export()
+    if options.stdout:
+        print(json.dumps(result, ensure_ascii=False))
+    else:
+        directory = APP / "tests/fixtures"
+        manifest_path = directory / "preparation-flow-platforms.json"
+        manifest = json.loads(manifest_path.read_text())
+        if result["host"] not in manifest["baselines"]:
+            parser.error("this host has no declared preparation fixture baseline")
+        target = directory / result["baseline"]["fixture"]
+        target.write_text(
+            json.dumps(result["fixture"], ensure_ascii=False, indent="\t") + "\n"
+        )
+        manifest["baselines"][result["host"]] = result["baseline"]
+        manifest_path.write_text(
+            json.dumps(manifest, ensure_ascii=False, indent="\t") + "\n"
+        )
+        print(target)

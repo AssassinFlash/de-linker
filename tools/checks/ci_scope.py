@@ -154,6 +154,11 @@ GENIE_COMMERCE_INPUTS = (
     "plugins/linker-commerce/includes/Products/SelectionFacts.php",
     *ENGINE_PUBLICATION_INPUTS,
 )
+CABLE_ADOPTION = "plugins/linker-commerce/data/cable-references.json"
+COMMERCE_COMPATIBILITY = "plugins/linker-commerce/data/compatibility.json"
+PLANNER_CHUNK = re.compile(
+    r"plugins/linker-tools/build/planner/assets/([A-Za-z0-9_-]+)-[A-Za-z0-9_-]{8}\.js"
+)
 ENGINE_TOOLS_SCHEMAS = "plugins/linker-tools/src/configurator/schema/"
 
 
@@ -280,6 +285,10 @@ def selected_modules(changes, base="", head=""):
         elif path.startswith("mu-plugins/"):
             selected.add("php:mu")
             selected.update(native)
+        elif path == CABLE_ADOPTION:
+            # The CLI reads this once for adoption. Engine/Genie consume Woo
+            # publications, never this input file as a runtime data source.
+            selected.update(("php:commerce", "content"))
         elif path.startswith("plugins/"):
             parts = path.split("/")
             package = parts[1]
@@ -304,6 +313,7 @@ def selected_modules(changes, base="", head=""):
                     selected.add("genie")
             elif (
                 path.endswith(".php")
+                or path == COMMERCE_COMPATIBILITY
                 or relative.startswith(("content/", "languages/", "tests/php/"))
                 or parts[-1].startswith(("composer.", "phpunit", "phpstan", "phpcs"))
             ):
@@ -315,6 +325,8 @@ def selected_modules(changes, base="", head=""):
                     selected.add("php:commerce")
                 if not relative.startswith("tests/"):
                     selected.add("content")
+                if path == COMMERCE_COMPATIBILITY:
+                    selected.update(("engine", "python:migrate"))
                 if name == "commerce" and relative.startswith(
                     "includes/Products/Publication"
                 ):
@@ -464,7 +476,7 @@ def module_inputs(module):
             "services/engine/",
             *ENGINE_PLANNER_INPUTS,
             "fixtures/planning/",
-            commerce + "data/compatibility.json",
+            COMMERCE_COMPATIBILITY,
             *ENGINE_PUBLICATION_INPUTS,
             ENGINE_TOOLS_SCHEMAS,
             *ENGINE_DOC_INPUTS,
@@ -682,7 +694,18 @@ def diff_changes(base, head):
             if status.startswith(("R", "C")):
                 if not fields:
                     raise ValueError("Missing destination in Git structural record")
-                fields.pop(0)
+                destination = fields.pop(0)
+                old_chunk = PLANNER_CHUNK.fullmatch(path)
+                new_chunk = PLANNER_CHUNK.fullmatch(destination)
+                if (
+                    status.startswith("R")
+                    and old_chunk
+                    and new_chunk
+                    and old_chunk[1] == new_chunk[1]
+                ):
+                    # Vite changed the content hash of this generated bundle.
+                    # The no-renames diff retains both paths and Planner rebuilds them.
+                    continue
             changes.append((status, path))
         return changes
 

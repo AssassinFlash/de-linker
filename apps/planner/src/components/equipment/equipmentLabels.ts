@@ -19,6 +19,8 @@ export function equipmentCheckLabel(id: string): string {
 			return __("Converters in the group", "linker-tools");
 		case "plant_joint_operation":
 			return __("Joint operation", "linker-tools");
+		case "plant_controller_network_count":
+			return __("Inverters on the controller network", "linker-tools");
 		case "plant_controller":
 			return __("Shared controller", "linker-tools");
 		case "plant_pv_allocation":
@@ -142,6 +144,16 @@ export function equipmentReason(reason: string): string | null {
 	if (reason === "parallel_count_uses_applicable_manufacturer_limit")
 		return __(
 			"Group size is checked only against manufacturer limits documented for the declared operating mode, topology and communication setup. If no applicable limit is documented, it remains unknown.",
+			"linker-tools",
+		);
+	if (reason === "current_cited_controller_network_limit_required")
+		return __(
+			"The comparison requires a network type and the manufacturer’s inverter limit for that network.",
+			"linker-tools",
+		);
+	if (reason === "controller_network_limit_comparison")
+		return __(
+			"The limit applies to the selected controller and network. The operating limits of the inverter group are shown separately.",
 			"linker-tools",
 		);
 	if (reason === "maximum_grid_output_is_necessary_bound_only")

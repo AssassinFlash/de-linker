@@ -52,6 +52,7 @@ final class ShortcodesTest extends TestCase {
 			'linker_checkout'           => 'checkout',
 			'linker_draft_empty'        => 'draft_empty',
 			'linker_faqs'               => 'faqs',
+			'linker_faq_rows'           => 'faq_rows',
 			'linker_contact_link'       => 'contact_link',
 			'linker_contact_invitation' => 'contact_invitation',
 			'linker_site_url'           => 'site_url',
@@ -220,6 +221,133 @@ final class ShortcodesTest extends TestCase {
 		$this->assertStringNotContainsString( 'Welchen Strom', $html );
 		$this->assertStringNotContainsString( '<section', $html );
 		unset( $GLOBALS['product'] );
+	}
+
+	/**
+	 * One authorized read gates LC content and supplies its native nested rows.
+	 *
+	 * @dataProvider faq_section_languages
+	 * @param string $language Page language.
+	 * @param string $question Expected original question.
+	 */
+	public function test_faq_section_reads_once_and_keeps_rows_scoped( string $language, string $question ): void {
+		$codes = $this->section_faq_product( $language );
+		WP_Mock::userFunction( 'get_posts' )->once()->andReturn( array( 1178 ) );
+		WP_Mock::userFunction( 'do_shortcode' )->once()->andReturnUsing(
+			function ( string $content ) use ( $codes, $question ): string {
+				$this->assertSame( '<section>[linker_faq_rows]</section>', $content );
+				$this->assertStringContainsString( $question, $codes->faq_rows() );
+				return '<section>' . $codes->faq_rows() . '</section>';
+			}
+		);
+		$this->assertSame( '', $codes->faq_rows() );
+		$html = $codes->faqs( array(), '<section>[linker_faq_rows]</section>' );
+		$this->assertStringContainsString( '<section><details', $html );
+		$this->assertStringContainsString( $question, $html );
+		$this->assertSame( '', $codes->faq_rows() );
+		unset( $GLOBALS['product'] );
+	}
+
+	/**
+	 * Both independently authored language rows.
+	 *
+	 * @return array<string,array{string,string}>
+	 */
+	public static function faq_section_languages(): array {
+		return array(
+			'English' => array( 'en', 'Current question?' ),
+			'German'  => array( 'de', 'Aktuelle Frage?' ),
+		);
+	}
+
+	/**
+	 * A later rendering always reauthorizes current permission and source bytes.
+	 *
+	 * @dataProvider faq_section_revocations
+	 * @param string $change Permission/source change.
+	 * @param int    $downloads Remaining current document links.
+	 */
+	public function test_faq_section_does_not_reuse_revoked_rows( string $change, int $downloads ): void {
+		$codes = $this->section_faq_product( 'en' );
+		WP_Mock::userFunction( 'do_shortcode' )->once()->andReturnUsing( static fn (): string => $codes->faq_rows() );
+		$this->assertNotSame( '', $codes->faqs( array(), '[linker_faq_rows]' ) );
+		if ( 'withdrawn' === $change ) {
+			WP_Mock::userFunction( 'get_post_status' )->with( 1178 )->andReturn( 'draft' );
+		} elseif ( 'missing' === $change ) {
+			unlink( $this->publication_uploads . '/2026/manual.pdf' );
+		} else {
+			file_put_contents( $this->publication_uploads . '/2026/manual.pdf', "%PDF-1.4\nCurrent replacement with different source bytes.\n%%EOF" );
+		}
+		clearstatcache();
+		$this->assertSame( '', $codes->faqs( array(), '<section>[linker_faq_rows]</section>' ) );
+		$this->assertSame( '', $codes->faq_rows() );
+		$this->assertCount( $downloads, ( new \Linker\Commerce\Storefront\ProductView() )->downloads( 1178 ) );
+		unset( $GLOBALS['product'] );
+	}
+
+	/**
+	 * Permission and source mutations after a successful page rendering.
+	 *
+	 * @return array<string,array{string,int}>
+	 */
+	public static function faq_section_revocations(): array {
+		return array(
+			'withdrawn'            => array( 'withdrawn', 0 ),
+			'missing file'         => array( 'missing', 0 ),
+			'same URL replacement' => array( 'replacement', 1 ),
+		);
+	}
+
+	/** An exception in another LC data fragment cannot retain the authorized rows. */
+	public function test_faq_section_releases_rows_when_nested_rendering_fails(): void {
+		$codes = $this->section_faq_product( 'en' );
+		WP_Mock::userFunction( 'do_shortcode' )->once()->andThrow( new \RuntimeException( 'Fragment failed' ) );
+		try {
+			$codes->faqs( array(), '[linker_faq_rows]' );
+			$this->fail( 'The fragment exception must remain visible.' );
+		} catch ( \RuntimeException $error ) {
+			$this->assertSame( 'Fragment failed', $error->getMessage() );
+		} finally {
+			$this->assertSame( '', $codes->faq_rows() );
+			unset( $GLOBALS['product'] );
+		}
+	}
+
+	/** WordPress can pass empty content for the original standalone shortcode. */
+	public function test_standalone_faqs_accepts_native_empty_content(): void {
+		$codes = $this->section_faq_product( 'en' );
+		$this->assertStringContainsString( 'Current question?', $codes->faqs( array(), '' ) );
+		$this->assertSame( '', $codes->faq_rows() );
+		unset( $GLOBALS['product'] );
+	}
+
+	/**
+	 * Current original bytes and EN/DE content, owned by this presentation test.
+	 *
+	 * @param string $language Page language.
+	 */
+	private function section_faq_product( string $language ): Shortcodes {
+		$product = Mockery::mock( WC_Product::class );
+		$product->allows( 'get_id' )->andReturn( 1178 );
+		$GLOBALS['product'] = $product; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WooCommerce's global.
+		$this->current_faq_product(
+			1178,
+			array(
+				array(
+					'question'    => 'Current question?',
+					'answer'      => 'Current answer.',
+					'question_de' => 'Aktuelle Frage?',
+					'answer_de'   => 'Aktuelle Antwort.',
+					'citation'    => array(
+						'url'  => 'https://de-linker.com/wp-content/uploads/2026/manual.pdf',
+						'page' => 1,
+					),
+				),
+			)
+		);
+		WP_Mock::userFunction( 'pll_current_language' )->andReturn( $language );
+		WP_Mock::passthruFunction( 'wpautop' );
+		return $this->shortcodes();
 	}
 
 	/**

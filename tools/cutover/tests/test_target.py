@@ -10,19 +10,23 @@ from __future__ import annotations
 
 import shutil
 import signal
+import ssl
 import subprocess
 import sys
 import textwrap
 import threading
+import urllib.error
 from collections.abc import Iterator
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import DEFAULT, patch
 
 import pytest
 
 from linker_cutover.target import (
     HOST,
+    OPENER,
     PLUGINS,
     CutoverError,
     Target,
@@ -178,6 +182,25 @@ def test_an_error_status_is_the_status_the_address_answered(
     """A 404 is a finding about the site, not an exception the caller has to catch."""
     target, _ = site
     assert target.http("/missing/", cache_buster="r1") == (404, "not found")
+
+
+def test_tls_eof_retries_only_the_interrupted_get(
+    site: tuple[Target, list[str]],
+) -> None:
+    target, requested = site
+    interrupted = urllib.error.URLError(ssl.SSLEOFError("handshake ended"))
+    with patch.object(
+        OPENER, "open", wraps=OPENER.open, side_effect=[interrupted, DEFAULT]
+    ) as opening:
+        assert target.http("/de/produkte/", cache_buster="batch")[0] == 200
+        assert [call.args[0].full_url for call in opening.call_args_list] == [
+            f"{target.base_url}/de/produkte/?cbq=batch"
+        ] * 2
+    assert requested == ["/de/produkte/?cbq=batch"]
+    with patch.object(OPENER, "open", side_effect=interrupted) as opening:
+        with pytest.raises(CutoverError, match="handshake ended"):
+            target.http("/terms-of-sale/")
+        assert opening.call_count == 2
 
 
 def test_a_single_file_copies_out_and_in_without_the_directory_form(
