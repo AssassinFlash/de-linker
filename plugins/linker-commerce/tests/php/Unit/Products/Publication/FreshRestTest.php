@@ -137,6 +137,6 @@ final class FreshRestTest extends TestCase {
 				$this->assertSame( 'no-store, private, max-age=0', $response->get_headers()['Cache-Control'] );
 			}
 		}
-		$this->assertTrue( DONOTCACHEPAGE );
+		$this->assertTrue( defined( 'DONOTCACHEPAGE' ) && DONOTCACHEPAGE );
 	}
 }
