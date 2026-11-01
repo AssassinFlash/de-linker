@@ -37,8 +37,14 @@ def test_runs_wp_cli_under_the_given_php_with_the_instance_ini(
     ]
 
 
-def test_wp_cli_never_offers_to_replace_itself() -> None:
-    environment = wpcli.environment({"LINKER_LOCAL_LOGIN": "local-admin"})
+def test_wp_cli_keeps_project_configuration_without_research_credentials(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("APIFY_TOKEN_PRIMARY", "synthetic-research")
+    environment = wpcli.environment(
+        {"LINKER_LOCAL_LOGIN": "local-admin", "APIFY_TOKEN_ALT": "synthetic-extra"}
+    )
+    assert not any(key.startswith("APIFY_") for key in environment)
 
     assert environment["WP_CLI_DISABLE_AUTO_CHECK_UPDATE"] == "1"
     assert environment["LINKER_LOCAL_LOGIN"] == "local-admin"

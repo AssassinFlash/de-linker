@@ -125,6 +125,7 @@ def test_genie_launch_omits_weather_credential_and_keeps_its_own_model_environme
             launches.append(env)
 
     monkeypatch.setenv("APIFY_TOKEN", "synthetic-private-weather")
+    monkeypatch.setenv("APIFY_TOKEN_PRIMARY", "synthetic-research-alias")
     monkeypatch.setenv("DEEPSEEK_API_KEY", "synthetic-private-genie-model")
     monkeypatch.setattr(services, "_uv", lambda: Path(sys.executable))
     monkeypatch.setattr(services, "service_token", lambda _: "synthetic-service")
@@ -143,7 +144,7 @@ def test_genie_launch_omits_weather_credential_and_keeps_its_own_model_environme
     monkeypatch.setattr(wp, "run", lambda *a, **k: "")
     services.serve(instance, checkout, wp, only="genie")
     assert len(launches) == 1
-    assert "APIFY_TOKEN" not in launches[0]
+    assert not any(key.startswith("APIFY_") for key in launches[0])
     assert launches[0]["DEEPSEEK_API_KEY"] == "synthetic-private-genie-model"
     assert "--no-sync" in commands[0] and "--offline" in commands[0]
     assert "synthetic-private-weather" not in " ".join(commands[0])

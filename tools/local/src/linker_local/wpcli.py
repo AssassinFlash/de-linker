@@ -8,6 +8,7 @@ import subprocess
 from pathlib import Path
 
 from linker_local.instance import Instance
+from linker_local.processes import without_research_credentials
 
 # The production host runs WP-CLI 2.12.0 (docs/research/2026-10-09/framework-choice.md §2).
 VERSION = "2.12"
@@ -30,7 +31,9 @@ def phar() -> Path:
 def environment(extra: dict[str, str] | None = None) -> dict[str, str]:
     """The environment of every WP-CLI run. A person running WP-CLI is offered
     to replace its phar (Runner::auto_check_update()); it stays on 2.12."""
-    return {**os.environ, "WP_CLI_DISABLE_AUTO_CHECK_UPDATE": "1", **(extra or {})}
+    return without_research_credentials(
+        {**os.environ, "WP_CLI_DISABLE_AUTO_CHECK_UPDATE": "1", **(extra or {})}
+    )
 
 
 def require_version(php: Path) -> None:
