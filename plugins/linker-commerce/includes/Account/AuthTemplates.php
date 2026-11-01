@@ -90,7 +90,7 @@ final class AuthTemplates {
 	}
 
 	/**
-	 * English authentication endpoint titles use their existing card headings.
+	 * English account titles use their existing page and endpoint headings.
 	 *
 	 * SEOPress otherwise repeats the parent account page's saved sign-in title.
 	 * Both title entry points share this callback; independent German titles
@@ -110,10 +110,25 @@ final class AuthTemplates {
 			$heading = __( 'Create your business account', 'linker-commerce' );
 		} elseif ( is_wc_endpoint_url( 'lost-password' ) ) {
 			$heading = __( 'Reset your password', 'linker-commerce' );
+		} elseif ( is_user_logged_in() ) {
+			$endpoint = WC()->query->get_current_endpoint();
+			if ( '' === $endpoint ) {
+				$heading = __( 'Overview', 'linker-commerce' );
+			} elseif ( 'view-order' === $endpoint ) {
+				// The document head precedes Woo's body permission check. Never
+				// ask the endpoint-title filter for a private inquiry number first.
+				// phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce's native view_order meta capability checks order ownership.
+				$allowed = current_user_can( 'view_order', absint( get_query_var( 'view-order' ) ) );
+				$heading = $allowed ? WC()->query->get_endpoint_title( $endpoint ) : __( 'Inquiry', 'linker-commerce' );
+			} elseif ( in_array( $endpoint, array( 'orders', 'saved-solutions', 'documents', 'edit-address', 'edit-account' ), true ) ) {
+				$heading = WC()->query->get_endpoint_title( $endpoint );
+			} else {
+				return $title;
+			}
 		} else {
 			return $title;
 		}
-		return $heading . ' | ' . get_bloginfo( 'name' );
+		return '' === trim( $heading ) ? $title : $heading . ' | ' . get_bloginfo( 'name' );
 	}
 
 	/**
