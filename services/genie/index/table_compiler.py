@@ -18,6 +18,7 @@ from index.publication import (
     scope_proofs,
 )
 from linker_genie.certificate_scope import has_explicit_exclusion
+from linker_genie.compatibility_physical import physical_key, valid_physical_evidence
 from linker_genie.family_scope import family_id
 from linker_genie.publication import PublicationClient, Snapshot
 from linker_genie.publication_scope import author_scope_allows
@@ -501,11 +502,28 @@ def _footnote_sources(
 def external_axis_anchors(chunks: list[Chunk]) -> dict[str, dict[str, Any]]:
     """Derive canonical table anchors from original chunks, not projections."""
     from linker_genie.table_projection import native_chunk_id_matches
+    from linker_genie.warranty_named import is_named_policy_overview
 
     by_id = {chunk.id: chunk for chunk in chunks}
     anchors: dict[str, dict[str, Any]] = {}
-    policy_shas: set[str] = set()
+    policy_shas: set[str] = {
+        chunk.doc_sha256
+        for chunk in chunks
+        if chunk.page == 1
+        and chunk.section == "OVERVIEW"
+        and chunk.kind == "text"
+        and not chunk.source_picture
+        and native_chunk_id_matches(
+            chunk.doc_sha256, chunk.page, "text", chunk.text, chunk.id
+        )
+        and is_named_policy_overview(chunk.text)
+    }
     for chunk in chunks:
+        for evidence in chunk.source_physical_evidence:
+            if valid_physical_evidence(
+                evidence, chunk.doc_sha256, chunk.id, chunk.text
+            ):
+                anchors[physical_key(chunk.id)] = evidence
         if chunk.source_pdf_cover:
             from linker_genie.warranty_scope import valid_pdf_cover
 
@@ -1070,6 +1088,27 @@ def compile_scopes(
     )
     output.extend(overviews)
     result.update(overview_scopes)
+    from index.compatibility_units import compile_physical_compatibility
+
+    physical, physical_scopes = compile_physical_compatibility(
+        relevant,
+        overviews,
+        overview_scopes,
+        source,
+        statuses,
+        tokenizer,
+        max_tokens,
+        source_anchors,
+    )
+    output.extend(physical)
+    result.update(physical_scopes)
+    from index.hs3_evidence import compile_hs3_evidence
+
+    hs3_units, hs3_scopes = compile_hs3_evidence(
+        relevant, source, statuses, tokenizer, max_tokens
+    )
+    output.extend(hs3_units)
+    result.update(hs3_scopes)
     manual_units, manual_scopes = _family_units(
         relevant, source, statuses, tokenizer, max_tokens, result, contexts
     )
@@ -1105,6 +1144,13 @@ def compile_scopes(
     )
     output.extend(terms)
     result.update(term_scopes)
+    from index.warranty_named import compile_named_terms
+
+    named_terms, named_scopes = compile_named_terms(
+        relevant, source, tokenizer, max_tokens, restricted_contexts=contexts
+    )
+    output.extend(named_terms)
+    result.update(named_scopes)
     certificates, certificate_scopes = compile_certificate_subjects(
         relevant, source, tokenizer, max_tokens, contexts
     )

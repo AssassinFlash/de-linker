@@ -10,6 +10,8 @@ from typing import Any, cast
 from index.chunking import Chunk, Tokenizer
 from index.inventory import document_kind_of
 from index.publication import ScopeProof
+from linker_genie.manual_diagram import model_list_descriptor, physical_descriptor
+from linker_genie.manual_diagram_records import DIAGRAMS
 from linker_genie.manual_evidence import evidence_id, subject_matches
 from linker_genie.manual_evidence_records import RECORDS
 from linker_genie.publication import Snapshot
@@ -33,7 +35,7 @@ def compile_manual_evidence(
     positions = {chunk.id: i for i, chunk in enumerate(chunks)}
     output: list[Chunk] = []
     proofs: dict[str, ScopeProof] = {}
-    for record in RECORDS:
+    for record in [*RECORDS, *DIAGRAMS]:
         anchor = by_id.get(record["anchor_id"])
         body = by_id.get(record["source_id"])
         anchor_text = (
@@ -56,7 +58,15 @@ def compile_manual_evidence(
             or _digest(anchor_text) != record["anchor_sha256"]
             or _digest(body.text) != record["source_sha256"]
             or record["anchor_quote"] not in anchor_text
-            or record["excerpt"] not in body.text
+            or (
+                (
+                    physical_descriptor(record) not in body.source_physical_evidence
+                    or model_list_descriptor(record)
+                    not in anchor.source_physical_evidence
+                )
+                if "figure" in record
+                else record["excerpt"] not in body.text
+            )
         ):
             continue
         for pid, product in source.products.items():
@@ -185,6 +195,16 @@ def compile_manual_evidence(
                     "source_text": body.text,
                     "anchor_id": anchor.id,
                     "anchor_text": anchor_text,
+                    **(
+                        {"physical_evidence": physical_descriptor(record)}
+                        if "figure" in record
+                        else {}
+                    ),
+                    **(
+                        {"physical_model_evidence": model_list_descriptor(record)}
+                        if "figure" in record
+                        else {}
+                    ),
                     **({"clearance": clearance} if clearance is not None else {}),
                 },
             }
@@ -193,7 +213,8 @@ def compile_manual_evidence(
                 if not author_scope_allows(proof, {pid}, source.products):
                     continue
             text = str(record["excerpt"])
-            header = f"{model} | {body.section} | p. {body.page}"
+            section = str(record.get("display_section", body.section))
+            header = f"{model} | {section} | p. {body.page}"
             tokens = tokenizer.count(header + "\n" + text)
             if tokens > max_tokens:
                 continue
@@ -201,7 +222,14 @@ def compile_manual_evidence(
             if cid in proofs:
                 continue
             output.append(
-                replace(body, id=cid, header=header, text=text, tokens=tokens)
+                replace(
+                    body,
+                    id=cid,
+                    section=section,
+                    header=header,
+                    text=text,
+                    tokens=tokens,
+                )
             )
             proofs[cid] = cast(ScopeProof, proof)
     return output, proofs

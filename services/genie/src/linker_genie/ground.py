@@ -328,6 +328,7 @@ def check(
     failures.extend(_no_amount_from_attachments(output, facts))
     failures.extend(_no_sent_claim(output))
     failures.extend(_warranty_sources(output, facts, route, question, page_product_id))
+    failures.extend(_conditional_certificate_sources(output, facts))
     failures.extend(_extreme(output, facts))
     failures.extend(_handoff_only_when_out_of_scope(output, route))
     if route is not None:
@@ -340,6 +341,56 @@ def check(
         citations=tuple(citations),
         unbound_only=bool(number_failures) and len(failures) == len(number_failures),
     )
+
+
+def _conditional_certificate_sources(output: TurnOutput, facts: TurnFacts) -> list[str]:
+    """A used HS3 unit keeps its complete condition; other blocks stay independent."""
+    protected = set(facts.conditional_certificate_answers)
+    supporting_only = {
+        source
+        for cid in protected
+        for source in facts.supporting_documents.get(cid, ())
+        if f"{source}.text" not in facts.facts
+    }
+    used: set[str] = set()
+    for block in output.blocks:
+        if isinstance(block, TextBlock):
+            cited = set(block.refs) & protected
+            if set(block.refs) & supporting_only and not cited:
+                return [
+                    "cite the conditional certificate unit, not a supporting link alone"
+                ]
+            figures = {
+                chunk
+                for fact_id in leftover_placeholders(block.text)
+                if (chunk := chunk_of(fact_id)) in protected
+            }
+            if not cited and not figures:
+                continue
+            if len(cited) != 1 or not figures.issubset(cited):
+                return [
+                    "cite exactly one conditional certificate unit in its own text block"
+                ]
+            cid = next(iter(cited))
+            answer = facts.conditional_certificate_answers[cid].get(output.language)
+            if not answer or block.text != answer:
+                return ["use the complete conditional certificate answer for this unit"]
+            used.add(cid)
+        elif isinstance(block, HandoffBlock) and any(
+            chunk_of(fact_id) in protected
+            for fact_id in leftover_placeholders(block.summary)
+        ):
+            return [
+                "conditional certificate figures require their complete source answer"
+            ]
+    if any(
+        isinstance(block, DocumentBlock)
+        and block.ref in protected
+        and block.ref not in used
+        for block in output.blocks
+    ):
+        return ["a conditional certificate link requires its complete source answer"]
+    return []
 
 
 _WARRANTY_CONTEXT = re.compile(
@@ -507,7 +558,12 @@ def _warranty_sources(
             allowed = facts.warranty_answers.get(cid, {})
             if (
                 not notes
-                or any(note.lang != output.language for note in notes)
+                or (
+                    any(note.lang != output.language for note in notes)
+                    and not (
+                        output.language == "de" and cid in facts.warranty_translated_de
+                    )
+                )
                 or block.text not in allowed.values()
             ):
                 return [

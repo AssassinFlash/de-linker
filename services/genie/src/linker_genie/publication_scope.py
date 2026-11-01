@@ -16,7 +16,9 @@ from linker_genie.certificate_scope import (
     valid_certificate_fragment,
     valid_certificate_scope,
 )
+from linker_genie.compatibility_physical import valid_inverter_scope, valid_iot_scope
 from linker_genie.family_scope import valid_family_scope
+from linker_genie.hs3_evidence import valid_hs3_scope
 from linker_genie.manual_evidence import valid_reviewed_manual
 from linker_genie.source_models import model_pattern
 from linker_genie.source_roles import (
@@ -48,6 +50,17 @@ def _compatibility_document(document: Mapping[str, Any]) -> bool:
     return str(document.get("role", "")).casefold() == "compatibility_list" or str(
         document.get("type", "")
     ).casefold() in {"compatibility", "kompatibilität"}
+
+
+def _compatibility_evidence_document(document: Mapping[str, Any]) -> bool:
+    """New multi-document relations require the current role's own purpose."""
+    label = str(document.get("role", "")).strip() or str(document.get("type", ""))
+    return label.casefold() in {
+        "compatibility",
+        "compatibility_list",
+        "kompatibilität",
+        "kompatibilitätsliste",
+    }
 
 
 def author_scope_allows(
@@ -105,6 +118,22 @@ def _authorize_core(
     wanted = set(product_ids)
     if not wanted:
         return []
+    if scope is not None and scope.get("basis") == "hs3_conditional_certificate":
+        if (
+            products is None
+            or documents is None
+            or not valid_hs3_scope(
+                scope,
+                product_ids,
+                products,
+                documents,
+                sha=sha,
+                chunk_id=chunk_id,
+                text=text,
+                anchors=external_axis_anchors,
+            )
+        ):
+            return []
     if scope is not None and (
         scope.get("basis") == "certificate_subject" or "certificate_scope" in scope
     ):
@@ -181,6 +210,47 @@ def _authorize_core(
             or any(
                 did not in documents or not _compatibility_document(documents[did])
                 for did in scope.get("document_ids", [])
+            )
+        ):
+            return []
+    if scope is not None and scope.get("basis") == "compatibility_inverter":
+        if (
+            products is None
+            or documents is None
+            or any(
+                did not in documents
+                or not _compatibility_evidence_document(documents[did])
+                for did in scope.get("document_ids", [])
+            )
+            or not valid_inverter_scope(
+                scope,
+                product_ids,
+                products,
+                documents,
+                sha=sha,
+                chunk_id=chunk_id,
+                text=text,
+                anchors=external_axis_anchors,
+            )
+        ):
+            return []
+    if scope is not None and scope.get("basis") == "compatibility_iot":
+        if (
+            products is None
+            or documents is None
+            or any(
+                did not in documents
+                or not _compatibility_evidence_document(documents[did])
+                for did in scope.get("document_ids", [])
+            )
+            or not valid_iot_scope(
+                scope,
+                product_ids,
+                products,
+                sha=sha,
+                chunk_id=chunk_id,
+                text=text,
+                anchors=external_axis_anchors,
             )
         ):
             return []
@@ -350,7 +420,7 @@ def authorize_chunk(
     available = _authorize_core(
         sha, product_ids, associations, scope, chunk_id=chunk_id, text=text, **args
     )
-    if basis == "certificate_subject":
+    if basis in {"certificate_subject", "hs3_conditional_certificate"}:
         return available
     # The complete original group is checked before choosing a non-certificate
     # relation. A certificate relation never carries raw technical source text.

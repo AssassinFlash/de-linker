@@ -12,7 +12,15 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
-from linker_genie.figures import chunk_of, swap_decimals
+from linker_genie.figures import chunk_of, swap_decimals, tag
+from linker_genie.hs3_evidence import (
+    CERTIFICATE,
+    DATA_MODELS,
+    MANUAL_MODEL,
+    conditional_answers,
+    evidence_id,
+    source_text,
+)
 from linker_genie.stock import phrase
 from linker_genie.tools import READ_ATTACHMENT, READ_PAGE, READ_PLANNING, READ_SOLUTION
 from linker_genie.warranty_answer import answers as warranty_answers
@@ -59,9 +67,16 @@ class TurnFacts:
     # Fact or chunk ID → the document it names (search-knowledge hits, pairing
     # documents), so a document block can link it instead of printing the URL.
     documents: dict[str, Document] = field(default_factory=dict)
+    supporting_documents: dict[str, tuple[str, ...]] = field(default_factory=dict)
+    # Only a complete, server-derived answer may use this conditional evidence.
+    conditional_certificate_answers: dict[str, dict[str, str]] = field(
+        default_factory=dict
+    )
     # A table projection's figures all carry these original conditions.
     qualifications: dict[str, tuple[Qualification, ...]] = field(default_factory=dict)
     warranty_chunks: set[str] = field(default_factory=set)
+    # A reviewed German rendering of an English policy, rechecked at collection.
+    warranty_translated_de: set[str] = field(default_factory=set)
     warranty_procedures: set[str] = field(default_factory=set)
     technical_chunks: set[str] = field(default_factory=set)
     warranty_models: dict[str, tuple[str, ...]] = field(default_factory=dict)
@@ -123,7 +138,7 @@ def collect(name: str, payload: Any, locale: str = "en") -> TurnFacts:
     elif name.endswith("size-hint"):
         _from_size_hint(gathered, payload)
     elif name.endswith("search-knowledge"):
-        _from_knowledge(gathered, payload)
+        _from_knowledge(gathered, payload, locale)
     elif name.endswith("inquiry-status"):
         _from_inquiry(gathered, payload, locale)
     elif name.endswith("handoff-team"):
@@ -285,8 +300,17 @@ def merge(parts: list[TurnFacts]) -> TurnFacts:
         combined.chunk_ids.update(part.chunk_ids)
         combined.tool_calls.extend(part.tool_calls)
         combined.documents.update(part.documents)
+        combined.supporting_documents.update(part.supporting_documents)
+        for cid, answers in part.conditional_certificate_answers.items():
+            previous_answers = combined.conditional_certificate_answers.get(cid)
+            combined.conditional_certificate_answers[cid] = (
+                answers
+                if previous_answers is None or previous_answers == answers
+                else {}
+            )
         combined.qualifications.update(part.qualifications)
         combined.warranty_chunks.update(part.warranty_chunks)
+        combined.warranty_translated_de.update(part.warranty_translated_de)
         combined.warranty_procedures.update(part.warranty_procedures)
         combined.technical_chunks.update(part.technical_chunks)
         for cid, answers in part.warranty_answers.items():
@@ -750,6 +774,11 @@ def knowledge_qualifications(hit: dict[str, Any]) -> tuple[Qualification, ...] |
         ):
             return None
         notes.append(Qualification(quote, page, chunk_id, lang))
+    if hit.get("compatibility_iot") is True and (
+        [note.page for note in notes] != [7, 9]
+        or notes[0].chunk_id == notes[1].chunk_id
+    ):
+        return None
     expected = [f"{note.quote} (p. {note.page})" for note in notes]
     # Search may tag figures inside the original condition. Reconstruct the
     # exact original line before trusting it, and bind every tag to this hit's
@@ -777,7 +806,7 @@ def knowledge_qualifications(hit: dict[str, Any]) -> tuple[Qualification, ...] |
     return tuple(notes)
 
 
-def _from_knowledge(gathered: TurnFacts, payload: dict[str, Any]) -> None:
+def _from_knowledge(gathered: TurnFacts, payload: dict[str, Any], locale: str) -> None:
     """Chunk IDs, the documents they stand in, and their figures.
 
     A chunk is linked as a document (`documents`, a document block, #233);
@@ -791,9 +820,68 @@ def _from_knowledge(gathered: TurnFacts, payload: dict[str, Any]) -> None:
         chunk_id = hit.get("chunk_id")
         if not isinstance(chunk_id, str) or not chunk_id:
             continue
+        if chunk_id.startswith(f"{CERTIFICATE[:12]}-p1-hs3-conditional-") and (
+            hit.get("conditional_certificate") is not True
+        ):
+            continue
         notes = knowledge_qualifications(hit)
         if notes is None:
             continue
+        if hit.get("conditional_certificate") is True:
+            models = hit.get("product_models")
+            products = hit.get("product_ids")
+            support = hit.get("supporting_documents")
+            if (
+                hit.get("doc_type") != "certificate"
+                or hit.get("title") != "EU Declaration of Conformity"
+                or hit.get("page") != 1
+                or not isinstance(hit.get("doc_url"), str)
+                or not hit["doc_url"]
+                or not isinstance(hit.get("document_id"), str)
+                or not hit["document_id"]
+                or not isinstance(products, list)
+                or len(products) != 1
+                or type(products[0]) is not int
+                or products[0] < 1
+                or not isinstance(models, list)
+                or len(models) != 1
+                or not isinstance(models[0], str)
+                or not isinstance(support, list)
+                or len(support) != 2
+                or not all(isinstance(item, dict) for item in support)
+                or not all(
+                    isinstance(item.get("chunk_id"), str)
+                    and type(item.get("page")) is int
+                    for item in support
+                )
+                or {(item.get("chunk_id"), item.get("page")) for item in support}
+                != {(DATA_MODELS, 2), (MANUAL_MODEL, 18)}
+                or not all(
+                    isinstance(item.get("doc_url"), str)
+                    and item["doc_url"]
+                    and isinstance(item.get("document_id"), str)
+                    and item["document_id"]
+                    and isinstance(item.get("document_revision"), str)
+                    and item["document_revision"]
+                    for item in support
+                )
+            ):
+                continue
+            model = models[0]
+            original = source_text(model)
+            answers = conditional_answers(chunk_id, model)
+            if original is None or not answers:
+                continue
+            tagged = tag(chunk_id, original)
+            if (
+                chunk_id != evidence_id(model, hit["document_id"], original)
+                or hit.get("text") != tagged.text
+                or hit.get("figures") != tagged.figures
+                or tagged.figures != {f"{chunk_id}.n{i}": str(i) for i in range(1, 9)}
+                or hit.get("conditional_certificate_answers") != answers
+            ):
+                continue
+            gathered.conditional_certificate_answers[chunk_id] = answers
         if (
             hit.get("doc_type") in {"manual", "datasheet"}
             and isinstance(hit.get("doc_url"), str)
@@ -825,6 +913,16 @@ def _from_knowledge(gathered: TurnFacts, payload: dict[str, Any]) -> None:
                     continue
                 gathered.warranty_chunks.add(chunk_id)
                 gathered.warranty_answers[chunk_id] = rendered
+                if (
+                    locale == "de"
+                    and hit.get("answer_language") == "de"
+                    and "| Model / Modell |" in str(hit.get("text", ""))
+                    and len(notes) == 11
+                    and all(note.lang == "en" for note in notes)
+                ):
+                    # The named renderer accepts only reviewed full original
+                    # source conditions and verifies every translated exclusion.
+                    gathered.warranty_translated_de.add(chunk_id)
             else:
                 gathered.warranty_procedures.add(chunk_id)
             gathered.warranty_models[chunk_id] = tuple(models)
@@ -865,6 +963,35 @@ def _from_knowledge(gathered: TurnFacts, payload: dict[str, Any]) -> None:
                 title=str(title) or _file_name(url),
                 page=page if isinstance(page, int) else None,
             )
+            support_ids: list[str] = []
+            for support in hit.get("supporting_documents", []):
+                if not isinstance(support, dict):
+                    continue
+                ref, support_url, support_page = (
+                    support.get("chunk_id"),
+                    support.get("doc_url"),
+                    support.get("page"),
+                )
+                if (
+                    not isinstance(ref, str)
+                    or not ref
+                    or not isinstance(support_url, str)
+                    or not support_url
+                    or type(support_page) is not int
+                    or support_page < 1
+                ):
+                    continue
+                gathered.documents[ref] = Document(
+                    url=support_url,
+                    title=str(support.get("title") or _file_name(support_url)),
+                    page=support_page,
+                )
+                gathered.chunk_ids.add(ref)
+                support_ids.append(ref)
+            if support_ids:
+                gathered.supporting_documents[chunk_id] = tuple(
+                    dict.fromkeys(support_ids)
+                )
             if notes:
                 gathered.qualifications[chunk_id] = notes
                 for note in notes:

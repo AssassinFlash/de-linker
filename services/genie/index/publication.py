@@ -112,6 +112,7 @@ class ScopeProof(TypedDict):
     reviewed_manual: NotRequired[dict[str, Any]]
     compatibility_pair: NotRequired[dict[str, Any]]
     compatibility_series: NotRequired[dict[str, Any]]
+    hs3_conditional_certificate: NotRequired[dict[str, Any]]
     table_projection: NotRequired[dict[str, Any]]
     family_scope: NotRequired[dict[str, Any]]
     author_restrictions: NotRequired[list[dict[str, Any]]]

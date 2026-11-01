@@ -30,6 +30,7 @@ from typing import Any
 from linker_genie.embedding import EmbeddingError
 from linker_genie.facts import TurnFacts, collect, knowledge_qualifications
 from linker_genie.figures import tag
+from linker_genie.hs3_evidence import conditional_answers
 from linker_genie.publication import (
     PublicationChanged,
     PublicationClient,
@@ -140,10 +141,18 @@ class KnowledgeSearch:
                 **({"warranty_procedure": True} if hit.warranty_procedure else {}),
                 **(
                     {"product_models": list(hit.product_models)}
-                    if hit.warranty_terms or hit.warranty_procedure
+                    if hit.warranty_terms
+                    or hit.warranty_procedure
+                    or hit.conditional_certificate
                     else {}
                 ),
                 **({"scope_note": hit.scope_note} if hit.scope_note else {}),
+                **({"compatibility_iot": True} if hit.compatibility_iot else {}),
+                **(
+                    {"supporting_documents": list(hit.supporting_documents)}
+                    if hit.supporting_documents
+                    else {}
+                ),
                 **(
                     {
                         "qualification_required": True,
@@ -178,7 +187,20 @@ class KnowledgeSearch:
             tagged = tag(hit.chunk_id, hit.text, excluded_spans=tuple(protected))
             entry["text"] = tagged.text
             entry["figures"] = tagged.figures
+            if hit.conditional_certificate:
+                if len(hit.product_models) != 1 or tagged.figures != {
+                    f"{hit.chunk_id}.n{i}": str(i) for i in range(1, 9)
+                }:
+                    continue
+                answers = conditional_answers(hit.chunk_id, hit.product_models[0])
+                if not answers:
+                    continue
+                entry["conditional_certificate"] = True
+                entry["conditional_certificate_answers"] = answers
             if hit.warranty_terms:
+                # The policy remains quoted in its original language; the
+                # reviewed explicit-model summary follows the requested UI.
+                entry["answer_language"] = lang
                 checked = knowledge_qualifications(entry)
                 rendered = warranty_answers(entry, checked) if checked else {}
                 if not rendered:
@@ -312,6 +334,43 @@ def model_view(
                     "scope_note": hit.get("scope_note", ""),
                 }
                 if hit.get("warranty_procedure") is True
+                else {}
+            )
+            | (
+                {
+                    "conditional_certificate": True,
+                    "product_models": hit.get("product_models", []),
+                    "conditional_certificate_answers": hit.get(
+                        "conditional_certificate_answers", {}
+                    ),
+                    "conditional_instruction": (
+                        "If citing this hit, copy the complete conditional_certificate_answers "
+                        "value for the answer language into its own text block and cite its "
+                        "chunk_id; do not infer an unconditional certificate."
+                    ),
+                }
+                if hit.get("conditional_certificate") is True
+                else {}
+            )
+            | (
+                {
+                    "compatibility_instruction": (
+                        "Page 7 describes single-unit anti-reflux. The page 9 global "
+                        "statement concerns parallel operation; do not turn it into a "
+                        "prohibition of single-unit operation."
+                    )
+                }
+                if hit.get("compatibility_iot") is True
+                else {}
+            )
+            | (
+                {
+                    "supporting_sources": [
+                        {key: source[key] for key in ("chunk_id", "title", "page")}
+                        for source in hit["supporting_documents"]
+                    ]
+                }
+                if hit.get("supporting_documents")
                 else {}
             )
             for hit in payload["hits"]

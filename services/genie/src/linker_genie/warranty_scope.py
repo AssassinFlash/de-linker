@@ -333,6 +333,13 @@ def terms_text(
     unprepared rather than receiving guessed terms.
     """
     policy = value.get("policy")
+    if (
+        isinstance(policy, dict)
+        and policy.get("format") == "explicit_model_europe_policy"
+    ):
+        from linker_genie.warranty_named import render_named_terms
+
+        return render_named_terms(value, source_ids)
     if not isinstance(policy, dict):
         return None
     row = policy.get("term_row")
@@ -621,6 +628,23 @@ def valid_warranty_scope(
 ) -> bool:
     """Recheck both document grants and the exact model/series/procedure chain."""
     value = scope.get("warranty_scope")
+    policy = value.get("policy") if isinstance(value, dict) else None
+    if (
+        isinstance(policy, dict)
+        and policy.get("format") == "explicit_model_europe_policy"
+    ):
+        from linker_genie.warranty_named import valid_named_scope
+
+        return valid_named_scope(
+            scope,
+            product_ids,
+            products,
+            documents,
+            sha=sha,
+            chunk_id=chunk_id,
+            text=text,
+            anchors=external_axis_anchors,
+        )
     basis = scope.get("basis")
     if not isinstance(value, dict) or basis not in {
         "warranty_procedure",

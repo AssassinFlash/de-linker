@@ -265,18 +265,23 @@ def cited_documents(output: TurnOutput, facts: TurnFacts) -> list[DocumentBlock]
         if isinstance(block, TextBlock):
             cited.extend(ref for ref in block.refs if ref in facts.chunk_ids)
             for ref in block.refs:
+                cited.extend(facts.supporting_documents.get(ref, ()))
                 cited.extend(
                     note.chunk_id for note in facts.qualifications.get(ref, ())
                 )
             text = block.text
         elif isinstance(block, HandoffBlock):
             text = block.summary
+        elif isinstance(block, DocumentBlock):
+            cited.extend(facts.supporting_documents.get(block.ref, ()))
+            continue
         else:
             continue
         for fact_id in PLACEHOLDER.findall(text):
             chunk = chunk_of(fact_id)
             if chunk is not None and chunk in facts.chunk_ids:
                 cited.append(chunk)
+                cited.extend(facts.supporting_documents.get(chunk, ()))
                 cited.extend(
                     note.chunk_id for note in facts.qualifications.get(chunk, ())
                 )

@@ -35,7 +35,14 @@ if TYPE_CHECKING:
 
 import sqlite_vec
 
+from linker_genie.compatibility_physical import (
+    inverter_condition,
+    iot_condition,
+    physical_key,
+    valid_physical_evidence,
+)
 from linker_genie.embedding import Embedder, query_encoder
+from linker_genie.hs3_evidence import DATA_MODELS, MANUAL_MODEL, SOURCES, hs3_anchors
 from linker_genie.preparation import RUNTIME_SERVING_REVISION
 from linker_genie.publication_scope import authorize_chunk, table_header
 from linker_genie.table_projection import (
@@ -105,6 +112,15 @@ class Qualification(TypedDict):
     lang: str
 
 
+class SupportingDocument(TypedDict):
+    chunk_id: str
+    document_id: str
+    document_revision: str
+    doc_url: str
+    title: str
+    page: int
+
+
 @dataclass(frozen=True)
 class DocumentHit:
     """One retrieved chunk and the document page it comes from."""
@@ -128,6 +144,9 @@ class DocumentHit:
     warranty_terms: bool = False
     warranty_procedure: bool = False
     product_models: tuple[str, ...] = ()
+    supporting_documents: tuple[SupportingDocument, ...] = ()
+    conditional_certificate: bool = False
+    compatibility_iot: bool = False
 
     @property
     def link(self) -> str:
@@ -172,6 +191,10 @@ class Permit(TypedDict):
     warranty_terms: NotRequired[bool]
     warranty_procedure: NotRequired[bool]
     product_models: NotRequired[list[str]]
+    supporting_documents: NotRequired[list[SupportingDocument]]
+    conditional_certificate: NotRequired[bool]
+    compatibility_iot: NotRequired[bool]
+    title: NotRequired[str]
 
 
 class _Auto:
@@ -573,6 +596,7 @@ class DocumentIndex:
             output.append(
                 replace(
                     hit,
+                    title=permit.get("title", hit.title),
                     doc_url=permit["url"],
                     document_id=permit["document_id"],
                     document_revision=permit["document_revision"],
@@ -584,6 +608,11 @@ class DocumentIndex:
                     warranty_terms=permit.get("warranty_terms", False),
                     warranty_procedure=permit.get("warranty_procedure", False),
                     product_models=tuple(permit.get("product_models", [])),
+                    supporting_documents=tuple(permit.get("supporting_documents", [])),
+                    conditional_certificate=permit.get(
+                        "conditional_certificate", False
+                    ),
+                    compatibility_iot=permit.get("compatibility_iot", False),
                 )
             )
         return output
@@ -770,6 +799,98 @@ class DocumentIndex:
                     "product_ids": sorted(ids),
                     "table_header": header,
                 }
+                if scopes.get(cid, {}).get("basis") == "compatibility_inverter":
+                    relation = scopes[cid]["compatibility_inverter"]
+                    support = relation["support_document"]
+                    support_doc = snapshot.documents[support["document_id"]]
+                    output[row]["supporting_documents"] = [
+                        {
+                            "chunk_id": relation["axis_chunk_id"],
+                            "document_id": support["document_id"],
+                            "document_revision": support["document_revision"],
+                            "doc_url": support_doc["url"],
+                            "title": support_doc.get("title", ""),
+                            "page": 2,
+                        }
+                    ]
+                    note = inverter_condition(relation["base_text"])
+                    if note:
+                        base_proof = relation["base_scope"]["compatibility_series"]
+                        anchor = axis_anchors[base_proof["table_chunk_id"]]
+                        original = next(
+                            (
+                                source
+                                for source in anchor["axis_source"]
+                                if " ".join(source["text"].splitlines())
+                                == " ".join(relation["base_text"].splitlines()[2:])
+                            ),
+                            None,
+                        )
+                        if original is None:
+                            output.pop(row, None)
+                            continue
+                        output[row]["qualifications"] = [
+                            {
+                                "quote": note,
+                                "page": relation["source_page"],
+                                "chunk_id": original["chunk_id"],
+                                "lang": relation["lang"],
+                            }
+                        ]
+                        output[row]["qualification_required"] = True
+                if scopes.get(cid, {}).get("basis") == "compatibility_iot":
+                    relation = scopes[cid]["compatibility_iot"]
+                    output[row]["qualifications"] = [
+                        {
+                            "quote": iot_condition(
+                                axis_anchors[physical_key(relation[key])]["row_text"],
+                                page_number,
+                            ),
+                            "page": page_number,
+                            "chunk_id": relation[key],
+                            "lang": "en",
+                        }
+                        for key, page_number in (
+                            ("first_chunk_id", 7),
+                            ("second_chunk_id", 9),
+                        )
+                    ]
+                    output[row]["qualification_required"] = True
+                    output[row]["compatibility_iot"] = True
+                    document = snapshot.documents[str(association["document_id"])]
+                    output[row]["supporting_documents"] = [
+                        {
+                            "chunk_id": relation["second_chunk_id"],
+                            "document_id": str(association["document_id"]),
+                            "document_revision": str(association["document_revision"]),
+                            "doc_url": str(association["url"]),
+                            "title": str(document.get("title", "")),
+                            "page": 9,
+                        }
+                    ]
+                if scopes.get(cid, {}).get("basis") == "hs3_conditional_certificate":
+                    relation = scopes[cid]["hs3_conditional_certificate"]
+                    source_docs = relation["source_documents"]
+                    output[row]["title"] = "EU Declaration of Conformity"
+                    output[row]["conditional_certificate"] = True
+                    output[row]["product_models"] = [relation["model"]]
+                    output[row]["supporting_documents"] = []
+                    for role, source_id, page_number in (
+                        ("datasheet", DATA_MODELS, 2),
+                        ("manual", MANUAL_MODEL, 18),
+                    ):
+                        reference = source_docs[role]
+                        document = snapshot.documents[reference["document_id"]]
+                        output[row]["supporting_documents"].append(
+                            {
+                                "chunk_id": source_id,
+                                "document_id": reference["document_id"],
+                                "document_revision": reference["document_revision"],
+                                "doc_url": document["url"],
+                                "title": document.get("title", ""),
+                                "page": page_number,
+                            }
+                        )
                 if cid in column_texts:
                     output[row]["table_text"] = column_texts[cid]
                 if scopes.get(cid, {}).get("basis") == "warranty_procedure":
@@ -821,8 +942,14 @@ class DocumentIndex:
         row = self._db.execute(
             "SELECT value FROM meta WHERE key = 'external_axis_anchors'"
         ).fetchone()
+        source_rows = self._db.execute(
+            "SELECT id,doc_sha256,page,kind,text FROM chunks WHERE id IN "
+            "(SELECT value FROM json_each(?))",
+            (json.dumps(list(SOURCES)),),
+        ).fetchall()
+        source_anchors = hs3_anchors(source_rows)
         if row is None:
-            return {}
+            return source_anchors
         try:
             anchors = json.loads(row[0])
         except (TypeError, ValueError):
@@ -832,6 +959,28 @@ class DocumentIndex:
         verified: dict[str, Any] = {}
         for table_id, anchor in anchors.items():
             if not isinstance(table_id, str) or not isinstance(anchor, dict):
+                continue
+            if anchor.get("kind") in {"series_axis", "iot_matrix"}:
+                sha = anchor.get("source_sha256")
+                page = anchor.get("source_page")
+                cid = anchor.get("target_chunk_id")
+                text = anchor.get("source_text")
+                kind = "text" if anchor["kind"] == "series_axis" else "table"
+                if (
+                    isinstance(sha, str)
+                    and type(page) is int
+                    and isinstance(cid, str)
+                    and isinstance(text, str)
+                    and table_id == physical_key(cid)
+                    and self._db.execute(
+                        "SELECT doc_sha256,page,kind,text FROM chunks WHERE id = ?",
+                        (cid,),
+                    ).fetchone()
+                    == (sha, page, kind, text)
+                    and native_chunk_id_matches(sha, page, kind, text, cid)
+                    and valid_physical_evidence(anchor, sha, cid, text)
+                ):
+                    verified[table_id] = anchor
                 continue
             if anchor.get("kind") == "policy_text":
                 sha, page, text, lang, section = (
@@ -971,6 +1120,7 @@ class DocumentIndex:
                     continue
                 verified_notes.append(note)
             verified[table_id] = {**anchor, "footnote_sources": verified_notes}
+        verified.update(source_anchors)
         return verified
 
     def chunks(self, chunk_ids: Sequence[str], lang: str) -> list[DocumentHit]:
