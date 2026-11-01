@@ -271,7 +271,9 @@ sha256: b70d599dcfd74eb95e6d66b5cb58d16753106c6830bbf3ab09cde4cc858246e8
 | `Installation routing` 显示 0 | 正确行为 | 该字段来自兼容合同的 `meter`/`backup`，不读安装事实；路由报告另需 `installation.cable_runs` |
 | `product_evidence_changed` 拒绝设备检查 | 准备状态的时间差，非数据不一致 | `engineering` 未 `ready` 时 `prepared_view` 不含该商品；恢复后同一项目成功 |
 
-## 未验证（附解除条件）
+## 早间未验证项（历史状态）
+
+下表记录当时缺失的条件。8207 的所有者浏览器读回和受控询盘提交稍后已完成，分别见本文件相应生产读回章节。
 
 | 项 | 缺什么 | 解除条件 |
 | --- | --- | --- |
@@ -1585,3 +1587,10 @@ The saved report's cited SEC row had rendered "10 units" without its source scop
 The source-bound document hash, feed worker ACK/reuse/retention and saved-report increment received independent Spec/Standards review. The real unknown-data retention test failed first by deleting the witness; all three affected retention/retry/readback cases passed after limiting removal to verified generation contents. No prefix-based recursive cleanup of unrelated state remains on those retirement paths. The local controller accepted 2/LAN/10, rejected 11/LAN/10, and reported 2/RS485/unknown. EN/DE 1440/390 were read on the final frontend, including cited LAN · 10 and page 1. Native save retry recovered revision 6 without duplicate revision creation. The local controller closed in 1336.91s, 1708 original workspace files and the 28 AS rows remained unchanged; its one guest session and temporary release/store were removed (4,131,477 logical bytes).
 
 The reviewed one-time cable adoption JSON alone selected all 25 modules through the unknown-path fallback. Its only runtime reader is the Woo migration CLI. It now selects php:commerce and the content scanners; unknown sibling data retains the full fallback. Targeted selector and existing Vite-path tests passed. The control change itself still runs the full baseline.
+
+Worker reuse preflight, owner root. One read-only call against the actual VPS pair to compare today's Woo feed and the selected generation using the candidate's reusable_generation() and actual authenticated /resource/version?ready=1. No jobs/claim or ACK, process start/stop, feed fetch loop or production file writes. Only one source GET and one loaded observation if inputs match; counters, digest and status only, no tokens or full data. The helper and SSH run only in memory and exit within 75 seconds.
+
+Actual read-only worker preflight succeeded with production Engine PID 379357 and selected publication-generation-o29zkr7x. One fresh 1,234,999-byte Woo feed fetch plus one authenticated loaded read matched native loaded version f3ebc547e6ad1564be51b81a21bf8b86ea6b4c5e0d378692b5ac0df839d0064f and 86 prepared products. The proposed reuse path recognized that exact pair without creating a job, restarting Engine or installing the candidate. Natural post-install watermark/log readback remains separate.
+
+
+Nexans native Woo adoption acceptance resource contract (owner electrical_backend_finish, 2026-11-01). Reuse the released p548 only. At most one PHP-only native server on 9347 (six native workers), one in-memory Python controller for 20 minutes, two exact original PDFs at uploads/2026/11/nexans-038021106.pdf and nexans-038023102.pdf, two native media attachments and two reference products. No Engine/Genie runtime, project, customer, provider or production writes. One temporary MU file wp-content/mu-plugins/548-nexans-acceptance.php prevents async Action Scheduler dispatch during these public read probes and is deleted in outer finally; existing DISABLE_WP_CRON is retained. Save original source, raw publication options, exact AS rows and existing relevant term IDs in memory. Preview/apply/read/feed/download/noncommercial/withdraw use real Woo code. Finally remove only newly created reference/media/unused attribute IDs and owned files, restore raw publication options only against observed task postimages, assert source and original queue rows unchanged, stop the exact server and remove the MU file. Original PDF files under de-linker-data/pdf are protected. Evidence is appended here; no separate report or permanent helper.

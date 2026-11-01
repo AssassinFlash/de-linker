@@ -470,3 +470,11 @@ Aladdin 不只提供画布。固定源码中已经能追到：
 指南区分设计电流 IB、保护器件额定或整定电流 In、回路允许载流量 Iz，以及保护器的约定动作电流 I2。其图 G6 及断路器应用段分别核查 IB ≤ In ≤ Iz 和 I2 ≤ 1.45 Iz。熔断器须使用型号对应的约定动作电流与规定时间。安装点的预期短路电流及器件分断能力另行核查。此处取得了原厂指南的过载方法，项目仍需提供具体器件、整定、安装条件，以及适用的国家规则。Nexans 在特定条件下的电缆载流数值不能自动满足全部条件。这批仍使用 Apify，官网直取仅限先前已经核验的两个 PDF。
 
 搜索任务自有 default dataset、KV、queue 已删除并分别读回 404。正文任务的两个 dataset 和 KV 也已删除并读回 404。队列回收最初遇到本地 API 网络超时；05:46 UTC 通过 Apify API 对该 run 已确认的默认队列 mEV8UsToFmQkJ9fqD 再读，返回 404。两次采集均无遗留的默认存储。
+
+### 10.11 PV 支路反向电流保护来源检索
+
+负责人 root。为核实并联光伏组串故障回流和熔断保护依据，使用一个已批准的 Apify Google Search run 和至多一个 website-content-crawler run（最多两个原厂页面，每次180秒，不递归）。仅保留来源、适用条件与简短结果，正文在内存中处理。每个已结束 run 的自有 dataset、KV、queue 和附属错误 dataset 在核对所有权后删除并读回 404。若找不到原厂正文，保留缺项，不用搜索摘要产生工程参数。
+
+Apify run `nhPfDmNMgtWfE3VZY` 完成，结果包含 6 条搜索项。逐项检查后未定位可确认的原厂指南正文链接，本次没有依据这些结果采用组串熔断倍率。run 自有 dataset、KV、队列均已通过 Apify 读回 404。本机读取 dataset 删除状态时曾网络超时，后经独立网络出口确认删除已生效，其余两项随后按各自所有权删除并核对。
+
+现有工程参考 8349 的本地 Woo feed（source `e1773a35f189…`）已维护 `max_series_fuse_a=25 A`，出处为 Trina 原件第 2 页。本轮实际重新核对两页原件字节 SHA-256 `f4d280f9a0d89475cf575fbb99906e2b091da27f08b848fc51877cc1d24e8e22` 和第 2 页的 Max Series Fuse Rating。该值是模块允许的串联熔断器额定电流上限。判断某个并联方案是否需要保护、选择实际熔断器、核算反向故障电流和电缆保护仍需要相应器件与项目依据。[Trina Vertex S+ NEG9R.28 原厂数据手册，第 2 页](https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf#page=2)
