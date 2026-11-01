@@ -98,24 +98,24 @@ def german_named_answers(
         translated = translated.replace("{deadline}", deadline)
     period = f"{{fact:{chunk_id}.n{period_id}}}"
     buyer = (
-        "Voraussetzung ist der Kauf über einen von GoodWe autorisierten Vertrieb und die "
+        "Voraussetzung ist der Kauf bei einem von GoodWe autorisierten Vertriebspartner und die "
         "Installation in der EU, Norwegen oder der Schweiz, sofern mit dem direkten Käufer "
         "keine besonderen Garantiebedingungen vereinbart wurden."
     )
     start = (
-        "Die Garantie beginnt am früheren der beiden Zeitpunkte: am Tag der ersten "
-        f"Installation oder {months} nach dem Herstellungsdatum."
+        "Die Garantie beginnt am Tag der ersten Installation oder "
+        f"{months} nach dem Herstellungsdatum, je nachdem, welcher Zeitpunkt früher liegt."
     )
     geography = (
-        "Diese Regelung gilt für Europa ohne Vereinigtes Königreich. " + buyer + " "
+        "Diese Regelung gilt für Europa mit Ausnahme des Vereinigten Königreichs. " + buyer + " "
         "Wird ein Gerät in einem anderen Land oder Gebiet installiert als dem, für das "
         "es verkauft wurde, ist vor der Installation eine schriftliche Bestätigung oder "
-        "Genehmigung von GoodWe erforderlich; andernfalls wird die Garantie ungültig. "
+        "Genehmigung von GoodWe erforderlich. Andernfalls erlischt die Garantie. "
         "Die gesetzlichen Rechte nach nationalem Recht bleiben unberührt. In manchen "
-        "Ländern oder Gebieten kann der örtliche Vertrieb zusätzliche, mindestens "
-        "gleichwertige Garantieversprechen geben; Ansprüche daraus sind an diesen zu richten. "
-        "GoodWe weist darauf hin, dass dieses Dokument nicht die neueste Fassung sein muss; "
-        "diese ist auf der globalen GoodWe-Website zu prüfen."
+        "Ländern oder Gebieten kann der örtliche Vertriebspartner zusätzliche, mindestens "
+        "gleichwertige Garantien anbieten. Ansprüche daraus richten Sie an diesen Partner. "
+        "GoodWe weist darauf hin, dass inzwischen eine neuere Fassung vorliegen kann. "
+        "Prüfen Sie die aktuelle Fassung auf der internationalen GoodWe-Website."
     )
     coverage = (
         "Sofern keine besondere Vereinbarung besteht, deckt die eingeschränkte Garantie "
@@ -123,8 +123,8 @@ def german_named_answers(
         "GoodWe nennt außerdem folgenden Ausschluss: " + translated
     )
     result = {
-        "period": f"Eingeschränkte Garantiedauer: {period}. {start}",
-        "production": f"Ein möglicher Beginn ist {months} nach dem Herstellungsdatum; maßgeblich ist der frühere der beiden Zeitpunkte.",
+        "period": f"Die eingeschränkte Herstellergarantie gilt für {period}. {start}",
+        "production": start,
         "overview": buyer,
         "start": start,
         "effective": f"Die Bedingungen gelten für Produkte, die nach November {year} verkauft und installiert wurden.",

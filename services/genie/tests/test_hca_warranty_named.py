@@ -296,7 +296,7 @@ def test_simulated_woo_link_through_sqlite_knowledge_hydration_and_withdrawal(
                     assert "statutory" in hit["warranty_answers"]["geography"]
                 else:
                     assert (
-                        "Europa ohne Vereinigtes Königreich"
+                        "Europa mit Ausnahme des Vereinigten Königreichs"
                         in hit["warranty_answers"]["geography"]
                     )
                     assert "gesetzlichen Rechte" in hit["warranty_answers"]["geography"]
