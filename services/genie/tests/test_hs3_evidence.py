@@ -20,6 +20,7 @@ from linker_genie.hs3_evidence import (
     MANUAL_MODEL,
     SOURCES,
     conditional_answers,
+    hs3_anchor_key,
     hs3_anchors,
     valid_hs3_scope,
     variants,
@@ -138,7 +139,7 @@ def test_scope_snippet_without_any_original_chunk_fails(missing: str) -> None:
     unit = units[0]
     scope = scopes[unit.id]
     pid = scope["product_ids"][0]
-    del originals[missing]
+    del originals[hs3_anchor_key(missing)]
     assert not valid_hs3_scope(
         scope,
         [pid],

@@ -938,7 +938,7 @@ class DocumentIndex:
         return output
 
     def _external_axis_anchors(self) -> dict[str, Any]:
-        """Read independent table digests and confirm the original text chunks."""
+        """Read table digests and recheck HS3 source text under separate keys."""
         row = self._db.execute(
             "SELECT value FROM meta WHERE key = 'external_axis_anchors'"
         ).fetchone()

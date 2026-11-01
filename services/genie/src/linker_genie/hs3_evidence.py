@@ -170,6 +170,11 @@ def variants(model: str) -> tuple[str, str] | None:
     return model.replace("-W/G-", "-W-"), model.replace("-W/G-", "-G-")
 
 
+def hs3_anchor_key(chunk_id: str) -> str:
+    """Keep whole-text HS3 evidence separate from native table anchors."""
+    return f"hs3:{chunk_id}"
+
+
 def hs3_anchors(
     rows: Iterable[tuple[str, str, int, str, str]],
 ) -> dict[str, dict[str, Any]]:
@@ -190,14 +195,14 @@ def hs3_anchors(
             and (sha, page) == expected[:2]
             and hashlib.sha256(text.encode()).hexdigest() == expected[2]
         ):
-            found[cid] = {
+            found[hs3_anchor_key(cid)] = {
                 "source_sha256": sha,
                 "page": page,
                 "kind": kind,
                 "text": text,
             }
     for cid in duplicates:
-        found.pop(cid, None)
+        found.pop(hs3_anchor_key(cid), None)
     return found
 
 
@@ -273,7 +278,7 @@ def valid_hs3_scope(
         or not isinstance(source_docs, dict)
         or set(source_docs) != {"certificate", "datasheet", "manual"}
         or not isinstance(anchors, Mapping)
-        or not set(SOURCES).issubset(anchors)
+        or not {hs3_anchor_key(cid) for cid in SOURCES}.issubset(anchors)
         or not set(SOURCES).issubset(scope.get("source_chunk_ids", []))
     ):
         return False
@@ -303,7 +308,7 @@ def valid_hs3_scope(
         return False
     expected_rows = []
     for cid in SOURCES:
-        value = anchors.get(cid)
+        value = anchors.get(hs3_anchor_key(cid))
         if not isinstance(value, dict):
             return False
         source_sha = value.get("source_sha256")
@@ -321,10 +326,14 @@ def valid_hs3_scope(
     # Do not trust metadata merely because it was copied into the proof.
     if len(hs3_anchors(expected_rows)) != len(SOURCES):
         return False
-    header = anchors[CERT_HEADER]["text"]
-    declaration = anchors[CERT_MODELS]["text"] + "\n" + anchors[CERT_END]["text"]
-    data = anchors[DATA_MODELS]["text"]
-    manual = anchors[MANUAL_MODEL]["text"]
+    header = anchors[hs3_anchor_key(CERT_HEADER)]["text"]
+    declaration = (
+        anchors[hs3_anchor_key(CERT_MODELS)]["text"]
+        + "\n"
+        + anchors[hs3_anchor_key(CERT_END)]["text"]
+    )
+    data = anchors[hs3_anchor_key(DATA_MODELS)]["text"]
+    manual = anchors[hs3_anchor_key(MANUAL_MODEL)]["text"]
     if (
         "We Guangzhou Sanjing Electric Co., Ltd." not in header
         or "We declare under our own responsibility" not in header

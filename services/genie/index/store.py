@@ -206,8 +206,9 @@ def export(directory: Path, path: Path) -> None:
             or (anchor.get("source_sha256"), anchor.get("source_table"))
             in projected_tables
         }
-        # Unlike serialized metadata, these anchors derive from the original
-        # chunks that will actually be written to this generation.
+        # HS3 whole-text anchors have separate keys from native table anchors:
+        # the same datasheet table can support both kinds of proof.
+        # Derive them from the original chunks written to this generation.
         axis_anchors.update(
             hs3_anchors(
                 (c.id, c.doc_sha256, c.page, c.kind, c.text)
