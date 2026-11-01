@@ -103,7 +103,7 @@ def resolve_binding(
         return "fact_unavailable", None
     if len(matches) != 1:
         return "invalid_evidence", None
-    fact = cast(Object, matches[0])
+    fact = matches[0]
     specification, source = fact.get("specification"), fact.get("source")
     if (
         fact.get("basis") != "manufacturer_terminal_map"
