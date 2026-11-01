@@ -212,7 +212,7 @@ final class Publication {
 	 */
 	public static function manifest(): array {
 		self::refresh_runtime();
-		DocumentFiles::begin_read();
+		DocumentFiles::begin_read( true );
 		try {
 			return self::assemble();
 		} finally {

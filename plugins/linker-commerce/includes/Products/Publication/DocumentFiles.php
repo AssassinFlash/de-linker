@@ -11,6 +11,9 @@ namespace Linker\Commerce\Products\Publication;
 
 /** Resolve only real PDF files inside this site's uploads directory. */
 final class DocumentFiles {
+	/** Derived hashes for stable files in the most recent full manifest. */
+	private const HASH_CACHE_OPTION = 'linker_publication_document_hashes_v1';
+
 	/**
 	 * Byte hashes live only within one authority assembly, never across reads.
 	 *
@@ -35,16 +38,56 @@ final class DocumentFiles {
 	 */
 	private static array $verified = array();
 
-	/** Begin a fresh authority assembly. */
-	public static function begin_read(): void {
-		self::$hashes  = array();
-		self::$reading = true;
+	/**
+	 * Stable hashes loaded for this manifest.
+	 *
+	 * @var array<array-key,mixed>
+	 */
+	private static array $cached = array();
+
+	/**
+	 * Stable hashes actually encountered in this manifest.
+	 *
+	 * @var array<string,array{identity:string,sha:string}>
+	 */
+	private static array $seen = array();
+
+	/**
+	 * Whether this authority assembly may reuse cross-request byte hashes.
+	 *
+	 * @var bool
+	 */
+	private static bool $cache_manifest = false;
+
+	/**
+	 * Begin a fresh authority assembly.
+	 *
+	 * @param bool $cache_manifest Reuse byte hashes only in a full manifest.
+	 */
+	public static function begin_read( bool $cache_manifest = false ): void {
+		self::$hashes         = array();
+		self::$reading        = true;
+		self::$cache_manifest = $cache_manifest;
+		self::$seen           = array();
+		$cached               = $cache_manifest ? get_option( self::HASH_CACHE_OPTION, array() ) : array();
+		self::$cached         = is_array( $cached ) ? $cached : array();
 	}
 
 	/** Release request assembly data immediately. */
 	public static function end_read(): void {
-		self::$hashes  = array();
-		self::$reading = false;
+		if ( self::$cache_manifest ) {
+			// Retain only files in this manifest, including permitted aliases.
+			ksort( self::$seen );
+			ksort( self::$cached );
+			if ( self::$seen !== self::$cached ) {
+				update_option( self::HASH_CACHE_OPTION, self::$seen, false );
+			}
+		}
+		self::$hashes         = array();
+		self::$cached         = array();
+		self::$seen           = array();
+		self::$cache_manifest = false;
+		self::$reading        = false;
 	}
 
 	/**
@@ -75,22 +118,42 @@ final class DocumentFiles {
 		// PHP stat timestamps have whole-second precision. Reuse across authority
 		// reads only after that change interval has closed, using a fresh stat.
 		clearstatcache( false, $path );
-		$now   = time();
-		$stat  = stat( $path );
-		$key   = is_array( $stat ) && $stat['ctime'] < $now && $stat['mtime'] < $now
-			? implode( ':', array( $stat['dev'], $stat['ino'], $stat['size'], $stat['mtime'], $stat['ctime'] ) )
-			: null;
-		$known = self::$verified[ $path ] ?? null;
-		if ( null !== $key && null !== $known && $known['identity'] === $key ) {
-			$sha = $known['sha'];
+		$now  = time();
+		$stat = stat( $path );
+		if ( false === $stat ) {
+			return false;
+		}
+		$identity  = implode( ':', array( $stat['dev'], $stat['ino'], $stat['size'], $stat['mtime'], $stat['ctime'] ) );
+		$key       = $stat['ctime'] < $now && $stat['mtime'] < $now ? $identity : null;
+		$cache_key = hash( 'sha256', $path );
+		$known     = self::$verified[ $path ] ?? ( self::$cache_manifest ? self::$cached[ $cache_key ] ?? null : null );
+		$stable    = false;
+		if ( null !== $key && is_array( $known ) && ( $known['identity'] ?? null ) === $key && is_string( $known['sha'] ?? null ) && 1 === preg_match( '/^[a-f0-9]{64}$/D', $known['sha'] ) ) {
+			$sha    = $known['sha'];
+			$stable = true;
 		} else {
 			$sha = hash_file( 'sha256', $path );
-			if ( false !== $sha && null !== $key ) {
-				self::$verified[ $path ] = array(
-					'identity' => $key,
-					'sha'      => $sha,
-				);
+			if ( false !== $sha ) {
+				// A changed file has no usable digest for this read or a later one.
+				clearstatcache( false, $path );
+				$after = stat( $path );
+				if ( false === $after || implode( ':', array( $after['dev'], $after['ino'], $after['size'], $after['mtime'], $after['ctime'] ) ) !== $identity ) {
+					return false;
+				}
+				if ( null !== $key ) {
+					self::$verified[ $path ] = array(
+						'identity' => $key,
+						'sha'      => $sha,
+					);
+					$stable                  = true;
+				}
 			}
+		}
+		if ( self::$cache_manifest && $stable ) {
+			self::$seen[ $cache_key ] = array(
+				'identity' => $key,
+				'sha'      => $sha,
+			);
 		}
 		if ( self::$reading && false !== $sha ) {
 			self::$hashes[ $path ] = $sha;
