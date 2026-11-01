@@ -344,6 +344,7 @@ def test_cached_only_release_never_delegates_missing_vectors(
     underlying = SimpleNamespace(
         fingerprint={"model": "same-existing-model"},
         model="same-existing-model",
+        dimensions=3072,
         embed_documents=lambda rows: delegated.append(rows),
     )
     monkeypatch.setattr(build, "document_embedder", lambda model: underlying)
@@ -537,3 +538,66 @@ def test_paired_requires_native_ack_complete_before_success(
     assert result == (0 if complete is True else 1)
     assert journal.exists() is (complete is not True)
     assert observed == ["/wp-json/linker/v1/publication/jobs/ack"]
+
+
+def test_cached_adapter_builds_and_reads_the_native_store_from_hits(
+    tmp_path: Path,
+) -> None:
+    import sqlite3
+
+    from test_build import CountingEmbedder, corpus
+    from test_chunking import Words
+
+    from index.build import build
+    from index.corpus import read_chunks, read_meta
+    from linker_genie.embedding import Embedder
+
+    inventory, pdfs, parsed = corpus(tmp_path)
+    out = tmp_path / "out"
+    warm = CountingEmbedder()
+    original = build(inventory, pdfs, parsed, out, warm, Words(), lambda text: "en")
+    assert warm.embedded > 0
+    underlying = CountingEmbedder()
+    cached: Embedder = paired.CachedEmbedder(underlying)
+    result = build(inventory, pdfs, parsed, out, cached, Words(), lambda text: "en")
+    assert underlying.embedded == 0
+    assert read_meta(result / "corpus").dimensions == underlying.dimensions
+    before = list(read_chunks(original / "corpus"))
+    after = list(read_chunks(result / "corpus"))
+    assert after == before
+    assert all(vector is not None for _, vector in after)
+    with sqlite3.connect(
+        (result / "index.sqlite").as_uri() + "?mode=ro", uri=True
+    ) as db:
+        assert db.execute(
+            "SELECT value FROM meta WHERE key='dimensions'"
+        ).fetchone() == ("2",)
+        assert db.execute("SELECT count(*) FROM chunks").fetchone() == (len(after),)
+    with pytest.raises(RuntimeError, match="query embedding"):
+        cached.embed_query("a query must never be computed")
+
+
+def test_cached_adapter_native_build_miss_has_zero_provider_calls(
+    tmp_path: Path,
+) -> None:
+    from test_build import CountingEmbedder, corpus
+    from test_chunking import Words
+
+    from index.build import build
+    from linker_genie.embedding import Embedder
+
+    inventory, pdfs, parsed = corpus(tmp_path)
+    underlying = CountingEmbedder()
+    cached: Embedder = paired.CachedEmbedder(underlying)
+    with pytest.raises(RuntimeError, match="refused missing embeddings"):
+        build(
+            inventory,
+            pdfs,
+            parsed,
+            tmp_path / "out",
+            cached,
+            Words(),
+            lambda text: "en",
+        )
+    assert underlying.embedded == 0
+    assert not list((tmp_path / "out" / "builds").glob("*/index.sqlite"))

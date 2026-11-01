@@ -37,6 +37,7 @@ from index import build, inventory, parse  # noqa: E402
 from index.paths import INDEX_DIR, INVENTORY_PATH, PARSED_DIR, PDF_DIR  # noqa: E402
 from index.preparation import recipe_revision  # noqa: E402
 from index.publication import inventory as fetch_inventory  # noqa: E402
+from linker_genie.embedding import Embedder  # noqa: E402
 from linker_genie.preparation import RUNTIME_SERVING_REVISION  # noqa: E402
 from linker_genie.publication import Snapshot, knowledge_progress  # noqa: E402
 from publish_index import (  # noqa: E402
@@ -739,7 +740,7 @@ def main(
     *,
     publisher: Any = publish,
     worker_factory: Any = Worker,
-    embedding_factory: Any = build.document_embedder,
+    embedding_factory: Callable[[str], Embedder] = build.document_embedder,
     busy_exit: int = 0,
 ) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
