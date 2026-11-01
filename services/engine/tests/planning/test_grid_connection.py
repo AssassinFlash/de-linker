@@ -181,6 +181,10 @@ def test_saved_revisions_run_and_input_floor_keep_the_new_contract(
 ) -> None:
     old = workspace.create(owner, "Grid", {}, key="create")
     old_run = workspace.evaluate(owner, old.id, 1, context, key="old", max_attempts=1)
+    jobs = Jobs(workspace)
+    lease = jobs.claim("fixture", kinds=("evaluate",), lease_seconds=30)
+    assert lease is not None
+    jobs.complete(lease, {"assessment": country_assessment({})})
     current = workspace.revise(
         owner,
         old.id,
@@ -194,10 +198,6 @@ def test_saved_revisions_run_and_input_floor_keep_the_new_contract(
     run = workspace.evaluate(owner, old.id, 2, context, key="new", max_attempts=1)
     assert workspace.pinned_inputs(old_run.manifest) == {}
     before = country_assessment(workspace.pinned_inputs(run.manifest))
-    jobs = Jobs(workspace)
-    lease = jobs.claim("fixture", kinds=("evaluate",), lease_seconds=30)
-    assert lease is not None
-    jobs.complete(lease, {"assessment": country_assessment({})})
     lease = jobs.claim("fixture", kinds=("evaluate",), lease_seconds=30)
     assert lease is not None
     jobs.complete(lease, {"assessment": before})
