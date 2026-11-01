@@ -416,3 +416,101 @@ def test_an_unfinished_backup_is_not_linked_from(tmp_path: Path) -> None:
     (done / backup.MANIFEST).write_text("{}", encoding="utf-8")
 
     assert backup.latest_complete(home) == done
+
+
+def test_successful_native_create_automatically_rotates_and_hashes_the_dump_once(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from linker_cutover import backup_retention
+
+    _streams_a_stand_in_dump(monkeypatch)
+    monkeypatch.setenv("LINKER_LOCAL_HOME", str(tmp_path / "local"))
+    monkeypatch.setattr(backup_retention, "_unused", lambda *_: True)
+    site, _ = _site(tmp_path)
+    home = tmp_path / "home"
+    original = backup.sha256
+    dumped: list[Path] = []
+
+    def observe(path: Path) -> str:
+        if path.name == backup.DUMP:
+            dumped.append(path)
+        return original(path)
+
+    monkeypatch.setattr(backup, "sha256", observe)
+    copies = [
+        backup.create(site, home, now=datetime(2026, 11, 1, hour, tzinfo=UTC)).directory
+        for hour in (1, 2, 3, 4)
+    ]
+    assert not copies[0].exists()
+    assert all(path.exists() for path in copies[1:])
+    assert len(dumped) == 4
+    upload = Path(UPLOADS) / "2026" / "09" / "a.png"
+    assert (copies[1] / upload).stat().st_ino == (copies[-1] / upload).stat().st_ino
+
+
+@pytest.mark.parametrize("relative", [MU_PLUGINS, HTACCESS])
+def test_optional_source_transfer_failure_is_not_absence_or_rotation_permission(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    relative: str,
+) -> None:
+    from linker_cutover import backup_retention
+
+    _streams_a_stand_in_dump(monkeypatch)
+    site, _ = _site(tmp_path)
+    method = "copy_out" if relative == MU_PLUGINS else "copy_file_out"
+    original = getattr(_Site, method)
+
+    def transfer(
+        self: Target, source: str, destination: Path, **kwargs: object
+    ) -> None:
+        if source == relative:
+            raise CutoverError("source exists but transport failed")
+        original(self, source, destination, **kwargs)
+
+    monkeypatch.setattr(_Site, method, transfer)
+    rotated: list[bool] = []
+    monkeypatch.setattr(
+        backup_retention, "prune", lambda *_args, **_kwargs: rotated.append(True)
+    )
+    home = tmp_path / "home"
+    with pytest.raises(CutoverError, match="transport failed"):
+        backup.create(site, home, now=datetime(2026, 11, 1, tzinfo=UTC))
+    partial = backup.destination(home, now=datetime(2026, 11, 1, tzinfo=UTC))
+    assert (partial / backup.DUMP).exists()
+    assert not (partial / backup.MANIFEST).exists()
+    assert rotated == []
+
+
+def test_confirmed_optional_absence_can_complete_a_backup(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _streams_a_stand_in_dump(monkeypatch)
+    site, root = _site(tmp_path, must_use=False)
+    (root / HTACCESS).unlink()
+    taken = backup.create(site, tmp_path / "home")
+    assert not (taken.directory / MU_PLUGINS).exists()
+    assert (taken.directory / HTACCESS).read_bytes() == b""
+    assert (taken.directory / backup.MANIFEST).exists()
+
+
+def test_unknown_source_presence_leaves_a_failed_backup_without_manifest(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _streams_a_stand_in_dump(monkeypatch)
+    site, _ = _site(tmp_path)
+    original = _Site.shell
+
+    def shell(self: Target, script: str) -> str:
+        if script.startswith("if ["):
+            raise CutoverError("source probe disconnected")
+        return original(self, script)
+
+    monkeypatch.setattr(_Site, "shell", shell)
+    home = tmp_path / "home"
+    with pytest.raises(CutoverError, match="probe disconnected"):
+        backup.create(site, home, now=datetime(2026, 11, 1, tzinfo=UTC))
+    partial = backup.destination(home, now=datetime(2026, 11, 1, tzinfo=UTC))
+    assert (partial / backup.DUMP).exists()
+    assert not (partial / backup.MANIFEST).exists()

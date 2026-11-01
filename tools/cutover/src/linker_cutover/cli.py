@@ -33,7 +33,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from linker_cutover import backup as backup_module
-from linker_cutover import deployment, plan, probe, steps
+from linker_cutover import backup_retention, deployment, plan, probe, steps
 from linker_cutover import drill as drill_module
 from linker_cutover import snapshot as snapshot_module
 from linker_cutover.target import CutoverError, Target, local_target, remote_target
@@ -92,6 +92,16 @@ def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("backup", parents=[common], help="step 1: the complete backup")
+    adopting = sub.add_parser(
+        "register-backup",
+        parents=[common],
+        help="register the confirmed source of an existing legacy backup; never deletes",
+    )
+    adopting.add_argument(
+        "--baseline",
+        action="store_true",
+        help="the one retained recovery baseline for this source",
+    )
     maintenance = sub.add_parser(
         "maintenance", parents=[common], help="steps 2 and 7: the maintenance window"
     )
@@ -204,6 +214,9 @@ def _run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
             target.session() as connected,
         ):
             return _run_steps(args, parser, connected)
+    if args.write and args.command == "backup":
+        with target.session() as connected:
+            return _run_steps(args, parser, connected)
     return _run_steps(args, parser, target)
 
 
@@ -214,6 +227,15 @@ def _run_steps(
     acceptance = args.acceptance or repository / "docs" / "acceptance" / _today() / "17"
 
     try:
+        if args.command == "register-backup":
+            if args.backup is None:
+                raise CutoverError("register-backup requires --backup")
+            if args.write:
+                backup_retention.register(args.backup, target, baseline=args.baseline)
+                print(f"backup: registered {args.backup}")
+            else:
+                print(f"backup: would register {args.backup} as {target.label}")
+            return 0
         if args.command == "backup":
             print(f"cutover: backup at {_backup(target, args)}")
             return 0

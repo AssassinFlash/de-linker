@@ -38,6 +38,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import IO
 
+from linker_cutover import backup_retention
 from linker_cutover.target import (
     HTACCESS,
     MU_PLUGINS,
@@ -181,14 +182,25 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def directory_manifest(directory: Path) -> dict[str, dict[str, object]]:
+def directory_manifest(
+    directory: Path, *, known_hashes: dict[str, tuple[str, list[int]]] | None = None
+) -> dict[str, dict[str, object]]:
     """Every file under `directory`, with its sha256 and size, keyed by relative path."""
     entries: dict[str, dict[str, object]] = {}
     for path in sorted(directory.rglob("*")):
         if path.is_file() and not path.is_symlink():
-            entries[str(path.relative_to(directory))] = {
-                "sha256": sha256(path),
+            name = str(path.relative_to(directory))
+            before = backup_retention.file_stamp(path)
+            known = (known_hashes or {}).get(name)
+            if known is not None and known[1] != before:
+                raise CutoverError(f"verified backup file changed: {path}")
+            digest = known[0] if known is not None else sha256(path)
+            if before != backup_retention.file_stamp(path):
+                raise CutoverError(f"backup file changed while hashing: {path}")
+            entries[name] = {
+                "sha256": digest,
                 "bytes": path.stat().st_size,
+                "verified_stat": before,
             }
     return entries
 
@@ -238,6 +250,22 @@ def _prove_the_tree_arrived(target: Target, relative: str, local: Path) -> None:
         )
 
 
+def _source_present(target: Target, relative: str, *, tree: bool = False) -> bool:
+    """Only a successful source-side existence probe can authorize absence."""
+    source = target.path_of(relative)
+    parent = str(Path(source).parent)
+    kind = "d" if tree else "f"
+    answer = target.shell(
+        f"if [ ! -r {shlex.quote(parent)} ] || [ ! -x {shlex.quote(parent)} ]; then exit 64; "
+        f"elif [ -{kind} {shlex.quote(source)} ]; then printf present; "
+        f"elif [ ! -e {shlex.quote(source)} ] && [ ! -L {shlex.quote(source)} ]; then printf absent; "
+        "else exit 65; fi"
+    ).strip()
+    if answer not in ("present", "absent"):
+        raise CutoverError(f"cannot establish source presence: {relative}")
+    return answer == "present"
+
+
 def dump_to(target: Target, path: Path, *, skip: tuple[str, ...] = ()) -> None:
     """Stream the database into `path` and refuse a dump that does not read to its end."""
     with path.open("wb") as handle:
@@ -252,20 +280,48 @@ def restore_database(target: Target, dump: Path) -> None:
         stream(target, restore_script(target), stdin=handle)
 
 
-def latest_complete(home: Path, *, exclude: Path | None = None) -> Path | None:
+def latest_complete(
+    home: Path, *, exclude: Path | None = None, target: Target | None = None
+) -> Path | None:
     """The newest `cutover-*` backup under `home` that finished (has its manifest)."""
     candidates = sorted(
         (
             path
             for path in home.glob("cutover-2*")
-            if path.is_dir() and (path / MANIFEST).is_file() and path != exclude
+            if path.is_dir()
+            and (path / MANIFEST).is_file()
+            and path != exclude
+            and (target is None or backup_retention.same_source(path, target))
         ),
         key=lambda path: path.name,
     )
     return candidates[-1] if candidates else None
 
 
-def create(target: Target, home: Path, *, now: datetime | None = None) -> Backup:
+def create(
+    target: Target,
+    home: Path,
+    *,
+    now: datetime | None = None,
+    protect: frozenset[str] = frozenset(),
+) -> Backup:
+    """Serialize writers and rotate only after a complete verified backup."""
+    at = now or datetime.now(UTC)
+    with backup_retention.locked(home, writer=True):
+        with backup_retention.locked(home, reader=True):
+            taken = _create(target, home, now=at)
+        backup_retention.prune(
+            home,
+            target,
+            taken.directory,
+            now=at,
+            protect=protect,
+            verified_dump=taken.dump_sha256,
+        )
+        return taken
+
+
+def _create(target: Target, home: Path, *, now: datetime) -> Backup:
     """Take the backup: database, uploads, plugins, .htaccess, options, manifest.
 
     Files unchanged since the newest complete backup are hard-linked to it,
@@ -273,7 +329,7 @@ def create(target: Target, home: Path, *, now: datetime | None = None) -> Backup
     its own, and only what changed travels.
     """
     directory = destination(home, now=now)
-    previous = latest_complete(home, exclude=directory)
+    previous = latest_complete(home, exclude=directory, target=target)
     # An empty directory is a run that died before it wrote anything (the
     # window would otherwise be blocked for the rest of that minute); anything
     # in it is somebody's backup, and a second one must not merge into it.
@@ -296,7 +352,10 @@ def create(target: Target, home: Path, *, now: datetime | None = None) -> Backup
     print("backup: database")
     dump = directory / DUMP
     dump_to(target, dump)
+    dump_stamp = backup_retention.file_stamp(dump)
     dump_sha = sha256(dump)
+    if backup_retention.file_stamp(dump) != dump_stamp:
+        raise CutoverError(f"backup database changed while hashing: {dump}")
     print(f"backup: database {dump.stat().st_size} bytes, sha256 {dump_sha[:16]}…")
 
     if previous is not None:
@@ -318,26 +377,24 @@ def create(target: Target, home: Path, *, now: datetime | None = None) -> Backup
     # check stays outside the try: a mismatch is a failed backup, not a site
     # without a directory.
     print(f"backup: {MU_PLUGINS}")
-    present = True
-    try:
+    present = _source_present(target, MU_PLUGINS, tree=True)
+    if present:
         target.copy_out(
             MU_PLUGINS,
             directory / MU_PLUGINS,
             link_dest=None if previous is None else previous / MU_PLUGINS,
         )
-    except CutoverError as error:
-        present = False
-        print(f"backup: no {MU_PLUGINS} ({error})")
-    if present:
         _prove_the_tree_arrived(target, MU_PLUGINS, directory / MU_PLUGINS)
+    else:
+        print(f"backup: source confirms no {MU_PLUGINS}")
 
     htaccess = directory / HTACCESS
-    try:
+    if _source_present(target, HTACCESS):
         target.copy_file_out(HTACCESS, htaccess)
-    except CutoverError as error:
+    else:
         # A site without .htaccess is legal — the rewrite rules then live in the
         # server config. The absence is recorded, not fatal.
-        print(f"backup: no {HTACCESS} ({error})")
+        print(f"backup: source confirms no {HTACCESS}")
         htaccess.write_text("", encoding="utf-8")
 
     print(f"backup: {OPTIONS}")
@@ -345,12 +402,15 @@ def create(target: Target, home: Path, *, now: datetime | None = None) -> Backup
         target.wp("option", "list", "--format=json") + "\n", encoding="utf-8"
     )
 
-    manifest = directory_manifest(directory)
+    manifest = directory_manifest(
+        directory, known_hashes={DUMP: (dump_sha, dump_stamp)}
+    )
     (directory / MANIFEST).write_text(
         json.dumps(
             {
                 "target": target.label,
-                "taken_at": datetime.now(UTC).isoformat(),
+                "source": backup_retention.identity(target),
+                "taken_at": now.isoformat(),
                 "files": manifest,
             },
             indent=1,
@@ -365,6 +425,11 @@ def create(target: Target, home: Path, *, now: datetime | None = None) -> Backup
 
 def restore(target: Target, directory: Path) -> None:
     """Put a backup back: the database, the file trees, then the caches."""
+    with backup_retention.locked(Path(directory).parent, reader=True):
+        _restore(target, directory)
+
+
+def _restore(target: Target, directory: Path) -> None:
     directory = Path(directory)
     dump = directory / DUMP
     if not dump.is_file():
