@@ -9,19 +9,214 @@ from typing import cast
 import pytest
 
 from linker_engine.planning.assistant_context import (
+    _installation_report_projection,
     _report_materials,
+    _report_source_projection,
     assistant_context,
 )
 from linker_engine.planning.canonical import Json, Object
 from linker_engine.planning.errors import InvalidInput, NotFound
+from linker_engine.planning.installation_takeoff import route_takeoff
 from linker_engine.planning.jobs import Jobs
+from linker_engine.planning.project_materials import project_materials
 from linker_engine.planning.records import Actor, Context
 from linker_engine.planning.report_copy import text
 from linker_engine.planning.report_model import build_report
 from linker_engine.planning.report_pvlib import pvlib_sections
 from linker_engine.planning.workspace import Workspace
 
+from .test_installation_electrical import circuit_fixture
 from .test_pv_generation import parameter_document
+
+
+@pytest.mark.parametrize("locale", ["en", "de"])
+@pytest.mark.parametrize("missing_source", [False, True])
+@pytest.mark.parametrize("pinned_materials", [False, True])
+def test_electrical_report_projects_frozen_numbers_without_private_project_text(
+    workspace: Workspace,
+    owner: Actor,
+    context: Context,
+    monkeypatch: pytest.MonkeyPatch,
+    locale: str,
+    missing_source: bool,
+    pinned_materials: bool,
+) -> None:
+    inputs, basis = circuit_fixture()
+    plan = inputs["installation"]
+    circuit = plan["circuits"][0]
+    circuit["name"] = "PRIVATE CIRCUIT NAME"
+    condition = circuit["operating_conditions"][0]
+    condition.update(
+        name="PRIVATE CONDITION NAME",
+        source_note="PRIVATE CONDITION SOURCE",
+        voltage_limit={"maximum_percent": 1, "source_note": "PRIVATE LIMIT SOURCE"},
+    )
+    for index, cable in enumerate(plan["cable_runs"]):
+        cable["id"] = f"PRIVATE-RUN-{index}"
+        cable["name"] = f"PRIVATE CABLE {index}"
+        cable["conductor"]["source_note"] = "PRIVATE CONDUCTOR SOURCE"
+    for route in plan["routes"]:
+        route.update(name="PRIVATE ROUTE", extra_length_note="PRIVATE LENGTH NOTE")
+    for instance in plan["instances"]:
+        instance["name"] = "PRIVATE INSTANCE"
+        for port in instance["ports"]:
+            port["name"] = "PRIVATE PORT"
+    if missing_source:
+        basis["cable_references"] = []
+    project = workspace.create(owner, "Conductor scenario", {}, key="new")
+    source: Object = {
+        "title": project.title,
+        "project_id": project.id,
+        "revision": 1,
+        "input_sha256": project.input_sha256,
+        "generated_at": "2026-11-01T00:00:00Z",
+        "source_runs": [],
+        "locale": locale,
+        "installation": route_takeoff(cast(Object, inputs), cast(Object, basis)),
+        "unrelated_hourly_profile": [{"value": 123.4}],
+    }
+    if pinned_materials:
+        source["materials"] = project_materials(source)
+    recorded = cast(Object, build_report(source).model_dump(mode="json"))
+    unrelated_section: Object = {
+        "id": "unrelated-stored-history",
+        "title": "Stored history",
+        "rows": [{"label": "Preserved section", "value": "UNCHANGED STORED SECTION"}],
+    }
+    cast(list[Json], recorded["sections"]).append(unrelated_section)
+    safe_source = _report_source_projection(source, locale)
+    assert safe_source["unrelated_hourly_profile"] is source["unrelated_hourly_profile"]
+    same_language_report = _installation_report_projection(recorded, source, locale)
+    assert cast(list[Object], same_language_report["sections"])[-1] is unrelated_section
+    original_source, original_report = deepcopy(source), deepcopy(recorded)
+    assert "PRIVATE CONDITION SOURCE" in str(recorded)
+    assert "PRIVATE LIMIT SOURCE" in str(recorded)
+    assert "PRIVATE-RUN-0" in str(source)
+    run = workspace.evaluate(owner, project.id, 1, context, key="run", max_attempts=1)
+    jobs = Jobs(workspace)
+    lease = jobs.claim("fixture", kinds=("evaluate",), lease_seconds=30)
+    assert lease is not None
+    source_sha = workspace.blobs.put_object(source)
+    jobs.complete(
+        lease,
+        {
+            "kind": "planning_report_v1",
+            "report": recorded,
+            "dependencies": {"report_source": source_sha},
+        },
+    )
+    workspace.revise(owner, project.id, 1, {"later": True}, key="edit")
+    with workspace.database.read() as connection:
+        before = list(connection.iterdump())
+    blobs = sorted(p.name for p in workspace.blobs.directory.rglob("*") if p.is_file())
+    for requested in (locale, "de" if locale == "en" else "en"):
+        with monkeypatch.context() as scoped:
+            if requested == locale:
+
+                def no_full_report_rebuild(source: Object) -> None:
+                    raise AssertionError(
+                        "same-language reads must reuse unrelated saved sections"
+                    )
+
+                scoped.setattr(
+                    "linker_engine.planning.assistant_context.build_report",
+                    no_full_report_rebuild,
+                )
+            projection = assistant_context(
+                workspace, owner, project.id, 1, [run.id], requested
+            )
+        shown = str(projection)
+        if requested == locale:
+            assert "UNCHANGED STORED SECTION" in shown
+        assert "PRIVATE" not in shown
+        selected = cast(list[Object], projection["runs"])[0]
+        assert selected["revision"] == 1 and selected["is_current"] is False
+        assert selected["matches_view_revision"] is True
+        assert "20 A / 600 V" in shown
+        assert "1%" in shown
+        assert "30 m" in shown and "4 mm²" in shown and "6 mm²" in shown
+        if missing_source:
+            assert "5.088" not in shown and "101.76" not in shown
+            assert (
+                "Die gewählte Kabelquelle ist nicht verfügbar."
+                if requested == "de"
+                else "The selected cable source is unavailable."
+            ) in shown
+        else:
+            assert "5.088 / 0.848" in shown and "101.76" in shown
+            assert "dc_20" in shown
+            assert (
+                "Maximaler Leiterwiderstand"
+                if requested == "de"
+                else "Maximum conductor resistance"
+            ) in shown
+            assert (
+                "Innerhalb des erfassten Projektgrenzwerts"
+                if requested == "de"
+                else "Within recorded project limit"
+            ) in shown
+        assert ("Strombelastbarkeit" if requested == "de" else "ampacity") in shown
+        assert projection["current_product_permission"] == "not_granted_by_this_context"
+    assert workspace.blobs.object(source_sha) == original_source
+    saved = workspace.run(owner, run.id).result
+    assert saved is not None and saved["report"] == original_report
+    with workspace.database.read() as connection:
+        assert list(connection.iterdump()) == before
+    assert (
+        sorted(p.name for p in workspace.blobs.directory.rglob("*") if p.is_file())
+        == blobs
+    )
+
+
+@pytest.mark.parametrize("locale", ["en", "de"])
+@pytest.mark.parametrize("retained_source", [False, True])
+def test_historical_installation_report_without_electrical_remains_readable(
+    workspace: Workspace,
+    owner: Actor,
+    context: Context,
+    locale: str,
+    retained_source: bool,
+) -> None:
+    inputs, basis = circuit_fixture()
+    installation = route_takeoff(cast(Object, inputs), cast(Object, basis))
+    installation.pop("electrical")
+    cast(list[Object], installation["cables"])[0]["name"] = "PRIVATE CABLE NAME"
+    project = workspace.create(owner, "Historical installation", {}, key="new")
+    source: Object = {
+        "title": project.title,
+        "project_id": project.id,
+        "revision": 1,
+        "input_sha256": project.input_sha256,
+        "generated_at": "2026-11-01T00:00:00Z",
+        "source_runs": [],
+        "locale": locale,
+        "installation": installation,
+    }
+    report = cast(Object, build_report(source).model_dump(mode="json"))
+    run = workspace.evaluate(owner, project.id, 1, context, key="run", max_attempts=1)
+    jobs = Jobs(workspace)
+    lease = jobs.claim("fixture", kinds=("evaluate",), lease_seconds=30)
+    assert lease is not None
+    jobs.complete(
+        lease,
+        {
+            "kind": "planning_report_v1",
+            "report": report,
+            "dependencies": {"report_source": workspace.blobs.put_object(source)}
+            if retained_source
+            else {},
+        },
+    )
+    projection = assistant_context(workspace, owner, project.id, 1, [run.id], locale)
+    shown = str(projection)
+    assert "PRIVATE" not in shown
+    assert text("installation_scope", locale) in shown
+    assert "5.088" not in shown and "20 A" not in shown
+    assert "Conductor calculation" not in shown
+    if retained_source:
+        assert "30 m" in shown and "4 mm²" in shown
+    saved = workspace.run(owner, run.id).result
+    assert saved is not None and saved["report"] == report
 
 
 def test_owned_snapshot_preserves_scope_revision_units_and_store(

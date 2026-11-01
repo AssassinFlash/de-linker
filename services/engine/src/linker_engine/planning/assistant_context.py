@@ -20,6 +20,14 @@ from .geometric_pv_inputs import KIND as GEOMETRIC_PV_KIND
 from .geometric_pv_inputs import PROFILE_PURPOSE as GEOMETRIC_PV_PURPOSE
 from .geometric_pv_profile import prepared_profile as geometric_pv_profile
 from .geometric_pv_profile import reference_bundle as geometric_pv_bundle
+from .installation_report import installation_sections
+from .project_materials import (
+    material_name,
+    material_quantity,
+    material_reference,
+    material_scope,
+    project_materials,
+)
 from .pvgis_reference_inputs import PvgisReferenceInputs
 from .pvgis_reference_profile import (
     PROFILE_PURPOSE,
@@ -218,6 +226,168 @@ def _report_materials(workspace: Workspace, run: Run, result: Object) -> Json | 
     }
 
 
+def _report_source_projection(source: Object, locale: str) -> Object:
+    """Keep frozen engineering facts; project labels/notes remain owner-only.
+
+    Redact native source fields before reusing the report presenter. This keeps
+    the same numerical labels, source evidence and scope in either language,
+    without parsing localized prose or changing the stored report/PDF/CSV.
+    """
+    projected = {**source, "locale": locale}
+    raw_plan = source.get("installation")
+    if not isinstance(raw_plan, dict):
+        return projected
+    private = (
+        "Im eigenen Bericht erfasst" if locale == "de" else "Recorded in owned report"
+    )
+    # Copy only edited branches. Unrelated saved profiles and evidence are read
+    # as-is, and no persistent blob or source object is changed.
+    plan = {**raw_plan, "sources": []}
+    projected["installation"] = plan
+    plan["instances"] = [
+        {
+            **device,
+            "name": f"{text('installation_instance', locale)} {index}",
+            "ports": [
+                {**port, "name": f"{text('installation_ports', locale)} {port_index}"}
+                for port_index, port in enumerate(
+                    cast(list[Object], device["ports"]), 1
+                )
+            ],
+        }
+        for index, device in enumerate(cast(list[Object], raw_plan["instances"]), 1)
+    ]
+    plan["cables"] = [
+        {
+            **cable,
+            "name": f"{text('installation_conductor', locale)} {index}",
+            "circuit_name": private,
+            "route_name": private,
+            "extra_length_note": private
+            if cable.get("extra_length_note") is not None
+            else None,
+        }
+        for index, cable in enumerate(cast(list[Object], raw_plan["cables"]), 1)
+    ]
+    electrical = raw_plan.get("electrical")
+    if isinstance(electrical, dict):
+        circuits: list[Json] = []
+        plan["electrical"] = {**electrical, "circuits": circuits}
+        for index, circuit in enumerate(cast(list[Object], electrical["circuits"]), 1):
+            conditions: list[Json] = []
+            circuits.append(
+                {
+                    **circuit,
+                    "name": f"{'Stromkreis' if locale == 'de' else 'Circuit'} {index}",
+                    "conditions": conditions,
+                }
+            )
+            for condition_index, result in enumerate(
+                cast(list[Object], circuit["conditions"]), 1
+            ):
+                condition = cast(Object, result["condition"])
+                limit = cast(Object, result["limit"])
+                declared = limit.get("declared")
+                conditions.append(
+                    {
+                        **result,
+                        "name": f"{'Betriebsfall' if locale == 'de' else 'Condition'} {condition_index}",
+                        "condition": {
+                            **condition,
+                            "source_note": private,
+                            "arrangement": private
+                            if condition.get("arrangement") is not None
+                            else None,
+                        },
+                        "limit": {
+                            **limit,
+                            "declared": {**declared, "source_note": private}
+                            if isinstance(declared, dict)
+                            else declared,
+                        },
+                        "segments": [
+                            {
+                                **segment,
+                                "run_id": f"{text('installation_conductor', locale)} {segment_index}",
+                            }
+                            for segment_index, segment in enumerate(
+                                cast(list[Object], result["segments"]), 1
+                            )
+                        ],
+                    }
+                )
+    # Modern reports pin a materials model instead of deriving it at display
+    # time. Only the project-defined installation labels need redaction there.
+    materials = source.get("materials")
+    if isinstance(materials, dict):
+        lines: list[Json] = []
+        projected["materials"] = {**materials, "lines": lines}
+        for index, line in enumerate(cast(list[Object], materials["lines"]), 1):
+            if line.get("handling") != "installation_requirement":
+                lines.append(line)
+                continue
+            safe = dict(line)
+            lines.append(safe)
+            if line.get("basis") == plan.get("method"):
+                safe["label"] = {
+                    lang: f"{text('installation_conductor', lang)} {index}"
+                    for lang in ("en", "de")
+                }
+            origin = line.get("source")
+            link = origin.get("link") if isinstance(origin, dict) else None
+            if (
+                isinstance(origin, dict)
+                and isinstance(link, dict)
+                and "unit_id" in link
+            ):
+                safe["source"] = {
+                    **origin,
+                    "link": {**link, "unit_id": private, "inverter_instance_id": None},
+                }
+    return projected
+
+
+def _installation_report_projection(
+    report: Object, source: Object, locale: str
+) -> Object:
+    """Reuse stored non-installation sections; re-present only redacted branches."""
+    safe = _report_source_projection(source, locale)
+    replacements = {
+        section.id: cast(Object, section.model_dump(mode="json"))
+        for section in installation_sections(safe, locale)
+    }
+    materials = safe.get("materials")
+    if not isinstance(materials, dict):
+        materials = project_materials(safe)
+    sections: list[Json] = []
+    for section in cast(list[Object], report.get("sections", [])):
+        identifier = str(section.get("id", ""))
+        if identifier in replacements:
+            sections.append(replacements[identifier])
+        elif identifier == "bom" and isinstance(section.get("table"), dict):
+            table = cast(Object, section["table"])
+            sections.append(
+                {
+                    **section,
+                    "table": {
+                        **table,
+                        "rows": [
+                            [
+                                material_quantity(line, locale),
+                                material_name(line, locale),
+                                material_reference(line),
+                                material_scope(line, locale),
+                            ]
+                            for line in cast(list[Object], materials["lines"])
+                        ],
+                    },
+                }
+            )
+        else:
+            sections.append(section)
+    return {**report, "sections": sections}
+
+
 def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
     result = run.result
     if result is None:
@@ -236,10 +406,16 @@ def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
         report = result.get("report")
         if not isinstance(report, dict):
             raise InvalidInput("saved report model is missing")
-        if report.get("locale") != locale:
+        has_installation = any(
+            str(section.get("id", "")).startswith("installation-")
+            for section in cast(list[Object], report.get("sections", []))
+        )
+        dependencies = cast(Object, result.get("dependencies", {}))
+        if report.get("locale") != locale or (
+            has_installation and isinstance(dependencies.get("report_source"), str)
+        ):
             # Localize only presentation of its frozen source; no kernel, source
             # refresh, PDF, job, or persistent artifact is produced by this read.
-            dependencies = cast(Object, result.get("dependencies", {}))
             sha = dependencies.get("report_source")
             if not isinstance(sha, str):
                 raise InvalidInput("saved report source is missing")
@@ -250,10 +426,37 @@ def _result_rows(workspace: Workspace, run: Run, locale: str) -> list[Json]:
                 or source.get("input_sha256") != run.manifest.get("input_sha256")
             ):
                 raise InvalidInput("saved report source differs from selected result")
-            report = cast(
-                Object,
-                build_report({**source, "locale": locale}).model_dump(mode="json"),
-            )
+            if report.get("locale") == locale:
+                report = _installation_report_projection(report, source, locale)
+            else:
+                report = cast(
+                    Object,
+                    build_report(_report_source_projection(source, locale)).model_dump(
+                        mode="json"
+                    ),
+                )
+        elif has_installation:
+            # Source-less historical reports remain readable. Their fixed
+            # installation scope is safe, but unstructured project details
+            # cannot be separated from private text without the native source.
+            sections: list[Json] = []
+            for section in cast(list[Object], report.get("sections", [])):
+                if str(section.get("id", "")).startswith("installation-"):
+                    sections.append(
+                        {
+                            **section,
+                            "title": text("installation", locale),
+                            "rows": section.get("rows", [])
+                            if section.get("id") == "installation-pv-string-links"
+                            else [],
+                            "table": None,
+                        }
+                    )
+                elif section.get("id") == "bom":
+                    sections.append({**section, "table": None})
+                else:
+                    sections.append(section)
+            report = {**report, "sections": sections}
         rows: list[Json] = []
         for section in cast(list[Object], report.get("sections", [])):
             if section.get("id") == "site":
