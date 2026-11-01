@@ -29,8 +29,7 @@ def test_native_file_stage_without_hard_links(tmp_path: Path, partial: bytes) ->
     temporary.write_bytes(partial)
     program = (
         "$path = $argv[1]; $partial = $path . '.partial'; "
-        "$bytes = 'reviewed PDF bytes'; $new_sha = hash('sha256', $bytes); "
-        + stage
+        "$bytes = 'reviewed PDF bytes'; $new_sha = hash('sha256', $bytes); " + stage
     )
 
     def run() -> subprocess.CompletedProcess[str]:
