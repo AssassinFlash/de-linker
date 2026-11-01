@@ -495,6 +495,7 @@ final class AuthTemplatesTest extends TestCase {
 
 	/** Login marketing copy and unrelated account endpoints keep their own titles. */
 	public function test_other_english_account_titles_remain_unchanged(): void {
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
 		WP_Mock::userFunction( 'is_account_page', array( 'return' => true ) );
 		WP_Mock::userFunction( 'is_404', array( 'return' => false ) );
 		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'en' ) );
@@ -535,5 +536,125 @@ final class AuthTemplatesTest extends TestCase {
 		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => true ) );
 		WP_Mock::userFunction( 'is_404', array( 'return' => true ) );
 		$this->assertSame( 'Not found | Linker', ( new AuthTemplates() )->document_title( 'Not found | Linker' ) );
+	}
+	/**
+	 * Portal titles reuse Woo's menu-aware endpoint headings after sign-in.
+	 *
+	 * @testWith ["", "Overview"]
+	 *           ["orders", "Inquiries"]
+	 *           ["saved-solutions", "Saved solutions"]
+	 *           ["documents", "Documents"]
+	 *           ["edit-address", "Company"]
+	 *           ["edit-account", "Account details"]
+	 * @param string $endpoint Native Woo endpoint key.
+	 * @param string $heading Existing native page heading.
+	 */
+	public function test_signed_in_portal_titles_use_existing_native_headings( string $endpoint, string $heading ): void {
+		$this->english_portal_request();
+		$query = \Mockery::mock( \WC_Query::class );
+		$query->shouldReceive( 'get_current_endpoint' )->once()->andReturn( $endpoint );
+		if ( '' === $endpoint ) {
+			$query->shouldNotReceive( 'get_endpoint_title' );
+		} else {
+			$query->shouldReceive( 'get_endpoint_title' )->with( $endpoint )->once()->andReturn( $heading );
+		}
+		WP_Mock::userFunction( 'WC', array( 'return' => (object) array( 'query' => $query ) ) );
+		$this->assertSame( $heading . ' | Linker', ( new AuthTemplates() )->document_title( 'Partner Account: Sign In or Register | Linker' ) );
+	}
+
+	/**
+	 * Unknown and other-owner details never resolve a private inquiry number.
+	 *
+	 * @testWith [0]
+	 *           [42]
+	 * @param int $id Synthetic detail endpoint value, never a real order lookup.
+	 */
+	public function test_unavailable_inquiry_titles_do_not_read_private_numbers( int $id ): void {
+		$this->english_portal_request();
+		$query = \Mockery::mock( \WC_Query::class );
+		$query->shouldReceive( 'get_current_endpoint' )->once()->andReturn( 'view-order' );
+		$query->shouldNotReceive( 'get_endpoint_title' );
+		WP_Mock::userFunction( 'WC', array( 'return' => (object) array( 'query' => $query ) ) );
+		WP_Mock::userFunction(
+			'get_query_var',
+			array(
+				'args'   => array( 'view-order' ),
+				'return' => $id,
+			)
+		);
+		WP_Mock::userFunction(
+			'absint',
+			array(
+				'args'   => array( $id ),
+				'return' => $id,
+			)
+		);
+		WP_Mock::userFunction(
+			'current_user_can',
+			array(
+				'args'   => array( 'view_order', $id ),
+				'return' => false,
+			)
+		);
+		WP_Mock::userFunction( 'wc_get_order', array( 'times' => 0 ) );
+		$this->assertSame( 'Inquiry | Linker', ( new AuthTemplates() )->document_title( 'Parent account title | Linker' ) );
+	}
+
+	/** Only native Woo permission permits the endpoint's private display number. */
+	public function test_owned_inquiry_title_requires_native_view_order_permission(): void {
+		$this->english_portal_request();
+		$query = \Mockery::mock( \WC_Query::class );
+		$query->shouldReceive( 'get_current_endpoint' )->once()->andReturn( 'view-order' );
+		$query->shouldReceive( 'get_endpoint_title' )->with( 'view-order' )->once()->andReturn( 'Inquiry #SYNTHETIC-42' );
+		WP_Mock::userFunction( 'WC', array( 'return' => (object) array( 'query' => $query ) ) );
+		WP_Mock::userFunction(
+			'get_query_var',
+			array(
+				'args'   => array( 'view-order' ),
+				'return' => 42,
+			)
+		);
+		WP_Mock::userFunction(
+			'absint',
+			array(
+				'args'   => array( 42 ),
+				'return' => 42,
+			)
+		);
+		WP_Mock::userFunction(
+			'current_user_can',
+			array(
+				'args'   => array( 'view_order', 42 ),
+				'return' => true,
+			)
+		);
+		$this->assertSame( 'Inquiry #SYNTHETIC-42 | Linker', ( new AuthTemplates() )->document_title( 'Parent account title | Linker' ) );
+	}
+
+	/** Unregistered extension endpoints retain their existing title owner. */
+	public function test_unknown_account_endpoints_keep_existing_metadata(): void {
+		$this->english_portal_request();
+		$query = \Mockery::mock( \WC_Query::class );
+		$query->shouldReceive( 'get_current_endpoint' )->once()->andReturn( 'other-extension' );
+		$query->shouldNotReceive( 'get_endpoint_title' );
+		WP_Mock::userFunction( 'WC', array( 'return' => (object) array( 'query' => $query ) ) );
+		$this->assertSame( 'Extension title | Linker', ( new AuthTemplates() )->document_title( 'Extension title | Linker' ) );
+	}
+
+	/** A synthetic authenticated request on the actual English account page. */
+	private function english_portal_request(): void {
+		$this->plain_text();
+		WP_Mock::userFunction( 'is_account_page', array( 'return' => true ) );
+		WP_Mock::userFunction( 'is_404', array( 'return' => false ) );
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'en' ) );
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
+		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => false ) );
+		WP_Mock::userFunction(
+			'get_bloginfo',
+			array(
+				'args'   => array( 'name' ),
+				'return' => 'Linker',
+			)
+		);
 	}
 }

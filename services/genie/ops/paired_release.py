@@ -16,13 +16,32 @@ import runpy
 import shlex
 import subprocess
 import sys
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Any, Protocol
+from typing import TYPE_CHECKING, Any, Protocol
+
+if TYPE_CHECKING:
+    from linker_genie.embedding import Embedder, Passage
 
 if __package__ in {None, ""} and "__file__" in globals():
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 UNITS = ("linker-genie.service", "linker-genie-judge.service")
+
+
+class CachedEmbedder:
+    """The complete native encoder interface, refusing every computed vector."""
+
+    def __init__(self, underlying: Embedder) -> None:
+        self.fingerprint = underlying.fingerprint
+        self.model = underlying.model
+        self.dimensions = underlying.dimensions
+
+    def embed_documents(self, passages: Sequence[Passage]) -> list[bytes]:
+        raise RuntimeError("paired cached-only release refused missing embeddings")
+
+    def embed_query(self, text: str) -> bytes:
+        raise RuntimeError("paired cached-only release refused query embedding")
 
 
 def running(root: Path, version: str) -> dict[str, int]:
@@ -521,12 +540,8 @@ def main(argv: list[str] | None = None) -> int:
                 state["phase"] = "ready"
                 save(args.journal, state)
 
-    class CachedEmbedder:
-        def __init__(self, underlying: Any) -> None:
-            self.fingerprint, self.model = underlying.fingerprint, underlying.model
-
-        def embed_documents(self, passages: Any) -> Any:
-            raise RuntimeError("paired cached-only release refused missing embeddings")
+    def cached_embedder(model: str) -> Embedder:
+        return CachedEmbedder(build.document_embedder(model))
 
     worker_args = [
         "--host",
@@ -555,7 +570,7 @@ def main(argv: list[str] | None = None) -> int:
             ),
         ),
         worker_factory=ReleaseWorker,
-        embedding_factory=lambda model: CachedEmbedder(build.document_embedder(model)),
+        embedding_factory=cached_embedder,
         busy_exit=1,
     )
     if (
