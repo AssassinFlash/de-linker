@@ -6,6 +6,7 @@ import gzip
 import json
 from copy import deepcopy
 from dataclasses import replace
+from functools import partial
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
@@ -119,7 +120,9 @@ def test_new_association_is_mandatory_wrong_model_and_unreviewed_context_fail() 
     chunks, scopes = compile_publication(original, missing, authority(missing), Words())
     assert not new_terms(chunks, scopes)
     assert not any(
-        c.doc_sha256 == OLD and scopes.get(c.id, {}).get("basis") == "warranty_terms"
+        c.doc_sha256 == OLD
+        and c.id in scopes
+        and scopes[c.id]["basis"] == "warranty_terms"
         for c in chunks
     )
 
@@ -164,30 +167,31 @@ def test_runtime_checks_native_paragraphs_current_document_and_revision() -> Non
     anchors = external_axis_anchors(chunks)
     pid = proof["product_ids"][0]
     association = proof["associations"]
-    kwargs = dict(
+    permitted = partial(
+        authorize_chunk,
         products=source.products,
         documents=source.documents,
         chunk_id=unit.id,
         text=unit.text,
         external_axis_anchors=anchors,
     )
-    assert authorize_chunk(NEW, [pid], association, proof, **kwargs)
+    assert permitted(NEW, [pid], association, proof)
     altered = deepcopy(proof)
     altered["warranty_scope"]["policy"]["sources"]["geography"]["text"] += (
         " UK is included."
     )
-    assert not authorize_chunk(NEW, [pid], association, altered, **kwargs)
-    assert not authorize_chunk(NEW, [pid], [], proof, **kwargs)
+    assert not permitted(NEW, [pid], association, altered)
+    assert not permitted(NEW, [pid], [], proof)
     bad_anchors = deepcopy(anchors)
     del bad_anchors[
         proof["warranty_scope"]["policy"]["sources"]["exclusions"][0]["chunk_id"]
     ]
-    assert not authorize_chunk(
+    assert not permitted(
         NEW,
         [pid],
         association,
         proof,
-        **{**kwargs, "external_axis_anchors": bad_anchors},
+        external_axis_anchors=bad_anchors,
     )
 
 
@@ -330,16 +334,16 @@ def test_simulated_woo_link_through_sqlite_knowledge_hydration_and_withdrawal(
                     )
                     assert (
                         "Norwegen oder der Schweiz" in block.text
-                        and "Vereinigtes Königreich" in block.text
+                        and "Vereinigten Königreichs" in block.text
                     )
                 assert any(
-                    isinstance(b, DocumentBlock) and b.url.endswith("#page=1")
+                    isinstance(b, DocumentBlock) and b.url and b.url.endswith("#page=1")
                     for b in answer.blocks
                 )
                 assert {
                     b.url.rsplit("#page=", 1)[-1]
                     for b in answer.blocks
-                    if isinstance(b, DocumentBlock)
+                    if isinstance(b, DocumentBlock) and b.url
                 } >= {"1", "2", "3"}
                 if lang == "de":
                     assert "Herstellerbedingung (englisches Original)" in block.text
