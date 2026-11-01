@@ -6,6 +6,7 @@
     "pv_string_links_direct_beam_geometric_pv_v1",
     "pv_plant_string_plan_v1",
     "installation_circuit_electrical_v1",
-    "grid_connection_evidence_v1"
+    "grid_connection_evidence_v1",
+    "installation_terminal_bindings_v1"
   ]
 }
