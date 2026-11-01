@@ -23,6 +23,7 @@ from __future__ import annotations
 import json
 import shlex
 import signal
+import ssl
 import subprocess
 import tempfile
 import time
@@ -656,7 +657,18 @@ class Target:
             url = f"{url}{separator}cbq={cache_buster}"
         request = urllib.request.Request(url, headers={"User-Agent": "linker-cutover"})
         try:
-            with OPENER.open(request, timeout=30) as response:
+            try:
+                response = OPENER.open(request, timeout=30)
+            except urllib.error.URLError as error:
+                if not isinstance(error.reason, ssl.SSLEOFError):
+                    raise
+                # The production verification lost TLS before obtaining a response.
+                # Retry just this read once, keeping the same URL and redirect policy.
+                print(
+                    f"cutover: TLS EOF before response, retrying GET {path}", flush=True
+                )
+                response = OPENER.open(request, timeout=30)
+            with response:
                 return response.status, response.read().decode(
                     "utf-8", errors="replace"
                 )
