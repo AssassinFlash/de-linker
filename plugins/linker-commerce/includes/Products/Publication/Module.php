@@ -13,6 +13,7 @@ namespace Linker\Commerce\Products\Publication;
 final class Module {
 	/** Register native mutation, file and media-library hooks. */
 	public function register(): void {
+		( new FreshRest() )->register();
 		( new Visibility() )->register();
 		( new \Linker\Commerce\Products\EngineeringReference() )->register();
 		( new CompatibilityEditor() )->register();
