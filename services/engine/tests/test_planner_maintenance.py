@@ -297,6 +297,47 @@ def test_schedule_has_no_retry_daemon_and_keeps_utc_window_args(
     }
 
 
+@pytest.mark.parametrize(
+    ("message", "reason"),
+    [
+        ("Connection timed out during banner exchange", "ssh_banner_timeout"),
+        ("user@private-host: Permission denied (publickey).", "ssh_auth_denied"),
+        (
+            "ssh: connect to host private-host port 22: Connection refused",
+            "ssh_refused",
+        ),
+        ("unrecognized private diagnostic", "exit_255"),
+    ],
+)
+def test_remote_plan_failure_records_only_the_diagnostic_category(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, message: str, reason: str
+) -> None:
+    policy = maintenance.Policy(
+        "example", Path("/opt/linker-planner"), tmp_path, "a" * 32
+    )
+    remote = maintenance.Remote(policy)
+    child = subprocess.Popen(
+        [
+            sys.executable,
+            "-c",
+            "import sys;sys.stderr.write(sys.argv[1]);sys.exit(255)",
+            message,
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        start_new_session=True,
+    )
+    monkeypatch.setattr(remote, "start", lambda *_args: child)
+    with pytest.raises(RuntimeError) as failure:
+        remote.call("plan")
+    assert maintenance.failure_result(failure.value, "plan") == {
+        "phase": "plan",
+        "status": "error",
+        "reason": f"remote_plan_{reason}",
+    }
+    assert child.returncode == 255
+
+
 def test_native_automatic_guards_never_stop_on_busy_zero_or_missing_recovery(
     tmp_path: Path,
 ) -> None:
