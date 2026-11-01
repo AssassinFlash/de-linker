@@ -482,7 +482,9 @@ def _post_deploy(
     def present() -> list[str]:
         target.wp("linker-commerce", "present", "--user=1", "--allow-stale")
         return [
-            "wp linker-commerce present --user=1 --allow-stale (now run the WindPress admin compile: npm tools/windpress-compile.mjs with an admin login)"
+            "wp linker-commerce present --user=1 --allow-stale. In the signed-in "
+            "WindPress dashboard open Settings > Performance > Generate, then "
+            "check that Last Generated advances and the frontend loads that CSS version."
         ]
 
     def refresh() -> list[str]:

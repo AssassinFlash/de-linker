@@ -99,7 +99,7 @@ PR #299 第 3 轮裁定的恢复边界：已有目录的失败恢复先 `mv live
   LiveCanvas 模板 + partial + WindPress volume，`--allow-stale` 先行、浏览器编译后再净跑一次；
   2026-10-16 起净跑之后并排跑 `wp linker-commerce check --user=<admin>`——只读断言，0 行 exit 0
   才算部署面收口，见 `docs/acceptance/2026-10-16/h9-present-check/acceptance.md`）、
-  WindPress 浏览器侧编译（唯一编译方式；线上以临时一次性登录桥驱动 `tools/windpress-compile.mjs`，用完即撤）、
+  WindPress 浏览器侧编译（线上用已登录后台的 Settings → Performance → Generate，确认 Last Generated 更新并读回前台加载的同版本 CSS）、
   与 `12-site-chrome.py` / `page-template-empty.py`（改名与页模板，指向这两个脚本而非复制其规则）。
   服务侧两处必须在窗口内做、此前只写在运行面：`LINKER_ENGINE_CORS_ORIGINS` 之外，**PHP 侧对自签证书的
   钉扎**（`mu-plugins/linker-engine-pin.php` + `engine-ca.pem`，旧插件同名机制的移植）与**发布后重建 venv**
