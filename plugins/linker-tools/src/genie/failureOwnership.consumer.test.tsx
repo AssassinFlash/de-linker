@@ -578,6 +578,9 @@ test( 'native lookup pending accepts no ordinary input, outage Retry makes a usa
 	);
 	await waitFor( () => expect( ui.field().disabled ).toBe( false ) );
 	expect( screen.queryByText( 'One moment…' ) ).not.toBeInTheDocument();
+	expect(
+		screen.queryByText( 'Loading conversations…' )
+	).not.toBeInTheDocument();
 	expect( attach.disabled ).toBe( false );
 	expect( captures ).toHaveLength( 0 );
 	await askWorkspace( 'Explicit question after verification' );

@@ -1931,6 +1931,13 @@ export function App( { config }: { config: GenieConfig } ) {
 	const cardProofs = proofsOf( turn?.blocks ?? [] );
 	const compareIds = idsOf( turn?.blocks ?? [], 'compare' );
 
+	// A failed initial owner lookup also interrupted the first history load.
+	const recoverWorkspace = async () => {
+		await showStored();
+		if ( workspace && historyPhase === 'loading' ) {
+			await refreshHistory();
+		}
+	};
 	const entryInbox = useEntryInbox( {
 		context: draftContext,
 		config,
@@ -1939,7 +1946,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		files,
 		busy: phase === 'waiting',
 		ask: ( text, entryId, entryScope ) => ask( text, entryId, entryScope ),
-		onRecovery: showStored,
+		onRecovery: recoverWorkspace,
 		onComposerClaim: () => {
 			entryOwnsComposer.current = true;
 		},
@@ -2791,8 +2798,15 @@ export function App( { config }: { config: GenieConfig } ) {
 													void draftContext
 														.verify()
 														.then( async () => {
-															await entryInbox.retryRecovery();
-															await showStored();
+															if (
+																draftContext
+																	.identity
+																	?.persistent
+															) {
+																await entryInbox.retryRecovery();
+															} else {
+																await recoverWorkspace();
+															}
 														} )
 														.catch(
 															() => undefined
