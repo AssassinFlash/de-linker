@@ -176,22 +176,28 @@ test( 'human interaction can use 110 seconds before the unchanged response windo
 	expect( vi.getTimerCount() ).toBe( 0 );
 } );
 
-test( 'repeated provider failures retain input but cannot extend the challenge deadline or dispatch', async () => {
+test( 'a repeated provider failure after the native retry interval restores input without dispatch', async () => {
 	let repeated: ReturnType< typeof setInterval >;
+	let firstErrorAt = 0;
 	const f = fixture( ( options ) => {
-		queueMicrotask( () => options[ 'error-callback' ]( '300030' ) );
+		queueMicrotask( () => {
+			firstErrorAt = Date.now();
+			options[ 'error-callback' ]( '300030' );
+		} );
 		repeated = setInterval(
 			() => options[ 'error-callback' ]( '300030' ),
 			8000
 		);
 	} );
 	await vi.waitFor( () => expect( f.render ).toHaveBeenCalledOnce() );
-	await vi.advanceTimersByTimeAsync( 119_000 );
+	await vi.advanceTimersByTimeAsync(
+		Math.max( 0, firstErrorAt + 7999 - Date.now() )
+	);
 	expect( f.outcome() ).toBeUndefined();
-	await vi.advanceTimersByTimeAsync( 1000 );
+	await vi.advanceTimersByTimeAsync( 1 );
 	await f.pending;
 	clearInterval( repeated! );
-	expect( f.outcome() ).toEqual( new Error( 'verification_timeout' ) );
+	expect( f.outcome() ).toEqual( new Error( 'verification_widget_300030' ) );
 	expect( f.remove ).toHaveBeenCalledOnce();
 	expect( f.validation ).toHaveBeenCalledOnce();
 	expect( f.transport ).not.toHaveBeenCalled();
@@ -228,4 +234,25 @@ test( 'the verification bound and the shared client lifetime are one number', ()
 	expect( TURN_VERIFICATION_TIMEOUT_MS ).toBe(
 		3 * constant( 'NETWORK_MS' ) + constant( 'CHALLENGE_MS' )
 	);
+} );
+
+test( 'cancelling the real pending widget restores the editable draft and a late provider callback cannot send', async () => {
+	let late: Widget[ 'callback' ] = () => undefined;
+	const f = fixture( ( options ) => {
+		late = options.callback;
+	} );
+	await vi.waitFor( () => expect( f.render ).toHaveBeenCalledOnce() );
+	const widget = document.querySelector< HTMLElement >(
+		'[data-linker-resource-verification="genie"]'
+	)!;
+	expect( window.linkerPublicProtection?.cancel?.( 'genie', widget ) ).toBe(
+		true
+	);
+	await f.pending;
+	late( 'synthetic-late-proof' );
+	await vi.advanceTimersByTimeAsync( 0 );
+	expect( f.outcome() ).toEqual( new Error( 'verification_cancelled' ) );
+	expect( f.transport ).not.toHaveBeenCalled();
+	expect( document.querySelector( 'textarea' ) ).toHaveValue( question );
+	expect( vi.getTimerCount() ).toBe( 0 );
 } );

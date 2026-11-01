@@ -74,6 +74,8 @@ import { GenieCard } from './components/GenieCard';
 import { HelperFooter } from './components/HelperFooter';
 import { Reply } from './components/Reply';
 import { Transcript } from './components/Transcript';
+import { PlanningSourcesCard } from './components/PlanningSourcesCard';
+import { TurnProgress } from './components/TurnProgress';
 import {
 	AttachIcon,
 	BackIcon,
@@ -2386,6 +2388,36 @@ export function App( { config }: { config: GenieConfig } ) {
 													/>
 												</div>
 											) : null }
+											{ index === turnAt.current &&
+											message.role === 'assistant'
+												? turn?.blocks
+														.filter(
+															( block ) =>
+																block.type ===
+																'planning_sources'
+														)
+														.map(
+															(
+																block,
+																sourceIndex
+															) => (
+																<PlanningSourcesCard
+																	key={
+																		sourceIndex
+																	}
+																	block={
+																		block
+																	}
+																	configuratorLinks={
+																		config.configuratorLinks
+																	}
+																	currentPage={
+																		page
+																	}
+																/>
+															)
+														)
+												: null }
 											{ contacts
 												.filter(
 													( card ) =>
@@ -2424,34 +2456,13 @@ export function App( { config }: { config: GenieConfig } ) {
 										</li>
 									) ) }
 									{ 'waiting' === phase ? (
-										<li className="linker-genie-app__message linker-genie-app__message--assistant linker-genie-wait">
-											<div
-												role="status"
-												className="linker-genie-wait__status"
-											>
-												<span
-													className="linker-genie-wait__dot"
-													aria-hidden="true"
-												/>
-												{ verificationPending
-													? __(
-															'Checking verification…',
-															'linker-tools'
-														)
-													: __(
-															'Genie is thinking…',
-															'linker-tools'
-														) }
-											</div>
-											<div
-												className="linker-genie-wait__lines"
-												aria-hidden="true"
-											>
-												<span />
-												<span />
-												<span />
-											</div>
-										</li>
+										<TurnProgress
+											verificationPending={
+												verificationPending
+											}
+											onCancel={ cancelVerification }
+											skeleton
+										/>
 									) : null }
 								</ol>
 								{ /* The turn's text already stands in the thread
@@ -2481,6 +2492,7 @@ export function App( { config }: { config: GenieConfig } ) {
 									.filter(
 										( block ) =>
 											'text' !== block.type &&
+											'planning_sources' !== block.type &&
 											'contact' !== block.type
 									)
 									.map( ( block, index ) => (

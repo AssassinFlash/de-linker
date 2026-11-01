@@ -13090,3 +13090,12 @@ msgstr "Diese Quellen dienen als Hintergrund. Sie belegen weder die für dieses 
 #: build/planner/assets/planner.js:1
 msgid "Evidence snapshot date"
 msgstr "Stand der Quellenprüfung"
+
+
+#: build/genie.js:1 build/hero.js:1
+msgid "Cancel verification"
+msgstr "Prüfung abbrechen"
+
+#: build/genie.js:1
+msgid "This source card belongs to an earlier response, not the current request."
+msgstr "Diese Quellenkarte gehört zu einer früheren Antwort und bezieht sich nicht auf die aktuelle Anfrage."

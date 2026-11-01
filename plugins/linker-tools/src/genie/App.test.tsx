@@ -3400,6 +3400,15 @@ test( 'the real Genie composer labels a pending proof as unsent and restores its
 			screen.queryByText( 'Genie is thinking…' )
 		).not.toBeInTheDocument();
 		expect( screen.getByText( 'Checking verification…' ) ).toBeVisible();
+		expect(
+			document.querySelector( '.linker-genie-wait__lines' )
+		).toBeNull();
+		expect(
+			screen
+				.getByText( 'Checking verification…' )
+				.closest( '.linker-genie-app__message--assistant' )
+		).toBeNull();
+
 		const slot = document.querySelector< HTMLElement >(
 			'[data-linker-resource-verification-slot]'
 		)!;
@@ -3409,7 +3418,7 @@ test( 'the real Genie composer labels a pending proof as unsent and restores its
 		expect( widget?.parentElement ).toBe( slot );
 
 		await act( async () =>
-			failProof( new Error( 'verification_network' ) )
+			failProof( new Error( 'verification_widget_300030' ) )
 		);
 		await waitFor( () =>
 			expect( screen.getByRole( 'alert' ) ).toHaveTextContent(
@@ -3465,6 +3474,9 @@ test( 'a cached proof immediately dispatches through the real adapter and change
 		await waitFor( () => expect( transport ).toHaveBeenCalledOnce() );
 		expect( proof ).toHaveBeenCalledOnce();
 		expect( screen.getByText( 'Genie is thinking…' ) ).toBeVisible();
+		expect(
+			document.querySelector( '.linker-genie-wait__lines' )
+		).not.toBeNull();
 		expect(
 			screen.queryByText( 'Checking verification…' )
 		).not.toBeInTheDocument();
@@ -3646,4 +3658,121 @@ test( 'a history switch cancels the old verification owner before a late proof c
 	expect( screen.getByLabelText( 'Ask Genie' ) ).not.toHaveValue(
 		'Previous owner question'
 	);
+} );
+
+test( 'a confirmed older source card stays with its earlier answer while a newer planning request is unverified', async () => {
+	const project = 'a'.repeat( 32 ),
+		oldRun = 'b'.repeat( 32 ),
+		newRun = 'c'.repeat( 32 );
+	const source: PlanningSourcesBlock = {
+		type: 'planning_sources',
+		schema_version: 1,
+		status: 'available',
+		binding: {
+			planning_project_id: project,
+			planning_revision: 4,
+			planning_run_ids: [ oldRun ],
+			runs: [
+				{
+					id: oldRun,
+					revision: 4,
+					manifest_sha256: 'd'.repeat( 64 ),
+					result_sha256: 'e'.repeat( 64 ),
+				},
+			],
+		},
+		results: [ { revision: 4, groups: [] } ],
+		url: `/solution-configurator/?project=${ project }&run=${ oldRun }#lp-calculations`,
+	};
+	vi.mocked( readThread ).mockResolvedValue( {
+		conversationId: 12,
+		messages: [
+			{ role: 'user', content: 'Earlier project question' },
+			{ role: 'assistant', content: 'Earlier confirmed response' },
+		],
+		turn: {
+			meta: null,
+			blocks: [
+				{ type: 'text', text: 'Earlier confirmed response', refs: [] },
+				source,
+			],
+		},
+	} );
+	const proof = vi.fn( async () => new Promise< string >( () => {} ) );
+	const transport = vi.fn< typeof fetch >();
+	const { cancel } = await protectedComposer( proof, transport );
+	await act( async () =>
+		window.dispatchEvent(
+			new CustomEvent( 'linker-genie-planning-context', {
+				detail: {
+					page: {
+						type: 'tool',
+						title: 'Current selected project',
+						planning_project_id: project,
+						planning_revision: 5,
+						planning_run_ids: [ newRun ],
+					},
+					plannerNonce: 'synthetic',
+				},
+			} )
+		)
+	);
+	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+		target: { value: 'Explain the newly selected revision five' },
+	} );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) );
+	await waitFor( () => expect( proof ).toHaveBeenCalledOnce() );
+	try {
+		const card = screen.getByRole( 'region', {
+			name: 'Calculation sources and periods',
+		} );
+		expect( card.closest( 'li' ) ).toHaveTextContent(
+			'Earlier confirmed response'
+		);
+		expect(
+			card.compareDocumentPosition(
+				screen.getByText( 'Explain the newly selected revision five' )
+			)
+		).toBe( Node.DOCUMENT_POSITION_FOLLOWING );
+		expect(
+			screen.getByText(
+				'This source card belongs to an earlier response, not the current request.'
+			)
+		).toBeVisible();
+		expect( screen.getByText( 'Saved revision 4' ) ).toBeVisible();
+		expect( transport ).not.toHaveBeenCalled();
+	} finally {
+		fireEvent.click( screen.getByRole( 'button', { name: 'Close' } ) );
+		await waitFor( () => expect( cancel ).toHaveBeenCalledOnce() );
+	}
+} );
+
+test( 'the visible cancel-verification action restores the draft without closing Genie or dispatching a late proof', async () => {
+	let finish: ( value: string ) => void = () => undefined;
+	const proof = vi.fn(
+		async () =>
+			new Promise< string >( ( resolve ) => {
+				finish = resolve;
+			} )
+	);
+	const transport = vi.fn< typeof fetch >();
+	const { cancel } = await protectedComposer( proof, transport );
+	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+		target: { value: 'Keep the unsent verification draft' },
+	} );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) );
+	await waitFor( () => expect( proof ).toHaveBeenCalledOnce() );
+	fireEvent.click(
+		screen.getByRole( 'button', { name: 'Cancel verification' } )
+	);
+	await waitFor( () =>
+		expect( screen.getByLabelText( 'Ask Genie' ) ).toHaveValue(
+			'Keep the unsent verification draft'
+		)
+	);
+	expect( screen.queryByRole( 'alert' ) ).not.toBeInTheDocument();
+	expect( screen.getByRole( 'button', { name: 'Send' } ) ).toBeEnabled();
+	expect( cancel ).toHaveBeenCalledOnce();
+	await act( async () => finish( 'synthetic-late-proof' ) );
+	expect( transport ).not.toHaveBeenCalled();
 } );

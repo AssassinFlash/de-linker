@@ -3,6 +3,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import type {
 	PlanningSourcesBlock,
 	PlanningSourcesAvailableBlock,
+	PageContext,
 } from '../api/turn';
 import type { GenieConfig } from '../config';
 
@@ -50,9 +51,11 @@ function destination(
 export function PlanningSourcesCard( {
 	block,
 	configuratorLinks,
+	currentPage,
 }: {
 	block: PlanningSourcesBlock;
 	configuratorLinks?: GenieConfig[ 'configuratorLinks' ];
+	currentPage?: PageContext;
 } ) {
 	if ( block.status === 'unavailable' ) {
 		return (
@@ -72,6 +75,13 @@ export function PlanningSourcesCard( {
 		'linker-tools'
 	);
 	const href = destination( block, configuratorLinks );
+	const previousContext =
+		currentPage?.planning_project_id !== undefined &&
+		( currentPage.planning_project_id !==
+			block.binding.planning_project_id ||
+			currentPage.planning_revision !== block.binding.planning_revision ||
+			JSON.stringify( currentPage.planning_run_ids ?? [] ) !==
+				JSON.stringify( block.binding.planning_run_ids ) );
 	return (
 		<section
 			className="linker-genie-attachment"
@@ -84,6 +94,14 @@ export function PlanningSourcesCard( {
 				{ __( 'Calculation sources and periods', 'linker-tools' ) }
 			</p>
 			<p>{ __( 'From the selected saved result.', 'linker-tools' ) }</p>
+			{ previousContext && (
+				<p>
+					{ __(
+						'This source card belongs to an earlier response, not the current request.',
+						'linker-tools'
+					) }
+				</p>
+			) }
 			{ block.results.map( ( result, index ) => (
 				<div key={ index }>
 					<p>
