@@ -7,7 +7,7 @@ import os
 import re
 import subprocess
 import sys
-from collections import OrderedDict
+from functools import lru_cache
 from pathlib import Path
 
 LANES = (
@@ -563,22 +563,15 @@ class ProofCache:
     """Bounded, invocation-local memoization of immutable Git proof inputs."""
 
     def __init__(self):
-        self.trees = OrderedDict()
-        self.pairs = OrderedDict()
-        self.fingerprints = OrderedDict()
-
-    @staticmethod
-    def get(table, key, limit, calculate):
-        if key in table:
-            table.move_to_end(key)
-            return table[key]
-        # Exceptions are never cached; callers retain their existing fail-closed
-        # handling when Git, classification, or object loading is unavailable.
-        value = calculate()
-        table[key] = value
-        if len(table) > limit:
-            table.popitem(last=False)
-        return value
+        # One head and one prior candidate; the API searches at most ten runs.
+        # A pair's module hashes need at most two complete module sets.
+        self.tree = lru_cache(maxsize=2)(
+            lambda commit: git("ls-tree", "-r", "-z", commit)
+        )
+        self.pair = lru_cache(maxsize=10)(proof_increment_known)
+        self.fingerprint = lru_cache(maxsize=2 * len(MODULE_COMMANDS))(
+            lambda commit, module: _module_fingerprint(commit, module, self)
+        )
 
 
 def immutable_commit(commit):
@@ -610,21 +603,14 @@ def module_input_path(module, path, paths):
 
 def module_fingerprint(commit, module, cache=None):
     if cache is not None and immutable_commit(commit):
-        return cache.get(
-            cache.fingerprints,
-            (commit, module),
-            128,
-            lambda: _module_fingerprint(commit, module, cache),
-        )
+        return cache.fingerprint(commit, module)
     return _module_fingerprint(commit, module, None)
 
 
 def _module_fingerprint(commit, module, cache):
     paths = module_inputs(module)
     if cache is not None:
-        tree = cache.get(
-            cache.trees, commit, 2, lambda: git("ls-tree", "-r", "-z", commit)
-        )
+        tree = cache.tree(commit)
     else:
         tree = git("ls-tree", "-r", "-z", commit)
     entries = tree.split(b"\0")
@@ -1025,12 +1011,7 @@ def proof_increment_known(before, head):
 
 def same_module_inputs(before, head, module, cache=None):
     if cache is not None and immutable_commit(before) and immutable_commit(head):
-        known = cache.get(
-            cache.pairs,
-            (before, head),
-            16,
-            lambda: proof_increment_known(before, head),
-        )
+        known = cache.pair(before, head)
     else:
         known = proof_increment_known(before, head)
     if not known:

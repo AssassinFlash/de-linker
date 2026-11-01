@@ -1755,14 +1755,14 @@ class ModuleReuseTest(unittest.TestCase):
             self.assertNotEqual(
                 before_head, ci_scope.module_fingerprint("HEAD", "engine", cache)
             )
-            with self.assertRaises(RuntimeError):
-                cache.get(
-                    cache.pairs,
-                    ("failure",),
-                    16,
-                    lambda: (_ for _ in ()).throw(RuntimeError()),
-                )
-            self.assertNotIn(("failure",), cache.pairs)
+            with patch.object(
+                ci_scope, "proof_increment_known", side_effect=[RuntimeError(), True]
+            ) as checked:
+                retry_cache = ci_scope.ProofCache()
+                with self.assertRaises(RuntimeError):
+                    retry_cache.pair(base, head)
+                self.assertTrue(retry_cache.pair(base, head))
+                self.assertEqual(checked.call_count, 2)
 
     def test_real_git_input_hash_preserves_unrelated_service_but_invalidates_consumed_inputs(
         self,
