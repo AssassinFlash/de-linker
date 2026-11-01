@@ -290,20 +290,20 @@ def _discard_unswitched_preparation(
 
 def _write_prepared_manifest(target: Target, manifest: Manifest, directory: str) -> str:
     """Fill copied-backup inodes inside the same shell that prepares and switches."""
-    paths = [
-        target.path_of(
+    paths = {
+        entry.relative: target.path_of(
             _siblings(entry.relative).previous
             if entry.existed
             else _siblings(entry.relative).absent
         )
         for entry in manifest.backups
-    ]
+    }
     script = (
         "import json,os\nfrom pathlib import Path\n"
         f"record=json.loads({json.dumps(asdict(manifest))!r})\n"
         f"paths={paths!r}\n"
-        "for entry,path in zip(record['backups'],paths,strict=True):\n"
-        " info=os.stat(path)\n entry['inode']=f'{info.st_dev}:{info.st_ino}'\n"
+        "for entry in record['backups']:\n"
+        " info=os.stat(paths[entry['relative']])\n entry['inode']=f'{info.st_dev}:{info.st_ino}'\n"
         f"path=Path({_manifest_path(directory)!r})\n"
         "temporary=path.with_suffix('.json.next')\n"
         "temporary.write_text(json.dumps(record))\n"
