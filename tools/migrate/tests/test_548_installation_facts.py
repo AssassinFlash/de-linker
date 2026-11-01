@@ -242,6 +242,17 @@ def test_reviewed_production_plan_is_frozen() -> None:
     } == expected_products
     items = [item for product in products.values() for item in product["items"]]
     assert len(items) == 79
+    terminal_uses = {
+        (key, item["id"]): item["specification"]["terminal_use"]
+        for key, product in products.items()
+        for item in product["items"]
+        if "terminal_use" in item["specification"]
+    }
+    assert terminal_uses == {
+        (key, item_id): value
+        for key in ("1956", "1957", "1958")
+        for item_id, value in migration.TERMINAL_USES.items()
+    }
     sources = {
         item["source"]["document_id"]: (
             item["source"]["document_revision"],
@@ -256,7 +267,7 @@ def test_reviewed_production_plan_is_frozen() -> None:
             return {
                 key: without_revisions(item)
                 for key, item in value.items()
-                if key not in {"product_revision", "document_revision"}
+                if key not in {"product_revision", "document_revision", "terminal_use"}
             }
         if isinstance(value, list):
             return [without_revisions(item) for item in value]
@@ -608,3 +619,281 @@ def test_action_specific_options_are_rejected(arguments: list[str]) -> None:
 
     with pytest.raises(SystemExit):
         migration._validate_args(parser, args)
+
+
+def test_terminal_patch_selects_exact_reviewed_items_without_mutating_plan() -> None:
+    original = migration.load_plan()
+    frozen = json.dumps(original, sort_keys=True)
+    selected = migration.terminal_use_plan(original)
+
+    assert set(selected["products"]) == {"1956", "1957", "1958"}
+    assert all(
+        {item["id"] for item in entry["items"]} == set(migration.TERMINAL_USES)
+        for entry in selected["products"].values()
+    )
+    assert json.dumps(original, sort_keys=True) == frozen
+    assert set(migration.terminal_use_plan(original, "1958")["products"]) == {"1958"}
+
+    selected["products"]["1958"]["items"][0]["specification"]["terminal_use"] = (
+        "changed"
+    )
+    assert json.dumps(original, sort_keys=True) == frozen
+
+
+def test_terminal_patch_local_rebind_keeps_original_bytes_and_plan_in_memory() -> None:
+    selected = migration.terminal_use_plan(migration.load_plan(), "1958")
+    entry = selected["products"]["1958"]
+    source = entry["items"][0]["source"]
+    pinned = {
+        "products": {
+            "1958": {
+                "product_revision": "e" * 64,
+                "documents": {
+                    source["document_id"]: {
+                        "document_revision": "f" * 64,
+                        "blob_sha256": source["blob_sha256"],
+                    }
+                },
+            }
+        }
+    }
+    migration.rebind_local_patch(selected, pinned)
+    assert entry["product_revision"] == "e" * 64
+    assert all(
+        item["source"]["document_revision"] == "f" * 64 for item in entry["items"]
+    )
+    pinned["products"]["1958"]["documents"][source["document_id"]]["blob_sha256"] = (
+        "0" * 64
+    )
+    with pytest.raises(migration.MigrationError, match="Source bytes changed"):
+        migration.rebind_local_patch(selected, pinned)
+
+
+@pytest.mark.parametrize(
+    "arguments",
+    [
+        [
+            "--production",
+            "preview",
+            "--terminal-use-patch",
+            "--product",
+            "1958",
+            "--receipt",
+            "/tmp/x",
+        ],
+        ["--instance", "p548", "apply", "--terminal-use-patch", "--receipt", "/tmp/x"],
+        ["--instance", "p548", "preview", "--product", "1958", "--receipt", "/tmp/x"],
+    ],
+)
+def test_terminal_patch_rejects_partial_production_or_invalid_actions(
+    arguments: list[str],
+) -> None:
+    parser = migration._parser()
+    with pytest.raises(SystemExit):
+        migration._validate_args(parser, parser.parse_args(arguments))
+
+
+def test_terminal_receipt_refuses_unrelated_changes_and_conflicting_scope() -> None:
+    before = {
+        "schema_version": 1,
+        "items": [
+            {
+                "id": "external-communication-terminal",
+                "specification": {"other": "preserved"},
+            },
+            {"id": "internal-communication-terminals", "specification": {}},
+            {"id": "later-added-fact", "specification": {"x": 1}},
+        ],
+        "other_metadata": "preserved",
+    }
+    after = json.loads(json.dumps(before))
+    for item in after["items"]:
+        if item["id"] in migration.TERMINAL_USES:
+            item["specification"]["terminal_use"] = migration.TERMINAL_USES[item["id"]]
+    diff = [
+        {
+            "product_id": 1958,
+            "item_id": item["id"],
+            "before": None,
+            "after": migration.TERMINAL_USES[item["id"]],
+        }
+        for item in before["items"]
+        if item["id"] in migration.TERMINAL_USES
+    ]
+    data = {
+        "site": "http://127.0.0.1:9347",
+        "products": {"1958": {"before_exists": True, "before": before, "after": after}},
+        "terminal_use_changes": diff,
+    }
+    migration.validate_terminal_receipt(data)
+
+    after["items"][2]["specification"]["x"] = 2
+    with pytest.raises(migration.MigrationError, match="unrelated metadata"):
+        migration.validate_terminal_receipt(data)
+    after["items"][2]["specification"]["x"] = 1
+    data["site"] = "https://de-linker.com"
+    with pytest.raises(migration.MigrationError, match="all three products"):
+        migration.validate_terminal_receipt(data)
+
+
+def test_terminal_patch_php_preserves_extra_facts_and_rejects_conflicts() -> None:
+    """Run the real PHP binder and migration against an in-memory Woo fixture."""
+    reviewed = migration.load_plan()
+    fixture = {
+        "full": reviewed["products"]["1958"],
+        "patch": migration.terminal_use_plan(reviewed, "1958"),
+        "migration": str(HERE.parent / "548-installation-facts.php"),
+        "binder": str(
+            migration.ROOT
+            / "plugins/linker-commerce/includes/Products/Publication/InstallationFacts.php"
+        ),
+    }
+    encoded = base64.b64encode(json.dumps(fixture).encode()).decode()
+    php = r"""<?php
+namespace Linker\Commerce\Products {
+ final class Publication {
+  public static function manifest(): array {
+   $manifest = $GLOBALS['fixture_manifest'];
+   $manifest['source_revision'] = hash('sha256', json_encode($GLOBALS['fixture_meta']));
+   return $manifest;
+  }
+  public static function canonical_id(int $id): int { return $id; }
+  public static function is_published(int $id): bool { return $id === 1958; }
+  public static function revision(mixed $data): string {
+   return hash('sha256', json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+  }
+ }
+ final class EngineeringFeed {
+  public static function item(int $id, array $manifest): array {
+   return ['installation_facts' => \Linker\Commerce\Products\Publication\InstallationFacts::projection($id, $manifest)];
+  }
+ }
+}
+namespace {
+ define('ABSPATH', '/fixture/');
+ class WC_Product {
+  public function __construct(private int $id) {}
+  public function get_attribute(string $name): string { return $GLOBALS['fixture_full']['model']; }
+  public function get_data(): array { return ['id' => $this->id, 'meta_data' => []]; }
+ }
+ class WP_CLI { public static function error(string $message): never { throw new \RuntimeException($message); } }
+ function __(string $message, string $domain): string { return $message; }
+ function esc_html(string $message): string { return $message; }
+ function home_url(): string { return $GLOBALS['fixture_site']; }
+ function wp_parse_url(string $url, int $part): mixed { return parse_url($url, $part); }
+ function wp_json_encode(mixed $value, int $flags = 0): string|false { return json_encode($value, $flags); }
+ function wc_get_product(int $id): WC_Product { return new WC_Product($id); }
+ function metadata_exists(string $type, int $id, string $key): bool { return array_key_exists($id, $GLOBALS['fixture_meta']); }
+ function get_post_meta(int $id, string $key, bool $single): mixed { return $GLOBALS['fixture_meta'][$id] ?? ''; }
+ function wp_slash(mixed $value): mixed { return $value; }
+ function update_post_meta(int $id, string $key, mixed $next, mixed $previous): bool {
+  if (($GLOBALS['fixture_meta'][$id] ?? null) !== $previous) { return false; }
+  $GLOBALS['fixture_meta'][$id] = $next; return true;
+ }
+ function add_post_meta(int $id, string $key, mixed $value, bool $unique): bool {
+  if (array_key_exists($id, $GLOBALS['fixture_meta'])) { return false; }
+  $GLOBALS['fixture_meta'][$id] = $value; return true;
+ }
+ function delete_post_meta(int $id, string $key, mixed $value): bool {
+  if (($GLOBALS['fixture_meta'][$id] ?? null) !== $value) { return false; }
+  unset($GLOBALS['fixture_meta'][$id]); return true;
+ }
+ function wc_delete_product_transients(int $id): void {}
+ function require_it(bool $condition, string $message): void {
+  if (!$condition) { throw new \RuntimeException($message); }
+ }
+ function run_migration(array $request): array {
+  $source = file_get_contents($GLOBALS['fixture_script']);
+  $payload = base64_encode(json_encode($request, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+  $needle = "'548-installation-facts-payload'";
+  require_it(substr_count($source, $needle) === 1, 'payload placeholder');
+  $source = str_replace($needle, "'" . $payload . "'", $source);
+  ob_start();
+  try { eval('?>' . $source); $output = ob_get_clean(); }
+  catch (\Throwable $error) { ob_end_clean(); throw $error; }
+  require_it((bool) preg_match('/@@548-installation-facts@@([^\n]+)/', $output, $match), 'result marker');
+  return json_decode($match[1], true, 512, JSON_THROW_ON_ERROR);
+ }
+ $fixture = json_decode(base64_decode('__FIXTURE__'), true, 512, JSON_THROW_ON_ERROR);
+ $GLOBALS['fixture_full'] = $fixture['full'];
+ $GLOBALS['fixture_script'] = $fixture['migration'];
+ $GLOBALS['fixture_site'] = 'http://127.0.0.1:9347';
+ $src = $fixture['full']['items'][0]['source'];
+ $GLOBALS['fixture_manifest'] = [
+  'products' => [['product_id' => 1958, 'product_revision' => $fixture['full']['product_revision']]],
+  'documents' => [[
+   'document_id' => $src['document_id'], 'document_revision' => $src['document_revision'],
+   'blob_sha256' => $src['blob_sha256'], 'product_ids' => [1958], 'url' => 'https://de-linker.com/document.pdf',
+  ]],
+ ];
+ $GLOBALS['fixture_meta'] = [2409 => ['controller' => 'preserve']];
+ require $fixture['binder'];
+ $rows = [];
+ foreach ($fixture['full']['items'] as $item) {
+  unset($item['specification']['terminal_use']);
+  $rows[] = json_decode(json_encode(\Linker\Commerce\Products\Publication\InstallationFacts::bind(1958, $item, $GLOBALS['fixture_manifest'])), true);
+ }
+ $rows[1]['customer_note'] = 'keep even when projection ignores this key';
+ $extra = $rows[0]; $extra['id'] = 'later-added-fact'; $rows[] = $extra;
+ $GLOBALS['fixture_meta'][1958] = ['schema_version' => 1, 'items' => $rows, 'other_metadata' => 'keep'];
+ $before = $GLOBALS['fixture_meta'];
+ $request = ['action' => 'preview', 'plan' => $fixture['patch'], 'terminal_use_patch' => true];
+ $receipt = run_migration($request);
+ $expected = $before[1958];
+ foreach ($expected['items'] as &$item) {
+  if ($item['id'] === 'external-communication-terminal') { $item['specification']['terminal_use'] = 'external_communication'; }
+  if ($item['id'] === 'internal-communication-terminals') { $item['specification']['terminal_use'] = 'internal_communication'; }
+ }
+ unset($item);
+ require_it($receipt['products'][1958]['before'] === $before[1958], 'exact preimage');
+ require_it($receipt['products'][1958]['after'] === $expected, 'only reviewed fields changed');
+ require_it(count($receipt['terminal_use_changes']) === 2, 'two diffs');
+ $GLOBALS['fixture_meta'][1958]['items'][7]['label']['en'] = 'concurrent edit';
+ $concurrent = $GLOBALS['fixture_meta'];
+ try { run_migration(['action' => 'apply', 'receipt' => $receipt]); throw new \RuntimeException('concurrent edit accepted'); }
+ catch (\RuntimeException $error) { require_it(str_contains($error->getMessage(), 'Concurrent edit'), 'concurrent edit error'); }
+ require_it($GLOBALS['fixture_meta'] === $concurrent, 'concurrent edit overwritten');
+ $GLOBALS['fixture_meta'] = $before;
+ run_migration(['action' => 'apply', 'receipt' => $receipt]);
+ require_it($GLOBALS['fixture_meta'][1958] === $expected && $GLOBALS['fixture_meta'][2409] === $before[2409], 'apply preserved other data');
+ $verified = run_migration(['action' => 'verify', 'receipt' => $receipt]);
+ require_it($verified['products'][0]['status'] === 'verified' && $verified['products'][0]['item_count'] === 8, 'projection verification');
+ run_migration(['action' => 'rollback', 'receipt' => $receipt]);
+ require_it($GLOBALS['fixture_meta'] === $before, 'rollback restored exact preimage');
+ $verified = run_migration(['action' => 'verify', 'receipt' => $receipt]);
+ require_it($verified['products'][0]['status'] === 'restored', 'rollback verification');
+ $GLOBALS['fixture_meta'][1958]['items'][1]['source']['quote'] = 'changed source quote';
+ $source_changed = $GLOBALS['fixture_meta'];
+ try { run_migration($request); throw new \RuntimeException('changed source quote accepted'); }
+ catch (\RuntimeException $error) { require_it(str_contains($error->getMessage(), 'reviewed source'), 'source error'); }
+ require_it($GLOBALS['fixture_meta'] === $source_changed, 'source change mutated data');
+ $GLOBALS['fixture_meta'] = $before;
+ $GLOBALS['fixture_meta'][1958]['items'][1]['specification']['terminal_use'] = 'internal_communication';
+ $conflict = $GLOBALS['fixture_meta'];
+ try { run_migration($request); throw new \RuntimeException('conflicting terminal use accepted'); }
+ catch (\RuntimeException $error) { require_it(str_contains($error->getMessage(), 'Conflicting terminal use'), 'conflict error'); }
+ require_it($GLOBALS['fixture_meta'] === $conflict, 'conflict mutated data');
+ $GLOBALS['fixture_meta'] = $before;
+ $GLOBALS['fixture_meta'][1958]['items'][] = $GLOBALS['fixture_meta'][1958]['items'][1];
+ $duplicate = $GLOBALS['fixture_meta'];
+ try { run_migration($request); throw new \RuntimeException('duplicate accepted'); }
+ catch (\RuntimeException $error) { require_it(str_contains($error->getMessage(), 'identities'), 'duplicate error'); }
+ require_it($GLOBALS['fixture_meta'] === $duplicate, 'duplicate mutated data');
+ $GLOBALS['fixture_meta'] = $before;
+ $GLOBALS['fixture_site'] = 'https://de-linker.com';
+ try { run_migration($request); throw new \RuntimeException('partial production scope accepted'); }
+ catch (\RuntimeException $error) { require_it(str_contains($error->getMessage(), 'product scope'), 'production scope error'); }
+ echo json_encode(['receipt' => $receipt, 'checks' => 'passed']);
+}
+""".replace("__FIXTURE__", encoded)
+    result = subprocess.run(
+        ["/opt/homebrew/opt/php@8.3/bin/php"],
+        input=php,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    payload = json.loads(result.stdout)
+    assert payload["checks"] == "passed"
+    migration.validate_terminal_receipt(payload["receipt"])
