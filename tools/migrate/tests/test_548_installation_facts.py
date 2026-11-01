@@ -36,7 +36,9 @@ def test_controller_cli_drops_research_credentials_before_transport(
     )
     observed: dict[str, object] = {}
 
-    def transport(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+    def transport(
+        command: list[str], **kwargs: object
+    ) -> subprocess.CompletedProcess[str]:
         observed["env"] = kwargs.get("env")
         payload = {
             "schema_version": 1,
@@ -61,7 +63,13 @@ def test_controller_cli_drops_research_credentials_before_transport(
     monkeypatch.setattr(
         controller.sys,
         "argv",
-        ["controller", "--production", "preview", "--receipt", str(tmp_path / "receipt")],
+        [
+            "controller",
+            "--production",
+            "preview",
+            "--receipt",
+            str(tmp_path / "receipt"),
+        ],
     )
 
     assert controller.main() == 0
