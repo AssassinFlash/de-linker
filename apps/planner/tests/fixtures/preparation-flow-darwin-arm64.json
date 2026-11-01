@@ -7,14 +7,14 @@
 		"revision": 2,
 		"state": "succeeded",
 		"is_current": true,
-		"manifest_sha256": "23e87435e17c6f0b14b11a7fef754cfd82f2b9cc28a056bdfdfd82e0815176cc",
+		"manifest_sha256": "977c0cce51cbbff6ff3d894407bba919d39b71a4fbffa3bfa24485801bd1ea8e",
 		"manifest": {
 			"context": {
 				"assets": {
-					"runtime_bundle": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6",
+					"runtime_bundle": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f",
 					"weather_acquisition.plan": "cba7b972160b1324fa878de1a68983e7deff5db8d653ebbd74938bb7358806b0"
 				},
-				"code_sha256": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6",
+				"code_sha256": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f",
 				"models": {
 					"acquisition": "official_jrc_https_get_original_v1",
 					"task": "acquire_pvgis_tmy_weather_v1",
@@ -37,7 +37,7 @@
 			"revision": 2,
 			"schema": 1
 		},
-		"result_sha256": "92d9463c3c9fdc6dac5de6a855b9b5006aeb98b352373d839db741927086cb76",
+		"result_sha256": "9da7fe9a14161a00c82a4c9bbbc1fa49337078d19c5579bd78573e605c301800",
 		"result": {
 			"acquisition_run_id": "00000000000000000000000000000002",
 			"dependencies": {
@@ -45,16 +45,16 @@
 				"capture.transport_receipt": "6148805d41a061558040ebbcf39a313a731c32bfd07d9c58c6a298f38de56e24",
 				"capture_evidence": "c38a02959b3fe6b51eb8b601db6988c77853bd512814fe103e893d2fbb7e2795",
 				"prepared_asset_content": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
-				"prepared_asset_metadata": "1683b2821add8ecb418881a43b528211bd750153c89462223b7c36d78f261565",
-				"runtime_bundle": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6",
+				"prepared_asset_metadata": "7b0fb4189a6e030ce8c536cdc8ca13815464b5a43ac800bdbf87cd503c0a9c7a",
+				"runtime_bundle": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f",
 				"weather_capture": "e7580ae493fae7167f91a54ebf24966cbb23ef94c19a9cbe1dc81d5af0a6c492",
 				"weather_original": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110"
 			},
 			"input_sha256": "1694640ee6fb0a3b2a5c3ead6573ee9ae1ac81db4afcc4e1fb77dbb974fa0077",
 			"kind": "acquire_pvgis_tmy_weather_v1",
-			"manifest_sha256": "23e87435e17c6f0b14b11a7fef754cfd82f2b9cc28a056bdfdfd82e0815176cc",
+			"manifest_sha256": "977c0cce51cbbff6ff3d894407bba919d39b71a4fbffa3bfa24485801bd1ea8e",
 			"pinned_assets": {
-				"runtime_bundle": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6",
+				"runtime_bundle": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f",
 				"weather_acquisition.plan": "cba7b972160b1324fa878de1a68983e7deff5db8d653ebbd74938bb7358806b0"
 			},
 			"prepared_asset": {
@@ -74,7 +74,7 @@
 						"acquisition_plan": "cba7b972160b1324fa878de1a68983e7deff5db8d653ebbd74938bb7358806b0",
 						"capture.transport_receipt": "6148805d41a061558040ebbcf39a313a731c32bfd07d9c58c6a298f38de56e24",
 						"capture_evidence": "c38a02959b3fe6b51eb8b601db6988c77853bd512814fe103e893d2fbb7e2795",
-						"runtime_bundle": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6",
+						"runtime_bundle": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f",
 						"weather_capture": "e7580ae493fae7167f91a54ebf24966cbb23ef94c19a9cbe1dc81d5af0a6c492",
 						"weather_original": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110"
 					},
@@ -335,13 +335,13 @@
 						"use_terrain_horizon": false
 					}
 				},
-				"metadata_sha256": "1683b2821add8ecb418881a43b528211bd750153c89462223b7c36d78f261565",
+				"metadata_sha256": "7b0fb4189a6e030ce8c536cdc8ca13815464b5a43ac800bdbf87cd503c0a9c7a",
 				"project_id": "00000000000000000000000000000001",
 				"purpose": "pvgis_tmy_weather_v1"
 			},
 			"project_id": "00000000000000000000000000000001",
 			"revision": 2,
-			"runtime_sha256": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6",
+			"runtime_sha256": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f",
 			"schema": 1,
 			"weather_summary": {
 				"altitude_m": 37.0,
@@ -568,15 +568,15 @@
 		"revision": 3,
 		"state": "succeeded",
 		"is_current": true,
-		"manifest_sha256": "b76b0248edd6ae1e8cf8d192ca0c69fe69cfbc40b784a00567429eb2fa1fe302",
+		"manifest_sha256": "ae8120ecb5187378203abaa9ed4ec06744910e0f25f914e20d4131384b712198",
 		"manifest": {
 			"context": {
 				"assets": {
-					"runtime_bundle": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6",
-					"weather.metadata": "1683b2821add8ecb418881a43b528211bd750153c89462223b7c36d78f261565",
+					"runtime_bundle": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f",
+					"weather.metadata": "7b0fb4189a6e030ce8c536cdc8ca13815464b5a43ac800bdbf87cd503c0a9c7a",
 					"weather.raw": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110"
 				},
-				"code_sha256": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6",
+				"code_sha256": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f",
 				"models": {
 					"generation": "uniform_unshaded_pvlib_reference_v1",
 					"pvlib": "0.16.1",
@@ -598,7 +598,7 @@
 			"revision": 3,
 			"schema": 1
 		},
-		"result_sha256": "478364022eb8fa0f1c3bb3cf9a49a6f4d51a2f67c061ac846504db9c1a50ed5b",
+		"result_sha256": "b673d55d72920bb5d41aefea49063bddb7230b784a83727a49b5dc865a285692",
 		"result": {
 			"country_assessment": {
 				"status": "not_assessed"
@@ -614,13 +614,13 @@
 			},
 			"input_sha256": "a82c7486577eec1d3bb8d363b2caeea49a3d1c72816c21549d4fe31ef4b4838f",
 			"kind": "prepare_roof_pv_reference_v1",
-			"manifest_sha256": "b76b0248edd6ae1e8cf8d192ca0c69fe69cfbc40b784a00567429eb2fa1fe302",
+			"manifest_sha256": "ae8120ecb5187378203abaa9ed4ec06744910e0f25f914e20d4131384b712198",
 			"near_shading_assessment": {
 				"status": "not_assessed"
 			},
 			"pinned_assets": {
-				"runtime_bundle": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6",
-				"weather.metadata": "1683b2821add8ecb418881a43b528211bd750153c89462223b7c36d78f261565",
+				"runtime_bundle": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f",
+				"weather.metadata": "7b0fb4189a6e030ce8c536cdc8ca13815464b5a43ac800bdbf87cd503c0a9c7a",
 				"weather.raw": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110"
 			},
 			"prepared_asset": {
@@ -737,7 +737,7 @@
 			},
 			"project_id": "00000000000000000000000000000001",
 			"revision": 3,
-			"runtime_sha256": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6",
+			"runtime_sha256": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f",
 			"schema": 1
 		},
 		"error": null
@@ -1130,15 +1130,15 @@
 		"revision": 1,
 		"state": "succeeded",
 		"is_current": true,
-		"manifest_sha256": "515993bf7cabd6798ca874c959a8fc650c9d85ba47f0eb56e813fd9e1b7c33a4",
+		"manifest_sha256": "f72dd5366899ebe1813738ca25bd11dec55deee8ad4b5957e7b7d0934ca44840",
 		"manifest": {
 			"context": {
 				"assets": {
 					"pvgis_reference.plan": "bcdd35ea84dc87cc95660db972a544d906d055f2a8e0d840888298b6cc33344f",
-					"runtime_bundle": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6",
+					"runtime_bundle": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f",
 					"woo.module_inputs": "cc898879cf39d0dd565aa435be443dbf22aa1583195a82bd1e06ec2b9b7b9c00"
 				},
-				"code_sha256": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6",
+				"code_sha256": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f",
 				"models": {
 					"acquisition": "official_jrc_https_get_original_v1",
 					"aggregate": "exact_same_axis_array_ac_sum_v1",
@@ -1165,7 +1165,7 @@
 			"revision": 1,
 			"schema": 1
 		},
-		"result_sha256": "64001483dfb7107cea936ae65d7e5232dd16fbba5e0bcfddd283ac4207120242",
+		"result_sha256": "66dffa42d9bc8737ac4c9ad8842d47b929529c1d5f55133ae193745f4d5849ff",
 		"result": {
 			"country_assessment": {
 				"status": "not_assessed"
@@ -1176,7 +1176,7 @@
 				"array.1.capture": "fb1e01602f9122483e464fe5383e703223b2c8c356354712682631f56776fb15",
 				"array.1.original": "f264b64e47645522ccccc326bb283724f1ed01addf9765d64f04331e1fdf5825",
 				"prepared_asset_content": "3c1a0d903ba66d774dd74236d00c3a63c4ab871c42aebeebdb2179022fd1ffec",
-				"prepared_asset_metadata": "4246c9d5d01525734bb1ea7ba0b7974840123197adee8d6cca8d2063214a83b2",
+				"prepared_asset_metadata": "07cd3505f37502591236d35a5ec405ffcedbad962478f2df764d78c021262084",
 				"reference_geometry": "c0da5d35a4d05946f6886bd2741b6139f833733ac3f3816003e8f93ca041ac39",
 				"reference_output": "8d330221d1a2ebdbbaab980bcefd24a033113577b53891f669bc78d3c5b4a3b6",
 				"reference_parameters": "6e779825f213428fd1ff3f570d9a2d05f0b3e2099014a2ce0426b483cb7ce413",
@@ -1188,13 +1188,13 @@
 			},
 			"input_sha256": "f9d8f71535a1d87aa94da6e5041331c833c366d6f103af8d5d7392c12e5cf35b",
 			"kind": "prepare_pvgis_roof_ac_reference_v1",
-			"manifest_sha256": "515993bf7cabd6798ca874c959a8fc650c9d85ba47f0eb56e813fd9e1b7c33a4",
+			"manifest_sha256": "f72dd5366899ebe1813738ca25bd11dec55deee8ad4b5957e7b7d0934ca44840",
 			"near_shading_assessment": {
 				"status": "not_assessed"
 			},
 			"pinned_assets": {
 				"pvgis_reference.plan": "bcdd35ea84dc87cc95660db972a544d906d055f2a8e0d840888298b6cc33344f",
-				"runtime_bundle": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6",
+				"runtime_bundle": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f",
 				"woo.module_inputs": "cc898879cf39d0dd565aa435be443dbf22aa1583195a82bd1e06ec2b9b7b9c00"
 			},
 			"prepared_asset": {
@@ -1227,7 +1227,7 @@
 							"reference_plan": "bcdd35ea84dc87cc95660db972a544d906d055f2a8e0d840888298b6cc33344f"
 						},
 						"kind": "pvgis_roof_reference_acquisition_v1",
-						"manifest_sha256": "515993bf7cabd6798ca874c959a8fc650c9d85ba47f0eb56e813fd9e1b7c33a4",
+						"manifest_sha256": "f72dd5366899ebe1813738ca25bd11dec55deee8ad4b5957e7b7d0934ca44840",
 						"plan_sha256": "bcdd35ea84dc87cc95660db972a544d906d055f2a8e0d840888298b6cc33344f",
 						"run_id": "00000000000000000000000000000009",
 						"schema_version": 1,
@@ -1341,7 +1341,7 @@
 						"schema_version": 1
 					}
 				},
-				"metadata_sha256": "4246c9d5d01525734bb1ea7ba0b7974840123197adee8d6cca8d2063214a83b2",
+				"metadata_sha256": "07cd3505f37502591236d35a5ec405ffcedbad962478f2df764d78c021262084",
 				"project_id": "00000000000000000000000000000008",
 				"purpose": "pvgis_roof_ac_reference_profile_v1"
 			},
@@ -1358,7 +1358,7 @@
 			},
 			"project_id": "00000000000000000000000000000008",
 			"revision": 1,
-			"runtime_sha256": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6",
+			"runtime_sha256": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f",
 			"schema": 1
 		},
 		"error": null
@@ -1634,17 +1634,17 @@
 			"revision": 2,
 			"state": "succeeded",
 			"is_current": false,
-			"manifest_sha256": "48b19288c9fa8bdacf08fe6bfb05139f546ce427f1709f4357040b76e6929b3f",
+			"manifest_sha256": "a2f0c78d9648cb82ed77f978001553fa041c320266f6d44f0cdda7ee91701d4a",
 			"manifest": {
 				"context": {
 					"assets": {
 						"geometry": "8762cd5e4e3604574ac33d40c518bac76e253725cacf6483409b3f4081973b29",
-						"runtime_bundle": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6",
+						"runtime_bundle": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f",
 						"weather.metadata": "190106b0915b648656d22a83be6cf6a5f6abbf21a176a3b9dfe15e495388b686",
 						"weather.raw": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
 						"woo.module_inputs": "cc898879cf39d0dd565aa435be443dbf22aa1583195a82bd1e06ec2b9b7b9c00"
 					},
-					"code_sha256": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6",
+					"code_sha256": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f",
 					"models": {
 						"geometry": "declared_opaque_ray_midpoint_uvn_v1",
 						"pvlib": "0.16.1",
@@ -1673,7 +1673,7 @@
 				"revision": 2,
 				"schema": 1
 			},
-			"result_sha256": "aa570afb8a540fd662da2315535cebb0f0f337d225943ab86bee71f64adeb5b7",
+			"result_sha256": "5e0840294b4b3e036d7744aa404df492726d58841add1b7fa2a2711a32b152cb",
 			"result": {
 				"consumer_scope": "sampled_geometry_only_no_power_profile",
 				"country_assessment": {
@@ -1681,7 +1681,7 @@
 				},
 				"dependencies": {
 					"geometry": "8762cd5e4e3604574ac33d40c518bac76e253725cacf6483409b3f4081973b29",
-					"runtime_bundle": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6",
+					"runtime_bundle": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f",
 					"weather.document": "3b3e7241ad9a2f31d186e04ef1b338c9d5590ed6b4ea4426b468ee97b10024d2",
 					"weather.metadata": "190106b0915b648656d22a83be6cf6a5f6abbf21a176a3b9dfe15e495388b686",
 					"weather.raw": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
@@ -1797,7 +1797,7 @@
 				},
 				"input_sha256": "8e3c6fe25671951be06d95c066d995abf53833aaed4c8385249dc945f692b4c1",
 				"kind": "prepare_direct_beam_visibility_v1",
-				"manifest_sha256": "48b19288c9fa8bdacf08fe6bfb05139f546ce427f1709f4357040b76e6929b3f",
+				"manifest_sha256": "a2f0c78d9648cb82ed77f978001553fa041c320266f6d44f0cdda7ee91701d4a",
 				"native_source_checks": {
 					"owner": "native_owned_asset_at_admission",
 					"publication": "standard_worker_jobs_lease_fence_required",
@@ -1811,7 +1811,7 @@
 				},
 				"pinned_assets": {
 					"geometry": "8762cd5e4e3604574ac33d40c518bac76e253725cacf6483409b3f4081973b29",
-					"runtime_bundle": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6",
+					"runtime_bundle": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f",
 					"weather.metadata": "190106b0915b648656d22a83be6cf6a5f6abbf21a176a3b9dfe15e495388b686",
 					"weather.raw": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
 					"woo.module_inputs": "cc898879cf39d0dd565aa435be443dbf22aa1583195a82bd1e06ec2b9b7b9c00"
@@ -1819,7 +1819,7 @@
 				"project_id": "0000000000000000000000000000000c",
 				"result_scope": "geometric_witness_not_a_profile_or_power_loss",
 				"revision": 2,
-				"runtime_sha256": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6",
+				"runtime_sha256": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f",
 				"schema": 1,
 				"visibility": {
 					"arithmetic": {
@@ -2091,14 +2091,14 @@
 			"revision": 2,
 			"state": "succeeded",
 			"is_current": false,
-			"manifest_sha256": "41e799765e74197d88f06d8f906156bf97bd0d07ca86a1cce0220c0688aa3ba9",
+			"manifest_sha256": "0859ba05cf7ea2b2ae32f18b46bfc03516e0697bc1b3f379615c3302b7db3e48",
 			"manifest": {
 				"context": {
 					"assets": {
-						"report.source": "c0e26cdc49939177d01b3fda5065b2b46a7bab0ce46001e304a98c5dd768da9d",
-						"runtime_bundle": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6"
+						"report.source": "80ed462d68e474c5dd2f1d97e5341cbddf59acea6ee21e7562105683a5c8bdf2",
+						"runtime_bundle": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f"
 					},
-					"code_sha256": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6",
+					"code_sha256": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f",
 					"models": {
 						"certificate_information": "literal_certificate_cover_v1",
 						"installation": "installation_route_takeoff_v1",
@@ -2116,36 +2116,36 @@
 				"revision": 2,
 				"schema": 1
 			},
-			"result_sha256": "490c4d540ecba14114c3081d743bd40869d9288074125cf8af3e40d45967ab40",
+			"result_sha256": "386b7d42f961ff96004d4b6e68fcf7d46d2026d38a05b081880adf9744da796d",
 			"result": {
 				"dependencies": {
 					"materials_model": "95245358ded11790a07b5631622e43a7ef81571886517a6a63eab8e18b1556d9",
-					"prepared_asset_content": "ada65a7283449410c2c14fc9d3c3189c37754628913dcefc795c210d7e6c6ec5",
-					"prepared_asset_metadata": "253410d5145747fcca8edc6ce22ee6555d1fcf247058303e5ce49118ff2a66a6",
+					"prepared_asset_content": "97dc5fa579e7e7948688ab393177446e696269804ce068c0cc84f7991f7a8b17",
+					"prepared_asset_metadata": "a656b656b97786bd2edbfb2c00c181fe17d4d1c8b2bed7d6960850158fba26f1",
 					"prepared_attachment.bill_of_materials_csv.content": "8eb70033ecfb88403dea096364e239cc5de2614d9099245ca61c5350a920d297",
-					"prepared_attachment.bill_of_materials_csv.metadata": "a1d46160d88a52efa4e1fdc8975141e03cbee6d44d79b9aee0ca71cad9739211",
-					"report_model": "9a5cf7188e20f22ed382d6437f2e6ccc9a713e0bfa8306e6bc51a9e2b969d572",
-					"report_source": "c0e26cdc49939177d01b3fda5065b2b46a7bab0ce46001e304a98c5dd768da9d"
+					"prepared_attachment.bill_of_materials_csv.metadata": "ad506504d91d9b61ca2f9801912233ddfaf89ad4c2e56514cd9f3c72340a760e",
+					"report_model": "70730c3075bb5a5cf917045a6dda8013cc41ebc2d347767659760d99d4220c49",
+					"report_source": "80ed462d68e474c5dd2f1d97e5341cbddf59acea6ee21e7562105683a5c8bdf2"
 				},
 				"equipment_candidate": null,
 				"has_draft_items": false,
 				"input_sha256": "8e3c6fe25671951be06d95c066d995abf53833aaed4c8385249dc945f692b4c1",
 				"kind": "planning_report_v1",
-				"manifest_sha256": "41e799765e74197d88f06d8f906156bf97bd0d07ca86a1cce0220c0688aa3ba9",
+				"manifest_sha256": "0859ba05cf7ea2b2ae32f18b46bfc03516e0697bc1b3f379615c3302b7db3e48",
 				"materials_sha256": "95245358ded11790a07b5631622e43a7ef81571886517a6a63eab8e18b1556d9",
 				"pinned_assets": {
-					"report.source": "c0e26cdc49939177d01b3fda5065b2b46a7bab0ce46001e304a98c5dd768da9d",
-					"runtime_bundle": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6"
+					"report.source": "80ed462d68e474c5dd2f1d97e5341cbddf59acea6ee21e7562105683a5c8bdf2",
+					"runtime_bundle": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f"
 				},
 				"prepared_asset": {
-					"content_sha256": "ada65a7283449410c2c14fc9d3c3189c37754628913dcefc795c210d7e6c6ec5",
+					"content_sha256": "97dc5fa579e7e7948688ab393177446e696269804ce068c0cc84f7991f7a8b17",
 					"id": "00000000000000000000000000000012",
 					"media_type": "application/pdf",
 					"metadata": {
 						"dependencies": {
 							"materials_model": "95245358ded11790a07b5631622e43a7ef81571886517a6a63eab8e18b1556d9",
-							"report_model": "9a5cf7188e20f22ed382d6437f2e6ccc9a713e0bfa8306e6bc51a9e2b969d572",
-							"report_source": "c0e26cdc49939177d01b3fda5065b2b46a7bab0ce46001e304a98c5dd768da9d"
+							"report_model": "70730c3075bb5a5cf917045a6dda8013cc41ebc2d347767659760d99d4220c49",
+							"report_source": "80ed462d68e474c5dd2f1d97e5341cbddf59acea6ee21e7562105683a5c8bdf2"
 						},
 						"locale": "en",
 						"provenance": {
@@ -2153,10 +2153,10 @@
 							"label": "Project planning report",
 							"rights_basis": "Private project output and customer-provided branding"
 						},
-						"report_model_sha256": "9a5cf7188e20f22ed382d6437f2e6ccc9a713e0bfa8306e6bc51a9e2b969d572",
+						"report_model_sha256": "70730c3075bb5a5cf917045a6dda8013cc41ebc2d347767659760d99d4220c49",
 						"retention": "permanent"
 					},
-					"metadata_sha256": "253410d5145747fcca8edc6ce22ee6555d1fcf247058303e5ce49118ff2a66a6",
+					"metadata_sha256": "a656b656b97786bd2edbfb2c00c181fe17d4d1c8b2bed7d6960850158fba26f1",
 					"project_id": "0000000000000000000000000000000c",
 					"purpose": "planning_report_pdf_v1"
 				},
@@ -2168,8 +2168,8 @@
 						"metadata": {
 							"dependencies": {
 								"materials_model": "95245358ded11790a07b5631622e43a7ef81571886517a6a63eab8e18b1556d9",
-								"report_model": "9a5cf7188e20f22ed382d6437f2e6ccc9a713e0bfa8306e6bc51a9e2b969d572",
-								"report_source": "c0e26cdc49939177d01b3fda5065b2b46a7bab0ce46001e304a98c5dd768da9d"
+								"report_model": "70730c3075bb5a5cf917045a6dda8013cc41ebc2d347767659760d99d4220c49",
+								"report_source": "80ed462d68e474c5dd2f1d97e5341cbddf59acea6ee21e7562105683a5c8bdf2"
 							},
 							"locale": "en",
 							"provenance": {
@@ -2179,7 +2179,7 @@
 							},
 							"retention": "permanent"
 						},
-						"metadata_sha256": "a1d46160d88a52efa4e1fdc8975141e03cbee6d44d79b9aee0ca71cad9739211",
+						"metadata_sha256": "ad506504d91d9b61ca2f9801912233ddfaf89ad4c2e56514cd9f3c72340a760e",
 						"project_id": "0000000000000000000000000000000c",
 						"purpose": "planning_materials_csv_v3"
 					}
@@ -2249,12 +2249,12 @@
 								{
 									"href": null,
 									"label": "Witness result SHA-256",
-									"value": "aa570afb8a540fd662da2315535cebb0f0f337d225943ab86bee71f64adeb5b7"
+									"value": "5e0840294b4b3e036d7744aa404df492726d58841add1b7fa2a2711a32b152cb"
 								},
 								{
 									"href": null,
 									"label": "Witness manifest SHA-256",
-									"value": "48b19288c9fa8bdacf08fe6bfb05139f546ce427f1709f4357040b76e6929b3f"
+									"value": "a2f0c78d9648cb82ed77f978001553fa041c320266f6d44f0cdda7ee91701d4a"
 								},
 								{
 									"href": null,
@@ -2264,7 +2264,7 @@
 								{
 									"href": null,
 									"label": "runtime_bundle SHA-256",
-									"value": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6"
+									"value": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f"
 								},
 								{
 									"href": null,
@@ -2437,19 +2437,19 @@
 					"subtitle": "Saved project inputs and selected calculation results",
 					"title": "Project planning report"
 				},
-				"report_sha256": "9a5cf7188e20f22ed382d6437f2e6ccc9a713e0bfa8306e6bc51a9e2b969d572",
+				"report_sha256": "70730c3075bb5a5cf917045a6dda8013cc41ebc2d347767659760d99d4220c49",
 				"revision": 2,
-				"runtime_sha256": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6",
+				"runtime_sha256": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f",
 				"schema": 1,
 				"source_runs": [
 					{
 						"input_sha256": "8e3c6fe25671951be06d95c066d995abf53833aaed4c8385249dc945f692b4c1",
 						"kind": "prepare_direct_beam_visibility_v1",
-						"manifest_sha256": "48b19288c9fa8bdacf08fe6bfb05139f546ce427f1709f4357040b76e6929b3f",
-						"result_sha256": "aa570afb8a540fd662da2315535cebb0f0f337d225943ab86bee71f64adeb5b7",
+						"manifest_sha256": "a2f0c78d9648cb82ed77f978001553fa041c320266f6d44f0cdda7ee91701d4a",
+						"result_sha256": "5e0840294b4b3e036d7744aa404df492726d58841add1b7fa2a2711a32b152cb",
 						"revision": 2,
 						"run_id": "0000000000000000000000000000000e",
-						"runtime_sha256": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6"
+						"runtime_sha256": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f"
 					}
 				]
 			},
@@ -3078,16 +3078,16 @@
 			"revision": 2,
 			"state": "succeeded",
 			"is_current": true,
-			"manifest_sha256": "720ff64f69adb073c6e1fa202b1c0768a6d3d16a818ccadc1a93c9af63db6c93",
+			"manifest_sha256": "6fa4de5e9fef1c684f3840e8ea5b17be1c94dcd345d339a0e27c1d7b09a41108",
 			"manifest": {
 				"context": {
 					"assets": {
-						"runtime_bundle": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6",
+						"runtime_bundle": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f",
 						"weather.metadata": "190106b0915b648656d22a83be6cf6a5f6abbf21a176a3b9dfe15e495388b686",
 						"weather.raw": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
 						"woo.module_inputs": "cc898879cf39d0dd565aa435be443dbf22aa1583195a82bd1e06ec2b9b7b9c00"
 					},
-					"code_sha256": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6",
+					"code_sha256": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f",
 					"models": {
 						"generation": "opaque_direct_uniform_pvlib_reference_v1",
 						"geometry": "declared_opaque_ray_midpoint_uvn_v1",
@@ -3117,7 +3117,7 @@
 				"revision": 2,
 				"schema": 1
 			},
-			"result_sha256": "77037ecf8410d15ded47552f1733aab0d8f184cd0c4324dbad0aba3dcaf8c20f",
+			"result_sha256": "83791787fa70e756f7c8f01f2a2608cdc9fb58eff440be7ca0ed7631f869dc45",
 			"result": {
 				"country_assessment": {
 					"status": "not_assessed"
@@ -3137,13 +3137,13 @@
 				},
 				"input_sha256": "11b1272c9c97bcccc72534a7a023aa850b960adba2e9caa8a5140e82bb52e0c3",
 				"kind": "prepare_geometric_pv_reference_v1",
-				"manifest_sha256": "720ff64f69adb073c6e1fa202b1c0768a6d3d16a818ccadc1a93c9af63db6c93",
+				"manifest_sha256": "6fa4de5e9fef1c684f3840e8ea5b17be1c94dcd345d339a0e27c1d7b09a41108",
 				"model": "opaque_direct_uniform_pvlib_reference_v1",
 				"near_shading_assessment": {
 					"status": "direct_only_scenario_not_complete_assessment"
 				},
 				"pinned_assets": {
-					"runtime_bundle": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6",
+					"runtime_bundle": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f",
 					"weather.metadata": "190106b0915b648656d22a83be6cf6a5f6abbf21a176a3b9dfe15e495388b686",
 					"weather.raw": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
 					"woo.module_inputs": "cc898879cf39d0dd565aa435be443dbf22aa1583195a82bd1e06ec2b9b7b9c00"
@@ -3313,7 +3313,7 @@
 				},
 				"project_id": "00000000000000000000000000000014",
 				"revision": 2,
-				"runtime_sha256": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6",
+				"runtime_sha256": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f",
 				"schema": 1,
 				"scope": {
 					"diffuse_policy": "retain_unobstructed_sky_and_ground_components_v1",
@@ -4406,14 +4406,14 @@
 			"revision": 3,
 			"state": "succeeded",
 			"is_current": true,
-			"manifest_sha256": "c796ffcbaa5b0e42dc1687646fc48ffd2155bb72f37c66f94bc39545a938bff5",
+			"manifest_sha256": "794e8da403920db5e175e8394e2a17514170f2e5478730499d25685fecc7fddf",
 			"manifest": {
 				"context": {
 					"assets": {
-						"report.source": "84b6f498825b411fee91eea551295e194ae3fd43d7faddd5666eda227f940326",
-						"runtime_bundle": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6"
+						"report.source": "46ac653daf41c4811834d351a8a99e87e2a2b416023d64110d8645543d0c873b",
+						"runtime_bundle": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f"
 					},
-					"code_sha256": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6",
+					"code_sha256": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f",
 					"models": {
 						"certificate_information": "literal_certificate_cover_v1",
 						"installation": "installation_route_takeoff_v1",
@@ -4431,26 +4431,26 @@
 				"revision": 3,
 				"schema": 1
 			},
-			"result_sha256": "dad6df29166bca872a354a4e9e8c51dec9bfdf002c0556bbfd210a4ecdde999e",
+			"result_sha256": "e3942235a1e3dd8520fea29df1bab9663630a45687f6b79d1e676c5499770e2b",
 			"result": {
 				"dependencies": {
 					"materials_model": "0ae87c958148c4c997589dd32c2f1e2f8b562b752fe9d821cb099e195aa7db22",
 					"prepared_asset_content": "a7fb0461736a83f8c107ba374c24a372f53f508f9c2a27bd16346ed4241cc5a0",
-					"prepared_asset_metadata": "2a2cecacf7f88800d140e29806120d1364c06844d8b1a0b17a772ae9017e8b57",
+					"prepared_asset_metadata": "6584b030df19c353882ed0c3e52b9836fe1dd7b83e381c5d16e457deace8c706",
 					"prepared_attachment.bill_of_materials_csv.content": "d45e51f973384b807365c0e169b0d58bee56be46d2b07a631f383ed990477049",
-					"prepared_attachment.bill_of_materials_csv.metadata": "8c99b8966f5721184e883cce5a457c8a5ea0f434eff7f2863a41a9f29ed3206b",
+					"prepared_attachment.bill_of_materials_csv.metadata": "a730533330ebc3446181bc43dd68df90ccd1e0f6ecc077988d2cad72942d996b",
 					"report_model": "45175677f68af8a4a11c2e651df48dd2ad6e7960ccb04c525872b155828560a3",
-					"report_source": "84b6f498825b411fee91eea551295e194ae3fd43d7faddd5666eda227f940326"
+					"report_source": "46ac653daf41c4811834d351a8a99e87e2a2b416023d64110d8645543d0c873b"
 				},
 				"equipment_candidate": null,
 				"has_draft_items": false,
 				"input_sha256": "628163633215a0c5254d6d5b9005a69447ff71f9339a062f3c2d6a6b80211379",
 				"kind": "planning_report_v1",
-				"manifest_sha256": "c796ffcbaa5b0e42dc1687646fc48ffd2155bb72f37c66f94bc39545a938bff5",
+				"manifest_sha256": "794e8da403920db5e175e8394e2a17514170f2e5478730499d25685fecc7fddf",
 				"materials_sha256": "0ae87c958148c4c997589dd32c2f1e2f8b562b752fe9d821cb099e195aa7db22",
 				"pinned_assets": {
-					"report.source": "84b6f498825b411fee91eea551295e194ae3fd43d7faddd5666eda227f940326",
-					"runtime_bundle": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6"
+					"report.source": "46ac653daf41c4811834d351a8a99e87e2a2b416023d64110d8645543d0c873b",
+					"runtime_bundle": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f"
 				},
 				"prepared_asset": {
 					"content_sha256": "a7fb0461736a83f8c107ba374c24a372f53f508f9c2a27bd16346ed4241cc5a0",
@@ -4460,7 +4460,7 @@
 						"dependencies": {
 							"materials_model": "0ae87c958148c4c997589dd32c2f1e2f8b562b752fe9d821cb099e195aa7db22",
 							"report_model": "45175677f68af8a4a11c2e651df48dd2ad6e7960ccb04c525872b155828560a3",
-							"report_source": "84b6f498825b411fee91eea551295e194ae3fd43d7faddd5666eda227f940326"
+							"report_source": "46ac653daf41c4811834d351a8a99e87e2a2b416023d64110d8645543d0c873b"
 						},
 						"locale": "de",
 						"provenance": {
@@ -4471,7 +4471,7 @@
 						"report_model_sha256": "45175677f68af8a4a11c2e651df48dd2ad6e7960ccb04c525872b155828560a3",
 						"retention": "permanent"
 					},
-					"metadata_sha256": "2a2cecacf7f88800d140e29806120d1364c06844d8b1a0b17a772ae9017e8b57",
+					"metadata_sha256": "6584b030df19c353882ed0c3e52b9836fe1dd7b83e381c5d16e457deace8c706",
 					"project_id": "00000000000000000000000000000014",
 					"purpose": "planning_report_pdf_v1"
 				},
@@ -4484,7 +4484,7 @@
 							"dependencies": {
 								"materials_model": "0ae87c958148c4c997589dd32c2f1e2f8b562b752fe9d821cb099e195aa7db22",
 								"report_model": "45175677f68af8a4a11c2e651df48dd2ad6e7960ccb04c525872b155828560a3",
-								"report_source": "84b6f498825b411fee91eea551295e194ae3fd43d7faddd5666eda227f940326"
+								"report_source": "46ac653daf41c4811834d351a8a99e87e2a2b416023d64110d8645543d0c873b"
 							},
 							"locale": "de",
 							"provenance": {
@@ -4494,7 +4494,7 @@
 							},
 							"retention": "permanent"
 						},
-						"metadata_sha256": "8c99b8966f5721184e883cce5a457c8a5ea0f434eff7f2863a41a9f29ed3206b",
+						"metadata_sha256": "a730533330ebc3446181bc43dd68df90ccd1e0f6ecc077988d2cad72942d996b",
 						"project_id": "00000000000000000000000000000014",
 						"purpose": "planning_materials_csv_v3"
 					}
@@ -4919,26 +4919,26 @@
 				},
 				"report_sha256": "45175677f68af8a4a11c2e651df48dd2ad6e7960ccb04c525872b155828560a3",
 				"revision": 3,
-				"runtime_sha256": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6",
+				"runtime_sha256": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f",
 				"schema": 1,
 				"source_runs": [
 					{
 						"input_sha256": "628163633215a0c5254d6d5b9005a69447ff71f9339a062f3c2d6a6b80211379",
 						"kind": "single_ac_energy_replay_v1",
-						"manifest_sha256": "042f0a3f0306a58182710dcb6a039b4a3cddf4e102b9977b0f52a40ae7e25adf",
-						"result_sha256": "3deefe073f25d091dba754d25a034f80b30f77759a0d54427d2bea8e5c797ced",
+						"manifest_sha256": "067423bfe0e403d8c46152b352a3b3baebd823375882603d16b08418918283ba",
+						"result_sha256": "0689ce3e5afe77bed3a92300b7af3095ce672b6cb5744728b60cfbf1f183e8d3",
 						"revision": 3,
 						"run_id": "0000000000000000000000000000001c",
-						"runtime_sha256": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6"
+						"runtime_sha256": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f"
 					},
 					{
 						"input_sha256": "11b1272c9c97bcccc72534a7a023aa850b960adba2e9caa8a5140e82bb52e0c3",
 						"kind": "prepare_geometric_pv_reference_v1",
-						"manifest_sha256": "720ff64f69adb073c6e1fa202b1c0768a6d3d16a818ccadc1a93c9af63db6c93",
-						"result_sha256": "77037ecf8410d15ded47552f1733aab0d8f184cd0c4324dbad0aba3dcaf8c20f",
+						"manifest_sha256": "6fa4de5e9fef1c684f3840e8ea5b17be1c94dcd345d339a0e27c1d7b09a41108",
+						"result_sha256": "83791787fa70e756f7c8f01f2a2608cdc9fb58eff440be7ca0ed7631f869dc45",
 						"revision": 2,
 						"run_id": "00000000000000000000000000000016",
-						"runtime_sha256": "7889ef045d81be9dfb79373180181ba426fcb39d03083f8f38e9e49b7e55c8d6"
+						"runtime_sha256": "4ff348f405fb8517238096750d930aa683f1eeb73a933f5b41e27e7815dc409f"
 					}
 				]
 			},
@@ -4962,8 +4962,8 @@
 					"state": "succeeded",
 					"matches_view_revision": true,
 					"is_current": false,
-					"manifest_sha256": "720ff64f69adb073c6e1fa202b1c0768a6d3d16a818ccadc1a93c9af63db6c93",
-					"result_sha256": "77037ecf8410d15ded47552f1733aab0d8f184cd0c4324dbad0aba3dcaf8c20f",
+					"manifest_sha256": "6fa4de5e9fef1c684f3840e8ea5b17be1c94dcd345d339a0e27c1d7b09a41108",
+					"result_sha256": "83791787fa70e756f7c8f01f2a2608cdc9fb58eff440be7ca0ed7631f869dc45",
 					"kind": "prepare_geometric_pv_reference_v1",
 					"scope": {
 						"country_assessment": {
@@ -5203,8 +5203,8 @@
 					"state": "succeeded",
 					"matches_view_revision": true,
 					"is_current": true,
-					"manifest_sha256": "c796ffcbaa5b0e42dc1687646fc48ffd2155bb72f37c66f94bc39545a938bff5",
-					"result_sha256": "dad6df29166bca872a354a4e9e8c51dec9bfdf002c0556bbfd210a4ecdde999e",
+					"manifest_sha256": "794e8da403920db5e175e8394e2a17514170f2e5478730499d25685fecc7fddf",
+					"result_sha256": "e3942235a1e3dd8520fea29df1bab9663630a45687f6b79d1e676c5499770e2b",
 					"kind": "planning_report_v1",
 					"scope": {
 						"country_assessment": null,
